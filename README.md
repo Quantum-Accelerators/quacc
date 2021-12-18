@@ -1,2 +1,2 @@
-# rosen_ase
-Various scripts defining Andrew's ASE workflows.
+# HT-ASE
+Various scripts enhancing ASE for high-throughput DFT.
