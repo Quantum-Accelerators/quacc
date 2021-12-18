@@ -1,0 +1,23 @@
+custodian_enabled: True
+vasp_cmd: srun -N 1 --ntasks-per-node 64 -c 4 --cpu_bind=cores vasp_std > vasp.out
+vasp_gamma_cmd: srun -N 1 --ntasks-per-node 64 -c 4 --cpu_bind=cores vasp_gam > vasp.out
+max_errors: 5
+scratch_dir: null
+handlers:
+  - VaspErrorHandler
+  - MeshSymmetryErrorHandler
+  - UnconvergedErrorHandler
+  - NonConvergingErrorHandler
+  - PotimErrorHandler
+  - PositiveEnergyErrorHandler
+  - FrozenJobErrorHandler
+  - StdErrHandler
+  - LargeSigmaHandler
+  - IncorrectSmearingHandler
+  - ScanMetalHandler
+validators:
+  - VasprunXMLValidator
+  - VaspFilesValidator
+wall_time: null
+vasp_job_kwargs: null
+custodian_kwargs: null
