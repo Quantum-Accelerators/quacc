@@ -33,7 +33,7 @@ class SmartVasp(Vasp):
 
             # Move final magmoms to initial magmoms if present and any
             # are > 0.02 in magnitude (unless the user has specified some)
-            if all([atoms.get_initial_magnetic_moments() == 0]):
+            if np.all(atoms.get_initial_magnetic_moments() == 0):
                 try:
                     mags = atoms.get_magnetic_moments()
                 except:
