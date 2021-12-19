@@ -25,7 +25,21 @@ In addition, you will want to define several environment variables (typically in
 **Required for database support**:
 - Make a `jobflow.yaml` as described in the [Atomate2 documentation](https://materialsproject.github.io/atomate2/user/install.html#jobflow-yaml) and then set the `JOBFLOW_CONFIG_FILE` environment variable to point to this `jobflow.yaml` file. The `jobflow.yaml` contains information about where to store calculation outputs. If the config file is not found by jobflow, serialized outputs will be stored in memory.
 
-## Minimal Example
+## Minimal Examples
+### SmartVasp Calculator
+To use HT-ASE's `SmartVasp()` calculator, simply import it from `htase.calculators.vasp` and use it with any of the [input arguments](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html) in a typical ASE `Vasp()` calculator. The only differences for the user are that that the first argument must be the ASE `Atoms` object, and the calculator should not be attached to the `Atoms` object since this will be done automatically.
+
+```python
+from htase.calculators.vasp import SmartVasp
+from ase.build import bulk
+
+atoms = bulk("Cu")
+SmartVasp(atoms, xc="PBE", setups="$pbe54", kpts={"reciprocal_density":50})
+atoms.get_potential_energy()
+```
+In the above example, there are already several enhancements compared to standard ASE. First, `SmartVasp()` will recognize that the requested `kpts` is an automatic k-point generation scheme from Pymatgen and will use that to generate the k-points for you. `SmartVasp()` will also recognize that you have an element with d electrons and will set `LMAXMIX=4` per the VASP manual. Finally, when the potential energy is requested, HT-ASE will run VASP using Custodian. Assuming `ASE_VASP_SETUPS` was set as outliend in the instructions, `setups="$pbe54"` will read in our pre-defined setups library [packaged with HT-ASE](https://github.com/arosen93/HT-ASE/tree/main/htase/defaults/user_setups/vasp).
+
+### Jobflow Integration
 
 ## Requirements
 Can be installed via `pip install -r requirements.txt`:
