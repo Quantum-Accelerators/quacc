@@ -41,7 +41,7 @@ In the above example, there are already several enhancements compared to standar
 
 ### Jobflow Integration
 
-To convert the jobflow flow to a Fireworks workflow, see the `jobflow.managers.fireworks` section in the [Jobflow API](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks)
+To convert the jobflow job/flow to a Fireworks firework/workflow, see the `jobflow.managers.fireworks.job_to_firework()` and `jobflow.managers.fireworks.flow_to_workflow()` functions in the [Jobflow documentation](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks).
 
 
 ## Requirements
