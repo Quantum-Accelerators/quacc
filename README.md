@@ -50,7 +50,7 @@ In the above example, there are already several enhancements compared to standar
 To convert the jobflow job/flow to a Fireworks firework/workflow, refer to the [Jobflow documentation](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks).
 
 ## Requirements
-Can be installed via `pip install -r requirements.txt`:
+Python 3.7+ is required in addition to the following packages, which can be installed via `pip install -r requirements.txt`:
 - [ASE](https://gitlab.com/ase/ase)
 - [Pymatgen](https://github.com/materialsproject/pymatgen)
 - [Custodian](https://github.com/materialsproject/custodian)
