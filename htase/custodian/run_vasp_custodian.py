@@ -11,6 +11,7 @@ from custodian.vasp.handlers import (
     NonConvergingErrorHandler,
     PositiveEnergyErrorHandler,
     PotimErrorHandler,
+    ScanMetalHandler,
     StdErrHandler,
     UnconvergedErrorHandler,
     VaspErrorHandler,
@@ -49,6 +50,7 @@ handlers_dict = {
     "UnconvergedErrorHandler": UnconvergedErrorHandler(),
     "VaspErrorHandler": VaspErrorHandler(),
     "WalltimeHandler": WalltimeHandler(),
+    "ScanMetalHandler": ScanMetalHandler(),
 }
 validators_dict = {
     "VaspFilesValidator": VaspFilesValidator(),
@@ -58,13 +60,13 @@ validators_dict = {
 handlers = []
 for handler_flag in config["handlers"]:
     if handler_flag not in handlers_dict.keys():
-        raise ValueError("Unknown VASP error handler")
+        raise ValueError(f"Unknown VASP error handler: {handler_flag}")
     handlers.append(handlers_dict[handler_flag])
 
 validators = []
 for validator_flag in config["validators"]:
     if validator_flag not in validators_dict.keys():
-        raise ValueError("Unknown VASP validator")
+        raise ValueError(f"Unknown VASP validator: {validator_flag}")
     validators.append(validators_dict[validator_flag])
 
 # Populate settings
