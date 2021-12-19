@@ -87,7 +87,7 @@ class SmartVasp(Vasp):
                 calc.set(lasph=True)
 
             if (
-                calc.asdict()["inputs"].get("lasph", False)
+                calc.asdict()["inputs"].get("lasph", False) is True
                 and calc.asdict()["inputs"].get("lmaxtau", 6) < 8
             ):
                 if verbose:
