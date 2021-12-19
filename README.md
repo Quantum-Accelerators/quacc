@@ -34,7 +34,11 @@ export ASE_VASP_VDW="/path/to/vdw_kernel.bindat" # for vdW functionals (optional
 - Edit the `vasp_cmd` and `vasp_gamma_cmd` in the `${HTASE_DIR}/htase/custodian/vasp_custodian_settings.yaml` [file](https://github.com/arosen93/HT-ASE/blob/main/htase/custodian/vasp_custodian_settings.yaml) to tell Custodian how to run VASP on your supercomputer. The file also contains some defualt settings for Custodian. If you want different settings for various projects (e.g. different numbers of nodes, different Custodian handlers), you can make a new `vasp_custodian_settings.yaml` file and define the path to it in a `VASP_CUSTODIAN_SETTINGS` environment variable at runtime.
 
 **Required for database support**:
-- Make a `jobflow.yaml` as described in the [Atomate2 documentation](https://materialsproject.github.io/atomate2/user/install.html#jobflow-yaml) and then set the `JOBFLOW_CONFIG_FILE` environment variable to point to this `jobflow.yaml` file. The `jobflow.yaml` contains information about where to store calculation outputs. If the config file is not found by jobflow, serialized outputs will be stored in memory.
+- Make a `jobflow.yaml` as described in the [Atomate2 documentation](https://materialsproject.github.io/atomate2/user/install.html#jobflow-yaml) and then add the following to yout `~/.bashrc`:
+```bash
+export JOBFLOW_CONFIG_FILE=/path/to/jobflow.yaml
+```
+The `jobflow.yaml` contains information about where to store calculation outputs. If the config file is not found by jobflow, serialized outputs will be stored in memory.
 
 ## Minimal Examples
 ### SmartVasp Calculator
