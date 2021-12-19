@@ -25,6 +25,8 @@ In addition, you will want to define several environment variables (typically in
 **Required for database support**:
 - Make a `jobflow.yaml` as described in the [Atomate2 documentation](https://materialsproject.github.io/atomate2/user/install.html#jobflow-yaml) and then set the `JOBFLOW_CONFIG_FILE` environment variable to point to this `jobflow.yaml` file. The `jobflow.yaml` contains information about where to store calculation outputs. If the config file is not found by jobflow, serialized outputs will be stored in memory.
 
+## Minimal Example
+
 ## Requirements
 Can be installed via `pip install -r requirements.txt`:
 - [ASE](https://gitlab.com/ase/ase)
