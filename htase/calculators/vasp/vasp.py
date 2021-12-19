@@ -64,13 +64,13 @@ class SmartVasp(Vasp):
             if any(atoms.get_atomic_numbers()) > 56:
                 if verbose:
                     warnings.warn(
-                        "Copilot: Setting LMAXMIX = 6 because you have an f-block element."
+                        "Copilot: Setting LMAXMIX = 6 because you have an f element."
                     )
                 calc.set(lmaxmix=6)
             elif any(atoms.get_atomic_numbers()) > 20:
                 if verbose:
                     warnings.warn(
-                        "Copilot: Setting LMAXMIX = 4 because you have a d-block element"
+                        "Copilot: Setting LMAXMIX = 4 because you have a d element"
                     )
                 calc.set(lmaxmix=4)
 
@@ -87,6 +87,16 @@ class SmartVasp(Vasp):
                 calc.set(lasph=True)
 
             if (
+                calc.asdict()["inputs"].get("lasph", False)
+                and calc.asdict()["inputs"].get("lmaxtau", 6) < 8
+            ):
+                if verbose:
+                    warnings.warn(
+                        "Copilot: Setting LMAXTAU = 8 because you have LASPH = True and an f element."
+                    )
+                calc.set(lmaxtau=8)
+
+            if (
                 calc.asdict()["inputs"].get("lhfcalc", False) is True
                 or calc.asdict()["inputs"].get("metagga", None) is not None
             ) and calc.asdict()["inputs"].get("algo", "Normal") != "All":
@@ -95,6 +105,18 @@ class SmartVasp(Vasp):
                         "Copilot: Setting ALGO = All because you have a meta-GGA or hybrid calculation."
                     )
                 calc.set(algo="All")
+
+            if (
+                calc.asdict()["inputs"].get("nedos", 301) > 301
+                and calc.asdict()["inputs"].get("ismear", 1) != -5
+                and calc.asdict()["inputs"].get("nsw", 0) == 0
+                and np.product(calc.asdict()["inputs"]["kpts"]) >= 4
+            ):
+                if verbose:
+                    warnings.warn(
+                        "Copilot: Setting ISMEAR = -5 because you have a static DOS calculation."
+                    )
+                calc.set(ismear=-5)
 
             if (
                 np.product(calc.asdict()["inputs"]["kpts"]) < 4
@@ -112,9 +134,37 @@ class SmartVasp(Vasp):
             ):
                 if verbose:
                     warnings.warn(
-                        "Copilot: KSPACING might be too large for ISMEAR = -5. Custodian will save you if needed, but you can also change ISMEAR to 0."
+                        "Copilot: KSPACING might be too large for ISMEAR = -5. Custodian should save you if needed, but you can also change ISMEAR to 0."
                     )
-                pass
+                pass  # let Custodian deal with it
+
+            if (
+                calc.asdict()["inputs"].get("nsw", 0) > 0
+                and calc.asdict()["inputs"].get("laechg", False) is True
+            ):
+                if verbose:
+                    warnings.warn(
+                        "Copilot: Setting LAECHG = False because you have NSW > 0. LAECHG is not compatible with NSW > 0."
+                    )
+                calc.set(laechg=False)
+
+            if (
+                calc.asdict()["inputs"].get("ldauprint", 0) == 0
+                and calc.asdict()["inputs"].get("ldau", False) is True
+            ):
+                if verbose:
+                    warnings.warn("Copilot: Setting LDAUPRINT = 1 because LDAU = True.")
+                calc.set(laechg=False)
+
+            if (
+                calc.asdict()["inputs"].get("lreal", False) is True
+                and calc.asdict()["inputs"].get("nsw", 0) <= 1
+            ):
+                if verbose:
+                    warnings.warn(
+                        "Copilot: Setting LREAL = False because you are running a static calculation. LREAL != False can be bad for energies."
+                    )
+                calc.set(lreal=False)
 
         # Shortcuts for pymatgen k-point generation schemes.
         # Options include: line_density (for band structures),
