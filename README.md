@@ -37,7 +37,7 @@ atoms = bulk("Cu")
 SmartVasp(atoms, xc="PBE", setups="$pbe54", kpts={"reciprocal_density":50})
 atoms.get_potential_energy()
 ```
-In the above example, there are already several enhancements compared to standard ASE. First, `SmartVasp()` will recognize that the requested `kpts` is an [automatic k-point generation scheme](https://pymatgen.org/pymatgen.io.vasp.inputs.html#pymatgen.io.vasp.inputs.Kpoints.automatic_density_by_vol) from Pymatgen and will use that to generate the k-points for you. `SmartVasp()` will also recognize that you have an element with d electrons and will set `LMAXMIX=4` per the VASP manual. Assuming `ASE_VASP_SETUPS` was set as outliend in the instructions, `setups="$pbe54"` will read in our pre-defined setups library [packaged with HT-ASE](https://github.com/arosen93/HT-ASE/tree/main/htase/defaults/user_setups/vasp). Finally, when the potential energy is requested, HT-ASE will run VASP using Custodian. 
+In the above example, there are already several enhancements compared to standard ASE. First, `SmartVasp()` will recognize that the requested `kpts` is an [automatic k-point generation scheme](https://pymatgen.org/pymatgen.io.vasp.inputs.html#pymatgen.io.vasp.inputs.Kpoints.automatic_density_by_vol) from Pymatgen and will use that to generate the k-points for you. `SmartVasp()` will also recognize that you have an element with d electrons and will set `LMAXMIX=4` per the VASP manual. Assuming `ASE_VASP_SETUPS` was set as outliend in the instructions, `setups="$pbe54"` will read in our [pre-defined setups library](https://github.com/arosen93/HT-ASE/tree/main/htase/defaults/user_setups/vasp) packaged with HT-ASE. Finally, when the potential energy is requested, HT-ASE will run VASP using Custodian. 
 
 ### Jobflow Integration
 
