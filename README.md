@@ -1,6 +1,6 @@
 # HT-ASE
-Various scripts enhancing [ASE](https://wiki.fysik.dtu.dk/ase/index.html) for high-throughput DFT. Some features include:
-- Support for running VASP via [Custodian](https://github.com/materialsproject/custodian) for on-the-fly error handling.
+HT-ASE enhances [ASE](https://wiki.fysik.dtu.dk/ase/index.html) for high-throughput DFT. Some features include:
+- Support for running VASP in ASE via [Custodian](https://github.com/materialsproject/custodian) for on-the-fly error handling.
 - A smarter ASE-based VASP calculator with a "co-pilot" mode that will automatically adjust INCAR flags that go against what is in the VASP manual. This is inspired by Pymatgen's [handling of input sets](https://github.com/materialsproject/pymatgen/blob/master/pymatgen/io/vasp/sets.py).
 - Support for Pymatgen [automatic k-point generation schemes](https://pymatgen.org/pymatgen.io.vasp.inputs.html) in the ASE calculator itself.
 - Easy integration with [Jobflow](https://materialsproject.github.io/jobflow/) for the simple construction of complex workflows and ability to store results in database format. By extension, this also makes it possible to easily use ASE with [Fireworks](https://github.com/materialsproject/fireworks) for job management.
@@ -24,6 +24,8 @@ In addition, you will want to define several environment variables (typically in
 
 **Required for database support**:
 - Make a `jobflow.yaml` as described in the [Atomate2 documentation](https://materialsproject.github.io/atomate2/user/install.html#jobflow-yaml) and then set the `JOBFLOW_CONFIG_FILE` environment variable to point to this `jobflow.yaml` file. The `jobflow.yaml` contains information about where to store calculation outputs. If the config file is not found by jobflow, serialized outputs will be stored in memory.
+
+## Minimal Example
 
 ## Requirements
 Can be installed via `pip install -r requirements.txt`:
