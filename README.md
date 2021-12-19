@@ -15,7 +15,7 @@ Credit: xkcd
 ## Installation
 Install HT-ASE via
 ```bash
-git clone https://github.com/arosen93/HT-ASE.git && cd HT-ASE && pip install .`
+git clone https://github.com/arosen93/HT-ASE.git && cd HT-ASE && pip install -r requirements.txt && pip install .`
 ```
 We recommend doing so in a clean virtual (e.g. [Miniconda](https://docs.conda.io/en/latest/miniconda.html)) environment.
 
@@ -59,7 +59,7 @@ In the above example, there are already several enhancements compared to standar
 To convert the jobflow job/flow to a Fireworks firework/workflow, refer to the [Jobflow documentation](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks).
 
 ## Requirements
-Python 3.7+ is required in addition to the following packages, which can be installed via `pip install -r requirements.txt`:
+Python 3.7+ is required in addition to the following packages:
 - [ASE](https://gitlab.com/ase/ase)
 - [Pymatgen](https://github.com/materialsproject/pymatgen)
 - [Custodian](https://github.com/materialsproject/custodian)
