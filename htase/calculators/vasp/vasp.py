@@ -61,13 +61,13 @@ class SmartVasp(Vasp):
 
         # Handle INCAR swaps as needed
         if incar_copilot and atoms:
-            if any(atoms.get_atomic_numbers()) > 56:
+            if any(atoms.get_atomic_numbers() > 56):
                 if verbose:
                     warnings.warn(
                         "Copilot: Setting LMAXMIX = 6 because you have an f element."
                     )
                 calc.set(lmaxmix=6)
-            elif any(atoms.get_atomic_numbers()) > 20:
+            elif any(atoms.get_atomic_numbers() > 20):
                 if verbose:
                     warnings.warn(
                         "Copilot: Setting LMAXMIX = 4 because you have a d element"
