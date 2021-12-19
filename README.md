@@ -6,7 +6,7 @@ Install HT-ASE via `pip install .` in the base directory. We recommend doing so 
 
 In addition, you will want to define several environment variables (typically in your `~/.bashrc`) to tell HT-ASE and the underlying ASE code how to run various codes.
 
-Requirements for VASP:
+Required for VASP:
 - Set the `VASP_PP_PATH` environment variable to point to your library of VASP PAW pseudopotentials, as described in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials).
 - Set the `HTASE_DIR` environment variable to point to the base directory of the HT-ASE package. This does nothing on its own. It is simply for convenience since we will reference it a lot.
 - `export ASE_VASP_COMMAND="python ${HTASE_DIR}/htase/custodian/run_vasp_custodian.py"`. This tell ASE to run Custodian-powered VASP.
@@ -16,7 +16,7 @@ Optional for VASP:
 - Set the `ASE_VASP_VDW` environment variable to point to your VASP vdW kernel file (typically named `vdw_kernel.bindat`), as described in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials). This is needed if vdW functionals are used.
 - `export ASE_VASP_SETUPS="${HTASE_DIR}/defaults/user_setups/vasp"`. This allows you to easily access our [custom setups](https://github.com/arosen93/HT-ASE/blob/main/htase/defaults/user_setups/vasp) (e.g. `setups='$pbe54'`) when instantiating your calculator.
 
-For database support:
+Required for database support:
 - Make a `jobflow.yaml` as described in the [Atomate2 documentation](https://materialsproject.github.io/atomate2/user/install.html#jobflow-yaml) and then set the `JOBFLOW_CONFIG_FILE` environment variable to point to this `jobflow.yaml` file. The `jobflow.yaml` contains information about where to store calculation outputs. If the config file is not found by jobflow, serialized outputs will be stored in memory.
 
 ## Requirements
