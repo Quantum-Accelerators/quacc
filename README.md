@@ -41,6 +41,9 @@ In the above example, there are already several enhancements compared to standar
 
 ### Jobflow Integration
 
+To convert the jobflow flow to a Fireworks workflow, see the `jobflow.managers.fireworks` section in the [Jobflow API](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks)
+
+
 ## Requirements
 Can be installed via `pip install -r requirements.txt`:
 - [ASE](https://gitlab.com/ase/ase)
