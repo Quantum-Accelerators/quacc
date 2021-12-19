@@ -25,8 +25,8 @@ export VASP_PP_PATH="/path/to/pseudopotential/library" # see ASE VASP calculator
 export HTASE_DIR="/path/to/HT-ASE" # path to this package
 export VASP_CUSTODIAN_SETTINGS="${HTASE_DIR}/htase/custodian/vasp_custodian_settings.yaml" # path to Custodian settings
 export ASE_VASP_COMMAND="python ${HTASE_DIR}/htase/custodian/run_vasp_custodian.py" # tells ASE to run Custodian-powered VASP
-export ASE_VASP_VDW="/path/to/vdw_kernel.bindat" # for vdW functionals (optional)
 export ASE_VASP_SETUPS="${HTASE_DIR}/defaults/user_setups/vasp" # to access HT-ASE pseudopotential defaults (optional)
+export ASE_VASP_VDW="/path/to/vdw_kernel.bindat" # for vdW functionals (optional)
 ```
 
 - Edit the `vasp_cmd` and `vasp_gamma_cmd` in the `${HTASE_DIR}/htase/custodian/vasp_custodian_settings.yaml` [file](https://github.com/arosen93/HT-ASE/blob/main/htase/custodian/vasp_custodian_settings.yaml) to tell Custodian how to run VASP on your supercomputer. The file also contains some defualt settings for Custodian. If you want different settings for various projects (e.g. different numbers of nodes, different Custodian handlers), you can make a new `vasp_custodian_settings.yaml` file and define the path to it in a `VASP_CUSTODIAN_SETTINGS` environment variable at runtime.
