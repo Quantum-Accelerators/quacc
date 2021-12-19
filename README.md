@@ -4,6 +4,8 @@ Various scripts enhancing ASE for high-throughput DFT.
 ## Installation
 Install HT-ASE via `pip install .` in the base directory. We recommend doing so in a clean virtual (e.g. [Miniconda](https://docs.conda.io/en/latest/miniconda.html)) environment.
 
+In addition, you will want to define several environment variables (typically in your `~/.bashrc`) to tell HT-ASE and the underlying ASE code how to run various codes.
+
 Requirements for VASP:
 - Set the `VASP_PP_PATH` environment variable to point to your library of VASP PAW pseudopotentials, as described in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials).
 - Set the `HTASE_DIR` environment variable to point to the base directory of the HT-ASE package. This does nothing on its own. It is simply for convenience since we will reference it a lot.
