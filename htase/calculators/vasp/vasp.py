@@ -166,6 +166,16 @@ class SmartVasp(Vasp):
                     )
                 calc.set(lreal=False)
 
+            if calc.asdict()["inputs"].get("lorbit", None) is None and (
+                calc.asdict()["inputs"].get("ispin", 1) == 2
+                or np.any(atoms.get_initial_magnetic_moments() != 0)
+            ):
+                if verbose:
+                    warnings.warn(
+                        "Copilot: Setting LORBIT = 11 because you have a spin-polarized calculation."
+                    )
+                calc.set(lorbit=11)
+
         # Shortcuts for pymatgen k-point generation schemes.
         # Options include: line_density (for band structures),
         # reciprocal_density (by volume), grid_density (by number of atoms),
