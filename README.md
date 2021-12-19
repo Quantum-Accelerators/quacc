@@ -17,9 +17,7 @@ Install HT-ASE via
 ```bash
 git clone https://github.com/arosen93/HT-ASE.git && cd HT-ASE && pip install -r requirements.txt && pip install .`
 ```
-We recommend doing so in a clean virtual (e.g. [Miniconda](https://docs.conda.io/en/latest/miniconda.html)) environment.
-
-In addition, you will want to define several environment variables, as outlined below.
+We recommend doing so in a clean virtual (e.g. [Miniconda](https://docs.conda.io/en/latest/miniconda.html)) environment. In addition, you will want to define several environment variables, as outlined below.
 
 **Required for VASP**:
 
