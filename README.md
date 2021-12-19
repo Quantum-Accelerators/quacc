@@ -13,9 +13,13 @@ Credit: xkcd
 </p>
 
 ## Installation
-Install HT-ASE via `pip install .` in the base directory. We recommend doing so in a clean virtual (e.g. [Miniconda](https://docs.conda.io/en/latest/miniconda.html)) environment.
+Install HT-ASE via
+```bash
+git clone https://github.com/arosen93/HT-ASE.git && cd HT-ASE && pip install .`
+```
+We recommend doing so in a clean virtual (e.g. [Miniconda](https://docs.conda.io/en/latest/miniconda.html)) environment.
 
-In addition, you will want to define several environment variables (typically in your `~/.bashrc`), as outlined below.
+In addition, you will want to define several environment variables, as outlined below.
 
 **Required for VASP**:
 
@@ -23,6 +27,7 @@ In addition, you will want to define several environment variables (typically in
 ```bash
 export VASP_PP_PATH="/path/to/pseudopotential/library" # see ASE VASP calculator documentation
 export HTASE_DIR="/path/to/HT-ASE" # path to this package
+export PYTHONPATH=$PYTHONPATH:$HTASE_DIR # ensure Python can find HT-ASE
 export VASP_CUSTODIAN_SETTINGS="${HTASE_DIR}/htase/custodian/vasp_custodian_settings.yaml" # path to Custodian settings
 export ASE_VASP_COMMAND="python ${HTASE_DIR}/htase/custodian/run_vasp_custodian.py" # tells ASE to run Custodian-powered VASP
 export ASE_VASP_SETUPS="${HTASE_DIR}/defaults/user_setups/vasp" # to access HT-ASE pseudopotential defaults (optional)
