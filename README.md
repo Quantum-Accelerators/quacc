@@ -11,7 +11,7 @@ Requirements for VASP:
 
 Optional for VASP:
 - Set the `ASE_VASP_VDW` environment variable to point to your VASP vdW kernel file (typically named `vdw_kernel.bindat`), as described in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials). This is needed if vdW functionals are used.
-- `export ASE_VASP_SETUPS="${HTASE_DIR}/defaults/user_setups/vasp"`. This allows you to easily use our [custom setups](https://github.com/arosen93/HT-ASE/blob/main/htase/defaults/user_setups/vasp) (e.g. `setups='$vasp54'` in your calculator).
+- `export ASE_VASP_SETUPS="${HTASE_DIR}/defaults/user_setups/vasp"`. This allows you to easily access our [custom setups](https://github.com/arosen93/HT-ASE/blob/main/htase/defaults/user_setups/vasp) (e.g. `setups='$vasp54'`) when instantiating your calculator.
 
 For database support:
 - Make a `jobflow.yaml` as described in the [Atomate2 documentation](https://materialsproject.github.io/atomate2/user/install.html#jobflow-yaml) and then set the `JOBFLOW_CONFIG_FILE` environment variable to point to this `jobflow.yaml` file. The `jobflow.yaml` contains information about where to store calculation outputs. If the config file is not found by jobflow, serialized outputs will be stored in memory.
