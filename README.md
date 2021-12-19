@@ -41,8 +41,8 @@ In the above example, there are already several enhancements compared to standar
 
 ### Jobflow Integration
 
-To convert the jobflow job/flow to a Fireworks firework/workflow, see the `jobflow.managers.fireworks.job_to_firework()` and `jobflow.managers.fireworks.flow_to_workflow()` functions in the [Jobflow documentation](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks).
-
+### Fireworks Integration
+To convert the jobflow job/flow to a Fireworks firework/workflow, refer to the [Jobflow documentation](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks).
 
 ## Requirements
 Can be installed via `pip install -r requirements.txt`:
