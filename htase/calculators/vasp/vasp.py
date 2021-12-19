@@ -64,13 +64,13 @@ class SmartVasp(Vasp):
             if any(atoms.get_atomic_numbers()) > 56:
                 if verbose:
                     warnings.warn(
-                        "Copilot: Setting LMAXMIX = 6 because you have an f-block element."
+                        "Copilot: Setting LMAXMIX = 6 because you have f electrons."
                     )
                 calc.set(lmaxmix=6)
             elif any(atoms.get_atomic_numbers()) > 20:
                 if verbose:
                     warnings.warn(
-                        "Copilot: Setting LMAXMIX = 4 because you have a d-block element"
+                        "Copilot: Setting LMAXMIX = 4 because you have d electrons."
                     )
                 calc.set(lmaxmix=4)
 
