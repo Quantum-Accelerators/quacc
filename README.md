@@ -9,7 +9,7 @@ In practice, the goal here is to enable the development of [Atomate2](https://gi
 <p align="center">
 <img src="https://imgs.xkcd.com/comics/standards_2x.png" alt="xkcd Comic" width="528" height="300">
 <p align="center">
-Credit: [xkcd](https://xkcd.com/927/)
+Credit: xkcd
 </p>
 
 ## Installation
