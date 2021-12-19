@@ -21,7 +21,7 @@ In addition, you will want to define several environment variables (typically in
 
 - Set the following in your `~/.bashrc`:
 ```bash
-export VASP_PP_PATH="/path/to/pseudopotential/library" # see https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials
+export VASP_PP_PATH="/path/to/pseudopotential/library" # see ASE VASP calculator documentation
 export HTASE_DIR="/path/to/HT-ASE" # path to this package
 export ASE_VASP_COMMAND="python ${HTASE_DIR}/htase/custodian/run_vasp_custodian.py" # tells ASE to run Custodian-powered VASP
 export ASE_VASP_VDW="/path/to/vdw_kernel.bindat" # for vdW functionals (optional)
