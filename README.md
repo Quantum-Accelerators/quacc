@@ -24,7 +24,7 @@ We recommend doing so in a clean virtual (e.g. [Miniconda](https://docs.conda.io
 - Set the following in your `~/.bashrc`:
 ```bash
 export VASP_PP_PATH="/path/to/pseudopotential/library" # see ASE VASP calculator documentation
-export HTASE_DIR="/path/to/HT-ASE" # path to this package
+export HTASE_DIR="/path/to/htase" # path to this package
 export VASP_CUSTODIAN_SETTINGS="${HTASE_DIR}/htase/custodian/vasp_custodian_settings.yaml" # path to Custodian settings
 export ASE_VASP_COMMAND="python ${HTASE_DIR}/htase/custodian/run_vasp_custodian.py" # tells ASE to run Custodian-powered VASP
 export ASE_VASP_SETUPS="${HTASE_DIR}/defaults/user_setups/vasp" # to access HT-ASE pseudopotential defaults (optional)
