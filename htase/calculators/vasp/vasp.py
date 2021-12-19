@@ -192,8 +192,7 @@ class SmartVasp(Vasp):
                 kpts, kpt_labels = kpath.get_kpoints(
                     line_density=calc.kpts["line_density"], coords_are_cartesian=True
                 )
-                calc.set(kpts=np.vstack(kpts))
-                calc.set(reciporcal=True)
+                calc.set(kpts=np.vstack(kpts), reciporcal=True)
 
             else:
                 if "vol_kppa_density" in calc.kpts:
@@ -228,5 +227,4 @@ class SmartVasp(Vasp):
                     gamma = True
                 else:
                     gamma = False
-                calc.set(kpts=kpts)
-                calc.set(gamma=gamma)
+                calc.set(kpts=kpts, gamma=gamma)
