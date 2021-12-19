@@ -1,5 +1,5 @@
 # HT-ASE
-Various scripts enhancing [ASE](https://wiki.fysik.dtu.dk/ase/index.html) for high-throughput DFT. Some features include:
+HT-ASE enhances [ASE](https://wiki.fysik.dtu.dk/ase/index.html) for high-throughput DFT. Some features include:
 - Support for running VASP via [Custodian](https://github.com/materialsproject/custodian) for on-the-fly error handling.
 - A smarter ASE-based VASP calculator with a "co-pilot" mode that will automatically adjust INCAR flags that go against what is in the VASP manual. This is inspired by Pymatgen's [handling of input sets](https://github.com/materialsproject/pymatgen/blob/master/pymatgen/io/vasp/sets.py).
 - Support for Pymatgen [automatic k-point generation schemes](https://pymatgen.org/pymatgen.io.vasp.inputs.html) in the ASE calculator itself.
