@@ -1,5 +1,11 @@
 # HT-ASE
-Various scripts enhancing ASE for high-throughput DFT.
+Various scripts enhancing [ASE](https://wiki.fysik.dtu.dk/ase/index.html) for high-throughput DFT. Some features include:
+- Support for running VASP via [Custodian](https://github.com/materialsproject/custodian) for on-the-fly error handling.
+- A smarter ASE-based VASP calculator with a "co-pilot" mode that will automatically adjust INCAR flags that go against what is in the VASP manual. This is inspired by Pymatgen's [handling of input sets](https://github.com/materialsproject/pymatgen/blob/master/pymatgen/io/vasp/sets.py).
+- Support for Pymatgen [automatic k-point generation schemes](https://pymatgen.org/pymatgen.io.vasp.inputs.html) in the ASE calculator itself.
+- Easy integration with [Jobflow](https://materialsproject.github.io/jobflow/) for the simple construction of complex workflows and ability to store results in database format. By extension, this also makes it possible to easily use ASE with [Fireworks](https://github.com/materialsproject/fireworks) for job management.
+
+In practice, the goal here is to make an [Atomate2](https://github.com/materialsproject/atomate2)-like platform centered around ASE that is primarily focused on the ability to  rapidly constructing custom workflows. The speed of workflow development comes into play here because ASE is largely calculator-agnostic, making it possible to construct and link together workflows for dozens of simulation packages without breaking a sweat. Additionally, because ASE is mostly calculator-agnostic, rapid prototyping for new workflows can be done with semi-empirical methods (e.g. effective medium theory) before switching over to your production code of choice.
 
 ## Installation
 Install HT-ASE via `pip install .` in the base directory. We recommend doing so in a clean virtual (e.g. [Miniconda](https://docs.conda.io/en/latest/miniconda.html)) environment.
