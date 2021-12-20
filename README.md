@@ -58,3 +58,4 @@ Python 3.7+ is required in addition to the following packages:
 - [Pymatgen](https://github.com/materialsproject/pymatgen)
 - [Custodian](https://github.com/materialsproject/custodian)
 - [Jobflow](https://github.com/materialsproject/jobflow)
+- [Atomate2](https://github.com/materialsproject/atomate2)
