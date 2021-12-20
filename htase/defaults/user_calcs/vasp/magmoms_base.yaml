@@ -1,0 +1,21 @@
+inputs:
+  elemental_magmoms:
+    Ce: 5
+    Cr: 5
+    Dy: 5
+    Er: 3
+    Eu: 10
+    Fe: 5
+    Gd: 7
+    Ho: 4
+    Mn: 5
+    Mo: 5
+    Nd: 3
+    Ni: 5
+    Pm: 4
+    Pr: 2
+    Sm: 5
+    Tb: 6
+    Tm: 2
+    V: 5
+    W: 5

@@ -1,5 +1,6 @@
+from ase.calculators.calculator import CalculatorSetupError
+from htase.utilities.calc import load_yaml_calc
 from ase.calculators.vasp import Vasp
-from ase.io import jsonio
 from pymatgen.io.vasp.inputs import Kpoints
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.symmetry.bandstructure import HighSymmKpath
@@ -9,7 +10,14 @@ import warnings
 
 
 def SmartVasp(
-    atoms, base=None, force_gamma=True, incar_copilot=True, verbose=True, **kwargs,
+    atoms,
+    presets=None,
+    incar_copilot=True,
+    force_gamma=True,
+    copy_magmoms=True,
+    mag_cutoff=0.05,
+    verbose=True,
+    **kwargs,
 ):
     """
     This is a wrapper around the VASP calculator that adjusts INCAR parameters on-the-fly.
@@ -19,15 +27,22 @@ def SmartVasp(
     ----------
     atoms : ase.Atoms
         The Atoms object to be used for the calculation.
-    base : str
-        The path to a .json file containing a list of INCAR parameters to use as a "base"
+    presets : str
+        The path to a .json file containing a list of INCAR parameters to use as a "presets"
         for the calculator.
-    force_gamma : bool
-        If True, the KPOINTS will be set to gamma-centered.
-        Defaults to True.
     incar_copilot : bool
         If True, the INCAR parameters will be adjusted if they go against the VASP manual.
         Defaults to True.
+    force_gamma : bool
+        If True, the KPOINTS will be set to gamma-centered.
+        Defaults to True.
+    copy_magmoms : bool
+        If True, any pre-existing atoms.get_magnetic_moments() will be set in atoms.set_initial_magnetic_moments().
+        Defaults to True.
+    mag_cutoff : float
+        If copy_magmoms is True, only copy atoms.get_magnetic_moments() if there is at least one atom with an 
+        absolute magnetic moment above mag_cutoff.
+        Defaults to 0.05.
     verbose : bool
         If True, warnings will be raised when INCAR parameters are changed.
         Defaults to True.
@@ -40,28 +55,34 @@ def SmartVasp(
         The ASE Atoms object with attached VASP calculator.
     """
 
-    if incar_copilot:
-
-        # Move final magmoms to initial magmoms if present and any
-        # are > 0.02 in magnitude (unless the user has specified some)
-        if np.all(atoms.get_initial_magnetic_moments() == 0):
-            try:
-                mags = atoms.get_magnetic_moments()
-            except:
-                mags = None
-            if mags and np.any(np.abs(mags > 0.02)):
-                atoms.set_initial_magnetic_moments(mags)
-
-    # Initialize calculator
-    if base:
-        if os.path.exists(base):
-            calc_base = jsonio.read_json(base)
+    # Get user-defined preset parameters for the calculator
+    if presets:
+        if os.path.exists(presets):
+            config = load_yaml_calc(presets)
+            calc_presets = config["inputs"]
         else:
-            raise ValueError(f"Cannot find {base}")
+            raise ValueError(f"Cannot find {presets}")
     else:
-        calc_base = {}
+        calc_presets = {}
 
-    calc = Vasp(**{**calc_base, **kwargs})
+    # Collect all the calculator parameters and prioritize the kwargs
+    # in the case of duplicates.
+    user_calc_params = {**calc_presets, **kwargs}
+
+    # Handle special arguments in the user calc parameters that
+    # ASE does not natively support
+    if "elemental_magmoms" in user_calc_params:
+        initial_mags_dict = user_calc_params["elemental_magmoms"]
+        del user_calc_params["elemental_magmoms"]
+    else:
+        initial_mags_dict = {}
+    if "auto_kpts" in user_calc_params:
+        if "kpts" in user_calc_params:
+            raise ValueError("kpts and auto_kpts cannot both be set.")
+        auto_kpts = user_calc_params["auto_kpts"]
+        del user_calc_params["auto_kpts"]
+    else:
+        auto_kpts = None
 
     # Shortcuts for pymatgen k-point generation schemes.
     # Options include: line_density (for band structures),
@@ -70,49 +91,86 @@ def SmartVasp(
     # These are formatted as {"line_density": float}, {"reciprocal_density": float},
     # {"grid_density": float}, {"vol_kkpa_density": [float, float]}, and
     # {"length_density": [float, float, float]}.
-    if isinstance(calc.kpts, dict):
+    if auto_kpts:
         struct = AseAtomsAdaptor().get_structure(atoms)
 
-        if "line_density" in calc.kpts:
+        if "line_density" in auto_kpts:
             kpath = HighSymmKpath(struct, path_type="latimer_munro")
             kpts, _ = kpath.get_kpoints(
-                line_density=calc.kpts["line_density"], coords_are_cartesian=True
+                line_density=auto_kpts["line_density"], coords_are_cartesian=True
             )
-            calc.set(kpts=kpts, reciprocal=True)
+            user_calc_params["kpts"] = kpts
+            user_calc_params["reciprocal"] = True
 
         else:
-            if "max_mixed_density" in calc.kpts:
+            if "max_mixed_density" in auto_kpts:
+                if len(auto_kpts["max_mixed_density"]) != 2:
+                    raise ValueError("Must specify two values for max_mixed_density.")
+
                 pmg_kpts1 = Kpoints.automatic_density_by_vol(
-                    struct, calc.kpts["max_mixed_density"][0], force_gamma
+                    struct, auto_kpts["max_mixed_density"][0], force_gamma
                 )
                 pmg_kpts2 = Kpoints.automatic_density(
-                    struct, calc.kpts["max_mixed_density"][1], force_gamma
+                    struct, auto_kpts["max_mixed_density"][1], force_gamma
                 )
                 if np.product(pmg_kpts1.kpts[0]) >= np.product(pmg_kpts2.kpts[0]):
                     pmg_kpts = pmg_kpts1
                 else:
                     pmg_kpts = pmg_kpts2
-            elif "reciprocal_density" in calc.kpts:
+            elif "reciprocal_density" in auto_kpts:
                 pmg_kpts = Kpoints.automatic_density_by_vol(
-                    struct, calc.kpts["reciprocal_density"], force_gamma
+                    struct, auto_kpts["reciprocal_density"], force_gamma
                 )
-            elif "grid_density" in calc.kpts:
+            elif "grid_density" in auto_kpts:
                 pmg_kpts = Kpoints.automatic_density(
-                    struct, calc.kpts["grid_density"], force_gamma
+                    struct, auto_kpts["grid_density"], force_gamma
                 )
-            elif "length_density" in calc.kpts:
+            elif "length_density" in auto_kpts:
+                if len(auto_kpts["length_density"]) != 3:
+                    raise ValueError("Must specify three values for length_density.")
                 pmg_kpts = Kpoints.automatic_density_by_lengths(
-                    struct, calc.kpts["length_density"], force_gamma
+                    struct, auto_kpts["length_density"], force_gamma
                 )
             else:
-                raise ValueError(f"Unsupported k-point generation scheme: {calc.kpts}.")
+                raise ValueError(f"Unsupported k-point generation scheme: {auto_kpts}.")
 
             kpts = pmg_kpts.kpts[0]
             if pmg_kpts.style.name.lower() == "gamma":
                 gamma = True
             else:
                 gamma = False
-            calc.set(kpts=kpts, gamma=gamma)
+
+            user_calc_params["kpts"] = kpts
+            user_calc_params["gamma"] = gamma
+
+    # Handle the magnetic moments
+    # Check if there are converged magmoms
+    try:
+        mags = atoms.get_magnetic_moments()
+    except RuntimeError or CalculatorSetupError:
+        mags = None
+
+    # Copy converged magmoms to input magmoms, if copy_magmoms is True
+    if mags and copy_magmoms and np.any(np.abs(mags > mag_cutoff)):
+        atoms.set_initial_magnetic_moments(mags)
+
+    initial_mags = atoms.get_initial_magnetic_moments()
+
+    # If there are no initial magmoms, we may need to add some
+    # from the presets yaml
+    if np.all(initial_mags == 0):
+
+        # If the presets dictionary has default magmoms, set
+        # those by element. If the element isn't in the magmoms dict
+        # then set it to 1.0 (VASP default).
+        if initial_mags_dict:
+            initial_mags = np.array(
+                [initial_mags_dict.get(atom.symbol, 1.0) for atom in atoms]
+            )
+            atoms.set_initial_magnetic_moments(initial_mags)
+
+    # Instantiate the calculator!
+    calc = Vasp(**user_calc_params)
 
     # Handle INCAR swaps as needed
     if incar_copilot:
@@ -171,7 +229,7 @@ def SmartVasp(
         ):
             if verbose:
                 warnings.warn(
-                    "Copilot: Setting ISMEAR = -5 because you have a static DOS calculation."
+                    "Copilot: Setting ISMEAR = -5 because you have a static DOS calculation and enough k-points."
                 )
             calc.set(ismear=-5)
 
@@ -214,7 +272,7 @@ def SmartVasp(
             calc.set(laechg=False)
 
         if (
-            calc.asdict()["inputs"].get("lreal", False) is True
+            calc.parameters.get("lreal", False) in ("auto", True)
             and calc.asdict()["inputs"].get("nsw", 0) <= 1
         ):
             if verbose:
@@ -233,6 +291,7 @@ def SmartVasp(
                 )
             calc.set(lorbit=11)
 
+    calc.discard_results_on_any_change = True
     atoms.calc = calc
 
     return atoms

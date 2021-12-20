@@ -1,0 +1,22 @@
+parent: magmoms_base.yaml
+inputs:
+  xc: RPBE
+	setups: $pbe54
+  encut: 400
+  auto_kpts:
+    length_density: [50, 50, 1]
+  algo: fast
+  ediff: 1.0e-5
+  ediffg: -0.03
+  ibrion: 2
+  isif: 2
+  ismear: 0
+  isym: 0
+  lcharg: false
+  lorbit: 11
+  lasph: true
+  lwave: false
+  nelm: 200
+  nsw: 200
+  prec: accurate
+  sigma: 0.05

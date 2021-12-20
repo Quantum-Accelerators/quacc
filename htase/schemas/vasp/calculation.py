@@ -1,6 +1,10 @@
-from atomate.vasp.schemas.calculation import Calculation
+from atomate2.vasp.schemas.task import TaskDocument
+import os
 
 
-# TODO
-def get_calculation_summary(dir_name, task_name, **kwargs):
-    input_output_metadata = Calculation.from_vasp_files(task_name=task_name, **kwargs)
+def get_calculation_summary(dir_name=None, **kwargs):
+    if dir_name is None:
+        dir_name = os.getcwd()
+    taskdoc = TaskDocument.from_directory(dir_name, **kwargs)
+
+    return taskdoc

@@ -1,5 +1,5 @@
-from pymatgen.core.structure import Structure
 from atomate2.common.schemas.structure import StructureMetadata
+from pymatgen.core.structure import Structure
 from pymatgen.io.ase import AseAtomsAdaptor
 
 
