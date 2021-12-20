@@ -79,7 +79,7 @@ def SmartVasp(
     if setups is None:
         if incar_copilot:
             if "ASE_VASP_SETUPS" in os.environ and os.path.exists(
-                os.path.join(os.environ.get["ASE_VASP_SETUPS"], "pbe54.json")
+                os.path.join(os.environ["ASE_VASP_SETUPS"], "pbe54.json")
             ):
                 warnings.warn(
                     "Copilot: Setups were not specified. Using the HT-ASE $pbe54 set."
