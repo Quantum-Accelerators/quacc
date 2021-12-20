@@ -13,30 +13,28 @@ Credit: xkcd
 </p>
 
 ## Installation
-Run the following command in a convenient place (e.g. `~/software`) to install HT-ASE:
+0. Make sure you have Python 3.7+ installed, preferable in a clean virtual (e.g. [Miniconda](https://docs.conda.io/en/latest/miniconda.html)) environment.
+1. Run the following command in a convenient place (e.g. `~/software`) to install HT-ASE:
 ```bash
 git clone https://github.com/arosen93/htase.git && cd htase && pip install -r requirements.txt && pip install -e .
 ```
-We recommend doing so in a clean virtual (e.g. [Miniconda](https://docs.conda.io/en/latest/miniconda.html)) environment. In addition, you will want to define several environment variables, as outlined below.
-
-**Required for VASP**:
-
-- Set the following in your `~/.bashrc`:
+2. In addition, you will want to define several environment variables (e.g. in yout `~/.bashrc`), as outlined below.
 ```bash
-export VASP_PP_PATH="/path/to/pseudopotential/library" # see ASE VASP calculator documentation
+export VASP_PP_PATH="/path/to/pseudopotential/library" # tells ASE where the VASP PAW pseudopotentials are
 export HTASE_DIR="/path/to/htase" # path to this package (only used for convenience below)
 export VASP_CUSTODIAN_SETTINGS="${HTASE_DIR}/htase/custodian/vasp_custodian_settings.yaml" # path to Custodian settings
 export ASE_VASP_COMMAND="python ${HTASE_DIR}/htase/custodian/run_vasp_custodian.py" # tells ASE to run Custodian-powered VASP
 export ASE_VASP_SETUPS="${HTASE_DIR}/htase/defaults/user_setups/vasp" # to access HT-ASE pseudopotential defaults (optional)
 export ASE_VASP_VDW="/path/to/vdw_kernel.bindat" # for vdW functionals (optional)
+export JOBFLOW_CONFIG_FILE=/path/to/jobflow.yaml # for jobflow Store support (optional). 
 ```
 
-- Edit the `vasp_cmd` and `vasp_gamma_cmd` in the `${HTASE_DIR}/htase/custodian/vasp_custodian_settings.yaml` [file](https://github.com/arosen93/HT-ASE/blob/main/htase/custodian/vasp_custodian_settings.yaml) to tell Custodian how to run VASP on your supercomputer. The file also contains some defualt settings for Custodian. If you want different settings for various projects (e.g. different numbers of nodes, different Custodian handlers), you can make a new `vasp_custodian_settings.yaml` file and define the path to it in a `VASP_CUSTODIAN_SETTINGS` environment variable at runtime.
+For guidance with setting up `VASP_PP_PATH` and `ASE_VASP_VDW`, see the [ASE Vasp calculator docs](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials). For guidance with setting up `JOBFLOW_CONFIG_FILE`, see the [Jobflow API docs](https://materialsproject.github.io/jobflow/jobflow.settings.html?highlight=jobflow_config_file#jobflow.settings.JobflowSettings).
+3. Edit the `vasp_cmd` and `vasp_gamma_cmd` in the `vasp_custodian_settings.yaml` [file](https://github.com/arosen93/HT-ASE/blob/main/htase/custodian/vasp_custodian_settings.yaml) to tell Custodian how to run VASP on your supercomputer. The file also contains some defualt settings for Custodian. If you want different settings for various projects (e.g. different numbers of nodes, different Custodian handlers), you can make a new `vasp_custodian_settings.yaml` file and define the path to it in a new `VASP_CUSTODIAN_SETTINGS` environment variable at runtime.
 
 **Required for database support**:
 - Make a `jobflow.yaml` as described in the [Atomate2 documentation](https://materialsproject.github.io/atomate2/user/install.html#jobflow-yaml) and then add the following to yout `~/.bashrc`:
 ```bash
-export JOBFLOW_CONFIG_FILE=/path/to/jobflow.yaml
 ```
 The `jobflow.yaml` contains information about where to store calculation outputs. If the config file is not found by jobflow, serialized outputs will be stored in memory.
 
