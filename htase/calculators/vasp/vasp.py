@@ -1,10 +1,11 @@
 from ase.calculators.vasp import Vasp
+from ase.io import jsonio
 from pymatgen.io.vasp.inputs import Kpoints
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.symmetry.bandstructure import HighSymmKpath
-import warnings
 import numpy as np
 import os
+import warnings
 
 
 def SmartVasp(
@@ -44,7 +45,16 @@ def SmartVasp(
                 atoms.set_initial_magnetic_moments(mags)
 
     # Initialize calculator
-    calc = Vasp(atoms=atoms, **kwargs)
+    if "base" in kwargs:
+        if os.path.exists(kwargs["base"]):
+            calc_base = jsonio.read_json(kwargs["base"])
+        else:
+            raise ValueError(f"Cannot find {kwargs['base']}")
+        kwargs.pop("base", None)
+    else:
+        calc_base = {}
+
+    calc = Vasp(**{**calc_base, **kwargs})
 
     # Shortcuts for pymatgen k-point generation schemes.
     # Options include: line_density (for band structures),
@@ -88,14 +98,14 @@ def SmartVasp(
                     struct, calc.kpts["length_density"], force_gamma
                 )
             else:
-                raise ValueError(f"Unsupported k-point generation scheme: {kpts}.")
+                raise ValueError(f"Unsupported k-point generation scheme: {calc.kpts}.")
 
             kpts = pmg_kpts.kpts[0]
             if pmg_kpts.style.name.lower() == "gamma":
                 gamma = True
             else:
                 gamma = False
-            calc.set(kpts, gamma)
+            calc.set(kpts=kpts, gamma=gamma)
 
     # Handle INCAR swaps as needed
     if incar_copilot:
@@ -103,13 +113,13 @@ def SmartVasp(
         if any(atoms.get_atomic_numbers() > 56):
             if verbose:
                 warnings.warn(
-                    "Copilot: Setting LMAXMIX = 6 because you have an f element."
+                    "Copilot: Setting LMAXMIX = 6 because you have an f-element."
                 )
             calc.set(lmaxmix=6)
         elif any(atoms.get_atomic_numbers() > 20):
             if verbose:
                 warnings.warn(
-                    "Copilot: Setting LMAXMIX = 4 because you have a d element"
+                    "Copilot: Setting LMAXMIX = 4 because you have a d-element"
                 )
             calc.set(lmaxmix=4)
 
@@ -128,10 +138,11 @@ def SmartVasp(
         if (
             calc.asdict()["inputs"].get("lasph", False) is True
             and calc.asdict()["inputs"].get("lmaxtau", 6) < 8
+            and np.max(atoms.get_atomic_numbers()) > 56
         ):
             if verbose:
                 warnings.warn(
-                    "Copilot: Setting LMAXTAU = 8 because you have LASPH = True and an f element."
+                    "Copilot: Setting LMAXTAU = 8 because you have LASPH = True and an f-element."
                 )
             calc.set(lmaxtau=8)
 
@@ -214,3 +225,7 @@ def SmartVasp(
                     "Copilot: Setting LORBIT = 11 because you have a spin-polarized calculation."
                 )
             calc.set(lorbit=11)
+
+    atoms.calc = calc
+
+    return atoms
