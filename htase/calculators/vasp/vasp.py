@@ -54,10 +54,10 @@ def SmartVasp(
 
     # Initialize calculator
     if base:
-        if os.path.exists(kwargs["base"]):
-            calc_base = jsonio.read_json(kwargs["base"])
+        if os.path.exists(base):
+            calc_base = jsonio.read_json(base)
         else:
-            raise ValueError(f"Cannot find {kwargs['base']}")
+            raise ValueError(f"Cannot find {base}")
     else:
         calc_base = {}
 
