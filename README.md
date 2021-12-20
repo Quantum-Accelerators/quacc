@@ -18,7 +18,7 @@ Credit: xkcd
 ```bash
 git clone https://github.com/arosen93/htase.git && cd htase && pip install -r requirements.txt && pip install -e .
 ```
-2. In addition, you will want to define several environment variables (e.g. in yout `~/.bashrc`), as outlined below.
+2. You will want to define several environment variables (e.g. in yout `~/.bashrc`), as outlined below:
 ```bash
 export VASP_PP_PATH="/path/to/pseudopotential/library" # tells ASE where the VASP PAW pseudopotentials are
 export HTASE_DIR="/path/to/htase" # path to this package (only used for convenience below)
