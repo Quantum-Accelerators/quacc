@@ -15,7 +15,7 @@ Credit: xkcd
 ## Installation
 Run the following command in a convenient place (e.g. `~/software`) to install HT-ASE:
 ```bash
-git clone https://github.com/arosen93/htase.git && cd htase && pip install -r requirements.txt && pip install .
+git clone https://github.com/arosen93/htase.git && cd htase && pip install -r requirements.txt && pip install -e .
 ```
 We recommend doing so in a clean virtual (e.g. [Miniconda](https://docs.conda.io/en/latest/miniconda.html)) environment. In addition, you will want to define several environment variables, as outlined below.
 
