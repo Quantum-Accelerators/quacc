@@ -2,3 +2,4 @@ ase>=3.22.1
 pymatgen>=2022.0.17
 custodian>=2021.12.2
 jobflow>=0.1.5
+atomate2>=0.0.3
