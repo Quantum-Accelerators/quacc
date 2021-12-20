@@ -101,7 +101,7 @@ def SmartVasp(
                     struct, calc.kpts["grid_density"], force_gamma
                 )
             elif "length_density" in calc.kpts:
-                pmg_kpts = Kpoints.automatic_density_by_length(
+                pmg_kpts = Kpoints.automatic_density_by_lengths(
                     struct, calc.kpts["length_density"], force_gamma
                 )
             else:
