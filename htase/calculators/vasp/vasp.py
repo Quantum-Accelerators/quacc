@@ -9,7 +9,7 @@ import warnings
 
 
 def SmartVasp(
-    atoms, force_gamma=True, incar_copilot=True, verbose=True, **kwargs,
+    atoms, base=None, force_gamma=True, incar_copilot=True, verbose=True, **kwargs,
 ):
     """
     This is a wrapper around the VASP calculator that adjusts INCAR parameters on-the-fly.
@@ -19,6 +19,9 @@ def SmartVasp(
     ----------
     atoms : ase.Atoms
         The Atoms object to be used for the calculation.
+    base : str
+        The path to a .json file containing a list of INCAR parameters to use as a "base"
+        for the calculator.
     force_gamma : bool
         If True, the KPOINTS will be set to gamma-centered.
         Defaults to True.
@@ -45,12 +48,11 @@ def SmartVasp(
                 atoms.set_initial_magnetic_moments(mags)
 
     # Initialize calculator
-    if "base" in kwargs:
+    if base:
         if os.path.exists(kwargs["base"]):
             calc_base = jsonio.read_json(kwargs["base"])
         else:
             raise ValueError(f"Cannot find {kwargs['base']}")
-        kwargs.pop("base", None)
     else:
         calc_base = {}
 
