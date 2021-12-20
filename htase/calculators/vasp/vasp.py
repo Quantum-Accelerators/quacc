@@ -8,14 +8,7 @@ import os
 
 
 def SmartVasp(
-    atoms,
-    xc=None,
-    kpts=None,
-    setups=None,
-    force_gamma=True,
-    incar_copilot=True,
-    verbose=True,
-    **kwargs,
+    atoms, force_gamma=True, incar_copilot=True, verbose=True, **kwargs,
 ):
     """
     This is a wrapper around the VASP calculator that adjusts INCAR parameters on-the-fly.
@@ -25,14 +18,6 @@ def SmartVasp(
     ----------
     atoms : ase.Atoms
         The Atoms object to be used for the calculation.
-    xc : str
-        The exchange-correlation functional to be used, as defined in the ASE manual.
-        Defaults to 'PBE' if incar_copilot is True.
-    kpts : list or dict.
-        The k-points to be used, as defined in the ASE manual.
-        Defaults to {"max_mixed_density": [100, 1000]]} if incar_copilot is True.
-    setups : string or dict.
-        The setups to be used, as defined in the ASE manual.
     force_gamma : bool
         If True, the KPOINTS will be set to gamma-centered.
         Defaults to True.
@@ -43,7 +28,7 @@ def SmartVasp(
         If True, warnings will be raised when INCAR parameters are changed.
         Defaults to True.
     **kwargs :
-        Additional arguments to be passed to the VASP calculator, e.g. encut=520.
+        Additional arguments to be passed to the VASP calculator, e.g. xc='PBE', encut=520.
     """
 
     if incar_copilot:
@@ -58,89 +43,59 @@ def SmartVasp(
             if mags and np.any(np.abs(mags > 0.02)):
                 atoms.set_initial_magnetic_moments(mags)
 
-    if xc is None:
-        if incar_copilot:
-            warnings.warn(
-                "Copilot: No exchange-correlation functional specified. Using xc = 'PBE'."
-            )
-            xc = "PBE"
-        else:
-            raise ValueError("You must specify xc.")
+    # Initialize calculator
+    calc = Vasp(atoms=atoms, **kwargs)
 
-    if kpts is None:
-        if incar_copilot:
-            warnings.warn(
-                "Copilot: No kpts specified. Using {'max_mixed_density': [100, 1000]'}."
-            )
-            kpts = {"max_mixed_density": [100, 1000]}
-        else:
-            raise ValueError("You must specify kpts.")
-
-    if setups is None:
-        if incar_copilot:
-            if "ASE_VASP_SETUPS" in os.environ and os.path.exists(
-                os.path.join(os.environ["ASE_VASP_SETUPS"], "pbe54.json")
-            ):
-                warnings.warn(
-                    "Copilot: Setups were not specified. Using the HT-ASE $pbe54 set."
-                )
-                setups = "$pbe54"
-            else:
-                raise ValueError(
-                    "Copilot: Setups were not specified. I tried to use the HT-ASE $pbe_54 set but could not find it."
-                )
-        else:
-            raise ValueError("You must specify setups.")
-
-    if isinstance(kpts, dict):
+    # Shortcuts for pymatgen k-point generation schemes.
+    # Options include: line_density (for band structures),
+    # reciprocal_density (by volume), grid_density (by number of atoms),
+    # max_mixed_density (max of reciprocal_density volume or atoms), and length_density (good for slabs).
+    # These are formatted as {"line_density": float}, {"reciprocal_density": float},
+    # {"grid_density": float}, {"vol_kkpa_density": [float, float]}, and
+    # {"length_density": [float, float, float]}.
+    if isinstance(calc.kpts, dict):
         struct = AseAtomsAdaptor().get_structure(atoms)
 
-        if "line_density" in kpts:
+        if "line_density" in calc.kpts:
             kpath = HighSymmKpath(struct, path_type="latimer_munro")
             kpts, _ = kpath.get_kpoints(
-                line_density=kpts["line_density"], coords_are_cartesian=True
+                line_density=calc.kpts["line_density"], coords_are_cartesian=True
             )
-            kpts = np.vstack(kpts)
-            kwargs["reciprocal"] = True
+            calc.set(kpts=kpts, reciprocal=True)
 
         else:
-            if "max_mixed_density" in kpts:
+            if "max_mixed_density" in calc.kpts:
                 pmg_kpts1 = Kpoints.automatic_density_by_vol(
-                    struct, kpts["max_mixed_density"][0], force_gamma
+                    struct, calc.kpts["max_mixed_density"][0], force_gamma
                 )
                 pmg_kpts2 = Kpoints.automatic_density(
-                    struct, kpts["max_mixed_density"][1], force_gamma
+                    struct, calc.kpts["max_mixed_density"][1], force_gamma
                 )
                 if np.product(pmg_kpts1.kpts[0]) >= np.product(pmg_kpts2.kpts[0]):
                     pmg_kpts = pmg_kpts1
                 else:
                     pmg_kpts = pmg_kpts2
-            elif "reciprocal_density" in kpts:
+            elif "reciprocal_density" in calc.kpts:
                 pmg_kpts = Kpoints.automatic_density_by_vol(
-                    struct, kpts["reciprocal_density"], force_gamma
+                    struct, calc.kpts["reciprocal_density"], force_gamma
                 )
-            elif "grid_density" in kpts:
+            elif "grid_density" in calc.kpts:
                 pmg_kpts = Kpoints.automatic_density(
-                    struct, kpts["grid_density"], force_gamma
+                    struct, calc.kpts["grid_density"], force_gamma
                 )
-            elif "length_density" in kpts:
+            elif "length_density" in calc.kpts:
                 pmg_kpts = Kpoints.automatic_density_by_length(
-                    struct, kpts["length_density"], force_gamma
+                    struct, calc.kpts["length_density"], force_gamma
                 )
             else:
                 raise ValueError(f"Unsupported k-point generation scheme: {kpts}.")
 
             kpts = pmg_kpts.kpts[0]
-            print(kpts)
             if pmg_kpts.style.name.lower() == "gamma":
                 gamma = True
             else:
                 gamma = False
-            kpts = kpts
-            kwargs["gamma"] = gamma
-
-    # Initialize calculator
-    calc = Vasp(xc=xc, kpts=kpts, setups=setups, **kwargs)
+            calc.set(kpts, gamma)
 
     # Handle INCAR swaps as needed
     if incar_copilot:
@@ -259,15 +214,3 @@ def SmartVasp(
                     "Copilot: Setting LORBIT = 11 because you have a spin-polarized calculation."
                 )
             calc.set(lorbit=11)
-
-    # Shortcuts for pymatgen k-point generation schemes.
-    # Options include: line_density (for band structures),
-    # reciprocal_density (by volume), grid_density (by number of atoms),
-    # max_mixed_density (max of reciprocal_density volume or atoms), and length_density (good for slabs).
-    # These are formatted as {"line_density": float}, {"reciprocal_density": float},
-    # {"grid_density": float}, {"vol_kkpa_density": [float, float]}, and
-    # {"length_density": [float, float, float]}.
-
-    atoms.calc = calc
-
-    return atoms
