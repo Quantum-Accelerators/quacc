@@ -8,14 +8,14 @@ import os
 
 
 def SmartVasp(
-    atoms=None,
+    atoms,
     xc=None,
     kpts=None,
     setups=None,
     force_gamma=True,
     incar_copilot=True,
     verbose=True,
-    **kwargs
+    **kwargs,
 ):
     """
     This is a wrapper around the VASP calculator that adjusts INCAR parameters on-the-fly.
@@ -46,7 +46,7 @@ def SmartVasp(
         Additional arguments to be passed to the VASP calculator, e.g. encut=520.
     """
 
-    if incar_copilot and atoms:
+    if incar_copilot:
 
         # Move final magmoms to initial magmoms if present and any
         # are > 0.02 in magnitude (unless the user has specified some)
@@ -63,27 +63,30 @@ def SmartVasp(
             warnings.warn(
                 "Copilot: No exchange-correlation functional specified. Using xc = 'PBE'."
             )
+            xc = "PBE"
         else:
             raise ValueError("You must specify xc.")
+
     if kpts is None:
         if incar_copilot:
             warnings.warn(
-                r"Copilot: No kpts specified. Using {'max_mixed_density': [100, 1000]'}."
+                "Copilot: No kpts specified. Using {'max_mixed_density': [100, 1000]'}."
             )
             kpts = {"max_mixed_density": [100, 1000]}
         else:
             raise ValueError("You must specify kpts.")
+
     if setups is None:
         if incar_copilot:
-            setups = "$pbe_54"
             if "ASE_VASP_SETUPS" in os.environ and os.path.exists(
                 os.path.join(os.environ.get["ASE_VASP_SETUPS"], "pbe_54.json")
             ):
                 warnings.warn(
                     "Copilot: Setups were not specified. Using the HT-ASE $pbe_54 set."
                 )
+                setups = "$pbe_54"
             else:
-                raise warnings.warn(
+                raise ValueError(
                     "Copilot: Setups were not specified. I tried to use the HT-ASE $pbe_54 set but could not find it."
                 )
         else:
@@ -97,7 +100,7 @@ def SmartVasp(
             kpts, _ = kpath.get_kpoints(
                 line_density=kpts["line_density"], coords_are_cartesian=True
             )
-            kwargs["kpts"] = np.vstack(kpts)
+            kpts = np.vstack(kpts)
             kwargs["reciprocal"] = True
 
         else:
@@ -112,8 +115,7 @@ def SmartVasp(
                     pmg_kpts = pmg_kpts1
                 else:
                     pmg_kpts = pmg_kpts2
-
-            if "reciprocal_density" in kpts:
+            elif "reciprocal_density" in kpts:
                 pmg_kpts = Kpoints.automatic_density_by_vol(
                     struct, kpts["reciprocal_density"], force_gamma
                 )
@@ -126,21 +128,22 @@ def SmartVasp(
                     struct, kpts["length_density"], force_gamma
                 )
             else:
-                raise ValueError("Unsupported k-point generation scheme.")
+                raise ValueError(f"Unsupported k-point generation scheme: {kpts}.")
 
             kpts = pmg_kpts.kpts[0]
+            print(kpts)
             if pmg_kpts.style.name.lower() == "gamma":
                 gamma = True
             else:
                 gamma = False
-            kwargs["kpts"] = kpts
+            kpts = kpts
             kwargs["gamma"] = gamma
 
     # Initialize calculator
     calc = Vasp(xc=xc, kpts=kpts, setups=setups, **kwargs)
 
     # Handle INCAR swaps as needed
-    if incar_copilot and atoms:
+    if incar_copilot:
 
         if any(atoms.get_atomic_numbers() > 56):
             if verbose:
