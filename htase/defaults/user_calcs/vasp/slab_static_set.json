@@ -2,7 +2,7 @@
 	"inputs":
 		{
 			"xc": "RPBE",
-			"setups": "$default",
+			"setups": "$pbe_54",
 			"kpts": {"length_density": [50, 50, 1]},
 			"algo": "Fast",
 			"ediff": 1e-6,
