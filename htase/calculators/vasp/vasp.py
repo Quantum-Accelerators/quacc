@@ -33,6 +33,11 @@ def SmartVasp(
         Defaults to True.
     **kwargs :
         Additional arguments to be passed to the VASP calculator, e.g. xc='PBE', encut=520.
+    
+    Returns
+    -------
+    atoms : ase.Atoms
+        The ASE Atoms object with attached VASP calculator.
     """
 
     if incar_copilot:
