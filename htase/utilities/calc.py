@@ -3,12 +3,9 @@ import os
 
 
 def load_yaml_calc(file_path):
-    supported_args = ["inputs", "parent", "parent_magmoms", "parent_setups"]
     config = loadfn(file_path)
-    for config_arg in config:
-        if config_arg not in supported_args:
-            raise ValueError(f"Unsupported argument: {config_arg}")
-    for config_arg in ["parent", "parent_magmoms", "parent_setups"]:
+    parent_args = ["parent", "parent_magmoms", "parent_setups"]
+    for config_arg in parent_args:
         if config_arg in config:
             parent_config = load_yaml_calc(
                 os.path.join(os.path.dirname(file_path), config[config_arg])

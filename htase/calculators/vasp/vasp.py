@@ -83,6 +83,9 @@ def SmartVasp(
     # Collect all the calculator parameters and prioritize the kwargs
     # in the case of duplicates.
     user_calc_params = {**calc_preset, **kwargs}
+    none_keys = [k for k, v in user_calc_params.items() if v is None]
+    for none_key in none_keys:
+        user_calc_params.pop(none_key)
 
     # If the user explicitly requests gamma = False, let's honor that
     # over force_gamma.
@@ -98,14 +101,19 @@ def SmartVasp(
 
     # Handle special arguments in the user calc parameters that
     # ASE does not natively support
-    if "elemental_magmoms" in user_calc_params:
+    if user_calc_params.get("elemental_magmoms", None) is not None:
         initial_mags_dict = user_calc_params["elemental_magmoms"]
         del user_calc_params["elemental_magmoms"]
     else:
         initial_mags_dict = {}
-    if "auto_kpts" in user_calc_params:
-        if "kpts" in user_calc_params:
-            raise ValueError("kpts and auto_kpts cannot both be set.")
+    if user_calc_params.get("auto_kpts", None) is not None:
+        if (
+            kwargs.get("kpts", None) is not None
+            and kwargs.get("auto_kpts", None) is not None
+        ):
+            raise ValueError(
+                "kpts and auto_kpts cannot both be set as keyword arguments."
+            )
         auto_kpts = user_calc_params["auto_kpts"]
         del user_calc_params["auto_kpts"]
     else:
@@ -121,7 +129,7 @@ def SmartVasp(
     if auto_kpts:
         struct = AseAtomsAdaptor().get_structure(atoms)
 
-        if "line_density" in auto_kpts:
+        if auto_kpts.get("line_density", None) is not None:
             kpath = HighSymmKpath(struct, path_type="latimer_munro")
             kpts, _ = kpath.get_kpoints(
                 line_density=auto_kpts["line_density"], coords_are_cartesian=True
@@ -130,7 +138,7 @@ def SmartVasp(
             user_calc_params["reciprocal"] = True
 
         else:
-            if "max_mixed_density" in auto_kpts:
+            if auto_kpts.get("max_mixed_density", None) is not None:
                 if len(auto_kpts["max_mixed_density"]) != 2:
                     raise ValueError("Must specify two values for max_mixed_density.")
 
@@ -144,15 +152,15 @@ def SmartVasp(
                     pmg_kpts = pmg_kpts1
                 else:
                     pmg_kpts = pmg_kpts2
-            elif "reciprocal_density" in auto_kpts:
+            elif auto_kpts.get("reciprocal_density", None) is not None:
                 pmg_kpts = Kpoints.automatic_density_by_vol(
                     struct, auto_kpts["reciprocal_density"], force_gamma
                 )
-            elif "grid_density" in auto_kpts:
+            elif auto_kpts.get("grid_density", None) is not None:
                 pmg_kpts = Kpoints.automatic_density(
                     struct, auto_kpts["grid_density"], force_gamma
                 )
-            elif "length_density" in auto_kpts:
+            elif auto_kpts.get("length_density", None) is not None:
                 if len(auto_kpts["length_density"]) != 3:
                     raise ValueError("Must specify three values for length_density.")
                 pmg_kpts = Kpoints.automatic_density_by_lengths(
