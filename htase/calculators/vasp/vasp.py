@@ -194,14 +194,17 @@ def SmartVasp(
     except RuntimeError or CalculatorSetupError:
         mags = None
 
+    # Check if the user has set any initial magmoms
+    has_initial_mags = np.any([atom.magmom for atom in atoms])
+
     # Copy converged magmoms to input magmoms, if copy_magmoms is True
+    # and if any are above mag_cutoff
     if mags and copy_magmoms and np.any(np.abs(mags > mag_cutoff)):
         atoms.set_initial_magnetic_moments(mags)
 
-    initial_mags = atoms.get_initial_magnetic_moments()
-    # If there are no initial magmoms, we may need to add some
-    # from the preset yaml
-    if np.all(initial_mags == 0):
+    # If there are no initial magmoms set, we may need to add some
+    # from the preset yaml.
+    if not has_initial_mags:
 
         # If the preset dictionary has default magmoms, set
         # those by element. If the element isn't in the magmoms dict
