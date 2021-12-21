@@ -1,16 +1,15 @@
-parent: magmoms_base.yaml
+parent: BaseMagmoms.yaml
 inputs:
-  xc: PBE
-  ivdw: 12
-  setups: $pbe_54
-  encut: 520
+  xc: RPBE
+  setups: $pbe54
+  encut: 400
   auto_kpts:
-    max_mixed_density: [100, 1000]
+    length_density: [50, 50, 1]
   algo: fast
   ediff: 1.0e-5
-  ediffg: -0.02
+  ediffg: -0.03
   ibrion: 2
-  isif: 3
+  isif: 2
   ismear: 0
   isym: 0
   lcharg: false
