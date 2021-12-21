@@ -41,7 +41,7 @@ from htase.calculators.vasp import SmartVasp
 from ase.build import bulk
 
 atoms = bulk("Cu")
-atoms = SmartVasp(atoms, preset="bulk_set", encut=600, auto_kpts={"reciprocal_density":200})
+atoms = SmartVasp(atoms, preset="BulkRelaxSet", encut=600, auto_kpts={"reciprocal_density": 200})
 atoms.get_potential_energy()
 ```
 
