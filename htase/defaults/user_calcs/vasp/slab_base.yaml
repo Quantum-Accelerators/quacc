@@ -1,7 +1,7 @@
 parent: magmoms_base.yaml
 inputs:
   xc: RPBE
-	setups: $pbe54
+  setups: $pbe54
   encut: 400
   auto_kpts:
     length_density: [50, 50, 1]

@@ -7,6 +7,11 @@ from pymatgen.symmetry.bandstructure import HighSymmKpath
 import numpy as np
 import os
 import warnings
+from pathlib import Path
+
+DEFAULT_CALCS_DIR = os.path.join(
+    Path(__file__).resolve().parent, "..", "..", "defaults", "user_calcs", "vasp"
+)
 
 
 def SmartVasp(
@@ -28,8 +33,9 @@ def SmartVasp(
     atoms : ase.Atoms
         The Atoms object to be used for the calculation.
     preset : str
-        The path to a .json file containing a list of INCAR parameters to use as a "preset"
-        for the calculator.
+        The path to a .yaml file containing a list of INCAR parameters to use as a "preset"
+        for the calculator. If no filepath is present, it will look in htase/defaults/user_calcs, such
+        that preset="bulk_base" is supported. It will append .yaml at the end if not present.
     incar_copilot : bool
         If True, the INCAR parameters will be adjusted if they go against the VASP manual.
         Defaults to True.
@@ -60,9 +66,15 @@ def SmartVasp(
 
     # Get user-defined preset parameters for the calculator
     if preset:
+        _, ext = os.path.splitext(preset)
+        if not ext:
+            preset += ".yaml"
         if os.path.exists(preset):
-            config = load_yaml_calc(preset)
-            calc_preset = config["inputs"]
+            calc_preset = load_yaml_calc(preset)["inputs"]
+        elif os.path.exists(os.path.join(DEFAULT_CALCS_DIR, preset)):
+            calc_preset = load_yaml_calc(os.path.join(DEFAULT_CALCS_DIR, preset))[
+                "inputs"
+            ]
         else:
             raise ValueError(f"Cannot find {preset}")
     else:
@@ -81,6 +93,8 @@ def SmartVasp(
                 "force_gamma is True but gamma is requested to be False. We will not force gamma-centered k-points."
             )
         force_gamma = False
+    else:
+        user_gamma = None
 
     # Handle special arguments in the user calc parameters that
     # ASE does not natively support
@@ -154,7 +168,7 @@ def SmartVasp(
                 gamma = False
 
             user_calc_params["kpts"] = kpts
-            if not user_gamma:
+            if user_gamma is None:
                 user_calc_params["gamma"] = gamma
 
     # Handle the magnetic moments
