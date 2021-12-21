@@ -1,5 +1,5 @@
-from ase.calculators.calculator import CalculatorSetupError
 from htase.utilities.calc import load_yaml_calc
+from ase.calculators.calculator import CalculatorSetupError
 from ase.calculators.vasp import Vasp
 from pymatgen.io.vasp.inputs import Kpoints
 from pymatgen.io.ase import AseAtomsAdaptor
@@ -34,7 +34,7 @@ def SmartVasp(
         If True, the INCAR parameters will be adjusted if they go against the VASP manual.
         Defaults to True.
     force_gamma : bool
-        If True, the KPOINTS will be set to gamma-centered.
+        If True, the KPOINTS will always be set to gamma-centered.
         Defaults to True.
     copy_magmoms : bool
         If True, any pre-existing atoms.get_magnetic_moments() will be set in atoms.set_initial_magnetic_moments().
@@ -47,7 +47,10 @@ def SmartVasp(
         If True, warnings will be raised when INCAR parameters are changed.
         Defaults to True.
     **kwargs :
-        Additional arguments to be passed to the VASP calculator, e.g. xc='PBE', encut=520.
+        Additional arguments to be passed to the VASP calculator, e.g. xc='PBE', encut=520. Takes all valid 
+        ASE calculator arguments, in addition to the ones listed below:
+            auto_kpts
+            elemental_magmoms
     
     Returns
     -------
@@ -68,6 +71,16 @@ def SmartVasp(
     # Collect all the calculator parameters and prioritize the kwargs
     # in the case of duplicates.
     user_calc_params = {**calc_preset, **kwargs}
+
+    # If the user explicitly requests gamma = False, let's honor that
+    # over force_gamma.
+    if user_calc_params.get("gamma", None):
+        user_gamma = user_calc_params["gamma"]
+        if force_gamma is True:
+            warnings.warn(
+                "force_gamma is True but gamma is requested to be False. We will not force gamma-centered k-points."
+            )
+        force_gamma = False
 
     # Handle special arguments in the user calc parameters that
     # ASE does not natively support
@@ -141,7 +154,8 @@ def SmartVasp(
                 gamma = False
 
             user_calc_params["kpts"] = kpts
-            user_calc_params["gamma"] = gamma
+            if not user_gamma:
+                user_calc_params["gamma"] = gamma
 
     # Handle the magnetic moments
     # Check if there are converged magmoms
