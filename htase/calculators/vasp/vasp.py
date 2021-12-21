@@ -99,6 +99,14 @@ def SmartVasp(
     else:
         user_gamma = None
 
+    # If the preset has auto_kpts but the user explicitly requests kpts, then
+    # we should honor that.
+    if (
+        kwargs.get("kpts", None) is not None
+        and calc_preset.get("auto_kpts", None) is not None
+    ):
+        user_calc_params.pop("auto_kpts")
+
     # Handle special arguments in the user calc parameters that
     # ASE does not natively support
     if user_calc_params.get("elemental_magmoms", None) is not None:
@@ -108,8 +116,8 @@ def SmartVasp(
         initial_mags_dict = {}
     if user_calc_params.get("auto_kpts", None) is not None:
         if (
-            kwargs.get("kpts", None) is not None
-            and kwargs.get("auto_kpts", None) is not None
+            user_calc_params.get("kpts", None) is not None
+            and user_calc_params.get("auto_kpts", None) is not None
         ):
             raise ValueError(
                 "kpts and auto_kpts cannot both be set as keyword arguments."
