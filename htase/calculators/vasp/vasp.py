@@ -202,13 +202,17 @@ def SmartVasp(
     # Handle INCAR swaps as needed
     if incar_copilot:
 
-        if any(atoms.get_atomic_numbers() > 56):
+        if calc.asdict()["inputs"].get("lmaxmix", 2) < 6 and any(
+            atoms.get_atomic_numbers() > 56
+        ):
             if verbose:
                 warnings.warn(
                     "Copilot: Setting LMAXMIX = 6 because you have an f-element."
                 )
             calc.set(lmaxmix=6)
-        elif any(atoms.get_atomic_numbers() > 20):
+        elif calc.asdict()["inputs"].get("lmaxmix", 2) < 4 and any(
+            atoms.get_atomic_numbers() > 20
+        ):
             if verbose:
                 warnings.warn(
                     "Copilot: Setting LMAXMIX = 4 because you have a d-element"
@@ -261,8 +265,8 @@ def SmartVasp(
             calc.set(ismear=-5)
 
         if (
-            np.product(calc.asdict()["inputs"].get("kpts", (1, 1, 1))) < 4
-            and calc.asdict()["inputs"].get("ismear", 1) == -5
+            calc.asdict()["inputs"].get("ismear", 1) == -5
+            and np.product(calc.asdict()["inputs"].get("kpts", (1, 1, 1))) < 4
         ):
             if verbose:
                 warnings.warn(
