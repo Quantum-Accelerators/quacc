@@ -13,8 +13,9 @@ def load_yaml_calc(file_path):
             for k, v in parent_config.items():
                 if k not in config:
                     config[k] = v
-                elif isinstance(v, dict):
-                    v_new = config.get(k, {})
-                    v_new.update(v)
-                    config[k] = v_new
+                else:
+                    v_new = parent_config.get(k, {})
+                    for kk, vv in v_new.items():
+                        if kk not in config[k]:
+                            config[k][kk] = vv
     return config
