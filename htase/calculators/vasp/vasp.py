@@ -208,7 +208,7 @@ def SmartVasp(
         # then set it to 1.0 (VASP default).
         if initial_mags_dict:
             initial_mags = np.array(
-                [initial_mags_dict.get(atom.symbol, 0.6) for atom in atoms]
+                [initial_mags_dict.get(atom.symbol, 1.0) for atom in atoms]
             )
             atoms.set_initial_magnetic_moments(initial_mags)
 
