@@ -35,17 +35,16 @@ For guidance with setting up `VASP_PP_PATH` and `ASE_VASP_VDW`, see the [ASE Vas
 
 ## Minimal Examples
 ### SmartVasp Calculator
-To use HT-ASE's `SmartVasp()` calculator, simply import it from `htase.calculators.vasp` and use it with any of the [input arguments](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html) in a typical ASE `Vasp()` calculator. The only differences for the user are that the first argument must be the ASE `Atoms` object, and it returns an `Atoms` object with an enhanced `Vasp()` calculator already attached.
+To use HT-ASE's `SmartVasp()` calculator, simply import it from `htase.calculators.vasp` and use it with any of the [input arguments](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html) in a typical ASE `Vasp()` calculator. The only differences for the user are that the first argument must be the ASE `Atoms` object, and it returns an `Atoms` object with an enhanced `Vasp()` calculator already attached. There are also some newly introduced parameters, like `auto_kpts` for one Pymatgen-generated k-point grids.
 
 ```python
 from htase.calculators.vasp import SmartVasp
 from ase.build import bulk
 
 atoms = bulk("Cu")
-atoms = SmartVasp(atoms, xc="PBE", setups="$pbe54", auto_kpts={"reciprocal_density":100})
+atoms = SmartVasp(atoms, base="bulk_set", auto_kpts={"reciprocal_density":200})
 atoms.get_potential_energy()
 ```
-In the above example, there are already several enhancements compared to standard ASE. First, `SmartVasp()` will recognize that the requested `auto_kpts` is an [automatic k-point generation scheme](https://pymatgen.org/pymatgen.io.vasp.inputs.html#pymatgen.io.vasp.inputs.Kpoints.automatic_density_by_vol) from Pymatgen and will use that to generate the k-points for you. `SmartVasp()` will also recognize that you have an element with d electrons and will set `LMAXMIX=4` per the VASP manual. Assuming `ASE_VASP_SETUPS` was set as outliend in the instructions, `setups="$pbe54"` will read from our [pre-defined setups library](https://github.com/arosen93/HT-ASE/tree/main/htase/defaults/user_setups/vasp) packaged with HT-ASE. Finally, when the potential energy is requested, HT-ASE will run VASP using Custodian. 
 
 ### Jobflow Integration
 
