@@ -11,7 +11,7 @@ import warnings
 
 def SmartVasp(
     atoms,
-    presets=None,
+    preset=None,
     incar_copilot=True,
     force_gamma=True,
     copy_magmoms=True,
@@ -27,8 +27,8 @@ def SmartVasp(
     ----------
     atoms : ase.Atoms
         The Atoms object to be used for the calculation.
-    presets : str
-        The path to a .json file containing a list of INCAR parameters to use as a "presets"
+    preset : str
+        The path to a .json file containing a list of INCAR parameters to use as a "preset"
         for the calculator.
     incar_copilot : bool
         If True, the INCAR parameters will be adjusted if they go against the VASP manual.
@@ -56,18 +56,18 @@ def SmartVasp(
     """
 
     # Get user-defined preset parameters for the calculator
-    if presets:
-        if os.path.exists(presets):
-            config = load_yaml_calc(presets)
-            calc_presets = config["inputs"]
+    if preset:
+        if os.path.exists(preset):
+            config = load_yaml_calc(preset)
+            calc_preset = config["inputs"]
         else:
-            raise ValueError(f"Cannot find {presets}")
+            raise ValueError(f"Cannot find {preset}")
     else:
-        calc_presets = {}
+        calc_preset = {}
 
     # Collect all the calculator parameters and prioritize the kwargs
     # in the case of duplicates.
-    user_calc_params = {**calc_presets, **kwargs}
+    user_calc_params = {**calc_preset, **kwargs}
 
     # Handle special arguments in the user calc parameters that
     # ASE does not natively support
@@ -157,10 +157,10 @@ def SmartVasp(
     initial_mags = atoms.get_initial_magnetic_moments()
 
     # If there are no initial magmoms, we may need to add some
-    # from the presets yaml
+    # from the preset yaml
     if np.all(initial_mags == 0):
 
-        # If the presets dictionary has default magmoms, set
+        # If the preset dictionary has default magmoms, set
         # those by element. If the element isn't in the magmoms dict
         # then set it to 1.0 (VASP default).
         if initial_mags_dict:
