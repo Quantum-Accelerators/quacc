@@ -318,6 +318,14 @@ def SmartVasp(
                 )
             calc.set(lorbit=11)
 
+        if (
+            calc.asdict()["inputs"].get("luse_vdw", False) is True
+            and "ASE_VASP_VDW" not in os.environ
+        ):
+            raise EnvironmentError(
+                "ASE_VASP_VDW was not set, yet you requested a vdW functional."
+            )
+
     calc.discard_results_on_any_change = True
     atoms.calc = calc
 
