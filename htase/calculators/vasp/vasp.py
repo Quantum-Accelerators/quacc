@@ -183,7 +183,6 @@ def SmartVasp(
         atoms.set_initial_magnetic_moments(mags)
 
     initial_mags = atoms.get_initial_magnetic_moments()
-
     # If there are no initial magmoms, we may need to add some
     # from the preset yaml
     if np.all(initial_mags == 0):
