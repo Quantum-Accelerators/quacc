@@ -24,7 +24,6 @@ export VASP_PP_PATH="/path/to/pseudopotential/library" # tells ASE where the VAS
 export HTASE_DIR="/path/to/htase" # path to this package (only used for convenience below)
 export VASP_CUSTODIAN_SETTINGS="${HTASE_DIR}/htase/custodian/vasp_custodian_settings.yaml" # path to Custodian settings
 export ASE_VASP_COMMAND="python ${HTASE_DIR}/htase/custodian/run_vasp_custodian.py" # tells ASE to run Custodian-powered VASP
-export ASE_VASP_SETUPS="${HTASE_DIR}/htase/defaults/user_setups/vasp" # to access HT-ASE pseudopotential defaults (optional)
 export ASE_VASP_VDW="/path/to/vdw_kernel.bindat" # for vdW functionals (optional)
 export JOBFLOW_CONFIG_FILE=/path/to/jobflow.yaml # for jobflow Store support (optional). 
 ```
