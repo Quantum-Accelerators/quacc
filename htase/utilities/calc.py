@@ -1,9 +1,10 @@
-from monty.serialization import loadfn
+import yaml
 import os
 
 
 def load_yaml_calc(file_path):
-    config = loadfn(file_path)
+    with open(file_path, "r") as stream:
+        config = yaml.safe_load(stream)
     parent_args = ["parent", "parent_magmoms", "parent_setups"]
     for config_arg in parent_args:
         if config_arg in config:
