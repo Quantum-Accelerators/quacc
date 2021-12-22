@@ -3,8 +3,22 @@ import os
 
 
 def load_yaml_calc(file_path):
+    """
+    Loads a YAML file containing ASE VASP calcultor settings.
+
+    Args:
+        file_path (str): Path to YAML file.
+
+    Returns:
+        config (dict): The calculator configuration (i.e. settings).
+    """
+
+    # Load YAML file
     with open(file_path, "r") as stream:
         config = yaml.safe_load(stream)
+
+    # Inherit arguments from any parent YAML files
+    # but do not overwrite those in the child file.
     parent_args = ["parent", "parent_magmoms", "parent_setups"]
     for config_arg in parent_args:
         if config_arg in config:
@@ -19,4 +33,5 @@ def load_yaml_calc(file_path):
                     for kk, vv in v_new.items():
                         if kk not in config[k]:
                             config[k][kk] = vv
+
     return config
