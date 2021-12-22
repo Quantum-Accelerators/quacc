@@ -64,6 +64,9 @@ def SmartVasp(
         The ASE Atoms object with attached VASP calculator.
     """
 
+    # Grab the pymatgen structure object in case we need it later
+    struct = AseAtomsAdaptor().get_structure(atoms)
+
     # Get user-defined preset parameters for the calculator
     if preset:
         _, ext = os.path.splitext(preset)
@@ -107,6 +110,14 @@ def SmartVasp(
     ):
         user_calc_params.pop("auto_kpts")
 
+    # If the preset has ediff_per_atom but the user explicitly requests ediff, then
+    # we should honor that.
+    if (
+        kwargs.get("ediff", None) is not None
+        and calc_preset.get("ediff_per_atom", None) is not None
+    ):
+        user_calc_params.pop("ediff_per_atom")
+
     # Handle special arguments in the user calc parameters that
     # ASE does not natively support
     if user_calc_params.get("elemental_magmoms", None) is not None:
@@ -115,17 +126,15 @@ def SmartVasp(
     else:
         initial_mags_dict = {}
     if user_calc_params.get("auto_kpts", None) is not None:
-        if (
-            user_calc_params.get("kpts", None) is not None
-            and user_calc_params.get("auto_kpts", None) is not None
-        ):
-            raise ValueError(
-                "kpts and auto_kpts cannot both be set as keyword arguments."
-            )
         auto_kpts = user_calc_params["auto_kpts"]
         del user_calc_params["auto_kpts"]
     else:
         auto_kpts = None
+    if user_calc_params.get("ediff_per_atom", None) is not None:
+        ediff_per_atom = user_calc_params["ediff_per_atom"]
+        del user_calc_params["ediff_per_atom"]
+    else:
+        ediff_per_atom = None
 
     # Shortcuts for pymatgen k-point generation schemes.
     # Options include: line_density (for band structures),
@@ -135,7 +144,6 @@ def SmartVasp(
     # {"grid_density": float}, {"vol_kkpa_density": [float, float]}, and
     # {"length_density": [float, float, float]}.
     if auto_kpts:
-        struct = AseAtomsAdaptor().get_structure(atoms)
 
         if auto_kpts.get("line_density", None) is not None:
             kpath = HighSymmKpath(struct, path_type="latimer_munro")
@@ -186,6 +194,10 @@ def SmartVasp(
             user_calc_params["kpts"] = kpts
             if user_gamma is None:
                 user_calc_params["gamma"] = gamma
+
+    # Handle ediff_per_atom if present
+    if ediff_per_atom:
+        user_calc_params["ediff"] = ediff_per_atom * len(atoms)
 
     # Handle the magnetic moments
     # Check if there are converged magmoms

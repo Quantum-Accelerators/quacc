@@ -1,4 +1,4 @@
-# VASP-recommended .54 PAW PBE potentials
+# Note: These are specifically the .54 PAW PBE potentials
 inputs:
   setups:
     Ac: Ac
@@ -11,8 +11,8 @@ inputs:
     Au: Au
     B: B
     Ba: Ba_sv
-    Be: Be
-    Bi: Bi_d
+    Be: Be_sv
+    Bi: Bi
     Br: Br
     C: C
     Ca: Ca_sv
@@ -24,15 +24,15 @@ inputs:
     Co: Co
     Cr: Cr_pv
     Cs: Cs_sv
-    Cu: Cu
+    Cu: Cu_pv
     Dy: Dy_3
     Er: Er_3
-    Eu: Eu_2
+    Eu: Eu
     F: F
-    Fe: Fe
+    Fe: Fe_pv
     Fr: Fr_sv
     Ga: Ga_d
-    Gd: Gd_3
+    Gd: Gd
     Ge: Ge_d
     H: H
     He: He
@@ -47,18 +47,18 @@ inputs:
     La: La
     Li: Li_sv
     Lu: Lu_3
-    Mg: Mg
+    Mg: Mg_pv
     Mn: Mn_pv
-    Mo: Mo_sv
+    Mo: Mo_pv
     N: N
     Na: Na_pv
-    Nb: Nb_sv
+    Nb: Nb_pv
     Nd: Nd_3
     Ne: Ne
-    Ni: Ni
+    Ni: Ni_pv
     Np: Np
     O: O
-    Os: Os
+    Os: Os_pv
     P: P
     Pa: Pa
     Pb: Pb_d
@@ -70,7 +70,7 @@ inputs:
     Pu: Pu
     Ra: Ra_sv
     Rb: Rb_sv
-    Re: Re
+    Re: Re_pv
     Rh: Rh_pv
     Rn: Rn
     Ru: Ru_pv
@@ -87,11 +87,11 @@ inputs:
     Tc: Tc_pv
     Te: Te
     Th: Th
-    Ti: Ti_sv
+    Ti: Ti_pv
     Tl: Tl_d
     Tm: Tm_3
     U: U
-    V: V_sv
+    V: V_pv
     W: W_sv
     Xe: Xe
     Y: Y_sv
