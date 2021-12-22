@@ -1,13 +1,48 @@
-from ase.atom import Atom
-from pymatgen.io.ase import AseAtomsAdaptor
 from ase.constraints import FixAtoms
+from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.core.surface import generate_all_slabs, Slab
 from pymatgen.core import Structure
+from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 from ase.atoms import Atoms
 import numpy as np
 
 
+def make_conventional_cell(atoms):
+    """
+    Function to make a conventional cell from an Atoms object.
+
+    Args:
+        atoms (ase.Atoms): Atoms object
+
+    Returns:
+        atoms (ase.Atoms): Atoms object with a conventional cell
+    """
+
+    if isinstance(atoms, Atoms):
+        struct = AseAtomsAdaptor.get_structure(atoms)
+    else:
+        struct = atoms
+    conventional_struct = SpacegroupAnalyzer(
+        struct
+    ).get_conventional_standard_structure()
+    conventional_atoms = AseAtomsAdaptor.get_atoms(conventional_struct)
+
+    return conventional_atoms
+
+
 def invert_slab(slab, return_atoms=True):
+    """
+    Function to invert a slab.
+
+    Args:
+        slab (pymatgen.core.surface.Slab): slab to invert
+        return_atoms (bool): True if an Atoms object should be returned; False if a Structure should be returned
+            Defaults to True
+    
+    Returns:
+        slab (ase.Atoms or pymatgen.core.surface.Slab): inverted slab
+
+    """
     if isinstance(slab, Atoms):
         slab_struct = AseAtomsAdaptor.get_structure(slab)
     else:
@@ -37,6 +72,7 @@ def invert_slab(slab, return_atoms=True):
     )
     if return_atoms:
         inverted_slab = AseAtomsAdaptor.get_atoms(inverted_slab_struct)
+
     return inverted_slab
 
 
@@ -72,7 +108,11 @@ def make_slabs_from_bulk(
     # unit cell boundary.
 
     # Use pymatgen to generate slabs
-    struct = AseAtomsAdaptor.get_structure(atoms)
+    if isinstance(atoms, Atoms):
+        struct = AseAtomsAdaptor.get_structure(atoms)
+    else:
+        struct = atoms
+
     slab_structs = [
         slab_struct
         for slab_struct in generate_all_slabs(
