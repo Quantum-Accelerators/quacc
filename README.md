@@ -30,7 +30,7 @@ export JOBFLOW_CONFIG_FILE=/path/to/jobflow.yaml # for jobflow Store support (op
 
 For guidance with setting up `VASP_PP_PATH` and `ASE_VASP_VDW`, see the [ASE Vasp calculator docs](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials). For guidance with setting up `JOBFLOW_CONFIG_FILE`, see the [Jobflow API docs](https://materialsproject.github.io/jobflow/jobflow.settings.html?highlight=jobflow_config_file#jobflow.settings.JobflowSettings).
 
-3. Edit the `vasp_cmd` and `vasp_gamma_cmd` in the `vasp_custodian_settings.yaml` [file](https://github.com/arosen93/HT-ASE/blob/main/htase/custodian/vasp_custodian_settings.yaml) to tell Custodian how to run VASP on your supercomputer. The file also contains some defualt settings for Custodian. If you want different settings for various projects (e.g. different numbers of nodes, different Custodian handlers), you can make a new `vasp_custodian_settings.yaml` file and define the path to it in a new `VASP_CUSTODIAN_SETTINGS` environment variable at runtime.
+3. Edit the `vasp_cmd` and `vasp_gamma_cmd` in the `vasp_custodian_settings.yaml` [file](https://github.com/arosen93/HT-ASE/blob/main/htase/custodian/vasp_custodian_settings.yaml) to tell Custodian how to run VASP on your supercomputer. The file also contains some defualt settings for Custodian. If you want different settings for various projects (e.g. different numbers of nodes, different Custodian handlers), you can make a new `vasp_custodian_settings.yaml` file and define the path to it in the `VASP_CUSTODIAN_SETTINGS` environment variable at runtime.
 
 ## Minimal Examples
 ### SmartVasp Calculator
