@@ -1,8 +1,9 @@
 # HT-ASE (🚧 Under Construction 🚧)
 HT-ASE enhances [ASE](https://wiki.fysik.dtu.dk/ase/index.html) for high-throughput DFT. Some features include:
 - Support for running VASP in ASE via [Custodian](https://github.com/materialsproject/custodian) for on-the-fly error handling.
-- A smarter ASE-based VASP calculator with an optional "co-pilot" mode that will automatically adjust INCAR flags if they go against what is in the [VASP manual](https://www.vasp.at/wiki/index.php/Main_page). This is inspired by Pymatgen's [handling of input sets](https://github.com/materialsproject/pymatgen/blob/master/pymatgen/io/vasp/sets.py).
-- Support for Pymatgen [automatic k-point generation schemes](https://www.vasp.at/wiki/index.php/Main_page) in the ASE calculator itself.
+- A smarter ASE-based VASP calculator with an optional "co-pilot" mode that will automatically adjust INCAR flags if they go against what is in the [VASP manual](https://www.vasp.at/wiki/index.php/Main_page).
+- Support for Pymatgen's [automatic k-point generation schemes](https://pymatgen.org/pymatgen.io.vasp.inputs.html?highlight=kpoints#pymatgen.io.vasp.inputs.Kpoints) in the ASE calculator itself.
+- The ability to read in pre-defined ASE calculators with settings defined in YAML format.
 - Easy integration with [Jobflow](https://materialsproject.github.io/jobflow/) for the simple construction of complex workflows and ability to store results in database format. By extension, this also makes it possible to easily use ASE with [Fireworks](https://github.com/materialsproject/fireworks) for job management.
 
 In practice, the goal here is to enable the development of [Atomate2](https://github.com/materialsproject/atomate2)-like workflows centered around ASE with a focus on rapid workflow construction and prototyping. The speed of workflow development comes into play because ASE is largely calculator-agnostic, making it possible to construct and link together workflows for dozens of simulation packages without breaking a sweat. Additionally, rapid prototyping for new workflows can be done with semi-empirical methods (e.g. effective medium theory) before switching over to your production code of choice.
@@ -18,7 +19,7 @@ Credit: xkcd
 ```bash
 git clone https://github.com/arosen93/htase.git && cd htase && pip install -r requirements.txt && pip install -e .
 ```
-2. You will want to define several environment variables (e.g. in yout `~/.bashrc`), as outlined below:
+2. You will want to define several environment variables (e.g. in your `~/.bashrc`), as outlined below:
 ```bash
 export VASP_PP_PATH="/path/to/pseudopotential/library" # tells ASE where the VASP PAW pseudopotentials are
 export HTASE_DIR="/path/to/htase" # path to this package (only used for convenience below)
@@ -34,7 +35,7 @@ For guidance with setting up `VASP_PP_PATH` and `ASE_VASP_VDW`, see the [ASE Vas
 
 ## Minimal Examples
 ### SmartVasp Calculator
-To use HT-ASE's `SmartVasp()` calculator, simply import it from `htase.calculators.vasp` and use it with any of the [input arguments](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html) in a typical ASE `Vasp()` calculator. The only differences for the user are that the first argument must be the ASE `Atoms` object, and it returns an `Atoms` object with an enhanced `Vasp()` calculator already attached. There are also some newly introduced parameters, like `auto_kpts` for one Pymatgen-generated k-point grids.
+To use HT-ASE's `SmartVasp()` calculator, simply import it from `htase.calculators.vasp` and use it with any of the [input arguments](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#ase.calculators.vasp.Vasp) in a typical ASE `Vasp()` calculator. The only differences for the user are that the first argument must be the ASE `Atoms` object, and it returns an `Atoms` object with an enhanced `Vasp()` calculator already attached. There are also some newly introduced parameters, like `auto_kpts` for Pymatgen-generated k-point grids.
 
 ```python
 from htase.calculators.vasp import SmartVasp
