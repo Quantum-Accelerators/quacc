@@ -195,7 +195,7 @@ def SmartVasp(
         mags = None
 
     # Check if the user has set any initial magmoms
-    has_initial_mags = np.any([atom.magmom for atom in atoms])
+    has_initial_mags = np.any([hasattr(atom, "magmom") for atom in atoms])
 
     # Copy converged magmoms to input magmoms, if copy_magmoms is True
     # and if any are above mag_cutoff
