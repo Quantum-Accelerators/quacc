@@ -72,6 +72,9 @@ def SmartVasp(
     # Grab the pymatgen structure object in case we need it later
     struct = AseAtomsAdaptor().get_structure(atoms)
 
+    # Is this a metal?
+    is_metal = all(k.is_metal for k in struct.composition.keys())
+
     # Get user-defined preset parameters for the calculator
     if preset:
         _, ext = os.path.splitext(preset)
@@ -322,6 +325,17 @@ def SmartVasp(
             calc.set(algo="All")
 
         if (
+            is_metal
+            and calc.int_params["ismear"] < 0
+            and (calc.int_params["nsw"] and calc.int_params["nsw"] > 1)
+        ):
+            if verbose:
+                warnings.warn(
+                    "Copilot: You are relaxing a likely metal. Setting ISMEAR = 1 and SIGMA = 0.1."
+                )
+            calc.set(ismear=1, sigma=0.1)
+
+        if (
             calc.int_params["nedos"]
             and calc.int_params["ismear"] != -5
             and calc.int_params["nsw"] in (None, 0)
@@ -329,16 +343,23 @@ def SmartVasp(
         ):
             if verbose:
                 warnings.warn(
-                    "Copilot: Setting ISMEAR = -5 because you have a static DOS calculation and enough k-points."
+                    "Copilot: Setting ISMEAR = -5 and SIGMA = 0.05 because you have a static DOS calculation and enough k-points."
                 )
-            calc.set(ismear=-5)
+            calc.set(ismear=-5, sigma=0.05)
 
         if calc.int_params["ismear"] == -5 and np.product(calc.kpts) < 4:
             if verbose:
                 warnings.warn(
-                    "Copilot: Setting ISMEAR = 0 because you don't have enough k-points for ISMEAR = -5."
+                    "Copilot: Setting ISMEAR = 0 and SIGMA = 0.05 because you don't have enough k-points for ISMEAR = -5."
                 )
-            calc.set(ismear=0)
+            calc.set(ismear=0, sigma=0.05)
+
+        if auto_kpts.get("line_density", None) is not None:
+            if verbose:
+                warnings.warn(
+                    "Copilot: Setting ISMEAR = 0 and SIGMA = 0.01 because you are doing a line mode calculation."
+                )
+            calc.set(ismear=0, sigma=0.01)
 
         if (
             calc.float_params["kspacing"]
@@ -350,13 +371,6 @@ def SmartVasp(
                     "Copilot: KSPACING might be too large for ISMEAR = -5. Custodian should save you if needed, but you can also change ISMEAR to 0."
                 )
             pass  # let Custodian deal with it
-
-        if auto_kpts.get("line_density", None) is not None:
-            if verbose:
-                warnings.warn(
-                    "Copilot: Setting ISMEAR = 0 and SIGMA = 0.01 because you are doing a line mode calculation."
-                )
-            calc.set(ismear=0, sigma=0.01)
 
         if (
             calc.int_params["nsw"]
