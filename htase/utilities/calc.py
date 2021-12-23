@@ -35,9 +35,8 @@ def load_yaml_calc(file_path):
                             config[k][kk] = vv
 
     # Allow for either "Cu_pv" and "_pv" style setups
-    for setup in config["inputs"].get("setups", {}):
-        for k, v in setup.items():
-            if k in v:
-                config["inputs"]["setups"][k] = v.split(k)[-1]
+    for k, v in config["inputs"].get("setups", {}).items():
+        if k in v:
+            config["inputs"]["setups"][k] = v.split(k)[-1]
 
     return config
