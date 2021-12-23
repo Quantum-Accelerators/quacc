@@ -299,6 +299,11 @@ def test_setups():
     atoms.calc.parameters["setups"]["Cu"] == ""
 
     atoms = bulk("Cu")
+    atoms = SmartVasp(atoms, preset="SlabRelaxSet")
+    atoms.calc.parameters["setups"]["Ba"] == "_sv"
+    atoms.calc.parameters["setups"]["Cu"] == ""
+
+    atoms = bulk("Cu")
     atoms = SmartVasp(atoms, preset="MPScanRelaxSet")
     atoms.calc.parameters["setups"]["Cu"] == "_pv"
 
