@@ -39,6 +39,7 @@ config = yaml.safe_load(open(settings_path))
 # Handlers for VASP
 handlers = []
 handlers_dict = {
+    "VaspErrorHandler": VaspErrorHandler(vtst_fixes=config["vtst_swaps"]),
     "FrozenJobErrorHandler": FrozenJobErrorHandler(),
     "IncorrectSmearingHandler": IncorrectSmearingHandler(),
     "LargeSigmaHandler": LargeSigmaHandler(),
@@ -48,7 +49,6 @@ handlers_dict = {
     "PotimErrorHandler": PotimErrorHandler(),
     "StdErrHandler": StdErrHandler(),
     "UnconvergedErrorHandler": UnconvergedErrorHandler(),
-    "VaspErrorHandler": VaspErrorHandler(),
     "WalltimeHandler": WalltimeHandler(),
     "ScanMetalHandler": ScanMetalHandler(),
 }
@@ -87,8 +87,7 @@ vasp_gamma_cmd = os.path.expandvars(vasp_gamma_cmd)
 split_vasp_cmd = shlex.split(vasp_cmd)
 split_vasp_gamma_cmd = shlex.split(vasp_gamma_cmd)
 
-if "auto_npar" not in vasp_job_kwargs:
-    vasp_job_kwargs["auto_npar"] = False
+vasp_job_kwargs["auto_npar"] = bool(vasp_job_kwargs.get("auto_npar", None))
 
 vasp_job_kwargs.update({"gamma_vasp_cmd": split_vasp_gamma_cmd})
 

@@ -1,6 +1,7 @@
-custodian_enabled: True
+custodian_enabled: true
 vasp_cmd: srun -N 1 --ntasks-per-node 64 -c 4 --cpu_bind=cores vasp_std > vasp.out
 vasp_gamma_cmd: srun -N 1 --ntasks-per-node 64 -c 4 --cpu_bind=cores vasp_gam > vasp.out
+vtst_swaps: false
 max_errors: 5
 scratch_dir: null
 handlers:
@@ -19,5 +20,6 @@ validators:
   - VasprunXMLValidator
   - VaspFilesValidator
 wall_time: null
-vasp_job_kwargs: null
+vasp_job_kwargs:
+  auto_npar: true
 custodian_kwargs: null
