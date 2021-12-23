@@ -72,6 +72,8 @@ def invert_slab(slab, return_atoms=True):
     )
     if return_atoms:
         inverted_slab = AseAtomsAdaptor.get_atoms(inverted_slab_struct)
+    else:
+        inverted_slab = inverted_slab_struct
 
     return inverted_slab
 
