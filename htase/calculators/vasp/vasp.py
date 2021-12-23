@@ -121,10 +121,10 @@ def SmartVasp(
     # Handle special arguments in the user calc parameters that
     # ASE does not natively support
     if user_calc_params.get("elemental_magmoms", None) is not None:
-        initial_mags_dict = user_calc_params["elemental_magmoms"]
+        elemental_mags_dict = user_calc_params["elemental_magmoms"]
         del user_calc_params["elemental_magmoms"]
     else:
-        initial_mags_dict = {}
+        elemental_mags_dict = {}
     if user_calc_params.get("auto_kpts", None) is not None:
         auto_kpts = user_calc_params["auto_kpts"]
         del user_calc_params["auto_kpts"]
@@ -221,11 +221,33 @@ def SmartVasp(
         # If the preset dictionary has default magmoms, set
         # those by element. If the element isn't in the magmoms dict
         # then set it to 1.0 (VASP default).
-        if initial_mags_dict:
+        if elemental_mags_dict:
             initial_mags = np.array(
-                [initial_mags_dict.get(atom.symbol, 1.0) for atom in atoms]
+                [elemental_mags_dict.get(atom.symbol, 1.0) for atom in atoms]
             )
             atoms.set_initial_magnetic_moments(initial_mags)
+
+    # Turn off EDIFFG/IBRION/ISIF/POTIM if NSW = 0
+    opt_flags = ["ediffg", "ibrion", "isif", "potim"]
+    if user_calc_params.get("nsw", 0) == 0:
+        for opt_flag in opt_flags:
+            user_calc_params.pop(opt_flag, None)
+
+    # Turn off +U flags if +U is not even used
+    ldau_flags = [
+        "ldau",
+        "ldauu",
+        "ldauj",
+        "ldaul",
+        "ldautype",
+        "ldauprint",
+        "ldau_luj",
+    ]
+    if not user_calc_params.get("ldau", False) and not user_calc_params.get(
+        "ldau_luj", None
+    ):
+        for ldau_flag in ldau_flags:
+            user_calc_params.pop(ldau_flag, None)
 
     # Instantiate the calculator!
     calc = Vasp(**user_calc_params)
@@ -233,16 +255,20 @@ def SmartVasp(
     # Handle INCAR swaps as needed
     if incar_copilot:
 
-        if calc.asdict()["inputs"].get("lmaxmix", 2) < 6 and any(
-            atoms.get_atomic_numbers() > 56
+        if (
+            not calc.int_params["lmaxmix"]
+            or calc.int_params["lmaxmix"] < 6
+            and any(atoms.get_atomic_numbers() > 56)
         ):
             if verbose:
                 warnings.warn(
                     "Copilot: Setting LMAXMIX = 6 because you have an f-element."
                 )
             calc.set(lmaxmix=6)
-        elif calc.asdict()["inputs"].get("lmaxmix", 2) < 4 and any(
-            atoms.get_atomic_numbers() > 20
+        elif (
+            not calc.int_params["lmaxmix"]
+            or calc.int_params["lmaxmix"] < 4
+            and any(atoms.get_atomic_numbers() > 20)
         ):
             if verbose:
                 warnings.warn(
@@ -251,11 +277,12 @@ def SmartVasp(
             calc.set(lmaxmix=4)
 
         if (
-            calc.asdict()["inputs"].get("luse_vdw", False) is True
-            or calc.asdict()["inputs"].get("lhfcalc", False) is True
-            or calc.asdict()["inputs"].get("ldau", False) is True
-            or calc.asdict()["inputs"].get("metagga", None) is not None
-        ) and calc.asdict()["inputs"].get("lasph", False) is False:
+            calc.bool_params["luse_vdw"]
+            or calc.bool_params["lhfcalc"]
+            or calc.bool_params["ldau"]
+            or calc.dict_params["ldau_luj"]
+            or calc.string_params["metagga"]
+        ) and not calc.bool_params["lasph"]:
             if verbose:
                 warnings.warn(
                     "Copilot: Setting LASPH = True because you have a +U, vdW, meta-GGA, or hybrid calculation."
@@ -263,8 +290,8 @@ def SmartVasp(
             calc.set(lasph=True)
 
         if (
-            calc.asdict()["inputs"].get("lasph", False) is True
-            and calc.asdict()["inputs"].get("lmaxtau", 6) < 8
+            calc.bool_params["lasph"]
+            and (calc.int_params["lmaxtau"] and calc.int_params["lmaxtau"] < 8)
             and np.max(atoms.get_atomic_numbers()) > 56
         ):
             if verbose:
@@ -273,10 +300,9 @@ def SmartVasp(
                 )
             calc.set(lmaxtau=8)
 
-        if (
-            calc.asdict()["inputs"].get("lhfcalc", False) is True
-            or calc.asdict()["inputs"].get("metagga", None) is not None
-        ) and calc.asdict()["inputs"].get("algo", "Normal") != "All":
+        if (calc.bool_params["lhfcalc"] or calc.string_params["metagga"]) and (
+            calc.string_params["algo"] and calc.string_params["algo"].lower() != "all"
+        ):
             if verbose:
                 warnings.warn(
                     "Copilot: Setting ALGO = All because you have a meta-GGA or hybrid calculation."
@@ -284,10 +310,10 @@ def SmartVasp(
             calc.set(algo="All")
 
         if (
-            calc.asdict()["inputs"].get("nedos", 301) > 301
-            and calc.asdict()["inputs"].get("ismear", 1) != -5
-            and calc.asdict()["inputs"].get("nsw", 0) == 0
-            and np.product(calc.asdict()["inputs"].get("kpts", (1, 1, 1))) >= 4
+            calc.int_params["nedos"]
+            and calc.int_params["ismear"] != -5
+            and calc.int_params["nsw"] in (None, 0)
+            and np.product(calc.kpts >= 4)
         ):
             if verbose:
                 warnings.warn(
@@ -295,10 +321,7 @@ def SmartVasp(
                 )
             calc.set(ismear=-5)
 
-        if (
-            calc.asdict()["inputs"].get("ismear", 1) == -5
-            and np.product(calc.asdict()["inputs"].get("kpts", (1, 1, 1))) < 4
-        ):
+        if calc.int_params["ismear"] == -5 and np.product(calc.kpts) < 4:
             if verbose:
                 warnings.warn(
                     "Copilot: Setting ISMEAR = 0 because you don't have enough k-points for ISMEAR = -5."
@@ -306,8 +329,9 @@ def SmartVasp(
             calc.set(ismear=0)
 
         if (
-            calc.asdict()["inputs"].get("kspacing", 0) > 0.5
-            and calc.asdict()["inputs"].get("ismear", 1) == -5
+            calc.float_params["kspacing"]
+            and calc.float_params["kspacing"] > 0.5
+            and calc.int_params["ismear"] == -5
         ):
             if verbose:
                 warnings.warn(
@@ -316,8 +340,9 @@ def SmartVasp(
             pass  # let Custodian deal with it
 
         if (
-            calc.asdict()["inputs"].get("nsw", 0) > 0
-            and calc.asdict()["inputs"].get("laechg", False) is True
+            calc.int_params["nsw"]
+            and calc.int_params["nsw"] > 0
+            and calc.bool_params["laechg"]
         ):
             if verbose:
                 warnings.warn(
@@ -325,26 +350,20 @@ def SmartVasp(
                 )
             calc.set(laechg=False)
 
-        if (
-            calc.asdict()["inputs"].get("ldauprint", 0) == 0
-            and calc.asdict()["inputs"].get("ldau", False) is True
-        ):
+        if calc.bool_params["ldauprint"] in (None, 0) and calc.bool_params["ldau"]:
             if verbose:
                 warnings.warn("Copilot: Setting LDAUPRINT = 1 because LDAU = True.")
             calc.set(laechg=False)
 
-        if (
-            calc.parameters.get("lreal", False) in ("auto", True)
-            and calc.asdict()["inputs"].get("nsw", 0) <= 1
-        ):
+        if calc.special_params["lreal"] and calc.int_params["nsw"] in (None, 0, 1):
             if verbose:
                 warnings.warn(
                     "Copilot: Setting LREAL = False because you are running a static calculation. LREAL != False can be bad for energies."
                 )
             calc.set(lreal=False)
 
-        if calc.asdict()["inputs"].get("lorbit", None) is None and (
-            calc.asdict()["inputs"].get("ispin", 1) == 2
+        if not calc.int_params["lorbit"] and (
+            calc.int_params["ispin"] == 2
             or np.any(atoms.get_initial_magnetic_moments() != 0)
         ):
             if verbose:
@@ -353,10 +372,7 @@ def SmartVasp(
                 )
             calc.set(lorbit=11)
 
-        if (
-            calc.asdict()["inputs"].get("luse_vdw", False) is True
-            and "ASE_VASP_VDW" not in os.environ
-        ):
+        if calc.int_params["luse_vdw"] and "ASE_VASP_VDW" not in os.environ:
             raise EnvironmentError(
                 "ASE_VASP_VDW was not set, yet you requested a vdW functional."
             )
