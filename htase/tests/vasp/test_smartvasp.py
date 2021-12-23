@@ -1,4 +1,3 @@
-import pytest
 import os
 from ase.io import read
 from ase.build import bulk
@@ -6,7 +5,6 @@ from ase.calculators.vasp import Vasp
 from htase.calculators.vasp import SmartVasp
 from pathlib import Path
 import numpy as np
-import warnings
 
 FILE_DIR = Path(__file__).resolve().parent
 DEFAULT_CALCS_DIR = os.path.join(FILE_DIR, "..", "..", "defaults", "user_calcs", "vasp")
@@ -293,6 +291,23 @@ def test_lorbit():
     atoms.set_initial_magnetic_moments([1.0] * len(atoms))
     atoms = SmartVasp(atoms)
     assert atoms.calc.int_params["lorbit"] == 11
+
+
+def test_setups():
+    atoms = bulk("Cu")
+    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms.calc.parameters["setups"]["Cu"] == ""
+
+    atoms = bulk("Cu")
+    atoms = SmartVasp(atoms, preset="MPScanRelaxSet")
+    atoms.calc.parameters["setups"]["Cu"] == "_pv"
+
+    atoms = bulk("Cu")
+    atoms = SmartVasp(atoms, setups="minimal", preset="MPScanRelaxSet")
+    assert (
+        isinstance(atoms.calc.parameters["setups"], str)
+        and atoms.calc.parameters["setups"] == "minimal"
+    )
 
 
 # def test_kpoint_schemes():
