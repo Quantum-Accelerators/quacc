@@ -87,7 +87,9 @@ def SmartVasp(
                 "inputs"
             ]
         else:
-            raise ValueError(f"Cannot find {preset}")
+            raise ValueError(
+                f"Cannot find {preset}. Provide the full path or place it in {DEFAULT_CALCS_DIR}."
+            )
     else:
         calc_preset = {}
 
@@ -104,7 +106,8 @@ def SmartVasp(
         user_gamma = user_calc_params["gamma"]
         if force_gamma is True:
             warnings.warn(
-                "force_gamma is True but gamma is requested to be False. We will not force gamma-centered k-points."
+                "force_gamma is True but gamma is requested to be False. We will not force gamma-centered k-points.",
+                UserWarning,
             )
         force_gamma = False
     else:
@@ -112,33 +115,27 @@ def SmartVasp(
 
     # If the preset has auto_kpts but the user explicitly requests kpts, then
     # we should honor that.
-    if (
-        kwargs.get("kpts", None) is not None
-        and calc_preset.get("auto_kpts", None) is not None
-    ):
+    if kwargs.get("kpts", None) and calc_preset.get("auto_kpts", None):
         user_calc_params.pop("auto_kpts")
 
     # If the preset has ediff_per_atom but the user explicitly requests ediff, then
     # we should honor that.
-    if (
-        kwargs.get("ediff", None) is not None
-        and calc_preset.get("ediff_per_atom", None) is not None
-    ):
+    if kwargs.get("ediff", None) and calc_preset.get("ediff_per_atom", None):
         user_calc_params.pop("ediff_per_atom")
 
     # Handle special arguments in the user calc parameters that
     # ASE does not natively support
-    if user_calc_params.get("elemental_magmoms", None) is not None:
+    if user_calc_params.get("elemental_magmoms", None):
         elemental_mags_dict = user_calc_params["elemental_magmoms"]
         del user_calc_params["elemental_magmoms"]
     else:
         elemental_mags_dict = {}
-    if user_calc_params.get("auto_kpts", None) is not None:
+    if user_calc_params.get("auto_kpts", None):
         auto_kpts = user_calc_params["auto_kpts"]
         del user_calc_params["auto_kpts"]
     else:
         auto_kpts = None
-    if user_calc_params.get("ediff_per_atom", None) is not None:
+    if user_calc_params.get("ediff_per_atom", None):
         ediff_per_atom = user_calc_params["ediff_per_atom"]
         del user_calc_params["ediff_per_atom"]
     else:
@@ -153,7 +150,7 @@ def SmartVasp(
     # {"length_density": [float, float, float]}.
     if auto_kpts:
 
-        if auto_kpts.get("line_density", None) is not None:
+        if auto_kpts.get("line_density", None):
             kpath = HighSymmKpath(struct, path_type="latimer_munro")
             kpts, _ = kpath.get_kpoints(
                 line_density=auto_kpts["line_density"], coords_are_cartesian=True
@@ -162,7 +159,7 @@ def SmartVasp(
             user_calc_params["reciprocal"] = True
 
         else:
-            if auto_kpts.get("max_mixed_density", None) is not None:
+            if auto_kpts.get("max_mixed_density", None):
                 if len(auto_kpts["max_mixed_density"]) != 2:
                     raise ValueError("Must specify two values for max_mixed_density.")
 
@@ -171,7 +168,8 @@ def SmartVasp(
                     > auto_kpts["max_mixed_density"][1]
                 ):
                     warnings.warn(
-                        "Warning: It is not usual that kppvol > kppa. Please make sure you have chosen the right k-point densities."
+                        "Warning: It is not usual that kppvol > kppa. Please make sure you have chosen the right k-point densities.",
+                        UserWarning,
                     )
                 pmg_kpts1 = Kpoints.automatic_density_by_vol(
                     struct, auto_kpts["max_mixed_density"][0], force_gamma
@@ -183,15 +181,15 @@ def SmartVasp(
                     pmg_kpts = pmg_kpts1
                 else:
                     pmg_kpts = pmg_kpts2
-            elif auto_kpts.get("reciprocal_density", None) is not None:
+            elif auto_kpts.get("reciprocal_density", None):
                 pmg_kpts = Kpoints.automatic_density_by_vol(
                     struct, auto_kpts["reciprocal_density"], force_gamma
                 )
-            elif auto_kpts.get("grid_density", None) is not None:
+            elif auto_kpts.get("grid_density", None):
                 pmg_kpts = Kpoints.automatic_density(
                     struct, auto_kpts["grid_density"], force_gamma
                 )
-            elif auto_kpts.get("length_density", None) is not None:
+            elif auto_kpts.get("length_density", None):
                 if len(auto_kpts["length_density"]) != 3:
                     raise ValueError("Must specify three values for length_density.")
                 pmg_kpts = Kpoints.automatic_density_by_lengths(
@@ -243,13 +241,13 @@ def SmartVasp(
             atoms.set_initial_magnetic_moments(initial_mags)
 
     # Turn off EDIFFG/IBRION/ISIF/POTIM if NSW = 0
-    opt_flags = ["ediffg", "ibrion", "isif", "potim"]
+    opt_flags = ("ediffg", "ibrion", "isif", "potim")
     if user_calc_params.get("nsw", 0) == 0:
         for opt_flag in opt_flags:
             user_calc_params.pop(opt_flag, None)
 
     # Turn off +U flags if +U is not even used
-    ldau_flags = [
+    ldau_flags = (
         "ldau",
         "ldauu",
         "ldauj",
@@ -257,7 +255,7 @@ def SmartVasp(
         "ldautype",
         "ldauprint",
         "ldau_luj",
-    ]
+    )
     if not user_calc_params.get("ldau", False) and not user_calc_params.get(
         "ldau_luj", None
     ):
@@ -270,24 +268,22 @@ def SmartVasp(
     # Handle INCAR swaps as needed
     if incar_copilot:
 
-        if (
-            not calc.int_params["lmaxmix"]
-            or calc.int_params["lmaxmix"] < 6
-            and any(atoms.get_atomic_numbers() > 56)
+        if (not calc.int_params["lmaxmix"] or calc.int_params["lmaxmix"] < 6) and any(
+            atoms.get_atomic_numbers() > 56
         ):
             if verbose:
                 warnings.warn(
-                    "Copilot: Setting LMAXMIX = 6 because you have an f-element."
+                    "Copilot: Setting LMAXMIX = 6 because you have an f-element.",
+                    UserWarning,
                 )
             calc.set(lmaxmix=6)
-        elif (
-            not calc.int_params["lmaxmix"]
-            or calc.int_params["lmaxmix"] < 4
-            and any(atoms.get_atomic_numbers() > 20)
+        elif (not calc.int_params["lmaxmix"] or calc.int_params["lmaxmix"] < 4) and any(
+            atoms.get_atomic_numbers() > 20
         ):
             if verbose:
                 warnings.warn(
-                    "Copilot: Setting LMAXMIX = 4 because you have a d-element"
+                    "Copilot: Setting LMAXMIX = 4 because you have a d-element",
+                    UserWarning,
                 )
             calc.set(lmaxmix=4)
 
@@ -300,38 +296,43 @@ def SmartVasp(
         ) and not calc.bool_params["lasph"]:
             if verbose:
                 warnings.warn(
-                    "Copilot: Setting LASPH = True because you have a +U, vdW, meta-GGA, or hybrid calculation."
+                    "Copilot: Setting LASPH = True because you have a +U, vdW, meta-GGA, or hybrid calculation.",
+                    UserWarning,
                 )
             calc.set(lasph=True)
 
         if (
             calc.bool_params["lasph"]
-            and (calc.int_params["lmaxtau"] and calc.int_params["lmaxtau"] < 8)
+            and (not calc.int_params["lmaxtau"] or calc.int_params["lmaxtau"] < 8)
             and np.max(atoms.get_atomic_numbers()) > 56
         ):
             if verbose:
                 warnings.warn(
-                    "Copilot: Setting LMAXTAU = 8 because you have LASPH = True and an f-element."
+                    "Copilot: Setting LMAXTAU = 8 because you have LASPH = True and an f-element.",
+                    UserWarning,
                 )
             calc.set(lmaxtau=8)
 
         if (calc.bool_params["lhfcalc"] or calc.string_params["metagga"]) and (
-            calc.string_params["algo"] and calc.string_params["algo"].lower() != "all"
+            not calc.string_params["algo"]
+            or calc.string_params["algo"].lower() != "all"
         ):
             if verbose:
                 warnings.warn(
-                    "Copilot: Setting ALGO = All because you have a meta-GGA or hybrid calculation."
+                    "Copilot: Setting ALGO = All because you have a meta-GGA or hybrid calculation.",
+                    UserWarning,
                 )
-            calc.set(algo="All")
+            calc.set(algo="all")
 
         if (
             is_metal
-            and calc.int_params["ismear"] < 0
-            and (calc.int_params["nsw"] and calc.int_params["nsw"] > 1)
+            and (calc.int_params["ismear"] and calc.int_params["ismear"] < 0)
+            and (calc.int_params["nsw"] and calc.int_params["nsw"] > 0)
         ):
             if verbose:
                 warnings.warn(
-                    "Copilot: You are relaxing a likely metal. Setting ISMEAR = 1 and SIGMA = 0.1."
+                    "Copilot: You are relaxing a likely metal. Setting ISMEAR = 1 and SIGMA = 0.1.",
+                    UserWarning,
                 )
             calc.set(ismear=1, sigma=0.1)
 
@@ -339,38 +340,46 @@ def SmartVasp(
             calc.int_params["nedos"]
             and calc.int_params["ismear"] != -5
             and calc.int_params["nsw"] in (None, 0)
-            and np.product(calc.kpts >= 4)
         ):
             if verbose:
                 warnings.warn(
-                    "Copilot: Setting ISMEAR = -5 and SIGMA = 0.05 because you have a static DOS calculation and enough k-points."
+                    "Copilot: Setting ISMEAR = -5 and SIGMA = 0.05 because you have a static DOS calculation and enough k-points.",
+                    UserWarning,
                 )
             calc.set(ismear=-5, sigma=0.05)
 
         if calc.int_params["ismear"] == -5 and np.product(calc.kpts) < 4:
             if verbose:
                 warnings.warn(
-                    "Copilot: Setting ISMEAR = 0 and SIGMA = 0.05 because you don't have enough k-points for ISMEAR = -5."
+                    "Copilot: Setting ISMEAR = 0 and SIGMA = 0.05 because you don't have enough k-points for ISMEAR = -5.",
+                    UserWarning,
                 )
             calc.set(ismear=0, sigma=0.05)
 
-        if auto_kpts.get("line_density", None) is not None:
+        if (
+            auto_kpts
+            and auto_kpts.get("line_density", None)
+            and (calc.int_params["ismear"] != 0 or calc.float_params["sigma"] > 0.01)
+        ):
             if verbose:
                 warnings.warn(
-                    "Copilot: Setting ISMEAR = 0 and SIGMA = 0.01 because you are doing a line mode calculation."
+                    "Copilot: Setting ISMEAR = 0 and SIGMA = 0.01 because you are doing a line mode calculation.",
+                    UserWarning,
                 )
             calc.set(ismear=0, sigma=0.01)
 
         if (
             calc.float_params["kspacing"]
-            and calc.float_params["kspacing"] > 0.5
+            and (calc.float_params["kspacing"] and calc.float_params["kspacing"] > 0.5)
             and calc.int_params["ismear"] == -5
         ):
             if verbose:
                 warnings.warn(
-                    "Copilot: KSPACING might be too large for ISMEAR = -5. Custodian should save you if needed, but you can also change ISMEAR to 0."
+                    "Copilot: KSPACING is likely too large for ISMEAR = -5. Setting ISMEAR = 0 and SIGMA = 0.05.",
+                    UserWarning,
                 )
-            pass  # let Custodian deal with it
+            calc.set(ismear=0, sigma=0.05)
+            pass
 
         if (
             calc.int_params["nsw"]
@@ -379,19 +388,25 @@ def SmartVasp(
         ):
             if verbose:
                 warnings.warn(
-                    "Copilot: Setting LAECHG = False because you have NSW > 0. LAECHG is not compatible with NSW > 0."
+                    "Copilot: Setting LAECHG = False because you have NSW > 0. LAECHG is not compatible with NSW > 0.",
+                    UserWarning,
                 )
-            calc.set(laechg=False)
+            calc.set(laechg=None)
 
-        if calc.int_params["ldauprint"] in (None, 0) and calc.bool_params["ldau"]:
+        if calc.int_params["ldauprint"] in (None, 0) and (
+            calc.bool_params["ldau"] or calc.dict_params["ldau_luj"]
+        ):
             if verbose:
-                warnings.warn("Copilot: Setting LDAUPRINT = 1 because LDAU = True.")
-            calc.set(laechg=False)
+                warnings.warn(
+                    "Copilot: Setting LDAUPRINT = 1 because LDAU = True.", UserWarning
+                )
+            calc.set(ldauprint=1)
 
         if calc.special_params["lreal"] and calc.int_params["nsw"] in (None, 0, 1):
             if verbose:
                 warnings.warn(
-                    "Copilot: Setting LREAL = False because you are running a static calculation. LREAL != False can be bad for energies."
+                    "Copilot: Setting LREAL = False because you are running a static calculation. LREAL != False can be bad for energies.",
+                    UserWarning,
                 )
             calc.set(lreal=False)
 
@@ -401,13 +416,15 @@ def SmartVasp(
         ):
             if verbose:
                 warnings.warn(
-                    "Copilot: Setting LORBIT = 11 because you have a spin-polarized calculation."
+                    "Copilot: Setting LORBIT = 11 because you have a spin-polarized calculation.",
+                    UserWarning,
                 )
             calc.set(lorbit=11)
 
         if calc.bool_params["luse_vdw"] and "ASE_VASP_VDW" not in os.environ:
-            raise EnvironmentError(
-                "ASE_VASP_VDW was not set, yet you requested a vdW functional."
+            warnings.warn(
+                "ASE_VASP_VDW was not set, yet you requested a vdW functional.",
+                UserWarning,
             )
 
     calc.discard_results_on_any_change = True
