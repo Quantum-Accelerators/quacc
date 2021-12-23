@@ -138,8 +138,8 @@ def make_slabs_from_bulk(
     for slab in slabs:
 
         # Supercell creation (if necessary)
-        a_factor = np.ceil(min_length_width / slab.cell.lengths[0])
-        b_factor = np.ceil(min_length_width / slab.cell.lengths[1])
+        a_factor = np.ceil(min_length_width / slab.cell.lengths()[0])
+        b_factor = np.ceil(min_length_width / slab.cell.lengths()[1])
         slab *= (a_factor, b_factor, 1)
 
         # Apply constraints by distance from surface
