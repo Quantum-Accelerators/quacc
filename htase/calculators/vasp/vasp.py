@@ -405,7 +405,7 @@ def SmartVasp(
                 )
             calc.set(lorbit=11)
 
-        if calc.int_params["luse_vdw"] and "ASE_VASP_VDW" not in os.environ:
+        if calc.bool_params["luse_vdw"] and "ASE_VASP_VDW" not in os.environ:
             raise EnvironmentError(
                 "ASE_VASP_VDW was not set, yet you requested a vdW functional."
             )
