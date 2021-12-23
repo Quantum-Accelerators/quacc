@@ -279,3 +279,7 @@ def test_lorbit():
     atoms = SmartVasp(atoms)
     assert atoms.calc.int_params["lorbit"] == 11
 
+
+# def test_kpoint_schemes():
+
+#     # TODO

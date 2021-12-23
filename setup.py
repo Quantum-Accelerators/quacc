@@ -24,4 +24,3 @@ if __name__ == "__main__":
         zip_safe=False,
         tests_require=["pytest"],
     )
-

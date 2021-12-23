@@ -38,7 +38,7 @@ def invert_slab(slab, return_atoms=True):
         slab (pymatgen.core.surface.Slab): slab to invert
         return_atoms (bool): True if an Atoms object should be returned; False if a Structure should be returned
             Defaults to True
-    
+
     Returns:
         slab (ase.Atoms or pymatgen.core.surface.Slab): inverted slab
 
@@ -59,7 +59,9 @@ def invert_slab(slab, return_atoms=True):
         max_oriented_c + min_oriented_c - oriented_frac_coords[:, -1]
     )
     inverted_oriented_cell = Structure(
-        oriented_cell.lattice, oriented_cell.species_and_occu, oriented_frac_coords,
+        oriented_cell.lattice,
+        oriented_cell.species_and_occu,
+        oriented_frac_coords,
     )
     inverted_slab_struct = Slab(
         slab_struct.lattice,

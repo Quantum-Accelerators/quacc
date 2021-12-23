@@ -51,18 +51,18 @@ def SmartVasp(
         or 1.0 for VASP default.
         Defaults to 1.0.
     mag_cutoff : float
-        If copy_magmoms is True, only copy atoms.get_magnetic_moments() if there is at least one atom with an 
+        If copy_magmoms is True, only copy atoms.get_magnetic_moments() if there is at least one atom with an
         absolute magnetic moment above mag_cutoff.
         Defaults to 0.05.
     verbose : bool
         If True, warnings will be raised when INCAR parameters are changed.
         Defaults to True.
     **kwargs :
-        Additional arguments to be passed to the VASP calculator, e.g. xc='PBE', encut=520. Takes all valid 
+        Additional arguments to be passed to the VASP calculator, e.g. xc='PBE', encut=520. Takes all valid
         ASE calculator arguments, in addition to the ones listed below:
             auto_kpts
             elemental_magmoms
-    
+
     Returns
     -------
     atoms : ase.Atoms
