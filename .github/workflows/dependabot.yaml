@@ -1,0 +1,11 @@
+name: Lint
+
+on: [push, pull_request]
+
+version: 2
+updates:
+- package-ecosystem: pip
+  directory: "/"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 10
