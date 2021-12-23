@@ -163,6 +163,13 @@ def SmartVasp(
                 if len(auto_kpts["max_mixed_density"]) != 2:
                     raise ValueError("Must specify two values for max_mixed_density.")
 
+                if (
+                    auto_kpts["max_mixed_density"][0]
+                    > auto_kpts["max_mixed_density"][1]
+                ):
+                    warnings.warn(
+                        "Warning: It is not usual that kppvol > kppa. Please make sure you have chosen the right k-point densities."
+                    )
                 pmg_kpts1 = Kpoints.automatic_density_by_vol(
                     struct, auto_kpts["max_mixed_density"][0], force_gamma
                 )
