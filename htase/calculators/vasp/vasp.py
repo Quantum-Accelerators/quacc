@@ -220,25 +220,28 @@ def SmartVasp(
         mags = None
 
     # Check if the user has set any initial magmoms
-    has_initial_mags = np.any([hasattr(atom, "magmom") for atom in atoms])
+    has_initial_mags = atoms.has("initial_magmoms")
 
     # Copy converged magmoms to input magmoms, if copy_magmoms is True
     # and if any are above mag_cutoff
-    if mags and copy_magmoms and np.any(np.abs(mags > mag_cutoff)):
-        atoms.set_initial_magnetic_moments(mags)
+    if mags is None:
+        if not has_initial_mags:
+
+            # If the preset dictionary has default magmoms, set
+            # those by element. If the element isn't in the magmoms dict
+            # then set it to mag_default.
+            if elemental_mags_dict:
+                initial_mags = np.array(
+                    [elemental_mags_dict.get(atom.symbol, mag_default) for atom in atoms]
+                )
+                atoms.set_initial_magnetic_moments(initial_mags)
+    else:
+        if copy_magmoms and np.any(np.abs(mags > mag_cutoff)):
+            atoms.set_initial_magnetic_moments(mags)
+
 
     # If there are no initial magmoms set, we may need to add some
     # from the preset yaml.
-    if not has_initial_mags:
-
-        # If the preset dictionary has default magmoms, set
-        # those by element. If the element isn't in the magmoms dict
-        # then set it to mag_default.
-        if elemental_mags_dict:
-            initial_mags = np.array(
-                [elemental_mags_dict.get(atom.symbol, mag_default) for atom in atoms]
-            )
-            atoms.set_initial_magnetic_moments(initial_mags)
 
     # Turn off EDIFFG/IBRION/ISIF/POTIM if NSW = 0
     opt_flags = ("ediffg", "ibrion", "isif", "potim")

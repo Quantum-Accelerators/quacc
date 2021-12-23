@@ -8,9 +8,8 @@ from pathlib import Path
 import numpy as np
 import warnings
 
-DEFAULT_CALCS_DIR = os.path.join(
-    Path(__file__).resolve().parent, "..", "..", "defaults", "user_calcs", "vasp"
-)
+FILE_DIR = Path(__file__).resolve().parent
+DEFAULT_CALCS_DIR = os.path.join(FILE_DIR, "..", "..", "defaults", "user_calcs", "vasp")
 
 
 def test_vanilla_smartvasp():
@@ -68,28 +67,35 @@ def test_ediff_per_atom():
 
 
 def test_magmoms():
-    atoms = bulk("Co") * (2, 2, 1)
+    atoms = bulk("Cu") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert atoms.get_initial_magnetic_moments().tolist() == [1.0] * (len(atoms) - 1) + [
         5.0
     ]
 
-    atoms = bulk("Co") * (2, 2, 1)
+    atoms = bulk("Cu") * (2, 2, 1)
+    atoms[-1].symbol = "Fe"
+    atoms = SmartVasp(atoms, preset="BulkRelaxSet", mag_default=2.5)
+    assert atoms.get_initial_magnetic_moments().tolist() == [2.5] * (len(atoms) - 1) + [
+        5.0
+    ]
+
+    atoms = bulk("Eu") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
     atoms = SmartVasp(atoms, preset="SlabRelaxSet")
+    assert atoms.get_initial_magnetic_moments().tolist() == [10.0] * (
+        len(atoms) - 1
+    ) + [5.0]
+
+    atoms = bulk("Cu") * (2, 2, 1)
+    atoms[-1].symbol = "Fe"
+    atoms = SmartVasp(atoms, preset="MPScanRelaxSet")
     assert atoms.get_initial_magnetic_moments().tolist() == [1.0] * (len(atoms) - 1) + [
         5.0
     ]
 
-    atoms = bulk("Co") * (2, 2, 1)
-    atoms[-1].symbol = "Fe"
-    atoms = SmartVasp(atoms, preset="MPScanRelaxSet")
-    assert atoms.get_initial_magnetic_moments().tolist() == [0.6] * (len(atoms) - 1) + [
-        5.0
-    ]
-
-    atoms = bulk("Co") * (2, 2, 1)
+    atoms = bulk("Cu") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
     atoms.set_initial_magnetic_moments([3.14] * (len(atoms) - 1) + [1.0])
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
@@ -101,13 +107,22 @@ def test_magmoms():
     atoms[-1].symbol = "Fe"
     atoms.set_initial_magnetic_moments([0.0] * len(atoms))
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
-    assert np.all(atoms.get_initial_magnetic_moments().tolist() == 0.0)
+    assert np.all(atoms.get_initial_magnetic_moments() == 0.0)
 
-    atoms = read("OUTCAR")
+    atoms = read(os.path.join(FILE_DIR, "OUTCAR_test.gz"))
+    mags = atoms.get_magnetic_moments()
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
-    assert np.array_equal(
-        atoms.get_initial_magnetic_moments() == atoms.get_magnetic_moments()
-    )
+    assert np.array_equal(atoms.get_initial_magnetic_moments(), mags) is True
+
+    atoms = read(os.path.join(FILE_DIR, "OUTCAR_test.gz"))
+    mags = atoms.get_magnetic_moments()
+    atoms = SmartVasp(atoms, preset="BulkRelaxSet", copy_magmoms=False)
+    assert atoms.has("initial_magmoms") is False
+
+    atoms = read(os.path.join(FILE_DIR, "OUTCAR_test.gz"))
+    mags = atoms.get_magnetic_moments()
+    atoms = SmartVasp(atoms, preset="BulkRelaxSet", mag_cutoff=2.0)
+    assert atoms.has("initial_magmoms") is False
 
 
 def test_unused_flags():
