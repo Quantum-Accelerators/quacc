@@ -20,6 +20,7 @@ def SmartVasp(
     incar_copilot=True,
     force_gamma=True,
     copy_magmoms=True,
+    mag_default=1.0,
     mag_cutoff=0.05,
     verbose=True,
     **kwargs,
@@ -45,6 +46,10 @@ def SmartVasp(
     copy_magmoms : bool
         If True, any pre-existing atoms.get_magnetic_moments() will be set in atoms.set_initial_magnetic_moments().
         Defaults to True.
+    mag_default : float
+        Default magmom value for sites without a pre-existing magmom or one in the preset. Use 0.6 for MP settings
+        or 1.0 for VASP default.
+        Defaults to 1.0.
     mag_cutoff : float
         If copy_magmoms is True, only copy atoms.get_magnetic_moments() if there is at least one atom with an 
         absolute magnetic moment above mag_cutoff.
@@ -220,10 +225,10 @@ def SmartVasp(
 
         # If the preset dictionary has default magmoms, set
         # those by element. If the element isn't in the magmoms dict
-        # then set it to 1.0 (VASP default).
+        # then set it to mag_default.
         if elemental_mags_dict:
             initial_mags = np.array(
-                [elemental_mags_dict.get(atom.symbol, 1.0) for atom in atoms]
+                [elemental_mags_dict.get(atom.symbol, mag_default) for atom in atoms]
             )
             atoms.set_initial_magnetic_moments(initial_mags)
 
