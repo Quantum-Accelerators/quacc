@@ -383,7 +383,7 @@ def SmartVasp(
                 )
             calc.set(laechg=False)
 
-        if calc.bool_params["ldauprint"] in (None, 0) and calc.bool_params["ldau"]:
+        if calc.int_params["ldauprint"] in (None, 0) and calc.bool_params["ldau"]:
             if verbose:
                 warnings.warn("Copilot: Setting LDAUPRINT = 1 because LDAU = True.")
             calc.set(laechg=False)
