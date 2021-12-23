@@ -344,6 +344,13 @@ def SmartVasp(
                 )
             pass  # let Custodian deal with it
 
+        if auto_kpts.get("line_density", None) is not None:
+            if verbose:
+                warnings.warn(
+                    "Copilot: Setting ISMEAR = 0 and SIGMA = 0.01 because you are doing a line mode calculation."
+                )
+            calc.set(ismear=0, sigma=0.01)
+
         if (
             calc.int_params["nsw"]
             and calc.int_params["nsw"] > 0
