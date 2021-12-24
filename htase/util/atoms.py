@@ -17,7 +17,7 @@ def serialize(atoms):
     possible to do things like atoms.get_magnetic_moment() even after
     an encode/decode cycle.
     """
-    if atoms.calc.results:
+    if getattr(atoms, "calc", None) and getattr(atoms.calc, "results", None):
         atoms.info["results"] = atoms.calc.results
     atoms = jsonio.encode(atoms)
     return atoms
@@ -89,9 +89,7 @@ def invert_slab(slab, return_atoms=True):
         max_oriented_c + min_oriented_c - oriented_frac_coords[:, -1]
     )
     inverted_oriented_cell = Structure(
-        oriented_cell.lattice,
-        oriented_cell.species_and_occu,
-        oriented_frac_coords,
+        oriented_cell.lattice, oriented_cell.species_and_occu, oriented_frac_coords,
     )
     inverted_slab_struct = Slab(
         slab_struct.lattice,
