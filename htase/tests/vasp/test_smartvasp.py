@@ -108,17 +108,17 @@ def test_magmoms():
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert np.all(atoms.get_initial_magnetic_moments() == 0.0)
 
-    atoms = read(os.path.join(FILE_DIR, "OUTCAR_test.gz"))
+    atoms = read(os.path.join(FILE_DIR, "OUTCAR_mag.gz"))
     mags = atoms.get_magnetic_moments()
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert np.array_equal(atoms.get_initial_magnetic_moments(), mags) is True
 
-    atoms = read(os.path.join(FILE_DIR, "OUTCAR_test.gz"))
+    atoms = read(os.path.join(FILE_DIR, "OUTCAR_mag.gz"))
     mags = atoms.get_magnetic_moments()
     atoms = SmartVasp(atoms, preset="BulkRelaxSet", copy_magmoms=False)
     assert atoms.has("initial_magmoms") is False
 
-    atoms = read(os.path.join(FILE_DIR, "OUTCAR_test.gz"))
+    atoms = read(os.path.join(FILE_DIR, "OUTCAR_mag.gz"))
     mags = atoms.get_magnetic_moments()
     atoms = SmartVasp(atoms, preset="BulkRelaxSet", mag_cutoff=2.0)
     assert atoms.has("initial_magmoms") is False
