@@ -360,4 +360,3 @@ def test_kpoint_schemes():
             )
         )
     ) < TOL
-

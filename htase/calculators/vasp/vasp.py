@@ -24,7 +24,7 @@ def convert_auto_kpts(struct, auto_kpts, force_gamma):
     These are formatted as {"line_density": float}, {"reciprocal_density": float},
     {"grid_density": float}, {"vol_kkpa_density": [float, float]}, and
     {"length_density": [float, float, float]}.
-        
+
     Args:
         struct (pymatgen.core.Structure): Pymatgen Structure object
         auto_kpts (str): String indicating the automatic k-point scheme

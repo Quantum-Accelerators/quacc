@@ -37,4 +37,3 @@ def test_invert_slab():
 #     slabs = make_slabs_from_bulk(atoms, z_fix=0.0)
 
 #     slabs = make_slabs_from_bulk(atoms, min_length_width=20)
-
