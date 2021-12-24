@@ -3,6 +3,7 @@ from ase.io import read
 from ase.build import bulk
 from ase.calculators.vasp import Vasp
 from htase.calculators.vasp import SmartVasp
+from htase.util.atoms import serialize, deserialize
 from pathlib import Path
 import numpy as np
 
@@ -122,6 +123,21 @@ def test_magmoms():
     mags = atoms.get_magnetic_moments()
     atoms = SmartVasp(atoms, preset="BulkRelaxSet", mag_cutoff=2.0)
     assert atoms.has("initial_magmoms") is False
+
+    atoms = read(os.path.join(FILE_DIR, "OUTCAR_mag.gz"))
+    assert atoms.get_magnetic_moments()[0] == 0.468
+    atoms = deserialize(serialize(atoms))
+    assert atoms.get_magnetic_moments()[0] == 0.468
+    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    assert atoms.get_initial_magnetic_moments()[0] == 0.468
+
+    atoms = read(os.path.join(FILE_DIR, "OUTCAR_nomag.gz"))
+    assert atoms.get_magnetic_moments()[0] == 0.0
+    atoms = deserialize(serialize(atoms))
+    assert atoms.get_magnetic_moments()[0] == 0.0
+    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    assert atoms.has("initial_magmoms") is False
+    assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
 
 def test_unused_flags():

@@ -1,11 +1,39 @@
+from ase.atoms import Atoms
+import ase.io.jsonio as jsonio
 from ase.constraints import FixAtoms
+from ase.calculators.singlepoint import SinglePointDFTCalculator
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.core.surface import generate_all_slabs, Slab
 from pymatgen.core import Structure
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 from pymatgen.transformations.standard_transformations import RotationTransformation
-from ase.atoms import Atoms
 import numpy as np
+
+
+def serialize(atoms):
+    """
+    A smarter version of ASE's encode() function for Atoms. Stores the calculator
+    results in atoms.info["results"] for later retrieval. This makes it
+    possible to do things like atoms.get_magnetic_moment() even after
+    an encode/decode cycle.
+    """
+    if atoms.calc.results:
+        atoms.info["results"] = atoms.calc.results
+    atoms = jsonio.encode(atoms)
+    return atoms
+
+
+def deserialize(atoms):
+    """
+    A smarter version of ASE's decode() function for Atoms. Retrieves the calculator
+    results from atoms.info["results"] to re-instantiate. This makes it
+    possible to do things like atoms.get_magnetic_moment() even after
+    an encode/decode cycle.
+    """
+    atoms = jsonio.decode(atoms)
+    if atoms.info.get("results", None):
+        atoms.calc = SinglePointDFTCalculator(atoms, **atoms.info["results"])
+    return atoms
 
 
 def make_conventional_cell(atoms):
