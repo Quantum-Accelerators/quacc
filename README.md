@@ -1,3 +1,4 @@
+![example workflow](https://github.com/arosen93/htase/actions/workflows/workflow.yaml/badge.svg)
 [![CodeFactor](https://www.codefactor.io/repository/github/arosen93/htase/badge)](https://www.codefactor.io/repository/github/arosen93/htase)
 
 # HT-ASE (🚧 Under Construction 🚧)
