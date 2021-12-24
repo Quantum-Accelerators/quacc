@@ -29,7 +29,10 @@ FILE_DIR = Path(__file__).resolve().parent
 if "VASP_CUSTODIAN_SETTINGS" in os.environ:
     settings_path = os.environ["VASP_CUSTODIAN_SETTINGS"]
 else:
-    settings_path = os.path.join(FILE_DIR, "vasp_custodian_settings.yaml",)
+    settings_path = os.path.join(
+        FILE_DIR,
+        "vasp_custodian_settings.yaml",
+    )
 if not os.path.exists(settings_path):
     raise ValueError(
         "Missing vasp_custodian_settings.yaml in same directory as run_custodian.py"
