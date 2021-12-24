@@ -2,6 +2,7 @@ import os
 import shlex
 import subprocess
 import yaml
+from pathlib import Path
 from custodian import Custodian
 from custodian.vasp.handlers import (
     FrozenJobErrorHandler,
@@ -22,14 +23,13 @@ from custodian.vasp.validators import VaspFilesValidator, VasprunXMLValidator
 
 # Adapted from https://github.com/materialsproject/atomate2/blob/main/src/atomate2/vasp/run.py
 
+FILE_DIR = Path(__file__).resolve().parent
+
 # Read in default settings
 if "VASP_CUSTODIAN_SETTINGS" in os.environ:
     settings_path = os.environ["VASP_CUSTODIAN_SETTINGS"]
 else:
-    settings_path = os.path.join(
-        os.path.dirname(os.environ["RUN_VASP_CUSTODIAN"]),
-        "vasp_custodian_settings.yaml",
-    )
+    settings_path = os.path.join(FILE_DIR, "vasp_custodian_settings.yaml",)
 if not os.path.exists(settings_path):
     raise ValueError(
         "Missing vasp_custodian_settings.yaml in same directory as run_custodian.py"
