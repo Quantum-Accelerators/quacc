@@ -3,6 +3,7 @@ from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.core.surface import generate_all_slabs, Slab
 from pymatgen.core import Structure
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
+from pymatgen.transformations.standard_transformations import RotationTransformation
 from ase.atoms import Atoms
 import numpy as np
 
@@ -32,7 +33,8 @@ def make_conventional_cell(atoms):
 
 def invert_slab(slab, return_atoms=True):
     """
-    Function to invert a slab.
+    Function to invert a Pymatgen slab object, keeping the vacuum
+    space in place.
 
     Args:
         slab (pymatgen.core.surface.Slab): slab to invert
@@ -43,10 +45,10 @@ def invert_slab(slab, return_atoms=True):
         slab (ase.Atoms or pymatgen.core.surface.Slab): inverted slab
 
     """
-    if isinstance(slab, Atoms):
-        slab_struct = AseAtomsAdaptor.get_structure(slab)
-    else:
+    if isinstance(slab, Slab):
         slab_struct = slab
+    else:
+        raise TypeError("slab must be a pymatgen.core.surface.Slab object")
     frac_coords = slab_struct.frac_coords
     max_c = np.max(frac_coords[:, -1])
     min_c = np.min(frac_coords[:, -1])
@@ -59,9 +61,7 @@ def invert_slab(slab, return_atoms=True):
         max_oriented_c + min_oriented_c - oriented_frac_coords[:, -1]
     )
     inverted_oriented_cell = Structure(
-        oriented_cell.lattice,
-        oriented_cell.species_and_occu,
-        oriented_frac_coords,
+        oriented_cell.lattice, oriented_cell.species_and_occu, oriented_frac_coords,
     )
     inverted_slab_struct = Slab(
         slab_struct.lattice,
@@ -140,14 +140,15 @@ def make_slabs_from_bulk(
     for slab in slabs:
 
         # Supercell creation (if necessary)
-        a_factor = np.ceil(min_length_width / slab.cell.lengths()[0])
-        b_factor = np.ceil(min_length_width / slab.cell.lengths()[1])
+        a_factor = int(np.ceil(min_length_width / slab.cell.lengths()[0]))
+        b_factor = int(np.ceil(min_length_width / slab.cell.lengths()[1]))
         slab *= (a_factor, b_factor, 1)
 
         # Apply constraints by distance from surface
+        # Caution: Will fail if slab crosses cell boundary
         max_z = np.max(atoms.positions[:, -1])
         constraints = FixAtoms(
-            indices=[atom.index for atom in atoms if atom.z < max_z - z_fix]
+            indices=[atom.index for atom in atoms if atom.z <= max_z - z_fix]
         )
         slab.set_constraint(constraints)
 

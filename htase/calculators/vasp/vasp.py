@@ -41,7 +41,7 @@ def SmartVasp(
         If True, the INCAR parameters will be adjusted if they go against the VASP manual.
         Defaults to True.
     force_gamma : bool
-        If True, the KPOINTS will always be set to gamma-centered.
+        If True, the automatic k-point generation schemes will default to gamma-centered.
         Defaults to True.
     copy_magmoms : bool
         If True, any pre-existing atoms.get_magnetic_moments() will be set in atoms.set_initial_magnetic_moments().
@@ -151,11 +151,12 @@ def SmartVasp(
     if auto_kpts:
 
         if auto_kpts.get("line_density", None):
+            # TODO: Support methods other than latimer-munro
             kpath = HighSymmKpath(struct, path_type="latimer_munro")
             kpts, _ = kpath.get_kpoints(
                 line_density=auto_kpts["line_density"], coords_are_cartesian=True
             )
-            user_calc_params["kpts"] = kpts
+            user_calc_params["kpts"] = np.stack(kpts)
             user_calc_params["reciprocal"] = True
 
         else:
@@ -232,13 +233,15 @@ def SmartVasp(
             # then set it to mag_default.
             if elemental_mags_dict:
                 initial_mags = np.array(
-                    [elemental_mags_dict.get(atom.symbol, mag_default) for atom in atoms]
+                    [
+                        elemental_mags_dict.get(atom.symbol, mag_default)
+                        for atom in atoms
+                    ]
                 )
                 atoms.set_initial_magnetic_moments(initial_mags)
     else:
         if copy_magmoms and np.any(np.abs(mags > mag_cutoff)):
             atoms.set_initial_magnetic_moments(mags)
-
 
     # If there are no initial magmoms set, we may need to add some
     # from the preset yaml.

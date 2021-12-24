@@ -8,6 +8,7 @@ import numpy as np
 
 FILE_DIR = Path(__file__).resolve().parent
 DEFAULT_CALCS_DIR = os.path.join(FILE_DIR, "..", "..", "defaults", "user_calcs", "vasp")
+TOL = 1e-5
 
 
 def test_vanilla_smartvasp():
@@ -315,6 +316,48 @@ def test_setups():
     )
 
 
-# def test_kpoint_schemes():
+def test_kpoint_schemes():
+    atoms = bulk("Cu")
+    atoms = SmartVasp(atoms, kpts=[1, 1, 1], preset="BulkRelaxSet")
+    assert atoms.calc.kpts == [1, 1, 1]
 
-#     # TODO
+    atoms = bulk("Cu")
+    atoms = SmartVasp(atoms, auto_kpts={"grid_density": 1000}, force_gamma=False)
+    assert atoms.calc.kpts == [10, 10, 10]
+    assert atoms.calc.input_params["gamma"] is False
+
+    atoms = bulk("Cu")
+    atoms = SmartVasp(atoms, auto_kpts={"grid_density": 1000})
+    assert atoms.calc.kpts == [10, 10, 10]
+    assert atoms.calc.input_params["gamma"] is True
+
+    atoms = bulk("Cu")
+    atoms = SmartVasp(
+        atoms, auto_kpts={"grid_density": 1000}, force_gamma=False, gamma=True
+    )
+    assert atoms.calc.kpts == [10, 10, 10]
+    assert atoms.calc.input_params["gamma"] is True
+
+    atoms = bulk("Cu")
+    atoms = SmartVasp(atoms, auto_kpts={"reciprocal_density": 100})
+    assert atoms.calc.kpts == [12, 12, 12]
+
+    atoms = bulk("Cu")
+    atoms = SmartVasp(atoms, auto_kpts={"max_mixed_density": [100, 1000]})
+    assert atoms.calc.kpts == [12, 12, 12]
+
+    atoms = bulk("Cu")
+    atoms = SmartVasp(atoms, auto_kpts={"length_density": [50, 50, 1]})
+    assert atoms.calc.kpts == [20, 20, 1]
+
+    atoms = bulk("Cu")
+    atoms = SmartVasp(atoms, auto_kpts={"line_density": 100})
+    assert (
+        np.max(
+            np.abs(
+                atoms.calc.kpts[-1, :]
+                - np.array([1.30537091e00, 1.11022302e-16, 1.30537091e00])
+            )
+        )
+    ) < TOL
+
