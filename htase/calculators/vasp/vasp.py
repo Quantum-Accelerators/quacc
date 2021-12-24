@@ -147,9 +147,13 @@ def check_is_metal(struct):
 def set_magmoms(atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutoff):
     # Handle the magnetic moments
     # Check if there are converged magmoms
-    try:
+    if (
+        getattr(atoms, "calc", None)
+        and getattr(atoms.calc, "results", None)
+        and atoms.calc.results.get("magmoms", None) is not None
+    ):
         mags = atoms.get_magnetic_moments()
-    except RuntimeError or CalculatorSetupError:
+    else:
         mags = None
 
     # Check if the user has set any initial magmoms
