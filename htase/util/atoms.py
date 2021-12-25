@@ -1,12 +1,11 @@
 from ase.atoms import Atoms
 import ase.io.jsonio as jsonio
-from ase.constraints import FixAtoms
 from ase.calculators.singlepoint import SinglePointDFTCalculator
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.core.surface import generate_all_slabs, Slab
 from pymatgen.core import Structure
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
-from pymatgen.transformations.standard_transformations import RotationTransformation
+from pymatgen.analysis.adsorption import AdsorbateSiteFinder
 import numpy as np
 
 
@@ -16,6 +15,12 @@ def serialize(atoms):
     results in atoms.info["results"] for later retrieval. This makes it
     possible to do things like atoms.get_magnetic_moment() even after
     an encode/decode cycle.
+
+    Args:
+        atoms (ase.Atoms): Atoms object
+
+    Returns:
+        atoms (ase.Atoms): Atoms object with calculator results attached in atoms.info["results"]
     """
     if getattr(atoms, "calc", None) and getattr(atoms.calc, "results", None):
         atoms.info["results"] = atoms.calc.results
@@ -29,6 +34,12 @@ def deserialize(atoms):
     results from atoms.info["results"] to re-instantiate. This makes it
     possible to do things like atoms.get_magnetic_moment() even after
     an encode/decode cycle.
+
+    Args:
+        atoms (ase.Atoms): Atoms object
+
+    Returns:
+        atoms (ase.Atoms): Atoms object with calculator results attached in atoms.info["results"]
     """
     atoms = jsonio.decode(atoms)
     if atoms.info.get("results", None):
@@ -46,7 +57,7 @@ def make_conventional_cell(atoms):
         atoms (ase.Atoms): Atoms object
 
     Returns:
-        atoms (ase.Atoms): Atoms object with a conventional cell
+        conventional_atoms (ase.Atoms): Atoms object with a conventional cell
     """
 
     if isinstance(atoms, Atoms):
@@ -72,7 +83,7 @@ def invert_slab(slab, return_atoms=True):
             Defaults to True
 
     Returns:
-        slab (ase.Atoms or pymatgen.core.surface.Slab): inverted slab
+        inverted_slab (ase.Atoms or pymatgen.core.surface.Slab): inverted slab
 
     """
     if isinstance(slab, Slab):
@@ -80,9 +91,9 @@ def invert_slab(slab, return_atoms=True):
     else:
         raise TypeError("slab must be a pymatgen.core.surface.Slab object")
     frac_coords = slab_struct.frac_coords
-    max_c = np.max(frac_coords[:, -1])
-    min_c = np.min(frac_coords[:, -1])
-    frac_coords[:, -1] = max_c + min_c - frac_coords[:, -1]
+    max_z = np.max(frac_coords[:, -1])
+    min_z = np.min(frac_coords[:, -1])
+    frac_coords[:, -1] = max_z + min_z - frac_coords[:, -1]
     oriented_cell = slab_struct.oriented_unit_cell
     oriented_frac_coords = oriented_cell.frac_coords
     max_oriented_c = np.max(oriented_frac_coords[:, -1])
@@ -122,7 +133,7 @@ def make_slabs_from_bulk(
     Function to make slabs from a bulk atoms object.
 
     Args:
-        atoms (ase.Atoms): bulk atoms object
+        atoms (ase.Atoms/pymatgen.core.Structre): bulk atoms/structure
         max_index (int): maximum Miller index for slab generation
             Defaults to 1.
         min_slab_size (float): minimum slab size in angstroms
@@ -135,11 +146,12 @@ def make_slabs_from_bulk(
             Defaults to 2.0
 
     Returns:
-        slabs (list of ase.Atoms): list of slabs
+        atoms_slabs (list of ase.Atoms): list of slabs
     """
 
     # Note: This will not work as expected if the slab crosses the
-    # unit cell boundary.
+    # unit cell boundary or for 2D systems. See Oxana/Martin's code
+    # for the 2D workflow: https://github.com/oxana-a/atomate/blob/ads_wf/atomate/vasp/firetasks/adsorption_tasks.py
 
     # Use pymatgen to generate slabs
     if isinstance(atoms, Atoms):
@@ -147,39 +159,40 @@ def make_slabs_from_bulk(
     else:
         struct = atoms
 
-    slab_structs = [
-        slab_struct
-        for slab_struct in generate_all_slabs(
+    slabs = [
+        slab
+        for slab in generate_all_slabs(
             struct, max_index, min_slab_size, min_vacuum_size
         )
     ]
 
     # If the two terminations are not equivalent, make new slab
     # by inverting the original slab and add it to the list
-    new_slab_structs = []
-    for slab_struct in slab_structs:
-        if not slab_struct.is_symmetric():
-            new_slab_struct = invert_slab(slab_struct, return_atoms=False)
-            new_slab_structs.append(new_slab_struct)
+    new_slabs = []
+    for slab in slabs:
+        if not slab.is_symmetric():
+            new_slab = invert_slab(slab, return_atoms=False)
+            new_slabs.append(new_slab)
 
-    slab_structs.extend(new_slab_structs)
-    slabs = [AseAtomsAdaptor().get_atoms(slab_struct) for slab_struct in slab_structs]
+    slabs.extend(new_slabs)
 
     # For each slab, make sure the lengths and widths are large enough
     # and fix atoms z_fix away from the top of the slab.
+    final_slabs = []
     for slab in slabs:
 
         # Supercell creation (if necessary)
-        a_factor = int(np.ceil(min_length_width / slab.cell.lengths()[0]))
-        b_factor = int(np.ceil(min_length_width / slab.cell.lengths()[1]))
-        slab *= (a_factor, b_factor, 1)
+        a_factor = int(np.ceil(min_length_width / slab.lattice.abc[0]))
+        b_factor = int(np.ceil(min_length_width / slab.lattice.abc[1]))
+        final_slab = slab * (a_factor, b_factor, 1)
 
-        # Apply constraints by distance from surface
-        # Caution: Will fail if slab crosses cell boundary
-        max_z = np.max(atoms.positions[:, -1])
-        constraints = FixAtoms(
-            indices=[atom.index for atom in atoms if atom.z <= max_z - z_fix]
-        )
-        slab.set_constraint(constraints)
+        # Apply constraints by distance from top surface
+        if z_fix:
+            final_slab = AdsorbateSiteFinder(
+                final_slab, selective_dynamics=True, height=z_fix
+            ).slab
+        final_slabs.append(final_slab)
 
-    return slabs
+    atoms_slabs = [AseAtomsAdaptor().get_atoms(slab) for slab in final_slabs]
+
+    return atoms_slabs
