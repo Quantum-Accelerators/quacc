@@ -72,7 +72,7 @@ def make_conventional_cell(atoms):
     return conventional_atoms
 
 
-def invert_slab(slab, return_atoms=True):
+def invert_slab(slab, return_struct=False):
     """
     Function to invert a Pymatgen slab object, keeping the vacuum
     space in place.
@@ -115,10 +115,10 @@ def invert_slab(slab, return_atoms=True):
         shift=-slab_struct.shift,
         scale_factor=slab_struct.scale_factor,
     )
-    if return_atoms:
-        inverted_slab = AseAtomsAdaptor.get_atoms(inverted_slab_struct)
-    else:
+    if return_struct:
         inverted_slab = inverted_slab_struct
+    else:
+        inverted_slab = AseAtomsAdaptor.get_atoms(inverted_slab_struct)
 
     return inverted_slab
 
@@ -173,7 +173,7 @@ def make_slabs_from_bulk(
     new_slabs = []
     for slab in slabs:
         if not slab.is_symmetric():
-            new_slab = invert_slab(slab, return_atoms=False)
+            new_slab = invert_slab(slab, return_struct=True)
             new_slabs.append(new_slab)
 
     slabs.extend(new_slabs)

@@ -28,7 +28,7 @@ def test_make_conventional_cell():
 def test_invert_slab():
     struct = Structure.from_file(os.path.join(FILE_DIR, "MnO2_primitive.cif.gz"))
     slab = SlabGenerator(struct, [0, 0, 1], 10, 10).get_slab()
-    inverted_slab = invert_slab(slab, return_atoms=False)
+    inverted_slab = invert_slab(slab, return_struct=True)
     assert slab[0].x == inverted_slab[0].x
     assert slab[0].y == inverted_slab[0].y
     assert pytest.approx(slab[0].z, 1e-5) == inverted_slab[0].z - 7.38042756
@@ -39,7 +39,7 @@ def test_invert_slab():
     true_slab = Structure.from_file(os.path.join(FILE_DIR, "slab_invert1.cif.gz"))
     assert np.allclose(slab.frac_coords, true_slab.frac_coords)
 
-    inverted_slab = invert_slab(slab, return_atoms=False)
+    inverted_slab = invert_slab(slab, return_struct=True)
     true_inverted_slab = Structure.from_file(
         os.path.join(FILE_DIR, "slab_invert2.cif.gz")
     )
