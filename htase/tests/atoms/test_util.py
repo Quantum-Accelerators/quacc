@@ -45,6 +45,10 @@ def test_serialization():
     assert atoms.get_potential_energy() == newatoms.get_potential_energy()
     assert np.array_equal(atoms.get_magnetic_moments(), newatoms.get_magnetic_moments())
 
+    atoms = read(os.path.join(FILE_DIR, "..", "vasp", "OUTCAR_nomag.gz"))
+    newatoms = deserialize(serialize(atoms))
+    assert np.array_equal(atoms.get_magnetic_moments(), newatoms.get_magnetic_moments())
+
 
 # This test takes a while. Clearly, make_slabs_from_bulk could be improved
 # for speed...
