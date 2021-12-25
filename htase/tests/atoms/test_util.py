@@ -1,7 +1,15 @@
 from ase.io import read
+from ase.build import bulk
+from htase.calculators.vasp import SmartVasp
 from pymatgen.core.surface import SlabGenerator
 from pymatgen.core import Structure
-from htase.util.atoms import make_conventional_cell, invert_slab, make_slabs_from_bulk
+from htase.util.atoms import (
+    serialize,
+    deserialize,
+    make_conventional_cell,
+    invert_slab,
+    make_slabs_from_bulk,
+)
 from pathlib import Path
 import os
 import numpy as np
@@ -24,6 +32,18 @@ def test_invert_slab():
     assert slab[0].x == inverted_slab[0].x
     assert slab[0].y == inverted_slab[0].y
     assert pytest.approx(slab[0].z, 1e-5) == inverted_slab[0].z - 7.38042756
+
+
+def test_serialization():
+    atoms = bulk("Cu")
+    newatoms = deserialize(serialize(atoms))
+    assert np.array_equal(atoms.get_positions(), newatoms.get_positions())
+
+    atoms = read(os.path.join(FILE_DIR, "..", "vasp", "OUTCAR_mag.gz"))
+    newatoms = deserialize(serialize(atoms))
+    assert np.array_equal(atoms.get_positions(), newatoms.get_positions())
+    assert atoms.get_potential_energy() == newatoms.get_potential_energy()
+    assert np.array_equal(atoms.get_magnetic_moments(), newatoms.get_magnetic_moments())
 
 
 # This test takes a while. Clearly, make_slabs_from_bulk could be improved

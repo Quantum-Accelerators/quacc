@@ -489,7 +489,12 @@ def SmartVasp(
     if incar_copilot:
         calc = calc_swaps(atoms, calc, auto_kpts, is_metal=is_metal, verbose=verbose)
 
+    # Set the calculator
     calc.discard_results_on_any_change = True
     atoms.calc = calc
+
+    # Remove any prior calculator results stored in "info"
+    if atoms.info.get("results", None):
+        atoms.info = {}
 
     return atoms
