@@ -1,5 +1,4 @@
 from htase.util.calc import load_yaml_calc
-from ase.calculators.calculator import CalculatorSetupError
 from ase.calculators.vasp import Vasp
 from ase.atoms import Atoms
 from pymatgen.io.vasp.inputs import Kpoints
