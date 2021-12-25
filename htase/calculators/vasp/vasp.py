@@ -450,7 +450,7 @@ def SmartVasp(
         elemental_mags_dict = user_calc_params["elemental_magmoms"]
         del user_calc_params["elemental_magmoms"]
     else:
-        elemental_mags_dict = {}
+        elemental_mags_dict = None
     if user_calc_params.get("auto_kpts", None):
         auto_kpts = user_calc_params["auto_kpts"]
         del user_calc_params["auto_kpts"]
