@@ -103,9 +103,7 @@ def invert_slab(slab, return_struct=False):
         max_oriented_c + min_oriented_c - oriented_frac_coords[:, -1]
     )
     inverted_oriented_cell = Structure(
-        oriented_cell.lattice,
-        oriented_cell.species_and_occu,
-        oriented_frac_coords,
+        oriented_cell.lattice, oriented_cell.species_and_occu, oriented_frac_coords,
     )
     inverted_slab_struct = Slab(
         slab_struct.lattice,
@@ -131,6 +129,7 @@ def make_slabs_from_bulk(
     min_vacuum_size=20.0,
     min_length_width=10.0,
     z_fix=2.0,
+    return_struct=False,
 ):
     """
     Function to make slabs from a bulk atoms object.
@@ -147,9 +146,12 @@ def make_slabs_from_bulk(
             Defaults to 10.0
         z_fix (float): distance (in angstroms) from top of slab for which atoms should be fixed
             Defaults to 2.0
+        return_struct (bool): True if a Pymatgen structure (technically, slab) object
+        should be returned; False if an ASE atoms object should be returned
+            Defaults to False
 
     Returns:
-        atoms_slabs (list of ase.Atoms): list of slabs
+        final_slabs (ase.Atoms or pymatgen.core.surface.Slab): inverted slab
     """
 
     # Note: This will not work as expected if the slab crosses the
@@ -190,12 +192,16 @@ def make_slabs_from_bulk(
         final_slab = slab * (a_factor, b_factor, 1)
 
         # Apply constraints by distance from top surface
+        # This does not actually create an adsorbate. It is just a
+        # useful function for finding surface vs. subsurface sites
+        # since you can't just do z_max - z_fix
         if z_fix:
             final_slab = AdsorbateSiteFinder(
                 final_slab, selective_dynamics=True, height=z_fix
             ).slab
         final_slabs.append(final_slab)
 
-    atoms_slabs = [AseAtomsAdaptor().get_atoms(slab) for slab in final_slabs]
+    if return_struct is False:
+        final_slabs = [AseAtomsAdaptor().get_atoms(slab) for slab in final_slabs]
 
-    return atoms_slabs
+    return final_slabs
