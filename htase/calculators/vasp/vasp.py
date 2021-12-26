@@ -8,6 +8,7 @@ import numpy as np
 import os
 import warnings
 from pathlib import Path
+from copy import deepcopy
 
 DEFAULT_CALCS_DIR = os.path.join(
     Path(__file__).resolve().parent, "..", "..", "defaults", "user_calcs", "vasp"
@@ -154,7 +155,7 @@ def set_magmoms(atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutof
     # Handle the magnetic moments
     # Check if there are converged magmoms
     if is_followup and atoms.calc.results.get("magmoms", None) is not None:
-        mags = atoms.get_magnetic_moments()
+        mags = atoms.calc.results["magmoms"]
     else:
         mags = None
 
@@ -401,12 +402,15 @@ def SmartVasp(
 
     Returns
     -------
-    atoms : ase.Atoms
+    atoms_new : ase.Atoms
         The ASE Atoms object with attached VASP calculator.
     """
 
+    # Copy the atoms to a new object so we don't modify the original
+    atoms_new = deepcopy(atoms)
+
     # Grab the pymatgen structure object in case we need it later
-    struct = AseAtomsAdaptor().get_structure(atoms)
+    struct = AseAtomsAdaptor().get_structure(atoms_new)
 
     # Is this a metal?
     is_metal = check_is_metal(struct)
@@ -475,11 +479,11 @@ def SmartVasp(
 
     # Handle ediff_per_atom if present
     if ediff_per_atom:
-        user_calc_params["ediff"] = ediff_per_atom * len(atoms)
+        user_calc_params["ediff"] = ediff_per_atom * len(atoms_new)
 
     # Set magnetic moments
-    atoms = set_magmoms(
-        atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutoff
+    atoms_new = set_magmoms(
+        atoms_new, elemental_mags_dict, copy_magmoms, mag_default, mag_cutoff
     )
 
     # Remove unused INCAR flags
@@ -490,7 +494,9 @@ def SmartVasp(
 
     # Handle INCAR swaps as needed
     if incar_copilot:
-        calc = calc_swaps(atoms, calc, auto_kpts, is_metal=is_metal, verbose=verbose)
+        calc = calc_swaps(
+            atoms_new, calc, auto_kpts, is_metal=is_metal, verbose=verbose
+        )
 
     # This is important! We want to make sure doing something like
     # atoms*(2,2,2) throws away the prior calculator results
@@ -499,10 +505,10 @@ def SmartVasp(
     calc.discard_results_on_any_change = True
 
     # Set the calculator
-    atoms.calc = calc
+    atoms_new.calc = calc
 
     # Remove any prior calculator results stored in "info"
-    if atoms.info.get("results", None):
-        atoms.info = {}
+    if atoms_new.info.get("results", None):
+        atoms_new.info = {}
 
-    return atoms
+    return atoms_new

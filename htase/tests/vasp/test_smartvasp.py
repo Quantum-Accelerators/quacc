@@ -131,7 +131,7 @@ def test_magmoms():
     assert atoms.get_initial_magnetic_moments()[0] == 0.468
 
     atoms = read(os.path.join(FILE_DIR, "OUTCAR_nomag.gz"))
-    assert atoms.get_magnetic_moments()[0] == 0.0
+    assert np.all(atoms.get_magnetic_moments() == 0.0)
     atoms = deserialize(serialize(atoms))
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert atoms.has("initial_magmoms") is False
