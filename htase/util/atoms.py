@@ -8,6 +8,20 @@ from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 from pymatgen.analysis.adsorption import AdsorbateSiteFinder
 import numpy as np
 
+# properties supported by SinglePointDFTCalculator
+all_properties = [
+    "energy",
+    "forces",
+    "stress",
+    "stresses",
+    "dipole",
+    "charges",
+    "magmom",
+    "magmoms",
+    "free_energy",
+    "energies",
+]
+
 
 def serialize(atoms):
     """
@@ -42,8 +56,13 @@ def deserialize(atoms):
         atoms (ase.Atoms): Atoms object with calculator results attached in atoms.info["results"]
     """
     atoms = jsonio.decode(atoms)
+
+    supported_results = {}
     if atoms.info.get("results", None):
-        calc = SinglePointDFTCalculator(atoms, **atoms.info["results"])
+        for prop, result in atoms.info["results"].items():
+            if prop in all_properties:
+                supported_results[prop] = result
+        calc = SinglePointDFTCalculator(atoms, **supported_results)
         calc.discard_results_on_any_change = True
         atoms.calc = calc
     return atoms
@@ -103,9 +122,7 @@ def invert_slab(slab, return_struct=False):
         max_oriented_c + min_oriented_c - oriented_frac_coords[:, -1]
     )
     inverted_oriented_cell = Structure(
-        oriented_cell.lattice,
-        oriented_cell.species_and_occu,
-        oriented_frac_coords,
+        oriented_cell.lattice, oriented_cell.species_and_occu, oriented_frac_coords,
     )
     inverted_slab_struct = Slab(
         slab_struct.lattice,
