@@ -2,6 +2,7 @@ import os
 from ase.io import read
 from ase.build import bulk
 from ase.calculators.vasp import Vasp
+from ase.calculators.singlepoint import SinglePointDFTCalculator
 from htase.calculators.vasp import SmartVasp
 from htase.util.atoms import serialize, deserialize
 from pathlib import Path
@@ -137,6 +138,14 @@ def test_magmoms():
     assert atoms.has("initial_magmoms") is False
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
     atoms.calc.results = {"energy": 1.0}  # mock calculation run
+    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    assert atoms.has("initial_magmoms") is False
+    assert np.all(atoms.get_initial_magnetic_moments() == 0)
+
+    atoms = read(os.path.join(FILE_DIR, "OUTCAR_nomag.gz"))
+    calc = SinglePointDFTCalculator(atoms, **{"magmoms": [0.0] * len(atoms)})
+    atoms.calc = calc
+    assert np.all(atoms.get_magnetic_moments() == 0)
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert atoms.has("initial_magmoms") is False
     assert np.all(atoms.get_initial_magnetic_moments() == 0)

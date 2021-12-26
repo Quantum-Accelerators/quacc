@@ -146,18 +146,16 @@ def check_is_metal(struct):
 
 def set_magmoms(atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutoff):
 
-    # Is this a follow-up job?
-    if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None):
-        is_followup = True
-    else:
-        is_followup = False
-
     # Handle the magnetic moments
-    # Check if there are converged magmoms
-    if is_followup and atoms.calc.results.get("magmoms", None) is not None:
-        mags = atoms.calc.results["magmoms"]
-    else:
-        mags = None
+    # Check if there are converged magmoms and see
+    # if this is a follow-up job
+    mags = None
+    is_followup = False
+    if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None):
+        if atoms.calc.results is not None:
+            is_followup = True
+        if atoms.calc.results.get("magmoms", None) is not None:
+            mags = atoms.calc.results["magmoms"]
 
     # Check if the user has set any initial magmoms
     has_initial_mags = atoms.has("initial_magmoms")
