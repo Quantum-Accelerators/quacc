@@ -143,7 +143,9 @@ def check_is_metal(struct):
     return is_metal
 
 
-def set_magmoms(atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutoff):
+def set_magmoms(
+    atoms, is_followup, elemental_mags_dict, copy_magmoms, mag_default, mag_cutoff
+):
     # Handle the magnetic moments
     # Check if there are converged magmoms
     if (
@@ -158,10 +160,10 @@ def set_magmoms(atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutof
     # Check if the user has set any initial magmoms
     has_initial_mags = atoms.has("initial_magmoms")
 
-    # Copy converged magmoms to input magmoms, if copy_magmoms is True
-    # and if any are above mag_cutoff
+    # If there are no initial magmoms set and this is not a follow-up job,
+    # we may need to add some from the preset yaml.
     if mags is None:
-        if not has_initial_mags:
+        if not has_initial_mags and not is_followup:
 
             # If the preset dictionary has default magmoms, set
             # those by element. If the element isn't in the magmoms dict
@@ -174,9 +176,9 @@ def set_magmoms(atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutof
                     ]
                 )
                 atoms.set_initial_magnetic_moments(initial_mags)
+    # Copy converged magmoms to input magmoms, if copy_magmoms is True
+    # and if any are above mag_cutoff
     else:
-        # If there are no initial magmoms set, we may need to add some
-        # from the preset yaml.
         if copy_magmoms and np.any(np.abs(mags > mag_cutoff)):
             atoms.set_initial_magnetic_moments(mags)
 
@@ -402,6 +404,12 @@ def SmartVasp(
         The ASE Atoms object with attached VASP calculator.
     """
 
+    # Is this a follow-up job?
+    if hasattr(atoms, "calc") and atoms.calc.results:
+        is_followup = True
+    else:
+        is_followup = False
+
     # Grab the pymatgen structure object in case we need it later
     struct = AseAtomsAdaptor().get_structure(atoms)
 
@@ -476,7 +484,7 @@ def SmartVasp(
 
     # Set magnetic moments
     atoms = set_magmoms(
-        atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutoff
+        atoms, is_followup, elemental_mags_dict, copy_magmoms, mag_default, mag_cutoff
     )
 
     # Remove unused INCAR flags

@@ -156,7 +156,7 @@ def make_slabs_from_bulk(
     atoms,
     max_index=1,
     min_slab_size=12.0,
-    min_vacuum_size=20.0,
+    min_vacuum_size=15.0,
     min_length_width=10.0,
     z_fix=2.0,
     return_struct=False,
