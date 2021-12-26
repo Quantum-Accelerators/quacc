@@ -187,6 +187,13 @@ def test_magmoms():
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
+    atoms = bulk("Mg")
+    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    assert np.all(atoms.get_initial_magnetic_moments() == 1.0)
+    atoms.calc.results = {"magmoms": [-5] * len(atoms)}
+    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    assert np.all(atoms.get_initial_magnetic_moments() == -5)
+
 
 def test_unused_flags():
     atoms = bulk("Cu")
