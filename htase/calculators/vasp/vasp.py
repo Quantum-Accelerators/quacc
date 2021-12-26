@@ -178,11 +178,11 @@ def set_magmoms(atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutof
     else:
         if copy_magmoms:
             # If any are above mag_cutoff, set them. Otherwise, just
-            # set them all to None (i.e. no magmoms set).
+            # set them all to 0 (no spin-polarization)
             if np.any(np.abs(mags) > mag_cutoff):
                 atoms.set_initial_magnetic_moments(mags)
             else:
-                atoms.set_initial_magnetic_moments(None)
+                atoms.set_initial_magnetic_moments([0.0] * len(atoms))
 
     return atoms
 

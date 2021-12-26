@@ -171,7 +171,7 @@ def make_slabs_from_bulk(
         min_slab_size (float): minimum slab size in angstroms
             Defaults to 12.0
         min_vacuum_size (float): minimum vacuum size in angstroms
-            Defaults to 20.0
+            Defaults to 15.0
         min_length_width (float): minimum length and width of the slab in angstroms
             Defaults to 10.0
         z_fix (float): distance (in angstroms) from top of slab for which atoms should be fixed
