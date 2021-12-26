@@ -9,7 +9,7 @@ from pymatgen.analysis.adsorption import AdsorbateSiteFinder
 import numpy as np
 
 # properties supported by SinglePointDFTCalculator
-all_properties = [
+ALL_PROPERTIES = [
     "energy",
     "forces",
     "stress",
@@ -60,7 +60,7 @@ def deserialize(atoms):
     supported_results = {}
     if atoms.info.get("results", None):
         for prop, result in atoms.info["results"].items():
-            if prop in all_properties:
+            if prop in ALL_PROPERTIES:
                 supported_results[prop] = result
         calc = SinglePointDFTCalculator(atoms, **supported_results)
         calc.discard_results_on_any_change = True
