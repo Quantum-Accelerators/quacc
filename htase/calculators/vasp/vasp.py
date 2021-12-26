@@ -489,8 +489,13 @@ def SmartVasp(
     if incar_copilot:
         calc = calc_swaps(atoms, calc, auto_kpts, is_metal=is_metal, verbose=verbose)
 
-    # Set the calculator
+    # This is important! We want to make sure doing something like
+    # atoms*(2,2,2) throws away the prior calculator results
+    # otherwise we can't do things like run a new calculation
+    # with atoms.get_potential_energy() after the transformation
     calc.discard_results_on_any_change = True
+
+    # Set the calculator
     atoms.calc = calc
 
     # Remove any prior calculator results stored in "info"
