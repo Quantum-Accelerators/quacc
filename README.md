@@ -16,6 +16,24 @@ In practice, the goal here is to enable the development of [Atomate2](https://gi
 Credit: xkcd
 </p>
 
+## Minimal Examples
+### SmartVasp Calculator
+To use HT-ASE's `SmartVasp()` calculator, simply import it from `htase.calculators.vasp` and use it with any of the [input arguments](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#ase.calculators.vasp.Vasp) in a typical ASE `Vasp()` calculator. The only differences for the user are that the first argument must be the ASE `Atoms` object, and it returns an `Atoms` object with an enhanced `Vasp()` calculator already attached. There are also some newly introduced parameters, like `auto_kpts` for Pymatgen-generated k-point grids.
+
+```python
+from htase.calculators.vasp import SmartVasp
+from ase.build import bulk
+
+atoms = bulk("Cu")
+atoms = SmartVasp(atoms, preset="BulkRelaxSet", encut=600, auto_kpts={"reciprocal_density": 200})
+atoms.get_potential_energy()
+```
+
+### Jobflow Integration
+
+### Fireworks Integration
+To convert the jobflow job/flow to a Fireworks firework/workflow, refer to the [Jobflow documentation](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks).
+
 ## Installation
 0. Make sure you have Python 3.7+ installed, preferable in a clean virtual (e.g. [Miniconda](https://docs.conda.io/en/latest/miniconda.html)) environment.
 1. Run the following command in a convenient place (e.g. `~/software`) to install HT-ASE:
@@ -35,25 +53,7 @@ export JOBFLOW_CONFIG_FILE=/path/to/jobflow.yaml # for jobflow Store support (op
 For guidance with setting up `VASP_PP_PATH` and `ASE_VASP_VDW`, see the [ASE Vasp calculator docs](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials). For guidance with setting up `JOBFLOW_CONFIG_FILE`, see the [Jobflow API docs](https://materialsproject.github.io/jobflow/jobflow.settings.html?highlight=jobflow_config_file#jobflow.settings.JobflowSettings).
 
 3. Edit the `vasp_cmd` and `vasp_gamma_cmd` in the `vasp_custodian_settings.yaml` [file](https://github.com/arosen93/HT-ASE/blob/main/htase/custodian/vasp_custodian_settings.yaml) to tell Custodian how to run VASP on your supercomputer. The file also contains some defualt settings for Custodian. If you want different settings for various projects (e.g. different numbers of nodes, different Custodian handlers), you can make a new `vasp_custodian_settings.yaml` file and define the path to it in the `VASP_CUSTODIAN_SETTINGS` environment variable at runtime.
-
-## Minimal Examples
-### SmartVasp Calculator
-To use HT-ASE's `SmartVasp()` calculator, simply import it from `htase.calculators.vasp` and use it with any of the [input arguments](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#ase.calculators.vasp.Vasp) in a typical ASE `Vasp()` calculator. The only differences for the user are that the first argument must be the ASE `Atoms` object, and it returns an `Atoms` object with an enhanced `Vasp()` calculator already attached. There are also some newly introduced parameters, like `auto_kpts` for Pymatgen-generated k-point grids.
-
-```python
-from htase.calculators.vasp import SmartVasp
-from ase.build import bulk
-
-atoms = bulk("Cu")
-atoms = SmartVasp(atoms, preset="BulkRelaxSet", encut=600, auto_kpts={"reciprocal_density": 200})
-atoms.get_potential_energy()
-```
-
-### Jobflow Integration
-
-### Fireworks Integration
-To convert the jobflow job/flow to a Fireworks firework/workflow, refer to the [Jobflow documentation](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks).
-
+4. 
 ## Requirements
 Python 3.7+ is required in addition to the following packages:
 - [ASE](https://gitlab.com/ase/ase)
