@@ -147,15 +147,13 @@ def check_is_metal(struct):
 def set_magmoms(atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutoff):
 
     # Handle the magnetic moments
-    # Check if there are converged magmoms and see
-    # if this is a follow-up job
+    # Check if a prior job was run and pull the prior magmoms
     mags = None
-    is_followup = False
     if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None) is not None:
-        if atoms.calc.results is not None:
-            is_followup = True
         if atoms.calc.results.get("magmoms", None) is not None:
             mags = atoms.calc.results["magmoms"]
+        else:
+            mags = [0.0] * len(atoms)  # in case lorbit was not set
 
     # Check if the user has set any initial magmoms
     has_initial_mags = atoms.has("initial_magmoms")
@@ -163,7 +161,7 @@ def set_magmoms(atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutof
     # If there are no initial magmoms set and this is not a follow-up job,
     # we may need to add some from the preset yaml.
     if mags is None:
-        if not has_initial_mags and not is_followup:
+        if not has_initial_mags:
 
             # If the preset dictionary has default magmoms, set
             # those by element. If the element isn't in the magmoms dict
@@ -177,10 +175,14 @@ def set_magmoms(atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutof
                 )
                 atoms.set_initial_magnetic_moments(initial_mags)
     # Copy converged magmoms to input magmoms, if copy_magmoms is True
-    # and if any are above mag_cutoff
     else:
-        if copy_magmoms and np.any(np.abs(mags > mag_cutoff)):
-            atoms.set_initial_magnetic_moments(mags)
+        if copy_magmoms:
+            # If any are above mag_cutoff, set them. Otherwise, just
+            # set them all to None (i.e. no magmoms set).
+            if np.any(np.abs(mags) > mag_cutoff):
+                atoms.set_initial_magnetic_moments(mags)
+            else:
+                atoms.set_initial_magnetic_moments(None)
 
     return atoms
 

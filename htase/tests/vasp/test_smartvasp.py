@@ -68,6 +68,15 @@ def test_ediff_per_atom():
 
 
 def test_magmoms():
+    atoms = bulk("Mg")
+    atoms = SmartVasp(atoms)
+    assert atoms.has("initial_magmoms") is False
+
+    atoms = bulk("Mg")
+    atoms.set_initial_magnetic_moments([3.14] * len(atoms))
+    atoms = SmartVasp(atoms)
+    assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
+
     atoms = bulk("Cu") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
@@ -148,6 +157,34 @@ def test_magmoms():
     assert np.all(atoms.get_magnetic_moments() == 0)
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert atoms.has("initial_magmoms") is False
+    assert np.all(atoms.get_initial_magnetic_moments() == 0)
+
+    atoms = read(os.path.join(FILE_DIR, "OUTCAR_nomag.gz"))
+    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    assert np.all(atoms.get_initial_magnetic_moments() == 0)
+    atoms.calc.results = {"magmoms": [0.0] * len(atoms)}
+    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    assert np.all(atoms.get_initial_magnetic_moments() == 0)
+
+    atoms = read(os.path.join(FILE_DIR, "OUTCAR_nomag.gz"))
+    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    assert np.all(atoms.get_initial_magnetic_moments() == 0)
+    atoms.calc.results = {"magmoms": [1.0] * len(atoms)}
+    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    assert np.all(atoms.get_initial_magnetic_moments() == 1)
+
+    atoms = bulk("Mg")
+    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    assert np.all(atoms.get_initial_magnetic_moments() == 1.0)
+    atoms.calc.results = {"magmoms": [0.0] * len(atoms)}
+    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    assert np.all(atoms.get_initial_magnetic_moments() == 0)
+
+    atoms = bulk("Mg")
+    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    assert np.all(atoms.get_initial_magnetic_moments() == 1.0)
+    atoms.calc.results = {"magmoms": [-0.01] * len(atoms)}
+    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
 
@@ -309,13 +346,14 @@ def test_lreal():
 
 def test_lorbit():
     atoms = bulk("Cu")
-
     atoms = SmartVasp(atoms, ispin=2)
     assert atoms.calc.int_params["lorbit"] == 11
 
+    atoms = bulk("Cu")
     atoms = SmartVasp(atoms, ispin=1)
     assert atoms.calc.int_params["lorbit"] is None
 
+    atoms = bulk("Cu")
     atoms.set_initial_magnetic_moments([1.0] * len(atoms))
     atoms = SmartVasp(atoms)
     assert atoms.calc.int_params["lorbit"] == 11
