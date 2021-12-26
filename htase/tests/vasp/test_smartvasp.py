@@ -127,14 +127,16 @@ def test_magmoms():
     atoms = read(os.path.join(FILE_DIR, "OUTCAR_mag.gz"))
     assert atoms.get_magnetic_moments()[0] == 0.468
     atoms = deserialize(serialize(atoms))
-    assert atoms.get_magnetic_moments()[0] == 0.468
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert atoms.get_initial_magnetic_moments()[0] == 0.468
 
     atoms = read(os.path.join(FILE_DIR, "OUTCAR_nomag.gz"))
     assert atoms.get_magnetic_moments()[0] == 0.0
     atoms = deserialize(serialize(atoms))
-    assert atoms.get_magnetic_moments()[0] == 0.0
+    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    assert atoms.has("initial_magmoms") is False
+    assert np.all(atoms.get_initial_magnetic_moments() == 0)
+    atoms.calc.results = {"energy": 1.0}  # mock calculation run
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert atoms.has("initial_magmoms") is False
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
