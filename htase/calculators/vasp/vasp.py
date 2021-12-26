@@ -151,7 +151,7 @@ def set_magmoms(atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutof
     # if this is a follow-up job
     mags = None
     is_followup = False
-    if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None):
+    if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None) is not None:
         if atoms.calc.results is not None:
             is_followup = True
         if atoms.calc.results.get("magmoms", None) is not None:
