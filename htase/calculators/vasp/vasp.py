@@ -143,16 +143,17 @@ def check_is_metal(struct):
     return is_metal
 
 
-def set_magmoms(
-    atoms, is_followup, elemental_mags_dict, copy_magmoms, mag_default, mag_cutoff
-):
+def set_magmoms(atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutoff):
+
+    # Is this a follow-up job?
+    if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None):
+        is_followup = True
+    else:
+        is_followup = False
+
     # Handle the magnetic moments
     # Check if there are converged magmoms
-    if (
-        getattr(atoms, "calc", None)
-        and getattr(atoms.calc, "results", None)
-        and atoms.calc.results.get("magmoms", None) is not None
-    ):
+    if is_followup and atoms.calc.results.get("magmoms", None) is not None:
         mags = atoms.get_magnetic_moments()
     else:
         mags = None
@@ -404,12 +405,6 @@ def SmartVasp(
         The ASE Atoms object with attached VASP calculator.
     """
 
-    # Is this a follow-up job?
-    if hasattr(atoms, "calc") and atoms.calc.results:
-        is_followup = True
-    else:
-        is_followup = False
-
     # Grab the pymatgen structure object in case we need it later
     struct = AseAtomsAdaptor().get_structure(atoms)
 
@@ -484,7 +479,7 @@ def SmartVasp(
 
     # Set magnetic moments
     atoms = set_magmoms(
-        atoms, is_followup, elemental_mags_dict, copy_magmoms, mag_default, mag_cutoff
+        atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutoff
     )
 
     # Remove unused INCAR flags
