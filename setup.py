@@ -24,4 +24,5 @@ if __name__ == "__main__":
         zip_safe=False,
         extras_require={"tests": ["pytest>=6.2.5"]},
         tests_require=["pytest"],
+        include_package_data=True,
     )
