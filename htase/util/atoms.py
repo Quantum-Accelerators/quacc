@@ -10,7 +10,7 @@ import numpy as np
 # - Anytime an Atoms object is converted to a pmg structure, make sure
 # to reattach any .info flags to the Atoms object.
 # - All major functions should take in Atoms by default and reutrn Atoms
-# by default.
+# by default. Pymatgen structures can be returned with an optional kwarg.
 # - If you modify the properties of an input Atoms object in any way, make sure to do so
 # on a copy because Atoms objects are mutable.
 

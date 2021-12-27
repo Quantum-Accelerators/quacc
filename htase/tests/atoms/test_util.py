@@ -75,4 +75,3 @@ def test_make_slabs_from_bulk():
         assert len(slab.constraints) == 0
 
     slabs = make_slabs_from_bulk(atoms, min_length_width=20)
-
