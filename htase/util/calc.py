@@ -1,5 +1,6 @@
 import yaml
 import os
+from copy import deepcopy
 
 
 def cache_calc(atoms):
@@ -22,6 +23,8 @@ def cache_calc(atoms):
     Returns:
         atoms (ase.Atoms): Atoms object with calculator results attached in atoms.info["results"]
     """
+    atoms = deepcopy(atoms)
+
     if hasattr(atoms, "calc") and getattr(atoms.calc, "results") is not None:
 
         # Dump calculator results into the .info tag
