@@ -18,18 +18,24 @@ Credit: xkcd
 
 ## Minimal Examples
 ### SmartVasp Calculator
-To use HT-ASE's `SmartVasp()` calculator, simply import it from `htase.calculators.vasp` and use it with any of the [input arguments](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#ase.calculators.vasp.Vasp) in a typical ASE `Vasp()` calculator. The only differences for the user are that the first argument must be the ASE `Atoms` object, and it returns an `Atoms` object with an enhanced `Vasp()` calculator already attached. There are also some newly introduced parameters, like `auto_kpts` for Pymatgen-generated k-point grids.
+To use HT-ASE's `SmartVasp()` calculator, simply import it from `htase.calculators.vasp` and use it with any of the [input arguments](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#ase.calculators.vasp.Vasp) in a typical ASE `Vasp()` calculator. The only differences for the user are that the first argument must be the ASE `Atoms` object, and it returns an `Atoms` object with an enhanced `Vasp()` calculator already attached. There are also some newly suppported parameters as well.
+
+The below example runs a relaxation followed by static calculation:
 
 ```python
 from htase.calculators.vasp import SmartVasp
 from ase.build import bulk
 
 atoms = bulk("Cu") # example Atoms object
-atoms = SmartVasp(atoms, preset="BulkRelaxSet", encut=600, auto_kpts={"reciprocal_density": 200}) # set calculator
+atoms = SmartVasp(atoms, preset="BulkRelaxSet") # set calculator
+atoms.get_potential_energy() # run VASP
+
+atoms = SmartVasp(atoms, preset="BulkRelaxSet", nsw=0) # set calculator
 atoms.get_potential_energy() # run VASP
 ```
 
 ### Jobflow Integration
+The above example can be converted a Jobflow flow as follows: 
 ```python
 from htase.calculators.vasp import SmartVasp
 from htase.schemas.vasp import summarize
