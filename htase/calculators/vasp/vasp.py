@@ -95,6 +95,9 @@ def convert_auto_kpts(struct, auto_kpts, force_gamma):
 
 
 def get_preset_params(preset):
+    """
+    Load in the presets from the specified YAML file.
+    """
     _, ext = os.path.splitext(preset)
     if not ext:
         preset += ".yaml"
@@ -111,6 +114,10 @@ def get_preset_params(preset):
 
 
 def remove_unused_flags(user_calc_params):
+    """
+    Removes unused flags in the INCAR, like EDIFFG
+    if you are doing NSW = 0.
+    """
 
     # Turn off EDIFFG/IBRION/ISIF/POTIM if NSW = 0
     opt_flags = ("ediffg", "ibrion", "isif", "potim")
@@ -138,6 +145,9 @@ def remove_unused_flags(user_calc_params):
 
 
 def check_is_metal(struct):
+    """
+    Checks if a structure is a likely metal.
+    """
     if isinstance(struct, Atoms):
         struct = AseAtomsAdaptor.get_structure(struct)
     is_metal = all(k.is_metal for k in struct.composition.keys())
@@ -145,7 +155,18 @@ def check_is_metal(struct):
 
 
 def set_magmoms(atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutoff):
+    """
+    Sets the initial magnetic moments in the INCAR.
 
+    This function deserves particular attention. The following logic is applied:
+    - If there is a converged set of magnetic moments, those are moved to the
+    initial magmoms if copy_magmoms is True. The only exception is if the magnitudes
+    are all below mag_cutoff, in which case no initial magmoms are set.
+    - If there is no converged set of magnetic moments but the user has set initial magmoms,
+    those are simply used as is.
+    - If there are no converged magnetic moments or initial magnetic moments, then
+    the default magnetic moments from the preset (if specified) are used.
+    """
     # Handle the magnetic moments
     # Check if a prior job was run and pull the prior magmoms
     if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None) is not None:
@@ -189,7 +210,9 @@ def set_magmoms(atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutof
 
 
 def calc_swaps(atoms, calc, auto_kpts, is_metal=None, verbose=True):
-
+    """
+    Swaps out bad INCAR flags.
+    """
     if is_metal is None:
         is_metal = check_is_metal(atoms)
     if (not calc.int_params["lmaxmix"] or calc.int_params["lmaxmix"] < 6) and any(

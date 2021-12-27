@@ -3,7 +3,7 @@ from ase.build import bulk
 from pymatgen.core.surface import SlabGenerator, generate_all_slabs
 from pymatgen.core import Structure
 from pymatgen.io.ase import AseAtomsAdaptor
-from htase.util.atoms import make_conventional_cell, invert_slab
+from htase.util.atoms import make_conventional_cell, invert_slab, make_slabs_from_bulk
 from htase.util.calc import cache_calc
 from ase.io.jsonio import encode, decode
 from pathlib import Path
@@ -32,9 +32,11 @@ def test_cache_calc():
 
 def test_make_conventional_cell():
     atoms = read(os.path.join(FILE_DIR, "MnO2_primitive.cif.gz"))
+    atoms.info = {"test": "hi"}
     atoms = make_conventional_cell(atoms)
     truth = read(os.path.join(FILE_DIR, "MnO2_conventional.cif.gz"))
     assert np.allclose(atoms.cell.lengths(), truth.cell.lengths())
+    assert atoms.info == {"test": "hi"}
 
 
 def test_invert_slab():
@@ -58,14 +60,19 @@ def test_invert_slab():
     assert np.allclose(inverted_slab.frac_coords, true_inverted_slab.frac_coords)
 
 
-# This test takes a while. Clearly, make_slabs_from_bulk could be improved
-# for speed...
-# def test_make_slabs_from_bulk():
-#     atoms = bulk("Cu")
-#     slabs = make_slabs_from_bulk(atoms)
+# This needs more tests
+def test_make_slabs_from_bulk():
+    atoms = bulk("Cu")
+    atoms.info = {"test": "hi"}
+    slabs = make_slabs_from_bulk(atoms)
+    assert slabs[-1].info == {"test": "hi"}
 
-#     slabs = make_slabs_from_bulk(atoms, max_index=0)
+    slabs = make_slabs_from_bulk(atoms, max_index=2)
+    assert len(slabs) == 9
 
-#     slabs = make_slabs_from_bulk(atoms, z_fix=0.0)
+    slabs = make_slabs_from_bulk(atoms, z_fix=0.0)
+    for slab in slabs:
+        assert len(slab.constraints) == 0
 
-#     slabs = make_slabs_from_bulk(atoms, min_length_width=20)
+    slabs = make_slabs_from_bulk(atoms, min_length_width=20)
+

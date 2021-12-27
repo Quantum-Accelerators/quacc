@@ -6,6 +6,14 @@ from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 from pymatgen.analysis.adsorption import AdsorbateSiteFinder
 import numpy as np
 
+# NOTES:
+# - Anytime an Atoms object is converted to a pmg structure, make sure
+# to reattach any .info flags to the Atoms object.
+# - All major functions should take in Atoms by default and reutrn Atoms
+# by default.
+# - If you modify the properties of an input Atoms object in any way, make sure to do so
+# on a copy because Atoms objects are mutable.
+
 # properties supported by SinglePointDFTCalculator
 ALL_PROPERTIES = [
     "energy",
@@ -32,14 +40,12 @@ def make_conventional_cell(atoms):
         conventional_atoms (ase.Atoms): Atoms object with a conventional cell
     """
 
-    if isinstance(atoms, Atoms):
-        struct = AseAtomsAdaptor.get_structure(atoms)
-    else:
-        struct = atoms
+    struct = AseAtomsAdaptor.get_structure(atoms)
     conventional_struct = SpacegroupAnalyzer(
         struct
     ).get_conventional_standard_structure()
     conventional_atoms = AseAtomsAdaptor.get_atoms(conventional_struct)
+    conventional_atoms.info = atoms.info
 
     return conventional_atoms
 
@@ -108,7 +114,7 @@ def make_slabs_from_bulk(
     Function to make slabs from a bulk atoms object.
 
     Args:
-        atoms (ase.Atoms/pymatgen.core.Structre): bulk atoms/structure
+        atoms (ase.Atoms): bulk atoms
         max_index (int): maximum Miller index for slab generation
             Defaults to 1.
         min_slab_size (float): minimum slab size in angstroms
@@ -119,11 +125,9 @@ def make_slabs_from_bulk(
             Defaults to 10.0
         z_fix (float): distance (in angstroms) from top of slab for which atoms should be fixed
             Defaults to 2.0
-        should be returned; False if an ASE atoms object should be returned
-            Defaults to False
 
     Returns:
-        final_slabs (ase.Atoms or pymatgen.core.surface.Slab): all generated slabs
+        final_slabs (ase.Atoms): all generated slabs
     """
 
     # Note: This will not work as expected if the slab crosses the
@@ -131,10 +135,7 @@ def make_slabs_from_bulk(
     # for the 2D workflow: https://github.com/oxana-a/atomate/blob/ads_wf/atomate/vasp/firetasks/adsorption_tasks.py
 
     # Use pymatgen to generate slabs
-    if isinstance(atoms, Atoms):
-        struct = AseAtomsAdaptor.get_structure(atoms)
-    else:
-        struct = atoms
+    struct = AseAtomsAdaptor.get_structure(atoms)
 
     slabs = [
         slab
@@ -171,6 +172,10 @@ def make_slabs_from_bulk(
             final_slab = AdsorbateSiteFinder(
                 final_slab, selective_dynamics=True, height=z_fix
             ).slab
+
+        # Add slab to list
+        final_slab = AseAtomsAdaptor.get_atoms(final_slab)
+        final_slab.info = atoms.info
         final_slabs.append(final_slab)
 
     return final_slabs
