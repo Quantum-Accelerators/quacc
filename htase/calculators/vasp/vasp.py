@@ -150,6 +150,9 @@ def set_magmoms(atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutof
     # Check if a prior job was run and pull the prior magmoms
     if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None) is not None:
         mags = atoms.calc.results.get("magmoms", [0.0] * len(atoms))
+        # Note: It is important that we set mags to 0.0 here rather than None if the
+        # calculator has no magmoms because: 1) lorbit=11 might not be set, and 2)
+        # it will distinguish this from an Atoms object with no calculated results at all.
     else:
         mags = None
 
