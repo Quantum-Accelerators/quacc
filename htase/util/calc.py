@@ -32,6 +32,8 @@ def cache_calc(atoms):
             atoms.info["results"] = {}
         atoms.info["results"][f"calc{prior_calcs}"] = atoms.calc.results
 
+        # Move converged magmoms to initial magmoms
+        # If none were present, then initial magmoms should be set to 0's
         atoms.set_initial_magnetic_moments(
             atoms.calc.results.get("magmoms", [0.0] * len(atoms))
         )
