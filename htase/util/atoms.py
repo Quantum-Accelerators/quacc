@@ -159,7 +159,6 @@ def make_slabs_from_bulk(
     min_vacuum_size=15.0,
     min_length_width=10.0,
     z_fix=2.0,
-    return_struct=False,
 ):
     """
     Function to make slabs from a bulk atoms object.
@@ -176,12 +175,11 @@ def make_slabs_from_bulk(
             Defaults to 10.0
         z_fix (float): distance (in angstroms) from top of slab for which atoms should be fixed
             Defaults to 2.0
-        return_struct (bool): True if a Pymatgen structure (technically, slab) object
         should be returned; False if an ASE atoms object should be returned
             Defaults to False
 
     Returns:
-        final_slabs (ase.Atoms or pymatgen.core.surface.Slab): inverted slab
+        final_slabs (ase.Atoms or pymatgen.core.surface.Slab): all generated slabs
     """
 
     # Note: This will not work as expected if the slab crosses the
@@ -230,8 +228,5 @@ def make_slabs_from_bulk(
                 final_slab, selective_dynamics=True, height=z_fix
             ).slab
         final_slabs.append(final_slab)
-
-    if return_struct is False:
-        final_slabs = [AseAtomsAdaptor().get_atoms(slab) for slab in final_slabs]
 
     return final_slabs

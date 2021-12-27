@@ -62,6 +62,20 @@ def test_lmaxmix():
     assert atoms.calc.int_params["lmaxmix"] == 6
 
 
+def test_autodipole():
+    atoms = bulk("Cu")
+    com = atoms.get_center_of_mass(scaled=True)
+    atoms = SmartVasp(atoms, auto_dipole=True)
+    assert atoms.calc.bool_params["ldipol"] is True
+    assert atoms.calc.int_params["idipol"] == 3
+    assert atoms.calc.bool_params["dipol"] == com
+
+    atoms = SmartVasp(atoms, auto_dipole=True, idipol=2)
+    assert atoms.calc.bool_params["ldipol"] is True
+    assert atoms.calc.int_params["idipol"] == 2
+    assert atoms.calc.bool_params["dipol"] == com
+
+
 def test_ediff_per_atom():
     atoms = bulk("Cu") * (2, 2, 2)
     atoms = SmartVasp(atoms, ediff_per_atom=1e-4)

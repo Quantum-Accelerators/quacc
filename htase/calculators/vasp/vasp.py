@@ -356,6 +356,7 @@ def SmartVasp(
     preset=None,
     incar_copilot=True,
     force_gamma=True,
+    auto_dipole=False,
     copy_magmoms=True,
     mag_default=1.0,
     mag_cutoff=0.05,
@@ -380,12 +381,15 @@ def SmartVasp(
     force_gamma : bool
         If True, the automatic k-point generation schemes will default to gamma-centered.
         Defaults to True.
+    auto_dipole : bool
+        If True, dipole corrections will be applied based on the center of mass. Default is to set the correction
+        in the c dimension. If False, no automatic dipole correction will be applied (must be defined by the user).
+        Defaults to False.
     copy_magmoms : bool
         If True, any pre-existing atoms.get_magnetic_moments() will be set in atoms.set_initial_magnetic_moments().
         Defaults to True.
     mag_default : float
-        Default magmom value for sites without a pre-existing magmom or one in the preset. Use 0.6 for MP settings
-        or 1.0 for VASP default.
+        Default magmom value for sites without one in the preset. Use 0.6 for MP settings or 1.0 for VASP default.
         Defaults to 1.0.
     mag_cutoff : float
         If copy_magmoms is True, only copy atoms.get_magnetic_moments() if there is at least one atom with an
@@ -427,6 +431,16 @@ def SmartVasp(
     none_keys = [k for k, v in user_calc_params.items() if v is None]
     for none_key in none_keys:
         user_calc_params.pop(none_key)
+
+    # Add dipole corrections if requested
+    if auto_dipole:
+        com = atoms.get_center_of_mass(scaled=True)
+        if "dipol" not in user_calc_params:
+            user_calc_params["dipol"] = com
+        if "idipol" not in user_calc_params:
+            user_calc_params["idipol"] = 3
+        if "ldipol" not in user_calc_params:
+            user_calc_params["ldipol"] = True
 
     # If the user explicitly requests gamma = False, let's honor that
     # over force_gamma.
