@@ -248,6 +248,14 @@ def test_magmoms():
 
     atoms = bulk("Mg")
     atoms = SmartVasp(atoms)
+    atoms.calc.results = {"energy": -1.0, "magmoms": [-0.02] * len(atoms)}
+    atoms = cache_calc(atoms)
+    atoms *= (2, 2, 2)
+    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    np.all(atoms.get_initial_magnetic_moments() == 0.0)
+
+    atoms = bulk("Mg")
+    atoms = SmartVasp(atoms)
     atoms.calc.results = {"energy": -1.0}
     atoms = cache_calc(atoms)
     atoms *= (2, 2, 2)
