@@ -5,6 +5,7 @@ from pymatgen.core import Structure
 from pymatgen.io.ase import AseAtomsAdaptor
 from htase.util.atoms import make_conventional_cell, invert_slab, make_slabs_from_bulk
 from htase.util.calc import cache_calc
+from htase.calculators.vasp import SmartVasp
 from ase.io.jsonio import encode, decode
 from pathlib import Path
 import os
@@ -21,6 +22,7 @@ def test_cache_calc():
     assert atoms.info.get("results", None) is not None
     assert atoms.info["results"].get("calc0", None) is not None
     assert atoms.info["results"]["calc0"]["magmom"] == mag
+    atoms = SmartVasp(atoms)
     atoms.calc.results = {"magmom": mag - 2}
     atoms = cache_calc(atoms)
     assert atoms.info.get("results", None) is not None
