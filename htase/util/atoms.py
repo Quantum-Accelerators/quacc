@@ -68,17 +68,19 @@ def invert_slab(slab, return_struct=False):
     )
     inverted_oriented_cell = Structure(
         oriented_cell.lattice,
-        oriented_cell.species_and_occu,
+        oriented_cell.species,
         oriented_frac_coords,
+        site_properties=oriented_cell.site_properties,
     )
     inverted_slab_struct = Slab(
         slab_struct.lattice,
-        species=slab_struct.species_and_occu,
+        species=slab_struct.species,
         coords=frac_coords,
         miller_index=slab_struct.miller_index,
         oriented_unit_cell=inverted_oriented_cell,
         shift=-slab_struct.shift,
         scale_factor=slab_struct.scale_factor,
+        site_properties=slab_struct.site_properties,
     )
     if return_struct:
         inverted_slab = inverted_slab_struct
