@@ -5,6 +5,7 @@ from pymatgen.core import Structure
 from pymatgen.io.ase import AseAtomsAdaptor
 from htase.util.atoms import make_conventional_cell, invert_slab
 from htase.util.calc import cache_calc
+from ase.io.jsonio import encode, decode
 from pathlib import Path
 import os
 import numpy as np
@@ -25,6 +26,7 @@ def test_cache_calc():
     assert atoms.info["results"].get("calc1", None) is not None
     assert atoms.info["results"]["calc0"]["magmom"] == mag
     assert atoms.info["results"]["calc1"]["magmom"] == mag
+    assert decode(encode(atoms)) == atoms
 
 
 def test_make_conventional_cell():
