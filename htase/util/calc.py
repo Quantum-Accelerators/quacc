@@ -23,6 +23,8 @@ def cache_calc(atoms):
         atoms (ase.Atoms): Atoms object with calculator results attached in atoms.info["results"]
     """
     if hasattr(atoms, "calc") and getattr(atoms.calc, "results") is not None:
+
+        # Dump calculator results into the .info tag
         if atoms.info.get("results", None) is None:
             prior_calcs = 0
         else:
@@ -38,6 +40,7 @@ def cache_calc(atoms):
             atoms.calc.results.get("magmoms", [0.0] * len(atoms))
         )
 
+        # Clear off the calculator results so we can run a new job
         atoms.calc.results = None
 
     return atoms
