@@ -56,10 +56,7 @@ def run_relax_static(atoms_json, static=False):
     atoms.get_potential_energy()
     
     # Return serialized results
-    return {
-        "atoms": encode(atoms),
-        "results": summarize.get_results(),
-    }
+    return {"atoms": encode(atoms), "results": summarize.get_results()}
 
 # Define a relax and then static job in a flow
 job1 = run_relax_static(encode(atoms))
