@@ -43,8 +43,8 @@ def cache_calc(atoms):
             atoms.calc.results.get("magmoms", [0.0] * len(atoms))
         )
 
-        # Clear off the calculator results so we can run a new job
-        atoms.calc.results = None
+        # Clear off the calculator so we can run a new job
+        atoms.calc = None
 
     return atoms
 
