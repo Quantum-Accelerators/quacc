@@ -167,13 +167,15 @@ def set_magmoms(atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutof
     - If there are no converged magnetic moments or initial magnetic moments, then
     the default magnetic moments from the preset (if specified) are used.
     """
+    atoms = deepcopy(atoms)
+
     # Handle the magnetic moments
     # Check if a prior job was run and pull the prior magmoms
     if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None) is not None:
         mags = atoms.calc.results.get("magmoms", [0.0] * len(atoms))
         # Note: It is important that we set mags to 0.0 here rather than None if the
-        # calculator has no magmoms because: 1) lorbit=11 might not be set, and 2)
-        # it will distinguish this from an Atoms object with no calculated results at all.
+        # calculator has no magmoms because: 1) ispin=1 might be set, and 2) we do
+        # not want the preset magmoms to be used.
     else:
         mags = None
 
@@ -430,15 +432,15 @@ def SmartVasp(
 
     Returns
     -------
-    atoms_new : ase.Atoms
+    atoms : ase.Atoms
         The ASE Atoms object with attached VASP calculator.
     """
 
     # Copy the atoms to a new object so we don't modify the original
-    atoms_new = deepcopy(atoms)
+    atoms = deepcopy(atoms)
 
     # Grab the pymatgen structure object in case we need it later
-    struct = AseAtomsAdaptor().get_structure(atoms_new)
+    struct = AseAtomsAdaptor().get_structure(atoms)
 
     # Is this a metal?
     is_metal = check_is_metal(struct)
@@ -517,11 +519,11 @@ def SmartVasp(
 
     # Handle ediff_per_atom if present
     if ediff_per_atom:
-        user_calc_params["ediff"] = ediff_per_atom * len(atoms_new)
+        user_calc_params["ediff"] = ediff_per_atom * len(atoms)
 
     # Set magnetic moments
-    atoms_new = set_magmoms(
-        atoms_new, elemental_mags_dict, copy_magmoms, mag_default, mag_cutoff
+    atoms = set_magmoms(
+        atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutoff
     )
 
     # Remove unused INCAR flags
@@ -532,9 +534,7 @@ def SmartVasp(
 
     # Handle INCAR swaps as needed
     if incar_copilot:
-        calc = calc_swaps(
-            atoms_new, calc, auto_kpts, is_metal=is_metal, verbose=verbose
-        )
+        calc = calc_swaps(atoms, calc, auto_kpts, is_metal=is_metal, verbose=verbose)
 
     # This is important! We want to make sure that setting
     # a new VASP parameter throws aaway the prior calculator results
@@ -543,6 +543,6 @@ def SmartVasp(
     calc.discard_results_on_any_change = True
 
     # Set the calculator
-    atoms_new.calc = calc
+    atoms.calc = calc
 
-    return atoms_new
+    return atoms
