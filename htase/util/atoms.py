@@ -1,6 +1,4 @@
 from ase.atoms import Atoms
-import ase.io.jsonio as jsonio
-from ase.calculators.singlepoint import SinglePointDFTCalculator
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.core.surface import generate_all_slabs, Slab
 from pymatgen.core import Structure
@@ -21,60 +19,6 @@ ALL_PROPERTIES = [
     "free_energy",
     "energies",
 ]
-
-
-def serialize(atoms):
-    """
-    A smarter version of ASE's encode() function for Atoms. Stores the calculator
-    results in atoms.info["results"] for later retrieval. This makes it
-    possible to do things like atoms.get_magnetic_moment() even after
-    an encode/decode cycle.
-
-    Args:
-        atoms (ase.Atoms): Atoms object
-
-    Returns:
-        atoms (ase.Atoms): Atoms object with calculator results attached in atoms.info["results"]
-    """
-    if getattr(atoms, "calc", None) and getattr(atoms.calc, "results", None):
-        atoms.info["results"] = atoms.calc.results
-    atoms = jsonio.encode(atoms)
-    return atoms
-
-
-def deserialize(atoms):
-    """
-    A smarter version of ASE's decode() function for Atoms. Retrieves the calculator
-    results from atoms.info["results"] to re-instantiate. This makes it
-    possible to do things like atoms.get_magnetic_moment() even after
-    an encode/decode cycle.
-
-    Args:
-        atoms (ase.Atoms): Atoms object
-
-    Returns:
-        atoms (ase.Atoms): Atoms object with calculator results attached in atoms.info["results"]
-    """
-    atoms = jsonio.decode(atoms)
-
-    supported_results = {}
-
-    # Store results in a SinglePointDFTCalculator to make sure they stay between
-    # serialize/deserialize cycles
-    if atoms.info.get("results", None):
-        for prop, result in atoms.info["results"].items():
-            if prop in ALL_PROPERTIES:
-                supported_results[prop] = result
-        calc = SinglePointDFTCalculator(atoms, **supported_results)
-
-        # This is important! We want to make sure doing something like
-        # atoms*(2,2,2) throws away the prior calculator results
-        # otherwise we can't do things like run a new calculation
-        # with atoms.get_potential_energy() after the transformation
-        calc.discard_results_on_any_change = True
-
-        atoms.calc = calc
-    return atoms
 
 
 def make_conventional_cell(atoms):

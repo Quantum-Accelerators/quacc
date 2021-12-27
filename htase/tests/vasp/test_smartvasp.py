@@ -5,7 +5,6 @@ from ase.calculators.vasp import Vasp
 from ase.calculators.singlepoint import SinglePointDFTCalculator
 from pymatgen.io.ase import AseAtomsAdaptor
 from htase.calculators.vasp import SmartVasp
-from htase.util.atoms import serialize, deserialize
 from pathlib import Path
 import numpy as np
 
@@ -68,12 +67,12 @@ def test_autodipole():
     atoms = SmartVasp(atoms, auto_dipole=True)
     assert atoms.calc.bool_params["ldipol"] is True
     assert atoms.calc.int_params["idipol"] == 3
-    assert atoms.calc.bool_params["dipol"] == com
+    assert np.array_equal(atoms.calc.list_float_params["dipol"], com)
 
     atoms = SmartVasp(atoms, auto_dipole=True, idipol=2)
     assert atoms.calc.bool_params["ldipol"] is True
     assert atoms.calc.int_params["idipol"] == 2
-    assert atoms.calc.bool_params["dipol"] == com
+    assert np.array_equal(atoms.calc.list_float_params["dipol"], com)
 
 
 def test_ediff_per_atom():
@@ -146,13 +145,11 @@ def test_magmoms():
 
     atoms = read(os.path.join(FILE_DIR, "OUTCAR_mag.gz"))
     assert atoms.get_magnetic_moments()[0] == 0.468
-    atoms = deserialize(serialize(atoms))
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert atoms.get_initial_magnetic_moments()[0] == 0.468
 
     atoms = read(os.path.join(FILE_DIR, "OUTCAR_nomag.gz"))
     assert np.all(atoms.get_magnetic_moments() == 0.0)
-    atoms = deserialize(serialize(atoms))
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
     atoms.calc.results = {"energy": -1.0}  # mock calculation run

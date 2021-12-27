@@ -148,12 +148,13 @@ def set_magmoms(atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutof
 
     # Handle the magnetic moments
     # Check if a prior job was run and pull the prior magmoms
-    mags = None
     if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None) is not None:
-        if atoms.calc.results.get("magmoms", None) is not None:
-            mags = atoms.calc.results["magmoms"]
-        else:
-            mags = [0.0] * len(atoms)  # in case lorbit was not set
+        mags = atoms.calc.results.get("magmoms", [0.0] * len(atoms))
+    elif atoms.info.get("results", None) is not None:
+        last_calc = len(atoms.info["results"]) - 1
+        mags = atoms.info.results[f"calc{last_calc}"].get("magmoms", [0.0] * len(atoms))
+    else:
+        mags = None
 
     # Check if the user has set any initial magmoms
     has_initial_mags = atoms.has("initial_magmoms")
@@ -512,17 +513,13 @@ def SmartVasp(
             atoms_new, calc, auto_kpts, is_metal=is_metal, verbose=verbose
         )
 
-    # This is important! We want to make sure doing something like
-    # atoms*(2,2,2) throws away the prior calculator results
+    # This is important! We want to make sure that setting
+    # a new VASP parameter throws aaway the prior calculator results
     # otherwise we can't do things like run a new calculation
     # with atoms.get_potential_energy() after the transformation
     calc.discard_results_on_any_change = True
 
     # Set the calculator
     atoms_new.calc = calc
-
-    # Remove any prior calculator results stored in "info"
-    if atoms_new.info.get("results", None):
-        atoms_new.info = {}
 
     return atoms_new

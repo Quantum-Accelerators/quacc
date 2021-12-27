@@ -2,6 +2,37 @@ import yaml
 import os
 
 
+def cache_calc(atoms):
+    """
+    Store the calculator results in atoms.info["results"] for later retrieval.
+    This makes it so that things like the converged magnetic moments are not
+    lost between serialize/deserialize cycles and also makes it possible to
+    retain information about computed properties when manipulating the
+    Atoms object, e.g. after a supercell transformation.
+
+    cache_calc supports multiple prior calculators. Each one will be stored in
+    atoms.info["results"] = {"calc0": {}, "calc1": {}, ...} with higher numbers
+    being the most recent.
+
+    Args:
+        atoms (ase.Atoms): Atoms object
+
+    Returns:
+        atoms (ase.Atoms): Atoms object with calculator results attached in atoms.info["results"]
+    """
+    if hasattr(atoms, "calc") and hasattr(atoms.calc, "results"):
+        if atoms.info.get("results", None) is None:
+            prior_calcs = 0
+        else:
+            prior_calcs = len(atoms.info["results"])
+
+        if atoms.info.get("results", None) is None:
+            atoms.info["results"] = {}
+        atoms.info["results"][f"calc{prior_calcs}"] = atoms.calc.results
+
+    return atoms
+
+
 def load_yaml_calc(file_path):
     """
     Loads a YAML file containing ASE VASP calcultor settings.

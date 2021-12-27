@@ -3,19 +3,28 @@ from ase.build import bulk
 from pymatgen.core.surface import SlabGenerator, generate_all_slabs
 from pymatgen.core import Structure
 from pymatgen.io.ase import AseAtomsAdaptor
-from htase.util.atoms import (
-    serialize,
-    deserialize,
-    make_conventional_cell,
-    invert_slab,
-    make_slabs_from_bulk,
-)
+from htase.util.atoms import make_conventional_cell, invert_slab
+from htase.util.calc import cache_calc
 from pathlib import Path
 import os
 import numpy as np
 import pytest
 
 FILE_DIR = Path(__file__).resolve().parent
+
+
+def test_cache_calc():
+    atoms = read(os.path.join(FILE_DIR, "..", "vasp", "OUTCAR_mag.gz"))
+    mag = atoms.get_magnetic_moment()
+    atoms = cache_calc(atoms)
+    assert atoms.info.get("results", None) is not None
+    assert atoms.info["results"].get("calc0", None) is not None
+    assert atoms.info["results"]["calc0"]["magmom"] == mag
+    atoms = cache_calc(atoms)
+    assert atoms.info.get("results", None) is not None
+    assert atoms.info["results"].get("calc1", None) is not None
+    assert atoms.info["results"]["calc0"]["magmom"] == mag
+    assert atoms.info["results"]["calc1"]["magmom"] == mag
 
 
 def test_make_conventional_cell():
@@ -44,22 +53,6 @@ def test_invert_slab():
         os.path.join(FILE_DIR, "slab_invert2.cif.gz")
     )
     assert np.allclose(inverted_slab.frac_coords, true_inverted_slab.frac_coords)
-
-
-def test_serialization():
-    atoms = bulk("Cu")
-    newatoms = deserialize(serialize(atoms))
-    assert np.allclose(atoms.get_positions(), newatoms.get_positions())
-
-    atoms = read(os.path.join(FILE_DIR, "..", "vasp", "OUTCAR_mag.gz"))
-    newatoms = deserialize(serialize(atoms))
-    assert np.allclose(atoms.get_positions(), newatoms.get_positions())
-    assert atoms.get_potential_energy() == newatoms.get_potential_energy()
-    assert np.allclose(atoms.get_magnetic_moments(), newatoms.get_magnetic_moments())
-
-    atoms = read(os.path.join(FILE_DIR, "..", "vasp", "OUTCAR_nomag.gz"))
-    newatoms = deserialize(serialize(atoms))
-    assert np.allclose(atoms.get_magnetic_moments(), newatoms.get_magnetic_moments())
 
 
 # This test takes a while. Clearly, make_slabs_from_bulk could be improved
