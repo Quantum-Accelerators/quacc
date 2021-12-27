@@ -73,7 +73,7 @@ flow = Flow([job1, job2], output=job2.output)
 responses = run_locally(flow, create_folders=True)
 ```
 ### Fireworks Integration
-To convert the jobflow job/flow to a Fireworks firework/workflow, refer to the [Jobflow documentation](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks). It can be done via
+The above example can be run using Fireworks (as opposed to locally) as follows:
 ```python
 from jobflow.managers.fireworks import flow_to_workflow
 
