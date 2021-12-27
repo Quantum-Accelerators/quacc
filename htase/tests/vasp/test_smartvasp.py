@@ -5,6 +5,7 @@ from ase.calculators.vasp import Vasp
 from ase.calculators.singlepoint import SinglePointDFTCalculator
 from pymatgen.io.ase import AseAtomsAdaptor
 from htase.calculators.vasp import SmartVasp
+from htase.util.calc import cache_calc
 from pathlib import Path
 import numpy as np
 
@@ -236,6 +237,30 @@ def test_magmoms():
     atoms = AseAtomsAdaptor.get_atoms(struct)
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert np.all(atoms.get_initial_magnetic_moments() == 0.0)
+
+    atoms = bulk("Mg")
+    atoms = SmartVasp(atoms)
+    atoms.calc.results = {"energy": -1.0, "magmoms": [0.0] * len(atoms)}
+    atoms = cache_calc(atoms)
+    atoms *= (2, 2, 2)
+    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    np.all(atoms.get_initial_magnetic_moments() == 0.0)
+
+    atoms = bulk("Mg")
+    atoms = SmartVasp(atoms)
+    atoms.calc.results = {"energy": -1.0}
+    atoms = cache_calc(atoms)
+    atoms *= (2, 2, 2)
+    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    np.all(atoms.get_initial_magnetic_moments() == 0.0)
+
+    atoms = bulk("Mg")
+    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms.calc.results = {"energy": -1.0, "magmoms": [3.14] * len(atoms)}
+    atoms = cache_calc(atoms)
+    atoms *= (2, 2, 2)
+    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    np.all(atoms.get_initial_magnetic_moments() == 3.14)
 
 
 def test_unused_flags():

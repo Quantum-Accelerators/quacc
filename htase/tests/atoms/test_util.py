@@ -21,11 +21,12 @@ def test_cache_calc():
     assert atoms.info.get("results", None) is not None
     assert atoms.info["results"].get("calc0", None) is not None
     assert atoms.info["results"]["calc0"]["magmom"] == mag
+    atoms.calc.results = {"magmom": mag - 2}
     atoms = cache_calc(atoms)
     assert atoms.info.get("results", None) is not None
     assert atoms.info["results"].get("calc1", None) is not None
     assert atoms.info["results"]["calc0"]["magmom"] == mag
-    assert atoms.info["results"]["calc1"]["magmom"] == mag
+    assert atoms.info["results"]["calc1"]["magmom"] == mag - 2
     assert decode(encode(atoms)) == atoms
 
 

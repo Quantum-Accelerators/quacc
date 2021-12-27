@@ -14,13 +14,15 @@ def cache_calc(atoms):
     atoms.info["results"] = {"calc0": {}, "calc1": {}, ...} with higher numbers
     being the most recent.
 
+    Also moves .get_magnetic_moments() to .get_initial_magnetic_moments()
+
     Args:
         atoms (ase.Atoms): Atoms object
 
     Returns:
         atoms (ase.Atoms): Atoms object with calculator results attached in atoms.info["results"]
     """
-    if hasattr(atoms, "calc") and hasattr(atoms.calc, "results"):
+    if hasattr(atoms, "calc") and getattr(atoms.calc, "results") is not None:
         if atoms.info.get("results", None) is None:
             prior_calcs = 0
         else:
@@ -29,6 +31,12 @@ def cache_calc(atoms):
         if atoms.info.get("results", None) is None:
             atoms.info["results"] = {}
         atoms.info["results"][f"calc{prior_calcs}"] = atoms.calc.results
+
+        atoms.set_initial_magnetic_moments(
+            atoms.calc.results.get("magmoms", [0.0] * len(atoms))
+        )
+
+        atoms.calc.results = None
 
     return atoms
 

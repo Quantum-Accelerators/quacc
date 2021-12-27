@@ -150,9 +150,6 @@ def set_magmoms(atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutof
     # Check if a prior job was run and pull the prior magmoms
     if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None) is not None:
         mags = atoms.calc.results.get("magmoms", [0.0] * len(atoms))
-    elif atoms.info.get("results", None) is not None:
-        last_calc = len(atoms.info["results"]) - 1
-        mags = atoms.info.results[f"calc{last_calc}"].get("magmoms", [0.0] * len(atoms))
     else:
         mags = None
 
