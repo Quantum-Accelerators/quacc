@@ -291,7 +291,7 @@ def calc_swaps(atoms, calc, auto_kpts, is_metal=None, verbose=True):
     ):
         if verbose:
             warnings.warn(
-                "Copilot: Setting ISMEAR = -5 and SIGMA = 0.05 because you have a static DOS calculation and enough k-points.",
+                "Copilot: Setting ISMEAR = -5 and SIGMA = 0.05 because you have a static DOS calculation.",
                 UserWarning,
             )
         calc.set(ismear=-5, sigma=0.05)
