@@ -54,9 +54,11 @@ def run_relax_static(atoms_json, static=False):
     atoms = decode(atoms_json)
     
     # Set calculator
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     if static:
-        atoms.calc.set(nsw=0)
+        nsw = 0
+    else:
+        nsw = None
+    atoms = SmartVasp(atoms, preset="BulkRelaxSet", nsw=nsw)
         
     # Run VASP
     atoms.get_potential_energy()
