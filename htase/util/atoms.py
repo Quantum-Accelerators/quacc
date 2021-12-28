@@ -138,9 +138,9 @@ def invert_slab(slab, return_struct=False):
 def make_slabs_from_bulk(
     atoms,
     max_index=1,
-    min_slab_size=12.0,
-    min_vacuum_size=15.0,
-    min_length_width=10.0,
+    min_slab_size=7.0,
+    min_length_width=8.0,
+    min_vacuum_size=20.0,
     z_fix=2.0,
 ):
     """
@@ -150,12 +150,12 @@ def make_slabs_from_bulk(
         atoms (ase.Atoms): bulk atoms
         max_index (int): maximum Miller index for slab generation
             Defaults to 1.
-        min_slab_size (float): minimum slab size in angstroms
-            Defaults to 12.0
-        min_vacuum_size (float): minimum vacuum size in angstroms
-            Defaults to 15.0
+        min_slab_size (float): minimum slab size (depth) in angstroms
+            Defaults to 7.0
         min_length_width (float): minimum length and width of the slab in angstroms
-            Defaults to 10.0
+            Defaults to 8.0
+        min_vacuum_size (float): minimum vacuum size in angstroms
+            Defaults to 20.0
         z_fix (float): distance (in angstroms) from top of slab for which atoms should be fixed
             Defaults to 2.0
 
