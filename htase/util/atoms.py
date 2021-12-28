@@ -145,6 +145,8 @@ def make_slabs_from_bulk(
 ):
     """
     Function to make slabs from a bulk atoms object.
+    The defaults for the size of the slabs are based on those used
+    in the Open Catalysis Project (https://doi.org/10.1021/acscatal.0c04525).
 
     Args:
         atoms (ase.Atoms): bulk atoms
