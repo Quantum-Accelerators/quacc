@@ -18,21 +18,73 @@ Credit: xkcd
 
 ## Minimal Examples
 ### SmartVasp Calculator
-To use HT-ASE's `SmartVasp()` calculator, simply import it from `htase.calculators.vasp` and use it with any of the [input arguments](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#ase.calculators.vasp.Vasp) in a typical ASE `Vasp()` calculator. The only differences for the user are that the first argument must be the ASE `Atoms` object, and it returns an `Atoms` object with an enhanced `Vasp()` calculator already attached. There are also some newly introduced parameters, like `auto_kpts` for Pymatgen-generated k-point grids.
+To use HT-ASE's `SmartVasp()` calculator, simply import it from `htase.calculators.vasp` and use it with any of the [input arguments](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#ase.calculators.vasp.Vasp) in a typical ASE `Vasp()` calculator. The only differences for the user are that the first argument must be the ASE `Atoms` object, and it returns an `Atoms` object with an enhanced `Vasp()` calculator already attached. There are also some newly suppported parameters as well.
+
+The below example runs a relaxation followed by static calculation:
 
 ```python
 from htase.calculators.vasp import SmartVasp
 from ase.build import bulk
 
-atoms = bulk("Cu")
-atoms = SmartVasp(atoms, preset="BulkRelaxSet", encut=600, auto_kpts={"reciprocal_density": 200})
-atoms.get_potential_energy()
+atoms = bulk("Cu") # example Atoms object
+atoms = SmartVasp(atoms, preset="BulkRelaxSet") # set calculator
+atoms.get_potential_energy() # run VASP
+
+atoms = SmartVasp(atoms, preset="BulkRelaxSet", nsw=0) # set calculator
+atoms.get_potential_energy() # run VASP
 ```
 
 ### Jobflow Integration
+The above example can be converted a Jobflow flow as follows: 
+```python
+from htase.calculators.vasp import SmartVasp
+from htase.schemas.vasp import summarize
+from ase.io.jsonio import encode, decode
+from ase.build import bulk
+from jobflow import job, Flow
+from jobflow.managers.local import run_locally
 
+# Constrct an Atoms object
+atoms = bulk("Cu") 
+
+@job
+def run_relax_static(atoms_json, static=False):
+
+    # Decode JSON to Atoms
+    atoms = decode(atoms_json)
+    
+    # Set calculator
+    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    if static:
+        atoms.calc.set(nsw=0)
+        
+    # Run VASP
+    atoms.get_potential_energy()
+    
+    # Return serialized results
+    return {"atoms": encode(atoms), "results": summarize.get_results()}
+
+# Define a relax and then static job in a flow
+job1 = run_relax_static(encode(atoms))
+job2 = run_relax_static(job1.output["atoms"], static=True)
+flow = Flow([job1, job2], output=job2.output)
+
+# Run locally
+responses = run_locally(flow, create_folders=True)
+```
 ### Fireworks Integration
-To convert the jobflow job/flow to a Fireworks firework/workflow, refer to the [Jobflow documentation](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks).
+To convert the jobflow job/flow to a Fireworks firework/workflow, refer to the [Jobflow documentation](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks). The above example can be run using Fireworks (as opposed to locally) as follows:
+```python
+from jobflow.managers.fireworks import flow_to_workflow
+
+# Convert a flow (like the one above) to a fireworks WorkFlow object
+wf = flow_to_workflow(flow)
+
+# Submit the workflow to the FireWorks launchpad
+# This is done instead of run_locally()
+lpad = LaunchPad.auto_load()
+lpad.add_wf(wf)
+```
 
 ## Installation
 0. Make sure you have Python 3.7+ installed, preferable in a clean virtual (e.g. [Miniconda](https://docs.conda.io/en/latest/miniconda.html)) environment.
