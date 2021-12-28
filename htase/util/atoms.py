@@ -30,11 +30,14 @@ def make_conventional_cell(atoms):
         struct = AseAtomsAdaptor.get_structure(atoms)
     else:
         struct = atoms
+
     conventional_struct = SpacegroupAnalyzer(
         struct
     ).get_conventional_standard_structure()
     conventional_atoms = AseAtomsAdaptor.get_atoms(conventional_struct)
-    conventional_atoms.info = atoms.info
+
+    if getattr(atoms, "info", None) is not None:
+        conventional_atoms.info = atoms.info
 
     # This is a workaround for a Pymatgen bug, see:
     # https://github.com/materialsproject/pymatgen/issues/2326
@@ -175,7 +178,8 @@ def make_slabs_from_bulk(
 
         # Add slab to list
         final_slab = AseAtomsAdaptor.get_atoms(final_slab)
-        final_slab.info = atoms.info
+        if getattr(atoms, "info", None) is not None:
+            final_slab.info = atoms.info
         final_slabs.append(final_slab)
 
     return final_slabs
