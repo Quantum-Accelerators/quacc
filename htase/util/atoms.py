@@ -72,12 +72,6 @@ def make_conventional_cell(atoms):
     if getattr(atoms, "info", None) is not None:
         conventional_atoms.info = atoms.info
 
-    # This is a workaround for a Pymatgen bug, see:
-    # https://github.com/materialsproject/pymatgen/issues/2326
-    magmoms = struct.site_properties.get("magmom", None)
-    if magmoms is not None and not conventional_atoms.has("initial_magmoms"):
-        conventional_atoms.set_initial_magnetic_moments(magmoms)
-
     return conventional_atoms
 
 
