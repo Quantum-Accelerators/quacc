@@ -26,12 +26,21 @@ def make_conventional_cell(atoms):
         conventional_atoms (ase.Atoms): Atoms object with a conventional cell
     """
 
-    struct = AseAtomsAdaptor.get_structure(atoms)
+    if isinstance(atoms, Atoms):
+        struct = AseAtomsAdaptor.get_structure(atoms)
+    else:
+        struct = atoms
     conventional_struct = SpacegroupAnalyzer(
         struct
     ).get_conventional_standard_structure()
     conventional_atoms = AseAtomsAdaptor.get_atoms(conventional_struct)
     conventional_atoms.info = atoms.info
+
+    # This is a workaround for a Pymatgen bug, see:
+    # https://github.com/materialsproject/pymatgen/issues/2326
+    magmoms = struct.site_properties.get("magmom", None)
+    if magmoms is not None and conventional_atoms.has("initial_magmoms") is None:
+        conventional_atoms.set_initial_magnetic_moments(magmoms)
 
     return conventional_atoms
 
@@ -123,7 +132,10 @@ def make_slabs_from_bulk(
     # for the 2D workflow: https://github.com/oxana-a/atomate/blob/ads_wf/atomate/vasp/firetasks/adsorption_tasks.py
 
     # Use pymatgen to generate slabs
-    struct = AseAtomsAdaptor.get_structure(atoms)
+    if isinstance(atoms, Atoms):
+        struct = AseAtomsAdaptor.get_structure(atoms)
+    else:
+        struct = atoms
 
     slabs = [
         slab
