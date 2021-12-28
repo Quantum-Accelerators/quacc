@@ -15,6 +15,39 @@ import numpy as np
 # on a deepcopy because Atoms objects are mutable.
 
 
+def check_is_metal(atoms):
+    """
+    Checks if a structure is a likely metal.
+    """
+    if isinstance(atoms, Atoms):
+        struct = AseAtomsAdaptor.get_structure(atoms)
+    else:
+        struct = atoms
+    is_metal = all(k.is_metal for k in struct.composition.keys())
+    return is_metal
+
+
+def get_highest_block(atoms):
+    """
+    Get the highest block (e.g. p-block, d-block f-block) of a structure 
+    """
+    if isinstance(atoms, Atoms):
+        struct = AseAtomsAdaptor.get_structure(atoms)
+    else:
+        struct = atoms
+    blocks = [site.specie.block for site in struct]
+    if "f" in blocks:
+        max_block = "f"
+    elif "d" in blocks:
+        max_block = "d"
+    elif "p" in blocks:
+        max_block = "p"
+    else:
+        max_block = "s"
+
+    return max_block
+
+
 def make_conventional_cell(atoms):
     """
     Function to make a conventional cell from an Atoms object.

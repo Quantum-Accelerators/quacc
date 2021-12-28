@@ -1,6 +1,6 @@
 from htase.util.calc import load_yaml_calc
+from htase.util.atoms import check_is_metal, get_highest_block
 from ase.calculators.vasp import Vasp
-from ase.atoms import Atoms
 from pymatgen.io.vasp.inputs import Kpoints
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.symmetry.bandstructure import HighSymmKpath
@@ -144,16 +144,6 @@ def remove_unused_flags(user_calc_params):
     return user_calc_params
 
 
-def check_is_metal(struct):
-    """
-    Checks if a structure is a likely metal.
-    """
-    if isinstance(struct, Atoms):
-        struct = AseAtomsAdaptor.get_structure(struct)
-    is_metal = all(k.is_metal for k in struct.composition.keys())
-    return is_metal
-
-
 def set_magmoms(atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutoff):
     """
     Sets the initial magnetic moments in the INCAR.
@@ -211,24 +201,25 @@ def set_magmoms(atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutof
     return atoms
 
 
-def calc_swaps(atoms, calc, auto_kpts, is_metal=None, verbose=True):
+def calc_swaps(atoms, calc, auto_kpts, verbose=True):
     """
     Swaps out bad INCAR flags.
     """
-    if is_metal is None:
-        is_metal = check_is_metal(atoms)
-    if (not calc.int_params["lmaxmix"] or calc.int_params["lmaxmix"] < 6) and any(
-        atoms.get_atomic_numbers() > 56
-    ):
+    is_metal = check_is_metal(atoms)
+    max_block = get_highest_block(atoms)
+
+    if (
+        not calc.int_params["lmaxmix"] or calc.int_params["lmaxmix"] < 6
+    ) and max_block == "f":
         if verbose:
             warnings.warn(
                 "Copilot: Setting LMAXMIX = 6 because you have an f-element.",
                 UserWarning,
             )
         calc.set(lmaxmix=6)
-    elif (not calc.int_params["lmaxmix"] or calc.int_params["lmaxmix"] < 4) and any(
-        atoms.get_atomic_numbers() > 20
-    ):
+    elif (
+        not calc.int_params["lmaxmix"] or calc.int_params["lmaxmix"] < 4
+    ) and max_block == "d":
         if verbose:
             warnings.warn(
                 "Copilot: Setting LMAXMIX = 4 because you have a d-element",
@@ -253,7 +244,7 @@ def calc_swaps(atoms, calc, auto_kpts, is_metal=None, verbose=True):
     if (
         calc.bool_params["lasph"]
         and (not calc.int_params["lmaxtau"] or calc.int_params["lmaxtau"] < 8)
-        and np.max(atoms.get_atomic_numbers()) > 56
+        and max_block == "f"
     ):
         if verbose:
             warnings.warn(
@@ -442,9 +433,6 @@ def SmartVasp(
     # Grab the pymatgen structure object in case we need it later
     struct = AseAtomsAdaptor().get_structure(atoms)
 
-    # Is this a metal?
-    is_metal = check_is_metal(struct)
-
     # Get user-defined preset parameters for the calculator
     if preset:
         calc_preset = get_preset_params(preset)
@@ -534,7 +522,7 @@ def SmartVasp(
 
     # Handle INCAR swaps as needed
     if incar_copilot:
-        calc = calc_swaps(atoms, calc, auto_kpts, is_metal=is_metal, verbose=verbose)
+        calc = calc_swaps(atoms, calc, auto_kpts, verbose=verbose)
 
     # This is important! We want to make sure that setting
     # a new VASP parameter throws aaway the prior calculator results

@@ -3,7 +3,7 @@
 # Caution: The pseudopotentials should be used with the .54 PAW PBE set
 # Source: https://github.com/materialsproject/pymatgen/blob/master/pymatgen/io/vasp/MPSCANRelaxSet.yaml
 parent: MPMagmoms.yaml
-parent_setups: MPScanSetups.yaml
+parent_setups: pbe54_MP.yaml
 inputs:
   algo: all
   ediff: 1.0e-05
