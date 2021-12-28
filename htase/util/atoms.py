@@ -29,7 +29,7 @@ def check_is_metal(atoms):
 
 def get_highest_block(atoms):
     """
-    Get the highest block (e.g. p-block, d-block f-block) of a structure 
+    Get the highest block (e.g. p-block, d-block f-block) of a structure
     """
     if isinstance(atoms, Atoms):
         struct = AseAtomsAdaptor.get_structure(atoms)
