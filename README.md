@@ -96,11 +96,16 @@ git clone https://github.com/arosen93/htase.git && cd htase && pip install -r re
 ```
 2. You will want to define several environment variables (e.g. in your `~/.bashrc`), as outlined below:
 ```bash
-export VASP_PP_PATH="/path/to/pseudopotential/library" # tells ASE where the VASP PAW pseudopotentials are
+# Standard ASE-VASP requirements
+export VASP_PP_PATH=... # tells ASE where the VASP PAW pseudopotentials are
+export ASE_VASP_VDW=... # directory containing vdw_kernel.bindat
+
+# HT-ASE requirements
 export HTASE_DIR="/path/to/htase" # path to this package (only used for convenience below)
 export VASP_CUSTODIAN_SETTINGS="${HTASE_DIR}/htase/custodian/vasp/vasp_custodian_settings.yaml" # path to Custodian settings
 export ASE_VASP_COMMAND="python ${HTASE_DIR}/htase/custodian/vasp/run_vasp_custodian.py" # tells ASE to run Custodian-powered VASP
-export ASE_VASP_VDW="/path/to/vdw_kernel.bindat" # for vdW functionals (optional)
+
+# Jobflow requirements
 export JOBFLOW_CONFIG_FILE=/path/to/jobflow.yaml # for jobflow Store support (optional). 
 ```
 
