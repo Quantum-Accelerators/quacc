@@ -18,7 +18,7 @@ Credit: xkcd
 
 ## Minimal Examples
 ### SmartVasp Calculator
-In direct analogy to conventional ASE, HT-ASE has a calculator called `SmartVasp()` that takes any of the [input arguments](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#ase.calculators.vasp.Vasp) in a typical ASE `Vasp()` calculator but supports several additional keyword arguments to supercharge your workflow and can adjust your settings on-the-fly if they go against the VASP manual. The main differences for the seasoned ASE user are that the first argument must be an ASE `Atoms` object, and it returns an `Atoms` object with an enhanced `Vasp()` calculator already attached.
+In direct analogy to the conventional way of running ASE, HT-ASE has a calculator called `SmartVasp()` that takes any of the [input arguments](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#ase.calculators.vasp.Vasp) in a typical ASE `Vasp()` calculator but supports several additional keyword arguments to supercharge your workflow. It can also adjust your settings on-the-fly if they go against the VASP manual. The main differences for the seasoned ASE user are that the first argument must be an ASE `Atoms` object, and it returns an `Atoms` object with an enhanced `Vasp()` calculator already attached.
 
 The example below runs a relaxation of bulk Cu using the RPBE functional with the remaining settings taken from a pre-defined set ("preset") of calculator input arguments.
 
@@ -32,7 +32,7 @@ atoms.get_potential_energy() # run VASP
 ```
 
 ### Jobflow Integration
-The above example can be converted to a Jobflow flow simply by defining it in a function with a `@job` wrapper immediately preceeding it. One nuance of Jobflow is that the inputs and outputs must be JSON serializable (so that it can be easily stored in a database), but otherwise a standard ASE function can be used with Jobflow using nothing more than a `@job` wrapper and a few short commands to execute the workflow.
+The above example can be converted to a format suitable for constructing a Jobflow flow simply by defining it in a function with a `@job` wrapper immediately preceeding it. One nuance of Jobflow is that the inputs and outputs must be JSON serializable (so that it can be easily stored in a database), but otherwise it works the same.
 
 ```python
 from htase.calculators.vasp import SmartVasp
