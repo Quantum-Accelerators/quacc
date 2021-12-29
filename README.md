@@ -117,6 +117,3 @@ Python 3.7+ is required in addition to the following packages:
 
 ## License
 HT-ASE is released under a modified BSD license; the full text can be found [here](https://github.com/arosen93/htase/blob/main/LICENSE.md).
-
-## Acknowledgements
-HT-ASE was designed by Andrew S. Rosen and is heavily inspired by [Atomate2](https://github.com/materialsproject/atomate2).
