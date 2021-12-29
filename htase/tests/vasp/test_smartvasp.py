@@ -75,6 +75,21 @@ def test_autodipole():
     assert atoms.calc.int_params["idipol"] == 2
     assert np.array_equal(atoms.calc.list_float_params["dipol"], com)
 
+    atoms = SmartVasp(atoms, preset="SlabRelaxSet")
+    assert atoms.calc.bool_params["ldipol"] is True
+    assert atoms.calc.int_params["idipol"] == 3
+    assert np.array_equal(atoms.calc.list_float_params["dipol"], com)
+
+    atoms = SmartVasp(atoms, preset="SlabRelaxSet", idipol=2)
+    assert atoms.calc.bool_params["ldipol"] is True
+    assert atoms.calc.int_params["idipol"] == 2
+    assert np.array_equal(atoms.calc.list_float_params["dipol"], com)
+
+    atoms = SmartVasp(atoms, auto_dipole=False, preset="SlabRelaxSet", idipol=2)
+    assert atoms.calc.bool_params["ldipol"] is None
+    assert atoms.calc.int_params["idipol"] == 2
+    assert atoms.calc.list_float_params["dipol"] is None
+
 
 def test_ediff_per_atom():
     atoms = bulk("Cu") * (2, 2, 2)
@@ -478,6 +493,16 @@ def test_kpoint_schemes():
     atoms = SmartVasp(atoms, auto_kpts={"grid_density": 1000})
     assert atoms.calc.kpts == [10, 10, 10]
     assert atoms.calc.input_params["gamma"] is True
+
+    atoms = bulk("Cu")
+    atoms = SmartVasp(
+        atoms,
+        preset="BulkRelaxSet",
+        auto_kpts={"grid_density": 1000},
+        force_gamma=False,
+    )
+    assert atoms.calc.kpts == [10, 10, 10]
+    assert atoms.calc.input_params["gamma"] is False
 
     atoms = bulk("Cu")
     atoms = SmartVasp(

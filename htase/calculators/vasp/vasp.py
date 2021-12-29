@@ -439,7 +439,7 @@ def SmartVasp(
     user_calc_params = {**calc_preset, **kwargs}
     none_keys = [k for k, v in user_calc_params.items() if v is None]
     for none_key in none_keys:
-        user_calc_params.pop(none_key)
+        del user_calc_params[none_key]
 
     # If the user explicitly requests gamma = False, let's honor that
     # over force_gamma.
@@ -457,31 +457,31 @@ def SmartVasp(
     # If the preset has auto_kpts but the user explicitly requests kpts, then
     # we should honor that.
     if kwargs.get("kpts", None) and calc_preset.get("auto_kpts", None):
-        user_calc_params.pop("auto_kpts")
+        del user_calc_params["auto_kpts"]
 
     # If the preset has ediff_per_atom but the user explicitly requests ediff, then
     # we should honor that.
     if kwargs.get("ediff", None) and calc_preset.get("ediff_per_atom", None):
-        user_calc_params.pop("ediff_per_atom")
+        del user_calc_params["ediff_per_atom"]
 
     # Handle special arguments in the user calc parameters that
     # ASE does not natively support
-    if user_calc_params.get("elemental_magmoms", None):
+    if user_calc_params.get("elemental_magmoms", None) is not None:
         elemental_mags_dict = user_calc_params["elemental_magmoms"]
         del user_calc_params["elemental_magmoms"]
     else:
         elemental_mags_dict = None
-    if user_calc_params.get("auto_kpts", None):
+    if user_calc_params.get("auto_kpts", None) is not None:
         auto_kpts = user_calc_params["auto_kpts"]
         del user_calc_params["auto_kpts"]
     else:
         auto_kpts = None
-    if user_calc_params.get("auto_dipole", None):
+    if user_calc_params.get("auto_dipole", None) is not None:
         auto_dipole = user_calc_params["auto_dipole"]
         del user_calc_params["auto_dipole"]
     else:
         auto_dipole = None
-    if user_calc_params.get("ediff_per_atom", None):
+    if user_calc_params.get("ediff_per_atom", None) is not None:
         ediff_per_atom = user_calc_params["ediff_per_atom"]
         del user_calc_params["ediff_per_atom"]
     else:
