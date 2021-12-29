@@ -57,7 +57,9 @@ def run_relax(atoms_json):
     return {"atoms": encode(atoms), "results": summarize.get_results()}
 
 # Constrct an Atoms object
-atoms = bulk("Cu") 
+atoms = bulk("Cu")
+
+# Call the relaxation function
 job1 = run_relax(encode(atoms))
 
 #-----Core Jobflow Block-----
