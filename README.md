@@ -69,7 +69,7 @@ flow = Flow([job1])
 # Run locally
 responses = run_locally(flow, create_folders=True)
 ```
-## Fireworks Integration
+### Fireworks Integration
 The above example can be run using Fireworks (as opposed to locally) as follows:
 ```python
 from jobflow.managers.fireworks import flow_to_workflow
