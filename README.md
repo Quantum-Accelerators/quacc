@@ -99,7 +99,7 @@ export VASP_CUSTODIAN_SETTINGS="/path/to/htase_config/vasp_custodian_settings.ya
 export ASE_VASP_COMMAND="python /path/to/htase/htase/custodian/vasp/run_vasp_custodian.py"
 
 # Jobflow requirements
-export JOBFLOW_CONFIG_FILE=/path/to/htase_config/jobflow.yaml
+export JOBFLOW_CONFIG_FILE="/path/to/htase_config/jobflow.yaml"
 
 # Standard ASE-VASP requirements
 export VASP_PP_PATH=... # tells ASE where the VASP PAW pseudopotentials are
