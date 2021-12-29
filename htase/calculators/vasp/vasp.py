@@ -373,7 +373,6 @@ def SmartVasp(
     preset=None,
     incar_copilot=True,
     force_gamma=True,
-    auto_dipole=False,
     copy_magmoms=True,
     mag_default=1.0,
     mag_cutoff=0.05,
@@ -398,10 +397,6 @@ def SmartVasp(
     force_gamma : bool
         If True, the automatic k-point generation schemes will default to gamma-centered.
         Defaults to True.
-    auto_dipole : bool
-        If True, dipole corrections will be applied based on the center of mass. Default is to set the correction
-        in the c dimension. If False, no automatic dipole correction will be applied (must be defined by the user).
-        Defaults to False.
     copy_magmoms : bool
         If True, any pre-existing atoms.get_magnetic_moments() will be set in atoms.set_initial_magnetic_moments().
         Defaults to True.
@@ -446,16 +441,6 @@ def SmartVasp(
     for none_key in none_keys:
         user_calc_params.pop(none_key)
 
-    # Add dipole corrections if requested
-    if auto_dipole:
-        com = atoms.get_center_of_mass(scaled=True)
-        if "dipol" not in user_calc_params:
-            user_calc_params["dipol"] = com
-        if "idipol" not in user_calc_params:
-            user_calc_params["idipol"] = 3
-        if "ldipol" not in user_calc_params:
-            user_calc_params["ldipol"] = True
-
     # If the user explicitly requests gamma = False, let's honor that
     # over force_gamma.
     if user_calc_params.get("gamma", None):
@@ -491,12 +476,18 @@ def SmartVasp(
         del user_calc_params["auto_kpts"]
     else:
         auto_kpts = None
+    if user_calc_params.get("auto_dipole", None):
+        auto_dipole = user_calc_params["auto_dipole"]
+        del user_calc_params["auto_dipole"]
+    else:
+        auto_dipole = None
     if user_calc_params.get("ediff_per_atom", None):
         ediff_per_atom = user_calc_params["ediff_per_atom"]
         del user_calc_params["ediff_per_atom"]
     else:
         ediff_per_atom = None
 
+    # Make automatic k-point mesh
     if auto_kpts:
         kpts, gamma, reciprocal = convert_auto_kpts(struct, auto_kpts, force_gamma)
         user_calc_params["kpts"] = kpts
@@ -504,6 +495,16 @@ def SmartVasp(
             user_calc_params["reciprocal"] = reciprocal
         if user_gamma is None:
             user_calc_params["gamma"] = gamma
+
+    # Add dipole corrections if requested
+    if auto_dipole:
+        com = atoms.get_center_of_mass(scaled=True)
+        if "dipol" not in user_calc_params:
+            user_calc_params["dipol"] = com
+        if "idipol" not in user_calc_params:
+            user_calc_params["idipol"] = 3
+        if "ldipol" not in user_calc_params:
+            user_calc_params["ldipol"] = True
 
     # Handle ediff_per_atom if present
     if ediff_per_atom:

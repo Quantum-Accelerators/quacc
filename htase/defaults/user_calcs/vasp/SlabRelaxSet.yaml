@@ -3,6 +3,7 @@ inputs:
   xc: rpbe
   ivdw: 0
   encut: 450
+  auto_dipole: true
   auto_kpts:
     length_density: [50, 50, 1]
   ediffg: -0.03
