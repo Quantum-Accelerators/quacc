@@ -39,6 +39,7 @@ from ase.build import bulk
 from jobflow import job, Flow
 from jobflow.managers.local import run_locally
 
+#-----Core HT-ASE Block-----
 @job
 def run_relax(atoms_json):
 
@@ -54,16 +55,19 @@ def run_relax(atoms_json):
 
 # Constrct an Atoms object
 atoms = bulk("Cu") 
-
-# Define the flow
 job1 = run_relax(encode(atoms))
+
+#-----Core Jobflow Block-----
+# Define the flow
 flow = Flow([job1])
 
 # Run locally
 responses = run_locally(flow, create_folders=True)
 ```
-### Fireworks Integration
-To convert the jobflow job/flow to a Fireworks firework/workflow, refer to the [Jobflow documentation](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks). The above example can be run using Fireworks (as opposed to locally) as follows:
+
+You'll notice that, while the above example is certainly more verbose, if you were to take the code in the "Core HT-ASE Block" section and simply delete the `@job` decorator, you're left with a fully functional ASE-based code that will still run (albeit without the benefits of Jobflow). This makes it extremely easy to go from standard ASE-style calculations to more complex workflows.
+
+To convert a jobflow job/flow to a Fireworks firework/workflow, refer to the [Jobflow documentation](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks). The above example can be run using Fireworks (as opposed to locally) as follows:
 ```python
 from jobflow.managers.fireworks import flow_to_workflow
 
