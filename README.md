@@ -39,9 +39,6 @@ from ase.build import bulk
 from jobflow import job, Flow
 from jobflow.managers.local import run_locally
 
-# Constrct an Atoms object
-atoms = bulk("Cu") 
-
 @job
 def run_relax(atoms_json):
 
@@ -54,6 +51,9 @@ def run_relax(atoms_json):
     
     # Return serialized results
     return {"atoms": encode(atoms), "results": summarize.get_results()}
+
+# Constrct an Atoms object
+atoms = bulk("Cu") 
 
 # Define the flow
 job1 = run_relax(encode(atoms))
