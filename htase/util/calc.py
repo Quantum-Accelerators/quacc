@@ -30,11 +30,11 @@ def cache_calc(atoms):
         # Dump calculator results into the .info tag
         if atoms.info.get("results", None) is None:
             prior_calcs = 0
+            atoms.info["results"] = {}
         else:
             prior_calcs = len(atoms.info["results"])
+            atoms.calc.results["rundir"] = os.getcwd()
 
-        if atoms.info.get("results", None) is None:
-            atoms.info["results"] = {}
         atoms.info["results"][f"calc{prior_calcs}"] = atoms.calc.results
 
         # Move converged magmoms to initial magmoms
