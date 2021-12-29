@@ -105,7 +105,7 @@ export JOBFLOW_CONFIG_FILE="/path/to/htase_config/jobflow.yaml"
 export VASP_PP_PATH=... # tells ASE where the VASP PAW pseudopotentials are
 export ASE_VASP_VDW=... # directory containing vdw_kernel.bindat
 ```
-Here, `VASP_CUSTODIAN_SETTINGS` and `JOBFLOW_CONFIG_FILE` are the paths to the files described in Step 3. The `ASE_VASP_COMMAND` environment variable points to the `run_vasp_custodian.py` file [packaged with HT-ASE](https://github.com/arosen93/htase/blob/main/htase/custodian/vasp/run_vasp_custodian.py). `VASP_PP_PATH` and `ASE_VASP_VDW` are ASE-specific environment variables defining the paths to the pseudopotential libraries and vdW kernel. For details on how to set these environment variables, see the [ASE Vasp calculator docs](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials). 
+Here, `VASP_CUSTODIAN_SETTINGS` and `JOBFLOW_CONFIG_FILE` are the paths to the files described in Step 3. The `ASE_VASP_COMMAND` environment variable points to the `run_vasp_custodian.py` file [packaged with HT-ASE](https://github.com/arosen93/htase/blob/main/htase/custodian/vasp/run_vasp_custodian.py). `VASP_PP_PATH` and `ASE_VASP_VDW` are ASE-specific environment variables defining the paths to the pseudopotential libraries and vdW kernel. For details on how to set these environment variables, see the [ASE VASP calculator docs](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials). 
 
 ## Requirements
 Python 3.7+ is required in addition to the following packages:
