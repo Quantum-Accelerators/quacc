@@ -77,29 +77,35 @@ lpad.add_wf(wf)
 ```
 
 ## Installation
-0. Make sure you have Python 3.7+ installed, preferable in a clean virtual (e.g. [Miniconda](https://docs.conda.io/en/latest/miniconda.html)) environment.
-1. Run the following command in a convenient place (e.g. `~/software`) to install HT-ASE:
+1. Make sure you have Python 3.7+ installed, preferable in a clean virtual (e.g. [Miniconda](https://docs.conda.io/en/latest/miniconda.html)) environment.
+
+2. Run the following command in a convenient place to install HT-ASE:
 ```bash
 git clone https://github.com/arosen93/htase.git && cd htase && pip install -r requirements.txt && pip install -e .
 ```
-2. You will want to define several environment variables (e.g. in your `~/.bashrc`), as outlined below:
+
+3. Make a directory called `htase_config` somewhere convenient. Copy the `vasp_custodian_settings.yaml` [file](https://github.com/arosen93/HT-ASE/blob/main/htase/custodian/vasp/vasp_custodian_settings.yaml) to this directory and modify the `vasp_cmd` and `vasp_gamma_cmd` to tell Custodian how to run VASP on your supercomputer. If you wish to use Jobflow, follow the [Jobflow API docs](https://materialsproject.github.io/jobflow/jobflow.settings.html?highlight=jobflow_config_file#jobflow.settings.JobflowSettings) and make a `jobflow.yaml` file to tell Jobflow where to store calculation results. Your directory structure should look like the following:
+
+```
+htase_config
+├── vasp_custodian_settings.yaml
+└── jobflow.yaml # optional
+```
+
+4. Define several environment variables (e.g. in your `~/.bashrc`), as outlined below:
 ```bash
+# HT-ASE requirements
+export VASP_CUSTODIAN_SETTINGS="/path/to/htase_config/vasp_custodian_settings.yaml"
+export ASE_VASP_COMMAND="python /path/to/htase/htase/custodian/vasp/run_vasp_custodian.py"
+
+# Jobflow requirements
+export JOBFLOW_CONFIG_FILE=/path/to/htase_config/jobflow.yaml
+
 # Standard ASE-VASP requirements
 export VASP_PP_PATH=... # tells ASE where the VASP PAW pseudopotentials are
 export ASE_VASP_VDW=... # directory containing vdw_kernel.bindat
-
-# HT-ASE requirements
-export HTASE_DIR="/path/to/htase" # path to this package (only used for convenience below)
-export VASP_CUSTODIAN_SETTINGS="${HTASE_DIR}/htase/custodian/vasp/vasp_custodian_settings.yaml" # path to Custodian settings
-export ASE_VASP_COMMAND="python ${HTASE_DIR}/htase/custodian/vasp/run_vasp_custodian.py" # tells ASE to run Custodian-powered VASP
-
-# Jobflow requirements
-export JOBFLOW_CONFIG_FILE=/path/to/jobflow.yaml # for jobflow Store support (optional). 
 ```
-
-For guidance with setting up `VASP_PP_PATH` and `ASE_VASP_VDW`, see the [ASE Vasp calculator docs](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials). For guidance with setting up `JOBFLOW_CONFIG_FILE`, see the [Jobflow API docs](https://materialsproject.github.io/jobflow/jobflow.settings.html?highlight=jobflow_config_file#jobflow.settings.JobflowSettings).
-
-3. Edit the `vasp_cmd` and `vasp_gamma_cmd` in the `vasp_custodian_settings.yaml` [file](https://github.com/arosen93/HT-ASE/blob/main/htase/custodian/vasp/vasp_custodian_settings.yaml) to tell Custodian how to run VASP on your supercomputer. The file also contains some defualt settings for Custodian. If you want different settings for various projects (e.g. different numbers of nodes, different Custodian handlers), you can make a new `vasp_custodian_settings.yaml` file and define the path to it in the `VASP_CUSTODIAN_SETTINGS` environment variable at runtime.
+Here, `VASP_CUSTODIAN_SETTINGS` and `JOBFLOW_CONFIG_FILE` are the paths to the files described in Step 2. The `ASE_VASP_COMMAND` environment variable points to the `run_vasp_custodian.py` file [packaged with HT-ASE](https://github.com/arosen93/htase/blob/main/htase/custodian/vasp/run_vasp_custodian.py). `VASP_PP_PATH` and `ASE_VASP_VDW` are ASE-specific environment variables defining the paths to the pseudopotential libraries and vdW kernel. For details on how to set these environment variables, see the [ASE Vasp calculator docs](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials). 
 
 ## Requirements
 Python 3.7+ is required in addition to the following packages:
