@@ -15,7 +15,6 @@ handlers:
   - StdErrHandler
   - LargeSigmaHandler
   - IncorrectSmearingHandler
-  - ScanMetalHandler
 validators:
   - VasprunXMLValidator
   - VaspFilesValidator
