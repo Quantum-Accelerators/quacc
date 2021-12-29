@@ -30,7 +30,7 @@ atoms.get_potential_energy() # run VASP
 ```
 
 ### Jobflow Integration
-The above example can be converted a Jobflow flow as follows: 
+The above example can be converted to a Jobflow flow as follows: 
 ```python
 from htase.calculators.vasp import SmartVasp
 from htase.schemas.vasp import summarize
