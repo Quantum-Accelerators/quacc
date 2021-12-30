@@ -1,6 +1,7 @@
 from htase.util.calc import load_yaml_calc
 from htase.util.atoms import check_is_metal, get_highest_block
 from ase.calculators.vasp import Vasp
+from ase.calculators.vasp.setups import _setups_defaults as ase_default_setups
 from pymatgen.io.vasp.inputs import Kpoints
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.symmetry.bandstructure import HighSymmKpath
@@ -440,6 +441,16 @@ def SmartVasp(
     none_keys = [k for k, v in user_calc_params.items() if v is None]
     for none_key in none_keys:
         del user_calc_params[none_key]
+
+    # Allow the user to use setups='mysetups.yaml' to load in a custom setups
+    # from a YAML file
+    if (
+        isinstance(user_calc_params.get("setups", None), str)
+        and user_calc_params["setups"] not in ase_default_setups
+    ):
+        user_calc_params["setups"] = get_preset_params(user_calc_params["setups"])[
+            "setups"
+        ]
 
     # If the user explicitly requests gamma = False, let's honor that
     # over force_gamma.

@@ -472,6 +472,16 @@ def test_setups():
     atoms.calc.parameters["setups"]["Cu"] == "_pv"
 
     atoms = bulk("Cu")
+    atoms = SmartVasp(
+        atoms, setups=os.path.join(FILE_DIR, "test_setups.yaml"), preset="BulkRelaxSet",
+    )
+    assert atoms.calc.parameters["setups"]["Cu"] == "_pv"
+
+    atoms = bulk("Cu")
+    atoms = SmartVasp(atoms, setups="pbe54_MP.yaml", preset="BulkRelaxSet",)
+    assert atoms.calc.parameters["setups"]["Cu"] == "_pv"
+
+    atoms = bulk("Cu")
     atoms = SmartVasp(atoms, setups="minimal", preset="MPScanRelaxSet")
     assert (
         isinstance(atoms.calc.parameters["setups"], str)
