@@ -18,19 +18,22 @@ Credit: xkcd
 
 ## Minimal Examples
 ### SmartVasp Calculator
-To use HT-ASE's `SmartVasp()` calculator, simply import it from `htase.calculators.vasp` and use it with any of the [input arguments](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#ase.calculators.vasp.Vasp) in a typical ASE `Vasp()` calculator. The only differences for the user are that the first argument must be the ASE `Atoms` object, and it returns an `Atoms` object with an enhanced `Vasp()` calculator already attached. There are also some newly suppported parameters as well.
+In direct analogy to the conventional way of running ASE, HT-ASE has a calculator called `SmartVasp()` that takes any of the [input arguments](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#ase.calculators.vasp.Vasp) in a typical ASE `Vasp()` calculator but supports several additional keyword arguments to supercharge your workflow. It can also adjust your settings on-the-fly if they go against the VASP manual. The main differences for the seasoned ASE user are that the first argument must be an ASE `Atoms` object, and it returns an `Atoms` object with an enhanced `Vasp()` calculator already attached.
+
+The example below runs a relaxation of bulk Cu using the RPBE functional with the remaining settings taken from a pre-defined set ("preset") of calculator input arguments.
 
 ```python
 from htase.calculators.vasp import SmartVasp
 from ase.build import bulk
 
 atoms = bulk("Cu") # example Atoms object
-atoms = SmartVasp(atoms, preset="BulkRelaxSet") # set calculator
+atoms = SmartVasp(atoms, xc='rpbe', preset="BulkRelaxSet") # set calculator
 atoms.get_potential_energy() # run VASP
 ```
 
 ### Jobflow Integration
-The above example can be converted to a Jobflow flow as follows: 
+The above example can be converted to a format suitable for constructing a Jobflow flow simply by defining it in a function with a `@job` wrapper immediately preceeding it. One nuance of Jobflow is that the inputs and outputs must be JSON serializable (so that it can be easily stored in a database), but otherwise it works the same.
+
 ```python
 from htase.calculators.vasp import SmartVasp
 from htase.schemas.vasp import summarize
@@ -39,6 +42,7 @@ from ase.build import bulk
 from jobflow import job, Flow
 from jobflow.managers.local import run_locally
 
+#-----Core HT-ASE Block-----
 @job
 def run_relax(atoms_json):
 
@@ -46,24 +50,27 @@ def run_relax(atoms_json):
     atoms = decode(atoms_json)
             
     # Run VASP
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, xc='rpbe', preset="BulkRelaxSet")
     atoms.get_potential_energy()
     
     # Return serialized results
     return {"atoms": encode(atoms), "results": summarize.get_results()}
 
 # Constrct an Atoms object
-atoms = bulk("Cu") 
+atoms = bulk("Cu")
 
-# Define the flow
+# Call the relaxation function
 job1 = run_relax(encode(atoms))
+
+#-----Core Jobflow Block-----
+# Define the flow
 flow = Flow([job1])
 
 # Run locally
 responses = run_locally(flow, create_folders=True)
 ```
 ### Fireworks Integration
-To convert the jobflow job/flow to a Fireworks firework/workflow, refer to the [Jobflow documentation](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks). The above example can be run using Fireworks (as opposed to locally) as follows:
+The above example can be run using Fireworks (as opposed to locally) as follows:
 ```python
 from jobflow.managers.fireworks import flow_to_workflow
 
@@ -75,6 +82,8 @@ wf = flow_to_workflow(flow)
 lpad = LaunchPad.auto_load()
 lpad.add_wf(wf)
 ```
+
+For additional details on how to convert a Jobflow job or flow to a Fireworks firework or workflow, refer to the [Jobflow documentation](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks). 
 
 ## Installation
 1. Make sure you have Python 3.7+ installed, preferable in a clean virtual (e.g. [Miniconda](https://docs.conda.io/en/latest/miniconda.html)) environment.
@@ -105,7 +114,7 @@ export JOBFLOW_CONFIG_FILE="/path/to/htase_config/jobflow.yaml"
 export VASP_PP_PATH=... # tells ASE where the VASP PAW pseudopotentials are
 export ASE_VASP_VDW=... # directory containing vdw_kernel.bindat
 ```
-Here, `VASP_CUSTODIAN_SETTINGS` and `JOBFLOW_CONFIG_FILE` are the paths to the files described in Step 3. The `ASE_VASP_COMMAND` environment variable points to the `run_vasp_custodian.py` file [packaged with HT-ASE](https://github.com/arosen93/htase/blob/main/htase/custodian/vasp/run_vasp_custodian.py). `VASP_PP_PATH` and `ASE_VASP_VDW` are ASE-specific environment variables defining the paths to the pseudopotential libraries and vdW kernel. For details on how to set these environment variables, see the [ASE VASP calculator docs](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials). 
+Here, `VASP_CUSTODIAN_SETTINGS` and `JOBFLOW_CONFIG_FILE` are the paths to the files described in Step 3. The `ASE_VASP_COMMAND` environment variable points to the `run_vasp_custodian.py` file [packaged with HT-ASE](https://github.com/arosen93/htase/blob/main/htase/custodian/vasp/run_vasp_custodian.py). `VASP_PP_PATH` and `ASE_VASP_VDW` are ASE-specific environment variables defining the paths to the pseudopotential libraries and vdW kernel. For details on how to set these environment variables, see the [ASE VASP calculator docs](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials).
 
 ## Requirements
 Python 3.7+ is required in addition to the following packages:
