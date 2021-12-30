@@ -41,6 +41,7 @@ from ase.io.jsonio import encode, decode
 from ase.build import bulk
 from jobflow import job, Flow
 from jobflow.managers.local import run_locally
+from fireworks import LaunchPad
 
 #-----Core HT-ASE Block-----
 @job
