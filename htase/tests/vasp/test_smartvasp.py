@@ -110,11 +110,11 @@ def test_magmoms():
     atoms = bulk("Cu") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
-    assert atoms.get_initial_magnetic_moments().tolist() == [1.0] * (len(atoms) - 1) + [
+    assert atoms.get_initial_magnetic_moments().tolist() == [2.0] * (len(atoms) - 1) + [
         5.0
     ]
 
-    atoms = bulk("Cu") * (2, 2, 1)
+    atoms = bulk("Zn") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
     atoms = SmartVasp(atoms, preset="BulkRelaxSet", mag_default=2.5)
     assert atoms.get_initial_magnetic_moments().tolist() == [2.5] * (len(atoms) - 1) + [
@@ -124,9 +124,9 @@ def test_magmoms():
     atoms = bulk("Eu") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
     atoms = SmartVasp(atoms, preset="SlabRelaxSet")
-    assert atoms.get_initial_magnetic_moments().tolist() == [10.0] * (
-        len(atoms) - 1
-    ) + [5.0]
+    assert atoms.get_initial_magnetic_moments().tolist() == [7.0] * (len(atoms) - 1) + [
+        5.0
+    ]
 
     atoms = bulk("Cu") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
@@ -195,10 +195,10 @@ def test_magmoms():
 
     atoms = bulk("Cu")
     atoms = SmartVasp(atoms, preset="BulkRelaxSet", copy_magmoms=False)
-    assert np.all(atoms.get_initial_magnetic_moments() == 1.0)
-    atoms.calc.results = {"magmoms": [2.0] * len(atoms)}
+    assert np.all(atoms.get_initial_magnetic_moments() == 2.0)
+    atoms.calc.results = {"magmoms": [3.0] * len(atoms)}
     atoms = SmartVasp(atoms, preset="BulkRelaxSet", copy_magmoms=False)
-    assert np.all(atoms.get_initial_magnetic_moments() == 1.0)
+    assert np.all(atoms.get_initial_magnetic_moments() == 2.0)
 
     atoms = bulk("Mg")
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
@@ -473,18 +473,12 @@ def test_setups():
 
     atoms = bulk("Cu")
     atoms = SmartVasp(
-        atoms,
-        setups=os.path.join(FILE_DIR, "test_setups.yaml"),
-        preset="BulkRelaxSet",
+        atoms, setups=os.path.join(FILE_DIR, "test_setups.yaml"), preset="BulkRelaxSet",
     )
     assert atoms.calc.parameters["setups"]["Cu"] == "_pv"
 
     atoms = bulk("Cu")
-    atoms = SmartVasp(
-        atoms,
-        setups="pbe54_MP.yaml",
-        preset="BulkRelaxSet",
-    )
+    atoms = SmartVasp(atoms, setups="pbe54_MP.yaml", preset="BulkRelaxSet",)
     assert atoms.calc.parameters["setups"]["Cu"] == "_pv"
 
     atoms = bulk("Cu")
