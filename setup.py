@@ -35,6 +35,7 @@ if __name__ == "__main__":
         #         "monty>2021.12.1",
         #     ],
         # },
+        extras_require={"tests": ["pytest>=6.2.5"]},
         tests_require=["pytest"],
         include_package_data=True,
     )
