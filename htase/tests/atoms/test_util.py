@@ -45,8 +45,8 @@ def test_invert_slab():
     struct = Structure.from_file(os.path.join(FILE_DIR, "MnO2_primitive.cif.gz"))
     slab = SlabGenerator(struct, [0, 0, 1], 10, 10).get_slab()
     inverted_slab = invert_slab(slab, return_struct=True)
-    assert slab[0].x == inverted_slab[0].x
-    assert slab[0].y == inverted_slab[0].y
+    assert pytest.approx(slab[0].x, 1e-9) == inverted_slab[0].x
+    assert pytest.approx(slab[0].y, 1e-9) == inverted_slab[0].y
     assert pytest.approx(slab[0].z, 1e-5) == inverted_slab[0].z - 7.38042756
 
     atoms = bulk("Cu")
