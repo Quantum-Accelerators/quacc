@@ -29,12 +29,12 @@ if __name__ == "__main__":
             "jobflow>=0.1.6",
             "atomate2>=0.0.4",
         ],
-        extras_require={
-            "fireworks": [
-                "fireworks>=1.9.8",
-                "git+https://github.com/arosen93/monty.git@rosen-json-fix",
-            ],
-        },
+#         extras_require={
+#             "fireworks": [
+#                 "fireworks>=1.9.8",
+#                 "monty>2021.12.1",
+#             ],
+#         },
         tests_require=["pytest"],
         include_package_data=True,
     )
