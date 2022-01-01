@@ -74,6 +74,7 @@ responses = run_locally(flow, create_folders=True)
 The above example can be run using Fireworks (as opposed to locally) as follows:
 ```python
 from jobflow.managers.fireworks import flow_to_workflow
+from fireworks import LaunchPad
 
 # Convert a flow (like the one above) to a fireworks WorkFlow object
 wf = flow_to_workflow(flow)
