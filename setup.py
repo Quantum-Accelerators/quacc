@@ -24,14 +24,17 @@ if __name__ == "__main__":
         zip_safe=False,
         install_requires=[
             "ase>=3.22.1",
-            "pymatgen>2022.0.17",
+            "git+https://github.com/arosen93/pymatgen.git@rosen-wflow#egg=pymatgen",
             "custodian>=2021.12.2",
             "jobflow>=0.1.6",
             "atomate2>=0.0.4",
         ],
-        extras_require={
-            "fireworks": ["fireworks>=1.9.8", "monty>2021.12.1"],
-        },
+#         extras_require={
+#             "fireworks": [
+#                 "fireworks>=1.9.8",
+#                 "monty>2021.12.1",
+#             ],
+#         },
         tests_require=["pytest"],
         include_package_data=True,
     )
