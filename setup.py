@@ -29,12 +29,12 @@ if __name__ == "__main__":
             "jobflow>=0.1.6",
             "atomate2>=0.0.4",
         ],
-#         extras_require={
-#             "fireworks": [
-#                 "fireworks>=1.9.8",
-#                 "monty>2021.12.1",
-#             ],
-#         },
+        #         extras_require={
+        #             "fireworks": [
+        #                 "fireworks>=1.9.8",
+        #                 "monty>2021.12.1",
+        #             ],
+        #         },
         tests_require=["pytest"],
         include_package_data=True,
     )
