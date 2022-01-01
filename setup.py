@@ -30,7 +30,10 @@ if __name__ == "__main__":
             "atomate2>=0.0.4",
         ],
         extras_require={
-            "fireworks": ["fireworks>=1.9.8", "git+https://github.com/arosen93/monty.git@rosen-json-fix"],
+            "fireworks": [
+                "fireworks>=1.9.8",
+                "git+https://github.com/arosen93/monty.git@rosen-json-fix",
+            ],
         },
         tests_require=["pytest"],
         include_package_data=True,
