@@ -36,7 +36,7 @@ config = yaml.safe_load(open(settings_path))
 
 # If $ is the first character, get from the environment variable
 for k, v in config.items():
-    if v[0] == "$":
+    if isinstance(v[0], str) and v[0] == "$":
         if v[1:] in os.environ:
             config[k] = os.environ[v[1:]]
         else:
