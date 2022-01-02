@@ -80,7 +80,7 @@ For additional details on how to convert a Jobflow job or flow to a Fireworks fi
 git clone https://github.com/arosen93/htase.git && cd htase && pip install -r requirements.txt && pip install -e .
 ```
 
-3. Make a directory called `htase_config` somewhere convenient. Copy the `vasp_custodian_settings.yaml` [file](https://github.com/arosen93/HT-ASE/blob/main/htase/custodian/vasp/vasp_custodian_settings.yaml) to this directory and modify the `vasp_cmd` and `vasp_gamma_cmd` to tell Custodian how to run VASP on your supercomputer. If you wish to use Jobflow, follow the [Jobflow API docs](https://materialsproject.github.io/jobflow/jobflow.settings.html?highlight=jobflow_config_file#jobflow.settings.JobflowSettings) and make a `jobflow.yaml` file to tell Jobflow where to store calculation results. Your directory structure should look like the following:
+3. Make a directory called `htase_config` somewhere convenient. Copy the `vasp_custodian_settings.yaml` [file](https://github.com/arosen93/HT-ASE/blob/main/htase/custodian/vasp/vasp_custodian_settings.yaml) to this directory and modify the `vasp_parallel_cmd`, `vasp_cmd`, and `vasp_gamma_cmd` to tell Custodian how to run VASP on your supercomputer. If you wish to use Jobflow, follow the [Jobflow API docs](https://materialsproject.github.io/jobflow/jobflow.settings.html?highlight=jobflow_config_file#jobflow.settings.JobflowSettings) and make a `jobflow.yaml` file to tell Jobflow where to store calculation results. Your directory structure should look like the following:
 
 ```
 htase_config
