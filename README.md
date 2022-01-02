@@ -28,7 +28,7 @@ from ase.build import bulk
 
 atoms = bulk("Cu") # example Atoms object
 atoms = SmartVasp(atoms, xc='rpbe', preset="BulkRelaxSet") # set calculator
-atoms.get_potential_energy() # run VASP
+atoms.get_potential_energy() # run VASP w/ Custodian
 ```
 
 ### Jobflow Integration
