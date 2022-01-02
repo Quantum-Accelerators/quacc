@@ -1,5 +1,5 @@
 git+https://gitlab.com/ase/ase.git@master#egg=ase
 git+https://github.com/arosen93/pymatgen.git@rosen-wflow#egg=pymatgen
 custodian==2021.12.2
-jobflow==0.1.6
+git+https://github.com/arosen93/jobflow.git@rosen-configupdates#egg=jobflow
 atomate2==0.0.4
