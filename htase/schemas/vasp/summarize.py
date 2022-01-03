@@ -4,7 +4,7 @@ import os
 
 def get_results(dir_path=None, atoms=None, **kwargs):
     """
-    
+
     Args:
         dir_path (str): Path to VASP outputs
             Defaults to None (current working directory)
