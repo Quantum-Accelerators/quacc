@@ -78,7 +78,7 @@ def make_conventional_cell(atoms, symprec=0.1, angle_tolerance=5.0):
     return conventional_atoms
 
 
-def invert_slab(slab, return_struct=False):
+def invert_slab(slab_struct, return_struct=False):
     """
     Function to invert a Pymatgen slab object, keeping the vacuum
     space in place.
@@ -93,9 +93,7 @@ def invert_slab(slab, return_struct=False):
         inverted_slab (ase.Atoms or pymatgen.core.surface.Slab): inverted slab
 
     """
-    if isinstance(slab, Slab):
-        slab_struct = slab
-    else:
+    if not isinstance(slab_struct, Slab):
         raise TypeError("slab must be a pymatgen.core.surface.Slab object")
     frac_coords = slab_struct.frac_coords
     max_z = np.max(frac_coords[:, -1])
@@ -186,7 +184,6 @@ def make_slabs_from_bulk(
         if not slab.is_symmetric():
             new_slab = invert_slab(slab, return_struct=True)
             new_slabs.append(new_slab)
-
     slabs.extend(new_slabs)
 
     # For each slab, make sure the lengths and widths are large enough
@@ -197,7 +194,7 @@ def make_slabs_from_bulk(
         # Supercell creation (if necessary)
         a_factor = int(np.ceil(min_length_width / slab.lattice.abc[0]))
         b_factor = int(np.ceil(min_length_width / slab.lattice.abc[1]))
-        final_slab = slab * (a_factor, b_factor, 1)
+        final_slab = slab.make_supercell([a_factor, b_factor, 1])
 
         # Apply constraints by distance from top surface
         # This does not actually create an adsorbate. It is just a
@@ -205,7 +202,7 @@ def make_slabs_from_bulk(
         # since you can't just do z_max - z_fix
         if z_fix:
             final_slab = AdsorbateSiteFinder(
-                final_slab, selective_dynamics=True, height=z_fix
+                slab, selective_dynamics=True, height=z_fix
             ).slab
 
         # Add slab to list
