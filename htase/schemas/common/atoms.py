@@ -4,5 +4,5 @@ from pymatgen.io.ase import AseAtomsAdaptor
 
 def atoms_to_db(atoms, **kwargs):
     struct = AseAtomsAdaptor().get_structure(atoms)
-    struct_metadata = StructureMetadata().from_structure(struct, **kwargs)
+    struct_metadata = StructureMetadata().from_structure(struct, **kwargs).dict()
     return struct_metadata
