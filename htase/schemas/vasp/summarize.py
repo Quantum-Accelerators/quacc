@@ -1,6 +1,7 @@
 from atomate2.vasp.schemas.task import TaskDocument
 import os
 from ase.io.jsonio import encode
+from ase.atoms import Atoms
 
 
 def get_results(dir_path=None, atoms=None, **kwargs):
@@ -22,6 +23,8 @@ def get_results(dir_path=None, atoms=None, **kwargs):
         dir_path = os.getcwd()
     results = TaskDocument.from_directory(dir_path, **kwargs)
     if atoms is not None:
-        results["atoms"] = encode(atoms)
+        if isinstance(atoms, Atoms):
+            atoms = encode(atoms)
+        results["atoms"] = atoms
 
     return results
