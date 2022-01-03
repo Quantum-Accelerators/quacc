@@ -42,7 +42,7 @@ from ase.build import bulk
 from jobflow import job, Flow
 from jobflow.managers.local import run_locally
 
-#-----Core HT-ASE Block-----
+#-----Jobflow Function-----
 @job
 def run_relax(atoms_json):
 
@@ -56,13 +56,13 @@ def run_relax(atoms_json):
     # Return serialized results
     return {"atoms": encode(atoms), "results": summarize.get_results()}
 
+#-----Make and Run a Flow-----
 # Constrct an Atoms object
 atoms = bulk("Cu")
 
 # Call the relaxation function
 job1 = run_relax(encode(atoms))
 
-#-----Core Jobflow Block-----
 # Define the flow
 flow = Flow([job1])
 
