@@ -1,12 +1,26 @@
-from htase.schemas.vasp.calculation import get_calculation_summary
+from atomate2.vasp.schemas.task import TaskDocument
 import os
 
 
-def get_results(dir_name=None, **kwargs):
-    if dir_name is None:
-        dir_name = os.getcwd()
+def get_results(dir_path=None, atoms=None, **kwargs):
+    """
+    
+    Args:
+        dir_path (str): Path to VASP outputs
+            Defaults to None (current working directory)
+        atoms (ase.Atoms): ASE Atoms object to store in {"atoms": atoms}
+            Defaults to None (not stored)
+        **kwargs: additional keyword arguments to pass to TaskDocument
 
-    results = get_calculation_summary(dir_name, **kwargs)
-    # We might want to do more later, but for now this is simple
+    Returns:
+        results (dict): dictionary of tabulated results
+
+    """
+
+    if dir_path is None:
+        dir_path = os.getcwd()
+    results = TaskDocument.from_directory(dir_path, **kwargs)
+    if atoms is not None:
+        results["atoms"] = atoms
 
     return results
