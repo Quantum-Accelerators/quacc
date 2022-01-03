@@ -22,7 +22,7 @@ def get_results(dir_path=None, atoms=None, **kwargs):
 
     if dir_path is None:
         dir_path = os.getcwd()
-    results = TaskDocument.from_directory(dir_path, **kwargs).dict
+    results = TaskDocument.from_directory(dir_path, **kwargs).dict()
     if atoms is not None:
         if isinstance(atoms, Atoms):
             atoms = encode(atoms)
