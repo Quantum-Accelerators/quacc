@@ -69,6 +69,10 @@ def test_make_slabs_from_bulk():
     slabs = make_slabs_from_bulk(atoms)
     assert slabs[-1].info == {"test": "hi"}
 
+    atoms = bulk("Cu")
+    slabs = make_slabs_from_bulk(atoms, required_surface_atoms=["Co"])
+    assert slabs is None
+
     slabs = make_slabs_from_bulk(atoms, max_index=2)
     assert len(slabs) == 9
 

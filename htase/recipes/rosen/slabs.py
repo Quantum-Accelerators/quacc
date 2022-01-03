@@ -75,10 +75,10 @@ def run_dos(atoms_json):
 
 
 @job
-def bulk_to_slab_job(atoms_json):
+def bulk_to_slab_job(atoms_json, **slabgen_kwargs):
     atoms = decode(atoms_json)
 
-    slabs = make_slabs_from_bulk(atoms)
+    slabs = make_slabs_from_bulk(atoms, **slabgen_kwargs)
     jobs = []
     outputs = []
     for slab in slabs:

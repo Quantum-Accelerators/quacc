@@ -137,6 +137,7 @@ def make_slabs_from_bulk(
     min_length_width=8.0,
     min_vacuum_size=20.0,
     z_fix=2.0,
+    required_surface_atoms=None,
 ):
     """
     Function to make slabs from a bulk atoms object.
@@ -155,6 +156,9 @@ def make_slabs_from_bulk(
             Defaults to 20.0
         z_fix (float): distance (in angstroms) from top of slab for which atoms should be fixed
             Defaults to 2.0
+        required_surface_atoms (list of str): List of chemical symbols that must be present on the
+        surface of the slab otherwise the slab will be discarded, e.g. ["Cu", "Ni"]
+            Defaults to None.
 
     Returns:
         final_slabs (ase.Atoms): all generated slabs
@@ -169,6 +173,9 @@ def make_slabs_from_bulk(
         struct = AseAtomsAdaptor.get_structure(atoms)
     else:
         struct = atoms
+
+    if isinstance(required_surface_atoms, str):
+        required_surface_atoms = [required_surface_atoms]
 
     slabs = [
         slab
@@ -194,7 +201,8 @@ def make_slabs_from_bulk(
         # Supercell creation (if necessary)
         a_factor = int(np.ceil(min_length_width / slab.lattice.abc[0]))
         b_factor = int(np.ceil(min_length_width / slab.lattice.abc[1]))
-        final_slab = slab.make_supercell([a_factor, b_factor, 1])
+        final_slab = slab.copy()
+        final_slab.make_supercell([a_factor, b_factor, 1])
 
         # Apply constraints by distance from top surface
         # This does not actually create an adsorbate. It is just a
@@ -202,13 +210,32 @@ def make_slabs_from_bulk(
         # since you can't just do z_max - z_fix
         if z_fix:
             final_slab = AdsorbateSiteFinder(
-                slab, selective_dynamics=True, height=z_fix
+                final_slab, selective_dynamics=True, height=z_fix
             ).slab
+
+            surface_species = [
+                site.specie.symbol
+                for site in final_slab
+                if site.properties["surface_properties"] == "surface"
+            ]
+
+            # Check that the desired atoms are on the surface
+            if required_surface_atoms and ~np.any(
+                [
+                    required_surface_atom in surface_species
+                    for required_surface_atom in required_surface_atoms
+                ]
+            ):
+                continue
 
         # Add slab to list
         final_slab = AseAtomsAdaptor.get_atoms(final_slab)
         if getattr(atoms, "info", None) is not None:
             final_slab.info = atoms.info
         final_slabs.append(final_slab)
+
+    # in case none of the desired atoms are on the surface
+    if final_slabs == []:
+        final_slabs = None
 
     return final_slabs
