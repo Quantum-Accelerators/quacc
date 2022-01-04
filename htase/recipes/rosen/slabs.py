@@ -1,7 +1,6 @@
 from htase.calculators.vasp import SmartVasp
 from htase.schemas.vasp import summarize
 from htase.util.atoms import make_slabs_from_bulk
-from htase.util.calc import cache_calc
 from ase.io.jsonio import encode, decode
 from jobflow import job, Flow, Response
 from shutil import copyfile
