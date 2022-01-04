@@ -222,38 +222,6 @@ def test_magmoms():
     assert np.all(atoms.get_initial_magnetic_moments() == -5)
 
     atoms = bulk("Mg")
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
-    atoms.calc.results = {"energy": -1.0, "magmoms": [0.0] * len(atoms)}
-    struct = AseAtomsAdaptor.get_structure(atoms)
-    atoms = AseAtomsAdaptor.get_atoms(struct)
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
-    assert np.all(atoms.get_initial_magnetic_moments() == 0.0)
-
-    atoms = bulk("Mg")
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
-    atoms.calc.results = {"energy": -1.0, "magmoms": [5.0] * len(atoms)}
-    struct = AseAtomsAdaptor.get_structure(atoms)
-    atoms = AseAtomsAdaptor.get_atoms(struct)
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
-    assert np.all(atoms.get_initial_magnetic_moments() == 5.0)
-
-    atoms = bulk("Mg")
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
-    atoms.calc.results = {"energy": -1.0, "magmoms": [5.0] * len(atoms)}
-    struct = AseAtomsAdaptor.get_structure(atoms)
-    atoms = AseAtomsAdaptor.get_atoms(struct)
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet", copy_magmoms=False)
-    assert np.all(atoms.get_initial_magnetic_moments() == 1.0)
-
-    atoms = bulk("Mg")
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
-    atoms.calc.results = {"energy": -1.0, "magmoms": [0.0] * len(atoms)}
-    struct = AseAtomsAdaptor.get_structure(atoms)
-    atoms = AseAtomsAdaptor.get_atoms(struct)
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
-    assert np.all(atoms.get_initial_magnetic_moments() == 0.0)
-
-    atoms = bulk("Mg")
     atoms = SmartVasp(atoms)
     atoms.calc.results = {"energy": -1.0, "magmoms": [0.0] * len(atoms)}
     atoms = cache_calc(atoms)
