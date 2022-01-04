@@ -120,4 +120,3 @@ def test_make_slabs_from_bulk():
     atoms = deepcopy(ATOMS_MAG)
     slabs = make_slabs_from_bulk(atoms)
     assert slabs[0].get_magnetic_moments()[0] == atoms.get_magnetic_moments()[0]
-
