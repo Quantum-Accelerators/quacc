@@ -28,6 +28,7 @@ def run_slab_job(atoms_json, slab=True, static=False):
         atoms = SmartVasp(
             atoms,
             preset="SlabRelaxSet",
+            isif=3,
             ncore=4,
             kpar=16,
             auto_dipole=False,
