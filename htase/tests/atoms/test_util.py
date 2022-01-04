@@ -115,8 +115,5 @@ def test_make_slabs_from_bulk():
 
     atoms = read(os.path.join(FILE_DIR, "..", "vasp", "OUTCAR_mag.gz"))
     slabs = make_slabs_from_bulk(atoms)
-    assert slabs[0].get_initial_magnetic_moments()[0] == atoms.get_magnetic_moments()[0]
+    assert slabs[0].get_magnetic_moments()[0] == atoms.get_magnetic_moments()[0]
 
-    atoms = read(os.path.join(FILE_DIR, "..", "vasp", "OUTCAR_nospin.gz"))
-    slabs = make_slabs_from_bulk(atoms)
-    assert atoms.has("initial_magmoms") is False
