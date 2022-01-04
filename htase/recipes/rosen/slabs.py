@@ -37,8 +37,7 @@ def run_slab_job(atoms_json, slab=True, static=False):
         )
 
     atoms.get_potential_energy()
-    atoms = cache_calc(atoms)
-    results = summarize.get_results(atoms=atoms)
+    results = summarize.get_results(atoms)
 
     return results
 
@@ -65,7 +64,6 @@ def run_dos(atoms_json):
         nedos=3001,
     )
     atoms.get_potential_energy()
-    atoms = cache_calc(atoms)
     results = summarize.get_results(atoms=atoms)
 
     return results

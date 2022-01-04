@@ -25,7 +25,7 @@ def cache_calc(atoms):
     """
     atoms = deepcopy(atoms)
 
-    if hasattr(atoms, "calc") and getattr(atoms.calc, "results") is not None:
+    if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None) is not None:
 
         # Dump calculator results into the .info tag
         if atoms.info.get("results", None) is None:
