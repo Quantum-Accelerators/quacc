@@ -12,7 +12,6 @@ def get_results(atoms=None, dir_path=None, **kwargs):
             Defaults to None.
         dir_path (str): Path to VASP outputs
             Defaults to None (current working directory)
-        **kwargs: additional keyword arguments to pass to TaskDocument
 
     Returns:
         results (dict): dictionary of tabulated results
@@ -22,14 +21,21 @@ def get_results(atoms=None, dir_path=None, **kwargs):
     if dir_path is None:
         dir_path = os.getcwd()
 
-    # Stores calculator results in the atoms.info flag and moves
-    # final magmoms to initial (necessary for sequential jobs)
-    atoms = cache_calc(atoms)
-
     # Fetch all tabulated results from VASP outputs files
+    # Fortunately, Atomate2 already has a handy function for this
     results = TaskDocument.from_directory(dir_path, **kwargs).dict()
 
-    # Store the encoded Atoms object for later use
-    results["atoms"] = encode(atoms)
+    if atoms:
+
+        # Store the encoded Atoms object for later use
+        results["atoms"] = encode(atoms)
+
+        # Store additional information if present in atoms.info
+        for k, v in atoms.info.items():
+            results[k] = v
+
+        # Stores calculator results in the atoms.info flag and moves
+        # final magmoms to initial (necessary for sequential jobs)
+        atoms = cache_calc(atoms)
 
     return results
