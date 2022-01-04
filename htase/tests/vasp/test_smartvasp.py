@@ -3,15 +3,18 @@ from ase.io import read
 from ase.build import bulk
 from ase.calculators.vasp import Vasp
 from ase.calculators.singlepoint import SinglePointDFTCalculator
-from pymatgen.io.ase import AseAtomsAdaptor
 from htase.calculators.vasp import SmartVasp
 from htase.util.calc import cache_calc
 from pathlib import Path
 import numpy as np
+from copy import deepcopy
 
 FILE_DIR = Path(__file__).resolve().parent
 DEFAULT_CALCS_DIR = os.path.join(FILE_DIR, "..", "..", "defaults", "user_calcs", "vasp")
 TOL = 1e-5
+ATOMS_MAG = read(os.path.join(FILE_DIR, "OUTCAR_mag.gz"))
+ATOMS_NOMAG = read(os.path.join(FILE_DIR, "OUTCAR_nomag.gz"))
+ATOMS_NOSPIN = read(os.path.join(FILE_DIR, "OUTCAR_nospin.gz"))
 
 
 def test_vanilla_smartvasp():
@@ -150,23 +153,23 @@ def test_magmoms():
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
-    atoms = read(os.path.join(FILE_DIR, "OUTCAR_mag.gz"))
+    atoms = deepcopy(ATOMS_MAG)
     mags = atoms.get_magnetic_moments()
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert np.array_equal(atoms.get_initial_magnetic_moments(), mags) is True
 
-    atoms = read(os.path.join(FILE_DIR, "OUTCAR_mag.gz"))
+    atoms = deepcopy(ATOMS_MAG)
     mags = atoms.get_magnetic_moments()
     atoms = SmartVasp(atoms, preset="BulkRelaxSet", mag_cutoff=2.0)
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
-    atoms = read(os.path.join(FILE_DIR, "OUTCAR_mag.gz"))
+    atoms = deepcopy(ATOMS_MAG)
     assert atoms.get_magnetic_moments()[0] == 0.468
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert atoms.get_initial_magnetic_moments()[0] == 0.468
 
-    atoms = read(os.path.join(FILE_DIR, "OUTCAR_nomag.gz"))
+    atoms = deepcopy(ATOMS_NOMAG)
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
@@ -175,20 +178,20 @@ def test_magmoms():
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
-    atoms = read(os.path.join(FILE_DIR, "OUTCAR_nomag.gz"))
+    atoms = deepcopy(ATOMS_NOMAG)
     calc = SinglePointDFTCalculator(atoms, **{"magmoms": [0.0] * len(atoms)})
     atoms.calc = calc
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
-    atoms = read(os.path.join(FILE_DIR, "OUTCAR_nomag.gz"))
+    atoms = deepcopy(ATOMS_NOMAG)
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
     atoms.calc.results = {"magmoms": [0.0] * len(atoms)}
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
-    atoms = read(os.path.join(FILE_DIR, "OUTCAR_nomag.gz"))
+    atoms = deepcopy(ATOMS_NOMAG)
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
@@ -196,7 +199,7 @@ def test_magmoms():
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert np.all(atoms.get_initial_magnetic_moments() == 1)
 
-    atoms = read(os.path.join(FILE_DIR, "OUTCAR_nospin.gz"))
+    atoms = deepcopy(ATOMS_NOSPIN)
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
@@ -232,20 +235,20 @@ def test_magmoms():
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert np.all(atoms.get_initial_magnetic_moments() == -5)
 
-    atoms = read(os.path.join(FILE_DIR, "OUTCAR_mag.gz"))
+    atoms = deepcopy(ATOMS_MAG)
     mag = atoms.get_magnetic_moments()[0]
     atoms = cache_calc(atoms)
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert atoms.has("initial_magmoms") is True
     assert atoms.get_initial_magnetic_moments()[0] == mag
 
-    atoms = read(os.path.join(FILE_DIR, "OUTCAR_nomag.gz"))
+    atoms = deepcopy(ATOMS_NOMAG)
     atoms = cache_calc(atoms)
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
-    atoms = read(os.path.join(FILE_DIR, "OUTCAR_nospin.gz"))
+    atoms = deepcopy(ATOMS_NOSPIN)
     atoms = cache_calc(atoms)
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert atoms.has("initial_magmoms") is True

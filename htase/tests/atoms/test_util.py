@@ -11,12 +11,16 @@ from pathlib import Path
 import os
 import numpy as np
 import pytest
+from copy import deepcopy
 
 FILE_DIR = Path(__file__).resolve().parent
+ATOMS_MAG = read(os.path.join(FILE_DIR, "..", "vasp", "OUTCAR_mag.gz"))
+ATOMS_NOMAG = read(os.path.join(FILE_DIR, "..", "vasp", "OUTCAR_nomag.gz"))
+ATOMS_NOSPIN = read(os.path.join(FILE_DIR, "..", "vasp", "OUTCAR_nospin.gz"))
 
 
 def test_cache_calc():
-    atoms = read(os.path.join(FILE_DIR, "..", "vasp", "OUTCAR_mag.gz"))
+    atoms = deepcopy(ATOMS_MAG)
     mag = atoms.get_magnetic_moment()
     mags = atoms.get_magnetic_moments()
     atoms = cache_calc(atoms)
@@ -33,7 +37,7 @@ def test_cache_calc():
     assert atoms.info["results"]["calc1"]["magmom"] == mag - 2
     assert decode(encode(atoms)) == atoms
 
-    atoms = read(os.path.join(FILE_DIR, "..", "vasp", "OUTCAR_nomag.gz"))
+    atoms = deepcopy(ATOMS_NOMAG)
     mag = atoms.get_magnetic_moment()
     atoms = cache_calc(atoms)
     assert atoms.info.get("results", None) is not None
@@ -48,7 +52,7 @@ def test_cache_calc():
     assert atoms.info["results"]["calc1"]["magmom"] == mag - 2
     assert decode(encode(atoms)) == atoms
 
-    atoms = read(os.path.join(FILE_DIR, "..", "vasp", "OUTCAR_nospin.gz"))
+    atoms = deepcopy(ATOMS_NOSPIN)
     atoms = cache_calc(atoms)
     assert atoms.info.get("results", None) is not None
     assert atoms.info["results"].get("calc0", None) is not None
@@ -113,7 +117,7 @@ def test_make_slabs_from_bulk():
 
     slabs = make_slabs_from_bulk(atoms, min_length_width=20)
 
-    atoms = read(os.path.join(FILE_DIR, "..", "vasp", "OUTCAR_mag.gz"))
+    atoms = deepcopy(ATOMS_MAG)
     slabs = make_slabs_from_bulk(atoms)
     assert slabs[0].get_magnetic_moments()[0] == atoms.get_magnetic_moments()[0]
 
