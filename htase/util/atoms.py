@@ -48,36 +48,6 @@ def get_highest_block(atoms):
     return max_block
 
 
-def make_conventional_cell(atoms, symprec=0.1, angle_tolerance=5.0):
-    """
-    Function to make a conventional cell from an Atoms object.
-
-    Args:
-        atoms (ase.Atoms): Atoms object
-        symprec (float): Symmetry tolerance for pymatgen.SpacegroupAnalyzer
-            Default: 0.1 (MP default)
-        angle_tolerance (float): Angle tolerance for pymatgen.SpacegroupAnalyzer
-            Default: 5.0 (MP default)
-    Returns:
-        conventional_atoms (ase.Atoms): Atoms object with a conventional cell
-    """
-
-    if isinstance(atoms, Atoms):
-        struct = AseAtomsAdaptor.get_structure(atoms)
-    else:
-        struct = atoms
-
-    conventional_struct = SpacegroupAnalyzer(
-        struct, symprec=symprec, angle_tolerance=angle_tolerance
-    ).get_conventional_standard_structure()
-    conventional_atoms = AseAtomsAdaptor.get_atoms(conventional_struct)
-
-    if getattr(atoms, "info", None) is not None:
-        conventional_atoms.info = atoms.info
-
-    return conventional_atoms
-
-
 def invert_slab(slab_struct, return_struct=False):
     """
     Function to invert a Pymatgen slab object, keeping the vacuum
