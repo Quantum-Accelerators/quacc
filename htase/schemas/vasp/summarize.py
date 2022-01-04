@@ -1,7 +1,6 @@
 from atomate2.vasp.schemas.task import TaskDocument
 import os
 from ase.io.jsonio import encode
-from ase.atoms import Atoms
 from htase.util.calc import cache_calc
 
 

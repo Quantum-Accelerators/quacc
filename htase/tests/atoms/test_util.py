@@ -18,6 +18,23 @@ FILE_DIR = Path(__file__).resolve().parent
 def test_cache_calc():
     atoms = read(os.path.join(FILE_DIR, "..", "vasp", "OUTCAR_mag.gz"))
     mag = atoms.get_magnetic_moment()
+    mags = atoms.get_magnetic_moments()
+    atoms = cache_calc(atoms)
+    assert atoms.info.get("results", None) is not None
+    assert atoms.info["results"].get("calc0", None) is not None
+    assert atoms.info["results"]["calc0"]["magmom"] == mag
+    assert atoms.get_initial_magnetic_moments().tolist() == mags.tolist()
+    atoms = SmartVasp(atoms)
+    atoms.calc.results = {"magmom": mag - 2}
+    atoms = cache_calc(atoms)
+    assert atoms.info.get("results", None) is not None
+    assert atoms.info["results"].get("calc1", None) is not None
+    assert atoms.info["results"]["calc0"]["magmom"] == mag
+    assert atoms.info["results"]["calc1"]["magmom"] == mag - 2
+    assert decode(encode(atoms)) == atoms
+
+    atoms = read(os.path.join(FILE_DIR, "..", "vasp", "OUTCAR_nomag.gz"))
+    mag = atoms.get_magnetic_moment()
     atoms = cache_calc(atoms)
     assert atoms.info.get("results", None) is not None
     assert atoms.info["results"].get("calc0", None) is not None
@@ -28,6 +45,20 @@ def test_cache_calc():
     assert atoms.info.get("results", None) is not None
     assert atoms.info["results"].get("calc1", None) is not None
     assert atoms.info["results"]["calc0"]["magmom"] == mag
+    assert atoms.info["results"]["calc1"]["magmom"] == mag - 2
+    assert decode(encode(atoms)) == atoms
+
+    atoms = read(os.path.join(FILE_DIR, "..", "vasp", "OUTCAR_nospin.gz"))
+    atoms = cache_calc(atoms)
+    assert atoms.info.get("results", None) is not None
+    assert atoms.info["results"].get("calc0", None) is not None
+    assert atoms.info["results"]["calc0"].get("magmom", None) is None
+    atoms = SmartVasp(atoms)
+    atoms.calc.results = {"magmom": mag - 2}
+    atoms = cache_calc(atoms)
+    assert atoms.info.get("results", None) is not None
+    assert atoms.info["results"].get("calc1", None) is not None
+    assert atoms.info["results"]["calc0"].get("magmom", None) is None
     assert atoms.info["results"]["calc1"]["magmom"] == mag - 2
     assert decode(encode(atoms)) == atoms
 
@@ -81,3 +112,11 @@ def test_make_slabs_from_bulk():
         assert len(slab.constraints) == 0
 
     slabs = make_slabs_from_bulk(atoms, min_length_width=20)
+
+    atoms = read(os.path.join(FILE_DIR, "..", "vasp", "OUTCAR_mag.gz"))
+    slabs = make_slabs_from_bulk(atoms)
+    assert slabs[0].get_initial_magnetic_moments()[0] == atoms.get_magnetic_moments()[0]
+
+    atoms = read(os.path.join(FILE_DIR, "..", "vasp", "OUTCAR_nospin.gz"))
+    slabs = make_slabs_from_bulk(atoms)
+    assert atoms.has("initial_magmoms") is False

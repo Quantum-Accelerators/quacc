@@ -147,7 +147,8 @@ def test_magmoms():
     atoms[-1].symbol = "Fe"
     atoms.set_initial_magnetic_moments([0.0] * len(atoms))
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
-    assert np.all(atoms.get_initial_magnetic_moments() == 0.0)
+    assert atoms.has("initial_magmoms") is True
+    assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = read(os.path.join(FILE_DIR, "OUTCAR_mag.gz"))
     mags = atoms.get_magnetic_moments()
@@ -157,7 +158,8 @@ def test_magmoms():
     atoms = read(os.path.join(FILE_DIR, "OUTCAR_mag.gz"))
     mags = atoms.get_magnetic_moments()
     atoms = SmartVasp(atoms, preset="BulkRelaxSet", mag_cutoff=2.0)
-    assert np.all(atoms.get_initial_magnetic_moments() == 0.0)
+    assert atoms.has("initial_magmoms") is True
+    assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = read(os.path.join(FILE_DIR, "OUTCAR_mag.gz"))
     assert atoms.get_magnetic_moments()[0] == 0.468
@@ -165,17 +167,17 @@ def test_magmoms():
     assert atoms.get_initial_magnetic_moments()[0] == 0.468
 
     atoms = read(os.path.join(FILE_DIR, "OUTCAR_nomag.gz"))
-    assert np.all(atoms.get_magnetic_moments() == 0.0)
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
     atoms.calc.results = {"energy": -1.0}  # mock calculation run
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = read(os.path.join(FILE_DIR, "OUTCAR_nomag.gz"))
     calc = SinglePointDFTCalculator(atoms, **{"magmoms": [0.0] * len(atoms)})
     atoms.calc = calc
-    assert np.all(atoms.get_magnetic_moments() == 0)
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
@@ -188,6 +190,15 @@ def test_magmoms():
 
     atoms = read(os.path.join(FILE_DIR, "OUTCAR_nomag.gz"))
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    assert atoms.has("initial_magmoms") is True
+    assert np.all(atoms.get_initial_magnetic_moments() == 0)
+    atoms.calc.results = {"magmoms": [1.0] * len(atoms)}
+    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    assert np.all(atoms.get_initial_magnetic_moments() == 1)
+
+    atoms = read(os.path.join(FILE_DIR, "OUTCAR_nospin.gz"))
+    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
     atoms.calc.results = {"magmoms": [1.0] * len(atoms)}
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
@@ -220,6 +231,25 @@ def test_magmoms():
     atoms.calc.results = {"magmoms": [-5] * len(atoms)}
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert np.all(atoms.get_initial_magnetic_moments() == -5)
+
+    atoms = read(os.path.join(FILE_DIR, "OUTCAR_mag.gz"))
+    mag = atoms.get_magnetic_moments()[0]
+    atoms = cache_calc(atoms)
+    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    assert atoms.has("initial_magmoms") is True
+    assert atoms.get_initial_magnetic_moments()[0] == mag
+
+    atoms = read(os.path.join(FILE_DIR, "OUTCAR_nomag.gz"))
+    atoms = cache_calc(atoms)
+    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    assert atoms.has("initial_magmoms") is True
+    assert np.all(atoms.get_initial_magnetic_moments() == 0)
+
+    atoms = read(os.path.join(FILE_DIR, "OUTCAR_nospin.gz"))
+    atoms = cache_calc(atoms)
+    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    assert atoms.has("initial_magmoms") is True
+    assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = bulk("Mg")
     atoms = SmartVasp(atoms)
@@ -441,18 +471,12 @@ def test_setups():
 
     atoms = bulk("Cu")
     atoms = SmartVasp(
-        atoms,
-        setups=os.path.join(FILE_DIR, "test_setups.yaml"),
-        preset="BulkRelaxSet",
+        atoms, setups=os.path.join(FILE_DIR, "test_setups.yaml"), preset="BulkRelaxSet",
     )
     assert atoms.calc.parameters["setups"]["Cu"] == "_pv"
 
     atoms = bulk("Cu")
-    atoms = SmartVasp(
-        atoms,
-        setups="pbe54_MP.yaml",
-        preset="BulkRelaxSet",
-    )
+    atoms = SmartVasp(atoms, setups="pbe54_MP.yaml", preset="BulkRelaxSet",)
     assert atoms.calc.parameters["setups"]["Cu"] == "_pv"
 
     atoms = bulk("Cu")
