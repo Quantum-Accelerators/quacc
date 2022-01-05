@@ -157,7 +157,9 @@ def set_magmoms(atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutof
     - If there are no converged magnetic moments or initial magnetic moments, then
     the default magnetic moments from the preset (if specified) are set as the
     initial magnetic moments.
-    - If mag_cutoff is not None, any initial magmoms below the cutoff are set to 0.
+    - For any of the above scenarios, if mag_cutoff is not None, the newly set
+    initial magnetic moments are checked. If all have a magnitude below mag_cutoff,
+    then they are all set to 0 (no spin polarization).
     """
     atoms = deepcopy(atoms)
 
