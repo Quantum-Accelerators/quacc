@@ -85,7 +85,6 @@ wall_time = config.get("custodian_wall_time", None)
 scratch_dir = config.get("scratch_dir", None)
 vasp_job_kwargs = config.get("vasp_job_kwargs", None)
 custodian_kwargs = config.get("custodian_kwargs", None)
-vasp_job_kwargs["auto_npar"] = False
 
 # Run VASP
 vasp_job_kwargs = {} if vasp_job_kwargs is None else vasp_job_kwargs
@@ -94,10 +93,6 @@ vasp_cmd = os.path.expandvars(vasp_cmd)
 vasp_gamma_cmd = os.path.expandvars(vasp_gamma_cmd)
 split_vasp_cmd = shlex.split(vasp_cmd)
 split_vasp_gamma_cmd = shlex.split(vasp_gamma_cmd)
-
-if "auto_npar" not in vasp_job_kwargs:
-    vasp_job_kwargs["auto_npar"] = False
-
 vasp_job_kwargs.update({"gamma_vasp_cmd": split_vasp_gamma_cmd})
 
 if custodian_enabled:
