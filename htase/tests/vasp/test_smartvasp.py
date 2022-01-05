@@ -382,6 +382,13 @@ def test_ncore():
     atoms = SmartVasp(atoms, ncore=4)
     assert atoms.calc.int_params["ncore"] == 4
 
+    atoms = SmartVasp(atoms, ncore=4, lhfcalc=True)
+    assert atoms.calc.int_params["ncore"] == 1
+
+    atoms = SmartVasp(atoms, npar=4, lhfcalc=True)
+    assert atoms.calc.int_params["ncore"] == 1
+    assert atoms.calc.int_params["npar"] is None
+
 
 def test_ismear():
     atoms = bulk("Cu")
@@ -504,18 +511,12 @@ def test_setups():
 
     atoms = bulk("Cu")
     atoms = SmartVasp(
-        atoms,
-        setups=os.path.join(FILE_DIR, "test_setups.yaml"),
-        preset="BulkRelaxSet",
+        atoms, setups=os.path.join(FILE_DIR, "test_setups.yaml"), preset="BulkRelaxSet",
     )
     assert atoms.calc.parameters["setups"]["Cu"] == "_pv"
 
     atoms = bulk("Cu")
-    atoms = SmartVasp(
-        atoms,
-        setups="pbe54_MP.yaml",
-        preset="BulkRelaxSet",
-    )
+    atoms = SmartVasp(atoms, setups="pbe54_MP.yaml", preset="BulkRelaxSet",)
     assert atoms.calc.parameters["setups"]["Cu"] == "_pv"
 
     atoms = bulk("Cu")

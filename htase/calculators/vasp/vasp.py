@@ -369,6 +369,24 @@ def calc_swaps(atoms, calc, auto_kpts, verbose=True):
     if (
         (calc.int_params["ncore"] and calc.int_params["ncore"] > 1)
         or (calc.int_params["npar"] and calc.int_params["npar"] > 1)
+    ) and (
+        calc.bool_params["lhfcalc"] is True
+        or calc.bool_params["lrpa"] is True
+        or calc.bool_params["lepsilon"] is True
+        or calc.int_params["ibrion"] in [5, 6, 7, 8]
+    ):
+        if verbose:
+            warnings.warn(
+                "Copilot: Setting NCORE = 1 because NCORE/NPAR is not compatible with this job type.",
+                UserWarning,
+            )
+        calc.set(ncore=1)
+        if calc.int_params.get("npar", None) is not None:
+            calc.int_params["npar"] = None
+
+    if (
+        (calc.int_params["ncore"] and calc.int_params["ncore"] > 1)
+        or (calc.int_params["npar"] and calc.int_params["npar"] > 1)
     ) and len(atoms) <= 4:
         if verbose:
             warnings.warn(
