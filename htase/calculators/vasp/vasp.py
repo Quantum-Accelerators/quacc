@@ -196,14 +196,11 @@ def set_magmoms(atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutof
             atoms.set_initial_magnetic_moments(mags)
 
     # If all the set mags are below mag_cutoff, set them to 0
-    has_new_initial_mags = atoms.has("initial_magmoms")
-    new_initial_mags = atoms.get_initial_magnetic_moments()
-    if (
-        mag_cutoff
-        and has_new_initial_mags
-        and np.all(np.abs(new_initial_mags) < mag_cutoff)
-    ):
-        atoms.set_initial_magnetic_moments([0.0] * len(atoms))
+    if mag_cutoff:
+        has_new_initial_mags = atoms.has("initial_magmoms")
+        new_initial_mags = atoms.get_initial_magnetic_moments()
+        if has_new_initial_mags and np.all(np.abs(new_initial_mags) < mag_cutoff):
+            atoms.set_initial_magnetic_moments([0.0] * len(atoms))
 
     return atoms
 
