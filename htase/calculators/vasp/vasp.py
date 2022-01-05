@@ -192,12 +192,17 @@ def set_magmoms(atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutof
     # Copy converged magmoms to input magmoms, if copy_magmoms is True
     else:
         if copy_magmoms:
-            # If any are above mag_cutoff, set them. Otherwise, just
-            # set them all to 0 (no spin-polarization)
-            if np.any(np.abs(mags) > mag_cutoff):
-                atoms.set_initial_magnetic_moments(mags)
-            else:
-                atoms.set_initial_magnetic_moments([0.0] * len(atoms))
+            atoms.set_initial_magnetic_moments(mags)
+
+    # If all the mags are below mag_cutoff, set them to 0
+    has_new_initial_mags = atoms.has("initial_magmoms")
+    new_initial_mags = atoms.get_initial_magnetic_moments()
+    if (
+        mag_cutoff
+        and has_new_initial_mags
+        and np.all(np.abs(new_initial_mags) < mag_cutoff)
+    ):
+        atoms.set_initial_magnetic_moments([0.0] * len(atoms))
 
     return atoms
 

@@ -159,7 +159,6 @@ def test_magmoms():
     assert np.array_equal(atoms.get_initial_magnetic_moments(), mags) is True
 
     atoms = deepcopy(ATOMS_MAG)
-    mags = atoms.get_magnetic_moments()
     atoms = SmartVasp(atoms, preset="BulkRelaxSet", mag_cutoff=2.0)
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
@@ -251,6 +250,12 @@ def test_magmoms():
     atoms = deepcopy(ATOMS_NOSPIN)
     atoms = cache_calc(atoms)
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    assert atoms.has("initial_magmoms") is True
+    assert np.all(atoms.get_initial_magnetic_moments() == 0)
+
+    atoms = deepcopy(ATOMS_MAG)
+    atoms = cache_calc(atoms)
+    atoms = SmartVasp(atoms, preset="BulkRelaxSet", mag_cutoff=10.0)
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
