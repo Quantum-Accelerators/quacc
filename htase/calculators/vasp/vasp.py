@@ -151,12 +151,13 @@ def set_magmoms(atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutof
 
     This function deserves particular attention. The following logic is applied:
     - If there is a converged set of magnetic moments, those are moved to the
-    initial magmoms if copy_magmoms is True. The only exception is if the magnitudes
-    are all below mag_cutoff, in which case no initial magmoms are set.
+    initial magmoms if copy_magmoms is True.
     - If there is no converged set of magnetic moments but the user has set initial magmoms,
     those are simply used as is.
     - If there are no converged magnetic moments or initial magnetic moments, then
-    the default magnetic moments from the preset (if specified) are used.
+    the default magnetic moments from the preset (if specified) are set as the
+    initial magnetic moments.
+    - If mag_cutoff is not None, any initial magmoms below the cutoff are set to 0.
     """
     atoms = deepcopy(atoms)
 
@@ -194,7 +195,7 @@ def set_magmoms(atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutof
         if copy_magmoms:
             atoms.set_initial_magnetic_moments(mags)
 
-    # If all the mags are below mag_cutoff, set them to 0
+    # If all the set mags are below mag_cutoff, set them to 0
     has_new_initial_mags = atoms.has("initial_magmoms")
     new_initial_mags = atoms.get_initial_magnetic_moments()
     if (
@@ -409,9 +410,8 @@ def SmartVasp(
     mag_default : float
         Default magmom value for sites without one in the preset. Use 0.6 for MP settings or 1.0 for VASP default.
         Defaults to 1.0.
-    mag_cutoff : float
-        If copy_magmoms is True, only copy atoms.get_magnetic_moments() if there is at least one atom with an
-        absolute magnetic moment above mag_cutoff.
+    mag_cutoff : None or float
+        Set all initial magmoms to 0 if all have a magnitude below this value.
         Defaults to 0.05.
     verbose : bool
         If True, warnings will be raised when INCAR parameters are changed.
