@@ -13,6 +13,7 @@ def run_slab_job(atoms_json, slab=True, static=False):
 
     if static:
         updates = {
+            "ismear": -5,
             "nsw": 0,
             "lwave": True,
             "lcharg": True,

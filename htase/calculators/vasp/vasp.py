@@ -120,8 +120,8 @@ def remove_unused_flags(user_calc_params):
     if you are doing NSW = 0.
     """
 
-    # Turn off EDIFFG/IBRION/ISIF/POTIM if NSW = 0
-    opt_flags = ("ediffg", "ibrion", "isif", "potim")
+    # Turn off opt flags if NSW = 0
+    opt_flags = ("ediffg", "ibrion", "isif", "potim", "iopt")
     if user_calc_params.get("nsw", 0) == 0:
         for opt_flag in opt_flags:
             user_calc_params.pop(opt_flag, None)
