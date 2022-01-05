@@ -366,6 +366,27 @@ def calc_swaps(atoms, calc, auto_kpts, verbose=True):
             )
         calc.set(lorbit=11)
 
+    if (
+        (calc.int_params["ncore"] and calc.int_params["ncore"] > 1)
+        or (calc.int_params["npar"] and calc.int_params["npar"] > 1)
+    ) and len(atoms) <= 4:
+        if verbose:
+            warnings.warn(
+                "Copilot: Setting NCORE = 1 because you have a very small structure.",
+                UserWarning,
+            )
+        calc.set(ncore=1)
+        if calc.int_params.get("npar", None) is not None:
+            calc.int_params["npar"] = None
+
+    if calc.int_params["kpar"] and calc.int_params["kpar"] > np.prod(calc.kpts):
+        if verbose:
+            warnings.warn(
+                "Copilot: Setting KPAR = 1 because you have too few k-points to parallelize.",
+                UserWarning,
+            )
+        calc.set(kpar=1)
+
     if calc.bool_params["luse_vdw"] and "ASE_VASP_VDW" not in os.environ:
         warnings.warn(
             "ASE_VASP_VDW was not set, yet you requested a vdW functional.",

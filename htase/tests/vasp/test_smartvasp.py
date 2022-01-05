@@ -358,6 +358,31 @@ def test_algo():
     assert atoms.calc.string_params["algo"] == "all"
 
 
+def test_kpar():
+    atoms = bulk("Cu")
+
+    atoms = SmartVasp(atoms, kpts=[2, 2, 1], kpar=4)
+    assert atoms.calc.int_params["kpar"] == 4
+
+    atoms = SmartVasp(atoms, kpar=4)
+    assert atoms.calc.int_params["kpar"] == 1
+
+
+def test_ncore():
+    atoms = bulk("Cu")
+
+    atoms = SmartVasp(atoms, ncore=16)
+    assert atoms.calc.int_params["ncore"] == 1
+
+    atoms = SmartVasp(atoms, npar=16)
+    assert atoms.calc.int_params["ncore"] == 1
+    assert atoms.calc.int_params["npar"] is None
+
+    atoms *= (2, 2, 2)
+    atoms = SmartVasp(atoms, ncore=4)
+    assert atoms.calc.int_params["ncore"] == 4
+
+
 def test_ismear():
     atoms = bulk("Cu")
 

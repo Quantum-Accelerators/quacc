@@ -6,6 +6,9 @@ from jobflow import job, Flow, Response
 from shutil import copyfile
 import os
 
+NCORE = 4
+KPAR = 4
+
 
 @job
 def run_slab_job(atoms_json, slab=True, static=False):
@@ -24,14 +27,16 @@ def run_slab_job(atoms_json, slab=True, static=False):
         updates = {}
 
     if slab:
-        atoms = SmartVasp(atoms, preset="SlabRelaxSet", kpar=4, **updates)
+        atoms = SmartVasp(
+            atoms, preset="SlabRelaxSet", ncore=NCORE, kpar=KPAR, **updates
+        )
     else:
         atoms = SmartVasp(
             atoms,
             preset="SlabRelaxSet",
             isif=3,
-            ncore=4,
-            kpar=16,
+            ncore=NCORE,
+            kpar=KPAR * 4,
             auto_dipole=False,
             auto_kpts={"length_density": [50, 50, 50]},
             **updates,
