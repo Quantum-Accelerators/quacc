@@ -24,7 +24,7 @@ def run_slab_job(atoms_json, slab=True, static=False):
         updates = {}
 
     if slab:
-        atoms = SmartVasp(atoms, preset="SlabRelaxSet", **updates)
+        atoms = SmartVasp(atoms, preset="SlabRelaxSet", kpar=4, **updates)
     else:
         atoms = SmartVasp(
             atoms,
@@ -62,7 +62,8 @@ def run_dos(atoms_json):
         icharg=icharg,
         ismear=-5,
         isym=2,
-        nedos=3001,
+        kpar=4,
+        nedos=5000,
     )
     atoms.get_potential_energy()
     results = summarize.get_results(atoms=atoms)
