@@ -1,0 +1,9 @@
+host: ???
+port: 27017
+name: '???'
+username: '???'
+password: '???'
+logdir: null
+Istrm_lvl: DEBUG
+user_indices: []
+wf_user_indices: []

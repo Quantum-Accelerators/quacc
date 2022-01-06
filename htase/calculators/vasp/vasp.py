@@ -435,6 +435,7 @@ def calc_swaps(atoms, calc, auto_kpts, verbose=True):
             "ASE_VASP_VDW was not set, yet you requested a vdW functional.",
             UserWarning,
         )
+
     return calc
 
 

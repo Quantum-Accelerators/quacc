@@ -20,6 +20,5 @@ validators:
   - VasprunXMLValidator
   - VaspFilesValidator
 custodian_wall_time: null
-vasp_job_kwargs:
-  auto_npar: false
+vasp_job_kwargs: null
 custodian_kwargs: null
