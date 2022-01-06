@@ -40,7 +40,8 @@ from htase.schemas.vasp import summarize
 from ase.io.jsonio import encode, decode
 from ase.build import bulk
 from jobflow import job, Flow
-from jobflow.managers.local import run_locally
+from 
+managers.local import run_locally
 
 #-----Jobflow Function-----
 @job
@@ -80,36 +81,41 @@ For additional details on how to convert a Jobflow job or flow to a Fireworks fi
 git clone https://github.com/arosen93/htase.git && cd htase && pip install -r requirements.txt && pip install -e .
 ```
 
-3. Make a directory called `htase_config` somewhere convenient. Copy the `vasp_custodian_settings.yaml` [file](https://github.com/arosen93/HT-ASE/blob/main/htase/custodian/vasp/vasp_custodian_settings.yaml) to this directory and modify the `vasp_parallel_cmd`, `vasp_cmd`, and `vasp_gamma_cmd` to tell Custodian how to run VASP on your supercomputer. If you wish to use Jobflow, follow the [Jobflow API docs](https://materialsproject.github.io/jobflow/jobflow.settings.html?highlight=jobflow_config_file#jobflow.settings.JobflowSettings) and make a `jobflow.yaml` file to tell Jobflow where to store calculation results. Your directory structure should look like the following:
-
-```
-htase_config
-├── vasp_custodian_settings.yaml
-└── jobflow.yaml # optional
-```
+3. Download the example `config` folder provided here and follow the steps in `instructions.md` to complete the setup proces.
 
 4. Define several environment variables (e.g. in your `~/.bashrc`), as outlined below:
 ```bash
 # HT-ASE requirements
-export VASP_CUSTODIAN_SETTINGS="/path/to/htase_config/vasp_custodian_settings.yaml"
 export ASE_VASP_COMMAND="python /path/to/htase/htase/custodian/vasp/run_vasp_custodian.py"
+export VASP_CUSTODIAN_SETTINGS="/path/to/config/htase_config/vasp_custodian_settings.yaml"
 
-# Jobflow requirements
-export JOBFLOW_CONFIG_FILE="/path/to/htase_config/jobflow.yaml"
-
-# Standard ASE-VASP requirements
+# ASE requirements
+# (details: https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials)
 export VASP_PP_PATH=... # tells ASE where the VASP PAW pseudopotentials are
 export ASE_VASP_VDW=... # directory containing vdw_kernel.bindat
-```
-Here, `VASP_CUSTODIAN_SETTINGS` and `JOBFLOW_CONFIG_FILE` are the paths to the files described in Step 3. The `ASE_VASP_COMMAND` environment variable points to the `run_vasp_custodian.py` file [packaged with HT-ASE](https://github.com/arosen93/htase/blob/main/htase/custodian/vasp/run_vasp_custodian.py). `VASP_PP_PATH` and `ASE_VASP_VDW` are ASE-specific environment variables defining the paths to the pseudopotential libraries and vdW kernel. For details on how to set these environment variables, see the [ASE VASP calculator docs](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials).
 
-## Requirements
+# Jobflow requirements (optional)
+# (details: https://materialsproject.github.io/jobflow/jobflow.settings.html)
+export JOBFLOW_CONFIG_FILE="/path/to/config/jobflow_config/jobflow.yaml"
+
+# FireWorks requirements (optional)
+# (details: https://materialsproject.github.io/fireworks)
+export FW_CONFIG_FILE='/path/to/config/fireworks_config/FW_config.yaml'
+
+```
+
+## Dependencies
 Python 3.7+ is required in addition to the following packages:
+
+Required:
 - [ASE](https://gitlab.com/ase/ase)
 - [Pymatgen](https://github.com/materialsproject/pymatgen)
 - [Custodian](https://github.com/materialsproject/custodian)
+
+Recommended:
 - [Jobflow](https://github.com/materialsproject/jobflow)
 - [Atomate2](https://github.com/materialsproject/atomate2)
+- [FireWorks](https://materialsproject.github.io/fireworks)
 
 ## License
 HT-ASE is released under a [modified BSD license](https://github.com/arosen93/htase/blob/main/LICENSE.md).
