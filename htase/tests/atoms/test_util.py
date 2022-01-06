@@ -22,12 +22,10 @@ ATOMS_NOSPIN = read(os.path.join(FILE_DIR, "..", "vasp", "OUTCAR_nospin.gz"))
 def test_cache_calc():
     atoms = deepcopy(ATOMS_MAG)
     mag = atoms.get_magnetic_moment()
-    mags = atoms.get_magnetic_moments()
     atoms = cache_calc(atoms)
     assert atoms.info.get("results", None) is not None
     assert atoms.info["results"].get("calc0", None) is not None
     assert atoms.info["results"]["calc0"]["magmom"] == mag
-    assert atoms.get_initial_magnetic_moments().tolist() == mags.tolist()
     atoms = SmartVasp(atoms)
     atoms.calc.results = {"magmom": mag - 2}
     atoms = cache_calc(atoms)

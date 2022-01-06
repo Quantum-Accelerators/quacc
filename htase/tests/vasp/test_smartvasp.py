@@ -235,11 +235,11 @@ def test_magmoms():
     assert np.all(atoms.get_initial_magnetic_moments() == -5)
 
     atoms = deepcopy(ATOMS_MAG)
-    mag = atoms.get_magnetic_moments()[0]
+    mags = atoms.get_magnetic_moments()
     atoms = cache_calc(atoms)
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert atoms.has("initial_magmoms") is True
-    assert atoms.get_initial_magnetic_moments()[0] == mag
+    assert atoms.get_initial_magnetic_moments().tolist() == mags.tolist()
 
     atoms = deepcopy(ATOMS_NOMAG)
     atoms = cache_calc(atoms)
