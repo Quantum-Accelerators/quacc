@@ -10,10 +10,11 @@ FILE_DIR = Path(__file__).resolve().parent
 
 run1 = os.path.join(FILE_DIR, "run1")
 
-# needs more tests
+
 def test_summarize():
     atoms = read(os.path.join(run1, "POSCAR.gz"))
     results = get_results(dir_path=run1)
+    # assert something here
 
     results = get_results(atoms=atoms, dir_path=run1)
     assert results.get("atoms", None) is not None and results["atoms"] == encode(atoms)

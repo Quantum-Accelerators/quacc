@@ -28,12 +28,12 @@ def cache_calc(atoms):
     if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None) is not None:
 
         # Dump calculator results into the .info tag
+        atoms.calc.results["rundir"] = os.getcwd()
         if atoms.info.get("results", None) is None:
             prior_calcs = 0
             atoms.info["results"] = {}
         else:
             prior_calcs = len(atoms.info["results"])
-            atoms.calc.results["rundir"] = os.getcwd()
 
         atoms.info["results"][f"calc{prior_calcs}"] = atoms.calc.results
 
