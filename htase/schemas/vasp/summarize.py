@@ -25,6 +25,16 @@ def get_results(atoms=None, dir_path=None, **kwargs):
     # Fortunately, Atomate2 already has a handy function for this
     results = TaskDocument.from_directory(dir_path, **kwargs).dict()
 
+    # Remove some key/vals we don't actually ever use
+    unused_props = (
+        "icsd_id",
+        "author",
+        "calcs_reversed",
+        "transformations",
+    )
+    for unused_prop in unused_props:
+        results.pop(unused_prop, None)
+
     if atoms:
 
         # Stores calculator results in the atoms.info flag and moves
