@@ -12,7 +12,7 @@ run1 = os.path.join(FILE_DIR, "run1")
 
 
 def test_summarize():
-    atoms = read(os.path.join(run1, "POSCAR.gz"))
+    atoms = read(os.path.join(run1, "CONTCAR.gz"))
     results = get_results(dir_path=run1)
     assert results["nsites"] == len(atoms)
 
@@ -25,7 +25,7 @@ def test_summarize():
     results = get_results(atoms=atoms, dir_path=run1)
     atoms = decode(cache_calc(results["atoms"]))
     assert atoms.info.get("results", None) is not None
-    assert atoms.info["results"].get("calc0", None)
+    assert atoms.info["results"].get("calc0", None) is not None
     assert atoms.info["results"]["calc0"].get("energy", None) == -1.0
     assert atoms.info["results"]["calc0"].get("magmoms", None) == [2.0] * len(atoms)
     assert atoms.info["results"]["calc0"].get("rundir", None) is not None
