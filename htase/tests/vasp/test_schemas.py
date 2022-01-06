@@ -25,4 +25,3 @@ def test_summarize():
     assert atoms.info.get("results", None) is not None
     assert atoms.info["results"].get("calc0", None)
     assert atoms.info["results"]["calc0"].get("energy", None) == -1.0
-
