@@ -27,15 +27,11 @@ def get_results(atoms=None, dir_path=None, **kwargs):
 
     if atoms:
 
-        # Store the encoded Atoms object for later use
-        results["atoms"] = encode(atoms)
-
-        # Store additional information if present in atoms.info
-        for k, v in atoms.info.items():
-            results[k] = v
-
         # Stores calculator results in the atoms.info flag and moves
         # final magmoms to initial (necessary for sequential jobs)
         atoms = cache_calc(atoms)
+
+        # Store the encoded Atoms object for later use
+        results["atoms"] = encode(atoms)
 
     return results
