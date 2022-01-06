@@ -91,7 +91,7 @@ export VASP_CUSTODIAN_SETTINGS="/path/to/config/htase_config/vasp_custodian_sett
 # ASE requirements
 # (details: https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials)
 export VASP_PP_PATH=... # tells ASE where the VASP PAW pseudopotentials are
-export ASE_VASP_VDW=... # directory containing vdw_kernel.bindat
+export ASE_VASP_VDW=... # directory containing vdw_kernel.bindat (optional)
 
 # Jobflow requirements (optional)
 # (details: https://materialsproject.github.io/jobflow/jobflow.settings.html)
