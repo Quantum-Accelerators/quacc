@@ -15,4 +15,4 @@ If you wish to use Fireworks, you'll need to fill out the files in `fw_config`, 
 - In `my_launchpad.yaml`, you will need to store your database credentials like you did for `jobflow.yaml`.
 - In `my_qadapter.yaml`, you will need to provide the relevant information on how to submit a job to your cluster. An example is provided for SLURM. For VASP, note that you need to export the `VASP_PARALLEL_CMD` variable in your pre-rocket, as noted above.
 
-For additional guidance, refer to the FireWorks setup instructions with [Atomate](https://atomate.org/installation.html#configure-database-connections-and-computing-center-parameters) but ignore the Atomate-specific detials.
+For additional guidance, refer to the FireWorks setup instructions with [Atomate](https://materialsproject.github.io/atomate2/user/fireworks.html#atomate2-fireworks) but ignore the Atomate-specific detials.
