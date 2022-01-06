@@ -104,8 +104,6 @@ export FW_CONFIG_FILE='/path/to/config/fireworks_config/FW_config.yaml'
 ```
 
 ## Dependencies
-Python 3.7+ is required in addition to the following packages:
-
 Required:
 - [ASE](https://gitlab.com/ase/ase)
 - [Pymatgen](https://github.com/materialsproject/pymatgen)
