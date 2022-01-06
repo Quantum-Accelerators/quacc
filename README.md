@@ -104,12 +104,12 @@ export FW_CONFIG_FILE='/path/to/config/fireworks_config/FW_config.yaml'
 ```
 
 ## Dependencies
-### Required:
+### Required
 - [ASE](https://gitlab.com/ase/ase)
 - [Pymatgen](https://github.com/materialsproject/pymatgen)
 - [Custodian](https://github.com/materialsproject/custodian)
 
-### Recommended:
+### Recommended
 - [Jobflow](https://github.com/materialsproject/jobflow)
 - [Atomate2](https://github.com/materialsproject/atomate2)
 - [FireWorks](https://materialsproject.github.io/fireworks)
