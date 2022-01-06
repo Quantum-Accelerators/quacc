@@ -1,5 +1,6 @@
 import os
 from htase.schemas.vasp.summarize import get_results
+from htase.util.calc import cache_calc
 from ase.io import read
 from ase.io.jsonio import encode
 from pathlib import Path
@@ -16,7 +17,9 @@ def test_summarize():
     results = get_results(atoms=atoms, dir_path=run1)
     assert results.get("atoms", None) is not None and results["atoms"] == encode(atoms)
 
-    atoms.info = {"test": "hi", "test2": ["hi", "bye"]}
     results = get_results(atoms=atoms, dir_path=run1)
-    assert results.get("test", None) == "hi"
-    assert results.get("test2", None) == ["hi", "bye"]
+    atoms = cache_calc(results["atoms"])
+    assert (
+        results["atoms"].get("results", None) is not None
+        and results["atoms"]["results"].get("calc0", None) is not None
+    )
