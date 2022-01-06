@@ -368,6 +368,25 @@ def test_kpar():
     assert atoms.calc.int_params["kpar"] == 1
 
 
+def test_isym():
+    atoms = bulk("Cu")
+
+    atoms = SmartVasp(atoms, isym=2)
+    assert atoms.calc.int_params["isym"] == 2
+
+    atoms = SmartVasp(atoms, isym=0)
+    assert atoms.calc.int_params["isym"] == 0
+
+    atoms = SmartVasp(atoms, xc="hse06", isym=2)
+    assert atoms.calc.int_params["isym"] == 3
+
+    atoms = SmartVasp(atoms, isym=2, nsw=100)
+    assert atoms.calc.int_params["isym"] == 0
+
+    atoms = SmartVasp(atoms, xc="hse06", isym=2, nsw=100)
+    assert atoms.calc.int_params["isym"] == 0
+
+
 def test_ncore():
     atoms = bulk("Cu")
 

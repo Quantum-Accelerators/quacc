@@ -405,6 +405,31 @@ def calc_swaps(atoms, calc, auto_kpts, verbose=True):
             )
         calc.set(kpar=1)
 
+    if (
+        calc.int_params["nsw"]
+        and calc.int_params["nsw"] > 0
+        and calc.int_params["isym"]
+        and calc.int_params["isym"] > 0
+    ):
+        if verbose:
+            warnings.warn(
+                "Copilot: Setting ISYM = 0 because you are running a relaxation.",
+                UserWarning,
+            )
+        calc.set(isym=0)
+
+    if (
+        calc.bool_params["lhfcalc"] is True
+        and calc.int_params["isym"]
+        and calc.int_params["isym"] in (1, 2)
+    ):
+        if verbose:
+            warnings.warn(
+                "Copilot: Setting ISYM = 3 because you are running a hybrid calculation.",
+                UserWarning,
+            )
+        calc.set(isym=3)
+
     if calc.bool_params["luse_vdw"] and "ASE_VASP_VDW" not in os.environ:
         warnings.warn(
             "ASE_VASP_VDW was not set, yet you requested a vdW functional.",
