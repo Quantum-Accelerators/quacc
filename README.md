@@ -40,8 +40,7 @@ from htase.schemas.vasp import summarize
 from ase.io.jsonio import encode, decode
 from ase.build import bulk
 from jobflow import job, Flow
-from 
-managers.local import run_locally
+from managers.local import run_locally
 
 #-----Jobflow Function-----
 @job
