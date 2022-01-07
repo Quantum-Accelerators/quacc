@@ -4,7 +4,6 @@ from pymatgen.core.surface import generate_all_slabs, Slab
 from pymatgen.core import Structure
 from pymatgen.analysis.adsorption import AdsorbateSiteFinder
 import numpy as np
-import random
 import warnings
 
 # NOTES:
@@ -102,47 +101,6 @@ def invert_slab(slab_struct, return_struct=False):
     return inverted_slab
 
 
-# internal Pymatgen-only function
-def gen_slabs(
-    struct, max_index, min_slab_size, min_vacuum_size, flip_asymmetric, **slabgen_kwargs
-):
-    """
-    Generate slabs from a pymatgen structure.
-
-    Args:
-        struct (pymatgen.core.structure.Structure): structure to generate slabs from
-        max_index (int): maximum index to generate slabs from
-        min_slab_size (float): minimum slab size in angstroms
-        min_vacuum_size (float): minimum vacuum size in angstroms
-        flip_asymmetric (bool): True if asymmetric slabs should be flipped
-        slabgen_kwargs (dict): keyword arguments to pass to pymatgen.core.surface.generate_all_slabs
-
-    Returns:
-        slabs (list): list of pymatgen.core.surface.Slab objects
-
-    """
-
-    # Call generate_all_slabs()
-    slabs = [
-        slab
-        for slab in generate_all_slabs(
-            struct, max_index, min_slab_size, min_vacuum_size, **slabgen_kwargs
-        )
-    ]
-
-    # If the two terminations are not equivalent, make new slab
-    # by inverting the original slab and add it to the list
-    if flip_asymmetric:
-        new_slabs = []
-        for slab in slabs:
-            if not slab.is_symmetric():
-                new_slab = invert_slab(slab, return_struct=True)
-                new_slabs.append(new_slab)
-        slabs.extend(new_slabs)
-
-    return slabs
-
-
 def make_slabs_from_bulk(
     atoms,
     max_index=1,
@@ -152,7 +110,6 @@ def make_slabs_from_bulk(
     z_fix=2.0,
     flip_asymmetric=True,
     required_surface_atoms=None,
-    max_slabs=None,
     **slabgen_kwargs,
 ):
     """
@@ -177,12 +134,6 @@ def make_slabs_from_bulk(
         required_surface_atoms (list of str): List of chemical symbols that must be present on the
         surface of the slab otherwise the slab will be discarded, e.g. ["Cu", "Ni"]
             Defaults to None.
-        max_slabs (int): A target number for the maximum number of slabs to generate. If set
-        to a value, ftol in the generate_all_slabs() pymatgen function will be tuned from 0.1 to 0.8
-        to see if len(final_slabs) can be brought to <= target_max_slabs. If not achieved, a random
-        set of max_slabs number of slabs are returned. Note that this check takes place before
-        any required_surface_atoms check.
-            Defaults to None.
 
     Returns:
         final_slabs (ase.Atoms): all generated slabs
@@ -201,58 +152,23 @@ def make_slabs_from_bulk(
     if isinstance(required_surface_atoms, str):
         required_surface_atoms = [required_surface_atoms]
 
-    # Call Pymatgen's generate_all_slabs()
-    slabs = gen_slabs(
-        struct,
-        max_index,
-        min_slab_size,
-        min_vacuum_size,
-        flip_asymmetric,
-        **slabgen_kwargs,
-    )
-
-    # Try to reduce the number of slabs if the user really wants it...
-    # (desperate times call for desperate measures)
-    if max_slabs and len(slabs) > max_slabs:
-        warnings.warn(
-            f"You requested {max_slabs} slabs, but {len(slabs)} were generated. Turning off the asymmetric slab flipping.",
-            UserWarning,
+    # Call generate_all_slabs()
+    slabs = [
+        slab
+        for slab in generate_all_slabs(
+            struct, max_index, min_slab_size, min_vacuum_size, **slabgen_kwargs
         )
-        slabs = gen_slabs(
-            struct,
-            max_index,
-            min_slab_size,
-            min_vacuum_size,
-            False,
-            **slabgen_kwargs,
-        )
-        if len(slabs) > max_slabs:
-            warnings.warn(
-                f"We reduced the number of slabs to {len(slabs)}, but that was not enough. Tuning ftol in generate_all_slabs() to try to reduce the number of slabs, at the expense of sampling fewer surface configurations.",
-                UserWarning,
-            )
-            slabs = random.sample(slabs, max_slabs)
-            for ftol in np.arange(0.1, 0.9, 0.1):
-                slabs_ftol = gen_slabs(
-                    struct,
-                    max_index,
-                    min_slab_size,
-                    min_vacuum_size,
-                    False,
-                    ftol=ftol,
-                    **slabgen_kwargs,
-                )
-                if len(slabs_ftol) < len(slabs):
-                    slabs = slabs_ftol
-                if len(slabs) <= max_slabs:
-                    break
+    ]
 
-            if len(slabs) > max_slabs:
-                warnings.warn(
-                    f"Could not reduce the number of slabs to {max_slabs}. Picking a random set of {max_slabs} slabs.",
-                    UserWarning,
-                )
-                slabs = random.sample(slabs, max_slabs)
+    # If the two terminations are not equivalent, make new slab
+    # by inverting the original slab and add it to the list
+    if flip_asymmetric:
+        new_slabs = []
+        for slab in slabs:
+            if not slab.is_symmetric():
+                new_slab = invert_slab(slab, return_struct=True)
+                new_slabs.append(new_slab)
+        slabs.extend(new_slabs)
 
     # For each slab, make sure the lengths and widths are large enough
     # and fix atoms z_fix away from the top of the slab.
@@ -298,3 +214,98 @@ def make_slabs_from_bulk(
         final_slabs = None
 
     return final_slabs
+
+
+def make_max_slabs_from_bulk(
+    atoms,
+    max_slabs,
+    tune_ftol=True,
+    max_index=1,
+    min_slab_size=7.0,
+    min_length_width=8.0,
+    min_vacuum_size=20.0,
+    z_fix=2.0,
+    flip_asymmetric=True,
+    required_surface_atoms=None,
+    **slabgen_kwargs,
+):
+
+    """
+    Generate no more than max_slabs number of slabs from a bulk structure.
+
+    Args:
+        atoms (ase.Atoms): bulk structure to generate slabs from
+        tune_ftol (bool): If True, the f_tol for the slab generator will be tuned to try
+        to reduce the number of structures
+
+    Returns:
+        slabs (list): list of pymatgen.core.surface.Slab objects
+
+    """
+
+    slabs = make_slabs_from_bulk(
+        atoms,
+        max_index=max_index,
+        min_slab_size=min_slab_size,
+        min_length_width=min_length_width,
+        min_vacuum_size=min_vacuum_size,
+        z_fix=z_fix,
+        flip_asymmetric=flip_asymmetric,
+        required_surface_atoms=required_surface_atoms,
+        **slabgen_kwargs,
+    )
+
+    # Try to reduce the number of slabs if the user really wants it...
+    # (desperate times call for desperate measures)
+    if max_slabs and len(slabs) > max_slabs:
+        warnings.warn(
+            f"You requested {max_slabs} slabs, but {len(slabs)} were generated. Turning off the asymmetric slab flipping.",
+            UserWarning,
+        )
+        slabs = make_slabs_from_bulk(
+            atoms,
+            max_index=max_index,
+            min_slab_size=min_slab_size,
+            min_length_width=min_length_width,
+            min_vacuum_size=min_vacuum_size,
+            z_fix=z_fix,
+            flip_asymmetric=False,
+            required_surface_atoms=required_surface_atoms,
+            **slabgen_kwargs,
+        )
+        if len(slabs) > max_slabs:
+            warnings.warn(
+                f"We reduced the number of slabs to {len(slabs)}, but that was not enough. Tuning ftol in generate_all_slabs() to try to reduce the number of slabs, at the expense of sampling fewer surface configurations.",
+                UserWarning,
+            )
+            if tune_ftol:
+                for ftol in np.arange(0.1, 0.9, 0.1):
+                    slabgen_kwargs["ftol"] = ftol
+                    slabs_ftol = make_slabs_from_bulk(
+                        atoms,
+                        max_index=max_index,
+                        min_slab_size=min_slab_size,
+                        min_length_width=min_length_width,
+                        min_vacuum_size=min_vacuum_size,
+                        z_fix=z_fix,
+                        flip_asymmetric=False,
+                        required_surface_atoms=required_surface_atoms,
+                        **slabgen_kwargs,
+                    )
+                    if len(slabs_ftol) < len(slabs):
+                        slabs = slabs_ftol
+                    if len(slabs) <= max_slabs:
+                        break
+
+            if len(slabs) > max_slabs:
+                warnings.warn(
+                    f"Could not reduce the number of slabs to {max_slabs}. Picking the smallest slabs by number of atoms.",
+                    UserWarning,
+                )
+                slabs.sort(key=lambda s: len(s))
+                if max_slabs == 1:
+                    slabs = [slabs[0]]
+                else:
+                    slabs = slabs[0:max_slabs]
+
+    return slabs

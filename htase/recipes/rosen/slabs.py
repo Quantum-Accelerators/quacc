@@ -1,6 +1,6 @@
 from htase.calculators.vasp import SmartVasp
 from htase.schemas.vasp import summarize
-from htase.util.atoms import make_slabs_from_bulk
+from htase.util.atoms import make_max_slabs_from_bulk
 from ase.io.jsonio import encode, decode
 from jobflow import job, Flow, Response
 
@@ -65,10 +65,10 @@ def run_dos(atoms_json):
 
 
 @job
-def bulk_to_slab_job(atoms_json, max_slabs=None, **slabgen_kwargs):
+def bulk_to_slab_job(atoms_json, max_slabs=None, **slab_kwargs):
     atoms = decode(atoms_json)
 
-    slabs = make_slabs_from_bulk(atoms, max_slabs=max_slabs, **slabgen_kwargs)
+    slabs = make_max_slabs_from_bulk(atoms, max_slabs=max_slabs, **slab_kwargs)
     jobs = []
     outputs = []
     for slab in slabs:
