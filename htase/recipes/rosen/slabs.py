@@ -35,12 +35,11 @@ def run_static_job(atoms_json, slab=True):
     atoms = decode(atoms_json)
 
     if slab:
-        updates = {"ncore": NCORE, "kpar": KPAR}
+        updates = {"ncore": NCORE, "kpar": KPAR, "lvhar": True}
     else:
         updates = {
             "auto_dipole": False,
             "auto_kpts": {"length_density": [50, 50, 50]},
-            "lvhar": True,
             "ncore": NCORE,
             "kpar": KPAR * 4,
         }
