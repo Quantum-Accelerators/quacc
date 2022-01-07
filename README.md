@@ -99,7 +99,7 @@ export JOBFLOW_CONFIG_FILE="/path/to/config/jobflow_config/jobflow.yaml"
 
 # FireWorks requirements (optional)
 # (details: https://materialsproject.github.io/fireworks)
-export FW_CONFIG_FILE='/path/to/config/fireworks_config/FW_config.yaml'
+export FW_CONFIG_FILE='/path/to/config/fw_config/FW_config.yaml'
 
 ```
 
