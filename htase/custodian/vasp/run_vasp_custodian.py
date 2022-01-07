@@ -26,6 +26,7 @@ from custodian.vasp.validators import VaspFilesValidator, VasprunXMLValidator
 
 FILE_DIR = Path(__file__).resolve().parent
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 # Read in default settings
 if "VASP_CUSTODIAN_SETTINGS" in os.environ:
