@@ -114,8 +114,8 @@ def test_make_slabs_from_bulk():
 def make_max_slabs_from_bulk():
     atoms = bulk("Cu")
     slabs = make_slabs_from_bulk(atoms)
-    slabs = make_max_slabs_from_bulk(atoms, None)
-    assert slabs == slabs
+    slabs2 = make_max_slabs_from_bulk(atoms, None)
+    assert slabs == slabs2
 
     atoms = bulk("Cu")
     slabs = make_max_slabs_from_bulk(atoms, 2)
