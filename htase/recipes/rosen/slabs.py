@@ -3,11 +3,10 @@ from htase.schemas.vasp import summarize
 from htase.util.atoms import make_slabs_from_bulk
 from ase.io.jsonio import encode, decode
 from jobflow import job, Flow, Response
-from shutil import copyfile
-import os
 
 NCORE = 4
 KPAR = 4
+MAX_SLABS = 20
 
 
 @job
@@ -70,7 +69,7 @@ def run_dos(atoms_json):
 def bulk_to_slab_job(atoms_json, **slabgen_kwargs):
     atoms = decode(atoms_json)
 
-    slabs = make_slabs_from_bulk(atoms, **slabgen_kwargs)
+    slabs = make_slabs_from_bulk(atoms, max_slabs=MAX_SLABS, **slabgen_kwargs)
     jobs = []
     outputs = []
     for slab in slabs:

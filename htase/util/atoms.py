@@ -152,7 +152,7 @@ def make_slabs_from_bulk(
     z_fix=2.0,
     flip_asymmetric=True,
     required_surface_atoms=None,
-    max_returned_slabs=None,
+    max_slabs=None,
     **slabgen_kwargs,
 ):
     """
@@ -177,10 +177,11 @@ def make_slabs_from_bulk(
         required_surface_atoms (list of str): List of chemical symbols that must be present on the
         surface of the slab otherwise the slab will be discarded, e.g. ["Cu", "Ni"]
             Defaults to None.
-        max_returned_slabs (int): A target number for the maximum number of slabs to generate. If set
+        max_slabs (int): A target number for the maximum number of slabs to generate. If set
         to a value, ftol in the generate_all_slabs() pymatgen function will be tuned from 0.1 to 0.8
         to see if len(final_slabs) can be brought to <= target_max_slabs. If not achieved, a random
-        set of max_returned_slabs number of slabs are returned.
+        set of max_slabs number of slabs are returned. Note that this check takes place before
+        any required_surface_atoms check.
             Defaults to None.
 
     Returns:
@@ -212,9 +213,9 @@ def make_slabs_from_bulk(
 
     # Try to reduce the number of slabs if the user really wants it...
     # (desperate times call for desperate measures)
-    if max_returned_slabs and len(slabs) > max_returned_slabs:
+    if max_slabs and len(slabs) > max_slabs:
         warnings.warn(
-            f"You requested {max_returned_slabs} slabs, but {len(slabs)} were generated. Turning off the asymmetric slab flipping.",
+            f"You requested {max_slabs} slabs, but {len(slabs)} were generated. Turning off the asymmetric slab flipping.",
             UserWarning,
         )
         slabs = gen_slabs(
@@ -225,12 +226,12 @@ def make_slabs_from_bulk(
             False,
             **slabgen_kwargs,
         )
-        if len(slabs) > max_returned_slabs:
+        if len(slabs) > max_slabs:
             warnings.warn(
                 f"We reduced the number of slabs to {len(slabs)}, but that was not enough. Tuning ftol in generate_all_slabs() to try to reduce the number of slabs, at the expense of sampling fewer surface configurations.",
                 UserWarning,
             )
-            slabs = random.sample(slabs, max_returned_slabs)
+            slabs = random.sample(slabs, max_slabs)
             for ftol in np.arange(0.1, 0.9, 0.1):
                 slabs_ftol = gen_slabs(
                     struct,
@@ -243,15 +244,15 @@ def make_slabs_from_bulk(
                 )
                 if len(slabs_ftol) < len(slabs):
                     slabs = slabs_ftol
-                if len(slabs) <= max_returned_slabs:
+                if len(slabs) <= max_slabs:
                     break
 
-            if len(slabs) > max_returned_slabs:
+            if len(slabs) > max_slabs:
                 warnings.warn(
-                    f"Could not reduce the number of slabs to {max_returned_slabs}. Picking a random set of {max_returned_slabs} slabs.",
+                    f"Could not reduce the number of slabs to {max_slabs}. Picking a random set of {max_slabs} slabs.",
                     UserWarning,
                 )
-                slabs = random.sample(slabs, max_returned_slabs)
+                slabs = random.sample(slabs, max_slabs)
 
     # For each slab, make sure the lengths and widths are large enough
     # and fix atoms z_fix away from the top of the slab.
