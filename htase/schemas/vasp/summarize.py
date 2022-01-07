@@ -21,6 +21,11 @@ def get_results(atoms=None, dir_path=None, **kwargs):
     if dir_path is None:
         dir_path = os.getcwd()
 
+    if "parse_dos" not in kwargs:
+        kwargs["parse_dos"] = "auto"
+    if "parse_bandstructure" not in kwargs:
+        kwargs["parse_bandstructure"] = "auto"
+
     # Fetch all tabulated results from VASP outputs files
     # Fortunately, Atomate2 already has a handy function for this
     results = TaskDocument.from_directory(dir_path, **kwargs).dict()
