@@ -2,8 +2,6 @@ import os
 import shlex
 import subprocess
 import yaml
-import logging
-from pathlib import Path
 from custodian import Custodian
 from custodian.vasp.handlers import (
     FrozenJobErrorHandler,
@@ -23,10 +21,6 @@ from custodian.vasp.jobs import VaspJob
 from custodian.vasp.validators import VaspFilesValidator, VasprunXMLValidator
 
 # Adapted from https://github.com/materialsproject/atomate2/blob/main/src/atomate2/vasp/run.py
-
-FILE_DIR = Path(__file__).resolve().parent
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 # Read in default settings
 if "VASP_CUSTODIAN_SETTINGS" in os.environ:
@@ -113,12 +107,12 @@ if custodian_enabled:
         **custodian_kwargs,
     )
 
-    logger.info("Running VASP using custodian.")
+    print("Running VASP using custodian.")
     c.run()
 
 else:
 
     # Run VASP without custodian
-    logger.info(f"Running command: {vasp_cmd}")
+    print(f"Running command: {vasp_cmd}")
     return_code = subprocess.call(vasp_cmd, shell=True)
-    logger.info(f"{vasp_cmd} finished running with returncode: {return_code}")
+    print(f"{vasp_cmd} finished running with returncode: {return_code}")
