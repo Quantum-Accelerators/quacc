@@ -23,8 +23,6 @@ def get_results(atoms=None, dir_path=None, **kwargs):
 
     if "parse_dos" not in kwargs:
         kwargs["parse_dos"] = "auto"
-    if "parse_bandstructure" not in kwargs:
-        kwargs["parse_bandstructure"] = "auto"
 
     # Fetch all tabulated results from VASP outputs files
     # Fortunately, Atomate2 already has a handy function for this
