@@ -51,20 +51,10 @@ def run_slab_job(atoms_json, slab=True, static=False):
 @job
 def run_dos(atoms_json):
     atoms = decode(atoms_json)
-    atoms_results = atoms.info["results"]
-    chgcar_path = os.path.join(
-        atoms_results[f"calc{len(atoms_results)-1}"]["rundir"], "CHGCAR"
-    )
-    if os.path.exists(chgcar_path):
-        copyfile(chgcar_path, "CHGCAR")
-        icharg = 11
-    else:
-        icharg = 0
     atoms = SmartVasp(
         atoms,
         preset="SlabRelaxSet",
         nsw=0,
-        icharg=icharg,
         ismear=-5,
         isym=2,
         kpar=4,
