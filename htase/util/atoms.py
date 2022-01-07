@@ -49,6 +49,7 @@ def get_highest_block(atoms):
     return max_block
 
 
+# internal Pymatgen-only function
 def invert_slab(slab_struct, return_struct=False):
     """
     Function to invert a Pymatgen slab object, keeping the vacuum
@@ -101,6 +102,7 @@ def invert_slab(slab_struct, return_struct=False):
     return inverted_slab
 
 
+# internal Pymatgen-only function
 def gen_slabs(
     struct, max_index, min_slab_size, min_vacuum_size, flip_asymmetric, **slabgen_kwargs
 ):
@@ -170,11 +172,11 @@ def make_slabs_from_bulk(
             Defaults to 20.0
         z_fix (float): distance (in angstroms) from top of slab for which atoms should be fixed
             Defaults to 2.0
+        flip_asymmetric (bool): If an asymmetric surface should be flipped and added to the list
+            Defaults to True.
         required_surface_atoms (list of str): List of chemical symbols that must be present on the
         surface of the slab otherwise the slab will be discarded, e.g. ["Cu", "Ni"]
             Defaults to None.
-        flip_asymmetric (bool): If an asymmetric surface should be flipped and added to the list
-            Defaults to True.
         max_returned_slabs (int): A target number for the maximum number of slabs to generate. If set
         to a value, ftol in the generate_all_slabs() pymatgen function will be tuned from 0.1 to 0.8
         to see if len(final_slabs) can be brought to <= target_max_slabs. If not achieved, a random
