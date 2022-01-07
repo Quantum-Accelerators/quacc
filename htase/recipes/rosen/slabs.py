@@ -13,14 +13,16 @@ def run_relax_job(atoms_json, slab=True):
     atoms = decode(atoms_json)
 
     if slab:
-        updates = {}
+        updates = {"ncore": NCORE, "kpar": KPAR}
     else:
         updates = {
             "isif": 3,
             "auto_dipole": False,
             "auto_kpts": {"length_density": [50, 50, 50]},
+            "ncore": NCORE,
+            "kpar": KPAR * 4,
         }
-    atoms = SmartVasp(atoms, preset="SlabRelaxSet", ncore=NCORE, kpar=KPAR, **updates)
+    atoms = SmartVasp(atoms, preset="SlabRelaxSet", **updates)
 
     atoms.get_potential_energy()
     results = summarize.get_results(atoms)
@@ -33,12 +35,14 @@ def run_static_job(atoms_json, slab=True):
     atoms = decode(atoms_json)
 
     if slab:
-        updates = {}
+        updates = {"ncore": NCORE, "kpar": KPAR}
     else:
         updates = {
             "auto_dipole": False,
             "auto_kpts": {"length_density": [50, 50, 50]},
             "lvhar": True,
+            "ncore": NCORE,
+            "kpar": KPAR * 4,
         }
     atoms = SmartVasp(
         atoms,
@@ -50,8 +54,6 @@ def run_static_job(atoms_json, slab=True):
         lwave=True,
         lcharg=True,
         laechg=True,
-        ncore=NCORE,
-        kpar=KPAR,
         **updates
     )
     atoms.get_potential_energy()
