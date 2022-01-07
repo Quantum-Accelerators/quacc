@@ -6,7 +6,6 @@ from jobflow import job, Flow, Response
 
 NCORE = 4
 KPAR = 4
-MAX_SLABS = 20
 
 
 @job
@@ -66,10 +65,10 @@ def run_dos(atoms_json):
 
 
 @job
-def bulk_to_slab_job(atoms_json, **slabgen_kwargs):
+def bulk_to_slab_job(atoms_json, max_slabs=None, **slabgen_kwargs):
     atoms = decode(atoms_json)
 
-    slabs = make_slabs_from_bulk(atoms, max_slabs=MAX_SLABS, **slabgen_kwargs)
+    slabs = make_slabs_from_bulk(atoms, max_slabs=max_slabs, **slabgen_kwargs)
     jobs = []
     outputs = []
     for slab in slabs:
