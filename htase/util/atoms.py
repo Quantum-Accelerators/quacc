@@ -212,30 +212,44 @@ def make_slabs_from_bulk(
     # (desperate times call for desperate measures)
     if max_returned_slabs and len(slabs) > max_returned_slabs:
         warnings.warn(
-            f"You requested {max_returned_slabs} slabs but {len(slabs)} were generated. Tuning ftol in generate_all_slabs() to try to reduce the number of slabs, at the expense of sampling fewer surface configurations.",
+            f"You requested {max_returned_slabs} slabs, but {len(slabs)} were generated. Turning off the asymmetric slab flipping.",
             UserWarning,
         )
-        for ftol in np.arange(0.1, 0.9, 0.1):
-            slabs_ftol = gen_slabs(
-                struct,
-                max_index,
-                min_slab_size,
-                min_vacuum_size,
-                flip_asymmetric,
-                ftol=ftol,
-                **slabgen_kwargs,
-            )
-            if len(slabs_ftol) < len(slabs):
-                slabs = slabs_ftol
-            if len(slabs) <= max_returned_slabs:
-                break
-
+        slabs = gen_slabs(
+            struct,
+            max_index,
+            min_slab_size,
+            min_vacuum_size,
+            False,
+            **slabgen_kwargs,
+        )
         if len(slabs) > max_returned_slabs:
             warnings.warn(
-                f"Could not reduce the number of slabs to {max_returned_slabs}. Picking a random set of {max_returned_slabs} slabs.",
+                f"We reduced the number of slabs to {len(slabs)}, but that was not enough. Tuning ftol in generate_all_slabs() to try to reduce the number of slabs, at the expense of sampling fewer surface configurations.",
                 UserWarning,
             )
             slabs = random.sample(slabs, max_returned_slabs)
+            for ftol in np.arange(0.1, 0.9, 0.1):
+                slabs_ftol = gen_slabs(
+                    struct,
+                    max_index,
+                    min_slab_size,
+                    min_vacuum_size,
+                    False,
+                    ftol=ftol,
+                    **slabgen_kwargs,
+                )
+                if len(slabs_ftol) < len(slabs):
+                    slabs = slabs_ftol
+                if len(slabs) <= max_returned_slabs:
+                    break
+
+            if len(slabs) > max_returned_slabs:
+                warnings.warn(
+                    f"Could not reduce the number of slabs to {max_returned_slabs}. Picking a random set of {max_returned_slabs} slabs.",
+                    UserWarning,
+                )
+                slabs = random.sample(slabs, max_returned_slabs)
 
     # For each slab, make sure the lengths and widths are large enough
     # and fix atoms z_fix away from the top of the slab.
