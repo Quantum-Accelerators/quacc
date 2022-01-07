@@ -3,7 +3,7 @@ from ase.build import bulk
 from pymatgen.core.surface import SlabGenerator, generate_all_slabs
 from pymatgen.core import Structure
 from pymatgen.io.ase import AseAtomsAdaptor
-from htase.util.atoms import invert_slab, make_slabs_from_bulk
+from htase.util.atoms import invert_slab, make_slabs_from_bulk, make_max_slabs_from_bulk
 from htase.util.calc import cache_calc
 from htase.calculators.vasp import SmartVasp
 from ase.io.jsonio import encode, decode
@@ -109,3 +109,14 @@ def test_make_slabs_from_bulk():
     atoms = deepcopy(ATOMS_MAG)
     slabs = make_slabs_from_bulk(atoms)
     assert slabs[0].get_magnetic_moments()[0] == atoms.get_magnetic_moments()[0]
+
+
+def make_max_slabs_from_bulk():
+    atoms = bulk("Cu")
+    slabs = make_slabs_from_bulk(atoms)
+    slabs = make_max_slabs_from_bulk(atoms, None)
+    assert slabs == slabs
+
+    atoms = bulk("Cu")
+    slabs = make_max_slabs_from_bulk(atoms, 2)
+    assert len(slabs) == 2
