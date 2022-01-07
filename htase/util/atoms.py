@@ -106,6 +106,7 @@ def make_slabs_from_bulk(
     min_length_width=8.0,
     min_vacuum_size=20.0,
     z_fix=2.0,
+    flip_asymetric=True,
     required_surface_atoms=None,
 ):
     """
@@ -128,6 +129,8 @@ def make_slabs_from_bulk(
         required_surface_atoms (list of str): List of chemical symbols that must be present on the
         surface of the slab otherwise the slab will be discarded, e.g. ["Cu", "Ni"]
             Defaults to None.
+        flip_asymmetric (bool): If an asymmetric surface should be flipped and added to the list
+            Defaults to True.
 
     Returns:
         final_slabs (ase.Atoms): all generated slabs
@@ -155,12 +158,13 @@ def make_slabs_from_bulk(
 
     # If the two terminations are not equivalent, make new slab
     # by inverting the original slab and add it to the list
-    new_slabs = []
-    for slab in slabs:
-        if not slab.is_symmetric():
-            new_slab = invert_slab(slab, return_struct=True)
-            new_slabs.append(new_slab)
-    slabs.extend(new_slabs)
+    if flip_asymetric:
+        new_slabs = []
+        for slab in slabs:
+            if not slab.is_symmetric():
+                new_slab = invert_slab(slab, return_struct=True)
+                new_slabs.append(new_slab)
+        slabs.extend(new_slabs)
 
     # For each slab, make sure the lengths and widths are large enough
     # and fix atoms z_fix away from the top of the slab.
@@ -199,12 +203,10 @@ def make_slabs_from_bulk(
 
         # Add slab to list
         final_slab = AseAtomsAdaptor.get_atoms(final_slab)
-        if getattr(atoms, "info", None) is not None:
-            final_slab.info = atoms.info
+        final_slab.info = atoms.info
         final_slabs.append(final_slab)
 
-    # in case none of the desired atoms are on the surface
-    if final_slabs == []:
+    if len(final_slabs) == 0:
         final_slabs = None
 
     return final_slabs
