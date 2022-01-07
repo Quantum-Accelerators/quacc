@@ -236,11 +236,7 @@ def make_max_slabs_from_bulk(
     1. Generate all slabs
     2. If number of slabs is greater than max_slabs, tune ftol from 0.1 to 0.8
     in increments of 0.1.
-    3. If number of slabs is still greater than max_slabs, disable flipping of
-    asymmetric slabs (with default ftol of 0.1).
-    4. If number of slabs is still greater than max_slabs, disable the flipping
-    of asymmetric slabs *and* tune ftol form 0.1 to 0.8.
-    5. If number of slabs is still greater than max_slabs, only return the slabs
+    3. If number of slabs is still greater than max_slabs, only return the slabs
     with the fewest number of atoms per cell such that the returned amount is
     less than or equal to max_slabs.
 
@@ -307,51 +303,9 @@ def make_max_slabs_from_bulk(
                 if len(slabs) <= max_slabs:
                     break
 
-        if len(slabs) > max_slabs and flip_asymmetric is True:
-            warnings.warn(
-                f"You requested {max_slabs} slabs, but {len(slabs)} were generated. Turning off the asymmetric slab flipping.",
-                UserWarning,
-            )
-            slabs_noflip = make_slabs_from_bulk(
-                atoms,
-                max_index=max_index,
-                min_slab_size=min_slab_size,
-                min_length_width=min_length_width,
-                min_vacuum_size=min_vacuum_size,
-                z_fix=z_fix,
-                flip_asymmetric=False,
-                required_surface_atoms=required_surface_atoms,
-                **slabgen_kwargs,
-            )
-            if len(slabs_noflip) < len(slabs):
-                slabs = slabs_noflip
-
-            if len(slabs) > max_slabs:
-                warnings.warn(
-                    f"You requested {max_slabs} slabs, but {len(slabs)} were generated. Tuning ftol in generate_all_slabs() to try to reduce the number of slabs *and* disabling asymmetric slab flipping.",
-                    UserWarning,
-                )
-                for ftol in np.arange(0.1, 0.9, 0.1):
-                    slabgen_kwargs["ftol"] = ftol
-                    slabs_ftol = make_slabs_from_bulk(
-                        atoms,
-                        max_index=max_index,
-                        min_slab_size=min_slab_size,
-                        min_length_width=min_length_width,
-                        min_vacuum_size=min_vacuum_size,
-                        z_fix=z_fix,
-                        flip_asymmetric=False,
-                        required_surface_atoms=required_surface_atoms,
-                        **slabgen_kwargs,
-                    )
-                    if len(slabs_ftol) < len(slabs):
-                        slabs = slabs_ftol
-                    if len(slabs) <= max_slabs:
-                        break
-
         if len(slabs) > max_slabs:
             warnings.warn(
-                f"Could not reduce the number of slabs to {max_slabs}. Picking the smallest slabs by number of atoms.",
+                f"You requested {max_slabs} slabs, but {len(slabs)} were generated. Could not reduce further. Picking the smallest slabs by number of atoms.",
                 UserWarning,
             )
             slabs.sort(key=lambda s: len(s))
