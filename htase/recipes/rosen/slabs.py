@@ -56,7 +56,7 @@ def run_static_job(atoms_json, slab=True):
         **updates
     )
     atoms.get_potential_energy()
-    results = summarize.get_results(atoms=atoms, parse_dos=True)
+    results = summarize.get_results(atoms=atoms)
 
     return results
 
