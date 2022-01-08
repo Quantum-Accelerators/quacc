@@ -18,6 +18,12 @@ import warnings
 def check_is_metal(atoms):
     """
     Checks if a structure is a likely metal.
+
+    Args:
+        atoms (ase.Atoms): ASE atoms object
+
+    Returns:
+        is_metal (bool): True if the structure is likely a metal; False otherwise
     """
     if isinstance(atoms, Atoms):
         struct = AseAtomsAdaptor.get_structure(atoms)
@@ -30,6 +36,12 @@ def check_is_metal(atoms):
 def get_highest_block(atoms):
     """
     Get the highest block (e.g. p-block, d-block f-block) of a structure
+
+    Args:
+        atoms (ase.Atoms): ASE atoms object
+
+    Returns:
+        highest_block (str): highest block of the structure
     """
     if isinstance(atoms, Atoms):
         struct = AseAtomsAdaptor.get_structure(atoms)
@@ -55,14 +67,13 @@ def invert_slab(slab_struct, return_struct=False):
     space in place.
 
     Args:
-        slab (pymatgen.core.surface.Slab): slab to invert
+        slab_struct (pymatgen.core.surface.Slab): slab to invert
         return_struct (bool): True if a Pymatgen structure (technically, slab) object
         should be returned; False if an ASE atoms object should be returned
             Defaults to False
 
     Returns:
         inverted_slab (ase.Atoms or pymatgen.core.surface.Slab): inverted slab
-
     """
     if not isinstance(slab_struct, Slab):
         raise TypeError("slab must be a pymatgen.core.surface.Slab object")
