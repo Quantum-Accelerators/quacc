@@ -8,7 +8,7 @@ from copy import deepcopy
 
 # NOTES:
 # - Anytime an Atoms object is converted to a pmg structure, make sure
-# to reattach any .info flags to the Atoms object.
+# to reattach any .info flags to the Atoms object via `new_atoms.info = atoms.info.copy() or {}``
 # - All major functions should take in Atoms by default and reutrn Atoms
 # by default. Pymatgen structures can be returned with an optional kwarg.
 # - If you modify the properties of an input Atoms object in any way, make sure to do so
@@ -62,29 +62,26 @@ def get_highest_block(atoms):
 
 def invert_atoms(atoms, return_struct=False):
     """
-    Function to invert a Pymatgen slab object, keeping the vacuum
-    space in place.
+    Function to invert a slab
     Args:
-        slab_struct (pymatgen.core.surface.Slab): slab to invert
+        atoms (ase.Atoms): Atoms object to convert
         return_struct (bool): True if a Pymatgen structure (technically, slab) object
         should be returned; False if an ASE atoms object should be returned
             Defaults to False
     Returns:
-        inverted_slab (ase.Atoms or pymatgen.core.surface.Slab): inverted slab
+        new_atoms (ase.Atoms or pymatgen.core.surface.Slab): inverted slab
     """
 
     if isinstance(atoms, Atoms):
-        atoms_info = atoms.info.copy()
         new_atoms = deepcopy(atoms)
     else:
-        atoms_info = {}
         new_atoms = AseAtomsAdaptor.get_atoms(atoms)
 
     new_atoms.rotate(180, "x")
     new_atoms.set_cell(new_atoms.get_cell() * -1)
     new_atoms.wrap()
 
-    new_atoms.info = atoms_info
+    new_atoms.info = atoms.info.copy() or {}
     if return_struct:
         new_atoms = AseAtomsAdaptor.get_structure(new_atoms)
 
