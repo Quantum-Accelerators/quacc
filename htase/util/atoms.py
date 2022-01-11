@@ -218,8 +218,14 @@ def make_slabs_from_bulk(
                 continue
 
         # Add slab to list
+        slab_stats = {
+            "miller_index": final_slab.miller_index,
+            "shift": final_slab.shift,
+            "scale_factor": final_slab.scale_factor,
+        }
         final_slab = AseAtomsAdaptor.get_atoms(final_slab)
         final_slab.info = atoms.info
+        final_slab.info["slab_stats"] = slab_stats
         final_slabs.append(final_slab)
 
     if len(final_slabs) == 0:

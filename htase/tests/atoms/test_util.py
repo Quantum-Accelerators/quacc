@@ -89,9 +89,9 @@ def test_invert_slab():
 # This needs more tests
 def test_make_slabs_from_bulk():
     atoms = bulk("Cu")
-    atoms.info = {"test": "hi"}
+    atoms.info["user_comments"] = "hi"
     slabs = make_slabs_from_bulk(atoms)
-    assert slabs[-1].info == {"test": "hi"}
+    assert slabs[-1].info.get("user_comments", None) == "hi"
 
     atoms = bulk("Cu")
     slabs = make_slabs_from_bulk(atoms, required_surface_atoms=["Co"])
@@ -109,6 +109,7 @@ def test_make_slabs_from_bulk():
     atoms = deepcopy(ATOMS_MAG)
     slabs = make_slabs_from_bulk(atoms)
     assert slabs[0].get_magnetic_moments()[0] == atoms.get_magnetic_moments()[0]
+    assert slabs[-1].info.get("slab_stats", None) is not None
 
 
 def make_max_slabs_from_bulk():
@@ -120,3 +121,4 @@ def make_max_slabs_from_bulk():
     atoms = bulk("Cu")
     slabs = make_max_slabs_from_bulk(atoms, 2)
     assert len(slabs) == 2
+    assert slabs[-1].info.get("slab_stats", None) is not None
