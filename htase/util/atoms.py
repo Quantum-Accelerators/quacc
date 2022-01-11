@@ -2,7 +2,6 @@ from ase.atoms import Atoms
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.core.surface import generate_all_slabs, Slab
 from pymatgen.analysis.adsorption import AdsorbateSiteFinder
-from pymatgen.core.surface import center_slab
 import numpy as np
 import warnings
 from copy import deepcopy
