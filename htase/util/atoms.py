@@ -1,10 +1,10 @@
 from ase.atoms import Atoms
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.core.surface import generate_all_slabs, Slab
-from pymatgen.core import Structure
 from pymatgen.analysis.adsorption import AdsorbateSiteFinder
 import numpy as np
 import warnings
+from copy import deepcopy
 
 # NOTES:
 # - Anytime an Atoms object is converted to a pmg structure, make sure
@@ -60,56 +60,35 @@ def get_highest_block(atoms):
     return max_block
 
 
-# internal Pymatgen-only function
-def invert_slab(slab_struct, return_struct=False):
+def invert_atoms(atoms, return_struct=False):
     """
     Function to invert a Pymatgen slab object, keeping the vacuum
     space in place.
-
     Args:
         slab_struct (pymatgen.core.surface.Slab): slab to invert
         return_struct (bool): True if a Pymatgen structure (technically, slab) object
         should be returned; False if an ASE atoms object should be returned
             Defaults to False
-
     Returns:
         inverted_slab (ase.Atoms or pymatgen.core.surface.Slab): inverted slab
     """
-    if not isinstance(slab_struct, Slab):
-        raise TypeError("slab must be a pymatgen.core.surface.Slab object")
-    frac_coords = slab_struct.frac_coords
-    max_z = np.max(frac_coords[:, -1])
-    min_z = np.min(frac_coords[:, -1])
-    frac_coords[:, -1] = max_z + min_z - frac_coords[:, -1]
-    oriented_cell = slab_struct.oriented_unit_cell
-    oriented_frac_coords = oriented_cell.frac_coords
-    max_oriented_c = np.max(oriented_frac_coords[:, -1])
-    min_oriented_c = np.min(oriented_frac_coords[:, -1])
-    oriented_frac_coords[:, -1] = (
-        max_oriented_c + min_oriented_c - oriented_frac_coords[:, -1]
-    )
-    inverted_oriented_cell = Structure(
-        oriented_cell.lattice,
-        oriented_cell.species,
-        oriented_frac_coords,
-        site_properties=oriented_cell.site_properties,
-    )
-    inverted_slab_struct = Slab(
-        slab_struct.lattice,
-        species=slab_struct.species,
-        coords=frac_coords,
-        miller_index=slab_struct.miller_index,
-        oriented_unit_cell=inverted_oriented_cell,
-        shift=-slab_struct.shift,
-        scale_factor=slab_struct.scale_factor,
-        site_properties=slab_struct.site_properties,
-    )
-    if return_struct:
-        inverted_slab = inverted_slab_struct
-    else:
-        inverted_slab = AseAtomsAdaptor.get_atoms(inverted_slab_struct)
 
-    return inverted_slab
+    if isinstance(atoms, Atoms):
+        atoms_info = atoms.info.copy()
+        new_atoms = deepcopy(atoms)
+    else:
+        atoms_info = {}
+        new_atoms = AseAtomsAdaptor.get_atoms(atoms)
+
+    new_atoms.rotate(180, "x")
+    new_atoms.set_cell(new_atoms.get_cell() * -1)
+    new_atoms.wrap()
+
+    new_atoms.info = atoms_info
+    if return_struct:
+        new_atoms = AseAtomsAdaptor.get_structure(new_atoms)
+
+    return new_atoms
 
 
 def make_slabs_from_bulk(
@@ -165,12 +144,9 @@ def make_slabs_from_bulk(
         required_surface_atoms = [required_surface_atoms]
 
     # Call generate_all_slabs()
-    slabs = [
-        slab
-        for slab in generate_all_slabs(
-            struct, max_index, min_slab_size, min_vacuum_size, **slabgen_kwargs
-        )
-    ]
+    slabs = generate_all_slabs(
+        struct, max_index, min_slab_size, min_vacuum_size, **slabgen_kwargs
+    )
 
     # If the two terminations are not equivalent, make new slab
     # by inverting the original slab and add it to the list
@@ -178,33 +154,45 @@ def make_slabs_from_bulk(
         new_slabs = []
         for slab in slabs:
             if not slab.is_symmetric():
-                new_slab = invert_slab(slab, return_struct=True)
+                new_slab = invert_atoms(slab, return_struct=True)
+                new_oriented_unit_cell = invert_atoms(
+                    slab.oriented_unit_cell, return_struct=True
+                )
+                new_slab = Slab(
+                    new_slab.lattice,
+                    new_slab.species,
+                    coords=new_slab.frac_coords,
+                    miller_index=slab.miller_index,
+                    oriented_unit_cell=new_oriented_unit_cell,
+                    shift=-slab.shift,
+                    scale_factor=slab.scale_factor,
+                    site_properties=new_slab.site_properties,
+                )
                 new_slabs.append(new_slab)
         slabs.extend(new_slabs)
 
     # For each slab, make sure the lengths and widths are large enough
     # and fix atoms z_fix away from the top of the slab.
-    final_slabs = []
+    slabs_with_props = []
     for slab in slabs:
 
         # Supercell creation (if necessary)
         a_factor = int(np.ceil(min_length_width / slab.lattice.abc[0]))
         b_factor = int(np.ceil(min_length_width / slab.lattice.abc[1]))
-        final_slab = slab.copy()
-        final_slab.make_supercell([a_factor, b_factor, 1])
+        slab_with_props = slab.copy()
+        slab_with_props.make_supercell([a_factor, b_factor, 1])
 
         # Apply constraints by distance from top surface
         # This does not actually create an adsorbate. It is just a
         # useful function for finding surface vs. subsurface sites
-        # since you can't just do z_max - z_fix
         if z_fix:
-            final_slab = AdsorbateSiteFinder(
-                final_slab, selective_dynamics=True, height=z_fix
+            slab_with_props = AdsorbateSiteFinder(
+                slab_with_props, selective_dynamics=True, height=z_fix
             ).slab
 
             surface_species = [
                 site.specie.symbol
-                for site in final_slab
+                for site in slab_with_props
                 if site.properties["surface_properties"] == "surface"
             ]
 
@@ -218,18 +206,24 @@ def make_slabs_from_bulk(
                 continue
 
         # Add slab to list
+        slabs_with_props.append(slab_with_props)
+
+    if len(slabs_with_props) == 0:
+        return None
+
+    # Only get unique structures
+    final_slabs = []
+    for slab_with_props in slabs_with_props:
+        final_slab = AseAtomsAdaptor.get_atoms(slab_with_props)
+
         slab_stats = {
-            "miller_index": final_slab.miller_index,
-            "shift": final_slab.shift,
-            "scale_factor": final_slab.scale_factor,
+            "miller_index": slab_with_props.miller_index,
+            "shift": slab_with_props.shift,
+            "scale_factor": slab_with_props.scale_factor,
         }
-        final_slab = AseAtomsAdaptor.get_atoms(final_slab)
-        final_slab.info = atoms.info
+        final_slab.info = atoms.info.copy() or {}
         final_slab.info["slab_stats"] = slab_stats
         final_slabs.append(final_slab)
-
-    if len(final_slabs) == 0:
-        final_slabs = None
 
     return final_slabs
 
