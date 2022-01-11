@@ -2,6 +2,7 @@ from ase.atoms import Atoms
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.core.surface import generate_all_slabs, Slab
 from pymatgen.analysis.adsorption import AdsorbateSiteFinder
+from pymatgen.core.surface import center_slab
 import numpy as np
 import warnings
 from copy import deepcopy
@@ -60,11 +61,11 @@ def get_highest_block(atoms):
     return max_block
 
 
-def invert_atoms(atoms, return_struct=False):
+def flip_atoms(atoms, return_struct=False):
     """
-    Function to invert a slab
+    Convenience function for vertically flipping atoms or structures
     Args:
-        atoms (ase.Atoms): Atoms object to convert
+        atoms (ase.Atoms|pymatgen.core.Structure): Atoms/structure to flip
         return_struct (bool): True if a Pymatgen structure (technically, slab) object
         should be returned; False if an ASE atoms object should be returned
             Defaults to False
@@ -74,14 +75,15 @@ def invert_atoms(atoms, return_struct=False):
 
     if isinstance(atoms, Atoms):
         new_atoms = deepcopy(atoms)
+        atoms_info = atoms.info.copy() or {}
     else:
         new_atoms = AseAtomsAdaptor.get_atoms(atoms)
+        atoms_info = {}
 
     new_atoms.rotate(180, "x")
-    new_atoms.set_cell(new_atoms.get_cell() * -1)
     new_atoms.wrap()
 
-    new_atoms.info = atoms.info.copy() or {}
+    new_atoms.info = atoms_info
     if return_struct:
         new_atoms = AseAtomsAdaptor.get_structure(new_atoms)
 
@@ -127,22 +129,28 @@ def make_slabs_from_bulk(
         final_slabs (ase.Atoms): all generated slabs
     """
 
-    # Note: This will not work as expected if the slab crosses the
-    # unit cell boundary or for 2D systems. See Oxana/Martin's code
-    # for the 2D workflow: https://github.com/oxana-a/atomate/blob/ads_wf/atomate/vasp/firetasks/adsorption_tasks.py
+    # Note: This will not work properly for 2D structures. See Oxana/Martin's code
+    # for adjustments for 2D: https://github.com/oxana-a/atomate/blob/ads_wf/atomate/vasp/firetasks/adsorption_tasks.py
 
     # Use pymatgen to generate slabs
     if isinstance(atoms, Atoms):
         struct = AseAtomsAdaptor.get_structure(atoms)
+        atoms_info = atoms.info.copy()
     else:
         struct = atoms
+        atoms_info = {}
 
     if isinstance(required_surface_atoms, str):
         required_surface_atoms = [required_surface_atoms]
 
     # Call generate_all_slabs()
     slabs = generate_all_slabs(
-        struct, max_index, min_slab_size, min_vacuum_size, **slabgen_kwargs
+        struct,
+        max_index,
+        min_slab_size,
+        min_vacuum_size,
+        center_slab=True,
+        **slabgen_kwargs,
     )
 
     # If the two terminations are not equivalent, make new slab
@@ -151,8 +159,9 @@ def make_slabs_from_bulk(
         new_slabs = []
         for slab in slabs:
             if not slab.is_symmetric():
-                new_slab = invert_atoms(slab, return_struct=True)
-                new_oriented_unit_cell = invert_atoms(
+
+                new_slab = flip_atoms(slab, return_struct=True)
+                new_oriented_unit_cell = flip_atoms(
                     slab.oriented_unit_cell, return_struct=True
                 )
                 new_slab = Slab(
@@ -164,6 +173,7 @@ def make_slabs_from_bulk(
                     shift=-slab.shift,
                     scale_factor=slab.scale_factor,
                     site_properties=new_slab.site_properties,
+                    reorient_lattice=False,
                 )
                 new_slabs.append(new_slab)
         slabs.extend(new_slabs)
@@ -212,13 +222,12 @@ def make_slabs_from_bulk(
     final_slabs = []
     for slab_with_props in slabs_with_props:
         final_slab = AseAtomsAdaptor.get_atoms(slab_with_props)
-
         slab_stats = {
             "miller_index": slab_with_props.miller_index,
             "shift": slab_with_props.shift,
             "scale_factor": slab_with_props.scale_factor,
         }
-        final_slab.info = atoms.info.copy() or {}
+        final_slab.info = atoms_info.copy() or {}
         final_slab.info["slab_stats"] = slab_stats
         final_slabs.append(final_slab)
 

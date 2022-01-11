@@ -1,10 +1,7 @@
 from ase.io import read
 from ase.build import bulk
-from pymatgen.core.surface import SlabGenerator, generate_all_slabs
-from pymatgen.core import Structure
-from pymatgen.io.ase import AseAtomsAdaptor
 from htase.util.atoms import (
-    invert_atoms,
+    flip_atoms,
     make_slabs_from_bulk,
     make_max_slabs_from_bulk,
 )
@@ -14,7 +11,6 @@ from ase.io.jsonio import encode, decode
 from pathlib import Path
 import os
 import numpy as np
-import pytest
 from copy import deepcopy
 
 FILE_DIR = Path(__file__).resolve().parent
@@ -69,45 +65,49 @@ def test_cache_calc():
     assert decode(encode(atoms)) == atoms
 
 
-# def test_invert_atoms():
-#     struct = Structure.from_file(os.path.join(FILE_DIR, "MnO2_primitive.cif.gz"))
-#     slab = SlabGenerator(struct, [0, 0, 1], 10, 10).get_slab()
-#     inverted_slab = invert_atoms(slab, return_struct=True)
-#     assert pytest.approx(slab[0].x, 1e-9) == inverted_slab[0].x
-#     assert pytest.approx(slab[0].y, 1e-9) == inverted_slab[0].y
-#     assert pytest.approx(slab[0].z, 1e-5) == inverted_slab[0].z - 7.38042756
-
-#     atoms = bulk("Cu")
-#     struct = AseAtomsAdaptor.get_structure(atoms)
-#     slab = [slab_struct for slab_struct in generate_all_slabs(struct, 1, 12, 20)][0]
-#     true_slab = Structure.from_file(os.path.join(FILE_DIR, "slab_invert1.cif.gz"))
-#     assert np.allclose(slab.frac_coords, true_slab.frac_coords)
-
-#     inverted_slab = invert_atoms(slab, return_struct=True)
-#     true_inverted_slab = Structure.from_file(
-#         os.path.join(FILE_DIR, "slab_invert2.cif.gz")
-#     )
-#     assert np.allclose(inverted_slab.frac_coords, true_inverted_slab.frac_coords)
-
-
-# This needs more tests
-def test_make_slabs_from_bulk():
-
+def test_flip_atoms():
     atoms = read(os.path.join(FILE_DIR, "ZnTe.cif.gz"))
+    atoms.info["test"] = "hi"
+    atoms.set_initial_magnetic_moments(
+        [2.0 if atom.symbol == "Zn" else 1.0 for atom in atoms]
+    )
+    new_atoms = flip_atoms(atoms)
+    assert (
+        np.unique(np.round(atoms.get_all_distances(mic=True), 4)).tolist()
+        == np.unique(np.round(new_atoms.get_all_distances(mic=True), 4)).tolist()
+    )
+    Zn_idx = [atom.index for atom in new_atoms if atom.symbol == "Zn"]
+    Te_idx = [atom.index for atom in new_atoms if atom.symbol == "Te"]
+    assert np.all(new_atoms.get_initial_magnetic_moments()[Zn_idx] == 2.0)
+    assert np.all(new_atoms.get_initial_magnetic_moments()[Te_idx] == 1.0)
+    assert new_atoms.info.get("test", None) == "hi"
+
+
+def test_make_slabs_from_bulk():
+    atoms = read(os.path.join(FILE_DIR, "ZnTe.cif.gz"))
+    atoms.info["test"] = "hi"
     slabs = make_slabs_from_bulk(atoms)
     assert len(slabs) == 7
+    assert len(slabs[0].constraints) != 0
     shifts = [np.round(slab.info["slab_stats"]["shift"], 3) for slab in slabs]
     shifts.sort()
     assert shifts == [-0.875, -0.375, -0.125, 0.125, 0.25, 0.375, 0.875]
+    z_store = -np.inf
+    for atom in slabs[3]:
+        if atom.z > z_store:
+            z_store = atom.z
+            highest_atom = atom.symbol
+    z_store = -np.inf
+    for atom in slabs[6]:
+        if atom.z > z_store:
+            z_store = atom.z
+            highest_atom2 = atom.symbol
+    assert highest_atom != highest_atom2
+    assert atoms.info.get("test", None) == "hi"
 
     atoms = read(os.path.join(FILE_DIR, "ZnTe.cif.gz"))
     slabs = make_slabs_from_bulk(atoms, flip_asymmetric=False)
     assert len(slabs) == 4
-
-    atoms = bulk("Cu")
-    atoms.info["user_comments"] = "hi"
-    slabs = make_slabs_from_bulk(atoms)
-    assert slabs[-1].info.get("user_comments", None) == "hi"
 
     atoms = bulk("Cu")
     slabs = make_slabs_from_bulk(atoms, required_surface_atoms=["Co"])
@@ -121,11 +121,24 @@ def test_make_slabs_from_bulk():
         assert len(slab.constraints) == 0
 
     slabs = make_slabs_from_bulk(atoms, min_length_width=20)
+    for slab in slabs:
+        assert slab.cell.lengths()[0] >= 20
+        assert slab.cell.lengths()[1] >= 20
 
     atoms = deepcopy(ATOMS_MAG)
     slabs = make_slabs_from_bulk(atoms)
     assert slabs[0].get_magnetic_moments()[0] == atoms.get_magnetic_moments()[0]
     assert slabs[-1].info.get("slab_stats", None) is not None
+
+    atoms = read(os.path.join(FILE_DIR, "Zn2CuAu.cif.gz"))
+    min_d = atoms.get_all_distances(mic=True)
+    min_d = np.min(min_d[min_d != 0.0])
+    slabs = make_slabs_from_bulk(atoms)
+    assert len(slabs) == 31
+    # This is to make sure nothing funky happened to our atom positions...
+    for slab in slabs:
+        d = slab.get_all_distances(mic=True)
+        assert np.round(np.min(d[d != 0]), 4) == np.round(min_d, 4)
 
 
 def make_max_slabs_from_bulk():
