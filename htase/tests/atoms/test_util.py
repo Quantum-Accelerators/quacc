@@ -141,7 +141,7 @@ def test_make_slabs_from_bulk():
         assert np.round(np.min(d[d != 0]), 4) == np.round(min_d, 4)
 
 
-def make_max_slabs_from_bulk():
+def test_make_max_slabs_from_bulk():
     atoms = bulk("Cu")
     slabs = make_slabs_from_bulk(atoms)
     slabs2 = make_max_slabs_from_bulk(atoms, None)
@@ -151,3 +151,7 @@ def make_max_slabs_from_bulk():
     slabs = make_max_slabs_from_bulk(atoms, 2)
     assert len(slabs) == 2
     assert slabs[-1].info.get("slab_stats", None) is not None
+
+    atoms = read(os.path.join(FILE_DIR, "ZnTe.cif.gz"))
+    slabs = make_max_slabs_from_bulk(atoms, 4)
+    assert len(slabs) == 4
