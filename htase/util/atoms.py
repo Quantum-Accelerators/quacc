@@ -173,7 +173,6 @@ def make_slabs_from_bulk(
                     shift=-slab.shift,
                     scale_factor=slab.scale_factor,
                     site_properties=new_slab.site_properties,
-                    reorient_lattice=False,
                 )
                 new_slabs.append(new_slab)
         slabs.extend(new_slabs)
