@@ -1,4 +1,6 @@
 from ase.atoms import Atoms
+from ase.build import molecule
+from ase.collections import g2
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.core.surface import generate_all_slabs, Slab
 from pymatgen.analysis.adsorption import AdsorbateSiteFinder
@@ -8,7 +10,8 @@ from copy import deepcopy
 
 # NOTES:
 # - Anytime an Atoms object is converted to a pmg structure, make sure
-# to reattach any .info flags to the Atoms object via `new_atoms.info = atoms.info.copy() or {}``
+# to reattach any .info flags to the Atoms object, e.g. via `new_atoms.info = atoms.info.copy()``.
+# Note that atoms.info is mutable, so copy it!
 # - All major functions should take in Atoms by default and reutrn Atoms
 # by default. Pymatgen structures can be returned with an optional kwarg.
 # - If you modify the properties of an input Atoms object in any way, make sure to do so
@@ -74,7 +77,7 @@ def flip_atoms(atoms, return_struct=False):
 
     if isinstance(atoms, Atoms):
         new_atoms = deepcopy(atoms)
-        atoms_info = atoms.info.copy() or {}
+        atoms_info = atoms.info.copy()
     else:
         new_atoms = AseAtomsAdaptor.get_atoms(atoms)
         atoms_info = {}
@@ -224,7 +227,7 @@ def make_slabs_from_bulk(
             "shift": slab_with_props.shift,
             "scale_factor": slab_with_props.scale_factor,
         }
-        final_slab.info = atoms_info.copy() or {}
+        final_slab.info = atoms_info.copy()
         final_slab.info["slab_stats"] = slab_stats
         final_slabs.append(final_slab)
 
@@ -329,3 +332,142 @@ def make_max_slabs_from_bulk(
                 slabs = slabs[0:max_slabs]
 
     return slabs
+
+
+def make_adsorbate_structures(
+    atoms,
+    adsorbate,
+    min_distance=2.0,
+    modes=["ontop", "bridge", "hollow"],
+    required_surface_symbols=None,
+    required_surface_indices=None,
+    ads_site_finder_kwargs=None,
+    find_ads_sites_kwargs=None,
+):
+    """
+    Add a single adsorbate to a structure for every requested adsorption mode
+
+    Args:
+        atoms (ase.Atoms): The atoms to add adsorbates to.
+        adsorbate (ase.Atoms|str): The adsorbate to add. If a string, it will pull from ase.collections.g2
+            Note: It will be placed on the surface in the exact input orientation specified provided by the user.
+        min_distance (float): The distance between the adsorbate and the surface site.
+        modes (List[str], str): The adsorption mode(s) to consider. Options include: "ontop",
+            "bridge", "hollow", "subsurface"
+        required_surface_symbols (list): The symbols of surface atoms to consider. If None,
+            will use all surface atoms.
+        required_surface_indices (list): The indices of surface atoms to consider. If None,
+            will use all surface atoms.
+        ads_site_finder_kwargs (dict): The keyword arguments to pass to the
+            AdsorbateSiteFinder().
+        find_ads_sites_kwargs (dict): The keyword arguments to pass to
+            AdsorbateSiteFinder.find_adsorption_sites().
+
+    Returns:
+        List[ase.Atoms]: The structures with adsorbates
+
+    """
+
+    ads_site_finder_kwargs = ads_site_finder_kwargs or {}
+    find_ads_sites_kwargs = find_ads_sites_kwargs or {}
+
+    # Check for double-used parameters
+    if min_distance and "distance" in find_ads_sites_kwargs:
+        raise ValueError(
+            "Cannot specify both min_distance and find_ads_sites_kwargs['distance']",
+        )
+    else:
+        find_ads_sites_kwargs["distance"] = min_distance
+
+    if modes and "positions" in find_ads_sites_kwargs:
+        raise ValueError(
+            "Cannot specify both modes and find_ads_sites_kwargs['positions']",
+        )
+    else:
+        if isinstance(modes, str):
+            modes = [modes]
+        find_ads_sites_kwargs["positions"] = [mode.lower() for mode in modes]
+
+    # Get adsorbate if string
+    if isinstance(adsorbate, str):
+        if adsorbate in g2.names:
+            adsorbate = molecule(adsorbate)
+        else:
+            raise ValueError(f"{adsorbate} is not in the G2 database.")
+
+    # Make a Pymatgen structure and molecule
+    struct = AseAtomsAdaptor.get_structure(atoms)
+    mol = AseAtomsAdaptor.get_molecule(adsorbate)
+
+    # Get the adsorption sites
+    ads_finder = AdsorbateSiteFinder(struct, **ads_site_finder_kwargs)
+    ads_sites = ads_finder.find_adsorption_sites(**find_ads_sites_kwargs)
+
+    if not ads_sites:
+        return None
+
+    # Find and add the adsorbates
+    new_atoms = []
+    for mode in modes:
+        for ads_coord in ads_sites[mode]:
+
+            # Place adsorbate
+            struct_with_adsorbate = ads_finder.add_adsorbate(mol, ads_coord)
+            atoms_with_adsorbate = AseAtomsAdaptor.get_atoms(struct_with_adsorbate)
+
+            # Get distance matrix between adsorbate binding atom and surface
+            adsorbate_index = len(atoms) + np.argmin(atom.z for atom in adsorbate)
+            d = atoms_with_adsorbate.get_all_distances(mic=True)
+            d = d[[atom.index for atom in atoms], :]
+            d = d[:, adsorbate_index]
+
+            # Find closest surface atoms
+            min_d = min(d)
+            surface_atom_indices = [
+                i for i, val in enumerate(d) if (min_d - 0.01) <= val <= (min_d + 0.01)
+            ]
+            surface_atom_symbols = atoms_with_adsorbate[
+                surface_atom_indices
+            ].get_chemical_symbols()
+
+            # Check if surface binding site is not in the specified
+            # user list. If so, skip this one
+            if required_surface_symbols:
+                if any(
+                    [
+                        surface_atom_symbol not in required_surface_symbols
+                        for surface_atom_symbol in surface_atom_symbols
+                    ]
+                ):
+                    continue
+
+            if required_surface_indices:
+                if any(
+                    [
+                        surface_atom_idx not in required_surface_indices
+                        for surface_atom_idx in surface_atom_indices
+                    ]
+                ):
+                    continue
+
+            # Store adsorbate info
+            atoms_with_adsorbate.info = atoms.info.copy()
+            ads_stats = {
+                "atoms": adsorbate,
+                "formula": adsorbate.get_chemical_formula(),
+                "mode": mode,
+                "surface_atoms_symbols": surface_atom_symbols,
+                "surface_atoms_indices": surface_atom_indices,
+            }
+            if atoms_with_adsorbate.info.get("adsorbates", None) is None:
+                atoms_with_adsorbate.info["adsorbates"] = [ads_stats]
+            else:
+                atoms_with_adsorbate.info["adsorbates"].extend([ads_stats])
+
+            # Add slab+adsorbate to list
+            new_atoms.append(atoms_with_adsorbate)
+
+    if new_atoms == []:
+        return None
+    else:
+        return new_atoms

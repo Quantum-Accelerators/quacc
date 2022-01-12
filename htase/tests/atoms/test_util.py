@@ -1,9 +1,10 @@
 from ase.io import read
-from ase.build import bulk
+from ase.build import bulk, fcc100
 from htase.util.atoms import (
     flip_atoms,
     make_slabs_from_bulk,
     make_max_slabs_from_bulk,
+    make_adsorbate_structures,
 )
 from htase.util.calc import cache_calc
 from htase.calculators.vasp import SmartVasp
@@ -135,6 +136,20 @@ def test_make_slabs_from_bulk():
     min_d = np.min(min_d[min_d != 0.0])
     slabs = make_slabs_from_bulk(atoms)
     assert len(slabs) == 31
+    assert (
+        slabs[3].info["slab_stats"]["shift"] == -slabs[22].info["slab_stats"]["shift"]
+    )
+    z_store = -np.inf
+    for atom in slabs[3]:
+        if atom.z > z_store:
+            z_store = atom.z
+            highest_atom = atom.symbol
+    z_store = -np.inf
+    for atom in slabs[22]:
+        if atom.z > z_store:
+            z_store = atom.z
+            highest_atom2 = atom.symbol
+    assert highest_atom != highest_atom2
     # This is to make sure nothing funky happened to our atom positions...
     for slab in slabs:
         d = slab.get_all_distances(mic=True)
@@ -155,3 +170,29 @@ def test_make_max_slabs_from_bulk():
     atoms = read(os.path.join(FILE_DIR, "ZnTe.cif.gz"))
     slabs = make_max_slabs_from_bulk(atoms, 4)
     assert len(slabs) == 4
+
+
+def test_make_adsorbate_structures():
+
+    atoms = fcc100("Cu", size=(3, 3, 3))
+    atoms.set_tags(None)
+    atoms.center(vacuum=10, axis=2)
+
+    new_atoms = make_adsorbate_structures(atoms, "H2O")
+    assert len(new_atoms) == 3
+    new_atoms = make_adsorbate_structures(atoms, "H2O", modes=["ontop"])
+    assert len(new_atoms) == 1
+
+    atoms[18].symbol = "Fe"
+    new_atoms = make_adsorbate_structures(atoms, "H2O", required_surface_symbols=["Fe"])
+    assert len(new_atoms) == 1
+    new_atoms = make_adsorbate_structures(
+        atoms, "H2O", required_surface_symbols=["Fe"], modes=["bridge"]
+    )
+    # assert new_atoms is None
+    # new_atoms = make_adsorbate_structures(atoms, "H2O", required_surface_indices=[23])
+    # assert len(new_atoms) == 2
+
+    # atoms = read("noncubic_slab.cif.gz")
+    # new_atoms = make_adsorbate_structures(atoms, "H2O")
+    # assert len(new_atoms) == 2
