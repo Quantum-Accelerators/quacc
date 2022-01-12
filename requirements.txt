@@ -3,5 +3,5 @@ pymatgen==2022.1.9
 custodian==2021.12.2
 git+https://github.com/arosen93/jobflow.git@rosen-configupdates#egg=jobflow
 atomate2==0.0.4
-git+https://github.com/arosen93/monty.git@rosen-json-fix
+monty==2022.1.12.1
 FireWorks==1.9.8
