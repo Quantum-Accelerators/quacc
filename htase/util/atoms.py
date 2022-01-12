@@ -4,6 +4,7 @@ from ase.collections import g2
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.core.surface import generate_all_slabs, Slab
 from pymatgen.analysis.adsorption import AdsorbateSiteFinder
+from pymatgen.core.surface import center_slab
 import numpy as np
 import warnings
 from copy import deepcopy
@@ -156,14 +157,37 @@ def make_slabs_from_bulk(
     # If the two terminations are not equivalent, make new slab
     # by inverting the original slab and add it to the list
     if flip_asymmetric:
+
         new_slabs = []
         for slab in slabs:
             if not slab.is_symmetric():
 
+                # Flip the slab and its oriented unit cell
                 new_slab = flip_atoms(slab, return_struct=True)
                 new_oriented_unit_cell = flip_atoms(
                     slab.oriented_unit_cell, return_struct=True
                 )
+
+                # It looks better to center the inverted slab so we do
+                # that here. We also shift the oriented unit cell for
+                # good measure.
+                start_z = new_slab.frac_coords[:, 2]
+                new_slab = center_slab(new_slab)
+                end_z = new_slab.frac_coords[:, 2]
+
+                # Here we get the shift that the centering process added
+                # in the c dimension. They should all be the same value,
+                # but we'll take the median for good measure
+                center_shift = np.median(end_z - start_z)
+
+                # Translate the oriented unit cell by the center shift
+                all_indices = [i for i in range(len(new_oriented_unit_cell))]
+                new_oriented_unit_cell.translate_sites(
+                    all_indices, [0, 0, center_shift]
+                )
+
+                # Reconstruct the full slab object, noting the new
+                # shift and oriented unit cell
                 new_slab = Slab(
                     new_slab.lattice,
                     new_slab.species,
@@ -174,7 +198,10 @@ def make_slabs_from_bulk(
                     scale_factor=slab.scale_factor,
                     site_properties=new_slab.site_properties,
                 )
+
+                # Add the new slab to the list
                 new_slabs.append(new_slab)
+
         slabs.extend(new_slabs)
 
     # For each slab, make sure the lengths and widths are large enough
