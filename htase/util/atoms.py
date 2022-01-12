@@ -238,9 +238,6 @@ def make_slabs_from_bulk(
             "miller_index": slab_with_props.miller_index,
             "shift": slab_with_props.shift,
             "scale_factor": slab_with_props.scale_factor,
-            "oriented_unit_cell": AseAtomsAdaptor.get_atoms(
-                slab_with_props.oriented_unit_cell
-            ),
         }
         final_slab.info = atoms_info.copy()
         final_slab.info["slab_stats"] = slab_stats
