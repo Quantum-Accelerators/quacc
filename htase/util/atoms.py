@@ -168,26 +168,6 @@ def make_slabs_from_bulk(
                     slab.oriented_unit_cell, return_struct=True
                 )
 
-                # It looks better to center the inverted slab so we do
-                # that here. We also shift the oriented unit cell for
-                # good measure.
-                start_z = new_slab.frac_coords[:, 2]
-                new_slab = center_slab(new_slab)
-                end_z = new_slab.frac_coords[:, 2]
-
-                # Here we get the shift that the centering process added
-                # in the c dimension. They should all be the same value,
-                # but we'll take the median for good measure
-                center_shift = np.median(end_z - start_z)
-
-                # Translate the oriented unit cell by the center shift.
-                # The oriented unti cell ends up not being stored in the final Atoms object
-                # but we'll keep this for now in case someone wants to include it one day
-                all_indices = [i for i in range(len(new_oriented_unit_cell))]
-                new_oriented_unit_cell.translate_sites(
-                    all_indices, [0, 0, center_shift]
-                )
-
                 # Reconstruct the full slab object, noting the new
                 # shift and oriented unit cell
                 new_slab = Slab(
@@ -200,6 +180,10 @@ def make_slabs_from_bulk(
                     scale_factor=slab.scale_factor,
                     site_properties=new_slab.site_properties,
                 )
+
+                # It looks better to center the inverted slab so we do
+                # that here.
+                new_slab = center_slab(new_slab)
 
                 # Add the new slab to the list
                 new_slabs.append(new_slab)
