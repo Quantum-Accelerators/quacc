@@ -180,7 +180,9 @@ def make_slabs_from_bulk(
                 # but we'll take the median for good measure
                 center_shift = np.median(end_z - start_z)
 
-                # Translate the oriented unit cell by the center shift
+                # Translate the oriented unit cell by the center shift.
+                # The oriented unti cell ends up not being stored in the final Atoms object
+                # but we'll keep this for now in case someone wants to include it one day
                 all_indices = [i for i in range(len(new_oriented_unit_cell))]
                 new_oriented_unit_cell.translate_sites(
                     all_indices, [0, 0, center_shift]
