@@ -1,6 +1,6 @@
 git+https://gitlab.com/ase/ase.git@master#egg=ase
 pymatgen==2022.1.9
-custodian==2021.12.2
+git+https://github.com/arosen93/custodian.git@rosen-hnform
 git+https://github.com/arosen93/jobflow.git@rosen-configupdates#egg=jobflow
 atomate2==0.0.4
 monty==2022.1.12.1
