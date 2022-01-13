@@ -175,11 +175,14 @@ def test_make_max_slabs_from_bulk():
 def test_make_adsorbate_structures():
 
     atoms = fcc100("Cu", size=(3, 3, 3))
+    mags = [5.0] * len(atoms)
+    atoms.set_initial_magnetic_moments(mags)
     atoms.set_tags(None)
     atoms.center(vacuum=10, axis=2)
 
     new_atoms = make_adsorbate_structures(atoms, "H2O")
     assert len(new_atoms) == 3
+    assert new_atoms[0].get_initial_magnetic_moments().tolist() == mags + [0, 0, 0]
     new_atoms = make_adsorbate_structures(atoms, "H2O", modes=["ontop"])
     assert len(new_atoms) == 1
 
@@ -200,7 +203,7 @@ def test_make_adsorbate_structures():
     new_atoms = make_adsorbate_structures(
         atoms, "H2O", allowed_surface_symbols=["Fe"], modes=["ontop"]
     )
-    assert len(new_atoms) is 1
+    assert len(new_atoms) == 1
     new_atoms = make_adsorbate_structures(
         atoms, "H2O", allowed_surface_symbols=["Cu", "Fe"]
     )

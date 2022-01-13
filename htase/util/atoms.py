@@ -427,6 +427,17 @@ def make_adsorbate_structures(
             # Place adsorbate
             struct_with_adsorbate = ads_finder.add_adsorbate(mol, ads_coord)
 
+            # FIXME: This is a hack to fix the NaN magmoms. This is a problem though
+            # because of the adsorbate molecule has magmoms, e.g. O2, then they will
+            # get stripped.
+            init_magmoms = struct_with_adsorbate.site_properties.get(
+                "initial_magmom", None
+            )
+            if init_magmoms and None in init_magmoms:
+                struct_with_adsorbate.add_site_property(
+                    "initial_magmom", [m if m else 0.0 for m in init_magmoms]
+                )
+
             # Convert back to Atoms object
             atoms_with_adsorbate = AseAtomsAdaptor.get_atoms(struct_with_adsorbate)
 
