@@ -2,6 +2,7 @@ from atomate2.vasp.schemas.task import TaskDocument
 import os
 from ase.io.jsonio import encode
 from htase.util.calc import cache_calc
+from monty.json import jsanitize
 
 
 def get_results(atoms=None, dir_path=None, **kwargs):
@@ -39,9 +40,15 @@ def get_results(atoms=None, dir_path=None, **kwargs):
 
         # Stores calculator results in the atoms.info flag and moves
         # final magmoms to initial (necessary for sequential jobs)
+        # Note: because Atoms objects are mutable, this change will
+        # carry through even though we do not return it
         atoms = cache_calc(atoms)
 
         # Store the encoded Atoms object for later use
         results["atoms"] = encode(atoms)
+
+        results["atoms_info"] = {}
+        for key, val in atoms.info.items():
+            results["atoms_info"][key] = jsanitize(val)
 
     return results

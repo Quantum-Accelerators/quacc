@@ -144,7 +144,7 @@ def make_slabs_from_bulk(
     if isinstance(required_surface_atoms, str):
         required_surface_atoms = [required_surface_atoms]
 
-    # Call generate_all_slabs()
+    # Make all the slabs
     slabs = generate_all_slabs(
         struct,
         max_index,
@@ -264,7 +264,7 @@ def make_max_slabs_from_bulk(
     The procedure is as follows:
     1. Generate all slabs
     2. If number of slabs is greater than max_slabs, tune ftol from 0.1 to 0.8
-    in increments of 0.1.
+    in increments of 0.1. This reduces the number of vertical shifts to consider.
     3. If number of slabs is still greater than max_slabs, only return the slabs
     with the fewest number of atoms per cell such that the returned amount is
     less than or equal to max_slabs.
@@ -346,6 +346,7 @@ def make_max_slabs_from_bulk(
     return slabs
 
 
+# TODO: We need a method to orient adsorbate via a kwarg
 def make_adsorbate_structures(
     atoms,
     adsorbate,
@@ -425,6 +426,8 @@ def make_adsorbate_structures(
 
             # Place adsorbate
             struct_with_adsorbate = ads_finder.add_adsorbate(mol, ads_coord)
+
+            # Convert back to Atoms object
             atoms_with_adsorbate = AseAtomsAdaptor.get_atoms(struct_with_adsorbate)
 
             # Get distance matrix between adsorbate binding atom and surface
