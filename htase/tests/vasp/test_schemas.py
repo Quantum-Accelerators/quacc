@@ -25,6 +25,10 @@ def test_summarize():
     atoms = SmartVasp(atoms)
     atoms.calc.results = {"energy": -1.0, "magmoms": [2.0] * len(atoms)}
     results = get_results(atoms=atoms, dir_path=run1)
+    assert results.get("atoms_info") is not None
+    assert results["atoms_info"].get("test", None) == "hi"
+    assert results["atoms_info"]["test_dict"] == {"hi": "there", "foo": "bar", "cow": 1}
+
     atoms = decode(cache_calc(results["atoms"]))
     assert atoms.info.get("results", None) is not None
     assert atoms.info["results"].get("calc0", None) is not None
@@ -34,6 +38,3 @@ def test_summarize():
     assert atoms.get_initial_magnetic_moments().tolist() == [2.0] * len(atoms)
     assert atoms.info["test"] == "hi"
     assert atoms.info["test_dict"] == {"hi": "there", "foo": "bar", "cow": 1}
-    assert results.get("atoms_info") is not None
-    assert results["atoms_info"].get("test", None) == "hi"
-    assert results["atoms_info"]["test_dict"] == {"hi": "there", "foo": "bar", "cow": 1}

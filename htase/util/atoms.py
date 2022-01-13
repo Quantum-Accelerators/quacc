@@ -101,7 +101,7 @@ def make_slabs_from_bulk(
     min_vacuum_size=20.0,
     z_fix=2.0,
     flip_asymmetric=True,
-    required_surface_atoms=None,
+    allowed_surface_atoms=None,
     **slabgen_kwargs,
 ):
     """
@@ -121,7 +121,7 @@ def make_slabs_from_bulk(
             Defaults to 2.0
         flip_asymmetric (bool): If an asymmetric surface should be flipped and added to the list
             Defaults to True.
-        required_surface_atoms (list of str): List of chemical symbols that must be present on the
+        allowed_surface_atoms (list of str): List of chemical symbols that must be present on the
         surface of the slab otherwise the slab will be discarded, e.g. ["Cu", "Ni"]
             Defaults to None.
         **slabgen_kwargs: keyword arguments to pass to the pymatgen generate_all_slabs() function
@@ -141,8 +141,8 @@ def make_slabs_from_bulk(
         struct = atoms
         atoms_info = {}
 
-    if isinstance(required_surface_atoms, str):
-        required_surface_atoms = [required_surface_atoms]
+    if isinstance(allowed_surface_atoms, str):
+        allowed_surface_atoms = [allowed_surface_atoms]
 
     # Make all the slabs
     slabs = generate_all_slabs(
@@ -216,10 +216,10 @@ def make_slabs_from_bulk(
             ]
 
             # Check that the desired atoms are on the surface
-            if required_surface_atoms and ~np.any(
+            if allowed_surface_atoms and ~np.any(
                 [
-                    required_surface_atom in surface_species
-                    for required_surface_atom in required_surface_atoms
+                    allowed_surface_atom in surface_species
+                    for allowed_surface_atom in allowed_surface_atoms
                 ]
             ):
                 continue
@@ -255,7 +255,7 @@ def make_max_slabs_from_bulk(
     min_vacuum_size=20.0,
     z_fix=2.0,
     flip_asymmetric=True,
-    required_surface_atoms=None,
+    allowed_surface_atoms=None,
     **slabgen_kwargs,
 ):
 
@@ -283,7 +283,7 @@ def make_max_slabs_from_bulk(
         z_fix (float): distance (in angstroms) from top of slab for which atoms should be fixed
             Defaults to 2.0
         flip_asymmetric (bool): If an asymmetric surface should be flipped and added to the list
-        required_surface_atoms (list of str): List of chemical symbols that must be present on the
+        allowed_surface_atoms (list of str): List of chemical symbols that must be present on the
         surface of the slab otherwise the slab will be discarded, e.g. ["Cu", "Ni"]
             Defaults to None.
         **slabgen_kwargs: keyword arguments to pass to the pymatgen generate_all_slabs() function
@@ -301,7 +301,7 @@ def make_max_slabs_from_bulk(
         min_vacuum_size=min_vacuum_size,
         z_fix=z_fix,
         flip_asymmetric=flip_asymmetric,
-        required_surface_atoms=required_surface_atoms,
+        allowed_surface_atoms=allowed_surface_atoms,
         **slabgen_kwargs,
     )
 
@@ -324,7 +324,7 @@ def make_max_slabs_from_bulk(
                     min_vacuum_size=min_vacuum_size,
                     z_fix=z_fix,
                     flip_asymmetric=flip_asymmetric,
-                    required_surface_atoms=required_surface_atoms,
+                    allowed_surface_atoms=allowed_surface_atoms,
                     **slabgen_kwargs,
                 )
                 if len(slabs_ftol) < len(slabs):
@@ -352,8 +352,8 @@ def make_adsorbate_structures(
     adsorbate,
     min_distance=2.0,
     modes=["ontop", "bridge", "hollow"],
-    required_surface_symbols=None,
-    required_surface_indices=None,
+    allowed_surface_symbols=None,
+    allowed_surface_indices=None,
     ads_site_finder_kwargs=None,
     find_ads_sites_kwargs=None,
 ):
@@ -367,9 +367,9 @@ def make_adsorbate_structures(
         min_distance (float): The distance between the adsorbate and the surface site.
         modes (List[str], str): The adsorption mode(s) to consider. Options include: "ontop",
             "bridge", "hollow", "subsurface"
-        required_surface_symbols (list): The symbols of surface atoms to consider. If None,
+        allowed_surface_symbols (list): The symbols of surface atoms to consider. If None,
             will use all surface atoms.
-        required_surface_indices (list): The indices of surface atoms to consider. If None,
+        allowed_surface_indices (list): The indices of surface atoms to consider. If None,
             will use all surface atoms.
         ads_site_finder_kwargs (dict): The keyword arguments to pass to the
             AdsorbateSiteFinder().
@@ -447,19 +447,19 @@ def make_adsorbate_structures(
 
             # Check if surface binding site is not in the specified
             # user list. If so, skip this one
-            if required_surface_symbols:
-                if any(
+            if allowed_surface_symbols:
+                if ~np.any(
                     [
-                        surface_atom_symbol not in required_surface_symbols
+                        surface_atom_symbol in allowed_surface_symbols
                         for surface_atom_symbol in surface_atom_symbols
                     ]
                 ):
                     continue
 
-            if required_surface_indices:
-                if any(
+            if allowed_surface_indices:
+                if ~np.any(
                     [
-                        surface_atom_idx not in required_surface_indices
+                        surface_atom_idx in allowed_surface_indices
                         for surface_atom_idx in surface_atom_indices
                     ]
                 ):

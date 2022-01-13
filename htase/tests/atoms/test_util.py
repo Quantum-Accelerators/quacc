@@ -111,7 +111,7 @@ def test_make_slabs_from_bulk():
     assert len(slabs) == 4
 
     atoms = bulk("Cu")
-    slabs = make_slabs_from_bulk(atoms, required_surface_atoms=["Co"])
+    slabs = make_slabs_from_bulk(atoms, allowed_surface_atoms=["Co"])
     assert slabs is None
 
     slabs = make_slabs_from_bulk(atoms, max_index=2)
@@ -183,15 +183,28 @@ def test_make_adsorbate_structures():
     new_atoms = make_adsorbate_structures(atoms, "H2O", modes=["ontop"])
     assert len(new_atoms) == 1
 
-    atoms[18].symbol = "Fe"
-    new_atoms = make_adsorbate_structures(atoms, "H2O", required_surface_symbols=["Fe"])
-    assert len(new_atoms) == 1
     new_atoms = make_adsorbate_structures(
-        atoms, "H2O", required_surface_symbols=["Fe"], modes=["bridge"]
+        atoms, "H2O", allowed_surface_symbols=["Cu", "Fe"]
     )
-    # assert new_atoms is None
-    # new_atoms = make_adsorbate_structures(atoms, "H2O", required_surface_indices=[23])
-    # assert len(new_atoms) == 2
+    assert len(new_atoms) == 3
+
+    new_atoms = make_adsorbate_structures(atoms, "H2O", allowed_surface_indices=[23])
+    assert len(new_atoms) == 2
+
+    new_atoms = make_adsorbate_structures(
+        atoms, "H2O", allowed_surface_indices=[18], modes=["ontop"]
+    )
+    assert len(new_atoms) == 1
+
+    atoms[18].symbol = "Fe"
+    new_atoms = make_adsorbate_structures(
+        atoms, "H2O", allowed_surface_symbols=["Fe"], modes=["ontop"]
+    )
+    assert len(new_atoms) is 1
+    new_atoms = make_adsorbate_structures(
+        atoms, "H2O", allowed_surface_symbols=["Cu", "Fe"]
+    )
+    assert len(new_atoms) == 10
 
     # atoms = read("noncubic_slab.cif.gz")
     # new_atoms = make_adsorbate_structures(atoms, "H2O")
