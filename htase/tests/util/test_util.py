@@ -188,23 +188,36 @@ def test_make_max_slabs_from_bulk():
 
 def test_make_adsorbate_structures():
 
-    atoms = fcc100("Cu", size=(3, 3, 3))
+    atoms = fcc100("Cu", size=(2, 2, 2))
+    atoms.set_tags(None)
+    atoms.center(vacuum=10, axis=2)
+    new_atoms = make_adsorbate_structures(atoms, "H2O", modes=["ontop"])
+    assert new_atoms[0].has("initial_magmoms") is False
+
+    mol = molecule("O2")
+    mol.set_initial_magnetic_moments([1.0, 1.0])
+    new_atoms = make_adsorbate_structures(atoms, mol)
+    assert len(new_atoms) == 3
+    assert new_atoms[0].get_initial_magnetic_moments().tolist() == [0.0] * len(
+        atoms
+    ) + [1.0, 1.0]
+
+    atoms = fcc100("Cu", size=(2, 2, 2))
     mags = [5.0] * len(atoms)
     atoms.set_initial_magnetic_moments(mags)
     atoms.set_tags(None)
     atoms.center(vacuum=10, axis=2)
+    mol = molecule("O2")
+    mol.set_initial_magnetic_moments([1.0, 1.0])
+    new_atoms = make_adsorbate_structures(atoms, mol)
+    assert len(new_atoms) == 3
+    assert new_atoms[0].get_initial_magnetic_moments().tolist() == mags + [1.0, 1.0]
 
     new_atoms = make_adsorbate_structures(atoms, "H2O")
     assert len(new_atoms) == 3
     assert new_atoms[0].get_initial_magnetic_moments().tolist() == mags + [0, 0, 0]
     new_atoms = make_adsorbate_structures(atoms, "H2O", modes=["ontop"])
     assert len(new_atoms) == 1
-
-    mol = molecule("O2")
-    mol.set_initial_magnetic_moments([1.0, 1.0])
-    new_atoms = make_adsorbate_structures(atoms, mol)
-    assert len(new_atoms) == 3
-    assert new_atoms[0].get_initial_magnetic_moments().tolist() == mags + [1.0, 1.0]
 
     new_atoms = make_adsorbate_structures(
         atoms, "H2O", allowed_surface_symbols=["Cu", "Fe"]

@@ -1,4 +1,4 @@
-from ase.atoms import Atoms
+from ase.atoms import Atom, Atoms
 from ase.build import molecule
 from ase.collections import g2
 from ase.io.jsonio import encode
@@ -30,7 +30,7 @@ def check_is_metal(atoms):
     Returns:
         is_metal (bool): True if the structure is likely a metal; False otherwise
     """
-    if isinstance(atoms, Atoms):
+    if type(atoms) is Atoms:
         struct = AseAtomsAdaptor.get_structure(atoms)
     else:
         struct = atoms
@@ -48,7 +48,7 @@ def get_highest_block(atoms):
     Returns:
         highest_block (str): highest block of the structure
     """
-    if isinstance(atoms, Atoms):
+    if type(atoms) is Atoms:
         struct = AseAtomsAdaptor.get_structure(atoms)
     else:
         struct = atoms
@@ -77,7 +77,7 @@ def flip_atoms(atoms, return_struct=False):
         new_atoms (ase.Atoms or pymatgen.core.surface.Slab): inverted slab
     """
 
-    if isinstance(atoms, Atoms):
+    if type(atoms) is Atoms:
         new_atoms = deepcopy(atoms)
         atoms_info = atoms.info.copy()
     else:
@@ -135,14 +135,14 @@ def make_slabs_from_bulk(
     # for adjustments for 2D: https://github.com/oxana-a/atomate/blob/ads_wf/atomate/vasp/firetasks/adsorption_tasks.py
 
     # Use pymatgen to generate slabs
-    if isinstance(atoms, Atoms):
+    if type(atoms) is Atoms:
         struct = AseAtomsAdaptor.get_structure(atoms)
         atoms_info = atoms.info.copy()
     else:
         struct = atoms
         atoms_info = {}
 
-    if isinstance(allowed_surface_atoms, str):
+    if type(allowed_surface_atoms) is str:
         allowed_surface_atoms = [allowed_surface_atoms]
 
     # Make all the slabs
@@ -398,16 +398,24 @@ def make_adsorbate_structures(
             "Cannot specify both modes and find_ads_sites_kwargs['positions']",
         )
     else:
-        if isinstance(modes, str):
+        if type(modes) is str:
             modes = [modes]
         find_ads_sites_kwargs["positions"] = [mode.lower() for mode in modes]
 
-    # Get adsorbate if string
-    if isinstance(adsorbate, str):
-        if adsorbate in g2.names:
-            adsorbate = molecule(adsorbate)
-        else:
-            raise ValueError(f"{adsorbate} is not in the G2 database.")
+    if type(adsorbate) is not Atoms:
+        if type(adsorbate) is Atom:
+            # If adsorbate is an Atom object, make it an Atoms object
+            adsorbate = Atoms([adsorbate])
+        elif type(adsorbate) is str:
+            # Get adsorbate if string
+            if adsorbate in g2.names:
+                adsorbate = molecule(adsorbate)
+            else:
+                raise ValueError(f"{adsorbate} is not in the G2 database.")
+
+    # Add 0.0 initial magmoms to adsorbate if needed
+    if atoms.has("initial_magmoms") and not adsorbate.has("initial_magmoms"):
+        adsorbate.set_initial_magnetic_moments([0.0] * len(adsorbate))
 
     # Make a Pymatgen structure and molecule
     struct = AseAtomsAdaptor.get_structure(atoms)
@@ -427,17 +435,6 @@ def make_adsorbate_structures(
 
             # Place adsorbate
             struct_with_adsorbate = ads_finder.add_adsorbate(mol, ads_coord)
-
-            # FIXME: This is a hack to fix the NaN magmoms. This is a problem though
-            # because of the adsorbate molecule has magmoms, e.g. O2, then they will
-            # get stripped.
-            init_magmoms = struct_with_adsorbate.site_properties.get(
-                "initial_magmom", None
-            )
-            if init_magmoms and None in init_magmoms:
-                struct_with_adsorbate.add_site_property(
-                    "initial_magmom", [m if m else 0.0 for m in init_magmoms]
-                )
 
             # Convert back to Atoms object
             atoms_with_adsorbate = AseAtomsAdaptor.get_atoms(struct_with_adsorbate)

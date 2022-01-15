@@ -594,6 +594,13 @@ def SmartVasp(
     atoms = set_magmoms(
         atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutoff
     )
+    if ~np.all(
+        [isinstance(m, (int, float)) for m in atoms.get_initial_magnetic_moments()]
+    ):
+        raise ValueError(
+            "Magnetic moments must be specified as a list of floats or ints.",
+            atoms.get_initial_magnetic_moments().tolist(),
+        )
 
     # Remove unused INCAR flags
     user_calc_params = remove_unused_flags(user_calc_params)
