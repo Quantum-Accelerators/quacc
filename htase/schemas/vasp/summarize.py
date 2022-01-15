@@ -51,8 +51,6 @@ def get_results(dir_path=None, atoms=None, prep_next_run=True, **taskdoc_kwargs)
     if atoms:
         # Stores calculator results in the atoms.info flag and moves
         # final magmoms to initial (necessary for sequential jobs)
-        # Note: because Atoms objects are mutable, this change will
-        # carry through even though we do not return the Atoms object
         if prep_next_run:
             atoms = cache_calc(atoms)
 
