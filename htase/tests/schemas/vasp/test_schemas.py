@@ -26,6 +26,7 @@ def test_summarize():
     atoms = read(os.path.join(run1, "CONTCAR.gz"))
     atoms.info["test"] = "hi"
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
+    results = get_results(dir_path=run1, atoms=atoms)
     assert results.get("atoms_info", {}) != {}
     assert results["atoms_info"].get("test", None) == "hi"
     assert results["atoms_info"].get("test_dict", None) == {"hi": "there", "foo": "bar"}
@@ -38,9 +39,11 @@ def test_summarize():
     atoms.calc.results = {"energy": -1.0, "magmoms": [2.0] * len(atoms)}
     results = get_results(dir_path=run1, atoms=atoms)
     results_atoms = decode(results["atoms"])
-    assert atoms.info.get("results", None) is not None
-    assert atoms.get_initial_magnetic_moments() == [3.14] * len(atoms)
+
     assert atoms.calc is not None
+    assert atoms.info == {}
+    assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
+
     assert results_atoms.info.get("results", None) is not None
     assert results_atoms.get_initial_magnetic_moments().tolist() == [2.0] * len(atoms)
     assert results_atoms.calc is None

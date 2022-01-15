@@ -49,16 +49,17 @@ def get_results(dir_path=None, atoms=None, prep_next_run=True, **taskdoc_kwargs)
         results.pop("vasp_objects", None)
 
     if atoms:
-        # We use get_metadata=False because the TaskDocument already
-        # makes the structure metadata for us
-        atoms_db = atoms_to_db(atoms, get_metadata=False)
-
         # Stores calculator results in the atoms.info flag and moves
         # final magmoms to initial (necessary for sequential jobs)
         # Note: because Atoms objects are mutable, this change will
         # carry through even though we do not return the Atoms object
         if prep_next_run:
             atoms = cache_calc(atoms)
+
+        # We use get_metadata=False because the TaskDocument already
+        # makes the structure metadata for us
+        atoms_db = atoms_to_db(atoms, get_metadata=False)
+
     else:
         atoms_db = {}
 
