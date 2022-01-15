@@ -14,7 +14,8 @@ def get_results(atoms=None, dir_path=None, tags=None, **kwargs):
             Defaults to None.
         dir_path (str): Path to VASP outputs
             Defaults to None (current working directory)
-        tags (List[str]): List of tags to store in {"tags": tags}.
+        tags (List[str]): List of tags to store in {"tags": tags}. Useful
+            for storing job metadata.
 
     Returns:
         results (dict): dictionary of tabulated results
@@ -36,9 +37,17 @@ def get_results(atoms=None, dir_path=None, tags=None, **kwargs):
         "transformations",
         "state",
         "entry",
+        "task_label",
+        "tags",
     )
     for unused_prop in unused_props:
         results.pop(unused_prop, None)
+
+    # Clean up
+    if results["included_objects"] is None:
+        del results["included_objects"]
+    if results["vasp_objects"] == {}:
+        del results["vasp_objects"]
 
     if atoms:
 
@@ -48,10 +57,9 @@ def get_results(atoms=None, dir_path=None, tags=None, **kwargs):
         # carry through even though we do not return the Atoms object
         atoms = cache_calc(atoms)
 
-        # Store the encoded Atoms object (without .info) for later use
+        # Store the info flags separately
         atoms_noinfo = deepcopy(atoms)
         atoms_noinfo.info = {}
-        results["atoms"] = encode(atoms_noinfo)
 
         # Store the info flags separately
         results["info"] = {}
@@ -61,5 +69,8 @@ def get_results(atoms=None, dir_path=None, tags=None, **kwargs):
         # Store any tags
         if tags:
             results["tags"] = tags
+
+        # Store the encoded Atoms object (without .info)
+        results["atoms"] = encode(atoms_noinfo)
 
     return results
