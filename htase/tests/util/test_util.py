@@ -200,6 +200,12 @@ def test_make_adsorbate_structures():
     new_atoms = make_adsorbate_structures(atoms, "H2O", modes=["ontop"])
     assert len(new_atoms) == 1
 
+    mol = molecule("O2")
+    mol.set_initial_magnetic_moments([1.0, 1.0])
+    new_atoms = make_adsorbate_structures(atoms, mol)
+    assert len(new_atoms) == 3
+    assert new_atoms[0].get_initial_magnetic_moments().tolist() == mags + [1.0, 1.0]
+
     new_atoms = make_adsorbate_structures(
         atoms, "H2O", allowed_surface_symbols=["Cu", "Fe"]
     )
