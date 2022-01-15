@@ -32,7 +32,7 @@ def convert_auto_kpts(struct, auto_kpts, force_gamma):
         force_gamma (bool): Force gamma-centered k-point grid
 
     Returns:
-        kpts: ASE-compatible kpts argument
+        kpts (List[Int]): ASE-compatible kpts argument
         gamma (bool): ASE gamma kwarg
         reciprocal (bool): ASE reciprocal kwarg
 
@@ -98,6 +98,12 @@ def convert_auto_kpts(struct, auto_kpts, force_gamma):
 def get_preset_params(preset):
     """
     Load in the presets from the specified YAML file.
+
+    Args:
+        preset (str): Path to the YAML file containing the preset parameters
+
+    Returns:
+        calc_preset (dict): Dictionary of parameters
     """
     _, ext = os.path.splitext(preset)
     if not ext:
@@ -116,8 +122,13 @@ def get_preset_params(preset):
 
 def remove_unused_flags(user_calc_params):
     """
-    Removes unused flags in the INCAR, like EDIFFG
-    if you are doing NSW = 0.
+    Removes unused flags in the INCAR, like EDIFFG if you are doing NSW = 0.
+
+    Args:
+        user_calc_params (dict): User-specified calculation parameters
+
+    Returns:
+        user_calc_params (dict): Adjusted user-specified calculation parameters
     """
 
     # Turn off opt flags if NSW = 0
@@ -145,9 +156,11 @@ def remove_unused_flags(user_calc_params):
     return user_calc_params
 
 
-def set_magmoms(atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutoff):
+def set_magmoms(
+    atoms, elemental_mags_dict=None, copy_magmoms=True, mag_default=1.0, mag_cutoff=0.05
+):
     """
-    Sets the initial magnetic moments in the INCAR.
+    Sets the initial magnetic moments in the Atoms object.
 
     This function deserves particular attention. The following logic is applied:
     - If there is a converged set of magnetic moments, those are moved to the
@@ -160,6 +173,25 @@ def set_magmoms(atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutof
     - For any of the above scenarios, if mag_cutoff is not None, the newly set
     initial magnetic moments are checked. If all have a magnitude below mag_cutoff,
     then they are all set to 0 (no spin polarization).
+
+    Args:
+        atoms (ase.Atoms): Atoms object
+        elemental_mags_dict (dict): Dictionary of elements and their
+        corresponding magnetic moments to set.
+            Default: None.
+        copy_magmoms (bool): Whether to copy the magnetic moments from the
+        converged set of magnetic moments to the initial magnetic moments.
+            Default: True.
+        mag_default (float): Default magnetic moment to use if no magnetic
+        moments are specified in the preset.
+            Default: 1.0.
+        mag_cutoff (float): Magnitude below which the magnetic moments are
+        considered to be zero.
+            Default: 0.05.
+
+    Returns:
+        atoms (ase.Atoms): Atoms object
+
     """
     atoms = deepcopy(atoms)
 
@@ -210,6 +242,19 @@ def set_magmoms(atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutof
 def calc_swaps(atoms, calc, auto_kpts, verbose=True):
     """
     Swaps out bad INCAR flags.
+
+    Args:
+        atoms (ase.Atoms): Atoms object
+        calc (ase.calculators.vasp.Vasp): ASE VASP calculator
+        auto_kpts (bool): Whether to automatically set kpoints using
+        one of the Pymatgen schemes.
+        verbose (bool): Whether to print out any time the input flags
+        are adjusted.
+            Default: True.
+
+    Returns:
+        calc (ase.calculators.vasp.Vasp): ASE VASP calculator with
+        modified arguments.
     """
     is_metal = check_is_metal(atoms)
     max_block = get_highest_block(atoms)
@@ -464,22 +509,22 @@ def SmartVasp(
         that preset="bulk_base" is supported. It will append .yaml at the end if not present.
     incar_copilot : bool
         If True, the INCAR parameters will be adjusted if they go against the VASP manual.
-        Defaults to True.
+            Defaults to True.
     force_gamma : bool
         If True, the automatic k-point generation schemes will default to gamma-centered.
-        Defaults to True.
+            Defaults to True.
     copy_magmoms : bool
         If True, any pre-existing atoms.get_magnetic_moments() will be set in atoms.set_initial_magnetic_moments().
-        Defaults to True.
+            Defaults to True. Set this to False if you want to use a preset's magnetic moments every time.
     mag_default : float
         Default magmom value for sites without one in the preset. Use 0.6 for MP settings or 1.0 for VASP default.
-        Defaults to 1.0.
+            Defaults to 1.0.
     mag_cutoff : None or float
         Set all initial magmoms to 0 if all have a magnitude below this value.
-        Defaults to 0.05.
+            Defaults to 0.05.
     verbose : bool
         If True, warnings will be raised when INCAR parameters are changed.
-        Defaults to True.
+            Defaults to True.
     **kwargs :
         Additional arguments to be passed to the VASP calculator, e.g. xc='PBE', encut=520. Takes all valid
         ASE calculator arguments, in addition to the ones listed below:
@@ -592,7 +637,11 @@ def SmartVasp(
 
     # Set magnetic moments
     atoms = set_magmoms(
-        atoms, elemental_mags_dict, copy_magmoms, mag_default, mag_cutoff
+        atoms,
+        elemental_mags_dict=elemental_mags_dict,
+        copy_magmoms=copy_magmoms,
+        mag_default=mag_default,
+        mag_cutoff=mag_cutoff,
     )
     if ~np.all(
         [isinstance(m, (int, float)) for m in atoms.get_initial_magnetic_moments()]
