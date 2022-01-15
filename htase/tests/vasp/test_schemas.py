@@ -25,9 +25,9 @@ def test_summarize():
     atoms = SmartVasp(atoms)
     atoms.calc.results = {"energy": -1.0, "magmoms": [2.0] * len(atoms)}
     results = get_results(atoms=atoms, dir_path=run1)
-    assert results.get("atoms_info") is not None
-    assert results["atoms_info"].get("test", None) == "hi"
-    assert results["atoms_info"]["test_dict"] == {"hi": "there", "foo": "bar", "cow": 1}
+    assert results.get("info") is not None
+    assert results["info"].get("test", None) == "hi"
+    assert results["info"]["test_dict"] == {"hi": "there", "foo": "bar", "cow": 1}
 
     atoms = decode(cache_calc(results["atoms"]))
     assert atoms.info.get("results", None) is not None

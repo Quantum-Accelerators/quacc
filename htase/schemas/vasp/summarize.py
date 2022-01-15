@@ -3,6 +3,7 @@ import os
 from ase.io.jsonio import encode
 from htase.util.calc import cache_calc
 from monty.json import jsanitize
+from copy import deepcopy
 
 
 def get_results(atoms=None, dir_path=None, **kwargs):
@@ -41,14 +42,17 @@ def get_results(atoms=None, dir_path=None, **kwargs):
         # Stores calculator results in the atoms.info flag and moves
         # final magmoms to initial (necessary for sequential jobs)
         # Note: because Atoms objects are mutable, this change will
-        # carry through even though we do not return it
+        # carry through even though we do not return the Atoms object
         atoms = cache_calc(atoms)
 
-        # Store the encoded Atoms object for later use
-        results["atoms"] = encode(atoms)
+        # Store the encoded Atoms object (without .info) for later use
+        atoms_noinfo = deepcopy(atoms)
+        atoms_noinfo.info = {}
+        results["atoms"] = encode(atoms_noinfo)
 
-        results["atoms_info"] = {}
+        # Store the info flags separately
+        results["info"] = {}
         for key, val in atoms.info.items():
-            results["atoms_info"][key] = jsanitize(val)
+            results["info"][key] = jsanitize(val)
 
     return results

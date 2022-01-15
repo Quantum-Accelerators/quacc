@@ -87,7 +87,7 @@ def slab_to_ads_slab_job(atoms_json, adsorbate_json, **slab_ads_kwargs):
 
     slabs = make_adsorbate_structures(atoms, adsorbate, **slab_ads_kwargs)
     if slabs is None:
-        return {"atoms": None}
+        return None
 
     jobs = []
     outputs = []
