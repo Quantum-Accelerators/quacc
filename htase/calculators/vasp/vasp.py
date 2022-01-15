@@ -606,7 +606,7 @@ def SmartVasp(
         calc = calc_swaps(atoms, calc, auto_kpts, verbose=verbose)
 
     # This is important! We want to make sure that setting
-    # a new VASP parameter throws aaway the prior calculator results
+    # a new VASP parameter throws away the prior calculator results
     # otherwise we can't do things like run a new calculation
     # with atoms.get_potential_energy() after the transformation
     calc.discard_results_on_any_change = True

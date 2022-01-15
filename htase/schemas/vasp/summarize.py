@@ -1,21 +1,22 @@
 from atomate2.vasp.schemas.task import TaskDocument
 import os
-from ase.io.jsonio import encode
+from htase.schemas.common.atoms import atoms_to_db
 from htase.util.calc import cache_calc
-from monty.json import jsanitize
-from copy import deepcopy
 
 
-def get_results(atoms=None, dir_path=None, tags=None, **kwargs):
+def get_results(dir_path=None, atoms=None, prep_next_run=True, **taskdoc_kwargs):
     """
 
     Args:
-        atoms (ase.Atoms): ASE Atoms object to store in {"atoms": atoms}.
-            Defaults to None.
         dir_path (str): Path to VASP outputs
             Defaults to None (current working directory)
-        tags (List[str]): List of tags to store in {"tags": tags}. Useful
-            for storing job metadata.
+        atoms (ase.Atoms): ASE Atoms object to store in {"atoms": atoms}.
+            Defaults to None.
+        prep_next_run (bool): Whether the Atoms object, if present, should be prepared
+        for the next run. This clears out any attached calculator and moves
+        the final magmoms to the initial magmoms.
+            Defauls to True.
+        **taskdoc_kwargs: Additional keyword arguments to pass to TaskDocument.from_directory()
 
     Returns:
         results (dict): dictionary of tabulated results
@@ -27,7 +28,7 @@ def get_results(atoms=None, dir_path=None, tags=None, **kwargs):
 
     # Fetch all tabulated results from VASP outputs files
     # Fortunately, Atomate2 already has a handy function for this
-    results = TaskDocument.from_directory(dir_path, **kwargs).dict()
+    results = TaskDocument.from_directory(dir_path, **taskdoc_kwargs).dict()
 
     # Remove some key/vals we don't actually ever use
     unused_props = (
@@ -48,29 +49,19 @@ def get_results(atoms=None, dir_path=None, tags=None, **kwargs):
         results.pop("vasp_objects", None)
 
     if atoms:
+        # We use get_metadata=False because the TaskDocument already
+        # makes the structure metadata for us
+        atoms_db = atoms_to_db(atoms, get_metadata=False)
 
         # Stores calculator results in the atoms.info flag and moves
         # final magmoms to initial (necessary for sequential jobs)
         # Note: because Atoms objects are mutable, this change will
         # carry through even though we do not return the Atoms object
-        atoms = cache_calc(atoms)
+        if prep_next_run:
+            atoms = cache_calc(atoms)
+    else:
+        atoms_db = {}
 
-        # Store the info flags separately
-        atoms_noinfo = deepcopy(atoms)
-        atoms_noinfo.info = {}
+    results_full = {**results, **atoms_db}
 
-        # Store the info flags separately
-        results["info"] = {}
-        for key, val in atoms.info.items():
-            results["info"][key] = jsanitize(val)
-
-        # Store any tags
-        if tags:
-            results["tags"] = tags
-        else:
-            results.pop("tags", None)
-
-        # Store the encoded Atoms object (without .info)
-        results["atoms"] = encode(atoms_noinfo)
-
-    return results
+    return results_full

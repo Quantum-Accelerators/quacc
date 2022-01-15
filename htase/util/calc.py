@@ -3,11 +3,11 @@ import os
 from copy import deepcopy
 
 
-def cache_calc(atoms):
+def cache_calc(atoms, move_magmoms=True):
     """
     Store the calculator results in atoms.info["results"] for later retrieval.
-    This makes it so that things like the converged magnetic moments are not
-    lost between serialize/deserialize cycles and also makes it possible to
+    This makes it so the calculator results are not lost between
+    serialize/deserialize cycles and also makes it possible to
     retain information about computed properties when manipulating the
     Atoms object, e.g. after a supercell transformation.
 
@@ -15,10 +15,10 @@ def cache_calc(atoms):
     atoms.info["results"] = {"calc0": {}, "calc1": {}, ...} with higher numbers
     being the most recent.
 
-    Also moves .get_magnetic_moments() to .get_initial_magnetic_moments()
-
     Args:
         atoms (ase.Atoms): Atoms object
+        move_magmoms (bool): If True, move atoms.get_magnetic_moments() to
+        atoms.get_initial_magnetic_moments()
 
     Returns:
         atoms (ase.Atoms): Atoms object with calculator results attached in atoms.info["results"]
@@ -39,12 +39,14 @@ def cache_calc(atoms):
 
         # Move converged magmoms to initial magmoms
         # If none were present, then initial magmoms should be set to 0's
-        atoms.set_initial_magnetic_moments(
-            atoms.calc.results.get("magmoms", [0.0] * len(atoms))
-        )
+        # because a spin-unpolarized calculation was carried out
+        if move_magmoms:
+            atoms.set_initial_magnetic_moments(
+                atoms.calc.results.get("magmoms", [0.0] * len(atoms))
+            )
 
-        # Clear off the calculator so we can run a new job
-        atoms.calc = None
+    # Clear off the calculator so we can run a new job
+    atoms.calc = None
 
     return atoms
 

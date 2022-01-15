@@ -1,5 +1,7 @@
 from ase.io import read
 from ase.build import bulk, fcc100
+from ase.io.jsonio import encode, decode
+from ase.build import molecule
 from htase.util.atoms import (
     flip_atoms,
     make_slabs_from_bulk,
@@ -8,22 +10,30 @@ from htase.util.atoms import (
 )
 from htase.util.calc import cache_calc
 from htase.calculators.vasp import SmartVasp
-from ase.io.jsonio import encode, decode
 from pathlib import Path
 import os
 import numpy as np
 from copy import deepcopy
 
 FILE_DIR = Path(__file__).resolve().parent
-ATOMS_MAG = read(os.path.join(FILE_DIR, "..", "vasp", "OUTCAR_mag.gz"))
-ATOMS_NOMAG = read(os.path.join(FILE_DIR, "..", "vasp", "OUTCAR_nomag.gz"))
-ATOMS_NOSPIN = read(os.path.join(FILE_DIR, "..", "vasp", "OUTCAR_nospin.gz"))
+ATOMS_MAG = read(os.path.join(FILE_DIR, "..", "calculators", "vasp", "OUTCAR_mag.gz"))
+ATOMS_NOMAG = read(
+    os.path.join(FILE_DIR, "..", "calculators", "vasp", "OUTCAR_nomag.gz")
+)
+ATOMS_NOSPIN = read(
+    os.path.join(FILE_DIR, "..", "calculators", "vasp", "OUTCAR_nospin.gz")
+)
 
 
 def test_cache_calc():
     atoms = deepcopy(ATOMS_MAG)
+    atoms.info = {"test": "hi"}
     mag = atoms.get_magnetic_moment()
+    init_mags = atoms.get_initial_magnetic_moments()
+    mags = atoms.get_magnetic_moments()
     atoms = cache_calc(atoms)
+    assert atoms.info.get("test", None) == "hi"
+    assert atoms.get_initial_magnetic_moments().tolist() == mags.tolist()
     assert atoms.info.get("results", None) is not None
     assert atoms.info["results"].get("calc0", None) is not None
     assert atoms.info["results"]["calc0"]["magmom"] == mag
@@ -35,6 +45,10 @@ def test_cache_calc():
     assert atoms.info["results"]["calc0"]["magmom"] == mag
     assert atoms.info["results"]["calc1"]["magmom"] == mag - 2
     assert decode(encode(atoms)) == atoms
+
+    atoms = deepcopy(ATOMS_MAG)
+    atoms = cache_calc(atoms, move_magmoms=False)
+    assert atoms.get_initial_magnetic_moments().tolist() == init_mags.tolist()
 
     atoms = deepcopy(ATOMS_NOMAG)
     mag = atoms.get_magnetic_moment()
@@ -209,6 +223,7 @@ def test_make_adsorbate_structures():
     )
     assert len(new_atoms) == 10
 
-    # atoms = read("noncubic_slab.cif.gz")
-    # new_atoms = make_adsorbate_structures(atoms, "H2O")
-    # assert len(new_atoms) == 2
+    assert new_atoms[0].info.get("adsorbates", None) is not None
+    assert decode(new_atoms[0].info.get("adsorbates", None)[0]["atoms"]) == molecule(
+        "H2O"
+    )

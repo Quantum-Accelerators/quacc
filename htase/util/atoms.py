@@ -1,6 +1,7 @@
 from ase.atoms import Atoms
 from ase.build import molecule
 from ase.collections import g2
+from ase.io.jsonio import encode
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.core.surface import generate_all_slabs, Slab
 from pymatgen.analysis.adsorption import AdsorbateSiteFinder
@@ -479,7 +480,7 @@ def make_adsorbate_structures(
             # Store adsorbate info
             atoms_with_adsorbate.info = atoms.info.copy()
             ads_stats = {
-                "atoms": adsorbate,
+                "atoms": encode(adsorbate),
                 "formula": adsorbate.get_chemical_formula(),
                 "mode": mode,
                 "surface_atoms_symbols": surface_atom_symbols,
