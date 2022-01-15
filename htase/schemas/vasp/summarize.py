@@ -42,12 +42,10 @@ def get_results(atoms=None, dir_path=None, tags=None, **kwargs):
     )
     for unused_prop in unused_props:
         results.pop(unused_prop, None)
-
-    # Clean up
-    if results["included_objects"] is None:
-        del results["included_objects"]
-    if results["vasp_objects"] == {}:
-        del results["vasp_objects"]
+    if results.get("included_objects", None) is None:
+        results.pop("included_objects", None)
+    if results.get("vasp_objects", {}) == {}:
+        results.pop("vasp_objects", None)
 
     if atoms:
 
@@ -69,6 +67,8 @@ def get_results(atoms=None, dir_path=None, tags=None, **kwargs):
         # Store any tags
         if tags:
             results["tags"] = tags
+        else:
+            results.pop("tags", None)
 
         # Store the encoded Atoms object (without .info)
         results["atoms"] = encode(atoms_noinfo)
