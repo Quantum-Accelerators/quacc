@@ -6,7 +6,7 @@ from monty.json import jsanitize
 from copy import deepcopy
 
 
-def get_results(atoms=None, dir_path=None, **kwargs):
+def get_results(atoms=None, dir_path=None, tags=None, **kwargs):
     """
 
     Args:
@@ -14,6 +14,7 @@ def get_results(atoms=None, dir_path=None, **kwargs):
             Defaults to None.
         dir_path (str): Path to VASP outputs
             Defaults to None (current working directory)
+        tags (List[str]): List of tags to store in {"tags": tags}.
 
     Returns:
         results (dict): dictionary of tabulated results
@@ -33,6 +34,8 @@ def get_results(atoms=None, dir_path=None, **kwargs):
         "author",
         "calcs_reversed",
         "transformations",
+        "state",
+        "entry",
     )
     for unused_prop in unused_props:
         results.pop(unused_prop, None)
@@ -54,5 +57,9 @@ def get_results(atoms=None, dir_path=None, **kwargs):
         results["info"] = {}
         for key, val in atoms.info.items():
             results["info"][key] = jsanitize(val)
+
+        # Store any tags
+        if tags:
+            results["tags"] = tags
 
     return results
