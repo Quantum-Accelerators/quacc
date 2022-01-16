@@ -1,6 +1,6 @@
 import os
 from ase.io import read
-from ase.build import bulk
+from ase.build import bulk, molecule
 from ase.calculators.vasp import Vasp
 from ase.calculators.singlepoint import SinglePointDFTCalculator
 from htase.calculators.vasp import SmartVasp
@@ -313,16 +313,16 @@ def test_lasph():
     atoms = SmartVasp(atoms, xc="rpbe")
     assert atoms.calc.bool_params["lasph"] is None
 
-    atoms = SmartVasp(atoms, metagga="m06l")
+    atoms = SmartVasp(atoms, xc="m06l")
     assert atoms.calc.bool_params["lasph"] is True
 
-    atoms = SmartVasp(atoms, metagga="m06l", lasph=False)
+    atoms = SmartVasp(atoms, xc="m06l", lasph=False)
     assert atoms.calc.bool_params["lasph"] is True
 
-    atoms = SmartVasp(atoms, metagga="hse06")
+    atoms = SmartVasp(atoms, xc="hse06")
     assert atoms.calc.bool_params["lasph"] is True
 
-    atoms = SmartVasp(atoms, metagga="beef-vdw")
+    atoms = SmartVasp(atoms, xc="beef-vdw")
     assert atoms.calc.bool_params["lasph"] is True
 
     atoms = SmartVasp(atoms, ldau_luj={"Cu": {"L": 2, "U": 5, "J": 0.0}})
@@ -350,13 +350,18 @@ def test_algo():
     atoms = SmartVasp(atoms, xc="rpbe")
     assert atoms.calc.string_params["algo"] is None
 
-    atoms = SmartVasp(atoms, metagga="m06l")
+    atoms = SmartVasp(atoms, xc="m06l")
     assert atoms.calc.string_params["algo"] == "all"
 
-    atoms = SmartVasp(atoms, metagga="m06l", algo="fast")
+    atoms = SmartVasp(atoms, xc="m06l", algo="fast")
     assert atoms.calc.string_params["algo"] == "all"
 
-    atoms = SmartVasp(atoms, metagga="hse06")
+    atoms = SmartVasp(atoms, xc="hse06")
+    assert atoms.calc.string_params["algo"] == "damped"
+    assert atoms.calc.float_params["time"] == 0.5
+
+    atoms = molecule("H2")
+    atoms = SmartVasp(atoms, xc="hse06")
     assert atoms.calc.string_params["algo"] == "all"
 
 
@@ -419,6 +424,7 @@ def test_ismear():
 
     atoms = SmartVasp(atoms, ismear=-5, nsw=10)
     assert atoms.calc.int_params["ismear"] == 1
+    assert atoms.calc.float_params["sigma"] == 0.1
 
     atoms = SmartVasp(atoms, ismear=-5, nsw=0)
     assert atoms.calc.int_params["ismear"] == 0
@@ -456,6 +462,10 @@ def test_ismear():
     atoms = SmartVasp(atoms, nsw=0, kspacing=1.0, ismear=1, sigma=0.1)
     assert atoms.calc.int_params["ismear"] == 1
     assert atoms.calc.float_params["sigma"] == 0.1
+
+    atoms = molecule("H2")
+    atoms = SmartVasp(atoms, ismear=-5, nsw=10)
+    assert atoms.calc.int_params["ismear"] == -5
 
 
 def test_laechg():

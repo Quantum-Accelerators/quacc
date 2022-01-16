@@ -304,15 +304,34 @@ def calc_swaps(atoms, calc, auto_kpts, verbose=True):
             )
         calc.set(lmaxtau=8)
 
-    if (calc.bool_params["lhfcalc"] or calc.string_params["metagga"]) and (
+    if calc.string_params["metagga"] and (
         not calc.string_params["algo"] or calc.string_params["algo"].lower() != "all"
     ):
         if verbose:
             warnings.warn(
-                "Copilot: Setting ALGO = All because you have a meta-GGA or hybrid calculation.",
+                "Copilot: Setting ALGO = All because you have a meta-GGA calculation.",
                 UserWarning,
             )
         calc.set(algo="all")
+
+    if calc.bool_params["lhfcalc"] and (
+        not calc.string_params["algo"]
+        or calc.string_params["algo"].lower() not in ["all", "damped"]
+    ):
+        if is_metal:
+            calc.set(algo="damped", time=0.5)
+            if verbose:
+                warnings.warn(
+                    "Copilot: Setting ALGO = Damped, TIME = 0.5 because you have a hybrid calculation with a metal.",
+                    UserWarning,
+                )
+        else:
+            calc.set(algo="all")
+            if verbose:
+                warnings.warn(
+                    "Copilot: Setting ALGO = All because you have a hybrid calculation.",
+                    UserWarning,
+                )
 
     if (
         is_metal
