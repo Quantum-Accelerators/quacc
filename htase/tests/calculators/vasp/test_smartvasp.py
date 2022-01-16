@@ -361,6 +361,7 @@ def test_algo():
     assert atoms.calc.float_params["time"] == 0.5
 
     atoms = molecule("H2")
+    atoms.center(vacuum=10, axis=1)
     atoms = SmartVasp(atoms, xc="hse06")
     assert atoms.calc.string_params["algo"] == "all"
 
@@ -464,6 +465,7 @@ def test_ismear():
     assert atoms.calc.float_params["sigma"] == 0.1
 
     atoms = molecule("H2")
+    atoms.center(vacuum=10, axis=1)
     atoms = SmartVasp(atoms, ismear=-5, nsw=10)
     assert atoms.calc.int_params["ismear"] == -5
 
