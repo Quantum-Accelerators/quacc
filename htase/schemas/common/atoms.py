@@ -2,6 +2,7 @@ from atomate2.common.schemas.structure import StructureMetadata
 from pymatgen.io.ase import AseAtomsAdaptor
 from ase.io.jsonio import encode
 from monty.json import jsanitize
+import numpy as np
 from copy import deepcopy
 
 
@@ -29,12 +30,20 @@ def atoms_to_db(atoms, get_metadata=True, strip_info=True, **metadata_kwargs):
 
     # Get Atoms metadata, if requested
     if get_metadata:
-        struct = AseAtomsAdaptor().get_structure(atoms)
-        struct_metadata = (
-            StructureMetadata().from_structure(struct, **metadata_kwargs).dict()
-        )
+        if np.all(atoms.pbc == False):
+            mol = AseAtomsAdaptor().get_molecule(atoms)
+            metadata = (
+                StructureMetadata()
+                .from_composition(mol.composition, **metadata_kwargs)
+                .dict()
+            )
+        else:
+            struct = AseAtomsAdaptor().get_structure(atoms)
+            metadata = (
+                StructureMetadata().from_structure(struct, **metadata_kwargs).dict()
+            )
     else:
-        struct_metadata = {}
+        metadata = {}
 
     # Store the info flags separately for easy querying
     results["atoms_info"] = {}
@@ -49,6 +58,6 @@ def atoms_to_db(atoms, get_metadata=True, strip_info=True, **metadata_kwargs):
     results["atoms"] = encode(atoms)
 
     # Combine the metadata and results dictionaries
-    results_full = {**struct_metadata, **results}
+    results_full = {**metadata, **results}
 
     return results_full

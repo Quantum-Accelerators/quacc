@@ -1,6 +1,6 @@
 import os
 from ase.io import read
-from ase.build import bulk, molecule
+from ase.build import bulk
 from ase.calculators.vasp import Vasp
 from ase.calculators.singlepoint import SinglePointDFTCalculator
 from htase.calculators.vasp import SmartVasp
@@ -360,8 +360,7 @@ def test_algo():
     assert atoms.calc.string_params["algo"] == "damped"
     assert atoms.calc.float_params["time"] == 0.5
 
-    atoms = molecule("H2")
-    atoms.center(vacuum=10, axis=1)
+    atoms[0].symbol = "H"
     atoms = SmartVasp(atoms, xc="hse06")
     assert atoms.calc.string_params["algo"] == "all"
 
@@ -464,9 +463,8 @@ def test_ismear():
     assert atoms.calc.int_params["ismear"] == 1
     assert atoms.calc.float_params["sigma"] == 0.1
 
-    atoms = molecule("H2")
-    atoms.center(vacuum=10, axis=1)
-    atoms = SmartVasp(atoms, ismear=-5, nsw=10)
+    atoms[0].symbol = "H"
+    atoms = SmartVasp(atoms, kpts=(10, 10, 10), ismear=-5, nsw=10)
     assert atoms.calc.int_params["ismear"] == -5
 
 
