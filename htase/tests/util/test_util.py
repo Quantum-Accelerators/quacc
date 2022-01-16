@@ -1,4 +1,3 @@
-from hashlib import new
 from ase.io import read
 from ase.build import bulk, fcc100
 from ase.io.jsonio import encode, decode
