@@ -77,7 +77,7 @@ def bulk_to_slab_job(atoms_json, max_slabs=None, **slab_kwargs):
         jobs.append(static_job)
         outputs.append(static_job.output)
 
-    return Response(replace=Flow(jobs, output=outputs))
+    return Response(replace=Flow(jobs))
 
 
 @job
@@ -100,4 +100,4 @@ def slab_to_ads_slab_job(atoms_json, adsorbate_json, **slab_ads_kwargs):
         jobs.append(static_job)
         outputs.append(static_job.output)
 
-    return Response(replace=Flow(jobs, output=outputs))
+    return Response(replace=Flow(jobs))
