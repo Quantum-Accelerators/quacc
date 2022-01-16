@@ -73,10 +73,10 @@ def get_highest_block(atoms):
 
 def flip_atoms(atoms, return_struct=False):
     """
-    Convenience function for vertically flipping atoms or structures
+    Convenience function for vertically flipping periodic atoms or structures
     Args:
         atoms (ase.Atoms|pymatgen.core.Structure): Atoms/structure to flip
-        return_struct (bool): True if a Pymatgen structure (technically, slab) object
+        return_struct (bool): True if a Pymatgen structure object
         should be returned; False if an ASE atoms object should be returned
             Defaults to False
     Returns:
