@@ -74,7 +74,7 @@ def flip_atoms(atoms, return_struct=False):
         should be returned; False if an ASE atoms object should be returned
             Defaults to False
     Returns:
-        new_atoms (ase.Atoms or pymatgen.core.surface.Slab): inverted slab
+        new_atoms (ase.Atoms|pymatgen.core.surface.Slab): inverted slab
     """
 
     if type(atoms) is Atoms:
@@ -109,7 +109,7 @@ def make_slabs_from_bulk(
     Function to make slabs from a bulk atoms object.
 
     Args:
-        atoms (ase.Atoms): bulk atoms
+        atoms (ase.atoms.Atoms): bulk atoms
         max_index (int): maximum Miller index for slab generation
             Defaults to 1.
         min_slab_size (float): minimum slab size (depth) in angstroms
@@ -128,7 +128,7 @@ def make_slabs_from_bulk(
         **slabgen_kwargs: keyword arguments to pass to the pymatgen generate_all_slabs() function
 
     Returns:
-        final_slabs (ase.Atoms): all generated slabs
+        final_slabs (list[ase.atoms.Atoms]|None): all generated slabs
     """
 
     # Note: This will not work properly for 2D structures. See Oxana/Martin's code
@@ -363,22 +363,22 @@ def make_adsorbate_structures(
 
     Args:
         atoms (ase.Atoms): The atoms to add adsorbates to.
-        adsorbate (ase.Atoms|str): The adsorbate to add. If a string, it will pull from ase.collections.g2
-            Note: It will be placed on the surface in the exact input orientation specified provided by the user.
+        adsorbate (ase.atoms.Atoms|ase.atoms.Atom|str): The adsorbate to add. If a string, it will pull from ase.collections.g2
+            Note: It will be placed on the surface in the exact input orientation provided by the user.
         min_distance (float): The distance between the adsorbate and the surface site.
         modes (List[str], str): The adsorption mode(s) to consider. Options include: "ontop",
             "bridge", "hollow", "subsurface"
-        allowed_surface_symbols (list): The symbols of surface atoms to consider. If None,
+        allowed_surface_symbols (list[str]|str): The symbols of surface atoms to consider. If None,
             will use all surface atoms.
-        allowed_surface_indices (list): The indices of surface atoms to consider. If None,
-            will use all surface atoms.
+        allowed_surface_indices (list[int]|int): The indices of surface atoms to consider. If None,
+            will use all surface atoms. Generally used if a specific site is to be excluded from the set.
         ads_site_finder_kwargs (dict): The keyword arguments to pass to the
             AdsorbateSiteFinder().
         find_ads_sites_kwargs (dict): The keyword arguments to pass to
             AdsorbateSiteFinder.find_adsorption_sites().
 
     Returns:
-        List[ase.Atoms]: The structures with adsorbates
+        List[ase.Atoms]|None: The structures with adsorbates
 
     """
 
@@ -402,6 +402,23 @@ def make_adsorbate_structures(
             modes = [modes]
         find_ads_sites_kwargs["positions"] = [mode.lower() for mode in modes]
 
+    # Allow the user to provide a single entry instead of a list for convenience
+    if type(allowed_surface_symbols) is str:
+        allowed_surface_symbols = [allowed_surface_symbols]
+    if type(allowed_surface_indices) is int:
+        allowed_surface_indices = [allowed_surface_indices]
+
+    # Check the provided surface indices are reasonable
+    atom_indices = [atom.index for atom in atoms]
+    if allowed_surface_indices and ~np.all(
+        [idx in atom_indices for idx in allowed_surface_indices]
+    ):
+        raise ValueError(
+            "All indices in allowed_surface_indices must be in atoms.",
+            allowed_surface_indices,
+            atom_indices,
+        )
+
     if type(adsorbate) is not Atoms:
         if type(adsorbate) is Atom:
             # If adsorbate is an Atom object, make it an Atoms object
@@ -413,9 +430,11 @@ def make_adsorbate_structures(
             else:
                 raise ValueError(f"{adsorbate} is not in the G2 database.")
 
-    # Add 0.0 initial magmoms to adsorbate if needed
+    # Add 0.0 initial magmoms to atoms/adsorbate if needed
     if atoms.has("initial_magmoms") and not adsorbate.has("initial_magmoms"):
         adsorbate.set_initial_magnetic_moments([0.0] * len(adsorbate))
+    if adsorbate.has("initial_magmoms") and not atoms.has("initial_magmoms"):
+        atoms.set_initial_magnetic_moments([0.0] * len(atoms))
 
     # Make a Pymatgen structure and molecule
     struct = AseAtomsAdaptor.get_structure(atoms)
@@ -442,7 +461,7 @@ def make_adsorbate_structures(
             # Get distance matrix between adsorbate binding atom and surface
             adsorbate_index = len(atoms) + np.argmin(atom.z for atom in adsorbate)
             d = atoms_with_adsorbate.get_all_distances(mic=True)
-            d = d[[atom.index for atom in atoms], :]
+            d = d[atom_indices, :]
             d = d[:, adsorbate_index]
 
             # Find closest surface atoms

@@ -1,3 +1,4 @@
+from hashlib import new
 from ase.io import read
 from ase.build import bulk, fcc100
 from ase.io.jsonio import encode, decode
@@ -224,24 +225,27 @@ def test_make_adsorbate_structures():
     )
     assert len(new_atoms) == 3
 
-    new_atoms = make_adsorbate_structures(atoms, "H2O", allowed_surface_indices=[23])
+    new_atoms = make_adsorbate_structures(atoms, "H2O", allowed_surface_indices=[6])
     assert len(new_atoms) == 2
 
-    new_atoms = make_adsorbate_structures(
-        atoms, "H2O", allowed_surface_indices=[18], modes=["ontop"]
-    )
-    assert len(new_atoms) == 1
+    atoms[7].symbol = "Fe"
+    new_atoms = make_adsorbate_structures(atoms, "H2O", modes=["ontop"])
+    assert len(new_atoms) == 3
 
-    atoms[18].symbol = "Fe"
     new_atoms = make_adsorbate_structures(
         atoms, "H2O", allowed_surface_symbols=["Fe"], modes=["ontop"]
     )
     assert len(new_atoms) == 1
+
+    new_atoms = make_adsorbate_structures(
+        atoms, "H2O", allowed_surface_indices=[7], modes=["ontop"]
+    )
+    assert len(new_atoms) == 1
+
     new_atoms = make_adsorbate_structures(
         atoms, "H2O", allowed_surface_symbols=["Cu", "Fe"]
     )
-    assert len(new_atoms) == 10
-
+    assert len(new_atoms) == 6
     assert new_atoms[0].info.get("adsorbates", None) is not None
     assert decode(new_atoms[0].info.get("adsorbates", None)[0]["atoms"]) == molecule(
         "H2O"
