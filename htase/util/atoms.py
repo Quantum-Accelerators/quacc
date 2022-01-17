@@ -369,7 +369,8 @@ def make_adsorbate_structures(
     Args:
         atoms (ase.Atoms): The atoms to add adsorbates to.
         adsorbate (ase.atoms.Atoms|ase.atoms.Atom|str): The adsorbate to add. If a string, it will pull from ase.collections.g2
-            Note: It will be placed on the surface in the exact input orientation provided by the user.
+            Note: It will be placed on the surface in the exact input orientation provided by the user (the adsorption mode is
+            along the c axis and the coordinating atom is the one in the -z direction).
         min_distance (float): The distance between the adsorbate and the surface site.
         modes (List[str], str): The adsorption mode(s) to consider. Options include: "ontop",
             "bridge", "hollow", "subsurface"
@@ -434,7 +435,7 @@ def make_adsorbate_structures(
                 adsorbate = molecule(adsorbate)
                 # Remove any adsorbate magmoms from the g2 collection. I find
                 # it very bothersome that ASE automatically adds magnetic moments
-                # without the user's consent or knowledge. Leave thaat to the user.
+                # without the user's consent or knowledge. Leave that to the user.
                 adsorbate.set_initial_magnetic_moments(None)
             else:
                 raise ValueError(f"{adsorbate} is not in the G2 database.")
