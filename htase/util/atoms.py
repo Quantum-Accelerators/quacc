@@ -373,7 +373,7 @@ def make_adsorbate_structures(
             along the c axis and the coordinating atom is the one in the -z direction).
         min_distance (float): The distance between the adsorbate and the surface site.
         modes (List[str], str): The adsorption mode(s) to consider. Options include: "ontop",
-            "bridge", "hollow", "subsurface"
+            "bridge", "hollow", "subsurface".
         allowed_surface_symbols (list[str]|str): The symbols of surface atoms to consider. If None,
             will use all surface atoms.
         allowed_surface_indices (list[int]|int): The indices of surface atoms to consider. If None,
