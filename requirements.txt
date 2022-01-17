@@ -2,6 +2,6 @@ git+https://gitlab.com/ase/ase.git@master#egg=ase # waiting on >= 3.22.2 for VAS
 git+https://github.com/materialsproject/pymatgen.git # waiting on PR #2353 to be in version
 git+https://github.com/arosen93/custodian.git@rosen-flow # waiting on > 2021.12.2
 git+https://github.com/arosen93/jobflow.git@rosen-configupdates#egg=jobflow # waiting on PR #73 to be in version
-git+https://github.com/materialsproject/atomate2.git # waiting on PR #54 to be in version
+git+https://github.com/arosen93/atomate2.git@rosen-schemas # waiting on PR #54 to be in version
 monty==2022.1.12.1
 FireWorks==1.9.8
