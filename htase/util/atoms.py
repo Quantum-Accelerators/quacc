@@ -18,6 +18,8 @@ from copy import deepcopy
 # by default. Pymatgen structures can be returned with an optional kwarg.
 # - If you modify the properties of an input Atoms object in any way, make sure to do so
 # on a deepcopy because Atoms objects are mutable.
+# - If you are going to store an Atoms/Atom object in the atoms.info dictionary, do so using
+# atoms_to_db(atoms) so that it can be properly serialized.
 
 
 def check_is_metal(atoms):
@@ -430,6 +432,10 @@ def make_adsorbate_structures(
             # Get adsorbate if string
             if adsorbate in g2.names:
                 adsorbate = molecule(adsorbate)
+                # Remove any adsorbate magmoms from the g2 collection. I find
+                # it very bothersome that ASE automatically adds magnetic moments
+                # without the user's consent or knowledge. Leave thaat to the user.
+                adsorbate.set_initial_magnetic_moments(None)
             else:
                 raise ValueError(f"{adsorbate} is not in the G2 database.")
 
