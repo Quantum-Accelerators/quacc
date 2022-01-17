@@ -141,12 +141,8 @@ def make_slabs_from_bulk(
     # for adjustments for 2D: https://github.com/oxana-a/atomate/blob/ads_wf/atomate/vasp/firetasks/adsorption_tasks.py
 
     # Use pymatgen to generate slabs
-    if type(atoms) is Atoms:
-        struct = AseAtomsAdaptor.get_structure(atoms)
-        atoms_info = atoms.info.copy()
-    else:
-        struct = atoms
-        atoms_info = {}
+    struct = AseAtomsAdaptor.get_structure(atoms)
+    atoms_info = atoms.info.copy()
 
     if type(allowed_surface_atoms) is str:
         allowed_surface_atoms = [allowed_surface_atoms]
@@ -242,6 +238,7 @@ def make_slabs_from_bulk(
     for slab_with_props in slabs_with_props:
         final_slab = AseAtomsAdaptor.get_atoms(slab_with_props)
         slab_stats = {
+            "bulk": encode(atoms),
             "miller_index": slab_with_props.miller_index,
             "shift": slab_with_props.shift,
             "scale_factor": slab_with_props.scale_factor,
