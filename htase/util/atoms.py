@@ -1,11 +1,11 @@
 from ase.atoms import Atom, Atoms
 from ase.build import molecule
 from ase.collections import g2
-from ase.io.jsonio import encode
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.core.surface import generate_all_slabs, Slab
 from pymatgen.analysis.adsorption import AdsorbateSiteFinder
 from pymatgen.core.surface import center_slab
+from htase.schemas.common.atoms import atoms_to_db
 import numpy as np
 import warnings
 from copy import deepcopy
@@ -238,7 +238,7 @@ def make_slabs_from_bulk(
     for slab_with_props in slabs_with_props:
         final_slab = AseAtomsAdaptor.get_atoms(slab_with_props)
         slab_stats = {
-            "bulk": encode(atoms),
+            "bulk": atoms_to_db(atoms),
             "miller_index": slab_with_props.miller_index,
             "shift": slab_with_props.shift,
             "scale_factor": slab_with_props.scale_factor,
@@ -499,8 +499,7 @@ def make_adsorbate_structures(
             # Store adsorbate info
             atoms_with_adsorbate.info = atoms.info.copy()
             ads_stats = {
-                "atoms": encode(adsorbate),
-                "formula": adsorbate.get_chemical_formula(),
+                "adsorbate": atoms_to_db(adsorbate),
                 "mode": mode,
                 "surface_atoms_symbols": surface_atom_symbols,
                 "surface_atoms_indices": surface_atom_indices,

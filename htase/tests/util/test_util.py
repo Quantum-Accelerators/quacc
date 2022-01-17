@@ -246,6 +246,6 @@ def test_make_adsorbate_structures():
     )
     assert len(new_atoms) == 6
     assert new_atoms[0].info.get("adsorbates", None) is not None
-    assert decode(new_atoms[0].info.get("adsorbates", None)[0]["atoms"]) == molecule(
-        "H2O"
-    )
+    assert decode(
+        new_atoms[0].info.get("adsorbates", None)[0]["adsorbate"]["atoms"]
+    ) == molecule("H2O")
