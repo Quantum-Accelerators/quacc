@@ -507,7 +507,7 @@ def make_adsorbate_structures(
             atoms_with_adsorbate.info = atoms.info.copy()
             ads_stats = {
                 "adsorbate": atoms_to_db(adsorbate),
-                "mode": mode,
+                "initial_mode": mode,
                 "surface_atoms_symbols": surface_atom_symbols,
                 "surface_atoms_indices": surface_atom_indices,
             }
