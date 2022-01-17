@@ -1,6 +1,6 @@
 git+https://gitlab.com/ase/ase.git@master#egg=ase # waiting on >= 3.22.2 for VASP6 OUTCAR parsing
 pymatgen==2022.1.9
-git+https://github.com/materialsproject/custodian.git # waiting on > 2021.12.2
+custodian==2022.1.17
 git+https://github.com/arosen93/jobflow.git@rosen-configupdates#egg=jobflow # waiting on PR #73 to be in version
 git+https://github.com/arosen93/atomate2.git@rosen-schemas # waiting on PR #54 to be in version
 monty==2022.1.12.1
