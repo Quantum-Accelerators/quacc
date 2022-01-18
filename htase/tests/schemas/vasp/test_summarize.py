@@ -14,18 +14,14 @@ def test_summarize():
 
     # Make sure metadata is made
     atoms = read(os.path.join(run1, "CONTCAR.gz"))
-    results = get_results(dir_path=run1)
+    results = get_results(atoms, dir_path=run1)
     assert results["nsites"] == len(atoms)
-
-    # Make sure Atoms object is stored properly
-    atoms = read(os.path.join(run1, "CONTCAR.gz"))
-    results = get_results(dir_path=run1, atoms=atoms)
     assert decode(results["atoms"]) == atoms
 
     # Make sure info tags are handled appropriately
     atoms = read(os.path.join(run1, "CONTCAR.gz"))
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
-    results = get_results(dir_path=run1, atoms=atoms)
+    results = get_results(atoms, dir_path=run1)
     results_atoms = decode(results["atoms"])
     assert atoms.info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results.get("atoms_info", {}) != {}
@@ -37,7 +33,7 @@ def test_summarize():
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
     atoms = SmartVasp(atoms)
     atoms.calc.results = {"energy": -1.0, "magmoms": [2.0] * len(atoms)}
-    results = get_results(dir_path=run1, atoms=atoms)
+    results = get_results(atoms, dir_path=run1)
     results_atoms = decode(results["atoms"])
 
     assert atoms.calc is not None
@@ -49,7 +45,7 @@ def test_summarize():
     # Make sure Atoms magmoms were not moved if specified
     atoms = read(os.path.join(run1, "CONTCAR.gz"))
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
-    results = get_results(dir_path=run1, atoms=atoms, prep_next_run=False)
+    results = get_results(atoms, dir_path=run1, prep_next_run=False)
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
     results_atoms = decode(results["atoms"])
     assert results_atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)

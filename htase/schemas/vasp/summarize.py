@@ -4,15 +4,14 @@ from htase.schemas.common.atoms import atoms_to_db
 from htase.util.calc import cache_calc
 
 
-def get_results(dir_path=None, atoms=None, prep_next_run=True, **taskdoc_kwargs):
+def get_results(atoms, dir_path=None, prep_next_run=True, **taskdoc_kwargs):
     """
 
     Args:
+        atoms (ase.Atoms): ASE Atoms object following a calculation.
         dir_path (str): Path to VASP outputs
             Defaults to None (current working directory)
-        atoms (ase.Atoms): ASE Atoms object to store in {"atoms": atoms}.
-            Defaults to None.
-        prep_next_run (bool): Whether the Atoms object, if present, should be prepared
+        prep_next_run (bool): Whether the Atoms object should be prepared
         for the next run. This clears out any attached calculator and moves
         the final magmoms to the initial magmoms.
             Defauls to True.
@@ -48,17 +47,13 @@ def get_results(dir_path=None, atoms=None, prep_next_run=True, **taskdoc_kwargs)
     if results.get("vasp_objects", {}) == {}:
         results.pop("vasp_objects", None)
 
-    if atoms:
-        # Moves final magmoms to initial (necessary for sequential jobs)
-        if prep_next_run:
-            atoms = cache_calc(atoms)
+    # Moves final magmoms to initial (necessary for sequential jobs)
+    if prep_next_run:
+        atoms = cache_calc(atoms)
 
-        # We use get_metadata=False because the TaskDocument already
-        # makes the structure metadata for us
-        atoms_db = atoms_to_db(atoms, get_metadata=False)
-
-    else:
-        atoms_db = {}
+    # We use get_metadata=False because the TaskDocument already
+    # makes the structure metadata for us
+    atoms_db = atoms_to_db(atoms, get_metadata=False)
 
     results_full = {**results, **atoms_db}
 
