@@ -112,10 +112,10 @@ export FW_CONFIG_FILE='/path/to/config/fw_config/FW_config.yaml'
 - [ASE](https://gitlab.com/ase/ase)
 - [Pymatgen](https://github.com/materialsproject/pymatgen)
 - [Custodian](https://github.com/materialsproject/custodian)
+- [Atomate2](https://github.com/materialsproject/atomate2)
 
 ### Recommended
 - [Jobflow](https://github.com/materialsproject/jobflow)
-- [Atomate2](https://github.com/materialsproject/atomate2)
 - [FireWorks](https://materialsproject.github.io/fireworks)
 
 ## License
