@@ -7,7 +7,7 @@ import numpy as np
 from copy import deepcopy
 
 
-def atoms_to_db(atoms, get_metadata=True, strip_info=True):
+def atoms_to_db(atoms, get_metadata=True, strip_info=False):
 
     """
     Convert an ASE Atoms object to a dict suitable for storage in MongoDB.
@@ -18,7 +18,7 @@ def atoms_to_db(atoms, get_metadata=True, strip_info=True):
             Defaults to True.
         strip_info (bool): Whether to strip the data from atoms.info in the returned {"atoms":atoms}.
         Note that this data will be stored in {"atoms_info":atoms.info} regardless.
-            Defaults to True.
+            Defaults to False.
 
     Returns:
         Dict: dictionary of tabulated atoms object data

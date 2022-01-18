@@ -3,22 +3,33 @@ import os
 from copy import deepcopy
 
 
-def cache_calc(atoms, move_magmoms=True):
+def cache_calc(
+    atoms,
+    move_magmoms=True,
+    store_results=False,
+):
     """
-    Store the calculator results in atoms.info["results"] for later retrieval.
-    This makes it so the calculator results are not lost between
-    serialize/deserialize cycles and also makes it possible to
-    retain information about computed properties when manipulating the
-    Atoms object, e.g. after a supercell transformation.
+    Prepares the Atoms object for a new run.
 
-    cache_calc supports multiple prior calculators. Each one will be stored in
-    atoms.info["results"] = {"calc0": {}, "calc1": {}, ...} with higher numbers
-    being the most recent.
+    Depending on the arguments, this function will:
+        - Move the converged magnetic moments to the initial magnetic moments.
+        - Store the calculator results in atoms.info["results"] for later retrieval.
+        This makes it so the calculator results are not lost between
+        serialize/deserialize cycles and also makes it possible to
+        retain information about computed properties when manipulating the
+        Atoms object, e.g. after a supercell transformation. Each one will be stored in
+        atoms.info["results"] = {"calc0": {}, "calc1": {}, ...} with higher numbers
+        being the most recent.
+
+    In all cases, the calculator will be reset so new jobs can be run.
 
     Args:
         atoms (ase.Atoms): Atoms object
         move_magmoms (bool): If True, move atoms.get_magnetic_moments() to
         atoms.get_initial_magnetic_moments()
+            Defult: True.
+        store_results (bool): If True, store calculator results in atoms.info["results"]
+            Default: False.
 
     Returns:
         atoms (ase.Atoms): Atoms object with calculator results attached in atoms.info["results"]
@@ -27,15 +38,16 @@ def cache_calc(atoms, move_magmoms=True):
 
     if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None) is not None:
 
-        # Dump calculator results into the .info tag
-        atoms.calc.results["rundir"] = os.getcwd()
-        if atoms.info.get("results", None) is None:
-            prior_calcs = 0
-            atoms.info["results"] = {}
-        else:
-            prior_calcs = len(atoms.info["results"])
+        if store_results:
+            # Dump calculator results into the .info tag
+            atoms.calc.results["rundir"] = os.getcwd()
+            if atoms.info.get("results", None) is None:
+                prior_calcs = 0
+                atoms.info["results"] = {}
+            else:
+                prior_calcs = len(atoms.info["results"])
 
-        atoms.info["results"][f"calc{prior_calcs}"] = atoms.calc.results
+            atoms.info["results"][f"calc{prior_calcs}"] = atoms.calc.results
 
         # Move converged magmoms to initial magmoms
         # If none were present, then initial magmoms should be set to 0's

@@ -26,20 +26,27 @@ ATOMS_NOSPIN = read(
 
 
 def test_cache_calc():
+
     atoms = deepcopy(ATOMS_MAG)
-    atoms.info = {"test": "hi"}
+    atoms.info["test"] = "hi"
     mag = atoms.get_magnetic_moment()
     init_mags = atoms.get_initial_magnetic_moments()
     mags = atoms.get_magnetic_moments()
     atoms = cache_calc(atoms)
-    assert atoms.info.get("test", None) == "hi"
+    assert atoms.info == {"test": "hi"}
+    assert atoms.calc == None
     assert atoms.get_initial_magnetic_moments().tolist() == mags.tolist()
+
+    atoms = deepcopy(ATOMS_MAG)
+    atoms.info["test"] = "hi"
+    atoms = cache_calc(atoms, store_results=True)
+    assert atoms.info.get("test", None) == "hi"
     assert atoms.info.get("results", None) is not None
     assert atoms.info["results"].get("calc0", None) is not None
     assert atoms.info["results"]["calc0"]["magmom"] == mag
     atoms = SmartVasp(atoms)
     atoms.calc.results = {"magmom": mag - 2}
-    atoms = cache_calc(atoms)
+    atoms = cache_calc(atoms, store_results=True)
     assert atoms.info.get("results", None) is not None
     assert atoms.info["results"].get("calc1", None) is not None
     assert atoms.info["results"]["calc0"]["magmom"] == mag
@@ -52,13 +59,13 @@ def test_cache_calc():
 
     atoms = deepcopy(ATOMS_NOMAG)
     mag = atoms.get_magnetic_moment()
-    atoms = cache_calc(atoms)
+    atoms = cache_calc(atoms, store_results=True)
     assert atoms.info.get("results", None) is not None
     assert atoms.info["results"].get("calc0", None) is not None
     assert atoms.info["results"]["calc0"]["magmom"] == mag
     atoms = SmartVasp(atoms)
     atoms.calc.results = {"magmom": mag - 2}
-    atoms = cache_calc(atoms)
+    atoms = cache_calc(atoms, store_results=True)
     assert atoms.info.get("results", None) is not None
     assert atoms.info["results"].get("calc1", None) is not None
     assert atoms.info["results"]["calc0"]["magmom"] == mag
@@ -66,13 +73,13 @@ def test_cache_calc():
     assert decode(encode(atoms)) == atoms
 
     atoms = deepcopy(ATOMS_NOSPIN)
-    atoms = cache_calc(atoms)
+    atoms = cache_calc(atoms, store_results=True)
     assert atoms.info.get("results", None) is not None
     assert atoms.info["results"].get("calc0", None) is not None
     assert atoms.info["results"]["calc0"].get("magmom", None) is None
     atoms = SmartVasp(atoms)
     atoms.calc.results = {"magmom": mag - 2}
-    atoms = cache_calc(atoms)
+    atoms = cache_calc(atoms, store_results=True)
     assert atoms.info.get("results", None) is not None
     assert atoms.info["results"].get("calc1", None) is not None
     assert atoms.info["results"]["calc0"].get("magmom", None) is None

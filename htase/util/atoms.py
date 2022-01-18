@@ -242,7 +242,7 @@ def make_slabs_from_bulk(
         slab_stats = {
             "bulk": atoms_to_db(atoms),
             "miller_index": slab_with_props.miller_index,
-            "shift": slab_with_props.shift,
+            "shift": round(slab_with_props.shift, 3),
             "scale_factor": slab_with_props.scale_factor,
         }
         final_slab.info = atoms_info.copy()
