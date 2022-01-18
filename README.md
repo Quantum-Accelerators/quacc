@@ -78,7 +78,7 @@ For additional details on how to convert a Jobflow job or flow to a Fireworks fi
 git clone https://github.com/arosen93/htase.git && cd htase && pip install -r requirements.txt && pip install -e .
 ```
 
-2. Download the example `config` folder provided [here](https://github.com/arosen93/htase/tree/main/htase/setup) and follow the steps in `instructions.md`.
+2. Acecss the example `config` folder provided [here](https://github.com/arosen93/htase/tree/main/htase/setup) and follow the steps in `instructions.md`.
 
 3. Define several environment variables (e.g. in your `~/.bashrc`), as outlined below:
 ```bash
