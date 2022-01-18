@@ -38,6 +38,7 @@ The above example can be converted to a format suitable for constructing a Jobfl
 from htase.calculators.vasp import SmartVasp
 from htase.schemas.vasp import summarize
 from ase.io.jsonio import decode
+from jobflow import job
 
 #-----Jobflow Function-----
 @job
@@ -54,7 +55,7 @@ def run_relax(atoms_json):
 ```python
 from ase.build import bulk
 from ase.io.jsonio import encode
-from jobflow import job, Flow
+from jobflow import Flow
 from jobflow.managers.local import run_locally
 
 #-----Make and Run a Flow-----
