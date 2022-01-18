@@ -62,11 +62,12 @@ from jobflow.managers.local import run_locally
 # Constrct an Atoms object
 atoms = bulk("Cu")
 
-# Call the relaxation function
+# Define the flow
 job1 = run_relax(encode(atoms))
+flow = Flow([job1])
 
-# Define and run the flow locally
-responses = run_locally(Flow([job1]), create_folders=True)
+# Run the flow
+run_locally(flow, create_folders=True)
 ```
 ### Fireworks Integration
 For additional details on how to convert a Jobflow job or flow to a Fireworks firework or workflow, refer to the [Jobflow documentation](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks). 
