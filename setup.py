@@ -14,7 +14,7 @@ if __name__ == "__main__":
         long_description_content_type="text/markdown",
         author="Andrew S. Rosen",
         author_email="asrosen93@gmail.com",
-        url="https://github.com/arosen93/HT-ASE",
+        url="https://github.com/arosen93/htase",
         python_requires=">=3.8.0",
         version="0.0.1",
         packages=find_packages(),
