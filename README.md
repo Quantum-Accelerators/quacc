@@ -43,11 +43,8 @@ from ase.io.jsonio import decode
 @job
 def run_relax(atoms_json):
 
-    # Decode JSON to Atoms
-    atoms = decode(atoms_json)
-            
     # Run VASP
-    atoms = SmartVasp(atoms, xc='rpbe', preset="BulkRelaxSet")
+    atoms = SmartVasp(decode(atoms_json), xc='rpbe', preset="BulkRelaxSet")
     atoms.get_potential_energy()
     
     # Return serialized results
