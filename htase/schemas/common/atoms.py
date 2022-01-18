@@ -7,7 +7,7 @@ import numpy as np
 from copy import deepcopy
 
 
-def atoms_to_db(atoms, get_metadata=True, strip_info=True, **metadata_kwargs):
+def atoms_to_db(atoms, get_metadata=True, strip_info=True):
 
     """
     Convert an ASE Atoms object to a dict suitable for storage in MongoDB.
@@ -16,10 +16,9 @@ def atoms_to_db(atoms, get_metadata=True, strip_info=True, **metadata_kwargs):
         atoms (ase.Atoms): ASE Atoms object to store in {"atoms": atoms}.
         get_metadata (bool): Whether to store atoms metadata in the returned dict.
             Defaults to True.
-        strip_info (bool): Whether to strip the data from atoms.info in the returned {"atoms":atoms}
+        strip_info (bool): Whether to strip the data from atoms.info in the returned {"atoms":atoms}.
         Note that this data will be stored in {"atoms_info":atoms.info} regardless.
             Defaults to True.
-        metadata_kwargs: Keyword arguments to pass to StructureMetadata().from_structure()/MoleculeMetadata.from_molecule()
 
     Returns:
         Dict: dictionary of tabulated atoms object data
@@ -34,12 +33,10 @@ def atoms_to_db(atoms, get_metadata=True, strip_info=True, **metadata_kwargs):
     if get_metadata:
         if np.all(atoms.pbc == False):
             mol = AseAtomsAdaptor().get_molecule(atoms)
-            metadata = MoleculeMetadata().from_molecule(mol, **metadata_kwargs).dict()
+            metadata = MoleculeMetadata().from_molecule(mol).dict()
         else:
             struct = AseAtomsAdaptor().get_structure(atoms)
-            metadata = (
-                StructureMetadata().from_structure(struct, **metadata_kwargs).dict()
-            )
+            metadata = StructureMetadata().from_structure(struct).dict()
     else:
         metadata = {}
 
