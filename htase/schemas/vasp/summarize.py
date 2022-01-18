@@ -33,7 +33,6 @@ def get_results(atoms, dir_path=None, prep_next_run=True, **taskdoc_kwargs):
     unused_props = (
         "icsd_id",
         "author",
-        "calcs_reversed",
         "transformations",
         "state",
         "entry",
