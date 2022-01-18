@@ -37,10 +37,7 @@ The above example can be converted to a format suitable for constructing a Jobfl
 ```python
 from htase.calculators.vasp import SmartVasp
 from htase.schemas.vasp import summarize
-from ase.io.jsonio import encode, decode
-from ase.build import bulk
-from jobflow import job, Flow
-from jobflow.managers.local import run_locally
+from ase.io.jsonio import decode
 
 #-----Jobflow Function-----
 @job
@@ -56,6 +53,12 @@ def run_relax(atoms_json):
     # Return serialized results
     results = summarize.get_results(atoms)
     return results
+```
+```python
+from ase.build import bulk
+from ase.io.jsonio import encode
+from jobflow import job, Flow
+from jobflow.managers.local import run_locally
 
 #-----Make and Run a Flow-----
 # Constrct an Atoms object
