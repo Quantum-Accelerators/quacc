@@ -54,7 +54,8 @@ def run_relax(atoms_json):
     atoms.get_potential_energy()
     
     # Return serialized results
-    return {"atoms": encode(atoms), "results": summarize.get_results()}
+    results = summarize.get_results(atoms)
+    return results
 
 #-----Make and Run a Flow-----
 # Constrct an Atoms object
