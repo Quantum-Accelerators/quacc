@@ -38,16 +38,14 @@ The above example can be converted to a format suitable for constructing a Jobfl
 from htase.calculators.vasp import SmartVasp
 from htase.schemas.vasp import summarize
 from ase.io.jsonio import decode
+from jobflow import job
 
 #-----Jobflow Function-----
 @job
 def run_relax(atoms_json):
 
-    # Decode JSON to Atoms
-    atoms = decode(atoms_json)
-            
     # Run VASP
-    atoms = SmartVasp(atoms, xc='rpbe', preset="BulkRelaxSet")
+    atoms = SmartVasp(decode(atoms_json), xc='rpbe', preset="BulkRelaxSet")
     atoms.get_potential_energy()
     
     # Return serialized results
@@ -57,36 +55,32 @@ def run_relax(atoms_json):
 ```python
 from ase.build import bulk
 from ase.io.jsonio import encode
-from jobflow import job, Flow
+from jobflow import Flow
 from jobflow.managers.local import run_locally
 
 #-----Make and Run a Flow-----
 # Constrct an Atoms object
 atoms = bulk("Cu")
 
-# Call the relaxation function
-job1 = run_relax(encode(atoms))
-
 # Define the flow
+job1 = run_relax(encode(atoms))
 flow = Flow([job1])
 
-# Run locally
-responses = run_locally(flow, create_folders=True)
+# Run the flow
+run_locally(flow, create_folders=True)
 ```
 ### Fireworks Integration
 For additional details on how to convert a Jobflow job or flow to a Fireworks firework or workflow, refer to the [Jobflow documentation](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks). 
 
 ## Installation
-1. Make sure you have Python 3.7+ installed, preferable in a clean virtual (e.g. [Miniconda](https://docs.conda.io/en/latest/miniconda.html)) environment.
-
-2. Run the following command in a convenient place to install HT-ASE:
+1. Run the following command in a convenient place to install HT-ASE:
 ```bash
 git clone https://github.com/arosen93/htase.git && cd htase && pip install -r requirements.txt && pip install -e .
 ```
 
-3. Download the example `config` folder provided [here](https://github.com/arosen93/htase/tree/main/htase/setup) and follow the steps in `instructions.md`.
+2. Acecss the example `config` folder provided [here](https://github.com/arosen93/htase/tree/main/htase/setup) and follow the steps in `instructions.md`.
 
-4. Define several environment variables (e.g. in your `~/.bashrc`), as outlined below:
+3. Define several environment variables (e.g. in your `~/.bashrc`), as outlined below:
 ```bash
 # HT-ASE requirements
 export ASE_VASP_COMMAND="python /path/to/htase/htase/custodian/vasp/run_vasp_custodian.py"

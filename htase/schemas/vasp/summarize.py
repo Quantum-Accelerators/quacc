@@ -11,9 +11,9 @@ def get_results(atoms, dir_path=None, prep_next_run=True, **taskdoc_kwargs):
         atoms (ase.Atoms): ASE Atoms object following a calculation.
         dir_path (str): Path to VASP outputs
             Defaults to None (current working directory)
-        prep_next_run (bool): Whether the Atoms object should be prepared
-        for the next run. This clears out any attached calculator and moves
-        the final magmoms to the initial magmoms.
+        prep_next_run (bool): Whether the Atoms object storeed in {"atoms": atoms} should be prepared
+        for the next run. This clears out any attached calculator and moves the final magmoms to the
+        initial magmoms.
             Defauls to True.
         **taskdoc_kwargs: Additional keyword arguments to pass to TaskDocument.from_directory()
 
