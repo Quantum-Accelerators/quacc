@@ -1,0 +1,50 @@
+from pymatgen.command_line.bader_caller import bader_analysis_from_path
+import os
+
+
+def run_bader(path=None):
+    """
+    Runs a Bader analysis using the VASP output files in the given path.
+    This function requires that `bader` or `bader.exe` is located in your
+    PATH environment variable. See http://theory.cm.utexas.edu/henkelman/code/bader
+    for the bader code.
+
+    Args:
+        path (str): The path where the VASP output files are located.
+        Must include CHGCAR, AECCAR0, AECCAR2, and POTCAR files. These
+        files can be gzip'd or not -- it doesn't matter.
+            Default: None (current working directory).
+
+    Returns:
+        Dictionary containing the Bader analysis summary.
+
+    """
+
+    if path is None:
+        path = os.getcwd()
+
+    # Make sure files are present.
+    for f in ["CHGCAR", "AECCAR0", "AECCAR2", "POTCAR"]:
+        if not os.path.exists(os.path.join(path, f)) and not os.path.exists(
+            os.path.join(path, f"{f}.gz")
+        ):
+            raise ValueError("Could not find {} in {}".format(f, path))
+
+    # Run Bader analysis
+    bader_stats = bader_analysis_from_path(path)
+
+    # Store the partial charge, which is much more useful than the
+    # raw charge and is more intuitive than the charge transferred.
+    # An atom with a positive partial charge is cationic, whereas
+    # an atom with a negative partial charge is anionic.
+    bader_stats["partial_charge"] = [-c for c in bader_stats["charge_transfer"]]
+
+    # Some cleanup of the returned dictionary
+    if "magmom" in bader_stats:
+        bader_stats["spin_moment"] = bader_stats["magmom"]
+    bader_stats.pop("charge", None)
+    bader_stats.pop("charge_transfer", None)
+    bader_stats.pop("reference_used", None)
+    bader_stats.pop("magmom", None)
+
+    return bader_stats
