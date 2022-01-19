@@ -3,5 +3,5 @@ pymatgen==2022.1.9
 custodian==2022.1.17
 git+https://github.com/arosen93/jobflow.git@rosen-configupdates#egg=jobflow # waiting on PR #73
 git+https://github.com/arosen93/atomate2.git@rosen-schemas # waiting on PR #54 to be in version
-monty==2022.1.12.1
+monty==2022.1.19
 FireWorks==1.9.8
