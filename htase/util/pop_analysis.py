@@ -113,16 +113,13 @@ def run_chargemol(path=None, atomic_densities_path=None):
 
     # Run Chargemol analysis
     chargemol_stats = ChargemolAnalysis(
-        chgcar_filename=os.path.join(path, "CHGCAR"),
-        potcar_filename=os.path.join(path, "POTCAR"),
-        aeccar0_filename=os.path.join(path, "AECCAR0"),
-        aeccar2_filename=os.path.join(path, "AECCAR2"),
+        path=path,
         atomic_densities_path=atomic_densities_path,
     )
 
     # Some cleanup of the returned dictionary
     if "spin_moments" not in chargemol_stats["ddec"]:
-        chargemol_stats["ddec"]["spin_moment"] = [0.0] * len(
+        chargemol_stats["ddec"]["spin_moments"] = [0.0] * len(
             chargemol_stats["ddec"]["partial_charge"]
         )
 
