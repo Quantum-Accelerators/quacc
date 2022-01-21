@@ -25,8 +25,8 @@ def run_bader(path=None):
                 "vacuum_charge": float,
                 "vacuum_volume": float,
                 "bader_version": float,
-                "partial_charge": List[float],
-                "spin_moment": List[float],
+                "partial_charges": List[float],
+                "spin_moments": List[float],
             }
 
     """
@@ -48,13 +48,13 @@ def run_bader(path=None):
     # raw charge and is more intuitive than the charge transferred.
     # An atom with a positive partial charge is cationic, whereas
     # an atom with a negative partial charge is anionic.
-    bader_stats["partial_charge"] = [-c for c in bader_stats["charge_transfer"]]
+    bader_stats["partial_charges"] = [-c for c in bader_stats["charge_transfer"]]
 
     # Some cleanup of the returned dictionary
     if "magmom" in bader_stats:
-        bader_stats["spin_moment"] = bader_stats["magmom"]
+        bader_stats["spin_moments"] = bader_stats["magmom"]
     else:
-        bader_stats["spin_moment"] = [0.0] * len(bader_stats["partial_charge"])
+        bader_stats["spin_moments"] = [0.0] * len(bader_stats["partial_charge"])
     bader_stats.pop("charge", None)
     bader_stats.pop("charge_transfer", None)
     bader_stats.pop("reference_used", None)
@@ -89,10 +89,7 @@ def run_chargemol(path=None, atomic_densities_path=None):
                 "ddec": {
                             "partial_charges": List[float],
                             "spin_moments": List[float],
-                            "dipoles": List[float],
-                            "rsquared_moments": List[float],
-                            "rcubed_moments": List[float],
-                            "rfourth_moments": List[float],
+                            "dipole_magnitudes": List[float],
                             "bond_order_sums": List[float],
                             "bond_order_dict": Dict
                         },
@@ -122,5 +119,8 @@ def run_chargemol(path=None, atomic_densities_path=None):
         chargemol_stats["ddec"]["spin_moments"] = [0.0] * len(
             chargemol_stats["ddec"]["partial_charge"]
         )
+    chargemol_stats.pop("rsquared_moments", None)
+    chargemol_stats.pop("rcubed_moments", None)
+    chargemol_stats.pop("rfourth_moments", None)
 
     return chargemol_stats
