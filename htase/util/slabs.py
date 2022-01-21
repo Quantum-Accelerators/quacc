@@ -373,8 +373,10 @@ def make_adsorbate_structures(
                 adsorbate = molecule(adsorbate)
                 # Remove any adsorbate magmoms from the g2 collection. I find
                 # it very bothersome that ASE automatically adds magnetic moments
-                # without the user's consent or knowledge. Leave that to the user.
-                adsorbate.set_initial_magnetic_moments(None)
+                # without the user's consent or knowledge. Leave that to the user
+                # except for O2.
+                if adsorbate.get_chemical_formula() != "O2":
+                    adsorbate.set_initial_magnetic_moments(None)
             else:
                 raise ValueError(f"{adsorbate} is not in the G2 database.")
 
