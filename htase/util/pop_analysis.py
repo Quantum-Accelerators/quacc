@@ -93,6 +93,7 @@ def run_chargemol(path=None, atomic_densities_path=None):
                             "rsquared_moments": List[float],
                             "rcubed_moments": List[float],
                             "rfourth_moments": List[float],
+                            "bond_order_sums": List[float],
                             "bond_order_dict": Dict
                         },
                 "cm5": {
