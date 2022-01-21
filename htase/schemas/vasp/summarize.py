@@ -2,6 +2,7 @@ from atomate2.vasp.schemas.task import TaskDocument
 import os
 from htase.schemas.common.atoms import atoms_to_db
 from htase.util.atoms import prep_next_run as prep_next_run_func
+from monty.json import jsanitize
 
 
 def get_results(atoms, dir_path=None, prep_next_run=True, **taskdoc_kwargs):
@@ -58,5 +59,8 @@ def get_results(atoms, dir_path=None, prep_next_run=True, **taskdoc_kwargs):
     atoms_db = atoms_to_db(atoms, get_metadata=False)
 
     results_full = {**results, **atoms_db}
+
+    # Make sure it's all JSON serializable
+    results_full = jsanitize(results_full)
 
     return results_full

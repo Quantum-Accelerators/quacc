@@ -45,9 +45,7 @@ def atoms_to_db(atoms, get_metadata=True, strip_info=False):
     # Copy the info flags as a separate entry in the DB for easy querying
     results["atoms_info"] = {}
     for key, val in atoms.info.items():
-        # We use jsanitize to make sure all data is stored in
-        # a JSON-friendly formaat (or converted to a string if not).
-        results["atoms_info"][key] = jsanitize(val)
+        results["atoms_info"][key] = val
 
     # Store the encoded Atoms object
     if strip_info:
@@ -57,5 +55,8 @@ def atoms_to_db(atoms, get_metadata=True, strip_info=False):
 
     # Combine the metadata and results dictionaries
     results_full = {**metadata, **results}
+
+    # Make sure it's all JSON serializable
+    results_full = jsanitize(results_full)
 
     return results_full
