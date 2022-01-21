@@ -89,7 +89,7 @@ def run_chargemol(path=None, atomic_densities_path=None):
                 "ddec": {
                             "partial_charges": List[float],
                             "spin_moments": List[float],
-                            "dipole_magnitudes": List[float],
+                            "dipoles": List[float],
                             "bond_order_sums": List[float],
                             "bond_order_dict": Dict
                         },
