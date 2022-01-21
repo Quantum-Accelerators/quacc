@@ -13,8 +13,8 @@ def run_bader(path=None):
     will need to be slightly modified.
     Args:
         path (str): The path where the VASP output files are located.
-        Must include CHGCAR, AECCAR0, AECCAR2, and POTCAR files. These
-        files can be gzip'd or not -- it doesn't matter.
+            Must include CHGCAR, AECCAR0, AECCAR2, and POTCAR files. These
+            files can be gzip'd or not -- it doesn't matter.
             Default: None (current working directory).
 
     Returns:
@@ -75,13 +75,13 @@ def run_chargemol(path=None, atomic_densities_path=None):
 
     Args:
         path (str): The path where the VASP output files are located.
-        Must include CHGCAR, AECCAR0, AECCAR2, and POTCAR files. These
-        files can be gzip'd or not -- it doesn't matter.
+            Must include CHGCAR, AECCAR0, AECCAR2, and POTCAR files. These
+            files can be gzip'd or not -- it doesn't matter.
             Default: None (current working directory).
         atomic_densities_path (str): The path where the reference atomic densities
-        are located for Chargemol. If None, we assume that this
-        directory is defined in an environment variable named DDEC6_ATOMIC_DENSITIES_DIR.
-        See the Chargemol documentation for more information.
+            are located for Chargemol. If None, we assume that this
+            directory is defined in an environment variable named DDEC6_ATOMIC_DENSITIES_DIR.
+            See the Chargemol documentation for more information.
 
     Returns:
         Dictionary containing the Chargemol analysis summary:

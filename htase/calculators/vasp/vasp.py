@@ -177,16 +177,16 @@ def set_magmoms(
     Args:
         atoms (ase.Atoms): Atoms object
         elemental_mags_dict (dict): Dictionary of elements and their
-        corresponding magnetic moments to set.
+            corresponding magnetic moments to set.
             Default: None.
         copy_magmoms (bool): Whether to copy the magnetic moments from the
-        converged set of magnetic moments to the initial magnetic moments.
+            converged set of magnetic moments to the initial magnetic moments.
             Default: True.
         mag_default (float): Default magnetic moment to use if no magnetic
-        moments are specified in the preset.
+            moments are specified in the preset.
             Default: 1.0.
         mag_cutoff (float): Magnitude below which the magnetic moments are
-        considered to be zero.
+            considered to be zero.
             Default: 0.05.
 
     Returns:
@@ -247,14 +247,14 @@ def calc_swaps(atoms, calc, auto_kpts, verbose=True):
         atoms (ase.Atoms): Atoms object
         calc (ase.calculators.vasp.Vasp): ASE VASP calculator
         auto_kpts (bool): Whether to automatically set kpoints using
-        one of the Pymatgen schemes.
+            one of the Pymatgen schemes.
         verbose (bool): Whether to print out any time the input flags
-        are adjusted.
+            are adjusted.
             Default: True.
 
     Returns:
         calc (ase.calculators.vasp.Vasp): ASE VASP calculator with
-        modified arguments.
+            modified arguments.
     """
     is_metal = check_is_metal(atoms)
     max_block = get_highest_block(atoms)
@@ -524,8 +524,8 @@ def SmartVasp(
         The Atoms object to be used for the calculation.
     preset : str
         The path to a .yaml file containing a list of INCAR parameters to use as a "preset"
-        for the calculator. If no filepath is present, it will look in htase/defaults/user_calcs, such
-        that preset="bulk_base" is supported. It will append .yaml at the end if not present.
+            for the calculator. If no filepath is present, it will look in htase/defaults/user_calcs, such
+            that preset="bulk_base" is supported. It will append .yaml at the end if not present.
     incar_copilot : bool
         If True, the INCAR parameters will be adjusted if they go against the VASP manual.
             Defaults to True.
@@ -546,9 +546,7 @@ def SmartVasp(
             Defaults to True.
     **kwargs :
         Additional arguments to be passed to the VASP calculator, e.g. xc='PBE', encut=520. Takes all valid
-        ASE calculator arguments, in addition to the ones listed below:
-            auto_kpts
-            elemental_magmoms
+            ASE calculator arguments, in addition to those custom to HT-ASE.
 
     Returns
     -------

@@ -4,7 +4,7 @@ from ase.build import bulk
 from ase.calculators.vasp import Vasp
 from ase.calculators.singlepoint import SinglePointDFTCalculator
 from htase.calculators.vasp import SmartVasp
-from htase.util.calc import cache_calc
+from htase.util.atoms import prep_next_run
 from pathlib import Path
 import numpy as np
 from copy import deepcopy
@@ -238,25 +238,25 @@ def test_magmoms():
 
     atoms = deepcopy(ATOMS_MAG)
     mags = atoms.get_magnetic_moments()
-    atoms = cache_calc(atoms)
+    atoms = prep_next_run(atoms)
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert atoms.has("initial_magmoms") is True
     assert atoms.get_initial_magnetic_moments().tolist() == mags.tolist()
 
     atoms = deepcopy(ATOMS_NOMAG)
-    atoms = cache_calc(atoms)
+    atoms = prep_next_run(atoms)
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = deepcopy(ATOMS_NOSPIN)
-    atoms = cache_calc(atoms)
+    atoms = prep_next_run(atoms)
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = deepcopy(ATOMS_MAG)
-    atoms = cache_calc(atoms)
+    atoms = prep_next_run(atoms)
     atoms = SmartVasp(atoms, preset="BulkRelaxSet", mag_cutoff=10.0)
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
@@ -264,7 +264,7 @@ def test_magmoms():
     atoms = bulk("Mg")
     atoms = SmartVasp(atoms)
     atoms.calc.results = {"energy": -1.0, "magmoms": [0.0] * len(atoms)}
-    atoms = cache_calc(atoms)
+    atoms = prep_next_run(atoms)
     atoms *= (2, 2, 2)
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     np.all(atoms.get_initial_magnetic_moments() == 0.0)
@@ -272,7 +272,7 @@ def test_magmoms():
     atoms = bulk("Mg")
     atoms = SmartVasp(atoms)
     atoms.calc.results = {"energy": -1.0, "magmoms": [-0.02] * len(atoms)}
-    atoms = cache_calc(atoms)
+    atoms = prep_next_run(atoms)
     atoms *= (2, 2, 2)
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     np.all(atoms.get_initial_magnetic_moments() == 0.0)
@@ -280,7 +280,7 @@ def test_magmoms():
     atoms = bulk("Mg")
     atoms = SmartVasp(atoms)
     atoms.calc.results = {"energy": -1.0}
-    atoms = cache_calc(atoms)
+    atoms = prep_next_run(atoms)
     atoms *= (2, 2, 2)
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     np.all(atoms.get_initial_magnetic_moments() == 0.0)
@@ -288,7 +288,7 @@ def test_magmoms():
     atoms = bulk("Mg")
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     atoms.calc.results = {"energy": -1.0, "magmoms": [3.14] * len(atoms)}
-    atoms = cache_calc(atoms)
+    atoms = prep_next_run(atoms)
     atoms *= (2, 2, 2)
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     np.all(atoms.get_initial_magnetic_moments() == 3.14)

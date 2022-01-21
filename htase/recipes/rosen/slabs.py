@@ -1,6 +1,6 @@
 from htase.calculators.vasp import SmartVasp
 from htase.schemas.vasp import summarize
-from htase.util.atoms import make_max_slabs_from_bulk, make_adsorbate_structures
+from htase.util.slabs import make_max_slabs_from_bulk, make_adsorbate_structures
 from ase.io.jsonio import encode, decode
 from jobflow import job, Flow, Response
 

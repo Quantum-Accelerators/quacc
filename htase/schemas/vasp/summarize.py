@@ -1,7 +1,7 @@
 from atomate2.vasp.schemas.task import TaskDocument
 import os
 from htase.schemas.common.atoms import atoms_to_db
-from htase.util.calc import cache_calc
+from htase.util.atoms import prep_next_run as prep_next_run_func
 
 
 def get_results(atoms, dir_path=None, prep_next_run=True, **taskdoc_kwargs):
@@ -12,8 +12,8 @@ def get_results(atoms, dir_path=None, prep_next_run=True, **taskdoc_kwargs):
         dir_path (str): Path to VASP outputs
             Defaults to None (current working directory)
         prep_next_run (bool): Whether the Atoms object storeed in {"atoms": atoms} should be prepared
-        for the next run. This clears out any attached calculator and moves the final magmoms to the
-        initial magmoms.
+            for the next run. This clears out any attached calculator and moves the final magmoms to the
+            initial magmoms.
             Defauls to True.
         **taskdoc_kwargs: Additional keyword arguments to pass to TaskDocument.from_directory()
 
@@ -47,9 +47,11 @@ def get_results(atoms, dir_path=None, prep_next_run=True, **taskdoc_kwargs):
     if results.get("vasp_objects", {}) == {}:
         results.pop("vasp_objects", None)
 
-    # Moves final magmoms to initial (necessary for sequential jobs)
+    # Prepares the Atoms object for the next run by moving the
+    # final magmoms to initial, clearing the calculator state,
+    # and assigning the resulting Atoms object a unique ID.
     if prep_next_run:
-        atoms = cache_calc(atoms)
+        atoms = prep_next_run_func(atoms)
 
     # We use get_metadata=False because the TaskDocument already
     # makes the structure metadata for us
