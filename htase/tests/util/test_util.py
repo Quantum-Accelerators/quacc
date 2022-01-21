@@ -30,20 +30,20 @@ ATOMS_NOSPIN = read(
 
 def test_get_atoms_id():
     atoms = bulk("Cu")
-    md5hash = "5f9a7d971f5b6f655ccbde7403f5b2fe"
+    md5hash = "d4859270a1a67083343bec0ab783f774"
     assert get_atoms_id(atoms) == md5hash
 
     atoms.info["test"] = "hi"
     assert get_atoms_id(atoms) == md5hash
 
     atoms.set_initial_magnetic_moments([1.0])
-    md5maghash = "a2d1f468c23bad3511f9dd8fb3544d64"
+    md5maghash = "7d456a48c235e05cf17da4abcc433a4f"
     assert get_atoms_id(atoms) == md5maghash
 
 
 def test_prep_next_run():
     atoms = bulk("Cu")
-    md5hash = "5f9a7d971f5b6f655ccbde7403f5b2fe"
+    md5hash = "d4859270a1a67083343bec0ab783f774"
     atoms = prep_next_run(atoms)
     assert atoms.info.get("_id", None) == md5hash
     assert atoms.info.get("_old_ids", None) is None
@@ -51,7 +51,7 @@ def test_prep_next_run():
     assert atoms.info.get("_id", None) == md5hash
     assert atoms.info.get("_old_ids", None) == [md5hash]
     atoms[0].symbol = "Pt"
-    new_md5hash = "31b258b71510a59c44ea4274eeb07a64"
+    new_md5hash = "5927cfa3f3773bb6e966a22c79d3353b"
     atoms = prep_next_run(atoms)
     assert atoms.info.get("_old_ids", None) == [
         md5hash,

@@ -107,7 +107,16 @@ def get_atoms_id(atoms):
 
     atoms = deepcopy(atoms)
     atoms.info = {}
-    md5hash = hashlib.md5(encode(atoms).encode("utf-8")).hexdigest()
+    encoded_atoms = encode(atoms)
+    # This is a hack to avoid int32/int64 and float32/float64 differences
+    # between machines.
+    encoded_atoms = (
+        encoded_atoms.replace("int64", "int")
+        .replace("int32", "int")
+        .replace("float64", "float")
+        .replace("float32", "float")
+    )
+    md5hash = hashlib.md5(encoded_atoms.encode("utf-8")).hexdigest()
     return md5hash
 
 
