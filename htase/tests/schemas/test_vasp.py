@@ -21,7 +21,7 @@ def test_results_to_db():
     # ^uncomment after Pymatgen #2367 is resolved
 
     # Make sure info tags are handled appropriately
-    atoms = read(os.path.join(run1, "OUTCAR.gz"))
+    atoms = read(os.path.join(run1, "CONTCAR.gz"))
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
     results = results_to_db(atoms, dir_path=run1)
     results_atoms = decode(results["atoms"])
@@ -31,7 +31,7 @@ def test_results_to_db():
     assert results_atoms.info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
     # Make sure magnetic moments are handled appropriately
-    atoms = read(os.path.join(run1, "OUTCAR.gz"))
+    atoms = read(os.path.join(run1, "CONTCAR.gz"))
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
     atoms = SmartVasp(atoms)
     atoms.calc.results = {"energy": -1.0, "magmoms": [2.0] * len(atoms)}
@@ -45,7 +45,7 @@ def test_results_to_db():
     assert results_atoms.calc is None
 
     # Make sure Atoms magmoms were not moved if specified
-    atoms = read(os.path.join(run1, "OUTCAR.gz"))
+    atoms = read(os.path.join(run1, "CONTCAR.gz"))
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
     results = results_to_db(atoms, dir_path=run1, prep_next_run=False)
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
