@@ -25,7 +25,7 @@ def run_relax_job(atoms_json, slab=True):
     atoms = SmartVasp(atoms, preset="SlabRelaxSet", **updates)
 
     atoms.get_potential_energy()
-    results = results_to_db.get_results(atoms)
+    results = results_to_db(atoms)
 
     return results
 
@@ -56,7 +56,7 @@ def run_static_job(atoms_json, slab=True):
         **updates
     )
     atoms.get_potential_energy()
-    results = results_to_db.get_results(atoms)
+    results = results_to_db(atoms)
 
     return results
 

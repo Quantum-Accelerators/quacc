@@ -50,7 +50,7 @@ def run_relax(atoms_json):
     atoms.get_potential_energy()
     
     # Return serialized results
-    results = results_to_db.get_results(atoms)
+    results = results_to_db(atoms)
     return results
 ```
 ```python
