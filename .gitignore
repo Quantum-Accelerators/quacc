@@ -1,3 +1,4 @@
 *.pyc
 htase.egg*
 __pycache__
+POTCAR*
