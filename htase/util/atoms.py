@@ -96,7 +96,7 @@ def prep_next_run(
 def get_atoms_id(atoms):
     """
     Returns a unique ID for the Atoms object. Note: The .info dict
-    is excluded from the hash generation.
+    and calculator is excluded from the hash generation.
 
     Args:
         atoms (ase.Atoms): Atoms object
@@ -107,6 +107,7 @@ def get_atoms_id(atoms):
 
     atoms = deepcopy(atoms)
     atoms.info = {}
+    atoms.calc = None
     encoded_atoms = encode(atoms)
     # This is a hack to avoid int32/int64 and float32/float64 differences
     # between machines.

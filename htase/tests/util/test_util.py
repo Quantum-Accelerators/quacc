@@ -51,7 +51,7 @@ def test_prep_next_run():
     assert atoms.info.get("_id", None) == md5hash
     assert atoms.info.get("_old_ids", None) == [md5hash]
     atoms[0].symbol = "Pt"
-    new_md5hash = "5927cfa3f3773bb6e966a22c79d3353b"
+    new_md5hash = "52087d50a909572d58e01cfb49d4911b"
     atoms = prep_next_run(atoms)
     assert atoms.info.get("_old_ids", None) == [
         md5hash,
