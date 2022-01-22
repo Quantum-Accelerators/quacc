@@ -2,19 +2,36 @@ import yaml
 import os
 
 
-def load_yaml_calc(file_path):
+def load_yaml_calc(yaml_file, default_calcs_dir=None):
     """
     Loads a YAML file containing ASE VASP calcultor settings.
 
     Args:
-        file_path (str): Path to YAML file.
+        yaml_file (str): Filename or full path to YAML file.
+        default_calcs_dir (str): If yaml_file is just a filename, load_yaml_calc
+            will look in default_calcs_dir for the file.
 
     Returns:
-        config (dict): The calculator configuration (i.e. settings).
+        calc_preset (dict): The calculator configuration (i.e. settings).
     """
 
+    _, ext = os.path.splitext(yaml_file)
+    if not ext:
+        yaml_file += ".yaml"
+
+    if os.path.exists(yaml_file):
+        yaml_path = yaml_file
+    elif default_calcs_dir and os.path.exists(
+        os.path.join(default_calcs_dir, yaml_file)
+    ):
+        yaml_path = os.path.join(default_calcs_dir, yaml_file)
+    else:
+        raise ValueError(
+            f"Cannot find {yaml_file}. Provide the full path or place it in {default_calcs_dir}."
+        )
+
     # Load YAML file
-    with open(file_path, "r") as stream:
+    with open(yaml_path, "r") as stream:
         config = yaml.safe_load(stream)
 
     # Inherit arguments from any parent YAML files
@@ -23,7 +40,7 @@ def load_yaml_calc(file_path):
     for config_arg in parent_args:
         if config_arg in config:
             parent_config = load_yaml_calc(
-                os.path.join(os.path.dirname(file_path), config[config_arg])
+                config[config_arg], default_calcs_dir=default_calcs_dir
             )
             for k, v in parent_config.items():
                 if k not in config:

@@ -75,7 +75,9 @@ def SmartVasp(
 
     # Get user-defined preset parameters for the calculator
     if preset:
-        calc_preset = _get_preset_params(preset)
+        calc_preset = load_yaml_calc(preset, default_calcs_dir=DEFAULT_CALCS_DIR)[
+            "inputs"
+        ]
     else:
         calc_preset = {}
 
@@ -92,9 +94,9 @@ def SmartVasp(
         isinstance(user_calc_params.get("setups", None), str)
         and user_calc_params["setups"] not in ase_default_setups
     ):
-        user_calc_params["setups"] = _get_preset_params(user_calc_params["setups"])[
-            "setups"
-        ]
+        user_calc_params["setups"] = load_yaml_calc(
+            user_calc_params["setups"], default_calcs_dir=DEFAULT_CALCS_DIR
+        )["inputs"]["setups"]
 
     # If the user explicitly requests gamma = False, let's honor that
     # over force_gamma.
@@ -279,31 +281,6 @@ def _convert_auto_kpts(struct, auto_kpts, force_gamma=True):
             gamma = False
 
     return kpts, gamma, reciprocal
-
-
-def _get_preset_params(preset):
-    """
-    Load in the presets from the specified YAML file.
-
-    Args:
-        preset (str): Path to the YAML file containing the preset parameters
-
-    Returns:
-        calc_preset (dict): Dictionary of parameters
-    """
-    _, ext = os.path.splitext(preset)
-    if not ext:
-        preset += ".yaml"
-    if os.path.exists(preset):
-        calc_preset = load_yaml_calc(preset)["inputs"]
-    elif os.path.exists(os.path.join(DEFAULT_CALCS_DIR, preset)):
-        calc_preset = load_yaml_calc(os.path.join(DEFAULT_CALCS_DIR, preset))["inputs"]
-    else:
-        raise ValueError(
-            f"Cannot find {preset}. Provide the full path or place it in {DEFAULT_CALCS_DIR}."
-        )
-
-    return calc_preset
 
 
 def _remove_unused_flags(user_calc_params):
