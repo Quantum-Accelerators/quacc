@@ -1,4 +1,4 @@
-from htase.util.calc import load_yaml_calc
+from htase.util.calc import load_yaml_calc, set_magmoms
 from htase.util.atoms import check_is_metal, get_highest_block
 from ase.calculators.vasp import Vasp
 from ase.calculators.vasp.setups import _setups_defaults as ase_default_setups
@@ -166,7 +166,7 @@ def SmartVasp(
         user_calc_params["ediff"] = ediff_per_atom * len(atoms)
 
     # Set magnetic moments
-    atoms = _set_magmoms(
+    atoms = set_magmoms(
         atoms,
         elemental_mags_dict=elemental_mags_dict,
         copy_magmoms=copy_magmoms,
@@ -317,89 +317,6 @@ def _remove_unused_flags(user_calc_params):
             user_calc_params.pop(ldau_flag, None)
 
     return user_calc_params
-
-
-def _set_magmoms(
-    atoms, elemental_mags_dict=None, copy_magmoms=True, mag_default=1.0, mag_cutoff=0.05
-):
-    """
-    Sets the initial magnetic moments in the Atoms object.
-
-    This function deserves particular attention. The following logic is applied:
-    - If there is a converged set of magnetic moments, those are moved to the
-    initial magmoms if copy_magmoms is True.
-    - If there is no converged set of magnetic moments but the user has set initial magmoms,
-    those are simply used as is.
-    - If there are no converged magnetic moments or initial magnetic moments, then
-    the default magnetic moments from the preset (if specified) are set as the
-    initial magnetic moments.
-    - For any of the above scenarios, if mag_cutoff is not None, the newly set
-    initial magnetic moments are checked. If all have a magnitude below mag_cutoff,
-    then they are all set to 0 (no spin polarization).
-
-    Args:
-        atoms (ase.Atoms): Atoms object
-        elemental_mags_dict (dict): Dictionary of elements and their
-            corresponding magnetic moments to set.
-            Default: None.
-        copy_magmoms (bool): Whether to copy the magnetic moments from the
-            converged set of magnetic moments to the initial magnetic moments.
-            Default: True.
-        mag_default (float): Default magnetic moment to use if no magnetic
-            moments are specified in the preset.
-            Default: 1.0.
-        mag_cutoff (float): Magnitude below which the magnetic moments are
-            considered to be zero.
-            Default: 0.05.
-
-    Returns:
-        atoms (ase.Atoms): Atoms object
-
-    """
-    atoms = deepcopy(atoms)
-
-    # Handle the magnetic moments
-    # Check if a prior job was run and pull the prior magmoms
-    if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None) is not None:
-        mags = atoms.calc.results.get("magmoms", [0.0] * len(atoms))
-        # Note: It is important that we set mags to 0.0 here rather than None if the
-        # calculator has no magmoms because: 1) ispin=1 might be set, and 2) we do
-        # not want the preset magmoms to be used.
-    else:
-        mags = None
-
-    # Check if the user has set any initial magmoms
-    has_initial_mags = atoms.has("initial_magmoms")
-
-    # If there are no initial magmoms set and this is not a follow-up job,
-    # we may need to add some from the preset yaml.
-    if mags is None:
-        if not has_initial_mags:
-
-            # If the preset dictionary has default magmoms, set
-            # those by element. If the element isn't in the magmoms dict
-            # then set it to mag_default.
-            if elemental_mags_dict:
-                initial_mags = np.array(
-                    [
-                        elemental_mags_dict.get(atom.symbol, mag_default)
-                        for atom in atoms
-                    ]
-                )
-                atoms.set_initial_magnetic_moments(initial_mags)
-    # Copy converged magmoms to input magmoms, if copy_magmoms is True
-    else:
-        if copy_magmoms:
-            atoms.set_initial_magnetic_moments(mags)
-
-    # If all the set mags are below mag_cutoff, set them to 0
-    if mag_cutoff:
-        has_new_initial_mags = atoms.has("initial_magmoms")
-        new_initial_mags = atoms.get_initial_magnetic_moments()
-        if has_new_initial_mags and np.all(np.abs(new_initial_mags) < mag_cutoff):
-            atoms.set_initial_magnetic_moments([0.0] * len(atoms))
-
-    return atoms
 
 
 def _calc_swaps(atoms, calc, auto_kpts=None, verbose=True):
