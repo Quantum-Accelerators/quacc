@@ -21,6 +21,7 @@ from copy import deepcopy
 # - If you are going to store an Atoms/Atom object in the atoms.info dictionary, do so using
 # atoms_to_db(atoms) so that it can be properly serialized.
 
+
 def flip_atoms(atoms, return_struct=False):
     """
     Convenience function for vertically flipping periodic atoms or structures
