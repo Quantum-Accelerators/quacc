@@ -10,6 +10,16 @@ import numpy as np
 import warnings
 from copy import deepcopy
 
+# NOTES:
+# - Anytime an Atoms object is converted to a pmg structure, make sure
+# to reattach any .info flags to the Atoms object, e.g. via `new_atoms.info = atoms.info.copy()``.
+# Note that atoms.info is mutable, so copy it!
+# - All major functions should take in Atoms by default and reutrn Atoms
+# by default. Pymatgen structures can be returned with an optional kwarg.
+# - If you modify the properties of an input Atoms object in any way, make sure to do so
+# on a deepcopy because Atoms objects are mutable.
+# - If you are going to store an Atoms/Atom object in the atoms.info dictionary, do so using
+# atoms_to_db(atoms) so that it can be properly serialized.
 
 def flip_atoms(atoms, return_struct=False):
     """
