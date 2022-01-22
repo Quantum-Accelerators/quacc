@@ -75,7 +75,8 @@ For additional details on how to convert a Jobflow job or flow to a Fireworks fi
 ## Installation
 1. Run the following command in a convenient place to install HT-ASE:
 ```bash
-git clone https://github.com/arosen93/htase.git && cd htase && pip install -r requirements.txt && pip install -e .
+git clone https://github.com/arosen93/htase.git
+cd htase && pip install -r requirements.txt && pip install -e .
 ```
 
 2. Acecss the example `config` folder provided [here](https://github.com/arosen93/htase/tree/main/htase/setup) and follow the steps in `instructions.md`.
