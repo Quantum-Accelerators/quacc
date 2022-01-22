@@ -98,14 +98,10 @@ def SmartVasp(
 
     # If the user explicitly requests gamma = False, let's honor that
     # over force_gamma.
-    if user_calc_params.get("gamma", None):
+    if user_calc_params.get("gamma", None) is not None:
         user_gamma = user_calc_params["gamma"]
         if force_gamma is True:
-            warnings.warn(
-                "force_gamma is True but gamma is requested to be False. We will not force gamma-centered k-points.",
-                UserWarning,
-            )
-        force_gamma = False
+            raise ValueError("force_gamma is True, but gamma is set to be False.")
     else:
         user_gamma = None
 
