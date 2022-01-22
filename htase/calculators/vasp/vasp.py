@@ -16,7 +16,196 @@ DEFAULT_CALCS_DIR = os.path.join(
 )
 
 
-def convert_auto_kpts(struct, auto_kpts, force_gamma):
+def SmartVasp(
+    atoms,
+    preset=None,
+    incar_copilot=True,
+    force_gamma=True,
+    copy_magmoms=True,
+    mag_default=1.0,
+    mag_cutoff=0.05,
+    verbose=True,
+    **kwargs,
+):
+    """
+    This is a wrapper around the VASP calculator that adjusts INCAR parameters on-the-fly.
+    Also supports several automatic k-point generation schemes from Pymatgen.
+
+    Parameters
+    ----------
+    atoms : ase.Atoms
+        The Atoms object to be used for the calculation.
+    preset : str
+        The path to a .yaml file containing a list of INCAR parameters to use as a "preset"
+            for the calculator. If no filepath is present, it will look in htase/defaults/user_calcs, such
+            that preset="bulk_base" is supported. It will append .yaml at the end if not present.
+    incar_copilot : bool
+        If True, the INCAR parameters will be adjusted if they go against the VASP manual.
+            Defaults to True.
+    force_gamma : bool
+        If True, the automatic k-point generation schemes will default to gamma-centered.
+            Defaults to True.
+    copy_magmoms : bool
+        If True, any pre-existing atoms.get_magnetic_moments() will be set in atoms.set_initial_magnetic_moments().
+            Defaults to True. Set this to False if you want to use a preset's magnetic moments every time.
+    mag_default : float
+        Default magmom value for sites without one in the preset. Use 0.6 for MP settings or 1.0 for VASP default.
+            Defaults to 1.0.
+    mag_cutoff : None or float
+        Set all initial magmoms to 0 if all have a magnitude below this value.
+            Defaults to 0.05.
+    verbose : bool
+        If True, warnings will be raised when INCAR parameters are changed.
+            Defaults to True.
+    **kwargs :
+        Additional arguments to be passed to the VASP calculator, e.g. xc='PBE', encut=520. Takes all valid
+            ASE calculator arguments, in addition to those custom to HT-ASE.
+
+    Returns
+    -------
+    atoms : ase.Atoms
+        The ASE Atoms object with attached VASP calculator.
+    """
+
+    # Copy the atoms to a new object so we don't modify the original
+    atoms = deepcopy(atoms)
+
+    # Grab the pymatgen structure object in case we need it later
+    struct = AseAtomsAdaptor().get_structure(atoms)
+
+    # Get user-defined preset parameters for the calculator
+    if preset:
+        calc_preset = _get_preset_params(preset)
+    else:
+        calc_preset = {}
+
+    # Collect all the calculator parameters and prioritize the kwargs
+    # in the case of duplicates.
+    user_calc_params = {**calc_preset, **kwargs}
+    none_keys = [k for k, v in user_calc_params.items() if v is None]
+    for none_key in none_keys:
+        del user_calc_params[none_key]
+
+    # Allow the user to use setups='mysetups.yaml' to load in a custom setups
+    # from a YAML file
+    if (
+        isinstance(user_calc_params.get("setups", None), str)
+        and user_calc_params["setups"] not in ase_default_setups
+    ):
+        user_calc_params["setups"] = _get_preset_params(user_calc_params["setups"])[
+            "setups"
+        ]
+
+    # If the user explicitly requests gamma = False, let's honor that
+    # over force_gamma.
+    if user_calc_params.get("gamma", None):
+        user_gamma = user_calc_params["gamma"]
+        if force_gamma is True:
+            warnings.warn(
+                "force_gamma is True but gamma is requested to be False. We will not force gamma-centered k-points.",
+                UserWarning,
+            )
+        force_gamma = False
+    else:
+        user_gamma = None
+
+    # If the preset has auto_kpts but the user explicitly requests kpts, then
+    # we should honor that.
+    if kwargs.get("kpts", None) and calc_preset.get("auto_kpts", None):
+        del user_calc_params["auto_kpts"]
+
+    # If the preset has ediff_per_atom but the user explicitly requests ediff, then
+    # we should honor that.
+    if kwargs.get("ediff", None) and calc_preset.get("ediff_per_atom", None):
+        del user_calc_params["ediff_per_atom"]
+
+    # Handle special arguments in the user calc parameters that
+    # ASE does not natively support
+    if user_calc_params.get("elemental_magmoms", None) is not None:
+        elemental_mags_dict = user_calc_params["elemental_magmoms"]
+        del user_calc_params["elemental_magmoms"]
+    else:
+        elemental_mags_dict = None
+    if user_calc_params.get("auto_kpts", None) is not None:
+        auto_kpts = user_calc_params["auto_kpts"]
+        del user_calc_params["auto_kpts"]
+    else:
+        auto_kpts = None
+    if user_calc_params.get("auto_dipole", None) is not None:
+        auto_dipole = user_calc_params["auto_dipole"]
+        del user_calc_params["auto_dipole"]
+    else:
+        auto_dipole = None
+    if user_calc_params.get("ediff_per_atom", None) is not None:
+        ediff_per_atom = user_calc_params["ediff_per_atom"]
+        del user_calc_params["ediff_per_atom"]
+    else:
+        ediff_per_atom = None
+
+    # Make automatic k-point mesh
+    if auto_kpts:
+        kpts, gamma, reciprocal = _convert_auto_kpts(
+            struct, auto_kpts, force_gamma=force_gamma
+        )
+        user_calc_params["kpts"] = kpts
+        if reciprocal:
+            user_calc_params["reciprocal"] = reciprocal
+        if user_gamma is None:
+            user_calc_params["gamma"] = gamma
+
+    # Add dipole corrections if requested
+    if auto_dipole:
+        com = atoms.get_center_of_mass(scaled=True)
+        if "dipol" not in user_calc_params:
+            user_calc_params["dipol"] = com
+        if "idipol" not in user_calc_params:
+            user_calc_params["idipol"] = 3
+        if "ldipol" not in user_calc_params:
+            user_calc_params["ldipol"] = True
+
+    # Handle ediff_per_atom if present
+    if ediff_per_atom:
+        user_calc_params["ediff"] = ediff_per_atom * len(atoms)
+
+    # Set magnetic moments
+    atoms = _set_magmoms(
+        atoms,
+        elemental_mags_dict=elemental_mags_dict,
+        copy_magmoms=copy_magmoms,
+        mag_default=mag_default,
+        mag_cutoff=mag_cutoff,
+    )
+    if ~np.all(
+        [isinstance(m, (int, float)) for m in atoms.get_initial_magnetic_moments()]
+    ):
+        raise ValueError(
+            "Magnetic moments must be specified as a list of floats or ints.",
+            atoms.get_initial_magnetic_moments().tolist(),
+        )
+
+    # Remove unused INCAR flags
+    user_calc_params = _remove_unused_flags(user_calc_params)
+
+    # Instantiate the calculator!
+    calc = Vasp(**user_calc_params)
+
+    # Handle INCAR swaps as needed
+    if incar_copilot:
+        calc = _calc_swaps(atoms, calc, auto_kpts=auto_kpts, verbose=verbose)
+
+    # This is important! We want to make sure that setting
+    # a new VASP parameter throws away the prior calculator results
+    # otherwise we can't do things like run a new calculation
+    # with atoms.get_potential_energy() after the transformation
+    calc.discard_results_on_any_change = True
+
+    # Set the calculator
+    atoms.calc = calc
+
+    return atoms
+
+
+def _convert_auto_kpts(struct, auto_kpts, force_gamma=True):
     """
     Shortcuts for pymatgen k-point generation schemes.
     Options include: line_density (for band structures),
@@ -30,6 +219,7 @@ def convert_auto_kpts(struct, auto_kpts, force_gamma):
         struct (pymatgen.core.Structure): Pymatgen Structure object
         auto_kpts (str): String indicating the automatic k-point scheme
         force_gamma (bool): Force gamma-centered k-point grid
+            Default: True
 
     Returns:
         kpts (List[Int]): ASE-compatible kpts argument
@@ -95,7 +285,7 @@ def convert_auto_kpts(struct, auto_kpts, force_gamma):
     return kpts, gamma, reciprocal
 
 
-def get_preset_params(preset):
+def _get_preset_params(preset):
     """
     Load in the presets from the specified YAML file.
 
@@ -120,7 +310,7 @@ def get_preset_params(preset):
     return calc_preset
 
 
-def remove_unused_flags(user_calc_params):
+def _remove_unused_flags(user_calc_params):
     """
     Removes unused flags in the INCAR, like EDIFFG if you are doing NSW = 0.
 
@@ -156,7 +346,7 @@ def remove_unused_flags(user_calc_params):
     return user_calc_params
 
 
-def set_magmoms(
+def _set_magmoms(
     atoms, elemental_mags_dict=None, copy_magmoms=True, mag_default=1.0, mag_cutoff=0.05
 ):
     """
@@ -239,7 +429,7 @@ def set_magmoms(
     return atoms
 
 
-def calc_swaps(atoms, calc, auto_kpts, verbose=True):
+def _calc_swaps(atoms, calc, auto_kpts=None, verbose=True):
     """
     Swaps out bad INCAR flags.
 
@@ -248,6 +438,7 @@ def calc_swaps(atoms, calc, auto_kpts, verbose=True):
         calc (ase.calculators.vasp.Vasp): ASE VASP calculator
         auto_kpts (bool): Whether to automatically set kpoints using
             one of the Pymatgen schemes.
+            Default: None.
         verbose (bool): Whether to print out any time the input flags
             are adjusted.
             Default: True.
@@ -501,190 +692,3 @@ def calc_swaps(atoms, calc, auto_kpts, verbose=True):
         )
 
     return calc
-
-
-def SmartVasp(
-    atoms,
-    preset=None,
-    incar_copilot=True,
-    force_gamma=True,
-    copy_magmoms=True,
-    mag_default=1.0,
-    mag_cutoff=0.05,
-    verbose=True,
-    **kwargs,
-):
-    """
-    This is a wrapper around the VASP calculator that adjusts INCAR parameters on-the-fly.
-    Also supports several automatic k-point generation schemes from Pymatgen.
-
-    Parameters
-    ----------
-    atoms : ase.Atoms
-        The Atoms object to be used for the calculation.
-    preset : str
-        The path to a .yaml file containing a list of INCAR parameters to use as a "preset"
-            for the calculator. If no filepath is present, it will look in htase/defaults/user_calcs, such
-            that preset="bulk_base" is supported. It will append .yaml at the end if not present.
-    incar_copilot : bool
-        If True, the INCAR parameters will be adjusted if they go against the VASP manual.
-            Defaults to True.
-    force_gamma : bool
-        If True, the automatic k-point generation schemes will default to gamma-centered.
-            Defaults to True.
-    copy_magmoms : bool
-        If True, any pre-existing atoms.get_magnetic_moments() will be set in atoms.set_initial_magnetic_moments().
-            Defaults to True. Set this to False if you want to use a preset's magnetic moments every time.
-    mag_default : float
-        Default magmom value for sites without one in the preset. Use 0.6 for MP settings or 1.0 for VASP default.
-            Defaults to 1.0.
-    mag_cutoff : None or float
-        Set all initial magmoms to 0 if all have a magnitude below this value.
-            Defaults to 0.05.
-    verbose : bool
-        If True, warnings will be raised when INCAR parameters are changed.
-            Defaults to True.
-    **kwargs :
-        Additional arguments to be passed to the VASP calculator, e.g. xc='PBE', encut=520. Takes all valid
-            ASE calculator arguments, in addition to those custom to HT-ASE.
-
-    Returns
-    -------
-    atoms : ase.Atoms
-        The ASE Atoms object with attached VASP calculator.
-    """
-
-    # Copy the atoms to a new object so we don't modify the original
-    atoms = deepcopy(atoms)
-
-    # Grab the pymatgen structure object in case we need it later
-    struct = AseAtomsAdaptor().get_structure(atoms)
-
-    # Get user-defined preset parameters for the calculator
-    if preset:
-        calc_preset = get_preset_params(preset)
-    else:
-        calc_preset = {}
-
-    # Collect all the calculator parameters and prioritize the kwargs
-    # in the case of duplicates.
-    user_calc_params = {**calc_preset, **kwargs}
-    none_keys = [k for k, v in user_calc_params.items() if v is None]
-    for none_key in none_keys:
-        del user_calc_params[none_key]
-
-    # Allow the user to use setups='mysetups.yaml' to load in a custom setups
-    # from a YAML file
-    if (
-        isinstance(user_calc_params.get("setups", None), str)
-        and user_calc_params["setups"] not in ase_default_setups
-    ):
-        user_calc_params["setups"] = get_preset_params(user_calc_params["setups"])[
-            "setups"
-        ]
-
-    # If the user explicitly requests gamma = False, let's honor that
-    # over force_gamma.
-    if user_calc_params.get("gamma", None):
-        user_gamma = user_calc_params["gamma"]
-        if force_gamma is True:
-            warnings.warn(
-                "force_gamma is True but gamma is requested to be False. We will not force gamma-centered k-points.",
-                UserWarning,
-            )
-        force_gamma = False
-    else:
-        user_gamma = None
-
-    # If the preset has auto_kpts but the user explicitly requests kpts, then
-    # we should honor that.
-    if kwargs.get("kpts", None) and calc_preset.get("auto_kpts", None):
-        del user_calc_params["auto_kpts"]
-
-    # If the preset has ediff_per_atom but the user explicitly requests ediff, then
-    # we should honor that.
-    if kwargs.get("ediff", None) and calc_preset.get("ediff_per_atom", None):
-        del user_calc_params["ediff_per_atom"]
-
-    # Handle special arguments in the user calc parameters that
-    # ASE does not natively support
-    if user_calc_params.get("elemental_magmoms", None) is not None:
-        elemental_mags_dict = user_calc_params["elemental_magmoms"]
-        del user_calc_params["elemental_magmoms"]
-    else:
-        elemental_mags_dict = None
-    if user_calc_params.get("auto_kpts", None) is not None:
-        auto_kpts = user_calc_params["auto_kpts"]
-        del user_calc_params["auto_kpts"]
-    else:
-        auto_kpts = None
-    if user_calc_params.get("auto_dipole", None) is not None:
-        auto_dipole = user_calc_params["auto_dipole"]
-        del user_calc_params["auto_dipole"]
-    else:
-        auto_dipole = None
-    if user_calc_params.get("ediff_per_atom", None) is not None:
-        ediff_per_atom = user_calc_params["ediff_per_atom"]
-        del user_calc_params["ediff_per_atom"]
-    else:
-        ediff_per_atom = None
-
-    # Make automatic k-point mesh
-    if auto_kpts:
-        kpts, gamma, reciprocal = convert_auto_kpts(struct, auto_kpts, force_gamma)
-        user_calc_params["kpts"] = kpts
-        if reciprocal:
-            user_calc_params["reciprocal"] = reciprocal
-        if user_gamma is None:
-            user_calc_params["gamma"] = gamma
-
-    # Add dipole corrections if requested
-    if auto_dipole:
-        com = atoms.get_center_of_mass(scaled=True)
-        if "dipol" not in user_calc_params:
-            user_calc_params["dipol"] = com
-        if "idipol" not in user_calc_params:
-            user_calc_params["idipol"] = 3
-        if "ldipol" not in user_calc_params:
-            user_calc_params["ldipol"] = True
-
-    # Handle ediff_per_atom if present
-    if ediff_per_atom:
-        user_calc_params["ediff"] = ediff_per_atom * len(atoms)
-
-    # Set magnetic moments
-    atoms = set_magmoms(
-        atoms,
-        elemental_mags_dict=elemental_mags_dict,
-        copy_magmoms=copy_magmoms,
-        mag_default=mag_default,
-        mag_cutoff=mag_cutoff,
-    )
-    if ~np.all(
-        [isinstance(m, (int, float)) for m in atoms.get_initial_magnetic_moments()]
-    ):
-        raise ValueError(
-            "Magnetic moments must be specified as a list of floats or ints.",
-            atoms.get_initial_magnetic_moments().tolist(),
-        )
-
-    # Remove unused INCAR flags
-    user_calc_params = remove_unused_flags(user_calc_params)
-
-    # Instantiate the calculator!
-    calc = Vasp(**user_calc_params)
-
-    # Handle INCAR swaps as needed
-    if incar_copilot:
-        calc = calc_swaps(atoms, calc, auto_kpts, verbose=verbose)
-
-    # This is important! We want to make sure that setting
-    # a new VASP parameter throws away the prior calculator results
-    # otherwise we can't do things like run a new calculation
-    # with atoms.get_potential_energy() after the transformation
-    calc.discard_results_on_any_change = True
-
-    # Set the calculator
-    atoms.calc = calc
-
-    return atoms
