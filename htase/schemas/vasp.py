@@ -41,6 +41,7 @@ def results_to_db(atoms, dir_path=None, prep_next_run=True, **taskdoc_kwargs):
         "entry",
         "task_label",
         "tags",
+        "structure",
     )
     for unused_prop in unused_props:
         results.pop(unused_prop, None)

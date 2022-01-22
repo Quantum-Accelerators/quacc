@@ -24,7 +24,7 @@ def results_to_db(atoms, prep_next_run=True):
         raise ValueError("ASE Atoms object has no attached calculator.")
 
     # Fetch all tabulated results from the attached calculator
-    results = atoms.calc.properties()
+    results = {"output": atoms.calc.results}
 
     # Get the calculator inputs
     inputs = atoms.calc.parameters
