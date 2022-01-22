@@ -37,7 +37,7 @@ The above example can be converted to a format suitable for constructing a Jobfl
 
 ```python
 from htase.calculators.vasp import SmartVasp
-from htase.schemas.vasp import summarize
+from htase.schemas.vasp import results_to_db
 from ase.io.jsonio import decode
 from jobflow import job
 
@@ -50,7 +50,7 @@ def run_relax(atoms_json):
     atoms.get_potential_energy()
     
     # Return serialized results
-    results = summarize.get_results(atoms)
+    results = results_to_db.get_results(atoms)
     return results
 ```
 ```python

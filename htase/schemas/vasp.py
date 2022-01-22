@@ -1,12 +1,13 @@
 from atomate2.vasp.schemas.task import TaskDocument
 import os
-from htase.schemas.common.atoms import atoms_to_db
-from htase.util.atoms import prep_next_run as prep_next_run_func
+from htase.schemas.atoms import atoms_to_db
+from htase.util.atoms import prep_next_run as prep_next_run_
 from monty.json import jsanitize
 
 
-def get_results(atoms, dir_path=None, prep_next_run=True, **taskdoc_kwargs):
+def results_to_db(atoms, dir_path=None, prep_next_run=True, **taskdoc_kwargs):
     """
+    Get tabulated results from a VASP run and store them in a database-friendly format.
 
     Args:
         atoms (ase.Atoms): ASE Atoms object following a calculation.
@@ -52,7 +53,7 @@ def get_results(atoms, dir_path=None, prep_next_run=True, **taskdoc_kwargs):
     # final magmoms to initial, clearing the calculator state,
     # and assigning the resulting Atoms object a unique ID.
     if prep_next_run:
-        atoms = prep_next_run_func(atoms)
+        atoms = prep_next_run_(atoms)
 
     # We use get_metadata=False because the TaskDocument already
     # makes the structure metadata for us
