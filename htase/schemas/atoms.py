@@ -26,8 +26,6 @@ def atoms_to_db(atoms, get_metadata=True, strip_info=False):
     """
 
     atoms = deepcopy(atoms)
-    atoms_no_info = deepcopy(atoms)
-    atoms_no_info.info = {}
     results = {}
 
     # Get Atoms metadata, if requested. Atomate2 already has built-in tools for
@@ -49,6 +47,8 @@ def atoms_to_db(atoms, get_metadata=True, strip_info=False):
 
     # Store the encoded Atoms object
     if strip_info:
+        atoms_no_info = deepcopy(atoms)
+        atoms_no_info.info = {}
         results["atoms"] = encode(atoms_no_info)
     else:
         results["atoms"] = encode(atoms)
