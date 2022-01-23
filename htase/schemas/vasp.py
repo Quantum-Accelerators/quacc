@@ -3,9 +3,12 @@ import os
 from htase.schemas.atoms import atoms_to_db
 from htase.util.atoms import prep_next_run as prep_next_run_
 from monty.json import jsanitize
+import warnings
 
 
-def results_to_db(atoms, dir_path=None, prep_next_run=True, **taskdoc_kwargs):
+def results_to_db(
+    atoms, dir_path=None, prep_next_run=True, check_convergence=True, **taskdoc_kwargs
+):
     """
     Get tabulated results from a VASP run and store them in a database-friendly format.
 
@@ -17,6 +20,9 @@ def results_to_db(atoms, dir_path=None, prep_next_run=True, **taskdoc_kwargs):
             for the next run. This clears out any attached calculator and moves the final magmoms to the
             initial magmoms.
             Defauls to True.
+        check_convergence (bool): Whether to check for convergence in the ASE Atoms object's calculator.
+            If running Custodian, it should only output a result if the calculation is converged, but
+            it can't hurt to double-check.
         **taskdoc_kwargs: Additional keyword arguments to pass to TaskDocument.from_directory()
 
     Returns:
@@ -26,6 +32,18 @@ def results_to_db(atoms, dir_path=None, prep_next_run=True, **taskdoc_kwargs):
 
     if dir_path is None:
         dir_path = os.getcwd()
+
+    if check_convergence:
+        if atoms.calc is None:
+            warnings.warns(
+                "ASE Atoms object has no attached calculator. Cannot check for ASE-based convergence."
+            )
+        else:
+            converged = atoms.calc.converged
+            if not converged:
+                raise ValueError(
+                    "ASE has determined the calculation has not converged based on the calculator in the ASE Atoms object."
+                )
 
     # Fetch all tabulated results from VASP outputs files
     # Fortunately, Atomate2 already has a handy function for this
