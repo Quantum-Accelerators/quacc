@@ -6,7 +6,9 @@ from monty.json import jsanitize
 import warnings
 
 
-def results_to_db(atoms, dir_path=None, prep_next_run=True, **taskdoc_kwargs):
+def results_to_db(
+    atoms, dir_path=None, prep_next_run=True, check_convergence=True, **taskdoc_kwargs
+):
     """
     Get tabulated results from a VASP run and store them in a database-friendly format.
 
@@ -18,6 +20,7 @@ def results_to_db(atoms, dir_path=None, prep_next_run=True, **taskdoc_kwargs):
             for the next run. This clears out any attached calculator and moves the final magmoms to the
             initial magmoms.
             Defauls to True.
+        check_convergence (bool): Whether to throw an error if convergence is not reached.
         **taskdoc_kwargs: Additional keyword arguments to pass to TaskDocument.from_directory()
 
     Returns:
@@ -28,14 +31,15 @@ def results_to_db(atoms, dir_path=None, prep_next_run=True, **taskdoc_kwargs):
     if dir_path is None:
         dir_path = os.getcwd()
 
-    if atoms.calc and getattr(atoms.calc, "converged", None) is False:
-        raise ValueError(
-            "ASE has determined the calculation has not converged based on the calculator in the ASE Atoms object."
-        )
-
     # Fetch all tabulated results from VASP outputs files
     # Fortunately, Atomate2 already has a handy function for this
     results = TaskDocument.from_directory(dir_path, **taskdoc_kwargs).dict()
+
+    # Check for calculation convergence
+    if check_convergence and results["state"] != "successful":
+        raise RuntimeError(
+            "VASP calculation did not converge. Will not store task data."
+        )
 
     # Remove some key/vals we don't actually ever use
     unused_props = (
@@ -43,7 +47,6 @@ def results_to_db(atoms, dir_path=None, prep_next_run=True, **taskdoc_kwargs):
         "author",
         "calcs_reversed",
         "transformations",
-        "state",
         "entry",
         "task_label",
         "tags",
