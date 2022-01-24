@@ -25,7 +25,6 @@ def results_to_db(
 
     Returns:
         results (dict): dictionary of tabulated results
-
     """
 
     if dir_path is None:
