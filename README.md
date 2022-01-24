@@ -102,17 +102,5 @@ export JOBFLOW_CONFIG_FILE="/path/to/config/jobflow_config/jobflow.yaml"
 export FW_CONFIG_FILE='/path/to/config/fw_config/FW_config.yaml'
 
 ```
-
-## Dependencies
-### Required
-- [ASE](https://gitlab.com/ase/ase)
-- [Pymatgen](https://github.com/materialsproject/pymatgen)
-- [Custodian](https://github.com/materialsproject/custodian)
-- [Atomate2](https://github.com/materialsproject/atomate2)
-
-### Recommended
-- [Jobflow](https://github.com/materialsproject/jobflow)
-- [FireWorks](https://materialsproject.github.io/fireworks)
-
 ## License
 HT-ASE is released under a [modified BSD license](https://github.com/arosen93/htase/blob/main/LICENSE.md).
