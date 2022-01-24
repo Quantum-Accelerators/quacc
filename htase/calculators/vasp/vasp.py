@@ -1,5 +1,7 @@
 from htase.util.calc import load_yaml_calc, set_magmoms
 from htase.util.atoms import check_is_metal, get_highest_block
+from htase.custodian import vasp
+from htase.defaults import custodian_settings
 from ase.calculators.vasp import Vasp
 from ase.calculators.vasp.setups import _setups_defaults as ase_default_setups
 from pymatgen.io.vasp.inputs import Kpoints
@@ -10,6 +12,8 @@ import os
 import warnings
 from pathlib import Path
 from copy import deepcopy
+import inspect
+from monty.os.path import which
 
 DEFAULT_CALCS_DIR = os.path.join(
     Path(__file__).resolve().parent, "..", "..", "defaults", "user_calcs", "vasp"
@@ -18,6 +22,7 @@ DEFAULT_CALCS_DIR = os.path.join(
 
 def SmartVasp(
     atoms,
+    custodian=True,
     preset=None,
     incar_copilot=True,
     force_gamma=True,
@@ -35,15 +40,24 @@ def SmartVasp(
     ----------
     atoms : ase.Atoms
         The Atoms object to be used for the calculation.
+    custodian : bool
+        Whether to use Custodian to run VASP. If True, the Custodian settings will (by default) be
+            adopted from htase.defaults.custodian_settings.vasp_custodian_settings.yaml. To override
+            these default Custodian settings, you can define your own .yaml file and set the path in
+            the VASP_CUSTODIAN_SETTINGS environment variable at runtime. If set to False, ASE will
+            run VASP without Custodian, in which case you must have a valid ASE_VASP_COMMAND set per
+            the ASE documentation.
+            Defualts to True.
     preset : str
         The path to a .yaml file containing a list of INCAR parameters to use as a "preset"
             for the calculator. If no filepath is present, it will look in htase/defaults/user_calcs, such
-            that preset="bulk_base" is supported. It will append .yaml at the end if not present.
+            that preset="BulkRelaxSet" is supported. It will append .yaml at the end if not present.
     incar_copilot : bool
         If True, the INCAR parameters will be adjusted if they go against the VASP manual.
             Defaults to True.
     force_gamma : bool
-        If True, the automatic k-point generation schemes will default to gamma-centered.
+        If True, the k-point scheme will always be gamma-centered. If False, gamma will depend on the
+            atuomatic k-point generation scheme or user setting.
             Defaults to True.
     copy_magmoms : bool
         If True, any pre-existing atoms.get_magnetic_moments() will be set in atoms.set_initial_magnetic_moments().
@@ -73,6 +87,10 @@ def SmartVasp(
     # Grab the pymatgen structure object in case we need it later
     struct = AseAtomsAdaptor().get_structure(atoms)
 
+    # Get VASP executable command, if necessary, and specify child environment
+    # variables
+    command = _manage_environment(custodian)
+
     # Get user-defined preset parameters for the calculator
     if preset:
         calc_preset = load_yaml_calc(preset, default_calcs_dir=DEFAULT_CALCS_DIR)[
@@ -97,15 +115,6 @@ def SmartVasp(
         user_calc_params["setups"] = load_yaml_calc(
             user_calc_params["setups"], default_calcs_dir=DEFAULT_CALCS_DIR
         )["inputs"]["setups"]
-
-    # If the user explicitly requests gamma = False, let's honor that
-    # over force_gamma.
-    if user_calc_params.get("gamma", None) is not None:
-        user_gamma = user_calc_params["gamma"]
-        if force_gamma is True:
-            raise ValueError("force_gamma is True, but gamma is set to be False.")
-    else:
-        user_gamma = None
 
     # If the preset has auto_kpts but the user explicitly requests kpts, then
     # we should honor that.
@@ -142,14 +151,16 @@ def SmartVasp(
 
     # Make automatic k-point mesh
     if auto_kpts:
-        kpts, gamma, reciprocal = _convert_auto_kpts(
-            struct, auto_kpts, force_gamma=force_gamma
-        )
+        kpts, gamma, reciprocal = _convert_auto_kpts(struct, auto_kpts)
         user_calc_params["kpts"] = kpts
-        if reciprocal:
+        if reciprocal and user_calc_params.get("reciprocal", None) is None:
             user_calc_params["reciprocal"] = reciprocal
-        if user_gamma is None:
+        if gamma and user_calc_params.get("gamma", None) is None:
             user_calc_params["gamma"] = gamma
+
+    # Force gamma-centered if specified by the user
+    if force_gamma:
+        user_calc_params["gamma"] = True
 
     # Add dipole corrections if requested
     if auto_dipole:
@@ -185,7 +196,7 @@ def SmartVasp(
     user_calc_params = _remove_unused_flags(user_calc_params)
 
     # Instantiate the calculator!
-    calc = Vasp(**user_calc_params)
+    calc = Vasp(command=command, **user_calc_params)
 
     # Handle INCAR swaps as needed
     if incar_copilot:
@@ -203,7 +214,62 @@ def SmartVasp(
     return atoms
 
 
-def _convert_auto_kpts(struct, auto_kpts, force_gamma=True):
+def _manage_environment(custodian=True):
+    """
+    Manage the environment for the VASP calculator.
+
+    Args:
+        custodian (bool): If True, Custodian will be used to run VASP.
+            Default: True
+
+    Returns:
+        str: The command flag to pass to the Vasp calculator.
+    """
+
+    # Check ASE environment variables
+    if "VASP_PP_PATH" not in os.environ:
+        warnings.warn(
+            "The VASP_PP_PATH environment variable must point to the library of VASP pseudopotentials. See the ASE Vasp calculator documentation for details.",
+        )
+
+    # Check if Custodian should be used and confirm environment variables are set
+    if custodian:
+        if "VASP_CUSTODIAN_SETTINGS" in os.environ:
+            custodian_yaml = os.environ["VASP_CUSTODIAN_SETTINGS"]
+        else:
+            warnings.warn(
+                "The VASP_CUSTODIAN_SETTINGS environment variable was not defined. Using default settings. This assumes that the VASP_PARALLEL_CMD environment variable is set and your VASP executables are named vasp_std and vasp_gam."
+            )
+            if "VASP_PARALLEL_CMD" not in os.environ:
+                warnings.warn(
+                    'VASP_PARALLEL_CMD must be set in the environment. For instance, this might look something like VASP_PARALLEL_CMD="srun -N 2 --ntasks-per-node 64"'
+                )
+            if not which("vasp_std") or not which("vasp_gam"):
+                warnings.warn(
+                    "Could not find vasp_std or vasp_gam executables in your PATH. Make sure to load the VASP module if necessary."
+                )
+            custodian_yaml = os.path.join(
+                os.path.dirname(os.path.abspath(inspect.getfile(custodian_settings))),
+                "vasp_custodian_settings.yaml",
+            )
+            os.environ["VASP_CUSTODIAN_SETTINGS"] = custodian_yaml
+        if not os.path.isfile(custodian_yaml):
+            raise FileNotFoundError("{custodian_yaml} not found.")
+
+        custodian_dir = os.path.dirname(os.path.abspath(inspect.getfile(vasp)))
+        run_vasp_custodian_file = os.path.join(custodian_dir, "run_vasp_custodian.py")
+        command = f"python {run_vasp_custodian_file}"
+    else:
+        if "ASE_VASP_COMMAND" not in os.environ and "VASP_SCRIPT" not in os.environ:
+            warnings.warn(
+                "ASE_VASP_COMMAND or VASP_SCRIPT must be set in the environment to run VASP. See the ASE Vasp calculator documentation for details."
+            )
+        command = None
+
+    return command
+
+
+def _convert_auto_kpts(struct, auto_kpts):
     """
     Shortcuts for pymatgen k-point generation schemes.
     Options include: line_density (for band structures),
@@ -216,8 +282,6 @@ def _convert_auto_kpts(struct, auto_kpts, force_gamma=True):
     Args:
         struct (pymatgen.core.Structure): Pymatgen Structure object
         auto_kpts (str): String indicating the automatic k-point scheme
-        force_gamma (bool): Force gamma-centered k-point grid
-            Default: True
 
     Returns:
         kpts (List[Int]): ASE-compatible kpts argument
@@ -248,10 +312,10 @@ def _convert_auto_kpts(struct, auto_kpts, force_gamma=True):
                     UserWarning,
                 )
             pmg_kpts1 = Kpoints.automatic_density_by_vol(
-                struct, auto_kpts["max_mixed_density"][0], force_gamma
+                struct, auto_kpts["max_mixed_density"][0]
             )
             pmg_kpts2 = Kpoints.automatic_density(
-                struct, auto_kpts["max_mixed_density"][1], force_gamma
+                struct, auto_kpts["max_mixed_density"][1]
             )
             if np.product(pmg_kpts1.kpts[0]) >= np.product(pmg_kpts2.kpts[0]):
                 pmg_kpts = pmg_kpts1
@@ -259,17 +323,15 @@ def _convert_auto_kpts(struct, auto_kpts, force_gamma=True):
                 pmg_kpts = pmg_kpts2
         elif auto_kpts.get("reciprocal_density", None):
             pmg_kpts = Kpoints.automatic_density_by_vol(
-                struct, auto_kpts["reciprocal_density"], force_gamma
+                struct, auto_kpts["reciprocal_density"]
             )
         elif auto_kpts.get("grid_density", None):
-            pmg_kpts = Kpoints.automatic_density(
-                struct, auto_kpts["grid_density"], force_gamma
-            )
+            pmg_kpts = Kpoints.automatic_density(struct, auto_kpts["grid_density"])
         elif auto_kpts.get("length_density", None):
             if len(auto_kpts["length_density"]) != 3:
                 raise ValueError("Must specify three values for length_density.")
             pmg_kpts = Kpoints.automatic_density_by_lengths(
-                struct, auto_kpts["length_density"], force_gamma
+                struct, auto_kpts["length_density"]
             )
         else:
             raise ValueError(f"Unsupported k-point generation scheme: {auto_kpts}.")

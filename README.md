@@ -82,22 +82,15 @@ cd htase && pip install -r requirements.txt && pip install -e .
 
 2. Acecss the example `config` folder provided [here](https://github.com/arosen93/htase/tree/main/htase/setup) and follow the steps in `instructions.md`.
 
-3. Define several environment variables (e.g. in your `~/.bashrc`), as outlined below:
+3. Follow the instructions in ASE's [documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html#supported-calculators) for how to set up the ASE calculator(s) you plan to use.
+
+4. Define the following environment variables (e.g. in your `~/.bashrc`) if you wish to use Jobflow and/or Fireworks, in addition to any that you have set in Step 3.
 ```bash
-# HT-ASE requirements
-export ASE_VASP_COMMAND="python /path/to/htase/htase/custodian/vasp/run_vasp_custodian.py"
-export VASP_CUSTODIAN_SETTINGS="/path/to/config/htase_config/vasp_custodian_settings.yaml"
-
-# ASE requirements
-# (details: https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials)
-export VASP_PP_PATH=... # tells ASE where the VASP PAW pseudopotentials are
-export ASE_VASP_VDW=... # directory containing vdw_kernel.bindat (optional)
-
-# Jobflow requirements (optional)
+# Jobflow requirements
 # (details: https://materialsproject.github.io/jobflow/jobflow.settings.html)
 export JOBFLOW_CONFIG_FILE="/path/to/config/jobflow_config/jobflow.yaml"
 
-# FireWorks requirements (optional)
+# FireWorks requirements
 # (details: https://materialsproject.github.io/fireworks)
 export FW_CONFIG_FILE='/path/to/config/fw_config/FW_config.yaml'
 
