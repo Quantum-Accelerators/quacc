@@ -5,7 +5,7 @@ from htase.schemas.atoms import atoms_to_db
 from htase.util.atoms import prep_next_run as prep_next_run_
 
 
-def results_to_db(atoms, output_file, prep_next_run=True):
+def summarize_run(atoms, output_file, prep_next_run=True):
     """
     Get tabulated results from a molecular DFT run and store them in a database-friendly format.
     This is meant to be a general parser built on top of cclib.
@@ -19,7 +19,7 @@ def results_to_db(atoms, output_file, prep_next_run=True):
             Defauls to True.
 
     Returns:
-        results (dict): dictionary of tabulated results
+        task_doc (dict): dictionary of tabulated inputs/results
     """
     # Make sure there is a calculator with results
     if not atoms.calc:
@@ -30,16 +30,16 @@ def results_to_db(atoms, output_file, prep_next_run=True):
     # Fetch all tabulated results from the attached calculator
     if not os.path.exists(output_file):
         raise FileNotFoundError(f"Could not find {output_file}")
-    outputs = cclib.io.ccopen(output_file)
-    if outputs is None:
+    output_io = cclib.io.ccopen(output_file)
+    if output_io is None:
         raise ValueError(f"cclib could not parse {output_file}")
-    outputs = outputs.parse()
-    outputs_dict = outputs.getattributes()
-    results = {"output": outputs_dict}
-    metadata = outputs.metadata
+
+    output = output_io.parse()
+    results = {"attributes": output.getattributes()}
+    metadata = {"metadata": output.metadata}
 
     # Get the calculator inputs
-    inputs = atoms.calc.parameters
+    inputs = {"parameters": atoms.calc.parameters}
 
     # Prepares the Atoms object for the next run by moving the
     # final magmoms to initial, clearing the calculator state,
@@ -54,6 +54,6 @@ def results_to_db(atoms, output_file, prep_next_run=True):
     results_full = {**atoms_db, **inputs, **metadata, **results}
 
     # Make sure it's all JSON serializable
-    results_full = jsanitize(results_full)
+    task_doc = jsanitize(results_full)
 
-    return results_full
+    return task_doc

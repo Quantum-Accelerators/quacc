@@ -3,7 +3,7 @@ from htase.schemas.atoms import atoms_to_db
 from htase.util.atoms import prep_next_run as prep_next_run_
 
 
-def results_to_db(atoms, prep_next_run=True):
+def summarize_run(atoms, prep_next_run=True):
     """
     Get tabulated results from an Atoms object and calculator and store them in a database-friendly format.
     This is meant to be compatible with all calculator types.
@@ -16,7 +16,7 @@ def results_to_db(atoms, prep_next_run=True):
             Defauls to True.
 
     Returns:
-        results (dict): dictionary of tabulated results
+        task_doc (dict): dictionary of tabulated inputs/results
 
     """
     # Make sure there is a calculator with results
@@ -26,10 +26,10 @@ def results_to_db(atoms, prep_next_run=True):
         raise ValueError("ASE Atoms object's calculator has no results.")
 
     # Fetch all tabulated results from the attached calculator
-    results = {"output": atoms.calc.results}
+    results = {"results": atoms.calc.results}
 
     # Get the calculator inputs
-    inputs = atoms.calc.parameters
+    inputs = {"parameters": atoms.calc.parameters}
 
     # Prepares the Atoms object for the next run by moving the
     # final magmoms to initial, clearing the calculator state,
@@ -44,6 +44,6 @@ def results_to_db(atoms, prep_next_run=True):
     results_full = {**atoms_db, **inputs, **results}
 
     # Make sure it's all JSON serializable
-    results_full = jsanitize(results_full)
+    task_doc = jsanitize(results_full)
 
-    return results_full
+    return task_doc

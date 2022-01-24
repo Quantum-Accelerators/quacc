@@ -1,5 +1,5 @@
 from htase.calculators.vasp import SmartVasp
-from htase.schemas.vasp import results_to_db
+from htase.schemas.vasp import summarize_run
 from htase.util.slabs import make_max_slabs_from_bulk, make_adsorbate_structures
 from ase.io.jsonio import encode, decode
 from jobflow import job, Flow, Response
@@ -25,9 +25,9 @@ def run_relax_job(atoms_json, slab=True):
     atoms = SmartVasp(atoms, preset="SlabRelaxSet", **updates)
 
     atoms.get_potential_energy()
-    results = results_to_db(atoms)
+    summary = summarize_run(atoms)
 
-    return results
+    return summary
 
 
 @job
@@ -56,9 +56,9 @@ def run_static_job(atoms_json, slab=True):
         **updates
     )
     atoms.get_potential_energy()
-    results = results_to_db(atoms)
+    summary = summarize_run(atoms)
 
-    return results
+    return summary
 
 
 @job

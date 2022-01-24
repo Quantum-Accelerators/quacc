@@ -3,10 +3,9 @@ import os
 from htase.schemas.atoms import atoms_to_db
 from htase.util.atoms import prep_next_run as prep_next_run_
 from monty.json import jsanitize
-import warnings
 
 
-def results_to_db(
+def summarize_run(
     atoms, dir_path=None, prep_next_run=True, check_convergence=True, **taskdoc_kwargs
 ):
     """
@@ -24,7 +23,7 @@ def results_to_db(
         **taskdoc_kwargs: Additional keyword arguments to pass to TaskDocument.from_directory()
 
     Returns:
-        results (dict): dictionary of tabulated results
+        task_doc (dict): dictionary of tabulated inputs/results
     """
 
     if dir_path is None:
@@ -71,6 +70,6 @@ def results_to_db(
     results_full = {**results, **atoms_db}
 
     # Make sure it's all JSON serializable
-    results_full = jsanitize(results_full)
+    task_doc = jsanitize(results_full)
 
-    return results_full
+    return task_doc

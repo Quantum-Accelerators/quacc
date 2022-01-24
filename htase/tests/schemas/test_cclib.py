@@ -1,5 +1,5 @@
 import os
-from htase.schemas.cclib import results_to_db
+from htase.schemas.cclib import summarize_run
 from ase.io import read
 from ase.io.jsonio import decode
 from pathlib import Path
@@ -10,19 +10,21 @@ run1 = os.path.join(FILE_DIR, "gaussian_run1")
 log1 = os.path.join(run1, "gautest.log.gz")
 
 
-def test_results_to_db():
+def test_summarize_run():
 
     # Make sure metadata is made
     atoms = read(log1)
-    results = results_to_db(atoms, log1)
-    assert results["output"].get("mult", None) == 1
-    assert results["output"].get("natom", None) == 6
-    assert results.get("success", None) == True
+    results = summarize_run(atoms, log1)
+    assert results["nsites"] == len(atoms)
+    assert decode(results["atoms"]) == atoms
+    assert results["attributes"].get("mult", None) == 1
+    assert results["attributes"].get("natom", None) == 6
+    assert results["metadata"].get("success", None) == True
 
     # Make sure info tags are handled appropriately
     atoms = read(log1)
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
-    results = results_to_db(atoms, log1)
+    results = summarize_run(atoms, log1)
     results_atoms = decode(results["atoms"])
     assert atoms.info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results.get("atoms_info", {}) != {}
@@ -33,7 +35,7 @@ def test_results_to_db():
     atoms = read(os.path.join(run1, log1))
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
     atoms.calc.results["magmoms"] = [2.0] * len(atoms)
-    results = results_to_db(atoms, log1)
+    results = summarize_run(atoms, log1)
     results_atoms = decode(results["atoms"])
 
     assert atoms.calc is not None
@@ -45,7 +47,7 @@ def test_results_to_db():
     # Make sure Atoms magmoms were not moved if specified
     atoms = read(os.path.join(run1, log1))
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
-    results = results_to_db(atoms, log1, prep_next_run=False)
+    results = summarize_run(atoms, log1, prep_next_run=False)
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
     results_atoms = decode(results["atoms"])
     assert results_atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
