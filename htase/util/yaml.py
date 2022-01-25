@@ -76,8 +76,10 @@ def load_yaml_settings(yaml_file):
     # If $ is the first character, get from the environment variable
     for k, v in settings.items():
         if isinstance(v, str) and v[0] == "$":
-            if os.path.expandvars(v) != v in os.environ:
-                raise EnvironmentError(f"Missing environment variable {v[1:]}")
+            if os.path.expandvars(v) == v:
+                raise EnvironmentError(
+                    f"Missing environment variable {v}, as specified in {yaml_file}"
+                )
             settings[k] = os.path.expandvars(v)
 
     return settings
