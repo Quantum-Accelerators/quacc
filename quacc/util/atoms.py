@@ -1,7 +1,7 @@
 import hashlib
 import os
 from copy import deepcopy
-from typing import Dict, Optional
+from typing import Dict, Optional, Type
 import numpy as np
 from ase.atoms import Atoms
 from ase.io.jsonio import encode
@@ -59,7 +59,10 @@ def prep_next_run(
     .Atoms
         Atoms object with calculator results attached in atoms.info["results"]
     """
-    atoms = deepcopy(atoms)
+    try:
+        atoms = deepcopy(atoms)
+    except TypeError:
+        atoms = atoms.copy()
 
     if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None) is not None:
 
