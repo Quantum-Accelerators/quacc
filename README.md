@@ -67,7 +67,7 @@ atoms = bulk("Cu")
 job1 = run_relax(encode(atoms))
 flow = Job([job1])
 
-# Run the flow
+# Run the flow locally
 run_locally(flow, create_folders=True)
 ```
 ### Fireworks Integration
