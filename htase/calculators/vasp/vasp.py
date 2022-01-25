@@ -237,16 +237,13 @@ def _manage_environment(custodian=True):
         if "VASP_CUSTODIAN_SETTINGS" in os.environ:
             custodian_yaml = os.environ["VASP_CUSTODIAN_SETTINGS"]
         else:
-            warnings.warn(
-                "The VASP_CUSTODIAN_SETTINGS environment variable was not defined. Using default settings. This assumes that the VASP_PARALLEL_CMD environment variable is set and your VASP executables are named vasp_std and vasp_gam."
-            )
             if "VASP_PARALLEL_CMD" not in os.environ:
                 warnings.warn(
                     'VASP_PARALLEL_CMD must be set in the environment. For instance, this might look something like VASP_PARALLEL_CMD="srun -N 2 --ntasks-per-node 64"'
                 )
             if not which("vasp_std") or not which("vasp_gam"):
                 warnings.warn(
-                    "Could not find vasp_std or vasp_gam executables in your PATH. Make sure to load the VASP module if necessary."
+                    "Could not find vasp_std or vasp_gam executables in your PATH. Make sure you have loaded a VASP module if necessary."
                 )
             custodian_yaml = os.path.join(
                 os.path.dirname(os.path.abspath(inspect.getfile(custodian_settings))),
