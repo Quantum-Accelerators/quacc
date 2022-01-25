@@ -1,10 +1,10 @@
 import inspect
 import os
 import warnings
+import numpy as np
 from typing import List, Union, Dict, Optional, Tuple
 from copy import deepcopy
 from pathlib import Path
-import numpy as np
 from pymatgen.core import Structure
 from pymatgen.io.vasp.inputs import Kpoints
 from pymatgen.io.ase import AseAtomsAdaptor
@@ -12,9 +12,9 @@ from pymatgen.symmetry.bandstructure import HighSymmKpath
 from ase.atoms import Atoms
 from ase.calculators.vasp import Vasp
 from ase.calculators.vasp.setups import _setups_defaults as ase_default_setups
+from quacc import custodian as custodian_
 from quacc.util.yaml import load_yaml_calc, load_yaml_settings
 from quacc.util.atoms import set_magmoms, check_is_metal, get_highest_block
-from quacc import custodian as custodian_
 from quacc.defaults.user_calcs import vasp as vasp_defaults
 from quacc.defaults import custodian_settings
 
