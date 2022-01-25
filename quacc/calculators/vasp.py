@@ -14,12 +14,11 @@ from ase.calculators.vasp import Vasp
 from ase.calculators.vasp.setups import _setups_defaults as ase_default_setups
 from quacc.util.yaml import load_yaml_calc, load_yaml_settings
 from quacc.util.atoms import set_magmoms, check_is_metal, get_highest_block
-from quacc.custodian import vasp
+from quacc import custodian as custodian_
+from quacc.defaults.user_calcs import vasp as vasp_defaults
 from quacc.defaults import custodian_settings
 
-DEFAULT_CALCS_DIR = os.path.join(
-    Path(__file__).resolve().parent, "..", "..", "defaults", "user_calcs", "vasp"
-)
+DEFAULT_CALCS_DIR = os.path.dirname(os.path.abspath(inspect.getfile(vasp_defaults)))
 
 
 def SmartVasp(
@@ -251,7 +250,7 @@ def _manage_environment(custodian: bool = True) -> str:
             warnings.warn(str(msg))
 
         # Return the command flag
-        custodian_dir = os.path.dirname(os.path.abspath(inspect.getfile(vasp)))
+        custodian_dir = os.path.dirname(os.path.abspath(inspect.getfile(custodian_)))
         run_vasp_custodian_file = os.path.join(custodian_dir, "run_vasp_custodian.py")
         command = f"python {run_vasp_custodian_file}"
     else:
