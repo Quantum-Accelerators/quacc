@@ -1,9 +1,10 @@
+from typing import Optional, Dict
 from pymatgen.command_line.bader_caller import bader_analysis_from_path
 from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
 import os
 
 
-def run_bader(path=None):
+def run_bader(path: Optional[str] = None) -> Dict:
     """
     Runs a Bader partial charge and spin moment analysis using the VASP
     output files in the given path. This function requires that `bader` or
@@ -11,13 +12,18 @@ def run_bader(path=None):
     http://theory.cm.utexas.edu/henkelman/code/bader for the bader code.
     Note: If you want to use Bader on a code other than VASP, this function
     will need to be slightly modified.
-    Args:
-        path (str): The path where the VASP output files are located.
-            Must include CHGCAR, AECCAR0, AECCAR2, and POTCAR files. These
-            files can be gzip'd or not -- it doesn't matter.
-            Default: None (current working directory).
 
-    Returns:
+    Parameters
+    ----------
+    path
+        The path where the VASP output files are located.
+        Must include CHGCAR, AECCAR0, AECCAR2, and POTCAR files. These
+        files can be gzip'd or not -- it doesn't matter.
+        If None, the current working directory is used.
+
+    Returns
+    -------
+    Dict
         Dictionary containing the Bader analysis summary:
             {
                 "min_dist": List[float],
@@ -28,7 +34,6 @@ def run_bader(path=None):
                 "partial_charges": List[float],
                 "spin_moments": List[float],
             }
-
     """
 
     if path is None:
@@ -63,7 +68,9 @@ def run_bader(path=None):
     return bader_stats
 
 
-def run_chargemol(path=None, atomic_densities_path=None):
+def run_chargemol(
+    path: Optional[str] = None, atomic_densities_path: Optional[str] = None
+) -> Dict:
     """
     Runs a Chargemol (i.e. DDEC6 + CM5) analysis using the VASP output files
     in the given path. This function requires that the chargemol executable,
@@ -73,17 +80,22 @@ def run_chargemol(path=None, atomic_densities_path=None):
     the Chargemol code. Note: If you want to use Chargemol on a code other
     than VASP, this function will need to be slightly modified.
 
-    Args:
-        path (str): The path where the VASP output files are located.
-            Must include CHGCAR, AECCAR0, AECCAR2, and POTCAR files. These
-            files can be gzip'd or not -- it doesn't matter.
-            Default: None (current working directory).
-        atomic_densities_path (str): The path where the reference atomic densities
-            are located for Chargemol. If None, we assume that this
-            directory is defined in an environment variable named DDEC6_ATOMIC_DENSITIES_DIR.
-            See the Chargemol documentation for more information.
+    Parameters
+    ----------
+    path
+        The path where the VASP output files are located.
+        Must include CHGCAR, AECCAR0, AECCAR2, and POTCAR files. These
+        files can be gzip'd or not -- it doesn't matter.
+        If None, the current working directory is used.
+    atomic_densities_path
+        The path where the reference atomic densities are located for Chargemol.
+        If None, we assume that this directory is defined in an environment variable
+        named DDEC6_ATOMIC_DENSITIES_DIR.
+        See the Chargemol documentation for more information.
 
-    Returns:
+    Returns
+    -------
+    Dict
         Dictionary containing the Chargemol analysis summary:
             {
                 "ddec": {

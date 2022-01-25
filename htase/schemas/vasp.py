@@ -1,29 +1,39 @@
-from atomate2.vasp.schemas.task import TaskDocument
 import os
+from typing import Dict, Optional
+from ase.atoms import Atoms
+from monty.json import jsanitize
+from atomate2.vasp.schemas.task import TaskDocument
 from htase.schemas.atoms import atoms_to_db
 from htase.util.atoms import prep_next_run as prep_next_run_
-from monty.json import jsanitize
 
 
 def summarize_run(
-    atoms, dir_path=None, prep_next_run=True, check_convergence=True, **taskdoc_kwargs
-):
+    atoms: Atoms,
+    dir_path: Optional[str] = None,
+    prep_next_run: bool = True,
+    check_convergence: bool = True,
+    **taskdoc_kwargs
+) -> Dict:
     """
     Get tabulated results from a VASP run and store them in a database-friendly format.
 
-    Args:
-        atoms (ase.Atoms): ASE Atoms object following a calculation.
-        dir_path (str): Path to VASP outputs
-            Defaults to None (current working directory)
-        prep_next_run (bool): Whether the Atoms object storeed in {"atoms": atoms} should be prepared
-            for the next run. This clears out any attached calculator and moves the final magmoms to the
-            initial magmoms.
-            Defauls to True.
-        check_convergence (bool): Whether to throw an error if convergence is not reached.
-        **taskdoc_kwargs: Additional keyword arguments to pass to TaskDocument.from_directory()
+    Parameters
+    ----------
+    atoms
+        ASE Atoms object following a calculation.
+    dir_path
+        Path to VASP outputs. A value of None specifies the current working directory
+    prep_next_run
+        Whether the Atoms object storeed in {"atoms": atoms} should be prepared for the next run.
+        This clears out any attached calculator and moves the final magmoms to the initial magmoms.
+    check_convergence
+        Whether to throw an error if convergence is not reached.
+    **taskdoc_kwargs: Additional keyword arguments to pass to TaskDocument.from_directory()
 
-    Returns:
-        task_doc (dict): dictionary of tabulated inputs/results
+    Returns
+    -------
+    Dict
+        Dictionary of tabulated inputs/results
     """
 
     if dir_path is None:

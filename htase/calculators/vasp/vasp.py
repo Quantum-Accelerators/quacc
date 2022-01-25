@@ -1,19 +1,21 @@
+import inspect
+import os
+import warnings
+from typing import List, Union, Dict, Optional, Tuple
+from copy import deepcopy
+from pathlib import Path
+import numpy as np
+from pymatgen.core import Structure
+from pymatgen.io.vasp.inputs import Kpoints
+from pymatgen.io.ase import AseAtomsAdaptor
+from pymatgen.symmetry.bandstructure import HighSymmKpath
+from ase.atoms import Atoms
+from ase.calculators.vasp import Vasp
+from ase.calculators.vasp.setups import _setups_defaults as ase_default_setups
 from htase.util.yaml import load_yaml_calc, load_yaml_settings
 from htase.util.atoms import set_magmoms, check_is_metal, get_highest_block
 from htase.custodian import vasp
 from htase.defaults import custodian_settings
-from ase.calculators.vasp import Vasp
-from ase.calculators.vasp.setups import _setups_defaults as ase_default_setups
-from pymatgen.io.vasp.inputs import Kpoints
-from pymatgen.io.ase import AseAtomsAdaptor
-from pymatgen.symmetry.bandstructure import HighSymmKpath
-import numpy as np
-import os
-import warnings
-from pathlib import Path
-from copy import deepcopy
-import inspect
-from monty.os.path import which
 
 DEFAULT_CALCS_DIR = os.path.join(
     Path(__file__).resolve().parent, "..", "..", "defaults", "user_calcs", "vasp"
@@ -21,63 +23,58 @@ DEFAULT_CALCS_DIR = os.path.join(
 
 
 def SmartVasp(
-    atoms,
-    custodian=True,
-    preset=None,
-    incar_copilot=True,
-    force_gamma=True,
-    copy_magmoms=True,
-    mag_default=1.0,
-    mag_cutoff=0.05,
-    verbose=True,
+    atoms: Atoms,
+    custodian: bool = True,
+    preset: Optional[str] = None,
+    incar_copilot: bool = True,
+    force_gamma: bool = True,
+    copy_magmoms: bool = True,
+    mag_default: float = 1.0,
+    mag_cutoff: Optional[float] = 0.05,
+    verbose: bool = True,
     **kwargs,
-):
+) -> Atoms:
     """
     This is a wrapper around the VASP calculator that adjusts INCAR parameters on-the-fly.
     Also supports several automatic k-point generation schemes from Pymatgen.
 
     Parameters
     ----------
-    atoms : ase.Atoms
+    atoms
         The Atoms object to be used for the calculation.
-    custodian : bool
+    custodian
         Whether to use Custodian to run VASP. If True, the Custodian settings will (by default) be
-            adopted from htase.defaults.custodian_settings.vasp_custodian_settings.yaml. To override
-            these default Custodian settings, you can define your own .yaml file and set the path in
-            the VASP_CUSTODIAN_SETTINGS environment variable at runtime. If set to False, ASE will
-            run VASP without Custodian, in which case you must have a valid ASE_VASP_COMMAND set per
-            the ASE documentation.
-            Defualts to True.
-    preset : str
+        adopted from htase.defaults.custodian_settings.vasp_custodian_settings.yaml. To override
+        these default Custodian settings, you can define your own .yaml file and set the path in
+        the VASP_CUSTODIAN_SETTINGS environment variable at runtime. If set to False, ASE will
+        run VASP without Custodian, in which case you must have a valid ASE_VASP_COMMAND set per
+        the ASE documentation.
+    preset
         The path to a .yaml file containing a list of INCAR parameters to use as a "preset"
-            for the calculator. If no filepath is present, it will look in htase/defaults/user_calcs, such
-            that preset="BulkRelaxSet" is supported. It will append .yaml at the end if not present.
-    incar_copilot : bool
+        for the calculator. If no filepath is present, it will look in htase/defaults/user_calcs, such
+        that preset="BulkRelaxSet" is supported. It will append .yaml at the end if not present.
+    incar_copilot
         If True, the INCAR parameters will be adjusted if they go against the VASP manual.
-            Defaults to True.
-    force_gamma : bool
+    force_gamma
         If True, the k-point scheme will always be gamma-centered. If False, gamma will depend on the
-            atuomatic k-point generation scheme or user setting.
-            Defaults to True.
-    copy_magmoms : bool
+        atuomatic k-point generation scheme or user setting.
+        Defaults to True.
+    copy_magmoms
         If True, any pre-existing atoms.get_magnetic_moments() will be set in atoms.set_initial_magnetic_moments().
-            Defaults to True. Set this to False if you want to use a preset's magnetic moments every time.
-    mag_default : float
+        Set this to False if you want to use a preset's magnetic moments every time.
+    mag_default
         Default magmom value for sites without one in the preset. Use 0.6 for MP settings or 1.0 for VASP default.
-            Defaults to 1.0.
-    mag_cutoff : None or float
+    mag_cutoff
         Set all initial magmoms to 0 if all have a magnitude below this value.
-            Defaults to 0.05.
-    verbose : bool
+    verbose
         If True, warnings will be raised when INCAR parameters are changed.
-            Defaults to True.
-    **kwargs :
+    **kwargs
         Additional arguments to be passed to the VASP calculator, e.g. xc='PBE', encut=520. Takes all valid
-            ASE calculator arguments, in addition to those custom to HT-ASE.
+        ASE calculator arguments, in addition to those custom to HT-ASE.
 
     Returns
     -------
-    atoms : ase.Atoms
+    Atoms
         The ASE Atoms object with attached VASP calculator.
     """
 
@@ -214,16 +211,19 @@ def SmartVasp(
     return atoms
 
 
-def _manage_environment(custodian=True):
+def _manage_environment(custodian: bool = True) -> str:
     """
     Manage the environment for the VASP calculator.
 
-    Args:
-        custodian (bool): If True, Custodian will be used to run VASP.
-            Default: True
+    Parameters
+    ----------
+    custodian
+        If True, Custodian will be used to run VASP.
 
-    Returns:
-        str: The command flag to pass to the Vasp calculator.
+    Returns
+    -------
+    str
+        The command flag to pass to the Vasp calculator.
     """
 
     # Check ASE environment variables
@@ -264,7 +264,16 @@ def _manage_environment(custodian=True):
     return command
 
 
-def _convert_auto_kpts(struct, auto_kpts):
+def _convert_auto_kpts(
+    struct: Structure,
+    auto_kpts: Optional[
+        Union[
+            Dict[str, float],
+            Dict[str, List[Tuple[float, float]]],
+            Dict[str, List[Tuple[float, float, float]]],
+        ]
+    ],
+) -> Tuple[List[Tuple[int, int, int]], Optional[bool], Optional[bool]]:
     """
     Shortcuts for pymatgen k-point generation schemes.
     Options include: line_density (for band structures),
@@ -274,15 +283,21 @@ def _convert_auto_kpts(struct, auto_kpts):
     {"grid_density": float}, {"vol_kkpa_density": [float, float]}, and
     {"length_density": [float, float, float]}.
 
-    Args:
-        struct (pymatgen.core.Structure): Pymatgen Structure object
-        auto_kpts (str): String indicating the automatic k-point scheme
+    Parameters
+    ----------
+    .Structure
+        Pymatgen Structure object
+    auto_kpts
+        Dictionary describing the automatic k-point scheme
 
-    Returns:
-        kpts (List[Int]): ASE-compatible kpts argument
-        gamma (bool): ASE gamma kwarg
-        reciprocal (bool): ASE reciprocal kwarg
-
+    Returns
+    -------
+    List[int, int, int]
+        List of k-points for use with the ASE Vasp calculator
+    Optional[bool]
+        The gamma command for use with the ASE Vasp calculator
+    Optional[bool]
+        The reciprocal command for use with the ASE Vasp calculator
     """
 
     if auto_kpts.get("line_density", None):
@@ -340,15 +355,19 @@ def _convert_auto_kpts(struct, auto_kpts):
     return kpts, gamma, reciprocal
 
 
-def _remove_unused_flags(user_calc_params):
+def _remove_unused_flags(user_calc_params: Dict) -> Dict:
     """
     Removes unused flags in the INCAR, like EDIFFG if you are doing NSW = 0.
 
-    Args:
-        user_calc_params (dict): User-specified calculation parameters
+    Parameters
+    ----------
+    user_calc_params
+        User-specified calculation parameters
 
-    Returns:
-        user_calc_params (dict): Adjusted user-specified calculation parameters
+    Returns
+    -------
+    Dict
+        Adjusted user-specified calculation parameters
     """
 
     # Turn off opt flags if NSW = 0
@@ -376,23 +395,36 @@ def _remove_unused_flags(user_calc_params):
     return user_calc_params
 
 
-def _calc_swaps(atoms, calc, auto_kpts=None, verbose=True):
+def _calc_swaps(
+    atoms: Atoms,
+    calc: Vasp,
+    auto_kpts: Optional[
+        Union[
+            Dict[str, float],
+            Dict[str, List[Tuple[float, float]]],
+            Dict[str, List[Tuple[float, float, float]]],
+        ]
+    ],
+    verbose: bool = True,
+) -> Vasp:
     """
     Swaps out bad INCAR flags.
 
-    Args:
-        atoms (ase.Atoms): Atoms object
-        calc (ase.calculators.vasp.Vasp): ASE VASP calculator
-        auto_kpts (bool): Whether to automatically set kpoints using
-            one of the Pymatgen schemes.
-            Default: None.
-        verbose (bool): Whether to print out any time the input flags
-            are adjusted.
-            Default: True.
+    Parameters
+    ----------
+    .Atoms
+        Atoms object
+    .Vasp
+        ASE VASP calculator
+    auto_kpts
+        The automatic k-point scheme dictionary
+    verbose
+        Whether to print out any time the input flags are adjusted.
 
-    Returns:
-        calc (ase.calculators.vasp.Vasp): ASE VASP calculator with
-            modified arguments.
+    Returns
+    -------
+    .Vasp
+        ASE VASP calculator with modified arguments.
     """
     is_metal = check_is_metal(atoms)
     max_block = get_highest_block(atoms)

@@ -1,18 +1,23 @@
+from typing import Optional, Dict
 import yaml
 import os
 
 
-def load_yaml_calc(yaml_file, default_calcs_dir=None):
+def load_yaml_calc(yaml_file: str, default_calcs_dir: Optional[str] = None) -> Dict:
     """
     Loads a YAML file containing ASE VASP calcultor settings.
 
-    Args:
-        yaml_file (str): Filename or full path to YAML file.
-        default_calcs_dir (str): If yaml_file is just a filename, load_yaml_calc
-            will look in default_calcs_dir for the file.
+    Parameters
+    ----------
+    yaml_file
+        Filename or full path to YAML file.
+    default_calcs_dir
+        If yaml_file is just a filename, load_yaml_calc will look in default_calcs_dir for the file.
 
-    Returns:
-        calc_preset (dict): The calculator configuration (i.e. settings).
+    Returns
+    -------
+    Dict
+        The calculator configuration (i.e. settings).
     """
 
     _, ext = os.path.splitext(yaml_file)
@@ -59,16 +64,20 @@ def load_yaml_calc(yaml_file, default_calcs_dir=None):
     return config
 
 
-def load_yaml_settings(yaml_file):
+def load_yaml_settings(yaml_file: str) -> Dict:
     """
     Loads a standard YAML settings file. Any entry marked with
     a "$" sign is an environment variable.
 
-    Args:
-        yaml_file (str): Filename or full path to YAML file.
+    Parameters
+    ----------
+    yaml_file
+        Filename or full path to YAML file.
 
-    Returns:
-        settings : The settings specified in the YAML file.
+    Returns
+    -------
+    Dict
+        The settings specified in the YAML file.
     """
 
     settings = yaml.safe_load(open(yaml_file))

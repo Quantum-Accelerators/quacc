@@ -1,25 +1,31 @@
-import cclib
 import os
+from typing import Dict
+from ase.atoms import Atoms
+from cclib.io import ccopen
 from monty.json import jsanitize
 from htase.schemas.atoms import atoms_to_db
 from htase.util.atoms import prep_next_run as prep_next_run_
 
 
-def summarize_run(atoms, output_file, prep_next_run=True):
+def summarize_run(atoms: Atoms, output_file: str, prep_next_run: bool = True) -> Dict:
     """
     Get tabulated results from a molecular DFT run and store them in a database-friendly format.
     This is meant to be a general parser built on top of cclib.
 
-    Args:
-        atoms (ase.Atoms): ASE Atoms object following a calculation.
-        output_file (str): Path to the main output file.
-        prep_next_run (bool): Whether the Atoms object storeed in {"atoms": atoms} should be prepared
-            for the next run. This clears out any attached calculator and moves the final magmoms to the
-            initial magmoms.
-            Defauls to True.
+    Parameters
+    ----------
+    atoms
+        ASE Atoms object following a calculation.
+    output_file
+        Path to the main output file.
+    prep_next_run
+        Whether the Atoms object storeed in {"atoms": atoms} should be prepared for the next run.
+        This clears out any attached calculator and moves the final magmoms to the initial magmoms.
 
-    Returns:
-        task_doc (dict): dictionary of tabulated inputs/results
+    Returns
+    -------
+    Dict
+        Dictionary of tabulated inputs/results
     """
     # Make sure there is a calculator with results
     if not atoms.calc:
@@ -30,7 +36,7 @@ def summarize_run(atoms, output_file, prep_next_run=True):
     # Fetch all tabulated results from the attached calculator
     if not os.path.exists(output_file):
         raise FileNotFoundError(f"Could not find {output_file}")
-    output_io = cclib.io.ccopen(output_file)
+    output_io = ccopen(output_file)
     if output_io is None:
         raise ValueError(f"cclib could not parse {output_file}")
 

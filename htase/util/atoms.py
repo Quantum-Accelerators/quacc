@@ -1,10 +1,11 @@
+import hashlib
+import os
+from copy import deepcopy
+from typing import Dict, Optional
+import numpy as np
 from ase.atoms import Atoms
 from ase.io.jsonio import encode
 from pymatgen.io.ase import AseAtomsAdaptor
-import numpy as np
-from copy import deepcopy
-import hashlib
-import os
 
 # NOTES:
 # - Anytime an Atoms object is converted to a pmg structure, make sure
@@ -19,11 +20,11 @@ import os
 
 
 def prep_next_run(
-    atoms,
-    assign_id=True,
-    move_magmoms=True,
-    store_results=False,
-):
+    atoms: Atoms,
+    assign_id: bool = True,
+    move_magmoms: bool = True,
+    store_results: bool = False,
+) -> Atoms:
     """
     Prepares the Atoms object for a new run.
 
@@ -39,21 +40,24 @@ def prep_next_run(
 
     In all cases, the calculator will be reset so new jobs can be run.
 
-    Args:
-        atoms (ase.Atoms): Atoms object
-        assign_id (bool): Whether to assign a unique ID to the Atoms object in atoms.info["_id"].
-            Any existing IDs will be moved to atoms.info["_old_ids"].
-            move_magmoms (bool): If True, move atoms.get_magnetic_moments() to
-            atoms.get_initial_magnetic_moments()
-            Defult: True.
-        store_results (bool): If True, store calculator results in atoms.info["results"].
-            This makes it so the calculator results are not lost between serialize/deserialize cycles,
-            if desired. Each one will be stored in atoms.info["results"] = {"calc0": {}, "calc1": {}, ...}
-            with higher numbers being the most recent.
-            Default: False.
+    Parameters
+    ----------
+    atoms
+        Atoms object
+    assign_id
+        Whether to assign a unique ID to the Atoms object in atoms.info["_id"].
+        Any existing IDs will be moved to atoms.info["_old_ids"].
+    move_magmoms
+        If True, move atoms.get_magnetic_moments() to atoms.get_initial_magnetic_moments()
+    store_results
+        If True, store calculator results in atoms.info["results"]. This makes it so the calculator results
+        are not lost between serialize/deserialize cycles, if desired. Each one will be stored in
+        atoms.info["results"] = {"calc0": {}, "calc1": {}, ...} with higher numbers being the most recent.
 
-    Returns:
-        atoms (ase.Atoms): Atoms object with calculator results attached in atoms.info["results"]
+    Returns
+    -------
+    .Atoms
+        Atoms object with calculator results attached in atoms.info["results"]
     """
     atoms = deepcopy(atoms)
 
@@ -96,8 +100,12 @@ def prep_next_run(
 
 
 def set_magmoms(
-    atoms, elemental_mags_dict=None, copy_magmoms=True, mag_default=1.0, mag_cutoff=0.05
-):
+    atoms: Atoms,
+    elemental_mags_dict: Optional[Dict] = None,
+    copy_magmoms: bool = True,
+    mag_default: Optional[float] = 1.0,
+    mag_cutoff: float = 0.05,
+) -> Atoms:
     """
     Sets the initial magnetic moments in the Atoms object.
 
@@ -113,24 +121,24 @@ def set_magmoms(
     initial magnetic moments are checked. If all have a magnitude below mag_cutoff,
     then they are all set to 0 (no spin polarization).
 
-    Args:
-        atoms (ase.Atoms): Atoms object
-        elemental_mags_dict (dict): Dictionary of elements and their
-            corresponding magnetic moments to set.
-            Default: None.
-        copy_magmoms (bool): Whether to copy the magnetic moments from the
-            converged set of magnetic moments to the initial magnetic moments.
-            Default: True.
-        mag_default (float): Default magnetic moment to use if no magnetic
-            moments are specified in the preset.
-            Default: 1.0.
-        mag_cutoff (float): Magnitude below which the magnetic moments are
-            considered to be zero.
-            Default: 0.05.
+    Parameters
+    ----------
+    atoms
+        .Atoms object
+    elemental_mags_dict
+        Dictionary of elemental symbols and their corresponding magnetic moments to set.
+        If None, no default values will be used.
+    copy_magmoms
+        Whether to copy the magnetic moments from the converged set of magnetic moments to the initial magnetic moments.
+    mag_default
+        Default magnetic moment to use if no magnetic moments are specified in the preset.
+    mag_cutoff
+        Magnitude below which the magnetic moments are considered to be zero. If None, no cutoff will be applied
 
-    Returns:
-        atoms (ase.Atoms): Atoms object
-
+    Returns
+    -------
+    .Atoms
+        Atoms object
     """
     atoms = deepcopy(atoms)
 
@@ -178,16 +186,20 @@ def set_magmoms(
     return atoms
 
 
-def get_atoms_id(atoms):
+def get_atoms_id(atoms: Atoms) -> str:
     """
     Returns a unique ID for the Atoms object. Note: The .info dict
     and calculator is excluded from the hash generation.
 
-    Args:
-        atoms (ase.Atoms): Atoms object
+    Parameters
+    ----------
+    atoms
+        .Atoms object
 
-    Returns:
-        md5hash (str): MD5 hash of the Atoms object
+    Returns
+    -------
+    md5hash
+        MD5 hash of the .Atoms object
     """
 
     atoms = deepcopy(atoms)
@@ -206,15 +218,19 @@ def get_atoms_id(atoms):
     return md5hash
 
 
-def check_is_metal(atoms):
+def check_is_metal(atoms: Atoms) -> bool:
     """
     Checks if a structure is a likely metal.
 
-    Args:
-        atoms (ase.Atoms): ASE atoms object
+    Parameters
+    ----------
+    atoms
+        .Atoms object
 
-    Returns:
-        is_metal (bool): True if the structure is likely a metal; False otherwise
+    Returns
+    -------
+    bool
+        True if the structure is likely a metal; False otherwise
     """
     if type(atoms) is Atoms:
         if np.all(atoms.pbc) == False:
@@ -227,15 +243,19 @@ def check_is_metal(atoms):
     return is_metal
 
 
-def get_highest_block(atoms):
+def get_highest_block(atoms: Atoms) -> str:
     """
     Get the highest block (e.g. p-block, d-block f-block) of a structure
 
-    Args:
-        atoms (ase.Atoms): ASE atoms object
+    Parameters
+    ----------
+    atoms
+        .Atoms object
 
-    Returns:
-        highest_block (str): highest block of the structure
+    Returns
+    -------
+    str
+        highest block of the structure
     """
     if type(atoms) is Atoms:
         if np.all(atoms.pbc) == False:

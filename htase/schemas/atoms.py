@@ -1,28 +1,35 @@
+from copy import deepcopy
+from typing import Dict
+from monty.json import jsanitize
+import numpy as np
+from ase.atoms import Atoms
+from ase.io.jsonio import encode
 from atomate2.common.schemas.structure import StructureMetadata
 from atomate2.common.schemas.molecule import MoleculeMetadata
 from pymatgen.io.ase import AseAtomsAdaptor
-from ase.io.jsonio import encode
-from monty.json import jsanitize
-import numpy as np
-from copy import deepcopy
 
 
-def atoms_to_db(atoms, get_metadata=True, strip_info=False):
+def atoms_to_db(
+    atoms: Atoms, get_metadata: bool = True, strip_info: bool = False
+) -> Dict:
 
     """
     Convert an ASE Atoms object to a dict suitable for storage in MongoDB.
 
-    Args:
-        atoms (ase.Atoms): ASE Atoms object to store in {"atoms": atoms}.
-        get_metadata (bool): Whether to store atoms metadata in the returned dict.
-            Defaults to True.
-        strip_info (bool): Whether to strip the data from atoms.info in the returned {"atoms":atoms}.
-            Note that this data will be stored in {"atoms_info":atoms.info} regardless.
-            Defaults to False.
+    Parameters
+    ----------
+    aomss
+        ASE Atoms object to store in {"atoms": atoms}
+    get_metadata
+        Whether to store atoms metadata in the returned dict.
+    strip_info
+        Whether to strip the data from atoms.info in the returned {"atoms":.Atoms}.
+        Note that this data will be stored in {"atoms_info":atoms.info} regardless.
 
-    Returns:
-        Dict: dictionary of tabulated atoms object data
-
+    Returns
+    -------
+    Dict
+        Dictionary of tabulated atoms object data
     """
 
     atoms = deepcopy(atoms)
