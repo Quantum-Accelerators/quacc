@@ -17,7 +17,7 @@ from custodian.vasp.handlers import (
 )
 from custodian.vasp.jobs import VaspJob
 from custodian.vasp.validators import VaspFilesValidator, VasprunXMLValidator
-from htase.util.custodian import load_yaml_settings
+from htase.util.yaml import load_yaml_settings
 
 # Adapted from https://github.com/materialsproject/atomate2/blob/main/src/atomate2/vasp/run.py
 
@@ -74,8 +74,6 @@ custodian_kwargs = config.get("custodian_kwargs", None)
 # Run VASP
 vasp_job_kwargs = {} if vasp_job_kwargs is None else vasp_job_kwargs
 custodian_kwargs = {} if custodian_kwargs is None else custodian_kwargs
-vasp_cmd = os.path.expandvars(vasp_cmd)
-vasp_gamma_cmd = os.path.expandvars(vasp_gamma_cmd)
 split_vasp_cmd = shlex.split(vasp_cmd)
 split_vasp_gamma_cmd = shlex.split(vasp_gamma_cmd)
 vasp_job_kwargs.update({"gamma_vasp_cmd": split_vasp_gamma_cmd})
@@ -95,5 +93,4 @@ c = Custodian(
     **custodian_kwargs,
 )
 
-print("Running VASP using custodian.")
 c.run()

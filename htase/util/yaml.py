@@ -60,15 +60,24 @@ def load_yaml_calc(yaml_file, default_calcs_dir=None):
 
 
 def load_yaml_settings(yaml_file):
+    """
+    Loads a standard YAML settings file. Any entry marked with
+    a "$" sign is an environment variable.
 
-    config = yaml.safe_load(open(yaml_file))
+    Args:
+        yaml_file (str): Filename or full path to YAML file.
+
+    Returns:
+        settings : The settings specified in the YAML file.
+    """
+
+    settings = yaml.safe_load(open(yaml_file))
 
     # If $ is the first character, get from the environment variable
-    for k, v in config.items():
+    for k, v in settings.items():
         if isinstance(v, str) and v[0] == "$":
-            if v[1:] in os.environ:
-                config[k] = os.environ[v[1:]]
-            else:
+            if os.path.expandvars(v) != v in os.environ:
                 raise EnvironmentError(f"Missing environment variable {v[1:]}")
+            settings[k] = os.path.expandvars(v)
 
-    return config
+    return settings
