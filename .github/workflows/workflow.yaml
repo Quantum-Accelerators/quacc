@@ -22,7 +22,7 @@ jobs:
           pip install -r requirements.txt
           pip install .[tests]
           pip install pytest-cov
-          
+
       - name: Run tests with pytest
         run: pytest --cov=htase --cov-report=xml
 
