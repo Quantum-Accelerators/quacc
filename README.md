@@ -3,12 +3,15 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/arosen93/quacc/badge)](https://www.codefactor.io/repository/github/arosen93/quacc)
 
 # QuAcc (🚧 Under Construction 🚧)
-The Quantum Accelerator (QuAcc) enhances [ASE](https://wiki.fysik.dtu.dk/ase/index.html) for high-throughput DFT. Some features include:
-- Support for running VASP in ASE via [Custodian](https://github.com/materialsproject/custodian) for on-the-fly error handling.
-- A smarter ASE-based VASP calculator with an optional "co-pilot" mode that will automatically adjust INCAR flags if they go against what is in the [VASP manual](https://www.vasp.at/wiki/index.php/Main_page).
-- Support for Pymatgen's [automatic k-point generation schemes](https://pymatgen.org/pymatgen.io.vasp.inputs.html?highlight=kpoints#pymatgen.io.vasp.inputs.Kpoints) in the ASE calculator itself.
-- The ability to read in pre-defined ASE calculators with settings defined in YAML format.
-- Easy integration with [Jobflow](https://materialsproject.github.io/jobflow/) for the simple construction of complex workflows and ability to store results in database format. By extension, this also makes it possible to easily use ASE with [Fireworks](https://github.com/materialsproject/fireworks) for job management.
+The Quantum Accelerator (QuAcc) supercharges your code to support high-throughput, database-driven density functional theory (DFT). QuAcc is built with the following goals in mind:
+- Rapid workflow development, no matter your favorite code.
+    - QuAcc is built on top of [ASE](https://wiki.fysik.dtu.dk/ase/index.html) for calculation setup and execution, providing native support for dozens of DFT packages through a common interface. Through the use of [cclib](https://github.com/cclib/cclib) and [pymatgen](https://pymatgen.org/), there's a single interface for output parsing too.
+- A database-oriented approach that is as easy to use for 1 calculation as it is for 10,000.
+    - QuAcc makes it easy to integrate ASE with [Jobflow](https://materialsproject.github.io/jobflow/) for the simple construction of complex workflows and ability to store results in database format. By extension, this also makes it possible to easily use ASE with [Fireworks](https://github.com/materialsproject/fireworks) for job management.
+- On-the-fly error handling and "smart" calculators.
+    - For VASP, QuAcc comes pre-packaged with a `SmartVasp` calculator that can run calculations via [Custodian](https://github.com/materialsproject/custodian) for on-the-fly error handling, an optional "co-pilot" mode to ensure your input arguments don't go against what is in the [VASP manual](https://www.vasp.at/wiki/index.php/Main_page), and more.
+- Seamless collaboration.
+    - QuAcc makes it possible to read in pre-defined ASE calculator configurations with settings defined in YAML format.
 
 In practice, the goal here is to enable the development of [Atomate2](https://github.com/materialsproject/atomate2)-like workflows centered around ASE with a focus on rapid workflow construction and prototyping.
 <p align="center">
