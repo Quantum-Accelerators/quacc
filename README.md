@@ -80,11 +80,10 @@ git clone https://github.com/arosen93/htase.git
 cd htase && pip install -r requirements.txt && pip install -e .
 ```
 
-2. Acecss the example `config` folder provided [here](https://github.com/arosen93/htase/tree/main/htase/setup) and follow the steps in `instructions.md`.
+2. Follow the instructions in ASE's [documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html#supported-calculators) for how to set up the ASE calculator(s) you plan to use.
 
-3. Follow the instructions in ASE's [documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html#supported-calculators) for how to set up the ASE calculator(s) you plan to use.
+3. Define the following environment variables (e.g. in your `~/.bashrc`) if you wish to use Jobflow and/or Fireworks, in addition to any that you have set in Step 3. Example `.yaml` file are provided [here](https://github.com/arosen93/htase/tree/main/htase/setup).
 
-4. Define the following environment variables (e.g. in your `~/.bashrc`) if you wish to use Jobflow and/or Fireworks, in addition to any that you have set in Step 3.
 ```bash
 # Jobflow requirements
 # (details: https://materialsproject.github.io/jobflow/jobflow.settings.html)
