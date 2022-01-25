@@ -1,11 +1,11 @@
 from ase.io import read
 from ase.build import bulk
 from ase.io.jsonio import encode, decode
-from htase.util.atoms import (
+from quacc.util.atoms import (
     prep_next_run,
     get_atoms_id,
 )
-from htase.calculators.vasp import SmartVasp
+from quacc.calculators.vasp import SmartVasp
 from pathlib import Path
 import os
 from copy import deepcopy

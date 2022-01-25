@@ -1,30 +1,26 @@
 import os
-from htase.schemas.cclib import summarize_run
+from quacc.schemas.calc import summarize_run
 from ase.io import read
 from ase.io.jsonio import decode
 from pathlib import Path
 
 FILE_DIR = Path(__file__).resolve().parent
 
-run1 = os.path.join(FILE_DIR, "gaussian_run1")
-log1 = os.path.join(run1, "gautest.log.gz")
+run1 = os.path.join(FILE_DIR, "vasp_run1")
 
 
 def test_summarize_run():
 
     # Make sure metadata is made
-    atoms = read(log1)
-    results = summarize_run(atoms, log1)
+    atoms = read(os.path.join(run1, "OUTCAR.gz"))
+    results = summarize_run(atoms)
     assert results["nsites"] == len(atoms)
     assert decode(results["atoms"]) == atoms
-    assert results["attributes"].get("mult", None) == 1
-    assert results["attributes"].get("natom", None) == 6
-    assert results["metadata"].get("success", None) == True
 
     # Make sure info tags are handled appropriately
-    atoms = read(log1)
+    atoms = read(os.path.join(run1, "OUTCAR.gz"))
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
-    results = summarize_run(atoms, log1)
+    results = summarize_run(atoms)
     results_atoms = decode(results["atoms"])
     assert atoms.info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results.get("atoms_info", {}) != {}
@@ -32,10 +28,10 @@ def test_summarize_run():
     assert results_atoms.info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
     # Make sure magnetic moments are handled appropriately
-    atoms = read(os.path.join(run1, log1))
+    atoms = read(os.path.join(run1, "OUTCAR.gz"))
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
     atoms.calc.results["magmoms"] = [2.0] * len(atoms)
-    results = summarize_run(atoms, log1)
+    results = summarize_run(atoms)
     results_atoms = decode(results["atoms"])
 
     assert atoms.calc is not None
@@ -45,9 +41,9 @@ def test_summarize_run():
     assert results_atoms.calc is None
 
     # Make sure Atoms magmoms were not moved if specified
-    atoms = read(os.path.join(run1, log1))
+    atoms = read(os.path.join(run1, "OUTCAR.gz"))
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
-    results = summarize_run(atoms, log1, prep_next_run=False)
+    results = summarize_run(atoms, prep_next_run=False)
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
     results_atoms = decode(results["atoms"])
     assert results_atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)

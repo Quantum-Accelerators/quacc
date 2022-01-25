@@ -3,8 +3,8 @@ from ase.io import read
 from ase.build import bulk
 from ase.calculators.vasp import Vasp
 from ase.calculators.singlepoint import SinglePointDFTCalculator
-from htase.calculators.vasp import SmartVasp
-from htase.util.atoms import prep_next_run
+from quacc.calculators.vasp import SmartVasp
+from quacc.util.atoms import prep_next_run
 from pathlib import Path
 import numpy as np
 from copy import deepcopy

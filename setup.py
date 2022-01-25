@@ -8,13 +8,13 @@ with open(module_dir / "README.md") as f:
 
 if __name__ == "__main__":
     setup(
-        name="htase",
+        name="QuAcc",
         description="Enhance ASE for high-throughput DFT",
         long_description=long_description,
         long_description_content_type="text/markdown",
         author="Andrew S. Rosen",
         author_email="asrosen93@gmail.com",
-        url="https://github.com/arosen93/htase",
+        url="https://github.com/arosen93/quacc",
         python_requires=">=3.8.0",
         version="0.0.1",
         packages=find_packages(),

@@ -1,8 +1,8 @@
 # Setup Instructions
 
-## htase_config
+## quacc_config
 ### VASP Setup
-This folder contains a `vasp_custodian_settings.yaml` file, which tells HT-ASE how to run Custodian-powered VASP. By default, you do not need to make any changes to this file other than `vasp_cmd` and `vasp_gamma_cmd` if your executables are named differently than `vasp_std` and `vasp_gam`. The path to your `vasp_custodian_settings.yaml` file should be set under the `VASP_CUSTODIAN_SETTINGS` environment variable. Make sure that these executables are available in your path at runtime, such as by loading the relevant VASP module.
+This folder contains a `vasp_custodian_settings.yaml` file, which tells QuAcc how to run Custodian-powered VASP. By default, you do not need to make any changes to this file other than `vasp_cmd` and `vasp_gamma_cmd` if your executables are named differently than `vasp_std` and `vasp_gam`. The path to your `vasp_custodian_settings.yaml` file should be set under the `VASP_CUSTODIAN_SETTINGS` environment variable. Make sure that these executables are available in your path at runtime, such as by loading the relevant VASP module.
 
 Note that `VASP_PARALLEL_CMD` in the `vasp_custodian_settings.yaml` file is set to `$VASP_PARALLEL_CMD` by default. This means that Custodian will run VASP based on however the `VASP_PARALLEL_CMD` environment variable is set. For instance, you might include something like the following line in your submission script: `export VASP_PARALLEL_CMD="srun -N 2 --ntasks-per-node 64 -c 4 --cpu_bind=cores"`.
 

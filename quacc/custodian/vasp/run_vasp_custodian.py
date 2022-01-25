@@ -17,7 +17,7 @@ from custodian.vasp.handlers import (
 )
 from custodian.vasp.jobs import VaspJob
 from custodian.vasp.validators import VaspFilesValidator, VasprunXMLValidator
-from htase.util.yaml import load_yaml_settings
+from quacc.util.yaml import load_yaml_settings
 
 # Adapted from https://github.com/materialsproject/atomate2/blob/main/src/atomate2/vasp/run.py
 

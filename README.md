@@ -2,8 +2,8 @@
 [![codecov](https://codecov.io/gh/arosen93/htase/branch/main/graph/badge.svg?token=BCKGTD89H0)](https://codecov.io/gh/arosen93/htase)
 [![CodeFactor](https://www.codefactor.io/repository/github/arosen93/htase/badge)](https://www.codefactor.io/repository/github/arosen93/htase)
 
-# HT-ASE (🚧 Under Construction 🚧)
-HT-ASE enhances [ASE](https://wiki.fysik.dtu.dk/ase/index.html) for high-throughput DFT. Some features include:
+# QuAcc (🚧 Under Construction 🚧)
+The Quantum Accelerator (QuAcc) enhances [ASE](https://wiki.fysik.dtu.dk/ase/index.html) for high-throughput DFT. Some features include:
 - Support for running VASP in ASE via [Custodian](https://github.com/materialsproject/custodian) for on-the-fly error handling.
 - A smarter ASE-based VASP calculator with an optional "co-pilot" mode that will automatically adjust INCAR flags if they go against what is in the [VASP manual](https://www.vasp.at/wiki/index.php/Main_page).
 - Support for Pymatgen's [automatic k-point generation schemes](https://pymatgen.org/pymatgen.io.vasp.inputs.html?highlight=kpoints#pymatgen.io.vasp.inputs.Kpoints) in the ASE calculator itself.
@@ -19,7 +19,7 @@ Credit: xkcd
 
 ## Minimal Examples
 ### SmartVasp Calculator
-In direct analogy to the conventional way of running ASE, HT-ASE has a calculator called `SmartVasp()` that takes any of the [input arguments](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#ase.calculators.vasp.Vasp) in a typical ASE `Vasp()` calculator but supports several additional keyword arguments to supercharge your workflow. It can also adjust your settings on-the-fly if they go against the VASP manual. The main differences for the seasoned ASE user are that the first argument must be an ASE `Atoms` object, and it returns an `Atoms` object with an enhanced `Vasp()` calculator already attached.
+In direct analogy to the conventional way of running ASE, QuAcc has a calculator called `SmartVasp()` that takes any of the [input arguments](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#ase.calculators.vasp.Vasp) in a typical ASE `Vasp()` calculator but supports several additional keyword arguments to supercharge your workflow. It can also adjust your settings on-the-fly if they go against the VASP manual. The main differences for the seasoned ASE user are that the first argument must be an ASE `Atoms` object, and it returns an `Atoms` object with an enhanced `Vasp()` calculator already attached.
 
 The example below runs a relaxation of bulk Cu using the RPBE functional with the remaining settings taken from a pre-defined set ("preset") of calculator input arguments.
 
@@ -74,7 +74,7 @@ run_locally(flow, create_folders=True)
 For additional details on how to convert a Jobflow job or flow to a Fireworks firework or workflow, refer to the [Jobflow documentation](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks). 
 
 ## Installation
-1. Run the following command in a convenient place to install HT-ASE:
+1. Run the following command in a convenient place to install QuAcc:
 ```bash
 git clone https://github.com/arosen93/htase.git
 cd htase && pip install -r requirements.txt && pip install -e .
@@ -95,4 +95,4 @@ export FW_CONFIG_FILE='/path/to/config/fw_config/FW_config.yaml'
 
 ```
 ## License
-HT-ASE is released under a [modified BSD license](https://github.com/arosen93/htase/blob/main/LICENSE.md).
+QuAcc is released under a [modified BSD license](https://github.com/arosen93/htase/blob/main/LICENSE.md).

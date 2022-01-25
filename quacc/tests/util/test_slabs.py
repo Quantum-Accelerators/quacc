@@ -2,7 +2,7 @@ from ase.io import read
 from ase.build import bulk, fcc100
 from ase.io.jsonio import decode
 from ase.build import molecule
-from htase.util.slabs import (
+from quacc.util.slabs import (
     flip_atoms,
     make_slabs_from_bulk,
     make_max_slabs_from_bulk,
