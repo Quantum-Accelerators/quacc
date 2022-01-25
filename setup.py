@@ -8,7 +8,7 @@ with open(module_dir / "README.md") as f:
 
 if __name__ == "__main__":
     setup(
-        name="QuAcc",
+        name="quacc",
         description="Enhance ASE for high-throughput DFT",
         long_description=long_description,
         long_description_content_type="text/markdown",

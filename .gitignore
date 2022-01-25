@@ -1,4 +1,4 @@
 *.pyc
-htase.egg*
+*.egg*
 __pycache__
 POTCAR*
