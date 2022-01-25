@@ -4,14 +4,9 @@
 
 # QuAcc (🚧 Under Construction 🚧)
 The Quantum Accelerator (QuAcc) supercharges your code to support high-throughput, database-driven density functional theory (DFT). QuAcc is built with the following goals in mind:
-- Rapid workflow development, no matter your favorite code.
-    - QuAcc is built on top of [ASE](https://wiki.fysik.dtu.dk/ase/index.html) for calculation setup and execution, providing native support for dozens of DFT packages through a common interface. Through the use of [cclib](https://github.com/cclib/cclib) and [pymatgen](https://pymatgen.org/), there's a single interface for output parsing too.
-- A database-oriented approach that is as easy to use for 1 calculation as it is for 10,000.
-    - QuAcc makes it easy to integrate ASE with [Jobflow](https://materialsproject.github.io/jobflow/) for the simple construction of complex workflows and ability to store results in database format. By extension, this also makes it possible to easily use ASE with [Fireworks](https://github.com/materialsproject/fireworks) for job management.
-- On-the-fly error handling and "smart" calculators.
-    - For VASP, QuAcc comes pre-packaged with a `SmartVasp` calculator that can run calculations via [Custodian](https://github.com/materialsproject/custodian) for on-the-fly error handling, an optional "co-pilot" mode to ensure your input arguments don't go against what is in the [VASP manual](https://www.vasp.at/wiki/index.php/Main_page), and more.
-- Seamless collaboration.
-    - QuAcc makes it possible to read in pre-defined ASE calculator configurations with settings defined in YAML format.
+1. Rapid workflow development and prototyping, no matter your favorite code.
+2. A database-oriented approach that is as easy to use for 1 calculation as it is for 10,000.
+3. On-the-fly error handling and "smart" calculators.
 
 In practice, the goal here is to enable the development of [Atomate2](https://github.com/materialsproject/atomate2)-like workflows centered around ASE with a focus on rapid workflow construction and prototyping.
 <p align="center">
@@ -22,7 +17,7 @@ Credit: xkcd
 
 ## Minimal Examples
 ### SmartVasp Calculator
-In direct analogy to the conventional way of running ASE, QuAcc has a calculator called `SmartVasp()` that takes any of the [input arguments](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#ase.calculators.vasp.Vasp) in a typical ASE `Vasp()` calculator but supports several additional keyword arguments to supercharge your workflow. It can also adjust your settings on-the-fly if they go against the VASP manual. The main differences for the seasoned ASE user are that the first argument must be an ASE `Atoms` object, and it returns an `Atoms` object with an enhanced `Vasp()` calculator already attached.
+For VASP, QuAcc comes pre-packaged with a `SmartVasp` calculator that can run calculations via [Custodian](https://github.com/materialsproject/custodian) for on-the-fly error handling, an optional "co-pilot" mode to ensure your input arguments don't go against what is in the [VASP manual](https://www.vasp.at/wiki/index.php/Main_page), and more.
 
 The example below runs a relaxation of bulk Cu using the RPBE functional with the remaining settings taken from a pre-defined set ("preset") of calculator input arguments.
 
@@ -76,6 +71,64 @@ run_locally(flow, create_folders=True)
 ### Fireworks Integration
 For additional details on how to convert a Jobflow job or flow to a Fireworks firework or workflow, refer to the [Jobflow documentation](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks). 
 
+### Coupling of Multiple Codes
+QuAcc is built on top of [ASE](https://wiki.fysik.dtu.dk/ase/index.html) for calculation setup and execution, providing native support for dozens of DFT packages through a common interface. Through the use of [cclib](https://github.com/cclib/cclib) and [pymatgen](https://pymatgen.org/), there's a consistent interface in QuAcc for output parsing too.
+
+The example below highlights how one could construct a Fireworks-enabled workflow to carry out a structure relaxation of O2 using Gaussian and then a refinement using Q-Chem. The metadata and tabulated calculation results of this workflow would be deposited in your specified database.
+```python
+from ase.calculators.gaussian import Gaussian
+from ase.calculators.qchem import QChem
+from quacc.schemas.cclib import summarize_run
+from ase.io.jsonio import decode
+from jobflow import job
+
+# -----Jobflow Function-----
+@job
+def run_relax_gaussian(atoms_json):
+    # Run Gaussian
+    atoms = decode(atoms_json)
+    atoms.calc = Gaussian(method="wB97X-D", basis="def2-TZVP", extra="opt")
+    atoms.get_potential_energy()
+
+    # Return serialized results
+    summary = summarize_run(atoms)
+    return summary
+
+
+# -----Jobflow Function-----
+@job
+def run_relax_qchem(atoms_json):
+
+    # Run Q-Chem
+    atoms = decode(atoms_json)
+    atoms.calc = QChem(method="wB97M-V", basis="def2-TZVPD", jobtype="opt")
+    atoms.get_potential_energy()
+
+    # Return serialized results
+    summary = summarize_run(atoms)
+    return summary
+```
+```python
+from ase.build import molecule
+from ase.io.jsonio import encode
+from fireworks import LaunchPad
+from jobflow import Flow
+from jobflow.managers.local import flow_to_workflow
+
+# -----Create a Fireworks workflow-----
+# Constrct an Atoms object
+atoms = molecule("O2")
+
+# Define the flow
+job1 = run_relax_gaussian(encode(atoms))
+job2 = run_relax_qchem(encode(job1.output["atoms"]))
+flow = Flow([job1, job2])
+
+# Add a Firework to the launchpad
+wf = flow_to_workflow(flow)
+lpad = LaunchPad.auto_load()
+lpad.add_wf(wf)
+```
 ## Installation
 1. Run the following command in a convenient place to install QuAcc:
 ```bash
