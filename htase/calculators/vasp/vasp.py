@@ -1,5 +1,5 @@
-from htase.util.calc import load_yaml_calc, set_magmoms
-from htase.util.atoms import check_is_metal, get_highest_block
+from htase.util.yaml import load_yaml_calc, load_yaml_settings
+from htase.util.atoms import set_magmoms, check_is_metal, get_highest_block
 from htase.custodian import vasp
 from htase.defaults import custodian_settings
 from ase.calculators.vasp import Vasp
@@ -237,17 +237,6 @@ def _manage_environment(custodian=True):
         if "VASP_CUSTODIAN_SETTINGS" in os.environ:
             custodian_yaml = os.environ["VASP_CUSTODIAN_SETTINGS"]
         else:
-            warnings.warn(
-                "The VASP_CUSTODIAN_SETTINGS environment variable was not defined. Using default settings. This assumes that the VASP_PARALLEL_CMD environment variable is set and your VASP executables are named vasp_std and vasp_gam."
-            )
-            if "VASP_PARALLEL_CMD" not in os.environ:
-                warnings.warn(
-                    'VASP_PARALLEL_CMD must be set in the environment. For instance, this might look something like VASP_PARALLEL_CMD="srun -N 2 --ntasks-per-node 64"'
-                )
-            if not which("vasp_std") or not which("vasp_gam"):
-                warnings.warn(
-                    "Could not find vasp_std or vasp_gam executables in your PATH. Make sure to load the VASP module if necessary."
-                )
             custodian_yaml = os.path.join(
                 os.path.dirname(os.path.abspath(inspect.getfile(custodian_settings))),
                 "vasp_custodian_settings.yaml",
@@ -256,6 +245,12 @@ def _manage_environment(custodian=True):
         if not os.path.isfile(custodian_yaml):
             raise FileNotFoundError("{custodian_yaml} not found.")
 
+        try:
+            load_yaml_settings(custodian_yaml)
+        except EnvironmentError as msg:
+            warnings.warn(str(msg))
+
+        # Return the command flag
         custodian_dir = os.path.dirname(os.path.abspath(inspect.getfile(vasp)))
         run_vasp_custodian_file = os.path.join(custodian_dir, "run_vasp_custodian.py")
         command = f"python {run_vasp_custodian_file}"

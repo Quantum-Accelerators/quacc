@@ -1,7 +1,5 @@
 import os
 import shlex
-import subprocess
-import yaml
 from custodian import Custodian
 from custodian.vasp.handlers import (
     FrozenJobErrorHandler,
@@ -19,6 +17,7 @@ from custodian.vasp.handlers import (
 )
 from custodian.vasp.jobs import VaspJob
 from custodian.vasp.validators import VaspFilesValidator, VasprunXMLValidator
+from htase.util.custodian import load_yaml_settings
 
 # Adapted from https://github.com/materialsproject/atomate2/blob/main/src/atomate2/vasp/run.py
 
@@ -27,15 +26,7 @@ if "VASP_CUSTODIAN_SETTINGS" in os.environ:
     settings_path = os.environ["VASP_CUSTODIAN_SETTINGS"]
 else:
     raise EnvironmentError("Missing environment variable VASP_CUSTODIAN_SETTINGS.")
-config = yaml.safe_load(open(settings_path))
-
-# If $ is the first character, get from the environment variable
-for k, v in config.items():
-    if isinstance(v, str) and v[0] == "$":
-        if v[1:] in os.environ:
-            config[k] = os.environ[v[1:]]
-        else:
-            raise EnvironmentError(f"Missing environment variable {v[1:]}")
+config = load_yaml_settings(settings_path)
 
 # Handlers for VASP
 handlers = []
@@ -71,7 +62,6 @@ for validator_flag in config["validators"]:
     validators.append(validators_dict[validator_flag])
 
 # Populate settings
-custodian_enabled = config.get("custodian_enabled", True)
 parallel_cmd = config.get("vasp_parallel_cmd", "") + " "
 vasp_cmd = parallel_cmd + config.get("vasp_cmd", "vasp_std")
 vasp_gamma_cmd = parallel_cmd + config.get("vasp_gamma_cmd", "vasp_gam")
@@ -90,29 +80,20 @@ split_vasp_cmd = shlex.split(vasp_cmd)
 split_vasp_gamma_cmd = shlex.split(vasp_gamma_cmd)
 vasp_job_kwargs.update({"gamma_vasp_cmd": split_vasp_gamma_cmd})
 
-if custodian_enabled:
+# Run with Custodian
+jobs = [VaspJob(split_vasp_cmd, **vasp_job_kwargs)]
 
-    # Run with Custodian
-    jobs = [VaspJob(split_vasp_cmd, **vasp_job_kwargs)]
+if wall_time is not None:
+    handlers = list(handlers) + [WalltimeHandler(wall_time=wall_time)]
 
-    if wall_time is not None:
-        handlers = list(handlers) + [WalltimeHandler(wall_time=wall_time)]
+c = Custodian(
+    handlers,
+    jobs,
+    validators=validators,
+    max_errors=max_errors,
+    scratch_dir=scratch_dir,
+    **custodian_kwargs,
+)
 
-    c = Custodian(
-        handlers,
-        jobs,
-        validators=validators,
-        max_errors=max_errors,
-        scratch_dir=scratch_dir,
-        **custodian_kwargs,
-    )
-
-    print("Running VASP using custodian.")
-    c.run()
-
-else:
-
-    # Run VASP without custodian
-    print(f"Running command: {vasp_cmd}")
-    return_code = subprocess.call(vasp_cmd, shell=True)
-    print(f"{vasp_cmd} finished running with returncode: {return_code}")
+print("Running VASP using custodian.")
+c.run()
