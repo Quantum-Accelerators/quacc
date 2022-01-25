@@ -1,6 +1,6 @@
-![example workflow](https://github.com/arosen93/htase/actions/workflows/workflow.yaml/badge.svg)
-[![codecov](https://codecov.io/gh/arosen93/htase/branch/main/graph/badge.svg?token=BCKGTD89H0)](https://codecov.io/gh/arosen93/htase)
-[![CodeFactor](https://www.codefactor.io/repository/github/arosen93/htase/badge)](https://www.codefactor.io/repository/github/arosen93/htase)
+![example workflow](https://github.com/arosen93/quacc/actions/workflows/workflow.yaml/badge.svg)
+[![codecov](https://codecov.io/gh/arosen93/quacc/branch/main/graph/badge.svg?token=BCKGTD89H0)](https://codecov.io/gh/arosen93/quacc)
+[![CodeFactor](https://www.codefactor.io/repository/github/arosen93/quacc/badge)](https://www.codefactor.io/repository/github/arosen93/quacc)
 
 # QuAcc (🚧 Under Construction 🚧)
 The Quantum Accelerator (QuAcc) enhances [ASE](https://wiki.fysik.dtu.dk/ase/index.html) for high-throughput DFT. Some features include:
@@ -24,7 +24,7 @@ In direct analogy to the conventional way of running ASE, QuAcc has a calculator
 The example below runs a relaxation of bulk Cu using the RPBE functional with the remaining settings taken from a pre-defined set ("preset") of calculator input arguments.
 
 ```python
-from htase.calculators.vasp import SmartVasp
+from quacc.calculators.vasp import SmartVasp
 from ase.build import bulk
 
 atoms = bulk("Cu") # example Atoms object
@@ -36,8 +36,8 @@ atoms.get_potential_energy() # run VASP w/ Custodian
 The above example can be converted to a format suitable for constructing a Jobflow flow simply by defining it in a function with a `@job` wrapper immediately preceeding it. One nuance of Jobflow is that the inputs and outputs must be JSON serializable (so that it can be easily stored in a database), but otherwise it works the same.
 
 ```python
-from htase.calculators.vasp import SmartVasp
-from htase.schemas.vasp import summarize_run
+from quacc.calculators.vasp import SmartVasp
+from quacc.schemas.vasp import summarize_run
 from ase.io.jsonio import decode
 from jobflow import job
 
@@ -76,13 +76,13 @@ For additional details on how to convert a Jobflow job or flow to a Fireworks fi
 ## Installation
 1. Run the following command in a convenient place to install QuAcc:
 ```bash
-git clone https://github.com/arosen93/htase.git
-cd htase && pip install -r requirements.txt && pip install -e .
+git clone https://github.com/arosen93/quacc.git
+cd quacc && pip install -r requirements.txt && pip install -e .
 ```
 
 2. Follow the instructions in ASE's [documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html#supported-calculators) for how to set up the ASE calculator(s) you plan to use.
 
-3. Define the following environment variables (e.g. in your `~/.bashrc`) if you wish to use Jobflow and/or Fireworks, in addition to any that you have set in Step 2. Example `.yaml` files are provided [here](https://github.com/arosen93/htase/tree/main/htase/setup).
+3. Define the following environment variables (e.g. in your `~/.bashrc`) if you wish to use Jobflow and/or Fireworks, in addition to any that you have set in Step 2. Example `.yaml` files are provided [here](https://github.com/arosen93/quacc/tree/main/quacc/setup).
 
 ```bash
 # Jobflow requirements
@@ -95,4 +95,4 @@ export FW_CONFIG_FILE='/path/to/config/fw_config/FW_config.yaml'
 
 ```
 ## License
-QuAcc is released under a [modified BSD license](https://github.com/arosen93/htase/blob/main/LICENSE.md).
+QuAcc is released under a [modified BSD license](https://github.com/arosen93/quacc/blob/main/LICENSE.md).
