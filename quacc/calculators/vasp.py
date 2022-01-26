@@ -2,7 +2,7 @@ import inspect
 import os
 import warnings
 import numpy as np
-from typing import List, Dict, Optional, Tuple
+from typing import List, Dict, Optional, Tuple, Union
 from copy import deepcopy
 from pymatgen.core import Structure
 from pymatgen.io.vasp.inputs import Kpoints
@@ -273,9 +273,11 @@ def _manage_environment(custodian: bool = True) -> str:
 def _convert_auto_kpts(
     struct: Structure,
     auto_kpts: Optional[
-        Dict[str, float]
-        | Dict[str, List[Tuple[float, float]]]
-        | Dict[str, List[Tuple[float, float, float]]]
+        Union[
+            Dict[str, float],
+            Dict[str, List[Tuple[float, float]]],
+            Dict[str, List[Tuple[float, float, float]]],
+        ]
     ],
 ) -> Tuple[List[Tuple[int, int, int]], Optional[bool], Optional[bool]]:
     """
@@ -403,9 +405,11 @@ def _calc_swaps(
     atoms: Atoms,
     calc: Vasp,
     auto_kpts: Optional[
-        Dict[str, float]
-        | Dict[str, List[Tuple[float, float]]]
-        | Dict[str, List[Tuple[float, float, float]]],
+        Union[
+            Dict[str, float],
+            Dict[str, List[Tuple[float, float]]],
+            Dict[str, List[Tuple[float, float, float]]],
+        ]
     ],
     verbose: bool = True,
 ) -> Vasp:
