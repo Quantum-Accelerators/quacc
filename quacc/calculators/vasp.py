@@ -4,7 +4,6 @@ import warnings
 import numpy as np
 from typing import List, Union, Dict, Optional, Tuple
 from copy import deepcopy
-from pathlib import Path
 from pymatgen.core import Structure
 from pymatgen.io.vasp.inputs import Kpoints
 from pymatgen.io.ase import AseAtomsAdaptor
