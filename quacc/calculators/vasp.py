@@ -657,11 +657,7 @@ def _calc_swaps(
             )
         calc.set(isym=0)
 
-    if (
-        calc.bool_params["lhfcalc"] is True
-        and calc.int_params["isym"]
-        and calc.int_params["isym"] in (1, 2)
-    ):
+    if calc.bool_params["lhfcalc"] is True and calc.int_params["isym"] in (1, 2):
         if verbose:
             warnings.warn(
                 "Copilot: Setting ISYM = 3 because you are running a hybrid calculation.",
