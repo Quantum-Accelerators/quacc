@@ -14,9 +14,7 @@ class RelaxMaker(Maker):
     kpar: int = 1
 
     @job
-    def make(
-        self, atoms_json: str, volume_relax: bool = True, **kwargs
-    ) -> Dict:
+    def make(self, atoms_json: str, volume_relax: bool = True, **kwargs) -> Dict:
         atoms = decode(atoms_json)
         if volume_relax:
             isif = 3
@@ -54,7 +52,7 @@ class StaticMaker(Maker):
     kpar: int = 1
 
     @job
-    def make(self, atoms_json: str, slab: bool = False, **kwargs) -> Dict:
+    def make(self, atoms_json: str, **kwargs) -> Dict:
         atoms = decode(atoms_json)
         flags = {
             "ediff": 1e-6,
