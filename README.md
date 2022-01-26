@@ -3,6 +3,11 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/arosen93/quacc/badge)](https://www.codefactor.io/repository/github/arosen93/quacc)
 
 # QuAcc (🚧 Under Construction 🚧)
+
+## Disclaimer
+While largely functional, this code is under extreme levels of construction. Not recommended for daily consumption. 
+
+## Summary
 The Quantum Accelerator (QuAcc) supercharges your code to support high-throughput, database-driven density functional theory (DFT). QuAcc is built with the following goals in mind:
 1. Rapid workflow development and prototyping, no matter your favorite DFT package.
 2. A database-oriented approach that is as easy to use for 1 calculation as it is for 10,000.
