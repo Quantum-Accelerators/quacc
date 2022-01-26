@@ -83,6 +83,14 @@ def SmartVasp(
     # Grab the pymatgen structure object in case we need it later
     struct = AseAtomsAdaptor().get_structure(atoms)
 
+    # Check constraints
+    if custodian:
+        for constraint in atoms.constraints:
+            if constraint.todict()["name"] != "FixAtoms":
+                raise ValueError(
+                    "Atoms object has a constraint that is not compatible with Custodian"
+                )
+
     # Get VASP executable command, if necessary, and specify child environment
     # variables
     command = _manage_environment(custodian)
