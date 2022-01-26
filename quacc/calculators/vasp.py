@@ -85,11 +85,10 @@ def SmartVasp(
 
     # Check constraints
     if custodian:
-        for constraint in atoms.constraints:
-            if constraint.todict()["name"] != "FixAtoms":
-                raise ValueError(
-                    "Atoms object has a constraint that is not compatible with Custodian"
-                )
+        if "FixAtoms" in [c.todict()["name"] for c in atoms.constraints]:
+            raise ValueError(
+                "Atoms object has a constraint that is not compatible with Custodian"
+            )
 
     # Get VASP executable command, if necessary, and specify child environment
     # variables
