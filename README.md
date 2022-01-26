@@ -7,8 +7,9 @@ The Quantum Accelerator (QuAcc) supercharges your code to support high-throughpu
 1. Rapid workflow development and prototyping, no matter your favorite DFT package.
 2. A database-oriented approach that is as easy to use for 1 calculation as it is for 10,000.
 3. On-the-fly error handling and "smart" calculators.
-
-In practice, the goal here is to enable the development of [Atomate2](https://github.com/materialsproject/atomate2)-like workflows centered around [ASE](https://wiki.fysik.dtu.dk/ase/index.html) with a focus on rapid workflow construction and prototyping.
+4. All within the existing framework of the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/index.html) and the corresponding `Atoms` object.
+ 
+In practice, the goal here is to enable the development of high-throughput workflows centered around ASE with a focus on rapid workflow construction and prototyping. If your goal is to use a package that provides pre-defined recipes, [Atomate2](https://github.com/materialsproject/atomate2) is what you're looking for!
 <p align="center">
 <img src="https://imgs.xkcd.com/comics/standards_2x.png" alt="xkcd Comic" width="528" height="300">
 <p align="center">
