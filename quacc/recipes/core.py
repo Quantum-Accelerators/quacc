@@ -8,13 +8,44 @@ from dataclasses import dataclass
 
 @dataclass
 class RelaxMaker(Maker):
+    """
+    Class to relax a structure.
+
+    Parameters
+    ----------
+    name:
+        Name of the job.
+    preset:
+        Preset to use.
+    ncore:
+        VASP NCORE parameter.
+    kpar:
+        VASP KPAR parameter.
+    """
+
     name: str = "Relax"
     preset: Optional[str] = None
-    npar: int = 1
+    ncore: int = 1
     kpar: int = 1
 
     @job
     def make(self, atoms_json: str, volume_relax: bool = True, **kwargs) -> Dict:
+        """
+        Make the run.
+
+        Parameters
+        ----------
+        atoms_json:
+            Encoded .Atoms object
+        volume_relax:
+            True if a volume relaxation (ISIF = 3) should be performed.
+            False if only the positions (ISIF = 2) should be updated.
+
+        Returns
+        -------
+        Dict
+            Summary of the run.
+        """
         atoms = decode(atoms_json)
         if volume_relax:
             isif = 3
@@ -46,6 +77,21 @@ class RelaxMaker(Maker):
 
 @dataclass
 class StaticMaker(Maker):
+    """
+    Class to carry out a single-point calculation.
+
+    Parameters
+    ----------
+    name:
+        Name of the job.
+    preset:
+        Preset to use.
+    ncore:
+        VASP NCORE parameter.
+    kpar:
+        VASP KPAR parameter.
+    """
+
     name: str = "Static"
     preset: Optional[str] = None
     npar: int = 1
@@ -53,6 +99,19 @@ class StaticMaker(Maker):
 
     @job
     def make(self, atoms_json: str, **kwargs) -> Dict:
+        """
+        Make the run.
+
+        Parameters
+        ----------
+        atoms_json:
+            Encoded .Atoms object
+
+        Returns
+        -------
+        Dict
+            Summary of the run.
+        """
         atoms = decode(atoms_json)
         flags = {
             "ediff": 1e-6,
