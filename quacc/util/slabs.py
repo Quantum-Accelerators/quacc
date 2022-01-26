@@ -1,7 +1,9 @@
+from typing import Optional, List, Union, Dict
 from ase.atoms import Atom, Atoms
 from ase.build import molecule
 from ase.collections import g2
 from pymatgen.io.ase import AseAtomsAdaptor
+from pymatgen.core import Structure
 from pymatgen.core.surface import generate_all_slabs, Slab
 from pymatgen.analysis.adsorption import AdsorbateSiteFinder
 from pymatgen.core.surface import center_slab
@@ -22,16 +24,24 @@ from copy import deepcopy
 # atoms_to_db(atoms) so that it can be properly serialized.
 
 
-def flip_atoms(atoms, return_struct=False):
+def flip_atoms(
+    atoms: Atoms | Structure | Slab, return_struct: bool = False
+) -> Atoms | Structure | Slab:
     """
     Convenience function for vertically flipping periodic atoms or structures
-    Args:
-        atoms (ase.Atoms|pymatgen.core.Structure): Atoms/structure to flip
-        return_struct (bool): True if a Pymatgen structure object
-            should be returned; False if an ASE atoms object should be returned
-            Defaults to False
+
+    Parameters
+    ----------
+    atoms
+        .Atoms/structure to flip
+    return_struct
+        True if a Pymatgen structure object should be returned.
+        False if an ASE atoms object should be returned
+
     Returns:
-        new_atoms (ase.Atoms|pymatgen.core.surface.Slab): inverted slab
+    --------
+    Atoms | Structure | Slab
+        Inverted slab
     """
 
     if type(atoms) is Atoms:
@@ -52,40 +62,43 @@ def flip_atoms(atoms, return_struct=False):
 
 
 def make_slabs_from_bulk(
-    atoms,
-    max_index=1,
-    min_slab_size=10.0,
-    min_length_width=8.0,
-    min_vacuum_size=20.0,
-    z_fix=2.0,
-    flip_asymmetric=True,
-    allowed_surface_atoms=None,
+    atoms: Atoms,
+    max_index: int = 1,
+    min_slab_size: float = 10.0,
+    min_length_width: float = 8.0,
+    min_vacuum_size: float = 20.0,
+    z_fix: Optional[float] = 2.0,
+    flip_asymmetric: bool = True,
+    allowed_surface_atoms: Optional[str | List[str]] = None,
     **slabgen_kwargs,
-):
+) -> Optional[List[Atoms]]:
     """
     Function to make slabs from a bulk atoms object.
 
-    Args:
-        atoms (ase.atoms.Atoms): bulk atoms
-        max_index (int): maximum Miller index for slab generation
-            Defaults to 1.
-        min_slab_size (float): minimum slab size (depth) in angstroms
-            Defaults to 10.0
-        min_length_width (float): minimum length and width of the slab in angstroms
-            Defaults to 8.0
-        min_vacuum_size (float): minimum vacuum size in angstroms
-            Defaults to 20.0
-        z_fix (float): distance (in angstroms) from top of slab for which atoms should be fixed
-            Defaults to 2.0
-        flip_asymmetric (bool): If an asymmetric surface should be flipped and added to the list
-            Defaults to True.
-        allowed_surface_atoms (list of str): List of chemical symbols that must be present on the
-            surface of the slab otherwise the slab will be discarded, e.g. ["Cu", "Ni"]
-            Defaults to None.
-        **slabgen_kwargs: keyword arguments to pass to the pymatgen generate_all_slabs() function
+    Parameters:
+    -----------
+    atoms
+        bulk atoms
+    max_index
+        Maximum Miller index for slab generation
+    min_slab_size
+        Minimum slab size (depth) in angstroms
+    min_length_width
+        Minimum length and width of the slab in angstroms
+    min_vacuum_size
+        Minimum vacuum size in angstroms
+    z_fix
+        Distance (in angstroms) from top of slab for which atoms should be fixed
+    flip_asymmetric
+        If an asymmetric surface should be flipped and added to the list
+    allowed_surface_atoms
+        List of chemical symbols that must be present on the surface of the slab otherwise the slab will be discarded, e.g. ["Cu", "Ni"]
+    **slabgen_kwargs: keyword arguments to pass to the pymatgen generate_all_slabs() function
 
     Returns:
-        final_slabs (list[ase.atoms.Atoms]|None): all generated slabs
+    --------
+    Optional[List[.Atoms]]
+        All generated slabs
     """
 
     # Note: This will not work properly for 2D structures. See Oxana/Martin's code
@@ -202,17 +215,17 @@ def make_slabs_from_bulk(
 
 
 def make_max_slabs_from_bulk(
-    atoms,
-    max_slabs,
-    max_index=1,
-    min_slab_size=10.0,
-    min_length_width=8.0,
-    min_vacuum_size=20.0,
-    z_fix=2.0,
-    flip_asymmetric=True,
-    allowed_surface_atoms=None,
+    atoms: Atoms,
+    max_slabs: Optional[int],
+    max_index: int = 1,
+    min_slab_size: float = 10.0,
+    min_length_width: float = 8.0,
+    min_vacuum_size: float = 20.0,
+    z_fix: float = 2.0,
+    flip_asymmetric: bool = True,
+    allowed_surface_atoms: bool = None,
     **slabgen_kwargs,
-):
+) -> List[Atoms]:
 
     """
     Generate no more than max_slabs number of slabs from a bulk structure.
@@ -224,27 +237,33 @@ def make_max_slabs_from_bulk(
     with the fewest number of atoms per cell such that the returned amount is
     less than or equal to max_slabs.
 
-    Args:
-        atoms (ase.Atoms): bulk structure to generate slabs from
-        max_slabs (int): maximum number of slabs to generate
-        max_index (int): maximum Miller index for slab generation
-            Defaults to 1.
-        min_slab_size (float): minimum slab size (depth) in angstroms
-            Defaults to 10.0
-        min_length_width (float): minimum length and width of the slab in angstroms
-            Defaults to 8.0
-        min_vacuum_size (float): minimum vacuum size in angstroms
-            Defaults to 20.0
-        z_fix (float): distance (in angstroms) from top of slab for which atoms should be fixed
-            Defaults to 2.0
-        flip_asymmetric (bool): If an asymmetric surface should be flipped and added to the list
-            allowed_surface_atoms (list of str): List of chemical symbols that must be present on the
-            surface of the slab otherwise the slab will be discarded, e.g. ["Cu", "Ni"]
-            Defaults to None.
-        **slabgen_kwargs: keyword arguments to pass to the pymatgen generate_all_slabs() function
+    Parameters:
+    -----------
+    atoms
+        Bulk structure to generate slabs from
+    max_slabs
+        Maximum number of slabs to generate
+    max_index
+        Maximum Miller index for slab generation
+    min_slab_size
+        Minimum slab size (depth) in angstroms
+    min_length_width
+        Minimum length and width of the slab in angstroms
+    min_vacuum_size
+        Minimum vacuum size in angstroms
+    z_fix
+        Distance (in angstroms) from top of slab for which atoms should be fixed
+    flip_asymmetric
+        If an asymmetric surface should be flipped and added to the list
+    allowed_surface_atoms
+        List of chemical symbols that must be present on the surface of the slab otherwise
+        the slab will be discarded, e.g. ["Cu", "Ni"]
+    **slabgen_kwargs: keyword arguments to pass to the pymatgen generate_all_slabs() function
 
     Returns:
-        slabs (list): list of pymatgen.core.surface.Slab objects
+    --------
+    List[.Atoms]
+        List of slabs
 
     """
 
@@ -303,37 +322,43 @@ def make_max_slabs_from_bulk(
 
 # TODO: We need a method to orient adsorbate via a kwarg
 def make_adsorbate_structures(
-    atoms,
-    adsorbate,
-    min_distance=2.0,
-    modes=["ontop", "bridge", "hollow"],
-    allowed_surface_symbols=None,
-    allowed_surface_indices=None,
-    ads_site_finder_kwargs=None,
-    find_ads_sites_kwargs=None,
-):
+    atoms: Atoms,
+    adsorbate: Atoms | Atom | str,
+    min_distance: float = 2.0,
+    modes: List[str] = ["ontop", "bridge", "hollow"],
+    allowed_surface_symbols: Optional[List[str]] = None,
+    allowed_surface_indices: Optional[List[int]] = None,
+    ads_site_finder_kwargs: Optional[Dict] = None,
+    find_ads_sites_kwargs: Optional[Dict] = None,
+) -> Optional[List[Atoms]]:
     """
     Add a single adsorbate to a structure for every requested adsorption mode
 
-    Args:
-        atoms (ase.Atoms): The atoms to add adsorbates to.
-        adsorbate (ase.atoms.Atoms|ase.atoms.Atom|str): The adsorbate to add. If a string, it will pull from ase.collections.g2
-            Note: It will be placed on the surface in the exact input orientation provided by the user (the adsorption mode is
-            along the c axis and the coordinating atom is the one in the -z direction).
-        min_distance (float): The distance between the adsorbate and the surface site.
-        modes (List[str], str): The adsorption mode(s) to consider. Options include: "ontop",
-            "bridge", "hollow", "subsurface".
-        allowed_surface_symbols (list[str]|str): The symbols of surface atoms to consider. If None,
-            will use all surface atoms.
-        allowed_surface_indices (list[int]|int): The indices of surface atoms to consider. If None,
-            will use all surface atoms. Generally used if a specific site is to be excluded from the set.
-        ads_site_finder_kwargs (dict): The keyword arguments to pass to the
-            AdsorbateSiteFinder().
-        find_ads_sites_kwargs (dict): The keyword arguments to pass to
-            AdsorbateSiteFinder.find_adsorption_sites().
+    Parameters:
+    -----------
+    atoms
+        The atoms to add adsorbates to.
+    adsorbate
+        The adsorbate to add. If a string, it will pull from ase.collections.g2
+        Note: It will be placed on the surface in the exact input orientation provided by the user (the adsorption mode is
+        along the c axis and the coordinating atom is the one in the -z direction).
+    min_distance
+        The distance between the adsorbate and the surface site.
+    modes
+        The adsorption mode(s) to consider. Options include: "ontop", "bridge", "hollow", "subsurface".
+    allowed_surface_symbols
+        The symbols of surface atoms to consider. If None, will use all surface atoms.
+    allowed_surface_indices
+        The indices of surface atoms to consider. If None, will use all surface atoms. Generally used if a specific site is to be excluded from the set.
+    ads_site_finder_kwargs
+        The keyword arguments to pass to the AdsorbateSiteFinder().
+    find_ads_sites_kwargs
+        The keyword arguments to pass to AdsorbateSiteFinder.find_adsorption_sites().
 
     Returns:
-        List[ase.Atoms]|None: The structures with adsorbates
+    --------
+    Optional[List[ase.Atoms]]
+        The structures with adsorbates
 
     """
 

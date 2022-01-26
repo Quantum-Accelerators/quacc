@@ -2,7 +2,7 @@ import inspect
 import os
 import warnings
 import numpy as np
-from typing import List, Union, Dict, Optional, Tuple
+from typing import List, Dict, Optional, Tuple
 from copy import deepcopy
 from pymatgen.core import Structure
 from pymatgen.io.vasp.inputs import Kpoints
@@ -51,6 +51,7 @@ def SmartVasp(
         The path to a .yaml file containing a list of INCAR parameters to use as a "preset"
         for the calculator. If no filepath is present, it will look in htase/defaults/user_calcs, such
         that preset="BulkRelaxSet" is supported. It will append .yaml at the end if not present.
+        Note that any specific kwargs take precedence over the flags set in the preset dictionary.
     incar_copilot
         If True, the INCAR parameters will be adjusted if they go against the VASP manual.
     force_gamma
@@ -272,11 +273,9 @@ def _manage_environment(custodian: bool = True) -> str:
 def _convert_auto_kpts(
     struct: Structure,
     auto_kpts: Optional[
-        Union[
-            Dict[str, float],
-            Dict[str, List[Tuple[float, float]]],
-            Dict[str, List[Tuple[float, float, float]]],
-        ]
+        Dict[str, float]
+        | Dict[str, List[Tuple[float, float]]]
+        | Dict[str, List[Tuple[float, float, float]]]
     ],
 ) -> Tuple[List[Tuple[int, int, int]], Optional[bool], Optional[bool]]:
     """
@@ -404,11 +403,9 @@ def _calc_swaps(
     atoms: Atoms,
     calc: Vasp,
     auto_kpts: Optional[
-        Union[
-            Dict[str, float],
-            Dict[str, List[Tuple[float, float]]],
-            Dict[str, List[Tuple[float, float, float]]],
-        ]
+        Dict[str, float]
+        | Dict[str, List[Tuple[float, float]]]
+        | Dict[str, List[Tuple[float, float, float]]],
     ],
     verbose: bool = True,
 ) -> Vasp:
