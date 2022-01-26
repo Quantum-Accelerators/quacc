@@ -5,16 +5,10 @@
 # QuAcc (🚧 Under Construction 🚧)
 
 ## Disclaimer
-While largely functional, this code is under extreme levels of construction. Not recommended for daily consumption. 
+While largely functional, this code is to be consiered highly experimental. Not recommended for daily consumption. 
 
 ## Summary
-The Quantum Accelerator (QuAcc) supercharges your code to support high-throughput, database-driven density functional theory (DFT). QuAcc is built with the following goals in mind:
-1. Rapid workflow development and prototyping, no matter your favorite DFT package.
-2. A database-oriented approach that is as easy to use for 1 calculation as it is for 10,000.
-3. On-the-fly error handling and "smart" calculators.
-4. All within the existing framework of the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/index.html) and the corresponding `Atoms` object.
- 
-In practice, the goal here is to enable the development of high-throughput workflows centered around ASE with a focus on rapid workflow construction and prototyping. If your goal is to use a package that provides pre-defined recipes, [Atomate2](https://github.com/materialsproject/atomate2) is what you're looking for!
+The Quantum Accelerator (QuAcc) supercharges your code to support high-throughput, database-driven density functional theory (DFT). QuAcc is built upon the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/index.html) and [Jobflow](https://github.com/materialsproject/jobflow) for rapid development and prototyping, no matter your favorite DFT package.
 <p align="center">
 <img src="https://imgs.xkcd.com/comics/standards_2x.png" alt="xkcd Comic" width="528" height="300">
 <p align="center">
@@ -37,15 +31,13 @@ atoms.get_potential_energy() # run VASP w/ Custodian
 ```
 
 ### Jobflow Integration
-QuAcc makes it easy to interface ASE with [Jobflow](https://github.com/materialsproject/jobflow) for the rapid construction of workflows, from simple to highly complex. All the calculation results and metadaata can be stored in a database of your choosing as well.
-
 The above example can be made compatible with Jobflow simply by defining it in a function with a `@job` wrapper immediately preceeding it. One nuance of Jobflow is that the inputs and outputs must be JSON serializable (so that it can be easily stored in a database), but otherwise it works the same.
 
 ```python
-from quacc.calculators.vasp import SmartVasp
-from quacc.schemas.vasp import summarize_run
 from ase.io.jsonio import decode
 from jobflow import job
+from quacc.calculators.vasp import SmartVasp
+from quacc.schemas.vasp import summarize_run
 
 #-----Jobflow Function-----
 @job
@@ -80,15 +72,15 @@ run_locally(flow, create_folders=True)
 Jobflow provides an easy interface to [Fireworks](https://github.com/materialsproject/fireworks) for high-throughput job management. For additional details on how to convert a Jobflow job or flow to a Fireworks firework or workflow, refer to the [Jobflow documentation](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks). 
 
 ### Coupling of Multiple Codes
-Through the use of [cclib](https://github.com/cclib/cclib) and [pymatgen](https://pymatgen.org/), there's a consistent and expansive interface in QuAcc for output parsing too. Since QuAcc is built on top of [ASE](https://wiki.fysik.dtu.dk/ase/index.html) for calculation setup and execution, this means that there is out-of-the-box support for most of your favorite DFT packages.
+Since QuAcc is built on top of [ASE](https://wiki.fysik.dtu.dk/ase/index.html) for calculation setup and execution, this means that there is out-of-the-box support for most of your favorite DFT packages. Additionally, through the use of [cclib](https://github.com/cclib/cclib) and [pymatgen](https://pymatgen.org), there's rarely a need to construct your own output parsers. QuAcc will parse most things you can throw at it.
 
-The example below highlights how one could construct a Fireworks workflow to carry out a structure relaxation of O2 using Gaussian and then a refinement using Q-Chem. The metadata and tabulated calculation results of this workflow would be deposited in your database.
+The example below highlights how one could construct a Fireworks workflow to carry out a structure relaxation of O2 using Gaussian and then a static calculation using Q-Chem. The metadata and tabulated calculation results of this workflow would be deposited in your database.
 ```python
 from ase.calculators.gaussian import Gaussian
 from ase.calculators.qchem import QChem
-from quacc.schemas.cclib import summarize_run
 from ase.io.jsonio import decode
 from jobflow import job
+from quacc.schemas.cclib import summarize_run
 
 # -----Jobflow Function-----
 @job
@@ -109,7 +101,7 @@ def run_relax_qchem(atoms_json):
 
     # Run Q-Chem
     atoms = decode(atoms_json)
-    atoms.calc = QChem(method="wB97M-V", basis="def2-TZVPD", jobtype="opt")
+    atoms.calc = QChem(method="wB97M-V", basis="def2-TZVPD", jobtype="SP")
     atoms.get_potential_energy()
 
     # Return serialized results

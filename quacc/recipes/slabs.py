@@ -41,7 +41,7 @@ class SlabRelaxMaker(Maker):
 
         Returns
         -------
-        Dict
+        Dict:
             Summary of the run.
         """
         atoms = decode(atoms_json)
@@ -199,9 +199,8 @@ class BulkToSlabMaker(Maker):
 @dataclass
 class SlabToAdsSlabMaker(Maker):
     """
-    Class to convert a slab structure to one with adsorbates
-    present, along with the relaxations and statics for the slab+
-    adsorbate systems.
+    Class to convert a slab structure to one with adsorbates present,
+    along with the relaxations and statics for the slab-adsorbate systems.
 
     Parameters
     ----------
