@@ -3,12 +3,18 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/arosen93/quacc/badge)](https://www.codefactor.io/repository/github/arosen93/quacc)
 
 # QuAcc (🚧 Under Construction 🚧)
+
+## Disclaimer
+While largely functional, this code is under extreme levels of construction. Not recommended for daily consumption. 
+
+## Summary
 The Quantum Accelerator (QuAcc) supercharges your code to support high-throughput, database-driven density functional theory (DFT). QuAcc is built with the following goals in mind:
 1. Rapid workflow development and prototyping, no matter your favorite DFT package.
 2. A database-oriented approach that is as easy to use for 1 calculation as it is for 10,000.
 3. On-the-fly error handling and "smart" calculators.
-
-In practice, the goal here is to enable the development of [Atomate2](https://github.com/materialsproject/atomate2)-like workflows centered around [ASE](https://wiki.fysik.dtu.dk/ase/index.html) with a focus on rapid workflow construction and prototyping.
+4. All within the existing framework of the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/index.html) and the corresponding `Atoms` object.
+ 
+In practice, the goal here is to enable the development of high-throughput workflows centered around ASE with a focus on rapid workflow construction and prototyping. If your goal is to use a package that provides pre-defined recipes, [Atomate2](https://github.com/materialsproject/atomate2) is what you're looking for!
 <p align="center">
 <img src="https://imgs.xkcd.com/comics/standards_2x.png" alt="xkcd Comic" width="528" height="300">
 <p align="center">
@@ -74,7 +80,7 @@ run_locally(flow, create_folders=True)
 Jobflow provides an easy interface to [Fireworks](https://github.com/materialsproject/fireworks) for high-throughput job management. For additional details on how to convert a Jobflow job or flow to a Fireworks firework or workflow, refer to the [Jobflow documentation](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks). 
 
 ### Coupling of Multiple Codes
-QuAcc is built on top of [ASE](https://wiki.fysik.dtu.dk/ase/index.html) for calculation setup and execution, providing native support for dozens of DFT packages through a common interface. Through the use of [cclib](https://github.com/cclib/cclib) and [pymatgen](https://pymatgen.org/), there's a consistent interface in QuAcc for output parsing too.
+Through the use of [cclib](https://github.com/cclib/cclib) and [pymatgen](https://pymatgen.org/), there's a consistent and expansive interface in QuAcc for output parsing too. Since QuAcc is built on top of [ASE](https://wiki.fysik.dtu.dk/ase/index.html) for calculation setup and execution, this means that there is out-of-the-box support for most of your favorite DFT packages.
 
 The example below highlights how one could construct a Fireworks workflow to carry out a structure relaxation of O2 using Gaussian and then a refinement using Q-Chem. The metadata and tabulated calculation results of this workflow would be deposited in your database.
 ```python
