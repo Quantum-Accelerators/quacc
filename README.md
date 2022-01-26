@@ -75,7 +75,7 @@ run_locally(flow, create_folders=True)
 Jobflow provides an easy interface to [Fireworks](https://github.com/materialsproject/fireworks) for high-throughput job management. For additional details on how to convert a Jobflow job or flow to a Fireworks firework or workflow, refer to the [Jobflow documentation](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks). 
 
 ### Coupling of Multiple Codes
-QuAcc is built on top of [ASE](https://wiki.fysik.dtu.dk/ase/index.html) for calculation setup and execution, providing native support for dozens of DFT packages through a common interface. Through the use of [cclib](https://github.com/cclib/cclib) and [pymatgen](https://pymatgen.org/), there's a consistent interface in QuAcc for output parsing too.
+Through the use of [cclib](https://github.com/cclib/cclib) and [pymatgen](https://pymatgen.org/), there's a consistent and expansive interface in QuAcc for output parsing too. Since QuAcc is built on top of [ASE](https://wiki.fysik.dtu.dk/ase/index.html) for calculation setup and execution, this means that there is out-of-the-box support for most of your favorite DFT packages.
 
 The example below highlights how one could construct a Fireworks workflow to carry out a structure relaxation of O2 using Gaussian and then a refinement using Q-Chem. The metadata and tabulated calculation results of this workflow would be deposited in your database.
 ```python
