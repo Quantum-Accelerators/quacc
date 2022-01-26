@@ -15,19 +15,14 @@ class RelaxMaker(Maker):
 
     @job
     def make(
-        self, atoms_json: str, volume_relax: bool = True, slab: bool = False, **kwargs
+        self, atoms_json: str, volume_relax: bool = True, **kwargs
     ) -> Dict:
         atoms = decode(atoms_json)
         if volume_relax:
             isif = 3
         else:
             isif = 2
-        if slab:
-            auto_dipole = True
-        else:
-            auto_dipole = False
         flags = {
-            "auto_dipole": auto_dipole,
             "ediff": 1e-5,
             "ediffg": -0.02,
             "isif": isif,
@@ -61,21 +56,13 @@ class StaticMaker(Maker):
     @job
     def make(self, atoms_json: str, slab: bool = False, **kwargs) -> Dict:
         atoms = decode(atoms_json)
-        if slab:
-            auto_dipole = True
-            lvhar = True
-        else:
-            auto_dipole = False
-            lvhar = False
         flags = {
-            "auto_dipole": auto_dipole,
             "ediff": 1e-6,
             "ismear": -5,
             "isym": 2,
             "kpar": self.kpar,
             "laechg": True,
             "lcharg": True,
-            "lvhar": lvhar,
             "lwave": True,
             "ncore": self.ncore,
             "nedos": 5001,
