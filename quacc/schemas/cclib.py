@@ -59,7 +59,7 @@ def summarize_run(
 
     output = output_io.parse()
     results = {"attributes": output.getattributes()}
-    results["attributes"].pop("metadata", None)
+    results["attributes"].pop("metadata")
     metadata = {"metadata": output.metadata}
 
     # Get the calculator inputs
