@@ -2,7 +2,7 @@ import os
 from quacc.schemas.vasp import summarize_run
 from quacc.calculators.vasp import SmartVasp
 from ase.io import read
-from ase.io.jsonio import decode
+from quacc.util.atoms import decode
 from pathlib import Path
 
 FILE_DIR = Path(__file__).resolve().parent

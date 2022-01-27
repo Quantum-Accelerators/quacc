@@ -1,7 +1,7 @@
 import os
-from quacc.schemas.calc import summarize_run
 from ase.io import read
-from ase.io.jsonio import decode
+from quacc.schemas.calc import summarize_run
+from quacc.util.atoms import decode
 from pathlib import Path
 
 FILE_DIR = Path(__file__).resolve().parent

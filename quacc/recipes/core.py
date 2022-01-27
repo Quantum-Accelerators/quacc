@@ -1,7 +1,7 @@
 from typing import Optional, Dict
 from quacc.calculators.vasp import SmartVasp
 from quacc.schemas.vasp import summarize_run
-from ase.io.jsonio import decode
+from quacc.util.atoms import decode
 from jobflow import job, Maker
 from dataclasses import dataclass
 

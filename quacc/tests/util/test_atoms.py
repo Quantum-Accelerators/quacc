@@ -1,7 +1,8 @@
 from ase.io import read
 from ase.build import bulk
-from ase.io.jsonio import encode, decode
 from quacc.util.atoms import (
+    encode,
+    decode,
     prep_next_run,
     get_atoms_id,
 )

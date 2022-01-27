@@ -1,8 +1,8 @@
 from typing import Optional, Dict
 from quacc.calculators.vasp import SmartVasp
 from quacc.schemas.vasp import summarize_run
+from quacc.util.atoms import encode, decode
 from quacc.util.slabs import make_max_slabs_from_bulk, make_adsorbate_structures
-from ase.io.jsonio import encode, decode
 from jobflow import job, Flow, Response, Maker
 from dataclasses import dataclass
 
