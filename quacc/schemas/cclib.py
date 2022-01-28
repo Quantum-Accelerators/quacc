@@ -9,7 +9,7 @@ from quacc.util.atoms import prep_next_run as prep_next_run_
 
 def summarize_run(
     atoms: Atoms,
-    logfile_extensions: str | List[str] = None,
+    logfile_extensions: str | List[str],
     dir_path: str = None,
     prep_next_run: bool = True,
 ) -> Dict:
