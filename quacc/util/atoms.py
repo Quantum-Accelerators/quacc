@@ -190,42 +190,6 @@ def set_magmoms(
     return atoms
 
 
-def encode(atoms: Atoms) -> Dict:
-    """
-    Encode an Atoms object so that it is JSON serializable.
-
-    Parameters
-    ----------
-    atoms
-        .Atoms object
-
-    Returns
-    -------
-    Dict
-        Dictionary of .Atoms object attributes
-    """
-    return json.loads(encode(atoms))
-
-
-def decode(atoms_json: Union[str, Dict]) -> Atoms:
-    """
-    Decode an encoded Atoms object.
-
-    Parameters
-    ----------
-    atoms
-        Dictionary of .Atoms object attributes
-
-    Returns
-    -------
-    .Atoms
-        Atoms object
-    """
-    if type(atoms_json) == str:
-        return decode(atoms_json)
-    return decode(encode(atoms_json))
-
-
 def get_atoms_id(atoms: Atoms) -> str:
     """
     Returns a unique ID for the Atoms object. Note: The .info dict

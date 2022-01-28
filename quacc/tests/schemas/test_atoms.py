@@ -1,5 +1,5 @@
 from quacc.schemas.atoms import atoms_to_db
-from quacc.util.atoms import decode
+from ase.io.jsonio import decode
 from ase.build import bulk
 
 
