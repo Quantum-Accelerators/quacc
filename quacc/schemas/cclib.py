@@ -2,7 +2,6 @@ import os
 from typing import Dict, List
 from ase.atoms import Atoms
 from atomate2.common.schemas.cclib import TaskDocument
-from cclib.io import ccopen
 from monty.json import jsanitize
 from quacc.schemas.atoms import atoms_to_db
 from quacc.util.atoms import prep_next_run as prep_next_run_
@@ -49,7 +48,7 @@ def summarize_run(
         dir_path = os.getcwd()
 
     # Fortunately, there is alreayd a cclib parser in Atomate2
-    results = TaskDocument.from_file(dir_path, logfile_extensions)
+    results = TaskDocument.from_logfile(dir_path, logfile_extensions)
 
     # Get the calculator inputs
     inputs = {"parameters": atoms.calc.parameters}
