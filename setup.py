@@ -2,6 +2,8 @@ from setuptools import setup, find_packages
 from pathlib import Path
 
 module_dir = Path(__file__).resolve().parent
+with open("requirements.txt") as f:
+    required = f.read().splitlines()
 
 with open(module_dir / "README.md") as f:
     long_description = f.read()
@@ -22,6 +24,7 @@ if __name__ == "__main__":
         keywords="high-throughput automated workflow dft vasp",
         data_files=["LICENSE.md"],
         zip_safe=False,
+        install_requires=required,
         extras_require={"tests": ["pytest>=6.2.5"]},
         tests_require=["pytest"],
         include_package_data=True,
