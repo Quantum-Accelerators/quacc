@@ -17,7 +17,7 @@ from quacc.util.atoms import set_magmoms, check_is_metal, get_highest_block
 from quacc.defaults.user_calcs import vasp as vasp_defaults
 from quacc.defaults import custodian_settings
 
-DEFAULT_CALCS_DIR = os.path.dirname(os.path.abspath(inspect.getfile(vasp_defaults)))
+DEFAULT_CALCS_DIR = os.path.dirname(vasp_defaults.__file__)
 
 
 def SmartVasp(
@@ -244,7 +244,7 @@ def _manage_environment(custodian: bool = True) -> str:
             custodian_yaml = os.environ["VASP_CUSTODIAN_SETTINGS"]
         else:
             custodian_yaml = os.path.join(
-                os.path.dirname(os.path.abspath(inspect.getfile(custodian_settings))),
+                os.path.dirname(custodian_settings.__file__),
                 "vasp_custodian_settings.yaml",
             )
             os.environ["VASP_CUSTODIAN_SETTINGS"] = custodian_yaml
