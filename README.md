@@ -130,7 +130,6 @@ lpad.add_wf(wf)
 ```
 ## Installation
 1. Run the following command, ideally in a fresh Python environment: `pip install git+https://github.com/arosen93/quacc.git`
-```
 
 2. Follow the instructions in ASE's [documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html#supported-calculators) for how to set up the ASE calculator(s) you plan to use.
 
