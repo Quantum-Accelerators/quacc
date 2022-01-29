@@ -50,6 +50,15 @@ def summarize_run(
     # Fortunately, there is alreayd a cclib parser in Atomate2
     results = TaskDocument.from_logfile(dir_path, logfile_extensions).dict()
 
+    # Remove some key/vals we don't actually ever use
+    unused_props = (
+        "task_label",
+        "tags",
+        "molecule",
+    )
+    for unused_prop in unused_props:
+        results.pop(unused_prop, None)
+        
     # Get the calculator inputs
     inputs = {"parameters": atoms.calc.parameters}
 
