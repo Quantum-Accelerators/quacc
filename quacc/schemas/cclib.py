@@ -58,7 +58,7 @@ def summarize_run(
     )
     for unused_prop in unused_props:
         results.pop(unused_prop, None)
-        
+
     # Get the calculator inputs
     inputs = {"parameters": atoms.calc.parameters}
 
