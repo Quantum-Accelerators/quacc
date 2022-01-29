@@ -2,7 +2,7 @@ import inspect
 import os
 import warnings
 import numpy as np
-from typing import List, Dict, Optional, Tuple, Union
+from typing import Any, List, Dict, Tuple
 from copy import deepcopy
 from pymatgen.core import Structure
 from pymatgen.io.vasp.inputs import Kpoints
@@ -23,12 +23,12 @@ DEFAULT_CALCS_DIR = os.path.dirname(vasp_defaults.__file__)
 def SmartVasp(
     atoms: Atoms,
     custodian: bool = True,
-    preset: Optional[str] = None,
+    preset: None | str = None,
     incar_copilot: bool = True,
     force_gamma: bool = True,
     copy_magmoms: bool = True,
     mag_default: float = 1.0,
-    mag_cutoff: Optional[float] = 0.05,
+    mag_cutoff: None | float = 0.05,
     verbose: bool = True,
     **kwargs,
 ) -> Atoms:
@@ -96,9 +96,10 @@ def SmartVasp(
 
     # Get user-defined preset parameters for the calculator
     if preset:
-        calc_preset = load_yaml_calc(preset, default_calcs_dir=DEFAULT_CALCS_DIR)[
-            "inputs"
-        ]
+        _, ext = os.path.splitext(preset)
+        if not ext:
+            preset += ".yaml"
+        calc_preset = load_yaml_calc(os.path.join(DEFAULT_CALCS_DIR, preset))["inputs"]
     else:
         calc_preset = {}
 
@@ -116,7 +117,7 @@ def SmartVasp(
         and user_calc_params["setups"] not in ase_default_setups
     ):
         user_calc_params["setups"] = load_yaml_calc(
-            user_calc_params["setups"], default_calcs_dir=DEFAULT_CALCS_DIR
+            os.path.join(DEFAULT_CALCS_DIR, user_calc_params["setups"])
         )["inputs"]["setups"]
 
     # If the preset has auto_kpts but the user explicitly requests kpts, then
@@ -272,14 +273,11 @@ def _manage_environment(custodian: bool = True) -> str:
 
 def _convert_auto_kpts(
     struct: Structure,
-    auto_kpts: Optional[
-        Union[
-            Dict[str, float],
-            Dict[str, List[Tuple[float, float]]],
-            Dict[str, List[Tuple[float, float, float]]],
-        ]
-    ],
-) -> Tuple[List[Tuple[int, int, int]], Optional[bool], Optional[bool]]:
+    auto_kpts: None
+    | Dict[str, float]
+    | Dict[str, List[Tuple[float, float]]]
+    | Dict[str, List[Tuple[float, float, float]]],
+) -> Tuple[List[Tuple[int, int, int]], None | bool, None | bool]:
     """
     Shortcuts for pymatgen k-point generation schemes.
     Options include: line_density (for band structures),
@@ -361,7 +359,7 @@ def _convert_auto_kpts(
     return kpts, gamma, reciprocal
 
 
-def _remove_unused_flags(user_calc_params: Dict) -> Dict:
+def _remove_unused_flags(user_calc_params: Dict[str, Any]) -> Dict[str, Any]:
     """
     Removes unused flags in the INCAR, like EDIFFG if you are doing NSW = 0.
 
@@ -404,13 +402,10 @@ def _remove_unused_flags(user_calc_params: Dict) -> Dict:
 def _calc_swaps(
     atoms: Atoms,
     calc: Vasp,
-    auto_kpts: Optional[
-        Union[
-            Dict[str, float],
-            Dict[str, List[Tuple[float, float]]],
-            Dict[str, List[Tuple[float, float, float]]],
-        ]
-    ],
+    auto_kpts: None
+    | Dict[str, float]
+    | Dict[str, List[Tuple[float, float]]]
+    | Dict[str, List[Tuple[float, float, float]]],
     verbose: bool = True,
 ) -> Vasp:
     """

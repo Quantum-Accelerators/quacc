@@ -1,5 +1,5 @@
 import os
-from typing import Dict, Optional
+from typing import Any, Dict
 from ase.atoms import Atoms
 from monty.json import jsanitize
 from atomate2.vasp.schemas.task import TaskDocument
@@ -9,11 +9,11 @@ from quacc.util.atoms import prep_next_run as prep_next_run_
 
 def summarize_run(
     atoms: Atoms,
-    dir_path: Optional[str] = None,
+    dir_path: None | str = None,
     prep_next_run: bool = True,
     check_convergence: bool = True,
     **taskdoc_kwargs
-) -> Dict:
+) -> Dict[str, Any]:
     """
     Get tabulated results from a VASP run and store them in a database-friendly format.
 

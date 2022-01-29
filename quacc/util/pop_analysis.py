@@ -1,10 +1,10 @@
-from typing import Optional, Dict
+from typing import Any, Dict
 from pymatgen.command_line.bader_caller import bader_analysis_from_path
 from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
 import os
 
 
-def run_bader(path: Optional[str] = None) -> Dict:
+def run_bader(path: None | str = None) -> Dict[str, Any]:
     """
     Runs a Bader partial charge and spin moment analysis using the VASP
     output files in the given path. This function requires that `bader` or
@@ -69,8 +69,8 @@ def run_bader(path: Optional[str] = None) -> Dict:
 
 
 def run_chargemol(
-    path: Optional[str] = None, atomic_densities_path: Optional[str] = None
-) -> Dict:
+    path: None | str = None, atomic_densities_path: None | str = None
+) -> Dict[str, Any]:
     """
     Runs a Chargemol (i.e. DDEC6 + CM5) analysis using the VASP output files
     in the given path. This function requires that the chargemol executable,

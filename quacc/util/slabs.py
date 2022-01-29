@@ -1,4 +1,4 @@
-from typing import Optional, List, Union, Dict
+from typing import Any, List, Dict
 from ase.atoms import Atom, Atoms
 from ase.build import molecule
 from ase.collections import g2
@@ -67,11 +67,11 @@ def make_slabs_from_bulk(
     min_slab_size: float = 10.0,
     min_length_width: float = 8.0,
     min_vacuum_size: float = 20.0,
-    z_fix: Optional[float] = 2.0,
+    z_fix: None | float = 2.0,
     flip_asymmetric: bool = True,
-    allowed_surface_atoms: Optional[str | List[str]] = None,
+    allowed_surface_atoms: None | str | List[str] = None,
     **slabgen_kwargs,
-) -> Optional[List[Atoms]]:
+) -> None | List[Atoms]:
     """
     Function to make slabs from a bulk atoms object.
 
@@ -216,7 +216,7 @@ def make_slabs_from_bulk(
 
 def make_max_slabs_from_bulk(
     atoms: Atoms,
-    max_slabs: Optional[int],
+    max_slabs: None | int,
     max_index: int = 1,
     min_slab_size: float = 10.0,
     min_length_width: float = 8.0,
@@ -326,11 +326,11 @@ def make_adsorbate_structures(
     adsorbate: Atoms | Atom | str,
     min_distance: float = 2.0,
     modes: List[str] = ["ontop", "bridge", "hollow"],
-    allowed_surface_symbols: Optional[List[str]] = None,
-    allowed_surface_indices: Optional[List[int]] = None,
-    ads_site_finder_kwargs: Optional[Dict] = None,
-    find_ads_sites_kwargs: Optional[Dict] = None,
-) -> Optional[List[Atoms]]:
+    allowed_surface_symbols: None | List[str] = None,
+    allowed_surface_indices: None | List[int] = None,
+    ads_site_finder_kwargs: None | Dict = None,
+    find_ads_sites_kwargs: None | Dict = None,
+) -> None | List[Atoms]:
     """
     Add a single adsorbate to a structure for every requested adsorption mode
 

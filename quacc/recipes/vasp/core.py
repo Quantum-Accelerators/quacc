@@ -1,4 +1,4 @@
-from typing import Optional, Dict
+from typing import Any, Dict
 from ase.io.jsonio import decode
 from quacc.calculators.vasp import SmartVasp
 from quacc.schemas.vasp import summarize_run
@@ -24,12 +24,14 @@ class RelaxMaker(Maker):
     """
 
     name: str = "Relax"
-    preset: Optional[str] = None
+    preset: None | str = None
     ncore: int = 1
     kpar: int = 1
 
     @job
-    def make(self, atoms_json: str, volume_relax: bool = True, **kwargs) -> Dict:
+    def make(
+        self, atoms_json: str, volume_relax: bool = True, **kwargs
+    ) -> Dict[str, Any]:
         """
         Make the run.
 
@@ -93,12 +95,12 @@ class StaticMaker(Maker):
     """
 
     name: str = "Static"
-    preset: Optional[str] = None
+    preset: None | str = None
     npar: int = 1
     kpar: int = 1
 
     @job
-    def make(self, atoms_json: str, **kwargs) -> Dict:
+    def make(self, atoms_json: str, **kwargs) -> Dict[str, Any]:
         """
         Make the run.
 

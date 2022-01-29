@@ -1,5 +1,5 @@
 import os
-from typing import Dict, List
+from typing import Any, Dict, List
 from ase.atoms import Atoms
 from atomate2.common.schemas.cclib import TaskDocument
 from monty.json import jsanitize
@@ -12,7 +12,7 @@ def summarize_run(
     logfile_extensions: str | List[str],
     dir_path: str = None,
     prep_next_run: bool = True,
-) -> Dict:
+) -> Dict[str, Any]:
     """
     Get tabulated results from a molecular DFT run and store them in a database-friendly format.
     This is meant to be a general parser built on top of cclib.

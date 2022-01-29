@@ -1,4 +1,4 @@
-from typing import Optional, Dict
+from typing import Any, Dict
 from ase.io.jsonio import encode, decode
 from quacc.calculators.vasp import SmartVasp
 from quacc.schemas.vasp import summarize_run
@@ -25,12 +25,12 @@ class SlabRelaxMaker(Maker):
     """
 
     name: str = "SlabRelax"
-    preset: Optional[str] = None
+    preset: None | str = None
     ncore: int = 1
     kpar: int = 1
 
     @job
-    def make(self, atoms_json: str, **kwargs) -> Dict:
+    def make(self, atoms_json: str, **kwargs) -> Dict[str, Any]:
         """
         Make the run.
 
@@ -88,12 +88,12 @@ class SlabStaticMaker(Maker):
     """
 
     name: str = "SlabStatic"
-    preset: Optional[str] = None
+    preset: None | str = None
     npar: int = 1
     kpar: int = 1
 
     @job
-    def make(self, atoms_json: str, **kwargs) -> Dict:
+    def make(self, atoms_json: str, **kwargs) -> Dict[str, Any]:
         """
         Make the run.
 
@@ -152,12 +152,12 @@ class BulkToSlabMaker(Maker):
     """
 
     name: str = "BulkToSlab"
-    preset: Optional[str] = None
+    preset: None | str = None
     npar: int = 1
     kpar: int = 1
 
     def make(
-        self, atoms_json: str, max_slabs: Optional[int] = None, **slab_kwargs
+        self, atoms_json: str, max_slabs: None | int = None, **slab_kwargs
     ) -> Response:
         """
         Make the run.
@@ -215,7 +215,7 @@ class SlabToAdsSlabMaker(Maker):
     """
 
     name: str = "SlabToAdsSlab"
-    preset: Optional[str] = None
+    preset: None | str = None
     npar: int = 1
     kpar: int = 1
 

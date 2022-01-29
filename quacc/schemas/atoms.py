@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import Dict
+from typing import Any, Dict
 from monty.json import jsanitize
 import numpy as np
 from ase.atoms import Atoms
@@ -11,7 +11,7 @@ from pymatgen.io.ase import AseAtomsAdaptor
 
 def atoms_to_db(
     atoms: Atoms, get_metadata: bool = True, strip_info: bool = False
-) -> Dict:
+) -> Dict[str, Any]:
 
     """
     Convert an ASE Atoms object to a dict suitable for storage in MongoDB.

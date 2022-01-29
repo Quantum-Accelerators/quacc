@@ -1,11 +1,11 @@
-from typing import Dict
+from typing import Any, Dict
 from ase.atoms import Atoms
 from monty.json import jsanitize
 from quacc.schemas.atoms import atoms_to_db
 from quacc.util.atoms import prep_next_run as prep_next_run_
 
 
-def summarize_run(atoms: Atoms, prep_next_run: bool = True) -> Dict:
+def summarize_run(atoms: Atoms, prep_next_run: bool = True) -> Dict[str, Any]:
     """
     Get tabulated results from an Atoms object and calculator and store them in a database-friendly format.
     This is meant to be compatible with all calculator types.

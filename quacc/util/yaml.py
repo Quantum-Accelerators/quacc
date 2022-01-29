@@ -1,18 +1,16 @@
-from typing import Optional, Dict
+from typing import Dict, Any
 import yaml
 import os
 
 
-def load_yaml_calc(yaml_file: str, default_calcs_dir: Optional[str] = None) -> Dict:
+def load_yaml_calc(yaml_path: str) -> Dict[str, Any]:
     """
     Loads a YAML file containing ASE VASP calcultor settings.
 
     Parameters
     ----------
-    yaml_file
-        Filename or full path to YAML file.
-    default_calcs_dir
-        If yaml_file is just a filename, load_yaml_calc will look in default_calcs_dir for the file.
+    yaml_path
+        Path to the YAML file.
 
     Returns
     -------
@@ -20,20 +18,14 @@ def load_yaml_calc(yaml_file: str, default_calcs_dir: Optional[str] = None) -> D
         The calculator configuration (i.e. settings).
     """
 
-    _, ext = os.path.splitext(yaml_file)
+    _, ext = os.path.splitext(yaml_path)
     if not ext:
-        yaml_file += ".yaml"
+        yaml_path += ".yaml"
 
-    if os.path.exists(yaml_file):
-        yaml_path = yaml_file
-    elif default_calcs_dir and os.path.exists(
-        os.path.join(default_calcs_dir, yaml_file)
-    ):
-        yaml_path = os.path.join(default_calcs_dir, yaml_file)
-    else:
-        raise ValueError(
-            f"Cannot find {yaml_file}. Provide the full path or place it in {default_calcs_dir}."
-        )
+    if not os.path.exists(yaml_path):
+        raise ValueError(f"Cannot find {yaml_path}.")
+
+    yaml_path = yaml_path
 
     # Load YAML file
     with open(yaml_path, "r") as stream:
@@ -45,7 +37,7 @@ def load_yaml_calc(yaml_file: str, default_calcs_dir: Optional[str] = None) -> D
     for config_arg in parent_args:
         if config_arg in config:
             parent_config = load_yaml_calc(
-                config[config_arg], default_calcs_dir=default_calcs_dir
+                os.path.join(os.path.dirname(yaml_path), config[config_arg])
             )
             for k, v in parent_config.items():
                 if k not in config:
@@ -64,7 +56,7 @@ def load_yaml_calc(yaml_file: str, default_calcs_dir: Optional[str] = None) -> D
     return config
 
 
-def load_yaml_settings(yaml_file: str) -> Dict:
+def load_yaml_settings(yaml_file: str) -> Dict[str, Any]:
     """
     Loads a standard YAML settings file. Any entry marked with
     a "$" sign is an environment variable.
