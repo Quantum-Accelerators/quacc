@@ -63,7 +63,7 @@ atoms = bulk("Cu")
 
 # Define the job
 job1 = run_relax(encode(atoms))
-flow = Job([job1])
+flow = Flow([job1])
 
 # Run the flow locally
 run_locally(flow, create_folders=True)
