@@ -8,6 +8,7 @@ from quacc.util.slabs import (
     make_max_slabs_from_bulk,
     make_adsorbate_structures,
 )
+from quacc.util.json import jsanitize
 from pathlib import Path
 import os
 import numpy as np
@@ -111,6 +112,10 @@ def test_make_slabs_from_bulk():
     for slab in slabs:
         d = slab.get_all_distances(mic=True)
         assert np.round(np.min(d[d != 0]), 4) == np.round(min_d, 4)
+    # This is to make sure the slab deserialization works
+    slab_test = jsanitize(slab)
+    slab_test = decode(slab_test)
+    assert slab_test == slab
 
 
 def test_make_max_slabs_from_bulk():
@@ -189,6 +194,4 @@ def test_make_adsorbate_structures():
     )
     assert len(new_atoms) == 6
     assert new_atoms[0].info.get("adsorbates", None) is not None
-    assert decode(
-        new_atoms[0].info.get("adsorbates", None)[0]["adsorbate"]["atoms"]
-    ) == molecule("H2O")
+    assert new_atoms[0].info["adsorbates"][0]["adsorbate"] == molecule("H2O")

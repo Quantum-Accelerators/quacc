@@ -7,7 +7,6 @@ from pymatgen.core import Structure
 from pymatgen.core.surface import generate_all_slabs, Slab
 from pymatgen.analysis.adsorption import AdsorbateSiteFinder
 from pymatgen.core.surface import center_slab
-from quacc.schemas.atoms import atoms_to_db
 import numpy as np
 import warnings
 from copy import deepcopy
@@ -20,8 +19,6 @@ from copy import deepcopy
 # by default. Pymatgen structures can be returned with an optional kwarg.
 # - If you modify the properties of an input Atoms object in any way, make sure to do so
 # on a deepcopy because Atoms objects are mutable.
-# - If you are going to store an Atoms/Atom object in the atoms.info dictionary, do so using
-# atoms_to_db(atoms) so that it can be properly serialized.
 
 
 def flip_atoms(
@@ -202,7 +199,7 @@ def make_slabs_from_bulk(
     for slab_with_props in slabs_with_props:
         final_slab = AseAtomsAdaptor.get_atoms(slab_with_props)
         slab_stats = {
-            "bulk": atoms_to_db(atoms),
+            "bulk": atoms,
             "miller_index": slab_with_props.miller_index,
             "shift": round(slab_with_props.shift, 3),
             "scale_factor": slab_with_props.scale_factor,
@@ -216,7 +213,7 @@ def make_slabs_from_bulk(
 
 def make_max_slabs_from_bulk(
     atoms: Atoms,
-    max_slabs: None | int,
+    max_slabs: None | int = None,
     max_index: int = 1,
     min_slab_size: float = 10.0,
     min_length_width: float = 8.0,
@@ -328,8 +325,8 @@ def make_adsorbate_structures(
     modes: List[str] = ["ontop", "bridge", "hollow"],
     allowed_surface_symbols: None | List[str] = None,
     allowed_surface_indices: None | List[int] = None,
-    ads_site_finder_kwargs: None | Dict = None,
-    find_ads_sites_kwargs: None | Dict = None,
+    ads_site_finder_kwargs: None | Dict[str, Any] = None,
+    find_ads_sites_kwargs: None | Dict[str, Any] = None,
 ) -> None | List[Atoms]:
     """
     Add a single adsorbate to a structure for every requested adsorption mode
@@ -482,7 +479,7 @@ def make_adsorbate_structures(
             # Store adsorbate info
             atoms_with_adsorbate.info = atoms.info.copy()
             ads_stats = {
-                "adsorbate": atoms_to_db(adsorbate),
+                "adsorbate": adsorbate,
                 "initial_mode": mode,
                 "surface_atoms_symbols": surface_atom_symbols,
                 "surface_atoms_indices": surface_atom_indices,

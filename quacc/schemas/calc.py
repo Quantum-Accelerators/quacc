@@ -1,6 +1,6 @@
 from typing import Any, Dict
 from ase.atoms import Atoms
-from quacc.schemas.atoms import atoms_to_db
+from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
 from quacc.util.json import jsanitize
 
@@ -43,7 +43,7 @@ def summarize_run(atoms: Atoms, prep_next_run: bool = True) -> Dict[str, Any]:
         atoms = prep_next_run_(atoms)
 
     # Get tabulated properties of the structure itself
-    atoms_db = atoms_to_db(atoms)
+    atoms_db = atoms_to_metadata(atoms)
 
     # Create a dictionary of the inputs/outputs
     results_full = {**atoms_db, **inputs, **results}

@@ -1,14 +1,14 @@
 from copy import deepcopy
 from typing import Any, Dict
 import numpy as np
-from ase.atoms import Atoms
+from ase.atoms import Atom, Atoms
 from atomate2.common.schemas.structure import StructureMetadata
 from atomate2.common.schemas.molecule import MoleculeMetadata
 from pymatgen.io.ase import AseAtomsAdaptor
 from quacc.util.json import jsanitize
 
 
-def atoms_to_db(
+def atoms_to_metadata(
     atoms: Atoms, get_metadata: bool = True, strip_info: bool = False
 ) -> Dict[str, Any]:
 
@@ -49,6 +49,21 @@ def atoms_to_db(
     # Copy the info flags as a separate entry in the DB for easy querying
     results["atoms_info"] = {}
     for key, val in atoms.info.items():
+
+        # This is to make sure any Atom/Atoms object in atoms.info is also
+        # turned into metadata
+        if isinstance(val, (Atom, Atoms)):
+            val = atoms_to_metadata(val)
+        elif isinstance(val, (list, tuple, np.ndarray)):
+            val = [
+                atoms_to_metadata(v) if isinstance(v, (Atom, Atoms)) else v for v in val
+            ]
+        elif isinstance(val, dict):
+            val = {
+                k.__str__(): atoms_to_metadata(v) if isinstance(v, (Atom, Atoms)) else v
+                for k, v in val.items()
+            }
+
         results["atoms_info"][key] = val
 
     # Strip info if requested

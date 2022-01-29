@@ -53,16 +53,16 @@ def run_relax(atoms_json):
 ```
 ```python
 from ase.build import bulk
-from ase.io.jsonio import encode
 from jobflow import Job
 from jobflow.managers.local import run_locally
+from quacc.util.json import jsanitize
 
 #-----Make and Run a Flow-----
 # Constrct an Atoms object
 atoms = bulk("Cu")
 
 # Define the job
-job1 = run_relax(encode(atoms))
+job1 = run_relax(jsanitize(atoms))
 
 # Run the job locally
 run_locally(Job(job1), create_folders=True)
@@ -109,17 +109,17 @@ def run_relax_qchem(atoms_json):
 ```
 ```python
 from ase.build import molecule
-from ase.io.jsonio import encode
 from fireworks import LaunchPad
 from jobflow import Flow
 from jobflow.managers.local import flow_to_workflow
+from quacc.util.json import jsanitize
 
 # -----Create a Fireworks workflow-----
 # Constrct an Atoms object
 atoms = molecule("O2")
 
 # Define the flow
-job1 = run_relax_gaussian(encode(atoms))
+job1 = run_relax_gaussian(jsanitize(atoms))
 job2 = run_relax_qchem(job1.output["atoms"])
 flow = Flow([job1, job2])
 
