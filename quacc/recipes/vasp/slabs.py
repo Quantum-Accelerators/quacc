@@ -89,7 +89,7 @@ class SlabStaticMaker(Maker):
 
     name: str = "SlabStatic"
     preset: None | str = None
-    npar: int = 1
+    ncore: int = 1
     kpar: int = 1
 
     @job
@@ -153,7 +153,7 @@ class BulkToSlabMaker(Maker):
 
     name: str = "BulkToSlab"
     preset: None | str = None
-    npar: int = 1
+    ncore: int = 1
     kpar: int = 1
 
     def make(
