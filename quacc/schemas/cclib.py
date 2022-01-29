@@ -48,7 +48,7 @@ def summarize_run(
         dir_path = os.getcwd()
 
     # Fortunately, there is alreayd a cclib parser in Atomate2
-    results = TaskDocument.from_logfile(dir_path, logfile_extensions)
+    results = TaskDocument.from_logfile(dir_path, logfile_extensions).dict()
 
     # Get the calculator inputs
     inputs = {"parameters": atoms.calc.parameters}
