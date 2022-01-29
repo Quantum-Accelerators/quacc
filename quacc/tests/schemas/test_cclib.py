@@ -17,8 +17,8 @@ def test_summarize_run():
     results = summarize_run(atoms, ".log", dir_path=run1)
     assert results["nsites"] == len(atoms)
     assert decode(results["atoms"]) == atoms
-    assert results["attributes"].get("mult", None) == 1
-    assert results["attributes"].get("natom", None) == 6
+    assert results["spin_multiplicity"] == 1
+    assert results["nsites"] == 6
     assert results["metadata"].get("success", None) == True
 
     # Make sure info tags are handled appropriately
