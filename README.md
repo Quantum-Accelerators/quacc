@@ -129,10 +129,9 @@ lpad = LaunchPad.auto_load()
 lpad.add_wf(wf)
 ```
 ## Installation
-1. Run the following command in a convenient place to install QuAcc:
+1. Run the following command:
 ```bash
-git clone https://github.com/arosen93/quacc.git
-cd quacc && pip install -r requirements.txt && pip install -e .
+pip install git+https://github.com/arosen93/quacc.git
 ```
 
 2. Follow the instructions in ASE's [documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html#supported-calculators) for how to set up the ASE calculator(s) you plan to use.
