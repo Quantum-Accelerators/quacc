@@ -84,8 +84,8 @@ def SmartVasp(
     struct = AseAtomsAdaptor().get_structure(atoms)
 
     # Check constraints
-    if custodian:
-        if "FixAtoms" in [c.todict()["name"] for c in atoms.constraints]:
+    if custodian and atoms.constraints:
+        if any([c.todict()["name"] for c in atoms.constraints != "FixAtoms"]):
             raise ValueError(
                 "Atoms object has a constraint that is not compatible with Custodian"
             )
