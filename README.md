@@ -120,7 +120,7 @@ atoms = molecule("O2")
 
 # Define the flow
 job1 = run_relax_gaussian(jsanitize(atoms))
-job2 = run_relax_qchem(jsanitize(job1.output["atoms"]))
+job2 = run_relax_qchem(job1.output["atoms"])
 flow = Flow([job1, job2])
 
 # Add a Firework to the launchpad
