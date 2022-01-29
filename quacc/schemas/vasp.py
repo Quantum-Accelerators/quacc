@@ -1,10 +1,10 @@
 import os
 from typing import Any, Dict
 from ase.atoms import Atoms
-from monty.json import jsanitize
 from atomate2.vasp.schemas.task import TaskDocument
 from quacc.schemas.atoms import atoms_to_db
 from quacc.util.atoms import prep_next_run as prep_next_run_
+from quacc.util.json import jsanitize
 
 
 def summarize_run(

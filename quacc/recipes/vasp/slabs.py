@@ -1,5 +1,5 @@
 from typing import Any, Dict
-from ase.io.jsonio import encode, decode
+from ase.io.jsonio import decode
 from quacc.calculators.vasp import SmartVasp
 from quacc.schemas.vasp import summarize_run
 from quacc.util.slabs import make_max_slabs_from_bulk, make_adsorbate_structures
@@ -184,7 +184,7 @@ class BulkToSlabMaker(Maker):
         for slab in slabs:
             relax_job = SlabRelaxMaker(
                 preset=self.preset, ncore=self.ncore, kpar=self.kpar
-            ).make(encode(slab))
+            ).make(jsanitize(slab))
             jobs.append(relax_job)
             outputs.append(relax_job.output)
 
@@ -251,7 +251,7 @@ class SlabToAdsSlabMaker(Maker):
         for slab in slabs:
             relax_job = SlabRelaxMaker(
                 preset=self.preset, ncore=self.ncore, kpar=self.kpar
-            ).make(encode(slab))
+            ).make(jsanitize(slab))
             jobs.append(relax_job)
             outputs.append(relax_job.output)
 

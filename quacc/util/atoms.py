@@ -1,8 +1,7 @@
 import hashlib
 import os
-import json
 from copy import deepcopy
-from typing import Dict, Optional, Union
+from typing import Dict, Optional
 import numpy as np
 from ase.atoms import Atoms
 from ase.io.jsonio import encode

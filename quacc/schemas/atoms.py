@@ -1,12 +1,11 @@
 from copy import deepcopy
 from typing import Any, Dict
-from monty.json import jsanitize
 import numpy as np
 from ase.atoms import Atoms
-from ase.io.jsonio import encode
 from atomate2.common.schemas.structure import StructureMetadata
 from atomate2.common.schemas.molecule import MoleculeMetadata
 from pymatgen.io.ase import AseAtomsAdaptor
+from quacc.util.json import jsanitize
 
 
 def atoms_to_db(
@@ -52,13 +51,13 @@ def atoms_to_db(
     for key, val in atoms.info.items():
         results["atoms_info"][key] = val
 
-    # Store the encoded Atoms object
+    # Strip info if requested
     if strip_info:
         atoms_no_info = deepcopy(atoms)
         atoms_no_info.info = {}
-        results["atoms"] = encode(atoms_no_info)
+        results["atoms"] = atoms_no_info
     else:
-        results["atoms"] = encode(atoms)
+        results["atoms"] = atoms
 
     # Combine the metadata and results dictionaries
     results_full = {**metadata, **results}
