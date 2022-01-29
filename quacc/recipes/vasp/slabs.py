@@ -3,6 +3,7 @@ from ase.io.jsonio import decode
 from quacc.calculators.vasp import SmartVasp
 from quacc.schemas.vasp import summarize_run
 from quacc.util.slabs import make_max_slabs_from_bulk, make_adsorbate_structures
+from quacc.util.json import jsanitize
 from jobflow import job, Flow, Response, Maker
 from dataclasses import dataclass
 
