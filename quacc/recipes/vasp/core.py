@@ -70,7 +70,7 @@ class RelaxMaker(Maker):
         for k, v in kwargs.items():
             flags[k] = v
 
-        atoms = SmartVasp(atoms, preset=self.preset, **kwargs)
+        atoms = SmartVasp(atoms, preset=self.preset, **flags)
         atoms.get_potential_energy()
         summary = summarize_run(atoms)
 
@@ -131,7 +131,7 @@ class StaticMaker(Maker):
         for k, v in kwargs.items():
             flags[k] = v
 
-        atoms = SmartVasp(atoms, preset=self.preset, **kwargs)
+        atoms = SmartVasp(atoms, preset=self.preset, **flags)
         atoms.get_potential_energy()
         summary = summarize_run(atoms)
 
