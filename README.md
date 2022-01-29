@@ -35,7 +35,7 @@ The above example can be made compatible with Jobflow simply by defining it in a
 
 ```python
 from ase.io.jsonio import decode
-from jobflow import job
+from jobflow import job, Job
 from quacc.calculators.vasp import SmartVasp
 from quacc.schemas.vasp import summarize_run
 
@@ -54,7 +54,7 @@ def run_relax(atoms_json):
 ```python
 from ase.build import bulk
 from ase.io.jsonio import encode
-from jobflow import Flow
+from jobflow import Job
 from jobflow.managers.local import run_locally
 
 #-----Make and Run a Flow-----
@@ -63,10 +63,9 @@ atoms = bulk("Cu")
 
 # Define the job
 job1 = run_relax(encode(atoms))
-flow = Job([job1])
 
-# Run the flow locally
-run_locally(flow, create_folders=True)
+# Run the job locally
+run_locally(Job(job1), create_folders=True)
 ```
 ### Fireworks Integration
 Jobflow provides an easy interface to [Fireworks](https://github.com/materialsproject/fireworks) for high-throughput job management. For additional details on how to convert a Jobflow job or flow to a Fireworks firework or workflow, refer to the [Jobflow documentation](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks). 
