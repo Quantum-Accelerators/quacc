@@ -8,7 +8,7 @@
 While largely functional, this code is to be consiered highly experimental. Not recommended for daily consumption.
 
 ## Summary
-The Quantum Accelerator (QuAcc) supercharges your code to support high-throughput, database-driven density functional theory (DFT). QuAcc is built upon the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/index.html) and [Jobflow](https://github.com/materialsproject/jobflow) for rapid development and prototyping, no matter your favorite DFT package.
+The Quantum Accelerator (QuAcc) supercharges your code to support high-throughput, database-driven density functional theory (DFT). Primarily, QuAcc seeks to enable a seamless interface between the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/index.html) and [Jobflow](https://github.com/materialsproject/jobflow) for rapid workflow development and prototyping, no matter your favorite DFT package.
 <p align="center">
 <img src="https://imgs.xkcd.com/comics/standards_2x.png" alt="xkcd Comic" width="528" height="300">
 <p align="center">
