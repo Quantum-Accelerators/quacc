@@ -156,6 +156,7 @@ class BulkToSlabMaker(Maker):
     ncore: int = 1
     kpar: int = 1
 
+    @job
     def make(
         self, atoms_json: str, max_slabs: None | int = None, **slab_kwargs
     ) -> Response:
@@ -219,6 +220,7 @@ class SlabToAdsSlabMaker(Maker):
     npar: int = 1
     kpar: int = 1
 
+    @job
     def make(self, atoms_json: str, adsorbate_json: str, **slab_ads_kwargs) -> Response:
         """
         Make the run.
