@@ -1,5 +1,5 @@
 git+https://gitlab.com/argon214/ase.git@master-patch-76720 # waiting on >= 3.22.2 for VASP6 OUTCAR parsing
-git+https://github.com/materialsproject/pymatgen.git # waiting for PR #2369
+pymatgen==2022.1.24
 custodian==2022.1.17
 git+https://github.com/arosen93/jobflow.git@rosen-configupdates # waiting on PR #73
 git+https://github.com/arosen93/atomate2.git@rosen-cclib # waiting on PR 64
