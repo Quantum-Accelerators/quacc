@@ -11,6 +11,7 @@ from pymatgen.symmetry.bandstructure import HighSymmKpath
 from ase.atoms import Atoms
 from ase.calculators.vasp import Vasp
 from ase.calculators.vasp.setups import _setups_defaults as ase_default_setups
+from ase.constraints import FixAtoms
 from quacc import custodian as custodian_
 from quacc.util.yaml import load_yaml_calc, load_yaml_settings
 from quacc.util.atoms import set_magmoms, check_is_metal, get_highest_block
@@ -85,7 +86,7 @@ def SmartVasp(
 
     # Check constraints
     if custodian and atoms.constraints:
-        if any([c.todict()["name"] for c in atoms.constraints != "FixAtoms"]):
+        if ~all([isinstance(c, FixAtoms) for c in atoms.constraints]):
             raise ValueError(
                 "Atoms object has a constraint that is not compatible with Custodian"
             )
