@@ -41,7 +41,7 @@ def flip_atoms(
         Inverted slab
     """
 
-    if type(atoms) is Atoms:
+    if isinstance(atoms, Atoms):
         new_atoms = deepcopy(atoms)
         atoms_info = atoms.info.copy()
     else:
@@ -105,7 +105,7 @@ def make_slabs_from_bulk(
     struct = AseAtomsAdaptor.get_structure(atoms)
     atoms_info = atoms.info.copy()
 
-    if type(allowed_surface_atoms) is str:
+    if isinstance(allowed_surface_atoms, str):
         allowed_surface_atoms = [allowed_surface_atoms]
 
     # Make all the slabs
@@ -375,14 +375,14 @@ def make_adsorbate_structures(
             "Cannot specify both modes and find_ads_sites_kwargs['positions']",
         )
     else:
-        if type(modes) is str:
+        if isinstance(modes, str):
             modes = [modes]
         find_ads_sites_kwargs["positions"] = [mode.lower() for mode in modes]
 
     # Allow the user to provide a single entry instead of a list for convenience
-    if type(allowed_surface_symbols) is str:
+    if isinstance(allowed_surface_symbols, str):
         allowed_surface_symbols = [allowed_surface_symbols]
-    if type(allowed_surface_indices) is int:
+    if isinstance(allowed_surface_indices, int):
         allowed_surface_indices = [allowed_surface_indices]
 
     # Check the provided surface indices are reasonable
@@ -396,11 +396,11 @@ def make_adsorbate_structures(
             atom_indices,
         )
 
-    if type(adsorbate) is not Atoms:
-        if type(adsorbate) is Atom:
+    if not isinstance(adsorbate, Atoms):
+        if isinstance(adsorbate, Atom):
             # If adsorbate is an Atom object, make it an Atoms object
             adsorbate = Atoms([adsorbate])
-        elif type(adsorbate) is str:
+        elif isinstance(adsorbate, str):
             # Get adsorbate if string
             if adsorbate in g2.names:
                 adsorbate = molecule(adsorbate)

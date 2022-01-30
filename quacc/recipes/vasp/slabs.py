@@ -222,7 +222,9 @@ class SlabToAdsSlabMaker(Maker):
     kpar: int = 1
 
     @job
-    def make(self, atoms_json: str, adsorbate_json: str, **slab_ads_kwargs) -> Response:
+    def make(
+        self, atoms_json: str, adsorbate_json: str, **slab_ads_kwargs
+    ) -> Response | None:
         """
         Make the run.
 
