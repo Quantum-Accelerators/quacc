@@ -1,9 +1,8 @@
 from typing import Any, Dict
-from ase.io.jsonio import decode
 from quacc.calculators.vasp import SmartVasp
 from quacc.schemas.vasp import summarize_run
 from quacc.util.slabs import make_max_slabs_from_bulk, make_adsorbate_structures
-from quacc.util.json import jsanitize
+from quacc.util.json import jsanitize, jdesanitize
 from jobflow import job, Flow, Response, Maker
 from dataclasses import dataclass
 
@@ -45,7 +44,7 @@ class SlabRelaxMaker(Maker):
         Dict:
             Summary of the run.
         """
-        atoms = decode(atoms_json)
+        atoms = jdesanitize(atoms_json)
         flags = {
             "auto_dipole": True,
             "ediff": 1e-5,
@@ -108,7 +107,7 @@ class SlabStaticMaker(Maker):
         Dict
             Summary of the run.
         """
-        atoms = decode(atoms_json)
+        atoms = jdesanitize(atoms_json)
         flags = {
             "auto_dipole": True,
             "ediff": 1e-6,
@@ -178,7 +177,7 @@ class BulkToSlabMaker(Maker):
         Response
             A Flow of relaxation and static jobs for the generated slabs.
         """
-        atoms = decode(atoms_json)
+        atoms = jdesanitize(atoms_json)
         slabs = make_max_slabs_from_bulk(atoms, max_slabs=max_slabs, **slab_kwargs)
         jobs = []
         outputs = []
@@ -242,8 +241,8 @@ class SlabToAdsSlabMaker(Maker):
         Response
             A Flow of relaxation and static jobs for the generated slabs with adsorbates.
         """
-        atoms = decode(atoms_json)
-        adsorbate = decode(adsorbate_json)
+        atoms = jdesanitize(atoms_json)
+        adsorbate = jdesanitize(adsorbate_json)
 
         slabs = make_adsorbate_structures(atoms, adsorbate, **slab_ads_kwargs)
         if slabs is None:

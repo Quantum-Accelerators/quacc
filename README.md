@@ -34,17 +34,17 @@ atoms.get_potential_energy() # run VASP w/ Custodian
 The above example can be made compatible with Jobflow simply by defining it in a function with a `@job` wrapper immediately preceeding it. One nuance of Jobflow is that the inputs and outputs must be JSON serializable (so that it can be easily stored in a database), but otherwise it works the same.
 
 ```python
-from ase.io.jsonio import decode
 from jobflow import job, Job
 from quacc.calculators.vasp import SmartVasp
 from quacc.schemas.vasp import summarize_run
+from quacc.util.json import jdesanitize
 
 #-----Jobflow Function-----
 @job
 def run_relax(atoms_json):
 
     # Run VASP
-    atoms = SmartVasp(decode(atoms_json), xc='rpbe', preset="BulkRelaxSet")
+    atoms = SmartVasp(jdesanitize(atoms_json), xc='rpbe', preset="BulkRelaxSet")
     atoms.get_potential_energy()
     
     # Return serialized results
@@ -77,15 +77,15 @@ The example below highlights how one could construct a Fireworks workflow to car
 ```python
 from ase.calculators.gaussian import Gaussian
 from ase.calculators.qchem import QChem
-from ase.io.jsonio import decode
 from jobflow import job
 from quacc.schemas.cclib import summarize_run
+from quacc.util.json import jdesanitize
 
 # -----Jobflow Function-----
 @job
 def run_relax_gaussian(atoms_json):
     # Run Gaussian
-    atoms = decode(atoms_json)
+    atoms = jdesanitize(atoms_json)
     atoms.calc = Gaussian(method="wB97X-D", basis="def2-TZVP", extra="opt")
     atoms.get_potential_energy()
 
@@ -99,7 +99,7 @@ def run_relax_gaussian(atoms_json):
 def run_relax_qchem(atoms_json):
 
     # Run Q-Chem
-    atoms = decode(atoms_json)
+    atoms = jdesanitize(atoms_json)
     atoms.calc = QChem(method="wB97M-V", basis="def2-TZVPD", jobtype="SP")
     atoms.get_potential_energy()
 

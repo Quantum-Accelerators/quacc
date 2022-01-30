@@ -3,7 +3,6 @@ from ase.atoms import Atom, Atoms
 from ase.io.jsonio import encode, decode
 from monty.json import jsanitize as jsanitize_
 from monty.json import MSONable, MontyDecoder
-import pandas as pd
 import numpy as np
 
 
@@ -39,9 +38,9 @@ def jsanitize(obj: Any) -> Any:
     return jsanitize_(obj)
 
 
-def junsanitize(obj: Any) -> Any:
+def jdesanitize(obj: Any) -> Any:
     """
-    Unsanitize an input object that was jsanitized. This is
+    Desanitize an input object that was jsanitized. This is
     a wrapper around Monty's jsanitize function but is modified to deal
     with Atom/Atoms objects and better handling of MSONables.
 
@@ -63,10 +62,10 @@ def junsanitize(obj: Any) -> Any:
     ):
         return decode(obj)
     if isinstance(obj, list):
-        return [junsanitize(o) for o in obj]
+        return [jdesanitize(o) for o in obj]
     if isinstance(obj, dict):
         if "@module" in obj.keys():
             return MontyDecoder().process_decoded(obj)
-        return {k.__str__(): junsanitize(v) for k, v in obj.items()}
+        return {k.__str__(): jdesanitize(v) for k, v in obj.items()}
 
     return obj
