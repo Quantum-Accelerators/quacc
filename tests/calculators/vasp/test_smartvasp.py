@@ -611,14 +611,9 @@ def test_kpoint_schemes():
 
     atoms = bulk("Cu")
     atoms = SmartVasp(atoms, auto_kpts={"line_density": 100})
-    assert (
-        np.max(
-            np.abs(
-                atoms.calc.kpts[-1, :]
-                - np.array([1.30537091e00, 1.11022302e-16, 1.30537091e00])
-            )
-        )
-    ) < TOL
+    assert atoms.calc.kpts[-1, :] == pytest.approx(
+        np.array([1.30537091e00, 1.11022302e-16, 1.30537091e00])
+    )
 
 
 def test_constraints():
