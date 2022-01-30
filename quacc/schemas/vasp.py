@@ -57,8 +57,8 @@ def summarize_run(
     if compact:
         # Replace the InputSummary and OutputSummary with the full
         # input and output details from calcs_reversed
-        if results["output"].get("calcs_reversed", None):
-            final_run = results["output"]["calcs_reversed"][-1]
+        if results.get("calcs_reversed", None):
+            final_run = results["calcs_reversed"][-1]
             results["input"] = final_run["input"]
             results["output"] = final_run["output"]
 
