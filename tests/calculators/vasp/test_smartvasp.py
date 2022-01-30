@@ -14,7 +14,6 @@ from copy import deepcopy
 
 FILE_DIR = Path(__file__).resolve().parent
 DEFAULT_CALCS_DIR = os.path.dirname(v.__file__)
-TOL = 1e-5
 ATOMS_MAG = read(os.path.join(FILE_DIR, "OUTCAR_mag.gz"))
 ATOMS_NOMAG = read(os.path.join(FILE_DIR, "OUTCAR_nomag.gz"))
 ATOMS_NOSPIN = read(os.path.join(FILE_DIR, "OUTCAR_nospin.gz"))
