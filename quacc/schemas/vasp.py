@@ -68,7 +68,7 @@ def summarize_run(
             results["run_type"] = final_run["run_type"]
 
             # Then dump the calcs_reversed
-            results.pop("calcs_revsersed")
+            results.pop("calcs_reversed")
 
         # Remove structure because it's already in the outputs
         results.pop("structure", None)
