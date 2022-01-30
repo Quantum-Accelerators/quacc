@@ -57,6 +57,8 @@ def summarize_run(
         "transformations",
         "entry",
         "structure",
+        "tags",
+        "task_label",
     )
     for unused_prop in unused_props:
         results.pop(unused_prop, None)
