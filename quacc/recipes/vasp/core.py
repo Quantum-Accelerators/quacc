@@ -72,7 +72,7 @@ class RelaxMaker(Maker):
 
         atoms = SmartVasp(atoms, preset=self.preset, **flags)
         atoms.get_potential_energy()
-        summary = summarize_run(atoms)
+        summary = summarize_run(atoms, tags=[self.name])
 
         return summary
 
@@ -133,6 +133,6 @@ class StaticMaker(Maker):
 
         atoms = SmartVasp(atoms, preset=self.preset, **flags)
         atoms.get_potential_energy()
-        summary = summarize_run(atoms)
+        summary = summarize_run(atoms, tags=[self.name])
 
         return summary

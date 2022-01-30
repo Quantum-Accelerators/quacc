@@ -50,18 +50,17 @@ def summarize_run(
         )
 
     # Remove some key/vals we don't actually ever use
+    # or are duplicates of other things in the TaskDocument
     unused_props = (
         "icsd_id",
         "author",
-        "calcs_reversed",
         "transformations",
         "entry",
-        "task_label",
-        "tags",
         "structure",
     )
     for unused_prop in unused_props:
         results.pop(unused_prop, None)
+
     if results.get("included_objects", None) is None:
         results.pop("included_objects", None)
     if results.get("vasp_objects", {}) == {}:
