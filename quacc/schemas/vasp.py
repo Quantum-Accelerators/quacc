@@ -12,7 +12,8 @@ def summarize_run(
     dir_path: None | str = None,
     prep_next_run: bool = True,
     check_convergence: bool = True,
-    **taskdoc_kwargs
+    compact: bool = True,
+    **taskdoc_kwargs,
 ) -> Dict[str, Any]:
     """
     Get tabulated results from a VASP run and store them in a database-friendly format.
@@ -28,6 +29,10 @@ def summarize_run(
         This clears out any attached calculator and moves the final magmoms to the initial magmoms.
     check_convergence
         Whether to throw an error if convergence is not reached.
+    compact
+        Whether to use a compact representation of the TaskDocument. This does not store the
+        inputs/outputs from intermediate Custodian runs. It also removes duplicate key-value
+        pairs.
     **taskdoc_kwargs: Additional keyword arguments to pass to TaskDocument.from_directory()
 
     Returns
@@ -49,24 +54,24 @@ def summarize_run(
             "VASP calculation did not converge. Will not store task data."
         )
 
-    # Remove some key/vals we don't actually ever use
-    # or are duplicates of other things in the TaskDocument
-    unused_props = (
-        "icsd_id",
-        "author",
-        "transformations",
-        "entry",
-        "structure",
-        "tags",
-        "task_label",
-    )
-    for unused_prop in unused_props:
-        results.pop(unused_prop, None)
+    if compact:
+        # Replace the InputSummary and OutputSummary with the full
+        # input and output details from calcs_reversed
+        if results["output"].get("calcs_reversed", None):
+            final_run = results["output"]["calcs_reversed"][-1]
+            results["input"] = final_run["input"]
+            results["output"] = final_run["output"]
 
-    if results.get("included_objects", None) is None:
-        results.pop("included_objects", None)
-    if results.get("vasp_objects", {}) == {}:
-        results.pop("vasp_objects", None)
+            # Store a few additional properties
+            results["vasp_version"] = final_run["vasp_version"]
+            results["task_type"] = final_run["task_type"]
+            results["run_type"] = final_run["run_type"]
+
+            # Then dump the calcs_reversed
+            results.pop("calcs_revsersed")
+
+        # Remove structure because it's already in the outputs
+        results.pop("structure", None)
 
     # Prepares the Atoms object for the next run by moving the
     # final magmoms to initial, clearing the calculator state,
