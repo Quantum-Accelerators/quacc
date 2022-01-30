@@ -625,7 +625,7 @@ def test_constraints():
     atoms = bulk("Cu")
     atoms.set_constraint(FixAtoms(indices=[0]))
     atoms = SmartVasp(atoms)
-    assert atoms.constraints == [FixAtoms(indices=[0])]
+    assert isinstance(atoms.constraints[0], FixAtoms)
 
     atoms = bulk("Cu") * (2, 1, 1)
     atoms.set_constraint(FixBondLength(0, 1))
