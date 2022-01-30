@@ -3,10 +3,12 @@ from ase.io import read
 from ase.build import bulk
 from ase.calculators.vasp import Vasp
 from ase.calculators.singlepoint import SinglePointDFTCalculator
+from ase.constraints import FixAtoms, FixBondLength
 from quacc.calculators.vasp import SmartVasp
 from quacc.util.atoms import prep_next_run
 from quacc.defaults.user_calcs import vasp as v
 from pathlib import Path
+import pytest
 import numpy as np
 from copy import deepcopy
 
@@ -617,3 +619,15 @@ def test_kpoint_schemes():
             )
         )
     ) < TOL
+
+
+def test_constraints():
+    atoms = bulk("Cu")
+    atoms.set_constraint(FixAtoms(indices=[0]))
+    atoms = SmartVasp(atoms)
+    assert atoms.constraints == [FixAtoms(indices=[0])]
+
+    atoms = bulk("Cu") * (2, 1, 1)
+    atoms.set_constraint(FixBondLength(0, 1))
+    with pytest.raises(ValueError):
+        atoms = SmartVasp(atoms)

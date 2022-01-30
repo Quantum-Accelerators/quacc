@@ -86,7 +86,7 @@ def SmartVasp(
 
     # Check constraints
     if custodian and atoms.constraints:
-        if ~all([isinstance(c, FixAtoms) for c in atoms.constraints]):
+        if ~np.all([isinstance(c, FixAtoms) for c in atoms.constraints]):
             raise ValueError(
                 "Atoms object has a constraint that is not compatible with Custodian"
             )
