@@ -7,7 +7,7 @@ from quacc.util.slabs import (
     make_max_slabs_from_bulk,
     make_adsorbate_structures,
 )
-from quacc.util.json import clean, unclean
+from quacc.util.json import jsonify, unjsonify
 from pathlib import Path
 import os
 import numpy as np
@@ -112,8 +112,8 @@ def test_make_slabs_from_bulk():
         d = slab.get_all_distances(mic=True)
         assert np.round(np.min(d[d != 0]), 4) == np.round(min_d, 4)
     # This is to make sure the slab deserialization works
-    slab_test = clean(slab)
-    slab_test = unclean(slab_test)
+    slab_test = jsonify(slab)
+    slab_test = unjsonify(slab_test)
     assert slab_test == slab
 
 

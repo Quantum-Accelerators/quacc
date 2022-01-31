@@ -1,7 +1,7 @@
 import os
 from ase.io import read
 from quacc.schemas.calc import summarize_run
-from quacc.util.json import unclean
+from quacc.util.json import unjsonify
 from pathlib import Path
 
 FILE_DIR = Path(__file__).resolve().parent
@@ -15,13 +15,13 @@ def test_summarize_run():
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
     results = summarize_run(atoms)
     assert results["nsites"] == len(atoms)
-    assert unclean(results["atoms"]) == atoms
+    assert unjsonify(results["atoms"]) == atoms
 
     # Make sure info tags are handled appropriately
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
     results = summarize_run(atoms)
-    results_atoms = unclean(results["atoms"])
+    results_atoms = unjsonify(results["atoms"])
     assert atoms.info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results.get("atoms_info", {}) != {}
     assert results["atoms_info"].get("test_dict", None) == {"hi": "there", "foo": "bar"}
@@ -32,7 +32,7 @@ def test_summarize_run():
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
     atoms.calc.results["magmoms"] = [2.0] * len(atoms)
     results = summarize_run(atoms)
-    results_atoms = unclean(results["atoms"])
+    results_atoms = unjsonify(results["atoms"])
 
     assert atoms.calc is not None
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
@@ -45,5 +45,5 @@ def test_summarize_run():
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
     results = summarize_run(atoms, prep_next_run=False)
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
-    results_atoms = unclean(results["atoms"])
+    results_atoms = unjsonify(results["atoms"])
     assert results_atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)

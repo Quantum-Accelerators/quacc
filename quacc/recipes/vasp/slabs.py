@@ -2,7 +2,7 @@ from typing import Any, Dict
 from quacc.calculators.vasp import SmartVasp
 from quacc.schemas.vasp import summarize_run
 from quacc.util.slabs import make_max_slabs_from_bulk, make_adsorbate_structures
-from quacc.util.json import clean, unclean
+from quacc.util.json import jsonify, unjsonify
 from jobflow import job, Flow, Response, Maker
 from dataclasses import dataclass
 
@@ -44,7 +44,7 @@ class SlabRelaxMaker(Maker):
         Dict:
             Summary of the run.
         """
-        atoms = unclean(atoms_json)
+        atoms = unjsonify(atoms_json)
         flags = {
             "auto_dipole": True,
             "ediff": 1e-5,
@@ -107,7 +107,7 @@ class SlabStaticMaker(Maker):
         Dict
             Summary of the run.
         """
-        atoms = unclean(atoms_json)
+        atoms = unjsonify(atoms_json)
         flags = {
             "auto_dipole": True,
             "ediff": 1e-6,
@@ -177,14 +177,14 @@ class BulkToSlabMaker(Maker):
         Response
             A Flow of relaxation and static jobs for the generated slabs.
         """
-        atoms = unclean(atoms_json)
+        atoms = unjsonify(atoms_json)
         slabs = make_max_slabs_from_bulk(atoms, max_slabs=max_slabs, **slab_kwargs)
         jobs = []
         outputs = []
         for slab in slabs:
             relax_job = SlabRelaxMaker(
                 preset=self.preset, ncore=self.ncore, kpar=self.kpar
-            ).make(clean(slab))
+            ).make(jsonify(slab))
             jobs.append(relax_job)
             outputs.append(relax_job.output)
 
@@ -241,8 +241,8 @@ class SlabToAdsSlabMaker(Maker):
         Response
             A Flow of relaxation and static jobs for the generated slabs with adsorbates.
         """
-        atoms = unclean(atoms_json)
-        adsorbate = unclean(adsorbate_json)
+        atoms = unjsonify(atoms_json)
+        adsorbate = unjsonify(adsorbate_json)
 
         slabs = make_adsorbate_structures(atoms, adsorbate, **slab_ads_kwargs)
         if slabs is None:
@@ -253,7 +253,7 @@ class SlabToAdsSlabMaker(Maker):
         for slab in slabs:
             relax_job = SlabRelaxMaker(
                 preset=self.preset, ncore=self.ncore, kpar=self.kpar
-            ).make(clean(slab))
+            ).make(jsonify(slab))
             jobs.append(relax_job)
             outputs.append(relax_job.output)
 
