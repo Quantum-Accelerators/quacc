@@ -18,6 +18,24 @@ def test_summarize_run():
     assert results["nsites"] == len(atoms)
     assert unclean(results["atoms"]) == atoms
     assert results["output"]["energy"] == -33.15807349
+    assert results.get("calcs_reversed", None) is None
+
+    # Make sure metadata is made
+    atoms = read(os.path.join(run1, "OUTCAR.gz"))
+    results = summarize_run(atoms, dir_path=run1, compact=False, remove_empties=True)
+    assert results.get("calcs_reversed", None) is not None
+    assert "author" not in results
+    assert "additional_json" not in results
+    assert "handler" not in results["custodian"][0]
+    assert "corrections" not in results["custodian"][0]
+
+    # Make sure null are not removed
+    atoms = read(os.path.join(run1, "OUTCAR.gz"))
+    results = summarize_run(atoms, dir_path=run1, remove_empties=False)
+    assert results["author"] == None
+    assert results["additional_json"] == {}
+    assert results["custodian"][0]["handler"] is None
+    assert results["custodian"][0]["corrections"] == []
 
     # Make sure info tags are handled appropriately
     atoms = read(os.path.join(run1, "CONTCAR.gz"))

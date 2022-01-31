@@ -13,6 +13,7 @@ def summarize_run(
     prep_next_run: bool = True,
     check_convergence: bool = True,
     compact: bool = True,
+    remove_empties: bool = True,
     **taskdoc_kwargs,
 ) -> Dict[str, Any]:
     """
@@ -33,6 +34,8 @@ def summarize_run(
         Whether to use a compact representation of the TaskDocument. This does not store the
         inputs/outputs from intermediate Custodian runs. It also removes duplicate key-value
         pairs.
+    remove_empties
+        Whether to remove None values and empty lists/dicts from the TaskDocument.
     **taskdoc_kwargs: Additional keyword arguments to pass to TaskDocument.from_directory()
 
     Returns
@@ -88,4 +91,34 @@ def summarize_run(
     # Make sure it's all JSON serializable
     task_doc = clean(results_full)
 
+    if remove_empties:
+        task_doc = _remove_empties(task_doc)
+
     return task_doc
+
+
+def _remove_empties(d: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    For a given dictionary, recursively remove all items that are None
+    or are empty lists/dicts.
+
+    Parameters
+    ----------
+    d
+        Dictionary to clean
+
+    Returns
+    -------
+    Dict
+        Cleaned dictionary
+    """
+
+    if isinstance(d, dict):
+        return {
+            k: _remove_empties(v)
+            for k, v in d.items()
+            if v != None and v != [] and v != {}
+        }
+    if isinstance(d, list):
+        return [_remove_empties(v) for v in d]
+    return d
