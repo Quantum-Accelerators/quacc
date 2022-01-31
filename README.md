@@ -1,20 +1,18 @@
+# QuAcc (🚧 Under Construction 🚧)
 ![example workflow](https://github.com/arosen93/quacc/actions/workflows/workflow.yaml/badge.svg)
 [![codecov](https://codecov.io/gh/arosen93/quacc/branch/main/graph/badge.svg?token=BCKGTD89H0)](https://codecov.io/gh/arosen93/quacc)
 [![CodeFactor](https://www.codefactor.io/repository/github/arosen93/quacc/badge)](https://www.codefactor.io/repository/github/arosen93/quacc)
 [![This project supports Python 3.10](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://python.org/downloads)
 
-# QuAcc (🚧 Under Construction 🚧)
-
-## Disclaimer
-While largely functional, this code is to be consiered highly experimental. Not recommended for daily consumption.
-
-## Summary
 The Quantum Accelerator (QuAcc) supercharges your code to support high-throughput, database-driven density functional theory (DFT). Primarily, QuAcc seeks to enable a seamless interface between the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/index.html) (ASE) and [Jobflow](https://github.com/materialsproject/jobflow) for rapid workflow development and prototyping, no matter your favorite DFT package.
 <p align="center">
 <img src="https://imgs.xkcd.com/comics/standards_2x.png" alt="xkcd Comic" width="528" height="300">
 <p align="center">
 Credit: xkcd
 </p>
+
+## Disclaimer
+While largely functional, this code is to be consiered highly experimental. Not recommended for daily consumption.
 
 ## Representative Examples
 ### SmartVasp Calculator
