@@ -37,14 +37,14 @@ The above example can be made compatible with Jobflow simply by defining it in a
 from jobflow import job, Job
 from quacc.calculators.vasp import SmartVasp
 from quacc.schemas.vasp import summarize_run
-from quacc.util.json import jdesanitize
+from quacc.util.json import unclean
 
 #-----Jobflow Function-----
 @job
 def run_relax(atoms_json):
 
     # Run VASP
-    atoms = SmartVasp(jdesanitize(atoms_json), xc='rpbe', preset="BulkRelaxSet")
+    atoms = SmartVasp(unclean(atoms_json), xc='rpbe', preset="BulkRelaxSet")
     atoms.get_potential_energy()
     
     # Return serialized results
@@ -55,14 +55,14 @@ def run_relax(atoms_json):
 from ase.build import bulk
 from jobflow import Job
 from jobflow.managers.local import run_locally
-from quacc.util.json import jsanitize
+from quacc.util.json import clean
 
 #-----Make and Run a Flow-----
 # Constrct an Atoms object
 atoms = bulk("Cu")
 
 # Define the job
-job1 = run_relax(jsanitize(atoms))
+job1 = run_relax(clean(atoms))
 
 # Run the job locally
 run_locally(Job(job1), create_folders=True)
@@ -79,13 +79,13 @@ from ase.calculators.gaussian import Gaussian
 from ase.calculators.qchem import QChem
 from jobflow import job
 from quacc.schemas.cclib import summarize_run
-from quacc.util.json import jdesanitize
+from quacc.util.json import unclean
 
 # -----Jobflow Function-----
 @job
 def run_relax_gaussian(atoms_json):
     # Run Gaussian
-    atoms = jdesanitize(atoms_json)
+    atoms = unclean(atoms_json)
     atoms.calc = Gaussian(method="wB97X-D", basis="def2-TZVP", extra="opt")
     atoms.get_potential_energy()
 
@@ -99,7 +99,7 @@ def run_relax_gaussian(atoms_json):
 def run_relax_qchem(atoms_json):
 
     # Run Q-Chem
-    atoms = jdesanitize(atoms_json)
+    atoms = unclean(atoms_json)
     atoms.calc = QChem(method="wB97M-V", basis="def2-TZVPD", jobtype="SP")
     atoms.get_potential_energy()
 
@@ -112,14 +112,14 @@ from ase.build import molecule
 from fireworks import LaunchPad
 from jobflow import Flow
 from jobflow.managers.local import flow_to_workflow
-from quacc.util.json import jsanitize
+from quacc.util.json import clean
 
 # -----Create a Fireworks workflow-----
 # Constrct an Atoms object
 atoms = molecule("O2")
 
 # Define the flow
-job1 = run_relax_gaussian(jsanitize(atoms))
+job1 = run_relax_gaussian(clean(atoms))
 job2 = run_relax_qchem(job1.output["atoms"])
 flow = Flow([job1, job2])
 

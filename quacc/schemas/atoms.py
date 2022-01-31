@@ -5,7 +5,7 @@ from ase.atoms import Atom, Atoms
 from atomate2.common.schemas.structure import StructureMetadata
 from atomate2.common.schemas.molecule import MoleculeMetadata
 from pymatgen.io.ase import AseAtomsAdaptor
-from quacc.util.json import jsanitize
+from quacc.util.json import clean
 
 
 def atoms_to_metadata(
@@ -78,6 +78,6 @@ def atoms_to_metadata(
     results_full = {**metadata, **results}
 
     # Make sure it's all JSON serializable
-    results_full = jsanitize(results_full)
+    results_full = clean(results_full)
 
     return results_full

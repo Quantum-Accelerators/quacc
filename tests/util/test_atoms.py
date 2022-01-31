@@ -1,11 +1,11 @@
 from ase.io import read
-from ase.io.jsonio import encode, decode
 from ase.build import bulk
 from quacc.util.atoms import (
     prep_next_run,
     get_atoms_id,
 )
 from quacc.calculators.vasp import SmartVasp
+from quacc.util.json import clean, unclean
 from pathlib import Path
 import os
 from copy import deepcopy
@@ -75,7 +75,7 @@ def test_prep_next_run():
     assert atoms.info["results"].get("calc1", None) is not None
     assert atoms.info["results"]["calc0"]["magmom"] == mag
     assert atoms.info["results"]["calc1"]["magmom"] == mag - 2
-    assert decode(encode(atoms)) == atoms
+    assert unclean(clean(atoms)) == atoms
 
     atoms = deepcopy(ATOMS_MAG)
     atoms = prep_next_run(atoms, move_magmoms=False)
@@ -94,7 +94,7 @@ def test_prep_next_run():
     assert atoms.info["results"].get("calc1", None) is not None
     assert atoms.info["results"]["calc0"]["magmom"] == mag
     assert atoms.info["results"]["calc1"]["magmom"] == mag - 2
-    assert decode(encode(atoms)) == atoms
+    assert unclean(clean(atoms)) == atoms
 
     atoms = deepcopy(ATOMS_NOSPIN)
     atoms = prep_next_run(atoms, store_results=True)
@@ -108,4 +108,4 @@ def test_prep_next_run():
     assert atoms.info["results"].get("calc1", None) is not None
     assert atoms.info["results"]["calc0"].get("magmom", None) is None
     assert atoms.info["results"]["calc1"]["magmom"] == mag - 2
-    assert decode(encode(atoms)) == atoms
+    assert unclean(clean(atoms)) == atoms

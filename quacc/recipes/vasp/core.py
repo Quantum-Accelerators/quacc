@@ -1,7 +1,7 @@
 from typing import Any, Dict
 from quacc.calculators.vasp import SmartVasp
 from quacc.schemas.vasp import summarize_run
-from quacc.util.json import jdesanitize
+from quacc.util.json import unclean
 from jobflow import job, Maker
 from dataclasses import dataclass
 
@@ -48,7 +48,7 @@ class RelaxMaker(Maker):
         Dict
             Summary of the run.
         """
-        atoms = jdesanitize(atoms_json)
+        atoms = unclean(atoms_json)
         if volume_relax:
             isif = 3
         else:
@@ -114,7 +114,7 @@ class StaticMaker(Maker):
         Dict
             Summary of the run.
         """
-        atoms = jdesanitize(atoms_json)
+        atoms = unclean(atoms_json)
         flags = {
             "ediff": 1e-6,
             "ismear": -5,

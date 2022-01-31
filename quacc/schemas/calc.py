@@ -2,7 +2,7 @@ from typing import Any, Dict
 from ase.atoms import Atoms
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
-from quacc.util.json import jsanitize
+from quacc.util.json import clean
 
 
 def summarize_run(atoms: Atoms, prep_next_run: bool = True) -> Dict[str, Any]:
@@ -49,6 +49,6 @@ def summarize_run(atoms: Atoms, prep_next_run: bool = True) -> Dict[str, Any]:
     results_full = {**atoms_db, **inputs, **results}
 
     # Make sure it's all JSON serializable
-    task_doc = jsanitize(results_full)
+    task_doc = clean(results_full)
 
     return task_doc
