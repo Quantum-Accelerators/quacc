@@ -1,7 +1,7 @@
 from typing import Any
 from ase.atoms import Atom, Atoms
 from ase.io.jsonio import encode, decode
-from monty.json import jsanitize as jsanitize_
+from monty.json import jsanitize
 from monty.json import MSONable, MontyDecoder
 import numpy as np
 
@@ -35,7 +35,7 @@ def clean(obj: Any) -> Any:
     if isinstance(obj, MSONable):
         return obj.as_dict()
 
-    return jsanitize_(obj)
+    return jsanitize(obj)
 
 
 def unclean(obj: Any) -> Any:
