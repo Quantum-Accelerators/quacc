@@ -48,6 +48,12 @@ def run_calc(
     for f in os.listdir(run_path):
         copy(os.path.join(run_path, f), os.path.join(scratch_path, f))
 
+    # Leave a note in the run directory for where the scratch is located in case
+    # the job dies partway through
+    scratch_path_note = os.path.join(run_path, "scratch_path.txt")
+    with open(scratch_path_note, "w") as f:
+        f.write(scratch_path)
+
     # Run calculation via get_potential_energy()
     os.chdir(scratch_path)
     e = atoms.get_potential_energy()
@@ -62,5 +68,9 @@ def run_calc(
                     copyfileobj(f_in, f_out)
         else:
             copy(os.path.join(scratch_path, f), os.path.join(run_path, f))
+
+    # Remove the scratch note
+    if os.path.exists(scratch_path_note):
+        os.remove(scratch_path_note)
 
     return e
