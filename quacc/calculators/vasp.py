@@ -1,9 +1,9 @@
 import inspect
 import os
 import warnings
-import numpy as np
-from typing import Any, List, Dict, Tuple
 from copy import deepcopy
+from typing import Any, List, Dict, Tuple
+import numpy as np
 from pymatgen.core import Structure
 from pymatgen.io.vasp.inputs import Kpoints
 from pymatgen.io.ase import AseAtomsAdaptor
