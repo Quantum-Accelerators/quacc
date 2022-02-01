@@ -5,7 +5,7 @@ from ase.atoms import Atoms
 
 def run_calc(
     atoms: Atoms, run_path: str = None, scratch_path: str = None, gzip: bool = False
-) -> None:
+) -> float:
     """
     Run a calculation in a scratch directory and copy the results back to the
     original directory. This can be useful if file I/O is slow in the working
@@ -25,6 +25,11 @@ def run_calc(
         If None, a temporary directory in $SCRATCH will be used.
     gzip : bool
         Whether to gzip the output files.
+
+    Returns
+    -------
+    float
+        The energy of the calculation.
     """
 
     # Find the relevant paths
@@ -43,7 +48,7 @@ def run_calc(
 
     # Run calculation via get_potential_energy()
     os.chdir(scratch_path)
-    atoms.get_potential_energy()
+    e = atoms.get_potential_energy()
     os.chdir(run_path)
 
     # Copy files from scratch directory to working directory
@@ -55,3 +60,5 @@ def run_calc(
                     copyfileobj(f_in, f_out)
         else:
             copy(os.path.join(scratch_path, f), os.path.join(run_path, f))
+
+    return e
