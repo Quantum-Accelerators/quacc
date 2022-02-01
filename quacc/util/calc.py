@@ -1,5 +1,6 @@
 import os
 from shutil import copy, copyfileobj
+import tempfile
 from ase.atoms import Atoms
 
 
@@ -36,11 +37,12 @@ def run_calc(
     if not run_path:
         run_path = os.getcwd()
     if not scratch_path:
-        scratch_path = os.path.expandvars("$SCRATCH")
-        if not scratch_path:
+        if "SCRATCH" not in os.environ:
             raise EnvironmentError(
                 "scratch_path is None yet $SCRATCH environment variable is not set"
             )
+        tmp = tempfile.mkdtemp()
+        scratch_path = os.path.join(os.path.expandvars("$SCRATCH"), tmp)
 
     # Copy files from working directory to scratch directory
     for f in os.listdir(run_path):
