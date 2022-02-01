@@ -6,7 +6,7 @@ from ase.calculators.singlepoint import SinglePointDFTCalculator
 from ase.constraints import FixAtoms, FixBondLength
 from quacc.calculators.vasp import SmartVasp
 from quacc.util.atoms import prep_next_run
-from quacc.defaults.user_calcs import vasp as v
+from quacc.defaults.calcs import vasp as v
 from pathlib import Path
 import pytest
 import numpy as np
