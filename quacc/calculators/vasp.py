@@ -15,7 +15,7 @@ from ase.constraints import FixAtoms
 from quacc import custodian as custodian_
 from quacc.util.yaml import load_yaml_calc, load_yaml_settings
 from quacc.util.atoms import set_magmoms, check_is_metal, get_highest_block
-from quacc.defaults.user_calcs import vasp as vasp_defaults
+from quacc.defaults.calcs import vasp as vasp_defaults
 from quacc.defaults import custodian_settings
 
 DEFAULT_CALCS_DIR = os.path.dirname(vasp_defaults.__file__)
