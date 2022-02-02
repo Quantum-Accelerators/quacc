@@ -59,7 +59,7 @@ def run_bader(path: None | str = None) -> Dict[str, Any]:
     if "magmom" in bader_stats:
         bader_stats["spin_moments"] = bader_stats["magmom"]
     else:
-        bader_stats["spin_moments"] = [0.0] * len(bader_stats["partial_charge"])
+        bader_stats["spin_moments"] = [0.0] * len(bader_stats["partial_charges"])
     bader_stats.pop("charge", None)
     bader_stats.pop("charge_transfer", None)
     bader_stats.pop("reference_used", None)
