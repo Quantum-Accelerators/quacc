@@ -1,5 +1,5 @@
 import os
-from shutil import copy, copyfileobj
+from shutil import copy, copyfileobj, rmtree
 import tempfile
 from ase.atoms import Atoms
 
@@ -72,5 +72,9 @@ def run_calc(
     # Remove the scratch note
     if os.path.exists(scratch_path_note):
         os.remove(scratch_path_note)
+
+    # Remove the scratch directory
+    if os.path.exists(scratch_path):
+        rmtree(scratch_path)
 
     return e
