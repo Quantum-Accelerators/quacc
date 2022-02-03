@@ -78,7 +78,7 @@ def load_yaml_settings(yaml_file: str) -> Dict[str, Any]:
     for k, v in settings.items():
         if isinstance(v, str) and v[0] == "$":
             if os.path.expandvars(v) == v:
-                raise EnvironmentError(
+                raise OSError(
                     f"Missing environment variable {v}, as specified in {yaml_file}"
                 )
             settings[k] = os.path.expandvars(v)

@@ -38,7 +38,7 @@ def run_calc(
         run_dir = os.getcwd()
     if not scratch_dir:
         if "SCRATCH" not in os.environ:
-            raise EnvironmentError(
+            raise OSError(
                 "scratch_path is None yet $SCRATCH environment variable is not set"
             )
         scratch_dir = os.path.expandvars("$SCRATCH")

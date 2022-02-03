@@ -255,7 +255,7 @@ def _manage_environment(custodian: bool = True) -> str:
 
         try:
             load_yaml_settings(custodian_yaml)
-        except EnvironmentError as msg:
+        except OSError as msg:
             warnings.warn(str(msg))
 
         # Return the command flag
