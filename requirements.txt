@@ -4,5 +4,5 @@ custodian==2022.1.17
 git+https://github.com/arosen93/jobflow.git@rosen-configupdates # waiting on PR #73
 git+https://github.com/materialsproject/atomate2.git # waiting on PR 64
 monty==2022.1.19
-FireWorks==2.0.0
+FireWorks==2.0.2
 cclib==1.7.1
