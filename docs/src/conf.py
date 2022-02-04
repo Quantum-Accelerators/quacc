@@ -146,5 +146,5 @@ intersphinx_mapping = {
     "atomate2": ("https://materialsproject.github.io/atomate2/", None),
     "jobflow": ("https://materialsproject.github.io/jobflow/", None),
     "monty": ("https://guide.materialsvirtuallab.org/monty/", None),
-    "cclib": ("https://cclib.github.io/",None)
+    "cclib": ("https://cclib.github.io/", None),
 }
