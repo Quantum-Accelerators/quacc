@@ -1,0 +1,5 @@
+.. _installation tutorial:
+
+============
+Installation
+============

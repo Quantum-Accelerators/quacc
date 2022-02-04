@@ -10,8 +10,8 @@ def summarize_run(atoms: Atoms, prep_next_run: bool = True) -> Dict[str, Any]:
     Get tabulated results from an Atoms object and calculator and store them in a database-friendly format.
     This is meant to be compatible with all calculator types.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     atoms
         ASE Atoms object following a calculation.
     prep_next_run

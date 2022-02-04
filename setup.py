@@ -25,7 +25,19 @@ if __name__ == "__main__":
         data_files=["LICENSE.md"],
         zip_safe=False,
         # install_requires=required,
-        extras_require={"tests": ["pytest>=6.2.5"]},
+        extras_require={
+            "tests": ["pytest==6.2.5"],
+            "docs": [
+                "sphinx==4.4.0",
+                "numpydoc==1.2",
+                "m2r2==0.3.2",
+                "mistune==0.8.4",
+                "pydata-sphinx-theme==0.8.0",
+                "autodoc_pydantic==1.6.1",
+                "sphinx_panels==0.6.0",
+            ],
+            "dev": ["pytest==6.2.5", "black==22.1.0"],
+        },
         tests_require=["pytest"],
         include_package_data=True,
     )

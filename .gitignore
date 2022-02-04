@@ -2,3 +2,4 @@
 *.egg*
 __pycache__
 POTCAR*
+docs_build
