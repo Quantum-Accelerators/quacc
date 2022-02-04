@@ -26,7 +26,7 @@ if __name__ == "__main__":
         zip_safe=False,
         # install_requires=required,
         extras_require={
-            "tests": ["pytest==6.2.5"],
+            "tests": ["pytest==7.0.0"],
             "docs": [
                 "sphinx==4.4.0",
                 "numpydoc==1.2",
@@ -36,7 +36,7 @@ if __name__ == "__main__":
                 "autodoc_pydantic==1.6.1",
                 "sphinx_panels==0.6.0",
             ],
-            "dev": ["pytest==6.2.5", "black==22.1.0"],
+            "dev": ["pytest==7.0.0", "black==22.1.0"],
         },
         tests_require=["pytest"],
         include_package_data=True,
