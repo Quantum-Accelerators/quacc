@@ -14,7 +14,7 @@ coverage:
         threshold: 0%
     patch:
       default:
-        enabled: no 
+        enabled: no
         if_not_found: success
 
 comment: false

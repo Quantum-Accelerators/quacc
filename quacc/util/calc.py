@@ -1,4 +1,5 @@
 import os
+from copy import deepcopy
 from shutil import copy, copyfileobj
 from tempfile import TemporaryDirectory
 from ase.atoms import Atoms
@@ -29,9 +30,11 @@ def run_calc(
 
     Returns
     -------
-    float
-        The energy of the calculation.
+    .Atoms
+        The updated .Atoms object,
     """
+
+    atoms = deepcopy(atoms)
 
     # Find the relevant paths
     if not run_dir:
@@ -74,4 +77,4 @@ def run_calc(
     if os.path.exists(scratch_path_note):
         os.remove(scratch_path_note)
 
-    return e
+    return atoms

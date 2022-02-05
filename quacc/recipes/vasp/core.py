@@ -2,6 +2,7 @@ from typing import Any, Dict
 from quacc.calculators.vasp import SmartVasp
 from quacc.schemas.vasp import summarize_run
 from quacc.util.json import unjsonify
+from quacc.util.calc import run_calc
 from jobflow import job, Maker
 from dataclasses import dataclass
 
@@ -71,7 +72,7 @@ class RelaxMaker(Maker):
             flags[k] = v
 
         atoms = SmartVasp(atoms, preset=self.preset, **flags)
-        atoms.get_potential_energy()
+        atoms = run_calc(atoms)
         summary = summarize_run(atoms, additional_fields={"name": self.name})
 
         return summary
@@ -132,7 +133,7 @@ class StaticMaker(Maker):
             flags[k] = v
 
         atoms = SmartVasp(atoms, preset=self.preset, **flags)
-        atoms.get_potential_energy()
+        atoms = run_calc(atoms)
         summary = summarize_run(atoms, additional_fields={"name": self.name})
 
         return summary
