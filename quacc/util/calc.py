@@ -3,6 +3,7 @@ from copy import deepcopy
 from shutil import copy, copyfileobj
 from tempfile import TemporaryDirectory
 from ase.atoms import Atoms
+import warnings
 
 
 def run_calc(
@@ -24,7 +25,8 @@ def run_calc(
         If None, the current working directory will be used.
     scratch_dir : str
         Path to the base directory to store the scratch temp directories.
-        If None, a temporary directory in $SCRATCH will be used.
+        If None, a temporary directory in $SCRATCH will be used. If $SCRATCH
+        is not present, everything will be run in run_dir.
     gzip : bool
         Whether to gzip the output files.
 
@@ -40,11 +42,13 @@ def run_calc(
     if not run_dir:
         run_dir = os.getcwd()
     if not scratch_dir:
-        if "SCRATCH" not in os.environ:
-            raise OSError(
-                "scratch_path is None yet $SCRATCH environment variable is not set"
+        if "SCRATCH" in os.environ:
+            scratch_dir = os.path.expandvars("$SCRATCH")
+        else:
+            warnings.warn(
+                "scratch_path is None yet $SCRATCH environment variable is not set. No scratch directory will be used."
             )
-        scratch_dir = os.path.expandvars("$SCRATCH")
+            scratch_dir = run_dir
 
     with TemporaryDirectory(dir=scratch_dir, prefix="quacc-") as scratch_path:
 
