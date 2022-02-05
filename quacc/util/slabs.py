@@ -72,7 +72,7 @@ def make_slabs_from_bulk(
     """
     Function to make slabs from a bulk atoms object.
 
-    Parameters:
+    Parameters
     -----------
     atoms
         bulk atoms
@@ -234,7 +234,7 @@ def make_max_slabs_from_bulk(
     with the fewest number of atoms per cell such that the returned amount is
     less than or equal to max_slabs.
 
-    Parameters:
+    Parameters
     -----------
     atoms
         Bulk structure to generate slabs from
@@ -331,7 +331,7 @@ def make_adsorbate_structures(
     """
     Add a single adsorbate to a structure for every requested adsorption mode
 
-    Parameters:
+    Parameters
     -----------
     atoms
         The atoms to add adsorbates to.
