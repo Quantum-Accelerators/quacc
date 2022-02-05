@@ -45,9 +45,6 @@ def run_calc(
         if "SCRATCH" in os.environ:
             scratch_dir = os.path.expandvars("$SCRATCH")
         else:
-            warnings.warn(
-                "scratch_path is None yet $SCRATCH environment variable is not set. No scratch directory will be used."
-            )
             scratch_dir = run_dir
 
     with TemporaryDirectory(dir=scratch_dir, prefix="quacc-") as scratch_path:
