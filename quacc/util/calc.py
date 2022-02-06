@@ -61,7 +61,7 @@ def run_calc(
 
         # Run calculation via get_potential_energy()
         os.chdir(scratch_path)
-        e = atoms.get_potential_energy()
+        atoms.get_potential_energy()
         os.chdir(run_dir)
 
         _copy_from_scratch(run_dir, scratch_path, compress=compress)
