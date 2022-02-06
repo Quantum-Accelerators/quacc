@@ -53,22 +53,12 @@ def run_calc(
 
         _copy_to_scratch(run_dir, scratch_path)
 
-        # Leave a note in the run directory for where the scratch is located in case
-        # the job dies partway through
-        scratch_path_note = os.path.join(run_dir, "scratch_path.txt")
-        with open(scratch_path_note, "w") as f:
-            f.write(scratch_path)
-
         # Run calculation via get_potential_energy()
         os.chdir(scratch_path)
         atoms.get_potential_energy()
         os.chdir(run_dir)
 
         _copy_from_scratch(run_dir, scratch_path, compress=compress)
-
-    # Remove the scratch note
-    if os.path.exists(scratch_path_note):
-        os.remove(scratch_path_note)
 
     return atoms
 
@@ -90,6 +80,12 @@ def _copy_to_scratch(run_dir: str, scratch_path: str):
             copytree(os.path.join(run_dir, f), os.path.join(scratch_path, f))
         else:
             copy(os.path.join(run_dir, f), os.path.join(scratch_path, f))
+
+    # Leave a note in the run directory for where the scratch is located in case
+    # the job dies partway through
+    scratch_path_note = os.path.join(run_dir, "scratch_path.txt")
+    with open(scratch_path_note, "w") as f:
+        f.write(scratch_path)
 
 
 def _copy_from_scratch(run_dir: str, scratch_path: str, compress: bool = False):
@@ -116,3 +112,8 @@ def _copy_from_scratch(run_dir: str, scratch_path: str, compress: bool = False):
                         copyfileobj(f_in, f_out)
             else:
                 copy(os.path.join(scratch_path, f), os.path.join(run_dir, f))
+
+    # Remove the scratch note
+    scratch_path_note = os.path.join(run_dir, "scratch_path.txt")
+    if os.path.exists(scratch_path_note):
+        os.remove(scratch_path_note)
