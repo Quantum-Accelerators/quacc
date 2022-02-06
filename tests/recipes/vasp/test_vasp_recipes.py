@@ -1,6 +1,6 @@
 import pytest
 
-from ase.build import bulk
+from ase.build import bulk, molecule
 from jobflow.managers.local import run_locally
 
 from quacc.schemas.calc import summarize_run as calc_summarize_run
@@ -11,7 +11,7 @@ from quacc.recipes.vasp.slabs import (
     SlabStaticMaker,
     SlabToAdsSlabMaker,
 )
-from quacc.util.json import jsonify
+from quacc.util.json import jsonify, unjsonify
 
 
 def mock_summarize_run(atoms, **kwargs):
@@ -137,26 +137,106 @@ def test_slab_relax_maker():
     assert output["name"] == "test"
 
 
-def test_bulk_to_slab():
+def test_slab_flows():
     atoms = bulk("Cu") * (2, 2, 2)
     atoms_json = jsonify(atoms)
 
-    job = BulkToSlabMaker().make(atoms_json)
-    responses = run_locally(job)
-    output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
-    assert output["parameters"]["isif"] == 2
-    assert output["parameters"]["nsw"] > 0
-    assert output["parameters"]["isym"] == 0
-    assert output["parameters"]["lwave"] == False
-    assert output["name"] == "SlabRelax"
+    ## Test BulkToSlabMaker
+    flow = BulkToSlabMaker().make(atoms_json)
+    responses = run_locally(flow)
 
-    job = SlabRelaxMaker(preset="SlabRelaxSet", ncore=2, kpar=4, name="test").make(
+    assert len(responses) == 9
+    uuids = list(responses.keys())
+
+    # First job is a dummy job to make slabs and should have no output
+    output0 = responses[uuids[0]][1].output
+    assert output0 is None
+
+    # Subsequent jobs should be alternating relaxations and statics
+    output1 = responses[uuids[1]][1].output
+    assert output1["nsites"] > len(atoms)
+    assert output1["parameters"]["isif"] == 2
+    assert output1["name"] == "BulkToSlab_SlabRelax"
+
+    output2 = responses[uuids[2]][1].output
+    assert output2["nsites"] == output1["nsites"]
+    assert output2["parameters"]["nsw"] == 0
+    assert output2["name"] == "BulkToSlab_SlabStatic"
+
+    # Now try with kwargs
+    flow = BulkToSlabMaker(preset="SlabRelaxSet", ncore=2, kpar=4, name="test").make(
         atoms_json
     )
-    responses = run_locally(job)
-    output = responses[job.uuid][1].output
-    assert output["parameters"]["encut"] == 450
-    assert output["parameters"]["ncore"] == 2
-    assert output["parameters"]["kpar"] == 4
-    assert output["name"] == "test"
+    responses = run_locally(flow)
+
+    assert len(responses) == 9
+    uuids = list(responses.keys())
+
+    output0 = responses[uuids[0]][1].output
+    assert output0 is None
+
+    output1 = responses[uuids[1]][1].output
+    assert output1["parameters"]["isif"] == 2
+    assert output1["parameters"]["ncore"] == 2
+    assert output1["parameters"]["kpar"] == 4
+    assert output1["parameters"]["encut"] == 450
+    assert output1["name"] == "test_SlabRelax"
+
+    output2 = responses[uuids[2]][1].output
+    assert output2["parameters"]["nsw"] == 0
+    assert output2["parameters"]["ncore"] == 2
+    assert output2["parameters"]["kpar"] == 4
+    assert output2["parameters"]["encut"] == 450
+    assert output2["name"] == "test_SlabStatic"
+
+    ## Test SlabtoAdsSlabMaker using one of the slabs from above
+    atoms_json = output2["atoms"]
+    adsorbate = molecule("H2")
+    adsorbate_json = jsonify(adsorbate)
+
+    flow = SlabToAdsSlabMaker().make(atoms_json, adsorbate_json)
+    responses = run_locally(flow)
+
+    assert len(responses) == 11
+    uuids = list(responses.keys())
+
+    # First job is a dummy job to make slabs and should have no output
+    output0 = responses[uuids[0]][1].output
+    assert output0 is None
+
+    # Subsequent jobs should be alternating relaxations and statics
+    output1 = responses[uuids[1]][1].output
+    assert output1["nsites"] == len(unjsonify(output2["atoms"])) + 2
+    assert output1["parameters"]["isif"] == 2
+    assert output1["name"] == "SlabToAdsSlab_SlabRelax"
+
+    output2 = responses[uuids[2]][1].output
+    assert output2["nsites"] == output1["nsites"]
+    assert output2["parameters"]["nsw"] == 0
+    assert output2["name"] == "SlabToAdsSlab_SlabStatic"
+
+    # Now try with kwargs
+    flow = SlabToAdsSlabMaker(preset="SlabRelaxSet", ncore=2, kpar=4, name="test").make(
+        atoms_json, adsorbate_json
+    )
+    responses = run_locally(flow)
+
+    assert len(responses) == 11
+    uuids = list(responses.keys())
+
+    output0 = responses[uuids[0]][1].output
+    assert output0 is None
+
+    output1 = responses[uuids[1]][1].output
+    assert output1["parameters"]["isif"] == 2
+    assert output1["parameters"]["ncore"] == 2
+    assert output1["parameters"]["kpar"] == 4
+    assert output1["parameters"]["encut"] == 450
+    assert output1["name"] == "test_SlabRelax"
+
+    output2 = responses[uuids[2]][1].output
+    assert output2["parameters"]["nsw"] == 0
+    assert output2["parameters"]["ncore"] == 2
+    assert output2["parameters"]["kpar"] == 4
+    assert output2["parameters"]["encut"] == 450
+    assert output2["name"] == "test_SlabStatic"

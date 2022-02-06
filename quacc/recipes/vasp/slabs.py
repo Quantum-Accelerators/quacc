@@ -186,13 +186,19 @@ class BulkToSlabMaker(Maker):
         outputs = []
         for slab in slabs:
             relax_job = SlabRelaxMaker(
-                preset=self.preset, ncore=self.ncore, kpar=self.kpar
+                name=f"{self.name}_SlabRelax",
+                preset=self.preset,
+                ncore=self.ncore,
+                kpar=self.kpar,
             ).make(jsonify(slab))
             jobs.append(relax_job)
             outputs.append(relax_job.output)
 
             static_job = SlabStaticMaker(
-                preset=self.preset, ncore=self.ncore, kpar=self.kpar
+                f"{self.name}_SlabStatic",
+                preset=self.preset,
+                ncore=self.ncore,
+                kpar=self.kpar,
             ).make(relax_job.output["atoms"])
             jobs.append(static_job)
             outputs.append(static_job.output)
@@ -255,13 +261,19 @@ class SlabToAdsSlabMaker(Maker):
         outputs = []
         for slab in slabs:
             relax_job = SlabRelaxMaker(
-                preset=self.preset, ncore=self.ncore, kpar=self.kpar
+                name=f"{self.name}_SlabRelax",
+                preset=self.preset,
+                ncore=self.ncore,
+                kpar=self.kpar,
             ).make(jsonify(slab))
             jobs.append(relax_job)
             outputs.append(relax_job.output)
 
             static_job = SlabStaticMaker(
-                preset=self.preset, ncore=self.ncore, kpar=self.kpar
+                name=f"{self.name}_SlabStatic",
+                preset=self.preset,
+                ncore=self.ncore,
+                kpar=self.kpar,
             ).make(relax_job.output["atoms"])
             jobs.append(static_job)
             outputs.append(static_job.output)
