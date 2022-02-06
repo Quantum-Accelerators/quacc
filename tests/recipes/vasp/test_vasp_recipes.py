@@ -140,7 +140,7 @@ def test_slab_flows():
     atoms = bulk("Cu") * (2, 2, 2)
     atoms_json = jsonify(atoms)
 
-    ## Test BulkToSlabMaker
+    ### --------- Test BulkToSlabMaker --------- ###
     flow = BulkToSlabMaker().make(atoms_json)
     responses = run_locally(flow)
 
@@ -188,7 +188,7 @@ def test_slab_flows():
     assert output2["parameters"]["encut"] == 450
     assert output2["name"] == "test_SlabStatic"
 
-    ## Test SlabtoAdsSlabMaker using one of the slabs from above
+    ### --------- Test SlabToAdsSlabMaker --------- ###
     atoms_json = output2["atoms"]
     adsorbate = molecule("H2")
     adsorbate_json = jsonify(adsorbate)

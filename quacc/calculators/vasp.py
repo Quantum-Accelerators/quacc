@@ -117,11 +117,6 @@ def SmartVasp(
     if kwargs.get("kpts", None) and calc_preset.get("auto_kpts", None):
         del user_calc_params["auto_kpts"]
 
-    # If the preset has ediff_per_atom but the user explicitly requests ediff, then
-    # we should honor that.
-    if kwargs.get("ediff", None) and calc_preset.get("ediff_per_atom", None):
-        del user_calc_params["ediff_per_atom"]
-
     # Handle special arguments in the user calc parameters that
     # ASE does not natively support
     if user_calc_params.get("elemental_magmoms", None) is not None:
@@ -139,11 +134,6 @@ def SmartVasp(
         del user_calc_params["auto_dipole"]
     else:
         auto_dipole = None
-    if user_calc_params.get("ediff_per_atom", None) is not None:
-        ediff_per_atom = user_calc_params["ediff_per_atom"]
-        del user_calc_params["ediff_per_atom"]
-    else:
-        ediff_per_atom = None
 
     # Make automatic k-point mesh
     if auto_kpts:
@@ -164,10 +154,6 @@ def SmartVasp(
         if "ldipol" not in user_calc_params:
             user_calc_params["ldipol"] = True
 
-    # Handle ediff_per_atom if present
-    if ediff_per_atom:
-        user_calc_params["ediff"] = ediff_per_atom * len(atoms)
-
     # Set magnetic moments
     atoms = set_magmoms(
         atoms,
@@ -176,14 +162,7 @@ def SmartVasp(
         mag_default=mag_default,
         mag_cutoff=mag_cutoff,
     )
-    if ~np.all(
-        [isinstance(m, (int, float)) for m in atoms.get_initial_magnetic_moments()]
-    ):
-        raise ValueError(
-            "Magnetic moments must be specified as a list of floats or ints.",
-            atoms.get_initial_magnetic_moments().tolist(),
-        )
-
+    
     # Remove unused INCAR flags
     user_calc_params = remove_unused_flags(user_calc_params)
 

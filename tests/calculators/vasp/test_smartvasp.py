@@ -21,9 +21,17 @@ ATOMS_NOMAG = read(os.path.join(FILE_DIR, "OUTCAR_nomag.gz"))
 ATOMS_NOSPIN = read(os.path.join(FILE_DIR, "OUTCAR_nospin.gz"))
 
 
-def test_vanilla_smartVasp():
+def test_vanilla_smartvasp():
     atoms = bulk("Cu")
     atoms = SmartVasp(atoms, incar_copilot=False)
+    assert atoms.calc.asdict() == Vasp().asdict()
+
+    atoms = bulk("Cu")
+    atoms = SmartVasp(atoms, custodian=False, incar_copilot=False)
+    assert atoms.calc.asdict() == Vasp().asdict()
+
+    atoms = bulk("Cu")
+    atoms = SmartVasp(atoms, encut=None, incar_copilot=False)
     assert atoms.calc.asdict() == Vasp().asdict()
 
 
@@ -98,10 +106,13 @@ def test_autodipole():
     assert atoms.calc.list_float_params["dipol"] is None
 
 
-def test_ediff_per_atom():
-    atoms = bulk("Cu") * (2, 2, 2)
-    atoms = SmartVasp(atoms, ediff_per_atom=1e-4)
-    assert atoms.calc.exp_params["ediff"] == 1e-4 * len(atoms)
+def test_kspacing():
+    atoms = bulk("Cu")
+    atoms = SmartVasp(atoms, kspacing=0.1, ismear=-5)
+    assert atoms.calc.int_params["ismear"] == -5
+
+    atoms = SmartVasp(atoms, kspacing=100, ismear=-5)
+    assert atoms.calc.int_params["ismear"] == 0
 
 
 def test_magmoms():
@@ -605,6 +616,10 @@ def test_kpoint_schemes():
     assert atoms.calc.kpts == [12, 12, 12]
 
     atoms = bulk("Cu")
+    atoms = SmartVasp(atoms, auto_kpts={"max_mixed_density": [10, 1000]})
+    assert atoms.calc.kpts == [10, 10, 10]
+
+    atoms = bulk("Cu")
     atoms = SmartVasp(atoms, auto_kpts={"length_density": [50, 50, 1]})
     assert atoms.calc.kpts == [20, 20, 1]
 
@@ -624,4 +639,26 @@ def test_constraints():
     atoms = bulk("Cu") * (2, 1, 1)
     atoms.set_constraint(FixBondLength(0, 1))
     with pytest.raises(ValueError):
+        atoms = SmartVasp(atoms)
+
+
+def test_bad():
+    atoms = bulk("Cu")
+    with pytest.raises(ValueError):
+        atoms = SmartVasp(atoms, auto_kpts={"max_mixed_density": [100]})
+
+    with pytest.raises(ValueError):
+        atoms = SmartVasp(atoms, auto_kpts={"length_density": [100]})
+
+    with pytest.raises(ValueError):
+        atoms = SmartVasp(atoms, auto_kpts={"test": [100]})
+
+    with pytest.warns(Warning):
+        atoms = SmartVasp(atoms, auto_kpts={"max_mixed_density": [1000, 100]})
+
+
+def test_bad_custodian(monkeypatch):
+    monkeypatch.setenv("VASP_CUSTODIAN_SETTINGS", ".")
+    atoms = bulk("Cu")
+    with pytest.raises(FileNotFoundError):
         atoms = SmartVasp(atoms)

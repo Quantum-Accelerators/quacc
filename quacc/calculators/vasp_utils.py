@@ -148,10 +148,7 @@ def convert_auto_kpts(
             raise ValueError(f"Unsupported k-point generation scheme: {auto_kpts}.")
 
         kpts = pmg_kpts.kpts[0]
-        if pmg_kpts.style.name.lower() == "gamma":
-            gamma = True
-        else:
-            gamma = False
+        gamma = True if pmg_kpts.style.name.lower() == "gamma" else False
 
     return kpts, gamma, reciprocal
 
@@ -312,7 +309,11 @@ def calc_swaps(
             )
         calc.set(ismear=-5, sigma=0.05)
 
-    if calc.int_params["ismear"] == -5 and np.product(calc.kpts) < 4:
+    if (
+        calc.int_params["ismear"] == -5
+        and np.product(calc.kpts) < 4
+        and calc.float_params["kspacing"] is None
+    ):
         if verbose:
             warnings.warn(
                 "Copilot: Setting ISMEAR = 0 and SIGMA = 0.05 because you don't have enough k-points for ISMEAR = -5."
@@ -340,7 +341,6 @@ def calc_swaps(
                 "Copilot: KSPACING is likely too large for ISMEAR = -5. Setting ISMEAR = 0 and SIGMA = 0.05."
             )
         calc.set(ismear=0, sigma=0.05)
-        pass
 
     if (
         calc.int_params["nsw"]
@@ -406,7 +406,11 @@ def calc_swaps(
         if calc.int_params.get("npar", None) is not None:
             calc.int_params["npar"] = None
 
-    if calc.int_params["kpar"] and calc.int_params["kpar"] > np.prod(calc.kpts):
+    if (
+        calc.int_params["kpar"]
+        and calc.int_params["kpar"] > np.prod(calc.kpts)
+        and calc.float_params["kspacing"] is None
+    ):
         if verbose:
             warnings.warn(
                 "Copilot: Setting KPAR = 1 because you have too few k-points to parallelize."
