@@ -24,7 +24,6 @@ def SmartVasp(
     custodian: bool = True,
     preset: None | str = None,
     incar_copilot: bool = True,
-    force_gamma: bool = True,
     copy_magmoms: bool = True,
     mag_default: float = 1.0,
     mag_cutoff: None | float = 0.05,
@@ -53,10 +52,6 @@ def SmartVasp(
         Note that any specific kwargs take precedence over the flags set in the preset dictionary.
     incar_copilot
         If True, the INCAR parameters will be adjusted if they go against the VASP manual.
-    force_gamma
-        If True, the k-point scheme will always be gamma-centered. If False, gamma will depend on the
-        atuomatic k-point generation scheme or user setting.
-        Defaults to True.
     copy_magmoms
         If True, any pre-existing atoms.get_magnetic_moments() will be set in atoms.set_initial_magnetic_moments().
         Set this to False if you want to use a preset's magnetic moments every time.
@@ -158,12 +153,8 @@ def SmartVasp(
         user_calc_params["kpts"] = kpts
         if reciprocal and user_calc_params.get("reciprocal", None) is None:
             user_calc_params["reciprocal"] = reciprocal
-        if gamma and user_calc_params.get("gamma", None) is None:
+        if user_calc_params.get("gamma", None) is None:
             user_calc_params["gamma"] = gamma
-
-    # Force gamma-centered if specified by the user
-    if force_gamma:
-        user_calc_params["gamma"] = True
 
     # Add dipole corrections if requested
     if auto_dipole:

@@ -74,6 +74,7 @@ def convert_auto_kpts(
     | Dict[str, float]
     | Dict[str, List[Tuple[float, float]]]
     | Dict[str, List[Tuple[float, float, float]]],
+    force_gamma: bool = True,
 ) -> Tuple[List[Tuple[int, int, int]], None | bool, None | bool]:
     """
     Shortcuts for pymatgen k-point generation schemes.
@@ -90,6 +91,8 @@ def convert_auto_kpts(
         Pymatgen Structure object
     auto_kpts
         Dictionary describing the automatic k-point scheme
+    force_gamma
+        Whether a gamma-centered mesh should be returned
 
     Returns
     -------
@@ -123,10 +126,10 @@ def convert_auto_kpts(
                     UserWarning,
                 )
             pmg_kpts1 = Kpoints.automatic_density_by_vol(
-                struct, auto_kpts["max_mixed_density"][0]
+                struct, auto_kpts["max_mixed_density"][0], force_gamma=force_gamma
             )
             pmg_kpts2 = Kpoints.automatic_density(
-                struct, auto_kpts["max_mixed_density"][1]
+                struct, auto_kpts["max_mixed_density"][1], force_gamma=force_gamma
             )
             if np.product(pmg_kpts1.kpts[0]) >= np.product(pmg_kpts2.kpts[0]):
                 pmg_kpts = pmg_kpts1
@@ -134,15 +137,17 @@ def convert_auto_kpts(
                 pmg_kpts = pmg_kpts2
         elif auto_kpts.get("reciprocal_density", None):
             pmg_kpts = Kpoints.automatic_density_by_vol(
-                struct, auto_kpts["reciprocal_density"]
+                struct, auto_kpts["reciprocal_density"], force_gamma=force_gamma
             )
         elif auto_kpts.get("grid_density", None):
-            pmg_kpts = Kpoints.automatic_density(struct, auto_kpts["grid_density"])
+            pmg_kpts = Kpoints.automatic_density(
+                struct, auto_kpts["grid_density"], force_gamma=force_gamma
+            )
         elif auto_kpts.get("length_density", None):
             if len(auto_kpts["length_density"]) != 3:
                 raise ValueError("Must specify three values for length_density.")
             pmg_kpts = Kpoints.automatic_density_by_lengths(
-                struct, auto_kpts["length_density"]
+                struct, auto_kpts["length_density"], force_gamma=force_gamma
             )
         else:
             raise ValueError(f"Unsupported k-point generation scheme: {auto_kpts}.")
