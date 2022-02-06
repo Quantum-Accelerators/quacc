@@ -21,7 +21,7 @@ ATOMS_NOSPIN = read(os.path.join(FILE_DIR, "OUTCAR_nospin.gz"))
 
 def test_vanilla_smartvasp():
     atoms = bulk("Cu")
-    atoms = SmartVasp(atoms, incar_copilot=False, force_gamma=False)
+    atoms = SmartVasp(atoms, incar_copilot=False)
     assert atoms.calc.asdict() == Vasp().asdict()
 
 
@@ -570,7 +570,7 @@ def test_kpoint_schemes():
     assert atoms.calc.kpts == [1, 1, 1]
 
     atoms = bulk("Cu")
-    atoms = SmartVasp(atoms, auto_kpts={"grid_density": 1000}, force_gamma=False)
+    atoms = SmartVasp(atoms, auto_kpts={"grid_density": 1000}, gamma=False)
     assert atoms.calc.kpts == [10, 10, 10]
     assert atoms.calc.input_params["gamma"] is False
 
@@ -584,15 +584,13 @@ def test_kpoint_schemes():
         atoms,
         preset="BulkRelaxSet",
         auto_kpts={"grid_density": 1000},
-        force_gamma=False,
+        gamma=False,
     )
     assert atoms.calc.kpts == [10, 10, 10]
     assert atoms.calc.input_params["gamma"] is False
 
     atoms = bulk("Cu")
-    atoms = SmartVasp(
-        atoms, auto_kpts={"grid_density": 1000}, force_gamma=False, gamma=True
-    )
+    atoms = SmartVasp(atoms, auto_kpts={"grid_density": 1000}, gamma=True)
     assert atoms.calc.kpts == [10, 10, 10]
     assert atoms.calc.input_params["gamma"] is True
 
