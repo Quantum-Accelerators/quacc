@@ -22,7 +22,7 @@ ATOMS_NOSPIN = read(os.path.join(FILE_DIR, "OUTCAR_nospin.gz"))
 def test_vanilla_Vasp():
     atoms = bulk("Cu")
     atoms = Vasp(atoms, incar_copilot=False)
-    assert atoms.calc.asdict() == Vasp()_.asdict()
+    assert atoms.calc.asdict() == Vasp_().asdict()
 
 
 def test_presets():
