@@ -83,6 +83,11 @@ def prep_next_run(
                 atoms.calc.results.get("magmoms", [0.0] * len(atoms))
             )
 
+    # Clear off the calculator so we can run a new job. If we don't do this,
+    # then something like atoms *= (2,2,2) stil has a calculator attached, which
+    # is a bit confusing.
+    atoms.calc = None
+
     # Give the Atoms object a unique ID. This will be helpful for querying later.
     # Also store any old IDs somewhere else for future reference.
     # Note: Kep this at the end of the function so that the ID is assigned based

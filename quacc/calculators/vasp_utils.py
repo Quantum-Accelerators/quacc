@@ -1,5 +1,4 @@
 import inspect
-from multiprocessing.sharedctypes import Value
 import os
 import warnings
 from typing import Any, List, Dict, Tuple
@@ -10,7 +9,6 @@ from pymatgen.symmetry.bandstructure import HighSymmKpath
 from ase.atoms import Atoms
 from ase.calculators.vasp import Vasp
 from quacc import custodian as custodian_
-from quacc.util.yaml import load_yaml_settings
 from quacc.util.atoms import check_is_metal, get_highest_block
 from quacc.defaults import custodian_settings
 
