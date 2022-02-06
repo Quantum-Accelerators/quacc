@@ -1,6 +1,6 @@
 import os
 from copy import deepcopy
-from shutil import copy, copyfileobj
+from shutil import copy, copytree, copyfileobj
 from tempfile import TemporaryDirectory
 from ase.atoms import Atoms
 import warnings
@@ -37,6 +37,8 @@ def run_calc(
     """
 
     atoms = deepcopy(atoms)
+    if atoms.calc is None:
+        raise ValueError("Atoms object must have attached calculator.")
 
     # Find the relevant paths
     if not run_dir:
@@ -51,7 +53,10 @@ def run_calc(
 
         # Copy files from working directory to scratch directory
         for f in os.listdir(run_dir):
-            copy(os.path.join(run_dir, f), os.path.join(scratch_path, f))
+            if os.path.isdir(os.path.join(run_dir, f)):
+                copytree(os.path.join(run_dir, f), os.path.join(scratch_path, f))
+            else:
+                copy(os.path.join(run_dir, f), os.path.join(scratch_path, f))
 
         # Leave a note in the run directory for where the scratch is located in case
         # the job dies partway through
@@ -66,13 +71,17 @@ def run_calc(
 
         # Copy files from scratch directory to working directory
         for f in os.listdir(scratch_path):
-            # gzip the files in scratch before copying them back
-            if gzip:
-                with open(os.path.join(scratch_path, f), "rb") as f_in:
-                    with gzip.open(os.path.join(run_dir, f + ".gz"), "wb") as f_out:
-                        copyfileobj(f_in, f_out)
+            if os.path.isdir(os.path.join(scratch_path, f)):
+                copytree(os.path.join(scratch_path, f), os.path.join(run_dir, f))
+                # NOTE: Would be worth .tar.gz'ing the directory if gzip is True.
             else:
-                copy(os.path.join(scratch_path, f), os.path.join(run_dir, f))
+                # gzip the files in scratch before copying them back
+                if gzip and os.path.splitext(f)[1] != ".gz":
+                    with open(os.path.join(scratch_path, f), "rb") as f_in:
+                        with gzip.open(os.path.join(run_dir, f + ".gz"), "wb") as f_out:
+                            copyfileobj(f_in, f_out)
+                else:
+                    copy(os.path.join(scratch_path, f), os.path.join(run_dir, f))
 
     # Remove the scratch note
     if os.path.exists(scratch_path_note):
