@@ -83,9 +83,6 @@ def prep_next_run(
                 atoms.calc.results.get("magmoms", [0.0] * len(atoms))
             )
 
-    # Clear off the calculator so we can run a new job
-    atoms.calc = None
-
     # Give the Atoms object a unique ID. This will be helpful for querying later.
     # Also store any old IDs somewhere else for future reference.
     # Note: Kep this at the end of the function so that the ID is assigned based

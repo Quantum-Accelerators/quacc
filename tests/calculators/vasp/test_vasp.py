@@ -1,7 +1,7 @@
 import os
 from ase.io import read
 from ase.build import bulk
-from ase.calculators.vasp import Vasp
+from ase.calculators.vasp import Vasp_
 from ase.calculators.singlepoint import SinglePointDFTCalculator
 from ase.constraints import FixAtoms, FixBondLength
 from quacc.calculators.vasp import Vasp
@@ -22,7 +22,7 @@ ATOMS_NOSPIN = read(os.path.join(FILE_DIR, "OUTCAR_nospin.gz"))
 def test_vanilla_Vasp():
     atoms = bulk("Cu")
     atoms = Vasp(atoms, incar_copilot=False)
-    assert atoms.calc.asdict() == Vasp().asdict()
+    assert atoms.calc.asdict() == Vasp()_.asdict()
 
 
 def test_presets():
