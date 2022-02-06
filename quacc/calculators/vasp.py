@@ -2,7 +2,7 @@ import os
 from copy import deepcopy
 import numpy as np
 from ase.atoms import Atoms
-from ase.calculators.vasp import Vasp
+from ase.calculators.vasp import Vasp as Vasp_
 from ase.calculators.vasp.setups import _setups_defaults as ase_default_setups
 from ase.constraints import FixAtoms
 from quacc.util.yaml import load_yaml_calc
@@ -18,7 +18,7 @@ from quacc.calculators.vasp_utils import (
 DEFAULT_CALCS_DIR = os.path.dirname(vasp_defaults.__file__)
 
 
-def SmartVasp(
+def Vasp(
     atoms: Atoms,
     custodian: bool = True,
     preset: None | str = None,
@@ -186,7 +186,7 @@ def SmartVasp(
     user_calc_params = remove_unused_flags(user_calc_params)
 
     # Instantiate the calculator!
-    calc = Vasp(command=command, **user_calc_params)
+    calc = Vasp_(command=command, **user_calc_params)
 
     # Handle INCAR swaps as needed
     if incar_copilot:

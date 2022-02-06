@@ -4,7 +4,7 @@ from quacc.util.atoms import (
     prep_next_run,
     get_atoms_id,
 )
-from quacc.calculators.vasp import SmartVasp
+from quacc.calculators.vasp import Vasp
 from quacc.util.json import jsonify, unjsonify
 from pathlib import Path
 import os
@@ -68,7 +68,7 @@ def test_prep_next_run():
     assert atoms.info.get("results", None) is not None
     assert atoms.info["results"].get("calc0", None) is not None
     assert atoms.info["results"]["calc0"]["magmom"] == mag
-    atoms = SmartVasp(atoms)
+    atoms = Vasp(atoms)
     atoms.calc.results = {"magmom": mag - 2}
     atoms = prep_next_run(atoms, store_results=True)
     assert atoms.info.get("results", None) is not None
@@ -87,7 +87,7 @@ def test_prep_next_run():
     assert atoms.info.get("results", None) is not None
     assert atoms.info["results"].get("calc0", None) is not None
     assert atoms.info["results"]["calc0"]["magmom"] == mag
-    atoms = SmartVasp(atoms)
+    atoms = Vasp(atoms)
     atoms.calc.results = {"magmom": mag - 2}
     atoms = prep_next_run(atoms, store_results=True)
     assert atoms.info.get("results", None) is not None
@@ -101,7 +101,7 @@ def test_prep_next_run():
     assert atoms.info.get("results", None) is not None
     assert atoms.info["results"].get("calc0", None) is not None
     assert atoms.info["results"]["calc0"].get("magmom", None) is None
-    atoms = SmartVasp(atoms)
+    atoms = Vasp(atoms)
     atoms.calc.results = {"magmom": mag - 2}
     atoms = prep_next_run(atoms, store_results=True)
     assert atoms.info.get("results", None) is not None
