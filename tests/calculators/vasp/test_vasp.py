@@ -1,7 +1,7 @@
 import os
 from ase.io import read
 from ase.build import bulk
-from ase.calculators.vasp import Vasp_
+from ase.calculators.vasp import Vasp as Vasp_
 from ase.calculators.singlepoint import SinglePointDFTCalculator
 from ase.constraints import FixAtoms, FixBondLength
 from quacc.calculators.vasp import Vasp
