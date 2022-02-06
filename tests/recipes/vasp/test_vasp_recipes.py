@@ -51,12 +51,12 @@ def test_static_maker():
     assert output["parameters"]["lwave"] == True
     assert output["name"] == "Static"
 
-    job = StaticMaker(preset="SlabRelaxSet", ncore=2, kpar=4, name="test").make(
+    job = StaticMaker(preset="BulkRelaxSet", ncore=2, kpar=4, name="test").make(
         atoms_json
     )
     responses = run_locally(job)
     output = responses[job.uuid][1].output
-    assert output["parameters"]["idipol"] == 3
+    assert output["parameters"]["encut"] == 650
     assert output["parameters"]["ncore"] == 2
     assert output["parameters"]["kpar"] == 4
     assert output["name"] == "test"
@@ -72,39 +72,91 @@ def test_relax_maker():
     output = responses[job.uuid][1].output
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["isym"] == 0
-    assert output["parameters"]["nsw"] == 200
+    assert output["parameters"]["nsw"] > 0
+    assert output["parameters"]["isif"] == 3
     assert output["parameters"]["lwave"] == False
     assert output["name"] == "Relax"
 
-    job = RelaxMaker(preset="SlabRelaxSet", ncore=2, kpar=4, name="test").make(
+    job = RelaxMaker(preset="BulkRelaxSet", ncore=2, kpar=4, name="test").make(
         atoms_json
     )
     responses = run_locally(job)
     output = responses[job.uuid][1].output
-    assert output["parameters"]["idipol"] == 3
+    assert output["parameters"]["encut"] == 650
     assert output["parameters"]["ncore"] == 2
     assert output["parameters"]["kpar"] == 4
     assert output["name"] == "test"
 
 
-# def test_slabs():
-#     atoms_json = jsonify(bulk("Cu"))
+def test_slab_static_maker():
+    atoms = bulk("Cu") * (2, 2, 2)
+    atoms_json = jsonify(atoms)
 
-#     job = SlabStaticMaker().make(atoms_json)
-#     output = run_locally(job)
-#     assert output is not None
+    job = SlabStaticMaker().make(atoms_json)
+    responses = run_locally(job)
+    output = responses[job.uuid][1].output
+    assert output["nsites"] == len(atoms)
+    assert output["parameters"]["idipol"] == 3
+    assert output["parameters"]["nsw"] == 0
+    assert output["parameters"]["lvhar"] == True
+    assert output["name"] == "SlabStatic"
 
-#     job = SlabRelaxMaker().make(atoms_json)
-#     output = run_locally(job)
-#     assert output is not None
+    job = SlabStaticMaker(preset="SlabRelaxSet", ncore=2, kpar=4, name="test").make(
+        atoms_json
+    )
+    responses = run_locally(job)
+    output = responses[job.uuid][1].output
+    assert output["parameters"]["encut"] == 450
+    assert output["parameters"]["ncore"] == 2
+    assert output["parameters"]["kpar"] == 4
+    assert output["name"] == "test"
 
-#     job = BulkToSlabMaker().make(atoms_json)
-#     output = run_locally(job)
-#     assert output is not None
 
-#     atoms = bulk("Cu") * (2, 2, 2)
-#     atoms.center(vacuum=10, axis=2)
-#     slab_json = jsonify(atoms)
-#     job = SlabToAdsSlabMaker().make(slab_json)
-#     output = run_locally(job)
-#     assert output is not None
+def test_slab_relax_maker():
+    atoms = bulk("Cu") * (2, 2, 2)
+    atoms_json = jsonify(atoms)
+
+    job = SlabRelaxMaker().make(atoms_json)
+    responses = run_locally(job)
+    output = responses[job.uuid][1].output
+    assert output["nsites"] == len(atoms)
+    assert output["parameters"]["isif"] == 2
+    assert output["parameters"]["nsw"] > 0
+    assert output["parameters"]["isym"] == 0
+    assert output["parameters"]["lwave"] == False
+    assert output["name"] == "SlabRelax"
+
+    job = SlabRelaxMaker(preset="SlabRelaxSet", ncore=2, kpar=4, name="test").make(
+        atoms_json
+    )
+    responses = run_locally(job)
+    output = responses[job.uuid][1].output
+    assert output["parameters"]["encut"] == 450
+    assert output["parameters"]["ncore"] == 2
+    assert output["parameters"]["kpar"] == 4
+    assert output["name"] == "test"
+
+
+def test_bulk_to_slab():
+    atoms = bulk("Cu") * (2, 2, 2)
+    atoms_json = jsonify(atoms)
+
+    job = BulkToSlabMaker().make(atoms_json)
+    responses = run_locally(job)
+    output = responses[job.uuid][1].output
+    assert output["nsites"] == len(atoms)
+    assert output["parameters"]["isif"] == 2
+    assert output["parameters"]["nsw"] > 0
+    assert output["parameters"]["isym"] == 0
+    assert output["parameters"]["lwave"] == False
+    assert output["name"] == "SlabRelax"
+
+    job = SlabRelaxMaker(preset="SlabRelaxSet", ncore=2, kpar=4, name="test").make(
+        atoms_json
+    )
+    responses = run_locally(job)
+    output = responses[job.uuid][1].output
+    assert output["parameters"]["encut"] == 450
+    assert output["parameters"]["ncore"] == 2
+    assert output["parameters"]["kpar"] == 4
+    assert output["name"] == "test"
