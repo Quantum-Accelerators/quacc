@@ -1,7 +1,6 @@
 import os
 from copy import deepcopy
 import numpy as np
-from pymatgen.io.ase import AseAtomsAdaptor
 from ase.atoms import Atoms
 from ase.calculators.vasp import Vasp
 from ase.calculators.vasp.setups import _setups_defaults as ase_default_setups
@@ -73,9 +72,6 @@ def SmartVasp(
 
     # Copy the atoms to a new object so we don't modify the original
     atoms = deepcopy(atoms)
-
-    # Grab the pymatgen structure object in case we need it later
-    struct = AseAtomsAdaptor().get_structure(atoms)
 
     # Check constraints
     if custodian and atoms.constraints:
@@ -149,7 +145,7 @@ def SmartVasp(
 
     # Make automatic k-point mesh
     if auto_kpts:
-        kpts, gamma, reciprocal = convert_auto_kpts(struct, auto_kpts)
+        kpts, gamma, reciprocal = convert_auto_kpts(atoms, auto_kpts)
         user_calc_params["kpts"] = kpts
         if reciprocal and user_calc_params.get("reciprocal", None) is None:
             user_calc_params["reciprocal"] = reciprocal

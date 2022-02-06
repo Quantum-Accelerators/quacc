@@ -3,7 +3,7 @@ import os
 import warnings
 from typing import Any, List, Dict, Tuple
 import numpy as np
-from pymatgen.core import Structure
+from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.vasp.inputs import Kpoints
 from pymatgen.symmetry.bandstructure import HighSymmKpath
 from ase.atoms import Atoms
@@ -69,7 +69,7 @@ def manage_environment(custodian: bool = True) -> str:
 
 
 def convert_auto_kpts(
-    struct: Structure,
+    atoms: Atoms,
     auto_kpts: None
     | Dict[str, float]
     | Dict[str, List[Tuple[float, float]]]
@@ -87,8 +87,8 @@ def convert_auto_kpts(
 
     Parameters
     ----------
-    .Structure
-        Pymatgen Structure object
+    .Atoms
+        ASE Atoms object
     auto_kpts
         Dictionary describing the automatic k-point scheme
     force_gamma
@@ -103,6 +103,7 @@ def convert_auto_kpts(
     Optional[bool]
         The reciprocal command for use with the ASE Vasp calculator
     """
+    struct = AseAtomsAdaptor.get_structure(atoms)
 
     if auto_kpts.get("line_density", None):
         # TODO: Support methods other than latimer-munro
