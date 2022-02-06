@@ -18,7 +18,7 @@ from quacc.calculators.vasp_utils import (
 DEFAULT_CALCS_DIR = os.path.dirname(vasp_defaults.__file__)
 
 
-def Vasp(
+def SmartVasp(
     atoms: Atoms,
     custodian: bool = True,
     preset: None | str = None,

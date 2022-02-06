@@ -51,7 +51,8 @@ def run_calc(
 
     with TemporaryDirectory(dir=scratch_dir, prefix="quacc-") as scratch_path:
 
-        _copy_to_scratch(run_dir, scratch_path)
+        if copy_to_scratch:
+            _copy_to_scratch(run_dir, scratch_path)
 
         # Run calculation via get_potential_energy()
         atoms.calc.directory = scratch_path
