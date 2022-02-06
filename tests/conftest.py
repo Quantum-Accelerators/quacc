@@ -2,7 +2,6 @@ import numpy as np
 import pytest
 from ase.atoms import Atoms
 
-
 # @pytest.fixture(autouse=True)
 # def set_env(monkeypatch):
 #     # Set dummy environment variables in pytest

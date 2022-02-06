@@ -1,9 +1,7 @@
 import pytest
-
 from ase.build import bulk, molecule
 from jobflow.managers.local import run_locally
 
-from quacc.schemas.calc import summarize_run as calc_summarize_run
 from quacc.recipes.vasp.core import RelaxMaker, StaticMaker
 from quacc.recipes.vasp.slabs import (
     BulkToSlabMaker,
@@ -11,6 +9,7 @@ from quacc.recipes.vasp.slabs import (
     SlabStaticMaker,
     SlabToAdsSlabMaker,
 )
+from quacc.schemas.calc import summarize_run as calc_summarize_run
 from quacc.util.json import jsonify, unjsonify
 
 
