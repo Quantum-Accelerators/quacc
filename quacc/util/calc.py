@@ -52,8 +52,7 @@ def run_calc(
 
     with TemporaryDirectory(dir=scratch_dir, prefix="quacc-") as scratch_path:
 
-        if copy_to_scratch:
-            _copy_to_scratch(run_dir, scratch_path)
+        _copy_to_scratch(run_dir, scratch_path)
 
         # Run calculation via get_potential_energy()
         atoms.calc.directory = scratch_path
@@ -66,7 +65,8 @@ def run_calc(
 
 def _copy_to_scratch(run_dir: str, scratch_path: str):
     """
-    Copy files from working directory to scratch directory.
+    Copy files from working directory to scratch directory. Only
+    copies files, not directories.
 
     Parameters
     ----------
@@ -77,9 +77,7 @@ def _copy_to_scratch(run_dir: str, scratch_path: str):
     """
     # Copy files from working directory to scratch directory
     for f in os.listdir(run_dir):
-        if os.path.isdir(os.path.join(run_dir, f)):
-            copytree(os.path.join(run_dir, f), os.path.join(scratch_path, f))
-        else:
+        if os.path.isfile(os.path.join(run_dir, f)):
             copy(os.path.join(run_dir, f), os.path.join(scratch_path, f))
 
     # Leave a note in the run directory for where the scratch is located in case
@@ -91,7 +89,8 @@ def _copy_to_scratch(run_dir: str, scratch_path: str):
 
 def _copy_from_scratch(run_dir: str, scratch_path: str, compress: bool = False):
     """
-    Copy files from scratch directory to working directory.
+    Copy everything from scratch directory to working directory, including files
+    and directories.
 
     Parameters
     ----------

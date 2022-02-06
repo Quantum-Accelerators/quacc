@@ -3,11 +3,12 @@ import pytest
 from ase.atoms import Atoms
 
 
-@pytest.fixture(autouse=True)
-def set_env(monkeypatch):
-    # Set dummy environment variables in pytest so the tests can run
-    monkeypatch.setenv("VASP_PARALLEL_CMD", "")
-    monkeypatch.setenv("VASP_PP_PATH", ".")
+# @pytest.fixture(autouse=True)
+# def set_env(monkeypatch):
+#     # Set dummy environment variables in pytest
+#     monkeypatch.setenv("VASP_PARALLEL_CMD", "")
+#     monkeypatch.setenv("VASP_PP_PATH", ".")
+#     monkeypatch.setenv("ASE_VASP_VDW", ".")
 
 
 def mock_get_potential_energy(self):

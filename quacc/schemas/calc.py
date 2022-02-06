@@ -7,7 +7,9 @@ from quacc.util.atoms import prep_next_run as prep_next_run_
 from quacc.util.json import jsonify
 
 
-def summarize_run(atoms: Atoms, prep_next_run: bool = True) -> Dict[str, Any]:
+def summarize_run(
+    atoms: Atoms, prep_next_run: bool = True, additional_fields: Dict[str, Any] = None
+) -> Dict[str, Any]:
     """
     Get tabulated results from an Atoms object and calculator and store them in a database-friendly format.
     This is meant to be compatible with all calculator types.
@@ -19,6 +21,8 @@ def summarize_run(atoms: Atoms, prep_next_run: bool = True) -> Dict[str, Any]:
     prep_next_run
         Whether the Atoms object stored in {"atoms": atoms} should be prepared for the next run
         This clears out any attached calculator and moves the final magmoms to the initial magmoms.
+    additional_fields
+        Additional fields to add to the task document.
 
     Returns
     -------
@@ -31,6 +35,9 @@ def summarize_run(atoms: Atoms, prep_next_run: bool = True) -> Dict[str, Any]:
         raise ValueError("ASE Atoms object has no attached calculator.")
     if not atoms.calc.results:
         raise ValueError("ASE Atoms object's calculator has no results.")
+
+    if additional_fields is None:
+        additional_fields = {}
 
     # Fetch all tabulated results from the attached calculator
     results = {"results": atoms.calc.results}
@@ -48,7 +55,7 @@ def summarize_run(atoms: Atoms, prep_next_run: bool = True) -> Dict[str, Any]:
     atoms_db = atoms_to_metadata(atoms)
 
     # Create a dictionary of the inputs/outputs
-    results_full = {**atoms_db, **inputs, **results}
+    results_full = {**atoms_db, **inputs, **results, **additional_fields}
 
     # Make sure it's all JSON serializable
     task_doc = jsonify(results_full)

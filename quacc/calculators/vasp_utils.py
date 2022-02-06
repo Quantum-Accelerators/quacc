@@ -32,7 +32,7 @@ def manage_environment(custodian: bool = True) -> str:
 
     # Check ASE environment variables
     if "VASP_PP_PATH" not in os.environ:
-        raise OSError(
+        warnings.warn(
             "The VASP_PP_PATH environment variable must point to the library of VASP pseudopotentials. See the ASE Vasp calculator documentation for details.",
         )
 
@@ -55,7 +55,7 @@ def manage_environment(custodian: bool = True) -> str:
         command = f"python {run_vasp_custodian_file}"
     else:
         if "ASE_VASP_COMMAND" not in os.environ and "VASP_SCRIPT" not in os.environ:
-            raise OSError(
+            warnings.warn(
                 "ASE_VASP_COMMAND or VASP_SCRIPT must be set in the environment to run VASP. See the ASE Vasp calculator documentation for details."
             )
         command = None
@@ -119,7 +119,6 @@ def convert_auto_kpts(
             if auto_kpts["max_mixed_density"][0] > auto_kpts["max_mixed_density"][1]:
                 warnings.warn(
                     "Warning: It is not usual that kppvol > kppa. Please make sure you have chosen the right k-point densities.",
-                    UserWarning,
                 )
             pmg_kpts1 = Kpoints.automatic_density_by_vol(
                 struct, auto_kpts["max_mixed_density"][0], force_gamma=force_gamma
@@ -232,19 +231,13 @@ def calc_swaps(
         not calc.int_params["lmaxmix"] or calc.int_params["lmaxmix"] < 6
     ) and max_block == "f":
         if verbose:
-            warnings.warn(
-                "Copilot: Setting LMAXMIX = 6 because you have an f-element.",
-                UserWarning,
-            )
+            warnings.warn("Copilot: Setting LMAXMIX = 6 because you have an f-element.")
         calc.set(lmaxmix=6)
     elif (
         not calc.int_params["lmaxmix"] or calc.int_params["lmaxmix"] < 4
     ) and max_block == "d":
         if verbose:
-            warnings.warn(
-                "Copilot: Setting LMAXMIX = 4 because you have a d-element",
-                UserWarning,
-            )
+            warnings.warn("Copilot: Setting LMAXMIX = 4 because you have a d-element")
         calc.set(lmaxmix=4)
 
     if (
@@ -256,8 +249,7 @@ def calc_swaps(
     ) and not calc.bool_params["lasph"]:
         if verbose:
             warnings.warn(
-                "Copilot: Setting LASPH = True because you have a +U, vdW, meta-GGA, or hybrid calculation.",
-                UserWarning,
+                "Copilot: Setting LASPH = True because you have a +U, vdW, meta-GGA, or hybrid calculation."
             )
         calc.set(lasph=True)
 
@@ -268,8 +260,7 @@ def calc_swaps(
     ):
         if verbose:
             warnings.warn(
-                "Copilot: Setting LMAXTAU = 8 because you have LASPH = True and an f-element.",
-                UserWarning,
+                "Copilot: Setting LMAXTAU = 8 because you have LASPH = True and an f-element."
             )
         calc.set(lmaxtau=8)
 
@@ -278,8 +269,7 @@ def calc_swaps(
     ):
         if verbose:
             warnings.warn(
-                "Copilot: Setting ALGO = All because you have a meta-GGA calculation.",
-                UserWarning,
+                "Copilot: Setting ALGO = All because you have a meta-GGA calculation."
             )
         calc.set(algo="all")
 
@@ -291,15 +281,13 @@ def calc_swaps(
             calc.set(algo="damped", time=0.5)
             if verbose:
                 warnings.warn(
-                    "Copilot: Setting ALGO = Damped, TIME = 0.5 because you have a hybrid calculation with a metal.",
-                    UserWarning,
+                    "Copilot: Setting ALGO = Damped, TIME = 0.5 because you have a hybrid calculation with a metal."
                 )
         else:
             calc.set(algo="all")
             if verbose:
                 warnings.warn(
-                    "Copilot: Setting ALGO = All because you have a hybrid calculation.",
-                    UserWarning,
+                    "Copilot: Setting ALGO = All because you have a hybrid calculation."
                 )
 
     if (
@@ -309,8 +297,7 @@ def calc_swaps(
     ):
         if verbose:
             warnings.warn(
-                "Copilot: You are relaxing a likely metal. Setting ISMEAR = 1 and SIGMA = 0.1.",
-                UserWarning,
+                "Copilot: You are relaxing a likely metal. Setting ISMEAR = 1 and SIGMA = 0.1."
             )
         calc.set(ismear=1, sigma=0.1)
 
@@ -321,16 +308,14 @@ def calc_swaps(
     ):
         if verbose:
             warnings.warn(
-                "Copilot: Setting ISMEAR = -5 and SIGMA = 0.05 because you have a static DOS calculation.",
-                UserWarning,
+                "Copilot: Setting ISMEAR = -5 and SIGMA = 0.05 because you have a static DOS calculation."
             )
         calc.set(ismear=-5, sigma=0.05)
 
     if calc.int_params["ismear"] == -5 and np.product(calc.kpts) < 4:
         if verbose:
             warnings.warn(
-                "Copilot: Setting ISMEAR = 0 and SIGMA = 0.05 because you don't have enough k-points for ISMEAR = -5.",
-                UserWarning,
+                "Copilot: Setting ISMEAR = 0 and SIGMA = 0.05 because you don't have enough k-points for ISMEAR = -5."
             )
         calc.set(ismear=0, sigma=0.05)
 
@@ -341,8 +326,7 @@ def calc_swaps(
     ):
         if verbose:
             warnings.warn(
-                "Copilot: Setting ISMEAR = 0 and SIGMA = 0.01 because you are doing a line mode calculation.",
-                UserWarning,
+                "Copilot: Setting ISMEAR = 0 and SIGMA = 0.01 because you are doing a line mode calculation."
             )
         calc.set(ismear=0, sigma=0.01)
 
@@ -353,8 +337,7 @@ def calc_swaps(
     ):
         if verbose:
             warnings.warn(
-                "Copilot: KSPACING is likely too large for ISMEAR = -5. Setting ISMEAR = 0 and SIGMA = 0.05.",
-                UserWarning,
+                "Copilot: KSPACING is likely too large for ISMEAR = -5. Setting ISMEAR = 0 and SIGMA = 0.05."
             )
         calc.set(ismear=0, sigma=0.05)
         pass
@@ -366,8 +349,7 @@ def calc_swaps(
     ):
         if verbose:
             warnings.warn(
-                "Copilot: Setting LAECHG = False because you have NSW > 0. LAECHG is not compatible with NSW > 0.",
-                UserWarning,
+                "Copilot: Setting LAECHG = False because you have NSW > 0. LAECHG is not compatible with NSW > 0."
             )
         calc.set(laechg=None)
 
@@ -375,16 +357,13 @@ def calc_swaps(
         calc.bool_params["ldau"] or calc.dict_params["ldau_luj"]
     ):
         if verbose:
-            warnings.warn(
-                "Copilot: Setting LDAUPRINT = 1 because LDAU = True.", UserWarning
-            )
+            warnings.warn("Copilot: Setting LDAUPRINT = 1 because LDAU = True.")
         calc.set(ldauprint=1)
 
     if calc.special_params["lreal"] and calc.int_params["nsw"] in (None, 0, 1):
         if verbose:
             warnings.warn(
-                "Copilot: Setting LREAL = False because you are running a static calculation. LREAL != False can be bad for energies.",
-                UserWarning,
+                "Copilot: Setting LREAL = False because you are running a static calculation. LREAL != False can be bad for energies."
             )
         calc.set(lreal=False)
 
@@ -394,8 +373,7 @@ def calc_swaps(
     ):
         if verbose:
             warnings.warn(
-                "Copilot: Setting LORBIT = 11 because you have a spin-polarized calculation.",
-                UserWarning,
+                "Copilot: Setting LORBIT = 11 because you have a spin-polarized calculation."
             )
         calc.set(lorbit=11)
 
@@ -410,8 +388,7 @@ def calc_swaps(
     ):
         if verbose:
             warnings.warn(
-                "Copilot: Setting NCORE = 1 because NCORE/NPAR is not compatible with this job type.",
-                UserWarning,
+                "Copilot: Setting NCORE = 1 because NCORE/NPAR is not compatible with this job type."
             )
         calc.set(ncore=1)
         if calc.int_params.get("npar", None) is not None:
@@ -423,8 +400,7 @@ def calc_swaps(
     ) and len(atoms) <= 4:
         if verbose:
             warnings.warn(
-                "Copilot: Setting NCORE = 1 because you have a very small structure.",
-                UserWarning,
+                "Copilot: Setting NCORE = 1 because you have a very small structure."
             )
         calc.set(ncore=1)
         if calc.int_params.get("npar", None) is not None:
@@ -433,8 +409,7 @@ def calc_swaps(
     if calc.int_params["kpar"] and calc.int_params["kpar"] > np.prod(calc.kpts):
         if verbose:
             warnings.warn(
-                "Copilot: Setting KPAR = 1 because you have too few k-points to parallelize.",
-                UserWarning,
+                "Copilot: Setting KPAR = 1 because you have too few k-points to parallelize."
             )
         calc.set(kpar=1)
 
@@ -446,23 +421,18 @@ def calc_swaps(
     ):
         if verbose:
             warnings.warn(
-                "Copilot: Setting ISYM = 0 because you are running a relaxation.",
-                UserWarning,
+                "Copilot: Setting ISYM = 0 because you are running a relaxation."
             )
         calc.set(isym=0)
 
     if calc.bool_params["lhfcalc"] is True and calc.int_params["isym"] in (1, 2):
         if verbose:
             warnings.warn(
-                "Copilot: Setting ISYM = 3 because you are running a hybrid calculation.",
-                UserWarning,
+                "Copilot: Setting ISYM = 3 because you are running a hybrid calculation."
             )
         calc.set(isym=3)
 
     if calc.bool_params["luse_vdw"] and "ASE_VASP_VDW" not in os.environ:
-        warnings.warn(
-            "ASE_VASP_VDW was not set, yet you requested a vdW functional.",
-            UserWarning,
-        )
+        warnings.warn("ASE_VASP_VDW was not set, yet you requested a vdW functional.")
 
     return calc
