@@ -4,3 +4,4 @@ __pycache__
 POTCAR*
 docs_build
 docs/src/reference/*
+scratch_path.txt

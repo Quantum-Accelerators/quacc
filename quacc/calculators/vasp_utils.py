@@ -47,7 +47,7 @@ def manage_environment(custodian: bool = True) -> str:
             )
             os.environ["VASP_CUSTODIAN_SETTINGS"] = custodian_yaml
         if not os.path.isfile(custodian_yaml):
-            raise FileNotFoundError("{custodian_yaml} not found.")
+            raise FileNotFoundError(f"{custodian_yaml} not found.")
 
         # Return the command flag
         custodian_dir = os.path.dirname(os.path.abspath(inspect.getfile(custodian_)))
