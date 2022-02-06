@@ -1,7 +1,8 @@
+import os
 from typing import Any, Dict
+
 from pymatgen.command_line.bader_caller import bader_analysis_from_path
 from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
-import os
 
 
 def run_bader(path: None | str = None) -> Dict[str, Any]:

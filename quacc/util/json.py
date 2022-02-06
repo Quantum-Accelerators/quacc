@@ -1,9 +1,9 @@
 from typing import Any
-from ase.atoms import Atom, Atoms
-from ase.io.jsonio import encode, decode
-from monty.json import jsanitize
-from monty.json import MSONable, MontyDecoder
+
 import numpy as np
+from ase.atoms import Atom, Atoms
+from ase.io.jsonio import decode, encode
+from monty.json import MontyDecoder, MSONable, jsanitize
 
 
 def jsonify(obj: Any) -> Any:

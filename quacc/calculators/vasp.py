@@ -1,19 +1,18 @@
 import os
 from copy import deepcopy
+
 import numpy as np
 from ase.atoms import Atoms
 from ase.calculators.vasp import Vasp as Vasp_
 from ase.calculators.vasp.setups import _setups_defaults as ase_default_setups
 from ase.constraints import FixAtoms
-from quacc.util.yaml import load_yaml_calc
-from quacc.util.atoms import set_magmoms
+
+from quacc.calculators.vasp_utils import (calc_swaps, convert_auto_kpts,
+                                          manage_environment,
+                                          remove_unused_flags)
 from quacc.defaults.calcs import vasp as vasp_defaults
-from quacc.calculators.vasp_utils import (
-    manage_environment,
-    convert_auto_kpts,
-    remove_unused_flags,
-    calc_swaps,
-)
+from quacc.util.atoms import set_magmoms
+from quacc.util.yaml import load_yaml_calc
 
 DEFAULT_CALCS_DIR = os.path.dirname(vasp_defaults.__file__)
 

@@ -1,8 +1,10 @@
 import os
+from pathlib import Path
+
+from ase.io import read
+
 from quacc.schemas.cclib import summarize_run
 from quacc.util.json import unjsonify
-from ase.io import read
-from pathlib import Path
 
 FILE_DIR = Path(__file__).resolve().parent
 

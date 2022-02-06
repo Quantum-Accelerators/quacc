@@ -1,10 +1,12 @@
+from dataclasses import dataclass
 from typing import Any, Dict
+
+from jobflow import Maker, job
+
 from quacc.calculators.vasp import SmartVasp
 from quacc.schemas.vasp import summarize_run
-from quacc.util.json import unjsonify
 from quacc.util.calc import run_calc
-from jobflow import job, Maker
-from dataclasses import dataclass
+from quacc.util.json import unjsonify
 
 
 @dataclass

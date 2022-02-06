@@ -1,10 +1,12 @@
 from copy import deepcopy
 from typing import Any, Dict
+
 import numpy as np
 from ase.atoms import Atom, Atoms
-from atomate2.common.schemas.structure import StructureMetadata
 from atomate2.common.schemas.molecule import MoleculeMetadata
+from atomate2.common.schemas.structure import StructureMetadata
 from pymatgen.io.ase import AseAtomsAdaptor
+
 from quacc.util.json import jsonify
 
 

@@ -1,6 +1,6 @@
+import numpy as np
 import pytest
 from ase.atoms import Atoms
-import numpy as np
 
 
 @pytest.fixture(autouse=True)

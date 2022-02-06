@@ -1,9 +1,11 @@
 import os
-from quacc.schemas.vasp import summarize_run
-from quacc.calculators.vasp import SmartVasp
-from quacc.util.json import unjsonify
-from ase.io import read
 from pathlib import Path
+
+from ase.io import read
+
+from quacc.calculators.vasp import SmartVasp
+from quacc.schemas.vasp import summarize_run
+from quacc.util.json import unjsonify
 
 FILE_DIR = Path(__file__).resolve().parent
 

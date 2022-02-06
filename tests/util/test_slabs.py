@@ -1,17 +1,14 @@
-from ase.io import read
-from ase.build import bulk, fcc100
-from ase.build import molecule
-from quacc.util.slabs import (
-    flip_atoms,
-    make_slabs_from_bulk,
-    make_max_slabs_from_bulk,
-    make_adsorbate_structures,
-)
-from quacc.util.json import jsonify, unjsonify
-from pathlib import Path
 import os
-import numpy as np
 from copy import deepcopy
+from pathlib import Path
+
+import numpy as np
+from ase.build import bulk, fcc100, molecule
+from ase.io import read
+
+from quacc.util.json import jsonify, unjsonify
+from quacc.util.slabs import (flip_atoms, make_adsorbate_structures,
+                              make_max_slabs_from_bulk, make_slabs_from_bulk)
 
 FILE_DIR = Path(__file__).resolve().parent
 ATOMS_MAG = read(os.path.join(FILE_DIR, "..", "calculators", "vasp", "OUTCAR_mag.gz"))

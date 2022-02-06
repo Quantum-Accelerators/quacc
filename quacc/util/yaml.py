@@ -1,6 +1,7 @@
-from typing import Dict, Any
-import yaml
 import os
+from typing import Any, Dict
+
+import yaml
 
 
 def load_yaml_calc(yaml_path: str) -> Dict[str, Any]:

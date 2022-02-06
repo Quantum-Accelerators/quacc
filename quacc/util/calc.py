@@ -1,8 +1,9 @@
+import gzip
 import os
 from copy import deepcopy
-import gzip
-from shutil import copy, copytree, copyfileobj
+from shutil import copy, copyfileobj, copytree
 from tempfile import TemporaryDirectory
+
 from ase.atoms import Atoms
 
 

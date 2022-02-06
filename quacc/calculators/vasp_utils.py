@@ -1,16 +1,18 @@
 import inspect
 import os
 import warnings
-from typing import Any, List, Dict, Tuple
+from typing import Any, Dict, List, Tuple
+
 import numpy as np
+from ase.atoms import Atoms
+from ase.calculators.vasp import Vasp
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.vasp.inputs import Kpoints
 from pymatgen.symmetry.bandstructure import HighSymmKpath
-from ase.atoms import Atoms
-from ase.calculators.vasp import Vasp
+
 from quacc import custodian as custodian_
-from quacc.util.atoms import check_is_metal, get_highest_block
 from quacc.defaults import custodian_settings
+from quacc.util.atoms import check_is_metal, get_highest_block
 
 
 def manage_environment(custodian: bool = True) -> str:

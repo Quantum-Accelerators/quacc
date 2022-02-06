@@ -1,15 +1,15 @@
-from typing import Any, List, Dict
+import warnings
+from copy import deepcopy
+from typing import Any, Dict, List
+
+import numpy as np
 from ase.atoms import Atom, Atoms
 from ase.build import molecule
 from ase.collections import g2
-from pymatgen.io.ase import AseAtomsAdaptor
-from pymatgen.core import Structure
-from pymatgen.core.surface import generate_all_slabs, Slab
 from pymatgen.analysis.adsorption import AdsorbateSiteFinder
-from pymatgen.core.surface import center_slab
-import numpy as np
-import warnings
-from copy import deepcopy
+from pymatgen.core import Structure
+from pymatgen.core.surface import Slab, center_slab, generate_all_slabs
+from pymatgen.io.ase import AseAtomsAdaptor
 
 # NOTES:
 # - Anytime an Atoms object is converted to a pmg structure, make sure

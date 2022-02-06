@@ -1,16 +1,18 @@
 import os
-from ase.io import read
-from ase.build import bulk
-from ase.calculators.vasp import Vasp
-from ase.calculators.singlepoint import SinglePointDFTCalculator
-from ase.constraints import FixAtoms, FixBondLength
-from quacc.calculators.vasp import SmartVasp
-from quacc.util.atoms import prep_next_run
-from quacc.defaults.calcs import vasp as v
-from pathlib import Path
-import pytest
-import numpy as np
 from copy import deepcopy
+from pathlib import Path
+
+import numpy as np
+import pytest
+from ase.build import bulk
+from ase.calculators.singlepoint import SinglePointDFTCalculator
+from ase.calculators.vasp import Vasp
+from ase.constraints import FixAtoms, FixBondLength
+from ase.io import read
+
+from quacc.calculators.vasp import SmartVasp
+from quacc.defaults.calcs import vasp as v
+from quacc.util.atoms import prep_next_run
 
 FILE_DIR = Path(__file__).resolve().parent
 DEFAULT_CALCS_DIR = os.path.dirname(v.__file__)

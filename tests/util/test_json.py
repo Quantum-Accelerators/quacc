@@ -1,8 +1,9 @@
-from quacc.util.json import jsonify, unjsonify
+import numpy as np
 from ase.build import bulk
 from ase.io.jsonio import encode
 from pymatgen.io.ase import AseAtomsAdaptor
-import numpy as np
+
+from quacc.util.json import jsonify, unjsonify
 
 
 def test_json():

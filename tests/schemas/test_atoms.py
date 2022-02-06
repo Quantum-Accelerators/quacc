@@ -1,6 +1,7 @@
+from ase.build import bulk
+
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.json import unjsonify
-from ase.build import bulk
 
 
 def test_atoms_to_metadata():

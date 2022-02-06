@@ -1,16 +1,18 @@
+import os
+from pathlib import Path
+from shutil import copy
+
 from ase.build import bulk
+from jobflow.managers.local import run_locally
+
 from quacc.recipes.vasp.core import RelaxMaker, StaticMaker
 from quacc.recipes.vasp.slabs import (
+    BulkToSlabMaker,
     SlabRelaxMaker,
     SlabStaticMaker,
-    BulkToSlabMaker,
     SlabToAdsSlabMaker,
 )
 from quacc.util.json import jsonify
-from jobflow.managers.local import run_locally
-from pathlib import Path
-from shutil import copy
-import os
 
 FILE_DIR = Path(__file__).resolve().parent
 run1 = os.path.join(FILE_DIR, "..", "..", "schemas", "vasp_run1")

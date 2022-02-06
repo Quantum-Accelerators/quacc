@@ -1,11 +1,14 @@
+from dataclasses import dataclass
 from typing import Any, Dict
+
+from jobflow import Flow, Maker, Response, job
+
 from quacc.calculators.vasp import SmartVasp
 from quacc.schemas.vasp import summarize_run
-from quacc.util.slabs import make_max_slabs_from_bulk, make_adsorbate_structures
-from quacc.util.json import jsonify, unjsonify
 from quacc.util.calc import run_calc
-from jobflow import job, Flow, Response, Maker
-from dataclasses import dataclass
+from quacc.util.json import jsonify, unjsonify
+from quacc.util.slabs import (make_adsorbate_structures,
+                              make_max_slabs_from_bulk)
 
 
 @dataclass
