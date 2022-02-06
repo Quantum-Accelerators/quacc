@@ -1,4 +1,5 @@
 import inspect
+from multiprocessing.sharedctypes import Value
 import os
 import warnings
 from typing import Any, List, Dict, Tuple
@@ -32,7 +33,7 @@ def manage_environment(custodian: bool = True) -> str:
 
     # Check ASE environment variables
     if "VASP_PP_PATH" not in os.environ:
-        warnings.warn(
+        raise OSError(
             "The VASP_PP_PATH environment variable must point to the library of VASP pseudopotentials. See the ASE Vasp calculator documentation for details.",
         )
 
@@ -60,7 +61,7 @@ def manage_environment(custodian: bool = True) -> str:
         command = f"python {run_vasp_custodian_file}"
     else:
         if "ASE_VASP_COMMAND" not in os.environ and "VASP_SCRIPT" not in os.environ:
-            warnings.warn(
+            raise OSError(
                 "ASE_VASP_COMMAND or VASP_SCRIPT must be set in the environment to run VASP. See the ASE Vasp calculator documentation for details."
             )
         command = None

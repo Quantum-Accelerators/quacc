@@ -19,6 +19,12 @@ ATOMS_NOMAG = read(os.path.join(FILE_DIR, "OUTCAR_nomag.gz"))
 ATOMS_NOSPIN = read(os.path.join(FILE_DIR, "OUTCAR_nospin.gz"))
 
 
+@pytest.fixture(autouse=True)
+def set_env(monkeypatch):
+    monkeypatch.setenv("ASE_VASP_COMMAND", "vasp_std")
+    monkeypatch.setenv("VASP_PP_PATH", ".")
+
+
 def test_vanilla_smartvasp():
     atoms = bulk("Cu")
     atoms = SmartVasp(atoms, incar_copilot=False)
