@@ -7,9 +7,12 @@ from ase.calculators.vasp import Vasp as Vasp_
 from ase.calculators.vasp.setups import _setups_defaults as ase_default_setups
 from ase.constraints import FixAtoms
 
-from quacc.calculators.vasp_utils import (calc_swaps, convert_auto_kpts,
-                                          manage_environment,
-                                          remove_unused_flags)
+from quacc.calculators.vasp_utils import (
+    calc_swaps,
+    convert_auto_kpts,
+    manage_environment,
+    remove_unused_flags,
+)
 from quacc.defaults.calcs import vasp as vasp_defaults
 from quacc.util.atoms import set_magmoms
 from quacc.util.yaml import load_yaml_calc
