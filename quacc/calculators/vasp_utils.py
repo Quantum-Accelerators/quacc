@@ -12,7 +12,6 @@ from ase.calculators.vasp import Vasp
 from quacc import custodian as custodian_
 from quacc.util.yaml import load_yaml_settings
 from quacc.util.atoms import check_is_metal, get_highest_block
-from quacc.defaults.calcs import vasp as vasp_defaults
 from quacc.defaults import custodian_settings
 
 
@@ -49,11 +48,6 @@ def manage_environment(custodian: bool = True) -> str:
             os.environ["VASP_CUSTODIAN_SETTINGS"] = custodian_yaml
         if not os.path.isfile(custodian_yaml):
             raise FileNotFoundError("{custodian_yaml} not found.")
-
-        try:
-            load_yaml_settings(custodian_yaml)
-        except OSError as msg:
-            warnings.warn(str(msg))
 
         # Return the command flag
         custodian_dir = os.path.dirname(os.path.abspath(inspect.getfile(custodian_)))

@@ -21,7 +21,8 @@ ATOMS_NOSPIN = read(os.path.join(FILE_DIR, "OUTCAR_nospin.gz"))
 
 @pytest.fixture(autouse=True)
 def set_env(monkeypatch):
-    monkeypatch.setenv("ASE_VASP_COMMAND", "vasp_std")
+    # Set environment variables in pytest so the tests can run
+    monkeypatch.setenv("VASP_PARALLEL_CMD", "")
     monkeypatch.setenv("VASP_PP_PATH", ".")
 
 
