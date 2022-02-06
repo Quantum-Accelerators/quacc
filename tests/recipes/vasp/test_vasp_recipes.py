@@ -1,6 +1,11 @@
 from ase.build import bulk
 from quacc.recipes.vasp.core import RelaxMaker, StaticMaker
-from quacc.recipes.vasp.slabs import SlabRelaxMaker, SlabStaticMaker, SlabToAdsSlabMaker
+from quacc.recipes.vasp.slabs import (
+    SlabRelaxMaker,
+    SlabStaticMaker,
+    BulkToSlabMaker,
+    SlabToAdsSlabMaker,
+)
 from quacc.util.json import jsonify
 from jobflow.managers.local import run_locally
 from pathlib import Path
@@ -42,5 +47,16 @@ def test_slabs():
     assert output is not None
 
     job = SlabRelaxMaker().make(atoms_json)
+    output = run_locally(job)
+    assert output is not None
+
+    job = BulkToSlabMaker().make(atoms_json)
+    output = run_locally(job)
+    assert output is not None
+
+    atoms = bulk("Cu") * (2, 2, 2)
+    atoms.center(vacuum=10, axis=2)
+    slab_json = jsonify(atoms)
+    job = SlabToAdsSlabMaker().make(slab_json)
     output = run_locally(job)
     assert output is not None
