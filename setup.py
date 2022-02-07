@@ -23,6 +23,16 @@ if __name__ == "__main__":
         keywords="high-throughput automated workflow dft vasp",
         data_files=["LICENSE.md"],
         zip_safe=False,
+        install_requires=[
+            "ase==3.22.1",
+            "pymatgen==2022.2.7",
+            "custodian==2022.1.17",
+            "jobflow==0.1.6",
+            "atomate2==0.0.6",
+            "monty==2022.1.19",
+            "FireWorks==2.0.2",
+            "cclib==1.7.1",
+        ],
         extras_require={
             "tests": ["pytest==7.0.0"],
             "docs": [
