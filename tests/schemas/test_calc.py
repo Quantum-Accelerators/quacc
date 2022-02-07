@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
-import pytest
 
+import pytest
 from ase.build import bulk
 from ase.io import read
 
