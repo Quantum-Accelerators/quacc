@@ -18,19 +18,19 @@ class RelaxMaker(Maker):
     ----------
     name
         Name of the job.
-    volume_relax
-        True if a volume relaxation (ISIF = 3) should be performed.
-        False if only the positions (ISIF = 2) should be updated.
     preset
         Preset to use.
     swaps
         Dictionary of custom kwargs for the calculator.
+    volume_relax
+        True if a volume relaxation (ISIF = 3) should be performed.
+        False if only the positions (ISIF = 2) should be updated.
     """
 
     name: str = "Relax"
-    volume_relax: bool = True
     preset: None | str = None
     swaps: Dict[str, Any] = None
+    volume_relax: bool = True
 
     @job
     def make(self, atoms: Atoms) -> Dict[str, Any]:
@@ -48,15 +48,10 @@ class RelaxMaker(Maker):
             Summary of the run.
         """
         swaps = self.swaps or {}
-
-        if self.volume_relax:
-            isif = 3
-        else:
-            isif = 2
         flags = {
             "ediff": 1e-5,
             "ediffg": -0.02,
-            "isif": isif,
+            "isif": 3 if self.volume_relax else 2,
             "ibrion": 2,
             "ismear": 0,
             "isym": 0,
