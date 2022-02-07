@@ -1,8 +1,11 @@
 import os
 from pathlib import Path
+import pytest
 
+from ase.build import bulk
 from ase.io import read
 
+from quacc.calculators.vasp import SmartVasp
 from quacc.schemas.cclib import summarize_run
 from quacc.util.json import unjsonify
 
@@ -22,6 +25,12 @@ def test_summarize_run():
     assert results["spin_multiplicity"] == 1
     assert results["nsites"] == 6
     assert results["metadata"].get("success", None) == True
+
+    # Make sure default dir works
+    cwd = os.getcwd()
+    os.chdir(run1)
+    summarize_run(atoms, ".log")
+    os.chdir(cwd)
 
     # Make sure info tags are handled appropriately
     atoms = read(log1)
@@ -53,3 +62,13 @@ def test_summarize_run():
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
     results_atoms = unjsonify(results["atoms"])
     assert results_atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
+
+
+def test_errors():
+    atoms = bulk("Cu")
+    with pytest.raises(ValueError):
+        summarize_run(atoms, ".log", dir_path=run1)
+
+    atoms = SmartVasp(atoms)
+    with pytest.raises(ValueError):
+        summarize_run(atoms, ".log", dir_path=run1)

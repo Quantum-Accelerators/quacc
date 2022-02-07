@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
+import pytest
 
+from ase.build import bulk
 from ase.io import read
 
 from quacc.schemas.calc import summarize_run
@@ -49,3 +51,14 @@ def test_summarize_run():
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
     results_atoms = unjsonify(results["atoms"])
     assert results_atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
+
+
+def test_errors():
+    atoms = bulk("Cu")
+    with pytest.raises(ValueError):
+        summarize_run(atoms)
+
+    atoms = read(os.path.join(run1, "OUTCAR.gz"))
+    atoms.calc.results = {}
+    with pytest.raises(ValueError):
+        summarize_run(atoms)
