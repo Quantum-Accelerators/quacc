@@ -3,8 +3,6 @@ from pathlib import Path
 from setuptools import find_packages, setup
 
 module_dir = Path(__file__).resolve().parent
-# with open("requirements.txt") as f:
-#     required = f.read().splitlines()
 
 with open(module_dir / "README.md") as f:
     long_description = f.read()
