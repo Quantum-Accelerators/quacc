@@ -41,7 +41,7 @@ def SmartVasp(
         The Atoms object to be used for the calculation.
     custodian
         Whether to use Custodian to run VASP. If True, the Custodian settings will (by default) be
-        adopted from htase.defaults.custodian_settings.vasp_custodian_settings.yaml. To override
+        adopted from quacc.defaults.custodian_settings.vasp_custodian_settings.yaml. To override
         these default Custodian settings, you can define your own .yaml file and set the path in
         the VASP_CUSTODIAN_SETTINGS environment variable at runtime. If set to False, ASE will
         run VASP without Custodian, in which case you must have a valid ASE_VASP_COMMAND set per

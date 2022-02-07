@@ -55,3 +55,31 @@ def load_yaml_calc(yaml_path: str) -> Dict[str, Any]:
             config["inputs"]["setups"][k] = v.split(k)[-1]
 
     return config
+
+
+def load_yaml_settings(yaml_file: str) -> Dict[str, Any]:
+    """
+    Loads a standard YAML settings file. Any entry marked with
+    a "$" sign is an environment variable.
+    Parameters
+    ----------
+    yaml_file
+        Filename or full path to YAML file.
+    Returns
+    -------
+    Dict
+        The settings specified in the YAML file.
+    """
+
+    settings = yaml.safe_load(open(yaml_file))
+
+    # If $ is the first character, get from the environment variable
+    for k, v in settings.items():
+        if isinstance(v, str) and v[0] == "$":
+            if os.path.expandvars(v) == v:
+                raise OSError(
+                    f"Missing environment variable {v}, as specified in {yaml_file}"
+                )
+            settings[k] = os.path.expandvars(v)
+
+    return settings
