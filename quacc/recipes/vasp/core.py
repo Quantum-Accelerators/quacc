@@ -33,10 +33,7 @@ class RelaxMaker(Maker):
     swaps: Dict[str, Any] = None
 
     @job
-    def make(
-        self,
-        atoms_json: str,
-    ) -> Dict[str, Any]:
+    def make(self, atoms_json: str) -> Dict[str, Any]:
         """
         Make the run.
 

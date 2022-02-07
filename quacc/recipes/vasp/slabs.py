@@ -80,6 +80,8 @@ class SlabStaticMaker(Maker):
         Name of the job.
     preset
         Preset to use.
+    swaps
+        Dictionary of custom kwargs for the calculator.
     """
 
     name: str = "SlabStatic"
@@ -136,6 +138,10 @@ class BulkToSlabMaker(Maker):
     ----------
     name
         Name of the job.
+    slab_relax_maker
+        Maker to use for the SlabRelax job.
+    slab_static_maker
+        Default to use for the SlabStatic job.
     preset
         Preset to use.
     swaps
@@ -204,14 +210,18 @@ class SlabToAdsSlabMaker(Maker):
     ----------
     name:
         Name of the job.
+    slab_relax_maker
+        Maker to use for the SlabRelax job.
+    slab_static_maker
+        Default to use for the SlabStatic job.
     preset:
         Preset to use.
     """
 
     name: str = "SlabToAdsSlab"
-    preset: None | str = None
     slab_relax_maker: Maker = SlabRelaxMaker()
     slab_static_maker: Maker = SlabStaticMaker()
+    preset: None | str = None
     swaps: Dict[str, Any] = None
 
     @job
