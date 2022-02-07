@@ -30,7 +30,6 @@ if __name__ == "__main__":
                 "m2r2==0.3.2",
                 "mistune==2.0.2",
                 "pydata-sphinx-theme==0.8.0",
-                "autodoc_pydantic==1.6.1",
                 "sphinx_panels==0.6.0",
             ],
             "dev": ["pytest==7.0.0", "black==22.1.0"],
