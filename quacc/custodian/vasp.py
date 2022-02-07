@@ -29,7 +29,7 @@ def run_custodian():
     if "VASP_CUSTODIAN_SETTINGS" in os.environ:
         settings_path = os.environ["VASP_CUSTODIAN_SETTINGS"]
     else:
-        raise EnvironmentError("Missing environment variable VASP_CUSTODIAN_SETTINGS.")
+        raise OSError("Missing environment variable VASP_CUSTODIAN_SETTINGS.")
     config = load_yaml_settings(settings_path)
 
     # Handlers for VASP
