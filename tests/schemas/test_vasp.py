@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 from ase.io import read
+from monty.json import MontyDecoder, jsanitize
 
 from quacc.calculators.vasp import SmartVasp
 from quacc.schemas.vasp import summarize_run
@@ -75,3 +76,7 @@ def test_summarize_run():
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
     results_atoms = results["atoms"]
     assert results_atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
+
+    # test document can be jsanitized amd decoded
+    d = jsanitize(results, strict=True, enum_values=True)
+    MontyDecoder().process_decoded(d)

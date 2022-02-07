@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 from ase.build import bulk
 from ase.io import read
+from monty.json import MontyDecoder, jsanitize
 
 from quacc.calculators.vasp import SmartVasp
 from quacc.schemas.cclib import summarize_run
@@ -63,7 +64,10 @@ def test_summarize_run():
         atoms
     )
 
-
+    # test document can be jsanitized amd decoded
+    d = jsanitize(results, strict=True, enum_values=True)
+    MontyDecoder().process_decoded(d)
+    
 def test_errors():
     atoms = bulk("Cu")
     with pytest.raises(ValueError):

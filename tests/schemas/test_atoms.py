@@ -1,4 +1,5 @@
 from ase.build import bulk
+from monty.json import MontyDecoder, jsanitize
 
 from quacc.schemas.atoms import atoms_to_metadata
 
@@ -29,3 +30,7 @@ def test_atoms_to_metadata():
     results = atoms_to_metadata(atoms)
     assert results["atoms_info"]["parent"]["atoms"] == parent
     assert results["atoms_info"]["parent"]["nsites"] == len(parent)
+
+    # test document can be jsanitized amd decoded
+    d = jsanitize(results, strict=True, enum_values=True)
+    MontyDecoder().process_decoded(d)

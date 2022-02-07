@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 from ase.build import bulk
 from ase.io import read
+from monty.json import MontyDecoder, jsanitize
 
 from quacc.schemas.calc import summarize_run
 
@@ -51,6 +52,10 @@ def test_summarize_run():
     assert results["atoms"].get_initial_magnetic_moments().tolist() == [3.14] * len(
         atoms
     )
+
+    # test document can be jsanitized amd decoded
+    d = jsanitize(results, strict=True, enum_values=True)
+    MontyDecoder().process_decoded(d)
 
 
 def test_errors():
