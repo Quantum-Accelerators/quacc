@@ -2,11 +2,16 @@ import os
 from copy import deepcopy
 from pathlib import Path
 
-from ase.build import bulk
+from ase.build import bulk, molecule
 from ase.io import read
 
 from quacc.calculators.vasp import SmartVasp
-from quacc.util.atoms import get_atoms_id, prep_next_run
+from quacc.util.atoms import (
+    get_atoms_id,
+    prep_next_run,
+    check_is_metal,
+    get_highest_block,
+)
 from quacc.util.json import jsonify, unjsonify
 
 FILE_DIR = Path(__file__).resolve().parent
@@ -108,3 +113,23 @@ def test_prep_next_run():
     assert atoms.info["results"]["calc0"].get("magmom", None) is None
     assert atoms.info["results"]["calc1"]["magmom"] == mag - 2
     assert unjsonify(jsonify(atoms)) == atoms
+
+
+def test_check_is_metal():
+    atoms = bulk("Cu")
+    assert check_is_metal(atoms) == True
+    atoms = bulk("Cu") * (2, 2, 2)
+    atoms[-1].symbol = "O"
+    assert check_is_metal(atoms) == False
+    atoms = molecule("H2O")
+    assert check_is_metal(atoms) == False
+
+
+def test_get_highest_block():
+    atoms = bulk("Cu")
+    assert get_highest_block(atoms) == "d"
+    atoms = bulk("Cu") * (2, 2, 2)
+    atoms[-1].symbol = "U"
+    assert get_highest_block(atoms) == "f"
+    atoms = molecule("H2O")
+    assert get_highest_block(atoms) == "p"
