@@ -50,13 +50,13 @@ def patch_pop_analyses(monkeypatch):
 
 
 def setup_module():
-    for f in ["CHGCAR", "AECCAR0", "AECCAR2", "POTCAR"]:
+    for f in ["CHGCAR", "AECCAR0.gz", "AECCAR2.gz", "POTCAR"]:
         with open(f, "w") as w:
             w.write("test")
 
 
 def teardown_module():
-    for f in ["CHGCAR", "AECCAR0", "AECCAR2", "POTCAR"]:
+    for f in ["CHGCAR", "AECCAR0.gz", "AECCAR2.gz", "POTCAR"]:
         if os.path.isfile(f):
             os.remove(f)
 
@@ -76,3 +76,22 @@ def test_bader_erorr():
     os.remove("CHGCAR")
     with pytest.raises(FileNotFoundError):
         run_bader()
+    with open("CHGCAR", "w") as w:
+        w.write("test")
+
+
+def test_run_chargemol():
+    chargemol_stats = run_chargemol(path=".", atomic_densities_path=".")
+    assert chargemol_stats["ddec"]["partial_charges"] == [1.0]
+    assert chargemol_stats["ddec"]["spin_moments"] == [0.0]
+
+
+def test_chargemol_erorr():
+    with pytest.raises(OSError):
+        run_chargemol()
+
+    os.remove("CHGCAR")
+    with pytest.raises(FileNotFoundError):
+        run_chargemol(atomic_densities_path=".")
+    with open("CHGCAR", "w") as w:
+        w.write("test")

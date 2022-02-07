@@ -119,6 +119,10 @@ def run_chargemol(
         ):
             raise FileNotFoundError(f"Could not find {f} in {path}")
 
+    # Check environment variable
+    if atomic_densities_path is None and "DDEC6_ATOMIC_DENSITIES_DIR" not in os.environ:
+        raise OSError("DDEC6_ATOMIC_DENSITIES_DIR environment variable not defined.")
+
     # Run Chargemol analysis
     chargemol_stats = ChargemolAnalysis(
         path=path,
