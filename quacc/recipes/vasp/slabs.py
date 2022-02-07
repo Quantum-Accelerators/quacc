@@ -143,9 +143,10 @@ class BulkToSlabMaker(Maker):
     slab_static_maker
         Default to use for the SlabStatic job.
     preset
-        Preset to use.
+        Preset to use. Applies to all jobs in the flow.
     swaps
         Dictionary of custom kwargs for the calculator.
+        Applies to all jobs in the flow.
     """
 
     name: str = "BulkToSlab"
@@ -156,10 +157,7 @@ class BulkToSlabMaker(Maker):
 
     @job
     def make(
-        self,
-        atoms_json: str,
-        max_slabs: None | int = None,
-        slabgen_kwargs: Dict[str, Any] = None,
+        self, atoms_json: str, max_slabs: None | int = None, **slabgen_kwargs
     ) -> Response:
         """
         Make the run.
@@ -208,14 +206,17 @@ class SlabToAdsSlabMaker(Maker):
 
     Parameters
     ----------
-    name:
+    name
         Name of the job.
     slab_relax_maker
         Maker to use for the SlabRelax job.
     slab_static_maker
         Default to use for the SlabStatic job.
-    preset:
-        Preset to use.
+    preset
+        Preset to use. Applies to all jobs in the flow.
+    swaps
+        Dictionary of custom kwargs for the calculator.
+        Applies to all jobs in the flow.
     """
 
     name: str = "SlabToAdsSlab"
@@ -226,10 +227,7 @@ class SlabToAdsSlabMaker(Maker):
 
     @job
     def make(
-        self,
-        atoms_json: str,
-        adsorbate_json: str,
-        slabgen_ads_kwargs: Dict[str, Any] = None,
+        self, atoms_json: str, adsorbate_json: str, **slabgen_ads_kwargs
     ) -> Response | None:
         """
         Make the run.
