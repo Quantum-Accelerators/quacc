@@ -61,6 +61,7 @@ def prep_next_run(
     try:
         atoms = deepcopy(atoms)
     except TypeError:
+        # Workaround for xTB
         atoms = atoms.copy()
 
     if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None) is not None:
@@ -236,13 +237,10 @@ def check_is_metal(atoms: Atoms) -> bool:
     bool
         True if the structure is likely a metal; False otherwise
     """
-    if type(atoms) is Atoms:
-        if np.all(atoms.pbc) == False:
-            struct = AseAtomsAdaptor.get_molecule(atoms)
-        else:
-            struct = AseAtomsAdaptor.get_structure(atoms)
+    if np.all(atoms.pbc) == False:
+        struct = AseAtomsAdaptor.get_molecule(atoms)
     else:
-        struct = atoms
+        struct = AseAtomsAdaptor.get_structure(atoms)
     is_metal = all(k.is_metal for k in struct.composition.keys())
     return is_metal
 
@@ -261,13 +259,10 @@ def get_highest_block(atoms: Atoms) -> str:
     str
         highest block of the structure
     """
-    if type(atoms) is Atoms:
-        if np.all(atoms.pbc) == False:
-            struct = AseAtomsAdaptor.get_molecule(atoms)
-        else:
-            struct = AseAtomsAdaptor.get_structure(atoms)
+    if np.all(atoms.pbc) == False:
+        struct = AseAtomsAdaptor.get_molecule(atoms)
     else:
-        struct = atoms
+        struct = AseAtomsAdaptor.get_structure(atoms)
     blocks = [site.specie.block for site in struct]
     if "f" in blocks:
         max_block = "f"
