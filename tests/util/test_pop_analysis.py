@@ -1,4 +1,5 @@
 import os
+
 import pytest
 
 from quacc.util.pop_analysis import run_bader, run_chargemol

@@ -1,6 +1,6 @@
 import os
-import pytest
 
+import pytest
 from custodian import Custodian
 
 from quacc.custodian.vasp import run_custodian

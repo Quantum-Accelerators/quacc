@@ -7,10 +7,10 @@ from ase.io import read
 
 from quacc.calculators.vasp import SmartVasp
 from quacc.util.atoms import (
-    get_atoms_id,
-    prep_next_run,
     check_is_metal,
+    get_atoms_id,
     get_highest_block,
+    prep_next_run,
 )
 from quacc.util.json import jsonify, unjsonify
 
