@@ -162,7 +162,7 @@ def SmartVasp(
         mag_default=mag_default,
         mag_cutoff=mag_cutoff,
     )
-    
+
     # Remove unused INCAR flags
     user_calc_params = remove_unused_flags(user_calc_params)
 

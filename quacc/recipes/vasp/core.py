@@ -16,35 +16,34 @@ class RelaxMaker(Maker):
 
     Parameters
     ----------
-    name:
+    name
         Name of the job.
-    preset:
+    volume_relax
+        True if a volume relaxation (ISIF = 3) should be performed.
+        False if only the positions (ISIF = 2) should be updated.
+    preset
         Preset to use.
-    ncore:
-        VASP NCORE parameter.
-    kpar:
-        VASP KPAR parameter.
+    swaps
+        Dictionary of custom kwargs for the calculator.
     """
 
     name: str = "Relax"
+    volume_relax: bool = True
     preset: None | str = None
-    ncore: int = 1
-    kpar: int = 1
+    swaps: Dict[str, Any] = None
 
     @job
     def make(
-        self, atoms_json: str, volume_relax: bool = True, **kwargs
+        self,
+        atoms_json: str,
     ) -> Dict[str, Any]:
         """
         Make the run.
 
         Parameters
         ----------
-        atoms_json:
+        atoms_json
             Encoded .Atoms object
-        volume_relax:
-            True if a volume relaxation (ISIF = 3) should be performed.
-            False if only the positions (ISIF = 2) should be updated.
 
         Returns
         -------
@@ -52,7 +51,9 @@ class RelaxMaker(Maker):
             Summary of the run.
         """
         atoms = unjsonify(atoms_json)
-        if volume_relax:
+        swaps = self.swaps or {}
+
+        if self.volume_relax:
             isif = 3
         else:
             isif = 2
@@ -63,14 +64,12 @@ class RelaxMaker(Maker):
             "ibrion": 2,
             "ismear": 0,
             "isym": 0,
-            "kpar": self.kpar,
             "lcharg": False,
             "lwave": False,
-            "ncore": self.ncore,
             "nsw": 200,
             "sigma": 0.05,
         }
-        for k, v in kwargs.items():
+        for k, v in swaps.items():
             flags[k] = v
 
         atoms = SmartVasp(atoms, preset=self.preset, **flags)
@@ -87,29 +86,26 @@ class StaticMaker(Maker):
 
     Parameters
     ----------
-    name:
+    name
         Name of the job.
-    preset:
+    preset
         Preset to use.
-    ncore:
-        VASP NCORE parameter.
-    kpar:
-        VASP KPAR parameter.
+    swaps
+        Dictionary of custom kwargs for the calculator.
     """
 
     name: str = "Static"
     preset: None | str = None
-    ncore: int = 1
-    kpar: int = 1
+    swaps: Dict[str, Any] = None
 
     @job
-    def make(self, atoms_json: str, **kwargs) -> Dict[str, Any]:
+    def make(self, atoms_json: str) -> Dict[str, Any]:
         """
         Make the run.
 
         Parameters
         ----------
-        atoms_json:
+        atoms_json
             Encoded .Atoms object
 
         Returns
@@ -118,20 +114,19 @@ class StaticMaker(Maker):
             Summary of the run.
         """
         atoms = unjsonify(atoms_json)
+        swaps = self.swaps or {}
         flags = {
             "ediff": 1e-6,
             "ismear": -5,
             "isym": 2,
-            "kpar": self.kpar,
             "laechg": True,
             "lcharg": True,
             "lwave": True,
-            "ncore": self.ncore,
             "nedos": 5001,
             "nsw": 0,
             "sigma": 0.05,
         }
-        for k, v in kwargs.items():
+        for k, v in swaps.items():
             flags[k] = v
 
         atoms = SmartVasp(atoms, preset=self.preset, **flags)

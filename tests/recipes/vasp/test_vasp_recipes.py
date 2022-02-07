@@ -50,9 +50,9 @@ def test_static_maker():
     assert output["parameters"]["lwave"] == True
     assert output["name"] == "Static"
 
-    job = StaticMaker(preset="BulkRelaxSet", ncore=2, kpar=4, name="test").make(
-        atoms_json
-    )
+    job = StaticMaker(
+        preset="BulkRelaxSet", name="test", swaps={"ncore": 2, "kpar": 4}
+    ).make(atoms_json)
     responses = run_locally(job)
     output = responses[job.uuid][1].output
     assert output["parameters"]["encut"] == 650
@@ -76,15 +76,19 @@ def test_relax_maker():
     assert output["parameters"]["lwave"] == False
     assert output["name"] == "Relax"
 
-    job = RelaxMaker(preset="BulkRelaxSet", ncore=2, kpar=4, name="test").make(
+    job = RelaxMaker(preset="BulkRelaxSet", name="test", swaps={"nelmin": 6}).make(
         atoms_json
     )
     responses = run_locally(job)
     output = responses[job.uuid][1].output
     assert output["parameters"]["encut"] == 650
-    assert output["parameters"]["ncore"] == 2
-    assert output["parameters"]["kpar"] == 4
+    assert output["parameters"]["nelmin"] == 6
     assert output["name"] == "test"
+
+    job = RelaxMaker(volume_relax=False).make(atoms_json)
+    responses = run_locally(job)
+    output = responses[job.uuid][1].output
+    assert output["parameters"]["isif"] == 2
 
 
 def test_slab_static_maker():
@@ -100,14 +104,13 @@ def test_slab_static_maker():
     assert output["parameters"]["lvhar"] == True
     assert output["name"] == "SlabStatic"
 
-    job = SlabStaticMaker(preset="SlabRelaxSet", ncore=2, kpar=4, name="test").make(
+    job = SlabStaticMaker(preset="SlabRelaxSet", name="test", swaps={"nelmin": 6}).make(
         atoms_json
     )
     responses = run_locally(job)
     output = responses[job.uuid][1].output
     assert output["parameters"]["encut"] == 450
-    assert output["parameters"]["ncore"] == 2
-    assert output["parameters"]["kpar"] == 4
+    assert output["parameters"]["nelmin"] == 6
     assert output["name"] == "test"
 
 
@@ -125,14 +128,13 @@ def test_slab_relax_maker():
     assert output["parameters"]["lwave"] == False
     assert output["name"] == "SlabRelax"
 
-    job = SlabRelaxMaker(preset="SlabRelaxSet", ncore=2, kpar=4, name="test").make(
+    job = SlabRelaxMaker(preset="SlabRelaxSet", name="test", swaps={"nelmin": 6}).make(
         atoms_json
     )
     responses = run_locally(job)
     output = responses[job.uuid][1].output
     assert output["parameters"]["encut"] == 450
-    assert output["parameters"]["ncore"] == 2
-    assert output["parameters"]["kpar"] == 4
+    assert output["parameters"]["nelmin"] == 6
     assert output["name"] == "test"
 
 
@@ -151,21 +153,23 @@ def test_slab_flows():
     output0 = responses[uuids[0]][1].output
     assert output0 is None
 
-    # Subsequent jobs should be alternating relaxations and statics
     output1 = responses[uuids[1]][1].output
     assert output1["nsites"] > len(atoms)
     assert output1["parameters"]["isif"] == 2
-    assert output1["name"] == "BulkToSlab_SlabRelax"
+    assert output1["name"] == "SlabRelax"
 
     output2 = responses[uuids[2]][1].output
     assert output2["nsites"] == output1["nsites"]
     assert output2["parameters"]["nsw"] == 0
-    assert output2["name"] == "BulkToSlab_SlabStatic"
+    assert output2["name"] == "SlabStatic"
 
     # Now try with kwargs
-    flow = BulkToSlabMaker(preset="SlabRelaxSet", ncore=2, kpar=4, name="test").make(
-        atoms_json
-    )
+    flow = BulkToSlabMaker(
+        preset="SlabRelaxSet",
+        name="test",
+        slab_relax_maker=SlabRelaxMaker(swaps={"nelmin": 6}),
+        slab_static_maker=SlabStaticMaker(swaps={"nelmin": 6}),
+    ).make(atoms_json)
     responses = run_locally(flow)
 
     assert len(responses) == 9
@@ -176,17 +180,15 @@ def test_slab_flows():
 
     output1 = responses[uuids[1]][1].output
     assert output1["parameters"]["isif"] == 2
-    assert output1["parameters"]["ncore"] == 2
-    assert output1["parameters"]["kpar"] == 4
+    assert output1["parameters"]["nelmin"] == 6
     assert output1["parameters"]["encut"] == 450
-    assert output1["name"] == "test_SlabRelax"
+    assert output1["name"] == "SlabRelax"
 
     output2 = responses[uuids[2]][1].output
     assert output2["parameters"]["nsw"] == 0
-    assert output2["parameters"]["ncore"] == 2
-    assert output2["parameters"]["kpar"] == 4
+    assert output2["parameters"]["nelmin"] == 6
     assert output2["parameters"]["encut"] == 450
-    assert output2["name"] == "test_SlabStatic"
+    assert output2["name"] == "SlabStatic"
 
     ### --------- Test SlabToAdsSlabMaker --------- ###
     atoms_json = output2["atoms"]
@@ -207,17 +209,17 @@ def test_slab_flows():
     output1 = responses[uuids[1]][1].output
     assert output1["nsites"] == len(unjsonify(output2["atoms"])) + 2
     assert output1["parameters"]["isif"] == 2
-    assert output1["name"] == "SlabToAdsSlab_SlabRelax"
+    assert output1["name"] == "SlabRelax"
 
     output2 = responses[uuids[2]][1].output
     assert output2["nsites"] == output1["nsites"]
     assert output2["parameters"]["nsw"] == 0
-    assert output2["name"] == "SlabToAdsSlab_SlabStatic"
+    assert output2["name"] == "SlabStatic"
 
     # Now try with kwargs
-    flow = SlabToAdsSlabMaker(preset="SlabRelaxSet", ncore=2, kpar=4, name="test").make(
-        atoms_json, adsorbate_json
-    )
+    flow = SlabToAdsSlabMaker(
+        preset="SlabRelaxSet", name="test", swaps={"nelmin": 6}
+    ).make(atoms_json, adsorbate_json)
     responses = run_locally(flow)
 
     assert len(responses) == 11
@@ -228,14 +230,12 @@ def test_slab_flows():
 
     output1 = responses[uuids[1]][1].output
     assert output1["parameters"]["isif"] == 2
-    assert output1["parameters"]["ncore"] == 2
-    assert output1["parameters"]["kpar"] == 4
+    assert output1["parameters"]["nelmin"] == 6
     assert output1["parameters"]["encut"] == 450
-    assert output1["name"] == "test_SlabRelax"
+    assert output1["name"] == "SlabRelax"
 
     output2 = responses[uuids[2]][1].output
     assert output2["parameters"]["nsw"] == 0
-    assert output2["parameters"]["ncore"] == 2
-    assert output2["parameters"]["kpar"] == 4
+    assert output2["parameters"]["nelmin"] == 6
     assert output2["parameters"]["encut"] == 450
-    assert output2["name"] == "test_SlabStatic"
+    assert output2["name"] == "SlabStatic"

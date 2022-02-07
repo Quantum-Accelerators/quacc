@@ -17,29 +17,26 @@ class SlabRelaxMaker(Maker):
 
     Parameters
     ----------
-    name:
+    name
         Name of the job.
-    preset:
+    preset
         Preset to use.
-    ncore:
-        VASP NCORE parameter.
-    kpar:
-        VASP KPAR parameter.
+    swaps
+        Dictionary of custom kwargs for the calculator.
     """
 
     name: str = "SlabRelax"
     preset: None | str = None
-    ncore: int = 1
-    kpar: int = 1
+    swaps: Dict[str, Any] = None
 
     @job
-    def make(self, atoms_json: str, **kwargs) -> Dict[str, Any]:
+    def make(self, atoms_json: str) -> Dict[str, Any]:
         """
         Make the run.
 
         Parameters
         ----------
-        atoms_json:
+        atoms_json
             Encoded .Atoms object
 
         Returns
@@ -48,6 +45,7 @@ class SlabRelaxMaker(Maker):
             Summary of the run.
         """
         atoms = unjsonify(atoms_json)
+        swaps = self.swaps or {}
         flags = {
             "auto_dipole": True,
             "ediff": 1e-5,
@@ -56,14 +54,12 @@ class SlabRelaxMaker(Maker):
             "ibrion": 2,
             "ismear": 0,
             "isym": 0,
-            "kpar": self.kpar,
             "lcharg": False,
             "lwave": False,
-            "ncore": self.ncore,
             "nsw": 200,
             "sigma": 0.05,
         }
-        for k, v in kwargs.items():
+        for k, v in swaps.items():
             flags[k] = v
 
         atoms = SmartVasp(atoms, preset=self.preset, **flags)
@@ -80,29 +76,24 @@ class SlabStaticMaker(Maker):
 
     Parameters
     ----------
-    name:
+    name
         Name of the job.
-    preset:
+    preset
         Preset to use.
-    ncore:
-        VASP NCORE parameter.
-    kpar:
-        VASP KPAR parameter.
     """
 
     name: str = "SlabStatic"
     preset: None | str = None
-    ncore: int = 1
-    kpar: int = 1
+    swaps: Dict[str, Any] = None
 
     @job
-    def make(self, atoms_json: str, **kwargs) -> Dict[str, Any]:
+    def make(self, atoms_json: str) -> Dict[str, Any]:
         """
         Make the run.
 
         Parameters
         ----------
-        atoms_json:
+        atoms_json
             Encoded .Atoms object
 
         Returns
@@ -111,22 +102,21 @@ class SlabStaticMaker(Maker):
             Summary of the run.
         """
         atoms = unjsonify(atoms_json)
+        swaps = self.swaps or {}
         flags = {
             "auto_dipole": True,
             "ediff": 1e-6,
             "ismear": -5,
             "isym": 2,
-            "kpar": self.kpar,
             "laechg": True,
             "lcharg": True,
             "lvhar": True,
             "lwave": True,
-            "ncore": self.ncore,
             "nedos": 5001,
             "nsw": 0,
             "sigma": 0.05,
         }
-        for k, v in kwargs.items():
+        for k, v in swaps.items():
             flags[k] = v
 
         atoms = SmartVasp(atoms, preset=self.preset, **flags)
@@ -144,24 +134,26 @@ class BulkToSlabMaker(Maker):
 
     Parameters
     ----------
-    name:
+    name
         Name of the job.
-    preset:
+    preset
         Preset to use.
-    ncore:
-        VASP NCORE parameter.
-    kpar:
-        VASP KPAR parameter.
+    swaps
+        Dictionary of custom kwargs for the calculator.
     """
 
     name: str = "BulkToSlab"
+    slab_relax_maker: Maker = SlabRelaxMaker()
+    slab_static_maker: Maker = SlabStaticMaker()
     preset: None | str = None
-    ncore: int = 1
-    kpar: int = 1
+    swaps: Dict[str, Any] = None
 
     @job
     def make(
-        self, atoms_json: str, max_slabs: None | int = None, **slab_kwargs
+        self,
+        atoms_json: str,
+        max_slabs: None | int = None,
+        slabgen_kwargs: Dict[str, Any] = None,
     ) -> Response:
         """
         Make the run.
@@ -172,7 +164,7 @@ class BulkToSlabMaker(Maker):
             Encoded .Atoms object
         max_slabs
             Maximum number of slabs to make
-        **slab_kwargs
+        slabgen_kwargs
             Additional keyword arguments to pass to make_max_slabs_from_bulk()
 
         Returns
@@ -181,25 +173,21 @@ class BulkToSlabMaker(Maker):
             A Flow of relaxation and static jobs for the generated slabs.
         """
         atoms = unjsonify(atoms_json)
-        slabs = make_max_slabs_from_bulk(atoms, max_slabs=max_slabs, **slab_kwargs)
+        slabgen_kwargs = slabgen_kwargs or {}
+        self.slab_relax_maker.preset = self.slab_relax_maker.preset or self.preset
+        self.slab_static_maker.preset = self.slab_static_maker.preset or self.preset
+        self.slab_relax_maker.swaps = self.slab_relax_maker.swaps or self.swaps
+        self.slab_static_maker.swaps = self.slab_static_maker.swaps or self.swaps
+
+        slabs = make_max_slabs_from_bulk(atoms, max_slabs=max_slabs, **slabgen_kwargs)
         jobs = []
         outputs = []
         for slab in slabs:
-            relax_job = SlabRelaxMaker(
-                name=f"{self.name}_SlabRelax",
-                preset=self.preset,
-                ncore=self.ncore,
-                kpar=self.kpar,
-            ).make(jsonify(slab))
+            relax_job = self.slab_relax_maker.make(jsonify(slab))
             jobs.append(relax_job)
             outputs.append(relax_job.output)
 
-            static_job = SlabStaticMaker(
-                f"{self.name}_SlabStatic",
-                preset=self.preset,
-                ncore=self.ncore,
-                kpar=self.kpar,
-            ).make(relax_job.output["atoms"])
+            static_job = self.slab_static_maker.make(relax_job.output["atoms"])
             jobs.append(static_job)
             outputs.append(static_job.output)
 
@@ -218,20 +206,20 @@ class SlabToAdsSlabMaker(Maker):
         Name of the job.
     preset:
         Preset to use.
-    ncore:
-        VASP NCORE parameter.
-    kpar:
-        VASP KPAR parameter.
     """
 
     name: str = "SlabToAdsSlab"
     preset: None | str = None
-    ncore: int = 1
-    kpar: int = 1
+    slab_relax_maker: Maker = SlabRelaxMaker()
+    slab_static_maker: Maker = SlabStaticMaker()
+    swaps: Dict[str, Any] = None
 
     @job
     def make(
-        self, atoms_json: str, adsorbate_json: str, **slab_ads_kwargs
+        self,
+        atoms_json: str,
+        adsorbate_json: str,
+        slabgen_ads_kwargs: Dict[str, Any] = None,
     ) -> Response | None:
         """
         Make the run.
@@ -242,7 +230,7 @@ class SlabToAdsSlabMaker(Maker):
             Encoded .Atoms object for the structure.
         adsorbate_json
             Encoded .Atoms object for the adsorbate.
-        **slab_ads_kwargs
+        slabgen_ads_kwargs
             Additional keyword arguments to pass to make_adsorbate_structures()
 
         Returns
@@ -252,29 +240,24 @@ class SlabToAdsSlabMaker(Maker):
         """
         atoms = unjsonify(atoms_json)
         adsorbate = unjsonify(adsorbate_json)
+        slabgen_ads_kwargs = slabgen_ads_kwargs or {}
+        self.slab_relax_maker.preset = self.slab_relax_maker.preset or self.preset
+        self.slab_static_maker.preset = self.slab_static_maker.preset or self.preset
+        self.slab_relax_maker.swaps = self.slab_relax_maker.swaps or self.swaps
+        self.slab_static_maker.swaps = self.slab_static_maker.swaps or self.swaps
 
-        slabs = make_adsorbate_structures(atoms, adsorbate, **slab_ads_kwargs)
+        slabs = make_adsorbate_structures(atoms, adsorbate, **slabgen_ads_kwargs)
         if slabs is None:
             return None
 
         jobs = []
         outputs = []
         for slab in slabs:
-            relax_job = SlabRelaxMaker(
-                name=f"{self.name}_SlabRelax",
-                preset=self.preset,
-                ncore=self.ncore,
-                kpar=self.kpar,
-            ).make(jsonify(slab))
+            relax_job = self.slab_relax_maker.make(jsonify(slab))
             jobs.append(relax_job)
             outputs.append(relax_job.output)
 
-            static_job = SlabStaticMaker(
-                name=f"{self.name}_SlabStatic",
-                preset=self.preset,
-                ncore=self.ncore,
-                kpar=self.kpar,
-            ).make(relax_job.output["atoms"])
+            static_job = self.slab_static_maker.make(relax_job.output["atoms"])
             jobs.append(static_job)
             outputs.append(static_job.output)
 
