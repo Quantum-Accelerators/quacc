@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Any, Dict
 
-from ase.atoms import Atom, Atoms
+from ase.atoms import Atoms
 from jobflow import Flow, Maker, Response, job
 
 from quacc.calculators.vasp import SmartVasp
@@ -224,7 +224,7 @@ class SlabToAdsSlabMaker(Maker):
 
     @job
     def make(
-        self, atoms: Atoms, adsorbate: Atoms | Atom | str, **slabgen_ads_kwargs
+        self, atoms: Atoms, adsorbate: Atoms | str, **slabgen_ads_kwargs
     ) -> Response | None:
         """
         Make the run.

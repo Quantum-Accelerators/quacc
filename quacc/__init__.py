@@ -1,4 +1,4 @@
-from ase.atoms import Atom, Atoms
+from ase.atoms import Atoms
 from ase.io.jsonio import decode, encode
 
 from quacc._version import __version__
@@ -26,21 +26,5 @@ def atoms_from_dict(d):
     return atoms
 
 
-def atom_as_dict(self):
-    # Uses Monty's MSONable spec
-    d = {"@module": "ase.atoms", "@class": "Atom", "atom_json": encode(self)}
-
-    return d
-
-
-def atom_from_dict(d):
-    # Uses Monty's MSONable spec
-    atom = decode(d["atom_json"])
-
-    return atom
-
-
 Atoms.as_dict = atoms_as_dict
 Atoms.from_dict = atoms_from_dict
-Atom.as_dict = atom_as_dict
-Atom.from_dict = atom_from_dict

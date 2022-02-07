@@ -53,7 +53,7 @@ def test_summarize_run():
         atoms
     )
 
-    # test document can be jsanitized amd decoded
+    # test document can be jsanitized and decoded
     d = jsanitize(results, strict=True, enum_values=True)
     MontyDecoder().process_decoded(d)
 

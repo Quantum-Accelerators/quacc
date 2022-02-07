@@ -3,7 +3,7 @@ from copy import deepcopy
 from typing import Any, Dict, List
 
 import numpy as np
-from ase.atoms import Atom, Atoms
+from ase.atoms import Atoms
 from ase.build import molecule
 from ase.collections import g2
 from pymatgen.analysis.adsorption import AdsorbateSiteFinder
@@ -320,7 +320,7 @@ def make_max_slabs_from_bulk(
 # TODO: We need a method to orient adsorbate via a kwarg
 def make_adsorbate_structures(
     atoms: Atoms,
-    adsorbate: Atoms | Atom | str,
+    adsorbate: Atoms | str,
     min_distance: float = 2.0,
     modes: List[str] = ["ontop", "bridge", "hollow"],
     allowed_surface_symbols: None | List[str] = None,
@@ -396,22 +396,18 @@ def make_adsorbate_structures(
             atom_indices,
         )
 
-    if not isinstance(adsorbate, Atoms):
-        if isinstance(adsorbate, Atom):
-            # If adsorbate is an Atom object, make it an Atoms object
-            adsorbate = Atoms([adsorbate])
-        elif isinstance(adsorbate, str):
-            # Get adsorbate if string
-            if adsorbate in g2.names:
-                adsorbate = molecule(adsorbate)
-                # Remove any adsorbate magmoms from the g2 collection. I find
-                # it very bothersome that ASE automatically adds magnetic moments
-                # without the user's consent or knowledge. Leave that to the user
-                # except for O2.
-                if adsorbate.get_chemical_formula() != "O2":
-                    adsorbate.set_initial_magnetic_moments(None)
-            else:
-                raise ValueError(f"{adsorbate} is not in the G2 database.")
+    if isinstance(adsorbate, str):
+        # Get adsorbate if string
+        if adsorbate in g2.names:
+            adsorbate = molecule(adsorbate)
+            # Remove any adsorbate magmoms from the g2 collection. I find
+            # it very bothersome that ASE automatically adds magnetic moments
+            # without the user's consent or knowledge. Leave that to the user
+            # except for O2.
+            if adsorbate.get_chemical_formula() != "O2":
+                adsorbate.set_initial_magnetic_moments(None)
+        else:
+            raise ValueError(f"{adsorbate} is not in the G2 database.")
 
     # Add 0.0 initial magmoms to atoms/adsorbate if needed
     if atoms.has("initial_magmoms") and not adsorbate.has("initial_magmoms"):
