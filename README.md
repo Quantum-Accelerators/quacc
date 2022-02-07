@@ -4,12 +4,9 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/arosen93/quacc/badge)](https://www.codefactor.io/repository/github/arosen93/quacc)
 [![This project supports Python 3.10](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://python.org/downloads)
 
-The Quantum Accelerator (QuAcc) supercharges your code to support high-throughput, database-driven density functional theory (DFT). Primarily, QuAcc seeks to enable a seamless interface between the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/index.html) (ASE) and [Jobflow](https://github.com/materialsproject/jobflow) for rapid workflow development and prototyping, no matter your favorite DFT package. This package is heavily inspired by [Atomate2](https://github.com/materialsproject/atomate2), which I also recommend checking out.
-<p align="center">
-<img src="https://imgs.xkcd.com/comics/standards_2x.png" alt="xkcd Comic" width="528" height="300">
-<p align="center">
-Credit: xkcd
-</p>
+The Quantum Accelerator (QuAcc) supercharges your code to support high-throughput, database-driven density functional theory (DFT). Primarily, QuAcc seeks to enable a seamless interface between the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/index.html) (ASE) and [Jobflow](https://github.com/materialsproject/jobflow) for rapid workflow development and prototyping, no matter your favorite DFT package.
+
+This package is heavily inspired by [Atomate2](https://github.com/materialsproject/atomate2), which I also recommend checking out.
 
 ## Installation
 1. Run the following command, ideally in a fresh Python environment: `pip install git+https://github.com/arosen93/quacc.git`
