@@ -22,9 +22,7 @@ if __name__ == "__main__":
         license="modified BSD",
         keywords="high-throughput automated workflow dft vasp",
         data_files=["LICENSE.md"],
-        zip_safe=False,
-        # install_requires=required,
-        extras_require={
+        zip_safe=False,        extras_require={
             "tests": ["pytest==7.0.0"],
             "docs": [
                 "sphinx==4.4.0",
