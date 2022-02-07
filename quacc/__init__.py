@@ -33,7 +33,7 @@ def atom_as_dict(self):
     return d
 
 
-def atom_from_dict(self, d):
+def atom_from_dict(d):
     # Uses Monty's MSONable spec
     atom = decode(d["atom_json"])
 
