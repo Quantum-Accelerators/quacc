@@ -3,10 +3,10 @@ from typing import Any, Dict
 
 from ase.atoms import Atoms
 from atomate2.vasp.schemas.task import TaskDocument
+from monty.json import MSONable
 
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
-from quacc.util.json import jsonify
 
 
 def summarize_run(
@@ -88,10 +88,7 @@ def summarize_run(
     # makes the structure metadata for us
     atoms_db = atoms_to_metadata(atoms, get_metadata=False)
 
-    results_full = {**results, **atoms_db}
-
-    # Make sure it's all JSON serializable
-    task_doc = jsonify(results_full)
+    task_doc = {**results, **atoms_db}
 
     if remove_empties:
         task_doc = _remove_empties(task_doc)
@@ -119,7 +116,8 @@ def _remove_empties(d: Dict[str, Any]) -> Dict[str, Any]:
         return {
             k: _remove_empties(v)
             for k, v in d.items()
-            if v != None and v != [] and v != {}
+            if v is not None
+            and not ((isinstance(v, dict) or isinstance(v, list)) and len(v) == 0)
         }
     if isinstance(d, list):
         return [_remove_empties(v) for v in d]

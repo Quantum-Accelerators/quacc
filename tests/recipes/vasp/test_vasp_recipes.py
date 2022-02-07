@@ -10,7 +10,6 @@ from quacc.recipes.vasp.slabs import (
     SlabToAdsSlabMaker,
 )
 from quacc.schemas.calc import summarize_run as calc_summarize_run
-from quacc.util.json import jsonify, unjsonify
 
 
 def mock_summarize_run(atoms, **kwargs):
@@ -19,9 +18,9 @@ def mock_summarize_run(atoms, **kwargs):
     # in the working directory and will work with pytest.
 
     prep_next_run = kwargs.get("prep_next_run", True)
-    additioanl_fields = kwargs.get("additional_fields", None)
+    additional_fields = kwargs.get("additional_fields", None)
     output = calc_summarize_run(
-        atoms, prep_next_run=prep_next_run, additional_fields=additioanl_fields
+        atoms, prep_next_run=prep_next_run, additional_fields=additional_fields
     )
     return output
 
@@ -39,10 +38,9 @@ def patch_summarize_run(monkeypatch):
 def test_static_maker():
 
     atoms = bulk("Cu") * (2, 2, 2)
-    atoms_json = jsonify(atoms)
 
-    job = StaticMaker().make(atoms_json)
-    responses = run_locally(job)
+    job = StaticMaker().make(atoms)
+    responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["isym"] == 2
@@ -52,8 +50,8 @@ def test_static_maker():
 
     job = StaticMaker(
         preset="BulkRelaxSet", name="test", swaps={"ncore": 2, "kpar": 4}
-    ).make(atoms_json)
-    responses = run_locally(job)
+    ).make(atoms)
+    responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["parameters"]["encut"] == 650
     assert output["parameters"]["ncore"] == 2
@@ -64,10 +62,9 @@ def test_static_maker():
 def test_relax_maker():
 
     atoms = bulk("Cu") * (2, 2, 2)
-    atoms_json = jsonify(atoms)
 
-    job = RelaxMaker().make(atoms_json)
-    responses = run_locally(job)
+    job = RelaxMaker().make(atoms)
+    responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["isym"] == 0
@@ -77,26 +74,25 @@ def test_relax_maker():
     assert output["name"] == "Relax"
 
     job = RelaxMaker(preset="BulkRelaxSet", name="test", swaps={"nelmin": 6}).make(
-        atoms_json
+        atoms
     )
-    responses = run_locally(job)
+    responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["parameters"]["encut"] == 650
     assert output["parameters"]["nelmin"] == 6
     assert output["name"] == "test"
 
-    job = RelaxMaker(volume_relax=False).make(atoms_json)
-    responses = run_locally(job)
+    job = RelaxMaker(volume_relax=False).make(atoms)
+    responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["parameters"]["isif"] == 2
 
 
 def test_slab_static_maker():
     atoms = bulk("Cu") * (2, 2, 2)
-    atoms_json = jsonify(atoms)
 
-    job = SlabStaticMaker().make(atoms_json)
-    responses = run_locally(job)
+    job = SlabStaticMaker().make(atoms)
+    responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["idipol"] == 3
@@ -105,9 +101,9 @@ def test_slab_static_maker():
     assert output["name"] == "SlabStatic"
 
     job = SlabStaticMaker(preset="SlabRelaxSet", name="test", swaps={"nelmin": 6}).make(
-        atoms_json
+        atoms
     )
-    responses = run_locally(job)
+    responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["parameters"]["encut"] == 450
     assert output["parameters"]["nelmin"] == 6
@@ -116,10 +112,9 @@ def test_slab_static_maker():
 
 def test_slab_relax_maker():
     atoms = bulk("Cu") * (2, 2, 2)
-    atoms_json = jsonify(atoms)
 
-    job = SlabRelaxMaker().make(atoms_json)
-    responses = run_locally(job)
+    job = SlabRelaxMaker().make(atoms)
+    responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["isif"] == 2
@@ -129,9 +124,9 @@ def test_slab_relax_maker():
     assert output["name"] == "SlabRelax"
 
     job = SlabRelaxMaker(preset="SlabRelaxSet", name="test", swaps={"nelmin": 6}).make(
-        atoms_json
+        atoms
     )
-    responses = run_locally(job)
+    responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["parameters"]["encut"] == 450
     assert output["parameters"]["nelmin"] == 6
@@ -140,11 +135,10 @@ def test_slab_relax_maker():
 
 def test_slab_flows():
     atoms = bulk("Cu") * (2, 2, 2)
-    atoms_json = jsonify(atoms)
 
     ### --------- Test BulkToSlabMaker --------- ###
-    flow = BulkToSlabMaker().make(atoms_json)
-    responses = run_locally(flow)
+    flow = BulkToSlabMaker().make(atoms)
+    responses = run_locally(flow, ensure_success=True)
 
     assert len(responses) == 9
     uuids = list(responses.keys())
@@ -169,8 +163,8 @@ def test_slab_flows():
         name="test",
         slab_relax_maker=SlabRelaxMaker(swaps={"nelmin": 6}),
         slab_static_maker=SlabStaticMaker(swaps={"nelmin": 6}),
-    ).make(atoms_json)
-    responses = run_locally(flow)
+    ).make(atoms)
+    responses = run_locally(flow, ensure_success=True)
 
     assert len(responses) == 9
     uuids = list(responses.keys())
@@ -191,12 +185,11 @@ def test_slab_flows():
     assert output2["name"] == "SlabStatic"
 
     ### --------- Test SlabToAdsSlabMaker --------- ###
-    atoms_json = output2["atoms"]
+    atoms = output2["atoms"]
     adsorbate = molecule("H2")
-    adsorbate_json = jsonify(adsorbate)
 
-    flow = SlabToAdsSlabMaker().make(atoms_json, adsorbate_json)
-    responses = run_locally(flow)
+    flow = SlabToAdsSlabMaker().make(atoms, adsorbate)
+    responses = run_locally(flow, ensure_success=True)
 
     assert len(responses) == 11
     uuids = list(responses.keys())
@@ -207,7 +200,7 @@ def test_slab_flows():
 
     # Subsequent jobs should be alternating relaxations and statics
     output1 = responses[uuids[1]][1].output
-    assert output1["nsites"] == len(unjsonify(output2["atoms"])) + 2
+    assert output1["nsites"] == len(output2["atoms"]) + 2
     assert output1["parameters"]["isif"] == 2
     assert output1["name"] == "SlabRelax"
 
@@ -219,8 +212,8 @@ def test_slab_flows():
     # Now try with kwargs
     flow = SlabToAdsSlabMaker(
         preset="SlabRelaxSet", name="test", swaps={"nelmin": 6}
-    ).make(atoms_json, adsorbate_json)
-    responses = run_locally(flow)
+    ).make(atoms, adsorbate)
+    responses = run_locally(flow, ensure_success=True)
 
     assert len(responses) == 11
     uuids = list(responses.keys())

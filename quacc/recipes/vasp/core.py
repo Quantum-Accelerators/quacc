@@ -1,12 +1,12 @@
 from dataclasses import dataclass
 from typing import Any, Dict
 
+from ase.atoms import Atoms
 from jobflow import Maker, job
 
 from quacc.calculators.vasp import SmartVasp
 from quacc.schemas.vasp import summarize_run
 from quacc.util.calc import run_calc
-from quacc.util.json import unjsonify
 
 
 @dataclass
@@ -33,21 +33,20 @@ class RelaxMaker(Maker):
     swaps: Dict[str, Any] = None
 
     @job
-    def make(self, atoms_json: str) -> Dict[str, Any]:
+    def make(self, atoms: Atoms) -> Dict[str, Any]:
         """
         Make the run.
 
         Parameters
         ----------
-        atoms_json
-            Encoded .Atoms object
+        atoms
+            .Atoms object
 
         Returns
         -------
         Dict
             Summary of the run.
         """
-        atoms = unjsonify(atoms_json)
         swaps = self.swaps or {}
 
         if self.volume_relax:
@@ -96,21 +95,20 @@ class StaticMaker(Maker):
     swaps: Dict[str, Any] = None
 
     @job
-    def make(self, atoms_json: str) -> Dict[str, Any]:
+    def make(self, atoms: Atoms) -> Dict[str, Any]:
         """
         Make the run.
 
         Parameters
         ----------
-        atoms_json
-            Encoded .Atoms object
+        atoms
+            .Atoms object
 
         Returns
         -------
         Dict
             Summary of the run.
         """
-        atoms = unjsonify(atoms_json)
         swaps = self.swaps or {}
         flags = {
             "ediff": 1e-6,

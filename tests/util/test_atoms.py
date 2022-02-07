@@ -12,7 +12,6 @@ from quacc.util.atoms import (
     get_highest_block,
     prep_next_run,
 )
-from quacc.util.json import jsonify, unjsonify
 
 FILE_DIR = Path(__file__).resolve().parent
 ATOMS_MAG = read(os.path.join(FILE_DIR, "..", "calculators", "vasp", "OUTCAR_mag.gz"))
@@ -79,7 +78,6 @@ def test_prep_next_run():
     assert atoms.info["results"].get("calc1", None) is not None
     assert atoms.info["results"]["calc0"]["magmom"] == mag
     assert atoms.info["results"]["calc1"]["magmom"] == mag - 2
-    assert unjsonify(jsonify(atoms)) == atoms
 
     atoms = deepcopy(ATOMS_MAG)
     atoms = prep_next_run(atoms, move_magmoms=False)
@@ -98,7 +96,6 @@ def test_prep_next_run():
     assert atoms.info["results"].get("calc1", None) is not None
     assert atoms.info["results"]["calc0"]["magmom"] == mag
     assert atoms.info["results"]["calc1"]["magmom"] == mag - 2
-    assert unjsonify(jsonify(atoms)) == atoms
 
     atoms = deepcopy(ATOMS_NOSPIN)
     atoms = prep_next_run(atoms, store_results=True)
@@ -112,7 +109,6 @@ def test_prep_next_run():
     assert atoms.info["results"].get("calc1", None) is not None
     assert atoms.info["results"]["calc0"].get("magmom", None) is None
     assert atoms.info["results"]["calc1"]["magmom"] == mag - 2
-    assert unjsonify(jsonify(atoms)) == atoms
 
 
 def test_check_is_metal():

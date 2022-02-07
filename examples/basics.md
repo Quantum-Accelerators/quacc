@@ -15,23 +15,22 @@ atoms.get_potential_energy() # run VASP w/ Custodian
 ```
 
 ### Jobflow Integration
-The above example can be made compatible with Jobflow simply by defining it in a function with a `@job` wrapper immediately preceeding it. One nuance of Jobflow is that the inputs and outputs must be JSON serializable (so that it can be easily stored in a database), but otherwise it works the same.
+The above example can be made compatible with Jobflow simply by defining it in a function with a `@job` wrapper immediately preceeding it.
 
 ```python
 from jobflow import job, Job
 from quacc.calculators.vasp import SmartVasp
 from quacc.schemas.vasp import summarize_run
-from quacc.util.json import unjsonify
 
 #-----Jobflow Function-----
 @job
-def run_relax(atoms_json):
+def run_relax(atoms):
 
     # Run VASP
-    atoms = SmartVasp(unjsonify(atoms_json), xc='rpbe', preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, xc='rpbe', preset="BulkRelaxSet")
     atoms.get_potential_energy()
     
-    # Return serialized results
+    # Return serializable resultslts
     summary = summarize_run(atoms)
     return summary
 ```
@@ -39,14 +38,13 @@ def run_relax(atoms_json):
 from ase.build import bulk
 from jobflow import Job
 from jobflow.managers.local import run_locally
-from quacc.util.json import jsonify
 
 #-----Make and Run a Flow-----
 # Constrct an Atoms object
 atoms = bulk("Cu")
 
 # Define the job
-job1 = run_relax(jsonify(atoms))
+job1 = run_relax(atoms)
 
 # Run the job locally
 run_locally(Job(job1), create_folders=True)
@@ -63,31 +61,28 @@ from ase.calculators.gaussian import Gaussian
 from ase.calculators.qchem import QChem
 from jobflow import job
 from quacc.schemas.cclib import summarize_run
-from quacc.util.json import unjsonify
 
 # -----Jobflow Function-----
 @job
-def run_relax_gaussian(atoms_json):
+def run_relax_gaussian(atoms):
     # Run Gaussian
-    atoms = unjsonify(atoms_json)
     atoms.calc = Gaussian(method="wB97X-D", basis="def2-TZVP", extra="opt")
     atoms.get_potential_energy()
 
-    # Return serialized results
+    # Return serializable resultslts
     summary = summarize_run(atoms)
     return summary
 
 
 # -----Jobflow Function-----
 @job
-def run_relax_qchem(atoms_json):
+def run_relax_qchem(atoms):
 
     # Run Q-Chem
-    atoms = unjsonify(atoms_json)
     atoms.calc = QChem(method="wB97M-V", basis="def2-TZVPD", jobtype="SP")
     atoms.get_potential_energy()
 
-    # Return serialized results
+    # Return serializable resultslts
     summary = summarize_run(atoms)
     return summary
 ```
@@ -96,14 +91,13 @@ from ase.build import molecule
 from fireworks import LaunchPad
 from jobflow import Flow
 from jobflow.managers.local import flow_to_workflow
-from quacc.util.json import jsonify
 
 # -----Create a Fireworks workflow-----
 # Constrct an Atoms object
 atoms = molecule("O2")
 
 # Define the flow
-job1 = run_relax_gaussian(jsonify(atoms))
+job1 = run_relax_gaussian(atoms)
 job2 = run_relax_qchem(job1.output["atoms"])
 flow = Flow([job1, job2])
 

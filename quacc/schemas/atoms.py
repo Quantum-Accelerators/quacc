@@ -7,8 +7,6 @@ from atomate2.common.schemas.molecule import MoleculeMetadata
 from atomate2.common.schemas.structure import StructureMetadata
 from pymatgen.io.ase import AseAtomsAdaptor
 
-from quacc.util.json import jsonify
-
 
 def atoms_to_metadata(
     atoms: Atoms, get_metadata: bool = True, strip_info: bool = False
@@ -19,7 +17,7 @@ def atoms_to_metadata(
 
     Parameters
     ----------
-    aomss
+    atoms
         ASE Atoms object to store in {"atoms": atoms}
     get_metadata
         Whether to store atoms metadata in the returned dict.
@@ -77,9 +75,6 @@ def atoms_to_metadata(
         results["atoms"] = atoms
 
     # Combine the metadata and results dictionaries
-    results_full = {**metadata, **results}
+    atoms_doc = {**metadata, **results}
 
-    # Make sure it's all JSON serializable
-    results_full = jsonify(results_full)
-
-    return results_full
+    return atoms_doc

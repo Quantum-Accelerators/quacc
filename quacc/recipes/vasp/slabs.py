@@ -1,12 +1,12 @@
 from dataclasses import dataclass
 from typing import Any, Dict
 
+from ase.atoms import Atom, Atoms
 from jobflow import Flow, Maker, Response, job
 
 from quacc.calculators.vasp import SmartVasp
 from quacc.schemas.vasp import summarize_run
 from quacc.util.calc import run_calc
-from quacc.util.json import jsonify, unjsonify
 from quacc.util.slabs import make_adsorbate_structures, make_max_slabs_from_bulk
 
 
@@ -30,21 +30,20 @@ class SlabRelaxMaker(Maker):
     swaps: Dict[str, Any] = None
 
     @job
-    def make(self, atoms_json: str) -> Dict[str, Any]:
+    def make(self, atoms: Atoms) -> Dict[str, Any]:
         """
         Make the run.
 
         Parameters
         ----------
-        atoms_json
-            Encoded .Atoms object
+        atoms
+            .Atoms object
 
         Returns
         -------
         Dict:
             Summary of the run.
         """
-        atoms = unjsonify(atoms_json)
         swaps = self.swaps or {}
         flags = {
             "auto_dipole": True,
@@ -89,21 +88,20 @@ class SlabStaticMaker(Maker):
     swaps: Dict[str, Any] = None
 
     @job
-    def make(self, atoms_json: str) -> Dict[str, Any]:
+    def make(self, atoms: Atoms) -> Dict[str, Any]:
         """
         Make the run.
 
         Parameters
         ----------
-        atoms_json
-            Encoded .Atoms object
+        atoms
+            .Atoms object
 
         Returns
         -------
         Dict
             Summary of the run.
         """
-        atoms = unjsonify(atoms_json)
         swaps = self.swaps or {}
         flags = {
             "auto_dipole": True,
@@ -157,15 +155,15 @@ class BulkToSlabMaker(Maker):
 
     @job
     def make(
-        self, atoms_json: str, max_slabs: None | int = None, **slabgen_kwargs
+        self, atoms: Atoms, max_slabs: None | int = None, **slabgen_kwargs
     ) -> Response:
         """
         Make the run.
 
         Parameters
         ----------
-        atoms_json
-            Encoded .Atoms object
+        atoms
+            .Atoms object
         max_slabs
             Maximum number of slabs to make
         slabgen_kwargs
@@ -176,7 +174,6 @@ class BulkToSlabMaker(Maker):
         Response
             A Flow of relaxation and static jobs for the generated slabs.
         """
-        atoms = unjsonify(atoms_json)
         slabgen_kwargs = slabgen_kwargs or {}
         self.slab_relax_maker.preset = self.slab_relax_maker.preset or self.preset
         self.slab_static_maker.preset = self.slab_static_maker.preset or self.preset
@@ -187,7 +184,7 @@ class BulkToSlabMaker(Maker):
         jobs = []
         outputs = []
         for slab in slabs:
-            relax_job = self.slab_relax_maker.make(jsonify(slab))
+            relax_job = self.slab_relax_maker.make(slab)
             jobs.append(relax_job)
             outputs.append(relax_job.output)
 
@@ -227,17 +224,17 @@ class SlabToAdsSlabMaker(Maker):
 
     @job
     def make(
-        self, atoms_json: str, adsorbate_json: str, **slabgen_ads_kwargs
+        self, atoms: Atoms, adsorbate: Atoms | Atom | str, **slabgen_ads_kwargs
     ) -> Response | None:
         """
         Make the run.
 
         Parameters
         ----------
-        atoms_json
-            Encoded .Atoms object for the structure.
-        adsorbate_json
-            Encoded .Atoms object for the adsorbate.
+        atoms
+            .Atoms object for the structure.
+        adsorbate
+            .Atoms object for the adsorbate.
         slabgen_ads_kwargs
             Additional keyword arguments to pass to make_adsorbate_structures()
 
@@ -246,8 +243,6 @@ class SlabToAdsSlabMaker(Maker):
         Response
             A Flow of relaxation and static jobs for the generated slabs with adsorbates.
         """
-        atoms = unjsonify(atoms_json)
-        adsorbate = unjsonify(adsorbate_json)
         slabgen_ads_kwargs = slabgen_ads_kwargs or {}
         self.slab_relax_maker.preset = self.slab_relax_maker.preset or self.preset
         self.slab_static_maker.preset = self.slab_static_maker.preset or self.preset
@@ -261,7 +256,7 @@ class SlabToAdsSlabMaker(Maker):
         jobs = []
         outputs = []
         for slab in slabs:
-            relax_job = self.slab_relax_maker.make(jsonify(slab))
+            relax_job = self.slab_relax_maker.make(slab)
             jobs.append(relax_job)
             outputs.append(relax_job.output)
 

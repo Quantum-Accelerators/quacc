@@ -6,7 +6,6 @@ from atomate2.common.schemas.cclib import TaskDocument
 
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
-from quacc.util.json import jsonify
 
 
 def summarize_run(
@@ -74,9 +73,6 @@ def summarize_run(
     atoms_db = atoms_to_metadata(atoms)
 
     # Create a dictionary of the inputs/outputs
-    results_full = {**atoms_db, **inputs, **results}
-
-    # Make sure it's all JSON serializable
-    task_doc = jsonify(results_full)
+    task_doc = {**atoms_db, **inputs, **results}
 
     return task_doc

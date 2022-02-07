@@ -6,7 +6,6 @@ import numpy as np
 from ase.build import bulk, fcc100, molecule
 from ase.io import read
 
-from quacc.util.json import jsonify, unjsonify
 from quacc.util.slabs import (
     flip_atoms,
     make_adsorbate_structures,
@@ -112,10 +111,6 @@ def test_make_slabs_from_bulk():
     for slab in slabs:
         d = slab.get_all_distances(mic=True)
         assert np.round(np.min(d[d != 0]), 4) == np.round(min_d, 4)
-    # This is to make sure the slab deserialization works
-    slab_test = jsonify(slab)
-    slab_test = unjsonify(slab_test)
-    assert slab_test == slab
 
 
 def test_make_max_slabs_from_bulk():
