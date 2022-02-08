@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 from ase.atoms import Atoms
+
 from quacc.schemas.calc import summarize_run as calc_summarize_run
 
 

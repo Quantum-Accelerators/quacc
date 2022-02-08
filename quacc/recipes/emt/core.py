@@ -3,8 +3,8 @@ from typing import Any, Dict
 
 from ase.atoms import Atoms
 from ase.calculators.emt import EMT
-from ase.optimize.optimize import Optimizer
 from ase.optimize import FIRE
+from ase.optimize.optimize import Optimizer
 from jobflow import Maker, job
 
 from quacc.schemas.calc import summarize_run

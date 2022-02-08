@@ -1,8 +1,9 @@
+import os
+
+import pytest
 from ase.build import bulk
 from ase.optimize import BFGS
 from jobflow.managers.local import run_locally
-import pytest
-import os
 
 from quacc.recipes.emt.core import RelaxMaker, StaticMaker
 
