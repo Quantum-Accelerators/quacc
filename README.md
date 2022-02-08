@@ -8,6 +8,21 @@ The Quantum Accelerator (QuAcc) supercharges your code to support high-throughpu
 
 This package is heavily inspired by [Atomate2](https://github.com/materialsproject/atomate2), which I also recommend checking out.
 
+## Example
+```python
+from ase.build import bulk
+from jobflow.managers.local import run_locally
+
+from quacc.recipes.xtb.core import RelaxMaker as xTBRelaxMaker
+from quacc.recipes.vasp.core import RelaxMaker as VaspRelaxMaker
+
+atoms = bulk("Cu")
+job1 = xTBRelaxMaker().make(atoms)
+job2 = VaspRelaxMaker().make(job1.outputs["atoms"])
+flow = [job1, job2]
+responses = run_locally(job)
+```
+
 ## Installation
 1. Run the following command, ideally in a fresh Python 3.10+ environment: `pip install quacc`. For the most recent development version, instead run `pip install git+https://github.com/arosen93/quacc.git`.
 
