@@ -21,7 +21,7 @@ atoms = bulk("Cu")
 
 # Make a flow consisting of an EMT relaxation followed by a VASP relaxation
 job1 = EMTRelaxMaker().make(atoms)
-job2 = VaspRelaxMaker().make(job1.outputs["atoms"])
+job2 = VaspRelaxMaker(preset='BulkRelaxSet').make(job1.outputs["atoms"])
 flow = [job1, job2]
 
 # Run the flow locally, with all output data stored in a convenient schema
@@ -40,8 +40,8 @@ from quacc.recipes.orca.core import RelaxMaker as OrcaRelaxMaker
 # Make an H2 molecule
 atoms = molecule("H2")
 
-# Make a flow consisting of an xTB relaxation followed by an ORCA relaxation
-job1 = xTBRelaxMaker().make(atoms)
+# Make a flow consisting of a GFN-FF relaxation followed by an ORCA relaxation
+job1 = xTBRelaxMaker(method='GFN-FF').make(atoms)
 job2 = OrcaRelaxMaker().make(job1.outputs["atoms"])
 flow = [job1, job2]
 responses = run_locally(job)
