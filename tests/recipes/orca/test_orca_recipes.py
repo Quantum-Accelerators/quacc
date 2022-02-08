@@ -9,17 +9,18 @@ from quacc.recipes.orca.core import RelaxMaker, StaticMaker
 
 FILE_DIR = os.path.dirname(os.path.realpath(__file__))
 ORCA_DIR = os.path.join(FILE_DIR, "orca_run")
+PWD = os.getcwd()
 
 
 def setup_module():
     for f in os.listdir(ORCA_DIR):
-        copy(os.path.join(ORCA_DIR, f), os.path.join(FILE_DIR, f))
+        copy(os.path.join(ORCA_DIR, f), os.path.join(PWD, f))
 
 
 def teardown_module():
     for f in os.listdir(ORCA_DIR):
-        if os.path.exists(os.path.join(FILE_DIR, f)):
-            os.remove(os.path.join(FILE_DIR, f))
+        if os.path.exists(os.path.join(PWD, f)):
+            os.remove(os.path.join(PWD, f))
 
 
 def test_static_maker():
