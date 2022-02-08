@@ -44,7 +44,6 @@ atoms = molecule("H2")
 job1 = xTBRelaxMaker(method="GFN-FF").make(atoms)
 job2 = OrcaRelaxMaker().make(job1.output["atoms"])
 flow = [job1, job2]
-responses = run_locally(job)
 
 # Convert the flow to a FireWorks workflow and add it to launchpad
 # Database-friendly results will be deposited in your JobFlow DB
