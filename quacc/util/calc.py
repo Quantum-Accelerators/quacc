@@ -1,9 +1,10 @@
 import os
 from copy import deepcopy
-from tempfile import TemporaryDirectory
-from monty.shutil import copy_r, gzip_dir
 from shutil import copy
+from tempfile import TemporaryDirectory
+
 from ase.atoms import Atoms
+from monty.shutil import copy_r, gzip_dir
 
 
 def run_calc(

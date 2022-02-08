@@ -1,9 +1,11 @@
 import os
 from shutil import rmtree
+
 import pytest
 from ase.build import bulk
-from quacc.util.calc import run_calc
+
 from quacc.calculators.vasp import SmartVasp
+from quacc.util.calc import run_calc
 
 
 def setup_module():
