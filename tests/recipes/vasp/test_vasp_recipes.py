@@ -9,30 +9,6 @@ from quacc.recipes.vasp.slabs import (
     SlabStaticMaker,
     SlabToAdsSlabMaker,
 )
-from quacc.schemas.calc import summarize_run as calc_summarize_run
-
-
-def mock_summarize_run(atoms, **kwargs):
-    # Instead of running the VASP-specific summarize_run(), we mock it with the
-    # general calculator schema which does not require VASP files to be
-    # in the working directory and will work with pytest.
-
-    prep_next_run = kwargs.get("prep_next_run", True)
-    additional_fields = kwargs.get("additional_fields", None)
-    output = calc_summarize_run(
-        atoms, prep_next_run=prep_next_run, additional_fields=additional_fields
-    )
-    return output
-
-
-@pytest.fixture(autouse=True)
-def patch_summarize_run(monkeypatch):
-    # Monkeypatch the summarize_run() function so that we aren't relying on real
-    # VASP files to be in the working directory during the test. Note that even though
-    # summarize_run() is a function in the quacc.schemas.vasp module, we modify it
-    # only in quacc.recipes.vasp.core/.slabs because otherwise it will not work properly.
-    monkeypatch.setattr("quacc.recipes.vasp.core.summarize_run", mock_summarize_run)
-    monkeypatch.setattr("quacc.recipes.vasp.slabs.summarize_run", mock_summarize_run)
 
 
 def test_static_maker():
@@ -46,7 +22,7 @@ def test_static_maker():
     assert output["parameters"]["isym"] == 2
     assert output["parameters"]["nsw"] == 0
     assert output["parameters"]["lwave"] == True
-    assert output["name"] == "Static"
+    assert output["name"] == "VASP-Static"
 
     job = StaticMaker(
         preset="BulkRelaxSet", name="test", swaps={"ncore": 2, "kpar": 4}
@@ -71,7 +47,7 @@ def test_relax_maker():
     assert output["parameters"]["nsw"] > 0
     assert output["parameters"]["isif"] == 3
     assert output["parameters"]["lwave"] == False
-    assert output["name"] == "Relax"
+    assert output["name"] == "VASP-Relax"
 
     job = RelaxMaker(preset="BulkRelaxSet", name="test", swaps={"nelmin": 6}).make(
         atoms
@@ -98,7 +74,7 @@ def test_slab_static_maker():
     assert output["parameters"]["idipol"] == 3
     assert output["parameters"]["nsw"] == 0
     assert output["parameters"]["lvhar"] == True
-    assert output["name"] == "SlabStatic"
+    assert output["name"] == "VASP-SlabStatic"
 
     job = SlabStaticMaker(preset="SlabRelaxSet", name="test", swaps={"nelmin": 6}).make(
         atoms
@@ -121,7 +97,7 @@ def test_slab_relax_maker():
     assert output["parameters"]["nsw"] > 0
     assert output["parameters"]["isym"] == 0
     assert output["parameters"]["lwave"] == False
-    assert output["name"] == "SlabRelax"
+    assert output["name"] == "VASP-SlabRelax"
 
     job = SlabRelaxMaker(preset="SlabRelaxSet", name="test", swaps={"nelmin": 6}).make(
         atoms
@@ -150,12 +126,12 @@ def test_slab_flows():
     output1 = responses[uuids[1]][1].output
     assert output1["nsites"] > len(atoms)
     assert output1["parameters"]["isif"] == 2
-    assert output1["name"] == "SlabRelax"
+    assert output1["name"] == "VASP-SlabRelax"
 
     output2 = responses[uuids[2]][1].output
     assert output2["nsites"] == output1["nsites"]
     assert output2["parameters"]["nsw"] == 0
-    assert output2["name"] == "SlabStatic"
+    assert output2["name"] == "VASP-SlabStatic"
 
     # Now try with kwargs
     flow = BulkToSlabMaker(
@@ -176,13 +152,13 @@ def test_slab_flows():
     assert output1["parameters"]["isif"] == 2
     assert output1["parameters"]["nelmin"] == 6
     assert output1["parameters"]["encut"] == 450
-    assert output1["name"] == "SlabRelax"
+    assert output1["name"] == "VASP-SlabRelax"
 
     output2 = responses[uuids[2]][1].output
     assert output2["parameters"]["nsw"] == 0
     assert output2["parameters"]["nelmin"] == 6
     assert output2["parameters"]["encut"] == 450
-    assert output2["name"] == "SlabStatic"
+    assert output2["name"] == "VASP-SlabStatic"
 
     ### --------- Test SlabToAdsSlabMaker --------- ###
     atoms = output2["atoms"]
@@ -202,12 +178,12 @@ def test_slab_flows():
     output1 = responses[uuids[1]][1].output
     assert output1["nsites"] == len(output2["atoms"]) + 2
     assert output1["parameters"]["isif"] == 2
-    assert output1["name"] == "SlabRelax"
+    assert output1["name"] == "VASP-SlabRelax"
 
     output2 = responses[uuids[2]][1].output
     assert output2["nsites"] == output1["nsites"]
     assert output2["parameters"]["nsw"] == 0
-    assert output2["name"] == "SlabStatic"
+    assert output2["name"] == "VASP-SlabStatic"
 
     # Now try with kwargs
     flow = SlabToAdsSlabMaker(
@@ -225,10 +201,10 @@ def test_slab_flows():
     assert output1["parameters"]["isif"] == 2
     assert output1["parameters"]["nelmin"] == 6
     assert output1["parameters"]["encut"] == 450
-    assert output1["name"] == "SlabRelax"
+    assert output1["name"] == "VASP-SlabRelax"
 
     output2 = responses[uuids[2]][1].output
     assert output2["parameters"]["nsw"] == 0
     assert output2["parameters"]["nelmin"] == 6
     assert output2["parameters"]["encut"] == 450
-    assert output2["name"] == "SlabStatic"
+    assert output2["name"] == "VASP-SlabStatic"

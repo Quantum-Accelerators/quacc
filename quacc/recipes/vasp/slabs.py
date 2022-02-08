@@ -25,7 +25,7 @@ class SlabRelaxMaker(Maker):
         Dictionary of custom kwargs for the calculator.
     """
 
-    name: str = "SlabRelax"
+    name: str = "VASP-SlabRelax"
     preset: None | str = None
     swaps: Dict[str, Any] = None
 
@@ -83,7 +83,7 @@ class SlabStaticMaker(Maker):
         Dictionary of custom kwargs for the calculator.
     """
 
-    name: str = "SlabStatic"
+    name: str = "VASP-SlabStatic"
     preset: None | str = None
     swaps: Dict[str, Any] = None
 
@@ -147,7 +147,7 @@ class BulkToSlabMaker(Maker):
         Default to use for the SlabStatic job.
     """
 
-    name: str = "BulkToSlab"
+    name: str = "VASP-BulkToSlab"
     preset: None | str = None
     swaps: Dict[str, Any] = None
     slab_relax_maker: Maker = SlabRelaxMaker()
@@ -216,7 +216,7 @@ class SlabToAdsSlabMaker(Maker):
         Default to use for the SlabStatic job.
     """
 
-    name: str = "SlabToAdsSlab"
+    name: str = "VASP-SlabToAdsSlab"
     preset: None | str = None
     swaps: Dict[str, Any] = None
     slab_relax_maker: Maker = SlabRelaxMaker()

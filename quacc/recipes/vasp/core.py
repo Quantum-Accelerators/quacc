@@ -27,7 +27,7 @@ class RelaxMaker(Maker):
         False if only the positions (ISIF = 2) should be updated.
     """
 
-    name: str = "Relax"
+    name: str = "VASP-Relax"
     preset: None | str = None
     swaps: Dict[str, Any] = None
     volume_relax: bool = True
@@ -85,7 +85,7 @@ class StaticMaker(Maker):
         Dictionary of custom kwargs for the calculator.
     """
 
-    name: str = "Static"
+    name: str = "VASP-Static"
     preset: None | str = None
     swaps: Dict[str, Any] = None
 
