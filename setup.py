@@ -31,7 +31,7 @@ if __name__ == "__main__":
             "atomate2==0.0.6",
             "monty==2022.1.19",
             "FireWorks==2.0.2",
-            "cclib==1.7.1",
+            "cclib @ https://github.com/cclib/cclib.git",
         ],
         extras_require={
             "tests": ["pytest==7.0.0"],
