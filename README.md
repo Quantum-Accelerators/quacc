@@ -13,14 +13,43 @@ This package is heavily inspired by [Atomate2](https://github.com/materialsproje
 from ase.build import bulk
 from jobflow.managers.local import run_locally
 
-from quacc.recipes.xtb.core import RelaxMaker as xTBRelaxMaker
+from quacc.recipes.emt.core import RelaxMaker as EMTRelaxMaker
 from quacc.recipes.vasp.core import RelaxMaker as VaspRelaxMaker
 
+# Make a bulk Cu structure
 atoms = bulk("Cu")
-job1 = xTBRelaxMaker().make(atoms)
+
+# Make a flow consisting of an EMT relaxation followed by a VASP relaxation
+job1 = EMTRelaxMaker().make(atoms)
 job2 = VaspRelaxMaker().make(job1.outputs["atoms"])
 flow = [job1, job2]
+
+# Run the flow locally, with all output data stored in a convenient schema
 responses = run_locally(job)
+```
+
+## Example with FireWorks
+```python
+from ase.build import molecule
+from fireworks import LaunchPad
+from jobflow.managers.fireworks import flow_to_workflow
+
+from quacc.recipes.xtb.core import RelaxMaker as xTBRelaxMaker
+from quacc.recipes.orca.core import RelaxMaker as OrcaRelaxMaker
+
+# Make an H2 molecule
+atoms = molecule("H2")
+
+# Make a flow consisting of an xTB relaxation followed by an ORCA relaxation
+job1 = xTBRelaxMaker().make(atoms)
+job2 = OrcaRelaxMaker().make(job1.outputs["atoms"])
+flow = [job1, job2]
+responses = run_locally(job)
+
+# Convert the flow to a FireWorks workflow and add it to launchpad
+wf = flow_to_workflow(flow)
+lpad = LaunchPad.auto_load()
+lpad.add_wf(wf)
 ```
 
 ## Installation
