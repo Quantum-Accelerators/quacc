@@ -91,8 +91,13 @@ class RelaxMaker(Maker):
             Summary of the run.
         """
         opt_kwargs = self.opt_kwargs or {}
+
+        # We always want to save the logfile and trajectory, so we will set some default
+        # values if not specified by the user (and then remove them from the **opt_kwargs)
         logfile = opt_kwargs.get("logfile", None) or "opt.log"
         trajectory = opt_kwargs.get("trajectory", None) or "opt.traj"
+        opt_kwargs.pop("logfile", None)
+        opt_kwargs.pop("trajectory", None)
 
         atoms.calc = EMT(asap_cutoff=self.asap_cutoff)
         dyn = self.optimizer(

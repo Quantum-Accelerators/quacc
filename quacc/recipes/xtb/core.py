@@ -77,7 +77,7 @@ class RelaxMaker(Maker):
         .Optimizer class to use for the relaxation.
     fmax
         Tolerance for the force convergence (in eV/A).
-    optkwargs
+    opt_kwargs
         Dictionary of kwargs for the optimizer.
     """
 
@@ -86,7 +86,7 @@ class RelaxMaker(Maker):
     xtb_kwargs: Dict[str, Any] = None
     optimizer: Optimizer = FIRE
     fmax: float = 0.03
-    optkwargs: Dict[str, Any] = None
+    opt_kwargs: Dict[str, Any] = None
 
     @job
     @requires(
@@ -107,14 +107,18 @@ class RelaxMaker(Maker):
             Summary of the run.
         """
         xtb_kwargs = self.xtb_kwargs or {}
-        optkwargs = self.optkwargs or {}
-        logfile = optkwargs.get("logfile", None) or "opt.log"
-        trajectory = optkwargs.get("trajectory", None) or "opt.traj"
-        restart = optkwargs.get("restart", None) or "opt.pckl"
+        opt_kwargs = self.opt_kwargs or {}
+
+        # We always want to save the logfile and trajectory, so we will set some default
+        # values if not specified by the user (and then remove them from the **opt_kwargs)
+        logfile = opt_kwargs.get("logfile", None) or "opt.log"
+        trajectory = opt_kwargs.get("trajectory", None) or "opt.traj"
+        opt_kwargs.pop("logfile", None)
+        opt_kwargs.pop("trajectory", None)
 
         atoms.calc = XTB(method=self.method, **xtb_kwargs)
         dyn = self.optimizer(
-            atoms, logfile=logfile, trajectory=trajectory, restart=restart, **optkwargs
+            atoms, logfile=logfile, trajectory=trajectory, **opt_kwargs
         )
         dyn.run(fmax=self.fmax)
         summary = summarize_run(atoms, additional_fields={"name": self.name})
