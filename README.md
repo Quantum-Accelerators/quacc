@@ -47,6 +47,7 @@ flow = [job1, job2]
 responses = run_locally(job)
 
 # Convert the flow to a FireWorks workflow and add it to launchpad
+# Database-friendly results will be deposited in your JobFlow DB
 wf = flow_to_workflow(flow)
 lpad = LaunchPad.auto_load()
 lpad.add_wf(wf)
