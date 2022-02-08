@@ -21,7 +21,7 @@ atoms = bulk("Cu")
 
 # Make a flow consisting of an EMT relaxation followed by a VASP relaxation
 job1 = EMTRelaxMaker().make(atoms)
-job2 = VaspRelaxMaker(preset='BulkRelaxSet').make(job1.output["atoms"])
+job2 = VaspRelaxMaker(preset="BulkRelaxSet").make(job1.output["atoms"])
 flow = [job1, job2]
 
 # Run the flow locally, with all output data stored in a convenient schema
