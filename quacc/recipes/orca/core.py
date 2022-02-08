@@ -20,13 +20,13 @@ class StaticMaker(Maker):
         Name of the job.
     orcasimpleinput
         ORCA simple input string.
-    orcablock
+    orcablocks
         ORCA block input string.
     """
 
     name: str = "ORCA-Static"
     orcasimpleinput: str = "SP SlowConv NormalPrint"
-    orcablock: str = ""
+    orcablocks: str = ""
 
     @job
     def make(self, atoms: Atoms) -> Dict[str, Any]:
@@ -45,7 +45,7 @@ class StaticMaker(Maker):
         """
         atoms.calc = ORCA(
             orcasimpleinput=self.orcasimpleinput,
-            orcablock=self.orcablock,
+            orcablocks=self.orcablocks,
         )
         atoms = run_calc(atoms)
         summary = summarize_run(atoms, ".out", additional_fields={"name": self.name})
@@ -64,7 +64,7 @@ class RelaxMaker(Maker):
         Name of the job.
     orcasimpleinput
         ORCA simple input string.
-    orcablock
+    orcablocks
         ORCA block input string.
     freq
         If a requency calculation should be carried out.
@@ -72,7 +72,7 @@ class RelaxMaker(Maker):
 
     name: str = "ORCA-Relax"
     orcasimpleinput: str = "Opt SlowConv NormalPrint"
-    orcablock: str = ""
+    orcablocks: str = ""
     freq: bool = False
 
     @job
@@ -100,7 +100,7 @@ class RelaxMaker(Maker):
 
         atoms.calc = ORCA(
             orcasimpleinput=self.orcasimpleinput,
-            orcablock=self.orcablock,
+            orcablocks=self.orcablocks,
         )
         atoms = run_calc(atoms)
         summary = summarize_run(atoms, ".out", additional_fields={"name": self.name})
