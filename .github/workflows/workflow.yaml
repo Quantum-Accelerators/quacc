@@ -11,10 +11,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Setup Miniconda
-        uses: conda-incubator/setup-miniconda@v2.1.1
+      - name: Install Mamba
+        uses: mamba-org/provision-with-micromamba@v11
         with:
-          python-version: '3.10'
+          extra-specs: |
+            python: '3.10'
 
       - name: Install dependencies
         run: |
