@@ -41,7 +41,7 @@ from quacc.recipes.orca.core import RelaxMaker as OrcaRelaxMaker
 atoms = molecule("H2")
 
 # Make a flow consisting of a GFN-FF relaxation followed by an ORCA relaxation
-job1 = xTBRelaxMaker(method='GFN-FF').make(atoms)
+job1 = xTBRelaxMaker(method="GFN-FF").make(atoms)
 job2 = OrcaRelaxMaker().make(job1.output["atoms"])
 flow = [job1, job2]
 responses = run_locally(job)
