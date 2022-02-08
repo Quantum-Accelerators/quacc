@@ -16,7 +16,7 @@ def summarize_run(
     check_convergence: bool = True,
     compact: bool = True,
     remove_empties: bool = True,
-    **taskdoc_kwargs,
+    additional_fields: Dict[str, Any] = None,
 ) -> Dict[str, Any]:
     """
     Get tabulated results from a VASP run and store them in a database-friendly format.
@@ -38,7 +38,8 @@ def summarize_run(
         pairs.
     remove_empties
         Whether to remove None values and empty lists/dicts from the TaskDocument.
-    **taskdoc_kwargs: Additional keyword arguments to pass to TaskDocument.from_directory()
+    additional_fields
+        Additional fields to add to the task document.
 
     Returns
     -------
@@ -46,12 +47,14 @@ def summarize_run(
         Dictionary of tabulated inputs/results
     """
 
+    if additional_fields is None:
+        additional_fields = {}
     if dir_path is None:
         dir_path = os.getcwd()
 
     # Fetch all tabulated results from VASP outputs files
     # Fortunately, Atomate2 already has a handy function for this
-    results = TaskDocument.from_directory(dir_path, **taskdoc_kwargs).dict()
+    results = TaskDocument.from_directory(dir_path).dict()
 
     # Check for calculation convergence
     if check_convergence and results["state"] != "successful":
@@ -88,7 +91,7 @@ def summarize_run(
     # makes the structure metadata for us
     atoms_db = atoms_to_metadata(atoms, get_metadata=False)
 
-    task_doc = {**results, **atoms_db}
+    task_doc = {**results, **atoms_db, **additional_fields}
 
     if remove_empties:
         task_doc = _remove_empties(task_doc)

@@ -13,6 +13,7 @@ def summarize_run(
     logfile_extensions: str | List[str],
     dir_path: str = None,
     prep_next_run: bool = True,
+    additional_fields: Dict[str, Any] = None,
 ) -> Dict[str, Any]:
     """
     Get tabulated results from a molecular DFT run and store them in a database-friendly format.
@@ -33,6 +34,8 @@ def summarize_run(
     prep_next_run
         Whether the Atoms object storeed in {"atoms": atoms} should be prepared for the next run.
         This clears out any attached calculator and moves the final magmoms to the initial magmoms.
+    additional_fields
+        Additional fields to add to the task document.
 
     Returns
     -------
@@ -45,6 +48,8 @@ def summarize_run(
     if not atoms.calc.results:
         raise ValueError("ASE Atoms object's calculator has no results.")
 
+    if additional_fields is None:
+        additional_fields = {}
     if dir_path is None:
         dir_path = os.getcwd()
 
@@ -73,6 +78,6 @@ def summarize_run(
     atoms_db = atoms_to_metadata(atoms)
 
     # Create a dictionary of the inputs/outputs
-    task_doc = {**atoms_db, **inputs, **results}
+    task_doc = {**atoms_db, **inputs, **results, **additional_fields}
 
     return task_doc
