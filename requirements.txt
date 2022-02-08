@@ -1,4 +1,4 @@
-git+https://gitlab.com/argon214/ase.git@argon214-master-patch-76720 # waiting on >= 3.22.2 for VASP6 OUTCAR parsing
+git+https://gitlab.com/ase/ase.git # waiting on >= 3.22.2 for VASP6 OUTCAR parsing
 pymatgen==2022.2.7
 custodian==2022.1.17
 jobflow==0.1.6

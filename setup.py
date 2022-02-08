@@ -24,7 +24,7 @@ if __name__ == "__main__":
         data_files=["LICENSE.md"],
         zip_safe=False,
         install_requires=[
-            "ase @ git+https://gitlab.com/argon214/ase.git@argon214-master-patch-76720",
+            "ase @ git+https://gitlab.com/ase/ase.git",
             "pymatgen==2022.2.7",
             "custodian==2022.1.17",
             "jobflow==0.1.6",
