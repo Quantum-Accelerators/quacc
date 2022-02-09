@@ -31,27 +31,31 @@ def test_static_maker():
     output = responses[job.uuid][1].output
     assert output["nsites"] == len(atoms)
     assert output["name"] == "Gaussian-Static"
+    assert "charge" not in output["parameters"]
+    assert "mult" not in output["parameters"]
     assert output["parameters"]["sp"] == ""
-    assert output["parameters"]["xc"] == "wB97X-D"
-    assert output["parameters"]["basis"] == "def2-TZVP"
+    assert output["parameters"]["xc"] == "wb97x-d"
+    assert output["parameters"]["basis"] == "def2-tzvp"
     assert output["parameters"]["integral"] == "ultrafine"
     assert output["parameters"]["gfinput"] == ""
     assert output["parameters"]["ioplist"] == ["6/7=3"]
 
     job = StaticMaker(
-        xc="M06L",
-        basis="def2-SVP",
+        xc="m06l",
+        basis="def2-svp",
         pop="regular",
         molden=False,
         swaps={"integral": "superfinegrid"},
-    ).make(atoms)
+    ).make(atoms, charge=-2, mult=3)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["nsites"] == len(atoms)
+    assert output["parameters"]["charge"] == -2
+    assert output["parameters"]["mult"] == 3
     assert output["name"] == "Gaussian-Static"
     assert output["parameters"]["sp"] == ""
-    assert output["parameters"]["xc"] == "M06L"
-    assert output["parameters"]["basis"] == "def2-SVP"
+    assert output["parameters"]["xc"] == "m06l"
+    assert output["parameters"]["basis"] == "def2-svp"
     assert output["parameters"]["integral"] == "superfinegrid"
     assert "gfinput" not in output["parameters"]
     assert "ioptlist" not in output["parameters"]
@@ -67,25 +71,26 @@ def test_relax_maker():
     output = responses[job.uuid][1].output
     assert output["nsites"] == len(atoms)
     assert output["name"] == "Gaussian-Relax"
+    assert "charge" not in output["parameters"]
+    assert "mult" not in output["parameters"]
     assert output["parameters"]["opt"] == ""
-    assert output["parameters"]["xc"] == "wB97X-D"
-    assert output["parameters"]["basis"] == "def2-TZVP"
+    assert output["parameters"]["xc"] == "wb97x-d"
+    assert output["parameters"]["basis"] == "def2-tzvp"
     assert output["parameters"]["integral"] == "ultrafine"
     assert "freq" not in output["parameters"]
     assert "sp" not in output["parameters"]
 
     job = RelaxMaker(
-        xc="M06L",
-        basis="def2-SVP",
-        freq=True,
-        swaps={"integral": "superfinegrid"},
-    ).make(atoms)
+        xc="m06l", basis="def2-svp", freq=True, swaps={"integral": "superfinegrid"}
+    ).make(atoms, charge=-2, mult=3)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["nsites"] == len(atoms)
+    assert output["parameters"]["charge"] == -2
+    assert output["parameters"]["mult"] == 3
     assert output["name"] == "Gaussian-Relax"
     assert output["parameters"]["opt"] == ""
     assert output["parameters"]["freq"] == ""
-    assert output["parameters"]["xc"] == "M06L"
-    assert output["parameters"]["basis"] == "def2-SVP"
+    assert output["parameters"]["xc"] == "m06l"
+    assert output["parameters"]["basis"] == "def2-svp"
     assert output["parameters"]["integral"] == "superfinegrid"

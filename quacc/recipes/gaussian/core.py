@@ -32,14 +32,16 @@ class StaticMaker(Maker):
     """
 
     name: str = "Gaussian-Static"
-    xc: str = "wB97X-D"
-    basis: str = "def2-TZVP"
+    xc: str = "wb97x-d"
+    basis: str = "def2-tzvp"
     pop: str = "hirshfeld"
     molden: bool = True
     swaps: Dict[str, Any] = None
 
     @job
-    def make(self, atoms: Atoms) -> Dict[str, Any]:
+    def make(
+        self, atoms: Atoms, charge: int = None, mult: int = None
+    ) -> Dict[str, Any]:
         """
         Make the run.
 
@@ -47,6 +49,12 @@ class StaticMaker(Maker):
         ----------
         atoms
             .Atoms object
+        charge
+            Charge of the system. If None, this is determined from the sum of
+            atoms.get_initial_charges().
+        mult
+            Multiplicity of the system. If None, this is determined from 1+ the sum
+            of atoms.get_initial_magnetic_moments().
 
         Returns
         -------
@@ -58,6 +66,8 @@ class StaticMaker(Maker):
             "mem": "16GB",
             "xc": self.xc,
             "basis": self.basis,
+            "charge": charge,
+            "mult": mult,
             "sp": "",
             "scf": ["maxcycle=250", "xqc"],
             "integral": "ultrafine",
@@ -95,13 +105,15 @@ class RelaxMaker(Maker):
     """
 
     name: str = "Gaussian-Relax"
-    xc: str = "wB97X-D"
-    basis: str = "def2-TZVP"
+    xc: str = "wb97x-d"
+    basis: str = "def2-tzvp"
     freq: bool = False
     swaps: Dict[str, Any] = None
 
     @job
-    def make(self, atoms: Atoms) -> Dict[str, Any]:
+    def make(
+        self, atoms: Atoms, charge: int = None, mult: int = None
+    ) -> Dict[str, Any]:
         """
         Make the run.
 
@@ -109,6 +121,12 @@ class RelaxMaker(Maker):
         ----------
         atoms
             .Atoms object
+        charge
+            Charge of the system. If None, this is determined from the sum of
+            atoms.get_initial_charges().
+        mult
+            Multiplicity of the system. If None, this is determined from 1+ the sum
+            of atoms.get_initial_magnetic_moments().
 
         Returns
         -------
@@ -120,6 +138,8 @@ class RelaxMaker(Maker):
             "mem": "16GB",
             "xc": self.xc,
             "basis": self.basis,
+            "charge": charge,
+            "mult": mult,
             "opt": "",
             "scf": ["maxcycle=250", "xqc"],
             "integral": "ultrafine",
