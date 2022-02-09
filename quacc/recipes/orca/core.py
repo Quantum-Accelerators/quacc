@@ -175,7 +175,7 @@ class RelaxMaker(Maker):
         atoms.calc = ORCA(
             orcasimpleinput=orcasimpleinput,
             orcablocks=orcablocks,
-            charge=charge if charge else round(sum(atoms.get_initial_charges()),
+            charge=charge if charge else round(sum(atoms.get_initial_charges())),
             mult=mult if mult else round(1 + sum(atoms.get_initial_magnetic_moments())),
         )
         atoms = run_calc(atoms)
