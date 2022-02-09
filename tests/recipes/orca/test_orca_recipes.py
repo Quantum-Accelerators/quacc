@@ -7,20 +7,19 @@ from jobflow.managers.local import run_locally
 
 from quacc.recipes.orca.core import RelaxMaker, StaticMaker
 
-FILE_DIR = os.path.dirname(os.path.realpath(__file__))
+FILE_DIR = Path(__file__).resolve().parent
 ORCA_DIR = os.path.join(FILE_DIR, "orca_run")
-PWD = os.getcwd()
 
 
 def setup_module():
     for f in os.listdir(ORCA_DIR):
-        copy(os.path.join(ORCA_DIR, f), os.path.join(PWD, f))
+        copy(os.path.join(ORCA_DIR, f), os.path.join(os.getcwd(), f))
 
 
 def teardown_module():
     for f in os.listdir(ORCA_DIR):
-        if os.path.exists(os.path.join(PWD, f)):
-            os.remove(os.path.join(PWD, f))
+        if os.path.exists(os.path.join(os.getcwd(), f)):
+            os.remove(os.path.join(os.getcwd(), f))
 
 
 def test_static_maker():

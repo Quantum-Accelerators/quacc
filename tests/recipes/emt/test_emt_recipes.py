@@ -9,7 +9,7 @@ from quacc.recipes.emt.core import RelaxMaker, StaticMaker
 
 
 def teardown_module():
-    for f in os.listdir("."):
+    for f in os.listdir(os.getcwd()):
         if (
             f.endswith(".log")
             or f.endswith(".pckl")
