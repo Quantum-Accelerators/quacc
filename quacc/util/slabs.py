@@ -35,8 +35,8 @@ def flip_atoms(
         True if a Pymatgen structure object should be returned.
         False if an ASE atoms object should be returned
 
-    Returns:
-    --------
+    Returns
+    -------
     Atoms | Structure | Slab
         Inverted slab
     """
@@ -73,7 +73,7 @@ def make_slabs_from_bulk(
     Function to make slabs from a bulk atoms object.
 
     Parameters
-    -----------
+    ----------
     atoms
         bulk atoms
     max_index
@@ -92,8 +92,8 @@ def make_slabs_from_bulk(
         List of chemical symbols that must be present on the surface of the slab otherwise the slab will be discarded, e.g. ["Cu", "Ni"]
     **slabgen_kwargs: keyword arguments to pass to the pymatgen generate_all_slabs() function
 
-    Returns:
-    --------
+    Returns
+    -------
     Optional[List[.Atoms]]
         All generated slabs
     """
@@ -235,7 +235,7 @@ def make_max_slabs_from_bulk(
     less than or equal to max_slabs.
 
     Parameters
-    -----------
+    ----------
     atoms
         Bulk structure to generate slabs from
     max_slabs
@@ -332,7 +332,7 @@ def make_adsorbate_structures(
     Add a single adsorbate to a structure for every requested adsorption mode
 
     Parameters
-    -----------
+    ----------
     atoms
         The atoms to add adsorbates to.
     adsorbate
