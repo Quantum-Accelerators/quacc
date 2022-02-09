@@ -32,8 +32,9 @@ def SmartVasp(
     **kwargs,
 ) -> Atoms:
     """
-    This is a wrapper around the VASP calculator that adjusts INCAR parameters on-the-fly.
-    Also supports several automatic k-point generation schemes from Pymatgen.
+    This is a wrapper around the VASP calculator that adjusts INCAR parameters on-the-fly,
+    allows for ASE to run VASP via Custodian, and supports several automatic k-point generation schemes
+    from Pymatgen.
 
     Parameters
     ----------

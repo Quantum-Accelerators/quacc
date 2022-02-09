@@ -11,7 +11,7 @@ If you wish to use Fireworks, you'll need to fill out the files in `fw_config`, 
 
 For additional guidance, refer to the FireWorks setup instructions with [Atomate2](https://materialsproject.github.io/atomate2/user/fireworks.html#atomate2-fireworks).
 
-## quacc_config
+## Extraneous
 ### VASP
 The `vasp_custodian_settings.yaml` file found [here](https://github.com/arosen93/quacc/blob/main/quacc/defaults/custodian_settings/vasp_custodian_settings.yaml) contains the default settings for how QuAcc should run Custodian-powered VASP. If you wish to change them, you can copy this `.yaml` file and specify its path in the `VASP_CUSTODIAN_SETTINGS` environment variable. Generally though, you do not need to make any changes to this file other than `vasp_cmd` and `vasp_gamma_cmd` if your executables are named differently than `vasp_std` and `vasp_gam`.
 
