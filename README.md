@@ -8,6 +8,8 @@ The Quantum Accelerator (QuAcc) supercharges your code to support high-throughpu
 
 This package is heavily inspired by [Atomate2](https://github.com/materialsproject/atomate2), which I also recommend checking out.
 
+**Warning**: Currently, this package should be considered *highly experimental.*
+
 ## Example: EMT + VASP Flow
 ```python
 from ase.build import bulk
