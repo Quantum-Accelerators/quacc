@@ -7,6 +7,7 @@ from jobflow import Maker, job
 from quacc.calculators.vasp import SmartVasp
 from quacc.schemas.vasp import summarize_run
 from quacc.util.calc import run_calc
+from quacc.util.basics import merge_dicts
 
 
 @dataclass
@@ -44,7 +45,7 @@ class StaticMaker(Maker):
             Summary of the run.
         """
         swaps = self.swaps or {}
-        flags = {
+        defaults = {
             "ediff": 1e-6,
             "ismear": -5,
             "isym": 2,
@@ -55,8 +56,7 @@ class StaticMaker(Maker):
             "nsw": 0,
             "sigma": 0.05,
         }
-        for k, v in swaps.items():
-            flags[k] = v
+        flags = merge_dicts(defaults, swaps, remove_none=True)
 
         atoms = SmartVasp(atoms, preset=self.preset, **flags)
         atoms = run_calc(atoms)
@@ -76,17 +76,17 @@ class RelaxMaker(Maker):
         Name of the job.
     preset
         Preset to use.
-    swaps
-        Dictionary of custom kwargs for the calculator.
     volume_relax
         True if a volume relaxation (ISIF = 3) should be performed.
         False if only the positions (ISIF = 2) should be updated.
+    swaps
+        Dictionary of custom kwargs for the calculator.
     """
 
     name: str = "VASP-Relax"
     preset: str = None
-    swaps: Dict[str, Any] = None
     volume_relax: bool = True
+    swaps: Dict[str, Any] = None
 
     @job
     def make(self, atoms: Atoms) -> Dict[str, Any]:
@@ -104,7 +104,7 @@ class RelaxMaker(Maker):
             Summary of the run.
         """
         swaps = self.swaps or {}
-        flags = {
+        defaults = {
             "ediff": 1e-5,
             "ediffg": -0.02,
             "isif": 3 if self.volume_relax else 2,
@@ -116,8 +116,7 @@ class RelaxMaker(Maker):
             "nsw": 200,
             "sigma": 0.05,
         }
-        for k, v in swaps.items():
-            flags[k] = v
+        flags = merge_dicts(defaults, swaps, remove_none=True)
 
         atoms = SmartVasp(atoms, preset=self.preset, **flags)
         atoms = run_calc(atoms)

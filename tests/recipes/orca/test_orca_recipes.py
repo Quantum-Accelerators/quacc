@@ -32,18 +32,25 @@ def test_static_maker():
     assert output["nsites"] == len(atoms)
     assert output["name"] == "ORCA-Static"
     assert output["parameters"]["charge"] == 0
-    assert output["parameters"]["orcasimpleinput"] == "SP SlowConv NormalPrint"
+    assert (
+        output["parameters"]["orcasimpleinput"]
+        == "wb97x-d def2-tzvp sp slowconv normalprint"
+    )
     assert output["parameters"]["orcablocks"] == ""
 
     job = StaticMaker(
-        orcasimpleinput="HF def2-SVP SP", orcablocks=r"%scf maxiter 300 end"
+        input_swaps={"def2-SVP": True, "def2-TZVP": False},
+        block_swaps={"%scf maxiter 300 end": True},
     ).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["nsites"] == len(atoms)
     assert output["name"] == "ORCA-Static"
     assert output["parameters"]["charge"] == 0
-    assert output["parameters"]["orcasimpleinput"] == "HF def2-SVP SP"
+    assert (
+        output["parameters"]["orcasimpleinput"]
+        == "wb97x-d sp slowconv normalprint def2-svp"
+    )
     assert output["parameters"]["orcablocks"] == r"%scf maxiter 300 end"
 
 
@@ -57,16 +64,28 @@ def test_relax_maker():
     assert output["nsites"] == len(atoms)
     assert output["name"] == "ORCA-Relax"
     assert output["parameters"]["charge"] == 0
-    assert output["parameters"]["orcasimpleinput"] == "Opt SlowConv NormalPrint"
+    assert (
+        output["parameters"]["orcasimpleinput"]
+        == "wb97x-d def2-tzvp opt slowconv normalprint"
+    )
     assert output["parameters"]["orcablocks"] == ""
 
     job = RelaxMaker(
-        orcasimpleinput="HF def2-SVP Opt", orcablocks=r"%scf maxiter 300 end"
+        input_swaps={
+            "HF": True,
+            "wb97x-d": False,
+            "def2-SVP": True,
+            "def2-TZVP": False,
+        },
+        block_swaps={"%scf maxiter 300 end": True},
     ).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["nsites"] == len(atoms)
     assert output["name"] == "ORCA-Relax"
     assert output["parameters"]["charge"] == 0
-    assert output["parameters"]["orcasimpleinput"] == "HF def2-SVP Opt"
+    assert (
+        output["parameters"]["orcasimpleinput"]
+        == "opt slowconv normalprint hf def2-svp"
+    )
     assert output["parameters"]["orcablocks"] == r"%scf maxiter 300 end"

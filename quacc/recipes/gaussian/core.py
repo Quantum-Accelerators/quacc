@@ -7,6 +7,7 @@ from jobflow import Maker, job
 
 from quacc.schemas.cclib import summarize_run
 from quacc.util.calc import run_calc
+from quacc.util.basics import merge_dicts
 
 
 @dataclass
@@ -22,20 +23,20 @@ class StaticMaker(Maker):
         Exchange-correlation functional
     basis
         Basis set
-    swaps
-        Dictionary of custom kwargs for the calculator.
     pop
         Type of population analysis to perform, if any
     molden
         Whether to write a molden file for orbital visualization
+    swaps
+        Dictionary of custom kwargs for the calculator.
     """
 
     name: str = "Gaussian-Static"
     xc: str = "wB97X-D"
     basis: str = "def2-TZVP"
-    swaps: Dict[str, Any] = None
     pop: str = "hirshfeld"
     molden: bool = True
+    swaps: Dict[str, Any] = None
 
     @job
     def make(self, atoms: Atoms) -> Dict[str, Any]:
@@ -53,7 +54,7 @@ class StaticMaker(Maker):
             Summary of the run.
         """
         swaps = self.swaps or {}
-        flags = {
+        defaults = {
             "mem": "16GB",
             "xc": self.xc,
             "basis": self.basis,
@@ -65,9 +66,8 @@ class StaticMaker(Maker):
             "gfinput": "" if self.molden else None,
             "ioplist": ["6/7=3"] if self.molden else None,
         }
-        for k, v in swaps.items():
-            flags[k] = v
-        flags = {k: v for k, v in flags.items() if v is not None}
+        flags = merge_dicts(defaults, swaps, remove_none=True)
+
         atoms.calc = Gaussian(**flags)
         atoms = run_calc(atoms)
         summary = summarize_run(atoms, ".log", additional_fields={"name": self.name})
@@ -88,17 +88,17 @@ class RelaxMaker(Maker):
         Exchange-correlation functional
     basis
         Basis set
-    swaps
-        Dictionary of custom kwargs for the calculator.
     freq
         If a requency calculation should be carried out.
+    swaps
+        Dictionary of custom kwargs for the calculator.
     """
 
     name: str = "Gaussian-Relax"
     xc: str = "wB97X-D"
     basis: str = "def2-TZVP"
-    swaps: Dict[str, Any] = None
     freq: bool = False
+    swaps: Dict[str, Any] = None
 
     @job
     def make(self, atoms: Atoms) -> Dict[str, Any]:
@@ -116,7 +116,7 @@ class RelaxMaker(Maker):
             Summary of the run.
         """
         swaps = self.swaps or {}
-        flags = {
+        defaults = {
             "mem": "16GB",
             "xc": self.xc,
             "basis": self.basis,
@@ -126,9 +126,8 @@ class RelaxMaker(Maker):
             "nosymmetry": "",
             "freq": "" if self.freq else None,
         }
-        for k, v in swaps.items():
-            flags[k] = v
-        flags = {k: v for k, v in flags.items() if v is not None}
+        flags = merge_dicts(defaults, swaps, remove_none=True)
+
         atoms.calc = Gaussian(**flags)
         atoms = run_calc(atoms)
         summary = summarize_run(atoms, ".log", additional_fields={"name": self.name})

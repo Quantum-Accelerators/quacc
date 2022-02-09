@@ -8,6 +8,7 @@ from quacc.calculators.vasp import SmartVasp
 from quacc.schemas.vasp import summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.slabs import make_adsorbate_structures, make_max_slabs_from_bulk
+from quacc.util.basics import merge_dicts
 
 
 @dataclass
@@ -45,7 +46,7 @@ class SlabRelaxMaker(Maker):
             Summary of the run.
         """
         swaps = self.swaps or {}
-        flags = {
+        defaults = {
             "auto_dipole": True,
             "ediff": 1e-5,
             "ediffg": -0.02,
@@ -58,8 +59,7 @@ class SlabRelaxMaker(Maker):
             "nsw": 200,
             "sigma": 0.05,
         }
-        for k, v in swaps.items():
-            flags[k] = v
+        flags = merge_dicts(defaults, swaps, remove_none=True)
 
         atoms = SmartVasp(atoms, preset=self.preset, **flags)
         atoms = run_calc(atoms)
@@ -103,7 +103,7 @@ class SlabStaticMaker(Maker):
             Summary of the run.
         """
         swaps = self.swaps or {}
-        flags = {
+        defaults = {
             "auto_dipole": True,
             "ediff": 1e-6,
             "ismear": -5,
@@ -116,8 +116,7 @@ class SlabStaticMaker(Maker):
             "nsw": 0,
             "sigma": 0.05,
         }
-        for k, v in swaps.items():
-            flags[k] = v
+        flags = merge_dicts(defaults, swaps, remove_none=True)
 
         atoms = SmartVasp(atoms, preset=self.preset, **flags)
         atoms = run_calc(atoms)
@@ -138,20 +137,20 @@ class BulkToSlabMaker(Maker):
         Name of the job.
     preset
         Preset to use. Applies to all jobs in the flow.
-    swaps
-        Dictionary of custom kwargs for the calculator.
-        Applies to all jobs in the flow.
     slab_relax_maker
         Maker to use for the SlabRelax job.
     slab_static_maker
         Default to use for the SlabStatic job.
+    swaps
+        Dictionary of custom kwargs for the calculator.
+        Applies to all jobs in the flow.
     """
 
     name: str = "VASP-BulkToSlab"
     preset: None | str = None
-    swaps: Dict[str, Any] = None
     slab_relax_maker: Maker = SlabRelaxMaker()
     slab_static_maker: Maker = SlabStaticMaker()
+    swaps: Dict[str, Any] = None
 
     @job
     def make(
@@ -207,13 +206,13 @@ class SlabToAdsSlabMaker(Maker):
         Name of the job.
     preset
         Preset to use. Applies to all jobs in the flow.
-    swaps
-        Dictionary of custom kwargs for the calculator.
-        Applies to all jobs in the flow.
     slab_relax_maker
         Maker to use for the SlabRelax job.
     slab_static_maker
         Default to use for the SlabStatic job.
+    swaps
+        Dictionary of custom kwargs for the calculator.
+        Applies to all jobs in the flow.
     """
 
     name: str = "VASP-SlabToAdsSlab"

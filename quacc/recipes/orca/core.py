@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from ase.atoms import Atoms
 from ase.calculators.orca import ORCA
@@ -7,6 +7,7 @@ from jobflow import Maker, job
 
 from quacc.schemas.cclib import summarize_run
 from quacc.util.calc import run_calc
+from quacc.util.basics import merge_dicts
 
 
 @dataclass
@@ -18,15 +19,25 @@ class StaticMaker(Maker):
     ----------
     name
         Name of the job.
-    orcasimpleinput
-        ORCA simple input string.
-    orcablocks
-        ORCA block input string.
+    xc
+        Exchange-correlation functional
+    basis
+        Basis set
+    input_swaps
+        Dictionary of orcasimpleinput swaps for the calculator.
+        To enable new entries, set the value as True.
+        To remove entries from the defaults, set the value as None/False.
+    block_swaps
+        Dictionary of orcablocks swaps for the calculator.
+        To enable new entries, set the value as True.
+        To remove entries from the defaults, set the value as None/False.
     """
 
     name: str = "ORCA-Static"
-    orcasimpleinput: str = "SP SlowConv NormalPrint"
-    orcablocks: str = ""
+    xc: str = "wB97X-D"
+    basis: str = "def2-TZVP"
+    input_swaps: Dict[str, Any] = None
+    block_swaps: Dict[str, Any] = None
 
     @job
     def make(self, atoms: Atoms) -> Dict[str, Any]:
@@ -43,9 +54,30 @@ class StaticMaker(Maker):
         Dict
             Summary of the run.
         """
+        input_swaps = self.input_swaps or {}
+        block_swaps = self.block_swaps or {}
+
+        default_inputs = {
+            self.xc: True,
+            self.basis: True,
+            "sp": True,
+            "slowconv": True,
+            "normalprint": True,
+        }
+        default_blocks = {}
+
+        inputs = merge_dicts(
+            default_inputs, input_swaps, remove_none=True, remove_false=True
+        )
+        blocks = merge_dicts(
+            default_blocks, block_swaps, remove_none=True, remove_false=True
+        )
+        orcasimpleinput = " ".join([k for k, v in inputs.items() if v])
+        orcablocks = " ".join([k for k, v in blocks.items() if v])
+
         atoms.calc = ORCA(
-            orcasimpleinput=self.orcasimpleinput,
-            orcablocks=self.orcablocks,
+            orcasimpleinput=orcasimpleinput,
+            orcablocks=orcablocks,
         )
         atoms = run_calc(atoms)
         summary = summarize_run(atoms, ".out", additional_fields={"name": self.name})
@@ -62,18 +94,28 @@ class RelaxMaker(Maker):
     ----------
     name
         Name of the job.
-    orcasimpleinput
-        ORCA simple input string.
-    orcablocks
-        ORCA block input string.
+    xc
+        Exchange-correlation functional
+    basis
+        Basis set
     freq
         If a requency calculation should be carried out.
+    input_swaps
+        Dictionary of orcasimpleinput swaps for the calculator.
+        To enable new entries, set the value as True.
+        To remove entries from the defaults, set the value as None/False.
+    block_swaps
+        Dictionary of orcablocks swaps for the calculator.
+        To enable new entries, set the value as True.
+        To remove entries from the defaults, set the value as None/False.
     """
 
     name: str = "ORCA-Relax"
-    orcasimpleinput: str = "Opt SlowConv NormalPrint"
-    orcablocks: str = ""
+    xc: str = "wB97X-D"
+    basis: str = "def2-TZVP"
     freq: bool = False
+    input_swaps: Dict[str, Any] = None
+    block_swaps: Dict[str, Any] = None
 
     @job
     def make(self, atoms: Atoms) -> Dict[str, Any]:
@@ -90,17 +132,31 @@ class RelaxMaker(Maker):
         Dict
             Summary of the run.
         """
-        # TODO: Use " NumFreq" if analyticals aren't available.
-        if (
-            self.freq
-            and "freq" not in self.orcasimpleinput.lower()
-            and "numfreq" not in self.orcasimpleinput.lower()
-        ):
-            self.orcasimpleinput += " Freq"
+        input_swaps = self.input_swaps or {}
+        block_swaps = self.block_swaps or {}
+
+        default_inputs = {
+            self.xc: True,
+            self.basis: True,
+            "opt": True,
+            "slowconv": True,
+            "normalprint": True,
+            "freq": True if self.freq else None,
+        }
+        default_blocks = {}
+
+        inputs = merge_dicts(
+            default_inputs, input_swaps, remove_none=True, remove_false=True
+        )
+        blocks = merge_dicts(
+            default_blocks, block_swaps, remove_none=True, remove_false=True
+        )
+        orcasimpleinput = " ".join([k for k, v in inputs.items() if v])
+        orcablocks = " ".join([k for k, v in blocks.items() if v])
 
         atoms.calc = ORCA(
-            orcasimpleinput=self.orcasimpleinput,
-            orcablocks=self.orcablocks,
+            orcasimpleinput=orcasimpleinput,
+            orcablocks=orcablocks,
         )
         atoms = run_calc(atoms)
         summary = summarize_run(atoms, ".out", additional_fields={"name": self.name})
