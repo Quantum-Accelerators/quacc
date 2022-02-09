@@ -10,6 +10,62 @@ from quacc.util.calc import run_calc
 
 
 @dataclass
+class StaticMaker(Maker):
+    """
+    Class to carry out a single-point calculation.
+
+    Parameters
+    ----------
+    name
+        Name of the job.
+    preset
+        Preset to use.
+    swaps
+        Dictionary of custom kwargs for the calculator.
+    """
+
+    name: str = "VASP-Static"
+    preset: str = None
+    swaps: Dict[str, Any] = None
+
+    @job
+    def make(self, atoms: Atoms) -> Dict[str, Any]:
+        """
+        Make the run.
+
+        Parameters
+        ----------
+        atoms
+            .Atoms object
+
+        Returns
+        -------
+        Dict
+            Summary of the run.
+        """
+        swaps = self.swaps or {}
+        flags = {
+            "ediff": 1e-6,
+            "ismear": -5,
+            "isym": 2,
+            "laechg": True,
+            "lcharg": True,
+            "lwave": True,
+            "nedos": 5001,
+            "nsw": 0,
+            "sigma": 0.05,
+        }
+        for k, v in swaps.items():
+            flags[k] = v
+
+        atoms = SmartVasp(atoms, preset=self.preset, **flags)
+        atoms = run_calc(atoms)
+        summary = summarize_run(atoms, additional_fields={"name": self.name})
+
+        return summary
+
+
+@dataclass
 class RelaxMaker(Maker):
     """
     Class to relax a structure.
@@ -28,7 +84,7 @@ class RelaxMaker(Maker):
     """
 
     name: str = "VASP-Relax"
-    preset: None | str = None
+    preset: str = None
     swaps: Dict[str, Any] = None
     volume_relax: bool = True
 
@@ -58,62 +114,6 @@ class RelaxMaker(Maker):
             "lcharg": False,
             "lwave": False,
             "nsw": 200,
-            "sigma": 0.05,
-        }
-        for k, v in swaps.items():
-            flags[k] = v
-
-        atoms = SmartVasp(atoms, preset=self.preset, **flags)
-        atoms = run_calc(atoms)
-        summary = summarize_run(atoms, additional_fields={"name": self.name})
-
-        return summary
-
-
-@dataclass
-class StaticMaker(Maker):
-    """
-    Class to carry out a single-point calculation.
-
-    Parameters
-    ----------
-    name
-        Name of the job.
-    preset
-        Preset to use.
-    swaps
-        Dictionary of custom kwargs for the calculator.
-    """
-
-    name: str = "VASP-Static"
-    preset: None | str = None
-    swaps: Dict[str, Any] = None
-
-    @job
-    def make(self, atoms: Atoms) -> Dict[str, Any]:
-        """
-        Make the run.
-
-        Parameters
-        ----------
-        atoms
-            .Atoms object
-
-        Returns
-        -------
-        Dict
-            Summary of the run.
-        """
-        swaps = self.swaps or {}
-        flags = {
-            "ediff": 1e-6,
-            "ismear": -5,
-            "isym": 2,
-            "laechg": True,
-            "lcharg": True,
-            "lwave": True,
-            "nedos": 5001,
-            "nsw": 0,
             "sigma": 0.05,
         }
         for k, v in swaps.items():

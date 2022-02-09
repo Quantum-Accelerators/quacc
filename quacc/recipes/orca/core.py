@@ -56,7 +56,7 @@ class StaticMaker(Maker):
 @dataclass
 class RelaxMaker(Maker):
     """
-    Class to carry out a single-point calculation.
+    Class to carry out a geometry optimization.
 
     Parameters
     ----------

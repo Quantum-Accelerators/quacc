@@ -53,7 +53,7 @@ class StaticMaker(Maker):
 @dataclass
 class RelaxMaker(Maker):
     """
-    Class to relax a structure.
+    Class to carry out a geometry optimization.
 
     Parameters
     ----------
