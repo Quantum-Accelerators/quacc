@@ -42,7 +42,7 @@ def test_run_calc():
     assert os.path.exists("test_file.txt")
     assert os.path.exists("test_file.txt.gz")
 
-    atoms = run_calc(atoms, store_dir=".", scratch_basedir="test_calc", gzip=True)
+    atoms = run_calc(atoms, store_dir=".", scratch_dir="test_calc", gzip=True)
     assert atoms.calc.results is not None
     assert os.path.exists("test_file.txt")
     assert os.path.exists("test_file.txt.gz")
