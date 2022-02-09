@@ -30,7 +30,7 @@ flow = Flow([job1, job2])
 responses = run_locally(flow)
 ```
 
-## Example: GFN2+xTB + Gaussian + ORCA Flow with FireWorks
+## Example: GFN2-xTB + Gaussian + ORCA Flow with FireWorks
 ```python
 from ase.build import molecule
 from fireworks import LaunchPad
