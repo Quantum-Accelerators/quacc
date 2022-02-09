@@ -1821,8 +1821,8 @@
  IN-LAWS ARE LIKE SEEDS. YOU DON'T NEED THEM
  BUT THEY COME WITH THE TOMATO.
  Leave Link 9999 at Fri Oct 22 11:38:46 2021, MaxMem=  4294967296 cpu:               0.1 elap:               0.1
- Job cpu time:       0 days  0 hours  0 minutes 26.9 seconds.
- Elapsed time:       0 days  0 hours  0 minutes  8.3 seconds.
+ Job cpu time:       0 days  0 hours  0 minutes 0.0 seconds.
+ Elapsed time:       0 days  0 hours  0 minutes  0.0 seconds.
  File lengths (MBytes):  RWF=      6 Int=      0 D2E=      0 Chk=      2 Scr=      1
  Normal termination of Gaussian 16 at Fri Oct 22 11:38:46 2021.
  (Enter /clusterfs/cloudcuckoo/software/gaussian/G16_AVX2-enabled/tar/g16/l1.exe)

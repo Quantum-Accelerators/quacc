@@ -53,8 +53,9 @@ def test_static_maker():
     assert output["parameters"]["xc"] == "M06L"
     assert output["parameters"]["basis"] == "def2-SVP"
     assert output["parameters"]["integral"] == "superfinegrid"
-    assert output["parameters"].get("gfinput", None) is None
-    assert output["parameters"].get("ioplist", None) is None
+    assert "gfinput" not in output["parameters"]
+    assert "ioptlist" not in output["parameters"]
+    assert "opt" not in output["parameters"]
 
 
 def test_relax_maker():
@@ -70,6 +71,8 @@ def test_relax_maker():
     assert output["parameters"]["xc"] == "wB97X-D"
     assert output["parameters"]["basis"] == "def2-TZVP"
     assert output["parameters"]["integral"] == "ultrafine"
+    assert "freq" not in output["parameters"]
+    assert "sp" not in output["parameters"]
 
     job = RelaxMaker(
         xc="M06L",

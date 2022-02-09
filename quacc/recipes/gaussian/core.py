@@ -67,6 +67,7 @@ class StaticMaker(Maker):
         }
         for k, v in swaps.items():
             flags[k] = v
+        flags = {k: v for k, v in flags.items() if v is not None}
         atoms.calc = Gaussian(**flags)
         atoms = run_calc(atoms)
         summary = summarize_run(atoms, ".log", additional_fields={"name": self.name})
@@ -127,6 +128,7 @@ class RelaxMaker(Maker):
         }
         for k, v in swaps.items():
             flags[k] = v
+        flags = {k: v for k, v in flags.items() if v is not None}
         atoms.calc = Gaussian(**flags)
         atoms = run_calc(atoms)
         summary = summarize_run(atoms, ".log", additional_fields={"name": self.name})
