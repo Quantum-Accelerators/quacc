@@ -54,6 +54,7 @@ class StaticMaker(Maker):
         """
         swaps = self.swaps or {}
         flags = {
+            "mem": "16GB",
             "xc": self.xc,
             "basis": self.basis,
             "sp": "",
@@ -115,6 +116,7 @@ class RelaxMaker(Maker):
         """
         swaps = self.swaps or {}
         flags = {
+            "mem": "16GB",
             "xc": self.xc,
             "basis": self.basis,
             "opt": "",

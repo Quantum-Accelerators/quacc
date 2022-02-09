@@ -7,3 +7,5 @@ docs/src/reference/*
 scratch_path.txt
 build
 dist
+tmp_path.txt
+quacc-*
