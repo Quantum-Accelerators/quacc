@@ -10,7 +10,12 @@ from quacc.recipes.emt.core import RelaxMaker, StaticMaker
 
 def teardown_module():
     for f in os.listdir("."):
-        if f.endswith(".log") or f.endswith(".pckl") or f.endswith(".traj"):
+        if (
+            f.endswith(".log")
+            or f.endswith(".pckl")
+            or f.endswith(".traj")
+            or f.endswith(".out")
+        ):
             os.remove(f)
 
 
