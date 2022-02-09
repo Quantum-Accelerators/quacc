@@ -72,8 +72,8 @@ class StaticMaker(Maker):
         blocks = merge_dicts(
             default_blocks, block_swaps, remove_none=True, remove_false=True
         )
-        orcasimpleinput = " ".join([k for k in inputs.keys()])
-        orcablocks = " ".join([k for k in blocks.keys()])
+        orcasimpleinput = " ".join(list(inputs.keys()))
+        orcablocks = " ".join(list(blocks.keys()))
 
         atoms.calc = ORCA(
             orcasimpleinput=orcasimpleinput,
@@ -151,8 +151,8 @@ class RelaxMaker(Maker):
         blocks = merge_dicts(
             default_blocks, block_swaps, remove_none=True, remove_false=True
         )
-        orcasimpleinput = " ".join([k for k in inputs.keys()])
-        orcablocks = " ".join([k for k in blocks.keys()])
+        orcasimpleinput = " ".join(list(inputs.keys()))
+        orcablocks = " ".join(list(blocks.keys()))
 
         atoms.calc = ORCA(
             orcasimpleinput=orcasimpleinput,
