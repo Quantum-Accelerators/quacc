@@ -121,7 +121,7 @@ class RelaxMaker(Maker):
     """
 
     name: str = "ORCA-Relax"
-    xc: str = "wb97x-v"
+    xc: str = "wb97x-d"
     basis: str = "def2-tzvp"
     freq: bool = False
     input_swaps: Dict[str, Any] = None
