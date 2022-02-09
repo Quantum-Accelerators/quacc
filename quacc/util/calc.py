@@ -8,7 +8,7 @@ from monty.shutil import copy_r, gzip_dir
 
 
 def run_calc(
-    atoms: Atoms, store_dir: str = None, scratch_basedir: str = None, gzip: bool = False
+    atoms: Atoms, store_dir: str = None, scratch_dir: str = None, gzip: bool = False
 ) -> float:
     """
     Run a calculation in a scratch directory and copy the results back to the
@@ -24,7 +24,7 @@ def run_calc(
     store_dir : str
         Path where calculation results should be stored. Also will copy all files
         from this directory at runtime. If None, the current working directory will be used.
-    scratch_basedir : str
+    scratch_dir : str
         Path to the base directory where a tmp directory will be made for
         scratch files. If None, a temporary directory in $SCRATCH will be used.
         If $SCRATCH is not present, a tmp directory will be made in store_dir.
@@ -44,40 +44,40 @@ def run_calc(
     # Find the relevant paths
     if not store_dir:
         store_dir = os.getcwd()
-    if not scratch_basedir:
+    if not scratch_dir:
         if "SCRATCH" in os.environ:
-            scratch_basedir = os.path.expandvars("$SCRATCH")
+            scratch_dir = os.path.expandvars("$SCRATCH")
         else:
-            scratch_basedir = store_dir
-    if not os.path.exists(scratch_basedir):
-        raise OSError(f"Cannot find {scratch_basedir}")
+            scratch_dir = store_dir
+    if not os.path.exists(scratch_dir):
+        raise OSError(f"Cannot find {scratch_dir}")
 
-    scratch_path = mkdtemp(dir=scratch_basedir, prefix="quacc-")
+    tmp_path = mkdtemp(dir=scratch_dir, prefix="quacc-")
 
     # Copy files to scratch
     for f in os.listdir(store_dir):
         if os.path.isfile(os.path.join(store_dir, f)):
-            copy(os.path.join(store_dir, f), os.path.join(scratch_path, f))
+            copy(os.path.join(store_dir, f), os.path.join(tmp_path, f))
 
-    # Leave a note in the run directory for where the scratch is located in case
+    # Leave a note in the run directory for where the tmp is located in case
     # the job dies partway through
-    scratch_path_note = os.path.join(store_dir, "scratch_path.txt")
-    with open(scratch_path_note, "w") as f:
-        f.write(scratch_path)
+    tmp_path_note = os.path.join(store_dir, "tmp_path.txt")
+    with open(tmp_path_note, "w") as f:
+        f.write(tmp_path)
 
     # Run calculation via get_potential_energy()
-    atoms.calc.directory = scratch_path
+    atoms.calc.directory = tmp_path
     atoms.get_potential_energy()
 
     # gzip files and recursively copy files back to store_dir
     if gzip:
-        gzip_dir(scratch_path)
-    copy_r(scratch_path, store_dir)
+        gzip_dir(tmp_path)
+    copy_r(tmp_path, store_dir)
 
-    # Remove the scratch note and scratch dir
-    if os.path.exists(scratch_path_note):
-        os.remove(scratch_path_note)
-    if os.path.exists(scratch_path):
-        rmtree(scratch_path)
+    # Remove the scratch note and tmp dir
+    if os.path.exists(tmp_path_note):
+        os.remove(tmp_path_note)
+    if os.path.exists(tmp_path):
+        rmtree(tmp_path)
 
     return atoms
