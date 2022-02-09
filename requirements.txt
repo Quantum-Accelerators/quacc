@@ -5,4 +5,4 @@ jobflow==0.1.6
 atomate2==0.0.6
 monty==2022.1.19
 FireWorks==2.0.2
-git+https://github.com/cclib/cclib.git # waiting on v.1.7.2 to be released
+cclib==1.7.2
