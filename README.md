@@ -47,7 +47,7 @@ atoms = molecule("H2")
 # and then an ORCA static calculation
 job1 = XTBRelaxMaker(method="GFN-FF").make(atoms)
 job2 = GaussianRelaxMaker().make(job1.output["atoms"])
-job3 = OrcaRelaxMaker(xc="wB97M-V").make(job2.output["atoms"])
+job3 = OrcaStaticMaker(xc="wB97M-V").make(job2.output["atoms"])
 flow = Flow([job1, job2, job3])
 
 # Convert the flow to a FireWorks workflow and add it to launchpad
