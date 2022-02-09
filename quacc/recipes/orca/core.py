@@ -34,8 +34,8 @@ class StaticMaker(Maker):
     """
 
     name: str = "ORCA-Static"
-    xc: str = "wB97X-D"
-    basis: str = "def2-TZVP"
+    xc: str = "wb97x-d"
+    basis: str = "def2-tzvp"
     input_swaps: Dict[str, Any] = None
     block_swaps: Dict[str, Any] = None
 
@@ -121,8 +121,8 @@ class RelaxMaker(Maker):
     """
 
     name: str = "ORCA-Relax"
-    xc: str = "wB97X-D"
-    basis: str = "def2-TZVP"
+    xc: str = "wb97x-v"
+    basis: str = "def2-tzvp"
     freq: bool = False
     input_swaps: Dict[str, Any] = None
     block_swaps: Dict[str, Any] = None

@@ -38,14 +38,17 @@ from jobflow.managers.fireworks import flow_to_workflow
 
 from quacc.recipes.xtb.core import RelaxMaker as xTBRelaxMaker
 from quacc.recipes.gaussian.core import RelaxMaker as GaussianRelaxMaker
+from quacc.recipes.orca.core import StaticMaker as OrcaStaticMaker
 
 # Make an H2 molecule
 atoms = molecule("H2")
 
 # Make a flow consisting of a GFN-FF relaxation followed by a Gaussian relaxation
+# and then an ORCA static calculation
 job1 = xTBRelaxMaker(method="GFN-FF").make(atoms)
 job2 = GaussianRelaxMaker().make(job1.output["atoms"])
-flow = Flow([job1, job2])
+job3 = OrcaRelaxMaker(xc="wB97M-V").make(job2.output["atoms"])
+flow = Flow([job1, job2, job3])
 
 # Convert the flow to a FireWorks workflow and add it to launchpad
 # Database-friendly results will be deposited in your JobFlow DB
