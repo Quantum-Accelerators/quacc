@@ -20,7 +20,8 @@ from quacc.recipes.vasp.core import RelaxMaker as VaspRelaxMaker
 # Make a bulk Cu structure
 atoms = bulk("Cu")
 
-# Make a flow consisting of an EMT relaxation followed by a VASP relaxation
+# Make a flow consisting of an EMT relaxation followed by a VASP relaxation.
+# By default, VASP will be run using Custodian for on-the-fly error handling.
 job1 = EMTRelaxMaker().make(atoms)
 job2 = VaspRelaxMaker(preset="BulkRelaxSet").make(job1.output["atoms"])
 flow = Flow([job1, job2])
@@ -50,7 +51,7 @@ job2 = GaussianRelaxMaker(xc="PBE").make(job1.output["atoms"])
 job3 = OrcaStaticMaker(xc="wB97M-V").make(job2.output["atoms"])
 flow = Flow([job1, job2, job3])
 
-# Convert the flow to a FireWorks workflow and add it to launchpad
+# Convert the flow to a FireWorks workflow and add it to the launchpad.
 # Database-friendly results will be deposited in your JobFlow DB
 wf = flow_to_workflow(flow)
 lpad = LaunchPad.auto_load()
