@@ -30,7 +30,7 @@ flow = Flow([job1, job2])
 responses = run_locally(flow)
 ```
 
-## Example: GFN-FF + Gaussian + ORCA Flow with FireWorks
+## Example: GFN2+xTB + Gaussian + ORCA Flow with FireWorks
 ```python
 from ase.build import molecule
 from fireworks import LaunchPad
@@ -44,9 +44,9 @@ from quacc.recipes.orca.core import StaticMaker as OrcaStaticMaker
 # Make an H2 molecule
 atoms = molecule("H2")
 
-# Make a flow consisting of a GFN-FF relaxation followed by a Gaussian relaxation
+# Make a flow consisting of a GFN2-xTB relaxation followed by a Gaussian relaxation
 # and then an ORCA static calculation
-job1 = XTBRelaxMaker(method="GFN-FF").make(atoms)
+job1 = XTBRelaxMaker(method="GFN2-xTB").make(atoms)
 job2 = GaussianRelaxMaker(xc="PBE").make(job1.output["atoms"])
 job3 = OrcaStaticMaker(xc="wB97M-V").make(job2.output["atoms"])
 flow = Flow([job1, job2, job3])
