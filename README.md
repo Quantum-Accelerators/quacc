@@ -8,7 +8,7 @@ The Quantum Accelerator (QuAcc) supercharges your code to support high-throughpu
 
 This package is heavily inspired by [Atomate2](https://github.com/materialsproject/atomate2), which I also recommend checking out.
 
-## Example
+## Example: EMT + VASP Flow
 ```python
 from ase.build import bulk
 from jobflow import Flow
@@ -29,7 +29,7 @@ flow = Flow([job1, job2])
 responses = run_locally(flow)
 ```
 
-## Example with FireWorks
+## Example: GFN-FF + Gaussian + ORCA Flow with FireWorks
 ```python
 from ase.build import molecule
 from fireworks import LaunchPad
