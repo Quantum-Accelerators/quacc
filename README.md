@@ -37,14 +37,14 @@ from jobflow import Flow
 from jobflow.managers.fireworks import flow_to_workflow
 
 from quacc.recipes.xtb.core import RelaxMaker as xTBRelaxMaker
-from quacc.recipes.orca.core import RelaxMaker as OrcaRelaxMaker
+from quacc.recipes.gaussian.core import RelaxMaker as GaussianRelaxMaker
 
 # Make an H2 molecule
 atoms = molecule("H2")
 
-# Make a flow consisting of a GFN-FF relaxation followed by an ORCA relaxation
+# Make a flow consisting of a GFN-FF relaxation followed by a Gaussian relaxation
 job1 = xTBRelaxMaker(method="GFN-FF").make(atoms)
-job2 = OrcaRelaxMaker().make(job1.output["atoms"])
+job2 = GaussianRelaxMaker().make(job1.output["atoms"])
 flow = Flow([job1, job2])
 
 # Convert the flow to a FireWorks workflow and add it to launchpad
