@@ -6,8 +6,8 @@ from ase.calculators.gaussian import Gaussian
 from jobflow import Maker, job
 
 from quacc.schemas.cclib import summarize_run
-from quacc.util.calc import run_calc
 from quacc.util.basics import merge_dicts
+from quacc.util.calc import run_calc
 
 
 @dataclass

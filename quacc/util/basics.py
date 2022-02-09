@@ -1,7 +1,7 @@
 # Functions in here should be ported to monty if practical
 
 
-def merge_dicts(d1, d2, remove_none=False,remove_false=False):
+def merge_dicts(d1, d2, remove_none=False, remove_false=False):
     """
     Merges two dictionaries into a single dictionary. If both dictionaries
     have the same key, the value from the second dictionary will be used. This

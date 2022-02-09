@@ -6,8 +6,8 @@ from jobflow import Maker, job
 
 from quacc.calculators.vasp import SmartVasp
 from quacc.schemas.vasp import summarize_run
-from quacc.util.calc import run_calc
 from quacc.util.basics import merge_dicts
+from quacc.util.calc import run_calc
 
 
 @dataclass
