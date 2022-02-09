@@ -11,7 +11,7 @@ This package is heavily inspired by [Atomate2](https://github.com/materialsproje
 ## Example
 ```python
 from ase.build import bulk
-from jobflow.core.flow import Flow
+from jobflow import Flow
 from jobflow.managers.local import run_locally
 
 from quacc.recipes.emt.core import RelaxMaker as EMTRelaxMaker
@@ -33,7 +33,7 @@ responses = run_locally(flow)
 ```python
 from ase.build import molecule
 from fireworks import LaunchPad
-from jobflow.core.flow import Flow
+from jobflow import Flow
 from jobflow.managers.fireworks import flow_to_workflow
 
 from quacc.recipes.xtb.core import RelaxMaker as xTBRelaxMaker
