@@ -1,7 +1,7 @@
 import os
 from copy import deepcopy
-from shutil import copy
-from tempfile import TemporaryDirectory
+from shutil import copy, rmtree
+from tempfile import mkdtemp
 
 from ase.atoms import Atoms
 from monty.shutil import copy_r, gzip_dir
@@ -52,30 +52,32 @@ def run_calc(
     if not os.path.exists(scratch_basedir):
         raise OSError(f"Cannot find {scratch_basedir}")
 
-    with TemporaryDirectory(dir=scratch_basedir, prefix="quacc-") as scratch_path:
+    scratch_path = mkdtemp(dir=scratch_basedir, prefix="quacc-")
 
-        # Copy files to scratch
-        for f in os.listdir(store_dir):
-            if os.path.isfile(os.path.join(store_dir, f)):
-                copy(os.path.join(store_dir, f), os.path.join(scratch_path, f))
+    # Copy files to scratch
+    for f in os.listdir(store_dir):
+        if os.path.isfile(os.path.join(store_dir, f)):
+            copy(os.path.join(store_dir, f), os.path.join(scratch_path, f))
 
-        # Leave a note in the run directory for where the scratch is located in case
-        # the job dies partway through
-        scratch_path_note = os.path.join(store_dir, "scratch_path.txt")
-        with open(scratch_path_note, "w") as f:
-            f.write(scratch_path)
+    # Leave a note in the run directory for where the scratch is located in case
+    # the job dies partway through
+    scratch_path_note = os.path.join(store_dir, "scratch_path.txt")
+    with open(scratch_path_note, "w") as f:
+        f.write(scratch_path)
 
-        # Run calculation via get_potential_energy()
-        atoms.calc.directory = scratch_path
-        atoms.get_potential_energy()
+    # Run calculation via get_potential_energy()
+    atoms.calc.directory = scratch_path
+    atoms.get_potential_energy()
 
-        # gzip files and recursively copy files back to store_dir
-        if gzip:
-            gzip_dir(scratch_path)
-        copy_r(scratch_path, store_dir)
+    # gzip files and recursively copy files back to store_dir
+    if gzip:
+        gzip_dir(scratch_path)
+    copy_r(scratch_path, store_dir)
 
-    # Remove the scratch note
+    # Remove the scratch note and scratch dir
     if os.path.exists(scratch_path_note):
         os.remove(scratch_path_note)
+    if os.path.exists(scratch_path):
+        rmtree(scratch_path)
 
     return atoms
