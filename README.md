@@ -11,6 +11,7 @@ This package is heavily inspired by [Atomate2](https://github.com/materialsproje
 ## Example
 ```python
 from ase.build import bulk
+from jobflow.core.flow import Flow
 from jobflow.managers.local import run_locally
 
 from quacc.recipes.emt.core import RelaxMaker as EMTRelaxMaker
@@ -22,16 +23,17 @@ atoms = bulk("Cu")
 # Make a flow consisting of an EMT relaxation followed by a VASP relaxation
 job1 = EMTRelaxMaker().make(atoms)
 job2 = VaspRelaxMaker(preset="BulkRelaxSet").make(job1.output["atoms"])
-flow = [job1, job2]
+flow = Flow([job1, job2])
 
 # Run the flow locally, with all output data stored in a convenient schema
-responses = run_locally(job)
+responses = run_locally(flow)
 ```
 
 ## Example with FireWorks
 ```python
 from ase.build import molecule
 from fireworks import LaunchPad
+from jobflow.core.flow import Flow
 from jobflow.managers.fireworks import flow_to_workflow
 
 from quacc.recipes.xtb.core import RelaxMaker as xTBRelaxMaker
@@ -43,7 +45,7 @@ atoms = molecule("H2")
 # Make a flow consisting of a GFN-FF relaxation followed by an ORCA relaxation
 job1 = xTBRelaxMaker(method="GFN-FF").make(atoms)
 job2 = OrcaRelaxMaker().make(job1.output["atoms"])
-flow = [job1, job2]
+flow = Flow([job1, job2])
 
 # Convert the flow to a FireWorks workflow and add it to launchpad
 # Database-friendly results will be deposited in your JobFlow DB
