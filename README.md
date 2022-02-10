@@ -26,6 +26,7 @@ atoms = bulk("Cu")
 # By default, VASP will be run using Custodian for on-the-fly error handling.
 job1 = EMTRelaxMaker().make(atoms)
 job2 = VaspRelaxMaker(preset="BulkRelaxSet").make(job1.output["atoms"])
+
 flow = Flow([job1, job2])
 
 # Run the flow locally, with all output data stored in a convenient schema
@@ -51,6 +52,7 @@ atoms = molecule("H2")
 job1 = XTBRelaxMaker(method="GFN2-xTB").make(atoms)
 job2 = GaussianRelaxMaker(xc="PBE").make(job1.output["atoms"])
 job3 = OrcaStaticMaker(xc="wB97M-V").make(job2.output["atoms"])
+
 flow = Flow([job1, job2, job3])
 
 # Convert the flow to a FireWorks workflow and add it to the launchpad.
