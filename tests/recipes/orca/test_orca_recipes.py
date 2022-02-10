@@ -56,7 +56,8 @@ def test_static_maker():
         == "wb97x-d sp slowconv normalprint def2-svp"
     )
     assert (
-        output["parameters"]["orcablocks"] == r"%scf maxiter 300 end %pal nprocs 16 end"
+        output["parameters"]["orcablocks"]
+        == f"%scf maxiter 300 end %pal nprocs {nprocs} end"
     )
 
 
@@ -98,5 +99,6 @@ def test_relax_maker():
         == "opt slowconv normalprint hf def2-svp"
     )
     assert (
-        output["parameters"]["orcablocks"] == r"%scf maxiter 300 end %pal nprocs 16 end"
+        output["parameters"]["orcablocks"]
+        == f"%scf maxiter 300 end %pal nprocs {nprocs} end"
     )
