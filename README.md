@@ -15,15 +15,19 @@ This package is heavily inspired by [Atomate2](https://github.com/materialsproje
 from ase.build import bulk
 from jobflow import Flow
 from jobflow.managers.local import run_locally
+
 from quacc.recipes.emt.core import RelaxMaker as EMTRelaxMaker
 from quacc.recipes.vasp.core import RelaxMaker as VaspRelaxMaker
+
 # Make a bulk Cu structure
 atoms = bulk("Cu")
+
 # Make a flow consisting of an EMT relaxation followed by a VASP relaxation.
 # By default, VASP will be run using Custodian for on-the-fly error handling.
 job1 = EMTRelaxMaker().make(atoms)
 job2 = VaspRelaxMaker(preset="BulkRelaxSet").make(job1.output["atoms"])
 flow = Flow([job1, job2])
+
 # Run the flow locally, with all output data stored in a convenient schema
 responses = run_locally(flow)
 ```
@@ -34,17 +38,21 @@ from ase.build import molecule
 from fireworks import LaunchPad
 from jobflow import Flow
 from jobflow.managers.fireworks import flow_to_workflow
+
 from quacc.recipes.xtb.core import RelaxMaker as XTBRelaxMaker
 from quacc.recipes.gaussian.core import RelaxMaker as GaussianRelaxMaker
 from quacc.recipes.orca.core import StaticMaker as OrcaStaticMaker
+
 # Make an H2 molecule
 atoms = molecule("H2")
+
 # Make a flow consisting of a GFN2-xTB relaxation followed by a Gaussian relaxation
 # and then an ORCA static calculation
 job1 = XTBRelaxMaker(method="GFN2-xTB").make(atoms)
 job2 = GaussianRelaxMaker(xc="PBE").make(job1.output["atoms"])
 job3 = OrcaStaticMaker(xc="wB97M-V").make(job2.output["atoms"])
 flow = Flow([job1, job2, job3])
+
 # Convert the flow to a FireWorks workflow and add it to the launchpad.
 # Database-friendly results will be deposited in your JobFlow DB
 wf = flow_to_workflow(flow)
@@ -63,6 +71,7 @@ lpad.add_wf(wf)
 # Jobflow requirements
 # (details: https://materialsproject.github.io/jobflow/jobflow.settings.html)
 export JOBFLOW_CONFIG_FILE="/path/to/config/jobflow_config/jobflow.yaml"
+
 # FireWorks requirements
 # (details: https://materialsproject.github.io/fireworks)
 export FW_CONFIG_FILE='/path/to/config/fw_config/FW_config.yaml'
