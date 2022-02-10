@@ -64,6 +64,7 @@ class StaticMaker(Maker):
         swaps = self.swaps or {}
         defaults = {
             "mem": "16GB",
+            "chk": "Gaussian.chk",
             "xc": self.xc,
             "basis": self.basis,
             "charge": charge,
@@ -136,6 +137,7 @@ class RelaxMaker(Maker):
         swaps = self.swaps or {}
         defaults = {
             "mem": "16GB",
+            "chk": "Gaussian.chk",
             "xc": self.xc,
             "basis": self.basis,
             "charge": charge,
