@@ -1,3 +1,4 @@
+import multiprocessing
 from dataclasses import dataclass
 from typing import Any, Dict, List
 
@@ -64,6 +65,9 @@ class StaticMaker(Maker):
         """
         input_swaps = self.input_swaps or {}
         block_swaps = self.block_swaps or {}
+        if ~any([k for k in block_swaps if "nprocs" in k.lower()]):
+            nprocs = multiprocessing.cpu_count()
+            block_swaps[f"%pal nprocs {nprocs} end"] = True
 
         default_inputs = {
             self.xc: True,
@@ -152,6 +156,9 @@ class RelaxMaker(Maker):
         """
         input_swaps = self.input_swaps or {}
         block_swaps = self.block_swaps or {}
+        if ~any([k for k in block_swaps if "nprocs" in k.lower()]):
+            nprocs = multiprocessing.cpu_count()
+            block_swaps[f"%pal nprocs {nprocs} end"] = True
 
         default_inputs = {
             self.xc: True,

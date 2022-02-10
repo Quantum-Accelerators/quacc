@@ -1,3 +1,4 @@
+import multiprocessing
 import os
 from pathlib import Path
 from shutil import copy
@@ -25,6 +26,7 @@ def teardown_module():
 def test_static_maker():
 
     atoms = molecule("H2")
+    nprocs = multiprocessing.cpu_count()
 
     job = StaticMaker().make(atoms)
     responses = run_locally(job, ensure_success=True)
@@ -35,7 +37,7 @@ def test_static_maker():
         output["parameters"]["orcasimpleinput"]
         == "wb97x-d def2-tzvp sp slowconv normalprint"
     )
-    assert output["parameters"]["orcablocks"] == ""
+    assert output["parameters"]["orcablocks"] == f"%pal nprocs {nprocs} end"
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
 
@@ -53,12 +55,15 @@ def test_static_maker():
         output["parameters"]["orcasimpleinput"]
         == "wb97x-d sp slowconv normalprint def2-svp"
     )
-    assert output["parameters"]["orcablocks"] == r"%scf maxiter 300 end"
+    assert (
+        output["parameters"]["orcablocks"] == r"%scf maxiter 300 end %pal nprocs 16 end"
+    )
 
 
 def test_relax_maker():
 
     atoms = molecule("H2")
+    nprocs = multiprocessing.cpu_count()
 
     job = RelaxMaker().make(atoms)
     responses = run_locally(job, ensure_success=True)
@@ -71,7 +76,7 @@ def test_relax_maker():
         output["parameters"]["orcasimpleinput"]
         == "wb97x-d def2-tzvp opt slowconv normalprint"
     )
-    assert output["parameters"]["orcablocks"] == ""
+    assert output["parameters"]["orcablocks"] == f"%pal nprocs {nprocs} end"
 
     job = RelaxMaker(
         input_swaps={
@@ -92,4 +97,6 @@ def test_relax_maker():
         output["parameters"]["orcasimpleinput"]
         == "opt slowconv normalprint hf def2-svp"
     )
-    assert output["parameters"]["orcablocks"] == r"%scf maxiter 300 end"
+    assert (
+        output["parameters"]["orcablocks"] == r"%scf maxiter 300 end %pal nprocs 16 end"
+    )

@@ -1,3 +1,4 @@
+import multiprocessing
 from dataclasses import dataclass
 from typing import Any, Dict
 
@@ -65,6 +66,7 @@ class StaticMaker(Maker):
         defaults = {
             "mem": "16GB",
             "chk": "Gaussian.chk",
+            "nprocshared": multiprocessing.cpu_count(),
             "xc": self.xc,
             "basis": self.basis,
             "charge": charge,
@@ -138,6 +140,7 @@ class RelaxMaker(Maker):
         defaults = {
             "mem": "16GB",
             "chk": "Gaussian.chk",
+            "nprocshared": multiprocessing.cpu_count(),
             "xc": self.xc,
             "basis": self.basis,
             "charge": charge,
