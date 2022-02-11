@@ -34,7 +34,7 @@ if __name__ == "__main__":
             "cclib==1.7.1",
         ],
         extras_require={
-            "tests": ["pytest==7.0.0"],
+            "tests": ["pytest==7.0.1"],
             "docs": [
                 "sphinx==4.4.0",
                 "numpydoc==1.2",
@@ -43,7 +43,7 @@ if __name__ == "__main__":
                 "pydata-sphinx-theme==0.8.0",
                 "sphinx_panels==0.6.0",
             ],
-            "dev": ["pytest==7.0.0", "black==22.1.0"],
+            "dev": ["pytest==7.0.1", "black==22.1.0"],
         },
         tests_require=["pytest"],
         include_package_data=True,
