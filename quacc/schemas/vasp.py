@@ -15,7 +15,7 @@ def summarize_run(
     atoms: Atoms,
     dir_path: None | str = None,
     prep_next_run: bool = True,
-    bader: bool = True,
+    bader: bool = False,
     check_convergence: bool = True,
     compact: bool = True,
     remove_empties: bool = True,

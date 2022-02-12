@@ -111,7 +111,7 @@ def test_summarize_run():
 def test_summarize_bader_run():
     # Make sure Bader works
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
-    results = summarize_run(atoms, dir_path=run1)
+    results = summarize_run(atoms, dir_path=run1, bader=True)
     struct = results["output"]["structure"]
     assert struct.site_properties["bader_charge"] == [-1.0] * len(atoms)
     assert struct.site_properties["bader_spin"] == [0.0] * len(atoms)
