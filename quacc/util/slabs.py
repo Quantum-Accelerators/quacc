@@ -428,8 +428,13 @@ def make_adsorbate_structures(
 
     # Find and add the adsorbates
     new_atoms = []
-    for mode in modes:
-        for ads_coord in ads_sites[mode]:
+    for mode, ads_coords in ads_sites.items():
+
+        # Check if mode is in desired list
+        if mode not in modes:
+            continue
+        
+        for ads_coord in ads_coords:
 
             # Place adsorbate
             struct_with_adsorbate = ads_finder.add_adsorbate(mol, ads_coord)
@@ -488,7 +493,4 @@ def make_adsorbate_structures(
             # Add slab+adsorbate to list
             new_atoms.append(atoms_with_adsorbate)
 
-    if new_atoms == []:
-        return None
-    else:
-        return new_atoms
+    return new_atoms

@@ -224,7 +224,7 @@ class SlabToAdsSlabMaker(Maker):
     @job
     def make(
         self, atoms: Atoms, adsorbate: Atoms | str, **slabgen_ads_kwargs
-    ) -> Response | None:
+    ) -> Response:
         """
         Make the run.
 
@@ -249,8 +249,6 @@ class SlabToAdsSlabMaker(Maker):
         self.slab_static_maker.swaps = self.slab_static_maker.swaps or self.swaps
 
         slabs = make_adsorbate_structures(atoms, adsorbate, **slabgen_ads_kwargs)
-        if slabs is None:
-            return None
 
         jobs = []
         outputs = []
