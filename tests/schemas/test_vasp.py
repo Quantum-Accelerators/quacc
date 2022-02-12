@@ -15,6 +15,7 @@ run1 = os.path.join(FILE_DIR, "vasp_run1")
 
 
 def mock_bader_analysis(*args, **kwargs):
+    # NOTE: This is hard-coded for vasp_run1 with its 16 atoms
     bader_stats = {
         "min_dist": [1.0] * 16,
         "atomic_volume": [1.0] * 16,

@@ -542,16 +542,16 @@ def test_lorbit():
 def test_setups():
     atoms = bulk("Cu")
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
-    atoms.calc.parameters["setups"]["Cu"] == ""
+    assert atoms.calc.parameters["setups"]["Cu"] == ""
 
     atoms = bulk("Cu")
     atoms = SmartVasp(atoms, preset="SlabRelaxSet")
-    atoms.calc.parameters["setups"]["Ba"] == "_sv"
-    atoms.calc.parameters["setups"]["Cu"] == ""
+    assert atoms.calc.parameters["setups"]["Ba"] == "_sv"
+    assert atoms.calc.parameters["setups"]["Cu"] == ""
 
     atoms = bulk("Cu")
     atoms = SmartVasp(atoms, preset="MPScanRelaxSet")
-    atoms.calc.parameters["setups"]["Cu"] == "_pv"
+    assert atoms.calc.parameters["setups"]["Cu"] == "_pv"
 
     atoms = bulk("Cu")
     atoms = SmartVasp(

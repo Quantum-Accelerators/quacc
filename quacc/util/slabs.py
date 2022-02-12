@@ -361,15 +361,12 @@ def make_adsorbate_structures(
         raise ValueError(
             "Cannot specify both min_distance and find_ads_sites_kwargs['distance']",
         )
-    else:
-        find_ads_sites_kwargs["distance"] = min_distance
-
     if modes and "positions" in find_ads_sites_kwargs:
         raise ValueError(
             "Cannot specify both modes and find_ads_sites_kwargs['positions']",
         )
-    else:
-        find_ads_sites_kwargs["positions"] = [mode.lower() for mode in modes]
+    find_ads_sites_kwargs["distance"] = min_distance
+    find_ads_sites_kwargs["positions"] = [mode.lower() for mode in modes]
 
     # Check the provided surface indices are reasonable
     atom_indices = [atom.index for atom in atoms]
