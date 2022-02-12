@@ -107,7 +107,6 @@ def test_summarize_run():
     MontyDecoder().process_decoded(d)
 
 
-@pytest.mark.skipif(which("bader") is None, reason="Bader not in PATH")
 def test_summarize_bader_run():
     # Make sure Bader works
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
