@@ -657,7 +657,8 @@ def test_bad():
         atoms = SmartVasp(atoms, auto_kpts={"max_mixed_density": [1000, 100]})
 
     with pytest.raises(ValueError):
-        atoms = SmartVasp(atoms,preset="BadRelaxSet")
+        atoms = SmartVasp(atoms, preset="BadRelaxSet")
+
 
 def test_bad_custodian(monkeypatch):
     monkeypatch.setenv("VASP_CUSTODIAN_SETTINGS", ".")
