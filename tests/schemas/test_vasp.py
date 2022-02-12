@@ -3,6 +3,7 @@ from pathlib import Path
 
 from ase.io import read
 from monty.json import MontyDecoder, jsanitize
+import pytest
 
 from quacc.calculators.vasp import SmartVasp
 from quacc.schemas.vasp import summarize_run
@@ -10,6 +11,29 @@ from quacc.schemas.vasp import summarize_run
 FILE_DIR = Path(__file__).resolve().parent
 
 run1 = os.path.join(FILE_DIR, "vasp_run1")
+
+
+def mock_bader_analysis(*args, **kwargs):
+    bader_stats = {
+        "min_dist": [1.0] * 16,
+        "atomic_volume": [1.0] * 16,
+        "vacuum_charge": 1.0,
+        "vacuum_volume": 1.0,
+        "bader_version": 1.0,
+        "reference_used": [0.0] * 16,
+        "partial_charges": [-1.0] * 16,
+        "spin_moments": [0.0] * 16,
+    }
+    return bader_stats
+
+
+@pytest.fixture(autouse=True)
+def patch_pop_analyses(monkeypatch):
+    # Monkeypatch the Bader analysis
+    monkeypatch.setattr(
+        "quacc.schemas.vasp.run_bader",
+        mock_bader_analysis,
+    )
 
 
 def test_summarize_run():
@@ -21,6 +45,13 @@ def test_summarize_run():
     assert results["atoms"] == atoms
     assert results["output"]["energy"] == -33.15807349
     assert results.get("calcs_reversed", None) is None
+
+    # Make sure Bader works
+    atoms = read(os.path.join(run1, "OUTCAR.gz"))
+    results = summarize_run(atoms, dir_path=run1, bader=True)
+    struct = results["output"]["structure"]
+    assert struct.site_properties["bader_charge"] == [-1.0] * len(atoms)
+    assert struct.site_properties["bader_spin"] == [0.0] * len(atoms)
 
     # Make sure default dir works
     cwd = os.getcwd()

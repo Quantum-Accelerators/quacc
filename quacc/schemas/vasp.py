@@ -1,18 +1,20 @@
 import os
 from typing import Any, Dict
+import warnings
 
 from ase.atoms import Atoms
 from atomate2.vasp.schemas.task import TaskDocument
-from monty.json import MSONable
 
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
+from quacc.util.pop_analysis import run_bader
 
 
 def summarize_run(
     atoms: Atoms,
     dir_path: None | str = None,
     prep_next_run: bool = True,
+    bader: bool = False,
     check_convergence: bool = True,
     compact: bool = True,
     remove_empties: bool = True,
@@ -30,6 +32,8 @@ def summarize_run(
     prep_next_run
         Whether the Atoms object storeed in {"atoms": atoms} should be prepared for the next run.
         This clears out any attached calculator and moves the final magmoms to the initial magmoms.
+    bader
+        Whether a Bader analysis should be performed. Requires bader to be in PATH.
     check_convergence
         Whether to throw an error if convergence is not reached.
     compact
@@ -80,6 +84,23 @@ def summarize_run(
 
         # Remove structure because it's already in the outputs
         results.pop("structure", None)
+
+    # Get Bader analysis
+    if bader:
+        try:
+            bader_stats = run_bader(dir_path)
+        except:
+            bader_stats = None
+            warnings.warn("Bader analysis could not be performed.")
+
+        if bader_stats:
+            results["bader"] = bader_stats
+
+            # Attach bader charges/spins to structure object
+            struct = results["output"]["structure"]
+            struct.add_site_property("bader_charge", bader_stats["partial_charges"])
+            struct.add_site_property("bader_spin", bader_stats["spin_moments"])
+            results["output"]["structure"] = struct
 
     # Prepares the Atoms object for the next run by moving the
     # final magmoms to initial, clearing the calculator state,

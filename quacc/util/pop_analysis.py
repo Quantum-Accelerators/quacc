@@ -8,8 +8,8 @@ from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
 def run_bader(path: None | str = None) -> Dict[str, Any]:
     """
     Runs a Bader partial charge and spin moment analysis using the VASP
-    output files in the given path. This function requires that `bader` or
-    `bader.exe` is located in your PATH environment variable. See
+    output files in the given path. This function requires that `bader`
+    is located in your PATH environment variable. See
     http://theory.cm.utexas.edu/henkelman/code/bader for the bader code.
     Note: If you want to use Bader on a code other than VASP, this function
     will need to be slightly modified.
@@ -45,7 +45,7 @@ def run_bader(path: None | str = None) -> Dict[str, Any]:
         if not os.path.exists(os.path.join(path, f)) and not os.path.exists(
             os.path.join(path, f"{f}.gz")
         ):
-            raise FileNotFoundError("Could not find {f} in {path}")
+            raise FileNotFoundError(f"Could not find {f} in {path}.")
 
     # Run Bader analysis
     bader_stats = bader_analysis_from_path(path)
@@ -117,7 +117,7 @@ def run_chargemol(
         if not os.path.exists(os.path.join(path, f)) and not os.path.exists(
             os.path.join(path, f"{f}.gz")
         ):
-            raise FileNotFoundError(f"Could not find {f} in {path}")
+            raise FileNotFoundError(f"Could not find {f} in {path}.")
 
     # Check environment variable
     if atomic_densities_path is None and "DDEC6_ATOMIC_DENSITIES_DIR" not in os.environ:
