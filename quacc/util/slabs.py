@@ -66,7 +66,7 @@ def make_slabs_from_bulk(
     min_vacuum_size: float = 20.0,
     z_fix: None | float = 2.0,
     flip_asymmetric: bool = True,
-    allowed_surface_atoms: None | str | List[str] = None,
+    allowed_surface_atoms: None | List[str] = None,
     **slabgen_kwargs,
 ) -> None | List[Atoms]:
     """
@@ -104,9 +104,6 @@ def make_slabs_from_bulk(
     # Use pymatgen to generate slabs
     struct = AseAtomsAdaptor.get_structure(atoms)
     atoms_info = atoms.info.copy()
-
-    if isinstance(allowed_surface_atoms, str):
-        allowed_surface_atoms = [allowed_surface_atoms]
 
     # Make all the slabs
     slabs = generate_all_slabs(
@@ -309,10 +306,7 @@ def make_max_slabs_from_bulk(
                 UserWarning,
             )
             slabs.sort(key=lambda s: len(s))
-            if max_slabs == 1:
-                slabs = [slabs[0]]
-            else:
-                slabs = slabs[0:max_slabs]
+            slabs = slabs[0:max_slabs]
 
     return slabs
 
@@ -375,15 +369,7 @@ def make_adsorbate_structures(
             "Cannot specify both modes and find_ads_sites_kwargs['positions']",
         )
     else:
-        if isinstance(modes, str):
-            modes = [modes]
         find_ads_sites_kwargs["positions"] = [mode.lower() for mode in modes]
-
-    # Allow the user to provide a single entry instead of a list for convenience
-    if isinstance(allowed_surface_symbols, str):
-        allowed_surface_symbols = [allowed_surface_symbols]
-    if isinstance(allowed_surface_indices, int):
-        allowed_surface_indices = [allowed_surface_indices]
 
     # Check the provided surface indices are reasonable
     atom_indices = [atom.index for atom in atoms]
@@ -422,9 +408,6 @@ def make_adsorbate_structures(
     # Get the adsorption sites
     ads_finder = AdsorbateSiteFinder(struct, **ads_site_finder_kwargs)
     ads_sites = ads_finder.find_adsorption_sites(**find_ads_sites_kwargs)
-
-    if not ads_sites:
-        return None
 
     # Find and add the adsorbates
     new_atoms = []

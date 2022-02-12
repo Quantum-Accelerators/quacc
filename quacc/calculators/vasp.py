@@ -89,9 +89,6 @@ def SmartVasp(
 
     # Get user-defined preset parameters for the calculator
     if preset:
-        _, ext = os.path.splitext(preset)
-        if not ext:
-            preset += ".yaml"
         calc_preset = load_yaml_calc(os.path.join(DEFAULT_CALCS_DIR, preset))["inputs"]
     else:
         calc_preset = {}

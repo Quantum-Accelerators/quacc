@@ -3,6 +3,7 @@ from copy import deepcopy
 from pathlib import Path
 
 import numpy as np
+import pytest
 from ase.build import bulk, fcc100, molecule
 from ase.io import read
 
@@ -190,3 +191,25 @@ def test_make_adsorbate_structures():
     assert len(new_atoms) == 6
     assert new_atoms[0].info.get("adsorbates", None) is not None
     assert new_atoms[0].info["adsorbates"][0]["adsorbate"] == molecule("H2O")
+
+
+def test_errors():
+    atoms = fcc100("Cu", size=(2, 2, 2))
+    atoms.set_tags(None)
+    atoms.center(vacuum=10, axis=2)
+
+    with pytest.raises(ValueError):
+        make_adsorbate_structures(
+            atoms, "H2O", min_distance=1.0, find_ads_sites_kwargs={"distance": 1.0}
+        )
+    with pytest.raises(ValueError):
+        make_adsorbate_structures(
+            atoms,
+            "H2O",
+            modes=["ontop"],
+            find_ads_sites_kwargs={"positions": ["ontop"]},
+        )
+    with pytest.raises(ValueError):
+        make_adsorbate_structures(atoms, "H2O", allowed_surface_indices=[100])
+    with pytest.raises(ValueError):
+        make_adsorbate_structures(atoms, "WOW")
