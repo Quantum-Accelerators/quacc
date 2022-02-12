@@ -1,6 +1,6 @@
 import os
-from typing import Any, Dict
 import warnings
+from typing import Any, Dict
 
 from ase.atoms import Atoms
 from atomate2.vasp.schemas.task import TaskDocument

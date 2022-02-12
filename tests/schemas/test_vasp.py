@@ -1,9 +1,9 @@
 import os
 from pathlib import Path
 
+import pytest
 from ase.io import read
 from monty.json import MontyDecoder, jsanitize
-import pytest
 
 from quacc.calculators.vasp import SmartVasp
 from quacc.schemas.vasp import summarize_run
