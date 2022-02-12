@@ -50,6 +50,9 @@ def test_run_calc():
 
 def test_bad_run_calc(monkeypatch):
     atoms = bulk("Cu")
+    with pytest.raises(ValueError):
+        atoms = run_calc(atoms)
+
     atoms = SmartVasp(atoms)
 
     monkeypatch.setenv("SCRATCH", "nonexistant_dir")
