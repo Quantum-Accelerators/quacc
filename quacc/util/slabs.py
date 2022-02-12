@@ -433,7 +433,7 @@ def make_adsorbate_structures(
         # Check if mode is in desired list
         if mode not in modes:
             continue
-        
+
         for ads_coord in ads_coords:
 
             # Place adsorbate
