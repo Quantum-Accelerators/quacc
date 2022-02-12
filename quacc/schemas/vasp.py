@@ -141,8 +141,7 @@ def _remove_empties(d: Dict[str, Any]) -> Dict[str, Any]:
         return {
             k: _remove_empties(v)
             for k, v in d.items()
-            if v is not None
-            and not ((isinstance(v, dict) or isinstance(v, list)) and len(v) == 0)
+            if v is not None and not (isinstance(v, (dict, list)) and len(v) == 0)
         }
     if isinstance(d, list):
         return [_remove_empties(v) for v in d]
