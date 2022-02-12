@@ -1,5 +1,6 @@
 import os
 import warnings
+from shutil import which
 from typing import Any, Dict
 
 from ase.atoms import Atoms
@@ -14,7 +15,7 @@ def summarize_run(
     atoms: Atoms,
     dir_path: None | str = None,
     prep_next_run: bool = True,
-    bader: bool = False,
+    bader: bool = True,
     check_convergence: bool = True,
     compact: bool = True,
     remove_empties: bool = True,
@@ -33,7 +34,7 @@ def summarize_run(
         Whether the Atoms object storeed in {"atoms": atoms} should be prepared for the next run.
         This clears out any attached calculator and moves the final magmoms to the initial magmoms.
     bader
-        Whether a Bader analysis should be performed. Requires bader to be in PATH.
+        Whether a Bader analysis should be performed. Will not run if bader is not in PATH.
     check_convergence
         Whether to throw an error if convergence is not reached.
     compact
@@ -86,12 +87,14 @@ def summarize_run(
         results.pop("structure", None)
 
     # Get Bader analysis
-    if bader:
+    if bader and which("bader"):
         try:
             bader_stats = run_bader(dir_path)
-        except:
+        except FileNotFoundError:
             bader_stats = None
-            warnings.warn("Bader analysis could not be performed.")
+            warnings.warn(
+                "Bader analysis could not be performed because of missing files."
+            )
 
         if bader_stats:
             results["bader"] = bader_stats

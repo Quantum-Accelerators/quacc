@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from shutil import which
 
 import pytest
 from ase.io import read
@@ -45,13 +46,6 @@ def test_summarize_run():
     assert results["atoms"] == atoms
     assert results["output"]["energy"] == -33.15807349
     assert results.get("calcs_reversed", None) is None
-
-    # Make sure Bader works
-    atoms = read(os.path.join(run1, "OUTCAR.gz"))
-    results = summarize_run(atoms, dir_path=run1, bader=True)
-    struct = results["output"]["structure"]
-    assert struct.site_properties["bader_charge"] == [-1.0] * len(atoms)
-    assert struct.site_properties["bader_spin"] == [0.0] * len(atoms)
 
     # Make sure default dir works
     cwd = os.getcwd()
@@ -111,3 +105,13 @@ def test_summarize_run():
     # test document can be jsanitized and decoded
     d = jsanitize(results, strict=True, enum_values=True)
     MontyDecoder().process_decoded(d)
+
+
+@pytest.mark.skipif(which("bader") is None, reason="Bader not in PATH")
+def test_summarize_bader_run():
+    # Make sure Bader works
+    atoms = read(os.path.join(run1, "OUTCAR.gz"))
+    results = summarize_run(atoms, dir_path=run1)
+    struct = results["output"]["structure"]
+    assert struct.site_properties["bader_charge"] == [-1.0] * len(atoms)
+    assert struct.site_properties["bader_spin"] == [0.0] * len(atoms)
