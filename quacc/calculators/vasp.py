@@ -1,7 +1,6 @@
 import os
 from copy import deepcopy
 
-import numpy as np
 from ase.atoms import Atoms
 from ase.calculators.vasp import Vasp as Vasp_
 from ase.calculators.vasp.setups import _setups_defaults as ase_default_setups
@@ -78,7 +77,7 @@ def SmartVasp(
 
     # Check constraints
     if custodian and atoms.constraints:
-        if ~np.all([isinstance(c, FixAtoms) for c in atoms.constraints]):
+        if not all([isinstance(c, FixAtoms) for c in atoms.constraints]):
             raise ValueError(
                 "Atoms object has a constraint that is not compatible with Custodian"
             )
