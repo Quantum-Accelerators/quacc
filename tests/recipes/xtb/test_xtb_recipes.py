@@ -6,7 +6,7 @@ from jobflow.managers.local import run_locally
 
 try:
     from xtb.ase.calculator import XTB
-except:
+except ModuleNotFoundError:
     XTB = None
 from quacc.recipes.xtb.core import RelaxMaker, StaticMaker
 
