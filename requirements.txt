@@ -1,6 +1,6 @@
 git+https://gitlab.com/ase/ase.git # waiting on >= 3.22.2 for VASP6 OUTCAR parsing
 pymatgen==2022.2.10
-custodian==2022.1.17
+custodian==2022.2.13
 jobflow==0.1.6
 atomate2==0.0.6
 monty==2022.1.19
