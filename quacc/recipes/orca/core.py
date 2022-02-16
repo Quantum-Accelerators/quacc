@@ -1,6 +1,6 @@
 import multiprocessing
 from dataclasses import dataclass
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from ase.atoms import Atoms
 from ase.calculators.orca import ORCA
@@ -65,7 +65,7 @@ class StaticMaker(Maker):
         """
         input_swaps = self.input_swaps or {}
         block_swaps = self.block_swaps or {}
-        if ~any([k for k in block_swaps if "nprocs" in k.lower()]):
+        if not any([k for k in block_swaps if "nprocs" in k.lower()]):
             nprocs = multiprocessing.cpu_count()
             block_swaps[f"%pal nprocs {nprocs} end"] = True
 
@@ -158,7 +158,7 @@ class RelaxMaker(Maker):
         """
         input_swaps = self.input_swaps or {}
         block_swaps = self.block_swaps or {}
-        if ~any([k for k in block_swaps if "nprocs" in k.lower()]):
+        if not any([k for k in block_swaps if "nprocs" in k.lower()]):
             nprocs = multiprocessing.cpu_count()
             block_swaps[f"%pal nprocs {nprocs} end"] = True
 
