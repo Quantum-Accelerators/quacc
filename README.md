@@ -21,7 +21,7 @@ from quacc.recipes.vasp.core import RelaxMaker as VaspRelaxMaker
 # Make a bulk Cu structure
 atoms = bulk("Cu")
 
-# Make a job consisting of a VASP relaxation.
+# Make a job consisting of a VASP relaxation using a pre-defined input set.
 # By default, VASP will be run using Custodian for on-the-fly error handling.
 job = VaspRelaxMaker(preset="BulkRelaxSet").make(atoms)
 
