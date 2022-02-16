@@ -17,7 +17,7 @@ if __name__ == "__main__":
         author_email="asrosen93@gmail.com",
         url="https://github.com/arosen93/quacc",
         python_requires=">=3.10.0",
-        version="0.0.2",
+        version="0.0.3",
         packages=find_packages(),
         license="modified BSD",
         keywords="high-throughput automated workflow dft vasp",
