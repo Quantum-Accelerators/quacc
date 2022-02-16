@@ -16,7 +16,6 @@ This package is heavily inspired by [Atomate2](https://github.com/materialsproje
 from ase.build import bulk
 from jobflow.managers.local import run_locally
 
-from quacc.recipes.emt.core import RelaxMaker as EMTRelaxMaker
 from quacc.recipes.vasp.core import RelaxMaker as VaspRelaxMaker
 
 # Make a bulk Cu structure
@@ -24,7 +23,7 @@ atoms = bulk("Cu")
 
 # Make a job consisting of a VASP relaxation.
 # By default, VASP will be run using Custodian for on-the-fly error handling.
-job = EMTRelaxMaker().make(atoms)
+job = VaspRelaxMaker(preset="BulkRelaxSet").make(atoms)
 
 # Run the job locally, with all output data stored in a convenient schema
 responses = run_locally(job, create_folders=True)
