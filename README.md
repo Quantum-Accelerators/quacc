@@ -11,7 +11,8 @@ This package is heavily inspired by [Atomate2](https://github.com/materialsproje
 
 **Warning**: Currently, this package should be considered *highly experimental.*
 
-## Example: VASP Job
+## Examples
+### VASP Job
 ```python
 from ase.build import bulk
 from jobflow.managers.local import run_locally
@@ -29,7 +30,7 @@ job = VaspRelaxMaker(preset="BulkRelaxSet").make(atoms)
 responses = run_locally(job, create_folders=True)
 ```
 
-## Example: GFN2-xTB + Gaussian + ORCA Workflow with FireWorks
+### GFN2-xTB + Gaussian + ORCA Workflow with FireWorks
 ```python
 from ase.build import molecule
 from fireworks import LaunchPad
@@ -58,7 +59,7 @@ lpad = LaunchPad.auto_load()
 lpad.add_wf(wf)
 ```
 
-## Database-Friendly Output
+### Database-Friendly Output
 Assuming a Jobflow configuration file has been provided, the input and output data will be automagically tabulated and placed in your selected database. No custom parsing required. An example document is shown below:
 
 ![docs](docs/src/imgs/schema.gif)
