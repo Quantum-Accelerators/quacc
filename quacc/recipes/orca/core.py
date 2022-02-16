@@ -94,7 +94,9 @@ class StaticMaker(Maker):
             mult=mult if mult else round(1 + sum(atoms.get_initial_magnetic_moments())),
         )
         atoms = run_calc(atoms)
-        summary = summarize_run(atoms, "orca.out", additional_fields={"name": self.name})
+        summary = summarize_run(
+            atoms, "orca.out", additional_fields={"name": self.name}
+        )
 
         return summary
 
@@ -186,6 +188,8 @@ class RelaxMaker(Maker):
             mult=mult if mult else round(1 + sum(atoms.get_initial_magnetic_moments())),
         )
         atoms = run_calc(atoms)
-        summary = summarize_run(atoms, "orca.out", additional_fields={"name": self.name})
+        summary = summarize_run(
+            atoms, "orca.out", additional_fields={"name": self.name}
+        )
 
         return summary
