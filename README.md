@@ -64,7 +64,7 @@ lpad.add_wf(wf)
 ```
 
 ## Database-Friendly Output
-Assuming a Jobflow configuration file has been provided, the input and output data will be automagically tabulated and placed in your selected database. No assembly required. An example document from a completed ORCA calculation is shown below:
+Assuming a Jobflow configuration file has been provided, the input and output data will be automagically tabulated and placed in your selected database. No custom parsing required. An example document is shown below:
 
 ![docs](docs/src/imgs/schema.gif)
 
