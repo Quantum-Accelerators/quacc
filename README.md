@@ -31,7 +31,7 @@ job2 = VaspRelaxMaker(preset="BulkRelaxSet").make(job1.output["atoms"])
 flow = Flow([job1, job2])
 
 # Run the flow locally, with all output data stored in a convenient schema
-responses = run_locally(flow)
+responses = run_locally(flow, create_folders=True)
 ```
 
 ## Example: GFN2-xTB + Gaussian + ORCA Flow with FireWorks
