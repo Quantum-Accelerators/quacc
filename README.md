@@ -29,7 +29,7 @@ job = VaspRelaxMaker(preset="BulkRelaxSet").make(atoms)
 responses = run_locally(job)
 ```
 
-## Example: GFN2-xTB + Gaussian + ORCA Flow with FireWorks
+## Example: GFN2-xTB + Gaussian + ORCA Workflow with FireWorks
 ```python
 from ase.build import molecule
 from fireworks import LaunchPad
