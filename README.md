@@ -26,7 +26,7 @@ atoms = bulk("Cu")
 job = VaspRelaxMaker(preset="BulkRelaxSet").make(atoms)
 
 # Run the job locally, with all output data stored in a convenient schema
-responses = run_locally(job)
+responses = run_locally(job, create_folders=True)
 ```
 
 ## Example: GFN2-xTB + Gaussian + ORCA Workflow with FireWorks
