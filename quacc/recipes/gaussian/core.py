@@ -83,7 +83,7 @@ class StaticMaker(Maker):
 
         atoms.calc = Gaussian(**flags)
         atoms = run_calc(atoms)
-        summary = summarize_run(atoms, ".log", additional_fields={"name": self.name})
+        summary = summarize_run(atoms, "Gaussian.log", additional_fields={"name": self.name})
 
         return summary
 
@@ -155,6 +155,6 @@ class RelaxMaker(Maker):
 
         atoms.calc = Gaussian(**flags)
         atoms = run_calc(atoms)
-        summary = summarize_run(atoms, ".log", additional_fields={"name": self.name})
+        summary = summarize_run(atoms, "Gaussian.log", additional_fields={"name": self.name})
 
         return summary
