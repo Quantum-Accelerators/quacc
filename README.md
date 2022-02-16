@@ -63,6 +63,11 @@ lpad = LaunchPad.auto_load()
 lpad.add_wf(wf)
 ```
 
+## Database-Friendly Output
+Provided a JobFlow configuration file has been set up, the input and output data will be automagically tabulated and placed in your selected database. No assembly required. An example document from an ORCA calculation is shown below:
+
+![docs](docs/src/schema.gif)
+
 ## Installation
 1. Run the following command, ideally in a fresh Python 3.10+ environment: `pip install quacc`. For the most recent development version, instead run `pip install git+https://github.com/arosen93/quacc.git`.
 
