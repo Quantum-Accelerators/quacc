@@ -8,11 +8,7 @@ enabled = true
   runtime_version = "3.x.x"
 
 [[transformers]]
-name = "isort"
-enabled = true
-
-[[transformers]]
-name = "black"
+name = "autopep8"
 enabled = true
 
 [[transformers]]
@@ -20,5 +16,9 @@ name = "yapf"
 enabled = true
 
 [[transformers]]
-name = "autopep8"
+name = "isort"
+enabled = true
+
+[[transformers]]
+name = "black"
 enabled = true
