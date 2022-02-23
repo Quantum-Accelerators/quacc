@@ -2,7 +2,6 @@
 ![example workflow](https://github.com/arosen93/quacc/actions/workflows/workflow.yaml/badge.svg)
 [![codecov](https://codecov.io/gh/arosen93/quacc/branch/main/graph/badge.svg?token=BCKGTD89H0)](https://codecov.io/gh/arosen93/quacc)
 [![CodeFactor](https://www.codefactor.io/repository/github/arosen93/quacc/badge)](https://www.codefactor.io/repository/github/arosen93/quacc)
-[![DeepSource](https://deepsource.io/gh/arosen93/quacc.svg/?label=active+issues&token=O0LvluUkUS6qiQnHXc7BUlHn)](https://deepsource.io/gh/arosen93/quacc/)
 [![This project supports Python 3.10](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://python.org/downloads)
 [![Pypi](https://img.shields.io/pypi/v/quacc)](https://pypi.org/project/quacc)
 
