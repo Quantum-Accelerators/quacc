@@ -179,7 +179,7 @@ def make_slabs_from_bulk(
             # Check that the desired atoms are on the surface
             if allowed_surface_atoms and not any(
                 allowed_surface_atom in surface_species
-                    for allowed_surface_atom in allowed_surface_atoms
+                for allowed_surface_atom in allowed_surface_atoms
             ):
                 continue
 
@@ -442,14 +442,14 @@ def make_adsorbate_structures(
             if allowed_surface_symbols:
                 if not any(
                     surface_atom_symbol in allowed_surface_symbols
-                        for surface_atom_symbol in surface_atom_symbols
+                    for surface_atom_symbol in surface_atom_symbols
                 ):
                     continue
 
             if allowed_surface_indices:
                 if not any(
                     surface_atom_idx in allowed_surface_indices
-                        for surface_atom_idx in surface_atom_indices
+                    for surface_atom_idx in surface_atom_indices
                 ):
                     continue
 
