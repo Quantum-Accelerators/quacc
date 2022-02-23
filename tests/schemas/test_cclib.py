@@ -20,11 +20,16 @@ def test_summarize_run():
     # Make sure metadata is made
     atoms = read(log1)
     results = summarize_run(atoms, ".log", dir_path=run1)
-    assert results["nsites"] == len(atoms)
-    assert results["atoms"] == atoms
-    assert results["spin_multiplicity"] == 1
-    assert results["nsites"] == 6
-    assert results["metadata"].get("success", None) == True
+    if results["nsites"] != len(atoms):
+        raise AssertionError
+    if results["atoms"] != atoms:
+        raise AssertionError
+    if results["spin_multiplicity"] != 1:
+        raise AssertionError
+    if results["nsites"] != 6:
+        raise AssertionError
+    if results["metadata"].get("success", None) != True:
+        raise AssertionError
 
     # Make sure default dir works
     cwd = os.getcwd()
@@ -36,10 +41,14 @@ def test_summarize_run():
     atoms = read(log1)
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
     results = summarize_run(atoms, ".log", dir_path=run1)
-    assert atoms.info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
-    assert results.get("atoms_info", {}) != {}
-    assert results["atoms_info"].get("test_dict", None) == {"hi": "there", "foo": "bar"}
-    assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
+    if atoms.info.get("test_dict", None) != {"hi": "there", "foo": "bar"}:
+        raise AssertionError
+    if results.get("atoms_info", {}) == {}:
+        raise AssertionError
+    if results["atoms_info"].get("test_dict", None) != {"hi": "there", "foo": "bar"}:
+        raise AssertionError
+    if results["atoms"].info.get("test_dict", None) != {"hi": "there", "foo": "bar"}:
+        raise AssertionError
 
     # Make sure magnetic moments are handled appropriately
     atoms = read(os.path.join(run1, log1))
@@ -47,22 +56,28 @@ def test_summarize_run():
     atoms.calc.results["magmoms"] = [2.0] * len(atoms)
     results = summarize_run(atoms, ".log", dir_path=run1)
 
-    assert atoms.calc is not None
-    assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
+    if atoms.calc is None:
+        raise AssertionError
+    if atoms.get_initial_magnetic_moments().tolist() != [3.14] * len(atoms):
+        raise AssertionError
 
-    assert results["atoms"].get_initial_magnetic_moments().tolist() == [2.0] * len(
+    if results["atoms"].get_initial_magnetic_moments().tolist() != [2.0] * len(
         atoms
-    )
-    assert results["atoms"].calc is None
+    ):
+        raise AssertionError
+    if results["atoms"].calc is not None:
+        raise AssertionError
 
     # Make sure Atoms magmoms were not moved if specified
     atoms = read(os.path.join(run1, log1))
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
     results = summarize_run(atoms, ".log", dir_path=run1, prep_next_run=False)
-    assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
-    assert results["atoms"].get_initial_magnetic_moments().tolist() == [3.14] * len(
+    if atoms.get_initial_magnetic_moments().tolist() != [3.14] * len(atoms):
+        raise AssertionError
+    if results["atoms"].get_initial_magnetic_moments().tolist() != [3.14] * len(
         atoms
-    )
+    ):
+        raise AssertionError
 
     # test document can be jsanitized and decoded
     d = jsanitize(results, strict=True, enum_values=True)

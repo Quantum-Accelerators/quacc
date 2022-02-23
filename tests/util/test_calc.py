@@ -33,19 +33,28 @@ def test_run_calc():
     atoms = SmartVasp(atoms)
 
     atoms = run_calc(atoms)
-    assert atoms.calc.results is not None
-    assert os.path.exists("test_file.txt")
-    assert not os.path.exists("test_file.txt.gz")
+    if atoms.calc.results is None:
+        raise AssertionError
+    if not os.path.exists("test_file.txt"):
+        raise AssertionError
+    if os.path.exists("test_file.txt.gz"):
+        raise AssertionError
 
     atoms = run_calc(atoms, gzip=True)
-    assert atoms.calc.results is not None
-    assert os.path.exists("test_file.txt")
-    assert os.path.exists("test_file.txt.gz")
+    if atoms.calc.results is None:
+        raise AssertionError
+    if not os.path.exists("test_file.txt"):
+        raise AssertionError
+    if not os.path.exists("test_file.txt.gz"):
+        raise AssertionError
 
     atoms = run_calc(atoms, store_dir=".", scratch_dir="test_calc", gzip=True)
-    assert atoms.calc.results is not None
-    assert os.path.exists("test_file.txt")
-    assert os.path.exists("test_file.txt.gz")
+    if atoms.calc.results is None:
+        raise AssertionError
+    if not os.path.exists("test_file.txt"):
+        raise AssertionError
+    if not os.path.exists("test_file.txt.gz"):
+        raise AssertionError
 
 
 def test_bad_run_calc(monkeypatch):

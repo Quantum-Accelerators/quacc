@@ -32,29 +32,39 @@ def test_static_maker():
     job = StaticMaker().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["spin_multiplicity"] == 1
-    assert output["nsites"] == len(atoms)
-    assert output["parameters"]["method"] == "GFN2-xTB"
-    assert output["name"] == "xTB-Static"
-    assert output["results"]["energy"] == pytest.approx(-137.96777587302995)
+    if output["spin_multiplicity"] != 1:
+        raise AssertionError
+    if output["nsites"] != len(atoms):
+        raise AssertionError
+    if output["parameters"]["method"] != "GFN2-xTB":
+        raise AssertionError
+    if output["name"] != "xTB-Static":
+        raise AssertionError
+    if output["results"]["energy"] != pytest.approx(-137.96777587302995):
+        raise AssertionError
 
     job = StaticMaker(method="GFN1-xTB").make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["parameters"]["method"] == "GFN1-xTB"
-    assert output["results"]["energy"] == pytest.approx(-156.96750578831137)
+    if output["parameters"]["method"] != "GFN1-xTB":
+        raise AssertionError
+    if output["results"]["energy"] != pytest.approx(-156.96750578831137):
+        raise AssertionError
 
     job = StaticMaker(method="GFN-FF").make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["parameters"]["method"] == "GFN-FF"
-    assert output["results"]["energy"] == pytest.approx(-8.912667188932252)
+    if output["parameters"]["method"] != "GFN-FF":
+        raise AssertionError
+    if output["results"]["energy"] != pytest.approx(-8.912667188932252):
+        raise AssertionError
 
     atoms = bulk("Cu")
     job = StaticMaker(method="GFN1-xTB").make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["results"]["energy"] == pytest.approx(-119.77643232313169)
+    if output["results"]["energy"] != pytest.approx(-119.77643232313169):
+        raise AssertionError
 
 
 @pytest.mark.skipif(
@@ -66,26 +76,36 @@ def test_relax_maker():
     job = RelaxMaker().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["spin_multiplicity"] == 1
-    assert output["nsites"] == len(atoms)
-    assert output["parameters"]["method"] == "GFN2-xTB"
-    assert output["name"] == "xTB-Relax"
-    assert output["results"]["energy"] == pytest.approx(-137.9764670127011)
+    if output["spin_multiplicity"] != 1:
+        raise AssertionError
+    if output["nsites"] != len(atoms):
+        raise AssertionError
+    if output["parameters"]["method"] != "GFN2-xTB":
+        raise AssertionError
+    if output["name"] != "xTB-Relax":
+        raise AssertionError
+    if output["results"]["energy"] != pytest.approx(-137.9764670127011):
+        raise AssertionError
 
     job = RelaxMaker(method="GFN1-xTB").make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["parameters"]["method"] == "GFN1-xTB"
-    assert output["results"]["energy"] == pytest.approx(-156.9763496338962)
+    if output["parameters"]["method"] != "GFN1-xTB":
+        raise AssertionError
+    if output["results"]["energy"] != pytest.approx(-156.9763496338962):
+        raise AssertionError
 
     job = RelaxMaker(method="GFN-FF").make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["parameters"]["method"] == "GFN-FF"
-    assert output["results"]["energy"] == pytest.approx(-8.915963671549369)
+    if output["parameters"]["method"] != "GFN-FF":
+        raise AssertionError
+    if output["results"]["energy"] != pytest.approx(-8.915963671549369):
+        raise AssertionError
 
     atoms = bulk("Cu")
     job = RelaxMaker(method="GFN1-xTB").make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["results"]["energy"] == pytest.approx(-119.77643232313169)
+    if output["results"]["energy"] != pytest.approx(-119.77643232313169):
+        raise AssertionError

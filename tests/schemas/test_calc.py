@@ -18,17 +18,23 @@ def test_summarize_run():
     # Make sure metadata is made
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
     results = summarize_run(atoms)
-    assert results["nsites"] == len(atoms)
-    assert results["atoms"] == atoms
+    if results["nsites"] != len(atoms):
+        raise AssertionError
+    if results["atoms"] != atoms:
+        raise AssertionError
 
     # Make sure info tags are handled appropriately
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
     results = summarize_run(atoms)
-    assert atoms.info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
-    assert results.get("atoms_info", {}) != {}
-    assert results["atoms_info"].get("test_dict", None) == {"hi": "there", "foo": "bar"}
-    assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
+    if atoms.info.get("test_dict", None) != {"hi": "there", "foo": "bar"}:
+        raise AssertionError
+    if results.get("atoms_info", {}) == {}:
+        raise AssertionError
+    if results["atoms_info"].get("test_dict", None) != {"hi": "there", "foo": "bar"}:
+        raise AssertionError
+    if results["atoms"].info.get("test_dict", None) != {"hi": "there", "foo": "bar"}:
+        raise AssertionError
 
     # Make sure magnetic moments are handled appropriately
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
@@ -36,22 +42,28 @@ def test_summarize_run():
     atoms.calc.results["magmoms"] = [2.0] * len(atoms)
     results = summarize_run(atoms)
 
-    assert atoms.calc is not None
-    assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
+    if atoms.calc is None:
+        raise AssertionError
+    if atoms.get_initial_magnetic_moments().tolist() != [3.14] * len(atoms):
+        raise AssertionError
 
-    assert results["atoms"].get_initial_magnetic_moments().tolist() == [2.0] * len(
+    if results["atoms"].get_initial_magnetic_moments().tolist() != [2.0] * len(
         atoms
-    )
-    assert results["atoms"].calc is None
+    ):
+        raise AssertionError
+    if results["atoms"].calc is not None:
+        raise AssertionError
 
     # Make sure Atoms magmoms were not moved if specified
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
     results = summarize_run(atoms, prep_next_run=False)
-    assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
-    assert results["atoms"].get_initial_magnetic_moments().tolist() == [3.14] * len(
+    if atoms.get_initial_magnetic_moments().tolist() != [3.14] * len(atoms):
+        raise AssertionError
+    if results["atoms"].get_initial_magnetic_moments().tolist() != [3.14] * len(
         atoms
-    )
+    ):
+        raise AssertionError
 
     # test document can be jsanitized and decoded
     d = jsanitize(results, strict=True, enum_values=True)

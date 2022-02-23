@@ -17,21 +17,30 @@ def test_static_maker():
     job = StaticMaker().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
-    assert output["parameters"]["isym"] == 2
-    assert output["parameters"]["nsw"] == 0
-    assert output["parameters"]["lwave"] == True
-    assert output["name"] == "VASP-Static"
+    if output["nsites"] != len(atoms):
+        raise AssertionError
+    if output["parameters"]["isym"] != 2:
+        raise AssertionError
+    if output["parameters"]["nsw"] != 0:
+        raise AssertionError
+    if output["parameters"]["lwave"] != True:
+        raise AssertionError
+    if output["name"] != "VASP-Static":
+        raise AssertionError
 
     job = StaticMaker(
         preset="BulkRelaxSet", name="test", swaps={"ncore": 2, "kpar": 4}
     ).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["parameters"]["encut"] == 650
-    assert output["parameters"]["ncore"] == 2
-    assert output["parameters"]["kpar"] == 4
-    assert output["name"] == "test"
+    if output["parameters"]["encut"] != 650:
+        raise AssertionError
+    if output["parameters"]["ncore"] != 2:
+        raise AssertionError
+    if output["parameters"]["kpar"] != 4:
+        raise AssertionError
+    if output["name"] != "test":
+        raise AssertionError
 
 
 def test_relax_maker():
@@ -41,26 +50,36 @@ def test_relax_maker():
     job = RelaxMaker().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
-    assert output["parameters"]["isym"] == 0
-    assert output["parameters"]["nsw"] > 0
-    assert output["parameters"]["isif"] == 3
-    assert output["parameters"]["lwave"] == False
-    assert output["name"] == "VASP-Relax"
+    if output["nsites"] != len(atoms):
+        raise AssertionError
+    if output["parameters"]["isym"] != 0:
+        raise AssertionError
+    if output["parameters"]["nsw"] <= 0:
+        raise AssertionError
+    if output["parameters"]["isif"] != 3:
+        raise AssertionError
+    if output["parameters"]["lwave"] != False:
+        raise AssertionError
+    if output["name"] != "VASP-Relax":
+        raise AssertionError
 
     job = RelaxMaker(preset="BulkRelaxSet", name="test", swaps={"nelmin": 6}).make(
         atoms
     )
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["parameters"]["encut"] == 650
-    assert output["parameters"]["nelmin"] == 6
-    assert output["name"] == "test"
+    if output["parameters"]["encut"] != 650:
+        raise AssertionError
+    if output["parameters"]["nelmin"] != 6:
+        raise AssertionError
+    if output["name"] != "test":
+        raise AssertionError
 
     job = RelaxMaker(volume_relax=False).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["parameters"]["isif"] == 2
+    if output["parameters"]["isif"] != 2:
+        raise AssertionError
 
 
 def test_slab_static_maker():
@@ -69,20 +88,28 @@ def test_slab_static_maker():
     job = SlabStaticMaker().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
-    assert output["parameters"]["idipol"] == 3
-    assert output["parameters"]["nsw"] == 0
-    assert output["parameters"]["lvhar"] == True
-    assert output["name"] == "VASP-SlabStatic"
+    if output["nsites"] != len(atoms):
+        raise AssertionError
+    if output["parameters"]["idipol"] != 3:
+        raise AssertionError
+    if output["parameters"]["nsw"] != 0:
+        raise AssertionError
+    if output["parameters"]["lvhar"] != True:
+        raise AssertionError
+    if output["name"] != "VASP-SlabStatic":
+        raise AssertionError
 
     job = SlabStaticMaker(preset="SlabRelaxSet", name="test", swaps={"nelmin": 6}).make(
         atoms
     )
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["parameters"]["encut"] == 450
-    assert output["parameters"]["nelmin"] == 6
-    assert output["name"] == "test"
+    if output["parameters"]["encut"] != 450:
+        raise AssertionError
+    if output["parameters"]["nelmin"] != 6:
+        raise AssertionError
+    if output["name"] != "test":
+        raise AssertionError
 
 
 def test_slab_relax_maker():
@@ -91,21 +118,30 @@ def test_slab_relax_maker():
     job = SlabRelaxMaker().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
-    assert output["parameters"]["isif"] == 2
-    assert output["parameters"]["nsw"] > 0
-    assert output["parameters"]["isym"] == 0
-    assert output["parameters"]["lwave"] == False
-    assert output["name"] == "VASP-SlabRelax"
+    if output["nsites"] != len(atoms):
+        raise AssertionError
+    if output["parameters"]["isif"] != 2:
+        raise AssertionError
+    if output["parameters"]["nsw"] <= 0:
+        raise AssertionError
+    if output["parameters"]["isym"] != 0:
+        raise AssertionError
+    if output["parameters"]["lwave"] != False:
+        raise AssertionError
+    if output["name"] != "VASP-SlabRelax":
+        raise AssertionError
 
     job = SlabRelaxMaker(preset="SlabRelaxSet", name="test", swaps={"nelmin": 6}).make(
         atoms
     )
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["parameters"]["encut"] == 450
-    assert output["parameters"]["nelmin"] == 6
-    assert output["name"] == "test"
+    if output["parameters"]["encut"] != 450:
+        raise AssertionError
+    if output["parameters"]["nelmin"] != 6:
+        raise AssertionError
+    if output["name"] != "test":
+        raise AssertionError
 
 
 def test_slab_flows():
@@ -115,22 +151,30 @@ def test_slab_flows():
     flow = BulkToSlabMaker().make(atoms)
     responses = run_locally(flow, ensure_success=True)
 
-    assert len(responses) == 9
+    if len(responses) != 9:
+        raise AssertionError
     uuids = list(responses.keys())
 
     # First job is a dummy job to make slabs and should have no output
     output0 = responses[uuids[0]][1].output
-    assert output0 is None
+    if output0 is not None:
+        raise AssertionError
 
     output1 = responses[uuids[1]][1].output
-    assert output1["nsites"] > len(atoms)
-    assert output1["parameters"]["isif"] == 2
-    assert output1["name"] == "VASP-SlabRelax"
+    if output1["nsites"] <= len(atoms):
+        raise AssertionError
+    if output1["parameters"]["isif"] != 2:
+        raise AssertionError
+    if output1["name"] != "VASP-SlabRelax":
+        raise AssertionError
 
     output2 = responses[uuids[2]][1].output
-    assert output2["nsites"] == output1["nsites"]
-    assert output2["parameters"]["nsw"] == 0
-    assert output2["name"] == "VASP-SlabStatic"
+    if output2["nsites"] != output1["nsites"]:
+        raise AssertionError
+    if output2["parameters"]["nsw"] != 0:
+        raise AssertionError
+    if output2["name"] != "VASP-SlabStatic":
+        raise AssertionError
 
     # Now try with kwargs
     flow = BulkToSlabMaker(
@@ -141,23 +185,33 @@ def test_slab_flows():
     ).make(atoms)
     responses = run_locally(flow, ensure_success=True)
 
-    assert len(responses) == 9
+    if len(responses) != 9:
+        raise AssertionError
     uuids = list(responses.keys())
 
     output0 = responses[uuids[0]][1].output
-    assert output0 is None
+    if output0 is not None:
+        raise AssertionError
 
     output1 = responses[uuids[1]][1].output
-    assert output1["parameters"]["isif"] == 2
-    assert output1["parameters"]["nelmin"] == 6
-    assert output1["parameters"]["encut"] == 450
-    assert output1["name"] == "VASP-SlabRelax"
+    if output1["parameters"]["isif"] != 2:
+        raise AssertionError
+    if output1["parameters"]["nelmin"] != 6:
+        raise AssertionError
+    if output1["parameters"]["encut"] != 450:
+        raise AssertionError
+    if output1["name"] != "VASP-SlabRelax":
+        raise AssertionError
 
     output2 = responses[uuids[2]][1].output
-    assert output2["parameters"]["nsw"] == 0
-    assert output2["parameters"]["nelmin"] == 6
-    assert output2["parameters"]["encut"] == 450
-    assert output2["name"] == "VASP-SlabStatic"
+    if output2["parameters"]["nsw"] != 0:
+        raise AssertionError
+    if output2["parameters"]["nelmin"] != 6:
+        raise AssertionError
+    if output2["parameters"]["encut"] != 450:
+        raise AssertionError
+    if output2["name"] != "VASP-SlabStatic":
+        raise AssertionError
 
     ### --------- Test SlabToAdsSlabMaker --------- ###
     atoms = output2["atoms"]
@@ -166,23 +220,31 @@ def test_slab_flows():
     flow = SlabToAdsSlabMaker().make(atoms, adsorbate)
     responses = run_locally(flow, ensure_success=True)
 
-    assert len(responses) == 11
+    if len(responses) != 11:
+        raise AssertionError
     uuids = list(responses.keys())
 
     # First job is a dummy job to make slabs and should have no output
     output0 = responses[uuids[0]][1].output
-    assert output0 is None
+    if output0 is not None:
+        raise AssertionError
 
     # Subsequent jobs should be alternating relaxations and statics
     output1 = responses[uuids[1]][1].output
-    assert output1["nsites"] == len(output2["atoms"]) + 2
-    assert output1["parameters"]["isif"] == 2
-    assert output1["name"] == "VASP-SlabRelax"
+    if output1["nsites"] != len(output2["atoms"]) + 2:
+        raise AssertionError
+    if output1["parameters"]["isif"] != 2:
+        raise AssertionError
+    if output1["name"] != "VASP-SlabRelax":
+        raise AssertionError
 
     output2 = responses[uuids[2]][1].output
-    assert output2["nsites"] == output1["nsites"]
-    assert output2["parameters"]["nsw"] == 0
-    assert output2["name"] == "VASP-SlabStatic"
+    if output2["nsites"] != output1["nsites"]:
+        raise AssertionError
+    if output2["parameters"]["nsw"] != 0:
+        raise AssertionError
+    if output2["name"] != "VASP-SlabStatic":
+        raise AssertionError
 
     # Now try with kwargs
     flow = SlabToAdsSlabMaker(
@@ -190,20 +252,30 @@ def test_slab_flows():
     ).make(atoms, adsorbate)
     responses = run_locally(flow, ensure_success=True)
 
-    assert len(responses) == 11
+    if len(responses) != 11:
+        raise AssertionError
     uuids = list(responses.keys())
 
     output0 = responses[uuids[0]][1].output
-    assert output0 is None
+    if output0 is not None:
+        raise AssertionError
 
     output1 = responses[uuids[1]][1].output
-    assert output1["parameters"]["isif"] == 2
-    assert output1["parameters"]["nelmin"] == 6
-    assert output1["parameters"]["encut"] == 450
-    assert output1["name"] == "VASP-SlabRelax"
+    if output1["parameters"]["isif"] != 2:
+        raise AssertionError
+    if output1["parameters"]["nelmin"] != 6:
+        raise AssertionError
+    if output1["parameters"]["encut"] != 450:
+        raise AssertionError
+    if output1["name"] != "VASP-SlabRelax":
+        raise AssertionError
 
     output2 = responses[uuids[2]][1].output
-    assert output2["parameters"]["nsw"] == 0
-    assert output2["parameters"]["nelmin"] == 6
-    assert output2["parameters"]["encut"] == 450
-    assert output2["name"] == "VASP-SlabStatic"
+    if output2["parameters"]["nsw"] != 0:
+        raise AssertionError
+    if output2["parameters"]["nelmin"] != 6:
+        raise AssertionError
+    if output2["parameters"]["encut"] != 450:
+        raise AssertionError
+    if output2["name"] != "VASP-SlabStatic":
+        raise AssertionError

@@ -9,27 +9,36 @@ def test_atoms_to_metadata():
     atoms = bulk("Cu")
     atoms.info["test"] = "hi"
     results = atoms_to_metadata(atoms)
-    assert results["atoms"].info.get("test", None) == "hi"
+    if results["atoms"].info.get("test", None) != "hi":
+        raise AssertionError
 
     atoms = bulk("Cu")
     atoms.info["test"] = "hi"
     results = atoms_to_metadata(atoms, strip_info=True)
-    assert results["atoms"] == atoms
-    assert results["atoms"].info == {}
-    assert results["nsites"] == len(atoms)
-    assert results["atoms_info"].get("test", None) == "hi"
+    if results["atoms"] != atoms:
+        raise AssertionError
+    if results["atoms"].info != {}:
+        raise AssertionError
+    if results["nsites"] != len(atoms):
+        raise AssertionError
+    if results["atoms_info"].get("test", None) != "hi":
+        raise AssertionError
 
     atoms = bulk("Cu")
     results = atoms_to_metadata(atoms, get_metadata=False)
-    assert results["atoms"] == atoms
-    assert results.get("nsites", None) is None
+    if results["atoms"] != atoms:
+        raise AssertionError
+    if results.get("nsites", None) is not None:
+        raise AssertionError
 
     atoms = bulk("Cu")
     parent = bulk("Al") * (2, 1, 1)
     atoms.info = {"parent": parent}
     results = atoms_to_metadata(atoms)
-    assert results["atoms_info"]["parent"]["atoms"] == parent
-    assert results["atoms_info"]["parent"]["nsites"] == len(parent)
+    if results["atoms_info"]["parent"]["atoms"] != parent:
+        raise AssertionError
+    if results["atoms_info"]["parent"]["nsites"] != len(parent):
+        raise AssertionError
 
     # test document can be jsanitized and decoded
     d = jsanitize(results, strict=True, enum_values=True)

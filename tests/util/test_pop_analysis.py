@@ -64,13 +64,20 @@ def teardown_module():
 
 def test_run_bader():
     bader_stats = run_bader()
-    assert bader_stats["min_dist"] == [1.0]
-    assert bader_stats["partial_charges"] == [1.0]
-    assert bader_stats["spin_moments"] == [0.0]
-    assert bader_stats.get("charge") is None
-    assert bader_stats.get("charge_transfer") is None
-    assert bader_stats.get("reference_used") is None
-    assert bader_stats.get("magmom") is None
+    if bader_stats["min_dist"] != [1.0]:
+        raise AssertionError
+    if bader_stats["partial_charges"] != [1.0]:
+        raise AssertionError
+    if bader_stats["spin_moments"] != [0.0]:
+        raise AssertionError
+    if bader_stats.get("charge") is not None:
+        raise AssertionError
+    if bader_stats.get("charge_transfer") is not None:
+        raise AssertionError
+    if bader_stats.get("reference_used") is not None:
+        raise AssertionError
+    if bader_stats.get("magmom") is not None:
+        raise AssertionError
 
 
 def test_bader_erorr():
@@ -83,8 +90,10 @@ def test_bader_erorr():
 
 def test_run_chargemol():
     chargemol_stats = run_chargemol(path=".", atomic_densities_path=".")
-    assert chargemol_stats["ddec"]["partial_charges"] == [1.0]
-    assert chargemol_stats["ddec"]["spin_moments"] == [0.0]
+    if chargemol_stats["ddec"]["partial_charges"] != [1.0]:
+        raise AssertionError
+    if chargemol_stats["ddec"]["spin_moments"] != [0.0]:
+        raise AssertionError
 
 
 def test_chargemol_erorr():

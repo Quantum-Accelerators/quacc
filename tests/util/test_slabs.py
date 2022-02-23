@@ -31,26 +31,32 @@ def test_flip_atoms():
         [2.0 if atom.symbol == "Zn" else 1.0 for atom in atoms]
     )
     new_atoms = flip_atoms(atoms)
-    assert (
-        np.unique(np.round(atoms.get_all_distances(mic=True), 4)).tolist()
-        == np.unique(np.round(new_atoms.get_all_distances(mic=True), 4)).tolist()
-    )
+    if (
+        np.unique(np.round(atoms.get_all_distances(mic=True), 4)).tolist() != np.unique(np.round(new_atoms.get_all_distances(mic=True), 4)).tolist()
+    ):
+        raise AssertionError
     Zn_idx = [atom.index for atom in new_atoms if atom.symbol == "Zn"]
     Te_idx = [atom.index for atom in new_atoms if atom.symbol == "Te"]
-    assert np.all(new_atoms.get_initial_magnetic_moments()[Zn_idx] == 2.0)
-    assert np.all(new_atoms.get_initial_magnetic_moments()[Te_idx] == 1.0)
-    assert new_atoms.info.get("test", None) == "hi"
+    if not np.all(new_atoms.get_initial_magnetic_moments()[Zn_idx] == 2.0):
+        raise AssertionError
+    if not np.all(new_atoms.get_initial_magnetic_moments()[Te_idx] == 1.0):
+        raise AssertionError
+    if new_atoms.info.get("test", None) != "hi":
+        raise AssertionError
 
 
 def test_make_slabs_from_bulk():
     atoms = read(os.path.join(FILE_DIR, "ZnTe.cif.gz"))
     atoms.info["test"] = "hi"
     slabs = make_slabs_from_bulk(atoms)
-    assert len(slabs) == 7
-    assert len(slabs[0].constraints) != 0
+    if len(slabs) != 7:
+        raise AssertionError
+    if len(slabs[0].constraints) == 0:
+        raise AssertionError
     shifts = [np.round(slab.info["slab_stats"]["shift"], 3) for slab in slabs]
     shifts.sort()
-    assert shifts == [-0.875, -0.375, -0.125, 0.125, 0.25, 0.375, 0.875]
+    if shifts != [-0.875, -0.375, -0.125, 0.125, 0.25, 0.375, 0.875]:
+        raise AssertionError
     z_store = -np.inf
     for atom in slabs[3]:
         if atom.z > z_store:
@@ -61,42 +67,54 @@ def test_make_slabs_from_bulk():
         if atom.z > z_store:
             z_store = atom.z
             highest_atom2 = atom.symbol
-    assert highest_atom != highest_atom2
-    assert atoms.info.get("test", None) == "hi"
+    if highest_atom == highest_atom2:
+        raise AssertionError
+    if atoms.info.get("test", None) != "hi":
+        raise AssertionError
 
     atoms = read(os.path.join(FILE_DIR, "ZnTe.cif.gz"))
     slabs = make_slabs_from_bulk(atoms, flip_asymmetric=False)
-    assert len(slabs) == 4
+    if len(slabs) != 4:
+        raise AssertionError
 
     atoms = bulk("Cu")
     slabs = make_slabs_from_bulk(atoms, allowed_surface_atoms=["Co"])
-    assert slabs is None
+    if slabs is not None:
+        raise AssertionError
 
     slabs = make_slabs_from_bulk(atoms, max_index=2)
-    assert len(slabs) == 9
+    if len(slabs) != 9:
+        raise AssertionError
 
     slabs = make_slabs_from_bulk(atoms, z_fix=0.0)
     for slab in slabs:
-        assert len(slab.constraints) == 0
+        if len(slab.constraints) != 0:
+            raise AssertionError
 
     slabs = make_slabs_from_bulk(atoms, min_length_width=20)
     for slab in slabs:
-        assert slab.cell.lengths()[0] >= 20
-        assert slab.cell.lengths()[1] >= 20
+        if slab.cell.lengths()[0] < 20:
+            raise AssertionError
+        if slab.cell.lengths()[1] < 20:
+            raise AssertionError
 
     atoms = deepcopy(ATOMS_MAG)
     slabs = make_slabs_from_bulk(atoms)
-    assert slabs[0].get_magnetic_moments()[0] == atoms.get_magnetic_moments()[0]
-    assert slabs[-1].info.get("slab_stats", None) is not None
+    if slabs[0].get_magnetic_moments()[0] != atoms.get_magnetic_moments()[0]:
+        raise AssertionError
+    if slabs[-1].info.get("slab_stats", None) is None:
+        raise AssertionError
 
     atoms = read(os.path.join(FILE_DIR, "Zn2CuAu.cif.gz"))
     min_d = atoms.get_all_distances(mic=True)
     min_d = np.min(min_d[min_d != 0.0])
     slabs = make_slabs_from_bulk(atoms)
-    assert len(slabs) == 31
-    assert (
-        slabs[3].info["slab_stats"]["shift"] == -slabs[22].info["slab_stats"]["shift"]
-    )
+    if len(slabs) != 31:
+        raise AssertionError
+    if (
+        slabs[3].info["slab_stats"]["shift"] != -slabs[22].info["slab_stats"]["shift"]
+    ):
+        raise AssertionError
     z_store = -np.inf
     for atom in slabs[3]:
         if atom.z > z_store:
@@ -107,27 +125,33 @@ def test_make_slabs_from_bulk():
         if atom.z > z_store:
             z_store = atom.z
             highest_atom2 = atom.symbol
-    assert highest_atom != highest_atom2
+    if highest_atom == highest_atom2:
+        raise AssertionError
     # This is to make sure nothing funky happened to our atom positions...
     for slab in slabs:
         d = slab.get_all_distances(mic=True)
-        assert np.round(np.min(d[d != 0]), 4) == np.round(min_d, 4)
+        if np.round(np.min(d[d != 0]), 4) != np.round(min_d, 4):
+            raise AssertionError
 
 
 def test_make_max_slabs_from_bulk():
     atoms = bulk("Cu")
     slabs = make_slabs_from_bulk(atoms)
     slabs2 = make_max_slabs_from_bulk(atoms, None)
-    assert slabs == slabs2
+    if slabs != slabs2:
+        raise AssertionError
 
     atoms = bulk("Cu")
     slabs = make_max_slabs_from_bulk(atoms, 2)
-    assert len(slabs) == 2
-    assert slabs[-1].info.get("slab_stats", None) is not None
+    if len(slabs) != 2:
+        raise AssertionError
+    if slabs[-1].info.get("slab_stats", None) is None:
+        raise AssertionError
 
     atoms = read(os.path.join(FILE_DIR, "ZnTe.cif.gz"))
     slabs = make_max_slabs_from_bulk(atoms, 4)
-    assert len(slabs) == 4
+    if len(slabs) != 4:
+        raise AssertionError
 
 
 def test_make_adsorbate_structures():
@@ -136,15 +160,18 @@ def test_make_adsorbate_structures():
     atoms.set_tags(None)
     atoms.center(vacuum=10, axis=2)
     new_atoms = make_adsorbate_structures(atoms, "H2O", modes=["ontop"])
-    assert new_atoms[0].has("initial_magmoms") is False
+    if new_atoms[0].has("initial_magmoms") is not False:
+        raise AssertionError
 
     mol = molecule("O2")
     mol.set_initial_magnetic_moments([1.0, 1.0])
     new_atoms = make_adsorbate_structures(atoms, mol)
-    assert len(new_atoms) == 3
-    assert new_atoms[0].get_initial_magnetic_moments().tolist() == [0.0] * len(
+    if len(new_atoms) != 3:
+        raise AssertionError
+    if new_atoms[0].get_initial_magnetic_moments().tolist() != [0.0] * len(
         atoms
-    ) + [1.0, 1.0]
+    ) + [1.0, 1.0]:
+        raise AssertionError
 
     atoms = fcc100("Cu", size=(2, 2, 2))
     mags = [5.0] * len(atoms)
@@ -154,43 +181,56 @@ def test_make_adsorbate_structures():
     mol = molecule("O2")
     mol.set_initial_magnetic_moments([1.0, 1.0])
     new_atoms = make_adsorbate_structures(atoms, mol)
-    assert len(new_atoms) == 3
-    assert new_atoms[0].get_initial_magnetic_moments().tolist() == mags + [1.0, 1.0]
+    if len(new_atoms) != 3:
+        raise AssertionError
+    if new_atoms[0].get_initial_magnetic_moments().tolist() != mags + [1.0, 1.0]:
+        raise AssertionError
 
     new_atoms = make_adsorbate_structures(atoms, "H2O")
-    assert len(new_atoms) == 3
-    assert new_atoms[0].get_initial_magnetic_moments().tolist() == mags + [0, 0, 0]
+    if len(new_atoms) != 3:
+        raise AssertionError
+    if new_atoms[0].get_initial_magnetic_moments().tolist() != mags + [0, 0, 0]:
+        raise AssertionError
     new_atoms = make_adsorbate_structures(atoms, "H2O", modes=["ontop"])
-    assert len(new_atoms) == 1
+    if len(new_atoms) != 1:
+        raise AssertionError
 
     new_atoms = make_adsorbate_structures(
         atoms, "H2O", allowed_surface_symbols=["Cu", "Fe"]
     )
-    assert len(new_atoms) == 3
+    if len(new_atoms) != 3:
+        raise AssertionError
 
     new_atoms = make_adsorbate_structures(atoms, "H2O", allowed_surface_indices=[6])
-    assert len(new_atoms) == 2
+    if len(new_atoms) != 2:
+        raise AssertionError
 
     atoms[7].symbol = "Fe"
     new_atoms = make_adsorbate_structures(atoms, "H2O", modes=["ontop"])
-    assert len(new_atoms) == 3
+    if len(new_atoms) != 3:
+        raise AssertionError
 
     new_atoms = make_adsorbate_structures(
         atoms, "H2O", allowed_surface_symbols=["Fe"], modes=["ontop"]
     )
-    assert len(new_atoms) == 1
+    if len(new_atoms) != 1:
+        raise AssertionError
 
     new_atoms = make_adsorbate_structures(
         atoms, "H2O", allowed_surface_indices=[7], modes=["ontop"]
     )
-    assert len(new_atoms) == 1
+    if len(new_atoms) != 1:
+        raise AssertionError
 
     new_atoms = make_adsorbate_structures(
         atoms, "H2O", allowed_surface_symbols=["Cu", "Fe"]
     )
-    assert len(new_atoms) == 6
-    assert new_atoms[0].info.get("adsorbates", None) is not None
-    assert new_atoms[0].info["adsorbates"][0]["adsorbate"] == molecule("H2O")
+    if len(new_atoms) != 6:
+        raise AssertionError
+    if new_atoms[0].info.get("adsorbates", None) is None:
+        raise AssertionError
+    if new_atoms[0].info["adsorbates"][0]["adsorbate"] != molecule("H2O"):
+        raise AssertionError
 
 
 def test_errors():

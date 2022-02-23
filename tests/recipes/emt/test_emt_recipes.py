@@ -27,18 +27,26 @@ def test_static_maker():
     job = StaticMaker().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
-    assert output["parameters"]["asap_cutoff"] == False
-    assert output["name"] == "EMT-Static"
-    assert output["results"]["energy"] == pytest.approx(0.07001766638245854)
+    if output["nsites"] != len(atoms):
+        raise AssertionError
+    if output["parameters"]["asap_cutoff"] != False:
+        raise AssertionError
+    if output["name"] != "EMT-Static":
+        raise AssertionError
+    if output["results"]["energy"] != pytest.approx(0.07001766638245854):
+        raise AssertionError
 
     job = StaticMaker(asap_cutoff=True).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
-    assert output["parameters"]["asap_cutoff"] == True
-    assert output["name"] == "EMT-Static"
-    assert output["results"]["energy"] == pytest.approx(0.11074520235398744)
+    if output["nsites"] != len(atoms):
+        raise AssertionError
+    if output["parameters"]["asap_cutoff"] != True:
+        raise AssertionError
+    if output["name"] != "EMT-Static":
+        raise AssertionError
+    if output["results"]["energy"] != pytest.approx(0.11074520235398744):
+        raise AssertionError
 
 
 def test_relax_maker():
@@ -48,29 +56,43 @@ def test_relax_maker():
     job = RelaxMaker().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
-    assert output["parameters"]["asap_cutoff"] == False
-    assert output["name"] == "EMT-Relax"
-    assert output["results"]["energy"] == pytest.approx(-0.04517048198212592)
+    if output["nsites"] != len(atoms):
+        raise AssertionError
+    if output["parameters"]["asap_cutoff"] != False:
+        raise AssertionError
+    if output["name"] != "EMT-Relax":
+        raise AssertionError
+    if output["results"]["energy"] != pytest.approx(-0.04517048198212592):
+        raise AssertionError
 
     job = RelaxMaker(asap_cutoff=True).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
-    assert output["parameters"]["asap_cutoff"] == True
-    assert output["name"] == "EMT-Relax"
-    assert output["results"]["energy"] == pytest.approx(-0.004527567070971017)
+    if output["nsites"] != len(atoms):
+        raise AssertionError
+    if output["parameters"]["asap_cutoff"] != True:
+        raise AssertionError
+    if output["name"] != "EMT-Relax":
+        raise AssertionError
+    if output["results"]["energy"] != pytest.approx(-0.004527567070971017):
+        raise AssertionError
 
     job = RelaxMaker(fmax=0.01).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
-    assert output["name"] == "EMT-Relax"
-    assert output["results"]["energy"] == pytest.approx(-0.0454470914411953)
+    if output["nsites"] != len(atoms):
+        raise AssertionError
+    if output["name"] != "EMT-Relax":
+        raise AssertionError
+    if output["results"]["energy"] != pytest.approx(-0.0454470914411953):
+        raise AssertionError
 
     job = RelaxMaker(optimizer=BFGS).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
-    assert output["name"] == "EMT-Relax"
-    assert output["results"]["energy"] == pytest.approx(-0.0454470914411953)
+    if output["nsites"] != len(atoms):
+        raise AssertionError
+    if output["name"] != "EMT-Relax":
+        raise AssertionError
+    if output["results"]["energy"] != pytest.approx(-0.0454470914411953):
+        raise AssertionError

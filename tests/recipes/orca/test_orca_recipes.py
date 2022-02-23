@@ -31,15 +31,20 @@ def test_static_maker():
     job = StaticMaker().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
-    assert output["name"] == "ORCA-Static"
-    assert (
-        output["parameters"]["orcasimpleinput"]
-        == "wb97x-d def2-tzvp sp slowconv normalprint"
-    )
-    assert output["parameters"]["orcablocks"] == f"%pal nprocs {nprocs} end"
-    assert output["parameters"]["charge"] == 0
-    assert output["parameters"]["mult"] == 1
+    if output["nsites"] != len(atoms):
+        raise AssertionError
+    if output["name"] != "ORCA-Static":
+        raise AssertionError
+    if (
+        output["parameters"]["orcasimpleinput"] != "wb97x-d def2-tzvp sp slowconv normalprint"
+    ):
+        raise AssertionError
+    if output["parameters"]["orcablocks"] != f"%pal nprocs {nprocs} end":
+        raise AssertionError
+    if output["parameters"]["charge"] != 0:
+        raise AssertionError
+    if output["parameters"]["mult"] != 1:
+        raise AssertionError
 
     job = StaticMaker(
         input_swaps={"def2-SVP": True, "def2-TZVP": False},
@@ -47,18 +52,22 @@ def test_static_maker():
     ).make(atoms, charge=-2, mult=3)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
-    assert output["name"] == "ORCA-Static"
-    assert output["parameters"]["charge"] == -2
-    assert output["parameters"]["mult"] == 3
-    assert (
-        output["parameters"]["orcasimpleinput"]
-        == "wb97x-d sp slowconv normalprint def2-svp"
-    )
-    assert (
-        output["parameters"]["orcablocks"]
-        == f"%scf maxiter 300 end %pal nprocs {nprocs} end"
-    )
+    if output["nsites"] != len(atoms):
+        raise AssertionError
+    if output["name"] != "ORCA-Static":
+        raise AssertionError
+    if output["parameters"]["charge"] != -2:
+        raise AssertionError
+    if output["parameters"]["mult"] != 3:
+        raise AssertionError
+    if (
+        output["parameters"]["orcasimpleinput"] != "wb97x-d sp slowconv normalprint def2-svp"
+    ):
+        raise AssertionError
+    if (
+        output["parameters"]["orcablocks"] != f"%scf maxiter 300 end %pal nprocs {nprocs} end"
+    ):
+        raise AssertionError
 
 
 def test_relax_maker():
@@ -69,15 +78,20 @@ def test_relax_maker():
     job = RelaxMaker().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
-    assert output["parameters"]["charge"] == 0
-    assert output["parameters"]["mult"] == 1
-    assert output["name"] == "ORCA-Relax"
-    assert (
-        output["parameters"]["orcasimpleinput"]
-        == "wb97x-d def2-tzvp opt slowconv normalprint"
-    )
-    assert output["parameters"]["orcablocks"] == f"%pal nprocs {nprocs} end"
+    if output["nsites"] != len(atoms):
+        raise AssertionError
+    if output["parameters"]["charge"] != 0:
+        raise AssertionError
+    if output["parameters"]["mult"] != 1:
+        raise AssertionError
+    if output["name"] != "ORCA-Relax":
+        raise AssertionError
+    if (
+        output["parameters"]["orcasimpleinput"] != "wb97x-d def2-tzvp opt slowconv normalprint"
+    ):
+        raise AssertionError
+    if output["parameters"]["orcablocks"] != f"%pal nprocs {nprocs} end":
+        raise AssertionError
 
     job = RelaxMaker(
         input_swaps={
@@ -90,15 +104,19 @@ def test_relax_maker():
     ).make(atoms, charge=-2, mult=3)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
-    assert output["name"] == "ORCA-Relax"
-    assert output["parameters"]["charge"] == -2
-    assert output["parameters"]["mult"] == 3
-    assert (
-        output["parameters"]["orcasimpleinput"]
-        == "opt slowconv normalprint hf def2-svp"
-    )
-    assert (
-        output["parameters"]["orcablocks"]
-        == f"%scf maxiter 300 end %pal nprocs {nprocs} end"
-    )
+    if output["nsites"] != len(atoms):
+        raise AssertionError
+    if output["name"] != "ORCA-Relax":
+        raise AssertionError
+    if output["parameters"]["charge"] != -2:
+        raise AssertionError
+    if output["parameters"]["mult"] != 3:
+        raise AssertionError
+    if (
+        output["parameters"]["orcasimpleinput"] != "opt slowconv normalprint hf def2-svp"
+    ):
+        raise AssertionError
+    if (
+        output["parameters"]["orcablocks"] != f"%scf maxiter 300 end %pal nprocs {nprocs} end"
+    ):
+        raise AssertionError
