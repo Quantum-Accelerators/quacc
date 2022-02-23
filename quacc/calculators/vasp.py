@@ -76,11 +76,14 @@ def SmartVasp(
     atoms = deepcopy(atoms)
 
     # Check constraints
-    if custodian and atoms.constraints:
-        if not all(isinstance(c, FixAtoms) for c in atoms.constraints):
-            raise ValueError(
-                "Atoms object has a constraint that is not compatible with Custodian"
-            )
+    if (
+        custodian
+        and atoms.constraints
+        and not all(isinstance(c, FixAtoms) for c in atoms.constraints)
+    ):
+        raise ValueError(
+            "Atoms object has a constraint that is not compatible with Custodian"
+        )
 
     # Get VASP executable command, if necessary, and specify child environment
     # variables
