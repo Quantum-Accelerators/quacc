@@ -303,7 +303,7 @@ def make_max_slabs_from_bulk(
                 f"You requested {max_slabs} slabs, but {len(slabs)} were generated. Could not reduce further. Picking the smallest slabs by number of atoms.",
                 UserWarning,
             )
-            slabs.sort(key=lambda s: len(s))
+            slabs.sort(key=len)
             slabs = slabs[0:max_slabs]
 
     return slabs
