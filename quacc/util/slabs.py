@@ -439,19 +439,23 @@ def make_adsorbate_structures(
 
             # Check if surface binding site is not in the specified
             # user list. If so, skip this one
-            if allowed_surface_symbols:
-                if not any(
-                    surface_atom_symbol in allowed_surface_symbols
-                    for surface_atom_symbol in surface_atom_symbols
-                ):
-                    continue
+            if (
+                allowed_surface_symbols
+                and not any(
+                surface_atom_symbol in allowed_surface_symbols
+                for surface_atom_symbol in surface_atom_symbols
+            )
+            ):
+                continue
 
-            if allowed_surface_indices:
-                if not any(
-                    surface_atom_idx in allowed_surface_indices
-                    for surface_atom_idx in surface_atom_indices
-                ):
-                    continue
+            if (
+                allowed_surface_indices
+                and not any(
+                surface_atom_idx in allowed_surface_indices
+                for surface_atom_idx in surface_atom_indices
+            )
+            ):
+                continue
 
             # Store adsorbate info
             atoms_with_adsorbate.info = atoms.info.copy()
