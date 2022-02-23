@@ -39,9 +39,9 @@ def test_presets():
     atoms = bulk("Co") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
 
-    atoms_fullpath = SmartVasp(
-        atoms, preset=os.path.join(DEFAULT_CALCS_DIR, "BulkRelaxSet")
-    )
+    atoms_fullpath = SmartVasp(atoms,
+                               preset=os.path.join(DEFAULT_CALCS_DIR,
+                                                   "BulkRelaxSet"))
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
     assert atoms == atoms_fullpath
     assert atoms.calc.xc.lower() == "pbe"
@@ -100,7 +100,10 @@ def test_autodipole():
     assert atoms.calc.int_params["idipol"] == 2
     assert np.array_equal(atoms.calc.list_float_params["dipol"], com)
 
-    atoms = SmartVasp(atoms, auto_dipole=False, preset="SlabRelaxSet", idipol=2)
+    atoms = SmartVasp(atoms,
+                      auto_dipole=False,
+                      preset="SlabRelaxSet",
+                      idipol=2)
     assert atoms.calc.bool_params["ldipol"] is None
     assert atoms.calc.int_params["idipol"] == 2
     assert atoms.calc.list_float_params["dipol"] is None
@@ -128,38 +131,33 @@ def test_magmoms():
     atoms = bulk("Cu") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
-    assert atoms.get_initial_magnetic_moments().tolist() == [2.0] * (len(atoms) - 1) + [
-        5.0
-    ]
+    assert atoms.get_initial_magnetic_moments().tolist(
+    ) == [2.0] * (len(atoms) - 1) + [5.0]
 
     atoms = bulk("Zn") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
     atoms = SmartVasp(atoms, preset="BulkRelaxSet", mag_default=2.5)
-    assert atoms.get_initial_magnetic_moments().tolist() == [2.5] * (len(atoms) - 1) + [
-        5.0
-    ]
+    assert atoms.get_initial_magnetic_moments().tolist(
+    ) == [2.5] * (len(atoms) - 1) + [5.0]
 
     atoms = bulk("Eu") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
     atoms = SmartVasp(atoms, preset="SlabRelaxSet")
-    assert atoms.get_initial_magnetic_moments().tolist() == [7.0] * (len(atoms) - 1) + [
-        5.0
-    ]
+    assert atoms.get_initial_magnetic_moments().tolist(
+    ) == [7.0] * (len(atoms) - 1) + [5.0]
 
     atoms = bulk("Cu") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
     atoms = SmartVasp(atoms, preset="MPScanRelaxSet")
-    assert atoms.get_initial_magnetic_moments().tolist() == [1.0] * (len(atoms) - 1) + [
-        5.0
-    ]
+    assert atoms.get_initial_magnetic_moments().tolist(
+    ) == [1.0] * (len(atoms) - 1) + [5.0]
 
     atoms = bulk("Cu") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
     atoms.set_initial_magnetic_moments([3.14] * (len(atoms) - 1) + [1.0])
     atoms = SmartVasp(atoms, preset="BulkRelaxSet")
-    assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * (
-        len(atoms) - 1
-    ) + [1.0]
+    assert atoms.get_initial_magnetic_moments().tolist(
+    ) == [3.14] * (len(atoms) - 1) + [1.0]
 
     atoms = bulk("Co") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
@@ -461,7 +459,10 @@ def test_ismear():
     assert atoms.calc.int_params["ismear"] == 0
     assert atoms.calc.float_params["sigma"] == 0.01
 
-    atoms = SmartVasp(atoms, auto_kpts={"line_density": 100}, ismear=0, sigma=1e-3)
+    atoms = SmartVasp(atoms,
+                      auto_kpts={"line_density": 100},
+                      ismear=0,
+                      sigma=1e-3)
     assert atoms.calc.int_params["ismear"] == 0
     assert atoms.calc.float_params["sigma"] == 1e-3
 
@@ -571,10 +572,8 @@ def test_setups():
 
     atoms = bulk("Cu")
     atoms = SmartVasp(atoms, setups="minimal", preset="MPScanRelaxSet")
-    assert (
-        isinstance(atoms.calc.parameters["setups"], str)
-        and atoms.calc.parameters["setups"] == "minimal"
-    )
+    assert (isinstance(atoms.calc.parameters["setups"], str)
+            and atoms.calc.parameters["setups"] == "minimal")
 
 
 def test_kpoint_schemes():
@@ -626,8 +625,7 @@ def test_kpoint_schemes():
     atoms = bulk("Cu")
     atoms = SmartVasp(atoms, auto_kpts={"line_density": 100})
     assert atoms.calc.kpts[-1, :] == pytest.approx(
-        np.array([1.30537091e00, 1.11022302e-16, 1.30537091e00])
-    )
+        np.array([1.30537091e00, 1.11022302e-16, 1.30537091e00]))
 
 
 def test_constraints():

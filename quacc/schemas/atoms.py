@@ -8,10 +8,9 @@ from atomate2.common.schemas.structure import StructureMetadata
 from pymatgen.io.ase import AseAtomsAdaptor
 
 
-def atoms_to_metadata(
-    atoms: Atoms, get_metadata: bool = True, strip_info: bool = False
-) -> Dict[str, Any]:
-
+def atoms_to_metadata(atoms: Atoms,
+                      get_metadata: bool = True,
+                      strip_info: bool = False) -> Dict[str, Any]:
     """
     Convert an ASE Atoms object to a dict suitable for storage in MongoDB.
 
@@ -56,11 +55,13 @@ def atoms_to_metadata(
             val = atoms_to_metadata(val)
         elif isinstance(val, (list, tuple, np.ndarray)):
             val = [
-                atoms_to_metadata(v) if isinstance(v, (Atom, Atoms)) else v for v in val
+                atoms_to_metadata(v) if isinstance(v, (Atom, Atoms)) else v
+                for v in val
             ]
         elif isinstance(val, dict):
             val = {
-                k.__str__(): atoms_to_metadata(v) if isinstance(v, (Atom, Atoms)) else v
+                k.__str__():
+                atoms_to_metadata(v) if isinstance(v, (Atom, Atoms)) else v
                 for k, v in val.items()
             }
 

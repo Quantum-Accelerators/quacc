@@ -35,7 +35,8 @@ class StaticMaker(Maker):
 
     @job
     @requires(
-        XTB, "xTB-python must be installed. Try conda install -c conda-forge xtb-python"
+        XTB,
+        "xTB-python must be installed. Try conda install -c conda-forge xtb-python"
     )
     def make(self, atoms: Atoms) -> Dict[str, Any]:
         """
@@ -90,7 +91,8 @@ class RelaxMaker(Maker):
 
     @job
     @requires(
-        XTB, "xTB-python must be installed. Try conda install -c conda-forge xtb-python"
+        XTB,
+        "xTB-python must be installed. Try conda install -c conda-forge xtb-python"
     )
     def make(self, atoms: Atoms) -> Dict[str, Any]:
         """
@@ -117,9 +119,10 @@ class RelaxMaker(Maker):
         opt_kwargs.pop("trajectory", None)
 
         atoms.calc = XTB(method=self.method, **xtb_kwargs)
-        dyn = self.optimizer(
-            atoms, logfile=logfile, trajectory=trajectory, **opt_kwargs
-        )
+        dyn = self.optimizer(atoms,
+                             logfile=logfile,
+                             trajectory=trajectory,
+                             **opt_kwargs)
         dyn.run(fmax=self.fmax)
         summary = summarize_run(atoms, additional_fields={"name": self.name})
 

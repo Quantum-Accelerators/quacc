@@ -76,11 +76,8 @@ def SmartVasp(
     atoms = deepcopy(atoms)
 
     # Check constraints
-    if (
-        custodian
-        and atoms.constraints
-        and not all(isinstance(c, FixAtoms) for c in atoms.constraints)
-    ):
+    if (custodian and atoms.constraints
+            and not all(isinstance(c, FixAtoms) for c in atoms.constraints)):
         raise ValueError(
             "Atoms object has a constraint that is not compatible with Custodian"
         )
@@ -91,7 +88,8 @@ def SmartVasp(
 
     # Get user-defined preset parameters for the calculator
     if preset:
-        calc_preset = load_yaml_calc(os.path.join(DEFAULT_CALCS_DIR, preset))["inputs"]
+        calc_preset = load_yaml_calc(os.path.join(DEFAULT_CALCS_DIR,
+                                                  preset))["inputs"]
     else:
         calc_preset = {}
 
@@ -104,13 +102,11 @@ def SmartVasp(
 
     # Allow the user to use setups='mysetups.yaml' to load in a custom setups
     # from a YAML file
-    if (
-        isinstance(user_calc_params.get("setups", None), str)
-        and user_calc_params["setups"] not in ase_default_setups
-    ):
+    if (isinstance(user_calc_params.get("setups", None), str)
+            and user_calc_params["setups"] not in ase_default_setups):
         user_calc_params["setups"] = load_yaml_calc(
-            os.path.join(DEFAULT_CALCS_DIR, user_calc_params["setups"])
-        )["inputs"]["setups"]
+            os.path.join(DEFAULT_CALCS_DIR,
+                         user_calc_params["setups"]))["inputs"]["setups"]
 
     # If the preset has auto_kpts but the user explicitly requests kpts, then
     # we should honor that.

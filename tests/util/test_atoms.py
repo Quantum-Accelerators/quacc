@@ -14,13 +14,12 @@ from quacc.util.atoms import (
 )
 
 FILE_DIR = Path(__file__).resolve().parent
-ATOMS_MAG = read(os.path.join(FILE_DIR, "..", "calculators", "vasp", "OUTCAR_mag.gz"))
+ATOMS_MAG = read(
+    os.path.join(FILE_DIR, "..", "calculators", "vasp", "OUTCAR_mag.gz"))
 ATOMS_NOMAG = read(
-    os.path.join(FILE_DIR, "..", "calculators", "vasp", "OUTCAR_nomag.gz")
-)
+    os.path.join(FILE_DIR, "..", "calculators", "vasp", "OUTCAR_nomag.gz"))
 ATOMS_NOSPIN = read(
-    os.path.join(FILE_DIR, "..", "calculators", "vasp", "OUTCAR_nospin.gz")
-)
+    os.path.join(FILE_DIR, "..", "calculators", "vasp", "OUTCAR_nospin.gz"))
 
 
 def test_get_atoms_id():

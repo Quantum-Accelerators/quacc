@@ -33,17 +33,20 @@ def test_static_maker():
     output = responses[job.uuid][1].output
     assert output["nsites"] == len(atoms)
     assert output["name"] == "ORCA-Static"
-    assert (
-        output["parameters"]["orcasimpleinput"]
-        == "wb97x-d def2-tzvp sp slowconv normalprint"
-    )
+    assert (output["parameters"]["orcasimpleinput"] ==
+            "wb97x-d def2-tzvp sp slowconv normalprint")
     assert output["parameters"]["orcablocks"] == f"%pal nprocs {nprocs} end"
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
 
     job = StaticMaker(
-        input_swaps={"def2-SVP": True, "def2-TZVP": False},
-        block_swaps={"%scf maxiter 300 end": True},
+        input_swaps={
+            "def2-SVP": True,
+            "def2-TZVP": False
+        },
+        block_swaps={
+            "%scf maxiter 300 end": True
+        },
     ).make(atoms, charge=-2, mult=3)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
@@ -51,14 +54,10 @@ def test_static_maker():
     assert output["name"] == "ORCA-Static"
     assert output["parameters"]["charge"] == -2
     assert output["parameters"]["mult"] == 3
-    assert (
-        output["parameters"]["orcasimpleinput"]
-        == "wb97x-d sp slowconv normalprint def2-svp"
-    )
-    assert (
-        output["parameters"]["orcablocks"]
-        == f"%scf maxiter 300 end %pal nprocs {nprocs} end"
-    )
+    assert (output["parameters"]["orcasimpleinput"] ==
+            "wb97x-d sp slowconv normalprint def2-svp")
+    assert (output["parameters"]["orcablocks"] ==
+            f"%scf maxiter 300 end %pal nprocs {nprocs} end")
 
 
 def test_relax_maker():
@@ -73,10 +72,8 @@ def test_relax_maker():
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
     assert output["name"] == "ORCA-Relax"
-    assert (
-        output["parameters"]["orcasimpleinput"]
-        == "wb97x-d def2-tzvp opt slowconv normalprint"
-    )
+    assert (output["parameters"]["orcasimpleinput"] ==
+            "wb97x-d def2-tzvp opt slowconv normalprint")
     assert output["parameters"]["orcablocks"] == f"%pal nprocs {nprocs} end"
 
     job = RelaxMaker(
@@ -86,7 +83,9 @@ def test_relax_maker():
             "def2-SVP": True,
             "def2-TZVP": False,
         },
-        block_swaps={"%scf maxiter 300 end": True},
+        block_swaps={
+            "%scf maxiter 300 end": True
+        },
     ).make(atoms, charge=-2, mult=3)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
@@ -94,11 +93,7 @@ def test_relax_maker():
     assert output["name"] == "ORCA-Relax"
     assert output["parameters"]["charge"] == -2
     assert output["parameters"]["mult"] == 3
-    assert (
-        output["parameters"]["orcasimpleinput"]
-        == "opt slowconv normalprint hf def2-svp"
-    )
-    assert (
-        output["parameters"]["orcablocks"]
-        == f"%scf maxiter 300 end %pal nprocs {nprocs} end"
-    )
+    assert (output["parameters"]["orcasimpleinput"] ==
+            "opt slowconv normalprint hf def2-svp")
+    assert (output["parameters"]["orcablocks"] ==
+            f"%scf maxiter 300 end %pal nprocs {nprocs} end")

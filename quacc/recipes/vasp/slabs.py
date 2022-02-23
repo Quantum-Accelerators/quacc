@@ -153,9 +153,10 @@ class BulkToSlabMaker(Maker):
     swaps: Dict[str, Any] = None
 
     @job
-    def make(
-        self, atoms: Atoms, max_slabs: None | int = None, **slabgen_kwargs
-    ) -> Response:
+    def make(self,
+             atoms: Atoms,
+             max_slabs: None | int = None,
+             **slabgen_kwargs) -> Response:
         """
         Make the run.
 
@@ -179,7 +180,9 @@ class BulkToSlabMaker(Maker):
         self.slab_relax_maker.swaps = self.slab_relax_maker.swaps or self.swaps
         self.slab_static_maker.swaps = self.slab_static_maker.swaps or self.swaps
 
-        slabs = make_max_slabs_from_bulk(atoms, max_slabs=max_slabs, **slabgen_kwargs)
+        slabs = make_max_slabs_from_bulk(atoms,
+                                         max_slabs=max_slabs,
+                                         **slabgen_kwargs)
         jobs = []
         outputs = []
         for slab in slabs:
@@ -222,9 +225,8 @@ class SlabToAdsSlabMaker(Maker):
     slab_static_maker: Maker = SlabStaticMaker()
 
     @job
-    def make(
-        self, atoms: Atoms, adsorbate: Atoms | str, **slabgen_ads_kwargs
-    ) -> Response:
+    def make(self, atoms: Atoms, adsorbate: Atoms | str,
+             **slabgen_ads_kwargs) -> Response:
         """
         Make the run.
 
@@ -248,7 +250,8 @@ class SlabToAdsSlabMaker(Maker):
         self.slab_relax_maker.swaps = self.slab_relax_maker.swaps or self.swaps
         self.slab_static_maker.swaps = self.slab_static_maker.swaps or self.swaps
 
-        slabs = make_adsorbate_structures(atoms, adsorbate, **slabgen_ads_kwargs)
+        slabs = make_adsorbate_structures(atoms, adsorbate,
+                                          **slabgen_ads_kwargs)
 
         jobs = []
         outputs = []

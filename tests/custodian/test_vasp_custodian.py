@@ -31,9 +31,8 @@ def patch_custodian_run(monkeypatch):
 def test_run_vasp_custodian(monkeypatch):
     monkeypatch.setenv(
         "VASP_CUSTODIAN_SETTINGS",
-        os.path.join(
-            os.path.dirname(custodian_settings.__file__), "vasp_custodian_settings.yaml"
-        ),
+        os.path.join(os.path.dirname(custodian_settings.__file__),
+                     "vasp_custodian_settings.yaml"),
     )
     monkeypatch.setenv("VASP_PARALLEL_CMD", "mpirun")
     run_custodian()
@@ -45,9 +44,8 @@ def test_failed_custodian(monkeypatch):
 
     monkeypatch.setenv(
         "VASP_CUSTODIAN_SETTINGS",
-        os.path.join(
-            os.path.dirname(custodian_settings.__file__), "vasp_custodian_settings.yaml"
-        ),
+        os.path.join(os.path.dirname(custodian_settings.__file__),
+                     "vasp_custodian_settings.yaml"),
     )
     with pytest.raises(OSError):
         run_custodian()

@@ -38,8 +38,7 @@ def load_yaml_calc(yaml_path: str) -> Dict[str, Any]:
     for config_arg in parent_args:
         if config_arg in config:
             parent_config = load_yaml_calc(
-                os.path.join(os.path.dirname(yaml_path), config[config_arg])
-            )
+                os.path.join(os.path.dirname(yaml_path), config[config_arg]))
             for k, v in parent_config.items():
                 if k not in config:
                     config[k] = v

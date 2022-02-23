@@ -64,8 +64,7 @@ def summarize_run(
     # Check for calculation convergence
     if check_convergence and results["state"] != "successful":
         raise RuntimeError(
-            "VASP calculation did not converge. Will not store task data."
-        )
+            "VASP calculation did not converge. Will not store task data.")
 
     if compact:
         # Replace the InputSummary and OutputSummary with the full
@@ -99,7 +98,8 @@ def summarize_run(
 
             # Attach bader charges/spins to structure object
             struct = results["output"]["structure"]
-            struct.add_site_property("bader_charge", bader_stats["partial_charges"])
+            struct.add_site_property("bader_charge",
+                                     bader_stats["partial_charges"])
             struct.add_site_property("bader_spin", bader_stats["spin_moments"])
             results["output"]["structure"] = struct
 
@@ -140,8 +140,8 @@ def _remove_empties(d: Dict[str, Any]) -> Dict[str, Any]:
     if isinstance(d, dict):
         return {
             k: _remove_empties(v)
-            for k, v in d.items()
-            if v is not None and not (isinstance(v, (dict, list)) and len(v) == 0)
+            for k, v in d.items() if v is not None
+            and not (isinstance(v, (dict, list)) and len(v) == 0)
         }
     if isinstance(d, list):
         return [_remove_empties(v) for v in d]

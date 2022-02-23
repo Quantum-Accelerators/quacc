@@ -41,9 +41,10 @@ class StaticMaker(Maker):
     block_swaps: Dict[str, Any] = None
 
     @job
-    def make(
-        self, atoms: Atoms, charge: int = None, mult: int = None
-    ) -> Dict[str, Any]:
+    def make(self,
+             atoms: Atoms,
+             charge: int = None,
+             mult: int = None) -> Dict[str, Any]:
         """
         Make the run.
 
@@ -78,25 +79,29 @@ class StaticMaker(Maker):
         }
         default_blocks = {}
 
-        inputs = merge_dicts(
-            default_inputs, input_swaps, remove_none=True, remove_false=True
-        )
-        blocks = merge_dicts(
-            default_blocks, block_swaps, remove_none=True, remove_false=True
-        )
+        inputs = merge_dicts(default_inputs,
+                             input_swaps,
+                             remove_none=True,
+                             remove_false=True)
+        blocks = merge_dicts(default_blocks,
+                             block_swaps,
+                             remove_none=True,
+                             remove_false=True)
         orcasimpleinput = " ".join(list(inputs.keys()))
         orcablocks = " ".join(list(blocks.keys()))
 
         atoms.calc = ORCA(
             orcasimpleinput=orcasimpleinput,
             orcablocks=orcablocks,
-            charge=charge if charge else round(sum(atoms.get_initial_charges())),
-            mult=mult if mult else round(1 + sum(atoms.get_initial_magnetic_moments())),
+            charge=charge
+            if charge else round(sum(atoms.get_initial_charges())),
+            mult=mult
+            if mult else round(1 + sum(atoms.get_initial_magnetic_moments())),
         )
         atoms = run_calc(atoms)
-        summary = summarize_run(
-            atoms, "orca.out", additional_fields={"name": self.name}
-        )
+        summary = summarize_run(atoms,
+                                "orca.out",
+                                additional_fields={"name": self.name})
 
         return summary
 
@@ -134,9 +139,10 @@ class RelaxMaker(Maker):
     block_swaps: Dict[str, Any] = None
 
     @job
-    def make(
-        self, atoms: Atoms, charge: int = None, mult: int = None
-    ) -> Dict[str, Any]:
+    def make(self,
+             atoms: Atoms,
+             charge: int = None,
+             mult: int = None) -> Dict[str, Any]:
         """
         Make the run.
 
@@ -172,24 +178,28 @@ class RelaxMaker(Maker):
         }
         default_blocks = {}
 
-        inputs = merge_dicts(
-            default_inputs, input_swaps, remove_none=True, remove_false=True
-        )
-        blocks = merge_dicts(
-            default_blocks, block_swaps, remove_none=True, remove_false=True
-        )
+        inputs = merge_dicts(default_inputs,
+                             input_swaps,
+                             remove_none=True,
+                             remove_false=True)
+        blocks = merge_dicts(default_blocks,
+                             block_swaps,
+                             remove_none=True,
+                             remove_false=True)
         orcasimpleinput = " ".join(list(inputs.keys()))
         orcablocks = " ".join(list(blocks.keys()))
 
         atoms.calc = ORCA(
             orcasimpleinput=orcasimpleinput,
             orcablocks=orcablocks,
-            charge=charge if charge else round(sum(atoms.get_initial_charges())),
-            mult=mult if mult else round(1 + sum(atoms.get_initial_magnetic_moments())),
+            charge=charge
+            if charge else round(sum(atoms.get_initial_charges())),
+            mult=mult
+            if mult else round(1 + sum(atoms.get_initial_magnetic_moments())),
         )
         atoms = run_calc(atoms)
-        summary = summarize_run(
-            atoms, "orca.out", additional_fields={"name": self.name}
-        )
+        summary = summarize_run(atoms,
+                                "orca.out",
+                                additional_fields={"name": self.name})
 
         return summary
