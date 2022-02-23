@@ -26,8 +26,6 @@ def load_yaml_calc(yaml_path: str) -> Dict[str, Any]:
     if not os.path.exists(yaml_path):
         raise ValueError(f"Cannot find {yaml_path}.")
 
-    yaml_path = yaml_path
-
     # Load YAML file
     with open(yaml_path, "r") as stream:
         config = yaml.safe_load(stream)
