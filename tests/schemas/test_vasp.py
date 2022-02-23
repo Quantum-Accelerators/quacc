@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-from shutil import which
 
 import pytest
 from ase.io import read
