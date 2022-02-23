@@ -55,13 +55,13 @@ def run_custodian():
 
     handlers = []
     for handler_flag in config["handlers"]:
-        if handler_flag not in handlers_dict.keys():
+        if handler_flag not in handlers_dict:
             raise ValueError(f"Unknown VASP error handler: {handler_flag}")
         handlers.append(handlers_dict[handler_flag])
 
     validators = []
     for validator_flag in config["validators"]:
-        if validator_flag not in validators_dict.keys():
+        if validator_flag not in validators_dict:
             raise ValueError(f"Unknown VASP validator: {validator_flag}")
         validators.append(validators_dict[validator_flag])
 
