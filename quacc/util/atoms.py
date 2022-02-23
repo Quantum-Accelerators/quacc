@@ -64,7 +64,8 @@ def prep_next_run(
         # Workaround for xTB
         atoms = atoms.copy()
 
-    if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None) is not None:
+    if hasattr(atoms, "calc") and getattr(atoms.calc, "results",
+                                          None) is not None:
 
         if store_results:
             # Dump calculator results into the .info tag
@@ -82,8 +83,7 @@ def prep_next_run(
         # because a spin-unpolarized calculation was carried out
         if move_magmoms:
             atoms.set_initial_magnetic_moments(
-                atoms.calc.results.get("magmoms", [0.0] * len(atoms))
-            )
+                atoms.calc.results.get("magmoms", [0.0] * len(atoms)))
 
     # Clear off the calculator so we can run a new job. If we don't do this,
     # then something like atoms *= (2,2,2) stil has a calculator attached, which
@@ -149,7 +149,8 @@ def set_magmoms(
 
     # Handle the magnetic moments
     # Check if a prior job was run and pull the prior magmoms
-    if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None) is not None:
+    if hasattr(atoms, "calc") and getattr(atoms.calc, "results",
+                                          None) is not None:
         mags = atoms.calc.results.get("magmoms", [0.0] * len(atoms))
         # Note: It is important that we set mags to 0.0 here rather than None if the
         # calculator has no magmoms because: 1) ispin=1 might be set, and 2) we do
@@ -169,12 +170,10 @@ def set_magmoms(
             # those by element. If the element isn't in the magmoms dict
             # then set it to mag_default.
             if elemental_mags_dict:
-                initial_mags = np.array(
-                    [
-                        elemental_mags_dict.get(atom.symbol, mag_default)
-                        for atom in atoms
-                    ]
-                )
+                initial_mags = np.array([
+                    elemental_mags_dict.get(atom.symbol, mag_default)
+                    for atom in atoms
+                ])
                 atoms.set_initial_magnetic_moments(initial_mags)
     # Copy converged magmoms to input magmoms, if copy_magmoms is True
     else:
@@ -185,7 +184,8 @@ def set_magmoms(
     if mag_cutoff:
         has_new_initial_mags = atoms.has("initial_magmoms")
         new_initial_mags = atoms.get_initial_magnetic_moments()
-        if has_new_initial_mags and np.all(np.abs(new_initial_mags) < mag_cutoff):
+        if has_new_initial_mags and np.all(
+                np.abs(new_initial_mags) < mag_cutoff):
             atoms.set_initial_magnetic_moments([0.0] * len(atoms))
 
     return atoms
@@ -213,12 +213,9 @@ def get_atoms_id(atoms: Atoms) -> str:
     encoded_atoms = encode(atoms)
     # This is a hack to avoid int32/int64 and float32/float64 differences
     # between machines.
-    encoded_atoms = (
-        encoded_atoms.replace("int64", "int")
-        .replace("int32", "int")
-        .replace("float64", "float")
-        .replace("float32", "float")
-    )
+    encoded_atoms = (encoded_atoms.replace("int64", "int").replace(
+        "int32", "int").replace("float64",
+                                "float").replace("float32", "float"))
     md5hash = hashlib.md5(encoded_atoms.encode("utf-8")).hexdigest()
     return md5hash
 

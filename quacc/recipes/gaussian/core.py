@@ -40,9 +40,10 @@ class StaticMaker(Maker):
     swaps: Dict[str, Any] = None
 
     @job
-    def make(
-        self, atoms: Atoms, charge: int = None, mult: int = None
-    ) -> Dict[str, Any]:
+    def make(self,
+             atoms: Atoms,
+             charge: int = None,
+             mult: int = None) -> Dict[str, Any]:
         """
         Make the run.
 
@@ -83,9 +84,9 @@ class StaticMaker(Maker):
 
         atoms.calc = Gaussian(**flags)
         atoms = run_calc(atoms)
-        summary = summarize_run(
-            atoms, "Gaussian.log", additional_fields={"name": self.name}
-        )
+        summary = summarize_run(atoms,
+                                "Gaussian.log",
+                                additional_fields={"name": self.name})
 
         return summary
 
@@ -116,9 +117,10 @@ class RelaxMaker(Maker):
     swaps: Dict[str, Any] = None
 
     @job
-    def make(
-        self, atoms: Atoms, charge: int = None, mult: int = None
-    ) -> Dict[str, Any]:
+    def make(self,
+             atoms: Atoms,
+             charge: int = None,
+             mult: int = None) -> Dict[str, Any]:
         """
         Make the run.
 
@@ -157,8 +159,8 @@ class RelaxMaker(Maker):
 
         atoms.calc = Gaussian(**flags)
         atoms = run_calc(atoms)
-        summary = summarize_run(
-            atoms, "Gaussian.log", additional_fields={"name": self.name}
-        )
+        summary = summarize_run(atoms,
+                                "Gaussian.log",
+                                additional_fields={"name": self.name})
 
         return summary

@@ -23,9 +23,12 @@ def test_static_maker():
     assert output["parameters"]["lwave"] == True
     assert output["name"] == "VASP-Static"
 
-    job = StaticMaker(
-        preset="BulkRelaxSet", name="test", swaps={"ncore": 2, "kpar": 4}
-    ).make(atoms)
+    job = StaticMaker(preset="BulkRelaxSet",
+                      name="test",
+                      swaps={
+                          "ncore": 2,
+                          "kpar": 4
+                      }).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["parameters"]["encut"] == 650
@@ -48,9 +51,9 @@ def test_relax_maker():
     assert output["parameters"]["lwave"] == False
     assert output["name"] == "VASP-Relax"
 
-    job = RelaxMaker(preset="BulkRelaxSet", name="test", swaps={"nelmin": 6}).make(
-        atoms
-    )
+    job = RelaxMaker(preset="BulkRelaxSet", name="test", swaps={
+        "nelmin": 6
+    }).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["parameters"]["encut"] == 650
@@ -75,9 +78,11 @@ def test_slab_static_maker():
     assert output["parameters"]["lvhar"] == True
     assert output["name"] == "VASP-SlabStatic"
 
-    job = SlabStaticMaker(preset="SlabRelaxSet", name="test", swaps={"nelmin": 6}).make(
-        atoms
-    )
+    job = SlabStaticMaker(preset="SlabRelaxSet",
+                          name="test",
+                          swaps={
+                              "nelmin": 6
+                          }).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["parameters"]["encut"] == 450
@@ -98,9 +103,11 @@ def test_slab_relax_maker():
     assert output["parameters"]["lwave"] == False
     assert output["name"] == "VASP-SlabRelax"
 
-    job = SlabRelaxMaker(preset="SlabRelaxSet", name="test", swaps={"nelmin": 6}).make(
-        atoms
-    )
+    job = SlabRelaxMaker(preset="SlabRelaxSet",
+                         name="test",
+                         swaps={
+                             "nelmin": 6
+                         }).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["parameters"]["encut"] == 450
@@ -185,9 +192,11 @@ def test_slab_flows():
     assert output2["name"] == "VASP-SlabStatic"
 
     # Now try with kwargs
-    flow = SlabToAdsSlabMaker(
-        preset="SlabRelaxSet", name="test", swaps={"nelmin": 6}
-    ).make(atoms, adsorbate)
+    flow = SlabToAdsSlabMaker(preset="SlabRelaxSet",
+                              name="test",
+                              swaps={
+                                  "nelmin": 6
+                              }).make(atoms, adsorbate)
     responses = run_locally(flow, ensure_success=True)
 
     assert len(responses) == 11

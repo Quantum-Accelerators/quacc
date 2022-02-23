@@ -45,7 +45,9 @@ def test_static_maker():
         basis="def2-svp",
         pop="regular",
         molden=False,
-        swaps={"integral": "superfinegrid"},
+        swaps={
+            "integral": "superfinegrid"
+        },
     ).make(atoms, charge=-2, mult=3)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
@@ -80,9 +82,12 @@ def test_relax_maker():
     assert "freq" not in output["parameters"]
     assert "sp" not in output["parameters"]
 
-    job = RelaxMaker(
-        xc="m06l", basis="def2-svp", freq=True, swaps={"integral": "superfinegrid"}
-    ).make(atoms, charge=-2, mult=3)
+    job = RelaxMaker(xc="m06l",
+                     basis="def2-svp",
+                     freq=True,
+                     swaps={
+                         "integral": "superfinegrid"
+                     }).make(atoms, charge=-2, mult=3)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["nsites"] == len(atoms)

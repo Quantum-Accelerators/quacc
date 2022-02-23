@@ -23,4 +23,5 @@ def mock_get_potential_energy(self, **kwargs):
 def patch_get_potential_energy(monkeypatch):
     # Monkeypatch the .get_potential_energy() method of the .Atoms object so
     # we aren't running the actual calculation during testing.
-    monkeypatch.setattr(Atoms, "get_potential_energy", mock_get_potential_energy)
+    monkeypatch.setattr(Atoms, "get_potential_energy",
+                        mock_get_potential_energy)

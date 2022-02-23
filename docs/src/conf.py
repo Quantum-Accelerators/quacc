@@ -101,7 +101,6 @@ autosummary_imported_members = False
 # The suffix(es) of source filenames.
 source_suffix = [".rst", ".md"]
 
-
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -117,7 +116,6 @@ html_theme_options = {
     # "use_edit_page_button": True,
     "show_toc_level": 1,
 }
-
 
 html_context = {
     "github_user": "arosen93",

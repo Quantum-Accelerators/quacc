@@ -100,9 +100,10 @@ class RelaxMaker(Maker):
         opt_kwargs.pop("trajectory", None)
 
         atoms.calc = EMT(asap_cutoff=self.asap_cutoff)
-        dyn = self.optimizer(
-            atoms, logfile=logfile, trajectory=trajectory, **opt_kwargs
-        )
+        dyn = self.optimizer(atoms,
+                             logfile=logfile,
+                             trajectory=trajectory,
+                             **opt_kwargs)
         dyn.run(fmax=self.fmax)
         summary = summarize_run(atoms, additional_fields={"name": self.name})
 

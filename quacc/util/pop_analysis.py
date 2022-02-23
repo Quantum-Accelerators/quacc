@@ -43,8 +43,7 @@ def run_bader(path: None | str = None) -> Dict[str, Any]:
     # Make sure files are present.
     for f in ["CHGCAR", "AECCAR0", "AECCAR2", "POTCAR"]:
         if not os.path.exists(os.path.join(path, f)) and not os.path.exists(
-            os.path.join(path, f"{f}.gz")
-        ):
+                os.path.join(path, f"{f}.gz")):
             raise FileNotFoundError(f"Could not find {f} in {path}.")
 
     # Run Bader analysis
@@ -54,7 +53,9 @@ def run_bader(path: None | str = None) -> Dict[str, Any]:
     # raw charge and is more intuitive than the charge transferred.
     # An atom with a positive partial charge is cationic, whereas
     # an atom with a negative partial charge is anionic.
-    bader_stats["partial_charges"] = [-c for c in bader_stats["charge_transfer"]]
+    bader_stats["partial_charges"] = [
+        -c for c in bader_stats["charge_transfer"]
+    ]
 
     # Some cleanup of the returned dictionary
     if "magmom" in bader_stats:
@@ -67,9 +68,8 @@ def run_bader(path: None | str = None) -> Dict[str, Any]:
     return bader_stats
 
 
-def run_chargemol(
-    path: None | str = None, atomic_densities_path: None | str = None
-) -> Dict[str, Any]:
+def run_chargemol(path: None | str = None,
+                  atomic_densities_path: None | str = None) -> Dict[str, Any]:
     """
     Runs a Chargemol (i.e. DDEC6 + CM5) analysis using the VASP output files
     in the given path. This function requires that the chargemol executable,
@@ -115,13 +115,13 @@ def run_chargemol(
     # Make sure files are present.
     for f in ["CHGCAR", "AECCAR0", "AECCAR2", "POTCAR"]:
         if not os.path.exists(os.path.join(path, f)) and not os.path.exists(
-            os.path.join(path, f"{f}.gz")
-        ):
+                os.path.join(path, f"{f}.gz")):
             raise FileNotFoundError(f"Could not find {f} in {path}.")
 
     # Check environment variable
     if atomic_densities_path is None and "DDEC6_ATOMIC_DENSITIES_DIR" not in os.environ:
-        raise OSError("DDEC6_ATOMIC_DENSITIES_DIR environment variable not defined.")
+        raise OSError(
+            "DDEC6_ATOMIC_DENSITIES_DIR environment variable not defined.")
 
     # Run Chargemol analysis
     chargemol_stats = ChargemolAnalysis(

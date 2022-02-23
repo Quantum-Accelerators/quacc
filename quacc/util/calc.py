@@ -7,9 +7,10 @@ from ase.atoms import Atoms
 from monty.shutil import copy_r, gzip_dir
 
 
-def run_calc(
-    atoms: Atoms, store_dir: str = None, scratch_dir: str = None, gzip: bool = False
-) -> float:
+def run_calc(atoms: Atoms,
+             store_dir: str = None,
+             scratch_dir: str = None,
+             gzip: bool = False) -> float:
     """
     Run a calculation in a scratch directory and copy the results back to the
     original directory. This can be useful if file I/O is slow in the working

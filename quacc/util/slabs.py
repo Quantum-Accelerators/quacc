@@ -21,9 +21,8 @@ from pymatgen.io.ase import AseAtomsAdaptor
 # on a deepcopy because Atoms objects are mutable.
 
 
-def flip_atoms(
-    atoms: Atoms | Structure | Slab, return_struct: bool = False
-) -> Atoms | Structure | Slab:
+def flip_atoms(atoms: Atoms | Structure | Slab,
+               return_struct: bool = False) -> Atoms | Structure | Slab:
     """
     Convenience function for vertically flipping periodic atoms or structures
 
@@ -125,9 +124,8 @@ def make_slabs_from_bulk(
 
                 # Flip the slab and its oriented unit cell
                 new_slab = flip_atoms(slab, return_struct=True)
-                new_oriented_unit_cell = flip_atoms(
-                    slab.oriented_unit_cell, return_struct=True
-                )
+                new_oriented_unit_cell = flip_atoms(slab.oriented_unit_cell,
+                                                    return_struct=True)
 
                 # Reconstruct the full slab object, noting the new
                 # shift and oriented unit cell
@@ -166,21 +164,19 @@ def make_slabs_from_bulk(
         # This does not actually create an adsorbate. It is just a
         # useful function for finding surface vs. subsurface sites
         if z_fix:
-            slab_with_props = AdsorbateSiteFinder(
-                slab_with_props, selective_dynamics=True, height=z_fix
-            ).slab
+            slab_with_props = AdsorbateSiteFinder(slab_with_props,
+                                                  selective_dynamics=True,
+                                                  height=z_fix).slab
 
             surface_species = [
-                site.specie.symbol
-                for site in slab_with_props
+                site.specie.symbol for site in slab_with_props
                 if site.properties["surface_properties"] == "surface"
             ]
 
             # Check that the desired atoms are on the surface
             if allowed_surface_atoms and not any(
-                allowed_surface_atom in surface_species
-                for allowed_surface_atom in allowed_surface_atoms
-            ):
+                    allowed_surface_atom in surface_species
+                    for allowed_surface_atom in allowed_surface_atoms):
                 continue
 
         # Add slab to list
@@ -218,7 +214,6 @@ def make_max_slabs_from_bulk(
     allowed_surface_atoms: bool = None,
     **slabgen_kwargs,
 ) -> List[Atoms]:
-
     """
     Generate no more than max_slabs number of slabs from a bulk structure.
     The procedure is as follows:
@@ -370,9 +365,8 @@ def make_adsorbate_structures(
 
     # Check the provided surface indices are reasonable
     atom_indices = [atom.index for atom in atoms]
-    if allowed_surface_indices and not all(
-        idx in atom_indices for idx in allowed_surface_indices
-    ):
+    if allowed_surface_indices and not all(idx in atom_indices
+                                           for idx in allowed_surface_indices):
         raise ValueError(
             "All indices in allowed_surface_indices must be in atoms.",
             allowed_surface_indices,
@@ -420,10 +414,12 @@ def make_adsorbate_structures(
             struct_with_adsorbate = ads_finder.add_adsorbate(mol, ads_coord)
 
             # Convert back to Atoms object
-            atoms_with_adsorbate = AseAtomsAdaptor.get_atoms(struct_with_adsorbate)
+            atoms_with_adsorbate = AseAtomsAdaptor.get_atoms(
+                struct_with_adsorbate)
 
             # Get distance matrix between adsorbate binding atom and surface
-            adsorbate_index = len(atoms) + np.argmin(atom.z for atom in adsorbate)
+            adsorbate_index = len(atoms) + np.argmin(atom.z
+                                                     for atom in adsorbate)
             d = atoms_with_adsorbate.get_all_distances(mic=True)
             d = d[atom_indices, :]
             d = d[:, adsorbate_index]
@@ -431,26 +427,22 @@ def make_adsorbate_structures(
             # Find closest surface atoms
             min_d = min(d)
             surface_atom_indices = [
-                i for i, val in enumerate(d) if (min_d - 0.01) <= val <= (min_d + 0.01)
+                i for i, val in enumerate(d)
+                if (min_d - 0.01) <= val <= (min_d + 0.01)
             ]
             surface_atom_symbols = atoms_with_adsorbate[
-                surface_atom_indices
-            ].get_chemical_symbols()
+                surface_atom_indices].get_chemical_symbols()
 
             # Check if surface binding site is not in the specified
             # user list. If so, skip this one
             if allowed_surface_symbols:
-                if not any(
-                    surface_atom_symbol in allowed_surface_symbols
-                    for surface_atom_symbol in surface_atom_symbols
-                ):
+                if not any(surface_atom_symbol in allowed_surface_symbols
+                           for surface_atom_symbol in surface_atom_symbols):
                     continue
 
             if allowed_surface_indices:
-                if not any(
-                    surface_atom_idx in allowed_surface_indices
-                    for surface_atom_idx in surface_atom_indices
-                ):
+                if not any(surface_atom_idx in allowed_surface_indices
+                           for surface_atom_idx in surface_atom_indices):
                     continue
 
             # Store adsorbate info
