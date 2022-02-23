@@ -20,7 +20,7 @@ def test_static_maker():
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["isym"] == 2
     assert output["parameters"]["nsw"] == 0
-    assert output["parameters"]["lwave"] == True
+    assert output["parameters"]["lwave"] is True
     assert output["name"] == "VASP-Static"
 
     job = StaticMaker(
@@ -45,7 +45,7 @@ def test_relax_maker():
     assert output["parameters"]["isym"] == 0
     assert output["parameters"]["nsw"] > 0
     assert output["parameters"]["isif"] == 3
-    assert output["parameters"]["lwave"] == False
+    assert output["parameters"]["lwave"] is False
     assert output["name"] == "VASP-Relax"
 
     job = RelaxMaker(preset="BulkRelaxSet", name="test", swaps={"nelmin": 6}).make(
@@ -72,7 +72,7 @@ def test_slab_static_maker():
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["idipol"] == 3
     assert output["parameters"]["nsw"] == 0
-    assert output["parameters"]["lvhar"] == True
+    assert output["parameters"]["lvhar"] is True
     assert output["name"] == "VASP-SlabStatic"
 
     job = SlabStaticMaker(preset="SlabRelaxSet", name="test", swaps={"nelmin": 6}).make(
@@ -95,7 +95,7 @@ def test_slab_relax_maker():
     assert output["parameters"]["isif"] == 2
     assert output["parameters"]["nsw"] > 0
     assert output["parameters"]["isym"] == 0
-    assert output["parameters"]["lwave"] == False
+    assert output["parameters"]["lwave"] is False
     assert output["name"] == "VASP-SlabRelax"
 
     job = SlabRelaxMaker(preset="SlabRelaxSet", name="test", swaps={"nelmin": 6}).make(

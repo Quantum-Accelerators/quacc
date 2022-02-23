@@ -28,7 +28,7 @@ def test_static_maker():
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["nsites"] == len(atoms)
-    assert output["parameters"]["asap_cutoff"] == False
+    assert output["parameters"]["asap_cutoff"] is False
     assert output["name"] == "EMT-Static"
     assert output["results"]["energy"] == pytest.approx(0.07001766638245854)
 
@@ -36,7 +36,7 @@ def test_static_maker():
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["nsites"] == len(atoms)
-    assert output["parameters"]["asap_cutoff"] == True
+    assert output["parameters"]["asap_cutoff"] is True
     assert output["name"] == "EMT-Static"
     assert output["results"]["energy"] == pytest.approx(0.11074520235398744)
 
@@ -49,7 +49,7 @@ def test_relax_maker():
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["nsites"] == len(atoms)
-    assert output["parameters"]["asap_cutoff"] == False
+    assert output["parameters"]["asap_cutoff"] is False
     assert output["name"] == "EMT-Relax"
     assert output["results"]["energy"] == pytest.approx(-0.04517048198212592)
 
@@ -57,7 +57,7 @@ def test_relax_maker():
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["nsites"] == len(atoms)
-    assert output["parameters"]["asap_cutoff"] == True
+    assert output["parameters"]["asap_cutoff"] is True
     assert output["name"] == "EMT-Relax"
     assert output["results"]["energy"] == pytest.approx(-0.004527567070971017)
 

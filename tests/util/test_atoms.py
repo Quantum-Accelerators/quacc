@@ -61,7 +61,7 @@ def test_prep_next_run():
     mags = atoms.get_magnetic_moments()
     atoms = prep_next_run(atoms)
     assert atoms.info["test"] == "hi"
-    assert atoms.calc == None
+    assert atoms.calc is None
     assert atoms.get_initial_magnetic_moments().tolist() == mags.tolist()
 
     atoms = deepcopy(ATOMS_MAG)
@@ -113,12 +113,12 @@ def test_prep_next_run():
 
 def test_check_is_metal():
     atoms = bulk("Cu")
-    assert check_is_metal(atoms) == True
+    assert check_is_metal(atoms) is True
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[-1].symbol = "O"
-    assert check_is_metal(atoms) == False
+    assert check_is_metal(atoms) is False
     atoms = molecule("H2O")
-    assert check_is_metal(atoms) == False
+    assert check_is_metal(atoms) is False
 
 
 def test_get_highest_block():

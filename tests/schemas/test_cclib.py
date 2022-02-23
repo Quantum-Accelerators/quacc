@@ -24,7 +24,7 @@ def test_summarize_run():
     assert results["atoms"] == atoms
     assert results["spin_multiplicity"] == 1
     assert results["nsites"] == 6
-    assert results["metadata"].get("success", None) == True
+    assert results["metadata"].get("success", None) is True
 
     # Make sure default dir works
     cwd = os.getcwd()
