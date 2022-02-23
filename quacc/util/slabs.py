@@ -316,7 +316,7 @@ def make_adsorbate_structures(
     atoms: Atoms,
     adsorbate: Atoms | str,
     min_distance: float = 2.0,
-    modes: List[str] = ["ontop", "bridge", "hollow"],
+    modes: List[str] = None,
     allowed_surface_symbols: None | List[str] = None,
     allowed_surface_indices: None | List[int] = None,
     ads_site_finder_kwargs: None | Dict[str, Any] = None,
@@ -352,6 +352,8 @@ def make_adsorbate_structures(
         The structures with adsorbates
 
     """
+    if modes is None:
+        modes = ["ontop", "bridge", "hollow"]
 
     ads_site_finder_kwargs = ads_site_finder_kwargs or {}
     find_ads_sites_kwargs = find_ads_sites_kwargs or {}
