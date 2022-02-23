@@ -105,7 +105,7 @@ def SmartVasp(
     # Allow the user to use setups='mysetups.yaml' to load in a custom setups
     # from a YAML file
     if (
-        isinstance(user_calc_params.get("setups", None), str)
+        isinstance(user_calc_params.get("setups"), str)
         and user_calc_params["setups"] not in ase_default_setups
     ):
         user_calc_params["setups"] = load_yaml_calc(
@@ -114,22 +114,22 @@ def SmartVasp(
 
     # If the preset has auto_kpts but the user explicitly requests kpts, then
     # we should honor that.
-    if kwargs.get("kpts") and calc_preset.get("auto_kpts", None):
+    if kwargs.get("kpts") and calc_preset.get("auto_kpts"):
         del user_calc_params["auto_kpts"]
 
     # Handle special arguments in the user calc parameters that
     # ASE does not natively support
-    if user_calc_params.get("elemental_magmoms", None) is not None:
+    if user_calc_params.get("elemental_magmoms") is not None:
         elemental_mags_dict = user_calc_params["elemental_magmoms"]
         del user_calc_params["elemental_magmoms"]
     else:
         elemental_mags_dict = None
-    if user_calc_params.get("auto_kpts", None) is not None:
+    if user_calc_params.get("auto_kpts") is not None:
         auto_kpts = user_calc_params["auto_kpts"]
         del user_calc_params["auto_kpts"]
     else:
         auto_kpts = None
-    if user_calc_params.get("auto_dipole", None) is not None:
+    if user_calc_params.get("auto_dipole") is not None:
         auto_dipole = user_calc_params["auto_dipole"]
         del user_calc_params["auto_dipole"]
     else:
@@ -139,9 +139,9 @@ def SmartVasp(
     if auto_kpts:
         kpts, gamma, reciprocal = convert_auto_kpts(atoms, auto_kpts)
         user_calc_params["kpts"] = kpts
-        if reciprocal and user_calc_params.get("reciprocal", None) is None:
+        if reciprocal and user_calc_params.get("reciprocal") is None:
             user_calc_params["reciprocal"] = reciprocal
-        if user_calc_params.get("gamma", None) is None:
+        if user_calc_params.get("gamma") is None:
             user_calc_params["gamma"] = gamma
 
     # Add dipole corrections if requested
