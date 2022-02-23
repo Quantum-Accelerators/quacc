@@ -148,7 +148,7 @@ def convert_auto_kpts(
             raise ValueError(f"Unsupported k-point generation scheme: {auto_kpts}.")
 
         kpts = pmg_kpts.kpts[0]
-        gamma = True if pmg_kpts.style.name.lower() == "gamma" else False
+        gamma = pmg_kpts.style.name.lower() == "gamma"
 
     return kpts, gamma, reciprocal
 
