@@ -114,7 +114,7 @@ def SmartVasp(
 
     # If the preset has auto_kpts but the user explicitly requests kpts, then
     # we should honor that.
-    if kwargs.get("kpts") and calc_preset.get("auto_kpts"):
+    if kwargs.get("kpts",None) and calc_preset.get("auto_kpts"):
         del user_calc_params["auto_kpts"]
 
     # Handle special arguments in the user calc parameters that

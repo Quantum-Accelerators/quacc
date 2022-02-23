@@ -34,7 +34,7 @@ def mock_summarize_run(atoms, **kwargs):
     # in the working directory and will work with pytest.
 
     prep_next_run = kwargs.get("prep_next_run", True)
-    additional_fields = kwargs.get("additional_fields")
+    additional_fields = kwargs.get("additional_fields",None)
     output = calc_summarize_run(
         atoms, prep_next_run=prep_next_run, additional_fields=additional_fields
     )
