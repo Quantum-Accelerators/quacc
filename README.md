@@ -1,4 +1,4 @@
-# QuAcc (🚧 Under Construction 🚧)
+# QuAcc
 ![example workflow](https://github.com/arosen93/quacc/actions/workflows/workflow.yaml/badge.svg)
 [![codecov](https://codecov.io/gh/arosen93/quacc/branch/main/graph/badge.svg?token=BCKGTD89H0)](https://codecov.io/gh/arosen93/quacc)
 [![CodeFactor](https://www.codefactor.io/repository/github/arosen93/quacc/badge)](https://www.codefactor.io/repository/github/arosen93/quacc)
