@@ -53,7 +53,7 @@ def summarize_run(
     if dir_path is None:
         dir_path = os.getcwd()
 
-    # Fortunately, there is alreayd a cclib parser in Atomate2
+    # Fortunately, there is already a cclib parser in Atomate2
     results = TaskDocument.from_logfile(dir_path, logfile_extensions).dict()
 
     # Remove some key/vals we don't actually ever use
