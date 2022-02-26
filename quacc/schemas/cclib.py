@@ -69,8 +69,8 @@ def summarize_run(
         # yield all positive modes, but the optimization tolerances me be
         # not entirely met. See https://gaussian.com/faq3.
         vibfreqs = results["attributes"].get("vibfreqs")
-        n_imag = sum(vibfreq < 0 for vibfreq in vibfreqs)
         if vibfreqs:
+            n_imag = sum(vibfreq < 0 for vibfreq in vibfreqs)
             if n_imag >= 2:
                 raise ValueError(f"Too many imaginary modes: {n_imag}")
             if n_imag == 1 and not transition_state:
