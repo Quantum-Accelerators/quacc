@@ -69,20 +69,16 @@ def summarize_run(
         # yield all positive modes, but the optimization tolerances me be
         # not entirely met. See https://gaussian.com/faq3.
         vibfreqs = results["attributes"].get("vibfreqs")
+        n_imag = sum(vibfreq < 0 for vibfreq in vibfreqs)
         if vibfreqs:
-            if transition_state:
-                if sum(vibfreq < 0 for vibfreq in vibfreqs) != 1:
-                    raise ValueError(
-                        "Transition state not found based on frequency analysis."
-                    )
-            else:
-                if sum(vibfreq < 0 for vibfreq in vibfreqs) != 0:
-                    raise ValueError(
-                        "Local minimum not found based on frequency analysis."
-                    )
-        else:
-            if results["attributes"].get("optdone") is False:
-                raise ValueError("Optimization not complete.")
+            if n_imag >= 2:
+                raise ValueError(f"Too many imaginary modes: {n_imag}")
+            elif n_imag == 1 and not transition_state:
+                raise ValueError("One imaginary mode, but transition_state = False.")
+            elif n_imag == 0 and transition_state:
+                raise ValueError("No imaginary modes, but transition_state = True.")
+        elif results["attributes"].get("optdone") is False:
+            raise ValueError("Optimization not complete.")
 
     # Remove some key/vals we don't actually ever use
     unused_props = (
