@@ -61,7 +61,7 @@ def summarize_run(
 
     # Check convergence if requested
     if check_convergence and results["attributes"].get("optdone") is False:
-            raise ValueError("Optimization not complete.")
+        raise ValueError("Optimization not complete.")
 
     # Remove some key/vals we don't actually ever use
     unused_props = (
