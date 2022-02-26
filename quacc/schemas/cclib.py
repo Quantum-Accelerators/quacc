@@ -73,9 +73,9 @@ def summarize_run(
         if vibfreqs:
             if n_imag >= 2:
                 raise ValueError(f"Too many imaginary modes: {n_imag}")
-            elif n_imag == 1 and not transition_state:
+            if n_imag == 1 and not transition_state:
                 raise ValueError("One imaginary mode, but transition_state = False.")
-            elif n_imag == 0 and transition_state:
+            if n_imag == 0 and transition_state:
                 raise ValueError("No imaginary modes, but transition_state = True.")
         elif results["attributes"].get("optdone") is False:
             raise ValueError("Optimization not complete.")
