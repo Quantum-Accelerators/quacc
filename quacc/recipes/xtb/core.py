@@ -9,7 +9,7 @@ from monty.dev import requires
 
 try:
     from xtb.ase.calculator import XTB
-except ModuleNotFoundError:
+except (ModuleNotFoundError, ImportError):
     XTB = None
 from quacc.schemas.calc import summarize_run
 
