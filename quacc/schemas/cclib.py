@@ -13,6 +13,7 @@ def summarize_run(
     logfile_extensions: str | List[str],
     dir_path: str = None,
     check_convergence: bool = True,
+    transition_state: bool = False,
     prep_next_run: bool = True,
     additional_fields: Dict[str, Any] = None,
 ) -> Dict[str, Any]:
@@ -34,6 +35,8 @@ def summarize_run(
         current working directory.
     check_convergence
          Whether to throw an error if convergence is not reached.
+    transition_state
+        Whether the calculation is a transition state (used for convergence check).
     prep_next_run
         Whether the Atoms object storeed in {"atoms": atoms} should be prepared for the next run.
         This clears out any attached calculator and moves the final magmoms to the initial magmoms.
@@ -60,8 +63,26 @@ def summarize_run(
     results = TaskDocument.from_logfile(dir_path, logfile_extensions).dict()
 
     # Check convergence if requested
-    if check_convergence and results["attributes"].get("optdone") is False:
-        raise ValueError("Optimization not complete.")
+    if check_convergence:
+        # If it's an opt+freq job, we will just check convergence on the
+        # frequency step. This is because sometimes the frequency job will
+        # yield all positive modes, but the optimization tolerances me be
+        # not entirely met. See https://gaussian.com/faq3.
+        vibfreqs = results["attributes"].get("vibfreqs")
+        if vibfreqs:
+            if transition_state:
+                if sum(vibfreq < 0 for vibfreq in vibfreqs) != 1:
+                    raise ValueError(
+                        "Transition state not found based on frequency analysis."
+                    )
+            else:
+                if sum(vibfreq < 0 for vibfreq in vibfreqs) != 0:
+                    raise ValueError(
+                        "Local minimum not found based on frequency analysis."
+                    )
+        else:
+            if results["attributes"].get("optdone") is False:
+                raise ValueError("Optimization not complete.")
 
     # Remove some key/vals we don't actually ever use
     unused_props = (
