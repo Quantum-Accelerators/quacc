@@ -12,63 +12,6 @@ from quacc.util.slabs import make_adsorbate_structures, make_max_slabs_from_bulk
 
 
 @dataclass
-class SlabRelaxMaker(Maker):
-    """
-    Class to relax a slab.
-
-    Parameters
-    ----------
-    name
-        Name of the job.
-    preset
-        Preset to use.
-    swaps
-        Dictionary of custom kwargs for the calculator.
-    """
-
-    name: str = "VASP-SlabRelax"
-    preset: None | str = None
-    swaps: Dict[str, Any] = None
-
-    @job
-    def make(self, atoms: Atoms) -> Dict[str, Any]:
-        """
-        Make the run.
-
-        Parameters
-        ----------
-        atoms
-            .Atoms object
-
-        Returns
-        -------
-        Dict:
-            Summary of the run.
-        """
-        swaps = self.swaps or {}
-        defaults = {
-            "auto_dipole": True,
-            "ediff": 1e-5,
-            "ediffg": -0.02,
-            "isif": 2,
-            "ibrion": 2,
-            "ismear": 0,
-            "isym": 0,
-            "lcharg": False,
-            "lwave": False,
-            "nsw": 200,
-            "sigma": 0.05,
-        }
-        flags = merge_dicts(defaults, swaps, remove_none=True)
-
-        atoms = SmartVasp(atoms, preset=self.preset, **flags)
-        atoms = run_calc(atoms)
-        summary = summarize_run(atoms, additional_fields={"name": self.name})
-
-        return summary
-
-
-@dataclass
 class SlabStaticMaker(Maker):
     """
     Class to carry out a single-point calculation on a slab.
@@ -114,6 +57,63 @@ class SlabStaticMaker(Maker):
             "lwave": True,
             "nedos": 5001,
             "nsw": 0,
+            "sigma": 0.05,
+        }
+        flags = merge_dicts(defaults, swaps, remove_none=True)
+
+        atoms = SmartVasp(atoms, preset=self.preset, **flags)
+        atoms = run_calc(atoms)
+        summary = summarize_run(atoms, additional_fields={"name": self.name})
+
+        return summary
+
+
+@dataclass
+class SlabRelaxMaker(Maker):
+    """
+    Class to relax a slab.
+
+    Parameters
+    ----------
+    name
+        Name of the job.
+    preset
+        Preset to use.
+    swaps
+        Dictionary of custom kwargs for the calculator.
+    """
+
+    name: str = "VASP-SlabRelax"
+    preset: None | str = None
+    swaps: Dict[str, Any] = None
+
+    @job
+    def make(self, atoms: Atoms) -> Dict[str, Any]:
+        """
+        Make the run.
+
+        Parameters
+        ----------
+        atoms
+            .Atoms object
+
+        Returns
+        -------
+        Dict:
+            Summary of the run.
+        """
+        swaps = self.swaps or {}
+        defaults = {
+            "auto_dipole": True,
+            "ediff": 1e-5,
+            "ediffg": -0.02,
+            "isif": 2,
+            "ibrion": 2,
+            "ismear": 0,
+            "isym": 0,
+            "lcharg": False,
+            "lwave": False,
+            "nsw": 200,
             "sigma": 0.05,
         }
         flags = merge_dicts(defaults, swaps, remove_none=True)
