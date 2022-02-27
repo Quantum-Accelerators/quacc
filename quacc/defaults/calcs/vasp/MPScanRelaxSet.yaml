@@ -21,7 +21,7 @@ inputs:
   lelf: True
   lwave: False
   lvtot: True
-  metagga: r2scan
   nelm: 200
   nsw: 99
   prec: accurate
+  xc: r2scan
