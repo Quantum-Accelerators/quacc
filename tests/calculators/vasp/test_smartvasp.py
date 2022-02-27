@@ -564,7 +564,7 @@ def test_setups():
     atoms = bulk("Cu")
     atoms = SmartVasp(
         atoms,
-        setups="pbe54_MP.yaml",
+        setups="setups_pbe54_MP.yaml",
         preset="BulkRelaxSet",
     )
     assert atoms.calc.parameters["setups"]["Cu"] == "_pv"

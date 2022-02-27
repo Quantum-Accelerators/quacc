@@ -27,7 +27,7 @@ class SlabStaticMaker(Maker):
     """
 
     name: str = "VASP-SlabStatic"
-    preset: None | str = None
+    preset: str = None
     swaps: Dict[str, Any] = None
 
     @job
@@ -84,7 +84,7 @@ class SlabRelaxMaker(Maker):
     """
 
     name: str = "VASP-SlabRelax"
-    preset: None | str = None
+    preset: str = None
     swaps: Dict[str, Any] = None
 
     @job
@@ -147,7 +147,7 @@ class BulkToSlabMaker(Maker):
     """
 
     name: str = "VASP-BulkToSlab"
-    preset: None | str = None
+    preset: str = None
     slab_relax_maker: Maker = SlabRelaxMaker()
     slab_static_maker: Maker = SlabStaticMaker()
     swaps: Dict[str, Any] = None
@@ -164,7 +164,7 @@ class BulkToSlabMaker(Maker):
         atoms
             .Atoms object
         max_slabs
-            Maximum number of slabs to make
+            Maximum number of slabs to make. None implies no upper limit.
         slabgen_kwargs
             Additional keyword arguments to pass to make_max_slabs_from_bulk()
 
@@ -174,10 +174,12 @@ class BulkToSlabMaker(Maker):
             A Flow of relaxation and static jobs for the generated slabs.
         """
         slabgen_kwargs = slabgen_kwargs or {}
-        self.slab_relax_maker.preset = self.slab_relax_maker.preset or self.preset
-        self.slab_static_maker.preset = self.slab_static_maker.preset or self.preset
-        self.slab_relax_maker.swaps = self.slab_relax_maker.swaps or self.swaps
-        self.slab_static_maker.swaps = self.slab_static_maker.swaps or self.swaps
+        if self.preset:
+            self.slab_static_maker.preset = self.preset
+            self.slab_relax_maker.preset = self.preset
+        if self.swaps:
+            self.slab_static_maker.swaps = self.swaps
+            self.slab_relax_maker.swaps = self.swaps
 
         slabs = make_max_slabs_from_bulk(atoms, max_slabs=max_slabs, **slabgen_kwargs)
         jobs = []
@@ -216,7 +218,7 @@ class SlabToAdsSlabMaker(Maker):
     """
 
     name: str = "VASP-SlabToAdsSlab"
-    preset: None | str = None
+    preset: str = None
     swaps: Dict[str, Any] = None
     slab_relax_maker: Maker = SlabRelaxMaker()
     slab_static_maker: Maker = SlabStaticMaker()
@@ -243,10 +245,12 @@ class SlabToAdsSlabMaker(Maker):
             A Flow of relaxation and static jobs for the generated slabs with adsorbates.
         """
         slabgen_ads_kwargs = slabgen_ads_kwargs or {}
-        self.slab_relax_maker.preset = self.slab_relax_maker.preset or self.preset
-        self.slab_static_maker.preset = self.slab_static_maker.preset or self.preset
-        self.slab_relax_maker.swaps = self.slab_relax_maker.swaps or self.swaps
-        self.slab_static_maker.swaps = self.slab_static_maker.swaps or self.swaps
+        if self.preset:
+            self.slab_static_maker.preset = self.preset
+            self.slab_relax_maker.preset = self.preset
+        if self.swaps:
+            self.slab_static_maker.swaps = self.swaps
+            self.slab_relax_maker.swaps = self.swaps
 
         slabs = make_adsorbate_structures(atoms, adsorbate, **slabgen_ads_kwargs)
 
