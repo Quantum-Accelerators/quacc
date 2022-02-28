@@ -29,8 +29,8 @@ class MultiRelaxMaker(Maker):
     preset
         Preset to use. Applies for all jobs.
     volume_relax
-        True if a volume relaxation (ISIF = 3) should be performed.
-        False if only the positions (ISIF = 2) should be updated.
+        True if a volume relaxation should be performed.
+        False if only the positions should be updated.
     swaps
         Dictionary of custom kwargs for the calculator. Applies for all jobs.
     """
@@ -58,98 +58,211 @@ class MultiRelaxMaker(Maker):
         swaps = self.swaps or {}
 
         # 1. Pre-relaxation
-        defaults = {
-            "auto_kpts": {"grid_density": 100},
-            "ediff": 1e-4,
-            "encut": None,
-            "ismear": 0,
-            "isym": 0,
-            "lcharg": False,
-            "lreal": "auto",
-            "lwave": True,
-            "nelm": 225,
-            "nsw": 0,
-            "sigma": 0.05,
-        }
-        flags = merge_dicts(defaults, swaps, remove_none=True)
-        atoms = SmartVasp(atoms, preset=self.preset, **flags)
-        dyn = BFGSLineSearch(atoms, logfile="prerelax.log", trajectory="prerelax.traj")
-        dyn.run(fmax=5.0)
+        atoms = prerelax(atoms, self.preset, swaps, fmax=5.0)
 
         # 2. Position relaxation (loose)
-        defaults = {
-            "auto_kpts": {"grid_density": 100},
-            "encut": None,
-            "ediff": 1e-4,
-            "ediffg": -0.05,
-            "isif": 2,
-            "ibrion": 2,
-            "ismear": 0,
-            "isym": 0,
-            "lcharg": False,
-            "lreal": "auto",
-            "lwave": True,
-            "nsw": 250,
-            "sigma": 0.05,
-        }
-        flags = merge_dicts(defaults, swaps, remove_none=True)
-        atoms = SmartVasp(atoms, preset=self.preset, **flags)
-        atoms = run_calc(atoms)
+        atoms = loose_relax_positions(atoms, self.preset, swaps)
 
         # 3. Optional: Volume relaxation (loose)
-        defaults = {
-            "auto_kpts": {"grid_density": 100},
-            "ediff": 1e-6,
-            "ediffg": -0.02,
-            "isif": 3,
-            "ibrion": 2,
-            "ismear": 0,
-            "isym": 0,
-            "lcharg": False,
-            "lreal": "auto",
-            "lwave": True,
-            "nsw": 500,
-            "sigma": 0.05,
-        }
-        flags = merge_dicts(defaults, swaps, remove_none=True)
-        atoms = SmartVasp(atoms, preset=self.preset, **flags)
-        atoms = run_calc(atoms)
+        if self.volume_relax:
+            atoms = loose_relax_volume(atoms, self.preset, swaps)
 
         # 4. Double Relaxation
         # This is done for two reasons: a) because it can resolve repadding
         # issues when dV is large; b) because we can use LREAL = Auto for the
         # first relaxation and the default LREAL for the second.
-        defaults = {
-            "ediff": 1e-6,
-            "ediffg": -0.02,
-            "isif": 3 if self.volume_relax else 2,
-            "ibrion": 2,
-            "ismear": 0,
-            "isym": 0,
-            "lcharg": False,
-            "lreal": "auto",
-            "lwave": True,
-            "nsw": 250,
-            "sigma": 0.05,
-        }
-        flags = merge_dicts(defaults, swaps, remove_none=True)
-        old_calc = atoms.calc
-        atoms = SmartVasp(atoms, preset=self.preset, **flags)
+        atoms = double_relax(atoms, self.preset, swaps, volume_relax=self.volume_relax)
 
-        # You can't restart a vasp_std calculation from a vasp_gam WAVECAR.
-        # Here, we check if we change from vasp_gam to vasp_std and set
-        # ISTART = 0 if needed.
-        if atoms.calc.kpts != [1, 1, 1] and old_calc.kpts == [1, 1, 1]:
-            defaults["istart"] = 0
-        atoms = run_calc(atoms)
-
-        # Reset LREAL and ISTART to their default values.
-        del defaults["lreal"]
-        defaults.pop("istart", None)
-        flags = merge_dicts(defaults, swaps, remove_none=True)
-        atoms = SmartVasp(atoms, preset=self.preset, **flags)
-        atoms = run_calc(atoms)
-
+        # Make summary of run
         summary = summarize_run(atoms, additional_fields={"name": self.name})
 
         return summary
+
+
+def prerelax(
+    atoms: Atoms,
+    preset: str,
+    swaps: Dict[str, Any],
+    fmax: float = 5.0,
+) -> Atoms:
+    """
+    A "pre-relaxation" with BFGSLineSearch to resolve very high forces.
+
+    Parameters
+    ----------
+    atoms
+        .Atoms object
+    preset
+        Preset to use. Applies for all jobs.
+    swaps
+        Dictionary of custom kwargs for the calculator. Applies for all jobs.
+    fmax
+        Maximum force in eV/A.
+
+    Returns
+    -------
+    .Atoms object
+    """
+    defaults = {
+        "auto_kpts": {"grid_density": 100},
+        "ediff": 1e-4,
+        "encut": None,
+        "ismear": 0,
+        "isym": 0,
+        "lcharg": False,
+        "lreal": "auto",
+        "lwave": True,
+        "nelm": 225,
+        "nsw": 0,
+        "sigma": 0.05,
+    }
+    flags = merge_dicts(defaults, swaps, remove_none=True)
+    atoms = SmartVasp(atoms, preset=preset, **flags)
+    dyn = BFGSLineSearch(atoms, logfile="prerelax.log", trajectory="prerelax.traj")
+    dyn.run(fmax=fmax)
+
+    return atoms
+
+
+def loose_relax_positions(
+    atoms: Atoms,
+    preset: str,
+    swaps: Dict[str, Any],
+) -> Atoms:
+    """
+    Position relaxation with default ENCUT and coarse k-point grid.
+
+    Parameters
+    ----------
+    atoms
+        .Atoms object
+    preset
+        Preset to use. Applies for all jobs.
+    swaps
+        Dictionary of custom kwargs for the calculator. Applies for all jobs.
+
+    Returns
+    -------
+    .Atoms object
+    """
+    defaults = {
+        "auto_kpts": {"grid_density": 100},
+        "encut": None,
+        "ediff": 1e-4,
+        "ediffg": -0.05,
+        "isif": 2,
+        "ibrion": 2,
+        "ismear": 0,
+        "isym": 0,
+        "lcharg": False,
+        "lreal": "auto",
+        "lwave": True,
+        "nsw": 250,
+        "sigma": 0.05,
+    }
+    flags = merge_dicts(defaults, swaps, remove_none=True)
+    atoms = SmartVasp(atoms, preset=preset, **flags)
+    atoms = run_calc(atoms)
+
+    return atoms
+
+
+def loose_relax_volume(
+    atoms: Atoms,
+    preset: str,
+    swaps: Dict[str, Any],
+) -> Atoms:
+    """
+    Optional: volume relaxation with coarse k-point grid.
+
+    Parameters
+    ----------
+    atoms
+        .Atoms object
+    preset
+        Preset to use. Applies for all jobs.
+    swaps
+        Dictionary of custom kwargs for the calculator. Applies for all jobs.
+
+    Returns
+    -------
+    .Atoms object
+    """
+    defaults = {
+        "auto_kpts": {"grid_density": 100},
+        "ediff": 1e-6,
+        "ediffg": -0.02,
+        "isif": 3,
+        "ibrion": 2,
+        "ismear": 0,
+        "isym": 0,
+        "lcharg": False,
+        "lreal": "auto",
+        "lwave": True,
+        "nsw": 500,
+        "sigma": 0.05,
+    }
+    flags = merge_dicts(defaults, swaps, remove_none=True)
+    atoms = SmartVasp(atoms, preset=preset, **flags)
+    atoms = run_calc(atoms)
+
+    return atoms
+
+
+def double_relax(
+    atoms: Atoms,
+    preset: str,
+    swaps: Dict[str, Any],
+    volume_relax: bool = True,
+) -> Atoms:
+    """
+    Double relaxation using production-quality settings.
+
+    Parameters
+    ----------
+    atoms
+        .Atoms object
+    preset
+        Preset to use. Applies for all jobs.
+    swaps
+        Dictionary of custom kwargs for the calculator. Applies for all jobs.
+    volume_relax
+        True if a volume relaxation should be performed.
+
+    Returns
+    -------
+    .Atoms object
+    """
+
+    defaults = {
+        "ediff": 1e-6,
+        "ediffg": -0.02,
+        "isif": 3 if volume_relax else 2,
+        "ibrion": 2,
+        "ismear": 0,
+        "isym": 0,
+        "lcharg": False,
+        "lreal": "auto",
+        "lwave": True,
+        "nsw": 250,
+        "sigma": 0.05,
+    }
+    flags = merge_dicts(defaults, swaps, remove_none=True)
+    old_calc = atoms.calc
+    atoms = SmartVasp(atoms, preset=preset, **flags)
+
+    # You can't restart a vasp_std calculation from a vasp_gam WAVECAR.
+    # Here, we check if we change from vasp_gam to vasp_std and set
+    # ISTART = 0 if needed.
+    if atoms.calc.kpts != [1, 1, 1] and old_calc.kpts == [1, 1, 1]:
+        defaults["istart"] = 0
+    atoms = run_calc(atoms)
+
+    # Reset LREAL and ISTART to their default values.
+    del defaults["lreal"]
+    defaults.pop("istart", None)
+    flags = merge_dicts(defaults, swaps, remove_none=True)
+    atoms = SmartVasp(atoms, preset=preset, **flags)
+    atoms = run_calc(atoms)
+
+    return atoms
