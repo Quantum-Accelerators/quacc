@@ -1,13 +1,22 @@
+import os
+
 from ase.build import bulk, molecule
 from jobflow.managers.local import run_locally
 
 from quacc.recipes.vasp.core import RelaxMaker, StaticMaker
+from quacc.recipes.vasp.multistage import MultiRelaxMaker
 from quacc.recipes.vasp.slabs import (
     BulkToSlabMaker,
     SlabRelaxMaker,
     SlabStaticMaker,
     SlabToAdsSlabMaker,
 )
+
+
+def teardown_module():
+    for f in ["prerelax.log", "prerelax.traj"]:
+        if os.path.exists(f):
+            os.remove(f)
 
 
 def test_static_maker():
@@ -207,3 +216,29 @@ def test_slab_flows():
     assert output2["parameters"]["nelmin"] == 6
     assert output2["parameters"]["encut"] == 450
     assert output2["name"] == "VASP-SlabStatic"
+
+
+def test_multirelax_maker():
+    atoms = bulk("Cu")
+    job = MultiRelaxMaker().make(atoms)
+    responses = run_locally(job, ensure_success=True)
+    output = responses[job.uuid][1].output
+    assert output["nsites"] == len(atoms)
+    assert output["parameters"]["isym"] == 0
+    assert output["parameters"]["nsw"] > 0
+    assert output["parameters"]["isif"] == 3
+    assert output["name"] == "VASP-MultiRelax"
+
+    job = MultiRelaxMaker(preset="BulkRelaxSet", name="test", swaps={"nelmin": 6}).make(
+        atoms
+    )
+    responses = run_locally(job, ensure_success=True)
+    output = responses[job.uuid][1].output
+    assert output["parameters"]["encut"] == 650
+    assert output["parameters"]["nelmin"] == 6
+    assert output["name"] == "test"
+
+    job = MultiRelaxMaker(volume_relax=False).make(atoms)
+    responses = run_locally(job, ensure_success=True)
+    output = responses[job.uuid][1].output
+    assert output["parameters"]["isif"] == 2

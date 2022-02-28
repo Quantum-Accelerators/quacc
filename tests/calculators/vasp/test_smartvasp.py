@@ -46,13 +46,13 @@ def test_presets():
     assert atoms == atoms_fullpath
     assert atoms.calc.xc.lower() == "pbe"
     assert atoms.calc.string_params["algo"] == "fast"
-    assert atoms.calc.exp_params["ediff"] == 1e-5
+    assert atoms.calc.exp_params["ediff"] == 1e-6
     assert atoms.calc.int_params["isif"] == 3
 
     atoms = SmartVasp(atoms, xc="rpbe", preset="SlabRelaxSet")
     assert atoms.calc.xc.lower() == "rpbe"
     assert atoms.calc.string_params["algo"] == "fast"
-    assert atoms.calc.exp_params["ediff"] == 1e-5
+    assert atoms.calc.exp_params["ediff"] == 1e-6
     assert atoms.calc.int_params["isif"] == 2
 
     atoms = SmartVasp(atoms, xc="scan", preset="MPScanRelaxSet")

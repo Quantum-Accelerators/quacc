@@ -4,7 +4,7 @@ inputs:
   auto_kpts:
     max_mixed_density: [100, 1000]
   algo: fast
-  ediff: 1.0e-5
+  ediff: 1.0e-6
   ediffg: -0.02
   encut: 650
   ibrion: 2

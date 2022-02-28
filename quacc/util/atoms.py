@@ -136,7 +136,7 @@ def set_magmoms(
     copy_magmoms
         Whether to copy the magnetic moments from the converged set of magnetic moments to the initial magnetic moments.
     mag_default
-        Default magnetic moment to use if no magnetic moments are specified in the preset.
+        Default magnetic moment to use if no magnetic moment is specified in the preset for a given element.
     mag_cutoff
         Magnitude below which the magnetic moments are considered to be zero. If None, no cutoff will be applied
 

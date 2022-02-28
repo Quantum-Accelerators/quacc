@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 from ase.atoms import Atoms
+from ase.optimize.optimize import Optimizer
 
 from quacc.schemas.calc import summarize_run as calc_summarize_run
 
@@ -28,6 +29,18 @@ def patch_get_potential_energy(monkeypatch):
     monkeypatch.setattr(Atoms, "get_potential_energy", mock_get_potential_energy)
 
 
+def mock_dynrun(*args, **kwargs):
+    # Instead of running optimizer.run(), just proceed
+    return True
+
+
+@pytest.fixture(autouse=True)
+def patch_dynrun(monkeypatch):
+    # Monkeypatch the optimizer.run() method of the .Atoms object so
+    # we aren't running the actual calculation during testing.
+    monkeypatch.setattr(Optimizer, "run", mock_dynrun)
+
+
 def mock_summarize_run(atoms, **kwargs):
     # Instead of running the VASP-specific summarize_run(), we mock it with the
     # general calculator schema which does not require VASP files to be
@@ -48,4 +61,7 @@ def patch_summarize_run(monkeypatch):
     # summarize_run() is a function in the quacc.schemas.vasp module, we modify it
     # only in quacc.recipes.vasp.core/.slabs because otherwise it will not work properly.
     monkeypatch.setattr("quacc.recipes.vasp.core.summarize_run", mock_summarize_run)
+    monkeypatch.setattr(
+        "quacc.recipes.vasp.multistage.summarize_run", mock_summarize_run
+    )
     monkeypatch.setattr("quacc.recipes.vasp.slabs.summarize_run", mock_summarize_run)

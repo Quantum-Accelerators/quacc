@@ -105,7 +105,7 @@ class RelaxMaker(Maker):
         """
         swaps = self.swaps or {}
         defaults = {
-            "ediff": 1e-5,
+            "ediff": 1e-6,
             "ediffg": -0.02,
             "isif": 3 if self.volume_relax else 2,
             "ibrion": 2,
