@@ -242,3 +242,8 @@ def test_multirelax_maker():
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["parameters"]["isif"] == 2
+
+    # This makes sure the vasp_gam --> vasp_std run works
+    atoms = bulk("Cu") * (8, 8, 8)
+    job = MultiRelaxMaker().make(atoms)
+    responses = run_locally(job, ensure_success=True)
