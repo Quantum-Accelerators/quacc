@@ -60,12 +60,14 @@ class MultiRelaxMaker(Maker):
         # 1. Pre-relaxation
         defaults = {
             "auto_kpts": {"grid_density": 100},
+            "ediff": 1e-4,
             "encut": None,
             "ismear": 0,
             "isym": 0,
             "lcharg": False,
             "lreal": "auto",
             "lwave": True,
+            "nelm": 225,
             "nsw": 0,
             "sigma": 0.05,
         }
@@ -78,7 +80,7 @@ class MultiRelaxMaker(Maker):
         defaults = {
             "auto_kpts": {"grid_density": 100},
             "encut": None,
-            "ediff": 1e-5,
+            "ediff": 1e-4,
             "ediffg": -0.05,
             "isif": 2,
             "ibrion": 2,
@@ -87,7 +89,7 @@ class MultiRelaxMaker(Maker):
             "lcharg": False,
             "lreal": "auto",
             "lwave": True,
-            "nsw": 200,
+            "nsw": 250,
             "sigma": 0.05,
         }
         flags = merge_dicts(defaults, swaps, remove_none=True)
@@ -99,14 +101,14 @@ class MultiRelaxMaker(Maker):
             "auto_kpts": {"grid_density": 100},
             "ediff": 1e-6,
             "ediffg": -0.02,
-            "isif": 2,
+            "isif": 3,
             "ibrion": 2,
             "ismear": 0,
             "isym": 0,
             "lcharg": False,
             "lreal": "auto",
             "lwave": True,
-            "nsw": 200,
+            "nsw": 500,
             "sigma": 0.05,
         }
         flags = merge_dicts(defaults, swaps, remove_none=True)
@@ -127,7 +129,7 @@ class MultiRelaxMaker(Maker):
             "lcharg": False,
             "lreal": "auto",
             "lwave": True,
-            "nsw": 200,
+            "nsw": 250,
             "sigma": 0.05,
         }
         flags = merge_dicts(defaults, swaps, remove_none=True)

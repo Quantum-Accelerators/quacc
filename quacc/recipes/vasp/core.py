@@ -46,7 +46,6 @@ class StaticMaker(Maker):
         """
         swaps = self.swaps or {}
         defaults = {
-            "ediff": 1e-6,
             "ismear": -5,
             "isym": 2,
             "laechg": True,
@@ -105,7 +104,6 @@ class RelaxMaker(Maker):
         """
         swaps = self.swaps or {}
         defaults = {
-            "ediff": 1e-6,
             "ediffg": -0.02,
             "isif": 3 if self.volume_relax else 2,
             "ibrion": 2,

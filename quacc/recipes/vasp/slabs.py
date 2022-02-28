@@ -48,7 +48,6 @@ class SlabStaticMaker(Maker):
         swaps = self.swaps or {}
         defaults = {
             "auto_dipole": True,
-            "ediff": 1e-6,
             "ismear": -5,
             "isym": 2,
             "laechg": True,
@@ -105,7 +104,6 @@ class SlabRelaxMaker(Maker):
         swaps = self.swaps or {}
         defaults = {
             "auto_dipole": True,
-            "ediff": 1e-5,
             "ediffg": -0.02,
             "isif": 2,
             "ibrion": 2,

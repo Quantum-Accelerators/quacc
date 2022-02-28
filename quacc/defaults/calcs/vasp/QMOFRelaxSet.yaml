@@ -1,0 +1,28 @@
+parent_magmoms: magmoms_qmof.yaml
+parent_setups: setups_pbe54.yaml
+inputs:
+  auto_kpts:
+    grid_density: 1000
+  algo: all
+  ediff: 1.0e-6
+  ediffg: -0.03
+  encut: 520
+  ibrion: 2
+  isif: 3
+  ismear: 0
+  isym: 0
+  ivdw: 12
+  lorbit: 11
+  lasph: false
+  lreal: false
+  nelm: 150
+  nelmin: 3
+  nsw: 500
+  prec: accurate
+  sigma: 0.01
+  symprec: 1.0e-8
+  xc: pbe
+setups:
+  Eu: Eu_3
+  Li: Li
+  Yb: Yb_3
