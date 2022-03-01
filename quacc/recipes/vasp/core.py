@@ -121,3 +121,86 @@ class RelaxMaker(Maker):
         summary = summarize_run(atoms, additional_fields={"name": self.name})
 
         return summary
+
+
+@dataclass
+class DoubleRelaxMaker(Maker):
+    """
+    Class to double-relax a structure. This is particularly useful for
+    a few reasons:
+    1. To carry out a cheaper pre-relaxation before the high-quality run.
+    2. To carry out a GGA calculation before a meta-GGA or hybrid calculation
+    that requies the GGA wavefunction.
+    3. To carry out volume relaxations where large changes in volume
+    can require a second relaxation to resolve forces.
+
+    Parameters
+    ----------
+    name
+        Name of the job.
+    preset
+        Preset to use.
+    volume_relax
+        True if a volume relaxation (ISIF = 3) should be performed.
+        False if only the positions (ISIF = 2) should be updated.
+    swaps1
+        Dictionary of custom kwargs for the first relaxation.
+    swaps2
+        Dictionary of custom kwargs for the second relaxation.
+    """
+
+    name: str = "VASP-DoubleRelax"
+    preset: str = None
+    volume_relax: bool = True
+    swaps1: Dict[str, Any] = None
+    swaps2: Dict[str, Any] = None
+
+    @job
+    def make(self, atoms: Atoms) -> Dict[str, Any]:
+        """
+        Make the run.
+
+        Parameters
+        ----------
+        atoms
+            .Atoms object
+
+        Returns
+        -------
+        Dict
+            Summary of the run.
+        """
+        swaps1 = self.swaps1 or {}
+        swaps2 = self.swaps2 or {}
+
+        defaults = {
+            "ediffg": -0.02,
+            "isif": 3 if self.volume_relax else 2,
+            "ibrion": 2,
+            "ismear": 0,
+            "isym": 0,
+            "lcharg": False,
+            "lwave": True,
+            "nsw": 200,
+            "sigma": 0.05,
+        }
+
+        # Run first relaxation
+        flags = merge_dicts(defaults, swaps1, remove_none=True)
+        atoms = SmartVasp(atoms, preset=self.preset, **flags)
+        kpts1 = atoms.calc.kpts
+        atoms = run_calc(atoms)
+
+        # Run second relaxation
+        flags = merge_dicts(defaults, swaps2, remove_none=True)
+        atoms = SmartVasp(atoms, preset=self.preset, **flags)
+        kpts2 = atoms.calc.kpts
+
+        # Use ISTART = 0 if this goes from vasp_gam --> vasp_std
+        if kpts1 == [1, 1, 1] and kpts2 != [1, 1, 1]:
+            atoms.calc.set(istart=0)
+        atoms = run_calc(atoms)
+
+        summary = summarize_run(atoms, additional_fields={"name": self.name})
+
+        return summary

@@ -1,9 +1,10 @@
 import os
+from tokenize import Double
 
 from ase.build import bulk, molecule
 from jobflow.managers.local import run_locally
 
-from quacc.recipes.vasp.core import RelaxMaker, StaticMaker
+from quacc.recipes.vasp.core import DoubleRelaxMaker, RelaxMaker, StaticMaker
 from quacc.recipes.vasp.multistage import MultiRelaxMaker
 from quacc.recipes.vasp.slabs import (
     BulkToSlabMaker,
@@ -70,6 +71,39 @@ def test_relax_maker():
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["parameters"]["isif"] == 2
+
+
+def test_doublerelax_maker():
+
+    atoms = bulk("Cu") * (2, 2, 2)
+
+    job = DoubleRelaxMaker().make(atoms)
+    responses = run_locally(job, ensure_success=True)
+    output = responses[job.uuid][1].output
+    assert output["nsites"] == len(atoms)
+    assert output["parameters"]["isym"] == 0
+    assert output["parameters"]["nsw"] > 0
+    assert output["parameters"]["isif"] == 3
+    assert output["parameters"]["lwave"] == True
+    assert output["name"] == "VASP-DoubleRelax"
+
+    job = DoubleRelaxMaker(
+        preset="BulkRelaxSet", name="test", swaps2={"nelmin": 6}
+    ).make(atoms)
+    responses = run_locally(job, ensure_success=True)
+    output = responses[job.uuid][1].output
+    assert output["parameters"]["encut"] == 650
+    assert output["parameters"]["nelmin"] == 6
+    assert output["name"] == "test"
+
+    job = DoubleRelaxMaker(volume_relax=False).make(atoms)
+    responses = run_locally(job, ensure_success=True)
+    output = responses[job.uuid][1].output
+    assert output["parameters"]["isif"] == 2
+
+    atoms = bulk("Cu") * (8, 8, 8)
+    job = DoubleRelaxMaker().make(atoms)
+    responses = run_locally(job, ensure_success=True)
 
 
 def test_slab_static_maker():
@@ -243,7 +277,6 @@ def test_multirelax_maker():
     output = responses[job.uuid][1].output
     assert output["parameters"]["isif"] == 2
 
-    # This makes sure the vasp_gam --> vasp_std run works
     atoms = bulk("Cu") * (8, 8, 8)
     job = MultiRelaxMaker().make(atoms)
     responses = run_locally(job, ensure_success=True)

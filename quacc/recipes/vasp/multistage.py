@@ -248,21 +248,21 @@ def double_relax(
         "sigma": 0.05,
     }
     flags = merge_dicts(defaults, swaps, remove_none=True)
-    old_calc = atoms.calc
     atoms = SmartVasp(atoms, preset=preset, **flags)
-
-    # You can't restart a vasp_std calculation from a vasp_gam WAVECAR.
-    # Here, we check if we change from vasp_gam to vasp_std and set
-    # ISTART = 0 if needed.
-    if atoms.calc.kpts != [1, 1, 1] and old_calc.kpts == [1, 1, 1]:
-        defaults["istart"] = 0
+    kpts1 = atoms.calc.kpts
     atoms = run_calc(atoms)
 
     # Reset LREAL and ISTART to their default values.
     del defaults["lreal"]
-    defaults.pop("istart", None)
+
     flags = merge_dicts(defaults, swaps, remove_none=True)
     atoms = SmartVasp(atoms, preset=preset, **flags)
+    kpts2 = atoms.calc.kpts
+
+    # Use ISTART = 0 if this goes from vasp_gam --> vasp_std
+    if kpts1 == [1, 1, 1] and kpts2 != [1, 1, 1]:
+        atoms.calc.set(istart=0)
+
     atoms = run_calc(atoms)
 
     return atoms
