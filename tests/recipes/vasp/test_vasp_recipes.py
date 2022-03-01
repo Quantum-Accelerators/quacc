@@ -100,8 +100,7 @@ def test_doublerelax_maker():
     output = responses[job.uuid][1].output
     assert output["parameters"]["isif"] == 2
 
-    atoms = bulk("Cu") * (8, 8, 8)
-    job = DoubleRelaxMaker().make(atoms)
+    job = DoubleRelaxMaker(swaps1={"kpts": [1, 1, 1]}).make(atoms)
     responses = run_locally(job, ensure_success=True)
 
 
