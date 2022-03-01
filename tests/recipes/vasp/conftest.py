@@ -61,7 +61,5 @@ def patch_summarize_run(monkeypatch):
     # summarize_run() is a function in the quacc.schemas.vasp module, we modify it
     # only in quacc.recipes.vasp.core/.slabs because otherwise it will not work properly.
     monkeypatch.setattr("quacc.recipes.vasp.core.summarize_run", mock_summarize_run)
-    monkeypatch.setattr(
-        "quacc.recipes.vasp.multistage.summarize_run", mock_summarize_run
-    )
+    monkeypatch.setattr("quacc.recipes.vasp.qmof.summarize_run", mock_summarize_run)
     monkeypatch.setattr("quacc.recipes.vasp.slabs.summarize_run", mock_summarize_run)

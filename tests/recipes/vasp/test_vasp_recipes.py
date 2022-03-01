@@ -4,7 +4,7 @@ from ase.build import bulk, molecule
 from jobflow.managers.local import run_locally
 
 from quacc.recipes.vasp.core import DoubleRelaxMaker, RelaxMaker, StaticMaker
-from quacc.recipes.vasp.multistage import MultiRelaxMaker
+from quacc.recipes.vasp.qmof import QMOFMaker
 from quacc.recipes.vasp.slabs import (
     BulkToSlabMaker,
     SlabRelaxMaker,
@@ -250,31 +250,31 @@ def test_slab_flows():
     assert output2["name"] == "VASP-SlabStatic"
 
 
-def test_multirelax_maker():
+def test_qmof_maker():
     atoms = bulk("Cu")
-    job = MultiRelaxMaker().make(atoms)
+    job = QMOFMaker().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["nsites"] == len(atoms)
+    assert output["parameters"]["sigma"] == 0.01
     assert output["parameters"]["isym"] == 0
     assert output["parameters"]["nsw"] > 0
     assert output["parameters"]["isif"] == 3
-    assert output["name"] == "VASP-MultiRelax"
+    assert output["name"] == "QMOF-Relax"
 
-    job = MultiRelaxMaker(preset="BulkRelaxSet", name="test", swaps={"nelmin": 6}).make(
-        atoms
-    )
+    job = QMOFMaker(preset="BulkRelaxSet", name="test", swaps={"nelmin": 6}).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["parameters"]["encut"] == 650
     assert output["parameters"]["nelmin"] == 6
+    assert output["parameters"]["sigma"] == 0.05
     assert output["name"] == "test"
 
-    job = MultiRelaxMaker(volume_relax=False).make(atoms)
+    job = QMOFMaker(volume_relax=False).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["parameters"]["isif"] == 2
 
     atoms = bulk("Cu") * (8, 8, 8)
-    job = MultiRelaxMaker().make(atoms)
+    job = QMOFMaker().make(atoms)
     responses = run_locally(job, ensure_success=True)

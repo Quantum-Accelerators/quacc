@@ -10,12 +10,16 @@ from quacc.schemas.vasp import summarize_run
 from quacc.util.basics import merge_dicts
 from quacc.util.calc import run_calc
 
+# This set of recipes is meant to be compatible with the QMOF Database workflow.
+# Reference: https://doi.org/10.1016/j.matt.2021.02.015
+
 
 @dataclass
-class MultiRelaxMaker(Maker):
+class QMOFMaker(Maker):
     """
     Class to relax a structure in a multi-step process for increased
     computational efficiency. This is all done in a single compute job.
+    Settings are such that they are compatible with the QMOF Database.
 
     1. A "pre-relaxation" with BFGSLineSearch to resolve very high forces.
     2. Position relaxation with default ENCUT and coarse k-point grid.
@@ -35,8 +39,8 @@ class MultiRelaxMaker(Maker):
         Dictionary of custom kwargs for the calculator. Applies for all jobs.
     """
 
-    name: str = "VASP-MultiRelax"
-    preset: str = None
+    name: str = "QMOF-Relax"
+    preset: str = "QMOFRelaxSet"
     volume_relax: bool = True
     swaps: Dict[str, Any] = None
 
@@ -107,14 +111,11 @@ def prerelax(
         "auto_kpts": {"grid_density": 100},
         "ediff": 1e-4,
         "encut": None,
-        "ismear": 0,
-        "isym": 0,
         "lcharg": False,
         "lreal": "auto",
         "lwave": True,
         "nelm": 225,
         "nsw": 0,
-        "sigma": 0.05,
     }
     flags = merge_dicts(defaults, swaps, remove_none=True)
     atoms = SmartVasp(atoms, preset=preset, **flags)
@@ -147,18 +148,14 @@ def loose_relax_positions(
     """
     defaults = {
         "auto_kpts": {"grid_density": 100},
-        "encut": None,
         "ediff": 1e-4,
         "ediffg": -0.05,
+        "encut": None,
         "isif": 2,
-        "ibrion": 2,
-        "ismear": 0,
-        "isym": 0,
         "lcharg": False,
         "lreal": "auto",
         "lwave": True,
         "nsw": 250,
-        "sigma": 0.05,
     }
     flags = merge_dicts(defaults, swaps, remove_none=True)
     atoms = SmartVasp(atoms, preset=preset, **flags)
@@ -190,17 +187,11 @@ def loose_relax_volume(
     """
     defaults = {
         "auto_kpts": {"grid_density": 100},
-        "ediff": 1e-6,
-        "ediffg": -0.02,
         "isif": 3,
-        "ibrion": 2,
-        "ismear": 0,
-        "isym": 0,
         "lcharg": False,
         "lreal": "auto",
         "lwave": True,
         "nsw": 500,
-        "sigma": 0.05,
     }
     flags = merge_dicts(defaults, swaps, remove_none=True)
     atoms = SmartVasp(atoms, preset=preset, **flags)
@@ -235,17 +226,11 @@ def double_relax(
     """
 
     defaults = {
-        "ediff": 1e-6,
-        "ediffg": -0.02,
         "isif": 3 if volume_relax else 2,
-        "ibrion": 2,
-        "ismear": 0,
-        "isym": 0,
         "lcharg": False,
         "lreal": "auto",
         "lwave": True,
-        "nsw": 250,
-        "sigma": 0.05,
+        "nsw": 500 if volume_relax else 250,
     }
     flags = merge_dicts(defaults, swaps, remove_none=True)
     atoms = SmartVasp(atoms, preset=preset, **flags)
