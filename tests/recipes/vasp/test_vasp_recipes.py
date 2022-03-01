@@ -1,5 +1,4 @@
 import os
-from tokenize import Double
 
 from ase.build import bulk, molecule
 from jobflow.managers.local import run_locally
