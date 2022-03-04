@@ -1,4 +1,4 @@
-parent: BulkRelaxSet.yaml
+parent: BulkSet.yaml
 inputs:
   auto_dipole: true
   auto_kpts:

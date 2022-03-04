@@ -40,7 +40,7 @@ class QMOFMaker(Maker):
     """
 
     name: str = "QMOF-Relax"
-    preset: str = "QMOFRelaxSet"
+    preset: str = "QMOFSet"
     volume_relax: bool = True
     swaps: Dict[str, Any] = None
 
@@ -85,8 +85,8 @@ class QMOFMaker(Maker):
 
 def prerelax(
     atoms: Atoms,
-    preset: str,
-    swaps: Dict[str, Any],
+    preset: str = "QMOFSet",
+    swaps: Dict[str, Any] = None,
     fmax: float = 5.0,
 ) -> Atoms:
     """
@@ -107,6 +107,7 @@ def prerelax(
     -------
     .Atoms object
     """
+    swaps = swaps or {}
     defaults = {
         "auto_kpts": {"grid_density": 100},
         "ediff": 1e-4,
@@ -127,8 +128,8 @@ def prerelax(
 
 def loose_relax_positions(
     atoms: Atoms,
-    preset: str,
-    swaps: Dict[str, Any],
+    preset: str = "QMOFSet",
+    swaps: Dict[str, Any] = None,
 ) -> Atoms:
     """
     Position relaxation with default ENCUT and coarse k-point grid.
@@ -146,6 +147,7 @@ def loose_relax_positions(
     -------
     .Atoms object
     """
+    swaps = swaps or {}
     defaults = {
         "auto_kpts": {"grid_density": 100},
         "ediff": 1e-4,
@@ -166,8 +168,8 @@ def loose_relax_positions(
 
 def loose_relax_volume(
     atoms: Atoms,
-    preset: str,
-    swaps: Dict[str, Any],
+    preset: str = "QMOFSet",
+    swaps: Dict[str, Any] = None,
 ) -> Atoms:
     """
     Optional: volume relaxation with coarse k-point grid.
@@ -185,6 +187,7 @@ def loose_relax_volume(
     -------
     .Atoms object
     """
+    swaps = swaps or {}
     defaults = {
         "auto_kpts": {"grid_density": 100},
         "isif": 3,
@@ -202,8 +205,8 @@ def loose_relax_volume(
 
 def double_relax(
     atoms: Atoms,
-    preset: str,
-    swaps: Dict[str, Any],
+    preset: str = "QMOFSet",
+    swaps: Dict[str, Any] = None,
     volume_relax: bool = True,
 ) -> Atoms:
     """
@@ -224,7 +227,7 @@ def double_relax(
     -------
     .Atoms object
     """
-
+    swaps = swaps or {}
     defaults = {
         "isif": 3 if volume_relax else 2,
         "lcharg": False,
@@ -232,14 +235,17 @@ def double_relax(
         "lwave": True,
         "nsw": 500 if volume_relax else 250,
     }
+
+    # Run first relaxation
     flags = merge_dicts(defaults, swaps, remove_none=True)
     atoms = SmartVasp(atoms, preset=preset, **flags)
     kpts1 = atoms.calc.kpts
     atoms = run_calc(atoms)
 
-    # Reset LREAL and ISTART to their default values.
+    # Reset LREAL
     del defaults["lreal"]
 
+    # Run second relaxation
     flags = merge_dicts(defaults, swaps, remove_none=True)
     atoms = SmartVasp(atoms, preset=preset, **flags)
     kpts2 = atoms.calc.kpts

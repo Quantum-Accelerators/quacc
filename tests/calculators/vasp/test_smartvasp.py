@@ -39,23 +39,21 @@ def test_presets():
     atoms = bulk("Co") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
 
-    atoms_fullpath = SmartVasp(
-        atoms, preset=os.path.join(DEFAULT_CALCS_DIR, "BulkRelaxSet")
-    )
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms_fullpath = SmartVasp(atoms, preset=os.path.join(DEFAULT_CALCS_DIR, "BulkSet"))
+    atoms = SmartVasp(atoms, preset="BulkSet")
     assert atoms == atoms_fullpath
     assert atoms.calc.xc.lower() == "pbe"
     assert atoms.calc.string_params["algo"] == "fast"
     assert atoms.calc.exp_params["ediff"] == 1e-6
     assert atoms.calc.int_params["isif"] == 3
 
-    atoms = SmartVasp(atoms, xc="rpbe", preset="SlabRelaxSet")
+    atoms = SmartVasp(atoms, xc="rpbe", preset="SlabSet")
     assert atoms.calc.xc.lower() == "rpbe"
     assert atoms.calc.string_params["algo"] == "fast"
     assert atoms.calc.exp_params["ediff"] == 1e-6
     assert atoms.calc.int_params["isif"] == 2
 
-    atoms = SmartVasp(atoms, xc="scan", preset="MPScanRelaxSet")
+    atoms = SmartVasp(atoms, xc="scan", preset="MPScanSet")
     assert atoms.calc.xc.lower() == "scan"
     assert atoms.calc.string_params["algo"] == "all"
     assert atoms.calc.exp_params["ediff"] == 1e-5
@@ -90,17 +88,17 @@ def test_autodipole():
     assert atoms.calc.int_params["idipol"] == 2
     assert np.array_equal(atoms.calc.list_float_params["dipol"], com)
 
-    atoms = SmartVasp(atoms, preset="SlabRelaxSet")
+    atoms = SmartVasp(atoms, preset="SlabSet")
     assert atoms.calc.bool_params["ldipol"] is True
     assert atoms.calc.int_params["idipol"] == 3
     assert np.array_equal(atoms.calc.list_float_params["dipol"], com)
 
-    atoms = SmartVasp(atoms, preset="SlabRelaxSet", idipol=2)
+    atoms = SmartVasp(atoms, preset="SlabSet", idipol=2)
     assert atoms.calc.bool_params["ldipol"] is True
     assert atoms.calc.int_params["idipol"] == 2
     assert np.array_equal(atoms.calc.list_float_params["dipol"], com)
 
-    atoms = SmartVasp(atoms, auto_dipole=False, preset="SlabRelaxSet", idipol=2)
+    atoms = SmartVasp(atoms, auto_dipole=False, preset="SlabSet", idipol=2)
     assert atoms.calc.bool_params["ldipol"] is None
     assert atoms.calc.int_params["idipol"] == 2
     assert atoms.calc.list_float_params["dipol"] is None
@@ -127,28 +125,28 @@ def test_magmoms():
 
     atoms = bulk("Cu") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, preset="BulkSet")
     assert atoms.get_initial_magnetic_moments().tolist() == [2.0] * (len(atoms) - 1) + [
         5.0
     ]
 
     atoms = bulk("Zn") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet", mag_default=2.5)
+    atoms = SmartVasp(atoms, preset="BulkSet", mag_default=2.5)
     assert atoms.get_initial_magnetic_moments().tolist() == [2.5] * (len(atoms) - 1) + [
         5.0
     ]
 
     atoms = bulk("Eu") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
-    atoms = SmartVasp(atoms, preset="SlabRelaxSet")
+    atoms = SmartVasp(atoms, preset="SlabSet")
     assert atoms.get_initial_magnetic_moments().tolist() == [7.0] * (len(atoms) - 1) + [
         5.0
     ]
 
     atoms = bulk("Cu") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
-    atoms = SmartVasp(atoms, preset="MPScanRelaxSet")
+    atoms = SmartVasp(atoms, preset="MPScanSet")
     assert atoms.get_initial_magnetic_moments().tolist() == [1.0] * (len(atoms) - 1) + [
         5.0
     ]
@@ -156,7 +154,7 @@ def test_magmoms():
     atoms = bulk("Cu") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
     atoms.set_initial_magnetic_moments([3.14] * (len(atoms) - 1) + [1.0])
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, preset="BulkSet")
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * (
         len(atoms) - 1
     ) + [1.0]
@@ -164,113 +162,113 @@ def test_magmoms():
     atoms = bulk("Co") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
     atoms.set_initial_magnetic_moments([0.0] * len(atoms))
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, preset="BulkSet")
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = deepcopy(ATOMS_MAG)
     mags = atoms.get_magnetic_moments()
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, preset="BulkSet")
     assert np.array_equal(atoms.get_initial_magnetic_moments(), mags) is True
 
     atoms = deepcopy(ATOMS_MAG)
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet", mag_cutoff=2.0)
+    atoms = SmartVasp(atoms, preset="BulkSet", mag_cutoff=2.0)
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = deepcopy(ATOMS_MAG)
     assert atoms.get_magnetic_moments()[0] == 0.468
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, preset="BulkSet")
     assert atoms.get_initial_magnetic_moments()[0] == 0.468
 
     atoms = deepcopy(ATOMS_NOMAG)
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, preset="BulkSet")
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
     atoms.calc.results = {"energy": -1.0}  # mock calculation run
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, preset="BulkSet")
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = deepcopy(ATOMS_NOMAG)
     calc = SinglePointDFTCalculator(atoms, **{"magmoms": [0.0] * len(atoms)})
     atoms.calc = calc
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, preset="BulkSet")
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = deepcopy(ATOMS_NOMAG)
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, preset="BulkSet")
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
     atoms.calc.results = {"magmoms": [0.0] * len(atoms)}
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, preset="BulkSet")
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = deepcopy(ATOMS_NOMAG)
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, preset="BulkSet")
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
     atoms.calc.results = {"magmoms": [1.0] * len(atoms)}
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, preset="BulkSet")
     assert np.all(atoms.get_initial_magnetic_moments() == 1)
 
     atoms = deepcopy(ATOMS_NOSPIN)
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, preset="BulkSet")
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
     atoms.calc.results = {"magmoms": [1.0] * len(atoms)}
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, preset="BulkSet")
     assert np.all(atoms.get_initial_magnetic_moments() == 1)
 
     atoms = bulk("Cu")
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet", copy_magmoms=False)
+    atoms = SmartVasp(atoms, preset="BulkSet", copy_magmoms=False)
     assert np.all(atoms.get_initial_magnetic_moments() == 2.0)
     atoms.calc.results = {"magmoms": [3.0] * len(atoms)}
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet", copy_magmoms=False)
+    atoms = SmartVasp(atoms, preset="BulkSet", copy_magmoms=False)
     assert np.all(atoms.get_initial_magnetic_moments() == 2.0)
 
     atoms = bulk("Mg")
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, preset="BulkSet")
     assert np.all(atoms.get_initial_magnetic_moments() == 1.0)
     atoms.calc.results = {"magmoms": [0.0] * len(atoms)}
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, preset="BulkSet")
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = bulk("Mg")
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, preset="BulkSet")
     assert np.all(atoms.get_initial_magnetic_moments() == 1.0)
     atoms.calc.results = {"magmoms": [-0.01] * len(atoms)}
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, preset="BulkSet")
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = bulk("Mg")
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, preset="BulkSet")
     assert np.all(atoms.get_initial_magnetic_moments() == 1.0)
     atoms.calc.results = {"magmoms": [-5] * len(atoms)}
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, preset="BulkSet")
     assert np.all(atoms.get_initial_magnetic_moments() == -5)
 
     atoms = deepcopy(ATOMS_MAG)
     mags = atoms.get_magnetic_moments()
     atoms = prep_next_run(atoms)
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, preset="BulkSet")
     assert atoms.has("initial_magmoms") is True
     assert atoms.get_initial_magnetic_moments().tolist() == mags.tolist()
 
     atoms = deepcopy(ATOMS_NOMAG)
     atoms = prep_next_run(atoms)
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, preset="BulkSet")
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = deepcopy(ATOMS_NOSPIN)
     atoms = prep_next_run(atoms)
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, preset="BulkSet")
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = deepcopy(ATOMS_MAG)
     atoms = prep_next_run(atoms)
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet", mag_cutoff=10.0)
+    atoms = SmartVasp(atoms, preset="BulkSet", mag_cutoff=10.0)
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
@@ -279,7 +277,7 @@ def test_magmoms():
     atoms.calc.results = {"energy": -1.0, "magmoms": [0.0] * len(atoms)}
     atoms = prep_next_run(atoms)
     atoms *= (2, 2, 2)
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, preset="BulkSet")
     np.all(atoms.get_initial_magnetic_moments() == 0.0)
 
     atoms = bulk("Mg")
@@ -287,7 +285,7 @@ def test_magmoms():
     atoms.calc.results = {"energy": -1.0, "magmoms": [-0.02] * len(atoms)}
     atoms = prep_next_run(atoms)
     atoms *= (2, 2, 2)
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, preset="BulkSet")
     np.all(atoms.get_initial_magnetic_moments() == 0.0)
 
     atoms = bulk("Mg")
@@ -295,21 +293,21 @@ def test_magmoms():
     atoms.calc.results = {"energy": -1.0}
     atoms = prep_next_run(atoms)
     atoms *= (2, 2, 2)
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, preset="BulkSet")
     np.all(atoms.get_initial_magnetic_moments() == 0.0)
 
     atoms = bulk("Mg")
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, preset="BulkSet")
     atoms.calc.results = {"energy": -1.0, "magmoms": [3.14] * len(atoms)}
     atoms = prep_next_run(atoms)
     atoms *= (2, 2, 2)
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, preset="BulkSet")
     np.all(atoms.get_initial_magnetic_moments() == 3.14)
 
 
 def test_unused_flags():
     atoms = bulk("Cu")
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet", potim=1.5, nsw=0)
+    atoms = SmartVasp(atoms, preset="BulkSet", potim=1.5, nsw=0)
     assert atoms.calc.int_params["nsw"] == 0
     assert atoms.calc.exp_params["ediffg"] is None
     assert atoms.calc.int_params["isif"] is None
@@ -541,23 +539,23 @@ def test_lorbit():
 
 def test_setups():
     atoms = bulk("Cu")
-    atoms = SmartVasp(atoms, preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, preset="BulkSet")
     assert atoms.calc.parameters["setups"]["Cu"] == ""
 
     atoms = bulk("Cu")
-    atoms = SmartVasp(atoms, preset="SlabRelaxSet")
+    atoms = SmartVasp(atoms, preset="SlabSet")
     assert atoms.calc.parameters["setups"]["Ba"] == "_sv"
     assert atoms.calc.parameters["setups"]["Cu"] == ""
 
     atoms = bulk("Cu")
-    atoms = SmartVasp(atoms, preset="MPScanRelaxSet")
+    atoms = SmartVasp(atoms, preset="MPScanSet")
     assert atoms.calc.parameters["setups"]["Cu"] == "_pv"
 
     atoms = bulk("Cu")
     atoms = SmartVasp(
         atoms,
         setups=os.path.join(FILE_DIR, "test_setups.yaml"),
-        preset="BulkRelaxSet",
+        preset="BulkSet",
     )
     assert atoms.calc.parameters["setups"]["Cu"] == "_pv"
 
@@ -565,12 +563,12 @@ def test_setups():
     atoms = SmartVasp(
         atoms,
         setups="setups_pbe54_MP.yaml",
-        preset="BulkRelaxSet",
+        preset="BulkSet",
     )
     assert atoms.calc.parameters["setups"]["Cu"] == "_pv"
 
     atoms = bulk("Cu")
-    atoms = SmartVasp(atoms, setups="minimal", preset="MPScanRelaxSet")
+    atoms = SmartVasp(atoms, setups="minimal", preset="MPScanSet")
     assert (
         isinstance(atoms.calc.parameters["setups"], str)
         and atoms.calc.parameters["setups"] == "minimal"
@@ -579,7 +577,7 @@ def test_setups():
 
 def test_kpoint_schemes():
     atoms = bulk("Cu")
-    atoms = SmartVasp(atoms, kpts=[1, 1, 1], preset="BulkRelaxSet")
+    atoms = SmartVasp(atoms, kpts=[1, 1, 1], preset="BulkSet")
     assert atoms.calc.kpts == [1, 1, 1]
 
     atoms = bulk("Cu")
@@ -595,7 +593,7 @@ def test_kpoint_schemes():
     atoms = bulk("Cu")
     atoms = SmartVasp(
         atoms,
-        preset="BulkRelaxSet",
+        preset="BulkSet",
         auto_kpts={"grid_density": 1000},
         gamma=False,
     )
