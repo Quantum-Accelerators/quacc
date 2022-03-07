@@ -51,7 +51,7 @@ def manage_environment(custodian: bool = True) -> str:
 
         # Return the command flag
         custodian_dir = os.path.dirname(os.path.abspath(inspect.getfile(custodian_)))
-        run_vasp_custodian_file = os.path.join(custodian_dir, "run_vasp_custodian.py")
+        run_vasp_custodian_file = os.path.join(custodian_dir, "vasp.py")
         command = f"python {run_vasp_custodian_file}"
     else:
         if "ASE_VASP_COMMAND" not in os.environ and "VASP_SCRIPT" not in os.environ:
