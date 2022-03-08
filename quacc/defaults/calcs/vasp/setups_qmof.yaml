@@ -1,6 +1,4 @@
-# VASP-recommended .54 PAW PBE potentials
-# Use this instead of setups='recommended' in case
-# ASE makes some change.
+# QMOF-compatible PAW PBE potentials
 inputs:
   setups:
     Ac: Ac
