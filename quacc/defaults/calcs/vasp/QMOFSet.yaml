@@ -1,5 +1,5 @@
 parent_magmoms: magmoms_qmof.yaml
-parent_setups: setups_pbe54.yaml
+parent_setups: setups_qmof.yaml
 inputs:
   auto_kpts:
     grid_density: 1000
@@ -22,7 +22,3 @@ inputs:
   sigma: 0.01
   symprec: 1.0e-8
   xc: pbe
-setups:
-  Eu: Eu_3
-  Li: Li
-  Yb: Yb_3

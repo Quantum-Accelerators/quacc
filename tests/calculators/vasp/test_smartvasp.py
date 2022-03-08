@@ -574,6 +574,12 @@ def test_setups():
         and atoms.calc.parameters["setups"] == "minimal"
     )
 
+    atoms = bulk("Cu")
+    atoms = SmartVasp(atoms, preset="QMOFSet")
+    assert atoms.calc.parameters["setups"]["Cu"] == ""
+    assert atoms.calc.parameters["setups"]["Er"] == "_3"
+    assert atoms.calc.parameters["setups"]["Yb"] == "_3"
+
 
 def test_kpoint_schemes():
     atoms = bulk("Cu")
