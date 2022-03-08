@@ -10,7 +10,7 @@ from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.vasp.inputs import Kpoints
 from pymatgen.symmetry.bandstructure import HighSymmKpath
 
-from quacc import custodian as custodian_
+from quacc.custodian import vasp as custodian_vasp
 from quacc.defaults import custodian_settings
 from quacc.util.atoms import check_is_metal, get_highest_block
 
@@ -50,8 +50,7 @@ def manage_environment(custodian: bool = True) -> str:
             raise FileNotFoundError(f"{custodian_yaml} not found.")
 
         # Return the command flag
-        custodian_dir = os.path.dirname(os.path.abspath(inspect.getfile(custodian_)))
-        run_vasp_custodian_file = os.path.join(custodian_dir, "run_vasp_custodian.py")
+        run_vasp_custodian_file = os.path.abspath(inspect.getfile(custodian_vasp))
         command = f"python {run_vasp_custodian_file}"
     else:
         if "ASE_VASP_COMMAND" not in os.environ and "VASP_SCRIPT" not in os.environ:
