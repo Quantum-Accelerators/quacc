@@ -1,6 +1,7 @@
 from copy import deepcopy
 from typing import Any, Dict
 
+from monty.json import jsanitize
 import numpy as np
 from ase.atoms import Atom, Atoms
 from atomate2.common.schemas.molecule import MoleculeMetadata
@@ -63,6 +64,8 @@ def atoms_to_metadata(
                 k.__str__(): atoms_to_metadata(v) if isinstance(v, (Atom, Atoms)) else v
                 for k, v in val.items()
             }
+        else:
+            val = jsanitize(val)
 
         results["atoms_info"][key] = val
 
