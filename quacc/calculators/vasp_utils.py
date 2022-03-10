@@ -307,12 +307,6 @@ def calc_swaps(
                 "Copilot: Setting ISMEAR = -5 because you have a static DOS calculation."
             )
         calc.set(ismear=-5)
-        if calc.float_params.get("sigma", 0.2) > 0.05:
-            if verbose:
-                warnings.warn(
-                    "Copilot: Setting SIGMA = 0.05 because a static DOS was requested with SIGMA > 0.05."
-                )
-            calc.set(sigma=0.05)
 
     if (
         calc.int_params["ismear"] == -5
@@ -321,20 +315,29 @@ def calc_swaps(
     ):
         if verbose:
             warnings.warn(
-                "Copilot: Setting ISMEAR = 0 and SIGMA = 0.05 because you don't have enough k-points for ISMEAR = -5."
+                "Copilot: Setting ISMEAR = 0 because you don't have enough k-points for ISMEAR = -5."
             )
-        calc.set(ismear=0, sigma=0.05)
+        calc.set(ismear=0)
 
     if (
         auto_kpts
         and auto_kpts.get("line_density", None)
-        and (calc.int_params["ismear"] != 0 or calc.float_params["sigma"] > 0.01)
+        and calc.int_params["ismear"] != 0
     ):
         if verbose:
             warnings.warn(
                 "Copilot: Setting ISMEAR = 0 and SIGMA = 0.01 because you are doing a line mode calculation."
             )
         calc.set(ismear=0, sigma=0.01)
+
+    if calc.int_params["ismear"] == -5 and (
+        not calc.float_params["sigma"] or calc.float_params["sigma"] > 0.05
+    ):
+        if verbose:
+            warnings.warn(
+                "Copilot: Setting SIGMA = 0.05 because ISMEAR = -5 was requested with SIGMA > 0.05."
+            )
+        calc.set(sigma=0.05)
 
     if (
         calc.float_params["kspacing"]
@@ -343,9 +346,9 @@ def calc_swaps(
     ):
         if verbose:
             warnings.warn(
-                "Copilot: KSPACING is likely too large for ISMEAR = -5. Setting ISMEAR = 0 and SIGMA = 0.05."
+                "Copilot: KSPACING is likely too large for ISMEAR = -5. Setting ISMEAR = 0."
             )
-        calc.set(ismear=0, sigma=0.05)
+        calc.set(ismear=0)
 
     if (
         calc.int_params["nsw"]
