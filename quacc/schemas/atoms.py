@@ -84,9 +84,9 @@ def _quacc_sanitize(obj: Any) -> Any:
     if isinstance(obj, (Atom, Atoms)):
         obj = atoms_to_metadata(obj)
     elif isinstance(obj, (list, tuple, np.ndarray)):
-        obj = [quacc_sanitize(i) for i in obj]
+        obj = [_quacc_sanitize(i) for i in obj]
     elif isinstance(obj, dict):
-        obj = {k.__str__(): quacc_sanitize(v) for k, v in obj.items()}
+        obj = {k.__str__(): _quacc_sanitize(v) for k, v in obj.items()}
     else:
         obj = jsanitize(obj)
     return obj
