@@ -42,6 +42,15 @@ def test_static_maker():
     assert output["parameters"]["kpar"] == 4
     assert output["name"] == "test"
 
+    job = StaticMaker(
+        preset="QMOFSet", swaps={"ismear": 0, "sigma": 0.01, "nedos": None}
+    ).make(atoms)
+    responses = run_locally(job, ensure_success=True)
+    output = responses[job.uuid][1].output
+    assert output["parameters"]["encut"] == 520
+    assert output["parameters"]["ismear"] == 0
+    assert output["parameters"]["sigma"] == 0.01
+
 
 def test_relax_maker():
 
