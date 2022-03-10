@@ -304,9 +304,16 @@ def calc_swaps(
     ):
         if verbose:
             warnings.warn(
-                "Copilot: Setting ISMEAR = -5 and SIGMA = 0.05 because you have a static DOS calculation."
+                "Copilot: Setting ISMEAR = -5 because you have a static DOS calculation."
             )
-        calc.set(ismear=-5, sigma=0.05)
+        calc.set(ismear=-5)
+        if calc.float_params.get("sigma", 0.2) > 0.05:
+            if verbose:
+                    warnings.warn(
+                        "Copilot: Setting SIGMA = 0.05 because a static DOS was requested with SIGMA > 0.05."
+                    )
+            calc.set(sigma=0.05)
+            
 
     if (
         calc.int_params["ismear"] == -5
