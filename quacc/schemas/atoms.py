@@ -1,11 +1,11 @@
 from copy import deepcopy
 from typing import Any, Dict
 
-from monty.json import jsanitize
 import numpy as np
 from ase.atoms import Atom, Atoms
 from atomate2.common.schemas.molecule import MoleculeMetadata
 from atomate2.common.schemas.structure import StructureMetadata
+from monty.json import jsanitize
 from pymatgen.io.ase import AseAtomsAdaptor
 
 
@@ -48,26 +48,7 @@ def atoms_to_metadata(
         metadata = {}
 
     # Copy the info flags as a separate entry in the DB for easy querying
-    results["atoms_info"] = {}
-    for key, val in atoms.info.items():
-
-        # This is to make sure any Atom/Atoms object in atoms.info is also
-        # turned into metadata
-        if isinstance(val, (Atom, Atoms)):
-            val = atoms_to_metadata(val)
-        elif isinstance(val, (list, tuple, np.ndarray)):
-            val = [
-                atoms_to_metadata(v) if isinstance(v, (Atom, Atoms)) else v for v in val
-            ]
-        elif isinstance(val, dict):
-            val = {
-                k.__str__(): atoms_to_metadata(v) if isinstance(v, (Atom, Atoms)) else v
-                for k, v in val.items()
-            }
-        else:
-            val = jsanitize(val)
-
-        results["atoms_info"][key] = val
+    results["atoms_info"] = quacc_sanitize(atoms.info)
 
     # Strip info if requested
     if strip_info:
@@ -81,3 +62,31 @@ def atoms_to_metadata(
     atoms_doc = {**metadata, **results}
 
     return atoms_doc
+
+
+def quacc_sanitize(obj: Any) -> Any:
+    """
+    Sanitizes an object for storage in MongoDB.
+
+    This is an analogue of monty's jsanitize function but meant to serialize
+    Atom/Atoms objects as well.
+
+    Parameters
+    ----------
+    obj
+        Object to sanitize
+
+    Returns
+    -------
+    Any
+        Sanitized object
+    """
+    if isinstance(obj, (Atom, Atoms)):
+        obj = atoms_to_metadata(obj)
+    elif isinstance(obj, (list, tuple, np.ndarray)):
+        obj = [quacc_sanitize(i) for i in obj]
+    elif isinstance(obj, dict):
+        obj = {k.__str__(): quacc_sanitize(v) for k, v in obj.items()}
+    else:
+        obj = jsanitize(obj)
+    return obj
