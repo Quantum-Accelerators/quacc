@@ -48,7 +48,7 @@ def atoms_to_metadata(
         metadata = {}
 
     # Copy the info flags as a separate entry in the DB for easy querying
-    results["atoms_info"] = quacc_sanitize(atoms.info)
+    results["atoms_info"] = _quacc_sanitize(atoms.info)
 
     # Strip info if requested
     if strip_info:
@@ -64,7 +64,7 @@ def atoms_to_metadata(
     return atoms_doc
 
 
-def quacc_sanitize(obj: Any) -> Any:
+def _quacc_sanitize(obj: Any) -> Any:
     """
     Sanitizes an object for storage in MongoDB.
 
