@@ -1,7 +1,5 @@
 from typing import Any, Dict
 
-# Functions in here should be ported to monty if practical
-
 
 def merge_dicts(
     d1: Dict[str, Any],
@@ -33,3 +31,30 @@ def merge_dicts(
     if remove_false:
         d_merged = {k: v for k, v in d_merged.items() if v is not False}
     return d_merged
+
+
+def remove_dict_empties(d: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    For a given dictionary, recursively remove all items that are None
+    or are empty lists/dicts.
+
+    Parameters
+    ----------
+    d
+        Dictionary to jsonify
+
+    Returns
+    -------
+    Dict
+        jsonify'd dictionary
+    """
+
+    if isinstance(d, dict):
+        return {
+            k: remove_dict_empties(v)
+            for k, v in d.items()
+            if v is not None and not (isinstance(v, (dict, list)) and len(v) == 0)
+        }
+    if isinstance(d, list):
+        return [remove_dict_empties(v) for v in d]
+    return d

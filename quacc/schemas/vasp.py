@@ -7,6 +7,7 @@ from atomate2.vasp.schemas.task import TaskDocument
 
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
+from quacc.util.basics import remove_dict_empties
 from quacc.util.pop_analysis import run_bader
 
 
@@ -116,33 +117,6 @@ def summarize_run(
     task_doc = {**results, **atoms_db, **additional_fields}
 
     if remove_empties:
-        task_doc = _remove_empties(task_doc)
+        task_doc = remove_dict_empties(task_doc)
 
     return task_doc
-
-
-def _remove_empties(d: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    For a given dictionary, recursively remove all items that are None
-    or are empty lists/dicts.
-
-    Parameters
-    ----------
-    d
-        Dictionary to jsonify
-
-    Returns
-    -------
-    Dict
-        jsonify'd dictionary
-    """
-
-    if isinstance(d, dict):
-        return {
-            k: _remove_empties(v)
-            for k, v in d.items()
-            if v is not None and not (isinstance(v, (dict, list)) and len(v) == 0)
-        }
-    if isinstance(d, list):
-        return [_remove_empties(v) for v in d]
-    return d
