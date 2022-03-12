@@ -4,8 +4,6 @@ from typing import Any, Dict, List
 
 import numpy as np
 from ase.atoms import Atoms
-from ase.build import molecule
-from ase.collections import g2
 from pymatgen.analysis.adsorption import AdsorbateSiteFinder
 from pymatgen.core import Structure
 from pymatgen.core.surface import Slab, center_slab, generate_all_slabs
@@ -309,10 +307,9 @@ def make_max_slabs_from_bulk(
     return slabs
 
 
-# TODO: We need a method to orient adsorbate via a kwarg
 def make_adsorbate_structures(
     atoms: Atoms,
-    adsorbate: Atoms | str,
+    adsorbate: Atoms,
     min_distance: float = 2.0,
     modes: List[str] = None,
     allowed_surface_symbols: None | List[str] = None,
@@ -328,7 +325,7 @@ def make_adsorbate_structures(
     atoms
         The atoms to add adsorbates to.
     adsorbate
-        The adsorbate to add. If a string, it will pull from ase.collections.g2
+        The adsorbate to add.
         Note: It will be placed on the surface in the exact input orientation provided by the user (the adsorption mode is
         along the c axis and the coordinating atom is the one in the -z direction).
     min_distance
@@ -378,19 +375,6 @@ def make_adsorbate_structures(
             allowed_surface_indices,
             atom_indices,
         )
-
-    if isinstance(adsorbate, str):
-        # Get adsorbate if string
-        if adsorbate in g2.names:
-            adsorbate = molecule(adsorbate)
-            # Remove any adsorbate magmoms from the g2 collection. I find
-            # it very bothersome that ASE automatically adds magnetic moments
-            # without the user's consent or knowledge. Leave that to the user
-            # except for O2.
-            if adsorbate.get_chemical_formula() != "O2":
-                adsorbate.set_initial_magnetic_moments(None)
-        else:
-            raise ValueError(f"{adsorbate} is not in the G2 database.")
 
     # Add 0.0 initial magmoms to atoms/adsorbate if needed
     if atoms.has("initial_magmoms") and not adsorbate.has("initial_magmoms"):

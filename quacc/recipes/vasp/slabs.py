@@ -124,9 +124,9 @@ class SlabRelaxMaker(Maker):
 
 
 @dataclass
-class BulkToSlabMaker(Maker):
+class BulkToSlabsMaker(Maker):
     """
-    Class to convert a bulk structure to a slab,
+    Class to convert a bulk structure to slabs,
     along with the relaxations and statics for the slabs.
 
     Parameters

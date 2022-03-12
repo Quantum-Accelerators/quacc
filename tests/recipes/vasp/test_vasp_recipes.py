@@ -6,7 +6,7 @@ from jobflow.managers.local import run_locally
 from quacc.recipes.vasp.core import DoubleRelaxMaker, RelaxMaker, StaticMaker
 from quacc.recipes.vasp.qmof import QMOFMaker
 from quacc.recipes.vasp.slabs import (
-    BulkToSlabMaker,
+    BulkToSlabsMaker,
     SlabRelaxMaker,
     SlabStaticMaker,
     SlabToAdsSlabMaker,
@@ -158,7 +158,7 @@ def test_slab_flows():
     atoms = bulk("Cu") * (2, 2, 2)
 
     ### --------- Test BulkToSlabMaker --------- ###
-    flow = BulkToSlabMaker().make(atoms)
+    flow = BulkToSlabsMaker().make(atoms)
     responses = run_locally(flow, ensure_success=True)
 
     assert len(responses) == 9
