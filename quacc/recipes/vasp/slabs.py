@@ -219,9 +219,7 @@ class SlabToAdsSlabMaker(Maker):
     slab_static_maker: Maker = SlabStaticMaker()
 
     @job
-    def make(
-        self, atoms: Atoms, adsorbate: Atoms | str, **slabgen_ads_kwargs
-    ) -> Response:
+    def make(self, atoms: Atoms, adsorbate: Atoms, **slabgen_ads_kwargs) -> Response:
         """
         Make the run.
 
