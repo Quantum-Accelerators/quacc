@@ -151,9 +151,7 @@ class BulkToSlabMaker(Maker):
     swaps: Dict[str, Any] = None
 
     @job
-    def make(
-        self, atoms: Atoms, max_slabs: None | int = None, **slabgen_kwargs
-    ) -> Response:
+    def make(self, atoms: Atoms, max_slabs: int = None, **slabgen_kwargs) -> Response:
         """
         Make the run.
 
@@ -185,7 +183,6 @@ class BulkToSlabMaker(Maker):
         for slab in slabs:
             relax_job = self.slab_relax_maker.make(slab)
             jobs.append(relax_job)
-            outputs.append(relax_job.output)
 
             static_job = self.slab_static_maker.make(relax_job.output["atoms"])
             jobs.append(static_job)
@@ -257,7 +254,6 @@ class SlabToAdsSlabMaker(Maker):
         for slab in slabs:
             relax_job = self.slab_relax_maker.make(slab)
             jobs.append(relax_job)
-            outputs.append(relax_job.output)
 
             static_job = self.slab_static_maker.make(relax_job.output["atoms"])
             jobs.append(static_job)
