@@ -17,14 +17,14 @@ This package is heavily inspired by [Atomate2](https://github.com/materialsproje
 from ase.build import bulk
 from jobflow.managers.local import run_locally
 
-from quacc.recipes.vasp.core import RelaxMaker as VaspRelaxMaker
+from quacc.recipes.vasp.core import RelaxJob as VaspRelaxJob
 
 # Make a bulk Cu structure
 atoms = bulk("Cu")
 
 # Make a job consisting of a VASP relaxation using a pre-defined input set.
 # By default, VASP will be run using Custodian for on-the-fly error handling.
-job = VaspRelaxMaker(preset="BulkSet").make(atoms)
+job = VaspRelaxJob(preset="BulkSet").make(atoms)
 
 # Run the job locally, with all output data stored in a convenient schema
 responses = run_locally(job, create_folders=True)
@@ -37,18 +37,18 @@ from fireworks import LaunchPad
 from jobflow import Flow
 from jobflow.managers.fireworks import flow_to_workflow
 
-from quacc.recipes.xtb.core import RelaxMaker as XTBRelaxMaker
-from quacc.recipes.gaussian.core import RelaxMaker as GaussianRelaxMaker
-from quacc.recipes.orca.core import StaticMaker as OrcaStaticMaker
+from quacc.recipes.xtb.core import RelaxJob as XTBRelaxJob
+from quacc.recipes.gaussian.core import RelaxJob as GaussianRelaxJob
+from quacc.recipes.orca.core import StaticJob as OrcaStaticJob
 
 # Make an H2 molecule
 atoms = molecule("H2")
 
 # Make a flow consisting of a GFN2-xTB relaxation followed by a Gaussian relaxation
 # and then an ORCA static calculation
-job1 = XTBRelaxMaker(method="GFN2-xTB").make(atoms)
-job2 = GaussianRelaxMaker(xc="PBE").make(job1.output["atoms"])
-job3 = OrcaStaticMaker(xc="wB97M-V").make(job2.output["atoms"])
+job1 = XTBRelaxJob(method="GFN2-xTB").make(atoms)
+job2 = GaussianRelaxJob(xc="PBE").make(job1.output["atoms"])
+job3 = OrcaStaticJob(xc="wB97M-V").make(job2.output["atoms"])
 
 flow = Flow([job1, job2, job3])
 

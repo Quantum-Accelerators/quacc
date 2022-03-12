@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Any, Dict
 
 from ase.atoms import Atoms
-from jobflow import Maker, job
+from jobflow import Maker, job, Flow
 
 from quacc.calculators.vasp import SmartVasp
 from quacc.schemas.vasp import summarize_run
@@ -11,7 +11,7 @@ from quacc.util.calc import run_calc
 
 
 @dataclass
-class StaticMaker(Maker):
+class StaticJob(Maker):
     """
     Class to carry out a single-point calculation.
 
@@ -65,7 +65,7 @@ class StaticMaker(Maker):
 
 
 @dataclass
-class RelaxMaker(Maker):
+class RelaxJob(Maker):
     """
     Class to relax a structure.
 
@@ -124,7 +124,7 @@ class RelaxMaker(Maker):
 
 
 @dataclass
-class DoubleRelaxMaker(Maker):
+class DoubleRelaxJob(Maker):
     """
     Class to double-relax a structure. This is particularly useful for
     a few reasons:
@@ -204,3 +204,81 @@ class DoubleRelaxMaker(Maker):
         summary = summarize_run(atoms, additional_fields={"name": self.name})
 
         return summary
+
+
+@dataclass
+class FullRelaxFlow(Maker):
+    """
+    Class to convert make a full relaxation flow consisting of
+    an optional volume relaxation, positions relaxation, and
+    static calculation.
+
+    Parameters
+    ----------
+    name
+        Name of the job.
+    preset
+        Preset to use. Applies to all jobs in the flow.
+    slab_relax_job
+        Maker to use for the SlabRelax job.
+    slab_static_job
+        Default to use for the SlabStatic job.
+    swaps
+        Dictionary of custom kwargs for the calculator.
+        Applies to all jobs in the flow.
+    """
+
+    name: str = "VASP-FullRelax"
+    preset: str = None
+    volume_relax_job: Maker | None = DoubleRelaxJob()
+    positions_relax_job: Maker | None = RelaxJob(volume_relax=False)
+    static_job: Maker | None = StaticJob()
+    swaps: Dict[str, Any] = None
+
+    def make(self, atoms: Atoms) -> Flow:
+        """
+        Make the run.
+
+        Parameters
+        ----------
+        atoms
+            .Atoms object
+
+        Returns
+        -------
+        Flow
+            Flow object
+        """
+        jobs = []
+        if self.volume_relax_job:
+            if self.preset:
+                self.volume_relax_job.preset = self.preset
+            if self.swaps:
+                self.volume_relax_job.swaps = self.swaps
+
+            volume_relax_job = self.volume_relax_job.make(atoms)
+            atoms = volume_relax_job.output["atoms"]
+            jobs.append(volume_relax_job)
+
+        if self.positions_relax_job:
+            if self.preset:
+                self.positions_relax_job.preset = self.preset
+            if self.swaps:
+                self.positions_relax_job.swaps = self.swaps
+
+            positions_relax_job = self.positions_relax_job.make(atoms)
+            atoms = positions_relax_job.output["atoms"]
+            jobs.append(positions_relax_job)
+
+        if self.static_job:
+            if self.preset:
+                self.static_job.preset = self.preset
+            if self.swaps:
+                self.static_job.swaps = self.swaps
+
+            static_job = self.static_job.make(atoms)
+            jobs.append(static_job)
+
+        flow = Flow(jobs, output=jobs[-1].output, name=self.name)
+
+        return flow

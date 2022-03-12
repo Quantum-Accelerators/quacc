@@ -12,7 +12,7 @@ from quacc.util.calc import run_calc
 
 
 @dataclass
-class StaticMaker(Maker):
+class StaticJob(Maker):
     """
     Class to carry out a single-point calculation.
 
@@ -91,7 +91,7 @@ class StaticMaker(Maker):
 
 
 @dataclass
-class RelaxMaker(Maker):
+class RelaxJob(Maker):
     """
     Class to carry out a geometry optimization.
 
