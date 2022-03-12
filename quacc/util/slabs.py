@@ -490,9 +490,6 @@ def get_cleavage_energy(
         slab.get_potential_energy().
     """
 
-    alpha = len(slab) / len(bulk)
-    matrix = slab.cell.array
-    A = np.linalg.norm(np.cross(matrix[0, :], matrix[1, :]))
     if (
         bulk_energy is None
         and hasattr(bulk, "calc")
@@ -505,6 +502,10 @@ def get_cleavage_energy(
         and slab.calc.results.get("energy", None)
     ):
         slab_energy = slab.get_potential_energy()
+
+    alpha = len(slab) / len(bulk)
+    matrix = slab.cell.array
+    A = np.linalg.norm(np.cross(matrix[0, :], matrix[1, :]))
     cleave_energy = (slab_energy - alpha * bulk_energy) / (2 * A)
 
     return cleave_energy
