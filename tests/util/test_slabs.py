@@ -223,5 +223,3 @@ def test_errors():
         )
     with pytest.raises(ValueError):
         make_adsorbate_structures(atoms, mol, allowed_surface_indices=[100])
-    with pytest.raises(ValueError):
-        make_adsorbate_structures(atoms, "WOW")

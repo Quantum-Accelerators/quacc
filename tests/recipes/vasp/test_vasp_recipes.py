@@ -157,7 +157,7 @@ def test_slab_relax_maker():
 def test_slab_flows():
     atoms = bulk("Cu") * (2, 2, 2)
 
-    ### --------- Test BulkToSlabMaker --------- ###
+    ### --------- Test BulkToSlabsMaker --------- ###
     flow = BulkToSlabsMaker().make(atoms)
     responses = run_locally(flow, ensure_success=True)
 
@@ -179,7 +179,7 @@ def test_slab_flows():
     assert output2["name"] == "VASP-SlabStatic"
 
     # Now try with kwargs
-    flow = BulkToSlabMaker(
+    flow = BulkToSlabsMaker(
         preset="SlabSet",
         name="test",
         slab_relax_maker=SlabRelaxMaker(swaps={"nelmin": 6}),
