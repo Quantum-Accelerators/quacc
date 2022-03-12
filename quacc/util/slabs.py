@@ -470,7 +470,7 @@ def make_adsorbate_structures(
     return new_atoms
 
 
-def get_surface_energy(
+def get_cleavage_energy(
     bulk: Atoms, slab: Atoms, bulk_energy: float, slab_energy: float
 ):
     """
