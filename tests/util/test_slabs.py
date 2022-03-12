@@ -10,10 +10,10 @@ from ase.io import read
 
 from quacc.util.slabs import (
     flip_atoms,
+    get_cleavage_energy,
     make_adsorbate_structures,
     make_max_slabs_from_bulk,
     make_slabs_from_bulk,
-    get_cleavage_energy,
 )
 
 FILE_DIR = Path(__file__).resolve().parent
