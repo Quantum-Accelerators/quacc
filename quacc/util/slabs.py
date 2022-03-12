@@ -470,11 +470,12 @@ def make_adsorbate_structures(
     return new_atoms
 
 
-def get_cleavage_energy(
-    bulk: Atoms, slab: Atoms, bulk_energy: float = None, slab_energy: float = None
+def get_surface_energy(
+    bulk: Atoms, slab: Atoms, bulk_energy: float, slab_energy: float
 ):
     """
     Calculate the cleavage energy to form a given surface slab from a bulk structure.
+    This is the surface energy for symmetric slabs.
 
     Parameters:
     -----------
@@ -483,25 +484,10 @@ def get_cleavage_energy(
     slab
         The slab structure.
     bulk_energy
-        The energy of the bulk structure. If None, the energy will be pulled from
-        bulk.get_potential_energy().
+        The total energy of the bulk structure.
     slab_energy
-        The energy of the slab structure. If None, the energy will be pulled from
-        slab.get_potential_energy().
+        The total energy of the slab structure.
     """
-
-    if (
-        bulk_energy is None
-        and hasattr(bulk, "calc")
-        and atoms.calc.results.get("energy", None)
-    ):
-        bulk_energy = bulk.get_potential_energy()
-    if (
-        slab_energy is None
-        and hasattr(slab, "calc")
-        and slab.calc.results.get("energy", None)
-    ):
-        slab_energy = slab.get_potential_energy()
 
     alpha = len(slab) / len(bulk)
     matrix = slab.cell.array

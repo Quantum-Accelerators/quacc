@@ -5,6 +5,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 from ase.build import bulk, fcc100, molecule
+from ase.calculators.vasp import Vasp
 from ase.io import read
 
 from quacc.util.slabs import (
@@ -12,6 +13,7 @@ from quacc.util.slabs import (
     make_adsorbate_structures,
     make_max_slabs_from_bulk,
     make_slabs_from_bulk,
+    get_cleavage_energy,
 )
 
 FILE_DIR = Path(__file__).resolve().parent
@@ -191,6 +193,15 @@ def test_make_adsorbate_structures():
     assert len(new_atoms) == 6
     assert new_atoms[0].info.get("adsorbates", None) is not None
     assert new_atoms[0].info["adsorbates"][0]["adsorbate"] == molecule("H2O")
+
+
+def test_get_cleavage_energy():
+    atoms = bulk("Cu")
+    slab = fcc100("Cu", size=(2, 2, 2))
+    bulk_energy = -1.0
+    slab_energy = -20.0
+    cleave_energy = get_cleavage_energy(atoms, slab, bulk_energy, slab_energy)
+    assert cleave_energy == -0.23020081184152974
 
 
 def test_errors():
