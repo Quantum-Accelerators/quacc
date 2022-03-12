@@ -192,7 +192,7 @@ def test_make_adsorbate_structures():
     )
     assert len(new_atoms) == 6
     assert new_atoms[0].info.get("adsorbates", None) is not None
-    assert new_atoms[0].info["adsorbates"][0]["adsorbate"] == molecule(h2o)
+    assert new_atoms[0].info["adsorbates"][0]["adsorbate"] == h2o
 
 
 def test_get_cleavage_energy():
