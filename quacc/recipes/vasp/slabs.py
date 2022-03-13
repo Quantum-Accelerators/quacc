@@ -324,7 +324,7 @@ class BulkToAdsorbatesFlow(Maker):
         if self.swaps:
             self.slab_to_adsorbates_job.swaps = self.swaps
         slab_to_adsorbates_job = self.slab_to_adsorbates_job.make(
-            find_stable_slab_job.output["stable_slabs"]["atoms"],
+            find_stable_slab_job.output["stable_slab"]["atoms"],
             adsorbate,
             **make_ads_kwargs
         )
