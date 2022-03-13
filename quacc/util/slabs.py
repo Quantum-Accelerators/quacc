@@ -206,7 +206,7 @@ def make_slabs_from_bulk(
 
 def make_max_slabs_from_bulk(
     atoms: Atoms,
-    max_slabs: None | int = None,
+    max_slabs: int = None,
     max_index: int = 1,
     min_slab_size: float = 10.0,
     min_length_width: float = 8.0,
