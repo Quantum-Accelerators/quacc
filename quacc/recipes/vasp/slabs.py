@@ -220,7 +220,7 @@ class SlabToAdsorbatesJob(Maker):
 
     @job
     def make(
-        self, slab: Atoms | List[Atoms], adsorbate: Atoms, **make_ads_kwargs
+        self, slabs: Atoms | List[Atoms], adsorbate: Atoms, **make_ads_kwargs
     ) -> Response:
         """
         Make the run.
@@ -242,10 +242,10 @@ class SlabToAdsorbatesJob(Maker):
         """
         make_ads_kwargs = make_ads_kwargs or {}
 
-        if isinstance(slab, Atoms):
-            slabs_list = [slab]
+        if isinstance(slabs, Atoms):
+            slabs_list = [slabs]
         else:
-            slabs_list = slab
+            slabs_list = slabs
 
         jobs = []
         outputs = []
