@@ -250,7 +250,7 @@ class SlabToAdsorbatesJob(Maker):
         jobs = []
         outputs = []
         all_atoms = []
-        for slab in slabs:
+        for slab in slabs_list:
 
             # Make slab-adsorbate systems
             ads_slabs = make_adsorbate_structures(slab, adsorbate, **make_ads_kwargs)
