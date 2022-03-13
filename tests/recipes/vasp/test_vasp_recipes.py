@@ -1,5 +1,6 @@
 import os
 
+import pytest
 from ase.build import bulk, molecule
 from jobflow.managers.local import run_locally
 
@@ -284,6 +285,11 @@ def test_slab_flows():
     ).make(atoms, adsorbate)
     responses = run_locally(flow, ensure_success=True)
     assert len(responses) == 76
+
+    with pytest.raises(ValueError):
+        flow = BulkToAdsorbatesFlow(bulk_relax_job=None, bulk_static_job=None).make(
+            atoms, adsorbate
+        )
 
 
 def test_qmof():
