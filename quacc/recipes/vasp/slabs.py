@@ -337,7 +337,7 @@ class BulkToAdsorbatesFlow(Maker):
 @job
 def _get_stable_slab_summary(
     bulk_summary: Dict[str, Any], slab_summaries: Dict[str, Any]
-) -> Dict[str, float | Dict[str, Any]]:
+) -> Dict[str, Any]:
     """
     Determine the most stable surface slab (based on cleavage energy) for
     a given bulk summary and list of slab summaries.
@@ -352,7 +352,8 @@ def _get_stable_slab_summary(
     Returns
     -------
     Dict
-        Output of the most stable slab.
+        VASP output summaries for the stable and unstable slabs formatted as
+        {"stable_slab": {"atoms": ..., "output": ...}, "unstable_slabs": [...]}
     """
     min_cleave_energy = np.inf
     bulk = bulk_summary["atoms"]
