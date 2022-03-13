@@ -228,7 +228,7 @@ class EnergyFlow(Maker):
         Applies to all jobs in the flow.
     """
 
-    name: str = "VASP-FullRelax"
+    name: str = "VASP-EnergyFlow"
     preset: str = None
     volume_relax_job: Maker | None = DoubleRelaxJob()
     positions_relax_job: Maker | None = RelaxJob(volume_relax=False)
