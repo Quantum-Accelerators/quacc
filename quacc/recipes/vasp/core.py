@@ -207,11 +207,11 @@ class DoubleRelaxJob(Maker):
 
 
 @dataclass
-class FullRelaxFlow(Maker):
+class EnergyFlow(Maker):
     """
-    Class to convert make a full relaxation flow consisting of
-    an optional volume relaxation, positions relaxation, and
-    static calculation.
+    Class to get the energy of a structure based on an 
+    optional volume relaxation, optional positions relaxation,
+    and final static calculation.
 
     Parameters
     ----------
@@ -232,7 +232,7 @@ class FullRelaxFlow(Maker):
     preset: str = None
     volume_relax_job: Maker | None = DoubleRelaxJob()
     positions_relax_job: Maker | None = RelaxJob(volume_relax=False)
-    static_job: Maker | None = StaticJob()
+    static_job: Maker = StaticJob()
     swaps: Dict[str, Any] = None
 
     def make(self, atoms: Atoms) -> Flow:
@@ -270,15 +270,14 @@ class FullRelaxFlow(Maker):
             atoms = positions_relax_job.output["atoms"]
             jobs.append(positions_relax_job)
 
-        if self.static_job:
-            if self.preset:
-                self.static_job.preset = self.preset
-            if self.swaps:
-                self.static_job.swaps = self.swaps
+        if self.preset:
+            self.static_job.preset = self.preset
+        if self.swaps:
+            self.static_job.swaps = self.swaps
 
-            static_job = self.static_job.make(atoms)
-            jobs.append(static_job)
+        static_job = self.static_job.make(atoms)
+        jobs.append(static_job)
 
-        flow = Flow(jobs, output=jobs[-1].output, name=self.name)
+        flow = Flow(jobs, output=static_job.output, name=self.name)
 
         return flow
