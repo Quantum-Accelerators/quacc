@@ -6,7 +6,7 @@ from jobflow.managers.local import run_locally
 from quacc.recipes.vasp.core import DoubleRelaxJob, EnergyFlow, RelaxJob, StaticJob
 from quacc.recipes.vasp.qmof import QMOFRelaxJob
 from quacc.recipes.vasp.slabs import (
-    BulkToAdsEnergyFlow,
+    BulkToAdsorbatesFlow,
     BulkToSlabsJob,
     SlabRelaxJob,
     SlabStaticJob,
@@ -267,7 +267,7 @@ def test_slab_dynamic_jobs():
 def test_slab_flows():
     atoms = bulk("Cu")
     adsorbate = molecule("H2O")
-    flow = BulkToAdsEnergyFlow().make(atoms, adsorbate)
+    flow = BulkToAdsorbatesFlow().make(atoms, adsorbate)
     responses = run_locally(flow, ensure_success=True)
 
 

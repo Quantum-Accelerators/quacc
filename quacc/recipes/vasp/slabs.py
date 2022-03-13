@@ -7,7 +7,7 @@ from jobflow import Flow, Maker, Response, job
 from jobflow.core.flow import JobOrder
 
 from quacc.calculators.vasp import SmartVasp
-from quacc.recipes.vasp.core import RelaxJob, StaticJob
+from quacc.recipes.vasp.core import DoubleRelaxJob, StaticJob
 from quacc.schemas.vasp import summarize_run
 from quacc.util.basics import merge_dicts
 from quacc.util.calc import run_calc
@@ -270,14 +270,14 @@ class SlabToAdsorbatesJob(Maker):
 
 
 @dataclass
-class BulkToAdsEnergyFlow(Maker):
+class BulkToAdsorbatesFlow(Maker):
     """
     Maker to get adsorption energies from a bulk structure.
     """
 
-    name: str = "Bulk"
+    name: str = "VASP-BulkToAdsorbates"
     preset: str = None
-    bulk_relax_job: Maker | None = RelaxJob()
+    bulk_relax_job: Maker | None = DoubleRelaxJob()
     bulk_static_job: Maker | None = StaticJob()
     bulk_to_slabs_job: Maker = BulkToSlabsJob()
     slab_to_adsorbates_job: Maker = SlabToAdsorbatesJob()
@@ -297,18 +297,18 @@ class BulkToAdsEnergyFlow(Maker):
 
         if self.bulk_relax_job:
             if self.preset:
-                bulk_relax_job.preset = self.preset
+                self.bulk_relax_job.preset = self.preset
             if self.swaps:
-                bulk_relax_job.swaps = self.swaps
+                self.bulk_relax_job.swaps = self.swaps
             bulk_relax_job = self.bulk_relax_job.make(atoms)
             atoms = bulk_relax_job.output["atoms"]
             jobs.append(bulk_relax_job)
 
         if self.bulk_static_job:
             if self.preset:
-                bulk_static_job.preset = self.preset
+                self.bulk_static_job.preset = self.preset
             if self.swaps:
-                bulk_static_job.swaps = self.swaps
+                self.bulk_static_job.swaps = self.swaps
             bulk_static_job = self.bulk_static_job.make(atoms)
             atoms = bulk_static_job.output["atoms"]
             jobs.append(bulk_static_job)
@@ -316,11 +316,17 @@ class BulkToAdsEnergyFlow(Maker):
         bulk_to_slabs_job = self.bulk_to_slabs_job.make(
             atoms, max_slabs=max_slabs, **slabgen_kwargs
         )
-        find_stable_slab_job = get_stable_slab_summary(
+        find_stable_slab_job = _get_stable_slab_summary(
             bulk_static_job.output, bulk_to_slabs_job.output
         )
+        if self.preset:
+            self.slab_to_adsorbates_job.preset = self.preset
+        if self.swaps:
+            self.slab_to_adsorbates_job.swaps = self.swaps
         slab_to_adsorbates_job = self.slab_to_adsorbates_job.make(
-            find_stable_slab_job.output["atoms"], adsorbate, **make_ads_kwargs
+            find_stable_slab_job.output["stable_slab_summary"]["atoms"],
+            adsorbate,
+            **make_ads_kwargs
         )
 
         jobs += [bulk_to_slabs_job, find_stable_slab_job, slab_to_adsorbates_job]
@@ -328,25 +334,54 @@ class BulkToAdsEnergyFlow(Maker):
         return Flow(jobs)
 
 
-# ----------------------------------------------
-# Utility jobs that are rarely used on their own
-# ----------------------------------------------
 @job
-def get_stable_slab_summary(bulk_summary, slab_summaries):
-    """ """
+def _get_stable_slab_summary(
+    bulk_summary: Dict[str, Any], slab_summaries: Dict[str, Any]
+) -> Dict[str, float | Dict[str, Any]]:
+    """
+    Determine the most stable surface slab (based on cleavage energy) for
+    a given bulk summary and list of slab summaries.
+
+    Parameters
+    ----------
+    bulk_summary
+        Output of a VASP job corresponding to the bulk structure.
+    slab_summaries
+        List of outputs of VASP jobs corresponding to the slab structures.
+
+    Returns
+    -------
+    Dict
+        Output of the most stable slab.
+    """
     min_cleave_energy = np.inf
     bulk = bulk_summary["atoms"]
     bulk_energy = bulk_summary["output"]["energy"]
-    stable_slab_summary = None
-    for slab_summary in slab_summaries:
+    stable_slab_idx = None
+
+    # Iterate through each slab summary and determine the most stable slab
+    for i, slab_summary in enumerate(slab_summaries):
         slab = slab_summary["atoms"]
         slab_energy = slab_summary["output"]["energy"]
 
+        # Calculate the cleavage energy
         cleave_energy = get_cleavage_energy(bulk, slab, bulk_energy, slab_energy)
+
+        # Attach the energy to the atoms.info dictionary, which will be reflected
+        # then in slab_summary["output"]["atoms"].info automatically
         slab.info["cleavage_energy"] = cleave_energy
 
+        # Determine if we are at a more stable slab
         if cleave_energy < min_cleave_energy:
             min_cleave_energy = cleave_energy
-            stable_slab_summary = slab_summary
+            stable_slab_idx = i
 
-    return stable_slab_summary
+    # Here, we return the full summary dictionary for
+    output = {
+        "stable_slab_summary": slab_summaries[stable_slab_idx],
+        "unstable_slab_summaries": [
+            summary for i, summary in enumerate(slab_summaries) if i != stable_slab_idx
+        ],
+    }
+
+    return output
