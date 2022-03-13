@@ -262,12 +262,12 @@ def test_slab_flows():
     flow = BulkToAdsorbatesFlow().make(atoms, adsorbate)
     responses = run_locally(flow, ensure_success=True)
 
-    flow = BulkToAdsorbatesFlow().make(atoms, adsorbate, stable_slab=False)
+    flow = BulkToAdsorbatesFlow(stable_slab=False).make(atoms, adsorbate)
     responses = run_locally(flow, ensure_success=True)
 
-    flow = BulkToAdsorbatesFlow(bulk_relax_job=None, bulk_static_job=None).make(
-        atoms, adsorbate
-    )
+    flow = BulkToAdsorbatesFlow(
+        bulk_relax_job=None, bulk_static_job=None, stable_slab=False
+    ).make(atoms, adsorbate)
     responses = run_locally(flow, ensure_success=True)
 
 

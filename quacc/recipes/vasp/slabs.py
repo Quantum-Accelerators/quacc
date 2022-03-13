@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from multiprocessing.sharedctypes import Value
 from typing import Any, Dict, List
 
 import numpy as np
@@ -290,6 +291,8 @@ class BulkToAdsorbatesFlow(Maker):
     ----------
     name
         Name of the job.
+    stable_slab
+        Whether to add adsorbates to only the most stable slab.
     bulk_relax_job
         Maker to use for the RelaxJob.
     bulk_static_job
@@ -301,6 +304,7 @@ class BulkToAdsorbatesFlow(Maker):
     """
 
     name: str = "VASP-BulkToAdsorbates"
+    stable_slab: bool = True
     bulk_relax_job: Maker | None = RelaxJob()
     bulk_static_job: Maker | None = StaticJob()
     bulk_to_slabs_job: Maker = BulkToSlabsJob()
@@ -310,7 +314,6 @@ class BulkToAdsorbatesFlow(Maker):
         self,
         atoms: Atoms,
         adsorbate: Atoms,
-        stable_slab: bool = True,
         max_slabs: int = None,
         slabgen_kwargs: Dict[str, Any] = None,
         make_ads_kwargs: Dict[str, Any] = None,
@@ -324,8 +327,6 @@ class BulkToAdsorbatesFlow(Maker):
             .Atoms object for the structure.
         adsorbate
             .Atoms object for the adsorbate.
-        stable_slab
-            Whether to add adsorbates to only the most stable slab.
         max_slabs
             Maximum number of slabs to make. None implies no upper limit.
         slabgen_kwargs
@@ -342,6 +343,9 @@ class BulkToAdsorbatesFlow(Maker):
         slabgen_kwargs = slabgen_kwargs or {}
         make_ads_kwargs = make_ads_kwargs or {}
 
+        if self.stable_slab and not self.bulk_static_job:
+            raise ValueError("Cannot use stable_slab without a bulk_static_job")
+
         if self.bulk_relax_job:
             bulk_relax_job = self.bulk_relax_job.make(atoms)
             atoms = bulk_relax_job.output["atoms"]
@@ -357,7 +361,7 @@ class BulkToAdsorbatesFlow(Maker):
         )
         jobs.append(bulk_to_slabs_job)
 
-        if stable_slab:
+        if self.stable_slab:
             find_stable_slab_job = _get_slab_stability(
                 bulk_static_job.output, bulk_to_slabs_job.output["all_outputs"]
             )
