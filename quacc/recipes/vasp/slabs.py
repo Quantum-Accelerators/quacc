@@ -324,7 +324,7 @@ class BulkToAdsorbatesFlow(Maker):
         if self.swaps:
             self.slab_to_adsorbates_job.swaps = self.swaps
         slab_to_adsorbates_job = self.slab_to_adsorbates_job.make(
-            find_stable_slab_job.output["stable_slab_summary"]["atoms"],
+            find_stable_slab_job.output["stable_slabs"]["atoms"],
             adsorbate,
             **make_ads_kwargs
         )
@@ -367,19 +367,19 @@ def _get_stable_slab_summary(
         # Calculate the cleavage energy
         cleave_energy = get_cleavage_energy(bulk, slab, bulk_energy, slab_energy)
 
-        # Attach the energy to the atoms.info dictionary, which will be reflected
-        # then in slab_summary["output"]["atoms"].info automatically
-        slab.info["cleavage_energy"] = cleave_energy
+        # Insert the cleavage energy into the slab summary
+        slab_summary["cleavage_energy"] = cleave_energy
 
         # Determine if we are at a more stable slab
         if cleave_energy < min_cleave_energy:
             min_cleave_energy = cleave_energy
             stable_slab_idx = i
 
-    # Here, we return the full summary dictionary for
+    # Here, we return the summary dictionaries for the stable and unstable slabs
+    # with the cleavage energy inserted into the summary.
     output = {
-        "stable_slab_summary": slab_summaries[stable_slab_idx],
-        "unstable_slab_summaries": [
+        "stable_slab": slab_summaries[stable_slab_idx],
+        "unstable_slabs": [
             summary for i, summary in enumerate(slab_summaries) if i != stable_slab_idx
         ],
     }
