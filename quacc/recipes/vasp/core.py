@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Any, Dict
 
 from ase.atoms import Atoms
-from jobflow import Flow, Maker, job
+from jobflow import Maker, job
 
 from quacc.calculators.vasp import SmartVasp
 from quacc.schemas.vasp import summarize_run

@@ -257,6 +257,8 @@ def test_slab_dynamic_jobs():
 
 
 def test_slab_flows():
+    # TODO: This could use some more detailed tests
+
     atoms = bulk("Cu")
     adsorbate = molecule("H2O")
     flow = BulkToAdsorbatesFlow().make(atoms, adsorbate)
@@ -270,13 +272,18 @@ def test_slab_flows():
     output1 = responses[uuids[1]][1].output
     assert output1["parameters"]["nsw"] == 0
 
+    output_final = responses[uuids[-1]][1].output
+    assert output_final["parameters"]["nsw"] == 0
+
     flow = BulkToAdsorbatesFlow(stable_slab=False).make(atoms, adsorbate)
     responses = run_locally(flow, ensure_success=True)
+    assert len(responses) == 78
 
     flow = BulkToAdsorbatesFlow(
         bulk_relax_job=None, bulk_static_job=None, stable_slab=False
     ).make(atoms, adsorbate)
     responses = run_locally(flow, ensure_success=True)
+    assert len(responses) == 76
 
 
 def test_qmof():

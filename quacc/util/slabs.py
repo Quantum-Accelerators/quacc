@@ -64,7 +64,7 @@ def make_slabs_from_bulk(
     min_vacuum_size: float = 20.0,
     z_fix: None | float = 2.0,
     flip_asymmetric: bool = True,
-    allowed_surface_atoms: None | List[str] = None,
+    allowed_surface_atoms: List[str] = None,
     **slabgen_kwargs,
 ) -> None | List[Atoms]:
     """
@@ -312,10 +312,10 @@ def make_adsorbate_structures(
     adsorbate: Atoms,
     min_distance: float = 2.0,
     modes: List[str] = None,
-    allowed_surface_symbols: None | List[str] = None,
-    allowed_surface_indices: None | List[int] = None,
-    ads_site_finder_kwargs: None | Dict[str, Any] = None,
-    find_ads_sites_kwargs: None | Dict[str, Any] = None,
+    allowed_surface_symbols: List[str] = None,
+    allowed_surface_indices: List[int] = None,
+    ads_site_finder_kwargs: Dict[str, Any] = None,
+    find_ads_sites_kwargs: Dict[str, Any] = None,
 ) -> None | List[Atoms]:
     """
     Add a single adsorbate to a structure for every requested adsorption mode
