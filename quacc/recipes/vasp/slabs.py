@@ -199,7 +199,7 @@ class BulkToSlabsJob(Maker):
 @dataclass
 class SlabToAdsorbatesJob(Maker):
     """
-    Class to convert a slab structure to one with an adsorbate present,
+    Class to convert a slab (or slabs) to one with an adsorbate present,
     along with the relaxations and statics for the slab-adsorbate systems.
     Multiple slab-adsorbate systems will be generated, one for each unique
     binding site.
@@ -220,7 +220,7 @@ class SlabToAdsorbatesJob(Maker):
 
     @job
     def make(
-        self, atoms: Atoms | List[Atoms], adsorbate: Atoms, **make_ads_kwargs
+        self, slabs: Atoms | List[Atoms], adsorbate: Atoms, **make_ads_kwargs
     ) -> Response:
         """
         Make the run.
@@ -250,14 +250,14 @@ class SlabToAdsorbatesJob(Maker):
         jobs = []
         outputs = []
         all_atoms = []
-        for atoms in atoms_list:
+        for slab in atoms_list:
 
             # Make slab-adsorbate systems
-            slabs = make_adsorbate_structures(atoms, adsorbate, **make_ads_kwargs)
+            ads_slabs = make_adsorbate_structures(slab, adsorbate, **make_ads_kwargs)
 
             # Make a relaxation+static job for each slab-adsorbate ysstem
-            for slab in slabs:
-                relax_job = self.slab_relax_job.make(slab)
+            for ads_slab in ads_slabs:
+                relax_job = self.slab_relax_job.make(ads_slab)
                 static_job = self.slab_static_job.make(relax_job.output["atoms"])
 
                 jobs += [relax_job, static_job]
@@ -376,7 +376,12 @@ class BulkToAdsorbatesFlow(Maker):
             )
             jobs.append(slab_to_adsorbates_job)
 
-        return Flow(jobs, output=slab_to_adsorbates_job.output, name=self.name)
+        return Flow(
+            jobs,
+            output=slab_to_adsorbates_job.output,
+            name=self.name,
+            order=JobOrder.LINEAR,
+        )
 
 
 @job

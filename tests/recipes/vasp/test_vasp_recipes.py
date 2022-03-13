@@ -261,6 +261,14 @@ def test_slab_flows():
     adsorbate = molecule("H2O")
     flow = BulkToAdsorbatesFlow().make(atoms, adsorbate)
     responses = run_locally(flow, ensure_success=True)
+    uuids = list(responses.keys())
+    assert len(responses) == 27
+
+    output0 = responses[uuids[0]][1].output
+    assert output0["parameters"]["ediffg"] == -0.02
+
+    output1 = responses[uuids[1]][1].output
+    assert output1["parameters"]["nsw"] == 0
 
     flow = BulkToAdsorbatesFlow(stable_slab=False).make(atoms, adsorbate)
     responses = run_locally(flow, ensure_success=True)
