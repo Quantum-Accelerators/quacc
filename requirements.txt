@@ -3,6 +3,6 @@ pymatgen==2022.3.7
 custodian==2022.2.13
 jobflow==0.1.6
 atomate2==0.0.6
-monty==2022.1.19
+monty==2022.3.12
 FireWorks==2.0.2
 cclib==1.7.1
