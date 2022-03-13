@@ -209,7 +209,7 @@ class DoubleRelaxJob(Maker):
 @dataclass
 class EnergyFlow(Maker):
     """
-    Class to get the energy of a structure based on an 
+    Class to get the energy of a structure based on an
     optional volume relaxation, optional positions relaxation,
     and final static calculation.
 
