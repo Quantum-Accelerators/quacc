@@ -6,11 +6,11 @@ from jobflow.managers.local import run_locally
 from quacc.recipes.vasp.core import DoubleRelaxJob, EnergyFlow, RelaxJob, StaticJob
 from quacc.recipes.vasp.qmof import QMOFRelaxJob
 from quacc.recipes.vasp.slabs import (
-    BulktoAdsEnergyFlow,
+    BulkToAdsEnergyFlow,
     BulkToSlabsJob,
     SlabRelaxJob,
     SlabStaticJob,
-    SlabToAdsSlabJob,
+    SlabToAdsorbatesJob,
 )
 
 
@@ -214,11 +214,11 @@ def test_slab_dynamic_jobs():
     assert output2["parameters"]["encut"] == 450
     assert output2["name"] == "VASP-SlabStatic"
 
-    ### --------- Test SlabToAdsSlabJob --------- ###
+    ### --------- Test SlabToAdsorbatesJob --------- ###
     atoms = output2["atoms"]
     adsorbate = molecule("H2")
 
-    flow = SlabToAdsSlabJob().make(atoms, adsorbate)
+    flow = SlabToAdsorbatesJob().make(atoms, adsorbate)
     responses = run_locally(flow, ensure_success=True)
 
     assert len(responses) == 11
@@ -240,7 +240,7 @@ def test_slab_dynamic_jobs():
     assert output2["name"] == "VASP-SlabStatic"
 
     # Now try with kwargs
-    flow = SlabToAdsSlabJob(preset="SlabSet", name="test", swaps={"nelmin": 6}).make(
+    flow = SlabToAdsorbatesJob(preset="SlabSet", name="test", swaps={"nelmin": 6}).make(
         atoms, adsorbate
     )
     responses = run_locally(flow, ensure_success=True)
@@ -267,7 +267,7 @@ def test_slab_dynamic_jobs():
 def test_slab_flows():
     atoms = bulk("Cu")
     adsorbate = molecule("H2O")
-    flow = BulktoAdsEnergyFlow().make(atoms, adsorbate)
+    flow = BulkToAdsEnergyFlow().make(atoms, adsorbate)
     responses = run_locally(flow, ensure_success=True)
 
 

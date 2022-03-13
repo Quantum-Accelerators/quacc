@@ -213,7 +213,7 @@ def make_max_slabs_from_bulk(
     min_vacuum_size: float = 20.0,
     z_fix: float = 2.0,
     flip_asymmetric: bool = True,
-    allowed_surface_atoms: bool = None,
+    allowed_surface_atoms: List[str] = None,
     **slabgen_kwargs,
 ) -> List[Atoms]:
 

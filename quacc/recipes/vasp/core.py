@@ -278,6 +278,4 @@ class EnergyFlow(Maker):
         static_job = self.static_job.make(atoms)
         jobs.append(static_job)
 
-        flow = Flow(jobs, output=static_job.output, name=self.name)
-
-        return flow
+        return Flow(jobs, output=static_job.output, name=self.name)

@@ -1,15 +1,21 @@
 from dataclasses import dataclass
 from typing import Any, Dict
 
+import numpy as np
 from ase.atoms import Atoms
 from jobflow import Flow, Maker, Response, job
+from jobflow.core.flow import JobOrder
 
 from quacc.calculators.vasp import SmartVasp
 from quacc.recipes.vasp.core import RelaxJob, StaticJob
 from quacc.schemas.vasp import summarize_run
 from quacc.util.basics import merge_dicts
 from quacc.util.calc import run_calc
-from quacc.util.slabs import make_adsorbate_structures, make_max_slabs_from_bulk
+from quacc.util.slabs import (
+    get_cleavage_energy,
+    make_adsorbate_structures,
+    make_max_slabs_from_bulk,
+)
 
 
 @dataclass
@@ -189,14 +195,16 @@ class BulkToSlabsJob(Maker):
             jobs.append(static_job)
             outputs.append(static_job.output)
 
-        return Response(replace=Flow(jobs))  # , output=outputs))
+        return Response(replace=Flow(jobs, output=outputs, order=JobOrder.LINEAR))
 
 
 @dataclass
-class SlabToAdsSlabJob(Maker):
+class SlabToAdsorbatesJob(Maker):
     """
-    Class to convert a slab structure to one with adsorbates present,
+    Class to convert a slab structure to one with an adsorbate present,
     along with the relaxations and statics for the slab-adsorbate systems.
+    Multiple slab-adsorbate systems will be generated, one for each unique
+    binding site.
 
     Parameters
     ----------
@@ -213,14 +221,14 @@ class SlabToAdsSlabJob(Maker):
         Applies to all jobs in the flow.
     """
 
-    name: str = "VASP-SlabToAdsSlab"
+    name: str = "VASP-SlabToAdsorbates"
     preset: str = None
     swaps: Dict[str, Any] = None
     slab_relax_job: Maker | None = SlabRelaxJob()
     slab_static_job: Maker | None = SlabStaticJob()
 
     @job
-    def make(self, atoms: Atoms, adsorbate: Atoms, **slabgen_ads_kwargs) -> Response:
+    def make(self, atoms: Atoms, adsorbate: Atoms, **make_ads_kwargs) -> Response:
         """
         Make the run.
 
@@ -230,7 +238,7 @@ class SlabToAdsSlabJob(Maker):
             .Atoms object for the structure.
         adsorbate
             .Atoms object for the adsorbate.
-        slabgen_ads_kwargs
+        make_ads_kwargs
             Additional keyword arguments to pass to make_adsorbate_structures()
 
         Returns
@@ -238,7 +246,7 @@ class SlabToAdsSlabJob(Maker):
         Response
             A Flow of relaxation and static jobs for the generated slabs with adsorbates.
         """
-        slabgen_ads_kwargs = slabgen_ads_kwargs or {}
+        make_ads_kwargs = make_ads_kwargs or {}
         if self.preset:
             self.slab_static_job.preset = self.preset
             self.slab_relax_job.preset = self.preset
@@ -246,7 +254,7 @@ class SlabToAdsSlabJob(Maker):
             self.slab_static_job.swaps = self.swaps
             self.slab_relax_job.swaps = self.swaps
 
-        slabs = make_adsorbate_structures(atoms, adsorbate, **slabgen_ads_kwargs)
+        slabs = make_adsorbate_structures(atoms, adsorbate, **make_ads_kwargs)
 
         jobs = []
         outputs = []
@@ -258,11 +266,11 @@ class SlabToAdsSlabJob(Maker):
             jobs.append(static_job)
             outputs.append(static_job.output)
 
-        return Response(replace=Flow(jobs))  # , output=outputs))
+        return Response(replace=Flow(jobs, output=outputs, order=JobOrder.LINEAR))
 
 
 @dataclass
-class BulktoAdsEnergyFlow(Maker):
+class BulkToAdsEnergyFlow(Maker):
     """
     Maker to get adsorption energies from a bulk structure.
     """
@@ -272,11 +280,20 @@ class BulktoAdsEnergyFlow(Maker):
     bulk_relax_job: Maker | None = RelaxJob()
     bulk_static_job: Maker | None = StaticJob()
     bulk_to_slabs_job: Maker = BulkToSlabsJob()
-    slab_to_ads_slab_job: Maker = SlabToAdsSlabJob()
+    slab_to_adsorbates_job: Maker = SlabToAdsorbatesJob()
     swaps: Dict[str, Any] = None
 
-    def make(self, atoms: Atoms, adsorbate: Atoms):
+    def make(
+        self,
+        atoms: Atoms,
+        adsorbate: Atoms,
+        max_slabs: int = None,
+        slabgen_kwargs: Dict[str, Any] = None,
+        make_ads_kwargs: Dict[str, Any] = None,
+    ) -> Flow:
         jobs = []
+        slabgen_kwargs = slabgen_kwargs or {}
+        make_ads_kwargs = make_ads_kwargs or {}
 
         if self.bulk_relax_job:
             if self.preset:
@@ -296,9 +313,40 @@ class BulktoAdsEnergyFlow(Maker):
             atoms = bulk_static_job.output["atoms"]
             jobs.append(bulk_static_job)
 
-        bulk_to_slabs_job = self.bulk_to_slabs_job.make(atoms)
+        bulk_to_slabs_job = self.bulk_to_slabs_job.make(
+            atoms, max_slabs=max_slabs, **slabgen_kwargs
+        )
+        find_stable_slab_job = get_stable_slab_summary(
+            bulk_static_job.output, bulk_to_slabs_job.output
+        )
+        slab_to_adsorbates_job = self.slab_to_adsorbates_job.make(
+            find_stable_slab_job.output["atoms"], adsorbate, **make_ads_kwargs
+        )
 
-        # bulk_to_slabs_job.output
+        jobs += [bulk_to_slabs_job, find_stable_slab_job, slab_to_adsorbates_job]
 
-        jobs += [bulk_to_slabs_job]
         return Flow(jobs)
+
+
+# ----------------------------------------------
+# Utility jobs that are rarely used on their own
+# ----------------------------------------------
+@job
+def get_stable_slab_summary(bulk_summary, slab_summaries):
+    """ """
+    min_cleave_energy = np.inf
+    bulk = bulk_summary["atoms"]
+    bulk_energy = bulk_summary["output"]["energy"]
+    stable_slab_summary = None
+    for slab_summary in slab_summaries:
+        slab = slab_summary["atoms"]
+        slab_energy = slab_summary["output"]["energy"]
+
+        cleave_energy = get_cleavage_energy(bulk, slab, bulk_energy, slab_energy)
+        slab.info["cleavage_energy"] = cleave_energy
+
+        if cleave_energy < min_cleave_energy:
+            min_cleave_energy = cleave_energy
+            stable_slab_summary = slab_summary
+
+    return stable_slab_summary
