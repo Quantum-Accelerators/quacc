@@ -180,10 +180,9 @@ def test_slab_dynamic_jobs():
 
     # Now try with kwargs
     flow = BulkToSlabsJob(
-        preset="SlabSet",
         name="test",
-        slab_relax_job=SlabRelaxJob(swaps={"nelmin": 6}),
-        slab_static_job=SlabStaticJob(swaps={"nelmin": 6}),
+        slab_relax_job=SlabRelaxJob(preset="SlabSet", swaps={"nelmin": 6}),
+        slab_static_job=SlabStaticJob(preset="SlabSet", swaps={"nelmin": 6}),
     ).make(atoms)
     responses = run_locally(flow, ensure_success=True)
 
@@ -231,9 +230,11 @@ def test_slab_dynamic_jobs():
     assert output2["name"] == "VASP-SlabStatic"
 
     # Now try with kwargs
-    flow = SlabToAdsorbatesJob(preset="SlabSet", name="test", swaps={"nelmin": 6}).make(
-        atoms, adsorbate
-    )
+    flow = SlabToAdsorbatesJob(
+        name="test",
+        slab_relax_job=SlabRelaxJob(preset="SlabSet", swaps={"nelmin": 6}),
+        slab_static_job=SlabStaticJob(preset="SlabSet", swaps={"nelmin": 6}),
+    ).make(atoms, adsorbate)
     responses = run_locally(flow, ensure_success=True)
 
     assert len(responses) == 11
