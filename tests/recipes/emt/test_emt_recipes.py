@@ -5,7 +5,7 @@ from ase.build import bulk
 from ase.optimize import BFGS
 from jobflow.managers.local import run_locally
 
-from quacc.recipes.emt.core import RelaxMaker, StaticMaker
+from quacc.recipes.emt.core import RelaxJob, StaticJob
 
 
 def teardown_module():
@@ -19,12 +19,12 @@ def teardown_module():
             os.remove(f)
 
 
-def test_static_maker():
+def test_static_Job():
 
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += [0.1, 0.1, 0.1]
 
-    job = StaticMaker().make(atoms)
+    job = StaticJob().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["nsites"] == len(atoms)
@@ -32,7 +32,7 @@ def test_static_maker():
     assert output["name"] == "EMT-Static"
     assert output["results"]["energy"] == pytest.approx(0.07001766638245854)
 
-    job = StaticMaker(asap_cutoff=True).make(atoms)
+    job = StaticJob(asap_cutoff=True).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["nsites"] == len(atoms)
@@ -41,11 +41,11 @@ def test_static_maker():
     assert output["results"]["energy"] == pytest.approx(0.11074520235398744)
 
 
-def test_relax_maker():
+def test_relax_Job():
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += [0.1, 0.1, 0.1]
 
-    job = RelaxMaker().make(atoms)
+    job = RelaxJob().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["nsites"] == len(atoms)
@@ -53,7 +53,7 @@ def test_relax_maker():
     assert output["name"] == "EMT-Relax"
     assert output["results"]["energy"] == pytest.approx(-0.04517048198212592)
 
-    job = RelaxMaker(asap_cutoff=True).make(atoms)
+    job = RelaxJob(asap_cutoff=True).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["nsites"] == len(atoms)
@@ -61,14 +61,14 @@ def test_relax_maker():
     assert output["name"] == "EMT-Relax"
     assert output["results"]["energy"] == pytest.approx(-0.004527567070971017)
 
-    job = RelaxMaker(fmax=0.01).make(atoms)
+    job = RelaxJob(fmax=0.01).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["nsites"] == len(atoms)
     assert output["name"] == "EMT-Relax"
     assert output["results"]["energy"] == pytest.approx(-0.0454470914411953)
 
-    job = RelaxMaker(optimizer=BFGS).make(atoms)
+    job = RelaxJob(optimizer=BFGS).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["nsites"] == len(atoms)

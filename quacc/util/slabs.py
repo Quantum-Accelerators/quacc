@@ -206,14 +206,14 @@ def make_slabs_from_bulk(
 
 def make_max_slabs_from_bulk(
     atoms: Atoms,
-    max_slabs: None | int = None,
+    max_slabs: int = None,
     max_index: int = 1,
     min_slab_size: float = 10.0,
     min_length_width: float = 8.0,
     min_vacuum_size: float = 20.0,
     z_fix: float = 2.0,
     flip_asymmetric: bool = True,
-    allowed_surface_atoms: bool = None,
+    allowed_surface_atoms: List[str] = None,
     **slabgen_kwargs,
 ) -> List[Atoms]:
 

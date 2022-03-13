@@ -15,7 +15,7 @@ from quacc.util.calc import run_calc
 
 
 @dataclass
-class QMOFMaker(Maker):
+class QMOFRelaxJob(Maker):
     """
     Class to relax a structure in a multi-step process for increased
     computational efficiency. This is all done in a single compute job.

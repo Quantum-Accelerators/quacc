@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Any, Dict
 
 from ase.atoms import Atoms
-from jobflow import Maker, job
+from jobflow import Flow, Maker, job
 
 from quacc.calculators.vasp import SmartVasp
 from quacc.schemas.vasp import summarize_run
@@ -11,7 +11,7 @@ from quacc.util.calc import run_calc
 
 
 @dataclass
-class StaticMaker(Maker):
+class StaticJob(Maker):
     """
     Class to carry out a single-point calculation.
 
@@ -65,7 +65,7 @@ class StaticMaker(Maker):
 
 
 @dataclass
-class RelaxMaker(Maker):
+class RelaxJob(Maker):
     """
     Class to relax a structure.
 
@@ -124,7 +124,7 @@ class RelaxMaker(Maker):
 
 
 @dataclass
-class DoubleRelaxMaker(Maker):
+class DoubleRelaxJob(Maker):
     """
     Class to double-relax a structure. This is particularly useful for
     a few reasons:

@@ -8,7 +8,7 @@ try:
     from xtb.ase.calculator import XTB
 except (ModuleNotFoundError, ImportError):
     XTB = None
-from quacc.recipes.xtb.core import RelaxMaker, StaticMaker
+from quacc.recipes.xtb.core import RelaxJob, StaticJob
 
 
 def teardown_module():
@@ -26,10 +26,10 @@ def teardown_module():
     XTB is None,
     reason="xTB-python must be installed. Try conda install -c conda-forge xtb-python",
 )
-def test_static_maker():
+def test_static_Job():
 
     atoms = molecule("H2O")
-    job = StaticMaker().make(atoms)
+    job = StaticJob().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["spin_multiplicity"] == 1
@@ -38,20 +38,20 @@ def test_static_maker():
     assert output["name"] == "xTB-Static"
     assert output["results"]["energy"] == pytest.approx(-137.96777587302995)
 
-    job = StaticMaker(method="GFN1-xTB").make(atoms)
+    job = StaticJob(method="GFN1-xTB").make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["parameters"]["method"] == "GFN1-xTB"
     assert output["results"]["energy"] == pytest.approx(-156.96750578831137)
 
-    job = StaticMaker(method="GFN-FF").make(atoms)
+    job = StaticJob(method="GFN-FF").make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["parameters"]["method"] == "GFN-FF"
     assert output["results"]["energy"] == pytest.approx(-8.912667188932252)
 
     atoms = bulk("Cu")
-    job = StaticMaker(method="GFN1-xTB").make(atoms)
+    job = StaticJob(method="GFN1-xTB").make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["results"]["energy"] == pytest.approx(-119.77643232313169)
@@ -61,9 +61,9 @@ def test_static_maker():
     XTB is None,
     reason="xTB-python must be installed. Try conda install -c conda-forge xtb-python",
 )
-def test_relax_maker():
+def test_relax_Job():
     atoms = molecule("H2O")
-    job = RelaxMaker().make(atoms)
+    job = RelaxJob().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["spin_multiplicity"] == 1
@@ -72,20 +72,20 @@ def test_relax_maker():
     assert output["name"] == "xTB-Relax"
     assert output["results"]["energy"] == pytest.approx(-137.9764670127011)
 
-    job = RelaxMaker(method="GFN1-xTB").make(atoms)
+    job = RelaxJob(method="GFN1-xTB").make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["parameters"]["method"] == "GFN1-xTB"
     assert output["results"]["energy"] == pytest.approx(-156.9763496338962)
 
-    job = RelaxMaker(method="GFN-FF").make(atoms)
+    job = RelaxJob(method="GFN-FF").make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["parameters"]["method"] == "GFN-FF"
     assert output["results"]["energy"] == pytest.approx(-8.915963671549369)
 
     atoms = bulk("Cu")
-    job = RelaxMaker(method="GFN1-xTB").make(atoms)
+    job = RelaxJob(method="GFN1-xTB").make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["results"]["energy"] == pytest.approx(-119.77643232313169)

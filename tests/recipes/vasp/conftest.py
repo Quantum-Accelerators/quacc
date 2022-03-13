@@ -51,15 +51,14 @@ def mock_summarize_run(atoms, **kwargs):
     output = calc_summarize_run(
         atoms, prep_next_run=prep_next_run, additional_fields=additional_fields
     )
+    output["output"] = {"energy": -1.0}
     return output
 
 
 @pytest.fixture(autouse=True)
 def patch_summarize_run(monkeypatch):
     # Monkeypatch the summarize_run() function so that we aren't relying on real
-    # VASP files to be in the working directory during the test. Note that even though
-    # summarize_run() is a function in the quacc.schemas.vasp module, we modify it
-    # only in quacc.recipes.vasp.core/.slabs because otherwise it will not work properly.
+    # VASP files to be in the working directory during the test.
     monkeypatch.setattr("quacc.recipes.vasp.core.summarize_run", mock_summarize_run)
     monkeypatch.setattr("quacc.recipes.vasp.qmof.summarize_run", mock_summarize_run)
     monkeypatch.setattr("quacc.recipes.vasp.slabs.summarize_run", mock_summarize_run)
