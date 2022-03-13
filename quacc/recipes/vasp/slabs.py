@@ -151,10 +151,10 @@ class BulkToSlabsJob(Maker):
         Applies to all jobs in the flow.
     """
 
-    name: str = "VASP-BulkToSlab"
+    name: str = "VASP-BulkToSlabs"
     preset: str = None
-    slab_relax_job: Maker | None = SlabRelaxJob()
-    slab_static_job: Maker | None = SlabStaticJob()
+    slab_relax_job: Maker = SlabRelaxJob()
+    slab_static_job: Maker = SlabStaticJob()
     swaps: Dict[str, Any] = None
 
     @job
@@ -178,29 +178,32 @@ class BulkToSlabsJob(Maker):
         """
         slabgen_kwargs = slabgen_kwargs or {}
         if self.preset:
-            self.slab_static_job.preset = self.preset
             self.slab_relax_job.preset = self.preset
+            self.slab_static_job.preset = self.preset
         if self.swaps:
-            self.slab_static_job.swaps = self.swaps
             self.slab_relax_job.swaps = self.swaps
+            self.slab_static_job.swaps = self.swaps
 
+        # Generate all the slab
         slabs = make_max_slabs_from_bulk(atoms, max_slabs=max_slabs, **slabgen_kwargs)
+
+        # Generate the jobs for each slab
         jobs = []
         outputs = []
         all_atoms = []
         for slab in slabs:
             relax_job = self.slab_relax_job.make(slab)
-            jobs.append(relax_job)
-
             static_job = self.slab_static_job.make(relax_job.output["atoms"])
-            jobs.append(static_job)
-            all_atoms.append(static_job.output["atoms"])
+
+            jobs += [relax_job, static_job]
             outputs.append(static_job.output)
+            all_atoms.append(static_job.output["atoms"])
 
         return Response(
             replace=Flow(
                 jobs,
                 output={"all_atoms": all_atoms, "all_outputs": outputs},
+                name=self.name,
                 order=JobOrder.LINEAR,
             )
         )
@@ -232,8 +235,8 @@ class SlabToAdsorbatesJob(Maker):
     name: str = "VASP-SlabToAdsorbates"
     preset: str = None
     swaps: Dict[str, Any] = None
-    slab_relax_job: Maker | None = SlabRelaxJob()
-    slab_static_job: Maker | None = SlabStaticJob()
+    slab_relax_job: Maker = SlabRelaxJob()
+    slab_static_job: Maker = SlabStaticJob()
 
     @job
     def make(
@@ -264,25 +267,37 @@ class SlabToAdsorbatesJob(Maker):
         if self.swaps:
             self.slab_static_job.swaps = self.swaps
             self.slab_relax_job.swaps = self.swaps
-        jobs = []
-        outputs = []
 
         if isinstance(atoms, Atoms):
             atoms_list = [atoms]
         else:
             atoms_list = atoms
+
+        jobs = []
+        outputs = []
+        all_atoms = []
         for atoms in atoms_list:
+
+            # Make slab-adsorbate systems
             slabs = make_adsorbate_structures(atoms, adsorbate, **make_ads_kwargs)
 
+            # Make a relaxation+static job for each slab-adsorbate ysstem
             for slab in slabs:
                 relax_job = self.slab_relax_job.make(slab)
-                jobs.append(relax_job)
-
                 static_job = self.slab_static_job.make(relax_job.output["atoms"])
-                jobs.append(static_job)
-                outputs.append(static_job.output)
 
-        return Response(replace=Flow(jobs, output=outputs, order=JobOrder.LINEAR))
+                jobs += [relax_job, static_job]
+                outputs.append(static_job.output)
+                all_atoms.append(static_job.output["atoms"])
+
+        return Response(
+            replace=Flow(
+                jobs,
+                output={"all_atoms": all_atoms, "all_outputs": outputs},
+                name=self.name,
+                order=JobOrder.LINEAR,
+            )
+        )
 
 
 @dataclass
@@ -357,7 +372,6 @@ class BulkToAdsorbatesFlow(Maker):
             The Flow for this process.
         """
         jobs = []
-        outputs = []
         slabgen_kwargs = slabgen_kwargs or {}
         make_ads_kwargs = make_ads_kwargs or {}
 
@@ -378,7 +392,6 @@ class BulkToAdsorbatesFlow(Maker):
             bulk_static_job = self.bulk_static_job.make(atoms)
             atoms = bulk_static_job.output["atoms"]
             jobs.append(bulk_static_job)
-            outputs.append(bulk_static_job.output)
 
         if self.preset:
             self.bulk_to_slabs_job.preset = self.preset
@@ -391,7 +404,6 @@ class BulkToAdsorbatesFlow(Maker):
             atoms, max_slabs=max_slabs, **slabgen_kwargs
         )
         jobs.append(bulk_to_slabs_job)
-        outputs.append(bulk_to_slabs_job.output)
 
         if stable_slab:
             find_stable_slab_job = _get_slab_stability(
@@ -403,15 +415,13 @@ class BulkToAdsorbatesFlow(Maker):
                 **make_ads_kwargs
             )
             jobs += [find_stable_slab_job, slab_to_adsorbates_job]
-            outputs += [find_stable_slab_job.output, slab_to_adsorbates_job.output]
         else:
             slab_to_adsorbates_job = self.slab_to_adsorbates_job.make(
                 bulk_to_slabs_job.output["all_atoms"], adsorbate, **make_ads_kwargs
             )
             jobs.append(slab_to_adsorbates_job)
-            outputs.append(slab_to_adsorbates_job.output)
 
-        return Flow(jobs, output=outputs)
+        return Flow(jobs, output=slab_to_adsorbates_job.output, name=self.name)
 
 
 @job

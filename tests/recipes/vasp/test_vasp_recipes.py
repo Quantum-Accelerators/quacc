@@ -3,7 +3,7 @@ import os
 from ase.build import bulk, molecule
 from jobflow.managers.local import run_locally
 
-from quacc.recipes.vasp.core import DoubleRelaxJob, EnergyFlow, RelaxJob, StaticJob
+from quacc.recipes.vasp.core import DoubleRelaxJob, RelaxJob, StaticJob
 from quacc.recipes.vasp.qmof import QMOFRelaxJob
 from quacc.recipes.vasp.slabs import (
     BulkToAdsorbatesFlow,
@@ -111,15 +111,6 @@ def test_doublerelax_job():
     job = DoubleRelaxJob(swaps1={"kpts": [1, 1, 1]}).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-
-
-def test_energy_flow():
-    atoms = bulk("Cu")
-
-    flow = EnergyFlow().make(atoms)
-    responses = run_locally(flow, ensure_success=True)
-
-    # TODO: Add tests
 
 
 def test_slab_static_job():
