@@ -1,6 +1,6 @@
+import warnings
 from dataclasses import dataclass
 from typing import Any, Dict, List
-import warnings
 
 from ase.atoms import Atoms
 from jobflow import Flow, Maker, Response, job
