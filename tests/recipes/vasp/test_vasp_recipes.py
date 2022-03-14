@@ -233,8 +233,8 @@ def test_slab_dynamic_jobs():
     # Now try with kwargs
     flow = SlabToAdsorbatesJob(
         name="test",
-        slab_relax_job=SlabRelaxJob(preset="SlabSet", swaps={"nelmin": 6}),
-        slab_static_job=SlabStaticJob(preset="SlabSet", swaps={"nelmin": 6}),
+        slab_ads_relax_job=SlabRelaxJob(preset="SlabSet", swaps={"nelmin": 6}),
+        slab_ads_static_job=SlabStaticJob(preset="SlabSet", swaps={"nelmin": 6}),
     ).make(atoms, adsorbate)
     responses = run_locally(flow, ensure_success=True)
 

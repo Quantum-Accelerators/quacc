@@ -218,8 +218,8 @@ class SlabToAdsorbatesJob(Maker):
     """
 
     name: str = "VASP-SlabToAdsorbates"
-    slab_relax_job: Maker = SlabRelaxJob()
-    slab_static_job: Maker = SlabStaticJob()
+    slab_ads_relax_job: Maker = SlabRelaxJob()
+    slab_ads_static_job: Maker = SlabStaticJob()
 
     @job
     def make(
@@ -271,8 +271,10 @@ class SlabToAdsorbatesJob(Maker):
 
                 # Make a relaxation+static job for each slab-adsorbate ysstem
                 for ads_slab in ads_slabs:
-                    relax_job = self.slab_relax_job.make(ads_slab)
-                    static_job = self.slab_static_job.make(relax_job.output["atoms"])
+                    relax_job = self.slab_ads_relax_job.make(ads_slab)
+                    static_job = self.slab_ads_static_job.make(
+                        relax_job.output["atoms"]
+                    )
 
                     jobs += [relax_job, static_job]
                     outputs.append(static_job.output)
