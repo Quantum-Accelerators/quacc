@@ -66,7 +66,7 @@ def make_slabs_from_bulk(
     flip_asymmetric: bool = True,
     allowed_surface_atoms: List[str] = None,
     **slabgen_kwargs,
-) -> None | List[Atoms]:
+) -> List[Atoms]:
     """
     Function to make slabs from a bulk atoms object.
 
