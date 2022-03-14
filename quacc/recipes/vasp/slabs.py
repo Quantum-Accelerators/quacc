@@ -186,6 +186,9 @@ class BulkToSlabsJob(Maker):
             outputs.append(static_job.output)
             all_atoms.append(static_job.output["atoms"])
 
+        if len(slabs) == 0:
+            return Response(stop_children=True)
+
         return Response(
             replace=Flow(
                 jobs,
@@ -274,6 +277,9 @@ class SlabToAdsorbatesJob(Maker):
                     jobs += [relax_job, static_job]
                     outputs.append(static_job.output)
                     all_atoms.append(static_job.output["atoms"])
+
+        if len(jobs) == 0:
+            return Response(stop_children=True)
 
         return Response(
             replace=Flow(

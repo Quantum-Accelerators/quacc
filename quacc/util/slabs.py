@@ -185,7 +185,7 @@ def make_slabs_from_bulk(
         slabs_with_props.append(slab_with_props)
 
     if len(slabs_with_props) == 0:
-        return None
+        return []
 
     # Make atoms objects and store slab stats
     final_slabs = []
@@ -316,7 +316,7 @@ def make_adsorbate_structures(
     allowed_surface_indices: List[int] = None,
     ads_site_finder_kwargs: Dict[str, Any] = None,
     find_ads_sites_kwargs: Dict[str, Any] = None,
-) -> None | List[Atoms]:
+) -> List[Atoms]:
     """
     Add a single adsorbate to a structure for every requested adsorption mode
 
