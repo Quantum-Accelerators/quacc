@@ -141,9 +141,9 @@ class BulkToSlabsJob(Maker):
     name
         Name of the job.
     slab_relax_job
-        Maker to use for the SlabRelax job.
+        Maker to use for the relaxation of the slab.
     slab_static_job
-        Default to use for the SlabStatic job.
+        Default to use for the static calculation of the slab.
     """
 
     name: str = "VASP-BulkToSlabs"
@@ -211,10 +211,10 @@ class SlabToAdsorbatesJob(Maker):
     ----------
     name
         Name of the job.
-    slab_relax_job
-        Maker to use for the SlabRelax job.
-    slab_static_job
-        Default to use for the SlabStatic job.
+    slab_ads_relax_job
+        Maker to use for the relaxation of the slab-adsorbate system.
+    slab_ads_static_job
+        Maker to use for the static calculation of the slab-adsorbate system.
     """
 
     name: str = "VASP-SlabToAdsorbates"
@@ -310,9 +310,9 @@ class BulkToAdsorbatesFlow(Maker):
     name
         Name of the job.
     bulk_relax_job
-        Maker to use for the RelaxJob.
+        Maker to use for the relaxation of the bulk structure.
     bulk_static_job
-        Default to use for the StaticJob.
+        Default to use for the static calculation of the bulk structure.
     bulk_to_slabs_job
         Maker to use for the BulkToSlabsJob.
     slab_to_adsorbate_job
