@@ -184,11 +184,11 @@ def make_slabs_from_bulk(
         # Add slab to list
         slabs_with_props.append(slab_with_props)
 
+    final_slabs = []
     if len(slabs_with_props) == 0:
-        return []
+        return final_slabs
 
     # Make atoms objects and store slab stats
-    final_slabs = []
     for slab_with_props in slabs_with_props:
         final_slab = AseAtomsAdaptor.get_atoms(slab_with_props)
         slab_stats = {
