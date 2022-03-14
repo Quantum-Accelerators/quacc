@@ -286,6 +286,12 @@ def test_slab_flows():
     responses = run_locally(flow, ensure_success=True)
     assert len(responses) == 76
 
+    flow = BulkToAdsorbatesFlow(
+        bulk_relax_job=None, bulk_static_job=None, stable_slab=False
+    ).make(atoms, [adsorbate, molecule("H2")])
+    responses = run_locally(flow, ensure_success=True)
+    assert len(responses) == 142
+
     with pytest.raises(ValueError):
         flow = BulkToAdsorbatesFlow(bulk_relax_job=None, bulk_static_job=None).make(
             atoms, adsorbate

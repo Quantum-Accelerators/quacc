@@ -220,7 +220,10 @@ class SlabToAdsorbatesJob(Maker):
 
     @job
     def make(
-        self, slabs: Atoms | List[Atoms], adsorbate: Atoms, **make_ads_kwargs
+        self,
+        slabs: Atoms | List[Atoms],
+        adsorbates: Atoms | List[Atoms],
+        **make_ads_kwargs
     ) -> Response:
         """
         Make the run.
@@ -230,8 +233,9 @@ class SlabToAdsorbatesJob(Maker):
         atoms
             .Atoms object for the slab structure. Also takes a list of Atoms objects
             for the creation of a series of slabs with adsorbates.
-        adsorbate
-            .Atoms object for the adsorbate.
+        adsorbates
+            .Atoms object for the adsorbate. Also takes a list of Atoms objects for
+            the consideration of multiple different adsorbates.
         make_ads_kwargs
             Additional keyword arguments to pass to make_adsorbate_structures()
 
@@ -246,23 +250,30 @@ class SlabToAdsorbatesJob(Maker):
             slabs_list = [slabs]
         else:
             slabs_list = slabs
+        if isinstance(adsorbates, Atoms):
+            adsorbates_list = [adsorbates]
+        else:
+            adsorbates_list = adsorbates
 
         jobs = []
         outputs = []
         all_atoms = []
         for slab in slabs_list:
+            for adsorbate in adsorbates_list:
 
-            # Make slab-adsorbate systems
-            ads_slabs = make_adsorbate_structures(slab, adsorbate, **make_ads_kwargs)
+                # Make slab-adsorbate systems
+                ads_slabs = make_adsorbate_structures(
+                    slab, adsorbate, **make_ads_kwargs
+                )
 
-            # Make a relaxation+static job for each slab-adsorbate ysstem
-            for ads_slab in ads_slabs:
-                relax_job = self.slab_relax_job.make(ads_slab)
-                static_job = self.slab_static_job.make(relax_job.output["atoms"])
+                # Make a relaxation+static job for each slab-adsorbate ysstem
+                for ads_slab in ads_slabs:
+                    relax_job = self.slab_relax_job.make(ads_slab)
+                    static_job = self.slab_static_job.make(relax_job.output["atoms"])
 
-                jobs += [relax_job, static_job]
-                outputs.append(static_job.output)
-                all_atoms.append(static_job.output["atoms"])
+                    jobs += [relax_job, static_job]
+                    outputs.append(static_job.output)
+                    all_atoms.append(static_job.output["atoms"])
 
         return Response(
             replace=Flow(
@@ -312,7 +323,7 @@ class BulkToAdsorbatesFlow(Maker):
     def make(
         self,
         atoms: Atoms,
-        adsorbate: Atoms,
+        adsorbate: Atoms | List[Atoms],
         max_slabs: int = None,
         slabgen_kwargs: Dict[str, Any] = None,
         make_ads_kwargs: Dict[str, Any] = None,
@@ -325,7 +336,7 @@ class BulkToAdsorbatesFlow(Maker):
         atoms
             .Atoms object for the structure.
         adsorbate
-            .Atoms object for the adsorbate.
+            .Atoms object for the adsorbate. Can also take a list of adsorbates.
         max_slabs
             Maximum number of slabs to make. None implies no upper limit.
         slabgen_kwargs
