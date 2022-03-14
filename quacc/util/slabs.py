@@ -92,7 +92,7 @@ def make_slabs_from_bulk(
 
     Returns
     -------
-    Optional[List[.Atoms]]
+    List[.Atoms]
         All generated slabs
     """
 
@@ -343,7 +343,7 @@ def make_adsorbate_structures(
 
     Returns:
     --------
-    Optional[List[ase.Atoms]]
+    List[ase.Atoms]
         The structures with adsorbates
 
     """

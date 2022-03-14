@@ -262,7 +262,7 @@ def test_slab_flows():
 
     atoms = bulk("Cu")
     adsorbate = molecule("H2O")
-    flow = BulkToAdsorbatesFlow().make(atoms, adsorbate)
+    flow = BulkToAdsorbatesFlow().make(atoms, adsorbate, n_stable_slabs=1)
     responses = run_locally(flow, ensure_success=True)
     uuids = list(responses.keys())
     assert len(responses) == 27
@@ -276,23 +276,25 @@ def test_slab_flows():
     output_final = responses[uuids[-1]][1].output
     assert output_final["parameters"]["nsw"] == 0
 
-    flow = BulkToAdsorbatesFlow().make(atoms, [adsorbate, molecule("H2")])
+    flow = BulkToAdsorbatesFlow().make(
+        atoms, [adsorbate, molecule("H2")], n_stable_slabs=1
+    )
     responses = run_locally(flow, ensure_success=True)
     assert len(responses) == 41
 
-    flow = BulkToAdsorbatesFlow(stable_slab=False).make(atoms, adsorbate)
+    flow = BulkToAdsorbatesFlow().make(atoms, adsorbate)
     responses = run_locally(flow, ensure_success=True)
     assert len(responses) == 78
 
-    flow = BulkToAdsorbatesFlow(
-        bulk_relax_job=None, bulk_static_job=None, stable_slab=False
-    ).make(atoms, adsorbate)
+    flow = BulkToAdsorbatesFlow(bulk_relax_job=None, bulk_static_job=None).make(
+        atoms, adsorbate, n_stable_slabs=None
+    )
     responses = run_locally(flow, ensure_success=True)
     assert len(responses) == 76
 
     with pytest.raises(ValueError):
         flow = BulkToAdsorbatesFlow(bulk_relax_job=None, bulk_static_job=None).make(
-            atoms, adsorbate
+            atoms, adsorbate, n_stable_slabs=1
         )
 
 

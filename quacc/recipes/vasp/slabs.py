@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Any, Dict, List
+import warnings
 
-import numpy as np
 from ase.atoms import Atoms
 from jobflow import Flow, Maker, Response, job
 from jobflow.core.flow import JobOrder
@@ -307,8 +307,6 @@ class BulkToAdsorbatesFlow(Maker):
     ----------
     name
         Name of the job.
-    stable_slab
-        Whether to add adsorbates to only the most stable slab.
     bulk_relax_job
         Maker to use for the RelaxJob.
     bulk_static_job
@@ -320,7 +318,6 @@ class BulkToAdsorbatesFlow(Maker):
     """
 
     name: str = "VASP-BulkToAdsorbates"
-    stable_slab: bool = True
     bulk_relax_job: Maker | None = RelaxJob()
     bulk_static_job: Maker | None = StaticJob()
     bulk_to_slabs_job: Maker = BulkToSlabsJob()
@@ -330,6 +327,7 @@ class BulkToAdsorbatesFlow(Maker):
         self,
         atoms: Atoms,
         adsorbate: Atoms | List[Atoms],
+        n_stable_slabs: int = None,
         max_slabs: int = None,
         slabgen_kwargs: Dict[str, Any] = None,
         make_ads_kwargs: Dict[str, Any] = None,
@@ -343,6 +341,9 @@ class BulkToAdsorbatesFlow(Maker):
             .Atoms object for the structure.
         adsorbate
             .Atoms object for the adsorbate. Can also take a list of adsorbates.
+        n_stable_slabs
+            If set to an integer, the n most stable slabs will be considered
+            for adsorption. If None, then all will be considered.
         max_slabs
             Maximum number of slabs to make. None implies no upper limit.
         slabgen_kwargs
@@ -359,8 +360,8 @@ class BulkToAdsorbatesFlow(Maker):
         slabgen_kwargs = slabgen_kwargs or {}
         make_ads_kwargs = make_ads_kwargs or {}
 
-        if self.stable_slab and not self.bulk_static_job:
-            raise ValueError("Cannot use stable_slab without a bulk_static_job")
+        if n_stable_slabs and not self.bulk_static_job:
+            raise ValueError("Cannot use n_stable_slabs without a bulk_static_job")
 
         if self.bulk_relax_job:
             bulk_relax_job = self.bulk_relax_job.make(atoms)
@@ -377,12 +378,14 @@ class BulkToAdsorbatesFlow(Maker):
         )
         jobs.append(bulk_to_slabs_job)
 
-        if self.stable_slab:
+        if n_stable_slabs:
             find_stable_slab_job = _get_slab_stability(
-                bulk_static_job.output, bulk_to_slabs_job.output["all_outputs"]
+                bulk_static_job.output,
+                bulk_to_slabs_job.output["all_outputs"],
+                n_stable_slabs=n_stable_slabs,
             )
             slab_to_adsorbates_job = self.slab_to_adsorbates_job.make(
-                find_stable_slab_job.output["stable_slab"]["atoms"],
+                find_stable_slab_job.output["stable_slabs"]["all_atoms"],
                 adsorbate,
                 **make_ads_kwargs
             )
@@ -403,10 +406,12 @@ class BulkToAdsorbatesFlow(Maker):
 
 @job
 def _get_slab_stability(
-    bulk_summary: Dict[str, Any], slab_summaries: Dict[str, Any]
+    bulk_summary: Dict[str, Any],
+    slab_summaries: Dict[str, Any],
+    n_stable_slabs: int = 1,
 ) -> Dict[str, Any]:
     """
-    A job that determine the most stable surface slab (based on cleavage energy) for
+    A job that determine the most stable surface slabs (based on cleavage energy) for
     a given bulk summary and list of slab summaries.
 
     Parameters
@@ -415,19 +420,30 @@ def _get_slab_stability(
         Output of a VASP job corresponding to the bulk structure.
     slab_summaries
         List of outputs of VASP jobs corresponding to the slab structures.
+    n_stable_slabs
+        The n most stable slabs are returned.
 
     Returns
     -------
     Dict
         VASP output summaries for the stable and unstable slabs formatted as
-        {"stable_slab": {"atoms": ..., "output": ...}, "unstable_slabs": [...]}
+        {
+            {"stable_slabs": {"all_atoms": [.Atoms, .Atoms], "all_outputs": [...],
+            {"unstable_slabs": {"all_atoms": [.Atoms, .Atoms], "all_outputs": [...]
+        }
     """
-    min_cleave_energy = np.inf
     bulk = bulk_summary["atoms"]
     bulk_energy = bulk_summary["output"]["energy"]
+    cleavage_energies = []
+
+    if n_stable_slabs > len(slab_summaries):
+        warnings.warn(
+            "n_stable_slabs is larger than the number of slabs. Setting n_stable_slabs to the number of slabs."
+        )
+        n_stable_slabs = len(slab_summaries)
 
     # Iterate through each slab summary and determine the most stable slab
-    for i, slab_summary in enumerate(slab_summaries):
+    for slab_summary in slab_summaries:
         slab = slab_summary["atoms"]
         slab_energy = slab_summary["output"]["energy"]
 
@@ -437,18 +453,27 @@ def _get_slab_stability(
         # Insert the cleavage energy into the slab summary
         slab_summary["cleavage_energy"] = cleave_energy
 
-        # Determine if we are at a more stable slab
-        if cleave_energy < min_cleave_energy:
-            min_cleave_energy = cleave_energy
-            stable_slab_idx = i
+        # Store the slab energy in a convenient dict
+        cleavage_energies.append(cleave_energy)
 
-    # Here, we return the summary dictionaries for the stable and unstable slabs
-    # with the cleavage energy inserted into the summary.
+    slab_summaries_sorted = [
+        slab_summary
+        for _, slab_summary in sorted(zip(cleavage_energies, slab_summaries))
+    ]
+    stable_slab_summaries = slab_summaries_sorted[0:n_stable_slabs]
+    unstable_slab_summaries = slab_summaries_sorted[n_stable_slabs:]
+
     output = {
-        "stable_slab": slab_summaries[stable_slab_idx],
-        "unstable_slabs": [
-            summary for i, summary in enumerate(slab_summaries) if i != stable_slab_idx
-        ],
+        "stable_slabs": {
+            "all_atoms": [summary["atoms"] for summary in stable_slab_summaries],
+            "all_outputs": stable_slab_summaries,
+        },
+        "unstable_slabs": {
+            "all_atoms": [summary["atoms"] for summary in unstable_slab_summaries]
+            if unstable_slab_summaries
+            else [],
+            "all_outputs": unstable_slab_summaries,
+        },
     }
 
     return output
