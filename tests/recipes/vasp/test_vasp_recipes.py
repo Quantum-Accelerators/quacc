@@ -167,7 +167,8 @@ def test_slab_dynamic_jobs():
 
     # First job is a dummy job to make slabs and should have no output
     output0 = responses[uuids[0]][1].output
-    assert output0 is None
+    assert "generated_slabs" in output0
+    assert len(output0["generated_slabs"][0]) == 96
 
     output1 = responses[uuids[1]][1].output
     assert output1["nsites"] > len(atoms)
@@ -191,7 +192,8 @@ def test_slab_dynamic_jobs():
     uuids = list(responses.keys())
 
     output0 = responses[uuids[0]][1].output
-    assert output0 is None
+    assert "generated_slabs" in output0
+    assert len(output0["generated_slabs"][0]) == 96
 
     output1 = responses[uuids[1]][1].output
     assert output1["parameters"]["isif"] == 2
@@ -217,7 +219,9 @@ def test_slab_dynamic_jobs():
 
     # First job is a dummy job to make slabs and should have no output
     output0 = responses[uuids[0]][1].output
-    assert output0 is None
+    assert "generated_slab_ads" in output0
+    assert "H2" in output0["generated_slab_ads"]
+    assert len(output0["generated_slab_ads"]["H2"][0]) == 98
 
     # Subsequent jobs should be alternating relaxations and statics
     output1 = responses[uuids[1]][1].output
@@ -242,7 +246,9 @@ def test_slab_dynamic_jobs():
     uuids = list(responses.keys())
 
     output0 = responses[uuids[0]][1].output
-    assert output0 is None
+    assert "generated_slab_ads" in output0
+    assert "H2" in output0["generated_slab_ads"]
+    assert len(output0["generated_slab_ads"]["H2"][0]) == 98
 
     output1 = responses[uuids[1]][1].output
     assert output1["parameters"]["isif"] == 2

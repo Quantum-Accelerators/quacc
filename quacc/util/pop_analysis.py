@@ -5,7 +5,7 @@ from pymatgen.command_line.bader_caller import bader_analysis_from_path
 from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
 
 
-def run_bader(path: None | str = None) -> Dict[str, Any]:
+def run_bader(path: str = None) -> Dict[str, Any]:
     """
     Runs a Bader partial charge and spin moment analysis using the VASP
     output files in the given path. This function requires that `bader`
@@ -68,7 +68,7 @@ def run_bader(path: None | str = None) -> Dict[str, Any]:
 
 
 def run_chargemol(
-    path: None | str = None, atomic_densities_path: None | str = None
+    path: str = None, atomic_densities_path: str = None
 ) -> Dict[str, Any]:
     """
     Runs a Chargemol (i.e. DDEC6 + CM5) analysis using the VASP output files
