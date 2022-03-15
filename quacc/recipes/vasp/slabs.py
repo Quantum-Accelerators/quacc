@@ -273,7 +273,7 @@ class SlabToAdsorbatesJob(Maker):
                 ads_slabs = make_adsorbate_structures(
                     slab, adsorbate, **make_ads_kwargs
                 )
-                all_ads_slabs[adsorbate.get_chemical_formula() : ads_slabs]
+                all_ads_slabs[adsorbate.get_chemical_formula()] = ads_slabs
 
                 # Make a relaxation+static job for each slab-adsorbate ysstem
                 for ads_slab in ads_slabs:
