@@ -187,15 +187,19 @@ class BulkToSlabsJob(Maker):
             all_atoms.append(static_job.output["atoms"])
 
         if len(slabs) == 0:
-            return Response(stop_children=True)
+            return Response(
+                output={"input_bulk": atoms, "generated_slabs": None},
+                stop_children=True,
+            )
 
         return Response(
+            output={"input_bulk": atoms, "generated_slabs": slabs},
             replace=Flow(
                 jobs,
                 output={"all_atoms": all_atoms, "all_outputs": outputs},
                 name=self.name,
                 order=JobOrder.LINEAR,
-            )
+            ),
         )
 
 
@@ -233,7 +237,7 @@ class SlabToAdsorbatesJob(Maker):
 
         Parameters
         ----------
-        atoms
+        slabs
             .Atoms object for the slab structure. Also takes a list of Atoms objects
             for the creation of a series of slabs with adsorbates.
         adsorbates
@@ -258,6 +262,7 @@ class SlabToAdsorbatesJob(Maker):
         else:
             adsorbates_list = adsorbates
 
+        all_ads_slabs = {}
         jobs = []
         outputs = []
         all_atoms = []
@@ -268,6 +273,7 @@ class SlabToAdsorbatesJob(Maker):
                 ads_slabs = make_adsorbate_structures(
                     slab, adsorbate, **make_ads_kwargs
                 )
+                all_ads_slabs[adsorbate.get_chemical_formula() : ads_slabs]
 
                 # Make a relaxation+static job for each slab-adsorbate ysstem
                 for ads_slab in ads_slabs:
@@ -281,15 +287,19 @@ class SlabToAdsorbatesJob(Maker):
                     all_atoms.append(static_job.output["atoms"])
 
         if len(jobs) == 0:
-            return Response(stop_children=True)
+            return Response(
+                output={"input_slabs": slabs, "generated_slab_ads": None},
+                stop_children=True,
+            )
 
         return Response(
+            output={"input_slabs": slabs, "generated_slab_ads": all_ads_slabs},
             replace=Flow(
                 jobs,
                 output={"all_atoms": all_atoms, "all_outputs": outputs},
                 name=self.name,
                 order=JobOrder.LINEAR,
-            )
+            ),
         )
 
 
