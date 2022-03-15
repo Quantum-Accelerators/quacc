@@ -44,13 +44,13 @@ def test_presets():
     assert atoms == atoms_fullpath
     assert atoms.calc.xc.lower() == "pbe"
     assert atoms.calc.string_params["algo"] == "fast"
-    assert atoms.calc.exp_params["ediff"] == 1e-6
+    assert atoms.calc.exp_params["ediff"] == 1e-5
     assert atoms.calc.float_params["encut"] == 520
 
     atoms = SmartVasp(atoms, xc="rpbe", preset="SlabSet")
     assert atoms.calc.xc.lower() == "rpbe"
     assert atoms.calc.string_params["algo"] == "fast"
-    assert atoms.calc.exp_params["ediff"] == 1e-6
+    assert atoms.calc.exp_params["ediff"] == 1e-5
     assert atoms.calc.float_params["encut"] == 450
 
     atoms = SmartVasp(atoms, xc="scan", preset="MPScanSet")
