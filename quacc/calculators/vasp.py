@@ -129,7 +129,7 @@ def SmartVasp(
         del user_calc_params["auto_kpts"]
     else:
         auto_kpts = None
-    if user_calc_params.get("auto_dipole") is not None:
+    if user_calc_params.get("auto_dipole"):
         auto_dipole = user_calc_params["auto_dipole"]
         del user_calc_params["auto_dipole"]
     else:
