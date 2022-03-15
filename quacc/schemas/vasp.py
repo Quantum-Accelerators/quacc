@@ -13,7 +13,7 @@ from quacc.util.pop_analysis import run_bader
 
 def summarize_run(
     atoms: Atoms,
-    dir_path: None | str = None,
+    dir_path: str = None,
     prep_next_run: bool = True,
     bader: bool = True,
     check_convergence: bool = True,
@@ -86,6 +86,9 @@ def summarize_run(
 
         # Remove structure because it's already in the outputs
         results.pop("structure", None)
+
+        # Remove the entry data since it's redundant
+        results.pop("entry", None)
 
     # Get Bader analysis
     if bader:
