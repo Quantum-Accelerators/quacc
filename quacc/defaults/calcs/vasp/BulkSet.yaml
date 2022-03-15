@@ -5,10 +5,7 @@ inputs:
     max_mixed_density: [100, 1000]
   algo: fast
   ediff: 1.0e-6
-  ediffg: -0.02
-  encut: 650
-  ibrion: 2
-  isif: 3
+  encut: 520
   ismear: 0
   isym: 0
   ivdw: 12
@@ -17,7 +14,6 @@ inputs:
   lasph: true
   lwave: false
   nelm: 120
-  nsw: 200
   prec: accurate
   sigma: 0.05
   xc: pbe

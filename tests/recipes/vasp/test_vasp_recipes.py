@@ -39,7 +39,7 @@ def test_static_job():
     )
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["parameters"]["encut"] == 650
+    assert output["parameters"]["encut"] == 520
     assert output["parameters"]["ncore"] == 2
     assert output["parameters"]["kpar"] == 4
     assert output["name"] == "test"
@@ -71,7 +71,7 @@ def test_relax_job():
     job = RelaxJob(preset="BulkSet", name="test", swaps={"nelmin": 6}).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["parameters"]["encut"] == 650
+    assert output["parameters"]["encut"] == 520
     assert output["parameters"]["nelmin"] == 6
     assert output["name"] == "test"
 
@@ -100,7 +100,7 @@ def test_doublerelax_job():
     )
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["parameters"]["encut"] == 650
+    assert output["parameters"]["encut"] == 520
     assert output["parameters"]["nelmin"] == 6
     assert output["name"] == "test"
 
@@ -313,7 +313,7 @@ def test_qmof():
     job = QMOFRelaxJob(preset="BulkSet", name="test", swaps={"nelmin": 6}).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["parameters"]["encut"] == 650
+    assert output["parameters"]["encut"] == 520
     assert output["parameters"]["nelmin"] == 6
     assert output["parameters"]["sigma"] == 0.05
     assert output["name"] == "test"
