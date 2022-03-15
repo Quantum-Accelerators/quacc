@@ -119,21 +119,21 @@ def SmartVasp(
 
     # Handle special arguments in the user calc parameters that
     # ASE does not natively support
-    if user_calc_params.get("elemental_magmoms") is not None:
+    if user_calc_params.get("elemental_magmoms"):
         elemental_mags_dict = user_calc_params["elemental_magmoms"]
-        del user_calc_params["elemental_magmoms"]
     else:
         elemental_mags_dict = None
-    if user_calc_params.get("auto_kpts") is not None:
+    if user_calc_params.get("auto_kpts"):
         auto_kpts = user_calc_params["auto_kpts"]
-        del user_calc_params["auto_kpts"]
     else:
         auto_kpts = None
     if user_calc_params.get("auto_dipole"):
         auto_dipole = user_calc_params["auto_dipole"]
-        del user_calc_params["auto_dipole"]
     else:
         auto_dipole = None
+    user_calc_params.pop("elemental_magmoms", None)
+    user_calc_params.pop("auto_kpts", None)
+    user_calc_params.pop("auto_dipole", None)
 
     # Make automatic k-point mesh
     if auto_kpts:
