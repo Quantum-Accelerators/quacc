@@ -5,7 +5,7 @@
 [![This project supports Python 3.10](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://python.org/downloads)
 [![Pypi](https://img.shields.io/pypi/v/quacc)](https://pypi.org/project/quacc)
 
-**Warning**: Currently, this package is under active development and should be considered *highly experimental.*
+**Warning**: Currently, this package is under active development and should be considered *highly experimental.* User-friendly documentation will be provided once the code is in a more stable state.
 
 The Quantum Accelerator (QuAcc) supercharges your code to support high-throughput, database-driven computational materials science and quantum chemistry. Primarily, QuAcc seeks to enable a seamless interface between the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/index.html) (ASE) and [Jobflow](https://github.com/materialsproject/jobflow) for rapid workflow development and prototyping.
 
