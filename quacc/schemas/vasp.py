@@ -101,7 +101,8 @@ def summarize_run(
             # Attach bader charges/spins to structure object
             struct = results["output"]["structure"]
             struct.add_site_property("bader_charge", bader_stats["partial_charges"])
-            struct.add_site_property("bader_spin", bader_stats["spin_moments"])
+            if "spin_moments" in bader_stats:
+                struct.add_site_property("bader_spin", bader_stats["spin_moments"])
             results["output"]["structure"] = struct
 
     # Prepares the Atoms object for the next run by moving the
