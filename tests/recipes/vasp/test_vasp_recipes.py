@@ -88,6 +88,12 @@ def test_doublerelax_job():
     job = DoubleRelaxJob().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
+    assert output["relax1"]["nsites"] == len(atoms)
+    assert output["relax1"]["parameters"]["isym"] == 0
+    assert output["relax1"]["parameters"]["nsw"] > 0
+    assert output["relax1"]["parameters"]["isif"] == 3
+    assert output["relax1"]["parameters"]["lwave"] == True
+    assert output["relax1"]["name"] == "VASP-DoubleRelax"
     assert output["relax2"]["nsites"] == len(atoms)
     assert output["relax2"]["parameters"]["isym"] == 0
     assert output["relax2"]["parameters"]["nsw"] > 0
@@ -100,6 +106,9 @@ def test_doublerelax_job():
     )
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
+    assert output["relax1"]["parameters"]["encut"] == 520
+    assert "nelmin" not in output["relax1"]["parameters"]
+    assert output["relax1"]["name"] == "test"
     assert output["relax2"]["parameters"]["encut"] == 520
     assert output["relax2"]["parameters"]["nelmin"] == 6
     assert output["relax2"]["name"] == "test"
@@ -107,6 +116,7 @@ def test_doublerelax_job():
     job = DoubleRelaxJob(volume_relax=False).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
+    assert output["relax1"]["parameters"]["isif"] == 2
     assert output["relax2"]["parameters"]["isif"] == 2
 
     job = DoubleRelaxJob(swaps1={"kpts": [1, 1, 1]}).make(atoms)
