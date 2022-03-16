@@ -440,8 +440,8 @@ def _get_slab_stability(
     Dict
         VASP output summaries for the stable and unstable slabs formatted as
         {
-            {"stable_slabs": {"all_atoms": [.Atoms, .Atoms], "all_outputs": [...],
-            {"unstable_slabs": {"all_atoms": [.Atoms, .Atoms], "all_outputs": [...]
+            {"stable_slabs": {"all_atoms": [.Atoms, .Atoms, ...], "all_outputs": [...],
+            {"unstable_slabs": {"all_atoms": [.Atoms, .Atoms, ...], "all_outputs": [...]
         }
     """
     bulk = bulk_summary["atoms"]

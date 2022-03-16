@@ -64,7 +64,7 @@ def make_slabs_from_bulk(
     min_vacuum_size: float = 20.0,
     z_fix: None | float = 2.0,
     flip_asymmetric: bool = True,
-    allowed_surface_atoms: List[str] = None,
+    allowed_surface_symbols: List[str] = None,
     **slabgen_kwargs,
 ) -> List[Atoms]:
     """
@@ -86,7 +86,7 @@ def make_slabs_from_bulk(
         Distance (in angstroms) from top of slab for which atoms should be fixed
     flip_asymmetric
         If an asymmetric surface should be flipped and added to the list
-    allowed_surface_atoms
+    allowed_surface_symbols
         List of chemical symbols that must be present on the surface of the slab otherwise the slab will be discarded, e.g. ["Cu", "Ni"]
     **slabgen_kwargs: keyword arguments to pass to the pymatgen generate_all_slabs() function
 
@@ -175,9 +175,9 @@ def make_slabs_from_bulk(
             ]
 
             # Check that the desired atoms are on the surface
-            if allowed_surface_atoms and not any(
+            if allowed_surface_symbols and not any(
                 allowed_surface_atom in surface_species
-                for allowed_surface_atom in allowed_surface_atoms
+                for allowed_surface_atom in allowed_surface_symbols
             ):
                 continue
 
@@ -213,7 +213,7 @@ def make_max_slabs_from_bulk(
     min_vacuum_size: float = 20.0,
     z_fix: float = 2.0,
     flip_asymmetric: bool = True,
-    allowed_surface_atoms: List[str] = None,
+    allowed_surface_symbols: List[str] = None,
     **slabgen_kwargs,
 ) -> List[Atoms]:
 
@@ -245,7 +245,7 @@ def make_max_slabs_from_bulk(
         Distance (in angstroms) from top of slab for which atoms should be fixed
     flip_asymmetric
         If an asymmetric surface should be flipped and added to the list
-    allowed_surface_atoms
+    allowed_surface_symbols
         List of chemical symbols that must be present on the surface of the slab otherwise
         the slab will be discarded, e.g. ["Cu", "Ni"]
     **slabgen_kwargs: keyword arguments to pass to the pymatgen generate_all_slabs() function
@@ -265,7 +265,7 @@ def make_max_slabs_from_bulk(
         min_vacuum_size=min_vacuum_size,
         z_fix=z_fix,
         flip_asymmetric=flip_asymmetric,
-        allowed_surface_atoms=allowed_surface_atoms,
+        allowed_surface_symbols=allowed_surface_symbols,
         **slabgen_kwargs,
     )
 
@@ -288,7 +288,7 @@ def make_max_slabs_from_bulk(
                     min_vacuum_size=min_vacuum_size,
                     z_fix=z_fix,
                     flip_asymmetric=flip_asymmetric,
-                    allowed_surface_atoms=allowed_surface_atoms,
+                    allowed_surface_symbols=allowed_surface_symbols,
                     **slabgen_kwargs,
                 )
                 if len(slabs_ftol) < len(slabs):
