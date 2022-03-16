@@ -55,7 +55,7 @@ class StaticJob(Maker):
             "nsw": 0,
             "sigma": 0.05,
         }
-        flags = merge_dicts(defaults, swaps, remove_none=True)
+        flags = merge_dicts(defaults, swaps)
 
         atoms = SmartVasp(atoms, preset=self.preset, **flags)
         atoms = run_calc(atoms)
@@ -114,7 +114,7 @@ class RelaxJob(Maker):
             "nsw": 200,
             "sigma": 0.05,
         }
-        flags = merge_dicts(defaults, swaps, remove_none=True)
+        flags = merge_dicts(defaults, swaps)
 
         atoms = SmartVasp(atoms, preset=self.preset, **flags)
         atoms = run_calc(atoms)
@@ -186,14 +186,14 @@ class DoubleRelaxJob(Maker):
         }
 
         # Run first relaxation
-        flags = merge_dicts(defaults, swaps1, remove_none=True)
+        flags = merge_dicts(defaults, swaps1)
         atoms = SmartVasp(atoms, preset=self.preset, **flags)
         kpts1 = atoms.calc.kpts
         atoms = run_calc(atoms)
         summary1 = summarize_run(atoms, additional_fields={"name": self.name})
 
         # Run second relaxation
-        flags = merge_dicts(defaults, swaps2, remove_none=True)
+        flags = merge_dicts(defaults, swaps2)
         atoms = SmartVasp(summary1["atoms"], preset=self.preset, **flags)
         kpts2 = atoms.calc.kpts
 

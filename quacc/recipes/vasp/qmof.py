@@ -88,7 +88,7 @@ class QMOFJob(Maker):
         summary5 = static(atoms, self.preset, swaps)
 
         return {
-            "pre-relax-lowacc": summary1,
+            "prerelax-lowacc": summary1,
             "position-relax-lowacc": summary2,
             "volume-relax-lowacc": summary3 if self.volume_relax else None,
             "double-relax": summary4,
@@ -132,7 +132,7 @@ def prerelax(
         "nelm": 225,
         "nsw": 0,
     }
-    flags = merge_dicts(defaults, swaps, remove_none=True)
+    flags = merge_dicts(defaults, swaps)
     atoms = SmartVasp(atoms, preset=preset, **flags)
     dyn = BFGSLineSearch(atoms, logfile="prerelax.log", trajectory="prerelax.traj")
     dyn.run(fmax=fmax)
@@ -176,7 +176,7 @@ def loose_relax_positions(
         "lwave": True,
         "nsw": 250,
     }
-    flags = merge_dicts(defaults, swaps, remove_none=True)
+    flags = merge_dicts(defaults, swaps)
     atoms = SmartVasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms)
 
@@ -216,7 +216,7 @@ def loose_relax_volume(
         "lwave": True,
         "nsw": 500,
     }
-    flags = merge_dicts(defaults, swaps, remove_none=True)
+    flags = merge_dicts(defaults, swaps)
     atoms = SmartVasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms)
 
@@ -260,7 +260,7 @@ def double_relax(
     }
 
     # Run first relaxation
-    flags = merge_dicts(defaults, swaps, remove_none=True)
+    flags = merge_dicts(defaults, swaps)
     atoms = SmartVasp(atoms, preset=preset, **flags)
     kpts1 = atoms.calc.kpts
     atoms = run_calc(atoms)
@@ -273,7 +273,7 @@ def double_relax(
     del defaults["lreal"]
 
     # Run second relaxation
-    flags = merge_dicts(defaults, swaps, remove_none=True)
+    flags = merge_dicts(defaults, swaps)
     atoms = SmartVasp(atoms, preset=preset, **flags)
     kpts2 = atoms.calc.kpts
 
@@ -318,7 +318,7 @@ def static(
     }
 
     # Run static calculation
-    flags = merge_dicts(defaults, swaps, remove_none=True)
+    flags = merge_dicts(defaults, swaps)
     atoms = SmartVasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms)
 

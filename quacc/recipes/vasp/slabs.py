@@ -65,7 +65,7 @@ class SlabStaticJob(Maker):
             "nsw": 0,
             "sigma": 0.05,
         }
-        flags = merge_dicts(defaults, swaps, remove_none=True)
+        flags = merge_dicts(defaults, swaps)
 
         atoms = SmartVasp(atoms, preset=self.preset, **flags)
         atoms = run_calc(atoms)
@@ -121,7 +121,7 @@ class SlabRelaxJob(Maker):
             "nsw": 200,
             "sigma": 0.05,
         }
-        flags = merge_dicts(defaults, swaps, remove_none=True)
+        flags = merge_dicts(defaults, swaps)
 
         atoms = SmartVasp(atoms, preset=self.preset, **flags)
         atoms = run_calc(atoms)

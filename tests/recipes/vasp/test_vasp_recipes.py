@@ -53,6 +53,11 @@ def test_static_job():
     assert output["parameters"]["ismear"] == 0
     assert output["parameters"]["sigma"] == 0.01
 
+    job = StaticJob(swaps={"lwave": None}).make(atoms)
+    responses = run_locally(job, ensure_success=True)
+    output = responses[job.uuid][1].output
+    assert "lwave" not in output["parameters"]
+
 
 def test_relax_job():
 
@@ -319,22 +324,68 @@ def test_qmof():
     job = QMOFJob().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
+    assert output["prerelax-lowacc"]["nsites"] == len(atoms)
+    assert output["prerelax-lowacc"]["parameters"]["sigma"] == 0.01
+    assert output["prerelax-lowacc"]["parameters"]["isym"] == 0
+    assert output["prerelax-lowacc"]["parameters"]["nsw"] == 0
+    assert "isif" not in output["prerelax-lowacc"]["parameters"]
+    assert "encut" not in output["prerelax-lowacc"]["parameters"]
+
+    assert output["position-relax-lowacc"]["nsites"] == len(atoms)
+    assert output["position-relax-lowacc"]["parameters"]["sigma"] == 0.01
+    assert output["position-relax-lowacc"]["parameters"]["isym"] == 0
+    assert output["position-relax-lowacc"]["parameters"]["nsw"] > 0
+    assert output["position-relax-lowacc"]["parameters"]["isif"] == 2
+    assert "encut" not in output["prerelax-lowacc"]["parameters"]
+
+    assert output["volume-relax-lowacc"]["nsites"] == len(atoms)
+    assert output["volume-relax-lowacc"]["parameters"]["encut"] == 520
+    assert output["volume-relax-lowacc"]["parameters"]["sigma"] == 0.01
+    assert output["volume-relax-lowacc"]["parameters"]["isym"] == 0
+    assert output["volume-relax-lowacc"]["parameters"]["nsw"] > 0
+    assert output["volume-relax-lowacc"]["parameters"]["isif"] == 3
+
+    assert output["double-relax"]["relax1"]["nsites"] == len(atoms)
+    assert output["double-relax"]["relax1"]["parameters"]["encut"] == 520
+    assert output["double-relax"]["relax1"]["parameters"]["sigma"] == 0.01
+    assert output["double-relax"]["relax1"]["parameters"]["isym"] == 0
+    assert output["double-relax"]["relax1"]["parameters"]["nsw"] > 0
+    assert output["double-relax"]["relax1"]["parameters"]["isif"] == 3
+
     assert output["double-relax"]["relax2"]["nsites"] == len(atoms)
-    assert output["double-relax"]["relax2"]["parameters"]["sigma"] == 0.01
+    assert output["double-relax"]["relax2"]["parameters"]["encut"] == 520
     assert output["double-relax"]["relax2"]["parameters"]["isym"] == 0
     assert output["double-relax"]["relax2"]["parameters"]["nsw"] > 0
     assert output["double-relax"]["relax2"]["parameters"]["isif"] == 3
 
+    assert output["static"]["nsites"] == len(atoms)
+    assert output["static"]["parameters"]["encut"] == 520
+    assert output["static"]["parameters"]["sigma"] == 0.01
+    assert output["static"]["parameters"]["isym"] == 0
+    assert output["static"]["parameters"]["nsw"] == 0
+    assert output["static"]["parameters"]["laechg"] == True
+
     job = QMOFJob(preset="BulkSet", name="test", swaps={"nelmin": 6}).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
+    assert output["double-relax"]["relax1"]["parameters"]["encut"] == 520
+    assert output["double-relax"]["relax1"]["parameters"]["nelmin"] == 6
+    assert output["double-relax"]["relax1"]["parameters"]["sigma"] == 0.05
+
     assert output["double-relax"]["relax2"]["parameters"]["encut"] == 520
     assert output["double-relax"]["relax2"]["parameters"]["nelmin"] == 6
     assert output["double-relax"]["relax2"]["parameters"]["sigma"] == 0.05
 
+    assert output["static"]["parameters"]["encut"] == 520
+    assert output["static"]["parameters"]["nelmin"] == 6
+    assert output["static"]["parameters"]["sigma"] == 0.05
+
     job = QMOFJob(volume_relax=False).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
+    assert "volume-relax" not in output
+
+    assert output["double-relax"]["relax1"]["parameters"]["isif"] == 2
     assert output["double-relax"]["relax2"]["parameters"]["isif"] == 2
 
     atoms = bulk("Cu") * (8, 8, 8)
