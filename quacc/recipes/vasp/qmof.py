@@ -6,6 +6,7 @@ from ase.optimize import BFGSLineSearch
 from jobflow import Maker, job
 
 from quacc.calculators.vasp import SmartVasp
+from quacc.schemas.calc import summarize_run as summarize_ase_run
 from quacc.schemas.vasp import summarize_run
 from quacc.util.basics import merge_dicts
 from quacc.util.calc import run_calc
@@ -15,7 +16,7 @@ from quacc.util.calc import run_calc
 
 
 @dataclass
-class QMOFRelaxJob(Maker):
+class QMOFJob(Maker):
     """
     Class to relax a structure in a multi-step process for increased
     computational efficiency. This is all done in a single compute job.
@@ -39,7 +40,7 @@ class QMOFRelaxJob(Maker):
         Dictionary of custom kwargs for the calculator. Applies for all jobs.
     """
 
-    name: str = "QMOF-Relax"
+    name: str = "QMOF"
     preset: str = "QMOFSet"
     volume_relax: bool = True
     swaps: Dict[str, Any] = None
@@ -62,25 +63,37 @@ class QMOFRelaxJob(Maker):
         swaps = self.swaps or {}
 
         # 1. Pre-relaxation
-        atoms = prerelax(atoms, self.preset, swaps, fmax=5.0)
+        summary1 = prerelax(atoms, self.preset, swaps, fmax=5.0)
+        atoms = summary1["atoms"]
 
         # 2. Position relaxation (loose)
-        atoms = loose_relax_positions(atoms, self.preset, swaps)
+        summary2 = loose_relax_positions(atoms, self.preset, swaps)
+        atoms = summary2["atoms"]
 
         # 3. Optional: Volume relaxation (loose)
         if self.volume_relax:
-            atoms = loose_relax_volume(atoms, self.preset, swaps)
+            summary3 = loose_relax_volume(atoms, self.preset, swaps)
+            atoms = summary3["atoms"]
 
         # 4. Double Relaxation
         # This is done for two reasons: a) because it can resolve repadding
         # issues when dV is large; b) because we can use LREAL = Auto for the
         # first relaxation and the default LREAL for the second.
-        atoms = double_relax(atoms, self.preset, swaps, volume_relax=self.volume_relax)
+        summary4 = double_relax(
+            atoms, self.preset, swaps, volume_relax=self.volume_relax
+        )
+        atoms = summary4["relax2"]["atoms"]
 
-        # Make summary of run
-        summary = summarize_run(atoms, additional_fields={"name": self.name})
+        # 5. Static Calculation
+        summary5 = static(atoms, self.preset, swaps)
 
-        return summary
+        return {
+            "pre-relax-lowacc": summary1,
+            "position-relax-lowacc": summary2,
+            "volume-relax-lowacc": summary3 if self.volume_relax else None,
+            "double-relax": summary4,
+            "static": summary5,
+        }
 
 
 def prerelax(
@@ -88,7 +101,7 @@ def prerelax(
     preset: str = "QMOFSet",
     swaps: Dict[str, Any] = None,
     fmax: float = 5.0,
-) -> Atoms:
+) -> Dict[str, Any]:
     """
     A "pre-relaxation" with BFGSLineSearch to resolve very high forces.
 
@@ -97,15 +110,16 @@ def prerelax(
     atoms
         .Atoms object
     preset
-        Preset to use. Applies for all jobs.
+        Preset to use.
     swaps
-        Dictionary of custom kwargs for the calculator. Applies for all jobs.
+        Dictionary of custom kwargs for the calculator.
     fmax
         Maximum force in eV/A.
 
     Returns
     -------
-    .Atoms object
+    Dict
+        Summary of the run.
     """
     swaps = swaps or {}
     defaults = {
@@ -123,14 +137,16 @@ def prerelax(
     dyn = BFGSLineSearch(atoms, logfile="prerelax.log", trajectory="prerelax.traj")
     dyn.run(fmax=fmax)
 
-    return atoms
+    summary = summarize_ase_run(atoms)
+
+    return summary
 
 
 def loose_relax_positions(
     atoms: Atoms,
     preset: str = "QMOFSet",
     swaps: Dict[str, Any] = None,
-) -> Atoms:
+) -> Dict[str, Any]:
     """
     Position relaxation with default ENCUT and coarse k-point grid.
 
@@ -139,13 +155,14 @@ def loose_relax_positions(
     atoms
         .Atoms object
     preset
-        Preset to use. Applies for all jobs.
+        Preset to use.
     swaps
-        Dictionary of custom kwargs for the calculator. Applies for all jobs.
+        Dictionary of custom kwargs for the calculator.
 
     Returns
     -------
-    .Atoms object
+    Dict
+        Summary of the run.
     """
     swaps = swaps or {}
     defaults = {
@@ -163,14 +180,16 @@ def loose_relax_positions(
     atoms = SmartVasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms)
 
-    return atoms
+    summary = summarize_run(atoms)
+
+    return summary
 
 
 def loose_relax_volume(
     atoms: Atoms,
     preset: str = "QMOFSet",
     swaps: Dict[str, Any] = None,
-) -> Atoms:
+) -> Dict[str, Any]:
     """
     Optional: volume relaxation with coarse k-point grid.
 
@@ -179,13 +198,14 @@ def loose_relax_volume(
     atoms
         .Atoms object
     preset
-        Preset to use. Applies for all jobs.
+        Preset to use.
     swaps
-        Dictionary of custom kwargs for the calculator. Applies for all jobs.
+        Dictionary of custom kwargs for the calculator.
 
     Returns
     -------
-    .Atoms object
+    Dict
+        Summary of the run.
     """
     swaps = swaps or {}
     defaults = {
@@ -200,7 +220,9 @@ def loose_relax_volume(
     atoms = SmartVasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms)
 
-    return atoms
+    summary = summarize_run(atoms)
+
+    return summary
 
 
 def double_relax(
@@ -208,7 +230,7 @@ def double_relax(
     preset: str = "QMOFSet",
     swaps: Dict[str, Any] = None,
     volume_relax: bool = True,
-) -> Atoms:
+) -> Dict[str, Any]:
     """
     Double relaxation using production-quality settings.
 
@@ -217,15 +239,16 @@ def double_relax(
     atoms
         .Atoms object
     preset
-        Preset to use. Applies for all jobs.
+        Preset to use.
     swaps
-        Dictionary of custom kwargs for the calculator. Applies for all jobs.
+        Dictionary of custom kwargs for the calculator.
     volume_relax
         True if a volume relaxation should be performed.
 
     Returns
     -------
-    .Atoms object
+    Dict
+        Summary of the run.
     """
     swaps = swaps or {}
     defaults = {
@@ -242,6 +265,10 @@ def double_relax(
     kpts1 = atoms.calc.kpts
     atoms = run_calc(atoms)
 
+    # Update atoms for
+    summary1 = summarize_run(atoms, additional_fields={"name": "relax1"})
+    atoms = summary1["atoms"]
+
     # Reset LREAL
     del defaults["lreal"]
 
@@ -255,5 +282,46 @@ def double_relax(
         atoms.calc.set(istart=0)
 
     atoms = run_calc(atoms)
+    summary2 = summarize_run(atoms)
 
-    return atoms
+    return {"relax1": summary1, "relax2": summary2}
+
+
+def static(
+    atoms: Atoms,
+    preset: str = "QMOFSet",
+    swaps: Dict[str, Any] = None,
+) -> Dict[str, Any]:
+    """
+    Static calculation using production-quality settings.
+
+    Parameters
+    ----------
+    atoms
+        .Atoms object
+    preset
+        Preset to use.
+    swaps
+        Dictionary of custom kwargs for the calculator.
+
+    Returns
+    -------
+    Dict
+        Summary of the run.
+    """
+    swaps = swaps or {}
+    defaults = {
+        "laechg": True,
+        "lcharg": True,
+        "lwave": True,
+        "nsw": 0,
+    }
+
+    # Run static calculation
+    flags = merge_dicts(defaults, swaps, remove_none=True)
+    atoms = SmartVasp(atoms, preset=preset, **flags)
+    atoms = run_calc(atoms)
+
+    summary = summarize_run(atoms)
+
+    return summary

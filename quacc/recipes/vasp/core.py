@@ -156,7 +156,7 @@ class DoubleRelaxJob(Maker):
     swaps2: Dict[str, Any] = None
 
     @job
-    def make(self, atoms: Atoms) -> Dict[str, Any]:
+    def make(self, atoms: Atoms) -> Dict[Dict[str, Any], Dict[str, Any]]:
         """
         Make the run.
 
@@ -190,17 +190,18 @@ class DoubleRelaxJob(Maker):
         atoms = SmartVasp(atoms, preset=self.preset, **flags)
         kpts1 = atoms.calc.kpts
         atoms = run_calc(atoms)
+        summary1 = summarize_run(atoms, additional_fields={"name": self.name})
 
         # Run second relaxation
         flags = merge_dicts(defaults, swaps2, remove_none=True)
-        atoms = SmartVasp(atoms, preset=self.preset, **flags)
+        atoms = SmartVasp(summary1["atoms"], preset=self.preset, **flags)
         kpts2 = atoms.calc.kpts
 
         # Use ISTART = 0 if this goes from vasp_gam --> vasp_std
         if kpts1 == [1, 1, 1] and kpts2 != [1, 1, 1]:
             atoms.calc.set(istart=0)
+
         atoms = run_calc(atoms)
+        summary2 = summarize_run(atoms, additional_fields={"name": self.name})
 
-        summary = summarize_run(atoms, additional_fields={"name": self.name})
-
-        return summary
+        return {"relax1": summary1, "relax2": summary2}

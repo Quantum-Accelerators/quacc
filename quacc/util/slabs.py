@@ -28,7 +28,7 @@ def flip_atoms(
     Parameters
     ----------
     atoms
-        .Atoms/structure to flip
+        .Atoms/.Structure to flip
     return_struct
         True if a Pymatgen structure object should be returned.
         False if an ASE atoms object should be returned
@@ -276,7 +276,6 @@ def make_max_slabs_from_bulk(
         if len(slabs) > max_slabs:
             warnings.warn(
                 f"You requested {max_slabs} slabs, but {len(slabs)} were generated. Tuning ftol in generate_all_slabs() to try to reduce the number of slabs, at the expense of sampling fewer surface configurations.",
-                UserWarning,
             )
             for ftol in np.arange(0.1, 0.9, 0.1):
                 slabgen_kwargs["ftol"] = ftol
@@ -299,7 +298,6 @@ def make_max_slabs_from_bulk(
         if len(slabs) > max_slabs:
             warnings.warn(
                 f"You requested {max_slabs} slabs, but {len(slabs)} were generated. Could not reduce further. Picking the smallest slabs by number of atoms.",
-                UserWarning,
             )
             slabs.sort(key=len)
             slabs = slabs[0:max_slabs]

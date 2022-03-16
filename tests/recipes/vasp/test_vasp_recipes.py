@@ -5,7 +5,7 @@ from ase.build import bulk, molecule
 from jobflow.managers.local import run_locally
 
 from quacc.recipes.vasp.core import DoubleRelaxJob, RelaxJob, StaticJob
-from quacc.recipes.vasp.qmof import QMOFRelaxJob
+from quacc.recipes.vasp.qmof import QMOFJob
 from quacc.recipes.vasp.slabs import (
     BulkToAdsorbatesFlow,
     BulkToSlabsJob,
@@ -88,26 +88,26 @@ def test_doublerelax_job():
     job = DoubleRelaxJob().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
-    assert output["parameters"]["isym"] == 0
-    assert output["parameters"]["nsw"] > 0
-    assert output["parameters"]["isif"] == 3
-    assert output["parameters"]["lwave"] == True
-    assert output["name"] == "VASP-DoubleRelax"
+    assert output["relax2"]["nsites"] == len(atoms)
+    assert output["relax2"]["parameters"]["isym"] == 0
+    assert output["relax2"]["parameters"]["nsw"] > 0
+    assert output["relax2"]["parameters"]["isif"] == 3
+    assert output["relax2"]["parameters"]["lwave"] == True
+    assert output["relax2"]["name"] == "VASP-DoubleRelax"
 
     job = DoubleRelaxJob(preset="BulkSet", name="test", swaps2={"nelmin": 6}).make(
         atoms
     )
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["parameters"]["encut"] == 520
-    assert output["parameters"]["nelmin"] == 6
-    assert output["name"] == "test"
+    assert output["relax2"]["parameters"]["encut"] == 520
+    assert output["relax2"]["parameters"]["nelmin"] == 6
+    assert output["relax2"]["name"] == "test"
 
     job = DoubleRelaxJob(volume_relax=False).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["parameters"]["isif"] == 2
+    assert output["relax2"]["parameters"]["isif"] == 2
 
     job = DoubleRelaxJob(swaps1={"kpts": [1, 1, 1]}).make(atoms)
     responses = run_locally(job, ensure_success=True)
@@ -306,29 +306,27 @@ def test_slab_flows():
 
 def test_qmof():
     atoms = bulk("Cu")
-    job = QMOFRelaxJob().make(atoms)
+    job = QMOFJob().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
-    assert output["parameters"]["sigma"] == 0.01
-    assert output["parameters"]["isym"] == 0
-    assert output["parameters"]["nsw"] > 0
-    assert output["parameters"]["isif"] == 3
-    assert output["name"] == "QMOF-Relax"
+    assert output["double-relax"]["relax2"]["nsites"] == len(atoms)
+    assert output["double-relax"]["relax2"]["parameters"]["sigma"] == 0.01
+    assert output["double-relax"]["relax2"]["parameters"]["isym"] == 0
+    assert output["double-relax"]["relax2"]["parameters"]["nsw"] > 0
+    assert output["double-relax"]["relax2"]["parameters"]["isif"] == 3
 
-    job = QMOFRelaxJob(preset="BulkSet", name="test", swaps={"nelmin": 6}).make(atoms)
+    job = QMOFJob(preset="BulkSet", name="test", swaps={"nelmin": 6}).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["parameters"]["encut"] == 520
-    assert output["parameters"]["nelmin"] == 6
-    assert output["parameters"]["sigma"] == 0.05
-    assert output["name"] == "test"
+    assert output["double-relax"]["relax2"]["parameters"]["encut"] == 520
+    assert output["double-relax"]["relax2"]["parameters"]["nelmin"] == 6
+    assert output["double-relax"]["relax2"]["parameters"]["sigma"] == 0.05
 
-    job = QMOFRelaxJob(volume_relax=False).make(atoms)
+    job = QMOFJob(volume_relax=False).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["parameters"]["isif"] == 2
+    assert output["double-relax"]["relax2"]["parameters"]["isif"] == 2
 
     atoms = bulk("Cu") * (8, 8, 8)
-    job = QMOFRelaxJob().make(atoms)
+    job = QMOFJob().make(atoms)
     responses = run_locally(job, ensure_success=True)

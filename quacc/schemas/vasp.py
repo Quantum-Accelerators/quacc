@@ -31,7 +31,7 @@ def summarize_run(
     dir_path
         Path to VASP outputs. A value of None specifies the current working directory
     prep_next_run
-        Whether the Atoms object storeed in {"atoms": atoms} should be prepared for the next run.
+        Whether the Atoms object stored in {"atoms": atoms} should be prepared for the next run.
         This clears out any attached calculator and moves the final magmoms to the initial magmoms.
     bader
         Whether a Bader analysis should be performed. Will not run if bader executable is not in PATH even if
