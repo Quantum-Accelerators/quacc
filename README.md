@@ -70,7 +70,7 @@ Assuming a Jobflow configuration file has been provided, the input and output da
 
 2. Follow the instructions in ASE's [documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html#supported-calculators) for how to set up the ASE calculator(s) you plan to use.
 
-3. Define the following environment variables (e.g. in your `~/.bashrc`) to use Jobflow and Fireworks, in addition to any that you have set in Step 2. Example `.yaml` files are provided [here](https://github.com/arosen93/quacc/tree/main/.config).
+3. Optional: Define the following environment variables (e.g. in your `~/.bashrc`) to use the database features of Jobflow and Fireworks, in addition to any that you have set in Step 2. Example `.yaml` files are provided [here](https://github.com/arosen93/quacc/tree/main/.config).
 
 ```bash
 # Jobflow requirements
