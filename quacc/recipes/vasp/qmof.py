@@ -16,7 +16,7 @@ from quacc.util.calc import run_calc
 
 
 @dataclass
-class QMOFJob(Maker):
+class QMOFRelaxJob(Maker):
     """
     Class to relax a structure in a multi-step process for increased
     computational efficiency. This is all done in a single compute job.
@@ -40,7 +40,7 @@ class QMOFJob(Maker):
         Dictionary of custom kwargs for the calculator. Applies for all jobs.
     """
 
-    name: str = "QMOF"
+    name: str = "QMOF-Relax"
     preset: str = "QMOFSet"
     volume_relax: bool = True
     swaps: Dict[str, Any] = None

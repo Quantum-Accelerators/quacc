@@ -5,7 +5,7 @@ from ase.build import bulk, molecule
 from jobflow.managers.local import run_locally
 
 from quacc.recipes.vasp.core import DoubleRelaxJob, RelaxJob, StaticJob
-from quacc.recipes.vasp.qmof import QMOFJob
+from quacc.recipes.vasp.qmof import QMOFRelaxJob
 from quacc.recipes.vasp.slabs import (
     BulkToAdsorbatesFlow,
     BulkToSlabsJob,
@@ -321,7 +321,7 @@ def test_slab_flows():
 
 def test_qmof():
     atoms = bulk("Cu")
-    job = QMOFJob().make(atoms)
+    job = QMOFRelaxJob().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["prerelax-lowacc"]["nsites"] == len(atoms)
@@ -365,7 +365,7 @@ def test_qmof():
     assert output["static"]["parameters"]["nsw"] == 0
     assert output["static"]["parameters"]["laechg"] == True
 
-    job = QMOFJob(preset="BulkSet", name="test", swaps={"nelmin": 6}).make(atoms)
+    job = QMOFRelaxJob(preset="BulkSet", name="test", swaps={"nelmin": 6}).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["double-relax"]["relax1"]["parameters"]["encut"] == 520
@@ -380,7 +380,7 @@ def test_qmof():
     assert output["static"]["parameters"]["nelmin"] == 6
     assert output["static"]["parameters"]["sigma"] == 0.05
 
-    job = QMOFJob(volume_relax=False).make(atoms)
+    job = QMOFRelaxJob(volume_relax=False).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert "volume-relax" not in output
@@ -389,5 +389,5 @@ def test_qmof():
     assert output["double-relax"]["relax2"]["parameters"]["isif"] == 2
 
     atoms = bulk("Cu") * (8, 8, 8)
-    job = QMOFJob().make(atoms)
+    job = QMOFRelaxJob().make(atoms)
     responses = run_locally(job, ensure_success=True)
