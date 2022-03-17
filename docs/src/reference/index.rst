@@ -14,7 +14,6 @@ This section gives an overview of the API for QuAcc.
    :nosignatures:
 
    calculators
-   defaults
    recipes
    schemas
    util
