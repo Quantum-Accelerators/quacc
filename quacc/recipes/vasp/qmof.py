@@ -210,6 +210,8 @@ def loose_relax_volume(
     swaps = swaps or {}
     defaults = {
         "auto_kpts": {"grid_density": 100},
+        "ediffg": -0.03,
+        "ibrion": 2,
         "isif": 3,
         "lcharg": False,
         "lreal": "auto",
@@ -252,6 +254,8 @@ def double_relax(
     """
     swaps = swaps or {}
     defaults = {
+        "ediffg": -0.03,
+        "ibrion": 2,
         "isif": 3 if volume_relax else 2,
         "lcharg": False,
         "lreal": "auto",
