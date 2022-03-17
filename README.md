@@ -66,7 +66,7 @@ Assuming a Jobflow configuration file has been provided, the input and output da
 ![docs](docs/src/imgs/schema.gif)
 
 ## Installation
-1. Run the following command, ideally in a fresh Python 3.10+ environment: `pip install quacc`. For the most recent development version (recommended for now), instead run `pip install git+https://github.com/arosen93/quacc.git`.
+1. Run the following command, ideally in a fresh Python 3.10+ environment: `pip install quacc`. For the most recent development version, instead run `pip install git+https://github.com/arosen93/quacc.git`.
 
 2. Follow the instructions in ASE's [documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html#supported-calculators) for how to set up the ASE calculator(s) you plan to use.
 
