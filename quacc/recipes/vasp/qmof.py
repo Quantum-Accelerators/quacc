@@ -63,29 +63,29 @@ class QMOFRelaxJob(Maker):
         swaps = self.swaps or {}
 
         # 1. Pre-relaxation
-        summary1 = prerelax(atoms, self.preset, swaps, fmax=5.0)
+        summary1 = _prerelax(atoms, self.preset, swaps, fmax=5.0)
         atoms = summary1["atoms"]
 
         # 2. Position relaxation (loose)
-        summary2 = loose_relax_positions(atoms, self.preset, swaps)
+        summary2 = _loose_relax_positions(atoms, self.preset, swaps)
         atoms = summary2["atoms"]
 
         # 3. Optional: Volume relaxation (loose)
         if self.volume_relax:
-            summary3 = loose_relax_volume(atoms, self.preset, swaps)
+            summary3 = _loose_relax_volume(atoms, self.preset, swaps)
             atoms = summary3["atoms"]
 
         # 4. Double Relaxation
         # This is done for two reasons: a) because it can resolve repadding
         # issues when dV is large; b) because we can use LREAL = Auto for the
         # first relaxation and the default LREAL for the second.
-        summary4 = double_relax(
+        summary4 = _double_relax(
             atoms, self.preset, swaps, volume_relax=self.volume_relax
         )
         atoms = summary4["relax2"]["atoms"]
 
         # 5. Static Calculation
-        summary5 = static(atoms, self.preset, swaps)
+        summary5 = _static(atoms, self.preset, swaps)
 
         return {
             "prerelax-lowacc": summary1,
@@ -96,7 +96,7 @@ class QMOFRelaxJob(Maker):
         }
 
 
-def prerelax(
+def _prerelax(
     atoms: Atoms,
     preset: str = "QMOFSet",
     swaps: Dict[str, Any] = None,
@@ -142,7 +142,7 @@ def prerelax(
     return summary
 
 
-def loose_relax_positions(
+def _loose_relax_positions(
     atoms: Atoms,
     preset: str = "QMOFSet",
     swaps: Dict[str, Any] = None,
@@ -185,7 +185,7 @@ def loose_relax_positions(
     return summary
 
 
-def loose_relax_volume(
+def _loose_relax_volume(
     atoms: Atoms,
     preset: str = "QMOFSet",
     swaps: Dict[str, Any] = None,
@@ -227,7 +227,7 @@ def loose_relax_volume(
     return summary
 
 
-def double_relax(
+def _double_relax(
     atoms: Atoms,
     preset: str = "QMOFSet",
     swaps: Dict[str, Any] = None,
@@ -291,7 +291,7 @@ def double_relax(
     return {"relax1": summary1, "relax2": summary2}
 
 
-def static(
+def _static(
     atoms: Atoms,
     preset: str = "QMOFSet",
     swaps: Dict[str, Any] = None,
