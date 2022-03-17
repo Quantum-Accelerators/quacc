@@ -52,8 +52,9 @@ job3 = OrcaStaticJob(xc="wB97M-V").make(job2.output["atoms"])
 
 flow = Flow([job1, job2, job3])
 
-# Convert the flow to a FireWorks workflow and add it to the launchpad.
-# Database-friendly results will be deposited in your JobFlow DB
+# Instead of running locally, we will run the workflow via Fireworks here.
+# The commands below convert the flow to a FireWorks workflow and adds it to
+# the launchpad. Database-friendly results will be deposited in your JobFlow DB
 wf = flow_to_workflow(flow)
 lpad = LaunchPad.auto_load()
 lpad.add_wf(wf)
