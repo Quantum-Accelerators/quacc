@@ -26,6 +26,7 @@ class QMOFRelaxJob(Maker):
     2. Position relaxation with default ENCUT and coarse k-point grid.
     3. Optional: volume relaxation with coarse k-point grid.
     4. Double relaxation using production-quality settings.
+    5. Static calculation.
 
     Parameters
     ----------

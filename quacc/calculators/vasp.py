@@ -64,7 +64,7 @@ def SmartVasp(
         If True, warnings will be raised when INCAR parameters are changed.
     **kwargs
         Additional arguments to be passed to the VASP calculator, e.g. xc='PBE', encut=520. Takes all valid
-        ASE calculator arguments, in addition to those custom to HT-ASE.
+        ASE calculator arguments, in addition to those custom to QuAcc.
 
     Returns
     -------
