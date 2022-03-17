@@ -1,4 +1,4 @@
-name: Tests
+name: testing
 on:
   push:
 
@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: psf/black@stable
-  build:
+  test:
     runs-on: ubuntu-latest
     defaults:
       run:
