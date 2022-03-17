@@ -39,7 +39,7 @@ def atoms_to_metadata(
     # generating pymatgen Structure/Molecule metadata, so we'll just use that.
     if get_metadata:
         if np.all(atoms.pbc == False):
-            mol = AseAtomsAdaptor().get_molecule(atoms)
+            mol = AseAtomsAdaptor().get_molecule(atoms, charge_spin_check=False)
             metadata = MoleculeMetadata().from_molecule(mol).dict()
         else:
             struct = AseAtomsAdaptor().get_structure(atoms)

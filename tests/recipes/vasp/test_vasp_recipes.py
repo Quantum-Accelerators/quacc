@@ -277,6 +277,20 @@ def test_slab_dynamic_jobs():
     assert output2["parameters"]["encut"] == 450
     assert output2["name"] == "VASP-SlabStatic"
 
+    # Now try with different adsorbate
+    adsorbate2 = molecule("CH3")
+    flow = SlabToAdsorbatesJob().make(atoms, adsorbate2)
+    responses = run_locally(flow, ensure_success=True)
+
+    assert len(responses) == 11
+
+    adsorbate2 = molecule("CH3")
+    adsorbate2.set_initial_magnetic_moments([0.0] * len(adsorbate2))
+    flow = SlabToAdsorbatesJob().make(atoms, adsorbate2)
+    responses = run_locally(flow, ensure_success=True)
+
+    assert len(responses) == 11
+
 
 def test_slab_flows():
     # TODO: This could use some more detailed tests

@@ -382,7 +382,7 @@ def make_adsorbate_structures(
 
     # Make a Pymatgen structure and molecule
     struct = AseAtomsAdaptor.get_structure(atoms)
-    mol = AseAtomsAdaptor.get_molecule(adsorbate)
+    mol = AseAtomsAdaptor.get_molecule(adsorbate, charge_spin_check=False)
 
     # Get the adsorption sites
     ads_finder = AdsorbateSiteFinder(struct, **ads_site_finder_kwargs)
