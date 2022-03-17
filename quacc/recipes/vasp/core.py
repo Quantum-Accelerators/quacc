@@ -53,7 +53,6 @@ class StaticJob(Maker):
             "lwave": True,
             "nedos": 5001,
             "nsw": 0,
-            "sigma": 0.05,
         }
         flags = merge_dicts(defaults, swaps)
 
@@ -107,12 +106,10 @@ class RelaxJob(Maker):
             "ediffg": -0.02,
             "isif": 3 if self.volume_relax else 2,
             "ibrion": 2,
-            "ismear": 0,
             "isym": 0,
             "lcharg": False,
             "lwave": False,
             "nsw": 200,
-            "sigma": 0.05,
         }
         flags = merge_dicts(defaults, swaps)
 
@@ -177,12 +174,10 @@ class DoubleRelaxJob(Maker):
             "ediffg": -0.02,
             "isif": 3 if self.volume_relax else 2,
             "ibrion": 2,
-            "ismear": 0,
             "isym": 0,
             "lcharg": False,
             "lwave": True,
             "nsw": 200,
-            "sigma": 0.05,
         }
 
         # Run first relaxation

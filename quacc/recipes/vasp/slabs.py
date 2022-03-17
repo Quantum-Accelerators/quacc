@@ -63,7 +63,6 @@ class SlabStaticJob(Maker):
             "lwave": True,
             "nedos": 5001,
             "nsw": 0,
-            "sigma": 0.05,
         }
         flags = merge_dicts(defaults, swaps)
 
@@ -114,12 +113,10 @@ class SlabRelaxJob(Maker):
             "ediffg": -0.02,
             "isif": 2,
             "ibrion": 2,
-            "ismear": 0,
             "isym": 0,
             "lcharg": False,
             "lwave": False,
             "nsw": 200,
-            "sigma": 0.05,
         }
         flags = merge_dicts(defaults, swaps)
 
