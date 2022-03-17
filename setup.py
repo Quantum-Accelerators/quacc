@@ -43,6 +43,7 @@ if __name__ == "__main__":
                 "mistune==0.8.4",
                 "pydata-sphinx-theme==0.8.0",
                 "sphinx_panels==0.6.0",
+                "autodoc_pydantic==1.6.1",
             ],
             "dev": ["pytest==7.1.0", "black==22.1.0"],
         },
