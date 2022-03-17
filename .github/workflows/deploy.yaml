@@ -8,7 +8,7 @@ on:
 
 jobs:
   deploy-docs:
-    if: ${{ github.repository_owner == 'arosen93' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && startsWith(github.event.workflow_run.head_branch, 'v') }}
+    if: ${{ github.repository_owner == 'arosen93' && github.event.workflow_run.conclusion == 'success'}}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
