@@ -71,7 +71,7 @@ def summarize_run(
     if compact:
         # Replace the InputSummary and OutputSummary with the full
         # input and output details from calcs_reversed
-        if results.get("calcs_reversed", None):
+        if "calcs_reversed" in results:
             final_run = results["calcs_reversed"][-1]
             results["input"] = final_run["input"]
             results["output"] = final_run["output"]
@@ -89,6 +89,12 @@ def summarize_run(
 
         # Remove the entry data since it's redundant
         results.pop("entry", None)
+
+        # Remove other unnecessary fields
+        results.pop("task_type", None)
+        if "output" in results:
+            results["output"].pop("elph_displaced_structures", None)
+            results["output"].pop("frequency_dependent_dielectric", None)
 
     # Get Bader analysis
     if bader:
