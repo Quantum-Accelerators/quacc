@@ -1,5 +1,5 @@
 # QuAcc
-![testing](https://github.com/arosen93/quacc/actions/workflows/testing.yaml/badge.svg)
+![tests](https://github.com/arosen93/quacc/actions/workflows/testing.yaml/badge.svg)
 [![codecov](https://codecov.io/gh/arosen93/quacc/branch/main/graph/badge.svg?token=BCKGTD89H0)](https://codecov.io/gh/arosen93/quacc)
 [![CodeFactor](https://www.codefactor.io/repository/github/arosen93/quacc/badge)](https://www.codefactor.io/repository/github/arosen93/quacc)
 [![This project supports Python 3.10](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://python.org/downloads)
@@ -66,7 +66,7 @@ Assuming a Jobflow configuration file has been provided, the input and output da
 ![docs](docs/src/imgs/schema.gif)
 
 ## Installation
-1. Run the following command, ideally in a fresh Python 3.10+ environment: `pip install quacc`. For the most recent development version (recommended for now), instead run `pip install git+https://github.com/arosen93/quacc.git`.
+1. Run the following command, ideally in a fresh Python 3.10+ environment: `pip install quacc`. For the most recent development version, instead run `pip install git+https://github.com/arosen93/quacc.git`.
 
 2. Follow the instructions in ASE's [documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html#supported-calculators) for how to set up the ASE calculator(s) you plan to use.
 
