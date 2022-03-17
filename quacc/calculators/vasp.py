@@ -48,7 +48,7 @@ def SmartVasp(
         the ASE documentation.
     preset
         The path to a .yaml file containing a list of INCAR parameters to use as a "preset"
-        for the calculator. If no filepath is present, it will look in htase/defaults/user_calcs, such
+        for the calculator. If no filepath is present, it will look in quacc/defaults/calcs/vasp, such
         that preset="BulkRelaxSet" is supported. It will append .yaml at the end if not present.
         Note that any specific kwargs take precedence over the flags set in the preset dictionary.
     incar_copilot
