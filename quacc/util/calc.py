@@ -60,7 +60,7 @@ def run_calc(
             copy(os.path.join(store_dir, f), os.path.join(tmp_path, f))
 
     # Make a symlink to the scratch dir
-    sym_path = os.path.join(store_dir, "scratch_run")
+    sym_path = os.path.join(store_dir, "scratch_symlink")
     if os.name != "nt":
         os.symlink(tmp_path, sym_path)
 
