@@ -32,17 +32,17 @@ def test_run_calc():
     atoms = bulk("Cu")
     atoms = SmartVasp(atoms)
 
-    atoms = run_calc(atoms)
+    atoms = run_calc(atoms, gzip=False)
     assert atoms.calc.results is not None
     assert os.path.exists("test_file.txt")
     assert not os.path.exists("test_file.txt.gz")
 
-    atoms = run_calc(atoms, gzip=True)
+    atoms = run_calc(atoms)
     assert atoms.calc.results is not None
     assert os.path.exists("test_file.txt")
     assert os.path.exists("test_file.txt.gz")
 
-    atoms = run_calc(atoms, store_dir=".", scratch_dir="test_calc", gzip=True)
+    atoms = run_calc(atoms, store_dir=".", scratch_dir="test_calc")
     assert atoms.calc.results is not None
     assert os.path.exists("test_file.txt")
     assert os.path.exists("test_file.txt.gz")

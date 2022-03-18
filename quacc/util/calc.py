@@ -8,7 +8,7 @@ from monty.shutil import copy_r, gzip_dir
 
 
 def run_calc(
-    atoms: Atoms, store_dir: str = None, scratch_dir: str = None, gzip: bool = False
+    atoms: Atoms, store_dir: str = None, scratch_dir: str = None, gzip: bool = True
 ) -> float:
     """
     Run a calculation in a scratch directory and copy the results back to the
