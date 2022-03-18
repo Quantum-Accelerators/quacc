@@ -195,7 +195,6 @@ class BulkToSlabsJob(Maker):
                 jobs,
                 output={"all_atoms": all_atoms, "all_outputs": outputs},
                 name=self.name,
-                order=JobOrder.LINEAR,
             ),
         )
 
@@ -295,7 +294,6 @@ class SlabToAdsorbatesJob(Maker):
                 jobs,
                 output={"all_atoms": all_atoms, "all_outputs": outputs},
                 name=self.name,
-                order=JobOrder.LINEAR,
             ),
         )
 
@@ -405,12 +403,7 @@ class BulkToAdsorbatesFlow(Maker):
             )
             jobs.append(slab_to_adsorbates_job)
 
-        return Flow(
-            jobs,
-            output=slab_to_adsorbates_job.output,
-            name=self.name,
-            order=JobOrder.LINEAR,
-        )
+        return Flow(jobs, output=slab_to_adsorbates_job.output, name=self.name)
 
 
 @job

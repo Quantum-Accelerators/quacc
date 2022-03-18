@@ -37,12 +37,14 @@ def test_run_calc():
     assert os.path.exists("test_file.txt")
     assert not os.path.exists("test_file.txt.gz")
 
-    atoms = run_calc(atoms)
+    atoms = run_calc(atoms, copy_from_store_dir=True)
     assert atoms.calc.results is not None
     assert os.path.exists("test_file.txt")
     assert os.path.exists("test_file.txt.gz")
 
-    atoms = run_calc(atoms, store_dir=".", scratch_dir="test_calc")
+    atoms = run_calc(
+        atoms, store_dir=".", scratch_dir="test_calc", copy_from_store_dir=True
+    )
     assert atoms.calc.results is not None
     assert os.path.exists("test_file.txt")
     assert os.path.exists("test_file.txt.gz")

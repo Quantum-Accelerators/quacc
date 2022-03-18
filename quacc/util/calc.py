@@ -8,7 +8,11 @@ from monty.shutil import copy_r, gzip_dir
 
 
 def run_calc(
-    atoms: Atoms, store_dir: str = None, scratch_dir: str = None, gzip: bool = True
+    atoms: Atoms,
+    store_dir: str = None,
+    scratch_dir: str = None,
+    gzip: bool = True,
+    copy_from_store_dir: bool = False,
 ) -> float:
     """
     Run a calculation in a scratch directory and copy the results back to the
@@ -22,14 +26,17 @@ def run_calc(
     atoms : .Atoms
         The Atoms object to run the calculation on.
     store_dir : str
-        Path where calculation results should be stored. Also will copy all files
-        from this directory at runtime. If None, the current working directory will be used.
+        Path where calculation results should be stored.
+        If None, the current working directory will be used.
     scratch_dir : str
         Path to the base directory where a tmp directory will be made for
         scratch files. If None, a temporary directory in $SCRATCH will be used.
         If $SCRATCH is not present, a tmp directory will be made in store_dir.
     gzip : bool
         Whether to gzip the output files.
+    copy_from_store_dir : bool
+        Whether to copy any pre-existing files from the store_dir to the scratch_dir
+        before running the calculation.
 
     Returns
     -------
@@ -55,9 +62,10 @@ def run_calc(
     tmp_path = mkdtemp(dir=scratch_dir, prefix="quacc-")
 
     # Copy files to scratch
-    for f in os.listdir(store_dir):
-        if os.path.isfile(os.path.join(store_dir, f)):
-            copy(os.path.join(store_dir, f), os.path.join(tmp_path, f))
+    if copy_from_store_dir:
+        for f in os.listdir(store_dir):
+            if os.path.isfile(os.path.join(store_dir, f)):
+                copy(os.path.join(store_dir, f), os.path.join(tmp_path, f))
 
     # Make a symlink to the scratch dir
     sym_path = os.path.join(store_dir, "scratch_symlink")

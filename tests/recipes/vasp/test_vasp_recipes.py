@@ -148,6 +148,14 @@ def test_slab_static_job():
     assert output["parameters"]["nelmin"] == 6
     assert output["name"] == "test"
 
+    job = SlabStaticJob(preset="SlabSet", name="test", swaps={"encut": None}).make(
+        atoms
+    )
+    responses = run_locally(job, ensure_success=True)
+    output = responses[job.uuid][1].output
+    assert "encut" not in output["parameters"]
+    assert output["name"] == "test"
+
 
 def test_slab_relax_job():
     atoms = bulk("Cu") * (2, 2, 2)
@@ -190,7 +198,7 @@ def test_slab_dynamic_jobs():
     assert output1["parameters"]["isif"] == 2
     assert output1["name"] == "VASP-SlabRelax"
 
-    output2 = responses[uuids[2]][1].output
+    output2 = responses[uuids[-1]][1].output
     assert output2["nsites"] == output1["nsites"]
     assert output2["parameters"]["nsw"] == 0
     assert output2["name"] == "VASP-SlabStatic"
@@ -216,7 +224,7 @@ def test_slab_dynamic_jobs():
     assert output1["parameters"]["encut"] == 450
     assert output1["name"] == "VASP-SlabRelax"
 
-    output2 = responses[uuids[2]][1].output
+    output2 = responses[uuids[-1]][1].output
     assert output2["parameters"]["nsw"] == 0
     assert output2["parameters"]["nelmin"] == 6
     assert output2["parameters"]["encut"] == 450
@@ -229,7 +237,7 @@ def test_slab_dynamic_jobs():
     flow = SlabToAdsorbatesJob().make(atoms, adsorbate)
     responses = run_locally(flow, ensure_success=True)
 
-    assert len(responses) == 11
+    assert len(responses) == 15
     uuids = list(responses.keys())
 
     # First job is a dummy job to make slabs and should have no output
@@ -238,13 +246,12 @@ def test_slab_dynamic_jobs():
     assert "H2" in output0["generated_slab_ads"]
     assert len(output0["generated_slab_ads"]["H2"][0]) == 98
 
-    # Subsequent jobs should be alternating relaxations and statics
     output1 = responses[uuids[1]][1].output
     assert output1["nsites"] == len(output2["atoms"]) + 2
     assert output1["parameters"]["isif"] == 2
     assert output1["name"] == "VASP-SlabRelax"
 
-    output2 = responses[uuids[2]][1].output
+    output2 = responses[uuids[-1]][1].output
     assert output2["nsites"] == output1["nsites"]
     assert output2["parameters"]["nsw"] == 0
     assert output2["name"] == "VASP-SlabStatic"
@@ -257,7 +264,7 @@ def test_slab_dynamic_jobs():
     ).make(atoms, adsorbate)
     responses = run_locally(flow, ensure_success=True)
 
-    assert len(responses) == 11
+    assert len(responses) == 15
     uuids = list(responses.keys())
 
     output0 = responses[uuids[0]][1].output
@@ -271,7 +278,7 @@ def test_slab_dynamic_jobs():
     assert output1["parameters"]["encut"] == 450
     assert output1["name"] == "VASP-SlabRelax"
 
-    output2 = responses[uuids[2]][1].output
+    output2 = responses[uuids[-1]][1].output
     assert output2["parameters"]["nsw"] == 0
     assert output2["parameters"]["nelmin"] == 6
     assert output2["parameters"]["encut"] == 450
@@ -282,14 +289,14 @@ def test_slab_dynamic_jobs():
     flow = SlabToAdsorbatesJob().make(atoms, adsorbate2)
     responses = run_locally(flow, ensure_success=True)
 
-    assert len(responses) == 11
+    assert len(responses) == 15
 
     adsorbate2 = molecule("CH3")
     adsorbate2.set_initial_magnetic_moments([0.0] * len(adsorbate2))
     flow = SlabToAdsorbatesJob().make(atoms, adsorbate2)
     responses = run_locally(flow, ensure_success=True)
 
-    assert len(responses) == 11
+    assert len(responses) == 15
 
 
 def test_slab_flows():
