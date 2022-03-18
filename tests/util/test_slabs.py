@@ -73,6 +73,10 @@ def test_make_slabs_from_bulk():
     slabs = make_slabs_from_bulk(atoms, allowed_surface_symbols=["Co"])
     assert slabs == []
 
+    atoms = bulk("Cu")
+    slabs = make_slabs_from_bulk(atoms, allowed_surface_symbols="Co")
+    assert slabs == []
+
     slabs = make_slabs_from_bulk(atoms, max_index=2)
     assert len(slabs) == 9
 
@@ -122,6 +126,11 @@ def test_make_max_slabs_from_bulk():
     assert slabs == slabs2
 
     atoms = bulk("Cu")
+    slabs = make_slabs_from_bulk(atoms)
+    slabs2 = make_max_slabs_from_bulk(atoms, None, allowed_surface_symbols="Cu")
+    assert slabs == slabs2
+
+    atoms = bulk("Cu")
     slabs = make_max_slabs_from_bulk(atoms, 2)
     assert len(slabs) == 2
     assert slabs[-1].info.get("slab_stats", None) is not None
@@ -165,12 +174,18 @@ def test_make_adsorbate_structures():
     new_atoms = make_adsorbate_structures(atoms, h2o, modes=["ontop"])
     assert len(new_atoms) == 1
 
+    new_atoms = make_adsorbate_structures(atoms, h2o, modes="ontop")
+    assert len(new_atoms) == 1
+
     new_atoms = make_adsorbate_structures(
         atoms, h2o, allowed_surface_symbols=["Cu", "Fe"]
     )
     assert len(new_atoms) == 3
 
     new_atoms = make_adsorbate_structures(atoms, h2o, allowed_surface_indices=[6])
+    assert len(new_atoms) == 2
+
+    new_atoms = make_adsorbate_structures(atoms, h2o, allowed_surface_indices=6)
     assert len(new_atoms) == 2
 
     atoms[7].symbol = "Fe"

@@ -64,7 +64,7 @@ def make_slabs_from_bulk(
     min_vacuum_size: float = 20.0,
     z_fix: None | float = 2.0,
     flip_asymmetric: bool = True,
-    allowed_surface_symbols: List[str] = None,
+    allowed_surface_symbols: List[str] | str = None,
     **slabgen_kwargs,
 ) -> List[Atoms]:
     """
@@ -102,6 +102,9 @@ def make_slabs_from_bulk(
     # Use pymatgen to generate slabs
     struct = AseAtomsAdaptor.get_structure(atoms)
     atoms_info = atoms.info.copy()
+
+    if isinstance(allowed_surface_symbols, str):
+        allowed_surface_symbols = [allowed_surface_symbols]
 
     # Make all the slabs
     slabs = generate_all_slabs(
@@ -213,7 +216,7 @@ def make_max_slabs_from_bulk(
     min_vacuum_size: float = 20.0,
     z_fix: float = 2.0,
     flip_asymmetric: bool = True,
-    allowed_surface_symbols: List[str] = None,
+    allowed_surface_symbols: List[str] | str = None,
     **slabgen_kwargs,
 ) -> List[Atoms]:
 
@@ -256,6 +259,9 @@ def make_max_slabs_from_bulk(
         List of slabs
 
     """
+
+    if isinstance(allowed_surface_symbols, str):
+        allowed_surface_symbols = [allowed_surface_symbols]
 
     slabs = make_slabs_from_bulk(
         atoms,
@@ -309,9 +315,9 @@ def make_adsorbate_structures(
     atoms: Atoms,
     adsorbate: Atoms,
     min_distance: float = 2.0,
-    modes: List[str] = None,
-    allowed_surface_symbols: List[str] = None,
-    allowed_surface_indices: List[int] = None,
+    modes: List[str] | str = None,
+    allowed_surface_symbols: List[str] | str = None,
+    allowed_surface_indices: List[int] | int = None,
     ads_site_finder_kwargs: Dict[str, Any] = None,
     find_ads_sites_kwargs: Dict[str, Any] = None,
 ) -> List[Atoms]:
@@ -347,6 +353,12 @@ def make_adsorbate_structures(
     """
     if modes is None:
         modes = ["ontop", "bridge", "hollow"]
+    if isinstance(modes, str):
+        modes = [modes]
+    if isinstance(allowed_surface_symbols, str):
+        allowed_surface_symbols = [allowed_surface_symbols]
+    if isinstance(allowed_surface_indices, int):
+        allowed_surface_indices = [allowed_surface_indices]
 
     ads_site_finder_kwargs = ads_site_finder_kwargs or {}
     find_ads_sites_kwargs = find_ads_sites_kwargs or {}
