@@ -40,7 +40,7 @@ if __name__ == "__main__":
                 "numpydoc==1.2",
                 "m2r2==0.3.2",
                 "ipython==8.1.1",
-                "mistune==2.0.2",
+                "mistune==0.8.4",
                 "pydata-sphinx-theme==0.8.0",
                 "sphinx_panels==0.6.0",
                 "autodoc_pydantic==1.6.1",
