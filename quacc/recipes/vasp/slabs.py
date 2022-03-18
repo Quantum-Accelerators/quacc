@@ -4,7 +4,6 @@ from typing import Any, Dict, List
 
 from ase.atoms import Atoms
 from jobflow import Flow, Maker, Response, job
-from jobflow.core.flow import JobOrder
 
 from quacc.calculators.vasp import SmartVasp
 from quacc.recipes.vasp.core import RelaxJob, StaticJob
