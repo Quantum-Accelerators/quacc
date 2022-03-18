@@ -452,12 +452,13 @@ def make_adsorbate_structures(
     return new_atoms
 
 
-def get_cleavage_energy(
+def get_surface_energy(
     bulk: Atoms, slab: Atoms, bulk_energy: float, slab_energy: float
 ):
     """
-    Calculate the cleavage energy to form a given surface slab from a bulk structure.
-    This is the surface energy for symmetric slabs.
+    Calculate the surface energy to form a given surface slab from a bulk structure.
+    For asymmetric slabs, this is best thought of as an average surface energy, where
+    the cleavage energy would be 2x this value.
 
     Parameters:
     -----------
@@ -474,6 +475,6 @@ def get_cleavage_energy(
     alpha = len(slab) / len(bulk)
     matrix = slab.cell.array
     A = np.linalg.norm(np.cross(matrix[0, :], matrix[1, :]))
-    cleave_energy = (slab_energy - alpha * bulk_energy) / (2 * A)
+    surface_energy = (slab_energy - alpha * bulk_energy) / (2 * A)
 
-    return cleave_energy
+    return surface_energy

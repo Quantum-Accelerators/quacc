@@ -12,7 +12,7 @@ from quacc.schemas.vasp import summarize_run
 from quacc.util.basics import merge_dicts
 from quacc.util.calc import run_calc
 from quacc.util.slabs import (
-    get_cleavage_energy,
+    get_surface_energy,
     make_adsorbate_structures,
     make_max_slabs_from_bulk,
 )
@@ -413,7 +413,7 @@ def _get_slab_stability(
     n_stable_slabs: int = 1,
 ) -> Dict[str, Any]:
     """
-    A job that determine the most stable surface slabs (based on cleavage energy) for
+    A job that determine the most stable surface slabs (based on surface energy) for
     a given bulk summary and list of slab summaries.
 
     Parameters
@@ -436,7 +436,7 @@ def _get_slab_stability(
     """
     bulk = bulk_summary["atoms"]
     bulk_energy = bulk_summary["output"]["energy"]
-    cleavage_energies = []
+    surface_energies = []
 
     if n_stable_slabs > len(slab_summaries):
         warnings.warn(
@@ -449,18 +449,18 @@ def _get_slab_stability(
         slab = slab_summary["atoms"]
         slab_energy = slab_summary["output"]["energy"]
 
-        # Calculate the cleavage energy
-        cleave_energy = get_cleavage_energy(bulk, slab, bulk_energy, slab_energy)
+        # Calculate the surface energy
+        surface_energy = get_surface_energy(bulk, slab, bulk_energy, slab_energy)
 
-        # Insert the cleavage energy into the slab summary
-        slab_summary["cleavage_energy"] = cleave_energy
+        # Insert the surface energy into the slab summary
+        slab_summary["avg_surface_energy"] = surface_energy
 
         # Store the slab energy in a convenient dict
-        cleavage_energies.append(cleave_energy)
+        surface_energies.append(surface_energy)
 
     slab_summaries_sorted = [
         slab_summary
-        for _, slab_summary in sorted(zip(cleavage_energies, slab_summaries))
+        for _, slab_summary in sorted(zip(surface_energies, slab_summaries))
     ]
     stable_slab_summaries = slab_summaries_sorted[0:n_stable_slabs]
     unstable_slab_summaries = slab_summaries_sorted[n_stable_slabs:]
