@@ -59,6 +59,11 @@ def run_calc(
         if os.path.isfile(os.path.join(store_dir, f)):
             copy(os.path.join(store_dir, f), os.path.join(tmp_path, f))
 
+    # Make a symlink to the scratch dir
+    sym_path = os.path.join(store_dir, "scratch_run")
+    if os.name != "nt":
+        os.symlink(tmp_path,sym_path)
+
     # Leave a note in the run directory for where the tmp is located in case
     # the job dies partway through
     tmp_path_note = os.path.join(store_dir, "tmp_path.txt")
@@ -74,9 +79,11 @@ def run_calc(
         gzip_dir(tmp_path)
     copy_r(tmp_path, store_dir)
 
-    # Remove the scratch note and tmp dir
+    # Remove the scratch note, tmp dir, and symlink
     if os.path.exists(tmp_path_note):
         os.remove(tmp_path_note)
+    if os.path.exists(sym_path):
+        os.remove(sym_path)
     if os.path.exists(tmp_path):
         rmtree(tmp_path)
 
