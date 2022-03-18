@@ -9,7 +9,7 @@ from ase.io import read
 
 from quacc.util.slabs import (
     flip_atoms,
-    get_cleavage_energy,
+    get_surface_energy,
     make_adsorbate_structures,
     make_max_slabs_from_bulk,
     make_slabs_from_bulk,
@@ -195,12 +195,12 @@ def test_make_adsorbate_structures():
     assert new_atoms[0].info["adsorbates"][0]["adsorbate"] == h2o
 
 
-def test_get_cleavage_energy():
+def test_get_surface_energy():
     atoms = bulk("Cu")
     slab = fcc100("Cu", size=(2, 2, 2))
     bulk_energy = -1.0
     slab_energy = -20.0
-    cleave_energy = get_cleavage_energy(atoms, slab, bulk_energy, slab_energy)
+    cleave_energy = get_surface_energy(atoms, slab, bulk_energy, slab_energy)
     assert cleave_energy == -0.23020081184152974
 
 
