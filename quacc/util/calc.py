@@ -64,12 +64,6 @@ def run_calc(
     if os.name != "nt":
         os.symlink(tmp_path, sym_path)
 
-    # Leave a note in the run directory for where the tmp is located in case
-    # the job dies partway through
-    tmp_path_note = os.path.join(store_dir, "tmp_path.txt")
-    with open(tmp_path_note, "w") as f:
-        f.write(tmp_path)
-
     # Run calculation via get_potential_energy()
     atoms.calc.directory = tmp_path
     atoms.get_potential_energy()
@@ -79,9 +73,7 @@ def run_calc(
         gzip_dir(tmp_path)
     copy_r(tmp_path, store_dir)
 
-    # Remove the scratch note, tmp dir, and symlink
-    if os.path.exists(tmp_path_note):
-        os.remove(tmp_path_note)
+    # Remove the tmp dir and symlink
     if os.path.exists(sym_path):
         os.remove(sym_path)
     if os.path.exists(tmp_path):
