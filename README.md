@@ -1,3 +1,8 @@
+<div align="center">
+  <img src=quacc_logo_wide.svg width="500"><br>
+</div>
+
+--------------------------------------
 # QuAcc – The Quantum Accelerator
 ![tests](https://github.com/arosen93/quacc/actions/workflows/tests.yaml/badge.svg)
 [![codecov](https://codecov.io/gh/arosen93/quacc/branch/main/graph/badge.svg?token=BCKGTD89H0)](https://codecov.io/gh/arosen93/quacc)
