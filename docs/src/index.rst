@@ -11,7 +11,7 @@ QuAcc Documentation
 :mod:`QuAcc` is a platform for high-throughput, database-driven computational materials science and quantum chemistry.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
    :hidden:
 
    Installation Guide <install/index>

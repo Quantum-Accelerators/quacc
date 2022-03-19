@@ -1,4 +1,6 @@
-# Contributors
+============
+Contributors
+============
 
 QuAcc was designed and developed by **Andrew S. Rosen** |arosen| |0000-0002-0141-7006|.
 
