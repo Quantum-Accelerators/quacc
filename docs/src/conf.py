@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.abspath("../../"))
 # -- Project information -----------------------------------------------------
 
 project = "quacc"
-copyright = "2022"
+copyright = "2021"
 author = "Andrew S. Rosen"
 
 # The short X.Y version
@@ -32,7 +32,6 @@ release = __version__
 extensions = [
     "sphinx.ext.autodoc",
     "numpydoc",
-    # "sphinx.ext.napoleon",
     "sphinx.ext.intersphinx",
     "sphinx.ext.viewcode",
     "sphinx.ext.autosummary",

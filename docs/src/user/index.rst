@@ -12,10 +12,11 @@ Table of Contents
    :maxdepth: 2
 
    Installation <install>
+   Configuring DFT Packages <codes.rst>
+   Database configuration <config.rst>
    Running workflows <running-workflows>
    Writing workflows <writing-workflows>
    Fireworks integration <fireworks>
-   DFT Codes <codes/index>
 
 .. toctree::
    :hidden:
