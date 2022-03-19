@@ -6,20 +6,31 @@
 QuAcc documentation
 **********************
 
-**Date**: |date|
+**Date**: |date| **Version**: |version|
 
-**Useful links**:
-`Source Repository <https://github.com/arosen93/quacc>`_
-
-
-:mod:`QuAcc` supercharges your code to support high-throughput, database-driven density functional theory via the Atomic Simulation Environment and Jobflow.
+:mod:`QuAcc` is a platform for high-throughput, database-driven computational materials science and quantum chemistry.
 
 .. panels::
     :card: + intro-card text-center
     :column: col-lg-6 col-md-6 col-sm-6 col-xs-12 d-flex
 
     ---
-    :img-top: _static/index_user_guide.svg
+    :img-top: _static/tools.png
+
+    Installation guide
+    ^^^^^^^^^^^^^^^^^^
+
+    The installation guide provides instructions on how to setup and configure *QuAcc*.
+
+    +++
+
+    .. link-button:: install
+            :type: ref
+            :text: To the installation guide
+            :classes: btn-block btn-secondary stretched-link
+
+    ---
+    :img-top: _static/information.png
 
     User guide
     ^^^^^^^^^^
@@ -34,7 +45,7 @@ QuAcc documentation
             :classes: btn-block btn-secondary stretched-link
 
     ---
-    :img-top: _static/index_api.svg
+    :img-top: _static/api.png
 
     API reference
     ^^^^^^^^^^^^^
@@ -49,12 +60,12 @@ QuAcc documentation
             :classes: btn-block btn-secondary stretched-link
 
     ---
-    :img-top: _static/index_contribute.svg
+    :img-top: _static/coding.svg
 
     Developer guide
     ^^^^^^^^^^^^^^^
 
-    The developer guide provides instructions and best-practices for contribution to *QuAcc*.
+    The developer guide provides instructions for contribution to *QuAcc*.
     +++
 
     .. link-button:: dev
@@ -62,11 +73,14 @@ QuAcc documentation
             :text: To the development guide
             :classes: btn-block btn-secondary stretched-link
 
+Icons made by [Freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](https://www.flaticon.com/)
+
 
 .. toctree::
    :maxdepth: 2
    :hidden:
 
+   Installation Guide <install/index>
    User Guide <user/index>
    API Reference <reference/index>
    Developer Guide <dev/index>
