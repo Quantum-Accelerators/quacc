@@ -1,20 +1,9 @@
-.. _running_workflows:
+# Running Workflows
 
-=================
-Running Workflows
-=================
+## Introduction
 
-Introduction
-============
+## Examples
 
-
-
-
-
-
-========
-Examples
-========
 ```python
 from ase.build import bulk
 from jobflow.managers.local import run_locally
@@ -61,9 +50,8 @@ lpad = LaunchPad.auto_load()
 lpad.add_wf(wf)
 ```
 
-============
-Contributing
-============
+## Contributing
+
 To contribute to QuAcc, we recommend installing QuAcc in editable mode so that your changes are reflected every time you run QuAcc. This can be done by using the `-e` flag when running `pip install`. Also, you will need to install the development dependencies via `pip install .[dev]`.
 
 To ensure a consistent formatting style, we use `isort` and `black` to format the code. In the base directory of `quacc`, simply run `isort .` and then `black .` (in that order) to format the code. This will ensure your contributions pass the linting check.

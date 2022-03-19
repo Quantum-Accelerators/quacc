@@ -3,7 +3,9 @@
 </div>
 
 --------------------------------------
+
 # QuAcc – The Quantum Accelerator
+
 ![tests](https://github.com/arosen93/quacc/actions/workflows/tests.yaml/badge.svg)
 [![codecov](https://codecov.io/gh/arosen93/quacc/branch/main/graph/badge.svg?token=BCKGTD89H0)](https://codecov.io/gh/arosen93/quacc)
 [![CodeFactor](https://www.codefactor.io/repository/github/arosen93/quacc/badge)](https://www.codefactor.io/repository/github/arosen93/quacc)
@@ -17,11 +19,13 @@ QuAcc is a platform for high-throughput, database-driven computational materials
 **Disclaimer**: Currently, this package is under active development and should be considered *highly experimental.*
 
 ## Documentation
+
 [**Coming Soon**](https://arosen93.github.io/quacc/)
 
-
 ## Examples
+
 ### VASP Job
+
 ```python
 from ase.build import bulk
 from jobflow.managers.local import run_locally
@@ -40,6 +44,7 @@ responses = run_locally(job, create_folders=True)
 ```
 
 ### GFN2-xTB + Gaussian + ORCA Workflow
+
 ```python
 from ase.build import molecule
 from fireworks import LaunchPad
@@ -65,12 +70,15 @@ responses = run_locally(flow, create_folders=True)
 ```
 
 ### Database-Friendly Output
+
 Assuming a Jobflow configuration file has been provided, the input and output data will be automagically tabulated and placed in your selected database. No custom parsing required. An example document is shown below:
 
 ![docs](docs/src/imgs/schema.gif)
 
 ## Inspiration
+
 This package is heavily inspired by [Atomate2](https://github.com/materialsproject/atomate2), which I also recommend checking out.
 
 ## License
+
 QuAcc is released under a [modified BSD license](https://github.com/arosen93/quacc/blob/main/LICENSE.md).

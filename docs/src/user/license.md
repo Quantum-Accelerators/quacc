@@ -1,5 +1,4 @@
-License
-=======
+# License
 
 ``QuAcc`` is developed under a modified BSD license, reproduced below:
 

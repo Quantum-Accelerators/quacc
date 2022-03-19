@@ -12,8 +12,8 @@ Table of Contents
    :maxdepth: 2
 
    Installation <install.md>
-   Configuring DFT Packages <codes.rst>
-   Database configuration <config.rst>
+   Configuring DFT Packages <codes.md>
+   Database configuration <config.md>
 
 .. toctree::
    :hidden:
