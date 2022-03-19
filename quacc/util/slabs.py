@@ -177,6 +177,10 @@ def make_slabs_from_bulk(
                 if site.properties["surface_properties"] == "surface"
             ]
 
+            # Remove the surface_properties, which are only really meant
+            # if an adsorbate is present.
+            slab_with_props.remove_site_property("surface_properties")
+
             # Check that the desired atoms are on the surface
             if allowed_surface_symbols and not any(
                 allowed_surface_atom in surface_species
@@ -351,6 +355,8 @@ def make_adsorbate_structures(
         The structures with adsorbates
 
     """
+    atoms = deepcopy(atoms)
+
     if modes is None:
         modes = ["ontop", "bridge", "hollow"]
     if isinstance(modes, str):

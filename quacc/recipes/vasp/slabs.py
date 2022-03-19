@@ -238,7 +238,7 @@ class SlabToAdsorbatesJob(Maker):
         adsorbates
             .Atoms object for the adsorbate. Also takes a list of Atoms objects for
             the consideration of multiple different adsorbates.
-        make_ads_kwargs
+        **make_ads_kwargs
             Additional keyword arguments to pass to make_adsorbate_structures()
 
         Returns

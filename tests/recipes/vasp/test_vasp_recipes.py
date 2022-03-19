@@ -237,11 +237,12 @@ def test_slab_dynamic_jobs():
     flow = SlabToAdsorbatesJob().make(atoms, adsorbate)
     responses = run_locally(flow, ensure_success=True)
 
-    assert len(responses) == 15
+    assert len(responses) == 9
     uuids = list(responses.keys())
 
     # First job is a dummy job to make slabs and should have no output
     output0 = responses[uuids[0]][1].output
+    assert "input_slabs" in output0
     assert "generated_slab_ads" in output0
     assert "H2" in output0["generated_slab_ads"]
     assert len(output0["generated_slab_ads"]["H2"][0]) == 98
@@ -264,7 +265,7 @@ def test_slab_dynamic_jobs():
     ).make(atoms, adsorbate)
     responses = run_locally(flow, ensure_success=True)
 
-    assert len(responses) == 15
+    assert len(responses) == 9
     uuids = list(responses.keys())
 
     output0 = responses[uuids[0]][1].output
@@ -289,14 +290,14 @@ def test_slab_dynamic_jobs():
     flow = SlabToAdsorbatesJob().make(atoms, adsorbate2)
     responses = run_locally(flow, ensure_success=True)
 
-    assert len(responses) == 15
+    assert len(responses) == 9
 
     adsorbate2 = molecule("CH3")
     adsorbate2.set_initial_magnetic_moments([0.0] * len(adsorbate2))
     flow = SlabToAdsorbatesJob().make(atoms, adsorbate2)
     responses = run_locally(flow, ensure_success=True)
 
-    assert len(responses) == 15
+    assert len(responses) == 9
 
 
 def test_slab_flows():
@@ -307,7 +308,7 @@ def test_slab_flows():
     flow = BulkToAdsorbatesFlow().make(atoms, adsorbate, n_stable_slabs=1)
     responses = run_locally(flow, ensure_success=True)
     uuids = list(responses.keys())
-    assert len(responses) == 27
+    assert len(responses) == 21
 
     output0 = responses[uuids[0]][1].output
     assert output0["parameters"]["ediffg"] == -0.02
@@ -322,17 +323,17 @@ def test_slab_flows():
         atoms, [adsorbate, molecule("H2")], n_stable_slabs=1
     )
     responses = run_locally(flow, ensure_success=True)
-    assert len(responses) == 41
+    assert len(responses) == 29
 
     flow = BulkToAdsorbatesFlow().make(atoms, adsorbate)
     responses = run_locally(flow, ensure_success=True)
-    assert len(responses) == 78
+    assert len(responses) == 48
 
     flow = BulkToAdsorbatesFlow(bulk_relax_job=None, bulk_static_job=None).make(
         atoms, adsorbate, n_stable_slabs=None
     )
     responses = run_locally(flow, ensure_success=True)
-    assert len(responses) == 76
+    assert len(responses) == 46
 
     with pytest.raises(ValueError):
         flow = BulkToAdsorbatesFlow(bulk_relax_job=None, bulk_static_job=None).make(
