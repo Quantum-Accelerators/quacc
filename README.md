@@ -17,7 +17,7 @@ QuAcc is a platform for high-throughput, database-driven computational materials
 **Disclaimer**: Currently, this package is under active development and should be considered *highly experimental.*
 
 ## Documentation
-[**WIP**](https://arosen93.github.io/quacc/)
+[**Coming Soon**](https://arosen93.github.io/quacc/)
 
 
 ## Examples
