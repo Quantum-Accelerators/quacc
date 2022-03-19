@@ -31,12 +31,13 @@ release = __version__
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
-    "numpydoc",
+    "sphinx.ext.napoleon",
     "sphinx.ext.intersphinx",
     "sphinx.ext.viewcode",
     "sphinx.ext.autosummary",
     "m2r2",
-    "sphinx_panels",
+    "nbsphinx",
+    "nbsphinx_link",
     "sphinxcontrib.autodoc_pydantic",
 ]
 
@@ -49,35 +50,17 @@ templates_path = ["_templates"]
 exclude_patterns = ["Thumbs.db", ".DS_Store", "test*.py"]
 
 # use type hints
-# autodoc_typehints = "description"
-autoclass_content = "class"
+autodoc_typehints = "description"
+autoclass_content = "both"
 autodoc_member_order = "bysource"
-# autodoc_inherit_docstrings = True
-python_use_unqualified_type_names = True
-
-# autodoc_typehints_description_target = "documented"
-# autodoc_class_signature = "separated"
-
-autodoc_preserve_defaults = True
-
-# don't overwrite summary but generate them if they don't exist
-autosummary_generate = True
-autosummary_generate_overwrite = True
-
-# numpydoc options
-numpydoc_class_members_toctree = False
-numpydoc_show_class_members = False
-numpydoc_show_inherited_class_members = False
-numpydoc_attributes_as_param_list = False
-numpydoc_xref_param_type = True
 
 # better napolean support
-# napoleon_use_param = True
-# napoleon_use_rtype = True
-# napoleon_use_ivar = True
+napoleon_use_param = True
+napoleon_use_rtype = True
+napoleon_use_ivar = True
 
-# sphinx-panels shouldn't add bootstrap css as the pydata-sphinx-theme already loads it
-panels_add_bootstrap_css = False
+# The suffix(es) of source filenames.
+source_suffix = [".rst", ".md"]
 
 # control pydantic model docs
 autodoc_pydantic_model_show_json = False
@@ -95,43 +78,53 @@ autodoc_pydantic_settings_member_order = "bysource"
 autodoc_pydantic_field_list_validators = False
 autodoc_pydantic_field_show_constraints = False
 
-autosummary_imported_members = False
-
-# The suffix(es) of source filenames.
-source_suffix = [".rst", ".md"]
-
-
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#
-html_theme = "pydata_sphinx_theme"
+html_theme = "furo"
 
 # hide sphinx footer
 html_show_sphinx = False
 html_show_sourcelink = False
-html_theme_options = {
-    "github_url": "https://github.com/arosen93/quacc",
-    # "use_edit_page_button": True,
-    "show_toc_level": 1,
-}
-
-
-html_context = {
-    "github_user": "arosen93",
-    "github_repo": "quacc",
-    "github_version": "main",
-    "doc_path": "docs",
-}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
+fonts = [
+    "Lato",
+    "-apple-system",
+    "BlinkMacSystemFont",
+    "Segoe UI",
+    "Helvetica",
+    "Arial",
+    "sans-serif",
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+]
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
-# html_favicon = "_static/favicon.ico"
-
+html_favicon = "_static/favicon.ico"
+html_theme_options = {
+    "light_css_variables": {
+        "admonition-font-size": "92%",
+        "admonition-title-font-size": "92%",
+        "font-stack": ",".join(fonts),
+        "font-size--small": "92%",
+        "font-size--small--2": "87.5%",
+        "font-size--small--3": "87.5%",
+        "font-size--small--4": "87.5%",
+    },
+    "dark_css_variables": {
+        "admonition-font-size": "92%",
+        "admonition-title-font-size": "92%",
+        "font-stack": ",".join(fonts),
+        "font-size--small": "92%",
+        "font-size--small--2": "87.5%",
+        "font-size--small--3": "87.5%",
+        "font-size--small--4": "87.5%",
+    },
+}
 html_title = "quacc"
 
 # -- Options for intersphinx extension ---------------------------------------
