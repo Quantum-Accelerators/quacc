@@ -35,12 +35,12 @@ job = VaspRelaxJob(preset="BulkSet").make(atoms)
 responses = run_locally(job, create_folders=True)
 ```
 
-### GFN2-xTB + Gaussian + ORCA Workflow with FireWorks
+### GFN2-xTB + Gaussian + ORCA Workflow
 ```python
 from ase.build import molecule
 from fireworks import LaunchPad
 from jobflow import Flow
-from jobflow.managers.fireworks import flow_to_workflow
+from jobflow.managers.local import run_locally
 
 from quacc.recipes.xtb.core import RelaxJob as XTBRelaxJob
 from quacc.recipes.gaussian.core import RelaxJob as GaussianRelaxJob
@@ -57,12 +57,7 @@ job3 = OrcaStaticJob(xc="wB97M-V").make(job2.output["atoms"])
 
 flow = Flow([job1, job2, job3])
 
-# Instead of running locally, we will run the workflow via Fireworks here.
-# The commands below convert the flow to a FireWorks workflow and adds it to
-# the launchpad. Database-friendly results will be deposited in your JobFlow DB
-wf = flow_to_workflow(flow)
-lpad = LaunchPad.auto_load()
-lpad.add_wf(wf)
+responses = run_locally(flow, create_folders=True)
 ```
 
 ### Database-Friendly Output
@@ -70,21 +65,8 @@ Assuming a Jobflow configuration file has been provided, the input and output da
 
 ![docs](docs/src/imgs/schema.gif)
 
-## Installation
-1. Run the following command, ideally in a fresh Python 3.10+ environment: `pip install quacc`. For the most recent development version, instead run `pip install git+https://github.com/arosen93/quacc.git`.
+## Documentation
+[**Installation Guide**](https://arosen93.github.io/quacc/user/install.html)
 
-2. Follow the instructions in ASE's [documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html#supported-calculators) for how to set up the ASE calculator(s) you plan to use.
-
-3. Optional: Define the following environment variables (e.g. in your `~/.bashrc`) to use the database features of Jobflow and Fireworks, in addition to any that you have set in Step 2. Example `.yaml` files are provided [here](https://github.com/arosen93/quacc/tree/main/.config).
-
-```bash
-# Jobflow requirements
-# (details: https://materialsproject.github.io/jobflow/jobflow.settings.html)
-export JOBFLOW_CONFIG_FILE="/path/to/config/jobflow_config/jobflow.yaml"
-
-# FireWorks requirements
-# (details: https://materialsproject.github.io/fireworks)
-export FW_CONFIG_FILE='/path/to/config/fw_config/FW_config.yaml'
-```
 ## License
 QuAcc is released under a [modified BSD license](https://github.com/arosen93/quacc/blob/main/LICENSE.md).
