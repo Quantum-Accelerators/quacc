@@ -6,15 +6,19 @@
 # QuAcc – The Quantum Accelerator
 ![tests](https://github.com/arosen93/quacc/actions/workflows/tests.yaml/badge.svg)
 [![codecov](https://codecov.io/gh/arosen93/quacc/branch/main/graph/badge.svg?token=BCKGTD89H0)](https://codecov.io/gh/arosen93/quacc)
-[![CodeFactor](https://www.codefactor.io/repository/github/arosen93/quacc/badge)](https://www.codefactor.io/repository/github/arosen93/quacc)
 [![This project supports Python 3.10](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://python.org/downloads)
 [![Pypi](https://img.shields.io/pypi/v/quacc)](https://pypi.org/project/quacc)
+[![CodeFactor](https://www.codefactor.io/repository/github/arosen93/quacc/badge)](https://www.codefactor.io/repository/github/arosen93/quacc)
+[![DeepSource](https://deepsource.io/gh/arosen93/quacc.svg/?label=active+issues&token=O0LvluUkUS6qiQnHXc7BUlHn)](https://deepsource.io/gh/arosen93/quacc/?ref=repository-badge)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 QuAcc is a platform for high-throughput, database-driven computational materials science and quantum chemistry. Primarily, QuAcc seeks to enable a seamless interface between the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/index.html) (ASE) and [Jobflow](https://github.com/materialsproject/jobflow) for rapid workflow development and prototyping while leveraging many of the tools that power the [Materials Project](https://materialsproject.org).
 
-This package is heavily inspired by [Atomate2](https://github.com/materialsproject/atomate2), which I also recommend checking out.
+**Disclaimer**: Currently, this package is under active development and should be considered *highly experimental.*
 
-**Disclaimer**: Currently, this package is under active development and should be considered *highly experimental.* User-friendly documentation will be provided once the code is in a more stable state.
+## Documentation
+[**Coming Soon**](https://arosen93.github.io/quacc/)
+
 
 ## Examples
 ### VASP Job
@@ -65,8 +69,8 @@ Assuming a Jobflow configuration file has been provided, the input and output da
 
 ![docs](docs/src/imgs/schema.gif)
 
-## Documentation
-[**Installation Guide**](https://arosen93.github.io/quacc/user/install.html)
+## Inspiration
+This package is heavily inspired by [Atomate2](https://github.com/materialsproject/atomate2), which I also recommend checking out.
 
 ## License
 QuAcc is released under a [modified BSD license](https://github.com/arosen93/quacc/blob/main/LICENSE.md).
