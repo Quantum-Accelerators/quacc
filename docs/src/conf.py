@@ -132,8 +132,7 @@ html_title = "quacc"
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3.10", None),
-    "matplotlib": ("http://matplotlib.org", None),
-    "ase": ("https://wiki.fysik.dtu.dk/ase/index.html", None),
+    "ase": ("https://wiki.fysik.dtu.dk/ase/py-modindex.html", None),
     "pymatgen": ("http://pymatgen.org", None),
     "atomate2": ("https://materialsproject.github.io/atomate2/", None),
     "jobflow": ("https://materialsproject.github.io/jobflow/", None),
