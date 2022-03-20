@@ -59,6 +59,7 @@ def run_bader(
         os.path.abspath(scratch_dir),
         copy_from_current_on_enter=True,
         copy_to_current_on_exit=True,
+        remove_symlink_on_exit=True,
         delete_removed_files=False,
     ):
         bader_stats = bader_analysis_from_path(path)
@@ -145,6 +146,7 @@ def run_chargemol(
         os.path.abspath(scratch_dir),
         copy_from_current_on_enter=True,
         copy_to_current_on_exit=True,
+        remove_symlink_on_exit=True,
         delete_removed_files=False,
     ):
         chargemol_stats = ChargemolAnalysis(

@@ -51,6 +51,7 @@ def run_calc(
         copy_from_current_on_enter=copy_from_store_dir,
         copy_to_current_on_exit=True,
         gzip_on_exit=gzip,
+        remove_symlink_on_exit=True,
         delete_removed_files=False,
     ):
 

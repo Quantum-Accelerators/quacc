@@ -48,7 +48,7 @@ def test_run_calc():
     assert not os.path.exists("test_file.txt.gz")
 
 
-def test_bad_run_calc(monkeypatch):
+def test_bad_run_calc():
     atoms = bulk("Cu")
     with pytest.raises(ValueError):
         atoms = run_calc(atoms)
