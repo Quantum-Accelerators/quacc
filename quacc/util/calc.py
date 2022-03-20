@@ -24,9 +24,6 @@ def run_calc(
     ----------
     atoms : .Atoms
         The Atoms object to run the calculation on.
-    store_dir : str
-        Path where calculation results should be stored.
-        If None, the current working directory will be used.
     scratch_dir : str
         Path to the base directory where a tmp directory will be made for
         scratch files. If None, a temporary directory in $SCRATCH will be used.
@@ -34,8 +31,8 @@ def run_calc(
     gzip : bool
         Whether to gzip the output files.
     copy_from_store_dir : bool
-        Whether to copy any pre-existing files from the store_dir to the scratch_dir
-        before running the calculation.
+        Whether to copy any pre-existing files from the original directory to the
+        scratch_dir before running the calculation.
 
     Returns
     -------
@@ -44,18 +41,9 @@ def run_calc(
     """
 
     atoms = deepcopy(atoms)
+    scratch_dir = scratch_dir or os.getcwd()
     if atoms.calc is None:
         raise ValueError("Atoms object must have attached calculator.")
-
-    # Find the relevant paths
-    if not scratch_dir:
-        if "SCRATCH" in os.environ:
-            scratch_dir = os.path.expandvars("$SCRATCH")
-        else:
-            scratch_dir = os.getcwd()
-
-    if not os.path.exists(scratch_dir):
-        raise ValueError(f"Cannot find {scratch_dir}")
 
     with ScratchDir(
         os.path.abspath(scratch_dir),

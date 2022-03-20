@@ -44,8 +44,8 @@ def run_bader(
             }
     """
 
-    if path is None:
-        path = os.getcwd()
+    path = path or os.getcwd()
+    scratch_dir = scratch_dir or path
 
     # Make sure files are present.
     for f in ["CHGCAR", "AECCAR0", "AECCAR2", "POTCAR"]:
@@ -126,8 +126,8 @@ def run_chargemol(
                         }
             }
     """
-    if path is None:
-        path = os.getcwd()
+    path = path or os.getcwd()
+    scratch_dir = scratch_dir or path
 
     # Make sure files are present.
     for f in ["CHGCAR", "AECCAR0", "AECCAR2", "POTCAR"]:
