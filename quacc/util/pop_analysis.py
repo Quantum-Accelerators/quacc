@@ -45,7 +45,7 @@ def run_bader(
     """
 
     path = path or os.getcwd()
-    scratch_dir = scratch_dir or path
+    scratch_dir = scratch_dir or os.getcwd()
 
     # Make sure files are present.
     for f in ["CHGCAR", "AECCAR0", "AECCAR2", "POTCAR"]:
