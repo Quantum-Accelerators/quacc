@@ -23,6 +23,7 @@ class QuaccSettings(BaseSettings):
         _DEFAULT_CONFIG_FILE_PATH, description="File to load alternative defaults from."
     )
     SCRATCH_DIR: str = Field("/tmp", description="Scratch directory for calculations.")
+    GZIP_FILES: bool = Field(True, description="Whether generated files should be gzip'd.")
 
     class Config:
         """Pydantic config settings."""

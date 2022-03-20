@@ -10,7 +10,7 @@ from quacc import SETTINGS
 def run_calc(
     atoms: Atoms,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
-    gzip: bool = True,
+    gzip: bool = SETTINGS.GZIP_FILES,
     copy_from_store_dir: bool = False,
 ) -> float:
     """
@@ -25,9 +25,8 @@ def run_calc(
     atoms : .Atoms
         The Atoms object to run the calculation on.
     scratch_dir : str
-        Path to the base directory where a tmp directory will be made for
-        scratch files. If None, a temporary directory in $SCRATCH will be used.
-        If $SCRATCH is not present, the current working directory will be used.
+        Path where a tmpdir should be made for running the calculation. If None,
+        the current working directory will be used.
     gzip : bool
         Whether to gzip the output files.
     copy_from_store_dir : bool
