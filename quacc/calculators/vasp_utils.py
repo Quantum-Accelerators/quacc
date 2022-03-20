@@ -11,7 +11,6 @@ from pymatgen.io.vasp.inputs import Kpoints
 from pymatgen.symmetry.bandstructure import HighSymmKpath
 
 from quacc.custodian import vasp as custodian_vasp
-from quacc.defaults import custodian_settings
 from quacc.util.atoms import check_is_metal, get_highest_block
 
 
@@ -38,17 +37,6 @@ def manage_environment(custodian: bool = True) -> str:
 
     # Check if Custodian should be used and confirm environment variables are set
     if custodian:
-        if "VASP_CUSTODIAN_SETTINGS" in os.environ:
-            custodian_yaml = os.environ["VASP_CUSTODIAN_SETTINGS"]
-        else:
-            custodian_yaml = os.path.join(
-                os.path.dirname(custodian_settings.__file__),
-                "vasp_custodian_settings.yaml",
-            )
-            os.environ["VASP_CUSTODIAN_SETTINGS"] = custodian_yaml
-        if not os.path.isfile(custodian_yaml):
-            raise FileNotFoundError(f"{custodian_yaml} not found.")
-
         # Return the command flag
         run_vasp_custodian_file = os.path.abspath(inspect.getfile(custodian_vasp))
         command = f"python {run_vasp_custodian_file}"

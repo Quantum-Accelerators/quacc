@@ -4,6 +4,8 @@ from pathlib import Path
 
 from pydantic import BaseSettings, Field, root_validator
 
+from quacc.defaults import custodian_settings
+
 _DEFAULT_CONFIG_FILE_PATH = "~/.quacc.yaml"
 
 
@@ -19,6 +21,7 @@ class QuaccSettings(BaseSettings):
     using the "QUACC" prefix. e.g. QUACC_SCRATCH_DIR = /path/to/scratch.
     """
 
+    # General Settings
     CONFIG_FILE: str = Field(
         _DEFAULT_CONFIG_FILE_PATH, description="File to load alternative defaults from."
     )
@@ -28,6 +31,32 @@ class QuaccSettings(BaseSettings):
     )
     GZIP_FILES: bool = Field(
         True, description="Whether generated files should be gzip'd."
+    )
+
+    # VASP Settings
+    VASP_CUSTODIAN: bool = Field(
+        True, description="Whether Custodian should be used to run VASP"
+    )
+    VASP_CUSTODIAN_YAML_PATH: str = Field(
+        os.path.join(
+            os.path.dirname(custodian_settings.__file__), "vasp_custodian_settings.yaml"
+        ),
+        description="YAML file containing the settings for VASP Custodian",
+    )
+    INCAR_COPILOT: bool = Field(
+        True, description="Whether co-pilot mode should be used for VASP INCAR handling"
+    )
+    VASP_BADER: bool = Field(
+        True,
+        description="Whether to run a Bader analysis when summarizing VASP results. Requires bader to be in PATH.",
+    )
+    VASP_PRESET_MAG_DEFAULT: float = Field(
+        1.0,
+        description="Default initial magmom to use for a given element if a preset with magmoms is provided but an element is missing from the list",
+    )
+    VASP_MAG_CUTOFF: float = Field(
+        0.05,
+        description="If the absolute value of all magnetic moments are below this value, they will be set to 0 such that a spin-unpolarized calculation will be performed",
     )
 
     class Config:

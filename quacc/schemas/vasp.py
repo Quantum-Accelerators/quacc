@@ -5,6 +5,7 @@ from typing import Any, Dict
 from ase.atoms import Atoms
 from atomate2.vasp.schemas.task import TaskDocument
 
+from quacc import SETTINGS
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
 from quacc.util.basics import remove_dict_empties
@@ -15,7 +16,7 @@ def summarize_run(
     atoms: Atoms,
     dir_path: str = None,
     prep_next_run: bool = True,
-    bader: bool = True,
+    bader: bool = SETTINGS.VASP_BADER,
     check_convergence: bool = True,
     compact: bool = True,
     remove_empties: bool = True,

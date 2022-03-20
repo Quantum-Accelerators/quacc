@@ -88,7 +88,7 @@ def test_run_chargemol():
 
 
 def test_chargemol_erorr():
-    with pytest.raises(OSError):
+    with pytest.raises(ValueError):
         run_chargemol()
 
     os.remove("CHGCAR")

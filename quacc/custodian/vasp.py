@@ -1,4 +1,3 @@
-import os
 import shlex
 
 from custodian import Custodian
@@ -19,18 +18,17 @@ from custodian.vasp.handlers import (
 from custodian.vasp.jobs import VaspJob
 from custodian.vasp.validators import VaspFilesValidator, VasprunXMLValidator
 
+from quacc import SETTINGS
 from quacc.util.yaml import load_yaml_settings
+
+VASP_CUSTODIAN_YAML_PATH = SETTINGS.VASP_CUSTODIAN_YAML_PATH
 
 
 def run_custodian():
     # Adapted from https://github.com/materialsproject/atomate2/blob/main/src/atomate2/vasp/run.py
 
     # Read in default settings
-    if "VASP_CUSTODIAN_SETTINGS" in os.environ:
-        settings_path = os.environ["VASP_CUSTODIAN_SETTINGS"]
-    else:
-        raise OSError("Missing environment variable VASP_CUSTODIAN_SETTINGS.")
-    config = load_yaml_settings(settings_path)
+    config = load_yaml_settings(VASP_CUSTODIAN_YAML_PATH)
 
     # Handlers for VASP
     handlers = []

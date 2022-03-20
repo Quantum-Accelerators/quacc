@@ -6,6 +6,7 @@ from ase.calculators.vasp import Vasp as Vasp_
 from ase.calculators.vasp.setups import _setups_defaults as ase_default_setups
 from ase.constraints import FixAtoms
 
+from quacc import SETTINGS
 from quacc.calculators.vasp_utils import (
     calc_swaps,
     convert_auto_kpts,
@@ -21,12 +22,12 @@ DEFAULT_CALCS_DIR = os.path.dirname(vasp_defaults.__file__)
 
 def SmartVasp(
     atoms: Atoms,
-    custodian: bool = True,
     preset: None | str = None,
-    incar_copilot: bool = True,
+    custodian: bool = SETTINGS.VASP_CUSTODIAN,
+    incar_copilot: bool = SETTINGS.INCAR_COPILOT,
     copy_magmoms: bool = True,
-    mag_default: float = 1.0,
-    mag_cutoff: None | float = 0.05,
+    preset_mag_default: float = SETTINGS.VASP_PRESET_MAG_DEFAULT,
+    mag_cutoff: None | float = SETTINGS.VASP_MAG_CUTOFF,
     verbose: bool = True,
     **kwargs,
 ) -> Atoms:
@@ -39,27 +40,27 @@ def SmartVasp(
     ----------
     atoms
         The Atoms object to be used for the calculation.
-    custodian
-        Whether to use Custodian to run VASP. If True, the Custodian settings will (by default) be
-        adopted from quacc.defaults.custodian_settings.vasp_custodian_settings.yaml. To override
-        these default Custodian settings, you can define your own .yaml file and set the path in
-        the VASP_CUSTODIAN_SETTINGS environment variable at runtime. If set to False, ASE will
-        run VASP without Custodian, in which case you must have a valid ASE_VASP_COMMAND set per
-        the ASE documentation.
     preset
         The path to a .yaml file containing a list of INCAR parameters to use as a "preset"
         for the calculator. If no filepath is present, it will look in quacc/defaults/calcs/vasp, such
         that preset="BulkRelaxSet" is supported. It will append .yaml at the end if not present.
         Note that any specific kwargs take precedence over the flags set in the preset dictionary.
+    custodian
+        Whether to use Custodian to run VASP.
+        Default is True in settings.
     incar_copilot
         If True, the INCAR parameters will be adjusted if they go against the VASP manual.
+        Default is True in settings.
     copy_magmoms
         If True, any pre-existing atoms.get_magnetic_moments() will be set in atoms.set_initial_magnetic_moments().
         Set this to False if you want to use a preset's magnetic moments every time.
-    mag_default
-        Default magmom value for sites without one in the preset. Use 0.6 for MP settings or 1.0 for VASP default.
+    preset_mag_default
+        Default magmom value for sites without one explicitly specified in the preset. Only used if a preset is
+        specified with an elemental_mags_dict key-value pair.
+        Default is 1.0 in settings.
     mag_cutoff
         Set all initial magmoms to 0 if all have a magnitude below this value.
+        Default is 0.05 in settings.
     verbose
         If True, warnings will be raised when INCAR parameters are changed.
     **kwargs
@@ -159,7 +160,7 @@ def SmartVasp(
         atoms,
         elemental_mags_dict=elemental_mags_dict,
         copy_magmoms=copy_magmoms,
-        mag_default=mag_default,
+        elemental_mags_default=preset_mag_default,
         mag_cutoff=mag_cutoff,
     )
 

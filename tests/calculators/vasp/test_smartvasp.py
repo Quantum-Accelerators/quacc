@@ -131,7 +131,7 @@ def test_magmoms():
 
     atoms = bulk("Zn") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
-    atoms = SmartVasp(atoms, preset="BulkSet", mag_default=2.5)
+    atoms = SmartVasp(atoms, preset="BulkSet", preset_mag_default=2.5)
     assert atoms.get_initial_magnetic_moments().tolist() == [2.5] * (len(atoms) - 1) + [
         5.0
     ]
@@ -661,10 +661,3 @@ def test_bad():
 
     with pytest.raises(ValueError):
         atoms = SmartVasp(atoms, preset="BadRelaxSet")
-
-
-def test_bad_custodian(monkeypatch):
-    monkeypatch.setenv("VASP_CUSTODIAN_SETTINGS", ".")
-    atoms = bulk("Cu")
-    with pytest.raises(FileNotFoundError):
-        atoms = SmartVasp(atoms)
