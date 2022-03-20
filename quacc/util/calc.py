@@ -4,11 +4,12 @@ from copy import deepcopy
 from ase.atoms import Atoms
 from monty.tempfile import ScratchDir
 
+from quacc import SETTINGS
+
 
 def run_calc(
     atoms: Atoms,
-    store_dir: str = None,
-    scratch_dir: str = None,
+    scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = True,
     copy_from_store_dir: bool = False,
 ) -> float:

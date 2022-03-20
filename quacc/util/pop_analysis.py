@@ -8,7 +8,9 @@ from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
 from quacc import SETTINGS
 
 
-def run_bader(path: str = None, scratch_dir: str = None) -> Dict[str, Any]:
+def run_bader(
+    path: str = None, scratch_dir: str = SETTINGS.SCRATCH_DIR
+) -> Dict[str, Any]:
     """
     Runs a Bader partial charge and spin moment analysis using the VASP
     output files in the given path. This function requires that `bader`
@@ -24,6 +26,8 @@ def run_bader(path: str = None, scratch_dir: str = None) -> Dict[str, Any]:
         Must include CHGCAR, AECCAR0, AECCAR2, and POTCAR files. These
         files can be gzip'd or not -- it doesn't matter.
         If None, the current working directory is used.
+    scratch_dir
+        The path where the Bader analysis will be run.
 
     Returns
     -------
@@ -52,7 +56,7 @@ def run_bader(path: str = None, scratch_dir: str = None) -> Dict[str, Any]:
 
     # Run Bader analysis
     with ScratchDir(
-        os.path.abspath(SETTINGS.SCRATCH_DIR),
+        os.path.abspath(scratch_dir),
         copy_from_current_on_enter=True,
         copy_to_current_on_exit=True,
         delete_removed_files=False,
@@ -77,7 +81,9 @@ def run_bader(path: str = None, scratch_dir: str = None) -> Dict[str, Any]:
 
 
 def run_chargemol(
-    path: str = None, atomic_densities_path: str = None
+    path: str = None,
+    atomic_densities_path: str = None,
+    scratch_dir: str = SETTINGS.SCRATCH_DIR,
 ) -> Dict[str, Any]:
     """
     Runs a Chargemol (i.e. DDEC6 + CM5) analysis using the VASP output files
@@ -100,6 +106,8 @@ def run_chargemol(
         If None, we assume that this directory is defined in an environment variable
         named DDEC6_ATOMIC_DENSITIES_DIR.
         See the Chargemol documentation for more information.
+    scratch_dir
+        The path where the Chargemol analysis will be run.
 
     Returns
     -------
@@ -134,7 +142,7 @@ def run_chargemol(
 
     # Run Chargemol analysis
     with ScratchDir(
-        os.path.abspath(SETTINGS.SCRATCH_DIR),
+        os.path.abspath(scratch_dir),
         copy_from_current_on_enter=True,
         copy_to_current_on_exit=True,
         delete_removed_files=False,
