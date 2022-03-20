@@ -37,7 +37,7 @@ atoms = bulk("Cu")
 
 # Make a job consisting of a VASP relaxation using a pre-defined input set.
 # By default, VASP will be run using Custodian for on-the-fly error handling.
-job = VaspRelaxJob(preset="BulkSet").make(atoms)
+job = VaspRelaxJob(preset="MPScanSet").make(atoms)
 
 # Run the job locally, with all output data stored in a convenient schema
 responses = run_locally(job, create_folders=True)
