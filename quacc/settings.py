@@ -1,5 +1,5 @@
 """Settings for quacc"""
-
+import os
 from pathlib import Path
 
 from pydantic import BaseSettings, Field, root_validator
@@ -22,7 +22,10 @@ class QuaccSettings(BaseSettings):
     CONFIG_FILE: str = Field(
         _DEFAULT_CONFIG_FILE_PATH, description="File to load alternative defaults from."
     )
-    SCRATCH_DIR: str = Field("/tmp", description="Scratch directory for calculations.")
+    SCRATCH_DIR: str = Field(
+        os.path.expandvars("$SCRATCH"),
+        description="Scratch directory for calculations.",
+    )
     GZIP_FILES: bool = Field(
         True, description="Whether generated files should be gzip'd."
     )
