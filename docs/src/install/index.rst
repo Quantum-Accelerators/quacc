@@ -13,7 +13,8 @@ Table of Contents
 
    Installation <install.md>
    Configuring DFT Packages <codes.md>
-   Database configuration <config.md>
+   QuAcc Settings <settings.md>
+   Database configuration <config_db.md>
 
 .. toctree::
    :hidden:

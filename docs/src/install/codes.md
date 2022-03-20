@@ -1,16 +1,17 @@
 # DFT Package Setup
 
+Here, we outline how to ensure that QuAcc can run the quantum chemistry package of your choosing. You only need to follow the instructions for the code(s) you intend to use.
+
 ## VASP
 
-As described in the [ASE VASP documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#environment-variables), you will need to define a few environment variables. By default, you do not need to define the `ASE_VASP_COMMAND` (or `VASP_SCRIPT`) environment variable unless you plan to run QuAcc without on-the-fly error-handling using Custodian. However, you do need to define the `VASP_PP_PATH` environment variable that points to your pseudopotential library. Additionally, for the use of van der Waals functionals, you need to define the `ASE_VASP_VDW` environment variable to point to the `vdw_kernel.bindat` file distributed with VASP.
-
-To run VASP with Custodian (the default behavior in QuAcc), you will need to define a `VASP_PARALLEL_CMD` environment variable that tells Custodian how to parallelize VASP. For instance, this might look something like `export VASP_PARALLEL_CMD="srun -N 2 --ntasks-per-node 64 -c 4 --cpu_bind=cores"`. Note, the VASP executables are not included in this environment variable.
-
-By default, Custodian will assume that the VASP executables can be run with `vasp_std` or `vasp_gam` for standard or gamma-point calculations. If you need to use different executable names, create and modify the `vasp_custodian_settings.yaml` file found [here](https://github.com/arosen93/quacc/blob/main/quacc/defaults/custodian_settings/vasp_custodian_settings.yaml) and define the `VASP_CUSTODIAN_SETTINGS` environment variable, which should point to the newly created `vasp_custodian_settings.yaml` file.
+1. Define the `VASP_PP_PATH` environment variable that points to your pseudopotential library. See the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials) for full details. We recommend including this in your `~/.bashrc` file.
+2. Define the `ASE_VASP_VDW` environment variable to point to the `vdw_kernel.bindat` file distributed with VASP. Again, refer to the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials) for additional details. We recommend including this in your `~/.bashrc` file.
+3. To run VASP with Custodian (the default behavior in QuAcc), you will need to define a `VASP_PARALLEL_CMD` environment variable that tells Custodian how to parallelize VASP. For instance, this might look something like `export VASP_PARALLEL_CMD="srun -N 2 --ntasks-per-node 24"`. Note, the VASP executables are not included in this environment variable. For convenience, we recommend specifying this environment variable at runtime so you can easily modify it.
+4. By default, Custodian will assume that the VASP executables can be run with `vasp_std` or `vasp_gam` for standard or gamma-point calculations. If you need to use different executable names or wish to change any Custodian settings from the selected defaults, create and modify the `vasp_custodian_settings.yaml` file found [here](https://github.com/arosen93/quacc/blob/main/quacc/defaults/custodian_settings/vasp_custodian_settings.yaml) and set the path to this file in a `QUACC_VASP_CUSTODIAN_YAML_PATH` environment variable.
 
 ## Gaussian
 
-As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/gaussian.html), ASE will look for executables named `g16`, `g09`, or `g03` (in that order). If you want to use a different executable name, you can define the `ASE_GAUSSIAN_COMMAND` environment variable accordingly.
+By default, QuAcc (via ASE) will look for executables named `g16`, `g09`, or `g03` (in order of decreasing preference). If you want to use a different executable name, define the `ASE_GAUSSIAN_COMMAND` environment variable accordingly. See the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/gaussian.html) for more details.
 
 ## ORCA
 
