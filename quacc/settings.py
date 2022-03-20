@@ -17,7 +17,7 @@ class QuaccSettings(BaseSettings):
     the environment variable QUACC_CONFIG_FILE can be set to point to a yaml file with
     quacc settings.
 
-    Alternatively, the variables can be modified directly though environment variables by
+    The variables can also be modified individually though environment variables by
     using the "QUACC" prefix. e.g. QUACC_SCRATCH_DIR = /path/to/scratch.
     """
 
