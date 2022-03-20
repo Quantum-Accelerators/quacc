@@ -42,9 +42,7 @@ def test_run_calc():
     assert os.path.exists("test_file.txt")
     assert os.path.exists("test_file.txt.gz")
 
-    atoms = run_calc(
-        atoms, store_dir=".", scratch_dir="test_calc", copy_from_store_dir=True
-    )
+    atoms = run_calc(atoms, scratch_dir="test_calc", copy_from_store_dir=True)
     assert atoms.calc.results is not None
     assert os.path.exists("test_file.txt")
     assert os.path.exists("test_file.txt.gz")
@@ -58,5 +56,5 @@ def test_bad_run_calc(monkeypatch):
     atoms = SmartVasp(atoms)
 
     monkeypatch.setenv("SCRATCH", "nonexistant_dir")
-    with pytest.raises(OSError):
+    with pytest.raises(ValueError):
         atoms = run_calc(atoms)

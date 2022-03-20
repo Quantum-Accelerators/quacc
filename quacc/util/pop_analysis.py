@@ -1,11 +1,14 @@
 import os
 from typing import Any, Dict
 
+from monty.tempfile import ScratchDir
 from pymatgen.command_line.bader_caller import bader_analysis_from_path
 from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
 
+from quacc import SETTINGS
 
-def run_bader(path: str = None) -> Dict[str, Any]:
+
+def run_bader(path: str = None, scratch_dir: str = None) -> Dict[str, Any]:
     """
     Runs a Bader partial charge and spin moment analysis using the VASP
     output files in the given path. This function requires that `bader`
@@ -48,7 +51,13 @@ def run_bader(path: str = None) -> Dict[str, Any]:
             raise FileNotFoundError(f"Could not find {f} in {path}.")
 
     # Run Bader analysis
-    bader_stats = bader_analysis_from_path(path)
+    with ScratchDir(
+        os.path.abspath(SETTINGS.SCRATCH_DIR),
+        copy_from_current_on_enter=True,
+        copy_to_current_on_exit=True,
+        delete_removed_files=False,
+    ):
+        bader_stats = bader_analysis_from_path(path)
 
     # Store the partial charge, which is much more useful than the
     # raw charge and is more intuitive than the charge transferred.
@@ -124,10 +133,16 @@ def run_chargemol(
         raise OSError("DDEC6_ATOMIC_DENSITIES_DIR environment variable not defined.")
 
     # Run Chargemol analysis
-    chargemol_stats = ChargemolAnalysis(
-        path=path,
-        atomic_densities_path=atomic_densities_path,
-    )
+    with ScratchDir(
+        os.path.abspath(SETTINGS.SCRATCH_DIR),
+        copy_from_current_on_enter=True,
+        copy_to_current_on_exit=True,
+        delete_removed_files=False,
+    ):
+        chargemol_stats = ChargemolAnalysis(
+            path=path,
+            atomic_densities_path=atomic_densities_path,
+        )
 
     # Some cleanup of the returned dictionary
     chargemol_stats.pop("rsquared_moments", None)

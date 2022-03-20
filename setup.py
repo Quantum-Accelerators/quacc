@@ -29,8 +29,8 @@ if __name__ == "__main__":
             "custodian==2022.2.13",
             "jobflow==0.1.6",
             "atomate2==0.0.6",
-            "monty==2022.3.12",
-            "FireWorks==2.0.2",
+            "monty @ git+https://github.com/arosen93/monty.git@rosen-tmp",
+            "fireworks @ git+https://github.com/materialsproject/fireworks.git",
             "cclib==1.7.1",
         ],
         extras_require={
