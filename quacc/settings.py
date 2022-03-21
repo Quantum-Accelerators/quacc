@@ -2,8 +2,8 @@
 import os
 from pathlib import Path
 from typing import List
-from pydantic import BaseSettings, Field, root_validator
 
+from pydantic import BaseSettings, Field, root_validator
 
 _DEFAULT_CONFIG_FILE_PATH = "~/.quacc.yaml"
 
