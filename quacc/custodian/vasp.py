@@ -33,7 +33,7 @@ def run_custodian(
     vasp_custodian_validators: List[str] = SETTINGS.VASP_CUSTODIAN_VALIDATORS,
     scratch_dir: str = None,
     vasp_job_kwargs: Dict = None,
-    **custodian_kwargs,
+    custodian_kwargs: Dict = None,
 ):
     """
     Function to run VASP Custodian
@@ -102,8 +102,6 @@ def run_custodian(
     # Populate settings
     vasp_cmd = f"{vasp_parallel_cmd} {vasp_cmd}"
     vasp_gamma_cmd = f"{vasp_parallel_cmd} {vasp_gamma_cmd}"
-    max_errors = vasp_custodian_max_errors
-    wall_time = vasp_custodian_wall_time
 
     # Run VASP
     vasp_job_kwargs = {} if vasp_job_kwargs is None else vasp_job_kwargs
@@ -115,14 +113,16 @@ def run_custodian(
     # Run with Custodian
     jobs = [VaspJob(split_vasp_cmd, **vasp_job_kwargs)]
 
-    if wall_time is not None:
-        handlers = list(handlers) + [WalltimeHandler(wall_time=wall_time)]
+    if vasp_custodian_wall_time is not None:
+        handlers = list(handlers) + [
+            WalltimeHandler(wall_time=vasp_custodian_wall_time)
+        ]
 
     c = Custodian(
         handlers,
         jobs,
         validators=validators,
-        max_errors=max_errors,
+        max_errors=vasp_custodian_max_errors,
         scratch_dir=scratch_dir,
         **custodian_kwargs,
     )
