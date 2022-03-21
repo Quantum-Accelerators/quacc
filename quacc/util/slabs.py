@@ -1,3 +1,6 @@
+"""
+Utility functions for dealing with slabs
+"""
 import warnings
 from copy import deepcopy
 from typing import Any, Dict, List

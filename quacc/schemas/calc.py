@@ -1,3 +1,6 @@
+"""
+Schemas for storing ASE calculator data
+"""
 from typing import Any, Dict
 
 from ase.atoms import Atoms

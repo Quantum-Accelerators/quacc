@@ -1,3 +1,4 @@
+"""Core recipes for ORCA"""
 import multiprocessing
 from dataclasses import dataclass
 from typing import Any, Dict

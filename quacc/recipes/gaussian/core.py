@@ -1,3 +1,4 @@
+"""Core recipes for Gaussian"""
 import multiprocessing
 from dataclasses import dataclass
 from typing import Any, Dict

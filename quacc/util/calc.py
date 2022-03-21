@@ -1,3 +1,6 @@
+"""
+Utility functions for running ASE calculators
+"""
 import os
 from copy import deepcopy
 

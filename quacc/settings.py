@@ -1,4 +1,4 @@
-"""Settings for quacc"""
+"""Settings for QuAcc"""
 import os
 from pathlib import Path
 from typing import List

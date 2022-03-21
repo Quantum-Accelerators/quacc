@@ -1,3 +1,7 @@
+"""
+A wrapper around ASE's Vasp calculator that makes it better suited for high-throughput DFT.
+"""
+
 import inspect
 import os
 import warnings

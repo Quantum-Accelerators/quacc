@@ -1,3 +1,6 @@
+"""
+Utility functions for dealing with Atoms
+"""
 import hashlib
 import os
 from copy import deepcopy

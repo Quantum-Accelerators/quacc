@@ -1,3 +1,6 @@
+"""
+Core recipes for the xTB code
+"""
 from dataclasses import dataclass
 from typing import Any, Dict
 

@@ -1,3 +1,6 @@
+"""
+Schemas for storing metadata about Atoms objects
+"""
 from copy import deepcopy
 from typing import Any, Dict
 

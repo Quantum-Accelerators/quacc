@@ -1,3 +1,4 @@
+"""Core recipes sfor EMT"""
 from dataclasses import dataclass
 from typing import Any, Dict
 

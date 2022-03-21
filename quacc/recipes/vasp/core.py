@@ -1,3 +1,4 @@
+"""Core recipes for VASP"""
 from dataclasses import dataclass
 from typing import Any, Dict
 

@@ -1,3 +1,4 @@
+"""Init data for QuAcc"""
 from ase.atoms import Atoms
 from ase.io.jsonio import decode, encode
 

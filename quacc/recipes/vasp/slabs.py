@@ -1,3 +1,4 @@
+"""Recipes for slabs"""
 import warnings
 from dataclasses import dataclass
 from typing import Any, Dict, List

@@ -1,3 +1,6 @@
+"""
+Schemas for VASP
+"""
 import os
 import warnings
 from typing import Any, Dict
