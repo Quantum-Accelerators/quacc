@@ -56,7 +56,6 @@ class SlabStaticJob(Maker):
         defaults = {
             "auto_dipole": True,
             "ismear": -5,
-            "isym": 2,
             "laechg": True,
             "lcharg": True,
             "lvhar": True,

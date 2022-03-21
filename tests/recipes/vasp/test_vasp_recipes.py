@@ -29,7 +29,7 @@ def test_static_job():
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["nsites"] == len(atoms)
-    assert output["parameters"]["isym"] == 2
+    assert "isym" not in output["parameters"]
     assert output["parameters"]["nsw"] == 0
     assert output["parameters"]["lwave"] == True
     assert output["name"] == "VASP-Static"

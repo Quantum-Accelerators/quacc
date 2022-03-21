@@ -48,7 +48,6 @@ class StaticJob(Maker):
         swaps = self.swaps or {}
         defaults = {
             "ismear": -5,
-            "isym": 2,
             "laechg": True,
             "lcharg": True,
             "lwave": True,
