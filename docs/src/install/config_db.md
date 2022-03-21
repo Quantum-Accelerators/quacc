@@ -1,6 +1,6 @@
-# Configuration
+# Database Configuration
 
-## Database Setup
+## MongoDB Setup
 
 ### Introduction
 
