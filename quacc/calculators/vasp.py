@@ -15,7 +15,7 @@ from quacc.calculators.vasp_utils import (
 )
 from quacc.presets import vasp as vasp_defaults
 from quacc.util.atoms import set_magmoms
-from quacc.util.yaml import load_yaml_calc
+from quacc.util.basics import load_yaml_calc
 
 DEFAULT_CALCS_DIR = os.path.dirname(vasp_defaults.__file__)
 
