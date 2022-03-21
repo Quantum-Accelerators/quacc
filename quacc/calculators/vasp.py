@@ -13,7 +13,7 @@ from quacc.calculators.vasp_utils import (
     manage_environment,
     remove_unused_flags,
 )
-from quacc.defaults.calcs import vasp as vasp_defaults
+from quacc.presets import vasp as vasp_defaults
 from quacc.util.atoms import set_magmoms
 from quacc.util.yaml import load_yaml_calc
 
