@@ -63,9 +63,6 @@ def remove_dict_empties(d: Dict[str, Any]) -> Dict[str, Any]:
     return d
 
 
-import yaml
-
-
 def load_yaml_calc(yaml_path: str) -> Dict[str, Any]:
     """
     Loads a YAML file containing ASE VASP calcultor settings.
