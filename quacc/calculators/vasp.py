@@ -7,7 +7,6 @@ from typing import Any, Dict, List, Tuple
 import numpy as np
 from ase.atoms import Atoms
 from ase.calculators.vasp import Vasp
-from ase.calculators.vasp import Vasp as Vasp_
 from ase.calculators.vasp.setups import _setups_defaults as ase_default_setups
 from ase.constraints import FixAtoms
 from pymatgen.io.ase import AseAtomsAdaptor
@@ -171,7 +170,7 @@ def SmartVasp(
     user_calc_params = remove_unused_flags(user_calc_params)
 
     # Instantiate the calculator!
-    calc = Vasp_(command=command, **user_calc_params)
+    calc = Vasp(command=command, **user_calc_params)
 
     # Handle INCAR swaps as needed
     if incar_copilot:
