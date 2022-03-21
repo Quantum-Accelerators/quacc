@@ -1,4 +1,5 @@
 import os
+from shutil import rmtree
 
 import pytest
 
@@ -50,16 +51,26 @@ def patch_pop_analyses(monkeypatch):
     )
 
 
+CWD = os.getcwd()
+
+
 def setup_module():
+    if not os.path.exists("rundir"):
+        os.mkdir("rundir")
+    os.chdir("rundir")
     for f in ["CHGCAR", "AECCAR0.gz", "AECCAR2.gz", "POTCAR"]:
         with open(f, "w") as w:
             w.write("test")
 
 
 def teardown_module():
+
     for f in ["CHGCAR", "AECCAR0.gz", "AECCAR2.gz", "POTCAR"]:
         if os.path.isfile(f):
             os.remove(f)
+    if os.path.exists("rundir"):
+        rmtree("rundir")
+    os.chdir(CWD)
 
 
 def test_run_bader():
