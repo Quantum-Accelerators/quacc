@@ -14,11 +14,3 @@ Table of Contents
    Running workflows <running-workflows.md>
    Writing workflows <writing-workflows.md>
    Fireworks integration <fireworks.md>
-
-.. toctree::
-   :hidden:
-
-   changelog
-   contributors
-   contributing
-   license
