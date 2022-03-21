@@ -45,13 +45,12 @@ job = VaspRelaxJob(preset="MPScanSet").make(atoms)
 responses = run_locally(job, create_folders=True)
 ```
 
-### GFN2-xTB + Gaussian + ORCA Workflow
-
+### GFN2-xTB + Gaussian + ORCA Workflow with FireWorks
 ```python
 from ase.build import molecule
 from fireworks import LaunchPad
 from jobflow import Flow
-from jobflow.managers.local import run_locally
+from jobflow.managers.fireworks import flow_to_workflow
 
 from quacc.recipes.xtb.core import RelaxJob as XTBRelaxJob
 from quacc.recipes.gaussian.core import RelaxJob as GaussianRelaxJob
@@ -65,10 +64,14 @@ atoms = molecule("H2")
 job1 = XTBRelaxJob(method="GFN2-xTB").make(atoms)
 job2 = GaussianRelaxJob(xc="PBE").make(job1.output["atoms"])
 job3 = OrcaStaticJob(xc="wB97M-V").make(job2.output["atoms"])
-
 flow = Flow([job1, job2, job3])
 
-responses = run_locally(flow, create_folders=True)
+# Instead of running locally, we will run the workflow via Fireworks here.
+# The commands below convert the flow to a FireWorks workflow and adds it to
+# the launchpad. Database-friendly results will be deposited in your JobFlow DB
+wf = flow_to_workflow(flow)
+lpad = LaunchPad.auto_load()
+lpad.add_wf(wf)
 ```
 
 ### Database-Friendly Output
