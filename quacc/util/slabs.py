@@ -478,8 +478,7 @@ def get_surface_energy(
 ):
     """
     Calculate the surface energy to form a given surface slab from a bulk structure.
-    For asymmetric slabs, this is best thought of as an average surface energy, where
-    the cleavage energy would be 2x this value.
+    For asymmetric slabs, this is better thought of as the cleavage energy.
 
     Parameters:
     -----------
