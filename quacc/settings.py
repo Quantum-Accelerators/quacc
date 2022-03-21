@@ -5,7 +5,7 @@ from typing import List
 
 from pydantic import BaseSettings, Field, root_validator
 
-_DEFAULT_CONFIG_FILE_PATH = "~/.quacc.yaml"
+_DEFAULT_CONFIG_FILE_PATH = os.path.expanduser("~/.quacc.yaml")
 
 
 class QuaccSettings(BaseSettings):
