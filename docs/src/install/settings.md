@@ -10,7 +10,7 @@ By defualt, the global QuAcc settings can be found in the `settings.py` file [he
 
 If you wish to modify any of the QuAcc settings, there are several ways to do so.
 
-The easiest way is to create a file `~/quacc.yaml`. For instance, it might looke something like the following to modify the aforementioned settings.
+The easiest way is to create a file `~/quacc.yaml`. For instance, it might look something like the following to modify the aforementioned settings.
 
 ```yaml
 SCRATCH_DIR: /tmp
