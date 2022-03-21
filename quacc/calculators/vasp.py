@@ -94,7 +94,7 @@ def SmartVasp(
 
     # Get VASP executable command, if necessary, and specify child environment
     # variables
-    command = manage_environment(custodian)
+    command = _manage_environment(custodian)
 
     # Get user-defined preset parameters for the calculator
     if preset:
@@ -144,7 +144,7 @@ def SmartVasp(
 
     # Make automatic k-point mesh
     if auto_kpts:
-        kpts, gamma, reciprocal = convert_auto_kpts(atoms, auto_kpts)
+        kpts, gamma, reciprocal = _convert_auto_kpts(atoms, auto_kpts)
         user_calc_params["kpts"] = kpts
         if reciprocal and user_calc_params.get("reciprocal") is None:
             user_calc_params["reciprocal"] = reciprocal
@@ -171,14 +171,14 @@ def SmartVasp(
     )
 
     # Remove unused INCAR flags
-    user_calc_params = remove_unused_flags(user_calc_params)
+    user_calc_params = _remove_unused_flags(user_calc_params)
 
     # Instantiate the calculator!
     calc = Vasp(command=command, **user_calc_params)
 
     # Handle INCAR swaps as needed
     if incar_copilot:
-        calc = calc_swaps(atoms, calc, auto_kpts=auto_kpts, verbose=verbose)
+        calc = _calc_swaps(atoms, calc, auto_kpts=auto_kpts, verbose=verbose)
 
     # This is important! We want to make sure that setting
     # a new VASP parameter throws away the prior calculator results
@@ -192,7 +192,7 @@ def SmartVasp(
     return atoms
 
 
-def manage_environment(custodian: bool = True) -> str:
+def _manage_environment(custodian: bool = True) -> str:
     """
     Manage the environment for the VASP calculator.
 
@@ -228,7 +228,7 @@ def manage_environment(custodian: bool = True) -> str:
     return command
 
 
-def convert_auto_kpts(
+def _convert_auto_kpts(
     atoms: Atoms,
     auto_kpts: None
     | Dict[str, float]
@@ -318,7 +318,7 @@ def convert_auto_kpts(
     return kpts, gamma, reciprocal
 
 
-def remove_unused_flags(user_calc_params: Dict[str, Any]) -> Dict[str, Any]:
+def _remove_unused_flags(user_calc_params: Dict[str, Any]) -> Dict[str, Any]:
     """
     Removes unused flags in the INCAR, like EDIFFG if you are doing NSW = 0.
 
@@ -358,7 +358,7 @@ def remove_unused_flags(user_calc_params: Dict[str, Any]) -> Dict[str, Any]:
     return user_calc_params
 
 
-def calc_swaps(
+def _calc_swaps(
     atoms: Atoms,
     calc: Vasp,
     auto_kpts: None
