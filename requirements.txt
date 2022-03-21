@@ -1,7 +1,7 @@
 git+https://gitlab.com/ase/ase.git # waiting on >= 3.22.2 for VASP6 OUTCAR parsing
 git+https://github.com/arosen93/pymatgen.git@rosen-aseio #waiting on #2462
 custodian==2022.2.13
-jobflow==0.1.6
+jobflow==git+https://github.com/arosen93/jobflow.git@rosen-manager #waiting on #121
 atomate2==0.0.6
 git+https://github.com/arosen93/monty.git@rosen-tmp #waiting on #363
 git+https://github.com/materialsproject/fireworks.git # waiting on #483
