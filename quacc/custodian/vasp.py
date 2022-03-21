@@ -19,21 +19,15 @@ from custodian.vasp.jobs import VaspJob
 from custodian.vasp.validators import VaspFilesValidator, VasprunXMLValidator
 
 from quacc import SETTINGS
-from quacc.util.yaml import load_yaml_settings
-
-VASP_CUSTODIAN_YAML_PATH = SETTINGS.VASP_CUSTODIAN_YAML_PATH
 
 
 def run_custodian():
     # Adapted from https://github.com/materialsproject/atomate2/blob/main/src/atomate2/vasp/run.py
 
-    # Read in default settings
-    config = load_yaml_settings(VASP_CUSTODIAN_YAML_PATH)
-
     # Handlers for VASP
     handlers = []
     handlers_dict = {
-        "VaspErrorHandler": VaspErrorHandler(vtst_fixes=config["vtst_swaps"]),
+        "VaspErrorHandler": VaspErrorHandler(vtst_fixes=SETTINGS.VASP_CUSTODIAN_VTST),
         "FrozenJobErrorHandler": FrozenJobErrorHandler(),
         "IncorrectSmearingHandler": IncorrectSmearingHandler(),
         "LargeSigmaHandler": LargeSigmaHandler(),
@@ -52,26 +46,26 @@ def run_custodian():
     }
 
     handlers = []
-    for handler_flag in config["handlers"]:
+    for handler_flag in SETTINGS.VASP_CUSTODIAN_HANDLERS:
         if handler_flag not in handlers_dict:
             raise ValueError(f"Unknown VASP error handler: {handler_flag}")
         handlers.append(handlers_dict[handler_flag])
 
     validators = []
-    for validator_flag in config["validators"]:
+    for validator_flag in SETTINGS.VASP_CUSTODIAN_VALIDATORS:
         if validator_flag not in validators_dict:
             raise ValueError(f"Unknown VASP validator: {validator_flag}")
         validators.append(validators_dict[validator_flag])
 
     # Populate settings
-    parallel_cmd = config.get("vasp_parallel_cmd", "") + " "
-    vasp_cmd = parallel_cmd + config.get("vasp_cmd", "vasp_std")
-    vasp_gamma_cmd = parallel_cmd + config.get("vasp_gamma_cmd", "vasp_gam")
-    max_errors = config.get("max_errors", 5)
-    wall_time = config.get("custodian_wall_time", None)
-    scratch_dir = config.get("scratch_dir", None)
-    vasp_job_kwargs = config.get("vasp_job_kwargs", None)
-    custodian_kwargs = config.get("custodian_kwargs", None)
+    parallel_cmd = SETTINGS.VASP_PARALLEL_CMD + " "
+    vasp_cmd = parallel_cmd + SETTINGS.VASP_CMD
+    vasp_gamma_cmd = parallel_cmd + SETTINGS.VASP_GAMMA_CMD
+    max_errors = SETTINGS.VASP_CUSTODIAN_MAX_ERRORS
+    wall_time = SETTINGS.VASP_CUSTODIAN_WALL_TIME
+    scratch_dir = None
+    vasp_job_kwargs = None
+    custodian_kwargs = None
 
     # Run VASP
     vasp_job_kwargs = {} if vasp_job_kwargs is None else vasp_job_kwargs
