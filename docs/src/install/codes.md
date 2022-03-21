@@ -13,9 +13,11 @@ Here, we outline how to ensure that QuAcc can run the quantum chemistry package 
 
 By default, QuAcc (via ASE) will look for executables named `g16`, `g09`, or `g03` (in order of decreasing preference). If you want to use a different executable name, define the `ASE_GAUSSIAN_COMMAND` environment variable accordingly. See the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/gaussian.html) for more details.
 
+As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/gaussian.html), by default the executables named `g16`, `g09`, or `g03` will be searched (in order of decreasing preference) to run Gaussian. To use a different executable name, you will need to define an environment variable named `ASE_GAUSSIAN_COMMAND`. It should be of the form `ASE_GAUSSIAN_COMMAND="/path/to/my/gaussian_executable gaussian.com > orca.log"`.
+
 ## ORCA
 
-As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/orca.html), to use ORCA in parallel mode, you will need to define an environment variable named `ASE_ORCA_COMMAND` that is the full path to the ORCA executable.
+As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/orca.html), to use ORCA in parallel mode, you will need to define an environment variable named `ASE_ORCA_COMMAND`. It should be of the form `ASE_ORCA_COMMAND="/path/to/my/orca orca.inp > orca.out"`.
 
 ## xTB
 

@@ -35,7 +35,7 @@ class StaticJob(Maker):
     """
 
     name: str = "ORCA-Static"
-    xc: str = "wb97x-d"
+    xc: str = "wb97x-d3bj"
     basis: str = "def2-tzvp"
     input_swaps: Dict[str, Any] = None
     block_swaps: Dict[str, Any] = None
@@ -88,10 +88,10 @@ class StaticJob(Maker):
         orcablocks = " ".join(list(blocks.keys()))
 
         atoms.calc = ORCA(
-            orcasimpleinput=orcasimpleinput,
-            orcablocks=orcablocks,
             charge=charge if charge else round(sum(atoms.get_initial_charges())),
             mult=mult if mult else round(1 + sum(atoms.get_initial_magnetic_moments())),
+            orcasimpleinput=orcasimpleinput,
+            orcablocks=orcablocks,
         )
         atoms = run_calc(atoms)
         summary = summarize_run(
@@ -127,7 +127,7 @@ class RelaxJob(Maker):
     """
 
     name: str = "ORCA-Relax"
-    xc: str = "wb97x-d"
+    xc: str = "wb97x-d3bj"
     basis: str = "def2-tzvp"
     freq: bool = False
     input_swaps: Dict[str, Any] = None
@@ -182,10 +182,10 @@ class RelaxJob(Maker):
         orcablocks = " ".join(list(blocks.keys()))
 
         atoms.calc = ORCA(
-            orcasimpleinput=orcasimpleinput,
-            orcablocks=orcablocks,
             charge=charge if charge else round(sum(atoms.get_initial_charges())),
             mult=mult if mult else round(1 + sum(atoms.get_initial_magnetic_moments())),
+            orcasimpleinput=orcasimpleinput,
+            orcablocks=orcablocks,
         )
         atoms = run_calc(atoms)
         summary = summarize_run(

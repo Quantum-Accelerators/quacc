@@ -35,7 +35,7 @@ def test_static_Job():
     assert output["name"] == "ORCA-Static"
     assert (
         output["parameters"]["orcasimpleinput"]
-        == "wb97x-d def2-tzvp sp slowconv normalprint"
+        == "wb97x-d3bj def2-tzvp sp slowconv normalprint"
     )
     assert output["parameters"]["orcablocks"] == f"%pal nprocs {nprocs} end"
     assert output["parameters"]["charge"] == 0
@@ -53,7 +53,7 @@ def test_static_Job():
     assert output["parameters"]["mult"] == 3
     assert (
         output["parameters"]["orcasimpleinput"]
-        == "wb97x-d sp slowconv normalprint def2-svp"
+        == "wb97x-d3bj sp slowconv normalprint def2-svp"
     )
     assert (
         output["parameters"]["orcablocks"]
@@ -75,14 +75,14 @@ def test_relax_Job():
     assert output["name"] == "ORCA-Relax"
     assert (
         output["parameters"]["orcasimpleinput"]
-        == "wb97x-d def2-tzvp opt slowconv normalprint"
+        == "wb97x-d3bj def2-tzvp opt slowconv normalprint"
     )
     assert output["parameters"]["orcablocks"] == f"%pal nprocs {nprocs} end"
 
     job = RelaxJob(
         input_swaps={
             "HF": True,
-            "wb97x-d": False,
+            "wb97x-d3bj": False,
             "def2-SVP": True,
             "def2-TZVP": False,
         },
