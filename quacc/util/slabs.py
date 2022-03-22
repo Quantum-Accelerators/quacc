@@ -281,12 +281,13 @@ def make_max_slabs_from_bulk(
         **slabgen_kwargs,
     )
 
+    if randomize:
+        slabs = random.sample(slabs, max_slabs)
+        return slabs
+
     # Try to reduce the number of slabs if the user really wants it...
     # (desperate times call for desperate measures)
     if max_slabs and slabs is not None and len(slabs) > max_slabs:
-
-        if randomize:
-            slabs = random.sample(slabs, max_slabs)
 
         if len(slabs) > max_slabs:
             warnings.warn(
