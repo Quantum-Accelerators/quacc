@@ -487,8 +487,8 @@ def get_surface_energy(
     """
 
     alpha = len(slab) / len(bulk)
-    matrix = slab.cell.array
-    A = np.linalg.norm(np.cross(matrix[0, :], matrix[1, :]))
+    cell = slab.get_cell()
+    A = np.linalg.norm(np.cross(cell[0], cell[1]))
     surface_energy = (slab_energy - alpha * bulk_energy) / (2 * A)
 
     return surface_energy
