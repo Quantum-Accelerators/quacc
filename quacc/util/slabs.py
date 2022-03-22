@@ -282,7 +282,8 @@ def make_max_slabs_from_bulk(
     )
 
     if randomize:
-        slabs = random.sample(slabs, max_slabs)
+        subsample = max_slabs or len(slabs)
+        slabs = random.sample(slabs, subsample)
         return slabs
 
     # Try to reduce the number of slabs if the user really wants it...
