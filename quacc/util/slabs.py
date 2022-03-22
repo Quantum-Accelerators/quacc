@@ -160,39 +160,33 @@ def make_slabs_from_bulk(
     slabs_with_props = []
     for slab in slabs:
 
-        # Supercell creation (if necessary)
-        a_factor = int(np.ceil(min_length_width / slab.lattice.abc[0]))
-        b_factor = int(np.ceil(min_length_width / slab.lattice.abc[1]))
-        slab_with_props = slab.copy()
-        slab_with_props.make_supercell([a_factor, b_factor, 1])
+        # Make sure desired atoms are on surface
+        if allowed_surface_symbols:
 
-        # Apply constraints by distance from top surface
-        # This does not actually create an adsorbate. It is just a
-        # useful function for finding surface vs. subsurface sites
-        if z_fix:
-            slab_with_props = AdsorbateSiteFinder(
-                slab_with_props, selective_dynamics=True, height=z_fix
-            ).slab
+            # Find atoms at surface
+            surf_sites = AdsorbateSiteFinder(slab.copy()).surface_sites
+            surface_species = [s.specie.symbol for s in surf_sites]
 
-            surface_species = [
-                site.specie.symbol
-                for site in slab_with_props
-                if site.properties["surface_properties"] == "surface"
-            ]
-
-            # Remove the surface_properties, which are only really meant
-            # if an adsorbate is present.
-            slab_with_props.remove_site_property("surface_properties")
-
-            # Check that the desired atoms are on the surface
             if allowed_surface_symbols and not any(
                 allowed_surface_atom in surface_species
                 for allowed_surface_atom in allowed_surface_symbols
             ):
                 continue
 
+        # Supercell creation (if necessary)
+        a_factor = int(np.ceil(min_length_width / slab.lattice.abc[0]))
+        b_factor = int(np.ceil(min_length_width / slab.lattice.abc[1]))
+        slab.make_supercell([a_factor, b_factor, 1])
+
+        # Add constraints. Note: This does not actually add an adsorbate
+        if z_fix:
+            sel_dyn = AdsorbateSiteFinder(
+                slab.copy(), selective_dynamics=True, height=z_fix
+            ).slab.site_properties["selective_dynamics"]
+            slab.add_site_property("selective_dynamics", sel_dyn)
+
         # Add slab to list
-        slabs_with_props.append(slab_with_props)
+        slabs_with_props.append(slab)
 
     final_slabs = []
     if len(slabs_with_props) == 0:
