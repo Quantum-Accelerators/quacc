@@ -24,6 +24,16 @@ This package is heavily inspired by [Atomate2](https://github.com/materialsproje
 
 [**Coming Soon**](https://arosen93.github.io/quacc/)
 
+## Installation
+QuAcc can be installed as follows:
+```bash
+# For the latest release
+pip install quacc
+
+# For the development version
+pip install git+https://github.com/arosen93/quacc.git
+```
+
 ## Examples
 
 ### VASP Job
