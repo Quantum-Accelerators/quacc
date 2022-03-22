@@ -97,7 +97,7 @@ If you are accessing your MongoDB via a URI (e.g. as with MongoDB Atlas), then y
 ```yaml
 host: <URI>
 port: 27017
-name: <collection name>
+name: <databases name>
 uri_store: true
 logdir: null
 Istrm_lvl: DEBUG
