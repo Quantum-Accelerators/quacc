@@ -1,10 +1,10 @@
 """
 Utility functions for dealing with slabs
 """
+import random
 import warnings
 from copy import deepcopy
 from typing import Any, Dict, List
-import random
 
 import numpy as np
 from ase.atoms import Atoms
