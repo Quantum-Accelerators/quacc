@@ -4,6 +4,7 @@ Utility functions for dealing with slabs
 import warnings
 from copy import deepcopy
 from typing import Any, Dict, List
+import random
 
 import numpy as np
 from ase.atoms import Atoms
@@ -212,6 +213,7 @@ def make_max_slabs_from_bulk(
     atoms: Atoms,
     max_slabs: int = None,
     max_index: int = 1,
+    randomize: bool = False,
     min_slab_size: float = 10.0,
     min_length_width: float = 8.0,
     min_vacuum_size: float = 20.0,
@@ -237,6 +239,9 @@ def make_max_slabs_from_bulk(
         Bulk structure to generate slabs from
     max_slabs
         Maximum number of slabs to generate
+    randomize
+        If True, return a random selection of max_slabs number of slabs. Otherwise,
+        follow the procedure outlined above.
     max_index
         Maximum Miller index for slab generation
     min_slab_size
@@ -279,6 +284,9 @@ def make_max_slabs_from_bulk(
     # Try to reduce the number of slabs if the user really wants it...
     # (desperate times call for desperate measures)
     if max_slabs and slabs is not None and len(slabs) > max_slabs:
+
+        if randomize:
+            slabs = random.sample(slabs, max_slabs)
 
         if len(slabs) > max_slabs:
             warnings.warn(

@@ -1,6 +1,7 @@
 import os
 from copy import deepcopy
 from pathlib import Path
+from random import random
 
 import numpy as np
 import pytest
@@ -131,12 +132,17 @@ def test_make_max_slabs_from_bulk():
     assert slabs == slabs2
 
     atoms = bulk("Cu")
-    slabs = make_max_slabs_from_bulk(atoms, 2)
+    slabs = make_max_slabs_from_bulk(atoms, max_slabs=2)
+    assert len(slabs) == 2
+    assert slabs[-1].info.get("slab_stats", None) is not None
+
+    atoms = bulk("Cu")
+    slabs = make_max_slabs_from_bulk(atoms, max_slabs=2, randomize=True)
     assert len(slabs) == 2
     assert slabs[-1].info.get("slab_stats", None) is not None
 
     atoms = read(os.path.join(FILE_DIR, "ZnTe.cif.gz"))
-    slabs = make_max_slabs_from_bulk(atoms, 4)
+    slabs = make_max_slabs_from_bulk(atoms, max_slabs=4)
     assert len(slabs) == 4
 
 
