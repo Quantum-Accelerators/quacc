@@ -1,6 +1,7 @@
 """
 Custodian runner for VASP
 """
+import os
 import shlex
 from typing import Dict, List
 
