@@ -69,6 +69,8 @@ def run_custodian(
     """
     # Adapted from https://github.com/materialsproject/atomate2/blob/main/src/atomate2/vasp/run.py
 
+    vasp_parallel_cmd = os.path.expandvars(vasp_parallel_cmd)
+    
     # Handlers for VASP
     handlers = []
     handlers_dict = {
