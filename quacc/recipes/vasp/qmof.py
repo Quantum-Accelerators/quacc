@@ -5,6 +5,7 @@ from typing import Any, Dict
 from ase.atoms import Atoms
 from ase.optimize import BFGSLineSearch
 from jobflow import Maker, job
+from monty.shutil import gzip_dir
 
 from quacc.calculators.vasp import SmartVasp
 from quacc.schemas.calc import summarize_run as summarize_ase_run
@@ -138,6 +139,7 @@ def _prerelax(
     atoms = SmartVasp(atoms, preset=preset, **flags)
     dyn = BFGSLineSearch(atoms, logfile="prerelax.log", trajectory="prerelax.traj")
     dyn.run(fmax=fmax)
+    gzip_dir(os.getcwd())
 
     summary = summarize_ase_run(atoms)
 
