@@ -319,6 +319,7 @@ def _static(
     defaults = {
         "laechg": True,
         "lcharg": True,
+        "lreal": False,
         "lwave": True,
         "nsw": 0,
     }
