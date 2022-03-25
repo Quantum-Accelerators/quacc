@@ -1,11 +1,12 @@
 """QMOF-compatible recipes"""
+import os
 from dataclasses import dataclass
 from typing import Any, Dict
 
 from ase.atoms import Atoms
 from ase.optimize import BFGSLineSearch
 from jobflow import Maker, job
-from monty.shutil import gzip_dir
+from monty.tempfile import ScratchDir
 
 from quacc.calculators.vasp import SmartVasp
 from quacc.schemas.calc import summarize_run as summarize_ase_run
@@ -137,9 +138,15 @@ def _prerelax(
     }
     flags = merge_dicts(defaults, swaps)
     atoms = SmartVasp(atoms, preset=preset, **flags)
-    dyn = BFGSLineSearch(atoms, logfile="prerelax.log", trajectory="prerelax.traj")
-    dyn.run(fmax=fmax)
-    gzip_dir(os.getcwd())
+    with ScratchDir(
+        os.path.abspath(SETTINGS.SCRATCH_DIR),
+        create_symbolic_link=os.name != "nt",
+        copy_to_current_on_exit=True,
+        gzip_on_exit=SETTINGS.GZIP_FILES,
+        delete_removed_files=False,
+    ):
+        dyn = BFGSLineSearch(atoms, logfile="prerelax.log", trajectory="prerelax.traj")
+        dyn.run(fmax=fmax)
 
     summary = summarize_ase_run(atoms)
 
