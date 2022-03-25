@@ -1,7 +1,6 @@
 import os
 from copy import deepcopy
 from pathlib import Path
-from random import random
 
 import numpy as np
 import pytest

@@ -1,6 +1,7 @@
 """
 Custodian runner for VASP
 """
+import os
 import shlex
 from typing import Dict, List
 
@@ -68,6 +69,8 @@ def run_custodian(
         Any remaining keyword arguments to pass to Custodian. Defaults to None.
     """
     # Adapted from https://github.com/materialsproject/atomate2/blob/main/src/atomate2/vasp/run.py
+
+    vasp_parallel_cmd = os.path.expandvars(vasp_parallel_cmd)
 
     # Handlers for VASP
     handlers = []

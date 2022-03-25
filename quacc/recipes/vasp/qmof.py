@@ -174,6 +174,7 @@ def _loose_relax_positions(
         "ediff": 1e-4,
         "ediffg": -0.05,
         "encut": None,
+        "ibrion": 2,
         "isif": 2,
         "lcharg": False,
         "lreal": "auto",
@@ -321,6 +322,7 @@ def _static(
     defaults = {
         "laechg": True,
         "lcharg": True,
+        "lreal": False,
         "lwave": True,
         "nsw": 0,
     }
