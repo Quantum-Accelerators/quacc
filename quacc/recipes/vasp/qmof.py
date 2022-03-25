@@ -1,4 +1,5 @@
 """QMOF-compatible recipes"""
+import os
 from dataclasses import dataclass
 from typing import Any, Dict
 
