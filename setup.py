@@ -26,7 +26,7 @@ if __name__ == "__main__":
         install_requires=[
             "ase @ git+https://gitlab.com/ase/ase.git",
             "pymatgen==2022.3.24",
-            "custodian==2022.2.13",
+            "custodian @ git+https://github.com/arosen93/custodian.git",
             "jobflow @ git+https://github.com/materialsproject/jobflow.git",
             "atomate2==0.0.6",
             "monty @ git+https://github.com/arosen93/monty.git@rosen-tmp",
