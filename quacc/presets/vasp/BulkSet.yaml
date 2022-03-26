@@ -13,7 +13,7 @@ inputs:
   lorbit: 11
   lasph: true
   lwave: false
-  nelm: 120
+  nelm: 175
   prec: accurate
   sigma: 0.05
   xc: pbe
