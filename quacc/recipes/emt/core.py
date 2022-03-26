@@ -1,4 +1,4 @@
-"""Core recipes sfor EMT"""
+"""Core recipes for EMT"""
 from dataclasses import dataclass
 from typing import Any, Dict
 
