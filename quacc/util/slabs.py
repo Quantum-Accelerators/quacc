@@ -344,13 +344,15 @@ def make_adsorbate_structures(
         Note: It will be placed on the surface in the exact input orientation provided by the user (the adsorption mode is
         along the c axis and the coordinating atom is the one in the -z direction).
     min_distance
-        The distance between the adsorbate and the surface site.
+        The (minimum) distance to set between the adsorbate and the surface site.
     modes
         The adsorption mode(s) to consider. Options include: "ontop", "bridge", "hollow", "subsurface".
     allowed_surface_symbols
         The symbols of surface atoms to consider. If None, will use all surface atoms.
+        Note: This method could be improved for bridge/hollow sites.
     allowed_surface_indices
         The indices of surface atoms to consider. If None, will use all surface atoms. Generally used if a specific site is to be excluded from the set.
+        Note: This method could be improved for bridge/hollow sites.
     ads_site_finder_kwargs
         The keyword arguments to pass to the AdsorbateSiteFinder().
     find_ads_sites_kwargs
@@ -430,16 +432,16 @@ def make_adsorbate_structures(
             atoms_with_adsorbate = AseAtomsAdaptor.get_atoms(struct_with_adsorbate)
 
             # Get distance matrix between adsorbate binding atom and surface
-            adsorbate_index = len(atoms) + np.argmin(atom.z for atom in adsorbate)
-            d = atoms_with_adsorbate.get_all_distances(mic=True)
-            d = d[atom_indices, :]
-            d = d[:, adsorbate_index]
+            d = atoms_with_adsorbate.get_all_distances(mic=True)[
+                0 : len(atoms), len(atoms) :
+            ]
 
             # Find closest surface atoms
-            min_d = min(d)
-            surface_atom_indices = [
-                i for i, val in enumerate(d) if (min_d - 0.01) <= val <= (min_d + 0.01)
-            ]
+            min_d = np.min(d)
+            surface_atom_indices = np.where(
+                (d >= min_d - min_d * 0.1) & (d <= min_d + min_d * 0.1)
+            )[0]
+
             surface_atom_symbols = atoms_with_adsorbate[
                 surface_atom_indices
             ].get_chemical_symbols()
