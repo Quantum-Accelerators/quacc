@@ -25,7 +25,7 @@ if __name__ == "__main__":
         zip_safe=False,
         install_requires=[
             "ase @ git+https://gitlab.com/ase/ase.git",
-            "pymatgen==2022.3.24",
+            "pymatgen==2022.3.29",
             "custodian @ git+https://github.com/arosen93/custodian.git@rosen-planewave",
             "jobflow @ git+https://github.com/materialsproject/jobflow.git",
             "atomate2==0.0.6",
