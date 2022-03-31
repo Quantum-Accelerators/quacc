@@ -25,7 +25,7 @@ if __name__ == "__main__":
         zip_safe=False,
         install_requires=[
             "ase @ git+https://gitlab.com/ase/ase.git",
-            "pymatgen==2022.3.24",
+            "pymatgen==2022.3.29",
             "custodian @ git+https://github.com/arosen93/custodian.git@rosen-planewave",
             "jobflow @ git+https://github.com/materialsproject/jobflow.git",
             "atomate2==0.0.6",
@@ -36,15 +36,15 @@ if __name__ == "__main__":
         extras_require={
             "tests": ["pytest==7.1.1"],
             "docs": [
-                "sphinx==4.4.0",
+                "sphinx==4.5.0",
                 "furo==2022.3.4",
                 "m2r2==0.3.2",
-                "ipython==8.1.1",
+                "ipython==8.2.0",
                 "nbsphinx==0.8.8",
                 "nbsphinx-link==1.3.0",
                 "autodoc_pydantic==1.6.1",
             ],
-            "dev": ["pytest==7.1.1", "black==22.1.0", "isort==5.10.1"],
+            "dev": ["pytest==7.1.1", "black==22.3.0", "isort==5.10.1"],
         },
         tests_require=["pytest"],
         include_package_data=True,
