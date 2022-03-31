@@ -1,6 +1,6 @@
 """Recipes for slabs"""
 import warnings
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Dict, List
 
 from ase.atoms import Atoms
@@ -143,8 +143,8 @@ class BulkToSlabsJob(Maker):
     """
 
     name: str = "VASP-BulkToSlabs"
-    slab_relax_job: Maker = SlabRelaxJob()
-    slab_static_job: Maker = SlabStaticJob()
+    slab_relax_job: Maker = field(default_factory=SlabRelaxJob())
+    slab_static_job: Maker = field(default_factory=SlabStaticJob())
 
     @job
     def make(self, atoms: Atoms, max_slabs: int = None, **slabgen_kwargs) -> Response:
@@ -217,8 +217,8 @@ class SlabToAdsorbatesJob(Maker):
     """
 
     name: str = "VASP-SlabToAdsorbates"
-    slab_ads_relax_job: Maker = SlabRelaxJob()
-    slab_ads_static_job: Maker = SlabStaticJob()
+    slab_ads_relax_job: Maker = field(default_factory=SlabRelaxJob())
+    slab_ads_static_job: Maker = field(default_factory=SlabStaticJob())
 
     @job
     def make(
@@ -324,10 +324,10 @@ class BulkToAdsorbatesFlow(Maker):
     """
 
     name: str = "VASP-BulkToAdsorbates"
-    bulk_relax_job: Maker | None = RelaxJob()
-    bulk_static_job: Maker | None = StaticJob()
-    bulk_to_slabs_job: Maker = BulkToSlabsJob()
-    slab_to_adsorbates_job: Maker = SlabToAdsorbatesJob()
+    bulk_relax_job: Maker | None = field(default_factory=RelaxJob())
+    bulk_static_job: Maker | None = field(default_factory=StaticJob())
+    bulk_to_slabs_job: Maker = field(default_factory=BulkToSlabsJob())
+    slab_to_adsorbates_job: Maker = field(default_factory=SlabToAdsorbatesJob())
 
     def make(
         self,
