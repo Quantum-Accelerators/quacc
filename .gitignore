@@ -9,3 +9,4 @@ build
 dist
 tmp_path.txt
 quacc-*
+tmp*

@@ -35,7 +35,7 @@ class SlabStaticJob(Maker):
 
     name: str = "VASP-SlabStatic"
     preset: str = None
-    swaps: Dict[str, Any] = None
+    swaps: Dict[str, Any] = field(default_factory=dict)
 
     @job
     def make(self, atoms: Atoms) -> Dict[str, Any]:
@@ -52,7 +52,6 @@ class SlabStaticJob(Maker):
         Dict
             Summary of the run.
         """
-        swaps = self.swaps or {}
         defaults = {
             "auto_dipole": True,
             "ismear": -5,
@@ -63,7 +62,7 @@ class SlabStaticJob(Maker):
             "nedos": 5001,
             "nsw": 0,
         }
-        flags = merge_dicts(defaults, swaps)
+        flags = merge_dicts(defaults, self.swaps)
 
         atoms = SmartVasp(atoms, preset=self.preset, **flags)
         atoms = run_calc(atoms)
@@ -89,7 +88,7 @@ class SlabRelaxJob(Maker):
 
     name: str = "VASP-SlabRelax"
     preset: str = None
-    swaps: Dict[str, Any] = None
+    swaps: Dict[str, Any] = field(default_factory=dict)
 
     @job
     def make(self, atoms: Atoms) -> Dict[str, Any]:
@@ -106,7 +105,6 @@ class SlabRelaxJob(Maker):
         Dict:
             Summary of the run.
         """
-        swaps = self.swaps or {}
         defaults = {
             "auto_dipole": True,
             "ediffg": -0.02,
@@ -117,7 +115,7 @@ class SlabRelaxJob(Maker):
             "lwave": False,
             "nsw": 200,
         }
-        flags = merge_dicts(defaults, swaps)
+        flags = merge_dicts(defaults, self.swaps)
 
         atoms = SmartVasp(atoms, preset=self.preset, **flags)
         atoms = run_calc(atoms)

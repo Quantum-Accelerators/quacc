@@ -1,7 +1,7 @@
 """
 Core recipes for the xTB code
 """
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Dict
 
 from ase.atoms import Atoms
@@ -34,7 +34,7 @@ class StaticJob(Maker):
 
     name: str = "xTB-Static"
     method: str = "GFN2-xTB"
-    xtb_kwargs: Dict[str, Any] = None
+    xtb_kwargs: Dict[str, Any] = field(default_factory=dict)
 
     @job
     @requires(
@@ -54,9 +54,7 @@ class StaticJob(Maker):
         Dict
             Summary of the run.
         """
-        xtb_kwargs = self.xtb_kwargs or {}
-
-        atoms.calc = XTB(method=self.method, **xtb_kwargs)
+        atoms.calc = XTB(method=self.method, **self.xtb_kwargs)
         atoms.get_potential_energy()
         summary = summarize_run(atoms, additional_fields={"name": self.name})
 
@@ -86,10 +84,10 @@ class RelaxJob(Maker):
 
     name: str = "xTB-Relax"
     method: str = "GFN2-xTB"
-    xtb_kwargs: Dict[str, Any] = None
+    xtb_kwargs: Dict[str, Any] = field(default_factory=dict)
     optimizer: Optimizer = FIRE
     fmax: float = 0.03
-    opt_kwargs: Dict[str, Any] = None
+    opt_kwargs: Dict[str, Any] = field(default_factory=dict)
 
     @job
     @requires(
@@ -109,19 +107,16 @@ class RelaxJob(Maker):
         Dict
             Summary of the run.
         """
-        xtb_kwargs = self.xtb_kwargs or {}
-        opt_kwargs = self.opt_kwargs or {}
-
         # We always want to save the logfile and trajectory, so we will set some default
         # values if not specified by the user (and then remove them from the **opt_kwargs)
-        logfile = opt_kwargs.get("logfile", None) or "opt.log"
-        trajectory = opt_kwargs.get("trajectory", None) or "opt.traj"
-        opt_kwargs.pop("logfile", None)
-        opt_kwargs.pop("trajectory", None)
+        logfile = self.opt_kwargs.get("logfile", None) or "opt.log"
+        trajectory = self.opt_kwargs.get("trajectory", None) or "opt.traj"
+        self.opt_kwargs.pop("logfile", None)
+        self.opt_kwargs.pop("trajectory", None)
 
-        atoms.calc = XTB(method=self.method, **xtb_kwargs)
+        atoms.calc = XTB(method=self.method, **self.xtb_kwargs)
         dyn = self.optimizer(
-            atoms, logfile=logfile, trajectory=trajectory, **opt_kwargs
+            atoms, logfile=logfile, trajectory=trajectory, **self.opt_kwargs
         )
         dyn.run(fmax=self.fmax)
         summary = summarize_run(atoms, additional_fields={"name": self.name})

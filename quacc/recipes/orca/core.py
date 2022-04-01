@@ -1,6 +1,6 @@
 """Core recipes for ORCA"""
 import multiprocessing
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Dict
 
 from ase.atoms import Atoms
@@ -38,8 +38,8 @@ class StaticJob(Maker):
     name: str = "ORCA-Static"
     xc: str = "wb97x-d3bj"
     basis: str = "def2-tzvp"
-    input_swaps: Dict[str, Any] = None
-    block_swaps: Dict[str, Any] = None
+    input_swaps: Dict[str, Any] = field(default_factory=dict)
+    block_swaps: Dict[str, Any] = field(default_factory=dict)
 
     @job
     def make(
@@ -64,11 +64,9 @@ class StaticJob(Maker):
         Dict
             Summary of the run.
         """
-        input_swaps = self.input_swaps or {}
-        block_swaps = self.block_swaps or {}
-        if not any(k for k in block_swaps if "nprocs" in k.lower()):
+        if not any(k for k in self.block_swaps if "nprocs" in k.lower()):
             nprocs = multiprocessing.cpu_count()
-            block_swaps[f"%pal nprocs {nprocs} end"] = True
+            self.block_swaps[f"%pal nprocs {nprocs} end"] = True
 
         default_inputs = {
             self.xc: True,
@@ -80,10 +78,10 @@ class StaticJob(Maker):
         default_blocks = {}
 
         inputs = merge_dicts(
-            default_inputs, input_swaps, remove_none=True, remove_false=True
+            default_inputs, self.input_swaps, remove_none=True, remove_false=True
         )
         blocks = merge_dicts(
-            default_blocks, block_swaps, remove_none=True, remove_false=True
+            default_blocks, self.block_swaps, remove_none=True, remove_false=True
         )
         orcasimpleinput = " ".join(list(inputs.keys()))
         orcablocks = " ".join(list(blocks.keys()))
@@ -131,8 +129,8 @@ class RelaxJob(Maker):
     xc: str = "wb97x-d3bj"
     basis: str = "def2-tzvp"
     freq: bool = False
-    input_swaps: Dict[str, Any] = None
-    block_swaps: Dict[str, Any] = None
+    input_swaps: Dict[str, Any] = field(default_factory=dict)
+    block_swaps: Dict[str, Any] = field(default_factory=dict)
 
     @job
     def make(
@@ -157,11 +155,9 @@ class RelaxJob(Maker):
         Dict
             Summary of the run.
         """
-        input_swaps = self.input_swaps or {}
-        block_swaps = self.block_swaps or {}
-        if not any(k for k in block_swaps if "nprocs" in k.lower()):
+        if not any(k for k in self.block_swaps if "nprocs" in k.lower()):
             nprocs = multiprocessing.cpu_count()
-            block_swaps[f"%pal nprocs {nprocs} end"] = True
+            self.block_swaps[f"%pal nprocs {nprocs} end"] = True
 
         default_inputs = {
             self.xc: True,
@@ -174,10 +170,10 @@ class RelaxJob(Maker):
         default_blocks = {}
 
         inputs = merge_dicts(
-            default_inputs, input_swaps, remove_none=True, remove_false=True
+            default_inputs, self.input_swaps, remove_none=True, remove_false=True
         )
         blocks = merge_dicts(
-            default_blocks, block_swaps, remove_none=True, remove_false=True
+            default_blocks, self.block_swaps, remove_none=True, remove_false=True
         )
         orcasimpleinput = " ".join(list(inputs.keys()))
         orcablocks = " ".join(list(blocks.keys()))

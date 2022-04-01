@@ -1,6 +1,6 @@
 """QMOF-compatible recipes"""
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Dict
 
 from ase.atoms import Atoms
@@ -48,7 +48,7 @@ class QMOFRelaxJob(Maker):
     name: str = "QMOF-Relax"
     preset: str = "QMOFSet"
     volume_relax: bool = True
-    swaps: Dict[str, Any] = None
+    swaps: Dict[str, Any] = field(default_factory=dict)
 
     @job
     def make(self, atoms: Atoms) -> Dict[str, Any]:
@@ -65,19 +65,17 @@ class QMOFRelaxJob(Maker):
         Dict
             Summary of the run.
         """
-        swaps = self.swaps or {}
-
         # 1. Pre-relaxation
-        summary1 = _prerelax(atoms, self.preset, swaps, fmax=5.0)
+        summary1 = _prerelax(atoms, self.preset, self.swaps, fmax=5.0)
         atoms = summary1["atoms"]
 
         # 2. Position relaxation (loose)
-        summary2 = _loose_relax_positions(atoms, self.preset, swaps)
+        summary2 = _loose_relax_positions(atoms, self.preset, self.swaps)
         atoms = summary2["atoms"]
 
         # 3. Optional: Volume relaxation (loose)
         if self.volume_relax:
-            summary3 = _loose_relax_volume(atoms, self.preset, swaps)
+            summary3 = _loose_relax_volume(atoms, self.preset, self.swaps)
             atoms = summary3["atoms"]
 
         # 4. Double Relaxation
@@ -85,12 +83,12 @@ class QMOFRelaxJob(Maker):
         # issues when dV is large; b) because we can use LREAL = Auto for the
         # first relaxation and the default LREAL for the second.
         summary4 = _double_relax(
-            atoms, self.preset, swaps, volume_relax=self.volume_relax
+            atoms, self.preset, self.swaps, volume_relax=self.volume_relax
         )
         atoms = summary4["relax2"]["atoms"]
 
         # 5. Static Calculation
-        summary5 = _static(atoms, self.preset, swaps)
+        summary5 = _static(atoms, self.preset, self.swaps)
 
         return {
             "prerelax-lowacc": summary1,

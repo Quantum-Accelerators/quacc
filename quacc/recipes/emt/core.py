@@ -1,5 +1,5 @@
 """Core recipes for EMT"""
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Dict
 
 from ase.atoms import Atoms
@@ -74,7 +74,7 @@ class RelaxJob(Maker):
     asap_cutoff: bool = False
     optimizer: Optimizer = FIRE
     fmax: float = 0.03
-    opt_kwargs: Dict[str, Any] = None
+    opt_kwargs: Dict[str, Any] = field(default_factory=dict)
 
     @job
     def make(self, atoms: Atoms) -> Dict[str, Any]:
@@ -91,18 +91,16 @@ class RelaxJob(Maker):
         Dict
             Summary of the run.
         """
-        opt_kwargs = self.opt_kwargs or {}
-
         # We always want to save the logfile and trajectory, so we will set some default
         # values if not specified by the user (and then remove them from the **opt_kwargs)
-        logfile = opt_kwargs.get("logfile", None) or "opt.log"
-        trajectory = opt_kwargs.get("trajectory", None) or "opt.traj"
-        opt_kwargs.pop("logfile", None)
-        opt_kwargs.pop("trajectory", None)
+        logfile = self.opt_kwargs.get("logfile", None) or "opt.log"
+        trajectory = self.opt_kwargs.get("trajectory", None) or "opt.traj"
+        self.opt_kwargs.pop("logfile", None)
+        self.opt_kwargs.pop("trajectory", None)
 
         atoms.calc = EMT(asap_cutoff=self.asap_cutoff)
         dyn = self.optimizer(
-            atoms, logfile=logfile, trajectory=trajectory, **opt_kwargs
+            atoms, logfile=logfile, trajectory=trajectory, **self.opt_kwargs
         )
         dyn.run(fmax=self.fmax)
         summary = summarize_run(atoms, additional_fields={"name": self.name})

@@ -1,6 +1,6 @@
 """Core recipes for Gaussian"""
 import multiprocessing
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Dict
 
 from ase.atoms import Atoms
@@ -38,7 +38,7 @@ class StaticJob(Maker):
     basis: str = "def2-tzvp"
     pop: str = "hirshfeld"
     molden: bool = True
-    swaps: Dict[str, Any] = None
+    swaps: Dict[str, Any] = field(default_factory=dict)
 
     @job
     def make(
@@ -63,7 +63,6 @@ class StaticJob(Maker):
         Dict
             Summary of the run.
         """
-        swaps = self.swaps or {}
         defaults = {
             "mem": "16GB",
             "chk": "Gaussian.chk",
@@ -80,7 +79,7 @@ class StaticJob(Maker):
             "gfinput": "" if self.molden else None,
             "ioplist": ["6/7=3"] if self.molden else None,
         }
-        flags = merge_dicts(defaults, swaps, remove_none=True)
+        flags = merge_dicts(defaults, self.swaps, remove_none=True)
 
         atoms.calc = Gaussian(**flags)
         atoms = run_calc(atoms)
@@ -114,7 +113,7 @@ class RelaxJob(Maker):
     xc: str = "wb97x-d"
     basis: str = "def2-tzvp"
     freq: bool = False
-    swaps: Dict[str, Any] = None
+    swaps: Dict[str, Any] = field(default_factory=dict)
 
     @job
     def make(
@@ -139,7 +138,6 @@ class RelaxJob(Maker):
         Dict
             Summary of the run.
         """
-        swaps = self.swaps or {}
         defaults = {
             "mem": "16GB",
             "chk": "Gaussian.chk",
@@ -154,7 +152,7 @@ class RelaxJob(Maker):
             "nosymmetry": "",
             "freq": "" if self.freq else None,
         }
-        flags = merge_dicts(defaults, swaps, remove_none=True)
+        flags = merge_dicts(defaults, self.swaps, remove_none=True)
 
         atoms.calc = Gaussian(**flags)
         atoms = run_calc(atoms)

@@ -1,5 +1,5 @@
 """Core recipes for VASP"""
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Dict
 
 from ase.atoms import Atoms
@@ -28,7 +28,7 @@ class StaticJob(Maker):
 
     name: str = "VASP-Static"
     preset: str = None
-    swaps: Dict[str, Any] = None
+    swaps: Dict[str, Any] = field(default_factory=dict)
 
     @job
     def make(self, atoms: Atoms) -> Dict[str, Any]:
@@ -45,7 +45,6 @@ class StaticJob(Maker):
         Dict
             Summary of the run.
         """
-        swaps = self.swaps or {}
         defaults = {
             "ismear": -5,
             "laechg": True,
@@ -54,7 +53,7 @@ class StaticJob(Maker):
             "nedos": 5001,
             "nsw": 0,
         }
-        flags = merge_dicts(defaults, swaps)
+        flags = merge_dicts(defaults, self.swaps)
 
         atoms = SmartVasp(atoms, preset=self.preset, **flags)
         atoms = run_calc(atoms)
@@ -84,7 +83,7 @@ class RelaxJob(Maker):
     name: str = "VASP-Relax"
     preset: str = None
     volume_relax: bool = True
-    swaps: Dict[str, Any] = None
+    swaps: Dict[str, Any] = field(default_factory=dict)
 
     @job
     def make(self, atoms: Atoms) -> Dict[str, Any]:
@@ -101,7 +100,6 @@ class RelaxJob(Maker):
         Dict
             Summary of the run.
         """
-        swaps = self.swaps or {}
         defaults = {
             "ediffg": -0.02,
             "isif": 3 if self.volume_relax else 2,
@@ -111,7 +109,7 @@ class RelaxJob(Maker):
             "lwave": False,
             "nsw": 200,
         }
-        flags = merge_dicts(defaults, swaps)
+        flags = merge_dicts(defaults, self.swaps)
 
         atoms = SmartVasp(atoms, preset=self.preset, **flags)
         atoms = run_calc(atoms)
@@ -149,8 +147,8 @@ class DoubleRelaxJob(Maker):
     name: str = "VASP-DoubleRelax"
     preset: str = None
     volume_relax: bool = True
-    swaps1: Dict[str, Any] = None
-    swaps2: Dict[str, Any] = None
+    swaps1: Dict[str, Any] = field(default_factory=dict)
+    swaps2: Dict[str, Any] = field(default_factory=dict)
 
     @job
     def make(self, atoms: Atoms) -> Dict[Dict[str, Any], Dict[str, Any]]:
@@ -167,9 +165,6 @@ class DoubleRelaxJob(Maker):
         Dict
             Summary of the run.
         """
-        swaps1 = self.swaps1 or {}
-        swaps2 = self.swaps2 or {}
-
         defaults = {
             "ediffg": -0.02,
             "isif": 3 if self.volume_relax else 2,
@@ -181,14 +176,14 @@ class DoubleRelaxJob(Maker):
         }
 
         # Run first relaxation
-        flags = merge_dicts(defaults, swaps1)
+        flags = merge_dicts(defaults, self.swaps1)
         atoms = SmartVasp(atoms, preset=self.preset, **flags)
         kpts1 = atoms.calc.kpts
         atoms = run_calc(atoms)
         summary1 = summarize_run(atoms, additional_fields={"name": self.name})
 
         # Run second relaxation
-        flags = merge_dicts(defaults, swaps2)
+        flags = merge_dicts(defaults, self.swaps2)
         atoms = SmartVasp(summary1["atoms"], preset=self.preset, **flags)
         kpts2 = atoms.calc.kpts
 
