@@ -93,8 +93,8 @@ class RelaxJob(Maker):
         """
         # We always want to save the logfile and trajectory, so we will set some default
         # values if not specified by the user (and then remove them from the **opt_kwargs)
-        logfile = self.opt_kwargs.get("logfile", None) or "opt.log"
-        trajectory = self.opt_kwargs.get("trajectory", None) or "opt.traj"
+        logfile = self.opt_kwargs.get("logfile") or "opt.log"
+        trajectory = self.opt_kwargs.get("trajectory") or "opt.traj"
         self.opt_kwargs.pop("logfile", None)
         self.opt_kwargs.pop("trajectory", None)
 
