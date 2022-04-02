@@ -603,6 +603,13 @@ def _calc_swaps(
             )
         calc.set(isym=0)
 
+    if calc.bool_params["lsorbit"]:
+        if verbose:
+            warnings.warn(
+                "Copilot: Setting ISYM = -1 because you are running a SOC calculation."
+            )
+        calc.set(isym=-1)
+        
     if calc.bool_params["lhfcalc"] is True and calc.int_params["isym"] in (1, 2):
         if verbose:
             warnings.warn(
