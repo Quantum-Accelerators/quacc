@@ -37,7 +37,7 @@ if __name__ == "__main__":
             "tests": ["pytest==7.1.1"],
             "docs": [
                 "sphinx==4.5.0",
-                "furo==2022.3.4",
+                "furo==2022.4.7",
                 "m2r2==0.3.2",
                 "ipython==8.2.0",
                 "nbsphinx==0.8.8",
