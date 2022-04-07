@@ -5,7 +5,7 @@ from typing import Any, Dict
 from ase.atoms import Atoms
 from jobflow import Maker, job
 
-from quacc.calculators.vasp import SmartVasp
+from quacc.calculators.vasp import Vasp
 from quacc.schemas.vasp import summarize_run
 from quacc.util.basics import merge_dicts
 from quacc.util.calc import run_calc
@@ -55,7 +55,8 @@ class StaticJob(Maker):
         }
         flags = merge_dicts(defaults, self.swaps)
 
-        atoms = SmartVasp(atoms, preset=self.preset, **flags)
+        calc = Vasp(atoms, preset=self.preset, **flags)
+        atoms.calc = calc
         atoms = run_calc(atoms)
         summary = summarize_run(atoms, additional_fields={"name": self.name})
 
@@ -111,7 +112,8 @@ class RelaxJob(Maker):
         }
         flags = merge_dicts(defaults, self.swaps)
 
-        atoms = SmartVasp(atoms, preset=self.preset, **flags)
+        calc = Vasp(atoms, preset=self.preset, **flags)
+        atoms.calc = calc
         atoms = run_calc(atoms)
         summary = summarize_run(atoms, additional_fields={"name": self.name})
 
@@ -177,14 +179,16 @@ class DoubleRelaxJob(Maker):
 
         # Run first relaxation
         flags = merge_dicts(defaults, self.swaps1)
-        atoms = SmartVasp(atoms, preset=self.preset, **flags)
+        calc = Vasp(atoms, preset=self.preset, **flags)
+        atoms.calc = calc
         kpts1 = atoms.calc.kpts
         atoms = run_calc(atoms)
         summary1 = summarize_run(atoms, additional_fields={"name": self.name})
 
         # Run second relaxation
         flags = merge_dicts(defaults, self.swaps2)
-        atoms = SmartVasp(summary1["atoms"], preset=self.preset, **flags)
+        calc = Vasp(summary1["atoms"], preset=self.preset, **flags)
+        atoms.calc = calc
         kpts2 = atoms.calc.kpts
 
         # Use ISTART = 0 if this goes from vasp_gam --> vasp_std

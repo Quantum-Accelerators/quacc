@@ -52,7 +52,7 @@ class QuaccSettings(BaseSettings):
     )
 
     # VASP Settings: General
-    INCAR_COPILOT: bool = Field(
+    VASP_INCAR_COPILOT: bool = Field(
         True, description="Whether co-pilot mode should be used for VASP INCAR handling"
     )
     VASP_BADER: bool = Field(
@@ -66,6 +66,14 @@ class QuaccSettings(BaseSettings):
     VASP_MAG_CUTOFF: float = Field(
         0.05,
         description="If the absolute value of all magnetic moments are below this value, they will be set to 0 such that a spin-unpolarized calculation will be performed",
+    )
+    VASP_COPY_MAGMOMS: bool = Field(
+        True,
+        description="If True, any pre-existing atoms.get_magnetic_moments() will be set in atoms.set_initial_magnetic_moments().",
+    )
+    VASP_VERBOSE: bool = Field(
+        True,
+        description="If True, warnings will be raised when INCAR parameters are changed.",
     )
 
     # VASP Settings: Custodian

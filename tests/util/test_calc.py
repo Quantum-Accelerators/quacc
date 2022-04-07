@@ -4,7 +4,7 @@ from shutil import rmtree
 import pytest
 from ase.build import bulk
 
-from quacc.calculators.vasp import SmartVasp
+from quacc.calculators.vasp import Vasp
 from quacc.util.calc import run_calc
 
 CWD = os.getcwd()
@@ -32,7 +32,8 @@ def teardown_module():
 def test_run_calc():
 
     atoms = bulk("Cu")
-    atoms = SmartVasp(atoms)
+    calc = Vasp(atoms)
+    atoms.calc = calc
 
     atoms = run_calc(atoms, scratch_dir="test_calc", copy_from_store_dir=True)
     assert atoms.calc.results is not None

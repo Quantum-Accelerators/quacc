@@ -6,7 +6,7 @@ from ase.build import bulk
 from ase.io import read
 from monty.json import MontyDecoder, jsanitize
 
-from quacc.calculators.vasp import SmartVasp
+from quacc.calculators.vasp import Vasp
 from quacc.schemas.cclib import summarize_run
 
 FILE_DIR = Path(__file__).resolve().parent
@@ -74,6 +74,7 @@ def test_errors():
     with pytest.raises(ValueError):
         summarize_run(atoms, ".log", dir_path=run1)
 
-    atoms = SmartVasp(atoms)
+    calc = Vasp(atoms)
+    atoms.calc = calc
     with pytest.raises(ValueError):
         summarize_run(atoms, ".log", dir_path=run1)

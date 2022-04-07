@@ -6,7 +6,7 @@ from typing import Any, Dict, List
 from ase.atoms import Atoms
 from jobflow import Flow, Maker, Response, job
 
-from quacc.calculators.vasp import SmartVasp
+from quacc.calculators.vasp import Vasp
 from quacc.recipes.vasp.core import RelaxJob, StaticJob
 from quacc.schemas.vasp import summarize_run
 from quacc.util.basics import merge_dicts
@@ -64,7 +64,8 @@ class SlabStaticJob(Maker):
         }
         flags = merge_dicts(defaults, self.swaps)
 
-        atoms = SmartVasp(atoms, preset=self.preset, **flags)
+        calc = Vasp(atoms, preset=self.preset, **flags)
+        atoms.calc = calc
         atoms = run_calc(atoms)
         summary = summarize_run(atoms, additional_fields={"name": self.name})
 
@@ -117,7 +118,8 @@ class SlabRelaxJob(Maker):
         }
         flags = merge_dicts(defaults, self.swaps)
 
-        atoms = SmartVasp(atoms, preset=self.preset, **flags)
+        calc = Vasp(atoms, preset=self.preset, **flags)
+        atoms.calc = calc
         atoms = run_calc(atoms)
         summary = summarize_run(atoms, additional_fields={"name": self.name})
 
