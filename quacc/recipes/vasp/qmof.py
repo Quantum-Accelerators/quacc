@@ -191,7 +191,7 @@ def _loose_relax_positions(
     atoms = SmartVasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms)
 
-    summary = summarize_run(atoms)
+    summary = summarize_run(atoms, bader=False)
 
     return summary
 
@@ -233,7 +233,7 @@ def _loose_relax_volume(
     atoms = SmartVasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms)
 
-    summary = summarize_run(atoms)
+    summary = summarize_run(atoms, bader=False)
 
     return summary
 
@@ -281,7 +281,7 @@ def _double_relax(
     atoms = run_calc(atoms)
 
     # Update atoms for
-    summary1 = summarize_run(atoms, additional_fields={"name": "relax1"})
+    summary1 = summarize_run(atoms, bader=False, additional_fields={"name": "relax1"})
     atoms = summary1["atoms"]
 
     # Reset LREAL
@@ -297,7 +297,7 @@ def _double_relax(
         atoms.calc.set(istart=0)
 
     atoms = run_calc(atoms)
-    summary2 = summarize_run(atoms)
+    summary2 = summarize_run(atoms, bader=False)
 
     return {"relax1": summary1, "relax2": summary2}
 
