@@ -1,4 +1,4 @@
-"""Core recipes for Gaussian"""
+"""Core recipes for DFTB+"""
 from dataclasses import dataclass, field
 from shutil import which
 from typing import Any, Dict
