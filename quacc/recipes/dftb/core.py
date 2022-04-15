@@ -61,7 +61,9 @@ class StaticJob(Maker):
         elif "gfn1-xtb" in self.method.lower():
             defaults["Hamiltonian_Method"] = "GFN1-xTB"
 
-        flags = merge_dicts(defaults, self.swaps, remove_none=True, auto_lowercase=False)
+        flags = merge_dicts(
+            defaults, self.swaps, remove_none=True, auto_lowercase=False
+        )
 
         atoms.calc = Dftb(**flags)
         atoms = run_calc(atoms)
