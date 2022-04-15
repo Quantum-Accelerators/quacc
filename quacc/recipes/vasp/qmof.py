@@ -9,7 +9,7 @@ from jobflow import Maker, job
 from monty.tempfile import ScratchDir
 
 from quacc import SETTINGS
-from quacc.calculators.vasp import SmartVasp
+from quacc.calculators.vasp import Vasp
 from quacc.schemas.calc import summarize_run as summarize_ase_run
 from quacc.schemas.vasp import summarize_run
 from quacc.util.basics import merge_dicts
@@ -136,7 +136,8 @@ def _prerelax(
         "nsw": 0,
     }
     flags = merge_dicts(defaults, swaps)
-    atoms = SmartVasp(atoms, preset=preset, **flags)
+    calc = Vasp(atoms, preset=preset, **flags)
+    atoms.calc = calc
     with ScratchDir(
         os.path.abspath(SETTINGS.SCRATCH_DIR),
         create_symbolic_link=os.name != "nt",
@@ -188,7 +189,8 @@ def _loose_relax_positions(
         "nsw": 250,
     }
     flags = merge_dicts(defaults, swaps)
-    atoms = SmartVasp(atoms, preset=preset, **flags)
+    calc = Vasp(atoms, preset=preset, **flags)
+    atoms.calc = calc
     atoms = run_calc(atoms)
 
     summary = summarize_run(atoms, bader=False)
@@ -230,7 +232,8 @@ def _loose_relax_volume(
         "nsw": 500,
     }
     flags = merge_dicts(defaults, swaps)
-    atoms = SmartVasp(atoms, preset=preset, **flags)
+    calc = Vasp(atoms, preset=preset, **flags)
+    atoms.calc = calc
     atoms = run_calc(atoms)
 
     summary = summarize_run(atoms, bader=False)
@@ -276,8 +279,8 @@ def _double_relax(
 
     # Run first relaxation
     flags = merge_dicts(defaults, swaps)
-    atoms = SmartVasp(atoms, preset=preset, **flags)
-    kpts1 = atoms.calc.kpts
+    calc1 = Vasp(atoms, preset=preset, **flags)
+    atoms.calc = calc1
     atoms = run_calc(atoms)
 
     # Update atoms for
@@ -289,11 +292,11 @@ def _double_relax(
 
     # Run second relaxation
     flags = merge_dicts(defaults, swaps)
-    atoms = SmartVasp(atoms, preset=preset, **flags)
-    kpts2 = atoms.calc.kpts
+    calc2 = Vasp(atoms, preset=preset, **flags)
+    atoms.calc = calc2
 
     # Use ISTART = 0 if this goes from vasp_gam --> vasp_std
-    if kpts1 == [1, 1, 1] and kpts2 != [1, 1, 1]:
+    if calc1.kpts == [1, 1, 1] and calc2.kpts != [1, 1, 1]:
         atoms.calc.set(istart=0)
 
     atoms = run_calc(atoms)
@@ -335,7 +338,8 @@ def _static(
 
     # Run static calculation
     flags = merge_dicts(defaults, swaps)
-    atoms = SmartVasp(atoms, preset=preset, **flags)
+    calc = Vasp(atoms, preset=preset, **flags)
+    atoms.calc = calc
     atoms = run_calc(atoms)
 
     summary = summarize_run(atoms)

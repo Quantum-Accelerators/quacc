@@ -5,7 +5,7 @@ from pathlib import Path
 from ase.build import bulk, molecule
 from ase.io import read
 
-from quacc.calculators.vasp import SmartVasp
+from quacc.calculators.vasp import Vasp
 from quacc.util.atoms import (
     check_is_metal,
     get_atoms_id,
@@ -71,7 +71,8 @@ def test_prep_next_run():
     assert atoms.info.get("results", None) is not None
     assert atoms.info["results"].get("calc0", None) is not None
     assert atoms.info["results"]["calc0"]["magmom"] == mag
-    atoms = SmartVasp(atoms)
+    calc = Vasp(atoms)
+    atoms.calc = calc
     atoms.calc.results = {"magmom": mag - 2}
     atoms = prep_next_run(atoms, store_results=True)
     assert atoms.info.get("results", None) is not None
@@ -89,7 +90,8 @@ def test_prep_next_run():
     assert atoms.info.get("results", None) is not None
     assert atoms.info["results"].get("calc0", None) is not None
     assert atoms.info["results"]["calc0"]["magmom"] == mag
-    atoms = SmartVasp(atoms)
+    calc = Vasp(atoms)
+    atoms.calc = calc
     atoms.calc.results = {"magmom": mag - 2}
     atoms = prep_next_run(atoms, store_results=True)
     assert atoms.info.get("results", None) is not None
@@ -102,7 +104,8 @@ def test_prep_next_run():
     assert atoms.info.get("results", None) is not None
     assert atoms.info["results"].get("calc0", None) is not None
     assert atoms.info["results"]["calc0"].get("magmom", None) is None
-    atoms = SmartVasp(atoms)
+    calc = Vasp(atoms)
+    atoms.calc = calc
     atoms.calc.results = {"magmom": mag - 2}
     atoms = prep_next_run(atoms, store_results=True)
     assert atoms.info.get("results", None) is not None

@@ -14,9 +14,6 @@ def mock_get_potential_energy(self, **kwargs):
     e = -1.0
     self.calc.results = {
         "energy": e,
-        "magmom": 0.0,
-        "magmoms": [0.0] * len(self),
-        "free_energy": -1.0,
         "forces": np.array([[0.0, 0.0, 0.0]] * len(self)),
     }
     return e

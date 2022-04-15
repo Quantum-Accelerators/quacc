@@ -150,7 +150,6 @@ def set_magmoms(
     .Atoms
         Atoms object
     """
-    atoms = deepcopy(atoms)
 
     # Handle the magnetic moments
     # Check if a prior job was run and pull the prior magmoms

@@ -5,7 +5,7 @@ import pytest
 from ase.io import read
 from monty.json import MontyDecoder, jsanitize
 
-from quacc.calculators.vasp import SmartVasp
+from quacc.calculators.vasp import Vasp
 from quacc.schemas.vasp import summarize_run
 
 FILE_DIR = Path(__file__).resolve().parent
@@ -83,7 +83,8 @@ def test_summarize_run():
     # Make sure magnetic moments are handled appropriately
     atoms = read(os.path.join(run1, "CONTCAR.gz"))
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
-    atoms = SmartVasp(atoms)
+    calc = Vasp(atoms)
+    atoms.calc = calc
     atoms.calc.results = {"energy": -1.0, "magmoms": [2.0] * len(atoms)}
     results = summarize_run(atoms, dir_path=run1)
     results_atoms = results["atoms"]
