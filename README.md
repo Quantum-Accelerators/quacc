@@ -30,7 +30,7 @@ QuAcc can be installed as follows:
 # For the latest release
 pip install quacc
 
-# For the development version
+# For the development version (recommended)
 pip install git+https://github.com/arosen93/quacc.git
 ```
 
