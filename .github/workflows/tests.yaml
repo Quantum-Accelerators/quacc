@@ -28,7 +28,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          conda install -c conda-forge xtb-python tblite
+          conda install -c conda-forge xtb-python dftbplus
           pip install .[tests]
           pip install pytest-cov
 

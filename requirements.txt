@@ -1,4 +1,4 @@
-git+https://gitlab.com/ase/ase.git # waiting on >= 3.22.2 for VASP6 OUTCAR parsing
+git+https://gitlab.com/argon214/ase.git # waiting on #2682 for DFTB+, >= 3.22.2 for VASP6 OUTCAR parsing
 pymatgen==2022.3.29
 git+https://github.com/arosen93/custodian.git@rosen-planewave #waiting for #211
 jobflow==0.1.8
