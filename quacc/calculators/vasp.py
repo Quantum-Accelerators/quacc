@@ -163,15 +163,13 @@ class Vasp(Vasp_):
                 user_calc_params["ldipol"] = True
 
         # Set magnetic moments
-        initial_mags = set_magmoms(
+        set_magmoms(
             atoms,
             elemental_mags_dict=elemental_mags_dict,
             copy_magmoms=copy_magmoms,
             elemental_mags_default=preset_mag_default,
             mag_cutoff=mag_cutoff,
-        ).get_initial_magnetic_moments()
-        if np.any(initial_mags != 0):
-            atoms.set_initial_magnetic_moments(initial_mags)
+        )
 
         # Handle INCAR swaps as needed
         if incar_copilot:
