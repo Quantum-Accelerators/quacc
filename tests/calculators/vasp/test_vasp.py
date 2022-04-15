@@ -197,6 +197,7 @@ def test_magmoms():
     atoms.calc.results = {"energy": -1.0}  # mock calculation run
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
+    assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = deepcopy(ATOMS_NOMAG)
@@ -209,6 +210,7 @@ def test_magmoms():
     atoms = deepcopy(ATOMS_NOMAG)
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
+    assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
     atoms.calc.results = {"magmoms": [0.0] * len(atoms)}
     calc = Vasp(atoms, preset="BulkSet")
@@ -218,6 +220,7 @@ def test_magmoms():
     atoms = deepcopy(ATOMS_NOMAG)
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
+    assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
     atoms.calc.results = {"magmoms": [1.0] * len(atoms)}
     calc = Vasp(atoms, preset="BulkSet")
@@ -227,6 +230,7 @@ def test_magmoms():
     atoms = deepcopy(ATOMS_NOSPIN)
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
+    assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
     atoms.calc.results = {"magmoms": [1.0] * len(atoms)}
     calc = Vasp(atoms, preset="BulkSet")
@@ -274,24 +278,28 @@ def test_magmoms():
     atoms = prep_next_run(atoms)
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
+    assert atoms.has("initial_magmoms") is True
     assert atoms.get_initial_magnetic_moments().tolist() == mags.tolist()
 
     atoms = deepcopy(ATOMS_NOMAG)
     atoms = prep_next_run(atoms)
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
+    assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = deepcopy(ATOMS_NOSPIN)
     atoms = prep_next_run(atoms)
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
+    assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = deepcopy(ATOMS_MAG)
     atoms = prep_next_run(atoms)
     calc = Vasp(atoms, preset="BulkSet", mag_cutoff=10.0)
     atoms.calc = calc
+    assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = bulk("Mg")
