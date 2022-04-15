@@ -12,6 +12,7 @@ def merge_dicts(
     d2: Dict[str, Any],
     remove_none: bool = False,
     remove_false: bool = False,
+    auto_lowercase: bool = True,
 ) -> Dict[str, Any]:
     """
     Merges two dictionaries into a single dictionary. If both dictionaries
@@ -28,7 +29,12 @@ def merge_dicts(
         If True, all keys with a value of None in the merged dictionary will be removed.
     remove_false
         If True, all keys with a value of False in the merged dictionary will be removed.
+    auto_lowercase
+        If True, all keys will be turned into lowercase.
     """
+    if auto_lowercase:
+        d1 = {k.lower(): v for k, v in d1.items()}
+        d2 = {k.lower(): v for k, v in d2.items()}
     d_merged = {**d1, **d2}
     if remove_none:
         d_merged = {k: v for k, v in d_merged.items() if v is not None}
