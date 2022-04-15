@@ -668,7 +668,7 @@ def test_kpoint_schemes():
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, auto_kpts={"line_density": 100})
-    assert calc.kpts[-1, :] == pytest.approx(
+    assert calc.kpts[-1] == pytest.approx(
         np.array([1.30537091e00, 1.11022302e-16, 1.30537091e00])
     )
 
