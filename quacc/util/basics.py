@@ -29,9 +29,7 @@ def merge_dicts(
     remove_false
         If True, all keys with a value of False in the merged dictionary will be removed.
     """
-    d1_clean = {k: v for k, v in d1.items()}
-    d2_clean = {k: v for k, v in d2.items()}
-    d_merged = {**d1_clean, **d2_clean}
+    d_merged = {**d1, **d2}
     if remove_none:
         d_merged = {k: v for k, v in d_merged.items() if v is not None}
     if remove_false:
