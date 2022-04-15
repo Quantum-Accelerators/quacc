@@ -12,7 +12,7 @@ from quacc.schemas.calc import summarize_run
 from quacc.util.basics import merge_dicts
 from quacc.util.calc import run_calc
 
-DFTBPLUS_EXISTS = True if which("dftb+") else False
+DFTBPLUS_EXISTS = bool(which("dftb+"))
 
 
 @dataclass
