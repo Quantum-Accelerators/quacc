@@ -16,7 +16,7 @@ from quacc.recipes.vasp.slabs import (
 
 
 def teardown_module():
-    for f in ["prerelax.log", "prerelax.traj"]:
+    for f in ["prerelax.log", "prerelax.traj", "prerelax.log.gz", "prerelax.traj.gz"]:
         if os.path.exists(f):
             os.remove(f)
 
