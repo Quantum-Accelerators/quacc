@@ -21,6 +21,10 @@ As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculator
 
 If you plan to use xTB with QuAcc, you will need to install the [xtb-python](https://github.com/grimme-lab/xtb-python) interface. This can be done via `conda install -c conda-force xtb-python`.
 
+## Psi4
+
+If you plan to use [Psi4](https://github.com/psi4/psi4) with QuAcc, you will need to install it prior to use. This can be done via `conda install -c psi4 psi4`.
+
 ## DFTB+
 
 If you plan to use DFTB+ (which includes a separate interface to xTB) with QuAcc, you will need to install [DFTB+](https://dftbplus.org/). This can be done via `conda install -c conda-force dftbplus`.
