@@ -1,4 +1,4 @@
-"""Core recipes for Gaussian"""
+"""Core recipes for DFTB+"""
 from dataclasses import dataclass, field
 from shutil import which
 from typing import Any, Dict
@@ -12,7 +12,7 @@ from quacc.schemas.calc import summarize_run
 from quacc.util.basics import merge_dicts
 from quacc.util.calc import run_calc
 
-DFTBPLUS_EXISTS = True if which("dftb+") else False
+DFTBPLUS_EXISTS = bool(which("dftb+"))
 
 
 @dataclass
@@ -61,7 +61,9 @@ class StaticJob(Maker):
         elif "gfn1-xtb" in self.method.lower():
             defaults["Hamiltonian_Method"] = "GFN1-xTB"
 
-        flags = merge_dicts(defaults, self.swaps, remove_none=True)
+        flags = merge_dicts(
+            defaults, self.swaps, remove_none=True, auto_lowercase=False
+        )
 
         atoms.calc = Dftb(**flags)
         atoms = run_calc(atoms)
