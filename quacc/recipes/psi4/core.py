@@ -38,7 +38,7 @@ class StaticMaker(Maker):
     swaps: Dict[str, Any] = None
 
     @job
-    @requires(psi4, "Psi4 be installed. Try conda install psi4 -c psi4")
+    @requires(psi4, "Psi4 be installed. Try conda install -c psi4 psi4")
     def make(
         self, atoms: Atoms, charge: int = None, mult: int = None
     ) -> Dict[str, Any]:
