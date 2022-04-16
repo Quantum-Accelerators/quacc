@@ -1,6 +1,4 @@
-import numpy as np
 import pytest
-from ase.atoms import Atoms
 
 
 def mock_get_potential_energy(self, **kwargs):
@@ -8,15 +6,8 @@ def mock_get_potential_energy(self, **kwargs):
     # dummy results to the atoms object and returning a fake energy. This
     # works because the real atoms.get_potential_energy() takes one argument
     # (i.e. self) and that self object is the atoms object.
-    e = -1.0
-    self.calc.results = {
-        "energy": e,
-        "magmom": 0.0,
-        "magmoms": [0.0] * len(self),
-        "free_energy": -1.0,
-        "forces": np.array([[0.0, 0.0, 0.0]] * len(self)),
-    }
-    return e
+    self.calc.results["energy"] = -1.0
+    return self.calc.results["energy"
 
 
 @pytest.fixture(autouse=True)
