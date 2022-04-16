@@ -66,8 +66,10 @@ class StaticJob(Maker):
             defaults, self.swaps, remove_none=True, auto_lowercase=False
         )
         if True in atoms.pbc and "kpts" not in flags:
-            warnings.warn("No kpts were specified. Running a gamma-point only calculation.")
-        
+            warnings.warn(
+                "No kpts were specified. Running a gamma-point only calculation."
+            )
+
         atoms.calc = Dftb(**flags)
         atoms = run_calc(atoms)
         summary = summarize_run(
