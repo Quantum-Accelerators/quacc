@@ -5,7 +5,7 @@ from shutil import copy
 from ase.build import molecule
 from jobflow.managers.local import run_locally
 
-from quacc.recipes.gaussian.core import StaticMaker
+from quacc.recipes.psi4.core import StaticMaker
 
 FILE_DIR = Path(__file__).resolve().parent
 PSI4_DIR = os.path.join(FILE_DIR, "psi4_run")
