@@ -1,4 +1,5 @@
 """Core recipes for DFTB+"""
+import warnings
 from dataclasses import dataclass, field
 from shutil import which
 from typing import Any, Dict
@@ -24,7 +25,7 @@ class StaticJob(Maker):
     ----------
     name
         Name of the job.
-    Method
+    method
         Method to use. Accepts 'DFTB', 'GFN1-xTB', and 'GFN2-xTB'.
     swaps
         Dictionary of custom kwargs for the calculator.
@@ -64,7 +65,9 @@ class StaticJob(Maker):
         flags = merge_dicts(
             defaults, self.swaps, remove_none=True, auto_lowercase=False
         )
-
+        if True in atoms.pbc and "kpts" not in flags:
+            warnings.warn("No kpts were specified. Running a gamma-point only calculation.")
+        
         atoms.calc = Dftb(**flags)
         atoms = run_calc(atoms)
         summary = summarize_run(
