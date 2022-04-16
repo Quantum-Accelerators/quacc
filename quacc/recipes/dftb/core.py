@@ -1,5 +1,4 @@
 """Core recipes for DFTB+"""
-import warnings
 from dataclasses import dataclass, field
 from shutil import which
 from typing import Any, Dict
@@ -66,8 +65,8 @@ class StaticJob(Maker):
             defaults, self.swaps, remove_none=True, auto_lowercase=False
         )
         if True in atoms.pbc and "kpts" not in flags:
-            warnings.warn(
-                "No kpts were specified. Running a gamma-point only calculation."
+            raise ValueError(
+                "No kpts were specified for a PBC calculation."
             )
 
         atoms.calc = Dftb(**flags)
