@@ -23,7 +23,7 @@ If you plan to use xTB with QuAcc, you will need to install the [xtb-python](htt
 
 ## DFTB+
 
-If you plan to use DFTB+ (which includes a separate interface to xTB) with QuAcc, you will need to install [DFTB+](https://dftbplus.org/) interface. This can be done via `conda install -c conda-force dftbplus`.
+If you plan to use DFTB+ (which includes a separate interface to xTB) with QuAcc, you will need to install [DFTB+](https://dftbplus.org/). This can be done via `conda install -c conda-force dftbplus`.
 
 ## Other Codes
 
