@@ -1,7 +1,7 @@
 """Core recipes for DFTB+"""
 from dataclasses import dataclass, field
 from shutil import which
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from ase.atoms import Atoms
 from ase.calculators.dftb import Dftb
@@ -60,12 +60,16 @@ class StaticJob(Maker):
         defaults = {}
         if "xtb" in self.method.lower():
             defaults["Hamiltonian_"] = "xTB"
-        if "gfn2-xtb" in self.method.lower():
-            defaults["Hamiltonian_Method"] = "GFN2-xTB"
-        elif "gfn1-xtb" in self.method.lower():
-            defaults["Hamiltonian_Method"] = "GFN1-xTB"
-        if True in atoms.pbc:
+            if "gfn2-xtb" in self.method.lower():
+                defaults["Hamiltonian_Method"] = "GFN2-xTB"
+            elif "gfn1-xtb" in self.method.lower():
+                defaults["Hamiltonian_Method"] = "GFN1-xTB"
+        if self.kpts:
+            defaults["kpts"] = self.kpts
+        elif True in atoms.pbc:
             defaults["kpts"] = (1, 1, 1)
+        else:
+            defaults["kpts"] = None
 
         flags = merge_dicts(
             defaults, self.swaps, remove_none=True, auto_lowercase=False

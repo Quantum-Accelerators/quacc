@@ -18,6 +18,7 @@ def teardown_module():
             or f.endswith(".hsd")
             or f.endswith(".gz")
             or f.endswith(".gen")
+            or f.endswith(".tag")
         ):
             os.remove(f)
 
