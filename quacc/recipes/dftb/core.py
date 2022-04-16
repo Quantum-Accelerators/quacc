@@ -26,12 +26,16 @@ class StaticJob(Maker):
         Name of the job.
     method
         Method to use. Accepts 'DFTB', 'GFN1-xTB', and 'GFN2-xTB'.
+    kpts
+        k-point grid to use. Defaults to None for molecules and
+        (1, 1, 1) for solids.
     swaps
         Dictionary of custom kwargs for the calculator.
     """
 
     name: str = "DFTB-Static"
     method: str = "GFN2-xTB"
+    kpts: tuple | List[tuple] | Dict[str, Any] = None
     swaps: Dict[str, Any] = field(default_factory=dict)
 
     @job
@@ -60,14 +64,12 @@ class StaticJob(Maker):
             defaults["Hamiltonian_Method"] = "GFN2-xTB"
         elif "gfn1-xtb" in self.method.lower():
             defaults["Hamiltonian_Method"] = "GFN1-xTB"
+        if True in atoms.pbc:
+            defaults["kpts"] = (1, 1, 1)
 
         flags = merge_dicts(
             defaults, self.swaps, remove_none=True, auto_lowercase=False
         )
-        if True in atoms.pbc and "kpts" not in flags:
-            raise ValueError(
-                "No kpts were specified for a PBC calculation."
-            )
 
         atoms.calc = Dftb(**flags)
         atoms = run_calc(atoms)
