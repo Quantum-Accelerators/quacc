@@ -1,7 +1,7 @@
 import os
 
 import pytest
-from ase.build import molecule
+from ase.build import bulk, molecule
 from jobflow.managers.local import run_locally
 
 from quacc.recipes.dftb.core import StaticJob
@@ -32,3 +32,12 @@ def test_static_Job():
     assert output["nsites"] == len(atoms)
     assert output["name"] == "DFTB-Static"
     assert output["results"]["energy"] == pytest.approx(-137.97459675495645)
+
+    atoms = bulk("Cu")
+
+    job = StaticJob(swaps={"kpts":(3,3,3)}).make(atoms)
+    responses = run_locally(job, ensure_success=True)
+    output = responses[job.uuid][1].output
+    assert output["nsites"] == len(atoms)
+    assert output["name"] == "DFTB-Static"
+    assert output["results"]["energy"] == pytest.approx(-107.55154244254307)
