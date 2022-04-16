@@ -41,3 +41,9 @@ def test_static_Job():
     assert output["nsites"] == len(atoms)
     assert output["name"] == "DFTB-Static"
     assert output["results"]["energy"] == pytest.approx(-107.55154244254307)
+
+def test_errors():
+    atoms = bulk("Cu")
+
+    with pytest.raises(ValueError):
+        job = StaticJob().make(atoms)
