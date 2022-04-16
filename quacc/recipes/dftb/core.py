@@ -65,9 +65,7 @@ class StaticJob(Maker):
             defaults, self.swaps, remove_none=True, auto_lowercase=False
         )
         if True in atoms.pbc and "kpts" not in flags:
-            raise ValueError(
-                "No kpts were specified for a PBC calculation."
-            )
+            raise ValueError("No kpts were specified for a PBC calculation.")
 
         atoms.calc = Dftb(**flags)
         atoms = run_calc(atoms)
