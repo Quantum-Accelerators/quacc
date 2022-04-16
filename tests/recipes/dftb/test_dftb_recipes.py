@@ -35,7 +35,7 @@ def test_static_Job():
 
     atoms = bulk("Cu")
 
-    job = StaticJob(swaps={"kpts":(3,3,3)}).make(atoms)
+    job = StaticJob(swaps={"kpts": (3, 3, 3)}).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["nsites"] == len(atoms)
