@@ -3,11 +3,13 @@ from copy import deepcopy
 from pathlib import Path
 
 import numpy as np
+import pytest
 from ase.build import bulk, fcc100, molecule
 from ase.io import read
 
 from quacc.util.slabs import (
     flip_atoms,
+    get_surface_energy,
     make_adsorbate_structures,
     make_max_slabs_from_bulk,
     make_slabs_from_bulk,
@@ -68,8 +70,12 @@ def test_make_slabs_from_bulk():
     assert len(slabs) == 4
 
     atoms = bulk("Cu")
-    slabs = make_slabs_from_bulk(atoms, allowed_surface_atoms=["Co"])
-    assert slabs is None
+    slabs = make_slabs_from_bulk(atoms, allowed_surface_symbols=["Co"])
+    assert slabs == []
+
+    atoms = bulk("Cu")
+    slabs = make_slabs_from_bulk(atoms, allowed_surface_symbols="Co")
+    assert slabs == []
 
     slabs = make_slabs_from_bulk(atoms, max_index=2)
     assert len(slabs) == 9
@@ -120,21 +126,32 @@ def test_make_max_slabs_from_bulk():
     assert slabs == slabs2
 
     atoms = bulk("Cu")
-    slabs = make_max_slabs_from_bulk(atoms, 2)
+    slabs = make_slabs_from_bulk(atoms)
+    slabs2 = make_max_slabs_from_bulk(atoms, None, allowed_surface_symbols="Cu")
+    assert slabs == slabs2
+
+    atoms = bulk("Cu")
+    slabs = make_max_slabs_from_bulk(atoms, max_slabs=2)
+    assert len(slabs) == 2
+    assert slabs[-1].info.get("slab_stats", None) is not None
+
+    atoms = bulk("Cu")
+    slabs = make_max_slabs_from_bulk(atoms, max_slabs=2, randomize=True)
     assert len(slabs) == 2
     assert slabs[-1].info.get("slab_stats", None) is not None
 
     atoms = read(os.path.join(FILE_DIR, "ZnTe.cif.gz"))
-    slabs = make_max_slabs_from_bulk(atoms, 4)
+    slabs = make_max_slabs_from_bulk(atoms, max_slabs=4)
     assert len(slabs) == 4
 
 
 def test_make_adsorbate_structures():
 
+    h2o = molecule("H2O")
     atoms = fcc100("Cu", size=(2, 2, 2))
     atoms.set_tags(None)
     atoms.center(vacuum=10, axis=2)
-    new_atoms = make_adsorbate_structures(atoms, "H2O", modes=["ontop"])
+    new_atoms = make_adsorbate_structures(atoms, h2o, modes=["ontop"])
     assert new_atoms[0].has("initial_magmoms") is False
 
     mol = molecule("O2")
@@ -156,37 +173,73 @@ def test_make_adsorbate_structures():
     assert len(new_atoms) == 3
     assert new_atoms[0].get_initial_magnetic_moments().tolist() == mags + [1.0, 1.0]
 
-    new_atoms = make_adsorbate_structures(atoms, "H2O")
+    new_atoms = make_adsorbate_structures(atoms, h2o)
     assert len(new_atoms) == 3
     assert new_atoms[0].get_initial_magnetic_moments().tolist() == mags + [0, 0, 0]
-    new_atoms = make_adsorbate_structures(atoms, "H2O", modes=["ontop"])
+    new_atoms = make_adsorbate_structures(atoms, h2o, modes=["ontop"])
+    assert len(new_atoms) == 1
+
+    new_atoms = make_adsorbate_structures(atoms, h2o, modes="ontop")
     assert len(new_atoms) == 1
 
     new_atoms = make_adsorbate_structures(
-        atoms, "H2O", allowed_surface_symbols=["Cu", "Fe"]
+        atoms, h2o, allowed_surface_symbols=["Cu", "Fe"]
     )
     assert len(new_atoms) == 3
 
-    new_atoms = make_adsorbate_structures(atoms, "H2O", allowed_surface_indices=[6])
+    new_atoms = make_adsorbate_structures(atoms, h2o, allowed_surface_indices=[6])
+    assert len(new_atoms) == 2
+
+    new_atoms = make_adsorbate_structures(atoms, h2o, allowed_surface_indices=6)
     assert len(new_atoms) == 2
 
     atoms[7].symbol = "Fe"
-    new_atoms = make_adsorbate_structures(atoms, "H2O", modes=["ontop"])
+    new_atoms = make_adsorbate_structures(atoms, h2o, modes=["ontop"])
     assert len(new_atoms) == 3
 
     new_atoms = make_adsorbate_structures(
-        atoms, "H2O", allowed_surface_symbols=["Fe"], modes=["ontop"]
+        atoms, h2o, allowed_surface_symbols=["Fe"], modes=["ontop"]
     )
     assert len(new_atoms) == 1
 
     new_atoms = make_adsorbate_structures(
-        atoms, "H2O", allowed_surface_indices=[7], modes=["ontop"]
+        atoms, h2o, allowed_surface_indices=[7], modes=["ontop"]
     )
     assert len(new_atoms) == 1
 
     new_atoms = make_adsorbate_structures(
-        atoms, "H2O", allowed_surface_symbols=["Cu", "Fe"]
+        atoms, h2o, allowed_surface_symbols=["Cu", "Fe"]
     )
     assert len(new_atoms) == 6
     assert new_atoms[0].info.get("adsorbates", None) is not None
-    assert new_atoms[0].info["adsorbates"][0]["adsorbate"] == molecule("H2O")
+    assert new_atoms[0].info["adsorbates"][0]["adsorbate"] == h2o
+
+
+def test_get_surface_energy():
+    atoms = bulk("Cu")
+    slab = fcc100("Cu", size=(2, 2, 2))
+    bulk_energy = -1.0
+    slab_energy = -20.0
+    cleave_energy = get_surface_energy(atoms, slab, bulk_energy, slab_energy)
+    assert cleave_energy == -0.23020081184152974
+
+
+def test_errors():
+    h2o = molecule("H2O")
+    atoms = fcc100("Cu", size=(2, 2, 2))
+    atoms.set_tags(None)
+    atoms.center(vacuum=10, axis=2)
+
+    with pytest.raises(ValueError):
+        make_adsorbate_structures(
+            atoms, h2o, min_distance=1.0, find_ads_sites_kwargs={"distance": 1.0}
+        )
+    with pytest.raises(ValueError):
+        make_adsorbate_structures(
+            atoms,
+            h2o,
+            modes=["ontop"],
+            find_ads_sites_kwargs={"positions": ["ontop"]},
+        )
+    with pytest.raises(ValueError):
+        make_adsorbate_structures(atoms, h2o, allowed_surface_indices=[100])

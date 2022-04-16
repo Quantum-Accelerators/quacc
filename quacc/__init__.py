@@ -1,7 +1,9 @@
+"""Init data for QuAcc"""
 from ase.atoms import Atoms
 from ase.io.jsonio import decode, encode
 
 from quacc._version import __version__
+from quacc.settings import QuaccSettings
 
 
 def atoms_as_dict(self):
@@ -28,3 +30,4 @@ def atoms_from_dict(d):
 
 Atoms.as_dict = atoms_as_dict
 Atoms.from_dict = atoms_from_dict
+SETTINGS = QuaccSettings()

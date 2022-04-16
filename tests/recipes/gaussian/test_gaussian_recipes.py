@@ -5,7 +5,7 @@ from shutil import copy
 from ase.build import molecule
 from jobflow.managers.local import run_locally
 
-from quacc.recipes.gaussian.core import RelaxMaker, StaticMaker
+from quacc.recipes.gaussian.core import RelaxJob, StaticJob
 
 FILE_DIR = Path(__file__).resolve().parent
 GAUSSIAN_DIR = os.path.join(FILE_DIR, "gaussian_run")
@@ -22,11 +22,11 @@ def teardown_module():
             os.remove(os.path.join(os.getcwd(), f))
 
 
-def test_static_maker():
+def test_static_Job():
 
     atoms = molecule("H2")
 
-    job = StaticMaker().make(atoms)
+    job = StaticJob().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["nsites"] == len(atoms)
@@ -40,7 +40,7 @@ def test_static_maker():
     assert output["parameters"]["gfinput"] == ""
     assert output["parameters"]["ioplist"] == ["6/7=3"]
 
-    job = StaticMaker(
+    job = StaticJob(
         xc="m06l",
         basis="def2-svp",
         pop="regular",
@@ -62,11 +62,11 @@ def test_static_maker():
     assert "opt" not in output["parameters"]
 
 
-def test_relax_maker():
+def test_relax_Job():
 
     atoms = molecule("H2")
 
-    job = RelaxMaker().make(atoms)
+    job = RelaxJob().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["nsites"] == len(atoms)
@@ -80,7 +80,7 @@ def test_relax_maker():
     assert "freq" not in output["parameters"]
     assert "sp" not in output["parameters"]
 
-    job = RelaxMaker(
+    job = RelaxJob(
         xc="m06l", basis="def2-svp", freq=True, swaps={"integral": "superfinegrid"}
     ).make(atoms, charge=-2, mult=3)
     responses = run_locally(job, ensure_success=True)

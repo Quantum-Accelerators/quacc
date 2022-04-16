@@ -1,3 +1,6 @@
+"""
+Schemas for molecular DFT codes parsed by cclib
+"""
 import os
 from typing import Any, Dict, List
 
@@ -12,6 +15,8 @@ def summarize_run(
     atoms: Atoms,
     logfile_extensions: str | List[str],
     dir_path: str = None,
+    check_convergence: bool = True,
+    transition_state: bool = False,
     prep_next_run: bool = True,
     additional_fields: Dict[str, Any] = None,
 ) -> Dict[str, Any]:
@@ -31,6 +36,10 @@ def summarize_run(
     dir_name
         The path to the folder containing the calculation outputs. A value of None specifies the
         current working directory.
+    check_convergence
+         Whether to throw an error if convergence is not reached.
+    transition_state
+        Whether the calculation is a transition state (used for convergence check).
     prep_next_run
         Whether the Atoms object storeed in {"atoms": atoms} should be prepared for the next run.
         This clears out any attached calculator and moves the final magmoms to the initial magmoms.
@@ -53,8 +62,26 @@ def summarize_run(
     if dir_path is None:
         dir_path = os.getcwd()
 
-    # Fortunately, there is alreayd a cclib parser in Atomate2
+    # Fortunately, there is already a cclib parser in Atomate2
     results = TaskDocument.from_logfile(dir_path, logfile_extensions).dict()
+
+    # Check convergence if requested
+    if check_convergence:
+        # If it's an opt+freq job, we will just check convergence on the
+        # frequency step. This is because sometimes the frequency job will
+        # yield all positive modes, but the optimization tolerances me be
+        # not entirely met. See https://gaussian.com/faq3.
+        vibfreqs = results["attributes"].get("vibfreqs")
+        if vibfreqs:
+            n_imag = sum(vibfreq < 0 for vibfreq in vibfreqs)
+            if n_imag >= 2:
+                raise ValueError(f"Too many imaginary modes: {n_imag}")
+            if n_imag == 1 and not transition_state:
+                raise ValueError("One imaginary mode, but transition_state = False.")
+            if n_imag == 0 and transition_state:
+                raise ValueError("No imaginary modes, but transition_state = True.")
+        elif results["attributes"].get("optdone") is False:
+            raise ValueError("Optimization not complete.")
 
     # Remove some key/vals we don't actually ever use
     unused_props = (

@@ -1,6 +1,7 @@
+"""Core recipes for ORCA"""
 import multiprocessing
-from dataclasses import dataclass
-from typing import Any, Dict, List
+from dataclasses import dataclass, field
+from typing import Any, Dict
 
 from ase.atoms import Atoms
 from ase.calculators.orca import ORCA
@@ -12,7 +13,7 @@ from quacc.util.calc import run_calc
 
 
 @dataclass
-class StaticMaker(Maker):
+class StaticJob(Maker):
     """
     Class to carry out a single-point calculation.
 
@@ -35,10 +36,10 @@ class StaticMaker(Maker):
     """
 
     name: str = "ORCA-Static"
-    xc: str = "wb97x-d"
+    xc: str = "wb97x-d3bj"
     basis: str = "def2-tzvp"
-    input_swaps: Dict[str, Any] = None
-    block_swaps: Dict[str, Any] = None
+    input_swaps: Dict[str, Any] = field(default_factory=dict)
+    block_swaps: Dict[str, Any] = field(default_factory=dict)
 
     @job
     def make(
@@ -63,11 +64,9 @@ class StaticMaker(Maker):
         Dict
             Summary of the run.
         """
-        input_swaps = self.input_swaps or {}
-        block_swaps = self.block_swaps or {}
-        if ~any([k for k in block_swaps if "nprocs" in k.lower()]):
+        if not any(k for k in self.block_swaps if "nprocs" in k.lower()):
             nprocs = multiprocessing.cpu_count()
-            block_swaps[f"%pal nprocs {nprocs} end"] = True
+            self.block_swaps[f"%pal nprocs {nprocs} end"] = True
 
         default_inputs = {
             self.xc: True,
@@ -79,28 +78,30 @@ class StaticMaker(Maker):
         default_blocks = {}
 
         inputs = merge_dicts(
-            default_inputs, input_swaps, remove_none=True, remove_false=True
+            default_inputs, self.input_swaps, remove_none=True, remove_false=True
         )
         blocks = merge_dicts(
-            default_blocks, block_swaps, remove_none=True, remove_false=True
+            default_blocks, self.block_swaps, remove_none=True, remove_false=True
         )
         orcasimpleinput = " ".join(list(inputs.keys()))
         orcablocks = " ".join(list(blocks.keys()))
 
         atoms.calc = ORCA(
-            orcasimpleinput=orcasimpleinput,
-            orcablocks=orcablocks,
             charge=charge if charge else round(sum(atoms.get_initial_charges())),
             mult=mult if mult else round(1 + sum(atoms.get_initial_magnetic_moments())),
+            orcasimpleinput=orcasimpleinput,
+            orcablocks=orcablocks,
         )
         atoms = run_calc(atoms)
-        summary = summarize_run(atoms, ".out", additional_fields={"name": self.name})
+        summary = summarize_run(
+            atoms, "orca.out", additional_fields={"name": self.name}
+        )
 
         return summary
 
 
 @dataclass
-class RelaxMaker(Maker):
+class RelaxJob(Maker):
     """
     Class to carry out a geometry optimization.
 
@@ -125,11 +126,11 @@ class RelaxMaker(Maker):
     """
 
     name: str = "ORCA-Relax"
-    xc: str = "wb97x-d"
+    xc: str = "wb97x-d3bj"
     basis: str = "def2-tzvp"
     freq: bool = False
-    input_swaps: Dict[str, Any] = None
-    block_swaps: Dict[str, Any] = None
+    input_swaps: Dict[str, Any] = field(default_factory=dict)
+    block_swaps: Dict[str, Any] = field(default_factory=dict)
 
     @job
     def make(
@@ -154,11 +155,9 @@ class RelaxMaker(Maker):
         Dict
             Summary of the run.
         """
-        input_swaps = self.input_swaps or {}
-        block_swaps = self.block_swaps or {}
-        if ~any([k for k in block_swaps if "nprocs" in k.lower()]):
+        if not any(k for k in self.block_swaps if "nprocs" in k.lower()):
             nprocs = multiprocessing.cpu_count()
-            block_swaps[f"%pal nprocs {nprocs} end"] = True
+            self.block_swaps[f"%pal nprocs {nprocs} end"] = True
 
         default_inputs = {
             self.xc: True,
@@ -171,21 +170,23 @@ class RelaxMaker(Maker):
         default_blocks = {}
 
         inputs = merge_dicts(
-            default_inputs, input_swaps, remove_none=True, remove_false=True
+            default_inputs, self.input_swaps, remove_none=True, remove_false=True
         )
         blocks = merge_dicts(
-            default_blocks, block_swaps, remove_none=True, remove_false=True
+            default_blocks, self.block_swaps, remove_none=True, remove_false=True
         )
         orcasimpleinput = " ".join(list(inputs.keys()))
         orcablocks = " ".join(list(blocks.keys()))
 
         atoms.calc = ORCA(
-            orcasimpleinput=orcasimpleinput,
-            orcablocks=orcablocks,
             charge=charge if charge else round(sum(atoms.get_initial_charges())),
             mult=mult if mult else round(1 + sum(atoms.get_initial_magnetic_moments())),
+            orcasimpleinput=orcasimpleinput,
+            orcablocks=orcablocks,
         )
         atoms = run_calc(atoms)
-        summary = summarize_run(atoms, ".out", additional_fields={"name": self.name})
+        summary = summarize_run(
+            atoms, "orca.out", additional_fields={"name": self.name}
+        )
 
         return summary

@@ -1,1 +1,1 @@
-recursive-include quacc *.py *.json *.yaml *.txt *.csv
+recursive-include quacc *.py *.json *.yaml *.txt *.csv *.gif *.png *.jpg *.pdf

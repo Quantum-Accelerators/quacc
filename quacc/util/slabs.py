@@ -1,11 +1,13 @@
+"""
+Utility functions for dealing with slabs
+"""
+import random
 import warnings
 from copy import deepcopy
 from typing import Any, Dict, List
 
 import numpy as np
 from ase.atoms import Atoms
-from ase.build import molecule
-from ase.collections import g2
 from pymatgen.analysis.adsorption import AdsorbateSiteFinder
 from pymatgen.core import Structure
 from pymatgen.core.surface import Slab, center_slab, generate_all_slabs
@@ -30,7 +32,7 @@ def flip_atoms(
     Parameters
     ----------
     atoms
-        .Atoms/structure to flip
+        .Atoms/.Structure to flip
     return_struct
         True if a Pymatgen structure object should be returned.
         False if an ASE atoms object should be returned
@@ -66,9 +68,9 @@ def make_slabs_from_bulk(
     min_vacuum_size: float = 20.0,
     z_fix: None | float = 2.0,
     flip_asymmetric: bool = True,
-    allowed_surface_atoms: None | str | List[str] = None,
+    allowed_surface_symbols: List[str] | str = None,
     **slabgen_kwargs,
-) -> None | List[Atoms]:
+) -> List[Atoms]:
     """
     Function to make slabs from a bulk atoms object.
 
@@ -88,13 +90,13 @@ def make_slabs_from_bulk(
         Distance (in angstroms) from top of slab for which atoms should be fixed
     flip_asymmetric
         If an asymmetric surface should be flipped and added to the list
-    allowed_surface_atoms
+    allowed_surface_symbols
         List of chemical symbols that must be present on the surface of the slab otherwise the slab will be discarded, e.g. ["Cu", "Ni"]
     **slabgen_kwargs: keyword arguments to pass to the pymatgen generate_all_slabs() function
 
     Returns
     -------
-    Optional[List[.Atoms]]
+    List[.Atoms]
         All generated slabs
     """
 
@@ -105,8 +107,8 @@ def make_slabs_from_bulk(
     struct = AseAtomsAdaptor.get_structure(atoms)
     atoms_info = atoms.info.copy()
 
-    if isinstance(allowed_surface_atoms, str):
-        allowed_surface_atoms = [allowed_surface_atoms]
+    if isinstance(allowed_surface_symbols, str):
+        allowed_surface_symbols = [allowed_surface_symbols]
 
     # Make all the slabs
     slabs = generate_all_slabs(
@@ -159,43 +161,39 @@ def make_slabs_from_bulk(
     slabs_with_props = []
     for slab in slabs:
 
-        # Supercell creation (if necessary)
-        a_factor = int(np.ceil(min_length_width / slab.lattice.abc[0]))
-        b_factor = int(np.ceil(min_length_width / slab.lattice.abc[1]))
-        slab_with_props = slab.copy()
-        slab_with_props.make_supercell([a_factor, b_factor, 1])
+        # Make sure desired atoms are on surface
+        if allowed_surface_symbols:
 
-        # Apply constraints by distance from top surface
-        # This does not actually create an adsorbate. It is just a
-        # useful function for finding surface vs. subsurface sites
-        if z_fix:
-            slab_with_props = AdsorbateSiteFinder(
-                slab_with_props, selective_dynamics=True, height=z_fix
-            ).slab
+            # Find atoms at surface
+            surf_sites = AdsorbateSiteFinder(slab.copy()).surface_sites
+            surface_species = [s.specie.symbol for s in surf_sites]
 
-            surface_species = [
-                site.specie.symbol
-                for site in slab_with_props
-                if site.properties["surface_properties"] == "surface"
-            ]
-
-            # Check that the desired atoms are on the surface
-            if allowed_surface_atoms and ~np.any(
-                [
-                    allowed_surface_atom in surface_species
-                    for allowed_surface_atom in allowed_surface_atoms
-                ]
+            if allowed_surface_symbols and not any(
+                allowed_surface_atom in surface_species
+                for allowed_surface_atom in allowed_surface_symbols
             ):
                 continue
 
-        # Add slab to list
-        slabs_with_props.append(slab_with_props)
+        # Supercell creation (if necessary)
+        a_factor = int(np.ceil(min_length_width / slab.lattice.abc[0]))
+        b_factor = int(np.ceil(min_length_width / slab.lattice.abc[1]))
+        slab.make_supercell([a_factor, b_factor, 1])
 
+        # Add constraints. Note: This does not actually add an adsorbate
+        if z_fix:
+            sel_dyn = AdsorbateSiteFinder(
+                slab.copy(), selective_dynamics=True, height=z_fix
+            ).slab.site_properties["selective_dynamics"]
+            slab.add_site_property("selective_dynamics", sel_dyn)
+
+        # Add slab to list
+        slabs_with_props.append(slab)
+
+    final_slabs = []
     if len(slabs_with_props) == 0:
-        return None
+        return final_slabs
 
     # Make atoms objects and store slab stats
-    final_slabs = []
     for slab_with_props in slabs_with_props:
         final_slab = AseAtomsAdaptor.get_atoms(slab_with_props)
         slab_stats = {
@@ -213,14 +211,15 @@ def make_slabs_from_bulk(
 
 def make_max_slabs_from_bulk(
     atoms: Atoms,
-    max_slabs: None | int = None,
+    max_slabs: int = None,
     max_index: int = 1,
+    randomize: bool = False,
     min_slab_size: float = 10.0,
     min_length_width: float = 8.0,
     min_vacuum_size: float = 20.0,
     z_fix: float = 2.0,
     flip_asymmetric: bool = True,
-    allowed_surface_atoms: bool = None,
+    allowed_surface_symbols: List[str] | str = None,
     **slabgen_kwargs,
 ) -> List[Atoms]:
 
@@ -240,6 +239,9 @@ def make_max_slabs_from_bulk(
         Bulk structure to generate slabs from
     max_slabs
         Maximum number of slabs to generate
+    randomize
+        If True, return a random selection of max_slabs number of slabs. Otherwise,
+        follow the procedure outlined above.
     max_index
         Maximum Miller index for slab generation
     min_slab_size
@@ -252,7 +254,7 @@ def make_max_slabs_from_bulk(
         Distance (in angstroms) from top of slab for which atoms should be fixed
     flip_asymmetric
         If an asymmetric surface should be flipped and added to the list
-    allowed_surface_atoms
+    allowed_surface_symbols
         List of chemical symbols that must be present on the surface of the slab otherwise
         the slab will be discarded, e.g. ["Cu", "Ni"]
     **slabgen_kwargs: keyword arguments to pass to the pymatgen generate_all_slabs() function
@@ -264,6 +266,9 @@ def make_max_slabs_from_bulk(
 
     """
 
+    if isinstance(allowed_surface_symbols, str):
+        allowed_surface_symbols = [allowed_surface_symbols]
+
     slabs = make_slabs_from_bulk(
         atoms,
         max_index=max_index,
@@ -272,9 +277,14 @@ def make_max_slabs_from_bulk(
         min_vacuum_size=min_vacuum_size,
         z_fix=z_fix,
         flip_asymmetric=flip_asymmetric,
-        allowed_surface_atoms=allowed_surface_atoms,
+        allowed_surface_symbols=allowed_surface_symbols,
         **slabgen_kwargs,
     )
+
+    if randomize:
+        subsample = max_slabs or len(slabs)
+        slabs = random.sample(slabs, subsample)
+        return slabs
 
     # Try to reduce the number of slabs if the user really wants it...
     # (desperate times call for desperate measures)
@@ -283,7 +293,6 @@ def make_max_slabs_from_bulk(
         if len(slabs) > max_slabs:
             warnings.warn(
                 f"You requested {max_slabs} slabs, but {len(slabs)} were generated. Tuning ftol in generate_all_slabs() to try to reduce the number of slabs, at the expense of sampling fewer surface configurations.",
-                UserWarning,
             )
             for ftol in np.arange(0.1, 0.9, 0.1):
                 slabgen_kwargs["ftol"] = ftol
@@ -295,7 +304,7 @@ def make_max_slabs_from_bulk(
                     min_vacuum_size=min_vacuum_size,
                     z_fix=z_fix,
                     flip_asymmetric=flip_asymmetric,
-                    allowed_surface_atoms=allowed_surface_atoms,
+                    allowed_surface_symbols=allowed_surface_symbols,
                     **slabgen_kwargs,
                 )
                 if len(slabs_ftol) < len(slabs):
@@ -306,28 +315,23 @@ def make_max_slabs_from_bulk(
         if len(slabs) > max_slabs:
             warnings.warn(
                 f"You requested {max_slabs} slabs, but {len(slabs)} were generated. Could not reduce further. Picking the smallest slabs by number of atoms.",
-                UserWarning,
             )
-            slabs.sort(key=lambda s: len(s))
-            if max_slabs == 1:
-                slabs = [slabs[0]]
-            else:
-                slabs = slabs[0:max_slabs]
+            slabs.sort(key=len)
+            slabs = slabs[0:max_slabs]
 
     return slabs
 
 
-# TODO: We need a method to orient adsorbate via a kwarg
 def make_adsorbate_structures(
     atoms: Atoms,
-    adsorbate: Atoms | str,
+    adsorbate: Atoms,
     min_distance: float = 2.0,
-    modes: List[str] = ["ontop", "bridge", "hollow"],
-    allowed_surface_symbols: None | List[str] = None,
-    allowed_surface_indices: None | List[int] = None,
-    ads_site_finder_kwargs: None | Dict[str, Any] = None,
-    find_ads_sites_kwargs: None | Dict[str, Any] = None,
-) -> None | List[Atoms]:
+    modes: List[str] | str = None,
+    allowed_surface_symbols: List[str] | str = None,
+    allowed_surface_indices: List[int] | int = None,
+    ads_site_finder_kwargs: Dict[str, Any] = None,
+    find_ads_sites_kwargs: Dict[str, Any] = None,
+) -> List[Atoms]:
     """
     Add a single adsorbate to a structure for every requested adsorption mode
 
@@ -336,17 +340,19 @@ def make_adsorbate_structures(
     atoms
         The atoms to add adsorbates to.
     adsorbate
-        The adsorbate to add. If a string, it will pull from ase.collections.g2
+        The adsorbate to add.
         Note: It will be placed on the surface in the exact input orientation provided by the user (the adsorption mode is
         along the c axis and the coordinating atom is the one in the -z direction).
     min_distance
-        The distance between the adsorbate and the surface site.
+        The (minimum) distance to set between the adsorbate and the surface site.
     modes
         The adsorption mode(s) to consider. Options include: "ontop", "bridge", "hollow", "subsurface".
     allowed_surface_symbols
         The symbols of surface atoms to consider. If None, will use all surface atoms.
+        Note: This method could be improved for bridge/hollow sites.
     allowed_surface_indices
         The indices of surface atoms to consider. If None, will use all surface atoms. Generally used if a specific site is to be excluded from the set.
+        Note: This method could be improved for bridge/hollow sites.
     ads_site_finder_kwargs
         The keyword arguments to pass to the AdsorbateSiteFinder().
     find_ads_sites_kwargs
@@ -354,10 +360,20 @@ def make_adsorbate_structures(
 
     Returns:
     --------
-    Optional[List[ase.Atoms]]
+    List[ase.Atoms]
         The structures with adsorbates
 
     """
+    atoms = deepcopy(atoms)
+
+    if modes is None:
+        modes = ["ontop", "bridge", "hollow"]
+    if isinstance(modes, str):
+        modes = [modes]
+    if isinstance(allowed_surface_symbols, str):
+        allowed_surface_symbols = [allowed_surface_symbols]
+    if isinstance(allowed_surface_indices, int):
+        allowed_surface_indices = [allowed_surface_indices]
 
     ads_site_finder_kwargs = ads_site_finder_kwargs or {}
     find_ads_sites_kwargs = find_ads_sites_kwargs or {}
@@ -367,47 +383,23 @@ def make_adsorbate_structures(
         raise ValueError(
             "Cannot specify both min_distance and find_ads_sites_kwargs['distance']",
         )
-    else:
-        find_ads_sites_kwargs["distance"] = min_distance
-
     if modes and "positions" in find_ads_sites_kwargs:
         raise ValueError(
             "Cannot specify both modes and find_ads_sites_kwargs['positions']",
         )
-    else:
-        if isinstance(modes, str):
-            modes = [modes]
-        find_ads_sites_kwargs["positions"] = [mode.lower() for mode in modes]
-
-    # Allow the user to provide a single entry instead of a list for convenience
-    if isinstance(allowed_surface_symbols, str):
-        allowed_surface_symbols = [allowed_surface_symbols]
-    if isinstance(allowed_surface_indices, int):
-        allowed_surface_indices = [allowed_surface_indices]
+    find_ads_sites_kwargs["distance"] = min_distance
+    find_ads_sites_kwargs["positions"] = [mode.lower() for mode in modes]
 
     # Check the provided surface indices are reasonable
     atom_indices = [atom.index for atom in atoms]
-    if allowed_surface_indices and ~np.all(
-        [idx in atom_indices for idx in allowed_surface_indices]
+    if allowed_surface_indices and not all(
+        idx in atom_indices for idx in allowed_surface_indices
     ):
         raise ValueError(
             "All indices in allowed_surface_indices must be in atoms.",
             allowed_surface_indices,
             atom_indices,
         )
-
-    if isinstance(adsorbate, str):
-        # Get adsorbate if string
-        if adsorbate in g2.names:
-            adsorbate = molecule(adsorbate)
-            # Remove any adsorbate magmoms from the g2 collection. I find
-            # it very bothersome that ASE automatically adds magnetic moments
-            # without the user's consent or knowledge. Leave that to the user
-            # except for O2.
-            if adsorbate.get_chemical_formula() != "O2":
-                adsorbate.set_initial_magnetic_moments(None)
-        else:
-            raise ValueError(f"{adsorbate} is not in the G2 database.")
 
     # Add 0.0 initial magmoms to atoms/adsorbate if needed
     if atoms.has("initial_magmoms") and not adsorbate.has("initial_magmoms"):
@@ -417,19 +409,21 @@ def make_adsorbate_structures(
 
     # Make a Pymatgen structure and molecule
     struct = AseAtomsAdaptor.get_structure(atoms)
-    mol = AseAtomsAdaptor.get_molecule(adsorbate)
+    mol = AseAtomsAdaptor.get_molecule(adsorbate, charge_spin_check=False)
 
     # Get the adsorption sites
     ads_finder = AdsorbateSiteFinder(struct, **ads_site_finder_kwargs)
     ads_sites = ads_finder.find_adsorption_sites(**find_ads_sites_kwargs)
 
-    if not ads_sites:
-        return None
-
     # Find and add the adsorbates
     new_atoms = []
-    for mode in modes:
-        for ads_coord in ads_sites[mode]:
+    for mode, ads_coords in ads_sites.items():
+
+        # Check if mode is in desired list
+        if mode not in modes:
+            continue
+
+        for ads_coord in ads_coords:
 
             # Place adsorbate
             struct_with_adsorbate = ads_finder.add_adsorbate(mol, ads_coord)
@@ -438,39 +432,33 @@ def make_adsorbate_structures(
             atoms_with_adsorbate = AseAtomsAdaptor.get_atoms(struct_with_adsorbate)
 
             # Get distance matrix between adsorbate binding atom and surface
-            adsorbate_index = len(atoms) + np.argmin(atom.z for atom in adsorbate)
-            d = atoms_with_adsorbate.get_all_distances(mic=True)
-            d = d[atom_indices, :]
-            d = d[:, adsorbate_index]
+            d = atoms_with_adsorbate.get_all_distances(mic=True)[
+                0 : len(atoms), len(atoms) :
+            ]
 
             # Find closest surface atoms
-            min_d = min(d)
-            surface_atom_indices = [
-                i for i, val in enumerate(d) if (min_d - 0.01) <= val <= (min_d + 0.01)
-            ]
+            min_d = np.min(d)
+            surface_atom_indices = np.where(
+                (d >= min_d - min_d * 0.1) & (d <= min_d + min_d * 0.1)
+            )[0]
+
             surface_atom_symbols = atoms_with_adsorbate[
                 surface_atom_indices
             ].get_chemical_symbols()
 
             # Check if surface binding site is not in the specified
             # user list. If so, skip this one
-            if allowed_surface_symbols:
-                if ~np.any(
-                    [
-                        surface_atom_symbol in allowed_surface_symbols
-                        for surface_atom_symbol in surface_atom_symbols
-                    ]
-                ):
-                    continue
+            if allowed_surface_symbols and not any(
+                surface_atom_symbol in allowed_surface_symbols
+                for surface_atom_symbol in surface_atom_symbols
+            ):
+                continue
 
-            if allowed_surface_indices:
-                if ~np.any(
-                    [
-                        surface_atom_idx in allowed_surface_indices
-                        for surface_atom_idx in surface_atom_indices
-                    ]
-                ):
-                    continue
+            if allowed_surface_indices and not any(
+                surface_atom_idx in allowed_surface_indices
+                for surface_atom_idx in surface_atom_indices
+            ):
+                continue
 
             # Store adsorbate info
             atoms_with_adsorbate.info = atoms.info.copy()
@@ -488,7 +476,31 @@ def make_adsorbate_structures(
             # Add slab+adsorbate to list
             new_atoms.append(atoms_with_adsorbate)
 
-    if new_atoms == []:
-        return None
-    else:
-        return new_atoms
+    return new_atoms
+
+
+def get_surface_energy(
+    bulk: Atoms, slab: Atoms, bulk_energy: float, slab_energy: float
+):
+    """
+    Calculate the surface energy to form a given surface slab from a bulk structure.
+    For asymmetric slabs, this is better thought of as the cleavage energy.
+
+    Parameters:
+    -----------
+    bulk
+        The bulk structure.
+    slab
+        The slab structure.
+    bulk_energy
+        The total energy of the bulk structure.
+    slab_energy
+        The total energy of the slab structure.
+    """
+
+    alpha = len(slab) / len(bulk)
+    cell = slab.get_cell()
+    A = np.linalg.norm(np.cross(cell[0], cell[1]))
+    surface_energy = (slab_energy - alpha * bulk_energy) / (2 * A)
+
+    return surface_energy

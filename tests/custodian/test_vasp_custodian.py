@@ -1,10 +1,7 @@
-import os
-
 import pytest
 from custodian import Custodian
 
 from quacc.custodian.vasp import run_custodian
-from quacc.defaults import custodian_settings
 
 
 class MockRun:
@@ -29,25 +26,5 @@ def patch_custodian_run(monkeypatch):
 
 
 def test_run_vasp_custodian(monkeypatch):
-    monkeypatch.setenv(
-        "VASP_CUSTODIAN_SETTINGS",
-        os.path.join(
-            os.path.dirname(custodian_settings.__file__), "vasp_custodian_settings.yaml"
-        ),
-    )
-    monkeypatch.setenv("VASP_PARALLEL_CMD", "mpirun")
+    monkeypatch.setenv("VASP_PARALLEL_CMD", "fake-mpirun")
     run_custodian()
-
-
-def test_failed_custodian(monkeypatch):
-    with pytest.raises(OSError):
-        run_custodian()
-
-    monkeypatch.setenv(
-        "VASP_CUSTODIAN_SETTINGS",
-        os.path.join(
-            os.path.dirname(custodian_settings.__file__), "vasp_custodian_settings.yaml"
-        ),
-    )
-    with pytest.raises(OSError):
-        run_custodian()

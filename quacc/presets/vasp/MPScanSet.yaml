@@ -1,0 +1,27 @@
+# Default VASP settings for calculations in the Materials Project
+# using the r2SCAN functional.
+# Caution: The pseudopotentials should be used with the .54 PAW PBE set
+# Source: https://github.com/materialsproject/pymatgen/blob/master/pymatgen/io/vasp/MPSCANRelaxSet.yaml
+parent_magmoms: magmoms_MP.yaml
+parent_setups: setups_pbe54_MP.yaml
+inputs:
+  algo: all
+  ediff: 1.0e-05
+  ediffg: -0.02
+  enaug: 1360
+  encut: 680
+  ibrion: 2
+  isif: 3
+  lorbit: 11
+  lasph: True
+  lreal: auto
+  lmixtau: True
+  lcharg: True
+  laechg: True
+  lelf: True
+  lwave: False
+  lvtot: True
+  nelm: 200
+  nsw: 99
+  prec: accurate
+  xc: r2scan

@@ -1,7 +1,10 @@
+"""
+Utility functions for dealing with Atoms
+"""
 import hashlib
 import os
 from copy import deepcopy
-from typing import Dict, Optional
+from typing import Dict
 
 import numpy as np
 from ase.atoms import Atoms
@@ -106,9 +109,9 @@ def prep_next_run(
 
 def set_magmoms(
     atoms: Atoms,
-    elemental_mags_dict: Optional[Dict] = None,
+    elemental_mags_dict: Dict = None,
+    elemental_mags_default: float = 1.0,
     copy_magmoms: bool = True,
-    mag_default: Optional[float] = 1.0,
     mag_cutoff: float = 0.05,
 ) -> Atoms:
     """
@@ -120,8 +123,8 @@ def set_magmoms(
     - If there is no converged set of magnetic moments but the user has set initial magmoms,
     those are simply used as is.
     - If there are no converged magnetic moments or initial magnetic moments, then
-    the default magnetic moments from the preset (if specified) are set as the
-    initial magnetic moments.
+    the default magnetic moments from the preset elemental_mags_dict (if specified)
+    are set as the initial magnetic moments.
     - For any of the above scenarios, if mag_cutoff is not None, the newly set
     initial magnetic moments are checked. If all have a magnitude below mag_cutoff,
     then they are all set to 0 (no spin polarization).
@@ -133,10 +136,12 @@ def set_magmoms(
     elemental_mags_dict
         Dictionary of elemental symbols and their corresponding magnetic moments to set.
         If None, no default values will be used.
+    elemental_mags_default
+        Default magnetic moment on an element if no magnetic moment is specified in the elemental_mags_dict.
+        Only used if elemental_mags_dict is not None. This kwarg is mainly a convenience so that you don't need to
+        list every single element in the elemental_mags_dict.
     copy_magmoms
         Whether to copy the magnetic moments from the converged set of magnetic moments to the initial magnetic moments.
-    mag_default
-        Default magnetic moment to use if no magnetic moments are specified in the preset.
     mag_cutoff
         Magnitude below which the magnetic moments are considered to be zero. If None, no cutoff will be applied
 
@@ -145,7 +150,6 @@ def set_magmoms(
     .Atoms
         Atoms object
     """
-    atoms = deepcopy(atoms)
 
     # Handle the magnetic moments
     # Check if a prior job was run and pull the prior magmoms
@@ -171,7 +175,7 @@ def set_magmoms(
             if elemental_mags_dict:
                 initial_mags = np.array(
                     [
-                        elemental_mags_dict.get(atom.symbol, mag_default)
+                        elemental_mags_dict.get(atom.symbol, elemental_mags_default)
                         for atom in atoms
                     ]
                 )

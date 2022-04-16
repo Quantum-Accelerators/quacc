@@ -4,8 +4,10 @@ from shutil import rmtree
 import pytest
 from ase.build import bulk
 
-from quacc.calculators.vasp import SmartVasp
+from quacc.calculators.vasp import Vasp
 from quacc.util.calc import run_calc
+
+CWD = os.getcwd()
 
 
 def setup_module():
@@ -23,35 +25,31 @@ def setup_module():
 
 def teardown_module():
     # Clean up
-    os.chdir("..")
+    os.chdir(CWD)
     rmtree("blank_dir")
 
 
 def test_run_calc():
 
     atoms = bulk("Cu")
-    atoms = SmartVasp(atoms)
+    calc = Vasp(atoms)
+    atoms.calc = calc
 
-    atoms = run_calc(atoms)
+    atoms = run_calc(atoms, scratch_dir="test_calc", copy_from_store_dir=True)
+    assert atoms.calc.results is not None
+    assert os.path.exists("test_file.txt")
+    assert os.path.exists("test_file.txt.gz")
+    os.remove("test_file.txt.gz")
+
+    atoms = run_calc(
+        atoms, scratch_dir="test_calc", gzip=False, copy_from_store_dir=True
+    )
     assert atoms.calc.results is not None
     assert os.path.exists("test_file.txt")
     assert not os.path.exists("test_file.txt.gz")
 
-    atoms = run_calc(atoms, gzip=True)
-    assert atoms.calc.results is not None
-    assert os.path.exists("test_file.txt")
-    assert os.path.exists("test_file.txt.gz")
 
-    atoms = run_calc(atoms, store_dir=".", scratch_dir="test_calc", gzip=True)
-    assert atoms.calc.results is not None
-    assert os.path.exists("test_file.txt")
-    assert os.path.exists("test_file.txt.gz")
-
-
-def test_bad_run_calc(monkeypatch):
+def test_bad_run_calc():
     atoms = bulk("Cu")
-    atoms = SmartVasp(atoms)
-
-    monkeypatch.setenv("SCRATCH", "nonexistant_dir")
-    with pytest.raises(OSError):
+    with pytest.raises(ValueError):
         atoms = run_calc(atoms)

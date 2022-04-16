@@ -1,9 +1,0 @@
-JOB_STORE:
-    docs_store:
-      type: MongoStore
-      database: ???
-      host: ???
-      port: ???
-      username: ???
-      password: ???
-      collection_name: jobflow_outputs

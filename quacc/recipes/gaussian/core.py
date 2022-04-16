@@ -1,5 +1,6 @@
+"""Core recipes for Gaussian"""
 import multiprocessing
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Dict
 
 from ase.atoms import Atoms
@@ -12,7 +13,7 @@ from quacc.util.calc import run_calc
 
 
 @dataclass
-class StaticMaker(Maker):
+class StaticJob(Maker):
     """
     Class to carry out a single-point calculation.
 
@@ -37,7 +38,7 @@ class StaticMaker(Maker):
     basis: str = "def2-tzvp"
     pop: str = "hirshfeld"
     molden: bool = True
-    swaps: Dict[str, Any] = None
+    swaps: Dict[str, Any] = field(default_factory=dict)
 
     @job
     def make(
@@ -62,7 +63,6 @@ class StaticMaker(Maker):
         Dict
             Summary of the run.
         """
-        swaps = self.swaps or {}
         defaults = {
             "mem": "16GB",
             "chk": "Gaussian.chk",
@@ -79,17 +79,19 @@ class StaticMaker(Maker):
             "gfinput": "" if self.molden else None,
             "ioplist": ["6/7=3"] if self.molden else None,
         }
-        flags = merge_dicts(defaults, swaps, remove_none=True)
+        flags = merge_dicts(defaults, self.swaps, remove_none=True)
 
         atoms.calc = Gaussian(**flags)
         atoms = run_calc(atoms)
-        summary = summarize_run(atoms, ".log", additional_fields={"name": self.name})
+        summary = summarize_run(
+            atoms, "Gaussian.log", additional_fields={"name": self.name}
+        )
 
         return summary
 
 
 @dataclass
-class RelaxMaker(Maker):
+class RelaxJob(Maker):
     """
     Class to carry out a geometry optimization.
 
@@ -111,7 +113,7 @@ class RelaxMaker(Maker):
     xc: str = "wb97x-d"
     basis: str = "def2-tzvp"
     freq: bool = False
-    swaps: Dict[str, Any] = None
+    swaps: Dict[str, Any] = field(default_factory=dict)
 
     @job
     def make(
@@ -136,7 +138,6 @@ class RelaxMaker(Maker):
         Dict
             Summary of the run.
         """
-        swaps = self.swaps or {}
         defaults = {
             "mem": "16GB",
             "chk": "Gaussian.chk",
@@ -151,10 +152,12 @@ class RelaxMaker(Maker):
             "nosymmetry": "",
             "freq": "" if self.freq else None,
         }
-        flags = merge_dicts(defaults, swaps, remove_none=True)
+        flags = merge_dicts(defaults, self.swaps, remove_none=True)
 
         atoms.calc = Gaussian(**flags)
         atoms = run_calc(atoms)
-        summary = summarize_run(atoms, ".log", additional_fields={"name": self.name})
+        summary = summarize_run(
+            atoms, "Gaussian.log", additional_fields={"name": self.name}
+        )
 
         return summary

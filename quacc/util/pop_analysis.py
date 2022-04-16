@@ -1,15 +1,23 @@
+"""
+Utility functions for population analyses
+"""
 import os
 from typing import Any, Dict
 
+from monty.tempfile import ScratchDir
 from pymatgen.command_line.bader_caller import bader_analysis_from_path
 from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
 
+from quacc import SETTINGS
 
-def run_bader(path: None | str = None) -> Dict[str, Any]:
+
+def run_bader(
+    path: str = None, scratch_dir: str = SETTINGS.SCRATCH_DIR
+) -> Dict[str, Any]:
     """
     Runs a Bader partial charge and spin moment analysis using the VASP
-    output files in the given path. This function requires that `bader` or
-    `bader.exe` is located in your PATH environment variable. See
+    output files in the given path. This function requires that `bader`
+    is located in your PATH environment variable. See
     http://theory.cm.utexas.edu/henkelman/code/bader for the bader code.
     Note: If you want to use Bader on a code other than VASP, this function
     will need to be slightly modified.
@@ -21,6 +29,8 @@ def run_bader(path: None | str = None) -> Dict[str, Any]:
         Must include CHGCAR, AECCAR0, AECCAR2, and POTCAR files. These
         files can be gzip'd or not -- it doesn't matter.
         If None, the current working directory is used.
+    scratch_dir
+        The path where the Bader analysis will be run.
 
     Returns
     -------
@@ -37,18 +47,24 @@ def run_bader(path: None | str = None) -> Dict[str, Any]:
             }
     """
 
-    if path is None:
-        path = os.getcwd()
+    path = path or os.getcwd()
+    scratch_dir = scratch_dir or os.getcwd()
 
     # Make sure files are present.
     for f in ["CHGCAR", "AECCAR0", "AECCAR2", "POTCAR"]:
         if not os.path.exists(os.path.join(path, f)) and not os.path.exists(
             os.path.join(path, f"{f}.gz")
         ):
-            raise FileNotFoundError("Could not find {f} in {path}")
+            raise FileNotFoundError(f"Could not find {f} in {path}.")
 
     # Run Bader analysis
-    bader_stats = bader_analysis_from_path(path)
+    with ScratchDir(
+        os.path.abspath(scratch_dir),
+        copy_from_current_on_enter=True,
+        copy_to_current_on_exit=True,
+        delete_removed_files=False,
+    ):
+        bader_stats = bader_analysis_from_path(path)
 
     # Store the partial charge, which is much more useful than the
     # raw charge and is more intuitive than the charge transferred.
@@ -68,7 +84,9 @@ def run_bader(path: None | str = None) -> Dict[str, Any]:
 
 
 def run_chargemol(
-    path: None | str = None, atomic_densities_path: None | str = None
+    path: str = None,
+    atomic_densities_path: str = None,
+    scratch_dir: str = SETTINGS.SCRATCH_DIR,
 ) -> Dict[str, Any]:
     """
     Runs a Chargemol (i.e. DDEC6 + CM5) analysis using the VASP output files
@@ -91,6 +109,8 @@ def run_chargemol(
         If None, we assume that this directory is defined in an environment variable
         named DDEC6_ATOMIC_DENSITIES_DIR.
         See the Chargemol documentation for more information.
+    scratch_dir
+        The path where the Chargemol analysis will be run.
 
     Returns
     -------
@@ -109,25 +129,31 @@ def run_chargemol(
                         }
             }
     """
-    if path is None:
-        path = os.getcwd()
+    path = path or os.getcwd()
+    scratch_dir = scratch_dir or path
 
     # Make sure files are present.
     for f in ["CHGCAR", "AECCAR0", "AECCAR2", "POTCAR"]:
         if not os.path.exists(os.path.join(path, f)) and not os.path.exists(
             os.path.join(path, f"{f}.gz")
         ):
-            raise FileNotFoundError(f"Could not find {f} in {path}")
+            raise FileNotFoundError(f"Could not find {f} in {path}.")
 
     # Check environment variable
     if atomic_densities_path is None and "DDEC6_ATOMIC_DENSITIES_DIR" not in os.environ:
-        raise OSError("DDEC6_ATOMIC_DENSITIES_DIR environment variable not defined.")
+        raise ValueError("DDEC6_ATOMIC_DENSITIES_DIR environment variable not defined.")
 
     # Run Chargemol analysis
-    chargemol_stats = ChargemolAnalysis(
-        path=path,
-        atomic_densities_path=atomic_densities_path,
-    )
+    with ScratchDir(
+        os.path.abspath(scratch_dir),
+        copy_from_current_on_enter=True,
+        copy_to_current_on_exit=True,
+        delete_removed_files=False,
+    ):
+        chargemol_stats = ChargemolAnalysis(
+            path=path,
+            atomic_densities_path=atomic_densities_path,
+        )
 
     # Some cleanup of the returned dictionary
     chargemol_stats.pop("rsquared_moments", None)

@@ -1,18 +1,25 @@
+"""
+Schemas for VASP
+"""
 import os
+import warnings
 from typing import Any, Dict
 
 from ase.atoms import Atoms
 from atomate2.vasp.schemas.task import TaskDocument
-from monty.json import MSONable
 
+from quacc import SETTINGS
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
+from quacc.util.basics import remove_dict_empties
+from quacc.util.pop_analysis import run_bader
 
 
 def summarize_run(
     atoms: Atoms,
-    dir_path: None | str = None,
+    dir_path: str = None,
     prep_next_run: bool = True,
+    bader: bool = SETTINGS.VASP_BADER,
     check_convergence: bool = True,
     compact: bool = True,
     remove_empties: bool = True,
@@ -28,8 +35,11 @@ def summarize_run(
     dir_path
         Path to VASP outputs. A value of None specifies the current working directory
     prep_next_run
-        Whether the Atoms object storeed in {"atoms": atoms} should be prepared for the next run.
+        Whether the Atoms object stored in {"atoms": atoms} should be prepared for the next run.
         This clears out any attached calculator and moves the final magmoms to the initial magmoms.
+    bader
+        Whether a Bader analysis should be performed. Will not run if bader executable is not in PATH even if
+        bader is set to True.
     check_convergence
         Whether to throw an error if convergence is not reached.
     compact
@@ -65,7 +75,7 @@ def summarize_run(
     if compact:
         # Replace the InputSummary and OutputSummary with the full
         # input and output details from calcs_reversed
-        if results.get("calcs_reversed", None):
+        if "calcs_reversed" in results:
             final_run = results["calcs_reversed"][-1]
             results["input"] = final_run["input"]
             results["output"] = final_run["output"]
@@ -81,6 +91,33 @@ def summarize_run(
         # Remove structure because it's already in the outputs
         results.pop("structure", None)
 
+        # Remove the entry data since it's redundant
+        results.pop("entry", None)
+
+        # Remove other unnecessary fields
+        results.pop("task_type", None)
+        if "output" in results:
+            results["output"].pop("elph_displaced_structures", None)
+            results["output"].pop("frequency_dependent_dielectric", None)
+
+    # Get Bader analysis
+    if bader:
+        try:
+            bader_stats = run_bader(dir_path)
+        except:
+            bader_stats = None
+            warnings.warn("Bader analysis could not be performed.")
+
+        if bader_stats:
+            results["bader"] = bader_stats
+
+            # Attach bader charges/spins to structure object
+            struct = results["output"]["structure"]
+            struct.add_site_property("bader_charge", bader_stats["partial_charges"])
+            if "spin_moments" in bader_stats:
+                struct.add_site_property("bader_spin", bader_stats["spin_moments"])
+            results["output"]["structure"] = struct
+
     # Prepares the Atoms object for the next run by moving the
     # final magmoms to initial, clearing the calculator state,
     # and assigning the resulting Atoms object a unique ID.
@@ -94,34 +131,6 @@ def summarize_run(
     task_doc = {**results, **atoms_db, **additional_fields}
 
     if remove_empties:
-        task_doc = _remove_empties(task_doc)
+        task_doc = remove_dict_empties(task_doc)
 
     return task_doc
-
-
-def _remove_empties(d: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    For a given dictionary, recursively remove all items that are None
-    or are empty lists/dicts.
-
-    Parameters
-    ----------
-    d
-        Dictionary to jsonify
-
-    Returns
-    -------
-    Dict
-        jsonify'd dictionary
-    """
-
-    if isinstance(d, dict):
-        return {
-            k: _remove_empties(v)
-            for k, v in d.items()
-            if v is not None
-            and not ((isinstance(v, dict) or isinstance(v, list)) and len(v) == 0)
-        }
-    if isinstance(d, list):
-        return [_remove_empties(v) for v in d]
-    return d
