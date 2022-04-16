@@ -21,6 +21,10 @@ As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculator
 
 If you plan to use xTB with QuAcc, you will need to install the [xtb-python](https://github.com/grimme-lab/xtb-python) interface. This can be done via `conda install -c conda-force xtb-python`.
 
+## DFTB+
+
+If you plan to use DFTB+ (which includes a separate interface to xTB) with QuAcc, you will need to install [DFTB+](https://dftbplus.org/) interface. This can be done via `conda install -c conda-force dftbplus`.
+
 ## Other Codes
 
 For any other code, simply make sure to follow the instructions in [ASE's documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html#supported-calculators) for setting up your desired calculator.
