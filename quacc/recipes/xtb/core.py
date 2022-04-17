@@ -55,11 +55,10 @@ class StaticJob(Maker):
         Dict
             Summary of the run.
         """
-        input_atoms = atoms.copy()
         atoms.calc = XTB(method=self.method, **self.xtb_kwargs)
-        atoms = run_calc(atoms)
+        new_atoms = run_calc(atoms)
         summary = summarize_run(
-            atoms, input_atoms, additional_fields={"name": self.name}
+            new_atoms, atoms, additional_fields={"name": self.name}
         )
 
         return summary
@@ -111,13 +110,12 @@ class RelaxJob(Maker):
         Dict
             Summary of the run.
         """
-        input_atoms = atoms.copy()
         atoms.calc = XTB(method=self.method, **self.xtb_kwargs)
-        atoms = run_ase_opt(
+        new_atoms = run_ase_opt(
             atoms, fmax=self.fmax, optimizer=self.optimizer, opt_kwargs=self.opt_kwargs
         )
         summary = summarize_run(
-            atoms, input_atoms, additional_fields={"name": self.name}
+            new_atoms, atoms, additional_fields={"name": self.name}
         )
 
         return summary
