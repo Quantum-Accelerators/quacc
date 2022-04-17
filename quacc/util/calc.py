@@ -19,7 +19,8 @@ def run_calc(
     """
     Run a calculation in a scratch directory and copy the results back to the
     original directory. This can be useful if file I/O is slow in the working
-    directory, so long as file transfer speeds are reasonable.
+    directory, so long as file transfer speeds are reasonable. Note: This
+    function does not modify the atoms object in-place.
 
     This is a wrapper around atoms.get_potential_energy().
 

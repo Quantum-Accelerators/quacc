@@ -10,7 +10,10 @@ from quacc.util.atoms import prep_next_run as prep_next_run_
 
 
 def summarize_run(
-    atoms: Atoms, prep_next_run: bool = True, additional_fields: Dict[str, Any] = None
+    atoms: Atoms,
+    input_atoms: Atoms = None,
+    prep_next_run: bool = True,
+    additional_fields: Dict[str, Any] = None,
 ) -> Dict[str, Any]:
     """
     Get tabulated results from an Atoms object and calculator and store them in a database-friendly format.
@@ -19,7 +22,9 @@ def summarize_run(
     Parameters
     ----------
     atoms
-        ASE Atoms object following a calculation.
+        ASE Atoms following a calculation. A calculator must be attached.
+    input_atoms
+        Input ASE Atoms object to store.
     prep_next_run
         Whether the Atoms object stored in {"atoms": atoms} should be prepared for the next run
         This clears out any attached calculator and moves the final magmoms to the initial magmoms.
@@ -46,6 +51,9 @@ def summarize_run(
 
     # Get the calculator inputs
     inputs = {"parameters": atoms.calc.parameters}
+    if input_atoms:
+        input_atoms_db = atoms_to_metadata(input_atoms)
+        inputs["input_atoms"] = input_atoms_db
 
     # Prepares the Atoms object for the next run by moving the
     # final magmoms to initial, clearing the calculator state,

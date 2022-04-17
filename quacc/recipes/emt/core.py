@@ -1,4 +1,5 @@
 """Core recipes for EMT"""
+from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import Any, Dict
 
@@ -44,9 +45,12 @@ class StaticJob(Maker):
         Dict
             Summary of the run.
         """
+        input_atoms = deepcopy(atoms)
         atoms.calc = EMT(asap_cutoff=self.asap_cutoff)
         atoms.get_potential_energy()
-        summary = summarize_run(atoms, additional_fields={"name": self.name})
+        summary = summarize_run(
+            atoms, input_atoms, additional_fields={"name": self.name}
+        )
 
         return summary
 
@@ -98,11 +102,14 @@ class RelaxJob(Maker):
         self.opt_kwargs.pop("logfile", None)
         self.opt_kwargs.pop("trajectory", None)
 
+        input_atoms = deepcopy(atoms)
         atoms.calc = EMT(asap_cutoff=self.asap_cutoff)
         dyn = self.optimizer(
             atoms, logfile=logfile, trajectory=trajectory, **self.opt_kwargs
         )
         dyn.run(fmax=self.fmax)
-        summary = summarize_run(atoms, additional_fields={"name": self.name})
+        summary = summarize_run(
+            atoms, input_atoms, additional_fields={"name": self.name}
+        )
 
         return summary

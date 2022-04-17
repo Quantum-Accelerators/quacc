@@ -54,9 +54,12 @@ class StaticJob(Maker):
         Dict
             Summary of the run.
         """
+        input_atoms = atoms.copy()
         atoms.calc = XTB(method=self.method, **self.xtb_kwargs)
         atoms.get_potential_energy()
-        summary = summarize_run(atoms, additional_fields={"name": self.name})
+        summary = summarize_run(
+            atoms, input_atoms, additional_fields={"name": self.name}
+        )
 
         return summary
 
@@ -114,11 +117,14 @@ class RelaxJob(Maker):
         self.opt_kwargs.pop("logfile", None)
         self.opt_kwargs.pop("trajectory", None)
 
+        input_atoms = atoms.copy()
         atoms.calc = XTB(method=self.method, **self.xtb_kwargs)
         dyn = self.optimizer(
             atoms, logfile=logfile, trajectory=trajectory, **self.opt_kwargs
         )
         dyn.run(fmax=self.fmax)
-        summary = summarize_run(atoms, additional_fields={"name": self.name})
+        summary = summarize_run(
+            atoms, input_atoms, additional_fields={"name": self.name}
+        )
 
         return summary

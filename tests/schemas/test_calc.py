@@ -21,6 +21,13 @@ def test_summarize_run():
     assert results["nsites"] == len(atoms)
     assert results["atoms"] == atoms
 
+    # Make sure initial atoms object is stored if specified
+    atoms = read(os.path.join(run1, "OUTCAR.gz"))
+    results = summarize_run(atoms, atoms)
+    assert results["nsites"] == len(atoms)
+    assert results["atoms"] == atoms
+    assert results["input_atoms"] == atoms
+
     # Make sure info tags are handled appropriately
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}

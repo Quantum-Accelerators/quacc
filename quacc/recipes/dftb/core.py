@@ -78,10 +78,8 @@ class StaticJob(Maker):
         )
 
         atoms.calc = Dftb(**flags)
-        atoms = run_calc(atoms)
-        summary = summarize_run(
-            atoms, "dftb.out", additional_fields={"name": self.name}
-        )
+        new_atoms = run_calc(atoms)
+        summary = summarize_run(new_atoms, atoms, additional_fields={"name": self.name})
 
         return summary
 
@@ -161,9 +159,7 @@ class RelaxJob(Maker):
         )
 
         atoms.calc = Dftb(**flags)
-        atoms = run_calc(atoms)
-        summary = summarize_run(
-            atoms, "dftb.out", additional_fields={"name": self.name}
-        )
+        new_atoms = run_calc(atoms)
+        summary = summarize_run(new_atoms, atoms, additional_fields={"name": self.name})
 
         return summary
