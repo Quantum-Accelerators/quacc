@@ -1,5 +1,6 @@
 import os
 
+import numpy as np
 import pytest
 from ase.build import bulk, molecule
 from jobflow.managers.local import run_locally
@@ -67,6 +68,9 @@ def test_relax_job():
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
     assert output["results"]["energy"] == pytest.approx(-137.98336133558837)
+    assert (
+        np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is False
+    )
 
     atoms = bulk("Cu")
 
@@ -86,6 +90,7 @@ def test_relax_job():
     assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty002"] == "0 0 3"
     assert output["parameters"]["Driver_"] == "GeometryOptimization"
     assert output["parameters"]["Driver_LatticeOpt"] == "No"
+    assert output["atoms"].get_volume() == atoms.get_volume()
 
     atoms = bulk("Cu")
 
@@ -105,3 +110,4 @@ def test_relax_job():
     assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty002"] == "0 0 3"
     assert output["parameters"]["Driver_"] == "GeometryOptimization"
     assert output["parameters"]["Driver_LatticeOpt"] == "Yes"
+    assert output["atoms"].get_volume() != atoms.get_volume()

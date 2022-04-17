@@ -10,8 +10,9 @@ from ase.optimize.optimize import Optimizer
 from jobflow import Maker, job
 
 from quacc.schemas.calc import summarize_run
+from quacc.util.calc import run_ase_opt, run_calc
 
-# NOTE: This set of recipes is mainly for demonstration purposes
+# NOTE: This set of minimal recipes is mainly for demonstration purposes
 
 
 @dataclass
@@ -95,17 +96,10 @@ class RelaxJob(Maker):
         Dict
             Summary of the run.
         """
-        # We always want to save the logfile and trajectory, so we will set some default
-        # values if not specified by the user (and then remove them from the **opt_kwargs)
-        logfile = self.opt_kwargs.get("logfile") or "opt.log"
-        trajectory = self.opt_kwargs.get("trajectory") or "opt.traj"
-        self.opt_kwargs.pop("logfile", None)
-        self.opt_kwargs.pop("trajectory", None)
-
         input_atoms = deepcopy(atoms)
         atoms.calc = EMT(asap_cutoff=self.asap_cutoff)
         dyn = self.optimizer(
-            atoms, logfile=logfile, trajectory=trajectory, **self.opt_kwargs
+            atoms, logfile="opt.log", trajectory="opt.traj", **self.opt_kwargs
         )
         dyn.run(fmax=self.fmax)
         summary = summarize_run(

@@ -17,6 +17,8 @@ from quacc.util.slabs import (
     make_max_slabs_from_bulk,
 )
 
+GEOM_FILE = "CONTCAR"
+
 
 @dataclass
 class SlabStaticJob(Maker):
@@ -66,7 +68,7 @@ class SlabStaticJob(Maker):
 
         calc = Vasp(atoms, preset=self.preset, **flags)
         atoms.calc = calc
-        atoms = run_calc(atoms)
+        atoms = run_calc(atoms, geom_file=GEOM_FILE)
         summary = summarize_run(atoms, additional_fields={"name": self.name})
 
         return summary
@@ -120,7 +122,7 @@ class SlabRelaxJob(Maker):
 
         calc = Vasp(atoms, preset=self.preset, **flags)
         atoms.calc = calc
-        atoms = run_calc(atoms)
+        atoms = run_calc(atoms, geom_file=GEOM_FILE)
         summary = summarize_run(atoms, additional_fields={"name": self.name})
 
         return summary

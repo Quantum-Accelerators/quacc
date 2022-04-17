@@ -1,5 +1,4 @@
 """Core recipes for DFTB+"""
-import warnings
 from dataclasses import dataclass, field
 from shutil import which
 from typing import Any, Dict, List
@@ -14,6 +13,7 @@ from quacc.util.basics import merge_dicts
 from quacc.util.calc import run_calc
 
 DFTBPLUS_EXISTS = bool(which("dftb+"))
+GEOM_FILE = "geo_end.gen"
 
 
 @dataclass
@@ -68,7 +68,7 @@ class StaticJob(Maker):
 
         if self.kpts:
             defaults["kpts"] = self.kpts
-        elif True in atoms.pbc:
+        elif atoms.pbc.any():
             defaults["kpts"] = (1, 1, 1)
         else:
             defaults["kpts"] = None
@@ -78,7 +78,7 @@ class StaticJob(Maker):
         )
 
         atoms.calc = Dftb(**flags)
-        new_atoms = run_calc(atoms)
+        new_atoms = run_calc(atoms, geom_file=GEOM_FILE)
         summary = summarize_run(new_atoms, atoms, additional_fields={"name": self.name})
 
         return summary
@@ -130,14 +130,12 @@ class RelaxJob(Maker):
         Dict
             Summary of the run.
         """
-        warnings.warn(
-            "Due to a bug in ASE, the atoms object does not get updated. See https://gitlab.com/ase/ase/-/issues/1083 for further details."
-        )
         defaults = {
             "Driver_": "GeometryOptimization",
             "Driver_LatticeOpt": "Yes"
             if self.lattice_opt and True in atoms.pbc
             else "No",
+            "Driver_MaxSteps": 1000,
         }
 
         if "xtb" in self.method.lower():
@@ -149,7 +147,7 @@ class RelaxJob(Maker):
 
         if self.kpts:
             defaults["kpts"] = self.kpts
-        elif True in atoms.pbc:
+        elif atoms.pbc.any():
             defaults["kpts"] = (1, 1, 1)
         else:
             defaults["kpts"] = None
@@ -159,7 +157,7 @@ class RelaxJob(Maker):
         )
 
         atoms.calc = Dftb(**flags)
-        new_atoms = run_calc(atoms)
+        new_atoms = run_calc(atoms, geom_file=GEOM_FILE)
         summary = summarize_run(new_atoms, atoms, additional_fields={"name": self.name})
 
         return summary

@@ -10,6 +10,8 @@ from quacc.schemas.vasp import summarize_run
 from quacc.util.basics import merge_dicts
 from quacc.util.calc import run_calc
 
+GEOM_FILE = "CONTCAR"
+
 
 @dataclass
 class StaticJob(Maker):
@@ -57,7 +59,7 @@ class StaticJob(Maker):
 
         calc = Vasp(atoms, preset=self.preset, **flags)
         atoms.calc = calc
-        atoms = run_calc(atoms)
+        atoms = run_calc(atoms, geom_file=GEOM_FILE)
         summary = summarize_run(atoms, additional_fields={"name": self.name})
 
         return summary
@@ -114,7 +116,7 @@ class RelaxJob(Maker):
 
         calc = Vasp(atoms, preset=self.preset, **flags)
         atoms.calc = calc
-        atoms = run_calc(atoms)
+        atoms = run_calc(atoms, geom_file=GEOM_FILE)
         summary = summarize_run(atoms, additional_fields={"name": self.name})
 
         return summary
@@ -182,7 +184,7 @@ class DoubleRelaxJob(Maker):
         calc = Vasp(atoms, preset=self.preset, **flags)
         atoms.calc = calc
         kpts1 = atoms.calc.kpts
-        atoms = run_calc(atoms)
+        atoms = run_calc(atoms, geom_file=GEOM_FILE)
         summary1 = summarize_run(atoms, additional_fields={"name": self.name})
 
         # Run second relaxation
@@ -195,7 +197,7 @@ class DoubleRelaxJob(Maker):
         if kpts1 == [1, 1, 1] and kpts2 != [1, 1, 1]:
             atoms.calc.set(istart=0)
 
-        atoms = run_calc(atoms)
+        atoms = run_calc(atoms, geom_file=GEOM_FILE)
         summary2 = summarize_run(atoms, additional_fields={"name": self.name})
 
         return {"relax1": summary1, "relax2": summary2}
