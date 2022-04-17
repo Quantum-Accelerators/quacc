@@ -26,7 +26,7 @@ def test_summarize_run():
     results = summarize_run(atoms, atoms)
     assert results["nsites"] == len(atoms)
     assert results["atoms"] == atoms
-    assert results["input_atoms"] == atoms
+    assert results["input_atoms"]["atoms"] == atoms
 
     # Make sure info tags are handled appropriately
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
