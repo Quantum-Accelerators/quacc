@@ -4,7 +4,7 @@ import pytest
 from ase.build import bulk, molecule
 from jobflow.managers.local import run_locally
 
-from quacc.recipes.dftb.core import StaticJob
+from quacc.recipes.dftb.core import RelaxJob, StaticJob
 
 
 def teardown_module():
@@ -32,6 +32,8 @@ def test_static_Job():
     output = responses[job.uuid][1].output
     assert output["nsites"] == len(atoms)
     assert output["name"] == "DFTB-Static"
+    assert output["parameters"]["Hamiltonian_"] == "xTB"
+    assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
     assert output["results"]["energy"] == pytest.approx(-137.97459675495645)
 
     atoms = bulk("Cu")
@@ -41,4 +43,65 @@ def test_static_Job():
     output = responses[job.uuid][1].output
     assert output["nsites"] == len(atoms)
     assert output["name"] == "DFTB-Static"
+    assert output["parameters"]["Hamiltonian_"] == "xTB"
+    assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
+    assert (
+        output["parameters"]["Hamiltonian_KPointsAndWeights_"].strip()
+        == "SupercellFolding"
+    )
+    assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty000"] == "3 0 0"
+    assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty001"] == "0 3 0"
+    assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty002"] == "0 0 3"
     assert output["results"]["energy"] == pytest.approx(-107.55154244254307)
+
+
+def test_relax_job():
+
+    atoms = molecule("H2O")
+
+    job = RelaxJob().make(atoms)
+    responses = run_locally(job, ensure_success=True)
+    output = responses[job.uuid][1].output
+    assert output["nsites"] == len(atoms)
+    assert output["name"] == "DFTB-Relax"
+    assert output["parameters"]["Hamiltonian_"] == "xTB"
+    assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
+    assert output["results"]["energy"] == pytest.approx(-137.98336133558837)
+
+    atoms = bulk("Cu")
+
+    job = RelaxJob(kpts=(3, 3, 3)).make(atoms)
+    responses = run_locally(job, ensure_success=True)
+    output = responses[job.uuid][1].output
+    assert output["nsites"] == len(atoms)
+    assert output["name"] == "DFTB-Relax"
+    assert output["parameters"]["Hamiltonian_"] == "xTB"
+    assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
+    assert (
+        output["parameters"]["Hamiltonian_KPointsAndWeights_"].strip()
+        == "SupercellFolding"
+    )
+    assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty000"] == "3 0 0"
+    assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty001"] == "0 3 0"
+    assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty002"] == "0 0 3"
+    assert output["parameters"]["Driver_"] == "GeometryOptimization"
+    assert output["parameters"]["Driver_LatticeOpt"] == "No"
+
+    atoms = bulk("Cu")
+
+    job = RelaxJob(method="GFN1-xTB", kpts=(3, 3, 3), lattice_opt=True).make(atoms)
+    responses = run_locally(job, ensure_success=True)
+    output = responses[job.uuid][1].output
+    assert output["nsites"] == len(atoms)
+    assert output["name"] == "DFTB-Relax"
+    assert output["parameters"]["Hamiltonian_"] == "xTB"
+    assert output["parameters"]["Hamiltonian_Method"] == "GFN1-xTB"
+    assert (
+        output["parameters"]["Hamiltonian_KPointsAndWeights_"].strip()
+        == "SupercellFolding"
+    )
+    assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty000"] == "3 0 0"
+    assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty001"] == "0 3 0"
+    assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty002"] == "0 0 3"
+    assert output["parameters"]["Driver_"] == "GeometryOptimization"
+    assert output["parameters"]["Driver_LatticeOpt"] == "Yes"
