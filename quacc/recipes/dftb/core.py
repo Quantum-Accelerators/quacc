@@ -1,4 +1,5 @@
 """Core recipes for DFTB+"""
+import warnings
 from dataclasses import dataclass, field
 from shutil import which
 from typing import Any, Dict, List
@@ -131,6 +132,9 @@ class RelaxJob(Maker):
         Dict
             Summary of the run.
         """
+        warnings.warn(
+            "Due to a bug in ASE, the atoms object does not get updated. See https://gitlab.com/ase/ase/-/issues/1083 for further details."
+        )
         defaults = {
             "Driver_": "GeometryOptimization",
             "Driver_LatticeOpt": "Yes"
