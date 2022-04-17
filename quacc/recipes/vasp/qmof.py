@@ -138,10 +138,9 @@ def _prerelax(
     flags = merge_dicts(defaults, swaps)
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
-    input_atoms = deepcopy(atoms)
-    atoms = run_ase_opt(atoms, fmax=fmax, optimizer=BFGSLineSearch)
+    new_atoms = run_ase_opt(atoms, fmax=fmax, optimizer=BFGSLineSearch)
 
-    summary = summarize_ase_run(atoms, input_atoms=input_atoms)
+    summary = summarize_ase_run(new_atoms, input_atoms=atoms)
 
     return summary
 
