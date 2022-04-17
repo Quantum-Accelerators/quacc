@@ -49,7 +49,7 @@ class StaticJob(Maker):
         atoms.calc = EMT(asap_cutoff=self.asap_cutoff)
         atoms.get_potential_energy()
         summary = summarize_run(
-            atoms, input_atoms, additional_fields={"name": self.name}
+            atoms, input_atoms=input_atoms, additional_fields={"name": self.name}
         )
 
         return summary
@@ -102,7 +102,7 @@ class RelaxJob(Maker):
         )
         dyn.run(fmax=self.fmax)
         summary = summarize_run(
-            atoms, input_atoms, additional_fields={"name": self.name}
+            atoms, input_atoms=input_atoms, additional_fields={"name": self.name}
         )
 
         return summary
