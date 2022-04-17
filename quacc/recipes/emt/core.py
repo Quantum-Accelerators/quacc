@@ -10,7 +10,6 @@ from ase.optimize.optimize import Optimizer
 from jobflow import Maker, job
 
 from quacc.schemas.calc import summarize_run
-from quacc.util.calc import run_ase_opt, run_calc
 
 # NOTE: This set of minimal recipes is mainly for demonstration purposes
 

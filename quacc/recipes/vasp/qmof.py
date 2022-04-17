@@ -7,7 +7,6 @@ from ase.atoms import Atoms
 from ase.optimize import BFGSLineSearch
 from jobflow import Maker, job
 
-from quacc import SETTINGS
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.calc import summarize_run as summarize_ase_run
 from quacc.schemas.vasp import summarize_run
