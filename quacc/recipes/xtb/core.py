@@ -57,9 +57,7 @@ class StaticJob(Maker):
         """
         atoms.calc = XTB(method=self.method, **self.xtb_kwargs)
         new_atoms = run_calc(atoms)
-        summary = summarize_run(
-            new_atoms, atoms, additional_fields={"name": self.name}
-        )
+        summary = summarize_run(new_atoms, atoms, additional_fields={"name": self.name})
 
         return summary
 
@@ -114,8 +112,6 @@ class RelaxJob(Maker):
         new_atoms = run_ase_opt(
             atoms, fmax=self.fmax, optimizer=self.optimizer, opt_kwargs=self.opt_kwargs
         )
-        summary = summarize_run(
-            new_atoms, atoms, additional_fields={"name": self.name}
-        )
+        summary = summarize_run(new_atoms, atoms, additional_fields={"name": self.name})
 
         return summary
