@@ -390,7 +390,11 @@ def test_qmof():
     job = QMOFRelaxJob(prerelax=False).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
+<<<<<<< HEAD
     assert output["prerelax-lowacc"] is None
+=======
+    assert "prerelax-lowacc" not in output
+>>>>>>> main
 
     job = QMOFRelaxJob(preset="BulkSet", name="test", swaps={"nelmin": 6}).make(atoms)
     responses = run_locally(job, ensure_success=True)
