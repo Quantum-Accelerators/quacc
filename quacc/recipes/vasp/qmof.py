@@ -97,7 +97,7 @@ class QMOFRelaxJob(Maker):
         summary5 = _static(atoms, self.preset, self.swaps)
 
         return {
-            "prerelax-lowacc": summary1,
+            "prerelax-lowacc": summary1 if self.prerelax else None,
             "position-relax-lowacc": summary2,
             "volume-relax-lowacc": summary3 if self.volume_relax else None,
             "double-relax": summary4,
