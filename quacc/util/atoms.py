@@ -51,7 +51,7 @@ def prep_next_run(
         Whether to assign a unique ID to the Atoms object in atoms.info["_id"].
         Any existing IDs will be moved to atoms.info["_old_ids"].
     move_magmoms
-        If True, move atoms.get_magnetic_moments() to atoms.get_initial_magnetic_moments()
+        If True, move atoms.calc.results["magmoms"] to atoms.get_initial_magnetic_moments()
     store_results
         If True, store calculator results in atoms.info["results"]. This makes it so the calculator results
         are not lost between serialize/deserialize cycles, if desired. Each one will be stored in
