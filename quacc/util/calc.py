@@ -21,7 +21,7 @@ def run_calc(
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
     copy_from_store_dir: bool = False,
-) -> float:
+) -> Atoms:
     """
     Run a calculation in a scratch directory and copy the results back to the
     original directory. This can be useful if file I/O is slow in the working
@@ -96,7 +96,7 @@ def run_ase_opt(
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
     copy_from_store_dir: bool = False,
-) -> float:
+) -> Atoms:
     """
     Run an ASE-based optimization in a scratch directory and copy the results
     back to the original directory. This can be useful if file I/O is slow in
