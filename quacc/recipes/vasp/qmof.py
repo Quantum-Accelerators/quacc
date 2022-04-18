@@ -16,7 +16,6 @@ from quacc.util.calc import run_ase_opt, run_calc
 
 # This set of recipes is meant to be compatible with the QMOF Database workflow.
 # Reference: https://doi.org/10.1016/j.matt.2021.02.015
-GEOM_FILE = "CONTCAR"
 
 
 @dataclass
@@ -41,6 +40,10 @@ class QMOFRelaxJob(Maker):
     volume_relax
         True if a volume relaxation should be performed.
         False if only the positions should be updated.
+    prerelax
+        If True, a pre-relax will be carried out with BFGSLineSearch.
+        Recommended if starting from hypothetical structures or materials
+        with very high starting forces.
     swaps
         Dictionary of custom kwargs for the calculator. Applies for all jobs.
     """
@@ -48,6 +51,7 @@ class QMOFRelaxJob(Maker):
     name: str = "QMOF-Relax"
     preset: str = "QMOFSet"
     volume_relax: bool = True
+    prerelax: bool = True
     swaps: Dict[str, Any] = field(default_factory=dict)
 
     @job
@@ -66,8 +70,9 @@ class QMOFRelaxJob(Maker):
             Summary of the run.
         """
         # 1. Pre-relaxation
-        summary1 = _prerelax(atoms, self.preset, self.swaps, fmax=5.0)
-        atoms = summary1["atoms"]
+        if self.prerelax:
+            summary1 = _prerelax(atoms, self.preset, self.swaps, fmax=5.0)
+            atoms = summary1["atoms"]
 
         # 2. Position relaxation (loose)
         summary2 = _loose_relax_positions(atoms, self.preset, self.swaps)
@@ -91,7 +96,7 @@ class QMOFRelaxJob(Maker):
         summary5 = _static(atoms, self.preset, self.swaps)
 
         return {
-            "prerelax-lowacc": summary1,
+            "prerelax-lowacc": summary1 if self.prerelax else None,
             "position-relax-lowacc": summary2,
             "volume-relax-lowacc": summary3 if self.volume_relax else None,
             "double-relax": summary4,
@@ -183,7 +188,7 @@ def _loose_relax_positions(
     flags = merge_dicts(defaults, swaps)
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
-    atoms = run_calc(atoms, geom_file=GEOM_FILE)
+    atoms = run_calc(atoms)
 
     summary = summarize_run(atoms, bader=False)
 
@@ -226,7 +231,7 @@ def _loose_relax_volume(
     flags = merge_dicts(defaults, swaps)
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
-    atoms = run_calc(atoms, geom_file=GEOM_FILE)
+    atoms = run_calc(atoms)
 
     summary = summarize_run(atoms, bader=False)
 
@@ -273,7 +278,7 @@ def _double_relax(
     flags = merge_dicts(defaults, swaps)
     calc1 = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc1
-    atoms = run_calc(atoms, geom_file=GEOM_FILE)
+    atoms = run_calc(atoms)
 
     # Update atoms for
     summary1 = summarize_run(atoms, bader=False, additional_fields={"name": "relax1"})
@@ -291,7 +296,7 @@ def _double_relax(
     if calc1.kpts == [1, 1, 1] and calc2.kpts != [1, 1, 1]:
         atoms.calc.set(istart=0)
 
-    atoms = run_calc(atoms, geom_file=GEOM_FILE)
+    atoms = run_calc(atoms)
     summary2 = summarize_run(atoms, bader=False)
 
     return {"relax1": summary1, "relax2": summary2}
@@ -332,7 +337,7 @@ def _static(
     flags = merge_dicts(defaults, swaps)
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
-    atoms = run_calc(atoms, geom_file=GEOM_FILE)
+    atoms = run_calc(atoms)
 
     summary = summarize_run(atoms)
 
