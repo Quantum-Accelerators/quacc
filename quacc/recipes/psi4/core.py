@@ -67,7 +67,7 @@ class StaticMaker(Maker):
         swaps = self.swaps or {}
         defaults = {
             "mem": "16GB",
-            "num_thread": "max",
+            "num_threads": "max",
             "method": self.method,
             "basis": "def2-tzvp",
             "charge": charge if charge else round(sum(atoms.get_initial_charges())),
