@@ -41,6 +41,10 @@ class QMOFRelaxJob(Maker):
     volume_relax
         True if a volume relaxation should be performed.
         False if only the positions should be updated.
+    prerelax
+        If True, a pre-relax will be carried out with BFGSLineSearch.
+        Recommended if starting from hypothetical structures or materials
+        with very high starting forces.
     swaps
         Dictionary of custom kwargs for the calculator. Applies for all jobs.
     """
@@ -48,6 +52,7 @@ class QMOFRelaxJob(Maker):
     name: str = "QMOF-Relax"
     preset: str = "QMOFSet"
     volume_relax: bool = True
+    prerelax: bool = True
     swaps: Dict[str, Any] = field(default_factory=dict)
 
     @job
@@ -66,8 +71,9 @@ class QMOFRelaxJob(Maker):
             Summary of the run.
         """
         # 1. Pre-relaxation
-        summary1 = _prerelax(atoms, self.preset, self.swaps, fmax=5.0)
-        atoms = summary1["atoms"]
+        if self.prerelax:
+            summary1 = _prerelax(atoms, self.preset, self.swaps, fmax=5.0)
+            atoms = summary1["atoms"]
 
         # 2. Position relaxation (loose)
         summary2 = _loose_relax_positions(atoms, self.preset, self.swaps)
