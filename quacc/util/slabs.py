@@ -2,6 +2,7 @@
 Utility functions for dealing with slabs
 """
 from __future__ import annotations
+
 import random
 import warnings
 from copy import deepcopy
