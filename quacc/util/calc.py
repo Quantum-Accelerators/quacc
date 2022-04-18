@@ -71,12 +71,18 @@ def run_calc(
         # Run calculation via get_potential_energy()
         atoms.get_potential_energy()
 
-    # Update the atom positions in case .get_potential_energy()
-    # does not do so by default
+    # Some ASE calculators do not update the atoms object in-place with
+    # a call to .get_potential_energy(). This is a workaround to ensure
+    # that the atoms object is updated with the correct positions, cell,
+    # and magmoms.
     if geom_file and os.path.exists(geom_file):
-        calc = atoms.calc
-        atoms = read(geom_file)
-        atoms.calc = calc
+
+        # Note: We have to be careful to make sure we don't lose the
+        # converged magnetic moments, if present. That's why we simply
+        # update the positions and cell in-place.
+        atoms_new = read(geom_file)
+        atoms.positions = atoms_new.positions
+        atoms.cell = atoms_new.cell
 
     return atoms
 
