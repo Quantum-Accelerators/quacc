@@ -8,17 +8,11 @@ from jobflow.managers.local import run_locally
 from quacc.recipes.psi4.core import StaticMaker
 
 FILE_DIR = Path(__file__).resolve().parent
-PSI4_DIR = os.path.join(FILE_DIR, "psi4_run")
-
-
-def setup_module():
-    for f in os.listdir(PSI4_DIR):
-        copy(os.path.join(PSI4_DIR, f), os.path.join(os.getcwd(), f))
 
 
 def teardown_module():
-    for f in os.listdir(PSI4_DIR):
-        if os.path.exists(os.path.join(os.getcwd(), f)):
+    for f in os.listdir(os.getcwd()):
+        if f.endswith(".dat"):
             os.remove(os.path.join(os.getcwd(), f))
 
 
