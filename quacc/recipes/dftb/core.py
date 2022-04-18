@@ -1,4 +1,5 @@
 """Core recipes for DFTB+"""
+from __future__ import annotations
 from dataclasses import dataclass, field
 from shutil import which
 from typing import Any, Dict, List

@@ -1,6 +1,7 @@
 """
 Schemas for molecular DFT codes parsed by cclib
 """
+from __future__ import annotations
 import os
 from typing import Any, Dict, List
 

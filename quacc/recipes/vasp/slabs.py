@@ -1,4 +1,5 @@
 """Recipes for slabs"""
+from __future__ import annotations
 import warnings
 from dataclasses import dataclass, field
 from typing import Any, Dict, List
@@ -227,7 +228,7 @@ class SlabToAdsorbatesJob(Maker):
         self,
         slabs: Atoms | List[Atoms],
         adsorbates: Atoms | List[Atoms],
-        **make_ads_kwargs
+        **make_ads_kwargs,
     ) -> Response:
         """
         Make the run.
@@ -395,7 +396,7 @@ class BulkToAdsorbatesFlow(Maker):
             slab_to_adsorbates_job = self.slab_to_adsorbates_job.make(
                 find_stable_slab_job.output["stable_slabs"]["all_atoms"],
                 adsorbate,
-                **make_ads_kwargs
+                **make_ads_kwargs,
             )
             jobs += [find_stable_slab_job, slab_to_adsorbates_job]
         else:
