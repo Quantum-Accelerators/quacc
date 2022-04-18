@@ -1,4 +1,6 @@
 """Core recipes for ORCA"""
+from __future__ import annotations
+
 import multiprocessing
 from dataclasses import dataclass, field
 from typing import Any, Dict
@@ -10,6 +12,9 @@ from jobflow import Maker, job
 from quacc.schemas.cclib import summarize_run
 from quacc.util.basics import merge_dicts
 from quacc.util.calc import run_calc
+
+LOG_FILE = ORCA().label + ".out"
+GEOM_FILE = ORCA().label + ".xyz"
 
 
 @dataclass
@@ -74,6 +79,7 @@ class StaticJob(Maker):
             "sp": True,
             "slowconv": True,
             "normalprint": True,
+            "xyzfile": True,
         }
         default_blocks = {}
 
@@ -92,10 +98,8 @@ class StaticJob(Maker):
             orcasimpleinput=orcasimpleinput,
             orcablocks=orcablocks,
         )
-        atoms = run_calc(atoms)
-        summary = summarize_run(
-            atoms, "orca.out", additional_fields={"name": self.name}
-        )
+        atoms = run_calc(atoms, geom_file=GEOM_FILE)
+        summary = summarize_run(atoms, LOG_FILE, additional_fields={"name": self.name})
 
         return summary
 
@@ -166,6 +170,7 @@ class RelaxJob(Maker):
             "slowconv": True,
             "normalprint": True,
             "freq": True if self.freq else None,
+            "xyzfile": True,
         }
         default_blocks = {}
 
@@ -184,9 +189,7 @@ class RelaxJob(Maker):
             orcasimpleinput=orcasimpleinput,
             orcablocks=orcablocks,
         )
-        atoms = run_calc(atoms)
-        summary = summarize_run(
-            atoms, "orca.out", additional_fields={"name": self.name}
-        )
+        atoms = run_calc(atoms, geom_file=GEOM_FILE)
+        summary = summarize_run(atoms, LOG_FILE, additional_fields={"name": self.name})
 
         return summary

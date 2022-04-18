@@ -1,22 +1,22 @@
 """QMOF-compatible recipes"""
-import os
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from typing import Any, Dict
 
 from ase.atoms import Atoms
 from ase.optimize import BFGSLineSearch
 from jobflow import Maker, job
-from monty.tempfile import ScratchDir
 
-from quacc import SETTINGS
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.calc import summarize_run as summarize_ase_run
 from quacc.schemas.vasp import summarize_run
 from quacc.util.basics import merge_dicts
-from quacc.util.calc import run_calc
+from quacc.util.calc import run_ase_opt, run_calc
 
 # This set of recipes is meant to be compatible with the QMOF Database workflow.
 # Reference: https://doi.org/10.1016/j.matt.2021.02.015
+GEOM_FILE = "CONTCAR"
 
 
 @dataclass
@@ -138,17 +138,9 @@ def _prerelax(
     flags = merge_dicts(defaults, swaps)
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
-    with ScratchDir(
-        os.path.abspath(SETTINGS.SCRATCH_DIR),
-        create_symbolic_link=os.name != "nt",
-        copy_to_current_on_exit=True,
-        gzip_on_exit=SETTINGS.GZIP_FILES,
-        delete_removed_files=False,
-    ):
-        dyn = BFGSLineSearch(atoms, logfile="prerelax.log", trajectory="prerelax.traj")
-        dyn.run(fmax=fmax)
+    new_atoms = run_ase_opt(atoms, fmax=fmax, optimizer=BFGSLineSearch)
 
-    summary = summarize_ase_run(atoms)
+    summary = summarize_ase_run(new_atoms, input_atoms=atoms)
 
     return summary
 
@@ -191,7 +183,7 @@ def _loose_relax_positions(
     flags = merge_dicts(defaults, swaps)
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
-    atoms = run_calc(atoms)
+    atoms = run_calc(atoms, geom_file=GEOM_FILE)
 
     summary = summarize_run(atoms, bader=False)
 
@@ -234,7 +226,7 @@ def _loose_relax_volume(
     flags = merge_dicts(defaults, swaps)
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
-    atoms = run_calc(atoms)
+    atoms = run_calc(atoms, geom_file=GEOM_FILE)
 
     summary = summarize_run(atoms, bader=False)
 
@@ -281,7 +273,7 @@ def _double_relax(
     flags = merge_dicts(defaults, swaps)
     calc1 = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc1
-    atoms = run_calc(atoms)
+    atoms = run_calc(atoms, geom_file=GEOM_FILE)
 
     # Update atoms for
     summary1 = summarize_run(atoms, bader=False, additional_fields={"name": "relax1"})
@@ -299,7 +291,7 @@ def _double_relax(
     if calc1.kpts == [1, 1, 1] and calc2.kpts != [1, 1, 1]:
         atoms.calc.set(istart=0)
 
-    atoms = run_calc(atoms)
+    atoms = run_calc(atoms, geom_file=GEOM_FILE)
     summary2 = summarize_run(atoms, bader=False)
 
     return {"relax1": summary1, "relax2": summary2}
@@ -340,7 +332,7 @@ def _static(
     flags = merge_dicts(defaults, swaps)
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
-    atoms = run_calc(atoms)
+    atoms = run_calc(atoms, geom_file=GEOM_FILE)
 
     summary = summarize_run(atoms)
 

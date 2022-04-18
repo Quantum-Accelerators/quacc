@@ -12,7 +12,7 @@ from quacc.schemas.cclib import summarize_run
 FILE_DIR = Path(__file__).resolve().parent
 
 run1 = os.path.join(FILE_DIR, "gaussian_run1")
-log1 = os.path.join(run1, "gautest.log")
+log1 = os.path.join(run1, "Gaussian.log")
 
 
 def test_summarize_run():

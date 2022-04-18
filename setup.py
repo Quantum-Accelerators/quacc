@@ -16,7 +16,7 @@ if __name__ == "__main__":
         author="Andrew S. Rosen",
         author_email="asrosen93@gmail.com",
         url="https://github.com/arosen93/quacc",
-        python_requires=">=3.10.0",
+        python_requires=">=3.8.0",
         version="0.0.3",
         packages=find_packages(),
         license="modified BSD",
@@ -26,7 +26,7 @@ if __name__ == "__main__":
         install_requires=[
             "ase @ git+https://gitlab.com/argon214/ase.git@rosen-dftb",
             "pymatgen==2022.3.29",
-            "custodian @ git+https://github.com/arosen93/custodian.git@rosen-planewave",
+            "custodian @ git+https://github.com/arosen93/custodian.git@rosen-combined-fixes",
             "jobflow==0.1.8",
             "atomate2==0.0.6",
             "monty @ git+https://github.com/arosen93/monty.git@rosen-tmp",

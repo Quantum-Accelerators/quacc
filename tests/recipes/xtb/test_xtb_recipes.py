@@ -13,12 +13,7 @@ from quacc.recipes.xtb.core import RelaxJob, StaticJob
 
 def teardown_module():
     for f in os.listdir("."):
-        if (
-            f.endswith(".log")
-            or f.endswith(".pckl")
-            or f.endswith(".traj")
-            or f == "gfnff_topo"
-        ):
+        if ".log" in f or ".pckl" in f or ".traj" in f or "gfnff_topo" in f:
             os.remove(f)
 
 
@@ -82,7 +77,7 @@ def test_relax_Job():
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["parameters"]["method"] == "GFN-FF"
-    assert output["results"]["energy"] == pytest.approx(-8.915963671549369)
+    assert output["results"]["energy"] == pytest.approx(-8.915974748299963)
 
     atoms = bulk("Cu")
     job = RelaxJob(method="GFN1-xTB").make(atoms)

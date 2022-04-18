@@ -1,4 +1,6 @@
 """Core recipes for Gaussian"""
+from __future__ import annotations
+
 import multiprocessing
 from dataclasses import dataclass, field
 from typing import Any, Dict
@@ -10,6 +12,9 @@ from jobflow import Maker, job
 from quacc.schemas.cclib import summarize_run
 from quacc.util.basics import merge_dicts
 from quacc.util.calc import run_calc
+
+LOG_FILE = Gaussian().label + ".log"
+GEOM_FILE = LOG_FILE
 
 
 @dataclass
@@ -82,10 +87,8 @@ class StaticJob(Maker):
         flags = merge_dicts(defaults, self.swaps, remove_none=True)
 
         atoms.calc = Gaussian(**flags)
-        atoms = run_calc(atoms)
-        summary = summarize_run(
-            atoms, "Gaussian.log", additional_fields={"name": self.name}
-        )
+        atoms = run_calc(atoms, geom_file=GEOM_FILE)
+        summary = summarize_run(atoms, LOG_FILE, additional_fields={"name": self.name})
 
         return summary
 
@@ -155,9 +158,7 @@ class RelaxJob(Maker):
         flags = merge_dicts(defaults, self.swaps, remove_none=True)
 
         atoms.calc = Gaussian(**flags)
-        atoms = run_calc(atoms)
-        summary = summarize_run(
-            atoms, "Gaussian.log", additional_fields={"name": self.name}
-        )
+        atoms = run_calc(atoms, geom_file=GEOM_FILE)
+        summary = summarize_run(atoms, LOG_FILE, additional_fields={"name": self.name})
 
         return summary
