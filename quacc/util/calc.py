@@ -57,10 +57,7 @@ def run_calc(
 
     if atoms.calc is None:
         raise ValueError("Atoms object must have attached calculator.")
-    try:
-        atoms = deepcopy(atoms)
-    except Exception:
-        atoms = atoms.copy()
+    atoms = deepcopy(atoms)
     scratch_dir = scratch_dir or os.getcwd()
     geom_file = geom_file + ".gz" if geom_file and gzip else geom_file
 
@@ -137,10 +134,7 @@ def run_ase_opt(
     if atoms.calc is None:
         raise ValueError("Atoms object must have attached calculator.")
 
-    try:
-        atoms = deepcopy(atoms)
-    except Exception:
-        atoms = atoms.copy()
+    atoms = deepcopy(atoms)
     scratch_dir = scratch_dir or os.getcwd()
     opt_kwargs = opt_kwargs or {}
 
