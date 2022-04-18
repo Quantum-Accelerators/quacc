@@ -1,4 +1,6 @@
 """Core recipes for Psi4"""
+from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import Any, Dict
 
