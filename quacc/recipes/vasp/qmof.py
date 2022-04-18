@@ -16,7 +16,6 @@ from quacc.util.calc import run_ase_opt, run_calc
 
 # This set of recipes is meant to be compatible with the QMOF Database workflow.
 # Reference: https://doi.org/10.1016/j.matt.2021.02.015
-GEOM_FILE = "CONTCAR"
 
 
 @dataclass
@@ -189,7 +188,7 @@ def _loose_relax_positions(
     flags = merge_dicts(defaults, swaps)
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
-    atoms = run_calc(atoms, geom_file=GEOM_FILE)
+    atoms = run_calc(atoms)
 
     summary = summarize_run(atoms, bader=False)
 
@@ -232,7 +231,7 @@ def _loose_relax_volume(
     flags = merge_dicts(defaults, swaps)
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
-    atoms = run_calc(atoms, geom_file=GEOM_FILE)
+    atoms = run_calc(atoms)
 
     summary = summarize_run(atoms, bader=False)
 
@@ -279,7 +278,7 @@ def _double_relax(
     flags = merge_dicts(defaults, swaps)
     calc1 = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc1
-    atoms = run_calc(atoms, geom_file=GEOM_FILE)
+    atoms = run_calc(atoms)
 
     # Update atoms for
     summary1 = summarize_run(atoms, bader=False, additional_fields={"name": "relax1"})
@@ -297,7 +296,7 @@ def _double_relax(
     if calc1.kpts == [1, 1, 1] and calc2.kpts != [1, 1, 1]:
         atoms.calc.set(istart=0)
 
-    atoms = run_calc(atoms, geom_file=GEOM_FILE)
+    atoms = run_calc(atoms)
     summary2 = summarize_run(atoms, bader=False)
 
     return {"relax1": summary1, "relax2": summary2}
@@ -338,7 +337,7 @@ def _static(
     flags = merge_dicts(defaults, swaps)
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
-    atoms = run_calc(atoms, geom_file=GEOM_FILE)
+    atoms = run_calc(atoms)
 
     summary = summarize_run(atoms)
 
