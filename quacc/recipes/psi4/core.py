@@ -78,7 +78,9 @@ class StaticMaker(Maker):
         flags = merge_dicts(defaults, swaps, remove_none=True)
 
         atoms.calc = Psi4(**flags)
-        atoms = run_calc(atoms)
-        summary = summarize_run(atoms, ".log", additional_fields={"name": self.name})
+        new_atoms = run_calc(atoms)
+        summary = summarize_run(
+            new_atoms, input_atoms=atoms, additional_fields={"name": self.name}
+        )
 
         return summary
