@@ -1,5 +1,6 @@
 """Core recipes for ORCA"""
 from __future__ import annotations
+
 import multiprocessing
 from dataclasses import dataclass, field
 from typing import Any, Dict

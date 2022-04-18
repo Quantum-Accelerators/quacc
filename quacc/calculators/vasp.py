@@ -2,6 +2,7 @@
 A wrapper around ASE's Vasp calculator that makes it better suited for high-throughput DFT.
 """
 from __future__ import annotations
+
 import inspect
 import os
 import warnings

@@ -2,6 +2,7 @@
 Utility functions for running ASE calculators
 """
 from __future__ import annotations
+
 import os
 from copy import deepcopy
 from typing import Any, Dict
