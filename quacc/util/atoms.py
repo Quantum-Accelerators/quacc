@@ -20,7 +20,7 @@ from pymatgen.io.ase import AseAtomsAdaptor
 # - All major functions should take in Atoms by default and reutrn Atoms
 # by default. Pymatgen structures can be returned with an optional kwarg.
 # - If you modify the properties of an input Atoms object in any way, make sure to do so
-# on a deepcopy because Atoms objects are mutable.
+# on a copy because Atoms objects are mutable.
 
 
 def prep_next_run(
@@ -281,7 +281,6 @@ def get_highest_block(atoms: Atoms) -> str:
 def copy_atoms(atoms: Atoms) -> Atoms:
     """
     Simple function to copy an atoms object to prevent mutability.
-    Also re-attaches the calculator.
 
     Parameters
     ----------

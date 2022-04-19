@@ -23,7 +23,7 @@ from quacc.util.atoms import copy_atoms
 # - All major functions should take in Atoms by default and return Atoms
 # by default. Pymatgen structures can be returned with an optional kwarg.
 # - If you modify the properties of an input Atoms object in any way, make sure to do so
-# on a deepcopy because Atoms objects are mutable.
+# on a copy because Atoms objects are mutable.
 
 
 def flip_atoms(
