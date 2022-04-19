@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import random
 import warnings
-from copy import deepcopy
 from typing import Any, Dict, List
 
 import numpy as np
@@ -15,6 +14,8 @@ from pymatgen.core import Structure
 from pymatgen.core.surface import Slab, center_slab, generate_all_slabs
 from pymatgen.io.ase import AseAtomsAdaptor
 
+from quacc.util.atoms import copy_atoms
+
 # NOTES:
 # - Anytime an Atoms object is converted to a pmg structure, make sure
 # to reattach any .info flags to the Atoms object, e.g. via `new_atoms.info = atoms.info.copy()``.
@@ -22,7 +23,7 @@ from pymatgen.io.ase import AseAtomsAdaptor
 # - All major functions should take in Atoms by default and return Atoms
 # by default. Pymatgen structures can be returned with an optional kwarg.
 # - If you modify the properties of an input Atoms object in any way, make sure to do so
-# on a deepcopy because Atoms objects are mutable.
+# on a copy because Atoms objects are mutable.
 
 
 def flip_atoms(
@@ -46,7 +47,7 @@ def flip_atoms(
     """
 
     if isinstance(atoms, Atoms):
-        new_atoms = deepcopy(atoms)
+        new_atoms = copy_atoms(atoms)
         atoms_info = atoms.info.copy()
     else:
         new_atoms = AseAtomsAdaptor.get_atoms(atoms)
@@ -366,7 +367,7 @@ def make_adsorbate_structures(
         The structures with adsorbates
 
     """
-    atoms = deepcopy(atoms)
+    atoms = copy_atoms(atoms)
 
     if modes is None:
         modes = ["ontop", "bridge", "hollow"]

@@ -1,4 +1,5 @@
 import os
+from shutil import which
 
 import numpy as np
 import pytest
@@ -6,6 +7,8 @@ from ase.build import bulk, molecule
 from jobflow.managers.local import run_locally
 
 from quacc.recipes.dftb.core import RelaxJob, StaticJob
+
+DFTBPLUS_EXISTS = bool(which("dftb+"))
 
 
 def teardown_module():
@@ -24,6 +27,10 @@ def teardown_module():
             os.remove(f)
 
 
+@pytest.mark.skipif(
+    DFTBPLUS_EXISTS is False,
+    reason="DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
+)
 def test_static_Job():
 
     atoms = molecule("H2O")
@@ -56,6 +63,10 @@ def test_static_Job():
     assert output["results"]["energy"] == pytest.approx(-107.55154244254307)
 
 
+@pytest.mark.skipif(
+    DFTBPLUS_EXISTS is False,
+    reason="DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
+)
 def test_relax_job():
 
     atoms = molecule("H2O")

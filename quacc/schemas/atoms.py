@@ -3,7 +3,6 @@ Schemas for storing metadata about Atoms objects
 """
 from __future__ import annotations
 
-from copy import deepcopy
 from typing import Any, Dict
 
 import numpy as np
@@ -12,6 +11,8 @@ from atomate2.common.schemas.molecule import MoleculeMetadata
 from atomate2.common.schemas.structure import StructureMetadata
 from monty.json import jsanitize
 from pymatgen.io.ase import AseAtomsAdaptor
+
+from quacc.util.atoms import copy_atoms
 
 
 def atoms_to_metadata(
@@ -37,7 +38,7 @@ def atoms_to_metadata(
         Dictionary of tabulated atoms object data
     """
 
-    atoms = deepcopy(atoms)
+    atoms = copy_atoms(atoms)
     results = {}
 
     # Get Atoms metadata, if requested. Atomate2 already has built-in tools for
@@ -57,7 +58,7 @@ def atoms_to_metadata(
 
     # Strip info if requested
     if strip_info:
-        atoms_no_info = deepcopy(atoms)
+        atoms_no_info = copy_atoms(atoms)
         atoms_no_info.info = {}
         results["atoms"] = atoms_no_info
     else:

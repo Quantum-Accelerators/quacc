@@ -23,7 +23,9 @@ This package is heavily inspired by [Atomate2](https://github.com/materialsproje
 [**Coming Soon**](https://arosen93.github.io/quacc/)
 
 ## Installation
+
 QuAcc can be installed as follows:
+
 ```bash
 # For the latest release
 pip install quacc
@@ -54,6 +56,7 @@ responses = run_locally(job, create_folders=True)
 ```
 
 ### GFN2-xTB + Gaussian + ORCA Workflow with FireWorks
+
 ```python
 from ase.build import molecule
 from fireworks import LaunchPad

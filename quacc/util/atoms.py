@@ -20,7 +20,7 @@ from pymatgen.io.ase import AseAtomsAdaptor
 # - All major functions should take in Atoms by default and reutrn Atoms
 # by default. Pymatgen structures can be returned with an optional kwarg.
 # - If you modify the properties of an input Atoms object in any way, make sure to do so
-# on a deepcopy because Atoms objects are mutable.
+# on a copy because Atoms objects are mutable.
 
 
 def prep_next_run(
@@ -63,11 +63,7 @@ def prep_next_run(
     .Atoms
         Atoms object with calculator results attached in atoms.info["results"]
     """
-    try:
-        atoms = deepcopy(atoms)
-    except TypeError:
-        # Workaround for xTB
-        atoms = atoms.copy()
+    atoms = copy_atoms(atoms)
 
     if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None) is not None:
 
@@ -213,7 +209,7 @@ def get_atoms_id(atoms: Atoms) -> str:
         MD5 hash of the .Atoms object
     """
 
-    atoms = deepcopy(atoms)
+    atoms = copy_atoms(atoms)
     atoms.info = {}
     atoms.calc = None
     encoded_atoms = encode(atoms)
@@ -280,3 +276,27 @@ def get_highest_block(atoms: Atoms) -> str:
         max_block = "s"
 
     return max_block
+
+
+def copy_atoms(atoms: Atoms) -> Atoms:
+    """
+    Simple function to copy an atoms object to prevent mutability.
+
+    Parameters
+    ----------
+    atoms
+        .Atoms object
+
+    Returns
+    -------
+    atoms
+        .Atoms object
+    """
+    try:
+        atoms = deepcopy(atoms)
+    except Exception:
+        calc = atoms.calc
+        atoms = atoms.copy()
+        atoms.calc = calc
+
+    return atoms
