@@ -1,6 +1,7 @@
 import os
 from shutil import which
 
+
 import numpy as np
 import pytest
 from ase.build import bulk, molecule
