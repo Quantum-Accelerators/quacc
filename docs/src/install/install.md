@@ -2,9 +2,9 @@
 
 ## Pre-Requisites
 
-To use QuAcc, you must have a Python 3.8+ environment set up. For this, we recommend using an environment manager, such as Miniconda. To install Python via Miniconda, download and run your operating system's [Miniconda installer](https://docs.conda.io/en/latest/miniconda.html).
+To use QuAcc, you must have a Python environment set up. For this, we recommend using an environment manager, such as Miniconda. To install Python via Miniconda, download and run your operating system's [Miniconda installer](https://docs.conda.io/en/latest/miniconda.html).
 
-With Miniconda installed, create a fresh environment by running `conda create -n quacc python=3.10`. You can then activate this environment via `conda activate quacc`.
+With Miniconda installed, create a fresh environment by running `conda create -n quacc python=3.9`. You can then activate this environment via `conda activate quacc`.
 
 ## Installing QuAcc
 
