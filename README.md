@@ -14,7 +14,7 @@
 
 QuAcc is a platform for high-throughput, database-driven computational materials science and quantum chemistry. Primarily, QuAcc seeks to enable a seamless interface between the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/index.html) (ASE) and [Jobflow](https://github.com/materialsproject/jobflow) for rapid workflow development and prototyping while leveraging many of the tools that power the [Materials Project](https://materialsproject.org).
 
-This package is heavily inspired by [Atomate2](https://github.com/materialsproject/atomate2), which I also recommend checking out. If you don't care about developing workflows based on ASE, you will probably want to use Atomate2.
+This package is heavily inspired by [Atomate2](https://github.com/materialsproject/atomate2), which I also recommend checking out.
 
 **Disclaimer**: Currently, this package is under active development and should be considered *highly experimental.*
 
