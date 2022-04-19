@@ -1,11 +1,15 @@
 import os
 from pathlib import Path
-
+import pytest
 from ase.build import molecule
 from jobflow.managers.local import run_locally
 
 from quacc.recipes.psi4.core import StaticMaker
 
+try:
+    import psi4
+except:
+    psi4 = None
 FILE_DIR = Path(__file__).resolve().parent
 
 
@@ -15,6 +19,10 @@ def teardown_module():
             os.remove(f)
 
 
+@pytest.mark.skipif(
+    psi4 is None,
+    reason="Psi4 must be installed. Try conda install -c psi4 psi4",
+)
 def test_static_maker():
 
     atoms = molecule("H2")

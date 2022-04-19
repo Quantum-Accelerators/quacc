@@ -294,7 +294,7 @@ def copy_atoms(atoms: Atoms) -> Atoms:
         .Atoms object
     """
     try:
-        deepcopy(atoms)
+        atoms = deepcopy(atoms)
     except Exception:
         calc = atoms.calc
         atoms = atoms.copy()
