@@ -35,7 +35,7 @@ class StaticMaker(Maker):
         Dictionary of custom kwargs for the calculator.
     """
 
-    name: str = "psi4-Static"
+    name: str = "Psi4-Static"
     method: str = "wb97x-v"
     basis: str = "def2-tzvp"
     swaps: Dict[str, Any] = None
@@ -69,7 +69,7 @@ class StaticMaker(Maker):
             "mem": "16GB",
             "num_threads": "max",
             "method": self.method,
-            "basis": "def2-tzvp",
+            "basis": self.basis,
             "charge": charge if charge else round(sum(atoms.get_initial_charges())),
             "multiplicity": mult
             if mult

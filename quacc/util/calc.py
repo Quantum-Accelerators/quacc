@@ -4,7 +4,6 @@ Utility functions for running ASE calculators
 from __future__ import annotations
 
 import os
-from copy import deepcopy
 from typing import Any, Dict
 
 from ase.atoms import Atoms
@@ -14,6 +13,7 @@ from ase.optimize.optimize import Optimizer
 from monty.tempfile import ScratchDir
 
 from quacc import SETTINGS
+from quacc.util.atoms import copy_atoms
 
 
 def run_calc(
@@ -57,7 +57,7 @@ def run_calc(
 
     if atoms.calc is None:
         raise ValueError("Atoms object must have attached calculator.")
-    atoms = deepcopy(atoms)
+    atoms = copy_atoms(atoms)
     scratch_dir = scratch_dir or os.getcwd()
     geom_file = geom_file + ".gz" if geom_file and gzip else geom_file
 
@@ -134,7 +134,7 @@ def run_ase_opt(
     if atoms.calc is None:
         raise ValueError("Atoms object must have attached calculator.")
 
-    atoms = deepcopy(atoms)
+    atoms = copy_atoms(atoms)
     scratch_dir = scratch_dir or os.getcwd()
     opt_kwargs = opt_kwargs or {}
 
