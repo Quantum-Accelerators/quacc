@@ -60,21 +60,11 @@ class StaticJob(Maker):
         Dict
             Summary of the run.
         """
-        defaults = {}
-        if "xtb" in self.method.lower():
-            defaults["Hamiltonian_"] = "xTB"
-            if "gfn2-xtb" in self.method.lower():
-                defaults["Hamiltonian_Method"] = "GFN2-xTB"
-            elif "gfn1-xtb" in self.method.lower():
-                defaults["Hamiltonian_Method"] = "GFN1-xTB"
-
-        if self.kpts:
-            defaults["kpts"] = self.kpts
-        elif atoms.pbc.any():
-            defaults["kpts"] = (1, 1, 1)
-        else:
-            defaults["kpts"] = None
-
+        defaults = {
+            "Hamiltonian_": "xTB" if "xtb" in self.method.lower() else "DFTB",
+            "Hamiltonian_Method": self.method if "xtb" in self.method.lower() else None,
+            "kpts": self.kpts if self.kpts else (1, 1, 1) if atoms.pbc.any() else None,
+        }
         flags = merge_dicts(
             defaults, self.swaps, remove_none=True, auto_lowercase=False
         )
@@ -135,27 +125,15 @@ class RelaxJob(Maker):
             Summary of the run.
         """
         defaults = {
+            "Hamiltonian_": "xTB" if "xtb" in self.method.lower() else "DFTB",
+            "Hamiltonian_Method": self.method if "xtb" in self.method.lower() else None,
+            "kpts": self.kpts if self.kpts else (1, 1, 1) if atoms.pbc.any() else None,
             "Driver_": "GeometryOptimization",
             "Driver_LatticeOpt": "Yes"
-            if self.lattice_opt and True in atoms.pbc
+            if self.lattice_opt and atoms.pbc.any()
             else "No",
-            "Driver_MaxSteps": 1000,
+            "Driver_MaxSteps": 500,
         }
-
-        if "xtb" in self.method.lower():
-            defaults["Hamiltonian_"] = "xTB"
-            if "gfn2-xtb" in self.method.lower():
-                defaults["Hamiltonian_Method"] = "GFN2-xTB"
-            elif "gfn1-xtb" in self.method.lower():
-                defaults["Hamiltonian_Method"] = "GFN1-xTB"
-
-        if self.kpts:
-            defaults["kpts"] = self.kpts
-        elif atoms.pbc.any():
-            defaults["kpts"] = (1, 1, 1)
-        else:
-            defaults["kpts"] = None
-
         flags = merge_dicts(
             defaults, self.swaps, remove_none=True, auto_lowercase=False
         )
