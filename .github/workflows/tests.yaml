@@ -32,7 +32,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           conda install -c conda-forge xtb-python dftbplus
-          conda install -c psi4 psi4
           pip install .[tests]
           pip install pytest-cov
 
