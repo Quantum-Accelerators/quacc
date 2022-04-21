@@ -35,14 +35,14 @@ def test_run_calc():
     calc = Vasp(atoms)
     atoms.calc = calc
 
-    atoms = run_calc(atoms, scratch_dir="test_calc", copy_from_store_dir=True)
+    atoms = run_calc(atoms, scratch_dir="test_calc", copy_files=["test_file.txt"])
     assert atoms.calc.results is not None
     assert os.path.exists("test_file.txt")
     assert os.path.exists("test_file.txt.gz")
     os.remove("test_file.txt.gz")
 
     atoms = run_calc(
-        atoms, scratch_dir="test_calc", gzip=False, copy_from_store_dir=True
+        atoms, scratch_dir="test_calc", gzip=False, copy_files=["test_file.txt"]
     )
     assert atoms.calc.results is not None
     assert os.path.exists("test_file.txt")
