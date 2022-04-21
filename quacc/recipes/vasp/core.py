@@ -184,7 +184,7 @@ class DoubleRelaxJob(Maker):
         calc = Vasp(atoms, preset=self.preset, **flags)
         atoms.calc = calc
         kpts1 = atoms.calc.kpts
-        atoms = run_calc(atoms)
+        atoms = run_calc(atoms, gzip=False)
         summary1 = summarize_run(atoms, additional_fields={"name": self.name})
 
         # Run second relaxation
@@ -197,7 +197,7 @@ class DoubleRelaxJob(Maker):
         if kpts1 == [1, 1, 1] and kpts2 != [1, 1, 1]:
             atoms.calc.set(istart=0)
 
-        atoms = run_calc(atoms)
+        atoms = run_calc(atoms, copy_from_store_dir=True)
         summary2 = summarize_run(atoms, additional_fields={"name": self.name})
 
         return {"relax1": summary1, "relax2": summary2}
