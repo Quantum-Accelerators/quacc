@@ -72,9 +72,11 @@ def run_calc(
         # Copy files to scratch and decompress them if needed
         if copy_files:
             for f in copy_files:
-                if os.path.exists(zpath(f)):
-                    copy(zpath(f), os.path.join(tmpdir, f))
-                    decompress_file(os.path.join(tmpdir, f))
+                zpath = zpath(f)
+                zfile = os.path.basename(zpath)
+                if os.path.exists(zpath):
+                    copy(zpath, os.path.join(tmpdir, zfile))
+                    decompress_file(os.path.join(tmpdir, zfile))
 
         # Run calculation via get_potential_energy()
         os.chdir(tmpdir)
@@ -166,9 +168,11 @@ def run_ase_opt(
         # Copy files to scratch and decompress them if needed
         if copy_files:
             for f in copy_files:
-                if os.path.exists(zpath(f)):
-                    copy(zpath(f), os.path.join(tmpdir, f))
-                    decompress_file(os.path.join(tmpdir, f))
+                zpath = zpath(f)
+                zfile = os.path.basename(zpath)
+                if os.path.exists(zpath):
+                    copy(zpath, os.path.join(tmpdir, zfile))
+                    decompress_file(os.path.join(tmpdir, zfile))
 
         # Run calculation
         os.chdir(tmpdir)
