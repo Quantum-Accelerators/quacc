@@ -1,3 +1,4 @@
+import gzip
 import os
 from shutil import rmtree
 
@@ -58,13 +59,15 @@ def setup_module():
     if not os.path.exists("rundir"):
         os.mkdir("rundir")
     os.chdir("rundir")
-    for f in ["CHGCAR", "AECCAR0.gz", "AECCAR2.gz", "POTCAR"]:
+    for f in ["CHGCAR", "POTCAR"]:
         with open(f, "w") as w:
             w.write("test")
+    for f in ["AECCAR0.gz", "AECCAR2.gz"]:
+        with gzip.open(f, "wb") as gf:
+            gf.write("test".encode())
 
 
 def teardown_module():
-
     for f in ["CHGCAR", "AECCAR0.gz", "AECCAR2.gz", "POTCAR"]:
         if os.path.isfile(f):
             os.remove(f)

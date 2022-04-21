@@ -25,8 +25,8 @@ def copy_decompress(src_files: List[str], dst) -> None:
     """
     for f in src_files:
         z_path = zpath(f)
-        z_file = os.path.basename(z_path)
         if os.path.exists(z_path):
+            z_file = os.path.basename(z_path)
             copy(z_path, os.path.join(dst, z_file))
             decompress_file(os.path.join(dst, z_file))
 
