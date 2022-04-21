@@ -197,7 +197,7 @@ class DoubleRelaxJob(Maker):
         if kpts1 == [1, 1, 1] and kpts2 != [1, 1, 1]:
             atoms.calc.set(istart=0)
 
-        atoms = run_calc(atoms)
+        atoms = run_calc(atoms, copy_files=["WAVECAR"])
         summary2 = summarize_run(atoms, additional_fields={"name": self.name})
 
         return {"relax1": summary1, "relax2": summary2}

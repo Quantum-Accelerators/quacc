@@ -4,13 +4,16 @@ Utility functions for running ASE calculators
 from __future__ import annotations
 
 import os
-from typing import Any, Dict
+from shutil import copy
+from tempfile import TemporaryDirectory
+from typing import Any, Dict, List
 
 from ase.atoms import Atoms
 from ase.io import read
 from ase.optimize import FIRE
 from ase.optimize.optimize import Optimizer
-from monty.tempfile import ScratchDir
+from monty.os.path import zpath
+from monty.shutil import copy_r, gzip_dir
 
 from quacc import SETTINGS
 from quacc.util.atoms import copy_atoms
@@ -21,7 +24,7 @@ def run_calc(
     geom_file: str = None,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
-    copy_from_store_dir: bool = False,
+    copy_files: List[str] = None,
 ) -> Atoms:
     """
     Run a calculation in a scratch directory and copy the results back to the
@@ -45,9 +48,8 @@ def run_calc(
         the current working directory will be used.
     gzip : bool
         Whether to gzip the output files.
-    copy_from_store_dir : bool
-        Whether to copy any pre-existing files from the original directory to the
-        scratch_dir before running the calculation.
+    copy_files : List[str]
+        Filenames to copy from source to scratch directory.
 
     Returns
     -------
@@ -58,31 +60,47 @@ def run_calc(
     if atoms.calc is None:
         raise ValueError("Atoms object must have attached calculator.")
     atoms = copy_atoms(atoms)
-    scratch_dir = scratch_dir or os.getcwd()
-    geom_file = geom_file + ".gz" if geom_file and gzip else geom_file
+    cwd = os.getcwd()
+    scratch_dir = scratch_dir or cwd
+    symlink = os.path.join(cwd, "tmp_dir")
 
-    with ScratchDir(
-        os.path.abspath(scratch_dir),
-        create_symbolic_link=os.name != "nt",
-        copy_from_current_on_enter=copy_from_store_dir,
-        copy_to_current_on_exit=True,
-        gzip_on_exit=gzip,
-        delete_removed_files=False,
-    ):
+    with TemporaryDirectory(dir=scratch_dir) as tmpdir:
+
+        if os.name != "nt":
+            os.symlink(tmpdir, symlink)
+
+        # Copy files to scratch
+        if copy_files:
+            for f in copy_files:
+                if os.path.exists(zpath(f)):
+                    copy(zpath(f), tmpdir)
 
         # Run calculation via get_potential_energy()
+        os.chdir(tmpdir)
         atoms.get_potential_energy()
+        os.chdir(cwd)
+
+        # Gzip files in tmpdir
+        if gzip:
+            gzip_dir(tmpdir)
+
+        # Copy files back to run_dir
+        copy_r(tmpdir, cwd)
+
+        # Remove symlink
+        if os.path.islink(symlink):
+            os.remove(symlink)
 
     # Some ASE calculators do not update the atoms object in-place with
     # a call to .get_potential_energy(). This is a workaround to ensure
     # that the atoms object is updated with the correct positions, cell,
     # and magmoms.
-    if geom_file and os.path.exists(geom_file):
+    if geom_file and os.path.exists(zpath(geom_file)):
 
         # Note: We have to be careful to make sure we don't lose the
         # converged magnetic moments, if present. That's why we simply
         # update the positions and cell in-place.
-        atoms_new = read(geom_file)
+        atoms_new = read(zpath(geom_file))
         atoms.positions = atoms_new.positions
         atoms.cell = atoms_new.cell
 
@@ -96,7 +114,7 @@ def run_ase_opt(
     opt_kwargs: Dict[str, Any] = None,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
-    copy_from_store_dir: bool = False,
+    copy_files: List[str] = None,
 ) -> Atoms:
     """
     Run an ASE-based optimization in a scratch directory and copy the results
@@ -121,9 +139,8 @@ def run_ase_opt(
         the current working directory will be used.
     gzip : bool
         Whether to gzip the output files.
-    copy_from_store_dir : bool
-        Whether to copy any pre-existing files from the original directory to the
-        scratch_dir before running the calculation.
+    copy_files : List[str]
+        Filenames to copy from source to scratch directory.
 
     Returns
     -------
@@ -135,19 +152,39 @@ def run_ase_opt(
         raise ValueError("Atoms object must have attached calculator.")
 
     atoms = copy_atoms(atoms)
-    scratch_dir = scratch_dir or os.getcwd()
+    cwd = os.getcwd()
+    scratch_dir = scratch_dir or cwd
+    symlink = os.path.join(cwd, "tmp_dir")
     opt_kwargs = opt_kwargs or {}
 
-    with ScratchDir(
-        os.path.abspath(scratch_dir),
-        create_symbolic_link=os.name != "nt",
-        copy_from_current_on_enter=copy_from_store_dir,
-        copy_to_current_on_exit=True,
-        gzip_on_exit=gzip,
-        delete_removed_files=False,
-    ):
-        # Run calculation via ASE optimizers
-        dyn = optimizer(atoms, logfile="opt.log", trajectory="opt.traj", **opt_kwargs)
+    with TemporaryDirectory(dir=scratch_dir) as tmpdir:
+
+        if os.name != "nt":
+            os.symlink(tmpdir, symlink)
+
+        # Copy files to scratch
+        if copy_files:
+            for f in copy_files:
+                if os.path.exists(zpath(f)):
+                    copy(zpath(cwd, f), tmpdir)
+
+        # Run calculation
+        os.chdir(tmpdir)
+        dyn = optimizer(atoms, **opt_kwargs)
         dyn.run(fmax=fmax)
+        os.chdir(cwd)
+
+        # Gzip files in tmpdir
+        if gzip:
+            gzip_dir(tmpdir)
+
+        # Copy files back to run_dir
+        copy_r(tmpdir, cwd)
+
+        # Remove symlink
+        if os.path.islink(symlink):
+            os.remove(symlink)
+
+        os.chdir(cwd)
 
     return atoms
