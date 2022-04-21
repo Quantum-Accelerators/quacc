@@ -4,7 +4,6 @@ Utility functions for running ASE calculators
 from __future__ import annotations
 
 import os
-from shutil import copy
 from tempfile import TemporaryDirectory
 from typing import Any, Dict, List
 
@@ -13,7 +12,7 @@ from ase.io import read
 from ase.optimize import FIRE
 from ase.optimize.optimize import Optimizer
 from monty.os.path import zpath
-from monty.shutil import compress_dir, copy_r, gzip_dir
+from monty.shutil import copy_r, gzip_dir
 
 from quacc import SETTINGS
 from quacc.util.atoms import copy_atoms
