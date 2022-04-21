@@ -70,7 +70,7 @@ def summarize_run(
 
     # Check for calculation convergence
     if check_convergence and results["state"] != "successful":
-        raise RuntimeError(
+        raise ValueError(
             "VASP calculation did not converge. Will not store task data."
         )
 
