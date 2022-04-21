@@ -63,7 +63,7 @@ def run_bader(
 
     # Run Bader analysis
     with TemporaryDirectory(dir=scratch_dir) as tmpdir:
-        copy_decompress(relevant_files, os.path.join(tmpdir, f))
+        copy_decompress(relevant_files, tmpdir)
         bader_stats = bader_analysis_from_path(path)
 
     # Store the partial charge, which is much more useful than the
@@ -146,7 +146,7 @@ def run_chargemol(
 
     # Run Chargemol analysis
     with TemporaryDirectory(dir=scratch_dir) as tmpdir:
-        copy_decompress(relevant_files, os.path.join(tmpdir, f))
+        copy_decompress(relevant_files, tmpdir)
         chargemol_stats = ChargemolAnalysis(
             path=path,
             atomic_densities_path=atomic_densities_path,
