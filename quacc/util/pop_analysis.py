@@ -4,13 +4,14 @@ Utility functions for population analyses
 from __future__ import annotations
 
 import os
+from tempfile import TemporaryDirectory
 from typing import Any, Dict
 
-from monty.tempfile import ScratchDir
 from pymatgen.command_line.bader_caller import bader_analysis_from_path
 from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
 
 from quacc import SETTINGS
+from quacc.util.basics import copy_decompress
 
 
 def run_bader(
@@ -52,20 +53,17 @@ def run_bader(
     path = path or os.getcwd()
     scratch_dir = scratch_dir or os.getcwd()
 
-    # Make sure files are present.
-    for f in ["CHGCAR", "AECCAR0", "AECCAR2", "POTCAR"]:
+    # Make sure files are present
+    relevant_files = ["AECCAR0", "AECCAR2", "CHGCAR", "POTCAR"]
+    for f in relevant_files:
         if not os.path.exists(os.path.join(path, f)) and not os.path.exists(
             os.path.join(path, f"{f}.gz")
         ):
             raise FileNotFoundError(f"Could not find {f} in {path}.")
 
     # Run Bader analysis
-    with ScratchDir(
-        os.path.abspath(scratch_dir),
-        copy_from_current_on_enter=True,
-        copy_to_current_on_exit=True,
-        delete_removed_files=False,
-    ):
+    with TemporaryDirectory(dir=scratch_dir) as tmpdir:
+        copy_decompress(relevant_files, os.path.join(tmpdir, f))
         bader_stats = bader_analysis_from_path(path)
 
     # Store the partial charge, which is much more useful than the
@@ -134,8 +132,9 @@ def run_chargemol(
     path = path or os.getcwd()
     scratch_dir = scratch_dir or path
 
-    # Make sure files are present.
-    for f in ["CHGCAR", "AECCAR0", "AECCAR2", "POTCAR"]:
+    # Make sure files are present
+    relevant_files = ["AECCAR0", "AECCAR2", "CHGCAR", "POTCAR"]
+    for f in relevant_files:
         if not os.path.exists(os.path.join(path, f)) and not os.path.exists(
             os.path.join(path, f"{f}.gz")
         ):
@@ -146,12 +145,8 @@ def run_chargemol(
         raise ValueError("DDEC6_ATOMIC_DENSITIES_DIR environment variable not defined.")
 
     # Run Chargemol analysis
-    with ScratchDir(
-        os.path.abspath(scratch_dir),
-        copy_from_current_on_enter=True,
-        copy_to_current_on_exit=True,
-        delete_removed_files=False,
-    ):
+    with TemporaryDirectory(dir=scratch_dir) as tmpdir:
+        copy_decompress(relevant_files, os.path.join(tmpdir, f))
         chargemol_stats = ChargemolAnalysis(
             path=path,
             atomic_densities_path=atomic_densities_path,

@@ -13,10 +13,11 @@ from ase.io import read
 from ase.optimize import FIRE
 from ase.optimize.optimize import Optimizer
 from monty.os.path import zpath
-from monty.shutil import copy_r, decompress_file, gzip_dir
+from monty.shutil import compress_dir, copy_r, gzip_dir
 
 from quacc import SETTINGS
 from quacc.util.atoms import copy_atoms
+from quacc.util.basics import copy_decompress
 
 
 def run_calc(
@@ -71,12 +72,7 @@ def run_calc(
 
         # Copy files to scratch and decompress them if needed
         if copy_files:
-            for f in copy_files:
-                z_path = zpath(f)
-                z_file = os.path.basename(z_path)
-                if os.path.exists(z_path):
-                    copy(zpath, os.path.join(tmpdir, z_file))
-                    decompress_file(os.path.join(tmpdir, z_file))
+            copy_decompress(copy_files, tmpdir)
 
         # Run calculation via get_potential_energy()
         os.chdir(tmpdir)
@@ -167,12 +163,7 @@ def run_ase_opt(
 
         # Copy files to scratch and decompress them if needed
         if copy_files:
-            for f in copy_files:
-                z_path = zpath(f)
-                z_file = os.path.basename(z_path)
-                if os.path.exists(z_path):
-                    copy(zpath, os.path.join(tmpdir, z_file))
-                    decompress_file(os.path.join(tmpdir, z_file))
+            copy_decompress(copy_files, tmpdir)
 
         # Run calculation
         os.chdir(tmpdir)

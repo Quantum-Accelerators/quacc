@@ -4,9 +4,31 @@ Basic utility functions
 from __future__ import annotations
 
 import os
-from typing import Any, Dict
+from shutil import copy
+from typing import Any, Dict, List
 
 import yaml
+from monty.os.path import zpath
+from monty.shutil import decompress_file
+
+
+def copy_decompress(src_files: List[str], dst) -> None:
+    """
+    Copy and decompress files from src to dst.
+
+    Parameters
+    ----------
+    src_files
+        List of files to copy and decompress.
+    dst
+        Destination directory.
+    """
+    for f in src_files:
+        z_path = zpath(f)
+        z_file = os.path.basename(z_path)
+        if os.path.exists(z_path):
+            copy(z_path, os.path.join(dst, z_file))
+            decompress_file(os.path.join(dst, z_file))
 
 
 def merge_dicts(
