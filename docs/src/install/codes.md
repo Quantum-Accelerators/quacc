@@ -11,7 +11,7 @@ Here, we outline how to ensure that QuAcc can run the quantum chemistry package 
 
 ## Gaussian
 
-As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/gaussian.html), by default the executables named `g16`, `g09`, or `g03` will be searched (in order of decreasing preference) to run Gaussian. To use a different executable name, you will need to define an environment variable named `ASE_GAUSSIAN_COMMAND`. It should be of the form `ASE_GAUSSIAN_COMMAND="/path/to/my/gaussian_executable gaussian.com > gaussian.log"`.
+As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/gaussian.html), by default the executables named `g16`, `g09`, or `g03` will be searched (in order of decreasing preference) to run Gaussian. To use a different executable name, you will need to define an environment variable named `ASE_GAUSSIAN_COMMAND`. It should be of the form `ASE_GAUSSIAN_COMMAND="/path/to/my/gaussian_executable Gaussian.com > Gaussian.log"`.
 
 ## ORCA
 
