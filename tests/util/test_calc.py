@@ -5,7 +5,7 @@ import pytest
 from ase.build import bulk
 from ase.calculators.emt import EMT
 
-from quacc.util.calc import run_calc, run_ase_opt, run_ase_vib
+from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
 
 CWD = os.getcwd()
 
