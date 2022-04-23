@@ -204,7 +204,7 @@ def _convert_auto_kpts(
     reciprocal_density (by volume), grid_density (by number of atoms),
     max_mixed_density (max of reciprocal_density volume or atoms), and length_density (good for slabs).
     These are formatted as {"line_density": float}, {"reciprocal_density": float},
-    {"grid_density": float}, {"vol_kkpa_density": [float, float]}, and
+    {"grid_density": float}, {"max_mixed_density": [float, float]}, and
     {"length_density": [float, float, float]}.
 
     Parameters
