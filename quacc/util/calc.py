@@ -155,7 +155,7 @@ def run_ase_opt(
     symlink = os.path.join(cwd, "tmp_dir")
     opt_kwargs = opt_kwargs or {}
 
-	tmpdir = mkdtemp(dir=scratch_dir)
+    tmpdir = mkdtemp(dir=scratch_dir)
 
     if os.name != "nt":
         os.symlink(tmpdir, symlink)
