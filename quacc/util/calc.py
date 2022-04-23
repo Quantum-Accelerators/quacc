@@ -7,13 +7,13 @@ import os
 from tempfile import mkdtemp
 from typing import Any, Dict, List
 
+import numpy as np
 from ase.atoms import Atoms
 from ase.io import read
 from ase.optimize import FIRE
 from ase.optimize.optimize import Optimizer
 from monty.os.path import zpath
 from monty.shutil import copy_r, gzip_dir
-import numpy as np
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.vasp.inputs import Kpoints
 from pymatgen.symmetry.bandstructure import HighSymmKpath
