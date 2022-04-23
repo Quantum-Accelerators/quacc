@@ -13,6 +13,9 @@ from ase.optimize import FIRE
 from ase.optimize.optimize import Optimizer
 from monty.os.path import zpath
 from monty.shutil import copy_r, gzip_dir
+from pymatgen.io.ase import AseAtomsAdaptor
+from pymatgen.io.vasp.inputs import Kpoints
+from pymatgen.symmetry.bandstructure import HighSymmKpath
 
 from quacc import SETTINGS
 from quacc.util.atoms import copy_atoms
@@ -184,3 +187,93 @@ def run_ase_opt(
     os.chdir(cwd)
 
     return atoms
+
+
+def _convert_auto_kpts(
+    atoms: Atoms,
+    auto_kpts: None
+    | Dict[str, float]
+    | Dict[str, List[Tuple[float, float]]]
+    | Dict[str, List[Tuple[float, float, float]]],
+    force_gamma: bool = True,
+) -> Tuple[List[Tuple[int, int, int]], None | bool, None | bool]:
+    """
+    Shortcuts for pymatgen k-point generation schemes.
+    Options include: line_density (for band structures),
+    reciprocal_density (by volume), grid_density (by number of atoms),
+    max_mixed_density (max of reciprocal_density volume or atoms), and length_density (good for slabs).
+    These are formatted as {"line_density": float}, {"reciprocal_density": float},
+    {"grid_density": float}, {"vol_kkpa_density": [float, float]}, and
+    {"length_density": [float, float, float]}.
+
+    Parameters
+    ----------
+    .Atoms
+        ASE Atoms object
+    auto_kpts
+        Dictionary describing the automatic k-point scheme
+    force_gamma
+        Whether a gamma-centered mesh should be returned
+
+    Returns
+    -------
+    List[int, int, int]
+        List of k-points for use with the ASE Vasp calculator
+    Optional[bool]
+        The gamma command for use with the ASE Vasp calculator
+    Optional[bool]
+        The reciprocal command for use with the ASE Vasp calculator
+    """
+    struct = AseAtomsAdaptor.get_structure(atoms)
+
+    if auto_kpts.get("line_density", None):
+        # TODO: Support methods other than latimer-munro
+        kpath = HighSymmKpath(struct, path_type="latimer_munro")
+        kpts, _ = kpath.get_kpoints(
+            line_density=auto_kpts["line_density"], coords_are_cartesian=True
+        )
+        kpts = np.stack(kpts)
+        reciprocal = True
+        gamma = None
+
+    else:
+        reciprocal = None
+        if auto_kpts.get("max_mixed_density", None):
+            if len(auto_kpts["max_mixed_density"]) != 2:
+                raise ValueError("Must specify two values for max_mixed_density.")
+
+            if auto_kpts["max_mixed_density"][0] > auto_kpts["max_mixed_density"][1]:
+                warnings.warn(
+                    "Warning: It is not usual that kppvol > kppa. Please make sure you have chosen the right k-point densities.",
+                )
+            pmg_kpts1 = Kpoints.automatic_density_by_vol(
+                struct, auto_kpts["max_mixed_density"][0], force_gamma=force_gamma
+            )
+            pmg_kpts2 = Kpoints.automatic_density(
+                struct, auto_kpts["max_mixed_density"][1], force_gamma=force_gamma
+            )
+            if np.product(pmg_kpts1.kpts[0]) >= np.product(pmg_kpts2.kpts[0]):
+                pmg_kpts = pmg_kpts1
+            else:
+                pmg_kpts = pmg_kpts2
+        elif auto_kpts.get("reciprocal_density", None):
+            pmg_kpts = Kpoints.automatic_density_by_vol(
+                struct, auto_kpts["reciprocal_density"], force_gamma=force_gamma
+            )
+        elif auto_kpts.get("grid_density", None):
+            pmg_kpts = Kpoints.automatic_density(
+                struct, auto_kpts["grid_density"], force_gamma=force_gamma
+            )
+        elif auto_kpts.get("length_density", None):
+            if len(auto_kpts["length_density"]) != 3:
+                raise ValueError("Must specify three values for length_density.")
+            pmg_kpts = Kpoints.automatic_density_by_lengths(
+                struct, auto_kpts["length_density"], force_gamma=force_gamma
+            )
+        else:
+            raise ValueError(f"Unsupported k-point generation scheme: {auto_kpts}.")
+
+        kpts = pmg_kpts.kpts[0]
+        gamma = pmg_kpts.style.name.lower() == "gamma"
+
+    return kpts, gamma, reciprocal
