@@ -13,6 +13,7 @@ from ase.optimize import FIRE
 from ase.optimize.optimize import Optimizer
 from monty.os.path import zpath
 from monty.shutil import copy_r, gzip_dir
+import numpy as np
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.vasp.inputs import Kpoints
 from pymatgen.symmetry.bandstructure import HighSymmKpath
