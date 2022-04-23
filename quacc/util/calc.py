@@ -4,14 +4,16 @@ Utility functions for running ASE calculators
 from __future__ import annotations
 
 import os
+import warnings
 from tempfile import mkdtemp
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 import numpy as np
 from ase.atoms import Atoms
 from ase.io import read
 from ase.optimize import FIRE
 from ase.optimize.optimize import Optimizer
+from ase.vibrations import Vibrations
 from monty.os.path import zpath
 from monty.shutil import copy_r, gzip_dir
 from pymatgen.io.ase import AseAtomsAdaptor
@@ -172,6 +174,82 @@ def run_ase_opt(
     os.chdir(tmpdir)
     dyn = optimizer(atoms, **opt_kwargs)
     dyn.run(fmax=fmax)
+    os.chdir(cwd)
+
+    # Gzip files in tmpdir
+    if gzip:
+        gzip_dir(tmpdir)
+
+    # Copy files back to run_dir
+    copy_r(tmpdir, cwd)
+
+    # Remove symlink
+    if os.path.islink(symlink):
+        os.remove(symlink)
+
+    os.chdir(cwd)
+
+    return atoms
+
+
+def run_ase_vib(
+    atoms: Atoms,
+    vib_kwargs: Dict[str, Any] = None,
+    scratch_dir: str = SETTINGS.SCRATCH_DIR,
+    gzip: bool = SETTINGS.GZIP_FILES,
+    copy_files: List[str] = None,
+) -> Atoms:
+    """
+    Run an ASE-based vibration analysis in a scratch directory and copy the results
+    back to the original directory. This can be useful if file I/O is slow in
+    the working directory, so long as file transfer speeds are reasonable.
+
+    This is a wrapper around the vibrations module in ASE. Note: This function does
+    not modify the atoms object in-place.
+
+    Parameters
+    ----------
+    atoms : .Atoms
+        The Atoms object to run the calculation on.
+    vib_kwargs : dict
+        Dictionary of kwargs for the vibration analysis.
+    scratch_dir : str
+        Path where a tmpdir should be made for running the calculation. If None,
+        the current working directory will be used.
+    gzip : bool
+        Whether to gzip the output files.
+    copy_files : List[str]
+        Filenames to copy from source to scratch directory.
+
+    Returns
+    -------
+    .Atoms
+        The updated .Atoms object,
+    """
+
+    if atoms.calc is None:
+        raise ValueError("Atoms object must have attached calculator.")
+
+    atoms = copy_atoms(atoms)
+    cwd = os.getcwd()
+    scratch_dir = scratch_dir or cwd
+    symlink = os.path.join(cwd, "tmp_dir")
+    vib_kwargs = vib_kwargs or {}
+
+    tmpdir = mkdtemp(dir=scratch_dir)
+
+    if os.name != "nt":
+        os.symlink(tmpdir, symlink)
+
+    # Copy files to scratch and decompress them if needed
+    if copy_files:
+        copy_decompress(copy_files, tmpdir)
+
+    # Run calculation
+    os.chdir(tmpdir)
+    vib = Vibrations(atoms, **vib_kwargs)
+    vib.run()
+    vib.summary()
     os.chdir(cwd)
 
     # Gzip files in tmpdir
