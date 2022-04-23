@@ -4,7 +4,7 @@ Utility functions for running ASE calculators
 from __future__ import annotations
 
 import os
-from tempfile import TemporaryDirectory
+from tempfile import mkdtemp
 from typing import Any, Dict, List
 
 from ase.atoms import Atoms
@@ -64,30 +64,30 @@ def run_calc(
     scratch_dir = scratch_dir or cwd
     symlink = os.path.join(cwd, "tmp_dir")
 
-    with TemporaryDirectory(dir=scratch_dir) as tmpdir:
+    tmpdir = mkdtemp(dir=scratch_dir)
 
-        if os.name != "nt":
-            os.symlink(tmpdir, symlink)
+    if os.name != "nt":
+        os.symlink(tmpdir, symlink)
 
-        # Copy files to scratch and decompress them if needed
-        if copy_files:
-            copy_decompress(copy_files, tmpdir)
+    # Copy files to scratch and decompress them if needed
+    if copy_files:
+        copy_decompress(copy_files, tmpdir)
 
-        # Run calculation via get_potential_energy()
-        os.chdir(tmpdir)
-        atoms.get_potential_energy()
-        os.chdir(cwd)
+    # Run calculation via get_potential_energy()
+    os.chdir(tmpdir)
+    atoms.get_potential_energy()
+    os.chdir(cwd)
 
-        # Gzip files in tmpdir
-        if gzip:
-            gzip_dir(tmpdir)
+    # Gzip files in tmpdir
+    if gzip:
+        gzip_dir(tmpdir)
 
-        # Copy files back to run_dir
-        copy_r(tmpdir, cwd)
+    # Copy files back to run_dir
+    copy_r(tmpdir, cwd)
 
-        # Remove symlink
-        if os.path.islink(symlink):
-            os.remove(symlink)
+    # Remove symlink
+    if os.path.islink(symlink):
+        os.remove(symlink)
 
     # Some ASE calculators do not update the atoms object in-place with
     # a call to .get_potential_energy(). This is a workaround to ensure
@@ -155,32 +155,32 @@ def run_ase_opt(
     symlink = os.path.join(cwd, "tmp_dir")
     opt_kwargs = opt_kwargs or {}
 
-    with TemporaryDirectory(dir=scratch_dir) as tmpdir:
+	tmpdir = mkdtemp(dir=scratch_dir)
 
-        if os.name != "nt":
-            os.symlink(tmpdir, symlink)
+    if os.name != "nt":
+        os.symlink(tmpdir, symlink)
 
-        # Copy files to scratch and decompress them if needed
-        if copy_files:
-            copy_decompress(copy_files, tmpdir)
+    # Copy files to scratch and decompress them if needed
+    if copy_files:
+        copy_decompress(copy_files, tmpdir)
 
-        # Run calculation
-        os.chdir(tmpdir)
-        dyn = optimizer(atoms, **opt_kwargs)
-        dyn.run(fmax=fmax)
-        os.chdir(cwd)
+    # Run calculation
+    os.chdir(tmpdir)
+    dyn = optimizer(atoms, **opt_kwargs)
+    dyn.run(fmax=fmax)
+    os.chdir(cwd)
 
-        # Gzip files in tmpdir
-        if gzip:
-            gzip_dir(tmpdir)
+    # Gzip files in tmpdir
+    if gzip:
+        gzip_dir(tmpdir)
 
-        # Copy files back to run_dir
-        copy_r(tmpdir, cwd)
+    # Copy files back to run_dir
+    copy_r(tmpdir, cwd)
 
-        # Remove symlink
-        if os.path.islink(symlink):
-            os.remove(symlink)
+    # Remove symlink
+    if os.path.islink(symlink):
+        os.remove(symlink)
 
-        os.chdir(cwd)
+    os.chdir(cwd)
 
     return atoms
