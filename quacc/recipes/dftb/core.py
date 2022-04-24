@@ -12,9 +12,10 @@ from monty.dev import requires
 
 from quacc.schemas.calc import summarize_run
 from quacc.util.basics import merge_dicts
-from quacc.util.calc import run_calc
+from quacc.util.calc import _check_logfile, run_calc
 
 DFTBPLUS_EXISTS = bool(which("dftb+"))
+LOG_FILE = "dftb.out"
 GEOM_FILE = "geo_end.gen"
 
 
@@ -140,6 +141,9 @@ class RelaxJob(Maker):
 
         atoms.calc = Dftb(**flags)
         new_atoms = run_calc(atoms, geom_file=GEOM_FILE)
+        check = _check_logfile(LOG_FILE, "Geometry did NOT converge")
+        if check:
+            raise ValueError("Geometry did not converge")
         summary = summarize_run(
             new_atoms, input_atoms=atoms, additional_fields={"name": self.name}
         )
