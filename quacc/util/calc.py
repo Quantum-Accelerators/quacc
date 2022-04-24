@@ -14,6 +14,7 @@ from ase.io import read
 from ase.optimize import FIRE
 from ase.optimize.optimize import Optimizer
 from ase.vibrations import Vibrations
+from monty.io import zopen
 from monty.os.path import zpath
 from monty.shutil import copy_r, gzip_dir
 from pymatgen.io.ase import AseAtomsAdaptor
@@ -285,7 +286,7 @@ def _check_logfile(logfile: str, check_str: str) -> bool:
         True if the string is found in the logfile, False otherwise.
     """
     zlog = zpath(logfile)
-    with open(zlog, "r") as f:
+    with zopen(zlog, "r") as f:
         for line in f:
             if check_str.lower() in line.lower():
                 return True
