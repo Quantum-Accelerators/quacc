@@ -267,7 +267,8 @@ def run_ase_vib(
 
     return atoms
 
-def _check_logfile(str:logfile,str:check_str)->bool:
+
+def _check_logfile(str: logfile, str: check_str) -> bool:
     """
     Check if a logfile has a given string (case-insensitive).
 
@@ -283,12 +284,12 @@ def _check_logfile(str:logfile,str:check_str)->bool:
     bool
         True if the string is found in the logfile, False otherwise.
     """
-    with open(logfile,'r') as f:
+    with open(logfile, "r") as f:
         for line in f:
             if check_str.lower() in line.lower():
                 return True
     return False
-    """
+
 
 def _convert_auto_kpts(
     atoms: Atoms,
