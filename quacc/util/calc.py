@@ -268,7 +268,7 @@ def run_ase_vib(
     return atoms
 
 
-def _check_logfile(str: logfile, str: check_str) -> bool:
+def _check_logfile(logfile: str, check_str: str) -> bool:
     """
     Check if a logfile has a given string (case-insensitive).
 
