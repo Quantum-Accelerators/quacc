@@ -284,7 +284,8 @@ def _check_logfile(logfile: str, check_str: str) -> bool:
     bool
         True if the string is found in the logfile, False otherwise.
     """
-    with open(logfile, "r") as f:
+    zlog = zpath(logfile)
+    with open(zlog, "r") as f:
         for line in f:
             if check_str.lower() in line.lower():
                 return True
