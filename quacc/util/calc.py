@@ -106,6 +106,8 @@ def run_calc(
         # converged magnetic moments, if present. That's why we simply
         # update the positions and cell in-place.
         atoms_new = read(zpath(geom_file))
+        if isinstance(atoms_new, list):
+            atoms_new = atoms_new[-1]
         atoms.positions = atoms_new.positions
         atoms.cell = atoms_new.cell
 
