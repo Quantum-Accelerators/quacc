@@ -285,7 +285,7 @@ def _check_logfile(str:logfile,str:check_str)->bool:
     """
     with open(logfile,'r') as f:
         for line in f:
-            if check_str.lower() in line.lower:
+            if check_str.lower() in line.lower():
                 return True
     return False
     """
