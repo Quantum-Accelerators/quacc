@@ -134,7 +134,7 @@ class RelaxJob(Maker):
             if self.lattice_opt and atoms.pbc.any()
             else "No",
             "Driver_AppendGeometries": "Yes",
-            "Driver_MaxSteps": 1000,
+            "Driver_MaxSteps": 2000,
         }
         flags = merge_dicts(
             defaults, self.swaps, remove_none=True, auto_lowercase=False
