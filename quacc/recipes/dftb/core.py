@@ -130,9 +130,7 @@ class RelaxJob(Maker):
             "Hamiltonian_Method": self.method if "xtb" in self.method.lower() else None,
             "kpts": self.kpts if self.kpts else (1, 1, 1) if atoms.pbc.any() else None,
             "Driver_": "GeometryOptimization",
-            "Driver_LatticeOpt": "Yes"
-            if self.lattice_opt
-            else "No",
+            "Driver_LatticeOpt": "Yes" if self.lattice_opt else "No",
             "Driver_AppendGeometries": "Yes",
             "Driver_MaxSteps": 2000,
         }
