@@ -41,7 +41,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           conda install -c psi4 psi4
-          conda install -c conda-forge xtb-python 'dftbplus=*=mpi_*'
+          conda install -c conda-forge xtb-python dftbplus
           pip install .[tests]
           pip install pytest-cov
 
