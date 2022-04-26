@@ -3,6 +3,6 @@ pymatgen==2022.4.19
 git+https://github.com/arosen93/custodian.git@rosen-combined-fixes #waiting for #211, 214, 215
 jobflow==0.1.8
 atomate2==0.0.6
-monty==2022.3.12
+monty==2022.4.26
 git+https://github.com/materialsproject/fireworks.git # waiting on #483
 cclib==1.7.1
