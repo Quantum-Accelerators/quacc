@@ -29,7 +29,7 @@ if __name__ == "__main__":
             "custodian @ git+https://github.com/arosen93/custodian.git@rosen-combined-fixes",
             "jobflow==0.1.8",
             "atomate2==0.0.6",
-            "monty==2022.3.12",
+            "monty==2022.4.26",
             "fireworks @ git+https://github.com/materialsproject/fireworks.git",
             "cclib==1.7.1",
         ],
