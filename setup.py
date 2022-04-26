@@ -30,7 +30,7 @@ if __name__ == "__main__":
             "jobflow==0.1.8",
             "atomate2==0.0.6",
             "monty==2022.4.26",
-            "fireworks @ git+https://github.com/materialsproject/fireworks.git",
+            "fireworks==2.0.3",
             "cclib==1.7.1",
         ],
         extras_require={
