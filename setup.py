@@ -20,7 +20,7 @@ if __name__ == "__main__":
         version="0.0.3",
         packages=find_packages(),
         license="modified BSD",
-        keywords="high-throughput automated workflow dft vasp",
+        keywords="high-throughput automated workflow dft",
         data_files=["LICENSE.md"],
         zip_safe=False,
         install_requires=[
