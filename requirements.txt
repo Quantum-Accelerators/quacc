@@ -1,5 +1,5 @@
 git+https://gitlab.com/argon214/ase.git@rosen-dftb # waiting on #2682 for DFTB+, >= 3.22.2 for VASP6 OUTCAR parsing
-pymatgen==2022.4.19
+pymatgen==2022.4.26
 git+https://github.com/arosen93/custodian.git@rosen-combined-fixes #waiting for #211, 214, 215
 jobflow==0.1.8
 atomate2==0.0.6
