@@ -3,10 +3,12 @@ Schemas for storing ASE calculator data
 """
 from __future__ import annotations
 
+import os
 from typing import Any, Dict
 
 from ase.atoms import Atoms
 
+from atomate2.utils.path import get_uri
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
 
@@ -52,7 +54,7 @@ def summarize_run(
     results = {"results": atoms.calc.results}
 
     # Get the calculator inputs
-    inputs = {"parameters": atoms.calc.parameters}
+    inputs = {"parameters": atoms.calc.parameters, "dir_name": get_uri(os.getcwd())}
     if input_atoms:
         input_atoms_db = atoms_to_metadata(input_atoms)
         inputs["input_structure"] = input_atoms_db
