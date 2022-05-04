@@ -72,6 +72,9 @@ class StaticJob(Maker):
 
         atoms.calc = Dftb(**flags)
         new_atoms = run_calc(atoms, geom_file=GEOM_FILE)
+        scc_check = _check_logfile(LOG_FILE, "SCC is NOT converged")
+        if scc_check:
+            raise ValueError("SCC is not converged")
         summary = summarize_run(
             new_atoms, input_atoms=atoms, additional_fields={"name": self.name}
         )
@@ -140,9 +143,12 @@ class RelaxJob(Maker):
 
         atoms.calc = Dftb(**flags)
         new_atoms = run_calc(atoms, geom_file=GEOM_FILE)
-        check = _check_logfile(LOG_FILE, "Geometry did NOT converge")
-        if check:
+        geom_check = _check_logfile(LOG_FILE, "Geometry did NOT converge")
+        if geom_check:
             raise ValueError("Geometry did not converge")
+        scc_check = _check_logfile(LOG_FILE, "SCC is NOT converged")
+        if scc_check:
+            raise ValueError("SCC is not converged")
         summary = summarize_run(
             new_atoms, input_atoms=atoms, additional_fields={"name": self.name}
         )
