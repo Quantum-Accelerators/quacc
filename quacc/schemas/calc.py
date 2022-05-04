@@ -7,8 +7,8 @@ import os
 from typing import Any, Dict
 
 from ase.atoms import Atoms
-
 from atomate2.utils.path import get_uri
+
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
 
