@@ -1,11 +1,11 @@
 import os
 from shutil import rmtree
 
+import numpy as np
 import pytest
 from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.calculators.lj import LennardJones
-import numpy as np
 
 from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
 
