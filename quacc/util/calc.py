@@ -226,8 +226,8 @@ def run_ase_vib(
 
     Returns
     -------
-    .Atoms
-        The updated .Atoms object,
+    .Vibrations
+        The updated Vibrations module
     """
 
     if atoms.calc is None:
@@ -268,7 +268,7 @@ def run_ase_vib(
 
     os.chdir(cwd)
 
-    return atoms
+    return vib
 
 
 def _check_logfile(logfile: str, check_str: str) -> bool:
