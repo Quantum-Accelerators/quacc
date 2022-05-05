@@ -143,12 +143,9 @@ class RelaxJob(Maker):
 
         atoms.calc = Dftb(**flags)
         new_atoms = run_calc(atoms, geom_file=GEOM_FILE)
-        geom_check = _check_logfile(LOG_FILE, "Geometry did NOT converge")
-        if geom_check:
+        geom_check = _check_logfile(LOG_FILE, "Geometry converged")
+        if not geom_check:
             raise ValueError("Geometry did not converge")
-        scc_check = _check_logfile(LOG_FILE, "SCC is NOT converged")
-        if scc_check:
-            raise ValueError("SCC is not converged")
         summary = summarize_run(
             new_atoms, input_atoms=atoms, additional_fields={"name": self.name}
         )
