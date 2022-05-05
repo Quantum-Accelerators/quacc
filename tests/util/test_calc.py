@@ -51,16 +51,16 @@ def test_run_calc():
     assert os.path.exists("test_file.txt")
     assert not os.path.exists("test_file.txt.gz")
 
-    atoms = molecule("H2")
-    atoms.calc = LennardJones()
-    vib = run_ase_vib(atoms, scratch_dir="test_calc", copy_files=["test_file.txt"])
-    assert pytest.approx(np.real(vib.get_frequencies()[-1]), 152229.50461546227)
+    atoms = run_ase_opt(atoms, scratch_dir="test_calc", copy_files=["test_file.txt"])
+    assert atoms.calc.results is not None
     assert os.path.exists("test_file.txt")
     assert os.path.exists("test_file.txt.gz")
     os.remove("test_file.txt.gz")
 
-    atoms = run_ase_opt(atoms, scratch_dir="test_calc", copy_files=["test_file.txt"])
-    assert atoms.calc.results is not None
+    h2 = molecule("H2")
+    h2.calc = LennardJones()
+    vib = run_ase_vib(h2, scratch_dir="test_calc", copy_files=["test_file.txt"])
+    assert pytest.approx(np.real(vib.get_frequencies()[-1]), 152229.50461546227)
     assert os.path.exists("test_file.txt")
     assert os.path.exists("test_file.txt.gz")
     os.remove("test_file.txt.gz")
