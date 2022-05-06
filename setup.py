@@ -28,7 +28,7 @@ if __name__ == "__main__":
             "pymatgen==2022.4.26",
             "custodian @ git+https://github.com/arosen93/custodian.git@rosen-combined-fixes",
             "jobflow==0.1.8",
-            "atomate2==0.0.6",
+            "atomate2==0.0.7",
             "monty==2022.4.26",
             "fireworks==2.0.3",
             "cclib==1.7.1",
