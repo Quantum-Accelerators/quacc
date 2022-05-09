@@ -60,7 +60,7 @@ def test_run_calc():
     h2 = molecule("H2")
     h2.calc = LennardJones()
     vib = run_ase_vib(h2, scratch_dir="test_calc", copy_files=["test_file.txt"])
-    assert np.real(vib.get_frequencies()[-1] == pytest.approx(152229.50461546227)
+    assert np.real(vib.get_frequencies()[-1]) == pytest.approx(152229.50461546227)
     assert os.path.exists("test_file.txt")
     assert os.path.exists("test_file.txt.gz")
     os.remove("test_file.txt.gz")
