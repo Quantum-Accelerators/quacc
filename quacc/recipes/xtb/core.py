@@ -89,9 +89,9 @@ class RelaxJob(Maker):
 
     name: str = "xTB-Relax"
     method: str = "GFN2-xTB"
-    xtb_kwargs: Dict[str, Any] = field(default_factory=dict)
     fmax: float = 0.01
     optimizer: Optimizer = FIRE
+    xtb_kwargs: Dict[str, Any] = field(default_factory=dict)
     opt_kwargs: Dict[str, Any] = field(default_factory=dict)
 
     @job
