@@ -138,8 +138,6 @@ class ThermoJob(Maker):
         Temperature in Kelvins.
     pressure
         Pressure in bar.
-    energy
-        Potential energy in eV. If 0 eV, then the thermochemical correction is computed.
     geometry
         Monatomic, linear, or nonlinear. Will try to determine automatically if None.
     symmetry_number
@@ -152,7 +150,6 @@ class ThermoJob(Maker):
     method: str = "GFN2-xTB"
     temperature: float = 298.15
     pressure: float = 1.0
-    energy: float = 0.0
     geometry: str = None
     symmetry_number: int = 1
     xtb_kwargs: Dict[str, Any] = field(default_factory=dict)
@@ -161,7 +158,7 @@ class ThermoJob(Maker):
     @requires(
         XTB, "xTB-python must be installed. Try conda install -c conda-forge xtb-python"
     )
-    def make(self, atoms: Atoms) -> Dict[str, Any]:
+    def make(self, atoms: Atoms, energy: float = 0.0) -> Dict[str, Any]:
         """
         Make the run.
 
@@ -169,6 +166,8 @@ class ThermoJob(Maker):
         ----------
         atoms
             .Atoms object
+        energy
+            Potential energy in eV. If 0 eV, then the thermochemical correction is computed.
 
         Returns
         -------
