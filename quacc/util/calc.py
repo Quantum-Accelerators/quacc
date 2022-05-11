@@ -279,12 +279,12 @@ def calculate_thermo(
     energy: float = 0.0,
     geometry: str = None,
     symmetry_number: int = 1,
-    spin: int = None,
+    spin: float = None,
 ) -> Dict[str, Any]:
 
     atoms = vibrations.atoms
 
-    # Get the spin spin from the Atoms object
+    # Get the spin from the Atoms object
     if spin is None:
         if (
             getattr(atoms, "calc", None) is not None
