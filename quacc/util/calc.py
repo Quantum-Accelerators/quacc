@@ -290,7 +290,7 @@ def calculate_thermo(
             getattr(atoms, "calc", None) is not None
             and getattr(atoms.calc, "results", None) is not None
         ):
-            spin = round(atoms.calc.results.get("magmom")) / 2
+            spin = round(atoms.calc.results.get("magmom", 0)) / 2
         elif atoms.has("initial_magmoms"):
             spin = round(np.sum(atoms.get_initial_magnetic_moments())) / 2
         else:

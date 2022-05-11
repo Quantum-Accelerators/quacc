@@ -173,7 +173,7 @@ class ThermoJob(Maker):
         Returns
         -------
         Dict
-            Summary of the run.
+            Summary of the thermochemistry.
         """
         atoms.calc = XTB(method=self.method, **self.xtb_kwargs)
         vibrations = run_ase_vib(atoms)
