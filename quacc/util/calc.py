@@ -318,9 +318,18 @@ def calculate_thermo(
         symmetrynumber=symmetry_number,
         spin=spin,
     )
+    freqs = vibrations.get_frequencies()
+
+    # Use negataive sign convention for imag modes
+    clean_freqs = []
+    for f in freqs:
+        if np.iscomplex(f):
+            clean_freqs.append(-np.abs(f))
+        else:
+            clean_freqs.append(f)
 
     thermo_summary = {
-        "frequencies": vibrations.get_frequencies(),
+        "frequencies": clean_freqs,
         "enthalpy": igt.get_enthalpy(temperature, verbose=False),
         "entropy": igt.get_entropy(temperature, pressure / 10**5, verbose=False),
         "free_energy": igt.get_gibbs_energy(
