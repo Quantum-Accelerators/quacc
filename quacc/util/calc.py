@@ -304,6 +304,14 @@ def calculate_thermo(
         Rotational symmetry number.
     spin_multiplicity
         The spin multiplicity
+    
+    Returns
+    -------
+    dict
+        {"frequencies": list of frequencies in cm^-1,
+        "enthalpy": enthalpy in eV,
+        "entropy": entropy in eV/K,
+        "free_energy": free energy in eV}
     """
     # Pull atoms from vibrations object if needed
     atoms = atoms or vibrations.atoms
