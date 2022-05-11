@@ -77,12 +77,12 @@ class RelaxJob(Maker):
         Name of the job.
     method
         GFN0-xTB, GFN1-xTB, GFN2-xTB, GFN-FF.
-    xtb_kwargs
-        Dictionary of custom kwargs for the xTB calculator.
     fmax
         Tolerance for the force convergence (in eV/A).
     optimizer
         .Optimizer class to use for the relaxation.
+    xtb_kwargs
+        Dictionary of custom kwargs for the xTB calculator.
     opt_kwargs
         Dictionary of kwargs for the optimizer.
     """
