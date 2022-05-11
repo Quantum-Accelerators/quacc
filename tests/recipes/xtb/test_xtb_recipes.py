@@ -1,4 +1,5 @@
 import os
+from shutil import rmtree
 
 import numpy as np
 import pytest
@@ -9,13 +10,15 @@ try:
     from xtb.ase.calculator import XTB
 except (ModuleNotFoundError, ImportError):
     XTB = None
-from quacc.recipes.xtb.core import RelaxJob, StaticJob
+from quacc.recipes.xtb.core import RelaxJob, StaticJob, ThermoJob
 
 
 def teardown_module():
     for f in os.listdir("."):
         if ".log" in f or ".pckl" in f or ".traj" in f or "gfnff_topo" in f:
             os.remove(f)
+    if os.path.exists("vib"):
+        rmtree("vib")
 
 
 @pytest.mark.skipif(
@@ -96,3 +99,18 @@ def test_relax_Job():
     output = responses[job.uuid][1].output
     assert output["results"]["energy"] == pytest.approx(-156.97441169886613)
     assert not np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
+
+
+@pytest.mark.skipif(
+    XTB is None,
+    reason="xTB-python must be installed. Try conda install -c conda-forge xtb-python",
+)
+def test_thermo_job():
+    atoms = molecule("H2O")
+    job = ThermoJob().make(atoms)
+    responses = run_locally(job, ensure_success=True)
+    output = responses[job.uuid][1].output
+    assert output["frequencies"][-1] == pytest.approx(3526.945468014458)
+    assert output["enthalpy"] == pytest.approx(0.637581401404518)
+    assert output["entropy"] == pytest.approx(0.004002443787031705)
+    assert output["free_energy"] == pytest.approx(-0.5557472136989847)

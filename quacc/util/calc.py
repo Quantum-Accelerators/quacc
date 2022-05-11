@@ -13,12 +13,14 @@ from ase.atoms import Atoms
 from ase.io import read
 from ase.optimize import FIRE
 from ase.optimize.optimize import Optimizer
+from ase.thermochemistry import IdealGasThermo
 from ase.vibrations import Vibrations
 from monty.io import zopen
 from monty.os.path import zpath
 from monty.shutil import copy_r, gzip_dir
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.vasp.inputs import Kpoints
+from pymatgen.symmetry.analyzer import PointGroupAnalyzer
 from pymatgen.symmetry.bandstructure import HighSymmKpath
 
 from quacc import SETTINGS
@@ -269,6 +271,115 @@ def run_ase_vib(
     os.chdir(cwd)
 
     return vib
+
+
+def calculate_thermo(
+    vibrations: Vibrations,
+    atoms: Atoms = None,
+    temperature: float = 298.15,
+    pressure: float = 1.0,
+    energy: float = 0.0,
+    geometry: str = None,
+    symmetry_number: int = 1,
+    spin_multiplicity: float = None,
+) -> Dict[str, Any]:
+    """
+    Calculate thermodynamic properties from a given vibrational analysis.
+
+    Parameters
+    ----------
+    vibrations : .Vibrations
+        The Vibrations module to use.
+    atoms : .Atoms
+        The Atoms object to use. If None, the Atoms object will be taken from
+        the Vibrations module.
+    temperature
+        Temperature in Kelvins.
+    pressure
+        Pressure in bar.
+    energy
+        Potential energy in eV. If 0 eV, then the thermochemical correction is computed.
+    geometry
+        Monatomic, linear, or nonlinear. Will try to determine automatically if None.
+    symmetry_number
+        Rotational symmetry number.
+    spin_multiplicity
+        The spin multiplicity
+
+    Returns
+    -------
+    dict
+        {"frequencies": list of frequencies in cm^-1,
+        "enthalpy": enthalpy in eV,
+        "entropy": entropy in eV/K,
+        "free_energy": free energy in eV}
+    """
+    # Pull atoms from vibrations object if needed
+    atoms = atoms or vibrations.atoms
+
+    # Get the spin from the Atoms object
+    if spin_multiplicity:
+        spin = (spin_multiplicity - 1) / 2
+    else:
+        if (
+            getattr(atoms, "calc", None) is not None
+            and getattr(atoms.calc, "results", None) is not None
+        ):
+            spin = round(atoms.calc.results.get("magmom", 0)) / 2
+        elif atoms.has("initial_magmoms"):
+            spin = round(np.sum(atoms.get_initial_magnetic_moments())) / 2
+        else:
+            spin = 0
+
+    # Get symmetry for later use
+    if geometry is None or symmetry_number is None:
+        if atoms.pbc.any():
+            pmg_obj = AseAtomsAdaptor.get_structure(atoms)
+        else:
+            pmg_obj = AseAtomsAdaptor.get_molecule(atoms)
+        pga = PointGroupAnalyzer(pmg_obj)
+        pointgroup = pga.get_pointgroup()
+
+    # Get the geometry
+    if geometry is None:
+        if len(atoms) == 1:
+            geometry = "monatomic"
+        elif len(atoms) == 2 or (len(atoms) > 2 and pointgroup == "D*h"):
+            geometry = "linear"
+        else:
+            geometry = "nonlinear"
+
+    # TODO: Automatically get rotational symmetry number if None
+
+    # Calculate ideal gas thermo
+    igt = IdealGasThermo(
+        vibrations.get_energies(),
+        geometry,
+        potentialenergy=energy,
+        atoms=atoms,
+        symmetrynumber=symmetry_number,
+        spin=spin,
+    )
+    freqs = vibrations.get_frequencies()
+
+    # Use negataive sign convention for imag modes
+    clean_freqs = []
+    for f in freqs:
+        if np.iscomplex(f):
+            clean_freqs.append(-np.abs(f))
+        else:
+            clean_freqs.append(np.abs(f))
+
+    thermo_summary = {
+        "frequencies": clean_freqs,
+        "enthalpy": igt.get_enthalpy(temperature, verbose=False),
+        "entropy": igt.get_entropy(temperature, pressure / 10**5, verbose=False),
+        "free_energy": igt.get_gibbs_energy(
+            temperature, pressure / 10**5, verbose=False
+        ),
+    }
+
+    return thermo_summary
 
 
 def _check_logfile(logfile: str, check_str: str) -> bool:
