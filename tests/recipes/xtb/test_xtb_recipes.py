@@ -107,3 +107,7 @@ def test_thermo_job():
     job = ThermoJob().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
+    assert output["frequencies"] == [1]
+    assert output["enthalpy"] == 1
+    assert output["entropy"] == 1
+    assert output["free_energy"] == 1

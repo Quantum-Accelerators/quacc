@@ -280,14 +280,38 @@ def calculate_thermo(
     energy: float = 0.0,
     geometry: str = None,
     symmetry_number: int = 1,
-    spin: float = None,
+    spin_multiplicity: float = None,
 ) -> Dict[str, Any]:
+    """
+    Calculate thermodynamic properties from a given vibrational analysis.
 
+    Parameters
+    ----------
+    vibrations : .Vibrations
+        The Vibrations module to use.
+    atoms : .Atoms
+        The Atoms object to use. If None, the Atoms object will be taken from
+        the Vibrations module.
+    temperature
+        Temperature in Kelvins.
+    pressure
+        Pressure in bar.
+    energy
+        Potential energy in eV. If 0 eV, then the thermochemical correction is computed.
+    geometry
+        Monatomic, linear, or nonlinear. Will try to determine automatically if None.
+    symmetry_number
+        Rotational symmetry number.
+    spin_multiplicity
+        The spin multiplicity
+    """
     # Pull atoms from vibrations object if needed
     atoms = atoms or vibrations.atoms
 
     # Get the spin from the Atoms object
-    if spin is None:
+    if spin_multiplicity:
+        spin = (spin_multiplicity - 1) / 2
+    else:
         if (
             getattr(atoms, "calc", None) is not None
             and getattr(atoms.calc, "results", None) is not None
