@@ -29,7 +29,7 @@ JOB_STORE:
       host: <host name>
       port: 27017
       username: <username>
-      password: <port>
+      password: <password>
       database: <database name>
       collection_name: <collection name>
 ```
