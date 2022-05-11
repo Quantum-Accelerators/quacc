@@ -155,7 +155,6 @@ class ThermoJob(Maker):
     energy: float = 0.0
     geometry: str = None
     symmetry_number: int = 1
-    transition_state: bool = False
     xtb_kwargs: Dict[str, Any] = field(default_factory=dict)
 
     @job
