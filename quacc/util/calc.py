@@ -274,6 +274,7 @@ def run_ase_vib(
 
 def calculate_thermo(
     vibrations: Vibrations,
+    atoms: Atoms = None,
     temperature: float = 298.15,
     pressure: float = 1.0,
     energy: float = 0.0,
@@ -282,7 +283,8 @@ def calculate_thermo(
     spin: float = None,
 ) -> Dict[str, Any]:
 
-    atoms = vibrations.atoms
+    # Pull atoms from vibrations object if needed
+    atoms = atoms or vibrations.atoms
 
     # Get the spin from the Atoms object
     if spin is None:

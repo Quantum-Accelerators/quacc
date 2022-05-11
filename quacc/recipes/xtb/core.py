@@ -179,6 +179,7 @@ class ThermoJob(Maker):
         vibrations = run_ase_vib(atoms)
         thermo_summary = calculate_thermo(
             vibrations,
+            atoms=atoms,
             temperature=self.temperature,
             pressure=self.pressure,
             energy=self.energy,
