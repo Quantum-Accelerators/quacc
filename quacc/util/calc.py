@@ -328,7 +328,7 @@ def calculate_thermo(
         if np.iscomplex(f):
             clean_freqs.append(-np.abs(f))
         else:
-            clean_freqs.append(f)
+            clean_freqs.append(np.abs(f))
 
     thermo_summary = {
         "frequencies": clean_freqs,
