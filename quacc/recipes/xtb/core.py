@@ -181,7 +181,7 @@ class ThermoJob(Maker):
             atoms=atoms,
             temperature=self.temperature,
             pressure=self.pressure,
-            energy=self.energy,
+            energy=energy,
             geometry=self.geometry,
             symmetry_number=self.symmetry_number,
         )
