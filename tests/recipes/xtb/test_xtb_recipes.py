@@ -1,4 +1,5 @@
 import os
+from shutil import rmtree
 
 import numpy as np
 import pytest
@@ -16,6 +17,8 @@ def teardown_module():
     for f in os.listdir("."):
         if ".log" in f or ".pckl" in f or ".traj" in f or "gfnff_topo" in f:
             os.remove(f)
+    if os.path.exists("vib"):
+        rmtree("vib")
 
 
 @pytest.mark.skipif(
@@ -107,7 +110,7 @@ def test_thermo_job():
     job = ThermoJob().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["frequencies"] == [1]
-    assert output["enthalpy"] == 1
-    assert output["entropy"] == 1
-    assert output["free_energy"] == 1
+    assert output["frequencies"][-1] == pytest.approx(3526.945468014458)
+    assert output["enthalpy"] == pytest.approx(0.637581401404518)
+    assert output["entropy"] == pytest.approx(0.004002443787031705)
+    assert output["free_energy"] == pytest.approx(-0.5557472136989847)

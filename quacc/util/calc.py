@@ -20,6 +20,7 @@ from monty.os.path import zpath
 from monty.shutil import copy_r, gzip_dir
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.vasp.inputs import Kpoints
+from pymatgen.symmetry.analyzer import PointGroupAnalyzer
 from pymatgen.symmetry.bandstructure import HighSymmKpath
 
 from quacc import SETTINGS
@@ -304,7 +305,7 @@ def calculate_thermo(
         Rotational symmetry number.
     spin_multiplicity
         The spin multiplicity
-    
+
     Returns
     -------
     dict
@@ -330,18 +331,25 @@ def calculate_thermo(
         else:
             spin = 0
 
+    # Get symmetry for later use
+    if geometry is None or symmetry_number is None:
+        if atoms.pbc.any():
+            pmg_obj = AseAtomsAdaptor.get_structure(atoms)
+        else:
+            pmg_obj = AseAtomsAdaptor.get_molecule(atoms)
+        pga = PointGroupAnalyzer(pmg_obj)
+        pointgroup = pga.get_pointgroup()
+
     # Get the geometry
     if geometry is None:
         if len(atoms) == 1:
             geometry = "monatomic"
-        elif len(atoms) == 2 or (
-            len(atoms) == 3
-            and atoms.get_angle(0, 1, 2) > 179.0
-            and atoms.get_angle(0, 1, 2) < 181.0
-        ):
+        elif len(atoms) == 2 or (len(atoms) > 2 and pointgroup == "D*h"):
             geometry = "linear"
         else:
             geometry = "nonlinear"
+
+    # TODO: Automatically get rotational symmetry number if None
 
     # Calculate ideal gas thermo
     igt = IdealGasThermo(
