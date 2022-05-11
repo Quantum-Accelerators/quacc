@@ -9,7 +9,7 @@ try:
     from xtb.ase.calculator import XTB
 except (ModuleNotFoundError, ImportError):
     XTB = None
-from quacc.recipes.xtb.core import RelaxJob, StaticJob
+from quacc.recipes.xtb.core import RelaxJob, StaticJob, ThermoJob
 
 
 def teardown_module():
@@ -96,3 +96,14 @@ def test_relax_Job():
     output = responses[job.uuid][1].output
     assert output["results"]["energy"] == pytest.approx(-156.97441169886613)
     assert not np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
+
+
+@pytest.mark.skipif(
+    XTB is None,
+    reason="xTB-python must be installed. Try conda install -c conda-forge xtb-python",
+)
+def test_thermo_job():
+    atoms = molecule("H2O")
+    job = ThermoJob().make(atoms)
+    responses = run_locally(job, ensure_success=True)
+    output = responses[job.uuid][1].output

@@ -13,6 +13,7 @@ from ase.atoms import Atoms
 from ase.io import read
 from ase.optimize import FIRE
 from ase.optimize.optimize import Optimizer
+from ase.thermochemistry import IdealGasThermo
 from ase.vibrations import Vibrations
 from monty.io import zopen
 from monty.os.path import zpath
@@ -269,6 +270,65 @@ def run_ase_vib(
     os.chdir(cwd)
 
     return vib
+
+
+def calculate_thermo(
+    vibrations: Vibrations,
+    temperature: float = 298.15,
+    pressure: float = 1.0,
+    energy: float = 0.0,
+    geometry: str = None,
+    symmetry_number: int = 1,
+    spin: int = None,
+) -> Dict[str, Any]:
+
+    atoms = vibrations.atoms
+
+    # Get the spin spin from the Atoms object
+    if spin is None:
+        if (
+            getattr(atoms, "calc", None) is not None
+            and getattr(atoms.calc, "results", None) is not None
+        ):
+            spin = round(atoms.calc.results.get("magmom")) / 2
+        elif atoms.has("initial_magmoms"):
+            spin = round(np.sum(atoms.get_initial_magnetic_moments())) / 2
+        else:
+            spin = 0
+
+    # Get the geometry
+    if geometry is None:
+        if len(atoms) == 1:
+            geometry = "monatomic"
+        elif len(atoms) == 2 or (
+            len(atoms) == 3
+            and atoms.get_angle(0, 1, 2) > 179.0
+            and atoms.get_angle(0, 1, 2) < 181.0
+        ):
+            geometry = "linear"
+        else:
+            geometry = "nonlinear"
+
+    # Calculate ideal gas thermo
+    igt = IdealGasThermo(
+        vibrations.get_energies(),
+        geometry,
+        potentialenergy=energy,
+        atoms=atoms,
+        symmetrynumber=symmetry_number,
+        spin=spin,
+    )
+
+    thermo_summary = {
+        "frequencies": vibrations.get_frequencies(),
+        "enthalpy": igt.get_enthalpy(temperature, verbose=False),
+        "entropy": igt.get_entropy(temperature, pressure / 10**5, verbose=False),
+        "free_energy": igt.get_gibbs_energy(
+            temperature, pressure / 10**5, verbose=False
+        ),
+    }
+
+    return thermo_summary
 
 
 def _check_logfile(logfile: str, check_str: str) -> bool:

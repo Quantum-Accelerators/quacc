@@ -17,7 +17,7 @@ try:
 except (ModuleNotFoundError, ImportError):
     XTB = None
 from quacc.schemas.calc import summarize_run
-from quacc.util.calc import run_ase_opt, run_calc
+from quacc.util.calc import calculate_thermo, run_ase_opt, run_ase_vib, run_calc
 
 
 @dataclass
@@ -121,3 +121,70 @@ class RelaxJob(Maker):
         )
 
         return summary
+
+
+@dataclass
+class ThermoJob(Maker):
+    """
+    Class to calculate thermochemistry.
+
+    Parameters
+    ----------
+    name
+        Name of the job.
+    method
+        GFN0-xTB, GFN1-xTB, GFN2-xTB, GFN-FF.
+    temperature
+        Temperature in Kelvins.
+    pressure
+        Pressure in bar.
+    energy
+        Potential energy in eV. If 0 eV, then the thermochemical correction is computed.
+    geometry
+        Monatomic, linear, or nonlinear. Will try to determine automatically if None.
+    symmetry_number
+        Rotational symmetry number.
+    xtb_kwargs
+        Dictionary of custom kwargs for the xTB calculator.
+    """
+
+    name: str = "xTB-Relax"
+    method: str = "GFN2-xTB"
+    temperature: float = 298.15
+    pressure: float = 1.0
+    energy: float = 0.0
+    geometry: str = None
+    symmetry_number: int = 1
+    transition_state: bool = False
+    xtb_kwargs: Dict[str, Any] = field(default_factory=dict)
+
+    @job
+    @requires(
+        XTB, "xTB-python must be installed. Try conda install -c conda-forge xtb-python"
+    )
+    def make(self, atoms: Atoms) -> Dict[str, Any]:
+        """
+        Make the run.
+
+        Parameters
+        ----------
+        atoms
+            .Atoms object
+
+        Returns
+        -------
+        Dict
+            Summary of the run.
+        """
+        atoms.calc = XTB(method=self.method, **self.xtb_kwargs)
+        vibrations = run_ase_vib(atoms)
+        thermo_summary = calculate_thermo(
+            vibrations,
+            temperature=self.temperature,
+            pressure=self.pressure,
+            energy=self.energy,
+            geometry=self.geometry,
+            symmetry_number=self.symmetry_number,
+        )
+
+        return thermo_summary
