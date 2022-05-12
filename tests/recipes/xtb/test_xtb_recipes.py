@@ -18,7 +18,7 @@ def teardown_module():
         if ".log" in f or ".pckl" in f or ".traj" in f or "gfnff_topo" in f:
             os.remove(f)
     for f in os.listdir(os.getcwd()):
-        if "quacc-tmp" in f or f == "vib":
+        if "quacc-tmp" in f or f in ["vib", "tmp_dir"]:
             rmtree(f)
 
 
@@ -111,7 +111,22 @@ def test_thermo_job():
     job = ThermoJob().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
+    assert output["atoms"] == atoms
+    assert output["n_imag"] == 0.0
     assert output["frequencies"][-1] == pytest.approx(3526.945468014458)
+    assert output["energy"] == 0.0
     assert output["enthalpy"] == pytest.approx(0.637581401404518)
     assert output["entropy"] == pytest.approx(0.003942713004759747)
-    assert output["gibbs"] == pytest.approx(-0.5379384809646004)
+    assert output["gibbs_energy"] == pytest.approx(-0.5379384809646004)
+
+    atoms = molecule("O2")
+    job = ThermoJob(temperature=200, pressure=2.0).make(atoms, energy=-100.0)
+    responses = run_locally(job, ensure_success=True)
+    output = responses[job.uuid][1].output
+    assert output["atoms"] == atoms
+    assert output["n_imag"] == 0.0
+    assert output["frequencies"][-1] == pytest.approx(1449.82397338371)
+    assert output["energy"] == -100.0
+    assert output["enthalpy"] == pytest.approx(-99.84979574721257)
+    assert output["entropy"] == pytest.approx(0.0038997333854535934)
+    assert output["gibbs_energy"] == pytest.approx(-100.62974242430329)

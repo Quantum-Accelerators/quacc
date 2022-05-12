@@ -20,7 +20,7 @@ def teardown_module():
         if f.endswith(".dat"):
             os.remove(f)
     for f in os.listdir(os.getcwd()):
-        if "quacc-tmp" in f:
+        if "quacc-tmp" in f or f == "tmp_dir":
             rmtree(f)
 
 

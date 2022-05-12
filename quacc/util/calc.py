@@ -31,6 +31,7 @@ from pymatgen.symmetry.analyzer import PointGroupAnalyzer
 from pymatgen.symmetry.bandstructure import HighSymmKpath
 
 from quacc import SETTINGS
+from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import copy_atoms
 from quacc.util.basics import copy_decompress
 
@@ -381,6 +382,12 @@ def ideal_gas_thermo(
     # Automatically get rotational symmetry number
     symmetry_number = pga.get_rotational_symmetry_number()
 
+    # Get the true vibrational modes
+    if geometry == "nonlinear":
+        n_vib = 3 * len(atoms) - 6
+    else:
+        n_vib = 3 * len(atoms) - 5
+
     # Calculate ideal gas thermo
     igt = IdealGasThermo(
         vibrations.get_energies(),
@@ -391,7 +398,6 @@ def ideal_gas_thermo(
         spin=spin,
     )
     freqs = vibrations.get_frequencies()
-    imag_freqs = [f for f in freqs if np.iscomplex(f)]
 
     # Use negataive sign convention for imag modes
     clean_freqs = []
@@ -401,13 +407,24 @@ def ideal_gas_thermo(
         else:
             clean_freqs.append(np.abs(f))
 
+    # Ensure 3N-5, 3N-6 modes are stored
+    clean_freqs.sort()
+    clean_freqs = clean_freqs[-n_vib:]
+
+    # Count number of imaginary frequencies
+    imag_freqs = [f for f in clean_freqs if f < 0]
+
     thermo_summary = {
+        "atoms": atoms,
+        "atoms_metadata": atoms_to_metadata(atoms),
         "frequencies": clean_freqs,
         "n_imag": len(imag_freqs),
-        "potential_energy": energy,
+        "energy": energy,
         "enthalpy": igt.get_enthalpy(temperature, verbose=False),
         "entropy": igt.get_entropy(temperature, pressure / 10**5, verbose=False),
-        "gibbs": igt.get_gibbs_energy(temperature, pressure / 10**5, verbose=False),
+        "gibbs_energy": igt.get_gibbs_energy(
+            temperature, pressure / 10**5, verbose=False
+        ),
     }
 
     return thermo_summary

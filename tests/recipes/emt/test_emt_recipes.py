@@ -17,7 +17,7 @@ def teardown_module():
             or f.endswith(".out")
         ):
             os.remove(f)
-        if "quacc-tmp" in f:
+        if "quacc-tmp" in f or f == "tmp_dir":
             rmtree(f)
 
 
