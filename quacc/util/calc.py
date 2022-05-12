@@ -376,7 +376,7 @@ def ideal_gas_thermo(
     else:
         geometry = "nonlinear"
 
-    # Automatically get rotational symmetry number if None
+    # Automatically get rotational symmetry number
     symmetry_number = pga.get_rotational_symmetry_number()
 
     # Calculate ideal gas thermo
