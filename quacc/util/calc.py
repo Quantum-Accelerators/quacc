@@ -381,7 +381,7 @@ def ideal_gas_thermo(
     if len(atoms) == 1:
         pointgroup = None
     else:
-        pointgroup = pga.get_pointgroup()
+        pointgroup = pga.get_pointgroup().sch_symbol
 
     # Get the geometry
     if len(atoms) == 1:
