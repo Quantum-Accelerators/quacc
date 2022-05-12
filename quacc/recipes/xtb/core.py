@@ -166,7 +166,7 @@ class ThermoJob(Maker):
         atoms
             .Atoms object
         energy
-            Potential energy in eV. If 0 eV, then the thermochemical correction is computed.
+            Potential energy in eV. If 0, then the output is just the correction.
 
         Returns
         -------

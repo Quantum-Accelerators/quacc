@@ -80,7 +80,7 @@ def run_calc(
     scratch_dir = scratch_dir or cwd
     symlink = os.path.join(cwd, "tmp_dir")
 
-    tmpdir = mkdtemp(dir=scratch_dir)
+    tmpdir = mkdtemp(prefix="quacc-tmp", dir=scratch_dir)
 
     if os.name != "nt":
         os.symlink(tmpdir, symlink)
@@ -197,7 +197,7 @@ def run_ase_opt(
     else:
         raise ValueError(f"Unknown optimizer: {optimizer}")
 
-    tmpdir = mkdtemp(dir=scratch_dir)
+    tmpdir = mkdtemp(prefix="quacc-tmp", dir=scratch_dir)
 
     if os.name != "nt":
         os.symlink(tmpdir, symlink)
@@ -279,7 +279,7 @@ def run_ase_vib(
     symlink = os.path.join(cwd, "tmp_dir")
     vib_kwargs = vib_kwargs or {}
 
-    tmpdir = mkdtemp(dir=scratch_dir)
+    tmpdir = mkdtemp(prefix="quacc-tmp", dir=scratch_dir)
 
     if os.name != "nt":
         os.symlink(tmpdir, symlink)
@@ -342,9 +342,11 @@ def ideal_gas_thermo(
     -------
     dict
         {"frequencies": list of frequencies in cm^-1,
+        "n_imag": number of imaginary modes,
+        "potential_energy": potential energy in eV,
         "enthalpy": enthalpy in eV,
         "entropy": entropy in eV/K,
-        "free_energy": free energy in eV}
+        "gibbs": free energy in eV}
     """
     # Pull atoms from vibrations object if needed
     atoms = atoms or vibrations.atoms
@@ -389,6 +391,7 @@ def ideal_gas_thermo(
         spin=spin,
     )
     freqs = vibrations.get_frequencies()
+    real_freqs = [f for f in freqs if np.iscomplex(f)]
 
     # Use negataive sign convention for imag modes
     clean_freqs = []
@@ -400,11 +403,11 @@ def ideal_gas_thermo(
 
     thermo_summary = {
         "frequencies": clean_freqs,
+        "n_imag": len(real_freqs),
+        "potential_energy": energy,
         "enthalpy": igt.get_enthalpy(temperature, verbose=False),
         "entropy": igt.get_entropy(temperature, pressure / 10**5, verbose=False),
-        "free_energy": igt.get_gibbs_energy(
-            temperature, pressure / 10**5, verbose=False
-        ),
+        "gibbs": igt.get_gibbs_energy(temperature, pressure / 10**5, verbose=False),
     }
 
     return thermo_summary

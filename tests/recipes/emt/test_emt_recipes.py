@@ -1,4 +1,5 @@
 import os
+from shutil import rmtree
 
 import pytest
 from ase.build import bulk
@@ -16,6 +17,8 @@ def teardown_module():
             or f.endswith(".out")
         ):
             os.remove(f)
+        if "quacc-tmp" in f:
+            rmtree(f)
 
 
 def test_static_Job():

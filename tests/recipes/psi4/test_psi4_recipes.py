@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from shutil import rmtree
 
 import pytest
 from ase.build import molecule
@@ -18,6 +19,9 @@ def teardown_module():
     for f in os.listdir(os.getcwd()):
         if f.endswith(".dat"):
             os.remove(f)
+    for f in os.listdir(os.getcwd()):
+        if "quacc-tmp" in f:
+            rmtree(f)
 
 
 @pytest.mark.skipif(

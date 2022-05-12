@@ -1,5 +1,5 @@
 import os
-from shutil import which
+from shutil import rmtree, which
 
 import numpy as np
 import pytest
@@ -25,6 +25,8 @@ def teardown_module():
             or f.endswith(".tag")
         ):
             os.remove(f)
+        if "quacc-tmp" in f:
+            rmtree(f)
 
 
 @pytest.mark.skipif(

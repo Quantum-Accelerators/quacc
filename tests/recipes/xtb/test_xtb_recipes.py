@@ -17,8 +17,9 @@ def teardown_module():
     for f in os.listdir("."):
         if ".log" in f or ".pckl" in f or ".traj" in f or "gfnff_topo" in f:
             os.remove(f)
-    if os.path.exists("vib"):
-        rmtree("vib")
+    for f in os.listdir(os.getcwd()):
+        if "quacc-tmp" in f or f == "vib":
+            rmtree(f)
 
 
 @pytest.mark.skipif(
@@ -113,4 +114,4 @@ def test_thermo_job():
     assert output["frequencies"][-1] == pytest.approx(3526.945468014458)
     assert output["enthalpy"] == pytest.approx(0.637581401404518)
     assert output["entropy"] == pytest.approx(0.003942713004759747)
-    assert output["free_energy"] == pytest.approx(-0.5379384809646004)
+    assert output["gibbs"] == pytest.approx(-0.5379384809646004)

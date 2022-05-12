@@ -1,4 +1,5 @@
 import os
+from shutil import rmtree
 
 import pytest
 from ase.build import bulk, molecule
@@ -16,9 +17,9 @@ from quacc.recipes.vasp.slabs import (
 
 
 def teardown_module():
-    for f in ["prerelax.log", "prerelax.traj", "prerelax.log.gz", "prerelax.traj.gz"]:
-        if os.path.exists(f):
-            os.remove(f)
+    for f in os.listdir(os.getcwd()):
+        if "quacc-tmp" in f:
+            rmtree(f)
 
 
 def test_static_job():

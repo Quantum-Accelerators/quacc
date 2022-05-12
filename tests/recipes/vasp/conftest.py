@@ -1,6 +1,11 @@
+import os
+from pathlib import Path
+
 import numpy as np
 import pytest
 from ase.atoms import Atoms
+from ase.build import bulk
+from ase.calculators.emt import EMT
 from ase.optimize.optimize import Optimizer
 
 from quacc.schemas.calc import summarize_run as calc_summarize_run
@@ -27,15 +32,15 @@ def patch_get_potential_energy(monkeypatch):
 
 
 def mock_dynrun(*args, **kwargs):
-    # Instead of running optimizer.run(), just proceed
-    return True
+    dummy_atoms = bulk("Cu")
+    dummy_atoms.calc = EMT()
+    dummy_atoms.calc.results = {"energy": -1.0}
+    return [dummy_atoms]
 
 
 @pytest.fixture(autouse=True)
 def patch_dynrun(monkeypatch):
-    # Monkeypatch the optimizer.run() method of the .Atoms object so
-    # we aren't running the actual calculation during testing.
-    monkeypatch.setattr(Optimizer, "run", mock_dynrun)
+    monkeypatch.setattr("quacc.recipes.vasp.qmof.run_ase_opt", mock_dynrun)
 
 
 def mock_summarize_run(atoms, **kwargs):
