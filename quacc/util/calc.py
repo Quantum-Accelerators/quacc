@@ -337,7 +337,8 @@ def ideal_gas_thermo(
     energy
         Potential energy in eV. If 0 eV, then the thermochemical correction is computed.
     spin_multiplicity
-        The spin multiplicity
+        The spin multiplicity. If None, this will be determined automatically from the
+        attached magnetic moments.
 
     Returns
     -------
@@ -386,24 +387,19 @@ def ideal_gas_thermo(
     # Get the geometry
     if len(atoms) == 1:
         geometry = "monatomic"
+        n_vib = 0
     elif len(atoms) == 2 or (len(atoms) > 2 and pointgroup == "D*h"):
         geometry = "linear"
+        n_vib = 3 * len(atoms) - 5
     else:
         geometry = "nonlinear"
+        n_vib = 3 * len(atoms) - 6
 
     # Automatically get rotational symmetry number
     if geometry == "monatomic":
         symmetry_number = 1
     else:
         symmetry_number = pga.get_rotational_symmetry_number()
-
-    # Get the true vibrational modes
-    if geometry == "nonlinear":
-        n_vib = 3 * len(atoms) - 6
-    elif geometry == "linear":
-        n_vib = 3 * len(atoms) - 5
-    else:
-        n_vib = 0
 
     # Calculate ideal gas thermo
     igt = IdealGasThermo(
