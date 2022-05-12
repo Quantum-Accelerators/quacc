@@ -116,6 +116,7 @@ def test_thermo_job():
     assert len(output["results"]["frequencies"]) == 9
     assert len(output["results"]["true_frequencies"]) == 3
     assert output["results"]["true_frequencies"][-1] == pytest.approx(3526.945468014458)
+    assert output["results"]["geometry"] == "nonlinear"
     assert output["results"]["energy"] == 0.0
     assert output["results"]["enthalpy"] == pytest.approx(0.637581401404518)
     assert output["results"]["entropy"] == pytest.approx(0.003942713004759747)
@@ -129,6 +130,7 @@ def test_thermo_job():
     assert output["results"]["n_imag"] == 0
     assert len(output["results"]["true_frequencies"]) == 1
     assert output["results"]["true_frequencies"][-1] == pytest.approx(1449.82397338371)
+    assert output["results"]["geometry"] == "linear"
     assert output["results"]["pointgroup"] == "D*h"
     assert output["results"]["energy"] == -100.0
     assert output["results"]["enthalpy"] == pytest.approx(-99.84979574721257)
@@ -141,6 +143,7 @@ def test_thermo_job():
     output = responses[job.uuid][1].output
     assert output["atoms"] == atoms
     assert output["results"]["n_imag"] == 0
+    assert output["results"]["geometry"] == "monatomic"
     assert len(output["results"]["true_frequencies"]) == 0
     assert output["results"]["energy"] == -1.0
     assert output["results"]["enthalpy"] == pytest.approx(-0.9357685739989672)
