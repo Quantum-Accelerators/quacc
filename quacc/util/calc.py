@@ -391,7 +391,7 @@ def ideal_gas_thermo(
         spin=spin,
     )
     freqs = vibrations.get_frequencies()
-    real_freqs = [f for f in freqs if np.iscomplex(f)]
+    imag_freqs = [f for f in freqs if np.iscomplex(f)]
 
     # Use negataive sign convention for imag modes
     clean_freqs = []
@@ -403,7 +403,7 @@ def ideal_gas_thermo(
 
     thermo_summary = {
         "frequencies": clean_freqs,
-        "n_imag": len(real_freqs),
+        "n_imag": len(imag_freqs),
         "potential_energy": energy,
         "enthalpy": igt.get_enthalpy(temperature, verbose=False),
         "entropy": igt.get_entropy(temperature, pressure / 10**5, verbose=False),
