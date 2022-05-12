@@ -2,7 +2,6 @@ import os
 
 import pytest
 from ase.build import bulk
-from ase.optimize import BFGS
 from jobflow.managers.local import run_locally
 
 from quacc.recipes.emt.core import RelaxJob, StaticJob
