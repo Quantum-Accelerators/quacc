@@ -342,12 +342,20 @@ def ideal_gas_thermo(
     Returns
     -------
     dict
-        {"frequencies": list of frequencies in cm^-1,
-        "n_imag": number of imaginary modes,
-        "potential_energy": potential energy in eV,
-        "enthalpy": enthalpy in eV,
-        "entropy": entropy in eV/K,
-        "gibbs": free energy in eV}
+        {
+            "atoms": .Atoms,
+            ...,
+            "results":
+            {
+                "frequencies": list of frequencies in cm^-1,
+                "true_frequencies": list of true vibrational frequencies in cm^-1,
+                "n_imag": number of imaginary modes,
+                "energy": potential energy in eV,
+                "enthalpy": enthalpy in eV,
+                "entropy": entropy in eV/K,
+                "gibbs_energy": free energy in eV
+            }
+        }
     """
     # Pull atoms from vibrations object if needed
     atoms = atoms or vibrations.atoms
@@ -369,24 +377,28 @@ def ideal_gas_thermo(
     # Get symmetry for later use
     pmg_obj = AseAtomsAdaptor.get_molecule(atoms)
     pga = PointGroupAnalyzer(pmg_obj)
-    pointgroup = pga.get_pointgroup()
 
     # Get the geometry
     if len(atoms) == 1:
         geometry = "monatomic"
-    elif len(atoms) == 2 or (len(atoms) > 2 and pointgroup == "D*h"):
+    elif len(atoms) == 2 or (len(atoms) > 2 and pga.get_pointgroup() == "D*h"):
         geometry = "linear"
     else:
         geometry = "nonlinear"
 
     # Automatically get rotational symmetry number
-    symmetry_number = pga.get_rotational_symmetry_number()
+    if geometry == "monatomic":
+        symmetry_number = 1
+    else:
+        symmetry_number = pga.get_rotational_symmetry_number()
 
     # Get the true vibrational modes
     if geometry == "nonlinear":
         n_vib = 3 * len(atoms) - 6
-    else:
+    elif geometry == "linear":
         n_vib = 3 * len(atoms) - 5
+    else:
+        n_vib = 0
 
     # Calculate ideal gas thermo
     igt = IdealGasThermo(
@@ -407,24 +419,29 @@ def ideal_gas_thermo(
         else:
             clean_freqs.append(np.abs(f))
 
-    # Ensure 3N-5, 3N-6 modes are stored
+    # Ensure proper number of modes are stored
     clean_freqs.sort()
-    clean_freqs = clean_freqs[-n_vib:]
+    if n_vib == 0:
+        true_frequencies = []
+    else:
+        true_frequencies = clean_freqs[-n_vib:]
 
     # Count number of imaginary frequencies
-    imag_freqs = [f for f in clean_freqs if f < 0]
+    imag_freqs = [f for f in true_frequencies if f < 0]
 
     thermo_summary = {
-        "atoms": atoms,
-        "atoms_metadata": atoms_to_metadata(atoms),
-        "frequencies": clean_freqs,
-        "n_imag": len(imag_freqs),
-        "energy": energy,
-        "enthalpy": igt.get_enthalpy(temperature, verbose=False),
-        "entropy": igt.get_entropy(temperature, pressure / 10**5, verbose=False),
-        "gibbs_energy": igt.get_gibbs_energy(
-            temperature, pressure / 10**5, verbose=False
-        ),
+        **atoms_to_metadata(atoms),
+        "results": {
+            "frequencies": clean_freqs,
+            "true_frequencies": true_frequencies,
+            "n_imag": len(imag_freqs),
+            "energy": energy,
+            "enthalpy": igt.get_enthalpy(temperature, verbose=False),
+            "entropy": igt.get_entropy(temperature, pressure / 10**5, verbose=False),
+            "gibbs_energy": igt.get_gibbs_energy(
+                temperature, pressure / 10**5, verbose=False
+            ),
+        },
     }
 
     return thermo_summary
