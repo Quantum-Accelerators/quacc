@@ -15,11 +15,10 @@ jobs:
       matrix:
         python-version: [ '3.8', '3.9' ]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - uses: conda-incubator/setup-miniconda@v2
         with:
-          auto-update-conda: true
           python-version: ${{ matrix.python-version }}
 
       - name: Get Date
@@ -27,11 +26,11 @@ jobs:
         run: echo "::set-output name=today::$(/bin/date -u '+%Y%m%d')"
         shell: bash
 
-      - name: Cache Conda env
-        uses: actions/cache@v2
+      - name: Cache Conda
+        uses: actions/cache@v3
         with:
           path: ${{ env.CONDA }}/envs
-          key: conda-${{ runner.os }}--${{ runner.arch }}--${{ steps.get-date.outputs.today }}-${{ hashFiles('etc/example-environment-caching.yml') }}-${{ env.CACHE_NUMBER }}
+          key: conda-${{ runner.os }}--${{ runner.arch }}--${{ steps.get-date.outputs.today }}-${{ hashFiles('requirements.txt') }}-${{ env.CACHE_NUMBER }}
         env:
           CACHE_NUMBER: 0
         id: cache
@@ -57,10 +56,10 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install pandoc
         run: sudo apt-get install pandoc
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v3
         with:
           python-version: '3.10'
       - name: Install dependencies
