@@ -16,8 +16,8 @@ try:
     from xtb.ase.calculator import XTB
 except (ModuleNotFoundError, ImportError):
     XTB = None
-from quacc.schemas.calc import summarize_run
-from quacc.util.calc import calculate_thermo, run_ase_opt, run_ase_vib, run_calc
+from quacc.schemas.calc import summarize_opt_run, summarize_run
+from quacc.util.calc import ideal_gas_thermo, run_ase_opt, run_ase_vib, run_calc
 
 
 @dataclass
@@ -79,8 +79,10 @@ class RelaxJob(Maker):
         GFN0-xTB, GFN1-xTB, GFN2-xTB, GFN-FF.
     fmax
         Tolerance for the force convergence (in eV/A).
+    max_steps
+        Maximum number of steps to take.
     optimizer
-        .Optimizer class to use for the relaxation.
+        Name of ASE optimizer class to use for the relaxation.
     xtb_kwargs
         Dictionary of custom kwargs for the xTB calculator.
     opt_kwargs
@@ -90,7 +92,8 @@ class RelaxJob(Maker):
     name: str = "xTB-Relax"
     method: str = "GFN2-xTB"
     fmax: float = 0.01
-    optimizer: Optimizer = FIRE
+    max_steps: int = 1000
+    optimizer: str = "FIRE"
     xtb_kwargs: Dict[str, Any] = field(default_factory=dict)
     opt_kwargs: Dict[str, Any] = field(default_factory=dict)
 
@@ -113,11 +116,15 @@ class RelaxJob(Maker):
             Summary of the run.
         """
         atoms.calc = XTB(method=self.method, **self.xtb_kwargs)
-        new_atoms = run_ase_opt(
-            atoms, fmax=self.fmax, optimizer=self.optimizer, opt_kwargs=self.opt_kwargs
+        traj = run_ase_opt(
+            atoms,
+            fmax=self.fmax,
+            max_steps=self.max_steps,
+            optimizer=self.optimizer,
+            opt_kwargs=self.opt_kwargs,
         )
-        summary = summarize_run(
-            new_atoms, input_atoms=atoms, additional_fields={"name": self.name}
+        summary = summarize_opt_run(
+            traj, atoms.calc.parameters, additional_fields={"name": self.name}
         )
 
         return summary
@@ -138,10 +145,6 @@ class ThermoJob(Maker):
         Temperature in Kelvins.
     pressure
         Pressure in bar.
-    geometry
-        Monatomic, linear, or nonlinear. Will try to determine automatically if None.
-    symmetry_number
-        Rotational symmetry number.
     xtb_kwargs
         Dictionary of custom kwargs for the xTB calculator.
     """
@@ -150,8 +153,6 @@ class ThermoJob(Maker):
     method: str = "GFN2-xTB"
     temperature: float = 298.15
     pressure: float = 1.0
-    geometry: str = None
-    symmetry_number: int = 1
     xtb_kwargs: Dict[str, Any] = field(default_factory=dict)
 
     @job
@@ -176,14 +177,12 @@ class ThermoJob(Maker):
         """
         atoms.calc = XTB(method=self.method, **self.xtb_kwargs)
         vibrations = run_ase_vib(atoms)
-        thermo_summary = calculate_thermo(
+        thermo_summary = ideal_gas_thermo(
             vibrations,
             atoms=atoms,
             temperature=self.temperature,
             pressure=self.pressure,
             energy=energy,
-            geometry=self.geometry,
-            symmetry_number=self.symmetry_number,
         )
 
         return thermo_summary

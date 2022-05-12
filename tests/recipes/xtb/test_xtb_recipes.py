@@ -112,5 +112,5 @@ def test_thermo_job():
     output = responses[job.uuid][1].output
     assert output["frequencies"][-1] == pytest.approx(3526.945468014458)
     assert output["enthalpy"] == pytest.approx(0.637581401404518)
-    assert output["entropy"] == pytest.approx(0.004002443787031705)
-    assert output["free_energy"] == pytest.approx(-0.5557472136989847)
+    assert output["entropy"] == pytest.approx(0.003942713004759747)
+    assert output["free_energy"] == pytest.approx(-0.5379384809646004)

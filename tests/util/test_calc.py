@@ -52,7 +52,7 @@ def test_run_calc():
     assert not os.path.exists("test_file.txt.gz")
 
     atoms = run_ase_opt(atoms, scratch_dir="test_calc", copy_files=["test_file.txt"])
-    assert atoms.calc.results is not None
+    assert atoms[-1].calc.results is not None
     assert os.path.exists("test_file.txt")
     assert os.path.exists("test_file.txt.gz")
     os.remove("test_file.txt.gz")

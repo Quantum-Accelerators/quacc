@@ -10,9 +10,16 @@ from typing import Any, Dict, List, Tuple
 
 import numpy as np
 from ase.atoms import Atoms
-from ase.io import read
-from ase.optimize import FIRE
-from ase.optimize.optimize import Optimizer
+from ase.io import read, trajectory
+from ase.optimize import (
+    BFGS,
+    FIRE,
+    LBFGS,
+    BFGSLineSearch,
+    GPMin,
+    LBFGSLineSearch,
+    MDMin,
+)
 from ase.thermochemistry import IdealGasThermo
 from ase.vibrations import Vibrations
 from monty.io import zopen
@@ -119,12 +126,13 @@ def run_calc(
 def run_ase_opt(
     atoms: Atoms,
     fmax: float = 0.01,
-    optimizer: Optimizer = FIRE,
+    max_steps: int = 100,
+    optimizer: str = "FIRE",
     opt_kwargs: Dict[str, Any] = None,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
     copy_files: List[str] = None,
-) -> Atoms:
+) -> trajectory:
     """
     Run an ASE-based optimization in a scratch directory and copy the results
     back to the original directory. This can be useful if file I/O is slow in
@@ -139,8 +147,10 @@ def run_ase_opt(
         The Atoms object to run the calculation on.
     fmax : float
         Tolerance for the force convergence (in eV/A).
-    optimizer : .Optimizer
-        .Optimizer class to use for the relaxation.
+    max_steps : int
+        Maximum number of steps to take.
+    optimizer : str
+        Name of optimizer class to use.
     opt_kwargs : dict
         Dictionary of kwargs for the optimizer.
     scratch_dir : str
@@ -153,8 +163,8 @@ def run_ase_opt(
 
     Returns
     -------
-    .Atoms
-        The updated .Atoms object,
+    traj
+        The ASE trajectory object.
     """
 
     if atoms.calc is None:
@@ -165,6 +175,27 @@ def run_ase_opt(
     scratch_dir = scratch_dir or cwd
     symlink = os.path.join(cwd, "tmp_dir")
     opt_kwargs = opt_kwargs or {}
+
+    opt_kwargs["trajectory"] = "opt.traj"
+    opt_kwargs["restart"] = "opt.pckl"
+
+    # Get optimizer
+    if optimizer.lower() == "bfgs":
+        opt_class = BFGS
+    elif optimizer.lower() == "bfgslinesearch":
+        opt_class = BFGSLineSearch
+    elif optimizer.lower() == "lbfgs":
+        opt_class = LBFGS
+    elif optimizer.lower() == "lbfgslinesearch":
+        opt_class = LBFGSLineSearch
+    elif optimizer.lower() == "gpmin":
+        opt_class = GPMin
+    elif optimizer.lower() == "mdmin":
+        opt_class = MDMin
+    elif optimizer.lower() == "fire":
+        opt_class = FIRE
+    else:
+        raise ValueError(f"Unknown optimizer: {optimizer}")
 
     tmpdir = mkdtemp(dir=scratch_dir)
 
@@ -177,9 +208,16 @@ def run_ase_opt(
 
     # Run calculation
     os.chdir(tmpdir)
-    dyn = optimizer(atoms, **opt_kwargs)
-    dyn.run(fmax=fmax)
+    dyn = opt_class(atoms, **opt_kwargs)
+    dyn.run(fmax=fmax, steps=max_steps)
     os.chdir(cwd)
+
+    # Check convergence
+    if not dyn.converged:
+        raise ValueError("Optimization did not converge.")
+
+    # Read trajectory
+    traj = read(os.path.join(tmpdir, "opt.traj"), index=":")
 
     # Gzip files in tmpdir
     if gzip:
@@ -194,7 +232,7 @@ def run_ase_opt(
 
     os.chdir(cwd)
 
-    return atoms
+    return traj
 
 
 def run_ase_vib(
@@ -254,6 +292,7 @@ def run_ase_vib(
     os.chdir(tmpdir)
     vib = Vibrations(atoms, **vib_kwargs)
     vib.run()
+    vib.summary()
     os.chdir(cwd)
 
     # Gzip files in tmpdir
@@ -272,18 +311,16 @@ def run_ase_vib(
     return vib
 
 
-def calculate_thermo(
+def ideal_gas_thermo(
     vibrations: Vibrations,
     atoms: Atoms = None,
     temperature: float = 298.15,
     pressure: float = 1.0,
     energy: float = 0.0,
-    geometry: str = None,
-    symmetry_number: int = 1,
     spin_multiplicity: float = None,
 ) -> Dict[str, Any]:
     """
-    Calculate thermodynamic properties from a given vibrational analysis.
+    Calculate thermodynamic properties for a molecule from a given vibrational analysis.
 
     Parameters
     ----------
@@ -298,10 +335,6 @@ def calculate_thermo(
         Pressure in bar.
     energy
         Potential energy in eV. If 0 eV, then the thermochemical correction is computed.
-    geometry
-        Monatomic, linear, or nonlinear. Will try to determine automatically if None.
-    symmetry_number
-        Rotational symmetry number.
     spin_multiplicity
         The spin multiplicity
 
@@ -331,24 +364,20 @@ def calculate_thermo(
             spin = 0
 
     # Get symmetry for later use
-    if geometry is None or symmetry_number is None:
-        if atoms.pbc.any():
-            pmg_obj = AseAtomsAdaptor.get_structure(atoms)
-        else:
-            pmg_obj = AseAtomsAdaptor.get_molecule(atoms)
-        pga = PointGroupAnalyzer(pmg_obj)
-        pointgroup = pga.get_pointgroup()
+    pmg_obj = AseAtomsAdaptor.get_molecule(atoms)
+    pga = PointGroupAnalyzer(pmg_obj)
+    pointgroup = pga.get_pointgroup()
 
     # Get the geometry
-    if geometry is None:
-        if len(atoms) == 1:
-            geometry = "monatomic"
-        elif len(atoms) == 2 or (len(atoms) > 2 and pointgroup == "D*h"):
-            geometry = "linear"
-        else:
-            geometry = "nonlinear"
+    if len(atoms) == 1:
+        geometry = "monatomic"
+    elif len(atoms) == 2 or (len(atoms) > 2 and pointgroup == "D*h"):
+        geometry = "linear"
+    else:
+        geometry = "nonlinear"
 
-    # TODO: Automatically get rotational symmetry number if None
+    # Automatically get rotational symmetry number if None
+    symmetry_number = pga.get_rotational_symmetry_number()
 
     # Calculate ideal gas thermo
     igt = IdealGasThermo(

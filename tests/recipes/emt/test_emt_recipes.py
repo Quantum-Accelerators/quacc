@@ -67,10 +67,3 @@ def test_relax_Job():
     assert output["nsites"] == len(atoms)
     assert output["name"] == "EMT-Relax"
     assert output["results"]["energy"] == pytest.approx(-0.0454470914411953)
-
-    job = RelaxJob(optimizer=BFGS).make(atoms)
-    responses = run_locally(job, ensure_success=True)
-    output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
-    assert output["name"] == "EMT-Relax"
-    assert output["results"]["energy"] == pytest.approx(-0.0454470914411953)
