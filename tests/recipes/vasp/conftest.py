@@ -1,12 +1,9 @@
-import os
-from pathlib import Path
 
 import numpy as np
 import pytest
 from ase.atoms import Atoms
 from ase.build import bulk
 from ase.calculators.emt import EMT
-from ase.optimize.optimize import Optimizer
 
 from quacc.schemas.calc import summarize_run as calc_summarize_run
 
