@@ -7,8 +7,6 @@ from dataclasses import dataclass, field
 from typing import Any, Dict
 
 from ase.atoms import Atoms
-from ase.optimize import FIRE
-from ase.optimize.optimize import Optimizer
 from jobflow import Maker, job
 from monty.dev import requires
 
