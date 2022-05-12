@@ -378,10 +378,15 @@ def ideal_gas_thermo(
     pmg_obj = AseAtomsAdaptor.get_molecule(atoms)
     pga = PointGroupAnalyzer(pmg_obj)
 
+    if len(atoms) == 1:
+        pointgroup = None
+    else:
+        pointgroup.get_pointgroup()
+
     # Get the geometry
     if len(atoms) == 1:
         geometry = "monatomic"
-    elif len(atoms) == 2 or (len(atoms) > 2 and pga.get_pointgroup() == "D*h"):
+    elif len(atoms) == 2 or (len(atoms) > 2 and pointgroup == "D*h"):
         geometry = "linear"
     else:
         geometry = "nonlinear"
@@ -435,6 +440,8 @@ def ideal_gas_thermo(
             "frequencies": clean_freqs,
             "true_frequencies": true_frequencies,
             "n_imag": len(imag_freqs),
+            "geometry": geometry,
+            "pointgroup": pointgroup,
             "energy": energy,
             "enthalpy": igt.get_enthalpy(temperature, verbose=False),
             "entropy": igt.get_entropy(temperature, pressure / 10**5, verbose=False),

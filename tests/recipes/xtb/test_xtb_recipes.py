@@ -129,6 +129,7 @@ def test_thermo_job():
     assert output["results"]["n_imag"] == 0
     assert len(output["results"]["true_frequencies"]) == 1
     assert output["results"]["true_frequencies"][-1] == pytest.approx(1449.82397338371)
+    assert output["results"]["pointgroup"] == "D*h"
     assert output["results"]["energy"] == -100.0
     assert output["results"]["enthalpy"] == pytest.approx(-99.84979574721257)
     assert output["results"]["entropy"] == pytest.approx(0.0038997333854535934)
