@@ -84,6 +84,8 @@ def run_calc(
     tmpdir = mkdtemp(prefix="quacc-tmp", dir=scratch_dir)
 
     if os.name != "nt":
+        if os.path.islink(symlink):
+            os.unlink(symlink)
         os.symlink(tmpdir, symlink)
 
     # Copy files to scratch and decompress them if needed
@@ -201,6 +203,8 @@ def run_ase_opt(
     tmpdir = mkdtemp(prefix="quacc-tmp", dir=scratch_dir)
 
     if os.name != "nt":
+        if os.path.islink(symlink):
+            os.unlink(symlink)
         os.symlink(tmpdir, symlink)
 
     # Copy files to scratch and decompress them if needed
@@ -283,6 +287,8 @@ def run_ase_vib(
     tmpdir = mkdtemp(prefix="quacc-tmp", dir=scratch_dir)
 
     if os.name != "nt":
+        if os.path.islink(symlink):
+            os.unlink(symlink)
         os.symlink(tmpdir, symlink)
 
     # Copy files to scratch and decompress them if needed
