@@ -25,7 +25,7 @@ if __name__ == "__main__":
         zip_safe=False,
         install_requires=[
             "ase @ git+https://gitlab.com/argon214/ase.git@rosen-dftb",
-            "pymatgen==2022.5.17",
+            "pymatgen==2022.5.18.1",
             "custodian==2022.5.17",
             "jobflow==0.1.8",
             "atomate2==0.0.7",
@@ -42,7 +42,7 @@ if __name__ == "__main__":
                 "ipython==8.3.0",
                 "nbsphinx==0.8.8",
                 "nbsphinx-link==1.3.0",
-                "autodoc_pydantic==1.6.2",
+                "autodoc_pydantic==1.7.0",
             ],
             "dev": ["pytest==7.1.2", "black==22.3.0", "isort==5.10.1"],
         },
