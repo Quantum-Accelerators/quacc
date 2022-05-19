@@ -18,8 +18,11 @@ def teardown_module():
         if ".log" in f or ".pckl" in f or ".traj" in f or "gfnff_topo" in f:
             os.remove(f)
     for f in os.listdir(os.getcwd()):
-        if "quacc-tmp" in f or f in ["vib", "tmp_dir"]:
-            rmtree(f)
+        if "quacc-tmp" in f or f == "tmp_dir":
+            if os.path.islink(f):
+                os.unlink(f)
+            else:
+                rmtree(f)
 
 
 @pytest.mark.skipif(
