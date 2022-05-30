@@ -42,7 +42,7 @@ if __name__ == "__main__":
                 "ipython==8.3.0",
                 "nbsphinx==0.8.8",
                 "nbsphinx-link==1.3.0",
-                "autodoc_pydantic==1.7.0",
+                "autodoc_pydantic==1.7.1",
             ],
             "dev": ["pytest==7.1.2", "black==22.3.0", "isort==5.10.1"],
         },
