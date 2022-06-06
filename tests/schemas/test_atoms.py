@@ -20,6 +20,8 @@ def test_atoms_to_metadata():
     atoms.info["test"] = "hi"
     results = atoms_to_metadata(atoms)
     assert results["atoms"].info.get("test", None) == "hi"
+    assert results["structure"] == AseAtomsAdaptor.get_structure(atoms)
+    assert "molecule" not in results
 
     atoms = bulk("Cu")
     atoms.info["test"] = "hi"
@@ -39,6 +41,7 @@ def test_atoms_to_metadata():
     results = atoms_to_metadata(atoms)
     assert results["atoms"].info.get("test", None) == "hi"
     assert results["molecule"] == AseAtomsAdaptor().get_molecule(atoms)
+    assert "structure" not in results
 
     atoms = bulk("Cu")
     parent = bulk("Al") * (2, 1, 1)
