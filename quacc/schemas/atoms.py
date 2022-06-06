@@ -44,12 +44,14 @@ def atoms_to_metadata(
     # Get Atoms metadata, if requested. Atomate2 already has built-in tools for
     # generating pymatgen Structure/Molecule metadata, so we'll just use that.
     if get_metadata:
-        if np.all(atoms.pbc == False):
-            mol = AseAtomsAdaptor().get_molecule(atoms, charge_spin_check=False)
-            metadata = MoleculeMetadata().from_molecule(mol).dict()
-        else:
+        if atoms.pbc.any():
             struct = AseAtomsAdaptor().get_structure(atoms)
             metadata = StructureMetadata().from_structure(struct).dict()
+            results["structure"] = struct
+        else:
+            mol = AseAtomsAdaptor().get_molecule(atoms, charge_spin_check=False)
+            metadata = MoleculeMetadata().from_molecule(mol).dict()
+            results["molecule"] = mol
     else:
         metadata = {}
 
