@@ -26,6 +26,10 @@ def test_summarize_run():
     assert results["nsites"] == 6
     assert results["metadata"].get("success", None) == True
 
+    # test document can be jsanitized and decoded
+    d = jsanitize(results, strict=True, enum_values=True)
+    MontyDecoder().process_decoded(d)
+
     # Make sure default dir works
     cwd = os.getcwd()
     os.chdir(run1)
@@ -63,10 +67,6 @@ def test_summarize_run():
     assert results["atoms"].get_initial_magnetic_moments().tolist() == [3.14] * len(
         atoms
     )
-
-    # test document can be jsanitized and decoded
-    d = jsanitize(results, strict=True, enum_values=True)
-    MontyDecoder().process_decoded(d)
 
 
 def test_errors():
