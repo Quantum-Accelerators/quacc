@@ -128,7 +128,7 @@ def summarize_run(
 
     # We use get_metadata=False because the TaskDocument already
     # makes the structure metadata for us
-    atoms_db = atoms_to_metadata(atoms, get_metadata=False)
+    atoms_db = atoms_to_metadata(atoms, get_metadata=False, store_pmg=False)
 
     task_doc = {**results, **atoms_db, **additional_fields}
 

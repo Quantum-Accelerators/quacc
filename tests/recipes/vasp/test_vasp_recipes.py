@@ -294,7 +294,11 @@ def test_slab_dynamic_jobs():
     adsorbate2.set_initial_magnetic_moments([1, 0, 0, 0])
     flow = SlabToAdsorbatesJob().make(atoms, adsorbate2)
     responses = run_locally(flow, ensure_success=True)
+    assert len(responses) == 9
 
+    adsorbate2 = molecule("CH3")
+    flow = SlabToAdsorbatesJob().make(atoms, adsorbate2)
+    responses = run_locally(flow, ensure_success=True)
     assert len(responses) == 9
 
 

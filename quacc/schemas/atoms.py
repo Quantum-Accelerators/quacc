@@ -16,7 +16,7 @@ from quacc.util.atoms import copy_atoms
 
 
 def atoms_to_metadata(
-    atoms: Atoms, get_metadata: bool = True, strip_info: bool = False
+    atoms: Atoms, get_metadata: bool = True, strip_info: bool = False, store_pmg=True
 ) -> Dict[str, Any]:
 
     """
@@ -30,7 +30,10 @@ def atoms_to_metadata(
         Whether to store atoms metadata in the returned dict.
     strip_info
         Whether to strip the data from atoms.info in the returned {"atoms":.Atoms}.
-        Note that this data will be stored in {"atoms_info":atoms.info} regardless.
+        Note that this data will be stored in {"atoms_info":atoms.info} regardless
+    store_pmg
+        Whether to store the Pymatgen Structure/Molecule object in {"structure": Structure}
+        or {"molecule": Molecule}, respectively.
 
     Returns
     -------
@@ -47,11 +50,13 @@ def atoms_to_metadata(
         if atoms.pbc.any():
             struct = AseAtomsAdaptor().get_structure(atoms)
             metadata = StructureMetadata().from_structure(struct).dict()
-            results["structure"] = struct
+            if store_pmg:
+                results["structure"] = struct
         else:
             mol = AseAtomsAdaptor().get_molecule(atoms, charge_spin_check=False)
             metadata = MoleculeMetadata().from_molecule(mol).dict()
-            results["molecule"] = mol
+            if store_pmg:
+                results["molecule"] = mol
     else:
         metadata = {}
 
