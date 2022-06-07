@@ -131,7 +131,7 @@ class RelaxJob(Maker):
 @dataclass
 class ThermoJob(Maker):
     """
-    Class to calculate thermochemistry.
+    Class to run a frequency job and calculate thermochemistry.
 
     Parameters
     ----------
