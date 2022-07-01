@@ -20,7 +20,7 @@ This package is heavily inspired by [Atomate2](https://github.com/materialsproje
 
 ## Documentation
 
-[**Coming Soon**](https://arosen93.github.io/quacc/)
+[**Work in Progress**](https://arosen93.github.io/quacc/)
 
 ## Installation
 

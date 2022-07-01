@@ -131,7 +131,7 @@ class RelaxJob(Maker):
 @dataclass
 class ThermoJob(Maker):
     """
-    Class to calculate thermochemistry.
+    Class to run a frequency job and calculate thermochemistry.
 
     Parameters
     ----------
@@ -147,7 +147,7 @@ class ThermoJob(Maker):
         Dictionary of custom kwargs for the xTB calculator.
     """
 
-    name: str = "xTB-Relax"
+    name: str = "xTB-Freq"
     method: str = "GFN2-xTB"
     temperature: float = 298.15
     pressure: float = 1.0
