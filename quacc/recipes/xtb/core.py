@@ -147,7 +147,7 @@ class ThermoJob(Maker):
         Dictionary of custom kwargs for the xTB calculator.
     """
 
-    name: str = "xTB-Relax"
+    name: str = "xTB-freq"
     method: str = "GFN2-xTB"
     temperature: float = 298.15
     pressure: float = 1.0
