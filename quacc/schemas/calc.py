@@ -60,7 +60,7 @@ def summarize_run(
     inputs = {
         "parameters": atoms.calc.parameters,
         "nid": nid,
-        "dir_name": uri.removeprefix(nid+':'),
+        "dir_name": uri.removeprefix(nid + ":"),
     }
     if input_atoms:
         input_atoms_db = atoms_to_metadata(input_atoms)
