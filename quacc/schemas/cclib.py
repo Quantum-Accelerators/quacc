@@ -66,9 +66,9 @@ def summarize_run(
 
     # Fortunately, there is already a cclib parser in Atomate2
     results = TaskDocument.from_logfile(dir_path, logfile_extensions).dict()
-    uri = results["output"]["dir_name"]
-    results["output"]["nid"] = uri.split(":")[0]
-    results["output"]["dir_name"] = ":".join(uri.split(":")[1:])
+    uri = results["dir_name"]
+    results["nid"] = uri.split(":")[0]
+    results["dir_name"] = ":".join(uri.split(":")[1:])
 
     # Check convergence if requested
     if check_convergence:
