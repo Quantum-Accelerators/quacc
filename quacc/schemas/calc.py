@@ -56,11 +56,10 @@ def summarize_run(
 
     # Get the calculator inputs
     uri = get_uri(os.getcwd())
-    nid = uri.split(":")[0]
     inputs = {
         "parameters": atoms.calc.parameters,
-        "nid": nid,
-        "dir_name": uri.removeprefix(nid + ":"),
+        "nid": uri.split(":")[0],
+        "dir_name": ":".join(uri.split(":")[1:]),
     }
     if input_atoms:
         input_atoms_db = atoms_to_metadata(input_atoms)

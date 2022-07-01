@@ -69,7 +69,7 @@ def summarize_run(
     results = TaskDocument.from_directory(dir_path).dict()
     uri = results["output"]["dir_name"]
     results["output"]["nid"] = uri.split(":")[0]
-    results["output"]["dir_name"] = uri.removeprefix(results["output"]["nid"] + ":")
+    results["output"]["dir_name"] = ":".join(uri.split(":")[1:])
 
     # Check for calculation convergence
     if check_convergence and results["state"] != "successful":
