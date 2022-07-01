@@ -1,1 +1,1 @@
-"""Recipes for xTB"""
+"""Recipes for tblite"""
