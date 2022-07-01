@@ -67,6 +67,9 @@ def summarize_run(
     # Fetch all tabulated results from VASP outputs files
     # Fortunately, Atomate2 already has a handy function for this
     results = TaskDocument.from_directory(dir_path).dict()
+    uri = results["output"]["dir_name"]
+    results["output"]["nid"] = uri.split(":")[0]
+    results["output"]["dir_name"] = uri.removeprefix(results["output"]["nid"])
 
     # Check for calculation convergence
     if check_convergence and results["state"] != "successful":
