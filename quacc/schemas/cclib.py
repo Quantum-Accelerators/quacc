@@ -68,7 +68,7 @@ def summarize_run(
     results = TaskDocument.from_logfile(dir_path, logfile_extensions).dict()
     uri = results["output"]["dir_name"]
     results["output"]["nid"] = uri.split(":")[0]
-    results["output"]["dir_name"] = uri.removeprefix(results["output"]["nid"])
+    results["output"]["dir_name"] = uri.removeprefix(results["output"]["nid"] + ":")
 
     # Check convergence if requested
     if check_convergence:
