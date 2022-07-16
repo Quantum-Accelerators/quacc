@@ -31,7 +31,7 @@ if __name__ == "__main__":
             "atomate2==0.0.7",
             "monty==2022.4.26",
             "fireworks==2.0.3",
-            "cclib==1.7.1",
+            "cclib==1.7.2",
         ],
         extras_require={
             "tests": ["pytest==7.1.2"],
