@@ -29,7 +29,7 @@ if __name__ == "__main__":
             "custodian==2022.5.26",
             "jobflow==0.1.8",
             "atomate2==0.0.7",
-            "monty==2022.4.26",
+            "monty==2022.9.9",
             "fireworks==2.0.3",
             "cclib==1.7.2",
         ],
