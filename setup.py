@@ -34,7 +34,7 @@ if __name__ == "__main__":
             "cclib==1.7.2",
         ],
         extras_require={
-            "tests": ["pytest==7.1.2"],
+            "tests": ["pytest==7.1.3"],
             "docs": [
                 "sphinx==5.0.2",
                 "furo==2022.6.21",
@@ -44,7 +44,7 @@ if __name__ == "__main__":
                 "nbsphinx-link==1.3.0",
                 "autodoc_pydantic==1.7.2",
             ],
-            "dev": ["pytest==7.1.2", "black==22.8.0", "isort==5.10.1"],
+            "dev": ["pytest==7.1.3", "black==22.8.0", "isort==5.10.1"],
         },
         tests_require=["pytest"],
         include_package_data=True,
