@@ -36,7 +36,7 @@ if __name__ == "__main__":
         extras_require={
             "tests": ["pytest==7.1.3"],
             "docs": [
-                "sphinx==5.0.2",
+                "sphinx==5.2.2",
                 "furo==2022.9.15",
                 "m2r2==0.3.2",
                 "ipython==8.5.0",
