@@ -38,7 +38,7 @@ if __name__ == "__main__":
             "docs": [
                 "sphinx==5.0.2",
                 "furo==2022.9.29",
-                "m2r2==0.3.2",
+                "m2r2==0.3.3",
                 "ipython==8.5.0",
                 "nbsphinx==0.8.9",
                 "nbsphinx-link==1.3.0",
