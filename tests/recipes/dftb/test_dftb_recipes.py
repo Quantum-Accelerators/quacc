@@ -65,7 +65,7 @@ def test_static_Job():
     assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty000"] == "3 0 0"
     assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty001"] == "0 3 0"
     assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty002"] == "0 0 3"
-    assert output["results"]["energy"] == pytest.approx(-107.55154244254307)
+    assert output["results"]["energy"] == pytest.approx(-106.86647125470942)
 
 
 @pytest.mark.skipif(
