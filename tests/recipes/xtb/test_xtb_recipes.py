@@ -8,7 +8,7 @@ from jobflow.managers.local import run_locally
 
 try:
     from xtb.ase.calculator import XTB
-except (ModuleNotFoundError, ImportError):
+except ImportError:
     XTB = None
 from quacc.recipes.xtb.core import RelaxJob, StaticJob, ThermoJob
 
