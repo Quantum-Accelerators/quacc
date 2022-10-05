@@ -47,7 +47,7 @@ def test_static_Job():
     assert output["name"] == "DFTB-Static"
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
-    assert output["results"]["energy"] == pytest.approx(-137.97459675495645)
+    assert output["results"]["energy"] == pytest.approx(-137.9677759924738)
 
     atoms = bulk("Cu")
 
