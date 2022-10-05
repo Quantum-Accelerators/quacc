@@ -122,8 +122,8 @@ def test_thermo_job():
     assert output["results"]["geometry"] == "nonlinear"
     assert output["results"]["energy"] == 0.0
     assert output["results"]["enthalpy"] == pytest.approx(0.637581401404518)
-    assert output["results"]["entropy"] == pytest.approx(0.003942713004759747)
-    assert output["results"]["gibbs_energy"] == pytest.approx(-0.5379384809646004)
+    assert output["results"]["entropy"] == pytest.approx(0.0019584993671715764)
+    assert output["results"]["gibbs_energy"] == pytest.approx(0.05365481508231251)
 
     atoms = molecule("O2")
     job = ThermoJob(temperature=200, pressure=2.0).make(atoms, energy=-100.0)
@@ -137,8 +137,8 @@ def test_thermo_job():
     assert output["results"]["pointgroup"] == "D*h"
     assert output["results"]["energy"] == -100.0
     assert output["results"]["enthalpy"] == pytest.approx(-99.84979574721257)
-    assert output["results"]["entropy"] == pytest.approx(0.0038997333854535934)
-    assert output["results"]["gibbs_energy"] == pytest.approx(-100.62974242430329)
+    assert output["results"]["entropy"] == pytest.approx(0.001915519747865423)
+    assert output["results"]["gibbs_energy"] == pytest.approx(-100.23289969678565)
 
     atoms = molecule("H")
     job = ThermoJob().make(atoms, energy=-1.0)
