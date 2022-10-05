@@ -83,7 +83,7 @@ def test_relax_job():
     assert output["name"] == "DFTB-Relax"
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
-    assert output["results"]["energy"] == pytest.approx(-137.98336133558837)
+    assert output["results"]["energy"] == pytest.approx(-137.97654214864497)
     assert (
         np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is False
     )
