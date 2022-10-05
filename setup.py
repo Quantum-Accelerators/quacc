@@ -28,7 +28,7 @@ if __name__ == "__main__":
             "pymatgen==2022.9.21",
             "custodian==2022.5.26",
             "jobflow==0.1.9",
-            "atomate2==0.0.7",
+            "atomate2==0.0.8",
             "monty==2022.9.9",
             "fireworks==2.0.3",
             "cclib==1.7.2",
