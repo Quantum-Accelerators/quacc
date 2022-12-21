@@ -11,15 +11,8 @@ from typing import Any, Dict, List, Tuple
 import numpy as np
 from ase.atoms import Atoms
 from ase.io import read, trajectory
-from ase.optimize import (
-    BFGS,
-    FIRE,
-    LBFGS,
-    BFGSLineSearch,
-    GPMin,
-    LBFGSLineSearch,
-    MDMin,
-)
+from ase.optimize import (BFGS, FIRE, LBFGS, BFGSLineSearch, GPMin,
+                          LBFGSLineSearch, MDMin)
 from ase.thermochemistry import IdealGasThermo
 from ase.vibrations import Vibrations
 from monty.io import zopen
