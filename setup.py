@@ -44,7 +44,7 @@ if __name__ == "__main__":
                 "nbsphinx-link==1.3.0",
                 "autodoc_pydantic==1.8.0",
             ],
-            "dev": ["pytest==7.2.0", "black==22.12.0", "isort==5.11.3"],
+            "dev": ["pytest==7.2.0", "black==22.12.0", "isort==5.11.4"],
         },
         tests_require=["pytest"],
         include_package_data=True,
