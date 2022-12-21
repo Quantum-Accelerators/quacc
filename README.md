@@ -16,7 +16,7 @@ QuAcc is a platform for high-throughput, database-driven computational materials
 
 This package is heavily inspired by [Atomate2](https://github.com/materialsproject/atomate2), which I also recommend checking out.
 
-**Disclaimer**: Currently, this package is under active development and should be considered *highly experimental.*
+**Disclaimer**: Currently, this package is under active development and should be considered *experimental.*
 
 ## Documentation
 

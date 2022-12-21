@@ -439,9 +439,9 @@ def ideal_gas_thermo(
             "pointgroup": pointgroup,
             "energy": energy,
             "enthalpy": igt.get_enthalpy(temperature, verbose=False),
-            "entropy": igt.get_entropy(temperature, pressure / 10**5, verbose=False),
+            "entropy": igt.get_entropy(temperature, pressure * 10**5, verbose=False),
             "gibbs_energy": igt.get_gibbs_energy(
-                temperature, pressure / 10**5, verbose=False
+                temperature, pressure * 10**5, verbose=False
             ),
         },
     }

@@ -183,5 +183,6 @@ class ThermoJob(Maker):
             pressure=self.pressure,
             energy=energy,
         )
+        thermo_summary["name"] = self.name
 
         return thermo_summary
