@@ -7,9 +7,13 @@ import pytest
 from ase.build import bulk, fcc100, molecule
 from ase.io import read
 
-from quacc.util.slabs import (flip_atoms, get_surface_energy,
-                              make_adsorbate_structures,
-                              make_max_slabs_from_bulk, make_slabs_from_bulk)
+from quacc.util.slabs import (
+    flip_atoms,
+    get_surface_energy,
+    make_adsorbate_structures,
+    make_max_slabs_from_bulk,
+    make_slabs_from_bulk,
+)
 
 FILE_DIR = Path(__file__).resolve().parent
 ATOMS_MAG = read(os.path.join(FILE_DIR, "..", "calculators", "vasp", "OUTCAR_mag.gz"))
