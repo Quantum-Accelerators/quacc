@@ -12,7 +12,7 @@ from monty.dev import requires
 
 try:
     from xtb.ase.calculator import XTB
-except (ModuleNotFoundError, ImportError):
+except ImportError:
     XTB = None
 from quacc.schemas.calc import summarize_opt_run, summarize_run
 from quacc.util.calc import (ideal_gas_thermo, run_ase_opt, run_ase_vib,
