@@ -39,7 +39,7 @@ class StaticJob(Maker):
 
     @job
     @requires(
-        XTB, "xTB-python must be installed. Try conda install -c conda-forge xtb-python"
+        XTB, "xTB-python must be installed. Try pip install xtb"
     )
     def make(self, atoms: Atoms) -> Dict[str, Any]:
         """
@@ -97,7 +97,7 @@ class RelaxJob(Maker):
 
     @job
     @requires(
-        XTB, "xTB-python must be installed. Try conda install -c conda-forge xtb-python"
+        XTB, "xTB-python must be installed. Try pip install xtb"
     )
     def make(self, atoms: Atoms) -> Dict[str, Any]:
         """
