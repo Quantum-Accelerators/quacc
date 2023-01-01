@@ -38,9 +38,7 @@ class StaticJob(Maker):
     xtb_kwargs: Dict[str, Any] = field(default_factory=dict)
 
     @job
-    @requires(
-        XTB, "xTB-python must be installed. Try pip install xtb"
-    )
+    @requires(XTB, "xTB-python must be installed. Try pip install xtb")
     def make(self, atoms: Atoms) -> Dict[str, Any]:
         """
         Make the run.
@@ -96,9 +94,7 @@ class RelaxJob(Maker):
     opt_kwargs: Dict[str, Any] = field(default_factory=dict)
 
     @job
-    @requires(
-        XTB, "xTB-python must be installed. Try pip install xtb"
-    )
+    @requires(XTB, "xTB-python must be installed. Try pip install xtb")
     def make(self, atoms: Atoms) -> Dict[str, Any]:
         """
         Make the run.
