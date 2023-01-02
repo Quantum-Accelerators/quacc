@@ -35,6 +35,7 @@ if __name__ == "__main__":
         ],
         extras_require={
             "tests": ["pytest==7.2.0"],
+            "codes": ["xtb==22.1"],
             "docs": [
                 "sphinx==5.3.0",
                 "furo==2022.12.7",
