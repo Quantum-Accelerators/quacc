@@ -41,6 +41,7 @@ jobs:
           pip install -r requirements.txt
           pip install .[codes]
           pip install .[tests]
+          pip install chardet
           pip install pytest-cov
           conda install -c psi4 psi4
           # conda install -c conda-forge dftbplus
