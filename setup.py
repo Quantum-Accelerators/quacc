@@ -27,7 +27,7 @@ if __name__ == "__main__":
             "ase @ git+https://gitlab.com/argon214/ase.git@rosen-dftb",
             "pymatgen==2023.3.10",
             "custodian==2022.5.26",
-            "jobflow==0.1.10",
+            "jobflow==0.1.11",
             "atomate2==0.0.9",
             "monty==2022.9.9",
             "fireworks==2.0.3",
