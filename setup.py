@@ -25,7 +25,7 @@ if __name__ == "__main__":
         zip_safe=False,
         install_requires=[
             "ase @ git+https://gitlab.com/argon214/ase.git@rosen-dftb",
-            "pymatgen==2023.3.10",
+            "pymatgen==2023.3.23",
             "custodian==2023.3.10",
             "jobflow==0.1.11",
             "atomate2==0.0.10",
