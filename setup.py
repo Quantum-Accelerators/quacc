@@ -38,7 +38,7 @@ if __name__ == "__main__":
             "codes": ["xtb==22.1"],
             "docs": [
                 "sphinx==6.1.3",
-                "furo==2022.12.7",
+                "furo==2023.3.23",
                 "m2r2==0.3.3.post2",
                 "ipython==8.11.0",
                 "nbsphinx==0.9.1",
