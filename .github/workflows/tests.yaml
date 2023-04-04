@@ -13,7 +13,7 @@ jobs:
         shell: bash -l {0}
     strategy:
       matrix:
-        python-version: [ '3.8' , '3.9' ]
+        python-version: ['3.8', '3.9']
     steps:
       - uses: actions/checkout@v3
 
@@ -44,7 +44,7 @@ jobs:
           pip install chardet
           pip install pytest-cov
           conda install -c psi4 psi4
-          # conda install -c conda-forge dftbplus
+          conda install -c conda-forge dftbplus
           conda install -c conda-forge tblite
 
       - name: Run tests with pytest
