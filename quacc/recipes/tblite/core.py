@@ -10,7 +10,7 @@ from ase.atoms import Atoms
 from jobflow import Maker, job
 from monty.dev import requires
 
-from quacc.schemas.calc import summarize_run, summarize_opt_run
+from quacc.schemas.calc import summarize_opt_run, summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
 
 try:
