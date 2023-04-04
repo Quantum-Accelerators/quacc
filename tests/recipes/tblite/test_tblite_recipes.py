@@ -7,7 +7,7 @@ from jobflow.managers.local import run_locally
 
 try:
     from tblite.ase import TBLite
-except ModuleNotFoundError:
+except ImportError:
     TBLite = None
 from quacc.recipes.tblite.core import RelaxJob, StaticJob
 
