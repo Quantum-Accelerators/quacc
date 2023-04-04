@@ -15,8 +15,10 @@ from monty.dev import requires
 from quacc.schemas.calc import summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
 
-TBLITE_EXISTS = bool(which("tblite"))
-
+try:
+    from tblite.ase import TBLite
+except ImportError:
+    TBLite = None
 
 @dataclass
 class StaticJob(Maker):
@@ -39,7 +41,7 @@ class StaticJob(Maker):
 
     @job
     @requires(
-        TBLITE_EXISTS,
+        TBLite,
         "tblite must be installed. Try conda install -c conda-forge tblite",
     )
     def make(self, atoms: Atoms) -> Dict[str, Any]:
@@ -95,7 +97,7 @@ class RelaxJob(Maker):
 
     @job
     @requires(
-        TBLITE_EXISTS,
+        TBLite,
         "tblite must be installed. Try conda install -c conda-forge tblite",
     )
     def make(self, atoms: Atoms) -> Dict[str, Any]:
