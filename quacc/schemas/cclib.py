@@ -35,7 +35,7 @@ def summarize_run(
         only a partial match is needed. For instance, `.log` will match `.log.gz` and `.log.1.gz`.
         If multiple files with this extension are found, the one with the most recent change time
         will be used. For an exact match only, put in the full file name.
-    dir_name
+    dir_path
         The path to the folder containing the calculation outputs. A value of None specifies the
         current working directory.
     check_convergence
@@ -66,6 +66,9 @@ def summarize_run(
 
     # Fortunately, there is already a cclib parser in Atomate2
     results = TaskDocument.from_logfile(dir_path, logfile_extensions).dict()
+    uri = results["dir_name"]
+    results["nid"] = uri.split(":")[0]
+    results["dir_name"] = ":".join(uri.split(":")[1:])
 
     # Check convergence if requested
     if check_convergence:

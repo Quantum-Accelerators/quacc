@@ -29,7 +29,7 @@ JOB_STORE:
       host: <host name>
       port: 27017
       username: <username>
-      password: <port>
+      password: <password>
       database: <database name>
       collection_name: <collection name>
 ```
@@ -73,7 +73,7 @@ For the `my_fworker.yaml`, you can use the following template. You do not need t
 ```yaml
 name: quacc_fworker
 category: ''
-query: '{}'
+query: {}
 ```
 
 ### Launchpad
@@ -97,7 +97,7 @@ If you are accessing your MongoDB via a URI (e.g. as with MongoDB Atlas), then y
 ```yaml
 host: <URI>
 port: 27017
-name: <databases name>
+name: <database name>
 uri_store: true
 logdir: null
 Istrm_lvl: DEBUG

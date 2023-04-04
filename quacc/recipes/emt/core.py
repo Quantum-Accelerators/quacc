@@ -7,11 +7,11 @@ from typing import Any, Dict
 
 from ase.atoms import Atoms
 from ase.calculators.emt import EMT
+from ase.io import read
 from ase.optimize import FIRE
-from ase.optimize.optimize import Optimizer
 from jobflow import Maker, job
 
-from quacc.schemas.calc import summarize_run
+from quacc.schemas.calc import summarize_opt_run, summarize_run
 
 # NOTE: This set of minimal recipes is mainly for demonstration purposes
 
@@ -68,8 +68,6 @@ class RelaxJob(Maker):
         Name of the job.
     asap_cutoff
         If an ASAP-style cutoff should be used.
-    optimizer
-        .Optimizer class to use for the relaxation.
     fmax
         Tolerance for the force convergence (in eV/A).
     opt_kwargs
@@ -78,7 +76,6 @@ class RelaxJob(Maker):
 
     name: str = "EMT-Relax"
     asap_cutoff: bool = False
-    optimizer: Optimizer = FIRE
     fmax: float = 0.03
     opt_kwargs: Dict[str, Any] = field(default_factory=dict)
 
@@ -97,14 +94,12 @@ class RelaxJob(Maker):
         Dict
             Summary of the run.
         """
-        input_atoms = deepcopy(atoms)
         atoms.calc = EMT(asap_cutoff=self.asap_cutoff)
-        dyn = self.optimizer(
-            atoms, logfile="opt.log", trajectory="opt.traj", **self.opt_kwargs
-        )
+        dyn = FIRE(atoms, logfile="opt.log", trajectory="opt.traj", **self.opt_kwargs)
         dyn.run(fmax=self.fmax)
-        summary = summarize_run(
-            atoms, input_atoms=input_atoms, additional_fields={"name": self.name}
+        traj = read("opt.traj", index=":")
+        summary = summarize_opt_run(
+            traj, atoms.calc.parameters, additional_fields={"name": self.name}
         )
 
         return summary

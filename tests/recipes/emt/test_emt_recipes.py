@@ -1,8 +1,8 @@
 import os
+from shutil import rmtree
 
 import pytest
 from ase.build import bulk
-from ase.optimize import BFGS
 from jobflow.managers.local import run_locally
 
 from quacc.recipes.emt.core import RelaxJob, StaticJob
@@ -17,6 +17,8 @@ def teardown_module():
             or f.endswith(".out")
         ):
             os.remove(f)
+        if "quacc-tmp" in f or f == "tmp_dir":
+            rmtree(f)
 
 
 def test_static_Job():
@@ -62,13 +64,6 @@ def test_relax_Job():
     assert output["results"]["energy"] == pytest.approx(-0.004527567070971017)
 
     job = RelaxJob(fmax=0.01).make(atoms)
-    responses = run_locally(job, ensure_success=True)
-    output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
-    assert output["name"] == "EMT-Relax"
-    assert output["results"]["energy"] == pytest.approx(-0.0454470914411953)
-
-    job = RelaxJob(optimizer=BFGS).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["nsites"] == len(atoms)

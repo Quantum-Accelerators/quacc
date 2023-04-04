@@ -1,4 +1,5 @@
 import os
+from shutil import rmtree
 
 import numpy as np
 import pytest
@@ -7,15 +8,21 @@ from jobflow.managers.local import run_locally
 
 try:
     from xtb.ase.calculator import XTB
-except (ModuleNotFoundError, ImportError):
+except ImportError:
     XTB = None
-from quacc.recipes.xtb.core import RelaxJob, StaticJob
+from quacc.recipes.xtb.core import RelaxJob, StaticJob, ThermoJob
 
 
 def teardown_module():
     for f in os.listdir("."):
         if ".log" in f or ".pckl" in f or ".traj" in f or "gfnff_topo" in f:
             os.remove(f)
+    for f in os.listdir(os.getcwd()):
+        if "quacc-tmp" in f or f == "tmp_dir":
+            if os.path.islink(f):
+                os.unlink(f)
+            else:
+                rmtree(f)
 
 
 @pytest.mark.skipif(
@@ -96,3 +103,50 @@ def test_relax_Job():
     output = responses[job.uuid][1].output
     assert output["results"]["energy"] == pytest.approx(-156.97441169886613)
     assert not np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
+
+
+@pytest.mark.skipif(
+    XTB is None,
+    reason="xTB-python must be installed. Try conda install -c conda-forge xtb-python",
+)
+def test_thermo_job():
+    atoms = molecule("H2O")
+    job = ThermoJob().make(atoms)
+    responses = run_locally(job, ensure_success=True)
+    output = responses[job.uuid][1].output
+    assert output["atoms"] == atoms
+    assert output["results"]["n_imag"] == 0
+    assert len(output["results"]["frequencies"]) == 9
+    assert len(output["results"]["true_frequencies"]) == 3
+    assert output["results"]["true_frequencies"][-1] == pytest.approx(3526.945468014458)
+    assert output["results"]["geometry"] == "nonlinear"
+    assert output["results"]["energy"] == 0.0
+    assert output["results"]["enthalpy"] == pytest.approx(0.637581401404518)
+    assert output["results"]["entropy"] == pytest.approx(0.0019584993671715764)
+    assert output["results"]["gibbs_energy"] == pytest.approx(0.05365481508231251)
+
+    atoms = molecule("O2")
+    job = ThermoJob(temperature=200, pressure=2.0).make(atoms, energy=-100.0)
+    responses = run_locally(job, ensure_success=True)
+    output = responses[job.uuid][1].output
+    assert output["atoms"] == atoms
+    assert output["results"]["n_imag"] == 0
+    assert len(output["results"]["true_frequencies"]) == 1
+    assert output["results"]["true_frequencies"][-1] == pytest.approx(1449.82397338371)
+    assert output["results"]["geometry"] == "linear"
+    assert output["results"]["pointgroup"] == "D*h"
+    assert output["results"]["energy"] == -100.0
+    assert output["results"]["enthalpy"] == pytest.approx(-99.84979574721257)
+    assert output["results"]["entropy"] == pytest.approx(0.001915519747865423)
+    assert output["results"]["gibbs_energy"] == pytest.approx(-100.23289969678565)
+
+    atoms = molecule("H")
+    job = ThermoJob().make(atoms, energy=-1.0)
+    responses = run_locally(job, ensure_success=True)
+    output = responses[job.uuid][1].output
+    assert output["atoms"] == atoms
+    assert output["results"]["n_imag"] == 0
+    assert output["results"]["geometry"] == "monatomic"
+    assert len(output["results"]["true_frequencies"]) == 0
+    assert output["results"]["energy"] == -1.0
+    assert output["results"]["enthalpy"] == pytest.approx(-0.9357685739989672)

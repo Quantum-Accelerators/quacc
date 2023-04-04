@@ -5,11 +5,10 @@ from dataclasses import dataclass, field
 from typing import Any, Dict
 
 from ase.atoms import Atoms
-from ase.optimize import BFGSLineSearch
 from jobflow import Maker, job
 
 from quacc.calculators.vasp import Vasp
-from quacc.schemas.calc import summarize_run as summarize_ase_run
+from quacc.schemas.calc import summarize_opt_run
 from quacc.schemas.vasp import summarize_run
 from quacc.util.basics import merge_dicts
 from quacc.util.calc import run_ase_opt, run_calc
@@ -143,9 +142,9 @@ def _prerelax(
     flags = merge_dicts(defaults, swaps)
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
-    new_atoms = run_ase_opt(atoms, fmax=fmax, optimizer=BFGSLineSearch)
+    traj = run_ase_opt(atoms, fmax=fmax, optimizer="BFGSLineSearch")
 
-    summary = summarize_ase_run(new_atoms, input_atoms=atoms)
+    summary = summarize_opt_run(traj, calc.parameters)
 
     return summary
 

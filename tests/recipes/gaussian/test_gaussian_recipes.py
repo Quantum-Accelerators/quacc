@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from shutil import copy
+from shutil import copy, rmtree
 
 from ase.build import molecule
 from jobflow.managers.local import run_locally
@@ -20,6 +20,12 @@ def teardown_module():
     for f in os.listdir(GAUSSIAN_DIR):
         if os.path.exists(os.path.join(os.getcwd(), f)):
             os.remove(os.path.join(os.getcwd(), f))
+    for f in os.listdir(os.getcwd()):
+        if "quacc-tmp" in f or f == "tmp_dir":
+            if os.path.islink(f):
+                os.unlink(f)
+            else:
+                rmtree(f)
 
 
 def test_static_Job():

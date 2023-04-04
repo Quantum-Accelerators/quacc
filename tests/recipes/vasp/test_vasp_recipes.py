@@ -1,4 +1,5 @@
 import os
+from shutil import rmtree
 
 import pytest
 from ase.build import bulk, molecule
@@ -6,19 +7,18 @@ from jobflow.managers.local import run_locally
 
 from quacc.recipes.vasp.core import DoubleRelaxJob, RelaxJob, StaticJob
 from quacc.recipes.vasp.qmof import QMOFRelaxJob
-from quacc.recipes.vasp.slabs import (
-    BulkToAdsorbatesFlow,
-    BulkToSlabsJob,
-    SlabRelaxJob,
-    SlabStaticJob,
-    SlabToAdsorbatesJob,
-)
+from quacc.recipes.vasp.slabs import (BulkToAdsorbatesFlow, BulkToSlabsJob,
+                                      SlabRelaxJob, SlabStaticJob,
+                                      SlabToAdsorbatesJob)
 
 
 def teardown_module():
-    for f in ["prerelax.log", "prerelax.traj", "prerelax.log.gz", "prerelax.traj.gz"]:
-        if os.path.exists(f):
-            os.remove(f)
+    for f in os.listdir(os.getcwd()):
+        if "quacc-tmp" in f or f == "tmp_dir":
+            if os.path.islink(f):
+                os.unlink(f)
+            else:
+                rmtree(f)
 
 
 def test_static_job():
@@ -287,16 +287,14 @@ def test_slab_dynamic_jobs():
 
     # Now try with different adsorbate
     adsorbate2 = molecule("CH3")
+    adsorbate2.set_initial_magnetic_moments([1, 0, 0, 0])
     flow = SlabToAdsorbatesJob().make(atoms, adsorbate2)
     responses = run_locally(flow, ensure_success=True)
-
     assert len(responses) == 9
 
     adsorbate2 = molecule("CH3")
-    adsorbate2.set_initial_magnetic_moments([0.0] * len(adsorbate2))
     flow = SlabToAdsorbatesJob().make(atoms, adsorbate2)
     responses = run_locally(flow, ensure_success=True)
-
     assert len(responses) == 9
 
 

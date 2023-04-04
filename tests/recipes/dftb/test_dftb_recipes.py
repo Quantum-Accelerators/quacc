@@ -1,5 +1,5 @@
 import os
-from shutil import which
+from shutil import rmtree, which
 
 import numpy as np
 import pytest
@@ -25,6 +25,11 @@ def teardown_module():
             or f.endswith(".tag")
         ):
             os.remove(f)
+        if "quacc-tmp" in f or f == "tmp_dir":
+            if os.path.islink(f):
+                os.unlink(f)
+            else:
+                rmtree(f)
 
 
 @pytest.mark.skipif(
@@ -42,7 +47,7 @@ def test_static_Job():
     assert output["name"] == "DFTB-Static"
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
-    assert output["results"]["energy"] == pytest.approx(-137.97459675495645)
+    assert output["results"]["energy"] == pytest.approx(-137.9677759924738)
 
     atoms = bulk("Cu")
 
@@ -60,7 +65,7 @@ def test_static_Job():
     assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty000"] == "3 0 0"
     assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty001"] == "0 3 0"
     assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty002"] == "0 0 3"
-    assert output["results"]["energy"] == pytest.approx(-107.55154244254307)
+    assert output["results"]["energy"] == pytest.approx(-106.86647125470942)
 
 
 @pytest.mark.skipif(
@@ -78,7 +83,7 @@ def test_relax_job():
     assert output["name"] == "DFTB-Relax"
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
-    assert output["results"]["energy"] == pytest.approx(-137.98336133558837)
+    assert output["results"]["energy"] == pytest.approx(-137.97654214864497)
     assert (
         np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is False
     )

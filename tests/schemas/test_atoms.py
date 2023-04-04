@@ -2,9 +2,10 @@ import os
 from pathlib import Path
 
 import numpy as np
-from ase.build import bulk
+from ase.build import bulk, molecule
 from ase.io import read
 from monty.json import MontyDecoder, jsanitize
+from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc.schemas.atoms import atoms_to_metadata
 
@@ -19,6 +20,8 @@ def test_atoms_to_metadata():
     atoms.info["test"] = "hi"
     results = atoms_to_metadata(atoms)
     assert results["atoms"].info.get("test", None) == "hi"
+    assert results["structure"] == AseAtomsAdaptor.get_structure(atoms)
+    assert "molecule" not in results
 
     atoms = bulk("Cu")
     atoms.info["test"] = "hi"
@@ -32,6 +35,13 @@ def test_atoms_to_metadata():
     results = atoms_to_metadata(atoms, get_metadata=False)
     assert results["atoms"] == atoms
     assert results.get("nsites", None) is None
+
+    atoms = molecule("H2O")
+    atoms.info["test"] = "hi"
+    results = atoms_to_metadata(atoms)
+    assert results["atoms"].info.get("test", None) == "hi"
+    assert results["molecule"] == AseAtomsAdaptor().get_molecule(atoms)
+    assert "structure" not in results
 
     atoms = bulk("Cu")
     parent = bulk("Al") * (2, 1, 1)

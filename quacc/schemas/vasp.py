@@ -67,6 +67,9 @@ def summarize_run(
     # Fetch all tabulated results from VASP outputs files
     # Fortunately, Atomate2 already has a handy function for this
     results = TaskDocument.from_directory(dir_path).dict()
+    uri = results["dir_name"]
+    results["nid"] = uri.split(":")[0]
+    results["dir_name"] = ":".join(uri.split(":")[1:])
 
     # Check for calculation convergence
     if check_convergence and results["state"] != "successful":
@@ -128,7 +131,7 @@ def summarize_run(
 
     # We use get_metadata=False because the TaskDocument already
     # makes the structure metadata for us
-    atoms_db = atoms_to_metadata(atoms, get_metadata=False)
+    atoms_db = atoms_to_metadata(atoms, get_metadata=False, store_pmg=False)
 
     task_doc = {**results, **atoms_db, **additional_fields}
 
