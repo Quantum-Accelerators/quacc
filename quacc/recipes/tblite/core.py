@@ -20,6 +20,7 @@ try:
 except ImportError:
     TBLite = None
 
+
 @dataclass
 class StaticJob(Maker):
     """
