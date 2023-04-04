@@ -12,13 +12,10 @@ from ase.optimize.optimize import Optimizer
 from jobflow import Maker, job
 from monty.dev import requires
 
-try:
-    from tblite.ase import TBLite
-except ModuleNotFoundError:
-    TBLite = None
 from quacc.schemas.calc import summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
 
+TBLITE_EXISTS = bool(which("tblite"))
 
 @dataclass
 class StaticJob(Maker):
@@ -41,7 +38,7 @@ class StaticJob(Maker):
 
     @job
     @requires(
-        TBLite, "tblite must be installed. Try conda install -c conda-forge tblite"
+        TBLITE_EXISTS, "tblite must be installed. Try conda install -c conda-forge tblite"
     )
     def make(self, atoms: Atoms) -> Dict[str, Any]:
         """
@@ -96,7 +93,7 @@ class RelaxJob(Maker):
 
     @job
     @requires(
-        TBLite, "tblite must be installed. Try conda install -c conda-forge tblite"
+        TBLITE_EXISTS, "tblite must be installed. Try conda install -c conda-forge tblite"
     )
     def make(self, atoms: Atoms) -> Dict[str, Any]:
         """
