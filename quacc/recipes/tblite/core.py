@@ -7,12 +7,10 @@ from dataclasses import dataclass, field
 from typing import Any, Dict
 
 from ase.atoms import Atoms
-from ase.optimize import FIRE
-from ase.optimize.optimize import Optimizer
 from jobflow import Maker, job
 from monty.dev import requires
 
-from quacc.schemas.calc import summarize_run
+from quacc.schemas.calc import summarize_run, summarize_opt_run
 from quacc.util.calc import run_ase_opt, run_calc
 
 try:
@@ -79,21 +77,24 @@ class RelaxJob(Maker):
         Name of the job.
     method
         GFN0-xTB, GFN1-xTB, GFN2-xTB.
-    tblite_kwargs
-        Dictionary of custom kwargs for the tblite calculator.
     fmax
         Tolerance for the force convergence (in eV/A).
+    max_steps
+        Maximum number of steps to take.
     optimizer
         .Optimizer class to use for the relaxation.
+    tblite_kwargs
+        Dictionary of custom kwargs for the tblite calculator.
     opt_kwargs
         Dictionary of kwargs for the optimizer.
     """
 
     name: str = "tblite-Relax"
     method: str = "GFN2-xTB"
-    tblite_kwargs: Dict[str, Any] = field(default_factory=dict)
     fmax: float = 0.01
-    optimizer: Optimizer = FIRE
+    max_steps: int = 1000
+    optimizer: str = "FIRE"
+    tblite_kwargs: Dict[str, Any] = field(default_factory=dict)
     opt_kwargs: Dict[str, Any] = field(default_factory=dict)
 
     @job
@@ -116,11 +117,15 @@ class RelaxJob(Maker):
             Summary of the run.
         """
         atoms.calc = TBLite(method=self.method, **self.tblite_kwargs)
-        new_atoms = run_ase_opt(
-            atoms, fmax=self.fmax, optimizer=self.optimizer, opt_kwargs=self.opt_kwargs
+        traj = run_ase_opt(
+            atoms,
+            fmax=self.fmax,
+            max_steps=self.max_steps,
+            optimizer=self.optimizer,
+            opt_kwargs=self.opt_kwargs,
         )
-        summary = summarize_run(
-            new_atoms, input_atoms=atoms, additional_fields={"name": self.name}
+        summary = summarize_opt_run(
+            traj, atoms.calc.parameters, additional_fields={"name": self.name}
         )
 
         return summary

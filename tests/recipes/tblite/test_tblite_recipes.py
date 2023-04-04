@@ -31,7 +31,7 @@ def test_static_Job():
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["method"] == "GFN2-xTB"
     assert output["name"] == "tblite-Static"
-    assert output["results"]["energy"] == pytest.approx(-137.9745971808714)
+    assert output["results"]["energy"] == pytest.approx(-137.96777594361672)
     assert np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
 
     job = StaticJob(method="GFN1-xTB").make(atoms)
@@ -55,5 +55,5 @@ def test_relax_Job():
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["method"] == "GFN2-xTB"
     assert output["name"] == "tblite-Relax"
-    assert output["results"]["energy"] == pytest.approx(-137.9833607328507)
+    assert output["results"]["energy"] == pytest.approx(-137.97654191396492)
     assert not np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
