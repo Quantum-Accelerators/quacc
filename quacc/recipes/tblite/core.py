@@ -17,6 +17,7 @@ from quacc.util.calc import run_ase_opt, run_calc
 
 TBLITE_EXISTS = bool(which("tblite"))
 
+
 @dataclass
 class StaticJob(Maker):
     """
@@ -38,7 +39,8 @@ class StaticJob(Maker):
 
     @job
     @requires(
-        TBLITE_EXISTS, "tblite must be installed. Try conda install -c conda-forge tblite"
+        TBLITE_EXISTS,
+        "tblite must be installed. Try conda install -c conda-forge tblite",
     )
     def make(self, atoms: Atoms) -> Dict[str, Any]:
         """
@@ -93,7 +95,8 @@ class RelaxJob(Maker):
 
     @job
     @requires(
-        TBLITE_EXISTS, "tblite must be installed. Try conda install -c conda-forge tblite"
+        TBLITE_EXISTS,
+        "tblite must be installed. Try conda install -c conda-forge tblite",
     )
     def make(self, atoms: Atoms) -> Dict[str, Any]:
         """
