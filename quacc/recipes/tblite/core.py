@@ -14,7 +14,7 @@ from monty.dev import requires
 
 try:
     from tblite.ase import TBLite
-except (ModuleNotFoundError, ImportError):
+except ModuleNotFoundError:
     TBLite = None
 from quacc.schemas.calc import summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
