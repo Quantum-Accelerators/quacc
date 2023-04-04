@@ -13,8 +13,8 @@ from quacc.schemas.cclib import summarize_run
 from quacc.util.basics import merge_dicts
 from quacc.util.calc import run_calc
 
-LOG_FILE = ORCA().label + ".out"
-GEOM_FILE = ORCA().label + ".xyz"
+LOG_FILE = ORCA().name + ".out"
+GEOM_FILE = ORCA().name + ".xyz"
 
 
 @dataclass
