@@ -8,9 +8,11 @@ from ase.atoms import Atoms
 from ase.calculators.gulp import GULP
 from jobflow import Maker, job
 
-from quacc.schemas.calc import summarize_opt_run, summarize_run
+from quacc.schemas.calc import summarize_run
 from quacc.util.basics import merge_dicts
-from quacc.util.calc import run_ase_opt, run_calc
+from quacc.util.calc import run_calc
+
+import warnings
 
 
 @dataclass
@@ -24,7 +26,7 @@ class StaticJob(Maker):
     name
         Name of the job.
     gfnff
-        True if (periodic) GFN-FF should be used; False if not.
+        True if (p)GFN-FF should be used; False if not.
     library
         Filename of the potential library file, if required.
     keyword_swaps
@@ -97,7 +99,7 @@ class RelaxJob(Maker):
     name
         Name of the job.
     gfnff
-        True if (periodic) GFN-FF should be used; False if not.
+        True if (p)GFN-FF should be used; False if not.
     library
         Filename of the potential library file, if required.
     volume_relax
@@ -140,12 +142,16 @@ class RelaxJob(Maker):
         Dict
             Summary of the run.
         """
+        if self.volume_relax and not atoms.pbc.any():
+            warnings.warn("Volume relaxation requested but no PBCs found. Ignoring.")
+            self.volume_relax = False
+
         default_keywords = {
             "opti": True,
             "gfnff": self.gfnff,
             "gwolf": True if self.gfnff and atoms.pbc.any() else False,
-            "conp": True if self.volume_relax else False,
-            "conv": False if self.volume_relax else True,
+            "conp": True if self.volume_relax and atoms.pbc.any() else False,
+            "conv": False if self.volume_relax and atoms.pbc.any() else True,
         }
         default_options = {
             "dump every gulp.res": True,
