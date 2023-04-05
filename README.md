@@ -13,7 +13,12 @@
 [![Pypi](https://img.shields.io/pypi/v/quacc)](https://pypi.org/project/quacc)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7720999.svg)](https://doi.org/10.5281/zenodo.7720999)
 
-QuAcc is a platform for high-throughput, database-driven computational materials science and quantum chemistry. Primarily, QuAcc seeks to enable a seamless interface between the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/index.html) (ASE) and [Jobflow](https://github.com/materialsproject/jobflow) for rapid workflow development and prototyping while leveraging many of the tools that power the [Materials Project](https://materialsproject.org).
+QuAcc is a flexible platform for high-throughput, database-driven computational materials science and quantum chemistry.
+
+The three core goals of QuAcc are as follows:
+1. To enable a seamless interface between the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/index.html) (ASE) and the high-throughput infrastructure powering the [Materials Project](https://materialsproject.org).
+2. To reduce the barrier for constructing complex, mixed-code workflows.
+3. To promote rapid workflow development and testing via [Jobflow](https://github.com/materialsproject/jobflow). 
 
 This package is heavily inspired by [Atomate2](https://github.com/materialsproject/atomate2), which I also recommend checking out.
 
