@@ -23,7 +23,7 @@ If you plan to use xTB with QuAcc, you will need to install the [xtb-python](htt
 
 ## tblite
 
-If you plan to use tblite with QuAcc, you will need to install the [tblite](https://github.com/tblite/tblite) interface. This can be done via `conda install -c conda-forge tblite`.
+If you plan to use tblite with QuAcc, you will need to install the [tblite](https://github.com/tblite/tblite) interface with ASE support. This can be done via `pip install tblite[ase]`.
 
 ## Psi4
 
