@@ -41,7 +41,7 @@ class StaticJob(Maker):
     @job
     @requires(
         TBLite,
-        "tblite must be installed. Try conda install -c conda-forge tblite",
+        "tblite must be installed. Try pip install tblite[ase]",
     )
     def make(self, atoms: Atoms) -> Dict[str, Any]:
         """
@@ -100,7 +100,7 @@ class RelaxJob(Maker):
     @job
     @requires(
         TBLite,
-        "tblite must be installed. Try conda install -c conda-forge tblite",
+        "tblite must be installed. Try pip install tblite[ase]",
     )
     def make(self, atoms: Atoms) -> Dict[str, Any]:
         """
