@@ -17,23 +17,24 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Cache conda
+        uses: actions/cache@v3
+        env:
+          # Increase this value to reset cache if etc/example-environment.yml has not changed
+          CACHE_NUMBER: 0
+        with:
+          path: ~/conda_pkgs_dir
+          key:
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{
+            hashFiles('etc/example-environment.yml') }}
+
       - uses: conda-incubator/setup-miniconda@v2
         with:
           python-version: ${{ matrix.python-version }}
-
-      - name: Get Date
-        id: get-date
-        run: echo "::set-output name=today::$(/bin/date -u '+%Y%m%d')"
-        shell: bash
-
-      - name: Cache Conda
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.CONDA }}/envs
-          key: conda-${{ runner.os }}--${{ runner.arch }}--${{ steps.get-date.outputs.today }}-${{ hashFiles('requirements.txt') }}-${{ env.CACHE_NUMBER }}
-        env:
-          CACHE_NUMBER: 0
-        id: cache
+          activate-environment: anaconda-client-env
+          channel-priority: strict
+          environment-file: etc/example-environment.yml
+          use-only-tar-bz2: true # IMPORTANT: This needs to be set for caching to work properly!
 
       - name: Install dependencies
         run: |
@@ -50,7 +51,7 @@ jobs:
         run: pytest --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         if: github.repository == 'arosen93/quacc'
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
