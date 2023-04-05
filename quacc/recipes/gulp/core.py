@@ -57,7 +57,7 @@ class StaticJob(Maker):
             Summary of the run.
         """
         default_keywords = {"gfnff": self.gfnff, "gwolf": True if self.gfnff else False}
-        default_options = {}
+        default_options = {"dump every gulp.res"}
 
         keywords = merge_dicts(
             default_keywords, self.keyword_swaps, remove_none=True, remove_false=True
@@ -135,7 +135,7 @@ class RelaxJob(Maker):
             "conp": True if self.volume_relax else False,
             "conv": False if self.volume_relax else True,
         }
-        default_options = {}
+        default_options = {"dump every gulp.res"}
 
         keywords = merge_dicts(
             default_keywords, self.keyword_swaps, remove_none=True, remove_false=True
