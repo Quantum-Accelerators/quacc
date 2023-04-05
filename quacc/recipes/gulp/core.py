@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict
 
 from ase.atoms import Atoms
-from ase.calculators.gulp import GULP, Conditions
+from ase.calculators.gulp import GULP
 from jobflow import Maker, job
 
 from quacc.schemas.calc import summarize_opt_run, summarize_run
@@ -104,7 +104,7 @@ class RelaxJob(Maker):
         Dictionary of custom option swap kwargs for the calculator.
     """
 
-    name: str = "GULP-Static"
+    name: str = "GULP-Relax"
     gfnff: bool = True
     library: str = None
     volume_relax: bool = True
