@@ -79,7 +79,6 @@ class Vasp(Vasp_):
         verbose: bool = SETTINGS.VASP_VERBOSE,
         **kwargs,
     ):
-
         # Check constraints
         if (
             custodian

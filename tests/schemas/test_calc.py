@@ -14,7 +14,6 @@ run1 = os.path.join(FILE_DIR, "vasp_run1")
 
 
 def test_summarize_run():
-
     # Make sure metadata is made
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
     results = summarize_run(atoms)

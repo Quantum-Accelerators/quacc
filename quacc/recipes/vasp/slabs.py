@@ -13,8 +13,11 @@ from quacc.recipes.vasp.core import RelaxJob, StaticJob
 from quacc.schemas.vasp import summarize_run
 from quacc.util.basics import merge_dicts
 from quacc.util.calc import run_calc
-from quacc.util.slabs import (get_surface_energy, make_adsorbate_structures,
-                              make_max_slabs_from_bulk)
+from quacc.util.slabs import (
+    get_surface_energy,
+    make_adsorbate_structures,
+    make_max_slabs_from_bulk,
+)
 
 
 @dataclass
@@ -262,7 +265,6 @@ class SlabToAdsorbatesJob(Maker):
         all_atoms = []
         for slab in slabs_list:
             for adsorbate in adsorbates_list:
-
                 # Make slab-adsorbate systems
                 ads_slabs = make_adsorbate_structures(
                     slab, adsorbate, **make_ads_kwargs

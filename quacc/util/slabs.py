@@ -126,11 +126,9 @@ def make_slabs_from_bulk(
     # If the two terminations are not equivalent, make new slab
     # by inverting the original slab and add it to the list
     if flip_asymmetric:
-
         new_slabs = []
         for slab in slabs:
             if not slab.is_symmetric():
-
                 # Flip the slab and its oriented unit cell
                 new_slab = flip_atoms(slab, return_struct=True)
                 new_oriented_unit_cell = flip_atoms(
@@ -163,10 +161,8 @@ def make_slabs_from_bulk(
     # and fix atoms z_fix away from the top of the slab.
     slabs_with_props = []
     for slab in slabs:
-
         # Make sure desired atoms are on surface
         if allowed_surface_symbols:
-
             # Find atoms at surface
             surf_sites = AdsorbateSiteFinder(slab.copy()).surface_sites
             surface_species = [s.specie.symbol for s in surf_sites]
@@ -225,7 +221,6 @@ def make_max_slabs_from_bulk(
     allowed_surface_symbols: List[str] | str = None,
     **slabgen_kwargs,
 ) -> List[Atoms]:
-
     """
     Generate no more than max_slabs number of slabs from a bulk structure.
     The procedure is as follows:
@@ -292,7 +287,6 @@ def make_max_slabs_from_bulk(
     # Try to reduce the number of slabs if the user really wants it...
     # (desperate times call for desperate measures)
     if max_slabs and slabs is not None and len(slabs) > max_slabs:
-
         if len(slabs) > max_slabs:
             warnings.warn(
                 f"You requested {max_slabs} slabs, but {len(slabs)} were generated. Tuning ftol in generate_all_slabs() to try to reduce the number of slabs, at the expense of sampling fewer surface configurations.",
@@ -421,13 +415,11 @@ def make_adsorbate_structures(
     # Find and add the adsorbates
     new_atoms = []
     for mode, ads_coords in ads_sites.items():
-
         # Check if mode is in desired list
         if mode not in modes:
             continue
 
         for ads_coord in ads_coords:
-
             # Place adsorbate
             struct_with_adsorbate = ads_finder.add_adsorbate(mol, ads_coord)
 

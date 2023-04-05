@@ -32,7 +32,6 @@ def teardown_module():
 
 
 def test_run_calc():
-
     atoms = bulk("Cu")
     calc = EMT()
     atoms.calc = calc

@@ -113,7 +113,6 @@ def run_calc(
     # that the atoms object is updated with the correct positions, cell,
     # and magmoms.
     if geom_file and os.path.exists(zpath(geom_file)):
-
         # Note: We have to be careful to make sure we don't lose the
         # converged magnetic moments, if present. That's why we simply
         # update the positions and cell in-place.

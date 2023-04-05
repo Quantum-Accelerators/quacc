@@ -7,9 +7,13 @@ from jobflow.managers.local import run_locally
 
 from quacc.recipes.vasp.core import DoubleRelaxJob, RelaxJob, StaticJob
 from quacc.recipes.vasp.qmof import QMOFRelaxJob
-from quacc.recipes.vasp.slabs import (BulkToAdsorbatesFlow, BulkToSlabsJob,
-                                      SlabRelaxJob, SlabStaticJob,
-                                      SlabToAdsorbatesJob)
+from quacc.recipes.vasp.slabs import (
+    BulkToAdsorbatesFlow,
+    BulkToSlabsJob,
+    SlabRelaxJob,
+    SlabStaticJob,
+    SlabToAdsorbatesJob,
+)
 
 
 def teardown_module():
@@ -22,7 +26,6 @@ def teardown_module():
 
 
 def test_static_job():
-
     atoms = bulk("Cu") * (2, 2, 2)
 
     job = StaticJob().make(atoms)
@@ -60,7 +63,6 @@ def test_static_job():
 
 
 def test_relax_job():
-
     atoms = bulk("Cu") * (2, 2, 2)
 
     job = RelaxJob().make(atoms)
@@ -87,7 +89,6 @@ def test_relax_job():
 
 
 def test_doublerelax_job():
-
     atoms = bulk("Cu") * (2, 2, 2)
 
     job = DoubleRelaxJob().make(atoms)

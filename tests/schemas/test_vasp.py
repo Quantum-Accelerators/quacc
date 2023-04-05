@@ -38,7 +38,6 @@ def patch_pop_analyses(monkeypatch):
 
 
 def test_summarize_run():
-
     # Make sure metadata is made
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
     results = summarize_run(atoms, dir_path=run1)
