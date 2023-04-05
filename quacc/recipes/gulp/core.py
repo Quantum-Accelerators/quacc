@@ -103,10 +103,6 @@ class RelaxJob(Maker):
         Filename of the potential library file, if required.
     volume_relax
         True if the volume should be relaxed; False if not.
-    fmax
-        Tolerance for the force convergence (in eV/A).
-    max_steps
-        Maximum number of steps to take.
     keyword_swaps
         Dictionary of custom keyword swap kwargs for the calculator.
     option_swaps
@@ -117,8 +113,6 @@ class RelaxJob(Maker):
     gfnff: bool = True
     library: str = None
     volume_relax: bool = True
-    fmax: float = 0.01
-    max_steps: int = 1000
     keyword_swaps: Dict[str, Any] = field(default_factory=dict)
     option_swaps: Dict[str, Any] = field(default_factory=dict)
 
