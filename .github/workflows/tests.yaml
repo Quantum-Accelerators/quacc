@@ -51,10 +51,7 @@ jobs:
 
       - name: Update Conda environment
         run: |
-          # If you update this list, also update conda_codes.yaml
           conda env update -n quacc-env -f conda_codes.yaml
-          # conda install -c psi4 psi4
-          # conda install -c conda-forge dftbplus==22.2
         if: steps.cache_conda.outputs.cache-hit != 'true'
 
       - name: Run tests with pytest
