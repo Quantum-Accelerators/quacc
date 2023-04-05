@@ -23,6 +23,12 @@ ORCA is a free code that is especially useful for molecular DFT calculations wit
 
 As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/orca.html), to use ORCA in parallel mode, you will need to define an environment variable named `ASE_ORCA_COMMAND`. It should be of the form `ASE_ORCA_COMMAND="/path/to/my/orca orca.inp > orca.out"`.
 
+## Psi4
+
+Psi4 is especially useful for constructing and testing out new functionals, like DeepMind's DM21.
+
+If you plan to use [Psi4](https://github.com/psi4/psi4) with QuAcc, you will need to install it prior to use. This can be done via `conda install -c psi4 psi4`.
+
 ## xTB
 
 xTB is especially useful for semi-empirical tight-binding calculations based on the GFN-xTB method.
