@@ -29,7 +29,6 @@ def teardown_module():
 
 
 def test_static_Job():
-
     atoms = molecule("H2")
 
     job = StaticJob().make(atoms)
@@ -69,7 +68,6 @@ def test_static_Job():
 
 
 def test_relax_Job():
-
     atoms = molecule("H2")
 
     job = RelaxJob().make(atoms)

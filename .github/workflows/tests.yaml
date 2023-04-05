@@ -20,41 +20,52 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2
         with:
           python-version: ${{ matrix.python-version }}
+          activate-environment: quacc-env
+          use-only-tar-bz2: true
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
 
       - name: Get Date
         id: get-date
-        run: echo "::set-output name=today::$(/bin/date -u '+%Y%m%d')"
+        run: echo "name=today::$(/bin/date -u '+%Y%m%d')" >> $GITHUB_OUTPUT
         shell: bash
 
-      - name: Cache Conda
+      - name: Cache conda
         uses: actions/cache@v3
         with:
-          path: ${{ env.CONDA }}/envs
-          key: conda-${{ runner.os }}--${{ runner.arch }}--${{ steps.get-date.outputs.today }}-${{ hashFiles('requirements.txt') }}-${{ env.CACHE_NUMBER }}
+          path: ~/conda_pkgs_dir
+          key: conda-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-date.outputs.today }}-${{ hashFiles('setup.py') }}-${{ hashFiles('conda_codes.yaml') }}-${{ env.CACHE_NUMBER }}
         env:
           CACHE_NUMBER: 0
-        id: cache
+        id: cache_conda
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
+      - run: |
           pip install -r requirements.txt
           pip install .[codes]
           pip install .[tests]
           pip install chardet
           pip install pytest-cov
+
+      - name: Update Conda environment
+        run: |
+          # If you update this list, also update conda_codes.yaml
           conda install -c psi4 psi4
-          conda install -c conda-forge dftbplus
+          # conda install -c conda-forge dftbplus==22.2
+        if: steps.cache_conda.outputs.cache-hit != 'true'
 
       - name: Run tests with pytest
         run: pytest --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         if: github.repository == 'arosen93/quacc'
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml
+
   docs:
     runs-on: ubuntu-latest
     steps:

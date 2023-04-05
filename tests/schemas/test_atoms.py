@@ -15,7 +15,6 @@ test_cifs = os.path.join(FILE_DIR, "test_files")
 
 
 def test_atoms_to_metadata():
-
     atoms = bulk("Cu")
     atoms.info["test"] = "hi"
     results = atoms_to_metadata(atoms)

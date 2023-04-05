@@ -8,15 +8,20 @@ import shlex
 from typing import Dict, List
 
 from custodian import Custodian
-from custodian.vasp.handlers import (FrozenJobErrorHandler,
-                                     IncorrectSmearingHandler,
-                                     LargeSigmaHandler,
-                                     MeshSymmetryErrorHandler,
-                                     NonConvergingErrorHandler,
-                                     PositiveEnergyErrorHandler,
-                                     PotimErrorHandler, ScanMetalHandler,
-                                     StdErrHandler, UnconvergedErrorHandler,
-                                     VaspErrorHandler, WalltimeHandler)
+from custodian.vasp.handlers import (
+    FrozenJobErrorHandler,
+    IncorrectSmearingHandler,
+    LargeSigmaHandler,
+    MeshSymmetryErrorHandler,
+    NonConvergingErrorHandler,
+    PositiveEnergyErrorHandler,
+    PotimErrorHandler,
+    ScanMetalHandler,
+    StdErrHandler,
+    UnconvergedErrorHandler,
+    VaspErrorHandler,
+    WalltimeHandler,
+)
 from custodian.vasp.jobs import VaspJob
 from custodian.vasp.validators import VaspFilesValidator, VasprunXMLValidator
 
