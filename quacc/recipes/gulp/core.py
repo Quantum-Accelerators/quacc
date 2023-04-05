@@ -111,10 +111,7 @@ class RelaxJob(Maker):
     keyword_swaps
         Dictionary of custom keyword swap kwargs for the calculator.
     option_swaps
-        Dictionary of
-          custom option swap kwargs for the calculator.
-    opt_kwargs
-        Dictionary of kwargs for the optimizer.
+        Dictionary of custom option swap kwargs for the calculator.
     """
 
     name: str = "GULP-Relax"
@@ -125,7 +122,6 @@ class RelaxJob(Maker):
     max_steps: int = 1000
     keyword_swaps: Dict[str, Any] = field(default_factory=dict)
     option_swaps: Dict[str, Any] = field(default_factory=dict)
-    opt_kwargs: Dict[str, Any] = field(default_factory=dict)
 
     @job
     def make(self, atoms: Atoms) -> Dict[str, Any]:
