@@ -45,7 +45,6 @@ jobs:
           pip install pytest-cov
           conda install -c psi4 psi4
           conda install -c conda-forge dftbplus
-          conda install -c conda-forge tblite
 
       - name: Run tests with pytest
         run: pytest --cov=quacc --cov-report=xml
