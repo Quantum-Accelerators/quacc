@@ -196,8 +196,6 @@ def run_ase_opt(
         opt_class = MDMin
     elif optimizer.lower() == "fire":
         opt_class = FIRE
-    elif optimizer.lower() == "gulp":
-        opt_class = atoms.calc.get_optimizer(atoms)
     else:
         raise ValueError(f"Unknown optimizer: {optimizer}")
 

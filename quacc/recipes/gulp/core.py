@@ -12,8 +12,6 @@ from quacc.schemas.calc import summarize_opt_run, summarize_run
 from quacc.util.basics import merge_dicts
 from quacc.util.calc import run_ase_opt, run_calc
 
-GEOM_FILE = GULP.label() + ".got"
-
 
 @dataclass
 class StaticJob(Maker):
@@ -56,8 +54,16 @@ class StaticJob(Maker):
         Dict
             Summary of the run.
         """
-        default_keywords = {"gfnff": self.gfnff, "gwolf": True if self.gfnff else False}
-        default_options = {"dump every gulp.res"}
+
+        default_keywords = {
+            "gfnff": self.gfnff,
+            "gwolf": True if self.gfnff and atoms.pbc.any() else False,
+        }
+        default_options = {
+            "dump every gulp.res": True,
+            "output cif gulp.cif": True if atoms.pbc.any() else False,
+            "output xyz gulp.xyz": False if atoms.pbc.any() else True,
+        }
 
         keywords = merge_dicts(
             default_keywords, self.keyword_swaps, remove_none=True, remove_false=True
@@ -67,12 +73,14 @@ class StaticJob(Maker):
         )
 
         gulp_keywords = " ".join(list(keywords.keys()))
-        gulp_options = " ".join(list(options.keys()))
+        gulp_options = list(options.keys())
 
         atoms.calc = GULP(keywords=gulp_keywords, options=gulp_options)
-        atoms = run_calc(atoms, geom_file=GEOM_FILE)
+        new_atoms = run_calc(
+            atoms, geom_file="gulp.cif" if atoms.pbc.any() else "gulp.xyz"
+        )
         summary = summarize_run(
-            atoms, input_atoms=atoms, additional_fields={"name": self.name}
+            new_atoms, input_atoms=atoms, additional_fields={"name": self.name}
         )
 
         return summary
@@ -101,7 +109,10 @@ class RelaxJob(Maker):
     keyword_swaps
         Dictionary of custom keyword swap kwargs for the calculator.
     option_swaps
-        Dictionary of custom option swap kwargs for the calculator.
+        Dictionary of
+          custom option swap kwargs for the calculator.
+    opt_kwargs
+        Dictionary of kwargs for the optimizer.
     """
 
     name: str = "GULP-Relax"
@@ -112,6 +123,7 @@ class RelaxJob(Maker):
     max_steps: int = 1000
     keyword_swaps: Dict[str, Any] = field(default_factory=dict)
     option_swaps: Dict[str, Any] = field(default_factory=dict)
+    opt_kwargs: Dict[str, Any] = field(default_factory=dict)
 
     @job
     def make(self, atoms: Atoms) -> Dict[str, Any]:
@@ -131,11 +143,15 @@ class RelaxJob(Maker):
         default_keywords = {
             "opti": True,
             "gfnff": self.gfnff,
-            "gwolf": True if self.gfnff else False,
+            "gwolf": True if self.gfnff and atoms.pbc.any() else False,
             "conp": True if self.volume_relax else False,
             "conv": False if self.volume_relax else True,
         }
-        default_options = {"dump every gulp.res"}
+        default_options = {
+            "dump every gulp.res": True,
+            "output cif gulp.cif": True if atoms.pbc.any() else False,
+            "output xyz gulp.xyz": False if atoms.pbc.any() else True,
+        }
 
         keywords = merge_dicts(
             default_keywords, self.keyword_swaps, remove_none=True, remove_false=True
@@ -145,19 +161,18 @@ class RelaxJob(Maker):
         )
 
         gulp_keywords = " ".join(list(keywords.keys()))
-        gulp_options = " ".join(list(options.keys()))
+        gulp_options = list(options.keys())
 
         atoms.calc = GULP(keywords=gulp_keywords, options=gulp_options)
-        traj = run_ase_opt(
-            atoms,
-            fmax=self.fmax,
-            max_steps=self.max_steps,
-            optimizer="gulp",
-            opt_kwargs=self.opt_kwargs,
+        new_atoms = run_calc(
+            atoms, geom_file="gulp.cif" if atoms.pbc.any() else "gulp.xyz"
         )
 
-        summary = summarize_opt_run(
-            traj, atoms.calc.parameters, additional_fields={"name": self.name}
+        if not new_atoms.calc.get_opt_state():
+            raise ValueError("Optimization did not converge!")
+
+        summary = summarize_run(
+            new_atoms, input_atoms=atoms, additional_fields={"name": self.name}
         )
 
         return summary
