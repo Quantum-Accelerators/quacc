@@ -30,7 +30,6 @@ def teardown_module():
 
 
 def test_static_Job():
-
     atoms = molecule("H2")
     nprocs = multiprocessing.cpu_count()
 
@@ -68,7 +67,6 @@ def test_static_Job():
 
 
 def test_relax_Job():
-
     atoms = molecule("H2")
     nprocs = multiprocessing.cpu_count()
 

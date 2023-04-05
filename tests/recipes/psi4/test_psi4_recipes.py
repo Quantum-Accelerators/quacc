@@ -32,7 +32,6 @@ def teardown_module():
     reason="Psi4 must be installed. Try conda install -c psi4 psi4",
 )
 def test_static_maker():
-
     atoms = molecule("H2")
 
     job = StaticMaker().make(atoms)

@@ -37,7 +37,6 @@ def teardown_module():
     reason="DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
 )
 def test_static_Job():
-
     atoms = molecule("H2O")
 
     job = StaticJob().make(atoms)
@@ -73,7 +72,6 @@ def test_static_Job():
     reason="DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
 )
 def test_relax_job():
-
     atoms = molecule("H2O")
 
     job = RelaxJob().make(atoms)

@@ -30,7 +30,6 @@ def teardown_module():
     reason="xTB-python must be installed. Try conda install -c conda-forge xtb-python",
 )
 def test_static_Job():
-
     atoms = molecule("H2O")
     job = StaticJob().make(atoms)
     responses = run_locally(job, ensure_success=True)

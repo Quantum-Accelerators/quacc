@@ -22,7 +22,6 @@ def teardown_module():
 
 
 def test_static_Job():
-
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += [0.1, 0.1, 0.1]
 

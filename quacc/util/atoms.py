@@ -66,7 +66,6 @@ def prep_next_run(
     atoms = copy_atoms(atoms)
 
     if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None) is not None:
-
         if store_results:
             # Dump calculator results into the .info tag
             atoms.calc.results["rundir"] = os.getcwd()
@@ -166,7 +165,6 @@ def set_magmoms(
     # we may need to add some from the preset yaml.
     if mags is None:
         if not has_initial_mags:
-
             # If the preset dictionary has default magmoms, set
             # those by element. If the element isn't in the magmoms dict
             # then set it to mag_default.

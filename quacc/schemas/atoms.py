@@ -18,7 +18,6 @@ from quacc.util.atoms import copy_atoms
 def atoms_to_metadata(
     atoms: Atoms, get_metadata: bool = True, strip_info: bool = False, store_pmg=True
 ) -> Dict[str, Any]:
-
     """
     Convert an ASE Atoms object to a dict suitable for storage in MongoDB.
 

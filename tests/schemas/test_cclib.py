@@ -16,7 +16,6 @@ log1 = os.path.join(run1, "Gaussian.log")
 
 
 def test_summarize_run():
-
     # Make sure metadata is made
     atoms = read(log1)
     results = summarize_run(atoms, ".log", dir_path=run1)
