@@ -1,6 +1,7 @@
 """Core recipes for GULP"""
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass, field
 from typing import Any, Dict
 
@@ -11,8 +12,6 @@ from jobflow import Maker, job
 from quacc.schemas.calc import summarize_run
 from quacc.util.basics import merge_dicts
 from quacc.util.calc import run_calc
-
-import warnings
 
 
 @dataclass
