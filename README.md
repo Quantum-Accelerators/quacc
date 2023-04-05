@@ -33,11 +33,11 @@ This package is heavily inspired by [Atomate2](https://github.com/materialsproje
 QuAcc can be installed as follows:
 
 ```bash
-# For the latest release
-pip install quacc
-
-# For the development version (recommended)
+# For the GitHub development version (recommended)
 pip install git+https://github.com/arosen93/quacc.git
+
+# For the latest PyPI release
+pip install quacc
 ```
 
 ## Examples
