@@ -17,29 +17,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Get Date
-        id: get-date
-        run: echo "::set-output name=today::$(/bin/date -u '+%Y%m%d')"
-        shell: bash
-
-      - name: Cache pip
-        uses: actions/cache@v3
-        with:
-          path: ~/conda_pkgs_dir
-          key: pip-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-date.outputs.today }}-${{ hashFiles('requirements.txt') }}-${{ env.CACHE_NUMBER }}
-        env:
-          CACHE_NUMBER: 2
-        id: cache_pip
-
-      - name: Cache conda
-        uses: actions/cache@v3
-        with:
-          path: ~/conda_pkgs_dir
-          key: conda-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-date.outputs.today }}-${{ hashFiles('conda_codes.yaml') }}-${{ env.CACHE_NUMBER }}
-        env:
-          CACHE_NUMBER: 2
-        id: cache_conda
-
       - uses: conda-incubator/setup-miniconda@v2
         with:
           python-version: ${{ matrix.python-version }}
@@ -51,20 +28,32 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
 
+      - name: Get Date
+        id: get-date
+        run: echo "name=today::$(/bin/date -u '+%Y%m%d')" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Cache conda
+        uses: actions/cache@v3
+        with:
+          path: ~/conda_pkgs_dir
+          key: conda-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-date.outputs.today }}-${{ hashFiles('setup.py') }}-${{ env.CACHE_NUMBER }}
+        env:
+          CACHE_NUMBER: 0
+        id: cache_conda
+
       - run: |
-          python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install .[codes]
           pip install .[tests]
           pip install chardet
           pip install pytest-cov
-        if: steps.cache_pip.outputs.cache-hit != 'true'
 
       - name: Update Conda environment
         run: |
           # If you update this list, also update conda_codes.yaml
           conda install -c psi4 psi4
-          conda install -c conda-forge dftbplus==22.2
+          # conda install -c conda-forge dftbplus==22.2
         if: steps.cache_conda.outputs.cache-hit != 'true'
 
       - name: Run tests with pytest
@@ -76,6 +65,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml
+
   docs:
     runs-on: ubuntu-latest
     steps:
