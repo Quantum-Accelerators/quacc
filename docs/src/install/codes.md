@@ -31,7 +31,11 @@ If you plan to use [Psi4](https://github.com/psi4/psi4) with QuAcc, you will nee
 
 ## DFTB+
 
-If you plan to use DFTB+ (which includes a separate interface to xTB) with QuAcc, you will need to install [DFTB+](https://dftbplus.org/). This can be done via `conda install -c conda-forge dftbplus`.
+If you plan to use [DFTB+](https://dftbplus.org/) (which includes a separate interface to xTB) with QuAcc, you will need to install [DFTB+](https://dftbplus.org/). This can be done via `conda install -c conda-forge dftbplus`.
+
+# GULP
+
+As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/gulp.html), if you plan to use [GULP](https://gulp.curtin.edu.au/), you must set the environment variables `GULP_LIB="/path/to/my/gulp-#.#.#/Libraries"` and `$ASE_GULP_COMMAND="/path/to/my/gulp-#.#.#/gulp < gulp.gin > gulp.got"`.
 
 ## Other Codes
 
