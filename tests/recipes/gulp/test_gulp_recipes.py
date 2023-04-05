@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from shutil import copy, rmtree
 
-from ase.build import molecule, bulk
+from ase.build import bulk, molecule
 from jobflow.managers.local import run_locally
 
 from quacc.recipes.gulp.core import RelaxJob, StaticJob
