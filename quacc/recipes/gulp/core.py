@@ -129,6 +129,7 @@ class RelaxJob(Maker):
             Summary of the run.
         """
         default_keywords = {
+            "opti":True,
             "gfnff": self.gfnff,
             "gwolf": True if self.gfnff else False,
             "conp": True if self.volume_relax else False,
