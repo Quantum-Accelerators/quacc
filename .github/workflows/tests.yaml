@@ -42,7 +42,7 @@ jobs:
           path: .
           key: conda-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-date.outputs.today }}-${{ hashFiles('setup.py') }}-${{ hashFiles('conda_codes.yaml') }}-${{ env.CACHE_NUMBER }}
         env:
-          CACHE_NUMBER: 1
+          CACHE_NUMBER: 0
         id: cache
 
       - name: Update Conda environment
