@@ -23,7 +23,7 @@ jobs:
           # All of these options are optional, so you can remove them if you are happy with the defaults
           concurent_skipping: outdated_runs
           paths_ignore: '["**/README.md", "**/docs/**"]'
-          do_not_skip: '["pull_request", "workflow_dispatch", "schedule", "release"]'
+          do_not_skip: '["workflow_dispatch", "schedule", "release"]'
 
   test:
     needs: pre_test
