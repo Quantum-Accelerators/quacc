@@ -57,6 +57,13 @@ jobs:
       - name: Run tests with pytest
         run: pytest --cov=quacc --cov-report=xml
 
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        if: github.repository == 'arosen93/quacc'
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+          
   docs:
     runs-on: ubuntu-latest
     needs: [test]
@@ -78,16 +85,3 @@ jobs:
           
       - name: Build
         run: sphinx-build docs/src docs_build
-
-  codecov:
-    runs-on: ubuntu-latest
-    needs: [test]
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        if: github.repository == 'arosen93/quacc'
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
