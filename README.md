@@ -15,7 +15,7 @@
 
 QuAcc is a flexible platform for high-throughput, database-driven computational materials science and quantum chemistry.
 
-The three core goals of QuAcc are as follows:
+The three main goals of QuAcc are as follows:
 1. To enable a seamless interface between the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/index.html) (ASE) and the high-throughput infrastructure powering the [Materials Project](https://materialsproject.org).
 2. To reduce the barrier for constructing complex, mixed-code workflows.
 3. To promote rapid workflow development and testing via [Jobflow](https://github.com/materialsproject/jobflow). 
@@ -33,11 +33,11 @@ This package is heavily inspired by [Atomate2](https://github.com/materialsproje
 QuAcc can be installed as follows:
 
 ```bash
-# For the latest release
-pip install quacc
-
-# For the development version (recommended)
+# For the GitHub development version (recommended)
 pip install git+https://github.com/arosen93/quacc.git
+
+# For the latest PyPI release
+pip install quacc
 ```
 
 ## Examples

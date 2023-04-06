@@ -1,5 +1,5 @@
 """
-Custodian runner for VASP
+Custodian handlers for VASP
 """
 from __future__ import annotations
 
