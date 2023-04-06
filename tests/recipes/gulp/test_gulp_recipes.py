@@ -1,8 +1,9 @@
 import os
 from pathlib import Path
 from shutil import copy, rmtree
-import pytest
+
 import numpy as np
+import pytest
 from ase.build import bulk, molecule
 from jobflow.managers.local import run_locally
 
