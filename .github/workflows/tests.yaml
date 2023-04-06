@@ -2,9 +2,6 @@ name: tests
 on:
   push:
 
-  pull_request:
-    branches:
-      - main
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -51,10 +48,7 @@ jobs:
 
       - name: Update Conda environment
         run: |
-          # If you update this list, also update conda_codes.yaml
-          conda install -c psi4 psi4
-          # conda install -c conda-forge dftbplus==22.2
-        if: steps.cache_conda.outputs.cache-hit != 'true'
+          conda env update -n quacc-env -f conda_codes.yaml
 
       - name: Run tests with pytest
         run: pytest --cov=quacc --cov-report=xml
@@ -65,20 +59,24 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml
-
+          
   docs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      
       - name: Install pandoc
         run: sudo apt-get install pandoc
+        
       - uses: actions/setup-python@v3
         with:
           python-version: '3.9'
+          
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -e .[docs]
+          
       - name: Build
         run: sphinx-build docs/src docs_build
