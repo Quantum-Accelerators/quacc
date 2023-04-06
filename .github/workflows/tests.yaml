@@ -52,7 +52,6 @@ jobs:
       - name: Update Conda environment
         run: |
           conda env update -n quacc-env -f conda_codes.yaml
-        if: steps.cache_conda.outputs.cache-hit != 'true'
 
       - name: Run tests with pytest
         run: pytest --cov=quacc --cov-report=xml
