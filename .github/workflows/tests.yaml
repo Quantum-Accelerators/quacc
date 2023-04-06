@@ -18,7 +18,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           activate-environment: quacc-env
-          use-only-tar-bz2: true
 
       - uses: actions/setup-python@v4
         with:
@@ -30,21 +29,21 @@ jobs:
         run: echo "name=today::$(/bin/date -u '+%Y%m%d')" >> $GITHUB_OUTPUT
         shell: bash
 
-      - name: Cache conda
-        uses: actions/cache@v3
-        with:
-          path: ~/conda_pkgs_dir
-          key: conda-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-date.outputs.today }}-${{ hashFiles('setup.py') }}-${{ hashFiles('conda_codes.yaml') }}-${{ env.CACHE_NUMBER }}
-        env:
-          CACHE_NUMBER: 0
-        id: cache_conda
-
       - run: |
           pip install -r requirements.txt
           pip install .[codes]
           pip install .[tests]
           pip install chardet
           pip install pytest-cov
+
+      - name: Cache conda
+        uses: actions/cache@v3
+        with:
+          path: .
+          key: conda-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-date.outputs.today }}-${{ hashFiles('setup.py') }}-${{ hashFiles('conda_codes.yaml') }}-${{ env.CACHE_NUMBER }}
+        env:
+          CACHE_NUMBER: 0
+        id: cache
 
       - name: Update Conda environment
         run: |

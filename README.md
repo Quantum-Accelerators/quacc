@@ -15,7 +15,7 @@
 
 QuAcc is a flexible platform for high-throughput, database-driven computational materials science and quantum chemistry.
 
-The three core goals of QuAcc are as follows:
+The three primary goals of QuAcc are as follows:
 1. To enable a seamless interface between the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/index.html) (ASE) and the high-throughput infrastructure powering the [Materials Project](https://materialsproject.org).
 2. To reduce the barrier for constructing complex, mixed-code workflows.
 3. To promote rapid workflow development and testing via [Jobflow](https://github.com/materialsproject/jobflow). 
