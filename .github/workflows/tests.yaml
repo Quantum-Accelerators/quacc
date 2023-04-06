@@ -2,53 +2,85 @@ name: tests
 on:
   push:
 
+  pull_request:
+    branches:
+      - main
+
+env:
+  CACHE_NUMBER: 1
+          
 jobs:
-  test:
+
+  pre_test:
+    continue-on-error: true # Uncomment once integration is finished
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash -l {0}
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v5
+        with:
+          # All of these options are optional, so you can remove them if you are happy with the defaults
+          concurent_skipping: outdated_runs
+          paths_ignore: '["**/README.md", "**/docs/**"]'
+          do_not_skip: '["pull_request", "workflow_dispatch", "schedule", "release"]'
+
+  test:
+    needs: pre_test
+    if: needs.pre_test.outputs.should_skip != 'true'
+    
     strategy:
       matrix:
         python-version: ['3.8', '3.9']
+        
+    runs-on: ubuntu-latest
+            
+    defaults:
+      run:
+        shell: bash -l {0}
+
     steps:
       - uses: actions/checkout@v3
 
-      - uses: conda-incubator/setup-miniconda@v2
+      - name: Set up conda
+        uses: conda-incubator/setup-miniconda@v2
         with:
           python-version: ${{ matrix.python-version }}
           activate-environment: quacc-env
 
-      - uses: actions/setup-python@v4
+      - name: Set up pip caching
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
 
-      - name: Get Date
+      - name: Export date
         id: get-date
         run: echo "name=today::$(/bin/date -u '+%Y%m%d')" >> $GITHUB_OUTPUT
         shell: bash
-
-      - run: |
+          
+        # Could not get caching to work...
+#       - name: Set up conda caching
+#         uses: actions/cache@v3
+#         with:
+#           path: /usr/share/miniconda3/envs/quacc-env
+#           key: conda-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-date.outputs.today }}-${{ hashFiles('setup.py') }}-${{ hashFiles('conda_codes.yaml') }}-${{ env.CACHE_NUMBER }}
+      
+      - name: Install pip packages
+        run: |
           pip install -r requirements.txt
           pip install .[codes]
           pip install .[tests]
           pip install chardet
           pip install pytest-cov
-
-      - name: Cache conda
-        uses: actions/cache@v3
-        with:
-          path: .
-          key: conda-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-date.outputs.today }}-${{ hashFiles('setup.py') }}-${{ hashFiles('conda_codes.yaml') }}-${{ env.CACHE_NUMBER }}
-        env:
-          CACHE_NUMBER: 0
         id: cache
 
-      - name: Update Conda environment
+      - name: Install conda packages
         run: |
-          conda env update -n quacc-env -f conda_codes.yaml
-
+          # Update conda_codes.yaml manually if this is changed
+          conda install -c psi4 psi4
+          conda install -c conda-forge dftbplus==22.2
+        
       - name: Run tests with pytest
         run: pytest --cov=quacc --cov-report=xml
 

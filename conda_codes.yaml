@@ -1,2 +1,3 @@
 dependencies:
   - psi4::psi4
+  - conda-forge::dftbplus==22.2
