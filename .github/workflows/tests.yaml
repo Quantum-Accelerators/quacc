@@ -37,7 +37,7 @@ jobs:
           key: conda-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-date.outputs.today }}-${{ hashFiles('setup.py') }}-${{ hashFiles('conda_codes.yaml') }}-${{ env.CACHE_NUMBER }}
         env:
           CACHE_NUMBER: 0
-        id: cache_conda
+        id: cache
 
       - run: |
           pip install -r requirements.txt
