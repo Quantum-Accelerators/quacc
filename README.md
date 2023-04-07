@@ -36,7 +36,7 @@ QuAcc can be installed as follows:
 # For the GitHub development version (recommended)
 pip install git+https://github.com/arosen93/quacc.git
 
-# For the latest PyPI release
+# For the latest PyPI release (currently out-of-sync)
 pip install quacc
 ```
 
