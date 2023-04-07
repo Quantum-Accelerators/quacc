@@ -58,12 +58,12 @@ class StaticJob(Maker):
 
         default_keywords = {
             "gfnff": self.gfnff,
-            "gwolf": True if self.gfnff and atoms.pbc.any() else False,
+            "gwolf": bool(self.gfnff and atoms.pbc.any()),
         }
         default_options = {
             "dump every gulp.res": True,
-            "output cif gulp.cif": True if atoms.pbc.any() else False,
-            "output xyz gulp.xyz": False if atoms.pbc.any() else True,
+            "output cif gulp.cif": bool(atoms.pbc.any()),
+            "output xyz gulp.xyz": not atoms.pbc.any(),
         }
 
         keywords = merge_dicts(
@@ -138,14 +138,14 @@ class RelaxJob(Maker):
         default_keywords = {
             "opti": True,
             "gfnff": self.gfnff,
-            "gwolf": True if self.gfnff and atoms.pbc.any() else False,
-            "conp": True if self.volume_relax and atoms.pbc.any() else False,
-            "conv": True if not self.volume_relax or not atoms.pbc.any() else False,
+            "gwolf": bool(self.gfnff and atoms.pbc.any()),
+            "conp": bool(self.volume_relax and atoms.pbc.any()),
+            "conv": bool(not self.volume_relax or not atoms.pbc.any()),
         }
         default_options = {
             "dump every gulp.res": True,
-            "output cif gulp.cif": True if atoms.pbc.any() else False,
-            "output xyz gulp.xyz": False if atoms.pbc.any() else True,
+            "output cif gulp.cif": bool(atoms.pbc.any()),
+            "output xyz gulp.xyz": not atoms.pbc.any(),
         }
 
         keywords = merge_dicts(
