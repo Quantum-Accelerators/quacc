@@ -140,7 +140,7 @@ class RelaxJob(Maker):
             "gfnff": self.gfnff,
             "gwolf": True if self.gfnff and atoms.pbc.any() else False,
             "conp": True if self.volume_relax and atoms.pbc.any() else False,
-            "conv": False if not self.volume_relax and atoms.pbc.any() else True,
+            "conv": True if not self.volume_relax or not atoms.pbc.any() else False,
         }
         default_options = {
             "dump every gulp.res": True,
