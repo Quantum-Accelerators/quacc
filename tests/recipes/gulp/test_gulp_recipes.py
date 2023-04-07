@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from shutil import copy, rmtree
+
 import numpy as np
 import pytest
 from ase.build import bulk, molecule
@@ -150,7 +151,7 @@ def test_relax_Job():
     assert "output xyz gulp.xyz" in output["parameters"]["options"]
     assert "output cif gulp.cif" not in output["parameters"]["options"]
 
-    atoms = bulk("Cu")*(2,2,2)
+    atoms = bulk("Cu") * (2, 2, 2)
     job = RelaxJob().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
