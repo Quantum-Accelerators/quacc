@@ -23,6 +23,7 @@ def patch_get_potential_energy(monkeypatch):
     # we aren't running the actual calculation during testing.
     monkeypatch.setattr(Atoms, "get_potential_energy", mock_get_potential_energy)
 
+
 def mock_get_opt_state(self, **kwargs):
     # Instead of running GULP and getting the opt state, we'll just mock
     # it as true
@@ -30,6 +31,7 @@ def mock_get_opt_state(self, **kwargs):
     self.get_opt_state = True
 
     return True
+
 
 @pytest.fixture(autouse=True)
 def patch_get_opt_state(monkeypatch):
