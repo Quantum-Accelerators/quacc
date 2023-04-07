@@ -35,7 +35,7 @@ class StaticJob(Maker):
         To enable new entries, set the value as True.
         To remove entries from the defaults, set the value as None/False.
     block_swaps
-        Dictionary of orcablocks swaps for the calculator.
+        Dictionary of orcablock swaps for the calculator.
         To enable new entries, set the value as True.
         To remove entries from the defaults, set the value as None/False.
     """
@@ -124,7 +124,7 @@ class RelaxJob(Maker):
         To enable new entries, set the value as True.
         To remove entries from the defaults, set the value as None/False.
     block_swaps
-        Dictionary of orcablocks swaps for the calculator.
+        Dictionary of orcablock swaps for the calculator.
         To enable new entries, set the value as True.
         To remove entries from the defaults, set the value as None/False.
     """
