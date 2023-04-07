@@ -53,7 +53,7 @@ DFTB+ is especially useful for periodic xTB calculations and the DFTB+ method ba
 
 If you plan to use [DFTB+](https://dftbplus.org/) (which includes a separate interface to xTB) with QuAcc, you will need to install [DFTB+](https://dftbplus.org/). This can be done via `conda install -c conda-forge dftbplus`.
 
-# GULP
+## GULP
 
 GULP is especially useful for periodic GFN-FF calculations and force field methods.
 
