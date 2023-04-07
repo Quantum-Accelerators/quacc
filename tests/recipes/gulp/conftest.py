@@ -1,14 +1,17 @@
+import os
+from unittest import mock
+
 import numpy as np
 import pytest
 from ase.atoms import Atoms
 from ase.calculators.gulp import GULP
-from unittest import mock
-import os
+
 
 @pytest.fixture(autouse=True)
 def mock_settings_env_vars():
     with mock.patch.dict(os.environ, {"GULP_LIB": "."}):
         yield
+
 
 def mock_get_potential_energy(self, **kwargs):
     # Instead of running .get_potential_energy(), we mock it by attaching
