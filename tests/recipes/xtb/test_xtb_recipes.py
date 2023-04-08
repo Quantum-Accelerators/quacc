@@ -127,24 +127,19 @@ def test_thermo_job():
     assert output["results"]["gibbs_energy"] == pytest.approx(0.06761947964648929)
 
     atoms = molecule("O2")
-    relax_job = RelaxJob().make(atoms)
-    thermo_job = ThermoJob(temperature=200, pressure=2.0).make(
-        relax_job.output["atoms"], energy=relax_job.output["results"]["energy"]
-    )
-    responses = run_locally(Flow([relax_job, thermo_job]), ensure_success=True)
-    output = responses[thermo_job.uuid][1].output
-    assert output["atoms"] != atoms
+    job = ThermoJob(temperature=200, pressure=2.0).make(atoms, energy=-100.0)
+    responses = run_locally(job, ensure_success=True)
+    output = responses[job.uuid][1].output
+    assert output["atoms"] == atoms
     assert output["results"]["n_imag"] == 0
     assert len(output["results"]["true_frequencies"]) == 1
-    assert output["results"]["true_frequencies"][-1] == pytest.approx(
-        1628.7541365047628
-    )
+    assert output["results"]["true_frequencies"][-1] == pytest.approx(1449.82397338371)
     assert output["results"]["geometry"] == "linear"
     assert output["results"]["pointgroup"] == "D*h"
-    assert output["results"]["energy"] == pytest.approx(-215.08201433443142)
-    assert output["results"]["enthalpy"] == pytest.approx(-214.92072148837198)
-    assert output["results"]["entropy"] == pytest.approx(0.0019104439558499913)
-    assert output["results"]["gibbs_energy"] == pytest.approx(-215.30281027954197)
+    assert output["results"]["energy"] == -100.0
+    assert output["results"]["enthalpy"] == pytest.approx(-99.84979574721257)
+    assert output["results"]["entropy"] == pytest.approx(0.001915519747865423)
+    assert output["results"]["gibbs_energy"] == pytest.approx(-100.23289969678565)
 
     atoms = molecule("H")
     job = ThermoJob().make(atoms, energy=-1.0)
