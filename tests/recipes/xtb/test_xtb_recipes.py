@@ -110,6 +110,41 @@ def test_relax_Job():
     reason="xTB-python must be installed. Try conda install -c conda-forge xtb-python",
 )
 def test_thermo_job():
+    atoms = molecule("H")
+    job = ThermoJob().make(atoms, energy=-1.0)
+    responses = run_locally(job, ensure_success=True)
+    output = responses[job.uuid][1].output
+    assert output["atoms"] == atoms
+    assert output["results"]["n_imag"] == 0
+    assert output["results"]["geometry"] == "monatomic"
+    assert len(output["results"]["true_frequencies"]) == 0
+    assert output["results"]["energy"] == -1.0
+    assert output["results"]["enthalpy"] == pytest.approx(-0.9357685739989672)
+
+    atoms = molecule("O2")
+    job = ThermoJob(temperature=200, pressure=2.0).make(atoms, energy=-100.0)
+    responses = run_locally(job, ensure_success=True)
+    output = responses[job.uuid][1].output
+    assert output["atoms"] == atoms
+    assert output["results"]["n_imag"] == 0
+    assert len(output["results"]["true_frequencies"]) == 1
+    assert output["results"]["true_frequencies"][-1] == pytest.approx(1449.82397338371)
+    assert output["results"]["geometry"] == "linear"
+    assert output["results"]["pointgroup"] == "D*h"
+    assert output["results"]["energy"] == -100.0
+    assert output["results"]["enthalpy"] == pytest.approx(-99.84979574721257)
+    assert output["results"]["entropy"] == pytest.approx(0.001915519747865423)
+    assert output["results"]["gibbs_energy"] == pytest.approx(-100.23289969678565)
+
+    atoms = molecule("CO2")
+    job = ThermoJob().make(atoms)
+    responses = run_locally(job, ensure_success=True)
+    output = responses[job.uuid][1].output
+    assert output["atoms"] == atoms
+    assert len(output["results"]["frequencies"]) == 9
+    assert len(output["results"]["true_frequencies"]) == 4
+    assert output["results"]["geometry"] == "linear"
+
     atoms = molecule("H2O")
     relax_job = RelaxJob().make(atoms)
     thermo_job = ThermoJob().make(relax_job.output["atoms"])
@@ -127,38 +162,11 @@ def test_thermo_job():
     assert output["results"]["gibbs_energy"] == pytest.approx(0.06761947964648929)
 
     atoms = molecule("H2O")
-    atoms.set_angle(0, 1, 2, 178)
-    relax_job = RelaxJob().make(atoms)
-    thermo_job = ThermoJob().make(relax_job.output["atoms"])
-    responses = run_locally(Flow([relax_job, thermo_job]), ensure_success=True)
-    output = responses[thermo_job.uuid][1].output
-    assert output["atoms"] != atoms
+    atoms.set_angle(0, 1, 2, 90)
+    job = ThermoJob().make(atoms)
+    responses = run_locally(job, ensure_success=True)
+    output = responses[job.uuid][1].output
+    assert output["atoms"] == atoms
     assert output["results"]["n_imag"] > 0
     assert len(output["results"]["frequencies"]) == 9
     assert len(output["results"]["true_frequencies"]) == 3
-
-    atoms = molecule("O2")
-    job = ThermoJob(temperature=200, pressure=2.0).make(atoms, energy=-100.0)
-    responses = run_locally(job, ensure_success=True)
-    output = responses[job.uuid][1].output
-    assert output["atoms"] == atoms
-    assert output["results"]["n_imag"] == 0
-    assert len(output["results"]["true_frequencies"]) == 1
-    assert output["results"]["true_frequencies"][-1] == pytest.approx(1449.82397338371)
-    assert output["results"]["geometry"] == "linear"
-    assert output["results"]["pointgroup"] == "D*h"
-    assert output["results"]["energy"] == -100.0
-    assert output["results"]["enthalpy"] == pytest.approx(-99.84979574721257)
-    assert output["results"]["entropy"] == pytest.approx(0.001915519747865423)
-    assert output["results"]["gibbs_energy"] == pytest.approx(-100.23289969678565)
-
-    atoms = molecule("H")
-    job = ThermoJob().make(atoms, energy=-1.0)
-    responses = run_locally(job, ensure_success=True)
-    output = responses[job.uuid][1].output
-    assert output["atoms"] == atoms
-    assert output["results"]["n_imag"] == 0
-    assert output["results"]["geometry"] == "monatomic"
-    assert len(output["results"]["true_frequencies"]) == 0
-    assert output["results"]["energy"] == -1.0
-    assert output["results"]["enthalpy"] == pytest.approx(-0.9357685739989672)
