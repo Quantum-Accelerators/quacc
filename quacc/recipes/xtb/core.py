@@ -150,9 +150,7 @@ class ThermoJob(Maker):
     xtb_kwargs: Dict[str, Any] = field(default_factory=dict)
 
     @job
-    @requires(
-        XTB, "xTB-python must be installed. Try conda install -c conda-forge xtb-python"
-    )
+    @requires(XTB, "xTB-python must be installed. Try pip install xtb")
     def make(self, atoms: Atoms, energy: float = 0.0) -> Dict[str, Any]:
         """
         Make the run.

@@ -381,6 +381,7 @@ def ideal_gas_thermo(
             spin = 0
 
     # Get symmetry for later use
+    natoms = len(atoms)
     pmg_obj = AseAtomsAdaptor.get_molecule(atoms)
     pga = PointGroupAnalyzer(pmg_obj)
 
@@ -389,16 +390,18 @@ def ideal_gas_thermo(
     else:
         pointgroup = pga.get_pointgroup().sch_symbol
 
-    # Get the geometry
-    if len(atoms) == 1:
+    # Get the geometry and true frequencies that should
+    # be used for thermo calculations
+    all_freqs = vibrations.get_frequencies()
+    if natoms == 1:
         geometry = "monatomic"
-        n_vib = 0
-    elif len(atoms) == 2 or (len(atoms) > 2 and pointgroup == "D*h"):
+        true_freqs = []
+    elif natoms == 2 or (natoms > 2 and pointgroup == "D*h"):
         geometry = "linear"
-        n_vib = 3 * len(atoms) - 5
+        true_freqs = all_freqs[-(3 * natoms - 5) :]
     else:
         geometry = "nonlinear"
-        n_vib = 3 * len(atoms) - 6
+        true_freqs = all_freqs[-(3 * natoms - 6) :]
 
     # Automatically get rotational symmetry number
     if geometry == "monatomic":
@@ -406,41 +409,33 @@ def ideal_gas_thermo(
     else:
         symmetry_number = pga.get_rotational_symmetry_number()
 
+    # Fetch the real vibrational energies
+    real_vib_energies = [ve for ve in vibrations.get_energies() if np.isreal(ve)]
+    real_vib_energies.sort()
+
     # Calculate ideal gas thermo
     igt = IdealGasThermo(
-        vibrations.get_energies(),
+        real_vib_energies,
         geometry,
         potentialenergy=energy,
         atoms=atoms,
         symmetrynumber=symmetry_number,
         spin=spin,
     )
-    freqs = vibrations.get_frequencies()
 
-    # Use negataive sign convention for imag modes
-    clean_freqs = []
-    for f in freqs:
-        if np.iscomplex(f):
-            clean_freqs.append(-np.abs(f))
-        else:
-            clean_freqs.append(np.abs(f))
+    # Use negative sign convention for imag modes
+    all_freqs = [np.abs(f) if np.isreal(f) else -np.abs(f) for f in all_freqs]
+    true_freqs = [np.abs(f) if np.isreal(f) else -np.abs(f) for f in true_freqs]
 
-    # Ensure proper number of modes are stored
-    clean_freqs.sort()
-    if n_vib == 0:
-        true_frequencies = []
-    else:
-        true_frequencies = clean_freqs[-n_vib:]
-
-    # Count number of imaginary frequencies
-    imag_freqs = [f for f in true_frequencies if f < 0]
+    # Count number of relevant imaginary frequencies
+    n_imag = len([f for f in true_freqs if f < 0])
 
     thermo_summary = {
         **atoms_to_metadata(atoms),
         "results": {
-            "frequencies": clean_freqs,
-            "true_frequencies": true_frequencies,
-            "n_imag": len(imag_freqs),
+            "frequencies": all_freqs,  # full list of computed frequencies
+            "true_frequencies": true_freqs,  # list of *relevant* frequencies based on the geometry
+            "n_imag": n_imag,  # number of imag modes within true_frequencies
             "geometry": geometry,
             "pointgroup": pointgroup,
             "energy": energy,
