@@ -11,7 +11,7 @@
 [![DeepSource](https://deepsource.io/gh/arosen93/quacc.svg/?label=active+issues&token=O0LvluUkUS6qiQnHXc7BUlHn)](https://deepsource.io/gh/arosen93/quacc/?ref=repository-badge)
 [![This project supports Python 3.8](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org/downloads)
 [![Pypi](https://img.shields.io/pypi/v/quacc)](https://pypi.org/project/quacc)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7720999.svg)](https://doi.org/10.5281/zenodo.7720999)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7720998.svg)](https://doi.org/10.5281/zenodo.7720998)
 
 QuAcc is a flexible platform for high-throughput, database-driven computational materials science and quantum chemistry.
 
