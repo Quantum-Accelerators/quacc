@@ -126,6 +126,17 @@ def test_thermo_job():
     assert output["results"]["entropy"] == pytest.approx(0.0019548443040349555)
     assert output["results"]["gibbs_energy"] == pytest.approx(0.06761947964648929)
 
+    atoms = molecule("H2O")
+    atoms.set_angle(0, 1, 2, 178)
+    relax_job = RelaxJob().make(atoms)
+    thermo_job = ThermoJob().make(relax_job.output["atoms"])
+    responses = run_locally(Flow([relax_job, thermo_job]), ensure_success=True)
+    output = responses[thermo_job.uuid][1].output
+    assert output["atoms"] != atoms
+    assert output["results"]["n_imag"] > 0
+    assert len(output["results"]["frequencies"]) == 9
+    assert len(output["results"]["true_frequencies"]) == 3
+
     atoms = molecule("O2")
     job = ThermoJob(temperature=200, pressure=2.0).make(atoms, energy=-100.0)
     responses = run_locally(job, ensure_success=True)
