@@ -74,8 +74,8 @@ def summarize_run(
     if check_convergence:
         # If it's an opt+freq job, we will just check convergence on the
         # frequency step. This is because sometimes the frequency job will
-        # yield all positive modes, but the optimization tolerances me be
-        # not entirely met. See https://gaussian.com/faq3.
+        # yield all positive modes, but the optimization tolerances may
+        # not be entirely met. See https://gaussian.com/faq3.
         vibfreqs = results["attributes"].get("vibfreqs")
         if vibfreqs:
             n_imag = sum(vibfreq < 0 for vibfreq in vibfreqs)
