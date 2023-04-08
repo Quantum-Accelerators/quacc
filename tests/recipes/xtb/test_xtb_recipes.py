@@ -4,8 +4,8 @@ from shutil import rmtree
 import numpy as np
 import pytest
 from ase.build import bulk, molecule
-from jobflow.managers.local import run_locally
 from jobflow import Flow
+from jobflow.managers.local import run_locally
 
 try:
     from xtb.ase.calculator import XTB
