@@ -3,6 +3,7 @@ from shutil import rmtree
 
 import numpy as np
 import pytest
+from ase import Atoms
 from ase.build import bulk, molecule
 from jobflow import Flow
 from jobflow.managers.local import run_locally
@@ -161,8 +162,14 @@ def test_thermo_job():
     assert output["results"]["entropy"] == pytest.approx(0.0019548443040349555)
     assert output["results"]["gibbs_energy"] == pytest.approx(0.06761947964648929)
 
-    atoms = molecule("H2O")
-    atoms.set_angle(0, 1, 2, 90)
+    atoms = Atoms(
+        "OHH",
+        positions=[
+            (0.000000000, 0.000000000, 0.119262000),
+            (0.000000000, 0.596309000, -0.643977000),
+            (0.000000000, -0.763239000, -0.477047000),
+        ],
+    )
     job = ThermoJob().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
