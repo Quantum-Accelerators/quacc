@@ -27,7 +27,7 @@ if __name__ == "__main__":
             "ase @ git+https://gitlab.com/ase/ase.git",
             "pymatgen==2023.3.23",
             "jobflow==0.1.11",
-            "@emmet-core git+https://github.com/arosen93/emmet.git@cclib",
+            "@emmet-core git+https://github.com/arosen93/emmet.git@cclib#subdirectory=emmet-core",
             "cclib==1.7.2",
             "custodian==2023.3.10",
             "fireworks==2.0.3",
