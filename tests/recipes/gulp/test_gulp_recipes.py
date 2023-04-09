@@ -34,9 +34,9 @@ def test_static_Job():
     job = StaticJob().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
+    assert output["natoms"] == len(atoms)
     assert output["name"] == "GULP-Static"
-    assert output["nsites"] == len(atoms)
+    assert output["natoms"] == len(atoms)
     assert output["parameters"]["keywords"] == "gfnff"
     assert "gwolf" not in output["parameters"]["keywords"]
     assert "dump every gulp.res" in output["parameters"]["options"]
@@ -46,9 +46,9 @@ def test_static_Job():
     job = StaticJob(keyword_swaps={"gwolf": True}).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
+    assert output["natoms"] == len(atoms)
     assert output["name"] == "GULP-Static"
-    assert output["nsites"] == len(atoms)
+    assert output["natoms"] == len(atoms)
     assert "gfnff" in output["parameters"]["keywords"]
     assert "gwolf" in output["parameters"]["keywords"]
     assert "dump every gulp.res" in output["parameters"]["options"]
@@ -58,9 +58,9 @@ def test_static_Job():
     job = StaticJob(gfnff=False).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
+    assert output["natoms"] == len(atoms)
     assert output["name"] == "GULP-Static"
-    assert output["nsites"] == len(atoms)
+    assert output["natoms"] == len(atoms)
     assert "gfnff" not in output["parameters"]["keywords"]
     assert "gwolf" not in output["parameters"]["keywords"]
     assert "dump every gulp.res" in output["parameters"]["options"]
@@ -108,7 +108,7 @@ def test_relax_Job():
     job = RelaxJob().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
+    assert output["natoms"] == len(atoms)
     assert output["name"] == "GULP-Relax"
     assert "gfnff" in output["parameters"]["keywords"]
     assert "opti" in output["parameters"]["keywords"]
@@ -122,9 +122,9 @@ def test_relax_Job():
     job = RelaxJob(volume_relax=False, keyword_swaps={"gwolf": True}).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
+    assert output["natoms"] == len(atoms)
     assert output["name"] == "GULP-Relax"
-    assert output["nsites"] == len(atoms)
+    assert output["natoms"] == len(atoms)
     assert "gfnff" in output["parameters"]["keywords"]
     assert "opti" in output["parameters"]["keywords"]
     assert "conp" not in output["parameters"]["keywords"]
@@ -137,9 +137,9 @@ def test_relax_Job():
     job = RelaxJob(gfnff=False).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
+    assert output["natoms"] == len(atoms)
     assert output["name"] == "GULP-Relax"
-    assert output["nsites"] == len(atoms)
+    assert output["natoms"] == len(atoms)
     assert "gfnff" not in output["parameters"]["keywords"]
     assert "opti" in output["parameters"]["keywords"]
     assert "conp" not in output["parameters"]["keywords"]

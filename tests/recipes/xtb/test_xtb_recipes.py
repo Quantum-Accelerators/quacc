@@ -35,7 +35,7 @@ def test_static_Job():
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["spin_multiplicity"] == 1
-    assert output["nsites"] == len(atoms)
+    assert output["natoms"] == len(atoms)
     assert output["parameters"]["method"] == "GFN2-xTB"
     assert output["name"] == "xTB-Static"
     assert output["results"]["energy"] == pytest.approx(-137.96777587302995)
@@ -73,7 +73,7 @@ def test_relax_Job():
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["spin_multiplicity"] == 1
-    assert output["nsites"] == len(atoms)
+    assert output["natoms"] == len(atoms)
     assert output["parameters"]["method"] == "GFN2-xTB"
     assert output["name"] == "xTB-Relax"
     assert output["results"]["energy"] == pytest.approx(-137.9764670127011)
