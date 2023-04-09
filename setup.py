@@ -33,7 +33,7 @@ if __name__ == "__main__":
             "custodian==2023.3.10",
             "fireworks==2.0.3",
             "numpy",
-            "monty"
+            "monty",
         ],
         extras_require={
             "tests": ["pytest==7.2.2"],
