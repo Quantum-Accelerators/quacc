@@ -13,22 +13,22 @@ env:
           
 jobs:
 
-  pre_test:
-    continue-on-error: true # Uncomment once integration is finished
-    runs-on: ubuntu-latest
-    outputs:
-      should_skip: ${{ steps.skip_check.outputs.should_skip }}
-    steps:
-      - id: skip_check
-        uses: fkirc/skip-duplicate-actions@v5
-        with:
-          concurent_skipping: same_content_newer
-          paths_ignore: '["**/README.md", "**/docs/**"]'
-          do_not_skip: '["schedule", "release"]'
+  # pre_test:
+  #   continue-on-error: true # Uncomment once integration is finished
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     should_skip: ${{ steps.skip_check.outputs.should_skip }}
+  #   steps:
+  #     - id: skip_check
+  #       uses: fkirc/skip-duplicate-actions@v5
+  #       with:
+  #         concurent_skipping: same_content_newer
+  #         paths_ignore: '["**/README.md", "**/docs/**"]'
+  #         do_not_skip: '["schedule", "release"]'
 
   test:
-    needs: pre_test
-    if: needs.pre_test.outputs.should_skip != 'true'
+    # needs: pre_test
+    # if: needs.pre_test.outputs.should_skip != 'true'
     
     strategy:
       matrix:
