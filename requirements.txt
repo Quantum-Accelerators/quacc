@@ -1,5 +1,4 @@
 git+https://gitlab.com/ase/ase.git # waiting on version update to >= 3.22.2
-git+https://github.com/arosen93/atomate2.git@cclib2emmet # waiting on PR 301
 pymatgen==2023.3.23
 jobflow==0.1.11
 git+https://github.com/arosen93/emmet.git@cclib # waiting on PR 643

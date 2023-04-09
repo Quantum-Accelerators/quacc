@@ -7,6 +7,10 @@ import os
 from shutil import copy
 from typing import Any, Dict, List
 
+import contextlib
+import socket
+from pathlib import Path
+
 import yaml
 from monty.os.path import zpath
 from monty.shutil import decompress_file
@@ -142,3 +146,26 @@ def load_yaml_calc(yaml_path: str) -> Dict[str, Any]:
             config["inputs"]["setups"][k] = v.split(k)[-1]
 
     return config
+
+
+def get_uri(dir_name: str | Path) -> str:
+    """
+    Return the URI path for a directory.
+
+    This allows files hosted on different file servers to have distinct locations.
+
+    Parameters
+    ----------
+    dir_name : str or Path
+        A directory name.
+
+    Returns
+    -------
+    str
+        Full URI path, e.g., "fileserver.host.com:/full/path/of/dir_name".
+    """
+    fullpath = Path(dir_name).absolute()
+    hostname = socket.gethostname()
+    with contextlib.suppress(socket.gaierror, socket.herror):
+        hostname = socket.gethostbyaddr(hostname)[0]
+    return f"{hostname}:{fullpath}"

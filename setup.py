@@ -25,7 +25,6 @@ if __name__ == "__main__":
         zip_safe=False,
         install_requires=[
             "ase @ git+https://gitlab.com/ase/ase.git",
-            "atomate2 @ git+https://github.com/arosen93/atomate2.git@cclib2emmet",
             "pymatgen==2023.3.23",
             "jobflow==0.1.11",
             "@emmet-core git+https://github.com/arosen93/emmet.git@cclib",

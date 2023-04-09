@@ -8,11 +8,10 @@ from typing import Any, Dict
 
 from ase.atoms import Atoms
 from ase.io import Trajectory
-from atomate2.utils.path import get_uri
 
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
-
+from quacc.util.basics import get_uri
 
 def summarize_run(
     atoms: Atoms,

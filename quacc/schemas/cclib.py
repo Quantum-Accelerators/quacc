@@ -7,7 +7,7 @@ import os
 from typing import Any, Dict, List
 
 from ase.atoms import Atoms
-from atomate2.common.schemas.cclib import TaskDocument
+from emmet.core.cclib_tasks import TaskDocument
 
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
