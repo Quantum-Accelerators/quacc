@@ -25,7 +25,7 @@ if __name__ == "__main__":
         zip_safe=False,
         install_requires=[
             "ase @ git+https://gitlab.com/ase/ase.git",
-            "git+https://github.com/arosen93/atomate2.git@molecule#egg=atomate2"
+            "atomate2 @ git+https://github.com/arosen93/atomate2.git@molecule",
             "pymatgen==2023.3.23",
             "custodian==2023.3.10",
             "jobflow==0.1.11",
