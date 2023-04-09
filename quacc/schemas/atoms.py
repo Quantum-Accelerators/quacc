@@ -43,7 +43,7 @@ def atoms_to_metadata(
     atoms = copy_atoms(atoms)
     results = {}
 
-    # Get Atoms metadata, if requested. Atomate2 already has built-in tools for
+    # Get Atoms metadata, if requested. emmet already has built-in tools for
     # generating pymatgen Structure/Molecule metadata, so we'll just use that.
     if get_metadata:
         if atoms.pbc.any():
@@ -56,7 +56,7 @@ def atoms_to_metadata(
             metadata = MoleculeMetadata().from_molecule(mol).dict()
             if store_pmg:
                 results["molecule"] = mol
-        metadata = _quacc_sanitize(metadata)
+        metadata["builder_meta"]["build_date"] = str(metadata["builder_meta"]["build_date"])
     else:
         metadata = {}
 
