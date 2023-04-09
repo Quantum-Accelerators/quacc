@@ -8,13 +8,15 @@ import shlex
 from typing import Dict, List
 
 from monty.dev import requires
+
 try:
     from custodian import Custodian
 except:
-    Custodian=None
+    Custodian = None
 from quacc import SETTINGS
 
-@requires(Custodian,"Custodian must be installed. Try pip install custodian")
+
+@requires(Custodian, "Custodian must be installed. Try pip install custodian")
 def run_custodian(
     vasp_parallel_cmd: str = SETTINGS.VASP_PARALLEL_CMD,
     vasp_cmd: str = SETTINGS.VASP_CMD,
@@ -75,7 +77,7 @@ def run_custodian(
     )
     from custodian.vasp.jobs import VaspJob
     from custodian.vasp.validators import VaspFilesValidator, VasprunXMLValidator
-    
+
     vasp_parallel_cmd = os.path.expandvars(vasp_parallel_cmd)
 
     # Handlers for VASP
