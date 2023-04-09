@@ -152,6 +152,7 @@ def get_uri(dir_name: str | Path) -> str:
     Return the URI path for a directory.
 
     This allows files hosted on different file servers to have distinct locations.
+    Adapted from Atomate2 by Alex Ganose.
 
     Parameters
     ----------
