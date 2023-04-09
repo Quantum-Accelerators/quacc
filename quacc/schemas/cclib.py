@@ -92,7 +92,6 @@ def summarize_run(
     unused_props = (
         "task_label",
         "tags",
-        "molecule",
     )
     for unused_prop in unused_props:
         results.pop(unused_prop, None)
