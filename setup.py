@@ -25,10 +25,10 @@ if __name__ == "__main__":
         zip_safe=False,
         install_requires=[
             "ase @ git+https://gitlab.com/ase/ase.git",
+            "atomate2 @ git+https://github.com/arosen93/atomate2.git@molecule"
             "pymatgen==2023.3.23",
             "custodian==2023.3.10",
             "jobflow==0.1.11",
-            "atomate2==0.0.10",
             "monty==2022.9.9",
             "fireworks==2.0.3",
             "cclib==1.7.2",
