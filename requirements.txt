@@ -3,6 +3,5 @@ git+https://github.com/arosen93/atomate2.git@molecule # waiting on PR 301
 pymatgen==2023.3.23
 custodian==2023.3.10
 jobflow==0.1.11
-monty==2022.9.9
 fireworks==2.0.3
 cclib==1.7.2
