@@ -38,9 +38,9 @@ def test_atoms_to_metadata():
     atoms = molecule("H2O")
     atoms.info["test"] = "hi"
     results = atoms_to_metadata(atoms)
+    assert "structure" not in results
     assert results["atoms"].info.get("test", None) == "hi"
     assert results["molecule"] == AseAtomsAdaptor().get_molecule(atoms)
-    assert "structure" not in results
 
     atoms = bulk("Cu")
     parent = bulk("Al") * (2, 1, 1)

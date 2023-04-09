@@ -69,13 +69,14 @@ def summarize_run(
     uri = results["dir_name"]
     results["nid"] = uri.split(":")[0]
     results["dir_name"] = ":".join(uri.split(":")[1:])
+    results["builder_meta"]["build_date"] = str(results["builder_meta"]["build_date"])
 
     # Check convergence if requested
     if check_convergence:
         # If it's an opt+freq job, we will just check convergence on the
         # frequency step. This is because sometimes the frequency job will
-        # yield all positive modes, but the optimization tolerances me be
-        # not entirely met. See https://gaussian.com/faq3.
+        # yield all positive modes, but the optimization tolerances may
+        # not be entirely met. See https://gaussian.com/faq3.
         vibfreqs = results["attributes"].get("vibfreqs")
         if vibfreqs:
             n_imag = sum(vibfreq < 0 for vibfreq in vibfreqs)
@@ -92,7 +93,6 @@ def summarize_run(
     unused_props = (
         "task_label",
         "tags",
-        "molecule",
     )
     for unused_prop in unused_props:
         results.pop(unused_prop, None)

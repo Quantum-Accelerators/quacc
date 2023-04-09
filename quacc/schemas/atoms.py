@@ -3,12 +3,12 @@ Schemas for storing metadata about Atoms objects
 """
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Any, Dict
 
 import numpy as np
 from ase.atoms import Atom, Atoms
-from atomate2.common.schemas.molecule import MoleculeMetadata
-from atomate2.common.schemas.structure import StructureMetadata
+from emmet.core.structure import MoleculeMetadata, StructureMetadata
 from monty.json import jsanitize
 from pymatgen.io.ase import AseAtomsAdaptor
 
@@ -43,7 +43,7 @@ def atoms_to_metadata(
     atoms = copy_atoms(atoms)
     results = {}
 
-    # Get Atoms metadata, if requested. Atomate2 already has built-in tools for
+    # Get Atoms metadata, if requested. emmet already has built-in tools for
     # generating pymatgen Structure/Molecule metadata, so we'll just use that.
     if get_metadata:
         if atoms.pbc.any():
@@ -56,6 +56,9 @@ def atoms_to_metadata(
             metadata = MoleculeMetadata().from_molecule(mol).dict()
             if store_pmg:
                 results["molecule"] = mol
+        metadata["builder_meta"]["build_date"] = str(
+            metadata["builder_meta"]["build_date"]
+        )
     else:
         metadata = {}
 
@@ -99,6 +102,8 @@ def _quacc_sanitize(obj: Any) -> Any:
         obj = [_quacc_sanitize(i) for i in obj]
     elif isinstance(obj, dict):
         obj = {k.__str__(): _quacc_sanitize(v) for k, v in obj.items()}
+    elif isinstance(obj, datetime):
+        obj = str(datetime)
     else:
         obj = jsanitize(obj)
     return obj

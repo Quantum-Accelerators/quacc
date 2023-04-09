@@ -25,17 +25,21 @@ if __name__ == "__main__":
         zip_safe=False,
         install_requires=[
             "ase @ git+https://gitlab.com/ase/ase.git",
+            "atomate2 @ git+https://github.com/arosen93/atomate2.git@molecule",
             "pymatgen==2023.3.23",
-            "custodian==2023.3.10",
             "jobflow==0.1.11",
-            "atomate2==0.0.10",
-            "monty==2022.9.9",
-            "fireworks==2.0.3",
+            "emmet-core==0.51.11",
             "cclib==1.7.2",
+            "monty==2022.9.9",
+            "numpy",
         ],
         extras_require={
+            "all": ["custodian==2023.3.10", "fireworks==2.0.3"],
+            "codes": [
+                "xtb==22.1",
+                "tblite[ase]==0.3.0",
+            ],
             "tests": ["pytest==7.2.2"],
-            "codes": ["xtb==22.1", "tblite[ase]==0.3.0"],
             "docs": [
                 "sphinx==6.1.3",
                 "furo==2023.3.27",

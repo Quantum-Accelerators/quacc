@@ -11,7 +11,7 @@
 [![DeepSource](https://deepsource.io/gh/arosen93/quacc.svg/?label=active+issues&token=O0LvluUkUS6qiQnHXc7BUlHn)](https://deepsource.io/gh/arosen93/quacc/?ref=repository-badge)
 [![This project supports Python 3.8](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org/downloads)
 [![Pypi](https://img.shields.io/pypi/v/quacc)](https://pypi.org/project/quacc)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7720999.svg)](https://doi.org/10.5281/zenodo.7720999)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7720998.svg)](https://doi.org/10.5281/zenodo.7720998)
 
 QuAcc is a flexible platform for high-throughput, database-driven computational materials science and quantum chemistry.
 
@@ -19,7 +19,7 @@ The three main goals of QuAcc are as follows:
 
 1. To enable a seamless interface between the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/index.html) (ASE) and the high-throughput infrastructure powering the [Materials Project](https://materialsproject.org).
 2. To reduce the barrier for constructing complex, mixed-code workflows.
-3. To promote rapid workflow development and testing via [Jobflow](https://github.com/materialsproject/jobflow). 
+3. To promote rapid workflow development and testing via [Jobflow](https://github.com/materialsproject/jobflow).
 
 This package is heavily inspired by [Atomate2](https://github.com/materialsproject/atomate2), which I also recommend checking out.
 
@@ -35,10 +35,10 @@ QuAcc can be installed as follows:
 
 ```bash
 # For the GitHub development version (recommended)
-pip install git+https://github.com/arosen93/quacc.git
+pip install git+https://github.com/arosen93/quacc.git[all]
 
 # For the latest PyPI release (currently out-of-sync)
-pip install quacc
+pip install quacc[all]
 ```
 
 ## Examples

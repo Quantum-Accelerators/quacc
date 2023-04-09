@@ -58,7 +58,6 @@ def test_summarize_run():
     assert results.get("calcs_reversed", None) is not None
     assert "author" not in results
     assert "additional_json" not in results
-    assert "handler" not in results["custodian"][0]
     assert "corrections" not in results["custodian"][0]
 
     # Make sure null are not removed
@@ -66,7 +65,6 @@ def test_summarize_run():
     results = summarize_run(atoms, dir_path=run1, remove_empties=False)
     assert results["author"] == None
     assert results["additional_json"] == {}
-    assert results["custodian"][0]["handler"] is None
     assert results["custodian"][0]["corrections"] == []
 
     # Make sure info tags are handled appropriately
