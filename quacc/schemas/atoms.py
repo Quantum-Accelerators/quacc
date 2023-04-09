@@ -56,7 +56,9 @@ def atoms_to_metadata(
             metadata = MoleculeMetadata().from_molecule(mol).dict()
             if store_pmg:
                 results["molecule"] = mol
-        metadata["builder_meta"]["build_date"] = str(metadata["builder_meta"]["build_date"])
+        metadata["builder_meta"]["build_date"] = str(
+            metadata["builder_meta"]["build_date"]
+        )
     else:
         metadata = {}
 
