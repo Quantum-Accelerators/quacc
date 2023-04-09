@@ -28,7 +28,7 @@ if __name__ == "__main__":
             "atomate2 @ git+https://github.com/arosen93/atomate2.git@molecule",
             "pymatgen==2023.3.23",
             "jobflow==0.1.11",
-            "emmet==0.51.11",
+            "emmet-core==0.51.11",
             "cclib==1.7.2",
             "custodian==2023.3.10",
             "fireworks==2.0.3",
