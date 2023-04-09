@@ -3,13 +3,12 @@ Basic utility functions
 """
 from __future__ import annotations
 
-import os
-from shutil import copy
-from typing import Any, Dict, List
-
 import contextlib
+import os
 import socket
 from pathlib import Path
+from shutil import copy
+from typing import Any, Dict, List
 
 import yaml
 from monty.os.path import zpath
