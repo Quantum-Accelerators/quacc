@@ -24,6 +24,7 @@ def teardown_module():
             else:
                 rmtree(f)
 
+
 @pytest.mark.skipif(
     TBLite is None,
     reason="tblite must be installed. Try conda install -c conda-forge tblite",
