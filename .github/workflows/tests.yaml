@@ -9,7 +9,7 @@ on:
       - main
 
 env:
-  CACHE_NUMBER: 1
+  CACHE_NUMBER: 0
           
 jobs:
 
