@@ -42,7 +42,7 @@ def test_static_Job():
     job = StaticJob().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
+    assert output["natoms"] == len(atoms)
     assert output["name"] == "DFTB-Static"
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
@@ -77,7 +77,7 @@ def test_relax_job():
     job = RelaxJob().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
+    assert output["natoms"] == len(atoms)
     assert output["name"] == "DFTB-Relax"
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"

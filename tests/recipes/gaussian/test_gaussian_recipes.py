@@ -34,7 +34,7 @@ def test_static_Job():
     job = StaticJob().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
+    assert output["natoms"] == len(atoms)
     assert output["name"] == "Gaussian-Static"
     assert "charge" not in output["parameters"]
     assert "mult" not in output["parameters"]
@@ -54,7 +54,7 @@ def test_static_Job():
     ).make(atoms, charge=-2, mult=3)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
+    assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == -2
     assert output["parameters"]["mult"] == 3
     assert output["name"] == "Gaussian-Static"
@@ -73,7 +73,7 @@ def test_relax_Job():
     job = RelaxJob().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
+    assert output["natoms"] == len(atoms)
     assert output["name"] == "Gaussian-Relax"
     assert "charge" not in output["parameters"]
     assert "mult" not in output["parameters"]
@@ -89,7 +89,7 @@ def test_relax_Job():
     ).make(atoms, charge=-2, mult=3)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
+    assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == -2
     assert output["parameters"]["mult"] == 3
     assert output["name"] == "Gaussian-Relax"

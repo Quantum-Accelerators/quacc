@@ -69,6 +69,7 @@ def summarize_run(
     uri = results["dir_name"]
     results["nid"] = uri.split(":")[0]
     results["dir_name"] = ":".join(uri.split(":")[1:])
+    results["builder_meta"]["build_date"] = str(results["builder_meta"]["build_date"])
 
     # Check convergence if requested
     if check_convergence:
@@ -92,7 +93,6 @@ def summarize_run(
     unused_props = (
         "task_label",
         "tags",
-        "molecule",
     )
     for unused_prop in unused_props:
         results.pop(unused_prop, None)

@@ -8,7 +8,7 @@ import warnings
 from typing import Any, Dict
 
 from ase.atoms import Atoms
-from atomate2.vasp.schemas.task import TaskDocument
+from emmet.core.tasks import TaskDoc
 
 from quacc import SETTINGS
 from quacc.schemas.atoms import atoms_to_metadata
@@ -65,11 +65,12 @@ def summarize_run(
         dir_path = os.getcwd()
 
     # Fetch all tabulated results from VASP outputs files
-    # Fortunately, Atomate2 already has a handy function for this
-    results = TaskDocument.from_directory(dir_path).dict()
+    # Fortunately, emmet already has a handy function for this
+    results = TaskDoc.from_directory(dir_path).dict()
     uri = results["dir_name"]
     results["nid"] = uri.split(":")[0]
     results["dir_name"] = ":".join(uri.split(":")[1:])
+    results["builder_meta"]["build_date"] = str(results["builder_meta"]["build_date"])
 
     # Check for calculation convergence
     if check_convergence and results["state"] != "successful":

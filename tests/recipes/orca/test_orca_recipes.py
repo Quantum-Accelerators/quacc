@@ -36,7 +36,7 @@ def test_static_Job():
     job = StaticJob().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
+    assert output["natoms"] == len(atoms)
     assert output["name"] == "ORCA-Static"
     assert (
         output["parameters"]["orcasimpleinput"]
@@ -52,7 +52,7 @@ def test_static_Job():
     ).make(atoms, charge=-2, mult=3)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
+    assert output["natoms"] == len(atoms)
     assert output["name"] == "ORCA-Static"
     assert output["parameters"]["charge"] == -2
     assert output["parameters"]["mult"] == 3
@@ -73,7 +73,7 @@ def test_relax_Job():
     job = RelaxJob().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
+    assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
     assert output["name"] == "ORCA-Relax"
@@ -94,7 +94,7 @@ def test_relax_Job():
     ).make(atoms, charge=-2, mult=3)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["nsites"] == len(atoms)
+    assert output["natoms"] == len(atoms)
     assert output["name"] == "ORCA-Relax"
     assert output["parameters"]["charge"] == -2
     assert output["parameters"]["mult"] == 3
