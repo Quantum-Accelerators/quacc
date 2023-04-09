@@ -8,7 +8,7 @@ import warnings
 from typing import Any, Dict
 
 from ase.atoms import Atoms
-from atomate2.vasp.schemas.task import TaskDocument
+from emmet.core.tasks import TaskDoc
 
 from quacc import SETTINGS
 from quacc.schemas.atoms import atoms_to_metadata
@@ -66,7 +66,7 @@ def summarize_run(
 
     # Fetch all tabulated results from VASP outputs files
     # Fortunately, Atomate2 already has a handy function for this
-    results = TaskDocument.from_directory(dir_path).dict()
+    results = TaskDoc.from_directory(dir_path).dict()
     uri = results["dir_name"]
     results["nid"] = uri.split(":")[0]
     results["dir_name"] = ":".join(uri.split(":")[1:])
