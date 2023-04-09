@@ -4,7 +4,5 @@ pymatgen==2023.3.23
 jobflow==0.1.11
 emmet-core==0.51.11
 cclib==1.7.2
-custodian==2023.3.10
-fireworks==2.0.3
 monty==2022.9.9
 numpy
