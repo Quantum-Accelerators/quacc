@@ -53,7 +53,7 @@ def test_static_Job():
     job = StaticJob(kpts=(3, 3, 3)).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["natoms"] == len(atoms)
+    assert output["nsites"] == len(atoms)
     assert output["name"] == "DFTB-Static"
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
@@ -91,7 +91,7 @@ def test_relax_job():
     job = RelaxJob(kpts=(3, 3, 3)).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["natoms"] == len(atoms)
+    assert output["nsites"] == len(atoms)
     assert output["name"] == "DFTB-Relax"
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
@@ -111,7 +111,7 @@ def test_relax_job():
     job = RelaxJob(method="GFN1-xTB", kpts=(3, 3, 3), lattice_opt=True).make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
-    assert output["natoms"] == len(atoms)
+    assert output["nsites"] == len(atoms)
     assert output["name"] == "DFTB-Relax"
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN1-xTB"
