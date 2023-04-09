@@ -29,12 +29,16 @@ if __name__ == "__main__":
             "jobflow==0.1.11",
             "emmet-core @ git+https://github.com/arosen93/emmet.git@cclib#subdirectory=emmet-core",
             "cclib==1.7.2",
-            "custodian==2023.3.10",
-            "fireworks==2.0.3",
+            "monty==2022.9.9",
+            "numpy",
         ],
         extras_require={
+            "all": ["custodian==2023.3.10", "fireworks==2.0.3"],
+            "codes": [
+                "xtb==22.1",
+                "tblite[ase]==0.3.0",
+            ],
             "tests": ["pytest==7.2.2"],
-            "codes": ["xtb==22.1", "tblite[ase]==0.3.0"],
             "docs": [
                 "sphinx==6.1.3",
                 "furo==2023.3.27",
