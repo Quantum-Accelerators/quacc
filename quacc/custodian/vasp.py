@@ -8,13 +8,15 @@ import shlex
 from typing import Dict, List
 
 from monty.dev import requires
+
 try:
     from custodian import Custodian
 except ImportError:
-    Custodian=None
+    Custodian = None
 from quacc import SETTINGS
 
-@requires(Custodian,"Custodian must be installed. Try pip install custodian")
+
+@requires(Custodian, "Custodian must be installed. Try pip install custodian")
 def run_custodian(
     vasp_parallel_cmd: str = SETTINGS.VASP_PARALLEL_CMD,
     vasp_cmd: str = SETTINGS.VASP_CMD,

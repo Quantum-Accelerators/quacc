@@ -34,7 +34,12 @@ if __name__ == "__main__":
             "numpy",
         ],
         extras_require={
-            "all":["custodian==2023.3.10","fireworks==2.0.3","xtb==22.1", "tblite[ase]==0.3.0"],
+            "all": [
+                "custodian==2023.3.10",
+                "fireworks==2.0.3",
+                "xtb==22.1",
+                "tblite[ase]==0.3.0",
+            ],
             "tests": ["pytest==7.2.2"],
             "docs": [
                 "sphinx==6.1.3",
