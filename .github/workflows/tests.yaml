@@ -73,7 +73,6 @@ jobs:
           pip install .[all]
           pip install .[codes]
           pip install .[tests]
-          pip install chardet
           pip install pytest-cov
         id: cache
 
