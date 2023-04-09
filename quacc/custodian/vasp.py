@@ -10,7 +10,7 @@ from typing import Dict, List
 from monty.dev import requires
 try:
     from custodian import Custodian
-except:
+except ImportError:
     Custodian=None
 from quacc import SETTINGS
 
@@ -75,7 +75,7 @@ def run_custodian(
     )
     from custodian.vasp.jobs import VaspJob
     from custodian.vasp.validators import VaspFilesValidator, VasprunXMLValidator
-    
+
     vasp_parallel_cmd = os.path.expandvars(vasp_parallel_cmd)
 
     # Handlers for VASP
