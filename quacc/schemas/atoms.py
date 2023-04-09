@@ -3,6 +3,7 @@ Schemas for storing metadata about Atoms objects
 """
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Any, Dict
 
 import numpy as np
@@ -55,6 +56,7 @@ def atoms_to_metadata(
             metadata = MoleculeMetadata().from_molecule(mol).dict()
             if store_pmg:
                 results["molecule"] = mol
+        metadata = _quacc_sanitize(metadata)
     else:
         metadata = {}
 
@@ -98,6 +100,8 @@ def _quacc_sanitize(obj: Any) -> Any:
         obj = [_quacc_sanitize(i) for i in obj]
     elif isinstance(obj, dict):
         obj = {k.__str__(): _quacc_sanitize(v) for k, v in obj.items()}
+    elif isinstance(obj, datetime):
+        obj = str(datetime)
     else:
         obj = jsanitize(obj)
     return obj
