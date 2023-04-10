@@ -11,7 +11,7 @@ from jobflow import Maker, job
 from monty.dev import requires
 
 from quacc.schemas.calc import summarize_opt_run, summarize_run
-from quacc.util.calc import run_ase_opt, run_calc
+from quacc.util.calc import ideal_gas_thermo, run_ase_opt, run_ase_vib, run_calc
 
 try:
     from tblite.ase import TBLite
@@ -129,3 +129,60 @@ class RelaxJob(Maker):
         )
 
         return summary
+
+
+@dataclass
+class ThermoJob(Maker):
+    """
+    Class to run a frequency job and calculate thermochemistry.
+
+    Parameters
+    ----------
+    name
+        Name of the job.
+    method
+        GFN0-xTB, GFN1-xTB, GFN2-xTB, GFN-FF.
+    temperature
+        Temperature in Kelvins.
+    pressure
+        Pressure in bar.
+    xtb_kwargs
+        Dictionary of custom kwargs for the xTB calculator.
+    """
+
+    name: str = "xTB-Freq"
+    method: str = "GFN2-xTB"
+    temperature: float = 298.15
+    pressure: float = 1.0
+    xtb_kwargs: Dict[str, Any] = field(default_factory=dict)
+
+    @job
+    @requires(TBLite, "xTB-python must be installed. Try pip install xtb")
+    def make(self, atoms: Atoms, energy: float = 0.0) -> Dict[str, Any]:
+        """
+        Make the run.
+
+        Parameters
+        ----------
+        atoms
+            .Atoms object
+        energy
+            Potential energy in eV. If 0, then the output is just the correction.
+
+        Returns
+        -------
+        Dict
+            Summary of the thermochemistry.
+        """
+        atoms.calc = TBLite(method=self.method, **self.xtb_kwargs)
+        vibrations = run_ase_vib(atoms)
+        thermo_summary = ideal_gas_thermo(
+            atoms,
+            vibrations.get_frequencies(),
+            temperature=self.temperature,
+            pressure=self.pressure,
+            energy=energy,
+        )
+        thermo_summary["name"] = self.name
+
+        return thermo_summary
