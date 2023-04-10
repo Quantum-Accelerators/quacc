@@ -138,4 +138,5 @@ intersphinx_mapping = {
     "jobflow": ("https://materialsproject.github.io/jobflow/", None),
     "monty": ("https://guide.materialsvirtuallab.org/monty/", None),
     "cclib": ("https://cclib.github.io/", None),
+    "emmet": ("https://materialsproject.github.io/emmet/", None),
 }
