@@ -170,7 +170,7 @@ class ThermoJob(Maker):
         atoms.calc = XTB(method=self.method, **self.xtb_kwargs)
         vibrations = run_ase_vib(atoms)
         thermo_summary = ideal_gas_thermo(
-            vibrations.atoms,
+            atoms,
             vibrations.get_frequencies(),
             temperature=self.temperature,
             pressure=self.pressure,
