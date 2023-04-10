@@ -21,8 +21,12 @@ from ase.optimize import (
     MDMin,
 )
 from ase.thermochemistry import IdealGasThermo
-from ase.vibrations import Vibrations
 from ase.units import invcm
+from ase.vibrations import Vibrations
+<<<<<<< HEAD
+from ase.units import invcm
+=======
+>>>>>>> xtbfix
 from monty.io import zopen
 from monty.os.path import zpath
 from monty.shutil import copy_r, gzip_dir
