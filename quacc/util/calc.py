@@ -418,7 +418,7 @@ def ideal_gas_thermo(
     real_vib_freqs = [f for f in true_freqs if np.isreal(f)]
     n_imag = len(true_freqs) - len(real_vib_freqs)
     real_vib_energies = [f * invcm for f in true_freqs]
-
+    
     # Calculate ideal gas thermo
     igt = IdealGasThermo(
         real_vib_energies,
@@ -436,8 +436,6 @@ def ideal_gas_thermo(
     # Use negative sign convention for imag modes
     all_freqs = [np.abs(f) if np.isreal(f) else -np.abs(f) for f in all_freqs]
     true_freqs = [np.abs(f) if np.isreal(f) else -np.abs(f) for f in true_freqs]
-
-    # Count number of relevant imaginary frequencies
 
     thermo_summary = {
         **atoms_to_metadata(atoms),

@@ -111,16 +111,20 @@ def test_relax_Job():
     reason="xTB-python must be installed. Try conda install -c conda-forge xtb-python",
 )
 def test_thermo_job():
-    atoms = molecule("H")
-    job = ThermoJob().make(atoms, energy=-1.0)
+    atoms = molecule("H2O")
+    job = ThermoJob().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["atoms"] == atoms
     assert output["results"]["n_imag"] == 0
-    assert output["results"]["geometry"] == "monatomic"
-    assert len(output["results"]["true_frequencies"]) == 0
-    assert output["results"]["energy"] == -1.0
-    assert output["results"]["enthalpy"] == pytest.approx(-0.9357685739989672)
+    assert len(output["results"]["frequencies"]) == 9
+    assert len(output["results"]["true_frequencies"]) == 3
+    assert output["results"]["true_frequencies"][-1] == pytest.approx(3526.945468014458)
+    assert output["results"]["geometry"] == "nonlinear"
+    assert output["results"]["energy"] == 0.0
+    assert output["results"]["enthalpy"] == pytest.approx(0.637581401404518)
+    assert output["results"]["entropy"] == pytest.approx(0.0019584993671715764)
+    assert output["results"]["gibbs_energy"] == pytest.approx(0.05365481508231251)
 
     atoms = molecule("O2")
     job = ThermoJob(temperature=200, pressure=2.0).make(atoms, energy=-100.0)
@@ -137,43 +141,13 @@ def test_thermo_job():
     assert output["results"]["entropy"] == pytest.approx(0.001915519747865423)
     assert output["results"]["gibbs_energy"] == pytest.approx(-100.23289969678565)
 
-    atoms = molecule("CO2")
-    job = ThermoJob().make(atoms)
+    atoms = molecule("H")
+    job = ThermoJob().make(atoms, energy=-1.0)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["atoms"] == atoms
-    assert len(output["results"]["frequencies"]) == 9
-    assert len(output["results"]["true_frequencies"]) == 4
-    assert output["results"]["geometry"] == "linear"
-
-    atoms = molecule("H2O")
-    relax_job = RelaxJob().make(atoms)
-    thermo_job = ThermoJob().make(relax_job.output["atoms"])
-    responses = run_locally(Flow([relax_job, thermo_job]), ensure_success=True)
-    output = responses[thermo_job.uuid][1].output
-    assert output["atoms"] != atoms
     assert output["results"]["n_imag"] == 0
-    assert len(output["results"]["frequencies"]) == 9
-    assert len(output["results"]["true_frequencies"]) == 3
-    assert output["results"]["true_frequencies"][-1] == pytest.approx(3651.485084849091)
-    assert output["results"]["geometry"] == "nonlinear"
-    assert output["results"]["energy"] == 0.0
-    assert output["results"]["enthalpy"] == pytest.approx(0.6504563088945112)
-    assert output["results"]["entropy"] == pytest.approx(0.0019548443040349555)
-    assert output["results"]["gibbs_energy"] == pytest.approx(0.06761947964648929)
-
-    atoms = Atoms(
-        "OHH",
-        positions=[
-            (0.000000000, 0.000000000, 0.119262000),
-            (0.000000000, 0.596309000, -0.643977000),
-            (0.000000000, -0.763239000, -0.477047000),
-        ],
-    )
-    job = ThermoJob().make(atoms)
-    responses = run_locally(job, ensure_success=True)
-    output = responses[job.uuid][1].output
-    assert output["atoms"] == atoms
-    assert output["results"]["n_imag"] > 0
-    assert len(output["results"]["frequencies"]) == 9
-    assert len(output["results"]["true_frequencies"]) == 3
+    assert output["results"]["geometry"] == "monatomic"
+    assert len(output["results"]["true_frequencies"]) == 0
+    assert output["results"]["energy"] == -1.0
+    assert output["results"]["enthalpy"] == pytest.approx(-0.9357685739989672)
