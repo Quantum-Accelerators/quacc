@@ -320,7 +320,7 @@ def run_ase_vib(
 
 def ideal_gas_thermo(
     atoms: Atoms,
-    vib_list: List[complex],
+    vib_list: List[float | complex],
     temperature: float = 298.15,
     pressure: float = 1.0,
     energy: float = 0.0,
@@ -335,7 +335,6 @@ def ideal_gas_thermo(
         The Atoms object to use.
     vib_list
         The list of vibrations to use, typically obtained from Vibrations.get_frequencies().
-        It is expected that imaginary frequencies are included as complex numbers.
     temperature
         Temperature in Kelvins.
     pressure
@@ -366,6 +365,10 @@ def ideal_gas_thermo(
             }
         }
     """
+    for i, f in enumerate(vib_list):
+        if type(f) != complex and f < 0:
+            vib_list[i] = complex(0 - f * 1j)
+
     # Get the spin from the Atoms object
     if spin_multiplicity:
         spin = (spin_multiplicity - 1) / 2
@@ -411,7 +414,7 @@ def ideal_gas_thermo(
     # Fetch the real vibrational energies
     real_vib_freqs = [f for f in true_freqs if np.isreal(f)]
     n_imag = len(true_freqs) - len(real_vib_freqs)
-    real_vib_energies = [f * invcm for f in true_freqs]
+    real_vib_energies = [f * invcm for f in real_vib_freqs]
 
     # Calculate ideal gas thermo
     igt = IdealGasThermo(
