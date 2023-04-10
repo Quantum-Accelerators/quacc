@@ -21,6 +21,7 @@ from ase.optimize import (
     MDMin,
 )
 from ase.thermochemistry import IdealGasThermo
+from ase.units import invcm
 from ase.vibrations import Vibrations
 from monty.io import zopen
 from monty.os.path import zpath
@@ -53,19 +54,19 @@ def run_calc(
 
     Parameters
     ----------
-    atoms : .Atoms
+    atoms
         The Atoms object to run the calculation on.
-    geom_file : str
+    geom_file
         The filename of the log file that contains the output geometry, used
         to update the atoms object's positions and cell after a job. It is better
         to specify this rather than relying on ASE's atoms.get_potential_energy()
         function to update the positions, as this varies between codes.
-    scratch_dir : str
+    scratch_dir
         Path where a tmpdir should be made for running the calculation. If None,
         the current working directory will be used.
-    gzip : bool
+    gzip
         Whether to gzip the output files.
-    copy_files : List[str]
+    copy_files
         Filenames to copy from source to scratch directory.
 
     Returns
@@ -145,22 +146,22 @@ def run_ase_opt(
 
     Parameters
     ----------
-    atoms : .Atoms
+    atoms
         The Atoms object to run the calculation on.
-    fmax : float
+    fmax
         Tolerance for the force convergence (in eV/A).
-    max_steps : int
+    max_steps
         Maximum number of steps to take.
-    optimizer : str
+    optimizer
         Name of optimizer class to use.
-    opt_kwargs : dict
+    opt_kwargs
         Dictionary of kwargs for the optimizer.
-    scratch_dir : str
+    scratch_dir
         Path where a tmpdir should be made for running the calculation. If None,
         the current working directory will be used.
-    gzip : bool
+    gzip
         Whether to gzip the output files.
-    copy_files : List[str]
+    copy_files
         Filenames to copy from source to scratch directory.
 
     Returns
@@ -256,16 +257,16 @@ def run_ase_vib(
 
     Parameters
     ----------
-    atoms : .Atoms
+    atoms
         The Atoms object to run the calculation on.
-    vib_kwargs : dict
+    vib_kwargs
         Dictionary of kwargs for the vibration analysis.
-    scratch_dir : str
+    scratch_dir
         Path where a tmpdir should be made for running the calculation. If None,
         the current working directory will be used.
-    gzip : bool
+    gzip
         Whether to gzip the output files.
-    copy_files : List[str]
+    copy_files
         Filenames to copy from source to scratch directory.
 
     Returns
@@ -318,8 +319,8 @@ def run_ase_vib(
 
 
 def ideal_gas_thermo(
-    vibrations: Vibrations,
-    atoms: Atoms = None,
+    atoms: Atoms,
+    vib_list: List[float, complex],
     temperature: float = 298.15,
     pressure: float = 1.0,
     energy: float = 0.0,
@@ -330,11 +331,10 @@ def ideal_gas_thermo(
 
     Parameters
     ----------
-    vibrations : .Vibrations
-        The Vibrations module to use.
-    atoms : .Atoms
-        The Atoms object to use. If None, the Atoms object will be taken from
-        the Vibrations module.
+    atoms
+        The Atoms object to use.
+    vib_list
+        The list of vibrations to use, typically obtained from Vibrations.get_frequencies().
     temperature
         Temperature in Kelvins.
     pressure
@@ -355,7 +355,9 @@ def ideal_gas_thermo(
             {
                 "frequencies": list of frequencies in cm^-1,
                 "true_frequencies": list of true vibrational frequencies in cm^-1,
-                "n_imag": number of imaginary modes,
+                "n_imag": number of imaginary modes within true_frequencies in cm^-1,
+                "geometry": the geometry of the molecule,
+                "pointgroup": the point group of the molecule,
                 "energy": potential energy in eV,
                 "enthalpy": enthalpy in eV,
                 "entropy": entropy in eV/K,
@@ -363,8 +365,9 @@ def ideal_gas_thermo(
             }
         }
     """
-    # Pull atoms from vibrations object if needed
-    atoms = atoms or vibrations.atoms
+    for i, f in enumerate(vib_list):
+        if type(f) != complex and f < 0:
+            vib_list[i] = complex(0 - f * 1j)
 
     # Get the spin from the Atoms object
     if spin_multiplicity:
@@ -381,6 +384,7 @@ def ideal_gas_thermo(
             spin = 0
 
     # Get symmetry for later use
+    natoms = len(atoms)
     pmg_obj = AseAtomsAdaptor.get_molecule(atoms)
     pga = PointGroupAnalyzer(pmg_obj)
 
@@ -389,16 +393,17 @@ def ideal_gas_thermo(
     else:
         pointgroup = pga.get_pointgroup().sch_symbol
 
-    # Get the geometry
-    if len(atoms) == 1:
+    # Get the geometry and true frequencies that should
+    # be used for thermo calculations
+    if natoms == 1:
         geometry = "monatomic"
-        n_vib = 0
-    elif len(atoms) == 2 or (len(atoms) > 2 and pointgroup == "D*h"):
+        true_freqs = []
+    elif natoms == 2 or (natoms > 2 and pointgroup == "D*h"):
         geometry = "linear"
-        n_vib = 3 * len(atoms) - 5
+        true_freqs = vib_list[-(3 * natoms - 5) :]
     else:
         geometry = "nonlinear"
-        n_vib = 3 * len(atoms) - 6
+        true_freqs = vib_list[-(3 * natoms - 6) :]
 
     # Automatically get rotational symmetry number
     if geometry == "monatomic":
@@ -406,41 +411,35 @@ def ideal_gas_thermo(
     else:
         symmetry_number = pga.get_rotational_symmetry_number()
 
+    # Fetch the real vibrational energies
+    real_vib_freqs = [f for f in true_freqs if np.isreal(f)]
+    n_imag = len(true_freqs) - len(real_vib_freqs)
+    real_vib_energies = [f * invcm for f in real_vib_freqs]
+
     # Calculate ideal gas thermo
     igt = IdealGasThermo(
-        vibrations.get_energies(),
+        real_vib_energies,
         geometry,
         potentialenergy=energy,
         atoms=atoms,
         symmetrynumber=symmetry_number,
         spin=spin,
     )
-    freqs = vibrations.get_frequencies()
+    if len(igt.vib_energies) != len(real_vib_energies):
+        raise ValueError(
+            "The number of real vibrational modes and those used by ASE do not match. Something is very wrong..."
+        )
 
-    # Use negataive sign convention for imag modes
-    clean_freqs = []
-    for f in freqs:
-        if np.iscomplex(f):
-            clean_freqs.append(-np.abs(f))
-        else:
-            clean_freqs.append(np.abs(f))
-
-    # Ensure proper number of modes are stored
-    clean_freqs.sort()
-    if n_vib == 0:
-        true_frequencies = []
-    else:
-        true_frequencies = clean_freqs[-n_vib:]
-
-    # Count number of imaginary frequencies
-    imag_freqs = [f for f in true_frequencies if f < 0]
+    # Use negative sign convention for imag modes
+    vib_list = [np.abs(f) if np.isreal(f) else -np.abs(f) for f in vib_list]
+    true_freqs = [np.abs(f) if np.isreal(f) else -np.abs(f) for f in true_freqs]
 
     thermo_summary = {
         **atoms_to_metadata(atoms),
         "results": {
-            "frequencies": clean_freqs,
-            "true_frequencies": true_frequencies,
-            "n_imag": len(imag_freqs),
+            "frequencies": vib_list,  # full list of computed frequencies
+            "true_frequencies": true_freqs,  # list of *relevant* frequencies based on the geometry
+            "n_imag": n_imag,  # number of imag modes within true_frequencies
             "geometry": geometry,
             "pointgroup": pointgroup,
             "energy": energy,

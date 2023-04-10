@@ -150,9 +150,7 @@ class ThermoJob(Maker):
     xtb_kwargs: Dict[str, Any] = field(default_factory=dict)
 
     @job
-    @requires(
-        XTB, "xTB-python must be installed. Try conda install -c conda-forge xtb-python"
-    )
+    @requires(XTB, "xTB-python must be installed. Try pip install xtb")
     def make(self, atoms: Atoms, energy: float = 0.0) -> Dict[str, Any]:
         """
         Make the run.
@@ -172,8 +170,8 @@ class ThermoJob(Maker):
         atoms.calc = XTB(method=self.method, **self.xtb_kwargs)
         vibrations = run_ase_vib(atoms)
         thermo_summary = ideal_gas_thermo(
-            vibrations,
-            atoms=atoms,
+            atoms,
+            vibrations.get_frequencies(),
             temperature=self.temperature,
             pressure=self.pressure,
             energy=energy,

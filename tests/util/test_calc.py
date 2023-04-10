@@ -7,7 +7,7 @@ from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.calculators.lj import LennardJones
 
-from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
+from quacc.util.calc import ideal_gas_thermo, run_ase_opt, run_ase_vib, run_calc
 
 CWD = os.getcwd()
 
@@ -69,3 +69,106 @@ def test_bad_run_calc():
     atoms = bulk("Cu")
     with pytest.raises(ValueError):
         atoms = run_calc(atoms)
+
+
+def test_ideal_gas_thermo():
+    # Note: More detailed tests are in the test for the xtb ThermoJob
+    atoms = molecule("CH4")
+    dummy_freqs = [
+        0,
+        0,
+        0,
+        0,
+        0,
+        10j,
+        200j,
+        500 + 0j,
+        1000 + 0j,
+        1500,
+        2000,
+        2500,
+        3000,
+        3500,
+        4000,
+    ]
+    igt = ideal_gas_thermo(atoms, dummy_freqs)["results"]
+    assert igt["frequencies"] == [
+        0,
+        0,
+        0,
+        0,
+        0,
+        -10,
+        -200,
+        500,
+        1000,
+        1500,
+        2000,
+        2500,
+        3000,
+        3500,
+        4000,
+    ]
+    assert igt["true_frequencies"] == [
+        -200,
+        500,
+        1000,
+        1500,
+        2000,
+        2500,
+        3000,
+        3500,
+        4000,
+    ]
+    assert igt["n_imag"] == 1  # 200j
+    assert igt["geometry"] == "nonlinear"
+    assert igt["pointgroup"] == "Td"
+
+    atoms = molecule("CH4")
+    dummy_freqs = [
+        0,
+        0,
+        0,
+        0,
+        0,
+        -10,
+        0.0 + 200j,
+        500 + 0j,
+        1000 + 0j,
+        1500,
+        2000,
+        2500,
+        3000,
+        3500,
+        4000,
+    ]
+    igt = ideal_gas_thermo(atoms, dummy_freqs)["results"]
+    assert igt["frequencies"] == [
+        0,
+        0,
+        0,
+        0,
+        0,
+        -10,
+        -200,
+        500,
+        1000,
+        1500,
+        2000,
+        2500,
+        3000,
+        3500,
+        4000,
+    ]
+    assert igt["true_frequencies"] == [
+        -200,
+        500,
+        1000,
+        1500,
+        2000,
+        2500,
+        3000,
+        3500,
+        4000,
+    ]
+    assert igt["n_imag"] == 1  # 200j
