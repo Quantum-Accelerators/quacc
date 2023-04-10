@@ -21,8 +21,8 @@ from ase.optimize import (
     MDMin,
 )
 from ase.thermochemistry import IdealGasThermo
+from ase.units import invcm
 from ase.vibrations import Vibrations
-from ase.units import invcm 
 from monty.io import zopen
 from monty.os.path import zpath
 from monty.shutil import copy_r, gzip_dir
@@ -399,10 +399,10 @@ def ideal_gas_thermo(
         true_freqs = []
     elif natoms == 2 or (natoms > 2 and pointgroup == "D*h"):
         geometry = "linear"
-        true_freqs = all_freqs[-(3 * natoms - 5):]
+        true_freqs = all_freqs[-(3 * natoms - 5) :]
     else:
         geometry = "nonlinear"
-        true_freqs = all_freqs[-(3 * natoms - 6):]
+        true_freqs = all_freqs[-(3 * natoms - 6) :]
 
     # Automatically get rotational symmetry number
     if geometry == "monatomic":
@@ -412,8 +412,8 @@ def ideal_gas_thermo(
 
     # Fetch the real vibrational energies
     real_vib_freqs = [f for f in true_freqs if np.isreal(f)]
-    n_imag = len(true_freqs)-len(real_vib_freqs)
-    real_vib_energies = [f*invcm for f in true_freq]
+    n_imag = len(true_freqs) - len(real_vib_freqs)
+    real_vib_energies = [f * invcm for f in true_freq]
 
     # Calculate ideal gas thermo
     igt = IdealGasThermo(
@@ -425,7 +425,9 @@ def ideal_gas_thermo(
         spin=spin,
     )
     if len(igt.vib_energies) != len(real_vib_energies):
-        raise ValueError("The number of real vibrational modes and those used by ASE do not match. Something is very wrong...")
+        raise ValueError(
+            "The number of real vibrational modes and those used by ASE do not match. Something is very wrong..."
+        )
 
     # Use negative sign convention for imag modes
     all_freqs = [np.abs(f) if np.isreal(f) else -np.abs(f) for f in all_freqs]
