@@ -23,8 +23,10 @@ from ase.optimize import (
 from ase.thermochemistry import IdealGasThermo
 from ase.units import invcm
 from ase.vibrations import Vibrations
+
 <<<<<<< HEAD
 from ase.units import invcm
+
 =======
 >>>>>>> xtbfix
 from monty.io import zopen
