@@ -39,7 +39,7 @@ If you plan to use xTB with QuAcc, you will need to install the [xtb-python](htt
 
 tblite is especially useful for xTB calculations and has a fair bit of overlap with the xTB-python package.
 
-If you plan to use tblite with QuAcc, you will need to install the [tblite](https://github.com/tblite/tblite) interface with ASE support. This can be done via `pip install tblite[ase]`.
+If you plan to use tblite with QuAcc, you will need to install the [tblite](https://github.com/tblite/tblite) interface with ASE support. This can be done via `pip install tblite[ase]`. Note that `tblite` cannot be installed on Windows currently but can be used on Windows via [WSL](https://ubuntu.com/wsl).
 
 ## Psi4
 

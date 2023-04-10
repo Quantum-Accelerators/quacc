@@ -157,7 +157,7 @@ class ThermoJob(Maker):
     xtb_kwargs: Dict[str, Any] = field(default_factory=dict)
 
     @job
-    @requires(TBLite, "xTB-python must be installed. Try pip install xtb")
+    @requires(TBLite, "tblite must be installed. Try pip install tblite[ase]")
     def make(self, atoms: Atoms, energy: float = 0.0) -> Dict[str, Any]:
         """
         Make the run.

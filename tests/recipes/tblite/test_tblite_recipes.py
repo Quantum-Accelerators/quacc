@@ -33,7 +33,7 @@ def teardown_module():
 
 @pytest.mark.skipif(
     TBLite is None,
-    reason="tblite must be installed. Try pip install tblite",
+    reason="tblite must be installed. Try pip install tblite[ase]",
 )
 def test_static_Job():
     atoms = molecule("H2O")
@@ -57,7 +57,7 @@ def test_static_Job():
 
 @pytest.mark.skipif(
     TBLite is None,
-    reason="tblite must be installed. Try pip install tblite",
+    reason="tblite must be installed. Try pip install tblite[ase]",
 )
 def test_relax_Job():
     atoms = molecule("H2O")
@@ -74,7 +74,7 @@ def test_relax_Job():
 
 @pytest.mark.skipif(
     TBLite is None,
-    reason="tblite must be installed. Try pip install tblite",
+    reason="tblite must be installed. Try pip install tblite[ase]",
 )
 def test_thermo_job():
     atoms = molecule("H2O")
