@@ -102,8 +102,6 @@ def _quacc_sanitize(obj: Any) -> Any:
         obj = [_quacc_sanitize(i) for i in obj]
     elif isinstance(obj, dict):
         obj = {k.__str__(): _quacc_sanitize(v) for k, v in obj.items()}
-    elif isinstance(obj, datetime):
-        obj = str(datetime)
     else:
         obj = jsanitize(obj)
     return obj
