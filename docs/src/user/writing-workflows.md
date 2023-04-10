@@ -1,4 +1,4 @@
 
-# Running Workflows
+# Writing Workflows
 
 ## Introduction

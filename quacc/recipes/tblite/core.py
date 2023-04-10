@@ -29,7 +29,7 @@ class StaticJob(Maker):
     name
         Name of the job.
     method
-        GFN0-xTB, GFN1-xTB, GFN2-xTB.
+        GFN1-xTB, GFN2-xTB, and IPEA1-xTB.
     tblite_kwargs
         Dictionary of custom kwargs for the tblite calculator.
     """
