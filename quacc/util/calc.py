@@ -23,8 +23,6 @@ from ase.optimize import (
 from ase.thermochemistry import IdealGasThermo
 from ase.units import invcm
 from ase.vibrations import Vibrations
-from ase.units import invcm
-
 from monty.io import zopen
 from monty.os.path import zpath
 from monty.shutil import copy_r, gzip_dir
@@ -416,7 +414,7 @@ def ideal_gas_thermo(
     real_vib_freqs = [f for f in true_freqs if np.isreal(f)]
     n_imag = len(true_freqs) - len(real_vib_freqs)
     real_vib_energies = [f * invcm for f in true_freqs]
-    
+
     # Calculate ideal gas thermo
     igt = IdealGasThermo(
         real_vib_energies,
