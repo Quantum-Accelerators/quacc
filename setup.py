@@ -39,7 +39,7 @@ if __name__ == "__main__":
                 "xtb==22.1",
                 "tblite[ase]==0.3.0",
             ],
-            "tests": ["pytest==7.2.2"],
+            "tests": ["pytest==7.3.0"],
             "docs": [
                 "sphinx==6.1.3",
                 "furo==2023.3.27",
@@ -49,7 +49,7 @@ if __name__ == "__main__":
                 "nbsphinx-link==1.3.0",
                 "autodoc_pydantic==1.8.0",
             ],
-            "dev": ["pytest==7.2.2", "black==23.3.0", "isort==5.12.0"],
+            "dev": ["pytest==7.3.0", "black==23.3.0", "isort==5.12.0"],
         },
         tests_require=["pytest"],
         include_package_data=True,
