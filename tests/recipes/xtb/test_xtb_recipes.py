@@ -3,9 +3,7 @@ from shutil import rmtree
 
 import numpy as np
 import pytest
-from ase import Atoms
 from ase.build import bulk, molecule
-from jobflow import Flow
 from jobflow.managers.local import run_locally
 
 try:
@@ -17,7 +15,13 @@ from quacc.recipes.xtb.core import RelaxJob, StaticJob, ThermoJob
 
 def teardown_module():
     for f in os.listdir("."):
-        if ".log" in f or ".pckl" in f or ".traj" in f or "gfnff_topo" in f:
+        if (
+            ".log" in f
+            or ".pckl" in f
+            or ".traj" in f
+            or "gfnff_topo" in f
+            or ".gz" in f
+        ):
             os.remove(f)
     for f in os.listdir(os.getcwd()):
         if "quacc-tmp" in f or f == "tmp_dir" or f == "vib":
