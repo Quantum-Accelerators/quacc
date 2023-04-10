@@ -320,7 +320,7 @@ def run_ase_vib(
 
 def ideal_gas_thermo(
     atoms: Atoms,
-    vib_list: List[float],
+    vib_list: List[complex],
     temperature: float = 298.15,
     pressure: float = 1.0,
     energy: float = 0.0,
