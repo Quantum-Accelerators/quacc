@@ -54,6 +54,10 @@ class StaticJob(Maker):
         Dict
             Summary of the run.
         """
+        warnings.warn(
+            "xTB-python will be deprecated in a future version of QuAcc. If possible, you should try using tblite instead.",
+            DeprecationWarning,
+        )
         atoms.calc = XTB(method=self.method, **self.xtb_kwargs)
         new_atoms = run_calc(atoms)
         summary = summarize_run(
@@ -110,6 +114,10 @@ class RelaxJob(Maker):
         Dict
             Summary of the run.
         """
+        warnings.warn(
+            "xTB-python will be deprecated in a future version of QuAcc. If possible, you should try using tblite instead.",
+            DeprecationWarning,
+        )
         atoms.calc = XTB(method=self.method, **self.xtb_kwargs)
         traj = run_ase_opt(
             atoms,
@@ -168,7 +176,6 @@ class ThermoJob(Maker):
         Dict
             Summary of the thermochemistry.
         """
-
         warnings.warn(
             "Vibrational frequency analyses appear to be unreliable when using xtb-python; see https://github.com/grimme-lab/xtb-python/issues/99 for details. Use at your own risk. Provided you are interested in using the GFN1-xTB or GFN2-xTB methods, you are likely better off using the tblite calculator."
         )
