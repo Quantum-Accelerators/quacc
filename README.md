@@ -70,7 +70,7 @@ from fireworks import LaunchPad
 from jobflow import Flow
 from jobflow.managers.fireworks import flow_to_workflow
 
-from quacc.recipes.xtb.core import RelaxJob as XTBRelaxJob
+from quacc.recipes.tblite.core import RelaxJob as XTBRelaxJob
 from quacc.recipes.gaussian.core import RelaxJob as GaussianRelaxJob
 from quacc.recipes.orca.core import StaticJob as OrcaStaticJob
 
