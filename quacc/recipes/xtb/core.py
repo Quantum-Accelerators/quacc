@@ -3,9 +3,9 @@ Core recipes for the xTB code
 """
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass, field
 from typing import Any, Dict
-import warnings
 
 from ase.atoms import Atoms
 from jobflow import Maker, job
