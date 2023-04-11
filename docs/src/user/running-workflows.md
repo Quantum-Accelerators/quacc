@@ -2,7 +2,8 @@
 
 In QuAcc, each code comes with pre-packaged jobs and workflows, which we call recipes for short. This tutorial walks you through how to use these provided recipes to run calculations.
 
-<https://github.com/arosen93/quacc/blob/01b62d36be7410527534077f5675dcef0680b977/quacc/recipes/tblite/core.py#L1-L19>
+{obj}`~quacc.recipes.tblite.core.StaticJob`
+{obj}`~jobflow.managers.fireworks.flow_to_workflow`
 
 ## Pre-Requisites
 
