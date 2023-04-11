@@ -1,4 +1,4 @@
-# Running Workflows
+# Running Jobs and Flows
 
 In QuAcc, each code comes with pre-packaged jobs and workflows, which we call recipes for short. This tutorial walks you through how to use these provided recipes to run calculations.
 
@@ -87,6 +87,7 @@ As you can see, the QuAcc code is nearly the same! All we had to do was swap out
 ## Running Flows
 
 ### Relaxation + Thermochemistry Flow
+
 By now, you have seen how to run individual jobs. Very often, you may want to link jobs together to make a workflow (or a `flow` in Jobflow parlance). For instance, you may want to run a relaxation job followed by a vibrational frequency calculation (including thermodynamic corrections) on the relaxed structure. An example of how to do this is shown below.
 
 ```python
@@ -141,7 +142,7 @@ atoms = bulk("Cu")
 # and attach it to the Atoms object
 job1 = RelaxJob().make(atoms)
 
-# Define a second job consisting of a GFN0-xTB static calculation
+# Define a second job consisting of a GFN1-xTB static calculation
 # and attach it to the Atoms object from the first job.
 job2 = StaticJob(method="GFN1-xTB").make(job1.output["atoms"])
 

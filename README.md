@@ -27,7 +27,7 @@ This package is heavily inspired by [Atomate2](https://github.com/materialsproje
 
 ## Documentation
 
-[**Work in Progress**](https://arosen93.github.io/quacc/)
+[Click me!](https://arosen93.github.io/quacc/)
 
 ## Installation
 

@@ -4,11 +4,11 @@
 
 The concepts in this section are based around [Jobflow](https://materialsproject.github.io/jobflow/), namely the concepts of a `job`, `flow`, `Maker`, and `Response`. It may be helpful to review the Jobflow tutorials if you are looking for more detailed information about any of these asepcts used in the examples below.
 
-## A Worked Example
+## Worked Examples
 
 Before writing your own workflows, let's first break down a few examples already provided by QuAcc so that you understand the nuts and bolts.
 
-### The Makeup of a Job
+### Example 1
 
 For this example, I'll walk you through the `quacc.recipes.tblite.core.StaticJob` job step-by-step.
 
@@ -143,3 +143,166 @@ That's the full function! Below `make`, we have some docstrings again highlighti
 4. We return the summary dictionary to the user.
 
 That's it! Again, from the user perspective you would run this as `StaticJob().make(atoms)` once imported.
+
+### Example 2
+
+Let's continue with the `tblite` examples!
+
+This time, let's take a deep dive with the `quacc.recipes.tblite.core.RelaxJob`.
+
+I'll just give you the whole codeblock to start, but we'll still go through it together.
+
+```python
+@dataclass
+class RelaxJob(Maker):
+    """
+    Class to relax a structure.
+
+    Parameters
+    ----------
+    name
+        Name of the job.
+    method
+        GFN0-xTB, GFN1-xTB, GFN2-xTB.
+    fmax
+        Tolerance for the force convergence (in eV/A).
+    max_steps
+        Maximum number of steps to take.
+    optimizer
+        .Optimizer class to use for the relaxation.
+    tblite_kwargs
+        Dictionary of custom kwargs for the tblite calculator.
+    opt_kwargs
+        Dictionary of kwargs for the optimizer.
+    """
+
+    name: str = "tblite-Relax"
+    method: str = "GFN2-xTB"
+    fmax: float = 0.01
+    max_steps: int = 1000
+    optimizer: str = "FIRE"
+    tblite_kwargs: Dict[str, Any] = field(default_factory=dict)
+    opt_kwargs: Dict[str, Any] = field(default_factory=dict)
+
+    @job
+    @requires(
+        TBLite,
+        "tblite must be installed. Try pip install tblite[ase]",
+    )
+    def make(self, atoms: Atoms) -> Dict[str, Any]:
+        """
+        Make the run.
+
+        Parameters
+        ----------
+        atoms
+            .Atoms object
+
+        Returns
+        -------
+        Dict
+            Summary of the run.
+        """
+        atoms.calc = TBLite(method=self.method, **self.tblite_kwargs)
+        traj = run_ase_opt(
+            atoms,
+            fmax=self.fmax,
+            max_steps=self.max_steps,
+            optimizer=self.optimizer,
+            opt_kwargs=self.opt_kwargs,
+        )
+        summary = summarize_opt_run(
+            traj, atoms.calc.parameters, additional_fields={"name": self.name}
+        )
+
+        return summary
+```
+
+So, what's different about this one? Well, the main thing is that some ASE calculators (including `tblite`) require you to use an ASE-based optimizer to relax the structure (see [here](https://wiki.fysik.dtu.dk/ase/ase/optimize.html) for more details). Just like how `run_calc` was a wrapper around ASE's `.get_potential_energy()` function to run a calculation, the `run_ase_opt` function is a wrapper around ASE's `Optimize` class. Otherwise, everything is largely the same except for some different arguments and a different summary function.
+
+### Example 3
+
+Finally, let's look at a more typical relaxation job where you can run the relaxation using the code itself rather than ASE. For this example, we'll look at the `quacc.rescipes.gaussian.core.RelaxJob` class, which is based around the [ASE Gaussian calculator](https://wiki.fysik.dtu.dk/ase/ase/calculators/gaussian.html).
+
+```python
+
+@dataclass
+class RelaxJob(Maker):
+    """
+    Class to carry out a geometry optimization.
+
+    Parameters
+    ----------
+    name
+        Name of the job.
+    xc
+        Exchange-correlation functional
+    basis
+        Basis set
+    freq
+        If a requency calculation should be carried out.
+    swaps
+        Dictionary of custom kwargs for the calculator.
+    """
+
+    name: str = "Gaussian-Relax"
+    xc: str = "wb97x-d"
+    basis: str = "def2-tzvp"
+    freq: bool = False
+    swaps: Dict[str, Any] = field(default_factory=dict)
+
+    @job
+    def make(
+        self, atoms: Atoms, charge: int = None, mult: int = None
+    ) -> Dict[str, Any]:
+        """
+        Make the run.
+
+        Parameters
+        ----------
+        atoms
+            .Atoms object
+        charge
+            Charge of the system. If None, this is determined from the sum of
+            atoms.get_initial_charges().
+        mult
+            Multiplicity of the system. If None, this is determined from 1+ the sum
+            of atoms.get_initial_magnetic_moments().
+
+        Returns
+        -------
+        Dict
+            Summary of the run.
+        """
+        defaults = {
+            "mem": "16GB",
+            "chk": "Gaussian.chk",
+            "nprocshared": multiprocessing.cpu_count(),
+            "xc": self.xc,
+            "basis": self.basis,
+            "charge": charge,
+            "mult": mult,
+            "opt": "",
+            "scf": ["maxcycle=250", "xqc"],
+            "integral": "ultrafine",
+            "nosymmetry": "",
+            "freq": "" if self.freq else None,
+        }
+        flags = merge_dicts(defaults, self.swaps, remove_none=True)
+
+        atoms.calc = Gaussian(**flags)
+        atoms = run_calc(atoms, geom_file=GEOM_FILE)
+        summary = summarize_run(atoms, LOG_FILE, additional_fields={"name": self.name})
+
+        return summary
+```
+
+Again, this should largely look similar. We start, like always, by instantiating a class that inherits a jobflow `Maker`. We then define the parameters that we want to be able to specify when we run the job. There are few more parameters here than in the `tblite` example since Gaussian has a lot more options the user might want to consider, but it's otherwise the same.
+
+Like always, we have a `@job` decorator around a `make` function that defines the job. Here, however, note that there are optional `charge` and `mult` keywoard arguments in addition to the usual `self` and `atoms` arguments. Again, this is mostly for user convenience since it's something that is often specified.
+
+Since there are a lot of arguments to specify, we define several defaults and then merge them with the user-specified arguments. This is done using the `merge_dicts` function, which is a helper function that is defined in `quacc.utils`. This function takes two dictionaries and merges them together, with the second dictionary taking precedence. It also has an option to remove any keys that have a value of `None` (which is what we do here).
+
+Finally, we define the calculator, attach it to the `Atoms` object, run the calculation, and summarize the run. Here, we are not using ASE's optimizer routines so can use the regular `run_calc` and `summarize_run` functions in QuAcc. The optimization is selected here in the `defaults` dictionary with the `"opt"` key, as described the `Gaussian` calculator documentation.
+
+This example nicely highlights how you'll often want to define some default values for a given job but also provide the user with full flexibility to change them as they see fit.
