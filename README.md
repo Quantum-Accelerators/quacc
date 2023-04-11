@@ -25,10 +25,6 @@ This package is heavily inspired by [Atomate2](https://github.com/materialsproje
 
 **Disclaimer**: Currently, this package is under active development and should be considered *experimental.*
 
-## Documentation
-
-[Click me!](https://arosen93.github.io/quacc/)
-
 ## Installation
 
 QuAcc can be installed as follows:
@@ -40,6 +36,10 @@ pip install git+https://github.com/arosen93/quacc.git[all]
 # For the latest PyPI release (currently out-of-sync)
 pip install quacc[all]
 ```
+
+## Documentation
+
+[Click me!](https://arosen93.github.io/quacc/)
 
 ## Examples
 
