@@ -12,7 +12,7 @@ Table of Contents
    :maxdepth: 2
 
    Installation <install.md>
-   Configuring DFT Packages <codes.md>
+   Quantum Chemistry Package Setup <codes.md>
    Database Configuration <config_db.md>
    QuAcc Settings <settings.md>
 

@@ -11,7 +11,7 @@ Table of Contents
 .. toctree::
    :maxdepth: 2
 
-   Running workflows <running-workflows.md>
+   Running Jobs and Flows <running-workflows.md>
    Breaking Down the Code <breakdown.md>
-   Writing workflows <writing-workflows.md>
+   Writing Jobs and Flows <writing-workflows.md>
    Fireworks integration <fireworks.md>
