@@ -51,7 +51,7 @@ class StaticMaker(Maker):
         Parameters
         ----------
         atoms
-            .Atoms object`
+            .Atoms object
         charge
             Charge of the system. If None, this is determined from the sum of
             atoms.get_initial_charges().

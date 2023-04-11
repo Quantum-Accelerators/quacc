@@ -12,6 +12,6 @@ Table of Contents
    :maxdepth: 2
 
    Running Jobs and Flows <running-workflows.md>
-   Breaking Down the Code <breakdown.md>
-   Writing Jobs and Flows <writing-workflows.md>
-   Fireworks integration <fireworks.md>
+   Understanding the Code <breakdown.md>
+   Writing New Jobs and Flows <writing-workflows.md>
+   Fireworks Integration <fireworks.md>

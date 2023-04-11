@@ -3,19 +3,15 @@
 
 ## Running Locally
 
-Note: If you're using FireWorks, go to the "Running with FireWorks" sub-subsection instead.
-
 The first step is to make a directory where you'll store your custom recipes. Let's make a folder that we'll name, for demonstration purposes, `myquacc`. Add a Python file to the `myquacc` directory that will hold your custom recipes, which we'll call `myrecipes.py`. We'll be editing `myrecipes.py` in the following examples.
 
 For a custom job named `MyBeautifulJob`, this will mean that when you're done, you can import it as `from myquacc.myrecipes import MyBeautifulJob` provided the `myquacc` folder is either in your current working directory is added to your `PYTHONPATH` environment variable.
 
-## Running with FireWorks
+## Running with FireWorks or Contributing to QuAcc
 
-Note: If you're not using FireWorks, use the "Running Locally" sub-subsection instead.
+If you are using FireWorks to manage your high-throughput workflows, all functions and classes to be installed in your environment in order for them to be successfully accessed at runtime. Therefore, instead of relying on a specific directory to store your custom recipes, you will need to add them to a copy of the QuAcc package itself. This is also necessary if you want to contribute new recipes to the main QuAcc repository.
 
-If you are using FireWorks to manage your high-throughput workflows, all functions and classes to be installed in your environment in order for them to be successfully accessed at runtime. Therefore, instead of relying on a specific directory to store your custom recipes, you will need to add them to a copy of the QuAcc package itself.
-
-This is quite simple:
+In general, take the following steps:
 
 1. Download the QuAcc repository from GitHub (e.g. `git clone https://github.com/arosen93/quacc.git`).
 2. From the command line, change directories to the base directory of the QuAcc package you unpacked (e.g. `cd quacc`).
