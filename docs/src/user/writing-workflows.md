@@ -1,145 +1,41 @@
-# Understanding the Code
 
-## Pre-Requisites
+# Writing New Jobs and Flows
 
-The concepts in this section are based around [Jobflow](https://materialsproject.github.io/jobflow/), namely the concepts of a `job`, `flow`, `Maker`, and `Response`. It may be helpful to review the Jobflow tutorials if you are looking for more detailed information about any of these asepcts used in the examples below.
+## Running Locally
 
-## A Worked Example
+Note: If you're using FireWorks, go to the "Running with FireWorks" sub-subsection instead.
 
-Before writing your own workflows, let's first break down a few examples already provided by QuAcc so that you understand the nuts and bolts.
+The first step is to make a directory where you'll store your custom recipes. Let's make a folder that we'll name, for demonstration purposes, `myquacc`. Add a Python file to the `myquacc` directory that will hold your custom recipes, which we'll call `myrecipes.py`. We'll be editing `myrecipes.py` in the following examples.
 
-### The Makeup of a Job
+For a custom job named `MyBeautifulJob`, this will mean that when you're done, you can import it as `from myquacc.myrecipes import MyBeautifulJob` provided the `myquacc` folder is either in your current working directory is added to your `PYTHONPATH` environment variable.
 
-For this example, I'll walk you through the `quacc.recipes.tblite.core.StaticJob` job step-by-step.
+## Running with FireWorks
 
-After the somewhat self-explanatory import statements, the first real lines are as follows:
+Note: If you're not using FireWorks, use the "Running Locally" sub-subsection instead.
 
-```python
-@dataclass
-class StaticJob(Maker):
-```
+If you are using FireWorks to manage your high-throughput workflows, all functions and classes to be installed in your environment in order for them to be successfully accessed at runtime. Therefore, instead of relying on a specific directory to store your custom recipes, you will need to add them to a copy of the QuAcc package itself.
 
-Here, we have defined a job with the name `StaticJob`. Strictly speaking, this what is called a jobflow `Maker` class, which is a class that can be used to generate a `job`. You always start by inheriting from the `Maker` class in Jobflow. The `@dataclass` decorator is allows us to define a class with attributes that are automatically initialized when the class is instantiated and should also always be included. So, really the only thing of note here is the name of the class, which is `StaticJob`.
+This is quite simple:
 
-Building it up a bit further, we have
+1. Download the QuAcc repository from GitHub (e.g. `git clone https://github.com/arosen93/quacc.git`).
+2. From the command line, change directories to the base directory of the QuAcc package you unpacked (e.g. `cd quacc`).
+3. In your desired Python environment, install QuAcc in editable mode (i.e. `pip install -e .[all]`). This ensures that any changes you make to QuAcc will be instantly reflected in your code without having to uninstall/reinstall QuAcc.
+4. Add your own recipes to the `quacc/recipes` directory, either as part of an existing folder or a new one.
 
-```python
-@dataclass
-class StaticJob(Maker):
-    """
-    Class to carry out a single-point calculation.
+If you added a new job (e.g. `MyBeautifulJob`) to a custom folder called `myrecipes`, then in your scripts you'd simply import it as `from quacc.recipes.myrecipes import MyBeautifulJob`, similar to what you might do with the pre-packaged recipes.
 
-    Parameters
-    ----------
-    name
-        Name of the job.
-    method
-        GFN1-xTB, GFN2-xTB, and IPEA1-xTB.
-    tblite_kwargs
-        Dictionary of custom kwargs for the tblite calculator.
-    """
+## Adding a Job or Flow for a New Calculator
 
-    name: str = "tblite-Static"
-    method: str = "GFN2-xTB"
-    tblite_kwargs: Dict[str, Any] = field(default_factory=dict)
-```
+While QuAcc ships with support for a number of common quantum chemistry packages, there may be others you wish to use. Natively, QuAcc can easily support can calculator that is part of the [ASE ecosystem](https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html), of which there are many! If you want to use a calculator that is not part of the ASE ecosystem, you can still use QuAcc, but you'll need to write an ASE calculator for it first (or at least a Python API of some kind).
 
-Below the name of the class, we have some docstrings to highlight the inputs that will define the settings of the job to be run. The first argument must always be `name` and is the name of the job. This is the only argument that needs to be included when writing a new `Maker`, but you can include as many additional arguments as you like. Here, we also include an optional argument `method` that will pass to the `tblite` calculator what level of theory to run. Finally, we have an optional argument `tblite_kwargs` that allows the user to pass a dictionary of any additional keyword arguments to the `tblite` calculator. It is important to give the user flexibility, so it is always a good idea to include a dictionary of arguments the user can pass on to the calculator if they so choose.
+## Generating an Output Schema
 
-In case you are not familiar with the syntax here, `name: str = "tblite-Static"` means that the `name` argument takes an argument in the form of a string and by default, this is set to `"tblite-Static"`. The line `tblite_kwargs: Dict[str, Any] = field(default_factory=dict)` means that the `tblite_kwargs` optional argument takes a dictionary of any type of value and by default, this is set to an empty dictionary. Of course, if you are coding this up only for internal use, you can hard-code the default values for the various arguments if you'd like, but this is good programming practice.
+At the end of any recipe you make, you need to return a summary dictionary of the main inputs and outputs. As alluded to in [breakdown.md](breakdown.md), this can currently be done with one of several possible functions:
 
-Okay, let's continue and expand on our codeblock:
+1. `quacc.schemas.calc.summarize_run`: This function is used to summarize any typical run that is done through ASE. It summarizes the inputs and outputs from the ASE calculator object. This is the most common function to use.
 
-```python
-@dataclass
-class StaticJob(Maker):
-    """
-    Class to carry out a single-point calculation.
+2. `quacc.schemas.cclib.summarize_run`: This function is used to summarize the inputs and outputs of a run for a code that is supported by [cclib](https://cclib.github.io/data.html). This is preferred over `quacc.schemas.calc.summarize_run` if the code is supported by cclib because it will generate a more detailed summary than ASE can provide.
 
-    Parameters
-    ----------
-    name
-        Name of the job.
-    method
-        GFN1-xTB, GFN2-xTB, and IPEA1-xTB.
-    tblite_kwargs
-        Dictionary of custom kwargs for the tblite calculator.
-    """
+3. `quacc.schemas.calc.summarize_opt_run`: This function is used to summarize any relaxation run that is specifically done via an ASE `Optimizer`. This is the only way ASE `Optimizer` runs can be summarized.
 
-    name: str = "tblite-Static"
-    method: str = "GFN2-xTB"
-    tblite_kwargs: Dict[str, Any] = field(default_factory=dict)
-
-    @job
-    @requires(
-        TBLite,
-        "tblite must be installed. Try pip install tblite[ase]",
-    )
-    def make(self, atoms: Atoms) -> Dict[str, Any]:
-```
-
-It's time to talk about the `make` function. This is the function that will define the job itself using the aforementioned arguments. The `make` function must always take at least the following arguments: `self` and `atoms`. The former allows the job to inherit the arguments we defined above (i.e. `name`, `method`, `tblite_kwargs`). The latter is necessary so the job knows what `Atoms` object to act on. Again, if you aren't familiar with the syntax here, `atoms: Atoms` means that it is a required positional argument with type `Atoms` and has no default value. Additionally, `-> Dict[str, Any]` is a type hint that tells the user what the output will be. In this case, it is a dictionary of strings and any type of value. Type hints don't change the function of the code; it is just helpful for the user to know what to expect.
-
-The `@job` decorator is equally important! It tells Jobflow that the `make` function is a job and that it should be run. All `job` objects need to have a `@job` wrapper preceeding it. The `@requires` decorator, on the other hand, is never really needed. Here, it is included as a guide for the user. It will throw an error if `tblite` isn't installed, which can be helpful.
-
-Alright, let's wrap this up:
-
-```python
-@dataclass
-class StaticJob(Maker):
-    """
-    Class to carry out a single-point calculation.
-
-    Parameters
-    ----------
-    name
-        Name of the job.
-    method
-        GFN1-xTB, GFN2-xTB, and IPEA1-xTB.
-    tblite_kwargs
-        Dictionary of custom kwargs for the tblite calculator.
-    """
-
-    name: str = "tblite-Static"
-    method: str = "GFN2-xTB"
-    tblite_kwargs: Dict[str, Any] = field(default_factory=dict)
-
-    @job
-    @requires(
-        TBLite,
-        "tblite must be installed. Try pip install tblite[ase]",
-    )
-    def make(self, atoms: Atoms) -> Dict[str, Any]:
-        """
-        Make the run.
-
-        Parameters
-        ----------
-        atoms
-            .Atoms object
-
-        Returns
-        -------
-        Dict
-            Summary of the run.
-        """
-        atoms.calc = TBLite(method=self.method, **self.tblite_kwargs)
-        new_atoms = run_calc(atoms)
-        summary = summarize_run(
-            new_atoms, input_atoms=atoms, additional_fields={"name": self.name}
-        )
-
-        return summary
-```
-
-That's the full function! Below `make`, we have some docstrings again highlighting both the inputs and the outputs. Then we do four things: 
-
-1. We instantiate the `TBLite` [ASE calculator](https://tblite.readthedocs.io/en/latest/users/ase.html) with the `method` and any `tblite_kwargs` arguments we defined above. The `**` before th `self.tblite_kwargs` is necessary to unpack the dictionary into individual keyword arguments, if there are any. We also attached this calculator to the `Atoms` object supplied by the user.
-
-2. We then run the calculation using the `run_calc` function supplied with QuAcc. This function is a wrapper around ASE's `.get_potential_energy()` function that will effectively launch a calculation given an `Atoms` object with an attached calculator. Crucially, QuAcc does *not* modify `Atoms` objects in place whenever possible, so we need to save the new `Atoms` object with a new variable name (here, `new_atoms` instead of `atoms`).
-
-3. We create a summary of the run inputs and outputs, which is a dictionary that will be output and stored. This is done using the `summarize_run` function supplied with QuAcc, which takes the output `Atoms`, input `Atoms`, and any other additional fields you'd like to specify. It is always recommended to store the `name` of the job as a field in the summary.
-
-4. We return the summary dictionary to the user.
-
-That's it! Again, from the user perspective you would run this as `StaticJob().make(atoms)` once imported.
+4. `quacc.schemas.vasp.summarize_run`: This function is used to summarize a VASP run. It has been custom-made for VASP.
