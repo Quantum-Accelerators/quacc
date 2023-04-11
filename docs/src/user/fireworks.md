@@ -15,13 +15,13 @@ lpad = LaunchPad.auto_load()
 lpad.add_wf(wf)
 ```
 
-To concert a `flow` to a `workflow` and add it to your launch pad:
+To convert a `flow` to a `workflow` and add it to your launch pad:
 
 ```python
 from fireworks import LaunchPad
 from jobflow.managers.fireworks import flow_to_workflow
 
-wf = flow_to_firework(job)
+wf = flow_to_firework(flow)
 lpad = LaunchPad.auto_load()
 lpad.add_wf(wf)
 ```
