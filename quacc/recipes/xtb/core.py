@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Any, Dict
+import warnings
 
 from ase.atoms import Atoms
 from jobflow import Maker, job
@@ -167,6 +168,11 @@ class ThermoJob(Maker):
         Dict
             Summary of the thermochemistry.
         """
+
+        warnings.warn(
+            "Vibrational frequency analyses appear to be unreliable when using xtb-python; see https://github.com/grimme-lab/xtb-python/issues/99 for details. Use at your own risk. Provided you are interested in using the GFN1-xTB or GFN2-xTB methods, you are likely better off using the tblite calculator."
+        )
+
         atoms.calc = XTB(method=self.method, **self.xtb_kwargs)
         vibrations = run_ase_vib(atoms)
         thermo_summary = ideal_gas_thermo(
