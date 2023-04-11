@@ -2,9 +2,6 @@
 
 In QuAcc, each code comes with pre-packaged jobs and workflows, which we call recipes for short. This tutorial walks you through how to use these provided recipes to run calculations.
 
-{obj}`~quacc.recipes.tblite.core.StaticJob`
-{obj}`~jobflow.managers.fireworks.flow_to_workflow`
-
 ## Pre-Requisites
 
 If you are not yet familiar with the ASE `Atoms` object, you should read the ASE tutorial [here](https://wiki.fysik.dtu.dk/ase/ase/atoms.html), as this is the main object used to represent molecules and structures within QuAcc. If you are coming from the Pymatgen ecosystem, there is a module to interconvert between ASE `Atoms` and Pymatgen `Structure`/`Molecule` objects [here](https://pymatgen.org/pymatgen.io.ase.html). Additionally, it is worthwhile to be familiar with the basics of what an ASE `Calculator` is, which is described in more detail [here](https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html).
