@@ -10,7 +10,7 @@ Before writing your own workflows, let's first break down a few examples already
 
 ### Example 1
 
-For this example, I'll walk you through [`quacc.recipes.tblite.core.StaticJob`](https://github.com/arosen93/quacc/blob/main/quacc/recipes/gaussian/core.py#L96-L164) step-by-step, which you should first skim over an try to understand what is going on.
+For this example, I'll walk you through [the code](https://github.com/arosen93/quacc/blob/main/quacc/recipes/gaussian/core.py#L96-L164) for `quacc.recipes.tblite.core.StaticJob` step-by-step, which you should first skim over an try to understand what is going on.
 
 Alright, now to explain a bit. Following the imports, the first notable lines are as follows:
 
@@ -92,13 +92,13 @@ That's it! Again, from the user perspective you would simplu create this job as 
 
 Let's continue with the `tblite` example!
 
-This time, take a look at the code for [`quacc.recipes.tblite.core.RelaxJob`](https://github.com/arosen93/quacc/blob/main/quacc/recipes/tblite/core.py#L69-L131), which is a geometry optimization.
+This time, take a look at [the code](https://github.com/arosen93/quacc/blob/main/quacc/recipes/tblite/core.py#L69-L131) for `quacc.recipes.tblite.core.RelaxJob`, which is a geometry optimization.
 
 What's different about this one? Well, the main thing is that some ASE calculators (including `tblite`) require you to use an ASE-based optimizer to relax the structure (see [here](https://wiki.fysik.dtu.dk/ase/ase/optimize.html) for more details). Just like how `run_calc` was a wrapper around ASE's `.get_potential_energy()` function to run a calculation, the `run_ase_opt` function is a wrapper around ASE's `Optimize` class. This makes it possible to run a geometry optimization in QuAcc using ASE. Otherwise, everything is largely the same except for some different arguments and a different summary function tailored for ASE optimization-based jobs.
 
 ### Example 3
 
-Finally, let's look at a more typical relaxation job where you can run the relaxation using the code itself rather than ASE. For this example, take a look at the code for [`quacc.rescipes.gaussian.core.RelaxJob`](https://github.com/arosen93/quacc/blob/main/quacc/recipes/gaussian/core.py#L96-L164), which is based around the [ASE Gaussian calculator](https://wiki.fysik.dtu.dk/ase/ase/calculators/gaussian.html). I explain the bits and pieces below.
+Finally, let's look at a more typical relaxation job where you can run the relaxation using the code itself rather than ASE. For this example, take a look at[the code](https://github.com/arosen93/quacc/blob/main/quacc/recipes/gaussian/core.py#L96-L164) for `quacc.rescipes.gaussian.core.RelaxJob`, which is based around the [ASE Gaussian calculator](https://wiki.fysik.dtu.dk/ase/ase/calculators/gaussian.html). I explain the bits and pieces below.
 
 Again, this should largely look similar. We start, like always, by instantiating a class that inherits a jobflow `Maker`. We then define the parameters that we want to be able to specify when we run the job. There are a few more parameters here than in the `tblite` example since Gaussian has a lot more options that we might want to suggest to the user that they should consider, but it's otherwise basically the same.
 
