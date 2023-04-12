@@ -98,7 +98,7 @@ What's different about this one? Well, the main thing is that some ASE calculato
 
 ### Example 3
 
-Finally, let's look at a more typical relaxation job where you can run the relaxation using the code itself rather than ASE. For this example, take a look at[the code](https://github.com/arosen93/quacc/blob/main/quacc/recipes/gaussian/core.py#L96-L164) for `quacc.rescipes.gaussian.core.RelaxJob`, which is based around the [ASE Gaussian calculator](https://wiki.fysik.dtu.dk/ase/ase/calculators/gaussian.html). I explain the bits and pieces below.
+Finally, let's look at a more typical relaxation job where you can run the relaxation using the code itself rather than ASE. For this example, take a look at [the code](https://github.com/arosen93/quacc/blob/main/quacc/recipes/gaussian/core.py#L96-L164) for `quacc.rescipes.gaussian.core.RelaxJob`, which is based around the [ASE Gaussian calculator](https://wiki.fysik.dtu.dk/ase/ase/calculators/gaussian.html). I explain the bits and pieces below.
 
 Again, this should largely look similar. We start, like always, by instantiating a class that inherits a jobflow `Maker`. We then define the parameters that we want to be able to specify when we run the job. There are a few more parameters here than in the `tblite` example since Gaussian has a lot more options that we might want to suggest to the user that they should consider, but it's otherwise basically the same.
 
