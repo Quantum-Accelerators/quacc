@@ -23,7 +23,7 @@ The three main goals of QuAcc are as follows:
 
 This package is heavily inspired by [Atomate2](https://github.com/materialsproject/atomate2), which I also recommend checking out.
 
-**Disclaimer**: Currently, this package is under active development and should be considered *experimental.*
+**Disclaimer**: Currently, this package is under active development. Issues and bug reports are always welcome!
 
 ## Installation
 
