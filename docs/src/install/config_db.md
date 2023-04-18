@@ -1,12 +1,10 @@
 # Database Configuration
 
+## Introduction
+
+One of the main advantages of using QuAcc is the ability to have all of your calculation inputs and outputs automatically deposited in a database of your choosing for easy querying. While this is not a requirement for using QuAcc, it is highly recommended. It is also the only way to use QuAcc with the [FireWorks](https://materialsproject.github.io/fireworks/) job management system. If you plan to only run QuAcc locally and without database support, however, you can skip this page.
+
 ## MongoDB Setup
-
-### Introduction
-
-One of the main advantages of using QuAcc is the ability to have all of your calculation inputs and outputs automatically deposited in a database of your choosing for easy querying. While this is not a requirement for using QuAcc, it is highly recommended. It is also the only way to use QuAcc with the [FireWorks](https://materialsproject.github.io/fireworks/) job management system.
-
-### Setting up a Mongo Database
 
 *Note*: If you already have a Mongo database, you can skip this section. Simply have your login credentials ready.
 
