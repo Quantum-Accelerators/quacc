@@ -13,27 +13,21 @@
 [![Pypi](https://img.shields.io/pypi/v/quacc)](https://pypi.org/project/quacc)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7720998.svg)](https://doi.org/10.5281/zenodo.7720998)
 
-QuAcc is a flexible platform for high-throughput, database-driven computational materials science and quantum chemistry.
+QuAcc is a flexible platform for high-throughput, database-driven computational materials science and quantum chemistry. Built around the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/index.html) (ASE), Quacc seeks to reduce the barrier for developing and deploying complex, mixed-code workflows across heterogeneous compute environments.
 
-The three main goals of QuAcc are as follows:
+This package was originally inspired by [Atomate2](https://github.com/materialsproject/atomate2), which I also recommend checking out.
 
-1. To enable a seamless interface between the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/index.html) (ASE) and the high-throughput infrastructure powering the [Materials Project](https://materialsproject.org).
-2. To reduce the barrier for constructing complex, mixed-code workflows.
-3. To promote rapid workflow development and testing via [Covalent](https://github.com/AgnostiqHQ/covalent).
-
-This package is heavily inspired by [Atomate2](https://github.com/materialsproject/atomate2), which I also recommend checking out.
-
-**Disclaimer**: Currently, this package is under active development. Issues and bug reports are always welcome!
+**Disclaimer**: Currently, this package is under active development. Questions and bug reports are always welcome!
 
 ## Installation
 
 QuAcc can be installed as follows:
 
 ```bash
-# For the GitHub development version (recommended)
+# For the current development version (recommended)
 pip install git+https://github.com/arosen93/quacc.git
 
-# For the latest PyPI release (currently out-of-sync)
+# For the latest PyPI release
 pip install quacc
 ```
 
@@ -47,7 +41,6 @@ pip install quacc
 
 ```python
 from ase.build import bulk
-from jobflow.managers.local import run_locally
 
 from quacc.recipes.vasp.core import RelaxJob as VaspRelaxJob
 
@@ -56,19 +49,14 @@ atoms = bulk("Cu")
 
 # Make a job consisting of a VASP relaxation using a pre-defined input set.
 # By default, VASP will be run using Custodian for on-the-fly error handling.
-job = VaspRelaxJob(preset="BulkSet").make(atoms)
-
-# Run the job locally, with all output data stored in a convenient schema
-responses = run_locally(job, create_folders=True)
+output = VaspRelaxJob(atoms, preset="BulkSet")
 ```
 
-### GFN2-xTB + Gaussian + ORCA Workflow with FireWorks
+### GFN2-xTB + Gaussian + ORCA Workflow with Covalent
 
 ```python
+import covalent as ct
 from ase.build import molecule
-from fireworks import LaunchPad
-from jobflow import Flow
-from jobflow.managers.fireworks import flow_to_workflow
 
 from quacc.recipes.tblite.core import RelaxJob as XTBRelaxJob
 from quacc.recipes.gaussian.core import RelaxJob as GaussianRelaxJob
@@ -77,19 +65,17 @@ from quacc.recipes.orca.core import StaticJob as OrcaStaticJob
 # Make an H2 molecule
 atoms = molecule("H2")
 
-# Make a flow consisting of a GFN2-xTB relaxation followed by a Gaussian relaxation
-# and then an ORCA static calculation
-job1 = XTBRelaxJob(method="GFN2-xTB").make(atoms)
-job2 = GaussianRelaxJob(xc="PBE").make(job1.output["atoms"])
-job3 = OrcaStaticJob(xc="wB97M-V").make(job2.output["atoms"])
-flow = Flow([job1, job2, job3])
+# Make a workflow consisting of a GFN2-xTB relaxation followed by a Gaussian relaxation
+# and then an ORCA static calculation using Covalent to manage the workflow.
+@ct.lattice
+def workflow(atoms):
+    output1 = ct.electron(XTBRelaxJob)(atoms, method="GFN2-xTB")
+    output2 = ct.electron(GaussianRelaxJob)(output1["atoms"], xc="PBE")
+    output3 = ct.electron(OrcaStaticJob)(output2["atoms"], xc="wB97M-V")
+    return output3
 
-# Instead of running locally, we will run the workflow via Fireworks here.
-# The commands below convert the flow to a FireWorks workflow and adds it to
-# the launchpad. Database-friendly results will be deposited in your JobFlow DB
-wf = flow_to_workflow(flow)
-lpad = LaunchPad.auto_load()
-lpad.add_wf(wf)
+# Run the workflow
+output = workflow(atoms)
 ```
 
 ### Database-Friendly Output
