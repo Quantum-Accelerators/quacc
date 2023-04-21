@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import warnings
 from typing import Any, Dict, List
+
 from ase.atoms import Atoms
 
 from quacc.calculators.vasp import Vasp
