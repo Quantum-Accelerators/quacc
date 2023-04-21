@@ -7,11 +7,11 @@ from ase.build import bulk, molecule
 from quacc.recipes.vasp.core import DoubleRelaxJob, RelaxJob, StaticJob
 from quacc.recipes.vasp.qmof import QMOFRelaxJob
 from quacc.recipes.vasp.slabs import (
-    BulkToAdsorbatesFlow,
-    BulkToSlabsJob,
+    # BulkToAdsorbatesFlow,
+    # BulkToSlabsJob,
     SlabRelaxJob,
     SlabStaticJob,
-    SlabToAdsorbatesJob,
+    # SlabToAdsorbatesJob,
 )
 
 
