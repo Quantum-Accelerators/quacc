@@ -7,9 +7,8 @@ from typing import Any, Dict, List
 
 from ase.atoms import Atoms
 from ase.calculators.dftb import Dftb
-from jobflow import Maker, job
 from monty.dev import requires
-
+import covalent as ct
 from quacc.schemas.calc import summarize_run
 from quacc.util.basics import merge_dicts
 from quacc.util.calc import _check_logfile, run_calc
@@ -19,15 +18,24 @@ LOG_FILE = "dftb.out"
 GEOM_FILE = "geo_end.gen"
 
 
-@dataclass
-class StaticJob(Maker):
+@ct.electron
+@requires(
+    DFTBPLUS_EXISTS,
+    "DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
+)
+def StaticJob(
+    atoms: Atoms,
+    method: str = "GFN2-xTB",
+    kpts: tuple | List[tuple] | Dict[str, Any] = None,
+    swaps: Dict[str, Any] | None = None,
+) -> Dict[str, Any]:
     """
     Class to carry out a single-point calculation.
 
     Parameters
     ----------
-    name
-        Name of the job.
+    atoms
+        .Atoms object
     method
         Method to use. Accepts 'DFTB', 'GFN1-xTB', and 'GFN2-xTB'.
     kpts
@@ -35,55 +43,44 @@ class StaticJob(Maker):
         (1, 1, 1) for solids.
     swaps
         Dictionary of custom kwargs for the calculator.
+
+    Returns
+    -------
+    summary
+        Dictionary of results from the calculation.
     """
 
-    name: str = "DFTB-Static"
-    method: str = "GFN2-xTB"
-    kpts: tuple | List[tuple] | Dict[str, Any] = None
-    swaps: Dict[str, Any] = field(default_factory=dict)
+    swaps = swaps or {}
 
-    @job
-    @requires(
-        DFTBPLUS_EXISTS,
-        "DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
-    )
-    def make(self, atoms: Atoms) -> Dict[str, Any]:
-        """
-        Make the run.
+    defaults = {
+        "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
+        "Hamiltonian_Method": method if "xtb" in method.lower() else None,
+        "kpts": kpts if kpts else (1, 1, 1) if atoms.pbc.any() else None,
+    }
+    flags = merge_dicts(defaults, swaps, remove_none=True, auto_lowercase=False)
 
-        Parameters
-        ----------
-        atoms
-            .Atoms object
+    atoms.calc = Dftb(**flags)
+    new_atoms = run_calc(atoms, geom_file=GEOM_FILE)
+    scc_check = _check_logfile(LOG_FILE, "SCC is NOT converged")
+    if scc_check:
+        raise ValueError("SCC is not converged")
+    summary = summarize_run(new_atoms, input_atoms=atoms)
 
-        Returns
-        -------
-        Dict
-            Summary of the run.
-        """
-        defaults = {
-            "Hamiltonian_": "xTB" if "xtb" in self.method.lower() else "DFTB",
-            "Hamiltonian_Method": self.method if "xtb" in self.method.lower() else None,
-            "kpts": self.kpts if self.kpts else (1, 1, 1) if atoms.pbc.any() else None,
-        }
-        flags = merge_dicts(
-            defaults, self.swaps, remove_none=True, auto_lowercase=False
-        )
-
-        atoms.calc = Dftb(**flags)
-        new_atoms = run_calc(atoms, geom_file=GEOM_FILE)
-        scc_check = _check_logfile(LOG_FILE, "SCC is NOT converged")
-        if scc_check:
-            raise ValueError("SCC is not converged")
-        summary = summarize_run(
-            new_atoms, input_atoms=atoms, additional_fields={"name": self.name}
-        )
-
-        return summary
+    return summary
 
 
-@dataclass
-class RelaxJob(Maker):
+@ct.electron
+@requires(
+    DFTBPLUS_EXISTS,
+    "DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
+)
+def RelaxJob(
+    atoms: Atoms,
+    method: str = "GFN2-xTB",
+    kpts: tuple | List[tuple] | Dict[str, Any] = None,
+    lattice_opt: bool = False,
+    swaps: Dict[str, Any] | None = None,
+) -> Dict[str, Any]:
     """
     Class to carry out a structure relaxation.
 
@@ -101,53 +98,31 @@ class RelaxJob(Maker):
         the positions.
     swaps
         Dictionary of custom kwargs for the calculator.
+
+    Returns
+    -------
+    summary
+        Dictionary of results from the calculation.
     """
 
-    name: str = "DFTB-Relax"
-    method: str = "GFN2-xTB"
-    kpts: tuple | List[tuple] | Dict[str, Any] = None
-    lattice_opt: bool = False
-    swaps: Dict[str, Any] = field(default_factory=dict)
+    swaps = swaps or {}
 
-    @job
-    @requires(
-        DFTBPLUS_EXISTS,
-        "DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
-    )
-    def make(self, atoms: Atoms) -> Dict[str, Any]:
-        """
-        Make the run.
+    defaults = {
+        "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
+        "Hamiltonian_Method": method if "xtb" in method.lower() else None,
+        "kpts": kpts if kpts else (1, 1, 1) if atoms.pbc.any() else None,
+        "Driver_": "GeometryOptimization",
+        "Driver_LatticeOpt": "Yes" if lattice_opt else "No",
+        "Driver_AppendGeometries": "Yes",
+        "Driver_MaxSteps": 2000,
+    }
+    flags = merge_dicts(defaults, swaps, remove_none=True, auto_lowercase=False)
 
-        Parameters
-        ----------
-        atoms
-            .Atoms object
+    atoms.calc = Dftb(**flags)
+    new_atoms = run_calc(atoms, geom_file=GEOM_FILE)
+    geom_check = _check_logfile(LOG_FILE, "Geometry converged")
+    if not geom_check:
+        raise ValueError("Geometry did not converge")
+    summary = summarize_run(new_atoms, input_atoms=atoms)
 
-        Returns
-        -------
-        Dict
-            Summary of the run.
-        """
-        defaults = {
-            "Hamiltonian_": "xTB" if "xtb" in self.method.lower() else "DFTB",
-            "Hamiltonian_Method": self.method if "xtb" in self.method.lower() else None,
-            "kpts": self.kpts if self.kpts else (1, 1, 1) if atoms.pbc.any() else None,
-            "Driver_": "GeometryOptimization",
-            "Driver_LatticeOpt": "Yes" if self.lattice_opt else "No",
-            "Driver_AppendGeometries": "Yes",
-            "Driver_MaxSteps": 2000,
-        }
-        flags = merge_dicts(
-            defaults, self.swaps, remove_none=True, auto_lowercase=False
-        )
-
-        atoms.calc = Dftb(**flags)
-        new_atoms = run_calc(atoms, geom_file=GEOM_FILE)
-        geom_check = _check_logfile(LOG_FILE, "Geometry converged")
-        if not geom_check:
-            raise ValueError("Geometry did not converge")
-        summary = summarize_run(
-            new_atoms, input_atoms=atoms, additional_fields={"name": self.name}
-        )
-
-        return summary
+    return summary
