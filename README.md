@@ -19,7 +19,7 @@ The three main goals of QuAcc are as follows:
 
 1. To enable a seamless interface between the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/index.html) (ASE) and the high-throughput infrastructure powering the [Materials Project](https://materialsproject.org).
 2. To reduce the barrier for constructing complex, mixed-code workflows.
-3. To promote rapid workflow development and testing via [Jobflow](https://github.com/materialsproject/jobflow).
+3. To promote rapid workflow development and testing via [Covalent](https://github.com/AgnostiqHQ/covalent).
 
 This package is heavily inspired by [Atomate2](https://github.com/materialsproject/atomate2), which I also recommend checking out.
 
@@ -31,10 +31,10 @@ QuAcc can be installed as follows:
 
 ```bash
 # For the GitHub development version (recommended)
-pip install "quacc[all] @ git+https://github.com/arosen93/quacc.git"
+pip install git+https://github.com/arosen93/quacc.git
 
 # For the latest PyPI release (currently out-of-sync)
-pip install quacc[all]
+pip install quacc
 ```
 
 ## Documentation

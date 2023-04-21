@@ -26,15 +26,15 @@ if __name__ == "__main__":
         install_requires=[
             "ase @ git+https://gitlab.com/ase/ase.git",
             "atomate2 @ git+https://github.com/arosen93/atomate2.git@molecule",
+            "covalent==0.209.1",
             "pymatgen==2023.3.23",
-            "jobflow==0.1.11",
             "emmet-core==0.51.13",
+            "custodian==2023.3.10",
             "cclib==1.7.2",
             "monty==2023.4.10",
             "numpy",
         ],
         extras_require={
-            "all": ["custodian==2023.3.10", "fireworks==2.0.3"],
             "codes": [
                 "xtb==22.1",
                 "tblite[ase]==0.3.0",
