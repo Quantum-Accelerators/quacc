@@ -131,7 +131,6 @@ def test_thermo_job():
     assert output["results"]["gibbs_energy"] == pytest.approx(0.05365481508231251)
 
     atoms = molecule("O2")
-    atoms.set_initial_magnetic_moments([1.0, 1.0])
     job = ThermoJob(temperature=200, pressure=2.0).make(atoms, energy=-100.0)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
