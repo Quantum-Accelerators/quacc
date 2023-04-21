@@ -4,6 +4,7 @@ Core recipes for the tblite code
 from __future__ import annotations
 
 from typing import Any, Dict
+
 import covalent as ct
 from ase.atoms import Atoms
 from monty.dev import requires
