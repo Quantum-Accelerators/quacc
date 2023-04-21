@@ -25,13 +25,13 @@ if __name__ == "__main__":
         zip_safe=False,
         install_requires=[
             "ase @ git+https://gitlab.com/ase/ase.git",
-            "atomate2 @ git+https://github.com/arosen93/atomate2.git@molecule",
             "covalent==0.209.1",
+            "monty==2023.4.10",
             "pymatgen==2023.3.23",
             "emmet-core==0.51.13",
             "custodian==2023.3.10",
+            "atomate2 @ git+https://github.com/arosen93/atomate2.git@molecule",
             "cclib==1.7.2",
-            "monty==2023.4.10",
             "numpy",
         ],
         extras_require={
