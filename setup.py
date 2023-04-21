@@ -29,15 +29,15 @@ if __name__ == "__main__":
             "monty==2023.4.10",
             "pymatgen==2023.3.23",
             "emmet-core==0.51.13",
-            "custodian==2023.3.10",
             "atomate2 @ git+https://github.com/arosen93/atomate2.git@molecule",
             "cclib==1.7.2",
             "numpy",
         ],
         extras_require={
-            "codes": [
-                "xtb==22.1",
+            "all": [
+                "custodian==2023.3.10",
                 "tblite[ase]==0.3.0",
+                "xtb==22.1",
             ],
             "tests": ["pytest==7.3.1"],
             "docs": [
