@@ -2,8 +2,8 @@
 from __future__ import annotations
 
 import multiprocessing
-
 from typing import Any, Dict
+
 import covalent as ct
 from ase.atoms import Atoms
 from ase.calculators.gaussian import Gaussian
