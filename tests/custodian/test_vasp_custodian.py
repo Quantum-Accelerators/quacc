@@ -37,3 +37,11 @@ def patch_custodian_run(monkeypatch):
 def test_run_vasp_custodian(monkeypatch):
     monkeypatch.setenv("VASP_PARALLEL_CMD", "fake-mpirun")
     run_custodian()
+
+    run_custodian(vasp_custodian_wall_time=1)
+
+    with pytest.raises(ValueError):
+        run_custodian(vasp_custodian_handlers="cow")
+
+    with pytest.raises(ValueError):
+        run_custodian(vasp_custodian_validators=["cow"])
