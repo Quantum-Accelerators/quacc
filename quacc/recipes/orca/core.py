@@ -4,9 +4,10 @@ from __future__ import annotations
 import multiprocessing
 from typing import Any, Dict
 
+import covalent as ct
 from ase.atoms import Atoms
 from ase.calculators.orca import ORCA
-import covalent as ct
+
 from quacc.schemas.cclib import summarize_run
 from quacc.util.basics import merge_dicts
 from quacc.util.calc import run_calc
