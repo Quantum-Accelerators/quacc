@@ -4,9 +4,10 @@ from __future__ import annotations
 import warnings
 from typing import Any, Dict
 
+import covalent as ct
 from ase.atoms import Atoms
 from ase.calculators.gulp import GULP
-import covalent as ct
+
 from quacc.schemas.calc import summarize_run
 from quacc.util.basics import merge_dicts
 from quacc.util.calc import run_calc

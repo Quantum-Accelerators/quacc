@@ -2,8 +2,9 @@ import os
 from pathlib import Path
 from shutil import copy, rmtree
 
-from ase.build import bulk, molecule
 import covalent as ct
+from ase.build import bulk, molecule
+
 from quacc.recipes.gulp.core import RelaxJob, StaticJob
 
 FILE_DIR = Path(__file__).resolve().parent
