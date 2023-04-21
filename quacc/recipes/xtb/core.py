@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import warnings
 from typing import Any, Dict
+
 import covalent as ct
 from ase.atoms import Atoms
 from monty.dev import requires

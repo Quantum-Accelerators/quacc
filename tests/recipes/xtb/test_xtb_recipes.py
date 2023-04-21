@@ -1,10 +1,10 @@
 import os
 from shutil import rmtree
 
+import covalent as ct
 import numpy as np
 import pytest
 from ase.build import bulk, molecule
-import covalent as ct
 
 try:
     from xtb.ase.calculator import XTB
