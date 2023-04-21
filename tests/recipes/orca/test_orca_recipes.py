@@ -4,7 +4,6 @@ from pathlib import Path
 from shutil import copy, rmtree
 
 from ase.build import molecule
-from jobflow.managers.local import run_locally
 
 from quacc.recipes.orca.core import RelaxJob, StaticJob
 
@@ -33,11 +32,8 @@ def test_static_Job():
     atoms = molecule("H2")
     nprocs = multiprocessing.cpu_count()
 
-    job = StaticJob().make(atoms)
-    responses = run_locally(job, ensure_success=True)
-    output = responses[job.uuid][1].output
+    output = StaticJob(atoms)
     assert output["natoms"] == len(atoms)
-    assert output["name"] == "ORCA-Static"
     assert (
         output["parameters"]["orcasimpleinput"]
         == "wb97x-d3bj def2-tzvp sp slowconv normalprint xyzfile"
@@ -46,14 +42,14 @@ def test_static_Job():
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
 
-    job = StaticJob(
+    output = StaticJob(
+        atoms,
+        charge=-2,
+        mult=3,
         input_swaps={"def2-SVP": True, "def2-TZVP": False},
         block_swaps={"%scf maxiter 300 end": True},
-    ).make(atoms, charge=-2, mult=3)
-    responses = run_locally(job, ensure_success=True)
-    output = responses[job.uuid][1].output
+    )
     assert output["natoms"] == len(atoms)
-    assert output["name"] == "ORCA-Static"
     assert output["parameters"]["charge"] == -2
     assert output["parameters"]["mult"] == 3
     assert (
@@ -70,20 +66,20 @@ def test_relax_Job():
     atoms = molecule("H2")
     nprocs = multiprocessing.cpu_count()
 
-    job = RelaxJob().make(atoms)
-    responses = run_locally(job, ensure_success=True)
-    output = responses[job.uuid][1].output
+    output = RelaxJob(atoms)
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
-    assert output["name"] == "ORCA-Relax"
     assert (
         output["parameters"]["orcasimpleinput"]
         == "wb97x-d3bj def2-tzvp opt slowconv normalprint xyzfile"
     )
     assert output["parameters"]["orcablocks"] == f"%pal nprocs {nprocs} end"
 
-    job = RelaxJob(
+    output = RelaxJob(
+        atoms,
+        charge=-2,
+        mult=3,
         input_swaps={
             "HF": True,
             "wb97x-d3bj": False,
@@ -91,11 +87,8 @@ def test_relax_Job():
             "def2-TZVP": False,
         },
         block_swaps={"%scf maxiter 300 end": True},
-    ).make(atoms, charge=-2, mult=3)
-    responses = run_locally(job, ensure_success=True)
-    output = responses[job.uuid][1].output
+    )
     assert output["natoms"] == len(atoms)
-    assert output["name"] == "ORCA-Relax"
     assert output["parameters"]["charge"] == -2
     assert output["parameters"]["mult"] == 3
     assert (
