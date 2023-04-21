@@ -103,6 +103,15 @@ def test_autodipole():
     assert calc.int_params["idipol"] == 2
     assert calc.list_float_params["dipol"] is None
 
+    calc = Vasp(atoms, auto_dipole=False, preset="SlabSet", idipol=2)
+    assert calc.bool_params["ldipol"] is None
+    assert calc.int_params["idipol"] == 2
+    assert calc.list_float_params["dipol"] is None
+
+    calc = Vasp(atoms, lsorbit=True)
+    assert calc.bool_params["lsorbit"] is True
+    assert calc.int_params["isym"] == -1
+
 
 def test_kspacing():
     atoms = bulk("Cu")

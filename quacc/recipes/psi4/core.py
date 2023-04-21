@@ -19,7 +19,7 @@ from quacc.util.calc import run_calc
 
 @ct.electron
 @requires(psi4, "Psi4 be installed. Try conda install -c psi4 psi4")
-def StaticMaker(
+def StaticJob(
     atoms: Atoms,
     charge: int = None,
     mult: int = None,

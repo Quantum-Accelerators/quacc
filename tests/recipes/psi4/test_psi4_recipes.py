@@ -5,7 +5,7 @@ from shutil import rmtree
 import pytest
 from ase.build import molecule
 
-from quacc.recipes.psi4.core import StaticMaker
+from quacc.recipes.psi4.core import StaticJob
 
 try:
     import psi4
@@ -32,8 +32,7 @@ def teardown_module():
 )
 def test_static_maker():
     atoms = molecule("H2")
-
-    output = StaticMaker(atoms)
+    output = StaticJob(atoms)
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["multiplicity"] == 1
@@ -41,7 +40,7 @@ def test_static_maker():
     assert output["parameters"]["basis"] == "def2-tzvp"
     assert output["parameters"]["num_threads"] == "max"
 
-    output = StaticMaker(
+    output = StaticJob(
         atoms,
         charge=-2,
         mult=3,
