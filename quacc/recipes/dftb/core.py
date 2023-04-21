@@ -5,10 +5,11 @@ from dataclasses import dataclass, field
 from shutil import which
 from typing import Any, Dict, List
 
+import covalent as ct
 from ase.atoms import Atoms
 from ase.calculators.dftb import Dftb
 from monty.dev import requires
-import covalent as ct
+
 from quacc.schemas.calc import summarize_run
 from quacc.util.basics import merge_dicts
 from quacc.util.calc import _check_logfile, run_calc
