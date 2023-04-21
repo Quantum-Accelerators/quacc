@@ -4,11 +4,9 @@ Core recipes for the xTB code
 from __future__ import annotations
 
 import warnings
-from dataclasses import dataclass, field
 from typing import Any, Dict
-
+import covalent as ct
 from ase.atoms import Atoms
-from jobflow import Maker, job
 from monty.dev import requires
 
 try:
@@ -19,63 +17,61 @@ from quacc.schemas.calc import summarize_opt_run, summarize_run
 from quacc.util.calc import ideal_gas_thermo, run_ase_opt, run_ase_vib, run_calc
 
 
-@dataclass
-class StaticJob(Maker):
+@ct.electron
+@requires(XTB, "xTB-python must be installed. Try pip install xtb")
+def StaticJob(
+    atoms: Atoms, method: str = "GFN2-xTB", xtb_kwargs: Dict[str, Any] | None = None
+) -> Dict[str, Any]:
     """
-    Class to carry out a single-point calculation.
+    Function to carry out a single-point calculation.
 
     Parameters
     ----------
-    name
-        Name of the job.
+    atoms
+        .Atoms object
     method
         GFN0-xTB, GFN1-xTB, GFN2-xTB, GFN-FF.
     xtb_kwargs
         Dictionary of custom kwargs for the xTB calculator.
+
+    Returns
+    -------
+    Dict
+        Summary of the run.
     """
 
-    name: str = "xTB-Static"
-    method: str = "GFN2-xTB"
-    xtb_kwargs: Dict[str, Any] = field(default_factory=dict)
+    warnings.warn(
+        "xTB-python will be deprecated in a future version of QuAcc. If possible, you should try using tblite instead.",
+        DeprecationWarning,
+    )
 
-    @job
-    @requires(XTB, "xTB-python must be installed. Try pip install xtb")
-    def make(self, atoms: Atoms) -> Dict[str, Any]:
-        """
-        Make the run.
+    if xtb_kwargs is None:
+        xtb_kwargs = {}
+    atoms.calc = XTB(method=method, **xtb_kwargs)
+    new_atoms = run_calc(atoms)
+    summary = summarize_run(new_atoms, input_atoms=atoms)
 
-        Parameters
-        ----------
-        atoms
-            .Atoms object`
-
-        Returns
-        -------
-        Dict
-            Summary of the run.
-        """
-        warnings.warn(
-            "xTB-python will be deprecated in a future version of QuAcc. If possible, you should try using tblite instead.",
-            DeprecationWarning,
-        )
-        atoms.calc = XTB(method=self.method, **self.xtb_kwargs)
-        new_atoms = run_calc(atoms)
-        summary = summarize_run(
-            new_atoms, input_atoms=atoms, additional_fields={"name": self.name}
-        )
-
-        return summary
+    return summary
 
 
-@dataclass
-class RelaxJob(Maker):
+@ct.electron
+@requires(XTB, "xTB-python must be installed. Try pip install xtb")
+def RelaxJob(
+    atoms: Atoms,
+    method: str = "GFN2-xTB",
+    fmax: float = 0.01,
+    max_steps: int = 1000,
+    optimizer: str = "FIRE",
+    xtb_kwargs: Dict[str, Any] | None = None,
+    opt_kwargs: Dict[str, Any] | None = None,
+) -> Dict[str, Any]:
     """
-    Class to relax a structure.
+    Function to relax a structure.
 
     Parameters
     ----------
-    name
-        Name of the job.
+    atoms
+        .Atoms object
     method
         GFN0-xTB, GFN1-xTB, GFN2-xTB, GFN-FF.
     fmax
@@ -90,58 +86,41 @@ class RelaxJob(Maker):
         Dictionary of kwargs for the optimizer.
     """
 
-    name: str = "xTB-Relax"
-    method: str = "GFN2-xTB"
-    fmax: float = 0.01
-    max_steps: int = 1000
-    optimizer: str = "FIRE"
-    xtb_kwargs: Dict[str, Any] = field(default_factory=dict)
-    opt_kwargs: Dict[str, Any] = field(default_factory=dict)
+    if xtb_kwargs is None:
+        xtb_kwargs = {}
+    if opt_kwargs is None:
+        opt_kwargs = {}
 
-    @job
-    @requires(XTB, "xTB-python must be installed. Try pip install xtb")
-    def make(self, atoms: Atoms) -> Dict[str, Any]:
-        """
-        Make the run.
+    atoms.calc = XTB(method=method, **xtb_kwargs)
+    traj = run_ase_opt(
+        atoms,
+        fmax=fmax,
+        max_steps=max_steps,
+        optimizer=optimizer,
+        opt_kwargs=opt_kwargs,
+    )
+    summary = summarize_opt_run(traj, atoms.calc.parameters)
 
-        Parameters
-        ----------
-        atoms
-            .Atoms object
-
-        Returns
-        -------
-        Dict
-            Summary of the run.
-        """
-        warnings.warn(
-            "xTB-python will be deprecated in a future version of QuAcc. If possible, you should try using tblite instead.",
-            DeprecationWarning,
-        )
-        atoms.calc = XTB(method=self.method, **self.xtb_kwargs)
-        traj = run_ase_opt(
-            atoms,
-            fmax=self.fmax,
-            max_steps=self.max_steps,
-            optimizer=self.optimizer,
-            opt_kwargs=self.opt_kwargs,
-        )
-        summary = summarize_opt_run(
-            traj, atoms.calc.parameters, additional_fields={"name": self.name}
-        )
-
-        return summary
+    return summary
 
 
-@dataclass
-class ThermoJob(Maker):
+@ct.electron
+@requires(XTB, "xTB-python must be installed. Try pip install xtb")
+def ThermoJob(
+    atoms: Atoms,
+    method: str = "GFN2-xTB",
+    energy: float = 0.0,
+    temperature: float = 298.15,
+    pressure: float = 1.0,
+    xtb_kwargs: Dict[str, Any] | None = None,
+):
     """
-    Class to run a frequency job and calculate thermochemistry.
+    Function to run a frequency job and calculate thermochemistry.
 
     Parameters
     ----------
-    name
-        Name of the job.
+    atoms
+        .Atoms object
     method
         GFN0-xTB, GFN1-xTB, GFN2-xTB, GFN-FF.
     temperature
@@ -152,43 +131,17 @@ class ThermoJob(Maker):
         Dictionary of custom kwargs for the xTB calculator.
     """
 
-    name: str = "xTB-Freq"
-    method: str = "GFN2-xTB"
-    temperature: float = 298.15
-    pressure: float = 1.0
-    xtb_kwargs: Dict[str, Any] = field(default_factory=dict)
+    if xtb_kwargs is None:
+        xtb_kwargs = {}
 
-    @job
-    @requires(XTB, "xTB-python must be installed. Try pip install xtb")
-    def make(self, atoms: Atoms, energy: float = 0.0) -> Dict[str, Any]:
-        """
-        Make the run.
+    atoms.calc = XTB(method=method, **xtb_kwargs)
+    vibrations = run_ase_vib(atoms)
+    thermo_summary = ideal_gas_thermo(
+        atoms,
+        vibrations.get_frequencies(),
+        temperature=temperature,
+        pressure=pressure,
+        energy=energy,
+    )
 
-        Parameters
-        ----------
-        atoms
-            .Atoms object
-        energy
-            Potential energy in eV. If 0, then the output is just the correction.
-
-        Returns
-        -------
-        Dict
-            Summary of the thermochemistry.
-        """
-        warnings.warn(
-            "Vibrational frequency analyses appear to be unreliable when using xtb-python; see https://github.com/grimme-lab/xtb-python/issues/99 for details. Use at your own risk. Provided you are interested in using the GFN1-xTB or GFN2-xTB methods, you are likely better off using the tblite calculator."
-        )
-
-        atoms.calc = XTB(method=self.method, **self.xtb_kwargs)
-        vibrations = run_ase_vib(atoms)
-        thermo_summary = ideal_gas_thermo(
-            atoms,
-            vibrations.get_frequencies(),
-            temperature=self.temperature,
-            pressure=self.pressure,
-            energy=energy,
-        )
-        thermo_summary["name"] = self.name
-
-        return thermo_summary
+    return thermo_summary
