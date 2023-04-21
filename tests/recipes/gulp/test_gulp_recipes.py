@@ -56,7 +56,7 @@ def test_static_Job():
 
     atoms = bulk("Cu") * (2, 2, 2)
     output = StaticJob(atoms)
-    assert output["natoms"] == len(atoms)
+    assert output["nsites"] == len(atoms)
     assert "gfnff" in output["parameters"]["keywords"]
     assert "gwolf" in output["parameters"]["keywords"]
     assert "dump every gulp.res" in output["parameters"]["options"]
@@ -64,7 +64,7 @@ def test_static_Job():
     assert "output cif gulp.cif" in output["parameters"]["options"]
 
     output = StaticJob(atoms, keyword_swaps={"gwolf": False})
-    assert output["natoms"] == len(atoms)
+    assert output["nsites"] == len(atoms)
     assert "gfnff" in output["parameters"]["keywords"]
     assert "gwolf" not in output["parameters"]["keywords"]
     assert "dump every gulp.res" in output["parameters"]["options"]
@@ -72,7 +72,7 @@ def test_static_Job():
     assert "output cif gulp.cif" in output["parameters"]["options"]
 
     output = StaticJob(atoms, gfnff=False)
-    assert output["natoms"] == len(atoms)
+    assert output["nsites"] == len(atoms)
     assert "gfnff" not in output["parameters"]["keywords"]
     assert "gwolf" not in output["parameters"]["keywords"]
     assert "dump every gulp.res" in output["parameters"]["options"]
@@ -118,7 +118,7 @@ def test_relax_Job():
 
     atoms = bulk("Cu") * (2, 2, 2)
     output = RelaxJob(atoms)
-    assert output["natoms"] == len(atoms)
+    assert output["nsites"] == len(atoms)
     assert "gfnff" in output["parameters"]["keywords"]
     assert "opti" in output["parameters"]["keywords"]
     assert "conp" in output["parameters"]["keywords"]
@@ -129,7 +129,7 @@ def test_relax_Job():
     assert "output cif gulp.cif" in output["parameters"]["options"]
 
     output = RelaxJob(atoms, volume_relax=False, keyword_swaps={"gwolf": True})
-    assert output["natoms"] == len(atoms)
+    assert output["nsites"] == len(atoms)
     assert "gfnff" in output["parameters"]["keywords"]
     assert "opti" in output["parameters"]["keywords"]
     assert "conp" not in output["parameters"]["keywords"]
@@ -140,7 +140,7 @@ def test_relax_Job():
     assert "output cif gulp.cif" in output["parameters"]["options"]
 
     output = RelaxJob(atoms, gfnff=False)
-    assert output["natoms"] == len(atoms)
+    assert output["nsites"] == len(atoms)
     assert "gfnff" not in output["parameters"]["keywords"]
     assert "opti" in output["parameters"]["keywords"]
     assert "conp" in output["parameters"]["keywords"]
