@@ -81,6 +81,10 @@ jobs:
           # Update conda_codes.yaml manually if this is changed
           conda install -c psi4 psi4
           conda install -c conda-forge dftbplus==22.2
+      
+      - name: Launch covalent server
+        run: |
+          covalent start
         
       - name: Run tests with pytest
         run: pytest --cov=quacc --cov-report=xml

@@ -25,6 +25,12 @@ def test_static_Job():
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += [0.1, 0.1, 0.1]
 
+    job = ct.electron(StaticJob)
+    workflow = ct.lattice(job)
+    dispatch_id = ct.dispatch(workflow)(atoms)
+    result = ct.get_result(dispatch_id)
+    assert result["results"]["energy"] == pytest.approx(0.07001766638245854)
+
     output = StaticJob(atoms)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] == False
