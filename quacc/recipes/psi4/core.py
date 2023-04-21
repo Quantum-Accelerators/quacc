@@ -3,10 +3,10 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
+import covalent as ct
 from ase.atoms import Atoms
 from ase.calculators.psi4 import Psi4
 from monty.dev import requires
-import covalent as ct
 
 try:
     import psi4
