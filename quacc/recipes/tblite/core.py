@@ -5,7 +5,6 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
-import covalent as ct
 from ase.atoms import Atoms
 from monty.dev import requires
 
@@ -18,7 +17,6 @@ except ImportError:
     TBLite = None
 
 
-@ct.electron
 @requires(
     TBLite,
     "tblite must be installed. Try pip install tblite[ase]",
@@ -52,7 +50,6 @@ def StaticJob(
     return summary
 
 
-@ct.electron
 @requires(
     TBLite,
     "tblite must be installed. Try pip install tblite[ase]",
@@ -106,7 +103,6 @@ def RelaxJob(
     return summary
 
 
-@ct.electron
 @requires(TBLite, "tblite must be installed. Try pip install tblite[ase]")
 def ThermoJob(
     atoms: Atoms,

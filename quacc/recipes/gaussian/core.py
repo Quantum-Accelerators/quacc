@@ -16,7 +16,6 @@ LOG_FILE = Gaussian().label + ".log"
 GEOM_FILE = LOG_FILE
 
 
-@ct.electron
 def StaticJob(
     atoms: Atoms,
     charge: int = None,
@@ -84,7 +83,6 @@ def StaticJob(
     return summary
 
 
-@ct.electron
 def RelaxJob(
     atoms: Atoms,
     charge: int = None,

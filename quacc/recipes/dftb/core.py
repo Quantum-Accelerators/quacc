@@ -5,7 +5,6 @@ from dataclasses import dataclass, field
 from shutil import which
 from typing import Any, Dict, List
 
-import covalent as ct
 from ase.atoms import Atoms
 from ase.calculators.dftb import Dftb
 from monty.dev import requires
@@ -19,7 +18,6 @@ LOG_FILE = "dftb.out"
 GEOM_FILE = "geo_end.gen"
 
 
-@ct.electron
 @requires(
     DFTBPLUS_EXISTS,
     "DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
@@ -70,7 +68,6 @@ def StaticJob(
     return summary
 
 
-@ct.electron
 @requires(
     DFTBPLUS_EXISTS,
     "DFTB+ must be installed. Try conda install -c conda-forge dftbplus",

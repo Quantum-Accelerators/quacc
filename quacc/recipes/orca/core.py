@@ -4,7 +4,6 @@ from __future__ import annotations
 import multiprocessing
 from typing import Any, Dict
 
-import covalent as ct
 from ase.atoms import Atoms
 from ase.calculators.orca import ORCA
 
@@ -16,7 +15,6 @@ LOG_FILE = ORCA().name + ".out"
 GEOM_FILE = ORCA().name + ".xyz"
 
 
-@ct.electron
 def StaticJob(
     atoms: Atoms,
     charge: int = None,
@@ -96,7 +94,6 @@ def StaticJob(
     return summary
 
 
-@ct.electron
 def RelaxJob(
     atoms: Atoms,
     charge: int = None,

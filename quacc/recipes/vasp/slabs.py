@@ -4,7 +4,6 @@ from __future__ import annotations
 import warnings
 from typing import Any, Dict, List
 
-import covalent as ct
 from ase.atoms import Atoms
 from jobflow import Flow, Maker, Response, job
 
@@ -20,7 +19,6 @@ from quacc.util.slabs import (
 )
 
 
-@ct.electron
 def SlabStaticJob(
     atoms: Atoms, preset: str = None, swaps: Dict[str, Any] | None = None
 ) -> Dict[str, Any]:
@@ -64,7 +62,6 @@ def SlabStaticJob(
     return summary
 
 
-@ct.electron
 def SlabRelaxJob(
     atoms: Atoms, preset: str = None, swaps: Dict[str, Any] | None = None
 ) -> Dict[str, Any]:
@@ -108,7 +105,6 @@ def SlabRelaxJob(
     return summary
 
 
-@ct.electron
 class BulkToSlabsJob(Maker):
     """
     Function to convert a bulk structure to slabs,
@@ -175,7 +171,6 @@ class BulkToSlabsJob(Maker):
             replace=Flow(
                 jobs,
                 output={"all_atoms": all_atoms, "all_outputs": outputs},
-                name=name,
             ),
         )
 
@@ -271,7 +266,6 @@ class SlabToAdsorbatesJob(Maker):
             replace=Flow(
                 jobs,
                 output={"all_atoms": all_atoms, "all_outputs": outputs},
-                name=name,
             ),
         )
 

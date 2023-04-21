@@ -4,7 +4,6 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Any, Dict
 
-import covalent as ct
 from ase.atoms import Atoms
 from ase.calculators.emt import EMT
 from ase.io import read
@@ -15,7 +14,6 @@ from quacc.schemas.calc import summarize_opt_run, summarize_run
 # NOTE: This set of minimal recipes is mainly for demonstration purposes
 
 
-@ct.electron
 def StaticJob(atoms: Atoms, asap_cutoff: bool = False) -> Dict[str, Any]:
     """
     Function to carry out a static calculation.
@@ -40,7 +38,6 @@ def StaticJob(atoms: Atoms, asap_cutoff: bool = False) -> Dict[str, Any]:
     return summary
 
 
-@ct.electron
 def RelaxJob(
     atoms: Atoms,
     asap_cutoff: bool = False,

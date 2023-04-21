@@ -6,7 +6,6 @@ from __future__ import annotations
 import warnings
 from typing import Any, Dict
 
-import covalent as ct
 from ase.atoms import Atoms
 from monty.dev import requires
 
@@ -18,7 +17,6 @@ from quacc.schemas.calc import summarize_opt_run, summarize_run
 from quacc.util.calc import ideal_gas_thermo, run_ase_opt, run_ase_vib, run_calc
 
 
-@ct.electron
 @requires(XTB, "xTB-python must be installed. Try pip install xtb")
 def StaticJob(
     atoms: Atoms, method: str = "GFN2-xTB", xtb_kwargs: Dict[str, Any] | None = None
@@ -55,7 +53,6 @@ def StaticJob(
     return summary
 
 
-@ct.electron
 @requires(XTB, "xTB-python must be installed. Try pip install xtb")
 def RelaxJob(
     atoms: Atoms,
@@ -108,7 +105,6 @@ def RelaxJob(
     return summary
 
 
-@ct.electron
 @requires(XTB, "xTB-python must be installed. Try pip install xtb")
 def ThermoJob(
     atoms: Atoms,

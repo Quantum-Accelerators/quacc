@@ -3,7 +3,6 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
-import covalent as ct
 from ase.atoms import Atoms
 from ase.calculators.psi4 import Psi4
 from monty.dev import requires
@@ -17,7 +16,6 @@ from quacc.util.basics import merge_dicts
 from quacc.util.calc import run_calc
 
 
-@ct.electron
 @requires(psi4, "Psi4 be installed. Try conda install -c psi4 psi4")
 def StaticJob(
     atoms: Atoms,

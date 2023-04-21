@@ -4,7 +4,6 @@ from __future__ import annotations
 import warnings
 from typing import Any, Dict
 
-import covalent as ct
 from ase.atoms import Atoms
 from ase.calculators.gulp import GULP
 
@@ -13,7 +12,6 @@ from quacc.util.basics import merge_dicts
 from quacc.util.calc import run_calc
 
 
-@ct.electron
 def StaticJob(
     atoms: Atoms,
     gfnff: bool = True,
@@ -69,7 +67,6 @@ def StaticJob(
     return summary
 
 
-@ct.electron
 def RelaxJob(
     atoms: Atoms,
     gfnff: bool = True,
