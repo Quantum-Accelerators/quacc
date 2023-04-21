@@ -1,9 +1,10 @@
 import os
 from shutil import rmtree
 
+import covalent as ct
 import pytest
 from ase.build import bulk
-import covalent as ct
+
 from quacc.recipes.emt.core import RelaxJob, StaticJob
 
 
@@ -29,7 +30,7 @@ def test_static_Job():
     assert output["parameters"]["asap_cutoff"] == False
     assert output["results"]["energy"] == pytest.approx(0.07001766638245854)
 
-    output = StaticJob(atoms,asap_cutoff=True)
+    output = StaticJob(atoms, asap_cutoff=True)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] == True
     assert output["results"]["energy"] == pytest.approx(0.11074520235398744)
@@ -44,11 +45,11 @@ def test_relax_Job():
     assert output["parameters"]["asap_cutoff"] == False
     assert output["results"]["energy"] == pytest.approx(-0.04517048198212592)
 
-    output = RelaxJob(atoms,asap_cutoff=True)
+    output = RelaxJob(atoms, asap_cutoff=True)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] == True
     assert output["results"]["energy"] == pytest.approx(-0.004527567070971017)
 
-    output = RelaxJob(atoms,fmax=0.01)
+    output = RelaxJob(atoms, fmax=0.01)
     assert output["nsites"] == len(atoms)
     assert output["results"]["energy"] == pytest.approx(-0.0454470914411953)
