@@ -3,8 +3,9 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
-from ase.atoms import Atoms
 import covalent as ct
+from ase.atoms import Atoms
+
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.calc import summarize_opt_run
 from quacc.schemas.vasp import summarize_run

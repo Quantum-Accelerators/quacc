@@ -1,10 +1,11 @@
 """Core recipes for VASP"""
 from __future__ import annotations
 
-import covalent as ct
 from typing import Any, Dict
 
+import covalent as ct
 from ase.atoms import Atoms
+
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.vasp import summarize_run
 from quacc.util.basics import merge_dicts
