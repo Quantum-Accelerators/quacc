@@ -40,11 +40,10 @@ def StaticJob(
 
     Returns
     -------
-    Dict
-        Summary of the run.
+    summary
+        Summary of the calculation.
     """
-    if tblite_kwargs is None:
-        tblite_kwargs = {}
+    tblite_kwargs = tblite_kwargs or {}
 
     atoms.calc = TBLite(method=method, **tblite_kwargs)
     new_atoms = run_calc(atoms)
@@ -87,14 +86,12 @@ def RelaxJob(
 
     Returns
     -------
-    Dict
-        Summary of the run.
+    summary
+        Summary of the calculation.
     """
 
-    if tblite_kwargs is None:
-        tblite_kwargs = {}
-    if opt_kwargs is None:
-        opt_kwargs = {}
+    tblite_kwargs = tblite_kwargs or {}
+    opt_kwargs = opt_kwargs or {}
 
     atoms.calc = TBLite(method=method, **tblite_kwargs)
     traj = run_ase_opt(
@@ -139,11 +136,10 @@ def ThermoJob(
 
     Returns
     -------
-    Dict
-        Summary of the run.
+    thermo_summary
+        Summary of the thermochemistry.
     """
-    if xtb_kwargs is None:
-        xtb_kwargs = {}
+    xtb_kwargs = xtb_kwargs or {}
 
     atoms.calc = TBLite(method=method, **xtb_kwargs)
     vibrations = run_ase_vib(atoms)

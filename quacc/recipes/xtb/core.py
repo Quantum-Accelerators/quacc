@@ -37,8 +37,8 @@ def StaticJob(
 
     Returns
     -------
-    Dict
-        Summary of the run.
+    summary
+        Summary of the calculation.
     """
 
     warnings.warn(
@@ -46,8 +46,8 @@ def StaticJob(
         DeprecationWarning,
     )
 
-    if xtb_kwargs is None:
-        xtb_kwargs = {}
+    xtb_kwargs = xtb_kwargs or {}
+
     atoms.calc = XTB(method=method, **xtb_kwargs)
     new_atoms = run_calc(atoms)
     summary = summarize_run(new_atoms, input_atoms=atoms)
@@ -85,12 +85,15 @@ def RelaxJob(
         Dictionary of custom kwargs for the xTB calculator.
     opt_kwargs
         Dictionary of kwargs for the optimizer.
+
+    Returns
+    -------
+    summary
+        Summary of the calculation.
     """
 
-    if xtb_kwargs is None:
-        xtb_kwargs = {}
-    if opt_kwargs is None:
-        opt_kwargs = {}
+    xtb_kwargs = xtb_kwargs or {}
+    opt_kwargs = opt_kwargs or {}
 
     atoms.calc = XTB(method=method, **xtb_kwargs)
     traj = run_ase_opt(
@@ -130,10 +133,14 @@ def ThermoJob(
         Pressure in bar.
     xtb_kwargs
         Dictionary of custom kwargs for the xTB calculator.
+
+    Returns
+    -------
+    thermo_summary
+        Summary of the thermochemistry.
     """
 
-    if xtb_kwargs is None:
-        xtb_kwargs = {}
+    xtb_kwargs = xtb_kwargs or {}
 
     atoms.calc = XTB(method=method, **xtb_kwargs)
     vibrations = run_ase_vib(atoms)
