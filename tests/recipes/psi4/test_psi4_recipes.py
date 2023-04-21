@@ -6,7 +6,7 @@ import pytest
 from ase.build import molecule
 from jobflow.managers.local import run_locally
 
-from quacc.recipes.psi4.core import StaticMaker
+from quacc.recipes.psi4.core import StaticJob
 
 try:
     import psi4
@@ -34,7 +34,7 @@ def teardown_module():
 def test_static_maker():
     atoms = molecule("H2")
 
-    job = StaticMaker().make(atoms)
+    job = StaticJob().make(atoms)
     responses = run_locally(job, ensure_success=True)
     output = responses[job.uuid][1].output
     assert output["natoms"] == len(atoms)
@@ -45,7 +45,7 @@ def test_static_maker():
     assert output["parameters"]["basis"] == "def2-tzvp"
     assert output["parameters"]["num_threads"] == "max"
 
-    job = StaticMaker(
+    job = StaticJob(
         method="m06l",
         basis="def2-svp",
         swaps={"num_threads": 1, "mem": None, "pop": "regular"},
