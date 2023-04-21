@@ -1,12 +1,10 @@
 """QMOF-compatible recipes"""
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 from typing import Any, Dict
 
 from ase.atoms import Atoms
-from jobflow import Maker, job
-
+import covalent as ct
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.calc import summarize_opt_run
 from quacc.schemas.vasp import summarize_run
@@ -17,10 +15,16 @@ from quacc.util.calc import run_ase_opt, run_calc
 # Reference: https://doi.org/10.1016/j.matt.2021.02.015
 
 
-@dataclass
-class QMOFRelaxJob(Maker):
+@ct.electron
+def QMOFRelaxJob(
+    atoms: Atoms,
+    preset: str = "QMOFSet",
+    volume_relax: bool = True,
+    prerelax: bool = True,
+    swaps: Dict[str, Any] | None = None,
+):
     """
-    Class to relax a structure in a multi-step process for increased
+    Function to relax a structure in a multi-step process for increased
     computational efficiency. This is all done in a single compute job.
     Settings are such that they are compatible with the QMOF Database.
 
@@ -45,68 +49,52 @@ class QMOFRelaxJob(Maker):
         with very high starting forces.
     swaps
         Dictionary of custom kwargs for the calculator. Applies for all jobs.
+
+    Returns
+    -------
+    summary
+        Dictionary of the run summary.
     """
 
-    name: str = "QMOF-Relax"
-    preset: str = "QMOFSet"
-    volume_relax: bool = True
-    prerelax: bool = True
-    swaps: Dict[str, Any] = field(default_factory=dict)
+    swaps = swaps or {}
 
-    @job
-    def make(self, atoms: Atoms) -> Dict[str, Any]:
-        """
-        Make the run.
+    # 1. Pre-relaxation
+    if prerelax:
+        summary1 = _prerelax(atoms, preset, swaps, fmax=5.0)
+        atoms = summary1["atoms"]
 
-        Parameters
-        ----------
-        atoms
-            .Atoms object
+    # 2. Position relaxation (loose)
+    summary2 = _loose_relax_positions(atoms, preset, swaps)
+    atoms = summary2["atoms"]
 
-        Returns
-        -------
-        Dict
-            Summary of the run.
-        """
-        # 1. Pre-relaxation
-        if self.prerelax:
-            summary1 = _prerelax(atoms, self.preset, self.swaps, fmax=5.0)
-            atoms = summary1["atoms"]
+    # 3. Optional: Volume relaxation (loose)
+    if volume_relax:
+        summary3 = _loose_relax_volume(atoms, preset, swaps)
+        atoms = summary3["atoms"]
 
-        # 2. Position relaxation (loose)
-        summary2 = _loose_relax_positions(atoms, self.preset, self.swaps)
-        atoms = summary2["atoms"]
+    # 4. Double Relaxation
+    # This is done for two reasons: a) because it can resolve repadding
+    # issues when dV is large; b) because we can use LREAL = Auto for the
+    # first relaxation and the default LREAL for the second.
+    summary4 = _double_relax(atoms, preset, swaps, volume_relax=volume_relax)
+    atoms = summary4["relax2"]["atoms"]
 
-        # 3. Optional: Volume relaxation (loose)
-        if self.volume_relax:
-            summary3 = _loose_relax_volume(atoms, self.preset, self.swaps)
-            atoms = summary3["atoms"]
+    # 5. Static Calculation
+    summary5 = _static(atoms, preset, swaps)
 
-        # 4. Double Relaxation
-        # This is done for two reasons: a) because it can resolve repadding
-        # issues when dV is large; b) because we can use LREAL = Auto for the
-        # first relaxation and the default LREAL for the second.
-        summary4 = _double_relax(
-            atoms, self.preset, self.swaps, volume_relax=self.volume_relax
-        )
-        atoms = summary4["relax2"]["atoms"]
-
-        # 5. Static Calculation
-        summary5 = _static(atoms, self.preset, self.swaps)
-
-        return {
-            "prerelax-lowacc": summary1 if self.prerelax else None,
-            "position-relax-lowacc": summary2,
-            "volume-relax-lowacc": summary3 if self.volume_relax else None,
-            "double-relax": summary4,
-            "static": summary5,
-        }
+    return {
+        "prerelax-lowacc": summary1 if prerelax else None,
+        "position-relax-lowacc": summary2,
+        "volume-relax-lowacc": summary3 if volume_relax else None,
+        "double-relax": summary4,
+        "static": summary5,
+    }
 
 
 def _prerelax(
     atoms: Atoms,
     preset: str = "QMOFSet",
-    swaps: Dict[str, Any] = None,
+    swaps: Dict[str, Any] | None = None,
     fmax: float = 5.0,
 ) -> Dict[str, Any]:
     """
@@ -152,7 +140,7 @@ def _prerelax(
 def _loose_relax_positions(
     atoms: Atoms,
     preset: str = "QMOFSet",
-    swaps: Dict[str, Any] = None,
+    swaps: Dict[str, Any] | None = None,
 ) -> Dict[str, Any]:
     """
     Position relaxation with default ENCUT and coarse k-point grid.
@@ -197,7 +185,7 @@ def _loose_relax_positions(
 def _loose_relax_volume(
     atoms: Atoms,
     preset: str = "QMOFSet",
-    swaps: Dict[str, Any] = None,
+    swaps: Dict[str, Any] | None = None,
 ) -> Dict[str, Any]:
     """
     Optional: volume relaxation with coarse k-point grid.
@@ -240,7 +228,7 @@ def _loose_relax_volume(
 def _double_relax(
     atoms: Atoms,
     preset: str = "QMOFSet",
-    swaps: Dict[str, Any] = None,
+    swaps: Dict[str, Any] | None = None,
     volume_relax: bool = True,
 ) -> Dict[str, Any]:
     """
@@ -304,7 +292,7 @@ def _double_relax(
 def _static(
     atoms: Atoms,
     preset: str = "QMOFSet",
-    swaps: Dict[str, Any] = None,
+    swaps: Dict[str, Any] | None = None,
 ) -> Dict[str, Any]:
     """
     Static calculation using production-quality settings.

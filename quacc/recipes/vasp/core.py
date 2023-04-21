@@ -1,22 +1,22 @@
 """Core recipes for VASP"""
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+import covalent as ct
 from typing import Any, Dict
 
 from ase.atoms import Atoms
-from jobflow import Maker, job
-
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.vasp import summarize_run
 from quacc.util.basics import merge_dicts
 from quacc.util.calc import run_calc
 
 
-@dataclass
-class StaticJob(Maker):
+@ct.electron
+def StaticJob(
+    atoms: Atoms, preset: str = None, swaps: Dict[str, Any] | None = None
+) -> Dict[str, Any]:
     """
-    Class to carry out a single-point calculation.
+    Function to carry out a single-point calculation.
 
     Parameters
     ----------
@@ -26,54 +26,47 @@ class StaticJob(Maker):
         Preset to use.
     swaps
         Dictionary of custom kwargs for the calculator.
+
+    Returns
+    -------
+    summary
+        Dictionary of the run summary.
     """
 
-    name: str = "VASP-Static"
-    preset: str = None
-    swaps: Dict[str, Any] = field(default_factory=dict)
+    swaps = swaps or {}
 
-    @job
-    def make(self, atoms: Atoms) -> Dict[str, Any]:
-        """
-        Make the run.
+    defaults = {
+        "ismear": -5,
+        "laechg": True,
+        "lcharg": True,
+        "lwave": True,
+        "nedos": 5001,
+        "nsw": 0,
+    }
+    flags = merge_dicts(defaults, swaps)
 
-        Parameters
-        ----------
-        atoms
-            .Atoms object
+    calc = Vasp(atoms, preset=preset, **flags)
+    atoms.calc = calc
+    atoms = run_calc(atoms)
+    summary = summarize_run(atoms)
 
-        Returns
-        -------
-        Dict
-            Summary of the run.
-        """
-        defaults = {
-            "ismear": -5,
-            "laechg": True,
-            "lcharg": True,
-            "lwave": True,
-            "nedos": 5001,
-            "nsw": 0,
-        }
-        flags = merge_dicts(defaults, self.swaps)
-
-        calc = Vasp(atoms, preset=self.preset, **flags)
-        atoms.calc = calc
-        atoms = run_calc(atoms)
-        summary = summarize_run(atoms, additional_fields={"name": self.name})
-
-        return summary
+    return summary
 
 
-@dataclass
-class RelaxJob(Maker):
+@ct.electron
+def RelaxJob(
+    atoms: Atoms,
+    preset: str = None,
+    volume_relax: bool = True,
+    swaps: Dict[str, Any] | None = None,
+) -> Dict[str, Any]:
     """
-    Class to relax a structure.
+    Function to relax a structure.
 
     Parameters
     ----------
-    name
-        Name of the job.
+    atoms
+        .Atoms object
     preset
         Preset to use.
     volume_relax
@@ -81,49 +74,42 @@ class RelaxJob(Maker):
         False if only the positions (ISIF = 2) should be updated.
     swaps
         Dictionary of custom kwargs for the calculator.
+
+    Returns
+    -------
+    summary
+        Dictionary of the run summary.
     """
 
-    name: str = "VASP-Relax"
-    preset: str = None
-    volume_relax: bool = True
-    swaps: Dict[str, Any] = field(default_factory=dict)
+    swaps = swaps or {}
 
-    @job
-    def make(self, atoms: Atoms) -> Dict[str, Any]:
-        """
-        Make the run.
+    defaults = {
+        "ediffg": -0.02,
+        "isif": 3 if volume_relax else 2,
+        "ibrion": 2,
+        "isym": 0,
+        "lcharg": False,
+        "lwave": False,
+        "nsw": 200,
+    }
+    flags = merge_dicts(defaults, swaps)
 
-        Parameters
-        ----------
-        atoms
-            .Atoms object
+    calc = Vasp(atoms, preset=preset, **flags)
+    atoms.calc = calc
+    atoms = run_calc(atoms)
+    summary = summarize_run(atoms)
 
-        Returns
-        -------
-        Dict
-            Summary of the run.
-        """
-        defaults = {
-            "ediffg": -0.02,
-            "isif": 3 if self.volume_relax else 2,
-            "ibrion": 2,
-            "isym": 0,
-            "lcharg": False,
-            "lwave": False,
-            "nsw": 200,
-        }
-        flags = merge_dicts(defaults, self.swaps)
-
-        calc = Vasp(atoms, preset=self.preset, **flags)
-        atoms.calc = calc
-        atoms = run_calc(atoms)
-        summary = summarize_run(atoms, additional_fields={"name": self.name})
-
-        return summary
+    return summary
 
 
-@dataclass
-class DoubleRelaxJob(Maker):
+@ct.electron
+def DoubleRelaxJob(
+    atoms: Atoms,
+    preset: str = None,
+    volume_relax: bool = True,
+    swaps1: Dict[str, Any] | None = None,
+    swaps2: Dict[str, Any] | None = None,
+) -> Dict[Dict[str, Any], Dict[str, Any]]:
     """
     Class to double-relax a structure. This is particularly useful for
     a few reasons:
@@ -135,8 +121,8 @@ class DoubleRelaxJob(Maker):
 
     Parameters
     ----------
-    name
-        Name of the job.
+    atoms
+        .Atoms object
     preset
         Preset to use.
     volume_relax
@@ -146,58 +132,45 @@ class DoubleRelaxJob(Maker):
         Dictionary of custom kwargs for the first relaxation.
     swaps2
         Dictionary of custom kwargs for the second relaxation.
+
+    Returns
+    -------
+    summary
+        Dictionary of the run summary.
     """
 
-    name: str = "VASP-DoubleRelax"
-    preset: str = None
-    volume_relax: bool = True
-    swaps1: Dict[str, Any] = field(default_factory=dict)
-    swaps2: Dict[str, Any] = field(default_factory=dict)
+    swaps1 = swaps1 or {}
+    swaps2 = swaps2 or {}
 
-    @job
-    def make(self, atoms: Atoms) -> Dict[Dict[str, Any], Dict[str, Any]]:
-        """
-        Make the run.
+    defaults = {
+        "ediffg": -0.02,
+        "isif": 3 if volume_relax else 2,
+        "ibrion": 2,
+        "isym": 0,
+        "lcharg": False,
+        "lwave": True,
+        "nsw": 200,
+    }
 
-        Parameters
-        ----------
-        atoms
-            .Atoms object
+    # Run first relaxation
+    flags = merge_dicts(defaults, swaps1)
+    calc = Vasp(atoms, preset=preset, **flags)
+    atoms.calc = calc
+    kpts1 = atoms.calc.kpts
+    atoms = run_calc(atoms)
+    summary1 = summarize_run(atoms)
 
-        Returns
-        -------
-        Dict
-            Summary of the run.
-        """
-        defaults = {
-            "ediffg": -0.02,
-            "isif": 3 if self.volume_relax else 2,
-            "ibrion": 2,
-            "isym": 0,
-            "lcharg": False,
-            "lwave": True,
-            "nsw": 200,
-        }
+    # Run second relaxation
+    flags = merge_dicts(defaults, swaps2)
+    calc = Vasp(summary1["atoms"], preset=preset, **flags)
+    atoms.calc = calc
+    kpts2 = atoms.calc.kpts
 
-        # Run first relaxation
-        flags = merge_dicts(defaults, self.swaps1)
-        calc = Vasp(atoms, preset=self.preset, **flags)
-        atoms.calc = calc
-        kpts1 = atoms.calc.kpts
-        atoms = run_calc(atoms)
-        summary1 = summarize_run(atoms, additional_fields={"name": self.name})
+    # Use ISTART = 0 if this goes from vasp_gam --> vasp_std
+    if kpts1 == [1, 1, 1] and kpts2 != [1, 1, 1]:
+        atoms.calc.set(istart=0)
 
-        # Run second relaxation
-        flags = merge_dicts(defaults, self.swaps2)
-        calc = Vasp(summary1["atoms"], preset=self.preset, **flags)
-        atoms.calc = calc
-        kpts2 = atoms.calc.kpts
+    atoms = run_calc(atoms, copy_files=["WAVECAR"])
+    summary2 = summarize_run(atoms)
 
-        # Use ISTART = 0 if this goes from vasp_gam --> vasp_std
-        if kpts1 == [1, 1, 1] and kpts2 != [1, 1, 1]:
-            atoms.calc.set(istart=0)
-
-        atoms = run_calc(atoms, copy_files=["WAVECAR"])
-        summary2 = summarize_run(atoms, additional_fields={"name": self.name})
-
-        return {"relax1": summary1, "relax2": summary2}
+    return {"relax1": summary1, "relax2": summary2}

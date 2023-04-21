@@ -2,9 +2,8 @@
 from __future__ import annotations
 
 import warnings
-from dataclasses import dataclass, field
 from typing import Any, Dict, List
-
+import covalent as ct
 from ase.atoms import Atoms
 from jobflow import Flow, Maker, Response, job
 
@@ -20,118 +19,98 @@ from quacc.util.slabs import (
 )
 
 
-@dataclass
-class SlabStaticJob(Maker):
+@ct.electron
+def SlabStaticJob(
+    atoms: Atoms, preset: str = None, swaps: Dict[str, Any] | None = None
+) -> Dict[str, Any]:
     """
-    Class to carry out a single-point calculation on a slab.
+    Function to carry out a single-point calculation on a slab.
 
     Parameters
     ----------
-    name
-        Name of the job.
+    atoms
+        .Atoms object
     preset
         Preset to use.
     swaps
         Dictionary of custom kwargs for the calculator.
+
+    Returns
+    -------
+    summary
+        Dictionary of the run summary.
     """
 
-    name: str = "VASP-SlabStatic"
-    preset: str = None
-    swaps: Dict[str, Any] = field(default_factory=dict)
+    swaps = swaps or {}
 
-    @job
-    def make(self, atoms: Atoms) -> Dict[str, Any]:
-        """
-        Make the run.
+    defaults = {
+        "auto_dipole": True,
+        "ismear": -5,
+        "laechg": True,
+        "lcharg": True,
+        "lvhar": True,
+        "lwave": True,
+        "nedos": 5001,
+        "nsw": 0,
+    }
+    flags = merge_dicts(defaults, swaps)
 
-        Parameters
-        ----------
-        atoms
-            .Atoms object
+    calc = Vasp(atoms, preset=preset, **flags)
+    atoms.calc = calc
+    atoms = run_calc(atoms)
+    summary = summarize_run(atoms)
 
-        Returns
-        -------
-        Dict
-            Summary of the run.
-        """
-        defaults = {
-            "auto_dipole": True,
-            "ismear": -5,
-            "laechg": True,
-            "lcharg": True,
-            "lvhar": True,
-            "lwave": True,
-            "nedos": 5001,
-            "nsw": 0,
-        }
-        flags = merge_dicts(defaults, self.swaps)
-
-        calc = Vasp(atoms, preset=self.preset, **flags)
-        atoms.calc = calc
-        atoms = run_calc(atoms)
-        summary = summarize_run(atoms, additional_fields={"name": self.name})
-
-        return summary
+    return summary
 
 
-@dataclass
-class SlabRelaxJob(Maker):
+@ct.electron
+def SlabRelaxJob(
+    atoms: Atoms, preset: str = None, swaps: Dict[str, Any] | None = None
+) -> Dict[str, Any]:
     """
-    Class to relax a slab.
+    Function to relax a slab.
 
     Parameters
     ----------
-    name
-        Name of the job.
+    atoms
+        .Atoms object
     preset
         Preset to use.
     swaps
         Dictionary of custom kwargs for the calculator.
+
+    Returns
+    -------
+    summary
+        Dictionary of the run summary.
     """
 
-    name: str = "VASP-SlabRelax"
-    preset: str = None
-    swaps: Dict[str, Any] = field(default_factory=dict)
+    swaps = swaps or {}
 
-    @job
-    def make(self, atoms: Atoms) -> Dict[str, Any]:
-        """
-        Make the run.
+    defaults = {
+        "auto_dipole": True,
+        "ediffg": -0.02,
+        "isif": 2,
+        "ibrion": 2,
+        "isym": 0,
+        "lcharg": False,
+        "lwave": False,
+        "nsw": 200,
+    }
+    flags = merge_dicts(defaults, swaps)
 
-        Parameters
-        ----------
-        atoms
-            .Atoms object
+    calc = Vasp(atoms, preset=preset, **flags)
+    atoms.calc = calc
+    atoms = run_calc(atoms)
+    summary = summarize_run(atoms)
 
-        Returns
-        -------
-        Dict:
-            Summary of the run.
-        """
-        defaults = {
-            "auto_dipole": True,
-            "ediffg": -0.02,
-            "isif": 2,
-            "ibrion": 2,
-            "isym": 0,
-            "lcharg": False,
-            "lwave": False,
-            "nsw": 200,
-        }
-        flags = merge_dicts(defaults, self.swaps)
-
-        calc = Vasp(atoms, preset=self.preset, **flags)
-        atoms.calc = calc
-        atoms = run_calc(atoms)
-        summary = summarize_run(atoms, additional_fields={"name": self.name})
-
-        return summary
+    return summary
 
 
-@dataclass
+@ct.electron
 class BulkToSlabsJob(Maker):
     """
-    Class to convert a bulk structure to slabs,
+    Function to convert a bulk structure to slabs,
     along with the relaxations and statics for the slabs.
 
     Parameters
@@ -177,8 +156,8 @@ class BulkToSlabsJob(Maker):
         outputs = []
         all_atoms = []
         for slab in slabs:
-            relax_job = self.slab_relax_job.make(slab)
-            static_job = self.slab_static_job.make(relax_job.output["atoms"])
+            relax_job = slab_relax_job.make(slab)
+            static_job = slab_static_job.make(relax_job.output["atoms"])
 
             jobs += [relax_job, static_job]
             outputs.append(static_job.output)
@@ -195,7 +174,7 @@ class BulkToSlabsJob(Maker):
             replace=Flow(
                 jobs,
                 output={"all_atoms": all_atoms, "all_outputs": outputs},
-                name=self.name,
+                name=name,
             ),
         )
 
@@ -273,10 +252,8 @@ class SlabToAdsorbatesJob(Maker):
 
                 # Make a relaxation+static job for each slab-adsorbate ysstem
                 for ads_slab in ads_slabs:
-                    relax_job = self.slab_ads_relax_job.make(ads_slab)
-                    static_job = self.slab_ads_static_job.make(
-                        relax_job.output["atoms"]
-                    )
+                    relax_job = slab_ads_relax_job.make(ads_slab)
+                    static_job = slab_ads_static_job.make(relax_job.output["atoms"])
 
                     jobs += [relax_job, static_job]
                     outputs.append(static_job.output)
@@ -293,7 +270,7 @@ class SlabToAdsorbatesJob(Maker):
             replace=Flow(
                 jobs,
                 output={"all_atoms": all_atoms, "all_outputs": outputs},
-                name=self.name,
+                name=name,
             ),
         )
 
@@ -367,20 +344,20 @@ class BulkToAdsorbatesFlow(Maker):
         slabgen_kwargs = slabgen_kwargs or {}
         make_ads_kwargs = make_ads_kwargs or {}
 
-        if n_stable_slabs and not self.bulk_static_job:
+        if n_stable_slabs and not bulk_static_job:
             raise ValueError("Cannot use n_stable_slabs without a bulk_static_job")
 
-        if self.bulk_relax_job:
-            bulk_relax_job = self.bulk_relax_job.make(atoms)
+        if bulk_relax_job:
+            bulk_relax_job = bulk_relax_job.make(atoms)
             atoms = bulk_relax_job.output["atoms"]
             jobs.append(bulk_relax_job)
 
-        if self.bulk_static_job:
-            bulk_static_job = self.bulk_static_job.make(atoms)
+        if bulk_static_job:
+            bulk_static_job = bulk_static_job.make(atoms)
             atoms = bulk_static_job.output["atoms"]
             jobs.append(bulk_static_job)
 
-        bulk_to_slabs_job = self.bulk_to_slabs_job.make(
+        bulk_to_slabs_job = bulk_to_slabs_job.make(
             atoms, max_slabs=max_slabs, **slabgen_kwargs
         )
         jobs.append(bulk_to_slabs_job)
@@ -391,29 +368,29 @@ class BulkToAdsorbatesFlow(Maker):
                 bulk_to_slabs_job.output["all_outputs"],
                 n_stable_slabs=n_stable_slabs,
             )
-            slab_to_adsorbates_job = self.slab_to_adsorbates_job.make(
+            slab_to_adsorbates_job = slab_to_adsorbates_job.make(
                 find_stable_slab_job.output["stable_slabs"]["all_atoms"],
                 adsorbate,
                 **make_ads_kwargs,
             )
             jobs += [find_stable_slab_job, slab_to_adsorbates_job]
         else:
-            slab_to_adsorbates_job = self.slab_to_adsorbates_job.make(
+            slab_to_adsorbates_job = slab_to_adsorbates_job.make(
                 bulk_to_slabs_job.output["all_atoms"], adsorbate, **make_ads_kwargs
             )
             jobs.append(slab_to_adsorbates_job)
 
-        return Flow(jobs, output=slab_to_adsorbates_job.output, name=self.name)
+        return Flow(jobs, output=slab_to_adsorbates_job.output)
 
 
-@job
+@ct.electron
 def _get_slab_stability(
     bulk_summary: Dict[str, Any],
     slab_summaries: Dict[str, Any],
     n_stable_slabs: int = 1,
 ) -> Dict[str, Any]:
     """
-    A job that determine the most stable surface slabs (based on surface energy) for
+    A function that determine the most stable surface slabs (based on surface energy) for
     a given bulk summary and list of slab summaries.
 
     Parameters
