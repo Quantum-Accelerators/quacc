@@ -4,11 +4,11 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Any, Dict
 
+import covalent as ct
 from ase.atoms import Atoms
 from ase.calculators.emt import EMT
 from ase.io import read
 from ase.optimize import FIRE
-import covalent as ct
 
 from quacc.schemas.calc import summarize_opt_run, summarize_run
 
