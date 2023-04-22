@@ -36,6 +36,8 @@ if __name__ == "__main__":
         extras_require={
             "all": [
                 "custodian==2023.3.10",
+                "fireworks==2.0.2",
+                "jobflow==0.1.11",
                 "tblite[ase]==0.3.0",
                 "xtb==22.1",
             ],
