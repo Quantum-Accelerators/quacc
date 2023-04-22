@@ -7,10 +7,9 @@ from ase.build import bulk, molecule
 from quacc.recipes.vasp.core import double_relax_job, relax_job, static_job
 from quacc.recipes.vasp.qmof import qmof_relax_job
 from quacc.recipes.vasp.slabs import (
-    bulk_to_slabs_job,
-    slab_relax_job,
     slab_static_job,  # BulkToAdsorbatesFlow, SlabToAdsorbatesJob,
 )
+from quacc.recipes.vasp.slabs import bulk_to_slabs_job, slab_relax_job
 
 
 def teardown_module():
