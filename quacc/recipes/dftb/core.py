@@ -1,8 +1,8 @@
 """Core recipes for DFTB+"""
 from __future__ import annotations
 
-from shutil import which
 from copy import deepcopy
+from shutil import which
 from typing import Any
 
 from ase.atoms import Atoms

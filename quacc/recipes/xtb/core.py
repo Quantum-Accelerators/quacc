@@ -4,8 +4,9 @@ Core recipes for the xTB code
 from __future__ import annotations
 
 import warnings
-from typing import Any
 from copy import deepcopy
+from typing import Any
+
 from ase.atoms import Atoms
 from monty.dev import requires
 

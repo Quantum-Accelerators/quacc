@@ -2,8 +2,8 @@
 from __future__ import annotations
 
 import warnings
-from typing import Any
 from copy import deepcopy
+from typing import Any
 
 from ase.atoms import Atoms
 from ase.calculators.gulp import GULP
