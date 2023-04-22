@@ -1,7 +1,6 @@
 """Core recipes for Psi4"""
 from __future__ import annotations
 
-from copy import deepcopy
 from typing import Any
 
 from ase.atoms import Atoms
@@ -53,7 +52,6 @@ def static_job(
     """
 
     swaps = swaps or {}
-    input_atoms = deepcopy(atoms)
 
     defaults = {
         "mem": "16GB",
@@ -68,7 +66,7 @@ def static_job(
     flags = merge_dicts(defaults, swaps, remove_none=True)
 
     atoms.calc = Psi4(**flags)
-    atoms = run_calc(atoms)
-    summary = summarize_run(atoms, input_atoms=input_atoms)
+    new_atoms = run_calc(atoms)
+    summary = summarize_run(new_atoms, input_atoms=atoms)
 
     return summary
