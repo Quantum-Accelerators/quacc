@@ -8,4 +8,4 @@ With Miniconda installed, create a fresh environment by running `conda create -n
 
 ## Installing QuAcc
 
-In your new activated conda environment, you can install QuAcc and its related dependencies by using `pip install quacc[full]`. For the development version of QuAcc (recommended), you can instead use `pip install quacc[full] @ git+https://github.com/arosen93/quacc.git`.
+In your new activated conda environment, you can install QuAcc and its related dependencies by using `pip install quacc`. For the development version of QuAcc (recommended), you can instead use `pip install git+https://github.com/arosen93/quacc.git`.

@@ -10,7 +10,7 @@ with open(module_dir / "README.md") as f:
 if __name__ == "__main__":
     setup(
         name="quacc",
-        description="Enhance ASE for high-throughput DFT",
+        description="A platform to enable high-throughput, database-driven quantum chemistry and computational materials science",
         long_description=long_description,
         long_description_content_type="text/markdown",
         author="Andrew S. Rosen",
@@ -33,15 +33,14 @@ if __name__ == "__main__":
             "numpy",
         ],
         extras_require={
-            "full": [
+            "workflows": [
                 "covalent==0.209.1",
                 "covalent-slurm-plugin==0.8.0",
-                "custodian==2023.3.10",
                 "fireworks==2.0.2",
                 "jobflow==0.1.11",
             ],
-            "codes": ["tblite[ase]==0.3.0", "xtb==22.1"],
-            "tests": ["pytest==7.3.1"],
+            "vasp": ["custodian==2023.3.10"],
+            "xtb": ["tblite[ase]==0.3.0", "xtb==22.1"],
             "docs": [
                 "sphinx==6.1.3",
                 "furo==2023.3.27",
