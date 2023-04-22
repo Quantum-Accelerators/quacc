@@ -49,11 +49,11 @@ jobs:
           python-version: ${{ matrix.python-version }}
           activate-environment: quacc-env
 
-      - name: Set up pip caching
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-          cache: 'pip'
+      # - name: Set up pip caching
+      #   uses: actions/setup-python@v4
+      #   with:
+      #     python-version: ${{ matrix.python-version }}
+      #     cache: 'pip'
 
       - name: Export date
         id: get-date
