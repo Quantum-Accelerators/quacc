@@ -10,7 +10,7 @@ on:
 
 env:
   CACHE_NUMBER: 0
-          
+
 jobs:
 
   # pre_test:
@@ -29,13 +29,13 @@ jobs:
   test:
     # needs: pre_test
     # if: needs.pre_test.outputs.should_skip != 'true'
-    
+
     strategy:
       matrix:
         python-version: ['3.8', '3.9']
-        
+
     runs-on: ubuntu-latest
-            
+
     defaults:
       run:
         shell: bash -l {0}
@@ -59,14 +59,14 @@ jobs:
         id: get-date
         run: echo "name=today::$(/bin/date -u '+%Y%m%d')" >> $GITHUB_OUTPUT
         shell: bash
-          
+
         # Could not get caching to work...
 #       - name: Set up conda caching
 #         uses: actions/cache@v3
 #         with:
 #           path: /usr/share/miniconda3/envs/quacc-env
 #           key: conda-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-date.outputs.today }}-${{ hashFiles('setup.py') }}-${{ hashFiles('conda_codes.yaml') }}-${{ env.CACHE_NUMBER }}
-      
+
       - name: Install pip packages
         run: |
           pip install -r requirements.txt
@@ -81,11 +81,11 @@ jobs:
           # Update conda_codes.yaml manually if this is changed
           conda install -c psi4 psi4
           conda install -c conda-forge dftbplus==22.2
-      
+
       - name: Launch covalent server
         run: |
           covalent start
-        
+
       - name: Run tests with pytest
         run: pytest --cov=quacc --cov-report=xml
 
@@ -95,24 +95,24 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml
-          
+
   docs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Install pandoc
         run: sudo apt-get install pandoc
-        
+
       - uses: actions/setup-python@v3
         with:
           python-version: '3.9'
-          
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -e .[docs]
-          
+
       - name: Build
         run: sphinx-build docs/src docs_build

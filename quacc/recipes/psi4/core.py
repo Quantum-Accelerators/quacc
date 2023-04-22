@@ -10,7 +10,7 @@ from monty.dev import requires
 
 try:
     import psi4
-except:
+except ImportError:
     psi4 = None
 from quacc.schemas.calc import summarize_run
 from quacc.util.basics import merge_dicts

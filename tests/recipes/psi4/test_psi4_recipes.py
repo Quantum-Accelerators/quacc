@@ -9,7 +9,7 @@ from quacc.recipes.psi4.core import static_job
 
 try:
     import psi4
-except:
+except ImportError:
     psi4 = None
 FILE_DIR = Path(__file__).resolve().parent
 
