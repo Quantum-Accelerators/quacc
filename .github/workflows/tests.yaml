@@ -69,8 +69,8 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install -r requirements.txt
-          pip install .[all]
+          pip install .[full]
+          pip install .[codes]
           pip install .[tests]
           pip install chardet
           pip install pytest-cov

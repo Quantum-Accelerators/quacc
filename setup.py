@@ -25,7 +25,6 @@ if __name__ == "__main__":
         zip_safe=False,
         install_requires=[
             "ase @ git+https://gitlab.com/ase/ase.git",
-            "covalent==0.209.1",
             "monty==2023.4.10",
             "pymatgen==2023.3.23",
             "emmet-core==0.51.13",
@@ -34,13 +33,14 @@ if __name__ == "__main__":
             "numpy",
         ],
         extras_require={
-            "all": [
+            "full": [
+                "covalent==0.209.1",
+                "covalent-slurm-plugin==0.8.0",
                 "custodian==2023.3.10",
                 "fireworks==2.0.2",
                 "jobflow==0.1.11",
-                "tblite[ase]==0.3.0",
-                "xtb==22.1",
             ],
+            "codes": ["tblite[ase]==0.3.0", "xtb==22.1"],
             "tests": ["pytest==7.3.1"],
             "docs": [
                 "sphinx==6.1.3",

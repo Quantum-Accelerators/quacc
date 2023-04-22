@@ -25,10 +25,10 @@ QuAcc can be installed as follows:
 
 ```bash
 # For the current development version (recommended)
-pip install git+https://github.com/arosen93/quacc.git
+pip install "quacc[full] @ git+https://github.com/arosen93/quacc.git"
 
 # For the latest PyPI release
-pip install quacc
+pip install quacc[full]
 ```
 
 ## Documentation
