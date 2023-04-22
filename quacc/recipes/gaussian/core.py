@@ -2,9 +2,8 @@
 from __future__ import annotations
 
 import multiprocessing
-from typing import Any, Dict
+from typing import Any
 
-import covalent as ct
 from ase.atoms import Atoms
 from ase.calculators.gaussian import Gaussian
 
@@ -16,16 +15,16 @@ LOG_FILE = Gaussian().label + ".log"
 GEOM_FILE = LOG_FILE
 
 
-def StaticJob(
+def static_job(
     atoms: Atoms,
-    charge: int = None,
-    mult: int = None,
+    charge: int | None = None,
+    mult: int | None = None,
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
     pop: str = "hirshfeld",
     molden: bool = True,
-    swaps: Dict[str, Any] | None = None,
-) -> Dict[str, Any]:
+    swaps: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """
     Function to carry out a single-point calculation.
 
@@ -83,15 +82,15 @@ def StaticJob(
     return summary
 
 
-def RelaxJob(
+def relax_job(
     atoms: Atoms,
     charge: int = None,
     mult: int = None,
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
     freq: bool = False,
-    swaps: Dict[str, Any] | None = None,
-) -> Dict[str, Any]:
+    swaps: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """
     Function to carry out a geometry optimization.
 

@@ -1,7 +1,7 @@
 """Core recipes for VASP"""
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any
 
 from ase.atoms import Atoms
 
@@ -11,16 +11,16 @@ from quacc.util.basics import merge_dicts
 from quacc.util.calc import run_calc
 
 
-def StaticJob(
-    atoms: Atoms, preset: str = None, swaps: Dict[str, Any] | None = None
-) -> Dict[str, Any]:
+def static_job(
+    atoms: Atoms, preset: str | None = None, swaps: dict[str, Any] | None = None
+) -> dict[str, Any]:
     """
     Function to carry out a single-point calculation.
 
     Parameters
     ----------
-    name
-        Name of the job.
+    atoms
+        .Atoms object
     preset
         Preset to use.
     swaps
@@ -29,7 +29,7 @@ def StaticJob(
     Returns
     -------
     summary
-        Dictionary of the run summary.
+        dictionary of the run summary.
     """
 
     swaps = swaps or {}
@@ -52,12 +52,12 @@ def StaticJob(
     return summary
 
 
-def RelaxJob(
+def relax_job(
     atoms: Atoms,
-    preset: str = None,
+    preset: str | None = None,
     volume_relax: bool = True,
-    swaps: Dict[str, Any] | None = None,
-) -> Dict[str, Any]:
+    swaps: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """
     Function to relax a structure.
 
@@ -100,15 +100,15 @@ def RelaxJob(
     return summary
 
 
-def DoubleRelaxJob(
+def double_relax_job(
     atoms: Atoms,
-    preset: str = None,
+    preset: str | None = None,
     volume_relax: bool = True,
-    swaps1: Dict[str, Any] | None = None,
-    swaps2: Dict[str, Any] | None = None,
-) -> Dict[Dict[str, Any], Dict[str, Any]]:
+    swaps1: dict[str, Any] | None = None,
+    swaps2: dict[str, Any] | None = None,
+) -> dict[dict[str, Any], dict[str, Any]]:
     """
-    Class to double-relax a structure. This is particularly useful for
+    Function to double-relax a structure. This is particularly useful for
     a few reasons:
     1. To carry out a cheaper pre-relaxation before the high-quality run.
     2. To carry out a GGA calculation before a meta-GGA or hybrid calculation

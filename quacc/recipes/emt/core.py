@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Any, Dict
+from typing import Any
 
 from ase.atoms import Atoms
 from ase.calculators.emt import EMT
@@ -14,7 +14,7 @@ from quacc.schemas.calc import summarize_opt_run, summarize_run
 # NOTE: This set of minimal recipes is mainly for demonstration purposes
 
 
-def StaticJob(atoms: Atoms, asap_cutoff: bool = False) -> Dict[str, Any]:
+def static_job(atoms: Atoms, asap_cutoff: bool = False) -> dict[str, Any]:
     """
     Function to carry out a static calculation.
 
@@ -27,10 +27,11 @@ def StaticJob(atoms: Atoms, asap_cutoff: bool = False) -> Dict[str, Any]:
 
     Returns
     -------
-    Dict
+    summary
         Summary of the run.
     """
     input_atoms = deepcopy(atoms)
+
     atoms.calc = EMT(asap_cutoff=asap_cutoff)
     atoms.get_potential_energy()
     summary = summarize_run(atoms, input_atoms=input_atoms)
@@ -38,12 +39,12 @@ def StaticJob(atoms: Atoms, asap_cutoff: bool = False) -> Dict[str, Any]:
     return summary
 
 
-def RelaxJob(
+def relax_job(
     atoms: Atoms,
     asap_cutoff: bool = False,
     fmax: float = 0.03,
-    opt_kwargs: Dict[str, Any] | None = None,
-) -> Dict[str, Any]:
+    opt_kwargs: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """
     Function to carry out a geometry optimization.
 
@@ -60,7 +61,7 @@ def RelaxJob(
 
     Returns
     -------
-    Dict
+    summary
         Summary of the run.
     """
     if opt_kwargs is None:

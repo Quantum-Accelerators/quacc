@@ -1,11 +1,10 @@
 import os
 from shutil import rmtree
 
-import covalent as ct
 import pytest
 from ase.build import bulk
 
-from quacc.recipes.emt.core import RelaxJob, StaticJob
+from quacc.recipes.emt.core import relax_job, static_job
 
 
 def teardown_module():
@@ -25,18 +24,12 @@ def test_static_Job():
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += [0.1, 0.1, 0.1]
 
-    job = ct.electron(StaticJob)
-    workflow = ct.lattice(job)
-    dispatch_id = ct.dispatch(workflow)(atoms)
-    result = ct.get_result(dispatch_id)
-    assert result["results"]["energy"] == pytest.approx(0.07001766638245854)
-
-    output = StaticJob(atoms)
+    output = static_job(atoms)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] == False
     assert output["results"]["energy"] == pytest.approx(0.07001766638245854)
 
-    output = StaticJob(atoms, asap_cutoff=True)
+    output = static_job(atoms, asap_cutoff=True)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] == True
     assert output["results"]["energy"] == pytest.approx(0.11074520235398744)
@@ -46,16 +39,16 @@ def test_relax_Job():
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += [0.1, 0.1, 0.1]
 
-    output = RelaxJob(atoms)
+    output = relax_job(atoms)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] == False
     assert output["results"]["energy"] == pytest.approx(-0.04517048198212592)
 
-    output = RelaxJob(atoms, asap_cutoff=True)
+    output = relax_job(atoms, asap_cutoff=True)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] == True
     assert output["results"]["energy"] == pytest.approx(-0.004527567070971017)
 
-    output = RelaxJob(atoms, fmax=0.01)
+    output = relax_job(atoms, fmax=0.01)
     assert output["nsites"] == len(atoms)
     assert output["results"]["energy"] == pytest.approx(-0.0454470914411953)

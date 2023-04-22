@@ -1,7 +1,6 @@
 import os
 from shutil import rmtree
 
-import covalent as ct
 import numpy as np
 import pytest
 from ase.build import bulk, molecule
@@ -10,7 +9,7 @@ try:
     from xtb.ase.calculator import XTB
 except ImportError:
     XTB = None
-from quacc.recipes.xtb.core import RelaxJob, StaticJob, ThermoJob
+from quacc.recipes.xtb.core import relax_job, static_job, thermo_job
 
 
 def teardown_module():
@@ -37,25 +36,25 @@ def teardown_module():
 )
 def test_static_Job():
     atoms = molecule("H2O")
-    output = StaticJob(atoms)
+    output = static_job(atoms)
     assert output["spin_multiplicity"] == 1
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["method"] == "GFN2-xTB"
     assert output["results"]["energy"] == pytest.approx(-137.96777587302995)
     assert np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
 
-    output = StaticJob(atoms, method="GFN1-xTB")
+    output = static_job(atoms, method="GFN1-xTB")
     assert output["parameters"]["method"] == "GFN1-xTB"
     assert output["results"]["energy"] == pytest.approx(-156.96750578831137)
     assert np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
 
-    output = StaticJob(atoms, method="GFN-FF")
+    output = static_job(atoms, method="GFN-FF")
     assert output["parameters"]["method"] == "GFN-FF"
     assert output["results"]["energy"] == pytest.approx(-8.912667188932252)
     assert np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
 
     atoms = bulk("Cu")
-    output = StaticJob(atoms, method="GFN1-xTB")
+    output = static_job(atoms, method="GFN1-xTB")
     assert output["results"]["energy"] == pytest.approx(-119.77643232313169)
     assert np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
 
@@ -66,19 +65,19 @@ def test_static_Job():
 )
 def test_relax_Job():
     atoms = molecule("H2O")
-    output = RelaxJob(atoms)
+    output = relax_job(atoms)
     assert output["spin_multiplicity"] == 1
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["method"] == "GFN2-xTB"
     assert output["results"]["energy"] == pytest.approx(-137.9764670127011)
     assert not np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
 
-    output = RelaxJob(atoms, method="GFN1-xTB")
+    output = relax_job(atoms, method="GFN1-xTB")
     assert output["parameters"]["method"] == "GFN1-xTB"
     assert output["results"]["energy"] == pytest.approx(-156.9763496338962)
     assert not np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
 
-    output = RelaxJob(atoms, method="GFN-FF")
+    output = relax_job(atoms, method="GFN-FF")
     assert output["parameters"]["method"] == "GFN-FF"
     assert output["results"]["energy"] == pytest.approx(-8.915974748299963)
     assert not np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
@@ -87,7 +86,7 @@ def test_relax_Job():
     atoms.center(vacuum=5)
     atoms.pbc = True
     atoms[0].position += 0.01
-    output = RelaxJob(atoms, method="GFN1-xTB")
+    output = relax_job(atoms, method="GFN1-xTB")
     assert output["results"]["energy"] == pytest.approx(-156.97441169886613)
     assert not np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
 
@@ -98,7 +97,7 @@ def test_relax_Job():
 )
 def test_thermo_job():
     atoms = molecule("H2O")
-    output = ThermoJob(atoms)
+    output = thermo_job(atoms)
     assert output["atoms"] == atoms
     assert output["results"]["n_imag"] == 0
     assert len(output["results"]["frequencies"]) == 9
@@ -111,7 +110,7 @@ def test_thermo_job():
     assert output["results"]["gibbs_energy"] == pytest.approx(0.05365481508231251)
 
     atoms = molecule("O2")
-    output = ThermoJob(atoms, energy=-100.0, temperature=200, pressure=2.0)
+    output = thermo_job(atoms, energy=-100.0, temperature=200, pressure=2.0)
     assert output["atoms"] == atoms
     assert output["results"]["n_imag"] == 0
     assert len(output["results"]["true_frequencies"]) == 1
@@ -124,7 +123,7 @@ def test_thermo_job():
     assert output["results"]["gibbs_energy"] == pytest.approx(-100.23289969678565)
 
     atoms = molecule("H")
-    output = ThermoJob(atoms, energy=-1.0)
+    output = thermo_job(atoms, energy=-1.0)
     assert output["atoms"] == atoms
     assert output["results"]["n_imag"] == 0
     assert output["results"]["geometry"] == "monatomic"

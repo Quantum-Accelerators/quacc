@@ -2,12 +2,12 @@
 from __future__ import annotations
 
 import warnings
-from typing import Any, Dict, List
+from typing import Any
 
 from ase.atoms import Atoms
 
 from quacc.calculators.vasp import Vasp
-from quacc.recipes.vasp.core import RelaxJob, StaticJob
+from quacc.recipes.vasp.core import relax_job, static_job
 from quacc.schemas.vasp import summarize_run
 from quacc.util.basics import merge_dicts
 from quacc.util.calc import run_calc
@@ -18,9 +18,9 @@ from quacc.util.slabs import (
 )
 
 
-def SlabStaticJob(
-    atoms: Atoms, preset: str = None, swaps: Dict[str, Any] | None = None
-) -> Dict[str, Any]:
+def slab_static_job(
+    atoms: Atoms, preset: str | None = None, swaps: dict[str, Any] | None = None
+) -> dict[str, Any]:
     """
     Function to carry out a single-point calculation on a slab.
 
@@ -31,7 +31,7 @@ def SlabStaticJob(
     preset
         Preset to use.
     swaps
-        Dictionary of custom kwargs for the calculator.
+        dictionary of custom kwargs for the calculator.
 
     Returns
     -------
@@ -61,9 +61,9 @@ def SlabStaticJob(
     return summary
 
 
-def SlabRelaxJob(
-    atoms: Atoms, preset: str = None, swaps: Dict[str, Any] | None = None
-) -> Dict[str, Any]:
+def slab_relax_job(
+    atoms: Atoms, preset: str | None = None, swaps: dict[str, Any] | None = None
+) -> dict[str, Any]:
     """
     Function to relax a slab.
 
@@ -185,8 +185,8 @@ def SlabRelaxJob(
 #     @job
 #     def make(
 #         self,
-#         slabs: Atoms | List[Atoms],
-#         adsorbates: Atoms | List[Atoms],
+#         slabs: Atoms | list[Atoms],
+#         adsorbates: Atoms | list[Atoms],
 #         **make_ads_kwargs,
 #     ) -> Response:
 #         """
@@ -290,11 +290,11 @@ def SlabRelaxJob(
 #     def make(
 #         self,
 #         atoms: Atoms,
-#         adsorbate: Atoms | List[Atoms],
+#         adsorbate: Atoms | list[Atoms],
 #         n_stable_slabs: int = None,
 #         max_slabs: int = None,
-#         slabgen_kwargs: Dict[str, Any] = None,
-#         make_ads_kwargs: Dict[str, Any] = None,
+#         slabgen_kwargs: dict[str, Any] = None,
+#         make_ads_kwargs: dict[str, Any] = None,
 #     ) -> Flow:
 #         """
 #         Make the Flow.
@@ -364,10 +364,10 @@ def SlabRelaxJob(
 
 
 def _get_slab_stability(
-    bulk_summary: Dict[str, Any],
-    slab_summaries: Dict[str, Any],
+    bulk_summary: dict[str, Any],
+    slab_summaries: dict[str, Any],
     n_stable_slabs: int = 1,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     A function that determine the most stable surface slabs (based on surface energy) for
     a given bulk summary and list of slab summaries.
@@ -377,13 +377,13 @@ def _get_slab_stability(
     bulk_summary
         Output of a VASP job corresponding to the bulk structure.
     slab_summaries
-        List of outputs of VASP jobs corresponding to the slab structures.
+        list of outputs of VASP jobs corresponding to the slab structures.
     n_stable_slabs
         The n most stable slabs are returned.
 
     Returns
     -------
-    Dict
+    dict
         VASP output summaries for the stable and unstable slabs formatted as
         {
             {"stable_slabs": {"all_atoms": [.Atoms, .Atoms, ...], "all_outputs": [...],

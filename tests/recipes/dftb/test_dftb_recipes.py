@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 from ase.build import bulk, molecule
 
-from quacc.recipes.dftb.core import RelaxJob, StaticJob
+from quacc.recipes.dftb.core import relax_job, static_job
 
 DFTBPLUS_EXISTS = bool(which("dftb+"))
 
@@ -38,7 +38,7 @@ def teardown_module():
 def test_static_Job():
     atoms = molecule("H2O")
 
-    output = StaticJob(atoms)
+    output = static_job(atoms)
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
@@ -46,7 +46,7 @@ def test_static_Job():
 
     atoms = bulk("Cu")
 
-    output = StaticJob(atoms, kpts=(3, 3, 3))
+    output = static_job(atoms, kpts=(3, 3, 3))
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
@@ -67,7 +67,7 @@ def test_static_Job():
 def test_relax_job():
     atoms = molecule("H2O")
 
-    output = RelaxJob(atoms)
+    output = relax_job(atoms)
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
@@ -78,7 +78,7 @@ def test_relax_job():
 
     atoms = bulk("Cu")
 
-    output = RelaxJob(atoms, kpts=(3, 3, 3))
+    output = relax_job(atoms, kpts=(3, 3, 3))
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
@@ -95,7 +95,7 @@ def test_relax_job():
 
     atoms = bulk("Cu")
 
-    output = RelaxJob(atoms, method="GFN1-xTB", kpts=(3, 3, 3), lattice_opt=True)
+    output = relax_job(atoms, method="GFN1-xTB", kpts=(3, 3, 3), lattice_opt=True)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN1-xTB"

@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import multiprocessing
-from typing import Any, Dict
+from typing import Any
 
 from ase.atoms import Atoms
 from ase.calculators.orca import ORCA
@@ -15,15 +15,15 @@ LOG_FILE = ORCA().name + ".out"
 GEOM_FILE = ORCA().name + ".xyz"
 
 
-def StaticJob(
+def static_job(
     atoms: Atoms,
-    charge: int = None,
-    mult: int = None,
+    charge: int | None = None,
+    mult: int | None = None,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
-    input_swaps: Dict[str, Any] | None = None,
-    block_swaps: Dict[str, Any] | None = None,
-) -> Dict[str, Any]:
+    input_swaps: dict[str, Any] | None = None,
+    block_swaps: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """
     Function to carry out a single-point calculation.
 
@@ -42,11 +42,11 @@ def StaticJob(
     basis
         Basis set
     input_swaps
-        Dictionary of orcasimpleinput swaps for the calculator.
+        dictionary of orcasimpleinput swaps for the calculator.
         To enable new entries, set the value as True.
         To remove entries from the defaults, set the value as None/False.
     block_swaps
-        Dictionary of orcablock swaps for the calculator.
+        dictionary of orcablock swaps for the calculator.
         To enable new entries, set the value as True.
         To remove entries from the defaults, set the value as None/False.
 
@@ -94,16 +94,16 @@ def StaticJob(
     return summary
 
 
-def RelaxJob(
+def relax_job(
     atoms: Atoms,
-    charge: int = None,
-    mult: int = None,
+    charge: int | None = None,
+    mult: int | None = None,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
     freq: bool = False,
-    input_swaps: Dict[str, Any] | None = None,
-    block_swaps: Dict[str, Any] | None = None,
-):
+    input_swaps: dict[str, Any] | None = None,
+    block_swaps: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """
     Function to carry out a geometry optimization.
 
@@ -124,11 +124,11 @@ def RelaxJob(
     freq
         If a requency calculation should be carried out.
     input_swaps
-        Dictionary of orcasimpleinput swaps for the calculator.
+        dictionary of orcasimpleinput swaps for the calculator.
         To enable new entries, set the value as True.
         To remove entries from the defaults, set the value as None/False.
     block_swaps
-        Dictionary of orcablock swaps for the calculator.
+        dictionary of orcablock swaps for the calculator.
         To enable new entries, set the value as True.
         To remove entries from the defaults, set the value as None/False.
 

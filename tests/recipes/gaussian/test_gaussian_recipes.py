@@ -2,10 +2,9 @@ import os
 from pathlib import Path
 from shutil import copy, rmtree
 
-import covalent as ct
 from ase.build import molecule
 
-from quacc.recipes.gaussian.core import RelaxJob, StaticJob
+from quacc.recipes.gaussian.core import relax_job, static_job
 
 FILE_DIR = Path(__file__).resolve().parent
 GAUSSIAN_DIR = os.path.join(FILE_DIR, "gaussian_run")
@@ -31,7 +30,7 @@ def teardown_module():
 def test_static_Job():
     atoms = molecule("H2")
 
-    output = StaticJob(atoms)
+    output = static_job(atoms)
     assert output["natoms"] == len(atoms)
     assert "charge" not in output["parameters"]
     assert "mult" not in output["parameters"]
@@ -42,7 +41,7 @@ def test_static_Job():
     assert output["parameters"]["gfinput"] == ""
     assert output["parameters"]["ioplist"] == ["6/7=3"]
 
-    output = StaticJob(
+    output = static_job(
         atoms,
         charge=-2,
         mult=3,
@@ -67,7 +66,7 @@ def test_static_Job():
 def test_relax_Job():
     atoms = molecule("H2")
 
-    output = RelaxJob(atoms)
+    output = relax_job(atoms)
     assert output["natoms"] == len(atoms)
     assert "charge" not in output["parameters"]
     assert "mult" not in output["parameters"]
@@ -78,7 +77,7 @@ def test_relax_Job():
     assert "freq" not in output["parameters"]
     assert "sp" not in output["parameters"]
 
-    output = RelaxJob(
+    output = relax_job(
         atoms,
         charge=-2,
         mult=3,

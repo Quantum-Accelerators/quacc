@@ -1,9 +1,9 @@
 """Core recipes for DFTB+"""
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 from shutil import which
-from typing import Any, Dict, List
+from copy import deepcopy
+from typing import Any
 
 from ase.atoms import Atoms
 from ase.calculators.dftb import Dftb
@@ -22,14 +22,14 @@ GEOM_FILE = "geo_end.gen"
     DFTBPLUS_EXISTS,
     "DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
 )
-def StaticJob(
+def static_job(
     atoms: Atoms,
     method: str = "GFN2-xTB",
-    kpts: tuple | List[tuple] | Dict[str, Any] = None,
-    swaps: Dict[str, Any] | None = None,
-) -> Dict[str, Any]:
+    kpts: tuple | list[tuple] | dict[str, Any] | None = None,
+    swaps: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """
-    Class to carry out a single-point calculation.
+    Function to carry out a single-point calculation.
 
     Parameters
     ----------
@@ -45,11 +45,14 @@ def StaticJob(
 
     Returns
     -------
+    atoms
+        .Atoms object after the run.
     summary
         Dictionary of results from the calculation.
     """
 
     swaps = swaps or {}
+    input_atoms = deepcopy(atoms)
 
     defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
@@ -59,11 +62,11 @@ def StaticJob(
     flags = merge_dicts(defaults, swaps, remove_none=True, auto_lowercase=False)
 
     atoms.calc = Dftb(**flags)
-    new_atoms = run_calc(atoms, geom_file=GEOM_FILE)
+    atoms = run_calc(atoms, geom_file=GEOM_FILE)
     scc_check = _check_logfile(LOG_FILE, "SCC is NOT converged")
     if scc_check:
         raise ValueError("SCC is not converged")
-    summary = summarize_run(new_atoms, input_atoms=atoms)
+    summary = summarize_run(atoms, input_atoms=input_atoms)
 
     return summary
 
@@ -72,20 +75,20 @@ def StaticJob(
     DFTBPLUS_EXISTS,
     "DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
 )
-def RelaxJob(
+def relax_job(
     atoms: Atoms,
     method: str = "GFN2-xTB",
-    kpts: tuple | List[tuple] | Dict[str, Any] = None,
+    kpts: tuple | list[tuple] | dict[str, Any] | None = None,
     lattice_opt: bool = False,
-    swaps: Dict[str, Any] | None = None,
-) -> Dict[str, Any]:
+    swaps: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """
-    Class to carry out a structure relaxation.
+    Function to carry out a structure relaxation.
 
     Parameters
     ----------
-    name
-        Name of the job.
+    atoms
+        .Atoms object
     method
         Method to use. Accepts 'DFTB', 'GFN1-xTB', and 'GFN2-xTB'.
     kpts
@@ -104,6 +107,7 @@ def RelaxJob(
     """
 
     swaps = swaps or {}
+    input_atoms = deepcopy(atoms)
 
     defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
@@ -117,10 +121,10 @@ def RelaxJob(
     flags = merge_dicts(defaults, swaps, remove_none=True, auto_lowercase=False)
 
     atoms.calc = Dftb(**flags)
-    new_atoms = run_calc(atoms, geom_file=GEOM_FILE)
+    atoms = run_calc(atoms, geom_file=GEOM_FILE)
     geom_check = _check_logfile(LOG_FILE, "Geometry converged")
     if not geom_check:
         raise ValueError("Geometry did not converge")
-    summary = summarize_run(new_atoms, input_atoms=atoms)
+    summary = summarize_run(atoms, input_atoms=input_atoms)
 
     return summary

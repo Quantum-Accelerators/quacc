@@ -1,8 +1,8 @@
 """Core recipes for Psi4"""
 from __future__ import annotations
 
-from typing import Any, Dict
-
+from typing import Any
+from copy import deepcopy
 from ase.atoms import Atoms
 from ase.calculators.psi4 import Psi4
 from monty.dev import requires
@@ -17,14 +17,14 @@ from quacc.util.calc import run_calc
 
 
 @requires(psi4, "Psi4 be installed. Try conda install -c psi4 psi4")
-def StaticJob(
+def static_job(
     atoms: Atoms,
-    charge: int = None,
-    mult: int = None,
+    charge: int | None = None,
+    mult: int | None = None,
     method: str = "wb97x-v",
     basis: str = "def2-tzvp",
-    swaps: Dict[str, Any] | None = None,
-):
+    swaps: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """
     Function to carry out a single-point calculation.
 
@@ -43,7 +43,7 @@ def StaticJob(
     basis
         Basis set
     swaps
-        Dictionary of custom kwargs for the calculator.
+        dictionary of custom kwargs for the calculator.
 
     Returns
     -------
@@ -52,6 +52,8 @@ def StaticJob(
     """
 
     swaps = swaps or {}
+    input_atoms = deepcopy(atoms)
+
     defaults = {
         "mem": "16GB",
         "num_threads": "max",
@@ -65,7 +67,7 @@ def StaticJob(
     flags = merge_dicts(defaults, swaps, remove_none=True)
 
     atoms.calc = Psi4(**flags)
-    new_atoms = run_calc(atoms)
-    summary = summarize_run(new_atoms, input_atoms=atoms)
+    atoms = run_calc(atoms)
+    summary = summarize_run(atoms, input_atoms=input_atoms)
 
     return summary

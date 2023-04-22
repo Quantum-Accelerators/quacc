@@ -2,7 +2,8 @@
 from __future__ import annotations
 
 import warnings
-from typing import Any, Dict
+from typing import Any
+from copy import deepcopy
 
 from ase.atoms import Atoms
 from ase.calculators.gulp import GULP
@@ -12,13 +13,13 @@ from quacc.util.basics import merge_dicts
 from quacc.util.calc import run_calc
 
 
-def StaticJob(
+def static_job(
     atoms: Atoms,
     gfnff: bool = True,
-    library: str = None,
-    keyword_swaps: Dict[str, Any] | None = None,
-    option_swaps: Dict[str, Any] | None = None,
-) -> Dict[str, Any]:
+    library: str | None = None,
+    keyword_swaps: dict[str, Any] | None = None,
+    option_swaps: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """
     Function to carry out a single-point calculation.
     Note: 'Conditions' are not yet natively supported.
@@ -32,13 +33,19 @@ def StaticJob(
     library
         Filename of the potential library file, if required.
     keyword_swaps
-        Dictionary of custom keyword swap kwargs for the calculator.
+        dictionary of custom keyword swap kwargs for the calculator.
     option_swaps
-        Dictionary of custom option swap kwargs for the calculator.
+        dictionary of custom option swap kwargs for the calculator.
+
+    Returns
+    -------
+    summary
+        Dictionary of the calculation summary.
     """
 
     keyword_swaps = keyword_swaps or {}
     option_swaps = option_swaps or {}
+    input_atoms = deepcopy(atoms)
 
     default_keywords = {
         "gfnff": gfnff,
@@ -61,20 +68,20 @@ def StaticJob(
     gulp_options = list(options.keys())
 
     atoms.calc = GULP(keywords=gulp_keywords, options=gulp_options)
-    new_atoms = run_calc(atoms, geom_file="gulp.cif" if atoms.pbc.any() else "gulp.xyz")
-    summary = summarize_run(new_atoms, input_atoms=atoms)
+    atoms = run_calc(atoms, geom_file="gulp.cif" if atoms.pbc.any() else "gulp.xyz")
+    summary = summarize_run(atoms, input_atoms=input_atoms)
 
     return summary
 
 
-def RelaxJob(
+def relax_job(
     atoms: Atoms,
     gfnff: bool = True,
-    library: str = None,
+    library: str | None = None,
     volume_relax: bool = True,
-    keyword_swaps: Dict[str, Any] | None = None,
-    option_swaps: Dict[str, Any] | None = None,
-) -> Dict[str, Any]:
+    keyword_swaps: dict[str, Any] | None = None,
+    option_swaps: dict[str, Any] | None = None,
+) -> tuple[Atoms, dict[str, Any]]:
     """
     Function to carry out a single-point calculation.
     Note: 'Conditions' are not yet natively supported.
@@ -93,10 +100,16 @@ def RelaxJob(
         Dictionary of custom keyword swap kwargs for the calculator.
     option_swaps
         Dictionary of custom option swap kwargs for the calculator.
+
+    Returns
+    -------
+    summary
+        Dictionary of the calculation summary.
     """
 
     keyword_swaps = keyword_swaps or {}
     option_swaps = option_swaps or {}
+    input_atoms = deepcopy(atoms)
 
     if volume_relax and not atoms.pbc.any():
         warnings.warn("Volume relaxation requested but no PBCs found. Ignoring.")
@@ -126,11 +139,11 @@ def RelaxJob(
     gulp_options = list(options.keys())
 
     atoms.calc = GULP(keywords=gulp_keywords, options=gulp_options)
-    new_atoms = run_calc(atoms, geom_file="gulp.cif" if atoms.pbc.any() else "gulp.xyz")
+    atoms = run_calc(atoms, geom_file="gulp.cif" if atoms.pbc.any() else "gulp.xyz")
 
-    if not new_atoms.calc.get_opt_state():
+    if not atoms.calc.get_opt_state():
         raise ValueError("Optimization did not converge!")
 
-    summary = summarize_run(new_atoms, input_atoms=atoms)
+    summary = summarize_run(atoms, input_atoms=input_atoms)
 
     return summary

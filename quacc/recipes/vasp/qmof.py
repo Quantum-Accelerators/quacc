@@ -1,9 +1,8 @@
 """QMOF-compatible recipes"""
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any
 
-import covalent as ct
 from ase.atoms import Atoms
 
 from quacc.calculators.vasp import Vasp
@@ -16,14 +15,13 @@ from quacc.util.calc import run_ase_opt, run_calc
 # Reference: https://doi.org/10.1016/j.matt.2021.02.015
 
 
-@ct.electron
-def QMOFRelaxJob(
+def qmof_relax_job(
     atoms: Atoms,
-    preset: str = "QMOFSet",
+    preset: str | None = "QMOFSet",
     volume_relax: bool = True,
     prerelax: bool = True,
-    swaps: Dict[str, Any] | None = None,
-):
+    swaps: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """
     Function to relax a structure in a multi-step process for increased
     computational efficiency. This is all done in a single compute job.
@@ -37,8 +35,8 @@ def QMOFRelaxJob(
 
     Parameters
     ----------
-    name
-        Name of the job.
+    atoms
+        .Atoms object
     preset
         Preset to use. Applies for all jobs.
     volume_relax
@@ -94,10 +92,10 @@ def QMOFRelaxJob(
 
 def _prerelax(
     atoms: Atoms,
-    preset: str = "QMOFSet",
-    swaps: Dict[str, Any] | None = None,
+    preset: str | None = "QMOFSet",
+    swaps: dict[str, Any] | None = None,
     fmax: float = 5.0,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     A "pre-relaxation" with BFGSLineSearch to resolve very high forces.
 
@@ -114,10 +112,12 @@ def _prerelax(
 
     Returns
     -------
-    Dict
+    summary
         Summary of the run.
     """
+
     swaps = swaps or {}
+
     defaults = {
         "auto_kpts": {"grid_density": 100},
         "ediff": 1e-4,
@@ -140,9 +140,9 @@ def _prerelax(
 
 def _loose_relax_positions(
     atoms: Atoms,
-    preset: str = "QMOFSet",
-    swaps: Dict[str, Any] | None = None,
-) -> Dict[str, Any]:
+    preset: str | None = "QMOFSet",
+    swaps: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """
     Position relaxation with default ENCUT and coarse k-point grid.
 
@@ -153,14 +153,16 @@ def _loose_relax_positions(
     preset
         Preset to use.
     swaps
-        Dictionary of custom kwargs for the calculator.
+        dictionary of custom kwargs for the calculator.
 
     Returns
     -------
-    Dict
+    summary
         Summary of the run.
     """
+
     swaps = swaps or {}
+
     defaults = {
         "auto_kpts": {"grid_density": 100},
         "ediff": 1e-4,
@@ -185,11 +187,11 @@ def _loose_relax_positions(
 
 def _loose_relax_volume(
     atoms: Atoms,
-    preset: str = "QMOFSet",
-    swaps: Dict[str, Any] | None = None,
-) -> Dict[str, Any]:
+    preset: str | None = "QMOFSet",
+    swaps: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """
-    Optional: volume relaxation with coarse k-point grid.
+    Volume relaxation with coarse k-point grid.
 
     Parameters
     ----------
@@ -202,10 +204,12 @@ def _loose_relax_volume(
 
     Returns
     -------
-    Dict
+    summary
         Summary of the run.
     """
+
     swaps = swaps or {}
+
     defaults = {
         "auto_kpts": {"grid_density": 100},
         "ediffg": -0.03,
@@ -228,10 +232,10 @@ def _loose_relax_volume(
 
 def _double_relax(
     atoms: Atoms,
-    preset: str = "QMOFSet",
-    swaps: Dict[str, Any] | None = None,
+    preset: str | None = "QMOFSet",
+    swaps: dict[str, Any] | None = None,
     volume_relax: bool = True,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Double relaxation using production-quality settings.
 
@@ -248,10 +252,12 @@ def _double_relax(
 
     Returns
     -------
-    Dict
+    summary
         Summary of the run.
     """
+
     swaps = swaps or {}
+
     defaults = {
         "ediffg": -0.03,
         "ibrion": 2,
@@ -269,7 +275,7 @@ def _double_relax(
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
 
     # Update atoms for
-    summary1 = summarize_run(atoms, bader=False, additional_fields={"name": "relax1"})
+    summary1 = summarize_run(atoms, bader=False)
     atoms = summary1["atoms"]
 
     # Reset LREAL
@@ -292,9 +298,9 @@ def _double_relax(
 
 def _static(
     atoms: Atoms,
-    preset: str = "QMOFSet",
-    swaps: Dict[str, Any] | None = None,
-) -> Dict[str, Any]:
+    preset: str | None = "QMOFSet",
+    swaps: dict[str, Any] | None = None,
+) -> tuple[Atoms, dict[str, Any]]:
     """
     Static calculation using production-quality settings.
 
@@ -309,10 +315,12 @@ def _static(
 
     Returns
     -------
-    Dict
+    summary
         Summary of the run.
     """
+
     swaps = swaps or {}
+
     defaults = {
         "laechg": True,
         "lcharg": True,

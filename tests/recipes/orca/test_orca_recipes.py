@@ -5,7 +5,7 @@ from shutil import copy, rmtree
 
 from ase.build import molecule
 
-from quacc.recipes.orca.core import RelaxJob, StaticJob
+from quacc.recipes.orca.core import relax_job, static_job
 
 FILE_DIR = Path(__file__).resolve().parent
 ORCA_DIR = os.path.join(FILE_DIR, "orca_run")
@@ -32,7 +32,7 @@ def test_static_Job():
     atoms = molecule("H2")
     nprocs = multiprocessing.cpu_count()
 
-    output = StaticJob(atoms)
+    output = static_job(atoms)
     assert output["natoms"] == len(atoms)
     assert (
         output["parameters"]["orcasimpleinput"]
@@ -42,7 +42,7 @@ def test_static_Job():
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
 
-    output = StaticJob(
+    output = static_job(
         atoms,
         charge=-2,
         mult=3,
@@ -66,7 +66,7 @@ def test_relax_Job():
     atoms = molecule("H2")
     nprocs = multiprocessing.cpu_count()
 
-    output = RelaxJob(atoms)
+    output = relax_job(atoms)
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
@@ -76,7 +76,7 @@ def test_relax_Job():
     )
     assert output["parameters"]["orcablocks"] == f"%pal nprocs {nprocs} end"
 
-    output = RelaxJob(
+    output = relax_job(
         atoms,
         charge=-2,
         mult=3,

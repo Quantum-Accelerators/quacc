@@ -4,8 +4,8 @@ Core recipes for the xTB code
 from __future__ import annotations
 
 import warnings
-from typing import Any, Dict
-
+from typing import Any
+from copy import deepcopy
 from ase.atoms import Atoms
 from monty.dev import requires
 
@@ -18,9 +18,9 @@ from quacc.util.calc import ideal_gas_thermo, run_ase_opt, run_ase_vib, run_calc
 
 
 @requires(XTB, "xTB-python must be installed. Try pip install xtb")
-def StaticJob(
-    atoms: Atoms, method: str = "GFN2-xTB", xtb_kwargs: Dict[str, Any] | None = None
-) -> Dict[str, Any]:
+def static_job(
+    atoms: Atoms, method: str = "GFN2-xTB", xtb_kwargs: dict[str, Any] | None = None
+) -> dict[str, Any]:
     """
     Function to carry out a single-point calculation.
 
@@ -45,24 +45,25 @@ def StaticJob(
     )
 
     xtb_kwargs = xtb_kwargs or {}
+    input_atoms = deepcopy(atoms)
 
     atoms.calc = XTB(method=method, **xtb_kwargs)
-    new_atoms = run_calc(atoms)
-    summary = summarize_run(new_atoms, input_atoms=atoms)
+    atoms = run_calc(atoms)
+    summary = summarize_run(atoms, input_atoms=input_atoms)
 
     return summary
 
 
 @requires(XTB, "xTB-python must be installed. Try pip install xtb")
-def RelaxJob(
+def relax_job(
     atoms: Atoms,
     method: str = "GFN2-xTB",
     fmax: float = 0.01,
     max_steps: int = 1000,
     optimizer: str = "FIRE",
-    xtb_kwargs: Dict[str, Any] | None = None,
-    opt_kwargs: Dict[str, Any] | None = None,
-) -> Dict[str, Any]:
+    xtb_kwargs: dict[str, Any] | None = None,
+    opt_kwargs: dict[str, Any] | None = None,
+) -> tuple[Atoms, dict[str, Any]]:
     """
     Function to relax a structure.
 
@@ -106,14 +107,14 @@ def RelaxJob(
 
 
 @requires(XTB, "xTB-python must be installed. Try pip install xtb")
-def ThermoJob(
+def thermo_job(
     atoms: Atoms,
     method: str = "GFN2-xTB",
     energy: float = 0.0,
     temperature: float = 298.15,
     pressure: float = 1.0,
-    xtb_kwargs: Dict[str, Any] | None = None,
-):
+    xtb_kwargs: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """
     Function to run a frequency job and calculate thermochemistry.
 
@@ -128,7 +129,7 @@ def ThermoJob(
     pressure
         Pressure in bar.
     xtb_kwargs
-        Dictionary of custom kwargs for the xTB calculator.
+        dictionary of custom kwargs for the xTB calculator.
 
     Returns
     -------
