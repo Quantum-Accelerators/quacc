@@ -130,7 +130,7 @@ def thermo_job(
     pressure
         Pressure in bar.
     xtb_kwargs
-        dictionary of custom kwargs for the xTB calculator.
+        Dictionary of custom kwargs for the xTB calculator.
 
     Returns
     -------
