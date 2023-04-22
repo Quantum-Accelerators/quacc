@@ -69,7 +69,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install .[vasp,xtb,dev]
+          pip install .[vasp,xtb]
           pip install chardet
           pip install pytest-cov
         id: cache
