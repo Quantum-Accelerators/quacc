@@ -6,9 +6,10 @@ from ase.build import bulk, molecule
 
 from quacc.recipes.vasp.core import double_relax_job, relax_job, static_job
 from quacc.recipes.vasp.qmof import qmof_relax_job
-from quacc.recipes.vasp.slabs import (  # BulkToAdsorbatesFlow,; BulkToSlabsJob,; SlabToAdsorbatesJob,
+from quacc.recipes.vasp.slabs import (
+    bulk_to_slabs_job,
     slab_relax_job,
-    slab_static_job,
+    slab_static_job,  # BulkToAdsorbatesFlow, SlabToAdsorbatesJob,
 )
 
 
@@ -128,7 +129,7 @@ def test_slab_relax_job():
 #     atoms = bulk("Cu") * (2, 2, 2)
 
 #     ### --------- Test BulkToSlabsJob --------- ###
-#     flow = BulkToSlabsJob(atoms).make(atoms)
+#     flow = bulk_to_slabs_job(atoms).make(atoms)
 #     responses = run_locally(flow, ensure_success=True)
 
 #     assert len(responses) == 9
@@ -148,7 +149,7 @@ def test_slab_relax_job():
 #     assert output2["parameters"]["nsw"] == 0
 
 #     # Now try with kwargs
-#     flow = BulkToSlabsJob(
+#     flow = bulk_to_slabs_job(
 #         slab_relax_job=slab_relax_job(preset="SlabSet", swaps={"nelmin": 6}),
 #         slab_static_job=slab_static_job(preset="SlabSet", swaps={"nelmin": 6}),
 #     ).make(atoms)
@@ -170,6 +171,7 @@ def test_slab_relax_job():
 #     assert output2["parameters"]["nsw"] == 0
 #     assert output2["parameters"]["nelmin"] == 6
 #     assert output2["parameters"]["encut"] == 450
+
 
 #     ### --------- Test SlabToAdsorbatesJob --------- ###
 #     atoms = output2["atoms"]

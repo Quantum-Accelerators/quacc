@@ -104,158 +104,88 @@ def slab_relax_job(
     return summary
 
 
-# def BulkToSlabsJob(
-#     atoms: Atoms,
-#     slab_relax_job=None,
-#     slab_static_job=None,
-#     max_slabs: int = None,
-#     **slabgen_kwargs,
-# ):
-#     """
-#     Function to convert a bulk structure to slabs,
-#     along with the relaxations and statics for the slabs.
+def bulk_to_slabs_job(
+    atoms: Atoms,
+    max_slabs: int = None,
+    **slabgen_kwargs,
+) -> list[Atoms] | None:
+    """
+    Function to convert a bulk structure to slabs.
 
-#     Parameters
-#     ----------
-#     atoms
-#         .Atoms object
-#     slab_relax_job
-#         Maker to use for the relaxation of the slab.
-#     slab_static_job
-#         Default to use for the static calculation of the slab.
-#     max_slabs
-#         Maximum number of slabs to make. None implies no upper limit.
-#     slabgen_kwargs
-#         Additional keyword arguments to pass to make_max_slabs_from_bulk()
-#     """
+    Parameters
+    ----------
+    atoms
+        .Atoms object
+    max_slabs
+        Maximum number of slabs to make. None implies no upper limit.
+    slabgen_kwargs
+        Additional keyword arguments to pass to make_max_slabs_from_bulk()
 
-#     slab_relax_job = slab_relax_job or SlabRelaxJob
-#     slab_static_job = slab_static_job or SlabStaticJob
-#     slabgen_kwargs = slabgen_kwargs or {}
+    Returns
+    -------
+    slabs
+        List of .Atoms objects for the slabs.
+    """
 
-#     # Generate all the slab
-#     slabs = make_max_slabs_from_bulk(atoms, max_slabs=max_slabs, **slabgen_kwargs)
+    slab_relax_job = slab_relax_job or slab_relax_job
+    slab_static_job = slab_static_job or slab_static_job
+    slabgen_kwargs = slabgen_kwargs or {}
 
-#     # Generate the jobs for each slab
-#     jobs = []
-#     outputs = []
-#     all_atoms = []
-#     for slab in slabs:
-#         relax_job_output = slab_relax_job(slab)
-#         static_job_output = slab_static_job(relax_job_output["atoms"])
+    # Generate all the slab
+    slabs = make_max_slabs_from_bulk(atoms, max_slabs=max_slabs, **slabgen_kwargs)
 
-#         jobs += [relax_job, static_job]
-#         outputs.append(static_job.output)
-#         all_atoms.append(static_job.output["atoms"])
+    if len(slabs) == 0:
+        return None
 
-#     if len(slabs) == 0:
-#         return Response(
-#             output={"input_bulk": atoms, "generated_slabs": None},
-#             stop_children=True,
-#         )
-
-#     return Response(
-#         output={"input_bulk": atoms, "generated_slabs": slabs},
-#         replace=Flow(
-#             jobs,
-#             output={"all_atoms": all_atoms, "all_outputs": outputs},
-#         ),
-#     )
+    return slabs
 
 
-# @dataclass
-# class SlabToAdsorbatesJob:
-#     """
-#     Class to convert a slab (or slabs) to one with an adsorbate present,
-#     along with the relaxations and statics for the slab-adsorbate systems.
-#     Multiple slab-adsorbate systems will be generated, one for each unique
-#     binding site.
+def slab_to_adsorbates_job(
+    slabs: Atoms | list[Atoms], adsorbates: Atoms | list[Atoms], **make_ads_kwargs
+) -> dict[str, list[Atoms]]:
+    """
+    Function to convert a slab (or slabs) to one with an adsorbate present.
+    Multiple slab-adsorbate systems will be generated, one for each unique
+    binding site.
 
-#     Parameters
-#     ----------
-#     slab_ads_relax_job
-#         Maker to use for the relaxation of the slab-adsorbate system.
-#     slab_ads_static_job
-#         Maker to use for the static calculation of the slab-adsorbate system.
-#     """
+    Parameters
+    ----------
+    slabs
+        .Atoms object for the slab structure. Also takes a list of Atoms objects
+        for the creation of a series of slabs with adsorbates.
+    adsorbates
+        .Atoms object for the adsorbate. Also takes a list of Atoms objects for
+        the consideration of multiple different adsorbates.
+    **make_ads_kwargs
+        Additional keyword arguments to pass to make_adsorbate_structures()
 
-#     slab_ads_relax_job: Maker = field(default_factory=SlabRelaxJob)
-#     slab_ads_static_job: Maker = field(default_factory=SlabStaticJob)
+    Returns
+    -------
+    all_ads_slabs
+        Dictionary of lists of .Atoms objects for the slab-adsorbate systems.
+    """
 
-#     @job
-#     def make(
-#         self,
-#         slabs: Atoms | list[Atoms],
-#         adsorbates: Atoms | list[Atoms],
-#         **make_ads_kwargs,
-#     ) -> Response:
-#         """
-#         Make the run.
+    make_ads_kwargs = make_ads_kwargs or {}
 
-#         Parameters
-#         ----------
-#         slabs
-#             .Atoms object for the slab structure. Also takes a list of Atoms objects
-#             for the creation of a series of slabs with adsorbates.
-#         adsorbates
-#             .Atoms object for the adsorbate. Also takes a list of Atoms objects for
-#             the consideration of multiple different adsorbates.
-#         **make_ads_kwargs
-#             Additional keyword arguments to pass to make_adsorbate_structures()
+    if isinstance(slabs, Atoms):
+        slabs_list = [slabs]
+    else:
+        slabs_list = slabs
+    if isinstance(adsorbates, Atoms):
+        adsorbates_list = [adsorbates]
+    else:
+        adsorbates_list = adsorbates
 
-#         Returns
-#         -------
-#         Response
-#             A Flow of relaxation and static jobs for the generated slabs with adsorbates.
-#         """
-#         make_ads_kwargs = make_ads_kwargs or {}
+    # Make slab-adsorbate systems
+    all_ads_slabs = {}
+    for slab in slabs_list:
+        for adsorbate in adsorbates_list:
+            ads_slabs = make_adsorbate_structures(slab, adsorbate, **make_ads_kwargs)
+            all_ads_slabs[adsorbate.get_chemical_formula()] = ads_slabs
 
-#         if isinstance(slabs, Atoms):
-#             slabs_list = [slabs]
-#         else:
-#             slabs_list = slabs
-#         if isinstance(adsorbates, Atoms):
-#             adsorbates_list = [adsorbates]
-#         else:
-#             adsorbates_list = adsorbates
-
-#         all_ads_slabs = {}
-#         jobs = []
-#         outputs = []
-#         all_atoms = []
-#         for slab in slabs_list:
-#             for adsorbate in adsorbates_list:
-#                 # Make slab-adsorbate systems
-#                 ads_slabs = make_adsorbate_structures(
-#                     slab, adsorbate, **make_ads_kwargs
-#                 )
-#                 all_ads_slabs[adsorbate.get_chemical_formula()] = ads_slabs
-
-#                 # Make a relaxation+static job for each slab-adsorbate ysstem
-#                 for ads_slab in ads_slabs:
-#                     relax_job = slab_ads_relax_job.make(ads_slab)
-#                     static_job = slab_ads_static_job.make(relax_job.output["atoms"])
-
-#                     jobs += [relax_job, static_job]
-#                     outputs.append(static_job.output)
-#                     all_atoms.append(static_job.output["atoms"])
-
-#         if len(jobs) == 0:
-#             return Response(
-#                 output={"input_slabs": slabs, "generated_slab_ads": None},
-#                 stop_children=True,
-#             )
-
-#         return Response(
-#             output={"input_slabs": slabs, "generated_slab_ads": all_ads_slabs},
-#             replace=Flow(
-#                 jobs,
-#                 output={"all_atoms": all_atoms, "all_outputs": outputs},
-#             ),
-#         )
+    return all_ads_slabs
 
 
-# @dataclass
 # class BulkToAdsorbatesFlow(Maker):
 #     """
 #     Flow consisting of:
@@ -272,13 +202,13 @@ def slab_relax_job(
 #     name
 #         Name of the job.
 #     bulk_relax_job
-#         Maker to use for the relaxation of the bulk structure.
+#         Default to use for the relaxation of the bulk structure.
 #     bulk_static_job
 #         Default to use for the static calculation of the bulk structure.
 #     bulk_to_slabs_job
-#         Maker to use for the BulkToSlabsJob.
+#         Default to use for the BulkToSlabsJob.
 #     slab_to_adsorbate_job
-#         Maker to use for the SlabToAdsorbatesJob.
+#         Default to use for the SlabToAdsorbatesJob.
 #     """
 
 #     name: str = "VASP-BulkToAdsorbates"
