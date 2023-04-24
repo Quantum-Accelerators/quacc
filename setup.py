@@ -37,7 +37,6 @@ if __name__ == "__main__":
                 "covalent==0.209.1",
                 "covalent-slurm-plugin==0.8.0",
                 "covalent-ssh-plugin==0.17.0",
-                "covalent-aws-plugins[all]==0.13.0",
             ],
             "jobflow": ["fireworks==2.0.2", "jobflow==0.1.11"],
             "vasp": ["custodian==2023.3.10"],
