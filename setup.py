@@ -34,9 +34,12 @@ if __name__ == "__main__":
         ],
         extras_require={
             "database": ["maggma==0.50.3"],
-            "covalent": ["covalent==0.209.1", "covalent-slurm-plugin==0.8.0"],
-            "fireworks": ["fireworks==2.0.2", "jobflow==0.1.11"],
+            "covalent": [
+                "covalent==0.209.1",
+                "covalent-slurm-plugin==0.8.0",
                 "covalent-ssh-plugin==0.17.0",
+            ],
+            "fireworks": ["fireworks==2.0.2", "jobflow==0.1.11"],
             "vasp": ["custodian==2023.3.10"],
             "xtb": ["tblite[ase]==0.3.0", "xtb==22.1"],
             "docs": [
