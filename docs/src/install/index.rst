@@ -13,8 +13,10 @@ Table of Contents
 
    Installation <install.md>
    Quantum Chemistry Package Setup <codes.md>
-   Database Configuration <config_db.md>
-   QuAcc Settings <settings.md>
+   Optional: QuAcc Settings <settings.md>
+   Optional: Database Configuration <config_db.md>
+   Optional: Covalent Configuration <covalent.md>
+   Optional: Fireworks Configuration <config_db.md>
 
 .. toctree::
    :hidden:

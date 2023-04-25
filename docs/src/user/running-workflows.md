@@ -1,4 +1,4 @@
-# Running Jobs and Flows
+# Running Workflow Recipes
 
 In QuAcc, each code comes with pre-packaged jobs and workflows, which we call recipes for short. This tutorial walks you through how to use these provided recipes to run calculations.
 
