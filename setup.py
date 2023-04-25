@@ -33,11 +33,11 @@ if __name__ == "__main__":
             "numpy",
         ],
         extras_require={
-            "database": ["maggma==0.50.3"],
             "covalent": [
                 "covalent==0.209.1",
                 "covalent-slurm-plugin==0.8.0",
                 "covalent-ssh-plugin==0.17.0",
+                "maggma==0.50.3",
             ],
             "fireworks": ["fireworks==2.0.2", "jobflow==0.1.11"],
             "vasp": ["custodian==2023.3.10"],
