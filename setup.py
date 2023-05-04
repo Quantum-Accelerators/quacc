@@ -44,7 +44,7 @@ if __name__ == "__main__":
                 "sphinx==6.2.1",
                 "furo==2023.3.27",
                 "m2r2==0.3.3.post2",
-                "ipython==8.13.1",
+                "ipython==8.13.2",
                 "nbsphinx==0.9.1",
                 "nbsphinx-link==1.3.0",
                 "autodoc_pydantic==1.8.0",
