@@ -25,10 +25,10 @@ if __name__ == "__main__":
         zip_safe=False,
         install_requires=[
             "ase @ git+https://gitlab.com/ase/ase.git",
-            "atomate2 @ git+https://github.com/arosen93/atomate2.git@molecule",
+            "atomate2 @ git+https://github.com/materialsproject/atomate2.git",
             "pymatgen==2023.3.23",
             "jobflow==0.1.11",
-            "emmet-core==0.53.0",
+            "emmet-core==0.54.1",
             "cclib==1.7.2",
             "monty==2023.4.10",
             "numpy",
