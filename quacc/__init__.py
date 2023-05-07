@@ -3,6 +3,7 @@ from ase.atoms import Atoms
 from ase.io.jsonio import decode, encode
 
 from quacc._version import __version__
+
 from quacc.settings import QuaccSettings
 
 
