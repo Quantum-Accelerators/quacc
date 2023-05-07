@@ -2,8 +2,9 @@
 from ase.atoms import Atoms
 from ase.io.jsonio import decode, encode
 
-from quacc.settings import QuaccSettings
 from quacc._version import __version__
+from quacc.settings import QuaccSettings
+
 
 def atoms_as_dict(s):
     # Uses Monty's MSONable spec
