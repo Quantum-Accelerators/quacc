@@ -26,7 +26,7 @@ if __name__ == "__main__":
         install_requires=[
             "ase @ git+https://gitlab.com/ase/ase.git",
             "atomate2 @ git+https://github.com/materialsproject/atomate2.git",
-            "pymatgen==2023.3.23",
+            "pymatgen==2023.5.8",
             "jobflow==0.1.11",
             "emmet-core==0.54.2",
             "cclib==1.7.2",
