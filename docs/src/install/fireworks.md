@@ -113,3 +113,8 @@ In the above example, you would need to change the path in the `rocket_launch` f
 
 Finally, you will need to define a `FW_CONFIG_FILE` environment variable pointing to the `FW_config.yaml` file you made. For instance, in your `~/.bashrc` file, add the following line:
 `export FW_CONFIG_FILE="/path/to/config/fw_config/FW_config.yaml"`.
+
+
+### Initialization
+
+To check that everything is working right with FireWorks, run lpad reset if you haven’t run it before to ensure there is a connection to the database.
