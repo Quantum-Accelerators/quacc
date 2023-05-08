@@ -40,8 +40,8 @@ if __name__ == "__main__":
                 "covalent-ssh-plugin==0.17.0",
                 "maggma==0.50.3",
             ],
-            "fireworks": ["fireworks==2.0.2", "jobflow==0.1.11"],
-            "vasp": ["custodian==2023.3.10"],
+            "fireworks": ["fireworks==2.0.3", "jobflow==0.1.11"],
+            "vasp": ["custodian==2023.5.7"],
             "xtb": ["tblite[ase]==0.3.0", "xtb==22.1"],
             "docs": [
                 "sphinx==6.2.1",
