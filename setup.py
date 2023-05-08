@@ -30,7 +30,7 @@ if __name__ == "__main__":
             "jobflow==0.1.11",
             "emmet-core==0.54.2",
             "cclib==1.7.2",
-            "monty==2023.4.10",
+            "monty==2023.5.8",
             "numpy",
         ],
         extras_require={
