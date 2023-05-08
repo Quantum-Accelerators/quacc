@@ -6,13 +6,13 @@ from quacc._version import __version__
 from quacc.settings import QuaccSettings
 
 
-def atoms_as_dict(self):
+def atoms_as_dict(s):
     # Uses Monty's MSONable spec
     # Normally, we would want to this to be a wrapper around atoms.todict() with @module and
     # @class key-value pairs inserted. However, atoms.todict()/atoms.fromdict() does not currently
     # work properly with constraints.
 
-    d = {"@module": "ase.atoms", "@class": "Atoms", "atoms_json": encode(self)}
+    d = {"@module": "ase.atoms", "@class": "Atoms", "atoms_json": encode(s)}
 
     return d
 
