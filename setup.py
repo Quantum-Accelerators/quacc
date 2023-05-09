@@ -35,7 +35,7 @@ if __name__ == "__main__":
         ],
         extras_require={
             "covalent": [
-                "covalent==0.209.1",
+                "covalent==0.220.0",
                 "covalent-slurm-plugin==0.8.0",
                 "covalent-ssh-plugin==0.17.0",
                 "maggma==0.50.3",
