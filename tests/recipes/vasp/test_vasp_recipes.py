@@ -213,84 +213,21 @@ def test_slab_dynamic_jobs():
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
     assert [output["parameters"]["encut"] == 450 for output in outputs]
 
+    adsorbate2 = molecule("CH3")
+    adsorbate2.set_initial_magnetic_moments([1, 0, 0, 0])
+    outputs = SlabToAdsFlow().run(atoms, adsorbate2)
+    assert outputs[0]["nsites"] == 99
+    assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
-#     # Now try with kwargs
-#     flow = SlabToAdsorbatesJob(
-#         slab_ads_relax_job=slab_relax_job(preset="SlabSet", swaps={"nelmin": 6}),
-#         slab_ads_static_job=slab_static_job(preset="SlabSet", swaps={"nelmin": 6}),
-#     ).make(atoms, adsorbate)
-#     responses = run_locally(flow, ensure_success=True)
+    outputs = SlabToAdsFlow(
+        relax_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
+        static_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
+    ).run(atoms, adsorbate)
 
-#     assert len(responses) == 9
-#     uuids = list(responses.keys())
-
-#     output0 = responses[uuids[0]][1].output
-#     assert "generated_slab_ads" in output0
-#     assert "H2" in output0["generated_slab_ads"]
-#     assert len(output0["generated_slab_ads"]["H2"][0]) == 98
-
-#     output1 = responses[uuids[1]][1].output
-#     assert output1["parameters"]["isif"] == 2
-#     assert output1["parameters"]["nelmin"] == 6
-#     assert output1["parameters"]["encut"] == 450
-
-#     output2 = responses[uuids[-1]][1].output
-#     assert output2["parameters"]["nsw"] == 0
-#     assert output2["parameters"]["nelmin"] == 6
-#     assert output2["parameters"]["encut"] == 450
-
-#     # Now try with different adsorbate
-#     adsorbate2 = molecule("CH3")
-#     adsorbate2.set_initial_magnetic_moments([1, 0, 0, 0])
-#     flow = SlabToAdsorbatesJob().make(atoms, adsorbate2)
-#     responses = run_locally(flow, ensure_success=True)
-#     assert len(responses) == 9
-
-#     adsorbate2 = molecule("CH3")
-#     flow = SlabToAdsorbatesJob().make(atoms, adsorbate2)
-#     responses = run_locally(flow, ensure_success=True)
-#     assert len(responses) == 9
-
-
-# def test_slab_flows():
-#     # TODO: This could use some more detailed tests
-
-#     atoms = bulk("Cu")
-#     adsorbate = molecule("H2O")
-#     flow = BulkToAdsorbatesFlow().make(atoms, adsorbate, n_stable_slabs=1)
-#     responses = run_locally(flow, ensure_success=True)
-#     uuids = list(responses.keys())
-#     assert len(responses) == 21
-
-#     output0 = responses[uuids[0]][1].output
-#     assert output0["parameters"]["ediffg"] == -0.02
-
-#     output1 = responses[uuids[1]][1].output
-#     assert output1["parameters"]["nsw"] == 0
-
-#     output_final = responses[uuids[-1]][1].output
-#     assert output_final["parameters"]["nsw"] == 0
-
-#     flow = BulkToAdsorbatesFlow().make(
-#         atoms, [adsorbate, molecule("H2")], n_stable_slabs=1
-#     )
-#     responses = run_locally(flow, ensure_success=True)
-#     assert len(responses) == 29
-
-#     flow = BulkToAdsorbatesFlow().make(atoms, adsorbate)
-#     responses = run_locally(flow, ensure_success=True)
-#     assert len(responses) == 48
-
-#     flow = BulkToAdsorbatesFlow(bulk_relax_job=None, bulk_static_job=None).make(
-#         atoms, adsorbate, n_stable_slabs=None
-#     )
-#     responses = run_locally(flow, ensure_success=True)
-#     assert len(responses) == 46
-
-#     with pytest.raises(ValueError):
-#         flow = BulkToAdsorbatesFlow(bulk_relax_job=None, bulk_static_job=None).make(
-#             atoms, adsorbate, n_stable_slabs=1
-#         )
+    assert outputs[0]["nsites"] == 98
+    assert [output["parameters"]["nsw"] == 0 for output in outputs]
+    assert [output["parameters"]["nelmin"] == 6 for output in outputs]
+    assert [output["parameters"]["encut"] == 450 for output in outputs]
 
 
 def test_qmof():
