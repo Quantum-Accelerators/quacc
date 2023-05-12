@@ -2,9 +2,12 @@
 from __future__ import annotations
 
 import warnings
-from typing import Any
+from dataclasses import dataclass
+from typing import Any, List
 
+import covalent as ct
 from ase.atoms import Atoms
+from covalent._workflow.electron import Electron
 
 from quacc.calculators.vasp import Vasp
 from quacc.recipes.vasp.core import relax_job, static_job
@@ -15,6 +18,7 @@ from quacc.util.slabs import (
     get_surface_energy,
     make_adsorbate_structures,
     make_max_slabs_from_bulk,
+    slab_to_adsorbates,
 )
 
 
@@ -104,193 +108,123 @@ def slab_relax_job(
     return summary
 
 
-def bulk_to_slabs_job(
-    atoms: Atoms,
-    max_slabs: int = None,
-    **slabgen_kwargs,
-) -> list[Atoms] | None:
+@dataclass
+class BulkToSlabsFlow:
     """
-    Function to convert a bulk structure to slabs.
+    Workflow consisting of:
+    1. Slab generation
+    2. Slab relaxations (optional)
+    3. Slab statics (optional)
 
     Parameters
     ----------
-    atoms
-        .Atoms object
-    max_slabs
-        Maximum number of slabs to make. None implies no upper limit.
-    slabgen_kwargs
-        Additional keyword arguments to pass to make_max_slabs_from_bulk()
-
-    Returns
-    -------
-    slabs
-        List of .Atoms objects for the slabs.
+    relax_electron
+        Default to use for the relaxation of the slab structures.
+    static_electron
+        Default to use for the static calculation of the slab structures.
     """
 
-    slab_relax_job = slab_relax_job or slab_relax_job
-    slab_static_job = slab_static_job or slab_static_job
-    slabgen_kwargs = slabgen_kwargs or {}
+    relax_electron: Electron | None = ct.electron(slab_relax_job)
+    static_electron: Electron | None = ct.electron(slab_static_job)
 
-    # Generate all the slab
-    slabs = make_max_slabs_from_bulk(atoms, max_slabs=max_slabs, **slabgen_kwargs)
+    def run(
+        self,
+        atoms: Atoms,
+        max_slabs: int = None,
+        slabgen_kwargs: dict[str, Any] = None,
+    ):
+        """
+        Make the workflow.
 
-    if len(slabs) == 0:
-        return None
+        Parameters
+        ----------
+        atoms
+            .Atoms object for the structure.
+        slabgen_kwargs
+            Additional keyword arguments to pass to make_max_slabs_from_bulk()
+        """
 
-    return slabs
+        slabgen_kwargs = slabgen_kwargs or {}
+
+        @ct.electron
+        @ct.lattice
+        def _relax_distributed(slabs):
+            return [self.relax_electron(slab) for slab in slabs]
+
+        @ct.electron
+        @ct.lattice
+        def _relax_and_static_distributed(slabs):
+            return [
+                self.static_electron(self.relax_electron(slab)["atoms"])
+                for slab in slabs
+            ]
+
+        slabs = make_max_slabs_from_bulk(atoms, max_slabs=max_slabs, **slabgen_kwargs)
+
+        if self.relax_electron and self.static_electron:
+            return _relax_and_static_distributed(slabs)
+        elif self.relax_electron:
+            return _relax_distributed(slabs)
+        else:
+            return slabs
 
 
-def slab_to_adsorbates_job(
-    slabs: Atoms | list[Atoms], adsorbates: Atoms | list[Atoms], **make_ads_kwargs
-) -> dict[str, list[Atoms]]:
+@dataclass
+class SlabToAdsFlow:
     """
-    Function to convert a slab (or slabs) to one with an adsorbate present.
-    Multiple slab-adsorbate systems will be generated, one for each unique
-    binding site.
+    Workflow consisting of:
+    1. Slab-adsorbate generation
+    2. Slab-adsorbate relaxations (optional)
+    3. Slab-adsorbate statics (optional)
 
     Parameters
     ----------
-    slabs
-        .Atoms object for the slab structure. Also takes a list of Atoms objects
-        for the creation of a series of slabs with adsorbates.
-    adsorbates
-        .Atoms object for the adsorbate. Also takes a list of Atoms objects for
-        the consideration of multiple different adsorbates.
-    **make_ads_kwargs
-        Additional keyword arguments to pass to make_adsorbate_structures()
-
-    Returns
-    -------
-    all_ads_slabs
-        Dictionary of lists of .Atoms objects for the slab-adsorbate systems.
+    relax_electron
+        Default to use for the relaxation of the slab structures.
+    static_electron
+        Default to use for the static calculation of the slab structures.
     """
 
-    make_ads_kwargs = make_ads_kwargs or {}
+    relax_electron: Electron | None = ct.electron(slab_relax_job)
+    static_electron: Electron | None = ct.electron(slab_static_job)
 
-    if isinstance(slabs, Atoms):
-        slabs_list = [slabs]
-    else:
-        slabs_list = slabs
-    if isinstance(adsorbates, Atoms):
-        adsorbates_list = [adsorbates]
-    else:
-        adsorbates_list = adsorbates
+    def run(self, slab: Atoms, adsorbate: Atoms, **make_ads_kwargs):
+        """
+        Make the run.
 
-    # Make slab-adsorbate systems
-    all_ads_slabs = {}
-    for slab in slabs_list:
-        for adsorbate in adsorbates_list:
-            ads_slabs = make_adsorbate_structures(slab, adsorbate, **make_ads_kwargs)
-            all_ads_slabs[adsorbate.get_chemical_formula()] = ads_slabs
+        Parameters
+        ----------
+        slab
+            .Atoms object for the slab structure.
+        adsorbate
+            .Atoms object for the adsorbate.
+        **make_ads_kwargs
+            Additional keyword arguments to pass to make_adsorbate_structures()
+        """
 
-    return all_ads_slabs
+        make_ads_kwargs = make_ads_kwargs or {}
 
+        @ct.electron
+        @ct.lattice
+        def _relax_distributed(slabs):
+            return [self.relax_electron(slab) for slab in slabs]
 
-# class BulkToAdsorbatesFlow(Maker):
-#     """
-#     Flow consisting of:
-#     1. Bulk relaxation (optional)
-#     2. Bulk static (optional)
-#     3. Slab generation
-#     4. Selection of the most stable slab (optional)
-#     5. Addition of adsorbates to the slabs or most stable slab
-#     6. Slab relaxation(s) with adsorbates at multiple binding sites
-#     7. Slab static(s) with adsorbates at multiple binding sites
+        @ct.electron
+        @ct.lattice
+        def _relax_and_static_distributed(slabs):
+            return [
+                self.static_electron(self.relax_electron(slab)["atoms"])
+                for slab in slabs
+            ]
 
-#     Parameters
-#     ----------
-#     name
-#         Name of the job.
-#     bulk_relax_job
-#         Default to use for the relaxation of the bulk structure.
-#     bulk_static_job
-#         Default to use for the static calculation of the bulk structure.
-#     bulk_to_slabs_job
-#         Default to use for the BulkToSlabsJob.
-#     slab_to_adsorbate_job
-#         Default to use for the SlabToAdsorbatesJob.
-#     """
+        ads_slabs = make_adsorbate_structures(slab, adsorbate, **make_ads_kwargs)
 
-#     name: str = "VASP-BulkToAdsorbates"
-#     bulk_relax_job: Maker | None = field(default_factory=RelaxJob)
-#     bulk_static_job: Maker | None = field(default_factory=StaticJob)
-#     bulk_to_slabs_job: Maker = field(default_factory=BulkToSlabsJob)
-#     slab_to_adsorbates_job: Maker = field(default_factory=SlabToAdsorbatesJob)
-
-#     def make(
-#         self,
-#         atoms: Atoms,
-#         adsorbate: Atoms | list[Atoms],
-#         n_stable_slabs: int = None,
-#         max_slabs: int = None,
-#         slabgen_kwargs: dict[str, Any] = None,
-#         make_ads_kwargs: dict[str, Any] = None,
-#     ) -> Flow:
-#         """
-#         Make the Flow.
-
-#         Parameters
-#         ----------
-#         atoms
-#             .Atoms object for the structure.
-#         adsorbate
-#             .Atoms object for the adsorbate. Can also take a list of adsorbates.
-#         n_stable_slabs
-#             If set to an integer, the n most stable slabs will be considered
-#             for adsorption. If None, then all will be considered.
-#         max_slabs
-#             Maximum number of slabs to make. None implies no upper limit.
-#         slabgen_kwargs
-#             Additional keyword arguments to pass to make_max_slabs_from_bulk()
-#         make_ads_kwargs
-#             Additional keyword arguments to pass to make_adsorbate_structures()
-
-#         Returns
-#         -------
-#         Flow
-#             The Flow for this process.
-#         """
-#         jobs = []
-#         slabgen_kwargs = slabgen_kwargs or {}
-#         make_ads_kwargs = make_ads_kwargs or {}
-
-#         if n_stable_slabs and not bulk_static_job:
-#             raise ValueError("Cannot use n_stable_slabs without a bulk_static_job")
-
-#         if bulk_relax_job:
-#             bulk_relax_job = bulk_relax_job.make(atoms)
-#             atoms = bulk_relax_job.output["atoms"]
-#             jobs.append(bulk_relax_job)
-
-#         if bulk_static_job:
-#             bulk_static_job = bulk_static_job.make(atoms)
-#             atoms = bulk_static_job.output["atoms"]
-#             jobs.append(bulk_static_job)
-
-#         bulk_to_slabs_job = bulk_to_slabs_job.make(
-#             atoms, max_slabs=max_slabs, **slabgen_kwargs
-#         )
-#         jobs.append(bulk_to_slabs_job)
-
-#         if n_stable_slabs:
-#             find_stable_slab_job = _get_slab_stability(
-#                 bulk_static_job.output,
-#                 bulk_to_slabs_job.output["all_outputs"],
-#                 n_stable_slabs=n_stable_slabs,
-#             )
-#             slab_to_adsorbates_job = slab_to_adsorbates_job.make(
-#                 find_stable_slab_job.output["stable_slabs"]["all_atoms"],
-#                 adsorbate,
-#                 **make_ads_kwargs,
-#             )
-#             jobs += [find_stable_slab_job, slab_to_adsorbates_job]
-#         else:
-#             slab_to_adsorbates_job = slab_to_adsorbates_job.make(
-#                 bulk_to_slabs_job.output["all_atoms"], adsorbate, **make_ads_kwargs
-#             )
-#             jobs.append(slab_to_adsorbates_job)
-
-#         return Flow(jobs, output=slab_to_adsorbates_job.output)
+        if self.relax_electron and self.static_electron:
+            return _relax_and_static_distributed(ads_slabs)
+        elif self.relax_electron:
+            return _relax_distributed(ads_slabs)
+        else:
+            return ads_slabs
 
 
 def _get_slab_stability(

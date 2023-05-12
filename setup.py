@@ -26,6 +26,7 @@ if __name__ == "__main__":
         install_requires=[
             "ase @ git+https://gitlab.com/ase/ase.git",
             "atomate2 @ git+https://github.com/materialsproject/atomate2.git",
+            "covalent==0.220.0",
             "pymatgen==2023.5.10",
             "jobflow==0.1.11",
             "emmet-core==0.54.4",
@@ -34,11 +35,9 @@ if __name__ == "__main__":
             "numpy",
         ],
         extras_require={
-            "covalent": [
-                "covalent==0.220.0",
+            "plugins": [
                 "covalent-slurm-plugin==0.12.1",
                 "covalent-ssh-plugin==0.17.0",
-                "maggma==0.50.3",
             ],
             "fireworks": ["fireworks==2.0.3", "jobflow==0.1.11"],
             "vasp": ["custodian==2023.5.7"],
