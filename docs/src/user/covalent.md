@@ -1,42 +1,14 @@
-# Covalent
+# Using Covalent
 
-## Example 1: Running a Single Function
+Here, we will show how to use [Covalent](https://github.com/AgnostiqHQ/covalent) to construct, dispatch, and monitor workflows in QuAcc. This section is intentionally designed to mimic the [Quick Start: Basics](quick-start.md) section so that you can see how it is trivial to go from "normal Python" to a distributed workflow.
 
-```python
-import covalent as ct
-from ase.build import bulk
-from quacc.recipes.emt.core import static_job
+## Pre-Requisites
 
-atoms = bulk("Cu")
+If you haven't already done so, make sure you completed the ["Covalent Setup"](covalent.md) section of the documentation. If you haven't done so already, run `covalent start` prior to starting these examples.
 
-@ct.lattice
-@ct.electron
-def workflow(atoms):
-    results = static_job(atoms)
-    return results
+Additionally, you should read the Covalent [First Experiment](https://covalent.readthedocs.io/en/latest/getting_started/first_experiment/index.html) guide to get a sense of how Covalent works. Namely, you should understand the [Covalent Basics](https://covalent.readthedocs.io/en/latest/concepts/basics.html) of the `Electron` and `Lattice` objects, which describe individual compute tasks and workflows, respectively.
 
-dispatch_id = ct.dispatch(workflow)(atoms)
-result = ct.get_result(dispatch_id, wait=True)
-print(result)
-```
-
-Note that this is can be made more compact as follows:
-
-```python
-import covalent as ct
-from ase.build import bulk
-from quacc.recipes.emt.core import static_job
-
-atoms = bulk("Cu")
-
-job = ct.electron(static_job)
-workflow = ct.lattice(job)
-dispatch_id = ct.dispatch(workflow)(atoms)
-result = ct.get_result(dispatch_id, wait=True)
-print(result)
-```
-
-## Example 2: Running a Simple Serial Workflow
+## Example 2: A Simple Calculation with GFN2-xTB
 
 ```python
 import covalent as ct
@@ -109,31 +81,47 @@ results = ct.get_result(dispatch_id, wait=True)
 print(results)
 ```
 
-## Storing the Results in a Database
+## Shorthand for Single-Job Lattices
 
-Covalent automatically stores all the inputs and outputs in an SQLite database, which you can find at the `"db_path"` when you run `covalent config`. However, if you want to store the results in a different database of your choosing, you can use [`maggma`](https://github.com/materialsproject/maggma) to do so quite easily. This is the generally recommended approach. An example is shown below for storing the results in a MongoDB. For assistance with setting up a MongoDB of your own, please see <>.
+Let's return to the simple example of using EMT to run a static calculation on a bulk structure of copper (Example 1 from the [Quick Start: Basics](quick-start.md) guide). This can be achieved using Covalent as follows:
 
 ```python
 import covalent as ct
-from maggma.stores import MongoStore
+from ase.build import bulk
+from quacc.recipes.emt.core import static_job
 
-# Connect to the database
-database = "my_db"
-collection_name = "my_collection"
-store = MongoStore(database,collection_nam,host="localhost",port=27017,username="my_username",password="my_password")
-store.connect()
+# Make an Atoms object of a bulk Cu structure
+atoms = bulk("Cu")
 
-# Fetch the results
-results_dir = ct.get_config()["dispatcher"]["results_dir"]
-docs = []
-for dispatcher_id in os.listdir(results_dir):
-    result = ct.get_result(dispatch_id).result
-    docs.append({"dispatcher_id":dispatcher_id, "result": result})
+# Define an Electron (job) that will perform the static calculation
+@ct.electron
+def job(atoms):
+    result = static_job(atoms)
+    return result
 
-# Store the results
-with store:
-    store.update(docs, key="dispatcher_id")
+# Define a Lattice (workflow) that will consist of the individual job steps
+@ct.lattice
+def workflow(atoms):
+    return job(atoms)
 
-# Close the database connection
-store.close()
+dispatch_id = ct.dispatch(workflow)(atoms)
+result = ct.get_result(dispatch_id, wait=True)
+print(result)
+```
+
+Now, this is admittedly quite verbose. Because this is a very simple one-job workflow, it can be made much more compact as follows:
+
+```python
+import covalent as ct
+from ase.build import bulk
+from quacc.recipes.emt.core import static_job
+
+# Make an Atoms object of a bulk Cu structure
+atoms = bulk("Cu")
+
+# Define a Lattice (workflow) and Electron (job)
+workflow = ct.lattice(ct.electron(static_job))
+dispatch_id = ct.dispatch(workflow)(atoms)
+result = ct.get_result(dispatch_id, wait=True)
+print(result)
 ```

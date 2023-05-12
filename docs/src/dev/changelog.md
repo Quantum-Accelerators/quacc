@@ -1,3 +1,3 @@
-# Change log
+# Changelog
 
-For a detailed changelog, see the [Releases page](https://github.com/arosen93/quacc/releases) on the QuAcc repository.
+For a detailed changelog, see the [CHANGELOG.md](https://github.com/arosen93/quacc/blob/main/CHANGELOG.md) in the QuAcc repository.
