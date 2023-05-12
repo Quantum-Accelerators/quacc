@@ -7,9 +7,11 @@ from ase.build import bulk, molecule
 from quacc.recipes.vasp.core import double_relax_job, relax_job, static_job
 from quacc.recipes.vasp.qmof import qmof_relax_job
 from quacc.recipes.vasp.slabs import (
-    slab_static_job,  # BulkToAdsorbatesFlow, SlabToAdsorbatesJob,
+    BulkToSlabsFlow,
+    SlabToAdsFlow,
+    slab_relax_job,
+    slab_static_job,
 )
-from quacc.recipes.vasp.slabs import bulk_to_slabs_job, slab_relax_job
 
 
 def teardown_module():
@@ -124,15 +126,12 @@ def test_slab_relax_job():
     assert output["parameters"]["nelmin"] == 6
 
 
-# def test_slab_dynamic_jobs():
-#     atoms = bulk("Cu") * (2, 2, 2)
+def test_slab_dynamic_jobs():
+    atoms = bulk("Cu") * (2, 2, 2)
 
-#     ### --------- Test BulkToSlabsJob --------- ###
-#     flow = bulk_to_slabs_job(atoms).make(atoms)
-#     responses = run_locally(flow, ensure_success=True)
+    ### --------- Test BulkToSlabsJob --------- ###
+    output = BulkToSlabsFlow().run(atoms)
 
-#     assert len(responses) == 9
-#     uuids = list(responses.keys())
 
 #     # First job is a dummy job to make slabs and should have no output
 #     output0 = responses[uuids[0]][1].output
