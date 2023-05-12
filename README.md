@@ -13,7 +13,7 @@
 [![Pypi](https://img.shields.io/pypi/v/quacc)](https://pypi.org/project/quacc)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7720998.svg)](https://doi.org/10.5281/zenodo.7720998)
 
-QuAcc is a flexible platform for high-throughput, database-driven computational materials science and quantum chemistry. Built around the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/index.html) (ASE), Quacc seeks to reduce the barrier for developing and deploying complex, mixed-code workflows across heterogeneous compute environments.
+QuAcc is a flexible platform for high-throughput, database-driven computational materials science and quantum chemistry. Built around the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/index.html) (ASE), QuAcc seeks to reduce the barrier for developing and deploying complex, mixed-code workflows across heterogeneous compute environments.
 
 This package was originally inspired by [Atomate2](https://github.com/materialsproject/atomate2), which I also recommend checking out.
 
