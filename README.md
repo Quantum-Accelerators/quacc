@@ -23,7 +23,7 @@ Built around the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/i
 
 3. Enable a seamless interface with much of the software infrastructure powering the [Materials Project](https://materialsproject.org).
 
-**Disclaimer**: Currently, this package is under active development, and API-breaking changes should be expected. Questions and bug reports are always welcome!
+**Disclaimer**: Currently, this package is under active development. Questions and bug reports are always welcome!
 
 ## Installation
 

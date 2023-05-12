@@ -8,19 +8,19 @@ Note that some of these codes do not natively run on Windows. If you are on a Wi
 
 DFTB+ is especially useful for periodic GFN-xTB calculations and the DFTB+ method based on Slater-Koster parameters.
 
-If you plan to use [DFTB+](https://dftbplus.org/) with QuAcc, you will need to install [DFTB+](https://dftbplus.org/). This can be done via `conda install -c conda-forge dftbplus`.
+If you plan to use DFTB+ with QuAcc, you will need to install the code from [here](https://dftbplus.org/). This can be done via `conda install -c conda-forge dftbplus`.
 
 ## Gaussian
 
-Gaussian is an extremely popular molecular DFT code that is quite robust and easy to use but lacks newer features in other packages.
+Gaussian is an extremely popular molecular DFT code that is quite robust and easy to use.
 
-As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/gaussian.html), by default the executables named `g16`, `g09`, or `g03` will be searched (in order of decreasing preference) to run Gaussian. To use a different executable name, you will need to define an environment variable named `ASE_GAUSSIAN_COMMAND`. It should be of the form `ASE_GAUSSIAN_COMMAND="/path/to/my/gaussian_executable Gaussian.com > Gaussian.log"`.
+As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/gaussian.html), you will need to define an environment variable named `ASE_GAUSSIAN_COMMAND`. It should be of the form `ASE_GAUSSIAN_COMMAND="/path/to/my/gaussian_executable Gaussian.com > Gaussian.log"`.
 
 ## GULP
 
 GULP is especially useful for periodic GFN-FF calculations and force field methods. GULP can be downloaded and installed [here](https://gulp.curtin.edu.au/).
 
-As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/gulp.html), if you plan to use [GULP](https://gulp.curtin.edu.au/), you must set the environment variables `GULP_LIB="/path/to/my/gulp-#.#.#/Libraries"` and `ASE_GULP_COMMAND="/path/to/my/gulp-#.#.#/Src/gulp < gulp.gin > gulp.got"`.
+As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/gulp.html), you must set the environment variables `GULP_LIB="/path/to/my/gulp-#.#.#/Libraries"` and `ASE_GULP_COMMAND="/path/to/my/gulp-#.#.#/Src/gulp < gulp.gin > gulp.got"`.
 
 ## ORCA
 

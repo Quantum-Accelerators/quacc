@@ -1,14 +1,12 @@
-# Optional: Database Configuration
+# Optional: MongoDB Setup
 
 ## Introduction
 
-One of the main advantages of using QuAcc is the ability to have all of your calculation inputs and outputs automatically deposited in a database of your choosing for easy querying. While this is not a requirement for using QuAcc, it can be helpful when dealing with a large amount of calculations.
+Some advanced users may wish to use QuAcc with a database so that all calculation inputs and outputs are stored in an easily queryable database. While not a requirement for using QuAcc, this can be readily achieved through the use of the [maggma](https://github.com/materialsproject/maggma) package. If this is of interest, we generally recommend using a Mongo database.
 
 ## MongoDB Setup
 
-*Note*: If you already have a Mongo database, you can skip this section. Simply have your login credentials ready.
-
-QuAcc relies on reading and writing to a Mongo Database (MongoDB). If you have never made a Mongo Database, there are many options to choose from. For new users, the easiest route is to use a cloud storage solution called [MongoDB Atlas](https://www.mongodb.com/atlas), which has a free tier. To set up your MongoDB with MongoDB Atlas, follow the instructions below.
+For new users, the easiest route to create a Mongo database is to use a cloud storage solution called [MongoDB Atlas](https://www.mongodb.com/atlas), which has a free tier. To set up your MongoDB with MongoDB Atlas, follow the instructions below.
 
 1. Sign up for a free account on [MongoDB Atlas](https://www.mongodb.com/atlas).
 2. Once logged in, select the "Build a Database" option under the "Database Deployments" section and choose the "Shared" free option.

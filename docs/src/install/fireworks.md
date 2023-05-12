@@ -1,14 +1,18 @@
-# Optional: Jobflow + Fireworks Configuration
+# Optional: Jobflow and Fireworks Setup
 
 ## Introduction
 
-While we recommend using Covalent as the workflow manager with QuAcc, there are other options available for most calculation types.
+While we recommend using Covalent as the workflow manager with QuAcc, it is not the only option for you to consider.
 
-If you would prefer to use [Jobflow](https://github.com/materialsproject/jobflow) to write your workflows and/or [FireWorks](https://github.com/materialsproject/fireworks) to manage them, follow the instructions below.
+If you would prefer to use [Jobflow](https://github.com/materialsproject/jobflow) to write your workflows and/or [FireWorks](https://github.com/materialsproject/fireworks) to manage them, follow the instructions below. For additional details, refer to the full [Jobflow documentation](https://materialsproject.github.io/jobflow/) and [FireWorks documentation](https://materialsproject.github.io/fireworks/).
+
+## MongoDB Setup
+
+Jobflow and FireWorks both require the use of a MongoDB database to store calculation results. If you haven't done so already, first create a Mongo database as described in the ["Optional: MongoDB Configuration"](covalent.md) section.
 
 ## Jobflow DB Setup
 
-To tell QuAcc where to store your calculation results, you will need to make a `jobflow.yaml` file. This file will generally be formatted like the example below. Fill in the above fields with the appropriate values for your MongoDB cluster.
+If you plan to use Jobflow to write your workflows, you will need to make a `jobflow.yaml` file. This file will generally be formatted like the example below. Fill in the above fields with the appropriate values for your MongoDB cluster.
 
 ```yaml
 JOB_STORE:
@@ -22,7 +26,7 @@ JOB_STORE:
       collection_name: <collection name>
 ```
 
-If you are using a URI (e.g. as in the MongoDB Atlas instructions above), then you will instead have a `jobflow.yaml` file that looks like the example below. Here, you will put the full URI in the `host` field. The `username` and `password` are part of the URI and so should not be included elsewhere in the YAML file.
+If you are using a URI (e.g. as is common with MongoDB Atlas), then you will instead have a `jobflow.yaml` file that looks like the example below. Here, you will put the full URI in the `host` field. The `username` and `password` are part of the URI and so should not be included elsewhere in the YAML file.
 
 ```yaml
 JOB_STORE:
@@ -41,7 +45,7 @@ When a QuAcc calculation completes, all the data will be stored in the database 
 
 ## FireWorks DB Setup
 
-If you plan to use FireWorks, you will also need to make a few configuration files: `FW_config.yaml`, `my_fworker.yaml`, `my_launchpad.yaml`, and `my_qadapter.yaml`.
+If you plan to use FireWorks to dispatch your Jobflow workflows, you will also need to make a few configuration files: `FW_config.yaml`, `my_fworker.yaml`, `my_launchpad.yaml`, and `my_qadapter.yaml`.
 
 To begin, make a directory called `fw_config` where you will store the above four files.
 
@@ -119,4 +123,4 @@ Finally, you will need to define a `FW_CONFIG_FILE` environment variable pointin
 
 ### Database Initialization
 
-To check that everything is working right with FireWorks, run lpad reset if you haven’t run it before to ensure there is a connection to the database.
+To check that everything is working right with FireWorks, run `lpad reset` to ensure there is a connection to the database. Note that this will clear your FireWorks launchpad, so only use this command if you are new to FireWorks.
