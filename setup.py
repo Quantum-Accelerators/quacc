@@ -34,7 +34,7 @@ if __name__ == "__main__":
             "numpy",
         ],
         extras_require={
-            "all": ["custodian==2023.5.7", "fireworks==2.0.3"],
+            "all": ["custodian==2023.5.12", "fireworks==2.0.3"],
             "codes": [
                 "xtb==22.1",
                 "tblite[ase]==0.3.0",
