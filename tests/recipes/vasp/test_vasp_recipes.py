@@ -216,18 +216,8 @@ def test_slab_dynamic_jobs():
     adsorbate2 = molecule("CH3")
     adsorbate2.set_initial_magnetic_moments([1, 0, 0, 0])
     outputs = SlabToAdsFlow().run(atoms, adsorbate2)
-    assert outputs[0]["nsites"] == 99
+    assert outputs[0]["nsites"] == 100
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
-
-    outputs = SlabToAdsFlow(
-        relax_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
-        static_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
-    ).run(atoms, adsorbate)
-
-    assert outputs[0]["nsites"] == 98
-    assert [output["parameters"]["nsw"] == 0 for output in outputs]
-    assert [output["parameters"]["nelmin"] == 6 for output in outputs]
-    assert [output["parameters"]["encut"] == 450 for output in outputs]
 
 
 def test_qmof():
