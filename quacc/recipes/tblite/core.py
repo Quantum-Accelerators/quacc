@@ -10,7 +10,7 @@ from ase.atoms import Atoms
 from monty.dev import requires
 
 from quacc.schemas.calc import summarize_opt_run, summarize_run
-from quacc.util.calc import ideal_gas_thermo, run_ase_opt, run_ase_vib, run_calc
+from quacc.util.dicts import ideal_gas_thermo, run_ase_opt, run_ase_vib, run_calc
 
 try:
     from tblite.ase import TBLite

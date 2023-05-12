@@ -10,7 +10,7 @@ from ase.calculators.dftb import Dftb
 from monty.dev import requires
 
 from quacc.schemas.calc import summarize_run
-from quacc.util.basics import merge_dicts
+from quacc.util.dicts import merge_dicts
 from quacc.util.calc import _check_logfile, run_calc
 
 DFTBPLUS_EXISTS = bool(which("dftb+"))

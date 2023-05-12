@@ -11,7 +11,7 @@ from pymatgen.command_line.bader_caller import bader_analysis_from_path
 from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
 
 from quacc import SETTINGS
-from quacc.util.basics import copy_decompress
+from quacc.util.files import copy_decompress
 
 
 def run_bader(

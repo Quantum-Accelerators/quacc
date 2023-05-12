@@ -8,7 +8,7 @@ from ase.atoms import Atoms
 from ase.calculators.orca import ORCA
 
 from quacc.schemas.cclib import summarize_run
-from quacc.util.basics import merge_dicts
+from quacc.util.dicts import merge_dicts
 from quacc.util.calc import run_calc
 
 LOG_FILE = ORCA().name + ".out"

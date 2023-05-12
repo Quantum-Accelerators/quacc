@@ -34,7 +34,7 @@ from pymatgen.symmetry.bandstructure import HighSymmKpath
 from quacc import SETTINGS
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import copy_atoms
-from quacc.util.basics import copy_decompress
+from quacc.util.files import copy_decompress
 
 
 def run_calc(

@@ -19,7 +19,7 @@ if __name__ == "__main__":
         python_requires=">=3.8.0",
         version="0.1.0",
         packages=find_packages(),
-        license="modified BSD",
+        license="BSD-3",
         keywords="high-throughput automated workflow dft",
         data_files=["LICENSE.md"],
         zip_safe=False,

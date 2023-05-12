@@ -8,7 +8,7 @@ from ase.atoms import Atoms
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.calc import summarize_opt_run
 from quacc.schemas.vasp import summarize_run
-from quacc.util.basics import merge_dicts
+from quacc.util.dicts import merge_dicts
 from quacc.util.calc import run_ase_opt, run_calc
 
 # This set of recipes is meant to be compatible with the QMOF Database workflow.

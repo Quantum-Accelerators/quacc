@@ -12,7 +12,7 @@ try:
 except ImportError:
     psi4 = None
 from quacc.schemas.calc import summarize_run
-from quacc.util.basics import merge_dicts
+from quacc.util.dicts import merge_dicts
 from quacc.util.calc import run_calc
 
 

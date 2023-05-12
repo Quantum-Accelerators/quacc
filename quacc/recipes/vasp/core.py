@@ -7,7 +7,7 @@ from ase.atoms import Atoms
 
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.vasp import summarize_run
-from quacc.util.basics import merge_dicts
+from quacc.util.dicts import merge_dicts
 from quacc.util.calc import run_calc
 
 
