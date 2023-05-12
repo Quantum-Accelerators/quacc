@@ -34,10 +34,6 @@ if __name__ == "__main__":
             "numpy",
         ],
         extras_require={
-            "plugins": [
-                "covalent-slurm-plugin==0.12.1",
-                "covalent-ssh-plugin==0.17.0",
-            ],
             "fireworks": ["jobflow==0.1.11", "fireworks==2.0.3"],
             "vasp": ["custodian==2023.5.7"],
             "xtb": ["tblite[ase]==0.3.0"],
