@@ -12,7 +12,7 @@ from quacc.calculators.vasp import Vasp
 from quacc.schemas.vasp import summarize_run
 from quacc.util.basics import merge_dicts
 from quacc.util.calc import run_calc
-from quacc.util.slabs import make_max_slabs_from_bulk, slab_to_adsorbates
+from quacc.util.slabs import make_adsorbate_structures, make_max_slabs_from_bulk
 
 
 def slab_static_job(
@@ -255,7 +255,7 @@ class SlabToAdsFlow:
                 for slab in slabs
             ]
 
-        ads_slabs = slab_to_adsorbates(slab, adsorbate, **make_ads_kwargs)
+        ads_slabs = make_adsorbate_structures(slab, adsorbate, **make_ads_kwargs)
 
         if self.relax_electron and self.static_electron:
             return _relax_and_static_distributed(ads_slabs)

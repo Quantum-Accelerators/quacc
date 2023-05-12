@@ -6,8 +6,9 @@ from ase.build import bulk, molecule
 
 from quacc.recipes.vasp.core import double_relax_job, relax_job, static_job
 from quacc.recipes.vasp.qmof import qmof_relax_job
-from quacc.recipes.vasp.slabs import (  # SlabToAdsFlow,
+from quacc.recipes.vasp.slabs import (
     BulkToSlabsFlow,
+    SlabToAdsFlow,
     slab_relax_job,
     slab_static_job,
 )
@@ -170,31 +171,48 @@ def test_slab_dynamic_jobs():
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
     assert [output["parameters"]["encut"] == 450 for output in outputs]
 
+    ### --------- Test SlabToAdsorbatesJob --------- ###
+    atoms = outputs[0]["atoms"]
+    adsorbate = molecule("H2")
 
-#     ### --------- Test SlabToAdsorbatesJob --------- ###
-#     atoms = output2["atoms"]
-#     adsorbate = molecule("H2")
+    outputs = SlabToAdsFlow(static_electron=None).run(atoms, adsorbate)
 
-#     flow = SlabToAdsorbatesJob().make(atoms, adsorbate)
-#     responses = run_locally(flow, ensure_success=True)
+    assert outputs[0]["nsites"] == 98
+    assert [output["parameters"]["isif"] == 2 for output in outputs]
 
-#     assert len(responses) == 9
-#     uuids = list(responses.keys())
+    outputs = SlabToAdsFlow().run(atoms, adsorbate)
+    assert outputs[0]["nsites"] == 98
+    assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
-#     # First job is a dummy job to make slabs and should have no output
-#     output0 = responses[uuids[0]][1].output
-#     assert "input_slabs" in output0
-#     assert "generated_slab_ads" in output0
-#     assert "H2" in output0["generated_slab_ads"]
-#     assert len(output0["generated_slab_ads"]["H2"][0]) == 98
+    outputs = SlabToAdsFlow(
+        relax_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
+        static_electron=None,
+    ).run(atoms, adsorbate)
 
-#     output1 = responses[uuids[1]][1].output
-#     assert output1["nsites"] == len(output2["atoms"]) + 2
-#     assert output1["parameters"]["isif"] == 2
+    assert outputs[0]["nsites"] == 98
+    assert [output["parameters"]["isif"] == 2 for output in outputs]
+    assert [output["parameters"]["nelmin"] == 6 for output in outputs]
+    assert [output["parameters"]["encut"] == 450 for output in outputs]
 
-#     output2 = responses[uuids[-1]][1].output
-#     assert output2["nsites"] == output1["nsites"]
-#     assert output2["parameters"]["nsw"] == 0
+    outputs = SlabToAdsFlow(
+        relax_electron=None,
+        static_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
+    ).run(atoms, adsorbate)
+
+    assert outputs[0]["nsites"] == 98
+    assert [output["parameters"]["nsw"] == 0 for output in outputs]
+    assert [output["parameters"]["nelmin"] == 6 for output in outputs]
+    assert [output["parameters"]["encut"] == 450 for output in outputs]
+
+    outputs = SlabToAdsFlow(
+        static_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
+    ).run(atoms, adsorbate)
+
+    assert outputs[0]["nsites"] == 98
+    assert [output["parameters"]["nsw"] == 0 for output in outputs]
+    assert [output["parameters"]["nelmin"] == 6 for output in outputs]
+    assert [output["parameters"]["encut"] == 450 for output in outputs]
+
 
 #     # Now try with kwargs
 #     flow = SlabToAdsorbatesJob(

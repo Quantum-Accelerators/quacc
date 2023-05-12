@@ -474,52 +474,6 @@ def make_adsorbate_structures(
     return new_atoms
 
 
-def slab_to_adsorbates(
-    slabs: Atoms | list[Atoms], adsorbates: Atoms | list[Atoms], **make_ads_kwargs
-) -> dict[str, list[Atoms]]:
-    """
-    Convert a slab (or slabs) to one with an adsorbate present.
-    Multiple slab-adsorbate systems will be generated, one for each unique
-    binding site.
-
-    Parameters
-    ----------
-    slabs
-        .Atoms object for the slab structure. Also takes a list of Atoms objects
-        for the creation of a series of slabs with adsorbates.
-    adsorbates
-        .Atoms object for the adsorbate. Also takes a list of Atoms objects for
-        the consideration of multiple different adsorbates.
-    **make_ads_kwargs
-        Additional keyword arguments to pass to make_adsorbate_structures()
-
-    Returns
-    -------
-    all_ads_slabs
-        Dictionary of lists of .Atoms objects for the slab-adsorbate systems.
-    """
-
-    make_ads_kwargs = make_ads_kwargs or {}
-
-    if isinstance(slabs, Atoms):
-        slabs_list = [slabs]
-    else:
-        slabs_list = slabs
-    if isinstance(adsorbates, Atoms):
-        adsorbates_list = [adsorbates]
-    else:
-        adsorbates_list = adsorbates
-
-    # Make slab-adsorbate systems
-    all_ads_slabs = {}
-    for slab in slabs_list:
-        for adsorbate in adsorbates_list:
-            ads_slabs = make_adsorbate_structures(slab, adsorbate, **make_ads_kwargs)
-            all_ads_slabs[adsorbate.get_chemical_formula()] = ads_slabs
-
-    return all_ads_slabs
-
-
 def get_surface_energy(
     bulk: Atoms, slab: Atoms, bulk_energy: float, slab_energy: float
 ):
