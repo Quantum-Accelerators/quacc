@@ -6,7 +6,7 @@ Note that some of these codes do not natively run on Windows. If you are on a Wi
 
 ## DFTB+
 
-DFTB+ is especially useful for periodic xTB calculations and the DFTB+ method based on Slater-Koster parameters.
+DFTB+ is especially useful for periodic GFN-xTB calculations and the DFTB+ method based on Slater-Koster parameters.
 
 If you plan to use [DFTB+](https://dftbplus.org/) with QuAcc, you will need to install [DFTB+](https://dftbplus.org/). This can be done via `conda install -c conda-forge dftbplus`.
 

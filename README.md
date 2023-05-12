@@ -13,11 +13,17 @@
 [![Pypi](https://img.shields.io/pypi/v/quacc)](https://pypi.org/project/quacc)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7720998.svg)](https://doi.org/10.5281/zenodo.7720998)
 
-QuAcc is a flexible platform for high-throughput, database-driven computational materials science and quantum chemistry. Built around the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/index.html) (ASE), QuAcc seeks to reduce the barrier for developing and deploying complex, mixed-code workflows across heterogeneous compute environments.
+QuAcc is a flexible platform for high-throughput, database-driven computational materials science and quantum chemistry.
 
-This package was originally inspired by [Atomate2](https://github.com/materialsproject/atomate2), which I also recommend checking out.
+Built around the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/index.html) (ASE), QuAcc seeks to:
 
-**Disclaimer**: Currently, this package is under active development. Questions and bug reports are always welcome!
+1. Reduce the barrier for running complex, mixed-code workflows for molecules and materials across heterogeneous compute environments.
+
+2. Promote rapid workflow development and testing via modern workflow managers, such as [Covalent](https://github.com/AgnostiqHQ/covalent) and [Jobflow](https://github.com/materialsproject/jobflow).
+
+3. Enable a seamless interface with much of the software infrastructure powering the [Materials Project](https://materialsproject.org).
+
+**Disclaimer**: Currently, this package is under active development, and API-breaking changes should be expected. Questions and bug reports are always welcome!
 
 ## Installation
 
@@ -42,14 +48,15 @@ pip install quacc
 ```python
 from ase.build import bulk
 
-from quacc.recipes.vasp.core import RelaxJob as VaspRelaxJob
+from quacc.recipes.vasp.core import relax_job as vasp_relax_job
 
 # Make a bulk Cu structure
 atoms = bulk("Cu")
 
 # Make a job consisting of a VASP relaxation using a pre-defined input set.
 # By default, VASP will be run using Custodian for on-the-fly error handling.
-output = VaspRelaxJob(atoms, preset="BulkSet")
+output = vasp_relax_job(atoms, preset="BulkSet")
+print(output)
 ```
 
 ### GFN2-xTB + Gaussian + ORCA Workflow with Covalent
@@ -58,9 +65,9 @@ output = VaspRelaxJob(atoms, preset="BulkSet")
 import covalent as ct
 from ase.build import molecule
 
-from quacc.recipes.tblite.core import RelaxJob as XTBRelaxJob
-from quacc.recipes.gaussian.core import RelaxJob as GaussianRelaxJob
-from quacc.recipes.orca.core import StaticJob as OrcaStaticJob
+from quacc.recipes.tblite.core import relax_job as xtb_relax_job
+from quacc.recipes.gaussian.core import relax_job as gaussian_relax_job
+from quacc.recipes.orca.core import static_job as orca_static_job
 
 # Make an H2 molecule
 atoms = molecule("H2")
@@ -69,20 +76,16 @@ atoms = molecule("H2")
 # and then an ORCA static calculation using Covalent to manage the workflow.
 @ct.lattice
 def workflow(atoms):
-    output1 = ct.electron(XTBRelaxJob)(atoms, method="GFN2-xTB")
-    output2 = ct.electron(GaussianRelaxJob)(output1["atoms"], xc="PBE")
-    output3 = ct.electron(OrcaStaticJob)(output2["atoms"], xc="wB97M-V")
+    output1 = ct.electron(xtb_relax_job)(atoms, method="GFN2-xTB")
+    output2 = ct.electron(gaussian_relax_job)(output1["atoms"], xc="PBE")
+    output3 = ct.electron(orca_static_job)(output2["atoms"], xc="wB97M-V")
     return output3
 
 # Run the workflow
-output = workflow(atoms)
+dispatch_id = ct.dispatch(workflow)(atoms)
+result = ct.get_result(dispatch_id, wait=True)
+print(result)
 ```
-
-### Database-Friendly Output
-
-Assuming a Jobflow configuration file has been provided, the input and output data will be automagically tabulated and placed in your selected database. No custom parsing required. An example document is shown below:
-
-![docs](docs/src/imgs/schema.gif)
 
 ## License
 

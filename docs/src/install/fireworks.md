@@ -1,12 +1,14 @@
-# Fireworks Configuration
+# Optional: Jobflow + Fireworks Configuration
 
 ## Introduction
 
-Follow the instructions to configure Quacc to work with Jobflow+FireWorks.
+While we recommend using Covalent as the workflow manager with QuAcc, there are other options available for most calculation types.
+
+If you would prefer to use [Jobflow](https://github.com/materialsproject/jobflow) to write your workflows and/or [FireWorks](https://github.com/materialsproject/fireworks) to manage them, follow the instructions below.
 
 ## Jobflow DB Setup
 
-To tell QuAcc where to store your calculations, you will need to make a `jobflow.yaml` file. This file will generally be formatted like the example below. Fill in the above fields with the appropriate values for your MongoDB cluster.
+To tell QuAcc where to store your calculation results, you will need to make a `jobflow.yaml` file. This file will generally be formatted like the example below. Fill in the above fields with the appropriate values for your MongoDB cluster.
 
 ```yaml
 JOB_STORE:
@@ -115,6 +117,6 @@ Finally, you will need to define a `FW_CONFIG_FILE` environment variable pointin
 `export FW_CONFIG_FILE="/path/to/config/fw_config/FW_config.yaml"`.
 
 
-### Initialization
+### Database Initialization
 
 To check that everything is working right with FireWorks, run lpad reset if you haven’t run it before to ensure there is a connection to the database.

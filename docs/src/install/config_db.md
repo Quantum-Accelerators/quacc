@@ -1,8 +1,8 @@
-# Database Configuration
+# Optional: Database Configuration
 
 ## Introduction
 
-One of the main advantages of using QuAcc is the ability to have all of your calculation inputs and outputs automatically deposited in a database of your choosing for easy querying. While this is not a requirement for using QuAcc, it is highly recommended.
+One of the main advantages of using QuAcc is the ability to have all of your calculation inputs and outputs automatically deposited in a database of your choosing for easy querying. While this is not a requirement for using QuAcc, it can be helpful when dealing with a large amount of calculations.
 
 ## MongoDB Setup
 

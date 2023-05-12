@@ -1,0 +1,39 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [UNRELEASED]
+
+## [0.0.6]
+
+### Added
+- Added support for Covalent as the workflow manager.
+
+### Changed
+- A complete overhaul of the UX, taking a function-oriented approach for jobs and a class-oriented approach for workflows.
+- Removed explicit dependency on Jobflow.
+- Removed the `xtb` recipes in favor of the `tblite` recipes.
+
+### Fixed
+
+## [0.0.5]
+
+See https://github.com/arosen93/quacc/releases/tag/v0.0.5 for more details.
+
+## [0.0.4]
+
+See https://github.com/arosen93/quacc/releases/tag/v0.0.4 for more details.
+
+## [0.0.3]
+
+See https://github.com/arosen93/quacc/releases/tag/v0.0.3 for more details.
+
+## [0.0.2]
+
+See https://github.com/arosen93/quacc/releases/tag/v0.0.2 for more details.
+
+## [0.0.1]
+
+See https://github.com/arosen93/quacc/releases/tag/v0.0.1 for more details.
