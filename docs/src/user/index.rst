@@ -12,7 +12,7 @@ Table of Contents
    :maxdepth: 2
 
    Quick Start: Basics <quick-start.md>
-   Using Covalent: Covalent <covalent.md>
-   Optional Quick Start: Jobflow and FireWorks <fireworks.md>
-   Understanding the Code <breakdown.md>
+   Using Covalent <covalent.md>
+   Understanding the Recipes <breakdown.md>
    Writing New Jobs and Flows <writing-workflows.md>
+   Optional: Jobflow and FireWorks <fireworks.md>

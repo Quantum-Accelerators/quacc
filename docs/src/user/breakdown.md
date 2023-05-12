@@ -1,4 +1,4 @@
-# Understanding the Code
+# Understanding the Recipes
 
 ## Pre-Requisites
 
