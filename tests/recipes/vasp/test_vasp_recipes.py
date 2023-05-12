@@ -175,6 +175,9 @@ def test_slab_dynamic_jobs():
     atoms = outputs[0]["atoms"]
     adsorbate = molecule("H2")
 
+    with pytest.raises(ValueError):
+        SlabToAdsFlow(relax_electron=None, static_electron=None).run(atoms, adsorbate)
+
     outputs = SlabToAdsFlow(static_electron=None).run(atoms, adsorbate)
 
     assert outputs[0]["nsites"] == 98
