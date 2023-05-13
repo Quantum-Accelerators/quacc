@@ -5,6 +5,7 @@ import pytest
 from ase.build import bulk
 
 from quacc.recipes.emt.core import relax_job, static_job
+from quacc.recipes.emt.slabs import BulkToSlabsFlow
 
 
 def teardown_module():
@@ -49,3 +50,27 @@ def test_relax_Job():
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] == True
     assert output["results"]["energy"] == pytest.approx(-0.004528885890177747)
+
+
+def test_slab_dynamic_jobs():
+    atoms = bulk("Cu") * (2, 2, 2)
+
+    with pytest.raises(ValueError):
+        BulkToSlabsFlow(relax_electron=None, static_electron=None).run(atoms)
+
+    outputs = BulkToSlabsFlow(relax_electron=None).run(atoms)
+    assert outputs[0]["nsites"] == 96
+    assert [output["parameters"]["asap_cutoff"] == False for output in outputs]
+
+    outputs = BulkToSlabsFlow(
+        static_electron=None,
+        relax_kwargs={"fmax": 1.0, "emt_kwargs": {"asap_cutoff": True}},
+    ).run(atoms)
+    assert outputs[0]["nsites"] == 96
+    assert [output["parameters"]["asap_cutoff"] == True for output in outputs]
+
+    outputs = BulkToSlabsFlow(
+        relax_kwargs={"fmax": 1.0, "emt_kwargs": {"asap_cutoff": True}},
+    ).run(atoms)
+    assert outputs[0]["nsites"] == 96
+    assert [output["parameters"]["asap_cutoff"] == False for output in outputs]

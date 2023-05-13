@@ -105,7 +105,7 @@ results = ct.get_result(dispatch_id, wait=True)
 print(results)
 ```
 
-Here, we have imported to the `BulkToSlabsFlow` class, which is instantiated with some optional user parameters and is applied to an `Atoms` object. The `.run` method here is itself an `Electron`, which is why we don't need to wrap it with `@ct.electron`. All we have to do to use the workflow is wrap it inside a `@ct.lattice` decorator.
+Here, we have imported to the `BulkToSlabsFlow` class, which is instantiated with some optional user parameters and is applied to an `Atoms` object. All we have to do to use the workflow is wrap it inside a `@ct.lattice` decorator. We don't need to use a `@ct.electron` decorator here because the `BulkToSlabsFlow` class is already calling `Electron` objects internally.
 
 If you want to understand what is going on underneath the hood, it is worth checking out the source code. Because the number of slabs is not pre-determined, this recipe is using a Covalent feature called a [Sublattice](https://covalent.readthedocs.io/en/latest/concepts/basics.html?highlight=sublattice#sublattice) that enables [dynamic workflows](https://covalent.readthedocs.io/en/latest/developer/patterns/dynamic_workflow.html?highlight=dynamic%20workflow). Of course, if you don't plan to develop new dynamic workflows, you don't actually need to know this. You can just import the recipe that makes use of this feature and away you go.
 
