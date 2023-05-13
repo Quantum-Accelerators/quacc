@@ -14,6 +14,7 @@ def teardown_module():
             or f.endswith(".pckl")
             or f.endswith(".traj")
             or f.endswith(".out")
+            or ".gz" in f
         ):
             os.remove(f)
         if "quacc-tmp" in f or f == "tmp_dir":
@@ -29,7 +30,7 @@ def test_static_Job():
     assert output["parameters"]["asap_cutoff"] == False
     assert output["results"]["energy"] == pytest.approx(0.07001766638245854)
 
-    output = static_job(atoms, asap_cutoff=True)
+    output = static_job(atoms, emt_kwargs={"asap_cutoff": True})
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] == True
     assert output["results"]["energy"] == pytest.approx(0.11074520235398744)
@@ -42,13 +43,9 @@ def test_relax_Job():
     output = relax_job(atoms)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] == False
-    assert output["results"]["energy"] == pytest.approx(-0.04517048198212592)
+    assert output["results"]["energy"] == pytest.approx(-0.04543069081693929)
 
-    output = relax_job(atoms, asap_cutoff=True)
+    output = relax_job(atoms, fmax=0.03, emt_kwargs={"asap_cutoff": True})
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] == True
-    assert output["results"]["energy"] == pytest.approx(-0.004527567070971017)
-
-    output = relax_job(atoms, fmax=0.01)
-    assert output["nsites"] == len(atoms)
-    assert output["results"]["energy"] == pytest.approx(-0.0454470914411953)
+    assert output["results"]["energy"] == pytest.approx(-0.004528885890177747)

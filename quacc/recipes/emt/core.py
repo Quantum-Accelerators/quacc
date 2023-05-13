@@ -6,15 +6,16 @@ from typing import Any
 
 from ase.atoms import Atoms
 from ase.calculators.emt import EMT
-from ase.io import read
-from ase.optimize import FIRE
 
 from quacc.schemas.calc import summarize_opt_run, summarize_run
+from quacc.util.calc import run_ase_opt, run_calc
 
 # NOTE: This set of minimal recipes is mainly for demonstration purposes
 
 
-def static_job(atoms: Atoms, asap_cutoff: bool = False) -> dict[str, Any]:
+def static_job(
+    atoms: Atoms, emt_kwargs: dict[str, Any] | None = None
+) -> dict[str, Any]:
     """
     Function to carry out a static calculation.
 
@@ -22,18 +23,20 @@ def static_job(atoms: Atoms, asap_cutoff: bool = False) -> dict[str, Any]:
     ----------
     atoms
         .Atoms object
-    asap_cutoff
-        If an ASAP-style cutoff should be used.
+    emt_kwargs
+        Dictinoary of custom kwargs for the EMT calculator.
 
     Returns
     -------
     summary
         Summary of the run.
     """
+
+    emt_kwargs = emt_kwargs or {}
     input_atoms = deepcopy(atoms)
 
-    atoms.calc = EMT(asap_cutoff=asap_cutoff)
-    atoms.get_potential_energy()
+    atoms.calc = EMT(**emt_kwargs)
+    atoms = run_calc(atoms)
     summary = summarize_run(atoms, input_atoms=input_atoms)
 
     return summary
@@ -41,8 +44,10 @@ def static_job(atoms: Atoms, asap_cutoff: bool = False) -> dict[str, Any]:
 
 def relax_job(
     atoms: Atoms,
-    asap_cutoff: bool = False,
-    fmax: float = 0.03,
+    fmax: float = 0.01,
+    max_steps: int = 1000,
+    optimizer: str = "FIRE",
+    emt_kwargs: dict[str, Any] | None = None,
     opt_kwargs: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """
@@ -52,10 +57,14 @@ def relax_job(
     ----------
     atoms
         .Atoms object
-    asap_cutoff
-        If an ASAP-style cutoff should be used.
     fmax
         Tolerance for the force convergence (in eV/A).
+    max_steps
+        Maximum number of steps to take.
+    optimizer
+        .Optimizer class to use for the relaxation.
+    emt_kwargs
+        Dictionary of custom kwargs for the EMT calculator.
     opt_kwargs
         Dictionary of kwargs for the optimizer.
 
@@ -64,13 +73,18 @@ def relax_job(
     summary
         Summary of the run.
     """
-    if opt_kwargs is None:
-        opt_kwargs = {}
 
-    atoms.calc = EMT(asap_cutoff=asap_cutoff)
-    dyn = FIRE(atoms, logfile="opt.log", trajectory="opt.traj", **opt_kwargs)
-    dyn.run(fmax=fmax)
-    traj = read("opt.traj", index=":")
+    emt_kwargs = emt_kwargs or {}
+    opt_kwargs = opt_kwargs or {}
+
+    atoms.calc = EMT(**emt_kwargs)
+    traj = run_ase_opt(
+        atoms,
+        fmax=fmax,
+        max_steps=max_steps,
+        optimizer=optimizer,
+        opt_kwargs=opt_kwargs,
+    )
     summary = summarize_opt_run(traj, atoms.calc.parameters)
 
     return summary
