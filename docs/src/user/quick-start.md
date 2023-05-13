@@ -12,7 +12,7 @@ If you are coming from the Pymatgen ecosystem, there is a module to convert from
 
 If you are already deeply familiar with ASE, this will all seem quite simple, but keep reading and you will see how QuAcc can help you run complex calculations much more efficiently.
 
-## Example 1: A Simple Calculation with EMT
+## A Simple Calculation with EMT
 
 Let's start with a simple example. Here, we will use a cheap (and inaccurate) calculator based on effective medium theory (EMT) to run a static calculation on a bulk structure of copper, as shown below.
 
@@ -32,7 +32,7 @@ Walking through step-by-step, we first defined an `Atoms` object representation 
 
 With the `Atoms` object defined, we then imported a desired recipe and instantiated it. In this case, since we want to use `EMT`, we can look in `quacc.recipes.emt` to see all the available recipes. Naturally, we are interested in the `StaticJob` recipe. We then instantiate and run the recipe by passing in the `Atoms` object we defined earlier.
 
-## Example 2: A Simple Calculation with GFN2-xTB
+## A Simple Calculation with GFN2-xTB
 
 If molecules are more your thing, let's consider another simple example. Here, we want to run a structure relaxation of a water molecule using the semi-empirical quantum mechanics method called [GFN2-xTB](https://doi.org/10.1021/acs.jctc.8b01176). This method is conveniently available in several packages, including `tblite`, which we will use here. The demonstration below shows how to run this calculation with QuAcc.
 
@@ -54,7 +54,7 @@ print(result)
 
 Here, we have imported the `RelaxJob` recipe from `quacc.recipes.tblite`. Most recipes have several optional keyword arguments that you can specify. In this example, the `method='GFN2-xTB'` keyword indicates that we want to use the GFN2-xTB method.
 
-## Example 3: A Pair of Serial Calculations
+## A Pair of Serial Calculations
 
 Now let's return to our bulk Cu example from above and start adding on some complexity. Here, we will use EMT to run a relaxation on the bulk Cu structure and then use the output of this calculation as the input to a static calculation with GFN2-xTB. This example nicely highlights how there are no restrictions in terms of how many calculators you can use in a single workflow.
 
@@ -76,7 +76,7 @@ print(result2)
 
 By default, the output of all compute jobs in QuAcc is a dictionary, which always has the key `"atoms"` containing a copy of the output `Atoms` object. This can be used to pass structure information between jobs, as shown above.
 
-## Example 4: A Pair of Parallel Calculations
+## A Pair of Parallel Calculations
 
 What if you wanted to run two separate calculations in parallel? Well, you might try to do something like the following, but it will run like any normal Python function wherin `atoms2` will not be run until after the calculation on `atoms1` finished.
 

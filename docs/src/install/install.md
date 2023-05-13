@@ -15,3 +15,5 @@ QuAcc can be installed with several `extras`, as outlined in the `setup.py` file
 - `quacc[vasp]`: Installs dependencies to enable the use of VASP with Custodian.
 - `quacc[xtb]`: Installs dependencies to enable the use of xtb via tblite.
 - `quacc[dev]`: Installs dependencies to enable local development of QuAcc.
+
+If you plan to use QuAcc with a workflow manager, ensure that you install QuAcc on all machines where the code will run.
