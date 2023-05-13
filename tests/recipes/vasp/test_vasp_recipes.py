@@ -127,7 +127,7 @@ def test_slab_relax_job():
 
 
 def test_slab_dynamic_jobs():
-    atoms = bulk("Cu") * (2, 2, 2)
+    atoms = bulk("Cu")
 
     ### --------- Test BulkToSlabsFlow --------- ###
 
@@ -135,11 +135,11 @@ def test_slab_dynamic_jobs():
         BulkToSlabsFlow(relax_electron=None, static_electron=None).run(atoms)
 
     outputs = BulkToSlabsFlow(static_electron=None).run(atoms)
-    assert outputs[0]["nsites"] == 96
+    assert outputs[0]["nsites"] == 80
     assert [output["parameters"]["isif"] == 2 for output in outputs]
 
     outputs = BulkToSlabsFlow().run(atoms)
-    assert outputs[0]["nsites"] == 96
+    assert outputs[0]["nsites"] == 80
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
     outputs = BulkToSlabsFlow(
@@ -147,7 +147,7 @@ def test_slab_dynamic_jobs():
         static_electron=None,
     ).run(atoms)
 
-    assert outputs[0]["nsites"] == 96
+    assert outputs[0]["nsites"] == 80
     assert [output["parameters"]["isif"] == 2 for output in outputs]
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
     assert [output["parameters"]["encut"] == 450 for output in outputs]
@@ -157,7 +157,7 @@ def test_slab_dynamic_jobs():
         static_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
     ).run(atoms)
 
-    assert outputs[0]["nsites"] == 96
+    assert outputs[0]["nsites"] == 80
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
     assert [output["parameters"]["encut"] == 450 for output in outputs]
@@ -166,7 +166,7 @@ def test_slab_dynamic_jobs():
         static_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
     ).run(atoms)
 
-    assert outputs[0]["nsites"] == 96
+    assert outputs[0]["nsites"] == 80
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
     assert [output["parameters"]["encut"] == 450 for output in outputs]
@@ -180,11 +180,11 @@ def test_slab_dynamic_jobs():
 
     outputs = SlabToAdsFlow(static_electron=None).run(atoms, adsorbate)
 
-    assert outputs[0]["nsites"] == 98
+    assert outputs[0]["nsites"] == 82
     assert [output["parameters"]["isif"] == 2 for output in outputs]
 
     outputs = SlabToAdsFlow().run(atoms, adsorbate)
-    assert outputs[0]["nsites"] == 98
+    assert outputs[0]["nsites"] == 82
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
     outputs = SlabToAdsFlow(
@@ -192,7 +192,7 @@ def test_slab_dynamic_jobs():
         static_electron=None,
     ).run(atoms, adsorbate)
 
-    assert outputs[0]["nsites"] == 98
+    assert outputs[0]["nsites"] == 82
     assert [output["parameters"]["isif"] == 2 for output in outputs]
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
     assert [output["parameters"]["encut"] == 450 for output in outputs]
@@ -202,7 +202,7 @@ def test_slab_dynamic_jobs():
         static_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
     ).run(atoms, adsorbate)
 
-    assert outputs[0]["nsites"] == 98
+    assert outputs[0]["nsites"] == 82
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
     assert [output["parameters"]["encut"] == 450 for output in outputs]
@@ -211,7 +211,7 @@ def test_slab_dynamic_jobs():
         static_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
     ).run(atoms, adsorbate)
 
-    assert outputs[0]["nsites"] == 98
+    assert outputs[0]["nsites"] == 82
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
     assert [output["parameters"]["encut"] == 450 for output in outputs]
@@ -219,7 +219,7 @@ def test_slab_dynamic_jobs():
     adsorbate2 = molecule("CH3")
     adsorbate2.set_initial_magnetic_moments([1, 0, 0, 0])
     outputs = SlabToAdsFlow().run(atoms, adsorbate2)
-    assert outputs[0]["nsites"] == 100
+    assert outputs[0]["nsites"] == 84
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
 
