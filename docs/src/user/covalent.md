@@ -93,11 +93,14 @@ In QuAcc, there are two types of recipes: 1) individual compute tasks that are f
 ```python
 import covalent as ct
 from ase.build import bulk
+from quacc.recipes.emt.core import relax_job
 from quacc.recipes.emt.slabs import BulkToSlabsFlow
 
 @ct.lattice
-def workflow(atoms)
-    return BulkToSlabsFlow(static_electron=None).run(atoms)
+def workflow(atoms):
+    relaxed_bulk = ct.electron(relax_job)(atoms)
+    relaxed_slabs = BulkToSlabsFlow(static_electron=None).run(relaxed_bulk["atoms"])
+    return relaxed_slabs
 
 atoms = bulk("Cu")
 dispatch_id = ct.dispatch(workflow)(atoms)
