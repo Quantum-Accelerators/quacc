@@ -4,7 +4,7 @@ Here, we will show how to use [Covalent](https://github.com/AgnostiqHQ/covalent)
 
 ## Pre-Requisites
 
-Make sure you completed the ["Covalent Setup"](covalent.md) section of the documentation. If you haven't done so already, run `covalent start` prior to starting these examples.
+Make sure you completed the "Covalent Setup" section of the documentation. If you haven't done so already, run `covalent start` prior to starting these examples.
 
 Additionally, you should read the Covalent [First Experiment](https://covalent.readthedocs.io/en/latest/getting_started/first_experiment/index.html) guide to get a sense of how Covalent works. Namely, you should understand the [Covalent Basics](https://covalent.readthedocs.io/en/latest/concepts/basics.html) of the `Electron` and `Lattice` objects, which describe individual compute tasks and workflows, respectively.
 
