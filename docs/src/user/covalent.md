@@ -98,8 +98,8 @@ from quacc.recipes.emt.slabs import BulkToSlabsFlow
 
 @ct.lattice
 def workflow(atoms):
-    relaxed_bulk = ct.electron(relax_job)(atoms)
-    relaxed_slabs = BulkToSlabsFlow(static_electron=None).run(relaxed_bulk["atoms"])
+    # relaxed_bulk = ct.electron(relax_job)(atoms)
+    relaxed_slabs = BulkToSlabsFlow(static_electron=None).run(atoms)
     return relaxed_slabs
 
 atoms = bulk("Cu")
