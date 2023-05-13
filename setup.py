@@ -47,7 +47,7 @@ if __name__ == "__main__":
                 "autodoc_pydantic==1.8.0",
             ],
             "dev": ["pytest==7.3.1", "black==23.3.0", "isort==5.12.0"],
-            "tests": [
+            "strict": [
                 "ase @ git+https://gitlab.com/ase/ase.git",
                 "atomate2 @ git+https://github.com/materialsproject/atomate2.git",
                 "covalent==0.220.0",
