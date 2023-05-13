@@ -13,6 +13,5 @@ Table of Contents
 
    Quick Start: Basics <quick-start.md>
    Using Covalent <covalent.md>
-   Understanding the Recipes <breakdown.md>
-   Writing New Jobs and Flows <writing-workflows.md>
+   Optional: Using a Database <database.md>
    Optional: Jobflow and FireWorks <fireworks.md>

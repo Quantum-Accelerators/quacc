@@ -6,6 +6,8 @@ Make sure you completed the "Jobflow and Fireworks Setup" section of the install
 
 ### Example 1: Running a Job
 
+Here, we will try running a simple job where we carry out a static calculation on a bulk Cu structure using EMT. This example is shown below.
+
 ```python
 import jobflow as jf
 from ase.build import bulk
@@ -22,7 +24,11 @@ result = responses[job.uuid][1].output
 print(result)
 ```
 
+The key thing to note is that we need to transform the QuAcc recipe, which is a normal function, into a `jobflow` `Job` object. This can be done using the `@job` decorator and a new function definition or, more compactly, via `jf.job(<function>)`. We chose to run the job locally, but other workflow managers can be imported and used, as we discuss for FireWorks further below.
+
 ### Example 2: Running a Flow
+
+Here, we will try running a simple workflow where we relax a bulk Cu structure using EMT and take the output of that calculation as the input to a follow-up static calculation with EMT. This example is shown below.
 
 ```python
 import jobflow as jf
@@ -41,6 +47,12 @@ responses = run_locally(workflow)
 result = responses[job2.uuid][1].output
 print(result)
 ```
+
+Like before, we need to define the individual `Job` objects. Now though, we must stitch them together into a `Flow`, which can be easily achieved by passing them to the `jf.Flow()` constructor. The `Flow` object will automatically determine the order in which the jobs should be run based on the inputs and outputs of each job. In this case, it will know not to run `job2` until `job1` has completed.
+
+### Learn More
+
+That ends the Jobflow section of the documentation. If you want to learn more about Jobflow, you can read the [Jobflow Documentation](https://materialsproject.github.io/jobflow/).
 
 ## FireWorks
 
@@ -70,4 +82,4 @@ lpad = LaunchPad.auto_load()
 lpad.add_wf(wf)
 ```
 
-For additional options, see the [Jobflow API](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks). For documentation on how to submit jobs to the queue that are in your launchpad, refer to the [FireWorks documentation](https://materialsproject.github.io/fireworks/queue_tutorial.html#submit-a-job).
+For additional FireWorks-related options in Jobflow, see the [Jobflow API](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks). For documentation on how to submit jobs to the queue that are in your launchpad, refer to the [FireWorks Documentation](https://materialsproject.github.io/fireworks/queue_tutorial.html#submit-a-job).
