@@ -41,7 +41,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install .[tests]
+          pip install .[tests,dev]
           pip install chardet
           pip install pytest-cov
         id: cache
