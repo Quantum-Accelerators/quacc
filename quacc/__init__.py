@@ -55,7 +55,7 @@ if ct:
             ct.set_config({f"executors.{executor}.create_unique_workdir": True})
 
     # Ensure that use_srun is False
-    if ct_config["executors"].get("slurm", None):
+    if "slurm" in ct_config["executors"]:
         if ct_config["executors"]["slurm"].get("use_srun", True) is not False:
             warnings.warn(
                 "Updating Covalent configuration... setting executors.slurm.use_srun: False",
