@@ -35,3 +35,16 @@ def test_emt():
     dispatch_id = ct.dispatch(workflow)(atoms)
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
+
+    workflow = ct.lattice(ct.electron(relax_job))
+    dispatch_id = ct.dispatch(workflow)(atoms)
+    result = ct.get_result(dispatch_id, wait=True)
+    assert result.status == "COMPLETED"
+
+    @ct.lattice
+    def workflow(atoms):
+        return BulkToSlabsFlow().run(atoms)
+
+    dispatch_id = ct.dispatch(workflow)(atoms)
+    result = ct.get_result(dispatch_id, wait=True)
+    assert result.status == "COMPLETED"
