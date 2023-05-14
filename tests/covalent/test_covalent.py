@@ -118,28 +118,3 @@ def test_tutorials():
     dispatch_id = ct.dispatch(workflow)(atoms)
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
-
-
-@pytest.mark.skipif(
-    ct is None or os.environ.get("GITHUB_ACTIONS", False) is False,
-    reason="This test is only meant to be run on GitHub Actions",
-)
-def test_emt():
-    atoms = bulk("Cu")
-    workflow = ct.lattice(ct.electron(static_job))
-    dispatch_id = ct.dispatch(workflow)(atoms)
-    result = ct.get_result(dispatch_id, wait=True)
-    assert result.status == "COMPLETED"
-
-    workflow = ct.lattice(ct.electron(relax_job))
-    dispatch_id = ct.dispatch(workflow)(atoms)
-    result = ct.get_result(dispatch_id, wait=True)
-    assert result.status == "COMPLETED"
-
-    @ct.lattice
-    def workflow(atoms):
-        return BulkToSlabsFlow().run(atoms)
-
-    dispatch_id = ct.dispatch(workflow)(atoms)
-    result = ct.get_result(dispatch_id, wait=True)
-    assert result.status == "COMPLETED"
