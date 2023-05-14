@@ -42,17 +42,14 @@ SETTINGS = QuaccSettings()
 if ct:
     ct_config = ct.get_config()
     for executor in ct_config["executors"]:
-        if (
-            ct_config["executors"][executor].get("create_unique_workdir", None)
-            == "false"
-        ):
+        if ct_config["executors"][executor].get("create_unique_workdir", None) is False:
             warnings.warn(
                 f"Updating Covalent configuration... setting executors.{executor}.create_unique_workdir: 'true'",
                 UserWarning,
             )
             ct.set_config({f"executors.{executor}.create_unique_workdir": "true"})
     if ct_config["executors"].get("slurm", None):
-        if ct_config["executors"]["slurm"].get("use_srun", "true") == "true":
+        if ct_config["executors"]["slurm"].get("use_srun", True):
             warnings.warn(
                 "Updating Covalent configuration... setting executors.slurm.use_srun: 'false'",
                 UserWarning,
