@@ -23,3 +23,7 @@ def test_emt():
     job = jf.job(static_job)(atoms)
     response = run_locally(job)
     assert response[job.uuid][1].output is not None
+
+    job = jf.job(relax_job)(atoms)
+    response = run_locally(job)
+    assert response[job.uuid][1].output is not None
