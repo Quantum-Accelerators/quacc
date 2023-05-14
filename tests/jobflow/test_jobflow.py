@@ -14,8 +14,8 @@ except ImportError:
 
 
 @pytest.mark.skipif(
-    jf is None,
-    reason="This test requires Jobflow",
+    jf is None or os.environ.get("GITHUB_ACTIONS", False) is False,
+    reason="This test is only meant to be run on GitHub Actions",
 )
 def test_emt():
     atoms = bulk("Cu")
