@@ -1,4 +1,5 @@
 """Init data for QuAcc"""
+import warnings
 from ase.atoms import Atoms
 from ase.io.jsonio import decode, encode
 
@@ -38,11 +39,29 @@ Atoms.from_dict = atoms_from_dict
 SETTINGS = QuaccSettings()
 
 if ct:
-    ct.set_config(
-        {
-            "executors.local.create_unique_workdir": "true",
-            "executors.dask.create_unique_workdir": "true",
-            "executors.slurm.use_srun": "false",
-            "executors.slurm.create_unique_workdir": "true",
-        }
-    )
+    ct_config = ct.get_config()
+    if not ct_config["executors"]["local"].get("create_unique_workdir", False):
+        warnings.warn(
+            "Updating Covalent configuration: setting covalent.executors.local.create_unique_workdir to True",
+            UserWarning,
+        )
+        ct.set_config({"executors.local.create_unique_workdir": True})
+    if not ct_config["executors"]["dask"].get("create_unique_workdir", False):
+        warnings.warn(
+            "Updating Covalent configuration: setting covalent.executors.dask.create_unique_workdir to True",
+            UserWarning,
+        )
+        ct.set_config({"executors.dask.create_unique_workdir": True})
+    if ct_config["executors"].get("slurm", None):
+        if not ct_config["executors"]["slurm"].get("create_unique_workdir", False):
+            warnings.warn(
+                "Updating Covalent configuration: setting covalent.executors.slurm.create_unique_workdir to True",
+                UserWarning,
+            )
+            ct.set_config({"executors.slurm.create_unique_workdir": True})
+        if ct_config["executors"]["slurm"].get("use_srun", True):
+            warnings.warn(
+                "Updating Covalent configuration: setting covalent.executors.slurm.use_srun to False",
+                UserWarning,
+            )
+            ct.set_config({"executors.slurm.use_srun": False})
