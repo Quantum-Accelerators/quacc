@@ -34,7 +34,7 @@ if __name__ == "__main__":
             "monty>=2023.5.8",
         ],
         extras_require={
-            "fireworks": ["jobflow>=0.1.11", "fireworks>=2.0.3"],
+            "jobflow": ["jobflow>=0.1.11", "fireworks>=2.0.3"],
             "vasp": ["custodian>=2023.5.7"],
             "xtb": ["tblite[ase]>=0.3.0"],
             "docs": [
@@ -50,7 +50,7 @@ if __name__ == "__main__":
             "strict": [
                 "ase @ git+https://gitlab.com/ase/ase.git",
                 "atomate2 @ git+https://github.com/materialsproject/atomate2.git",
-                "covalent==0.220.0",
+                "covalent @ git+https://github.com/arosen93/covalent.git@rosen-unique-workdir",
                 "pymatgen==2023.5.10",
                 "jobflow==0.1.11",
                 "emmet-core==0.55.0",

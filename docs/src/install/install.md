@@ -11,7 +11,7 @@ With Miniconda installed, create a fresh environment by running `conda create -n
 In your newly activated conda environment, you can install QuAcc and its related dependencies by using `pip install quacc`. For the development version of QuAcc (currently recommended), you can instead use `pip install git+https://github.com/arosen93/quacc.git`.
 
 QuAcc can be installed with several `extras`, as outlined in the `setup.py` file. These are described below:
-- `quacc[fireworks]`: Installs dependencies to enable the use of Jobflow and FireWorks.
+- `quacc[jobflow]`: Installs dependencies to enable the use of Jobflow and FireWorks.
 - `quacc[vasp]`: Installs dependencies to enable the use of VASP with Custodian.
 - `quacc[xtb]`: Installs dependencies to enable the use of xtb via tblite.
 - `quacc[dev]`: Installs dependencies to enable local development of QuAcc.
