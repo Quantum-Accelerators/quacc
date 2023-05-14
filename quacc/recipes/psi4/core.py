@@ -12,8 +12,8 @@ try:
 except ImportError:
     psi4 = None
 from quacc.schemas.calc import summarize_run
-from quacc.util.dicts import merge_dicts
 from quacc.util.calc import run_calc
+from quacc.util.dicts import merge_dicts
 
 
 @requires(psi4, "Psi4 be installed. Try conda install -c psi4 psi4")

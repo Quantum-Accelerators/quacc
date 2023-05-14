@@ -9,8 +9,8 @@ from ase.atoms import Atoms
 from ase.calculators.gulp import GULP
 
 from quacc.schemas.calc import summarize_run
-from quacc.util.dicts import merge_dicts
 from quacc.util.calc import run_calc
+from quacc.util.dicts import merge_dicts
 
 
 def static_job(

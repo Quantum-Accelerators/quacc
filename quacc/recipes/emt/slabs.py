@@ -39,7 +39,6 @@ class BulkToSlabsFlow:
     def run(
         self,
         atoms: Atoms,
-        max_slabs: int = None,
         slabgen_kwargs: dict[str, Any] = None,
     ):
         """
@@ -82,7 +81,7 @@ class BulkToSlabsFlow:
                 for slab in slabs
             ]
 
-        slabs = make_max_slabs_from_bulk(atoms, max_slabs=max_slabs, **slabgen_kwargs)
+        slabs = make_max_slabs_from_bulk(atoms, **slabgen_kwargs)
 
         if self.relax_electron and self.static_electron:
             return _relax_and_static_distributed(slabs)

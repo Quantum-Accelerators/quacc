@@ -59,18 +59,28 @@ def test_slab_dynamic_jobs():
         BulkToSlabsFlow(relax_electron=None, static_electron=None).run(atoms)
 
     outputs = BulkToSlabsFlow(relax_electron=None).run(atoms)
+    assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
+    assert outputs[1]["nsites"] == 96
+    assert outputs[2]["nsites"] == 80
+    assert outputs[3]["nsites"] == 64
     assert [output["parameters"]["asap_cutoff"] == False for output in outputs]
 
     outputs = BulkToSlabsFlow(
         static_electron=None,
         relax_kwargs={"fmax": 1.0, "emt_kwargs": {"asap_cutoff": True}},
     ).run(atoms)
+    assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
+    assert outputs[1]["nsites"] == 96
+    assert outputs[2]["nsites"] == 80
+    assert outputs[3]["nsites"] == 64
     assert [output["parameters"]["asap_cutoff"] == True for output in outputs]
 
     outputs = BulkToSlabsFlow(
         relax_kwargs={"fmax": 1.0, "emt_kwargs": {"asap_cutoff": True}},
-    ).run(atoms)
-    assert outputs[0]["nsites"] == 80
+    ).run(atoms, slabgen_kwargs={"max_slabs": 2})
+    assert len(outputs) == 2
+    assert outputs[0]["nsites"] == 64
+    assert outputs[1]["nsites"] == 80
     assert [output["parameters"]["asap_cutoff"] == False for output in outputs]

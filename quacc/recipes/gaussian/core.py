@@ -8,8 +8,8 @@ from ase.atoms import Atoms
 from ase.calculators.gaussian import Gaussian
 
 from quacc.schemas.cclib import summarize_run
-from quacc.util.dicts import merge_dicts
 from quacc.util.calc import run_calc
+from quacc.util.dicts import merge_dicts
 
 LOG_FILE = Gaussian().label + ".log"
 GEOM_FILE = LOG_FILE
