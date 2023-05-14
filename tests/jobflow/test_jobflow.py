@@ -1,4 +1,5 @@
 import os
+from shutil import rmtree
 
 import pytest
 from ase.build import bulk
@@ -14,6 +15,20 @@ except ImportError:
     jf = None
 
 store = JobStore(MemoryStore())
+
+
+def teardown_module():
+    for f in os.listdir(os.getcwd()):
+        if (
+            f.endswith(".log")
+            or f.endswith(".pckl")
+            or f.endswith(".traj")
+            or f.endswith(".out")
+            or ".gz" in f
+        ):
+            os.remove(f)
+        if "quacc-tmp" in f or f == "tmp_dir":
+            rmtree(f)
 
 
 @pytest.mark.skipif(jf is None, reason="This test requires jobflow")
