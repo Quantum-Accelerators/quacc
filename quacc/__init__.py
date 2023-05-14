@@ -5,6 +5,11 @@ from ase.io.jsonio import decode, encode
 from quacc._version import __version__
 from quacc.settings import QuaccSettings
 
+try:
+    import covalent as ct
+except ImportError:
+    ct = None
+
 
 def atoms_as_dict(s):
     # Uses Monty's MSONable spec
@@ -31,3 +36,13 @@ def atoms_from_dict(d):
 Atoms.as_dict = atoms_as_dict
 Atoms.from_dict = atoms_from_dict
 SETTINGS = QuaccSettings()
+
+if ct:
+    ct.set_config(
+        {
+            "executors.local.create_unique_workdir": "true",
+            "executors.dask.create_unique_workdir": "true",
+            "executors.slurm.use_srun": "false",
+            "executors.slurm.create_unique_workdir": "true",
+        }
+    )
