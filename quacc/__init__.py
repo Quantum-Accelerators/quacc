@@ -53,7 +53,6 @@ if ct:
                 UserWarning,
             )
             ct.set_config({f"executors.{executor}.create_unique_workdir": True})
-            ct.reload_config()
 
     # Ensure that use_srun is False
     if ct_config["executors"].get("slurm", None):
@@ -63,7 +62,6 @@ if ct:
                 UserWarning,
             )
             ct.set_config({"executors.slurm.use_srun": False})
-            ct.reload_config()
 
     # Make sure that the create_unique_workdir is set to True for all executors in case
     # we missed some from before
@@ -77,4 +75,3 @@ if ct:
                 UserWarning,
             )
             ct.set_config({f"executors.{executor}.create_unique_workdir": True})
-            ct.reload_config()
