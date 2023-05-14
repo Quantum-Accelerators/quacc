@@ -51,7 +51,7 @@ if __name__ == "__main__":
                 "ase @ git+https://gitlab.com/ase/ase.git",
                 "atomate2 @ git+https://github.com/materialsproject/atomate2.git",
                 "covalent @ git+https://github.com/arosen93/covalent.git@rosen-unique-workdir",
-                "covalent-slurm-plugin====0.16.0rc0",
+                "covalent-slurm-plugin==0.16.0rc0",
                 "pymatgen==2023.5.10",
                 "jobflow==0.1.11",
                 "emmet-core==0.55.0",
