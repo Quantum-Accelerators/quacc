@@ -41,7 +41,10 @@ SETTINGS = QuaccSettings()
 if ct:
     ct_config = ct.get_config()
     for executor in ct_config["executors"]:
-        if ct_config["executors"][executor].get("create_unique_workdir", "false") == "false":
+        if (
+            ct_config["executors"][executor].get("create_unique_workdir", "false")
+            == "false"
+        ):
             warnings.warn(
                 f"Updating Covalent configuration... setting executors.{executor}.create_unique_workdir: 'true'",
                 UserWarning,
