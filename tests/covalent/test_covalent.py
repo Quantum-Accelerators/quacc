@@ -35,14 +35,12 @@ def test_covalent_config():
     ct_config = ct.get_config()
     for executor in ["dask", "local"]:
         assert (
-            ct_config["executors"][executor].get("create_unique_workdir", "false")
-            == "true"
+            ct_config["executors"][executor].get("create_unique_workdir", False) == True
         )
     if ct_config["executors"].get("slurm", None):
-        assert ct_config["executors"]["slurm"].get("use_srun", "true") == "false"
+        assert ct_config["executors"]["slurm"].get("use_srun", True) == False
         assert (
-            ct_config["executors"]["slurm"].get("create_unique_workdir", "false")
-            == "true"
+            ct_config["executors"]["slurm"].get("create_unique_workdir", False) == True
         )
 
 
