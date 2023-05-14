@@ -104,8 +104,8 @@ def workflow(atoms):
 
 atoms = bulk("Cu")
 dispatch_id = ct.dispatch(workflow)(atoms)
-results = ct.get_result(dispatch_id, wait=True)
-print(results)
+result = ct.get_result(dispatch_id, wait=True)
+print(result)
 ```
 
 Here, we have imported to the `BulkToSlabsFlow` class, which is instantiated with optional parameters and is applied to an `Atoms` object. Here, for demonstration purposes, we specify the `static_electron=None` option to only do a relaxation after the slabs are made. All we have to do to use the workflow is wrap it inside a `@ct.lattice` decorator. We don't need to use a `@ct.electron` decorator here because the `BulkToSlabsFlow` class is already calling `Electron` objects internally. As a general rule, all classes in QuAcc are workflows that can be transformed into a `Lattice`, and all functions are compute tasks that can be transformed into `Electron` objects.
