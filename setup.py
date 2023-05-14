@@ -28,13 +28,13 @@ if __name__ == "__main__":
             "atomate2 @ git+https://github.com/materialsproject/atomate2.git",
             "pymatgen==2023.5.10",
             "jobflow==0.1.11",
-            "emmet-core==0.54.4",
+            "emmet-core==0.55.0",
             "cclib==1.7.2",
             "monty==2023.5.8",
             "numpy",
         ],
         extras_require={
-            "all": ["custodian==2023.5.7", "fireworks==2.0.3"],
+            "all": ["custodian==2023.5.12", "fireworks==2.0.3"],
             "codes": [
                 "xtb==22.1",
                 "tblite[ase]==0.3.0",
