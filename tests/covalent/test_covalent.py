@@ -79,16 +79,16 @@ def test_tutorials():
     assert result.status == "COMPLETED"
 
     # ------------------------------------------------------------
-    # @ct.lattice
-    # def workflow(atoms):
-    #     relaxed_bulk = ct.electron(relax_job)(atoms)
-    #     relaxed_slabs = BulkToSlabsFlow(static_electron=None).run(relaxed_bulk["atoms"])
-    #     return relaxed_slabs
+    @ct.lattice
+    def workflow(atoms):
+        relaxed_bulk = ct.electron(relax_job)(atoms)
+        relaxed_slabs = BulkToSlabsFlow(static_electron=None).run(relaxed_bulk["atoms"])
+        return relaxed_slabs
 
-    # atoms = bulk("Cu")
-    # dispatch_id = ct.dispatch(workflow)(atoms)
-    # result = ct.get_result(dispatch_id, wait=True)
-    # assert result.status == "COMPLETED"
+    atoms = bulk("Cu")
+    dispatch_id = ct.dispatch(workflow)(atoms)
+    result = ct.get_result(dispatch_id, wait=True)
+    assert result.status == "COMPLETED"
 
     # ------------------------------------------------------------
     @ct.lattice(executor="local")
