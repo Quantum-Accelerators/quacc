@@ -16,15 +16,12 @@ except ImportError:
 store = JobStore(MemoryStore())
 
 
-@pytest.mark.skipif(
-    jf is None or os.environ.get("GITHUB_ACTIONS", False) is False,
-    reason="This test is only meant to be run on GitHub Actions",
-)
+@pytest.mark.skipif(jf is None, reason="This test requires jobflow")
 def test_emt():
     atoms = bulk("Cu")
 
     job = jf.job(static_job)(atoms)
-    run_locally(job, ensure_success=True)
+    run_locally(job, store=store, ensure_success=True)
 
     job = jf.job(relax_job)(atoms)
-    run_locally(job, ensure_success=True)
+    run_locally(job, store=store, ensure_success=True)
