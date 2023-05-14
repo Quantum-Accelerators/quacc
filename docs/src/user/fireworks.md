@@ -68,7 +68,7 @@ from jobflow.managers.fireworks import job_to_firework
 
 fw = job_to_firework(job)
 lpad = LaunchPad.auto_load()
-lpad.add_wf(wf)
+lpad.add_wf(fw)
 ```
 
 To convert a `Flow` to a `workflow` and add it to your launch pad:
@@ -81,5 +81,7 @@ wf = flow_to_firework(flow)
 lpad = LaunchPad.auto_load()
 lpad.add_wf(wf)
 ```
+
+With a workflow added to your launch pad, on the desired machine of choice, you can run `qlaunch rapidfire --nlaunches <N>` (where `<N>` is the number of jobs to submit) in the command line to submit your workflows to the job scheduler.
 
 For additional FireWorks-related options in Jobflow, see the [Jobflow API](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks). For documentation on how to submit jobs to the queue that are in your launchpad, refer to the [FireWorks Documentation](https://materialsproject.github.io/fireworks/queue_tutorial.html#submit-a-job).

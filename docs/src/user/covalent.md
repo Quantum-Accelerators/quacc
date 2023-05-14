@@ -98,7 +98,7 @@ from quacc.recipes.emt.slabs import BulkToSlabsFlow
 
 @ct.lattice
 def workflow(atoms):
-    # relaxed_bulk = ct.electron(relax_job)(atoms)
+    relaxed_bulk = ct.electron(relax_job)(atoms)
     relaxed_slabs = BulkToSlabsFlow(static_electron=None).run(atoms)
     return relaxed_slabs
 
@@ -108,7 +108,7 @@ results = ct.get_result(dispatch_id, wait=True)
 print(results)
 ```
 
-Here, we have imported to the `BulkToSlabsFlow` class, which is instantiated with some optional user parameters and is applied to an `Atoms` object. All we have to do to use the workflow is wrap it inside a `@ct.lattice` decorator. We don't need to use a `@ct.electron` decorator here because the `BulkToSlabsFlow` class is already calling `Electron` objects internally.
+Here, we have imported to the `BulkToSlabsFlow` class, which is instantiated with optional parameters and is applied to an `Atoms` object. Here, for demonstration purposes, we specify the `static_electron=None` option to only do a relaxation after the slabs are made. All we have to do to use the workflow is wrap it inside a `@ct.lattice` decorator. We don't need to use a `@ct.electron` decorator here because the `BulkToSlabsFlow` class is already calling `Electron` objects internally. As a general rule, all classes in QuAcc are workflows that can be transformed into a `Lattice`, and all functions are compute tasks that can be transformed into `Electron` objects.
 
 If you want to understand what is going on underneath the hood, it is worth checking out the source code. Because the number of slabs is not pre-determined, this recipe is using a Covalent feature called a [Sublattice](https://covalent.readthedocs.io/en/latest/concepts/basics.html?highlight=sublattice#sublattice) that enables [dynamic workflows](https://covalent.readthedocs.io/en/latest/developer/patterns/dynamic_workflow.html?highlight=dynamic%20workflow). Of course, if you don't plan to develop new dynamic workflows, you don't actually need to know this. You can just import the recipe that makes use of this feature and away you go.
 
