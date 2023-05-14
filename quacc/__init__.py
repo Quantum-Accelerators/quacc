@@ -40,28 +40,17 @@ SETTINGS = QuaccSettings()
 
 if ct:
     ct_config = ct.get_config()
-    if not ct_config["executors"]["local"].get("create_unique_workdir", False):
-        warnings.warn(
-            "Updating Covalent configuration: setting covalent.executors.local.create_unique_workdir to True",
-            UserWarning,
-        )
-        ct.set_config({"executors.local.create_unique_workdir": True})
-    if not ct_config["executors"]["dask"].get("create_unique_workdir", False):
-        warnings.warn(
-            "Updating Covalent configuration: setting covalent.executors.dask.create_unique_workdir to True",
-            UserWarning,
-        )
-        ct.set_config({"executors.dask.create_unique_workdir": True})
+    for executor in ct_config["executors"]:
+        if ct_config["executors"][executor].get("create_unique_workdir", "false") == "false":
+            warnings.warn(
+                f"Updating Covalent configuration... setting executors.{executor}.create_unique_workdir: 'true'",
+                UserWarning,
+            )
+            ct.set_config({f"executors.{executor}.create_unique_workdir": "true"})
     if ct_config["executors"].get("slurm", None):
-        if not ct_config["executors"]["slurm"].get("create_unique_workdir", False):
+        if ct_config["executors"]["slurm"].get("use_srun", "true") == "true":
             warnings.warn(
-                "Updating Covalent configuration: setting covalent.executors.slurm.create_unique_workdir to True",
+                "Updating Covalent configuration... setting executors.slurm.use_srun: 'false'",
                 UserWarning,
             )
-            ct.set_config({"executors.slurm.create_unique_workdir": True})
-        if ct_config["executors"]["slurm"].get("use_srun", True):
-            warnings.warn(
-                "Updating Covalent configuration: setting covalent.executors.slurm.use_srun to False",
-                UserWarning,
-            )
-            ct.set_config({"executors.slurm.use_srun": False})
+            ct.set_config({"executors.slurm.use_srun": "false"})
