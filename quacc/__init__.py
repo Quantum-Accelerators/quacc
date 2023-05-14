@@ -44,10 +44,14 @@ if ct:
 
     # Ensure that the create_unique_workdir is set to True
     for executor in ["dask", "local", "slurm"]:
-        if (
-            "create_unique_workdir" in ct_config["executors"][executor]
-            and ct_config["executors"][executor]["create_unique_workdir"] is not True
-        ):
+        try:
+            create_unique_workdir = ct_config["executors"][executor][
+                "create_unique_workdir"
+            ]
+        except:
+            create_unique_workdir = None
+
+        if not create_unique_workdir:
             warnings.warn(
                 f"Updating Covalent configuration... setting executors.{executor}.create_unique_workdir: True",
                 UserWarning,
