@@ -3,6 +3,7 @@ import os
 import pytest
 from ase.build import bulk
 from jobflow.managers.local import run_locally
+from maggma.stores import MemoryStore
 
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.recipes.emt.slabs import BulkToSlabsFlow
@@ -12,18 +13,18 @@ try:
 except ImportError:
     jf = None
 
+store = MemoryStore()
+
 
 @pytest.mark.skipif(
-    jf is None or os.environ.get("GITHUB_ACTIONS", False) is False,
-    reason="This test is only meant to be run on GitHub Actions",
+    jf is None,
+    reason="This test requires Jobflow",
 )
 def test_emt():
     atoms = bulk("Cu")
 
     job = jf.job(static_job)(atoms)
-    response = run_locally(job)
-    assert response[job.uuid][1].output is not None
+    run_locally(job, store=store, ensure_success=True)
 
     job = jf.job(relax_job)(atoms)
-    response = run_locally(job)
-    assert response[job.uuid][1].output is not None
+    run_locally(job, store=store, ensure_success=True)
