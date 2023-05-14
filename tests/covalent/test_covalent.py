@@ -51,6 +51,8 @@ def test_covalent_config():
     reason="This test is only meant to be run on GitHub Actions",
 )
 def test_tutorials():
+    # Test of the various tutorials
+
     @ct.lattice
     def workflow(atoms):
         job1 = ct.electron(relax_job)
