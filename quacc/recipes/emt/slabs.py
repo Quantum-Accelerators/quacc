@@ -81,7 +81,7 @@ class BulkToSlabsFlow:
                 for slab in slabs
             ]
 
-        slabs = make_max_slabs_from_bulk(atoms, **slabgen_kwargs)
+        slabs = ct.electron(make_max_slabs_from_bulk)(atoms, **slabgen_kwargs)
 
         if self.relax_electron and self.static_electron:
             return _relax_and_static_distributed(slabs)
