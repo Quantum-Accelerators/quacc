@@ -50,7 +50,6 @@ if __name__ == "__main__":
             "strict": [
                 "ase @ git+https://gitlab.com/ase/ase.git",
                 "atomate2 @ git+https://github.com/materialsproject/atomate2.git",
-                "covalent @ git+https://github.com/arosen93/covalent.git@rosen-unique-workdir",
                 "pymatgen==2023.5.10",
                 "jobflow==0.1.11",
                 "emmet-core==0.55.0",
@@ -58,6 +57,7 @@ if __name__ == "__main__":
                 "monty==2023.5.8",
                 "custodian==2023.5.7",
                 "tblite[ase]==0.3.0",
+                "covalent @ git+https://github.com/arosen93/covalent.git@rosen-unique-workdir",
                 "covalent-slurm-plugin==0.16.0rc0",
             ],
         },
