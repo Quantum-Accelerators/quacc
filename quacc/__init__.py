@@ -1,5 +1,6 @@
 """Init data for QuAcc"""
 import warnings
+
 from ase.atoms import Atoms
 from ase.io.jsonio import decode, encode
 
@@ -42,7 +43,7 @@ if ct:
     ct_config = ct.get_config()
     for executor in ct_config["executors"]:
         if (
-            ct_config["executors"][executor].get("create_unique_workdir", "false")
+            ct_config["executors"][executor].get("create_unique_workdir", None)
             == "false"
         ):
             warnings.warn(

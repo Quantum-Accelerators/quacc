@@ -1,4 +1,4 @@
-# Storing the Results in a Database
+# Database Usage
 
 Oftentimes, it is beneficial to store the results in a database for easy querying. There are many ways to achieve this with QuAcc depending on your preferences.
 

@@ -6,7 +6,7 @@ QuAcc is made to directly interface with [Covalent](https://github.com/AgnostiqH
 
 We will describe only the most important setup instructions here. For full details, refer to the [Covalent documentation](https://covalent.readthedocs.io/en/latest/index.html). Please refer to their [Discussion Board](https://github.com/AgnostiqHQ/covalent/discussions) for any Covalent-specific questions.
 
-## Installation
+## Plugin Installation
 
 Covalent was installed when you installed QuAcc, so that part is already taken care of. Depending on where you wish to run your QuAcc calculations, you may also need to install the relevant plugin for the type of machine you wish to execture your calculations on, as described [here](https://covalent.readthedocs.io/en/latest/plugins.html).
 
