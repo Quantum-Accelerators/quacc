@@ -26,8 +26,8 @@ def test_covalent_config():
 
 
 @pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False,
-    reason="covalent must be installed. Try pip install covalent",
+    ct is None or os.environ.get("GITHUB_ACTIONS", False) is False,
+    reason="This test is only meant to be run on GitHub Actions",
 )
 def test_emt():
     atoms = bulk("Cu")
