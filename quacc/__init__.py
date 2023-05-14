@@ -43,8 +43,7 @@ if ct:
     ct_config = ct.get_config()
 
     # Ensure that the create_unique_workdir is set to True
-    # These are the executors where we know this parameter exists
-    for executor in ["dask", "local", "slurm"]:
+    for executor in ["dask", "local"]:
         try:
             create_unique_workdir = ct_config["executors"][executor][
                 "create_unique_workdir"
@@ -60,21 +59,6 @@ if ct:
             ct.set_config({f"executors.{executor}.create_unique_workdir": True})
             ct_config = ct.get_config()
 
-    # Make sure that the create_unique_workdir is set to True for any executor
-    # where this option exists, in case we missed any above
-    for executor in ct_config["executors"]:
-        if (
-            "create_unique_workdir" in ct_config["executors"][executor]
-            and ct_config["executors"][executor]["create_unique_workdir"]
-            is not True
-        ):
-            warnings.warn(
-                f"Updating Covalent configuration... setting executors.{executor}.create_unique_workdir: True",
-                UserWarning,
-            )
-            ct.set_config({f"executors.{executor}.create_unique_workdir": True})
-            ct_config = ct.get_config()
-
     # Ensure that use_srun is False in Slurm executor if the plugin is installed
     if "slurm" in ct_config["executors"]:
         if ct_config["executors"]["slurm"].get("use_srun", True) is not False:
@@ -83,4 +67,28 @@ if ct:
                 UserWarning,
             )
             ct.set_config({"executors.slurm.use_srun": False})
+            ct_config = ct.get_config()
+        if (
+            ct_config["executors"]["slurm"].get("create_unique_workdir", False)
+            is not True
+        ):
+            warnings.warn(
+                f"Updating Covalent configuration... setting executors.slurm.create_unique_workdir: True",
+                UserWarning,
+            )
+            ct.set_config({f"executors.slurm.create_unique_workdir": True})
+            ct_config = ct.get_config()
+
+    # Make sure that the create_unique_workdir is set to True for any optional plugin
+    # where this option exists, in case we missed any above
+    for executor in ct_config["executors"]:
+        if (
+            "create_unique_workdir" in ct_config["executors"][executor]
+            and ct_config["executors"][executor]["create_unique_workdir"] is not True
+        ):
+            warnings.warn(
+                f"Updating Covalent configuration... setting executors.{executor}.create_unique_workdir: True",
+                UserWarning,
+            )
+            ct.set_config({f"executors.{executor}.create_unique_workdir": True})
             ct_config = ct.get_config()

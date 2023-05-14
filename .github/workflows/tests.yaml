@@ -53,6 +53,7 @@ jobs:
       
       - name: Set up Covalent server
         run: |
+          echo "y" | covalent purge
           covalent start
 
       - name: Run tests with pytest

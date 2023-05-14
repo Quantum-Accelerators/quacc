@@ -33,10 +33,9 @@ def teardown_module():
 )
 def test_covalent_config():
     ct_config = ct.get_config()
-    assert ct_config["executors"]["local"].get("create_unique_workdir", False) is True
-    if "dask" in ct_config["executors"]:
+    for executor in ["local", "dask"]:
         assert (
-            ct_config["executors"]["dask"].get("create_unique_workdir", False) is True
+            ct_config["executors"][executor].get("create_unique_workdir", False) is True
         )
     if "slurm" in ct_config["executors"]:
         assert ct_config["executors"]["slurm"].get("use_srun", True) is False
