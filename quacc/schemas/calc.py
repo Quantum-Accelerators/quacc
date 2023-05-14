@@ -109,8 +109,7 @@ def summarize_opt_run(
 
     """
 
-    if additional_fields is None:
-        additional_fields = {}
+    additional_fields = additional_fields or {}
 
     initial_atoms = traj[0]
     final_atoms = traj[-1]

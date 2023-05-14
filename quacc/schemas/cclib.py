@@ -59,10 +59,8 @@ def summarize_run(
     if not atoms.calc.results:
         raise ValueError("ASE Atoms object's calculator has no results.")
 
-    if additional_fields is None:
-        additional_fields = {}
-    if dir_path is None:
-        dir_path = os.getcwd()
+    additional_fields = additional_fields or {}
+    dir_path = dir_path or os.getcwd()
 
     # Fortunately, there is already a cclib parser in Atomate2
     results = TaskDocument.from_logfile(dir_path, logfile_extensions).dict()

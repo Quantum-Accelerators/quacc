@@ -59,10 +59,8 @@ def summarize_run(
         Dictionary of tabulated inputs/results
     """
 
-    if additional_fields is None:
-        additional_fields = {}
-    if dir_path is None:
-        dir_path = os.getcwd()
+    additional_fields = additional_fields or {}
+    dir_path = dir_path or os.getcwd()
 
     # Fetch all tabulated results from VASP outputs files
     # Fortunately, emmet already has a handy function for this
