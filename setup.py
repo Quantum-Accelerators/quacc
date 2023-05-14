@@ -26,11 +26,11 @@ if __name__ == "__main__":
         install_requires=[
             "ase @ git+https://gitlab.com/ase/ase.git",
             "atomate2 @ git+https://github.com/materialsproject/atomate2.git",
+            "covalent>=0.220.0",
             "pymatgen>=2023.5.10",
             "emmet-core>=0.55.0",
             "monty>=2023.5.8",
             "cclib>=1.7.2",
-            "covalent>=0.220.0",
         ],
         extras_require={
             "jobflow": ["jobflow>=0.1.11", "fireworks>=2.0.3"],
@@ -49,6 +49,8 @@ if __name__ == "__main__":
             "strict": [
                 "ase @ git+https://gitlab.com/ase/ase.git",
                 "atomate2 @ git+https://github.com/materialsproject/atomate2.git",
+                "covalent @ git+https://github.com/arosen93/covalent.git@rosen-unique-workdir",
+                # "covalent-slurm-plugin==0.16.0rc0",
                 "pymatgen==2023.5.10",
                 "emmet-core==0.55.0",
                 "monty==2023.5.8",
@@ -56,8 +58,6 @@ if __name__ == "__main__":
                 "custodian==2023.5.7",
                 "tblite[ase]==0.3.0",
                 "jobflow==0.1.11",
-                "covalent @ git+https://github.com/arosen93/covalent.git@rosen-unique-workdir",
-                "covalent-slurm-plugin==0.16.0rc0",
             ],
         },
         tests_require=["pytest"],
