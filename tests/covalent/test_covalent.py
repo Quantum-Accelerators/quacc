@@ -13,7 +13,7 @@ except ImportError:
 
 @pytest.mark.skipif(
     ct is None,
-    reason="covalent must be installed. Try pip install covalent",
+    reason="Covalent must be installed",
 )
 def test_covalent_config():
     ct_config = ct.get_config()
