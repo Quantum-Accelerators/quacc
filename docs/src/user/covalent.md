@@ -1,6 +1,6 @@
 # Using Covalent
 
-Here, we will show how to use [Covalent](https://github.com/AgnostiqHQ/covalent) to construct, dispatch, and monitor workflows in QuAcc. If you prefer to use Jobflow and/or FireWorks, skip to the ["Using QuAcc with Jobflow and FireWorks"](fireworks.md) section of the documentation.
+Here, we will show how to use [Covalent](https://github.com/AgnostiqHQ/covalent) to construct, dispatch, and monitor workflows in QuAcc. If you prefer to use Jobflow and/or FireWorks, skip to the ["Using QuAcc with Jobflow and FireWorks"](jobflow.md) section of the documentation.
 
 ## Pre-Requisites
 

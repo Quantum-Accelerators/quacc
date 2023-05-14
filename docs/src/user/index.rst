@@ -14,4 +14,4 @@ Table of Contents
    Quick Start: Basics <quick-start.md>
    Using Covalent <covalent.md>
    Optional: Using a Database <database.md>
-   Optional: Jobflow and FireWorks <fireworks.md>
+   Optional: Jobflow and FireWorks <jobflow.md>
