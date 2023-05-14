@@ -69,11 +69,11 @@ def workflow(atoms1, atoms2):
     return [result1, result2]
 
 # Define two Atoms objects
-bulk = bulk("Cu")
-molecule = molecule("N2")
+atoms1 = bulk("Cu")
+atoms2 = molecule("N2")
 
 # Dispatch the workflow to the Covalent server
-dispatch_id = ct.dispatch(workflow)(bulk,molecule)
+dispatch_id = ct.dispatch(workflow)(atoms1, atoms1)
 
 # Fetch the results from the server
 result = ct.get_result(dispatch_id, wait=True)
@@ -99,7 +99,7 @@ from quacc.recipes.emt.slabs import BulkToSlabsFlow
 @ct.lattice
 def workflow(atoms):
     relaxed_bulk = ct.electron(relax_job)(atoms)
-    relaxed_slabs = BulkToSlabsFlow(static_electron=None).run(atoms)
+    relaxed_slabs = BulkToSlabsFlow(static_electron=None).run(relaxed_bulk["atoms"])
     return relaxed_slabs
 
 atoms = bulk("Cu")
