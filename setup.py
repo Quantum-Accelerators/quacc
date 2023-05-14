@@ -29,7 +29,6 @@ if __name__ == "__main__":
             "covalent>=0.220.0",
             "pymatgen>=2023.5.10",
             "emmet-core>=0.55.0",
-            "monty>=2023.5.8",
             "cclib>=1.7.2",
         ],
         extras_require={
@@ -53,7 +52,6 @@ if __name__ == "__main__":
                 # "covalent-slurm-plugin==0.16.0rc0",
                 "pymatgen==2023.5.10",
                 "emmet-core==0.55.0",
-                "monty==2023.5.8",
                 "cclib==1.7.2",
                 "custodian==2023.5.7",
                 "tblite[ase]==0.3.0",
