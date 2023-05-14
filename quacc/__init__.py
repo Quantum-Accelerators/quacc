@@ -41,11 +41,12 @@ SETTINGS = QuaccSettings()
 
 if ct:
     ct_config = ct.get_config()
+
     # Ensure that the create_unique_workdir is set to True
     # These are the executors where we know this parameter exists
     for executor in ["dask", "local", "slurm"]:
         try:
-            create_unique_workdir = ct.get_config()["executors"][executor][
+            create_unique_workdir = ct_config["executors"][executor][
                 "create_unique_workdir"
             ]
         except:
@@ -61,10 +62,10 @@ if ct:
 
     # Make sure that the create_unique_workdir is set to True for any executor
     # where this option exists, in case we missed any above
-    for executor in ct.get_config()["executors"]:
+    for executor in ct_config["executors"]:
         if (
-            "create_unique_workdir" in ct.get_config()["executors"][executor]
-            and ct.get_config()["executors"][executor]["create_unique_workdir"]
+            "create_unique_workdir" in ct_config["executors"][executor]
+            and ct_config["executors"][executor]["create_unique_workdir"]
             is not True
         ):
             warnings.warn(
@@ -75,8 +76,8 @@ if ct:
             ct_config = ct.get_config()
 
     # Ensure that use_srun is False in Slurm executor if the plugin is installed
-    if "slurm" in ct.get_config()["executors"]:
-        if ct.get_config()["executors"]["slurm"].get("use_srun", True) is not False:
+    if "slurm" in ct_config["executors"]:
+        if ct_config["executors"]["slurm"].get("use_srun", True) is not False:
             warnings.warn(
                 "Updating Covalent configuration... setting executors.slurm.use_srun: False",
                 UserWarning,
