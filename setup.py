@@ -26,7 +26,7 @@ if __name__ == "__main__":
         install_requires=[
             "ase @ git+https://gitlab.com/ase/ase.git",
             "atomate2 @ git+https://github.com/materialsproject/atomate2.git",
-            "covalent>=0.220.0",
+            "covalent @ git+https://github.com/arosen93/covalent.git@rosen-unique-workdir",
             "pymatgen>=2023.5.10",
             "emmet-core>=0.55.0",
             "cclib>=1.7.2",
