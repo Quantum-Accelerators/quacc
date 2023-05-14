@@ -24,6 +24,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
+## [0.0.6]
+
+See https://github.com/arosen93/quacc/releases/tag/v0.0.6 for more details.
+
+## [0.0.5]
+
+See https://github.com/arosen93/quacc/releases/tag/v0.0.5 for more details.
+
 ## [0.0.5]
 
 See https://github.com/arosen93/quacc/releases/tag/v0.0.5 for more details.
