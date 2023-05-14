@@ -26,7 +26,7 @@ def test_covalent_config():
 
 
 @pytest.mark.skipif(
-    ct is None,
+    os.environ.get("GITHUB_ACTIONS", False) is False,
     reason="covalent must be installed. Try pip install covalent",
 )
 def test_emt():
