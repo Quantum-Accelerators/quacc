@@ -11,14 +11,13 @@ Here, we will try running a simple job where we carry out a static calculation o
 ```python
 import jobflow as jf
 from ase.build import bulk
-from jobflow.managers.local import run_locally
 from quacc.recipes.emt.core import static_job
 
 atoms = bulk("Cu")
 
 job = jf.job(static_job)(atoms)
 
-responses = run_locally(job)
+responses = jf.run_locally(job)
 
 result = responses[job.uuid][1].output
 print(result)
@@ -33,7 +32,6 @@ Here, we will try running a simple workflow where we relax a bulk Cu structure u
 ```python
 import jobflow as jf
 from ase.build import bulk
-from jobflow.managers.local import run_locally
 from quacc.recipes.emt.core import relax_job, static_job
 
 atoms = bulk("Cu")
@@ -43,7 +41,7 @@ job2 = jf.job(static_job)(job1.output["atoms"])
 
 workflow = jf.Flow([job1, job2])
 
-responses = run_locally(workflow)
+responses = jf.run_locally(workflow)
 result = responses[job2.uuid][1].output
 print(result)
 ```
