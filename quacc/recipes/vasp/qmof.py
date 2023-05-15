@@ -83,7 +83,7 @@ def qmof_relax_job(
     summary5 = static(atoms, preset, swaps)
 
     return {
-        "prerelax-lowacc": summary1 if prerelax else None,
+        "prerelax-lowacc": summary1 if run_prerelax else None,
         "position-relax-lowacc": summary2,
         "volume-relax-lowacc": summary3 if relax_volume else None,
         "double-relax": summary4,
