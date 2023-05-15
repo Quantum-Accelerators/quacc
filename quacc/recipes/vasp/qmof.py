@@ -19,7 +19,7 @@ from quacc.util.dicts import merge_dicts
 def qmof_relax_job(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
-    volume_relax: bool = True,
+    relax_volume: bool = True,
     run_prerelax: bool = True,
     swaps: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
@@ -40,7 +40,7 @@ def qmof_relax_job(
         .Atoms object
     preset
         Preset to use. Applies for all jobs.
-    volume_relax
+    relax_volume
         True if a volume relaxation should be performed.
         False if only the positions should be updated.
     run_prerelax
@@ -68,7 +68,7 @@ def qmof_relax_job(
     atoms = summary2["atoms"]
 
     # 3. Optional: Volume relaxation (loose)
-    if volume_relax:
+    if relax_volume:
         summary3 = loose_relax_volume(atoms, preset, swaps)
         atoms = summary3["atoms"]
 
@@ -76,7 +76,7 @@ def qmof_relax_job(
     # This is done for two reasons: a) because it can resolve repadding
     # issues when dV is large; b) because we can use LREAL = Auto for the
     # first relaxation and the default LREAL for the second.
-    summary4 = double_relax(atoms, preset, swaps, volume_relax=volume_relax)
+    summary4 = double_relax(atoms, preset, swaps, relax_volume=relax_volume)
     atoms = summary4["relax2"]["atoms"]
 
     # 5. Static Calculation
@@ -85,7 +85,7 @@ def qmof_relax_job(
     return {
         "prerelax-lowacc": summary1 if prerelax else None,
         "position-relax-lowacc": summary2,
-        "volume-relax-lowacc": summary3 if volume_relax else None,
+        "volume-relax-lowacc": summary3 if relax_volume else None,
         "double-relax": summary4,
         "static": summary5,
     }
@@ -239,7 +239,7 @@ def double_relax(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
     swaps: dict[str, Any] | None = None,
-    volume_relax: bool = True,
+    relax_volume: bool = True,
 ) -> dict[str, Any]:
     """
     Double relaxation using production-quality settings.
@@ -252,7 +252,7 @@ def double_relax(
         Preset to use.
     swaps
         Dictionary of custom kwargs for the calculator.
-    volume_relax
+    relax_volume
         True if a volume relaxation should be performed.
 
     Returns
@@ -266,11 +266,11 @@ def double_relax(
     defaults = {
         "ediffg": -0.03,
         "ibrion": 2,
-        "isif": 3 if volume_relax else 2,
+        "isif": 3 if relax_volume else 2,
         "lcharg": False,
         "lreal": "auto",
         "lwave": True,
-        "nsw": 500 if volume_relax else 250,
+        "nsw": 500 if relax_volume else 250,
     }
 
     # Run first relaxation

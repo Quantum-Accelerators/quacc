@@ -24,7 +24,7 @@ def static_job(
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
     pop: str = "hirshfeld",
-    molden: bool = True,
+    write_molden: bool = True,
     swaps: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """
@@ -46,7 +46,7 @@ def static_job(
         Basis set
     pop
         Type of population analysis to perform, if any
-    molden
+    write_molden
         Whether to write a molden file for orbital visualization
     swaps
         Dictionary of custom kwargs for the calculator.
@@ -72,8 +72,8 @@ def static_job(
         "integral": "ultrafine",
         "nosymmetry": "",
         "pop": pop,
-        "gfinput": "" if molden else None,
-        "ioplist": ["6/7=3"] if molden else None,
+        "gfinput": "" if write_molden else None,
+        "ioplist": ["6/7=3"] if write_molden else None,
     }
     flags = merge_dicts(defaults, swaps, remove_none=True)
 

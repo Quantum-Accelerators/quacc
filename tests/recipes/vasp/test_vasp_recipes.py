@@ -62,7 +62,7 @@ def test_relax_job():
     assert output["parameters"]["encut"] == 520
     assert output["parameters"]["nelmin"] == 6
 
-    output = relax_job(atoms, volume_relax=False)
+    output = relax_job(atoms, relax_volume=False)
     assert output["parameters"]["isif"] == 2
 
 
@@ -87,7 +87,7 @@ def test_doublerelax_job():
     assert output["relax2"]["parameters"]["encut"] == 520
     assert output["relax2"]["parameters"]["nelmin"] == 6
 
-    output = double_relax_job(atoms, volume_relax=False)
+    output = double_relax_job(atoms, relax_volume=False)
     assert output["relax1"]["parameters"]["isif"] == 2
     assert output["relax2"]["parameters"]["isif"] == 2
 
@@ -300,7 +300,7 @@ def test_qmof():
     assert output["static"]["parameters"]["nelmin"] == 6
     assert output["static"]["parameters"]["sigma"] == 0.05
 
-    output = qmof_relax_job(atoms, volume_relax=False)
+    output = qmof_relax_job(atoms, relax_volume=False)
     assert "volume-relax" not in output
 
     assert output["double-relax"]["relax1"]["parameters"]["isif"] == 2

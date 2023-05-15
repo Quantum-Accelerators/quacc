@@ -103,7 +103,7 @@ def relax_job(
     mult: int | None = None,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
-    freq: bool = False,
+    run_freq: bool = False,
     input_swaps: dict[str, Any] | None = None,
     block_swaps: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
@@ -124,7 +124,7 @@ def relax_job(
         Exchange-correlation functional
     basis
         Basis set
-    freq
+    run_freq
         If a requency calculation should be carried out.
     input_swaps
         dictionary of orcasimpleinput swaps for the calculator.
@@ -154,7 +154,7 @@ def relax_job(
         "opt": True,
         "slowconv": True,
         "normalprint": True,
-        "freq": True if freq else None,
+        "freq": True if run_freq else None,
         "xyzfile": True,
     }
     default_blocks = {}
