@@ -48,7 +48,7 @@ if ct:
             create_unique_workdir = ct_config["executors"][executor][
                 "create_unique_workdir"
             ]
-        except:
+        except KeyError:
             create_unique_workdir = None
 
         if not create_unique_workdir:
