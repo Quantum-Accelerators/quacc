@@ -60,8 +60,8 @@ def test_run_calc():
     assert new_atoms[-1].calc.results is not None
     assert os.path.exists("test_file.txt")
     assert os.path.exists("test_file.txt.gz")
-    assert np.array_equal(new_atoms.get_positions(), atoms.get_positions()) is False
-    assert np.array_equal(new_atoms.cell.array, atoms.cell.array) is True
+    assert np.array_equal(new_atoms[-1].get_positions(), atoms.get_positions()) is False
+    assert np.array_equal(new_atoms[-1].cell.array, atoms.cell.array) is True
     os.remove("test_file.txt.gz")
 
     o2 = molecule("O2")

@@ -121,7 +121,7 @@ def run_calc(
         if isinstance(atoms_new, list):
             atoms_new = atoms_new[-1]
 
-        # Make sure the atom indices didn't get update somehow
+        # Make sure the atom indices didn't get updated somehow (sanity check)
         if (
             np.array_equal(atoms_new.get_atomic_numbers(), atoms.get_atomic_numbers())
             is False

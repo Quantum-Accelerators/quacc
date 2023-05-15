@@ -88,9 +88,10 @@ def test_relax_job():
     assert np.array_equal(output["atoms"].cell.array, atoms.cell.array) is True
     # assert output["atoms"] == read("geo_end.gen")
 
-    atoms = bulk("Cu")
+    atoms = bulk("Cu") * (2, 2, 1)
+    atoms[0].postion += 0.1
 
-    output = relax_job(atoms, kpts=(3, 3, 3))
+    output = relax_job(atoms, kpts=(2, 2, 3))
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
@@ -98,8 +99,8 @@ def test_relax_job():
         output["parameters"]["Hamiltonian_KPointsAndWeights_"].strip()
         == "SupercellFolding"
     )
-    assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty000"] == "3 0 0"
-    assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty001"] == "0 3 0"
+    assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty000"] == "2 0 0"
+    assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty001"] == "0 2 0"
     assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty002"] == "0 0 3"
     assert output["parameters"]["Driver_"] == "GeometryOptimization"
     assert output["parameters"]["Driver_LatticeOpt"] == "No"
@@ -109,9 +110,9 @@ def test_relax_job():
     assert np.array_equal(output["atoms"].cell.array, atoms.cell.array) is True
     # assert output["atoms"] == read("geo_end.gen")
 
-    atoms = bulk("Cu")
-
-    output = relax_job(atoms, method="GFN1-xTB", kpts=(3, 3, 3), lattice_opt=True)
+    atoms = bulk("Cu") * (2, 2, 1)
+    atoms[0].postion += 0.1
+    output = relax_job(atoms, method="GFN1-xTB", kpts=(2, 2, 3), lattice_opt=True)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN1-xTB"
@@ -119,8 +120,8 @@ def test_relax_job():
         output["parameters"]["Hamiltonian_KPointsAndWeights_"].strip()
         == "SupercellFolding"
     )
-    assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty000"] == "3 0 0"
-    assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty001"] == "0 3 0"
+    assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty000"] == "2 0 0"
+    assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty001"] == "0 2 0"
     assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty002"] == "0 0 3"
     assert output["parameters"]["Driver_"] == "GeometryOptimization"
     assert output["parameters"]["Driver_LatticeOpt"] == "Yes"
