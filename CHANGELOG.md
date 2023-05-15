@@ -22,6 +22,7 @@ See https://github.com/arosen93/quacc/releases/tag/v0.1.0 for more details.
 - Type checking during PRs.
 - Automatic formatting of files during PRs.
 - This `CHANGELOG.md` file.
+- The `BulkToSlabsFlow` in the EMT calculator.
 
 ### Changed
 - Individual compute jobs are now functions instead of classes.
@@ -33,8 +34,6 @@ See https://github.com/arosen93/quacc/releases/tag/v0.1.0 for more details.
 ### Removed
 - Removed the `xtb` recipes in favor of the `tblite` recipes.
 - Removed the `requirements.txt` file in favor of the `setup.py` file.
-
-### Fixed
 
 ## [0.0.6]
 
