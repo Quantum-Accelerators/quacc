@@ -14,8 +14,6 @@ try:
 except ImportError:
     jf = None
 
-store = JobStore(MemoryStore())
-
 
 def teardown_module():
     for f in os.listdir(os.getcwd()):
@@ -33,6 +31,8 @@ def teardown_module():
 
 @pytest.mark.skipif(jf is None, reason="This test requires jobflow")
 def test_emt():
+    store = JobStore(MemoryStore())
+
     atoms = bulk("Cu")
 
     job = jf.job(static_job)(atoms)

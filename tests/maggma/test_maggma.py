@@ -1,12 +1,11 @@
 import os
 
 import pytest
-from maggma.stores import MemoryStore
 
 try:
-    import maggma as mg
+    import maggma
 except ImportError:
-    mg = None
+    maggma = None
 try:
     import covalent as ct
 except ImportError:
@@ -14,11 +13,13 @@ except ImportError:
 
 
 @pytest.mark.skipif(
-    mg is None or ct is None,
+    maggma is None or ct is None,
     reason="Maggma and Covalent must be installed",
 )
 def test_tutorial():
     # Connect to the database
+    from maggma.stores import MemoryStore
+
     store = MemoryStore()
     store.connect()
 
@@ -28,7 +29,7 @@ def test_tutorial():
     for i, dispatch_id in enumerate(os.listdir(results_dir)):
         result = ct.get_result(dispatch_id).result
         docs.append({"dispatch_id": dispatch_id, "result": result})
-        if i > 2:
+        if i >= 2:
             break
 
     # Store the results
