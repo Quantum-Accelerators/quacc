@@ -4,6 +4,7 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Any
 
+import covalent as ct
 from ase.atoms import Atoms
 from ase.calculators.emt import EMT
 
@@ -13,6 +14,7 @@ from quacc.util.calc import run_ase_opt, run_calc
 # NOTE: This set of minimal recipes is mainly for demonstration purposes
 
 
+@ct.electron
 def static_job(
     atoms: Atoms, emt_kwargs: dict[str, Any] | None = None
 ) -> dict[str, Any]:
@@ -42,6 +44,7 @@ def static_job(
     return summary
 
 
+@ct.electron
 def relax_job(
     atoms: Atoms,
     fmax: float = 0.01,

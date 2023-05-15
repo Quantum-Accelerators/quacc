@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from typing import Any
 
+import covalent as ct
 from ase.atoms import Atoms
 from ase.calculators.psi4 import Psi4
 from monty.dev import requires
@@ -17,6 +18,7 @@ from quacc.util.dicts import merge_dicts
 
 
 @requires(psi4, "Psi4 be installed. Try conda install -c psi4 psi4")
+@ct.electron
 def static_job(
     atoms: Atoms,
     charge: int | None = None,

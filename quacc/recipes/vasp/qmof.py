@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from typing import Any
 
+import covalent as ct
 from ase.atoms import Atoms
 
 from quacc.calculators.vasp import Vasp
@@ -19,7 +20,7 @@ def qmof_relax_job(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
     volume_relax: bool = True,
-    prerelax: bool = True,
+    run_prerelax: bool = True,
     swaps: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """
@@ -42,7 +43,7 @@ def qmof_relax_job(
     volume_relax
         True if a volume relaxation should be performed.
         False if only the positions should be updated.
-    prerelax
+    run_prerelax
         If True, a pre-relax will be carried out with BFGSLineSearch.
         Recommended if starting from hypothetical structures or materials
         with very high starting forces.
@@ -58,28 +59,28 @@ def qmof_relax_job(
     swaps = swaps or {}
 
     # 1. Pre-relaxation
-    if prerelax:
-        summary1 = _prerelax(atoms, preset, swaps, fmax=5.0)
+    if run_prerelax:
+        summary1 = prerelax(atoms, preset, swaps, fmax=5.0)
         atoms = summary1["atoms"]
 
     # 2. Position relaxation (loose)
-    summary2 = _loose_relax_positions(atoms, preset, swaps)
+    summary2 = loose_relax_positions(atoms, preset, swaps)
     atoms = summary2["atoms"]
 
     # 3. Optional: Volume relaxation (loose)
     if volume_relax:
-        summary3 = _loose_relax_volume(atoms, preset, swaps)
+        summary3 = loose_relax_volume(atoms, preset, swaps)
         atoms = summary3["atoms"]
 
     # 4. Double Relaxation
     # This is done for two reasons: a) because it can resolve repadding
     # issues when dV is large; b) because we can use LREAL = Auto for the
     # first relaxation and the default LREAL for the second.
-    summary4 = _double_relax(atoms, preset, swaps, volume_relax=volume_relax)
+    summary4 = double_relax(atoms, preset, swaps, volume_relax=volume_relax)
     atoms = summary4["relax2"]["atoms"]
 
     # 5. Static Calculation
-    summary5 = _static(atoms, preset, swaps)
+    summary5 = static(atoms, preset, swaps)
 
     return {
         "prerelax-lowacc": summary1 if prerelax else None,
@@ -90,7 +91,8 @@ def qmof_relax_job(
     }
 
 
-def _prerelax(
+@ct.electron
+def prerelax(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
     swaps: dict[str, Any] | None = None,
@@ -138,7 +140,8 @@ def _prerelax(
     return summary
 
 
-def _loose_relax_positions(
+@ct.electron
+def loose_relax_positions(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
     swaps: dict[str, Any] | None = None,
@@ -185,7 +188,8 @@ def _loose_relax_positions(
     return summary
 
 
-def _loose_relax_volume(
+@ct.electron
+def loose_relax_volume(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
     swaps: dict[str, Any] | None = None,
@@ -230,7 +234,8 @@ def _loose_relax_volume(
     return summary
 
 
-def _double_relax(
+@ct.electron
+def double_relax(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
     swaps: dict[str, Any] | None = None,
@@ -296,7 +301,8 @@ def _double_relax(
     return {"relax1": summary1, "relax2": summary2}
 
 
-def _static(
+@ct.electron
+def static(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
     swaps: dict[str, Any] | None = None,

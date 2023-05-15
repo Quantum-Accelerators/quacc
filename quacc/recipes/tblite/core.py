@@ -6,6 +6,7 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Any
 
+import covalent as ct
 from ase.atoms import Atoms
 from monty.dev import requires
 
@@ -22,6 +23,7 @@ except ImportError:
     TBLite,
     "tblite must be installed. Try pip install tblite[ase]",
 )
+@ct.electron
 def static_job(
     atoms: Atoms, method: str = "GFN2-xTB", tblite_kwargs: dict[str, Any] | None = None
 ) -> dict[str, Any]:
@@ -56,6 +58,7 @@ def static_job(
     TBLite,
     "tblite must be installed. Try pip install tblite[ase]",
 )
+@ct.electron
 def relax_job(
     atoms: Atoms,
     method: str = "GFN2-xTB",
@@ -108,6 +111,7 @@ def relax_job(
 
 
 @requires(TBLite, "tblite must be installed. Try pip install tblite[ase]")
+@ct.electron
 def thermo_job(
     atoms: Atoms,
     method: str = "GFN2-xTB",

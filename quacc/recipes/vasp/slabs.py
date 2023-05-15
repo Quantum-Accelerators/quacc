@@ -15,6 +15,7 @@ from quacc.util.dicts import merge_dicts
 from quacc.util.slabs import make_adsorbate_structures, make_max_slabs_from_bulk
 
 
+@ct.electron
 def slab_static_job(
     atoms: Atoms, preset: str | None = None, swaps: dict[str, Any] | None = None
 ) -> dict[str, Any]:
@@ -58,6 +59,7 @@ def slab_static_job(
     return summary
 
 
+@ct.electron
 def slab_relax_job(
     atoms: Atoms, preset: str | None = None, swaps: dict[str, Any] | None = None
 ) -> dict[str, Any]:
@@ -121,8 +123,8 @@ class BulkToSlabsFlow:
         Additional keyword arguments to pass to the static calculation.
     """
 
-    relax_electron: Electron | None = ct.electron(slab_relax_job)
-    static_electron: Electron | None = ct.electron(slab_static_job)
+    relax_electron: Electron | None = slab_relax_job
+    static_electron: Electron | None = slab_static_job
     relax_kwargs: dict[str, Any] | None = None
     static_kwargs: dict[str, Any] | None = None
 

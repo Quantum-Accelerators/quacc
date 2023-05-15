@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from typing import Any
 
+import covalent as ct
 from ase.atoms import Atoms
 
 from quacc.calculators.vasp import Vasp
@@ -11,6 +12,7 @@ from quacc.util.calc import run_calc
 from quacc.util.dicts import merge_dicts
 
 
+@ct.electron
 def static_job(
     atoms: Atoms, preset: str | None = None, swaps: dict[str, Any] | None = None
 ) -> dict[str, Any]:
@@ -52,6 +54,7 @@ def static_job(
     return summary
 
 
+@ct.electron
 def relax_job(
     atoms: Atoms,
     preset: str | None = None,
@@ -100,6 +103,7 @@ def relax_job(
     return summary
 
 
+@ct.electron
 def double_relax_job(
     atoms: Atoms,
     preset: str | None = None,

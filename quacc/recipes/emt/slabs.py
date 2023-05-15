@@ -31,8 +31,8 @@ class BulkToSlabsFlow:
         Additional keyword arguments to pass to the static calculation.
     """
 
-    relax_electron: Electron | None = ct.electron(relax_job)
-    static_electron: Electron | None = ct.electron(static_job)
+    relax_electron: Electron | None = relax_job
+    static_electron: Electron | None = static_job
     relax_kwargs: dict[str, Any] | None = None
     static_kwargs: dict[str, Any] | None = None
 

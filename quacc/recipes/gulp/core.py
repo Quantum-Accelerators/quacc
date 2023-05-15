@@ -5,6 +5,7 @@ import warnings
 from copy import deepcopy
 from typing import Any
 
+import covalent as ct
 from ase.atoms import Atoms
 from ase.calculators.gulp import GULP
 
@@ -13,6 +14,7 @@ from quacc.util.calc import run_calc
 from quacc.util.dicts import merge_dicts
 
 
+@ct.electron
 def static_job(
     atoms: Atoms,
     gfnff: bool = True,
@@ -67,13 +69,14 @@ def static_job(
     gulp_keywords = " ".join(list(keywords.keys()))
     gulp_options = list(options.keys())
 
-    atoms.calc = GULP(keywords=gulp_keywords, options=gulp_options)
+    atoms.calc = GULP(keywords=gulp_keywords, options=gulp_options, library=library)
     atoms = run_calc(atoms, geom_file="gulp.cif" if atoms.pbc.any() else "gulp.xyz")
     summary = summarize_run(atoms, input_atoms=input_atoms)
 
     return summary
 
 
+@ct.electron
 def relax_job(
     atoms: Atoms,
     gfnff: bool = True,
@@ -138,7 +141,7 @@ def relax_job(
     gulp_keywords = " ".join(list(keywords.keys()))
     gulp_options = list(options.keys())
 
-    atoms.calc = GULP(keywords=gulp_keywords, options=gulp_options)
+    atoms.calc = GULP(keywords=gulp_keywords, options=gulp_options, library=library)
     atoms = run_calc(atoms, geom_file="gulp.cif" if atoms.pbc.any() else "gulp.xyz")
 
     if not atoms.calc.get_opt_state():

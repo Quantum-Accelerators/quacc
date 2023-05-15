@@ -4,6 +4,7 @@ from __future__ import annotations
 import multiprocessing
 from typing import Any
 
+import covalent as ct
 from ase.atoms import Atoms
 from ase.calculators.gaussian import Gaussian
 
@@ -15,6 +16,7 @@ LOG_FILE = Gaussian().label + ".log"
 GEOM_FILE = LOG_FILE
 
 
+@ct.electron
 def static_job(
     atoms: Atoms,
     charge: int | None = None,
@@ -82,6 +84,7 @@ def static_job(
     return summary
 
 
+@ct.electron
 def relax_job(
     atoms: Atoms,
     charge: int = None,

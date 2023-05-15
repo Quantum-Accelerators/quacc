@@ -17,11 +17,14 @@ DFTBPLUS_EXISTS = bool(which("dftb+"))
 LOG_FILE = "dftb.out"
 GEOM_FILE = "geo_end.gen"
 
+import covalent as ct
+
 
 @requires(
     DFTBPLUS_EXISTS,
     "DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
 )
+@ct.electron
 def static_job(
     atoms: Atoms,
     method: str = "GFN2-xTB",
@@ -75,6 +78,7 @@ def static_job(
     DFTBPLUS_EXISTS,
     "DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
 )
+@ct.electron
 def relax_job(
     atoms: Atoms,
     method: str = "GFN2-xTB",

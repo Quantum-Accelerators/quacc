@@ -15,3 +15,4 @@ Table of Contents
    Using Covalent <covalent.md>
    Optional: Using a Database <database.md>
    Optional: Jobflow and FireWorks <jobflow.md>
+   FAQ: Frequently Asked Questions <faq.md>
