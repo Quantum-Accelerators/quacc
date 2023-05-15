@@ -26,7 +26,7 @@ Please abide by the following when contributing code to QuAcc:
 
 5. When possible, you should use the "internal" optimizers for a given code rather than the ASE optimizers.
 
-6. For multi-step workflows, Covalent `Electron` objects should be defined to ensure that individual tasks are distributed across available compute resources. Never use a `Lattice` in the code directly (unless it is wrapped by an `Electron` as a sublattice).
+6. For multi-step workflows, Covalent `Electron` objects should be defined for each individual task to ensure that they are distributed across available compute resources. Never use a `Lattice` in the code directly (unless it is wrapped by an `Electron` as a sublattice).
 
 ## Output Schema
 
