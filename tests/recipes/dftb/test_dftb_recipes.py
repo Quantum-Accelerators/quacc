@@ -89,7 +89,7 @@ def test_relax_job():
     # assert output["atoms"] == read("geo_end.gen")
 
     atoms = bulk("Cu") * (2, 2, 1)
-    atoms[0].postion += 0.1
+    atoms[0].position += 0.1
 
     output = relax_job(atoms, kpts=(2, 2, 3))
     assert output["nsites"] == len(atoms)
@@ -111,7 +111,7 @@ def test_relax_job():
     # assert output["atoms"] == read("geo_end.gen")
 
     atoms = bulk("Cu") * (2, 2, 1)
-    atoms[0].postion += 0.1
+    atoms[0].position += 0.1
     output = relax_job(atoms, method="GFN1-xTB", kpts=(2, 2, 3), lattice_opt=True)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["Hamiltonian_"] == "xTB"

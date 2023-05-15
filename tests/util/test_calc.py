@@ -32,7 +32,8 @@ def teardown_module():
 
 
 def test_run_calc():
-    atoms = bulk("Cu")
+    atoms = bulk("Cu") * (2, 2, 1)
+    atoms[0].position += 0.1
     calc = EMT()
     atoms.calc = calc
 
