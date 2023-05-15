@@ -50,10 +50,14 @@ def test_run_calc():
     assert os.path.exists("test_file.txt")
     assert not os.path.exists("test_file.txt.gz")
 
-    atoms = run_ase_opt(atoms, scratch_dir="test_calc", copy_files=["test_file.txt"])
-    assert atoms[-1].calc.results is not None
+    new_atoms = run_ase_opt(
+        atoms, scratch_dir="test_calc", copy_files=["test_file.txt"]
+    )
+    assert new_atoms[-1].calc.results is not None
     assert os.path.exists("test_file.txt")
     assert os.path.exists("test_file.txt.gz")
+    assert np.array_equal(new_atoms.get_positions(), atoms.get_positions()) is False
+    assert new_atoms.cell != atoms.cell
     os.remove("test_file.txt.gz")
 
     o2 = molecule("O2")

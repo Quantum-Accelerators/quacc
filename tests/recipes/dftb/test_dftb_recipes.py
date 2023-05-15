@@ -91,6 +91,9 @@ def test_relax_job():
     assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty002"] == "0 0 3"
     assert output["parameters"]["Driver_"] == "GeometryOptimization"
     assert output["parameters"]["Driver_LatticeOpt"] == "No"
+    assert (
+        np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is False
+    )
     assert output["atoms"].get_volume() == atoms.get_volume()
 
     atoms = bulk("Cu")
@@ -108,4 +111,7 @@ def test_relax_job():
     assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty002"] == "0 0 3"
     assert output["parameters"]["Driver_"] == "GeometryOptimization"
     assert output["parameters"]["Driver_LatticeOpt"] == "Yes"
+    assert (
+        np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is False
+    )
     assert output["atoms"].get_volume() != atoms.get_volume()
