@@ -284,7 +284,7 @@ def test_qmof():
     assert output["static"]["parameters"]["nsw"] == 0
     assert output["static"]["parameters"]["laechg"] == True
 
-    output = qmof_relax_job(atoms, prerelax=False)
+    output = qmof_relax_job(atoms, use_prerelax=False)
     assert output["prerelax-lowacc"] is None
 
     output = qmof_relax_job(atoms, preset="BulkSet", swaps={"nelmin": 6})
