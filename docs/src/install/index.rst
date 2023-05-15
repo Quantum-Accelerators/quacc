@@ -16,7 +16,7 @@ Table of Contents
    QuAcc Settings <settings.md>
    Covalent Setup <covalent.md>
    Optional: MongoDB Setup <config_db.md>
-   Optional: Jobflow and FireWorks Setup <config_db.md>
+   Optional: Jobflow and FireWorks Setup <jobflow.md>
 
 .. toctree::
    :hidden:

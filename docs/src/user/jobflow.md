@@ -48,6 +48,10 @@ print(result)
 
 Like before, we need to define the individual `Job` objects. Now though, we must stitch them together into a `Flow`, which can be easily achieved by passing them to the `jf.Flow()` constructor. The `Flow` object will automatically determine the order in which the jobs should be run based on the inputs and outputs of each job. In this case, it will know not to run `job2` until `job1` has completed.
 
+### Known Limitations
+
+Currently, Jobflow cannot easily be used with QuAcc recipes that involve classes.
+
 ### Learn More
 
 That ends the Jobflow section of the documentation. If you want to learn more about Jobflow, you can read the [Jobflow Documentation](https://materialsproject.github.io/jobflow/).
