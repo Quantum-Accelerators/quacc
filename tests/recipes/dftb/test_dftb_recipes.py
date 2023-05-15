@@ -43,6 +43,9 @@ def test_static_Job():
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
     assert output["results"]["energy"] == pytest.approx(-137.9677759924738)
+    assert (
+        np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is True
+    )
 
     atoms = bulk("Cu")
 
@@ -58,6 +61,10 @@ def test_static_Job():
     assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty001"] == "0 3 0"
     assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty002"] == "0 0 3"
     assert output["results"]["energy"] == pytest.approx(-106.86647125470942)
+    assert (
+        np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is True
+    )
+    assert output["atoms"].cell == atoms.cell
 
 
 @pytest.mark.skipif(
@@ -75,6 +82,7 @@ def test_relax_job():
     assert (
         np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is False
     )
+    assert output["atoms"].cell == atoms.cell
 
     atoms = bulk("Cu")
 
@@ -94,7 +102,7 @@ def test_relax_job():
     assert (
         np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is False
     )
-    assert output["atoms"].get_volume() == atoms.get_volume()
+    assert output["atoms"].cell == atoms.cell
 
     atoms = bulk("Cu")
 
@@ -114,4 +122,4 @@ def test_relax_job():
     assert (
         np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is False
     )
-    assert output["atoms"].get_volume() != atoms.get_volume()
+    assert output["atoms"].cell != atoms.cell
