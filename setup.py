@@ -28,7 +28,7 @@ if __name__ == "__main__":
             "atomate2 @ git+https://github.com/materialsproject/atomate2.git",
             "covalent @ git+https://github.com/arosen93/covalent.git@rosen-unique-workdir",
             "pymatgen>=2023.5.10",
-            "emmet-core>=0.55.0",
+            "emmet-core>=0.55.1",
             "cclib>=1.7.2",
         ],
         extras_require={
@@ -51,7 +51,7 @@ if __name__ == "__main__":
                 "covalent @ git+https://github.com/arosen93/covalent.git@rosen-unique-workdir",
                 # "covalent-slurm-plugin==0.16.0rc0",
                 "pymatgen==2023.5.10",
-                "emmet-core==0.55.0",
+                "emmet-core==0.55.1",
                 "cclib==1.7.2",
                 "custodian==2023.5.7",
                 "tblite[ase]==0.3.0",
