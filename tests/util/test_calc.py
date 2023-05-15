@@ -42,6 +42,8 @@ def test_run_calc():
     assert atoms.calc.results is not None
     assert os.path.exists("test_file.txt")
     assert not os.path.exists("test_file.txt.gz")
+    assert np.array_equal(new_atoms.get_positions(), atoms.get_positions()) is True
+    assert new_atoms.cell == atoms.get_volume
 
     atoms = run_calc(
         atoms, scratch_dir="test_calc", gzip=False, copy_files=["test_file.txt"]
@@ -57,7 +59,7 @@ def test_run_calc():
     assert os.path.exists("test_file.txt")
     assert os.path.exists("test_file.txt.gz")
     assert np.array_equal(new_atoms.get_positions(), atoms.get_positions()) is False
-    assert new_atoms.get_volume() == atoms.get_volume()
+    assert new_atoms.cell == atoms.cell
     os.remove("test_file.txt.gz")
 
     o2 = molecule("O2")
