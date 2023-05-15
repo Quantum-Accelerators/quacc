@@ -32,10 +32,10 @@ def teardown_module():
 
 
 def test_run_calc():
+    atoms = bulk("Cu")
     calc = EMT()
     atoms.calc = calc
 
-    atoms = bulk("Cu")
     new_atoms = run_calc(
         atoms, scratch_dir="test_calc", gzip=False, copy_files=["test_file.txt"]
     )
@@ -45,7 +45,6 @@ def test_run_calc():
     assert np.array_equal(new_atoms.get_positions(), atoms.get_positions()) is True
     assert np.array_equal(new_atoms.cell.array, atoms.cell.array) is True
 
-    atoms = bulk("Cu")
     new_atoms = run_calc(
         atoms, scratch_dir="test_calc", gzip=False, copy_files=["test_file.txt"]
     )

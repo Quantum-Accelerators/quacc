@@ -120,6 +120,14 @@ def run_calc(
         atoms_new = read(zpath(geom_file))
         if isinstance(atoms_new, list):
             atoms_new = atoms_new[-1]
+
+        # Make sure the atom indices didn't get update somehow
+        if (
+            np.array_equal(atoms_new.get_atomic_numbers(), atoms.get_atomic_numbers())
+            is False
+        ):
+            raise ValueError("Atomic numbers do not match between atoms and geom_file.")
+
         atoms.positions = atoms_new.positions
         atoms.cell = atoms_new.cell
 

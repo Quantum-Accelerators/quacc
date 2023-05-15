@@ -66,7 +66,7 @@ def test_static_Job():
     assert (
         np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is True
     )
-    assert output["atoms"].cell == atoms.cell
+    assert np.array_equal(output["atoms"].cell.array, atoms.cell.array) is True
     # assert output["atoms"] == read("geo_end.gen")
 
 
@@ -85,7 +85,7 @@ def test_relax_job():
     assert (
         np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is False
     )
-    assert output["atoms"].cell == atoms.cell
+    assert np.array_equal(output["atoms"].cell.array, atoms.cell.array) is True
     # assert output["atoms"] == read("geo_end.gen")
 
     atoms = bulk("Cu")
@@ -106,7 +106,7 @@ def test_relax_job():
     assert (
         np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is False
     )
-    assert output["atoms"].cell == atoms.cell
+    assert np.array_equal(output["atoms"].cell.array, atoms.cell.array) is True
     # assert output["atoms"] == read("geo_end.gen")
 
     atoms = bulk("Cu")
@@ -127,5 +127,5 @@ def test_relax_job():
     assert (
         np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is False
     )
-    assert output["atoms"].cell != atoms.cell
+    assert np.array_equal(output["atoms"].cell.array, atoms.cell.array) is False
     # assert output["atoms"] == read("geo_end.gen")
