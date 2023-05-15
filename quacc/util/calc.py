@@ -82,6 +82,9 @@ def run_calc(
     scratch_dir = scratch_dir or cwd
     symlink = os.path.join(cwd, "tmp_dir")
 
+    if not os.path.exists(scratch_dir):
+        os.makedirs(scratch_dir)
+
     tmpdir = mkdtemp(prefix="quacc-tmp", dir=scratch_dir)
 
     if os.name != "nt":
@@ -137,7 +140,7 @@ def run_calc(
 def run_ase_opt(
     atoms: Atoms,
     fmax: float = 0.01,
-    max_steps: int = 100,
+    max_steps: int = 500,
     optimizer: str = "FIRE",
     opt_kwargs: Dict[str, Any] = None,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
@@ -186,6 +189,9 @@ def run_ase_opt(
     scratch_dir = scratch_dir or cwd
     symlink = os.path.join(cwd, "tmp_dir")
     opt_kwargs = opt_kwargs or {}
+
+    if not os.path.exists(scratch_dir):
+        os.makedirs(scratch_dir)
 
     opt_kwargs["trajectory"] = "opt.traj"
     opt_kwargs["restart"] = "opt.pckl"
@@ -291,6 +297,9 @@ def run_ase_vib(
     scratch_dir = scratch_dir or cwd
     symlink = os.path.join(cwd, "tmp_dir")
     vib_kwargs = vib_kwargs or {}
+
+    if not os.path.exists(scratch_dir):
+        os.makedirs(scratch_dir)
 
     tmpdir = mkdtemp(prefix="quacc-tmp", dir=scratch_dir)
 

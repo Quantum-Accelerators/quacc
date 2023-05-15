@@ -30,6 +30,10 @@ See https://github.com/arosen93/quacc/releases/tag/v0.1.0 for more details.
 - Use of a MongoDB is now optional to make setup easier.
 - Split `quacc.util.basics` into `quacc.util.dicts` and `quacc.util.files`.
 - Changed the `extras` names in `setup.py`.
+- Increased default for `max_steps` in `run_ase_opt` to 500.
+
+### Fixed
+- If `scratch_dir` does not exist in `run_calc`, `run_ase_opt`, or `run_ase_vib`, it will be created.
 
 ### Removed
 - Removed the `xtb` recipes in favor of the `tblite` recipes.
