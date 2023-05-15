@@ -13,19 +13,19 @@ from maggma.stores import MongoStore
 # Connect to the database
 database = "my_db"
 collection_name = "my_collection"
-store = MongoStore(database, collection_nam, host="localhost", port=27017, username="my_username", password="my_password")
+store = MongoStore(database, collection_name, host="localhost", port=27017, username="my_username", password="my_password")
 store.connect()
 
 # Fetch the results
 results_dir = ct.get_config()["dispatcher"]["results_dir"]
 docs = []
-for dispatcher_id in os.listdir(results_dir):
+for dispatch_id in os.listdir(results_dir):
     result = ct.get_result(dispatch_id).result
-    docs.append({"dispatcher_id":dispatcher_id, "result": result})
+    docs.append({"dispatch_id":dispatch_id, "result": result})
 
 # Store the results
 with store:
-    store.update(docs, key="dispatcher_id")
+    store.update(docs, key="dispatch_id")
 
 # Close the database connection
 store.close()
