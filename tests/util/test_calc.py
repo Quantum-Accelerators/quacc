@@ -57,7 +57,7 @@ def test_run_calc():
     assert os.path.exists("test_file.txt")
     assert os.path.exists("test_file.txt.gz")
     assert np.array_equal(new_atoms.get_positions(), atoms.get_positions()) is False
-    assert new_atoms.cell != atoms.cell
+    assert new_atoms.get_volume() != atoms.get_volume()
     os.remove("test_file.txt.gz")
 
     o2 = molecule("O2")
