@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from typing import Any
 
 from ase import Atoms
-from jobflow import Flow, Job, Maker, Response, job
 from monty.dev import requires
 
 from quacc.recipes.emt.core import relax_job, static_job
@@ -18,7 +17,8 @@ except:
 
 @requires(jf, "Jobflow be installed. Try pip install jobflow")
 @dataclass
-class BulkToSlabsFlow(Maker):
+class BulkToSlabsFlow(jf.Maker):
+
     """
     Workflow consisting of:
     1. Slab generation
@@ -39,14 +39,14 @@ class BulkToSlabsFlow(Maker):
         Additional keyword arguments to pass to the static calculation.
     """
 
-    name: str = "EMT-BulkToSlabs"
-    slab_relax_job: Job | None = jf.job(relax_job)
-    slab_static_job: Job | None = jf.job(static_job)
+    name: str = "EMT BulkToSlabsFlow"
+    slab_relax_job: jf.Job | None = jf.job(relax_job)
+    slab_static_job: jf.Job | None = jf.job(static_job)
     relax_kwargs: dict[str, Any] | None = None
     static_kwargs: dict[str, Any] | None = None
 
-    @job
-    def run(self, atoms: Atoms, slabgen_kwargs: dict[str, Any] = None) -> Response:
+    @jf.job
+    def run(self, atoms: Atoms, slabgen_kwargs: dict[str, Any] = None) -> jf.Response:
         """
         Make the run.
 
@@ -92,9 +92,9 @@ class BulkToSlabsFlow(Maker):
                 jobs += [job1]
                 outputs.append(job1.output)
 
-        return Response(
+        return jf.Response(
             output={"input_bulk": atoms, "generated_slabs": slabs},
-            replace=Flow(
+            replace=jf.Flow(
                 jobs,
                 output=outputs,
                 name=self.name,

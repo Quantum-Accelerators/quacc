@@ -22,7 +22,7 @@ See https://github.com/arosen93/quacc/releases/tag/v0.1.0 for more details.
 - Type checking during PRs.
 - Automatic formatting of files during PRs.
 - This `CHANGELOG.md` file.
-- The `BulkToSlabsFlow` in the EMT calculator.
+- The `BulkToSlabsFlow` in the EMT calculator for both Covalent and Jobflow.
 - `LennardJones` demonstration recipes.
 
 ### Changed
