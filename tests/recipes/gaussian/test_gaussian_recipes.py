@@ -48,7 +48,7 @@ def test_static_Job():
         xc="m06l",
         basis="def2-svp",
         pop="regular",
-        molden=False,
+        write_molden=False,
         swaps={"integral": "superfinegrid"},
     )
     assert output["natoms"] == len(atoms)
