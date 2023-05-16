@@ -50,7 +50,7 @@ Like before, we need to define the individual `Job` objects. Now though, we must
 
 ### Known Limitations
 
-Currently, Jobflow cannot easily be used with Quacc recipes that involve classes.
+Jobflow cannot easily be used with Quacc recipes that involve classes (particularly those involving dynamic workflows) since they are structured for [Covalent](https://github.com/AgnostiqHQ/covalent). Nonetheless, QuAcc fully supports the development of Jobflow-specific workflows. Refer to the `quacc.recipes.emt.jobflow` module for an example.
 
 ### Learn More
 

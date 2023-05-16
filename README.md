@@ -19,7 +19,7 @@ Built around the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/i
 
 1. Reduce the barrier for running complex, mixed-code workflows for molecules and materials across heterogeneous compute environments.
 
-2. Promote rapid workflow development and testing via modern workflow managers, such as [Covalent](https://github.com/AgnostiqHQ/covalent).
+2. Promote rapid workflow development and testing via modern workflow managers, such as [Covalent](https://github.com/AgnostiqHQ/covalent) and [Jobflow](https://github.com/materialsproject/jobflow).
 
 3. Enable a seamless interface with much of the software infrastructure powering the [Materials Project](https://materialsproject.org).
 
