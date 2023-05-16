@@ -17,16 +17,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 See https://github.com/arosen93/quacc/releases/tag/v0.1.0 for more details.
 
 ### Added
-- Added optional support for Covalent as the workflow manager.
+- Added optional support for Covalent as the workflow manager (but a required dependency).
 - Improved documentation.
 - Automatic formatting of files during PRs.
 - This `CHANGELOG.md` file.
 - The `BulkToSlabsFlow` in the EMT calculator for both Covalent and Jobflow.
+- The `BulkToSlabsFlow` in the VASP calculator for Covalent.
 - `LennardJones` demonstration recipes.
 
 ### Changed
 - Individual compute jobs are now functions instead of classes.
-- All compute jobs are wrapped by `@ct.electron`.
+- All compute jobs are wrapped by `@ct.electron` instead of `@job`.
 - Use of Jobflow is now optional.
 - Use of a MongoDB is now optional.
 - Split `quacc.util.basics` and its associated functions into `quacc.util.dicts` and `quacc.util.files`.
