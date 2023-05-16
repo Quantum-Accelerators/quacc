@@ -56,7 +56,7 @@ if __name__ == "__main__":
                 # "covalent-slurm-plugin==0.16.0rc0",
                 "monty==2023.5.8",
                 "pymatgen==2023.5.10",
-                "emmet-core==0.55.1",
+                "emmet-core==0.55.2",
                 "maggma==0.50.4",
                 "custodian==2023.5.7",
                 "jobflow==0.1.11",
