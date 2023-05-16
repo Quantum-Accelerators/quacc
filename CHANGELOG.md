@@ -26,6 +26,7 @@ See https://github.com/arosen93/quacc/releases/tag/v0.1.0 for more details.
 
 ### Changed
 - Individual compute jobs are now functions instead of classes.
+- All compute jobs are wrapped by `@ct.electron`.
 - Use of Jobflow is now optional.
 - Use of a MongoDB is now optional.
 - Split `quacc.util.basics` and its associated functions into `quacc.util.dicts` and `quacc.util.files`.
