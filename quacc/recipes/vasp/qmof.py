@@ -16,6 +16,7 @@ from quacc.util.dicts import merge_dicts
 # Reference: https://doi.org/10.1016/j.matt.2021.02.015
 
 
+@ct.electron
 def qmof_relax_job(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
@@ -60,27 +61,27 @@ def qmof_relax_job(
 
     # 1. Pre-relaxation
     if run_prerelax:
-        summary1 = prerelax(atoms, preset, swaps, fmax=5.0)
+        summary1 = _prerelax(atoms, preset, swaps, fmax=5.0)
         atoms = summary1["atoms"]
 
     # 2. Position relaxation (loose)
-    summary2 = loose_relax_positions(atoms, preset, swaps)
+    summary2 = _loose_relax_positions(atoms, preset, swaps)
     atoms = summary2["atoms"]
 
     # 3. Optional: Volume relaxation (loose)
     if relax_volume:
-        summary3 = loose_relax_volume(atoms, preset, swaps)
+        summary3 = _loose_relax_volume(atoms, preset, swaps)
         atoms = summary3["atoms"]
 
     # 4. Double Relaxation
     # This is done for two reasons: a) because it can resolve repadding
     # issues when dV is large; b) because we can use LREAL = Auto for the
     # first relaxation and the default LREAL for the second.
-    summary4 = double_relax(atoms, preset, swaps, relax_volume=relax_volume)
+    summary4 = _double_relax(atoms, preset, swaps, relax_volume=relax_volume)
     atoms = summary4["relax2"]["atoms"]
 
     # 5. Static Calculation
-    summary5 = static(atoms, preset, swaps)
+    summary5 = _static(atoms, preset, swaps)
 
     return {
         "prerelax-lowacc": summary1 if run_prerelax else None,
@@ -91,8 +92,7 @@ def qmof_relax_job(
     }
 
 
-@ct.electron
-def prerelax(
+def _prerelax(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
     swaps: dict[str, Any] | None = None,
@@ -142,8 +142,7 @@ def prerelax(
     return summary
 
 
-@ct.electron
-def loose_relax_positions(
+def _loose_relax_positions(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
     swaps: dict[str, Any] | None = None,
@@ -192,8 +191,7 @@ def loose_relax_positions(
     return summary
 
 
-@ct.electron
-def loose_relax_volume(
+def _loose_relax_volume(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
     swaps: dict[str, Any] | None = None,
@@ -240,8 +238,7 @@ def loose_relax_volume(
     return summary
 
 
-@ct.electron
-def double_relax(
+def _double_relax(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
     swaps: dict[str, Any] | None = None,
@@ -311,8 +308,7 @@ def double_relax(
     return {"relax1": summary1, "relax2": summary2}
 
 
-@ct.electron
-def static(
+def _static(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
     swaps: dict[str, Any] | None = None,
