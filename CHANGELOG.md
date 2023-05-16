@@ -23,6 +23,7 @@ See https://github.com/arosen93/quacc/releases/tag/v0.1.0 for more details.
 - Automatic formatting of files during PRs.
 - This `CHANGELOG.md` file.
 - The `BulkToSlabsFlow` in the EMT calculator.
+- `LennardJones` demonstration recipes.
 
 ### Changed
 - Individual compute jobs are now functions instead of classes.

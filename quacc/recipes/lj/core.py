@@ -6,17 +6,19 @@ from typing import Any
 
 import covalent as ct
 from ase.atoms import Atoms
-from ase.calculators.emt import EMT
+from ase.calculators.lj import LennardJones
 
 from quacc.schemas.calc import summarize_opt_run, summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
+from quacc.util.dicts import merge_dicts
 
 # NOTE: This set of minimal recipes is mainly for demonstration purposes
 
 
 @ct.electron
 def static_job(
-    atoms: Atoms, emt_kwargs: dict[str, Any] | None = None
+    atoms: Atoms,
+    lj_kwargs: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """
     Function to carry out a static calculation.
@@ -25,8 +27,8 @@ def static_job(
     ----------
     atoms
         .Atoms object
-    emt_kwargs
-        Dictionary of custom kwargs for the EMT calculator.
+    lj_kwargs
+        Dictionary of custom kwargs for the LJ calculator.
 
     Returns
     -------
@@ -34,13 +36,16 @@ def static_job(
         Summary of the run.
     """
 
-    emt_kwargs = emt_kwargs or {}
+    lj_kwargs = lj_kwargs or {}
     input_atoms = deepcopy(atoms)
 
-    atoms.calc = EMT(**emt_kwargs)
+    defaults = {"epsilon": 1.0, "sigma": 1.0}
+    flags = merge_dicts(defaults, lj_kwargs)
+
+    atoms.calc = LennardJones(**flags)
     atoms = run_calc(atoms)
     summary = summarize_run(
-        atoms, input_atoms=input_atoms, additional_fields={"name": "EMT Static"}
+        atoms, input_atoms=input_atoms, additional_fields={"name": "LJ Static"}
     )
 
     return summary
@@ -52,7 +57,7 @@ def relax_job(
     fmax: float = 0.01,
     max_steps: int = 1000,
     optimizer: str = "FIRE",
-    emt_kwargs: dict[str, Any] | None = None,
+    lj_kwargs: dict[str, Any] | None = None,
     opt_kwargs: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """
@@ -68,8 +73,8 @@ def relax_job(
         Maximum number of steps to take.
     optimizer
         .Optimizer class to use for the relaxation.
-    emt_kwargs
-        Dictionary of custom kwargs for the EMT calculator.
+    lj_kwargs
+        Dictionary of custom kwargs for the LJ calculator.
     opt_kwargs
         Dictionary of kwargs for the optimizer.
 
@@ -79,10 +84,13 @@ def relax_job(
         Summary of the run.
     """
 
-    emt_kwargs = emt_kwargs or {}
+    lj_kwargs = lj_kwargs or {}
     opt_kwargs = opt_kwargs or {}
 
-    atoms.calc = EMT(**emt_kwargs)
+    defaults = {"epsilon": 1.0, "sigma": 1.0}
+    flags = merge_dicts(defaults, lj_kwargs)
+
+    atoms.calc = LennardJones(**flags)
     traj = run_ase_opt(
         atoms,
         fmax=fmax,
@@ -91,7 +99,7 @@ def relax_job(
         opt_kwargs=opt_kwargs,
     )
     summary = summarize_opt_run(
-        traj, atoms.calc.parameters, additional_fields={"name": "EMT Relax"}
+        traj, atoms.calc.parameters, additional_fields={"name": ":J Relax"}
     )
 
     return summary

@@ -61,6 +61,7 @@ def test_relax_Job():
     assert output["parameters"]["method"] == "GFN2-xTB"
     assert output["results"]["energy"] == pytest.approx(-137.97654191396492)
     assert not np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
+    assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
 
 
 @pytest.mark.skipif(

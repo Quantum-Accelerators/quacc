@@ -1,6 +1,7 @@
 import os
 from shutil import rmtree
 
+import numpy as np
 import pytest
 from ase.build import bulk
 
@@ -45,11 +46,15 @@ def test_relax_Job():
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] == False
     assert output["results"]["energy"] == pytest.approx(-0.04543069081693929)
+    assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
 
+    atoms = bulk("Cu") * (2, 2, 2)
+    atoms[0].position += [0.1, 0.1, 0.1]
     output = relax_job(atoms, fmax=0.03, emt_kwargs={"asap_cutoff": True})
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] == True
     assert output["results"]["energy"] == pytest.approx(-0.004528885890177747)
+    assert 0.01 < np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.03
 
 
 def test_slab_dynamic_jobs():
