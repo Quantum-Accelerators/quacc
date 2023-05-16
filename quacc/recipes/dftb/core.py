@@ -19,11 +19,11 @@ LOG_FILE = "dftb.out"
 GEOM_FILE = "geo_end.gen"
 
 
+@ct.electron
 @requires(
     DFTBPLUS_EXISTS,
     "DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
 )
-@ct.electron
 def static_job(
     atoms: Atoms,
     method: str = "GFN2-xTB",
@@ -75,11 +75,11 @@ def static_job(
     return summary
 
 
+@ct.electron
 @requires(
     DFTBPLUS_EXISTS,
     "DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
 )
-@ct.electron
 def relax_job(
     atoms: Atoms,
     method: str = "GFN2-xTB",

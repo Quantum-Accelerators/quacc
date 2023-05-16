@@ -19,11 +19,11 @@ except ImportError:
     TBLite = None
 
 
+@ct.electron
 @requires(
     TBLite,
     "tblite must be installed. Try pip install tblite[ase]",
 )
-@ct.electron
 def static_job(
     atoms: Atoms, method: str = "GFN2-xTB", tblite_kwargs: dict[str, Any] | None = None
 ) -> dict[str, Any]:
@@ -56,11 +56,11 @@ def static_job(
     return summary
 
 
+@ct.electron
 @requires(
     TBLite,
     "tblite must be installed. Try pip install tblite[ase]",
 )
-@ct.electron
 def relax_job(
     atoms: Atoms,
     method: str = "GFN2-xTB",

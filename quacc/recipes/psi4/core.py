@@ -17,8 +17,8 @@ from quacc.util.calc import run_calc
 from quacc.util.dicts import merge_dicts
 
 
-@requires(psi4, "Psi4 be installed. Try conda install -c psi4 psi4")
 @ct.electron
+@requires(psi4, "Psi4 be installed. Try conda install -c psi4 psi4")
 def static_job(
     atoms: Atoms,
     charge: int | None = None,
