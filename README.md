@@ -19,7 +19,7 @@ Built around the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/i
 
 1. Reduce the barrier for running complex, mixed-code workflows for molecules and materials across heterogeneous compute environments.
 
-2. Promote rapid workflow development and testing via modern workflow managers, such as [Covalent](https://github.com/AgnostiqHQ/covalent) and [Jobflow](https://github.com/materialsproject/jobflow).
+2. Promote rapid workflow development and testing via modern workflow managers, such as [Covalent](https://github.com/AgnostiqHQ/covalent).
 
 3. Enable a seamless interface with much of the software infrastructure powering the [Materials Project](https://materialsproject.org).
 
@@ -39,54 +39,27 @@ pip install git+https://github.com/arosen93/quacc.git
 pip install quacc
 ```
 
+Then simply run `covalent start` to start the Covalent server and UI.
+
 ## Documentation
 
 [Read me!](https://arosen93.github.io/quacc/)
 
-## Examples
-
-### VASP Job
-
-```python
-from ase.build import bulk
-
-from quacc.recipes.vasp.core import relax_job as vasp_relax_job
-
-# Make a bulk Cu structure
-atoms = bulk("Cu")
-
-# Make a job consisting of a VASP relaxation using a pre-defined input set.
-# By default, VASP will be run using Custodian for on-the-fly error handling.
-output = vasp_relax_job(atoms, preset="BulkSet")
-print(output)
-```
-
-### GFN2-xTB + Gaussian + ORCA Workflow with Covalent
+## Minimal Example
 
 ```python
 import covalent as ct
-from ase.build import molecule
+from ase.build import bulk
+from quacc.recipes.emt.slabs import BulkToSlabsFlow
 
-from quacc.recipes.tblite.core import relax_job as xtb_relax_job
-from quacc.recipes.gaussian.core import relax_job as gaussian_relax_job
-from quacc.recipes.orca.core import static_job as orca_static_job
-
-# Make an H2 molecule
-atoms = molecule("H2")
-
-# Make a workflow consisting of a GFN2-xTB relaxation followed by a Gaussian relaxation
-# and then an ORCA static calculation using Covalent to manage the workflow.
 @ct.lattice
 def workflow(atoms):
-    output1 = ct.electron(xtb_relax_job)(atoms, method="GFN2-xTB")
-    output2 = ct.electron(gaussian_relax_job)(output1["atoms"], xc="PBE")
-    output3 = ct.electron(orca_static_job)(output2["atoms"], xc="wB97M-V")
-    return output3
+    relaxed_slabs = BulkToSlabsFlow().run(atoms)
+    return relaxed_slabs
 
-# Run the workflow
+atoms = bulk("Cu")
 dispatch_id = ct.dispatch(workflow)(atoms)
-result = ct.get_result(dispatch_id, wait=True)
-print(result)
+result = ct.get_result(dispatch_id)
 ```
 
 ## License
