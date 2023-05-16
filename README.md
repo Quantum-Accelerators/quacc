@@ -4,7 +4,7 @@
 
 --------------------------------------
 
-# QuAcc – The Quantum Accelerator
+# Quacc – The Quantum Accelerator
 
 ![tests](https://github.com/arosen93/quacc/actions/workflows/tests.yaml/badge.svg)
 [![codecov](https://codecov.io/gh/arosen93/quacc/branch/main/graph/badge.svg?token=BCKGTD89H0)](https://codecov.io/gh/arosen93/quacc)
@@ -13,9 +13,9 @@
 [![Pypi](https://img.shields.io/pypi/v/quacc)](https://pypi.org/project/quacc)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7720998.svg)](https://doi.org/10.5281/zenodo.7720998)
 
-QuAcc is a flexible platform for high-throughput, database-driven computational materials science and quantum chemistry.
+Quacc is a flexible platform for high-throughput, database-driven computational materials science and quantum chemistry.
 
-Built around the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/index.html) (ASE), QuAcc seeks to:
+Built around the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/index.html) (ASE), Quacc seeks to:
 
 1. Reduce the barrier for running complex, mixed-code workflows for molecules and materials across heterogeneous compute environments.
 
@@ -23,13 +23,13 @@ Built around the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/i
 
 3. Enable a seamless interface with much of the software infrastructure powering the [Materials Project](https://materialsproject.org).
 
-In short, QuAcc is designed to give the user the building blocks necessary to quickly prototype and construct complex quantum-chemical workflows without sacrificing flexibility.
+In short, Quacc is designed to give the user the building blocks necessary to quickly prototype and construct complex quantum-chemical workflows without sacrificing flexibility.
 
 **Disclaimer**: Currently, this package is under active development. Questions and bug reports are always welcome!
 
 ## Installation
 
-QuAcc can be installed as follows:
+Quacc can be installed as follows:
 
 ```bash
 # For the current development version (recommended)
@@ -91,4 +91,4 @@ print(result)
 
 ## License
 
-QuAcc is released under a [modified BSD license](https://github.com/arosen93/quacc/blob/main/LICENSE.md).
+Quacc is released under a [modified BSD license](https://github.com/arosen93/quacc/blob/main/LICENSE.md).

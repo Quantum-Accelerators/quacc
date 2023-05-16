@@ -2,13 +2,13 @@
 
 ## Introduction
 
-While we recommend using Covalent as the workflow manager with QuAcc, it is not the only option for you to consider.
+While we recommend using [Covalent](https://github.com/AgnostiqHQ/covalent) as the workflow manager with Quacc, it is not the only option for you to consider.
 
 If you would prefer to use [Jobflow](https://github.com/materialsproject/jobflow) to write your workflows and/or [FireWorks](https://github.com/materialsproject/fireworks) to manage them, follow the instructions below. For additional details, refer to the full [Jobflow documentation](https://materialsproject.github.io/jobflow/) and [FireWorks documentation](https://materialsproject.github.io/fireworks/).
 
 ## Installation
 
-To install QuAcc with support for Jobflow and FireWorks, do `pip install quacc[jobflow]`.
+To install Quacc with support for Jobflow and FireWorks, do `pip install quacc[jobflow]`.
 
 ## MongoDB Setup
 
@@ -45,7 +45,7 @@ JOB_STORE:
 Finally, you will need to define a `JOBFLOW_CONFIG_FILE` environment variable pointing to the file you made. For instance, in your `~/.bashrc` file, add the following line:
 `export JOBFLOW_CONFIG_FILE="/path/to/my/jobflow.yaml"`.
 
-When a QuAcc calculation completes, all the data will be stored in the database you have specified above. If needed, additional information about setting up your `jobflow.yaml` file can be found in the official [jobflow documentation](https://materialsproject.github.io/jobflow/jobflow.settings.html).
+When a Quacc calculation completes, all the data will be stored in the database you have specified above. If needed, additional information about setting up your `jobflow.yaml` file can be found in the official [jobflow documentation](https://materialsproject.github.io/jobflow/jobflow.settings.html).
 
 ## FireWorks DB Setup
 

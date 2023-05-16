@@ -2,19 +2,19 @@
 
 ## Steps to Contribute
 
-To contribute to QuAcc, we recommend doing the following:
+To contribute to Quacc, we recommend doing the following:
 
 1. Fork the repository to your personal GitHub account.
 2. Clone this forked repository to your local machine, e.g. via `git clone <repo url>.git`.
-3. In the newly downloaded `quacc` base directory, run `pip install -e .[dev]` to install QuAcc in editable mode and with the development dependencies.
+3. In the newly downloaded `quacc` base directory, run `pip install -e .[dev]` to install Quacc in editable mode and with the development dependencies.
 4. Commit your changes and push them to your personal forked repository.
-6. Create a pull request (PR) to merge your changes into the main QuAcc repository.
+6. Create a pull request (PR) to merge your changes into the main Quacc repository.
 
-For reproducibility purposes, we strongly recommend install QuAcc in a fresh virtual environment.
+For reproducibility purposes, we strongly recommend install Quacc in a fresh virtual environment.
 
 ## General Rules
 
-Please abide by the following when contributing code to QuAcc: 
+Please abide by the following when contributing code to Quacc: 
 
 1. All code should include type hints and have documentation for the inputs and outputs.
 
@@ -34,7 +34,7 @@ At the end of any recipe you make, you should return a summary dictionary of the
 
 1. `quacc.schemas.calc.summarize_run`: This function is used to summarize a typical run that is done through ASE. It summarizes the inputs and outputs by pulling them from the ASE calculator and `Atoms` object. This is the most common function to use but also the most limited.
 
-2. `quacc.schemas.calc.summarize_opt_run`: This function is used to summarize a relaxation run that is specifically carried out via an ASE `Optimizer`. This is the only way ASE `Optimizer` runs can be summarized within QuAcc.
+2. `quacc.schemas.calc.summarize_opt_run`: This function is used to summarize a relaxation run that is specifically carried out via an ASE `Optimizer`. This is the only way ASE `Optimizer` runs can be summarized within Quacc.
 
 3. `quacc.schemas.cclib.summarize_run`: This function is used to summarize the inputs and outputs of a run for codes that are supported by [cclib](https://cclib.github.io/data.html). When possible, this is preferred over `quacc.schemas.calc.summarize_run` because cclib will generate a more detailed summary than ASE can provide. It is also more standardized across different codes.
 
@@ -54,7 +54,7 @@ In general, please try to keep the code style consistent when possible. There ar
 
 ## Unit Tests
 
-All changes you make to QuAcc should be accompanied by unit tests and should not break existing tests. To run the test suite, run `pytest` from the the `quacc/tests` directory.
+All changes you make to Quacc should be accompanied by unit tests and should not break existing tests. To run the test suite, run `pytest` from the the `quacc/tests` directory.
 
 If you are adding recipes based on a code that can be readily installed via `pip` or `conda` (e.g. tblite, xtb-python, DFTB+, Psi4), then you can run the unit tests with these codes directly. Preferably, you should use a small molecule or solid and cheap method so the unit tests run quickly. If the recipes you're adding are proprietary or not available via `pip` or `conda` (e.g. Gaussian, GULP), then you will need to monkeypatch certain functions to change their behavior during testing. For instance, we do not want to run VASP directly during unit tests and have mocked the `atoms.get_potential_energy()` function to always return a dummy value of -1.0 during unit tests. Any mocked functions can be found in the `conftest.py` files of the testing directory.
 

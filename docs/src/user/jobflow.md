@@ -1,4 +1,4 @@
-# Using QuAcc with Jobflow and FireWorks
+# Using Quacc with Jobflow and FireWorks
 
 ## Jobflow
 
@@ -23,7 +23,7 @@ result = responses[job.uuid][1].output
 print(result)
 ```
 
-The key thing to note is that we need to transform the QuAcc recipe, which is a normal function, into a `jobflow` `Job` object. This can be done using the `@job` decorator and a new function definition or, more compactly, via `jf.job(<function>)`. We chose to run the job locally, but other workflow managers can be imported and used, as we discuss for FireWorks further below.
+The key thing to note is that we need to transform the Quacc recipe, which is a normal function, into a `jobflow` `Job` object. This can be done using the `@job` decorator and a new function definition or, more compactly, via `jf.job(<function>)`. We chose to run the job locally, but other workflow managers can be imported and used, as we discuss for FireWorks further below.
 
 ### Example 2: Running a Flow
 
@@ -50,7 +50,7 @@ Like before, we need to define the individual `Job` objects. Now though, we must
 
 ### Known Limitations
 
-Currently, Jobflow cannot easily be used with QuAcc recipes that involve classes.
+Currently, Jobflow cannot easily be used with Quacc recipes that involve classes.
 
 ### Learn More
 

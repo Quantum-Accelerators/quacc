@@ -1,4 +1,4 @@
-"""Init data for QuAcc"""
+"""Init data for Quacc"""
 import warnings
 
 from ase.atoms import Atoms

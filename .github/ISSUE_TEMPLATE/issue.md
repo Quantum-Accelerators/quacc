@@ -4,5 +4,5 @@
 
 # Environment
 
-- QuAcc version:
+- Quacc version:
 - Python version:

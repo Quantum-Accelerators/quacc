@@ -1,6 +1,6 @@
 # Database Usage
 
-Oftentimes, it is beneficial to store the results in a database for easy querying. There are many ways to achieve this with QuAcc depending on your preferences.
+Oftentimes, it is beneficial to store the results in a database for easy querying. There are many ways to achieve this with Quacc depending on your preferences.
 
 ## With Covalent as the Workflow Manager
 

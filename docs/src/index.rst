@@ -3,12 +3,12 @@
 .. |date| date::
 
 **********************
-QuAcc Documentation
+Quacc Documentation
 **********************
 
 **Date**: |date| | **Version**: |version|
 
-:mod:`QuAcc` is a platform for high-throughput, database-driven computational materials science and quantum chemistry.
+:mod:`Quacc` is a platform for high-throughput, database-driven computational materials science and quantum chemistry.
 
 .. image:: _static/quacc_logo_wide.svg
 

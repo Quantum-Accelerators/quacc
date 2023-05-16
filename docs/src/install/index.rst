@@ -13,7 +13,7 @@ Table of Contents
 
    Installation <install.md>
    Quantum Chemistry Package Setup <codes.md>
-   QuAcc Settings <settings.md>
+   Quacc Settings <settings.md>
    Covalent Setup <covalent.md>
    Optional: MongoDB Setup <config_db.md>
    Optional: Jobflow and FireWorks Setup <jobflow.md>

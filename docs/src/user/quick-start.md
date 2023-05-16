@@ -1,16 +1,16 @@
 # Quick Start: Basics
 
-In QuAcc, each code comes with pre-packaged jobs and workflows, which we call recipes for short. This tutorial walks you through how to use these provided recipes to run simple calculations that can be tested out on your local machine.
+In Quacc, each code comes with pre-packaged jobs and workflows, which we call recipes for short. This tutorial walks you through how to use these provided recipes to run simple calculations that can be tested out on your local machine.
 
-Once you understand the basics, you should move on to the [Covalent Quick Start](covalent.md) to learn how to use QuAcc with the Covalent workflow manager, which allows you to stich together and run complex QuAcc workflows across distributed computing resources.
+Once you understand the basics, you should move on to the [Covalent Quick Start](covalent.md) to learn how to use Quacc with the Covalent workflow manager, which allows you to stich together and run complex Quacc workflows across distributed computing resources.
 
 ## Pre-Requisites
 
-If you are not yet familiar with the ASE `Atoms` object, you should read the [ASE tutorial](https://wiki.fysik.dtu.dk/ase/ase/atoms.html), as this is the main object used to represent molecules and structures within QuAcc. Additionally, it is worthwhile to be familiar with the basics of what an ASE `Calculator` is, which is described in more detail [here](https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html).
+If you are not yet familiar with the ASE `Atoms` object, you should read the [ASE tutorial](https://wiki.fysik.dtu.dk/ase/ase/atoms.html), as this is the main object used to represent molecules and structures within Quacc. Additionally, it is worthwhile to be familiar with the basics of what an ASE `Calculator` is, which is described in more detail [here](https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html).
 
 If you are coming from the Pymatgen ecosystem, there is a module to convert from Pymatgen `Structure`/`Molecule` objects and the ASE `Atoms` object [here](https://pymatgen.org/pymatgen.io.ase.html).
 
-If you are already deeply familiar with ASE, this may not seem particularly impressive, but keep reading through the tutorials and you will see how QuAcc can help you run complex calculations much more efficiently.
+If you are already deeply familiar with ASE, this may not seem particularly impressive, but keep reading through the tutorials and you will see how Quacc can help you run complex calculations much more efficiently.
 
 ## A Simple Calculation with EMT
 
@@ -34,7 +34,7 @@ With the `Atoms` object defined, we then imported a desired recipe and instantia
 
 ## A Simple Calculation with GFN2-xTB
 
-If molecules are more your thing, let's consider another simple example. Here, we want to run a structure relaxation of a water molecule using the semi-empirical quantum mechanics method called [GFN2-xTB](https://doi.org/10.1021/acs.jctc.8b01176). This method is conveniently available in [`tblite`](https://github.com/tblite/tblite), which we will use here. The demonstration below shows how to run this calculation with QuAcc.
+If molecules are more your thing, let's consider another simple example. Here, we want to run a structure relaxation of a water molecule using the semi-empirical quantum mechanics method called [GFN2-xTB](https://doi.org/10.1021/acs.jctc.8b01176). This method is conveniently available in [`tblite`](https://github.com/tblite/tblite), which we will use here. The demonstration below shows how to run this calculation with Quacc.
 
 Note that for this example, you will need to install `tblite`, which can be done with `pip install tblite[ase]`, as noted in the "Quantum Chemistry Package Setup" of the installation instructions.
 
@@ -74,7 +74,7 @@ result2 = static_job(result1["atoms"], method="GFN2-xTB")
 print(result2)
 ```
 
-By default, the output of all compute jobs in QuAcc is a dictionary summarizing the results of the calculation. It always has a key `"atoms"` that contains a copy of the output `Atoms` object. This can be used to pass structure information between jobs, as shown above.
+By default, the output of all compute jobs in Quacc is a dictionary summarizing the results of the calculation. It always has a key `"atoms"` that contains a copy of the output `Atoms` object. This can be used to pass structure information between jobs, as shown above.
 
 ## A Pair of Parallel Calculations
 
