@@ -10,7 +10,7 @@ A: Atomate2 is a fantastic code that is maintained as part of the [Materials Pro
 
 In Atomate2, workflows are built around the Materials Project software stack and are fundamentally incompatible with much of the [Atomic Simulation Environment (ASE)](https://wiki.fysik.dtu.dk/ase/). In contrast, Quacc was built around ASE from the ground up while still making it possible to leverage the software underlying the Materials Project, such as [Custodian](https://github.com/materialsproject/custodian) for automated error correction. Since Quacc is built around ASE, it is also trivial to add new recipes based on any code that has an existing ASE Calculator even if it not in Quacc yet.
 
-Atomate2 is built around [Jobflow](https://github.com/materialsproject/jobflow). For individual compute tasks, Quacc is workflow manager-agnostic. For pre-packaged workflows, Quacc is built around [Covalent](https://github.com/AgnostiqHQ/covalent).
+Atomate2 is built around [Jobflow](https://github.com/materialsproject/jobflow). Quacc is predominantly (although not exclusively) built around [Covalent](https://github.com/AgnostiqHQ/covalent).
 
 Atomate2 provides prepackaged workflows that can be readily used as-is. In most cases, Quacc assumes that the user is interested in building their own custom workflows and provides the building blocks to do so.
 

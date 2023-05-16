@@ -34,6 +34,7 @@ See https://github.com/arosen93/quacc/releases/tag/v0.1.0 for more details.
 - The `prerelax` kwarg in `qmof_relax_job` was changed to `run_prerelax` to reflect that it is a boolean.
 - Rename `volume_relax` kwarg in VASP recipes to `relax_volume` to reflect that it is a boolean.
 - Rename `molden` to `write_molden` in Gaussian recipes to reflect that it is a boolean.
+- Switch license to standard BSD-3.
 
 ### Fixed
 - If the user-specified `scratch_dir` does not exist on the filesystem when using `run_calc`, `run_ase_opt`, or `run_ase_vib`, it will be created.

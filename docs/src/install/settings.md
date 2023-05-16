@@ -1,4 +1,4 @@
-# Settings
+# Quacc Configuration Variables
 
 ##  Modifying Quacc Settings
 
