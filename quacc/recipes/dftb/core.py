@@ -2,28 +2,21 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from shutil import which
 from typing import Any
 
 import covalent as ct
 from ase import Atoms
 from ase.calculators.dftb import Dftb
-from monty.dev import requires
 
 from quacc.schemas.calc import summarize_run
 from quacc.util.calc import _check_logfile, run_calc
 from quacc.util.dicts import merge_dicts
 
-DFTBPLUS_EXISTS = bool(which("dftb+"))
 LOG_FILE = "dftb.out"
 GEOM_FILE = "geo_end.gen"
 
 
 @ct.electron
-@requires(
-    DFTBPLUS_EXISTS,
-    "DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
-)
 def static_job(
     atoms: Atoms,
     method: str = "GFN2-xTB",
@@ -76,10 +69,6 @@ def static_job(
 
 
 @ct.electron
-@requires(
-    DFTBPLUS_EXISTS,
-    "DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
-)
 def relax_job(
     atoms: Atoms,
     method: str = "GFN2-xTB",
