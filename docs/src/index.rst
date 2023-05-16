@@ -6,6 +6,7 @@ install/codes
 install/covalent
 install/config_db
 install/jobflow
+install/fireworks
 install/settings
 ```
 

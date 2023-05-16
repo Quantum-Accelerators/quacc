@@ -4,6 +4,7 @@ from shutil import rmtree
 import numpy as np
 import pytest
 from ase.build import bulk
+from maggma.stores import MemoryStore
 
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.recipes.emt.jobflow.slabs import BulkToSlabsFlow as JFBulkToSlabsFlow
@@ -97,13 +98,7 @@ def test_slab_dynamic_jobs():
     assert [output["parameters"]["asap_cutoff"] == False for output in outputs]
 
 
-@pytest.mark.skipif(
-    jf is None,
-    reason="Jobflow is needed for this test.",
-)
 def test_jf_slab_dynamic_jobs():
-    from maggma.stores import MemoryStore
-
     store = jf.JobStore(MemoryStore())
 
     atoms = bulk("Cu")
