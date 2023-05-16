@@ -11,3 +11,4 @@ tmp_path.txt
 quacc-*
 tmp*
 timer.dat
+.mypy_cache*
