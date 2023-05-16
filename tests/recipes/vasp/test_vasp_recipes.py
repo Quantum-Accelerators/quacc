@@ -132,9 +132,9 @@ def test_slab_dynamic_jobs():
     ### --------- Test BulkToSlabsFlow --------- ###
 
     with pytest.raises(ValueError):
-        BulkToSlabsFlow(relax_electron=None, static_electron=None).run(atoms)
+        BulkToSlabsFlow(slab_relax_electron=None, slab_static_electron=None).run(atoms)
 
-    outputs = BulkToSlabsFlow(static_electron=None).run(atoms)
+    outputs = BulkToSlabsFlow(slab_static_electron=None).run(atoms)
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
     assert outputs[1]["nsites"] == 96
@@ -152,7 +152,7 @@ def test_slab_dynamic_jobs():
 
     outputs = BulkToSlabsFlow(
         relax_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
-        static_electron=None,
+        slab_static_electron=None,
     ).run(atoms)
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
@@ -164,7 +164,7 @@ def test_slab_dynamic_jobs():
     assert [output["parameters"]["encut"] == 450 for output in outputs]
 
     outputs = BulkToSlabsFlow(
-        relax_electron=None,
+        slab_relax_electron=None,
         static_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
     ).run(atoms)
     assert len(outputs) == 4
@@ -193,9 +193,11 @@ def test_slab_dynamic_jobs():
     adsorbate = molecule("H2")
 
     with pytest.raises(ValueError):
-        SlabToAdsFlow(relax_electron=None, static_electron=None).run(atoms, adsorbate)
+        SlabToAdsFlow(slab_relax_electron=None, slab_static_electron=None).run(
+            atoms, adsorbate
+        )
 
-    outputs = SlabToAdsFlow(static_electron=None).run(atoms, adsorbate)
+    outputs = SlabToAdsFlow(slab_static_electron=None).run(atoms, adsorbate)
 
     assert [output["nsites"] == 82 for output in outputs]
     assert [output["parameters"]["isif"] == 2 for output in outputs]
@@ -206,7 +208,7 @@ def test_slab_dynamic_jobs():
 
     outputs = SlabToAdsFlow(
         relax_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
-        static_electron=None,
+        slab_static_electron=None,
     ).run(atoms, adsorbate)
 
     assert [output["nsites"] == 82 for output in outputs]
@@ -215,7 +217,7 @@ def test_slab_dynamic_jobs():
     assert [output["parameters"]["encut"] == 450 for output in outputs]
 
     outputs = SlabToAdsFlow(
-        relax_electron=None,
+        slab_relax_electron=None,
         static_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
     ).run(atoms, adsorbate)
 

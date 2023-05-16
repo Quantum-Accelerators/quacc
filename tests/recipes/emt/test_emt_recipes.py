@@ -69,9 +69,9 @@ def test_slab_dynamic_jobs():
     atoms = bulk("Cu")
 
     with pytest.raises(ValueError):
-        BulkToSlabsFlow(relax_electron=None, static_electron=None).run(atoms)
+        BulkToSlabsFlow(slab_relax_electron=None, slab_static_electron=None).run(atoms)
 
-    outputs = BulkToSlabsFlow(relax_electron=None).run(atoms)
+    outputs = BulkToSlabsFlow(slab_relax_electron=None).run(atoms)
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
     assert outputs[1]["nsites"] == 96
@@ -80,7 +80,7 @@ def test_slab_dynamic_jobs():
     assert [output["parameters"]["asap_cutoff"] == False for output in outputs]
 
     outputs = BulkToSlabsFlow(
-        static_electron=None,
+        slab_static_electron=None,
         relax_kwargs={"fmax": 1.0, "emt_kwargs": {"asap_cutoff": True}},
     ).run(atoms)
     assert len(outputs) == 4
