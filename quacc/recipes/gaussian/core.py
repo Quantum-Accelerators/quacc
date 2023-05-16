@@ -79,7 +79,9 @@ def static_job(
 
     atoms.calc = Gaussian(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
-    summary = summarize_run(atoms, LOG_FILE)
+    summary = summarize_run(
+        atoms, LOG_FILE, additional_fields={"name": "Gaussian Static"}
+    )
 
     return summary
 
@@ -142,6 +144,8 @@ def relax_job(
 
     atoms.calc = Gaussian(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
-    summary = summarize_run(atoms, LOG_FILE)
+    summary = summarize_run(
+        atoms, LOG_FILE, additional_fields={"name": "Gaussian Relax"}
+    )
 
     return summary

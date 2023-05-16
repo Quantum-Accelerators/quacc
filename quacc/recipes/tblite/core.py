@@ -49,7 +49,9 @@ def static_job(
 
     atoms.calc = TBLite(method=method, **tblite_kwargs)
     atoms = run_calc(atoms)
-    summary = summarize_run(atoms, input_atoms=input_atoms)
+    summary = summarize_run(
+        atoms, input_atoms=input_atoms, additional_fields={"name": "TBLite Static"}
+    )
 
     return summary
 
@@ -105,7 +107,9 @@ def relax_job(
         optimizer=optimizer,
         opt_kwargs=opt_kwargs,
     )
-    summary = summarize_opt_run(traj, atoms.calc.parameters)
+    summary = summarize_opt_run(
+        traj, atoms.calc.parameters, additional_fields={"name": "TBLite Relax"}
+    )
 
     return summary
 

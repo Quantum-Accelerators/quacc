@@ -49,7 +49,7 @@ def static_job(
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
     atoms = run_calc(atoms)
-    summary = summarize_run(atoms)
+    summary = summarize_run(atoms, additional_fields={"name": "VASP Static"})
 
     return summary
 
@@ -98,7 +98,7 @@ def relax_job(
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
     atoms = run_calc(atoms)
-    summary = summarize_run(atoms)
+    summary = summarize_run(atoms, additional_fields={"name": "VASP Relax"})
 
     return summary
 
@@ -159,7 +159,7 @@ def double_relax_job(
     atoms.calc = calc
     kpts1 = atoms.calc.kpts
     atoms = run_calc(atoms)
-    summary1 = summarize_run(atoms)
+    summary1 = summarize_run(atoms, additional_fields={"name": "VASP DoubleRelax 1"})
 
     # Run second relaxation
     flags = merge_dicts(defaults, swaps2)
@@ -172,6 +172,6 @@ def double_relax_job(
         atoms.calc.set(istart=0)
 
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
-    summary2 = summarize_run(atoms)
+    summary2 = summarize_run(atoms, additional_fields={"name": "VASP DoubleRelax 2"})
 
     return {"relax1": summary1, "relax2": summary2}

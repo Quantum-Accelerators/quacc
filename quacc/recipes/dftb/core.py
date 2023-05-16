@@ -68,7 +68,9 @@ def static_job(
     scc_check = _check_logfile(LOG_FILE, "SCC is NOT converged")
     if scc_check:
         raise ValueError("SCC is not converged")
-    summary = summarize_run(atoms, input_atoms=input_atoms)
+    summary = summarize_run(
+        atoms, input_atoms=input_atoms, additional_fields={"name": "DFTB+ Static"}
+    )
 
     return summary
 
@@ -128,6 +130,8 @@ def relax_job(
     geom_check = _check_logfile(LOG_FILE, "Geometry converged")
     if not geom_check:
         raise ValueError("Geometry did not converge")
-    summary = summarize_run(atoms, input_atoms=input_atoms)
+    summary = summarize_run(
+        atoms, input_atoms=input_atoms, additional_fields={"name": "DFTB+ Relax"}
+    )
 
     return summary

@@ -135,7 +135,9 @@ def prerelax(
     atoms.calc = calc
     traj = run_ase_opt(atoms, fmax=fmax, optimizer="BFGSLineSearch")
 
-    summary = summarize_opt_run(traj, calc.parameters)
+    summary = summarize_opt_run(
+        traj, calc.parameters, additional_fields={"name": "QMOF Prerelax"}
+    )
 
     return summary
 
@@ -183,7 +185,9 @@ def loose_relax_positions(
     atoms.calc = calc
     atoms = run_calc(atoms)
 
-    summary = summarize_run(atoms, bader=False)
+    summary = summarize_run(
+        atoms, bader=False, additional_fields={"name": "QMOF Loose Relax"}
+    )
 
     return summary
 
@@ -229,7 +233,9 @@ def loose_relax_volume(
     atoms.calc = calc
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
 
-    summary = summarize_run(atoms, bader=False)
+    summary = summarize_run(
+        atoms, bader=False, additional_fields={"name": "QMOF Loose Relax Volume"}
+    )
 
     return summary
 
@@ -280,7 +286,9 @@ def double_relax(
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
 
     # Update atoms for
-    summary1 = summarize_run(atoms, bader=False)
+    summary1 = summarize_run(
+        atoms, bader=False, additional_fields={"name": "QMOF DoubleRelax 1"}
+    )
     atoms = summary1["atoms"]
 
     # Reset LREAL
@@ -296,7 +304,9 @@ def double_relax(
         atoms.calc.set(istart=0)
 
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
-    summary2 = summarize_run(atoms, bader=False)
+    summary2 = summarize_run(
+        atoms, bader=False, additional_fields={"name": "QMOF DoubleRelax 2"}
+    )
 
     return {"relax1": summary1, "relax2": summary2}
 
@@ -341,6 +351,6 @@ def static(
     atoms.calc = calc
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
 
-    summary = summarize_run(atoms)
+    summary = summarize_run(atoms, additional_fields={"name": "QMOF Static"})
 
     return summary

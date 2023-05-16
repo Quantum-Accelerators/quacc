@@ -54,7 +54,7 @@ def slab_static_job(
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
     atoms = run_calc(atoms)
-    summary = summarize_run(atoms)
+    summary = summarize_run(atoms, additional_fields={"name": "VASP Slab Static"})
 
     return summary
 
@@ -98,7 +98,7 @@ def slab_relax_job(
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
     atoms = run_calc(atoms)
-    summary = summarize_run(atoms)
+    summary = summarize_run(atoms, additional_fields={"name": "VASP Slab Relax"})
 
     return summary
 
