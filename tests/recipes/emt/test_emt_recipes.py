@@ -1,6 +1,7 @@
 import os
 from shutil import rmtree
 
+import jobflow as jf
 import numpy as np
 import pytest
 from ase.build import bulk
@@ -9,11 +10,6 @@ from maggma.stores import MemoryStore
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.recipes.emt.jobflow.slabs import BulkToSlabsFlow as JFBulkToSlabsFlow
 from quacc.recipes.emt.slabs import BulkToSlabsFlow
-
-try:
-    import jobflow as jf
-except:
-    jf = None
 
 
 def teardown_module():

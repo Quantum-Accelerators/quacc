@@ -17,7 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 See https://github.com/arosen93/quacc/releases/tag/v0.1.0 for more details.
 
 ### Added
-- Added optional support for Covalent as the workflow manager (but a required dependency).
+- Added optional support for Covalent as the workflow manager.
 - Improved documentation.
 - Automatic formatting of files during PRs.
 - This `CHANGELOG.md` file.
@@ -32,10 +32,11 @@ See https://github.com/arosen93/quacc/releases/tag/v0.1.0 for more details.
 - Use of a MongoDB is now optional.
 - Split `quacc.util.basics` and its associated functions into `quacc.util.dicts` and `quacc.util.files`.
 - Changed the `extras` names in `setup.py`.
+- Updated the dependencies.
 - Increased default for `max_steps` in `run_ase_opt` from 100 to 500.
-- Rename `prerelax` kwarg in `qmof_relax_job` was changed to `run_prerelax` to reflect that it is a boolean.
-- Rename `volume_relax` kwarg in VASP recipes to `relax_volume` to reflect that it is a boolean.
-- Rename `molden` to `write_molden` in Gaussian recipes to reflect that it is a boolean.
+- Renamed `prerelax` kwarg in `qmof_relax_job` was changed to `run_prerelax` to reflect that it is a boolean.
+- Renamed `volume_relax` kwarg in VASP recipes to `relax_volume` to reflect that it is a boolean.
+- Renamed `molden` to `write_molden` in Gaussian recipes to reflect that it is a boolean.
 - Switch license to standard BSD-3.
 - Simplified output schema for VASP slab workflows.
 
