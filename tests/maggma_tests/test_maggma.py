@@ -1,24 +1,11 @@
 import os
 
-import pytest
-
-try:
-    import maggma
-except ImportError:
-    maggma = None
-try:
-    import covalent as ct
-except ImportError:
-    ct = None
+import covalent as ct
+from maggma.stores import MemoryStore
 
 
-@pytest.mark.skipif(
-    maggma is None or ct is None,
-    reason="Maggma and Covalent must be installed",
-)
 def test_tutorial():
     # Connect to the database
-    from maggma.stores import MemoryStore
 
     store = MemoryStore()
     store.connect()

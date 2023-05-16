@@ -1,16 +1,13 @@
 import os
 from shutil import rmtree
 
+import jobflow as jf
 import pytest
 from ase.build import bulk
 from jobflow import JobStore, run_locally
+from maggma.stores import MemoryStore
 
 from quacc.recipes.emt.core import relax_job, static_job
-
-try:
-    import jobflow as jf
-except ImportError:
-    jf = None
 
 
 def teardown_module():
@@ -29,8 +26,6 @@ def teardown_module():
 
 @pytest.mark.skipif(jf is None, reason="This test requires jobflow")
 def test_emt():
-    from maggma.stores import MemoryStore
-
     store = JobStore(MemoryStore())
 
     atoms = bulk("Cu")
