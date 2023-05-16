@@ -9,7 +9,7 @@ import warnings
 from typing import Any, Dict, List, Tuple
 
 import numpy as np
-from ase.atoms import Atoms
+from ase import Atoms
 from ase.calculators.vasp import Vasp as Vasp_
 from ase.calculators.vasp.setups import _setups_defaults as ase_default_setups
 from ase.constraints import FixAtoms

@@ -6,7 +6,7 @@ from __future__ import annotations
 import os
 from typing import Any, Dict
 
-from ase.atoms import Atoms
+from ase import Atoms
 from ase.io import Trajectory
 from atomate2.utils.path import get_uri
 

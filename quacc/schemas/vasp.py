@@ -7,7 +7,7 @@ import os
 import warnings
 from typing import Any, Dict
 
-from ase.atoms import Atoms
+from ase import Atoms
 from emmet.core.tasks import TaskDoc
 
 from quacc import SETTINGS

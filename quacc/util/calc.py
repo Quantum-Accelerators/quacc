@@ -9,7 +9,7 @@ from tempfile import mkdtemp
 from typing import Any, Dict, List, Tuple
 
 import numpy as np
-from ase.atoms import Atoms
+from ase import Atoms
 from ase.io import read, trajectory
 from ase.optimize import (
     BFGS,

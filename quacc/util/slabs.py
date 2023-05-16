@@ -8,7 +8,7 @@ import warnings
 from typing import Any, Dict, List
 
 import numpy as np
-from ase.atoms import Atoms
+from ase import Atoms
 from pymatgen.analysis.adsorption import AdsorbateSiteFinder
 from pymatgen.core import Structure
 from pymatgen.core.surface import Slab, center_slab, generate_all_slabs

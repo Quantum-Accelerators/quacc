@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Any
 
 import covalent as ct
-from ase.atoms import Atoms
+from ase import Atoms
 from covalent._workflow.electron import Electron
 
 from quacc.recipes.emt.core import relax_job, static_job

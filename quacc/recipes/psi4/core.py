@@ -4,7 +4,7 @@ from __future__ import annotations
 from typing import Any
 
 import covalent as ct
-from ase.atoms import Atoms
+from ase import Atoms
 from ase.calculators.psi4 import Psi4
 from monty.dev import requires
 

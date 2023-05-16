@@ -6,7 +6,7 @@ from shutil import which
 from typing import Any
 
 import covalent as ct
-from ase.atoms import Atoms
+from ase import Atoms
 from ase.calculators.dftb import Dftb
 from monty.dev import requires
 

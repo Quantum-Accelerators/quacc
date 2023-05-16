@@ -7,7 +7,7 @@ from copy import deepcopy
 from typing import Any
 
 import covalent as ct
-from ase.atoms import Atoms
+from ase import Atoms
 from monty.dev import requires
 
 from quacc.schemas.calc import summarize_opt_run, summarize_run

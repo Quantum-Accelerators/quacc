@@ -5,7 +5,7 @@ import multiprocessing
 from typing import Any
 
 import covalent as ct
-from ase.atoms import Atoms
+from ase import Atoms
 from ase.calculators.orca import ORCA
 
 from quacc.schemas.cclib import summarize_run

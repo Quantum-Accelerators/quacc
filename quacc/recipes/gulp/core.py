@@ -6,7 +6,7 @@ from copy import deepcopy
 from typing import Any
 
 import covalent as ct
-from ase.atoms import Atoms
+from ase import Atoms
 from ase.calculators.gulp import GULP
 
 from quacc.schemas.calc import summarize_run
