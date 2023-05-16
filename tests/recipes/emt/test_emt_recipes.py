@@ -4,8 +4,6 @@ from shutil import rmtree
 import numpy as np
 import pytest
 from ase.build import bulk
-from jobflow import JobStore, run_locally
-from maggma.stores import MemoryStore
 
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.recipes.emt.jobflow.slabs import BulkToSlabsFlow as JFBulkToSlabsFlow
@@ -104,27 +102,29 @@ def test_slab_dynamic_jobs():
     reason="Jobflow is needed for this test.",
 )
 def test_jf_slab_dynamic_jobs():
-    store = JobStore(MemoryStore())
+    from maggma.stores import MemoryStore
+
+    store = jf.JobStore(MemoryStore())
 
     atoms = bulk("Cu")
 
     with pytest.raises(RuntimeError):
         flow = JFBulkToSlabsFlow(slab_relax_job=None, slab_static_job=None).run(atoms)
-        run_locally(flow, store=store, ensure_success=True)
+        jf.run_locally(flow, store=store, ensure_success=True)
 
     flow = JFBulkToSlabsFlow(slab_relax_job=None).run(atoms)
-    run_locally(flow, store=store, ensure_success=True)
+    jf.run_locally(flow, store=store, ensure_success=True)
 
     flow = JFBulkToSlabsFlow(
         slab_static_job=None,
         relax_kwargs={"fmax": 1.0, "emt_kwargs": {"asap_cutoff": True}},
     ).run(atoms)
-    run_locally(flow, store=store, ensure_success=True)
+    jf.run_locally(flow, store=store, ensure_success=True)
 
     flow = JFBulkToSlabsFlow(
         relax_kwargs={"fmax": 1.0, "emt_kwargs": {"asap_cutoff": True}},
     ).run(atoms, slabgen_kwargs={"max_slabs": 2})
-    responses = run_locally(flow, store=store, ensure_success=True)
+    responses = jf.run_locally(flow, store=store, ensure_success=True)
 
     assert len(responses) == 5
     uuids = list(responses.keys())

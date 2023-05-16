@@ -4,10 +4,8 @@ from shutil import rmtree
 import pytest
 from ase.build import bulk
 from jobflow import JobStore, run_locally
-from maggma.stores import MemoryStore
 
 from quacc.recipes.emt.core import relax_job, static_job
-from quacc.recipes.emt.slabs import BulkToSlabsFlow
 
 try:
     import jobflow as jf
@@ -31,6 +29,8 @@ def teardown_module():
 
 @pytest.mark.skipif(jf is None, reason="This test requires jobflow")
 def test_emt():
+    from maggma.stores import MemoryStore
+
     store = JobStore(MemoryStore())
 
     atoms = bulk("Cu")
