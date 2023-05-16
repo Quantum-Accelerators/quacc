@@ -27,7 +27,7 @@ For the `my_fworker.yaml`, you can use the following template. You do not need t
 ```yaml
 name: quacc_fworker
 category: ''
-query: {}
+query: '{}'
 ```
 
 ### Launchpad
