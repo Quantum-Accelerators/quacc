@@ -16,17 +16,17 @@ For reproducibility purposes, we strongly recommend install QuAcc in a fresh vir
 
 Please abide by the following when contributing code to QuAcc: 
 
-1. All code should include type hints and have documentation for all inputs and outputs.
+1. All code should include type hints and have documentation for the inputs and outputs.
 
 2. The input to most compute jobs should be an ASE `Atoms` object. The output of most compute tasks should be a schema from one of the `summarize_run` type functions (see "Output Schema" below).
 
 3. Individual compute jobs should be written as functions, and workflows should be written as classes. Refer to `quacc.rescipes.emt.core` and `quacc.recipes.emt.slabs` for examples.
 
-4. When possiible to do so, you should prioritize writing individual functions for each task over multi-step workflows so that the user has freedom to stitch them together how they choose.
+4. Only add multi-step workflows if they go beyond simply stitching together existing functions.
 
-5. When possible, you should use the "internal" optimizers for a given code rather than the ASE optimizers.
+5. When possible, you should use the "internal" geometry optimizers for a given code rather than the ASE optimizers.
 
-6. For multi-step workflows, Covalent `Electron` objects should be defined for each individual task to ensure that they are distributed across available compute resources. Never use a `Lattice` in the code directly (unless it is wrapped by an `Electron` as a sublattice).
+6. Never use a Covalent `Lattice` in the code directly (unless it is wrapped by an `Electron` as a sublattice).
 
 ## Output Schema
 
@@ -38,7 +38,7 @@ At the end of any recipe you make, you should return a summary dictionary of the
 
 3. `quacc.schemas.cclib.summarize_run`: This function is used to summarize the inputs and outputs of a run for codes that are supported by [cclib](https://cclib.github.io/data.html). When possible, this is preferred over `quacc.schemas.calc.summarize_run` because cclib will generate a more detailed summary than ASE can provide. It is also more standardized across different codes.
 
-4. `quacc.schemas.vasp.summarize_run`: This function is used to summarize a VASP run. It has been custom-made for VASP based on the schema present in [`emmet`](https://github.com/materialsproject/emmet/blob/de2d700ef58f04622fa3ab01870e562b1387b696/emmet-core/emmet/core/vasp/calculation.py#L394).
+4. `quacc.schemas.vasp.summarize_run`: This function is used to summarize a VASP run. It has been custom-made for VASP based on the schema present in [`emmet-core`](https://github.com/materialsproject/emmet/blob/de2d700ef58f04622fa3ab01870e562b1387b696/emmet-core/emmet/core/vasp/calculation.py#L394).
 
 ## Changelog
 
@@ -48,14 +48,15 @@ We keep a `CHANGELOG.md` file in the base directory of the `quacc` code. Before 
 
 In general, please try to keep the code style consistent when possible. There are two main things to consider:
 
-1. Functions should be lowercase and with underscores. Classes should be in CamelCase.
-2. All python code should be formatted with [isort](https://github.com/PyCQA/isort) and then [black](https://github.com/psf/black), although this will be corrected automatically for you when submitting a PR.
+1. Functions should be lowercase and with underscores. Classes should be in CamelCase and constructed using a `@dataclass` decorator.
+
+2. All Python code should be formatted with [isort](https://github.com/PyCQA/isort) and then [black](https://github.com/psf/black), although this will be corrected automatically for you when submitting a PR.
 
 ## Unit Tests
 
 All changes you make to QuAcc should be accompanied by unit tests and should not break existing tests. To run the test suite, run `pytest` from the the `quacc/tests` directory.
 
-If you are adding recipes based on a code that can be readily installed via `pip` or `conda` (e.g. tblite, xtb-python, DFTB+, Psi4), then you can run the unit tests with these codes directly. Preferably, you should use a small molecule or solid and cheap method so the unit tests run quickly. If the recipes you're adding are proprietary or not available via `pip` or `conda` (e.g. Gaussian, GULP), then you will need to monkeypatch certain functions to change their behavior during testing. For instance, we do not want to run VASP directly during unit tests and have mocked the `atoms.get_potential_energy()` function to always return a value of -1.0 during unit tests. Any mocked functions can be found in the `conftest.py` files of the testing directory.
+If you are adding recipes based on a code that can be readily installed via `pip` or `conda` (e.g. tblite, xtb-python, DFTB+, Psi4), then you can run the unit tests with these codes directly. Preferably, you should use a small molecule or solid and cheap method so the unit tests run quickly. If the recipes you're adding are proprietary or not available via `pip` or `conda` (e.g. Gaussian, GULP), then you will need to monkeypatch certain functions to change their behavior during testing. For instance, we do not want to run VASP directly during unit tests and have mocked the `atoms.get_potential_energy()` function to always return a dummy value of -1.0 during unit tests. Any mocked functions can be found in the `conftest.py` files of the testing directory.
 
 ## Tips
 
