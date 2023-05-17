@@ -1,7 +1,7 @@
 ---
 name: Issue Report
 about: Raise an issue to help improve Quacc
-title: "ISSUE:"
+title: ""
 ---
 
 # What is the Issue?

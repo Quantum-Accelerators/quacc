@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Some advanced users may wish to use Quacc with a database so that all calculation inputs and outputs are stored in an easily queryable database. While not a requirement for using Quacc, this can be readily achieved through the use of the [maggma](https://github.com/materialsproject/maggma) package. If this is of interest, we generally recommend using a Mongo database.
+Some users may wish to use Quacc with a custom database so that all calculation inputs and outputs are stored in an easily queryable database. While not a requirement for using Quacc, this can be readily achieved through the use of the [maggma](https://github.com/materialsproject/maggma) package. If this is of interest, we generally recommend using a Mongo database.
 
 ## MongoDB Setup
 

@@ -6,11 +6,11 @@ To use Quacc, you must have a Python environment set up. For this, we recommend 
 
 With Miniconda installed, create a fresh environment by running `conda create -n quacc python=3.9`. You can then activate this environment via `conda activate quacc`.
 
-Note: If you are on a Windows machine, we recommend installing and using the [Windows Subsystem for Linux (WSL)](https://ubuntu.com/wsl).
+Note: If you are on a Windows machine, you will need to install and use the [Windows Subsystem for Linux (WSL)](https://ubuntu.com/wsl).
 
 ## Installing Quacc
 
-In your newly activated conda environment, you can install Quacc and its related dependencies by using `pip install quacc`. For the development version of Quacc (currently recommended), you can instead use `pip install git+https://github.com/arosen93/quacc.git`.
+In your newly activated conda environment, you can install Quacc and its related dependencies by running `pip install quacc`. For the development version of Quacc (currently recommended), you can instead use `pip install git+https://github.com/arosen93/quacc.git`.
 
 Quacc can be installed with several `extras`, as outlined in the `setup.py` file. These are described below:
 

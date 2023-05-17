@@ -5,9 +5,8 @@ install/install
 install/codes
 install/covalent
 install/config_db
-install/jobflow
-install/fireworks
-install/settings
+install/jobflow/jobflow
+install/jobflow/fireworks
 ```
 
 ```{toctree}
@@ -18,6 +17,7 @@ user/covalent
 user/database
 user/jobflow
 user/fireworks
+user/settings
 ```
 
 ```{toctree}
@@ -65,7 +65,7 @@ Quacc is a flexible platform for high-throughput, database-driven computational 
 :class-header: bg-light
 **Installation Guide**
 ^^^
-The installation guide walks you through how to install Quacc and its dependencies.
+How to install Quacc and its dependencies.
 :::
 
 :::{grid-item-card}
@@ -74,26 +74,24 @@ The installation guide walks you through how to install Quacc and its dependenci
 :class-header: bg-light
 **User Guide**
 ^^^
-The user guide provides in-depth information and quick start guides for using Quacc.
+A walkthrough of how to use the major features of Quacc.
 :::
 
 :::{grid-item-card}
 :link: reference/index
 :link-type: doc
 :class-header: bg-light
-**API reference**
+**API Reference**
 ^^^
-The reference guide contains a detailed description of the Quacc API. It
-assumes that you have an understanding of the key concepts.
+A detailed description of the various Quacc modules.
 :::
 
 :::{grid-item-card}
 :link: dev/contributing
 :link-type: doc
 :class-header: bg-light
-**Developer guide**
+**Developer Guide**
 ^^^
-Do you want to develop your own workflows or improve existing functionalities?
-Check out the developer guide.
+A guide for how to contribute to Quacc.
 :::
 ::::
