@@ -8,7 +8,6 @@ import os
 from ase import Atoms
 from atomate2.common.schemas.cclib import TaskDocument
 
-from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import _quacc_sanitize
 from quacc.util.atoms import prep_next_run as prep_next_run_
 
