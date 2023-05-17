@@ -54,19 +54,19 @@ def summarize_run(
 
     Returns
     -------
-    Dict
-        The task document has the following fields:
+    Dictionary representation of the task document with the following fields:
         - atoms: Atoms = Field(None, title = "The Atoms object obtained from atoms.")
         - parameters: dict = Field(None, title = "The input parameters obtained from atoms.calc.parameters.")
         - nid: str = Field(None, title = "The node ID representing the machine where the calculation was run.")
+        - atoms_info: dict = Field(None, title = "The Atoms object info obtained from atoms.info.")
 
         The task document also inherits the following fields from atomate2.common.schemas.cclib.TaskDocument:
         - molecule: Molecule = Field(None, description="Final output molecule from the task")
         - energy: float = Field(None, description="Final total energy")
         - dir_name: str = Field(None, description="Directory where the output is parsed")
         - logfile: str = Field(None, description="Path to the log file used in the post-processing analysis")
-        - attributes: Dict = Field(None, description="Computed properties and calculation outputs")
-        - metadata: Dict = Field(None, description="Calculation metadata, including input parameters and runtime statistics")
+        - attributes: Dict = Field(None, description="Computed properties and calculation outputs. See https://cclib.github.io/data_notes.html")
+        - metadata: Dict = Field(None, description="Calculation metadata, including input parameters and runtime statistics. See https://cclib.github.io/data_notes.html#metadata")
         - task_label: str = Field(None, description="A description of the task")
         - tags: List[str] = Field(None, description="Optional tags for this task document")
         - last_updated: str = Field(default_factory=datetime_str, description="Timestamp for this task document was last updated")
@@ -86,6 +86,12 @@ def summarize_run(
         - formula_anonymous: str = Field(None, title="Anonymous Formula", description="Anonymized representation of the formula")
         - chemsys: str = Field(None, title="Chemical System", description="dash-delimited string of elements in the molecule")
         - symmetry: PointGroupData = Field(None, description="Symmetry data for this molecule")
+            - point_group: str = Field(None, title="Point Group Symbol", description="The point group for the lattice")
+            - rotation_number: float = Field(None, title="Rotational Symmetry Number", description="Rotational symmetry number for the molecule")
+            - linear: bool = Field(None, title="Molecule Linearity", description="Is the molecule linear?")
+            - tolerance: float = Field(None, title="Point Group Analyzer Tolerance", description="Distance tolerance to consider sites as symmetrically equivalent.")
+            - eigen_tolerance: float = Field(None, title="Interia Tensor Eigenvalue Tolerance", description="Tolerance to compare eigen values of the inertia tensor.")
+            - matrix_tolerance: float = Field(None, title="Symmetry Operation Matrix Element Tolerance" description="Tolerance used to generate the full set of symmetry operations of the point group.")
 
         ... as well as the following fields from emmet.core.base.EmmetBaseModel:
         - builder_meta: EmmetMeta = Field(default_factory=EmmetMeta, description="Builder metadata."):
@@ -110,6 +116,7 @@ def summarize_run(
     results["nid"] = uri.split(":")[0]
     results["dir_name"] = ":".join(uri.split(":")[1:])
     results["builder_meta"]["build_date"] = str(results["builder_meta"]["build_date"])
+    results["logfile"] = results["logfile"].split(":")[-1]
 
     # Check convergence if requested
     if check_convergence:
