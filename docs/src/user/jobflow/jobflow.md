@@ -1,6 +1,8 @@
 # Using Quacc with Jobflow
 
-## Jobflow
+## Introduction
+
+[Jobflow](https://github.com/materialsproject/jobflow) is a program developed by the Materials Project to write computational workflows. It can be used in place of Covalent, if preferred.
 
 Make sure you completed the ["Optional: Jobflow Setup"](../install/jobflow.md) and ["Optional: FireWorks Setup"](../install/fireworks.md) sections of the installation instructions. Additionally, you should read the Jobflow [Quick Start](https://materialsproject.github.io/jobflow/tutorials/1-quickstart.html) to get a sense of how Jobflow works. Namely, you should understand the `Job` and `Flow` definitions, which describe individual compute tasks and workflows, respectively.
 

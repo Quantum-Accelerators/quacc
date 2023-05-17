@@ -42,7 +42,7 @@ about/contributors
 about/license
 ```
 
-# Quacc documentation
+# Quacc Documentation
 
 **Last Updated**: {sub-ref}`today`
 
