@@ -33,7 +33,7 @@ def test_atoms_to_metadata():
     atoms = bulk("Cu")
     results = atoms_to_metadata(atoms, get_metadata=False)
     assert results["atoms"] == atoms
-    assert results.get("nsites", None) is None
+    assert results.get("nsites") is None
 
     atoms = molecule("H2O")
     atoms.info["test"] = "hi"
