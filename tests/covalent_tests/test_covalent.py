@@ -44,98 +44,98 @@ def test_covalent_config():
         )
 
 
-# @pytest.mark.skipif(
-#     ct is None or os.environ.get("GITHUB_ACTIONS", False) is False,
-#     reason="This test is only meant to be run on GitHub Actions",
-# )
-# def test_tutorials():
-#     # Test of the various tutorials
+@pytest.mark.skipif(
+    ct is None or os.environ.get("GITHUB_ACTIONS", False) is False,
+    reason="This test is only meant to be run on GitHub Actions",
+)
+def test_tutorials():
+    # Test of the various tutorials
 
-#     @ct.lattice
-#     def workflow(atoms):
-#         result1 = relax_job(atoms)
-#         result2 = static_job(result1["atoms"])
-#         return result2
+    @ct.lattice
+    def workflow(atoms):
+        result1 = relax_job(atoms)
+        result2 = static_job(result1["atoms"])
+        return result2
 
-#     atoms = bulk("Cu")
-#     dispatch_id = ct.dispatch(workflow)(atoms)
-#     result = ct.get_result(dispatch_id, wait=True)
-#     assert result.status == "COMPLETED"
+    atoms = bulk("Cu")
+    dispatch_id = ct.dispatch(workflow)(atoms)
+    result = ct.get_result(dispatch_id, wait=True)
+    assert result.status == "COMPLETED"
 
-#     # ------------------------------------------------------------
-#     @ct.lattice
-#     def workflow(atoms1, atoms2):
-#         result1 = relax_job(atoms1)
-#         result2 = relax_job(atoms2)
+    # ------------------------------------------------------------
+    @ct.lattice
+    def workflow(atoms1, atoms2):
+        result1 = relax_job(atoms1)
+        result2 = relax_job(atoms2)
 
-#         return [result1, result2]
+        return [result1, result2]
 
-#     atoms1 = bulk("Cu")
-#     atoms2 = molecule("N2")
-#     dispatch_id = ct.dispatch(workflow)(atoms1, atoms2)
-#     result = ct.get_result(dispatch_id, wait=True)
-#     assert result.status == "COMPLETED"
+    atoms1 = bulk("Cu")
+    atoms2 = molecule("N2")
+    dispatch_id = ct.dispatch(workflow)(atoms1, atoms2)
+    result = ct.get_result(dispatch_id, wait=True)
+    assert result.status == "COMPLETED"
 
-#     # ------------------------------------------------------------
-#     @ct.lattice
-#     def workflow(atoms):
-#         relaxed_bulk = relax_job(atoms)
-#         relaxed_slabs = BulkToSlabsFlow(slab_static_electron=None).run(
-#             relaxed_bulk["atoms"]
-#         )
-#         return relaxed_slabs
+    # ------------------------------------------------------------
+    @ct.lattice
+    def workflow(atoms):
+        relaxed_bulk = relax_job(atoms)
+        relaxed_slabs = BulkToSlabsFlow(slab_static_electron=None).run(
+            relaxed_bulk["atoms"]
+        )
+        return relaxed_slabs
 
-#     atoms = bulk("Cu")
-#     dispatch_id = ct.dispatch(workflow)(atoms)
-#     result = ct.get_result(dispatch_id, wait=True)
-#     assert result.status == "COMPLETED"
+    atoms = bulk("Cu")
+    dispatch_id = ct.dispatch(workflow)(atoms)
+    result = ct.get_result(dispatch_id, wait=True)
+    assert result.status == "COMPLETED"
 
-#     # ------------------------------------------------------------
-#     @ct.lattice(executor="local")
-#     def workflow(atoms):
-#         result1 = relax_job(atoms)
-#         result2 = static_job(result1["atoms"])
-#         return result2
+    # ------------------------------------------------------------
+    @ct.lattice(executor="local")
+    def workflow(atoms):
+        result1 = relax_job(atoms)
+        result2 = static_job(result1["atoms"])
+        return result2
 
-#     atoms = bulk("Cu")
-#     dispatch_id = ct.dispatch(workflow)(atoms)
-#     result = ct.get_result(dispatch_id, wait=True)
-#     assert result.status == "COMPLETED"
+    atoms = bulk("Cu")
+    dispatch_id = ct.dispatch(workflow)(atoms)
+    result = ct.get_result(dispatch_id, wait=True)
+    assert result.status == "COMPLETED"
 
-#     # ------------------------------------------------------------
-#     @ct.electron(executor="dask")
-#     def relax_electron(atoms):
-#         return relax_job(atoms)
+    # ------------------------------------------------------------
+    @ct.electron(executor="dask")
+    def relax_electron(atoms):
+        return relax_job(atoms)
 
-#     @ct.electron(executor="local")
-#     def static_electron(atoms):
-#         return static_job(atoms)
+    @ct.electron(executor="local")
+    def static_electron(atoms):
+        return static_job(atoms)
 
-#     @ct.lattice
-#     def workflow(atoms):
-#         output1 = relax_electron(atoms)
-#         output2 = static_electron(output1["atoms"])
-#         return output2
+    @ct.lattice
+    def workflow(atoms):
+        output1 = relax_electron(atoms)
+        output2 = static_electron(output1["atoms"])
+        return output2
 
-#     atoms = bulk("Cu")
-#     dispatch_id = ct.dispatch(workflow)(atoms)
-#     result = ct.get_result(dispatch_id, wait=True)
-#     assert result.status == "COMPLETED"
+    atoms = bulk("Cu")
+    dispatch_id = ct.dispatch(workflow)(atoms)
+    result = ct.get_result(dispatch_id, wait=True)
+    assert result.status == "COMPLETED"
 
-#     # ------------------------------------------------------------
-#     @ct.lattice
-#     def workflow(atoms):
-#         job1 = relax_job
-#         job1.electron_object.metadata["executor"] = "dask"
+    # ------------------------------------------------------------
+    @ct.lattice
+    def workflow(atoms):
+        job1 = relax_job
+        job1.electron_object.metadata["executor"] = "dask"
 
-#         job2 = static_job
-#         job2.electron_object.metadata["executor"] = "local"
+        job2 = static_job
+        job2.electron_object.metadata["executor"] = "local"
 
-#         output1 = job1(atoms)
-#         output2 = job2(output1["atoms"])
-#         return output2
+        output1 = job1(atoms)
+        output2 = job2(output1["atoms"])
+        return output2
 
-#     atoms = bulk("Cu")
-#     dispatch_id = ct.dispatch(workflow)(atoms)
-#     result = ct.get_result(dispatch_id, wait=True)
-#     assert result.status == "COMPLETED"
+    atoms = bulk("Cu")
+    dispatch_id = ct.dispatch(workflow)(atoms)
+    result = ct.get_result(dispatch_id, wait=True)
+    assert result.status == "COMPLETED"
