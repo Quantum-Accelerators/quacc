@@ -109,7 +109,7 @@ class QuaccSettings(BaseSettings):
         ["VasprunXMLValidator", "VaspFilesValidator"],
         description="Validators for Custodian",
     )
-    VASP_CUSTODIAN_WALL_TIME: int = Field(
+    VASP_CUSTODIAN_WALL_TIME: int | None = Field(
         None,
         description="After this many seconds, Custodian will stop running and ensure that VASP writes a STOPCAR",
     )
@@ -120,7 +120,7 @@ class QuaccSettings(BaseSettings):
         env_prefix = "quacc_"
 
     @root_validator(pre=True)
-    def load_default_settings(cls, values):
+    def load_default_settings(cls, values: dict) -> dict:
         from monty.serialization import loadfn
 
         """
@@ -130,7 +130,7 @@ class QuaccSettings(BaseSettings):
         This allows setting of the config file path through environment variables.
         """
 
-        config_file_path: str = values.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH)
+        config_file_path = values.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH)
 
         new_values = {}
         if Path(config_file_path).expanduser().exists():
