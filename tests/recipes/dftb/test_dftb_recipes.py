@@ -4,7 +4,6 @@ from shutil import rmtree, which
 import numpy as np
 import pytest
 from ase.build import bulk, molecule
-from ase.io import read
 
 from quacc.recipes.dftb.core import relax_job, static_job
 
