@@ -47,7 +47,6 @@ def test_static_Job():
     assert (
         np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is True
     )
-    # assert output["atoms"] == read("geo_end.gen")
 
     atoms = bulk("Cu")
 
@@ -67,7 +66,6 @@ def test_static_Job():
         np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is True
     )
     assert np.array_equal(output["atoms"].cell.array, atoms.cell.array) is True
-    # assert output["atoms"] == read("geo_end.gen")
 
 
 @pytest.mark.skipif(
