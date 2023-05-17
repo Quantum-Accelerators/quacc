@@ -79,7 +79,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install .[strict, docs]
+          pip install .[strict,docs]
 
       - name: Build
         run: sphinx-build docs/src docs_build
