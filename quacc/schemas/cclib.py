@@ -73,18 +73,19 @@ def summarize_run(
         - _schema: str = Field(__version__, description="Version of atomate2 used to create the document", alias="schema")
 
         ... as well as the following fields from emmet.core.structure.MoleculeMetadata:
-        - nsites: int = Field(None, description="Total number of sites in the structure.")
-        - elements: List[Element] = Field(None, description="List of elements in the material.")
-        - nelements: int = Field(None, description="Number of elements.")
-        - composition: Composition = Field(None, description="Full composition for the material.")
-        - composition_reduced: Composition = Field(None, title="Reduced Composition", description="Simplified representation of the composition.")
+        - charge: int = Field(None, description="Charge of the molecule")
+        - spin_multiplicity: int = Field(None, description="Spin multiplicity of the molecule")
+        - natoms: int = Field(None, description="Total number of atoms in the molecule")
+        - elements: List[Element] = Field(None, description="List of elements in the molecule")
+        - nelements: int = Field(None, title="Number of Elements")
+        - nelectrons: int = Field(None, title="Number of electrons", description="The total number of electrons for the molecule")
+        - composition: Composition = Field(None, description="Full composition for the molecule")
+        - composition_reduced: Composition = Field(None, title="Reduced Composition", description="Simplified representation of the composition")
+        - formula_alphabetical: str = Field(None, title="Alphabetical Formula", description="Alphabetical molecular formula")
         - formula_pretty: str = Field(None, title="Pretty Formula", description="Cleaned representation of the formula.")
-        - formula_anonymous: str = Field(None, title="Anonymous Formula", description="Anonymized representation of the formula.")
-        - chemsys: str = Field(None, title="Chemical System", description="dash-delimited string of elements in the material.")
-        - volume: float = Field(None, title="Volume", description="Total volume for this structure in Angstroms^3.")
-        - density: float = Field(None, title="Density", description="Density in grams per cm^3.")
-        - density_atomic: float = Field(None, title="Packing Density", description="The atomic packing density in atoms per cm^3.")
-        - symmetry: SymmetryData = Field(None, description="Symmetry data for this material.")
+        - formula_anonymous: str = Field(None, title="Anonymous Formula", description="Anonymized representation of the formula")
+        - chemsys: str = Field(None, title="Chemical System", description="dash-delimited string of elements in the molecule")
+        - symmetry: PointGroupData = Field(None, description="Symmetry data for this molecule")
 
         ... as well as the following fields from emmet.core.base.EmmetBaseModel:
         - builder_meta: EmmetMeta = Field(default_factory=EmmetMeta, description="Builder metadata."):
