@@ -8,7 +8,7 @@ import os
 from ase import Atoms
 from atomate2.common.schemas.cclib import TaskDocument
 
-from quacc.schemas.atoms import _quacc_sanitize
+from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
 
 
@@ -146,10 +146,10 @@ def summarize_run(
         atoms = prep_next_run_(atoms)
 
     # Add atoms info
-    results["atoms_info"] = _quacc_sanitize(atoms.info)
+    atoms_db = atoms_to_metadata(atoms, get_metadata=False, store_pmg=False)
 
     # Create a dictionary of the inputs/outputs
-    task_doc = {**inputs, **results, **additional_fields}
+    task_doc = {**atoms_db, **inputs, **results, **additional_fields}
 
     # Sort dict
     task_doc = dict(sorted(task_doc.items()))
