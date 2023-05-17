@@ -103,9 +103,9 @@ def relax_job(
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
     run_freq: bool = False,
-    input_swaps: dict[str, Any] | None = None,
-    block_swaps: dict[str, Any] | None = None,
-) -> dict[str, Any]:
+    input_swaps: dict | None = None,
+    block_swaps: dict | None = None,
+) -> dict:
     """
     Carry out a geometry optimization.
 
