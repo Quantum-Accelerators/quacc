@@ -25,44 +25,10 @@ def summarize_run(
     Get tabulated results from a molecular DFT run and store them in a database-friendly format.
     This is meant to be a general parser built on top of cclib.
 
-    The task document has the following fields:
-    - atoms: Atoms = Field(None, title = "The Atoms object obtained from atoms.")
-    - parameters: dict = Field(None, title = "The input parameters obtained from atoms.calc.parameters.")
-    - nid: str = Field(None, title = "The node ID representing the machine where the calculation was run.")
-
-    The task document also inherits the following fields from atomate2.common.schemas.cclib.TaskDocument:
-    - molecule: Molecule = Field(None, description="Final output molecule from the task")
-    - energy: float = Field(None, description="Final total energy")
-    - dir_name: str = Field(None, description="Directory where the output is parsed")
-    - logfile: str = Field(None, description="Path to the log file used in the post-processing analysis")
-    - attributes: Dict = Field(None, description="Computed properties and calculation outputs")
-    - metadata: Dict = Field(None, description="Calculation metadata, including input parameters and runtime statistics")
-    - task_label: str = Field(None, description="A description of the task")
-    - tags: List[str] = Field(None, description="Optional tags for this task document")
-    - last_updated: str = Field(default_factory=datetime_str, description="Timestamp for this task document was last updated")
-    - _schema: str = Field(__version__, description="Version of atomate2 used to create the document", alias="schema")
-
-    ... as well as the following fields from emmet.core.structure.MoleculeMetadata:
-    - nsites: int = Field(None, description="Total number of sites in the structure.")
-    - elements: List[Element] = Field(None, description="List of elements in the material.")
-    - nelements: int = Field(None, description="Number of elements.")
-    - composition: Composition = Field(None, description="Full composition for the material.")
-    - composition_reduced: Composition = Field(None, title="Reduced Composition", description="Simplified representation of the composition.")
-    - formula_pretty: str = Field(None, title="Pretty Formula", description="Cleaned representation of the formula.")
-    - formula_anonymous: str = Field(None, title="Anonymous Formula", description="Anonymized representation of the formula.")
-    - chemsys: str = Field(None, title="Chemical System", description="dash-delimited string of elements in the material.")
-    - volume: float = Field(None, title="Volume", description="Total volume for this structure in Angstroms^3.")
-    - density: float = Field(None, title="Density", description="Density in grams per cm^3.")
-    - density_atomic: float = Field(None, title="Packing Density", description="The atomic packing density in atoms per cm^3.")
-    - symmetry: SymmetryData = Field(None, description="Symmetry data for this material.")
-
-    ... as well as the following fields from emmet.core.base.EmmetBaseModel:
-    - builder_meta: EmmetMeta = Field(default_factory=EmmetMeta, description="Builder metadata."):
-        - emmet_version: str = Field(__version__, description="The version of emmet this document was built with.")
-        - pymatgen_version: str = Field(pmg_version, description="The version of pymatgen this document was built with.")
-        - pull_request: int = Field(None, description="The pull request number associated with this data build.")
-        - database_version: str = Field(None, description="The database version for the built data.")
-        - build_date: str = Field(default_factory=datetime.utcnow, description="The build date for this document.")
+    This document inherits from the following schemas:
+    - atomate2.common.schemas.cclib.TaskDocument
+    - emmet.core.structure.MoleculeMetadata
+    - emmet.core.base.EmmetBaseModel
 
     Parameters
     ----------
@@ -89,7 +55,44 @@ def summarize_run(
     Returns
     -------
     Dict
-        Dictionary of tabulated inputs/results.
+        The task document has the following fields:
+        - atoms: Atoms = Field(None, title = "The Atoms object obtained from atoms.")
+        - parameters: dict = Field(None, title = "The input parameters obtained from atoms.calc.parameters.")
+        - nid: str = Field(None, title = "The node ID representing the machine where the calculation was run.")
+
+        The task document also inherits the following fields from atomate2.common.schemas.cclib.TaskDocument:
+        - molecule: Molecule = Field(None, description="Final output molecule from the task")
+        - energy: float = Field(None, description="Final total energy")
+        - dir_name: str = Field(None, description="Directory where the output is parsed")
+        - logfile: str = Field(None, description="Path to the log file used in the post-processing analysis")
+        - attributes: Dict = Field(None, description="Computed properties and calculation outputs")
+        - metadata: Dict = Field(None, description="Calculation metadata, including input parameters and runtime statistics")
+        - task_label: str = Field(None, description="A description of the task")
+        - tags: List[str] = Field(None, description="Optional tags for this task document")
+        - last_updated: str = Field(default_factory=datetime_str, description="Timestamp for this task document was last updated")
+        - _schema: str = Field(__version__, description="Version of atomate2 used to create the document", alias="schema")
+
+        ... as well as the following fields from emmet.core.structure.MoleculeMetadata:
+        - nsites: int = Field(None, description="Total number of sites in the structure.")
+        - elements: List[Element] = Field(None, description="List of elements in the material.")
+        - nelements: int = Field(None, description="Number of elements.")
+        - composition: Composition = Field(None, description="Full composition for the material.")
+        - composition_reduced: Composition = Field(None, title="Reduced Composition", description="Simplified representation of the composition.")
+        - formula_pretty: str = Field(None, title="Pretty Formula", description="Cleaned representation of the formula.")
+        - formula_anonymous: str = Field(None, title="Anonymous Formula", description="Anonymized representation of the formula.")
+        - chemsys: str = Field(None, title="Chemical System", description="dash-delimited string of elements in the material.")
+        - volume: float = Field(None, title="Volume", description="Total volume for this structure in Angstroms^3.")
+        - density: float = Field(None, title="Density", description="Density in grams per cm^3.")
+        - density_atomic: float = Field(None, title="Packing Density", description="The atomic packing density in atoms per cm^3.")
+        - symmetry: SymmetryData = Field(None, description="Symmetry data for this material.")
+
+        ... as well as the following fields from emmet.core.base.EmmetBaseModel:
+        - builder_meta: EmmetMeta = Field(default_factory=EmmetMeta, description="Builder metadata."):
+            - emmet_version: str = Field(__version__, description="The version of emmet this document was built with.")
+            - pymatgen_version: str = Field(pmg_version, description="The version of pymatgen this document was built with.")
+            - pull_request: int = Field(None, description="The pull request number associated with this data build.")
+            - database_version: str = Field(None, description="The database version for the built data.")
+            - build_date: str = Field(default_factory=datetime.utcnow, description="The build date for this document.")
     """
     # Make sure there is a calculator with results
     if not atoms.calc:
