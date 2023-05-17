@@ -2,15 +2,15 @@
 
 ## Introduction
 
-While we recommend using [Covalent](https://github.com/AgnostiqHQ/covalent) as the workflow manager with Quacc, it is not the only option for you to consider. If you would prefer to use [Jobflow](https://github.com/materialsproject/jobflow) to write your workflows and/or [FireWorks](https://github.com/materialsproject/fireworks) to manage them, follow the instructions below. For additional details, refer to the full [Jobflow documentation](https://materialsproject.github.io/jobflow/) and [FireWorks documentation](https://materialsproject.github.io/fireworks/).
+While we recommend using [Covalent](https://github.com/AgnostiqHQ/covalent) as the workflow manager with Quacc, it is not the only option for you to consider. If you would prefer to use [Jobflow](https://github.com/materialsproject/jobflow) to write your workflows and/or [FireWorks](https://github.com/materialsproject/fireworks) to manage them, follow the instructions below. For additional details, refer to the full [Jobflow documentation](https://materialsproject.github.io/jobflow/).
 
 ## MongoDB Setup
 
-Jobflow and FireWorks both require the use of a MongoDB database to store calculation results. If you haven't done so already, first create a Mongo database as described in the ["Optional: MongoDB Configuration"](covalent.md) section.
+Jobflow and FireWorks both require the use of a database to store calculation results. If you haven't done so already, first create a Mongo database as described in the ["Optional: MongoDB Setup"](covalent.md) section.
 
 ## Jobflow DB Setup
 
-If you plan to use Jobflow to write your workflows, you will need to make a `jobflow.yaml` file. This file will generally be formatted like the example below. Fill in the above fields with the appropriate values for your MongoDB cluster.
+If you plan to use Jobflow to write your workflows, you will need to make a `jobflow.yaml` file. This file will generally be formatted like the example below. Fill in the fields with the appropriate values for your MongoDB cluster.
 
 ```yaml
 JOB_STORE:
@@ -39,4 +39,4 @@ JOB_STORE:
 Finally, you will need to define a `JOBFLOW_CONFIG_FILE` environment variable pointing to the file you made. For instance, in your `~/.bashrc` file, add the following line:
 `export JOBFLOW_CONFIG_FILE="/path/to/my/jobflow.yaml"`.
 
-When a Quacc calculation completes, all the data will be stored in the database you have specified above. If needed, additional information about setting up your `jobflow.yaml` file can be found in the official [jobflow documentation](https://materialsproject.github.io/jobflow/jobflow.settings.html).
+When a Quacc calculation completes, all the data will be stored in the database you have specified above.

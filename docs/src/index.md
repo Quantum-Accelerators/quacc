@@ -15,9 +15,9 @@ install/jobflow/fireworks
 user/quick-start
 user/covalent
 user/database
-user/jobflow
-user/fireworks
 user/settings
+user/jobflow/jobflow
+user/jobflow/fireworks
 ```
 
 ```{toctree}

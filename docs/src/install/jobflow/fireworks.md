@@ -1,14 +1,16 @@
 # Optional: FireWorks Setup
 
-## Installation
+## Introduction
 
-To install Quacc with support for FireWorks, run `pip install quacc[jobflow]`.
+[FireWorks](https://github.com/materialsproject/fireworks can be used to dispatch and monitor workflows, particularly those made using Jobflow.
+
+To install Quacc with support for FireWorks, run `pip install quacc[fireworks]`.
 
 ## FireWorks DB Setup
 
 If you plan to use FireWorks to dispatch your Jobflow workflows, you will also need to make a few configuration files: `FW_config.yaml`, `my_fworker.yaml`, `my_launchpad.yaml`, and `my_qadapter.yaml`.
 
-To begin, make a directory called `fw_config` where you will store the above four files.
+To begin, make a directory called `fw_config` where you will store the four files described in greater detail below.
 
 ### FW Config File
 
@@ -84,3 +86,7 @@ Finally, you will need to define a `FW_CONFIG_FILE` environment variable pointin
 ### Database Initialization
 
 To check that everything is working right with FireWorks, run `lpad reset` to ensure there is a connection to the database. Note that this will clear your FireWorks launchpad, so only use this command if you are new to FireWorks.
+
+## Read More
+
+For additional details of how to use FireWorks, refer to the full [FireWorks](https://github.com/materialsproject/fireworks) documentation.

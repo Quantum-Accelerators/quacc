@@ -16,7 +16,7 @@ Quacc can be installed with several `extras`, as outlined in the `setup.py` file
 
 - `quacc[fireworks]`: Installs dependencies to enable the use of FireWorks.
 - `quacc[vasp]`: Installs dependencies to enable the use of VASP with Custodian.
-- `quacc[xtb]`: Installs dependencies to enable the use of xtb via tblite.
+- `quacc[tblite]`: Installs dependencies to enable the use of xtb via tblite.
 - `quacc[dev]`: Installs dependencies to enable local development of Quacc.
 
 If you plan to use Quacc with a workflow manager, ensure that you install Quacc on all machines where the code will run.

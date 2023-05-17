@@ -1,10 +1,10 @@
-# Using Covalent
+# Using Quacc with Covalent
 
-Here, we will show how to use [Covalent](https://github.com/AgnostiqHQ/covalent) to construct, dispatch, and monitor workflows in Quacc. If you prefer to use Jobflow and/or FireWorks, skip to the ["Using Quacc with Jobflow and FireWorks"](jobflow.md) section of the documentation.
+Here, we will show how to use [Covalent](https://github.com/AgnostiqHQ/covalent) to construct, dispatch, and monitor workflows in Quacc. If you prefer to use Jobflow and/or FireWorks, skip to the ["Using Quacc with Jobflow"](jobflow/jobflow.md) and ["Using Quacc with FireWorks"](jobflow/fireworks.md) sections of the documentation.
 
 ## Pre-Requisites
 
-Make sure you completed the "Covalent Setup" section of the documentation. If you haven't done so already, run `covalent start` prior to starting these examples to start the Covalent server and UI.
+Make sure you completed the ["Covalent Setup"](../install/covalent.md) section of the documentation. If you haven't done so already, run `covalent start` prior to starting these examples to start the Covalent server and UI.
 
 Additionally, you should read the Covalent [First Experiment](https://covalent.readthedocs.io/en/latest/getting_started/first_experiment/index.html) guide to get a sense of how Covalent works. Namely, you should understand the [Covalent Basics](https://covalent.readthedocs.io/en/latest/concepts/basics.html) of the `Electron` and `Lattice` objects, which describe individual compute tasks and workflows, respectively.
 

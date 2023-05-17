@@ -1,4 +1,4 @@
-# Using Quacc with Jobflow and FireWorks
+# Using Quacc with Jobflow
 
 ## Jobflow
 

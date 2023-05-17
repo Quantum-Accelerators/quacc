@@ -38,7 +38,7 @@ if __name__ == "__main__":
         extras_require={
             "fireworks": ["fireworks>=2.0.3"],
             "vasp": ["custodian>=2023.5.7"],
-            "xtb": ["tblite[ase]>=0.3.0"],
+            "tblite": ["tblite[ase]>=0.3.0"],
             "docs": [
                 "autodoc_pydantic==1.8.0",
                 "furo==2023.03.27",

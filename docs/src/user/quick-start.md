@@ -2,15 +2,13 @@
 
 In Quacc, each code comes with pre-packaged jobs and workflows, which we call recipes for short. This tutorial walks you through how to use these provided recipes to run simple calculations that can be tested out on your local machine.
 
-Once you understand the basics, you should move on to the [Covalent Quick Start](covalent.md) to learn how to use Quacc with the Covalent workflow manager, which allows you to stich together and run complex Quacc workflows across distributed computing resources.
+Once you understand the basics, you should move on to the ["Using Quacc Covalent"](covalent.md) or ["Using Quacc with Jobflow"](jobflow/jobflow.md) guides to learn how to use Quacc with the a workflow manager, which allows you to stich together and run complex Quacc workflows across distributed computing resources.
 
 ## Pre-Requisites
 
 If you are not yet familiar with the ASE `Atoms` object, you should read the [ASE tutorial](https://wiki.fysik.dtu.dk/ase/ase/atoms.html), as this is the main object used to represent molecules and structures within Quacc. Additionally, it is worthwhile to be familiar with the basics of what an ASE `Calculator` is, which is described in more detail [here](https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html).
 
 If you are coming from the Pymatgen ecosystem, there is a module to convert from Pymatgen `Structure`/`Molecule` objects and the ASE `Atoms` object [here](https://pymatgen.org/pymatgen.io.ase.html).
-
-If you are already deeply familiar with ASE, this may not seem particularly impressive, but keep reading through the tutorials and you will see how Quacc can help you run complex calculations much more efficiently.
 
 ## A Simple Calculation with EMT
 
@@ -28,15 +26,15 @@ result = static_job(atoms)
 print(result)
 ```
 
-Walking through step-by-step, we first defined an `Atoms` object representation of the material we wish to run the calculation on. In this example, we have imported the bulk Cu structure from ASE's predefined library of bulk structures, but you could also read in a `.cif` file using the `ase.io.read` function.
+Walking through step-by-step, we first defined an `Atoms` object representation of the material we wish to run the calculation on. In this example, we have imported the bulk Cu structure from ASE's predefined library of bulk structures (you could also have read in a `.cif` file using the `ase.io.read` function, for instance).
 
-With the `Atoms` object defined, we then imported a desired recipe and instantiated it. In this case, since we want to use `EMT`, we can look in `quacc.recipes.emt` to see all the available recipes. We were interested in a static calculation so we imported the `StaticJob` recipe. We then instantiated and ran the recipe by passing in the `Atoms` object we defined earlier.
+With the `Atoms` object defined, we then imported a desired recipe and instantiated it. In this case, since we want to use EMT, we can look in `quacc.recipes.emt` to see all the available recipes. We are interested in a static calculation so we imported the `static_job` recipe. We then instantiated and ran the recipe by passing in the `Atoms` object we defined earlier.
 
 ## A Simple Calculation with GFN2-xTB
 
 If molecules are more your thing, let's consider another simple example. Here, we want to run a structure relaxation of a water molecule using the semi-empirical quantum mechanics method called [GFN2-xTB](https://doi.org/10.1021/acs.jctc.8b01176). This method is conveniently available in [`tblite`](https://github.com/tblite/tblite), which we will use here. The demonstration below shows how to run this calculation with Quacc.
 
-Note that for this example, you will need to install `tblite`, which can be done with `pip install tblite[ase]`, as noted in the "Quantum Chemistry Package Setup" of the installation instructions.
+Note that for this example, you will need to install `tblite`, which can be done with `pip install quacc[tblite]`, as noted in the ["Calculator Setup"](../install/codes.md) of the installation instructions.
 
 ```python
 from ase.build import molecule
@@ -51,7 +49,7 @@ result = relax_job(atoms, method="GFN2-xTB")
 print(result)
 ```
 
-Here, we have imported the `RelaxJob` recipe from `quacc.recipes.tblite`. Most recipes have several optional keyword arguments that you can specify. In this example, the `method="GFN2-xTB"` keyword indicates that we want to use the GFN2-xTB method.
+Here, we have imported the `relax_job` recipe from `quacc.recipes.tblite`. Most recipes have several optional keyword arguments that you can specify. In this example, the `method="GFN2-xTB"` keyword indicates that we want to use the GFN2-xTB method, which also happened to be the default value.
 
 ## A Pair of Serial Calculations
 
