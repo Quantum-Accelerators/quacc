@@ -12,7 +12,7 @@ from quacc.util.slabs import make_max_slabs_from_bulk
 
 
 @dataclass
-class BulkToSlabsFlow(jf.Maker):
+class BulkToSlabsFlow:
     """
     Workflow consisting of:
     1. Slab generation
