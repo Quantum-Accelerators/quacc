@@ -25,10 +25,8 @@ def summarize_run(
     Get tabulated results from a molecular DFT run and store them in a database-friendly format.
     This is meant to be a general parser built on top of cclib.
 
-    This document inherits from the following schemas:
-    - atomate2.common.schemas.cclib.TaskDocument
-        -> emmet.core.structure.MoleculeMetadata
-            -> emmet.core.base.EmmetBaseModel
+    This document inherits from the following schemas: atomate2.common.schemas.cclib.TaskDocument,
+    emmet.core.structure.MoleculeMetadata, emmet.core.base.EmmetBaseModel.
 
     Parameters
     ----------

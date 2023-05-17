@@ -1,4 +1,4 @@
-# Database Usage
+# Using a Database
 
 Oftentimes, it is beneficial to store the results in a database for easy querying (like the example below). There are many ways to achieve this with Quacc depending on your preferences.
 

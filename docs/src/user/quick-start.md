@@ -1,4 +1,4 @@
-# Quick Start: Basics
+# The Basics
 
 In Quacc, each code comes with pre-packaged jobs and workflows, which we call recipes for short. This tutorial walks you through how to use these provided recipes to run simple calculations that can be tested out on your local machine.
 

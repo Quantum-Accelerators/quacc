@@ -2,7 +2,7 @@
 
 ## Jobflow
 
-Make sure you completed the "Jobflow and Fireworks Setup" section of the installation instructions. Additionally, you should read the Jobflow [Quick Start](https://materialsproject.github.io/jobflow/tutorials/1-quickstart.html) to get a sense of how Jobflow works. Namely, you should understand the `Job` and `Flow` definitions, which describe individual compute tasks and workflows, respectively.
+Make sure you completed the ["Optional: Jobflow Setup"](../install/jobflow.md) and ["Optional: FireWorks Setup"](../install/fireworks.md) sections of the installation instructions. Additionally, you should read the Jobflow [Quick Start](https://materialsproject.github.io/jobflow/tutorials/1-quickstart.html) to get a sense of how Jobflow works. Namely, you should understand the `Job` and `Flow` definitions, which describe individual compute tasks and workflows, respectively.
 
 ### Example 1: Running a Job
 
@@ -54,36 +54,4 @@ Jobflow cannot easily be used with Quacc recipes that involve classes (particula
 
 ### Learn More
 
-That ends the Jobflow section of the documentation. If you want to learn more about Jobflow, you can read the [Jobflow Documentation](https://materialsproject.github.io/jobflow/).
-
-## FireWorks
-
-[FireWorks](https://materialsproject.github.io/fireworks/) is a powerful software package to manage and execute complex workflows.
-
-Jobflow comes with native support to convert a `Job` or `Flow` into a FireWorks `firework` or `workflow`, respectively.
-
-To convert a `Job` to a `firework` and add it to your launch pad:
-
-```python
-from fireworks import LaunchPad
-from jobflow.managers.fireworks import job_to_firework
-
-fw = job_to_firework(job)
-lpad = LaunchPad.auto_load()
-lpad.add_wf(fw)
-```
-
-To convert a `Flow` to a `workflow` and add it to your launch pad:
-
-```python
-from fireworks import LaunchPad
-from jobflow.managers.fireworks import flow_to_workflow
-
-wf = flow_to_firework(flow)
-lpad = LaunchPad.auto_load()
-lpad.add_wf(wf)
-```
-
-With a workflow added to your launch pad, on the desired machine of choice, you can run `qlaunch rapidfire --nlaunches <N>` (where `<N>` is the number of jobs to submit) in the command line to submit your workflows to the job scheduler.
-
-For additional FireWorks-related options in Jobflow, see the [Jobflow API](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks). For documentation on how to submit jobs to the queue that are in your launchpad, refer to the [FireWorks Documentation](https://materialsproject.github.io/fireworks/queue_tutorial.html#submit-a-job).
+That ends the Jobflow section of the documentation. If you want to learn more about Jobflow, you can read the [Jobflow Documentation](https://materialsproject.github.io/jobflow/). Continue to the ["Using Quacc with FireWorks"](fireworks.md) section to learn how to use Quacc with FireWorks.

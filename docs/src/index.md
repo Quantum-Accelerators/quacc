@@ -17,6 +17,7 @@ user/quick-start
 user/covalent
 user/database
 user/jobflow
+user/fireworks
 ```
 
 ```{toctree}
@@ -59,7 +60,6 @@ Quacc is a flexible platform for high-throughput, database-driven computational 
 :gutter: 3
 
 :::{grid-item-card}
-
 :link: install/install
 :link-type: doc
 :class-header: bg-light
@@ -68,6 +68,7 @@ Quacc is a flexible platform for high-throughput, database-driven computational 
 The installation guide walks you through how to install Quacc and its dependencies.
 :::
 
+:::{grid-item-card}
 :link: user/quick-start
 :link-type: doc
 :class-header: bg-light
