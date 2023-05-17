@@ -25,21 +25,17 @@ Built around the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/i
 
 In short, Quacc is designed to give the user the building blocks necessary to quickly prototype and construct complex quantum-chemical workflows without sacrificing flexibility.
 
-**Disclaimer**: Currently, this package is under active development. Questions and bug reports are always welcome!
+**Disclaimer**: Currently, this package is under active development. Questions and bug reports are always welcome! **Please wait for the upcoming v0.10.0 release to use Quacc with Covalent as your workflow manager**.
 
 ## Installation
 
 Quacc can be installed as follows:
 
 ```bash
-# For the current development version (recommended)
 pip install git+https://github.com/arosen93/quacc.git
-
-# For the latest PyPI release
-pip install quacc
 ```
 
-Then simply run `covalent start` to start the Covalent server and UI.
+If you plan to use [Covalent](https://github.com/AgnostiqHQ/covalent) with Quacc, then simply run `covalent start` to start the server and UI.
 
 ## Documentation
 
