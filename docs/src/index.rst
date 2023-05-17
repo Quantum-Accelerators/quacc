@@ -17,7 +17,6 @@ user/quick-start
 user/covalent
 user/database
 user/jobflow
-user/faq
 ```
 
 ```{toctree}
@@ -37,6 +36,7 @@ dev/conduct
 :caption: About
 :hidden:
 about/changelog
+about/faq
 about/contributors
 about/license
 ```
