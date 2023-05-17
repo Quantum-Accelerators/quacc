@@ -9,6 +9,7 @@ from ase import Atoms
 from atomate2.common.schemas.cclib import TaskDocument
 
 from quacc.schemas.atoms import atoms_to_metadata
+from quacc.util.atoms import _quacc_sanitize
 from quacc.util.atoms import prep_next_run as prep_next_run_
 
 
@@ -27,8 +28,8 @@ def summarize_run(
 
     This document inherits from the following schemas:
     - atomate2.common.schemas.cclib.TaskDocument
-    - emmet.core.structure.MoleculeMetadata
-    - emmet.core.base.EmmetBaseModel
+        -> emmet.core.structure.MoleculeMetadata
+            -> emmet.core.base.EmmetBaseModel
 
     Parameters
     ----------
@@ -145,10 +146,10 @@ def summarize_run(
     if prep_next_run:
         atoms = prep_next_run_(atoms)
 
-    # Get tabulated properties of the structure itself
-    atoms_db = atoms_to_metadata(atoms)
+    # Add atoms info
+    results["atoms_info"] = _quacc_sanitize(atoms.info)
 
     # Create a dictionary of the inputs/outputs
-    task_doc = {**atoms_db, **inputs, **results, **additional_fields}
+    task_doc = {**inputs, **results, **additional_fields}
 
     return task_doc
