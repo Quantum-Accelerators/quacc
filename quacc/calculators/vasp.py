@@ -6,10 +6,9 @@ from __future__ import annotations
 import inspect
 import os
 import warnings
-from typing import Any, Dict, List, Tuple
 
 import numpy as np
-from ase.atoms import Atoms
+from ase import Atoms
 from ase.calculators.vasp import Vasp as Vasp_
 from ase.calculators.vasp.setups import _setups_defaults as ase_default_setups
 from ase.constraints import FixAtoms
@@ -18,8 +17,8 @@ from quacc import SETTINGS
 from quacc.custodian import vasp as custodian_vasp
 from quacc.presets import vasp as vasp_defaults
 from quacc.util.atoms import check_is_metal, get_highest_block, set_magmoms
-from quacc.util.basics import load_yaml_calc
 from quacc.util.calc import _convert_auto_kpts
+from quacc.util.files import load_yaml_calc
 
 DEFAULT_CALCS_DIR = os.path.dirname(vasp_defaults.__file__)
 
@@ -59,7 +58,7 @@ class Vasp(Vasp_):
         If True, warnings will be raised when INCAR parameters are changed.
     **kwargs
         Additional arguments to be passed to the VASP calculator, e.g. xc='PBE', encut=520. Takes all valid
-        ASE calculator arguments, in addition to those custom to QuAcc.
+        ASE calculator arguments, in addition to those custom to Quacc.
 
     Returns
     -------
@@ -218,7 +217,7 @@ def _manage_environment(custodian: bool = True) -> str:
     return command
 
 
-def _remove_unused_flags(user_calc_params: Dict[str, Any]) -> Dict[str, Any]:
+def _remove_unused_flags(user_calc_params: dict) -> dict:
     """
     Removes unused flags in the INCAR, like EDIFFG if you are doing NSW = 0.
 
@@ -260,13 +259,13 @@ def _remove_unused_flags(user_calc_params: Dict[str, Any]) -> Dict[str, Any]:
 
 def _calc_swaps(
     atoms: Atoms,
-    user_calc_params: Dict[str, Any],
+    user_calc_params: dict,
     auto_kpts: None
-    | Dict[str, float]
-    | Dict[str, List[Tuple[float, float]]]
-    | Dict[str, List[Tuple[float, float, float]]],
+    | dict[str, float]
+    | dict[str, list[tuple[float, float]]]
+    | dict[str, list[tuple[float, float, float]]],
     verbose: bool = True,
-) -> Dict[str, Any]:
+) -> dict:
     """
     Swaps out bad INCAR flags.
 

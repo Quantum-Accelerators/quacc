@@ -4,13 +4,12 @@ from shutil import rmtree
 import numpy as np
 import pytest
 from ase.build import molecule
-from jobflow.managers.local import run_locally
 
 try:
     from tblite.ase import TBLite
 except ImportError:
     TBLite = None
-from quacc.recipes.tblite.core import RelaxJob, StaticJob, ThermoJob
+from quacc.recipes.tblite.core import relax_job, static_job, thermo_job
 
 
 def teardown_module():
@@ -37,19 +36,14 @@ def teardown_module():
 )
 def test_static_Job():
     atoms = molecule("H2O")
-    job = StaticJob().make(atoms)
-    responses = run_locally(job, ensure_success=True)
-    output = responses[job.uuid][1].output
+    output = static_job(atoms)
     assert output["spin_multiplicity"] == 1
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["method"] == "GFN2-xTB"
-    assert output["name"] == "tblite-Static"
     assert output["results"]["energy"] == pytest.approx(-137.96777594361672)
     assert np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
 
-    job = StaticJob(method="GFN1-xTB").make(atoms)
-    responses = run_locally(job, ensure_success=True)
-    output = responses[job.uuid][1].output
+    output = static_job(atoms, method="GFN1-xTB")
     assert output["parameters"]["method"] == "GFN1-xTB"
     assert output["results"]["energy"] == pytest.approx(-156.96750578831137)
     assert np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
@@ -61,15 +55,13 @@ def test_static_Job():
 )
 def test_relax_Job():
     atoms = molecule("H2O")
-    job = RelaxJob().make(atoms)
-    responses = run_locally(job, ensure_success=True)
-    output = responses[job.uuid][1].output
+    output = relax_job(atoms)
     assert output["spin_multiplicity"] == 1
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["method"] == "GFN2-xTB"
-    assert output["name"] == "tblite-Relax"
     assert output["results"]["energy"] == pytest.approx(-137.97654191396492)
     assert not np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
+    assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
 
 
 @pytest.mark.skipif(
@@ -78,9 +70,7 @@ def test_relax_Job():
 )
 def test_thermo_job():
     atoms = molecule("H2O")
-    job = ThermoJob().make(atoms)
-    responses = run_locally(job, ensure_success=True)
-    output = responses[job.uuid][1].output
+    output = thermo_job(atoms)
     assert output["atoms"] == atoms
     assert output["results"]["n_imag"] == 0
     assert len(output["results"]["frequencies"]) == 9
@@ -95,9 +85,7 @@ def test_thermo_job():
     assert output["results"]["gibbs_energy"] == pytest.approx(0.05367081893346748)
 
     atoms = molecule("O2")
-    job = ThermoJob(temperature=200, pressure=2.0).make(atoms, energy=-100.0)
-    responses = run_locally(job, ensure_success=True)
-    output = responses[job.uuid][1].output
+    output = thermo_job(atoms, energy=-100.0, temperature=200, pressure=2.0)
     assert output["atoms"] == atoms
     assert output["results"]["n_imag"] == 0
     assert len(output["results"]["true_frequencies"]) == 1
@@ -112,9 +100,7 @@ def test_thermo_job():
     assert output["results"]["gibbs_energy"] == pytest.approx(-100.23289938549244)
 
     atoms = molecule("H")
-    job = ThermoJob().make(atoms, energy=-1.0)
-    responses = run_locally(job, ensure_success=True)
-    output = responses[job.uuid][1].output
+    output = thermo_job(atoms, energy=-1.0)
     assert output["atoms"] == atoms
     assert output["results"]["n_imag"] == 0
     assert output["results"]["geometry"] == "monatomic"

@@ -2,101 +2,99 @@
 from __future__ import annotations
 
 import warnings
-from dataclasses import dataclass, field
-from typing import Any, Dict
+from copy import deepcopy
 
-from ase.atoms import Atoms
+import covalent as ct
+from ase import Atoms
 from ase.calculators.gulp import GULP
-from jobflow import Maker, job
 
 from quacc.schemas.calc import summarize_run
-from quacc.util.basics import merge_dicts
 from quacc.util.calc import run_calc
+from quacc.util.dicts import merge_dicts
 
 
-@dataclass
-class StaticJob(Maker):
+@ct.electron
+def static_job(
+    atoms: Atoms,
+    gfnff: bool = True,
+    library: str | None = None,
+    keyword_swaps: dict | None = None,
+    option_swaps: dict | None = None,
+) -> dict:
     """
-    Class to carry out a single-point calculation.
+    Carry out a single-point calculation.
     Note: 'Conditions' are not yet natively supported.
 
     Parameters
     ----------
-    name
-        Name of the job.
+    atoms
+        .Atoms object
     gfnff
         True if (p)GFN-FF should be used; False if not.
     library
         Filename of the potential library file, if required.
     keyword_swaps
-        Dictionary of custom keyword swap kwargs for the calculator.
+        dictionary of custom keyword swap kwargs for the calculator.
     option_swaps
-        Dictionary of custom option swap kwargs for the calculator.
+        dictionary of custom option swap kwargs for the calculator.
+
+    Returns
+    -------
+    summary
+        Dictionary of the calculation summary.
     """
 
-    name: str = "GULP-Static"
-    gfnff: bool = True
-    library: str = None
-    keyword_swaps: Dict[str, Any] = field(default_factory=dict)
-    option_swaps: Dict[str, Any] = field(default_factory=dict)
+    keyword_swaps = keyword_swaps or {}
+    option_swaps = option_swaps or {}
+    input_atoms = deepcopy(atoms)
 
-    @job
-    def make(self, atoms: Atoms) -> Dict[str, Any]:
-        """
-        Make the run.
+    default_keywords = {
+        "gfnff": gfnff,
+        "gwolf": bool(gfnff and atoms.pbc.any()),
+    }
+    default_options = {
+        "dump every gulp.res": True,
+        "output cif gulp.cif": bool(atoms.pbc.any()),
+        "output xyz gulp.xyz": not atoms.pbc.any(),
+    }
 
-        Parameters
-        ----------
-        atoms
-            .Atoms object
+    keywords = merge_dicts(
+        default_keywords, keyword_swaps, remove_none=True, remove_false=True
+    )
+    options = merge_dicts(
+        default_options, option_swaps, remove_none=True, remove_false=True
+    )
 
-        Returns
-        -------
-        Dict
-            Summary of the run.
-        """
+    gulp_keywords = " ".join(list(keywords.keys()))
+    gulp_options = list(options.keys())
 
-        default_keywords = {
-            "gfnff": self.gfnff,
-            "gwolf": bool(self.gfnff and atoms.pbc.any()),
-        }
-        default_options = {
-            "dump every gulp.res": True,
-            "output cif gulp.cif": bool(atoms.pbc.any()),
-            "output xyz gulp.xyz": not atoms.pbc.any(),
-        }
+    atoms.calc = GULP(keywords=gulp_keywords, options=gulp_options, library=library)
+    atoms = run_calc(atoms, geom_file="gulp.cif" if atoms.pbc.any() else "gulp.xyz")
 
-        keywords = merge_dicts(
-            default_keywords, self.keyword_swaps, remove_none=True, remove_false=True
-        )
-        options = merge_dicts(
-            default_options, self.option_swaps, remove_none=True, remove_false=True
-        )
+    summary = summarize_run(
+        atoms, input_atoms=input_atoms, additional_fields={"name": "GULP Static"}
+    )
 
-        gulp_keywords = " ".join(list(keywords.keys()))
-        gulp_options = list(options.keys())
-
-        atoms.calc = GULP(keywords=gulp_keywords, options=gulp_options)
-        new_atoms = run_calc(
-            atoms, geom_file="gulp.cif" if atoms.pbc.any() else "gulp.xyz"
-        )
-        summary = summarize_run(
-            new_atoms, input_atoms=atoms, additional_fields={"name": self.name}
-        )
-
-        return summary
+    return summary
 
 
-@dataclass
-class RelaxJob(Maker):
+@ct.electron
+def relax_job(
+    atoms: Atoms,
+    gfnff: bool = True,
+    library: str | None = None,
+    volume_relax: bool = True,
+    keyword_swaps: dict | None = None,
+    option_swaps: dict | None = None,
+) -> dict:
     """
-    Class to carry out a single-point calculation.
+    Carry out a single-point calculation.
     Note: 'Conditions' are not yet natively supported.
 
     Parameters
     ----------
-    name
-        Name of the job.
+    atoms
+        .Atoms object
     gfnff
         True if (p)GFN-FF should be used; False if not.
     library
@@ -107,67 +105,52 @@ class RelaxJob(Maker):
         Dictionary of custom keyword swap kwargs for the calculator.
     option_swaps
         Dictionary of custom option swap kwargs for the calculator.
+
+    Returns
+    -------
+    summary
+        Dictionary of the calculation summary.
     """
 
-    name: str = "GULP-Relax"
-    gfnff: bool = True
-    library: str = None
-    volume_relax: bool = True
-    keyword_swaps: Dict[str, Any] = field(default_factory=dict)
-    option_swaps: Dict[str, Any] = field(default_factory=dict)
+    keyword_swaps = keyword_swaps or {}
+    option_swaps = option_swaps or {}
+    input_atoms = deepcopy(atoms)
 
-    @job
-    def make(self, atoms: Atoms) -> Dict[str, Any]:
-        """
-        Make the run.
+    if volume_relax and not atoms.pbc.any():
+        warnings.warn("Volume relaxation requested but no PBCs found. Ignoring.")
+        volume_relax = False
 
-        Parameters
-        ----------
-        atoms
-            .Atoms object
+    default_keywords = {
+        "opti": True,
+        "gfnff": gfnff,
+        "gwolf": bool(gfnff and atoms.pbc.any()),
+        "conp": bool(volume_relax and atoms.pbc.any()),
+        "conv": bool(not volume_relax or not atoms.pbc.any()),
+    }
+    default_options = {
+        "dump every gulp.res": True,
+        "output cif gulp.cif": bool(atoms.pbc.any()),
+        "output xyz gulp.xyz": not atoms.pbc.any(),
+    }
 
-        Returns
-        -------
-        Dict
-            Summary of the run.
-        """
-        if self.volume_relax and not atoms.pbc.any():
-            warnings.warn("Volume relaxation requested but no PBCs found. Ignoring.")
-            self.volume_relax = False
+    keywords = merge_dicts(
+        default_keywords, keyword_swaps, remove_none=True, remove_false=True
+    )
+    options = merge_dicts(
+        default_options, option_swaps, remove_none=True, remove_false=True
+    )
 
-        default_keywords = {
-            "opti": True,
-            "gfnff": self.gfnff,
-            "gwolf": bool(self.gfnff and atoms.pbc.any()),
-            "conp": bool(self.volume_relax and atoms.pbc.any()),
-            "conv": bool(not self.volume_relax or not atoms.pbc.any()),
-        }
-        default_options = {
-            "dump every gulp.res": True,
-            "output cif gulp.cif": bool(atoms.pbc.any()),
-            "output xyz gulp.xyz": not atoms.pbc.any(),
-        }
+    gulp_keywords = " ".join(list(keywords.keys()))
+    gulp_options = list(options.keys())
 
-        keywords = merge_dicts(
-            default_keywords, self.keyword_swaps, remove_none=True, remove_false=True
-        )
-        options = merge_dicts(
-            default_options, self.option_swaps, remove_none=True, remove_false=True
-        )
+    atoms.calc = GULP(keywords=gulp_keywords, options=gulp_options, library=library)
+    atoms = run_calc(atoms, geom_file="gulp.cif" if atoms.pbc.any() else "gulp.xyz")
 
-        gulp_keywords = " ".join(list(keywords.keys()))
-        gulp_options = list(options.keys())
+    if not atoms.calc.get_opt_state():
+        raise ValueError("Optimization did not converge!")
 
-        atoms.calc = GULP(keywords=gulp_keywords, options=gulp_options)
-        new_atoms = run_calc(
-            atoms, geom_file="gulp.cif" if atoms.pbc.any() else "gulp.xyz"
-        )
+    summary = summarize_run(
+        atoms, input_atoms=input_atoms, additional_fields={"name": "GULP Relax"}
+    )
 
-        if not new_atoms.calc.get_opt_state():
-            raise ValueError("Optimization did not converge!")
-
-        summary = summarize_run(
-            new_atoms, input_atoms=atoms, additional_fields={"name": self.name}
-        )
-
-        return summary
+    return summary

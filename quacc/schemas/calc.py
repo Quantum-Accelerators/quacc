@@ -4,9 +4,8 @@ Schemas for storing ASE calculator data
 from __future__ import annotations
 
 import os
-from typing import Any, Dict
 
-from ase.atoms import Atoms
+from ase import Atoms
 from ase.io import Trajectory
 from atomate2.utils.path import get_uri
 
@@ -18,8 +17,8 @@ def summarize_run(
     atoms: Atoms,
     input_atoms: Atoms = None,
     prep_next_run: bool = True,
-    additional_fields: Dict[str, Any] = None,
-) -> Dict[str, Any]:
+    additional_fields: dict = None,
+) -> dict:
     """
     Get tabulated results from an Atoms object and calculator and store them in a database-friendly format.
     This is meant to be compatible with all calculator types.
@@ -77,15 +76,17 @@ def summarize_run(
     # Create a dictionary of the inputs/outputs
     task_doc = {**atoms_db, **inputs, **results, **additional_fields}
 
+    task_doc = dict(sorted(task_doc.items()))
+
     return task_doc
 
 
 def summarize_opt_run(
     traj: Trajectory,
-    parameters: Dict[str, Any],
+    parameters: dict,
     prep_next_run: bool = True,
-    additional_fields: Dict[str, Any] = None,
-) -> Dict[str, Any]:
+    additional_fields: dict = None,
+) -> dict:
     """
     Get tabulated results from an ASE Atoms trajectory and store them in a database-friendly format.
     This is meant to be compatible with all calculator types.
@@ -109,8 +110,7 @@ def summarize_opt_run(
 
     """
 
-    if additional_fields is None:
-        additional_fields = {}
+    additional_fields = additional_fields or {}
 
     initial_atoms = traj[0]
     final_atoms = traj[-1]
@@ -141,5 +141,7 @@ def summarize_opt_run(
 
     # Create a dictionary of the inputs/outputs
     task_doc = {**atoms_db, **inputs, **results, **traj_results, **additional_fields}
+
+    task_doc = dict(sorted(task_doc.items()))
 
     return task_doc

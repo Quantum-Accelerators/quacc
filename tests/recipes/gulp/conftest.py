@@ -3,7 +3,7 @@ from unittest import mock
 
 import numpy as np
 import pytest
-from ase.atoms import Atoms
+from ase import Atoms
 from ase.calculators.gulp import GULP
 
 

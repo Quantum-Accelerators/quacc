@@ -3,11 +3,10 @@ Core recipes for the tblite code
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Any, Dict
+from copy import deepcopy
 
-from ase.atoms import Atoms
-from jobflow import Maker, job
+import covalent as ct
+from ase import Atoms
 from monty.dev import requires
 
 from quacc.schemas.calc import summarize_opt_run, summarize_run
@@ -19,62 +18,64 @@ except ImportError:
     TBLite = None
 
 
-@dataclass
-class StaticJob(Maker):
+@ct.electron
+@requires(
+    TBLite,
+    "tblite must be installed. Try pip install tblite[ase]",
+)
+def static_job(
+    atoms: Atoms, method: str = "GFN2-xTB", tblite_kwargs: dict | None = None
+) -> dict:
     """
-    Class to carry out a single-point calculation.
+    Carry out a single-point calculation.
 
     Parameters
     ----------
-    name
-        Name of the job.
+    atoms
+        .Atoms object
     method
         GFN1-xTB, GFN2-xTB, and IPEA1-xTB.
     tblite_kwargs
         Dictionary of custom kwargs for the tblite calculator.
+
+    Returns
+    -------
+    summary
+        Summary of the calculation.
     """
+    tblite_kwargs = tblite_kwargs or {}
+    input_atoms = deepcopy(atoms)
 
-    name: str = "tblite-Static"
-    method: str = "GFN2-xTB"
-    tblite_kwargs: Dict[str, Any] = field(default_factory=dict)
-
-    @job
-    @requires(
-        TBLite,
-        "tblite must be installed. Try pip install tblite[ase]",
+    atoms.calc = TBLite(method=method, **tblite_kwargs)
+    atoms = run_calc(atoms)
+    summary = summarize_run(
+        atoms, input_atoms=input_atoms, additional_fields={"name": "TBLite Static"}
     )
-    def make(self, atoms: Atoms) -> Dict[str, Any]:
-        """
-        Make the run.
 
-        Parameters
-        ----------
-        atoms
-            .Atoms object`
-
-        Returns
-        -------
-        Dict
-            Summary of the run.
-        """
-        atoms.calc = TBLite(method=self.method, **self.tblite_kwargs)
-        new_atoms = run_calc(atoms)
-        summary = summarize_run(
-            new_atoms, input_atoms=atoms, additional_fields={"name": self.name}
-        )
-
-        return summary
+    return summary
 
 
-@dataclass
-class RelaxJob(Maker):
+@ct.electron
+@requires(
+    TBLite,
+    "tblite must be installed. Try pip install tblite[ase]",
+)
+def relax_job(
+    atoms: Atoms,
+    method: str = "GFN2-xTB",
+    fmax: float = 0.01,
+    max_steps: int = 1000,
+    optimizer: str = "FIRE",
+    tblite_kwargs: dict | None = None,
+    opt_kwargs: dict | None = None,
+) -> dict:
     """
-    Class to relax a structure.
+    Relax a structure.
 
     Parameters
     ----------
-    name
-        Name of the job.
+    atoms
+        .Atoms object
     method
         GFN0-xTB, GFN1-xTB, GFN2-xTB.
     fmax
@@ -87,102 +88,77 @@ class RelaxJob(Maker):
         Dictionary of custom kwargs for the tblite calculator.
     opt_kwargs
         Dictionary of kwargs for the optimizer.
+
+    Returns
+    -------
+    summary
+        Summary of the calculation.
     """
 
-    name: str = "tblite-Relax"
-    method: str = "GFN2-xTB"
-    fmax: float = 0.01
-    max_steps: int = 1000
-    optimizer: str = "FIRE"
-    tblite_kwargs: Dict[str, Any] = field(default_factory=dict)
-    opt_kwargs: Dict[str, Any] = field(default_factory=dict)
+    tblite_kwargs = tblite_kwargs or {}
+    opt_kwargs = opt_kwargs or {}
 
-    @job
-    @requires(
-        TBLite,
-        "tblite must be installed. Try pip install tblite[ase]",
+    atoms.calc = TBLite(method=method, **tblite_kwargs)
+    traj = run_ase_opt(
+        atoms,
+        fmax=fmax,
+        max_steps=max_steps,
+        optimizer=optimizer,
+        opt_kwargs=opt_kwargs,
     )
-    def make(self, atoms: Atoms) -> Dict[str, Any]:
-        """
-        Make the run.
 
-        Parameters
-        ----------
-        atoms
-            .Atoms object
+    summary = summarize_opt_run(
+        traj, atoms.calc.parameters, additional_fields={"name": "TBLite Relax"}
+    )
 
-        Returns
-        -------
-        Dict
-            Summary of the run.
-        """
-        atoms.calc = TBLite(method=self.method, **self.tblite_kwargs)
-        traj = run_ase_opt(
-            atoms,
-            fmax=self.fmax,
-            max_steps=self.max_steps,
-            optimizer=self.optimizer,
-            opt_kwargs=self.opt_kwargs,
-        )
-        summary = summarize_opt_run(
-            traj, atoms.calc.parameters, additional_fields={"name": self.name}
-        )
-
-        return summary
+    return summary
 
 
-@dataclass
-class ThermoJob(Maker):
+@requires(TBLite, "tblite must be installed. Try pip install tblite[ase]")
+@ct.electron
+def thermo_job(
+    atoms: Atoms,
+    method: str = "GFN2-xTB",
+    energy: float = 0.0,
+    temperature: float = 298.15,
+    pressure: float = 1.0,
+    xtb_kwargs: dict | None = None,
+) -> dict:
     """
-    Class to run a frequency job and calculate thermochemistry.
+    Run a frequency job and calculate thermochemistry.
 
     Parameters
     ----------
-    name
-        Name of the job.
+    atoms
+        .Atoms object
     method
         GFN0-xTB, GFN1-xTB, GFN2-xTB, GFN-FF.
+    energy
+        Potential energy in eV. If 0, then the output is just the correction.
     temperature
         Temperature in Kelvins.
     pressure
         Pressure in bar.
     xtb_kwargs
-        Dictionary of custom kwargs for the xTB calculator.
+        dictionary of custom kwargs for the xTB calculator.
+
+    Returns
+    -------
+    thermo_summary
+        Summary of the thermochemistry.
     """
 
-    name: str = "xTB-Freq"
-    method: str = "GFN2-xTB"
-    temperature: float = 298.15
-    pressure: float = 1.0
-    xtb_kwargs: Dict[str, Any] = field(default_factory=dict)
+    xtb_kwargs = xtb_kwargs or {}
 
-    @job
-    @requires(TBLite, "tblite must be installed. Try pip install tblite[ase]")
-    def make(self, atoms: Atoms, energy: float = 0.0) -> Dict[str, Any]:
-        """
-        Make the run.
+    atoms.calc = TBLite(method=method, **xtb_kwargs)
+    vibrations = run_ase_vib(atoms)
 
-        Parameters
-        ----------
-        atoms
-            .Atoms object
-        energy
-            Potential energy in eV. If 0, then the output is just the correction.
+    thermo_summary = ideal_gas_thermo(
+        atoms,
+        vibrations.get_frequencies(),
+        temperature=temperature,
+        pressure=pressure,
+        energy=energy,
+    )
 
-        Returns
-        -------
-        Dict
-            Summary of the thermochemistry.
-        """
-        atoms.calc = TBLite(method=self.method, **self.xtb_kwargs)
-        vibrations = run_ase_vib(atoms)
-        thermo_summary = ideal_gas_thermo(
-            atoms,
-            vibrations.get_frequencies(),
-            temperature=self.temperature,
-            pressure=self.pressure,
-            energy=energy,
-        )
-        thermo_summary["name"] = self.name
-
-        return thermo_summary
+    return thermo_summary

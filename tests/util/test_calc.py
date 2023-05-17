@@ -32,34 +32,44 @@ def teardown_module():
 
 
 def test_run_calc():
-    atoms = bulk("Cu")
+    atoms = bulk("Cu") * (2, 1, 1)
+    atoms[0].position += 0.1
     calc = EMT()
     atoms.calc = calc
 
-    atoms = run_calc(
+    new_atoms = run_calc(
         atoms, scratch_dir="test_calc", gzip=False, copy_files=["test_file.txt"]
     )
     assert atoms.calc.results is not None
     assert os.path.exists("test_file.txt")
     assert not os.path.exists("test_file.txt.gz")
+    assert np.array_equal(new_atoms.get_positions(), atoms.get_positions()) is True
+    assert np.array_equal(new_atoms.cell.array, atoms.cell.array) is True
 
-    atoms = run_calc(
+    new_atoms = run_calc(
         atoms, scratch_dir="test_calc", gzip=False, copy_files=["test_file.txt"]
     )
-    assert atoms.calc.results is not None
+    assert new_atoms.calc.results is not None
     assert os.path.exists("test_file.txt")
     assert not os.path.exists("test_file.txt.gz")
+    assert np.array_equal(new_atoms.get_positions(), atoms.get_positions()) is True
+    assert np.array_equal(new_atoms.cell.array, atoms.cell.array) is True
 
-    atoms = run_ase_opt(atoms, scratch_dir="test_calc", copy_files=["test_file.txt"])
-    assert atoms[-1].calc.results is not None
+    new_atoms = run_ase_opt(
+        atoms, scratch_dir="test_calc", copy_files=["test_file.txt"]
+    )
+    assert new_atoms[-1].calc.results is not None
     assert os.path.exists("test_file.txt")
     assert os.path.exists("test_file.txt.gz")
+    assert np.array_equal(new_atoms[-1].get_positions(), atoms.get_positions()) is False
+    assert np.array_equal(new_atoms[-1].cell.array, atoms.cell.array) is True
     os.remove("test_file.txt.gz")
 
     o2 = molecule("O2")
     o2.calc = LennardJones()
     vib = run_ase_vib(o2, scratch_dir="test_calc", copy_files=["test_file.txt"])
     assert np.real(vib.get_frequencies()[-1]) == pytest.approx(255.6863883406967)
+    assert np.array_equal(vib.atoms.get_positions(), o2.get_positions()) is True
     assert os.path.exists("test_file.txt")
     assert os.path.exists("test_file.txt.gz")
     os.remove("test_file.txt.gz")

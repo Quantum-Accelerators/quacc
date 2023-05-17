@@ -1,26 +1,29 @@
 """QMOF-compatible recipes"""
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Any, Dict
-
-from ase.atoms import Atoms
-from jobflow import Maker, job
+import covalent as ct
+from ase import Atoms
 
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.calc import summarize_opt_run
 from quacc.schemas.vasp import summarize_run
-from quacc.util.basics import merge_dicts
 from quacc.util.calc import run_ase_opt, run_calc
+from quacc.util.dicts import merge_dicts
 
 # This set of recipes is meant to be compatible with the QMOF Database workflow.
 # Reference: https://doi.org/10.1016/j.matt.2021.02.015
 
 
-@dataclass
-class QMOFRelaxJob(Maker):
+@ct.electron
+def qmof_relax_job(
+    atoms: Atoms,
+    preset: str | None = "QMOFSet",
+    relax_volume: bool = True,
+    run_prerelax: bool = True,
+    swaps: dict | None = None,
+) -> dict:
     """
-    Class to relax a structure in a multi-step process for increased
+    Relax a structure in a multi-step process for increased
     computational efficiency. This is all done in a single compute job.
     Settings are such that they are compatible with the QMOF Database.
 
@@ -32,83 +35,67 @@ class QMOFRelaxJob(Maker):
 
     Parameters
     ----------
-    name
-        Name of the job.
+    atoms
+        .Atoms object
     preset
         Preset to use. Applies for all jobs.
-    volume_relax
+    relax_volume
         True if a volume relaxation should be performed.
         False if only the positions should be updated.
-    prerelax
+    run_prerelax
         If True, a pre-relax will be carried out with BFGSLineSearch.
         Recommended if starting from hypothetical structures or materials
         with very high starting forces.
     swaps
         Dictionary of custom kwargs for the calculator. Applies for all jobs.
+
+    Returns
+    -------
+    summary
+        Dictionary of the run summary.
     """
 
-    name: str = "QMOF-Relax"
-    preset: str = "QMOFSet"
-    volume_relax: bool = True
-    prerelax: bool = True
-    swaps: Dict[str, Any] = field(default_factory=dict)
+    swaps = swaps or {}
 
-    @job
-    def make(self, atoms: Atoms) -> Dict[str, Any]:
-        """
-        Make the run.
+    # 1. Pre-relaxation
+    if run_prerelax:
+        summary1 = _prerelax(atoms, preset, swaps, fmax=5.0)
+        atoms = summary1["atoms"]
 
-        Parameters
-        ----------
-        atoms
-            .Atoms object
+    # 2. Position relaxation (loose)
+    summary2 = _loose_relax_positions(atoms, preset, swaps)
+    atoms = summary2["atoms"]
 
-        Returns
-        -------
-        Dict
-            Summary of the run.
-        """
-        # 1. Pre-relaxation
-        if self.prerelax:
-            summary1 = _prerelax(atoms, self.preset, self.swaps, fmax=5.0)
-            atoms = summary1["atoms"]
+    # 3. Optional: Volume relaxation (loose)
+    if relax_volume:
+        summary3 = _loose_relax_volume(atoms, preset, swaps)
+        atoms = summary3["atoms"]
 
-        # 2. Position relaxation (loose)
-        summary2 = _loose_relax_positions(atoms, self.preset, self.swaps)
-        atoms = summary2["atoms"]
+    # 4. Double Relaxation
+    # This is done for two reasons: a) because it can resolve repadding
+    # issues when dV is large; b) because we can use LREAL = Auto for the
+    # first relaxation and the default LREAL for the second.
+    summary4 = _double_relax(atoms, preset, swaps, relax_volume=relax_volume)
+    atoms = summary4[1]["atoms"]
 
-        # 3. Optional: Volume relaxation (loose)
-        if self.volume_relax:
-            summary3 = _loose_relax_volume(atoms, self.preset, self.swaps)
-            atoms = summary3["atoms"]
+    # 5. Static Calculation
+    summary5 = _static(atoms, preset, swaps)
 
-        # 4. Double Relaxation
-        # This is done for two reasons: a) because it can resolve repadding
-        # issues when dV is large; b) because we can use LREAL = Auto for the
-        # first relaxation and the default LREAL for the second.
-        summary4 = _double_relax(
-            atoms, self.preset, self.swaps, volume_relax=self.volume_relax
-        )
-        atoms = summary4["relax2"]["atoms"]
-
-        # 5. Static Calculation
-        summary5 = _static(atoms, self.preset, self.swaps)
-
-        return {
-            "prerelax-lowacc": summary1 if self.prerelax else None,
-            "position-relax-lowacc": summary2,
-            "volume-relax-lowacc": summary3 if self.volume_relax else None,
-            "double-relax": summary4,
-            "static": summary5,
-        }
+    return {
+        "prerelax-lowacc": summary1 if run_prerelax else None,
+        "position-relax-lowacc": summary2,
+        "volume-relax-lowacc": summary3 if relax_volume else None,
+        "double-relax": summary4,
+        "static": summary5,
+    }
 
 
 def _prerelax(
     atoms: Atoms,
-    preset: str = "QMOFSet",
-    swaps: Dict[str, Any] = None,
+    preset: str | None = "QMOFSet",
+    swaps: dict | None = None,
     fmax: float = 5.0,
-) -> Dict[str, Any]:
+) -> dict:
     """
     A "pre-relaxation" with BFGSLineSearch to resolve very high forces.
 
@@ -125,10 +112,12 @@ def _prerelax(
 
     Returns
     -------
-    Dict
+    summary
         Summary of the run.
     """
+
     swaps = swaps or {}
+
     defaults = {
         "auto_kpts": {"grid_density": 100},
         "ediff": 1e-4,
@@ -144,16 +133,18 @@ def _prerelax(
     atoms.calc = calc
     traj = run_ase_opt(atoms, fmax=fmax, optimizer="BFGSLineSearch")
 
-    summary = summarize_opt_run(traj, calc.parameters)
+    summary = summarize_opt_run(
+        traj, calc.parameters, additional_fields={"name": "QMOF Prerelax"}
+    )
 
     return summary
 
 
 def _loose_relax_positions(
     atoms: Atoms,
-    preset: str = "QMOFSet",
-    swaps: Dict[str, Any] = None,
-) -> Dict[str, Any]:
+    preset: str | None = "QMOFSet",
+    swaps: dict | None = None,
+) -> dict:
     """
     Position relaxation with default ENCUT and coarse k-point grid.
 
@@ -164,14 +155,16 @@ def _loose_relax_positions(
     preset
         Preset to use.
     swaps
-        Dictionary of custom kwargs for the calculator.
+        dictionary of custom kwargs for the calculator.
 
     Returns
     -------
-    Dict
+    summary
         Summary of the run.
     """
+
     swaps = swaps or {}
+
     defaults = {
         "auto_kpts": {"grid_density": 100},
         "ediff": 1e-4,
@@ -189,18 +182,20 @@ def _loose_relax_positions(
     atoms.calc = calc
     atoms = run_calc(atoms)
 
-    summary = summarize_run(atoms, bader=False)
+    summary = summarize_run(
+        atoms, bader=False, additional_fields={"name": "QMOF Loose Relax"}
+    )
 
     return summary
 
 
 def _loose_relax_volume(
     atoms: Atoms,
-    preset: str = "QMOFSet",
-    swaps: Dict[str, Any] = None,
-) -> Dict[str, Any]:
+    preset: str | None = "QMOFSet",
+    swaps: dict | None = None,
+) -> dict:
     """
-    Optional: volume relaxation with coarse k-point grid.
+    Volume relaxation with coarse k-point grid.
 
     Parameters
     ----------
@@ -213,10 +208,12 @@ def _loose_relax_volume(
 
     Returns
     -------
-    Dict
+    summary
         Summary of the run.
     """
+
     swaps = swaps or {}
+
     defaults = {
         "auto_kpts": {"grid_density": 100},
         "ediffg": -0.03,
@@ -232,17 +229,19 @@ def _loose_relax_volume(
     atoms.calc = calc
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
 
-    summary = summarize_run(atoms, bader=False)
+    summary = summarize_run(
+        atoms, bader=False, additional_fields={"name": "QMOF Loose Relax Volume"}
+    )
 
     return summary
 
 
 def _double_relax(
     atoms: Atoms,
-    preset: str = "QMOFSet",
-    swaps: Dict[str, Any] = None,
-    volume_relax: bool = True,
-) -> Dict[str, Any]:
+    preset: str | None = "QMOFSet",
+    swaps: dict | None = None,
+    relax_volume: bool = True,
+) -> dict:
     """
     Double relaxation using production-quality settings.
 
@@ -254,23 +253,25 @@ def _double_relax(
         Preset to use.
     swaps
         Dictionary of custom kwargs for the calculator.
-    volume_relax
+    relax_volume
         True if a volume relaxation should be performed.
 
     Returns
     -------
-    Dict
+    summary
         Summary of the run.
     """
+
     swaps = swaps or {}
+
     defaults = {
         "ediffg": -0.03,
         "ibrion": 2,
-        "isif": 3 if volume_relax else 2,
+        "isif": 3 if relax_volume else 2,
         "lcharg": False,
         "lreal": "auto",
         "lwave": True,
-        "nsw": 500 if volume_relax else 250,
+        "nsw": 500 if relax_volume else 250,
     }
 
     # Run first relaxation
@@ -280,7 +281,9 @@ def _double_relax(
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
 
     # Update atoms for
-    summary1 = summarize_run(atoms, bader=False, additional_fields={"name": "relax1"})
+    summary1 = summarize_run(
+        atoms, bader=False, additional_fields={"name": "QMOF DoubleRelax 1"}
+    )
     atoms = summary1["atoms"]
 
     # Reset LREAL
@@ -296,16 +299,18 @@ def _double_relax(
         atoms.calc.set(istart=0)
 
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
-    summary2 = summarize_run(atoms, bader=False)
+    summary2 = summarize_run(
+        atoms, bader=False, additional_fields={"name": "QMOF DoubleRelax 2"}
+    )
 
-    return {"relax1": summary1, "relax2": summary2}
+    return [summary1, summary2]
 
 
 def _static(
     atoms: Atoms,
-    preset: str = "QMOFSet",
-    swaps: Dict[str, Any] = None,
-) -> Dict[str, Any]:
+    preset: str | None = "QMOFSet",
+    swaps: dict | None = None,
+) -> tuple[Atoms, dict]:
     """
     Static calculation using production-quality settings.
 
@@ -320,10 +325,12 @@ def _static(
 
     Returns
     -------
-    Dict
+    summary
         Summary of the run.
     """
+
     swaps = swaps or {}
+
     defaults = {
         "laechg": True,
         "lcharg": True,
@@ -338,6 +345,6 @@ def _static(
     atoms.calc = calc
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
 
-    summary = summarize_run(atoms)
+    summary = summarize_run(atoms, additional_fields={"name": "QMOF Static"})
 
     return summary

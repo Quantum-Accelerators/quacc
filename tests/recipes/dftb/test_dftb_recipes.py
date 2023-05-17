@@ -4,9 +4,9 @@ from shutil import rmtree, which
 import numpy as np
 import pytest
 from ase.build import bulk, molecule
-from jobflow.managers.local import run_locally
+from ase.io import read
 
-from quacc.recipes.dftb.core import RelaxJob, StaticJob
+from quacc.recipes.dftb.core import relax_job, static_job
 
 DFTBPLUS_EXISTS = bool(which("dftb+"))
 
@@ -39,22 +39,20 @@ def teardown_module():
 def test_static_Job():
     atoms = molecule("H2O")
 
-    job = StaticJob().make(atoms)
-    responses = run_locally(job, ensure_success=True)
-    output = responses[job.uuid][1].output
+    output = static_job(atoms)
     assert output["natoms"] == len(atoms)
-    assert output["name"] == "DFTB-Static"
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
     assert output["results"]["energy"] == pytest.approx(-137.9677759924738)
+    assert (
+        np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is True
+    )
+    # assert output["atoms"] == read("geo_end.gen")
 
     atoms = bulk("Cu")
 
-    job = StaticJob(kpts=(3, 3, 3)).make(atoms)
-    responses = run_locally(job, ensure_success=True)
-    output = responses[job.uuid][1].output
+    output = static_job(atoms, kpts=(3, 3, 3))
     assert output["nsites"] == len(atoms)
-    assert output["name"] == "DFTB-Static"
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
     assert (
@@ -65,6 +63,11 @@ def test_static_Job():
     assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty001"] == "0 3 0"
     assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty002"] == "0 0 3"
     assert output["results"]["energy"] == pytest.approx(-106.86647125470942)
+    assert (
+        np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is True
+    )
+    assert np.array_equal(output["atoms"].cell.array, atoms.cell.array) is True
+    # assert output["atoms"] == read("geo_end.gen")
 
 
 @pytest.mark.skipif(
@@ -74,25 +77,21 @@ def test_static_Job():
 def test_relax_job():
     atoms = molecule("H2O")
 
-    job = RelaxJob().make(atoms)
-    responses = run_locally(job, ensure_success=True)
-    output = responses[job.uuid][1].output
+    output = relax_job(atoms)
     assert output["natoms"] == len(atoms)
-    assert output["name"] == "DFTB-Relax"
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
     assert output["results"]["energy"] == pytest.approx(-137.97654214864497)
     assert (
         np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is False
     )
+    assert np.array_equal(output["atoms"].cell.array, atoms.cell.array) is True
 
-    atoms = bulk("Cu")
+    atoms = bulk("Cu") * (2, 1, 1)
+    atoms[0].position += 0.1
 
-    job = RelaxJob(kpts=(3, 3, 3)).make(atoms)
-    responses = run_locally(job, ensure_success=True)
-    output = responses[job.uuid][1].output
+    output = relax_job(atoms, kpts=(3, 3, 3))
     assert output["nsites"] == len(atoms)
-    assert output["name"] == "DFTB-Relax"
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
     assert (
@@ -104,15 +103,15 @@ def test_relax_job():
     assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty002"] == "0 0 3"
     assert output["parameters"]["Driver_"] == "GeometryOptimization"
     assert output["parameters"]["Driver_LatticeOpt"] == "No"
-    assert output["atoms"].get_volume() == atoms.get_volume()
+    assert (
+        np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is False
+    )
+    assert np.array_equal(output["atoms"].cell.array, atoms.cell.array) is True
 
-    atoms = bulk("Cu")
-
-    job = RelaxJob(method="GFN1-xTB", kpts=(3, 3, 3), lattice_opt=True).make(atoms)
-    responses = run_locally(job, ensure_success=True)
-    output = responses[job.uuid][1].output
+    atoms = bulk("Cu") * (2, 1, 1)
+    atoms[0].position += 0.1
+    output = relax_job(atoms, method="GFN1-xTB", kpts=(3, 3, 3), lattice_opt=True)
     assert output["nsites"] == len(atoms)
-    assert output["name"] == "DFTB-Relax"
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN1-xTB"
     assert (
@@ -124,4 +123,7 @@ def test_relax_job():
     assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty002"] == "0 0 3"
     assert output["parameters"]["Driver_"] == "GeometryOptimization"
     assert output["parameters"]["Driver_LatticeOpt"] == "Yes"
-    assert output["atoms"].get_volume() != atoms.get_volume()
+    assert (
+        np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is False
+    )
+    assert np.array_equal(output["atoms"].cell.array, atoms.cell.array) is False

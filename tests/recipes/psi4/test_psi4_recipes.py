@@ -4,13 +4,12 @@ from shutil import rmtree
 
 import pytest
 from ase.build import molecule
-from jobflow.managers.local import run_locally
 
-from quacc.recipes.psi4.core import StaticJob
+from quacc.recipes.psi4.core import static_job
 
 try:
     import psi4
-except:
+except ImportError:
     psi4 = None
 FILE_DIR = Path(__file__).resolve().parent
 
@@ -33,29 +32,25 @@ def teardown_module():
 )
 def test_static_maker():
     atoms = molecule("H2")
-
-    job = StaticJob().make(atoms)
-    responses = run_locally(job, ensure_success=True)
-    output = responses[job.uuid][1].output
+    output = static_job(atoms)
     assert output["natoms"] == len(atoms)
-    assert output["name"] == "Psi4-Static"
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["multiplicity"] == 1
     assert output["parameters"]["method"] == "wb97x-v"
     assert output["parameters"]["basis"] == "def2-tzvp"
     assert output["parameters"]["num_threads"] == "max"
 
-    job = StaticJob(
+    output = static_job(
+        atoms,
+        charge=-2,
+        mult=3,
         method="m06l",
         basis="def2-svp",
         swaps={"num_threads": 1, "mem": None, "pop": "regular"},
-    ).make(atoms, charge=-2, mult=3)
-    responses = run_locally(job, ensure_success=True)
-    output = responses[job.uuid][1].output
+    )
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == -2
     assert output["parameters"]["multiplicity"] == 3
-    assert output["name"] == "Psi4-Static"
     assert output["parameters"]["method"] == "m06l"
     assert output["parameters"]["basis"] == "def2-svp"
     assert output["parameters"]["num_threads"] == 1

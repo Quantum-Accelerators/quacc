@@ -5,10 +5,9 @@ from __future__ import annotations
 
 import random
 import warnings
-from typing import Any, Dict, List
 
 import numpy as np
-from ase.atoms import Atoms
+from ase import Atoms
 from pymatgen.analysis.adsorption import AdsorbateSiteFinder
 from pymatgen.core import Structure
 from pymatgen.core.surface import Slab, center_slab, generate_all_slabs
@@ -69,11 +68,11 @@ def make_slabs_from_bulk(
     min_slab_size: float = 10.0,
     min_length_width: float = 8.0,
     min_vacuum_size: float = 20.0,
-    z_fix: None | float = 2.0,
+    z_fix: float | None = 2.0,
     flip_asymmetric: bool = True,
-    allowed_surface_symbols: List[str] | str = None,
+    allowed_surface_symbols: list[str] | str = None,
     **slabgen_kwargs,
-) -> List[Atoms]:
+) -> list[Atoms]:
     """
     Function to make slabs from a bulk atoms object.
 
@@ -210,17 +209,17 @@ def make_slabs_from_bulk(
 
 def make_max_slabs_from_bulk(
     atoms: Atoms,
-    max_slabs: int = None,
+    max_slabs: int | None = None,
     max_index: int = 1,
     randomize: bool = False,
     min_slab_size: float = 10.0,
     min_length_width: float = 8.0,
     min_vacuum_size: float = 20.0,
-    z_fix: float = 2.0,
+    z_fix: float | None = 2.0,
     flip_asymmetric: bool = True,
-    allowed_surface_symbols: List[str] | str = None,
+    allowed_surface_symbols: list[str] | str = None,
     **slabgen_kwargs,
-) -> List[Atoms]:
+) -> list[Atoms]:
     """
     Generate no more than max_slabs number of slabs from a bulk structure.
     The procedure is as follows:
@@ -323,12 +322,12 @@ def make_adsorbate_structures(
     atoms: Atoms,
     adsorbate: Atoms,
     min_distance: float = 2.0,
-    modes: List[str] | str = None,
-    allowed_surface_symbols: List[str] | str = None,
-    allowed_surface_indices: List[int] | int = None,
-    ads_site_finder_kwargs: Dict[str, Any] = None,
-    find_ads_sites_kwargs: Dict[str, Any] = None,
-) -> List[Atoms]:
+    modes: list[str] | str = None,
+    allowed_surface_symbols: list[str] | str | None = None,
+    allowed_surface_indices: list[int] | int | None = None,
+    ads_site_finder_kwargs: dict | None = None,
+    find_ads_sites_kwargs: dict | None = None,
+) -> list[Atoms]:
     """
     Add a single adsorbate to a structure for every requested adsorption mode
 

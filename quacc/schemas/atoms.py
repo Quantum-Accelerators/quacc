@@ -3,7 +3,7 @@ Schemas for storing metadata about Atoms objects
 """
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any
 
 import numpy as np
 from ase.atoms import Atom, Atoms
@@ -15,8 +15,11 @@ from quacc.util.atoms import copy_atoms
 
 
 def atoms_to_metadata(
-    atoms: Atoms, get_metadata: bool = True, strip_info: bool = False, store_pmg=True
-) -> Dict[str, Any]:
+    atoms: Atoms,
+    get_metadata: bool = True,
+    strip_info: bool = False,
+    store_pmg: bool = True,
+) -> dict:
     """
     Convert an ASE Atoms object to a dict suitable for storage in MongoDB.
 
@@ -74,6 +77,8 @@ def atoms_to_metadata(
 
     # Combine the metadata and results dictionaries
     atoms_doc = {**metadata, **results}
+
+    atoms_doc = dict(sorted(atoms_doc.items()))
 
     return atoms_doc
 

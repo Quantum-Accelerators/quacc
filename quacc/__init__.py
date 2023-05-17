@@ -1,9 +1,16 @@
-"""Init data for QuAcc"""
-from ase.atoms import Atoms
+"""Init data for Quacc"""
+import warnings
+
+from ase import Atoms
 from ase.io.jsonio import decode, encode
 
 from quacc._version import __version__
 from quacc.settings import QuaccSettings
+
+try:
+    import covalent as ct
+except ImportError:
+    ct = None
 
 
 def atoms_as_dict(s):
@@ -31,3 +38,57 @@ def atoms_from_dict(d):
 Atoms.as_dict = atoms_as_dict
 Atoms.from_dict = atoms_from_dict
 SETTINGS = QuaccSettings()
+
+if ct:
+    ct_config = ct.get_config()
+
+    # Ensure that the create_unique_workdir is set to True
+    for executor in ["dask", "local"]:
+        try:
+            create_unique_workdir = ct_config["executors"][executor][
+                "create_unique_workdir"
+            ]
+        except KeyError:
+            create_unique_workdir = None
+
+        if not create_unique_workdir:
+            warnings.warn(
+                f"Updating Covalent configuration... setting executors.{executor}.create_unique_workdir: True",
+                UserWarning,
+            )
+            ct.set_config({f"executors.{executor}.create_unique_workdir": True})
+            ct_config = ct.get_config()
+
+    # Ensure that use_srun is False in Slurm executor if the plugin is installed
+    if "slurm" in ct_config["executors"]:
+        if ct_config["executors"]["slurm"].get("use_srun", True) is not False:
+            warnings.warn(
+                "Updating Covalent configuration... setting executors.slurm.use_srun: False",
+                UserWarning,
+            )
+            ct.set_config({"executors.slurm.use_srun": False})
+            ct_config = ct.get_config()
+        if (
+            ct_config["executors"]["slurm"].get("create_unique_workdir", False)
+            is not True
+        ):
+            warnings.warn(
+                f"Updating Covalent configuration... setting executors.slurm.create_unique_workdir: True",
+                UserWarning,
+            )
+            ct.set_config({f"executors.slurm.create_unique_workdir": True})
+            ct_config = ct.get_config()
+
+    # Make sure that the create_unique_workdir is set to True for any optional plugin
+    # where this option exists, in case we missed any above
+    for executor in ct_config["executors"]:
+        if (
+            "create_unique_workdir" in ct_config["executors"][executor]
+            and ct_config["executors"][executor]["create_unique_workdir"] is not True
+        ):
+            warnings.warn(
+                f"Updating Covalent configuration... setting executors.{executor}.create_unique_workdir: True",
+                UserWarning,
+            )
+            ct.set_config({f"executors.{executor}.create_unique_workdir": True})
+            ct_config = ct.get_config()
