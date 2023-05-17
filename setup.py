@@ -54,7 +54,7 @@ if __name__ == "__main__":
                 "atomate2[cclib] @ git+https://github.com/materialsproject/atomate2.git",
                 "covalent==0.220.0",
                 # "covalent-slurm-plugin==0.16.0rc0",
-                "custodian==2023.5.7",
+                "custodian==2023.5.12",
                 "emmet-core==0.55.2",
                 "jobflow==0.1.11",
                 "maggma==0.50.4",
