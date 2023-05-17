@@ -76,6 +76,8 @@ def summarize_run(
     # Create a dictionary of the inputs/outputs
     task_doc = {**atoms_db, **inputs, **results, **additional_fields}
 
+    task_doc = dict(sorted(task_doc.items()))
+
     return task_doc
 
 
@@ -139,5 +141,7 @@ def summarize_opt_run(
 
     # Create a dictionary of the inputs/outputs
     task_doc = {**atoms_db, **inputs, **results, **traj_results, **additional_fields}
+
+    task_doc = dict(sorted(task_doc.items()))
 
     return task_doc

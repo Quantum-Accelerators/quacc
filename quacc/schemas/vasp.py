@@ -136,4 +136,6 @@ def summarize_run(
     if remove_empties:
         task_doc = remove_dict_empties(task_doc)
 
+    task_doc = dict(sorted(task_doc.items()))
+
     return task_doc

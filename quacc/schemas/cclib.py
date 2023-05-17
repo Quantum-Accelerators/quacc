@@ -151,4 +151,7 @@ def summarize_run(
     # Create a dictionary of the inputs/outputs
     task_doc = {**inputs, **results, **additional_fields}
 
+    # Sort dict
+    task_doc = dict(sorted(task_doc.items()))
+
     return task_doc

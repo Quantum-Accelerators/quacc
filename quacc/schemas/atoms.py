@@ -78,6 +78,8 @@ def atoms_to_metadata(
     # Combine the metadata and results dictionaries
     atoms_doc = {**metadata, **results}
 
+    atoms_doc = dict(sorted(atoms_doc.items()))
+
     return atoms_doc
 
 
