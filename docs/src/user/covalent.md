@@ -10,7 +10,7 @@ Additionally, you should read the Covalent [First Experiment](https://covalent.r
 
 In Covalent, the `@ct.lattice` decorator indicates that the function is a workflow, and the `@ct.electron` decorator indicates that the function is a job (i.e. an individual compute task). If you plan to use a job scheduling system like Slurm, you can think of each `Electron` as an individual Slurm job. If `Electron` objects are wrapped by a `Lattice`, they will only be executed once the job is dispatched. Conversely, if you did not include the `@ct.lattice` decorator, all the `Electron` objects would behave as normal Python functions.
 
-## Running a Simple Serial Workflow 
+## Running a Simple Serial Workflow
 
 Here, we will try running a simple workflow where we relax a bulk Cu structure using EMT and take the output of that calculation as the input to a follow-up static calculation with EMT. This example is shown below.
 
