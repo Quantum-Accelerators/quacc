@@ -73,10 +73,10 @@ if ct:
             is not True
         ):
             warnings.warn(
-                f"Updating Covalent configuration... setting executors.slurm.create_unique_workdir: True",
+                "Updating Covalent configuration... setting executors.slurm.create_unique_workdir: True",
                 UserWarning,
             )
-            ct.set_config({f"executors.slurm.create_unique_workdir": True})
+            ct.set_config({"executors.slurm.create_unique_workdir": True})
             ct_config = ct.get_config()
 
     # Make sure that the create_unique_workdir is set to True for any optional plugin
