@@ -1,4 +1,6 @@
-# Contributor Covenant Code of Conduct
+# Code of Conduct
+
+Adopted from: https://www.contributor-covenant.org
 
 ## Our Pledge
 

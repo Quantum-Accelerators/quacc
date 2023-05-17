@@ -40,7 +40,6 @@ Note that for this example, you will need to install `tblite`, which can be done
 
 ```python
 from ase.build import molecule
-from jobflow.managers.local import run_locally
 
 from quacc.recipes.tblite.core import relax_job
 

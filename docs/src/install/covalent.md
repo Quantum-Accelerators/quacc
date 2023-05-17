@@ -1,4 +1,4 @@
-# Covalent Setup
+# Suggested: Covalent Setup
 
 ## Introduction
 

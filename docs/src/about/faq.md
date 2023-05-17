@@ -1,4 +1,4 @@
-# Frequently Asked Questions
+# FAQ
 
 **Q: How is Quacc different than just using the [Atomic Simulation Environment (ASE)](https://wiki.fysik.dtu.dk/ase/)**
 

@@ -1,4 +1,4 @@
-# Quantum Chemistry Package Setup
+# Calculator Setup
 
 Here, we outline how to ensure that Quacc can run the quantum chemistry package of your choosing. You only need to follow the instructions for the code(s) you intend to use.
 
