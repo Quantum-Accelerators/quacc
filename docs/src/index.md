@@ -90,7 +90,7 @@ assumes that you have an understanding of the key concepts.
 :link: dev/contributing
 :link-type: doc
 :class-header: bg-light
-**Developer guide** 
+**Developer guide**
 ^^^
 Do you want to develop your own workflows or improve existing functionalities?
 Check out the developer guide.
