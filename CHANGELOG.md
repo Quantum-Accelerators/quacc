@@ -7,16 +7,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [UNRELEASED]
 
 ### Added
-
-### Changed
-
-### Fixed
-
-## [0.1.0]
-
-See https://github.com/arosen93/quacc/releases/tag/v0.1.0 for more details.
-
-### Added
 - Added optional support for Covalent as the workflow manager.
 - Improved documentation.
 - Automatic formatting of files during PRs.
