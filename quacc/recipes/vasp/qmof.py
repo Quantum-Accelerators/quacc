@@ -76,7 +76,7 @@ def qmof_relax_job(
     # issues when dV is large; b) because we can use LREAL = Auto for the
     # first relaxation and the default LREAL for the second.
     summary4 = _double_relax(atoms, preset, swaps, relax_volume=relax_volume)
-    atoms = summary4["relax2"]["atoms"]
+    atoms = summary4[1]["atoms"]
 
     # 5. Static Calculation
     summary5 = _static(atoms, preset, swaps)
