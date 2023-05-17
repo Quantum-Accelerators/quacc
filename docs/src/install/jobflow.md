@@ -16,26 +16,26 @@ If you plan to use Jobflow to write your workflows, you will need to make a `job
 
 ```yaml
 JOB_STORE:
-    docs_store:
-      type: MongoStore
-      host: <host name>
-      port: 27017
-      username: <username>
-      password: <password>
-      database: <database name>
-      collection_name: <collection name>
+  docs_store:
+    type: MongoStore
+    host: <host name>
+    port: 27017
+    username: <username>
+    password: <password>
+    database: <database name>
+    collection_name: <collection name>
 ```
 
 If you are using a URI (e.g. as is common with MongoDB Atlas), then you will instead have a `jobflow.yaml` file that looks like the example below. Here, you will put the full URI in the `host` field. The `username` and `password` are part of the URI and so should not be included elsewhere in the YAML file.
 
 ```yaml
 JOB_STORE:
-    docs_store:
-      type: MongoStore
-      host: <URI>
-      port: 27017
-      database: <database name>
-      collection_name: <collection name>
+  docs_store:
+    type: MongoStore
+    host: <URI>
+    port: 27017
+    database: <database name>
+    collection_name: <collection name>
 ```
 
 Finally, you will need to define a `JOBFLOW_CONFIG_FILE` environment variable pointing to the file you made. For instance, in your `~/.bashrc` file, add the following line:

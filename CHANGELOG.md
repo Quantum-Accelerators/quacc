@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [UNRELEASED]
 
 ### Added
+
 - Added optional support for Covalent as the workflow manager.
 - Improved documentation.
 - Automatic formatting of files during PRs.
@@ -16,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `LennardJones` demonstration recipes.
 
 ### Changed
+
 - Individual compute jobs are now functions instead of classes.
 - All compute jobs are wrapped by `@ct.electron` instead of `@job`.
 - Use of Jobflow is now optional.
@@ -32,9 +34,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Fixed type hinting.
 
 ### Fixed
+
 - If the user-specified `scratch_dir` does not exist on the filesystem when using `run_calc`, `run_ase_opt`, or `run_ase_vib`, it will be created.
 
 ### Removed
+
 - Removed the `xtb` recipes in favor of the `tblite` recipes following deprecation warning.
 - Removed the `requirements.txt` file in favor of the `setup.py` file.
 

@@ -1,4 +1,3 @@
-
 # Optional: FireWorks Setup
 
 ## Installation
@@ -26,8 +25,8 @@ For the `my_fworker.yaml`, you can use the following template. You do not need t
 
 ```yaml
 name: quacc_fworker
-category: ''
-query: '{}'
+category: ""
+query: "{}"
 ```
 
 ### Launchpad
@@ -73,15 +72,14 @@ account: <account>
 job_name: quacc_firework
 qos: regular
 pre_rocket: |
-            module load vasp
-            export VASP_PARALLEL_CMD="srun -N 2 --ntasks-per-node=24"
+  module load vasp
+  export VASP_PARALLEL_CMD="srun -N 2 --ntasks-per-node=24"
 ```
 
 In the above example, you would need to change the path in the `rocket_launch` field to the correct path to your `my_fworker.yaml`. The nodes, walltime, account, and qos are the corresponding parameters for your queuing system. Finally, anything in the `pre_rocket` field will be executed before the job begins running. It is a good place to load modules and set environment variables. A representative example has been provided above.
 
 Finally, you will need to define a `FW_CONFIG_FILE` environment variable pointing to the `FW_config.yaml` file you made. For instance, in your `~/.bashrc` file, add the following line:
 `export FW_CONFIG_FILE="/path/to/config/fw_config/FW_config.yaml"`.
-
 
 ### Database Initialization
 

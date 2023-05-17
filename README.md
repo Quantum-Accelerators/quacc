@@ -2,7 +2,7 @@
   <img src=docs/src/_static/quacc_logo_wide.svg width="500"><br>
 </div>
 
---------------------------------------
+---
 
 # Quacc – The Quantum Accelerator
 

@@ -8,13 +8,13 @@ To contribute to Quacc, we recommend doing the following:
 2. Clone this forked repository to your local machine, e.g. via `git clone <repo url>.git`.
 3. In the newly downloaded `quacc` base directory, run `pip install -e .[dev]` to install Quacc in editable mode and with the development dependencies.
 4. Commit your changes and push them to your personal forked repository.
-6. Create a pull request (PR) to merge your changes into the main Quacc repository.
+5. Create a pull request (PR) to merge your changes into the main Quacc repository.
 
 For reproducibility purposes, we strongly recommend install Quacc in a fresh virtual environment.
 
 ## General Rules
 
-Please abide by the following when contributing code to Quacc: 
+Please abide by the following when contributing code to Quacc:
 
 1. All code should include type hints and have documentation for the inputs and outputs.
 
