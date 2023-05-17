@@ -1,8 +1,6 @@
 """Core recipes for VASP"""
 from __future__ import annotations
 
-from typing import Any
-
 import covalent as ct
 from ase import Atoms
 
@@ -14,10 +12,10 @@ from quacc.util.dicts import merge_dicts
 
 @ct.electron
 def static_job(
-    atoms: Atoms, preset: str | None = None, swaps: dict[str, Any] | None = None
-) -> dict[str, Any]:
+    atoms: Atoms, preset: str | None = None, swaps: dict | None = None
+) -> dict:
     """
-    Function to carry out a single-point calculation.
+    Carry out a single-point calculation.
 
     Parameters
     ----------
@@ -49,6 +47,7 @@ def static_job(
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
     atoms = run_calc(atoms)
+
     summary = summarize_run(atoms, additional_fields={"name": "VASP Static"})
 
     return summary
@@ -59,10 +58,10 @@ def relax_job(
     atoms: Atoms,
     preset: str | None = None,
     relax_volume: bool = True,
-    swaps: dict[str, Any] | None = None,
-) -> dict[str, Any]:
+    swaps: dict | None = None,
+) -> dict:
     """
-    Function to relax a structure.
+    Relax a structure.
 
     Parameters
     ----------
@@ -98,6 +97,7 @@ def relax_job(
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
     atoms = run_calc(atoms)
+
     summary = summarize_run(atoms, additional_fields={"name": "VASP Relax"})
 
     return summary
@@ -108,12 +108,11 @@ def double_relax_job(
     atoms: Atoms,
     preset: str | None = None,
     relax_volume: bool = True,
-    swaps1: dict[str, Any] | None = None,
-    swaps2: dict[str, Any] | None = None,
-) -> dict[dict[str, Any], dict[str, Any]]:
+    swaps1: dict | None = None,
+    swaps2: dict | None = None,
+) -> list[dict]:
     """
-    Function to double-relax a structure. This is particularly useful for
-    a few reasons:
+    Double-relax a structure. This is particularly useful for a few reasons:
     1. To carry out a cheaper pre-relaxation before the high-quality run.
     2. To carry out a GGA calculation before a meta-GGA or hybrid calculation
     that requies the GGA wavefunction.
@@ -136,8 +135,8 @@ def double_relax_job(
 
     Returns
     -------
-    summary
-        Dictionary of the run summary.
+    [summary1, summary2]
+        Dictionaries of the run summary.
     """
 
     swaps1 = swaps1 or {}
@@ -174,4 +173,4 @@ def double_relax_job(
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
     summary2 = summarize_run(atoms, additional_fields={"name": "VASP DoubleRelax 2"})
 
-    return {"relax1": summary1, "relax2": summary2}
+    return [summary1, summary2]

@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Any
 
 import covalent as ct
 from ase import Atoms
@@ -15,11 +14,9 @@ from quacc.util.calc import run_ase_opt, run_calc
 
 
 @ct.electron
-def static_job(
-    atoms: Atoms, emt_kwargs: dict[str, Any] | None = None
-) -> dict[str, Any]:
+def static_job(atoms: Atoms, emt_kwargs: dict | None = None) -> dict:
     """
-    Function to carry out a static calculation.
+    Carry out a static calculation.
 
     Parameters
     ----------
@@ -39,6 +36,7 @@ def static_job(
 
     atoms.calc = EMT(**emt_kwargs)
     atoms = run_calc(atoms)
+
     summary = summarize_run(
         atoms, input_atoms=input_atoms, additional_fields={"name": "EMT Static"}
     )
@@ -52,11 +50,11 @@ def relax_job(
     fmax: float = 0.01,
     max_steps: int = 1000,
     optimizer: str = "FIRE",
-    emt_kwargs: dict[str, Any] | None = None,
-    opt_kwargs: dict[str, Any] | None = None,
-) -> dict[str, Any]:
+    emt_kwargs: dict | None = None,
+    opt_kwargs: dict | None = None,
+) -> dict:
     """
-    Function to carry out a geometry optimization.
+    Carry out a geometry optimization.
 
     Parameters
     ----------
@@ -90,6 +88,7 @@ def relax_job(
         optimizer=optimizer,
         opt_kwargs=opt_kwargs,
     )
+
     summary = summarize_opt_run(
         traj, atoms.calc.parameters, additional_fields={"name": "EMT Relax"}
     )

@@ -1,8 +1,6 @@
 """Core recipes for Psi4"""
 from __future__ import annotations
 
-from typing import Any
-
 import covalent as ct
 from ase import Atoms
 from ase.calculators.psi4 import Psi4
@@ -25,8 +23,8 @@ def static_job(
     mult: int | None = None,
     method: str = "wb97x-v",
     basis: str = "def2-tzvp",
-    swaps: dict[str, Any] | None = None,
-) -> dict[str, Any]:
+    swaps: dict | None = None,
+) -> dict:
     """
     Function to carry out a single-point calculation.
 
@@ -69,6 +67,7 @@ def static_job(
 
     atoms.calc = Psi4(**flags)
     new_atoms = run_calc(atoms)
+
     summary = summarize_run(
         new_atoms, input_atoms=atoms, additional_fields={"name": "Psi4 Static"}
     )

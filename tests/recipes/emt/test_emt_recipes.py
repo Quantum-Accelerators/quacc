@@ -77,7 +77,7 @@ def test_slab_dynamic_jobs():
 
     outputs = BulkToSlabsFlow(
         slab_static_electron=None,
-        relax_kwargs={"fmax": 1.0, "emt_kwargs": {"asap_cutoff": True}},
+        slab_relax_kwargs={"fmax": 1.0, "emt_kwargs": {"asap_cutoff": True}},
     ).run(atoms)
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
@@ -87,7 +87,7 @@ def test_slab_dynamic_jobs():
     assert [output["parameters"]["asap_cutoff"] == True for output in outputs]
 
     outputs = BulkToSlabsFlow(
-        relax_kwargs={"fmax": 1.0, "emt_kwargs": {"asap_cutoff": True}},
+        slab_relax_kwargs={"fmax": 1.0, "emt_kwargs": {"asap_cutoff": True}},
     ).run(atoms, slabgen_kwargs={"max_slabs": 2})
     assert len(outputs) == 2
     assert outputs[0]["nsites"] == 64
@@ -97,7 +97,7 @@ def test_slab_dynamic_jobs():
     outputs = BulkToSlabsFlow(
         slab_relax_electron=static_job,
         slab_static_electron=None,
-        relax_kwargs={"emt_kwargs": {"asap_cutoff": True}},
+        slab_relax_kwargs={"emt_kwargs": {"asap_cutoff": True}},
     ).run(atoms, slabgen_kwargs={"max_slabs": 2})
     assert len(outputs) == 2
     assert outputs[0]["nsites"] == 64
@@ -120,12 +120,12 @@ def test_jf_slab_dynamic_jobs():
 
     flow = JFBulkToSlabsFlow(
         slab_static_job=None,
-        relax_kwargs={"fmax": 1.0, "emt_kwargs": {"asap_cutoff": True}},
+        slab_relax_kwargs={"fmax": 1.0, "emt_kwargs": {"asap_cutoff": True}},
     ).run(atoms)
     jf.run_locally(flow, store=store, ensure_success=True)
 
     flow = JFBulkToSlabsFlow(
-        relax_kwargs={"fmax": 1.0, "emt_kwargs": {"asap_cutoff": True}},
+        slab_relax_kwargs={"fmax": 1.0, "emt_kwargs": {"asap_cutoff": True}},
     ).run(atoms, slabgen_kwargs={"max_slabs": 2})
     responses = jf.run_locally(flow, store=store, ensure_success=True)
 
@@ -148,7 +148,7 @@ def test_jf_slab_dynamic_jobs():
 
     flow = JFBulkToSlabsFlow(
         slab_relax_job=jf.job(static_job),
-        static_kwargs={"emt_kwargs": {"asap_cutoff": True}},
+        slab_static_kwargs={"emt_kwargs": {"asap_cutoff": True}},
     ).run(atoms, slabgen_kwargs={"max_slabs": 2})
     responses = jf.run_locally(flow, store=store, ensure_success=True)
 

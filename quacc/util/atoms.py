@@ -6,7 +6,6 @@ from __future__ import annotations
 import hashlib
 import os
 from copy import deepcopy
-from typing import Dict
 
 import numpy as np
 from ase import Atoms
@@ -106,7 +105,7 @@ def prep_next_run(
 
 def set_magmoms(
     atoms: Atoms,
-    elemental_mags_dict: Dict = None,
+    elemental_mags_dict: dict | None = None,
     elemental_mags_default: float = 1.0,
     copy_magmoms: bool = True,
     mag_cutoff: float = 0.05,

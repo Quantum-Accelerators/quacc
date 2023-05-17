@@ -6,7 +6,6 @@ from __future__ import annotations
 import os
 import warnings
 from tempfile import mkdtemp
-from typing import Any, Dict, List, Tuple
 
 import numpy as np
 from ase import Atoms
@@ -39,10 +38,10 @@ from quacc.util.files import copy_decompress
 
 def run_calc(
     atoms: Atoms,
-    geom_file: str = None,
+    geom_file: str | None = None,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
-    copy_files: List[str] = None,
+    copy_files: list[str] = None,
 ) -> Atoms:
     """
     Run a calculation in a scratch directory and copy the results back to the
@@ -142,10 +141,10 @@ def run_ase_opt(
     fmax: float = 0.01,
     max_steps: int = 500,
     optimizer: str = "FIRE",
-    opt_kwargs: Dict[str, Any] = None,
+    opt_kwargs: dict = None,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
-    copy_files: List[str] = None,
+    copy_files: list[str] = None,
 ) -> trajectory:
     """
     Run an ASE-based optimization in a scratch directory and copy the results
@@ -256,10 +255,10 @@ def run_ase_opt(
 
 def run_ase_vib(
     atoms: Atoms,
-    vib_kwargs: Dict[str, Any] = None,
+    vib_kwargs: dict = None,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
-    copy_files: List[str] = None,
+    copy_files: list[str] = None,
 ) -> Atoms:
     """
     Run an ASE-based vibration analysis in a scratch directory and copy the results
@@ -337,12 +336,12 @@ def run_ase_vib(
 
 def ideal_gas_thermo(
     atoms: Atoms,
-    vib_list: List[float, complex],
+    vib_list: list[float | complex],
     temperature: float = 298.15,
     pressure: float = 1.0,
     energy: float = 0.0,
     spin_multiplicity: float = None,
-) -> Dict[str, Any]:
+) -> dict:
     """
     Calculate thermodynamic properties for a molecule from a given vibrational analysis.
 
@@ -500,11 +499,11 @@ def _check_logfile(logfile: str, check_str: str) -> bool:
 def _convert_auto_kpts(
     atoms: Atoms,
     auto_kpts: None
-    | Dict[str, float]
-    | Dict[str, List[Tuple[float, float]]]
-    | Dict[str, List[Tuple[float, float, float]]],
+    | dict[str, float]
+    | dict[str, list[tuple[float, float]]]
+    | dict[str, list[tuple[float, float, float]]],
     force_gamma: bool = True,
-) -> Tuple[List[Tuple[int, int, int]], None | bool, None | bool]:
+) -> tuple[list[tuple[int, int, int]], None | bool, None | bool]:
     """
     Shortcuts for pymatgen k-point generation schemes.
     Options include: line_density (for band structures),

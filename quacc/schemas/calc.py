@@ -4,7 +4,6 @@ Schemas for storing ASE calculator data
 from __future__ import annotations
 
 import os
-from typing import Any, Dict
 
 from ase import Atoms
 from ase.io import Trajectory
@@ -18,8 +17,8 @@ def summarize_run(
     atoms: Atoms,
     input_atoms: Atoms = None,
     prep_next_run: bool = True,
-    additional_fields: Dict[str, Any] = None,
-) -> Dict[str, Any]:
+    additional_fields: dict = None,
+) -> dict:
     """
     Get tabulated results from an Atoms object and calculator and store them in a database-friendly format.
     This is meant to be compatible with all calculator types.
@@ -82,10 +81,10 @@ def summarize_run(
 
 def summarize_opt_run(
     traj: Trajectory,
-    parameters: Dict[str, Any],
+    parameters: dict,
     prep_next_run: bool = True,
-    additional_fields: Dict[str, Any] = None,
-) -> Dict[str, Any]:
+    additional_fields: dict = None,
+) -> dict:
     """
     Get tabulated results from an ASE Atoms trajectory and store them in a database-friendly format.
     This is meant to be compatible with all calculator types.

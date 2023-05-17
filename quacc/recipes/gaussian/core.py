@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import multiprocessing
-from typing import Any
 
 import covalent as ct
 from ase import Atoms
@@ -25,10 +24,10 @@ def static_job(
     basis: str = "def2-tzvp",
     pop: str = "hirshfeld",
     write_molden: bool = True,
-    swaps: dict[str, Any] | None = None,
-) -> dict[str, Any]:
+    swaps: dict | None = None,
+) -> dict:
     """
-    Function to carry out a single-point calculation.
+    Carry out a single-point calculation.
 
     Parameters
     ----------
@@ -79,6 +78,7 @@ def static_job(
 
     atoms.calc = Gaussian(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
+
     summary = summarize_run(
         atoms, LOG_FILE, additional_fields={"name": "Gaussian Static"}
     )
@@ -89,15 +89,15 @@ def static_job(
 @ct.electron
 def relax_job(
     atoms: Atoms,
-    charge: int = None,
-    mult: int = None,
+    charge: int | None = None,
+    mult: int | None = None,
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
     freq: bool = False,
-    swaps: dict[str, Any] | None = None,
-) -> dict[str, Any]:
+    swaps: dict | None = None,
+) -> dict:
     """
-    Function to carry out a geometry optimization.
+    Carry out a geometry optimization.
 
     Parameters
     ----------
@@ -114,7 +114,7 @@ def relax_job(
     basis
         Basis set
     freq
-        If a requency calculation should be carried out.
+        If a frequency calculation should be carried out.
     swaps
         Dictionary of custom kwargs for the calculator.
 
@@ -144,6 +144,7 @@ def relax_job(
 
     atoms.calc = Gaussian(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
+
     summary = summarize_run(
         atoms, LOG_FILE, additional_fields={"name": "Gaussian Relax"}
     )

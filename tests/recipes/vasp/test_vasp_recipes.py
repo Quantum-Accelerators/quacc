@@ -73,26 +73,26 @@ def test_doublerelax_job():
     atoms = bulk("Cu") * (2, 2, 2)
 
     output = double_relax_job(atoms)
-    assert output["relax1"]["nsites"] == len(atoms)
-    assert output["relax1"]["parameters"]["isym"] == 0
-    assert output["relax1"]["parameters"]["nsw"] > 0
-    assert output["relax1"]["parameters"]["isif"] == 3
-    assert output["relax1"]["parameters"]["lwave"] == True
-    assert output["relax2"]["nsites"] == len(atoms)
-    assert output["relax2"]["parameters"]["isym"] == 0
-    assert output["relax2"]["parameters"]["nsw"] > 0
-    assert output["relax2"]["parameters"]["isif"] == 3
-    assert output["relax2"]["parameters"]["lwave"] == True
+    assert output[0]["nsites"] == len(atoms)
+    assert output[0]["parameters"]["isym"] == 0
+    assert output[0]["parameters"]["nsw"] > 0
+    assert output[0]["parameters"]["isif"] == 3
+    assert output[0]["parameters"]["lwave"] == True
+    assert output[1]["nsites"] == len(atoms)
+    assert output[1]["parameters"]["isym"] == 0
+    assert output[1]["parameters"]["nsw"] > 0
+    assert output[1]["parameters"]["isif"] == 3
+    assert output[1]["parameters"]["lwave"] == True
 
     output = double_relax_job(atoms, preset="BulkSet", swaps2={"nelmin": 6})
-    assert output["relax1"]["parameters"]["encut"] == 520
-    assert "nelmin" not in output["relax1"]["parameters"]
-    assert output["relax2"]["parameters"]["encut"] == 520
-    assert output["relax2"]["parameters"]["nelmin"] == 6
+    assert output[0]["parameters"]["encut"] == 520
+    assert "nelmin" not in output[0]["parameters"]
+    assert output[1]["parameters"]["encut"] == 520
+    assert output[1]["parameters"]["nelmin"] == 6
 
     output = double_relax_job(atoms, relax_volume=False)
-    assert output["relax1"]["parameters"]["isif"] == 2
-    assert output["relax2"]["parameters"]["isif"] == 2
+    assert output[0]["parameters"]["isif"] == 2
+    assert output[1]["parameters"]["isif"] == 2
 
     output = double_relax_job(atoms, swaps1={"kpts": [1, 1, 1]})
 
@@ -154,7 +154,7 @@ def test_slab_dynamic_jobs():
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
     outputs = BulkToSlabsFlow(
-        relax_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
+        slab_relax_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
         slab_static_electron=None,
     ).run(atoms)
     assert len(outputs) == 4
@@ -168,7 +168,7 @@ def test_slab_dynamic_jobs():
 
     outputs = BulkToSlabsFlow(
         slab_relax_electron=None,
-        static_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
+        slab_static_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
     ).run(atoms)
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
@@ -180,7 +180,7 @@ def test_slab_dynamic_jobs():
     assert [output["parameters"]["encut"] == 450 for output in outputs]
 
     outputs = BulkToSlabsFlow(
-        static_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
+        slab_static_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
     ).run(atoms)
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
@@ -210,7 +210,7 @@ def test_slab_dynamic_jobs():
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
     outputs = SlabToAdsFlow(
-        relax_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
+        slab_relax_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
         slab_static_electron=None,
     ).run(atoms, adsorbate)
 
@@ -221,7 +221,7 @@ def test_slab_dynamic_jobs():
 
     outputs = SlabToAdsFlow(
         slab_relax_electron=None,
-        static_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
+        slab_static_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
     ).run(atoms, adsorbate)
 
     assert [output["nsites"] == 82 for output in outputs]
@@ -230,7 +230,7 @@ def test_slab_dynamic_jobs():
     assert [output["parameters"]["encut"] == 450 for output in outputs]
 
     outputs = SlabToAdsFlow(
-        static_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
+        slab_static_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
     ).run(atoms, adsorbate)
 
     assert [output["nsites"] == 82 for output in outputs]
@@ -269,18 +269,18 @@ def test_qmof():
     assert output["volume-relax-lowacc"]["parameters"]["nsw"] > 0
     assert output["volume-relax-lowacc"]["parameters"]["isif"] == 3
 
-    assert output["double-relax"]["relax1"]["nsites"] == len(atoms)
-    assert output["double-relax"]["relax1"]["parameters"]["encut"] == 520
-    assert output["double-relax"]["relax1"]["parameters"]["sigma"] == 0.01
-    assert output["double-relax"]["relax1"]["parameters"]["isym"] == 0
-    assert output["double-relax"]["relax1"]["parameters"]["nsw"] > 0
-    assert output["double-relax"]["relax1"]["parameters"]["isif"] == 3
+    assert output["double-relax"][0]["nsites"] == len(atoms)
+    assert output["double-relax"][0]["parameters"]["encut"] == 520
+    assert output["double-relax"][0]["parameters"]["sigma"] == 0.01
+    assert output["double-relax"][0]["parameters"]["isym"] == 0
+    assert output["double-relax"][0]["parameters"]["nsw"] > 0
+    assert output["double-relax"][0]["parameters"]["isif"] == 3
 
-    assert output["double-relax"]["relax2"]["nsites"] == len(atoms)
-    assert output["double-relax"]["relax2"]["parameters"]["encut"] == 520
-    assert output["double-relax"]["relax2"]["parameters"]["isym"] == 0
-    assert output["double-relax"]["relax2"]["parameters"]["nsw"] > 0
-    assert output["double-relax"]["relax2"]["parameters"]["isif"] == 3
+    assert output["double-relax"][1]["nsites"] == len(atoms)
+    assert output["double-relax"][1]["parameters"]["encut"] == 520
+    assert output["double-relax"][1]["parameters"]["isym"] == 0
+    assert output["double-relax"][1]["parameters"]["nsw"] > 0
+    assert output["double-relax"][1]["parameters"]["isif"] == 3
 
     assert output["static"]["nsites"] == len(atoms)
     assert output["static"]["parameters"]["encut"] == 520
@@ -293,13 +293,13 @@ def test_qmof():
     assert output["prerelax-lowacc"] is None
 
     output = qmof_relax_job(atoms, preset="BulkSet", swaps={"nelmin": 6})
-    assert output["double-relax"]["relax1"]["parameters"]["encut"] == 520
-    assert output["double-relax"]["relax1"]["parameters"]["nelmin"] == 6
-    assert output["double-relax"]["relax1"]["parameters"]["sigma"] == 0.05
+    assert output["double-relax"][0]["parameters"]["encut"] == 520
+    assert output["double-relax"][0]["parameters"]["nelmin"] == 6
+    assert output["double-relax"][0]["parameters"]["sigma"] == 0.05
 
-    assert output["double-relax"]["relax2"]["parameters"]["encut"] == 520
-    assert output["double-relax"]["relax2"]["parameters"]["nelmin"] == 6
-    assert output["double-relax"]["relax2"]["parameters"]["sigma"] == 0.05
+    assert output["double-relax"][1]["parameters"]["encut"] == 520
+    assert output["double-relax"][1]["parameters"]["nelmin"] == 6
+    assert output["double-relax"][1]["parameters"]["sigma"] == 0.05
 
     assert output["static"]["parameters"]["encut"] == 520
     assert output["static"]["parameters"]["nelmin"] == 6
@@ -308,8 +308,8 @@ def test_qmof():
     output = qmof_relax_job(atoms, relax_volume=False)
     assert "volume-relax" not in output
 
-    assert output["double-relax"]["relax1"]["parameters"]["isif"] == 2
-    assert output["double-relax"]["relax2"]["parameters"]["isif"] == 2
+    assert output["double-relax"][0]["parameters"]["isif"] == 2
+    assert output["double-relax"][1]["parameters"]["isif"] == 2
 
     atoms = bulk("Cu") * (8, 8, 8)
     output = qmof_relax_job(atoms)
@@ -329,12 +329,12 @@ def test_jf_slab_dynamic_jobs():
 
     flow = JFBulkToSlabsFlow(
         slab_static_job=None,
-        relax_kwargs={"swaps": {"nelmin": 6}},
+        slab_relax_kwargs={"swaps": {"nelmin": 6}},
     ).run(atoms)
     jf.run_locally(flow, store=store, ensure_success=True)
 
     flow = JFBulkToSlabsFlow(
-        relax_kwargs={"swaps": {"nelmin": 6}},
+        slab_relax_kwargs={"swaps": {"nelmin": 6}},
     ).run(atoms, slabgen_kwargs={"max_slabs": 2})
     responses = jf.run_locally(flow, store=store, ensure_success=True)
 

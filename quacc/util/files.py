@@ -5,14 +5,13 @@ from __future__ import annotations
 
 import os
 from shutil import copy
-from typing import Any, Dict, List
 
 import yaml
 from monty.os.path import zpath
 from monty.shutil import decompress_file
 
 
-def copy_decompress(src_files: List[str], dst) -> None:
+def copy_decompress(src_files: list[str], dst: str) -> None:
     """
     Copy and decompress files from src to dst.
 
@@ -31,7 +30,7 @@ def copy_decompress(src_files: List[str], dst) -> None:
             decompress_file(os.path.join(dst, z_file))
 
 
-def load_yaml_calc(yaml_path: str) -> Dict[str, Any]:
+def load_yaml_calc(yaml_path: str) -> dict:
     """
     Loads a YAML file containing ASE VASP calcultor settings.
 

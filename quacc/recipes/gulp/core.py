@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import warnings
 from copy import deepcopy
-from typing import Any
 
 import covalent as ct
 from ase import Atoms
@@ -19,11 +18,11 @@ def static_job(
     atoms: Atoms,
     gfnff: bool = True,
     library: str | None = None,
-    keyword_swaps: dict[str, Any] | None = None,
-    option_swaps: dict[str, Any] | None = None,
-) -> dict[str, Any]:
+    keyword_swaps: dict | None = None,
+    option_swaps: dict | None = None,
+) -> dict:
     """
-    Function to carry out a single-point calculation.
+    Carry out a single-point calculation.
     Note: 'Conditions' are not yet natively supported.
 
     Parameters
@@ -71,6 +70,7 @@ def static_job(
 
     atoms.calc = GULP(keywords=gulp_keywords, options=gulp_options, library=library)
     atoms = run_calc(atoms, geom_file="gulp.cif" if atoms.pbc.any() else "gulp.xyz")
+
     summary = summarize_run(
         atoms, input_atoms=input_atoms, additional_fields={"name": "GULP Static"}
     )
@@ -84,11 +84,11 @@ def relax_job(
     gfnff: bool = True,
     library: str | None = None,
     volume_relax: bool = True,
-    keyword_swaps: dict[str, Any] | None = None,
-    option_swaps: dict[str, Any] | None = None,
-) -> tuple[Atoms, dict[str, Any]]:
+    keyword_swaps: dict | None = None,
+    option_swaps: dict | None = None,
+) -> dict:
     """
-    Function to carry out a single-point calculation.
+    Carry out a single-point calculation.
     Note: 'Conditions' are not yet natively supported.
 
     Parameters

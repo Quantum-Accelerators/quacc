@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import os
 import shlex
-from typing import Dict, List
 
 from monty.dev import requires
 
@@ -24,11 +23,11 @@ def run_custodian(
     vasp_custodian_max_errors: int = SETTINGS.VASP_CUSTODIAN_MAX_ERRORS,
     vasp_custodian_wall_time: int = SETTINGS.VASP_CUSTODIAN_WALL_TIME,
     vtst_fixes: bool = SETTINGS.VASP_CUSTODIAN_VTST,
-    vasp_custodian_handlers: List[str] = SETTINGS.VASP_CUSTODIAN_HANDLERS,
-    vasp_custodian_validators: List[str] = SETTINGS.VASP_CUSTODIAN_VALIDATORS,
+    vasp_custodian_handlers: list[str] = SETTINGS.VASP_CUSTODIAN_HANDLERS,
+    vasp_custodian_validators: list[str] = SETTINGS.VASP_CUSTODIAN_VALIDATORS,
     scratch_dir: str = None,
-    vasp_job_kwargs: Dict = None,
-    custodian_kwargs: Dict = None,
+    vasp_job_kwargs: dict = None,
+    custodian_kwargs: dict = None,
 ):
     """
     Function to run VASP Custodian

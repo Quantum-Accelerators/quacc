@@ -1,15 +1,13 @@
 from __future__ import annotations
 
-from typing import Any, Dict
-
 
 def merge_dicts(
-    d1: Dict[str, Any],
-    d2: Dict[str, Any],
+    d1: dict,
+    d2: dict,
     remove_none: bool = False,
     remove_false: bool = False,
     auto_lowercase: bool = True,
-) -> Dict[str, Any]:
+) -> dict:
     """
     Merges two dictionaries into a single dictionary. If both dictionaries
     have the same key, the value from the second dictionary will be used. This
@@ -39,7 +37,7 @@ def merge_dicts(
     return d_merged
 
 
-def remove_dict_empties(d: Dict[str, Any]) -> Dict[str, Any]:
+def remove_dict_empties(d: dict) -> dict:
     """
     For a given dictionary, recursively remove all items that are None
     or are empty lists/dicts.

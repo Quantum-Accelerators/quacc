@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
 
 import jobflow as jf
 from ase import Atoms
@@ -28,20 +27,20 @@ class BulkToSlabsFlow(jf.Maker):
         Maker to use for the relaxation of the slab.
     slab_static_job
         Maker to use for the static calculation of the slab.
-    relax_kwargs
+    slab_relax_kwargs
         Additional keyword arguments to pass to the relaxation calculation.
-    static_kwargs
+    slab_static_kwargs
         Additional keyword arguments to pass to the static calculation.
     """
 
     name: str = "VASP BulkToSlabsFlow"
     slab_relax_job: jf.Job | None = jf.job(slab_relax_job_orig)
     slab_static_job: jf.job | None = jf.job(slab_static_job_orig)
-    relax_kwargs: dict[str, Any] | None = None
-    static_kwargs: dict[str, Any] | None = None
+    slab_relax_kwargs: dict | None = None
+    slab_static_kwargs: dict | None = None
 
     @jf.job
-    def run(self, atoms: Atoms, slabgen_kwargs: dict[str, Any] = None) -> jf.Response:
+    def run(self, atoms: Atoms, slabgen_kwargs: dict = None) -> jf.Response:
         """
         Make the run.
 
@@ -58,8 +57,8 @@ class BulkToSlabsFlow(jf.Maker):
             A Flow of relaxation and static jobs for the generated slabs.
         """
 
-        relax_kwargs = self.relax_kwargs or {}
-        static_kwargs = self.static_kwargs or {}
+        slab_relax_kwargs = self.slab_relax_kwargs or {}
+        slab_static_kwargs = self.slab_static_kwargs or {}
         slabgen_kwargs = slabgen_kwargs or {}
 
         # Generate all the slab
@@ -75,16 +74,16 @@ class BulkToSlabsFlow(jf.Maker):
         outputs = []
         for slab in slabs:
             if self.slab_relax_job and self.slab_static_job:
-                job1 = self.slab_relax_job(slab, **relax_kwargs)
-                job2 = self.slab_static_job(job1.output["atoms"], **static_kwargs)
+                job1 = self.slab_relax_job(slab, **slab_relax_kwargs)
+                job2 = self.slab_static_job(job1.output["atoms"], **slab_static_kwargs)
                 jobs += [job1, job2]
                 outputs.append(job2.output)
             elif self.slab_relax_job:
-                job1 = self.slab_relax_job(slab, **relax_kwargs)
+                job1 = self.slab_relax_job(slab, **slab_relax_kwargs)
                 jobs += [job1]
                 outputs.append(job1.output)
             elif self.slab_static_job:
-                job1 = self.slab_static_job(slab, **static_kwargs)
+                job1 = self.slab_static_job(slab, **slab_static_kwargs)
                 jobs += [job1]
                 outputs.append(job1.output)
 

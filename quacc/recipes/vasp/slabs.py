@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
 
 import covalent as ct
 from ase import Atoms
@@ -17,8 +16,8 @@ from quacc.util.slabs import make_adsorbate_structures, make_max_slabs_from_bulk
 
 @ct.electron
 def slab_static_job(
-    atoms: Atoms, preset: str | None = None, swaps: dict[str, Any] | None = None
-) -> dict[str, Any]:
+    atoms: Atoms, preset: str | None = None, swaps: dict | None = None
+) -> dict:
     """
     Function to carry out a single-point calculation on a slab.
 
@@ -54,6 +53,7 @@ def slab_static_job(
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
     atoms = run_calc(atoms)
+
     summary = summarize_run(atoms, additional_fields={"name": "VASP Slab Static"})
 
     return summary
@@ -61,8 +61,8 @@ def slab_static_job(
 
 @ct.electron
 def slab_relax_job(
-    atoms: Atoms, preset: str | None = None, swaps: dict[str, Any] | None = None
-) -> dict[str, Any]:
+    atoms: Atoms, preset: str | None = None, swaps: dict | None = None
+) -> dict:
     """
     Function to relax a slab.
 
@@ -98,6 +98,7 @@ def slab_relax_job(
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
     atoms = run_calc(atoms)
+
     summary = summarize_run(atoms, additional_fields={"name": "VASP Slab Relax"})
 
     return summary
@@ -117,24 +118,24 @@ class BulkToSlabsFlow:
         Default to use for the relaxation of the slab structures.
     slab_static_electron
         Default to use for the static calculation of the slab structures.
-    relax_kwargs
+    slab_relax_kwargs
         Additional keyword arguments to pass to the relaxation calculation.
-    static_kwargs
+    slab_static_kwargs
         Additional keyword arguments to pass to the static calculation.
     """
 
     slab_relax_electron: Electron | None = slab_relax_job
     slab_static_electron: Electron | None = slab_static_job
-    relax_kwargs: dict[str, Any] | None = None
-    static_kwargs: dict[str, Any] | None = None
+    slab_relax_kwargs: dict | None = None
+    slab_static_kwargs: dict | None = None
 
     def run(
         self,
         atoms: Atoms,
-        slabgen_kwargs: dict[str, Any] = None,
-    ):
+        slabgen_kwargs: dict = None,
+    ) -> dict:
         """
-        Make the workflow.
+        Run the workflow.
 
         Parameters
         ----------
@@ -144,8 +145,8 @@ class BulkToSlabsFlow:
             Additional keyword arguments to pass to make_max_slabs_from_bulk()
         """
 
-        relax_kwargs = self.relax_kwargs or {}
-        static_kwargs = self.static_kwargs or {}
+        relax_kwargs = self.slab_relax_kwargs or {}
+        static_kwargs = self.slab_static_kwargs or {}
         slabgen_kwargs = slabgen_kwargs or {}
 
         if not self.slab_relax_electron and not self.slab_static_electron:
@@ -194,27 +195,27 @@ class SlabToAdsFlow:
 
     Parameters
     ----------
-    relax_electron
+    slab_relax_electron
         Default to use for the relaxation of the slab structure.
-    static_electron
+    slab_static_electron
         Default to use for the static calculation of the slab structures.
-    relax_kwargs
+    slab_relax_kwargs
         Additional keyword arguments to pass to the relaxation calculation.
-    static_kwargs
+    slab_static_kwargs
         Additional keyword arguments to pass to the static calculation.
     """
 
     slab_relax_electron: Electron | None = ct.electron(slab_relax_job)
     slab_static_electron: Electron | None = ct.electron(slab_static_job)
-    relax_kwargs: dict[str, Any] | None = None
-    static_kwargs: dict[str, Any] | None = None
+    slab_relax_kwargs: dict | None = None
+    slab_static_kwargs: dict | None = None
 
     def run(
         self,
         slab: Atoms,
         adsorbate: Atoms,
         **make_ads_kwargs,
-    ):
+    ) -> dict:
         """
         Make the run.
 
@@ -228,8 +229,8 @@ class SlabToAdsFlow:
             Additional keyword arguments to pass to make_adsorbate_structures()
         """
 
-        relax_kwargs = self.relax_kwargs or {}
-        static_kwargs = self.static_kwargs or {}
+        slab_relax_kwargs = self.slab_relax_kwargs or {}
+        slab_static_kwargs = self.slab_static_kwargs or {}
         make_ads_kwargs = make_ads_kwargs or {}
 
         if not self.slab_relax_electron and not self.slab_static_electron:
@@ -240,20 +241,24 @@ class SlabToAdsFlow:
         @ct.electron
         @ct.lattice
         def _relax_distributed(slabs):
-            return [self.slab_relax_electron(slab, **relax_kwargs) for slab in slabs]
+            return [
+                self.slab_relax_electron(slab, **slab_relax_kwargs) for slab in slabs
+            ]
 
         @ct.electron
         @ct.lattice
         def _static_distributed(slabs):
-            return [self.slab_static_electron(slab, **static_kwargs) for slab in slabs]
+            return [
+                self.slab_static_electron(slab, **slab_static_kwargs) for slab in slabs
+            ]
 
         @ct.electron
         @ct.lattice
         def _relax_and_static_distributed(slabs):
             return [
                 self.slab_static_electron(
-                    self.slab_relax_electron(slab, **relax_kwargs)["atoms"],
-                    **static_kwargs,
+                    self.slab_relax_electron(slab, **slab_relax_kwargs)["atoms"],
+                    **slab_static_kwargs,
                 )
                 for slab in slabs
             ]

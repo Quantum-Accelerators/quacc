@@ -1,8 +1,6 @@
 """QMOF-compatible recipes"""
 from __future__ import annotations
 
-from typing import Any
-
 import covalent as ct
 from ase import Atoms
 
@@ -22,10 +20,10 @@ def qmof_relax_job(
     preset: str | None = "QMOFSet",
     relax_volume: bool = True,
     run_prerelax: bool = True,
-    swaps: dict[str, Any] | None = None,
-) -> dict[str, Any]:
+    swaps: dict | None = None,
+) -> dict:
     """
-    Function to relax a structure in a multi-step process for increased
+    Relax a structure in a multi-step process for increased
     computational efficiency. This is all done in a single compute job.
     Settings are such that they are compatible with the QMOF Database.
 
@@ -95,9 +93,9 @@ def qmof_relax_job(
 def _prerelax(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
-    swaps: dict[str, Any] | None = None,
+    swaps: dict | None = None,
     fmax: float = 5.0,
-) -> dict[str, Any]:
+) -> dict:
     """
     A "pre-relaxation" with BFGSLineSearch to resolve very high forces.
 
@@ -145,8 +143,8 @@ def _prerelax(
 def _loose_relax_positions(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
-    swaps: dict[str, Any] | None = None,
-) -> dict[str, Any]:
+    swaps: dict | None = None,
+) -> dict:
     """
     Position relaxation with default ENCUT and coarse k-point grid.
 
@@ -194,8 +192,8 @@ def _loose_relax_positions(
 def _loose_relax_volume(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
-    swaps: dict[str, Any] | None = None,
-) -> dict[str, Any]:
+    swaps: dict | None = None,
+) -> dict:
     """
     Volume relaxation with coarse k-point grid.
 
@@ -241,9 +239,9 @@ def _loose_relax_volume(
 def _double_relax(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
-    swaps: dict[str, Any] | None = None,
+    swaps: dict | None = None,
     relax_volume: bool = True,
-) -> dict[str, Any]:
+) -> dict:
     """
     Double relaxation using production-quality settings.
 
@@ -305,14 +303,14 @@ def _double_relax(
         atoms, bader=False, additional_fields={"name": "QMOF DoubleRelax 2"}
     )
 
-    return {"relax1": summary1, "relax2": summary2}
+    return [summary1, summary2]
 
 
 def _static(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
-    swaps: dict[str, Any] | None = None,
-) -> tuple[Atoms, dict[str, Any]]:
+    swaps: dict | None = None,
+) -> tuple[Atoms, dict]:
     """
     Static calculation using production-quality settings.
 

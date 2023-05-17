@@ -6,7 +6,6 @@ from __future__ import annotations
 import inspect
 import os
 import warnings
-from typing import Any, Dict, List, Tuple
 
 import numpy as np
 from ase import Atoms
@@ -218,7 +217,7 @@ def _manage_environment(custodian: bool = True) -> str:
     return command
 
 
-def _remove_unused_flags(user_calc_params: Dict[str, Any]) -> Dict[str, Any]:
+def _remove_unused_flags(user_calc_params: dict) -> dict:
     """
     Removes unused flags in the INCAR, like EDIFFG if you are doing NSW = 0.
 
@@ -260,13 +259,13 @@ def _remove_unused_flags(user_calc_params: Dict[str, Any]) -> Dict[str, Any]:
 
 def _calc_swaps(
     atoms: Atoms,
-    user_calc_params: Dict[str, Any],
+    user_calc_params: dict,
     auto_kpts: None
-    | Dict[str, float]
-    | Dict[str, List[Tuple[float, float]]]
-    | Dict[str, List[Tuple[float, float, float]]],
+    | dict[str, float]
+    | dict[str, list[tuple[float, float]]]
+    | dict[str, list[tuple[float, float, float]]],
     verbose: bool = True,
-) -> Dict[str, Any]:
+) -> dict:
     """
     Swaps out bad INCAR flags.
 

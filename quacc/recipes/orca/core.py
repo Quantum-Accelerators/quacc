@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import multiprocessing
-from typing import Any
 
 import covalent as ct
 from ase import Atoms
@@ -23,11 +22,11 @@ def static_job(
     mult: int | None = None,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
-    input_swaps: dict[str, Any] | None = None,
-    block_swaps: dict[str, Any] | None = None,
-) -> dict[str, Any]:
+    input_swaps: dict | None = None,
+    block_swaps: dict | None = None,
+) -> dict:
     """
-    Function to carry out a single-point calculation.
+    Carry out a single-point calculation.
 
     Parameters
     ----------
@@ -108,7 +107,7 @@ def relax_job(
     block_swaps: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """
-    Function to carry out a geometry optimization.
+    Carry out a geometry optimization.
 
     Parameters
     ----------

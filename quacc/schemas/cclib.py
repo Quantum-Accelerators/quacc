@@ -4,7 +4,6 @@ Schemas for molecular DFT codes parsed by cclib
 from __future__ import annotations
 
 import os
-from typing import Any, Dict, List
 
 from ase import Atoms
 from atomate2.common.schemas.cclib import TaskDocument
@@ -15,13 +14,13 @@ from quacc.util.atoms import prep_next_run as prep_next_run_
 
 def summarize_run(
     atoms: Atoms,
-    logfile_extensions: str | List[str],
+    logfile_extensions: str | list[str],
     dir_path: str = None,
     check_convergence: bool = True,
     transition_state: bool = False,
     prep_next_run: bool = True,
-    additional_fields: Dict[str, Any] = None,
-) -> Dict[str, Any]:
+    additional_fields: dict = None,
+) -> dict:
     """
     Get tabulated results from a molecular DFT run and store them in a database-friendly format.
     This is meant to be a general parser built on top of cclib.

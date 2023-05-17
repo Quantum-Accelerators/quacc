@@ -3,11 +3,12 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import List
 
 from pydantic import BaseSettings, Field, root_validator
 
-_DEFAULT_CONFIG_FILE_PATH = os.path.expanduser("~/.quacc.yaml")
+_DEFAULT_CONFIG_FILE_PATH = "~/.quacc.yaml"
+
+__all__ = ["QuaccSettings"]
 
 
 class QuaccSettings(BaseSettings):
@@ -89,7 +90,7 @@ class QuaccSettings(BaseSettings):
     VASP_CUSTODIAN_MAX_ERRORS: int = Field(
         5, description="Maximum errors for Custodian"
     )
-    VASP_CUSTODIAN_HANDLERS: List[str] = Field(
+    VASP_CUSTODIAN_HANDLERS: list[str] = Field(
         [
             "VaspErrorHandler",
             "MeshSymmetryErrorHandler",
@@ -104,7 +105,7 @@ class QuaccSettings(BaseSettings):
         ],
         description="Handlers for Custodian",
     )
-    VASP_CUSTODIAN_VALIDATORS: List[str] = Field(
+    VASP_CUSTODIAN_VALIDATORS: list[str] = Field(
         ["VasprunXMLValidator", "VaspFilesValidator"],
         description="Validators for Custodian",
     )
@@ -120,19 +121,20 @@ class QuaccSettings(BaseSettings):
 
     @root_validator(pre=True)
     def load_default_settings(cls, values):
+        from monty.serialization import loadfn
+
         """
         Load settings from file or environment variables.
         Loads settings from a root file if available and uses that as defaults in
         place of built in defaults.
         This allows setting of the config file path through environment variables.
         """
-        from monty.serialization import loadfn
 
         config_file_path: str = values.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH)
 
         new_values = {}
-        if Path(config_file_path).exists():
-            new_values.update(loadfn(config_file_path))
+        if Path(config_file_path).expanduser().exists():
+            new_values.update(loadfn(Path(config_file_path).expanduser()))
 
         new_values.update(values)
         return new_values

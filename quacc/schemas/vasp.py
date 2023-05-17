@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import os
 import warnings
-from typing import Any, Dict
 
 from ase import Atoms
 from emmet.core.tasks import TaskDoc
@@ -19,14 +18,14 @@ from quacc.util.pop_analysis import run_bader
 
 def summarize_run(
     atoms: Atoms,
-    dir_path: str = None,
+    dir_path: str | None = None,
     prep_next_run: bool = True,
     bader: bool = SETTINGS.VASP_BADER,
     check_convergence: bool = True,
     compact: bool = True,
     remove_empties: bool = True,
-    additional_fields: Dict[str, Any] = None,
-) -> Dict[str, Any]:
+    additional_fields: dict = None,
+) -> dict:
     """
     Get tabulated results from a VASP run and store them in a database-friendly format.
 

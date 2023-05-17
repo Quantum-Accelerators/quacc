@@ -4,7 +4,6 @@ Core recipes for the tblite code
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Any
 
 import covalent as ct
 from ase import Atoms
@@ -25,10 +24,10 @@ except ImportError:
     "tblite must be installed. Try pip install tblite[ase]",
 )
 def static_job(
-    atoms: Atoms, method: str = "GFN2-xTB", tblite_kwargs: dict[str, Any] | None = None
-) -> dict[str, Any]:
+    atoms: Atoms, method: str = "GFN2-xTB", tblite_kwargs: dict | None = None
+) -> dict:
     """
-    Function to carry out a single-point calculation.
+    Carry out a single-point calculation.
 
     Parameters
     ----------
@@ -67,11 +66,11 @@ def relax_job(
     fmax: float = 0.01,
     max_steps: int = 1000,
     optimizer: str = "FIRE",
-    tblite_kwargs: dict[str, Any] | None = None,
-    opt_kwargs: dict[str, Any] | None = None,
-) -> tuple[Atoms, dict[str, Any]]:
+    tblite_kwargs: dict | None = None,
+    opt_kwargs: dict | None = None,
+) -> dict:
     """
-    Function to relax a structure.
+    Relax a structure.
 
     Parameters
     ----------
@@ -107,6 +106,7 @@ def relax_job(
         optimizer=optimizer,
         opt_kwargs=opt_kwargs,
     )
+
     summary = summarize_opt_run(
         traj, atoms.calc.parameters, additional_fields={"name": "TBLite Relax"}
     )
@@ -122,10 +122,10 @@ def thermo_job(
     energy: float = 0.0,
     temperature: float = 298.15,
     pressure: float = 1.0,
-    xtb_kwargs: dict[str, Any] | None = None,
-) -> dict[str, Any]:
+    xtb_kwargs: dict | None = None,
+) -> dict:
     """
-    Function to run a frequency job and calculate thermochemistry.
+    Run a frequency job and calculate thermochemistry.
 
     Parameters
     ----------
@@ -152,6 +152,7 @@ def thermo_job(
 
     atoms.calc = TBLite(method=method, **xtb_kwargs)
     vibrations = run_ase_vib(atoms)
+
     thermo_summary = ideal_gas_thermo(
         atoms,
         vibrations.get_frequencies(),

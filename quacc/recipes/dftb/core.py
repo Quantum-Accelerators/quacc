@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Any
 
 import covalent as ct
 from ase import Atoms
@@ -20,11 +19,11 @@ GEOM_FILE = "geo_end.gen"
 def static_job(
     atoms: Atoms,
     method: str = "GFN2-xTB",
-    kpts: tuple | list[tuple] | dict[str, Any] | None = None,
-    swaps: dict[str, Any] | None = None,
-) -> dict[str, Any]:
+    kpts: tuple | list[tuple] | dict | None = None,
+    swaps: dict | None = None,
+) -> dict:
     """
-    Function to carry out a single-point calculation.
+    Carry out a single-point calculation.
 
     Parameters
     ----------
@@ -58,9 +57,11 @@ def static_job(
 
     atoms.calc = Dftb(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
+
     scc_check = _check_logfile(LOG_FILE, "SCC is NOT converged")
     if scc_check:
         raise ValueError("SCC is not converged")
+
     summary = summarize_run(
         atoms, input_atoms=input_atoms, additional_fields={"name": "DFTB+ Static"}
     )
@@ -72,12 +73,12 @@ def static_job(
 def relax_job(
     atoms: Atoms,
     method: str = "GFN2-xTB",
-    kpts: tuple | list[tuple] | dict[str, Any] | None = None,
+    kpts: tuple | list[tuple] | dict | None = None,
     lattice_opt: bool = False,
-    swaps: dict[str, Any] | None = None,
-) -> dict[str, Any]:
+    swaps: dict | None = None,
+) -> dict:
     """
-    Function to carry out a structure relaxation.
+    Carry out a structure relaxation.
 
     Parameters
     ----------
@@ -116,9 +117,11 @@ def relax_job(
 
     atoms.calc = Dftb(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
+
     geom_check = _check_logfile(LOG_FILE, "Geometry converged")
     if not geom_check:
         raise ValueError("Geometry did not converge")
+
     summary = summarize_run(
         atoms, input_atoms=input_atoms, additional_fields={"name": "DFTB+ Relax"}
     )

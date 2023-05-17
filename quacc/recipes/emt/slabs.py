@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
 
 import covalent as ct
 from ase import Atoms
@@ -22,25 +21,25 @@ class BulkToSlabsFlow:
     Parameters
     ----------
     slab_relax_electron
-        Default to use for the relaxation of the slab structures.
+        Default Electron to use for the relaxation of the slab structures.
     slab_static_electron
-        Default to use for the static calculation of the slab structures.
-    relax_kwargs
+        Default Electron to use for the static calculation of the slab structures.
+    slab_relax_kwargs
         Additional keyword arguments to pass to the relaxation calculation.
-    static_kwargs
+    slab_static_kwargs
         Additional keyword arguments to pass to the static calculation.
     """
 
     slab_relax_electron: Electron | None = relax_job
     slab_static_electron: Electron | None = static_job
-    relax_kwargs: dict[str, Any] | None = None
-    static_kwargs: dict[str, Any] | None = None
+    slab_relax_kwargs: dict | None = None
+    slab_static_kwargs: dict | None = None
 
     def run(
         self,
         atoms: Atoms,
-        slabgen_kwargs: dict[str, Any] = None,
-    ):
+        slabgen_kwargs: dict | None = None,
+    ) -> dict:
         """
         Make the workflow.
 
@@ -52,8 +51,8 @@ class BulkToSlabsFlow:
             Additional keyword arguments to pass to make_max_slabs_from_bulk()
         """
 
-        relax_kwargs = self.relax_kwargs or {}
-        static_kwargs = self.static_kwargs or {}
+        slab_relax_kwargs = self.slab_relax_kwargs or {}
+        slab_static_kwargs = self.slab_static_kwargs or {}
         slabgen_kwargs = slabgen_kwargs or {}
 
         if not self.slab_relax_electron and not self.slab_static_electron:
@@ -64,20 +63,24 @@ class BulkToSlabsFlow:
         @ct.electron
         @ct.lattice
         def _relax_distributed(slabs):
-            return [self.slab_relax_electron(slab, **relax_kwargs) for slab in slabs]
+            return [
+                self.slab_relax_electron(slab, **slab_relax_kwargs) for slab in slabs
+            ]
 
         @ct.electron
         @ct.lattice
         def _static_distributed(slabs):
-            return [self.slab_static_electron(slab, **static_kwargs) for slab in slabs]
+            return [
+                self.slab_static_electron(slab, **slab_static_kwargs) for slab in slabs
+            ]
 
         @ct.electron
         @ct.lattice
         def _relax_and_static_distributed(slabs):
             return [
                 self.slab_static_electron(
-                    self.slab_relax_electron(slab, **relax_kwargs)["atoms"],
-                    **static_kwargs,
+                    self.slab_relax_electron(slab, **slab_relax_kwargs)["atoms"],
+                    **slab_static_kwargs,
                 )
                 for slab in slabs
             ]

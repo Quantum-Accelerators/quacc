@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import os
 from tempfile import TemporaryDirectory
-from typing import Any, Dict
 
 from pymatgen.command_line.bader_caller import bader_analysis_from_path
 from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
@@ -14,9 +13,7 @@ from quacc import SETTINGS
 from quacc.util.files import copy_decompress
 
 
-def run_bader(
-    path: str = None, scratch_dir: str = SETTINGS.SCRATCH_DIR
-) -> Dict[str, Any]:
+def run_bader(path: str | None = None, scratch_dir: str = SETTINGS.SCRATCH_DIR) -> dict:
     """
     Runs a Bader partial charge and spin moment analysis using the VASP
     output files in the given path. This function requires that `bader`
@@ -84,10 +81,10 @@ def run_bader(
 
 
 def run_chargemol(
-    path: str = None,
-    atomic_densities_path: str = None,
+    path: str | None = None,
+    atomic_densities_path: str | None = None,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
-) -> Dict[str, Any]:
+) -> dict:
     """
     Runs a Chargemol (i.e. DDEC6 + CM5) analysis using the VASP output files
     in the given path. This function requires that the chargemol executable,
