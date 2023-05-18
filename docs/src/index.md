@@ -2,7 +2,6 @@
 :caption: Quick Start
 :hidden:
 start/demo
-start/next
 ```
 
 ```{toctree}
@@ -40,8 +39,8 @@ dev/conduct
 :caption: About
 :hidden:
 about/changelog
-about/faq
 about/contributors
+about/faq
 about/license
 ```
 
