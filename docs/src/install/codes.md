@@ -39,6 +39,7 @@ GULP is especially useful for periodic GFN-FF calculations and force field metho
 As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/gulp.html), you must set the environment variables `GULP_LIB="/path/to/my/gulp-#.#.#/Libraries"` and `ASE_GULP_COMMAND="/path/to/my/gulp-#.#.#/Src/gulp < gulp.gin > gulp.got"` based on where you installed GULP.
 
 ## Lennard Jones
+
 ```{note}
 Lennard Jones (LJ) is an empirical potential that is predominantly used for prototyping workflows for molecules.
 ```
