@@ -60,9 +60,9 @@ print(result)
 
 Here, we have imported the `.tblite.core.relax_job` recipe. Most recipes have several optional keyword arguments that you can specify. In this example, the `method="GFN2-xTB"` keyword indicates that we want to use the GFN2-xTB method, which also happened to be the default value.
 
-## A Pair of Serial Calculations
+## A Simple Mixed-Code Workflow
 
-Now let's return to our bulk Cu example from above and start adding on some complexity. Here, we will use EMT to run a relaxation on the bulk Cu structure and then use the output of this calculation as the input to a static calculation with GFN2-xTB. This example nicely highlights how there are no restrictions in terms of how many codes you can use in a single workflow.
+Now let's return to our bulk Cu example from above and start adding on some complexity. Here, we will use EMT to run a relaxation on the bulk Cu structure and then use the output of this calculation as the input to a static calculation with GFN2-xTB. This example highlights how there are no restrictions in terms of how many codes you can use in a single workflow.
 
 ```python
 from ase.build import bulk
