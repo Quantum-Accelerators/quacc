@@ -13,17 +13,8 @@ If you are familiar with ASE and want to dive right into the workflow manager de
 If you are not yet familiar with the ASE [`Atoms`](https://wiki.fysik.dtu.dk/ase/ase/atoms.html) object, you should read the [ASE tutorial](https://wiki.fysik.dtu.dk/ase/ase/atoms.html), as this is the main object used to represent molecules and structures within Quacc. Additionally, it is worthwhile to be familiar with the basics of what an ASE `Calculator` is, which is described in more detail [here](https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html).
 
 ```{hint}
-If you are coming from the Pymatgen ecosystem, you can use the [`AseAtomsAdaptor`](https://pymatgen.org/pymatgen.io.ase.html#pymatgen.io.ase.AseAtomsAdaptor) class in the `pymatgen.io.ase` module to convert between Pymatgen `Structure`/`Molecule` objects and the ASE `Atoms` object.
+If you are coming from the Pymatgen ecosystem, you can use the {obj}`AseAtomsAdaptor` class in the {obj}`pymatgen.io.ase` module to convert between Pymatgen {obj}`Structure`/{obj}`Molecule` objects and the ASE {obj}`ase.Atoms` object.
 ```
-
-{obj}`AseAtomsAdaptor`
-{obj}`.AseAtomsAdaptor`
-{class}`AseAtomsAdaptor`
-{class}`.AseAtomsAdaptor`
-{obj}`pymatgen.io.ase`
-{obj}`quacc.recipes.emt.core.static_job`
-{obj}`quacc.recipes.emt.core`
-{obj}`.emt.core.static_job`
 
 ## A Simple Calculation with EMT
 
