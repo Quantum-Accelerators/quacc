@@ -10,10 +10,10 @@ If you are familiar with ASE and want to dive right into the workflow manager de
 
 ## Pre-Requisites
 
-If you are not yet familiar with the ASE [`Atoms`](https://wiki.fysik.dtu.dk/ase/ase/atoms.html) object, you should read the [ASE tutorial](https://wiki.fysik.dtu.dk/ase/ase/atoms.html), as this is the main object used to represent molecules and structures within Quacc. Additionally, it is worthwhile to be familiar with the basics of what an ASE `Calculator` is, which is described in more detail [here](https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html).
+If you are not yet familiar with the ASE [`Atoms`](https://wiki.fysik.dtu.dk/ase/ase/atoms.html) object, you should read the [ASE tutorial](https://wiki.fysik.dtu.dk/ase/ase/atoms.html), as this is the main object used to represent molecules and structures within Quacc. Additionally, it is worthwhile to be familiar with the basics of what an ASE [`Calculator](https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html)` is.
 
 ```{hint}
-If you are coming from the Pymatgen ecosystem, you can use the {obj}`AseAtomsAdaptor` class in the {obj}`pymatgen.io.ase` module to convert between Pymatgen {obj}`Structure`/{obj}`Molecule` objects and the ASE {obj}`ase.Atoms` object.
+If you are coming from the Pymatgen ecosystem, you can use the {class}`pymatgen.io.ase.AseAtomsAdaptor` class to convert between Pymatgen `Structure`/`Molecule` objects and the ASE `Atoms` object.
 ```
 
 ## A Simple Calculation with EMT
@@ -35,10 +35,10 @@ print(result)
 Walking through step-by-step, we first defined an `Atoms` object representation of the material we wish to run the calculation on. In this example, we have imported the bulk Cu structure from ASE's predefined library of bulk structures.
 
 ```{hint}
-You can make an `Atoms` object from common files like a CIF, XYZ, or POSCAR by using the [`ase.io.read`](https://wiki.fysik.dtu.dk/ase/ase/io/io.html) function. For instance, `from ase.io import read` followed by `atoms = read("</path/to/file>")`.
+You can make an `Atoms` object from common files like a CIF, XYZ, or POSCAR by using the [`ase.io.read`](https://wiki.fysik.dtu.dk/ase/ase/io/io.html) function. For instance, {obj}`from ase.io import read` followed by `atoms = read("</path/to/file>")`.
 ```
 
-With the `Atoms` object defined, we then imported a desired recipe and instantiated it. In this case, since we want to use EMT, we can look in `quacc.recipes.emt` to see all the available recipes. We are interested in a static calculation so we imported the `static_job` recipe. We then instantiated and ran the recipe by passing in the `Atoms` object we defined earlier.
+With the `Atoms` object defined, we then imported a desired recipe and instantiated it. In this case, since we want to use EMT, we can look in {obj}`quacc.recipes.emt` to see all the available recipes. We are interested in a static calculation so we imported the {obj}`.emt.core.static_job` recipe. We then instantiated and ran the recipe by passing in the `Atoms` object we defined earlier.
 
 ## A Simple Calculation with GFN2-xTB
 
@@ -58,7 +58,7 @@ result = relax_job(atoms, method="GFN2-xTB")
 print(result)
 ```
 
-Here, we have imported the `relax_job` recipe from `quacc.recipes.tblite`. Most recipes have several optional keyword arguments that you can specify. In this example, the `method="GFN2-xTB"` keyword indicates that we want to use the GFN2-xTB method, which also happened to be the default value.
+Here, we have imported the `.tblite.core.relax_job` recipe. Most recipes have several optional keyword arguments that you can specify. In this example, the `method="GFN2-xTB"` keyword indicates that we want to use the GFN2-xTB method, which also happened to be the default value.
 
 ## A Pair of Serial Calculations
 
