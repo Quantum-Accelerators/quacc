@@ -4,7 +4,6 @@
 
 Quacc is made to directly interface with [Covalent](https://github.com/AgnostiqHQ/covalent), an open-source workflow management and dispatching solution. We will describe only the most important setup instructions here. For full details, refer to the [Covalent documentation](https://covalent.readthedocs.io/en/latest/index.html). Please refer to the Covalent [Discussion Board](https://github.com/AgnostiqHQ/covalent/discussions) for any Covalent-specific questions.
 
-
 ```{note}
 If you plan to use Jobflow as your workflow manager instead of Covalent, you may skip this section.
 ```
