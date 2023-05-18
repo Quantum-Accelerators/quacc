@@ -1,4 +1,4 @@
-name: docs_test
+name: docs
 on:
   push:
     branches:
@@ -13,7 +13,7 @@ env:
 
 jobs:
 
-  docs_test:
+  docs:
 
     runs-on: ubuntu-latest
     steps:
