@@ -11,7 +11,7 @@ start/next
 install/install
 install/codes
 install/covalent
-install/advamced/index
+install/advanced/index
 ```
 
 ```{toctree}
