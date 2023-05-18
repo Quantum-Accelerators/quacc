@@ -23,8 +23,6 @@ Built around the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/i
 
 3. Enable a seamless interface with much of the software infrastructure powering the [Materials Project](https://materialsproject.org).
 
-In short, Quacc is designed to give the user the building blocks necessary to quickly prototype and construct complex quantum-chemical workflows without sacrificing flexibility.
-
 **Disclaimer**: Currently, this package is under active development. Questions and bug reports are always welcome! **Please wait for the upcoming v0.1.0 release to use Quacc with Covalent as your workflow manager**.
 
 ## Installation 🔧
