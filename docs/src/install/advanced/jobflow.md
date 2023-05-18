@@ -1,4 +1,4 @@
-# Optional: Jobflow Setup
+# Jobflow Setup
 
 ## Introduction
 
@@ -6,11 +6,11 @@ While we recommend using [Covalent](https://github.com/AgnostiqHQ/covalent) as t
 
 ## MongoDB Setup
 
-Jobflow and FireWorks both require the use of a database to store calculation results. If you haven't done so already, first create a Mongo database as described in the ["Optional: MongoDB Setup"](covalent.md) section.
+Jobflow and FireWorks both require the use of a database to store calculation results. If you haven't done so already, first create a Mongo database as described in the ["MongoDB Setup"](config_db.md) section.
 
 ## Jobflow DB Setup
 
-If you plan to use Jobflow to write your workflows, you will need to make a `jobflow.yaml` file. This file will generally be formatted like the example below. Fill in the fields with the appropriate values for your MongoDB cluster.
+If you plan to use Jobflow to write your workflows, you will need to make a `jobflow.yaml` file. This file will generally be formatted like the example below. Fill in the fields with the appropriate values for your MongoDB cluster, which is where all your calculation inputs and outputs will be stored.
 
 ```yaml
 JOB_STORE:
@@ -36,7 +36,5 @@ JOB_STORE:
     collection_name: <collection name>
 ```
 
-Finally, you will need to define a `JOBFLOW_CONFIG_FILE` environment variable pointing to the file you made. For instance, in your `~/.bashrc` file, add the following line:
+You will then need to define a `JOBFLOW_CONFIG_FILE` environment variable pointing to the file you made. For instance, in your `~/.bashrc` file, add the following line:
 `export JOBFLOW_CONFIG_FILE="/path/to/my/jobflow.yaml"`.
-
-When a Quacc calculation completes, all the data will be stored in the database you have specified above.

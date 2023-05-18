@@ -17,7 +17,7 @@ If you plan to use DFTB+ with Quacc, you will need to install the code via `cond
 ## EMT
 
 ```{note}
-Effective medium theory (EMT) is a simple method for modeling solids that is predominantly used for prototyping workflows.
+Effective medium theory (EMT) is a simple method for modeling solids that is predominantly used for prototyping workflows. Because it is solely for demonstration purposes, it only supports the following metals: Al, Ni, Cu, Pd, Ag, Pt, and Au.
 ```
 
 No setup needed!

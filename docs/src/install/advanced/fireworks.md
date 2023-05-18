@@ -1,20 +1,26 @@
-# Optional: FireWorks Setup
+# FireWorks Setup
 
 ## Introduction
 
-[FireWorks](https://github.com/materialsproject/fireworks can be used to dispatch and monitor workflows, particularly those made using Jobflow.
+[FireWorks](https://github.com/materialsproject/fireworks) can be used to dispatch and monitor workflows, particularly those made using Jobflow.
 
 To install Quacc with support for FireWorks, run `pip install quacc[fireworks]`.
 
 ## FireWorks DB Setup
 
-If you plan to use FireWorks to dispatch your Jobflow workflows, you will also need to make a few configuration files: `FW_config.yaml`, `my_fworker.yaml`, `my_launchpad.yaml`, and `my_qadapter.yaml`.
+If you plan to use FireWorks to dispatch your Jobflow workflows, you will also need to make a few configuration files: `FW_config.yaml`, `my_fworker.yaml`, `my_launchpad.yaml`, and `my_qadapter.yaml`. To begin, make a directory called `fw_config` where you will store the four files described in greater detail below. The directory structure will look like the following:
 
-To begin, make a directory called `fw_config` where you will store the four files described in greater detail below.
+```text
+fw_config
+├── FW_config.yaml
+├── my_fworker.yaml
+├── my_launchpad.yaml
+└── my_qadapter.yaml
+```
 
 ### FW Config File
 
-For the `FW_config.yaml`, you can use the following template. Make sure to update the path to the `fw_config` folder you made earlier.
+For the `FW_config.yaml`, you can use the following template. Make sure to update the path to the `fw_config` folder where the file resides.
 
 ```yaml
 CONFIG_FILE_DIR: </path/to/fw_config>

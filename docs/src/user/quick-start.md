@@ -2,13 +2,15 @@
 
 In Quacc, each code comes with pre-packaged jobs and workflows, which we call recipes for short. This tutorial walks you through how to use these provided recipes to run simple calculations that can be tested out on your local machine.
 
-Once you understand the basics, you should move on to the ["Using Quacc Covalent"](covalent.md) or ["Using Quacc with Jobflow"](jobflow/jobflow.md) guides to learn how to use Quacc with the a workflow manager, which allows you to stich together and run complex Quacc workflows across distributed computing resources.
+Once you understand the basics, you should move on to the ["Using Quacc with Covalent"](covalent.md) (recommended) or ["Using Quacc with Jobflow"](advanced/jobflow.md) guides to learn how to use Quacc with a workflow manager, which allows you to stich together and run complex Quacc workflows across distributed computing resources.
 
 ## Pre-Requisites
 
 If you are not yet familiar with the ASE `Atoms` object, you should read the [ASE tutorial](https://wiki.fysik.dtu.dk/ase/ase/atoms.html), as this is the main object used to represent molecules and structures within Quacc. Additionally, it is worthwhile to be familiar with the basics of what an ASE `Calculator` is, which is described in more detail [here](https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html).
 
-If you are coming from the Pymatgen ecosystem, there is a module to convert from Pymatgen `Structure`/`Molecule` objects and the ASE `Atoms` object [here](https://pymatgen.org/pymatgen.io.ase.html).
+```{hint}
+If you are coming from the Pymatgen ecosystem, you can use the [`AseAtomsAdaptor` class](https://pymatgen.org/pymatgen.io.ase.html#pymatgen.io.ase.AseAtomsAdaptor) in the `pymatgen.io.ase`module to convert from Pymatgen `Structure`/`Molecule` objects and the ASE `Atoms` object.
+```
 
 ## A Simple Calculation with EMT
 

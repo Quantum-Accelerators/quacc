@@ -1,6 +1,6 @@
 # Advanced Topics
 
-Advanced usage of Quacc.
+Installation instructions for advanced users of Quacc and workflow tools.
 
 ```{toctree}
 config_db
