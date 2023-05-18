@@ -11,13 +11,21 @@ Covalent automatically stores all the inputs and outputs in an SQLite database, 
 An example is shown below for storing the results in a MongoDB. For assistance with setting up a MongoDB of your own, refer to the ["MongoDB Setup"](../../install/advanced/config_db.md) section of the installation instructions.
 
 ```python
+import os
 import covalent as ct
 from maggma.stores import MongoStore
 
 # Connect to the database
 database = "my_db"
 collection_name = "my_collection"
-store = MongoStore(database, collection_name, host="localhost", port=27017, username="my_username", password="my_password")
+store = MongoStore(
+    database,
+    collection_name,
+    host="localhost",
+    port=27017,
+    username="my_username",
+    password="my_password",
+)
 store.connect()
 
 # Fetch the results
@@ -25,7 +33,7 @@ results_dir = ct.get_config()["dispatcher"]["results_dir"]
 docs = []
 for dispatch_id in os.listdir(results_dir):
     result = ct.get_result(dispatch_id).result
-    docs.append({"dispatch_id":dispatch_id, "result": result})
+    docs.append({"dispatch_id": dispatch_id, "result": result})
 
 # Store the results
 with store:
