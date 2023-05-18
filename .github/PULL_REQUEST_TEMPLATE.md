@@ -6,4 +6,4 @@
 -->
 
 - [ ] I have added unit tests to cover my changes.
-- [ ] I have updated the documentation and CHANGELOG accordingly.
+- [ ] I have updated the documentation and `CHANGELOG.md` file accordingly.
