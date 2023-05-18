@@ -10,8 +10,6 @@ Want to get up and running with Quacc as fast possible? Here we go!
 
 ## Demo Workflow 1: A Simple One
 
-Run the following
-
 ```python
 import covalent as ct
 from ase.build import bulk
@@ -52,4 +50,4 @@ result = ct.get_result(dispatch_id, wait=True)
 
 ## What Next?
 
-Read through the docuemntation to learn more about Quacc and how to use it!
+Read through the documentation to learn more about Quacc and how to use it!

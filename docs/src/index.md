@@ -1,5 +1,5 @@
 ```{toctree}
-:caption: Quick Start
+:caption: Test Drive
 :hidden:
 start/demo
 ```
