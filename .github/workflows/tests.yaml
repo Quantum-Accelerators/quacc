@@ -5,6 +5,12 @@ on:
       - main
     paths-ignore:
       - CHANGELOG.md
+      - .gitignore
+      - CODE_OF_CONDUCT.md
+      - LICENSE.md
+      - README.md
+      - .deepsource.toml
+      - docs/**
 
   pull_request:
 
@@ -64,22 +70,3 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml
-
-  docs:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Install pandoc
-        run: sudo apt-get install pandoc
-
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
-
-      - name: Install dependencies
-        run: |
-          pip install .[strict,docs]
-
-      - name: Build
-        run: sphinx-build docs/src docs_build
