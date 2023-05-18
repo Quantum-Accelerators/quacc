@@ -1,8 +1,7 @@
 name: tests
 on:
   push:
-    branches:
-      - main
+    branches: [main]
     paths-ignore:
       - CHANGELOG.md
       - .gitignore
@@ -11,24 +10,16 @@ on:
       - README.md
       - .deepsource.toml
       - docs/**
-
   pull_request:
-
   release:
     types: [published]
 
-env:
-  CACHE_NUMBER: 0
-
 jobs:
-
-  test:
-
+  tests:
     strategy:
       fail-fast: true
       matrix:
         python-version: ['3.8', '3.9']
-
     runs-on: ubuntu-latest
 
     defaults:
@@ -36,6 +27,7 @@ jobs:
         shell: bash -l {0}
 
     steps:
+      - name: Check out repo
       - uses: actions/checkout@v3
 
       - name: Set up Python
@@ -56,7 +48,6 @@ jobs:
           pip install .[strict,dev]
           pip install chardet
           pip install pytest-cov
-        id: cache
 
       - name: Install conda packages
         run: |
@@ -96,5 +87,5 @@ jobs:
           python setup.py sdist bdist_wheel
           twine upload --skip-existing dist/*.tar.gz
         env:
-          TWINE_USERNAME: arosen
+          TWINE_USERNAME: __token __
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
