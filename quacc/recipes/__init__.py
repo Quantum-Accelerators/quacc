@@ -1,1 +1,1 @@
-"""Premade recipes for various DFT codes"""
+"""Premade recipes for various codes"""
