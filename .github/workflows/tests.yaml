@@ -9,6 +9,7 @@ on:
       - CODE_OF_CONDUCT.md
       - LICENSE.md
       - README.md
+      - .deepsource.toml
       - docs/**
 
   pull_request:
