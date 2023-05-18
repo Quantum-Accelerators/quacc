@@ -16,6 +16,15 @@ If you are not yet familiar with the ASE [`Atoms`](https://wiki.fysik.dtu.dk/ase
 If you are coming from the Pymatgen ecosystem, you can use the [`AseAtomsAdaptor`](https://pymatgen.org/pymatgen.io.ase.html#pymatgen.io.ase.AseAtomsAdaptor) class in the `pymatgen.io.ase` module to convert between Pymatgen `Structure`/`Molecule` objects and the ASE `Atoms` object.
 ```
 
+{obj}`AseAtomsAdaptor`
+{obj}`.AseAtomsAdaptor`
+{class}`AseAtomsAdaptor`
+{class}`.AseAtomsAdaptor`
+{obj}`pymatgen.io.ase`
+{obj}`quacc.recipes.emt.core.static_job`
+{obj}`quacc.recipes.emt.core`
+{obj}`.emt.core.static_job`
+
 ## A Simple Calculation with EMT
 
 Let's start with a simple example. Here, we will use a cheap calculator based on [effective medium theory (EMT)](<https://doi.org/10.1016/0039-6028(96)00816-3>) to run a static calculation on a bulk structure of copper, as shown below.
@@ -39,10 +48,6 @@ You can make an `Atoms` object from common files like a CIF, XYZ, or POSCAR by u
 ```
 
 With the `Atoms` object defined, we then imported a desired recipe and instantiated it. In this case, since we want to use EMT, we can look in `quacc.recipes.emt` to see all the available recipes. We are interested in a static calculation so we imported the `static_job` recipe. We then instantiated and ran the recipe by passing in the `Atoms` object we defined earlier.
-
-{module}`quacc.recipes.emt`
-{function}`quacc.recipes.emt.core.static_job`
-{class}`quacc.recipes.emt.slabs.BulkToSlabsFlow`
 
 ## A Simple Calculation with GFN2-xTB
 
