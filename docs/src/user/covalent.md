@@ -10,9 +10,9 @@ If you prefer to use Jobflow and/or FireWorks, skip to the ["Using Quacc with Jo
 
 Make sure you completed the ["Covalent Setup"](../install/covalent.md) section of the documentation. If you haven't done so already, run `covalent start` prior to starting these examples to start the Covalent server and UI.
 
-Additionally, you should read the Covalent [First Experiment](https://covalent.readthedocs.io/en/latest/getting_started/first_experiment/index.html) guide to get a sense of how Covalent works. Namely, you should understand the [Covalent Basics](https://covalent.readthedocs.io/en/latest/concepts/basics.html) of the `Electron` and `Lattice` objects, which describe individual compute tasks and workflows, respectively.
+Additionally, you should learn about the [Covalent Basics](https://covalent.readthedocs.io/en/latest/concepts/basics.html) of the `Electron` and `Lattice` objects, which describe individual compute tasks and workflows, respectively.
 
-In Covalent, the `@ct.lattice` decorator indicates that the function is a workflow, and the `@ct.electron` decorator indicates that the function is a job (i.e. an individual compute task). If you plan to use a job scheduling system like Slurm, you can think of each `Electron` as an individual Slurm job. If `Electron` objects are wrapped by a `Lattice`, they will only be executed once the job is dispatched. Conversely, if you do not include the `@ct.lattice` decorator, all the `Electron` objects would behave as normal Python functions.
+In Covalent, the [`@ct.lattice`](https://covalent.readthedocs.io/en/latest/api/lattice.html#covalent.lattice) decorator indicates that the function is a workflow, and the [`@ct.electron`](https://covalent.readthedocs.io/en/latest/api/electrons.html#covalent.electron) decorator indicates that the function is a job (i.e. an individual compute task). If you plan to use a job scheduling system like Slurm, you can think of each `Electron` as an individual Slurm job. If `Electron` objects are wrapped by a `Lattice`, they will only be executed once the job is dispatched. Conversely, if you do not include the `@ct.lattice` decorator, all the `Electron` objects would behave as normal Python functions.
 
 ## Running a Simple Serial Workflow
 

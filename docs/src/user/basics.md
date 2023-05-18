@@ -10,15 +10,15 @@ If you are familiar with ASE and want to dive right into the workflow manager de
 
 ## Pre-Requisites
 
-If you are not yet familiar with the ASE `Atoms` object, you should read the [ASE tutorial](https://wiki.fysik.dtu.dk/ase/ase/atoms.html), as this is the main object used to represent molecules and structures within Quacc. Additionally, it is worthwhile to be familiar with the basics of what an ASE `Calculator` is, which is described in more detail [here](https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html).
+If you are not yet familiar with the ASE [`Atoms`](https://wiki.fysik.dtu.dk/ase/ase/atoms.html) object, you should read the [ASE tutorial](https://wiki.fysik.dtu.dk/ase/ase/atoms.html), as this is the main object used to represent molecules and structures within Quacc. Additionally, it is worthwhile to be familiar with the basics of what an ASE `Calculator` is, which is described in more detail [here](https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html).
 
 ```{hint}
-If you are coming from the Pymatgen ecosystem, you can use the [`AseAtomsAdaptor` class](https://pymatgen.org/pymatgen.io.ase.html#pymatgen.io.ase.AseAtomsAdaptor) in the `pymatgen.io.ase`module to convert from Pymatgen `Structure`/`Molecule` objects and the ASE `Atoms` object.
+If you are coming from the Pymatgen ecosystem, you can use the [`AseAtomsAdaptor`](https://pymatgen.org/pymatgen.io.ase.html#pymatgen.io.ase.AseAtomsAdaptor) class in the `pymatgen.io.ase` module to convert between Pymatgen `Structure`/`Molecule` objects and the ASE `Atoms` object.
 ```
 
 ## A Simple Calculation with EMT
 
-Let's start with a simple example. Here, we will use a cheap calculator based on effective medium theory (EMT) to run a static calculation on a bulk structure of copper, as shown below.
+Let's start with a simple example. Here, we will use a cheap calculator based on [effective medium theory (EMT)](https://doi.org/10.1016/0039-6028(96)00816-3) to run a static calculation on a bulk structure of copper, as shown below.
 
 ```python
 from ase.build import bulk
@@ -35,20 +35,23 @@ print(result)
 Walking through step-by-step, we first defined an `Atoms` object representation of the material we wish to run the calculation on. In this example, we have imported the bulk Cu structure from ASE's predefined library of bulk structures.
 
 ```{hint}
-You can make an `Atoms` object from common files like a CIF, XYZ, or POSCAR by using the `ase.io.read` function. For instance, `from ase.io import read` followed by `atoms = read("</path/to/file>")`.
+You can make an `Atoms` object from common files like a CIF, XYZ, or POSCAR by using the [`ase.io.read`](https://wiki.fysik.dtu.dk/ase/ase/io/io.html) function. For instance, `from ase.io import read` followed by `atoms = read("</path/to/file>")`.
 ```
 
 With the `Atoms` object defined, we then imported a desired recipe and instantiated it. In this case, since we want to use EMT, we can look in `quacc.recipes.emt` to see all the available recipes. We are interested in a static calculation so we imported the `static_job` recipe. We then instantiated and ran the recipe by passing in the `Atoms` object we defined earlier.
 
+{module}`quacc.recipes.emt`
+{function}`quacc.recipes.emt.core.static_job`
+{class}`quacc.recipes.emt.slabs.BulkToSlabsFlow`
+
 ## A Simple Calculation with GFN2-xTB
 
-If molecules are more your thing, let's consider another simple example. Here, we want to run a structure relaxation of a water molecule using the semi-empirical quantum mechanics method called [GFN2-xTB](https://doi.org/10.1021/acs.jctc.8b01176). This method is conveniently available in [`tblite`](https://github.com/tblite/tblite), which we will use here. The demonstration below shows how to run this calculation with Quacc.
+If molecules are more your thing, let's consider another simple example. Here, we want to run a structure relaxation of a water molecule using the semi-empirical quantum mechanics method called [GFN2-xTB](https://doi.org/10.1021/acs.jctc.8b01176). This method is conveniently available in [tblite](https://github.com/tblite/tblite), which we will use here. The demonstration below shows how to run this calculation with Quacc.
 
-Note that for this example, you will need to install `tblite`, which can be done with `pip install quacc[tblite]`, as noted in the ["Calculator Setup"](../install/codes.md) of the installation instructions.
+Note that for this example, you will need to install tblite, which can be done with `pip install quacc[tblite]`, as noted in the ["Calculator Setup"](../install/codes.md) section of the installation instructions.
 
 ```python
 from ase.build import molecule
-
 from quacc.recipes.tblite.core import relax_job
 
 # Make an Atoms object of a water molecule
@@ -81,21 +84,8 @@ result2 = static_job(result1["atoms"], method="GFN2-xTB")
 print(result2)
 ```
 
-By default, the output of all compute jobs in Quacc is a dictionary summarizing the results of the calculation. It always has a key `"atoms"` that contains a copy of the output `Atoms` object. This can be used to pass structure information between jobs, as shown above.
-
-## A Pair of Parallel Calculations
-
-What if you wanted to run two separate calculations in parallel? Well, you might try to do something like the following, but it will run like any normal Python function wherin `atoms2` will not be run until after the calculation on `atoms1` finished.
-
-```python
-from ase.build import bulk, molecule
-from quacc.recipes.emt.core import relax_job
-
-atoms1 = bulk("Cu")
-atoms2 = molecule("N2")
-result1 = relax_job(atoms1)
-result2 = relax_job(atoms2)
-print([result1, result2])
+```{hint}
+The output of most compute jobs in Quacc is a dictionary summarizing the results of the calculation. It always has a key `"atoms"` that contains a copy of the output `Atoms` object. This can be used to pass structure information between jobs.
 ```
 
-To dispatch calculations in a parallel fashion, you need to use a workflow manager, such as [Covalent](covalent.md). Read on to learn how to define workflows with complex connectivity and how to dispatch them across distributed computing resources.
+What happens if the first job fails, however? Then the code will crash, no results will be stored, and you'd have to start from scratch. That'd be sad, but thankfully this is where using a workflow manager, such as [Covalent](covalent.md), can save the day. Read on to learn how to define workflows with complex connectivity and how to dispatch them across distributed computing resources.
