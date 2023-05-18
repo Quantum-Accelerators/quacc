@@ -186,4 +186,4 @@ Covalent will soon have easier ways of modifying the executor of imported `Elect
 
 ## Learn More
 
-That ends the Covalent section of the documentation. If you want to learn more about Covalent, you can read the [Covalent Documentation](https://covalent.readthedocs.io/en/latest/index.html).
+That ends the Covalent section of the documentation. If you want to learn more about Covalent, you can read the [Covalent Documentation](https://covalent.readthedocs.io/en/latest/index.html). Please refer to the Covalent [Discussion Board](https://github.com/AgnostiqHQ/covalent/discussions) for any Covalent-specific questions.

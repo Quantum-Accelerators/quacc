@@ -6,7 +6,7 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
 
 ## With Covalent as the Workflow Manager
 
-Covalent automatically stores all the inputs and outputs in an SQLite database, which you can find at the `"db_path"` when you run `covalent config`, and the results can be queried using the `ct.get_result(<dispath ID>)` syntax. However, if you want to store the results in a different database of your choosing, you can use [`maggma`](https://github.com/materialsproject/maggma) to do so quite easily.
+Covalent automatically stores all the inputs and outputs in an SQLite database, which you can find at the `"db_path"` when you run `covalent config`, and the results can be queried using the `ct.get_result(<dispath ID>)` syntax. However, if you want to store the results in a different database of your choosing, you can use [maggma](https://github.com/materialsproject/maggma) to do so quite easily.
 
 An example is shown below for storing the results in a MongoDB. For assistance with setting up a MongoDB of your own, refer to the ["MongoDB Setup"](../../install/advanced/config_db.md) section of the installation instructions.
 
