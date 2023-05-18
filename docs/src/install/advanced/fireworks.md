@@ -98,4 +98,3 @@ Running `lpad reset` will clear your FireWorks launchpad, so only use this comma
 ```
 
 To check that everything is working right with FireWorks, run `lpad reset` to ensure there is a connection to the database.
-
