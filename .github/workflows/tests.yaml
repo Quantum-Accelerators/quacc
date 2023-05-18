@@ -5,6 +5,10 @@ on:
       - main
     paths-ignore:
       - CHANGELOG.md
+      - .gitignore
+      - CODE_OF_CONDUCT.md
+      - LICENSE.md
+      - README.md
       - docs/**
 
   pull_request:
