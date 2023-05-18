@@ -20,6 +20,7 @@ If you are coming from the Pymatgen ecosystem, you can use the {class}`pymatgen.
 {obj}`ase.Atoms`
 {obj}`Atoms`
 {obj}`static_job`
+{obj}`.Atoms`
 
 ## A Simple Calculation with EMT
 
