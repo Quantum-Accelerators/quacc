@@ -4,7 +4,7 @@
 Just getting started? Try using the EMT or LJ recipes before worrying about setting up one of the calculators below.
 ```
 
-Here, we outline how to ensure that Quacc can run the quantum chemistry package of your choosing. You only need to follow the instructions for the code(s) you intend to use. All environment variables should be set on the machine where you wish to run Quacc calculations.
+Here, we outline how to ensure that Quacc can run the quantum chemistry package of your choosing. You only need to follow the instructions for the code(s) you intend to use.
 
 ## DFTB+
 
@@ -33,7 +33,7 @@ As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculator
 ## GULP
 
 ```{note}
-GULP is especially useful for periodic GFN-FF calculations and force field methods. GULP can be downloaded and installed [here](https://gulp.curtin.edu.au/).
+[GULP](https://gulp.curtin.edu.au/) is especially useful for periodic GFN-FF calculations and force field methods. GULP can be downloaded and installed [here](https://gulp.curtin.edu.au/download.html).
 ```
 
 As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/gulp.html), you must set the environment variables `GULP_LIB="/path/to/my/gulp-#.#.#/Libraries"` and `ASE_GULP_COMMAND="/path/to/my/gulp-#.#.#/Src/gulp < gulp.gin > gulp.got"` based on where you installed GULP.
@@ -41,7 +41,7 @@ As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculator
 ## Lennard Jones
 
 ```{note}
-Lennard Jones (LJ) is an empirical potential that is predominantly used for prototyping workflows for molecules.
+[Lennard Jones (LJ)](https://en.wikipedia.org/wiki/Lennard-Jones_potential) is an empirical potential that is predominantly used for prototyping workflows for molecules.
 ```
 
 No setup needed!
@@ -49,7 +49,7 @@ No setup needed!
 ## ORCA
 
 ```{note}
-ORCA is a free code that is especially useful for molecular DFT calculations with recently developed methods. ORCA can be downloaded and installed [here](https://orcaforum.kofo.mpg.de/app.php/portal).
+[ORCA](https://orcaforum.kofo.mpg.de/app.php/portal) is a free code that is especially useful for molecular DFT calculations with recently developed methods. ORCA can be downloaded and installed [here](https://orcaforum.kofo.mpg.de/app.php/dlext/).
 ```
 
 As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/orca.html), to use ORCA in parallel mode, you will need to define an environment variable named `ASE_ORCA_COMMAND`. It should be of the form `ASE_ORCA_COMMAND="/path/to/my/orca orca.inp > orca.out"`.
