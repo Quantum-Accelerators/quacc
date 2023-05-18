@@ -1,4 +1,4 @@
 """Version handling"""
-from pkg_resources import get_distribution
+from importlib.metadata import version
 
-__version__ = get_distribution("quacc").version
+__version__ = version("quacc")
