@@ -17,4 +17,5 @@ Atomate2 is a database-first approch to materials science workflows. Quacc suppo
 Despite these differences, Quacc and Atomate2 are largely interoperable! Feel free to stitch together workflows from both codes as you see fit!
 
 **Q: Can I contribute to Quacc?**
+
 A: Yes! Please do!

@@ -113,7 +113,7 @@ print(result)
 We have imported to the `BulkToSlabsFlow` class, which is instantiated with optional parameters and is applied to an `Atoms` object. Here, for demonstration purposes, we specify the `slab_static_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to use the workflow is wrap it inside a `@ct.lattice` decorator.
 
 ```{hint}
-As a general rule, all classes in Quacc are workflows that can be transformed into a `Lattice`, and all functions are compute tasks that can be transformed into `Electron` objects. We don't need to use `@ct.electron` decorators here because the `BulkToSlabsFlow` class is already calling `Electron` objects internally.
+You don't need to set `wait=True` in practice. Once you call `ct.dispatch`, the workflow will begin running. The `ct.get_result` function is used to fetch the workflow status and results from the server.
 ```
 
 If you want to understand what is going on underneath the hood, it is worth checking out the source code. Because the number of slabs is not pre-determined, this recipe is using a Covalent feature called a [Sublattice](https://covalent.readthedocs.io/en/latest/concepts/basics.html?highlight=sublattice#sublattice) that enables [dynamic workflows](https://covalent.readthedocs.io/en/latest/developer/patterns/dynamic_workflow.html?highlight=dynamic).

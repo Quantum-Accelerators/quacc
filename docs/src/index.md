@@ -17,7 +17,7 @@ install/advanced/index
 ```{toctree}
 :caption: User Guide
 :hidden:
-user/quick-start
+user/basics
 user/covalent
 user/settings
 user/advanced/index
