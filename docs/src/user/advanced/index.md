@@ -1,6 +1,6 @@
-# Jobflow and FireWorks
+# Advanced Topics
 
-The section gives the instructions for how to use Quacc with Jobflow and FireWorks.
+Instructions for advaned topics when using Quacc.
 
 ```{toctree}
 database
