@@ -71,7 +71,7 @@ How to install Quacc and its dependencies.
 :::
 
 :::{grid-item-card}
-:link: user/quick-start
+:link: user/basics
 :link-type: doc
 :class-header: bg-light
 **User Guide**
