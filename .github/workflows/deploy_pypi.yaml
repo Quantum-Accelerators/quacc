@@ -1,0 +1,35 @@
+name: deploy
+
+on:
+  workflow_run:
+    workflows: [tests]
+    types:
+      - completed
+jobs:
+
+  deploy-pypi:
+
+    # only run if commit is tagged as a version and the docs finished
+    if: ${{ github.repository_owner == 'arosen93' && startsWith(github.event.workflow_run.head_branch, 'v') }}
+    runs-on: ubuntu-latest
+    needs:
+      - deploy-docs
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Build
+        run: |
+          pip install setuptools setuptools_scm wheel
+          python setup.py sdist bdist_wheel
+      - name: Publish
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_PASSWORD }}
