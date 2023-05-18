@@ -1,12 +1,18 @@
 ```{toctree}
+:caption: Quick Start
+:hidden:
+start/demo
+start/next
+```
+
+```{toctree}
 :caption: Installation Guide
 :hidden:
 install/install
 install/codes
 install/covalent
 install/config_db
-install/jobflow/jobflow
-install/jobflow/fireworks
+install/jobflow/index
 ```
 
 ```{toctree}
@@ -16,8 +22,7 @@ user/quick-start
 user/covalent
 user/database
 user/settings
-user/jobflow/jobflow
-user/jobflow/fireworks
+user/jobflow/index
 ```
 
 ```{toctree}
