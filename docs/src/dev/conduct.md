@@ -1,7 +1,5 @@
 # Code of Conduct
 
-Adopted from: [https://www.contributor-covenant.org](https://www.contributor-covenant.org)
-
 ## Our Pledge
 
 We as members, contributors, and leaders pledge to make participation in our

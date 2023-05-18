@@ -9,3 +9,7 @@ Quacc was designed and developed by:
 ## Contributors
 
 Additional contributions were made by the individuals listed [here](https://github.com/arosen93/quacc/graphs/contributors).
+
+## Inspiration
+
+Quacc was originally inspired by [Atomate2](https://github.com/materialsproject/atomate2), developed by [Alex Ganose](https://www.imperial.ac.uk/people/a.ganose).
