@@ -18,7 +18,7 @@ If you are coming from the Pymatgen ecosystem, you can use the [`AseAtomsAdaptor
 
 ## A Simple Calculation with EMT
 
-Let's start with a simple example. Here, we will use a cheap calculator based on [effective medium theory (EMT)](https://doi.org/10.1016/0039-6028(96)00816-3) to run a static calculation on a bulk structure of copper, as shown below.
+Let's start with a simple example. Here, we will use a cheap calculator based on [effective medium theory (EMT)](<https://doi.org/10.1016/0039-6028(96)00816-3>) to run a static calculation on a bulk structure of copper, as shown below.
 
 ```python
 from ase.build import bulk
