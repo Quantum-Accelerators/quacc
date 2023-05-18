@@ -1,0 +1,30 @@
+name: deploy_docs
+
+on:
+  workflow_run:
+    workflows: [docs]
+    types:
+      - completed
+jobs:
+  deploy-docs:
+    if: ${{ github.repository_owner == 'arosen93' && github.event.workflow_run.conclusion == 'success'}}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+      - name: Install pandoc
+        run: sudo apt-get install pandoc
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Install dependencies
+        run: |
+          pip install .[strict,docs]
+      - name: Build
+        run: sphinx-build docs/src docs_build
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs_build
