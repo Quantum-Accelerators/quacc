@@ -4,7 +4,7 @@
 
 ---
 
-# Quacc – The Quantum Accelerator
+# Quacc – The Quantum Accelerator 🦆
 
 ![tests](https://github.com/arosen93/quacc/actions/workflows/tests.yaml/badge.svg)
 [![codecov](https://codecov.io/gh/arosen93/quacc/branch/main/graph/badge.svg?token=BCKGTD89H0)](https://codecov.io/gh/arosen93/quacc)
@@ -27,7 +27,7 @@ In short, Quacc is designed to give the user the building blocks necessary to qu
 
 **Disclaimer**: Currently, this package is under active development. Questions and bug reports are always welcome! **Please wait for the upcoming v0.1.0 release to use Quacc with Covalent as your workflow manager**.
 
-## Installation
+## Installation 🔧
 
 Quacc can be installed as follows:
 
@@ -35,16 +35,14 @@ Quacc can be installed as follows:
 pip install git+https://github.com/arosen93/quacc.git
 ```
 
-If you plan to use [Covalent](https://github.com/AgnostiqHQ/covalent) with Quacc, then simply run `covalent start` to start the server and UI.
+## Documentation 📖
 
-## Documentation
+[Learn more here!](https://arosen93.github.io/quacc/)
 
-[Read me... please!](https://arosen93.github.io/quacc/)
+## Demonstration ✨
 
-## Demonstration
+Coming soon...
 
-<Coming soon>
-
-## License
+## License ⚖️
 
 Quacc is released under a [modified BSD license](https://github.com/arosen93/quacc/blob/main/LICENSE.md).
