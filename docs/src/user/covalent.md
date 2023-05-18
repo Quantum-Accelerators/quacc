@@ -1,6 +1,10 @@
 # Using Quacc with Covalent
 
-Here, we will show how to use [Covalent](https://github.com/AgnostiqHQ/covalent) to construct, dispatch, and monitor workflows in Quacc. If you prefer to use Jobflow and/or FireWorks, skip to the ["Using Quacc with Jobflow"](jobflow/jobflow.md) and ["Using Quacc with FireWorks"](jobflow/fireworks.md) sections of the documentation.
+Here, we will show how to use [Covalent](https://github.com/AgnostiqHQ/covalent) to construct, dispatch, and monitor workflows in Quacc.
+
+```{note}
+If you prefer to use Jobflow and/or FireWorks, skip to the ["Using Quacc with Jobflow"](advanced/jobflow.md) and ["Using Quacc with FireWorks"](advanced/fireworks.md) sections of the documentation.
+```
 
 ## Pre-Requisites
 
@@ -8,11 +12,11 @@ Make sure you completed the ["Covalent Setup"](../install/covalent.md) section o
 
 Additionally, you should read the Covalent [First Experiment](https://covalent.readthedocs.io/en/latest/getting_started/first_experiment/index.html) guide to get a sense of how Covalent works. Namely, you should understand the [Covalent Basics](https://covalent.readthedocs.io/en/latest/concepts/basics.html) of the `Electron` and `Lattice` objects, which describe individual compute tasks and workflows, respectively.
 
-In Covalent, the `@ct.lattice` decorator indicates that the function is a workflow, and the `@ct.electron` decorator indicates that the function is a job (i.e. an individual compute task). If you plan to use a job scheduling system like Slurm, you can think of each `Electron` as an individual Slurm job. If `Electron` objects are wrapped by a `Lattice`, they will only be executed once the job is dispatched. Conversely, if you did not include the `@ct.lattice` decorator, all the `Electron` objects would behave as normal Python functions.
+In Covalent, the `@ct.lattice` decorator indicates that the function is a workflow, and the `@ct.electron` decorator indicates that the function is a job (i.e. an individual compute task). If you plan to use a job scheduling system like Slurm, you can think of each `Electron` as an individual Slurm job. If `Electron` objects are wrapped by a `Lattice`, they will only be executed once the job is dispatched. Conversely, if you do not include the `@ct.lattice` decorator, all the `Electron` objects would behave as normal Python functions.
 
 ## Running a Simple Serial Workflow
 
-Here, we will try running a simple workflow where we relax a bulk Cu structure using EMT and take the output of that calculation as the input to a follow-up static calculation with EMT. This example is shown below.
+We will first try running a simple workflow where we relax a bulk Cu structure using EMT and take the output of that calculation as the input to a follow-up static calculation with EMT.
 
 ```python
 import covalent as ct
@@ -26,7 +30,7 @@ def workflow(atoms):
     # Define Job 1
     result1 = relax_job(atoms)
 
-    # Define Job 2
+    # Define Job 2 take the output of Job 1 as input
     result2 = static_job(result1["atoms"])
 
     return result2
@@ -43,9 +47,13 @@ result = ct.get_result(dispatch_id, wait=True)
 print(result)
 ```
 
-Here, you can see that it is quite trivial to set up a workflow using the recipes within Quacc. We define the full workflow as a `Lattice` object and stitch together the individual workflow steps. By default, all Quacc recipe functions are `Electron` objects, so we didn't need to use the `@ct.electron` decorator around the functions here.
+You can see that it is quite trivial to set up a workflow using the recipes within Quacc. We define the full workflow as a `Lattice` object and stitch together the individual workflow steps.
 
-Covalent will also automatically construct a directed acyclic graph of the inputs and outputs for each calculation to determine which jobs are dependent on one another and the order the jobs should be run. In this example, Covalent will know not to run `job2` until `job1` has completed. While that may seem obvious here, this can be quite powerful when you start to construct more complex workflows and start to dispatch individual `Electron` calculations on remote compute resources.
+```{hint}
+By default, all Quacc recipe functions are imported as `Electron` objects, so we didn't need to use the `@ct.electron` decorator around the individual functions here.
+```
+
+Covalent will also automatically construct a directed acyclic graph of the inputs and outputs for each calculation to determine which jobs are dependent on one another and the order the jobs should be run. In this example, Covalent will know not to run `job2` until `job1` has completed successfully.
 
 ### Running a Simple Parallel Workflow
 
@@ -60,7 +68,7 @@ from quacc.recipes.emt.core import relax_job
 @ct.lattice
 def workflow(atoms1, atoms2):
 
-    # Define two separate relaxation jobs
+    # Define two independent relaxation jobs
     result1 = relax_job(atoms1)
     result2 = relax_job(atoms2)
 
@@ -80,11 +88,9 @@ print(result)
 
 ### Running Workflows with Complex Connectivity
 
-Now that you understand how to write and run simple workflows consisting of Quacc recipes, let's consider a more complex example.
-
 For this example, let's consider a toy scenario where we wish to relax a bulk Cu structure, carve all possible slabs, and then run a new relaxation calculation on each slab.
 
-In Quacc, there are two types of recipes: 1) individual compute tasks that are functions; 2) defined workflows that are classes. Here, we are interested in importing a workflow, so it will be instantiated slightly differently from the prior examples. See the example below:
+In Quacc, there are two types of recipes: 1) individual compute tasks that are functions; 2) workflows that are classes. Here, we are interested in importing a workflow, so it will be instantiated slightly differently from the prior examples. See the example below:
 
 ```python
 import covalent as ct
@@ -104,13 +110,23 @@ result = ct.get_result(dispatch_id, wait=True)
 print(result)
 ```
 
-Here, we have imported to the `BulkToSlabsFlow` class, which is instantiated with optional parameters and is applied to an `Atoms` object. Here, for demonstration purposes, we specify the `static_electron=None` option to only do a relaxation after the slabs are made. All we have to do to use the workflow is wrap it inside a `@ct.lattice` decorator. We don't need to use a `@ct.electron` decorator here because the `BulkToSlabsFlow` class is already calling `Electron` objects internally. As a general rule, all classes in Quacc are workflows that can be transformed into a `Lattice`, and all functions are compute tasks that can be transformed into `Electron` objects.
+We have imported to the `BulkToSlabsFlow` class, which is instantiated with optional parameters and is applied to an `Atoms` object. Here, for demonstration purposes, we specify the `slab_static_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to use the workflow is wrap it inside a `@ct.lattice` decorator.
 
-If you want to understand what is going on underneath the hood, it is worth checking out the source code. Because the number of slabs is not pre-determined, this recipe is using a Covalent feature called a [Sublattice](https://covalent.readthedocs.io/en/latest/concepts/basics.html?highlight=sublattice#sublattice) that enables [dynamic workflows](https://covalent.readthedocs.io/en/latest/tutorials/3_QuantumChemistry/dynamic_quantum_chemistry/source.html). Of course, if you don't plan to develop new dynamic workflows, you don't actually need to know this. You can just import the recipe that makes use of this feature and away you go.
+```{hint}
+As a general rule, all classes in Quacc are workflows that can be transformed into a `Lattice`, and all functions are compute tasks that can be transformed into `Electron` objects. We don't need to use `@ct.electron` decorators here because the `BulkToSlabsFlow` class is already calling `Electron` objects internally.
+```
+
+If you want to understand what is going on underneath the hood, it is worth checking out the source code. Because the number of slabs is not pre-determined, this recipe is using a Covalent feature called a [Sublattice](https://covalent.readthedocs.io/en/latest/concepts/basics.html?highlight=sublattice#sublattice) that enables [dynamic workflows](https://covalent.readthedocs.io/en/latest/developer/patterns/dynamic_workflow.html?highlight=dynamic).
+
+```{seealso}
+To learn more about how to construct dynamic workflows in Covalent, see [this tutorial](https://covalent.readthedocs.io/en/latest/tutorials/3_QuantumChemistry/dynamic_quantum_chemistry/source.html) that I made.
+```
 
 ## Setting Executors
 
-By defualt, Covalent will run all `Electron` tasks on your local machine using the [`DaskExecutor`](https://covalent.readthedocs.io/en/latest/api/executors/dask.html). This is a parameter that you can control. For instance, you may want to define the executor to be based on [Slurm](https://covalent.readthedocs.io/en/latest/api/executors/slurm.html) to submit a job to an HPC cluster. The example below highlights how one can change the executor for individual jobs.
+By defualt, Covalent will run all `Electron` tasks on your local machine using the [`DaskExecutor`](https://covalent.readthedocs.io/en/latest/api/executors/dask.html). This is a parameter that you can control. For instance, you may want to define the executor to be based on [Slurm](https://covalent.readthedocs.io/en/latest/api/executors/slurm.html) to submit a job to an HPC cluster. The example below highlights how one can change the executor.
+
+### Setting Executors via the Lattice Object
 
 If you want to use the same executor for all the `Electron` objects in a `Lattice`, you can pass the `executor` keyword argument to the `@ct.lattice` decorator, as shown below.
 
@@ -133,7 +149,9 @@ result = ct.get_result(dispatch_id, wait=True)
 print(result)
 ```
 
-If you construct workflow from scratch, you can also set the executor for individual `Electron` objects by passing the `executor` keyword argument to the `@ct.electron` decorator. In Quacc, the `Electron` executor options can be modified after they are imported as follows:
+### Setting Executors via the Electron Objects
+
+The `Electron` executor options can be modified after they are imported as follows:
 
 ```python
 import covalent as ct
@@ -156,6 +174,14 @@ atoms = bulk("Cu")
 dispatch_id = ct.dispatch(workflow)(atoms)
 result = ct.get_result(dispatch_id, wait=True)
 print(result)
+```
+
+```{hint}
+If you are writing your own workflows, you can set the executor for individual `Electron` objects by passing the `executor` keyword argument to the `@ct.electron` decorator.
+```
+
+```{note}
+Covalent will soon have easier ways of modifying the executor of imported `Electron` objects, as discussed [here](https://github.com/AgnostiqHQ/covalent/issues/1647).
 ```
 
 ## Learn More

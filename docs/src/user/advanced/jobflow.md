@@ -2,9 +2,9 @@
 
 ## Introduction
 
-[Jobflow](https://github.com/materialsproject/jobflow) is a program developed by the Materials Project to write computational workflows. It can be used in place of Covalent, if preferred.
+[Jobflow](https://github.com/materialsproject/jobflow) is a program developed by the [Materials Project](https://materialsproject.org/) team to write computational workflows. It can be used in place of Covalent, if preferred.
 
-Make sure you completed the ["Optional: Jobflow Setup"](../install/jobflow.md) and ["Optional: FireWorks Setup"](../install/fireworks.md) sections of the installation instructions. Additionally, you should read the Jobflow [Quick Start](https://materialsproject.github.io/jobflow/tutorials/1-quickstart.html) to get a sense of how Jobflow works. Namely, you should understand the `Job` and `Flow` definitions, which describe individual compute tasks and workflows, respectively.
+Make sure you completed the ["Jobflow Setup"](../install/advanced/jobflow.md) section of the installation instructions. Additionally, you should read the Jobflow documentation's [Quick Start](https://materialsproject.github.io/jobflow/tutorials/1-quickstart.html) to get a sense of how Jobflow works. Namely, you should understand the `Job` and `Flow` definitions, which describe individual compute tasks and workflows, respectively.
 
 ### Example 1: Running a Job
 
@@ -25,7 +25,11 @@ result = responses[job.uuid][1].output
 print(result)
 ```
 
-The key thing to note is that we need to transform the Quacc recipe, which is a normal function, into a `jobflow` `Job` object. This can be done using the `@job` decorator and a new function definition or, more compactly, via `jf.job(<function>)`. We chose to run the job locally, but other workflow managers can be imported and used, as we discuss for FireWorks further below.
+The key thing to note is that we need to transform the Quacc recipe, which is a normal function, into a `jobflow` `Job` object. This can be done using the `@job` decorator and a new function definition or, more compactly, via `jf.job(<function>)`. We chose to run the job locally, but other workflow managers supported by Jobflow can be imported and used.
+
+```{note}
+Even though the Quacc recipes are defined as Covalent `Electron` objects via the `@ct.electron` decorator, this decorator will be ignored when using Jobflow.
+```
 
 ### Example 2: Running a Flow
 
@@ -52,7 +56,11 @@ Like before, we need to define the individual `Job` objects. Now though, we must
 
 ### Known Limitations
 
-Jobflow cannot easily be used with Quacc recipes that involve classes (particularly those involving dynamic workflows) since they are structured for [Covalent](https://github.com/AgnostiqHQ/covalent). Nonetheless, QuAcc fully supports the development of Jobflow-specific workflows. Refer to the `quacc.recipes.emt.jobflow` module for an example.
+Jobflow cannot easily be used with Quacc recipes that involve classes (particularly those involving dynamic workflows) since they are structured for [Covalent](https://github.com/AgnostiqHQ/covalent). Nonetheless, we fully support the development of Jobflow-specific workflows. Refer to the `quacc.recipes.emt.jobflow` module for an example.
+
+```{hint}
+In short, Jobflow works for all features in Quacc that don't have a @ct.lattice decorator in the recipe.
+```
 
 ### Learn More
 

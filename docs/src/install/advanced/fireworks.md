@@ -91,7 +91,11 @@ Finally, you will need to define a `FW_CONFIG_FILE` environment variable pointin
 
 ### Database Initialization
 
-To check that everything is working right with FireWorks, run `lpad reset` to ensure there is a connection to the database. Note that this will clear your FireWorks launchpad, so only use this command if you are new to FireWorks.
+```{warning}
+Running `lpad reset` will clear your FireWorks launchpad, so only use this command if you are a new user.
+```
+
+To check that everything is working right with FireWorks, run `lpad reset` to ensure there is a connection to the database.
 
 ## Read More
 

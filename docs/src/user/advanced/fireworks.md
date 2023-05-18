@@ -2,7 +2,11 @@
 
 ## Introduction
 
-[FireWorks](https://materialsproject.github.io/fireworks/) is a powerful software package to manage and execute complex workflows. It is best used in tandem with Jobflow because Jobflow comes with native support to convert a `Job` or `Flow` into a FireWorks `firework` or `workflow`, respectively. Refer to the ["Using Quacc with Jobflow"](jobflow.md) before reviewing this section.
+[FireWorks](https://materialsproject.github.io/fireworks/) is a powerful software package to manage and execute complex workflows. It is best used in tandem with Jobflow because Jobflow comes with native support to convert a `Job` or `Flow` into a FireWorks `firework` or `workflow`, respectively.
+
+```{hint}
+Make sure you have completed the ["FireWorks Setup"](../install/advanced/fireworks.md) instructions. Additionally, refer to the ["Using Quacc with Jobflow"](jobflow.md) section before reviewing the content below.
+```
 
 ## Converting a Job to a Firework
 

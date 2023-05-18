@@ -4,6 +4,10 @@ In Quacc, each code comes with pre-packaged jobs and workflows, which we call re
 
 Once you understand the basics, you should move on to the ["Using Quacc with Covalent"](covalent.md) (recommended) or ["Using Quacc with Jobflow"](advanced/jobflow.md) guides to learn how to use Quacc with a workflow manager, which allows you to stich together and run complex Quacc workflows across distributed computing resources.
 
+```{note}
+If you are familiar with ASE and want to dive right into the workflow manager details, you can skip this section.
+```
+
 ## Pre-Requisites
 
 If you are not yet familiar with the ASE `Atoms` object, you should read the [ASE tutorial](https://wiki.fysik.dtu.dk/ase/ase/atoms.html), as this is the main object used to represent molecules and structures within Quacc. Additionally, it is worthwhile to be familiar with the basics of what an ASE `Calculator` is, which is described in more detail [here](https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html).
@@ -28,7 +32,11 @@ result = static_job(atoms)
 print(result)
 ```
 
-Walking through step-by-step, we first defined an `Atoms` object representation of the material we wish to run the calculation on. In this example, we have imported the bulk Cu structure from ASE's predefined library of bulk structures (you could also have read in a `.cif` file using the `ase.io.read` function, for instance).
+Walking through step-by-step, we first defined an `Atoms` object representation of the material we wish to run the calculation on. In this example, we have imported the bulk Cu structure from ASE's predefined library of bulk structures.
+
+```{hint}
+You can make an `Atoms` object from common files like a CIF, XYZ, or POSCAR by using the `ase.io.read` function. For instance, `from ase.io import read` followed by `atoms = read("</path/to/file>")`.
+```
 
 With the `Atoms` object defined, we then imported a desired recipe and instantiated it. In this case, since we want to use EMT, we can look in `quacc.recipes.emt` to see all the available recipes. We are interested in a static calculation so we imported the `static_job` recipe. We then instantiated and ran the recipe by passing in the `Atoms` object we defined earlier.
 
