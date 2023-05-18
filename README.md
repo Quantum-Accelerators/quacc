@@ -39,24 +39,11 @@ If you plan to use [Covalent](https://github.com/AgnostiqHQ/covalent) with Quacc
 
 ## Documentation
 
-[Read me!](https://arosen93.github.io/quacc/)
+[Read me... please!](https://arosen93.github.io/quacc/)
 
-## Minimal Example
+## Demonstration
 
-```python
-import covalent as ct
-from ase.build import bulk
-from quacc.recipes.emt.slabs import BulkToSlabsFlow
-
-@ct.lattice
-def workflow(atoms):
-    relaxed_slabs = BulkToSlabsFlow().run(atoms)
-    return relaxed_slabs
-
-atoms = bulk("Cu")
-dispatch_id = ct.dispatch(workflow)(atoms)
-result = ct.get_result(dispatch_id)
-```
+<Coming soon>
 
 ## License
 
