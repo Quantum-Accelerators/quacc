@@ -11,8 +11,7 @@ start/next
 install/install
 install/codes
 install/covalent
-install/config_db
-install/jobflow/index
+install/advamced/index
 ```
 
 ```{toctree}
@@ -20,9 +19,8 @@ install/jobflow/index
 :hidden:
 user/quick-start
 user/covalent
-user/database
 user/settings
-user/jobflow/index
+user/advanced/index
 ```
 
 ```{toctree}
