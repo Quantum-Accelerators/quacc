@@ -64,7 +64,7 @@ def test_tutorials():
 
     # ------------------------------------------------------------
     @ct.lattice
-    def workflow(atoms1, atoms2):
+    def workflow1(atoms1, atoms2):
         result1 = relax_job(atoms1)
         result2 = relax_job(atoms2)
 
@@ -72,13 +72,13 @@ def test_tutorials():
 
     atoms1 = bulk("Cu")
     atoms2 = molecule("N2")
-    dispatch_id = ct.dispatch(workflow)(atoms1, atoms2)
+    dispatch_id = ct.dispatch(workflow1)(atoms1, atoms2)
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
 
     # ------------------------------------------------------------
     @ct.lattice
-    def workflow(atoms):
+    def workflow2(atoms):
         relaxed_bulk = relax_job(atoms)
         relaxed_slabs = BulkToSlabsFlow(slab_static_electron=None).run(
             relaxed_bulk["atoms"]
@@ -86,19 +86,19 @@ def test_tutorials():
         return relaxed_slabs
 
     atoms = bulk("Cu")
-    dispatch_id = ct.dispatch(workflow)(atoms)
+    dispatch_id = ct.dispatch(workflow2)(atoms)
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
 
     # ------------------------------------------------------------
     @ct.lattice(executor="local")
-    def workflow(atoms):
+    def workflow3(atoms):
         result1 = relax_job(atoms)
         result2 = static_job(result1["atoms"])
         return result2
 
     atoms = bulk("Cu")
-    dispatch_id = ct.dispatch(workflow)(atoms)
+    dispatch_id = ct.dispatch(workflow3)(atoms)
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
 
@@ -112,19 +112,19 @@ def test_tutorials():
         return static_job(atoms)
 
     @ct.lattice
-    def workflow(atoms):
+    def workflow4(atoms):
         output1 = relax_electron(atoms)
         output2 = static_electron(output1["atoms"])
         return output2
 
     atoms = bulk("Cu")
-    dispatch_id = ct.dispatch(workflow)(atoms)
+    dispatch_id = ct.dispatch(workflow4)(atoms)
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
 
     # ------------------------------------------------------------
     @ct.lattice
-    def workflow(atoms):
+    def workflow5(atoms):
         job1 = relax_job
         job1.electron_object.metadata["executor"] = "dask"
 
@@ -136,6 +136,6 @@ def test_tutorials():
         return output2
 
     atoms = bulk("Cu")
-    dispatch_id = ct.dispatch(workflow)(atoms)
+    dispatch_id = ct.dispatch(workflow5)(atoms)
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
