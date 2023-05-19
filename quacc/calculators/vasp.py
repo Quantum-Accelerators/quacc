@@ -35,8 +35,8 @@ class Vasp(Vasp_):
         The Atoms object to be used for the calculation.
     preset
         The path to a .yaml file containing a list of INCAR parameters to use as a "preset"
-        for the calculator. If no filepath is present, it will look in quacc/defaults/calcs/vasp, such
-        that preset="BulkRelaxSet" is supported. It will append .yaml at the end if not present.
+        for the calculator. If a filename is used, it will look in quacc/defaults/calcs/vasp, such
+        that preset="BulkSet" is supported for instance. It will append .yaml at the end if not present.
         Note that any specific kwargs take precedence over the flags set in the preset dictionary.
     custodian
         Whether to use Custodian to run VASP.
