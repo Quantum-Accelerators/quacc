@@ -10,6 +10,7 @@ from atomate2.common.schemas.cclib import TaskDocument
 
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
+from quacc.util.dicts import remove_dict_empties
 
 
 def summarize_run(
@@ -19,6 +20,7 @@ def summarize_run(
     check_convergence: bool = True,
     transition_state: bool = False,
     prep_next_run: bool = True,
+    remove_empties: bool = False,
     additional_fields: dict = None,
 ) -> dict:
     """
@@ -47,6 +49,8 @@ def summarize_run(
     prep_next_run
         Whether the Atoms object storeed in {"atoms": atoms} should be prepared for the next run.
         This clears out any attached calculator and moves the final magmoms to the initial magmoms.
+    remove_empties
+        Whether to remove None values and empty lists/dicts from the TaskDocument.
     additional_fields
         Additional fields to add to the task document.
 
@@ -142,6 +146,10 @@ def summarize_run(
 
     # Create a dictionary of the inputs/outputs
     task_doc = {**atoms_db, **inputs, **results, **additional_fields}
+
+    # Remove empty fields
+    if remove_empties:
+        task_doc = remove_dict_empties(task_doc)
 
     # Sort dict
     task_doc = dict(sorted(task_doc.items()))

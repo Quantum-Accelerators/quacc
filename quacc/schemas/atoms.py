@@ -12,6 +12,7 @@ from monty.json import jsanitize
 from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc.util.atoms import copy_atoms
+from quacc.util.dicts import remove_dict_empties
 
 
 def atoms_to_metadata(
@@ -19,6 +20,7 @@ def atoms_to_metadata(
     get_metadata: bool = True,
     strip_info: bool = False,
     store_pmg: bool = True,
+    remove_empties: bool = False,
 ) -> dict:
     """
     Convert an ASE Atoms object to a dict suitable for storage in MongoDB.
@@ -35,6 +37,8 @@ def atoms_to_metadata(
     store_pmg
         Whether to store the Pymatgen Structure/Molecule object in {"structure": Structure}
         or {"molecule": Molecule}, respectively.
+    remove_empties
+        Whether to remove None values and empty lists/dicts from the TaskDocument.
 
     Returns
     -------
@@ -126,6 +130,9 @@ def atoms_to_metadata(
 
     # Combine the metadata and results dictionaries
     atoms_doc = {**metadata, **results}
+
+    if remove_empties:
+        task_doc = remove_dict_empties(task_doc)
 
     atoms_doc = dict(sorted(atoms_doc.items()))
 

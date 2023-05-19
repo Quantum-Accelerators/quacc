@@ -23,7 +23,7 @@ def summarize_run(
     bader: bool = SETTINGS.VASP_BADER,
     check_convergence: bool = True,
     compact: bool = True,
-    remove_empties: bool = True,
+    remove_empties: bool = False,
     additional_fields: dict = None,
 ) -> dict:
     """
@@ -58,46 +58,17 @@ def summarize_run(
 
     The task document also inherits the following fields from emmet.core.TaskDoc:
         - analysis: AnalysisDoc = Field(None, title="Calculation Analysis", description="Some analysis of calculation data after collection.")
-            - delta_volume
-            - delta_volume_percent
-            - max_force
+            - delta_volume: float = Field(None, title="Volume Change", description="Volume change for the calculation.")
+            - delta_volume_percent: float = Field(None, title="Volume Change Percent", description="Percent volume change for the calculation.")
+            - max_force: float = Field(None, title="Max Force", description="Maximum force on any atom at the end of the calculation.")
+            - warnings: List[str] = Field(None, title="Calculation Warnings",description="Warnings issued after analysis.")
+            - errors: List[str] = Field(None, title="Calculation Errors", description="Errors issued after analysis.")
         - atoms: Atoms = Field(None, title = "The Atoms object from the calculation result.")
         - atoms_info: dict = Field(None, title = "The Atoms object info obtained from atoms.info.")
         - builder_meta: EmmetMeta = Field(default_factory=EmmetMeta, description="Builder metadata."):
             - build_date: str = Field(default_factory=datetime.utcnow, description="The build date for this document.")
             - emmet_version: str = Field(__version__, description="The version of emmet this document was built with.")
             - pymatgen_version: str = Field(pmg_version, description="The version of pymatgen this document was built with.")
-        - xxxx calcs_reversed: List[Calculation] = Field(None, title="Calcs reversed data", description="Detailed data for each VASP calculation contributing to the task document, in reverse order.")
-            - bader: Dict = Field(None, description="Output from the bader software")
-            - calc_type: CalcType = Field(None, description="Return calculation type (run type + task_type).")
-            - completed_at: str = Field(None, description="Timestamp for when the calculation was completed")
-            - dir_name: str = Field(None, description="The directory for this VASP calculation")
-            - has_vasp_completed: Union[TaskState, bool] = Field(None, description="Whether VASP completed the calculation successfully")
-            - input: CalculationInput = Field(None, description="VASP input settings for the calculation")
-                - incar: Dict[str, Any] = Field(None, description="INCAR parameters for the calculation")
-                - is_hubbard: bool = Field(False, description="Is this a Hubbard +U calculation")
-                - kpoints: Union[Dict[str, Any], Kpoints] = Field(None, description="KPOINTS for the calculation")
-                - hubbards: Dict = Field(None, description="The hubbard parameters used")
-                - lattice_rec: Lattice = Field(None, description="Reciprocal lattice of the structure")
-                - nkpoints: int = Field(None, description="Total number of k-points")
-                - potcar: List[str] = Field(None, description="POTCAR symbols in the calculation")
-                - potcar_spec: List[PotcarSpec] = Field(None, description="Title and hash of POTCAR files used in the calculation")
-                - potcar_type: List[str] = Field(None, description="List of POTCAR functional types.")
-                - parameters: Dict = Field(None, description="Parameters from vasprun")
-                - structure: Structure = Field(None, description="Input structure for the calculation")
-            - output: CalculationOutput = Field(None, description="The VASP calculation output")
-                - bandgap: float = Field(None, description="The DFT bandgap for the last calculation")
-                - density: float = Field(..., description="Density of in units of g/cc.")
-                - energy: float = Field(..., description="Total Energy in units of eV.")
-                - energy_per_atom: float = Field(None, description="The final DFT energy per atom for the last calculation")
-                - forces: List[List[float]] = Field(None, description="The force on each atom in units of eV/A^2.")
-                - stress: List[List[float]] = Field(None, description="The stress on the cell in units of kB.")
-                - structure: Structure = Field(None, title="Output Structure", description="Output Structure from the VASP calculation.")
-            - output_file_paths: Dict[str, str] = Field(None, description="Paths (relative to dir_name) of the VASP output files associated with this calculation")
-            - run_type: RunType = Field(None, description="Calculation run type (e.g., HF, HSE06, PBE)")
-            - task_name: str = Field(None, description="Name of task given by custodian (e.g., relax1, relax2)")
-            - task_type: TaskType = Field(None, description="Calculation task type (e.g., Structure Optimization).")
-            - vasp_version: str = Field(None, description="VASP version used to perform the calculation")
         - chemsys: str = Field(None, title="Chemical System", description="dash-delimited string of elements in the material.")
         - composition: Composition = Field(None, description="Full composition for the material.")
         - composition_reduced: Composition = Field(None, title="Reduced Composition", description="Simplified representation of the composition.")
@@ -193,22 +164,29 @@ def summarize_run(
         # input and output details from calcs_reversed
         if "calcs_reversed" in results:
             final_run = results["calcs_reversed"][0]
-            results["input"] = final_run["input"]
-            results["output"] = final_run["output"]
 
             # Store a few additional properties
             results["vasp_version"] = final_run["vasp_version"]
-            results["task_type"] = final_run["task_type"]
             results["run_type"] = final_run["run_type"]
 
             # Then dump the calcs_reversed
             results.pop("calcs_reversed")
 
-        # Remove structure because it's already in the outputs
-        results.pop("structure", None)
-
         # Remove other unnecessary fields
-        results.pop("task_type", None)
+        for k in [
+            "additional_json",
+            "author",
+            "icsd_id",
+            "last_updated",
+            "structure",  # already in outputs
+            "tags",
+            "task_id",
+            "task_label",
+            "transformations",
+            "vasp_objects",
+        ]:
+            results.pop(k, None)
+
         if "output" in results:
             results["output"].pop("elph_displaced_structures", None)
             results["output"].pop("frequency_dependent_dielectric", None)
