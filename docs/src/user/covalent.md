@@ -24,7 +24,7 @@ from ase.build import bulk
 from quacc.recipes.emt.core import relax_job, static_job
 
 # Define the workflow
-@ct.lattice(executor="local")
+@ct.lattice
 def workflow(atoms):
 
     # Define Job 1
