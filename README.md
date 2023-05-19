@@ -44,4 +44,4 @@ Coming soon...
 
 ## License ⚖️
 
-Quacc is released under a [modified BSD license](https://github.com/arosen93/quacc/blob/main/LICENSE.md).
+Quacc is released under a [BSD 3-Clause license](https://github.com/arosen93/quacc/blob/main/LICENSE.md).
