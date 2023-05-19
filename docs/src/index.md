@@ -80,7 +80,7 @@ How to install Quacc and its dependencies.
 :class-header: bg-light
 **User Guide** 🧠
 ^^^
-A walkthrough of how to use the major features of Quacc.
+How to use the major features of Quacc.
 :::
 
 :::{grid-item-card}
