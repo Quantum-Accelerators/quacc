@@ -599,7 +599,7 @@ def test_setups():
     assert calc.parameters["setups"]["Cu"] == "_pv"
 
     atoms = bulk("Cu")
-    Vasp(
+    calc = Vasp(
         atoms,
         setups=os.path.join(FILE_DIR, "test_setups.yaml"),
         preset="BulkSet",
@@ -607,7 +607,7 @@ def test_setups():
     assert calc.parameters["setups"]["Cu"] == "_sv"
 
     atoms = bulk("Cu")
-    Vasp(
+    calc = Vasp(
         atoms,
         setups="setups_pbe54.yaml",
         preset="BulkSet",

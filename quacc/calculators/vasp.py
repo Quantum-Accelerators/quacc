@@ -33,7 +33,8 @@ class Vasp(Vasp_):
     preset
         The name of a .yaml file containing a list of INCAR parameters to use as a "preset" for the calculator.
         Quacc will automatically look in the VASP_PRESET_DIR (default: quacc/presets/vasp) for the file, such
-        that preset="BulkSet" is supported, for instance. The .yaml extension is not necessary.
+        that preset="BulkSet" is supported, for instance. The .yaml extension is not necessary. Any user-suppplied
+        calculator **kwargs will override any corresponding preset values.
     custodian
         Whether to use Custodian to run VASP.
         Default is True in settings.
