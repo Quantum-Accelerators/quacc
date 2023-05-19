@@ -63,8 +63,9 @@ def test_summarize_run():
     # Make sure null are not removed
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
     results = summarize_run(atoms, dir_path=run1, remove_empties=False)
-    assert results["author"] == None
-    assert results["additional_json"] == {}
+    assert "author" not in results
+    assert "additional_json" not in results
+    assert "corrections" in results["custodian"][0]
     assert results["custodian"][0]["corrections"] == []
 
     # Make sure info tags are handled appropriately

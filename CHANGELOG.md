@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [UNRELEASED]
 
+## [0.1.0]
+
 ### Added
 
 - Added optional support for Covalent as the workflow manager.
@@ -32,6 +34,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Switch license to standard BSD-3.
 - Simplified output schema for VASP slab workflows.
 - Fixed type hinting.
+- Changed `removed_empties` default to `False` for the VASP schema.
+- Moved `main` branch to an orphan and started new `main` branch.
 
 ### Fixed
 

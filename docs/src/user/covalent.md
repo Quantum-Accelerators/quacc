@@ -30,7 +30,7 @@ def workflow(atoms):
     # Define Job 1
     result1 = relax_job(atoms)
 
-    # Define Job 2 take the output of Job 1 as input
+    # Define Job 2, which takes the output of Job 1 as input
     result2 = static_job(result1["atoms"])
 
     return result2
@@ -81,7 +81,7 @@ atoms1 = bulk("Cu")
 atoms2 = molecule("N2")
 
 # Dispatch the workflow to the Covalent server
-dispatch_id = ct.dispatch(workflow)(atoms1, atoms1)
+dispatch_id = ct.dispatch(workflow)(atoms1, atoms2)
 
 # Fetch the results from the server
 result = ct.get_result(dispatch_id, wait=True)
@@ -112,7 +112,7 @@ result = ct.get_result(dispatch_id, wait=True)
 print(result)
 ```
 
-We have imported to the {obj}`.emt.slabs.BulkToSlabsFlow` class, which is instantiated with optional parameters and is applied to an `Atoms` object. Here, for demonstration purposes, we specify the `slab_static_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to use the workflow is wrap it inside a `@ct.lattice` decorator.
+We have imported the {obj}`.emt.slabs.BulkToSlabsFlow` class, which is instantiated with optional parameters and is applied to an `Atoms` object. Here, for demonstration purposes, we specify the `slab_static_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to use the workflow is wrap it inside a `@ct.lattice` decorator.
 
 ```{hint}
 You don't need to set `wait=True` in practice. Once you call `ct.dispatch`, the workflow will begin running. The `ct.get_result` function is used to fetch the workflow status and results from the server.
