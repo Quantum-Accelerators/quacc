@@ -60,9 +60,9 @@ Quacc is a flexible platform for high-throughput, database-driven computational 
 :link: start/demo
 :link-type: doc
 :class-header: bg-light
-**Quick Start** 🔧
+**Test Drive** 🏎️
 ^^^
-An easy-to-run demonstration of Quacc.
+Easy-to-run demonstrations of Quacc.
 :::
 
 :::{grid-item-card}
