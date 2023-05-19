@@ -1,0 +1,17 @@
+*.pyc
+*.egg*
+__pycache__
+POTCAR*
+docs_build
+docs/src/reference/*
+scratch_path.txt
+build
+dist
+tmp_path.txt
+quacc-*
+tmp*
+timer.dat
+.mypy_cache*
+.DS_Store
+.ipynb_checkpoints
+ipython_config.py
