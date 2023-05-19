@@ -32,7 +32,7 @@ The most recent release of Quacc can be installed as follows:
 pip install quacc
 ```
 
-To install the development version, run:
+To install the development version (**currently recommended**), run:
 
 ```bash
 pip install git+https://github.com/arosen93/quacc.git
