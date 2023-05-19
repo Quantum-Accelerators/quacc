@@ -193,7 +193,7 @@ def summarize_run(
             bader_stats = run_bader(dir_path)
         except:
             bader_stats = None
-            warnings.warn("Bader analysis could not be performed.")
+            warnings.warn("Bader analysis could not be performed.", UserWarning)
 
         if bader_stats:
             results["bader"] = bader_stats
