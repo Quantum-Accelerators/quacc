@@ -1,11 +1,11 @@
 ```{toctree}
-:caption: Test Drive
+:caption: Test Drive 🏎️
 :hidden:
 start/demo
 ```
 
 ```{toctree}
-:caption: Installation Guide
+:caption: Installation Guide 🔧
 :hidden:
 install/install
 install/codes
@@ -14,29 +14,24 @@ install/advanced/index
 ```
 
 ```{toctree}
-:caption: User Guide
+:caption: User Guide 🧠
 :hidden:
 user/basics
 user/covalent
 user/settings
 user/advanced/index
+user/api/index
 ```
 
 ```{toctree}
-:caption: Reference
-:hidden:
-reference/index
-```
-
-```{toctree}
-:caption: Developer Guide
+:caption: Developer Guide 🤝
 :hidden:
 dev/contributing
 dev/conduct
 ```
 
 ```{toctree}
-:caption: About
+:caption: About 📜
 :hidden:
 about/changelog
 about/contributors
@@ -62,10 +57,19 @@ Quacc is a flexible platform for high-throughput, database-driven computational 
 :gutter: 3
 
 :::{grid-item-card}
+:link: start/demo
+:link-type: doc
+:class-header: bg-light
+**Quick Start** 🔧
+^^^
+An easy-to-run demonstration of Quacc.
+:::
+
+:::{grid-item-card}
 :link: install/install
 :link-type: doc
 :class-header: bg-light
-**Installation Guide**
+**Installation Guide** 🔧
 ^^^
 How to install Quacc and its dependencies.
 :::
@@ -74,22 +78,13 @@ How to install Quacc and its dependencies.
 :link: user/basics
 :link-type: doc
 :class-header: bg-light
-**User Guide**
+**User Guide** 🧠
 ^^^
 A walkthrough of how to use the major features of Quacc.
 :::
 
 :::{grid-item-card}
-:link: reference/index
-:link-type: doc
-:class-header: bg-light
-**API Reference**
-^^^
-A detailed description of the various Quacc modules.
-:::
-
-:::{grid-item-card}
-:link: dev/contributing
+:link: dev/contributing 🤝
 :link-type: doc
 :class-header: bg-light
 **Developer Guide**
