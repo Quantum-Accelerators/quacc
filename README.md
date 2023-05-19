@@ -26,7 +26,13 @@ Built around the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/i
 
 ## Installation 🔧
 
-Quacc can be installed as follows:
+The most recent release of Quacc can be installed as follows:
+
+```bash
+pip install quacc
+```
+
+To install the development version, run:
 
 ```bash
 pip install git+https://github.com/arosen93/quacc.git
