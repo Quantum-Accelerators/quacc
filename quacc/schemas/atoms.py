@@ -132,7 +132,7 @@ def atoms_to_metadata(
     atoms_doc = {**metadata, **results}
 
     if remove_empties:
-        task_doc = remove_dict_empties(task_doc)
+        atoms_doc = remove_dict_empties(atoms_doc)
 
     atoms_doc = dict(sorted(atoms_doc.items()))
 

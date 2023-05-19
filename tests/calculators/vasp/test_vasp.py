@@ -587,32 +587,32 @@ def test_lorbit():
 def test_setups():
     atoms = bulk("Cu")
     calc = Vasp(atoms, preset="BulkSet")
-    assert calc.parameters["setups"]["Cu"] == ""
+    assert calc.parameters["setups"]["Cu"] == "_pv"
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, preset="SlabSet")
     assert calc.parameters["setups"]["Ba"] == "_sv"
-    assert calc.parameters["setups"]["Cu"] == ""
+    assert calc.parameters["setups"]["Cu"] == "_pv"
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, preset="MPScanSet")
     assert calc.parameters["setups"]["Cu"] == "_pv"
 
     atoms = bulk("Cu")
-    Vasp(
+    calc = Vasp(
         atoms,
         setups=os.path.join(FILE_DIR, "test_setups.yaml"),
         preset="BulkSet",
     )
-    assert calc.parameters["setups"]["Cu"] == "_pv"
+    assert calc.parameters["setups"]["Cu"] == "_sv"
 
     atoms = bulk("Cu")
-    Vasp(
+    calc = Vasp(
         atoms,
-        setups="setups_pbe54_MP.yaml",
+        setups="setups_pbe54.yaml",
         preset="BulkSet",
     )
-    assert calc.parameters["setups"]["Cu"] == "_pv"
+    assert calc.parameters["setups"]["Cu"] == ""
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, setups="minimal", preset="MPScanSet")

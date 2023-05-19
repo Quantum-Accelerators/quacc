@@ -7,6 +7,8 @@ from typing import List, Optional
 
 from pydantic import BaseSettings, Field, root_validator
 
+from quacc.presets import vasp as vasp_defaults
+
 _DEFAULT_CONFIG_FILE_PATH = "~/.quacc.yaml"
 
 __all__ = ["QuaccSettings"]
@@ -78,6 +80,10 @@ class QuaccSettings(BaseSettings):
     VASP_VERBOSE: bool = Field(
         True,
         description="If True, warnings will be raised when INCAR parameters are changed.",
+    )
+    VASP_PRESET_DIR: str = Field(
+        os.path.dirname(vasp_defaults.__file__),
+        description="Path to the VASP preset directory",
     )
 
     # VASP Settings: Custodian

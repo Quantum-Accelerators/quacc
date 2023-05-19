@@ -158,23 +158,14 @@ def summarize_run(
         )
 
     if compact:
-        # Replace the InputSummary and OutputSummary with the full
-        # input and output details from calcs_reversed
-        if "calcs_reversed" in results:
-            # Store a few additional properties
-            results["vasp_version"] = results["calcs_reversed"][0]["vasp_version"]
-            results["run_type"] = results["calcs_reversed"][0]["run_type"]
-
-            # Then dump the calcs_reversed
-            results.pop("calcs_reversed")
-
-        # Remove other unnecessary fields
+        # Remove unnecessary fields
         for k in [
             "additional_json",
             "author",
+            "calcs_reversed",
             "icsd_id",
             "last_updated",
-            "structure",  # already in outputs
+            "structure",  # already in output
             "tags",
             "task_id",
             "task_label",
@@ -191,7 +182,7 @@ def summarize_run(
     if bader:
         try:
             bader_stats = run_bader(dir_path)
-        except:
+        except Exception:
             bader_stats = None
             warnings.warn("Bader analysis could not be performed.", UserWarning)
 

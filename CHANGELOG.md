@@ -35,6 +35,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Simplified output schema for VASP slab workflows.
 - Fixed type hinting.
 - Changed `removed_empties` default to `False` for the VASP schema.
+- Use `setups_pbe54_MP` as the default pseudopotentials for the `BulkSet` preset in VASP.
 - Moved `main` branch to an orphan and started new `main` branch.
 
 ### Fixed

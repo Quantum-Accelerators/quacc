@@ -382,7 +382,7 @@ def ideal_gas_thermo(
         }
     """
     for i, f in enumerate(vib_list):
-        if type(f) != complex and f < 0:
+        if not isinstance(f, complex) and f < 0:
             vib_list[i] = complex(0 - f * 1j)
 
     # Get the spin from the Atoms object
