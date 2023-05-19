@@ -32,6 +32,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Switch license to standard BSD-3.
 - Simplified output schema for VASP slab workflows.
 - Fixed type hinting.
+- Moved `main` branch to an orphan and started new `main` branch.
 
 ### Fixed
 
