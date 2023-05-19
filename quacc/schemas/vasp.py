@@ -57,18 +57,17 @@ def summarize_run(
     Dictionary representation of the task document with the following fields:
 
     The task document also inherits the following fields from emmet.core.TaskDoc:
-        - additional_json: Dict[str, Any] = Field(None, description="Additional json loaded from the calculation directory")
         - analysis: AnalysisDoc = Field(None, title="Calculation Analysis", description="Some analysis of calculation data after collection.")
+            - delta_volume
+            - delta_volume_percent
+            - max_force
         - atoms: Atoms = Field(None, title = "The Atoms object from the calculation result.")
         - atoms_info: dict = Field(None, title = "The Atoms object info obtained from atoms.info.")
-        - author: str = Field(None, description="Author extracted from transformations")
         - builder_meta: EmmetMeta = Field(default_factory=EmmetMeta, description="Builder metadata."):
             - build_date: str = Field(default_factory=datetime.utcnow, description="The build date for this document.")
-            - database_version: str = Field(None, description="The database version for the built data.")
             - emmet_version: str = Field(__version__, description="The version of emmet this document was built with.")
             - pymatgen_version: str = Field(pmg_version, description="The version of pymatgen this document was built with.")
-            - pull_request: int = Field(None, description="The pull request number associated with this data build.")
-        - calcs_reversed: List[Calculation] = Field(None, title="Calcs reversed data", description="Detailed data for each VASP calculation contributing to the task document, in reverse order.")
+        - xxxx calcs_reversed: List[Calculation] = Field(None, title="Calcs reversed data", description="Detailed data for each VASP calculation contributing to the task document, in reverse order.")
             - bader: Dict = Field(None, description="Output from the bader software")
             - calc_type: CalcType = Field(None, description="Return calculation type (run type + task_type).")
             - completed_at: str = Field(None, description="Timestamp for when the calculation was completed")
@@ -112,8 +111,6 @@ def summarize_run(
         - entry: ComputedEntry = Field(None, description="The ComputedEntry from the task doc")
         - formula_anonymous: str = Field(None, title="Anonymous Formula", description="Anonymized representation of the formula.")
         - formula_pretty: str = Field(None, title="Pretty Formula", description="Cleaned representation of the formula.")
-        - icsd_id: str = Field(None, description="International crystal structure database id of the structure")
-        - included_objects: List[VaspObject] = Field(None, description="List of VASP objects included with this task document")
         - input: InputDoc = Field(None, description="The input structure used to generate the current task document.")
             - incar: Dict[str, Any] = Field(None, description="INCAR parameters for the calculation")
             - is_hubbard: bool = Field(False, description="Is this a Hubbard +U calculation")
@@ -126,7 +123,6 @@ def summarize_run(
             - potcar_type: List[str] = Field(None, description="List of POTCAR functional types.")
             - parameters: Dict = Field(None, description="Parameters from vasprun")
             - structure: Structure = Field(None, description="Input structure for the calculation")
-        - last_updated: datetime = Field(None, description="Timestamp for the most recent calculation for this task document")
         - nelements: int = Field(None, description="Number of elements.")
         - nid: str = Field(None, title = "The node ID representing the machine where the calculation was run.")
         - nsites: int = Field(None, description="Total number of sites in the structure.")
@@ -138,25 +134,28 @@ def summarize_run(
         - output: OutputDoc = Field(None, description="The exact set of output parameters used to generate the current task document.")
             - bandgap: float = Field(None, description="The DFT bandgap for the last calculation")
             - density: float = Field(..., description="Density of in units of g/cc.")
+            - direct_gap
+            - dos_properties
+            - efermi
             - energy: float = Field(..., description="Total Energy in units of eV.")
             - energy_per_atom: float = Field(None, description="The final DFT energy per atom for the last calculation")
             - forces: List[List[float]] = Field(None, description="The force on each atom in units of eV/A^2.")
+            - ionic_steps
+            - is_gap_direct
+            - mag_density
+            - outcar
+            - run_stats
             - stress: List[List[float]] = Field(None, description="The stress on the cell in units of kB.")
             - structure: Structure = Field(None, title="Output Structure", description="Output Structure from the VASP calculation.")
         - state: TaskState = Field(None, description="State of this calculation")
-        - structure: Structure = Field(None, description="Final output structure from the task")
         - symmetry: SymmetryData = Field(None, description="Symmetry data for this material.")
             - crystal_system: CrystalSystem = Field(None, title="Crystal System", description="The crystal system for this lattice.")
             - number: int = Field(None, title="Space Group Number", description="The spacegroup number for the lattice.")
             - point_group: str = Field(None, title="Point Group Symbol", description="The point group for the lattice.")
             - symbol: str = Field(None, title="Space Group Symbol", description="The spacegroup symbol for the lattice.")
             - symprec: float = Field(None, title="Symmetry Finding Precision", description="The precision given to spglib to determine the symmetry of this lattice.")
-        - tags: Union[List[str], None] = Field([], title="tag", description="Metadata tagged to a given task.")
-        - task_id: str = Field(None, description="The (task) ID of this calculation, used as a universal reference across property documents." "This comes in the form: mp-******.")
-        - task_label: str = Field(None, description="A description of the task")
-        - task_type: Union[CalcType, TaskType] = Field(None, description="The type of calculation.")
-        - transformations: Dict[str, Any] = Field(None, description="Information on the structural transformations, parsed from a transformations.json file")
-        - vasp_objects: Dict[VaspObject, Any] = Field(None, description="Vasp objects associated with this task")
+            - version
+        - vasp_version
         - volume: float = Field(None, title="Volume", description="Total volume for this structure in Angstroms^3.")
 
     If bader is True, the following fields are added:
@@ -169,8 +168,7 @@ def summarize_run(
             - partial_charges: List[float]
             - spin_moments: List[float]
 
-    If compact is False, the following fields are added:
-        -
+    If compact is False, a few redundant, additional fields will be inserted.
     """
 
     additional_fields = additional_fields or {}
@@ -194,7 +192,7 @@ def summarize_run(
         # Replace the InputSummary and OutputSummary with the full
         # input and output details from calcs_reversed
         if "calcs_reversed" in results:
-            final_run = results["calcs_reversed"][-1]
+            final_run = results["calcs_reversed"][0]
             results["input"] = final_run["input"]
             results["output"] = final_run["output"]
 
@@ -208,9 +206,6 @@ def summarize_run(
 
         # Remove structure because it's already in the outputs
         results.pop("structure", None)
-
-        # Remove the entry data since it's redundant
-        results.pop("entry", None)
 
         # Remove other unnecessary fields
         results.pop("task_type", None)
