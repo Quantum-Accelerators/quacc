@@ -30,7 +30,7 @@ def workflow(atoms):
     # Define Job 1
     result1 = relax_job(atoms)
 
-    # Define Job 2 take the output of Job 1 as input
+    # Define Job 2, which takes the output of Job 1 as input
     result2 = static_job(result1["atoms"])
 
     return result2
