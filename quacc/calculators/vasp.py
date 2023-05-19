@@ -15,7 +15,6 @@ from ase.constraints import FixAtoms
 
 from quacc import SETTINGS
 from quacc.custodian import vasp as custodian_vasp
-from quacc.presets import vasp as vasp_defaults
 from quacc.util.atoms import check_is_metal, get_highest_block, set_magmoms
 from quacc.util.calc import _convert_auto_kpts
 from quacc.util.files import load_yaml_calc
