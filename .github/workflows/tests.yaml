@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version: ['3.8', '3.9']
+        python-version: ["3.8", "3.9"]
     runs-on: ubuntu-latest
 
     defaults:
@@ -53,7 +53,7 @@ jobs:
         run: |
           conda install -c psi4 psi4
           conda install -c conda-forge dftbplus==22.2
-      
+
       - name: Set up Covalent server
         run: |
           echo "y" | covalent purge
@@ -61,7 +61,7 @@ jobs:
 
       - name: Run tests with pytest
         run: pytest --cov=quacc --cov-report=xml
-      
+
       - name: Stop Covalent server
         run: |
           covalent stop
