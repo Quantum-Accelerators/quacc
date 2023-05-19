@@ -84,10 +84,10 @@ How to use the major features of Quacc.
 :::
 
 :::{grid-item-card}
-:link: dev/contributing 🤝
+:link: dev/contributing
 :link-type: doc
 :class-header: bg-light
-**Developer Guide**
+**Developer Guide** 🤝
 ^^^
 A guide for how to contribute to Quacc.
 :::
