@@ -105,17 +105,17 @@ def summarize_run(
         - output: OutputDoc = Field(None, description="The exact set of output parameters used to generate the current task document.")
             - bandgap: float = Field(None, description="The DFT bandgap for the last calculation")
             - density: float = Field(..., description="Density of in units of g/cc.")
-            - direct_gap
-            - dos_properties
-            - efermi
+            - direct_gap: float = the direct bandgap (eV)
+            - dos_properties: DosProperties = Field(None, description="DOS properties for the material")
+            - efermi: float = the fermi energy
             - energy: float = Field(..., description="Total Energy in units of eV.")
             - energy_per_atom: float = Field(None, description="The final DFT energy per atom for the last calculation")
             - forces: List[List[float]] = Field(None, description="The force on each atom in units of eV/A^2.")
-            - ionic_steps
-            - is_gap_direct
-            - mag_density
-            - outcar
-            - run_stats
+            - ionic_steps: float = the number of ionic steps
+            - is_gap_direct: bool = if the band gap is direct
+            - mag_density: float = magnetization density
+            - outcar: Outcar = Field(None, description="Pymatgen object representing the OUTCAR file.")
+            - run_stats: Dict = Field(None, description="Runtime statistics from the calculation.")
             - stress: List[List[float]] = Field(None, description="The stress on the cell in units of kB.")
             - structure: Structure = Field(None, title="Output Structure", description="Output Structure from the VASP calculation.")
         - state: TaskState = Field(None, description="State of this calculation")
@@ -126,20 +126,18 @@ def summarize_run(
             - symbol: str = Field(None, title="Space Group Symbol", description="The spacegroup symbol for the lattice.")
             - symprec: float = Field(None, title="Symmetry Finding Precision", description="The precision given to spglib to determine the symmetry of this lattice.")
             - version
-        - vasp_version
+        - vasp_version: str: the version of VASP
         - volume: float = Field(None, title="Volume", description="Total volume for this structure in Angstroms^3.")
 
     If bader is True, the following fields are added:
         - bader
-            - atomic_volume: float
-            - bader_charge: float
-            - bader_spin: float
-            - bader_version: float
-            - min_dist: List[float]
-            - partial_charges: List[float]
-            - spin_moments: List[float]
-
-    If compact is False, a few redundant, additional fields will be inserted.
+            - atomic_volume: float = The atomic volume
+            - bader_charge: float = The net bader charge
+            - bader_spin: float = The net bader spin density
+            - bader_version: float = The bader version
+            - min_dist: List[float] = The bader min_dist parameter
+            - partial_charges: List[float] = The atom-projected bader partial charges
+            - spin_moments: List[float] = The atom-projected bader spin moments
     """
 
     additional_fields = additional_fields or {}
@@ -163,11 +161,9 @@ def summarize_run(
         # Replace the InputSummary and OutputSummary with the full
         # input and output details from calcs_reversed
         if "calcs_reversed" in results:
-            final_run = results["calcs_reversed"][0]
-
             # Store a few additional properties
-            results["vasp_version"] = final_run["vasp_version"]
-            results["run_type"] = final_run["run_type"]
+            results["vasp_version"] = results["calcs_reversed"][0]["vasp_version"]
+            results["run_type"] = results["calcs_reversed"][0]["run_type"]
 
             # Then dump the calcs_reversed
             results.pop("calcs_reversed")
