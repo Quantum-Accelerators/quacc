@@ -94,7 +94,6 @@ def summarize_run(
             - rotation_number: float = Field(None, title="Rotational Symmetry Number", description="Rotational symmetry number for the molecule")
             - point_group: str = Field(None, title="Point Group Symbol", description="The point group for the lattice")
             - tolerance: float = Field(None, title="Point Group Analyzer Tolerance", description="Distance tolerance to consider sites as symmetrically equivalent.")
-
     """
     # Make sure there is a calculator with results
     if not atoms.calc:

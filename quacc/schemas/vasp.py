@@ -164,7 +164,7 @@ def summarize_run(
             - atomic_volume: float
             - bader_charge: float
             - bader_spin: float
-            - bader_versoin: float
+            - bader_version: float
             - min_dist: List[float]
             - partial_charges: List[float]
             - spin_moments: List[float]
@@ -242,7 +242,7 @@ def summarize_run(
     if prep_next_run:
         atoms = prep_next_run_(atoms)
 
-    # We use get_metadata=False because the TaskDocument already
+    # We use get_metadata=False and store_pmg=False because the TaskDocument already
     # makes the structure metadata for us
     atoms_db = atoms_to_metadata(atoms, get_metadata=False, store_pmg=False)
 

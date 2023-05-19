@@ -81,7 +81,7 @@ atoms1 = bulk("Cu")
 atoms2 = molecule("N2")
 
 # Dispatch the workflow to the Covalent server
-dispatch_id = ct.dispatch(workflow)(atoms1, atoms1)
+dispatch_id = ct.dispatch(workflow)(atoms1, atoms2)
 
 # Fetch the results from the server
 result = ct.get_result(dispatch_id, wait=True)
