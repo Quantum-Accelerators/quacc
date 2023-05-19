@@ -1,5 +1,5 @@
 parent_magmoms: magmoms_base.yaml
-parent_setups: setups_pbe54.yaml
+parent_setups: setups_pbe54_MP.yaml
 inputs:
   auto_kpts:
     max_mixed_density: [100, 1000]
