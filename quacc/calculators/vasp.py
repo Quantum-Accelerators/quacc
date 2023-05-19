@@ -20,8 +20,6 @@ from quacc.util.atoms import check_is_metal, get_highest_block, set_magmoms
 from quacc.util.calc import _convert_auto_kpts
 from quacc.util.files import load_yaml_calc
 
-DEFAULT_CALCS_DIR = os.path.dirname(vasp_defaults.__file__)
-
 
 class Vasp(Vasp_):
     """
@@ -34,10 +32,9 @@ class Vasp(Vasp_):
     atoms
         The Atoms object to be used for the calculation.
     preset
-        The path to a .yaml file containing a list of INCAR parameters to use as a "preset"
-        for the calculator. If a filename is used, it will look in quacc/presets/vasp, such
-        that preset="BulkSet" is supported for instance. It will append .yaml at the end if not present.
-        Note that any specific kwargs take precedence over the flags set in the preset dictionary.
+        The name of a .yaml file containing a list of INCAR parameters to use as a "preset" for the calculator.
+        Quacc will automatically look in the VASP_PRESET_DIR (default: quacc/presets/vasp) for the file, such
+        that preset="BulkSet" is supported, for instance. The .yaml extension is not necessary.
     custodian
         Whether to use Custodian to run VASP.
         Default is True in settings.
@@ -94,9 +91,9 @@ class Vasp(Vasp_):
 
         # Get user-defined preset parameters for the calculator
         if preset:
-            calc_preset = load_yaml_calc(os.path.join(DEFAULT_CALCS_DIR, preset))[
-                "inputs"
-            ]
+            calc_preset = load_yaml_calc(
+                os.path.join(SETTINGS.VASP_PRESET_DIR, preset)
+            )["inputs"]
         else:
             calc_preset = {}
 
@@ -114,7 +111,7 @@ class Vasp(Vasp_):
             and user_calc_params["setups"] not in ase_default_setups
         ):
             user_calc_params["setups"] = load_yaml_calc(
-                os.path.join(DEFAULT_CALCS_DIR, user_calc_params["setups"])
+                os.path.join(SETTINGS.VASP_PRESET_DIR, user_calc_params["setups"])
             )["inputs"]["setups"]
 
         # If the preset has auto_kpts but the user explicitly requests kpts, then
