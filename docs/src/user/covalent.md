@@ -112,7 +112,7 @@ result = ct.get_result(dispatch_id, wait=True)
 print(result)
 ```
 
-We have imported to the {obj}`.emt.slabs.BulkToSlabsFlow` class, which is instantiated with optional parameters and is applied to an `Atoms` object. Here, for demonstration purposes, we specify the `slab_static_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to use the workflow is wrap it inside a `@ct.lattice` decorator.
+We have imported the {obj}`.emt.slabs.BulkToSlabsFlow` class, which is instantiated with optional parameters and is applied to an `Atoms` object. Here, for demonstration purposes, we specify the `slab_static_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to use the workflow is wrap it inside a `@ct.lattice` decorator.
 
 ```{hint}
 You don't need to set `wait=True` in practice. Once you call `ct.dispatch`, the workflow will begin running. The `ct.get_result` function is used to fetch the workflow status and results from the server.
