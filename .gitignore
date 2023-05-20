@@ -15,3 +15,5 @@ timer.dat
 .DS_Store
 .ipynb_checkpoints
 ipython_config.py
+*.doctrees*
+*.pickle
