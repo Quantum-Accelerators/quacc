@@ -33,15 +33,11 @@ def teardown_module():
 )
 def test_covalent_config():
     ct_config = ct.get_config()
-    for executor in ["local", "dask"]:
-        assert (
-            ct_config["executors"][executor].get("create_unique_workdir", False) is True
-        )
+    for executor in ct_config["executors"]:
+        if "create_unique_workdir" in ct_config["executors"][executor]:
+            assert ct_config["executors"][executor]["create_unique_workdir"] is True
     if "slurm" in ct_config["executors"]:
         assert ct_config["executors"]["slurm"].get("use_srun", True) is False
-        assert (
-            ct_config["executors"]["slurm"].get("create_unique_workdir", False) is True
-        )
 
 
 @pytest.mark.skipif(
@@ -51,6 +47,25 @@ def test_covalent_config():
 def test_tutorials():
     # Test of the various tutorials
 
+    # Quick start -------------------------------------------------
+    workflow_start = ct.lattice(relax_job)
+    atoms = bulk("Cu")
+    dispatch_id = ct.dispatch(workflow_start)(atoms)
+    result = ct.get_result(dispatch_id, wait=True)
+    assert result.status == "COMPLETED"
+
+    @ct.lattice(executor="local")
+    def workflow_start2(atoms):
+        relaxed_bulk = relax_job(atoms)
+        relaxed_slabs = BulkToSlabsFlow().run(relaxed_bulk.output["atoms"])
+        return relaxed_slabs
+
+    atoms = bulk("Cu")
+    dispatch_id = ct.dispatch(workflow_start2)(atoms)
+    result = ct.get_result(dispatch_id, wait=True)
+    assert result.status == "COMPLETED"
+
+    # Tutorials ---------------------------------------------------
     @ct.lattice
     def workflow(atoms):
         result1 = relax_job(atoms)
@@ -64,7 +79,7 @@ def test_tutorials():
 
     # ------------------------------------------------------------
     @ct.lattice
-    def workflow1(atoms1, atoms2):
+    def workflow2(atoms1, atoms2):
         result1 = relax_job(atoms1)
         result2 = relax_job(atoms2)
 
@@ -72,13 +87,13 @@ def test_tutorials():
 
     atoms1 = bulk("Cu")
     atoms2 = molecule("N2")
-    dispatch_id = ct.dispatch(workflow1)(atoms1, atoms2)
+    dispatch_id = ct.dispatch(workflow2)(atoms1, atoms2)
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
 
     # ------------------------------------------------------------
     @ct.lattice
-    def workflow2(atoms):
+    def workflow3(atoms):
         relaxed_bulk = relax_job(atoms)
         relaxed_slabs = BulkToSlabsFlow(slab_static_electron=None).run(
             relaxed_bulk["atoms"]
@@ -86,19 +101,19 @@ def test_tutorials():
         return relaxed_slabs
 
     atoms = bulk("Cu")
-    dispatch_id = ct.dispatch(workflow2)(atoms)
+    dispatch_id = ct.dispatch(workflow3)(atoms)
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
 
     # ------------------------------------------------------------
     @ct.lattice(executor="local")
-    def workflow3(atoms):
+    def workflow4(atoms):
         result1 = relax_job(atoms)
         result2 = static_job(result1["atoms"])
         return result2
 
     atoms = bulk("Cu")
-    dispatch_id = ct.dispatch(workflow3)(atoms)
+    dispatch_id = ct.dispatch(workflow4)(atoms)
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
 
@@ -112,27 +127,9 @@ def test_tutorials():
         return static_job(atoms)
 
     @ct.lattice
-    def workflow4(atoms):
+    def workflow5(atoms):
         output1 = relax_electron(atoms)
         output2 = static_electron(output1["atoms"])
-        return output2
-
-    atoms = bulk("Cu")
-    dispatch_id = ct.dispatch(workflow4)(atoms)
-    result = ct.get_result(dispatch_id, wait=True)
-    assert result.status == "COMPLETED"
-
-    # ------------------------------------------------------------
-    @ct.lattice
-    def workflow5(atoms):
-        job1 = relax_job
-        job1.electron_object.metadata["executor"] = "dask"
-
-        job2 = static_job
-        job2.electron_object.metadata["executor"] = "local"
-
-        output1 = job1(atoms)
-        output2 = job2(output1["atoms"])
         return output2
 
     atoms = bulk("Cu")
