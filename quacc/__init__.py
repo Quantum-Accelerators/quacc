@@ -40,16 +40,13 @@ SETTINGS = QuaccSettings()
 if ct:
     ct_config = ct.get_config()
 
-    # Ensure that the create_unique_workdir is set to True
-    for executor in ["dask", "local"]:
-        try:
-            create_unique_workdir = ct_config["executors"][executor][
-                "create_unique_workdir"
-            ]
-        except KeyError:
-            create_unique_workdir = None
-
-        if not create_unique_workdir:
+    # Make sure that the create_unique_workdir is set to True for any plugin
+    # where this option exists
+    for executor in ct_config["executors"]:
+        if (
+            "create_unique_workdir" in ct_config["executors"][executor]
+            and ct_config["executors"][executor]["create_unique_workdir"] is not True
+        ):
             print(
                 f"Configuring Covalent... Setting executors.{executor}.create_unique_workdir: True"
             )
@@ -61,26 +58,4 @@ if ct:
         if ct_config["executors"]["slurm"].get("use_srun", True) is not False:
             print("Configuring Covalent... Setting executors.slurm.use_srun: False")
             ct.set_config({"executors.slurm.use_srun": False})
-            ct_config = ct.get_config()
-        if (
-            ct_config["executors"]["slurm"].get("create_unique_workdir", False)
-            is not True
-        ):
-            print(
-                "Configuring Covalent... Setting executors.slurm.create_unique_workdir: True"
-            )
-            ct.set_config({"executors.slurm.create_unique_workdir": True})
-            ct_config = ct.get_config()
-
-    # Make sure that the create_unique_workdir is set to True for any optional plugin
-    # where this option exists, in case we missed any above
-    for executor in ct_config["executors"]:
-        if (
-            "create_unique_workdir" in ct_config["executors"][executor]
-            and ct_config["executors"][executor]["create_unique_workdir"] is not True
-        ):
-            print(
-                f"Configuring Covalent... Setting executors.{executor}.create_unique_workdir: True"
-            )
-            ct.set_config({f"executors.{executor}.create_unique_workdir": True})
             ct_config = ct.get_config()
