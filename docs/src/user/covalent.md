@@ -57,6 +57,8 @@ Covalent will also automatically construct a directed acyclic graph of the input
 
 The job will be dispatched to the Covalent server with the [`ct.dispatch`](https://covalent.readthedocs.io/en/stable/concepts/basics.html#basic-primitives-dispatch) command, which takes in the workflow function and the input arguments to the workflow. The [`ct.get_result`](https://covalent.readthedocs.io/en/stable/concepts/basics.html#result) command is used to fetch the results from the server.
 
+![Covalent UI](../_static/user/tutorial1)
+
 ### Running a Simple Parallel Workflow
 
 Now let's consider a similar but nonetheless distinct example. Here, we will define a workflow where we will carry out two EMT structure relaxations, but the two jobs are not dependent on one another. In this example, Covalent will know that it can run the two jobs separately, and even if Job 1 were to fail, Job 2 would still progress.
@@ -87,6 +89,8 @@ dispatch_id = ct.dispatch(workflow)(atoms1, atoms2)
 result = ct.get_result(dispatch_id, wait=True)
 print(result)
 ```
+
+![Covalent UI](../_static/user/tutorial2)
 
 ### Running Workflows with Complex Connectivity
 
@@ -121,8 +125,10 @@ You don't need to set `wait=True` in practice. Once you call `ct.dispatch`, the 
 If you want to understand what is going on underneath the hood, it is worth checking out the source code. Because the number of slabs is not pre-determined, this recipe is using a Covalent feature called a [Sublattice](https://covalent.readthedocs.io/en/latest/concepts/basics.html?highlight=sublattice#sublattice) that enables [dynamic workflows](https://covalent.readthedocs.io/en/latest/developer/patterns/dynamic_workflow.html?highlight=dynamic).
 
 ```{seealso}
-To learn more about how to construct dynamic workflows in Covalent, see [this tutorial](https://covalent.readthedocs.io/en/latest/tutorials/3_QuantumChemistry/dynamic_quantum_chemistry/source.html) that I made.
+To learn more about how to construct dynamic workflows in Covalent, see [this tutorial](https://covalent.readthedocs.io/en/latest/tutorials/3_QuantumChemistry/dynamic_quantum_chemistry/source.html).
 ```
+
+![Covalent UI](../_static/user/tutorial3)
 
 ## Setting Executors
 

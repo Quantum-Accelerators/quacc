@@ -32,6 +32,8 @@ result = ct.get_result(dispatch_id, wait=True)
 print(result)
 ```
 
+![Covalent UI](../_static/start/start1)
+
 ## Demo Workflow 2: A More Complex One
 
 This demo workflow will relax a bulk Cu structure using the EMT calculator, use the relaxed structure to generate a set of surface slabs, and then run a relaxation and static calculation on each generated slab.
@@ -60,6 +62,10 @@ result = ct.get_result(dispatch_id, wait=True)
 print(result)
 ```
 
+![Covalent UI](../_static/start/start2)
+
 ## What Next?
 
-Read through the documentation to learn more about Quacc and how to use it!
+Read through the documentation to learn more about Quacc and how to use it! And feel free to explore the calculations you just ran in the Covalent UI.
+
+![Covalent UI](../_static/start/ui)

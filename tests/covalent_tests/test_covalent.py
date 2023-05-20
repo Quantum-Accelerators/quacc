@@ -57,7 +57,7 @@ def test_tutorials():
     @ct.lattice(executor="local")
     def workflow_start2(atoms):
         relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = BulkToSlabsFlow().run(relaxed_bulk.output["atoms"])
+        relaxed_slabs = BulkToSlabsFlow().run(relaxed_bulk["atoms"])
         return relaxed_slabs
 
     atoms = bulk("Cu")
