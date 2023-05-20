@@ -1,18 +1,25 @@
+# Quacc specific ignores
+quacc-*
+POTCAR*
+scratch_path.txt
+tmp_path.txt
+tmp*
+
+# Docs ignores
+docs/src/reference/*
+docs_build
+*doctrees*
+
+# Python ignores
 *.pyc
 *.egg*
 __pycache__
-POTCAR*
-docs_build
-docs/src/reference/*
-scratch_path.txt
 build
 dist
-tmp_path.txt
-quacc-*
-tmp*
 timer.dat
 .mypy_cache*
-.DS_Store
 .ipynb_checkpoints
 ipython_config.py
-*doctrees*
+
+# OS ignores
+.DS_Store
