@@ -26,7 +26,7 @@ if __name__ == "__main__":
         install_requires=[
             "ase @ git+https://gitlab.com/ase/ase.git",  # waiting on >3.22.1
             "atomate2[cclib] @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
-            "https://github.com/AgnostiqHQ/covalent.git@refs/pull/1641/head",  # waiting on PR
+            "covalent @ git+https://github.com/AgnostiqHQ/covalent.git@refs/pull/1641/head",  # waiting on PR
             "emmet-core>=0.55.1",
             "jobflow>=0.1.11",
             "maggma>=0.50.4",
@@ -52,7 +52,7 @@ if __name__ == "__main__":
             "strict": [
                 "ase @ git+https://gitlab.com/ase/ase.git",
                 "atomate2[cclib] @ git+https://github.com/materialsproject/atomate2.git",
-                "git+https://github.com/AgnostiqHQ/covalent.git@refs/pull/1641/head",
+                "covalent @ git+https://github.com/AgnostiqHQ/covalent.git@refs/pull/1641/head",
                 # "covalent-slurm-plugin==0.16.0rc0",
                 "custodian==2023.5.12",
                 "emmet-core==0.55.2",
