@@ -51,7 +51,7 @@ if ct:
             create_unique_workdir = None
 
         if not create_unique_workdir:
-            print("Setting executors.{executor}.create_unique_workdir: True")
+            print(f"Setting executors.{executor}.create_unique_workdir: True")
             ct.set_config({f"executors.{executor}.create_unique_workdir": True})
             ct_config = ct.get_config()
 
