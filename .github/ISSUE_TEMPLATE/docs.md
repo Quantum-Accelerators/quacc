@@ -2,6 +2,9 @@
 name: Documentation
 about: Help improve the documentation
 title: ""
+labels: ["documentation"]
 ---
 
-# Proposed change to documentation
+<!--
+Please describe how the docs could be improved.
+-->
