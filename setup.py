@@ -16,7 +16,7 @@ if __name__ == "__main__":
         author="Andrew S. Rosen",
         author_email="asrosen93@gmail.com",
         url="https://github.com/arosen93/quacc",
-        python_requires=">=3.8.0",
+        python_requires=">=3.8.0, <3.10",
         version="0.1.0",
         packages=find_packages(),
         license="BSD-3",
@@ -26,7 +26,7 @@ if __name__ == "__main__":
         install_requires=[
             "ase @ git+https://gitlab.com/ase/ase.git",  # waiting on >3.22.1
             "atomate2[cclib] @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
-            "covalent @ git+https://github.com/AgnostiqHQ/covalent.git@refs/pull/1641/head",  # waiting on PR
+            "covalent>=0.223.1rc0",  # waiting on > 0.222.0
             "emmet-core>=0.55.1",
             "jobflow>=0.1.11",
             "maggma>=0.50.4",
@@ -51,8 +51,9 @@ if __name__ == "__main__":
             "dev": ["black==23.3.0", "isort==5.12.0", "pytest==7.3.1"],
             "strict": [
                 "ase @ git+https://gitlab.com/ase/ase.git",
-                "atomate2[cclib] @ git+https://github.com/materialsproject/atomate2.git",
-                "covalent @ git+https://github.com/AgnostiqHQ/covalent.git@refs/pull/1641/head",
+                "atomate2 @ git+https://github.com/materialsproject/atomate2.git",
+                "cclib==1.7.2",
+                "covalent==0.223.1rc0",
                 # "covalent-slurm-plugin==0.16.0rc0",
                 "custodian==2023.5.12",
                 "emmet-core==0.55.2",

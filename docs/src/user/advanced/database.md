@@ -2,7 +2,7 @@
 
 Oftentimes, it is beneficial to store the results in a database for easy querying (like the example below). There are many ways to achieve this with Quacc depending on your preferences.
 
-![Mongo example](../../_static/schema.gif)
+![Mongo example](../../_static/user/schema.gif)
 
 ## With Covalent as the Workflow Manager
 

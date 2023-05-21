@@ -44,7 +44,7 @@ pip install git+https://github.com/arosen93/quacc.git
 
 ## Demonstration ✨
 
-Coming soon...
+![Demo from Quick Start](docs/src/_static/start/start2.gif)
 
 ## License ⚖️
 

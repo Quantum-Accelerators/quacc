@@ -2,14 +2,12 @@
 name: Issue Report
 about: Raise an issue to help improve Quacc
 title: ""
+labels: ["bug"]
 ---
 
-# What is the Issue?
-
-# Steps to Reproduce the Issue
-
-# Environment
-
-- Quacc version:
-- Python version:
-- Operating system:
+<!--
+Make sure you include the following:
+1. What the issue is.
+2. Steps to reproduce the issue with a minimal working example.
+3. Your environment (Quacc version, Python version, operating system).
+-->
