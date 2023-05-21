@@ -5,5 +5,6 @@
 ⚠️ Make sure to add unit tests to cover any changes.
 -->
 
+- [ ] I have read the [Developer Guide](https://arosen93.github.io/quacc/dev/contributing.html).
 - [ ] I have added unit tests to cover my changes.
 - [ ] I have updated the documentation and `CHANGELOG.md` file accordingly.

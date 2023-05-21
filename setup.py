@@ -21,6 +21,16 @@ if __name__ == "__main__":
         packages=find_packages(),
         license="BSD-3",
         keywords="high-throughput automated workflow dft",
+        classifiers=[
+            "Programming Language :: Python :: 3",
+            "Programming Language :: Python :: 3.8",
+            "Programming Language :: Python :: 3.9",
+            "Development Status :: 3 - Alpha",
+            "Intended Audience :: Science/Research",
+            "Topic :: Scientific/Engineering",
+            "Operating System :: Unix",
+            "Operating System :: MacOS",
+        ],
         data_files=["LICENSE.md"],
         zip_safe=False,
         install_requires=[

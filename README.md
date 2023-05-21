@@ -10,7 +10,6 @@
 [![codecov](https://codecov.io/gh/arosen93/quacc/branch/main/graph/badge.svg?token=BCKGTD89H0)](https://codecov.io/gh/arosen93/quacc)
 [![DeepSource](https://deepsource.io/gh/arosen93/quacc.svg/?label=active+issues&token=O0LvluUkUS6qiQnHXc7BUlHn)](https://deepsource.io/gh/arosen93/quacc/?ref=repository-badge)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/9212eccfd6a144fe8a23efd12a7fb58d)](https://app.codacy.com/gh/arosen93/quacc/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
-[![This project supports Python 3.8+](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org/downloads)
 [![Pypi](https://img.shields.io/pypi/v/quacc)](https://pypi.org/project/quacc)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7720998.svg)](https://doi.org/10.5281/zenodo.7720998)
 
@@ -24,23 +23,18 @@ Built around the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/i
 
 3. Enable a seamless interface with much of the software infrastructure powering the [Materials Project](https://materialsproject.org).
 
-## Installation 🔧
+## Documentation
 
-The most recent release of Quacc can be installed as follows:
+<p align="center">
+  📖 <a href="https://arosen93.github.io/quacc/"><b><i>Learn More Here!</i></b></a> 📖
+</p>
 
-```bash
-pip install quacc
-```
+Includes the following sections:
 
-To install the development version (**currently recommended**), run:
-
-```bash
-pip install git+https://github.com/arosen93/quacc.git
-```
-
-## Documentation 📖
-
-[Learn more here!](https://arosen93.github.io/quacc/)
+- 🏎️ [Quick Start](https://arosen93.github.io/quacc/start/demo.html)
+- 🔧 [Installation Guide](https://arosen93.github.io/quacc/install/install.html)
+- 🧠 [User Guide](https://arosen93.github.io/quacc/user/basics.html)
+- 🤝 [Developer Guide](https://arosen93.github.io/quacc/dev/contributing.html)
 
 ## Demonstration ✨
 
