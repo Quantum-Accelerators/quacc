@@ -40,7 +40,7 @@ pip install git+https://github.com/arosen93/quacc.git
 
 ## Documentation 📖
 
-[Learn more here!](https://arosen93.github.io/quacc/)
+👉 [Learn more here!](https://arosen93.github.io/quacc/) 👈
 
 ## Demonstration ✨
 
