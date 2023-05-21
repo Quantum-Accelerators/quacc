@@ -24,23 +24,16 @@ Built around the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/i
 
 3. Enable a seamless interface with much of the software infrastructure powering the [Materials Project](https://materialsproject.org).
 
-## Installation 🔧
-
-The most recent release of Quacc can be installed as follows:
-
-```bash
-pip install quacc
-```
-
-To install the development version (**currently recommended**), run:
-
-```bash
-pip install git+https://github.com/arosen93/quacc.git
-```
-
 ## Documentation 📖
 
 👉 [Learn more here!](https://arosen93.github.io/quacc/) 👈
+
+Includes:
+
+- [Quick Start](https://arosen93.github.io/quacc/start/demo.html)
+- [Installation Guide](https://arosen93.github.io/quacc/install/install.html)
+- [Usage Guide](https://arosen93.github.io/quacc/user/basics.html)
+- [Developer Guide](https://arosen93.github.io/quacc/dev/contributing.html)
 
 ## Demonstration ✨
 
