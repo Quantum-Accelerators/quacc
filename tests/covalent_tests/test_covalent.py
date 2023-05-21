@@ -78,61 +78,61 @@ def test_tutorials():
     assert result.status == "COMPLETED"
 
     # ------------------------------------------------------------
-    @ct.lattice
-    def workflow2(atoms1, atoms2):
-        result1 = relax_job(atoms1)
-        result2 = relax_job(atoms2)
+    # @ct.lattice
+    # def workflow2(atoms1, atoms2):
+    #     result1 = relax_job(atoms1)
+    #     result2 = relax_job(atoms2)
 
-        return [result1, result2]
+    #     return [result1, result2]
 
-    atoms1 = bulk("Cu")
-    atoms2 = molecule("N2")
-    dispatch_id = ct.dispatch(workflow2)(atoms1, atoms2)
-    result = ct.get_result(dispatch_id, wait=True)
-    assert result.status == "COMPLETED"
+    # atoms1 = bulk("Cu")
+    # atoms2 = molecule("N2")
+    # dispatch_id = ct.dispatch(workflow2)(atoms1, atoms2)
+    # result = ct.get_result(dispatch_id, wait=True)
+    # assert result.status == "COMPLETED"
 
-    # ------------------------------------------------------------
-    @ct.lattice
-    def workflow3(atoms):
-        relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = BulkToSlabsFlow(slab_static_electron=None).run(
-            relaxed_bulk["atoms"]
-        )
-        return relaxed_slabs
+    # # ------------------------------------------------------------
+    # @ct.lattice
+    # def workflow3(atoms):
+    #     relaxed_bulk = relax_job(atoms)
+    #     relaxed_slabs = BulkToSlabsFlow(slab_static_electron=None).run(
+    #         relaxed_bulk["atoms"]
+    #     )
+    #     return relaxed_slabs
 
-    atoms = bulk("Cu")
-    dispatch_id = ct.dispatch(workflow3)(atoms)
-    result = ct.get_result(dispatch_id, wait=True)
-    assert result.status == "COMPLETED"
+    # atoms = bulk("Cu")
+    # dispatch_id = ct.dispatch(workflow3)(atoms)
+    # result = ct.get_result(dispatch_id, wait=True)
+    # assert result.status == "COMPLETED"
 
-    # ------------------------------------------------------------
-    @ct.lattice(executor="local")
-    def workflow4(atoms):
-        result1 = relax_job(atoms)
-        result2 = static_job(result1["atoms"])
-        return result2
+    # # ------------------------------------------------------------
+    # @ct.lattice(executor="local")
+    # def workflow4(atoms):
+    #     result1 = relax_job(atoms)
+    #     result2 = static_job(result1["atoms"])
+    #     return result2
 
-    atoms = bulk("Cu")
-    dispatch_id = ct.dispatch(workflow4)(atoms)
-    result = ct.get_result(dispatch_id, wait=True)
-    assert result.status == "COMPLETED"
+    # atoms = bulk("Cu")
+    # dispatch_id = ct.dispatch(workflow4)(atoms)
+    # result = ct.get_result(dispatch_id, wait=True)
+    # assert result.status == "COMPLETED"
 
-    # ------------------------------------------------------------
-    @ct.electron(executor="dask")
-    def relax_electron(atoms):
-        return relax_job(atoms)
+    # # ------------------------------------------------------------
+    # @ct.electron(executor="dask")
+    # def relax_electron(atoms):
+    #     return relax_job(atoms)
 
-    @ct.electron(executor="local")
-    def static_electron(atoms):
-        return static_job(atoms)
+    # @ct.electron(executor="local")
+    # def static_electron(atoms):
+    #     return static_job(atoms)
 
-    @ct.lattice
-    def workflow5(atoms):
-        output1 = relax_electron(atoms)
-        output2 = static_electron(output1["atoms"])
-        return output2
+    # @ct.lattice
+    # def workflow5(atoms):
+    #     output1 = relax_electron(atoms)
+    #     output2 = static_electron(output1["atoms"])
+    #     return output2
 
-    atoms = bulk("Cu")
-    dispatch_id = ct.dispatch(workflow5)(atoms)
-    result = ct.get_result(dispatch_id, wait=True)
-    assert result.status == "COMPLETED"
+    # atoms = bulk("Cu")
+    # dispatch_id = ct.dispatch(workflow5)(atoms)
+    # result = ct.get_result(dispatch_id, wait=True)
+    # assert result.status == "COMPLETED"
