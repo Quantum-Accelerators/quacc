@@ -12,7 +12,7 @@ If you plan to use Jobflow as your workflow manager instead of Covalent, skip to
 
 Covalent uses a server to dispatch and retrieve calculation details and results. To start the server, simply run `covalent start` in your terminal. It will return a URL that you can use to access the Covalent dashboard, which is shown below.
 
-![Covalent UI](../_static/install/ui_blank)
+![Covalent UI](../_static/install/ui_blank.jpg)
 
 ```{tip}
 Once you start scaling up your calculations, we recommend hosting the Covalent server on a dedicated machine or using [Covalent Cloud](https://www.covalent.xyz/cloud/), but for now you can simply run it on your local machine.

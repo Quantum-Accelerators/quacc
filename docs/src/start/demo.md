@@ -32,7 +32,7 @@ result = ct.get_result(dispatch_id, wait=True)
 print(result)
 ```
 
-![Covalent UI](../_static/start/start1)
+![Covalent UI](../_static/start/start1.jpg)
 
 ## Demo Workflow 2: A More Complex One
 
@@ -62,10 +62,10 @@ result = ct.get_result(dispatch_id, wait=True)
 print(result)
 ```
 
-![Covalent UI](../_static/start/start2)
+![Covalent UI](../_static/start/start2.gif)
 
 ## What Next?
 
-Read through the documentation to learn more about Quacc and how to use it! And feel free to explore the calculations you just ran in the Covalent UI.
+Read through the documentation to learn more about Quacc and how to use it! And of course, feel free to explore the calculations you just ran in the Covalent UI.
 
-![Covalent UI](../_static/start/ui)
+![Covalent UI](../_static/start/ui.jpg)
