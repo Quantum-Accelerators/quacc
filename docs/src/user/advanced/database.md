@@ -18,10 +18,10 @@ from quacc.util.db import covavlent_to_db
 store = MongoStore(
     "my_db_name",
     "my_collection_name",
-    host="localhost",
-    port=27017,
     username="my_username",
     password="my_password",
+    host="localhost",
+    port=27017
 )
 
 # Store the results
