@@ -61,7 +61,7 @@ def covalent_to_db(store: Store, dispatch_id: str = None, results_dir: str = Non
         store.close()
 
 
-def results_to_db(results: dict | list[dict], store: Store):
+def results_to_db(store: Store, results: dict | list[dict]):
     """
     Store the results of a Quacc recipe in a user-specified Maggma Store.
     A UUID will be generated for each entry.
