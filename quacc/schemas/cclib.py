@@ -19,6 +19,7 @@ def summarize_run(
     dir_path: str = None,
     check_convergence: bool = True,
     transition_state: bool = False,
+    pop_analysis: str | list[str] = None,
     prep_next_run: bool = True,
     remove_empties: bool = False,
     additional_fields: dict = None,
@@ -46,6 +47,11 @@ def summarize_run(
          Whether to throw an error if convergence is not reached.
     transition_state
         Whether the calculation is a transition state (used for convergence check).
+    pop_analysis
+        The name(s) of any cclib post-processing analysis to run. Note that for
+        bader, ddec6, and hirshfeld, a cube file (.cube, .cub) must reside in dir_path.
+        Supports: "cpsa", "mpa", "lpa", "bickelhaupt", "density", "mbo", "bader", "ddec6",
+        "hirshfeld".
     prep_next_run
         Whether the Atoms object storeed in {"atoms": atoms} should be prepared for the next run.
         This clears out any attached calculator and moves the final magmoms to the initial magmoms.
@@ -106,7 +112,9 @@ def summarize_run(
     dir_path = dir_path or os.getcwd()
 
     # Fortunately, there is already a cclib parser in Atomate2
-    results = TaskDocument.from_logfile(dir_path, logfile_extensions).dict()
+    results = TaskDocument.from_logfile(
+        dir_path, logfile_extensions, analysis=pop_analysis
+    ).dict()
     uri = results["dir_name"]
     results["nid"] = uri.split(":")[0]
     results["dir_name"] = ":".join(uri.split(":")[1:])
