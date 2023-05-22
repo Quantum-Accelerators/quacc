@@ -15,11 +15,9 @@ from maggma.stores import MongoStore
 from quacc.util.db import covavlent_to_db
 
 # Define your database credentials
-database = "my_db"
-collection_name = "my_collection"
 store = MongoStore(
-    database,
-    collection_name,
+    "my_db_name",
+    "my_collection_name",
     host="localhost",
     port=27017,
     username="my_username",
