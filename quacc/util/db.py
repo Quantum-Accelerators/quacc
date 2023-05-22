@@ -6,9 +6,7 @@ from covalent._shared_files.exceptions import MissingLatticeRecordError
 from maggma.core import Store
 
 
-def covalent_to_db(
-    store: Store = None, dispatch_id: str = None, results_dir: str = None
-):
+def covalent_to_db(store: Store, dispatch_id: str = None, results_dir: str = None):
     """
     Store the results of a Covalent dispatch in a database
 
