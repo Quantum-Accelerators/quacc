@@ -2,7 +2,7 @@ import covalent as ct
 import pytest
 from maggma.stores import MemoryStore
 
-from quacc.util.db import covalent_to_db
+from quacc.util.db import covalent_to_db, results_to_db
 
 
 def test_covalent_to_db():

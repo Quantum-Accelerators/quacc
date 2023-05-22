@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import os
+import uuid
 import warnings
 
 import covalent as ct
@@ -56,3 +59,32 @@ def covalent_to_db(store: Store, dispatch_id: str = None, results_dir: str = Non
             store.update(docs, key="dispatch_id")
         print(f"Stored {len(docs)} results in your database.")
         store.close()
+
+
+def results_to_db(results: dict | list[dict], store: Store):
+    """
+    Store the results of a Quacc recipe in a user-specified Maggma Store.
+    A UUID will be generated for each entry.
+
+    Parameters
+    ----------
+    results
+        The output summary dictionary or list of dictionaries from a Quacc recipe
+    store
+        The Maggma Store object to store the results in
+
+    Returns
+    -------
+    None
+    """
+
+    if isinstance(results, dict):
+        results = [results]
+    for result in results:
+        result["uuid"] = str(uuid.uuid4())
+
+    store.connect()
+    with store:
+        store.update(results, key="uuid")
+    print(f"Stored {len(results)} results in your database.")
+    store.close()
