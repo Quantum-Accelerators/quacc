@@ -68,8 +68,6 @@ def static_job(
     atoms.calc = Psi4(**flags)
     new_atoms = run_calc(atoms)
 
-    summary = summarize_run(
+    return summarize_run(
         new_atoms, input_atoms=atoms, additional_fields={"name": "Psi4 Static"}
     )
-
-    return summary

@@ -48,9 +48,7 @@ def static_job(
     atoms.calc = calc
     atoms = run_calc(atoms)
 
-    summary = summarize_run(atoms, additional_fields={"name": "VASP Static"})
-
-    return summary
+    return summarize_run(atoms, additional_fields={"name": "VASP Static"})
 
 
 @ct.electron
@@ -98,9 +96,7 @@ def relax_job(
     atoms.calc = calc
     atoms = run_calc(atoms)
 
-    summary = summarize_run(atoms, additional_fields={"name": "VASP Relax"})
-
-    return summary
+    return summarize_run(atoms, additional_fields={"name": "VASP Relax"})
 
 
 @ct.electron

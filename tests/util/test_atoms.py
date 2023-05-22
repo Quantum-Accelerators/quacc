@@ -61,7 +61,7 @@ def test_prep_next_run():
     mags = atoms.get_magnetic_moments()
     atoms = prep_next_run(atoms)
     assert atoms.info["test"] == "hi"
-    assert atoms.calc == None
+    assert atoms.calc is None
     assert atoms.get_initial_magnetic_moments().tolist() == mags.tolist()
 
     atoms = deepcopy(ATOMS_MAG)
