@@ -8,7 +8,7 @@ from maggma.core import Store
 
 def covalent_to_db(store: Store, dispatch_id: str = None, results_dir: str = None):
     """
-    Store the results of a Covalent dispatch in a database
+    Store the results of a Covalent database in a user-specified Maggma Store
 
     Parameters
     ----------
