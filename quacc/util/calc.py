@@ -389,9 +389,9 @@ def ideal_gas_thermo(
     if spin_multiplicity:
         spin = (spin_multiplicity - 1) / 2
     elif (
-            getattr(atoms, "calc", None) is not None
-            and getattr(atoms.calc, "results", None) is not None
-        ):
+        getattr(atoms, "calc", None) is not None
+        and getattr(atoms.calc, "results", None) is not None
+    ):
         spin = round(atoms.calc.results.get("magmom", 0)) / 2
     elif atoms.has("initial_magmoms"):
         spin = round(np.sum(atoms.get_initial_magnetic_moments())) / 2
@@ -455,9 +455,7 @@ def ideal_gas_thermo(
             "pointgroup": pointgroup,
             "energy": energy,
             "enthalpy": igt.get_enthalpy(temperature, verbose=False),
-            "entropy": igt.get_entropy(
-                temperature, pressure * 10**5, verbose=False
-            ),
+            "entropy": igt.get_entropy(temperature, pressure * 10**5, verbose=False),
             "gibbs_energy": igt.get_gibbs_energy(
                 temperature, pressure * 10**5, verbose=False
             ),

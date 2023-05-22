@@ -91,9 +91,7 @@ def static_job(
         orcablocks=orcablocks,
     )
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
-    return summarize_run(
-        atoms, LOG_FILE, additional_fields={"name": "ORCA Static"}
-    )
+    return summarize_run(atoms, LOG_FILE, additional_fields={"name": "ORCA Static"})
 
 
 @ct.electron
