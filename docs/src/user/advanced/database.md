@@ -53,5 +53,5 @@ store = MongoStore(
 )
 
 # Store the results
-results_to_db(results, store)
+results_to_db(store, results)
 ```
