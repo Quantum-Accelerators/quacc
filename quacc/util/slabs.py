@@ -166,11 +166,11 @@ def make_slabs_from_bulk(
             surf_sites = AdsorbateSiteFinder(slab.copy()).surface_sites
             surface_species = [s.specie.symbol for s in surf_sites]
 
-            if allowed_surface_symbols and not any(
-                allowed_surface_atom in surface_species
-                for allowed_surface_atom in allowed_surface_symbols
-            ):
-                continue
+        if allowed_surface_symbols and all(
+            allowed_surface_atom not in surface_species
+            for allowed_surface_atom in allowed_surface_symbols
+        ):
+            continue
 
         # Supercell creation (if necessary)
         a_factor = int(np.ceil(min_length_width / slab.lattice.abc[0]))
@@ -188,7 +188,7 @@ def make_slabs_from_bulk(
         slabs_with_props.append(slab)
 
     final_slabs = []
-    if len(slabs_with_props) == 0:
+    if not slabs_with_props:
         return final_slabs
 
     # Make atoms objects and store slab stats
@@ -286,34 +286,33 @@ def make_max_slabs_from_bulk(
     # Try to reduce the number of slabs if the user really wants it...
     # (desperate times call for desperate measures)
     if max_slabs and slabs is not None and len(slabs) > max_slabs:
-        if len(slabs) > max_slabs:
-            warnings.warn(
-                f"You requested {max_slabs} slabs, but {len(slabs)} were generated. Tuning ftol in generate_all_slabs() to try to reduce the number of slabs, at the expense of sampling fewer surface configurations.",
+        warnings.warn(
+            f"You requested {max_slabs} slabs, but {len(slabs)} were generated. Tuning ftol in generate_all_slabs() to try to reduce the number of slabs, at the expense of sampling fewer surface configurations.",
+        )
+        for ftol in np.arange(0.1, 0.9, 0.1):
+            slabgen_kwargs["ftol"] = ftol
+            slabs_ftol = make_slabs_from_bulk(
+                atoms,
+                max_index=max_index,
+                min_slab_size=min_slab_size,
+                min_length_width=min_length_width,
+                min_vacuum_size=min_vacuum_size,
+                z_fix=z_fix,
+                flip_asymmetric=flip_asymmetric,
+                allowed_surface_symbols=allowed_surface_symbols,
+                **slabgen_kwargs,
             )
-            for ftol in np.arange(0.1, 0.9, 0.1):
-                slabgen_kwargs["ftol"] = ftol
-                slabs_ftol = make_slabs_from_bulk(
-                    atoms,
-                    max_index=max_index,
-                    min_slab_size=min_slab_size,
-                    min_length_width=min_length_width,
-                    min_vacuum_size=min_vacuum_size,
-                    z_fix=z_fix,
-                    flip_asymmetric=flip_asymmetric,
-                    allowed_surface_symbols=allowed_surface_symbols,
-                    **slabgen_kwargs,
-                )
-                if len(slabs_ftol) < len(slabs):
-                    slabs = slabs_ftol
-                if len(slabs) <= max_slabs:
-                    break
+            if len(slabs_ftol) < len(slabs):
+                slabs = slabs_ftol
+            if len(slabs) <= max_slabs:
+                break
 
         if len(slabs) > max_slabs:
             warnings.warn(
                 f"You requested {max_slabs} slabs, but {len(slabs)} were generated. Could not reduce further. Picking the smallest slabs by number of atoms.",
             )
             slabs.sort(key=len)
-            slabs = slabs[0:max_slabs]
+            slabs = slabs[:max_slabs]
 
     return slabs
 
@@ -388,8 +387,8 @@ def make_adsorbate_structures(
 
     # Check the provided surface indices are reasonable
     atom_indices = [atom.index for atom in atoms]
-    if allowed_surface_indices and not all(
-        idx in atom_indices for idx in allowed_surface_indices
+    if allowed_surface_indices and any(
+        idx not in atom_indices for idx in allowed_surface_indices
     ):
         raise ValueError(
             "All indices in allowed_surface_indices must be in atoms.",
@@ -442,14 +441,14 @@ def make_adsorbate_structures(
 
             # Check if surface binding site is not in the specified
             # user list. If so, skip this one
-            if allowed_surface_symbols and not any(
-                surface_atom_symbol in allowed_surface_symbols
+            if allowed_surface_symbols and all(
+                surface_atom_symbol not in allowed_surface_symbols
                 for surface_atom_symbol in surface_atom_symbols
             ):
                 continue
 
-            if allowed_surface_indices and not any(
-                surface_atom_idx in allowed_surface_indices
+            if allowed_surface_indices and all(
+                surface_atom_idx not in allowed_surface_indices
                 for surface_atom_idx in surface_atom_indices
             ):
                 continue
@@ -495,6 +494,4 @@ def get_surface_energy(
     alpha = len(slab) / len(bulk)
     cell = slab.get_cell()
     A = np.linalg.norm(np.cross(cell[0], cell[1]))
-    surface_energy = (slab_energy - alpha * bulk_energy) / (2 * A)
-
-    return surface_energy
+    return (slab_energy - alpha * bulk_energy) / (2 * A)

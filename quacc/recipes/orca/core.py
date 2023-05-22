@@ -1,4 +1,5 @@
 """Core recipes for ORCA"""
+
 from __future__ import annotations
 
 import multiprocessing
@@ -11,8 +12,8 @@ from quacc.schemas.cclib import summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.dicts import merge_dicts
 
-LOG_FILE = ORCA().name + ".out"
-GEOM_FILE = ORCA().name + ".xyz"
+LOG_FILE = f"{ORCA().name}.out"
+GEOM_FILE = f"{ORCA().name}.xyz"
 
 
 @ct.electron
@@ -90,9 +91,9 @@ def static_job(
         orcablocks=orcablocks,
     )
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
-    summary = summarize_run(atoms, LOG_FILE, additional_fields={"name": "ORCA Static"})
-
-    return summary
+    return summarize_run(
+        atoms, LOG_FILE, additional_fields={"name": "ORCA Static"}
+    )
 
 
 @ct.electron
@@ -174,6 +175,4 @@ def relax_job(
         orcablocks=orcablocks,
     )
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
-    summary = summarize_run(atoms, LOG_FILE, additional_fields={"name": "ORCA Relax"})
-
-    return summary
+    return summarize_run(atoms, LOG_FILE, additional_fields={"name": "ORCA Relax"})

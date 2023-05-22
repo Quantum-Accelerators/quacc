@@ -121,7 +121,7 @@ def run_custodian(
     custodian_kwargs = {} if custodian_kwargs is None else custodian_kwargs
     split_vasp_cmd = shlex.split(vasp_cmd)
     split_vasp_gamma_cmd = shlex.split(vasp_gamma_cmd)
-    vasp_job_kwargs.update({"gamma_vasp_cmd": split_vasp_gamma_cmd})
+    vasp_job_kwargs["gamma_vasp_cmd"] = split_vasp_gamma_cmd
 
     # Run with Custodian
     jobs = [VaspJob(split_vasp_cmd, **vasp_job_kwargs)]

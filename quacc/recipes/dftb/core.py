@@ -58,15 +58,14 @@ def static_job(
     atoms.calc = Dftb(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
 
-    scc_check = _check_logfile(LOG_FILE, "SCC is NOT converged")
-    if scc_check:
+    if scc_check := _check_logfile(LOG_FILE, "SCC is NOT converged"):
         raise ValueError("SCC is not converged")
 
-    summary = summarize_run(
-        atoms, input_atoms=input_atoms, additional_fields={"name": "DFTB+ Static"}
+    return summarize_run(
+        atoms,
+        input_atoms=input_atoms,
+        additional_fields={"name": "DFTB+ Static"},
     )
-
-    return summary
 
 
 @ct.electron
@@ -118,12 +117,11 @@ def relax_job(
     atoms.calc = Dftb(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
 
-    geom_check = _check_logfile(LOG_FILE, "Geometry converged")
-    if not geom_check:
+    if geom_check := _check_logfile(LOG_FILE, "Geometry converged"):
+        return summarize_run(
+            atoms,
+            input_atoms=input_atoms,
+            additional_fields={"name": "DFTB+ Relax"},
+        )
+    else:
         raise ValueError("Geometry did not converge")
-
-    summary = summarize_run(
-        atoms, input_atoms=input_atoms, additional_fields={"name": "DFTB+ Relax"}
-    )
-
-    return summary

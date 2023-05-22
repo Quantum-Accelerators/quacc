@@ -8,7 +8,7 @@ from quacc.util.pop_analysis import run_bader, run_chargemol
 
 
 def mock_bader_analysis(*args, **kwargs):
-    bader_stats = {
+    return {
         "min_dist": [1.0],
         "charge": [1.0],
         "atomic_volume": [1.0],
@@ -19,11 +19,10 @@ def mock_bader_analysis(*args, **kwargs):
         "charge_transfer": [-1.0],
         "magmom": [0.0],
     }
-    return bader_stats
 
 
 def mock_chargemol_analysis(*args, **kwargs):
-    chargemol_stats = {
+    return {
         "ddec": {
             "partial_charges": [1.0],
             "spin_moments": [0.0],
@@ -36,7 +35,6 @@ def mock_chargemol_analysis(*args, **kwargs):
             "partial_charges": [1.0],
         },
     }
-    return chargemol_stats
 
 
 @pytest.fixture(autouse=True)

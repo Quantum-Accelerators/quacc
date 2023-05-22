@@ -1,4 +1,5 @@
 """Core recipes for Gaussian"""
+
 from __future__ import annotations
 
 import multiprocessing
@@ -11,7 +12,7 @@ from quacc.schemas.cclib import summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.dicts import merge_dicts
 
-LOG_FILE = Gaussian().label + ".log"
+LOG_FILE = f"{Gaussian().label}.log"
 GEOM_FILE = LOG_FILE
 
 
@@ -79,11 +80,9 @@ def static_job(
     atoms.calc = Gaussian(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
 
-    summary = summarize_run(
+    return summarize_run(
         atoms, LOG_FILE, additional_fields={"name": "Gaussian Static"}
     )
-
-    return summary
 
 
 @ct.electron
@@ -145,8 +144,6 @@ def relax_job(
     atoms.calc = Gaussian(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
 
-    summary = summarize_run(
+    return summarize_run(
         atoms, LOG_FILE, additional_fields={"name": "Gaussian Relax"}
     )
-
-    return summary
