@@ -1,7 +1,9 @@
 import covalent as ct
 import pytest
+from ase.build import bulk
 from maggma.stores import MemoryStore
 
+from quacc.recipes.emt.core import static_job
 from quacc.util.db import covalent_to_db, results_to_db
 
 
@@ -22,3 +24,13 @@ def test_covalent_to_db():
 
     with pytest.raises(ValueError):
         covalent_to_db(store, dispatch_id="bad-value", results_dir="bad-value")
+
+
+def test_results_to_db():
+    atoms = bulk("Cu") * (2, 2, 2)
+    atoms[0].position += [0.1, 0.1, 0.1]
+
+    output = static_job(atoms)
+    store = MemoryStore(collection_name="db3")
+    results_to_db(store, output)
+    assert store.count() == 1
