@@ -46,7 +46,8 @@ def covalent_to_db(store: Store, dispatch_id: str = None, results_dir: str = Non
         except MissingLatticeRecordError:
             warnings.warn(f"Could not find dispatch_id: {dispatch_id}", UserWarning)
             continue
-        docs.append({"dispatch_id": dispatch_id, "result": result})
+        if result.status == "COMPLETED":
+            docs.append({"dispatch_id": dispatch_id, "result": result})
 
     # Store the results
     if docs:
