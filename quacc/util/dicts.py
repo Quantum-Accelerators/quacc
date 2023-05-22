@@ -60,7 +60,6 @@ def remove_dict_empties(d: dict) -> dict:
         return {
             k: remove_dict_empties(v)
             for k, v in d.items()
-            if v is not None
-            and (not isinstance(v, (dict, list)) or len(v) != 0)
+            if v is not None and (not isinstance(v, (dict, list)) or len(v) != 0)
         }
     return [remove_dict_empties(v) for v in d] if isinstance(d, list) else d
