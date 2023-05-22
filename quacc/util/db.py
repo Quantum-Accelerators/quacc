@@ -43,14 +43,14 @@ def covalent_to_db(store: Store, dispatch_id: str = None, results_dir: str = Non
     for dispatch_id in dispatch_ids:
         try:
             result = ct.get_result(dispatch_id).result
-            docs.append({"dispatch_id": dispatch_id, "result": result})
         except MissingLatticeRecordError:
             warnings.warn(f"Could not find dispatch_id: {dispatch_id}", UserWarning)
+            continue
+        docs.append({"dispatch_id": dispatch_id, "result": result})
 
     # Store the results
-    store.connect()
-    with store:
-        store.update(docs, key="dispatch_id")
-
-    # Close the database connection
-    store.close()
+    if docs:
+        store.connect()
+        with store:
+            store.update(docs, key="dispatch_id")
+        store.close()
