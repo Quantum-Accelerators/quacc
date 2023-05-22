@@ -17,6 +17,7 @@ def summarize_run(
     atoms: Atoms,
     logfile_extensions: str | list[str],
     dir_path: str = None,
+    pop_analysis: str | list[str] = None,
     check_convergence: bool = True,
     transition_state: bool = False,
     prep_next_run: bool = True,
@@ -42,6 +43,11 @@ def summarize_run(
     dir_path
         The path to the folder containing the calculation outputs. A value of None specifies the
         current working directory.
+    pop_analysis
+        The name(s) of any cclib post-processing analysis to run. Note that for
+        bader, ddec6, and hirshfeld, a cube file (.cube, .cub) must reside in dir_path.
+        Supports: "cpsa", "mpa", "lpa", "bickelhaupt", "density", "mbo", "bader", "ddec6",
+        "hirshfeld".
     check_convergence
          Whether to throw an error if convergence is not reached.
     transition_state
@@ -106,7 +112,9 @@ def summarize_run(
     dir_path = dir_path or os.getcwd()
 
     # Fortunately, there is already a cclib parser in Atomate2
-    results = TaskDocument.from_logfile(dir_path, logfile_extensions).dict()
+    results = TaskDocument.from_logfile(
+        dir_path, logfile_extensions, analysis=pop_analysis
+    ).dict()
     uri = results["dir_name"]
     results["nid"] = uri.split(":")[0]
     results["dir_name"] = ":".join(uri.split(":")[1:])
