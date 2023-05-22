@@ -34,13 +34,13 @@ If you are using Jobflow to construct your workflows, it will automatically stor
 
 ## Without a Workflow Manager
 
-If you're not using a workflow manager, you can still store your results in a database of your choosing. For a given recipe, you can store the output summary dictionary in your database using the {}`quacc.util.db.results_to_db` function, as shown in the example below.
+If you're not using a workflow manager, you can still store your results in a database of your choosing. For a given recipe, you can store the output summary dictionary in your database using the {obj}`quacc.util.db.results_to_db` function, as shown in the example below.
 
 ```python
 from maggma.stores import MongoStore
 from quacc.util.db import results_to_db
 
-# Let `results` be a list of output summary dictionaries from Quacc recipes
+# Let `results` be an output (or list of outputs) from Quacc recipes
 
 # Define your database credentials
 store = MongoStore(
