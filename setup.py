@@ -51,7 +51,7 @@ if __name__ == "__main__":
             "tblite": ["tblite[ase]>=0.3.0"],
             "docs": [
                 "autodoc_pydantic==1.8.0",
-                "furo==2023.03.27",
+                "furo==2023.5.20",
                 "ipython==8.13.2",
                 "jsonschema[format]",
                 "myst_parser==1.0.0",
