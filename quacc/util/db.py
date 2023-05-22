@@ -54,4 +54,5 @@ def covalent_to_db(store: Store, dispatch_id: str = None, results_dir: str = Non
         store.connect()
         with store:
             store.update(docs, key="dispatch_id")
+        print(f"Stored {len(docs)} results in your database.")
         store.close()
