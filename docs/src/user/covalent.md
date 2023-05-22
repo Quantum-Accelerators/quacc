@@ -169,10 +169,10 @@ from quacc.recipes.emt.core import relax_job, static_job
 @ct.lattice
 def workflow(atoms):
     job1 = relax_job
-    job1.electron_object.metadata["executor"] = "dask"
+    job1.electron_object.executor = "dask"
 
     job2 = static_job
-    job2.electron_object.metadata["executor"] = "local"
+    job2.electron_object.executor = "local"
 
     output1 = job1(atoms)
     output2 = job2(output1["atoms"])
@@ -186,10 +186,6 @@ print(result)
 
 ```{hint}
 If you are defining your own workflow functions to use, you can also set the executor for individual `Electron` objects by passing the `executor` keyword argument to the `@ct.electron` decorator.
-```
-
-```{note}
-Covalent will soon have easier ways of modifying the executor of imported `Electron` objects, as discussed [here](https://github.com/AgnostiqHQ/covalent/issues/1647).
 ```
 
 ## Learn More
