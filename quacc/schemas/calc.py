@@ -278,7 +278,6 @@ def summarize_opt_run(
 
 def summarize_vib_run(
     vib: Vibrations,
-    input_atoms: Atoms,
     remove_empties: bool = False,
     additional_fields: dict = None,
 ) -> dict:
@@ -294,11 +293,12 @@ def summarize_vib_run(
             vib_freqs[i] = np.abs(f)
             vib_energies[i] = np.abs(vib_energies[i])
 
-    atoms_db = atoms_to_metadata(input_atoms)
+    atoms = vib.atoms
+    atoms_db = atoms_to_metadata(atoms)
 
     # Get the true vibrational modes if it's a molecule
-    natoms = len(input_atoms)
-    if natoms == 1 or input_atoms.pbc.any():
+    natoms = len(atoms)
+    if natoms == 1 or atoms.pbc.any():
         true_vib_freqs = []
         true_vib_energies = []
     elif atoms_db["symmetry"]["linear"]:
