@@ -1,12 +1,14 @@
 import os
+from copy import deepcopy
 from pathlib import Path
 from shutil import rmtree
 
 import pytest
-from ase.build import bulk
+from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.io import read
 from ase.optimize import BFGS
+from ase.vibrations import Vibrations
 from monty.json import MontyDecoder, jsanitize
 
 from quacc.schemas.calc import (
@@ -147,6 +149,37 @@ def test_summarize_opt_run():
     assert results["atoms"].get_initial_magnetic_moments().tolist() == [3.14] * len(
         atoms
     )
+
+    # test document can be jsanitized and decoded
+    d = jsanitize(results, strict=True, enum_values=True)
+    MontyDecoder().process_decoded(d)
+
+
+def test_summarize_vib_run():
+    # Make sure metadata is made
+    atoms = molecule("N2")
+    atoms.calc = EMT()
+    initial_atoms = deepcopy(atoms)
+    vib = Vibrations(atoms)
+    vib.run()
+
+    results = summarize_vib_run(vib, initial_atoms)
+    assert results["natoms"] == len(atoms)
+    assert results["atoms"] == initial_atoms
+    assert results["results"]["delta"] == vib.delta
+
+    # Make sure info tags are handled appropriately
+    atoms = molecule("N2")
+    atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
+    atoms.calc = EMT()
+    initial_atoms = deepcopy(atoms)
+    vib = Vibrations(atoms)
+    vib.run()
+
+    results = summarize_vib_run(vib, initial_atoms)
+    assert results.get("atoms_info", {}) != {}
+    assert results["atoms_info"].get("test_dict", None) == {"hi": "there", "foo": "bar"}
+    assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
     # test document can be jsanitized and decoded
     d = jsanitize(results, strict=True, enum_values=True)

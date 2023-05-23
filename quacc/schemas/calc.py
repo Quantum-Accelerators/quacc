@@ -284,18 +284,21 @@ def summarize_vib_run(
 ) -> dict:
     additional_fields = additional_fields or {}
 
-    vib_freqs = vib.get_frequencies()
-    vib_energies = vib.get_energies()
+    vib_freqs = vib.get_frequencies().tolist()
+    vib_energies = vib.get_energies().tolist()
     for i, f in enumerate(vib_freqs):
-        if isinstance(f, complex) and np.imag(f) != 0:
-            vib_freqs[i] = -np.imag(f)
-            vib_energies[i] = -np.imag(vib_energies[i])
+        if np.imag(f) > 0:
+            vib_freqs[i] = -np.abs(f)
+            vib_energies[i] = -np.abs(vib_energies[i])
+        else:
+            vib_freqs[i] = np.abs(f)
+            vib_energies[i] = np.abs(vib_energies[i])
 
     atoms_db = atoms_to_metadata(input_atoms)
 
-    # Get the geometry
+    # Get the true vibrational modes if it's a molecule
     natoms = len(input_atoms)
-    if natoms == 1:
+    if natoms == 1 or input_atoms.pbc.any():
         true_vib_freqs = []
         true_vib_energies = []
     elif atoms_db["symmetry"]["linear"]:
@@ -311,7 +314,7 @@ def summarize_vib_run(
             "direction": vib.direction,
             "imag_vib_freqs": [f / invcm for f in true_vib_freqs if f < 0],
             "method": vib.method,
-            "n_imag": sum(true_vib_freqs < 0) if len(true_vib_freqs) > 0 else 0,
+            "n_imag": len([v for v in true_vib_freqs if v < 0]),
             "ndof": vib.ndof,
             "nfree": vib.nfree,
             "true_vib_energies": true_vib_energies,
@@ -366,7 +369,7 @@ def summarize_thermo_run(
     results = {
         "results": {
             "vib_freqs": [f / invcm for f in igt.vib_energies],
-            "vib_energies": igt.vib_energies,
+            "vib_energies": igt.vib_energies.tolist(),
             "energy": igt.potentialenergy,
             "enthalpy": igt.get_enthalpy(temperature, verbose=True),
             "entropy": igt.get_entropy(temperature, pressure * 10**5, verbose=True),
