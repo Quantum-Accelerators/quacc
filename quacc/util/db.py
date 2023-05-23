@@ -46,7 +46,10 @@ def covalent_to_db(store: Store, dispatch_id: str = None, results_dir: str = Non
     # Populate the docs
     docs = []
     for d_id in dispatch_ids:
-        result_obj = ct.get_result(d_id)
+        try:
+            result_obj = ct.get_result(d_id)
+        except MissingLatticeRecordError:
+            result_obj = None
         if result_obj and result_obj.status == "COMPLETED":
             docs.append({"dispatch_id": d_id, "result": result_obj.result})
 
