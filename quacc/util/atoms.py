@@ -175,10 +175,8 @@ def set_magmoms(
                     ]
                 )
                 atoms.set_initial_magnetic_moments(initial_mags)
-    # Copy converged magmoms to input magmoms, if copy_magmoms is True
-    else:
-        if copy_magmoms:
-            atoms.set_initial_magnetic_moments(mags)
+    elif copy_magmoms:
+        atoms.set_initial_magnetic_moments(mags)
 
     # If all the set mags are below mag_cutoff, set them to 0
     if mag_cutoff:
@@ -218,8 +216,7 @@ def get_atoms_id(atoms: Atoms) -> str:
         .replace("float64", "float")
         .replace("float32", "float")
     )
-    md5hash = hashlib.md5(encoded_atoms.encode("utf-8")).hexdigest()
-    return md5hash
+    return hashlib.md5(encoded_atoms.encode("utf-8")).hexdigest()
 
 
 def check_is_metal(atoms: Atoms) -> bool:
@@ -240,8 +237,7 @@ def check_is_metal(atoms: Atoms) -> bool:
         struct = AseAtomsAdaptor.get_molecule(atoms)
     else:
         struct = AseAtomsAdaptor.get_structure(atoms)
-    is_metal = all(k.is_metal for k in struct.composition.keys())
-    return is_metal
+    return all(k.is_metal for k in struct.composition.keys())
 
 
 def get_highest_block(atoms: Atoms) -> str:
@@ -264,15 +260,13 @@ def get_highest_block(atoms: Atoms) -> str:
         struct = AseAtomsAdaptor.get_structure(atoms)
     blocks = [site.specie.block for site in struct]
     if "f" in blocks:
-        max_block = "f"
+        return "f"
     elif "d" in blocks:
-        max_block = "d"
+        return "d"
     elif "p" in blocks:
-        max_block = "p"
+        return "p"
     else:
-        max_block = "s"
-
-    return max_block
+        return "s"
 
 
 def copy_atoms(atoms: Atoms) -> Atoms:

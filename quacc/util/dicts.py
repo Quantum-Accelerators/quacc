@@ -32,7 +32,7 @@ def merge_dicts(
     if auto_lowercase:
         d1 = {k.lower(): v for k, v in d1.items()}
         d2 = {k.lower(): v for k, v in d2.items()}
-    d_merged = {**d1, **d2}
+    d_merged = d1 | d2
     if remove_none:
         d_merged = {k: v for k, v in d_merged.items() if v is not None}
     if remove_false:
@@ -60,8 +60,6 @@ def remove_dict_empties(d: dict) -> dict:
         return {
             k: remove_dict_empties(v)
             for k, v in d.items()
-            if v is not None and not (isinstance(v, (dict, list)) and len(v) == 0)
+            if v is not None and (not isinstance(v, (dict, list)) or len(v) != 0)
         }
-    if isinstance(d, list):
-        return [remove_dict_empties(v) for v in d]
-    return d
+    return [remove_dict_empties(v) for v in d] if isinstance(d, list) else d

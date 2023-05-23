@@ -37,12 +37,11 @@ def covalent_to_db(store: Store, dispatch_id: str = None, results_dir: str = Non
     dispatch_ids = []
     if dispatch_id:
         dispatch_ids = [dispatch_id]
+    elif results_dir:
+        dispatch_ids = os.listdir(results_dir)
     else:
-        if results_dir:
-            dispatch_ids = os.listdir(results_dir)
-        else:
-            config_results_dir = ct.get_config()["dispatcher"]["results_dir"]
-            dispatch_ids = os.listdir(config_results_dir)
+        config_results_dir = ct.get_config()["dispatcher"]["results_dir"]
+        dispatch_ids = os.listdir(config_results_dir)
 
     # Populate the docs
     docs = []
