@@ -368,10 +368,9 @@ def ideal_gas_thermo(
 
     # Only consider thermochemistry of the mobile atoms
     atom_indices = []
-    if atoms.constraints:
-        for constraint in atoms.constraints:
-            if isinstance(constraint, FixAtoms):
-                atom_indices.extend(constraint.index)
+    for constraint in atoms.constraints:
+        if isinstance(constraint, FixAtoms):
+            atom_indices.extend(constraint.index)
 
     if atom_indices:
         atoms = atoms[atom_indices]
