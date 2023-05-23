@@ -402,7 +402,7 @@ def _calc_swaps(
 
     if (
         calc.float_params["kspacing"]
-        and (calc.float_params["kspacing"] and calc.float_params["kspacing"] > 0.5)
+        and calc.float_params["kspacing"] > 0.5
         and calc.int_params["ismear"] == -5
     ):
         if verbose:

@@ -1,4 +1,6 @@
 """Core recipes for ORCA"""
+
+
 from __future__ import annotations
 
 import multiprocessing
@@ -11,8 +13,8 @@ from quacc.schemas.cclib import summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.dicts import merge_dicts
 
-LOG_FILE = ORCA().name + ".out"
-GEOM_FILE = ORCA().name + ".xyz"
+LOG_FILE = f"{ORCA().name}.out"
+GEOM_FILE = f"{ORCA().name}.xyz"
 
 
 @ct.electron
