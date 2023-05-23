@@ -365,8 +365,6 @@ def ideal_gas_thermo(
     IdealGasThermo object
 
     """
-    # Switch off PBC since this is only for molecules
-    atoms.set_pbc(False)
 
     # Only consider thermochemistry of the mobile atoms
     atom_indices = []
@@ -377,6 +375,9 @@ def ideal_gas_thermo(
 
     if atom_indices:
         atoms = atoms[atom_indices]
+
+    # Switch off PBC since this is only for molecules
+    atoms.set_pbc(False)
 
     # Ensure all imaginary modes are actually negatives
     for i, f in enumerate(vib_freqs):
