@@ -355,7 +355,7 @@ def summarize_thermo_run(
     Parameters
     ----------
     igt
-        ASE IdealGasThermo object obtained from quacc.util.calc.ideal_gas_thermo.
+        ASE IdealGasThermo object.
     temperature
         Temperature in Kelvins.
     pressure

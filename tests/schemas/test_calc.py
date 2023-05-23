@@ -13,7 +13,7 @@ from ase.units import invcm
 from ase.vibrations import Vibrations
 from monty.json import MontyDecoder, jsanitize
 
-from quacc.schemas.calc import (
+from quacc.schemas.ase import (
     summarize_opt_run,
     summarize_run,
     summarize_thermo_run,

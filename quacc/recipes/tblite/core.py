@@ -7,7 +7,7 @@ import covalent as ct
 from ase import Atoms
 from monty.dev import requires
 
-from quacc.schemas.calc import (
+from quacc.schemas.ase import (
     summarize_opt_run,
     summarize_run,
     summarize_thermo_run,

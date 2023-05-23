@@ -7,7 +7,7 @@ import covalent as ct
 from ase import Atoms
 from ase.calculators.gulp import GULP
 
-from quacc.schemas.calc import summarize_run
+from quacc.schemas.ase import summarize_run
 from quacc.util.atoms import copy_atoms
 from quacc.util.calc import run_calc
 from quacc.util.dicts import merge_dicts

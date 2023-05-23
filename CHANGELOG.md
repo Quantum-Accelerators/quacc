@@ -41,6 +41,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Changed `removed_empties` default to `False` for the VASP schema.
 - Use `setups_pbe54_MP` as the default pseudopotentials for the `BulkSet` preset in VASP.
 - Modified thermo and vibrational frequency schemas.
+- Renamed `quacc.schemas.calc` to `quacc.schemas.ase`.
 - Moved `main` branch to an orphan and started new `main` branch.
 
 ### Fixed
