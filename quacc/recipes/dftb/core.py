@@ -117,12 +117,11 @@ def relax_job(
     atoms.calc = Dftb(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
 
-    geom_check = _check_logfile(LOG_FILE, "Geometry converged")
-    if not geom_check:
+    if not _check_logfile(LOG_FILE, "Geometry converged"):
         raise ValueError("Geometry did not converge")
 
-    summary = summarize_run(
-        atoms, input_atoms=input_atoms, additional_fields={"name": "DFTB+ Relax"}
+    return summarize_run(
+        atoms,
+        input_atoms=input_atoms,
+        additional_fields={"name": "DFTB+ Relax"},
     )
-
-    return summary
