@@ -1,5 +1,5 @@
 """
-Schemas for storing ASE calculator data
+Schemas for storing ASE-based data
 """
 from __future__ import annotations
 
