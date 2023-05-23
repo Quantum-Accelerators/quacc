@@ -400,28 +400,19 @@ def ideal_gas_thermo(
 
     # Get symmetry for later use
     natoms = len(atoms)
-    pmg_obj = AseAtomsAdaptor.get_molecule(atoms)
-    pga = PointGroupAnalyzer(pmg_obj)
-
-    pointgroup = None if len(atoms) == 1 else pga.get_pointgroup().sch_symbol
+    metadata = atoms_to_metadata(atoms)
 
     # Get the geometry and true frequencies that should
     # be used for thermo calculations
     if natoms == 1:
         geometry = "monatomic"
         true_freqs = []
-    elif natoms == 2 or (natoms > 2 and pointgroup == "D*h"):
+    elif metadata["symmetry"]["linear"]:
         geometry = "linear"
         true_freqs = vib_list[-(3 * natoms - 5) :]
     else:
         geometry = "nonlinear"
         true_freqs = vib_list[-(3 * natoms - 6) :]
-
-    # Automatically get rotational symmetry number
-    if geometry == "monatomic":
-        symmetry_number = 1
-    else:
-        symmetry_number = pga.get_rotational_symmetry_number()
 
     # Fetch the real vibrational energies
     real_vib_freqs = [f for f in true_freqs if np.isreal(f)]
@@ -434,7 +425,7 @@ def ideal_gas_thermo(
         geometry,
         potentialenergy=energy,
         atoms=atoms,
-        symmetrynumber=symmetry_number,
+        symmetrynumber=metadata["symmetry"]["rotation_number"],
         spin=spin,
     )
     if len(igt.vib_energies) != len(real_vib_energies):
@@ -447,13 +438,11 @@ def ideal_gas_thermo(
     true_freqs = [np.abs(f) if np.isreal(f) else -np.abs(f) for f in true_freqs]
 
     return {
-        **atoms_to_metadata(atoms),
+        **metadata,
         "results": {
             "frequencies": vib_list,  # full list of computed frequencies
             "true_frequencies": true_freqs,  # list of *relevant* frequencies based on the geometry
             "n_imag": n_imag,  # number of imag modes within true_frequencies
-            "geometry": geometry,
-            "pointgroup": pointgroup,
             "energy": energy,
             "enthalpy": igt.get_enthalpy(temperature, verbose=False),
             "entropy": igt.get_entropy(temperature, pressure * 10**5, verbose=False),
