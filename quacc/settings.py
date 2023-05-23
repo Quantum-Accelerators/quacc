@@ -140,7 +140,7 @@ class QuaccSettings(BaseSettings):
 
         new_values = {}
         if Path(config_file_path).expanduser().exists():
-            new_values.update(loadfn(Path(config_file_path).expanduser()))
+            new_values |= loadfn(Path(config_file_path).expanduser())
 
         new_values.update(values)
         return new_values
