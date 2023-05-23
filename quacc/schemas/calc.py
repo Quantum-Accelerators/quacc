@@ -286,6 +286,14 @@ def summarize_vib_run(
     vib_freqs = vib.get_frequencies().tolist()
     vib_energies = vib.get_energies().tolist()
 
+    for i, f in enumerate(vib_freqs):
+        if np.imag(f) > 0:
+            vib_freqs[i] = -np.abs(f)
+            vib_energies[i] = -np.abs(vib_energies[i])
+        else:
+            vib_freqs[i] = np.abs(f)
+            vib_energies[i] = np.abs(vib_energies[i])
+
     uri = get_uri(os.getcwd())
     inputs = {
         "parameters": {
@@ -298,14 +306,6 @@ def summarize_vib_run(
         "nid": uri.split(":")[0],
         "dir_name": ":".join(uri.split(":")[1:]),
     }
-
-    for i, f in enumerate(vib_freqs):
-        if np.imag(f) > 0:
-            vib_freqs[i] = -np.abs(f)
-            vib_energies[i] = -np.abs(vib_energies[i])
-        else:
-            vib_freqs[i] = np.abs(f)
-            vib_energies[i] = np.abs(vib_energies[i])
 
     atoms = vib.atoms
     atoms_db = atoms_to_metadata(atoms)
