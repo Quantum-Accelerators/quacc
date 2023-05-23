@@ -39,7 +39,7 @@ def summarize_run(
         Whether the Atoms object stored in {"atoms": atoms} should be prepared for the next run
         This clears out any attached calculator and moves the final magmoms to the initial magmoms.
     remove_empties
-        Whether to remove None values and empty lists/dicts from the TaskDocument.
+        Whether to remove None values and empty lists/dicts from the task document.
     additional_fields
         Additional fields to add to the task document.
 
@@ -167,7 +167,7 @@ def summarize_opt_run(
         Whether the Atoms object stored in {"atoms": atoms} should be prepared for the next run
         This clears out any attached calculator and moves the final magmoms to the initial magmoms.
     remove_empties
-        Whether to remove None values and empty lists/dicts from the TaskDocument.
+        Whether to remove None values and empty lists/dicts from the task document.
     additional_fields
         Additional fields to add to the task document.
 
@@ -281,6 +281,23 @@ def summarize_vib_run(
     remove_empties: bool = False,
     additional_fields: dict = None,
 ) -> dict:
+    """
+    Get tabulated results from an ASE Vibrations object and store them in a database-friendly format.
+
+    Parameters
+    ----------
+    vib
+        ASE Vibrations object.
+    remove_empties
+        Whether to remove None values and empty lists/dicts from the task document.
+    additional_fields
+        Additional fields to add to the task document.
+
+    Returns
+    -------
+    Dict
+        Dictionary of tabulated inputs/results
+    """
     additional_fields = additional_fields or {}
 
     vib_freqs = vib.get_frequencies().tolist()
@@ -362,7 +379,7 @@ def summarize_thermo_run(
     pressure
         Pressure in bar.
     remove_empties
-        Whether to remove None values and empty lists/dicts from the TaskDocument.
+        Whether to remove None values and empty lists/dicts from the task document.
     additional_fields
         Additional fields to add to the task document.
 
