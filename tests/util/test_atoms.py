@@ -36,7 +36,7 @@ def test_get_atoms_id():
     assert get_atoms_id(atoms) == md5maghash
 
 
-def test_prep_next_run():
+def test_prep_next_run():  # sourcery skip: extract-duplicate-method
     atoms = bulk("Cu")
     md5hash = "d4859270a1a67083343bec0ab783f774"
     atoms = prep_next_run(atoms)
@@ -61,7 +61,7 @@ def test_prep_next_run():
     mags = atoms.get_magnetic_moments()
     atoms = prep_next_run(atoms)
     assert atoms.info["test"] == "hi"
-    assert atoms.calc == None
+    assert atoms.calc is None
     assert atoms.get_initial_magnetic_moments().tolist() == mags.tolist()
 
     atoms = deepcopy(ATOMS_MAG)
