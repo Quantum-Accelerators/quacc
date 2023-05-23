@@ -58,15 +58,14 @@ def static_job(
     atoms.calc = Dftb(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
 
-    scc_check = _check_logfile(LOG_FILE, "SCC is NOT converged")
-    if scc_check:
+    if _check_logfile(LOG_FILE, "SCC is NOT converged"):
         raise ValueError("SCC is not converged")
 
-    summary = summarize_run(
-        atoms, input_atoms=input_atoms, additional_fields={"name": "DFTB+ Static"}
+    return summarize_run(
+        atoms,
+        input_atoms=input_atoms,
+        additional_fields={"name": "DFTB+ Static"},
     )
-
-    return summary
 
 
 @ct.electron

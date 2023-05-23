@@ -133,11 +133,9 @@ def _prerelax(
     atoms.calc = calc
     traj = run_ase_opt(atoms, fmax=fmax, optimizer="BFGSLineSearch")
 
-    summary = summarize_opt_run(
+    return summarize_opt_run(
         traj, calc.parameters, additional_fields={"name": "QMOF Prerelax"}
     )
-
-    return summary
 
 
 def _loose_relax_positions(
@@ -182,11 +180,9 @@ def _loose_relax_positions(
     atoms.calc = calc
     atoms = run_calc(atoms)
 
-    summary = summarize_run(
+    return summarize_run(
         atoms, bader=False, additional_fields={"name": "QMOF Loose Relax"}
     )
-
-    return summary
 
 
 def _loose_relax_volume(
@@ -229,11 +225,11 @@ def _loose_relax_volume(
     atoms.calc = calc
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
 
-    summary = summarize_run(
-        atoms, bader=False, additional_fields={"name": "QMOF Loose Relax Volume"}
+    return summarize_run(
+        atoms,
+        bader=False,
+        additional_fields={"name": "QMOF Loose Relax Volume"},
     )
-
-    return summary
 
 
 def _double_relax(
@@ -345,6 +341,4 @@ def _static(
     atoms.calc = calc
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
 
-    summary = summarize_run(atoms, additional_fields={"name": "QMOF Static"})
-
-    return summary
+    return summarize_run(atoms, additional_fields={"name": "QMOF Static"})

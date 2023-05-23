@@ -71,11 +71,11 @@ def static_job(
     atoms.calc = GULP(keywords=gulp_keywords, options=gulp_options, library=library)
     atoms = run_calc(atoms, geom_file="gulp.cif" if atoms.pbc.any() else "gulp.xyz")
 
-    summary = summarize_run(
-        atoms, input_atoms=input_atoms, additional_fields={"name": "GULP Static"}
+    return summarize_run(
+        atoms,
+        input_atoms=input_atoms,
+        additional_fields={"name": "GULP Static"},
     )
-
-    return summary
 
 
 @ct.electron
@@ -125,7 +125,7 @@ def relax_job(
         "gfnff": gfnff,
         "gwolf": bool(gfnff and atoms.pbc.any()),
         "conp": bool(volume_relax and atoms.pbc.any()),
-        "conv": bool(not volume_relax or not atoms.pbc.any()),
+        "conv": not volume_relax or not atoms.pbc.any(),
     }
     default_options = {
         "dump every gulp.res": True,
@@ -149,8 +149,8 @@ def relax_job(
     if not atoms.calc.get_opt_state():
         raise ValueError("Optimization did not converge!")
 
-    summary = summarize_run(
-        atoms, input_atoms=input_atoms, additional_fields={"name": "GULP Relax"}
+    return summarize_run(
+        atoms,
+        input_atoms=input_atoms,
+        additional_fields={"name": "GULP Relax"},
     )
-
-    return summary
