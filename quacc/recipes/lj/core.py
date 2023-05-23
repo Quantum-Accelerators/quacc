@@ -97,6 +97,4 @@ def relax_job(
         opt_kwargs=opt_kwargs,
     )
 
-    return summarize_opt_run(
-        traj, atoms.calc.parameters, additional_fields={"name": ":J Relax"}
-    )
+    return summarize_opt_run(traj, additional_fields={"name": ":J Relax"})

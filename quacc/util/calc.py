@@ -230,7 +230,7 @@ def run_ase_opt(
     os.chdir(cwd)
 
     # Check convergence
-    if not dyn.converged:
+    if not dyn.converged():
         raise ValueError("Optimization did not converge.")
 
     # Read trajectory

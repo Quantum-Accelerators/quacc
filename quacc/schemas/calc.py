@@ -148,7 +148,6 @@ def summarize_run(
 
 def summarize_opt_run(
     traj: Trajectory,
-    parameters: dict,
     prep_next_run: bool = True,
     remove_empties: bool = False,
     additional_fields: dict = None,
@@ -161,8 +160,6 @@ def summarize_opt_run(
     ----------
     traj
         ASE Trajectory.
-    parameters
-        Dictionary of calculator parameters.
     prep_next_run
         Whether the Atoms object stored in {"atoms": atoms} should be prepared for the next run
         This clears out any attached calculator and moves the final magmoms to the initial magmoms.
@@ -249,7 +246,7 @@ def summarize_opt_run(
     # Get the calculator inputs
     uri = get_uri(os.getcwd())
     inputs = {
-        "parameters": parameters,
+        "parameters": final_atoms.calc.parameters,
         "nid": uri.split(":")[0],
         "dir_name": ":".join(uri.split(":")[1:]),
     }
