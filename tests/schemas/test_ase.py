@@ -1,5 +1,4 @@
 import os
-from copy import deepcopy
 from pathlib import Path
 from shutil import rmtree
 
