@@ -27,7 +27,6 @@ from monty.os.path import zpath
 from monty.shutil import copy_r, gzip_dir
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.vasp.inputs import Kpoints
-from pymatgen.symmetry.analyzer import PointGroupAnalyzer
 from pymatgen.symmetry.bandstructure import HighSymmKpath
 
 from quacc import SETTINGS
@@ -336,12 +335,10 @@ def run_ase_vib(
 
 def ideal_gas_thermo(
     atoms: Atoms,
-    vib_list: list[float | complex],
-    temperature: float = 298.15,
-    pressure: float = 1.0,
+    vib_freqs: list[float | complex],
     energy: float = 0.0,
     spin_multiplicity: float = None,
-) -> dict:
+) -> IdealGasThermo:
     """
     Calculate thermodynamic properties for a molecule from a given vibrational analysis.
 
@@ -349,12 +346,8 @@ def ideal_gas_thermo(
     ----------
     atoms
         The Atoms object to use.
-    vib_list
+    vib_freqs
         The list of vibrations to use, typically obtained from Vibrations.get_frequencies().
-    temperature
-        Temperature in Kelvins.
-    pressure
-        Pressure in bar.
     energy
         Potential energy in eV. If 0 eV, then the thermochemical correction is computed.
     spin_multiplicity
@@ -363,27 +356,21 @@ def ideal_gas_thermo(
 
     Returns
     -------
-    dict
-        {
-            "atoms": .Atoms,
-            ...,
-            "results":
-            {
-                "frequencies": list of frequencies in cm^-1,
-                "true_frequencies": list of true vibrational frequencies in cm^-1,
-                "n_imag": number of imaginary modes within true_frequencies in cm^-1,
-                "geometry": the geometry of the molecule,
-                "pointgroup": the point group of the molecule,
-                "energy": potential energy in eV,
-                "enthalpy": enthalpy in eV,
-                "entropy": entropy in eV/K,
-                "gibbs_energy": free energy in eV
-            }
-        }
+    IdealGasThermo object
+
     """
-    for i, f in enumerate(vib_list):
+
+    # Ensure all imaginary modes are actually negatives
+    for i, f in enumerate(vib_freqs):
+        if isinstance(f, complex) and np.imag(f) != 0:
+            vib_freqs[i] = complex(0 - f * 1j)
+
+    vib_energies = [f * invcm for f in vib_freqs]
+    real_vib_energies = np.real(vib_energies)
+
+    for i, f in enumerate(vib_freqs):
         if not isinstance(f, complex) and f < 0:
-            vib_list[i] = complex(0 - f * 1j)
+            vib_freqs[i] = complex(0 - f * 1j)
 
     # Get the spin from the Atoms object
     if spin_multiplicity:
@@ -402,25 +389,15 @@ def ideal_gas_thermo(
     natoms = len(atoms)
     metadata = atoms_to_metadata(atoms)
 
-    # Get the geometry and true frequencies that should
-    # be used for thermo calculations
+    # Get the geometry
     if natoms == 1:
         geometry = "monatomic"
-        true_freqs = []
     elif metadata["symmetry"]["linear"]:
         geometry = "linear"
-        true_freqs = vib_list[-(3 * natoms - 5) :]
     else:
         geometry = "nonlinear"
-        true_freqs = vib_list[-(3 * natoms - 6) :]
 
-    # Fetch the real vibrational energies
-    real_vib_freqs = [f for f in true_freqs if np.isreal(f)]
-    n_imag = len(true_freqs) - len(real_vib_freqs)
-    real_vib_energies = [f * invcm for f in real_vib_freqs]
-
-    # Calculate ideal gas thermo
-    igt = IdealGasThermo(
+    return IdealGasThermo(
         real_vib_energies,
         geometry,
         potentialenergy=energy,
@@ -428,29 +405,6 @@ def ideal_gas_thermo(
         symmetrynumber=metadata["symmetry"]["rotation_number"],
         spin=spin,
     )
-    if len(igt.vib_energies) != len(real_vib_energies):
-        raise ValueError(
-            "The number of real vibrational modes and those used by ASE do not match. Something is very wrong..."
-        )
-
-    # Use negative sign convention for imag modes
-    vib_list = [np.abs(f) if np.isreal(f) else -np.abs(f) for f in vib_list]
-    true_freqs = [np.abs(f) if np.isreal(f) else -np.abs(f) for f in true_freqs]
-
-    return {
-        **metadata,
-        "results": {
-            "frequencies": vib_list,  # full list of computed frequencies
-            "true_frequencies": true_freqs,  # list of *relevant* frequencies based on the geometry
-            "n_imag": n_imag,  # number of imag modes within true_frequencies
-            "energy": energy,
-            "enthalpy": igt.get_enthalpy(temperature, verbose=False),
-            "entropy": igt.get_entropy(temperature, pressure * 10**5, verbose=False),
-            "gibbs_energy": igt.get_gibbs_energy(
-                temperature, pressure * 10**5, verbose=False
-            ),
-        },
-    }
 
 
 def _check_logfile(logfile: str, check_str: str) -> bool:

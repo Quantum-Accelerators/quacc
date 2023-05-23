@@ -7,9 +7,15 @@ from copy import deepcopy
 
 import covalent as ct
 from ase import Atoms
+from ase.units import invcm
 from monty.dev import requires
 
-from quacc.schemas.calc import summarize_opt_run, summarize_run
+from quacc.schemas.calc import (
+    summarize_opt_run,
+    summarize_run,
+    summarize_thermo_run,
+    summarize_vib_run,
+)
 from quacc.util.calc import ideal_gas_thermo, run_ase_opt, run_ase_vib, run_calc
 
 try:
@@ -147,14 +153,20 @@ def thermo_job(
     """
 
     xtb_kwargs = xtb_kwargs or {}
-
+    input_atoms = deepcopy(atoms)
     atoms.calc = TBLite(method=method, **xtb_kwargs)
     vibrations = run_ase_vib(atoms)
 
-    return ideal_gas_thermo(
-        atoms,
-        vibrations.get_frequencies(),
-        temperature=temperature,
-        pressure=pressure,
-        energy=energy,
-    )
+    igt = ideal_gas_thermo(input_atoms, vibrations.get_frequencies(), energy=energy)
+
+    return {
+        "vib": summarize_vib_run(
+            vibrations, input_atoms, additional_fields={"name": "TBLite Vibrations"}
+        ),
+        "thermo": summarize_thermo_run(
+            igt,
+            temperature=temperature,
+            pressure=pressure,
+            additional_fields={"name": "TBLite Thermo"},
+        ),
+    }

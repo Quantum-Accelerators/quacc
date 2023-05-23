@@ -5,8 +5,12 @@ from __future__ import annotations
 
 import os
 
+import numpy as np
 from ase import Atoms
 from ase.io import Trajectory
+from ase.thermochemistry import IdealGasThermo
+from ase.units import invcm
+from ase.vibrations import Vibrations
 from atomate2.utils.path import get_uri
 
 from quacc.schemas.atoms import atoms_to_metadata
@@ -263,6 +267,118 @@ def summarize_opt_run(
 
     # Create a dictionary of the inputs/outputs
     task_doc = {**atoms_db, **inputs, **results, **traj_results, **additional_fields}
+
+    if remove_empties:
+        task_doc = remove_dict_empties(task_doc)
+
+    task_doc = dict(sorted(task_doc.items()))
+
+    return task_doc
+
+
+def summarize_vib_run(
+    vib: Vibrations,
+    input_atoms: Atoms,
+    remove_empties: bool = False,
+    additional_fields: dict = None,
+) -> dict:
+    additional_fields = additional_fields or {}
+
+    vib_freqs = vib.get_frequencies()
+    vib_energies = vib.get_energies()
+    for i, f in enumerate(vib_freqs):
+        if isinstance(f, complex) and np.imag(f) != 0:
+            vib_freqs[i] = -np.imag(f)
+            vib_energies[i] = -np.imag(vib_energies[i])
+
+    atoms_db = atoms_to_metadata(input_atoms)
+
+    # Get the geometry
+    natoms = len(input_atoms)
+    if natoms == 1:
+        true_vib_freqs = []
+        true_vib_energies = []
+    elif atoms_db["symmetry"]["linear"]:
+        true_vib_freqs = vib_freqs[-(3 * natoms - 5) :]
+        true_vib_energies = vib_energies[-(3 * natoms - 5) :]
+    else:
+        true_vib_freqs = vib_freqs[-(3 * natoms - 6) :]
+        true_vib_energies = vib_energies[-(3 * natoms - 6) :]
+
+    results = {
+        "results": {
+            "delta": vib.delta,
+            "direction": vib.direction,
+            "imag_vib_freqs": [f / invcm for f in true_vib_freqs if f < 0],
+            "method": vib.method,
+            "n_imag": sum(true_vib_freqs < 0) if len(true_vib_freqs) > 0 else 0,
+            "ndof": vib.ndof,
+            "nfree": vib.nfree,
+            "true_vib_energies": true_vib_energies,
+            "true_vib_freqs": true_vib_freqs,
+            "vib_energies": vib_energies,
+            "vib_freqs": vib_freqs,
+            "zpe": vib.get_zero_point_energy(),
+        }
+    }
+
+    task_doc = {**atoms_db, **results, **additional_fields}
+
+    if remove_empties:
+        task_doc = remove_dict_empties(task_doc)
+
+    task_doc = dict(sorted(task_doc.items()))
+
+    return task_doc
+
+
+def summarize_thermo_run(
+    igt: IdealGasThermo,
+    temperature: float = 298.15,
+    pressure: float = 1.0,
+    remove_empties: bool = False,
+    additional_fields: dict = None,
+) -> dict:
+    """
+    Get tabulated results from an ASE IdealGasThermo object and store them in a database-friendly format.
+
+    Parameters
+    ----------
+    igt
+        ASE IdealGasThermo object obtained from quacc.util.calc.ideal_gas_thermo.
+    temperature
+        Temperature in Kelvins.
+    pressure
+        Pressure in bar.
+    remove_empties
+        Whether to remove None values and empty lists/dicts from the TaskDocument.
+    additional_fields
+        Additional fields to add to the task document.
+
+    Returns
+    -------
+    Dict
+        Dictionary of tabulated inputs/results
+    """
+
+    additional_fields = additional_fields or {}
+
+    results = {
+        "results": {
+            "vib_freqs": [f / invcm for f in igt.vib_energies],
+            "vib_energies": igt.vib_energies,
+            "energy": igt.potentialenergy,
+            "enthalpy": igt.get_enthalpy(temperature, verbose=True),
+            "entropy": igt.get_entropy(temperature, pressure * 10**5, verbose=True),
+            "gibbs_energy": igt.get_gibbs_energy(
+                temperature, pressure * 10**5, verbose=True
+            ),
+        }
+    }
+
+    atoms_db = atoms_to_metadata(igt.atoms)
+
+    task_doc = {**atoms_db, **results, **additional_fields}
 
     if remove_empties:
         task_doc = remove_dict_empties(task_doc)
