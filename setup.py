@@ -49,7 +49,7 @@ if __name__ == "__main__":
             "tblite": ["tblite[ase]>=0.3.0"],
             "docs": [
                 "autodoc_pydantic==1.8.0",
-                "furo==2023.03.27",
+                "furo==2023.5.20",
                 "ipython==8.13.2",
                 "jsonschema[format]",
                 "myst_parser==1.0.0",
@@ -66,7 +66,7 @@ if __name__ == "__main__":
                 "custodian==2023.5.12",
                 "emmet-core==0.55.2",
                 "jobflow==0.1.11",
-                "maggma==0.50.4",
+                "maggma==0.51.0",
                 "monty==2023.5.8",
                 "pymatgen==2023.5.10",
                 "tblite[ase]==0.3.0",
