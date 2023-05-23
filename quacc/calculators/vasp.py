@@ -203,15 +203,13 @@ def _manage_environment(custodian: bool = True) -> str:
     if custodian:
         # Return the command flag
         run_vasp_custodian_file = os.path.abspath(inspect.getfile(custodian_vasp))
-        command = f"python {run_vasp_custodian_file}"
+        return f"python {run_vasp_custodian_file}"
     else:
         if "ASE_VASP_COMMAND" not in os.environ and "VASP_SCRIPT" not in os.environ:
             warnings.warn(
                 "ASE_VASP_COMMAND or VASP_SCRIPT must be set in the environment to run VASP. See the ASE Vasp calculator documentation for details."
             )
-        command = None
-
-    return command
+        return None
 
 
 def _remove_unused_flags(user_calc_params: dict) -> dict:
@@ -229,25 +227,25 @@ def _remove_unused_flags(user_calc_params: dict) -> dict:
         Adjusted user-specified calculation parameters
     """
 
-    # Turn off opt flags if NSW = 0
-    opt_flags = ("ediffg", "ibrion", "isif", "potim", "iopt")
     if user_calc_params.get("nsw", 0) == 0:
+        # Turn off opt flags if NSW = 0
+        opt_flags = ("ediffg", "ibrion", "isif", "potim", "iopt")
         for opt_flag in opt_flags:
             user_calc_params.pop(opt_flag, None)
 
-    # Turn off +U flags if +U is not even used
-    ldau_flags = (
-        "ldau",
-        "ldauu",
-        "ldauj",
-        "ldaul",
-        "ldautype",
-        "ldauprint",
-        "ldau_luj",
-    )
     if not user_calc_params.get("ldau", False) and not user_calc_params.get(
         "ldau_luj", None
     ):
+        # Turn off +U flags if +U is not even used
+        ldau_flags = (
+            "ldau",
+            "ldauu",
+            "ldauj",
+            "ldaul",
+            "ldautype",
+            "ldauprint",
+            "ldau_luj",
+        )
         for ldau_flag in ldau_flags:
             user_calc_params.pop(ldau_flag, None)
 
