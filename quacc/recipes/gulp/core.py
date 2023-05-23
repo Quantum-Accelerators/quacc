@@ -2,13 +2,13 @@
 from __future__ import annotations
 
 import warnings
-from copy import deepcopy
 
 import covalent as ct
 from ase import Atoms
 from ase.calculators.gulp import GULP
 
 from quacc.schemas.calc import summarize_run
+from quacc.util.atoms import copy_atoms
 from quacc.util.calc import run_calc
 from quacc.util.dicts import merge_dicts
 
@@ -46,7 +46,7 @@ def static_job(
 
     keyword_swaps = keyword_swaps or {}
     option_swaps = option_swaps or {}
-    input_atoms = deepcopy(atoms)
+    input_atoms = copy_atoms(atoms)
 
     default_keywords = {
         "gfnff": gfnff,
@@ -114,7 +114,7 @@ def relax_job(
 
     keyword_swaps = keyword_swaps or {}
     option_swaps = option_swaps or {}
-    input_atoms = deepcopy(atoms)
+    input_atoms = copy_atoms(atoms)
 
     if volume_relax and not atoms.pbc.any():
         warnings.warn("Volume relaxation requested but no PBCs found. Ignoring.")
