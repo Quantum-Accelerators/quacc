@@ -9,6 +9,7 @@ from tempfile import mkdtemp
 
 import numpy as np
 from ase import Atoms
+from ase.constraints import FixAtoms
 from ase.io import read, trajectory
 from ase.optimize import (
     BFGS,
@@ -336,6 +337,7 @@ def run_ase_vib(
 def ideal_gas_thermo(
     atoms: Atoms,
     vib_freqs: list[float | complex],
+    atom_indices: list[int] = None,
     energy: float = 0.0,
     spin_multiplicity: float = None,
 ) -> IdealGasThermo:
@@ -345,9 +347,13 @@ def ideal_gas_thermo(
     Parameters
     ----------
     atoms
-        The Atoms object to use.
+        The Atoms object associated with the vibrational analysis. If only certain atoms
+        are allowed to vibrate, then this should either be reflected via the FixAtoms constraint
+        or by passing in a subset of the original Atoms object.
     vib_freqs
         The list of vibrations to use, typically obtained from Vibrations.get_frequencies().
+    atom_indices
+        The indices of the atoms allowed to vibrate. If None, it's assumed they all vibrate.
     energy
         Potential energy in eV. If 0 eV, then the thermochemical correction is computed.
     spin_multiplicity
@@ -359,6 +365,18 @@ def ideal_gas_thermo(
     IdealGasThermo object
 
     """
+    # Switch off PBC since this is only for molecules
+    atoms.set_pbc(False)
+
+    # Only consider thermochemistry of the mobile atoms
+    atom_indices = []
+    if atoms.constraints:
+        for constraint in atoms.constraints:
+            if isinstance(constraint, FixAtoms):
+                atom_indices.extend(constraint.index)
+
+    if atom_indices:
+        atoms = atoms[atom_indices]
 
     # Ensure all imaginary modes are actually negatives
     for i, f in enumerate(vib_freqs):
