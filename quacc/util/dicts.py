@@ -32,7 +32,7 @@ def merge_dicts(
     if auto_lowercase:
         d1 = {k.lower(): v for k, v in d1.items()}
         d2 = {k.lower(): v for k, v in d2.items()}
-    d_merged = d1 | d2
+    d_merged = {**d1, **d2}
     if remove_none:
         d_merged = {k: v for k, v in d_merged.items() if v is not None}
     if remove_false:
