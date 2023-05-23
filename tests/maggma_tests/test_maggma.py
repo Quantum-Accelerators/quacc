@@ -1,9 +1,14 @@
 import os
 
 import covalent as ct
+import pytest
 from maggma.stores import MemoryStore
 
 
+@pytest.mark.skipif(
+    os.environ.get("GITHUB_ACTIONS", False) is False,
+    reason="This test is only meant to be run on GitHub Actions",
+)
 def test_tutorial():
     # Connect to the database
 

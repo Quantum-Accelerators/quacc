@@ -1,3 +1,5 @@
+import os
+
 import covalent as ct
 import pytest
 from ase.build import bulk
@@ -7,6 +9,10 @@ from quacc.recipes.emt.core import static_job
 from quacc.util.db import covalent_to_db, results_to_db
 
 
+@pytest.mark.skipif(
+    os.environ.get("GITHUB_ACTIONS", False) is False,
+    reason="This test is only meant to be run on GitHub Actions",
+)
 def test_covalent_to_db():
     store = MemoryStore(collection_name="db1")
     covalent_to_db(store)

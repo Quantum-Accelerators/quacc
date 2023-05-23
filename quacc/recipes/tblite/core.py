@@ -7,7 +7,6 @@ from copy import deepcopy
 
 import covalent as ct
 from ase import Atoms
-from ase.units import invcm
 from monty.dev import requires
 
 from quacc.schemas.calc import (
