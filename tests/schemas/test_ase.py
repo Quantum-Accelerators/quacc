@@ -165,7 +165,7 @@ def test_summarize_vib_run():
 
     results = summarize_vib_run(vib)
     assert results["natoms"] == len(atoms)
-    assert results["results"]["delta"] == vib.delta
+    assert results["parameters"]["delta"] == vib.delta
 
     # Make sure info tags are handled appropriately
     atoms = molecule("N2")
