@@ -106,7 +106,7 @@ def double_relax_job(
     relax_volume: bool = True,
     swaps1: dict | None = None,
     swaps2: dict | None = None,
-) -> list[dict]:
+) -> dict:
     """
     Double-relax a structure. This is particularly useful for a few reasons:
     1. To carry out a cheaper pre-relaxation before the high-quality run.
@@ -131,7 +131,7 @@ def double_relax_job(
 
     Returns
     -------
-    [summary1, summary2]
+    {"relax1": summary1, "relax2": summary2}
         Dictionaries of the run summary.
     """
 
@@ -169,4 +169,4 @@ def double_relax_job(
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
     summary2 = summarize_run(atoms, additional_fields={"name": "VASP DoubleRelax 2"})
 
-    return [summary1, summary2]
+    return {"relax1": summary1, "relax2": summary2}
