@@ -161,24 +161,21 @@ def test_summarize_vib_run():
     # Make sure metadata is made
     atoms = molecule("N2")
     atoms.calc = EMT()
-    initial_atoms = deepcopy(atoms)
     vib = Vibrations(atoms)
     vib.run()
 
-    results = summarize_vib_run(vib, initial_atoms)
+    results = summarize_vib_run(vib)
     assert results["natoms"] == len(atoms)
-    assert results["atoms"] == initial_atoms
     assert results["results"]["delta"] == vib.delta
 
     # Make sure info tags are handled appropriately
     atoms = molecule("N2")
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
     atoms.calc = EMT()
-    initial_atoms = deepcopy(atoms)
     vib = Vibrations(atoms)
     vib.run()
 
-    results = summarize_vib_run(vib, initial_atoms)
+    results = summarize_vib_run(vib)
     assert results.get("atoms_info", {}) != {}
     assert results["atoms_info"].get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
