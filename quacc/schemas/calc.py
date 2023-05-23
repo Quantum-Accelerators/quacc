@@ -283,6 +283,19 @@ def summarize_vib_run(
 ) -> dict:
     additional_fields = additional_fields or {}
 
+    uri = get_uri(os.getcwd())
+    inputs = {
+        "parameters": {
+            "delta": vib.delta,
+            "direction": vib.direction,
+            "method": vib.method,
+            "ndof": vib.ndof,
+            "nfree": vib.nfree,
+        },
+        "nid": uri.split(":")[0],
+        "dir_name": ":".join(uri.split(":")[1:]),
+    }
+
     vib_freqs = vib.get_frequencies().tolist()
     vib_energies = vib.get_energies().tolist()
     for i, f in enumerate(vib_freqs):
@@ -310,22 +323,16 @@ def summarize_vib_run(
 
     results = {
         "results": {
-            "delta": vib.delta,
-            "direction": vib.direction,
             "imag_vib_freqs": [f / invcm for f in true_vib_freqs if f < 0],
-            "method": vib.method,
-            "n_imag": len([v for v in true_vib_freqs if v < 0]),
-            "ndof": vib.ndof,
-            "nfree": vib.nfree,
+            "n_imag": len([f for f in true_vib_freqs if f < 0]),
             "true_vib_energies": true_vib_energies,
             "true_vib_freqs": true_vib_freqs,
             "vib_energies": vib_energies,
             "vib_freqs": vib_freqs,
-            "zpe": vib.get_zero_point_energy(),
         }
     }
 
-    task_doc = {**atoms_db, **results, **additional_fields}
+    task_doc = {**atoms_db, **inputs, **results, **additional_fields}
 
     if remove_empties:
         task_doc = remove_dict_empties(task_doc)
@@ -366,6 +373,18 @@ def summarize_thermo_run(
 
     additional_fields = additional_fields or {}
 
+    uri = get_uri(os.getcwd())
+    inputs = {
+        "parameters": {
+            "temperature": temperature,
+            "pressure": pressure,
+            "sigma": igt.sigma,
+            "spin_multiplicity": int(2 * igt.spin + 1),
+        },
+        "nid": uri.split(":")[0],
+        "dir_name": ":".join(uri.split(":")[1:]),
+    }
+
     results = {
         "results": {
             "vib_freqs": [e / invcm for e in igt.vib_energies],
@@ -376,12 +395,13 @@ def summarize_thermo_run(
             "gibbs_energy": igt.get_gibbs_energy(
                 temperature, pressure * 10**5, verbose=True
             ),
+            "zpe": igt.get_ZPE_correction(),
         }
     }
 
     atoms_db = atoms_to_metadata(igt.atoms)
 
-    task_doc = {**atoms_db, **results, **additional_fields}
+    task_doc = {**atoms_db, **inputs, **results, **additional_fields}
 
     if remove_empties:
         task_doc = remove_dict_empties(task_doc)

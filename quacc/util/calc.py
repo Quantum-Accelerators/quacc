@@ -84,7 +84,7 @@ def run_calc(
     if not os.path.exists(scratch_dir):
         os.makedirs(scratch_dir)
 
-    tmpdir = mkdtemp(prefix="quacc-tmp", dir=scratch_dir)
+    tmpdir = mkdtemp(prefix="quacc-tmp-", dir=scratch_dir)
 
     if os.name != "nt":
         if os.path.islink(symlink):
@@ -213,7 +213,7 @@ def run_ase_opt(
     else:
         raise ValueError(f"Unknown optimizer: {optimizer}")
 
-    tmpdir = mkdtemp(prefix="quacc-tmp", dir=scratch_dir)
+    tmpdir = mkdtemp(prefix="quacc-tmp-", dir=scratch_dir)
 
     if os.name != "nt":
         if os.path.islink(symlink):
@@ -300,7 +300,7 @@ def run_ase_vib(
     if not os.path.exists(scratch_dir):
         os.makedirs(scratch_dir)
 
-    tmpdir = mkdtemp(prefix="quacc-tmp", dir=scratch_dir)
+    tmpdir = mkdtemp(prefix="quacc-tmp-", dir=scratch_dir)
 
     if os.name != "nt":
         if os.path.islink(symlink):

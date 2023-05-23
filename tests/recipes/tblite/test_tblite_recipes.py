@@ -1,4 +1,5 @@
 import os
+from copy import deepcopy
 from shutil import rmtree
 
 import numpy as np
@@ -71,7 +72,7 @@ def test_relax_Job():
 def test_thermo_job():
     atoms = molecule("H2O")
     output = thermo_job(atoms)
-    assert output["vib"]["atoms"] == atoms
+    assert output["vib"]["atoms"] == molecule("H2O")
     assert len(output["vib"]["results"]["vib_freqs"]) == 9
     assert len(output["vib"]["results"]["true_vib_freqs"]) == 3
     assert output["vib"]["results"]["vib_freqs"][0] == pytest.approx(
@@ -109,36 +110,28 @@ def test_thermo_job():
         0.05367081893346437
     )
 
-    # atoms = molecule("O2")
-    # output = thermo_job(atoms, energy=-100.0, temperature=200, pressure=2.0)
-    # assert output["vib"]["atoms"] == atoms
-    # assert output["vib"]["results"]["n_imag"] == 0
+    atoms = molecule("H")
+    atoms.set_initial_magnetic_moments([0.0])
+    initial_atoms = deepcopy(atoms)
+    output = thermo_job(atoms, energy=-1.0)
+    assert output["vib"]["atoms"] == initial_atoms
+    assert len(output["vib"]["results"]["vib_freqs"]) == 3
+    assert len(output["vib"]["results"]["true_vib_freqs"]) == 0
+    assert output["vib"]["results"]["vib_freqs"][0] == 0
+    assert output["vib"]["results"]["vib_freqs"][-1] == 0
+    assert output["vib"]["results"]["true_vib_freqs"] == []
+    assert output["vib"]["results"]["n_imag"] == 0
+    assert output["vib"]["results"]["imag_vib_freqs"] == []
 
-    # assert output["thermo"]["atoms"] == atoms
-    # assert len(output["thermo"]["results"]["vib_freqs"]) == 1
-    # assert output["thermo"]["results"]["vib_freqs"][-1] == pytest.approx(
-    #     1449.8291293360887
-    # )
-    # assert output["thermo"]["symmetry"]["linear"] is True
-    # assert output["thermo"]["symmetry"]["point_group"] == "D*h"
-    # assert output["thermo"]["symmetry"]["rotation_number"] == 2
-    # assert output["thermo"]["results"]["energy"] == -100.0
-    # assert output["thermo"]["results"]["enthalpy"] == pytest.approx(-99.849795427762328)
-    # assert output["thermo"]["results"]["entropy"] == pytest.approx(
-    #     0.0019504600146485497
-    # )
-    # assert output["thermo"]["results"]["gibbs_energy"] == pytest.approx(
-    #     -100.23988743069202
-    # )
-
-    # atoms = molecule("H")
-    # output = thermo_job(atoms, energy=-1.0)
-    # assert output["vib"]["atoms"] == atoms
-    # assert output["vib"]["results"]["n_imag"] == 0
-
-    # assert output["thermo"]["atoms"] == atoms
-    # assert output["thermo"]["symmetry"]["linear"] is False
-    # assert output["thermo"]["symmetry"]["rotation_number"] == np.inf
-    # assert len(output["thermo"]["results"]["vib_freqs"]) == 0
-    # assert output["thermo"]["results"]["energy"] == -1.0
-    # assert output["thermo"]["results"]["enthalpy"] == pytest.approx(-0.9357685739989672)
+    assert output["thermo"]["atoms"] == initial_atoms
+    assert output["thermo"]["symmetry"]["linear"] is False
+    assert output["thermo"]["symmetry"]["rotation_number"] == np.inf
+    assert len(output["thermo"]["results"]["vib_freqs"]) == 0
+    assert output["thermo"]["results"]["energy"] == -1.0
+    assert output["thermo"]["results"]["enthalpy"] == pytest.approx(-0.9357685739989672)
+    assert output["thermo"]["results"]["entropy"] == pytest.approx(
+        0.0011292352752446438
+    )
+    assert output["thermo"]["results"]["gibbs_energy"] == pytest.approx(
+        -1.2724500713131577
+    )
