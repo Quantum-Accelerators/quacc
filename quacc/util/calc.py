@@ -259,7 +259,7 @@ def run_ase_vib(
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
     copy_files: list[str] = None,
-) -> Atoms:
+) -> Vibrations:
     """
     Run an ASE-based vibration analysis in a scratch directory and copy the results
     back to the original directory. This can be useful if file I/O is slow in
