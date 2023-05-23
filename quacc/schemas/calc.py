@@ -249,7 +249,7 @@ def summarize_opt_run(
     # Get the calculator inputs
     uri = get_uri(os.getcwd())
     inputs = {
-        "parameters": parameters,
+        "parameters": parameters or None,
         "nid": uri.split(":")[0],
         "dir_name": ":".join(uri.split(":")[1:]),
     }
