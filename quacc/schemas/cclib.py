@@ -127,8 +127,7 @@ def summarize_run(
         # frequency step. This is because sometimes the frequency job will
         # yield all positive modes, but the optimization tolerances may
         # not be entirely met. See https://gaussian.com/faq3.
-        vibfreqs = results["attributes"].get("vibfreqs")
-        if vibfreqs:
+        if vibfreqs := results["attributes"].get("vibfreqs"):
             n_imag = sum(vibfreq < 0 for vibfreq in vibfreqs)
             if n_imag >= 2:
                 raise ValueError(f"Too many imaginary modes: {n_imag}")

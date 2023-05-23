@@ -388,26 +388,22 @@ def ideal_gas_thermo(
     # Get the spin from the Atoms object
     if spin_multiplicity:
         spin = (spin_multiplicity - 1) / 2
+    elif (
+        getattr(atoms, "calc", None) is not None
+        and getattr(atoms.calc, "results", None) is not None
+    ):
+        spin = round(atoms.calc.results.get("magmom", 0)) / 2
+    elif atoms.has("initial_magmoms"):
+        spin = round(np.sum(atoms.get_initial_magnetic_moments())) / 2
     else:
-        if (
-            getattr(atoms, "calc", None) is not None
-            and getattr(atoms.calc, "results", None) is not None
-        ):
-            spin = round(atoms.calc.results.get("magmom", 0)) / 2
-        elif atoms.has("initial_magmoms"):
-            spin = round(np.sum(atoms.get_initial_magnetic_moments())) / 2
-        else:
-            spin = 0
+        spin = 0
 
     # Get symmetry for later use
     natoms = len(atoms)
     pmg_obj = AseAtomsAdaptor.get_molecule(atoms)
     pga = PointGroupAnalyzer(pmg_obj)
 
-    if len(atoms) == 1:
-        pointgroup = None
-    else:
-        pointgroup = pga.get_pointgroup().sch_symbol
+    pointgroup = None if len(atoms) == 1 else pga.get_pointgroup().sch_symbol
 
     # Get the geometry and true frequencies that should
     # be used for thermo calculations
@@ -450,7 +446,7 @@ def ideal_gas_thermo(
     vib_list = [np.abs(f) if np.isreal(f) else -np.abs(f) for f in vib_list]
     true_freqs = [np.abs(f) if np.isreal(f) else -np.abs(f) for f in true_freqs]
 
-    thermo_summary = {
+    return {
         **atoms_to_metadata(atoms),
         "results": {
             "frequencies": vib_list,  # full list of computed frequencies
@@ -466,8 +462,6 @@ def ideal_gas_thermo(
             ),
         },
     }
-
-    return thermo_summary
 
 
 def _check_logfile(logfile: str, check_str: str) -> bool:

@@ -22,7 +22,7 @@ Please abide by the following guidelines when contributing code to Quacc:
 
 3. The input to most compute jobs should be an ASE `Atoms` object. The output of most compute tasks should be a schema from one of the {obj}`quacc.schemas` (see below).
 
-4. Individual compute jobs should be written as functions, and workflows should be written as classes. Refer to {obj}`quacc.rescipes.emt.core` and {obj}`quacc.recipes.emt.slabs` for examples.
+4. Individual compute jobs should be written as functions, and workflows should be written as classes. Refer to {obj}`quacc.recipes.emt.core` and {obj}`quacc.recipes.emt.slabs` for examples.
 
 5. Only define multi-step workflows if they go beyond simply stitching together existing functions.
 

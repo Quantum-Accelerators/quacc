@@ -37,11 +37,11 @@ def static_job(atoms: Atoms, emt_kwargs: dict | None = None) -> dict:
     atoms.calc = EMT(**emt_kwargs)
     atoms = run_calc(atoms)
 
-    summary = summarize_run(
-        atoms, input_atoms=input_atoms, additional_fields={"name": "EMT Static"}
+    return summarize_run(
+        atoms,
+        input_atoms=input_atoms,
+        additional_fields={"name": "EMT Static"},
     )
-
-    return summary
 
 
 @ct.electron
@@ -89,8 +89,6 @@ def relax_job(
         opt_kwargs=opt_kwargs,
     )
 
-    summary = summarize_opt_run(
+    return summarize_opt_run(
         traj, atoms.calc.parameters, additional_fields={"name": "EMT Relax"}
     )
-
-    return summary

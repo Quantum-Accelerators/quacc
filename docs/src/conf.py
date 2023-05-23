@@ -164,7 +164,10 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3.10", None),
     "ase": ("https://wiki.fysik.dtu.dk/ase/py-modindex.html", None),
     "pymatgen": ("http://pymatgen.org", None),
-    "covalent": ("https://covalent.readthedocs.io/en/latest/", None),
+    "covalent": (
+        "https://docs.covalent.xyz/docs/user-documentation/api-reference/cov-api",
+        None,
+    ),
     "atomate2": ("https://materialsproject.github.io/atomate2/", None),
     "jobflow": ("https://materialsproject.github.io/jobflow/", None),
     "monty": ("https://guide.materialsvirtuallab.org/monty/", None),

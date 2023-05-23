@@ -48,11 +48,11 @@ def static_job(
 
     atoms.calc = TBLite(method=method, **tblite_kwargs)
     atoms = run_calc(atoms)
-    summary = summarize_run(
-        atoms, input_atoms=input_atoms, additional_fields={"name": "TBLite Static"}
+    return summarize_run(
+        atoms,
+        input_atoms=input_atoms,
+        additional_fields={"name": "TBLite Static"},
     )
-
-    return summary
 
 
 @ct.electron
@@ -107,11 +107,9 @@ def relax_job(
         opt_kwargs=opt_kwargs,
     )
 
-    summary = summarize_opt_run(
+    return summarize_opt_run(
         traj, atoms.calc.parameters, additional_fields={"name": "TBLite Relax"}
     )
-
-    return summary
 
 
 @requires(TBLite, "tblite must be installed. Try pip install tblite[ase]")
@@ -153,12 +151,10 @@ def thermo_job(
     atoms.calc = TBLite(method=method, **xtb_kwargs)
     vibrations = run_ase_vib(atoms)
 
-    thermo_summary = ideal_gas_thermo(
+    return ideal_gas_thermo(
         atoms,
         vibrations.get_frequencies(),
         temperature=temperature,
         pressure=pressure,
         energy=energy,
     )
-
-    return thermo_summary
