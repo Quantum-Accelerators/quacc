@@ -8,6 +8,8 @@ from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.io import read
 from ase.optimize import BFGS
+from ase.thermochemistry import IdealGasThermo
+from ase.units import invcm
 from ase.vibrations import Vibrations
 from monty.json import MontyDecoder, jsanitize
 
@@ -177,6 +179,46 @@ def test_summarize_vib_run():
     vib.run()
 
     results = summarize_vib_run(vib, initial_atoms)
+    assert results.get("atoms_info", {}) != {}
+    assert results["atoms_info"].get("test_dict", None) == {"hi": "there", "foo": "bar"}
+    assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
+
+    # test document can be jsanitized and decoded
+    d = jsanitize(results, strict=True, enum_values=True)
+    MontyDecoder().process_decoded(d)
+
+
+def test_summarize_thermo_run():
+    # Make sure metadata is made
+    atoms = molecule("N2")
+    igt = IdealGasThermo([0.34], "linear", atoms=atoms, spin=0, symmetrynumber=2)
+    results = summarize_thermo_run(igt)
+    assert results["natoms"] == len(atoms)
+    assert results["atoms"] == atoms
+    assert results["results"]["vib_energies"] == [0.34]
+    assert results["results"]["vib_freqs"] == [0.34 / invcm]
+    assert results["results"]["energy"] == 0
+
+    # Make sure right number of vib energies are reported
+    atoms = molecule("N2")
+    igt = IdealGasThermo(
+        [0.0, 0.34], "linear", atoms=atoms, potentialenergy=-1, spin=0, symmetrynumber=2
+    )
+    results = summarize_thermo_run(igt)
+    assert results["natoms"] == len(atoms)
+    assert results["atoms"] == atoms
+    assert results["results"]["vib_energies"] == [0.34]
+    assert results["results"]["vib_freqs"] == [0.34 / invcm]
+    assert results["results"]["energy"] == -1
+
+    # # Make sure info tags are handled appropriately
+    atoms = molecule("N2")
+    atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
+    atoms.calc = EMT()
+    igt = IdealGasThermo(
+        [0.0, 0.34], "linear", atoms=atoms, potentialenergy=-1, spin=0, symmetrynumber=2
+    )
+    results = summarize_thermo_run(igt)
     assert results.get("atoms_info", {}) != {}
     assert results["atoms_info"].get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}

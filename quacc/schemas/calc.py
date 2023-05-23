@@ -368,7 +368,7 @@ def summarize_thermo_run(
 
     results = {
         "results": {
-            "vib_freqs": [f / invcm for f in igt.vib_energies],
+            "vib_freqs": [e / invcm for e in igt.vib_energies],
             "vib_energies": igt.vib_energies.tolist(),
             "energy": igt.potentialenergy,
             "enthalpy": igt.get_enthalpy(temperature, verbose=True),
