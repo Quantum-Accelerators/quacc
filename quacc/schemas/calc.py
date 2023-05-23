@@ -283,6 +283,9 @@ def summarize_vib_run(
 ) -> dict:
     additional_fields = additional_fields or {}
 
+    vib_freqs = vib.get_frequencies().tolist()
+    vib_energies = vib.get_energies().tolist()
+
     uri = get_uri(os.getcwd())
     inputs = {
         "parameters": {
@@ -296,8 +299,6 @@ def summarize_vib_run(
         "dir_name": ":".join(uri.split(":")[1:]),
     }
 
-    vib_freqs = vib.get_frequencies().tolist()
-    vib_energies = vib.get_energies().tolist()
     for i, f in enumerate(vib_freqs):
         if np.imag(f) > 0:
             vib_freqs[i] = -np.abs(f)
