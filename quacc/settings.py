@@ -33,7 +33,11 @@ class QuaccSettings(BaseSettings):
         _DEFAULT_CONFIG_FILE_PATH, description="File to load alternative defaults from."
     )
     SCRATCH_DIR: str = Field(
-        os.path.expandvars("$SCRATCH") if "SCRATCH" in os.environ else ".",
+        os.path.expandvars("$SCRATCH")
+        if "SCRATCH" in os.environ
+        else "/tmp"
+        if os.path.exists("/tmp")
+        else ".",
         description="Scratch directory for calculations.",
     )
     GZIP_FILES: bool = Field(
