@@ -100,6 +100,7 @@ def test_summarize_opt_run():
     results = summarize_opt_run(traj)
     assert results["nsites"] == len(atoms)
     assert results["atoms"] == traj[-1]
+    assert results["results"]["energy"] == atoms.get_potential_energy()
     assert len(results["trajectory"]) == len(traj)
     assert len(results["trajectory_results"]) == len(traj)
     assert results["trajectory_results"][-1] == results["results"]
