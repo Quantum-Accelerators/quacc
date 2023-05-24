@@ -73,26 +73,26 @@ def test_doublerelax_job():
     atoms = bulk("Cu") * (2, 2, 2)
 
     output = double_relax_job(atoms)
-    assert output[0]["nsites"] == len(atoms)
-    assert output[0]["parameters"]["isym"] == 0
-    assert output[0]["parameters"]["nsw"] > 0
-    assert output[0]["parameters"]["isif"] == 3
-    assert output[0]["parameters"]["lwave"] == True
-    assert output[1]["nsites"] == len(atoms)
-    assert output[1]["parameters"]["isym"] == 0
-    assert output[1]["parameters"]["nsw"] > 0
-    assert output[1]["parameters"]["isif"] == 3
-    assert output[1]["parameters"]["lwave"] == True
+    assert output["relax1"]["nsites"] == len(atoms)
+    assert output["relax1"]["parameters"]["isym"] == 0
+    assert output["relax1"]["parameters"]["nsw"] > 0
+    assert output["relax1"]["parameters"]["isif"] == 3
+    assert output["relax1"]["parameters"]["lwave"] == True
+    assert output["relax2"]["nsites"] == len(atoms)
+    assert output["relax2"]["parameters"]["isym"] == 0
+    assert output["relax2"]["parameters"]["nsw"] > 0
+    assert output["relax2"]["parameters"]["isif"] == 3
+    assert output["relax2"]["parameters"]["lwave"] == True
 
     output = double_relax_job(atoms, preset="BulkSet", swaps2={"nelmin": 6})
-    assert output[0]["parameters"]["encut"] == 520
-    assert "nelmin" not in output[0]["parameters"]
-    assert output[1]["parameters"]["encut"] == 520
-    assert output[1]["parameters"]["nelmin"] == 6
+    assert output["relax1"]["parameters"]["encut"] == 520
+    assert "nelmin" not in output["relax1"]["parameters"]
+    assert output["relax2"]["parameters"]["encut"] == 520
+    assert output["relax2"]["parameters"]["nelmin"] == 6
 
     output = double_relax_job(atoms, relax_volume=False)
-    assert output[0]["parameters"]["isif"] == 2
-    assert output[1]["parameters"]["isif"] == 2
+    assert output["relax1"]["parameters"]["isif"] == 2
+    assert output["relax2"]["parameters"]["isif"] == 2
 
     output = double_relax_job(atoms, swaps1={"kpts": [1, 1, 1]})
 

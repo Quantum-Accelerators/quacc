@@ -86,8 +86,8 @@ def static_job(
     orcablocks = " ".join(list(blocks.keys()))
 
     atoms.calc = ORCA(
-        charge=charge if charge else round(sum(atoms.get_initial_charges())),
-        mult=mult if mult else round(1 + sum(atoms.get_initial_magnetic_moments())),
+        charge=charge or round(sum(atoms.get_initial_charges())),
+        mult=mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )
@@ -169,8 +169,8 @@ def relax_job(
     orcablocks = " ".join(list(blocks.keys()))
 
     atoms.calc = ORCA(
-        charge=charge if charge else round(sum(atoms.get_initial_charges())),
-        mult=mult if mult else round(1 + sum(atoms.get_initial_magnetic_moments())),
+        charge=charge or round(sum(atoms.get_initial_charges())),
+        mult=mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )

@@ -1,16 +1,12 @@
 import os
 from shutil import rmtree
 
+import covalent as ct
 import pytest
 from ase.build import bulk, molecule
 
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.recipes.emt.slabs import BulkToSlabsFlow
-
-try:
-    import covalent as ct
-except ImportError:
-    ct = None
 
 
 def teardown_module():
@@ -27,10 +23,6 @@ def teardown_module():
             rmtree(f)
 
 
-@pytest.mark.skipif(
-    ct is None,
-    reason="Covalent must be installed",
-)
 def test_covalent_config():
     ct_config = ct.get_config()
     for executor in ct_config["executors"]:
@@ -41,7 +33,7 @@ def test_covalent_config():
 
 
 @pytest.mark.skipif(
-    ct is None or os.environ.get("GITHUB_ACTIONS", False) is False,
+    os.environ.get("GITHUB_ACTIONS", False) is False,
     reason="This test is only meant to be run on GitHub Actions",
 )
 def test_tutorials():

@@ -51,8 +51,6 @@ def atoms_to_metadata(
             - emmet_version: str = Field(__version__, description="The version of emmet this document was built with.")
             - pymatgen_version: str = Field(pmg_version, description="The version of pymatgen this document was built with.")
             - pull_request: int = Field(None, description="The pull request number associated with this data build.")
-        - molecule: Molecule = Field(None, title = "The Pymatgen Molecule object from the Atoms object, if not periodic and store_pmg is True.")
-        - structure: Structure = Field(None, title = "The Pymatgen Structure object from the Atoms object, if periodic and store_pmg is True.")
 
         For periodic structures, the task document also has the following fields:
         - chemsys: str = Field(None, title="Chemical System", description="dash-delimited string of elements in the material.")
@@ -65,6 +63,7 @@ def atoms_to_metadata(
         - formula_pretty: str = Field(None, title="Pretty Formula", description="Cleaned representation of the formula.")
         - nelements: int = Field(None, description="Number of elements.")
         - nsites: int = Field(None, description="Total number of sites in the structure.")
+        - structure: Structure = Field(None, title = "The Pymatgen Structure object from the Atoms object, if periodic and store_pmg is True.")
         - symmetry: SymmetryData = Field(None, description="Symmetry data for this material.")
             - crystal_system: CrystalSystem = Field(None, title="Crystal System", description="The crystal system for this lattice.")
             - number: int = Field(None, title="Space Group Number", description="The spacegroup number for the lattice.")
@@ -82,6 +81,7 @@ def atoms_to_metadata(
         - formula_alphabetical: str = Field(None, title="Alphabetical Formula", description="Alphabetical molecular formula")
         - formula_anonymous: str = Field(None, title="Anonymous Formula", description="Anonymized representation of the formula")
         - formula_pretty: str = Field(None, title="Pretty Formula", description="Cleaned representation of the formula.")
+        - molecule: Molecule = Field(None, title = "The Pymatgen Molecule object from the Atoms object, if not periodic and store_pmg is True.")
         - natoms: int = Field(None, description="Total number of atoms in the molecule")
         - nelectrons: int = Field(None, title="Number of electrons", description="The total number of electrons for the molecule")
         - nelements: int = Field(None, title="Number of Elements")

@@ -4,6 +4,7 @@ POTCAR*
 scratch_path.txt
 tmp_path.txt
 tmp*
+cache*
 
 # Docs ignores
 docs/src/reference/*

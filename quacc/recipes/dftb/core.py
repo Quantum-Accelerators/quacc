@@ -1,13 +1,12 @@
 """Core recipes for DFTB+"""
 from __future__ import annotations
 
-from copy import deepcopy
-
 import covalent as ct
 from ase import Atoms
 from ase.calculators.dftb import Dftb
 
-from quacc.schemas.calc import summarize_run
+from quacc.schemas.ase import summarize_run
+from quacc.util.atoms import copy_atoms
 from quacc.util.calc import _check_logfile, run_calc
 from quacc.util.dicts import merge_dicts
 
@@ -46,7 +45,7 @@ def static_job(
     """
 
     swaps = swaps or {}
-    input_atoms = deepcopy(atoms)
+    input_atoms = copy_atoms(atoms)
 
     defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
@@ -101,12 +100,12 @@ def relax_job(
     """
 
     swaps = swaps or {}
-    input_atoms = deepcopy(atoms)
+    input_atoms = copy_atoms(atoms)
 
     defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
         "Hamiltonian_Method": method if "xtb" in method.lower() else None,
-        "kpts": kpts if kpts else (1, 1, 1) if atoms.pbc.any() else None,
+        "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
         "Driver_": "GeometryOptimization",
         "Driver_LatticeOpt": "Yes" if lattice_opt else "No",
         "Driver_AppendGeometries": "Yes",

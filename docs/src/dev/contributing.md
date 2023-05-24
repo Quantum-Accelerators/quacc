@@ -20,7 +20,7 @@ Please abide by the following guidelines when contributing code to Quacc:
 
 2. All code should include type hints and have documentation for the inputs and outputs.
 
-3. The input to most compute jobs should be an ASE `Atoms` object. The output of most compute tasks should be a schema from one of the {obj}`quacc.schemas` (see below).
+3. The input to most compute jobs should be an ASE `Atoms` object. The output of most compute tasks should be a schema from one of the module/functions within {obj}`quacc.schemas`.
 
 4. Individual compute jobs should be written as functions, and workflows should be written as classes. Refer to {obj}`quacc.recipes.emt.core` and {obj}`quacc.recipes.emt.slabs` for examples.
 
@@ -31,18 +31,6 @@ Please abide by the following guidelines when contributing code to Quacc:
 7. Never use `@ct.lattice` in the code directly (unless it is wrapped by `@ct.electron` to make it a sublattice).
 
 8. Ensure that the code remains flexible for the user.
-
-## Schemas
-
-At the end of any recipe you make, you should return a summary dictionary of the main inputs and outputs. This can currently be done with one of several possible functions:
-
-1. {obj}`quacc.schemas.calc.summarize_run`: This function is used to summarize a typical run that is done through ASE. It summarizes the inputs and outputs by pulling them from the ASE calculator and `Atoms` object. This is the most common function to use but also the most limited.
-
-2. {obj}`quacc.schemas.calc.summarize_opt_run`: This function is used to summarize a relaxation run that is specifically carried out via an ASE `Optimizer`. This is the only way ASE `Optimizer` runs can be summarized within Quacc.
-
-3. {obj}`quacc.schemas.cclib.summarize_run`: This function is used to summarize the inputs and outputs of a run for codes that are supported by [cclib](https://cclib.github.io/data.html). When possible, this is preferred over {obj}`quacc.schemas.calc.summarize_run` because cclib will generate a more detailed summary than ASE can provide. It is also more standardized across different codes.
-
-4. {obj}`quacc.schemas.vasp.summarize_run`: This function is used to summarize a VASP run. It has been custom-made for VASP based on the schema present in [`emmet-core`](https://github.com/materialsproject/emmet/blob/de2d700ef58f04622fa3ab01870e562b1387b696/emmet-core/emmet/core/vasp/calculation.py#L394).
 
 ## Changelog
 

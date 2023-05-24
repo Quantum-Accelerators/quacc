@@ -4,7 +4,7 @@ from ase import Atoms
 from ase.build import bulk
 from ase.calculators.emt import EMT
 
-from quacc.schemas.calc import summarize_run as calc_summarize_run
+from quacc.schemas.ase import summarize_run as calc_summarize_run
 
 
 def mock_get_potential_energy(self, **kwargs):

@@ -40,11 +40,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Fixed type hinting.
 - Changed `removed_empties` default to `False` for the VASP schema.
 - Use `setups_pbe54_MP` as the default pseudopotentials for the `BulkSet` preset in VASP.
+- Modified thermo and vibrational frequency schemas.
+- Renamed `quacc.schemas.calc` to `quacc.schemas.ase`.
 - Moved `main` branch to an orphan and started new `main` branch.
 
 ### Fixed
 
 - If the user-specified `scratch_dir` does not exist on the filesystem when using `run_calc`, `run_ase_opt`, or `run_ase_vib`, it will be created.
+- Fixed issue in the `TBLite` `ThermoJob` where magnetic moments were not being passed between the `Vibrations` and `IdealGasThermo` jobs.
 
 ### Removed
 

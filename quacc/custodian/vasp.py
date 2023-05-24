@@ -35,7 +35,7 @@ def run_custodian(
     Parameters
     ----------
     vasp_parallel_cmd
-        VASP parallel command, e.g. srun -N 2 --ntasks-per-node=24. Defaults to the $VASP_PARAlLEL_CMD
+        VASP parallel command, e.g. srun -N 2 --ntasks-per-node=24. Defaults to the $VASP_PARALLEL_CMD
         environment variable in settings.
     vasp_cmd
         VASP command. Defaults to vasp_std in settings.
