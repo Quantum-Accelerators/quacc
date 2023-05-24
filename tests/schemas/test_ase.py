@@ -44,6 +44,15 @@ def test_summarize_run():
     assert results["nsites"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["results"]["energy"] == atoms.get_potential_energy()
+    assert "pull_request" in results["builder_meta"]
+
+    # Test remove_empties
+    atoms = read(os.path.join(run1, "OUTCAR.gz"))
+    results = summarize_run(atoms, remove_empties=True)
+    assert results["nsites"] == len(atoms)
+    assert results["atoms"] == atoms
+    assert results["results"]["energy"] == atoms.get_potential_energy()
+    assert "pull_request" not in results["builder_meta"]
 
     # Make sure initial atoms object is stored if specified
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
@@ -106,6 +115,25 @@ def test_summarize_opt_run():
     assert results["trajectory_results"][-1] == results["results"]
     assert "nid" in results
     assert "dir_name" in results
+    assert "pull_request" in results["builder_meta"]
+
+    # Test remove_empties
+    atoms = bulk("Cu") * (2, 2, 1)
+    atoms[0].position += [0.1, 0.1, 0.1]
+    atoms.calc = EMT()
+    BFGS(atoms, trajectory="test.traj").run()
+    traj = read("test.traj", index=":")
+
+    results = summarize_opt_run(traj, remove_empties=True)
+    assert results["nsites"] == len(atoms)
+    assert results["atoms"] == traj[-1]
+    assert results["results"]["energy"] == atoms.get_potential_energy()
+    assert len(results["trajectory"]) == len(traj)
+    assert len(results["trajectory_results"]) == len(traj)
+    assert results["trajectory_results"][-1] == results["results"]
+    assert "nid" in results
+    assert "dir_name" in results
+    assert "pull_request" not in results["builder_meta"]
 
     # Make sure info tags are handled appropriately
     atoms = bulk("Cu") * (2, 2, 1)
@@ -179,6 +207,7 @@ def test_summarize_vib_run():
     assert results["parameters"]["nfree"] == 2
     assert "nid" in results
     assert "dir_name" in results
+    assert "pull_request" in results["builder_meta"]
     assert len(results["results"]["vib_freqs"]) == 6
     assert results["results"]["vib_freqs"][0] == -3.054403266390365e-06
     assert results["results"]["vib_freqs"][-1] == 928.1447554058556
@@ -191,6 +220,25 @@ def test_summarize_vib_run():
     assert results["results"]["true_vib_freqs"][0] == 928.1447554058556
     assert len(results["results"]["true_vib_energies"]) == 1
     assert results["results"]["true_vib_energies"][0] == 0.11507528256667966
+
+    # Test remove_empties
+    atoms = molecule("N2")
+    atoms.calc = EMT()
+    input_atoms = deepcopy(atoms)
+    vib = Vibrations(atoms)
+    vib.run()
+
+    results = summarize_vib_run(vib, remove_empties=True)
+    assert results["atoms"] == input_atoms
+    assert results["natoms"] == len(atoms)
+    assert results["parameters"]["delta"] == vib.delta
+    assert results["parameters"]["direction"] == "central"
+    assert results["parameters"]["method"] == "standard"
+    assert results["parameters"]["ndof"] == 6
+    assert results["parameters"]["nfree"] == 2
+    assert "nid" in results
+    assert "dir_name" in results
+    assert "pull_request" not in results["builder_meta"]
 
     # Make sure info tags are handled appropriately
     atoms = molecule("N2")
@@ -219,6 +267,18 @@ def test_summarize_thermo_run():
     assert results["results"]["vib_energies"] == [0.34]
     assert results["results"]["vib_freqs"] == [0.34 / invcm]
     assert results["results"]["energy"] == 0
+    assert "pull_request" in results["builder_meta"]
+
+    # Test remove_empties
+    atoms = molecule("N2")
+    igt = IdealGasThermo([0.34], "linear", atoms=atoms, spin=0, symmetrynumber=2)
+    results = summarize_thermo_run(igt, remove_empties=True)
+    assert results["natoms"] == len(atoms)
+    assert results["atoms"] == atoms
+    assert results["results"]["vib_energies"] == [0.34]
+    assert results["results"]["vib_freqs"] == [0.34 / invcm]
+    assert results["results"]["energy"] == 0
+    assert "pull_request" not in results["builder_meta"]
 
     # Make sure right number of vib energies are reported
     atoms = molecule("N2")

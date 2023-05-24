@@ -58,11 +58,6 @@ def summarize_run(
             Inherits the Structure of Molecule metadata fields described below.
         - nid: str = Field(None, title = "The node ID representing the machine where the calculation was run.")
         - parameters: dict = Field(None, title = "the parameters used to run the calculation.")
-            - delta: float = the Vibrations delta value
-            - direction: str = the Vibrations direction value
-            - method: str = the Vibrations method value
-            - ndof: int = the Vibrations ndof value
-            - nfree: int = the Vibrations nfree value
         - results: dict = Field(None, title = "The results from the calculation.")
 
         For periodic structures, the task document also has the following fields:
@@ -311,8 +306,18 @@ def summarize_vib_run(
         - dir_name: str = Field(None, description="Directory where the output is parsed")
         - nid: str = Field(None, title = "The node ID representing the machine where the calculation was run.")
         - parameters: dict = Field(None, title = "the parameters used to run the calculation.")
+            - delta: float = the Vibrations delta value
+            - direction: str = the Vibrations direction value
+            - method: str = the Vibrations method value
+            - ndof: int = the Vibrations ndof value
+            - nfree: int = the Vibrations nfree value
         - results: dict = Field(None, title = "The results from the calculation.")
-
+            - imag_vib_freqs: List[float] = Imaginary vibrational frequencies in cm^-1
+            - n_imag: int = Number of imaginary vibrational frequencies
+            - true_vib_energies: List[float] = True vibrational energies in eV
+            - true_vib_freqs: List[float] = True vibrational frequencies in cm^-1
+            - vib_energies: List[float] = Vibrational energies in eV, including artificial ones
+            - vib_freqs: List[float] = Vibrational frequencies in cm^-1, including artificial ones
         For periodic structures, the task document also has the following fields:
         - chemsys: str = Field(None, title="Chemical System", description="dash-delimited string of elements in the material.")
         - composition: Composition = Field(None, description="Full composition for the material.")
