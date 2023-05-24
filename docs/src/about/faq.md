@@ -23,3 +23,7 @@ Despite these differences, Quacc and Atomate2 are largely interoperable! Feel fr
 **Q: I see `@ct.electron` across the code. What if I don't want to use Covalent?**
 
 A: The beauty is that you don't have to use Covalent if you don't want to! By default, the `@ct.electron` wrapper is entirely ignored if you use Quacc without a workflow manager or if you use another workflow manager, such as Jobflow. For this reason, you can use Quacc with virtually any workflow manager you like.
+
+**Q: I want to contribute a new recipe to Quacc, but it will require additional dependencies. Is that a problem?**
+
+A: Absolutely not a problem! Simply make your dependencies optional in the `setup.py` file and use a `monty.dev.requires` decorator to ensure your recipes and tests only run if your necessary dependencies are installed. Refer to `quacc.recipes.tblite.core` and the `[tblite]` extras in the `setup.py` file for an example.
