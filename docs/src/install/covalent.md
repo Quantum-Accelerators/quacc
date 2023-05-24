@@ -15,7 +15,7 @@ Covalent uses a server to dispatch and retrieve calculation details and results.
 ![Covalent UI](../_static/install/ui_blank.jpg)
 
 ```{tip}
-Once you start scaling up your calculations, we recommend hosting the Covalent server on a dedicated machine or using [Covalent Cloud](https://www.covalent.xyz/cloud/), but for now you can simply run it on your local machine.
+Once you start scaling up your calculations, we recommend hosting the Covalent server on a dedicated machine or in the cloud. Refer to the [Deployment Guide](https://docs.covalent.xyz/docs/user-documentation/server-deployment) for details.
 ```
 
 ## Plugin Installation
