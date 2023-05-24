@@ -54,6 +54,10 @@ jobs:
           conda install -c psi4 psi4
           conda install -c conda-forge dftbplus==22.2
 
+      - name: Set up Quacc settings
+        run: |
+          export QUACC_VASP_VERBOSE=False
+
       - name: Set up Covalent server
         run: |
           echo "y" | covalent purge

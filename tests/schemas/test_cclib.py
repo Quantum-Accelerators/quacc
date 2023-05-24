@@ -24,6 +24,7 @@ def test_summarize_run():
     assert results["spin_multiplicity"] == 1
     assert results["natoms"] == 6
     assert results["metadata"].get("success", None) == True
+    assert "pull_request" in results["builder_meta"]
 
     # test document can be jsanitized and decoded
     d = jsanitize(results, strict=True, enum_values=True)
@@ -66,6 +67,17 @@ def test_summarize_run():
     assert results["atoms"].get_initial_magnetic_moments().tolist() == [3.14] * len(
         atoms
     )
+
+    # Test remove_empties
+    # Make sure metadata is made
+    atoms = read(log1)
+    results = summarize_run(atoms, ".log", dir_path=run1, remove_empties=True)
+    assert results["natoms"] == len(atoms)
+    assert results["atoms"] == atoms
+    assert results["spin_multiplicity"] == 1
+    assert results["natoms"] == 6
+    assert results["metadata"].get("success", None) == True
+    assert "pull_request" not in results["builder_meta"]
 
 
 def test_errors():

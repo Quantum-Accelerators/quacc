@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import os
-from pathlib import Path
 from typing import List, Optional
 
 from pydantic import BaseSettings, Field, root_validator
@@ -34,7 +33,11 @@ class QuaccSettings(BaseSettings):
         _DEFAULT_CONFIG_FILE_PATH, description="File to load alternative defaults from."
     )
     SCRATCH_DIR: str = Field(
-        os.path.expandvars("$SCRATCH") if "SCRATCH" in os.environ else ".",
+        os.path.expandvars("$SCRATCH")
+        if "SCRATCH" in os.environ
+        else "/tmp"
+        if os.path.exists("/tmp")
+        else ".",
         description="Scratch directory for calculations.",
     )
     GZIP_FILES: bool = Field(
@@ -134,6 +137,8 @@ class QuaccSettings(BaseSettings):
         place of built in defaults.
         This allows setting of the config file path through environment variables.
         """
+        from pathlib import Path
+
         from monty.serialization import loadfn
 
         config_file_path = values.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH)

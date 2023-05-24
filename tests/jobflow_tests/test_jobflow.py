@@ -4,7 +4,6 @@ from shutil import rmtree
 import jobflow as jf
 import pytest
 from ase.build import bulk
-from jobflow import JobStore, run_locally
 from maggma.stores import MemoryStore
 
 from quacc.recipes.emt.core import relax_job, static_job
@@ -26,12 +25,20 @@ def teardown_module():
 
 @pytest.mark.skipif(jf is None, reason="This test requires jobflow")
 def test_emt():
-    store = JobStore(MemoryStore())
+    store = jf.JobStore(MemoryStore())
 
     atoms = bulk("Cu")
 
+    # Test inddividual jobs
     job = jf.job(static_job)(atoms)
-    run_locally(job, store=store, ensure_success=True)
+    jf.run_locally(job, store=store, ensure_success=True)
 
     job = jf.job(relax_job)(atoms)
-    run_locally(job, store=store, ensure_success=True)
+    jf.run_locally(job, store=store, ensure_success=True)
+
+    # Test a Flow
+    job1 = jf.job(relax_job)(atoms)
+    job2 = jf.job(static_job)(job1.output["atoms"])
+
+    workflow = jf.Flow([job1, job2])
+    jf.run_locally(workflow, create_folders=True, ensure_success=True)

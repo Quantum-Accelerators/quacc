@@ -62,7 +62,7 @@ if __name__ == "__main__":
                 "ase @ git+https://gitlab.com/ase/ase.git",
                 "atomate2 @ git+https://github.com/materialsproject/atomate2.git",
                 "cclib==1.7.2",
-                "covalent==0.223.1rc0",
+                "covalent @ git+https://github.com/AgnostiqHQ/covalent.git",  # waiting on > 0.223.1rc0
                 # "covalent-slurm-plugin==0.16.0rc0",
                 "custodian==2023.5.12",
                 "emmet-core==0.55.2",
