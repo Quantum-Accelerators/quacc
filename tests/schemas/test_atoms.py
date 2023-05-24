@@ -21,6 +21,15 @@ def test_atoms_to_metadata():
     assert results["atoms"].info.get("test", None) == "hi"
     assert results["structure"] == AseAtomsAdaptor.get_structure(atoms)
     assert "molecule" not in results
+    assert "pull_request" in results["builder_meta"]
+
+    atoms = bulk("Cu")
+    atoms.info["test"] = "hi"
+    results = atoms_to_metadata(atoms, remove_empties=True)
+    assert results["atoms"].info.get("test", None) == "hi"
+    assert results["structure"] == AseAtomsAdaptor.get_structure(atoms)
+    assert "molecule" not in results
+    assert "pull_request" not in results["builder_meta"]
 
     atoms = bulk("Cu")
     atoms.info["test"] = "hi"
