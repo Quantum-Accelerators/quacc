@@ -18,7 +18,7 @@ Atomate2 is built around [Jobflow](https://github.com/materialsproject/jobflow).
 
 Atomate2 is a database-first approch to materials science workflows. Quacc supports the use of databases but does not require it, with the goal of reducing the barrier to getting started.
 
-Despite these differences, Quacc and Atomate2 are largely interoperable! Feel free to stitch together workflows from both codes as you see fit!
+Despite these differences, Quacc and Atomate2 are largely interoperable! Feel free to stitch together workflows from both codes as you see fit using Jobflow!
 
 **Q: I see `@ct.electron` across the code. What if I don't want to use Covalent?**
 
