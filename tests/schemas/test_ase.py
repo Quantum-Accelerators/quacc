@@ -43,6 +43,7 @@ def test_summarize_run():
     results = summarize_run(atoms)
     assert results["nsites"] == len(atoms)
     assert results["atoms"] == atoms
+    assert results["results"]["energy"] == atoms.get_potential_energy()
 
     # Make sure initial atoms object is stored if specified
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
