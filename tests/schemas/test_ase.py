@@ -1,4 +1,5 @@
 import os
+from copy import deepcopy
 from pathlib import Path
 from shutil import rmtree
 
@@ -101,6 +102,8 @@ def test_summarize_opt_run():
     assert len(results["trajectory"]) == len(traj)
     assert len(results["trajectory_results"]) == len(traj)
     assert results["trajectory_results"][-1] == results["results"]
+    assert "nid" in results
+    assert "dir_name" in results
 
     # Make sure info tags are handled appropriately
     atoms = bulk("Cu") * (2, 2, 1)
@@ -160,12 +163,32 @@ def test_summarize_vib_run():
     # Make sure metadata is made
     atoms = molecule("N2")
     atoms.calc = EMT()
+    input_atoms = deepcopy(atoms)
     vib = Vibrations(atoms)
     vib.run()
 
     results = summarize_vib_run(vib)
+    assert results["atoms"] == input_atoms
     assert results["natoms"] == len(atoms)
     assert results["parameters"]["delta"] == vib.delta
+    assert results["parameters"]["direction"] == "central"
+    assert results["parameters"]["method"] == "standard"
+    assert results["parameters"]["ndof"] == 6
+    assert results["parameters"]["nfree"] == 2
+    assert "nid" in results
+    assert "dir_name" in results
+    assert len(results["results"]["vib_freqs"]) == 6
+    assert results["results"]["vib_freqs"][0] == -3.054403266390365e-06
+    assert results["results"]["vib_freqs"][-1] == 928.1447554058556
+    assert len(results["results"]["vib_energies"]) == 6
+    assert results["results"]["vib_energies"][0] == -3.786977375083739e-10
+    assert results["results"]["vib_energies"][-1] == 0.11507528256667966
+    assert results["results"]["n_imag"] == 0
+    assert results["results"]["imag_vib_freqs"] == []
+    assert len(results["results"]["true_vib_freqs"]) == 1
+    assert results["results"]["true_vib_freqs"][0] == 928.1447554058556
+    assert len(results["results"]["true_vib_energies"]) == 1
+    assert results["results"]["true_vib_energies"][0] == 0.11507528256667966
 
     # Make sure info tags are handled appropriately
     atoms = molecule("N2")
