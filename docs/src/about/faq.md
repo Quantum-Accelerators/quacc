@@ -23,7 +23,3 @@ Despite these differences, Quacc and Atomate2 are largely interoperable! Feel fr
 **Q: I see `@ct.electron` across the code. What if I don't want to use Covalent?**
 
 A: The beauty is that you don't have to use Covalent if you don't want to! By default, the `@ct.electron` wrapper is entirely ignored if you use Quacc without a workflow manager or if you use another workflow manager, such as Jobflow. For this reason, you can use Quacc with virtually any workflow manager you like.
-
-**Q: Can I contribute to Quacc?**
-
-A: Yes! Please do!
