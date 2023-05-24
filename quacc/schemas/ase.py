@@ -6,10 +6,9 @@ from __future__ import annotations
 import os
 
 import numpy as np
-from ase import Atoms
+from ase import Atoms, units
 from ase.io import Trajectory
 from ase.thermochemistry import IdealGasThermo
-from ase.units import invcm
 from ase.vibrations import Vibrations
 from atomate2.utils.path import get_uri
 
@@ -399,7 +398,7 @@ def summarize_vib_run(
 
     results = {
         "results": {
-            "imag_vib_freqs": [f / invcm for f in true_vib_freqs if f < 0],
+            "imag_vib_freqs": [f / units.invcm for f in true_vib_freqs if f < 0],
             "n_imag": len([f for f in true_vib_freqs if f < 0]),
             "true_vib_energies": true_vib_energies,
             "true_vib_freqs": true_vib_freqs,
@@ -507,7 +506,7 @@ def summarize_thermo_run(
 
     results = {
         "results": {
-            "vib_freqs": [e / invcm for e in igt.vib_energies],
+            "vib_freqs": [e / units.invcm for e in igt.vib_energies],
             "vib_energies": igt.vib_energies.tolist(),
             "energy": igt.potentialenergy,
             "enthalpy": igt.get_enthalpy(temperature, verbose=True),
