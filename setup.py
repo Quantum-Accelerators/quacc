@@ -63,7 +63,7 @@ if __name__ == "__main__":
                 "atomate2 @ git+https://github.com/materialsproject/atomate2.git",
                 "cclib==1.7.2",
                 "covalent==0.223.1rc0",
-                # "covalent-slurm-plugin==0.16.0rc0",
+                "covalent-slurm-plugin==0.16.0rc0",
                 "custodian==2023.5.12",
                 "emmet-core==0.55.2",
                 "jobflow==0.1.11",
