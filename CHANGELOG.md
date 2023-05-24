@@ -37,7 +37,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Renamed `molden` to `write_molden` in Gaussian recipes to reflect that it is a boolean.
 - Switch license to standard BSD-3.
 - Simplified output schema for VASP slab workflows.
-- Fixed type hinting.
 - Changed `removed_empties` default to `False` for the VASP schema.
 - Use `setups_pbe54_MP` as the default pseudopotentials for the `BulkSet` preset in VASP.
 - Modified thermo and vibrational frequency schemas.
@@ -48,6 +47,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - If the user-specified `scratch_dir` does not exist on the filesystem when using `run_calc`, `run_ase_opt`, or `run_ase_vib`, it will be created.
 - Fixed issue in the `TBLite` `ThermoJob` where magnetic moments were not being passed between the `Vibrations` and `IdealGasThermo` jobs.
+- Fixed type hinting.
 
 ### Removed
 
