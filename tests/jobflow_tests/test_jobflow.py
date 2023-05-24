@@ -4,7 +4,6 @@ from shutil import rmtree
 import jobflow as jf
 import pytest
 from ase.build import bulk
-from jobflow import JobStore
 from maggma.stores import MemoryStore
 
 from quacc.recipes.emt.core import relax_job, static_job
