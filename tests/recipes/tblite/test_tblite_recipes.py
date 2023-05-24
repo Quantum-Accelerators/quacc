@@ -135,3 +135,45 @@ def test_thermo_job():
     assert output["thermo"]["results"]["gibbs_energy"] == pytest.approx(
         -1.2724500713131577
     )
+
+    atoms = molecule("CH3")
+    initial_atoms = deepcopy(atoms)
+    output = thermo_job(atoms, energy=-10.0, temperature=1000, pressure=20)
+    assert output["vib"]["atoms"] == initial_atoms
+    assert len(output["vib"]["results"]["vib_freqs"]) == 12
+    assert len(output["vib"]["results"]["true_vib_freqs"]) == 6
+    assert output["vib"]["results"]["vib_energies"][0] == pytest.approx(
+        -9.551076713062095e-06
+    )
+    assert output["vib"]["results"]["vib_energies"][-1] == pytest.approx(
+        0.3880868821616259
+    )
+    assert output["vib"]["results"]["true_vib_energies"][0] == pytest.approx(
+        0.0713506770137291
+    )
+    assert output["vib"]["results"]["true_vib_energies"][-1] == pytest.approx(
+        0.3880868821616259
+    )
+    assert output["vib"]["results"]["n_imag"] == 0
+    assert output["vib"]["results"]["imag_vib_freqs"] == []
+
+    assert output["thermo"]["atoms"] == initial_atoms
+    assert output["thermo"]["parameters"]["temperature"] == 1000.0
+    assert output["thermo"]["parameters"]["pressure"] == 20.0
+    assert output["thermo"]["parameters"]["sigma"] == 6
+    assert output["thermo"]["parameters"]["spin_multiplicity"] == 2
+    assert output["thermo"]["symmetry"]["linear"] is False
+    assert output["thermo"]["symmetry"]["rotation_number"] == 6
+    assert len(output["thermo"]["results"]["vib_freqs"]) == 6
+    assert output["thermo"]["results"]["energy"] == -10.0
+    assert output["thermo"]["results"]["enthalpy"] == pytest.approx(-8.749341973959462)
+    assert output["thermo"]["results"]["entropy"] == pytest.approx(
+        0.0023506788982171896
+    )
+    assert output["thermo"]["results"]["gibbs_energy"] == pytest.approx(
+        -11.100020872176652
+    )
+    assert "nid" in output["thermo"]
+    assert "dir_name" in output["thermo"]
+    assert "nid" in output["vib"]
+    assert "dir_name" in output["vib"]

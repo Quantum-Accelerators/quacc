@@ -247,18 +247,18 @@ def test_summarize_thermo_run():
     # Make sure spin works right
     atoms = molecule("CH3")
     vib_energies = [
-        9.551076713062095e-06j,
-        3.1825886575270693e-06j,
-        2.722329074480144e-06j,
-        (0.0385780245752849 + 0j),
-        (0.03876295284223488 + 0j),
-        (0.0387641138603004 + 0j),
-        (0.0713506770137291 + 0j),
-        (0.1699785717790076 + 0j),
-        (0.17002293587895384 + 0j),
-        (0.3768719400148429 + 0j),
-        (0.3880385493175119 + 0j),
-        (0.3880868821616259 + 0j),
+        9.551077150221621e-06j,
+        3.1825877476455407e-06j,
+        2.7223332245579342e-06j,
+        (0.03857802457526743 + 0j),
+        (0.038762952842240087 + 0j),
+        (0.03876411386029907 + 0j),
+        (0.07135067701372912 + 0j),
+        (0.1699785717790056 + 0j),
+        (0.1700229358789492 + 0j),
+        (0.3768719400148424 + 0j),
+        (0.38803854931751625 + 0j),
+        (0.3880868821616261 + 0j),
     ]
     igt = IdealGasThermo(
         vib_energies,
@@ -266,7 +266,7 @@ def test_summarize_thermo_run():
         potentialenergy=-10.0,
         atoms=atoms,
         spin=0.5,
-        symmetrynumber=3,
+        symmetrynumber=6,
     )
     results = summarize_thermo_run(igt, temperature=1000.0, pressure=20.0)
     assert results["natoms"] == len(atoms)
@@ -275,13 +275,15 @@ def test_summarize_thermo_run():
     assert results["results"]["vib_energies"][0] == vib_energies[-6]
     assert results["results"]["vib_energies"][-1] == vib_energies[-1]
     assert results["results"]["energy"] == -10.0
-    assert results["results"]["enthalpy"] == pytest.approx(-8.74934197395946)
-    assert results["results"]["entropy"] == pytest.approx(0.002410409680489146)
-    assert results["results"]["gibbs_energy"] == pytest.approx(-11.159751654448606)
+    assert results["results"]["enthalpy"] == pytest.approx(-8.749341973959462)
+    assert results["results"]["entropy"] == pytest.approx(0.0023506788982171896)
+    assert results["results"]["gibbs_energy"] == pytest.approx(-11.100020872176652)
     assert results["parameters"]["temperature"] == 1000.0
     assert results["parameters"]["pressure"] == 20.0
-    assert results["parameters"]["sigma"] == 3
+    assert results["parameters"]["sigma"] == 6
     assert results["parameters"]["spin_multiplicity"] == 2
+    assert "nid" in results
+    assert "dir_name" in results
 
     # test document can be jsanitized and decoded
     d = jsanitize(results, strict=True, enum_values=True)

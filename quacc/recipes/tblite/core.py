@@ -151,10 +151,12 @@ def thermo_job(
     """
 
     xtb_kwargs = xtb_kwargs or {}
+    input_atoms = copy_atoms(atoms)
+
     atoms.calc = TBLite(method=method, **xtb_kwargs)
     vibrations = run_ase_vib(atoms)
 
-    igt = ideal_gas_thermo(atoms, vibrations.get_frequencies(), energy=energy)
+    igt = ideal_gas_thermo(input_atoms, vibrations.get_frequencies(), energy=energy)
 
     return {
         "vib": summarize_vib_run(
