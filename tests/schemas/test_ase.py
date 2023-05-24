@@ -244,6 +244,45 @@ def test_summarize_thermo_run():
     assert results["atoms_info"].get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
+    # Make sure spin works right
+    atoms = molecule("CH3")
+    vib_energies = [
+        9.551076713062095e-06j,
+        3.1825886575270693e-06j,
+        2.722329074480144e-06j,
+        (0.0385780245752849 + 0j),
+        (0.03876295284223488 + 0j),
+        (0.0387641138603004 + 0j),
+        (0.0713506770137291 + 0j),
+        (0.1699785717790076 + 0j),
+        (0.17002293587895384 + 0j),
+        (0.3768719400148429 + 0j),
+        (0.3880385493175119 + 0j),
+        (0.3880868821616259 + 0j),
+    ]
+    igt = IdealGasThermo(
+        vib_energies,
+        "nonlinear",
+        potentialenergy=-10.0,
+        atoms=atoms,
+        spin=0.5,
+        symmetrynumber=3,
+    )
+    results = summarize_thermo_run(igt, temperature=1000.0, pressure=20.0)
+    assert results["natoms"] == len(atoms)
+    assert results["atoms"] == atoms
+    assert len(results["results"]["vib_energies"]) == 6
+    assert results["results"]["vib_energies"][0] == vib_energies[-6]
+    assert results["results"]["vib_energies"][-1] == vib_energies[-1]
+    assert results["results"]["energy"] == -10.0
+    assert results["results"]["enthalpy"] == pytest.approx(-8.74934197395946)
+    assert results["results"]["entropy"] == pytest.approx(0.002410409680489146)
+    assert results["results"]["gibbs_energy"] == pytest.approx(-11.159751654448606)
+    assert results["parameters"]["temperature"] == 1000.0
+    assert results["parameters"]["pressure"] == 20.0
+    assert results["parameters"]["sigma"] == 3
+    assert results["parameters"]["spin_multiplicity"] == 2
+
     # test document can be jsanitized and decoded
     d = jsanitize(results, strict=True, enum_values=True)
     MontyDecoder().process_decoded(d)
