@@ -175,9 +175,6 @@ def test_make_adsorbate_structures():
     new_atoms = make_adsorbate_structures(atoms, h2o)
     assert len(new_atoms) == 3
     assert new_atoms[0].get_initial_magnetic_moments().tolist() == mags + [0, 0, 0]
-    new_atoms = make_adsorbate_structures(atoms, h2o, modes=["ontop"])
-    assert len(new_atoms) == 1
-
     new_atoms = make_adsorbate_structures(atoms, h2o, modes="ontop")
     assert len(new_atoms) == 1
 
@@ -185,9 +182,6 @@ def test_make_adsorbate_structures():
         atoms, h2o, allowed_surface_symbols=["Cu", "Fe"]
     )
     assert len(new_atoms) == 3
-
-    new_atoms = make_adsorbate_structures(atoms, h2o, allowed_surface_indices=[6])
-    assert len(new_atoms) == 2
 
     new_atoms = make_adsorbate_structures(atoms, h2o, allowed_surface_indices=6)
     assert len(new_atoms) == 2
@@ -197,10 +191,9 @@ def test_make_adsorbate_structures():
     assert len(new_atoms) == 3
 
     new_atoms = make_adsorbate_structures(
-        atoms, h2o, allowed_surface_symbols=["Fe"], modes=["ontop"]
+        atoms, h2o, allowed_surface_symbols="Fe", modes=["ontop"]
     )
     assert len(new_atoms) == 1
-
     new_atoms = make_adsorbate_structures(
         atoms, h2o, allowed_surface_indices=[7], modes=["ontop"]
     )
