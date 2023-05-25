@@ -6,7 +6,7 @@ from ase.build import bulk, molecule
 from ase.io import read
 
 from quacc.calculators.vasp import Vasp
-from quacc.util.atoms import (
+from quacc.utils.atoms import (
     check_is_metal,
     get_atoms_id,
     get_highest_block,
