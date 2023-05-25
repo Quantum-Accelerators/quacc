@@ -18,8 +18,8 @@ from pymatgen.symmetry.bandstructure import HighSymmKpath
 
 from quacc import SETTINGS
 from quacc.custodian import vasp as custodian_vasp
-from quacc.utils.atoms import check_is_metal, get_highest_block, set_magmoms
-from quacc.utils.files import load_yaml_calc
+from quacc.util.atoms import check_is_metal, get_highest_block, set_magmoms
+from quacc.util.files import load_yaml_calc
 
 
 class Vasp(Vasp_):

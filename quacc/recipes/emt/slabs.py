@@ -8,7 +8,7 @@ from ase import Atoms
 from covalent._workflow.electron import Electron
 
 from quacc.recipes.emt.core import relax_job, static_job
-from quacc.utils.slabs import make_max_slabs_from_bulk
+from quacc.util.slabs import make_max_slabs_from_bulk
 
 
 @dataclass

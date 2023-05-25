@@ -6,8 +6,8 @@ from ase import Atoms
 from ase.calculators.emt import EMT
 
 from quacc.schemas.ase import summarize_opt_run, summarize_run
-from quacc.utils.atoms import copy_atoms
-from quacc.utils.calc import run_ase_opt, run_calc
+from quacc.util.atoms import copy_atoms
+from quacc.util.calc import run_ase_opt, run_calc
 
 # NOTE: This set of minimal recipes is mainly for demonstration purposes
 

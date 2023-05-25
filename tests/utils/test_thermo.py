@@ -1,7 +1,7 @@
 from ase.build import molecule
 from ase.calculators.emt import EMT
 
-from quacc.utils.thermo import ideal_gas
+from quacc.util.thermo import ideal_gas
 
 
 def test_ideal_gas():

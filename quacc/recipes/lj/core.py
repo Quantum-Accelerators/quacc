@@ -6,9 +6,9 @@ from ase import Atoms
 from ase.calculators.lj import LennardJones
 
 from quacc.schemas.ase import summarize_opt_run, summarize_run
-from quacc.utils.atoms import copy_atoms
-from quacc.utils.calc import run_ase_opt, run_calc
-from quacc.utils.dicts import merge_dicts
+from quacc.util.atoms import copy_atoms
+from quacc.util.calc import run_ase_opt, run_calc
+from quacc.util.dicts import merge_dicts
 
 # NOTE: This set of minimal recipes is mainly for demonstration purposes
 

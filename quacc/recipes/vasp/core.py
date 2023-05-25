@@ -6,8 +6,8 @@ from ase import Atoms
 
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.vasp import summarize_run
-from quacc.utils.calc import run_calc
-from quacc.utils.dicts import merge_dicts
+from quacc.util.calc import run_calc
+from quacc.util.dicts import merge_dicts
 
 
 @ct.electron

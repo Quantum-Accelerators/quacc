@@ -6,7 +6,7 @@ from ase.build import bulk
 from maggma.stores import MemoryStore
 
 from quacc.recipes.emt.core import static_job
-from quacc.utils.db import covalent_to_db, results_to_db
+from quacc.util.db import covalent_to_db, results_to_db
 
 
 @pytest.mark.skipif(

@@ -13,8 +13,8 @@ from ase.vibrations import Vibrations
 from atomate2.utils.path import get_uri
 
 from quacc.schemas.atoms import atoms_to_metadata
-from quacc.utils.atoms import prep_next_run as prep_next_run_
-from quacc.utils.dicts import remove_dict_empties
+from quacc.util.atoms import prep_next_run as prep_next_run_
+from quacc.util.dicts import remove_dict_empties
 
 
 def summarize_run(

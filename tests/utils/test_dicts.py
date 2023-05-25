@@ -1,4 +1,4 @@
-from quacc.utils.dicts import remove_dict_empties
+from quacc.util.dicts import remove_dict_empties
 
 
 def test_remove_dict_empties():

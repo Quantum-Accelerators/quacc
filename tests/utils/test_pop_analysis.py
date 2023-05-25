@@ -4,7 +4,7 @@ from shutil import rmtree
 
 import pytest
 
-from quacc.utils.pop_analysis import run_bader, run_chargemol
+from quacc.util.pop_analysis import run_bader, run_chargemol
 
 
 def mock_bader_analysis(*args, **kwargs):
@@ -41,11 +41,11 @@ def mock_chargemol_analysis(*args, **kwargs):
 def patch_pop_analyses(monkeypatch):
     # Monkeypatch the Bader and Chargemol analyses so they don't run via pytest
     monkeypatch.setattr(
-        "quacc.utils.pop_analysis.bader_analysis_from_path",
+        "quacc.util.pop_analysis.bader_analysis_from_path",
         mock_bader_analysis,
     )
     monkeypatch.setattr(
-        "quacc.utils.pop_analysis.ChargemolAnalysis",
+        "quacc.util.pop_analysis.ChargemolAnalysis",
         mock_chargemol_analysis,
     )
 

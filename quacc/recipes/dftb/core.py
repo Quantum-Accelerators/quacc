@@ -6,10 +6,10 @@ from ase import Atoms
 from ase.calculators.dftb import Dftb
 
 from quacc.schemas.ase import summarize_run
-from quacc.utils.atoms import copy_atoms
-from quacc.utils.calc import run_calc
-from quacc.utils.dicts import merge_dicts
-from quacc.utils.files import check_logfile
+from quacc.util.atoms import copy_atoms
+from quacc.util.calc import run_calc
+from quacc.util.dicts import merge_dicts
+from quacc.util.files import check_logfile
 
 LOG_FILE = "dftb.out"
 GEOM_FILE = "geo_end.gen"

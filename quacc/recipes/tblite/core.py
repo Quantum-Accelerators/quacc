@@ -13,9 +13,9 @@ from quacc.schemas.ase import (
     summarize_thermo_run,
     summarize_vib_run,
 )
-from quacc.utils.atoms import copy_atoms
-from quacc.utils.calc import run_ase_opt, run_ase_vib, run_calc
-from quacc.utils.thermo import ideal_gas
+from quacc.util.atoms import copy_atoms
+from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
+from quacc.util.thermo import ideal_gas
 
 try:
     from tblite.ase import TBLite
