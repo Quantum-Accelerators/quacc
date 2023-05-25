@@ -18,8 +18,7 @@ def summarize_run(
     logfile_extensions: str | list[str],
     dir_path: str = None,
     pop_analysis: str | list[str] = None,
-    check_convergence: bool = False,
-    transition_state: bool = False,
+    check_convergence: bool = True,
     prep_next_run: bool = True,
     remove_empties: bool = False,
     additional_fields: dict = None,
@@ -49,9 +48,7 @@ def summarize_run(
         Supports: "cpsa", "mpa", "lpa", "bickelhaupt", "density", "mbo", "bader", "ddec6",
         "hirshfeld".
     check_convergence
-         Whether to throw an error if convergence is not reached.
-    transition_state
-        Whether the calculation is a transition state (used for convergence check).
+         Whether to throw an error if geometry optimization convergence is not reached.
     prep_next_run
         Whether the Atoms object storeed in {"atoms": atoms} should be prepared for the next run.
         This clears out any attached calculator and moves the final magmoms to the initial magmoms.
@@ -122,21 +119,8 @@ def summarize_run(
     results["logfile"] = results["logfile"].split(":")[-1]
 
     # Check convergence if requested
-    if check_convergence:
-        # If it's an opt+freq job, we will just check convergence on the
-        # frequency step. This is because sometimes the frequency job will
-        # yield all positive modes, but the optimization tolerances may
-        # not be entirely met. See https://gaussian.com/faq3.
-        if vibfreqs := results["attributes"].get("vibfreqs"):
-            n_imag = sum(vibfreq < 0 for vibfreq in vibfreqs)
-            if n_imag >= 2:
-                raise ValueError(f"Too many imaginary modes: {n_imag}")
-            if n_imag == 1 and not transition_state:
-                raise ValueError("One imaginary mode, but transition_state = False.")
-            if n_imag == 0 and transition_state:
-                raise ValueError("No imaginary modes, but transition_state = True.")
-        elif results["attributes"].get("optdone") is False:
-            raise ValueError("Optimization not complete.")
+    if check_convergence and results["attributes"].get("optdone") is False:
+        raise ValueError("Optimization not complete.")
 
     # Get the calculator inputs
     inputs = {"parameters": atoms.calc.parameters}

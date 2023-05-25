@@ -7,14 +7,15 @@ import os
 
 import numpy as np
 from ase import Atoms, units
-from ase.io import Trajectory
+from ase.io import read
+from ase.optimize.optimize import Optimizer
 from ase.thermochemistry import IdealGasThermo
 from ase.vibrations import Vibrations
 from atomate2.utils.path import get_uri
 
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
-from quacc.util.dicts import remove_dict_empties
+from quacc.util.dicts import merge_dicts, remove_dict_empties
 
 
 def summarize_run(
@@ -146,8 +147,9 @@ def summarize_run(
 
 
 def summarize_opt_run(
-    traj: Trajectory,
+    dyn: Optimizer,
     parameters: dict = None,
+    check_convergence: bool = True,
     prep_next_run: bool = True,
     remove_empties: bool = False,
     additional_fields: dict = None,
@@ -158,10 +160,12 @@ def summarize_opt_run(
 
     Parameters
     ----------
-    traj
-        ASE Trajectory.
+    dyn
+        ASE Optimizer object.
     parameters
         atoms.calc.parameters used to run the calculation.
+    check_convergence
+        Whether to check the convergence of the calculation.
     prep_next_run
         Whether the Atoms object stored in {"atoms": atoms} should be prepared for the next run
         This clears out any attached calculator and moves the final magmoms to the initial magmoms.
@@ -234,7 +238,18 @@ def summarize_opt_run(
     """
 
     additional_fields = additional_fields or {}
+    parameters = parameters or {}
+    dyn_parameters = dyn.todict()
 
+    # Check trajectory
+    if not dyn.trajectory or not os.path.exists(dyn.trajectory):
+        raise ValueError("No trajectory file found.")
+
+    # Check convergence
+    if check_convergence and not dyn.converged():
+        raise ValueError("Optimization did not converge.")
+
+    traj = read(dyn.trajectory, index=":")
     initial_atoms = traj[0]
     final_atoms = traj[-1]
 
@@ -248,7 +263,7 @@ def summarize_opt_run(
     # Get the calculator inputs
     uri = get_uri(os.getcwd())
     inputs = {
-        "parameters": parameters or None,
+        "parameters": {**dyn_parameters, **parameters},
         "nid": uri.split(":")[0],
         "dir_name": ":".join(uri.split(":")[1:]),
     }

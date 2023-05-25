@@ -80,7 +80,7 @@ def relax_job(
     opt_kwargs = opt_kwargs or {}
 
     atoms.calc = EMT(**emt_kwargs)
-    traj = run_ase_opt(
+    dyn = run_ase_opt(
         atoms,
         fmax=fmax,
         max_steps=max_steps,
@@ -89,5 +89,5 @@ def relax_job(
     )
 
     return summarize_opt_run(
-        traj, atoms.calc.parameters, additional_fields={"name": "EMT Relax"}
+        dyn, atoms.calc.parameters, additional_fields={"name": "EMT Relax"}
     )

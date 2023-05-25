@@ -8,7 +8,7 @@ from tempfile import mkdtemp
 
 import numpy as np
 from ase import Atoms
-from ase.io import read, trajectory
+from ase.io import read
 from ase.optimize import (
     BFGS,
     FIRE,
@@ -18,6 +18,7 @@ from ase.optimize import (
     LBFGSLineSearch,
     MDMin,
 )
+from ase.optimize.optimize import Optimizer
 from ase.vibrations import Vibrations
 from monty.os.path import zpath
 from monty.shutil import copy_r, gzip_dir
@@ -136,7 +137,7 @@ def run_ase_opt(
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
     copy_files: list[str] = None,
-) -> trajectory:
+) -> Optimizer:
     """
     Run an ASE-based optimization in a scratch directory and copy the results
     back to the original directory. This can be useful if file I/O is slow in
@@ -167,8 +168,8 @@ def run_ase_opt(
 
     Returns
     -------
-    traj
-        The ASE trajectory object.
+    opt
+        The ASE Optimizer object.
     """
 
     if atoms.calc is None:
@@ -183,8 +184,10 @@ def run_ase_opt(
     if not os.path.exists(scratch_dir):
         os.makedirs(scratch_dir)
 
-    opt_kwargs["trajectory"] = "opt.traj"
-    opt_kwargs["restart"] = "opt.pckl"
+    if "trajectory" not in opt_kwargs:
+        opt_kwargs["trajectory"] = "opt.traj"
+    if "restart" not in opt_kwargs:
+        opt_kwargs["restart"] = "opt.pckl"
 
     # Get optimizer
     if optimizer.lower() == "bfgs":
@@ -215,18 +218,14 @@ def run_ase_opt(
     if copy_files:
         copy_decompress(copy_files, tmpdir)
 
+    # Define optimizer class
+    dyn = opt_class(atoms, **opt_kwargs)
+    dyn.trajectory = opt_kwargs["trajectory"]  # can remove after ASE MR 2901
+
     # Run calculation
     os.chdir(tmpdir)
-    dyn = opt_class(atoms, **opt_kwargs)
     dyn.run(fmax=fmax, steps=max_steps)
     os.chdir(cwd)
-
-    # Check convergence
-    if not dyn.converged():
-        raise ValueError("Optimization did not converge.")
-
-    # Read trajectory
-    traj = read(os.path.join(tmpdir, "opt.traj"), index=":")
 
     # Gzip files in tmpdir
     if gzip:
@@ -239,9 +238,7 @@ def run_ase_opt(
     if os.path.islink(symlink):
         os.remove(symlink)
 
-    os.chdir(cwd)
-
-    return traj
+    return dyn
 
 
 def run_ase_vib(
@@ -319,7 +316,5 @@ def run_ase_vib(
     # Remove symlink
     if os.path.islink(symlink):
         os.remove(symlink)
-
-    os.chdir(cwd)
 
     return vib
