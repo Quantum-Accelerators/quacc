@@ -19,8 +19,7 @@ def ideal_gas(
 ) -> IdealGasThermo:
     """
     Calculate thermodynamic properties for a molecule from a given vibrational analysis.
-    NOTE: Changes are necessary if you plan to accurately model adsorbates on
-    surfaces or if FixAtoms constraints are applied.
+    This is for free gases only and will not be valid for solids or adsorbates on surfaces.
 
     Parameters
     ----------
