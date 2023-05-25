@@ -31,7 +31,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Changed the `extras` names in `setup.py`.
 - Updated the dependencies.
 - Increased default for `max_steps` in `run_ase_opt` from 100 to 500.
-
 - Switch license to standard BSD-3.
 - Simplified output schema for VASP slab workflows.
 - Changed `removed_empties` default to `False` for the VASP schema.
