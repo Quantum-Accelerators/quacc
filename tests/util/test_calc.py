@@ -54,6 +54,21 @@ def test_run_calc():
     assert np.array_equal(new_atoms.get_positions(), atoms.get_positions()) is True
     assert np.array_equal(new_atoms.cell.array, atoms.cell.array) is True
 
+    atoms = bulk("Cu") * (2, 1, 1)
+    atoms[0].position += 0.1
+    atoms.calc = EMT()
+
+    new_atoms = run_calc(
+        atoms, scratch_dir="new_test_calc", gzip=False, copy_files=["test_file.txt"]
+    )
+    assert atoms.calc.results is not None
+
+    atoms = bulk("Cu") * (2, 1, 1)
+    with pytest.raises(ValueError):
+        run_calc(
+            atoms, scratch_dir="test_calc", gzip=False, copy_files=["test_file.txt"]
+        )
+
 
 def test_run_ase_opt():
     atoms = bulk("Cu") * (2, 1, 1)
