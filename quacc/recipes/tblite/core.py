@@ -119,7 +119,7 @@ def relax_job(
 
 @requires(TBLite, "tblite must be installed. Try pip install tblite[ase]")
 @ct.electron
-def thermo_job(
+def freq_job(
     atoms: Atoms,
     method: str = "GFN2-xTB",
     energy: float = 0.0,

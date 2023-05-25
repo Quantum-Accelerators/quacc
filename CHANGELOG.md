@@ -39,12 +39,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Renamed `prerelax` kwarg in `qmof_relax_job` was changed to `run_prerelax` to reflect that it is a boolean.
 - Renamed `volume_relax` kwarg in VASP recipes to `relax_volume` to reflect that it is a boolean.
 - Renamed `molden` to `write_molden` in Gaussian recipes to reflect that it is a boolean.
+- Renamed `quacc.recipes.tblite.core.thermo_job` to `quacc.recipes.tblite.core.freq_job`.
 - Renamed `quacc.schemas.calc` to `quacc.schemas.ase`.
 - Split `quacc.util.basics` and its associated functions into `quacc.util.dicts` and `quacc.util.files`.
 - Moved `main` branch to an orphan and started new `main` branch.
 - Moved ideal gas thermo calculation to `quacc.util.thermo`.
 - Moved `check_logfile` to `quacc.util.files`.
-- Moved `_convert_auto_kpts` to `quacc.calculators.vasp`.
+- Moved `convert_auto_kpts` to `quacc.calculators.vasp`.
 
 ### Fixed
 
