@@ -9,7 +9,6 @@ from ase.constraints import FixAtoms
 from ase.thermochemistry import IdealGasThermo
 from ase.units import invcm
 
-from quacc import SETTINGS
 from quacc.schemas.atoms import atoms_to_metadata
 
 
