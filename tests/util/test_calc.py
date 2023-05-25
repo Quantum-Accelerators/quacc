@@ -85,6 +85,15 @@ def test_run_ase_opt():
     assert np.array_equal(new_atoms[-1].cell.array, atoms.cell.array) is True
     os.remove("test_file.txt.gz")
 
+    atoms = bulk("Cu") * (2, 1, 1)
+    atoms[0].position += 0.1
+    atoms.calc = EMT()
+
+    new_atoms = run_ase_opt(
+        atoms, scratch_dir="new_test_calc2", gzip=False, copy_files=["test_file.txt"]
+    )
+    assert atoms.calc.results is not None
+
     atoms = bulk("Cu")
     with pytest.raises(ValueError):
         run_ase_opt(atoms, scratch_dir="test_calc", copy_files=["test_file.txt"])
