@@ -98,7 +98,7 @@ def test_run_ase_opt():
     )
     assert atoms[-1].calc.results is not None
     new_atoms = run_ase_opt(
-        atoms,
+        atoms[-1],
         optimizer="BFGSLineSearch",
         scratch_dir="test_calc",
         gzip=False,
@@ -106,7 +106,7 @@ def test_run_ase_opt():
     )
     assert new_atoms[-1].calc.results is not None
     new_atoms = run_ase_opt(
-        atoms,
+        atoms[-1],
         optimizer="LBFGS",
         scratch_dir="test_calc",
         gzip=False,
@@ -114,7 +114,7 @@ def test_run_ase_opt():
     )
     assert new_atoms[-1].calc.results is not None
     new_atoms = run_ase_opt(
-        atoms,
+        atoms[-1],
         optimizer="LBFGSLineSearch",
         scratch_dir="test_calc",
         gzip=False,
@@ -122,7 +122,7 @@ def test_run_ase_opt():
     )
     assert new_atoms[-1].calc.results is not None
     new_atoms = run_ase_opt(
-        atoms,
+        atoms[-1],
         optimizer="GPMin",
         scratch_dir="test_calc",
         gzip=False,
@@ -130,7 +130,7 @@ def test_run_ase_opt():
     )
     assert new_atoms[-1].calc.results is not None
     new_atoms = run_ase_opt(
-        atoms,
+        atoms[-1],
         optimizer="MDMin",
         scratch_dir="test_calc",
         gzip=False,
