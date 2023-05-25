@@ -36,6 +36,7 @@ if __name__ == "__main__":
             "ase @ git+https://gitlab.com/ase/ase.git",  # waiting on >3.22.1
             "atomate2[cclib] @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
             "covalent>=0.223.1rc0",  # waiting on > 0.222.0
+            "custodian>=2023.5.7",
             "emmet-core>=0.55.1",
             "jobflow>=0.1.11",
             "maggma>=0.50.4",
@@ -46,7 +47,6 @@ if __name__ == "__main__":
         ],
         extras_require={
             "fireworks": ["fireworks>=2.0.3"],
-            "vasp": ["custodian>=2023.5.7"],
             "tblite": ["tblite[ase]>=0.3.0"],
             "docs": [
                 "autodoc_pydantic==1.8.0",
