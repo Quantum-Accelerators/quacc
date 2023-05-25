@@ -89,8 +89,53 @@ def test_run_ase_opt():
     atoms[0].position += 0.1
     atoms.calc = EMT()
 
+    atoms = run_ase_opt(
+        atoms,
+        optimizer="BFGS",
+        scratch_dir="new_test_calc2",
+        gzip=False,
+        copy_files=["test_file.txt"],
+    )
+    assert atoms.calc.results is not None
+
     new_atoms = run_ase_opt(
-        atoms, scratch_dir="new_test_calc2", gzip=False, copy_files=["test_file.txt"]
+        atoms,
+        optimizer="BFGSLineSearch",
+        scratch_dir="test_calc",
+        gzip=False,
+        copy_files=["test_file.txt"],
+    )
+    assert atoms.calc.results is not None
+    new_atoms = run_ase_opt(
+        atoms,
+        optimizer="LBFGS",
+        scratch_dir="test_calc",
+        gzip=False,
+        copy_files=["test_file.txt"],
+    )
+    assert atoms.calc.results is not None
+    new_atoms = run_ase_opt(
+        atoms,
+        optimizer="LBFGSLineSearch",
+        scratch_dir="test_calc",
+        gzip=False,
+        copy_files=["test_file.txt"],
+    )
+    assert atoms.calc.results is not None
+    new_atoms = run_ase_opt(
+        atoms,
+        optimizer="GPMin",
+        scratch_dir="test_calc",
+        gzip=False,
+        copy_files=["test_file.txt"],
+    )
+    assert atoms.calc.results is not None
+    new_atoms = run_ase_opt(
+        atoms,
+        optimizer="MDMin",
+        scratch_dir="test_calc",
+        gzip=False,
+        copy_files=["test_file.txt"],
     )
     assert atoms.calc.results is not None
 
