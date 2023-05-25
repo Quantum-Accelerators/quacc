@@ -36,6 +36,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Changed `removed_empties` default to `False` for the VASP schema.
 - Use `setups_pbe54_MP` as the default pseudopotentials for the `BulkSet` preset in VASP.
 - Modified thermo and vibrational frequency schemas.
+- The `run_ase_opt` function returns an ASE `Optimizer` object instead of a `Trajectory` object.
+- The `summarize_opt_run` function takes in an ASE `Optimizer` object instead of a `Trajectory` object.
 - Renamed `prerelax` kwarg in `qmof_relax_job` was changed to `run_prerelax` to reflect that it is a boolean.
 - Renamed `volume_relax` kwarg in VASP recipes to `relax_volume` to reflect that it is a boolean.
 - Renamed `molden` to `write_molden` in Gaussian recipes to reflect that it is a boolean.
