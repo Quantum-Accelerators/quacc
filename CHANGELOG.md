@@ -28,20 +28,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - All compute jobs are wrapped by `@ct.electron` instead of `@job`.
 - Use of Jobflow is now optional.
 - Use of a MongoDB is now optional.
-- Split `quacc.utils.basics` and its associated functions into `quacc.utils.dicts` and `quacc.utils.files`.
 - Changed the `extras` names in `setup.py`.
 - Updated the dependencies.
 - Increased default for `max_steps` in `run_ase_opt` from 100 to 500.
-- Renamed `prerelax` kwarg in `qmof_relax_job` was changed to `run_prerelax` to reflect that it is a boolean.
-- Renamed `volume_relax` kwarg in VASP recipes to `relax_volume` to reflect that it is a boolean.
-- Renamed `molden` to `write_molden` in Gaussian recipes to reflect that it is a boolean.
+
 - Switch license to standard BSD-3.
 - Simplified output schema for VASP slab workflows.
 - Changed `removed_empties` default to `False` for the VASP schema.
 - Use `setups_pbe54_MP` as the default pseudopotentials for the `BulkSet` preset in VASP.
 - Modified thermo and vibrational frequency schemas.
+- Renamed `prerelax` kwarg in `qmof_relax_job` was changed to `run_prerelax` to reflect that it is a boolean.
+- Renamed `volume_relax` kwarg in VASP recipes to `relax_volume` to reflect that it is a boolean.
+- Renamed `molden` to `write_molden` in Gaussian recipes to reflect that it is a boolean.
 - Renamed `quacc.schemas.calc` to `quacc.schemas.ase`.
 - Renamed `quacc.util` to `quacc.utils`.
+- Split `quacc.utils.basics` and its associated functions into `quacc.utils.dicts` and `quacc.utils.files`.
 - Moved `main` branch to an orphan and started new `main` branch.
 - Moved ideal gas thermo calculation to `quacc.utils.thermo`.
 - Moved `check_logfile` to `quacc.utils.files`.
