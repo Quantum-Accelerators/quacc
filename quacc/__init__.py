@@ -1,14 +1,10 @@
 """Init data for Quacc"""
+import covalent as ct
 from ase import Atoms
 from ase.io.jsonio import decode, encode
 
 from quacc._version import __version__
 from quacc.settings import QuaccSettings
-
-try:
-    import covalent as ct
-except ImportError:
-    ct = None
 
 
 def atoms_as_dict(s):
