@@ -142,6 +142,8 @@ def test_run_ase_opt():
     atoms = bulk("Cu")
     with pytest.raises(ValueError):
         run_ase_opt(atoms, scratch_dir="test_calc", copy_files=["test_file.txt"])
+    with pytest.raises(ValueError):
+        run_ase_opt(atoms, optimizer="bad")
 
 
 def test_run_ase_vib():
