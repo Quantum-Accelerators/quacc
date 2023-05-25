@@ -42,6 +42,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Modified thermo and vibrational frequency schemas.
 - Renamed `quacc.schemas.calc` to `quacc.schemas.ase`.
 - Moved `main` branch to an orphan and started new `main` branch.
+- Moved ideal gas thermo calculation to `quacc.util.thermo`.
+- Moved `check_logfile` to `quacc.util.files`.
+- Moved `_convert_auto_kpts` to `quacc.calculators.vasp`.
 
 ### Fixed
 
