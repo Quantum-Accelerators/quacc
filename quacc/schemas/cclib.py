@@ -9,8 +9,8 @@ from ase import Atoms
 from atomate2.common.schemas.cclib import TaskDocument
 
 from quacc.schemas.atoms import atoms_to_metadata
-from quacc.util.atoms import prep_next_run as prep_next_run_
-from quacc.util.dicts import remove_dict_empties
+from quacc.utils.atoms import prep_next_run as prep_next_run_
+from quacc.utils.dicts import remove_dict_empties
 
 
 def summarize_run(

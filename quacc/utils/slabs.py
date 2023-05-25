@@ -13,7 +13,7 @@ from pymatgen.core import Structure
 from pymatgen.core.surface import Slab, center_slab, generate_all_slabs
 from pymatgen.io.ase import AseAtomsAdaptor
 
-from quacc.util.atoms import copy_atoms
+from quacc.utils.atoms import copy_atoms
 
 # NOTES:
 # - Anytime an Atoms object is converted to a pmg structure, make sure

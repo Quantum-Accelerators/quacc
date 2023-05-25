@@ -11,8 +11,8 @@ from emmet.core.structure import MoleculeMetadata, StructureMetadata
 from monty.json import jsanitize
 from pymatgen.io.ase import AseAtomsAdaptor
 
-from quacc.util.atoms import copy_atoms
-from quacc.util.dicts import remove_dict_empties
+from quacc.utils.atoms import copy_atoms
+from quacc.utils.dicts import remove_dict_empties
 
 
 def atoms_to_metadata(

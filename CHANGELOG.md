@@ -17,9 +17,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - The `BulkToSlabsFlow` in the EMT calculator for both Covalent and Jobflow.
 - The `BulkToSlabsFlow` in the VASP calculator for Covalent.
 - `LennardJones` demonstration recipes.
-- A module named `quacc.util.db` to handle database interactions.
-- A function `quacc.util.db.results_to_db` to store results in a database.
-- A function `quacc.util.db.covalent_to_db` to store Covalent results in a database.
+- A module named `quacc.utils.db` to handle database interactions.
+- A function `quacc.utils.db.results_to_db` to store results in a database.
+- A function `quacc.utils.db.covalent_to_db` to store Covalent results in a database.
 - A new `pop_analysis` kwarg to `quacc.schemas.cclib.summarize_run`
 
 ### Changed
@@ -28,7 +28,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - All compute jobs are wrapped by `@ct.electron` instead of `@job`.
 - Use of Jobflow is now optional.
 - Use of a MongoDB is now optional.
-- Split `quacc.util.basics` and its associated functions into `quacc.util.dicts` and `quacc.util.files`.
+- Split `quacc.utils.basics` and its associated functions into `quacc.utils.dicts` and `quacc.utils.files`.
 - Changed the `extras` names in `setup.py`.
 - Updated the dependencies.
 - Increased default for `max_steps` in `run_ase_opt` from 100 to 500.
@@ -41,9 +41,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Use `setups_pbe54_MP` as the default pseudopotentials for the `BulkSet` preset in VASP.
 - Modified thermo and vibrational frequency schemas.
 - Renamed `quacc.schemas.calc` to `quacc.schemas.ase`.
+- Renamed `quacc.util` to `quacc.utils`.
 - Moved `main` branch to an orphan and started new `main` branch.
-- Moved ideal gas thermo calculation to `quacc.util.thermo`.
-- Moved `check_logfile` to `quacc.util.files`.
+- Moved ideal gas thermo calculation to `quacc.utils.thermo`.
+- Moved `check_logfile` to `quacc.utils.files`.
 - Moved `_convert_auto_kpts` to `quacc.calculators.vasp`.
 
 ### Fixed

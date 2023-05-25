@@ -11,9 +11,9 @@ from emmet.core.tasks import TaskDoc
 
 from quacc import SETTINGS
 from quacc.schemas.atoms import atoms_to_metadata
-from quacc.util.atoms import prep_next_run as prep_next_run_
-from quacc.util.dicts import remove_dict_empties
-from quacc.util.pop_analysis import run_bader
+from quacc.utils.atoms import prep_next_run as prep_next_run_
+from quacc.utils.dicts import remove_dict_empties
+from quacc.utils.pop_analysis import run_bader
 
 
 def summarize_run(

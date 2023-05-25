@@ -9,9 +9,9 @@ from covalent._workflow.electron import Electron
 
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.vasp import summarize_run
-from quacc.util.calc import run_calc
-from quacc.util.dicts import merge_dicts
-from quacc.util.slabs import make_adsorbate_structures, make_max_slabs_from_bulk
+from quacc.utils.calc import run_calc
+from quacc.utils.dicts import merge_dicts
+from quacc.utils.slabs import make_adsorbate_structures, make_max_slabs_from_bulk
 
 
 @ct.electron
