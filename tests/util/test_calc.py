@@ -96,8 +96,7 @@ def test_run_ase_opt():
         gzip=False,
         copy_files=["test_file.txt"],
     )
-    assert atoms.calc.results is not None
-
+    assert atoms[-1].calc.results is not None
     new_atoms = run_ase_opt(
         atoms,
         optimizer="BFGSLineSearch",
@@ -105,7 +104,7 @@ def test_run_ase_opt():
         gzip=False,
         copy_files=["test_file.txt"],
     )
-    assert atoms.calc.results is not None
+    assert new_atoms[-1].calc.results is not None
     new_atoms = run_ase_opt(
         atoms,
         optimizer="LBFGS",
@@ -113,7 +112,7 @@ def test_run_ase_opt():
         gzip=False,
         copy_files=["test_file.txt"],
     )
-    assert atoms.calc.results is not None
+    assert new_atoms[-1].calc.results is not None
     new_atoms = run_ase_opt(
         atoms,
         optimizer="LBFGSLineSearch",
@@ -121,7 +120,7 @@ def test_run_ase_opt():
         gzip=False,
         copy_files=["test_file.txt"],
     )
-    assert atoms.calc.results is not None
+    assert new_atoms[-1].calc.results is not None
     new_atoms = run_ase_opt(
         atoms,
         optimizer="GPMin",
@@ -129,7 +128,7 @@ def test_run_ase_opt():
         gzip=False,
         copy_files=["test_file.txt"],
     )
-    assert atoms.calc.results is not None
+    assert new_atoms[-1].calc.results is not None
     new_atoms = run_ase_opt(
         atoms,
         optimizer="MDMin",
@@ -137,7 +136,7 @@ def test_run_ase_opt():
         gzip=False,
         copy_files=["test_file.txt"],
     )
-    assert atoms.calc.results is not None
+    assert new_atoms[-1].calc.results is not None
 
     atoms = bulk("Cu")
     with pytest.raises(ValueError):
