@@ -41,7 +41,7 @@ if __name__ == "__main__":
             "jobflow>=0.1.11",
             "maggma>=0.50.4",
             "pymatgen>=2023.5.10",
-            "monty",
+            "monty>=2023.4.10",
             "numpy",
             "pydantic",
         ],
