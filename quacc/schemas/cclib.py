@@ -18,7 +18,7 @@ def summarize_run(
     logfile_extensions: str | list[str],
     dir_path: str = None,
     pop_analysis: str | list[str] = None,
-    check_convergence: bool = True,
+    check_convergence: bool = False,
     transition_state: bool = False,
     prep_next_run: bool = True,
     remove_empties: bool = False,
