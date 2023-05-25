@@ -63,7 +63,7 @@ def test_run_calc():
     )
     assert atoms.calc.results is not None
 
-    atoms = bulk("Cu") * (2, 1, 1)
+    atoms = bulk("Cu")
     with pytest.raises(ValueError):
         run_calc(
             atoms, scratch_dir="test_calc", gzip=False, copy_files=["test_file.txt"]
@@ -84,6 +84,10 @@ def test_run_ase_opt():
     assert np.array_equal(new_atoms[-1].get_positions(), atoms.get_positions()) is False
     assert np.array_equal(new_atoms[-1].cell.array, atoms.cell.array) is True
     os.remove("test_file.txt.gz")
+
+    atoms = bulk("Cu")
+    with pytest.raises(ValueError):
+        run_ase_opt(atoms, scratch_dir="test_calc", copy_files=["test_file.txt"])
 
 
 def test_run_ase_vib():
