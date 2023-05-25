@@ -7,7 +7,7 @@ from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.calculators.lj import LennardJones
 
-from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
+from quacc.utils.calc import run_ase_opt, run_ase_vib, run_calc
 
 CWD = os.getcwd()
 
