@@ -4,7 +4,6 @@ Utility functions for running ASE calculators
 from __future__ import annotations
 
 import os
-import warnings
 from tempfile import mkdtemp
 
 import numpy as np
