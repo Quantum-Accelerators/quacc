@@ -7,8 +7,35 @@ import os
 from shutil import copy
 
 import yaml
+from monty.io import zopen
 from monty.os.path import zpath
 from monty.shutil import decompress_file
+
+
+def check_logfile(logfile: str, check_str: str) -> bool:
+    """
+    Check if a logfile has a given string (case-insensitive).
+
+    Parameters
+    ----------
+    logfile : str
+        Path to the logfile.
+    check_str : str
+        String to check for.
+
+    Returns
+    -------
+    bool
+        True if the string is found in the logfile, False otherwise.
+    """
+    zlog = zpath(logfile)
+    with zopen(zlog, "r") as f:
+        for line in f:
+            if not isinstance(line, str):
+                line = line.decode("utf-8")
+            if check_str.lower() in line.lower():
+                return True
+    return False
 
 
 def copy_decompress(src_files: list[str], dst: str) -> None:

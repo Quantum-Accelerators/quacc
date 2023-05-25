@@ -7,8 +7,9 @@ from ase.calculators.dftb import Dftb
 
 from quacc.schemas.ase import summarize_run
 from quacc.util.atoms import copy_atoms
-from quacc.util.calc import _check_logfile, run_calc
+from quacc.util.calc import run_calc
 from quacc.util.dicts import merge_dicts
+from quacc.util.files import check_logfile
 
 LOG_FILE = "dftb.out"
 GEOM_FILE = "geo_end.gen"
@@ -57,7 +58,7 @@ def static_job(
     atoms.calc = Dftb(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
 
-    if _check_logfile(LOG_FILE, "SCC is NOT converged"):
+    if check_logfile(LOG_FILE, "SCC is NOT converged"):
         raise ValueError("SCC is not converged")
 
     return summarize_run(
@@ -116,7 +117,7 @@ def relax_job(
     atoms.calc = Dftb(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
 
-    if not _check_logfile(LOG_FILE, "Geometry converged"):
+    if not check_logfile(LOG_FILE, "Geometry converged"):
         raise ValueError("Geometry did not converge")
 
     return summarize_run(

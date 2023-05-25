@@ -14,7 +14,8 @@ from quacc.schemas.ase import (
     summarize_vib_run,
 )
 from quacc.util.atoms import copy_atoms
-from quacc.util.calc import ideal_gas_thermo, run_ase_opt, run_ase_vib, run_calc
+from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
+from quacc.util.thermo import ideal_gas
 
 try:
     from tblite.ase import TBLite
@@ -156,7 +157,7 @@ def thermo_job(
     atoms.calc = TBLite(method=method, **xtb_kwargs)
     vibrations = run_ase_vib(atoms)
 
-    igt = ideal_gas_thermo(input_atoms, vibrations.get_frequencies(), energy=energy)
+    igt = ideal_gas(input_atoms, vibrations.get_frequencies(), energy=energy)
 
     return {
         "vib": summarize_vib_run(
