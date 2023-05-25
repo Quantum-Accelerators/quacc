@@ -138,11 +138,17 @@ def test_run_ase_opt():
     )
     assert new_atoms[-1].calc.results is not None
 
-    atoms = bulk("Cu")
     with pytest.raises(ValueError):
-        run_ase_opt(atoms, scratch_dir="test_calc", copy_files=["test_file.txt"])
+        new_atoms = run_ase_opt(
+            atoms[-1],
+            optimizer="Fake",
+            scratch_dir="test_calc",
+            gzip=False,
+            copy_files=["test_file.txt"],
+        )
+        assert new_atoms[-1].calc.results is not None
     with pytest.raises(ValueError):
-        run_ase_opt(atoms, optimizer="bad")
+        run_ase_opt(bulk("Cu"), scratch_dir="test_calc", copy_files=["test_file.txt"])
 
 
 def test_run_ase_vib():
