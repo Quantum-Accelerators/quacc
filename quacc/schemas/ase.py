@@ -403,17 +403,16 @@ def summarize_vib_run(
     # Get the true vibrational modes if it's a molecule
     natoms = len(atoms)
     if natoms == 1:
-        true_vib_freqs = []
-        true_vib_energies = []
+        n_modes = 0
     elif atoms.pbc.any():
-        true_vib_freqs = vib_freqs[-(3 * natoms - 3) :]
-        true_vib_energies = vib_energies[-(3 * natoms - 3) :]
+        n_modes = 3 * natoms - 3
     elif atoms_db["symmetry"]["linear"]:
-        true_vib_freqs = vib_freqs[-(3 * natoms - 5) :]
-        true_vib_energies = vib_energies[-(3 * natoms - 5) :]
+        n_modes = 3 * natoms - 5
     else:
-        true_vib_freqs = vib_freqs[-(3 * natoms - 6) :]
-        true_vib_energies = vib_energies[-(3 * natoms - 6) :]
+        n_modes = 3 * natoms - 6
+
+    true_vib_freqs = vib_freqs[-n_modes:]
+    true_vib_energies = vib_energies[-n_modes:]
 
     results = {
         "results": {
