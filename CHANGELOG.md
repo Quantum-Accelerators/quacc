@@ -49,7 +49,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Moved ideal gas thermo calculation to `quacc.util.thermo`.
 - Moved `check_logfile` to `quacc.util.files`.
 - Moved `convert_auto_kpts` to `quacc.calculators.vasp`.
-- Moved `quacc_sanitize` to `quacc.util.db`.
 
 ### Fixed
 
