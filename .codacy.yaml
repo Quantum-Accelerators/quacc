@@ -1,0 +1,7 @@
+---
+engines:
+  duplication:
+    exclude_paths:
+      - "quacc/tests/**"
+      - "docs/**"
+      - ".github/**"
