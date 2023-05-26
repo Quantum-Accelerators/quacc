@@ -240,7 +240,7 @@ def summarize_opt_run(
 
     # Check trajectory
     if not dyn.trajectory or not os.path.exists(dyn.trajectory):
-        raise ValueError("No trajectory file found.")
+        raise FileNotFoundError("No trajectory file found.")
 
     # Check convergence
     if check_convergence and not dyn.converged():

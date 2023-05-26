@@ -1,5 +1,10 @@
 ---
 engines:
+  complexity:
+    exclude_paths:
+      - "quacc/tests/**"
+      - "docs/**"
+      - ".github/**"
   duplication:
     exclude_paths:
       - "quacc/tests/**"
