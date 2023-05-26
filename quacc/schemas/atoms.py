@@ -3,8 +3,7 @@ Schemas for storing metadata about Atoms objects
 """
 from __future__ import annotations
 
-import numpy as np
-from ase.atoms import Atom, Atoms
+from ase.atoms import Atoms
 from emmet.core.structure import MoleculeMetadata, StructureMetadata
 from pymatgen.io.ase import AseAtomsAdaptor
 
