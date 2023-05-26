@@ -44,6 +44,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Renamed `molden` to `write_molden` in Gaussian recipes to reflect that it is a boolean.
 - Renamed `quacc.recipes.tblite.core.thermo_job` to `quacc.recipes.tblite.core.freq_job`.
 - Renamed `quacc.schemas.calc` to `quacc.schemas.ase`.
+- Renamed `thermo_job` to `freq_job`.
 - Split `quacc.util.basics` and its associated functions into `quacc.util.dicts` and `quacc.util.files`.
 - Moved `main` branch to an orphan and started new `main` branch.
 - Moved ideal gas thermo calculation to `quacc.util.thermo`.
