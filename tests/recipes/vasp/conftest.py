@@ -29,9 +29,12 @@ def patch_get_potential_energy(monkeypatch):
 
 
 def mock_dynrun(atoms, **kwargs):
-    atoms.calc = EMT()
-    dyn = BFGS(atoms, restart=False)
+    dummy_atoms = bulk("Cu")
+    dummy_atoms.calc = EMT()
+    dyn = BFGS(dummy_atoms, restart=False, trajectory="opt.traj")
+    dyn.trajectory = "opt.traj"  # can remove after ASE MR 2901
     dyn.run(fmax=100.0)
+    dyn.atoms.calc.parameters = atoms.calc.parameters
     return dyn
 
 
