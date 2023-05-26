@@ -405,7 +405,10 @@ def summarize_vib_run(
     if natoms == 1:
         true_vib_freqs = []
         true_vib_energies = []
-    elif not atoms.pbc.any() and atoms_db["symmetry"]["linear"]:
+    elif atoms.pbc.any():
+        true_vib_freqs = vib_freqs[-(3 * natoms - 3) :]
+        true_vib_energies = vib_energies[-(3 * natoms - 3) :]
+    elif atoms_db["symmetry"]["linear"]:
         true_vib_freqs = vib_freqs[-(3 * natoms - 5) :]
         true_vib_energies = vib_energies[-(3 * natoms - 5) :]
     else:
