@@ -168,7 +168,7 @@ def run_ase_opt(
 
     Returns
     -------
-    opt
+    dyn
         The ASE Optimizer object.
     """
 
