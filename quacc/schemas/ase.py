@@ -248,7 +248,7 @@ def summarize_opt_run(
 
     traj = read(dyn.trajectory, index=":")
     initial_atoms = traj[0]
-    final_atoms = traj[-1]
+    final_atoms = dyn.atoms
 
     # Get results
     traj_results = {
