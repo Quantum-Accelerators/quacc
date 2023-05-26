@@ -230,6 +230,22 @@ def test_summarize_vib_run():
     d = jsanitize(results, strict=True, enum_values=True)
     MontyDecoder().process_decoded(d)
 
+    # Test a solid
+    atoms = bulk("Cu") * (2, 1, 1)
+    atoms.calc = EMT()
+    input_atoms = deepcopy(atoms)
+    vib = Vibrations(atoms)
+    vib.run()
+
+    results = summarize_vib_run(vib)
+    assert results["atoms"] == input_atoms
+    assert results["nsites"] == len(atoms)
+    assert results["parameters"]["delta"] == vib.delta
+    assert len(results["results"]["vib_freqs"]) == 6
+    assert len(results["results"]["vib_energies"]) == 6
+    assert len(results["results"]["true_vib_freqs"]) == 3
+    assert len(results["results"]["true_vib_energies"]) == 3
+
 
 def test_summarize_thermo_run():
     # Make sure metadata is made
