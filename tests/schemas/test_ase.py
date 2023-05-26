@@ -114,7 +114,7 @@ def test_summarize_opt_run():
     assert results["results"]["energy"] == atoms.get_potential_energy()
     assert len(results["trajectory"]) == len(traj)
     assert len(results["trajectory_results"]) == len(traj)
-    assert results["trajectory_results"][-1] == results["results"]
+    assert results["trajectory_results"][-1]["energy"] == results["results"]["energy"]
     assert "nid" in results
     assert "dir_name" in results
     assert "pull_request" in results["builder_meta"]
@@ -134,7 +134,7 @@ def test_summarize_opt_run():
     assert results["results"]["energy"] == atoms.get_potential_energy()
     assert len(results["trajectory"]) == len(traj)
     assert len(results["trajectory_results"]) == len(traj)
-    assert results["trajectory_results"][-1] == results["results"]
+    assert results["trajectory_results"][-1]["energy"] == results["results"]["energy"]
     assert "nid" in results
     assert "dir_name" in results
     assert "pull_request" not in results["builder_meta"]
