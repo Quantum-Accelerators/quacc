@@ -109,8 +109,7 @@ def summarize_run(
     if not atoms.calc.results:
         raise ValueError("ASE Atoms object's calculator has no results.")
 
-    if additional_fields is None:
-        additional_fields = {}
+    additional_fields = additional_fields or {}
 
     # Fetch all tabulated results from the attached calculator
     results = {"results": atoms.calc.results}

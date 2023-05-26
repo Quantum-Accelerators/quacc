@@ -3,15 +3,13 @@ Schemas for storing metadata about Atoms objects
 """
 from __future__ import annotations
 
-from typing import Any
-
 import numpy as np
 from ase.atoms import Atom, Atoms
 from emmet.core.structure import MoleculeMetadata, StructureMetadata
-from monty.json import jsanitize
 from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc.util.atoms import copy_atoms
+from quacc.util.db import quacc_sanitize
 from quacc.util.dicts import remove_dict_empties
 
 
@@ -118,7 +116,7 @@ def atoms_to_metadata(
         metadata = {}
 
     # Copy the info flags as a separate entry in the DB for easy querying
-    results["atoms_info"] = _quacc_sanitize(atoms.info)
+    results["atoms_info"] = quacc_sanitize(atoms.info)
 
     # Strip info if requested
     if strip_info:
@@ -137,31 +135,3 @@ def atoms_to_metadata(
     atoms_doc = dict(sorted(atoms_doc.items()))
 
     return atoms_doc
-
-
-def _quacc_sanitize(obj: Any) -> Any:
-    """
-    Sanitizes an object for storage in MongoDB.
-
-    This is an analogue of monty's jsanitize function but meant to serialize
-    Atom/Atoms objects as well.
-
-    Parameters
-    ----------
-    obj
-        Object to sanitize
-
-    Returns
-    -------
-    Any
-        Sanitized object
-    """
-    if isinstance(obj, (Atom, Atoms)):
-        obj = atoms_to_metadata(obj)
-    elif isinstance(obj, (list, tuple, np.ndarray)):
-        obj = [_quacc_sanitize(i) for i in obj]
-    elif isinstance(obj, dict):
-        obj = {k.__str__(): _quacc_sanitize(v) for k, v in obj.items()}
-    else:
-        obj = jsanitize(obj)
-    return obj

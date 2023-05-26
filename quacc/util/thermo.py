@@ -14,7 +14,7 @@ def ideal_gas(
     atoms: Atoms,
     vib_freqs: list[float | complex],
     energy: float = 0.0,
-    spin_multiplicity: float = None,
+    spin_multiplicity: int = None,
 ) -> IdealGasThermo:
     """
     Calculate thermodynamic properties for a molecule from a given vibrational analysis.
