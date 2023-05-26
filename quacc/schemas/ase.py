@@ -109,8 +109,7 @@ def summarize_run(
     if not atoms.calc.results:
         raise ValueError("ASE Atoms object's calculator has no results.")
 
-    if additional_fields is None:
-        additional_fields = {}
+    additional_fields = additional_fields or {}
 
     # Fetch all tabulated results from the attached calculator
     results = {"results": atoms.calc.results}
@@ -401,21 +400,25 @@ def summarize_vib_run(
     atoms = vib.atoms
     atoms_db = atoms_to_metadata(atoms)
 
-    # Get the true vibrational modes if it's a molecule
+    # Get the true vibrational modes
     natoms = len(atoms)
-    if natoms == 1 or atoms.pbc.any():
+    if natoms == 1:
         true_vib_freqs = []
         true_vib_energies = []
-    elif atoms_db["symmetry"]["linear"]:
-        true_vib_freqs = vib_freqs[-(3 * natoms - 5) :]
-        true_vib_energies = vib_energies[-(3 * natoms - 5) :]
     else:
-        true_vib_freqs = vib_freqs[-(3 * natoms - 6) :]
-        true_vib_energies = vib_energies[-(3 * natoms - 6) :]
+        if atoms.pbc.any():
+            n_modes = 3 * natoms - 3
+        elif atoms_db["symmetry"]["linear"]:
+            n_modes = 3 * natoms - 5
+        else:
+            n_modes = 3 * natoms - 6
+
+        true_vib_freqs = vib_freqs[-n_modes:]
+        true_vib_energies = vib_energies[-n_modes:]
 
     results = {
         "results": {
-            "imag_vib_freqs": [f / units.invcm for f in true_vib_freqs if f < 0],
+            "imag_vib_freqs": [f for f in true_vib_freqs if f < 0],
             "n_imag": len([f for f in true_vib_freqs if f < 0]),
             "true_vib_energies": true_vib_energies,
             "true_vib_freqs": true_vib_freqs,

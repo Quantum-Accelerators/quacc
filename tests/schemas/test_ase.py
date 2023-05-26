@@ -183,17 +183,21 @@ def test_summarize_vib_run():
     assert "dir_name" in results
     assert "pull_request" in results["builder_meta"]
     assert len(results["results"]["vib_freqs"]) == 6
-    assert results["results"]["vib_freqs"][0] == -3.054403266390365e-06
-    assert results["results"]["vib_freqs"][-1] == 928.1447554058556
+    assert results["results"]["vib_freqs"][0] == pytest.approx(-3.054403266390365e-06)
+    assert results["results"]["vib_freqs"][-1] == pytest.approx(928.1447554058556)
     assert len(results["results"]["vib_energies"]) == 6
-    assert results["results"]["vib_energies"][0] == -3.786977375083739e-10
-    assert results["results"]["vib_energies"][-1] == 0.11507528256667966
+    assert results["results"]["vib_energies"][0] == pytest.approx(
+        -3.786977375083739e-10
+    )
+    assert results["results"]["vib_energies"][-1] == pytest.approx(0.11507528256667966)
     assert results["results"]["n_imag"] == 0
     assert results["results"]["imag_vib_freqs"] == []
     assert len(results["results"]["true_vib_freqs"]) == 1
-    assert results["results"]["true_vib_freqs"][0] == 928.1447554058556
+    assert results["results"]["true_vib_freqs"][0] == pytest.approx(928.1447554058556)
     assert len(results["results"]["true_vib_energies"]) == 1
-    assert results["results"]["true_vib_energies"][0] == 0.11507528256667966
+    assert results["results"]["true_vib_energies"][0] == pytest.approx(
+        0.11507528256667966
+    )
 
     # Test remove_empties
     atoms = molecule("N2")
@@ -229,6 +233,22 @@ def test_summarize_vib_run():
     # test document can be jsanitized and decoded
     d = jsanitize(results, strict=True, enum_values=True)
     MontyDecoder().process_decoded(d)
+
+    # Test a solid
+    atoms = bulk("Cu") * (2, 1, 1)
+    atoms.calc = EMT()
+    input_atoms = deepcopy(atoms)
+    vib = Vibrations(atoms)
+    vib.run()
+
+    results = summarize_vib_run(vib)
+    assert results["atoms"] == input_atoms
+    assert results["nsites"] == len(atoms)
+    assert results["parameters"]["delta"] == vib.delta
+    assert len(results["results"]["vib_freqs"]) == 6
+    assert len(results["results"]["vib_energies"]) == 6
+    assert len(results["results"]["true_vib_freqs"]) == 3
+    assert len(results["results"]["true_vib_energies"]) == 3
 
 
 def test_summarize_thermo_run():

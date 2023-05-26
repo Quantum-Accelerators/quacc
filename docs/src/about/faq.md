@@ -1,5 +1,9 @@
 # FAQ
 
+**Q: How do I cite Quacc?**
+
+A: Until a paper is eventually written, please cite Quacc as follows: A.S. Rosen, Quacc – The Quantum Accelerator, https://doi.org/10.5281/zenodo.7720998.
+
 **Q: Do you have any tips for writing new workflows?**
 
 A: When developing new workflows, I strongly recommend writing an initial draft based on a low-cost ASE calculator like `EMT` or `LJ`, which will allow you to test on your local machine with fast turnaround. Also try to keep things modular. Trying to do too much in one function can make it difficult to debug.

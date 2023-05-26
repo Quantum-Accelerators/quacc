@@ -48,12 +48,12 @@ def remove_dict_empties(d: dict) -> dict:
     Parameters
     ----------
     d
-        Dictionary to jsonify
+        Dictionary to clean
 
     Returns
     -------
     Dict
-        jsonify'd dictionary
+        Cleaned dictionary
     """
 
     if isinstance(d, dict):
