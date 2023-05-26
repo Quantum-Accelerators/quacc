@@ -24,6 +24,8 @@ def teardown_module():
                 os.unlink(f)
             else:
                 rmtree(f)
+        if f == "opt.traj":
+            os.remove(f)
 
 
 def test_static_job():
