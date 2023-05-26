@@ -6,16 +6,10 @@ from __future__ import annotations
 import os
 import uuid
 import warnings
-from typing import Any
 
 import covalent as ct
-import numpy as np
-from ase.atoms import Atom, Atoms
 from covalent._shared_files.exceptions import MissingLatticeRecordError
 from maggma.core import Store
-from monty.json import jsanitize
-
-from quacc.schemas.atoms import atoms_to_metadata
 
 
 def covalent_to_db(store: Store, dispatch_id: str = None, results_dir: str = None):
@@ -96,31 +90,3 @@ def results_to_db(store: Store, results: dict | list[dict]):
         store.update(results, key="uuid")
     print(f"Stored {len(results)} results in your database.")
     store.close()
-
-
-def quacc_sanitize(obj: Any) -> Any:
-    """
-    Sanitizes an object for storage in MongoDB.
-
-    This is an analogue of monty's jsanitize function but meant to serialize
-    Atom/Atoms objects as well.
-
-    Parameters
-    ----------
-    obj
-        Object to sanitize
-
-    Returns
-    -------
-    Any
-        Sanitized object
-    """
-    if isinstance(obj, (Atom, Atoms)):
-        obj = atoms_to_metadata(obj)
-    elif isinstance(obj, (list, tuple, np.ndarray)):
-        obj = [quacc_sanitize(i) for i in obj]
-    elif isinstance(obj, dict):
-        obj = {k.__str__(): quacc_sanitize(v) for k, v in obj.items()}
-    else:
-        obj = jsanitize(obj)
-    return obj
