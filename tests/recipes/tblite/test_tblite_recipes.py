@@ -10,7 +10,7 @@ try:
     from tblite.ase import TBLite
 except ImportError:
     TBLite = None
-from quacc.recipes.tblite.core import relax_job, static_job, thermo_job
+from quacc.recipes.tblite.core import freq_job, relax_job, static_job
 
 
 def teardown_module():
@@ -69,9 +69,9 @@ def test_relax_Job():
     TBLite is None,
     reason="tblite must be installed. Try pip install tblite[ase]",
 )
-def test_thermo_job():
+def test_freq_job():
     atoms = molecule("H2O")
-    output = thermo_job(atoms)
+    output = freq_job(atoms)
     assert output["vib"]["atoms"] == molecule("H2O")
     assert len(output["vib"]["results"]["vib_freqs"]) == 9
     assert len(output["vib"]["results"]["true_vib_freqs"]) == 3
@@ -113,7 +113,7 @@ def test_thermo_job():
     atoms = molecule("H")
     atoms.set_initial_magnetic_moments([0.0])
     initial_atoms = deepcopy(atoms)
-    output = thermo_job(atoms, energy=-1.0)
+    output = freq_job(atoms, energy=-1.0)
     assert output["vib"]["atoms"] == initial_atoms
     assert len(output["vib"]["results"]["vib_freqs"]) == 3
     assert len(output["vib"]["results"]["true_vib_freqs"]) == 0
@@ -138,7 +138,7 @@ def test_thermo_job():
 
     atoms = molecule("CH3")
     initial_atoms = deepcopy(atoms)
-    output = thermo_job(atoms, energy=-10.0, temperature=1000, pressure=20)
+    output = freq_job(atoms, energy=-10.0, temperature=1000, pressure=20)
     assert output["vib"]["atoms"] == initial_atoms
     assert len(output["vib"]["results"]["vib_freqs"]) == 12
     assert len(output["vib"]["results"]["true_vib_freqs"]) == 6

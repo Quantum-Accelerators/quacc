@@ -88,7 +88,7 @@ def relax_job(
     flags = merge_dicts(defaults, lj_kwargs)
 
     atoms.calc = LennardJones(**flags)
-    traj = run_ase_opt(
+    dyn = run_ase_opt(
         atoms,
         fmax=fmax,
         max_steps=max_steps,
@@ -96,6 +96,4 @@ def relax_job(
         opt_kwargs=opt_kwargs,
     )
 
-    return summarize_opt_run(
-        traj, atoms.calc.parameters, additional_fields={"name": "LJ Relax"}
-    )
+    return summarize_opt_run(dyn, additional_fields={"name": "LJ Relax"})

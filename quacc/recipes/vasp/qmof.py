@@ -131,11 +131,9 @@ def _prerelax(
     flags = merge_dicts(defaults, swaps)
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
-    traj = run_ase_opt(atoms, fmax=fmax, optimizer="BFGSLineSearch")
+    dyn = run_ase_opt(atoms, fmax=fmax, optimizer="BFGSLineSearch")
 
-    return summarize_opt_run(
-        traj, calc.parameters, additional_fields={"name": "QMOF Prerelax"}
-    )
+    return summarize_opt_run(dyn, additional_fields={"name": "QMOF Prerelax"})
 
 
 def _loose_relax_positions(

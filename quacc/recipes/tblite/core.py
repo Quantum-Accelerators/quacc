@@ -104,7 +104,7 @@ def relax_job(
     opt_kwargs = opt_kwargs or {}
 
     atoms.calc = TBLite(method=method, **tblite_kwargs)
-    traj = run_ase_opt(
+    dyn = run_ase_opt(
         atoms,
         fmax=fmax,
         max_steps=max_steps,
@@ -112,14 +112,12 @@ def relax_job(
         opt_kwargs=opt_kwargs,
     )
 
-    return summarize_opt_run(
-        traj, atoms.calc.parameters, additional_fields={"name": "TBLite Relax"}
-    )
+    return summarize_opt_run(dyn, additional_fields={"name": "TBLite Relax"})
 
 
 @requires(TBLite, "tblite must be installed. Try pip install tblite[ase]")
 @ct.electron
-def thermo_job(
+def freq_job(
     atoms: Atoms,
     method: str = "GFN2-xTB",
     energy: float = 0.0,

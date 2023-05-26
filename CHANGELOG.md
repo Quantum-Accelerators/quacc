@@ -36,15 +36,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Changed `removed_empties` default to `False` for the VASP schema.
 - Use `setups_pbe54_MP` as the default pseudopotentials for the `BulkSet` preset in VASP.
 - Modified thermo and vibrational frequency schemas.
+- The `run_ase_opt` function returns an ASE `Optimizer` object instead of a `Trajectory` object.
+- The `summarize_opt_run` function takes in an ASE `Optimizer` object instead of a `Trajectory` object.
+- The `summarize_opt_run` function no longer needs the `atoms.calc.parameters` kwarg.
 - Renamed `prerelax` kwarg in `qmof_relax_job` was changed to `run_prerelax` to reflect that it is a boolean.
 - Renamed `volume_relax` kwarg in VASP recipes to `relax_volume` to reflect that it is a boolean.
 - Renamed `molden` to `write_molden` in Gaussian recipes to reflect that it is a boolean.
+- Renamed `quacc.recipes.tblite.core.thermo_job` to `quacc.recipes.tblite.core.freq_job`.
 - Renamed `quacc.schemas.calc` to `quacc.schemas.ase`.
+- Renamed `thermo_job` to `freq_job`.
 - Split `quacc.util.basics` and its associated functions into `quacc.util.dicts` and `quacc.util.files`.
 - Moved `main` branch to an orphan and started new `main` branch.
 - Moved ideal gas thermo calculation to `quacc.util.thermo`.
 - Moved `check_logfile` to `quacc.util.files`.
-- Moved `_convert_auto_kpts` to `quacc.calculators.vasp`.
+- Moved `convert_auto_kpts` to `quacc.calculators.vasp`.
 
 ### Fixed
 

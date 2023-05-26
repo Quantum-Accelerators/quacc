@@ -3,6 +3,7 @@ import pytest
 from ase import Atoms
 from ase.build import bulk
 from ase.calculators.emt import EMT
+from ase.optimize import BFGS
 
 from quacc.schemas.ase import summarize_run as calc_summarize_run
 
@@ -27,11 +28,14 @@ def patch_get_potential_energy(monkeypatch):
     monkeypatch.setattr(Atoms, "get_potential_energy", mock_get_potential_energy)
 
 
-def mock_dynrun(*args, **kwargs):
+def mock_dynrun(atoms, **kwargs):
     dummy_atoms = bulk("Cu")
     dummy_atoms.calc = EMT()
-    dummy_atoms.calc.results = {"energy": -1.0}
-    return [dummy_atoms]
+    dyn = BFGS(dummy_atoms, restart=False, trajectory="opt.traj")
+    dyn.trajectory = "opt.traj"  # can remove after ASE MR 2901
+    dyn.run(fmax=100.0)
+    dyn.atoms.calc.parameters = atoms.calc.parameters
+    return dyn
 
 
 @pytest.fixture(autouse=True)

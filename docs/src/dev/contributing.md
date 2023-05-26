@@ -40,7 +40,7 @@ We keep a [`CHANGELOG.md`](https://github.com/arosen93/quacc/blob/main/CHANGELOG
 
 In general, please try to keep the code style consistent when possible. There are two main things to consider:
 
-1. Functions should be lowercase and with underscores. Classes should be in CamelCase and constructed using a `@dataclass` decorator.
+1. Functions should be lowercase and with underscores. Classes should be in CamelCase and constructed using a {obj}`@dataclass` decorator.
 
 2. All Python code should be formatted with [isort](https://github.com/PyCQA/isort) and then [black](https://github.com/psf/black), although this will be corrected automatically when merged.
 

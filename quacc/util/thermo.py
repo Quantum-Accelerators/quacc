@@ -4,10 +4,8 @@ Utility functions for thermochemistry
 from __future__ import annotations
 
 import numpy as np
-from ase import Atoms
-from ase.constraints import FixAtoms
+from ase import Atoms, units
 from ase.thermochemistry import IdealGasThermo
-from ase.units import invcm
 
 from quacc.schemas.atoms import atoms_to_metadata
 
@@ -21,13 +19,12 @@ def ideal_gas(
 ) -> IdealGasThermo:
     """
     Calculate thermodynamic properties for a molecule from a given vibrational analysis.
+    This is for free gases only and will not be valid for solids or adsorbates on surfaces.
 
     Parameters
     ----------
     atoms
-        The Atoms object associated with the vibrational analysis. If only certain atoms
-        are allowed to vibrate, then this should either be reflected via the FixAtoms constraint
-        or by passing in a subset of the original Atoms object.
+        The Atoms object associated with the vibrational analysis.
     vib_freqs
         The list of vibrations to use, typically obtained from Vibrations.get_frequencies().
     atom_indices
@@ -41,14 +38,7 @@ def ideal_gas(
     Returns
     -------
     IdealGasThermo object
-
     """
-
-    # Only consider thermochemistry of the mobile atoms
-    atom_indices = []
-    for constraint in atoms.constraints:
-        if isinstance(constraint, FixAtoms):
-            atom_indices.extend(constraint.index)
 
     if atom_indices:
         atoms = atoms[atom_indices]
@@ -61,7 +51,7 @@ def ideal_gas(
         if isinstance(f, complex) and np.imag(f) != 0:
             vib_freqs[i] = complex(0 - f * 1j)
 
-    vib_energies = [f * invcm for f in vib_freqs]
+    vib_energies = [f * units.invcm for f in vib_freqs]
     real_vib_energies = np.real(vib_energies)
 
     for i, f in enumerate(vib_freqs):
