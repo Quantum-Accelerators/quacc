@@ -13,7 +13,6 @@ from quacc.schemas.atoms import atoms_to_metadata
 def ideal_gas(
     atoms: Atoms,
     vib_freqs: list[float | complex],
-    atom_indices: list[int] = None,
     energy: float = 0.0,
     spin_multiplicity: float = None,
 ) -> IdealGasThermo:
@@ -27,8 +26,6 @@ def ideal_gas(
         The Atoms object associated with the vibrational analysis.
     vib_freqs
         The list of vibrations to use, typically obtained from Vibrations.get_frequencies().
-    atom_indices
-        The indices of the atoms allowed to vibrate. If None, it's assumed they all vibrate.
     energy
         Potential energy in eV. If 0 eV, then the thermochemical correction is computed.
     spin_multiplicity
@@ -39,9 +36,6 @@ def ideal_gas(
     -------
     IdealGasThermo object
     """
-
-    if atom_indices:
-        atoms = atoms[atom_indices]
 
     # Switch off PBC since this is only for molecules
     atoms.set_pbc(False)
