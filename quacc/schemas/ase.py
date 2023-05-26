@@ -148,7 +148,6 @@ def summarize_run(
 
 def summarize_opt_run(
     dyn: Optimizer,
-    parameters: dict = None,
     check_convergence: bool = True,
     prep_next_run: bool = True,
     remove_empties: bool = False,
@@ -162,8 +161,6 @@ def summarize_opt_run(
     ----------
     dyn
         ASE Optimizer object.
-    parameters
-        atoms.calc.parameters used to run the calculation.
     check_convergence
         Whether to check the convergence of the calculation.
     prep_next_run
@@ -238,8 +235,8 @@ def summarize_opt_run(
     """
 
     additional_fields = additional_fields or {}
-    parameters = parameters or {}
     dyn_parameters = dyn.todict()
+    parameters = dyn.atoms.calc.parameters
 
     # Check trajectory
     if not dyn.trajectory or not os.path.exists(dyn.trajectory):

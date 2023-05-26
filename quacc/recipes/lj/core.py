@@ -96,6 +96,4 @@ def relax_job(
         opt_kwargs=opt_kwargs,
     )
 
-    return summarize_opt_run(
-        dyn, atoms.calc.parameters, additional_fields={"name": "LJ Relax"}
-    )
+    return summarize_opt_run(dyn, additional_fields={"name": "LJ Relax"})

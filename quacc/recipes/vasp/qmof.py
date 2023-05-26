@@ -133,9 +133,7 @@ def _prerelax(
     atoms.calc = calc
     dyn = run_ase_opt(atoms, fmax=fmax, optimizer="BFGSLineSearch")
 
-    return summarize_opt_run(
-        dyn, calc.parameters, additional_fields={"name": "QMOF Prerelax"}
-    )
+    return summarize_opt_run(dyn, additional_fields={"name": "QMOF Prerelax"})
 
 
 def _loose_relax_positions(
