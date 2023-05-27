@@ -80,6 +80,5 @@ def sort_dict(d: dict) -> dict:
         Sorted dictionary
     """
     # Adopted from https://gist.github.com/gyli/f60f0374defc383aa098d44cfbd318eb
-    for k, v in sorted(d.items()):
-        d[k] = sorted(v) if isinstance(v, list) else v
+
     return {k: sort_dict(v) if isinstance(v, dict) else v for k, v in sorted(d.items())}
