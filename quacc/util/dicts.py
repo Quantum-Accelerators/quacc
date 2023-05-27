@@ -79,6 +79,5 @@ def sort_dict(d: dict) -> dict:
     Dict
         Sorted dictionary
     """
-    # Adopted from https://gist.github.com/gyli/f60f0374defc383aa098d44cfbd318eb
 
     return {k: sort_dict(v) if isinstance(v, dict) else v for k, v in sorted(d.items())}
