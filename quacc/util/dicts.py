@@ -40,6 +40,12 @@ def merge_dicts(
     return d_merged
 
 
+def clean_dict(d: dict, remove_empties=False) -> dict:
+    if remove_empties:
+        d = remove_dict_empties(d)
+    return sort_dict(d)
+
+
 def remove_dict_empties(d: dict) -> dict:
     """
     For a given dictionary, recursively remove all items that are None
