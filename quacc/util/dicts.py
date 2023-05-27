@@ -68,6 +68,16 @@ def remove_dict_empties(d: dict) -> dict:
 def sort_dict(d: dict) -> dict:
     """
     For a given dictionary, recursively sort all entries alphabetically by key.
+
+    Parameters
+    ----------
+    d
+        Dictionary to sort
+
+    Returns
+    -------
+    Dict
+        Sorted dictionary
     """
     # Adopted from https://gist.github.com/gyli/f60f0374defc383aa098d44cfbd318eb
     for k, v in sorted(d.items()):
