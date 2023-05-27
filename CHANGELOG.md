@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - A function `quacc.util.db.results_to_db` to store results in a database.
 - A function `quacc.util.db.covalent_to_db` to store Covalent results in a database.
 - A new `pop_analysis` kwarg to `quacc.schemas.cclib.summarize_run`
+- By default, output schemas are sorted by key alphabetically.
 
 ### Changed
 
