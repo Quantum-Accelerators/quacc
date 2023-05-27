@@ -20,8 +20,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - A module named `quacc.util.db` to handle database interactions.
 - A function `quacc.util.db.results_to_db` to store results in a database.
 - A function `quacc.util.db.covalent_to_db` to store Covalent results in a database.
-- A new `pop_analysis` kwarg to `quacc.schemas.cclib.summarize_run`
-- By default, output schemas are sorted by key alphabetically.
+- A new `pop_analysis` kwarg to `quacc.schemas.cclib.summarize_run`.
+- New functions `quacc.util.dict.clean_dicts` and `quacc.util.dicts.sort_dict`.
 
 ### Changed
 
@@ -50,6 +50,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Moved ideal gas thermo calculation to `quacc.util.thermo`.
 - Moved `check_logfile` to `quacc.util.files`.
 - Moved `convert_auto_kpts` to `quacc.calculators.vasp`.
+- By default, output schemas are sorted by key alphabetically.
 
 ### Fixed
 
