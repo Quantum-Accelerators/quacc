@@ -52,7 +52,7 @@ def test_summarize_run():
 
     # Make sure metadata is made
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
-    results = summarize_run(atoms, dir_path=run1, compact=False, remove_empties=True)
+    results = summarize_run(atoms, dir_path=run1, remove_empties=True)
     assert results.get("calcs_reversed") is not None
     assert "author" not in results
     assert "additional_json" not in results
