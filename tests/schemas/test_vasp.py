@@ -55,6 +55,7 @@ def test_summarize_run():
     results = summarize_run(atoms, dir_path=run1, remove_empties=True)
     assert "author" not in results
     assert "additional_json" not in results
+    assert "corrections" not in results["custodian"][0]
 
     # Make sure null are not removed
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
