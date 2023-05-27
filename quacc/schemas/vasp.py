@@ -12,7 +12,7 @@ from emmet.core.tasks import TaskDoc
 from quacc import SETTINGS
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
-from quacc.util.dicts import remove_dict_empties
+from quacc.util.dicts import remove_dict_empties, sort_dict
 from quacc.util.pop_analysis import run_bader
 
 
@@ -211,6 +211,4 @@ def summarize_run(
     if remove_empties:
         task_doc = remove_dict_empties(task_doc)
 
-    task_doc = dict(sorted(task_doc.items()))
-
-    return task_doc
+    return sort_dict(task_doc)

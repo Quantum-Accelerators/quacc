@@ -63,3 +63,13 @@ def remove_dict_empties(d: dict) -> dict:
             if v is not None and (not isinstance(v, (dict, list)) or len(v) != 0)
         }
     return [remove_dict_empties(v) for v in d] if isinstance(d, list) else d
+
+
+def sort_dict(d: dict) -> dict:
+    """
+    For a given dictionary, recursively sort all entries alphabetically by key.
+    """
+    # Adopted from https://gist.github.com/gyli/f60f0374defc383aa098d44cfbd318eb
+    for k, v in sorted(d.items()):
+        d[k] = sorted(v) if isinstance(v, list) else v
+    return {k: sort_dict(v) if isinstance(v, dict) else v for k, v in sorted(d.items())}
