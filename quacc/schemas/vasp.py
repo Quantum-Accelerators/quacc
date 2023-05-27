@@ -12,7 +12,7 @@ from emmet.core.tasks import TaskDoc
 from quacc import SETTINGS
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
-from quacc.util.dicts import remove_dict_empties
+from quacc.util.dicts import clean_dict
 from quacc.util.pop_analysis import run_bader
 
 
@@ -22,7 +22,6 @@ def summarize_run(
     prep_next_run: bool = True,
     bader: bool = SETTINGS.VASP_BADER,
     check_convergence: bool = True,
-    compact: bool = True,
     remove_empties: bool = False,
     additional_fields: dict = None,
 ) -> dict:
@@ -43,10 +42,6 @@ def summarize_run(
         bader is set to True.
     check_convergence
         Whether to throw an error if convergence is not reached.
-    compact
-        Whether to use a compact representation of the TaskDocument. This does not store the
-        inputs/outputs from intermediate Custodian runs. It also removes duplicate key-value
-        pairs.
     remove_empties
         Whether to remove None values and empty lists/dicts from the TaskDocument.
     additional_fields
@@ -157,26 +152,25 @@ def summarize_run(
             "VASP calculation did not converge. Will not store task data."
         )
 
-    if compact:
-        # Remove unnecessary fields
-        for k in [
-            "additional_json",
-            "author",
-            "calcs_reversed",
-            "icsd_id",
-            "last_updated",
-            "structure",  # already in output
-            "tags",
-            "task_id",
-            "task_label",
-            "transformations",
-            "vasp_objects",
-        ]:
-            results.pop(k, None)
+    # Remove unnecessary fields
+    for k in [
+        "additional_json",
+        "author",
+        "calcs_reversed",
+        "icsd_id",
+        "last_updated",
+        "structure",  # already in output
+        "tags",
+        "task_id",
+        "task_label",
+        "transformations",
+        "vasp_objects",
+    ]:
+        results.pop(k, None)
 
-        if "output" in results:
-            results["output"].pop("elph_displaced_structures", None)
-            results["output"].pop("frequency_dependent_dielectric", None)
+    if "output" in results:
+        results["output"].pop("elph_displaced_structures", None)
+        results["output"].pop("frequency_dependent_dielectric", None)
 
     # Get Bader analysis
     if bader:
@@ -208,9 +202,4 @@ def summarize_run(
 
     task_doc = {**results, **atoms_db, **additional_fields}
 
-    if remove_empties:
-        task_doc = remove_dict_empties(task_doc)
-
-    task_doc = dict(sorted(task_doc.items()))
-
-    return task_doc
+    return clean_dict(task_doc, remove_empties=remove_empties)

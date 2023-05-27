@@ -12,7 +12,7 @@ from monty.json import jsanitize
 from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc.util.atoms import copy_atoms
-from quacc.util.dicts import remove_dict_empties
+from quacc.util.dicts import clean_dict
 
 
 def atoms_to_metadata(
@@ -131,12 +131,7 @@ def atoms_to_metadata(
     # Combine the metadata and results dictionaries
     atoms_doc = {**metadata, **results}
 
-    if remove_empties:
-        atoms_doc = remove_dict_empties(atoms_doc)
-
-    atoms_doc = dict(sorted(atoms_doc.items()))
-
-    return atoms_doc
+    return clean_dict(atoms_doc, remove_empties=remove_empties)
 
 
 def _quacc_sanitize(obj: Any) -> Any:

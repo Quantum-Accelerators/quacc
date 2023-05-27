@@ -40,6 +40,12 @@ def merge_dicts(
     return d_merged
 
 
+def clean_dict(d: dict, remove_empties=False) -> dict:
+    if remove_empties:
+        d = remove_dict_empties(d)
+    return sort_dict(d)
+
+
 def remove_dict_empties(d: dict) -> dict:
     """
     For a given dictionary, recursively remove all items that are None
@@ -63,3 +69,21 @@ def remove_dict_empties(d: dict) -> dict:
             if v is not None and (not isinstance(v, (dict, list)) or len(v) != 0)
         }
     return [remove_dict_empties(v) for v in d] if isinstance(d, list) else d
+
+
+def sort_dict(d: dict) -> dict:
+    """
+    For a given dictionary, recursively sort all entries alphabetically by key.
+
+    Parameters
+    ----------
+    d
+        Dictionary to sort
+
+    Returns
+    -------
+    Dict
+        Sorted dictionary
+    """
+
+    return {k: sort_dict(v) if isinstance(v, dict) else v for k, v in sorted(d.items())}

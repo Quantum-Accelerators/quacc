@@ -10,7 +10,7 @@ from atomate2.common.schemas.cclib import TaskDocument
 
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
-from quacc.util.dicts import remove_dict_empties
+from quacc.util.dicts import clean_dict
 
 
 def summarize_run(
@@ -138,11 +138,4 @@ def summarize_run(
     # Create a dictionary of the inputs/outputs
     task_doc = {**atoms_db, **inputs, **results, **additional_fields}
 
-    # Remove empty fields
-    if remove_empties:
-        task_doc = remove_dict_empties(task_doc)
-
-    # Sort dict
-    task_doc = dict(sorted(task_doc.items()))
-
-    return task_doc
+    return clean_dict(task_doc, remove_empties=remove_empties)

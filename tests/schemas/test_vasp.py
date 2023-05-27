@@ -42,7 +42,7 @@ def test_summarize_run():
     assert results["nsites"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["output"]["energy"] == -33.15807349
-    assert results.get("calcs_reversed") is None
+    assert "calcs_reversed" not in results
 
     # Make sure default dir works
     cwd = os.getcwd()
@@ -52,8 +52,7 @@ def test_summarize_run():
 
     # Make sure metadata is made
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
-    results = summarize_run(atoms, dir_path=run1, compact=False, remove_empties=True)
-    assert results.get("calcs_reversed") is not None
+    results = summarize_run(atoms, dir_path=run1, remove_empties=True)
     assert "author" not in results
     assert "additional_json" not in results
     assert "corrections" not in results["custodian"][0]
