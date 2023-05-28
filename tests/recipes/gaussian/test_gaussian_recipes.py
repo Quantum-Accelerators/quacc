@@ -32,8 +32,8 @@ def test_static_Job():
 
     output = static_job(atoms)
     assert output["natoms"] == len(atoms)
-    assert "charge" not in output["parameters"]
-    assert "mult" not in output["parameters"]
+    assert output["parameters"]["charge"] == 0
+    assert output["parameters"]["mult"] == 1
     assert output["parameters"]["sp"] == ""
     assert output["parameters"]["xc"] == "wb97x-d"
     assert output["parameters"]["basis"] == "def2-tzvp"
@@ -68,8 +68,8 @@ def test_relax_Job():
 
     output = relax_job(atoms)
     assert output["natoms"] == len(atoms)
-    assert "charge" not in output["parameters"]
-    assert "mult" not in output["parameters"]
+    assert output["parameters"]["charge"] == 0
+    assert output["parameters"]["mult"] == 1
     assert output["parameters"]["opt"] == ""
     assert output["parameters"]["xc"] == "wb97x-d"
     assert output["parameters"]["basis"] == "def2-tzvp"
