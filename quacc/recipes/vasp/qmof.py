@@ -28,15 +28,19 @@ def qmof_relax_job(
     Settings are such that they are compatible with the QMOF Database.
 
     1. A "pre-relaxation" with BFGSLineSearch to resolve very high forces.
+
     2. Position relaxation with default ENCUT and coarse k-point grid.
+
     3. Optional: volume relaxation with coarse k-point grid.
+
     4. Double relaxation using production-quality settings.
+
     5. Static calculation.
 
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
     preset
         Preset to use. Applies for all jobs.
     relax_volume
@@ -51,8 +55,8 @@ def qmof_relax_job(
 
     Returns
     -------
-    summary
-        Dictionary of the run summary.
+    dict
+        Dictionary of results
     """
 
     swaps = swaps or {}
@@ -102,7 +106,7 @@ def _prerelax(
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
     preset
         Preset to use.
     swaps
@@ -112,8 +116,8 @@ def _prerelax(
 
     Returns
     -------
-    summary
-        Summary of the run.
+    dict
+        Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
 
     swaps = swaps or {}
@@ -147,7 +151,7 @@ def _loose_relax_positions(
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
     preset
         Preset to use.
     swaps
@@ -155,8 +159,8 @@ def _loose_relax_positions(
 
     Returns
     -------
-    summary
-        Summary of the run.
+    dict
+        Dictionary of results from quacc.schemas.vasp.summarize_run
     """
 
     swaps = swaps or {}
@@ -194,7 +198,7 @@ def _loose_relax_volume(
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
     preset
         Preset to use.
     swaps
@@ -202,8 +206,8 @@ def _loose_relax_volume(
 
     Returns
     -------
-    summary
-        Summary of the run.
+    dict
+        Dictionary of results from quacc.schemas.vasp.summarize_run
     """
 
     swaps = swaps or {}
@@ -242,7 +246,7 @@ def _double_relax(
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
     preset
         Preset to use.
     swaps
@@ -252,8 +256,8 @@ def _double_relax(
 
     Returns
     -------
-    summary
-        Summary of the run.
+    dict
+        Dictionary of results from quacc.schemas.vasp.summarize_run
     """
 
     swaps = swaps or {}
@@ -311,7 +315,7 @@ def _static(
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
     preset
         Preset to use.
     swaps
@@ -319,8 +323,8 @@ def _static(
 
     Returns
     -------
-    summary
-        Summary of the run.
+    dict
+        Dictionary of results from quacc.schemas.vasp.summarize_run
     """
 
     swaps = swaps or {}

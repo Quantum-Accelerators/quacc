@@ -15,8 +15,11 @@ from quacc.util.slabs import make_max_slabs_from_bulk
 class BulkToSlabsFlow:
     """
     Workflow consisting of:
+
     1. Slab generation
+
     2. Slab relaxations (optional)
+
     3. Slab statics (optional)
 
     Parameters
@@ -40,16 +43,21 @@ class BulkToSlabsFlow:
         self,
         atoms: Atoms,
         slabgen_kwargs: dict | None = None,
-    ) -> dict:
+    ) -> list[dict]:
         """
         Make the workflow.
 
         Parameters
         ----------
         atoms
-            .Atoms object for the structure.
+            Atoms object for the structure.
         slabgen_kwargs
             Additional keyword arguments to pass to make_max_slabs_from_bulk()
+
+        Returns
+        -------
+        list[dict]
+            List of dictionary of results from quacc.schemas.ase.summarize_run or quacc.schemas.ase.summarize_opt_run
         """
 
         slab_relax_kwargs = self.slab_relax_kwargs or {}

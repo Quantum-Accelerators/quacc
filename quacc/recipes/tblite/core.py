@@ -37,7 +37,7 @@ def static_job(
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
     method
         GFN1-xTB, GFN2-xTB, and IPEA1-xTB.
     tblite_kwargs
@@ -45,8 +45,8 @@ def static_job(
 
     Returns
     -------
-    summary
-        Summary of the calculation.
+    dict
+        Dictionary of results from quacc.schemas.ase.summarize_run
     """
     tblite_kwargs = tblite_kwargs or {}
     input_atoms = copy_atoms(atoms)
@@ -80,7 +80,7 @@ def relax_job(
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
     method
         GFN0-xTB, GFN1-xTB, GFN2-xTB.
     fmax
@@ -96,8 +96,8 @@ def relax_job(
 
     Returns
     -------
-    summary
-        Summary of the calculation.
+    dict
+        Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
 
     tblite_kwargs = tblite_kwargs or {}
@@ -131,7 +131,7 @@ def freq_job(
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
     method
         GFN0-xTB, GFN1-xTB, GFN2-xTB, GFN-FF.
     energy
@@ -145,8 +145,9 @@ def freq_job(
 
     Returns
     -------
-    thermo_summary
-        Summary of the thermochemistry.
+    dict
+        Dictionary of results from quacc.schemas.ase.summarize_vib_run and
+        quacc.schemas.ase.summarize_thermo_run
     """
 
     xtb_kwargs = xtb_kwargs or {}

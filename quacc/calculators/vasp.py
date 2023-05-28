@@ -10,7 +10,7 @@ import warnings
 import numpy as np
 from ase import Atoms
 from ase.calculators.vasp import Vasp as Vasp_
-from ase.calculators.vasp.setups import _setups_defaults as ase_default_setups
+from ase.calculators.vasp.setups import _setups_defaults
 from ase.constraints import FixAtoms
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.vasp.inputs import Kpoints
@@ -33,7 +33,7 @@ class Vasp(Vasp_):
     atoms
         The Atoms object to be used for the calculation.
     preset
-        The name of a .yaml file containing a list of INCAR parameters to use as a "preset" for the calculator.
+        The name of a YAML file containing a list of INCAR parameters to use as a "preset" for the calculator.
         Quacc will automatically look in the VASP_PRESET_DIR (default: quacc/presets/vasp) for the file, such
         that preset="BulkSet" is supported, for instance. The .yaml extension is not necessary. Any user-suppplied
         calculator **kwargs will override any corresponding preset values.
@@ -110,7 +110,7 @@ class Vasp(Vasp_):
         # from a YAML file
         if (
             isinstance(user_calc_params.get("setups"), str)
-            and user_calc_params["setups"] not in ase_default_setups
+            and user_calc_params["setups"] not in _setups_defaults.ase_default_setups
         ):
             user_calc_params["setups"] = load_yaml_calc(
                 os.path.join(SETTINGS.VASP_PRESET_DIR, user_calc_params["setups"])
@@ -268,7 +268,7 @@ def _calc_swaps(
 
     Parameters
     ----------
-    .Atoms
+    Atoms
         Atoms object
     user_calc_params
         User-specified calculation parameters
@@ -537,7 +537,7 @@ def _convert_auto_kpts(
 
     Parameters
     ----------
-    .Atoms
+    Atoms
         ASE Atoms object
     auto_kpts
         Dictionary describing the automatic k-point scheme

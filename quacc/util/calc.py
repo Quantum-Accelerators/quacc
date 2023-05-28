@@ -62,8 +62,8 @@ def run_calc(
 
     Returns
     -------
-    .Atoms
-        The updated .Atoms object,
+    Atoms
+        The updated Atoms object,
     """
 
     if atoms.calc is None:
@@ -168,7 +168,7 @@ def run_ase_opt(
 
     Returns
     -------
-    dyn
+    Optimizer
         The ASE Optimizer object.
     """
 
@@ -272,7 +272,7 @@ def run_ase_vib(
 
     Returns
     -------
-    .Vibrations
+    Vibrations
         The updated Vibrations module
     """
 

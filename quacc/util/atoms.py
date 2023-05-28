@@ -59,7 +59,7 @@ def prep_next_run(
 
     Returns
     -------
-    .Atoms
+    Atoms
         Atoms object with calculator results attached in atoms.info["results"]
     """
     atoms = copy_atoms(atoms)
@@ -139,7 +139,7 @@ def set_magmoms(
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
     elemental_mags_dict
         Dictionary of elemental symbols and their corresponding magnetic moments to set.
         If None, no default values will be used.
@@ -154,7 +154,7 @@ def set_magmoms(
 
     Returns
     -------
-    .Atoms
+    Atoms
         Atoms object
     """
 
@@ -207,12 +207,12 @@ def get_atoms_id(atoms: Atoms) -> str:
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
 
     Returns
     -------
     md5hash
-        MD5 hash of the .Atoms object
+        MD5 hash of the Atoms object
     """
 
     atoms = copy_atoms(atoms)
@@ -237,7 +237,7 @@ def check_is_metal(atoms: Atoms) -> bool:
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
 
     Returns
     -------
@@ -258,7 +258,7 @@ def get_highest_block(atoms: Atoms) -> str:
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
 
     Returns
     -------
@@ -287,12 +287,12 @@ def copy_atoms(atoms: Atoms) -> Atoms:
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
 
     Returns
     -------
     atoms
-        .Atoms object
+        Atoms object
     """
     try:
         atoms = deepcopy(atoms)

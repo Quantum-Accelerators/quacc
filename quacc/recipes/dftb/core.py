@@ -28,9 +28,9 @@ def static_job(
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
     method
-        Method to use. Accepts 'DFTB', 'GFN1-xTB', and 'GFN2-xTB'.
+        Method to use. Accepts "DFTB", "GFN1-xTB", and "GFN2-xTB".
     kpts
         k-point grid to use. Defaults to None for molecules and
         (1, 1, 1) for solids.
@@ -39,10 +39,8 @@ def static_job(
 
     Returns
     -------
-    atoms
-        .Atoms object after the run.
-    summary
-        Dictionary of results from the calculation.
+    dict
+        Dictionary of results from quacc.schemas.ase.summarize_run
     """
 
     swaps = swaps or {}
@@ -51,7 +49,7 @@ def static_job(
     defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
         "Hamiltonian_Method": method if "xtb" in method.lower() else None,
-        "kpts": kpts if kpts else (1, 1, 1) if atoms.pbc.any() else None,
+        "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
     }
     flags = merge_dicts(defaults, swaps, remove_none=True, auto_lowercase=False)
 
@@ -82,7 +80,7 @@ def relax_job(
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
     method
         Method to use. Accepts 'DFTB', 'GFN1-xTB', and 'GFN2-xTB'.
     kpts
@@ -96,8 +94,8 @@ def relax_job(
 
     Returns
     -------
-    summary
-        Dictionary of results from the calculation.
+    dict
+        Dictionary of results from quacc.schemas.ase.summarize_run
     """
 
     swaps = swaps or {}

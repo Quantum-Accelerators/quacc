@@ -45,7 +45,8 @@ def summarize_run(
 
     Returns
     -------
-    Dictionary representation of the task document with the following fields:
+    dict
+        Dictionary representation of the task document with the following fields:
         - atoms: Atoms = Field(None, title = "The Atoms object from the calculation result.")
         - atoms_info: dict = Field(None, title = "The Atoms object info obtained from atoms.info.")
         - builder_meta: EmmetMeta = Field(default_factory=EmmetMeta, description="Builder metadata."):
@@ -55,8 +56,7 @@ def summarize_run(
             - pymatgen_version: str = Field(pmg_version, description="The version of pymatgen this document was built with.")
             - pull_request: int = Field(None, description="The pull request number associated with this data build.")
         - dir_name: str = Field(None, description="Directory where the output is parsed")
-        - input_structure: Molecule | Structure = Field(None, title = "The Pymatgen Structure or Molecule object from the input Atoms object if input_atoms is not None.
-            Inherits the Structure of Molecule metadata fields described below.
+        - input_structure: Molecule | Structure = Field(None, title = "The Pymatgen Structure or Molecule object from the input Atoms object if input_atoms is not None.")
         - nid: str = Field(None, title = "The node ID representing the machine where the calculation was run.")
         - parameters: dict = Field(None, title = "the parameters used to run the calculation.")
         - results: dict = Field(None, title = "The results from the calculation.")
@@ -167,7 +167,8 @@ def summarize_opt_run(
 
     Returns
     -------
-    Dictionary representation of the task document with the following fields:
+    dict
+        Dictionary representation of the task document with the following fields:
         - atoms: Atoms = Field(None, title = "The Atoms object from the calculation result.")
         - atoms_info: dict = Field(None, title = "The Atoms object info obtained from atoms.info.")
         - builder_meta: EmmetMeta = Field(default_factory=EmmetMeta, description="Builder metadata."):
@@ -177,8 +178,7 @@ def summarize_opt_run(
             - pymatgen_version: str = Field(pmg_version, description="The version of pymatgen this document was built with.")
             - pull_request: int = Field(None, description="The pull request number associated with this data build.")
         - dir_name: str = Field(None, description="Directory where the output is parsed")
-        - input_structure: Molecule | Structure = Field(None, title = "The Pymatgen Structure or Molecule object from the input Atoms object if input_atoms is not None.
-            Inherits the Structure of Molecule metadata fields described below.
+        - input_structure: Molecule | Structure = Field(None, title = "The Pymatgen Structure or Molecule object from the input Atoms object if input_atoms is not None.")
         - nid: str = Field(None, title = "The node ID representing the machine where the calculation was run.")
         - parameters: dict = Field(None, title = "the parameters used to run the calculation.")
         - results: dict = Field(None, title = "The results from the calculation.")
@@ -295,7 +295,8 @@ def summarize_vib_run(
 
     Returns
     -------
-    Dictionary representation of the task document with the following fields:
+    dict
+        Dictionary representation of the task document with the following fields:
         - atoms: Atoms = Field(None, title = "The Atoms object from the calculation result.")
         - atoms_info: dict = Field(None, title = "The Atoms object info obtained from atoms.info.")
         - builder_meta: EmmetMeta = Field(default_factory=EmmetMeta, description="Builder metadata."):
@@ -319,6 +320,7 @@ def summarize_vib_run(
             - true_vib_freqs: List[float] = True vibrational frequencies in cm^-1
             - vib_energies: List[float] = Vibrational energies in eV, including artificial ones
             - vib_freqs: List[float] = Vibrational frequencies in cm^-1, including artificial ones
+
         For periodic structures, the task document also has the following fields:
         - chemsys: str = Field(None, title="Chemical System", description="dash-delimited string of elements in the material.")
         - composition: Composition = Field(None, description="Full composition for the material.")
@@ -447,7 +449,8 @@ def summarize_thermo_run(
 
     Returns
     -------
-    Dictionary representation of the task document with the following fields:
+    dict
+        Dictionary representation of the task document with the following fields:
         - atoms: Atoms = Field(None, title = "The Atoms object from the calculation result.")
         - atoms_info: dict = Field(None, title = "The Atoms object info obtained from atoms.info.")
         - builder_meta: EmmetMeta = Field(default_factory=EmmetMeta, description="Builder metadata."):

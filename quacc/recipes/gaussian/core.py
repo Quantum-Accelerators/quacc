@@ -1,5 +1,4 @@
 """Core recipes for Gaussian"""
-
 from __future__ import annotations
 
 import multiprocessing
@@ -33,7 +32,7 @@ def static_job(
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
     charge
         Charge of the system. If None, this is determined from the sum of
         atoms.get_initial_charges().
@@ -53,8 +52,8 @@ def static_job(
 
     Returns
     -------
-    summary
-        Dictionary of results from the calculation.
+    dict
+        Dictionary of results from quacc.schemas.cclib.summarize_run
     """
 
     swaps = swaps or {}
@@ -99,7 +98,7 @@ def relax_job(
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
     charge
         Charge of the system. If None, this is determined from the sum of
         atoms.get_initial_charges().
@@ -117,8 +116,8 @@ def relax_job(
 
     Returns
     -------
-    summary
-        Dictionary of results from the calculation.
+    dict
+        Dictionary of results from quacc.schemas.cclib.summarize_run
     """
 
     swaps = swaps or {}

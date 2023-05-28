@@ -1,1 +1,1 @@
-"""Custodian runners for various DFT codes"""
+"""Custodian runners for various codes"""

@@ -42,7 +42,8 @@ def atoms_to_metadata(
 
     Returns
     -------
-    Dictionary representation of the atoms object with the following fields:
+    dict
+        Dictionary representation of the atoms object with the following fields:
         - atoms: Atoms = Field(None, title = "The Atoms object from the calculation result.")
         - atoms_info: dict = Field(None, title = "The Atoms object info obtained from atoms.info.")
         - builder_meta: EmmetMeta = Field(default_factory=EmmetMeta, description="Builder metadata."):

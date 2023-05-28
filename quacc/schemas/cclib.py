@@ -59,7 +59,8 @@ def summarize_run(
 
     Returns
     -------
-    Dictionary representation of the task document with the following fields:
+    dict
+        Dictionary representation of the task document with the following fields:
         - atoms: Atoms = Field(None, title = "The Atoms object obtained from atoms.")
         - atoms_info: dict = Field(None, title = "The Atoms object info obtained from atoms.info.")
         - attributes: Dict = Field(None, description="Computed properties and calculation outputs. See https://cclib.github.io/data_notes.html")

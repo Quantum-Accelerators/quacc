@@ -1,1 +1,1 @@
-"""Schemas for storing output data"""
+"""Schemas for storing data from recipes"""

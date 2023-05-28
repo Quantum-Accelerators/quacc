@@ -24,7 +24,7 @@ def slab_static_job(
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
     preset
         Preset to use.
     swaps
@@ -32,8 +32,8 @@ def slab_static_job(
 
     Returns
     -------
-    summary
-        Dictionary of the run summary.
+    dict
+        Dictionary of results from quacc.schemas.vasp.summarize_run
     """
 
     swaps = swaps or {}
@@ -67,7 +67,7 @@ def slab_relax_job(
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
     preset
         Preset to use.
     swaps
@@ -75,8 +75,8 @@ def slab_relax_job(
 
     Returns
     -------
-    summary
-        Dictionary of the run summary.
+    dict
+        Dictionary of results from quacc.schemas.vasp.summarize_run
     """
 
     swaps = swaps or {}
@@ -104,8 +104,11 @@ def slab_relax_job(
 class BulkToSlabsFlow:
     """
     Workflow consisting of:
+
     1. Slab generation
+
     2. Slab relaxations (optional)
+
     3. Slab statics (optional)
 
     Parameters
@@ -129,16 +132,21 @@ class BulkToSlabsFlow:
         self,
         atoms: Atoms,
         slabgen_kwargs: dict = None,
-    ) -> dict:
+    ) -> list[dict]:
         """
         Run the workflow.
 
         Parameters
         ----------
         atoms
-            .Atoms object for the structure.
+            Atoms object for the structure.
         slabgen_kwargs
             Additional keyword arguments to pass to make_max_slabs_from_bulk()
+
+        Returns
+        -------
+        list[dict]
+            List of dictionary results from quacc.schemas.vasp.summarize_run
         """
 
         relax_kwargs = self.slab_relax_kwargs or {}
@@ -218,9 +226,9 @@ class SlabToAdsFlow:
         Parameters
         ----------
         slab
-            .Atoms object for the slab structure.
+            Atoms object for the slab structure.
         adsorbate
-            .Atoms object for the adsorbate.
+            Atoms object for the adsorbate.
         **make_ads_kwargs
             Additional keyword arguments to pass to make_adsorbate_structures()
         """
