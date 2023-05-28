@@ -150,7 +150,6 @@ def freq_job(
     """
 
     xtb_kwargs = xtb_kwargs or {}
-    input_atoms = copy_atoms(atoms)
 
     atoms.calc = TBLite(method=method, **xtb_kwargs)
     vibrations = run_ase_vib(atoms)
