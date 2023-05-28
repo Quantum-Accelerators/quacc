@@ -34,7 +34,7 @@ def run_bader(path: str | None = None, scratch_dir: str = SETTINGS.SCRATCH_DIR) 
 
     Returns
     -------
-    Dict
+    dict
         Dictionary containing the Bader analysis summary:
             {
                 "min_dist": List[float],
@@ -111,7 +111,7 @@ def run_chargemol(
 
     Returns
     -------
-    Dict
+    dict
         Dictionary containing the Chargemol analysis summary:
             {
                 "ddec": {

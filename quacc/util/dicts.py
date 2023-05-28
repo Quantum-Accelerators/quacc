@@ -28,6 +28,11 @@ def merge_dicts(
         If True, all keys with a value of False in the merged dictionary will be removed.
     auto_lowercase
         If True, all keys will be turned into lowercase.
+
+    Returns
+    -------
+    dict
+        Merged dictionary.
     """
     if auto_lowercase:
         d1 = {k.lower(): v for k, v in d1.items()}
@@ -41,6 +46,23 @@ def merge_dicts(
 
 
 def clean_dict(d: dict, remove_empties=False) -> dict:
+    """
+    For a given dictionary, recursively remove all items that are None
+    or are empty lists/dicts, and then sort all entries alphabetically by key.
+
+    Parameters
+    ----------
+    d
+        Dictionary to clean
+    remove_empties
+        If True, remove empty lists and dictionaries
+
+    Returns
+    -------
+    dict
+        Cleaned and sorted dictionary
+    """
+
     if remove_empties:
         d = remove_dict_empties(d)
     return sort_dict(d)
@@ -58,7 +80,7 @@ def remove_dict_empties(d: dict) -> dict:
 
     Returns
     -------
-    Dict
+    dict
         Cleaned dictionary
     """
 
@@ -82,7 +104,7 @@ def sort_dict(d: dict) -> dict:
 
     Returns
     -------
-    Dict
+    dict
         Sorted dictionary
     """
 

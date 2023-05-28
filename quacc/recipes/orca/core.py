@@ -1,6 +1,4 @@
 """Core recipes for ORCA"""
-
-
 from __future__ import annotations
 
 import multiprocessing
@@ -33,7 +31,7 @@ def static_job(
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
     charge
         Charge of the system. If None, this is determined from the sum of
         atoms.get_initial_charges().
@@ -55,8 +53,8 @@ def static_job(
 
     Returns
     -------
-    summary
-        Summary of the run.
+    dict
+        Dictionary of results from quacc.schemas.cclib.summarize_run
     """
 
     input_swaps = input_swaps or {}
@@ -113,7 +111,7 @@ def relax_job(
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
     charge
         Charge of the system. If None, this is determined from the sum of
         atoms.get_initial_charges().
@@ -137,8 +135,8 @@ def relax_job(
 
     Returns
     -------
-    summary
-        Summary of the run.
+    dict
+        Dictionary of results from quacc.schemas.cclib.summarize_run
     """
 
     input_swaps = input_swaps or {}

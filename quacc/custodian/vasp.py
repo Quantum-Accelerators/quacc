@@ -28,17 +28,17 @@ def run_custodian(
     scratch_dir: str = None,
     vasp_job_kwargs: dict = None,
     custodian_kwargs: dict = None,
-):
+) -> None:
     """
     Function to run VASP Custodian
 
     Parameters
     ----------
     vasp_parallel_cmd
-        VASP parallel command, e.g. srun -N 2 --ntasks-per-node=24. Defaults to the $VASP_PARALLEL_CMD
+        VASP parallel command, e.g. "srun -N 2 --ntasks-per-node=24". Defaults to the $VASP_PARALLEL_CMD
         environment variable in settings.
     vasp_cmd
-        VASP command. Defaults to vasp_std in settings.
+        VASP command. Defaults to "vasp_std" in settings.
     vasp_gamma_cmd
         VASP gamma command. Defaults to vasp_gam in settings.
     vasp_custodian_max_errors
@@ -54,9 +54,13 @@ def run_custodian(
     scratch_dir
         Scratch directory to use. Defaults to None.
     vasp_job_kwargs
-        Keyword arguments to pass to VaspJob. Defaults to None.
+        Keyword arguments to pass to the Custodian VaspJob. Defaults to None.
     custodian_kwargs
         Any remaining keyword arguments to pass to Custodian. Defaults to None.
+
+    Returns
+    -------
+    None
     """
     # Adapted from https://github.com/materialsproject/atomate2/blob/main/src/atomate2/vasp/run.py
 

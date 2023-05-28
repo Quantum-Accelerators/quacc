@@ -20,7 +20,7 @@ def static_job(
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
     preset
         Preset to use.
     swaps
@@ -28,8 +28,8 @@ def static_job(
 
     Returns
     -------
-    summary
-        dictionary of the run summary.
+    dict
+        Dictionary of results from quacc.schemas.vasp.summarize_run
     """
 
     swaps = swaps or {}
@@ -64,7 +64,7 @@ def relax_job(
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
     preset
         Preset to use.
     relax_volume
@@ -75,8 +75,8 @@ def relax_job(
 
     Returns
     -------
-    summary
-        Dictionary of the run summary.
+    dict
+        Dictionary of results from quacc.schemas.vasp.summarize_run
     """
 
     swaps = swaps or {}
@@ -109,16 +109,19 @@ def double_relax_job(
 ) -> dict:
     """
     Double-relax a structure. This is particularly useful for a few reasons:
+
     1. To carry out a cheaper pre-relaxation before the high-quality run.
+
     2. To carry out a GGA calculation before a meta-GGA or hybrid calculation
     that requies the GGA wavefunction.
+
     3. To carry out volume relaxations where large changes in volume
     can require a second relaxation to resolve forces.
 
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
     preset
         Preset to use.
     relax_volume
@@ -131,8 +134,8 @@ def double_relax_job(
 
     Returns
     -------
-    {"relax1": summary1, "relax2": summary2}
-        Dictionaries of the run summary.
+    {"relax1": dict, "relax2": dict}
+        Dictionaries of the type quacc.schemas.vasp.summarize_run.
     """
 
     swaps1 = swaps1 or {}

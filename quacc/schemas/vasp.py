@@ -49,9 +49,10 @@ def summarize_run(
 
     Returns
     -------
-    Dictionary representation of the task document with the following fields:
+    dict
+        Dictionary representation of the task document with the following fields:
 
-    The task document also inherits the following fields from emmet.core.TaskDoc:
+        The task document also inherits the following fields from emmet.core.TaskDoc:
         - analysis: AnalysisDoc = Field(None, title="Calculation Analysis", description="Some analysis of calculation data after collection.")
             - delta_volume: float = Field(None, title="Volume Change", description="Volume change for the calculation.")
             - delta_volume_percent: float = Field(None, title="Volume Change Percent", description="Percent volume change for the calculation.")
@@ -124,7 +125,7 @@ def summarize_run(
         - vasp_version: str: the version of VASP
         - volume: float = Field(None, title="Volume", description="Total volume for this structure in Angstroms^3.")
 
-    If bader is True, the following fields are added:
+        If bader is True, the following fields are added:
         - bader
             - atomic_volume: float = The atomic volume
             - bader_charge: float = The net bader charge

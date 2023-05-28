@@ -40,12 +40,12 @@ Includes the following sections:
 
 ![Demo from Quick Start](docs/src/_static/start/start2.gif)
 
-## License ⚖️
-
-Quacc is released under a [BSD 3-Clause license](https://github.com/arosen93/quacc/blob/main/LICENSE.md).
-
 ## Citation
 
 If you use Quacc in your work, please cite it as follows:
 
-A.S. Rosen, Quacc – The Quantum Accelerator, https://doi.org/10.5281/zenodo.7720998.
+- A.S. Rosen, Quacc – The Quantum Accelerator, https://doi.org/10.5281/zenodo.7720998.
+
+## License ⚖️
+
+Quacc is released under a [BSD 3-Clause license](https://github.com/arosen93/quacc/blob/main/LICENSE.md).

@@ -31,7 +31,7 @@ def static_job(
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
     charge
         Charge of the system. If None, this is determined from the sum of
         atoms.get_initial_charges().
@@ -47,8 +47,8 @@ def static_job(
 
     Returns
     -------
-    summary
-        Summary of the calculation.
+    dict
+        Dictionary of results from quacc.schemas.ase.summarize_run
     """
 
     swaps = swaps or {}

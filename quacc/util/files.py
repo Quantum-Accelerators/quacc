@@ -48,6 +48,10 @@ def copy_decompress(src_files: list[str], dst: str) -> None:
         List of files to copy and decompress.
     dst
         Destination directory.
+
+    Returns
+    -------
+    None
     """
     for f in src_files:
         z_path = zpath(f)
@@ -68,7 +72,7 @@ def load_yaml_calc(yaml_path: str) -> dict:
 
     Returns
     -------
-    Dict
+    dict
         The calculator configuration (i.e. settings).
     """
 

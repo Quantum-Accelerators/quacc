@@ -28,7 +28,7 @@ def static_job(
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
     gfnff
         True if (p)GFN-FF should be used; False if not.
     library
@@ -40,8 +40,8 @@ def static_job(
 
     Returns
     -------
-    summary
-        Dictionary of the calculation summary.
+    dict
+        Dictionary of results from quacc.schemas.ase.summarize_run
     """
 
     keyword_swaps = keyword_swaps or {}
@@ -94,7 +94,7 @@ def relax_job(
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
     gfnff
         True if (p)GFN-FF should be used; False if not.
     library
@@ -108,8 +108,8 @@ def relax_job(
 
     Returns
     -------
-    summary
-        Dictionary of the calculation summary.
+    dict
+        Dictionary of results from quacc.schemas.ase.summarize_run
     """
 
     keyword_swaps = keyword_swaps or {}

@@ -34,7 +34,7 @@ def flip_atoms(
     Parameters
     ----------
     atoms
-        .Atoms/.Structure to flip
+        Atoms/.Structure to flip
     return_struct
         True if a Pymatgen structure object should be returned.
         False if an ASE atoms object should be returned
@@ -98,7 +98,7 @@ def make_slabs_from_bulk(
 
     Returns
     -------
-    List[.Atoms]
+    list[Atoms]
         All generated slabs
     """
 
@@ -256,9 +256,9 @@ def make_max_slabs_from_bulk(
         the slab will be discarded, e.g. ["Cu", "Ni"]
     **slabgen_kwargs: keyword arguments to pass to the pymatgen generate_all_slabs() function
 
-    Returns:
+    Returns
     --------
-    List[.Atoms]
+    List[Atoms]
         List of slabs
 
     """
@@ -353,9 +353,9 @@ def make_adsorbate_structures(
     find_ads_sites_kwargs
         The keyword arguments to pass to AdsorbateSiteFinder.find_adsorption_sites().
 
-    Returns:
+    Returns
     --------
-    List[ase.Atoms]
+    list[Atoms]
         The structures with adsorbates
 
     """
@@ -474,12 +474,12 @@ def make_adsorbate_structures(
 
 def get_surface_energy(
     bulk: Atoms, slab: Atoms, bulk_energy: float, slab_energy: float
-):
+) -> float:
     """
     Calculate the surface energy to form a given surface slab from a bulk structure.
     For asymmetric slabs, this is better thought of as the cleavage energy.
 
-    Parameters:
+    Parameters
     -----------
     bulk
         The bulk structure.
@@ -489,6 +489,11 @@ def get_surface_energy(
         The total energy of the bulk structure.
     slab_energy
         The total energy of the slab structure.
+
+    Returns
+    -------
+    float
+        The surface energy in eV/A^2.
     """
 
     alpha = len(slab) / len(bulk)

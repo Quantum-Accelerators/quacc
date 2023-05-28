@@ -15,8 +15,11 @@ from quacc.util.slabs import make_max_slabs_from_bulk
 class BulkToSlabsFlow:
     """
     Workflow consisting of:
+
     1. Slab generation
+
     2. Slab relaxations (optional)
+
     3. Slab statics (optional)
 
     Parameters
@@ -47,13 +50,13 @@ class BulkToSlabsFlow:
         Parameters
         ----------
         atoms
-            .Atoms object for the structure.
+            Atoms object for the structure.
         slabgen_kwargs
             Additional keyword arguments to pass to make_max_slabs_from_bulk()
 
         Returns
         -------
-        Response
+        jf.Response
             A Flow of relaxation and static jobs for the generated slabs.
         """
 

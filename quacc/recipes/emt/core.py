@@ -20,14 +20,14 @@ def static_job(atoms: Atoms, emt_kwargs: dict | None = None) -> dict:
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
     emt_kwargs
         Dictionary of custom kwargs for the EMT calculator.
 
     Returns
     -------
-    summary
-        Summary of the run.
+    dict
+        Dictionary of results from quacc.schemas.ase.summarize_run
     """
 
     emt_kwargs = emt_kwargs or {}
@@ -58,7 +58,7 @@ def relax_job(
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
     fmax
         Tolerance for the force convergence (in eV/A).
     max_steps
@@ -72,8 +72,8 @@ def relax_job(
 
     Returns
     -------
-    summary
-        Summary of the run.
+    dict
+        Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
 
     emt_kwargs = emt_kwargs or {}

@@ -136,6 +136,16 @@ class QuaccSettings(BaseSettings):
         Loads settings from a root file if available and uses that as defaults in
         place of built in defaults.
         This allows setting of the config file path through environment variables.
+
+        Parameters
+        ----------
+        values
+            Settings to load.
+
+        Returns
+        -------
+        dict
+            Loaded settings.
         """
         from pathlib import Path
 

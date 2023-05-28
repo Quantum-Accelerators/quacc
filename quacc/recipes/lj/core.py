@@ -1,4 +1,4 @@
-"""Core recipes for EMT"""
+"""Core recipes for Lennard-Jones Potential"""
 from __future__ import annotations
 
 import covalent as ct
@@ -24,14 +24,14 @@ def static_job(
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
     lj_kwargs
         Dictionary of custom kwargs for the LJ calculator.
 
     Returns
     -------
-    summary
-        Summary of the run.
+    dict
+        Dictionary of results from quacc.schemas.ase.summarize_run
     """
 
     lj_kwargs = lj_kwargs or {}
@@ -63,7 +63,7 @@ def relax_job(
     Parameters
     ----------
     atoms
-        .Atoms object
+        Atoms object
     fmax
         Tolerance for the force convergence (in eV/A).
     max_steps
@@ -77,8 +77,8 @@ def relax_job(
 
     Returns
     -------
-    summary
-        Summary of the run.
+    dict
+        Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
 
     lj_kwargs = lj_kwargs or {}
