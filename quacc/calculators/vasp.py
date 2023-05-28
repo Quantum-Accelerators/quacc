@@ -110,7 +110,7 @@ class Vasp(Vasp_):
         # from a YAML file
         if (
             isinstance(user_calc_params.get("setups"), str)
-            and user_calc_params["setups"] not in ase_setups
+            and user_calc_params["setups"] not in ase_setups.setups_defaults
         ):
             user_calc_params["setups"] = load_yaml_calc(
                 os.path.join(SETTINGS.VASP_PRESET_DIR, user_calc_params["setups"])
