@@ -77,12 +77,23 @@ def prep_next_run(
             atoms.info["results"][f"calc{prior_calcs}"] = atoms.calc.results
 
         # Move converged magmoms to initial magmoms
-        # If none were present, then initial magmoms should be set to 0's
-        # because a spin-unpolarized calculation was carried out
         if move_magmoms:
-            atoms.set_initial_magnetic_moments(
-                atoms.calc.results.get("magmoms", [0.0] * len(atoms))
-            )
+            # If there are initial magmoms set, then we should see what the final
+            # magmoms are. If they are present, move them to initial. If they are not
+            # present, it means the calculator doesn't support the "magmoms" property
+            # so we have to retain the initial magmoms given no futher info.
+            if atoms.has("initial_magmoms"):
+                atoms.set_initial_magnetic_moments(
+                    atoms.calc.results.get(
+                        "magmoms", atoms.get_initial_magnetic_moments()
+                    )
+                )
+            # If there are no initial magmoms set, just check the results and set
+            # everything to 0.0 if there is nothing there.
+            else:
+                atoms.set_initial_magnetic_moments(
+                    atoms.calc.results.get("magmoms", [0.0] * len(atoms))
+                )
 
     # Clear off the calculator so we can run a new job. If we don't do this,
     # then something like atoms *= (2,2,2) stil has a calculator attached, which
