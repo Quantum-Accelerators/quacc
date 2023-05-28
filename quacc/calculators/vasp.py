@@ -10,7 +10,7 @@ import warnings
 import numpy as np
 from ase import Atoms
 from ase.calculators.vasp import Vasp as Vasp_
-from ase.calculators.vasp.setups import _setups_defaults
+from ase.calculators.vasp import setups as ase_setups
 from ase.constraints import FixAtoms
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.vasp.inputs import Kpoints
@@ -110,7 +110,7 @@ class Vasp(Vasp_):
         # from a YAML file
         if (
             isinstance(user_calc_params.get("setups"), str)
-            and user_calc_params["setups"] not in _setups_defaults.ase_default_setups
+            and user_calc_params["setups"] not in ase_setups
         ):
             user_calc_params["setups"] = load_yaml_calc(
                 os.path.join(SETTINGS.VASP_PRESET_DIR, user_calc_params["setups"])
