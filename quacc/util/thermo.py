@@ -52,14 +52,21 @@ def ideal_gas(
         if not isinstance(f, complex) and f < 0:
             vib_freqs[i] = complex(0 - f * 1j)
 
-    # Get the spin from the Atoms object
+    # Get the spin from the Atoms object.
     if spin_multiplicity:
         spin = (spin_multiplicity - 1) / 2
     elif (
         getattr(atoms, "calc", None) is not None
         and getattr(atoms.calc, "results", None) is not None
+        and atoms.calc.results.get("magmom", None) is not None
     ):
-        spin = round(atoms.calc.results.get("magmom", 0)) / 2
+        spin = round(atoms.calc.results["magmom"]) / 2
+    elif (
+        getattr(atoms, "calc", None) is not None
+        and getattr(atoms.calc, "results", None) is not None
+        and atoms.calc.results.get("magmoms", None) is not None
+    ):
+        spin = round(np.sum(atoms.calc.results["magmoms"])) / 2
     elif atoms.has("initial_magmoms"):
         spin = round(np.sum(atoms.get_initial_magnetic_moments())) / 2
     else:

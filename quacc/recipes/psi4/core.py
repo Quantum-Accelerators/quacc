@@ -58,10 +58,8 @@ def static_job(
         "num_threads": "max",
         "method": method,
         "basis": basis,
-        "charge": charge if charge else round(sum(atoms.get_initial_charges())),
-        "multiplicity": mult
-        if mult
-        else round(1 + sum(atoms.get_initial_magnetic_moments())),
+        "charge": charge or round(sum(atoms.get_initial_charges())),
+        "multiplicity": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
     }
     flags = merge_dicts(defaults, swaps, remove_none=True)
 
