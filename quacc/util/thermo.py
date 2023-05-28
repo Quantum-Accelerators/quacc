@@ -65,8 +65,7 @@ def ideal_gas(
     except KeyError or AttributeError:
         has_magmoms = False
 
-    # Get the spin from the Atoms object. This assumes that
-    # the final spin state is always the
+    # Get the spin from the Atoms object.
     if spin_multiplicity:
         spin = (spin_multiplicity - 1) / 2
     elif has_net_magmom:
