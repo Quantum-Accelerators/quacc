@@ -155,7 +155,7 @@ def freq_job(
     atoms.calc = TBLite(method=method, **xtb_kwargs)
     vibrations = run_ase_vib(atoms)
 
-    igt = ideal_gas(input_atoms, vibrations.get_frequencies(), energy=energy)
+    igt = ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)
 
     return {
         "vib": summarize_vib_run(
