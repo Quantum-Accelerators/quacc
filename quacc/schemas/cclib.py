@@ -358,7 +358,7 @@ class TaskDocument(MoleculeMetadata):
 
         # Calculate any properties
         if analysis:
-            if type(analysis) == str:
+            if type(analysis) is str:
                 analysis = [analysis]
             analysis = [a.lower() for a in analysis]
 
