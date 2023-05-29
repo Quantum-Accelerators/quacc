@@ -23,7 +23,7 @@ def test_summarize_run():
     assert results["atoms"] == atoms
     assert results["spin_multiplicity"] == 1
     assert results["natoms"] == 6
-    assert results["metadata"].get("success", None) == True
+    assert results["metadata"].get("success", None) is True
     assert "pull_request" in results["builder_meta"]
 
     # test document can be jsanitized and decoded
@@ -76,7 +76,7 @@ def test_summarize_run():
     assert results["atoms"] == atoms
     assert results["spin_multiplicity"] == 1
     assert results["natoms"] == 6
-    assert results["metadata"].get("success", None) == True
+    assert results["metadata"].get("success", None) is True
     assert "pull_request" not in results["builder_meta"]
 
 
