@@ -33,7 +33,7 @@ if __name__ == "__main__":
         data_files=["LICENSE.md"],
         zip_safe=False,
         install_requires=[
-            "ase @ git+https://gitlab.com/ase/ase.git",  # waiting on >3.22.1
+            "ase-core>=3.23.0b1.post2",  # waiting on >3.22.1 for regular ase
             "atomate2[cclib] @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
             "covalent>=0.223.1rc0",  # waiting on > 0.222.0
             "custodian>=2023.5.7",
