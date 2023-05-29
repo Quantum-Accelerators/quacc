@@ -37,6 +37,7 @@ if __name__ == "__main__":
             "atomate2[cclib] @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
             "covalent @ git+https://github.com/AgnostiqHQ/covalent.git",  # waiting on > 0.222.0
             "custodian>=2023.5.12",
+            "emmet-core>=0.51.11",
             "pymatgen>=2023.5.10",
             "monty>=2023.4.10",
         ],
