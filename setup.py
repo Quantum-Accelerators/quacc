@@ -56,7 +56,7 @@ if __name__ == "__main__":
             "strict": [
                 "ase @ git+https://github.com/Quantum-Accelerators/rASE.git",  # waiting on >3.22.1 for regular ase
                 "atomate2==0.0.10",
-                "black>=23.3.0",
+                "black==23.3.0",
                 "cclib==1.7.2",
                 "covalent>=0.223.1rc0",  # waiting on > 0.222.0
                 "custodian==2023.5.12",
