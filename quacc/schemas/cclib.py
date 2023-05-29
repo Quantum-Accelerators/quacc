@@ -191,8 +191,8 @@ class TaskDocument(MoleculeMetadata):
         dir_name: str,
         logfile_extensions: str | list[str],
         store_trajectory: bool = False,
-        additional_fields: dict = None,
-        analysis: str | list[str] = None,
+        additional_fields: Dict = None,
+        analysis: str | List[str] = None,
         proatom_dir: str = None,
     ) -> _T:
         """
