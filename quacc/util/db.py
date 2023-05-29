@@ -8,16 +8,11 @@ import uuid
 import warnings
 
 import covalent as ct
+import maggma
 from covalent._shared_files.exceptions import MissingLatticeRecordError
 from monty.dev import requires
 
-try:
-    import maggma
-except ImportError:
-    maggma = None
 
-
-@requires(maggma, "maggma must be installed. Try pip install quacc[db]")
 def covalent_to_db(
     store: maggma.core.Store, dispatch_id: str = None, results_dir: str = None
 ) -> None:
@@ -71,7 +66,6 @@ def covalent_to_db(
         store.close()
 
 
-@requires(maggma, "maggma must be installed. Try pip install quacc[db]")
 def results_to_db(store: maggma.core.Store, results: dict | list[dict]) -> None:
     """
     Store the results of a Quacc recipe in a user-specified Maggma Store.

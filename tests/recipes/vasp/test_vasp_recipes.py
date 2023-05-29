@@ -1,8 +1,11 @@
 import os
 from shutil import rmtree
 
+import jobflow as jf
+import maggma
 import pytest
 from ase.build import bulk, molecule
+from maggma.stores import MemoryStore
 
 from quacc.recipes.vasp.core import double_relax_job, relax_job, static_job
 from quacc.recipes.vasp.jobflow.slabs import BulkToSlabsFlow as JFBulkToSlabsFlow
@@ -13,16 +16,6 @@ from quacc.recipes.vasp.slabs import (
     slab_relax_job,
     slab_static_job,
 )
-
-try:
-    import jobflow as jf
-except ImportError:
-    jf = None
-
-try:
-    import maggma
-except ImportError:
-    maggma = None
 
 
 def teardown_module():
@@ -325,12 +318,7 @@ def test_qmof():
     output = qmof_relax_job(atoms)
 
 
-@pytest.mark.skipif(
-    jf is None or maggma is None, reason="This test requires jobflow and maggma"
-)
 def test_jf_slab_dynamic_jobs():
-    from maggma.stores import MemoryStore
-
     store = jf.JobStore(MemoryStore())
 
     atoms = bulk("Cu")

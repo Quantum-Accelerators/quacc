@@ -3,10 +3,7 @@ Basic utility functions
 """
 from __future__ import annotations
 
-import contextlib
 import os
-import socket
-from pathlib import Path
 from shutil import copy
 
 import yaml
@@ -41,36 +38,6 @@ def check_logfile(logfile: str, check_str: str) -> bool:
     return False
 
 
-def find_recent_logfile(dir_name: str, logfile_extensions: str | list[str]):
-    """
-    Find the most recent logfile in a given directory.
-
-    Parameters
-    ----------
-    dir_name
-        The path to the directory to search
-    logfile_extensions
-        The extension (or list of possible extensions) of the logfile to search for.
-        For an exact match only, put in the full file name.
-
-    Returns
-    -------
-    logfile
-        The path to the most recent logfile with the desired extension
-    """
-    mod_time = 0.0
-    logfile = None
-    if isinstance(logfile_extensions, str):
-        logfile_extensions = [logfile_extensions]
-    for f in os.listdir(dir_name):
-        f_path = os.path.join(dir_name, f)
-        for ext in logfile_extensions:
-            if ext in f and os.path.getmtime(f_path) > mod_time:
-                mod_time = os.path.getmtime(f_path)
-                logfile = os.path.abspath(f_path)
-    return logfile
-
-
 def copy_decompress(src_files: list[str], dst: str) -> None:
     """
     Copy and decompress files from src to dst.
@@ -92,31 +59,6 @@ def copy_decompress(src_files: list[str], dst: str) -> None:
             z_file = os.path.basename(z_path)
             copy(z_path, os.path.join(dst, z_file))
             decompress_file(os.path.join(dst, z_file))
-
-
-def get_uri(dir_name: str) -> str:
-    """
-    Return the URI path for a directory.
-
-    This allows files hosted on different file servers to have distinct locations.
-
-    Adapted from atomate2.utils.path.get_uri.
-
-    Parameters
-    ----------
-    dir_name : str or Path
-        A directory name.
-
-    Returns
-    -------
-    str
-        Full URI path, e.g., "fileserver.host.com:/full/path/of/dir_name".
-    """
-    fullpath = Path(dir_name).absolute()
-    hostname = socket.gethostname()
-    with contextlib.suppress(socket.gaierror, socket.herror):
-        hostname = socket.gethostbyaddr(hostname)[0]
-    return f"{hostname}:{fullpath}"
 
 
 def load_yaml_calc(yaml_path: str) -> dict:

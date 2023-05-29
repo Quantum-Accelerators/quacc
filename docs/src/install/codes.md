@@ -83,7 +83,6 @@ To use VASP with Quacc, you will need to do the following:
 
 To run VASP with Custodian (the default behavior in Quacc), you will also need to:
 
-- Run `pip install quacc[vasp]` if you wish to use Custodian with VASP.
 - Define a `VASP_PARALLEL_CMD` environment variable that tells Custodian how to parallelize VASP. For instance, this might look something like `export VASP_PARALLEL_CMD="srun -N 2 --ntasks-per-node 24"`. Note, the VASP executables are not included in this environment variable. For convenience, we recommend specifying this environment variable at runtime so you can easily modify it.
 - By default, Custodian will assume that the VASP executables can be run with `vasp_std` or `vasp_gam` for standard or gamma-point calculations. If you need to use different executable names or wish to change any Custodian settings from the selected defaults, refer to the section on ["Modifying Quacc Settings"](../../user/settings.md).
 

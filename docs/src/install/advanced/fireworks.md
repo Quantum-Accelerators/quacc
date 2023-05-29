@@ -6,7 +6,7 @@
 
 ## Installation
 
-To install Quacc with support for FireWorks, run `pip install quacc[jobflow]`.
+To install Quacc with support for FireWorks, run `pip install quacc[fireworks]`.
 
 ## FireWorks DB Setup
 

@@ -34,19 +34,15 @@ if __name__ == "__main__":
         zip_safe=False,
         install_requires=[
             "ase @ git+https://github.com/Quantum-Accelerators/rASE.git",  # waiting on >3.22.1 for regular ase
-            "cclib>=1.7.2",
+            "atomate2[cclib]>=0.0.10",
             "covalent>=0.223.1rc0",  # waiting on > 0.222.0
-            "emmet-core>=0.55.1",
+            "custodian>=2023.5.12",
             "pymatgen>=2023.5.10",
             "monty>=2023.4.10",
-            "numpy",
-            "pydantic",
         ],
         extras_require={
-            "db": ["maggma>=0.50.4"],
-            "jobflow": ["jobflow>=0.1.11", "fireworks>=2.0.3"],
+            "fireworks": ["fireworks>=2.0.3"],
             "tblite": ["tblite[ase]>=0.3.0"],
-            "vasp": ["custodian>=2023.5.7"],
             "docs": [
                 "autodoc_pydantic==1.8.0",
                 "furo==2023.5.20",
@@ -59,6 +55,7 @@ if __name__ == "__main__":
             "dev": ["black==23.3.0", "isort==5.12.0", "pytest==7.3.1"],
             "strict": [
                 "ase @ git+https://github.com/Quantum-Accelerators/rASE.git",  # waiting on >3.22.1 for regular ase
+                "atomate2==0.0.10",
                 "cclib==1.7.2",
                 "covalent @ git+https://github.com/AgnostiqHQ/covalent.git",  # waiting on > 0.222.0
                 "custodian==2023.5.12",
@@ -68,8 +65,8 @@ if __name__ == "__main__":
                 "monty==2023.5.8",
                 "pymatgen==2023.5.10",
                 "tblite[ase]==0.3.0",
-                "numpy",
-                "pydantic",
+                "numpy==1.24.3",
+                "pydantic==1.10.8",
             ],
         },
         tests_require=["pytest"],

@@ -1,19 +1,18 @@
 import os
 from shutil import rmtree
 
+import jobflow as jf
 import pytest
 from ase.build import bulk
+from jobflow.managers.fireworks import flow_to_workflow, job_to_firework
+from maggma.stores import MemoryStore
 
 from quacc.recipes.emt.core import relax_job, static_job
 
 try:
     import fireworks
-    import jobflow as jf
-    import maggma
-
-    missing_imports = False
 except ImportError:
-    missing_imports = True
+    fireworks = True
 
 
 def teardown_module():
@@ -30,14 +29,7 @@ def teardown_module():
             rmtree(f)
 
 
-@pytest.mark.skipif(
-    missing_imports, reason="This test requires jobflow, fireworks, and maggma"
-)
 def test_emt():
-    import jobflow as jf
-    from jobflow.managers.fireworks import flow_to_workflow, job_to_firework
-    from maggma.stores import MemoryStore
-
     store = jf.JobStore(MemoryStore())
 
     atoms = bulk("Cu")
@@ -55,6 +47,11 @@ def test_emt():
 
     workflow = jf.Flow([job1, job2])
     jf.run_locally(workflow, create_folders=True, ensure_success=True)
+
+
+@pytest.mark.skipif(fireworks is None, reason="This test requires fireworks")
+def test_fireworks():
+    atoms = bulk("Cu")
 
     # Test fireworks creation
     job1 = jf.job(relax_job)(atoms)

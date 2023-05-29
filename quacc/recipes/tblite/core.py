@@ -115,8 +115,8 @@ def relax_job(
     return summarize_opt_run(dyn, additional_fields={"name": "TBLite Relax"})
 
 
-@requires(TBLite, "tblite must be installed. Try pip install quacc[tblite]")
 @ct.electron
+@requires(TBLite, "tblite must be installed. Try pip install quacc[tblite]")
 def freq_job(
     atoms: Atoms,
     method: str = "GFN2-xTB",
