@@ -9,11 +9,17 @@ import warnings
 
 import covalent as ct
 from covalent._shared_files.exceptions import MissingLatticeRecordError
-from maggma.core import Store
+from monty.dev import requires
+
+try:
+    import maggma
+except ImportError:
+    maggma = None
 
 
+@requires(maggma, "maggma must be installed. Try pip install maggma")
 def covalent_to_db(
-    store: Store, dispatch_id: str = None, results_dir: str = None
+    store: maggma.core.Store, dispatch_id: str = None, results_dir: str = None
 ) -> None:
     """
     Store the results of a Covalent database in a user-specified Maggma Store
@@ -65,7 +71,7 @@ def covalent_to_db(
         store.close()
 
 
-def results_to_db(store: Store, results: dict | list[dict]) -> None:
+def results_to_db(store: maggma.core.Store, results: dict | list[dict]) -> None:
     """
     Store the results of a Quacc recipe in a user-specified Maggma Store.
     A UUID will be generated for each entry.

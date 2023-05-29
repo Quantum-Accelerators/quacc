@@ -3,17 +3,23 @@ import os
 import covalent as ct
 import pytest
 from ase.build import bulk
-from maggma.stores import MemoryStore
 
 from quacc.recipes.emt.core import static_job
 from quacc.util.db import covalent_to_db, results_to_db
 
+try:
+    import maggma
+except ImportError:
+    maggma = None
+
 
 @pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False,
+    os.environ.get("GITHUB_ACTIONS", False) is False or maggma is False,
     reason="This test is only meant to be run on GitHub Actions",
 )
 def test_covalent_to_db():
+    from maggma.stores import MemoryStore
+
     store = MemoryStore(collection_name="db1")
     covalent_to_db(store)
     count1 = store.count()
@@ -32,7 +38,13 @@ def test_covalent_to_db():
         covalent_to_db(store, dispatch_id="bad-value", results_dir="bad-value")
 
 
+@pytest.mark.skipif(
+    maggma is False,
+    reason="This test requires maggma",
+)
 def test_results_to_db():
+    from maggma.stores import MemoryStore
+
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += [0.1, 0.1, 0.1]
 

@@ -1,12 +1,19 @@
 import os
 from shutil import rmtree
 
-import jobflow as jf
 import pytest
 from ase.build import bulk
-from maggma.stores import MemoryStore
 
 from quacc.recipes.emt.core import relax_job, static_job
+
+try:
+    import jobflow as jf
+except ImportError:
+    jf = None
+try:
+    import maggma
+except ImportError:
+    maggma = None
 
 
 def teardown_module():
@@ -23,8 +30,12 @@ def teardown_module():
             rmtree(f)
 
 
-@pytest.mark.skipif(jf is None, reason="This test requires jobflow")
+@pytest.mark.skipif(
+    jf is None or maggma is None, reason="This test requires jobflow and maggma"
+)
 def test_emt():
+    from maggma.stores import MemoryStore
+
     store = jf.JobStore(MemoryStore())
 
     atoms = bulk("Cu")

@@ -2,14 +2,20 @@ import os
 
 import covalent as ct
 import pytest
-from maggma.stores import MemoryStore
+
+try:
+    import maggma
+except ImportError:
+    maggma = None
 
 
 @pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False,
-    reason="This test is only meant to be run on GitHub Actions",
+    maggma is None,
+    reason="This test requiers maggma",
 )
 def test_tutorial():
+    from maggma.stores import MemoryStore
+
     # Connect to the database
 
     store = MemoryStore()
