@@ -58,9 +58,9 @@ if __name__ == "__main__":
             ],
             "dev": ["black==23.3.0", "isort==5.12.0", "pytest==7.3.1"],
             "strict": [
-                "ase @ git+https://github.com/Quantum-Accelerators/rASE.git",
+                "ase @ git+https://github.com/Quantum-Accelerators/rASE.git",  # waiting on >3.22.1 for regular ase
                 "cclib==1.7.2",
-                "covalent @ git+https://github.com/AgnostiqHQ/covalent.git",
+                "covalent @ git+https://github.com/AgnostiqHQ/covalent.git",  # waiting on > 0.222.0
                 "custodian==2023.5.12",
                 "emmet-core==0.55.2",
                 "jobflow==0.1.11",
