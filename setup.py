@@ -43,6 +43,7 @@ if __name__ == "__main__":
         extras_require={
             "fireworks": ["fireworks>=2.0.3"],
             "tblite": ["tblite[ase]>=0.3.0"],
+            "dev": ["black>=23.3.0", "isort>=5.12.0", "pytest>=7.3.1"],
             "docs": [
                 "autodoc_pydantic==1.8.0",
                 "furo==2023.5.20",
@@ -52,7 +53,6 @@ if __name__ == "__main__":
                 "numpydoc==1.5.0",
                 "sphinx_design==0.4.1",
             ],
-            "dev": ["black>=23.3.0", "isort>=5.12.0", "pytest>=7.3.1"],
             "strict": [
                 "ase @ git+https://github.com/Quantum-Accelerators/rASE.git",  # waiting on >3.22.1 for regular ase
                 "atomate2==0.0.10",
