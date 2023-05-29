@@ -3,11 +3,6 @@ from custodian import Custodian
 
 from quacc.custodian.vasp import run_custodian
 
-try:
-    from custodian import Custodian
-except ImportError:
-    Custodian = None
-
 
 class MockRun:
     # Add a mock Custodian.run() function
@@ -30,10 +25,6 @@ def patch_custodian_run(monkeypatch):
     monkeypatch.setattr(Custodian, "run", mock_custodian_run)
 
 
-@pytest.mark.skipif(
-    Custodian is None,
-    reason="Custodian must be installed.",
-)
 def test_run_vasp_custodian(monkeypatch):
     monkeypatch.setenv("VASP_PARALLEL_CMD", "fake-mpirun")
     run_custodian()

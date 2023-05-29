@@ -3,19 +3,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+import jobflow as jf
 from ase import Atoms
-from monty.dev import requires
 
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.util.slabs import make_max_slabs_from_bulk
 
-try:
-    import jobflow as jf
-except ImportError:
-    jf = None
 
-
-@requires(jf, "jobflow must be installed. Try pip install jobflow.")
 @dataclass
 class BulkToSlabsFlow:
     """

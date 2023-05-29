@@ -12,7 +12,7 @@ from quacc.recipes.emt.core import relax_job, static_job
 try:
     import fireworks
 except ImportError:
-    fireworks = True
+    fireworks = False
 
 
 def teardown_module():

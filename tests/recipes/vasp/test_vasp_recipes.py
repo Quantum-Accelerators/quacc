@@ -2,7 +2,6 @@ import os
 from shutil import rmtree
 
 import jobflow as jf
-import maggma
 import pytest
 from ase.build import bulk, molecule
 from maggma.stores import MemoryStore
