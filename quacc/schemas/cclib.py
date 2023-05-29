@@ -35,7 +35,6 @@ from quacc.util.files import find_recent_logfile, get_uri
 
 __all__ = ["TaskDocument"]
 
-logger = logging.getLogger(__name__)
 _T = TypeVar("_T", bound="TaskDocument")
 
 
@@ -245,10 +244,6 @@ class TaskDocument(MoleculeMetadata):
             A TaskDocument object summarizing the inputs/outputs of the log file.
         """
 
-        logger.info(
-            f"Searching for most recent log file with extensions {logfile_extensions}"
-        )
-
         # Find the most recent log file with the given extension in the
         # specified directory.
         logfile = find_recent_logfile(dir_name, logfile_extensions)
@@ -257,12 +252,10 @@ class TaskDocument(MoleculeMetadata):
                 f"Could not find file with extension {logfile_extensions} in {dir_name}"
             )
 
-        logger.info(f"Getting task doc from {logfile}")
-
         additional_fields = {} if additional_fields is None else additional_fields
 
         # Let's parse the log file with cclib
-        cclib_obj = ccread(logfile, logging.ERROR)
+        cclib_obj = ccread(logfile)
         if not cclib_obj:
             raise ValueError(f"Could not parse {logfile}")
 
@@ -366,7 +359,6 @@ class TaskDocument(MoleculeMetadata):
             cubefile_path = find_recent_logfile(dir_name, [".cube", ".cub"])
 
             for analysis_name in analysis:
-                logger.info(f"Running {analysis_name}")
                 if calc_attributes := cclib_calculate(
                     cclib_obj, analysis_name, cubefile_path, proatom_dir
                 ):
