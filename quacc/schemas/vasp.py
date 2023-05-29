@@ -18,7 +18,7 @@ from quacc.util.pop_analysis import run_bader
 
 def summarize_run(
     atoms: Atoms,
-    dir_path: str | None = None,
+    dir_path: str = None,
     prep_next_run: bool = True,
     bader: bool = SETTINGS.VASP_BADER,
     check_convergence: bool = True,

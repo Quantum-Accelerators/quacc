@@ -209,7 +209,7 @@ def make_slabs_from_bulk(
 
 def make_max_slabs_from_bulk(
     atoms: Atoms,
-    max_slabs: int | None = None,
+    max_slabs: int = None,
     max_index: int = 1,
     randomize: bool = False,
     min_slab_size: float = 10.0,
@@ -322,10 +322,10 @@ def make_adsorbate_structures(
     adsorbate: Atoms,
     min_distance: float = 2.0,
     modes: list[str] | str = None,
-    allowed_surface_symbols: list[str] | str | None = None,
-    allowed_surface_indices: list[int] | int | None = None,
-    ads_site_finder_kwargs: dict | None = None,
-    find_ads_sites_kwargs: dict | None = None,
+    allowed_surface_symbols: list[str] | str = None,
+    allowed_surface_indices: list[int] | int = None,
+    ads_site_finder_kwargs: dict = None,
+    find_ads_sites_kwargs: dict = None,
 ) -> list[Atoms]:
     """
     Add a single adsorbate to a structure for every requested adsorption mode

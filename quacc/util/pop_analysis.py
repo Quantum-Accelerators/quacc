@@ -13,7 +13,7 @@ from quacc import SETTINGS
 from quacc.util.files import copy_decompress
 
 
-def run_bader(path: str | None = None, scratch_dir: str = SETTINGS.SCRATCH_DIR) -> dict:
+def run_bader(path: str = None, scratch_dir: str = SETTINGS.SCRATCH_DIR) -> dict:
     """
     Runs a Bader partial charge and spin moment analysis using the VASP
     output files in the given path. This function requires that `bader`
@@ -81,8 +81,8 @@ def run_bader(path: str | None = None, scratch_dir: str = SETTINGS.SCRATCH_DIR) 
 
 
 def run_chargemol(
-    path: str | None = None,
-    atomic_densities_path: str | None = None,
+    path: str = None,
+    atomic_densities_path: str = None,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
 ) -> dict:
     """

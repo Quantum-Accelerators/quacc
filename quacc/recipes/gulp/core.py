@@ -17,9 +17,9 @@ from quacc.util.dicts import merge_dicts
 def static_job(
     atoms: Atoms,
     gfnff: bool = True,
-    library: str | None = None,
-    keyword_swaps: dict | None = None,
-    option_swaps: dict | None = None,
+    library: str = None,
+    keyword_swaps: dict = None,
+    option_swaps: dict = None,
 ) -> dict:
     """
     Carry out a single-point calculation.
@@ -82,10 +82,10 @@ def static_job(
 def relax_job(
     atoms: Atoms,
     gfnff: bool = True,
-    library: str | None = None,
+    library: str = None,
     volume_relax: bool = True,
-    keyword_swaps: dict | None = None,
-    option_swaps: dict | None = None,
+    keyword_swaps: dict = None,
+    option_swaps: dict = None,
 ) -> dict:
     """
     Carry out a single-point calculation.

@@ -24,7 +24,6 @@ from cclib.method import (
 )
 from emmet.core.structure import MoleculeMetadata
 from monty.json import jsanitize
-from pydantic import Field
 from pymatgen.core import Molecule
 from pymatgen.core.periodic_table import Element
 
@@ -177,26 +176,15 @@ class TaskDocument(MoleculeMetadata):
     This is a mirror of atomate2.common.schemas.cclib.TaskDocument
     """
 
-    molecule: Molecule = Field(None, description="Final output molecule from the task")
-    energy: float = Field(None, description="Final total energy")
-    dir_name: str = Field(None, description="Directory where the output is parsed")
-    logfile: str = Field(
-        None, description="Path to the log file used in the post-processing analysis"
-    )
-    attributes: dict = Field(
-        None, description="Computed properties and calculation outputs"
-    )
-    metadata: dict = Field(
-        None,
-        description="Calculation metadata, including input parameters and runtime "
-        "statistics",
-    )
-    task_label: str = Field(None, description="A description of the task")
-    tags: list[str] = Field(None, description="Optional tags for this task document")
-    last_updated: str = Field(
-        default_factory=str,
-        description="Timestamp for when this task document was last updated",
-    )
+    molecule: Molecule = None
+    energy: float = None
+    dir_name: str = None
+    logfile: str = None
+    attributes: dict = None
+    metadata: dict = None
+    task_label: str = None
+    tags: list[str] = None
+    last_updated: str = None
 
     @classmethod
     def from_logfile(
@@ -204,9 +192,9 @@ class TaskDocument(MoleculeMetadata):
         dir_name: str,
         logfile_extensions: str | list[str],
         store_trajectory: bool = False,
-        additional_fields: dict | None = None,
-        analysis: str | list[str] | None = None,
-        proatom_dir: str | None = None,
+        additional_fields: dict = None,
+        analysis: str | list[str] = None,
+        proatom_dir: str = None,
     ) -> _T:
         """
         Create a TaskDocument from a log file.

@@ -36,13 +36,13 @@ class BulkToSlabsFlow:
 
     slab_relax_electron: Electron | None = relax_job
     slab_static_electron: Electron | None = static_job
-    slab_relax_kwargs: dict | None = None
-    slab_static_kwargs: dict | None = None
+    slab_relax_kwargs: dict = None
+    slab_static_kwargs: dict = None
 
     def run(
         self,
         atoms: Atoms,
-        slabgen_kwargs: dict | None = None,
+        slabgen_kwargs: dict = None,
     ) -> list[dict]:
         """
         Make the workflow.

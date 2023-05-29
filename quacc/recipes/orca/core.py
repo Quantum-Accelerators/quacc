@@ -18,12 +18,12 @@ GEOM_FILE = f"{ORCA().name}.xyz"
 @ct.electron
 def static_job(
     atoms: Atoms,
-    charge: int | None = None,
-    mult: int | None = None,
+    charge: int = None,
+    mult: int = None,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
-    input_swaps: dict | None = None,
-    block_swaps: dict | None = None,
+    input_swaps: dict = None,
+    block_swaps: dict = None,
 ) -> dict:
     """
     Carry out a single-point calculation.
@@ -97,13 +97,13 @@ def static_job(
 @ct.electron
 def relax_job(
     atoms: Atoms,
-    charge: int | None = None,
-    mult: int | None = None,
+    charge: int = None,
+    mult: int = None,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
     run_freq: bool = False,
-    input_swaps: dict | None = None,
-    block_swaps: dict | None = None,
+    input_swaps: dict = None,
+    block_swaps: dict = None,
 ) -> dict:
     """
     Carry out a geometry optimization.
