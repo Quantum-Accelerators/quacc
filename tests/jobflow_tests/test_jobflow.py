@@ -4,7 +4,6 @@ from shutil import rmtree
 import jobflow as jf
 import pytest
 from ase.build import bulk
-from jobflow.managers.fireworks import flow_to_workflow, job_to_firework
 from maggma.stores import MemoryStore
 
 from quacc.recipes.emt.core import relax_job, static_job
@@ -51,6 +50,8 @@ def test_emt():
 
 @pytest.mark.skipif(fireworks is None, reason="This test requires fireworks")
 def test_fireworks():
+    from jobflow.managers.fireworks import flow_to_workflow, job_to_firework
+
     atoms = bulk("Cu")
 
     # Test fireworks creation
