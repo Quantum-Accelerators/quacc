@@ -44,9 +44,9 @@ about/license
 **Last Updated**: {sub-ref}`today`
 
 **Useful links**:
-[Source Repository](https://github.com/arosen93/quacc) |
-[Issues & Ideas](https://github.com/arosen93/quacc/issues) |
-[Q & A](https://github.com/arosen93/quacc/discussions)
+[Source Repository](https://github.com/quantum-accelerators/quacc) |
+[Issues & Ideas](https://github.com/quantum-accelerators/quacc/issues) |
+[Q & A](https://github.com/quantum-accelerators/quacc/discussions)
 
 Quacc is a flexible platform for high-throughput, database-driven computational materials science and quantum chemistry.
 

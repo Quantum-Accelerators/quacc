@@ -8,7 +8,7 @@ Quacc was designed and developed by:
 
 ## Contributors
 
-Additional contributions were made by the individuals listed [here](https://github.com/arosen93/quacc/graphs/contributors).
+Additional contributions were made by the individuals listed [here](https://github.com/quantum-accelerators/quacc/graphs/contributors).
 
 ## Inspiration
 

@@ -34,7 +34,7 @@ Please abide by the following guidelines when contributing code to Quacc:
 
 ## Changelog
 
-We keep a [`CHANGELOG.md`](https://github.com/arosen93/quacc/blob/main/CHANGELOG.md) file in the base directory of the `quacc` code. Before submitting your PR, be sure to update the `CHANGELOG.md` file under the "Unreleased" section with a brief description of your changes. The `CHANGELOG.md` file follows the [Keep a Changelog](https://keepachangelog.com) format.
+We keep a [`CHANGELOG.md`](https://github.com/quantum-accelerators/quacc/blob/main/CHANGELOG.md) file in the base directory of the `quacc` code. Before submitting your PR, be sure to update the `CHANGELOG.md` file under the "Unreleased" section with a brief description of your changes. The `CHANGELOG.md` file follows the [Keep a Changelog](https://keepachangelog.com) format.
 
 ## Style Guidelines
 

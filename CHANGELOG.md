@@ -65,28 +65,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.0.6]
 
-See https://github.com/arosen93/quacc/releases/tag/v0.0.6 for more details.
+See https://github.com/quantum-accelerators/quacc/releases/tag/v0.0.6 for more details.
 
 ## [0.0.5]
 
-See https://github.com/arosen93/quacc/releases/tag/v0.0.5 for more details.
+See https://github.com/quantum-accelerators/quacc/releases/tag/v0.0.5 for more details.
 
 ## [0.0.5]
 
-See https://github.com/arosen93/quacc/releases/tag/v0.0.5 for more details.
+See https://github.com/quantum-accelerators/quacc/releases/tag/v0.0.5 for more details.
 
 ## [0.0.4]
 
-See https://github.com/arosen93/quacc/releases/tag/v0.0.4 for more details.
+See https://github.com/quantum-accelerators/quacc/releases/tag/v0.0.4 for more details.
 
 ## [0.0.3]
 
-See https://github.com/arosen93/quacc/releases/tag/v0.0.3 for more details.
+See https://github.com/quantum-accelerators/quacc/releases/tag/v0.0.3 for more details.
 
 ## [0.0.2]
 
-See https://github.com/arosen93/quacc/releases/tag/v0.0.2 for more details.
+See https://github.com/quantum-accelerators/quacc/releases/tag/v0.0.2 for more details.
 
 ## [0.0.1]
 
-See https://github.com/arosen93/quacc/releases/tag/v0.0.1 for more details.
+See https://github.com/quantum-accelerators/quacc/releases/tag/v0.0.1 for more details.

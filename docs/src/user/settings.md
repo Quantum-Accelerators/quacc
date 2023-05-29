@@ -2,7 +2,7 @@
 
 ## Modifying Quacc Settings
 
-By defualt, the global Quacc settings can be found in the [`settings.py`](https://github.com/arosen93/quacc/blob/main/quacc/settings.py) file. If you wish to modify any of the global Quacc settings, there are two ways to do so.
+By defualt, the global Quacc settings can be found in the [`settings.py`](https://github.com/quantum-accelerators/quacc/blob/main/quacc/settings.py) file. If you wish to modify any of the global Quacc settings, there are two ways to do so.
 
 ### Method 1
 

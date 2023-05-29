@@ -17,7 +17,7 @@ If you are on a Windows machine, you will need to install and use the [Windows S
 If you plan to use Quacc with a workflow manager, ensure that you install Quacc on all machines where the code will run.
 ```
 
-In your newly activated conda environment, you can install Quacc and its related dependencies by running `pip install quacc`. For the development version of Quacc (**currently required**), you should instead use `pip install git+https://github.com/arosen93/quacc.git`.
+In your newly activated conda environment, you can install Quacc and its related dependencies by running `pip install quacc`. For the development version of Quacc (**currently required**), you should instead use `pip install git+https://github.com/quantum-accelerators/quacc.git`.
 
 Quacc can be installed with several "extras," as outlined in the `setup.py` file. These are described below:
 

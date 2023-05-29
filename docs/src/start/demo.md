@@ -4,7 +4,7 @@ Want to get up and running with Quacc as fast possible? Here we go!
 
 ## Installation
 
-1. Run `pip install git+https://github.com/arosen93/quacc.git`.
+1. Run `pip install git+https://github.com/quantum-accelerators/quacc.git`.
 2. Run `covalent start` and open the URL.
 3. Run a sample workflow and check the webpage for results.
 

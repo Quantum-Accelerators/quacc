@@ -14,7 +14,7 @@ if __name__ == "__main__":
         long_description_content_type="text/markdown",
         author="Andrew S. Rosen",
         author_email="asrosen93@gmail.com",
-        url="https://github.com/arosen93/quacc",
+        url="https://github.com/quantum-accelerators/quacc",
         python_requires=">=3.8.0, <3.10",
         version="0.1.0",
         packages=find_packages(),
