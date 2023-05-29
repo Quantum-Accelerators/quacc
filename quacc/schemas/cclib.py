@@ -4,7 +4,7 @@ Schemas for molecular DFT codes parsed by cclib
 from __future__ import annotations
 
 import os
-from typing import Type, TypeVar
+from typing import Dict, List, Type, TypeVar
 
 import numpy as np
 from ase import Atoms
@@ -179,10 +179,10 @@ class TaskDocument(MoleculeMetadata):
     energy: float = None
     dir_name: str = None
     logfile: str = None
-    attributes: dict = None
-    metadata: dict = None
+    attributes: Dict = None
+    metadata: Dict = None
     task_label: str = None
-    tags: list[str] = None
+    tags: List[str] = None
     last_updated: str = None
 
     @classmethod
