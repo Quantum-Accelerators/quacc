@@ -15,7 +15,7 @@ except ImportError:
 from quacc import SETTINGS
 
 
-@requires(Custodian, "Custodian must be installed. Try pip install custodian")
+@requires(Custodian, "Custodian must be installed. Try pip install vasp[custodian]")
 def run_custodian(
     vasp_parallel_cmd: str = SETTINGS.VASP_PARALLEL_CMD,
     vasp_cmd: str = SETTINGS.VASP_CMD,

@@ -16,7 +16,7 @@ except ImportError:
     jf = None
 
 
-@requires(jf, "jobflow must be installed. Try pip install jobflow")
+@requires(jf, "jobflow must be installed. Try pip install quacc[jobflow]")
 @dataclass
 class BulkToSlabsFlow:
     """

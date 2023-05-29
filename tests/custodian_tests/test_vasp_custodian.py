@@ -32,7 +32,7 @@ def patch_custodian_run(monkeypatch):
 
 @pytest.mark.skipif(
     Custodian is None,
-    reason="Custodian must be installed. Try pip install custodian.",
+    reason="Custodian must be installed.",
 )
 def test_run_vasp_custodian(monkeypatch):
     monkeypatch.setenv("VASP_PARALLEL_CMD", "fake-mpirun")

@@ -17,7 +17,7 @@ except ImportError:
     maggma = None
 
 
-@requires(maggma, "maggma must be installed. Try pip install maggma")
+@requires(maggma, "maggma must be installed. Try pip install quacc[db]")
 def covalent_to_db(
     store: maggma.core.Store, dispatch_id: str = None, results_dir: str = None
 ) -> None:
@@ -71,6 +71,7 @@ def covalent_to_db(
         store.close()
 
 
+@requires(maggma, "maggma must be installed. Try pip install quacc[db]")
 def results_to_db(store: maggma.core.Store, results: dict | list[dict]) -> None:
     """
     Store the results of a Quacc recipe in a user-specified Maggma Store.

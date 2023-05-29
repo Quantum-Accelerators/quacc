@@ -26,7 +26,7 @@ except ImportError:
 @ct.electron
 @requires(
     TBLite,
-    "tblite must be installed. Try pip install tblite[ase]",
+    "tblite must be installed. Try pip install quacc[tblite]",
 )
 def static_job(
     atoms: Atoms, method: str = "GFN2-xTB", tblite_kwargs: dict = None
@@ -63,7 +63,7 @@ def static_job(
 @ct.electron
 @requires(
     TBLite,
-    "tblite must be installed. Try pip install tblite[ase]",
+    "tblite must be installed. Try pip install quacc[tblite]",
 )
 def relax_job(
     atoms: Atoms,
@@ -115,7 +115,7 @@ def relax_job(
     return summarize_opt_run(dyn, additional_fields={"name": "TBLite Relax"})
 
 
-@requires(TBLite, "tblite must be installed. Try pip install tblite[ase]")
+@requires(TBLite, "tblite must be installed. Try pip install quacc[tblite]")
 @ct.electron
 def freq_job(
     atoms: Atoms,

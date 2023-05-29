@@ -103,7 +103,6 @@ def summarize_run(
         - formula_alphabetical: str = Field(None, title="Alphabetical Formula", description="Alphabetical molecular formula")
         - formula_anonymous: str = Field(None, title="Anonymous Formula", description="Anonymized representation of the formula")
         - formula_pretty: str = Field(None, title="Pretty Formula", description="Cleaned representation of the formula.")
-        - last_updated: str = Field(default_factory=datetime_str, description="Timestamp for this task document was last updated")
         - logfile: str = Field(None, description="Path to the log file used in the post-processing analysis")
         - metadata: Dict = Field(None, description="Calculation metadata, including input parameters and runtime statistics. See https://cclib.github.io/data_notes.html#metadata")
         - molecule: Molecule = Field(None, description="Final output molecule from the task")
@@ -183,7 +182,6 @@ class TaskDocument(MoleculeMetadata):
     metadata: Dict = None
     task_label: str = None
     tags: List[str] = None
-    last_updated: str = None
 
     @classmethod
     def from_logfile(
