@@ -67,7 +67,7 @@ if __name__ == "__main__":
                 "custodian==2023.5.12",
                 "emmet-core==0.55.2",
                 "jobflow==0.1.11",
-                "maggma==0.51.0",
+                "maggma==0.51.1",
                 "monty==2023.5.8",
                 "pymatgen==2023.5.10",
                 "tblite[ase]==0.3.0",
