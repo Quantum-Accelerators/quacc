@@ -35,7 +35,7 @@ if __name__ == "__main__":
         install_requires=[
             "ase @ git+https://github.com/Quantum-Accelerators/rASE.git",  # waiting on >3.22.1 for regular ase
             "atomate2[cclib] @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
-            "covalent>=0.223.1rc0",  # waiting on > 0.222.0
+            "covalent @ git+https://github.com/AgnostiqHQ/covalent.git",  # waiting on > 0.222.0
             "custodian>=2023.5.12",
             "pymatgen>=2023.5.10",
             "monty>=2023.4.10",
