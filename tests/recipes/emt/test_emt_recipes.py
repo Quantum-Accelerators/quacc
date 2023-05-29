@@ -32,12 +32,12 @@ def test_static_Job():
 
     output = static_job(atoms)
     assert output["nsites"] == len(atoms)
-    assert output["parameters"]["asap_cutoff"] == False
+    assert output["parameters"]["asap_cutoff"] is False
     assert output["results"]["energy"] == pytest.approx(0.07001766638245854)
 
     output = static_job(atoms, emt_kwargs={"asap_cutoff": True})
     assert output["nsites"] == len(atoms)
-    assert output["parameters"]["asap_cutoff"] == True
+    assert output["parameters"]["asap_cutoff"] is True
     assert output["results"]["energy"] == pytest.approx(0.11074520235398744)
 
 
@@ -47,7 +47,7 @@ def test_relax_Job():
 
     output = relax_job(atoms)
     assert output["nsites"] == len(atoms)
-    assert output["parameters"]["asap_cutoff"] == False
+    assert output["parameters"]["asap_cutoff"] is False
     assert output["results"]["energy"] == pytest.approx(-0.04543069081693929)
     assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
 
@@ -55,7 +55,7 @@ def test_relax_Job():
     atoms[0].position += [0.1, 0.1, 0.1]
     output = relax_job(atoms, fmax=0.03, emt_kwargs={"asap_cutoff": True})
     assert output["nsites"] == len(atoms)
-    assert output["parameters"]["asap_cutoff"] == True
+    assert output["parameters"]["asap_cutoff"] is True
     assert output["results"]["energy"] == pytest.approx(-0.004528885890177747)
     assert 0.01 < np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.03
 
@@ -72,7 +72,7 @@ def test_slab_dynamic_jobs():
     assert outputs[1]["nsites"] == 96
     assert outputs[2]["nsites"] == 80
     assert outputs[3]["nsites"] == 64
-    assert [output["parameters"]["asap_cutoff"] == False for output in outputs]
+    assert [output["parameters"]["asap_cutoff"] is False for output in outputs]
     assert [output["name"] == "EMT Static" for output in outputs]
 
     outputs = BulkToSlabsFlow(
@@ -84,7 +84,7 @@ def test_slab_dynamic_jobs():
     assert outputs[1]["nsites"] == 96
     assert outputs[2]["nsites"] == 80
     assert outputs[3]["nsites"] == 64
-    assert [output["parameters"]["asap_cutoff"] == True for output in outputs]
+    assert [output["parameters"]["asap_cutoff"] is True for output in outputs]
 
     outputs = BulkToSlabsFlow(
         slab_relax_kwargs={"fmax": 1.0, "emt_kwargs": {"asap_cutoff": True}},
@@ -92,7 +92,7 @@ def test_slab_dynamic_jobs():
     assert len(outputs) == 2
     assert outputs[0]["nsites"] == 64
     assert outputs[1]["nsites"] == 80
-    assert [output["parameters"]["asap_cutoff"] == False for output in outputs]
+    assert [output["parameters"]["asap_cutoff"] is False for output in outputs]
 
     outputs = BulkToSlabsFlow(
         slab_relax_electron=static_job,
@@ -102,7 +102,7 @@ def test_slab_dynamic_jobs():
     assert len(outputs) == 2
     assert outputs[0]["nsites"] == 64
     assert outputs[1]["nsites"] == 80
-    assert outputs[0]["parameters"]["asap_cutoff"] == True
+    assert outputs[0]["parameters"]["asap_cutoff"] is True
     assert [output["name"] == "EMT Static" for output in outputs]
 
 
@@ -138,12 +138,12 @@ def test_jf_slab_dynamic_jobs():
 
     output1 = responses[uuids[1]][1].output
     assert output1["nsites"] == 64
-    assert output1["parameters"]["asap_cutoff"] == True
+    assert output1["parameters"]["asap_cutoff"] is True
     assert output1["name"] == "EMT Relax"
 
     output2 = responses[uuids[-1]][1].output
     assert output2["nsites"] == 80
-    assert output2["parameters"]["asap_cutoff"] == False
+    assert output2["parameters"]["asap_cutoff"] is False
     assert output2["name"] == "EMT Static"
 
     flow = JFBulkToSlabsFlow(
@@ -161,10 +161,10 @@ def test_jf_slab_dynamic_jobs():
 
     output1 = responses[uuids[1]][1].output
     assert output1["nsites"] == 64
-    assert output1["parameters"]["asap_cutoff"] == False
+    assert output1["parameters"]["asap_cutoff"] is False
     assert output1["name"] == "EMT Static"
 
     output2 = responses[uuids[-1]][1].output
     assert output2["nsites"] == 80
-    assert output2["parameters"]["asap_cutoff"] == True
+    assert output2["parameters"]["asap_cutoff"] is True
     assert output2["name"] == "EMT Static"

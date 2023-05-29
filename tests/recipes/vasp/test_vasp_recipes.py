@@ -35,7 +35,7 @@ def test_static_job():
     assert output["nsites"] == len(atoms)
     assert "isym" not in output["parameters"]
     assert output["parameters"]["nsw"] == 0
-    assert output["parameters"]["lwave"] == True
+    assert output["parameters"]["lwave"] is True
 
     output = static_job(atoms, preset="BulkSet", swaps={"ncore": 2, "kpar": 4})
     assert output["parameters"]["encut"] == 520
@@ -61,7 +61,7 @@ def test_relax_job():
     assert output["parameters"]["isym"] == 0
     assert output["parameters"]["nsw"] > 0
     assert output["parameters"]["isif"] == 3
-    assert output["parameters"]["lwave"] == False
+    assert output["parameters"]["lwave"] is False
 
     output = relax_job(atoms, preset="BulkSet", swaps={"nelmin": 6})
     assert output["parameters"]["encut"] == 520
@@ -79,12 +79,12 @@ def test_doublerelax_job():
     assert output["relax1"]["parameters"]["isym"] == 0
     assert output["relax1"]["parameters"]["nsw"] > 0
     assert output["relax1"]["parameters"]["isif"] == 3
-    assert output["relax1"]["parameters"]["lwave"] == True
+    assert output["relax1"]["parameters"]["lwave"] is True
     assert output["relax2"]["nsites"] == len(atoms)
     assert output["relax2"]["parameters"]["isym"] == 0
     assert output["relax2"]["parameters"]["nsw"] > 0
     assert output["relax2"]["parameters"]["isif"] == 3
-    assert output["relax2"]["parameters"]["lwave"] == True
+    assert output["relax2"]["parameters"]["lwave"] is True
 
     output = double_relax_job(atoms, preset="BulkSet", swaps2={"nelmin": 6})
     assert output["relax1"]["parameters"]["encut"] == 520
@@ -106,7 +106,7 @@ def test_slab_static_job():
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["idipol"] == 3
     assert output["parameters"]["nsw"] == 0
-    assert output["parameters"]["lvhar"] == True
+    assert output["parameters"]["lvhar"] is True
 
     output = slab_static_job(atoms, preset="SlabSet", swaps={"nelmin": 6})
     assert output["parameters"]["encut"] == 450
@@ -124,7 +124,7 @@ def test_slab_relax_job():
     assert output["parameters"]["isif"] == 2
     assert output["parameters"]["nsw"] > 0
     assert output["parameters"]["isym"] == 0
-    assert output["parameters"]["lwave"] == False
+    assert output["parameters"]["lwave"] is False
 
     output = slab_relax_job(atoms, preset="SlabSet", swaps={"nelmin": 6})
     assert output["parameters"]["encut"] == 450
@@ -289,7 +289,7 @@ def test_qmof():
     assert output["static"]["parameters"]["sigma"] == 0.01
     assert output["static"]["parameters"]["isym"] == 0
     assert output["static"]["parameters"]["nsw"] == 0
-    assert output["static"]["parameters"]["laechg"] == True
+    assert output["static"]["parameters"]["laechg"] is True
 
     output = qmof_relax_job(atoms, run_prerelax=False)
     assert output["prerelax-lowacc"] is None

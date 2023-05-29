@@ -116,12 +116,12 @@ def test_prep_next_run():  # sourcery skip: extract-duplicate-method
 
 def test_check_is_metal():
     atoms = bulk("Cu")
-    assert check_is_metal(atoms) == True
+    assert check_is_metal(atoms) is True
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[-1].symbol = "O"
-    assert check_is_metal(atoms) == False
+    assert check_is_metal(atoms) is False
     atoms = molecule("H2O")
-    assert check_is_metal(atoms) == False
+    assert check_is_metal(atoms) is False
 
 
 def test_get_highest_block():
