@@ -34,7 +34,7 @@ if __name__ == "__main__":
         zip_safe=False,
         install_requires=[
             "ase @ git+https://github.com/Quantum-Accelerators/rASE.git",  # waiting on >3.22.1 for regular ase
-            "atomate2[cclib]>=0.0.10",  # bump this when next release is made
+            "atomate2[cclib] @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
             "covalent>=0.223.1rc0",  # waiting on > 0.222.0
             "custodian>=2023.5.12",
             "pymatgen>=2023.5.10",
@@ -55,7 +55,7 @@ if __name__ == "__main__":
             ],
             "strict": [
                 "ase @ git+https://github.com/Quantum-Accelerators/rASE.git",  # waiting on >3.22.1 for regular ase
-                "atomate2==0.0.10",
+                "atomate2[cclib] @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
                 "black==23.3.0",
                 "cclib==1.7.2",
                 "covalent @ git+https://github.com/AgnostiqHQ/covalent.git",  # waiting on > 0.222.0
