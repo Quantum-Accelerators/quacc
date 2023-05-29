@@ -7,13 +7,13 @@ from ase.build import bulk
 from quacc.recipes.emt.core import relax_job, static_job
 
 try:
+    import fireworks
     import jobflow as jf
-except ImportError:
-    jf = None
-try:
     import maggma
+
+    missing_imports = False
 except ImportError:
-    maggma = None
+    missing_imports = True
 
 
 def teardown_module():
@@ -31,10 +31,11 @@ def teardown_module():
 
 
 @pytest.mark.skipif(
-    jf is None or maggma is None, reason="This test requires jobflow and maggma"
+    missing_imports, reason="This test requires jobflow, fireworks, and maggma"
 )
 def test_emt():
-    from jf.managers.fireworks import flow_to_workflow, job_to_firework
+    import jobflow as jf
+    from jobflow.managers.fireworks import flow_to_workflow, job_to_firework
     from maggma.stores import MemoryStore
 
     store = jf.JobStore(MemoryStore())
