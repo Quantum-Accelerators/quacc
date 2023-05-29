@@ -1,22 +1,15 @@
 import os
 from shutil import rmtree
 
+import jobflow as jf
 import numpy as np
 import pytest
 from ase.build import bulk
+from maggma.stores import MemoryStore
 
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.recipes.emt.jobflow.slabs import BulkToSlabsFlow as JFBulkToSlabsFlow
 from quacc.recipes.emt.slabs import BulkToSlabsFlow
-
-try:
-    import jobflow as jf
-except ImportError:
-    jf = None
-try:
-    import maggma
-except ImportError:
-    maggma = None
 
 
 def teardown_module():
@@ -113,12 +106,7 @@ def test_slab_dynamic_jobs():
     assert [output["name"] == "EMT Static" for output in outputs]
 
 
-@pytest.mark.skipif(
-    jf is None or maggma is None, reason="This test requires jobflow and maggma"
-)
 def test_jf_slab_dynamic_jobs():
-    from maggma.stores import MemoryStore
-
     store = jf.JobStore(MemoryStore())
 
     atoms = bulk("Cu")

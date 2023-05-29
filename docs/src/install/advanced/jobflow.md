@@ -4,10 +4,6 @@
 
 While we recommend using [Covalent](https://github.com/AgnostiqHQ/covalent) as the workflow manager with Quacc, it is not the only option for you to consider. If you would prefer to use [Jobflow](https://github.com/materialsproject/jobflow) to write your workflows and/or [FireWorks](https://github.com/materialsproject/fireworks) to manage them, follow the instructions below. For additional details, refer to the full [Jobflow documentation](https://materialsproject.github.io/jobflow/).
 
-## Installation
-
-To install Quacc with support for Jobflow, run `pip install quacc[jobflow]`.
-
 ## MongoDB Setup
 
 Jobflow and FireWorks both require the use of a database to store calculation results. If you haven't done so already, first create a Mongo database as described in the ["MongoDB Setup"](config_db.md) section.
