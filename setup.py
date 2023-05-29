@@ -58,7 +58,7 @@ if __name__ == "__main__":
                 "atomate2==0.0.10",
                 "black==23.3.0",
                 "cclib==1.7.2",
-                "covalent>=0.223.1rc0",  # waiting on > 0.222.0
+                "covalent==0.223.1rc0",  # waiting on > 0.222.0
                 "custodian==2023.5.12",
                 "emmet-core==0.55.2",
                 "isort==5.12.0",
