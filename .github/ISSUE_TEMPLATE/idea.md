@@ -1,5 +1,5 @@
 ---
-name: Idea
+name: Idea or Feature
 about: Propose a new feature to improve Quacc
 title: ""
 labels: ["enhancement"]
