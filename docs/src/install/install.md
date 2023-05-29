@@ -21,6 +21,11 @@ In your newly activated conda environment, you can install Quacc and its related
 
 Quacc can be installed with several "extras," as outlined in the `setup.py` file. These are described below:
 
-- `quacc[fireworks]`: Installs dependencies to enable the use of FireWorks.
+- `quacc[db]`: Installs dependencies to enable the use of databases.
+- `quacc[jobflow]`: Installs dependencies to enable the use of Jobflow and FireWorks.
 - `quacc[tblite]`: Installs dependencies to enable the use of tblite.
+- `quacc[vasp]`: Installs dependencies to enable the use of VASP with Custodian.
+
+- `quacc[docs]`: Installs dependencies to build the documentation.
 - `quacc[dev]`: Installs dependencies to enable local development of Quacc.
+- `quacc[strict]`: Installs dependencies that match the test suite on GitHub.

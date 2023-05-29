@@ -36,18 +36,17 @@ if __name__ == "__main__":
             "ase @ git+https://github.com/Quantum-Accelerators/rASE.git",  # waiting on >3.22.1 for regular ase
             "atomate2[cclib] @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
             "covalent>=0.223.1rc0",  # waiting on > 0.222.0
-            "custodian>=2023.5.7",
             "emmet-core>=0.55.1",
-            "jobflow>=0.1.11",
-            "maggma>=0.50.4",
             "pymatgen>=2023.5.10",
             "monty>=2023.4.10",
             "numpy",
             "pydantic",
         ],
         extras_require={
-            "fireworks": ["fireworks>=2.0.3"],
+            "db": ["maggma>=0.50.4"],
+            "jobflow": ["jobflow>=0.1.11", "fireworks>=2.0.3"],
             "tblite": ["tblite[ase]>=0.3.0"],
+            "vasp": ["custodian>=2023.5.7"],
             "docs": [
                 "autodoc_pydantic==1.8.0",
                 "furo==2023.5.20",
