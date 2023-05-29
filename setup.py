@@ -67,7 +67,7 @@ if __name__ == "__main__":
                 "maggma==0.51.1",
                 "monty==2023.5.8",
                 "numpy==1.24.3",
-                "pydantic==1.10.2",
+                "pydantic==1.10.8",
                 "pymatgen==2023.5.10",
                 "pytest==7.3.1",
                 "tblite[ase]==0.3.0",
