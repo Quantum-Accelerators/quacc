@@ -64,7 +64,7 @@ if __name__ == "__main__":
                 "fireworks==2.0.3",
                 "isort==5.12.0",
                 "jobflow==0.1.11",
-                "maggma==0.51.1",
+                "maggma==0.51.3",
                 "monty==2023.5.8",
                 "numpy==1.24.3",
                 "pydantic==1.10.2",
