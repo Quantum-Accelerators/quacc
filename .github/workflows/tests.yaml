@@ -99,6 +99,7 @@ jobs:
         run: |
           pip install .
           pip install chardet
+          pip install pytest
 
       - name: Set up Quacc settings
         run: |
