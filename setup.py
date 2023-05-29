@@ -59,10 +59,10 @@ if __name__ == "__main__":
             ],
             "dev": ["black==23.3.0", "isort==5.12.0", "pytest==7.3.1"],
             "strict": [
-                "ase @ git+https://gitlab.com/ase/ase.git",
+                "ase @ git+https://github.com/Quantum-Accelerators/rASE.git",
                 "atomate2 @ git+https://github.com/materialsproject/atomate2.git",
                 "cclib==1.7.2",
-                "covalent @ git+https://github.com/AgnostiqHQ/covalent.git",  # waiting on > 0.223.1rc0
+                "covalent @ git+https://github.com/AgnostiqHQ/covalent.git",
                 # "covalent-slurm-plugin==0.16.0rc0",
                 "custodian==2023.5.12",
                 "emmet-core==0.55.2",
