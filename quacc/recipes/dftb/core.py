@@ -19,8 +19,8 @@ GEOM_FILE = "geo_end.gen"
 def static_job(
     atoms: Atoms,
     method: str = "GFN2-xTB",
-    kpts: tuple | list[tuple] | dict | None = None,
-    swaps: dict | None = None,
+    kpts: tuple | list[tuple] | dict = None,
+    swaps: dict = None,
 ) -> dict:
     """
     Carry out a single-point calculation.
@@ -70,9 +70,9 @@ def static_job(
 def relax_job(
     atoms: Atoms,
     method: str = "GFN2-xTB",
-    kpts: tuple | list[tuple] | dict | None = None,
+    kpts: tuple | list[tuple] | dict = None,
     lattice_opt: bool = False,
-    swaps: dict | None = None,
+    swaps: dict = None,
 ) -> dict:
     """
     Carry out a structure relaxation.

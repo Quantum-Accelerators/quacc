@@ -11,9 +11,7 @@ from quacc.util.dicts import merge_dicts
 
 
 @ct.electron
-def static_job(
-    atoms: Atoms, preset: str | None = None, swaps: dict | None = None
-) -> dict:
+def static_job(atoms: Atoms, preset: str = None, swaps: dict = None) -> dict:
     """
     Carry out a single-point calculation.
 
@@ -54,9 +52,9 @@ def static_job(
 @ct.electron
 def relax_job(
     atoms: Atoms,
-    preset: str | None = None,
+    preset: str = None,
     relax_volume: bool = True,
-    swaps: dict | None = None,
+    swaps: dict = None,
 ) -> dict:
     """
     Relax a structure.
@@ -102,10 +100,10 @@ def relax_job(
 @ct.electron
 def double_relax_job(
     atoms: Atoms,
-    preset: str | None = None,
+    preset: str = None,
     relax_volume: bool = True,
-    swaps1: dict | None = None,
-    swaps2: dict | None = None,
+    swaps1: dict = None,
+    swaps2: dict = None,
 ) -> dict:
     """
     Double-relax a structure. This is particularly useful for a few reasons:

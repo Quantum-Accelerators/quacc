@@ -33,7 +33,7 @@ def teardown_module():
 
 @pytest.mark.skipif(
     TBLite is None,
-    reason="tblite must be installed. Try pip install tblite[ase]",
+    reason="tblite must be installed.",
 )
 def test_static_Job():
     atoms = molecule("H2O")
@@ -52,7 +52,7 @@ def test_static_Job():
 
 @pytest.mark.skipif(
     TBLite is None,
-    reason="tblite must be installed. Try pip install tblite[ase]",
+    reason="tblite must be installed.",
 )
 def test_relax_Job():
     atoms = molecule("H2O")
@@ -67,7 +67,7 @@ def test_relax_Job():
 
 @pytest.mark.skipif(
     TBLite is None,
-    reason="tblite must be installed. Try pip install tblite[ase]",
+    reason="tblite must be installed.",
 )
 def test_freq_job():
     atoms = molecule("H2O")

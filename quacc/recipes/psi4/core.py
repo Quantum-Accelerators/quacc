@@ -19,11 +19,11 @@ from quacc.util.dicts import merge_dicts
 @requires(psi4, "Psi4 be installed. Try conda install -c psi4 psi4")
 def static_job(
     atoms: Atoms,
-    charge: int | None = None,
-    mult: int | None = None,
+    charge: int = None,
+    mult: int = None,
     method: str = "wb97x-v",
     basis: str = "def2-tzvp",
-    swaps: dict | None = None,
+    swaps: dict = None,
 ) -> dict:
     """
     Function to carry out a single-point calculation.

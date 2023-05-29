@@ -20,7 +20,7 @@ def qmof_relax_job(
     preset: str | None = "QMOFSet",
     relax_volume: bool = True,
     run_prerelax: bool = True,
-    swaps: dict | None = None,
+    swaps: dict = None,
 ) -> dict:
     """
     Relax a structure in a multi-step process for increased
@@ -97,7 +97,7 @@ def qmof_relax_job(
 def _prerelax(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
-    swaps: dict | None = None,
+    swaps: dict = None,
     fmax: float = 5.0,
 ) -> dict:
     """
@@ -143,7 +143,7 @@ def _prerelax(
 def _loose_relax_positions(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
-    swaps: dict | None = None,
+    swaps: dict = None,
 ) -> dict:
     """
     Position relaxation with default ENCUT and coarse k-point grid.
@@ -190,7 +190,7 @@ def _loose_relax_positions(
 def _loose_relax_volume(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
-    swaps: dict | None = None,
+    swaps: dict = None,
 ) -> dict:
     """
     Volume relaxation with coarse k-point grid.
@@ -237,7 +237,7 @@ def _loose_relax_volume(
 def _double_relax(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
-    swaps: dict | None = None,
+    swaps: dict = None,
     relax_volume: bool = True,
 ) -> dict:
     """
@@ -307,7 +307,7 @@ def _double_relax(
 def _static(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
-    swaps: dict | None = None,
+    swaps: dict = None,
 ) -> tuple[Atoms, dict]:
     """
     Static calculation using production-quality settings.

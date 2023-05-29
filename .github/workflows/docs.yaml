@@ -29,7 +29,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install .[strict,docs]
+          pip install .[docs]
 
       - name: Build docs
         run: sphinx-build docs/src docs_build

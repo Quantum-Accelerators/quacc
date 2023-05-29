@@ -16,7 +16,7 @@ from quacc.util.dicts import merge_dicts
 @ct.electron
 def static_job(
     atoms: Atoms,
-    lj_kwargs: dict | None = None,
+    lj_kwargs: dict = None,
 ) -> dict:
     """
     Function to carry out a static calculation.
@@ -54,8 +54,8 @@ def relax_job(
     fmax: float = 0.01,
     max_steps: int = 1000,
     optimizer: str = "FIRE",
-    lj_kwargs: dict | None = None,
-    opt_kwargs: dict | None = None,
+    lj_kwargs: dict = None,
+    opt_kwargs: dict = None,
 ) -> dict:
     """
     Function to carry out a geometry optimization.

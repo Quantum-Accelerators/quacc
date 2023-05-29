@@ -30,7 +30,7 @@ from quacc.util.files import copy_decompress
 
 def run_calc(
     atoms: Atoms,
-    geom_file: str | None = None,
+    geom_file: str = None,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
     copy_files: list[str] = None,

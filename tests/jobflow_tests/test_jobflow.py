@@ -8,6 +8,11 @@ from maggma.stores import MemoryStore
 
 from quacc.recipes.emt.core import relax_job, static_job
 
+try:
+    import fireworks
+except ImportError:
+    fireworks = None
+
 
 def teardown_module():
     for f in os.listdir(os.getcwd()):
@@ -23,13 +28,12 @@ def teardown_module():
             rmtree(f)
 
 
-@pytest.mark.skipif(jf is None, reason="This test requires jobflow")
 def test_emt():
     store = jf.JobStore(MemoryStore())
 
     atoms = bulk("Cu")
 
-    # Test inddividual jobs
+    # Test individual jobs
     job = jf.job(static_job)(atoms)
     jf.run_locally(job, store=store, ensure_success=True)
 
@@ -42,3 +46,18 @@ def test_emt():
 
     workflow = jf.Flow([job1, job2])
     jf.run_locally(workflow, create_folders=True, ensure_success=True)
+
+
+@pytest.mark.skipif(fireworks is None, reason="This test requires fireworks")
+def test_fireworks():
+    from jobflow.managers.fireworks import flow_to_workflow, job_to_firework
+
+    atoms = bulk("Cu")
+
+    # Test fireworks creation
+    job1 = jf.job(relax_job)(atoms)
+    job2 = jf.job(static_job)(job1.output["atoms"])
+
+    workflow = jf.Flow([job1, job2])
+    job_to_firework(job1)
+    flow_to_workflow(workflow)

@@ -39,8 +39,8 @@ class BulkToSlabsFlow:
     name: str = "VASP BulkToSlabsFlow"
     slab_relax_job: jf.Job | None = jf.job(slab_relax_job_orig)
     slab_static_job: jf.job | None = jf.job(slab_static_job_orig)
-    slab_relax_kwargs: dict | None = None
-    slab_static_kwargs: dict | None = None
+    slab_relax_kwargs: dict = None
+    slab_static_kwargs: dict = None
 
     @jf.job
     def run(self, atoms: Atoms, slabgen_kwargs: dict = None) -> jf.Response:

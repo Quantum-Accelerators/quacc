@@ -13,7 +13,7 @@ from quacc.util.calc import run_ase_opt, run_calc
 
 
 @ct.electron
-def static_job(atoms: Atoms, emt_kwargs: dict | None = None) -> dict:
+def static_job(atoms: Atoms, emt_kwargs: dict = None) -> dict:
     """
     Carry out a static calculation.
 
@@ -49,8 +49,8 @@ def relax_job(
     fmax: float = 0.01,
     max_steps: int = 1000,
     optimizer: str = "FIRE",
-    emt_kwargs: dict | None = None,
-    opt_kwargs: dict | None = None,
+    emt_kwargs: dict = None,
+    opt_kwargs: dict = None,
 ) -> dict:
     """
     Carry out a geometry optimization.

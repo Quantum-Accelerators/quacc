@@ -38,11 +38,11 @@ class BulkToSlabsFlow:
     name: str = "EMT BulkToSlabsFlow"
     slab_relax_job: jf.Job | None = jf.job(relax_job)
     slab_static_job: jf.Job | None = jf.job(static_job)
-    slab_relax_kwargs: dict | None = None
-    slab_static_kwargs: dict | None = None
+    slab_relax_kwargs: dict = None
+    slab_static_kwargs: dict = None
 
     @jf.job
-    def run(self, atoms: Atoms, slabgen_kwargs: dict | None = None) -> jf.Response:
+    def run(self, atoms: Atoms, slabgen_kwargs: dict = None) -> jf.Response:
         """
         Make the run.
 

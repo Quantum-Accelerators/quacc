@@ -6,16 +6,11 @@ from __future__ import annotations
 import os
 import shlex
 
-from monty.dev import requires
+from custodian import Custodian
 
-try:
-    from custodian import Custodian
-except ImportError:
-    Custodian = None
 from quacc import SETTINGS
 
 
-@requires(Custodian, "Custodian must be installed. Try pip install custodian")
 def run_custodian(
     vasp_parallel_cmd: str = SETTINGS.VASP_PARALLEL_CMD,
     vasp_cmd: str = SETTINGS.VASP_CMD,
@@ -62,7 +57,7 @@ def run_custodian(
     -------
     None
     """
-    # Adapted from https://github.com/materialsproject/atomate2/blob/main/src/atomate2/vasp/run.py
+    # Adapted from atomate2.vasp.run.run_vasp
 
     from custodian.vasp.handlers import (
         FrozenJobErrorHandler,

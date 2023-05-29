@@ -24,3 +24,5 @@ Quacc can be installed with several "extras," as outlined in the `setup.py` file
 - `quacc[fireworks]`: Installs dependencies to enable the use of FireWorks.
 - `quacc[tblite]`: Installs dependencies to enable the use of tblite.
 - `quacc[dev]`: Installs dependencies to enable local development of Quacc.
+- `quacc[docs]`: Installs dependencies to build the documentation.
+- `quacc[strict]`: Installs dependencies that match the test suite on GitHub.

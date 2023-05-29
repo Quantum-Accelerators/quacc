@@ -26,10 +26,10 @@ except ImportError:
 @ct.electron
 @requires(
     TBLite,
-    "tblite must be installed. Try pip install tblite[ase]",
+    "tblite must be installed. Try pip install quacc[tblite]",
 )
 def static_job(
-    atoms: Atoms, method: str = "GFN2-xTB", tblite_kwargs: dict | None = None
+    atoms: Atoms, method: str = "GFN2-xTB", tblite_kwargs: dict = None
 ) -> dict:
     """
     Carry out a single-point calculation.
@@ -63,7 +63,7 @@ def static_job(
 @ct.electron
 @requires(
     TBLite,
-    "tblite must be installed. Try pip install tblite[ase]",
+    "tblite must be installed. Try pip install quacc[tblite]",
 )
 def relax_job(
     atoms: Atoms,
@@ -71,8 +71,8 @@ def relax_job(
     fmax: float = 0.01,
     max_steps: int = 1000,
     optimizer: str = "FIRE",
-    tblite_kwargs: dict | None = None,
-    opt_kwargs: dict | None = None,
+    tblite_kwargs: dict = None,
+    opt_kwargs: dict = None,
 ) -> dict:
     """
     Relax a structure.
@@ -115,15 +115,15 @@ def relax_job(
     return summarize_opt_run(dyn, additional_fields={"name": "TBLite Relax"})
 
 
-@requires(TBLite, "tblite must be installed. Try pip install tblite[ase]")
 @ct.electron
+@requires(TBLite, "tblite must be installed. Try pip install quacc[tblite]")
 def freq_job(
     atoms: Atoms,
     method: str = "GFN2-xTB",
     energy: float = 0.0,
     temperature: float = 298.15,
     pressure: float = 1.0,
-    xtb_kwargs: dict | None = None,
+    xtb_kwargs: dict = None,
 ) -> dict:
     """
     Run a frequency job and calculate thermochemistry.
