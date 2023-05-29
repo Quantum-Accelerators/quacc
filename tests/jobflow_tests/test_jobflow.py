@@ -41,7 +41,7 @@ def test_emt():
 
     atoms = bulk("Cu")
 
-    # Test inddividual jobs
+    # Test individual jobs
     job = jf.job(static_job)(atoms)
     jf.run_locally(job, store=store, ensure_success=True)
 
@@ -56,5 +56,9 @@ def test_emt():
     jf.run_locally(workflow, create_folders=True, ensure_success=True)
 
     # Test fireworks creation
+    job1 = jf.job(relax_job)(atoms)
+    job2 = jf.job(static_job)(job1.output["atoms"])
+
+    workflow = jf.Flow([job1, job2])
     job_to_firework(job1)
     flow_to_workflow(workflow)
