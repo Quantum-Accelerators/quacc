@@ -16,8 +16,8 @@ except ImportError:
     jf = None
 
 
-@dataclass
 @requires(jf, "jobflow must be installed. Try pip install jobflow")
+@dataclass
 class BulkToSlabsFlow:
     """
     Workflow consisting of:
