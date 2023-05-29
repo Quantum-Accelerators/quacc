@@ -244,10 +244,11 @@ def check_is_metal(atoms: Atoms) -> bool:
     bool
         True if the structure is likely a metal; False otherwise
     """
-    if np.all(atoms.pbc) == False:
-        struct = AseAtomsAdaptor.get_molecule(atoms)
-    else:
+    if atoms.pbc.any():
         struct = AseAtomsAdaptor.get_structure(atoms)
+    else:
+        struct = AseAtomsAdaptor.get_molecule(atoms)
+
     return all(k.is_metal for k in struct.composition.keys())
 
 
@@ -265,10 +266,11 @@ def get_highest_block(atoms: Atoms) -> str:
     str
         highest block of the structure
     """
-    if np.all(atoms.pbc) == False:
-        struct = AseAtomsAdaptor.get_molecule(atoms)
-    else:
+    if atoms.pbc.any():
         struct = AseAtomsAdaptor.get_structure(atoms)
+    else:
+        struct = AseAtomsAdaptor.get_molecule(atoms)
+
     blocks = [site.specie.block for site in struct]
     if "f" in blocks:
         return "f"
