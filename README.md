@@ -9,7 +9,6 @@
 ![tests](https://github.com/quantum-accelerators/quacc/actions/workflows/tests.yaml/badge.svg)
 [![codecov](https://codecov.io/gh/Quantum-Accelerators/quacc/branch/main/graph/badge.svg?token=OJaOZAH30u)](https://codecov.io/gh/Quantum-Accelerators/quacc)
 [![DeepSource](https://app.deepsource.com/gh/Quantum-Accelerators/quacc.svg/?label=active+issues&token=Y1NxOLIuFFEqWdjawIYnJNde)](https://app.deepsource.com/gh/Quantum-Accelerators/quacc/?ref=repository-badge)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/ccb8f387321e45bbaad21bc5e3d996fd)](https://app.codacy.com/gh/Quantum-Accelerators/quacc/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 ![Supported python versions](https://img.shields.io/badge/python-3.8%20%7C%203.9-blue)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7720998.svg)](https://doi.org/10.5281/zenodo.7720998)
 
