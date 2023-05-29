@@ -11,11 +11,11 @@ from ase.io import read
 from ase.optimize.optimize import Optimizer
 from ase.thermochemistry import IdealGasThermo
 from ase.vibrations import Vibrations
-from atomate2.utils.path import get_uri
 
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
 from quacc.util.dicts import clean_dict
+from quacc.util.files import get_uri
 
 
 def summarize_run(

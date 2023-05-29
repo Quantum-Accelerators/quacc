@@ -62,7 +62,7 @@ def run_custodian(
     -------
     None
     """
-    # Adapted from https://github.com/materialsproject/atomate2/blob/main/src/atomate2/vasp/run.py
+    # Adapted from atomate2.vasp.run.run_vasp
 
     from custodian.vasp.handlers import (
         FrozenJobErrorHandler,

@@ -34,6 +34,7 @@ def teardown_module():
     jf is None or maggma is None, reason="This test requires jobflow and maggma"
 )
 def test_emt():
+    from jf.managers.fireworks import flow_to_workflow, job_to_firework
     from maggma.stores import MemoryStore
 
     store = jf.JobStore(MemoryStore())
@@ -53,3 +54,7 @@ def test_emt():
 
     workflow = jf.Flow([job1, job2])
     jf.run_locally(workflow, create_folders=True, ensure_success=True)
+
+    # Test fireworks creation
+    job_to_firework(job1)
+    flow_to_workflow(workflow)
