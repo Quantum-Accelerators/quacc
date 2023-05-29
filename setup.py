@@ -40,7 +40,7 @@ if __name__ == "__main__":
             "emmet-core>=0.51.11",
             "pymatgen>=2023.5.10",
             "monty>=2023.4.10",
-            "numpy",
+            "numpy>=1.24.3",
         ],
         extras_require={
             "fireworks": ["fireworks>=2.0.3"],
