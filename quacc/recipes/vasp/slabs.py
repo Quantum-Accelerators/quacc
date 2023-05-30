@@ -263,7 +263,9 @@ class SlabToAdsFlow:
                 for slab in slabs
             ]
 
-        ads_slabs = make_adsorbate_structures(slab, adsorbate, **make_ads_kwargs)
+        ads_slabs = ct.electron(make_adsorbate_structures)(
+            slab, adsorbate, **make_ads_kwargs
+        )
 
         if self.slab_relax_electron and self.slab_static_electron:
             return _relax_and_static_distributed(ads_slabs)

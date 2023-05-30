@@ -9,6 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 import covalent as ct
+import numpy as np
 from ase import Atoms
 from covalent._workflow.electron import Electron
 
@@ -126,8 +127,42 @@ class MPRelaxFlow:
         prerelax_kwargs = self.prerelax_kwargs or {}
         relax_kwargs = self.relax_kwargs or {}
 
-        # TODO: By default, the kpoints should be based on KSPACING from the pre-relax job.
-
-        return self.relax_electron(
-            self.prerelax_electron(atoms, **prerelax_kwargs)["atoms"], **relax_kwargs
+        # TODO: Also, copy the WAVECAR
+        prerelax_results = self.prerelax_electron(atoms, **prerelax_kwargs)["atoms"]
+        kspacing_swaps = ct.electron(self._get_kspacing)(
+            prerelax_results["output"]["bandgap"]
         )
+
+        relax_kwargs["swaps"] = merge_dicts(
+            kspacing_swaps, relax_kwargs.get("swaps", {})
+        )
+
+        return self.relax_electron(prerelax_results["atoms"], **relax_kwargs)
+
+    def _get_kspacing(self, bandgap: float) -> dict:
+        """
+        Function to calculate KSPACING and related parameters for a given bandgap.
+
+        Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
+
+        Parameters
+        ----------
+        bandgap
+            Bandgap of the structure in eV.
+
+        Returns
+        -------
+        dict
+            Dictionary of KSPACING and related parameters to swap.
+        """
+
+        if self.bandgap == 0:
+            return {"kspacing": 0.22, "sigma": 0.2, "ismear": 2}
+
+        rmin = 25.22 - 2.87 * bandgap
+        kspacing = 2 * np.pi * 1.0265 / (rmin - 1.0183)
+        return {
+            "kspacing": kspacing if 0.22 < kspacing < 0.44 else 0.44,
+            "ismear": -5,
+            "sigma": 0.05,
+        }

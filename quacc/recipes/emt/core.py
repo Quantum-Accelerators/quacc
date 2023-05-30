@@ -1,7 +1,7 @@
 """
 Core recipes for EMT
 
-NOTE: This set of minimal recipes is mainly for demonstration purposes
+NOTE: This set of minimal recipes is mainly for demonstration purposes.
 """
 from __future__ import annotations
 
