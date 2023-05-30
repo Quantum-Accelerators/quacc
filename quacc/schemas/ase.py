@@ -409,10 +409,10 @@ def summarize_vib_run(
         "results": {
             "imag_vib_freqs": [f for f in true_vib_freqs if f < 0],
             "n_imag": len([f for f in true_vib_freqs if f < 0]),
-            "true_vib_energies": true_vib_energies,
-            "true_vib_freqs": true_vib_freqs,
-            "vib_energies": vib_energies,
-            "vib_freqs": vib_freqs,
+            "vib_energies": true_vib_energies,
+            "vib_freqs": true_vib_freqs,
+            "vib_energies_raw": vib_energies,
+            "vib_freqs_raw": vib_freqs,
         }
     }
 

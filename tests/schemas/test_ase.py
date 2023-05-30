@@ -182,22 +182,24 @@ def test_summarize_vib_run():
     assert "nid" in results
     assert "dir_name" in results
     assert "pull_request" in results["builder_meta"]
-    assert len(results["results"]["vib_freqs"]) == 6
-    assert results["results"]["vib_freqs"][0] == pytest.approx(-3.054403266390365e-06)
-    assert results["results"]["vib_freqs"][-1] == pytest.approx(928.1447554058556)
-    assert len(results["results"]["vib_energies"]) == 6
-    assert results["results"]["vib_energies"][0] == pytest.approx(
+    assert len(results["results"]["vib_freqs_raw"]) == 6
+    assert results["results"]["vib_freqs_raw"][0] == pytest.approx(
+        -3.054403266390365e-06
+    )
+    assert results["results"]["vib_freqs_raw"][-1] == pytest.approx(928.1447554058556)
+    assert len(results["results"]["vib_energies_raw"]) == 6
+    assert results["results"]["vib_energies_raw"][0] == pytest.approx(
         -3.786977375083739e-10
     )
-    assert results["results"]["vib_energies"][-1] == pytest.approx(0.11507528256667966)
-    assert results["results"]["n_imag"] == 0
-    assert results["results"]["imag_vib_freqs"] == []
-    assert len(results["results"]["true_vib_freqs"]) == 1
-    assert results["results"]["true_vib_freqs"][0] == pytest.approx(928.1447554058556)
-    assert len(results["results"]["true_vib_energies"]) == 1
-    assert results["results"]["true_vib_energies"][0] == pytest.approx(
+    assert results["results"]["vib_energies_raw"][-1] == pytest.approx(
         0.11507528256667966
     )
+    assert results["results"]["n_imag"] == 0
+    assert results["results"]["imag_vib_freqs"] == []
+    assert len(results["results"]["vib_freqs"]) == 1
+    assert results["results"]["vib_freqs"][0] == pytest.approx(928.1447554058556)
+    assert len(results["results"]["vib_energies"]) == 1
+    assert results["results"]["vib_energies"][0] == pytest.approx(0.11507528256667966)
 
     # Test remove_empties
     atoms = molecule("N2")
@@ -245,10 +247,10 @@ def test_summarize_vib_run():
     assert results["atoms"] == input_atoms
     assert results["nsites"] == len(atoms)
     assert results["parameters"]["delta"] == vib.delta
+    assert len(results["results"]["vib_freqs_raw"]) == 6
+    assert len(results["results"]["vib_energies_raw"]) == 6
     assert len(results["results"]["vib_freqs"]) == 6
     assert len(results["results"]["vib_energies"]) == 6
-    assert len(results["results"]["true_vib_freqs"]) == 3
-    assert len(results["results"]["true_vib_energies"]) == 3
 
 
 def test_summarize_thermo_run():
