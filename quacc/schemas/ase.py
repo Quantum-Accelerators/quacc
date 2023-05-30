@@ -365,16 +365,16 @@ def summarize_vib_run(
     """
     additional_fields = additional_fields or {}
 
-    vib_freqs = vib.get_frequencies().tolist()
-    vib_energies = vib.get_energies().tolist()
+    vib_freqs_raw = vib.get_frequencies().tolist()
+    vib_energies_raw = vib.get_energies().tolist()
 
-    for i, f in enumerate(vib_freqs):
+    for i, f in enumerate(vib_freqs_raw):
         if np.imag(f) > 0:
-            vib_freqs[i] = -np.abs(f)
-            vib_energies[i] = -np.abs(vib_energies[i])
+            vib_freqs_raw[i] = -np.abs(f)
+            vib_energies_raw[i] = -np.abs(vib_energies_raw[i])
         else:
-            vib_freqs[i] = np.abs(f)
-            vib_energies[i] = np.abs(vib_energies[i])
+            vib_freqs_raw[i] = np.abs(f)
+            vib_energies_raw[i] = np.abs(vib_energies_raw[i])
 
     uri = get_uri(os.getcwd())
     inputs = {
@@ -395,24 +395,26 @@ def summarize_vib_run(
     # Get the true vibrational modes
     natoms = len(atoms)
     if natoms == 1:
-        true_vib_freqs = []
-        true_vib_energies = []
+        vib_freqs = []
+        vib_energies = []
     elif atoms.pbc.any():
-        true_vib_freqs = vib_freqs
-        true_vib_energies = vib_energies
+        vib_freqs = vib_freqs_raw
+        vib_energies = vib_energies_raw
     else:
         n_modes = 3 * natoms - 5 if atoms_db["symmetry"]["linear"] else 3 * natoms - 6
-        true_vib_freqs = vib_freqs[-n_modes:]
-        true_vib_energies = vib_energies[-n_modes:]
+        vib_freqs = vib_freqs_raw[-n_modes:]
+        vib_energies = vib_energies_raw[-n_modes:]
+
+    imag_vib_freqs = [f for f in vib_freqs if f < 0]
 
     results = {
         "results": {
-            "imag_vib_freqs": [f for f in true_vib_freqs if f < 0],
-            "n_imag": len([f for f in true_vib_freqs if f < 0]),
-            "vib_energies": true_vib_energies,
-            "vib_freqs": true_vib_freqs,
-            "vib_energies_raw": vib_energies,
-            "vib_freqs_raw": vib_freqs,
+            "imag_vib_freqs": imag_vib_freqs,
+            "n_imag": len(imag_vib_freqs),
+            "vib_energies": vib_energies,
+            "vib_freqs": vib_freqs,
+            "vib_energies_raw": vib_energies_raw,
+            "vib_freqs_raw": vib_freqs_raw,
         }
     }
 
