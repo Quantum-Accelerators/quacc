@@ -73,18 +73,16 @@ def test_freq_job():
     atoms = molecule("H2O")
     output = freq_job(atoms)
     assert output["vib"]["atoms"] == molecule("H2O")
-    assert len(output["vib"]["results"]["vib_freqs"]) == 9
-    assert len(output["vib"]["results"]["true_vib_freqs"]) == 3
-    assert output["vib"]["results"]["vib_freqs"][0] == pytest.approx(
+    assert len(output["vib"]["results"]["vib_freqs_raw"]) == 9
+    assert len(output["vib"]["results"]["vib_freqs"]) == 3
+    assert output["vib"]["results"]["vib_freqs_raw"][0] == pytest.approx(
         -0.10864429415434408
     )
-    assert output["vib"]["results"]["vib_freqs"][-1] == pytest.approx(
+    assert output["vib"]["results"]["vib_freqs_raw"][-1] == pytest.approx(
         3526.9940431752034
     )
-    assert output["vib"]["results"]["true_vib_freqs"][0] == pytest.approx(
-        1586.623114694335
-    )
-    assert output["vib"]["results"]["true_vib_freqs"][-1] == pytest.approx(
+    assert output["vib"]["results"]["vib_freqs"][0] == pytest.approx(1586.623114694335)
+    assert output["vib"]["results"]["vib_freqs"][-1] == pytest.approx(
         3526.9940431752034
     )
     assert output["vib"]["results"]["n_imag"] == 0
@@ -95,9 +93,7 @@ def test_freq_job():
     assert output["thermo"]["symmetry"]["rotation_number"] == 2
     assert output["thermo"]["symmetry"]["linear"] is False
     assert len(output["thermo"]["results"]["vib_freqs"]) == 3
-    assert output["vib"]["results"]["true_vib_freqs"][0] == pytest.approx(
-        1586.623114694335
-    )
+    assert output["vib"]["results"]["vib_freqs"][0] == pytest.approx(1586.623114694335)
     assert output["thermo"]["results"]["vib_freqs"][-1] == pytest.approx(
         3526.9940431752034
     )
@@ -115,11 +111,11 @@ def test_freq_job():
     initial_atoms = deepcopy(atoms)
     output = freq_job(atoms, energy=-1.0)
     assert output["vib"]["atoms"] == initial_atoms
-    assert len(output["vib"]["results"]["vib_freqs"]) == 3
-    assert len(output["vib"]["results"]["true_vib_freqs"]) == 0
-    assert output["vib"]["results"]["vib_freqs"][0] == 0
-    assert output["vib"]["results"]["vib_freqs"][-1] == 0
-    assert output["vib"]["results"]["true_vib_freqs"] == []
+    assert len(output["vib"]["results"]["vib_freqs_raw"]) == 3
+    assert len(output["vib"]["results"]["vib_freqs"]) == 0
+    assert output["vib"]["results"]["vib_freqs_raw"][0] == 0
+    assert output["vib"]["results"]["vib_freqs_raw"][-1] == 0
+    assert output["vib"]["results"]["vib_freqs"] == []
     assert output["vib"]["results"]["n_imag"] == 0
     assert output["vib"]["results"]["imag_vib_freqs"] == []
 
@@ -140,18 +136,18 @@ def test_freq_job():
     initial_atoms = deepcopy(atoms)
     output = freq_job(atoms, energy=-10.0, temperature=1000, pressure=20)
     assert output["vib"]["atoms"] == initial_atoms
-    assert len(output["vib"]["results"]["vib_freqs"]) == 12
-    assert len(output["vib"]["results"]["true_vib_freqs"]) == 6
-    assert output["vib"]["results"]["vib_energies"][0] == pytest.approx(
+    assert len(output["vib"]["results"]["vib_freqs_raw"]) == 12
+    assert len(output["vib"]["results"]["vib_freqs"]) == 6
+    assert output["vib"]["results"]["vib_energies_raw"][0] == pytest.approx(
         -9.551076713062095e-06
     )
-    assert output["vib"]["results"]["vib_energies"][-1] == pytest.approx(
+    assert output["vib"]["results"]["vib_energies_raw"][-1] == pytest.approx(
         0.3880868821616259
     )
-    assert output["vib"]["results"]["true_vib_energies"][0] == pytest.approx(
+    assert output["vib"]["results"]["vib_energies"][0] == pytest.approx(
         0.0713506770137291
     )
-    assert output["vib"]["results"]["true_vib_energies"][-1] == pytest.approx(
+    assert output["vib"]["results"]["vib_energies"][-1] == pytest.approx(
         0.3880868821616259
     )
     assert output["vib"]["results"]["n_imag"] == 0
