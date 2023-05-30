@@ -136,18 +136,18 @@ def test_freq_job():
     initial_atoms = deepcopy(atoms)
     output = freq_job(atoms, energy=-10.0, temperature=1000, pressure=20)
     assert output["vib"]["atoms"] == initial_atoms
-    assert len(output["vib"]["results"]["vib_freqs"]) == 12
-    assert len(output["vib"]["results"]["true_vib_freqs"]) == 6
-    assert output["vib"]["results"]["vib_energies"][0] == pytest.approx(
+    assert len(output["vib"]["results"]["vib_freqs_raw"]) == 12
+    assert len(output["vib"]["results"]["vib_freqs"]) == 6
+    assert output["vib"]["results"]["vib_energies_raw"][0] == pytest.approx(
         -9.551076713062095e-06
     )
-    assert output["vib"]["results"]["vib_energies"][-1] == pytest.approx(
+    assert output["vib"]["results"]["vib_energies_raw"][-1] == pytest.approx(
         0.3880868821616259
     )
-    assert output["vib"]["results"]["true_vib_energies"][0] == pytest.approx(
+    assert output["vib"]["results"]["vib_energies"][0] == pytest.approx(
         0.0713506770137291
     )
-    assert output["vib"]["results"]["true_vib_energies"][-1] == pytest.approx(
+    assert output["vib"]["results"]["vib_energies"][-1] == pytest.approx(
         0.3880868821616259
     )
     assert output["vib"]["results"]["n_imag"] == 0
