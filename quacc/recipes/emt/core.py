@@ -1,4 +1,8 @@
-"""Core recipes for EMT"""
+"""
+Core recipes for EMT
+
+NOTE: This set of minimal recipes is mainly for demonstration purposes
+"""
 from __future__ import annotations
 
 import covalent as ct
@@ -8,8 +12,6 @@ from ase.calculators.emt import EMT
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.util.atoms import copy_atoms
 from quacc.util.calc import run_ase_opt, run_calc
-
-# NOTE: This set of minimal recipes is mainly for demonstration purposes
 
 
 @ct.electron
