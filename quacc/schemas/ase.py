@@ -316,10 +316,10 @@ def summarize_vib_run(
         - results: dict = Field(None, title = "The results from the calculation.")
             - imag_vib_freqs: List[float] = Imaginary vibrational frequencies in cm^-1
             - n_imag: int = Number of imaginary vibrational frequencies
-            - true_vib_energies: List[float] = True vibrational energies in eV
-            - true_vib_freqs: List[float] = True vibrational frequencies in cm^-1
-            - vib_energies: List[float] = Vibrational energies in eV, including artificial ones
-            - vib_freqs: List[float] = Vibrational frequencies in cm^-1, including artificial ones
+            - vib_energies: List[float] = Vibrational energies in eV. 3N-5 or 3N-6 for molecules; 3N for solids.
+            - vib_freqs: List[float] = Vibrational frequencies in cm^-1. 3N-5 or 3N-6 for molecules; 3N for solids.
+            - vib_energies_raw: List[float] = Vibrational energies in eV of length 3N.
+            - vib_freqs_raw: List[float] = Vibrational frequencies in cm^-1 of length 3N.
 
         For periodic structures, the task document also has the following fields:
         - chemsys: str = Field(None, title="Chemical System", description="dash-delimited string of elements in the material.")
