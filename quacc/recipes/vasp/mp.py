@@ -126,6 +126,8 @@ class MPRelaxFlow:
         prerelax_kwargs = self.prerelax_kwargs or {}
         relax_kwargs = self.relax_kwargs or {}
 
+        # TODO: By default, the kpoints should be based on KSPACING from the pre-relax job.
+
         return self.relax_electron(
             self.prerelax_electron(atoms, **prerelax_kwargs)["atoms"], **relax_kwargs
         )
