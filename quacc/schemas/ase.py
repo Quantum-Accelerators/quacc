@@ -399,7 +399,7 @@ def summarize_vib_run(
         true_vib_energies = []
     else:
         if atoms.pbc.any():
-            n_modes = 3 * natoms - 3
+            n_modes = 3 * natoms
         elif atoms_db["symmetry"]["linear"]:
             n_modes = 3 * natoms - 5
         else:
