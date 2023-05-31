@@ -175,7 +175,7 @@ class BulkToSlabsFlow:
         def _relax_and_static_distributed(slabs):
             return [
                 self.slab_static_electron(
-                    self.slab_relax_electron(slab, **self.relax_kwargs)["atoms"],
+                    self.slab_relax_electron(slab, **self.slab_relax_kwargs)["atoms"],
                     **self.slab_static_kwargs,
                 )
                 for slab in slabs
