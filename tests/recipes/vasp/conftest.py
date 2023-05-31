@@ -53,7 +53,10 @@ def mock_summarize_run(atoms, **kwargs):
     output = calc_summarize_run(
         atoms, prep_next_run=prep_next_run, additional_fields=additional_fields
     )
-    output["output"] = {"energy": -1.0, "bandgap": 0.5}
+    output["output"] = {
+        "energy": -1.0,
+        "bandgap": 0.0 if "Cu" in atoms.get_chemical_symbols() else 0.5,
+    }
     return output
 
 
