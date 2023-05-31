@@ -318,17 +318,6 @@ def test_qmof():
     output = qmof_relax_job(atoms)
 
 
-def test_mp():
-    atoms = bulk("Cu")
-    output = qmof_relax_job(atoms)
-    assert output["prerelax-lowacc"]["nsites"] == len(atoms)
-    assert output["prerelax-lowacc"]["parameters"]["sigma"] == 0.01
-    assert output["prerelax-lowacc"]["parameters"]["isym"] == 0
-    assert output["prerelax-lowacc"]["parameters"]["nsw"] == 0
-    assert "isif" not in output["prerelax-lowacc"]["parameters"]
-    assert "encut" not in output["prerelax-lowacc"]["parameters"]
-
-
 def test_jf_slab_dynamic_jobs():
     store = jf.JobStore(MemoryStore())
 
