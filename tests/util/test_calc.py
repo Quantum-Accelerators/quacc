@@ -77,7 +77,7 @@ def test_run_ase_opt():
     atoms.calc = EMT()
 
     dyn = run_ase_opt(atoms, scratch_dir="test_calc", copy_files=["test_file.txt"])
-    traj = read(dyn.trajectory, index=":")
+    traj = dyn.trajectory
     assert traj[-1].calc.results is not None
     assert os.path.exists("test_file.txt")
     assert os.path.exists("test_file.txt.gz")
@@ -97,7 +97,7 @@ def test_run_ase_opt():
         copy_files=["test_file.txt"],
         opt_kwargs={"restart": None},
     )
-    traj = read(dyn.trajectory, index=":")
+    traj = dyn.trajectory
     assert traj[-1].calc.results is not None
 
     dyn = run_ase_opt(
@@ -108,7 +108,7 @@ def test_run_ase_opt():
         copy_files=["test_file.txt"],
         opt_kwargs={"restart": None},
     )
-    traj = read(dyn.trajectory, index=":")
+    traj = dyn.trajectory
     assert traj[-1].calc.results is not None
     dyn = run_ase_opt(
         traj[-1],
@@ -118,7 +118,7 @@ def test_run_ase_opt():
         copy_files=["test_file.txt"],
         opt_kwargs={"restart": None},
     )
-    traj = read(dyn.trajectory, index=":")
+    traj = dyn.trajectory
     assert traj[-1].calc.results is not None
     dyn = run_ase_opt(
         traj[-1],
@@ -128,7 +128,7 @@ def test_run_ase_opt():
         copy_files=["test_file.txt"],
         opt_kwargs={"restart": None},
     )
-    traj = read(dyn.trajectory, index=":")
+    traj = dyn.trajectory
     assert traj[-1].calc.results is not None
     dyn = run_ase_opt(
         traj[-1],
@@ -138,7 +138,7 @@ def test_run_ase_opt():
         copy_files=["test_file.txt"],
         opt_kwargs={"restart": None},
     )
-    traj = read(dyn.trajectory, index=":")
+    traj = dyn.trajectory
     assert traj[-1].calc.results is not None
     dyn = run_ase_opt(
         traj[-1],
@@ -148,7 +148,7 @@ def test_run_ase_opt():
         copy_files=["test_file.txt"],
         opt_kwargs={"restart": None},
     )
-    traj = read(dyn.trajectory, index=":")
+    traj = dyn.trajectory
     assert traj[-1].calc.results is not None
 
     with pytest.raises(ValueError):
@@ -160,7 +160,7 @@ def test_run_ase_opt():
             copy_files=["test_file.txt"],
             opt_kwargs={"restart": None},
         )
-        traj = read(dyn.trajectory, index=":")
+        traj = dyn.trajectory
         assert traj[-1].calc.results is not None
     with pytest.raises(ValueError):
         run_ase_opt(bulk("Cu"), scratch_dir="test_calc", copy_files=["test_file.txt"])

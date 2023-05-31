@@ -231,16 +231,16 @@ def summarize_opt_run(
     additional_fields = additional_fields or {}
     dyn_parameters = dyn.todict()
     parameters = dyn.atoms.calc.parameters
+    traj = dyn.trajectory
 
     # Check trajectory
-    if not dyn.trajectory or not os.path.exists(dyn.trajectory):
+    if not traj:
         raise FileNotFoundError("No trajectory file found.")
 
     # Check convergence
     if check_convergence and not dyn.converged():
         raise ValueError("Optimization did not converge.")
 
-    traj = read(dyn.trajectory, index=":")
     initial_atoms = traj[0]
     final_atoms = dyn.atoms
 
