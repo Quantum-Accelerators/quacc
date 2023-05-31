@@ -129,17 +129,11 @@ class MPRelaxFlow:
 
         # TODO: Also, copy the WAVECAR
         prerelax_results = self.prerelax_electron(atoms, **prerelax_kwargs)["atoms"]
-        kspacing_swaps = ct.electron(self._get_kspacing)(
-            prerelax_results["output"]["bandgap"]
-        )
-
-        relax_kwargs["swaps"] = merge_dicts(
-            kspacing_swaps, relax_kwargs.get("swaps", {})
-        )
+        self._set_kspacing_swaps(prerelax_results["output"]["bandgap"])
 
         return self.relax_electron(prerelax_results["atoms"], **relax_kwargs)
 
-    def _get_kspacing(self, bandgap: float) -> dict:
+    def _set_kspacing_swaps(self, bandgap: float) -> dict:
         """
         Function to calculate KSPACING and related parameters for a given bandgap.
 
@@ -153,16 +147,21 @@ class MPRelaxFlow:
         Returns
         -------
         dict
-            Dictionary of KSPACING and related parameters to swap.
+            Dictionary of swaps.
         """
 
-        if self.bandgap == 0:
-            return {"kspacing": 0.22, "sigma": 0.2, "ismear": 2}
+        if bandgap < 1e-4:
+            kspacing_swaps = {"kspacing": 0.22, "sigma": 0.2, "ismear": 2, "kpts": None}
+        else:
+            rmin = 25.22 - 2.87 * bandgap
+            kspacing = 2 * np.pi * 1.0265 / (rmin - 1.0183)
+            kspacing_swaps = {
+                "kspacing": kspacing if 0.22 < kspacing < 0.44 else 0.44,
+                "ismear": -5,
+                "sigma": 0.05,
+                "kpts": None,
+            }
 
-        rmin = 25.22 - 2.87 * bandgap
-        kspacing = 2 * np.pi * 1.0265 / (rmin - 1.0183)
-        return {
-            "kspacing": kspacing if 0.22 < kspacing < 0.44 else 0.44,
-            "ismear": -5,
-            "sigma": 0.05,
-        }
+        self.relax_kwargs["swaps"] = merge_dicts(
+            kspacing_swaps, self.relax_kwargs.get("swaps", {})
+        )
