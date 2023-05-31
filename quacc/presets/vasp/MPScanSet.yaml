@@ -12,6 +12,8 @@ inputs:
   encut: 680
   ibrion: 2
   isif: 3
+  ismear: 2
+  kspacing: 0.22
   lorbit: 11
   lasph: True
   lreal: auto
@@ -24,4 +26,5 @@ inputs:
   nelm: 200
   nsw: 99
   prec: accurate
+  sigma: 0.2
   xc: r2scan

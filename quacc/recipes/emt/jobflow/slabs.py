@@ -58,8 +58,8 @@ class BulkToSlabsFlow:
         jf.Response
             A Flow of relaxation and static jobs for the generated slabs.
         """
-        slab_relax_kwargs = self.slab_relax_kwargs or {}
-        slab_static_kwargs = self.slab_static_kwargs or {}
+        self.slab_relax_kwargs = self.slab_relax_kwargs or {}
+        self.slab_static_kwargs = self.slab_static_kwargs or {}
         slabgen_kwargs = slabgen_kwargs or {}
 
         # Generate all the slab
@@ -75,16 +75,18 @@ class BulkToSlabsFlow:
         outputs = []
         for slab in slabs:
             if self.slab_relax_job and self.slab_static_job:
-                job1 = self.slab_relax_job(slab, **slab_relax_kwargs)
-                job2 = self.slab_static_job(job1.output["atoms"], **slab_static_kwargs)
+                job1 = self.slab_relax_job(slab, **self.slab_relax_kwargs)
+                job2 = self.slab_static_job(
+                    job1.output["atoms"], **self.slab_static_kwargs
+                )
                 jobs += [job1, job2]
                 outputs.append(job2.output)
             elif self.slab_relax_job:
-                job1 = self.slab_relax_job(slab, **slab_relax_kwargs)
+                job1 = self.slab_relax_job(slab, **self.slab_relax_kwargs)
                 jobs += [job1]
                 outputs.append(job1.output)
             elif self.slab_static_job:
-                job1 = self.slab_static_job(slab, **slab_static_kwargs)
+                job1 = self.slab_static_job(slab, **self.slab_static_kwargs)
                 jobs += [job1]
                 outputs.append(job1.output)
 

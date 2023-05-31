@@ -8,6 +8,7 @@ from maggma.stores import MemoryStore
 
 from quacc.recipes.vasp.core import double_relax_job, relax_job, static_job
 from quacc.recipes.vasp.jobflow.slabs import BulkToSlabsFlow as JFBulkToSlabsFlow
+from quacc.recipes.vasp.mp import MPRelaxFlow, mp_prerelax_job, mp_relax_job
 from quacc.recipes.vasp.qmof import qmof_relax_job
 from quacc.recipes.vasp.slabs import (
     BulkToSlabsFlow,
@@ -341,3 +342,55 @@ def test_jf_slab_dynamic_jobs():
     responses = jf.run_locally(flow, store=store, ensure_success=True)
 
     assert len(responses) == 5
+
+
+def test_mp():
+    atoms = bulk("Cu")
+    output = mp_prerelax_job(atoms)
+    assert output["nsites"] == len(atoms)
+    assert output["parameters"]["xc"] == "pbesol"
+    assert output["parameters"]["ediffg"] == -0.05
+    assert output["parameters"]["encut"] == 680
+    assert output["parameters"]["kspacing"] == 0.22
+    assert output["parameters"]["ismear"] == 2
+    assert "kpts" not in output["parameters"]
+
+    output = mp_relax_job(atoms)
+    assert output["nsites"] == len(atoms)
+    assert output["parameters"]["xc"] == "r2scan"
+    assert output["parameters"]["ediffg"] == -0.02
+    assert output["parameters"]["encut"] == 680
+    assert output["parameters"]["kspacing"] == 0.22
+    assert output["parameters"]["ismear"] == 2
+    assert "kpts" not in output["parameters"]
+
+    output = MPRelaxFlow().run(atoms)
+    assert output["nsites"] == len(atoms)
+    assert output["parameters"]["xc"] == "r2scan"
+    assert output["parameters"]["ediffg"] == -0.02
+    assert output["parameters"]["encut"] == 680
+    assert output["parameters"]["ismear"] == 2
+    assert "kpts" not in output["parameters"]
+    assert output["parameters"]["kspacing"] == 0.22
+
+    atoms = bulk("Fe")
+    output = MPRelaxFlow().run(atoms)
+    assert output["nsites"] == len(atoms)
+    assert output["parameters"]["xc"] == "r2scan"
+    assert output["parameters"]["ediffg"] == -0.02
+    assert output["parameters"]["encut"] == 680
+    assert output["parameters"]["ismear"] == 1
+    assert "kpts" not in output["parameters"]
+    assert output["parameters"]["kspacing"] == pytest.approx(0.28329488761304206)
+
+    atoms = molecule("O2")
+    atoms.center(vacuum=10)
+    atoms.pbc = True
+    output = MPRelaxFlow().run(atoms)
+    assert output["nsites"] == len(atoms)
+    assert output["parameters"]["xc"] == "r2scan"
+    assert output["parameters"]["ediffg"] == -0.02
+    assert output["parameters"]["encut"] == 680
+    assert output["parameters"]["ismear"] == -5
+    assert "kpts" not in output["parameters"]
+    assert output["parameters"]["kspacing"] == pytest.approx(0.28329488761304206)
