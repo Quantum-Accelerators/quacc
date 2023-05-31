@@ -4,7 +4,7 @@ from setuptools import find_packages, setup
 
 module_dir = Path(__file__).resolve().parent
 
-long_description = Path(module_dir / "README.md").read_text()
+long_description = Path(module_dir / "README.md").read_text(encoding="utf8")
 
 if __name__ == "__main__":
     setup(
