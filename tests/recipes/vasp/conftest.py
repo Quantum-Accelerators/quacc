@@ -53,7 +53,7 @@ def mock_summarize_run(atoms, **kwargs):
     output = calc_summarize_run(
         atoms, prep_next_run=prep_next_run, additional_fields=additional_fields
     )
-    output["output"] = {"energy": -1.0}
+    output["output"] = {"energy": -1.0, "bandgap": 0.5}
     return output
 
 
@@ -64,3 +64,4 @@ def patch_summarize_run(monkeypatch):
     monkeypatch.setattr("quacc.recipes.vasp.core.summarize_run", mock_summarize_run)
     monkeypatch.setattr("quacc.recipes.vasp.qmof.summarize_run", mock_summarize_run)
     monkeypatch.setattr("quacc.recipes.vasp.slabs.summarize_run", mock_summarize_run)
+    monkeypatch.setattr("quacc.recipes.vasp.mp.summarize_run", mock_summarize_run)

@@ -145,9 +145,9 @@ class BulkToSlabsFlow:
             List of dictionary results from quacc.schemas.vasp.summarize_run
         """
 
-        relax_kwargs = self.slab_relax_kwargs or {}
-        static_kwargs = self.slab_static_kwargs or {}
-        slabgen_kwargs = slabgen_kwargs or {}
+        self.relax_kwargs = self.slab_relax_kwargs or {}
+        self.static_kwargs = self.slab_static_kwargs or {}
+        self.slabgen_kwargs = slabgen_kwargs or {}
 
         if not self.slab_relax_electron and not self.slab_static_electron:
             raise ValueError(
@@ -157,20 +157,24 @@ class BulkToSlabsFlow:
         @ct.electron
         @ct.lattice
         def _relax_distributed(slabs):
-            return [self.slab_relax_electron(slab, **relax_kwargs) for slab in slabs]
+            return [
+                self.slab_relax_electron(slab, **self.relax_kwargs) for slab in slabs
+            ]
 
         @ct.electron
         @ct.lattice
         def _static_distributed(slabs):
-            return [self.slab_static_electron(slab, **static_kwargs) for slab in slabs]
+            return [
+                self.slab_static_electron(slab, **self.static_kwargs) for slab in slabs
+            ]
 
         @ct.electron
         @ct.lattice
         def _relax_and_static_distributed(slabs):
             return [
                 self.slab_static_electron(
-                    self.slab_relax_electron(slab, **relax_kwargs)["atoms"],
-                    **static_kwargs,
+                    self.slab_relax_electron(slab, **self.relax_kwargs)["atoms"],
+                    **self.static_kwargs,
                 )
                 for slab in slabs
             ]
@@ -229,8 +233,8 @@ class SlabToAdsFlow:
             Additional keyword arguments to pass to make_adsorbate_structures()
         """
 
-        slab_relax_kwargs = self.slab_relax_kwargs or {}
-        slab_static_kwargs = self.slab_static_kwargs or {}
+        self.slab_relax_kwargs = self.slab_relax_kwargs or {}
+        self.slab_static_kwargs = self.slab_static_kwargs or {}
         make_ads_kwargs = make_ads_kwargs or {}
 
         if not self.slab_relax_electron and not self.slab_static_electron:
@@ -242,14 +246,16 @@ class SlabToAdsFlow:
         @ct.lattice
         def _relax_distributed(slabs):
             return [
-                self.slab_relax_electron(slab, **slab_relax_kwargs) for slab in slabs
+                self.slab_relax_electron(slab, **self.slab_relax_kwargs)
+                for slab in slabs
             ]
 
         @ct.electron
         @ct.lattice
         def _static_distributed(slabs):
             return [
-                self.slab_static_electron(slab, **slab_static_kwargs) for slab in slabs
+                self.slab_static_electron(slab, **self.slab_static_kwargs)
+                for slab in slabs
             ]
 
         @ct.electron
@@ -257,8 +263,8 @@ class SlabToAdsFlow:
         def _relax_and_static_distributed(slabs):
             return [
                 self.slab_static_electron(
-                    self.slab_relax_electron(slab, **slab_relax_kwargs)["atoms"],
-                    **slab_static_kwargs,
+                    self.slab_relax_electron(slab, **self.slab_relax_kwargs)["atoms"],
+                    **self.slab_static_kwargs,
                 )
                 for slab in slabs
             ]

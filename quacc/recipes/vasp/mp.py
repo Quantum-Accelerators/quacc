@@ -43,7 +43,7 @@ def mp_prerelax_job(
     """
     swaps = swaps or {}
 
-    defaults = {"xc": "pbesol", "ediffg": -0.05}
+    defaults = {"ediffg": -0.05, "xc": "pbesol"}
     flags = merge_dicts(defaults, swaps)
 
     calc = Vasp(atoms, preset=preset, **flags)
@@ -124,16 +124,16 @@ class MPRelaxFlow:
         dict
             Dictionary results from quacc.schemas.vasp.summarize_run
         """
-        prerelax_kwargs = self.prerelax_kwargs or {}
-        relax_kwargs = self.relax_kwargs or {}
+        self.prerelax_kwargs = self.prerelax_kwargs or {}
+        self.relax_kwargs = self.relax_kwargs or {}
 
         # TODO: Also, copy the WAVECAR
-        prerelax_results = self.prerelax_electron(atoms, **prerelax_kwargs)["atoms"]
+        prerelax_results = self.prerelax_electron(atoms, **self.prerelax_kwargs)
         self._set_kspacing_swaps(prerelax_results["output"]["bandgap"])
 
-        return self.relax_electron(prerelax_results["atoms"], **relax_kwargs)
+        return self.relax_electron(prerelax_results["atoms"], **self.relax_kwargs)
 
-    def _set_kspacing_swaps(self, bandgap: float) -> dict:
+    def _set_kspacing_swaps(self, bandgap: float) -> None:
         """
         Function to calculate KSPACING and related parameters for a given bandgap.
 

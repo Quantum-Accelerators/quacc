@@ -60,8 +60,8 @@ class BulkToSlabsFlow:
             List of dictionary of results from quacc.schemas.ase.summarize_run or quacc.schemas.ase.summarize_opt_run
         """
 
-        slab_relax_kwargs = self.slab_relax_kwargs or {}
-        slab_static_kwargs = self.slab_static_kwargs or {}
+        self.slab_relax_kwargs = self.slab_relax_kwargs or {}
+        self.slab_static_kwargs = self.slab_static_kwargs or {}
         slabgen_kwargs = slabgen_kwargs or {}
 
         if not self.slab_relax_electron and not self.slab_static_electron:
@@ -73,14 +73,16 @@ class BulkToSlabsFlow:
         @ct.lattice
         def _relax_distributed(slabs):
             return [
-                self.slab_relax_electron(slab, **slab_relax_kwargs) for slab in slabs
+                self.slab_relax_electron(slab, **self.slab_relax_kwargs)
+                for slab in slabs
             ]
 
         @ct.electron
         @ct.lattice
         def _static_distributed(slabs):
             return [
-                self.slab_static_electron(slab, **slab_static_kwargs) for slab in slabs
+                self.slab_static_electron(slab, **self.slab_static_kwargs)
+                for slab in slabs
             ]
 
         @ct.electron
@@ -88,8 +90,8 @@ class BulkToSlabsFlow:
         def _relax_and_static_distributed(slabs):
             return [
                 self.slab_static_electron(
-                    self.slab_relax_electron(slab, **slab_relax_kwargs)["atoms"],
-                    **slab_static_kwargs,
+                    self.slab_relax_electron(slab, **self.slab_relax_kwargs)["atoms"],
+                    **self.slab_static_kwargs,
                 )
                 for slab in slabs
             ]
