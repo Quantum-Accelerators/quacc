@@ -7,7 +7,6 @@ import os
 
 import numpy as np
 from ase import Atoms, units
-from ase.io import read
 from ase.optimize.optimize import Optimizer
 from ase.thermochemistry import IdealGasThermo
 from ase.vibrations import Vibrations

@@ -6,7 +6,6 @@ import pytest
 from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.calculators.lj import LennardJones
-from ase.io import read
 
 from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
 
