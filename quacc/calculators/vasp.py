@@ -235,9 +235,7 @@ def _remove_unused_flags(user_calc_params: dict) -> dict:
         for opt_flag in opt_flags:
             user_calc_params.pop(opt_flag, None)
 
-    if not user_calc_params.get("ldau", False) and not user_calc_params.get(
-        "ldau_luj", None
-    ):
+    if not user_calc_params.get("ldau", False) and not user_calc_params.get("ldau_luj"):
         # Turn off +U flags if +U is not even used
         ldau_flags = (
             "ldau",
