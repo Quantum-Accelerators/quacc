@@ -2,7 +2,7 @@
 Materials Project-compatible recipes
 
 This set of recipes is meant to be compatible with the Materials Project
-Reference: https://doi.org/10.1038/s41524-022-00881-w
+Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
 """
 from __future__ import annotations
 
