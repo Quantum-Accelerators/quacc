@@ -126,7 +126,7 @@ def test_summarize_opt_run():
     dyn = BFGS(atoms, trajectory="test.traj")
     dyn.trajectory.filename = "test.traj"  # can remove after ASE MR 2901
     dyn.run()
-    traj = read("test.traj", index=":")
+    traj = read(dyn.trajectory.filename, index=":")
 
     results = summarize_opt_run(dyn, remove_empties=True)
     assert results["nsites"] == len(atoms)
@@ -145,8 +145,8 @@ def test_summarize_opt_run():
     atoms[0].position += [0.1, 0.1, 0.1]
     atoms.calc = EMT()
     dyn = BFGS(atoms, trajectory="test.traj")
+    dyn.trajectory.filename = "test.traj"  # can remove after ASE MR 2901
     dyn.run()
-    traj = read("test.traj", index=":")
 
     results = summarize_opt_run(dyn)
     assert results.get("atoms_info", {}) != {}
