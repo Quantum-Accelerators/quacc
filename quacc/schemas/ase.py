@@ -233,14 +233,14 @@ def summarize_opt_run(
     parameters = dyn.atoms.calc.parameters
 
     # Check trajectory
-    if not dyn.trajectory or not os.path.exists(dyn.trajectory):
+    if not os.path.exists(dyn.trajectory.filename):
         raise FileNotFoundError("No trajectory file found.")
 
     # Check convergence
     if check_convergence and not dyn.converged():
         raise ValueError("Optimization did not converge.")
 
-    traj = read(dyn.trajectory, index=":")
+    traj = read(dyn.trajectory.filename, index=":")
     initial_atoms = traj[0]
     final_atoms = dyn.atoms
 

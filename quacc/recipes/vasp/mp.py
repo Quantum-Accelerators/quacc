@@ -146,8 +146,7 @@ class MPRelaxFlow:
 
         Returns
         -------
-        dict
-            Dictionary of swaps.
+        None
         """
 
         if bandgap < 1e-4:

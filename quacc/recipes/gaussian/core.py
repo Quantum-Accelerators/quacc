@@ -72,7 +72,9 @@ def static_job(
         "nosymmetry": "",
         "pop": pop,
         "gfinput": "" if write_molden else None,
-        "ioplist": ["6/7=3"] if write_molden else None,
+        "ioplist": ["6/7=3", "2/9=2000"]
+        if write_molden
+        else ["2/9=2000"],  # see ASE issue #660
     }
     flags = merge_dicts(defaults, swaps, remove_none=True)
 
@@ -135,6 +137,7 @@ def relax_job(
         "integral": "ultrafine",
         "nosymmetry": "",
         "freq": "" if freq else None,
+        "ioplist": ["2/9=2000"],  # ASE issue #660
     }
     flags = merge_dicts(defaults, swaps, remove_none=True)
 
