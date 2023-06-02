@@ -104,6 +104,7 @@ def test_summarize_opt_run():
     atoms[0].position += [0.1, 0.1, 0.1]
     atoms.calc = EMT()
     dyn = BFGS(atoms, trajectory="test.traj")
+    dyn.trajectory.filename = "test.traj"  # can remove after ASE MR 2901
     dyn.run()
     traj = read("test.traj", index=":")
 
@@ -123,6 +124,7 @@ def test_summarize_opt_run():
     atoms[0].position += [0.1, 0.1, 0.1]
     atoms.calc = EMT()
     dyn = BFGS(atoms, trajectory="test.traj")
+    dyn.trajectory.filename = "test.traj"  # can remove after ASE MR 2901
     dyn.run()
     traj = read("test.traj", index=":")
 
@@ -156,7 +158,7 @@ def test_summarize_opt_run():
     MontyDecoder().process_decoded(d)
 
     with pytest.raises(FileNotFoundError):
-        dyn.trajectory = None
+        dyn.trajectory.filename = "not_a_file.traj"
         summarize_opt_run(dyn)
 
 

@@ -7,6 +7,7 @@ import os
 
 import numpy as np
 from ase import Atoms, units
+from ase.io import read
 from ase.optimize.optimize import Optimizer
 from ase.thermochemistry import IdealGasThermo
 from ase.vibrations import Vibrations
@@ -233,13 +234,14 @@ def summarize_opt_run(
     traj = dyn.trajectory
 
     # Check trajectory
-    if not traj:
+    if not os.path.exists(dyn.trajectory.filename):
         raise FileNotFoundError("No trajectory file found.")
 
     # Check convergence
     if check_convergence and not dyn.converged():
         raise ValueError("Optimization did not converge.")
 
+    traj = read(dyn.trajectory.filename, index=":")
     initial_atoms = traj[0]
     final_atoms = dyn.atoms
 
