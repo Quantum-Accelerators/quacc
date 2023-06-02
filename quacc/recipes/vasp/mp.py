@@ -138,7 +138,7 @@ class MPRelaxFlow:
             rmin = 25.22 - 2.87 * bandgap
             kspacing = 2 * np.pi * 1.0265 / (rmin - 1.0183)
             kspacing_swaps = {
-                "kspacing": kspacing if 0.22 < kspacing < 0.44 else 0.44,
+                "kspacing": min(kspacing, 0.44),
                 "ismear": -5,
                 "sigma": 0.05,
                 "kpts": None,
