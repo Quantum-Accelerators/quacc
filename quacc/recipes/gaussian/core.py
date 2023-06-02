@@ -137,7 +137,7 @@ def relax_job(
         "integral": "ultrafine",
         "nosymmetry": "",
         "freq": "" if freq else None,
-        "ioplist": "2/9=2000",  # ASE issue #660
+        "ioplist": ["2/9=2000"],  # ASE issue #660
     }
     flags = merge_dicts(defaults, swaps, remove_none=True)
 
