@@ -2,7 +2,7 @@
 Materials Project-compatible recipes
 
 This set of recipes is meant to be compatible with the Materials Project
-Reference: https://doi.org/10.1038/s41524-022-00881-w
+Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
 """
 from __future__ import annotations
 
@@ -127,28 +127,11 @@ class MPRelaxFlow:
         self.prerelax_kwargs = self.prerelax_kwargs or {}
         self.relax_kwargs = self.relax_kwargs or {}
 
-        # TODO: Also, copy the WAVECAR
+        # Run the prerelax
         prerelax_results = self.prerelax_electron(atoms, **self.prerelax_kwargs)
-        self._set_kspacing_swaps(prerelax_results["output"]["bandgap"])
 
-        return self.relax_electron(prerelax_results["atoms"], **self.relax_kwargs)
-
-    def _set_kspacing_swaps(self, bandgap: float) -> None:
-        """
-        Function to calculate KSPACING and related parameters for a given bandgap.
-
-        Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
-
-        Parameters
-        ----------
-        bandgap
-            Bandgap of the structure in eV.
-
-        Returns
-        -------
-        None
-        """
-
+        # Update KSPACING arguments
+        bandgap = prerelax_results["output"]["bandgap"]
         if bandgap < 1e-4:
             kspacing_swaps = {"kspacing": 0.22, "sigma": 0.2, "ismear": 2, "kpts": None}
         else:
@@ -160,7 +143,11 @@ class MPRelaxFlow:
                 "sigma": 0.05,
                 "kpts": None,
             }
-
         self.relax_kwargs["swaps"] = merge_dicts(
             kspacing_swaps, self.relax_kwargs.get("swaps", {})
         )
+
+        # TODO: Also, copy the WAVECAR from the prerelaxation to the relaxation
+
+        # Run the relax
+        return self.relax_electron(prerelax_results["atoms"], **self.relax_kwargs)
