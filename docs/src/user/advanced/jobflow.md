@@ -6,6 +6,10 @@
 
 Make sure you completed the ["Jobflow Setup"](../../install/advanced/jobflow.md) section of the installation instructions. Additionally, you should read the Jobflow documentation's [Quick Start](https://materialsproject.github.io/jobflow/tutorials/1-quickstart.html) to get a sense of how Jobflow works. Namely, you should understand the `Job` and `Flow` definitions, which describe individual compute tasks and workflows, respectively.
 
+```{note}
+For a helpful tutorial on how to use Jobflow, refer to [this helpful guide](https://materialsproject.github.io/jobflow/tutorials/1-quickstart.html) written by Dr. Janine George.
+```
+
 ### Example 1: Running a Job
 
 Here, we will try running a simple job where we carry out a static calculation on a bulk Cu structure using EMT. This example is shown below.
