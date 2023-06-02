@@ -231,7 +231,6 @@ def summarize_opt_run(
     additional_fields = additional_fields or {}
     dyn_parameters = dyn.todict()
     parameters = dyn.atoms.calc.parameters
-    traj = dyn.trajectory
 
     # Check trajectory
     if not os.path.exists(dyn.trajectory.filename):
