@@ -65,7 +65,7 @@ napoleon_use_rtype = True
 napoleon_use_ivar = True
 
 # The suffix(es) of source filenames.
-source_suffix = [".rst", ".md"]
+source_suffix = [".md", ".rst"]
 
 mathjax3_config = {
     "tex": {

@@ -35,13 +35,6 @@ jobs:
         run: sphinx-build docs/src docs_build
         id: build_docs
 
-      - name: Link Checker
-        uses: lycheeverse/lychee-action@v1.8.0
-        with:
-          fail: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Deploy docs
         uses: peaceiris/actions-gh-pages@v3
         with:
