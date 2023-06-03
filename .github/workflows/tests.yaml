@@ -195,7 +195,7 @@ jobs:
           covalent start
 
       - name: Run tests with pytest
-        run: pytest tests/recipes/dftbplus --cov=quacc --cov-report=xml
+        run: pytest tests/recipes/dftb --cov=quacc --cov-report=xml
 
       - name: Stop Covalent server
         run: |
