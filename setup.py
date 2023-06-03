@@ -36,16 +36,17 @@ if __name__ == "__main__":
             "ase @ git+https://gitlab.com/ase/ase.git",  # waiting on >3.22.1
             "atomate2[cclib] @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
             "covalent @ git+https://github.com/AgnostiqHQ/covalent.git",  # waiting on > 0.222.0
-            "custodian>=2023.5.12",
+            "custodian",
             "emmet-core>=0.51.11",
-            "pymatgen>=2023.5.10",
             "monty>=2023.4.10",
-            "numpy>=1.24.3",
+            "numpy",
+            "pydantic",
+            "pymatgen>=2022.7.8",
         ],
         extras_require={
-            "fireworks": ["fireworks>=2.0.3"],
-            "tblite": ["tblite[ase]>=0.3.0"],
-            "dev": ["black>=23.3.0", "isort>=5.12.0", "pytest>=7.3.1"],
+            "fireworks": ["fireworks"],
+            "tblite": ["tblite[ase]"],
+            "dev": ["black==23.3.0", "isort==5.12.0", "pytest==7.3.1"],
             "docs": [
                 "autodoc_pydantic==1.8.0",
                 "furo==2023.5.20",
@@ -57,21 +58,17 @@ if __name__ == "__main__":
             ],
             "strict": [
                 "ase @ git+https://gitlab.com/ase/ase.git",  # waiting on >3.22.1
-                "atomate2[cclib] @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
-                "black==23.3.0",
+                "atomate2 @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
                 "cclib==1.7.2",
                 "covalent @ git+https://github.com/AgnostiqHQ/covalent.git",  # waiting on > 0.222.0
                 "custodian==2023.5.12",
                 "emmet-core==0.55.2",
-                "fireworks==2.0.3",
-                "isort==5.12.0",
                 "jobflow==0.1.11",
                 "maggma==0.51.3",
                 "monty==2023.5.8",
                 "numpy==1.24.3",
                 "pydantic==1.10.2",
                 "pymatgen==2023.5.10",
-                "pytest==7.3.1",
             ],
         },
         tests_require=["pytest"],
