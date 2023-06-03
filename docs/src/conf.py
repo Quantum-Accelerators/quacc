@@ -85,7 +85,6 @@ latex_elements = {
 """
 }
 language = "en"
-html_extra_path = ["images/ badge.svg"]
 html_static_path = ["_static"]
 suppress_warnings = "etoc.toctree"
 
