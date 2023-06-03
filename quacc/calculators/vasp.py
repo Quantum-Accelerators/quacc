@@ -84,7 +84,7 @@ class Vasp(Vasp_):
             and not all(isinstance(c, FixAtoms) for c in atoms.constraints)
         ):
             raise ValueError(
-                "Atoms object has a constraint that is not compatible with Custodian"
+                "Atoms object has a constraint that is not compatible with Custodian. Set use_custodian = False."
             )
 
         # Get VASP executable command, if necessary, and specify child environment
@@ -101,7 +101,7 @@ class Vasp(Vasp_):
 
         # Collect all the calculator parameters and prioritize the kwargs
         # in the case of duplicates.
-        user_calc_params = {**calc_preset, **kwargs}
+        user_calc_params = calc_preset | kwargs
         none_keys = [k for k, v in user_calc_params.items() if v is None]
         for none_key in none_keys:
             del user_calc_params[none_key]
@@ -277,7 +277,7 @@ def _calc_swaps(
 
     Returns
     -------
-    Dict[str,Any]
+    dict
         Dictionary of new user-specified calculation parameters
     """
     is_metal = check_is_metal(atoms)

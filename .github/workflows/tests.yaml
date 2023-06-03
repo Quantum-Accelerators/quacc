@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version: ["3.8", "3.9"]
+        python-version: ["3.9"]
     runs-on: ubuntu-latest
 
     defaults:
@@ -79,6 +79,10 @@ jobs:
 
   tests-light:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.9", "3.10"]
 
     defaults:
       run:
@@ -91,7 +95,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.9"
+          python-version: ${{ matrix.python-version }}
           cache: pip
           cache-dependency-path: setup.py
 
