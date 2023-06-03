@@ -15,7 +15,7 @@ on:
     types: [published]
 
 jobs:
-  tests-light:
+  tests-base:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
@@ -102,7 +102,7 @@ jobs:
           covalent start
 
       - name: Run tests with pytest
-        run: pytest --cov=quacc --cov-report=xml
+        run: pytest tests/recipes/tblite --cov=quacc --cov-report=xml
 
       - name: Stop Covalent server
         run: |
@@ -231,8 +231,8 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
-    needs: [tests-light, tests-tblite, tests-psi4, tests-dftbplus]
-    if: github.event_name == 'release' && needs.tests-light.result == 'success' && needs.tests-tblite.result == 'success' && needs.tests-psi4.result == 'success' && needs.tests-dftbplus.result == 'success'
+    needs: [tests-base, tests-tblite, tests-psi4, tests-dftbplus]
+    if: github.event_name == 'release' && needs.tests-base.result == 'success' && needs.tests-tblite.result == 'success' && needs.tests-psi4.result == 'success' && needs.tests-dftbplus.result == 'success'
     steps:
       - name: Check out repo
         uses: actions/checkout@v3
