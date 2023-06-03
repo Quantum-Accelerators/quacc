@@ -63,7 +63,7 @@ def test_static_Job():
     assert "output xyz gulp.xyz" not in output["parameters"]["options"]
     assert "output cif gulp.cif" in output["parameters"]["options"]
 
-    output = static_job(atoms, keyword_swaps={"gwolf": False})
+    output = static_job(atoms, keyword_swaps={"gwolf": None})
     assert output["nsites"] == len(atoms)
     assert "gfnff" in output["parameters"]["keywords"]
     assert "gwolf" not in output["parameters"]["keywords"]

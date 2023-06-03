@@ -8,7 +8,6 @@ def merge_dicts(
     d1: dict,
     d2: dict,
     remove_none: bool = False,
-    remove_false: bool = False,
     auto_lowercase: bool = True,
 ) -> dict:
     """
@@ -24,8 +23,6 @@ def merge_dicts(
         Second dictionary, which has priority.
     remove_none
         If True, all keys with a value of None in the merged dictionary will be removed.
-    remove_false
-        If True, all keys with a value of False in the merged dictionary will be removed.
     auto_lowercase
         If True, all keys will be turned into lowercase.
 
@@ -40,8 +37,6 @@ def merge_dicts(
     d_merged = d1 | d2
     if remove_none:
         d_merged = {k: v for k, v in d_merged.items() if v is not None}
-    if remove_false:
-        d_merged = {k: v for k, v in d_merged.items() if v is not False}
     return d_merged
 
 
