@@ -201,6 +201,6 @@ def summarize_run(
     # makes the structure metadata for us
     atoms_db = atoms_to_metadata(atoms, get_metadata=False, store_pmg=False)
 
-    task_doc = {**results, **atoms_db, **additional_fields}
+    task_doc = results | atoms_db | additional_fields
 
     return clean_dict(task_doc, remove_empties=remove_empties)

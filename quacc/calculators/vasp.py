@@ -37,7 +37,7 @@ class Vasp(Vasp_):
         Quacc will automatically look in the VASP_PRESET_DIR (default: quacc/presets/vasp) for the file, such
         that preset="BulkSet" is supported, for instance. The .yaml extension is not necessary. Any user-suppplied
         calculator **kwargs will override any corresponding preset values.
-    custodian
+    use_custodian
         Whether to use Custodian to run VASP.
         Default is True in settings.
     incar_copilot
@@ -69,7 +69,7 @@ class Vasp(Vasp_):
         self,
         atoms: Atoms,
         preset: None | str = None,
-        custodian: bool = SETTINGS.VASP_CUSTODIAN,
+        use_custodian: bool = SETTINGS.VASP_CUSTODIAN,
         incar_copilot: bool = SETTINGS.VASP_INCAR_COPILOT,
         copy_magmoms: bool = SETTINGS.VASP_COPY_MAGMOMS,
         preset_mag_default: float = SETTINGS.VASP_PRESET_MAG_DEFAULT,
@@ -79,17 +79,17 @@ class Vasp(Vasp_):
     ):
         # Check constraints
         if (
-            custodian
+            use_custodian
             and atoms.constraints
             and not all(isinstance(c, FixAtoms) for c in atoms.constraints)
         ):
             raise ValueError(
-                "Atoms object has a constraint that is not compatible with Custodian"
+                "Atoms object has a constraint that is not compatible with Custodian. Set use_custodian = False."
             )
 
         # Get VASP executable command, if necessary, and specify child environment
         # variables
-        command = _manage_environment(custodian)
+        command = _manage_environment(use_custodian)
 
         # Get user-defined preset parameters for the calculator
         if preset:
@@ -101,7 +101,7 @@ class Vasp(Vasp_):
 
         # Collect all the calculator parameters and prioritize the kwargs
         # in the case of duplicates.
-        user_calc_params = {**calc_preset, **kwargs}
+        user_calc_params = calc_preset | kwargs
         none_keys = [k for k, v in user_calc_params.items() if v is None]
         for none_key in none_keys:
             del user_calc_params[none_key]
@@ -180,13 +180,13 @@ class Vasp(Vasp_):
         super().__init__(atoms=atoms, command=command, **user_calc_params)
 
 
-def _manage_environment(custodian: bool = True) -> str:
+def _manage_environment(use_custodian: bool = True) -> str:
     """
     Manage the environment for the VASP calculator.
 
     Parameters
     ----------
-    custodian
+    use_custodian
         If True, Custodian will be used to run VASP.
 
     Returns
@@ -202,7 +202,7 @@ def _manage_environment(custodian: bool = True) -> str:
         )
 
     # Check if Custodian should be used and confirm environment variables are set
-    if custodian:
+    if use_custodian:
         # Return the command flag
         run_vasp_custodian_file = os.path.abspath(inspect.getfile(custodian_vasp))
         return f"python {run_vasp_custodian_file}"
@@ -277,7 +277,7 @@ def _calc_swaps(
 
     Returns
     -------
-    Dict[str,Any]
+    dict
         Dictionary of new user-specified calculation parameters
     """
     is_metal = check_is_metal(atoms)

@@ -27,7 +27,7 @@ def test_vanilla_vasp():
     assert calc.asdict() == Vasp_().asdict()
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, custodian=False, incar_copilot=False)
+    calc = Vasp(atoms, use_custodian=False, incar_copilot=False)
     assert calc.asdict() == Vasp_().asdict()
 
     atoms = bulk("Cu")

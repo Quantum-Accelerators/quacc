@@ -5,12 +5,13 @@ NOTE: This set of minimal recipes is mainly for demonstration purposes.
 """
 from __future__ import annotations
 
+from copy import deepcopy
+
 import covalent as ct
 from ase import Atoms
 from ase.calculators.emt import EMT
 
 from quacc.schemas.ase import summarize_opt_run, summarize_run
-from quacc.util.atoms import copy_atoms
 from quacc.util.calc import run_ase_opt, run_calc
 
 
@@ -33,7 +34,7 @@ def static_job(atoms: Atoms, emt_kwargs: dict = None) -> dict:
     """
 
     emt_kwargs = emt_kwargs or {}
-    input_atoms = copy_atoms(atoms)
+    input_atoms = deepcopy(atoms)
 
     atoms.calc = EMT(**emt_kwargs)
     atoms = run_calc(atoms)

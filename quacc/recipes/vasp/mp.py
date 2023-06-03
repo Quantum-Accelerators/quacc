@@ -16,7 +16,6 @@ from covalent._workflow.electron import Electron
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.vasp import summarize_run
 from quacc.util.calc import run_calc
-from quacc.util.dicts import merge_dicts
 
 
 @ct.electron
@@ -44,7 +43,7 @@ def mp_prerelax_job(
     swaps = swaps or {}
 
     defaults = {"ediffg": -0.05, "xc": "pbesol"}
-    flags = merge_dicts(defaults, swaps)
+    flags = defaults | swaps
 
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
@@ -143,9 +142,7 @@ class MPRelaxFlow:
                 "sigma": 0.05,
                 "kpts": None,
             }
-        self.relax_kwargs["swaps"] = merge_dicts(
-            kspacing_swaps, self.relax_kwargs.get("swaps", {})
-        )
+        self.relax_kwargs["swaps"] = kspacing_swaps | self.relax_kwargs.get("swaps", {})
 
         # TODO: Also, copy the WAVECAR from the prerelaxation to the relaxation
 

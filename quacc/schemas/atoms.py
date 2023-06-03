@@ -130,7 +130,7 @@ def atoms_to_metadata(
         results["atoms"] = atoms
 
     # Combine the metadata and results dictionaries
-    atoms_doc = {**metadata, **results}
+    atoms_doc = metadata | results
 
     return clean_dict(atoms_doc, remove_empties=remove_empties)
 

@@ -299,6 +299,7 @@ def copy_atoms(atoms: Atoms) -> Atoms:
     try:
         atoms = deepcopy(atoms)
     except Exception:
+        # Needed because of ASE issue #1084
         calc = atoms.calc
         atoms = atoms.copy()
         atoms.calc = calc

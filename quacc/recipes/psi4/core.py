@@ -6,13 +6,14 @@ from ase import Atoms
 from ase.calculators.psi4 import Psi4
 from monty.dev import requires
 
+from quacc.util.dicts import remove_dict_empties
+
 try:
     import psi4
 except ImportError:
     psi4 = None
 from quacc.schemas.ase import summarize_run
 from quacc.util.calc import run_calc
-from quacc.util.dicts import merge_dicts
 
 
 @ct.electron
@@ -61,7 +62,7 @@ def static_job(
         "charge": charge or round(sum(atoms.get_initial_charges())),
         "multiplicity": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
     }
-    flags = merge_dicts(defaults, swaps, remove_none=True)
+    flags = remove_dict_empties(defaults | swaps)
 
     atoms.calc = Psi4(**flags)
     new_atoms = run_calc(atoms)

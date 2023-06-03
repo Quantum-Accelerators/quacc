@@ -1,14 +1,15 @@
 """Core recipes for DFTB+"""
 from __future__ import annotations
 
+from copy import deepcopy
+
 import covalent as ct
 from ase import Atoms
 from ase.calculators.dftb import Dftb
 
 from quacc.schemas.ase import summarize_run
-from quacc.util.atoms import copy_atoms
 from quacc.util.calc import run_calc
-from quacc.util.dicts import merge_dicts
+from quacc.util.dicts import remove_dict_empties
 from quacc.util.files import check_logfile
 
 LOG_FILE = "dftb.out"
@@ -44,14 +45,14 @@ def static_job(
     """
 
     swaps = swaps or {}
-    input_atoms = copy_atoms(atoms)
+    input_atoms = deepcopy(atoms)
 
     defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
         "Hamiltonian_Method": method if "xtb" in method.lower() else None,
         "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
     }
-    flags = merge_dicts(defaults, swaps, remove_none=True, auto_lowercase=False)
+    flags = remove_dict_empties(defaults | swaps)
 
     atoms.calc = Dftb(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
@@ -99,7 +100,7 @@ def relax_job(
     """
 
     swaps = swaps or {}
-    input_atoms = copy_atoms(atoms)
+    input_atoms = deepcopy(atoms)
 
     defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
@@ -110,7 +111,7 @@ def relax_job(
         "Driver_AppendGeometries": "Yes",
         "Driver_MaxSteps": 2000,
     }
-    flags = merge_dicts(defaults, swaps, remove_none=True, auto_lowercase=False)
+    flags = remove_dict_empties(defaults | swaps)
 
     atoms.calc = Dftb(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)

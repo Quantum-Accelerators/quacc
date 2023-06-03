@@ -69,6 +69,7 @@ def run_calc(
     if atoms.calc is None:
         raise ValueError("Atoms object must have attached calculator.")
     atoms = copy_atoms(atoms)
+
     cwd = os.getcwd()
     scratch_dir = scratch_dir or cwd
     symlink = os.path.join(cwd, "tmp_dir")
@@ -174,8 +175,8 @@ def run_ase_opt(
 
     if atoms.calc is None:
         raise ValueError("Atoms object must have attached calculator.")
-
     atoms = copy_atoms(atoms)
+
     cwd = os.getcwd()
     scratch_dir = scratch_dir or cwd
     symlink = os.path.join(cwd, "tmp_dir")
@@ -278,8 +279,8 @@ def run_ase_vib(
 
     if atoms.calc is None:
         raise ValueError("Atoms object must have attached calculator.")
-
     atoms = copy_atoms(atoms)
+
     cwd = os.getcwd()
     scratch_dir = scratch_dir or cwd
     symlink = os.path.join(cwd, "tmp_dir")

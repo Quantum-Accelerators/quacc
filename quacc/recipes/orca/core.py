@@ -9,7 +9,7 @@ from ase.calculators.orca import ORCA
 
 from quacc.schemas.cclib import summarize_run
 from quacc.util.calc import run_calc
-from quacc.util.dicts import merge_dicts
+from quacc.util.dicts import remove_dict_empties
 
 LOG_FILE = f"{ORCA().name}.out"
 GEOM_FILE = f"{ORCA().name}.xyz"
@@ -74,12 +74,8 @@ def static_job(
     }
     default_blocks = {}
 
-    inputs = merge_dicts(
-        default_inputs, input_swaps, remove_none=True, remove_false=True
-    )
-    blocks = merge_dicts(
-        default_blocks, block_swaps, remove_none=True, remove_false=True
-    )
+    inputs = remove_dict_empties(default_inputs | input_swaps)
+    blocks = remove_dict_empties(default_blocks | block_swaps)
     orcasimpleinput = " ".join(list(inputs.keys()))
     orcablocks = " ".join(list(blocks.keys()))
 
@@ -157,12 +153,8 @@ def relax_job(
     }
     default_blocks = {}
 
-    inputs = merge_dicts(
-        default_inputs, input_swaps, remove_none=True, remove_false=True
-    )
-    blocks = merge_dicts(
-        default_blocks, block_swaps, remove_none=True, remove_false=True
-    )
+    inputs = remove_dict_empties(default_inputs | input_swaps)
+    blocks = remove_dict_empties(default_blocks | block_swaps)
     orcasimpleinput = " ".join(list(inputs.keys()))
     orcablocks = " ".join(list(blocks.keys()))
 
