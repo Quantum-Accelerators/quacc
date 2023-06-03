@@ -57,7 +57,7 @@ if __name__ == "__main__":
             ],
             "strict": [
                 "ase @ git+https://gitlab.com/ase/ase.git",  # waiting on >3.22.1
-                "atomate2[cclib] @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
+                "atomate2 @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
                 "cclib==1.7.2",
                 "covalent @ git+https://github.com/AgnostiqHQ/covalent.git",  # waiting on > 0.222.0
                 "custodian==2023.5.12",
