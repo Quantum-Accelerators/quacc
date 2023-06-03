@@ -44,8 +44,8 @@ if __name__ == "__main__":
             "numpy",
         ],
         extras_require={
-            "fireworks": ["fireworks>=2.0.3"],
-            "tblite": ["tblite[ase]>=0.3.0"],
+            "fireworks": ["fireworks"],
+            "tblite": ["tblite[ase]"],
             "dev": ["black==23.3.0", "isort==5.12.0", "pytest"],
             "docs": [
                 "autodoc_pydantic==1.8.0",
