@@ -46,7 +46,7 @@ if __name__ == "__main__":
         extras_require={
             "fireworks": ["fireworks"],
             "tblite": ["tblite[ase]"],
-            "dev": ["black==23.3.0", "isort==5.12.0", "pytest"],
+            "dev": ["black", "isort", "pytest"],
             "docs": [
                 "autodoc_pydantic==1.8.0",
                 "furo==2023.5.20",
