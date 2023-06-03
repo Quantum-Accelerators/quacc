@@ -51,7 +51,7 @@ def static_job(
         "Hamiltonian_Method": method if "xtb" in method.lower() else None,
         "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
     }
-    flags = merge_dicts(defaults, swaps, remove_none=True, auto_lowercase=False)
+    flags = merge_dicts(defaults, swaps, auto_lowercase=False)
 
     atoms.calc = Dftb(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
@@ -110,7 +110,7 @@ def relax_job(
         "Driver_AppendGeometries": "Yes",
         "Driver_MaxSteps": 2000,
     }
-    flags = merge_dicts(defaults, swaps, remove_none=True, auto_lowercase=False)
+    flags = merge_dicts(defaults, swaps, auto_lowercase=False)
 
     atoms.calc = Dftb(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)

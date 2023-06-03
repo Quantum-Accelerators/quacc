@@ -7,13 +7,12 @@ from __future__ import annotations
 def merge_dicts(
     d1: dict,
     d2: dict,
-    remove_none: bool = False,
+    remove_none: bool = True,
     auto_lowercase: bool = True,
 ) -> dict:
     """
     Merges two dictionaries into a single dictionary. If both dictionaries
-    have the same key, the value from the second dictionary will be used. This
-    is done in a case-insensitive manner.
+    have the same key, the value from the second dictionary will be used.
 
     Parameters
     ----------
@@ -24,7 +23,7 @@ def merge_dicts(
     remove_none
         If True, all keys with a value of None in the merged dictionary will be removed.
     auto_lowercase
-        If True, all keys will be turned into lowercase.
+        If True, all keys will be turned into lowercase before merging.
 
     Returns
     -------

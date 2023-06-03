@@ -76,7 +76,7 @@ def static_job(
         if write_molden
         else ["2/9=2000"],  # see ASE issue #660
     }
-    flags = merge_dicts(defaults, swaps, remove_none=True)
+    flags = merge_dicts(defaults, swaps)
 
     atoms.calc = Gaussian(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
@@ -139,7 +139,7 @@ def relax_job(
         "freq": "" if freq else None,
         "ioplist": ["2/9=2000"],  # ASE issue #660
     }
-    flags = merge_dicts(defaults, swaps, remove_none=True)
+    flags = merge_dicts(defaults, swaps)
 
     atoms.calc = Gaussian(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)

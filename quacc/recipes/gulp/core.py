@@ -58,8 +58,8 @@ def static_job(
         "output xyz gulp.xyz": not atoms.pbc.any(),
     }
 
-    keywords = merge_dicts(default_keywords, keyword_swaps, remove_none=True)
-    options = merge_dicts(default_options, option_swaps, remove_none=True)
+    keywords = merge_dicts(default_keywords, keyword_swaps)
+    options = merge_dicts(default_options, option_swaps)
 
     gulp_keywords = " ".join(list(keywords.keys()))
     gulp_options = list(options.keys())
@@ -129,8 +129,8 @@ def relax_job(
         "output xyz gulp.xyz": not atoms.pbc.any(),
     }
 
-    keywords = merge_dicts(default_keywords, keyword_swaps, remove_none=True)
-    options = merge_dicts(default_options, option_swaps, remove_none=True)
+    keywords = merge_dicts(default_keywords, keyword_swaps)
+    options = merge_dicts(default_options, option_swaps)
 
     gulp_keywords = " ".join(list(keywords.keys()))
     gulp_options = list(options.keys())

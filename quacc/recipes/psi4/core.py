@@ -61,7 +61,7 @@ def static_job(
         "charge": charge or round(sum(atoms.get_initial_charges())),
         "multiplicity": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
     }
-    flags = merge_dicts(defaults, swaps, remove_none=True)
+    flags = merge_dicts(defaults, swaps)
 
     atoms.calc = Psi4(**flags)
     new_atoms = run_calc(atoms)
