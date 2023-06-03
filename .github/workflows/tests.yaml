@@ -77,29 +77,14 @@ jobs:
           cache: pip
           cache-dependency-path: setup.py
 
-      - name: Set up conda
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-          activate-environment: quacc-env
-
       - name: Install pip packages
         run: |
           pip install .[strict,tblite]
           pip install chardet
           pip install pytest-cov
 
-      - name: Set up Covalent server
-        run: |
-          echo "y" | covalent purge
-          covalent start
-
       - name: Run tests with pytest
         run: pytest tests/recipes/tblite --cov=quacc --cov-report=xml
-
-      - name: Stop Covalent server
-        run: |
-          covalent stop
 
   tests-psi4:
     strategy:
@@ -139,17 +124,8 @@ jobs:
         run: |
           conda install -c psi4 psi4
 
-      - name: Set up Covalent server
-        run: |
-          echo "y" | covalent purge
-          covalent start
-
       - name: Run tests with pytest
         run: pytest tests/recipes/psi4 --cov=quacc --cov-report=xml
-
-      - name: Stop Covalent server
-        run: |
-          covalent stop
 
   tests-dftbplus:
     strategy:
@@ -189,17 +165,8 @@ jobs:
         run: |
           conda install -c conda-forge dftbplus
 
-      - name: Set up Covalent server
-        run: |
-          echo "y" | covalent purge
-          covalent start
-
       - name: Run tests with pytest
         run: pytest tests/recipes/dftb --cov=quacc --cov-report=xml
-
-      - name: Stop Covalent server
-        run: |
-          covalent stop
 
   coverage:
     runs-on: ubuntu-latest
