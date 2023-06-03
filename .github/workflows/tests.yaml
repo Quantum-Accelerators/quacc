@@ -41,7 +41,7 @@ jobs:
         run: |
           pip install .[strict]
           pip install chardet
-          pip install pytest
+          pip install pytest-cov
 
       - name: Set up Covalent server
         run: |
@@ -49,7 +49,7 @@ jobs:
           covalent start
 
       - name: Run tests with pytest
-        run: pytest
+        run: pytest --cov=quacc --cov-report=xml
 
       - name: Stop Covalent server
         run: |
