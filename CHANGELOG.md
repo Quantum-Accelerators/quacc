@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - A function `quacc.util.db.covalent_to_db` to store Covalent results in a database.
 - A new `pop_analysis` kwarg to `quacc.schemas.cclib.summarize_run`.
 - New functions `quacc.util.dict.clean_dicts` and `quacc.util.dicts.sort_dict`.
+- Added support for Python 3.10.
 
 ### Changed
 
@@ -51,6 +52,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Moved `check_logfile` to `quacc.util.files`.
 - Moved `convert_auto_kpts` to `quacc.calculators.vasp`.
 - By default, output schemas are sorted by key alphabetically.
+- Used `|` operator for dictionary merging instead of `{**dict1, **dict2}`.
 
 ### Fixed
 
@@ -62,6 +64,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Removed the `xtb` recipes in favor of the `tblite` recipes following deprecation warning.
 - Removed the `requirements.txt` file in favor of the `setup.py` file.
+- Remove `quacc.util.dicts.merge_dicts`.
+- Removed Python 3.8 support.
 
 ## [0.0.6]
 
