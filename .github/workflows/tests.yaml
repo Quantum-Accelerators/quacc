@@ -39,7 +39,8 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install .[strict]
+          pip install -r requirements.txt
+          pip install .[dev]
           pip install chardet
           pip install pytest-cov
 
@@ -85,8 +86,8 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install .[strict,tblite]
-          pip install chardet
+          pip install -r requirements.txt
+          pip install .[dev,tblite]
           pip install pytest-cov
 
       - name: Run tests with pytest
@@ -129,7 +130,8 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install .[strict]
+          pip install -r requirements.txt
+          pip install .[dev]
           pip install chardet
           pip install pytest-cov
 
@@ -177,7 +179,8 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install .[strict]
+          pip install -r requirements.txt
+          pip install .[dev]
           pip install chardet
           pip install pytest-cov
 
