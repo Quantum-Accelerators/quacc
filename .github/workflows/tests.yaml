@@ -15,11 +15,58 @@ on:
     types: [published]
 
 jobs:
-  tests-full:
+  tests-light:
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: true
       matrix:
         python-version: ["3.9", "3.10"]
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: setup.py
+
+      - name: Install pip packages
+        run: |
+          pip install .
+          pip install chardet
+          pip install pytest
+
+      - name: Set up Covalent server
+        run: |
+          echo "y" | covalent purge
+          covalent start
+
+      - name: Run tests with pytest
+        run: pytest
+
+      - name: Stop Covalent server
+        run: |
+          covalent stop
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        if: github.repository == 'quantum-accelerators/quacc'
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+
+  tests-strict:
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.10"]
     runs-on: ubuntu-latest
 
     defaults:
@@ -49,15 +96,6 @@ jobs:
           pip install chardet
           pip install pytest-cov
 
-      - name: Install conda packages
-        run: |
-          conda install -c psi4 psi4
-          conda install -c conda-forge dftbplus==22.2
-
-      - name: Set up Quacc settings
-        run: |
-          export QUACC_VASP_VERBOSE=False
-
       - name: Set up Covalent server
         run: |
           echo "y" | covalent purge
@@ -77,12 +115,12 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml
 
-  tests-light:
-    runs-on: ubuntu-latest
+  tests-psi4:
     strategy:
       fail-fast: true
       matrix:
         python-version: ["3.10"]
+    runs-on: ubuntu-latest
 
     defaults:
       run:
@@ -99,15 +137,21 @@ jobs:
           cache: pip
           cache-dependency-path: setup.py
 
+      - name: Set up conda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          activate-environment: quacc-env
+
       - name: Install pip packages
         run: |
           pip install .
           pip install chardet
-          pip install pytest
+          pip install pytest-cov
 
-      - name: Set up Quacc settings
+      - name: Install conda packages
         run: |
-          export QUACC_VASP_VERBOSE=False
+          conda install -c psi4 psi4
 
       - name: Set up Covalent server
         run: |
@@ -115,16 +159,80 @@ jobs:
           covalent start
 
       - name: Run tests with pytest
-        run: pytest
+        run: pytest tests/recipes/psi4 --cov=quacc --cov-report=xml
 
       - name: Stop Covalent server
         run: |
           covalent stop
 
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        if: github.repository == 'quantum-accelerators/quacc'
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+
+  tests-dftbplus:
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.10"]
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: setup.py
+
+      - name: Set up conda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          activate-environment: quacc-env
+
+      - name: Install pip packages
+        run: |
+          pip install .
+          pip install chardet
+          pip install pytest-cov
+
+      - name: Install conda packages
+        run: |
+          conda install -c conda-forge dftbplus
+
+      - name: Set up Covalent server
+        run: |
+          echo "y" | covalent purge
+          covalent start
+
+      - name: Run tests with pytest
+        run: pytest tests/recipes/psi4 --cov=quacc --cov-report=xml
+
+      - name: Stop Covalent server
+        run: |
+          covalent stop
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        if: github.repository == 'quantum-accelerators/quacc'
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+
   release:
     runs-on: ubuntu-latest
-    needs: [tests-full, tests-light]
-    if: github.event_name == 'release' && needs.tests-full.result == 'success' && needs.tests-light.result == 'success'
+    needs: [tests-strict, tests-light]
+    if: github.event_name == 'release' && needs.tests-strict.result == 'success' && needs.tests-light.result == 'success'
     steps:
       - name: Check out repo
         uses: actions/checkout@v3
