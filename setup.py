@@ -33,9 +33,9 @@ if __name__ == "__main__":
         data_files=["LICENSE.md"],
         zip_safe=False,
         install_requires=[
-            "ase",  # waiting on >3.22.1
-            "atomate2[cclib]",  # waiting on >0.0.10
-            "covalent",  # waiting on > 0.222.0
+            "ase @ git+https://gitlab.com/ase/ase.git",  # waiting on >3.22.1
+            "atomate2[cclib] @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
+            "covalent @ git+https://github.com/AgnostiqHQ/covalent.git",  # waiting on > 0.222.0
             "custodian>=2023.5.12",
             "emmet-core>=0.51.11",
             "pymatgen>=2023.5.10",
@@ -54,6 +54,21 @@ if __name__ == "__main__":
                 "myst_parser==1.0.0",
                 "numpydoc==1.5.0",
                 "sphinx_design==0.4.1",
+            ],
+            "strict": [
+                "ase @ git+https://gitlab.com/ase/ase.git",  # waiting on >3.22.1
+                "atomate2[cclib] @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
+                "cclib==1.7.2",
+                "covalent @ git+https://github.com/AgnostiqHQ/covalent.git",  # waiting on > 0.222.0
+                "custodian==2023.5.12",
+                "emmet-core==0.55.2",
+                "fireworks==2.0.3",
+                "jobflow==0.1.11",
+                "maggma==0.51.3",
+                "monty==2023.5.8",
+                "numpy==1.24.3",
+                "pydantic==1.10.2",
+                "pymatgen==2023.5.10",
             ],
         },
         tests_require=["pytest"],
