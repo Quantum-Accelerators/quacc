@@ -137,6 +137,6 @@ def summarize_run(
     atoms_db = atoms_to_metadata(atoms, get_metadata=False, store_pmg=False)
 
     # Create a dictionary of the inputs/outputs
-    task_doc = {**atoms_db, **inputs, **results, **additional_fields}
+    task_doc = atoms_db | inputs | results | additional_fields
 
     return clean_dict(task_doc, remove_empties=remove_empties)

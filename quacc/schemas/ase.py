@@ -135,7 +135,7 @@ def summarize_run(
     atoms_db = atoms_to_metadata(atoms)
 
     # Create a dictionary of the inputs/outputs
-    task_doc = {**atoms_db, **inputs, **results, **additional_fields}
+    task_doc = atoms_db | inputs | results | additional_fields
 
     return clean_dict(task_doc, remove_empties=remove_empties)
 
@@ -254,7 +254,7 @@ def summarize_opt_run(
     # Get the calculator inputs
     uri = get_uri(os.getcwd())
     inputs = {
-        "parameters": {**dyn_parameters, **parameters},
+        "parameters": dyn_parameters | parameters,
         "nid": uri.split(":")[0],
         "dir_name": ":".join(uri.split(":")[1:]),
     }
@@ -271,7 +271,7 @@ def summarize_opt_run(
     atoms_db = atoms_to_metadata(final_atoms)
 
     # Create a dictionary of the inputs/outputs
-    task_doc = {**atoms_db, **inputs, **results, **traj_results, **additional_fields}
+    task_doc = atoms_db | inputs | results | traj_results | additional_fields
 
     return clean_dict(task_doc, remove_empties=remove_empties)
 
@@ -418,7 +418,7 @@ def summarize_vib_run(
         }
     }
 
-    task_doc = {**atoms_db, **inputs, **results, **additional_fields}
+    task_doc = atoms_db | inputs | results | additional_fields
 
     return clean_dict(task_doc, remove_empties=remove_empties)
 
@@ -527,6 +527,6 @@ def summarize_thermo_run(
 
     atoms_db = atoms_to_metadata(igt.atoms)
 
-    task_doc = {**atoms_db, **inputs, **results, **additional_fields}
+    task_doc = atoms_db | inputs | results | additional_fields
 
     return clean_dict(task_doc, remove_empties=remove_empties)

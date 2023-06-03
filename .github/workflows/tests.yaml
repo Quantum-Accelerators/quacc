@@ -52,8 +52,7 @@ jobs:
         run: pytest --cov=quacc --cov-report=xml
 
       - name: Stop Covalent server
-        run: |
-          covalent stop
+        run: covalent stop
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
