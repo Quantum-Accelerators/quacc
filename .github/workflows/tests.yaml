@@ -55,6 +55,13 @@ jobs:
         run: |
           covalent stop
 
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        if: github.repository == 'quantum-accelerators/quacc'
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+
   tests-tblite:
     strategy:
       fail-fast: true
@@ -85,6 +92,13 @@ jobs:
 
       - name: Run tests with pytest
         run: pytest tests/recipes/tblite --cov=quacc --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        if: github.repository == 'quantum-accelerators/quacc'
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
 
   tests-psi4:
     strategy:
@@ -127,6 +141,13 @@ jobs:
       - name: Run tests with pytest
         run: pytest tests/recipes/psi4 --cov=quacc --cov-report=xml
 
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        if: github.repository == 'quantum-accelerators/quacc'
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+
   tests-dftbplus:
     strategy:
       fail-fast: true
@@ -167,18 +188,6 @@ jobs:
 
       - name: Run tests with pytest
         run: pytest tests/recipes/dftb --cov=quacc --cov-report=xml
-
-  coverage:
-    runs-on: ubuntu-latest
-    needs: [tests-base, tests-tblite, tests-psi4, tests-dftbplus]
-
-    defaults:
-      run:
-        shell: bash -l {0}
-
-    steps:
-      - name: Check out repo
-        uses: actions/checkout@v3
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
