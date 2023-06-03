@@ -38,10 +38,10 @@ if __name__ == "__main__":
             "covalent @ git+https://github.com/AgnostiqHQ/covalent.git",  # waiting on > 0.222.0
             "custodian",
             "emmet-core>=0.51.11",
-            "pymatgen>=2022.7.8",
-            "maggma",
             "monty>=2023.4.10",
             "numpy",
+            "pydantic",
+            "pymatgen>=2022.7.8",
         ],
         extras_require={
             "fireworks": ["fireworks"],
