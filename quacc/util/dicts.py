@@ -4,7 +4,7 @@ Utility functions for dealing with dictionaries
 from __future__ import annotations
 
 
-def clean_dict(d: dict, remove_empties=False) -> dict:
+def clean_dict(d: dict, remove_empties: bool = False) -> dict:
     """
     For a given dictionary, recursively remove all items that are None
     or are empty lists/dicts, and then sort all entries alphabetically by key.
