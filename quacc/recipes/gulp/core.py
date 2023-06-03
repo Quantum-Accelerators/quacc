@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import warnings
-from shutil import deepcopy
+from copy import deepcopy
 
 import covalent as ct
 from ase import Atoms

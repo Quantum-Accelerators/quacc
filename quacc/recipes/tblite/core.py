@@ -3,7 +3,7 @@ Core recipes for the tblite code
 """
 from __future__ import annotations
 
-from shutil import deepcopy
+from copy import deepcopy
 
 import covalent as ct
 from ase import Atoms
