@@ -44,7 +44,7 @@ if __name__ == "__main__":
         ],
         extras_require={
             "fireworks": ["fireworks>=2.0.3"],
-            "tblite": ["tblite[ase]==0.3.0"],
+            "tblite": ["tblite[ase]>=0.3.0"],
             "dev": ["black>=23.3.0", "isort>=5.12.0", "pytest>=7.3.1"],
             "docs": [
                 "autodoc_pydantic==1.8.0",

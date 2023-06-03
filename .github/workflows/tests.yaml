@@ -183,7 +183,7 @@ jobs:
 
       - name: Install conda packages
         run: |
-          conda install -c conda-forge dftbplus==22.2
+          conda install -c conda-forge dftbplus
 
       - name: Run tests with pytest
         run: pytest tests/recipes/dftb --cov=quacc --cov-report=xml
