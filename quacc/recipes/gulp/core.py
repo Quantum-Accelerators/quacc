@@ -121,7 +121,7 @@ def relax_job(
         "gfnff": True if gfnff else None,
         "gwolf": True if gfnff and atoms.pbc.any() else None,
         "conp": True if volume_relax and atoms.pbc.any() else None,
-        "conv": None if volume_relax or atoms.pbc.any() else True,
+        "conv": None if volume_relax and atoms.pbc.any() else True,
     }
     default_options = {
         "dump every gulp.res": True,

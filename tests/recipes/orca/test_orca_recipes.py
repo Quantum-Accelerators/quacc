@@ -46,7 +46,7 @@ def test_static_Job():
         atoms,
         charge=-2,
         mult=3,
-        input_swaps={"def2-SVP": True, "def2-TZVP": None},
+        input_swaps={"def2-svp": True, "def2-tzvp": None},
         block_swaps={"%scf maxiter 300 end": True},
     )
     assert output["natoms"] == len(atoms)
@@ -81,10 +81,10 @@ def test_relax_Job():
         charge=-2,
         mult=3,
         input_swaps={
-            "HF": True,
+            "hf": True,
             "wb97x-d3bj": None,
-            "def2-SVP": True,
-            "def2-TZVP": None,
+            "def2-svp": True,
+            "def2-tzvp": None,
         },
         block_swaps={"%scf maxiter 300 end": True},
     )
