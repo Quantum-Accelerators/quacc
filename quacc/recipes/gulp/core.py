@@ -129,8 +129,8 @@ def relax_job(
         "output xyz gulp.xyz": None if atoms.pbc.any() else True,
     }
 
-    keywords = default_keywords | keyword_swaps
-    options = default_options | option_swaps
+    keywords = remove_dict_empties(default_keywords | keyword_swaps)
+    options = remove_dict_empties(default_options | option_swaps)
 
     gulp_keywords = " ".join(list(keywords.keys()))
     gulp_options = list(options.keys())
