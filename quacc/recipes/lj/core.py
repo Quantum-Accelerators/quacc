@@ -13,7 +13,6 @@ from ase.calculators.lj import LennardJones
 
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
-from quacc.util.dicts import merge_dicts
 
 
 @ct.electron
@@ -41,7 +40,7 @@ def static_job(
     input_atoms = deepcopy(atoms)
 
     defaults = {"epsilon": 1.0, "sigma": 1.0}
-    flags = merge_dicts(defaults, lj_kwargs)
+    flags = defaults | lj_kwargs
 
     atoms.calc = LennardJones(**flags)
     atoms = run_calc(atoms)
@@ -88,7 +87,7 @@ def relax_job(
     opt_kwargs = opt_kwargs or {}
 
     defaults = {"epsilon": 1.0, "sigma": 1.0}
-    flags = merge_dicts(defaults, lj_kwargs)
+    flags = defaults | lj_kwargs
 
     atoms.calc = LennardJones(**flags)
     dyn = run_ase_opt(

@@ -9,7 +9,7 @@ from ase.calculators.gaussian import Gaussian
 
 from quacc.schemas.cclib import summarize_run
 from quacc.util.calc import run_calc
-from quacc.util.dicts import merge_dicts
+from quacc.util.dicts import remove_dict_empties
 
 LOG_FILE = f"{Gaussian().label}.log"
 GEOM_FILE = LOG_FILE
@@ -76,7 +76,7 @@ def static_job(
         if write_molden
         else ["2/9=2000"],  # see ASE issue #660
     }
-    flags = merge_dicts(defaults, swaps)
+    flags = remove_dict_empties(defaults | swaps)
 
     atoms.calc = Gaussian(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
@@ -139,7 +139,7 @@ def relax_job(
         "freq": "" if freq else None,
         "ioplist": ["2/9=2000"],  # ASE issue #660
     }
-    flags = merge_dicts(defaults, swaps)
+    flags = remove_dict_empties(defaults | swaps)
 
     atoms.calc = Gaussian(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)

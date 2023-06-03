@@ -9,7 +9,7 @@ from ase.calculators.dftb import Dftb
 
 from quacc.schemas.ase import summarize_run
 from quacc.util.calc import run_calc
-from quacc.util.dicts import merge_dicts
+from quacc.util.dicts import remove_dict_empties
 from quacc.util.files import check_logfile
 
 LOG_FILE = "dftb.out"
@@ -52,7 +52,7 @@ def static_job(
         "Hamiltonian_Method": method if "xtb" in method.lower() else None,
         "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
     }
-    flags = merge_dicts(defaults, swaps, auto_lowercase=False)
+    flags = remove_dict_empties(defaults | swaps)
 
     atoms.calc = Dftb(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
@@ -111,7 +111,7 @@ def relax_job(
         "Driver_AppendGeometries": "Yes",
         "Driver_MaxSteps": 2000,
     }
-    flags = merge_dicts(defaults, swaps, auto_lowercase=False)
+    flags = remove_dict_empties(defaults | swaps)
 
     atoms.calc = Dftb(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)

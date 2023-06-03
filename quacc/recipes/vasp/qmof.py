@@ -13,7 +13,6 @@ from quacc.calculators.vasp import Vasp
 from quacc.schemas.ase import summarize_opt_run
 from quacc.schemas.vasp import summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
-from quacc.util.dicts import merge_dicts
 
 
 @ct.electron
@@ -134,7 +133,7 @@ def _prerelax(
         "nelm": 225,
         "nsw": 0,
     }
-    flags = merge_dicts(defaults, swaps)
+    flags = defaults | swaps
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
     dyn = run_ase_opt(atoms, fmax=fmax, optimizer="BFGSLineSearch")
@@ -179,7 +178,7 @@ def _loose_relax_positions(
         "lwave": True,
         "nsw": 250,
     }
-    flags = merge_dicts(defaults, swaps)
+    flags = defaults | swaps
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
     atoms = run_calc(atoms)
@@ -224,7 +223,7 @@ def _loose_relax_volume(
         "lwave": True,
         "nsw": 500,
     }
-    flags = merge_dicts(defaults, swaps)
+    flags = defaults | swaps
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
@@ -275,7 +274,7 @@ def _double_relax(
     }
 
     # Run first relaxation
-    flags = merge_dicts(defaults, swaps)
+    flags = defaults | swaps
     calc1 = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc1
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
@@ -290,7 +289,7 @@ def _double_relax(
     del defaults["lreal"]
 
     # Run second relaxation
-    flags = merge_dicts(defaults, swaps)
+    flags = defaults | swaps
     calc2 = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc2
 
@@ -340,7 +339,7 @@ def _static(
     }
 
     # Run static calculation
-    flags = merge_dicts(defaults, swaps)
+    flags = defaults | swaps
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
     atoms = run_calc(atoms, copy_files=["WAVECAR"])

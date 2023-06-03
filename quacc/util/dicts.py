@@ -4,41 +4,6 @@ Utility functions for dealing with dictionaries
 from __future__ import annotations
 
 
-def merge_dicts(
-    d1: dict,
-    d2: dict,
-    remove_none: bool = True,
-    auto_lowercase: bool = True,
-) -> dict:
-    """
-    Merges two dictionaries into a single dictionary. If both dictionaries
-    have the same key, the value from the second dictionary will be used.
-
-    Parameters
-    ----------
-    d1
-        First dictionary.
-    d2
-        Second dictionary, which has priority.
-    remove_none
-        If True, all keys with a value of None in the merged dictionary will be removed.
-    auto_lowercase
-        If True, all keys will be turned into lowercase before merging.
-
-    Returns
-    -------
-    dict
-        Merged dictionary.
-    """
-    if auto_lowercase:
-        d1 = {k.lower(): v for k, v in d1.items()}
-        d2 = {k.lower(): v for k, v in d2.items()}
-    d_merged = d1 | d2
-    if remove_none:
-        d_merged = {k: v for k, v in d_merged.items() if v is not None}
-    return d_merged
-
-
 def clean_dict(d: dict, remove_empties=False) -> dict:
     """
     For a given dictionary, recursively remove all items that are None

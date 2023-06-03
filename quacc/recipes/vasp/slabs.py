@@ -10,7 +10,6 @@ from covalent._workflow.electron import Electron
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.vasp import summarize_run
 from quacc.util.calc import run_calc
-from quacc.util.dicts import merge_dicts
 from quacc.util.slabs import make_adsorbate_structures, make_max_slabs_from_bulk
 
 
@@ -46,7 +45,7 @@ def slab_static_job(atoms: Atoms, preset: str = None, swaps: dict = None) -> dic
         "nedos": 5001,
         "nsw": 0,
     }
-    flags = merge_dicts(defaults, swaps)
+    flags = defaults | swaps
 
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
@@ -87,7 +86,7 @@ def slab_relax_job(atoms: Atoms, preset: str = None, swaps: dict = None) -> dict
         "lwave": False,
         "nsw": 200,
     }
-    flags = merge_dicts(defaults, swaps)
+    flags = defaults | swaps
 
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
