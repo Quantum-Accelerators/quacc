@@ -1,12 +1,13 @@
 """Core recipes for DFTB+"""
 from __future__ import annotations
 
+from shutil import deepcopy
+
 import covalent as ct
 from ase import Atoms
 from ase.calculators.dftb import Dftb
 
 from quacc.schemas.ase import summarize_run
-from quacc.util.atoms import copy_atoms
 from quacc.util.calc import run_calc
 from quacc.util.dicts import merge_dicts
 from quacc.util.files import check_logfile
@@ -44,7 +45,7 @@ def static_job(
     """
 
     swaps = swaps or {}
-    input_atoms = copy_atoms(atoms)
+    input_atoms = deepcopy(atoms)
 
     defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
@@ -99,7 +100,7 @@ def relax_job(
     """
 
     swaps = swaps or {}
-    input_atoms = copy_atoms(atoms)
+    input_atoms = deepcopy(atoms)
 
     defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",

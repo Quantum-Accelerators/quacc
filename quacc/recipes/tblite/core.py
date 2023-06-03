@@ -3,6 +3,8 @@ Core recipes for the tblite code
 """
 from __future__ import annotations
 
+from shutil import deepcopy
+
 import covalent as ct
 from ase import Atoms
 from monty.dev import requires
@@ -13,7 +15,6 @@ from quacc.schemas.ase import (
     summarize_thermo_run,
     summarize_vib_run,
 )
-from quacc.util.atoms import copy_atoms
 from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
 from quacc.util.thermo import ideal_gas
 
@@ -49,7 +50,7 @@ def static_job(
         Dictionary of results from quacc.schemas.ase.summarize_run
     """
     tblite_kwargs = tblite_kwargs or {}
-    input_atoms = copy_atoms(atoms)
+    input_atoms = deepcopy(atoms)
 
     atoms.calc = TBLite(method=method, **tblite_kwargs)
     atoms = run_calc(atoms)
