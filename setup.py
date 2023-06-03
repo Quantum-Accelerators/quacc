@@ -63,7 +63,6 @@ if __name__ == "__main__":
                 "covalent @ git+https://github.com/AgnostiqHQ/covalent.git",  # waiting on > 0.222.0
                 "custodian==2023.5.12",
                 "emmet-core==0.55.2",
-                "fireworks==2.0.3",
                 "jobflow==0.1.11",
                 "maggma==0.51.3",
                 "monty==2023.5.8",
