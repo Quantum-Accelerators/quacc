@@ -195,7 +195,7 @@ jobs:
           covalent start
 
       - name: Run tests with pytest
-        run: pytest tests/recipes/psi4 --cov=quacc --cov-report=xml
+        run: pytest tests/recipes/dftbplus --cov=quacc --cov-report=xml
 
       - name: Stop Covalent server
         run: |
@@ -212,13 +212,6 @@ jobs:
     steps:
       - name: Check out repo
         uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
-          cache: pip
-          cache-dependency-path: setup.py
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
