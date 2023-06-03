@@ -72,7 +72,6 @@ if __name__ == "__main__":
                 "pydantic==1.10.2",
                 "pymatgen==2023.5.10",
                 "pytest==7.3.1",
-                "tblite[ase]==0.3.0",
             ],
         },
         tests_require=["pytest"],
