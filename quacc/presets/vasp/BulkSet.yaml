@@ -5,6 +5,7 @@ inputs:
     max_mixed_density: [100, 1000]
   algo: fast
   ediff: 1.0e-5
+  efermi: midgap
   encut: 520
   ismear: 0
   isym: 0
