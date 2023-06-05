@@ -55,6 +55,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Moved `convert_auto_kpts` to `quacc.calculators.vasp`.
 - By default, output schemas are sorted by key alphabetically.
 - Used `|` operator for dictionary merging instead of `{**dict1, **dict2}`.
+- Refactors VASP calculator.
 
 ### Fixed
 

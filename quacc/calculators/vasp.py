@@ -513,7 +513,17 @@ class Vasp(Vasp_):
                 )
             calc.set(isym=-1)
 
-        if not calc.string_params["efermi"]:
+        if calc.string_params["efermi"]:
+            if (
+                isinstance(calc.string_params["efermi"], str)
+                and self.min_vasp_version < 6.4
+            ):
+                if self.verbose:
+                    warnings.warn(
+                        "Copilot: Unsetting EFERMI because MIN_VASP_VERSION < 6.4."
+                    )
+                calc.set(efermi=None)
+        elif self.min_vasp_version >= 6.4:
             if self.verbose:
                 warnings.warn("Copilot: Setting EFERMI = MIDGAP per the VASP manual.")
             calc.set(efermi="midgap")
