@@ -65,7 +65,7 @@ napoleon_use_rtype = True
 napoleon_use_ivar = True
 
 # The suffix(es) of source filenames.
-source_suffix = [".rst", ".md"]
+source_suffix = [".md", ".rst"]
 
 mathjax3_config = {
     "tex": {
@@ -85,9 +85,7 @@ latex_elements = {
 """
 }
 language = "en"
-html_extra_path = ["images/ badge.svg"]
 html_static_path = ["_static"]
-html_css_files = ["custom.css", "github.css"]
 suppress_warnings = "etoc.toctree"
 
 # autodoc options

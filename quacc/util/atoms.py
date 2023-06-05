@@ -119,7 +119,7 @@ def set_magmoms(
     elemental_mags_dict: dict = None,
     elemental_mags_default: float = 1.0,
     copy_magmoms: bool = True,
-    mag_cutoff: float = 0.05,
+    mag_cutoff: float | None = 0.05,
 ) -> Atoms:
     """
     Sets the initial magnetic moments in the Atoms object.

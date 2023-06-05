@@ -394,12 +394,42 @@ def test_lmaxtau():
 
     atoms = bulk("Ce")
     calc = Vasp(atoms, lasph=True)
+    assert calc.int_params["lmaxtau"] is None
+
+    atoms = bulk("Ce")
+    calc = Vasp(atoms, lasph=True, metagga="r2SCAN")
     assert calc.int_params["lmaxtau"] == 8
 
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[-1].symbol = "Ce"
-    calc = Vasp(atoms, lasph=True)
+    calc = Vasp(atoms, lasph=True, metagga="r2SCAN")
     assert calc.int_params["lmaxtau"] == 8
+
+
+def test_efermi():
+    atoms = bulk("Cu")
+    calc = Vasp(atoms)
+    assert calc.string_params["efermi"] == "midgap"
+
+    atoms = bulk("Cu")
+    calc = Vasp(atoms, efermi="midgap")
+    assert calc.string_params["efermi"] == "midgap"
+
+    atoms = bulk("Cu")
+    calc = Vasp(atoms, efermi=10.0)
+    assert calc.string_params["efermi"] == 10.0
+
+    atoms = bulk("Cu")
+    calc = Vasp(atoms, min_vasp_version=5.4)
+    assert calc.string_params["efermi"] is None
+
+    atoms = bulk("Cu")
+    calc = Vasp(atoms, min_vasp_version=5.4, efermi="midgap")
+    assert calc.string_params["efermi"] is None
+
+    atoms = bulk("Cu")
+    calc = Vasp(atoms, min_vasp_version=5.4, efermi=10.0)
+    assert calc.string_params["efermi"] == 10.0
 
 
 def test_algo():
