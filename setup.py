@@ -68,7 +68,7 @@ if __name__ == "__main__":
                 "monty==2023.5.8",
                 "numpy==1.24.3",
                 "pydantic==1.10.2",
-                "pymatgen==2023.5.10",
+                "pymatgen==2023.5.31",
             ],
         },
         tests_require=["pytest"],
