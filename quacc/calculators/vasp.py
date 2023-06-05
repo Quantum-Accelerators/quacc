@@ -517,7 +517,7 @@ class Vasp(Vasp_):
             ):
                 if self.verbose:
                     warnings.warn(
-                        "Copilot: Unsetting EFERMI because vasp_min_version < 6.4."
+                        "Copilot: Unsetting EFERMI because VASP_MIN_VERSION < 6.4."
                     )
                 calc.set(efermi=None)
         elif self.vasp_min_version >= 6.4:
