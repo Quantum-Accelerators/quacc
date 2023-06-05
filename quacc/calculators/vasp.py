@@ -53,7 +53,7 @@ class Vasp(Vasp_):
     mag_cutoff
         Set all initial magmoms to 0 if all have a magnitude below this value.
         Default is 0.05 in settings.
-    VASP_MIN_VERSION
+    vasp_min_version
         Oldest VASP version you plan to use. Used to ensure INCAR settings are version-compatible.
     verbose
         If True, warnings will be raised when INCAR parameters are changed.
@@ -76,7 +76,7 @@ class Vasp(Vasp_):
         copy_magmoms: bool = SETTINGS.VASP_COPY_MAGMOMS,
         preset_mag_default: float = SETTINGS.VASP_PRESET_MAG_DEFAULT,
         mag_cutoff: None | float = SETTINGS.VASP_MAG_CUTOFF,
-        VASP_MIN_VERSION: None | float = SETTINGS.VASP_MIN_VERSION,
+        vasp_min_version: None | float = SETTINGS.VASP_MIN_VERSION,
         verbose: bool = SETTINGS.VASP_VERBOSE,
         **kwargs,
     ):
@@ -88,7 +88,7 @@ class Vasp(Vasp_):
         self.copy_magmoms = copy_magmoms
         self.preset_mag_default = preset_mag_default
         self.mag_cutoff = mag_cutoff
-        self.VASP_MIN_VERSION = VASP_MIN_VERSION or np.inf
+        self.vasp_min_version = vasp_min_version or np.inf
         self.verbose = verbose
         self.kwargs = kwargs
 
@@ -513,14 +513,14 @@ class Vasp(Vasp_):
         if calc.string_params["efermi"]:
             if (
                 isinstance(calc.string_params["efermi"], str)
-                and self.VASP_MIN_VERSION < 6.4
+                and self.vasp_min_version < 6.4
             ):
                 if self.verbose:
                     warnings.warn(
                         "Copilot: Unsetting EFERMI because VASP_MIN_VERSION < 6.4."
                     )
                 calc.set(efermi=None)
-        elif self.VASP_MIN_VERSION >= 6.4:
+        elif self.vasp_min_version >= 6.4:
             if self.verbose:
                 warnings.warn("Copilot: Setting EFERMI = MIDGAP per the VASP manual.")
             calc.set(efermi="midgap")
