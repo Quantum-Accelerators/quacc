@@ -394,11 +394,15 @@ def test_lmaxtau():
 
     atoms = bulk("Ce")
     calc = Vasp(atoms, lasph=True)
+    assert calc.int_params["lmaxtau"] is None
+
+    atoms = bulk("Ce")
+    calc = Vasp(atoms, lasph=True, metagga="r2SCAN")
     assert calc.int_params["lmaxtau"] == 8
 
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[-1].symbol = "Ce"
-    calc = Vasp(atoms, lasph=True)
+    calc = Vasp(atoms, lasph=True, metagga="r2SCAN")
     assert calc.int_params["lmaxtau"] == 8
 
 
