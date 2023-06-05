@@ -62,7 +62,7 @@ if __name__ == "__main__":
                 "cclib==1.7.2",
                 "covalent @ https://github.com/AgnostiqHQ/covalent/archive/refs/heads/develop.zip",  # waiting on > 0.222.0
                 "custodian==2023.5.12",
-                "emmet-core==0.55.2",
+                "emmet-core==0.55.3",
                 "jobflow==0.1.11",
                 "maggma==0.51.3",
                 "monty==2023.5.8",
