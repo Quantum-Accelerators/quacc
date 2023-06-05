@@ -50,7 +50,7 @@ if __name__ == "__main__":
             "docs": [
                 "autodoc_pydantic==1.8.0",
                 "furo==2023.5.20",
-                "ipython==8.13.2",
+                "ipython==8.14.0",
                 "jsonschema[format]==4.17.3",
                 "myst_parser==1.0.0",
                 "numpydoc==1.5.0",
