@@ -33,9 +33,9 @@ if __name__ == "__main__":
         data_files=["LICENSE.md"],
         zip_safe=False,
         install_requires=[
-            "ase @ git+https://gitlab.com/ase/ase.git",  # waiting on >3.22.1
+            "ase @ https://gitlab.com/argon214/ase/-/archive/efermi/ase-efermi.zip",  # waiting on >3.22.1
             "atomate2[cclib] @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
-            "covalent @ git+https://github.com/AgnostiqHQ/covalent.git",  # waiting on > 0.222.0
+            "covalent @ https://github.com/AgnostiqHQ/covalent/archive/refs/heads/develop.zip",  # waiting on > 0.222.0
             "custodian",
             "emmet-core>=0.51.11",
             "monty>=2023.4.10",
@@ -57,10 +57,10 @@ if __name__ == "__main__":
                 "sphinx_design==0.4.1",
             ],
             "strict": [
-                "ase @ git+https://gitlab.com/ase/ase.git",  # waiting on >3.22.1
+                "ase @ https://gitlab.com/argon214/ase/-/archive/efermi/ase-efermi.zip",  # waiting on >3.22.1
                 "atomate2 @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
                 "cclib==1.7.2",
-                "covalent @ git+https://github.com/AgnostiqHQ/covalent.git",  # waiting on > 0.222.0
+                "covalent @ https://github.com/AgnostiqHQ/covalent/archive/refs/heads/develop.zip",  # waiting on > 0.222.0
                 "custodian==2023.5.12",
                 "emmet-core==0.55.2",
                 "jobflow==0.1.11",
