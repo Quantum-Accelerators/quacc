@@ -7,9 +7,8 @@ import os
 from tempfile import mkdtemp
 
 import numpy as np
-from ase import Atoms
+from ase import Atoms, optimize
 from ase.io import read
-from ase import optimize
 from ase.optimize.optimize import Optimizer
 from ase.vibrations import Vibrations
 from monty.os.path import zpath
@@ -186,7 +185,9 @@ def run_ase_opt(
     try:
         opt_class = getattr(optimize, optimizer)
     except AttributeError as e:
-        raise ValueError(f"Unknown {optimizer=}, must be one of {list(dir(optimize))}") from e
+        raise ValueError(
+            f"Unknown {optimizer=}, must be one of {list(dir(optimize))}"
+        ) from e
 
     tmpdir = mkdtemp(prefix="quacc-tmp-", dir=scratch_dir)
 
