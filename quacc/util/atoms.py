@@ -96,13 +96,13 @@ def prep_next_run(
                 )
 
     # Clear off the calculator so we can run a new job. If we don't do this,
-    # then something like atoms *= (2,2,2) stil has a calculator attached, which
+    # then something like atoms *= (2,2,2) still has a calculator attached, which
     # is a bit confusing.
     atoms.calc = None
 
     # Give the Atoms object a unique ID. This will be helpful for querying later.
     # Also store any old IDs somewhere else for future reference.
-    # Note: Kep this at the end of the function so that the ID is assigned based
+    # Note: Keep this at the end of the function so that the ID is assigned based
     # on the returned Atoms object.
     if assign_id:
         if atoms.info.get("_id", None) is not None:
