@@ -9,15 +9,7 @@ from tempfile import mkdtemp
 import numpy as np
 from ase import Atoms
 from ase.io import read
-from ase.optimize import (
-    BFGS,
-    FIRE,
-    LBFGS,
-    BFGSLineSearch,
-    GPMin,
-    LBFGSLineSearch,
-    MDMin,
-)
+from ase import optimize
 from ase.optimize.optimize import Optimizer
 from ase.vibrations import Vibrations
 from monty.os.path import zpath
@@ -191,22 +183,10 @@ def run_ase_opt(
         opt_kwargs["restart"] = "opt.pckl"
 
     # Get optimizer
-    if optimizer.lower() == "bfgs":
-        opt_class = BFGS
-    elif optimizer.lower() == "bfgslinesearch":
-        opt_class = BFGSLineSearch
-    elif optimizer.lower() == "lbfgs":
-        opt_class = LBFGS
-    elif optimizer.lower() == "lbfgslinesearch":
-        opt_class = LBFGSLineSearch
-    elif optimizer.lower() == "gpmin":
-        opt_class = GPMin
-    elif optimizer.lower() == "mdmin":
-        opt_class = MDMin
-    elif optimizer.lower() == "fire":
-        opt_class = FIRE
-    else:
-        raise ValueError(f"Unknown optimizer: {optimizer}")
+    try:
+        opt_class = getattr(optimize, optimizer)
+    except AttributeError as e:
+        raise ValueError(f"Unknown {optimizer=}, must be one of {list(dir(optimize))}") from e
 
     tmpdir = mkdtemp(prefix="quacc-tmp-", dir=scratch_dir)
 

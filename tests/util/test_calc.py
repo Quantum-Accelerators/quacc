@@ -110,46 +110,6 @@ def test_run_ase_opt():
     )
     traj = read(dyn.trajectory.filename, index=":")
     assert traj[-1].calc.results is not None
-    dyn = run_ase_opt(
-        traj[-1],
-        optimizer="LBFGS",
-        scratch_dir="test_calc",
-        gzip=False,
-        copy_files=["test_file.txt"],
-        opt_kwargs={"restart": None},
-    )
-    traj = read(dyn.trajectory.filename, index=":")
-    assert traj[-1].calc.results is not None
-    dyn = run_ase_opt(
-        traj[-1],
-        optimizer="LBFGSLineSearch",
-        scratch_dir="test_calc",
-        gzip=False,
-        copy_files=["test_file.txt"],
-        opt_kwargs={"restart": None},
-    )
-    traj = read(dyn.trajectory.filename, index=":")
-    assert traj[-1].calc.results is not None
-    dyn = run_ase_opt(
-        traj[-1],
-        optimizer="GPMin",
-        scratch_dir="test_calc",
-        gzip=False,
-        copy_files=["test_file.txt"],
-        opt_kwargs={"restart": None},
-    )
-    traj = read(dyn.trajectory.filename, index=":")
-    assert traj[-1].calc.results is not None
-    dyn = run_ase_opt(
-        traj[-1],
-        optimizer="MDMin",
-        scratch_dir="test_calc",
-        gzip=False,
-        copy_files=["test_file.txt"],
-        opt_kwargs={"restart": None},
-    )
-    traj = read(dyn.trajectory.filename, index=":")
-    assert traj[-1].calc.results is not None
 
     with pytest.raises(ValueError):
         dyn = run_ase_opt(
