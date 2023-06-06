@@ -178,8 +178,6 @@ def run_ase_opt(
 
     if "trajectory" not in opt_kwargs:
         opt_kwargs["trajectory"] = "opt.traj"
-    if "restart" not in opt_kwargs:
-        opt_kwargs["restart"] = "opt.pckl"
 
     # Get optimizer
     try:
