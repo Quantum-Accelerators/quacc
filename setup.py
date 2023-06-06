@@ -50,7 +50,7 @@ if __name__ == "__main__":
             "docs": [
                 "autodoc_pydantic==1.8.0",
                 "furo==2023.5.20",
-                "ipython==8.13.2",
+                "ipython==8.14.0",
                 "jsonschema[format]==4.17.3",
                 "myst_parser==1.0.0",
                 "numpydoc==1.5.0",
@@ -61,14 +61,14 @@ if __name__ == "__main__":
                 "atomate2 @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
                 "cclib==1.7.2",
                 "covalent @ https://github.com/AgnostiqHQ/covalent/archive/refs/heads/develop.zip",  # waiting on > 0.222.0
-                "custodian==2023.5.12",
-                "emmet-core==0.55.2",
+                "custodian==2023.6.5",
+                "emmet-core==0.55.3",
                 "jobflow==0.1.11",
-                "maggma==0.51.3",
+                "maggma==0.51.4",
                 "monty==2023.5.8",
                 "numpy==1.24.3",
                 "pydantic==1.10.2",
-                "pymatgen==2023.5.10",
+                "pymatgen==2023.5.31",
             ],
         },
         tests_require=["pytest"],
