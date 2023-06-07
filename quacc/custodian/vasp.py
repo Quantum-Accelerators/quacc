@@ -7,6 +7,22 @@ import os
 import shlex
 
 from custodian import Custodian
+from custodian.vasp.handlers import (
+    FrozenJobErrorHandler,
+    IncorrectSmearingHandler,
+    LargeSigmaHandler,
+    MeshSymmetryErrorHandler,
+    NonConvergingErrorHandler,
+    PositiveEnergyErrorHandler,
+    PotimErrorHandler,
+    ScanMetalHandler,
+    StdErrHandler,
+    UnconvergedErrorHandler,
+    VaspErrorHandler,
+    WalltimeHandler,
+)
+from custodian.vasp.jobs import VaspJob
+from custodian.vasp.validators import VaspFilesValidator, VasprunXMLValidator
 
 from quacc import SETTINGS
 
@@ -58,23 +74,6 @@ def run_custodian(
     None
     """
     # Adapted from atomate2.vasp.run.run_vasp
-
-    from custodian.vasp.handlers import (
-        FrozenJobErrorHandler,
-        IncorrectSmearingHandler,
-        LargeSigmaHandler,
-        MeshSymmetryErrorHandler,
-        NonConvergingErrorHandler,
-        PositiveEnergyErrorHandler,
-        PotimErrorHandler,
-        ScanMetalHandler,
-        StdErrHandler,
-        UnconvergedErrorHandler,
-        VaspErrorHandler,
-        WalltimeHandler,
-    )
-    from custodian.vasp.jobs import VaspJob
-    from custodian.vasp.validators import VaspFilesValidator, VasprunXMLValidator
 
     vasp_parallel_cmd = os.path.expandvars(vasp_parallel_cmd)
 
