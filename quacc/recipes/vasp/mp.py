@@ -17,13 +17,13 @@ from quacc.schemas.vasp import summarize_run
 from quacc.util.calc import run_calc
 
 if TYPE_CHECKING:
-    from ase import Atoms
+    from ase.atoms import Atoms
     from covalent._workflow.electron import Electron
 
 
 @ct.electron
 def mp_prerelax_job(
-    atoms: Atoms, preset: str | None = "MPScanSet", swaps: dict = None
+    atoms: Atoms, preset: str | None = "MPScanSet", swaps: dict | None = None
 ) -> dict:
     """
     Function to pre-relax a structure with Materials Project settings.
@@ -57,7 +57,7 @@ def mp_prerelax_job(
 
 @ct.electron
 def mp_relax_job(
-    atoms: Atoms, preset: str | None = "MPScanSet", swaps: dict = None
+    atoms: Atoms, preset: str | None = "MPScanSet", swaps: dict | None = None
 ) -> dict:
     """
     Function to relax a structure with Materials Project settings.
@@ -109,8 +109,8 @@ class MPRelaxFlow:
 
     prerelax_electron: Electron | None = mp_prerelax_job
     relax_electron: Electron | None = mp_relax_job
-    prerelax_kwargs: dict = None
-    relax_kwargs: dict = None
+    prerelax_kwargs: dict | None = None
+    relax_kwargs: dict | None = None
 
     def run(self, atoms: Atoms) -> dict:
         """

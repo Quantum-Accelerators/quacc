@@ -21,13 +21,13 @@ GEOM_FILE = LOG_FILE
 @ct.electron
 def static_job(
     atoms: Atoms,
-    charge: int = None,
-    mult: int = None,
+    charge: int | None = None,
+    mult: int | None = None,
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
     pop: str = "hirshfeld",
     write_molden: bool = True,
-    swaps: dict = None,
+    swaps: dict | None = None,
 ) -> dict:
     """
     Carry out a single-point calculation.
@@ -90,12 +90,12 @@ def static_job(
 @ct.electron
 def relax_job(
     atoms: Atoms,
-    charge: int = None,
-    mult: int = None,
+    charge: int | None = None,
+    mult: int | None = None,
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
     freq: bool = False,
-    swaps: dict = None,
+    swaps: dict | None = None,
 ) -> dict:
     """
     Carry out a geometry optimization.

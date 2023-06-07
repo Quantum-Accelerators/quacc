@@ -12,12 +12,14 @@ from quacc.util.calc import run_calc
 from quacc.util.slabs import make_adsorbate_structures, make_max_slabs_from_bulk
 
 if TYPE_CHECKING:
-    from ase import Atoms
+    from ase.atoms import Atoms
     from covalent._workflow.electron import Electron
 
 
 @ct.electron
-def slab_static_job(atoms: Atoms, preset: str = None, swaps: dict = None) -> dict:
+def slab_static_job(
+    atoms: Atoms, preset: str | None = None, swaps: dict | None = None
+) -> dict:
     """
     Function to carry out a single-point calculation on a slab.
 
@@ -58,7 +60,9 @@ def slab_static_job(atoms: Atoms, preset: str = None, swaps: dict = None) -> dic
 
 
 @ct.electron
-def slab_relax_job(atoms: Atoms, preset: str = None, swaps: dict = None) -> dict:
+def slab_relax_job(
+    atoms: Atoms, preset: str | None = None, swaps: dict | None = None
+) -> dict:
     """
     Function to relax a slab.
 
@@ -123,13 +127,13 @@ class BulkToSlabsFlow:
 
     slab_relax_electron: Electron | None = slab_relax_job
     slab_static_electron: Electron | None = slab_static_job
-    slab_relax_kwargs: dict = None
-    slab_static_kwargs: dict = None
+    slab_relax_kwargs: dict | None = None
+    slab_static_kwargs: dict | None = None
 
     def run(
         self,
         atoms: Atoms,
-        slabgen_kwargs: dict = None,
+        slabgen_kwargs: dict | None = None,
     ) -> list[dict]:
         """
         Run the workflow.
@@ -215,8 +219,8 @@ class SlabToAdsFlow:
 
     slab_relax_electron: Electron | None = ct.electron(slab_relax_job)
     slab_static_electron: Electron | None = ct.electron(slab_static_job)
-    slab_relax_kwargs: dict = None
-    slab_static_kwargs: dict = None
+    slab_relax_kwargs: dict | None = None
+    slab_static_kwargs: dict | None = None
 
     def run(
         self,

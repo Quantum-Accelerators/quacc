@@ -12,7 +12,7 @@ from quacc.util.calc import run_calc
 from quacc.util.dicts import remove_dict_empties
 
 if TYPE_CHECKING:
-    from ase import Atoms
+    from ase.atoms import Atoms
 
 LOG_FILE = f"{ORCA().name}.out"
 GEOM_FILE = f"{ORCA().name}.xyz"
@@ -21,12 +21,12 @@ GEOM_FILE = f"{ORCA().name}.xyz"
 @ct.electron
 def static_job(
     atoms: Atoms,
-    charge: int = None,
-    mult: int = None,
+    charge: int | None = None,
+    mult: int | None = None,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
-    input_swaps: dict = None,
-    block_swaps: dict = None,
+    input_swaps: dict | None = None,
+    block_swaps: dict | None = None,
 ) -> dict:
     """
     Carry out a single-point calculation.

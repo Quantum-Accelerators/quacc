@@ -20,9 +20,9 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms,
     gfnff: bool = True,
-    library: str = None,
-    keyword_swaps: dict = None,
-    option_swaps: dict = None,
+    library: str | None = None,
+    keyword_swaps: dict | None = None,
+    option_swaps: dict | None = None,
 ) -> dict:
     """
     Carry out a single-point calculation.
@@ -81,10 +81,10 @@ def static_job(
 def relax_job(
     atoms: Atoms,
     gfnff: bool = True,
-    library: str = None,
+    library: str | None = None,
     volume_relax: bool = True,
-    keyword_swaps: dict = None,
-    option_swaps: dict = None,
+    keyword_swaps: dict | None = None,
+    option_swaps: dict | None = None,
 ) -> dict:
     """
     Carry out a single-point calculation.

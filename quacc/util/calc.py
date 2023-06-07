@@ -19,16 +19,16 @@ from quacc.util.atoms import copy_atoms
 from quacc.util.files import copy_decompress
 
 if TYPE_CHECKING:
-    from ase import Atoms
+    from ase.atoms import Atoms
     from ase.optimize.optimize import Optimizer
 
 
 def run_calc(
     atoms: Atoms,
-    geom_file: str = None,
+    geom_file: str | None = None,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
-    copy_files: list[str] = None,
+    copy_files: list[str] | None = None,
 ) -> Atoms:
     """
     Run a calculation in a scratch directory and copy the results back to the
@@ -129,10 +129,10 @@ def run_ase_opt(
     fmax: float = 0.01,
     max_steps: int = 500,
     optimizer: str = "FIRE",
-    opt_kwargs: dict = None,
+    opt_kwargs: dict | None = None,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
-    copy_files: list[str] = None,
+    copy_files: list[str] | None = None,
 ) -> Optimizer:
     """
     Run an ASE-based optimization in a scratch directory and copy the results
@@ -227,10 +227,10 @@ def run_ase_opt(
 
 def run_ase_vib(
     atoms: Atoms,
-    vib_kwargs: dict = None,
+    vib_kwargs: dict | None = None,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
-    copy_files: list[str] = None,
+    copy_files: list[str] | None = None,
 ) -> Vibrations:
     """
     Run an ASE-based vibration analysis in a scratch directory and copy the results

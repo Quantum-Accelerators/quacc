@@ -16,7 +16,7 @@ from quacc.util.atoms import prep_next_run as prep_next_run_
 from quacc.util.dicts import clean_dict
 
 if TYPE_CHECKING:
-    from ase import Atoms
+    from ase.atoms import Atoms
     from ase.optimize.optimize import Optimizer
     from ase.thermochemistry import IdealGasThermo
     from ase.vibrations import Vibrations
@@ -24,10 +24,10 @@ if TYPE_CHECKING:
 
 def summarize_run(
     atoms: Atoms,
-    input_atoms: Atoms = None,
+    input_atoms: Atoms | None = None,
     prep_next_run: bool = True,
     remove_empties: bool = False,
-    additional_fields: dict = None,
+    additional_fields: dict | None = None,
 ) -> dict:
     """
     Get tabulated results from an Atoms object and calculator and store them in a database-friendly format.
@@ -149,7 +149,7 @@ def summarize_opt_run(
     check_convergence: bool = True,
     prep_next_run: bool = True,
     remove_empties: bool = False,
-    additional_fields: dict = None,
+    additional_fields: dict | None = None,
 ) -> dict:
     """
     Get tabulated results from an ASE Atoms trajectory and store them in a database-friendly format.
@@ -283,7 +283,7 @@ def summarize_opt_run(
 def summarize_vib_run(
     vib: Vibrations,
     remove_empties: bool = False,
-    additional_fields: dict = None,
+    additional_fields: dict | None = None,
 ) -> dict:
     """
     Get tabulated results from an ASE Vibrations object and store them in a database-friendly format.
@@ -432,7 +432,7 @@ def summarize_thermo_run(
     temperature: float = 298.15,
     pressure: float = 1.0,
     remove_empties: bool = False,
-    additional_fields: dict = None,
+    additional_fields: dict | None = None,
 ) -> dict:
     """
     Get tabulated results from an ASE IdealGasThermo object and store them in a database-friendly format.

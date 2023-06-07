@@ -15,11 +15,11 @@ from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
 
 if TYPE_CHECKING:
-    from ase import Atoms
+    from ase.atoms import Atoms
 
 
 @ct.electron
-def static_job(atoms: Atoms, emt_kwargs: dict = None) -> dict:
+def static_job(atoms: Atoms, emt_kwargs: dict | None = None) -> dict:
     """
     Carry out a static calculation.
 
@@ -55,8 +55,8 @@ def relax_job(
     fmax: float = 0.01,
     max_steps: int = 1000,
     optimizer: str = "FIRE",
-    emt_kwargs: dict = None,
-    opt_kwargs: dict = None,
+    emt_kwargs: dict | None = None,
+    opt_kwargs: dict | None = None,
 ) -> dict:
     """
     Carry out a geometry optimization.

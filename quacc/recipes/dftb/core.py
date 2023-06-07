@@ -13,7 +13,7 @@ from quacc.util.dicts import remove_dict_empties
 from quacc.util.files import check_logfile
 
 if TYPE_CHECKING:
-    from ase import Atoms
+    from ase.atoms import Atoms
 
 LOG_FILE = "dftb.out"
 GEOM_FILE = "geo_end.gen"
@@ -23,8 +23,8 @@ GEOM_FILE = "geo_end.gen"
 def static_job(
     atoms: Atoms,
     method: str = "GFN2-xTB",
-    kpts: tuple | list[tuple] | dict = None,
-    swaps: dict = None,
+    kpts: tuple | list[tuple] | dict | None = None,
+    swaps: dict | None = None,
 ) -> dict:
     """
     Carry out a single-point calculation.
@@ -74,9 +74,9 @@ def static_job(
 def relax_job(
     atoms: Atoms,
     method: str = "GFN2-xTB",
-    kpts: tuple | list[tuple] | dict = None,
+    kpts: tuple | list[tuple] | dict | None = None,
     lattice_opt: bool = False,
-    swaps: dict = None,
+    swaps: dict | None = None,
 ) -> dict:
     """
     Carry out a structure relaxation.
