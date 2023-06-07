@@ -2,10 +2,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
 
 import jobflow as jf
-from ase import Atoms
+from ase.atoms import Atoms
 
 from quacc.recipes.vasp.slabs import slab_relax_job as slab_relax_job_orig
 from quacc.recipes.vasp.slabs import slab_static_job as slab_static_job_orig

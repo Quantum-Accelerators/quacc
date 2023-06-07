@@ -6,17 +6,13 @@ Reference: https://doi.org/10.1016/j.matt.2021.02.015
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import covalent as ct
+from ase.atoms import Atoms
 
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.ase import summarize_opt_run
 from quacc.schemas.vasp import summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
-
-if TYPE_CHECKING:
-    from ase.atoms import Atoms
 
 
 @ct.electron

@@ -6,14 +6,11 @@ from __future__ import annotations
 import hashlib
 import os
 from copy import deepcopy
-from typing import TYPE_CHECKING
 
 import numpy as np
+from ase.atoms import Atoms
 from ase.io.jsonio import encode
 from pymatgen.io.ase import AseAtomsAdaptor
-
-if TYPE_CHECKING:
-    from ase.atoms import Atoms
 
 # NOTES:
 # - Anytime an Atoms object is converted to a pmg structure, make sure

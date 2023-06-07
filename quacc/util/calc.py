@@ -5,11 +5,12 @@ from __future__ import annotations
 
 import os
 from tempfile import mkdtemp
-from typing import TYPE_CHECKING
 
 import numpy as np
 from ase import optimize
+from ase.atoms import Atoms
 from ase.io import read
+from ase.optimize.optimize import Optimizer
 from ase.vibrations import Vibrations
 from monty.os.path import zpath
 from monty.shutil import copy_r, gzip_dir
@@ -17,10 +18,6 @@ from monty.shutil import copy_r, gzip_dir
 from quacc import SETTINGS
 from quacc.util.atoms import copy_atoms
 from quacc.util.files import copy_decompress
-
-if TYPE_CHECKING:
-    from ase.atoms import Atoms
-    from ase.optimize.optimize import Optimizer
 
 
 def run_calc(

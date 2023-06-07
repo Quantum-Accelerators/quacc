@@ -7,18 +7,15 @@ Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
 
 import covalent as ct
 import numpy as np
+from ase.atoms import Atoms
+from covalent._workflow.electron import Electron
 
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.vasp import summarize_run
 from quacc.util.calc import run_calc
-
-if TYPE_CHECKING:
-    from ase.atoms import Atoms
-    from covalent._workflow.electron import Electron
 
 
 @ct.electron

@@ -2,18 +2,15 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
 
 import covalent as ct
+from ase.atoms import Atoms
+from covalent._workflow.electron import Electron
 
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.vasp import summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.slabs import make_adsorbate_structures, make_max_slabs_from_bulk
-
-if TYPE_CHECKING:
-    from ase.atoms import Atoms
-    from covalent._workflow.electron import Electron
 
 
 @ct.electron

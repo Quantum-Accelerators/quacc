@@ -2,18 +2,15 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import TYPE_CHECKING
 
 import covalent as ct
+from ase.atoms import Atoms
 from ase.calculators.dftb import Dftb
 
 from quacc.schemas.ase import summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.dicts import remove_dict_empties
 from quacc.util.files import check_logfile
-
-if TYPE_CHECKING:
-    from ase.atoms import Atoms
 
 LOG_FILE = "dftb.out"
 GEOM_FILE = "geo_end.gen"

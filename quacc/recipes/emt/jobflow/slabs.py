@@ -2,15 +2,12 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
 
 import jobflow as jf
+from ase.atoms import Atoms
 
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.util.slabs import make_max_slabs_from_bulk
-
-if TYPE_CHECKING:
-    from ase import Atoms
 
 
 @dataclass

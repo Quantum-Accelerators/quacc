@@ -1,6 +1,6 @@
 """Init data for Quacc"""
 import covalent as ct
-from ase import Atoms
+from ase.atoms import Atoms
 from ase.io.jsonio import decode, encode
 
 from quacc._version import __version__
