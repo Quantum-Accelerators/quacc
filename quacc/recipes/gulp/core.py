@@ -3,14 +3,17 @@ from __future__ import annotations
 
 import warnings
 from copy import deepcopy
+from typing import TYPE_CHECKING
 
 import covalent as ct
-from ase import Atoms
 from ase.calculators.gulp import GULP
 
 from quacc.schemas.ase import summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.dicts import remove_dict_empties
+
+if TYPE_CHECKING:
+    from ase import Atoms
 
 
 @ct.electron

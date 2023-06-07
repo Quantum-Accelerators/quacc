@@ -5,8 +5,8 @@ from __future__ import annotations
 
 import os
 import warnings
+from typing import TYPE_CHECKING
 
-from ase import Atoms
 from emmet.core.tasks import TaskDoc
 
 from quacc import SETTINGS
@@ -14,6 +14,9 @@ from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
 from quacc.util.dicts import clean_dict
 from quacc.util.pop_analysis import run_bader
+
+if TYPE_CHECKING:
+    from ase import Atoms
 
 
 def summarize_run(

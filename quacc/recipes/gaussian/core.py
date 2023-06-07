@@ -2,14 +2,17 @@
 from __future__ import annotations
 
 import multiprocessing
+from typing import TYPE_CHECKING
 
 import covalent as ct
-from ase import Atoms
 from ase.calculators.gaussian import Gaussian
 
 from quacc.schemas.cclib import summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.dicts import remove_dict_empties
+
+if TYPE_CHECKING:
+    from ase import Atoms
 
 LOG_FILE = f"{Gaussian().label}.log"
 GEOM_FILE = LOG_FILE

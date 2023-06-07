@@ -4,18 +4,22 @@ Schemas for storing ASE-based data
 from __future__ import annotations
 
 import os
+from typing import TYPE_CHECKING
 
 import numpy as np
-from ase import Atoms, units
+from ase import units
 from ase.io import read
-from ase.optimize.optimize import Optimizer
-from ase.thermochemistry import IdealGasThermo
-from ase.vibrations import Vibrations
 from atomate2.utils.path import get_uri
 
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
 from quacc.util.dicts import clean_dict
+
+if TYPE_CHECKING:
+    from ase import Atoms
+    from ase.optimize.optimize import Optimizer
+    from ase.thermochemistry import IdealGasThermo
+    from ase.vibrations import Vibrations
 
 
 def summarize_run(

@@ -6,13 +6,16 @@ NOTE: This set of minimal recipes is mainly for demonstration purposes
 from __future__ import annotations
 
 from copy import deepcopy
+from typing import TYPE_CHECKING
 
 import covalent as ct
-from ase import Atoms
 from ase.calculators.lj import LennardJones
 
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
+
+if TYPE_CHECKING:
+    from ase import Atoms
 
 
 @ct.electron

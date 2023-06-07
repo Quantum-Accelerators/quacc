@@ -2,13 +2,16 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 import covalent as ct
-from ase import Atoms
-from covalent._workflow.electron import Electron
 
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.util.slabs import make_max_slabs_from_bulk
+
+if TYPE_CHECKING:
+    from ase import Atoms
+    from covalent._workflow.electron import Electron
 
 
 @dataclass

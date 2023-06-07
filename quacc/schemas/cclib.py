@@ -4,13 +4,16 @@ Schemas for molecular DFT codes parsed by cclib
 from __future__ import annotations
 
 import os
+from typing import TYPE_CHECKING
 
-from ase import Atoms
 from atomate2.common.schemas.cclib import TaskDocument
 
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
 from quacc.util.dicts import clean_dict
+
+if TYPE_CHECKING:
+    from ase import Atoms
 
 
 def summarize_run(

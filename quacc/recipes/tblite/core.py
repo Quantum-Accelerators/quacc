@@ -4,9 +4,9 @@ Core recipes for the tblite code
 from __future__ import annotations
 
 from copy import deepcopy
+from typing import TYPE_CHECKING
 
 import covalent as ct
-from ase import Atoms
 from monty.dev import requires
 
 from quacc.schemas.ase import (
@@ -18,6 +18,8 @@ from quacc.schemas.ase import (
 from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
 from quacc.util.thermo import ideal_gas
 
+if TYPE_CHECKING:
+    from ase import Atoms
 try:
     from tblite.ase import TBLite
 except ImportError:
