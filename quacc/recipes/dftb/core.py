@@ -4,7 +4,7 @@ from __future__ import annotations
 from copy import deepcopy
 
 import covalent as ct
-from ase import Atoms
+from ase.atoms import Atoms
 from ase.calculators.dftb import Dftb
 
 from quacc.schemas.ase import summarize_run
@@ -20,8 +20,8 @@ GEOM_FILE = "geo_end.gen"
 def static_job(
     atoms: Atoms,
     method: str = "GFN2-xTB",
-    kpts: tuple | list[tuple] | dict = None,
-    swaps: dict = None,
+    kpts: tuple | list[tuple] | dict | None = None,
+    swaps: dict | None = None,
 ) -> dict:
     """
     Carry out a single-point calculation.
@@ -71,9 +71,9 @@ def static_job(
 def relax_job(
     atoms: Atoms,
     method: str = "GFN2-xTB",
-    kpts: tuple | list[tuple] | dict = None,
+    kpts: tuple | list[tuple] | dict | None = None,
     lattice_opt: bool = False,
-    swaps: dict = None,
+    swaps: dict | None = None,
 ) -> dict:
     """
     Carry out a structure relaxation.

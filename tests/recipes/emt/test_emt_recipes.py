@@ -112,21 +112,21 @@ def test_jf_slab_dynamic_jobs():
     atoms = bulk("Cu")
 
     with pytest.raises(RuntimeError):
-        flow = JFBulkToSlabsFlow(slab_relax_job=None, slab_static_job=None).run(atoms)
+        flow = JFBulkToSlabsFlow(slab_relax_job=None, slab_static_job=None).make(atoms)
         jf.run_locally(flow, store=store, ensure_success=True)
 
-    flow = JFBulkToSlabsFlow(slab_relax_job=None).run(atoms)
+    flow = JFBulkToSlabsFlow(slab_relax_job=None).make(atoms)
     jf.run_locally(flow, store=store, ensure_success=True)
 
     flow = JFBulkToSlabsFlow(
         slab_static_job=None,
         slab_relax_kwargs={"fmax": 1.0, "emt_kwargs": {"asap_cutoff": True}},
-    ).run(atoms)
+    ).make(atoms)
     jf.run_locally(flow, store=store, ensure_success=True)
 
     flow = JFBulkToSlabsFlow(
         slab_relax_kwargs={"fmax": 1.0, "emt_kwargs": {"asap_cutoff": True}},
-    ).run(atoms, slabgen_kwargs={"max_slabs": 2})
+    ).make(atoms, slabgen_kwargs={"max_slabs": 2})
     responses = jf.run_locally(flow, store=store, ensure_success=True)
 
     assert len(responses) == 5
@@ -149,7 +149,7 @@ def test_jf_slab_dynamic_jobs():
     flow = JFBulkToSlabsFlow(
         slab_relax_job=jf.job(static_job),
         slab_static_kwargs={"emt_kwargs": {"asap_cutoff": True}},
-    ).run(atoms, slabgen_kwargs={"max_slabs": 2})
+    ).make(atoms, slabgen_kwargs={"max_slabs": 2})
     responses = jf.run_locally(flow, store=store, ensure_success=True)
 
     assert len(responses) == 5

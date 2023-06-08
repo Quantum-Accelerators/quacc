@@ -8,7 +8,7 @@ import os
 import warnings
 
 import numpy as np
-from ase import Atoms
+from ase.atoms import Atoms
 from ase.calculators.vasp import Vasp as Vasp_
 from ase.calculators.vasp import setups as ase_setups
 from ase.constraints import FixAtoms

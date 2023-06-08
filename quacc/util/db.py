@@ -13,7 +13,7 @@ from maggma.core import Store
 
 
 def covalent_to_db(
-    store: Store, dispatch_id: str = None, results_dir: str = None
+    store: Store, dispatch_id: str | None = None, results_dir: str | None = None
 ) -> None:
     """
     Store the results of a Covalent database in a user-specified Maggma Store

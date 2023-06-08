@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import os
 
-from ase import Atoms
+from ase.atoms import Atoms
 from atomate2.common.schemas.cclib import TaskDocument
 
 from quacc.schemas.atoms import atoms_to_metadata
@@ -16,12 +16,12 @@ from quacc.util.dicts import clean_dict
 def summarize_run(
     atoms: Atoms,
     logfile_extensions: str | list[str],
-    dir_path: str = None,
+    dir_path: str | None = None,
     pop_analysis: str | list[str] = None,
     check_convergence: bool = True,
     prep_next_run: bool = True,
     remove_empties: bool = False,
-    additional_fields: dict = None,
+    additional_fields: dict | None = None,
 ) -> dict:
     """
     Get tabulated results from a molecular DFT run and store them in a database-friendly format.

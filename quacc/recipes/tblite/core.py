@@ -6,7 +6,7 @@ from __future__ import annotations
 from copy import deepcopy
 
 import covalent as ct
-from ase import Atoms
+from ase.atoms import Atoms
 from monty.dev import requires
 
 from quacc.schemas.ase import (
@@ -30,7 +30,7 @@ except ImportError:
     "tblite must be installed. Try pip install quacc[tblite]",
 )
 def static_job(
-    atoms: Atoms, method: str = "GFN2-xTB", tblite_kwargs: dict = None
+    atoms: Atoms, method: str = "GFN2-xTB", tblite_kwargs: dict | None = None
 ) -> dict:
     """
     Carry out a single-point calculation.
@@ -72,8 +72,8 @@ def relax_job(
     fmax: float = 0.01,
     max_steps: int = 1000,
     optimizer: str = "FIRE",
-    tblite_kwargs: dict = None,
-    opt_kwargs: dict = None,
+    tblite_kwargs: dict | None = None,
+    opt_kwargs: dict | None = None,
 ) -> dict:
     """
     Relax a structure.
@@ -124,7 +124,7 @@ def freq_job(
     energy: float = 0.0,
     temperature: float = 298.15,
     pressure: float = 1.0,
-    xtb_kwargs: dict = None,
+    xtb_kwargs: dict | None = None,
 ) -> dict:
     """
     Run a frequency job and calculate thermochemistry.

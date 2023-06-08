@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import covalent as ct
-from ase import Atoms
+from ase.atoms import Atoms
 
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.vasp import summarize_run
@@ -10,7 +10,9 @@ from quacc.util.calc import run_calc
 
 
 @ct.electron
-def static_job(atoms: Atoms, preset: str = None, swaps: dict = None) -> dict:
+def static_job(
+    atoms: Atoms, preset: str | None = None, swaps: dict | None = None
+) -> dict:
     """
     Carry out a single-point calculation.
 
@@ -51,9 +53,9 @@ def static_job(atoms: Atoms, preset: str = None, swaps: dict = None) -> dict:
 @ct.electron
 def relax_job(
     atoms: Atoms,
-    preset: str = None,
+    preset: str | None = None,
     relax_volume: bool = True,
-    swaps: dict = None,
+    swaps: dict | None = None,
 ) -> dict:
     """
     Relax a structure.
@@ -99,10 +101,10 @@ def relax_job(
 @ct.electron
 def double_relax_job(
     atoms: Atoms,
-    preset: str = None,
+    preset: str | None = None,
     relax_volume: bool = True,
-    swaps1: dict = None,
-    swaps2: dict = None,
+    swaps1: dict | None = None,
+    swaps2: dict | None = None,
 ) -> dict:
     """
     Double-relax a structure. This is particularly useful for a few reasons:

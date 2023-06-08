@@ -8,7 +8,7 @@ from __future__ import annotations
 from copy import deepcopy
 
 import covalent as ct
-from ase import Atoms
+from ase.atoms import Atoms
 from ase.calculators.lj import LennardJones
 
 from quacc.schemas.ase import summarize_opt_run, summarize_run
@@ -18,7 +18,7 @@ from quacc.util.calc import run_ase_opt, run_calc
 @ct.electron
 def static_job(
     atoms: Atoms,
-    lj_kwargs: dict = None,
+    lj_kwargs: dict | None = None,
 ) -> dict:
     """
     Function to carry out a static calculation.
@@ -56,8 +56,8 @@ def relax_job(
     fmax: float = 0.01,
     max_steps: int = 1000,
     optimizer: str = "FIRE",
-    lj_kwargs: dict = None,
-    opt_kwargs: dict = None,
+    lj_kwargs: dict | None = None,
+    opt_kwargs: dict | None = None,
 ) -> dict:
     """
     Function to carry out a geometry optimization.

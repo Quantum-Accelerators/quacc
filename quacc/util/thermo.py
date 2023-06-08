@@ -4,7 +4,7 @@ Utility functions for thermochemistry
 from __future__ import annotations
 
 import numpy as np
-from ase import Atoms, units
+from ase.atoms import Atoms, units
 from ase.thermochemistry import IdealGasThermo
 
 from quacc.schemas.atoms import atoms_to_metadata
@@ -14,7 +14,7 @@ def ideal_gas(
     atoms: Atoms,
     vib_freqs: list[float | complex],
     energy: float = 0.0,
-    spin_multiplicity: int = None,
+    spin_multiplicity: int | None = None,
 ) -> IdealGasThermo:
     """
     Calculate thermodynamic properties for a molecule from a given vibrational analysis.

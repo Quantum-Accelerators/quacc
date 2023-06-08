@@ -4,7 +4,7 @@ from __future__ import annotations
 import multiprocessing
 
 import covalent as ct
-from ase import Atoms
+from ase.atoms import Atoms
 from ase.calculators.orca import ORCA
 
 from quacc.schemas.cclib import summarize_run
@@ -18,12 +18,12 @@ GEOM_FILE = f"{ORCA().name}.xyz"
 @ct.electron
 def static_job(
     atoms: Atoms,
-    charge: int = None,
-    mult: int = None,
+    charge: int | None = None,
+    mult: int | None = None,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
-    input_swaps: dict = None,
-    block_swaps: dict = None,
+    input_swaps: dict | None = None,
+    block_swaps: dict | None = None,
 ) -> dict:
     """
     Carry out a single-point calculation.
