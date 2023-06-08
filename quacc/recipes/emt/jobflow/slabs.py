@@ -11,7 +11,7 @@ from quacc.util.slabs import make_max_slabs_from_bulk
 
 
 @dataclass
-class BulkToSlabsFlow:
+class BulkToSlabsFlow(jf.Maker):
     """
     Workflow consisting of:
 
@@ -42,7 +42,7 @@ class BulkToSlabsFlow:
     slab_static_kwargs: dict | None = None
 
     @jf.job
-    def run(self, atoms: Atoms, slabgen_kwargs: dict = None) -> jf.Response:
+    def make(self, atoms: Atoms, slabgen_kwargs: dict = None) -> jf.Response:
         """
         Make the run.
 
