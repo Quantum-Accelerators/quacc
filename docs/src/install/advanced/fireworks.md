@@ -6,7 +6,7 @@
 
 ## Installation
 
-To install Quacc with support for FireWorks, run `pip install quacc[fireworks]`.
+To install Quacc with support for FireWorks, run `pip install fireworks`.
 
 ## FireWorks DB Setup
 
