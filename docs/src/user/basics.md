@@ -5,7 +5,7 @@ In Quacc, each code comes with pre-packaged jobs and workflows, which we call re
 Once you understand the basics, you should move on to the ["Using Quacc with Covalent"](covalent.md) (recommended) or ["Using Quacc with Jobflow"](advanced/jobflow.md) guides to learn how to use Quacc with a workflow manager, which allows you to stich together and run complex Quacc workflows across distributed computing resources.
 
 ```{note}
-If you are familiar with ASE and want to dive right into the workflow manager details, you can skip this section.
+If you are familiar with ASE and want to dive right into the workflow manager details, you can likely skim this section.
 ```
 
 ## Pre-Requisites
@@ -44,7 +44,7 @@ With the `Atoms` object defined, we then imported a desired recipe and instantia
 
 If molecules are more your thing, let's consider another simple example. Here, we want to run a structure relaxation of a water molecule using the semi-empirical quantum mechanics method called [GFN2-xTB](https://doi.org/10.1021/acs.jctc.8b01176). This method is conveniently available in [tblite](https://github.com/tblite/tblite), which we will use here. The demonstration below shows how to run this calculation with Quacc.
 
-Note that for this example, you will need to install tblite, which can be done with `pip install quacc[tblite]`, as noted in the ["Calculator Setup"](../install/codes.md) section of the installation instructions.
+Note that for this example, you will need to install tblite, as noted in the ["Calculator Setup"](../install/codes.md) section of the installation instructions.
 
 ```python
 from ase.build import molecule

@@ -8,7 +8,7 @@ import os
 from copy import deepcopy
 
 import numpy as np
-from ase import Atoms
+from ase.atoms import Atoms
 from ase.io.jsonio import encode
 from pymatgen.io.ase import AseAtomsAdaptor
 
@@ -116,7 +116,7 @@ def prep_next_run(
 
 def set_magmoms(
     atoms: Atoms,
-    elemental_mags_dict: dict = None,
+    elemental_mags_dict: dict | None = None,
     elemental_mags_default: float = 1.0,
     copy_magmoms: bool = True,
     mag_cutoff: float | None = 0.05,

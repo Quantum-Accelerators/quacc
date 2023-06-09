@@ -4,7 +4,7 @@ from __future__ import annotations
 import multiprocessing
 
 import covalent as ct
-from ase import Atoms
+from ase.atoms import Atoms
 from ase.calculators.gaussian import Gaussian
 
 from quacc.schemas.cclib import summarize_run
@@ -18,13 +18,13 @@ GEOM_FILE = LOG_FILE
 @ct.electron
 def static_job(
     atoms: Atoms,
-    charge: int = None,
-    mult: int = None,
+    charge: int | None = None,
+    mult: int | None = None,
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
     pop: str = "hirshfeld",
     write_molden: bool = True,
-    swaps: dict = None,
+    swaps: dict | None = None,
 ) -> dict:
     """
     Carry out a single-point calculation.
@@ -35,16 +35,16 @@ def static_job(
         Atoms object
     charge
         Charge of the system. If None, this is determined from the sum of
-        atoms.get_initial_charges().
+        `atoms.get_initial_charges().`
     mult
         Multiplicity of the system. If None, this is determined from 1+ the sum
-        of atoms.get_initial_magnetic_moments().
+        of `atoms.get_initial_magnetic_moments()`.
     xc
         Exchange-correlation functional
     basis
         Basis set
     pop
-        Type of population analysis to perform, if any
+        Type of population analysis to perform from `quacc.schemas.cclib.summarize_run`
     write_molden
         Whether to write a molden file for orbital visualization
     swaps
@@ -53,7 +53,7 @@ def static_job(
     Returns
     -------
     dict
-        Dictionary of results from quacc.schemas.cclib.summarize_run
+        Dictionary of results from `quacc.schemas.cclib.summarize_run`
     """
 
     swaps = swaps or {}
@@ -87,12 +87,12 @@ def static_job(
 @ct.electron
 def relax_job(
     atoms: Atoms,
-    charge: int = None,
-    mult: int = None,
+    charge: int | None = None,
+    mult: int | None = None,
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
     freq: bool = False,
-    swaps: dict = None,
+    swaps: dict | None = None,
 ) -> dict:
     """
     Carry out a geometry optimization.
@@ -103,10 +103,10 @@ def relax_job(
         Atoms object
     charge
         Charge of the system. If None, this is determined from the sum of
-        atoms.get_initial_charges().
+        `atoms.get_initial_charges()`.
     mult
         Multiplicity of the system. If None, this is determined from 1+ the sum
-        of atoms.get_initial_magnetic_moments().
+        of `atoms.get_initial_magnetic_moments()`.
     xc
         Exchange-correlation functional
     basis
@@ -119,7 +119,7 @@ def relax_job(
     Returns
     -------
     dict
-        Dictionary of results from quacc.schemas.cclib.summarize_run
+        Dictionary of results from `quacc.schemas.cclib.summarize_run`
     """
 
     swaps = swaps or {}

@@ -35,7 +35,7 @@ if __name__ == "__main__":
         install_requires=[
             "ase @ https://gitlab.com/argon214/ase/-/archive/efermi/ase-efermi.zip",  # waiting on >3.22.1
             "atomate2[cclib] @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
-            "covalent @ https://github.com/AgnostiqHQ/covalent/archive/refs/heads/develop.zip",  # waiting on > 0.222.0
+            "covalent>=0.224.0-rc.0",  # waiting on > 0.222.0
             "custodian",
             "emmet-core>=0.51.11",
             "monty>=2023.4.10",
@@ -60,7 +60,7 @@ if __name__ == "__main__":
                 "ase @ https://gitlab.com/argon214/ase/-/archive/efermi/ase-efermi.zip",  # waiting on >3.22.1
                 "atomate2 @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
                 "cclib==1.7.2",
-                "covalent @ https://github.com/AgnostiqHQ/covalent/archive/refs/heads/develop.zip",  # waiting on > 0.222.0
+                "covalent==0.224.0-rc.0",  # waiting on > 0.222.0
                 "custodian==2023.6.5",
                 "emmet-core==0.55.3",
                 "jobflow==0.1.11",

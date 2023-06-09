@@ -324,21 +324,21 @@ def test_jf_slab_dynamic_jobs():
     atoms = bulk("Cu")
 
     with pytest.raises(RuntimeError):
-        flow = JFBulkToSlabsFlow(slab_relax_job=None, slab_static_job=None).run(atoms)
+        flow = JFBulkToSlabsFlow(slab_relax_job=None, slab_static_job=None).make(atoms)
         jf.run_locally(flow, store=store, ensure_success=True)
 
-    flow = JFBulkToSlabsFlow(slab_relax_job=None).run(atoms)
+    flow = JFBulkToSlabsFlow(slab_relax_job=None).make(atoms)
     jf.run_locally(flow, store=store, ensure_success=True)
 
     flow = JFBulkToSlabsFlow(
         slab_static_job=None,
         slab_relax_kwargs={"swaps": {"nelmin": 6}},
-    ).run(atoms)
+    ).make(atoms)
     jf.run_locally(flow, store=store, ensure_success=True)
 
     flow = JFBulkToSlabsFlow(
         slab_relax_kwargs={"swaps": {"nelmin": 6}},
-    ).run(atoms, slabgen_kwargs={"max_slabs": 2})
+    ).make(atoms, slabgen_kwargs={"max_slabs": 2})
     responses = jf.run_locally(flow, store=store, ensure_success=True)
 
     assert len(responses) == 5

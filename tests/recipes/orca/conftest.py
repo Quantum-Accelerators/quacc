@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from ase import Atoms
+from ase.atoms import Atoms
 
 
 def mock_get_potential_energy(self, **kwargs):

@@ -4,7 +4,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 import jobflow as jf
-from ase import Atoms
+from ase.atoms import Atoms
 
 from quacc.recipes.vasp.slabs import slab_relax_job as slab_relax_job_orig
 from quacc.recipes.vasp.slabs import slab_static_job as slab_static_job_orig
@@ -12,7 +12,7 @@ from quacc.util.slabs import make_max_slabs_from_bulk
 
 
 @dataclass
-class BulkToSlabsFlow:
+class BulkToSlabsFlow(jf.Maker):
     """
     Workflow consisting of:
 
@@ -39,11 +39,11 @@ class BulkToSlabsFlow:
     name: str = "VASP BulkToSlabsFlow"
     slab_relax_job: jf.Job | None = jf.job(slab_relax_job_orig)
     slab_static_job: jf.Job | None = jf.job(slab_static_job_orig)
-    slab_relax_kwargs: dict = None
-    slab_static_kwargs: dict = None
+    slab_relax_kwargs: dict | None = None
+    slab_static_kwargs: dict | None = None
 
     @jf.job
-    def run(self, atoms: Atoms, slabgen_kwargs: dict = None) -> jf.Response:
+    def make(self, atoms: Atoms, slabgen_kwargs: dict | None = None) -> jf.Response:
         """
         Make the run.
 

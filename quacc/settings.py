@@ -59,12 +59,12 @@ class QuaccSettings(BaseSettings):
     VASP_GAMMA_CMD: str = Field(
         "vasp_gam", description="Command to run the gamma-point only version of VASP."
     )
+
+    # VASP Settings: General
     VASP_MIN_VERSION: Union[float, None] = Field(
         None,
         description="Oldest VASP version you plan to use. Used to ensure INCAR settings are version-compatible.",
     )
-
-    # VASP Settings: General
     VASP_INCAR_COPILOT: bool = Field(
         True, description="Whether co-pilot mode should be used for VASP INCAR handling"
     )

@@ -4,9 +4,10 @@ Core recipes for the tblite code
 from __future__ import annotations
 
 from copy import deepcopy
+from typing import Literal
 
 import covalent as ct
-from ase import Atoms
+from ase.atoms import Atoms
 from monty.dev import requires
 
 from quacc.schemas.ase import (
@@ -27,10 +28,12 @@ except ImportError:
 @ct.electron
 @requires(
     TBLite,
-    "tblite must be installed. Try pip install quacc[tblite]",
+    "tblite must be installed. Try pip install tblite[ase]",
 )
 def static_job(
-    atoms: Atoms, method: str = "GFN2-xTB", tblite_kwargs: dict = None
+    atoms: Atoms,
+    method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
+    tblite_kwargs: dict | None = None,
 ) -> dict:
     """
     Carry out a single-point calculation.
@@ -64,16 +67,16 @@ def static_job(
 @ct.electron
 @requires(
     TBLite,
-    "tblite must be installed. Try pip install quacc[tblite]",
+    "tblite must be installed. Try pip install tblite[ase]",
 )
 def relax_job(
     atoms: Atoms,
-    method: str = "GFN2-xTB",
+    method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
     fmax: float = 0.01,
     max_steps: int = 1000,
     optimizer: str = "FIRE",
-    tblite_kwargs: dict = None,
-    opt_kwargs: dict = None,
+    tblite_kwargs: dict | None = None,
+    opt_kwargs: dict | None = None,
 ) -> dict:
     """
     Relax a structure.
@@ -117,14 +120,14 @@ def relax_job(
 
 
 @ct.electron
-@requires(TBLite, "tblite must be installed. Try pip install quacc[tblite]")
+@requires(TBLite, "tblite must be installed. Try pip install tblite[ase]")
 def freq_job(
     atoms: Atoms,
-    method: str = "GFN2-xTB",
+    method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
     energy: float = 0.0,
     temperature: float = 298.15,
     pressure: float = 1.0,
-    xtb_kwargs: dict = None,
+    xtb_kwargs: dict | None = None,
 ) -> dict:
     """
     Run a frequency job and calculate thermochemistry.

@@ -4,7 +4,7 @@ from __future__ import annotations
 import multiprocessing
 
 import covalent as ct
-from ase import Atoms
+from ase.atoms import Atoms
 from ase.calculators.orca import ORCA
 
 from quacc.schemas.cclib import summarize_run
@@ -18,12 +18,12 @@ GEOM_FILE = f"{ORCA().name}.xyz"
 @ct.electron
 def static_job(
     atoms: Atoms,
-    charge: int = None,
-    mult: int = None,
+    charge: int | None = None,
+    mult: int | None = None,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
-    input_swaps: dict = None,
-    block_swaps: dict = None,
+    input_swaps: dict | None = None,
+    block_swaps: dict | None = None,
 ) -> dict:
     """
     Carry out a single-point calculation.
@@ -34,22 +34,22 @@ def static_job(
         Atoms object
     charge
         Charge of the system. If None, this is determined from the sum of
-        atoms.get_initial_charges().
+        `atoms.get_initial_charges()`.
     mult
         Multiplicity of the system. If None, this is determined from 1+ the sum
-        of atoms.get_initial_magnetic_moments().
+        of `atoms.get_initial_magnetic_moments()`.
     xc
         Exchange-correlation functional
     basis
         Basis set
     input_swaps
-        dictionary of orcasimpleinput swaps for the calculator.
+        Dictionary of orcasimpleinput swaps for the calculator.
         To enable new entries, set the value as True.
-        To remove entries from the defaults, set the value as None/False.
+        To remove entries from the defaults, set the value as None.
     block_swaps
-        dictionary of orcablock swaps for the calculator.
+        Dictionary of orcablock swaps for the calculator.
         To enable new entries, set the value as True.
-        To remove entries from the defaults, set the value as None/False.
+        To remove entries from the defaults, set the value as None.
 
     Returns
     -------
@@ -121,13 +121,13 @@ def relax_job(
     run_freq
         If a requency calculation should be carried out.
     input_swaps
-        dictionary of orcasimpleinput swaps for the calculator.
+        Dictionary of orcasimpleinput swaps for the calculator.
         To enable new entries, set the value as True.
-        To remove entries from the defaults, set the value as None/False.
+        To remove entries from the defaults, set the value as None.
     block_swaps
-        dictionary of orcablock swaps for the calculator.
+        Dictionary of orcablock swaps for the calculator.
         To enable new entries, set the value as True.
-        To remove entries from the defaults, set the value as None/False.
+        To remove entries from the defaults, set the value as None.
 
     Returns
     -------

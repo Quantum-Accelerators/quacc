@@ -8,7 +8,7 @@ from __future__ import annotations
 from copy import deepcopy
 
 import covalent as ct
-from ase import Atoms
+from ase.atoms import Atoms
 from ase.calculators.emt import EMT
 
 from quacc.schemas.ase import summarize_opt_run, summarize_run
@@ -16,7 +16,7 @@ from quacc.util.calc import run_ase_opt, run_calc
 
 
 @ct.electron
-def static_job(atoms: Atoms, emt_kwargs: dict = None) -> dict:
+def static_job(atoms: Atoms, emt_kwargs: dict | None = None) -> dict:
     """
     Carry out a static calculation.
 
@@ -30,7 +30,7 @@ def static_job(atoms: Atoms, emt_kwargs: dict = None) -> dict:
     Returns
     -------
     dict
-        Dictionary of results from quacc.schemas.ase.summarize_run
+        Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
 
     emt_kwargs = emt_kwargs or {}
@@ -52,8 +52,8 @@ def relax_job(
     fmax: float = 0.01,
     max_steps: int = 1000,
     optimizer: str = "FIRE",
-    emt_kwargs: dict = None,
-    opt_kwargs: dict = None,
+    emt_kwargs: dict | None = None,
+    opt_kwargs: dict | None = None,
 ) -> dict:
     """
     Carry out a geometry optimization.
@@ -67,7 +67,7 @@ def relax_job(
     max_steps
         Maximum number of steps to take.
     optimizer
-        .Optimizer class to use for the relaxation.
+        ASE Optimizer class to use for the relaxation.
     emt_kwargs
         Dictionary of custom kwargs for the EMT calculator.
     opt_kwargs

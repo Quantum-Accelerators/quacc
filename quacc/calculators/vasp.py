@@ -6,9 +6,10 @@ from __future__ import annotations
 import inspect
 import os
 import warnings
+from typing import Literal
 
 import numpy as np
-from ase import Atoms
+from ase.atoms import Atoms
 from ase.calculators.vasp import Vasp as Vasp_
 from ase.calculators.vasp import setups as ase_setups
 from ase.constraints import FixAtoms
@@ -24,17 +25,17 @@ from quacc.util.files import load_yaml_calc
 
 class Vasp(Vasp_):
     """
-    This is a wrapper around the Vasp calculator that adjusts INCAR parameters on-the-fly,
+    This is a wrapper around the ASE Vasp calculator that adjusts INCAR parameters on-the-fly,
     allows for ASE to run VASP via Custodian, and supports several automatic k-point generation schemes
     from Pymatgen.
 
     Parameters
     ----------
     input_atoms
-        The Atoms object to be used for the calculation.
+        The input Atoms object to be used for the calculation.
     preset
         The name of a YAML file containing a list of INCAR parameters to use as a "preset" for the calculator.
-        Quacc will automatically look in the VASP_PRESET_DIR (default: quacc/presets/vasp) for the file, such
+        Quacc will automatically look in the `VASP_PRESET_DIR` (default: quacc/presets/vasp) for the file, such
         that preset="BulkSet" is supported, for instance. The .yaml extension is not necessary. Any user-suppplied
         calculator **kwargs will override any corresponding preset values.
     use_custodian
@@ -44,7 +45,7 @@ class Vasp(Vasp_):
         If True, the INCAR parameters will be adjusted if they go against the VASP manual.
         Default is True in settings.
     copy_magmoms
-        If True, any pre-existing atoms.get_magnetic_moments() will be set in atoms.set_initial_magnetic_moments().
+        If True, any pre-existing `atoms.get_magnetic_moments()` will be set in `atoms.set_initial_magnetic_moments()`.
         Set this to False if you want to use a preset's magnetic moments every time.
     preset_mag_default
         Default magmom value for sites without one explicitly specified in the preset. Only used if a preset is
@@ -56,9 +57,9 @@ class Vasp(Vasp_):
     vasp_min_version
         Oldest VASP version you plan to use. Used to ensure INCAR settings are version-compatible.
     verbose
-        If True, warnings will be raised when INCAR parameters are changed.
+        If True, warnings will be raised when INCAR parameters are automatically changed.
     **kwargs
-        Additional arguments to be passed to the VASP calculator, e.g. xc='PBE', encut=520. Takes all valid
+        Additional arguments to be passed to the VASP calculator, e.g. `xc='PBE'`, `encut=520`. Takes all valid
         ASE calculator arguments, in addition to those custom to Quacc.
 
     Returns
@@ -257,9 +258,9 @@ class Vasp(Vasp_):
     def _calc_swaps(
         self,
         auto_kpts: None
-        | dict[str, float]
-        | dict[str, list[tuple[float, float]]]
-        | dict[str, list[tuple[float, float, float]]] = None,
+        | dict[Literal["line_density", "reciprocal_density", "grid_density"], float]
+        | dict[Literal["max_mixed_density"], list[float, float]]
+        | dict[Literal["length_density"], list[float, float, float]],
     ) -> dict:
         """
         Swaps out bad INCAR flags.
@@ -535,19 +536,13 @@ class Vasp(Vasp_):
     def _convert_auto_kpts(
         self,
         auto_kpts: None
-        | dict[str, float]
-        | dict[str, list[tuple[float, float]]]
-        | dict[str, list[tuple[float, float, float]]],
+        | dict[Literal["line_density", "reciprocal_density", "grid_density"], float]
+        | dict[Literal["max_mixed_density"], list[float, float]]
+        | dict[Literal["length_density"], list[float, float, float]],
         force_gamma: bool = True,
     ) -> tuple[list[tuple[int, int, int]], None | bool, None | bool]:
         """
         Shortcuts for pymatgen k-point generation schemes.
-        Options include: line_density (for band structures),
-        reciprocal_density (by volume), grid_density (by number of atoms),
-        max_mixed_density (max of reciprocal_density volume or atoms), and length_density (good for slabs).
-        These are formatted as {"line_density": float}, {"reciprocal_density": float},
-        {"grid_density": float}, {"max_mixed_density": [float, float]}, and
-        {"length_density": [float, float, float]}.
 
         Parameters
         ----------

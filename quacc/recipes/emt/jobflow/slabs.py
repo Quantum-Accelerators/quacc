@@ -4,14 +4,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 import jobflow as jf
-from ase import Atoms
+from ase.atoms import Atoms
 
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.util.slabs import make_max_slabs_from_bulk
 
 
 @dataclass
-class BulkToSlabsFlow:
+class BulkToSlabsFlow(jf.Maker):
     """
     Workflow consisting of:
 
@@ -38,11 +38,11 @@ class BulkToSlabsFlow:
     name: str = "EMT BulkToSlabsFlow"
     slab_relax_job: jf.Job | None = jf.job(relax_job)
     slab_static_job: jf.Job | None = jf.job(static_job)
-    slab_relax_kwargs: dict = None
-    slab_static_kwargs: dict = None
+    slab_relax_kwargs: dict | None = None
+    slab_static_kwargs: dict | None = None
 
     @jf.job
-    def run(self, atoms: Atoms, slabgen_kwargs: dict = None) -> jf.Response:
+    def make(self, atoms: Atoms, slabgen_kwargs: dict = None) -> jf.Response:
         """
         Make the run.
 
@@ -51,7 +51,7 @@ class BulkToSlabsFlow:
         atoms
             Atoms object
         slabgen_kwargs
-            Additional keyword arguments to pass to make_max_slabs_from_bulk()
+            Additional keyword arguments to pass to `make_max_slabs_from_bulk()`
 
         Returns
         -------
