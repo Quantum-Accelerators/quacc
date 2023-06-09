@@ -158,18 +158,18 @@ html_title = "quacc"
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3.10", None),
-    "ase": ("https://wiki.fysik.dtu.dk/ase/py-modindex.html", None),
-    "pymatgen": ("https://pymatgen.org/modules.html", None),
+    "ase": ("https://wiki.fysik.dtu.dk/ase/index.html", None),
+    "pymatgen": ("https://pymatgen.org/index.html", None),
     "covalent": (
-        "https://docs.covalent.xyz/docs/user-documentation/api-reference/cov-api",
+        "https://covalent.readthedocs.io/en/latest/index.html",
         None,
     ),
     "atomate2": (
-        "https://materialsproject.github.io/atomate2/reference/index.html",
+        "https://materialsproject.github.io/atomate2/",
         None,
     ),
-    "jobflow": ("https://materialsproject.github.io/jobflow/jobflow.html", None),
-    "monty": ("https://materialsvirtuallab.github.io/monty/#api-docs", None),
+    "jobflow": ("https://materialsproject.github.io/jobflow/", None),
+    "monty": ("https://materialsvirtuallab.github.io/monty/", None),
     "cclib": ("https://cclib.github.io/", None),
     "emmet": ("https://materialsproject.github.io/emmet/core/", None),
 }
