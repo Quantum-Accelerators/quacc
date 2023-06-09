@@ -62,7 +62,7 @@ class QuaccSettings(BaseSettings):
 
     # VASP Settings: General
     VASP_MIN_VERSION: Union[float, None] = Field(
-        5.4,
+        None,
         description="Oldest VASP version you plan to use. Used to ensure INCAR settings are version-compatible.",
     )
     VASP_INCAR_COPILOT: bool = Field(
