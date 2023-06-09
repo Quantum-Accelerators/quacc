@@ -34,22 +34,22 @@ def static_job(
         Atoms object
     charge
         Charge of the system. If None, this is determined from the sum of
-        atoms.get_initial_charges().
+        `atoms.get_initial_charges()`.
     mult
         Multiplicity of the system. If None, this is determined from 1+ the sum
-        of atoms.get_initial_magnetic_moments().
+        of `atoms.get_initial_magnetic_moments()`.
     xc
         Exchange-correlation functional
     basis
         Basis set
     input_swaps
-        dictionary of orcasimpleinput swaps for the calculator.
+        Dictionary of orcasimpleinput swaps for the calculator.
         To enable new entries, set the value as True.
-        To remove entries from the defaults, set the value as None/False.
+        To remove entries from the defaults, set the value as None.
     block_swaps
-        dictionary of orcablock swaps for the calculator.
+        Dictionary of orcablock swaps for the calculator.
         To enable new entries, set the value as True.
-        To remove entries from the defaults, set the value as None/False.
+        To remove entries from the defaults, set the value as None.
 
     Returns
     -------
@@ -121,13 +121,13 @@ def relax_job(
     run_freq
         If a requency calculation should be carried out.
     input_swaps
-        dictionary of orcasimpleinput swaps for the calculator.
+        Dictionary of orcasimpleinput swaps for the calculator.
         To enable new entries, set the value as True.
-        To remove entries from the defaults, set the value as None/False.
+        To remove entries from the defaults, set the value as None.
     block_swaps
-        dictionary of orcablock swaps for the calculator.
+        Dictionary of orcablock swaps for the calculator.
         To enable new entries, set the value as True.
-        To remove entries from the defaults, set the value as None/False.
+        To remove entries from the defaults, set the value as None.
 
     Returns
     -------

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from typing import Literal
 
 import covalent as ct
 from ase.atoms import Atoms
@@ -19,7 +20,7 @@ GEOM_FILE = "geo_end.gen"
 @ct.electron
 def static_job(
     atoms: Atoms,
-    method: str = "GFN2-xTB",
+    method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
     kpts: tuple | list[tuple] | dict | None = None,
     swaps: dict | None = None,
 ) -> dict:
@@ -31,7 +32,7 @@ def static_job(
     atoms
         Atoms object
     method
-        Method to use. Accepts "DFTB", "GFN1-xTB", and "GFN2-xTB".
+        Method to use.
     kpts
         k-point grid to use. Defaults to None for molecules and
         (1, 1, 1) for solids.
@@ -41,7 +42,7 @@ def static_job(
     Returns
     -------
     dict
-        Dictionary of results from quacc.schemas.ase.summarize_run
+        Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
 
     swaps = swaps or {}
@@ -70,7 +71,7 @@ def static_job(
 @ct.electron
 def relax_job(
     atoms: Atoms,
-    method: str = "GFN2-xTB",
+    method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
     kpts: tuple | list[tuple] | dict | None = None,
     lattice_opt: bool = False,
     swaps: dict | None = None,
@@ -96,7 +97,7 @@ def relax_job(
     Returns
     -------
     dict
-        Dictionary of results from quacc.schemas.ase.summarize_run
+        Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
 
     swaps = swaps or {}

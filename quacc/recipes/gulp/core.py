@@ -41,7 +41,7 @@ def static_job(
     Returns
     -------
     dict
-        Dictionary of results from quacc.schemas.ase.summarize_run
+        Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
 
     keyword_swaps = keyword_swaps or {}
@@ -105,7 +105,7 @@ def relax_job(
     Returns
     -------
     dict
-        Dictionary of results from quacc.schemas.ase.summarize_run
+        Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
 
     keyword_swaps = keyword_swaps or {}

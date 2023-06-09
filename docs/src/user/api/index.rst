@@ -3,7 +3,7 @@
 API Reference
 -------------
 
-This section gives an overview of the API for QuAcc.
+This section gives an overview of the API for Quacc.
 
 .. currentmodule:: quacc
 

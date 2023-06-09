@@ -51,7 +51,7 @@ class BulkToSlabsFlow(jf.Maker):
         atoms
             Atoms object
         slabgen_kwargs
-            Additional keyword arguments to pass to make_max_slabs_from_bulk()
+            Additional keyword arguments to pass to `make_max_slabs_from_bulk()`
 
         Returns
         -------
