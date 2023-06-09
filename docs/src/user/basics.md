@@ -5,7 +5,7 @@ In Quacc, each code comes with pre-packaged jobs and workflows, which we call re
 Once you understand the basics, you should move on to the ["Using Quacc with Covalent"](covalent.md) (recommended) or ["Using Quacc with Jobflow"](advanced/jobflow.md) guides to learn how to use Quacc with a workflow manager, which allows you to stich together and run complex Quacc workflows across distributed computing resources.
 
 ```{note}
-If you are familiar with ASE and want to dive right into the workflow manager details, you can skip this section.
+If you are familiar with ASE and want to dive right into the workflow manager details, you can likely skim this section.
 ```
 
 ## Pre-Requisites

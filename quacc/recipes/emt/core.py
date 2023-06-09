@@ -30,7 +30,7 @@ def static_job(atoms: Atoms, emt_kwargs: dict | None = None) -> dict:
     Returns
     -------
     dict
-        Dictionary of results from quacc.schemas.ase.summarize_run
+        Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
 
     emt_kwargs = emt_kwargs or {}
@@ -67,7 +67,7 @@ def relax_job(
     max_steps
         Maximum number of steps to take.
     optimizer
-        .Optimizer class to use for the relaxation.
+        ASE Optimizer class to use for the relaxation.
     emt_kwargs
         Dictionary of custom kwargs for the EMT calculator.
     opt_kwargs

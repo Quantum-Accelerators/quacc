@@ -28,12 +28,12 @@ def static_job(
     atoms
         Atoms object
     lj_kwargs
-        Dictionary of custom kwargs for the LJ calculator.
+        Dictionary of custom kwargs for the LJ calculator
 
     Returns
     -------
     dict
-        Dictionary of results from quacc.schemas.ase.summarize_run
+        Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
 
     lj_kwargs = lj_kwargs or {}
@@ -56,11 +56,11 @@ def relax_job(
     fmax: float = 0.01,
     max_steps: int = 1000,
     optimizer: str = "FIRE",
-    lj_kwargs: dict | None = None,
     opt_kwargs: dict | None = None,
+    lj_kwargs: dict | None = None,
 ) -> dict:
     """
-    Function to carry out a geometry optimization.
+    Function to carry out a geometry optimization
 
     Parameters
     ----------
@@ -71,16 +71,16 @@ def relax_job(
     max_steps
         Maximum number of steps to take.
     optimizer
-        .Optimizer class to use for the relaxation.
-    lj_kwargs
-        Dictionary of custom kwargs for the LJ calculator.
+        ASE Optimizer class to use for the relaxation.
     opt_kwargs
         Dictionary of kwargs for the optimizer.
+    lj_kwargs
+        Dictionary of custom kwargs for the LJ calculator.
 
     Returns
     -------
     dict
-        Dictionary of results from quacc.schemas.ase.summarize_opt_run
+        Dictionary of results from `quacc.schemas.ase.summarize_opt_run`
     """
 
     lj_kwargs = lj_kwargs or {}

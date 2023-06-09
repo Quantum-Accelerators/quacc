@@ -35,21 +35,21 @@ def static_job(
         Atoms object
     charge
         Charge of the system. If None, this is determined from the sum of
-        atoms.get_initial_charges().
+        `atoms.get_initial_charges()`.
     mult
         Multiplicity of the system. If None, this is determined from 1+ the sum
-        of atoms.get_initial_magnetic_moments().
+        of `atoms.get_initial_magnetic_moments()`.
     method
         The level of theory to use.
     basis
         Basis set
     swaps
-        dictionary of custom kwargs for the calculator.
+        Dictionary of custom kwargs for the calculator.
 
     Returns
     -------
     dict
-        Dictionary of results from quacc.schemas.ase.summarize_run
+        Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
 
     swaps = swaps or {}
