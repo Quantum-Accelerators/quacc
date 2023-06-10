@@ -33,6 +33,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.viewcode",
     "sphinx.ext.autosummary",
+    "myst_nb",
     "myst_parser",
     "sphinxcontrib.autodoc_pydantic",
     "numpydoc",
