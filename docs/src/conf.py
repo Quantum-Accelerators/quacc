@@ -36,6 +36,7 @@ extensions = [
     "myst_parser",
     "nbsphinx",
     "sphinxcontrib.autodoc_pydantic",
+    "sphinx_copybutton",
     "numpydoc",
     "sphinx_design",
 ]

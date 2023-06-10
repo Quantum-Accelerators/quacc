@@ -56,6 +56,7 @@ if __name__ == "__main__":
                 "myst_parser==1.0.0",
                 "numpydoc==1.5.0",
                 "sphinx_design==0.4.1",
+                "sphinx-copybutton==0.5.2",
             ],
             "strict": [
                 "ase @ https://gitlab.com/argon214/ase/-/archive/efermi/ase-efermi.zip",  # waiting on >3.22.1
