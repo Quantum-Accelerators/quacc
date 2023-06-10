@@ -48,7 +48,7 @@ If you use Quacc in your work, please cite it as follows:
 
 ## Inspiration
 
-Quacc was originally inspired by [Atomate2](https://github.com/materialsproject/atomate2), developed by [Dr. Alex Ganose](https://www.imperial.ac.uk/people/a.ganose) (@utf).
+Quacc was originally inspired by [Atomate2](https://github.com/materialsproject/atomate2), developed by Dr. Alex Ganose (@utf).
 
 ## License ⚖️
 
