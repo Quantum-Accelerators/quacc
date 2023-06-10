@@ -3,13 +3,21 @@ Custodian handlers for QChem
 """
 from __future__ import annotations
 
-import os
-import shlex
-
 from custodian import Custodian
+from monty.dev import requires
+
 from quacc import SETTINGS
 
+try:
+    import openbabel as ob
+except:
+    ob = None
 
+
+@requires(
+    ob,
+    "Openbabel must be installed. Try conda install -c conda-forge openbabel",
+)
 def run_custodian(
     qchem_cmd: str = SETTINGS.QChem_CMD,
     qchem_max_cores: int = SETTINGS.QChem_MAX_CORES,
