@@ -34,7 +34,6 @@ Includes the following sections:
 - 🔧 [Installation Guide](https://quantum-accelerators.github.io/quacc/install/install.html)
 - 🧠 [User Guide](https://quantum-accelerators.github.io/quacc/user/basics.html)
 - 🤝 [Developer Guide](https://quantum-accelerators.github.io/quacc/dev/contributing.html)
-- ❓ [FAQs](https://quantum-accelerators.github.io/quacc/about/faq.html)
 
 ## Demonstration ✨
 
@@ -48,7 +47,7 @@ If you use Quacc in your work, please cite it as follows:
 
 ## Inspiration
 
-Quacc was originally inspired by [Atomate2](https://github.com/materialsproject/atomate2), developed by Dr. Alex Ganose (@utf).
+Quacc was originally inspired by [Atomate2](https://github.com/materialsproject/atomate2). Some of the unique differences are discussed in the [FAQ section](https://quantum-accelerators.github.io/quacc/about/faq.html) of the documentation.
 
 ## License ⚖️
 
