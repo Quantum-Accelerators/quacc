@@ -181,23 +181,18 @@ def run_ase_opt(
         opt_kwargs["trajectory"] = "opt.traj"
 
     # Get optimizer
-    if opt_class.lower() == "sella":
+    if opt_class.lower() in ("sella", "sella_irc"):
         try:
-            from sella import Sella
+            from sella import IRC, Sella
         except ImportError as e:
             raise ImportError(
                 "You must install Sella to use Sella optimizer.s"
                 "Try `pip install sella`."
             ) from e
+
+    if opt_class.lower() == "sella":
         opt_class = Sella
     elif opt_class.lower() == "sella_irc":
-        try:
-            from sella import IRC
-        except ImportError as e:
-            raise ImportError(
-                "You must install Sella to use Sella optimizer.s"
-                "Try `pip install sella`."
-            ) from e
         opt_class = IRC
     else:
         try:
