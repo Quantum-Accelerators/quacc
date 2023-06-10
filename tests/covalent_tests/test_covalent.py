@@ -110,16 +110,18 @@ def test_tutorials():
     assert result.status == "COMPLETED"
 
     # ------------------------------------------------------------
-    @ct.electron(executor="dask")
+    @ct.electron
     def relax_electron(atoms):
         return relax_job(atoms)
 
-    @ct.electron(executor="local")
+    @ct.electron
     def static_electron(atoms):
         return static_job(atoms)
 
     @ct.lattice
     def workflow5(atoms):
+        relax_electron.executor = "dask"
+        static_electron.executor = "local"
         output1 = relax_electron(atoms)
         output2 = static_electron(output1["atoms"])
         return output2

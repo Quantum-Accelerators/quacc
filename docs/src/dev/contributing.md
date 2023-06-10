@@ -32,6 +32,8 @@ Please abide by the following guidelines when contributing code to Quacc:
 
 8. Ensure that the code remains flexible for the user.
 
+9. `gzip` large test files to save space.
+
 ## Changelog
 
 We keep a [`CHANGELOG.md`](https://github.com/quantum-accelerators/quacc/blob/main/CHANGELOG.md) file in the base directory of the `quacc` code. Before submitting your PR, be sure to update the `CHANGELOG.md` file under the "Unreleased" section with a brief description of your changes. The `CHANGELOG.md` file follows the [Keep a Changelog](https://keepachangelog.com) format.
@@ -40,7 +42,7 @@ We keep a [`CHANGELOG.md`](https://github.com/quantum-accelerators/quacc/blob/ma
 
 In general, please try to keep the code style consistent when possible. There are two main things to consider:
 
-1. Functions should be lowercase and with underscores. Classes should be in CamelCase and constructed using a {obj}`@dataclass` decorator.
+1. Functions should be lowercase and with underscores. Classes should be in CamelCase and constructed using a {obj}`@dataclass` decorator where possible.
 
 2. All Python code should be formatted with [isort](https://github.com/PyCQA/isort) and then [black](https://github.com/psf/black), although this will be corrected automatically when merged.
 
@@ -52,4 +54,4 @@ If you are adding recipes based on a code that can be readily installed via `pip
 
 ## Tips
 
-When developing new recipes, it is often helpful to start from an existing example. In general, we recommend referring to the EMT or tblite recipes. Some advanced use cases can also be found in the VASP recipes.
+When developing new recipes, it is often helpful to start from an existing example. In general, we recommend referring to {obj}`quacc.recipes.emt` or {obj}`quacc.recipes.tblite`. Some advanced use cases can also be found in the VASP recipes.
