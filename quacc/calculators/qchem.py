@@ -47,7 +47,7 @@ class QChem(FileIOCalculator):
         input_atoms: Atoms,
         charge: None | int = None,
         spin_multiplicity: None | int = None,
-        qchem_input_params: dict = {},
+        qchem_input_params: dict = None,
         use_custodian: bool = SETTINGS.QCHEM_CUSTODIAN,
         **kwargs,
     ):
@@ -57,6 +57,7 @@ class QChem(FileIOCalculator):
         self.spin_multiplicity = spin_multiplicity
         self.qchem_input_params = qchem_input_params
         self.use_custodian = use_custodian
+        self.qchem_input_params = qchem_input_params or {}
         self.kwargs = kwargs
 
         # Instantiate the calculator
