@@ -199,7 +199,7 @@ def run_ase_opt(
             opt_class = getattr(optimize, optimizer)
         except AttributeError as e:
             raise ValueError(
-                f"Unknown {optimizer=}, must be one of {list(dir(optimize))}"
+                f"Unknown {optimizer=}, must be one of {list(dir(optimize))} or sella, sella_irc"
             ) from e
 
     tmpdir = mkdtemp(prefix="quacc-tmp-", dir=scratch_dir)
