@@ -169,10 +169,10 @@ from quacc.recipes.emt.core import relax_job, static_job
 @ct.lattice
 def workflow(atoms):
     job1 = relax_job
-    job1.electron_object.executor = "dask"
+    job1.executor = "dask"
 
     job2 = static_job
-    job2.electron_object.executor = "local"
+    job2.executor = "local"
 
     output1 = job1(atoms)
     output2 = job2(output1["atoms"])
