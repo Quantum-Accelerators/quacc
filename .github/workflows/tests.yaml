@@ -229,6 +229,10 @@ jobs:
           pip install chardet
           pip install pytest-cov
 
+      - name: Install conda packages
+        run: |
+          conda install -c conda-forge openbabel
+
       - name: Run tests with pytest
         run: pytest tests/recipes/dftb --cov=quacc --cov-report=xml
 
