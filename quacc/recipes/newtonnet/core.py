@@ -4,7 +4,6 @@ Core recipes for the NewtonNet code
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass, field
 
 import covalent as ct
 import numpy as np
@@ -26,24 +25,6 @@ except ImportError:
 # TODO: Please all units based on ASE for internal consistency
 # TODO: Add `model_path` and `settings_path` to the global Quacc settings. Then remove them from the kwargs.
 # TODO: Add docstrings and typehints for all functions/classes.
-
-
-def get_freq_in_cm_inv(masses, reshaped_hessian):
-    # Calculate mass-weighted Hessian
-    mass_weighted_hessian = _mass_weighted_hessian(masses, reshaped_hessian)
-
-    # Calculate eigenvalues and eigenvectors
-    eigvals, eigvecs = np.linalg.eig(mass_weighted_hessian)
-    eigvals = np.sort(np.real(eigvals))
-
-    # Calculate frequencies in cm^-1
-    freqs = np.emath.sqrt(eigvals) * fs * (10**15) / (c * 100 * 2 * np.pi)
-    return [freqs, eigvecs]
-
-
-def get_hessian(atoms):
-    atoms.calc.calculate(atoms)
-    return atoms.calc.results["hessian"].reshape((-1, 3 * len(atoms)))
 
 
 @ct.electron
@@ -81,7 +62,7 @@ def ts_job(
 
     opt_kwargs["internal"] = True
     if ts_type == 0:
-        opt_kwargs["hessian_function"] = get_hessian
+        opt_kwargs["hessian_function"] = _get_hessian(atoms)
         opt_kwargs["diag_every_n"] = 0
 
     dyn = run_ase_opt(
@@ -102,7 +83,7 @@ def ts_job(
         atomic_numbers = mol.get_atomic_numbers()
         masses = [atomic_masses[number] for number in atomic_numbers]
 
-        freqs_cm_inv, eigvecs = get_freq_in_cm_inv(masses, hessian_reshaped)
+        freqs_cm_inv, eigvecs = _get_freq_in_cm_inv(masses, hessian_reshaped)
 
         summary["frequencies_real_cm_inv"] = np.real(freqs_cm_inv)
         summary["frequencies_imag_cm_inv"] = np.imag(freqs_cm_inv)
@@ -177,7 +158,7 @@ def irc_job(
         atomic_numbers = mol.get_atomic_numbers()
         masses = [atomic_masses[number] for number in atomic_numbers]
 
-        freqs_cm_inv, eigvecs = get_freq_in_cm_inv(masses, hessian_reshaped)
+        freqs_cm_inv, eigvecs = _get_freq_in_cm_inv(masses, hessian_reshaped)
 
         summary["frequencies_real_cm_inv"] = np.real(freqs_cm_inv)
         summary["frequencies_imag_cm_inv"] = np.imag(freqs_cm_inv)
@@ -273,7 +254,7 @@ def irc_job1(
         atomic_numbers = mol.get_atomic_numbers()
         masses = [atomic_masses[number] for number in atomic_numbers]
 
-        freqs_cm_inv, eigvecs = get_freq_in_cm_inv(masses, hessian_reshaped)
+        freqs_cm_inv, eigvecs = _get_freq_in_cm_inv(masses, hessian_reshaped)
 
         summary1["optimization"]["frequencies_real_cm_inv"] = np.real(freqs_cm_inv)
         summary1["optimization"]["frequencies_imag_cm_inv"] = np.imag(freqs_cm_inv)
@@ -376,3 +357,21 @@ def _mass_weighted_hessian(masses: list | np.array, hessian: np.ndarray) -> np.n
     mass_weighted_hessian = hessian / np.tile(sqrt_masses, (3, 3))
 
     return mass_weighted_hessian
+
+
+def _get_freq_in_cm_inv(masses, reshaped_hessian):
+    # Calculate mass-weighted Hessian
+    mass_weighted_hessian = _mass_weighted_hessian(masses, reshaped_hessian)
+
+    # Calculate eigenvalues and eigenvectors
+    eigvals, eigvecs = np.linalg.eig(mass_weighted_hessian)
+    eigvals = np.sort(np.real(eigvals))
+
+    # Calculate frequencies in cm^-1
+    freqs = np.emath.sqrt(eigvals) * fs * (10**15) / (c * 100 * 2 * np.pi)
+    return [freqs, eigvecs]
+
+
+def _get_hessian(atoms):
+    atoms.calc.calculate(atoms)
+    return atoms.calc.results["hessian"].reshape((-1, 3 * len(atoms)))
