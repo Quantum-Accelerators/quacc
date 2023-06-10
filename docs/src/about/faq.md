@@ -24,8 +24,6 @@ Atomate2 is a database-first approch to materials science workflows. Quacc is fu
 
 Atomate2 is developed and supported by the [Materials Project](http://materialsproject.org/) team at Lawrence Berkeley National Laboratory. Quacc is developed and maintained by the [Rosen Research Group](https://cbe.princeton.edu/people/andrew-rosen) at Princeton University.
 
-Atomate2 is developed and supported by the [Materials Project](http://materialsproject.org/) team at Lawrence Berkeley National Laboratory. Quacc is developed and maintained by the [Rosen Research Group](https://cbe.princeton.edu/people/andrew-rosen) at Princeton University.
-
 Despite these differences, Quacc and Atomate2 are largely interoperable! Feel free to stitch together workflows from both codes as you see fit using Jobflow!
 
 **Q: I see `@ct.electron` across the code. What if I don't want to use Covalent?**
@@ -34,4 +32,4 @@ A: The beauty is that you don't have to use Covalent if you don't want to! By de
 
 **Q: I want to contribute a new recipe to Quacc, but it will require additional dependencies. Is that a problem?**
 
-A: Absolutely not a problem! Simply make your dependencies optional in the `setup.py` file and use a `monty.dev.requires` decorator to ensure your recipes and tests only run if your necessary dependencies are installed. Refer to {obj}`quacc.recipes.tblite.core` and the `[tblite]` extras in the `setup.py` file for an example.
+A: Absolutely not a problem! Simply make your dependencies optional in the `setup.py` file and use a {obj}`monty.dev.requires` decorator to ensure your recipes and tests only run if your necessary dependencies are installed. Refer to {obj}`quacc.recipes.tblite.core` and the `[tblite]` extras in the `setup.py` file for an example.
