@@ -142,7 +142,8 @@ class QuaccSettings(BaseSettings):
     )
 
     QChem_CALC_LOC: str = Field(
-        "/tmp", description="Compute-node local scratch directory in which Q-Chem should perform IO."
+        "/tmp",
+        description="Compute-node local scratch directory in which Q-Chem should perform IO.",
     )
 
     # Q-Chem Settings: Custodian
