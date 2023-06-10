@@ -43,7 +43,6 @@ def run_custodian(
     from custodian.qchem.jobs import QCJob
 
     # Handlers for Q-Chem
-    handlers = []
     handlers_dict = {
         "QChemErrorHandler": QChemErrorHandler(),
     }
