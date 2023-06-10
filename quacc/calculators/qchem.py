@@ -124,9 +124,12 @@ class QChem(FileIOCalculator):
                     float(tmp_grad_data[ii * 3 + 2]),
                 ]
             )
-        gradient = data["gradients"][0]
+        if data["pcm_gradients"] is not None:
+            gradient = data["pcm_gradients"][0]
+        else:
+            gradient = data["gradients"][0]
         for ii, subgrad in enumerate(grad):
             for jj, val in enumerate(subgrad):
-                assert abs(gradient[ii, jj] - val) < 1e-7
+                assert abs(gradient[ii, jj] - val) < 1e-6
                 gradient[ii, jj] = val
         self.results["forces"] = gradient * (-units.Hartree / units.Bohr)
