@@ -19,13 +19,15 @@ except ImportError:
 
 # TODO: Make sure code doesn't crash if sella isn't installed
 # TODO: Don't hardcode fmax or steps
+# TODO: Add docstrings
+# TODO: Add all path-related variables to the global Quacc settings and remove from kwargs.
 
 
 @ct.electron
-@requires(NewtonNet is not None, "NewtonNet must be installed")
+@requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def optimize_and_analyze(atoms: Atoms, ml_path: str, config_path: str) -> dict:
     mlcalculator = NewtonNet(model_path=ml_path, settings_path=config_path)
-    atoms.set_calculator(mlcalculator)
+    atoms.calc = mlcalculator
     opt = Sella(atoms, internal=True, logfile=f"sella.log", trajectory=f"sella.traj")
     opt.run(fmax=0.01, steps=5)
 

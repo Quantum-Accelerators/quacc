@@ -28,11 +28,7 @@ except ImportError:
 
 
 @ct.electron
-@requires(
-    NewtonNet,
-    "newtonnet-python must be installed. "
-    "Check out https://github.com/ericyuan00000/NewtonNet/tree/main",
-)
+@requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def ts_job(
     atoms: Atoms,
     model_path: str = "training_18/models/best_model_state.tar",
@@ -106,11 +102,7 @@ def ts_job(
 
 
 @ct.electron
-@requires(
-    NewtonNet,
-    "newtonnet-python must be installed. Check out "
-    "https://github.com/ericyuan00000/NewtonNet/tree/main",
-)
+@requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def irc_job(
     atoms: Atoms,
     model_path: str = "training_18/models/best_model_state.tar",
@@ -137,7 +129,7 @@ def irc_job(
         settings_path=settings_path,
         **newtonnet_kwargs,
     )
-    atoms.set_calculator(mlcalculator)
+    atoms.calc = mlcalculator
     run_kwargs = {"direction": direction}
     dyn = run_ase_opt(
         atoms,
@@ -181,11 +173,7 @@ def irc_job(
 
 
 @ct.electron
-@requires(
-    NewtonNet,
-    "newtonnet-python must be installed. Check out "
-    "https://github.com/ericyuan00000/NewtonNet/tree/main",
-)
+@requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def irc_job1(
     atoms: Atoms,
     model_path: str = "training_18/models/best_model_state.tar",
@@ -211,7 +199,7 @@ def irc_job1(
         settings_path=settings_path,
         **newtonnet_kwargs,
     )
-    atoms.set_calculator(mlcalculator)
+    atoms.calc = mlcalculator
     run_kwargs = {"direction": direction}
     dyn1 = run_ase_opt(
         atoms,
@@ -229,7 +217,7 @@ def irc_job1(
         settings_path=settings_path,
         **newtonnet_kwargs,
     )
-    atoms2.set_calculator(mlcalculator)
+    atoms2.calc = mlcalculator
     opt2_kwargs["internal"] = True
     opt2_kwargs["order"] = 0
     opt2_kwargs["trajectory"] = "opt2.traj"
@@ -277,11 +265,7 @@ def irc_job1(
 
 
 @ct.electron
-@requires(
-    NewtonNet,
-    "newtonnet-python must be installed. Check out "
-    "https://github.com/ericyuan00000/NewtonNet/tree/main",
-)
+@requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def freq_job(
     atoms: Atoms,
     model_path: str = "training_18/models/best_model_state.tar",
@@ -300,7 +284,7 @@ def freq_job(
         settings_path=settings_path,
         **newtonnet_kwargs,
     )
-    atoms.set_calculator(mlcalculator)
+    atoms.calc = mlcalculator
     mlcalculator.calculate(atoms)
     hessian = mlcalculator.results["hessian"]
     n_atoms = np.shape(hessian)[0]
