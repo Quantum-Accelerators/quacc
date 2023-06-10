@@ -181,12 +181,25 @@ def run_ase_opt(
         opt_kwargs["trajectory"] = "opt.traj"
 
     # Get optimizer
-    try:
-        opt_class = getattr(optimize, optimizer)
-    except AttributeError as e:
-        raise ValueError(
-            f"Unknown {optimizer=}, must be one of {list(dir(optimize))}"
-        ) from e
+    if opt_class.lower() in ("sella", "sella_irc"):
+        try:
+            from sella import IRC, Sella
+        except ImportError as e:
+            raise ImportError(
+                "You must install Sella to use Sella optimizer.s"
+                "Try `pip install sella`."
+            ) from e
+        if opt_class.lower() == "sella":
+            opt_class = Sella
+        elif opt_class.lower() == "sella_irc":
+            opt_class = IRC
+    else:
+        try:
+            opt_class = getattr(optimize, optimizer)
+        except AttributeError as e:
+            raise ValueError(
+                f"Unknown {optimizer=}, must be one of {list(dir(optimize))}"
+            ) from e
 
     tmpdir = mkdtemp(prefix="quacc-tmp-", dir=scratch_dir)
 
