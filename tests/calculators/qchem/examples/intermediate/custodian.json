@@ -1,0 +1,29 @@
+[
+    {
+        "job": {
+            "@module": "custodian.qchem.jobs",
+            "@class": "QCJob",
+            "@version": "2023.3.10",
+            "qchem_command": [
+                "qchem"
+            ],
+            "max_cores": 40,
+            "multimode": "openmp",
+            "input_file": "mol.qin",
+            "output_file": "mol.qout",
+            "qclog_file": "mol.qclog",
+            "suffix": "",
+            "calc_loc": "/tmp",
+            "nboexe": "/clusterfs/mp/software/nbo7/bin/nbo7.i4.exe",
+            "save_scratch": false,
+            "backup": true
+        },
+        "corrections": [],
+        "handler": null,
+        "validator": null,
+        "max_errors": false,
+        "max_errors_per_job": false,
+        "max_errors_per_handler": false,
+        "nonzero_return_code": false
+    }
+]

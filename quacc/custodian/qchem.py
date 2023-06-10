@@ -53,7 +53,7 @@ def run_custodian(
     for handler_flag in qchem_custodian_handlers:
         if handler_flag not in handlers_dict:
             raise ValueError(f"Unknown Q-Chem error handler: {handler_flag}")
-        handlers.append(handlers_dict[handler_flag]
+        handlers.append(handlers_dict[handler_flag])
 
     # Run Q-Chem
 
@@ -66,7 +66,7 @@ def run_custodian(
         ]
 
     c = Custodian(
-        handlers, jobs, max_errors=qchem_custodian_max_errors, gzipped_output=True
+        handlers, jobs, max_errors=qchem_custodian_max_errors,
     )
 
     c.run()

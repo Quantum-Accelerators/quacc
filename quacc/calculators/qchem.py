@@ -6,6 +6,8 @@ from __future__ import annotations
 import inspect
 import os
 import warnings
+import struct
+from monty.io import zopen
 
 import numpy as np
 from ase import Atoms
@@ -13,6 +15,9 @@ import ase.units
 from ase.calculators.calculator import FileIOCalculator
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.qchem.sets import ForceSet
+from pymatgen.core import Molecule
+from pymatgen.io.qchem.inputs import QCInput
+from pymatgen.io.qchem.outputs import QCOutput
 
 from quacc import SETTINGS
 from quacc.custodian import qchem as custodian_qchem
@@ -41,9 +46,9 @@ class QChem(FileIOCalculator):
     def __init__(
         self,
         input_atoms: Atoms,
-        charge: None | int,
-        spin_multiplicity: None | int, 
-        qchem_input_params: None | dict,
+        charge: None | int = None,
+        spin_multiplicity: None | int = None, 
+        qchem_input_params: dict = {},
         use_custodian: bool = SETTINGS.QChem_CUSTODIAN,
         **kwargs,
     ):
@@ -84,17 +89,36 @@ class QChem(FileIOCalculator):
     def write_input(self, atoms, properties=None, system_changes=None):
         FileIOCalculator.write_input(self, atoms, properties, system_changes)
         mol = AseAtomsAdaptor.get_molecule(atoms)
-        mol.set_charge_and_spin(charge=self.charge, spin=self.spin_multiplicity)
+        if self.charge is not None:
+            if self.spin_multiplicity is not None:
+                mol.set_charge_and_spin(charge=self.charge, spin_multiplicity=self.spin_multiplicity)
+            else:
+                mol.set_charge_and_spin(charge=self.charge)
         qcin = ForceSet(mol, **self.qchem_input_params)
         qcin.write("mol.qin")
 
     def read_results(self):
         data = QCOutput("mol.qout").data
         self.results['energy'] = data["final_energy"] * ase.units.Hartree
-        if data["CDS_gradients"] is not None:
-            gradient = data["CDS_gradients"]
-        elif data["PCM_gradients"] is not None:
-            gradient = data["pcm_gradients"]
-        else:
-            gradient = data["gradients"]
+        tmp_grad_data = []
+        with zopen("131.0", mode="rb") as file:
+            binary = file.read()
+            for ii in range(int(len(binary) / 8)):
+                tmp_grad_data.append(
+                    struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
+                )
+        grad = []
+        for ii in range(int(len(tmp_grad_data) / 3)):
+            grad.append(
+                [
+                    float(tmp_grad_data[ii * 3]),
+                    float(tmp_grad_data[ii * 3 + 1]),
+                    float(tmp_grad_data[ii * 3 + 2]),
+                ]
+            )
+        gradient = data["gradients"][0]
+        for ii, subgrad in enumerate(grad):
+            for jj, val in enumerate(subgrad):
+                assert abs(gradient[ii,jj] - val) < 1e-7
+                gradient[ii,jj] = val
         self.results['forces'] = gradient * (-ase.units.Hartree / ase.units.Bohr)
