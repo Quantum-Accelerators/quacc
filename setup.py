@@ -46,7 +46,7 @@ if __name__ == "__main__":
         extras_require={
             "fireworks": ["fireworks"],
             "newtonnet": [
-                "newtonnet @ https://github.com/ericyuan00000/NewtonNet.git",
+                "newtonnet @ git+https://github.com/ericyuan00000/NewtonNet.git",
                 "sella",
             ],
             "tblite": ["tblite[ase]"],
