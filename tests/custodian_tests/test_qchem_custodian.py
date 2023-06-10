@@ -29,7 +29,7 @@ def patch_custodian_run(monkeypatch):
 
 
 @pytest.mark.skipif(
-    ob is False,
+    ob is None,
     reason="Openbabel needed for test.",
 )
 def test_run_qchem_custodian(monkeypatch):
