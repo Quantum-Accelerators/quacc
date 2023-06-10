@@ -29,7 +29,8 @@ def setup_module():
 def teardown_module():
     # Clean up
     os.chdir(CWD)
-    rmtree("blank_dir")
+    if os.path.exists("blank_dir"):
+        rmtree("blank_dir")
 
 
 def test_run_calc():
