@@ -2,7 +2,7 @@
 
 **Q: How do I cite Quacc?**
 
-A: Until a paper is eventually written, please cite Quacc as follows: A.S. Rosen, Quacc – The Quantum Accelerator, https://doi.org/10.5281/zenodo.7720998.
+A: Until a paper is eventually written, please cite Quacc as follows: A.S. Rosen, Quacc – The Quantum Accelerator, DOI: [10.5281/zenodo.7720998](https://doi.org/10.5281/zenodo.7720998).
 
 **Q: Do you have any tips for writing new workflows?**
 

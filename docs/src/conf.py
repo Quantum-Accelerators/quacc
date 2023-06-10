@@ -34,7 +34,9 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.autosummary",
     "myst_parser",
+    "nbsphinx",
     "sphinxcontrib.autodoc_pydantic",
+    "sphinx_copybutton",
     "numpydoc",
     "sphinx_design",
 ]
