@@ -8,9 +8,8 @@ import os
 import struct
 import warnings
 
-import ase.units
 import numpy as np
-from ase import Atoms
+from ase import Atoms, units
 from ase.calculators.calculator import FileIOCalculator
 from monty.io import zopen
 from pymatgen.core import Molecule
@@ -107,7 +106,7 @@ class QChem(FileIOCalculator):
 
     def read_results(self):
         data = QCOutput("mol.qout").data
-        self.results["energy"] = data["final_energy"] * ase.units.Hartree
+        self.results["energy"] = data["final_energy"] * units.Hartree
         tmp_grad_data = []
         with zopen("131.0", mode="rb") as file:
             binary = file.read()
@@ -129,4 +128,4 @@ class QChem(FileIOCalculator):
             for jj, val in enumerate(subgrad):
                 assert abs(gradient[ii, jj] - val) < 1e-7
                 gradient[ii, jj] = val
-        self.results["forces"] = gradient * (-ase.units.Hartree / ase.units.Bohr)
+        self.results["forces"] = gradient * (-units.Hartree / units.Bohr)
