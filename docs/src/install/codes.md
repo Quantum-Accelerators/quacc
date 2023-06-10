@@ -57,10 +57,18 @@ As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculator
 ## Psi4
 
 ```{note}
-[Psi4](https://github.com/psi4/psi4) is especially useful for constructing and testing out new functionals, like DeepMind's DM21 functional.
+[Psi4](https://github.com/psi4/psi4) is especially useful for open-source DFT development/contributions and includes some unique methods like DeepMind's DM21 functional.
 ```
 
 If you plan to use Psi4 with Quacc, you will need to install it prior to use. This can be done via `conda install -c psi4 psi4`.
+
+## Q-Chem
+
+```{note}
+[Q-Chem](https://www.q-chem.com/) is a powerful, general-purpose molecular DFT code with a variety of features.
+```
+
+If you plan to use Q-Chem with Quacc, you will need to install `openbabel` prior to use. This can be done via `conda install -c conda-forge openbabel`.
 
 ## tblite
 
