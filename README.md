@@ -46,6 +46,10 @@ If you use Quacc in your work, please cite it as follows:
 
 - A.S. Rosen, Quacc – The Quantum Accelerator, https://doi.org/10.5281/zenodo.7720998.
 
+## Inspiration
+
+Quacc was originally inspired by [Atomate2](https://github.com/materialsproject/atomate2) developed by [Dr. Alex Ganose](https://www.imperial.ac.uk/people/a.ganose) (@utf).
+
 ## License ⚖️
 
 Quacc is released under a [BSD 3-Clause license](https://github.com/quantum-accelerators/quacc/blob/main/LICENSE.md).
