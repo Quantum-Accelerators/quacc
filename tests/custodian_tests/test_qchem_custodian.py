@@ -1,7 +1,10 @@
 import pytest
 from custodian import Custodian
 
-from quacc.custodian.qchem import run_custodian
+try:
+    import openbabel as ob
+except ImportError:
+    ob = None
 
 
 class MockRun:
@@ -25,10 +28,18 @@ def patch_custodian_run(monkeypatch):
     monkeypatch.setattr(Custodian, "run", mock_custodian_run)
 
 
+@pytest.mark.skipif(
+    ob is False,
+    reason="Openbabel needed for test.",
+)
 def test_run_qchem_custodian(monkeypatch):
+    from quacc.custodian.qchem import run_custodian
+
     run_custodian()
 
-    run_custodian(qchem_max_cores=40, qchem_calc_loc="/not_tmp", qchem_custodian_max_errors=20)
+    run_custodian(
+        qchem_max_cores=40, qchem_calc_loc="/not_tmp", qchem_custodian_max_errors=20
+    )
 
     with pytest.raises(ValueError):
         run_custodian(qchem_custodian_handlers="cow")

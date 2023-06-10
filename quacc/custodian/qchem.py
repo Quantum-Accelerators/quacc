@@ -10,7 +10,7 @@ from quacc import SETTINGS
 
 try:
     import openbabel as ob
-except:
+except ImportError:
     ob = None
 
 

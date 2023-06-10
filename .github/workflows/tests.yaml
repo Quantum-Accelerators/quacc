@@ -234,7 +234,7 @@ jobs:
           conda install -c conda-forge openbabel
 
       - name: Run tests with pytest
-        run: pytest tests/calculators/qchem tests/custodian_tests/test_qchem_custodian.py --cov=quacc --cov-report=xml
+        run: pytest tests/custodian_tests/test_qchem_custodian.py --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3

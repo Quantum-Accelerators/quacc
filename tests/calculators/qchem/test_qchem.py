@@ -17,10 +17,6 @@ from quacc.util.atoms import prep_next_run
 FILE_DIR = Path(__file__).resolve().parent
 
 
-# @pytest.mark.skipif(
-#     qchem is False,
-#     reason="Qchem required for test",
-# )
 def test_qchem_write_input_basic():
     mol = Molecule.from_file(os.path.join(FILE_DIR, "test.xyz"))
     atoms = AseAtomsAdaptor.get_atoms(mol)
