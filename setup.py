@@ -63,7 +63,6 @@ if __name__ == "__main__":
                 "atomate2 @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
                 "cclib==1.7.2",
                 "covalent==0.224.0-rc.0",  # waiting on > 0.222.0
-                "covalent-slurm-plugin==0.12.1",
                 "custodian==2023.6.5",
                 "emmet-core==0.55.3",
                 "jobflow==0.1.11",
