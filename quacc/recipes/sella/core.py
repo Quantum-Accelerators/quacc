@@ -31,10 +31,10 @@ except ImportError:
 def optimize_and_analyze(atoms: Atoms, ml_path: str, config_path: str) -> dict:
     mlcalculator = NewtonNet(model_path=ml_path, settings_path=config_path)
     atoms.calc = mlcalculator
-    opt = Sella(atoms, internal=True, logfile=f"sella.log", trajectory=f"sella.traj")
+    opt = Sella(atoms, internal=True, logfile="sella.log", trajectory="sella.traj")
     opt.run(fmax=0.01, steps=5)
 
-    traj = read(f"sella.traj", index=":")
+    traj = read("sella.traj", index=":")
     mlcalculator.calculate(traj)
     H = mlcalculator.results["hessian"]
     n_atoms = np.shape(H)[0]
@@ -45,9 +45,8 @@ def optimize_and_analyze(atoms: Atoms, ml_path: str, config_path: str) -> dict:
         "eigvecs": np.array2string(eigvecs),
     }
 
-    summary = {
+    return {
         "name": name,
         "input": {"atoms": deepcopy(atoms)},
         "output": {"return_vars": return_vars},
     }
-    return summary

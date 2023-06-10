@@ -338,9 +338,7 @@ def _mass_weighted_hessian(masses: list | np.array, hessian: np.ndarray) -> np.n
         raise ValueError("Incompatible dimensions of masses and hessian.")
 
     sqrt_masses = np.sqrt(np.outer(masses, masses))
-    mass_weighted_hessian = hessian / np.tile(sqrt_masses, (3, 3))
-
-    return mass_weighted_hessian
+    return hessian / np.tile(sqrt_masses, (3, 3))
 
 
 def _get_freq_in_cm_inv(masses, reshaped_hessian):
