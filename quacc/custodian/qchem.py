@@ -58,15 +58,17 @@ def run_custodian(
     # Run Q-Chem
 
     jobs = [
-            QCJob(
-                qchem_command=qchem_cmd,
-                max_cores=qchem_max_cores,
-                calc_loc=qchem_calc_loc,
-            )
-        ]
+        QCJob(
+            qchem_command=qchem_cmd,
+            max_cores=qchem_max_cores,
+            calc_loc=qchem_calc_loc,
+        )
+    ]
 
     c = Custodian(
-        handlers, jobs, max_errors=qchem_custodian_max_errors,
+        handlers,
+        jobs,
+        max_errors=qchem_custodian_max_errors,
     )
 
     c.run()

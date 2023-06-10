@@ -5,19 +5,19 @@ from __future__ import annotations
 
 import inspect
 import os
-import warnings
 import struct
-from monty.io import zopen
+import warnings
 
+import ase.units
 import numpy as np
 from ase import Atoms
-import ase.units
 from ase.calculators.calculator import FileIOCalculator
-from pymatgen.io.ase import AseAtomsAdaptor
-from pymatgen.io.qchem.sets import ForceSet
+from monty.io import zopen
 from pymatgen.core import Molecule
+from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.qchem.inputs import QCInput
 from pymatgen.io.qchem.outputs import QCOutput
+from pymatgen.io.qchem.sets import ForceSet
 
 from quacc import SETTINGS
 from quacc.custodian import qchem as custodian_qchem
@@ -47,7 +47,7 @@ class QChem(FileIOCalculator):
         self,
         input_atoms: Atoms,
         charge: None | int = None,
-        spin_multiplicity: None | int = None, 
+        spin_multiplicity: None | int = None,
         qchem_input_params: dict = {},
         use_custodian: bool = SETTINGS.QChem_CUSTODIAN,
         **kwargs,
@@ -61,8 +61,14 @@ class QChem(FileIOCalculator):
         self.kwargs = kwargs
 
         # Instantiate the calculator
-        FileIOCalculator.__init__(self, restart=None, ignore_bad_restart_file=FileIOCalculator._deprecated,
-                                  label=None, atoms=self.input_atoms, **self.kwargs)
+        FileIOCalculator.__init__(
+            self,
+            restart=None,
+            ignore_bad_restart_file=FileIOCalculator._deprecated,
+            label=None,
+            atoms=self.input_atoms,
+            **self.kwargs,
+        )
 
         # Get Q-Chem executable command
         command = self._manage_environment()
@@ -91,7 +97,9 @@ class QChem(FileIOCalculator):
         mol = AseAtomsAdaptor.get_molecule(atoms)
         if self.charge is not None:
             if self.spin_multiplicity is not None:
-                mol.set_charge_and_spin(charge=self.charge, spin_multiplicity=self.spin_multiplicity)
+                mol.set_charge_and_spin(
+                    charge=self.charge, spin_multiplicity=self.spin_multiplicity
+                )
             else:
                 mol.set_charge_and_spin(charge=self.charge)
         qcin = ForceSet(mol, **self.qchem_input_params)
@@ -99,7 +107,7 @@ class QChem(FileIOCalculator):
 
     def read_results(self):
         data = QCOutput("mol.qout").data
-        self.results['energy'] = data["final_energy"] * ase.units.Hartree
+        self.results["energy"] = data["final_energy"] * ase.units.Hartree
         tmp_grad_data = []
         with zopen("131.0", mode="rb") as file:
             binary = file.read()
@@ -118,6 +126,6 @@ class QChem(FileIOCalculator):
         gradient = data["gradients"][0]
         for ii, subgrad in enumerate(grad):
             for jj, val in enumerate(subgrad):
-                assert abs(gradient[ii,jj] - val) < 1e-7
-                gradient[ii,jj] = val
-        self.results['forces'] = gradient * (-ase.units.Hartree / ase.units.Bohr)
+                assert abs(gradient[ii, jj] - val) < 1e-7
+                gradient[ii, jj] = val
+        self.results["forces"] = gradient * (-ase.units.Hartree / ase.units.Bohr)

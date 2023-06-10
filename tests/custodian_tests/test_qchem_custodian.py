@@ -28,7 +28,9 @@ def patch_custodian_run(monkeypatch):
 def test_run_qchem_custodian(monkeypatch):
     run_custodian()
 
-    run_custodian(qchem_max_cores=40, qchem_calc_loc="/not_tmp", qchem_custodian_max_errors=20)
+    run_custodian(
+        qchem_max_cores=40, qchem_calc_loc="/not_tmp", qchem_custodian_max_errors=20
+    )
 
     with pytest.raises(ValueError):
         run_custodian(qchem_custodian_handlers="cow")
