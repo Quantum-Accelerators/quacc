@@ -23,7 +23,9 @@ def test_qchem_write_input_basic():
     calc = QChem(atoms)
     calc.write_input(atoms)
     qcinp = QCInput.from_file("mol.qin")
-    ref_qcinp = QCInput.from_file("examples/basic/mol.qin")
+    ref_qcinp = QCInput.from_file(
+        os.path.join(FILE_DIR, "examples", "basic", "mol.qin")
+    )
     assert qcinp.as_dict() == ref_qcinp.as_dict()
     os.remove("mol.qin")
 
@@ -35,7 +37,9 @@ def test_qchem_write_input_intermediate():
     calc = QChem(atoms, charge=-1, qchem_input_params=params)
     calc.write_input(atoms)
     qcinp = QCInput.from_file("mol.qin")
-    ref_qcinp = QCInput.from_file("examples/intermediate/mol.qin")
+    ref_qcinp = QCInput.from_file(
+        os.path.join(FILE_DIR, "examples", "basic", "mol.qin")
+    )
     assert qcinp.as_dict() == ref_qcinp.as_dict()
     os.remove("mol.qin")
 
@@ -54,7 +58,9 @@ def test_qchem_write_input_advanced():
     calc = QChem(atoms, charge=-1, spin_multiplicity=2, qchem_input_params=params)
     calc.write_input(atoms)
     qcinp = QCInput.from_file("mol.qin")
-    ref_qcinp = QCInput.from_file("examples/advanced/mol.qin")
+    ref_qcinp = QCInput.from_file(
+        os.path.join(FILE_DIR, "examples", "basic", "mol.qin")
+    )
     assert qcinp.as_dict() == ref_qcinp.as_dict()
     os.remove("mol.qin")
 
@@ -63,6 +69,6 @@ def test_qchem_read_results_basic():
     mol = Molecule.from_file(os.path.join(FILE_DIR, "test.xyz"))
     atoms = AseAtomsAdaptor.get_atoms(mol)
     calc = QChem(atoms)
-    os.chdir(os.path.join(FILE_DIR, "examples/basic"))
+    os.chdir(os.path.join(FILE_DIR, "examples", "basic"))
     calc.read_results()
     assert calc.results["forces"][0][0] == -1.3826330655069403
