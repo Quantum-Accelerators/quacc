@@ -195,10 +195,54 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml
 
+  tests-qchem:
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.10"]
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: setup.py
+
+      - name: Set up conda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          activate-environment: quacc-env
+
+      - name: Install pip packages
+        run: |
+          pip install .[strict,dev,qchem]
+          pip install chardet
+          pip install pytest-cov
+
+      - name: Run tests with pytest
+        run: pytest tests/recipes/dftb --cov=quacc --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        if: github.repository == 'quantum-accelerators/quacc'
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+
   release:
     runs-on: ubuntu-latest
-    needs: [tests-base, tests-tblite, tests-psi4, tests-dftbplus]
-    if: github.event_name == 'release' && needs.tests-base.result == 'success' && needs.tests-tblite.result == 'success' && needs.tests-psi4.result == 'success' && needs.tests-dftbplus.result == 'success'
+    needs: [tests-base, tests-tblite, tests-psi4, tests-dftbplus, tests-qchem]
+    if: github.event_name == 'release' && needs.tests-base.result == 'success' && needs.tests-tblite.result == 'success' && needs.tests-psi4.result == 'success' && needs.tests-dftbplus.result == 'success' && needs.tests-qchem.result == 'success'
     steps:
       - name: Check out repo
         uses: actions/checkout@v3

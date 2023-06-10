@@ -45,6 +45,7 @@ if __name__ == "__main__":
         ],
         extras_require={
             "fireworks": ["fireworks"],
+            "qchem": ["openbabel"],
             "tblite": ["tblite[ase]"],
             "dev": ["black==23.3.0", "isort==5.12.0", "pytest==7.3.1"],
             "docs": [
