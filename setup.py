@@ -52,6 +52,7 @@ if __name__ == "__main__":
                 "furo==2023.5.20",
                 "ipython==8.14.0",
                 "jsonschema[format]==4.17.3",
+                "myst-nb==0.17.2",
                 "myst_parser==1.0.0",
                 "numpydoc==1.5.0",
                 "sphinx_design==0.4.1",
