@@ -47,7 +47,7 @@ If you use Quacc in your work, please cite it as follows:
 
 ## Inspiration
 
-Quacc was originally inspired by [Atomate2](https://github.com/materialsproject/atomate2). Some of the unique differences are discussed in the [FAQ section](https://quantum-accelerators.github.io/quacc/about/faq.html) of the documentation.
+Quacc was originally inspired by [Atomate2](https://github.com/materialsproject/atomate2). Refer to the [FAQ section](https://quantum-accelerators.github.io/quacc/about/faq.html) of the documentation for how these codes differ.
 
 ## License ⚖️
 
