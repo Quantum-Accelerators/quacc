@@ -19,11 +19,11 @@ except:
     "Openbabel must be installed. Try conda install -c conda-forge openbabel",
 )
 def run_custodian(
-    qchem_cmd: str = SETTINGS.QChem_CMD,
-    qchem_max_cores: int = SETTINGS.QChem_MAX_CORES,
-    qchem_calc_loc: str = SETTINGS.QChem_CALC_LOC,
-    qchem_custodian_max_errors: int = SETTINGS.QChem_CUSTODIAN_MAX_ERRORS,
-    qchem_custodian_handlers: list[str] = SETTINGS.QChem_CUSTODIAN_HANDLERS,
+    qchem_cmd: str = SETTINGS.QCHEM_CMD,
+    qchem_max_cores: int = SETTINGS.QCHEM_MAX_CORES,
+    qchem_calc_loc: str = SETTINGS.QCHEM_CALC_LOC,
+    qchem_custodian_max_errors: int = SETTINGS.QCHEM_CUSTODIAN_MAX_ERRORS,
+    qchem_custodian_handlers: list[str] = SETTINGS.QCHEM_CUSTODIAN_HANDLERS,
 ) -> None:
     """
     Function to run QChem Custodian

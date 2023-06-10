@@ -48,7 +48,7 @@ class QChem(FileIOCalculator):
         charge: None | int = None,
         spin_multiplicity: None | int = None,
         qchem_input_params: dict = {},
-        use_custodian: bool = SETTINGS.QChem_CUSTODIAN,
+        use_custodian: bool = SETTINGS.QCHEM_CUSTODIAN,
         **kwargs,
     ):
         # Assign variables to self

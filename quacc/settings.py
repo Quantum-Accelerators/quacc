@@ -133,27 +133,27 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
 
     # Q-Chem Settings: Main
-    QChem_CMD: str = Field(
+    QCHEM_CMD: str = Field(
         "qchem", description="Command to run the standard version of Q-Chem."
     )
 
-    QChem_MAX_CORES: int = Field(
+    QCHEM_MAX_CORES: int = Field(
         32, description="Maximum number of cores to use for the Q-Chem calculation."
     )
 
-    QChem_CALC_LOC: str = Field(
+    QCHEM_CALC_LOC: str = Field(
         "/tmp",
         description="Compute-node local scratch directory in which Q-Chem should perform IO.",
     )
 
     # Q-Chem Settings: Custodian
-    QChem_CUSTODIAN: bool = Field(
+    QCHEM_CUSTODIAN: bool = Field(
         True, description="Whether Custodian should be used to run Q-Chem"
     )
-    QChem_CUSTODIAN_MAX_ERRORS: int = Field(
+    QCHEM_CUSTODIAN_MAX_ERRORS: int = Field(
         5, description="Maximum errors for Q-Chem Custodian"
     )
-    QChem_CUSTODIAN_HANDLERS: List[str] = Field(
+    QCHEM_CUSTODIAN_HANDLERS: List[str] = Field(
         [
             "QChemErrorHandler",
         ],
