@@ -181,7 +181,7 @@ def run_ase_opt(
         opt_kwargs["trajectory"] = "opt.traj"
 
     # Get optimizer
-    if optimizer.lower() in ("sella", "sella_irc"):
+    if optimizer.lower() in {"sella", "sella_irc"}:
         try:
             from sella import IRC, Sella
         except ImportError as e:
