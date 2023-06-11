@@ -29,6 +29,16 @@ class QChem(FileIOCalculator):
     ----------
     input_atoms
         The Atoms object to be used for the calculation.
+    cores
+        Number of cores to use for the Q-Chem calculation.
+    charge
+        The total charge of the molecular system.
+        Effectively defaults to zero.
+    spin_multiplicity
+        The spin multiplicity of the molecular system.
+        Effectively defaults to the lowest spin state given the molecular structure and charge.
+    qchem_input_params
+        Dictionary of Q-Chem input parameters to be passed to pymatgen's ForceSet.
     use_custodian
         Whether to use Custodian to run Q-Chem.
         Default is True in settings.
@@ -45,6 +55,7 @@ class QChem(FileIOCalculator):
     def __init__(
         self,
         input_atoms: Atoms,
+        cores: int,
         charge: None | int = None,
         spin_multiplicity: None | int = None,
         qchem_input_params: dict = None,
@@ -53,6 +64,7 @@ class QChem(FileIOCalculator):
     ):
         # Assign variables to self
         self.input_atoms = input_atoms
+        self.cores = cores
         self.charge = charge
         self.spin_multiplicity = spin_multiplicity
         self.qchem_input_params = qchem_input_params
@@ -87,7 +99,7 @@ class QChem(FileIOCalculator):
         if self.use_custodian:
             # Return the command flag
             run_qchem_custodian_file = os.path.abspath(inspect.getfile(custodian_qchem))
-            return f"python {run_qchem_custodian_file}"
+            return f"python {run_qchem_custodian_file} {self.cores}"
         else:
             warnings.warn("Can only run Q-Chem via Custodian currently!")
             return None
