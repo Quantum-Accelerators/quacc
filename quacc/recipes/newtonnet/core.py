@@ -9,9 +9,8 @@ import covalent as ct
 import numpy as np
 from ase.atoms import Atoms
 from ase.data import atomic_masses
-from ase.units import fs
+from ase.units import _c, fs
 from monty.dev import requires
-from scipy.constants import c
 
 from quacc.schemas.ase import summarize_opt_run
 from quacc.util.calc import run_ase_opt
@@ -22,7 +21,6 @@ try:
 except ImportError:
     NewtonNet = None
 
-# TODO: Please all units based on ASE for internal consistency
 # TODO: Add `model_path` and `settings_path` to the global Quacc settings. Then remove them from the kwargs.
 # TODO: Add docstrings and typehints for all functions/classes.
 
@@ -350,7 +348,7 @@ def _get_freq_in_cm_inv(masses, reshaped_hessian):
     eigvals = np.sort(np.real(eigvals))
 
     # Calculate frequencies in cm^-1
-    freqs = np.emath.sqrt(eigvals) * fs * (10**15) / (c * 100 * 2 * np.pi)
+    freqs = np.emath.sqrt(eigvals) * fs * (10**15) / (_c * 100 * 2 * np.pi)
     return [freqs, eigvecs]
 
 
