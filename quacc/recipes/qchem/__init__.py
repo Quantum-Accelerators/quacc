@@ -1,1 +1,1 @@
-"""Recipes for tblite"""
+"""Recipes for Q-Chem"""
