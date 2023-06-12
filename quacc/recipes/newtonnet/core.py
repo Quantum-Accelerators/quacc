@@ -22,6 +22,7 @@ try:
 except ImportError:
     NewtonNet = None
 
+# TODO: There is currently no run_kwargs variable.
 # TODO: Refactor so there's less copy/paste
 # TODO: Do we need the model_path and config_path as kwargs or are global settings okay?
 # TODO: Are there "standard" models and configs provided with NewtonNet? If so,
