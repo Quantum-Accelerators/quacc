@@ -8,8 +8,8 @@ start/demo
 :caption: Installation Guide 🔧
 :hidden:
 install/install
-install/codes
 install/covalent
+install/codes
 install/advanced/index
 ```
 
@@ -49,6 +49,10 @@ about/license
 [Discussion Forum](https://github.com/quantum-accelerators/quacc/discussions)
 
 Quacc is a flexible platform for high-throughput, database-driven computational materials science and quantum chemistry.
+
+```{note}
+QuAcc is currently in active development. It is fully functional and ready to use, but note that the API is subject to change depending on user feedback.
+```
 
 ![Quacc logo](_static/quacc_logo_wide.svg)
 
