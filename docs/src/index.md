@@ -8,8 +8,8 @@ start/demo
 :caption: Installation Guide 🔧
 :hidden:
 install/install
-install/codes
 install/covalent
+install/codes
 install/advanced/index
 ```
 
