@@ -127,6 +127,7 @@ def run_ase_opt(
     max_steps: int = 500,
     optimizer: str = "FIRE",
     opt_kwargs: dict | None = None,
+    run_kwargs: dict | None = None,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
     copy_files: list[str] | None = None,
@@ -151,6 +152,8 @@ def run_ase_opt(
         Name of optimizer class to use.
     opt_kwargs
         Dictionary of kwargs for the optimizer.
+    run_kwargs
+        Dictionary of kwargs for the run() method of the optimizer.
     scratch_dir
         Path where a tmpdir should be made for running the calculation. If None,
         the current working directory will be used.
@@ -173,6 +176,7 @@ def run_ase_opt(
     scratch_dir = scratch_dir or cwd
     symlink = os.path.join(cwd, "tmp_dir")
     opt_kwargs = opt_kwargs or {}
+    run_kwargs = run_kwargs or {}
 
     if not os.path.exists(scratch_dir):
         os.makedirs(scratch_dir)
@@ -219,7 +223,7 @@ def run_ase_opt(
 
     # Run calculation
     os.chdir(tmpdir)
-    dyn.run(fmax=fmax, steps=max_steps)
+    dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
     os.chdir(cwd)
 
     # Gzip files in tmpdir

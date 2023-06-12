@@ -4,11 +4,13 @@ Core recipes for the NewtonNet code
 from __future__ import annotations
 
 import os
+from typing import Literal
 
 import covalent as ct
 import numpy as np
 from ase.atoms import Atoms
 from ase.data import atomic_masses
+from ase.optimize.optimize import Optimizer
 from ase.units import _c, fs
 from monty.dev import requires
 
@@ -21,11 +23,10 @@ try:
     from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
 except ImportError:
     NewtonNet = None
+# TODO: Add reasonable defaults to settings
+# TODO: remove paths from kwargs
 
-# TODO: There is currently no run_kwargs variable.
-# TODO: Do we need the model_path and config_path as kwargs or are global settings okay?
-# TODO: Are there "standard" models and configs provided with NewtonNet? If so,
-#   let's pull from those by default.
+
 # TODO: Refactor so there's less copy/paste
 # TODO: Make sure the calculation fails gracefully if paths aren't set correctly.
 # TODO: Not sure we want all these to be individual Slurm jobs since they're fast? Might
@@ -39,15 +40,13 @@ except ImportError:
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def ts_job(
     atoms: Atoms,
-    model_path: str = SETTINGS.NEWTONNET_MODEL_PATH,
-    config_path: str = SETTINGS.NEWTONNET_CONFIG_PATH,
     fmax: float = 0.01,
     max_steps: int = 1000,
     optimizer: str = "sella",
     temperature: float = 298.15,
     pressure: float = 1.0,
-    ts_type: int = 1,  # TODO: this is too vague
-    calc_final_freqs: bool = True,
+    custom_hessian: bool = False,
+    run_freq: bool = True,
     newtonnet_kwargs: dict | None = None,
     opt_kwargs: dict | None = None,
 ) -> dict:
@@ -59,17 +58,22 @@ def ts_job(
 
     # Define calculator
     mlcalculator = NewtonNet(
-        model_path=model_path,
-        config_path=config_path,
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
+        config_path=SETTINGS.NEWTONNET_CONFIG_PATH,
         **newtonnet_kwargs,
     )
     atoms.calc = mlcalculator
 
-    opt_kwargs["internal"] = True
-    if ts_type == 0:
-        opt_kwargs["hessian_function"] = _get_hessian(atoms)
-        opt_kwargs["diag_every_n"] = 0
+    # Sella-related parameters
+    if optimizer.lower() == "sella":
+        opt_kwargs["internal"] = True
+        if custom_hessian:
+            opt_kwargs["diag_every_n"] = 0
+            opt_kwargs["hessian_function"] = _get_hessian(atoms)
+    elif custom_hessian:
+        raise ValueError("Custom hessian can only be used with Sella.")
 
+    # Run the optimization
     dyn = run_ase_opt(
         atoms,
         fmax=fmax,
@@ -78,39 +82,16 @@ def ts_job(
         opt_kwargs=opt_kwargs,
     )
     summary = summarize_opt_run(dyn, additional_fields={"name": "Sella TS"})
-    if calc_final_freqs:
-        mol = summary["atoms"]
-        mol.calc = mlcalculator
-        mlcalculator.calculate(mol)
-        hessian = mlcalculator.results["hessian"]
-        n_atoms = np.shape(hessian)[0]
-        hessian_reshaped = np.reshape(hessian, (n_atoms * 3, n_atoms * 3))
 
-        atomic_numbers = mol.get_atomic_numbers()
-        masses = [atomic_masses[number] for number in atomic_numbers]
-
-        freqs_cm_inv, eigvecs = _get_freq_in_cm_inv(masses, hessian_reshaped)
-
-        summary["frequencies_real_cm_inv"] = np.real(freqs_cm_inv)
-        summary["frequencies_imag_cm_inv"] = np.imag(freqs_cm_inv)
-        summary["normal_modes_real"] = np.real(eigvecs)
-        summary["normal_modes_imag"] = np.imag(eigvecs)
-
-        freqs_eV = freqs_cm_inv * 1.23981 * 10 ** (-4)
-        summary["frequencies_real_eV"] = np.real(freqs_eV)
-        summary["frequencies_imag_eV"] = np.imag(freqs_eV)
-
-        igt = ideal_gas(
-            mol,
-            freqs_eV,
-            energy=mlcalculator.results["energy"],
-        )
-        summary["thermo_results"] = summarize_thermo_run(
-            igt,
+    # Run an optional frequency calculation
+    if run_freq:
+        freq_summary = freq_job(
+            summary["atoms"],
             temperature=temperature,
             pressure=pressure,
-            additional_fields={"name": "Sella Thermo"},
+            newtonnet_kwargs=newtonnet_kwargs,
         )
+        summary["thermo_results"] = freq_summary
     return summary
 
 
@@ -118,32 +99,33 @@ def ts_job(
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def irc_job(
     atoms: Atoms,
-    model_path: str = SETTINGS.NEWTONNET_MODEL_PATH,
-    config_path: str = SETTINGS.NEWTONNET_CONFIG_PATH,
     direction: str = "forward",
     fmax: float = 0.01,
     max_steps: int = 1000,
-    optimizer: str = "sella_irc",
+    optimizer: str = Literal["sella_irc"],
     temperature: float = 298.15,
     pressure: float = 1.0,
-    calc_final_freqs: bool = True,
+    run_freq: bool = True,
     newtonnet_kwargs: dict | None = None,
     opt_kwargs: dict | None = None,
 ) -> dict:
-    for f in [model_path, config_path]:
-        if not os.path.exists(f):
-            raise ValueError(f"{f} does not exist.")
+    """
+    TODO: docstrings
+    """
 
     newtonnet_kwargs = newtonnet_kwargs or {}
     opt_kwargs = opt_kwargs or {}
 
+    # Define calculator
     mlcalculator = NewtonNet(
-        model_path=model_path,
-        config_path=config_path,
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
+        config_path=SETTINGS.NEWTONNET_CONFIG_PATH,
         **newtonnet_kwargs,
     )
     atoms.calc = mlcalculator
-    run_kwargs = {"direction": direction}
+
+    # Run IRC
+    run_kwargs = {"direction": direction.lower()}
     dyn = run_ase_opt(
         atoms,
         fmax=fmax,
@@ -153,35 +135,16 @@ def irc_job(
         run_kwargs=run_kwargs,
     )
     summary = summarize_opt_run(dyn, additional_fields={"name": "Sella IRC"})
-    if calc_final_freqs:
-        mol = summary["atoms"]
-        mol.calc = mlcalculator
-        mlcalculator.calculate(mol)
-        hessian = mlcalculator.results["hessian"]
-        n_atoms = np.shape(hessian)[0]
-        hessian_reshaped = np.reshape(hessian, (n_atoms * 3, n_atoms * 3))
 
-        atomic_numbers = mol.get_atomic_numbers()
-        masses = [atomic_masses[number] for number in atomic_numbers]
-
-        freqs_cm_inv, eigvecs = _get_freq_in_cm_inv(masses, hessian_reshaped)
-
-        summary["frequencies_real_cm_inv"] = np.real(freqs_cm_inv)
-        summary["frequencies_imag_cm_inv"] = np.imag(freqs_cm_inv)
-        summary["normal_modes_real"] = np.real(eigvecs)
-        summary["normal_modes_imag"] = np.imag(eigvecs)
-
-        freqs_eV = freqs_cm_inv * 1.23981 * 10 ** (-4)
-        summary["frequencies_real_eV"] = np.real(freqs_eV)
-        summary["frequencies_imag_eV"] = np.imag(freqs_eV)
-
-        igt = ideal_gas(mol, freqs_eV, energy=mlcalculator.results["energy"])
-        summary["thermo_results"] = summarize_thermo_run(
-            igt,
+    # Run optional frequency job
+    if run_freq:
+        freq_summary = freq_job(
+            summary["atoms"],
             temperature=temperature,
             pressure=pressure,
-            additional_fields={"name": "Sella Thermo"},
+            newtonnet_kwargs=newtonnet_kwargs,
         )
+        summary["thermo_results"] = freq_summary
     return summary
 
 
@@ -189,34 +152,39 @@ def irc_job(
 # TODO: Must reduce copy-pasting
 @ct.electron
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
-def irc_job1(
+def quasi_irc_job(
     atoms: Atoms,
-    model_path: str = SETTINGS.NEWTONNET_MODEL_PATH,
-    config_path: str = SETTINGS.NEWTONNET_CONFIG_PATH,
     direction: str = "forward",
     fmax: float = 0.01,
     max_steps1: int = 5,
     max_steps2: int = 1000,
-    optimizer1: str = "sella_irc",
+    optimizer1: str = Literal["sella_irc"],
     optimizer2: str = "sella",
     temperature: float = 298.15,
     pressure: float = 1.0,
-    calc_final_freqs: bool = True,
+    run_freq: bool = True,
     newtonnet_kwargs: dict | None = None,
     opt1_kwargs: dict | None = None,
     opt2_kwargs: dict | None = None,
 ) -> dict:
-    for f in [model_path, config_path]:
-        if not os.path.exists(f):
-            raise ValueError(f"{f} does not exist.")
-    mlcalculator = NewtonNet(
-        model_path=model_path,
-        config_path=config_path,
+    """
+    TODO: docstrings
+    """
+    newtonnet_kwargs = newtonnet_kwargs or {}
+    opt1_kwargs = opt1_kwargs or {}
+    opt2_kwargs = opt2_kwargs or {}
+
+    # Define calculator
+    mlcalculator1 = NewtonNet(
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
+        config_path=SETTINGS.NEWTONNET_CONFIG_PATH,
         **newtonnet_kwargs,
     )
-    atoms.calc = mlcalculator
-    run_kwargs = {"direction": direction}
-    dyn1 = run_ase_opt(
+    atoms.calc = mlcalculator1
+
+    # Run IRC
+    run_kwargs = {"direction": direction.lower()}
+    dyn = run_ase_opt(
         atoms,
         fmax=fmax,
         max_steps=max_steps1,
@@ -224,59 +192,41 @@ def irc_job1(
         opt_kwargs=opt1_kwargs,
         run_kwargs=run_kwargs,
     )
-    summary1 = summarize_opt_run(dyn1, additional_fields={"name": "Sella IRC 1"})
+    irc_summary = summarize_opt_run(dyn, additional_fields={"name": "Sella IRC"})
 
-    atoms2 = summary1["atoms"]
+    # Run opt
+    atoms = irc_summary["atoms"]
     mlcalculator = NewtonNet(
-        model_path=model_path,
-        config_path=config_path,
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
+        config_path=SETTINGS.NEWTONNET_CONFIG_PATH,
         **newtonnet_kwargs,
     )
-    atoms2.calc = mlcalculator
+    atoms.calc = mlcalculator
     opt2_kwargs["internal"] = True
     opt2_kwargs["order"] = 0
-    opt2_kwargs["trajectory"] = "opt2.traj"
-    opt2_kwargs["restart"] = "opt2.pckl"
 
     dyn2 = run_ase_opt(
-        atoms2,
+        atoms,
         fmax=fmax,
         max_steps=max_steps2,
         optimizer=optimizer2,
         opt_kwargs=opt2_kwargs,
     )
-    summary2 = summarize_opt_run(dyn2, additional_fields={"name": "Sella IRC 2"})
-    summary1["optimization"] = summary2
-    if calc_final_freqs:
-        mol = summary2["atoms"]
-        mol.calc = mlcalculator
-        mlcalculator.calculate(mol)
-        hessian = mlcalculator.results["hessian"]
-        n_atoms = np.shape(hessian)[0]
-        hessian_reshaped = np.reshape(hessian, (n_atoms * 3, n_atoms * 3))
+    opt_summary = summarize_opt_run(dyn2, additional_fields={"name": "Sella Opt"})
 
-        atomic_numbers = mol.get_atomic_numbers()
-        masses = [atomic_masses[number] for number in atomic_numbers]
+    summary = {"IRC": irc_summary, "Opt": opt_summary}
 
-        freqs_cm_inv, eigvecs = _get_freq_in_cm_inv(masses, hessian_reshaped)
-
-        summary1["optimization"]["frequencies_real_cm_inv"] = np.real(freqs_cm_inv)
-        summary1["optimization"]["frequencies_imag_cm_inv"] = np.imag(freqs_cm_inv)
-        summary1["optimization"]["normal_modes_real"] = np.real(eigvecs)
-        summary1["optimization"]["normal_modes_imag"] = np.imag(eigvecs)
-
-        freqs_eV = freqs_cm_inv * 1.23981 * 10 ** (-4)
-        summary1["optimization"]["frequencies_real_eV"] = np.real(freqs_eV)
-        summary1["optimization"]["frequencies_imag_eV"] = np.imag(freqs_eV)
-
-        igt = ideal_gas(mol, freqs_eV, energy=mlcalculator.results["energy"])
-        summary1["thermo_results"] = summarize_thermo_run(
-            igt,
+    # Run optional frequency
+    if run_freq:
+        freq_summary = freq_job(
+            opt_summary["atoms"],
             temperature=temperature,
             pressure=pressure,
-            additional_fields={"name": "Sella Thermo"},
+            newtonnet_kwargs=newtonnet_kwargs,
         )
-    return summary1
+        summary["freq"] = freq_summary
+
+    return summary
 
 
 @ct.electron
@@ -286,23 +236,17 @@ def freq_job(
     temperature: float = 298.15,
     pressure: float = 1.0,
     newtonnet_kwargs: dict = None,
-    model_path: str | list[str] = SETTINGS.NEWTONNET_MODEL_PATH,
-    config_path: str | list[str] = SETTINGS.NEWTONNET_CONFIG_PATH,
 ) -> dict:
     """
     # TODO: Add docstrings
     """
     newtonnet_kwargs = newtonnet_kwargs or {}
 
-    # Make sure user sets required paths
-    if not model_path or not config_path:
-        raise ValueError(
-            "model_path and config_path must be specified in either the global Quacc settings or as kwargs."
-        )
-
     # Define calculator
     mlcalculator = NewtonNet(
-        model_path=model_path, config_path=config_path, **newtonnet_kwargs
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
+        config_path=SETTINGS.NEWTONNET_CONFIG_PATH,
+        **newtonnet_kwargs,
     )
     atoms.calc = mlcalculator
 
@@ -311,20 +255,17 @@ def freq_job(
     hessian = mlcalculator.results["hessian"]
 
     # Calculate frequencies
-    n_atoms = np.shape(hessian)[0]  # TODO: can't this be obtained from len(atoms)?
+    n_atoms = len(atoms)
     hessian_reshaped = np.reshape(hessian, (n_atoms * 3, n_atoms * 3))
-    eigvals, _ = np.linalg.eig(hessian_reshaped)
-    vib_freqs = np.sqrt(eigvals)
-
-    # TODO: Are the units right on the frequencies? cm^-1 but I don't see the conversion
+    freqs_cm_inv, _ = _get_freq_in_cm_inv(atoms.get_masses(), hessian_reshaped)
 
     # Sort the frequencies (can remove after ASE MR 2906 is merged)
-    vib_freqs = list(vib_freqs)
-    vib_freqs.sort(key=np.imag, reverse=True)
-    vib_freqs.sort(key=np.real)
+    freqs_cm_inv = list(freqs_cm_inv)
+    freqs_cm_inv.sort(key=np.imag, reverse=True)
+    freqs_cm_inv.sort(key=np.real)
 
     # Make IdealGasThermo object
-    igt = ideal_gas(atoms, vib_freqs, energy=mlcalculator.results["energy"])
+    igt = ideal_gas(atoms, freqs_cm_inv, energy=mlcalculator.results["energy"])
 
     return summarize_thermo_run(
         igt,
