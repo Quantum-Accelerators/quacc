@@ -31,6 +31,7 @@ except ImportError:
 # TODO: Not sure we want all these to be individual Slurm jobs since they're fast? Might
 #      be better to make them regular functions and have a single Slurm job combining them.
 # TODO: Add docstrings and typehints for all functions/classes.
+# TODO: Make sure the calculation fails gracefully if paths aren't set correctly.
 
 
 @ct.electron
@@ -54,11 +55,6 @@ def ts_job(
     """
     newtonnet_kwargs = newtonnet_kwargs or {}
     opt_kwargs = opt_kwargs or {}
-
-    if not model_path or not config_path:
-        raise ValueError(
-            "model_path and config_path must be specified in either the global Quacc settings or as kwargs."
-        )
 
     # Define calculator
     mlcalculator = NewtonNet(
@@ -393,5 +389,5 @@ def _get_freq_in_cm_inv(masses, reshaped_hessian):
 
 # TODO: type hints and docstrings
 def _get_hessian(atoms):
-    atoms.calc.calculate(atoms)
+    atoms.calc.calculate()
     return atoms.calc.results["hessian"].reshape((-1, 3 * len(atoms)))

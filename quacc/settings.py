@@ -131,11 +131,11 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # NewtonNet Settings
     # ---------------------------
-    NEWTONNET_MODEL_PATH: str | List[str] = Field(
-        None, description="Path to NewtonNet .tar model"
+    NEWTONNET_MODEL_PATH: Union[str, List[str]] = Field(
+        "best_model_state.tar", description="Path to NewtonNet .tar model"
     )
-    NEWTONNET_CONFIG_PATH: str | List[str] = Field(
-        None, description="Path to NewtonNet YAML settings file"
+    NEWTONNET_CONFIG_PATH: Union[str, List[str]] = Field(
+        "config.yml", description="Path to NewtonNet YAML settings file"
     )
 
     class Config:
