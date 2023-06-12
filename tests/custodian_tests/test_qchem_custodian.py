@@ -35,7 +35,7 @@ def patch_custodian_run(monkeypatch):
 def test_run_qchem_custodian(monkeypatch):
     from quacc.custodian.qchem import run_custodian
 
-    run_custodian(qchem_cores=5)
+    run_custodian()
 
     run_custodian(
         qchem_cores=40, qchem_cmd="qchem -save", qchem_calc_loc="/not_tmp", qchem_custodian_max_errors=20

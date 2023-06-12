@@ -3,6 +3,7 @@ Custodian handlers for QChem
 """
 from __future__ import annotations
 import sys
+import multiprocessing
 
 from custodian import Custodian
 from monty.dev import requires
@@ -20,7 +21,7 @@ except ImportError:
     "Openbabel must be installed. Try conda install -c conda-forge openbabel",
 )
 def run_custodian(
-    qchem_cores: int,
+    qchem_cores: int = multiprocessing.cpu_count(),
     qchem_cmd: str = SETTINGS.QCHEM_CMD,
     qchem_calc_loc: str = SETTINGS.QCHEM_CALC_LOC,
     qchem_custodian_max_errors: int = SETTINGS.QCHEM_CUSTODIAN_MAX_ERRORS,
