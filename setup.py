@@ -64,7 +64,7 @@ if __name__ == "__main__":
                 "cclib==1.7.2",
                 "covalent==0.224.0-rc.0",  # waiting on > 0.222.0
                 "custodian==2023.6.5",
-                "emmet-core==0.55.3",
+                "emmet-core==0.55.5",
                 "jobflow==0.1.11",
                 "maggma==0.51.4",
                 "monty==2023.5.8",
