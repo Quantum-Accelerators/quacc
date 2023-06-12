@@ -23,16 +23,16 @@ except ImportError:
     NewtonNet = None
 
 # TODO: There is currently no run_kwargs variable.
-# TODO: Refactor so there's less copy/paste
 # TODO: Do we need the model_path and config_path as kwargs or are global settings okay?
 # TODO: Are there "standard" models and configs provided with NewtonNet? If so,
-#   let's add them to quacc.presets so the user doesn't need to download them.
-# TODO: Might be better to add a convenience function to NewtonNet that returns frequencies
-# in the desired cm^-1 units so we don't need to do that in Quacc
+#   let's pull from those by default.
+# TODO: Refactor so there's less copy/paste
+# TODO: Make sure the calculation fails gracefully if paths aren't set correctly.
 # TODO: Not sure we want all these to be individual Slurm jobs since they're fast? Might
 #      be better to make them regular functions and have a single Slurm job combining them.
+# TODO: Might be better to add a convenience function to NewtonNet that returns frequencies
+# in the desired cm^-1 units so we don't need to do that in Quacc
 # TODO: Add docstrings and typehints for all functions/classes.
-# TODO: Make sure the calculation fails gracefully if paths aren't set correctly.
 
 
 @ct.electron
