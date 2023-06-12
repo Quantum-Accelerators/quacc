@@ -6,6 +6,7 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Literal
 
+import covalent as ct
 from ase.atoms import Atoms
 from monty.dev import requires
 
@@ -19,6 +20,8 @@ from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
 from quacc.util.thermo import ideal_gas
 from quacc.calculators.qchem import QChem
 
+
+@ct.electron
 def static_job(
     atoms: Atoms,
     qchem_kwargs: dict,
@@ -50,6 +53,7 @@ def static_job(
     )
 
 
+@ct.electron
 def opt_job(
     atoms: Atoms,
     qchem_kwargs: dict,
