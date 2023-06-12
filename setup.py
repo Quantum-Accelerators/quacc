@@ -46,7 +46,7 @@ if __name__ == "__main__":
         extras_require={
             "fireworks": ["fireworks"],
             "tblite": ["tblite[ase]"],
-            "dev": ["black==23.3.0", "isort==5.12.0", "pytest==7.3.1"],
+            "dev": ["black==23.3.0", "isort==5.12.0", "pytest==7.3.2"],
             "docs": [
                 "autodoc_pydantic==1.8.0",
                 "furo==2023.5.20",
@@ -62,11 +62,11 @@ if __name__ == "__main__":
                 "ase @ https://gitlab.com/argon214/ase/-/archive/efermi/ase-efermi.zip",  # waiting on >3.22.1
                 "atomate2 @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
                 "cclib==1.7.2",
-                "covalent==0.224.0-rc.0",  # waiting on > 0.222.0
+                "covalent==0.226.0rc0",  # waiting on > 0.222.0
                 "custodian==2023.6.5",
-                "emmet-core==0.55.3",
+                "emmet-core==0.55.5",
                 "jobflow==0.1.11",
-                "maggma==0.51.4",
+                "maggma==0.51.7",
                 "monty==2023.5.8",
                 "numpy==1.24.3",
                 "pydantic==1.10.2",
