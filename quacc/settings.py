@@ -128,6 +128,16 @@ class QuaccSettings(BaseSettings):
         description="After this many seconds, Custodian will stop running and ensure that VASP writes a STOPCAR",
     )
 
+    # ---------------------------
+    # NewtonNet Settings
+    # ---------------------------
+    NEWTONNET_MODEL_PATH: str | list[str] = Field(
+        None, description="Path to NewtonNet .tar model"
+    )
+    NEWTONNET_CONFIG_PATH: str | list[str] = Field(
+        None, description="Path to NewtonNet YAML settings file"
+    )
+
     class Config:
         """Pydantic config settings."""
 

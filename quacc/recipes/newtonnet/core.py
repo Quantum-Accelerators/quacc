@@ -12,6 +12,7 @@ from ase.data import atomic_masses
 from ase.units import _c, fs
 from monty.dev import requires
 
+from quacc import SETTINGS
 from quacc.schemas.ase import summarize_opt_run
 from quacc.util.calc import run_ase_opt
 from quacc.util.thermo import ideal_gas
@@ -23,14 +24,16 @@ except ImportError:
 
 # TODO: Add `model_path` and `settings_path` to the global Quacc settings. Then remove them from the kwargs.
 # TODO: Add docstrings and typehints for all functions/classes.
+# TODO: Do you ever really need to change the model_path or settings_path? If you only set it once, then
+#       remove from the kwargs and keep in global settings only.
 
 
 @ct.electron
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def ts_job(
     atoms: Atoms,
-    model_path: str = "training_18/models/best_model_state.tar",
-    settings_path: str = "training_18/run_scripts/config0.yml",
+    model_path: str = SETTINGS.NEWTONNET_MODEL_PATH,
+    settings_path: str = SETTINGS.NEWTONNET_SETTINGS_PATH,
     fmax: float = 0.01,
     max_steps: int = 1000,
     optimizer: str = "sella",
@@ -41,6 +44,11 @@ def ts_job(
     newtonnet_kwargs: dict | None = None,
     opt_kwargs: dict | None = None,
 ) -> dict:
+    if not model_path or not settings_path:
+        raise ValueError(
+            "model_path and settings_path must be specified in either the global Quacc settings or as kwargs."
+        )
+
     for f in [model_path, settings_path]:
         if not os.path.exists(f):
             raise ValueError(f"{f} does not exist.")
@@ -266,28 +274,33 @@ def irc_job1(
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def freq_job(
     atoms: Atoms,
-    model_path: str = "training_18/models/best_model_state.tar",
-    settings_path: str = "training_18/run_scripts/config0.yml",
     temperature: float = 298.15,
     pressure: float = 1.0,
-    calc_final_freqs: bool = True,
     newtonnet_kwargs: dict = None,
+    model_path: str | list[str] = SETTINGS.NEWTONNET_MODEL_PATH,
+    settings_path: str | list[str] = SETTINGS.NEWTONNET_CONFIG_PATH,
 ) -> dict:
-    for f in [model_path, settings_path]:
-        if not os.path.exists(f):
-            raise ValueError(f"{f} does not exist.")
+    """
+    # TODO: Add docstrings
+    """
 
+    # Make sure user sets required paths
+    if not model_path or not settings_path:
+        raise ValueError(
+            "model_path and settings_path must be specified in either the global Quacc settings or as kwargs."
+        )
+
+    # Define calculator
     mlcalculator = NewtonNet(
-        model_path=model_path,
-        settings_path=settings_path,
-        **newtonnet_kwargs,
+        model_path=model_path, settings_path=settings_path, **newtonnet_kwargs
     )
-    atoms.calc = mlcalculator
+
+    # Run calculator
     mlcalculator.calculate(atoms)
     hessian = mlcalculator.results["hessian"]
     n_atoms = np.shape(hessian)[0]
     hessian_reshaped = np.reshape(hessian, (n_atoms * 3, n_atoms * 3))
-    eigvals, eigvecs = np.linalg.eig(hessian_reshaped)
+    eigvals, _ = np.linalg.eig(hessian_reshaped)
     # Note: frequencies are added below as np.sqrt(eigvals)
     thermo_summary = ideal_gas(
         atoms,
