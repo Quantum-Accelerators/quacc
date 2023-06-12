@@ -23,16 +23,13 @@ try:
     from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
 except ImportError:
     NewtonNet = None
+
+
 # TODO: Add reasonable defaults to settings
-# TODO: remove paths from kwargs
-
-
-# TODO: Refactor so there's less copy/paste
+# TODO: Reduce number of kwargs
 # TODO: Make sure the calculation fails gracefully if paths aren't set correctly.
 # TODO: Not sure we want all these to be individual Slurm jobs since they're fast? Might
 #      be better to make them regular functions and have a single Slurm job combining them.
-# TODO: Might be better to add a convenience function to NewtonNet that returns frequencies
-# in the desired cm^-1 units so we don't need to do that in Quacc
 # TODO: Add docstrings and typehints for all functions/classes.
 
 
