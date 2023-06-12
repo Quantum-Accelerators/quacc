@@ -22,13 +22,15 @@ try:
 except ImportError:
     NewtonNet = None
 
-# TODO: Do we need the model_path and config_path as kwargs or not?
+# TODO: Refactor so there's less copy/paste
+# TODO: Do we need the model_path and config_path as kwargs or are global settings okay?
+# TODO: Are there "standard" models and configs provided with NewtonNet? If so,
+#   let's add them to quacc.presets so the user doesn't need to download them.
 # TODO: Might be better to add a convenience function to NewtonNet that returns frequencies
 # in the desired cm^-1 units so we don't need to do that in Quacc
-# TODO: Add docstrings and typehints for all functions/classes.
 # TODO: Not sure we want all these to be individual Slurm jobs since they're fast? Might
 #      be better to make them regular functions and have a single Slurm job combining them.
-# TODO: Refactor so there's less copy/paste
+# TODO: Add docstrings and typehints for all functions/classes.
 
 
 @ct.electron
@@ -52,7 +54,7 @@ def ts_job(
             "model_path and config_path must be specified in either the global Quacc settings or as kwargs."
         )
 
-    for f in [model_path, config_path]:
+    for f in {model_path, config_path}:
         if not os.path.exists(f):
             raise ValueError(f"{f} does not exist.")
 
@@ -64,6 +66,7 @@ def ts_job(
         config_path=config_path,
         **newtonnet_kwargs,
     )
+    atoms.calc = mlcalculator
 
     opt_kwargs["internal"] = True
     if ts_type == 0:
@@ -79,7 +82,7 @@ def ts_job(
     )
     summary = summarize_opt_run(dyn, additional_fields={"name": "Sella TS"})
     if calc_final_freqs:
-        mol = traj[-1]
+        mol = summary["atoms"]
         mol.calc = mlcalculator
         mlcalculator.calculate(mol)
         hessian = mlcalculator.results["hessian"]
@@ -100,14 +103,17 @@ def ts_job(
         summary["frequencies_real_eV"] = np.real(freqs_eV)
         summary["frequencies_imag_eV"] = np.imag(freqs_eV)
 
-        thermo_summary = ideal_gas(
+        igt = ideal_gas(
             mol,
             freqs_eV,
-            temperature=temperature,
-            pressure=pressure,
             energy=mlcalculator.results["energy"],
         )
-        summary["thermo_results"] = thermo_summary["results"]
+        summary["thermo_results"] = summarize_thermo_run(
+            igt,
+            temperature=temperature,
+            pressure=pressure,
+            additional_fields={"name": "Sella Thermo"},
+        )
     return summary
 
 
@@ -151,7 +157,7 @@ def irc_job(
     )
     summary = summarize_opt_run(dyn, additional_fields={"name": "Sella IRC"})
     if calc_final_freqs:
-        mol = traj[-1]
+        mol = summary["atoms"]
         mol.calc = mlcalculator
         mlcalculator.calculate(mol)
         hessian = mlcalculator.results["hessian"]
@@ -172,14 +178,13 @@ def irc_job(
         summary["frequencies_real_eV"] = np.real(freqs_eV)
         summary["frequencies_imag_eV"] = np.imag(freqs_eV)
 
-        thermo_summary = ideal_gas(
-            mol,
-            freqs_eV,
+        igt = ideal_gas(mol, freqs_eV, energy=mlcalculator.results["energy"])
+        summary["thermo_results"] = summarize_thermo_run(
+            igt,
             temperature=temperature,
             pressure=pressure,
-            energy=mlcalculator.results["energy"],
+            additional_fields={"name": "Sella Thermo"},
         )
-        summary["thermo_results"] = thermo_summary["results"]
     return summary
 
 
@@ -222,9 +227,9 @@ def irc_job1(
         opt_kwargs=opt1_kwargs,
         run_kwargs=run_kwargs,
     )
-    summary1 = summarize_opt_run(dyn1, additional_fields={"name": name})
+    summary1 = summarize_opt_run(dyn1, additional_fields={"name": "Sella IRC 1"})
 
-    atoms2 = traj1[-1]
+    atoms2 = summary1["atoms"]
     mlcalculator = NewtonNet(
         model_path=model_path,
         config_path=config_path,
@@ -243,10 +248,10 @@ def irc_job1(
         optimizer=optimizer2,
         opt_kwargs=opt2_kwargs,
     )
-    summary2 = summarize_opt_run(dyn2, additional_fields={"name": name})
+    summary2 = summarize_opt_run(dyn2, additional_fields={"name": "Sella IRC 2"})
     summary1["optimization"] = summary2
     if calc_final_freqs:
-        mol = traj2[-1]
+        mol = summary2["atoms"]
         mol.calc = mlcalculator
         mlcalculator.calculate(mol)
         hessian = mlcalculator.results["hessian"]
@@ -267,14 +272,13 @@ def irc_job1(
         summary1["optimization"]["frequencies_real_eV"] = np.real(freqs_eV)
         summary1["optimization"]["frequencies_imag_eV"] = np.imag(freqs_eV)
 
-        thermo_summary = ideal_gas(
-            mol,
-            freqs_eV,
+        igt = ideal_gas(mol, freqs_eV, energy=mlcalculator.results["energy"])
+        summary1["thermo_results"] = summarize_thermo_run(
+            igt,
             temperature=temperature,
             pressure=pressure,
-            energy=mlcalculator.results["energy"],
+            additional_fields={"name": "Sella Thermo"},
         )
-        summary1["thermo_results"] = thermo_summary["results"]
     return summary1
 
 
