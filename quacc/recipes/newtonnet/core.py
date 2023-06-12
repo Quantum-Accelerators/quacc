@@ -44,23 +44,23 @@ def ts_job(
     optimizer: str = "sella",
     temperature: float = 298.15,
     pressure: float = 1.0,
-    ts_type: int = 1,
+    ts_type: int = 1,  # TODO: this is too vague
     calc_final_freqs: bool = True,
     newtonnet_kwargs: dict | None = None,
     opt_kwargs: dict | None = None,
 ) -> dict:
+    """
+    # TODO: docstring
+    """
+    newtonnet_kwargs = newtonnet_kwargs or {}
+    opt_kwargs = opt_kwargs or {}
+
     if not model_path or not config_path:
         raise ValueError(
             "model_path and config_path must be specified in either the global Quacc settings or as kwargs."
         )
 
-    for f in {model_path, config_path}:
-        if not os.path.exists(f):
-            raise ValueError(f"{f} does not exist.")
-
-    newtonnet_kwargs = newtonnet_kwargs or {}
-    opt_kwargs = opt_kwargs or {}
-
+    # Define calculator
     mlcalculator = NewtonNet(
         model_path=model_path,
         config_path=config_path,
