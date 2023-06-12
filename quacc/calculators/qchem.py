@@ -142,6 +142,7 @@ class QChem(FileIOCalculator):
             gradient = data["gradients"][0]
         for ii, subgrad in enumerate(grad):
             for jj, val in enumerate(subgrad):
-                assert abs(gradient[ii, jj] - val) < 1e-6
+                if abs(gradient[ii, jj] - val) > 1e-6:
+                    raise ValueError("Difference between gradient value in scratch file vs. output file should not be this large! Exiting...")
                 gradient[ii, jj] = val
         self.results["forces"] = gradient * (-units.Hartree / units.Bohr)
