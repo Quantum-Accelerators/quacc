@@ -24,6 +24,7 @@ def run_custodian(
     qchem_cores: int = multiprocessing.cpu_count(),
     qchem_cmd: str = SETTINGS.QCHEM_CMD,
     qchem_calc_loc: str = SETTINGS.QCHEM_CALC_LOC,
+    qchem_use_error_handlers: bool = SETTINGS.QCHEM_USE_ERROR_HANDLERS,
     qchem_custodian_max_errors: int = SETTINGS.QCHEM_CUSTODIAN_MAX_ERRORS,
 ) -> None:
     """
@@ -50,7 +51,10 @@ def run_custodian(
     from custodian.qchem.jobs import QCJob
 
     # Error handlers for Q-Chem
-    handlers = [QChemErrorHandler()]
+    if qchem_use_error_handlers:
+        handlers = [QChemErrorHandler()]
+    else:
+        handlers = []
 
     # Run Q-Chem
     jobs = [

@@ -55,11 +55,10 @@ class QChem(FileIOCalculator):
     def __init__(
         self,
         input_atoms: Atoms,
-        cores: int,
+        cores: None | int = None,
         charge: None | int = None,
         spin_multiplicity: None | int = None,
         qchem_input_params: dict = None,
-        use_custodian: bool = SETTINGS.QCHEM_CUSTODIAN,
         **kwargs,
     ):
         # Assign variables to self
@@ -68,7 +67,6 @@ class QChem(FileIOCalculator):
         self.charge = charge
         self.spin_multiplicity = spin_multiplicity
         self.qchem_input_params = qchem_input_params
-        self.use_custodian = use_custodian
         self.qchem_input_params = qchem_input_params or {}
         self.kwargs = kwargs
 
@@ -95,14 +93,9 @@ class QChem(FileIOCalculator):
             The command flag to pass to the Q-Chem calculator.
         """
 
-        # Check if Custodian should be used
-        if self.use_custodian:
-            # Return the command flag
-            run_qchem_custodian_file = os.path.abspath(inspect.getfile(custodian_qchem))
-            return f"python {run_qchem_custodian_file} {self.cores}"
-        else:
-            warnings.warn("Can only run Q-Chem via Custodian currently!")
-            return None
+        # Return the command flag
+        run_qchem_custodian_file = os.path.abspath(inspect.getfile(custodian_qchem))
+        return f"python {run_qchem_custodian_file} {self.cores}"
 
     def write_input(self, atoms, properties=None, system_changes=None):
         FileIOCalculator.write_input(self, atoms, properties, system_changes)
@@ -115,6 +108,10 @@ class QChem(FileIOCalculator):
             else:
                 mol.set_charge_and_spin(charge=self.charge)
         qcin = ForceSet(mol, **self.qchem_input_params)
+        for key in self.swaps:
+            if key == "rem":
+                for subkey in self.swaps[key]:
+                    qcin.rem[subkey] = self.swaps[key][subkey]
         qcin.write("mol.qin")
 
     def read_results(self):
