@@ -247,6 +247,7 @@ def freq_job(
     )
     atoms.calc = mlcalculator
 
+
     # Run calculator
     mlcalculator.calculate(atoms)
     hessian = mlcalculator.results["hessian"]
