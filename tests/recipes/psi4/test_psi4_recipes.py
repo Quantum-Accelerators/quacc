@@ -5,12 +5,11 @@ from shutil import rmtree
 import pytest
 from ase.build import molecule
 
-from quacc.recipes.psi4.core import static_job
-
 try:
     import psi4
 except ImportError:
     psi4 = None
+
 FILE_DIR = Path(__file__).resolve().parent
 
 
@@ -31,6 +30,8 @@ def teardown_module():
     reason="Psi4 must be installed. Try conda install -c psi4 psi4",
 )
 def test_static_maker():
+    from quacc.recipes.psi4.core import static_job
+
     atoms = molecule("H2")
     output = static_job(atoms)
     assert output["natoms"] == len(atoms)

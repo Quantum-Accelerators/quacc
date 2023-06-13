@@ -10,7 +10,6 @@ try:
     from tblite.ase import TBLite
 except ImportError:
     TBLite = None
-from quacc.recipes.tblite.core import freq_job, relax_job, static_job
 
 
 def teardown_module():
@@ -36,6 +35,8 @@ def teardown_module():
     reason="tblite must be installed.",
 )
 def test_static_Job():
+    from quacc.recipes.tblite.core import static_job
+
     atoms = molecule("H2O")
     output = static_job(atoms)
     assert output["spin_multiplicity"] == 1
@@ -55,6 +56,8 @@ def test_static_Job():
     reason="tblite must be installed.",
 )
 def test_relax_Job():
+    from quacc.recipes.tblite.core import relax_job
+
     atoms = molecule("H2O")
     output = relax_job(atoms)
     assert output["spin_multiplicity"] == 1
@@ -70,6 +73,8 @@ def test_relax_Job():
     reason="tblite must be installed.",
 )
 def test_freq_job():
+    from quacc.recipes.tblite.core import freq_job
+
     atoms = molecule("H2O")
     output = freq_job(atoms)
     assert output["vib"]["atoms"] == molecule("H2O")
