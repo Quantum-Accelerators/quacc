@@ -4,14 +4,11 @@ Core recipes for the NewtonNet code
 from __future__ import annotations
 
 import os
-from copy import deepcopy
 from typing import Literal
 
 import covalent as ct
 import numpy as np
 from ase.atoms import Atoms
-from ase.data import atomic_masses
-from ase.optimize.optimize import Optimizer
 from ase.units import _c, fs
 from monty.dev import requires
 
@@ -35,39 +32,17 @@ except ImportError:
     NewtonNet = None
 
 
-# TODO: Add reasonable defaults to settings
-# TODO: Reduce number of kwargs
-# TODO: Make sure the calculation fails gracefully if paths aren't set correctly.
-# TODO: Not sure we want all these to be individual Slurm jobs since they're fast? Might
-#      be better to make them regular functions and have a single Slurm job combining them.
-# TODO: Add docstrings and typehints for all functions/classes.
-
 @ct.electron
-@requires(
-    NewtonNet,
-    "tblite must be installed. Try pip install tblite[ase]",
-)
-def static_job(
-    atoms: Atoms,
-    newtonnet_kwargs: dict | None = None,
+@requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
+def relax_job(
+    atoms: Atoms, newtonnet_kwargs: dict | None = None, opt_swaps: dict | None = None
 ) -> dict:
     """
-    Carry out a single-point calculation.
-
-    Parameters
-    ----------
-    atoms
-        Atoms object
-    newtonnet_kwargs
-        Dictionary of custom kwargs for the newtonnet calculator.
-
-    Returns
-    -------
-    dict
-        Dictionary of results from quacc.schemas.ase.summarize_run
+    TODO: docstring
     """
     newtonnet_kwargs = newtonnet_kwargs or {}
-    input_atoms = deepcopy(atoms)
+    opt_swaps = opt_swaps or {}
+
 
     # Define calculator
     mlcalculator = NewtonNet(
@@ -76,12 +51,10 @@ def static_job(
         **newtonnet_kwargs,
     )
     atoms.calc = mlcalculator
-    atoms = run_calc(atoms)
-    return summarize_run(
-        atoms,
-        input_atoms=input_atoms,
-        additional_fields={"name": "NewtonNet Static"},
-    )
+
+    # Run optimization
+    dyn = run_ase_opt(atoms, **opt_flags)
+    return summarize_opt_run(dyn, additional_fields={"name": "NewtonNet Relax"})
 
 
 @ct.electron
@@ -144,21 +117,25 @@ def relax_job(
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def ts_job(
     atoms: Atoms,
-    fmax: float = 0.01,
-    max_steps: int = 1000,
-    optimizer: str = "sella",
+    use_custom_hessian: bool = False,
     temperature: float = 298.15,
     pressure: float = 1.0,
-    custom_hessian: bool = False,
-    run_freq: bool = True,
     newtonnet_kwargs: dict | None = None,
-    opt_kwargs: dict | None = None,
+    opt_swaps: dict | None = None,
 ) -> dict:
     """
     # TODO: docstring
     """
     newtonnet_kwargs = newtonnet_kwargs or {}
-    opt_kwargs = opt_kwargs or {}
+    opt_swaps = opt_swaps or {}
+
+    opt_defaults = {
+        "fmax": 0.01,
+        "max_steps": 1000,
+        "optimizer": "Sella",
+        "optimizer_kwargs": {"diag_every_n": 0} if use_custom_hessian else {},
+    }
+    opt_flags = opt_defaults | opt_swaps
 
     # Define calculator
     mlcalculator = NewtonNet(
@@ -168,57 +145,56 @@ def ts_job(
     )
     atoms.calc = mlcalculator
 
-    # Sella-related parameters
-    if optimizer.lower() == "sella":
-        opt_kwargs["internal"] = True
-        if custom_hessian:
-            opt_kwargs["diag_every_n"] = 0
-            opt_kwargs["hessian_function"] = _get_hessian(atoms)
-    elif custom_hessian:
-        raise ValueError("Custom hessian can only be used with Sella.")
+    if use_custom_hessian:
+        if opt_flags["optimizer"].lower() != "sella":
+            raise ValueError("Custom hessian can only be used with Sella.")
 
-    # Run the optimization
-    dyn = run_ase_opt(
-        atoms,
-        fmax=fmax,
-        max_steps=max_steps,
-        optimizer=optimizer,
-        opt_kwargs=opt_kwargs,
+        atoms.calc.calculate()
+        hessian = atoms.calc.results["hessian"].reshape((-1, 3 * len(atoms)))
+        opt_defaults["optimizer_kwargs"]["hessian_function"] = hessian
+        # TODO: I think you may need to re-initialize the calculator
+        # object after this so that it's "blank" when you do
+        # run_ase_opt. Please check.
+
+    # Run the TS optimization
+    dyn = run_ase_opt(atoms, **opt_flags)
+    ts_summary = summarize_opt_run(dyn, additional_fields={"name": "NewtonNet TS"})
+
+    # Run a frequency calculation
+    thermo_summary = freq_job(
+        ts_summary["atoms"],
+        temperature=temperature,
+        pressure=pressure,
+        newtonnet_kwargs=newtonnet_kwargs,
     )
-    summary = summarize_opt_run(dyn, additional_fields={"name": "Sella TS"})
 
-    # Run an optional frequency calculation
-    if run_freq:
-        freq_summary = freq_job(
-            summary["atoms"],
-            temperature=temperature,
-            pressure=pressure,
-            newtonnet_kwargs=newtonnet_kwargs,
-        )
-        summary["thermo_results"] = freq_summary
-    return summary
+    return {"ts": ts_summary, "thermo": thermo_summary}
 
 
 @ct.electron
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def irc_job(
     atoms: Atoms,
-    direction: str = "forward",
-    fmax: float = 0.01,
-    max_steps: int = 1000,
-    optimizer: str = Literal["sella_irc"],
+    direction: Literal["forward", "reverse"] = "forward",
     temperature: float = 298.15,
     pressure: float = 1.0,
-    run_freq: bool = True,
     newtonnet_kwargs: dict | None = None,
-    opt_kwargs: dict | None = None,
+    opt_swaps: dict | None = None,
 ) -> dict:
     """
     TODO: docstrings
     """
 
     newtonnet_kwargs = newtonnet_kwargs or {}
-    opt_kwargs = opt_kwargs or {}
+    opt_swaps = opt_swaps or {}
+
+    opt_defaults = {
+        "fmax": 0.01,
+        "max_steps": 1000,
+        "optimizer": "Sella_IRC",
+        "run_kwargs": {"direction": direction.lower()},
+    }
+    opt_flags = opt_defaults | opt_swaps
 
     # Define calculator
     mlcalculator = NewtonNet(
@@ -229,110 +205,81 @@ def irc_job(
     atoms.calc = mlcalculator
 
     # Run IRC
-    run_kwargs = {"direction": direction.lower()}
-    dyn = run_ase_opt(
-        atoms,
-        fmax=fmax,
-        max_steps=max_steps,
-        optimizer=optimizer,
-        opt_kwargs=opt_kwargs,
-        run_kwargs=run_kwargs,
+    dyn = run_ase_opt(atoms, **opt_flags)
+    summary_irc = summarize_opt_run(dyn, additional_fields={"name": "NewtonNet IRC"})
+
+    # Run frequency job
+    thermo_summary = freq_job(
+        summary_irc["atoms"],
+        temperature=temperature,
+        pressure=pressure,
+        newtonnet_kwargs=newtonnet_kwargs,
     )
-    summary = summarize_opt_run(dyn, additional_fields={"name": "Sella IRC"})
-
-    # Run optional frequency job
-    if run_freq:
-        freq_summary = freq_job(
-            summary["atoms"],
-            temperature=temperature,
-            pressure=pressure,
-            newtonnet_kwargs=newtonnet_kwargs,
-        )
-        summary["thermo_results"] = freq_summary
-    return summary
+    return {"irc": summary_irc, "thermo": thermo_summary}
 
 
-# TODO: Must reduce number of kwargs
-# TODO: Must reduce copy-pasting
 @ct.electron
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def quasi_irc_job(
     atoms: Atoms,
-    direction: str = "forward",
-    fmax: float = 0.01,
-    max_steps1: int = 5,
-    max_steps2: int = 1000,
-    optimizer1: str = Literal["sella_irc"],
-    optimizer2: str = "sella",
+    direction: Literal["forward", "reverse"] = "forward",
     temperature: float = 298.15,
     pressure: float = 1.0,
-    run_freq: bool = True,
     newtonnet_kwargs: dict | None = None,
-    opt1_kwargs: dict | None = None,
-    opt2_kwargs: dict | None = None,
+    irc_swaps: dict | None = None,
+    opt_swaps: dict | None = None,
 ) -> dict:
     """
     TODO: docstrings
     """
     newtonnet_kwargs = newtonnet_kwargs or {}
-    opt1_kwargs = opt1_kwargs or {}
-    opt2_kwargs = opt2_kwargs or {}
+    irc_swaps = irc_swaps or {}
+    opt_swaps = opt_swaps or {}
+
+    irc_defaults = {
+        "fmax": 0.01,
+        "max_steps": 5,
+        "optimizer": "Sella_IRC",
+        "run_kwargs": {"direction": direction.lower()},
+    }
+    irc_flags = irc_defaults | irc_swaps
+
+    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
+    opt_flags = opt_defaults | opt_swaps
 
     # Define calculator
-    mlcalculator1 = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
-        config_path=SETTINGS.NEWTONNET_CONFIG_PATH,
-        **newtonnet_kwargs,
-    )
-    atoms.calc = mlcalculator1
-
-    # Run IRC
-    run_kwargs = {"direction": direction.lower()}
-    dyn = run_ase_opt(
-        atoms,
-        fmax=fmax,
-        max_steps=max_steps1,
-        optimizer=optimizer1,
-        opt_kwargs=opt1_kwargs,
-        run_kwargs=run_kwargs,
-    )
-    irc_summary = summarize_opt_run(dyn, additional_fields={"name": "Sella IRC"})
-
-    # Run opt
-    atoms = irc_summary["atoms"]
     mlcalculator = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
         config_path=SETTINGS.NEWTONNET_CONFIG_PATH,
         **newtonnet_kwargs,
     )
     atoms.calc = mlcalculator
-    opt2_kwargs["internal"] = True
-    opt2_kwargs["order"] = 0
 
-    dyn2 = run_ase_opt(
-        atoms,
-        fmax=fmax,
-        max_steps=max_steps2,
-        optimizer=optimizer2,
-        opt_kwargs=opt2_kwargs,
+    # Run IRC
+    irc_summary = irc_job(atoms, newtonnet_kwargs=newtonnet_kwargs, **irc_flags)
+
+    # Run opt
+    opt_summary = relax_job(
+        irc_summary["atoms"], newtonnet_kwargs=newtonnet_kwargs, **opt_flags
     )
-    opt_summary = summarize_opt_run(dyn2, additional_fields={"name": "Sella Opt"})
 
-    summary = {"IRC": irc_summary, "Opt": opt_summary}
+    # Run frequency
+    thermo_summary = freq_job(
+        opt_summary["atoms"],
+        temperature=temperature,
+        pressure=pressure,
+        newtonnet_kwargs=newtonnet_kwargs,
+    )
 
-    # Run optional frequency
-    if run_freq:
-        freq_summary = freq_job(
-            opt_summary["atoms"],
-            temperature=temperature,
-            pressure=pressure,
-            newtonnet_kwargs=newtonnet_kwargs,
-        )
-        summary["freq"] = freq_summary
-
-    return summary
+    return {"irc": irc_summary, "opt": opt_summary, "thermo": thermo_summary}
 
 
+# TODO: I think it is possible to get rid of all the unit conversion functions
+# and instead use the `VibrationsData` class in `ase.vibrations.data.py`
+# See details here: https://gitlab.com/ase/ase/-/blob/master/ase/vibrations/data.py
+# Once that class is contructed, you can do `VibrationsData.get_frequencies()`
+# to return the frequencies in cm^-1, as desired. You can then get rid of
+# the `_get_freq_in_cm_inv` and `_mass_weighted_hessian` functions.
 @ct.electron
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def freq_job(
@@ -372,21 +319,51 @@ def freq_job(
     # Make IdealGasThermo object
     igt = ideal_gas(atoms, freqs_cm_inv, energy=mlcalculator.results["energy"])
 
+    # TODO: If you are successful in using the `VibrationsData` class, you
+    # can then return the following instead for a much richer and consistent output:
+    # return {
+    #     "vib": summarize_vib_run(
+    #         vibrations_data, additional_fields={"name": "NewtonNet Vibrations"}
+    #     ),
+    #     "thermo": summarize_thermo_run(
+    #         igt,
+    #         temperature=temperature,
+    #         pressure=pressure,
+    #         additional_fields={"name": "NewtonNet Thermo"},
+    #     ),
+    # }
+
     return summarize_thermo_run(
         igt,
         temperature=temperature,
         pressure=pressure,
-        additional_fields={"name": "Sella Thermo"},
+        additional_fields={"name": "NewtonNet Thermo"},
     )
 
 
-# TODO: Make docstring compatible with that used in Quacc
-def _mass_weighted_hessian(masses: list | np.array, hessian: np.ndarray) -> np.ndarray:
+# TODO: Can potentially replace with `VibrationsData` (see above)
+def _get_freq_in_cm_inv(
+    masses: np.array, reshaped_hessian: np.ndarray
+) -> list[np.array, np.array]:
+    # Calculate mass-weighted Hessian
+    mass_weighted_hessian = _mass_weighted_hessian(masses, reshaped_hessian)
+
+    # Calculate eigenvalues and eigenvectors
+    eigvals, eigvecs = np.linalg.eig(mass_weighted_hessian)
+    eigvals = np.sort(np.real(eigvals))
+
+    # Calculate frequencies in cm^-1
+    freqs = np.emath.sqrt(eigvals) * fs * (10**15) / (_c * 100 * 2 * np.pi)
+    return freqs, eigvecs
+
+
+# TODO: Can potentially replace with `VibrationsData` (see above)
+def _mass_weighted_hessian(masses: np.array, hessian: np.ndarray) -> np.ndarray:
     """
     Calculates the mass-weighted Hessian matrix.
 
     Parameters:
-        masses (array-like): A list or array of atom masses.
+        masses (array): An array of atom masses.
         hessian (ndarray): A 2D numpy array representing the Hessian matrix.
 
     Returns:
@@ -410,31 +387,9 @@ def _mass_weighted_hessian(masses: list | np.array, hessian: np.ndarray) -> np.n
         hessian = np.zeros((21, 21))  # Example Hessian matrix
         mass_weighted_hessian = _mass_weighted_hessian(masses, hessian)
     """
-    masses = np.asarray(masses)
-    hessian = np.asarray(hessian)
 
     if len(masses) != hessian.shape[0] // 3 or hessian.shape[0] != hessian.shape[1]:
         raise ValueError("Incompatible dimensions of masses and hessian.")
 
     sqrt_masses = np.sqrt(np.outer(masses, masses))
     return hessian / np.tile(sqrt_masses, (3, 3))
-
-
-# TODO: type hints and docstrings
-def _get_freq_in_cm_inv(masses, reshaped_hessian):
-    # Calculate mass-weighted Hessian
-    mass_weighted_hessian = _mass_weighted_hessian(masses, reshaped_hessian)
-
-    # Calculate eigenvalues and eigenvectors
-    eigvals, eigvecs = np.linalg.eig(mass_weighted_hessian)
-    eigvals = np.sort(np.real(eigvals))
-
-    # Calculate frequencies in cm^-1
-    freqs = np.emath.sqrt(eigvals) * fs * (10**15) / (_c * 100 * 2 * np.pi)
-    return [freqs, eigvecs]
-
-
-# TODO: type hints and docstrings
-def _get_hessian(atoms):
-    atoms.calc.calculate()
-    return atoms.calc.results["hessian"].reshape((-1, 3 * len(atoms)))

@@ -59,7 +59,7 @@ The job will be dispatched to the Covalent server with the [`ct.dispatch`](https
 
 ![Covalent UI](../_static/user/tutorial1.jpg)
 
-### Running a Simple Parallel Workflow
+## Running a Simple Parallel Workflow
 
 Now let's consider a similar but nonetheless distinct example. Here, we will define a workflow where we will carry out two EMT structure relaxations, but the two jobs are not dependent on one another. In this example, Covalent will know that it can run the two jobs separately, and even if Job 1 were to fail, Job 2 would still progress.
 
@@ -92,7 +92,7 @@ print(result)
 
 ![Covalent UI](../_static/user/tutorial2.jpg)
 
-### Running Workflows with Complex Connectivity
+## Running Workflows with Complex Connectivity
 
 For this example, let's consider a toy scenario where we wish to relax a bulk Cu structure, carve all possible slabs, and then run a new relaxation calculation on each slab.
 

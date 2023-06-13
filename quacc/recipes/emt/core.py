@@ -25,7 +25,7 @@ def static_job(atoms: Atoms, emt_kwargs: dict | None = None) -> dict:
     atoms
         Atoms object
     emt_kwargs
-        Dictionary of custom kwargs for the EMT calculator.
+        Dictionary of custom kwargs for the EMT calculator
 
     Returns
     -------
@@ -48,12 +48,7 @@ def static_job(atoms: Atoms, emt_kwargs: dict | None = None) -> dict:
 
 @ct.electron
 def relax_job(
-    atoms: Atoms,
-    fmax: float = 0.01,
-    max_steps: int = 1000,
-    optimizer: str = "FIRE",
-    emt_kwargs: dict | None = None,
-    opt_kwargs: dict | None = None,
+    atoms: Atoms, emt_kwargs: dict | None = None, opt_swaps: dict | None = None
 ) -> dict:
     """
     Carry out a geometry optimization.
@@ -62,16 +57,11 @@ def relax_job(
     ----------
     atoms
         Atoms object
-    fmax
-        Tolerance for the force convergence (in eV/A).
-    max_steps
-        Maximum number of steps to take.
-    optimizer
-        ASE Optimizer class to use for the relaxation.
     emt_kwargs
-        Dictionary of custom kwargs for the EMT calculator.
-    opt_kwargs
-        Dictionary of kwargs for the optimizer.
+        Dictionary of custom kwargs for the EMT calculator
+    opt_swaps
+        Dictionary of swaps for `run_ase_opt`
+            opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "FIRE"}
 
     Returns
     -------
@@ -80,15 +70,12 @@ def relax_job(
     """
 
     emt_kwargs = emt_kwargs or {}
-    opt_kwargs = opt_kwargs or {}
+    opt_swaps = opt_swaps or {}
+
+    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "FIRE"}
+    opt_flags = opt_defaults | opt_swaps
 
     atoms.calc = EMT(**emt_kwargs)
-    dyn = run_ase_opt(
-        atoms,
-        fmax=fmax,
-        max_steps=max_steps,
-        optimizer=optimizer,
-        opt_kwargs=opt_kwargs,
-    )
+    dyn = run_ase_opt(atoms, **opt_flags)
 
     return summarize_opt_run(dyn, additional_fields={"name": "EMT Relax"})

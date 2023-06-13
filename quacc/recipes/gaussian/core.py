@@ -49,6 +49,24 @@ def static_job(
         Whether to write a molden file for orbital visualization
     swaps
         Dictionary of custom kwargs for the calculator.
+            defaults = {
+                "mem": "16GB",
+                "chk": "Gaussian.chk",
+                "nprocshared": multiprocessing.cpu_count(),
+                "xc": xc,
+                "basis": basis,
+                "charge": charge or round(sum(atoms.get_initial_charges())),
+                "mult": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
+                "sp": "",
+                "scf": ["maxcycle=250", "xqc"],
+                "integral": "ultrafine",
+                "nosymmetry": "",
+                "pop": pop,
+                "gfinput": "" if write_molden else None,
+                "ioplist": ["6/7=3", "2/9=2000"]
+                if write_molden
+                else ["2/9=2000"],  # see ASE issue #660
+            }
 
     Returns
     -------
@@ -115,6 +133,21 @@ def relax_job(
         If a frequency calculation should be carried out.
     swaps
         Dictionary of custom kwargs for the calculator.
+            defaults = {
+                "mem": "16GB",
+                "chk": "Gaussian.chk",
+                "nprocshared": multiprocessing.cpu_count(),
+                "xc": xc,
+                "basis": basis,
+                "charge": charge or round(sum(atoms.get_initial_charges())),
+                "mult": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
+                "opt": "",
+                "scf": ["maxcycle=250", "xqc"],
+                "integral": "ultrafine",
+                "nosymmetry": "",
+                "freq": "" if freq else None,
+                "ioplist": ["2/9=2000"],  # ASE issue #660
+            }
 
     Returns
     -------
