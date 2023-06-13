@@ -91,6 +91,7 @@ def ts_job(
         atoms.calc.calculate()
         hessian = atoms.calc.results["hessian"].reshape((-1, 3 * len(atoms)))
         opt_kwargs["hessian_function"] = hessian
+
     # Run the TS optimization
     dyn = run_ase_opt(
         atoms,

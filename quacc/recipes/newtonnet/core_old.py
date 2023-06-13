@@ -59,6 +59,7 @@ def ts_job(
         # object after this so that it's "blank" when you do
         # run_ase_opt. Please check.
         opt_kwargs["hessian_function"] = _get_hessian(atoms)
+
     # Run the TS optimization
     dyn = run_ase_opt(
         atoms,
