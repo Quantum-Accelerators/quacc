@@ -34,6 +34,7 @@ def mp_prerelax_job(
         Preset to use.
     swaps
         Dictionary of custom kwargs for the calculator.
+            defaults = {"ediffg": -0.05, "xc": "pbesol"}
 
     Returns
     -------
