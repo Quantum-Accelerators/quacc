@@ -4,6 +4,7 @@ Core recipes for the NewtonNet code
 from __future__ import annotations
 
 import os
+from copy import deepcopy
 from typing import Literal
 
 import covalent as ct
@@ -13,6 +14,15 @@ from ase.data import atomic_masses
 from ase.optimize.optimize import Optimizer
 from ase.units import _c, fs
 from monty.dev import requires
+
+from quacc.util.calc import run_calc
+
+from quacc.schemas.ase import (
+    summarize_opt_run,
+    summarize_run,
+    summarize_thermo_run,
+    summarize_vib_run,
+)
 
 from quacc import SETTINGS
 from quacc.schemas.ase import summarize_opt_run, summarize_thermo_run
@@ -31,6 +41,103 @@ except ImportError:
 # TODO: Not sure we want all these to be individual Slurm jobs since they're fast? Might
 #      be better to make them regular functions and have a single Slurm job combining them.
 # TODO: Add docstrings and typehints for all functions/classes.
+
+@ct.electron
+@requires(
+    NewtonNet,
+    "tblite must be installed. Try pip install tblite[ase]",
+)
+def static_job(
+    atoms: Atoms,
+    newtonnet_kwargs: dict | None = None,
+) -> dict:
+    """
+    Carry out a single-point calculation.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object
+    newtonnet_kwargs
+        Dictionary of custom kwargs for the newtonnet calculator.
+
+    Returns
+    -------
+    dict
+        Dictionary of results from quacc.schemas.ase.summarize_run
+    """
+    newtonnet_kwargs = newtonnet_kwargs or {}
+    input_atoms = deepcopy(atoms)
+
+    # Define calculator
+    mlcalculator = NewtonNet(
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
+        config_path=SETTINGS.NEWTONNET_CONFIG_PATH,
+        **newtonnet_kwargs,
+    )
+    atoms.calc = mlcalculator
+    atoms = run_calc(atoms)
+    return summarize_run(
+        atoms,
+        input_atoms=input_atoms,
+        additional_fields={"name": "NewtonNet Static"},
+    )
+
+
+@ct.electron
+@requires(
+    NewtonNet,
+    "newtonnet must be installed. Checkout https://github.com/ericyuan00000/NewtonNet",
+)
+def relax_job(
+    atoms: Atoms,
+    fmax: float = 0.01,
+    max_steps: int = 1000,
+    optimizer: str = "sella",
+    newtonnet_kwargs: dict | None = None,
+    opt_kwargs: dict | None = None,
+) -> dict:
+    """
+    Relax a structure.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object
+    fmax
+        Tolerance for the force convergence (in eV/A).
+    max_steps
+        Maximum number of steps to take.
+    optimizer
+        .Optimizer class to use for the relaxation.
+    newtonnet_kwargs
+        Dictionary of custom kwargs for the newtonnet calculator.
+    opt_kwargs
+        Dictionary of kwargs for the optimizer.
+
+    Returns
+    -------
+    dict
+        Dictionary of results from quacc.schemas.ase.summarize_opt_run
+    """
+
+    newtonnet_kwargs = newtonnet_kwargs or {}
+    opt_kwargs = opt_kwargs or {}
+
+    mlcalculator = NewtonNet(
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
+        config_path=SETTINGS.NEWTONNET_CONFIG_PATH,
+        **newtonnet_kwargs,
+    )
+    atoms.calc = mlcalculator
+    dyn = run_ase_opt(
+        atoms,
+        fmax=fmax,
+        max_steps=max_steps,
+        optimizer=optimizer,
+        opt_kwargs=opt_kwargs,
+    )
+    return summarize_opt_run(dyn, additional_fields={"name": "NewtonNet Relax"})
 
 
 @ct.electron

@@ -14,7 +14,7 @@ except ImportError:
 from quacc.recipes.newtonnet.core import ts_job, irc_job, quasi_irc_job, freq_job
 #, relax_job, static_job
 
-'''
+
 def teardown_module():
     for f in os.listdir("."):
         if (
@@ -34,8 +34,8 @@ def teardown_module():
 
 
 @pytest.mark.skipif(
-    TBLite is None,
-    reason="tblite must be installed.",
+    newtonnet is None,
+    reason="newtonnet must be installed.",
 )
 def test_static_Job():
     atoms = molecule("H2O")
@@ -51,7 +51,7 @@ def test_static_Job():
     assert output["results"]["energy"] == pytest.approx(-156.96750578831137)
     assert np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
 
-
+'''
 @pytest.mark.skipif(
     TBLite is None,
     reason="tblite must be installed.",
