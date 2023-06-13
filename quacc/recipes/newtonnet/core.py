@@ -90,10 +90,12 @@ def ts_job(
         if opt_flags["optimizer"].lower() != "sella":
             raise ValueError("Custom hessian can only be used with Sella.")
 
+        atoms.calc.calculate()
+        hessian = atoms.calc.results["hessian"].reshape((-1, 3 * len(atoms)))
+        opt_defaults["optimizer_kwargs"]["hessian_function"] = hessian
         # TODO: I think you may need to re-initialize the calculator
         # object after this so that it's "blank" when you do
         # run_ase_opt. Please check.
-        opt_defaults["optimizer_kwargs"]["hessian_function"] = _get_hessian(atoms)
 
     # Run the TS optimization
     dyn = run_ase_opt(atoms, **opt_flags)
@@ -277,14 +279,6 @@ def freq_job(
         pressure=pressure,
         additional_fields={"name": "NewtonNet Thermo"},
     )
-
-
-def _get_hessian(atoms: Atoms) -> np.ndarray:
-    """
-    TODO: docstrings
-    """
-    atoms.calc.calculate()
-    return atoms.calc.results["hessian"].reshape((-1, 3 * len(atoms)))
 
 
 # TODO: Can potentially replace with `VibrationsData` (see above)
