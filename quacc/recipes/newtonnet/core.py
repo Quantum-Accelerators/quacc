@@ -116,7 +116,7 @@ def ts_job(
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def irc_job(
     atoms: Atoms,
-    direction: str = Literal["forward", "reverse"],
+    direction: Literal["forward", "reverse"] = "forward",
     temperature: float = 298.15,
     pressure: float = 1.0,
     newtonnet_kwargs: dict | None = None,
@@ -163,7 +163,7 @@ def irc_job(
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def quasi_irc_job(
     atoms: Atoms,
-    direction: str = Literal["forward", "reverse"],
+    direction: Literal["forward", "reverse"] = "forward",
     temperature: float = 298.15,
     pressure: float = 1.0,
     newtonnet_kwargs: dict | None = None,
