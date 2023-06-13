@@ -26,10 +26,7 @@ except ImportError:
 
 
 @ct.electron
-@requires(
-    TBLite,
-    "tblite must be installed. Try pip install tblite[ase]",
-)
+@requires(TBLite, "tblite must be installed. Try pip install tblite[ase]")
 def static_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
@@ -65,18 +62,12 @@ def static_job(
 
 
 @ct.electron
-@requires(
-    TBLite,
-    "tblite must be installed. Try pip install tblite[ase]",
-)
+@requires(TBLite, "tblite must be installed. Try pip install tblite[ase]")
 def relax_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
-    fmax: float = 0.01,
-    max_steps: int = 1000,
-    optimizer: str = "FIRE",
     tblite_kwargs: dict | None = None,
-    opt_kwargs: dict | None = None,
+    opt_swaps: dict | None = None,
 ) -> dict:
     """
     Relax a structure.
@@ -87,16 +78,11 @@ def relax_job(
         Atoms object
     method
         GFN0-xTB, GFN1-xTB, GFN2-xTB.
-    fmax
-        Tolerance for the force convergence (in eV/A).
-    max_steps
-        Maximum number of steps to take.
-    optimizer
-        .Optimizer class to use for the relaxation.
     tblite_kwargs
         Dictionary of custom kwargs for the tblite calculator.
-    opt_kwargs
-        Dictionary of kwargs for the optimizer.
+    opt_swaps
+        Dictionary of custom kwargs for run_ase_opt
+            opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "FIRE"}
 
     Returns
     -------
@@ -105,16 +91,13 @@ def relax_job(
     """
 
     tblite_kwargs = tblite_kwargs or {}
-    opt_kwargs = opt_kwargs or {}
+    opt_swaps = opt_swaps or {}
+
+    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "FIRE"}
+    opt_flags = opt_defaults | opt_swaps
 
     atoms.calc = TBLite(method=method, **tblite_kwargs)
-    dyn = run_ase_opt(
-        atoms,
-        fmax=fmax,
-        max_steps=max_steps,
-        optimizer=optimizer,
-        opt_kwargs=opt_kwargs,
-    )
+    dyn = run_ase_opt(atoms, **opt_flags)
 
     return summarize_opt_run(dyn, additional_fields={"name": "TBLite Relax"})
 
@@ -128,6 +111,7 @@ def freq_job(
     temperature: float = 298.15,
     pressure: float = 1.0,
     xtb_kwargs: dict | None = None,
+    vib_kwargs: dict | None = None,
 ) -> dict:
     """
     Run a frequency job and calculate thermochemistry.
@@ -146,6 +130,8 @@ def freq_job(
         Pressure in bar.
     xtb_kwargs
         dictionary of custom kwargs for the xTB calculator.
+    vib_kwargs
+        dictionary of custom kwargs for the Vibrations object
 
     Returns
     -------
@@ -155,9 +141,10 @@ def freq_job(
     """
 
     xtb_kwargs = xtb_kwargs or {}
+    vib_kwargs = vib_kwargs or {}
 
     atoms.calc = TBLite(method=method, **xtb_kwargs)
-    vibrations = run_ase_vib(atoms)
+    vibrations = run_ase_vib(atoms, vib_kwargs=vib_kwargs)
 
     igt = ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)
 

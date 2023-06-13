@@ -46,10 +46,19 @@ def static_job(
         Dictionary of orcasimpleinput swaps for the calculator.
         To enable new entries, set the value as True.
         To remove entries from the defaults, set the value as None.
+            default_inputs = {
+                xc: True,
+                basis: True,
+                "sp": True,
+                "slowconv": True,
+                "normalprint": True,
+                "xyzfile": True,
+            }
     block_swaps
         Dictionary of orcablock swaps for the calculator.
         To enable new entries, set the value as True.
         To remove entries from the defaults, set the value as None.
+            default_blocks = {}
 
     Returns
     -------
@@ -124,10 +133,20 @@ def relax_job(
         Dictionary of orcasimpleinput swaps for the calculator.
         To enable new entries, set the value as True.
         To remove entries from the defaults, set the value as None.
+            default_inputs = {
+                xc: True,
+                basis: True,
+                "opt": True,
+                "slowconv": True,
+                "normalprint": True,
+                "freq": True if run_freq else None,
+                "xyzfile": True,
+            }
     block_swaps
         Dictionary of orcablock swaps for the calculator.
         To enable new entries, set the value as True.
         To remove entries from the defaults, set the value as None.
+            default_blocks = {}
 
     Returns
     -------

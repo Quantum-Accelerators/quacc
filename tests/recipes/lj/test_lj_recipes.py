@@ -54,7 +54,9 @@ def test_relax_Job():
     assert output["results"]["energy"] == pytest.approx(-2.983561029599189)
     assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
 
-    output = relax_job(atoms, fmax=0.03, lj_kwargs={"epsilon": 2.0, "rc": 0.5})
+    output = relax_job(
+        atoms, opt_swaps={"fmax": 0.03}, lj_kwargs={"epsilon": 2.0, "rc": 0.5}
+    )
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["epsilon"] == 2.0
     assert output["parameters"]["sigma"] == 1.0
