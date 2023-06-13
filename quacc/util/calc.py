@@ -175,7 +175,7 @@ def run_ase_opt(
     cwd = os.getcwd()
     scratch_dir = scratch_dir or cwd
     symlink = os.path.join(cwd, "tmp_dir")
-    optimizer_kwargs = opt_kwargs or {}
+    optimizer_kwargs = optimizer_kwargs or {}
     run_kwargs = run_kwargs or {}
 
     if not os.path.exists(scratch_dir):
@@ -186,8 +186,8 @@ def run_ase_opt(
 
     # Get optimizer
     if optimizer.lower() in {"sella", "sella_irc"}:
-        if not atoms.pbc.any() and "internal" not in opt_kwargs:
-            opt_kwargs["internal"] = True
+        if not atoms.pbc.any() and "internal" not in optimizer_kwargs:
+            optimizer_kwargs["internal"] = True
         try:
             from sella import IRC, Sella
         except ImportError as e:
