@@ -17,7 +17,7 @@ except ImportError:
 
 
 @ct.electron
-@requires(psi4 is not None, "Psi4 not installed. Try conda install -c psi4 psi4")
+@requires(psi4, "Psi4 not installed. Try conda install -c psi4 psi4")
 def static_job(
     atoms: Atoms,
     charge: int | None = None,
