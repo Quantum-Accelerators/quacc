@@ -11,6 +11,7 @@ try:
     import psi4
 except ImportError:
     psi4 = None
+
 FILE_DIR = Path(__file__).resolve().parent
 
 

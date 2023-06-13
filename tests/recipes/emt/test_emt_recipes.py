@@ -53,7 +53,9 @@ def test_relax_Job():
 
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += [0.1, 0.1, 0.1]
-    output = relax_job(atoms, fmax=0.03, emt_kwargs={"asap_cutoff": True})
+    output = relax_job(
+        atoms, opt_swaps={"fmax": 0.03}, emt_kwargs={"asap_cutoff": True}
+    )
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] is True
     assert output["results"]["energy"] == pytest.approx(-0.004528885890177747)
@@ -77,7 +79,10 @@ def test_slab_dynamic_jobs():
 
     outputs = BulkToSlabsFlow(
         slab_static_electron=None,
-        slab_relax_kwargs={"fmax": 1.0, "emt_kwargs": {"asap_cutoff": True}},
+        slab_relax_kwargs={
+            "opt_swaps": {"fmax": 1.0},
+            "emt_kwargs": {"asap_cutoff": True},
+        },
     ).run(atoms)
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
@@ -87,7 +92,10 @@ def test_slab_dynamic_jobs():
     assert [output["parameters"]["asap_cutoff"] is True for output in outputs]
 
     outputs = BulkToSlabsFlow(
-        slab_relax_kwargs={"fmax": 1.0, "emt_kwargs": {"asap_cutoff": True}},
+        slab_relax_kwargs={
+            "opt_swaps": {"fmax": 1.0},
+            "emt_kwargs": {"asap_cutoff": True},
+        },
     ).run(atoms, slabgen_kwargs={"max_slabs": 2})
     assert len(outputs) == 2
     assert outputs[0]["nsites"] == 64
@@ -120,12 +128,18 @@ def test_jf_slab_dynamic_jobs():
 
     flow = JFBulkToSlabsFlow(
         slab_static_job=None,
-        slab_relax_kwargs={"fmax": 1.0, "emt_kwargs": {"asap_cutoff": True}},
+        slab_relax_kwargs={
+            "opt_swaps": {"fmax": 1.0},
+            "emt_kwargs": {"asap_cutoff": True},
+        },
     ).make(atoms)
     jf.run_locally(flow, store=store, ensure_success=True)
 
     flow = JFBulkToSlabsFlow(
-        slab_relax_kwargs={"fmax": 1.0, "emt_kwargs": {"asap_cutoff": True}},
+        slab_relax_kwargs={
+            "opt_swaps": {"fmax": 1.0},
+            "emt_kwargs": {"asap_cutoff": True},
+        },
     ).make(atoms, slabgen_kwargs={"max_slabs": 2})
     responses = jf.run_locally(flow, store=store, ensure_success=True)
 
