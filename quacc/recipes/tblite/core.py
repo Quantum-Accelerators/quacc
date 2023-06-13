@@ -63,11 +63,8 @@ def static_job(
 def relax_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
-    fmax: float = 0.01,
-    max_steps: int = 1000,
-    optimizer: str = "FIRE",
     tblite_kwargs: dict | None = None,
-    optimizer_kwargs: dict | None = None,
+    opt_swaps: dict | None = None,
 ) -> dict:
     """
     Relax a structure.
@@ -78,16 +75,10 @@ def relax_job(
         Atoms object
     method
         GFN0-xTB, GFN1-xTB, GFN2-xTB.
-    fmax
-        Tolerance for the force convergence (in eV/A).
-    max_steps
-        Maximum number of steps to take.
-    optimizer
-        .Optimizer class to use for the relaxation.
+    opt_swaps
+        Dictionary of custom kwargs for run_ase_opt
     tblite_kwargs
         Dictionary of custom kwargs for the tblite calculator.
-    optimizer_kwargs
-        Dictionary of kwargs for the optimizer.
 
     Returns
     -------
@@ -96,16 +87,13 @@ def relax_job(
     """
 
     tblite_kwargs = tblite_kwargs or {}
-    optimizer_kwargs = optimizer_kwargs or {}
+    opt_swaps = opt_swaps or {}
+
+    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "FIRE"}
+    opt_flags = opt_defaults | opt_swaps
 
     atoms.calc = TBLite(method=method, **tblite_kwargs)
-    dyn = run_ase_opt(
-        atoms,
-        fmax=fmax,
-        max_steps=max_steps,
-        optimizer=optimizer,
-        optimizer_kwargs=optimizer_kwargs,
-    )
+    dyn = run_ase_opt(atoms, **opt_flags)
 
     return summarize_opt_run(dyn, additional_fields={"name": "TBLite Relax"})
 

@@ -149,8 +149,8 @@ def run_ase_opt(
         Maximum number of steps to take.
     optimizer
         Name of optimizer class to use.
-    opt_kwargs
-    optimizer_kwargsnary of kwargs for the optimizer.
+    optimizer_kwargs
+        Dictionary of kwargs for the optimizer.
     scratch_dir
         Path where a tmpdir should be made for running the calculation. If None,
         the current working directory will be used.
@@ -172,22 +172,22 @@ def run_ase_opt(
     cwd = os.getcwd()
     scratch_dir = scratch_dir or cwd
     symlink = os.path.join(cwd, "tmp_dir")
-    opt_kwargs = opt_kwargs or {}
+    optimizer_kwargs = optimizer_kwargs or {}
 
     if not os.path.exists(scratch_dir):
-    optimizer_kwargsedioptimizer_kwargs_dir)
+        os.makedirs(scratch_dir)
 
-    if "trajectory" not in opt_kwargs:
-        opt_kwargs["trajectory"] = "opt.traj"
+    if "trajectory" not in optimizer_kwargs:
+        optimizer_kwargs["trajectory"] = "opt.traj"
 
     # Get optimizer
-    try:optimizer_kwargs
-        optimizer_kwargs= getattr(optimize, optimizer)
+    try:
+        opt_class = getattr(optimize, optimizer)
     except AttributeError as e:
         raise ValueError(
             f"Unknown {optimizer=}, must be one of {list(dir(optimize))}"
-        ) from eoptimizer_kwargs
-optimizer_kwargs
+        ) from e
+
     tmpdir = mkdtemp(prefix="quacc-tmp-", dir=scratch_dir)
 
     if os.name != "nt":
@@ -200,8 +200,10 @@ optimizer_kwargs
         copy_decompress(copy_files, tmpdir)
 
     # Define optimizer class
-    dyn = opt_class(atoms, **opt_kwargs)
-    dyn.trajectory.filename = opt_kwargs["trajectory"]  # can remove after ASE MR 2901
+    dyn = opt_class(atoms, **optimizer_kwargs)
+    dyn.trajectory.filename = optimizer_kwargs[
+        "trajectory"
+    ]  # can remove after ASE MR 2901
 
     # Run calculation
     os.chdir(tmpdir)
@@ -220,8 +222,8 @@ optimizer_kwargs
         os.remove(symlink)
 
     return dyn
-optimizer_kwargs
-optimizer_kwargs
+
+
 def run_ase_vib(
     atoms: Atoms,
     vib_kwargs: dict | None = None,

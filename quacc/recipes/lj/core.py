@@ -52,12 +52,7 @@ def static_job(
 
 @ct.electron
 def relax_job(
-    atoms: Atoms,
-    fmax: float = 0.01,
-    max_steps: int = 1000,
-    optimizer: str = "FIRE",
-    optimizer_kwargs: dict | None = None,
-    lj_kwargs: dict | None = None,
+    atoms: Atoms, lj_kwargs: dict | None = None, opt_swaps: dict | None = None
 ) -> dict:
     """
     Function to carry out a geometry optimization
@@ -66,16 +61,10 @@ def relax_job(
     ----------
     atoms
         Atoms object
-    fmax
-        Tolerance for the force convergence (in eV/A).
-    max_steps
-        Maximum number of steps to take.
-    optimizer
-        ASE Optimizer class to use for the relaxation.
-    optimizer_kwargs
-        Dictionary of kwargs for the optimizer.
     lj_kwargs
         Dictionary of custom kwargs for the LJ calculator.
+    opt_swaps
+        Dictionary of swaps for run_ase_opt
 
     Returns
     -------
@@ -84,18 +73,15 @@ def relax_job(
     """
 
     lj_kwargs = lj_kwargs or {}
-    optimizer_kwargs = optimizer_kwargs or {}
+    opt_swaps = opt_swaps or {}
 
     defaults = {"epsilon": 1.0, "sigma": 1.0}
+    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "FIRE"}
+
     flags = defaults | lj_kwargs
+    opt_flags = opt_defaults | opt_swaps
 
     atoms.calc = LennardJones(**flags)
-    dyn = run_ase_opt(
-        atoms,
-        fmax=fmax,
-        max_steps=max_steps,
-        optimizer=optimizer,
-        optimizer_kwargs=optimizer_kwargs,
-    )
+    dyn = run_ase_opt(atoms, **opt_defaults)
 
     return summarize_opt_run(dyn, additional_fields={"name": "LJ Relax"})
