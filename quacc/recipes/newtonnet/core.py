@@ -24,17 +24,22 @@ except ImportError:
 @ct.electron
 def relax_job(
     atoms: Atoms,
-    fmax: float = 0.01,
-    max_steps: int = 1000,
-    optimizer: str = "sella",
     newtonnet_kwargs: dict | None = None,
-    opt_kwargs: dict | None = None,
+    opt_swaps: dict | None = None,
 ) -> dict:
     """
     TODO: docstring
     """
     newtonnet_kwargs = newtonnet_kwargs or {}
-    opt_kwargs = opt_kwargs or {}
+    opt_swaps = opt_swaps or {}
+
+    opt_defaults = {
+        "fmax": 0.01,
+        "max_steps": 1000,
+        "optimizer": "sella",
+        "optimizer_kwargs": {"order": 0},
+    }
+    opt_flags = opt_defaults | opt_swaps
 
     # Define calculator
     mlcalculator = NewtonNet(
@@ -44,35 +49,33 @@ def relax_job(
     )
     atoms.calc = mlcalculator
 
-    opt_kwargs["order"] = 0
-
-    dyn = run_ase_opt(
-        atoms,
-        fmax=fmax,
-        max_steps=max_steps,
-        optimizer=optimizer,
-        opt_kwargs=opt_kwargs,
-    )
+    # Run optimization
+    dyn = run_ase_opt(atoms, **opt_flags)
     return summarize_opt_run(dyn, additional_fields={"name": "NewtonNet Relax"})
 
 
 @ct.electron
 def ts_job(
     atoms: Atoms,
-    fmax: float = 0.01,
-    max_steps: int = 1000,
-    optimizer: str = "sella",
     temperature: float = 298.15,
     pressure: float = 1.0,
     use_custom_hessian: bool = False,
     newtonnet_kwargs: dict | None = None,
-    opt_kwargs: dict | None = None,
+    opt_swaps: dict | None = None,
 ) -> dict:
     """
     # TODO: docstring
     """
     newtonnet_kwargs = newtonnet_kwargs or {}
-    opt_kwargs = opt_kwargs or {}
+    opt_swaps = opt_swaps or {}
+
+    opt_defaults = {
+        "fmax": 0.01,
+        "max_steps": 1000,
+        "optimizer": "sella",
+        "optimizer_kwargs": {"diag_every_n": 0} if use_custom_hessian else {},
+    }
+    opt_flags = opt_defaults | opt_swaps
 
     # Define calculator
     mlcalculator = NewtonNet(
@@ -83,24 +86,16 @@ def ts_job(
     atoms.calc = mlcalculator
 
     if use_custom_hessian:
-        if optimizer.lower() != "sella":
+        if opt_flags["optimizer"].lower() != "sella":
             raise ValueError("Custom hessian can only be used with Sella.")
-
-        opt_kwargs["diag_every_n"] = 0
 
         # TODO: I think you may need to re-initialize the calculator
         # object after this so that it's "blank" when you do
         # run_ase_opt. Please check.
-        opt_kwargs["hessian_function"] = _get_hessian(atoms)
+        opt_defaults["optimizer_kwargs"]["hessian_function"] = _get_hessian(atoms)
 
     # Run the TS optimization
-    dyn = run_ase_opt(
-        atoms,
-        fmax=fmax,
-        max_steps=max_steps,
-        optimizer=optimizer,
-        opt_kwargs=opt_kwargs,
-    )
+    dyn = run_ase_opt(atoms, **opt_flags)
     ts_summary = summarize_opt_run(dyn, additional_fields={"name": "NewtonNet TS"})
 
     # Run a frequency calculation
