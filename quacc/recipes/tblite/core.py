@@ -8,6 +8,7 @@ from typing import Literal
 
 import covalent as ct
 from ase.atoms import Atoms
+from monty.dev import requires
 
 from quacc.schemas.ase import (
     summarize_opt_run,
@@ -21,10 +22,11 @@ from quacc.util.thermo import ideal_gas
 try:
     from tblite.ase import TBLite
 except ImportError:
-    raise ImportError("tblite must be installed. Try pip install tblite[ase]")
+    TBLite = None
 
 
 @ct.electron
+@requires(TBLite is not None, "tblite must be installed. Try pip install tblite[ase]")
 def static_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
@@ -60,6 +62,7 @@ def static_job(
 
 
 @ct.electron
+@requires(TBLite is not None, "tblite must be installed. Try pip install tblite[ase]")
 def relax_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
@@ -100,6 +103,7 @@ def relax_job(
 
 
 @ct.electron
+@requires(TBLite is not None, "tblite must be installed. Try pip install tblite[ase]")
 def freq_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",

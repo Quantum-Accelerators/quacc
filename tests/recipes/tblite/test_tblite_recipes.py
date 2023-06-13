@@ -6,6 +6,8 @@ import numpy as np
 import pytest
 from ase.build import molecule
 
+from quacc.recipes.tblite.core import freq_job, relax_job, static_job
+
 try:
     from tblite.ase import TBLite
 except ImportError:
@@ -30,22 +32,11 @@ def teardown_module():
                 rmtree(f)
 
 
-def test_failed_import():
-    with pytest.raises(ImportError):
-        from quacc.recipes.tblite.core import relax_job
-    with pytest.raises(ImportError):
-        from quacc.recipes.tblite.core import static_job
-    with pytest.raises(ImportError):
-        from quacc.recipes.tblite.core import freq_job
-
-
 @pytest.mark.skipif(
     TBLite is None,
     reason="tblite must be installed.",
 )
 def test_static_Job():
-    from quacc.recipes.tblite.core import static_job
-
     atoms = molecule("H2O")
     output = static_job(atoms)
     assert output["spin_multiplicity"] == 1
@@ -65,8 +56,6 @@ def test_static_Job():
     reason="tblite must be installed.",
 )
 def test_relax_Job():
-    from quacc.recipes.tblite.core import relax_job
-
     atoms = molecule("H2O")
     output = relax_job(atoms)
     assert output["spin_multiplicity"] == 1
@@ -82,8 +71,6 @@ def test_relax_Job():
     reason="tblite must be installed.",
 )
 def test_freq_job():
-    from quacc.recipes.tblite.core import freq_job
-
     atoms = molecule("H2O")
     output = freq_job(atoms)
     assert output["vib"]["atoms"] == molecule("H2O")

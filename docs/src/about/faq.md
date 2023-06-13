@@ -32,4 +32,4 @@ A: The beauty is that you don't have to use Covalent if you don't want to! By de
 
 **Q: I want to contribute a new recipe to Quacc, but it will require additional dependencies. Is that a problem?**
 
-A: Absolutely not a problem! Simply make your dependencies optional in the `setup.py` file and ensure your recipes and tests only run if your necessary dependencies are installed. Refer to {obj}`quacc.recipes.tblite.core` and the `[tblite]` extras in the `setup.py` file for an example.
+A: Absolutely not a problem! Simply make your dependencies optional in the `setup.py` file and use a {obj}`monty.dev.requires` decorator to ensure your recipes and tests only run if your necessary dependencies are installed. Refer to {obj}`quacc.recipes.tblite.core` and the `[tblite]` extras in the `setup.py` file for an example.
