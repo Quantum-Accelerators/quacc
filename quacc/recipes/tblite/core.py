@@ -8,7 +8,6 @@ from typing import Literal
 
 import covalent as ct
 from ase.atoms import Atoms
-from monty.dev import requires
 
 from quacc.schemas.ase import (
     summarize_opt_run,
@@ -22,14 +21,10 @@ from quacc.util.thermo import ideal_gas
 try:
     from tblite.ase import TBLite
 except ImportError:
-    TBLite = None
+    raise ImportError("tblite must be installed. Try pip install tblite[ase]")
 
 
 @ct.electron
-@requires(
-    TBLite,
-    "tblite must be installed. Try pip install tblite[ase]",
-)
 def static_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
@@ -65,10 +60,6 @@ def static_job(
 
 
 @ct.electron
-@requires(
-    TBLite,
-    "tblite must be installed. Try pip install tblite[ase]",
-)
 def relax_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
@@ -76,7 +67,7 @@ def relax_job(
     max_steps: int = 1000,
     optimizer: str = "FIRE",
     tblite_kwargs: dict | None = None,
-    opt_kwargs: dict | None = None,
+    optimizer_kwargs: dict | None = None,
 ) -> dict:
     """
     Relax a structure.
@@ -95,7 +86,7 @@ def relax_job(
         .Optimizer class to use for the relaxation.
     tblite_kwargs
         Dictionary of custom kwargs for the tblite calculator.
-    opt_kwargs
+    optimizer_kwargs
         Dictionary of kwargs for the optimizer.
 
     Returns
@@ -105,7 +96,7 @@ def relax_job(
     """
 
     tblite_kwargs = tblite_kwargs or {}
-    opt_kwargs = opt_kwargs or {}
+    optimizer_kwargs = optimizer_kwargs or {}
 
     atoms.calc = TBLite(method=method, **tblite_kwargs)
     dyn = run_ase_opt(
@@ -113,14 +104,13 @@ def relax_job(
         fmax=fmax,
         max_steps=max_steps,
         optimizer=optimizer,
-        opt_kwargs=opt_kwargs,
+        optimizer_kwargs=optimizer_kwargs,
     )
 
     return summarize_opt_run(dyn, additional_fields={"name": "TBLite Relax"})
 
 
 @ct.electron
-@requires(TBLite, "tblite must be installed. Try pip install tblite[ase]")
 def freq_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",

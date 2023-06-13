@@ -53,7 +53,7 @@ def relax_job(
     max_steps: int = 1000,
     optimizer: str = "FIRE",
     emt_kwargs: dict | None = None,
-    opt_kwargs: dict | None = None,
+    optimizer_kwargs: dict | None = None,
 ) -> dict:
     """
     Carry out a geometry optimization.
@@ -70,7 +70,7 @@ def relax_job(
         ASE Optimizer class to use for the relaxation.
     emt_kwargs
         Dictionary of custom kwargs for the EMT calculator.
-    opt_kwargs
+    optimizer_kwargs
         Dictionary of kwargs for the optimizer.
 
     Returns
@@ -80,7 +80,7 @@ def relax_job(
     """
 
     emt_kwargs = emt_kwargs or {}
-    opt_kwargs = opt_kwargs or {}
+    optimizer_kwargs = optimizer_kwargs or {}
 
     atoms.calc = EMT(**emt_kwargs)
     dyn = run_ase_opt(
@@ -88,7 +88,7 @@ def relax_job(
         fmax=fmax,
         max_steps=max_steps,
         optimizer=optimizer,
-        opt_kwargs=opt_kwargs,
+        optimizer_kwargs=optimizer_kwargs,
     )
 
     return summarize_opt_run(dyn, additional_fields={"name": "EMT Relax"})

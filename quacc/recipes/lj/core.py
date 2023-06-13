@@ -56,7 +56,7 @@ def relax_job(
     fmax: float = 0.01,
     max_steps: int = 1000,
     optimizer: str = "FIRE",
-    opt_kwargs: dict | None = None,
+    optimizer_kwargs: dict | None = None,
     lj_kwargs: dict | None = None,
 ) -> dict:
     """
@@ -72,7 +72,7 @@ def relax_job(
         Maximum number of steps to take.
     optimizer
         ASE Optimizer class to use for the relaxation.
-    opt_kwargs
+    optimizer_kwargs
         Dictionary of kwargs for the optimizer.
     lj_kwargs
         Dictionary of custom kwargs for the LJ calculator.
@@ -84,7 +84,7 @@ def relax_job(
     """
 
     lj_kwargs = lj_kwargs or {}
-    opt_kwargs = opt_kwargs or {}
+    optimizer_kwargs = optimizer_kwargs or {}
 
     defaults = {"epsilon": 1.0, "sigma": 1.0}
     flags = defaults | lj_kwargs
@@ -95,7 +95,7 @@ def relax_job(
         fmax=fmax,
         max_steps=max_steps,
         optimizer=optimizer,
-        opt_kwargs=opt_kwargs,
+        optimizer_kwargs=optimizer_kwargs,
     )
 
     return summarize_opt_run(dyn, additional_fields={"name": "LJ Relax"})

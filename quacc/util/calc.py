@@ -126,7 +126,7 @@ def run_ase_opt(
     fmax: float = 0.01,
     max_steps: int = 500,
     optimizer: str = "FIRE",
-    opt_kwargs: dict | None = None,
+    optimizer_kwargs: dict | None = None,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
     copy_files: list[str] | None = None,
@@ -150,7 +150,7 @@ def run_ase_opt(
     optimizer
         Name of optimizer class to use.
     opt_kwargs
-        Dictionary of kwargs for the optimizer.
+    optimizer_kwargsnary of kwargs for the optimizer.
     scratch_dir
         Path where a tmpdir should be made for running the calculation. If None,
         the current working directory will be used.
@@ -175,19 +175,19 @@ def run_ase_opt(
     opt_kwargs = opt_kwargs or {}
 
     if not os.path.exists(scratch_dir):
-        os.makedirs(scratch_dir)
+    optimizer_kwargsedioptimizer_kwargs_dir)
 
     if "trajectory" not in opt_kwargs:
         opt_kwargs["trajectory"] = "opt.traj"
 
     # Get optimizer
-    try:
-        opt_class = getattr(optimize, optimizer)
+    try:optimizer_kwargs
+        optimizer_kwargs= getattr(optimize, optimizer)
     except AttributeError as e:
         raise ValueError(
             f"Unknown {optimizer=}, must be one of {list(dir(optimize))}"
-        ) from e
-
+        ) from eoptimizer_kwargs
+optimizer_kwargs
     tmpdir = mkdtemp(prefix="quacc-tmp-", dir=scratch_dir)
 
     if os.name != "nt":
@@ -220,8 +220,8 @@ def run_ase_opt(
         os.remove(symlink)
 
     return dyn
-
-
+optimizer_kwargs
+optimizer_kwargs
 def run_ase_vib(
     atoms: Atoms,
     vib_kwargs: dict | None = None,

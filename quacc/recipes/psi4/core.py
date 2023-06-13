@@ -4,7 +4,6 @@ from __future__ import annotations
 import covalent as ct
 from ase.atoms import Atoms
 from ase.calculators.psi4 import Psi4
-from monty.dev import requires
 
 from quacc.schemas.ase import summarize_run
 from quacc.util.calc import run_calc
@@ -13,11 +12,10 @@ from quacc.util.dicts import remove_dict_empties
 try:
     import psi4
 except ImportError:
-    psi4 = None
+    raise ImportError("Psi4 not installed. Try conda install -c psi4 psi4")
 
 
 @ct.electron
-@requires(psi4, "Psi4 be installed. Try conda install -c psi4 psi4")
 def static_job(
     atoms: Atoms,
     charge: int | None = None,
