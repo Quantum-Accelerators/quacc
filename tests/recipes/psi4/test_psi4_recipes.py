@@ -25,6 +25,11 @@ def teardown_module():
                 rmtree(f)
 
 
+def test_failed_import():
+    with pytest.raises(ImportError):
+        from quacc.recipes.psi4.core import static_job
+
+
 @pytest.mark.skipif(
     psi4 is None,
     reason="Psi4 must be installed. Try conda install -c psi4 psi4",

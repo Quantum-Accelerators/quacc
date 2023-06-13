@@ -30,6 +30,15 @@ def teardown_module():
                 rmtree(f)
 
 
+def test_failed_import():
+    with pytest.raises(ImportError):
+        from quacc.recipes.tblite.core import relax_job
+    with pytest.raises(ImportError):
+        from quacc.recipes.tblite.core import static_job
+    with pytest.raises(ImportError):
+        from quacc.recipes.tblite.core import freq_job
+
+
 @pytest.mark.skipif(
     TBLite is None,
     reason="tblite must be installed.",
