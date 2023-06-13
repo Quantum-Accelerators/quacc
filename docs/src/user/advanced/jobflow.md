@@ -70,10 +70,6 @@ Like before, we need to define the individual `Job` objects. Now though, we must
 
 ### Known Limitations
 
-```{hint}
-Jobflow works for all features in Quacc that don't have a `@ct.lattice` decorator in the recipe.
-```
-
 Jobflow cannot be used with Quacc recipes that involve classes since they are, by default, structured for [Covalent](https://github.com/AgnostiqHQ/covalent). To address this, we fully support the development of Jobflow-specific workflows that are mirrors of their Covalent counterparts. Refer to the {obj}`quacc.recipes.emt.jobflow.slabs` module for a representative example that can be compared against the Covalent version at {obj}`quacc.recipes.emt.slabs`.
 
 ### Learn More
