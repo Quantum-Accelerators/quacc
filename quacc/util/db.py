@@ -10,6 +10,28 @@ import warnings
 import covalent as ct
 from covalent._shared_files.exceptions import MissingLatticeRecordError
 from maggma.core import Store
+from maggma.stores.mongolike import MontyStore
+
+
+def covalent_to_montydb(db_path: str = None, collection_name: str = "covalent") -> None:
+    """
+    Parse the Covalent SQLite DB as a MontyDB
+
+    Parameters
+    ----------
+    db_path
+        Path to the dispatcher_db.sqlite file.
+        If None, the path from ct.get_config() will be used
+    collection_name
+        Name of the collection to create
+
+    Returns
+    -------
+    None
+    """
+    if db_path is None:
+        db_path = ct.get_config()["dispatcher"]["db_path"]
+    return MontyStore(collection_name, os.path.basename(db_path))
 
 
 def covalent_to_db(
