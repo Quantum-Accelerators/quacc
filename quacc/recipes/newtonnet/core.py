@@ -188,18 +188,20 @@ def quasi_irc_job(
     opt_flags = opt_defaults | opt_swaps
 
     # Define calculator
-    mlcalculator1 = NewtonNet(
+    mlcalculator = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
         config_path=SETTINGS.NEWTONNET_CONFIG_PATH,
         **newtonnet_kwargs,
     )
-    atoms.calc = mlcalculator1
+    atoms.calc = mlcalculator
 
     # Run IRC
     irc_summary = irc_job(atoms, newtonnet_kwargs=newtonnet_kwargs, **irc_flags)
 
     # Run opt
-    opt_summary = relax_job(irc_summary["atoms"], **opt_flags)
+    opt_summary = relax_job(
+        irc_summary["atoms"], newtonnet_kwargs=newtonnet_kwargs, **opt_flags
+    )
 
     # Run frequency
     thermo_summary = freq_job(
