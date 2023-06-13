@@ -186,6 +186,8 @@ def run_ase_opt(
 
     # Get optimizer
     if optimizer.lower() in {"sella", "sella_irc"}:
+        if not atoms.pbc.any() and "internal" not in opt_kwargs:
+            opt_kwargs["internal"] = True
         try:
             from sella import IRC, Sella
         except ImportError as e:

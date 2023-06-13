@@ -3,14 +3,11 @@ Core recipes for the NewtonNet code
 """
 from __future__ import annotations
 
-import os
 from typing import Literal
 
 import covalent as ct
 import numpy as np
 from ase.atoms import Atoms
-from ase.data import atomic_masses
-from ase.optimize.optimize import Optimizer
 from ase.units import _c, fs
 from monty.dev import requires
 
@@ -25,14 +22,6 @@ except ImportError:
     NewtonNet = None
 
 
-# TODO: Add reasonable defaults to settings
-# TODO: Reduce number of kwargs
-# TODO: Make sure the calculation fails gracefully if paths aren't set correctly.
-# TODO: Not sure we want all these to be individual Slurm jobs since they're fast? Might
-#      be better to make them regular functions and have a single Slurm job combining them.
-# TODO: Add docstrings and typehints for all functions/classes.
-
-
 @ct.electron
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def ts_job(
@@ -42,8 +31,7 @@ def ts_job(
     optimizer: str = "sella",
     temperature: float = 298.15,
     pressure: float = 1.0,
-    custom_hessian: bool = False,
-    run_freq: bool = True,
+    use_custom_hessian: bool = False,
     newtonnet_kwargs: dict | None = None,
     opt_kwargs: dict | None = None,
 ) -> dict:
@@ -61,16 +49,19 @@ def ts_job(
     )
     atoms.calc = mlcalculator
 
-    # Sella-related parameters
-    if optimizer.lower() == "sella":
-        opt_kwargs["internal"] = True
-        if custom_hessian:
+    # Use custom Hessian if requested
+    if use_custom_hessian:
+        if optimizer.lower() == "sella":
             opt_kwargs["diag_every_n"] = 0
-            opt_kwargs["hessian_function"] = _get_hessian(atoms)
-    elif custom_hessian:
-        raise ValueError("Custom hessian can only be used with Sella.")
 
-    # Run the optimization
+            # TODO: I think you may need to re-initialize the calculator
+            # object after this so that it's "blank" when you do
+            # run_ase_opt. Please check.
+            opt_kwargs["hessian_function"] = _get_hessian(atoms)
+        else:
+            raise ValueError("Custom hessian can only be used with Sella.")
+
+    # Run the TS optimization
     dyn = run_ase_opt(
         atoms,
         fmax=fmax,
@@ -78,31 +69,30 @@ def ts_job(
         optimizer=optimizer,
         opt_kwargs=opt_kwargs,
     )
-    summary = summarize_opt_run(dyn, additional_fields={"name": "Sella TS"})
+    ts_summary = summarize_opt_run(dyn, additional_fields={"name": "Sella TS"})
 
-    # Run an optional frequency calculation
-    if run_freq:
-        freq_summary = freq_job(
-            summary["atoms"],
-            temperature=temperature,
-            pressure=pressure,
-            newtonnet_kwargs=newtonnet_kwargs,
-        )
-        summary["thermo_results"] = freq_summary
-    return summary
+    # Run a frequency calculation
+    thermo_summary = freq_job(
+        ts_summary["atoms"],
+        temperature=temperature,
+        pressure=pressure,
+        newtonnet_kwargs=newtonnet_kwargs,
+    )
+
+    return {"ts": ts_summary, "thermo": thermo_summary}
 
 
+# TODO: please add the other direction as a literal typehint. Is it backward or reverse?
 @ct.electron
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def irc_job(
     atoms: Atoms,
-    direction: str = "forward",
+    direction: str = Literal["forward"],
     fmax: float = 0.01,
     max_steps: int = 1000,
     optimizer: str = Literal["sella_irc"],
     temperature: float = 298.15,
     pressure: float = 1.0,
-    run_freq: bool = True,
     newtonnet_kwargs: dict | None = None,
     opt_kwargs: dict | None = None,
 ) -> dict:
@@ -131,22 +121,18 @@ def irc_job(
         opt_kwargs=opt_kwargs,
         run_kwargs=run_kwargs,
     )
-    summary = summarize_opt_run(dyn, additional_fields={"name": "Sella IRC"})
+    summary_irc = summarize_opt_run(dyn, additional_fields={"name": "Sella IRC"})
 
-    # Run optional frequency job
-    if run_freq:
-        freq_summary = freq_job(
-            summary["atoms"],
-            temperature=temperature,
-            pressure=pressure,
-            newtonnet_kwargs=newtonnet_kwargs,
-        )
-        summary["thermo_results"] = freq_summary
-    return summary
+    # Run frequency job
+    thermo_summary = freq_job(
+        summary_irc["atoms"],
+        temperature=temperature,
+        pressure=pressure,
+        newtonnet_kwargs=newtonnet_kwargs,
+    )
+    return {"irc": summary_irc, "thermo": thermo_summary}
 
 
-# TODO: Must reduce number of kwargs
-# TODO: Must reduce copy-pasting
 @ct.electron
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def quasi_irc_job(
@@ -159,7 +145,6 @@ def quasi_irc_job(
     optimizer2: str = "sella",
     temperature: float = 298.15,
     pressure: float = 1.0,
-    run_freq: bool = True,
     newtonnet_kwargs: dict | None = None,
     opt1_kwargs: dict | None = None,
     opt2_kwargs: dict | None = None,
@@ -211,21 +196,23 @@ def quasi_irc_job(
     )
     opt_summary = summarize_opt_run(dyn2, additional_fields={"name": "Sella Opt"})
 
-    summary = {"IRC": irc_summary, "Opt": opt_summary}
+    # Run frequency
+    thermo_summary = freq_job(
+        opt_summary["atoms"],
+        temperature=temperature,
+        pressure=pressure,
+        newtonnet_kwargs=newtonnet_kwargs,
+    )
 
-    # Run optional frequency
-    if run_freq:
-        freq_summary = freq_job(
-            opt_summary["atoms"],
-            temperature=temperature,
-            pressure=pressure,
-            newtonnet_kwargs=newtonnet_kwargs,
-        )
-        summary["freq"] = freq_summary
-
-    return summary
+    return {"irc": irc_summary, "opt": opt_summary, "thermo": thermo_summary}
 
 
+# TODO: I think it is possible to get rid of all the unit conversion functions
+# and instead use the `VibrationsData` class in `ase.vibrations.data.py`
+# See details here: https://gitlab.com/ase/ase/-/blob/master/ase/vibrations/data.py
+# Once that class is contructed, you can do `VibrationsData.get_frequencies()`
+# to return the frequencies in cm^-1, as desired. You can then get rid of
+# the `_get_freq_in_cm_inv` and `_mass_weighted_hessian` functions.
 @ct.electron
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def freq_job(
@@ -264,6 +251,20 @@ def freq_job(
     # Make IdealGasThermo object
     igt = ideal_gas(atoms, freqs_cm_inv, energy=mlcalculator.results["energy"])
 
+    # TODO: If you are successful in using the `VibrationsData` class, you
+    # can then return the following instead for a much richer and consistent output:
+    # return {
+    #     "vib": summarize_vib_run(
+    #         vibrations_data, additional_fields={"name": "Sella Vibrations"}
+    #     ),
+    #     "thermo": summarize_thermo_run(
+    #         igt,
+    #         temperature=temperature,
+    #         pressure=pressure,
+    #         additional_fields={"name": "Sella Thermo"},
+    #     ),
+    # }
+
     return summarize_thermo_run(
         igt,
         temperature=temperature,
@@ -272,13 +273,37 @@ def freq_job(
     )
 
 
-# TODO: Make docstring compatible with that used in Quacc
-def _mass_weighted_hessian(masses: list | np.array, hessian: np.ndarray) -> np.ndarray:
+def _get_hessian(atoms: Atoms) -> np.ndarray:
+    """
+    TODO: docstrings
+    """
+    atoms.calc.calculate()
+    return atoms.calc.results["hessian"].reshape((-1, 3 * len(atoms)))
+
+
+# TODO: Can potentially replace with `VibrationsData` (see above)
+def _get_freq_in_cm_inv(
+    masses: np.array, reshaped_hessian: np.ndarray
+) -> list[np.array, np.array]:
+    # Calculate mass-weighted Hessian
+    mass_weighted_hessian = _mass_weighted_hessian(masses, reshaped_hessian)
+
+    # Calculate eigenvalues and eigenvectors
+    eigvals, eigvecs = np.linalg.eig(mass_weighted_hessian)
+    eigvals = np.sort(np.real(eigvals))
+
+    # Calculate frequencies in cm^-1
+    freqs = np.emath.sqrt(eigvals) * fs * (10**15) / (_c * 100 * 2 * np.pi)
+    return freqs, eigvecs
+
+
+# TODO: Can potentially replace with `VibrationsData` (see above)
+def _mass_weighted_hessian(masses: np.array, hessian: np.ndarray) -> np.ndarray:
     """
     Calculates the mass-weighted Hessian matrix.
 
     Parameters:
-        masses (array-like): A list or array of atom masses.
+        masses (array): An array of atom masses.
         hessian (ndarray): A 2D numpy array representing the Hessian matrix.
 
     Returns:
@@ -302,31 +327,9 @@ def _mass_weighted_hessian(masses: list | np.array, hessian: np.ndarray) -> np.n
         hessian = np.zeros((21, 21))  # Example Hessian matrix
         mass_weighted_hessian = _mass_weighted_hessian(masses, hessian)
     """
-    masses = np.asarray(masses)
-    hessian = np.asarray(hessian)
 
     if len(masses) != hessian.shape[0] // 3 or hessian.shape[0] != hessian.shape[1]:
         raise ValueError("Incompatible dimensions of masses and hessian.")
 
     sqrt_masses = np.sqrt(np.outer(masses, masses))
     return hessian / np.tile(sqrt_masses, (3, 3))
-
-
-# TODO: type hints and docstrings
-def _get_freq_in_cm_inv(masses, reshaped_hessian):
-    # Calculate mass-weighted Hessian
-    mass_weighted_hessian = _mass_weighted_hessian(masses, reshaped_hessian)
-
-    # Calculate eigenvalues and eigenvectors
-    eigvals, eigvecs = np.linalg.eig(mass_weighted_hessian)
-    eigvals = np.sort(np.real(eigvals))
-
-    # Calculate frequencies in cm^-1
-    freqs = np.emath.sqrt(eigvals) * fs * (10**15) / (_c * 100 * 2 * np.pi)
-    return [freqs, eigvecs]
-
-
-# TODO: type hints and docstrings
-def _get_hessian(atoms):
-    atoms.calc.calculate()
-    return atoms.calc.results["hessian"].reshape((-1, 3 * len(atoms)))
