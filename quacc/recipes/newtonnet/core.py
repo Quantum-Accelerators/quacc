@@ -82,20 +82,15 @@ def ts_job(
     )
     atoms.calc = mlcalculator
 
-    # Use custom Hessian if requested
     if use_custom_hessian:
-        if optimizer.lower() == "sella":
-            opt_kwargs["diag_every_n"] = 0
-
-            atoms.calc.calculate()
-            hessian = atoms.calc.results["hessian"].reshape((-1, 3 * len(atoms)))
-            opt_kwargs["hessian_function"] = hessian
-            # TODO: I think you may need to re-initialize the calculator
-            # object after this so that it's "blank" when you do
-            # run_ase_opt. Please check.
-        else:
+        if optimizer.lower() != "sella":
             raise ValueError("Custom hessian can only be used with Sella.")
 
+        opt_kwargs["diag_every_n"] = 0
+
+        atoms.calc.calculate()
+        hessian = atoms.calc.results["hessian"].reshape((-1, 3 * len(atoms)))
+        opt_kwargs["hessian_function"] = hessian
     # Run the TS optimization
     dyn = run_ase_opt(
         atoms,
