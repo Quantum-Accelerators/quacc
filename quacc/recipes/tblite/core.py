@@ -107,6 +107,7 @@ def freq_job(
     temperature: float = 298.15,
     pressure: float = 1.0,
     xtb_kwargs: dict | None = None,
+    vib_kwargs: dict | None = None,
 ) -> dict:
     """
     Run a frequency job and calculate thermochemistry.
@@ -125,6 +126,8 @@ def freq_job(
         Pressure in bar.
     xtb_kwargs
         dictionary of custom kwargs for the xTB calculator.
+    vib_kwargs
+        dictionary of custom kwargs for the Vibrations object
 
     Returns
     -------
@@ -134,9 +137,10 @@ def freq_job(
     """
 
     xtb_kwargs = xtb_kwargs or {}
+    vib_kwargs = vib_kwargs or {}
 
     atoms.calc = TBLite(method=method, **xtb_kwargs)
-    vibrations = run_ase_vib(atoms)
+    vibrations = run_ase_vib(atoms, vib_kwargs=vib_kwargs)
 
     igt = ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)
 
