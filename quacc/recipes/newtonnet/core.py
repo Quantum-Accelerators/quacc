@@ -36,7 +36,7 @@ def relax_job(
     opt_defaults = {
         "fmax": 0.01,
         "max_steps": 1000,
-        "optimizer": "sella",
+        "optimizer": "Sella",
         "optimizer_kwargs": {"order": 0},
     }
     opt_flags = opt_defaults | opt_swaps
@@ -73,7 +73,7 @@ def ts_job(
     opt_defaults = {
         "fmax": 0.01,
         "max_steps": 1000,
-        "optimizer": "sella",
+        "optimizer": "Sella",
         "optimizer_kwargs": {"diag_every_n": 0} if use_custom_hessian else {},
     }
     opt_flags = opt_defaults | opt_swaps
@@ -132,7 +132,7 @@ def irc_job(
     opt_defaults = {
         "fmax": 0.01,
         "max_steps": 1000,
-        "optimizer": "sella_irc",
+        "optimizer": "Sella_IRC",
         "run_kwargs": {"direction": direction.lower()},
     }
     opt_flags = opt_defaults | opt_swaps
@@ -180,12 +180,12 @@ def quasi_irc_job(
     irc_defaults = {
         "fmax": 0.01,
         "max_steps": 5,
-        "optimizer": "sella_irc",
+        "optimizer": "Sella_IRC",
         "run_kwargs": {"direction": direction.lower()},
     }
     irc_flags = irc_defaults | irc_swaps
 
-    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "sella"}
+    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
     opt_flags = opt_defaults | opt_swaps
 
     # Define calculator
