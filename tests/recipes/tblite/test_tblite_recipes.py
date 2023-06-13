@@ -6,11 +6,12 @@ import numpy as np
 import pytest
 from ase.build import molecule
 
+from quacc.recipes.tblite.core import freq_job, relax_job, static_job
+
 try:
     from tblite.ase import TBLite
 except ImportError:
     TBLite = None
-from quacc.recipes.tblite.core import freq_job, relax_job, static_job
 
 
 def teardown_module():

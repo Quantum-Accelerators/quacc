@@ -17,7 +17,7 @@ except ImportError:
 
 
 @ct.electron
-@requires(psi4, "Psi4 be installed. Try conda install -c psi4 psi4")
+@requires(psi4, "Psi4 not installed. Try conda install -c psi4 psi4")
 def static_job(
     atoms: Atoms,
     charge: int | None = None,
@@ -45,6 +45,14 @@ def static_job(
         Basis set
     swaps
         Dictionary of custom kwargs for the calculator.
+            defaults = {
+                "mem": "16GB",
+                "num_threads": "max",
+                "method": method,
+                "basis": basis,
+                "charge": charge or round(sum(atoms.get_initial_charges())),
+                "multiplicity": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
+            }
 
     Returns
     -------

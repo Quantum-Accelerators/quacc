@@ -112,6 +112,16 @@ def _prerelax(
         Preset to use.
     swaps
         Dictionary of custom kwargs for the calculator.
+            defaults = {
+                "auto_kpts": {"grid_density": 100},
+                "ediff": 1e-4,
+                "encut": None,
+                "lcharg": False,
+                "lreal": "auto",
+                "lwave": True,
+                "nelm": 225,
+                "nsw": 0,
+            }
     fmax
         Maximum force in eV/A.
 
@@ -157,6 +167,18 @@ def _loose_relax_positions(
         Preset to use.
     swaps
         dictionary of custom kwargs for the calculator.
+            defaults = {
+                "auto_kpts": {"grid_density": 100},
+                "ediff": 1e-4,
+                "ediffg": -0.05,
+                "encut": None,
+                "ibrion": 2,
+                "isif": 2,
+                "lcharg": False,
+                "lreal": "auto",
+                "lwave": True,
+                "nsw": 250,
+            }
 
     Returns
     -------
@@ -204,6 +226,16 @@ def _loose_relax_volume(
         Preset to use.
     swaps
         Dictionary of custom kwargs for the calculator.
+            defaults = {
+                "auto_kpts": {"grid_density": 100},
+                "ediffg": -0.03,
+                "ibrion": 2,
+                "isif": 3,
+                "lcharg": False,
+                "lreal": "auto",
+                "lwave": True,
+                "nsw": 500,
+            }
 
     Returns
     -------
@@ -252,6 +284,15 @@ def _double_relax(
         Preset to use.
     swaps
         Dictionary of custom kwargs for the calculator.
+            defaults = {
+                "ediffg": -0.03,
+                "ibrion": 2,
+                "isif": 3 if relax_volume else 2,
+                "lcharg": False,
+                "lreal": "auto",
+                "lwave": True,
+                "nsw": 500 if relax_volume else 250,
+            }
     relax_volume
         True if a volume relaxation should be performed.
 
@@ -321,6 +362,13 @@ def _static(
         Preset to use.
     swaps
         Dictionary of custom kwargs for the calculator.
+            defaults = {
+                "laechg": True,
+                "lcharg": True,
+                "lreal": False,
+                "lwave": True,
+                "nsw": 0,
+            }
 
     Returns
     -------

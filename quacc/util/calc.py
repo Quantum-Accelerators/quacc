@@ -126,7 +126,7 @@ def run_ase_opt(
     fmax: float = 0.01,
     max_steps: int = 500,
     optimizer: str = "FIRE",
-    opt_kwargs: dict | None = None,
+    optimizer_kwargs: dict | None = None,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
     copy_files: list[str] | None = None,
@@ -149,7 +149,7 @@ def run_ase_opt(
         Maximum number of steps to take.
     optimizer
         Name of optimizer class to use.
-    opt_kwargs
+    optimizer_kwargs
         Dictionary of kwargs for the optimizer.
     scratch_dir
         Path where a tmpdir should be made for running the calculation. If None,
@@ -172,13 +172,13 @@ def run_ase_opt(
     cwd = os.getcwd()
     scratch_dir = scratch_dir or cwd
     symlink = os.path.join(cwd, "tmp_dir")
-    opt_kwargs = opt_kwargs or {}
+    optimizer_kwargs = optimizer_kwargs or {}
 
     if not os.path.exists(scratch_dir):
         os.makedirs(scratch_dir)
 
-    if "trajectory" not in opt_kwargs:
-        opt_kwargs["trajectory"] = "opt.traj"
+    if "trajectory" not in optimizer_kwargs:
+        optimizer_kwargs["trajectory"] = "opt.traj"
 
     # Get optimizer
     try:
@@ -200,8 +200,10 @@ def run_ase_opt(
         copy_decompress(copy_files, tmpdir)
 
     # Define optimizer class
-    dyn = opt_class(atoms, **opt_kwargs)
-    dyn.trajectory.filename = opt_kwargs["trajectory"]  # can remove after ASE MR 2901
+    dyn = opt_class(atoms, **optimizer_kwargs)
+    dyn.trajectory.filename = optimizer_kwargs[
+        "trajectory"
+    ]  # can remove after ASE MR 2901
 
     # Run calculation
     os.chdir(tmpdir)
