@@ -40,4 +40,4 @@ With a workflow added to your launch pad, on the desired machine of choice, you 
 
 ## Read More
 
-For additional FireWorks-related options in Jobflow, refer to the [Running Jobflow with FireWorks](https://materialsproject.github.io/jobflow/tutorials/8-fireworks.html) tutorial. For documentation on how to submit jobs to the queue that are in your launchpad, refer to the [FireWorks Documentation](https://materialsproject.github.io/fireworks/queue_tutorial.html#submit-a-job).
+For details about how to assign different compute resources and submission options for each job in a workflow, refer to the [Setting where Jobs are Dispatched](https://materialsproject.github.io/jobflow/tutorials/8-fireworks.html#setting-where-jobs-are-dispatched) section in the Jobflow documentation. For additional details on how to submit jobs to the queue that are in your launchpad, refer to the [FireWorks Documentation](https://materialsproject.github.io/fireworks/queue_tutorial.html#submit-a-job).
