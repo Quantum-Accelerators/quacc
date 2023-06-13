@@ -7,12 +7,10 @@ import pytest
 from ase.build import molecule
 
 try:
-    from tblite.ase import TBLite
+    from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
 except ImportError:
-    TBLite = None
-# from quacc.recipes.tblite.core import freq_job, relax_job, static_job
-from quacc.recipes.newtonnet.core import ts_job, irc_job, quasi_irc_job, freq_job
-#, relax_job, static_job
+    NewtonNet = None
+from quacc.recipes.newtonnet.core import ts_job, irc_job, quasi_irc_job, freq_job, relax_job, static_job
 
 
 def teardown_module():
@@ -34,42 +32,39 @@ def teardown_module():
 
 
 @pytest.mark.skipif(
-    newtonnet is None,
-    reason="newtonnet must be installed.",
+    NewtonNet is None,
+    reason="NewtonNet must be installed.",
 )
 def test_static_Job():
     atoms = molecule("H2O")
     output = static_job(atoms)
     assert output["spin_multiplicity"] == 1
     assert output["natoms"] == len(atoms)
-    assert output["parameters"]["method"] == "GFN2-xTB"
     assert output["results"]["energy"] == pytest.approx(-137.96777594361672)
     assert np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
 
-    output = static_job(atoms, method="GFN1-xTB")
+    output = static_job(atoms)
     assert output["parameters"]["method"] == "GFN1-xTB"
     assert output["results"]["energy"] == pytest.approx(-156.96750578831137)
     assert np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
 
-'''
 @pytest.mark.skipif(
-    TBLite is None,
-    reason="tblite must be installed.",
+    NewtonNet is None,
+    reason="NewtonNet must be installed.",
 )
 def test_relax_Job():
     atoms = molecule("H2O")
     output = relax_job(atoms)
     assert output["spin_multiplicity"] == 1
     assert output["natoms"] == len(atoms)
-    assert output["parameters"]["method"] == "GFN2-xTB"
     assert output["results"]["energy"] == pytest.approx(-137.97654191396492)
     assert not np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
     assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
 
 
 @pytest.mark.skipif(
-    TBLite is None,
-    reason="tblite must be installed.",
+    NewtonNet is None,
+    reason="NewtonNet must be installed.",
 )
 def test_freq_job():
     atoms = molecule("H2O")
@@ -175,4 +170,3 @@ def test_freq_job():
     assert "dir_name" in output["thermo"]
     assert "nid" in output["vib"]
     assert "dir_name" in output["vib"]
-'''
