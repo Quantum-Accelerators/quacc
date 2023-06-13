@@ -239,7 +239,6 @@ def freq_job(
     """
     newtonnet_kwargs = newtonnet_kwargs or {}
 
-
     # Define calculator
     mlcalculator = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
