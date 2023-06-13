@@ -82,6 +82,6 @@ def relax_job(
     opt_flags = opt_defaults | opt_swaps
 
     atoms.calc = LennardJones(**lj_kwargs)
-    dyn = run_ase_opt(atoms, **opt_defaults)
+    dyn = run_ase_opt(atoms, **opt_flags)
 
     return summarize_opt_run(dyn, additional_fields={"name": "LJ Relax"})
