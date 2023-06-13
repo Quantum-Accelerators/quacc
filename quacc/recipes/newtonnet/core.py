@@ -9,6 +9,7 @@ import covalent as ct
 import numpy as np
 from ase.atoms import Atoms
 from ase.units import _c, fs
+from monty.dev import requires
 
 from quacc import SETTINGS
 from quacc.schemas.ase import summarize_opt_run, summarize_thermo_run
@@ -18,14 +19,13 @@ from quacc.util.thermo import ideal_gas
 try:
     from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
 except ImportError:
-    raise ImportError("NewtonNet must be installed. Try pip install quacc[newtonnet]")
+    NewtonNet = None
 
 
 @ct.electron
+@requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def relax_job(
-    atoms: Atoms,
-    newtonnet_kwargs: dict | None = None,
-    opt_swaps: dict | None = None,
+    atoms: Atoms, newtonnet_kwargs: dict | None = None, opt_swaps: dict | None = None
 ) -> dict:
     """
     TODO: docstring
@@ -55,11 +55,12 @@ def relax_job(
 
 
 @ct.electron
+@requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def ts_job(
     atoms: Atoms,
+    use_custom_hessian: bool = False,
     temperature: float = 298.15,
     pressure: float = 1.0,
-    use_custom_hessian: bool = False,
     newtonnet_kwargs: dict | None = None,
     opt_swaps: dict | None = None,
 ) -> dict:
@@ -111,22 +112,29 @@ def ts_job(
 
 # TODO: please add the other direction as a literal typehint. Is it backward or reverse?
 @ct.electron
+@requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def irc_job(
     atoms: Atoms,
     direction: str = Literal["forward"],
-    fmax: float = 0.01,
-    max_steps: int = 1000,
     temperature: float = 298.15,
     pressure: float = 1.0,
     newtonnet_kwargs: dict | None = None,
-    opt_kwargs: dict | None = None,
+    opt_swaps: dict | None = None,
 ) -> dict:
     """
     TODO: docstrings
     """
 
     newtonnet_kwargs = newtonnet_kwargs or {}
-    opt_kwargs = opt_kwargs or {}
+    opt_swaps = opt_swaps or {}
+
+    opt_defaults = {
+        "fmax": 0.01,
+        "max_steps": 1000,
+        "optimizer": "sella_irc",
+        "run_kwargs": {"direction": direction.lower()},
+    }
+    opt_flags = opt_defaults | opt_swaps
 
     # Define calculator
     mlcalculator = NewtonNet(
@@ -137,15 +145,7 @@ def irc_job(
     atoms.calc = mlcalculator
 
     # Run IRC
-    run_kwargs = {"direction": direction.lower()}
-    dyn = run_ase_opt(
-        atoms,
-        fmax=fmax,
-        max_steps=max_steps,
-        optimizer="sella_irc",
-        opt_kwargs=opt_kwargs,
-        run_kwargs=run_kwargs,
-    )
+    dyn = run_ase_opt(atoms, **opt_flags)
     summary_irc = summarize_opt_run(dyn, additional_fields={"name": "NewtonNet IRC"})
 
     # Run frequency job
@@ -159,25 +159,33 @@ def irc_job(
 
 
 @ct.electron
+@requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def quasi_irc_job(
     atoms: Atoms,
-    direction: str = "forward",
-    fmax: float = 0.01,
-    max_steps1: int = 5,
-    max_steps2: int = 1000,
-    optimizer2: str = "sella",
+    direction: str = Literal["forward"],
     temperature: float = 298.15,
     pressure: float = 1.0,
     newtonnet_kwargs: dict | None = None,
-    opt1_kwargs: dict | None = None,
-    opt2_kwargs: dict | None = None,
+    irc_swaps: dict | None = None,
+    opt_swaps: dict | None = None,
 ) -> dict:
     """
     TODO: docstrings
     """
     newtonnet_kwargs = newtonnet_kwargs or {}
-    opt1_kwargs = opt1_kwargs or {}
-    opt2_kwargs = opt2_kwargs or {}
+    irc_swaps = irc_swaps or {}
+    opt_swaps = opt_swaps or {}
+
+    irc_defaults = {
+        "fmax": 0.01,
+        "max_steps": 5,
+        "optimizer": "sella_irc",
+        "run_kwargs": {"direction": direction.lower()},
+    }
+    irc_flags = irc_defaults | irc_swaps
+
+    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "sella"}
+    opt_flags = opt_defaults | opt_swaps
 
     # Define calculator
     mlcalculator1 = NewtonNet(
@@ -188,24 +196,10 @@ def quasi_irc_job(
     atoms.calc = mlcalculator1
 
     # Run IRC
-    irc_summary = irc_job(
-        atoms,
-        direction,
-        fmax,
-        max_steps1,
-        newtonnet_kwargs=newtonnet_kwargs,
-        opt_kwargs=opt1_kwargs,
-    )
+    irc_summary = irc_job(atoms, newtonnet_kwargs=newtonnet_kwargs, **irc_flags)
 
     # Run opt
-    opt_summary = relax_job(
-        atoms,
-        fmax=fmax,
-        max_steps=max_steps2,
-        optimizer=optimizer2,
-        optimizer=optimizer2,
-        opt_kwargs=opt2_kwargs,
-    )
+    opt_summary = relax_job(irc_summary["atoms"], **opt_flags)
 
     # Run frequency
     thermo_summary = freq_job(
@@ -225,6 +219,7 @@ def quasi_irc_job(
 # to return the frequencies in cm^-1, as desired. You can then get rid of
 # the `_get_freq_in_cm_inv` and `_mass_weighted_hessian` functions.
 @ct.electron
+@requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def freq_job(
     atoms: Atoms,
     temperature: float = 298.15,
