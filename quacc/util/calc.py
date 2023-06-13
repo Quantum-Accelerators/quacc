@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import os
 from tempfile import mkdtemp
+from typing import Literal
 
 import numpy as np
 from ase import optimize
@@ -125,7 +126,19 @@ def run_ase_opt(
     atoms: Atoms,
     fmax: float = 0.01,
     max_steps: int = 500,
-    optimizer: str = "FIRE",
+    optimizer: Literal[
+        "Berny",
+        "BFGS",
+        "BFGSLineSearch",
+        "FIRE",
+        "GPMin",
+        "LBFGS",
+        "LBFGSLineSearch",
+        "MDMin",
+        "QuasiNewton",
+        "Sella",
+        "Sella_IRC",
+    ] = "FIRE",
     optimizer_kwargs: dict | None = None,
     run_kwargs: dict | None = None,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
