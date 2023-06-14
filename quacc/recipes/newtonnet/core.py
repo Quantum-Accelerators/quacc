@@ -351,7 +351,19 @@ def freq_job(
     newtonnet_kwargs: dict = None,
 ) -> dict:
     """
-    # TODO: Add docstrings
+    Perform a frequency calculation using the given atoms object.
+
+    Args:
+        atoms (ase.Atoms): The atoms object representing the system.
+        temperature (float): The temperature for the thermodynamic analysis (default: 298.15 K).
+        pressure (float): The pressure for the thermodynamic analysis (default: 1.0 atm).
+        newtonnet_kwargs (dict, optional): Additional keyword arguments for the NewtonNet calculator (default: None).
+
+    Returns:
+        dict: A dictionary containing the thermodynamic summary.
+
+    TODO: Add detailed docstrings explaining the functionality of the function.
+
     """
     newtonnet_kwargs = newtonnet_kwargs or {}
 
