@@ -24,7 +24,15 @@ from quacc.calculators.qchem import QChem
 @ct.electron
 def static_job(
     atoms: Atoms,
-    qchem_kwargs: dict,
+    cores: int | None = None,
+    charge: int | None = None,
+    mult: int | None = None,
+    xc: str = "wb97mv",
+    basis: str = "def2-tzvpd",
+    scf_algorithm: str = "diis",
+    pcm_dielectric: str | None = None,
+    smd_solvent: str | None = None,
+    swaps: dict | None = None,
 ) -> dict:
     """
     Carry out a single-point calculation.
@@ -32,18 +40,78 @@ def static_job(
     Parameters
     ----------
     atoms
-        Atoms object
-    qchem_kwargs
-        Dictionary of kwargs for the Q-Chem calculator.
+        Atoms object.
+    cores
+        Number of cores to use for the Q-Chem calculation. 
+        Effectively defaults to use all cores available on a given node, so this only needs to
+        be set by the user if less than all available cores should be used.
+    charge
+        The total charge of the molecular system.
+        Effectively defaults to zero.
+    mult
+        The spin multiplicity of the molecular system.
+        Effectively defaults to the lowest spin state given the molecular structure and charge.
+    xc
+        Exchange-correlation functional.
+        Defaults to wB97M-V.
+    basis
+        Basis set.
+        Defaults to def2-TZVPD.
+    scf_algorithm
+        Algorithm used to converge the SCF. 
+        Defaults to DIIS, but for particularly difficult cases, GDM should be employed instead.
+    pcm_dielectric
+        Dielectric constant of the optional polarizable continuum impicit solvation model.
+        Defaults no None, in which case PCM will not be employed.
+    smd_solvent
+        Solvent to use for SMD implicit solvation model. Examples include "water", "ethanol", "methanol",
+        and "acetonitrile". Refer to the Q-Chem manual for a complete list of solvents available.
+        Defulats to None, in which case SMD will not be employed.
+    swaps
+        Dictionary of custom kwargs for the calculator. Must be formatted consistently with Pymatgen's
+        QChemDictSet's overwrite_inputs. For example: {"rem": {"symmetry": "true"}}.
 
     Returns
     -------
     dict
         Dictionary of results from quacc.schemas.ase.summarize_run
     """
+
+    if pcm_dielectric is not None and smd_solvent is not None:
+        raise RuntimeError("PCM and SMD cannot be employed simultaneously! Exiting...")
+
     input_atoms = deepcopy(atoms)
 
-    calc = QChem(atoms, **qchem_kwargs)
+    overwrite_inputs = {
+        "rem": {"method": xc}   
+    }
+
+    swaps = swaps or {}
+    for key in swaps:
+        if key not in overwrite_inputs:
+            overwrite_inputs[key] = {}
+            for subkey in swaps[key]:
+                overwrite_inputs[key][subkey] = swaps[key][subkey]
+
+    qchem_input_params = {
+        "basis_set": basis,
+        "scf_algorithm": scf_algorithm,
+        "qchem_version": 6,
+        "pcm_dielectric": pcm_dielectric,
+        "smd_solvent": smd_solvent,
+        "overwrite_inputs": overwrite_inputs
+    }
+
+    if scf_algorithm.lower() == "gdm":
+        qchem_input_params["max_scf_cycles"] = 200
+
+    calc = QChem(
+        input_atoms = atoms,
+        cores = cores,
+        charge = charge,
+        spin_multiplicity = mult,
+        qchem_input_params = qchem_input_params,
+    )
     atoms.calc = calc
     atoms = run_calc(atoms)
     return summarize_run(
@@ -54,31 +122,58 @@ def static_job(
 
 
 @ct.electron
-def opt_job(
+def relax_job(
     atoms: Atoms,
-    qchem_kwargs: dict,
-    fmax: float = 0.01,
-    max_steps: int = 1000,
-    optimizer: str = "Sella",
-    opt_kwargs: dict | None = None,
+    cores: int | None = None,
+    charge: int | None = None,
+    mult: int | None = None,
+    xc: str = "wb97mv",
+    basis: str = "def2-svpd",
+    scf_algorithm: str = "diis",
+    pcm_dielectric: str | None = None,
+    smd_solvent: str | None = None,
+    swaps: dict | None = None,
+    opt_swaps: dict | None = None,
 ) -> dict:
     """
-    Optimize a molecular structure.
+    Optimize aka "relax" a molecular structure.
 
     Parameters
     ----------
     atoms
-        Atoms object
-    qchem_kwargs
-        Dictionary of kwargs for the Q-Chem calculator.
-    fmax
-        Tolerance for the force convergence (in eV/A).
-    max_steps
-        Maximum number of steps to take.
-    optimizer
-        .Optimizer class to use for the optimization.
-    opt_kwargs
-        Dictionary of kwargs for the optimizer.
+        Atoms object.
+    cores
+        Number of cores to use for the Q-Chem calculation. 
+        Effectively defaults to use all cores available on a given node, so this only needs to
+        be set by the user if less than all available cores should be used.
+    charge
+        The total charge of the molecular system.
+        Effectively defaults to zero.
+    mult
+        The spin multiplicity of the molecular system.
+        Effectively defaults to the lowest spin state given the molecular structure and charge.
+    xc
+        Exchange-correlation functional.
+        Defaults to wB97M-V.
+    basis
+        Basis set.
+        Defaults to def2-SVPD.
+    scf_algorithm
+        Algorithm used to converge the SCF. 
+        Defaults to DIIS, but for particularly difficult cases, GDM should be employed instead.
+    pcm_dielectric
+        Dielectric constant of the optional polarizable continuum impicit solvation model.
+        Defaults no None, in which case PCM will not be employed.
+    smd_solvent
+        Solvent to use for SMD implicit solvation model. Examples include "water", "ethanol", "methanol",
+        and "acetonitrile". Refer to the Q-Chem manual for a complete list of solvents available.
+        Defulats to None, in which case SMD will not be employed.
+    swaps
+        Dictionary of custom kwargs for the calculator. Must be formatted consistently with Pymatgen's
+        QChemDictSet's overwrite_inputs. For example: {"rem": {"symmetry": "true"}}.
+    opt_swaps
+        Dictionary of custom kwargs for run_ase_opt
+            opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
 
     Returns
     -------
@@ -86,21 +181,54 @@ def opt_job(
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
 
-    opt_kwargs = opt_kwargs or {}
-    if optimizer == "Sella":
-        if "internal" not in opt_kwargs:
-            opt_kwargs["internal"] = True
-        if "order" not in opt_kwargs:
-            opt_kwargs["order"] = 0
+    # Reminder to self: exposing TRICs?
 
-    calc = QChem(atoms, **qchem_kwargs)
+    opt_swaps = opt_swaps or {}
+    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella", "optimizer_kwargs":{}}
+    opt_flags = opt_defaults | opt_swaps
+    if optimizer.lower() == "sella":
+        if "internal" not in opt_flags["optimizer_kwargs"]:
+            opt_flags["optimizer_kwargs"]["internal"] = True
+        if "order" not in opt_flags["optimizer_kwargs"]:
+            opt_flags["optimizer_kwargs"]["order"] = 0
+
+    if pcm_dielectric is not None and smd_solvent is not None:
+        raise RuntimeError("PCM and SMD cannot be employed simultaneously! Exiting...")
+
+    overwrite_inputs = {
+        "rem": {"method": xc}   
+    }
+
+    swaps = swaps or {}
+    for key in swaps:
+        if key not in overwrite_inputs:
+            overwrite_inputs[key] = {}
+            for subkey in swaps[key]:
+                overwrite_inputs[key][subkey] = swaps[key][subkey]
+
+    qchem_input_params = {
+        "basis_set": basis,
+        "scf_algorithm": scf_algorithm,
+        "qchem_version": 6,
+        "pcm_dielectric": pcm_dielectric,
+        "smd_solvent": smd_solvent,
+        "overwrite_inputs": overwrite_inputs
+    }
+
+    if scf_algorithm.lower() == "gdm":
+        qchem_input_params["max_scf_cycles"] = 200
+
+    calc = QChem(
+        input_atoms = atoms,
+        cores = cores,
+        charge = charge,
+        spin_multiplicity = mult,
+        qchem_input_params = qchem_input_params,
+    )
     atoms.calc = calc
     dyn = run_ase_opt(
         atoms,
-        fmax=fmax,
-        max_steps=max_steps,
-        optimizer=optimizer,
-        opt_kwargs=opt_kwargs,
+        **opt_flags
     )
 
     return summarize_opt_run(dyn, additional_fields={"name": "Q-Chem Optimization"})
