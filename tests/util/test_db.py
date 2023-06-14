@@ -20,7 +20,7 @@ def test_covalent_to_db():
     assert count1 > 0
 
     with pytest.warns(UserWarning):
-        covalent_to_db(store, dispatch_id="bad-value")
+        covalent_to_db(store, dispatch_ids=["bad-value"])
     assert store.count() == count1
 
     store = MemoryStore(collection_name="db2")
@@ -29,7 +29,7 @@ def test_covalent_to_db():
     assert count2 == count1
 
     with pytest.raises(ValueError):
-        covalent_to_db(store, dispatch_id="bad-value", results_dir="bad-value")
+        covalent_to_db(store, dispatch_ids=["bad-value"], results_dir="bad-value")
 
 
 def test_results_to_db():
