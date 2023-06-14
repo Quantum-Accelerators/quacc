@@ -214,9 +214,19 @@ def irc_job(
     opt_swaps: dict | None = None,
 ) -> dict:
     """
-    TODO: docstrings
-    """
+    Perform an intrinsic reaction coordinate (IRC) job using the given atoms object.
 
+    Args:
+        atoms (ase.Atoms): The atoms object representing the system.
+        direction (str): The direction of the IRC calculation ("forward" or "reverse") (default: "forward").
+        temperature (float): The temperature for the frequency calculation (default: 298.15 K).
+        pressure (float): The pressure for the frequency calculation (default: 1.0 atm).
+        newtonnet_kwargs (dict, optional): Additional keyword arguments for NewtonNet calculator (default: None).
+        opt_swaps (dict, optional): Optional swaps for the optimization parameters (default: None).
+
+    Returns:
+        dict: A dictionary containing the IRC summary and thermodynamic summary.
+    """
     newtonnet_kwargs = newtonnet_kwargs or {}
     opt_swaps = opt_swaps or {}
 
