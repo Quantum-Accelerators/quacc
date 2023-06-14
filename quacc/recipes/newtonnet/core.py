@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import os
 from typing import Literal
-
+from copy import deepcopy
 import covalent as ct
 import numpy as np
 from ase.atoms import Atoms
@@ -54,7 +54,7 @@ def static_job(
     """
     newtonnet_kwargs = newtonnet_kwargs or {}
     opt_swaps = opt_swaps or {}
-
+    input_atoms = deepcopy(atoms)
     # Define calculator
     mlcalculator = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
@@ -136,7 +136,21 @@ def ts_job(
     opt_swaps: dict | None = None,
 ) -> dict:
     """
-    # TODO: docstring
+    Perform a transition state (TS) job using the given atoms object.
+
+    Args:
+        atoms (ase.Atoms): The atoms object representing the system.
+        use_custom_hessian (bool): Whether to use a custom Hessian matrix.
+        temperature (float): The temperature for the frequency calculation (default: 298.15 K).
+        pressure (float): The pressure for the frequency calculation (default: 1.0 atm).
+        newtonnet_kwargs (dict, optional): Additional keyword arguments for NewtonNet calculator (default: None).
+        opt_swaps (dict, optional): Optional swaps for the optimization parameters (default: None).
+
+    Returns:
+        dict: A dictionary containing the TS summary and thermodynamic summary.
+
+    Raises:
+        ValueError: If the custom Hessian is enabled but the optimizer is not "Sella".
     """
     newtonnet_kwargs = newtonnet_kwargs or {}
     opt_swaps = opt_swaps or {}
@@ -167,7 +181,13 @@ def ts_job(
         # TODO: I think you may need to re-initialize the calculator
         # object after this so that it's "blank" when you do
         # run_ase_opt. Please check.
-
+    # Define calculator again TEST THIS WHILE RUNNING THE CALCULATIONS
+    mlcalculator = NewtonNet(
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
+        config_path=SETTINGS.NEWTONNET_CONFIG_PATH,
+        **newtonnet_kwargs,
+    )
+    atoms.calc = mlcalculator
     # Run the TS optimization
     dyn = run_ase_opt(atoms, **opt_flags)
     ts_summary = summarize_opt_run(dyn, additional_fields={"name": "NewtonNet TS"})
