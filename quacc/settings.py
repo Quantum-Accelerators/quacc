@@ -137,18 +137,18 @@ class QuaccSettings(BaseSettings):
         "qchem", description="Command to run the standard version of Q-Chem."
     )
 
-    QCHEM_CALC_LOC: str = Field(
+    QCHEM_LOCAL_SCRATCH: str = Field(
         "/tmp",
         description="Compute-node local scratch directory in which Q-Chem should perform IO.",
     )
 
     # Q-Chem Settings: Custodian
-    QCHEM_CUSTODIAN: bool = Field(
-        True, description="Whether Custodian should be used to run Q-Chem"
+    QCHEM_USE_ERROR_HANDLERS: bool = Field(
+        True, description="Whether Custodian's error handlers should be employed for Q-Chem."
     )
 
     QCHEM_CUSTODIAN_MAX_ERRORS: int = Field(
-        5, description="Maximum errors for Q-Chem Custodian"
+        5, description="Maximum errors for Q-Chem Custodian."
     )
 
     class Config:

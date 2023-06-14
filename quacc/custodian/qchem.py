@@ -23,7 +23,7 @@ except ImportError:
 def run_custodian(
     qchem_cores: int = multiprocessing.cpu_count(),
     qchem_cmd: str = SETTINGS.QCHEM_CMD,
-    qchem_calc_loc: str = SETTINGS.QCHEM_CALC_LOC,
+    qchem_local_scratch: str = SETTINGS.QCHEM_LOCAL_SCRATCH,
     qchem_use_error_handlers: bool = SETTINGS.QCHEM_USE_ERROR_HANDLERS,
     qchem_custodian_max_errors: int = SETTINGS.QCHEM_CUSTODIAN_MAX_ERRORS,
 ) -> None:
@@ -33,11 +33,14 @@ def run_custodian(
     Parameters
     ----------
     qchem_cores
-        Number of cores to use for the Q-Chem calculation. Must be set by user on the command line.
+        Number of cores to use for the Q-Chem calculation. Defaults to multiprocessing.cpu_count(). Can be
+        set by the user via the command line.
     qchem_cmd
         Q-Chem command. Defaults to "qchem" in settings.
-    qchem_calc_loc
+    qchem_local_scratch
         Compute-node local scratch directory in which Q-Chem should perform IO. Defaults to /tmp in settings.
+    qchem_use_error_handlers
+        Whether or not to employ error handlers. Defaults to True in settings.
     qchem_custodian_max_errors
         Maximum number of errors to allow before stopping the run. Defaults to 5 in settings.
 
@@ -61,7 +64,7 @@ def run_custodian(
         QCJob(
             qchem_command=qchem_cmd,
             max_cores=qchem_cores,
-            calc_loc=qchem_calc_loc,
+            calc_loc=qchem_local_scratch,
         )
     ]
 
@@ -75,5 +78,8 @@ def run_custodian(
 
 
 if __name__ == "__main__":
-    qchem_cores = sys.argv[1]
-    run_custodian(qchem_cores=qchem_cores)
+    if len(sys.argv) > 1:
+        qchem_cores = sys.argv[1]
+        run_custodian(qchem_cores=qchem_cores)
+    else:
+        run_custodian()

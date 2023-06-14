@@ -66,7 +66,6 @@ class QChem(FileIOCalculator):
         self.cores = cores
         self.charge = charge
         self.spin_multiplicity = spin_multiplicity
-        self.qchem_input_params = qchem_input_params
         self.qchem_input_params = qchem_input_params or {}
         self.kwargs = kwargs
 
@@ -95,7 +94,10 @@ class QChem(FileIOCalculator):
 
         # Return the command flag
         run_qchem_custodian_file = os.path.abspath(inspect.getfile(custodian_qchem))
-        return f"python {run_qchem_custodian_file} {self.cores}"
+        if self.cores is not None:
+            return f"python {run_qchem_custodian_file} {self.cores}"
+        else:
+            return f"python {run_qchem_custodian_file}"
 
     def write_input(self, atoms, properties=None, system_changes=None):
         FileIOCalculator.write_input(self, atoms, properties, system_changes)
@@ -108,10 +110,6 @@ class QChem(FileIOCalculator):
             else:
                 mol.set_charge_and_spin(charge=self.charge)
         qcin = ForceSet(mol, **self.qchem_input_params)
-        for key in self.swaps:
-            if key == "rem":
-                for subkey in self.swaps[key]:
-                    qcin.rem[subkey] = self.swaps[key][subkey]
         qcin.write("mol.qin")
 
     def read_results(self):
