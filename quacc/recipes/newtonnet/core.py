@@ -203,7 +203,7 @@ def irc_job(
     opt_defaults = {
         "fmax": 0.01,
         "max_steps": 1000,
-        "optimizer": "Sella_IRC",
+        "optimizer": "SellaIRC",
         "run_kwargs": {"direction": direction.lower()},
     }
     opt_flags = opt_defaults | opt_swaps
@@ -251,7 +251,7 @@ def quasi_irc_job(
     irc_defaults = {
         "fmax": 0.01,
         "max_steps": 5,
-        "optimizer": "Sella_IRC",
+        "optimizer": "SellaIRC",
         "run_kwargs": {"direction": direction.lower()},
     }
     irc_flags = irc_defaults | irc_swaps
