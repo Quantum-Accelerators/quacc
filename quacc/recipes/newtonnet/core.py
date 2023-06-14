@@ -166,8 +166,7 @@ def ts_job(
     # Define calculator
     mlcalculator = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
-        config_path=SETTINGS.NEWTONNET_CONFIG_PATH,
-        **newtonnet_kwargs,
+        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
     atoms.calc = mlcalculator
 
@@ -184,8 +183,7 @@ def ts_job(
     # Define calculator again TEST THIS WHILE RUNNING THE CALCULATIONS
     mlcalculator = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
-        config_path=SETTINGS.NEWTONNET_CONFIG_PATH,
-        **newtonnet_kwargs,
+        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
     atoms.calc = mlcalculator
     # Run the TS optimization
