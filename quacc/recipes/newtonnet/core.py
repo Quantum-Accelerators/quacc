@@ -361,9 +361,6 @@ def freq_job(
 
     Returns:
         dict: A dictionary containing the thermodynamic summary.
-
-    TODO: Add detailed docstrings explaining the functionality of the function.
-
     """
     newtonnet_kwargs = newtonnet_kwargs or {}
 
