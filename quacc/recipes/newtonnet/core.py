@@ -34,15 +34,26 @@ except ImportError:
 
 @ct.electron
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
-def relax_job(
+def static_job(
     atoms: Atoms, newtonnet_kwargs: dict | None = None, opt_swaps: dict | None = None
 ) -> dict:
     """
-    TODO: docstring
+    Carry out a single-point calculation.
+
+    Parameters
+    ----------
+    atoms : Atoms
+        The atomic configuration to be relaxed.
+    newtonnet_kwargs : dict, optional
+        Additional keyword arguments for the tblite calculator. Defaults to None.
+
+    Returns
+    -------
+    dict
+        A summary of the run, including relevant information about the calculation results.
     """
     newtonnet_kwargs = newtonnet_kwargs or {}
     opt_swaps = opt_swaps or {}
-
 
     # Define calculator
     mlcalculator = NewtonNet(
@@ -51,10 +62,11 @@ def relax_job(
         **newtonnet_kwargs,
     )
     atoms.calc = mlcalculator
-
-    # Run optimization
-    dyn = run_ase_opt(atoms, **opt_flags)
-    return summarize_opt_run(dyn, additional_fields={"name": "NewtonNet Relax"})
+    atoms = run_calc(atoms)
+    return summarize_run(
+        atoms,
+        input_atoms=input_atoms,
+        additional_fields={"name": "NewtonNet Relax"})
 
 
 @ct.electron
