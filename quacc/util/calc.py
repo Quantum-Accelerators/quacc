@@ -137,7 +137,7 @@ def run_ase_opt(
         "MDMin",
         "QuasiNewton",
         "Sella",
-        "Sella_IRC",
+        "SellaIRC",
     ] = "FIRE",
     optimizer_kwargs: dict | None = None,
     run_kwargs: dict | None = None,
@@ -198,7 +198,7 @@ def run_ase_opt(
         optimizer_kwargs["trajectory"] = "opt.traj"
 
     # Get optimizer
-    if optimizer.lower() in {"sella", "sella_irc"}:
+    if optimizer.lower() in {"sella", "sellairc"}:
         if not atoms.pbc.any() and "internal" not in optimizer_kwargs:
             optimizer_kwargs["internal"] = True
         try:
@@ -211,14 +211,14 @@ def run_ase_opt(
 
     if optimizer.lower() == "sella":
         opt_class = Sella
-    elif optimizer.lower() == "sella_irc":
+    elif optimizer.lower() == "sellairc":
         opt_class = IRC
     else:
         try:
             opt_class = getattr(optimize, optimizer)
         except AttributeError as e:
             raise ValueError(
-                f"Unknown {optimizer=}, must be one of {list(dir(optimize))} or sella, sella_irc"
+                f"Unknown {optimizer=}, must be one of {list(dir(optimize))} or Sella, SellaIRC"
             ) from e
 
     tmpdir = mkdtemp(prefix="quacc-tmp-", dir=scratch_dir)
