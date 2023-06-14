@@ -272,7 +272,19 @@ def quasi_irc_job(
     opt_swaps: dict | None = None,
 ) -> dict:
     """
-    TODO: docstrings
+    Perform a quasi-IRC job using the given atoms object.
+
+    Args:
+        atoms (ase.Atoms): The atoms object representing the system.
+        direction (str): The direction of the IRC calculation ("forward" or "reverse") (default: "forward").
+        temperature (float): The temperature for the frequency calculation (default: 298.15 K).
+        pressure (float): The pressure for the frequency calculation (default: 1.0 atm).
+        newtonnet_kwargs (dict, optional): Additional keyword arguments for NewtonNet calculator (default: None).
+        irc_swaps (dict, optional): Optional swaps for the IRC optimization parameters (default: None).
+        opt_swaps (dict, optional): Optional swaps for the optimization parameters (default: None).
+
+    Returns:
+        dict: A dictionary containing the IRC summary, optimization summary, and thermodynamic summary.
     """
     newtonnet_kwargs = newtonnet_kwargs or {}
     irc_swaps = irc_swaps or {}
@@ -299,6 +311,14 @@ def quasi_irc_job(
 
     # Run IRC
     irc_summary = irc_job(atoms, newtonnet_kwargs=newtonnet_kwargs, **irc_flags)
+
+    # Define calculator I BELIEVE THE CALCULATOR MAY BE NEEDED TO BE DEFINED AGAIN HERE. TEST NEEDED.
+    mlcalculator = NewtonNet(
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
+        config_path=SETTINGS.NEWTONNET_CONFIG_PATH,
+        **newtonnet_kwargs,
+    )
+    atoms.calc = mlcalculator
 
     # Run opt
     opt_summary = relax_job(
