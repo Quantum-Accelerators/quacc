@@ -137,7 +137,7 @@ def run_ase_opt(
         "MDMin",
         "QuasiNewton",
         "Sella",
-        "Sella_IRC",
+        "SellaIRC",
     ] = "FIRE",
     optimizer_kwargs: dict | None = None,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,

@@ -10,32 +10,10 @@ import warnings
 import covalent as ct
 from covalent._shared_files.exceptions import MissingLatticeRecordError
 from maggma.core import Store
-from maggma.stores.mongolike import MontyStore
-
-
-def covalent_to_montydb(db_path: str = None, collection_name: str = "covalent") -> None:
-    """
-    Parse the Covalent SQLite DB as a MontyDB
-
-    Parameters
-    ----------
-    db_path
-        Path to the dispatcher_db.sqlite file.
-        If None, the path from ct.get_config() will be used
-    collection_name
-        Name of the collection to create
-
-    Returns
-    -------
-    None
-    """
-    if db_path is None:
-        db_path = ct.get_config()["dispatcher"]["db_path"]
-    return MontyStore(collection_name, os.path.basename(db_path))
 
 
 def covalent_to_db(
-    store: Store, dispatch_id: str | None = None, results_dir: str | None = None
+    store: Store, dispatch_ids: list[str] | None = None, results_dir: str | None = None
 ) -> None:
     """
     Store the results of a Covalent database in a user-specified Maggma Store
@@ -44,8 +22,8 @@ def covalent_to_db(
     ----------
     store
         The Maggma Store object to store the results in
-    dispatch_id
-        A specific dispatch ID to store. If None, all dispatch IDs in the results_dir will be stored
+    dispatch_ids
+        Dispatch ID to store. If None, all dispatch IDs in the results_dir will be stored
     results_dir
         The Covalent results_dir to pull if dispatch_ID is None. If None, the results_dir from ct.get_config() will be used
 
@@ -54,18 +32,17 @@ def covalent_to_db(
     None
     """
 
-    if dispatch_id and results_dir:
+    if dispatch_ids and results_dir:
         raise ValueError("Cannot specify both dispatch_id and results_dir")
+    dispatch_ids = dispatch_ids or []
 
     # Get the dispatch IDs
-    dispatch_ids = []
-    if dispatch_id:
-        dispatch_ids = [dispatch_id]
-    elif results_dir:
-        dispatch_ids = os.listdir(results_dir)
-    else:
-        config_results_dir = ct.get_config()["dispatcher"]["results_dir"]
-        dispatch_ids = os.listdir(config_results_dir)
+    if not dispatch_ids:
+        if results_dir:
+            dispatch_ids = os.listdir(results_dir)
+        else:
+            config_results_dir = ct.get_config()["dispatcher"]["results_dir"]
+            dispatch_ids = os.listdir(config_results_dir)
 
     # Populate the docs
     docs = []
