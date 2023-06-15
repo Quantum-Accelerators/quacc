@@ -11,6 +11,7 @@ import numpy as np
 from ase import optimize
 from ase.atoms import Atoms
 from ase.io import read
+from ase.io.trajectory import Trajectory
 from ase.optimize.optimize import Optimizer
 from ase.vibrations import Vibrations
 from monty.os.path import zpath
@@ -194,8 +195,13 @@ def run_ase_opt(
     if not os.path.exists(scratch_dir):
         os.makedirs(scratch_dir)
 
-    if "trajectory" not in optimizer_kwargs:
-        optimizer_kwargs["trajectory"] = "opt.traj"
+    if "trajectory" in optimizer_kwargs:
+        if isinstance(optimizer_kwargs["trajectory"], str):
+            traj = Trajectory(optimizer_kwargs["trajectory"], "w", atoms=atoms)
+        else:
+            traj = optimizer_kwargs["trajectory"]
+    else:
+        traj = Trajectory("opt.traj", "w", atoms=atoms)
 
     # Get optimizer
     if optimizer.lower() in {"sella", "sellairc"}:
@@ -205,8 +211,7 @@ def run_ase_opt(
             from sella import IRC, Sella
         except ImportError as e:
             raise ImportError(
-                "You must install Sella to use Sella optimizers."
-                "Try `pip install sella`."
+                "You must install Sella to use Sella optimizers. Try `pip install sella`."
             ) from e
 
     if optimizer.lower() == "sella":
@@ -233,7 +238,8 @@ def run_ase_opt(
         copy_decompress(copy_files, tmpdir)
 
     # Define optimizer class
-    dyn = opt_class(atoms, **optimizer_kwargs)
+    dyn = opt_class(atoms, trajectory=traj, **optimizer_kwargs)
+    dyn.trajectory = traj
 
     # Run calculation
     os.chdir(tmpdir)
