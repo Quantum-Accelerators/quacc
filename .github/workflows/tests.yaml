@@ -41,8 +41,6 @@ jobs:
         run: |
           pip install .[strict,dev,fireworks]
           pip install covalent-slurm-plugin
-          pip install chardet
-          pip install pytest-cov
 
       - name: Set up Covalent server
         run: |
@@ -87,8 +85,6 @@ jobs:
       - name: Install pip packages
         run: |
           pip install .[strict,dev,optimizers,tblite]
-          pip install chardet
-          pip install pytest-cov
 
       - name: Run tests with pytest
         run: pytest tests/recipes/tblite --cov=quacc --cov-report=xml
@@ -131,8 +127,6 @@ jobs:
       - name: Install pip packages
         run: |
           pip install .[strict,dev]
-          pip install chardet
-          pip install pytest-cov
 
       - name: Install conda packages
         run: |
@@ -179,8 +173,6 @@ jobs:
       - name: Install pip packages
         run: |
           pip install .[strict,dev]
-          pip install chardet
-          pip install pytest-cov
 
       - name: Install conda packages
         run: |

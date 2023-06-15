@@ -47,7 +47,7 @@ if __name__ == "__main__":
             "fireworks": ["fireworks"],
             "optimizers": ["sella"],
             "tblite": ["tblite[ase]"],
-            "dev": ["black==23.3.0", "isort==5.12.0", "pytest==7.3.2"],
+            "dev": ["black", "isort", "pytest", "pytest-cov"],
             "docs": [
                 "autodoc_pydantic==1.8.0",
                 "furo==2023.5.20",
