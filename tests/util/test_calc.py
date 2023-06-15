@@ -13,7 +13,7 @@ from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
 try:
     import sella
 except ImportError:
-    Sella = None
+    sella = None
 
 CWD = os.getcwd()
 
