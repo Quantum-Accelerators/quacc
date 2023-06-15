@@ -191,8 +191,13 @@ def run_ase_opt(
     if not os.path.exists(scratch_dir):
         os.makedirs(scratch_dir)
 
-    if "trajectory" not in optimizer_kwargs:
-        optimizer_kwargs["trajectory"] = Trajectory("opt.traj", "w")
+    if "trajectory" in optimizer_kwargs:
+        if isinstance(optimizer_kwargs["trajectory"], str):
+            traj = Trajectory(optimizer_kwargs["trajectory"], "w", atoms=atoms)
+        else:
+            traj = optimizer_kwargs["trajectory"]
+    else:
+        traj = Trajectory("opt.traj", "w", atoms=atoms)
 
     # Get optimizer
     if optimizer.lower() in {"sella", "sellairc"}:
@@ -229,7 +234,8 @@ def run_ase_opt(
         copy_decompress(copy_files, tmpdir)
 
     # Define optimizer class
-    dyn = opt_class(atoms, **optimizer_kwargs)
+    dyn = opt_class(atoms, trajectory=traj, **optimizer_kwargs)
+    dyn.trajectory = traj
 
     # Run calculation
     os.chdir(tmpdir)
