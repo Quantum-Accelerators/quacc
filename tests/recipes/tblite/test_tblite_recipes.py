@@ -72,15 +72,6 @@ def test_relax_Job():
 
 
 @pytest.mark.skipif(
-    TBLite is None or sella is not None,
-    reason="tblite must be installed without sella.",
-)
-def test_relax_Job():
-    atoms = molecule("H2O")
-    relax_job(atoms, opt_swaps={"optimizer": "Sella"})
-
-
-@pytest.mark.skipif(
     TBLite is None,
     reason="tblite must be installed.",
 )
@@ -188,3 +179,12 @@ def test_freq_job():
     assert "dir_name" in output["thermo"]
     assert "nid" in output["vib"]
     assert "dir_name" in output["vib"]
+
+
+@pytest.mark.skipif(
+    TBLite is None or sella is not None,
+    reason="tblite must be installed without sella.",
+)
+def test_relax_Job():
+    atoms = molecule("H2O")
+    relax_job(atoms, opt_swaps={"optimizer": "Sella"})
