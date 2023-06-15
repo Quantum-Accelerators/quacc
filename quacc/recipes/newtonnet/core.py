@@ -28,7 +28,6 @@ except ImportError:
 
 
 def get_hessian(atoms):
-    atoms.calc.calculate(atoms)
     return atoms.calc.results['hessian'].reshape((-1, 3 * len(atoms)))
 
 
