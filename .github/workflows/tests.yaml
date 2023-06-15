@@ -39,6 +39,7 @@ jobs:
 
       - name: Install pip packages
         run: |
+          python -m pip cache purge
           pip install .[strict,dev,fireworks]
           pip install covalent-slurm-plugin
           pip install chardet
