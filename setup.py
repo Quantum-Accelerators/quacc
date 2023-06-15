@@ -33,7 +33,7 @@ if __name__ == "__main__":
         data_files=["LICENSE.md"],
         zip_safe=False,
         install_requires=[
-            "ase @ https://gitlab.com/argon214/ase/-/archive/efermi/ase-efermi.zip",  # waiting on >3.22.1
+            "ase @ https://gitlab.com/argon214/ase/-/archive/rosen-all-open-PRs/ase-rosen-all-open-PRs.zip",  # waiting on my PRs, then >3.22.1
             "atomate2[cclib] @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
             "covalent>=0.224.0-rc.0",  # waiting on > 0.222.0
             "custodian",
@@ -47,7 +47,7 @@ if __name__ == "__main__":
             "fireworks": ["fireworks"],
             "optimizers": ["sella"],
             "tblite": ["tblite[ase]"],
-            "dev": ["black==23.3.0", "isort==5.12.0", "pytest==7.3.2"],
+            "dev": ["black", "isort", "pytest", "pytest-cov"],
             "docs": [
                 "autodoc_pydantic==1.8.0",
                 "furo==2023.5.20",
@@ -60,7 +60,7 @@ if __name__ == "__main__":
                 "sphinx-copybutton==0.5.2",
             ],
             "strict": [
-                "ase @ https://gitlab.com/argon214/ase/-/archive/efermi/ase-efermi.zip",  # waiting on >3.22.1
+                "ase @ https://gitlab.com/argon214/ase/-/archive/rosen-all-open-PRs/ase-rosen-all-open-PRs.zip",  # waiting on my PRs, then >3.22.1
                 "atomate2 @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
                 "cclib==1.7.2",
                 "covalent==0.226.0rc0",  # waiting on > 0.222.0
