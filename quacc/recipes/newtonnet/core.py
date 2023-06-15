@@ -168,9 +168,9 @@ def ts_job(
         if opt_flags["optimizer"].lower() != "sella":
             raise ValueError("Custom hessian can only be used with Sella.")
 
-        atoms.calc.calculate()
-        hessian = atoms.calc.results["hessian"].reshape((-1, 3 * len(atoms)))
-        opt_flags["optimizer_kwargs"]["hessian_function"] = hessian
+        # atoms.calc.calculate()
+        # hessian = atoms.calc.results["hessian"].reshape((-1, 3 * len(atoms)))
+        # opt_flags["optimizer_kwargs"]["hessian_function"] = hessian
 
         # TODO: I think you may need to re-initialize the calculator
         # object after this so that it's "blank" when you do
@@ -420,56 +420,3 @@ def freq_job(
         additional_fields={"name": "NewtonNet Thermo"},
     )
 
-
-# TODO: Can potentially replace with `VibrationsData` (see above)
-def _get_freq_in_cm_inv(
-    masses: np.array, reshaped_hessian: np.ndarray
-) -> list[np.array, np.array]:
-    # Calculate mass-weighted Hessian
-    mass_weighted_hessian = _mass_weighted_hessian(masses, reshaped_hessian)
-
-    # Calculate eigenvalues and eigenvectors
-    eigvals, eigvecs = np.linalg.eig(mass_weighted_hessian)
-    eigvals = np.sort(np.real(eigvals))
-
-    # Calculate frequencies in cm^-1
-    freqs = np.emath.sqrt(eigvals) * fs * (10**15) / (_c * 100 * 2 * np.pi)
-    return freqs, eigvecs
-
-
-# TODO: Can potentially replace with `VibrationsData` (see above)
-def _mass_weighted_hessian(masses: np.array, hessian: np.ndarray) -> np.ndarray:
-    """
-    Calculates the mass-weighted Hessian matrix.
-
-    Parameters:
-        masses (array): An array of atom masses.
-        hessian (ndarray): A 2D numpy array representing the Hessian matrix.
-
-    Returns:
-        mass_weighted_hessian (ndarray): A 2D numpy array representing the mass-weighted Hessian matrix.
-
-    Raises:
-        ValueError: If the dimensions of masses and hessian are not compatible.
-
-    The mass-weighted Hessian matrix is calculated by dividing each element of the Hessian matrix
-    by the square root of the product of the masses of the corresponding atoms. The resulting matrix
-    represents the second derivatives of the potential energy surface, taking into account the masses
-    of the atoms.
-
-    The input hessian is assumed to be a square matrix of size 3N x 3N, where N is the number of atoms.
-    The input masses should have N elements, where each element corresponds to the mass of an atom.
-
-    The returned mass_weighted_hessian matrix will have the same dimensions as the input hessian.
-
-    Example:
-        masses = [12.01, 1.008, 1.008, 16.00, 1.008, 1.008, 1.008]
-        hessian = np.zeros((21, 21))  # Example Hessian matrix
-        mass_weighted_hessian = _mass_weighted_hessian(masses, hessian)
-    """
-
-    if len(masses) != hessian.shape[0] // 3 or hessian.shape[0] != hessian.shape[1]:
-        raise ValueError("Incompatible dimensions of masses and hessian.")
-
-    sqrt_masses = np.sqrt(np.outer(masses, masses))
-    return hessian / np.tile(sqrt_masses, (3, 3))
