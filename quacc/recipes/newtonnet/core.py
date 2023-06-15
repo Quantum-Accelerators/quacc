@@ -389,17 +389,13 @@ def freq_job(
     #print('vib.get_frequencies():', vib.get_frequencies())
 
     ## Sort the frequencies (can remove after ASE MR 2906 is merged)
-    #freqs_cm_inv = list(freqs_cm_inv)
-    #freqs_cm_inv.sort(key=np.imag, reverse=True)
-    #freqs_cm_inv.sort(key=np.real)
+    freqs_cm_inv = list(freqs_cm_inv)
+    freqs_cm_inv.sort(key=np.imag, reverse=True)
+    freqs_cm_inv.sort(key=np.real)
 
     ## Make IdealGasThermo object
-    #igt = ideal_gas(atoms, freqs_cm_inv, energy=mlcalculator.results["energy"])
-    igt = ideal_gas(
-        atoms,
-        vib.get_frequencies(),
-        energy=mlcalculator.results["energy"]
-    )
+    igt = ideal_gas(atoms, freqs_cm_inv, energy=mlcalculator.results["energy"])
+    # igt = ideal_gas(atoms, vib.get_frequencies(), energy=mlcalculator.results["energy"])
     '''
     print('\nthermo:', summarize_thermo_run(igt,
                                             temperature=temperature,
