@@ -39,7 +39,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install --no-cache-dir .[strict,dev,fireworks]
+          pip install .[strict,dev,fireworks]
           pip install covalent-slurm-plugin
           pip install chardet
           pip install pytest-cov
@@ -86,7 +86,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install --no-cache-dir .[strict,dev,optimizers,tblite]
+          pip install .[strict,dev,optimizers,tblite]
           pip install chardet
           pip install pytest-cov
 
@@ -130,7 +130,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install --no-cache-dir .[strict,dev]
+          pip install .[strict,dev]
           pip install chardet
           pip install pytest-cov
 
@@ -178,7 +178,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install --no-cache-dir .[strict,dev]
+          pip install .[strict,dev]
           pip install chardet
           pip install pytest-cov
 
