@@ -13,6 +13,11 @@ try:
 except ImportError:
     TBLite = None
 
+try:
+    import sella
+except ImportError:
+    sella = None
+
 
 def teardown_module():
     for f in os.listdir("."):
@@ -64,6 +69,15 @@ def test_relax_Job():
     assert output["results"]["energy"] == pytest.approx(-137.97654191396492)
     assert not np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
     assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
+
+
+@pytest.mark.skipif(
+    TBLite is None and sella is None,
+    reason="tblite must be installed without sella.",
+)
+def test_relax_Job():
+    atoms = molecule("H2O")
+    relax_job(atoms, opt_swaps={"optimizer": "Sella"})
 
 
 @pytest.mark.skipif(
