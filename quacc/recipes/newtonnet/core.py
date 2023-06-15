@@ -32,8 +32,8 @@ def get_hessian(atoms):
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
         settings_path=SETTINGS.NEWTONNET_CONFIG_PATH
     )
-    results = mlcalculator.calculate(atoms)
-    return results['hessian'].reshape((-1, 3 * len(atoms)))
+    mlcalculator.calculate(atoms)
+    return mlcalculator.results['hessian'].reshape((-1, 3 * len(atoms)))
 
 
 @ct.electron
