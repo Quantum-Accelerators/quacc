@@ -410,14 +410,6 @@ def freq_job(
             additional_fields={"name": "NewtonNet Thermo"},
         ),
     }
-    '''
-    return summarize_thermo_run(
-        igt,
-        temperature=temperature,
-        pressure=pressure,
-        additional_fields={"name": "NewtonNet Thermo"},
-    )
-    '''
 
 
 # TODO: Can potentially replace with `VibrationsData` (see above)
