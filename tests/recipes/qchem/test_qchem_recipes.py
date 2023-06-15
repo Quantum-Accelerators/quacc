@@ -39,3 +39,5 @@ def test_static_Job():
     assert output["spin_multiplicity"] == 1
     assert output["formula_alphabetical"] == 'C4 H4 O6'
     assert output["nelectrons"] == 76
+    assert output["parameters"]["charge"] == None
+    assert output["parameters"]["spin_multiplicity"] == None
