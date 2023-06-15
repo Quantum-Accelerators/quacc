@@ -2,27 +2,22 @@
 Core recipes for the NewtonNet code
 """
 from __future__ import annotations
-
-import os
 from typing import Literal
 from copy import deepcopy
 import covalent as ct
 import numpy as np
 from ase.atoms import Atoms
+from ase.vibrations.data.py import VibrationsData
 from ase.units import _c, fs
 from monty.dev import requires
-
-from quacc.util.calc import run_calc
-
 from quacc.schemas.ase import (
     summarize_opt_run,
     summarize_run,
     summarize_thermo_run,
     summarize_vib_run,
 )
-
 from quacc import SETTINGS
-from quacc.schemas.ase import summarize_opt_run, summarize_thermo_run
+from quacc.util.calc import run_calc
 from quacc.util.calc import run_ase_opt
 from quacc.util.thermo import ideal_gas
 
@@ -376,39 +371,46 @@ def freq_job(
     mlcalculator.calculate(atoms)
     hessian = mlcalculator.results["hessian"]
 
+    vib = VibrationsData(atoms, hessian)
+
+    '''
     # Calculate frequencies
     n_atoms = len(atoms)
     hessian_reshaped = np.reshape(hessian, (n_atoms * 3, n_atoms * 3))
     freqs_cm_inv, _ = _get_freq_in_cm_inv(atoms.get_masses(), hessian_reshaped)
+    '''
+    vib.get_frequencies()
 
-    # Sort the frequencies (can remove after ASE MR 2906 is merged)
-    freqs_cm_inv = list(freqs_cm_inv)
-    freqs_cm_inv.sort(key=np.imag, reverse=True)
-    freqs_cm_inv.sort(key=np.real)
+    ## Sort the frequencies (can remove after ASE MR 2906 is merged)
+    #freqs_cm_inv = list(freqs_cm_inv)
+    #freqs_cm_inv.sort(key=np.imag, reverse=True)
+    #freqs_cm_inv.sort(key=np.real)
 
-    # Make IdealGasThermo object
-    igt = ideal_gas(atoms, freqs_cm_inv, energy=mlcalculator.results["energy"])
+    ## Make IdealGasThermo object
+    #igt = ideal_gas(atoms, freqs_cm_inv, energy=mlcalculator.results["energy"])
+    igt = ideal_gas(atoms, vib.get_frequencies(), energy=mlcalculator.results["energy"])
 
     # TODO: If you are successful in using the `VibrationsData` class, you
     # can then return the following instead for a much richer and consistent output:
-    # return {
-    #     "vib": summarize_vib_run(
-    #         vibrations_data, additional_fields={"name": "NewtonNet Vibrations"}
-    #     ),
-    #     "thermo": summarize_thermo_run(
-    #         igt,
-    #         temperature=temperature,
-    #         pressure=pressure,
-    #         additional_fields={"name": "NewtonNet Thermo"},
-    #     ),
-    # }
-
+    return {
+        "vib": summarize_vib_run(
+            vib, additional_fields={"name": "NewtonNet Vibrations"}
+        ),
+        "thermo": summarize_thermo_run(
+            igt,
+            temperature=temperature,
+            pressure=pressure,
+            additional_fields={"name": "NewtonNet Thermo"},
+        ),
+    }
+    '''
     return summarize_thermo_run(
         igt,
         temperature=temperature,
         pressure=pressure,
         additional_fields={"name": "NewtonNet Thermo"},
     )
+    '''
 
 
 # TODO: Can potentially replace with `VibrationsData` (see above)
