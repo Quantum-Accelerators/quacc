@@ -386,7 +386,7 @@ def freq_job(
     hessian_reshaped = np.reshape(hessian, (n_atoms * 3, n_atoms * 3))
     freqs_cm_inv, _ = _get_freq_in_cm_inv(atoms.get_masses(), hessian_reshaped)
     '''
-    #print('vib.get_frequencies():', vib.get_frequencies())
+    print('vib.get_frequencies():', vib.get_frequencies())
 
     #freqs_cm_inv = list(freqs_cm_inv)
 
