@@ -45,6 +45,7 @@ if __name__ == "__main__":
         ],
         extras_require={
             "fireworks": ["fireworks"],
+            "optimizers": ["sella"],
             "newtonnet": [
                 "newtonnet @ git+https://github.com/ericyuan00000/NewtonNet.git",
                 "sella",
