@@ -7,7 +7,7 @@ from copy import deepcopy
 import covalent as ct
 import numpy as np
 from ase.atoms import Atoms
-from ase.vibrations.data.py import VibrationsData
+from ase.vibrations.data import VibrationsData
 from ase.units import _c, fs
 from monty.dev import requires
 from quacc.schemas.ase import (
