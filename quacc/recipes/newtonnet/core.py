@@ -379,7 +379,7 @@ def freq_job(
     hessian_reshaped = np.reshape(hessian, (n_atoms * 3, n_atoms * 3))
     freqs_cm_inv, _ = _get_freq_in_cm_inv(atoms.get_masses(), hessian_reshaped)
     '''
-    vib.get_frequencies()
+    #vib.get_frequencies()
 
     ## Sort the frequencies (can remove after ASE MR 2906 is merged)
     #freqs_cm_inv = list(freqs_cm_inv)
@@ -388,13 +388,19 @@ def freq_job(
 
     ## Make IdealGasThermo object
     #igt = ideal_gas(atoms, freqs_cm_inv, energy=mlcalculator.results["energy"])
-    igt = ideal_gas(atoms, vib.get_frequencies(), energy=mlcalculator.results["energy"])
+    igt = ideal_gas(
+        atoms,
+        vib.get_frequencies(),
+        energy=mlcalculator.results["energy"]
+    )
 
+    print('\n\n\n\nvib:', vib)
     # TODO: If you are successful in using the `VibrationsData` class, you
     # can then return the following instead for a much richer and consistent output:
     return {
         "vib": summarize_vib_run(
-            vib, additional_fields={"name": "NewtonNet Vibrations"}
+            vib,
+            additional_fields={"name": "NewtonNet Vibrations"}
         ),
         "thermo": summarize_thermo_run(
             igt,
