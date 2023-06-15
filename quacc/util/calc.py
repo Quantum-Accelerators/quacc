@@ -198,6 +198,7 @@ def run_ase_opt(
             traj = optimizer_kwargs["trajectory"]
     else:
         traj = Trajectory("opt.traj", "w", atoms=atoms)
+    optimizer_kwargs["trajectory"] = traj
 
     # Get optimizer
     if optimizer.lower() in {"sella", "sellairc"}:
@@ -234,7 +235,7 @@ def run_ase_opt(
         copy_decompress(copy_files, tmpdir)
 
     # Define optimizer class
-    dyn = opt_class(atoms, trajectory=traj, **optimizer_kwargs)
+    dyn = opt_class(atoms, **optimizer_kwargs)
     dyn.trajectory = traj
 
     # Run calculation
