@@ -13,6 +13,11 @@ try:
 except ImportError:
     TBLite = None
 
+try:
+    import sella
+except ImportError:
+    sella = None
+
 
 def teardown_module():
     for f in os.listdir("."):
@@ -174,3 +179,13 @@ def test_freq_job():
     assert "dir_name" in output["thermo"]
     assert "nid" in output["vib"]
     assert "dir_name" in output["vib"]
+
+
+@pytest.mark.skipif(
+    TBLite is None or sella is not None,
+    reason="tblite must be installed without sella.",
+)
+def test_no_sella():
+    atoms = molecule("H2O")
+    with pytest.raises(ImportError):
+        relax_job(atoms, opt_swaps={"optimizer": "Sella"})

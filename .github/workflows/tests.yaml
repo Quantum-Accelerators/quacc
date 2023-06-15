@@ -39,7 +39,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install --no-cache-dir .[strict,dev,fireworks] # remove --no-cache-dir after repos are removed from setup.py
+          pip install --no-cache-dir .[strict,dev,fireworks,optimizers] # remove --no-cache-dir after repos are removed from setup.py
           pip install covalent-slurm-plugin
 
       - name: Set up Covalent server
@@ -84,7 +84,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install --no-cache-dir .[strict,dev,optimizers,tblite] # remove --no-cache-dir after repos are removed from setup.py
+          pip install --no-cache-dir .[strict,dev,tblite] # remove --no-cache-dir after repos are removed from setup.py
 
       - name: Run tests with pytest
         run: pytest tests/recipes/tblite --cov=quacc --cov-report=xml
