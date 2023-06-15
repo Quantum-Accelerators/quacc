@@ -138,6 +138,7 @@ def test_run_ase_opt():
 def test_sella():
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
+    atoms.calc = EMT()
     dyn = run_ase_opt(
         atoms,
         optimizer="Sella",
