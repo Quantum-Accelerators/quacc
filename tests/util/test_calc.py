@@ -132,7 +132,7 @@ def test_run_ase_opt():
 
 
 @pytest.mark.skipif(
-    Sella is None,
+    sella is None,
     reason="Sella must be installed.",
 )
 def test_sella():
