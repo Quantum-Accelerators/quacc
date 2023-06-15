@@ -52,6 +52,8 @@ class QChem(FileIOCalculator):
         The ASE Atoms object with attached Q-Chem calculator.
     """
 
+    implemented_properties = ['energy', 'forces']
+
     def __init__(
         self,
         input_atoms: Atoms,
@@ -77,6 +79,9 @@ class QChem(FileIOCalculator):
             else:
                 self.default_parameters[key] = self.qchem_input_params[key]
 
+        # Get Q-Chem executable command
+        self.command = self._manage_environment()
+
         # Instantiate the calculator
         FileIOCalculator.__init__(
             self,
@@ -86,9 +91,6 @@ class QChem(FileIOCalculator):
             atoms=self.input_atoms,
             **self.kwargs,
         )
-
-        # Get Q-Chem executable command
-        FileIOCalculator.command = self._manage_environment()
 
     def _manage_environment(self) -> str:
         """
