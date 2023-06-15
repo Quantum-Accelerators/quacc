@@ -172,7 +172,7 @@ def ts_job(
         if opt_flags["optimizer"].lower() != "sella":
             raise ValueError("Custom hessian can only be used with Sella.")
 
-        atoms.calc.calculate()
+        # atoms.calc.calculate()
         # hessian = atoms.calc.results["hessian"].reshape((-1, 3 * len(atoms)))
         opt_flags["optimizer_kwargs"]["hessian_function"] = get_hessian
 
