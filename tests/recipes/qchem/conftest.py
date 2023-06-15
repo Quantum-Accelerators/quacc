@@ -1,23 +1,24 @@
 import numpy as np
 import pytest
-from ase.atoms import Atoms
+import os
+from pathlib import Path
+from shutil import copy, rmtree
+from ase.calculators.calculator import FileIOCalculator
 
+FILE_DIR = Path(__file__).resolve().parent
+QCHEM_DIR = os.path.join(FILE_DIR, "qchem_examples")
+TMP_DIR = os.path.join(FILE_DIR, "tmp_dir")
 
-def mock_get_potential_energy(self, **kwargs):
-    # Instead of running .get_potential_energy(), we mock it by attaching
-    # dummy results to the atoms object and returning a fake energy. This
-    # works because the real atoms.get_potential_energy() takes one argument
-    # (i.e. self) and that self object is the atoms object.
-    e = -1.0
-    self.calc.results = {
-        "energy": e,
-        "forces": np.array([[0.0, 0.0, 0.0]] * len(self)),
-    }
-    return e
-
+def mock_execute(self, **kwargs):
+    if not os.path.exists(os.path.join(FILE_DIR, "mol.qout.gz")):
+        copy(os.path.join(QCHEM_DIR, "mol.qout.basic"), os.path.join(TMP_DIR, "mol.qout"))
+        copy(os.path.join(QCHEM_DIR, "131.0.basic"), os.path.join(TMP_DIR, "131.0"))
+    else:
+        copy(os.path.join(QCHEM_DIR, "mol.qout.intermediate"), os.path.join(TMP_DIR, "mol.qout"))
+        copy(os.path.join(QCHEM_DIR, "131.0.intermediate"), os.path.join(TMP_DIR, "131.0"))
 
 @pytest.fixture(autouse=True)
-def patch_get_potential_energy(monkeypatch):
-    # Monkeypatch the .get_potential_energy() method of the Atoms object so
+def patch_execute(monkeypatch):
+    # Monkeypatch the .execute() method of the FileIOCalculator object so
     # we aren't running the actual calculation during testing.
-    monkeypatch.setattr(Atoms, "get_potential_energy", mock_get_potential_energy)
+    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute)

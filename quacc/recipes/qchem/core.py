@@ -186,7 +186,7 @@ def relax_job(
     opt_swaps = opt_swaps or {}
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella", "optimizer_kwargs":{}}
     opt_flags = opt_defaults | opt_swaps
-    if optimizer.lower() == "sella":
+    if opt_flags["optimizer"].lower() == "sella":
         if "internal" not in opt_flags["optimizer_kwargs"]:
             opt_flags["optimizer_kwargs"]["internal"] = True
         if "order" not in opt_flags["optimizer_kwargs"]:
