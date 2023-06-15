@@ -388,11 +388,11 @@ def freq_job(
     '''
     #print('vib.get_frequencies():', vib.get_frequencies())
 
-    freqs_cm_inv = list(freqs_cm_inv)
+    #freqs_cm_inv = list(freqs_cm_inv)
 
     ## Make IdealGasThermo object
-    igt = ideal_gas(atoms, freqs_cm_inv, energy=mlcalculator.results["energy"])
-    # igt = ideal_gas(atoms, vib.get_frequencies(), energy=mlcalculator.results["energy"])
+    #igt = ideal_gas(atoms, freqs_cm_inv, energy=mlcalculator.results["energy"])
+    igt = ideal_gas(atoms, vib.get_frequencies(), energy=mlcalculator.results["energy"])
     '''
     print('\nthermo:', summarize_thermo_run(igt,
                                             temperature=temperature,
