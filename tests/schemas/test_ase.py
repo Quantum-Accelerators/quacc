@@ -104,7 +104,6 @@ def test_summarize_opt_run():
     atoms[0].position += [0.1, 0.1, 0.1]
     atoms.calc = EMT()
     dyn = BFGS(atoms, trajectory="test.traj")
-    dyn.trajectory.filename = "test.traj"  # can remove after ASE MR 2901
     dyn.run()
     traj = read("test.traj", index=":")
 
@@ -124,7 +123,6 @@ def test_summarize_opt_run():
     atoms[0].position += [0.1, 0.1, 0.1]
     atoms.calc = EMT()
     dyn = BFGS(atoms, trajectory="test.traj")
-    dyn.trajectory.filename = "test.traj"  # can remove after ASE MR 2901
     dyn.run()
     traj = read(dyn.trajectory.filename, index=":")
 
@@ -145,7 +143,6 @@ def test_summarize_opt_run():
     atoms[0].position += [0.1, 0.1, 0.1]
     atoms.calc = EMT()
     dyn = BFGS(atoms, trajectory="test.traj")
-    dyn.trajectory.filename = "test.traj"  # can remove after ASE MR 2901
     dyn.run()
 
     results = summarize_opt_run(dyn)

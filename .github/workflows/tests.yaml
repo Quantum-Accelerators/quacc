@@ -39,10 +39,8 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install .[strict,dev,fireworks]
+          pip install --no-cache-dir .[strict,dev,fireworks] # remove --no-cache-dir after repos are removed from setup.py
           pip install covalent-slurm-plugin
-          pip install chardet
-          pip install pytest-cov
 
       - name: Set up Covalent server
         run: |
@@ -86,9 +84,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install .[strict,dev,optimizers,tblite]
-          pip install chardet
-          pip install pytest-cov
+          pip install --no-cache-dir .[strict,dev,optimizers,tblite] # remove --no-cache-dir after repos are removed from setup.py
 
       - name: Run tests with pytest
         run: pytest tests/recipes/tblite --cov=quacc --cov-report=xml
@@ -130,9 +126,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install .[strict,dev]
-          pip install chardet
-          pip install pytest-cov
+          pip install --no-cache-dir .[strict,dev] # remove --no-cache-dir after repos are removed from setup.py
 
       - name: Install conda packages
         run: |
@@ -178,9 +172,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install .[strict,dev]
-          pip install chardet
-          pip install pytest-cov
+          pip install --no-cache-dir .[strict,dev] # remove --no-cache-dir after repos are removed from setup.py
 
       - name: Install conda packages
         run: |
