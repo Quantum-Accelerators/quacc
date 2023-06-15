@@ -202,8 +202,7 @@ def run_ase_opt(
             from sella import IRC, Sella
         except ImportError as e:
             raise ImportError(
-                "You must install Sella to use Sella optimizers."
-                "Try `pip install sella`."
+                "You must install Sella to use Sella optimizers. Try `pip install sella`."
             ) from e
 
     if optimizer.lower() == "sella":
