@@ -170,10 +170,7 @@ def ts_job(
 
         atoms.calc.calculate()
         hessian = atoms.calc.results["hessian"].reshape((-1, 3 * len(atoms)))
-
-
-        opt_defaults["optimizer_kwargs"]["hessian_function"] = hessian
-
+        opt_flags["optimizer_kwargs"]["hessian_function"] = hessian
 
         # TODO: I think you may need to re-initialize the calculator
         # object after this so that it's "blank" when you do
@@ -380,7 +377,7 @@ def freq_job(
     hessian_reshaped = np.reshape(hessian, (n_atoms * 3, n_atoms * 3))
     freqs_cm_inv, _ = _get_freq_in_cm_inv(atoms.get_masses(), hessian_reshaped)
     '''
-    print('vib.get_frequencies():', vib.get_frequencies())
+    #print('vib.get_frequencies():', vib.get_frequencies())
 
     ## Sort the frequencies (can remove after ASE MR 2906 is merged)
     #freqs_cm_inv = list(freqs_cm_inv)
@@ -394,8 +391,13 @@ def freq_job(
         vib.get_frequencies(),
         energy=mlcalculator.results["energy"]
     )
-
-    print('\nvib:', vib)
+    '''
+    print('\nthermo:', summarize_thermo_run(igt,
+                                            temperature=temperature,
+                                            pressure=pressure,
+                                            additional_fields={"name": "NewtonNet Thermo"},
+                                            ))
+    '''
     # TODO: If you are successful in using the `VibrationsData` class, you
     # can then return the following instead for a much richer and consistent output:
     '''
