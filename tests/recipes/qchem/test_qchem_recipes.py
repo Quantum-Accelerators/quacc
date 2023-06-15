@@ -9,6 +9,12 @@ from pymatgen.io.qchem.inputs import QCInput
 
 from quacc.recipes.qchem.core import relax_job, static_job
 
+try:
+    import sella
+except ImportError:
+    sella = None
+
+
 FILE_DIR = Path(__file__).resolve().parent
 QCHEM_DIR = os.path.join(FILE_DIR, "qchem_examples")
 
@@ -79,6 +85,10 @@ def test_static_job():
     os.remove(os.path.join(os.getcwd(), "131.0.gz"))
 
 
+@pytest.mark.skipif(
+    sella is None,
+    reason="Sella must be installed.",
+)
 def test_relax_job():
     mol = Molecule.from_file(os.path.join(FILE_DIR, "test.xyz"))
     atoms = AseAtomsAdaptor.get_atoms(mol)
@@ -131,6 +141,10 @@ def test_relax_job():
     os.remove(os.path.join(os.getcwd(), "131.0.gz"))
 
 
+@pytest.mark.skipif(
+    sella is None,
+    reason="Sella must be installed.",
+)
 def test_relax_job_as_TSopt():
     mol = Molecule.from_file(os.path.join(FILE_DIR, "test.xyz"))
     atoms = AseAtomsAdaptor.get_atoms(mol)
