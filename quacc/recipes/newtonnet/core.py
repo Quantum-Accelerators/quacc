@@ -162,7 +162,6 @@ def ts_job(
         "optimizer_kwargs": {"diag_every_n": 0} if use_custom_hessian else {},
     }
     opt_flags = opt_defaults | opt_swaps
-
     # Define calculator
     mlcalculator = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
@@ -176,7 +175,11 @@ def ts_job(
 
         atoms.calc.calculate()
         hessian = atoms.calc.results["hessian"].reshape((-1, 3 * len(atoms)))
+
+
         opt_defaults["optimizer_kwargs"]["hessian_function"] = hessian
+
+
         # TODO: I think you may need to re-initialize the calculator
         # object after this so that it's "blank" when you do
         # run_ase_opt. Please check.
@@ -365,11 +368,9 @@ def freq_job(
     # Define calculator
     mlcalculator = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
-        config_path=SETTINGS.NEWTONNET_CONFIG_PATH,
-        **newtonnet_kwargs,
+        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
     atoms.calc = mlcalculator
-
 
     # Run calculator
     mlcalculator.calculate(atoms)
