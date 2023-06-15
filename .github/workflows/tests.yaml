@@ -39,7 +39,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install .[strict,dev,fireworks]
+          pip install --no-cache-dir .[strict,dev,fireworks]
           pip install covalent-slurm-plugin
           pip install chardet
           pip install pytest-cov
