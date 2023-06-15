@@ -234,9 +234,9 @@ def run_ase_opt(
 
     # Define optimizer class
     dyn = opt_class(atoms, **optimizer_kwargs)
-    #dyn.trajectory.filename = optimizer_kwargs[
+    # dyn.trajectory.filename = optimizer_kwargs[
     #    "trajectory"
-    #]  # can remove after ASE MR 2901
+    # ]  # can remove after ASE MR 2901
 
     # Run calculation
     os.chdir(tmpdir)

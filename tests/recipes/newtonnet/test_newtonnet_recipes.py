@@ -10,7 +10,14 @@ try:
     from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
 except ImportError:
     NewtonNet = None
-from quacc.recipes.newtonnet.core import ts_job, irc_job, quasi_irc_job, freq_job, relax_job, static_job
+from quacc.recipes.newtonnet.core import (
+    freq_job,
+    irc_job,
+    quasi_irc_job,
+    relax_job,
+    static_job,
+    ts_job,
+)
 
 
 def teardown_module():
@@ -47,6 +54,7 @@ def test_static_Job():
     assert output["parameters"]["method"] == "GFN1-xTB"
     assert output["results"]["energy"] == pytest.approx(-156.96750578831137)
     assert np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
+
 
 @pytest.mark.skipif(
     NewtonNet is None,

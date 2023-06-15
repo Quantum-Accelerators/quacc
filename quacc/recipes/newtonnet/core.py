@@ -2,23 +2,25 @@
 Core recipes for the NewtonNet code
 """
 from __future__ import annotations
-from typing import Literal
+
 from copy import deepcopy
+from typing import Literal
+
 import covalent as ct
 import numpy as np
 from ase.atoms import Atoms
-from ase.vibrations.data import VibrationsData
 from ase.units import _c, fs
+from ase.vibrations.data import VibrationsData
 from monty.dev import requires
+
+from quacc import SETTINGS
 from quacc.schemas.ase import (
     summarize_opt_run,
     summarize_run,
     summarize_thermo_run,
     summarize_vib_run,
 )
-from quacc import SETTINGS
-from quacc.util.calc import run_calc
-from quacc.util.calc import run_ase_opt
+from quacc.util.calc import run_ase_opt, run_calc
 from quacc.util.thermo import ideal_gas
 
 try:
@@ -59,9 +61,8 @@ def static_job(
     atoms.calc = mlcalculator
     atoms = run_calc(atoms)
     return summarize_run(
-        atoms,
-        input_atoms=input_atoms,
-        additional_fields={"name": "NewtonNet Relax"})
+        atoms, input_atoms=input_atoms, additional_fields={"name": "NewtonNet Relax"}
+    )
 
 
 @ct.electron
@@ -171,9 +172,7 @@ def ts_job(
         atoms.calc.calculate()
         hessian = atoms.calc.results["hessian"].reshape((-1, 3 * len(atoms)))
 
-
         opt_defaults["optimizer_kwargs"]["hessian_function"] = hessian
-
 
         # TODO: I think you may need to re-initialize the calculator
         # object after this so that it's "blank" when you do
@@ -373,21 +372,21 @@ def freq_job(
 
     vib = VibrationsData(atoms, hessian)
 
-    '''
+    """
     # Calculate frequencies
     n_atoms = len(atoms)
     hessian_reshaped = np.reshape(hessian, (n_atoms * 3, n_atoms * 3))
     freqs_cm_inv, _ = _get_freq_in_cm_inv(atoms.get_masses(), hessian_reshaped)
-    '''
+    """
     vib.get_frequencies()
 
     ## Sort the frequencies (can remove after ASE MR 2906 is merged)
-    #freqs_cm_inv = list(freqs_cm_inv)
-    #freqs_cm_inv.sort(key=np.imag, reverse=True)
-    #freqs_cm_inv.sort(key=np.real)
+    # freqs_cm_inv = list(freqs_cm_inv)
+    # freqs_cm_inv.sort(key=np.imag, reverse=True)
+    # freqs_cm_inv.sort(key=np.real)
 
     ## Make IdealGasThermo object
-    #igt = ideal_gas(atoms, freqs_cm_inv, energy=mlcalculator.results["energy"])
+    # igt = ideal_gas(atoms, freqs_cm_inv, energy=mlcalculator.results["energy"])
     igt = ideal_gas(atoms, vib.get_frequencies(), energy=mlcalculator.results["energy"])
 
     # TODO: If you are successful in using the `VibrationsData` class, you
