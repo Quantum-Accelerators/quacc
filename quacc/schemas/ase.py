@@ -241,7 +241,7 @@ def summarize_opt_run(
     if check_convergence and not dyn.converged():
         raise ValueError("Optimization did not converge.")
 
-    traj = dyn.trajectory
+    traj = read(dyn.trajectory.filename, index=":")
     initial_atoms = traj[0]
     final_atoms = dyn.atoms
 
