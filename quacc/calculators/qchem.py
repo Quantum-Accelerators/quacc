@@ -68,6 +68,14 @@ class QChem(FileIOCalculator):
         self.spin_multiplicity = spin_multiplicity
         self.qchem_input_params = qchem_input_params or {}
         self.kwargs = kwargs
+        self.default_parameters = {"cores": self.cores, "charge": self.charge, "spin_multiplicity": self.spin_multiplicity}
+        for key in self.qchem_input_params:
+            if key == "overwrite_inputs":
+                for subkey in self.qchem_input_params[key]:
+                    for subsubkey in self.qchem_input_params[key][subkey]:
+                        self.default_parameters["overwrite_" + subkey + "_" + subsubkey] = self.qchem_input_params[key][subkey][subsubkey]
+            else:
+                self.default_parameters[key] = self.qchem_input_params[key]
 
         # Instantiate the calculator
         FileIOCalculator.__init__(
@@ -80,7 +88,7 @@ class QChem(FileIOCalculator):
         )
 
         # Get Q-Chem executable command
-        command = self._manage_environment()
+        FileIOCalculator.command = self._manage_environment()
 
     def _manage_environment(self) -> str:
         """

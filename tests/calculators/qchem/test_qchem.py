@@ -21,6 +21,9 @@ def test_qchem_write_input_basic():
     mol = Molecule.from_file(os.path.join(FILE_DIR, "test.xyz"))
     atoms = AseAtomsAdaptor.get_atoms(mol)
     calc = QChem(atoms, 40)
+    assert calc.parameters["cores"] == 40
+    assert calc.parameters["charge"] == None
+    assert calc.parameters["spin_multiplicity"] == None
     calc.write_input(atoms)
     qcinp = QCInput.from_file("mol.qin")
     ref_qcinp = QCInput.from_file(
@@ -35,6 +38,12 @@ def test_qchem_write_input_intermediate():
     atoms = AseAtomsAdaptor.get_atoms(mol)
     params = {"dft_rung": 3, "basis_set": "def2-svpd", "pcm_dielectric": "3.0"}
     calc = QChem(atoms, cores=40, charge=-1, qchem_input_params=params)
+    assert calc.parameters["cores"] == 40
+    assert calc.parameters["charge"] == -1
+    assert calc.parameters["spin_multiplicity"] == None
+    assert calc.parameters["dft_rung"] == 3
+    assert calc.parameters["basis_set"] == "def2-svpd"
+    assert calc.parameters["pcm_dielectric"] == "3.0"
     calc.write_input(atoms)
     qcinp = QCInput.from_file("mol.qin")
     ref_qcinp = QCInput.from_file(
@@ -50,12 +59,20 @@ def test_qchem_write_input_advanced():
     params = {
         "scf_algorithm": "gdm",
         "qchem_version": 6,
-        "dft_rung": 3,
         "basis_set": "def2-svpd",
         "smd_solvent": "water",
-        "overwrite_inputs": {"rem": {"mem_total": "170000"}},
+        "overwrite_inputs": {"rem": {"method": "b97mv", "mem_total": "170000"}},
     }
     calc = QChem(atoms, cores=40, charge=-1, spin_multiplicity=2, qchem_input_params=params)
+    assert calc.parameters["cores"] == 40
+    assert calc.parameters["charge"] == -1
+    assert calc.parameters["spin_multiplicity"] == 2
+    assert calc.parameters["qchem_version"] == 6
+    assert calc.parameters["scf_algorithm"] == "gdm"
+    assert calc.parameters["basis_set"] == "def2-svpd"
+    assert calc.parameters["smd_solvent"] == "water"
+    assert calc.parameters["overwrite_rem_method"] == "b97mv"
+    assert calc.parameters["overwrite_rem_mem_total"] == "170000"
     calc.write_input(atoms)
     qcinp = QCInput.from_file("mol.qin")
     ref_qcinp = QCInput.from_file(
