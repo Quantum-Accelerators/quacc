@@ -11,6 +11,7 @@ import numpy as np
 from ase import optimize
 from ase.atoms import Atoms
 from ase.io import read
+from ase.io.trajectory import Trajectory
 from ase.optimize.optimize import Optimizer
 from ase.vibrations import Vibrations
 from monty.os.path import zpath
@@ -190,16 +191,36 @@ def run_ase_opt(
     if not os.path.exists(scratch_dir):
         os.makedirs(scratch_dir)
 
-    if "trajectory" not in optimizer_kwargs:
-        optimizer_kwargs["trajectory"] = "opt.traj"
+    if "trajectory" in optimizer_kwargs:
+        if isinstance(optimizer_kwargs["trajectory"], str):
+            traj = Trajectory(optimizer_kwargs["trajectory"], "w", atoms=atoms)
+        else:
+            traj = optimizer_kwargs["trajectory"]
+    else:
+        traj = Trajectory("opt.traj", "w", atoms=atoms)
 
     # Get optimizer
-    try:
-        opt_class = getattr(optimize, optimizer)
-    except AttributeError as e:
-        raise ValueError(
-            f"Unknown {optimizer=}, must be one of {list(dir(optimize))}"
-        ) from e
+    if optimizer.lower() in {"sella", "sellairc"}:
+        if not atoms.pbc.any() and "internal" not in optimizer_kwargs:
+            optimizer_kwargs["internal"] = True
+        try:
+            from sella import IRC, Sella
+        except ImportError as e:
+            raise ImportError(
+                "You must install Sella to use Sella optimizers. Try `pip install sella`."
+            ) from e
+
+    if optimizer.lower() == "sella":
+        opt_class = Sella
+    elif optimizer.lower() == "sellairc":
+        opt_class = IRC
+    else:
+        try:
+            opt_class = getattr(optimize, optimizer)
+        except AttributeError as e:
+            raise ValueError(
+                f"Unknown {optimizer=}, must be one of {list(dir(optimize))} or Sella, SellaIRC"
+            ) from e
 
     tmpdir = mkdtemp(prefix="quacc-tmp-", dir=scratch_dir)
 
@@ -213,7 +234,8 @@ def run_ase_opt(
         copy_decompress(copy_files, tmpdir)
 
     # Define optimizer class
-    dyn = opt_class(atoms, **optimizer_kwargs)
+    dyn = opt_class(atoms, trajectory=traj, **optimizer_kwargs)
+    dyn.trajectory = traj
 
     # Run calculation
     os.chdir(tmpdir)
