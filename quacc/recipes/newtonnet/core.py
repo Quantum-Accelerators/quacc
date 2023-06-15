@@ -306,8 +306,7 @@ def quasi_irc_job(
     # Define calculator
     mlcalculator = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
-        config_path=SETTINGS.NEWTONNET_CONFIG_PATH,
-        **newtonnet_kwargs,
+        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
     atoms.calc = mlcalculator
 
@@ -317,8 +316,7 @@ def quasi_irc_job(
     # Define calculator I BELIEVE THE CALCULATOR MAY BE NEEDED TO BE DEFINED AGAIN HERE. TEST NEEDED.
     mlcalculator = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
-        config_path=SETTINGS.NEWTONNET_CONFIG_PATH,
-        **newtonnet_kwargs,
+        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
     atoms.calc = mlcalculator
 
