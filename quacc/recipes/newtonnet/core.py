@@ -370,8 +370,9 @@ def freq_job(
     # Run calculator
     mlcalculator.calculate(atoms)
     hessian = mlcalculator.results["hessian"]
-
-    vib = VibrationsData(atoms, hessian)
+    from ase.vibrations import Vibrations
+    vib = Vibrations(atoms)
+    #vib = VibrationsData(atoms, hessian)
 
     '''
     # Calculate frequencies
