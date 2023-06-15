@@ -389,7 +389,8 @@ def freq_job(
     #print('vib.get_frequencies():', vib.get_frequencies())
 
     ## Sort the frequencies (can remove after ASE MR 2906 is merged)
-    freqs_cm_inv = list(freqs_cm_inv)
+    #freqs_cm_inv = list(freqs_cm_inv)
+    freqs_cm_inv = list(vib.get_frequencies())
     freqs_cm_inv.sort(key=np.imag, reverse=True)
     freqs_cm_inv.sort(key=np.real)
 
