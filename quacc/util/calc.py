@@ -11,6 +11,7 @@ import numpy as np
 from ase import optimize
 from ase.atoms import Atoms
 from ase.io import read
+from ase.io.trajectory import Trajectory
 from ase.optimize.optimize import Optimizer
 from ase.vibrations import Vibrations
 from monty.os.path import zpath
@@ -191,7 +192,7 @@ def run_ase_opt(
         os.makedirs(scratch_dir)
 
     if "trajectory" not in optimizer_kwargs:
-        optimizer_kwargs["trajectory"] = "opt.traj"
+        optimizer_kwargs["trajectory"] = Trajectory("opt.traj", "w")
 
     # Get optimizer
     if optimizer.lower() in {"sella", "sellairc"}:
