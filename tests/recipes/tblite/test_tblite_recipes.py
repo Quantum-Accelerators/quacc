@@ -72,7 +72,7 @@ def test_relax_Job():
 
 
 @pytest.mark.skipif(
-    TBLite is None and sella is None,
+    TBLite is None or sella is not None,
     reason="tblite must be installed without sella.",
 )
 def test_relax_Job():
