@@ -185,7 +185,7 @@ def test_freq_job():
     TBLite is None or sella is not None,
     reason="tblite must be installed without sella.",
 )
-def test_relax_Job():
+def test_no_sella():
+    atoms = molecule("H2O")
     with pytest.raises(ModuleNotFoundError):
-        atoms = molecule("H2O")
         relax_job(atoms, opt_swaps={"optimizer": "Sella"})
