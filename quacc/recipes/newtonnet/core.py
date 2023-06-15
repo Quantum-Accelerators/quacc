@@ -27,6 +27,11 @@ except ImportError:
     NewtonNet = None
 
 
+def get_hessian(atoms):
+    atoms.calc.calculate(atoms)
+    return atoms.calc.results['hessian'].reshape((-1, 3 * len(atoms)))
+
+
 @ct.electron
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def static_job(
@@ -168,9 +173,9 @@ def ts_job(
         if opt_flags["optimizer"].lower() != "sella":
             raise ValueError("Custom hessian can only be used with Sella.")
 
-        # atoms.calc.calculate()
+        atoms.calc.calculate()
         # hessian = atoms.calc.results["hessian"].reshape((-1, 3 * len(atoms)))
-        # opt_flags["optimizer_kwargs"]["hessian_function"] = hessian
+        opt_flags["optimizer_kwargs"]["hessian_function"] = get_hessian
 
         # TODO: I think you may need to re-initialize the calculator
         # object after this so that it's "blank" when you do
