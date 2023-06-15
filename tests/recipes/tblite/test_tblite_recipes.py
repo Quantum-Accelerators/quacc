@@ -187,5 +187,5 @@ def test_freq_job():
 )
 def test_no_sella():
     atoms = molecule("H2O")
-    with pytest.raises(ModuleNotFoundError):
+    with pytest.raises(ImportError):
         relax_job(atoms, opt_swaps={"optimizer": "Sella"})
