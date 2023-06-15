@@ -218,9 +218,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install .[strict,dev,newtonnet]
-          pip install chardet
-          pip install pytest-cov
+          pip install --no-cache-dir .[strict,dev,newtonnet] # remove --no-cache-dir after repos are removed from setup.py
 
       # - name: Run tests with pytest
       #   run: pytest tests/recipes/newtonnet --cov=quacc --cov-report=xml
