@@ -20,7 +20,8 @@ def teardown_module():
         os.remove(os.path.join(os.getcwd(), "mol.qout.gz"))
     if os.path.exists(os.path.join(os.getcwd(), "131.0.gz")):
         os.remove(os.path.join(os.getcwd(), "131.0.gz"))
-    rmtree(os.path.join(os.getcwd(), "__pycache__"))
+    if os.path.exists(os.path.join(os.getcwd(), "__pycache__")):
+        rmtree(os.path.join(os.getcwd(), "__pycache__"))
     if os.path.exists(os.path.join(os.getcwd(), "opt.traj")):
         os.remove(os.path.join(os.getcwd(), "opt.traj"))
     for f in os.listdir(os.getcwd()):
