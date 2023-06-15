@@ -33,7 +33,7 @@ if __name__ == "__main__":
         data_files=["LICENSE.md"],
         zip_safe=False,
         install_requires=[
-            "ase @ https://gitlab.com/argon214/ase/-/archive/traj/ase-traj.zip",
+            "ase @ https://gitlab.com/argon214/ase/-/archive/efermi/ase-efermi.zip",
             "atomate2[cclib] @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
             "covalent>=0.224.0-rc.0",  # waiting on > 0.222.0
             "custodian",
@@ -64,7 +64,7 @@ if __name__ == "__main__":
                 "sphinx-copybutton==0.5.2",
             ],
             "strict": [
-                "ase @ https://gitlab.com/argon214/ase/-/archive/traj/ase-traj.zip",
+                "ase @ https://gitlab.com/argon214/ase/-/archive/efermi/ase-efermi.zip",
                 "atomate2 @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
                 "cclib==1.7.2",
                 "covalent==0.226.0rc0",  # waiting on > 0.222.0
