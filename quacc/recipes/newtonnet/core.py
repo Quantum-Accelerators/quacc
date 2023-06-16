@@ -314,8 +314,10 @@ def quasi_irc_job(
     )
     atoms.calc = mlcalculator
 
+    # Atoms, temperature, pressure, newtonnet_kwargs,  opt_swaps
+
     # Run IRC
-    irc_summary = irc_job(atoms, newtonnet_kwargs=newtonnet_kwargs, **irc_flags)
+    irc_summary = irc_job(atoms, newtonnet_kwargs=newtonnet_kwargs, opt_swaps=irc_flags)
 
     # Define calculator I BELIEVE THE CALCULATOR MAY BE NEEDED TO BE DEFINED AGAIN HERE. TEST NEEDED.
     mlcalculator = NewtonNet(
