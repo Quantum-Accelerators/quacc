@@ -209,7 +209,6 @@ def ts_job(
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def irc_job(
     atoms: Atoms,
-    direction: Literal["forward", "reverse"] = "forward",
     temperature: float = 298.15,
     pressure: float = 1.0,
     newtonnet_kwargs: dict | None = None,
@@ -237,7 +236,7 @@ def irc_job(
         'eta': 1e-4,
         'gamma': 0.4,
         "run_kwargs": {
-            "direction": direction.lower(),
+            "direction": 'forward',
             "fmax": 0.01,
             "max_steps": 1000,
         },
