@@ -90,7 +90,7 @@ def static_job(
 
     atoms.calc = ORCA(
         charge=charge or round(sum(atoms.get_initial_charges())),
-        mult=multiplicity or round(1 + sum(atoms.get_initial_magnetic_moments())),
+        mult=mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )
