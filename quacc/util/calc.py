@@ -8,11 +8,12 @@ from tempfile import mkdtemp
 from typing import Literal
 
 import numpy as np
-from ase import optimize
 from ase.atoms import Atoms
 from ase.io import read
 from ase.io.trajectory import Trajectory
+from ase.optimize import FIRE
 from ase.optimize.optimize import Optimizer
+from ase.optimize.sciopt import SciPyOptimizer
 from ase.vibrations import Vibrations
 from monty.os.path import zpath
 from monty.shutil import copy_r, gzip_dir
@@ -127,19 +128,7 @@ def run_ase_opt(
     atoms: Atoms,
     fmax: float = 0.01,
     max_steps: int = 500,
-    optimizer: Literal[
-        "Berny",
-        "BFGS",
-        "BFGSLineSearch",
-        "FIRE",
-        "GPMin",
-        "LBFGS",
-        "LBFGSLineSearch",
-        "MDMin",
-        "QuasiNewton",
-        "Sella",
-        "SellaIRC",
-    ] = "FIRE",
+    optimizer: Optimizer = FIRE,
     optimizer_kwargs: dict | None = None,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
@@ -162,7 +151,7 @@ def run_ase_opt(
     max_steps
         Maximum number of steps to take.
     optimizer
-        Name of optimizer class to use.
+        Instance of the optimizer class to use.
     optimizer_kwargs
         Dictionary of kwargs for the optimizer.
     scratch_dir
@@ -201,27 +190,9 @@ def run_ase_opt(
     optimizer_kwargs["trajectory"] = traj
 
     # Get optimizer
-    if optimizer.lower() in {"sella", "sellairc"}:
+    if optimizer.__name__ in {"Sella", "IRC"}:
         if not atoms.pbc.any() and "internal" not in optimizer_kwargs:
             optimizer_kwargs["internal"] = True
-        try:
-            from sella import IRC, Sella
-        except ImportError as e:
-            raise ImportError(
-                "You must install Sella to use Sella optimizers. Try `pip install sella`."
-            ) from e
-
-    if optimizer.lower() == "sella":
-        opt_class = Sella
-    elif optimizer.lower() == "sellairc":
-        opt_class = IRC
-    else:
-        try:
-            opt_class = getattr(optimize, optimizer)
-        except AttributeError as e:
-            raise ValueError(
-                f"Unknown {optimizer=}, must be one of {list(dir(optimize))} or Sella, SellaIRC"
-            ) from e
 
     tmpdir = mkdtemp(prefix="quacc-tmp-", dir=scratch_dir)
 
@@ -235,7 +206,8 @@ def run_ase_opt(
         copy_decompress(copy_files, tmpdir)
 
     # Define optimizer class
-    dyn = opt_class(atoms, **optimizer_kwargs)
+    dyn = optimizer(atoms, **optimizer_kwargs)
+    dyn.trajectory = traj
 
     # Run calculation
     os.chdir(tmpdir)
