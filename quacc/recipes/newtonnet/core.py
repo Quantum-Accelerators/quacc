@@ -208,6 +208,8 @@ def ts_job(
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def irc_job(
     atoms: Atoms,
+    fmax: 0.01,
+    max_steps: 1000,
     temperature: float = 298.15,
     pressure: float = 1.0,
     newtonnet_kwargs: dict | None = None,
@@ -232,8 +234,6 @@ def irc_job(
 
     opt_defaults = {
         'optimizer': 'sella_irc',
-        "fmax": 0.01,
-        "max_steps": 1000,
         'optimizer_kwargs': {
             'dx': 0.1,
             'eta': 1e-4,
@@ -253,7 +253,7 @@ def irc_job(
     atoms.calc = mlcalculator
 
     # Run IRC
-    dyn = run_ase_opt(atoms, **opt_flags)
+    dyn = run_ase_opt(atoms, fmax=fmax, max_steps=max_steps, **opt_flags)
     summary_irc = summarize_opt_run(dyn, additional_fields={"name": "NewtonNet IRC"})
 
     # Run frequency job
@@ -298,8 +298,6 @@ def quasi_irc_job(
 
     irc_defaults = {
         "run_kwargs": {
-            "fmax": 0.01,
-            "max_steps": 5,
             "direction": direction.lower()
         },
     }
@@ -312,7 +310,10 @@ def quasi_irc_job(
 
     # Atoms, temperature, pressure, newtonnet_kwargs,  opt_swaps
     # Run IRC
-    irc_summary = irc_job(atoms, opt_swaps=irc_flags)
+    irc_summary = irc_job(atoms,
+                          max_steps=5,
+                          opt_swaps=irc_flags
+                          )
 
     # Run opt
     opt_summary = relax_job(
