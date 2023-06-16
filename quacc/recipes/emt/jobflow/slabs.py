@@ -31,10 +31,8 @@ class BulkToSlabsFlow(jf.Maker):
         Maker to use for the static calculation of the slab.
     slab_relax_kwargs
         Additional keyword arguments to pass to the relaxation calculation.
-        Default: {"relax_cell": False}
     slab_static_kwargs
         Additional keyword arguments to pass to the static calculation.
-        Default: {}
     """
 
     name: str = "EMT BulkToSlabsFlow"
@@ -60,9 +58,11 @@ class BulkToSlabsFlow(jf.Maker):
         jf.Response
             A Flow of relaxation and static jobs for the generated slabs.
         """
-        self.slab_relax_kwargs = self.slab_relax_kwargs or {"relax_cell": False}
+        self.slab_relax_kwargs = self.slab_relax_kwargs or {}
         self.slab_static_kwargs = self.slab_static_kwargs or {}
         slabgen_kwargs = slabgen_kwargs or {}
+        if "relax_cell" not in self.slab_relax_kwargs:
+            self.slab_relax_kwargs["relax_cell"] = False
 
         # Generate all the slab
         slabs = make_max_slabs_from_bulk(atoms, **slabgen_kwargs)

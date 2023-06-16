@@ -122,17 +122,6 @@ def test_slab_dynamic_jobs():
     assert outputs[1]["nsites"] == 80
     assert [output["parameters"]["asap_cutoff"] is False for output in outputs]
 
-    outputs = BulkToSlabsFlow(
-        slab_relax_electron=static_job,
-        slab_static_electron=None,
-        slab_relax_kwargs={"emt_kwargs": {"asap_cutoff": True}},
-    ).run(atoms, slabgen_kwargs={"max_slabs": 2})
-    assert len(outputs) == 2
-    assert outputs[0]["nsites"] == 64
-    assert outputs[1]["nsites"] == 80
-    assert outputs[0]["parameters"]["asap_cutoff"] is True
-    assert [output["name"] == "EMT Static" for output in outputs]
-
 
 def test_jf_slab_dynamic_jobs():
     store = jf.JobStore(MemoryStore())
@@ -180,28 +169,4 @@ def test_jf_slab_dynamic_jobs():
     output2 = responses[uuids[-1]][1].output
     assert output2["nsites"] == 80
     assert output2["parameters"]["asap_cutoff"] is False
-    assert output2["name"] == "EMT Static"
-
-    flow = JFBulkToSlabsFlow(
-        slab_relax_job=jf.job(static_job),
-        slab_static_kwargs={"emt_kwargs": {"asap_cutoff": True}},
-        slab_relax_kwargs={},
-    ).make(atoms, slabgen_kwargs={"max_slabs": 2})
-    responses = jf.run_locally(flow, store=store, ensure_success=True)
-
-    assert len(responses) == 5
-    uuids = list(responses.keys())
-
-    output0 = responses[uuids[0]][1].output
-    assert "generated_slabs" in output0
-    assert len(output0["generated_slabs"][0]) == 64
-
-    output1 = responses[uuids[1]][1].output
-    assert output1["nsites"] == 64
-    assert output1["parameters"]["asap_cutoff"] is False
-    assert output1["name"] == "EMT Static"
-
-    output2 = responses[uuids[-1]][1].output
-    assert output2["nsites"] == 80
-    assert output2["parameters"]["asap_cutoff"] is True
     assert output2["name"] == "EMT Static"

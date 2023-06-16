@@ -30,10 +30,8 @@ class BulkToSlabsFlow:
         Default Electron to use for the static calculation of the slab structures.
     slab_relax_kwargs
         Additional keyword arguments to pass to the relaxation calculation.
-        Default: {"relax_cell": False}
     slab_static_kwargs
         Additional keyword arguments to pass to the static calculation.
-        Default: {}
     """
 
     slab_relax_electron: Electron | None = relax_job
@@ -62,9 +60,11 @@ class BulkToSlabsFlow:
             List of dictionary of results from quacc.schemas.ase.summarize_run or quacc.schemas.ase.summarize_opt_run
         """
 
-        self.slab_relax_kwargs = self.slab_relax_kwargs or {"relax_cell": False}
+        self.slab_relax_kwargs = self.slab_relax_kwargs or {}
         self.slab_static_kwargs = self.slab_static_kwargs or {}
         slabgen_kwargs = slabgen_kwargs or {}
+        if "relax_cell" not in self.slab_relax_kwargs:
+            self.slab_relax_kwargs["relax_cell"] = False
 
         if not self.slab_relax_electron and not self.slab_static_electron:
             raise ValueError(
