@@ -125,7 +125,7 @@ def test_slab_dynamic_jobs():
     outputs = BulkToSlabsFlow(
         slab_relax_electron=static_job,
         slab_static_electron=None,
-        slab_relax_kwargs={"emt_kwargs": {"asap_cutoff": True}, "relax_cell": False},
+        slab_relax_kwargs={"emt_kwargs": {"asap_cutoff": True}},
     ).run(atoms, slabgen_kwargs={"max_slabs": 2})
     assert len(outputs) == 2
     assert outputs[0]["nsites"] == 64
