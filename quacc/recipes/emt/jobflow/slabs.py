@@ -63,8 +63,6 @@ class BulkToSlabsFlow(jf.Maker):
         self.slab_relax_kwargs = self.slab_relax_kwargs or {"relax_cell": False}
         self.slab_static_kwargs = self.slab_static_kwargs or {}
         slabgen_kwargs = slabgen_kwargs or {}
-        if "relax_cell" not in self.slab_relax_kwargs:
-            self.slab_relax_kwargs["relax_cell"] = False
 
         # Generate all the slab
         slabs = make_max_slabs_from_bulk(atoms, **slabgen_kwargs)
