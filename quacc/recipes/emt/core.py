@@ -10,6 +10,7 @@ from copy import deepcopy
 import covalent as ct
 from ase.atoms import Atoms
 from ase.calculators.emt import EMT
+from ase.constraints import ExpCellFilter
 
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
@@ -48,7 +49,10 @@ def static_job(atoms: Atoms, emt_kwargs: dict | None = None) -> dict:
 
 @ct.electron
 def relax_job(
-    atoms: Atoms, emt_kwargs: dict | None = None, opt_swaps: dict | None = None
+    atoms: Atoms,
+    relax_cell: bool = True,
+    emt_kwargs: dict | None = None,
+    opt_swaps: dict | None = None,
 ) -> dict:
     """
     Carry out a geometry optimization.
@@ -57,6 +61,8 @@ def relax_job(
     ----------
     atoms
         Atoms object
+    relax_cell
+        Whether to relax the cell
     emt_kwargs
         Dictionary of custom kwargs for the EMT calculator
     opt_swaps
@@ -76,6 +82,10 @@ def relax_job(
     opt_flags = opt_defaults | opt_swaps
 
     atoms.calc = EMT(**emt_kwargs)
+
+    if relax_cell:
+        atoms = ExpCellFilter(atoms)
+
     dyn = run_ase_opt(atoms, **opt_flags)
 
     return summarize_opt_run(dyn, additional_fields={"name": "EMT Relax"})
