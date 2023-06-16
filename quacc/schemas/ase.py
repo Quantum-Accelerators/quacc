@@ -8,7 +8,7 @@ import os
 import numpy as np
 from ase import units
 from ase.atoms import Atoms
-from ase.constraints import ExpCellFilter
+from ase.constraints import Filter
 from ase.io import read
 from ase.optimize.optimize import Optimizer
 from ase.thermochemistry import IdealGasThermo
@@ -244,7 +244,7 @@ def summarize_opt_run(
 
     traj = read(dyn.trajectory.filename, index=":")
     initial_atoms = traj[0]
-    if isinstance(dyn.atoms, ExpCellFilter):
+    if isinstance(dyn.atoms, Filter):
         final_atoms = dyn.atoms.atoms
     else:
         final_atoms = dyn.atoms
