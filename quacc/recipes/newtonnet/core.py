@@ -231,9 +231,11 @@ def irc_job(
     opt_swaps = opt_swaps or {}
 
     opt_defaults = {
-        'dx': 0.1,
-        'eta': 1e-4,
-        'gamma': 0.4,
+        'opt_kwargs': {
+            'dx': 0.1,
+            'eta': 1e-4,
+            'gamma': 0.4,
+        },
         "run_kwargs": {
             "direction": 'forward',
             "fmax": 0.01,
