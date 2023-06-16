@@ -45,6 +45,7 @@ if __name__ == "__main__":
         ],
         extras_require={
             "fireworks": ["fireworks"],
+            "ml": ["chgnet", "matgl"],
             "optimizers": ["sella"],
             "tblite": ["tblite[ase]"],
             "dev": ["black", "isort", "pytest", "pytest-cov"],

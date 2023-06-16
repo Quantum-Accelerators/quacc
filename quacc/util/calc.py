@@ -34,8 +34,7 @@ def run_calc(
     original directory. This can be useful if file I/O is slow in the working
     directory, so long as file transfer speeds are reasonable.
 
-    This is a wrapper around atoms.get_potential_energy(). Note: This
-    function does not modify the atoms object in-place.
+    Note: This function does not modify the atoms object in-place.
 
     Parameters
     ----------
@@ -82,9 +81,9 @@ def run_calc(
     if copy_files:
         copy_decompress(copy_files, tmpdir)
 
-    # Run calculation via get_potential_energy()
+    # Run calculation
     os.chdir(tmpdir)
-    atoms.get_potential_energy()
+    atoms.calc.calculate(atoms)
     os.chdir(cwd)
 
     # Gzip files in tmpdir
@@ -98,10 +97,9 @@ def run_calc(
     if os.path.islink(symlink):
         os.remove(symlink)
 
-    # Some ASE calculators do not update the atoms object in-place with
-    # a call to .get_potential_energy(). This is a workaround to ensure
-    # that the atoms object is updated with the correct positions, cell,
-    # and magmoms.
+    # Some ASE calculators do not update the atoms object in-place.
+    # This is a workaround to ensure that the returned atoms object is
+    # has the correct positions, cell, and magmoms.
     if geom_file and os.path.exists(zpath(geom_file)):
         # Note: We have to be careful to make sure we don't lose the
         # converged magnetic moments, if present. That's why we simply
