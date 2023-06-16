@@ -103,7 +103,7 @@ def static_job(
 def relax_job(
     atoms: Atoms,
     charge: int = None,
-    multiplicity: int = None,
+    mult: int = None,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
     run_freq: bool = False,
@@ -120,7 +120,7 @@ def relax_job(
     charge
         Charge of the system. If None, this is determined from the sum of
         atoms.get_initial_charges().
-    multiplicity
+    mult
         Multiplicity of the system. If None, this is determined from 1+ the sum
         of atoms.get_initial_magnetic_moments().
     xc
@@ -179,7 +179,7 @@ def relax_job(
 
     atoms.calc = ORCA(
         charge=charge or round(sum(atoms.get_initial_charges())),
-        mult=multiplicity or round(1 + sum(atoms.get_initial_magnetic_moments())),
+        mult=mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )

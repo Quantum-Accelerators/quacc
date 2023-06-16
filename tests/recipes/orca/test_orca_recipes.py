@@ -40,7 +40,7 @@ def test_static_Job():
     )
     assert output["parameters"]["orcablocks"] == f"%pal nprocs {nprocs} end"
     assert output["parameters"]["charge"] == 0
-    assert output["parameters"]["multiplicity"] == 1
+    assert output["parameters"]["mult"] == 1
 
     output = static_job(
         atoms,
@@ -51,7 +51,7 @@ def test_static_Job():
     )
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == -2
-    assert output["parameters"]["multiplicity"] == 3
+    assert output["parameters"]["mult"] == 3
     assert (
         output["parameters"]["orcasimpleinput"]
         == "wb97x-d3bj sp slowconv normalprint xyzfile def2-svp"
@@ -69,7 +69,7 @@ def test_relax_Job():
     output = relax_job(atoms)
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == 0
-    assert output["parameters"]["multiplicity"] == 1
+    assert output["parameters"]["mult"] == 1
     assert (
         output["parameters"]["orcasimpleinput"]
         == "wb97x-d3bj def2-tzvp opt slowconv normalprint xyzfile"
@@ -90,7 +90,7 @@ def test_relax_Job():
     )
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == -2
-    assert output["parameters"]["multiplicity"] == 3
+    assert output["parameters"]["mult"] == 3
     assert (
         output["parameters"]["orcasimpleinput"]
         == "opt slowconv normalprint xyzfile hf def2-svp"
