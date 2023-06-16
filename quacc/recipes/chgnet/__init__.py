@@ -1,1 +1,1 @@
-"""Recipes for matgl"""
+"""Recipes for CHGNet"""
