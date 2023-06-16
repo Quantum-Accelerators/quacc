@@ -5,6 +5,7 @@ NOTE: This set of minimal recipes is mainly for demonstration purposes.
 """
 from __future__ import annotations
 
+import warnings
 from copy import deepcopy
 
 import covalent as ct
@@ -81,9 +82,13 @@ def relax_job(
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "FIRE"}
     opt_flags = opt_defaults | opt_swaps
 
+    if relax_cell and not atoms.pbc.any():
+        warnings.warn("Volume relaxation requested but no PBCs found. Ignoring.")
+        relax_cell = False
+
     atoms.calc = EMT(**emt_kwargs)
 
-    if relax_cell and atoms.pbc.any():
+    if relax_cell:
         atoms = ExpCellFilter(atoms)
 
     dyn = run_ase_opt(atoms, **opt_flags)
