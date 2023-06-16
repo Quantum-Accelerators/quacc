@@ -208,8 +208,8 @@ def ts_job(
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def irc_job(
     atoms: Atoms,
-    fmax: 0.01,
-    max_steps: 1000,
+    fmax: float = 0.01,
+    max_steps: int = 1000,
     temperature: float = 298.15,
     pressure: float = 1.0,
     newtonnet_kwargs: dict | None = None,
