@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import os
 from tempfile import mkdtemp
-from typing import Literal
 
 import numpy as np
 from ase.atoms import Atoms
@@ -13,7 +12,6 @@ from ase.io import read
 from ase.io.trajectory import Trajectory
 from ase.optimize import FIRE
 from ase.optimize.optimize import Optimizer
-from ase.optimize.sciopt import SciPyOptimizer
 from ase.vibrations import Vibrations
 from monty.os.path import zpath
 from monty.shutil import copy_r, gzip_dir
