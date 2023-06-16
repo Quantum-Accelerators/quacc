@@ -33,7 +33,7 @@ def test_static_Job():
     output = static_job(atoms)
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == 0
-    assert output["parameters"]["multiplicity"] == 1
+    assert output["parameters"]["mult"] == 1
     assert output["parameters"]["sp"] == ""
     assert output["parameters"]["xc"] == "wb97x-d"
     assert output["parameters"]["basis"] == "def2-tzvp"
@@ -47,7 +47,7 @@ def test_static_Job():
     output = static_job(
         atoms,
         charge=-2,
-        multiplicity=3,
+        mult=3,
         xc="m06l",
         basis="def2-svp",
         pop="regular",
@@ -56,7 +56,7 @@ def test_static_Job():
     )
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == -2
-    assert output["parameters"]["multiplicity"] == 3
+    assert output["parameters"]["mult"] == 3
     assert output["parameters"]["sp"] == ""
     assert output["parameters"]["xc"] == "m06l"
     assert output["parameters"]["basis"] == "def2-svp"
@@ -72,7 +72,7 @@ def test_relax_Job():
     output = relax_job(atoms)
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == 0
-    assert output["parameters"]["multiplicity"] == 1
+    assert output["parameters"]["mult"] == 1
     assert output["parameters"]["opt"] == ""
     assert output["parameters"]["xc"] == "wb97x-d"
     assert output["parameters"]["basis"] == "def2-tzvp"
@@ -83,7 +83,7 @@ def test_relax_Job():
     output = relax_job(
         atoms,
         charge=-2,
-        multiplicity=3,
+        mult=3,
         xc="m06l",
         basis="def2-svp",
         freq=True,
@@ -91,7 +91,7 @@ def test_relax_Job():
     )
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == -2
-    assert output["parameters"]["multiplicity"] == 3
+    assert output["parameters"]["mult"] == 3
     assert output["parameters"]["opt"] == ""
     assert output["parameters"]["freq"] == ""
     assert output["parameters"]["xc"] == "m06l"

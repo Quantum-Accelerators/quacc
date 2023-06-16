@@ -19,7 +19,7 @@ GEOM_FILE = LOG_FILE
 def static_job(
     atoms: Atoms,
     charge: int | None = None,
-    multiplicity: int | None = None,
+    mult: int | None = None,
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
     pop: str = "hirshfeld",
@@ -36,7 +36,7 @@ def static_job(
     charge
         Charge of the system. If None, this is determined from the sum of
         `atoms.get_initial_charges().`
-    multiplicity
+    mult
         Multiplicity of the system. If None, this is determined from 1+ the sum
         of `atoms.get_initial_magnetic_moments()`.
     xc
@@ -56,7 +56,7 @@ def static_job(
                 "xc": xc,
                 "basis": basis,
                 "charge": charge or round(sum(atoms.get_initial_charges())),
-                "multiplicity": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
+                "mult": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
                 "sp": "",
                 "scf": ["maxcycle=250", "xqc"],
                 "integral": "ultrafine",
@@ -83,8 +83,7 @@ def static_job(
         "xc": xc,
         "basis": basis,
         "charge": charge or round(sum(atoms.get_initial_charges())),
-        "multiplicity": multiplicity
-        or round(1 + sum(atoms.get_initial_magnetic_moments())),
+        "mult": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
         "sp": "",
         "scf": ["maxcycle=250", "xqc"],
         "integral": "ultrafine",
@@ -107,7 +106,7 @@ def static_job(
 def relax_job(
     atoms: Atoms,
     charge: int | None = None,
-    multiplicity: int | None = None,
+    mult: int | None = None,
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
     freq: bool = False,
@@ -123,7 +122,7 @@ def relax_job(
     charge
         Charge of the system. If None, this is determined from the sum of
         `atoms.get_initial_charges()`.
-    multiplicity
+    mult
         Multiplicity of the system. If None, this is determined from 1+ the sum
         of `atoms.get_initial_magnetic_moments()`.
     xc
@@ -141,7 +140,7 @@ def relax_job(
                 "xc": xc,
                 "basis": basis,
                 "charge": charge or round(sum(atoms.get_initial_charges())),
-                "multiplicity": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
+                "mult": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
                 "opt": "",
                 "scf": ["maxcycle=250", "xqc"],
                 "integral": "ultrafine",
@@ -165,7 +164,7 @@ def relax_job(
         "xc": xc,
         "basis": basis,
         "charge": charge or round(sum(atoms.get_initial_charges())),
-        "mult": multiplicity or round(1 + sum(atoms.get_initial_magnetic_moments())),
+        "mult": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
         "opt": "",
         "scf": ["maxcycle=250", "xqc"],
         "integral": "ultrafine",

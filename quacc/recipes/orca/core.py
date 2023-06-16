@@ -19,7 +19,7 @@ GEOM_FILE = f"{ORCA().name}.xyz"
 def static_job(
     atoms: Atoms,
     charge: int | None = None,
-    multiplicity: int | None = None,
+    mult: int | None = None,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
     input_swaps: dict | None = None,
@@ -35,7 +35,7 @@ def static_job(
     charge
         Charge of the system. If None, this is determined from the sum of
         `atoms.get_initial_charges()`.
-    multiplicity
+    mult
         Multiplicity of the system. If None, this is determined from 1+ the sum
         of `atoms.get_initial_magnetic_moments()`.
     xc
