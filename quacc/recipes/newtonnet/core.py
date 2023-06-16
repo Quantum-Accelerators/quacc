@@ -115,8 +115,7 @@ def relax_job(
 
     mlcalculator = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
-        config_path=SETTINGS.NEWTONNET_CONFIG_PATH,
-        **newtonnet_kwargs,
+        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
     atoms.calc = mlcalculator
     dyn = run_ase_opt(
@@ -246,7 +245,7 @@ def irc_job(
     # Define calculator
     mlcalculator = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
-        config_path=SETTINGS.NEWTONNET_CONFIG_PATH,
+        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
     atoms.calc = mlcalculator
 
@@ -296,6 +295,7 @@ def quasi_irc_job(
 
     irc_defaults = {
         "run_kwargs": {
+            "fmax": 0.01,
             "max_steps": 5,
             "direction": direction.lower()
         },
@@ -307,24 +307,9 @@ def quasi_irc_job(
     opt_defaults = {}
     opt_flags = opt_defaults | opt_swaps
 
-    # Define calculator
-    mlcalculator = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
-    )
-    atoms.calc = mlcalculator
-
     # Atoms, temperature, pressure, newtonnet_kwargs,  opt_swaps
-
     # Run IRC
-    irc_summary = irc_job(atoms, newtonnet_kwargs=newtonnet_kwargs, opt_swaps=irc_flags)
-
-    # Define calculator I BELIEVE THE CALCULATOR MAY BE NEEDED TO BE DEFINED AGAIN HERE. TEST NEEDED.
-    mlcalculator = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
-    )
-    atoms.calc = mlcalculator
+    irc_summary = irc_job(atoms, opt_swaps=irc_flags)
 
     # Run opt
     opt_summary = relax_job(
