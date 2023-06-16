@@ -4,7 +4,7 @@ from shutil import rmtree
 import jobflow as jf
 import numpy as np
 import pytest
-from ase.build import bulk
+from ase.build import bulk, molecule
 from ase.constraints import FixAtoms
 from maggma.stores import MemoryStore
 
@@ -50,6 +50,12 @@ def test_relax_Job():
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] is False
     assert output["results"]["energy"] == pytest.approx(-0.04543069081693929)
+    assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
+
+    atoms = molecule("N2")
+    output = relax_job(atoms)
+    assert output["nsites"] == len(atoms)
+    assert output["parameters"]["asap_cutoff"] is False
     assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
 
     atoms = bulk("Cu") * (2, 2, 2)
