@@ -231,6 +231,7 @@ def irc_job(
     opt_swaps = opt_swaps or {}
 
     opt_defaults = {
+        'optimizer': 'sella_irc',
         'optimizer_kwargs': {
             'dx': 0.1,
             'eta': 1e-4,

@@ -217,7 +217,7 @@ def run_ase_opt(
 
     if optimizer.lower() == "sella":
         opt_class = Sella
-    elif optimizer.lower() == "sellairc":
+    elif optimizer.lower() == "sella_irc":
         opt_class = IRC
     else:
         try:
