@@ -190,7 +190,7 @@ def run_ase_opt(
     optimizer_kwargs["trajectory"] = traj
 
     # Get optimizer
-    if optimizer.__name__ in {"Sella", "IRC"}:
+    if "sella.optimize" in optimizer.__module__:
         if not atoms.pbc.any() and "internal" not in optimizer_kwargs:
             optimizer_kwargs["internal"] = True
 
