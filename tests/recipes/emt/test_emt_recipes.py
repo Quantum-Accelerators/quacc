@@ -5,6 +5,7 @@ import jobflow as jf
 import numpy as np
 import pytest
 from ase.build import bulk
+from ase.constraints import FixAtoms
 from maggma.stores import MemoryStore
 
 from quacc.recipes.emt.core import relax_job, static_job
@@ -60,6 +61,17 @@ def test_relax_Job():
     assert output["parameters"]["asap_cutoff"] is True
     assert output["results"]["energy"] == pytest.approx(-0.004528885890177747)
     assert 0.01 < np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.03
+
+    atoms = bulk("Cu") * (2, 2, 2)
+    atoms[0].position += [0.1, 0.1, 0.1]
+    c = FixAtoms(indices=[0, 1])
+    atoms.set_constraint(c)
+    output = relax_job(
+        atoms, opt_swaps={"fmax": 0.03}, emt_kwargs={"asap_cutoff": True}
+    )
+    assert output["nsites"] == len(atoms)
+    assert output["parameters"]["asap_cutoff"] is True
+    assert output["results"]["energy"] == pytest.approx(0.04996032884581858)
 
 
 def test_slab_dynamic_jobs():
