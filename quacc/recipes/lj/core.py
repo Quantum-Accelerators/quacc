@@ -63,11 +63,7 @@ def relax_job(
         Dictionary of custom kwargs for the LJ calculator.
     opt_swaps
         Dictionary of swaps for run_ase_opt
-            default_options = {
-                "dump every gulp.res": True,
-                "output cif gulp.cif": True if atoms.pbc.any() else None,
-                "output xyz gulp.xyz": None if atoms.pbc.any() else True,
-            }
+            opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
 
     Returns
     -------
