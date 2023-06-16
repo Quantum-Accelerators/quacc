@@ -236,7 +236,9 @@ def irc_job(
         "fmax": 0.01,
         "max_steps": 1000,
         "optimizer": "SellaIRC",
-        "run_kwargs": {"direction": direction.lower()},
+        "run_kwargs": {
+            "direction": direction.lower(),
+        },
     }
     opt_flags = opt_defaults | opt_swaps
 
@@ -291,7 +293,6 @@ def quasi_irc_job(
     newtonnet_kwargs = newtonnet_kwargs or {}
     irc_swaps = irc_swaps or {}
     opt_swaps = opt_swaps or {}
-
 
     irc_defaults = {
         "optimizer": "SellaIRC",
