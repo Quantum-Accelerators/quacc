@@ -232,6 +232,8 @@ def irc_job(
 
     opt_defaults = {
         'optimizer': 'sella_irc',
+        "fmax": 0.01,
+        "max_steps": 1000,
         'optimizer_kwargs': {
             'dx': 0.1,
             'eta': 1e-4,
@@ -239,8 +241,6 @@ def irc_job(
         },
         "run_kwargs": {
             "direction": 'forward',
-            "fmax": 0.01,
-            "max_steps": 1000,
         },
     }
     opt_flags = opt_defaults | opt_swaps
