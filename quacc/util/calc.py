@@ -236,7 +236,6 @@ def run_ase_opt(
 
     # Define optimizer class
     dyn = opt_class(atoms, **optimizer_kwargs)
-    dyn.trajectory = traj
 
     # Run calculation
     os.chdir(tmpdir)
