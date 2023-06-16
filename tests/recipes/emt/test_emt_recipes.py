@@ -54,7 +54,7 @@ def test_relax_Job():
 
     atoms = molecule("N2")
     output = relax_job(atoms)
-    assert output["nsites"] == len(atoms)
+    assert output["natoms"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] is False
     assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
 
