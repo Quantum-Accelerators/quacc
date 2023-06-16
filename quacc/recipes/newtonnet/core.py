@@ -315,7 +315,9 @@ def quasi_irc_job(
 
     opt_swaps = opt_swaps or {}
 
-    opt_defaults = {}
+    opt_defaults = {
+        'order': 0
+    }
     opt_flags = opt_defaults | opt_swaps
 
     # Atoms, temperature, pressure, newtonnet_kwargs,  opt_swaps
