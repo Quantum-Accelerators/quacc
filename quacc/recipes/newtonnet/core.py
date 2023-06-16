@@ -212,6 +212,7 @@ def irc_job(
     max_steps: int = 1000,
     temperature: float = 298.15,
     pressure: float = 1.0,
+    check_convergence: bool = False,
     newtonnet_kwargs: dict | None = None,
     opt_swaps: dict | None = None,
 ) -> dict:
@@ -253,8 +254,17 @@ def irc_job(
     atoms.calc = mlcalculator
 
     # Run IRC
-    dyn = run_ase_opt(atoms, fmax=fmax, max_steps=max_steps, **opt_flags)
-    summary_irc = summarize_opt_run(dyn, additional_fields={"name": "NewtonNet IRC"})
+    dyn = run_ase_opt(
+        atoms,
+        fmax=fmax,
+        max_steps=max_steps,
+        **opt_flags
+    )
+    summary_irc = summarize_opt_run(
+        dyn,
+        check_convergence=check_convergence,
+        additional_fields={"name": "NewtonNet IRC"}
+    )
 
     # Run frequency job
     thermo_summary = freq_job(
