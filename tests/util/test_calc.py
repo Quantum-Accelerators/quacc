@@ -103,6 +103,7 @@ def test_run_ase_opt():
         copy_files=["test_file.txt"],
         optimizer_kwargs={"restart": None},
     )
+    assert dyn.trajectory.filename == "opt.traj"
     traj = read(dyn.trajectory.filename, index=":")
     assert traj[-1].calc.results is not None
 
@@ -112,8 +113,9 @@ def test_run_ase_opt():
         scratch_dir="test_calc",
         gzip=False,
         copy_files=["test_file.txt"],
-        optimizer_kwargs={"restart": None},
+        optimizer_kwargs={"restart": None, "trajectory": "new_test.traj"},
     )
+    assert dyn.trajectory.filename == "new_test.traj"
     traj = read(dyn.trajectory.filename, index=":")
     assert traj[-1].calc.results is not None
 
