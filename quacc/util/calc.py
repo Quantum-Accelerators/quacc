@@ -208,8 +208,7 @@ def run_ase_opt(
 
     # Define optimizer class
     dyn = optimizer(atoms, **optimizer_kwargs)
-    if not hasattr(dyn, "trajectory"):
-        dyn.trajectory = traj
+    dyn.trajectory = traj
 
     # Run calculation
     os.chdir(tmpdir)
