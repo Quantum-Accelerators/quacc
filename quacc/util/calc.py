@@ -151,7 +151,7 @@ def run_ase_opt(
     max_steps
         Maximum number of steps to take.
     optimizer
-        Instance of the optimizer class to use.
+        Optimizer class to use.
     optimizer_kwargs
         Dictionary of kwargs for the optimizer.
     scratch_dir
