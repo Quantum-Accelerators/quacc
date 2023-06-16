@@ -71,7 +71,7 @@ def static_job(
         "basis": basis,
         "charge": charge or round(sum(atoms.get_initial_charges())),
         "multiplicity": multiplicity,
-        "reference": "uhf" if multiplicity > 1 else None,
+        "reference": "uhf" if multiplicity > 1 and "reference" not in swaps else None,
     }
     flags = remove_dict_empties(defaults | swaps)
 
