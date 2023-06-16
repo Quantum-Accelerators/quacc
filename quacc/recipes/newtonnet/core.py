@@ -233,11 +233,13 @@ def irc_job(
     opt_swaps = opt_swaps or {}
 
     opt_defaults = {
-        "fmax": 0.01,
-        "max_steps": 1000,
-        "optimizer": "SellaIRC",
+        'dx': 0.1,
+        'eta': 1e-4,
+        'gamma': 0.4,
         "run_kwargs": {
             "direction": direction.lower(),
+            "fmax": 0.01,
+            "max_steps": 1000,
         },
     }
     opt_flags = opt_defaults | opt_swaps
@@ -246,7 +248,6 @@ def irc_job(
     mlcalculator = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
         config_path=SETTINGS.NEWTONNET_CONFIG_PATH,
-        **newtonnet_kwargs,
     )
     atoms.calc = mlcalculator
 
@@ -295,19 +296,16 @@ def quasi_irc_job(
     opt_swaps = opt_swaps or {}
 
     irc_defaults = {
-        "optimizer": "SellaIRC",
-        'dx': 0.1,
-        'eta': 1e-4,
-        'gamma': 0.4,
         "run_kwargs": {
-            "fmax": 0.01,
             "max_steps": 5,
             "direction": direction.lower()
         },
     }
     irc_flags = irc_defaults | irc_swaps
 
-    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
+    opt_swaps = opt_swaps or {}
+
+    opt_defaults = {}
     opt_flags = opt_defaults | opt_swaps
 
     # Define calculator
@@ -342,13 +340,14 @@ def quasi_irc_job(
 
     return {"irc": irc_summary, "opt": opt_summary, "thermo": thermo_summary}
 
-
 # TODO: I think it is possible to get rid of all the unit conversion functions
 # and instead use the `VibrationsData` class in `ase.vibrations.data.py`
 # See details here: https://gitlab.com/ase/ase/-/blob/master/ase/vibrations/data.py
 # Once that class is contructed, you can do `VibrationsData.get_frequencies()`
 # to return the frequencies in cm^-1, as desired. You can then get rid of
 # the `_get_freq_in_cm_inv` and `_mass_weighted_hessian` functions.
+
+
 @ct.electron
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def freq_job(
