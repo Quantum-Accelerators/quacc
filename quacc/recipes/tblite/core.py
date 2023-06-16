@@ -8,6 +8,7 @@ from typing import Literal
 
 import covalent as ct
 from ase.atoms import Atoms
+from ase.optimize import FIRE
 from monty.dev import requires
 
 from quacc.schemas.ase import (
@@ -82,7 +83,7 @@ def relax_job(
         Dictionary of custom kwargs for the tblite calculator.
     opt_swaps
         Dictionary of custom kwargs for run_ase_opt
-            opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "FIRE"}
+            opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
 
     Returns
     -------
@@ -93,7 +94,7 @@ def relax_job(
     tblite_kwargs = tblite_kwargs or {}
     opt_swaps = opt_swaps or {}
 
-    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "FIRE"}
+    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
     opt_flags = opt_defaults | opt_swaps
 
     atoms.calc = TBLite(method=method, **tblite_kwargs)
