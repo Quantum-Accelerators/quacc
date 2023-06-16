@@ -83,7 +83,7 @@ def relax_job(
 
     atoms.calc = EMT(**emt_kwargs)
 
-    if relax_cell:
+    if relax_cell and atoms.pbc.any():
         atoms = ExpCellFilter(atoms)
 
     dyn = run_ase_opt(atoms, **opt_flags)
