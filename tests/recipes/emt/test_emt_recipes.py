@@ -181,6 +181,7 @@ def test_jf_slab_dynamic_jobs():
     flow = JFBulkToSlabsFlow(
         slab_relax_job=jf.job(static_job),
         slab_static_kwargs={"emt_kwargs": {"asap_cutoff": True}},
+        slab_relax_kwargs={},
     ).make(atoms, slabgen_kwargs={"max_slabs": 2})
     responses = jf.run_locally(flow, store=store, ensure_success=True)
 
