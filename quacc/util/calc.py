@@ -187,7 +187,7 @@ def run_ase_opt(
         traj = Trajectory("opt.traj", "w", atoms=atoms)
     optimizer_kwargs["trajectory"] = traj
 
-    # Get optimizer
+    # Set Sella kwargs
     if (
         "sella.optimize" in optimizer.__module__
         and not atoms.pbc.any()
@@ -208,12 +208,15 @@ def run_ase_opt(
 
     # Define optimizer class
     dyn = optimizer(atoms, **optimizer_kwargs)
-    dyn.trajectory = traj
 
     # Run calculation
     os.chdir(tmpdir)
     dyn.run(fmax=fmax, steps=max_steps)
     os.chdir(cwd)
+
+    # Attach trajectory metadata
+    if not hasattr(dyn, "trajectory"):
+        dyn.trajectory = traj
 
     # Gzip files in tmpdir
     if gzip:
