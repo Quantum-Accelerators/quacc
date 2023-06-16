@@ -45,7 +45,7 @@ def test_static_Job():
     output = static_job(
         atoms,
         charge=-2,
-        mult=3,
+        multiplicity=3,
         input_swaps={"def2-svp": True, "def2-tzvp": None},
         block_swaps={"%scf maxiter 300 end": True},
     )
@@ -79,7 +79,7 @@ def test_relax_Job():
     output = relax_job(
         atoms,
         charge=-2,
-        mult=3,
+        multiplicity=3,
         input_swaps={
             "hf": True,
             "wb97x-d3bj": None,

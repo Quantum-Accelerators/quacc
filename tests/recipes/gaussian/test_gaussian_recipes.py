@@ -83,7 +83,7 @@ def test_relax_Job():
     output = relax_job(
         atoms,
         charge=-2,
-        mult=3,
+        multiplicity=3,
         xc="m06l",
         basis="def2-svp",
         freq=True,
