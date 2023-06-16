@@ -69,6 +69,7 @@ def static_job(
         "basis": basis,
         "charge": charge or round(sum(atoms.get_initial_charges())),
         "multiplicity": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
+        "reference": "uhf" if mult > 1 else None,
     }
     flags = remove_dict_empties(defaults | swaps)
 
