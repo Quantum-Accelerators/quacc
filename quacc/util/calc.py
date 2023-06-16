@@ -83,7 +83,7 @@ def run_calc(
 
     # Run calculation
     os.chdir(tmpdir)
-    atoms.calc.calculate(atoms)
+    atoms.get_potential_energy()
     os.chdir(cwd)
 
     # Gzip files in tmpdir
