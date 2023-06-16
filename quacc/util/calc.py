@@ -205,11 +205,18 @@ def run_ase_opt(
     optimizer_kwargs["trajectory"] = traj
 
     # Get optimizer
-    if optimizer.lower() in {"sella", "sellairc"}:
+    if optimizer.lower() == "sella":
         if not atoms.pbc.any() and "internal" not in optimizer_kwargs:
             optimizer_kwargs["internal"] = True
         try:
-            from sella import IRC, Sella
+            from sella import Sella
+        except ImportError as e:
+            raise ImportError(
+                "You must install Sella to use Sella optimizers. Try `pip install sella`."
+            ) from e
+    elif optimizer.lower() == 'sella_irc':
+        try:
+            from sella import IRC
         except ImportError as e:
             raise ImportError(
                 "You must install Sella to use Sella optimizers. Try `pip install sella`."
