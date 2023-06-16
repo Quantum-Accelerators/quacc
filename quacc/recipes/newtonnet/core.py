@@ -327,7 +327,7 @@ def quasi_irc_job(
 
     # Run opt
     opt_summary = relax_job(
-        irc_summary["atoms"], newtonnet_kwargs=newtonnet_kwargs, **opt_flags
+        irc_summary["output"]["atoms"], newtonnet_kwargs=newtonnet_kwargs, **opt_flags
     )
 
     # Run frequency
