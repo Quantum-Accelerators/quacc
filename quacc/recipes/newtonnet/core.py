@@ -326,8 +326,9 @@ def quasi_irc_job(
                           max_steps=5,
                           opt_swaps=irc_flags
                           )
-    print('irc_summary:', irc_summary)
-    print('irc_summary.keys():', irc_summary.keys())
+    # print('irc_summary:', irc_summary)
+    # print('irc_summary.keys():', irc_summary.keys())
+    print("irc_summary['irc']['atoms']:", irc_summary['irc']['atoms'])
     # Run opt
     opt_summary = relax_job(
         irc_summary["irc"]["atoms"], newtonnet_kwargs=newtonnet_kwargs, **opt_flags
