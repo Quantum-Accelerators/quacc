@@ -208,15 +208,13 @@ def run_ase_opt(
 
     # Define optimizer class
     dyn = optimizer(atoms, **optimizer_kwargs)
+    if not hasattr(dyn, "trajectory"):
+        dyn.trajectory = traj
 
     # Run calculation
     os.chdir(tmpdir)
     dyn.run(fmax=fmax, steps=max_steps)
     os.chdir(cwd)
-
-    # Attach trajectory metadata
-    if not hasattr(dyn, "trajectory"):
-        dyn.trajectory = traj
 
     # Gzip files in tmpdir
     if gzip:
