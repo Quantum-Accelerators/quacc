@@ -165,7 +165,7 @@ def relax_job(
         "xc": xc,
         "basis": basis,
         "charge": charge or round(sum(atoms.get_initial_charges())),
-        "mult": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
+        "mult": multiplicity or round(1 + sum(atoms.get_initial_magnetic_moments())),
         "opt": "",
         "scf": ["maxcycle=250", "xqc"],
         "integral": "ultrafine",
