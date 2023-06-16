@@ -292,11 +292,17 @@ def quasi_irc_job(
     irc_swaps = irc_swaps or {}
     opt_swaps = opt_swaps or {}
 
+
     irc_defaults = {
-        "fmax": 0.01,
-        "max_steps": 5,
         "optimizer": "SellaIRC",
-        "run_kwargs": {"direction": direction.lower()},
+        'dx': 0.1,
+        'eta': 1e-4,
+        'gamma': 0.4,
+        "run_kwargs": {
+            "fmax": 0.01,
+            "max_steps": 5,
+            "direction": direction.lower()
+        },
     }
     irc_flags = irc_defaults | irc_swaps
 
