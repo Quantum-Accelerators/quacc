@@ -21,7 +21,7 @@ except ImportError:
 def static_job(
     atoms: Atoms,
     charge: int | None = None,
-    mult: int | None = None,
+    multiplicity: int | None = None,
     method: str = "wb97x-v",
     basis: str = "def2-tzvp",
     swaps: dict | None = None,
@@ -36,7 +36,7 @@ def static_job(
     charge
         Charge of the system. If None, this is determined from the sum of
         `atoms.get_initial_charges()`.
-    mult
+    multiplicity
         Multiplicity of the system. If None, this is determined from 1+ the sum
         of `atoms.get_initial_magnetic_moments()`.
     method
@@ -62,6 +62,7 @@ def static_job(
     """
 
     swaps = swaps or {}
+    multiplicity = multiplicity or round(1 + sum(atoms.get_initial_magnetic_moments()))
 
     defaults = {
         "mem": "16GB",
@@ -69,8 +70,8 @@ def static_job(
         "method": method,
         "basis": basis,
         "charge": charge or round(sum(atoms.get_initial_charges())),
-        "multiplicity": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
-        "reference": "uhf" if mult > 1 else None,
+        "multiplicity": multiplicity,
+        "reference": "uhf" if multiplicity > 1 else None,
     }
     flags = remove_dict_empties(defaults | swaps)
 

@@ -44,7 +44,7 @@ def test_static_maker():
     output = static_job(
         atoms,
         charge=-2,
-        mult=3,
+        multiplicity=3,
         method="m06l",
         basis="def2-svp",
         swaps={"num_threads": 1, "mem": None, "pop": "regular"},

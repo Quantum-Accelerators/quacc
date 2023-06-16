@@ -47,7 +47,7 @@ def test_static_Job():
     output = static_job(
         atoms,
         charge=-2,
-        mult=3,
+        multiplicity=3,
         xc="m06l",
         basis="def2-svp",
         pop="regular",
