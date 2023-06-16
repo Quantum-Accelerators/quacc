@@ -84,7 +84,7 @@ def relax_job(
     max_steps: int = 1000,
     optimizer: str = "sella",
     newtonnet_kwargs: dict | None = None,
-    opt_kwargs: dict | None = None,
+    optimizer_kwargs: dict | None = None,
 ) -> dict:
     """
     Relax a structure.
@@ -111,7 +111,7 @@ def relax_job(
     """
 
     newtonnet_kwargs = newtonnet_kwargs or {}
-    opt_kwargs = opt_kwargs or {}
+    optimizer_kwargs = optimizer_kwargs or {}
 
     mlcalculator = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
@@ -123,7 +123,7 @@ def relax_job(
         fmax=fmax,
         max_steps=max_steps,
         optimizer=optimizer,
-        opt_kwargs=opt_kwargs,
+        optimizer_kwargs=optimizer_kwargs,
     )
     return summarize_opt_run(dyn, additional_fields={"name": "NewtonNet Relax"})
 
