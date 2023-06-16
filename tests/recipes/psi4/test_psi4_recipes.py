@@ -44,15 +44,15 @@ def test_static_maker():
     output = static_job(
         atoms,
         charge=-2,
-        mult=3,
-        method="m06l",
+        multiplicity=3,
+        method="pbe",
         basis="def2-svp",
         swaps={"num_threads": 1, "mem": None, "pop": "regular"},
     )
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == -2
     assert output["parameters"]["multiplicity"] == 3
-    assert output["parameters"]["method"] == "m06l"
+    assert output["parameters"]["method"] == "pbe"
     assert output["parameters"]["basis"] == "def2-svp"
     assert output["parameters"]["num_threads"] == 1
     assert output["parameters"]["pop"] == "regular"
