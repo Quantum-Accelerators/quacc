@@ -8,6 +8,7 @@ import os
 import numpy as np
 from ase import units
 from ase.atoms import Atoms
+from ase.constraints import Filter
 from ase.io import read
 from ase.optimize.optimize import Optimizer
 from ase.thermochemistry import IdealGasThermo
@@ -245,8 +246,7 @@ def summarize_opt_run(
     #traj = read(dyn.trajectory.filename, index=":")
     traj = read('opt.traj', index=":")
     initial_atoms = traj[0]
-    final_atoms = dyn.atoms
-
+    final_atoms = dyn.atoms.atoms if isinstance(dyn.atoms, Filter) else dyn.atoms
     # Get results
     traj_results = {
         "trajectory_results": [atoms.calc.results for atoms in traj],

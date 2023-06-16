@@ -44,7 +44,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - The `summarize_opt_run` function takes in an ASE `Optimizer` object instead of a `Trajectory` object.
 - The `summarize_opt_run` function no longer needs the `atoms.calc.parameters` kwarg.
 - Renamed `prerelax` kwarg in `qmof_relax_job` was changed to `run_prerelax` to reflect that it is a boolean.
-- Renamed `volume_relax` kwarg in VASP recipes to `relax_volume` to reflect that it is a boolean.
+- Renamed `volume_relax` kwarg in VASP recipes to `relax_cell` to reflect that it is a boolean.
 - Renamed `molden` to `write_molden` in Gaussian recipes to reflect that it is a boolean.
 - Renamed `quacc.recipes.tblite.core.thermo_job` to `quacc.recipes.tblite.core.freq_job`.
 - Renamed `quacc.schemas.calc` to `quacc.schemas.ase`.
@@ -56,6 +56,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - By default, output schemas are sorted by key alphabetically.
 - Used `|` operator for dictionary merging instead of `{**dict1, **dict2}`.
 - Refactors VASP calculator.
+- Added `relax_cell` option to EMT `relax_job`.
 
 ### Fixed
 
