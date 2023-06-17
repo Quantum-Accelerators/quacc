@@ -20,7 +20,7 @@ from quacc.util.calc import run_ase_opt, run_calc
 try:
     from sella import Sella
 except ImportError:
-    sella = None
+    Sella = None
 
 
 @ct.electron
@@ -123,7 +123,7 @@ def static_job(
 
 @ct.electron
 @requires(
-    sella,
+    Sella,
     "Sella must be installed. pip install sella",
 )
 def relax_job(
@@ -238,7 +238,7 @@ def relax_job(
 
 @ct.electron
 @requires(
-    sella,
+    Sella,
     "Sella must be installed. pip install sella",
 )
 def ts_job(

@@ -22,7 +22,7 @@ except ImportError:
     "Openbabel must be installed. Try conda install -c conda-forge openbabel",
 )
 def run_custodian(
-    qchem_cores: int | None = None,
+    qchem_cores: int = None,
     qchem_cmd: str = SETTINGS.QCHEM_CMD,
     qchem_local_scratch: str = SETTINGS.QCHEM_LOCAL_SCRATCH,
     qchem_use_error_handlers: bool = SETTINGS.QCHEM_USE_ERROR_HANDLERS,
