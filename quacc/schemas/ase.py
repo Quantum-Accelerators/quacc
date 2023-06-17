@@ -406,8 +406,8 @@ def summarize_vib_run(
         # Sort by absolute value
         vib_freqs_raw_sorted = vib_freqs_raw.copy()
         vib_energies_raw_sorted = vib_energies_raw.copy()
-        vib_freqs_raw_sorted = vib_freqs_raw_sorted.sort(key=np.abs)
-        vib_energies_raw_sorted = vib_energies_raw_sorted.sort(key=np.abs)
+        vib_freqs_raw_sorted.sort(key=np.abs)
+        vib_energies_raw_sorted.sort(key=np.abs)
 
         # Cut the 3N-5 or 3N-6 modes based on their absolute value
         n_modes = 3 * natoms - 5 if atoms_db["symmetry"]["linear"] else 3 * natoms - 6
