@@ -18,7 +18,12 @@ except ImportError:
 FILE_DIR = Path(__file__).resolve().parent
 QCHEM_DIR = os.path.join(FILE_DIR, "qchem_examples")
 
+# NOTE to Sam: I just read it once up top for convenience
+# also I used ASE to read it instead of Pymatgen ;)
+TEST_ATOMS = read(os.path.join(FILE_DIR, "test.xyz"))
 
+
+# NOTE to Sam: This is much cleaner than what you were doing
 def teardown_module():
     for f in os.listdir("."):
         if ".log" in f or ".traj" in f or ".gz" in f:
@@ -31,9 +36,6 @@ def teardown_module():
                 rmtree(f)
 
 
-TEST_ATOMS = read(os.path.join(FILE_DIR, "test.xyz"))
-
-
 def test_static_job():
     output = static_job(TEST_ATOMS)
     assert output["atoms"] == TEST_ATOMS
@@ -43,6 +45,8 @@ def test_static_job():
     assert output["nelectrons"] == 76
     assert output["parameters"]["charge"] == None
     assert output["parameters"]["spin_multiplicity"] == None
+
+    # NOTE to Sam: never do hard equals in tests. use `pytest.approx()`
     assert output["results"]["energy"] == -606.1616819641 * units.Hartree
     assert output["results"]["forces"][0][0] == -1.3826330655069403
 
