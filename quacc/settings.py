@@ -18,7 +18,7 @@ class QuaccSettings(BaseSettings):
     Settings for quacc.
 
     The default way to modify these is to make a ~/.quacc.yaml file. Alternatively,
-    the environment variable QUACC_CONFIG_FILE can be set to point to a yaml file with
+    the environment variable QUACC_CONFIG_FILE can be set to point to a YAML file with
     quacc settings.
 
     The variables can also be modified individually though environment variables by
