@@ -7,7 +7,7 @@ from ase import units
 from ase.io import read
 from pymatgen.io.qchem.inputs import QCInput
 
-from quacc.recipes.qchem.core import relax_job, static_job
+from quacc.recipes.qchem.core import relax_job, static_job, ts_job
 
 try:
     import sella
@@ -45,10 +45,8 @@ def test_static_job():
     assert output["nelectrons"] == 76
     assert output["parameters"]["charge"] == None
     assert output["parameters"]["spin_multiplicity"] == None
-
-    # NOTE to Sam: never do hard equals in tests. use `pytest.approx()`
-    assert output["results"]["energy"] == -606.1616819641 * units.Hartree
-    assert output["results"]["forces"][0][0] == -1.3826330655069403
+    assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
+    assert output["results"]["forces"][0][0] == pytest.approx(-1.3826330655069403)
 
     qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(os.path.join(QCHEM_DIR, "mol.qin.basic"))
@@ -70,10 +68,8 @@ def test_static_job():
     assert output["formula_alphabetical"] == "C4 H4 O6"
     assert output["parameters"]["charge"] == -1
     assert output["parameters"]["spin_multiplicity"] == None
-    assert (
-        output["results"]["energy"] == -605.6859554025 * units.Hartree
-    )  # -16481.554341995
-    assert output["results"]["forces"][0][0] == -0.6955571014353796
+    assert output["results"]["energy"] == pytest.approx(-605.6859554025 * units.Hartree) # -16481.554341995
+    assert output["results"]["forces"][0][0] == pytest.approx(-0.6955571014353796)
 
     qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(os.path.join(QCHEM_DIR, "mol.qin.intermediate"))
@@ -97,8 +93,8 @@ def test_relax_job():
     assert output["nelectrons"] == 76
     assert output["parameters"]["charge"] == None
     assert output["parameters"]["spin_multiplicity"] == None
-    assert output["results"]["energy"] == -606.1616819641 * units.Hartree
-    assert output["results"]["forces"][0][0] == -1.3826330655069403
+    assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
+    assert output["results"]["forces"][0][0] == pytest.approx(-1.3826330655069403)
 
     qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(
@@ -122,8 +118,8 @@ def test_relax_job():
     assert output["formula_alphabetical"] == "C4 H4 O6"
     assert output["parameters"]["charge"] == -1
     assert output["parameters"]["spin_multiplicity"] == None
-    assert output["results"]["energy"] == -605.6859554025 * units.Hartree
-    assert output["results"]["forces"][0][0] == -0.6955571014353796
+    assert output["results"]["energy"] == pytest.approx(-605.6859554025 * units.Hartree)
+    assert output["results"]["forces"][0][0] == pytest.approx(-0.6955571014353796)
 
     qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(
@@ -139,11 +135,11 @@ def test_relax_job():
     sella is None,
     reason="Sella must be installed.",
 )
-def test_relax_job_as_TSopt():
-    output = relax_job(
+def test_ts_job():
+    output = ts_job(
         atoms=TEST_ATOMS,
         basis="def2-tzvpd",
-        opt_swaps={"max_steps": 1, "optimizer_kwargs": {"order": 1}},
+        opt_swaps={"max_steps": 1},
     )
 
     assert output["atoms"] != TEST_ATOMS
@@ -153,8 +149,8 @@ def test_relax_job_as_TSopt():
     assert output["nelectrons"] == 76
     assert output["parameters"]["charge"] == None
     assert output["parameters"]["spin_multiplicity"] == None
-    assert output["results"]["energy"] == -606.1616819641 * units.Hartree
-    assert output["results"]["forces"][0][0] == -1.3826330655069403
+    assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
+    assert output["results"]["forces"][0][0] == pytest.approx(-1.3826330655069403)
 
     qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(
@@ -162,12 +158,12 @@ def test_relax_job_as_TSopt():
     )
     assert qcin.as_dict() == ref_qcin.as_dict()
 
-    output = relax_job(
+    output = ts_job(
         atoms=TEST_ATOMS,
         charge=-1,
         xc="b97mv",
         pcm_dielectric="3.0",
-        opt_swaps={"max_steps": 1, "optimizer_kwargs": {"order": 1}},
+        opt_swaps={"max_steps": 1},
     )
 
     assert output["atoms"] != TEST_ATOMS
@@ -178,8 +174,8 @@ def test_relax_job_as_TSopt():
     assert output["formula_alphabetical"] == "C4 H4 O6"
     assert output["parameters"]["charge"] == -1
     assert output["parameters"]["spin_multiplicity"] == None
-    assert output["results"]["energy"] == -605.6859554025 * units.Hartree
-    assert output["results"]["forces"][0][0] == -0.6955571014353796
+    assert output["results"]["energy"] == pytest.approx(-605.6859554025 * units.Hartree)
+    assert output["results"]["forces"][0][0] == pytest.approx(-0.6955571014353796)
 
     qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(
