@@ -38,7 +38,10 @@ def test_run_qchem_custodian(monkeypatch):
     run_custodian()
 
     run_custodian(
-        qchem_cores=40, qchem_cmd="qchem -save", qchem_local_scratch="/not_tmp", qchem_custodian_max_errors=20
+        qchem_cores=40,
+        qchem_cmd="qchem -save",
+        qchem_local_scratch="/not_tmp",
+        qchem_custodian_max_errors=20,
     )
 
     run_custodian(qchem_use_error_handlers=False)

@@ -144,7 +144,8 @@ class QuaccSettings(BaseSettings):
 
     # Q-Chem Settings: Custodian
     QCHEM_USE_ERROR_HANDLERS: bool = Field(
-        True, description="Whether Custodian's error handlers should be employed for Q-Chem."
+        True,
+        description="Whether Custodian's error handlers should be employed for Q-Chem.",
     )
 
     QCHEM_CUSTODIAN_MAX_ERRORS: int = Field(

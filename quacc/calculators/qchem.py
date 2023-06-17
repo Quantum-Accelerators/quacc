@@ -52,7 +52,7 @@ class QChem(FileIOCalculator):
         The ASE Atoms object with attached Q-Chem calculator.
     """
 
-    implemented_properties = ['energy', 'forces']
+    implemented_properties = ["energy", "forces"]
 
     def __init__(
         self,
@@ -70,12 +70,18 @@ class QChem(FileIOCalculator):
         self.spin_multiplicity = spin_multiplicity
         self.qchem_input_params = qchem_input_params or {}
         self.kwargs = kwargs
-        self.default_parameters = {"cores": self.cores, "charge": self.charge, "spin_multiplicity": self.spin_multiplicity}
+        self.default_parameters = {
+            "cores": self.cores,
+            "charge": self.charge,
+            "spin_multiplicity": self.spin_multiplicity,
+        }
         for key in self.qchem_input_params:
             if key == "overwrite_inputs":
                 for subkey in self.qchem_input_params[key]:
                     for subsubkey in self.qchem_input_params[key][subkey]:
-                        self.default_parameters["overwrite_" + subkey + "_" + subsubkey] = self.qchem_input_params[key][subkey][subsubkey]
+                        self.default_parameters[
+                            "overwrite_" + subkey + "_" + subsubkey
+                        ] = self.qchem_input_params[key][subkey][subsubkey]
             else:
                 self.default_parameters[key] = self.qchem_input_params[key]
 
@@ -148,6 +154,8 @@ class QChem(FileIOCalculator):
         for ii, subgrad in enumerate(grad):
             for jj, val in enumerate(subgrad):
                 if abs(gradient[ii, jj] - val) > 1e-6:
-                    raise ValueError("Difference between gradient value in scratch file vs. output file should not be this large! Exiting...")
+                    raise ValueError(
+                        "Difference between gradient value in scratch file vs. output file should not be this large! Exiting..."
+                    )
                 gradient[ii, jj] = val
         self.results["forces"] = gradient * (-units.Hartree / units.Bohr)

@@ -5,8 +5,8 @@ from pathlib import Path
 import ase.units
 import numpy as np
 import pytest
-from ase.io import read
 from ase import units
+from ase.io import read
 from pymatgen.core import Molecule
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.qchem.inputs import QCInput
@@ -64,7 +64,9 @@ def test_qchem_write_input_advanced():
         "smd_solvent": "water",
         "overwrite_inputs": {"rem": {"method": "b97mv", "mem_total": "170000"}},
     }
-    calc = QChem(atoms, cores=40, charge=-1, spin_multiplicity=2, qchem_input_params=params)
+    calc = QChem(
+        atoms, cores=40, charge=-1, spin_multiplicity=2, qchem_input_params=params
+    )
     assert calc.parameters["cores"] == 40
     assert calc.parameters["charge"] == -1
     assert calc.parameters["spin_multiplicity"] == 2
@@ -89,7 +91,7 @@ def test_qchem_read_results_basic():
     calc = QChem(atoms, 40)
     os.chdir(os.path.join(FILE_DIR, "examples", "basic"))
     calc.read_results()
-    assert calc.results["energy"] == -606.1616819641*units.Hartree
+    assert calc.results["energy"] == -606.1616819641 * units.Hartree
     assert calc.results["forces"][0][0] == -1.3826330655069403
 
 
@@ -99,7 +101,7 @@ def test_qchem_read_results_intermediate():
     calc = QChem(atoms, 40)
     os.chdir(os.path.join(FILE_DIR, "examples", "intermediate"))
     calc.read_results()
-    assert calc.results["energy"] == -605.6859554025*units.Hartree
+    assert calc.results["energy"] == -605.6859554025 * units.Hartree
     assert calc.results["forces"][0][0] == -0.6955571014353796
 
 
@@ -109,6 +111,5 @@ def test_qchem_read_results_advanced():
     calc = QChem(atoms, 40)
     os.chdir(os.path.join(FILE_DIR, "examples", "advanced"))
     calc.read_results()
-    assert calc.results["energy"] == -605.7310332390*units.Hartree
+    assert calc.results["energy"] == -605.7310332390 * units.Hartree
     assert calc.results["forces"][0][0] == -0.4270884974249971
-

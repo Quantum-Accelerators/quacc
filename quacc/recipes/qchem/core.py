@@ -9,7 +9,9 @@ from typing import Literal
 import covalent as ct
 from ase.atoms import Atoms
 from monty.dev import requires
+from sella import Sella
 
+from quacc.calculators.qchem import QChem
 from quacc.schemas.ase import (
     summarize_opt_run,
     summarize_run,
@@ -18,8 +20,6 @@ from quacc.schemas.ase import (
 )
 from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
 from quacc.util.thermo import ideal_gas
-from quacc.calculators.qchem import QChem
-from sella import Sella
 
 
 @ct.electron
@@ -43,7 +43,7 @@ def static_job(
     atoms
         Atoms object.
     cores
-        Number of cores to use for the Q-Chem calculation. 
+        Number of cores to use for the Q-Chem calculation.
         Effectively defaults to use all cores available on a given node, so this only needs to
         be set by the user if less than all available cores should be used.
     charge
@@ -59,7 +59,7 @@ def static_job(
         Basis set.
         Defaults to def2-TZVPD.
     scf_algorithm
-        Algorithm used to converge the SCF. 
+        Algorithm used to converge the SCF.
         Defaults to DIIS, but for particularly difficult cases, GDM should be employed instead.
     pcm_dielectric
         Dielectric constant of the optional polarizable continuum impicit solvation model.
@@ -83,9 +83,7 @@ def static_job(
 
     input_atoms = deepcopy(atoms)
 
-    overwrite_inputs = {
-        "rem": {"method": xc}   
-    }
+    overwrite_inputs = {"rem": {"method": xc}}
 
     swaps = swaps or {}
     for key in swaps:
@@ -100,18 +98,18 @@ def static_job(
         "qchem_version": 6,
         "pcm_dielectric": pcm_dielectric,
         "smd_solvent": smd_solvent,
-        "overwrite_inputs": overwrite_inputs
+        "overwrite_inputs": overwrite_inputs,
     }
 
     if scf_algorithm.lower() == "gdm":
         qchem_input_params["max_scf_cycles"] = 200
 
     calc = QChem(
-        input_atoms = atoms,
-        cores = cores,
-        charge = charge,
-        spin_multiplicity = mult,
-        qchem_input_params = qchem_input_params,
+        input_atoms=atoms,
+        cores=cores,
+        charge=charge,
+        spin_multiplicity=mult,
+        qchem_input_params=qchem_input_params,
     )
     atoms.calc = calc
     atoms = run_calc(atoms)
@@ -144,7 +142,7 @@ def relax_job(
     atoms
         Atoms object.
     cores
-        Number of cores to use for the Q-Chem calculation. 
+        Number of cores to use for the Q-Chem calculation.
         Effectively defaults to use all cores available on a given node, so this only needs to
         be set by the user if less than all available cores should be used.
     charge
@@ -160,7 +158,7 @@ def relax_job(
         Basis set.
         Defaults to def2-SVPD.
     scf_algorithm
-        Algorithm used to converge the SCF. 
+        Algorithm used to converge the SCF.
         Defaults to DIIS, but for particularly difficult cases, GDM should be employed instead.
     pcm_dielectric
         Dielectric constant of the optional polarizable continuum impicit solvation model.
@@ -185,20 +183,20 @@ def relax_job(
     # Reminder to self: exposing TRICs?
 
     opt_swaps = opt_swaps or {}
-    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella, "optimizer_kwargs":{}}
+    opt_defaults = {
+        "fmax": 0.01,
+        "max_steps": 1000,
+        "optimizer": Sella,
+        "optimizer_kwargs": {},
+    }
     opt_flags = opt_defaults | opt_swaps
-    if "sella.optimize" in opt_flags["optimizer"].__module__:
-        # if "internal" not in opt_flags["optimizer_kwargs"]:
-        #     opt_flags["optimizer_kwargs"]["internal"] = True
-        # if "order" not in opt_flags["optimizer_kwargs"]:
+    if opt_flags["optimizer"] == Sella:
         opt_flags["optimizer_kwargs"]["order"] = 0
 
     if pcm_dielectric is not None and smd_solvent is not None:
         raise RuntimeError("PCM and SMD cannot be employed simultaneously! Exiting...")
 
-    overwrite_inputs = {
-        "rem": {"method": xc}   
-    }
+    overwrite_inputs = {"rem": {"method": xc}}
 
     swaps = swaps or {}
     for key in swaps:
@@ -213,24 +211,20 @@ def relax_job(
         "qchem_version": 6,
         "pcm_dielectric": pcm_dielectric,
         "smd_solvent": smd_solvent,
-        "overwrite_inputs": overwrite_inputs
+        "overwrite_inputs": overwrite_inputs,
     }
 
     if scf_algorithm.lower() == "gdm":
         qchem_input_params["max_scf_cycles"] = 200
 
     calc = QChem(
-        input_atoms = atoms,
-        cores = cores,
-        charge = charge,
-        spin_multiplicity = mult,
-        qchem_input_params = qchem_input_params,
+        input_atoms=atoms,
+        cores=cores,
+        charge=charge,
+        spin_multiplicity=mult,
+        qchem_input_params=qchem_input_params,
     )
     atoms.calc = calc
-    dyn = run_ase_opt(
-        atoms,
-        **opt_flags
-    )
+    dyn = run_ase_opt(atoms, **opt_flags)
 
     return summarize_opt_run(dyn, additional_fields={"name": "Q-Chem Optimization"})
-
