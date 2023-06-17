@@ -369,6 +369,7 @@ def summarize_vib_run(
     vib_freqs_raw = vib.get_frequencies().tolist()
     vib_energies_raw = vib.get_energies().tolist()
 
+    # Convert imaginary modes to negative values for DB storage
     for i, f in enumerate(vib_freqs_raw):
         if np.imag(f) > 0:
             vib_freqs_raw[i] = -np.abs(f)
@@ -402,9 +403,16 @@ def summarize_vib_run(
         vib_freqs = vib_freqs_raw
         vib_energies = vib_energies_raw
     else:
+        # Sort by absolute value
+        vib_freqs_raw_sorted = vib_freqs_raw.copy()
+        vib_energies_raw_sorted = vib_energies_raw.copy()
+        vib_freqs_raw_sorted.sort(key=np.abs)
+        vib_energies_raw_sorted.sort(key=np.abs)
+
+        # Cut the 3N-5 or 3N-6 modes based on their absolute value
         n_modes = 3 * natoms - 5 if atoms_db["symmetry"]["linear"] else 3 * natoms - 6
-        vib_freqs = vib_freqs_raw[-n_modes:]
-        vib_energies = vib_energies_raw[-n_modes:]
+        vib_freqs = vib_freqs_raw_sorted[-n_modes:]
+        vib_energies = vib_energies_raw_sorted[-n_modes:]
 
     imag_vib_freqs = [f for f in vib_freqs if f < 0]
 
