@@ -1,10 +1,11 @@
 import os
 from pathlib import Path
-from shutil import rmtree
+from shutil import copy, rmtree
 
 import pytest
 from ase import units
 from ase.io import read
+from ase.calculators.calculator import FileIOCalculator
 from pymatgen.io.qchem.inputs import QCInput
 
 from quacc.recipes.qchem.core import relax_job, static_job, ts_job
@@ -19,6 +20,14 @@ FILE_DIR = Path(__file__).resolve().parent
 QCHEM_DIR = os.path.join(FILE_DIR, "qchem_examples")
 TEST_ATOMS = read(os.path.join(FILE_DIR, "test.xyz"))
 
+def mock_execute1(_self, **kwargs):
+    copy(os.path.join(QCHEM_DIR, "mol.qout.basic"), "mol.qout")
+    copy(os.path.join(QCHEM_DIR, "131.0.basic"), "131.0")
+
+def mock_execute2(_self, **kwargs):
+    copy(os.path.join(QCHEM_DIR, "mol.qout.intermediate"), "mol.qout")
+    copy(os.path.join(QCHEM_DIR, "131.0.intermediate"), "131.0")
+
 
 def teardown_module():
     for f in os.listdir("."):
@@ -32,7 +41,8 @@ def teardown_module():
                 rmtree(f)
 
 
-def test_static_job():
+def test_static_job(monkeypatch):
+    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
     output = static_job(TEST_ATOMS)
     assert output["atoms"] == TEST_ATOMS
     assert output["charge"] == 0
@@ -48,6 +58,7 @@ def test_static_job():
     ref_qcin = QCInput.from_file(os.path.join(QCHEM_DIR, "mol.qin.basic"))
     assert qcin.as_dict() == ref_qcin.as_dict()
 
+    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute2)
     output = static_job(
         atoms=TEST_ATOMS,
         charge=-1,
@@ -72,16 +83,15 @@ def test_static_job():
     qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(os.path.join(QCHEM_DIR, "mol.qin.intermediate"))
     assert qcin.as_dict() == ref_qcin.as_dict()
-    os.remove("mol.qin.gz")
-    os.remove("mol.qout.gz")
-    os.remove("131.0.gz")
+    monkeypatch.delattr(FileIOCalculator, "execute")
 
 
 @pytest.mark.skipif(
     sella is None,
     reason="Sella must be installed.",
 )
-def test_relax_job():
+def test_relax_job(monkeypatch):
+    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
     output = relax_job(
         atoms=TEST_ATOMS,
         basis="def2-tzvpd",
@@ -105,6 +115,7 @@ def test_relax_job():
     )
     assert qcin.as_dict() == ref_qcin.as_dict()
 
+    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute2)
     output = relax_job(
         atoms=TEST_ATOMS,
         charge=-1,
@@ -139,7 +150,8 @@ def test_relax_job():
     sella is None,
     reason="Sella must be installed.",
 )
-def test_ts_job():
+def test_ts_job(monkeypatch):
+    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
     output = ts_job(
         atoms=TEST_ATOMS,
         basis="def2-tzvpd",
@@ -163,6 +175,7 @@ def test_ts_job():
     )
     assert qcin.as_dict() == ref_qcin.as_dict()
 
+    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute2)
     output = ts_job(
         atoms=TEST_ATOMS,
         charge=-1,
