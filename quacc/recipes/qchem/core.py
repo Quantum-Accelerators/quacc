@@ -194,7 +194,7 @@ def relax_job(
         opt_flags["optimizer_kwargs"]["order"] = 0
 
     if pcm_dielectric is not None and smd_solvent is not None:
-        raise RuntimeError("PCM and SMD cannot be employed simultaneously! Exiting...")
+        raise ValueError("PCM and SMD cannot be employed simultaneously! Exiting...")
 
     overwrite_inputs = {"rem": {"method": xc}}
 

@@ -22,6 +22,7 @@ QCHEM_DIR = os.path.join(FILE_DIR, "qchem_examples")
 
 
 def teardown_module():
+    # TODO: you can probably use a similar code as in test_tblite_recipes.py
     if os.path.exists(os.path.join(os.getcwd(), "mol.qin.gz")):
         os.remove(os.path.join(os.getcwd(), "mol.qin.gz"))
     if os.path.exists(os.path.join(os.getcwd(), "mol.qout.gz")):
