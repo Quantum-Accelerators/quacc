@@ -210,13 +210,17 @@ def run_ase_opt(
     if copy_files:
         copy_decompress(copy_files, tmpdir)
 
+    print('\n\n\n\n\n\n\naaaaaaaaaaaaaa\n\n\n\n\n')
+    print(atoms.positions)
+    print('optimizer_kwargs:', optimizer_kwargs)
+
     # Define optimizer class
     dyn = optimizer(atoms, **optimizer_kwargs)
     dyn.trajectory = traj
 
     # Run calculation
     os.chdir(tmpdir)
-    dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
+    dyn.run(fmax=fmax, steps=max_steps)#, **run_kwargs)
     os.chdir(cwd)
 
     # Gzip files in tmpdir

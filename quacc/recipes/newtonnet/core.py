@@ -64,8 +64,7 @@ def static_job(
     # Define calculator
     mlcalculator = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
-        config_path=SETTINGS.NEWTONNET_CONFIG_PATH,
-        **newtonnet_kwargs,
+        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
     atoms.calc = mlcalculator
     atoms = run_calc(atoms)
@@ -114,7 +113,6 @@ def relax_job(
 
     newtonnet_kwargs = newtonnet_kwargs or {}
     optimizer_kwargs = optimizer_kwargs or {}
-
     if 'sella.optimize' in optimizer.__module__:
         optimizer_kwargs['order'] = 0
 
