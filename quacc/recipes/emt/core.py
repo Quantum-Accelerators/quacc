@@ -12,6 +12,7 @@ import covalent as ct
 from ase.atoms import Atoms
 from ase.calculators.emt import EMT
 from ase.constraints import ExpCellFilter
+from ase.optimize import FIRE
 
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
@@ -68,7 +69,7 @@ def relax_job(
         Dictionary of custom kwargs for the EMT calculator
     opt_swaps
         Dictionary of swaps for `run_ase_opt`
-            opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "FIRE"}
+            opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
 
     Returns
     -------
@@ -79,7 +80,7 @@ def relax_job(
     emt_kwargs = emt_kwargs or {}
     opt_swaps = opt_swaps or {}
 
-    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "FIRE"}
+    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
     opt_flags = opt_defaults | opt_swaps
 
     if relax_cell and not atoms.pbc.any():

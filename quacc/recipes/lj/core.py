@@ -10,6 +10,7 @@ from copy import deepcopy
 import covalent as ct
 from ase.atoms import Atoms
 from ase.calculators.lj import LennardJones
+from ase.optimize import FIRE
 
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
@@ -62,11 +63,7 @@ def relax_job(
         Dictionary of custom kwargs for the LJ calculator.
     opt_swaps
         Dictionary of swaps for run_ase_opt
-            default_options = {
-                "dump every gulp.res": True,
-                "output cif gulp.cif": True if atoms.pbc.any() else None,
-                "output xyz gulp.xyz": None if atoms.pbc.any() else True,
-            }
+            opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
 
     Returns
     -------
@@ -77,7 +74,7 @@ def relax_job(
     lj_kwargs = lj_kwargs or {}
     opt_swaps = opt_swaps or {}
 
-    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "FIRE"}
+    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
 
     opt_flags = opt_defaults | opt_swaps
 
