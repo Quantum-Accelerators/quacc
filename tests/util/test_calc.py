@@ -7,8 +7,14 @@ from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.calculators.lj import LennardJones
 from ase.io import read
+from ase.optimize import BFGS, BFGSLineSearch
 
 from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
+
+try:
+    import sella
+except ImportError:
+    sella = None
 
 CWD = os.getcwd()
 
@@ -91,18 +97,45 @@ def test_run_ase_opt():
 
     dyn = run_ase_opt(
         atoms,
-        optimizer="BFGS",
+        optimizer=BFGS,
         scratch_dir="new_test_calc2",
         gzip=False,
         copy_files=["test_file.txt"],
         optimizer_kwargs={"restart": None},
     )
+    assert dyn.trajectory.filename == "opt.traj"
     traj = read(dyn.trajectory.filename, index=":")
     assert traj[-1].calc.results is not None
 
     dyn = run_ase_opt(
         traj[-1],
-        optimizer="BFGSLineSearch",
+        optimizer=BFGSLineSearch,
+        scratch_dir="test_calc",
+        gzip=False,
+        copy_files=["test_file.txt"],
+        optimizer_kwargs={"restart": None, "trajectory": "new_test.traj"},
+    )
+    assert dyn.trajectory.filename == "new_test.traj"
+    traj = read(dyn.trajectory.filename, index=":")
+    assert traj[-1].calc.results is not None
+
+    with pytest.raises(ValueError):
+        run_ase_opt(bulk("Cu"), scratch_dir="test_calc", copy_files=["test_file.txt"])
+
+
+@pytest.mark.skipif(
+    sella is None,
+    reason="Sella must be installed.",
+)
+def test_sella():
+    from sella.optimize import Sella
+
+    atoms = bulk("Cu") * (2, 1, 1)
+    atoms[0].position += 0.1
+    atoms.calc = EMT()
+    dyn = run_ase_opt(
+        atoms,
+        optimizer=Sella,
         scratch_dir="test_calc",
         gzip=False,
         copy_files=["test_file.txt"],
@@ -110,20 +143,21 @@ def test_run_ase_opt():
     )
     traj = read(dyn.trajectory.filename, index=":")
     assert traj[-1].calc.results is not None
+    assert dyn.user_internal is False
 
-    with pytest.raises(ValueError):
-        dyn = run_ase_opt(
-            traj[-1],
-            optimizer="Fake",
-            scratch_dir="test_calc",
-            gzip=False,
-            copy_files=["test_file.txt"],
-            optimizer_kwargs={"restart": None},
-        )
-        traj = read(dyn.trajectory.filename, index=":")
-        assert traj[-1].calc.results is not None
-    with pytest.raises(ValueError):
-        run_ase_opt(bulk("Cu"), scratch_dir="test_calc", copy_files=["test_file.txt"])
+    atoms = molecule("H2O")
+    atoms.calc = LennardJones()
+    dyn = run_ase_opt(
+        atoms,
+        optimizer=Sella,
+        scratch_dir="test_calc2",
+        gzip=False,
+        copy_files=["test_file.txt"],
+        optimizer_kwargs={"restart": None},
+    )
+    traj = read(dyn.trajectory.filename, index=":")
+    assert traj[-1].calc.results is not None
+    assert dyn.user_internal is True
 
 
 def test_run_ase_vib():

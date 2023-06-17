@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import covalent as ct
 from ase.atoms import Atoms
+from ase.optimize import BFGSLineSearch
 
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.ase import summarize_opt_run
@@ -146,7 +147,7 @@ def _prerelax(
     flags = defaults | swaps
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
-    dyn = run_ase_opt(atoms, fmax=fmax, optimizer="BFGSLineSearch")
+    dyn = run_ase_opt(atoms, fmax=fmax, optimizer=BFGSLineSearch)
 
     return summarize_opt_run(dyn, additional_fields={"name": "QMOF Prerelax"})
 

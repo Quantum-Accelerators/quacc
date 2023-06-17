@@ -13,6 +13,11 @@ try:
 except ImportError:
     TBLite = None
 
+try:
+    import sella
+except ImportError:
+    sella = None
+
 
 def teardown_module():
     for f in os.listdir("."):

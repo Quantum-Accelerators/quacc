@@ -99,7 +99,7 @@ def relax_job(
     atoms: Atoms,
     gfnff: bool = True,
     library: str | None = None,
-    volume_relax: bool = True,
+    relax_cell: bool = True,
     keyword_swaps: dict | None = None,
     option_swaps: dict | None = None,
 ) -> dict:
@@ -115,7 +115,7 @@ def relax_job(
         True if (p)GFN-FF should be used; False if not.
     library
         Filename of the potential library file, if required.
-    volume_relax
+    relax_cell
         True if the volume should be relaxed; False if not.
     keyword_swaps
         Dictionary of custom keyword swap kwargs for the calculator.
@@ -132,16 +132,16 @@ def relax_job(
     option_swaps = option_swaps or {}
     input_atoms = deepcopy(atoms)
 
-    if volume_relax and not atoms.pbc.any():
+    if relax_cell and not atoms.pbc.any():
         warnings.warn("Volume relaxation requested but no PBCs found. Ignoring.")
-        volume_relax = False
+        relax_cell = False
 
     default_keywords = {
         "opti": True,
         "gfnff": True if gfnff else None,
         "gwolf": True if gfnff and atoms.pbc.any() else None,
-        "conp": True if volume_relax and atoms.pbc.any() else None,
-        "conv": None if volume_relax and atoms.pbc.any() else True,
+        "conp": True if relax_cell and atoms.pbc.any() else None,
+        "conv": None if relax_cell and atoms.pbc.any() else True,
     }
     default_options = {
         "dump every gulp.res": True,

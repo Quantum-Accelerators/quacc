@@ -63,6 +63,8 @@ class BulkToSlabsFlow:
         self.slab_relax_kwargs = self.slab_relax_kwargs or {}
         self.slab_static_kwargs = self.slab_static_kwargs or {}
         slabgen_kwargs = slabgen_kwargs or {}
+        if "relax_cell" not in self.slab_relax_kwargs:
+            self.slab_relax_kwargs["relax_cell"] = False
 
         if not self.slab_relax_electron and not self.slab_static_electron:
             raise ValueError(
