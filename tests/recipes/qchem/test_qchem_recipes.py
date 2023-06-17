@@ -31,10 +31,12 @@ def teardown_module():
                 rmtree(f)
 
 
+TEST_ATOMS = read(os.path.join(FILE_DIR, "test.xyz"))
+
+
 def test_static_job():
-    atoms = read(os.path.join(FILE_DIR, "test.xyz"))
-    output = static_job(atoms)
-    assert output["atoms"] == atoms
+    output = static_job(TEST_ATOMS)
+    assert output["atoms"] == TEST_ATOMS
     assert output["charge"] == 0
     assert output["spin_multiplicity"] == 1
     assert output["formula_alphabetical"] == "C4 H4 O6"
@@ -48,16 +50,15 @@ def test_static_job():
     ref_qcin = QCInput.from_file(os.path.join(QCHEM_DIR, "mol.qin.basic"))
     assert qcin.as_dict() == ref_qcin.as_dict()
 
-    atoms = read(os.path.join(FILE_DIR, "test.xyz"))
     output = static_job(
-        atoms=atoms,
+        atoms=TEST_ATOMS,
         charge=-1,
         xc="b97mv",
         basis="def2-svpd",
         pcm_dielectric="3.0",
     )
 
-    assert output["atoms"] == atoms
+    assert output["atoms"] == TEST_ATOMS
     # next three lines should be able to be uncommented once charge is correctly passed through
     # assert output["charge"] == -1
     # assert output["spin_multiplicity"] == 2
@@ -83,10 +84,9 @@ def test_static_job():
     reason="Sella must be installed.",
 )
 def test_relax_job():
-    atoms = read(os.path.join(FILE_DIR, "test.xyz"))
-    output = relax_job(atoms=atoms, basis="def2-tzvpd", opt_swaps={"max_steps": 1})
+    output = relax_job(atoms=TEST_ATOMS, basis="def2-tzvpd", opt_swaps={"max_steps": 1})
 
-    assert output["atoms"] != atoms
+    assert output["atoms"] != TEST_ATOMS
     assert output["charge"] == 0
     assert output["spin_multiplicity"] == 1
     assert output["formula_alphabetical"] == "C4 H4 O6"
@@ -102,16 +102,15 @@ def test_relax_job():
     )
     assert qcin.as_dict() == ref_qcin.as_dict()
 
-    atoms = read(os.path.join(FILE_DIR, "test.xyz"))
     output = relax_job(
-        atoms=atoms,
+        atoms=TEST_ATOMS,
         charge=-1,
         xc="b97mv",
         pcm_dielectric="3.0",
         opt_swaps={"max_steps": 1},
     )
 
-    assert output["atoms"] != atoms
+    assert output["atoms"] != TEST_ATOMS
     # next three lines should be able to be uncommented once charge is correctly passed through
     # assert output["charge"] == -1
     # assert output["spin_multiplicity"] == 2
@@ -137,14 +136,13 @@ def test_relax_job():
     reason="Sella must be installed.",
 )
 def test_relax_job_as_TSopt():
-    atoms = read(os.path.join(FILE_DIR, "test.xyz"))
     output = relax_job(
-        atoms=atoms,
+        atoms=TEST_ATOMS,
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1, "optimizer_kwargs": {"order": 1}},
     )
 
-    assert output["atoms"] != atoms
+    assert output["atoms"] != TEST_ATOMS
     assert output["charge"] == 0
     assert output["spin_multiplicity"] == 1
     assert output["formula_alphabetical"] == "C4 H4 O6"
@@ -160,16 +158,15 @@ def test_relax_job_as_TSopt():
     )
     assert qcin.as_dict() == ref_qcin.as_dict()
 
-    atoms = read(os.path.join(FILE_DIR, "test.xyz"))
     output = relax_job(
-        atoms=atoms,
+        atoms=TEST_ATOMS,
         charge=-1,
         xc="b97mv",
         pcm_dielectric="3.0",
         opt_swaps={"max_steps": 1, "optimizer_kwargs": {"order": 1}},
     )
 
-    assert output["atoms"] != atoms
+    assert output["atoms"] != TEST_ATOMS
     # next three lines should be able to be uncommented once charge is correctly passed through
     # assert output["charge"] == -1
     # assert output["spin_multiplicity"] == 2
