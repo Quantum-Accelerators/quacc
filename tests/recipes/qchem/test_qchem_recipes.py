@@ -7,12 +7,11 @@ from ase import units
 from ase.io import read
 from ase.calculators.calculator import FileIOCalculator
 from ase.calculators.lj import LennardJones
-from ase.atoms import Atoms
 from pymatgen.io.qchem.inputs import QCInput
 from pymatgen.io.ase import AseAtomsAdaptor
 from quacc.calculators.qchem import QChem
 
-from quacc.recipes.qchem.core import static_job, relax_job, ts_job, irc_job
+from quacc.recipes.qchem.core import static_job, relax_job, irc_job#, ts_job
 
 try:
     import sella
@@ -42,6 +41,8 @@ def mock_execute3(self, **kwargs):
     print(self.results)
 
 def mock_read(self, **kwargs):
+    if self.results is None:
+        raise RuntimeError("Results should not be None here! Exiting...")
     pass
 
 
@@ -159,63 +160,62 @@ def test_relax_job(monkeypatch):
     assert qcin.as_dict() == ref_qcin.as_dict()
 
 
-""" Commenting this out until we have a dictionary approx equal
-@pytest.mark.skipif(
-    sella is None,
-    reason="Sella must be installed.",
-)
-def test_ts_job(monkeypatch):
-    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
-    output = ts_job(
-        atoms=TEST_ATOMS,
-        basis="def2-tzvpd",
-        opt_swaps={"max_steps": 1},
-        check_convergence=False,
-    )
+# Commenting this out until we have a dictionary approx equal
+# @pytest.mark.skipif(
+#     sella is None,
+#     reason="Sella must be installed.",
+# )
+# def test_ts_job(monkeypatch):
+#     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
+#     output = ts_job(
+#         atoms=TEST_ATOMS,
+#         basis="def2-tzvpd",
+#         opt_swaps={"max_steps": 1},
+#         check_convergence=False,
+#     )
 
-    assert output["atoms"] != TEST_ATOMS
-    assert output["charge"] == 0
-    assert output["spin_multiplicity"] == 1
-    assert output["formula_alphabetical"] == "C4 H4 O6"
-    assert output["nelectrons"] == 76
-    assert output["parameters"]["charge"] is None
-    assert output["parameters"]["spin_multiplicity"] is None
-    assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
-    assert output["results"]["forces"][0][0] == pytest.approx(-1.3826330655069403)
+#     assert output["atoms"] != TEST_ATOMS
+#     assert output["charge"] == 0
+#     assert output["spin_multiplicity"] == 1
+#     assert output["formula_alphabetical"] == "C4 H4 O6"
+#     assert output["nelectrons"] == 76
+#     assert output["parameters"]["charge"] is None
+#     assert output["parameters"]["spin_multiplicity"] is None
+#     assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
+#     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826330655069403)
 
-    qcin = QCInput.from_file("mol.qin.gz")
-    ref_qcin = QCInput.from_file(
-        os.path.join(QCHEM_DIR, "mol.qin.basic.sella_TSopt_iter1")
-    )
-    assert qcin.as_dict() == ref_qcin.as_dict()
+#     qcin = QCInput.from_file("mol.qin.gz")
+#     ref_qcin = QCInput.from_file(
+#         os.path.join(QCHEM_DIR, "mol.qin.basic.sella_TSopt_iter1")
+#     )
+#     assert qcin.as_dict() == ref_qcin.as_dict()
 
-    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute2)
-    output = ts_job(
-        atoms=TEST_ATOMS,
-        charge=-1,
-        xc="b97mv",
-        pcm_dielectric="3.0",
-        opt_swaps={"max_steps": 1},
-        check_convergence=False,
-    )
+#     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute2)
+#     output = ts_job(
+#         atoms=TEST_ATOMS,
+#         charge=-1,
+#         xc="b97mv",
+#         pcm_dielectric="3.0",
+#         opt_swaps={"max_steps": 1},
+#         check_convergence=False,
+#     )
 
-    assert output["atoms"] != TEST_ATOMS
-    # next three lines should be able to be uncommented once charge is correctly passed through
-    # assert output["charge"] == -1
-    # assert output["spin_multiplicity"] == 2
-    # assert output["nelectrons"] == 77
-    assert output["formula_alphabetical"] == "C4 H4 O6"
-    assert output["parameters"]["charge"] == -1
-    assert output["parameters"]["spin_multiplicity"] is None
-    assert output["results"]["energy"] == pytest.approx(-605.6859554025 * units.Hartree)
-    assert output["results"]["forces"][0][0] == pytest.approx(-0.6955571014353796)
+#     assert output["atoms"] != TEST_ATOMS
+#     # next three lines should be able to be uncommented once charge is correctly passed through
+#     # assert output["charge"] == -1
+#     # assert output["spin_multiplicity"] == 2
+#     # assert output["nelectrons"] == 77
+#     assert output["formula_alphabetical"] == "C4 H4 O6"
+#     assert output["parameters"]["charge"] == -1
+#     assert output["parameters"]["spin_multiplicity"] is None
+#     assert output["results"]["energy"] == pytest.approx(-605.6859554025 * units.Hartree)
+#     assert output["results"]["forces"][0][0] == pytest.approx(-0.6955571014353796)
 
-    qcin = QCInput.from_file("mol.qin.gz")
-    ref_qcin = QCInput.from_file(
-        os.path.join(QCHEM_DIR, "mol.qin.intermediate.sella_TSopt_iter1")
-    )
-    assert qcin.as_dict() == ref_qcin.as_dict()
-"""
+#     qcin = QCInput.from_file("mol.qin.gz")
+#     ref_qcin = QCInput.from_file(
+#         os.path.join(QCHEM_DIR, "mol.qin.intermediate.sella_TSopt_iter1")
+#     )
+#     assert qcin.as_dict() == ref_qcin.as_dict()
 
 
 @pytest.mark.skipif(
@@ -241,4 +241,24 @@ def test_irc_job(monkeypatch):
     assert output["nelectrons"] == 76
     assert output["parameters"]["charge"] is None
     assert output["parameters"]["spin_multiplicity"] is None
+
+    qcin = QCInput.from_file("mol.qin.gz")
+    ref_qcin = QCInput.from_file(
+        os.path.join(QCHEM_DIR, "mol.qin.basic.sella_IRC_forward_iter1")
+    )
+    assert qcin.as_dict() == ref_qcin.as_dict()
+
+    output = irc_job(
+        atoms=TEST_ATOMS,
+        direction="reverse",
+        basis="def2-tzvpd",
+        opt_swaps={"max_steps": 1},
+        check_convergence=False,
+    )
+
+    qcin = QCInput.from_file("mol.qin.gz")
+    ref_qcin = QCInput.from_file(
+        os.path.join(QCHEM_DIR, "mol.qin.basic.sella_IRC_reverse_iter1")
+    )
+    assert qcin.as_dict() == ref_qcin.as_dict()
 
