@@ -19,6 +19,7 @@ from quacc.schemas.ase import (
 from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
 from quacc.util.thermo import ideal_gas
 from quacc.calculators.qchem import QChem
+from sella import Sella
 
 
 @ct.electron
@@ -184,13 +185,13 @@ def relax_job(
     # Reminder to self: exposing TRICs?
 
     opt_swaps = opt_swaps or {}
-    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella", "optimizer_kwargs":{}}
+    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella, "optimizer_kwargs":{}}
     opt_flags = opt_defaults | opt_swaps
-    if opt_flags["optimizer"].lower() == "sella":
-        if "internal" not in opt_flags["optimizer_kwargs"]:
-            opt_flags["optimizer_kwargs"]["internal"] = True
-        if "order" not in opt_flags["optimizer_kwargs"]:
-            opt_flags["optimizer_kwargs"]["order"] = 0
+    if "sella.optimize" in opt_flags["optimizer"].__module__:
+        # if "internal" not in opt_flags["optimizer_kwargs"]:
+        #     opt_flags["optimizer_kwargs"]["internal"] = True
+        # if "order" not in opt_flags["optimizer_kwargs"]:
+        opt_flags["optimizer_kwargs"]["order"] = 0
 
     if pcm_dielectric is not None and smd_solvent is not None:
         raise RuntimeError("PCM and SMD cannot be employed simultaneously! Exiting...")
