@@ -113,6 +113,9 @@ def relax_job(
     newtonnet_kwargs = newtonnet_kwargs or {}
     optimizer_kwargs = optimizer_kwargs or {}
 
+    if optimizer == 'sella':
+        optimizer_kwargs['order'] = 0
+
     mlcalculator = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
         settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
