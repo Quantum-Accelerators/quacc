@@ -19,6 +19,7 @@ def ideal_gas(
     """
     Calculate thermodynamic properties for a molecule from a given vibrational analysis.
     This is for free gases only and will not be valid for solids or adsorbates on surfaces.
+    Any imaginary vibrational modes will simply be ignored.
 
     Parameters
     ----------
@@ -40,17 +41,13 @@ def ideal_gas(
     # Switch off PBC since this is only for molecules
     atoms.set_pbc(False)
 
-    # Ensure all imaginary modes are actually negatives
-    for i, f in enumerate(vib_freqs):
-        if isinstance(f, complex) and np.imag(f) != 0:
-            vib_freqs[i] = complex(0 - f * 1j)
-
-    vib_energies = [f * units.invcm for f in vib_freqs]
-    real_vib_energies = np.real(vib_energies)
-
+    # Ensure all negative modes are made complex
     for i, f in enumerate(vib_freqs):
         if not isinstance(f, complex) and f < 0:
             vib_freqs[i] = complex(0 - f * 1j)
+
+    # Convert vibrational frequencies to energies
+    vib_energies = [f * units.invcm for f in vib_freqs]
 
     # Get the spin from the Atoms object.
     if spin_multiplicity:
@@ -85,7 +82,7 @@ def ideal_gas(
         geometry = "nonlinear"
 
     return IdealGasThermo(
-        real_vib_energies,
+        vib_energies,
         geometry,
         potentialenergy=energy,
         atoms=atoms,
