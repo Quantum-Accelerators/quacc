@@ -54,7 +54,7 @@ def run_custodian(
     from custodian.qchem.handlers import QChemErrorHandler
     from custodian.qchem.jobs import QCJob
 
-    qchem_cores = qchem_cores or multiprocessing.cpu_count(),
+    qchem_cores = qchem_cores or multiprocessing.cpu_count()
 
     # Error handlers for Q-Chem
     if qchem_use_error_handlers:

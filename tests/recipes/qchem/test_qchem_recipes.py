@@ -64,7 +64,9 @@ def test_static_job():
     assert output["formula_alphabetical"] == "C4 H4 O6"
     assert output["parameters"]["charge"] == -1
     assert output["parameters"]["spin_multiplicity"] is None
-    assert output["results"]["energy"] == pytest.approx(-605.6859554025 * units.Hartree) # -16481.554341995
+    assert output["results"]["energy"] == pytest.approx(
+        -605.6859554025 * units.Hartree
+    )  # -16481.554341995
     assert output["results"]["forces"][0][0] == pytest.approx(-0.6955571014353796)
 
     qcin = QCInput.from_file("mol.qin.gz")
@@ -80,7 +82,12 @@ def test_static_job():
     reason="Sella must be installed.",
 )
 def test_relax_job():
-    output = relax_job(atoms=TEST_ATOMS, basis="def2-tzvpd", opt_swaps={"max_steps": 1}, check_convergence=False)
+    output = relax_job(
+        atoms=TEST_ATOMS,
+        basis="def2-tzvpd",
+        opt_swaps={"max_steps": 1},
+        check_convergence=False,
+    )
 
     assert output["atoms"] != TEST_ATOMS
     assert output["charge"] == 0

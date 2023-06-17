@@ -11,10 +11,7 @@ from ase.atoms import Atoms
 from monty.dev import requires
 
 from quacc.calculators.qchem import QChem
-from quacc.schemas.ase import (
-    summarize_opt_run,
-    summarize_run,
-)
+from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
 
 try:
@@ -233,7 +230,11 @@ def relax_job(
     atoms.calc = calc
     dyn = run_ase_opt(atoms, **opt_flags)
 
-    return summarize_opt_run(dyn, check_convergence=check_convergence, additional_fields={"name": "Q-Chem Optimization"})
+    return summarize_opt_run(
+        dyn,
+        check_convergence=check_convergence,
+        additional_fields={"name": "Q-Chem Optimization"},
+    )
 
 
 @ct.electron
@@ -348,4 +349,8 @@ def ts_job(
     atoms.calc = calc
     dyn = run_ase_opt(atoms, **opt_flags)
 
-    return summarize_opt_run(dyn, check_convergence=check_convergence, additional_fields={"name": "Q-Chem Optimization"})
+    return summarize_opt_run(
+        dyn,
+        check_convergence=check_convergence,
+        additional_fields={"name": "Q-Chem Optimization"},
+    )

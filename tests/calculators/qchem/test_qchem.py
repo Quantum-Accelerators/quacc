@@ -1,9 +1,11 @@
 import os
-import pytest
 from pathlib import Path
+
+import pytest
 from ase import units
 from ase.io import read
 from pymatgen.io.qchem.inputs import QCInput
+
 from quacc.calculators.qchem import QChem
 
 FILE_DIR = Path(__file__).resolve().parent
