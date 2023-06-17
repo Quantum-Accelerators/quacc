@@ -16,7 +16,7 @@ QCHEM_DIR = os.path.join(FILE_DIR, "qchem_examples")
 # be cd'd into. So, tl;dr --- you only ever are dealing with the
 # current working directory
 def mock_execute(_self, **kwargs):
-    if not os.path.exists(os.path.join(FILE_DIR, "mol.qout.gz")):
+    if not os.path.exists(os.path.join(FILE_DIR, "mol.qout.gz")) and not os.path.exists(os.path.join(FILE_DIR, "mol.qout")):
         copy(os.path.join(QCHEM_DIR, "mol.qout.basic"), "mol.qout")
         copy(os.path.join(QCHEM_DIR, "131.0.basic"), "131.0")
     else:
