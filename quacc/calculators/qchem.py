@@ -1,24 +1,19 @@
 """
-A wrapper around ASE's Q-Chem calculator that makes it better suited for high-throughput DFT.
+A Q-Chem calculator built on Pymatgen and Custodian functionality
 """
 from __future__ import annotations
 
 import inspect
 import os
 import struct
-import warnings
 
-import numpy as np
 from ase import Atoms, units
 from ase.calculators.calculator import FileIOCalculator
 from monty.io import zopen
-from pymatgen.core import Molecule
 from pymatgen.io.ase import AseAtomsAdaptor
-from pymatgen.io.qchem.inputs import QCInput
 from pymatgen.io.qchem.outputs import QCOutput
 from pymatgen.io.qchem.sets import ForceSet
 
-from quacc import SETTINGS
 from quacc.custodian import qchem as custodian_qchem
 
 

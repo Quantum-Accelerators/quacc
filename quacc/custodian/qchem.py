@@ -22,7 +22,7 @@ except ImportError:
     "Openbabel must be installed. Try conda install -c conda-forge openbabel",
 )
 def run_custodian(
-    qchem_cores: int = multiprocessing.cpu_count(),
+    qchem_cores: int | None = None,
     qchem_cmd: str = SETTINGS.QCHEM_CMD,
     qchem_local_scratch: str = SETTINGS.QCHEM_LOCAL_SCRATCH,
     qchem_use_error_handlers: bool = SETTINGS.QCHEM_USE_ERROR_HANDLERS,
@@ -53,6 +53,8 @@ def run_custodian(
 
     from custodian.qchem.handlers import QChemErrorHandler
     from custodian.qchem.jobs import QCJob
+
+    qchem_cores = qchem_cores or multiprocessing.cpu_count(),
 
     # Error handlers for Q-Chem
     if qchem_use_error_handlers:

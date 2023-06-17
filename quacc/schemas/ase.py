@@ -239,10 +239,8 @@ def summarize_opt_run(
         raise FileNotFoundError("No trajectory file found.")
 
     # Check convergence
-    # NOTE: I commented these two lines out because I don't think we want to raise a ValueError
-    # if the optimization doesn't converge. The calculation still ran without error.
-    # if check_convergence and not dyn.converged():
-    #     raise ValueError("Optimization did not converge.")
+    if check_convergence and not dyn.converged():
+        raise ValueError("Optimization did not converge.")
 
     traj = read(dyn.trajectory.filename, index=":")
     initial_atoms = traj[0]

@@ -9,17 +9,18 @@ from typing import Literal
 import covalent as ct
 from ase.atoms import Atoms
 from monty.dev import requires
-from sella import Sella
 
 from quacc.calculators.qchem import QChem
 from quacc.schemas.ase import (
     summarize_opt_run,
     summarize_run,
-    summarize_thermo_run,
-    summarize_vib_run,
 )
-from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
-from quacc.util.thermo import ideal_gas
+from quacc.util.calc import run_ase_opt, run_calc
+
+try:
+    from sella import Sella
+except ImportError:
+    sella = None
 
 
 @ct.electron
@@ -121,6 +122,10 @@ def static_job(
 
 
 @ct.electron
+@requires(
+    sella,
+    "Sella must be installed. pip install sella",
+)
 def relax_job(
     atoms: Atoms,
     cores: int | None = None,
@@ -133,6 +138,7 @@ def relax_job(
     smd_solvent: str | None = None,
     swaps: dict | None = None,
     opt_swaps: dict | None = None,
+    check_convergence: bool = True,
 ) -> dict:
     """
     Optimize aka "relax" a molecular structure.
@@ -227,10 +233,14 @@ def relax_job(
     atoms.calc = calc
     dyn = run_ase_opt(atoms, **opt_flags)
 
-    return summarize_opt_run(dyn, additional_fields={"name": "Q-Chem Optimization"})
+    return summarize_opt_run(dyn, check_convergence=check_convergence, additional_fields={"name": "Q-Chem Optimization"})
 
 
 @ct.electron
+@requires(
+    sella,
+    "Sella must be installed. pip install sella",
+)
 def ts_job(
     atoms: Atoms,
     cores: int | None = None,
@@ -243,6 +253,7 @@ def ts_job(
     smd_solvent: str | None = None,
     swaps: dict | None = None,
     opt_swaps: dict | None = None,
+    check_convergence: bool = True,
 ) -> dict:
     """
     TS optimize a molecular structure.
@@ -337,4 +348,4 @@ def ts_job(
     atoms.calc = calc
     dyn = run_ase_opt(atoms, **opt_flags)
 
-    return summarize_opt_run(dyn, additional_fields={"name": "Q-Chem Optimization"})
+    return summarize_opt_run(dyn, check_convergence=check_convergence, additional_fields={"name": "Q-Chem Optimization"})

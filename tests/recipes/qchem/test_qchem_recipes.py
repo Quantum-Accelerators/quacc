@@ -17,13 +17,9 @@ except ImportError:
 
 FILE_DIR = Path(__file__).resolve().parent
 QCHEM_DIR = os.path.join(FILE_DIR, "qchem_examples")
-
-# NOTE to Sam: I just read it once up top for convenience
-# also I used ASE to read it instead of Pymatgen ;)
 TEST_ATOMS = read(os.path.join(FILE_DIR, "test.xyz"))
 
 
-# NOTE to Sam: This is much cleaner than what you were doing
 def teardown_module():
     for f in os.listdir("."):
         if ".log" in f or ".traj" in f or ".gz" in f:
@@ -43,8 +39,8 @@ def test_static_job():
     assert output["spin_multiplicity"] == 1
     assert output["formula_alphabetical"] == "C4 H4 O6"
     assert output["nelectrons"] == 76
-    assert output["parameters"]["charge"] == None
-    assert output["parameters"]["spin_multiplicity"] == None
+    assert output["parameters"]["charge"] is None
+    assert output["parameters"]["spin_multiplicity"] is None
     assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826330655069403)
 
@@ -67,7 +63,7 @@ def test_static_job():
     # assert output["nelectrons"] == 77
     assert output["formula_alphabetical"] == "C4 H4 O6"
     assert output["parameters"]["charge"] == -1
-    assert output["parameters"]["spin_multiplicity"] == None
+    assert output["parameters"]["spin_multiplicity"] is None
     assert output["results"]["energy"] == pytest.approx(-605.6859554025 * units.Hartree) # -16481.554341995
     assert output["results"]["forces"][0][0] == pytest.approx(-0.6955571014353796)
 
@@ -84,15 +80,15 @@ def test_static_job():
     reason="Sella must be installed.",
 )
 def test_relax_job():
-    output = relax_job(atoms=TEST_ATOMS, basis="def2-tzvpd", opt_swaps={"max_steps": 1})
+    output = relax_job(atoms=TEST_ATOMS, basis="def2-tzvpd", opt_swaps={"max_steps": 1}, check_convergence=False)
 
     assert output["atoms"] != TEST_ATOMS
     assert output["charge"] == 0
     assert output["spin_multiplicity"] == 1
     assert output["formula_alphabetical"] == "C4 H4 O6"
     assert output["nelectrons"] == 76
-    assert output["parameters"]["charge"] == None
-    assert output["parameters"]["spin_multiplicity"] == None
+    assert output["parameters"]["charge"] is None
+    assert output["parameters"]["spin_multiplicity"] is None
     assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826330655069403)
 
@@ -108,6 +104,7 @@ def test_relax_job():
         xc="b97mv",
         pcm_dielectric="3.0",
         opt_swaps={"max_steps": 1},
+        check_convergence=False,
     )
 
     assert output["atoms"] != TEST_ATOMS
@@ -117,7 +114,7 @@ def test_relax_job():
     # assert output["nelectrons"] == 77
     assert output["formula_alphabetical"] == "C4 H4 O6"
     assert output["parameters"]["charge"] == -1
-    assert output["parameters"]["spin_multiplicity"] == None
+    assert output["parameters"]["spin_multiplicity"] is None
     assert output["results"]["energy"] == pytest.approx(-605.6859554025 * units.Hartree)
     assert output["results"]["forces"][0][0] == pytest.approx(-0.6955571014353796)
 
@@ -140,6 +137,7 @@ def test_ts_job():
         atoms=TEST_ATOMS,
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
+        check_convergence=False,
     )
 
     assert output["atoms"] != TEST_ATOMS
@@ -147,8 +145,8 @@ def test_ts_job():
     assert output["spin_multiplicity"] == 1
     assert output["formula_alphabetical"] == "C4 H4 O6"
     assert output["nelectrons"] == 76
-    assert output["parameters"]["charge"] == None
-    assert output["parameters"]["spin_multiplicity"] == None
+    assert output["parameters"]["charge"] is None
+    assert output["parameters"]["spin_multiplicity"] is None
     assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826330655069403)
 
@@ -164,6 +162,7 @@ def test_ts_job():
         xc="b97mv",
         pcm_dielectric="3.0",
         opt_swaps={"max_steps": 1},
+        check_convergence=False,
     )
 
     assert output["atoms"] != TEST_ATOMS
@@ -173,7 +172,7 @@ def test_ts_job():
     # assert output["nelectrons"] == 77
     assert output["formula_alphabetical"] == "C4 H4 O6"
     assert output["parameters"]["charge"] == -1
-    assert output["parameters"]["spin_multiplicity"] == None
+    assert output["parameters"]["spin_multiplicity"] is None
     assert output["results"]["energy"] == pytest.approx(-605.6859554025 * units.Hartree)
     assert output["results"]["forces"][0][0] == pytest.approx(-0.6955571014353796)
 

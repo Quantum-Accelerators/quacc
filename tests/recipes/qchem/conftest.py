@@ -1,8 +1,7 @@
 import os
 from pathlib import Path
-from shutil import copy, rmtree
+from shutil import copy
 
-import numpy as np
 import pytest
 from ase.calculators.calculator import FileIOCalculator
 
@@ -16,7 +15,7 @@ QCHEM_DIR = os.path.join(FILE_DIR, "qchem_examples")
 # of the tmp directory and into the base directory, where you will again
 # be cd'd into. So, tl;dr --- you only ever are dealing with the
 # current working directory
-def mock_execute(self, **kwargs):
+def mock_execute(_self, **kwargs):
     if not os.path.exists(os.path.join(FILE_DIR, "mol.qout.gz")):
         copy(os.path.join(QCHEM_DIR, "mol.qout.basic"), "mol.qout")
         copy(os.path.join(QCHEM_DIR, "131.0.basic"), "131.0")
