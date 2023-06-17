@@ -10,6 +10,8 @@ from ase.atoms import Atoms
 from ase.vibrations.data import VibrationsData
 from ase.units import _c, fs
 from monty.dev import requires
+from sella import Sella
+from ase.optimize.optimize import Optimizer
 from quacc.schemas.ase import (
     summarize_opt_run,
     summarize_run,
@@ -82,7 +84,7 @@ def relax_job(
     atoms: Atoms,
     fmax: float = 0.01,
     max_steps: int = 1000,
-    optimizer: str = "sella",
+    optimizer: Optimizer = Sella,
     newtonnet_kwargs: dict | None = None,
     optimizer_kwargs: dict | None = None,
 ) -> dict:
@@ -113,7 +115,7 @@ def relax_job(
     newtonnet_kwargs = newtonnet_kwargs or {}
     optimizer_kwargs = optimizer_kwargs or {}
 
-    if optimizer == 'sella':
+    if 'sella.optimize' in optimizer.__module__:
         optimizer_kwargs['order'] = 0
 
     mlcalculator = NewtonNet(
