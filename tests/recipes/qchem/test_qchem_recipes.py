@@ -55,6 +55,7 @@ def test_static_job():
     assert output["results"]["energy"] == -606.1616819641 * units.Hartree
     assert output["results"]["forces"][0][0] == -1.3826330655069403
 
+    raise ValueError(os.listdir(FILE_DIR))
     qcin = QCInput.from_file(os.path.join(FILE_DIR, "mol.qin.gz"))
     ref_qcin = QCInput.from_file(os.path.join(QCHEM_DIR, "mol.qin.basic"))
     assert qcin.as_dict() == ref_qcin.as_dict()
