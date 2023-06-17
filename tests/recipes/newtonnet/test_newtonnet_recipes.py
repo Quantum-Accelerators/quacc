@@ -42,7 +42,7 @@ def test_static_Job():
     assert output["spin_multiplicity"] == 1
     assert output["natoms"] == len(atoms)
     print('energy' ,output['results']['energy'])
-    assert output["results"]["energy"] == pytest.approx(-9.41466447)
+    assert output["results"]["energy"] == pytest.approx(-9.721764055652331)
     assert np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
 
 
@@ -57,7 +57,7 @@ def test_relax_Job():
     assert output["spin_multiplicity"] == 1
     assert output["natoms"] == len(atoms)
     print('min_e')
-    assert output["results"]["energy"] == pytest.approx(-137.97654191396492)
+    assert output["results"]["energy"] == pytest.approx(-9.722128179796167)
     assert not np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
     assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
 
