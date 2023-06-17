@@ -1,12 +1,10 @@
 import os
 from pathlib import Path
-from shutil import copy, rmtree
+from shutil import rmtree
 
 import pytest
-from ase import Atoms, units
-from ase.build import molecule
-from pymatgen.core import Molecule
-from pymatgen.io.ase import AseAtomsAdaptor
+from ase import units
+from ase.io import read
 from pymatgen.io.qchem.inputs import QCInput
 
 from quacc.recipes.qchem.core import relax_job, static_job
@@ -22,17 +20,9 @@ QCHEM_DIR = os.path.join(FILE_DIR, "qchem_examples")
 
 
 def teardown_module():
-    # TODO: you can probably use a similar code as in test_tblite_recipes.py
-    if os.path.exists(os.path.join(os.getcwd(), "mol.qin.gz")):
-        os.remove(os.path.join(os.getcwd(), "mol.qin.gz"))
-    if os.path.exists(os.path.join(os.getcwd(), "mol.qout.gz")):
-        os.remove(os.path.join(os.getcwd(), "mol.qout.gz"))
-    if os.path.exists(os.path.join(os.getcwd(), "131.0.gz")):
-        os.remove(os.path.join(os.getcwd(), "131.0.gz"))
-    if os.path.exists(os.path.join(os.getcwd(), "__pycache__")):
-        rmtree(os.path.join(os.getcwd(), "__pycache__"))
-    if os.path.exists(os.path.join(os.getcwd(), "opt.traj")):
-        os.remove(os.path.join(os.getcwd(), "opt.traj"))
+    for f in os.listdir("."):
+        if ".log" in f or ".traj" in f or ".gz" in f:
+            os.remove(f)
     for f in os.listdir(os.getcwd()):
         if "quacc-tmp" in f or f == "tmp_dir":
             if os.path.islink(f):
@@ -42,8 +32,7 @@ def teardown_module():
 
 
 def test_static_job():
-    mol = Molecule.from_file(os.path.join(FILE_DIR, "test.xyz"))
-    atoms = AseAtomsAdaptor.get_atoms(mol)
+    atoms = read(os.path.join(FILE_DIR, "test.xyz"))
     output = static_job(atoms)
     assert output["atoms"] == atoms
     assert output["charge"] == 0
@@ -55,13 +44,11 @@ def test_static_job():
     assert output["results"]["energy"] == -606.1616819641 * units.Hartree
     assert output["results"]["forces"][0][0] == -1.3826330655069403
 
-    raise ValueError(os.listdir(FILE_DIR))
-    qcin = QCInput.from_file(os.path.join(FILE_DIR, "mol.qin.gz"))
+    qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(os.path.join(QCHEM_DIR, "mol.qin.basic"))
     assert qcin.as_dict() == ref_qcin.as_dict()
 
-    mol = Molecule.from_file(os.path.join(FILE_DIR, "test.xyz"))
-    atoms = AseAtomsAdaptor.get_atoms(mol)
+    atoms = read(os.path.join(FILE_DIR, "test.xyz"))
     output = static_job(
         atoms=atoms,
         charge=-1,
@@ -83,12 +70,12 @@ def test_static_job():
     )  # -16481.554341995
     assert output["results"]["forces"][0][0] == -0.6955571014353796
 
-    qcin = QCInput.from_file(os.path.join(FILE_DIR, "mol.qin.gz"))
+    qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(os.path.join(QCHEM_DIR, "mol.qin.intermediate"))
     assert qcin.as_dict() == ref_qcin.as_dict()
-    os.remove(os.path.join(os.getcwd(), "mol.qin.gz"))
-    os.remove(os.path.join(os.getcwd(), "mol.qout.gz"))
-    os.remove(os.path.join(os.getcwd(), "131.0.gz"))
+    os.remove("mol.qin.gz")
+    os.remove("mol.qout.gz")
+    os.remove("131.0.gz")
 
 
 @pytest.mark.skipif(
@@ -96,8 +83,7 @@ def test_static_job():
     reason="Sella must be installed.",
 )
 def test_relax_job():
-    mol = Molecule.from_file(os.path.join(FILE_DIR, "test.xyz"))
-    atoms = AseAtomsAdaptor.get_atoms(mol)
+    atoms = read(os.path.join(FILE_DIR, "test.xyz"))
     output = relax_job(atoms=atoms, basis="def2-tzvpd", opt_swaps={"max_steps": 1})
 
     assert output["atoms"] != atoms
@@ -110,14 +96,13 @@ def test_relax_job():
     assert output["results"]["energy"] == -606.1616819641 * units.Hartree
     assert output["results"]["forces"][0][0] == -1.3826330655069403
 
-    qcin = QCInput.from_file(os.path.join(FILE_DIR, "mol.qin.gz"))
+    qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(
         os.path.join(QCHEM_DIR, "mol.qin.basic.sella_opt_iter1")
     )
     assert qcin.as_dict() == ref_qcin.as_dict()
 
-    mol = Molecule.from_file(os.path.join(FILE_DIR, "test.xyz"))
-    atoms = AseAtomsAdaptor.get_atoms(mol)
+    atoms = read(os.path.join(FILE_DIR, "test.xyz"))
     output = relax_job(
         atoms=atoms,
         charge=-1,
@@ -137,14 +122,14 @@ def test_relax_job():
     assert output["results"]["energy"] == -605.6859554025 * units.Hartree
     assert output["results"]["forces"][0][0] == -0.6955571014353796
 
-    qcin = QCInput.from_file(os.path.join(FILE_DIR, "mol.qin.gz"))
+    qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(
         os.path.join(QCHEM_DIR, "mol.qin.intermediate.sella_opt_iter1")
     )
     assert qcin.as_dict() == ref_qcin.as_dict()
-    os.remove(os.path.join(os.getcwd(), "mol.qin.gz"))
-    os.remove(os.path.join(os.getcwd(), "mol.qout.gz"))
-    os.remove(os.path.join(os.getcwd(), "131.0.gz"))
+    os.remove("mol.qin.gz")
+    os.remove("mol.qout.gz")
+    os.remove("131.0.gz")
 
 
 @pytest.mark.skipif(
@@ -152,8 +137,7 @@ def test_relax_job():
     reason="Sella must be installed.",
 )
 def test_relax_job_as_TSopt():
-    mol = Molecule.from_file(os.path.join(FILE_DIR, "test.xyz"))
-    atoms = AseAtomsAdaptor.get_atoms(mol)
+    atoms = read(os.path.join(FILE_DIR, "test.xyz"))
     output = relax_job(
         atoms=atoms,
         basis="def2-tzvpd",
@@ -170,14 +154,13 @@ def test_relax_job_as_TSopt():
     assert output["results"]["energy"] == -606.1616819641 * units.Hartree
     assert output["results"]["forces"][0][0] == -1.3826330655069403
 
-    qcin = QCInput.from_file(os.path.join(FILE_DIR, "mol.qin.gz"))
+    qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(
         os.path.join(QCHEM_DIR, "mol.qin.basic.sella_TSopt_iter1")
     )
     assert qcin.as_dict() == ref_qcin.as_dict()
 
-    mol = Molecule.from_file(os.path.join(FILE_DIR, "test.xyz"))
-    atoms = AseAtomsAdaptor.get_atoms(mol)
+    atoms = read(os.path.join(FILE_DIR, "test.xyz"))
     output = relax_job(
         atoms=atoms,
         charge=-1,
@@ -197,7 +180,7 @@ def test_relax_job_as_TSopt():
     assert output["results"]["energy"] == -605.6859554025 * units.Hartree
     assert output["results"]["forces"][0][0] == -0.6955571014353796
 
-    qcin = QCInput.from_file(os.path.join(FILE_DIR, "mol.qin.gz"))
+    qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(
         os.path.join(QCHEM_DIR, "mol.qin.intermediate.sella_TSopt_iter1")
     )
