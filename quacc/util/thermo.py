@@ -19,7 +19,7 @@ def ideal_gas(
     """
     Calculate thermodynamic properties for a molecule from a given vibrational analysis.
     This is for free gases only and will not be valid for solids or adsorbates on surfaces.
-    Any imaginary vibrational modes will simply be ignored.
+    Any imaginary vibrational modes after the 3N-5/3N-6 cut will simply be ignored.
 
     Parameters
     ----------
@@ -88,4 +88,5 @@ def ideal_gas(
         atoms=atoms,
         symmetrynumber=metadata["symmetry"]["rotation_number"],
         spin=spin,
+        ignore_imag_modes=True,
     )
