@@ -146,19 +146,19 @@ def test_sella():
     assert traj[-1].calc.results is not None
     assert dyn.user_internal is False
 
-    # atoms = molecule("H2O")
-    # atoms.calc = LennardJones()
-    # dyn = run_ase_opt(
-    #     atoms,
-    #     optimizer=Sella,
-    #     scratch_dir="test_calc2",
-    #     gzip=False,
-    #     copy_files=["test_file.txt"],
-    #     optimizer_kwargs={"restart": None},
-    # )
-    # traj = read(dyn.trajectory.filename, index=":")
-    # assert traj[-1].calc.results is not None
-    # assert dyn.user_internal is True
+    atoms = molecule("H2O")
+    atoms.calc = LennardJones()
+    dyn = run_ase_opt(
+        atoms,
+        optimizer=Sella,
+        scratch_dir="test_calc2",
+        gzip=False,
+        copy_files=["test_file.txt"],
+        optimizer_kwargs={"restart": None},
+    )
+    traj = read(dyn.trajectory.filename, index=":")
+    assert traj[-1].calc.results is not None
+    assert dyn.user_internal is True
 
 
 def test_run_ase_vib():

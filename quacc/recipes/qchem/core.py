@@ -352,7 +352,7 @@ def ts_job(
     return summarize_opt_run(
         dyn,
         check_convergence=check_convergence,
-        additional_fields={"name": "Q-Chem Optimization"},
+        additional_fields={"name": "Q-Chem TS Optimization"},
     )
 
 
@@ -478,5 +478,5 @@ def irc_job(
     return summarize_opt_run(
         dyn,
         check_convergence=check_convergence,
-        additional_fields={"name": "Q-Chem Optimization"},
+        additional_fields={"name": "Q-Chem IRC Optimization"},
     )
