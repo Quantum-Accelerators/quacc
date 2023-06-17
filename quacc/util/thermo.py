@@ -47,7 +47,7 @@ def ideal_gas(
             vib_freqs[i] = complex(0 - f * 1j)
 
     # Convert vibrational frequencies to energies
-    vib_energies = [f * units.invcm for f in vib_freqs if np.real(f) > 0]
+    vib_energies = [f * units.invcm for f in vib_freqs]
 
     # Get the spin from the Atoms object.
     if spin_multiplicity:
