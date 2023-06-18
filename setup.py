@@ -41,7 +41,7 @@ if __name__ == "__main__":
             "monty>=2023.4.10",
             "numpy",
             "pydantic",
-            "pymatgen>=2022.7.8",
+            "pymatgen @ git+https://github.com/arosen93/pymatgen.git@ase-dev",  # waiting on PR 3056
         ],
         extras_require={
             "fireworks": ["fireworks"],
@@ -75,7 +75,7 @@ if __name__ == "__main__":
                 "monty==2023.5.8",
                 "numpy==1.24.3",
                 "pydantic==1.10.2",
-                "pymatgen==2023.5.31",
+                "pymatgen @ git+https://github.com/arosen93/pymatgen.git@ase-dev",  # waiting on PR 3056
             ],
         },
         tests_require=["pytest"],
