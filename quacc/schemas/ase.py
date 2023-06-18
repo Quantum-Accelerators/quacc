@@ -245,6 +245,7 @@ def summarize_opt_run(
     traj = read(dyn.trajectory.filename, index=":")
     initial_atoms = traj[0]
     final_atoms = dyn.atoms.atoms if isinstance(dyn.atoms, Filter) else dyn.atoms
+
     # Get results
     traj_results = {
         "trajectory_results": [atoms.calc.results for atoms in traj],
