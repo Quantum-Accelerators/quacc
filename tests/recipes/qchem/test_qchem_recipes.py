@@ -84,10 +84,9 @@ def test_static_job(monkeypatch):
     )
 
     assert output["atoms"] == TEST_ATOMS
-    # next three lines should be able to be uncommented once charge is correctly passed through
     assert output["charge"] == -1
     assert output["spin_multiplicity"] == 2
-    # assert output["nelectrons"] == 77
+    assert output["nelectrons"] == 77
     assert output["formula_alphabetical"] == "C4 H4 O6"
     assert output["parameters"]["charge"] == -1
     assert output["parameters"]["spin_multiplicity"] is None
@@ -140,10 +139,9 @@ def test_relax_job(monkeypatch):
     )
 
     assert output["atoms"] != TEST_ATOMS
-    # next three lines should be able to be uncommented once charge is correctly passed through
     assert output["charge"] == -1
     assert output["spin_multiplicity"] == 2
-    # assert output["nelectrons"] == 77
+    assert output["nelectrons"] == 77
     assert output["formula_alphabetical"] == "C4 H4 O6"
     assert output["parameters"]["charge"] == -1
     assert output["parameters"]["spin_multiplicity"] is None
@@ -197,10 +195,9 @@ def test_ts_job(monkeypatch):
     )
 
     assert output["atoms"] != TEST_ATOMS
-    # next three lines should be able to be uncommented once charge is correctly passed through
     assert output["charge"] == -1
     assert output["spin_multiplicity"] == 2
-    # assert output["nelectrons"] == 77
+    assert output["nelectrons"] == 77
     assert output["formula_alphabetical"] == "C4 H4 O6"
     assert output["parameters"]["charge"] == -1
     assert output["parameters"]["spin_multiplicity"] is None

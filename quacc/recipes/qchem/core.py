@@ -124,11 +124,8 @@ def static_job(
     return summarize_run(
         atoms,
         input_atoms=input_atoms,
-        additional_fields={
-            "name": "Q-Chem Static",
-            "charge": true_charge,
-            "spin_multiplicity": true_spin
-        },
+        charge_and_multiplicity=(true_charge, true_spin),
+        additional_fields={"name": "Q-Chem Static"},
     )
 
 
@@ -249,11 +246,8 @@ def relax_job(
     return summarize_opt_run(
         dyn,
         check_convergence=check_convergence,
-        additional_fields={
-            "name": "Q-Chem Optimization",
-            "charge": true_charge,
-            "spin_multiplicity": true_spin
-        },
+        charge_and_multiplicity=(true_charge, true_spin),
+        additional_fields={"name": "Q-Chem Optimization"},
     )
 
 
@@ -374,11 +368,8 @@ def ts_job(
     return summarize_opt_run(
         dyn,
         check_convergence=check_convergence,
-        additional_fields={
-            "name": "Q-Chem TS Optimization",
-            "charge": true_charge,
-            "spin_multiplicity": true_spin
-        },
+        charge_and_multiplicity=(true_charge, true_spin),
+        additional_fields={"name": "Q-Chem TS Optimization"},
     )
 
 
@@ -506,9 +497,6 @@ def irc_job(
     return summarize_opt_run(
         dyn,
         check_convergence=check_convergence,
-        additional_fields={
-            "name": "Q-Chem IRC Optimization",
-            "charge": true_charge,
-            "spin_multiplicity": true_spin
-        },
+        charge_and_multiplicity=(true_charge, true_spin),
+        additional_fields={"name": "Q-Chem IRC Optimization"},
     )
