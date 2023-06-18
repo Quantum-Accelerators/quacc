@@ -62,6 +62,8 @@ def test_static_Job():
         output["parameters"]["orcablocks"]
         == f"%scf maxiter 300 end %pal nprocs {nprocs} end"
     )
+    assert output["charge"] == -2
+    assert output["spin_multiplicity"] == 3
 
 
 def test_relax_Job():
