@@ -50,8 +50,8 @@ def static_job(
                 "num_threads": "max",
                 "method": method,
                 "basis": basis,
-                "charge": charge or round(sum(atoms.get_initial_charges())),
-                "multiplicity": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
+                "charge": charge or int(sum(atoms.get_initial_charges())),
+                "multiplicity": mult or int(1 + sum(atoms.get_initial_magnetic_moments())),
                 "reference": "uhf" if mult > 1 else None,
             }
 
@@ -62,14 +62,18 @@ def static_job(
     """
 
     swaps = swaps or {}
-    multiplicity = multiplicity or round(1 + sum(atoms.get_initial_magnetic_moments()))
+
+    charge = charge or round(int(atoms.get_initial_charges().sum()))
+    multiplicity = multiplicity or round(
+        1 + int(atoms.get_initial_magnetic_moments().sum())
+    )
 
     defaults = {
         "mem": "16GB",
         "num_threads": "max",
         "method": method,
         "basis": basis,
-        "charge": charge or round(sum(atoms.get_initial_charges())),
+        "charge": charge,
         "multiplicity": multiplicity,
         "reference": "uhf" if multiplicity > 1 else None,
     }
@@ -79,5 +83,11 @@ def static_job(
     new_atoms = run_calc(atoms)
 
     return summarize_run(
-        new_atoms, input_atoms=atoms, additional_fields={"name": "Psi4 Static"}
+        new_atoms,
+        input_atoms=atoms,
+        additional_fields={
+            "name": "Psi4 Static",
+            "charge": charge,
+            "spin_multiplicity": multiplicity,
+        },
     )
