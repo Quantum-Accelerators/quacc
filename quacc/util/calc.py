@@ -187,7 +187,7 @@ def run_ase_opt(
 
     # Set Sella kwargs
     if (
-        "sella.optimize" in optimizer.__module__
+        optimizer.__name__ == "Sella"
         and not atoms.pbc.any()
         and "internal" not in optimizer_kwargs
     ):
