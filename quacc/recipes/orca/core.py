@@ -88,15 +88,26 @@ def static_job(
     orcasimpleinput = " ".join(list(inputs.keys()))
     orcablocks = " ".join(list(blocks.keys()))
 
+    charge = charge or int(atoms.get_initial_charges().sum())
+    mult = mult or int(1 + atoms.get_initial_magnetic_moments().sum())
+
     atoms.calc = ORCA(
-        charge=charge or round(sum(atoms.get_initial_charges())),
-        mult=mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
+        charge=charge,
+        mult=mult,
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
 
-    return summarize_run(atoms, LOG_FILE, additional_fields={"name": "ORCA Static"})
+    return summarize_run(
+        atoms,
+        LOG_FILE,
+        additional_fields={
+            "name": "ORCA Static",
+            "charge": charge,
+            "spin_multiplicity": mult,
+        },
+    )
 
 
 @ct.electron
@@ -177,12 +188,23 @@ def relax_job(
     orcasimpleinput = " ".join(list(inputs.keys()))
     orcablocks = " ".join(list(blocks.keys()))
 
+    charge = charge or int(atoms.get_initial_charges().sum())
+    mult = mult or int(1 + atoms.get_initial_magnetic_moments().sum())
+
     atoms.calc = ORCA(
-        charge=charge or round(sum(atoms.get_initial_charges())),
-        mult=mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
+        charge=charge,
+        mult=mult,
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
 
-    return summarize_run(atoms, LOG_FILE, additional_fields={"name": "ORCA Relax"})
+    return summarize_run(
+        atoms,
+        LOG_FILE,
+        additional_fields={
+            "name": "ORCA Relax",
+            "charge": charge,
+            "spin_multiplicity": mult,
+        },
+    )
