@@ -6,7 +6,11 @@ from ase.io.jsonio import decode, encode
 from quacc._version import __version__
 from quacc.settings import QuaccSettings
 
+# ----------- Quacc Settings ------------#
+SETTINGS = QuaccSettings()
 
+
+# ----------- ASE Monkeypatching ------------#
 def atoms_as_dict(s):
     # Uses Monty's MSONable spec
     # Normally, we would want to this to be a wrapper around atoms.todict() with @module and
@@ -23,10 +27,46 @@ def atoms_from_dict(d):
     return decode(d["atoms_json"])
 
 
+# Patch in `.as_dict()` and `.from_dict()` methods to make Atoms MSONable
 Atoms.as_dict = atoms_as_dict
 Atoms.from_dict = atoms_from_dict
-SETTINGS = QuaccSettings()
 
+
+# Allow user to set the charge
+def set_charge(self, value):
+    self._charge = value
+
+
+# Set the default charge
+def get_charge(self):
+    return getattr(
+        self,
+        "_charge",
+        int(self.get_initial_charges().sum()) if not self.pbc.any() else None,
+    )
+
+
+# Allow user to set the spin multiplicity
+def set_spin_multiplicity(self, value):
+    self._spin_multiplicity = value
+
+
+# Set the default spin multiplicity
+def get_spin_multiplicity(self):
+    return getattr(
+        self,
+        "_spin_multiplicity",
+        int(self.get_initial_magnetic_moments().sum() + 1)
+        if not self.pbc.any()
+        else None,
+    )
+
+
+# Assign properties to Atoms object
+Atoms.charge = property(get_charge, set_charge)
+Atoms.spin_multiplicity = property(get_spin_multiplicity, set_spin_multiplicity)
+
+# ----------- Covalent Configuration ------------#
 ct_config = ct.get_config()
 
 # Make sure that the create_unique_workdir is set to True for any plugin

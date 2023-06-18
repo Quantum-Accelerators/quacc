@@ -133,17 +133,6 @@ def summarize_run(
     if prep_next_run:
         atoms = prep_next_run_(atoms)
 
-    # Attach charge and spin multiplicity to ensure it's stored
-    # in metadata when the Atoms object is converted to a pmg dict.
-    for key in ["charge", "net_charge"]:
-        if atoms.calc.parameters.get(k):
-            atoms.charge = atoms.calc.parameters["charge"]
-            break
-    for key in ["spin_multiplicity", "multiplicity", "mult"]:
-        if atoms.calc.parameters.get(key):
-            atoms.spin_multiplicity = atoms.calc.parameters[key]
-            break
-
     # Get tabulated properties of the structure itself
     atoms_db = atoms_to_metadata(atoms)
 

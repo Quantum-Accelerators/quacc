@@ -33,11 +33,9 @@ def static_job(
     atoms
         Atoms object
     charge
-        Charge of the system. If None, this is determined from the sum of
-        `atoms.get_initial_charges()`.
+        Charge of the system. If None, this is determined from `atoms.charge`
     mult
-        Multiplicity of the system. If None, this is determined from 1+ the sum
-        of `atoms.get_initial_magnetic_moments()`.
+        Multiplicity of the system. If None, this is determined from `atoms.spin_multiplicity`
     xc
         Exchange-correlation functional
     basis
@@ -88,9 +86,12 @@ def static_job(
     orcasimpleinput = " ".join(list(inputs.keys()))
     orcablocks = " ".join(list(blocks.keys()))
 
+    atoms.charge = charge or getattr(atoms, "charge")
+    atoms.spin_multiplicity = mult or getattr(atoms, "spin_multiplicity")
+
     atoms.calc = ORCA(
-        charge=charge or round(sum(atoms.get_initial_charges())),
-        mult=mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
+        charge=charge or atoms.charge,
+        mult=mult or atoms.spin_multiplicity,
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )
@@ -118,11 +119,9 @@ def relax_job(
     atoms
         Atoms object
     charge
-        Charge of the system. If None, this is determined from the sum of
-        atoms.get_initial_charges().
+        Charge of the system. If None, this is determined from `atoms.charge`
     mult
-        Multiplicity of the system. If None, this is determined from 1+ the sum
-        of atoms.get_initial_magnetic_moments().
+        Multiplicity of the system. If None, this is determined from `atoms.spin_multiplicity`
     xc
         Exchange-correlation functional
     basis
@@ -177,9 +176,12 @@ def relax_job(
     orcasimpleinput = " ".join(list(inputs.keys()))
     orcablocks = " ".join(list(blocks.keys()))
 
+    atoms.charge = charge or getattr(atoms, "charge")
+    atoms.spin_multiplicity = mult or getattr(atoms, "spin_multiplicity")
+
     atoms.calc = ORCA(
-        charge=charge or round(sum(atoms.get_initial_charges())),
-        mult=mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
+        charge=atoms.charge,
+        mult=atoms.spin_multiplicity,
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )

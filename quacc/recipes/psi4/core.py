@@ -34,11 +34,9 @@ def static_job(
     atoms
         Atoms object
     charge
-        Charge of the system. If None, this is determined from the sum of
-        `atoms.get_initial_charges()`.
+        Charge of the system. If None, this is determined from `atoms.charge`
     multiplicity
-        Multiplicity of the system. If None, this is determined from 1+ the sum
-        of `atoms.get_initial_magnetic_moments()`.
+        Multiplicity of the system. If None, this is determined from `atoms.spin_multiplicity`
     method
         The level of theory to use.
     basis
@@ -50,8 +48,8 @@ def static_job(
                 "num_threads": "max",
                 "method": method,
                 "basis": basis,
-                "charge": charge or round(sum(atoms.get_initial_charges())),
-                "multiplicity": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
+                "charge": charge or getattr(atoms, "charge"),
+                "multiplicity": multiplicity or getattr(atoms, "spin_multiplicity"),
                 "reference": "uhf" if mult > 1 else None,
             }
 
@@ -63,15 +61,17 @@ def static_job(
 
     swaps = swaps or {}
 
+    atoms.charge = charge or getattr(atoms, "charge")
+    atoms.spin_multiplicity = multiplicity or getattr(atoms, "spin_multiplicity")
+
     defaults = {
         "mem": "16GB",
         "num_threads": "max",
         "method": method,
         "basis": basis,
-        "charge": charge or round(sum(atoms.get_initial_charges())),
-        "multiplicity": multiplicity
-        or round(1 + sum(atoms.get_initial_magnetic_moments())),
-        "reference": "uhf" if multiplicity > 1 else None,
+        "charge": atoms.charge,
+        "multiplicity": atoms.spin_multiplicity,
+        "reference": "uhf" if atoms.spin_multiplicity > 1 else None,
     }
     flags = remove_dict_empties(defaults | swaps)
 

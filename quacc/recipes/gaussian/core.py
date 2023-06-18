@@ -34,11 +34,9 @@ def static_job(
     atoms
         Atoms object
     charge
-        Charge of the system. If None, this is determined from the sum of
-        `atoms.get_initial_charges().`
+        Charge of the system. If None, this is determined from `atoms.charge`
     mult
-        Multiplicity of the system. If None, this is determined from 1+ the sum
-        of `atoms.get_initial_magnetic_moments()`.
+        Multiplicity of the system. If None, this is determined from `atoms.spin_multiplicity`
     xc
         Exchange-correlation functional
     basis
@@ -55,17 +53,15 @@ def static_job(
                 "nprocshared": multiprocessing.cpu_count(),
                 "xc": xc,
                 "basis": basis,
-                "charge": charge or round(sum(atoms.get_initial_charges())),
-                "mult": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
+                "charge": charge or getattr(atoms, "charge"),
+                "mult": mult or getattr(atoms, "spin_multiplicity"),
                 "sp": "",
                 "scf": ["maxcycle=250", "xqc"],
                 "integral": "ultrafine",
                 "nosymmetry": "",
                 "pop": pop,
                 "gfinput": "" if write_molden else None,
-                "ioplist": ["6/7=3", "2/9=2000"]
-                if write_molden
-                else ["2/9=2000"],  # see ASE issue #660
+                "ioplist": ["6/7=3"] if write_molden else [],
             }
 
     Returns
@@ -76,23 +72,24 @@ def static_job(
 
     swaps = swaps or {}
 
+    atoms.charge = charge or getattr(atoms, "charge")
+    atoms.spin_multiplicity = mult or getattr(atoms, "spin_multiplicity")
+
     defaults = {
         "mem": "16GB",
         "chk": "Gaussian.chk",
         "nprocshared": multiprocessing.cpu_count(),
         "xc": xc,
         "basis": basis,
-        "charge": charge or round(sum(atoms.get_initial_charges())),
-        "mult": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
+        "charge": atoms.charge,
+        "mult": atoms.spin_multiplicity,
         "sp": "",
         "scf": ["maxcycle=250", "xqc"],
         "integral": "ultrafine",
         "nosymmetry": "",
         "pop": pop,
         "gfinput": "" if write_molden else None,
-        "ioplist": ["6/7=3", "2/9=2000"]
-        if write_molden
-        else ["2/9=2000"],  # see ASE issue #660
+        "ioplist": ["6/7=3"] if write_molden else [],
     }
     flags = remove_dict_empties(defaults | swaps)
 
@@ -120,11 +117,9 @@ def relax_job(
     atoms
         Atoms object
     charge
-        Charge of the system. If None, this is determined from the sum of
-        `atoms.get_initial_charges()`.
+        Charge of the system. If None, this is determined from atoms.charge
     mult
-        Multiplicity of the system. If None, this is determined from 1+ the sum
-        of `atoms.get_initial_magnetic_moments()`.
+        Multiplicity of the system. If None, this is determined from atoms.spin_multiplicity
     xc
         Exchange-correlation functional
     basis
@@ -139,14 +134,13 @@ def relax_job(
                 "nprocshared": multiprocessing.cpu_count(),
                 "xc": xc,
                 "basis": basis,
-                "charge": charge or round(sum(atoms.get_initial_charges())),
-                "mult": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
+                "charge": charge or getattr(atoms, "charge"),
+                "mult": mult or getattr(atoms, "spin_multiplicity"),
                 "opt": "",
                 "scf": ["maxcycle=250", "xqc"],
                 "integral": "ultrafine",
                 "nosymmetry": "",
                 "freq": "" if freq else None,
-                "ioplist": ["2/9=2000"],  # ASE issue #660
             }
 
     Returns
@@ -157,20 +151,22 @@ def relax_job(
 
     swaps = swaps or {}
 
+    atoms.charge = charge or getattr(atoms, "charge")
+    atoms.spin_multiplicity = mult or getattr(atoms, "spin_multiplicity")
+
     defaults = {
         "mem": "16GB",
         "chk": "Gaussian.chk",
         "nprocshared": multiprocessing.cpu_count(),
         "xc": xc,
         "basis": basis,
-        "charge": charge or round(sum(atoms.get_initial_charges())),
-        "mult": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
+        "charge": atoms.charge,
+        "mult": atoms.spin_multiplicity,
         "opt": "",
         "scf": ["maxcycle=250", "xqc"],
         "integral": "ultrafine",
         "nosymmetry": "",
         "freq": "" if freq else None,
-        "ioplist": ["2/9=2000"],  # ASE issue #660
     }
     flags = remove_dict_empties(defaults | swaps)
 

@@ -65,6 +65,22 @@ def test_static_Job():
     assert output["parameters"]["ioplist"] == ["2/9=2000"]  # see ASE issue #660
     assert "opt" not in output["parameters"]
 
+    atoms.charge = 3
+    atoms.spin_multiplicity = 2
+    output = static_job(atoms)
+    assert output["natoms"] == len(atoms)
+    assert output["parameters"]["charge"] == 3
+    assert output["parameters"]["mult"] == 2
+    assert output["parameters"]["sp"] == ""
+    assert output["parameters"]["xc"] == "wb97x-d"
+    assert output["parameters"]["basis"] == "def2-tzvp"
+    assert output["parameters"]["integral"] == "ultrafine"
+    assert output["parameters"]["gfinput"] == ""
+    assert output["parameters"]["ioplist"] == [
+        "6/7=3",
+        "2/9=2000",
+    ]  # see ASE issue #660
+
 
 def test_relax_Job():
     atoms = molecule("H2")
