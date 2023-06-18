@@ -48,8 +48,8 @@ def static_job(
                 "num_threads": "max",
                 "method": method,
                 "basis": basis,
-                "charge": charge or getattr(atoms, "charge"),
-                "multiplicity": multiplicity or getattr(atoms, "spin_multiplicity"),
+                "charge": charge or atoms.charge,
+                "multiplicity": multiplicity or atoms.spin_multiplicity,
                 "reference": "uhf" if mult > 1 else None,
             }
 
