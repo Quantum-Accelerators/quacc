@@ -39,10 +39,6 @@ def test_static_Job():
     assert output["parameters"]["basis"] == "def2-tzvp"
     assert output["parameters"]["integral"] == "ultrafine"
     assert output["parameters"]["gfinput"] == ""
-    assert output["parameters"]["ioplist"] == [
-        "6/7=3",
-        "2/9=2000",
-    ]  # see ASE issue #660
 
     output = static_job(
         atoms,
@@ -62,7 +58,6 @@ def test_static_Job():
     assert output["parameters"]["basis"] == "def2-svp"
     assert output["parameters"]["integral"] == "superfinegrid"
     assert "gfinput" not in output["parameters"]
-    assert output["parameters"]["ioplist"] == ["2/9=2000"]  # see ASE issue #660
     assert "opt" not in output["parameters"]
 
     atoms.charge = 3

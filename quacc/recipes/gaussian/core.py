@@ -72,17 +72,14 @@ def static_job(
 
     swaps = swaps or {}
 
-    atoms.charge = charge or getattr(atoms, "charge")
-    atoms.spin_multiplicity = mult or getattr(atoms, "spin_multiplicity")
-
     defaults = {
         "mem": "16GB",
         "chk": "Gaussian.chk",
         "nprocshared": multiprocessing.cpu_count(),
         "xc": xc,
         "basis": basis,
-        "charge": atoms.charge,
-        "mult": atoms.spin_multiplicity,
+        "charge": charge or atoms.charge,
+        "mult": mult or atoms.spin_multiplicity,
         "sp": "",
         "scf": ["maxcycle=250", "xqc"],
         "integral": "ultrafine",
@@ -151,17 +148,14 @@ def relax_job(
 
     swaps = swaps or {}
 
-    atoms.charge = charge or getattr(atoms, "charge")
-    atoms.spin_multiplicity = mult or getattr(atoms, "spin_multiplicity")
-
     defaults = {
         "mem": "16GB",
         "chk": "Gaussian.chk",
         "nprocshared": multiprocessing.cpu_count(),
         "xc": xc,
         "basis": basis,
-        "charge": atoms.charge,
-        "mult": atoms.spin_multiplicity,
+        "charge": charge or atoms.charge,
+        "mult": mult or atoms.spin_multiplicity,
         "opt": "",
         "scf": ["maxcycle=250", "xqc"],
         "integral": "ultrafine",

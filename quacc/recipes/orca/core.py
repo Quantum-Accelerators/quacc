@@ -86,9 +86,6 @@ def static_job(
     orcasimpleinput = " ".join(list(inputs.keys()))
     orcablocks = " ".join(list(blocks.keys()))
 
-    atoms.charge = charge or getattr(atoms, "charge")
-    atoms.spin_multiplicity = mult or getattr(atoms, "spin_multiplicity")
-
     atoms.calc = ORCA(
         charge=charge or atoms.charge,
         mult=mult or atoms.spin_multiplicity,
@@ -176,12 +173,9 @@ def relax_job(
     orcasimpleinput = " ".join(list(inputs.keys()))
     orcablocks = " ".join(list(blocks.keys()))
 
-    atoms.charge = charge or getattr(atoms, "charge")
-    atoms.spin_multiplicity = mult or getattr(atoms, "spin_multiplicity")
-
     atoms.calc = ORCA(
-        charge=atoms.charge,
-        mult=atoms.spin_multiplicity,
+        charge=charge or atoms.charge,
+        mult=mult or atoms.spin_multiplicity,
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )
