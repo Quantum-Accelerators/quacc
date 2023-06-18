@@ -145,7 +145,7 @@ def summarize_run(
     if prep_next_run:
         atoms = prep_next_run_(atoms)
 
-    # We use get_metadata=False and store_pmg=False because the TaskDocument already	    # Get the atoms metadata
+    # We use get_metadata=False and store_pmg=False because the TaskDocument already
     # makes the Molecule metadata for us
     atoms_db = atoms_to_metadata(atoms, charge_and_multiplicity=charge_and_multiplicity)
 
