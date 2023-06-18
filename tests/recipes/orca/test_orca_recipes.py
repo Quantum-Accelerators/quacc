@@ -61,6 +61,12 @@ def test_static_Job():
         == f"%scf maxiter 300 end %pal nprocs {nprocs} end"
     )
 
+    atoms.charge = 2
+    atoms.spin_multiplicity = 3
+    output = static_job(atoms)
+    assert output["parameters"]["charge"] == 2
+    assert output["parameters"]["mult"] == 3
+
 
 def test_relax_Job():
     atoms = molecule("H2")

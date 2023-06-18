@@ -23,6 +23,33 @@ ATOMS_NOSPIN = read(
 )
 
 
+def test_init():
+    atoms = bulk("Cu")
+    assert atoms.charge is None
+    assert atoms.spin_multiplicity is None
+
+    atoms.charge = 2
+    atoms.spin_multiplicity = 3
+    assert atoms.charge == 2
+    assert atoms.spin_multiplicity == 3
+
+    atoms = molecule("CH4")
+    assert atoms.charge == 0
+    assert atoms.spin_multiplicity == 1
+    atoms.charge = 2
+    atoms.spin_multiplicity = 3
+    assert atoms.charge == 2
+    assert atoms.spin_multiplicity == 3
+
+    atoms = molecule("CH3")
+    assert atoms.charge == 0
+    assert atoms.spin_multiplicity == 2
+    atoms.charge = 2
+    atoms.spin_multiplicity = 4
+    assert atoms.charge == 2
+    assert atoms.spin_multiplicity == 4
+
+
 def test_get_atoms_id():
     atoms = bulk("Cu")
     md5hash = "d4859270a1a67083343bec0ab783f774"

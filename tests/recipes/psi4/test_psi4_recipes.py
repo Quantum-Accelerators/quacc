@@ -57,3 +57,10 @@ def test_static_maker():
     assert output["parameters"]["num_threads"] == 1
     assert output["parameters"]["pop"] == "regular"
     assert "mem" not in output["parameters"]
+
+    atoms.charge = 2
+    atoms.spin_multiplicity = 3
+    output = static_job(atoms)
+    assert output["natoms"] == len(atoms)
+    assert output["parameters"]["charge"] == 2
+    assert output["parameters"]["multiplicity"] == 3
