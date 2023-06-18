@@ -62,7 +62,6 @@ def static_job(
     """
 
     swaps = swaps or {}
-    multiplicity = multiplicity or round(1 + sum(atoms.get_initial_magnetic_moments()))
 
     defaults = {
         "mem": "16GB",
@@ -70,7 +69,8 @@ def static_job(
         "method": method,
         "basis": basis,
         "charge": charge or round(sum(atoms.get_initial_charges())),
-        "multiplicity": multiplicity,
+        "multiplicity": multiplicity
+        or round(1 + sum(atoms.get_initial_magnetic_moments())),
         "reference": "uhf" if multiplicity > 1 else None,
     }
     flags = remove_dict_empties(defaults | swaps)
