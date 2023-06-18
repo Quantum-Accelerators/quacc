@@ -135,7 +135,7 @@ def summarize_run(
 
     # Attach charge and spin multiplicity to ensure it's stored
     # in metadata when the Atoms object is converted to a pmg dict.
-    for key in ["charge", "net_charge"]:
+    for _ in ["charge", "net_charge"]:
         if atoms.calc.parameters.get(k):
             atoms.charge = atoms.calc.parameters["charge"]
             break
