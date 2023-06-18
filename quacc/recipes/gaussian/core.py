@@ -104,11 +104,7 @@ def static_job(
     return summarize_run(
         atoms,
         LOG_FILE,
-        additional_fields={
-            "name": "Gaussian Static",
-            "charge": charge,
-            "spin_multiplicity": mult,
-        },
+        additional_fields={"name": "Gaussian Static"},
     )
 
 
@@ -193,9 +189,5 @@ def relax_job(
     return summarize_run(
         atoms,
         LOG_FILE,
-        additional_fields={
-            "name": "Gaussian Relax",
-            "charge": charge,
-            "spin_multiplicity": mult,
-        },
+        additional_fields={"name": "Gaussian Relax"},
     )

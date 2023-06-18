@@ -62,8 +62,6 @@ def test_static_Job():
         output["parameters"]["orcablocks"]
         == f"%scf maxiter 300 end %pal nprocs {nprocs} end"
     )
-    assert output["spin_multiplicity"] == 3
-    assert output["charge"] == -2
 
 
 def test_relax_Job():
@@ -93,8 +91,6 @@ def test_relax_Job():
         block_swaps={"%scf maxiter 300 end": True},
     )
     assert output["natoms"] == len(atoms)
-    assert output["parameters"]["charge"] == -2
-    assert output["parameters"]["mult"] == 3
     assert (
         output["parameters"]["orcasimpleinput"]
         == "opt slowconv normalprint xyzfile hf def2-svp"

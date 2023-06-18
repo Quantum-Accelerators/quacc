@@ -85,9 +85,6 @@ def static_job(
     return summarize_run(
         new_atoms,
         input_atoms=atoms,
-        additional_fields={
-            "name": "Psi4 Static",
-            "charge": charge,
-            "spin_multiplicity": multiplicity,
-        },
+        charge_and_multiplicity=(charge, multiplicity),
+        additional_fields={"name": "Psi4 Static"},
     )

@@ -43,8 +43,6 @@ def test_static_Job():
         "6/7=3",
         "2/9=2000",
     ]  # see ASE issue #660
-    assert output["spin_multiplicity"] == 1
-    assert output["charge"] == 0
 
     output = static_job(
         atoms,
@@ -66,8 +64,6 @@ def test_static_Job():
     assert "gfinput" not in output["parameters"]
     assert output["parameters"]["ioplist"] == ["2/9=2000"]  # see ASE issue #660
     assert "opt" not in output["parameters"]
-    assert output["spin_multiplicity"] == 3
-    assert output["charge"] == -2
 
 
 def test_relax_Job():

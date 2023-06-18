@@ -23,6 +23,7 @@ from quacc.util.dicts import clean_dict
 def summarize_run(
     atoms: Atoms,
     input_atoms: Atoms | None = None,
+    charge_and_multiplicity: tuple[int, int] | None = None,
     prep_next_run: bool = True,
     remove_empties: bool = False,
     additional_fields: dict | None = None,
@@ -37,6 +38,8 @@ def summarize_run(
         ASE Atoms following a calculation. A calculator must be attached.
     input_atoms
         Input ASE Atoms object to store.
+    charge_and_multiplicity
+        Charge and spin multiplicity of the Atoms object, only used for Molecule metadata.
     prep_next_run
         Whether the Atoms object stored in {"atoms": atoms} should be prepared for the next run
         This clears out any attached calculator and moves the final magmoms to the initial magmoms.
@@ -124,7 +127,9 @@ def summarize_run(
         "dir_name": ":".join(uri.split(":")[1:]),
     }
     if input_atoms:
-        input_atoms_db = atoms_to_metadata(input_atoms)
+        input_atoms_db = atoms_to_metadata(
+            input_atoms, charge_and_multiplicity=charge_and_multiplicity
+        )
         inputs["input_atoms"] = input_atoms_db
 
     # Prepares the Atoms object for the next run by moving the
@@ -134,7 +139,7 @@ def summarize_run(
         atoms = prep_next_run_(atoms)
 
     # Get tabulated properties of the structure itself
-    atoms_db = atoms_to_metadata(atoms)
+    atoms_db = atoms_to_metadata(atoms, charge_and_multiplicity=charge_and_multiplicity)
 
     # Create a dictionary of the inputs/outputs
     task_doc = atoms_db | inputs | results | additional_fields
@@ -145,6 +150,7 @@ def summarize_run(
 def summarize_opt_run(
     dyn: Optimizer,
     check_convergence: bool = True,
+    charge_and_multiplicity: tuple[int, int] | None = None,
     prep_next_run: bool = True,
     remove_empties: bool = False,
     additional_fields: dict | None = None,
@@ -159,6 +165,8 @@ def summarize_opt_run(
         ASE Optimizer object.
     check_convergence
         Whether to check the convergence of the calculation.
+    charge_and_multiplicity
+        Charge and spin multiplicity of the Atoms object, only used for Molecule metadata.
     prep_next_run
         Whether the Atoms object stored in {"atoms": atoms} should be prepared for the next run
         This clears out any attached calculator and moves the final magmoms to the initial magmoms.
@@ -245,10 +253,14 @@ def summarize_opt_run(
     traj = read(dyn.trajectory.filename, index=":")
     initial_atoms = traj[0]
     final_atoms = dyn.atoms.atoms if isinstance(dyn.atoms, Filter) else dyn.atoms
+
     # Get results
     traj_results = {
         "trajectory_results": [atoms.calc.results for atoms in traj],
-        "trajectory": [atoms_to_metadata(atoms) for atoms in traj],
+        "trajectory": [
+            atoms_to_metadata(atoms, charge_and_multiplicity=charge_and_multiplicity)
+            for atoms in traj
+        ],
     }
     results = {"results": final_atoms.calc.results}
 
@@ -259,7 +271,9 @@ def summarize_opt_run(
         "nid": uri.split(":")[0],
         "dir_name": ":".join(uri.split(":")[1:]),
     }
-    input_atoms_db = atoms_to_metadata(initial_atoms)
+    input_atoms_db = atoms_to_metadata(
+        initial_atoms, charge_and_multiplicity=charge_and_multiplicity
+    )
     inputs["input_structure"] = input_atoms_db
 
     # Prepares the Atoms object for the next run by moving the
@@ -269,7 +283,9 @@ def summarize_opt_run(
         final_atoms = prep_next_run_(final_atoms)
 
     # Get tabulated properties of the structure itself
-    atoms_db = atoms_to_metadata(final_atoms)
+    atoms_db = atoms_to_metadata(
+        final_atoms, charge_and_multiplicity=charge_and_multiplicity
+    )
 
     # Create a dictionary of the inputs/outputs
     task_doc = atoms_db | inputs | results | traj_results | additional_fields
@@ -279,6 +295,7 @@ def summarize_opt_run(
 
 def summarize_vib_run(
     vib: Vibrations,
+    charge_and_multiplicity: tuple[int, int] | None = None,
     remove_empties: bool = False,
     additional_fields: dict | None = None,
 ) -> dict:
@@ -289,6 +306,8 @@ def summarize_vib_run(
     ----------
     vib
         ASE Vibrations object.
+    charge_and_multiplicity
+        Charge and spin multiplicity of the Atoms object, only used for Molecule metadata.
     remove_empties
         Whether to remove None values and empty lists/dicts from the task document.
     additional_fields
@@ -392,7 +411,7 @@ def summarize_vib_run(
     }
 
     atoms = vib.atoms
-    atoms_db = atoms_to_metadata(atoms)
+    atoms_db = atoms_to_metadata(atoms, charge_and_multiplicity=charge_and_multiplicity)
 
     # Get the true vibrational modes
     natoms = len(atoms)
@@ -436,6 +455,7 @@ def summarize_thermo_run(
     igt: IdealGasThermo,
     temperature: float = 298.15,
     pressure: float = 1.0,
+    charge_and_multiplicity: tuple[int, int] | None = None,
     remove_empties: bool = False,
     additional_fields: dict | None = None,
 ) -> dict:
@@ -450,6 +470,8 @@ def summarize_thermo_run(
         Temperature in Kelvins.
     pressure
         Pressure in bar.
+    charge_and_multiplicity
+        Charge and spin multiplicity of the Atoms object, only used for Molecule metadata.
     remove_empties
         Whether to remove None values and empty lists/dicts from the task document.
     additional_fields
@@ -534,7 +556,9 @@ def summarize_thermo_run(
         }
     }
 
-    atoms_db = atoms_to_metadata(igt.atoms)
+    atoms_db = atoms_to_metadata(
+        igt.atoms, charge_and_multiplicity=charge_and_multiplicity
+    )
 
     task_doc = atoms_db | inputs | results | additional_fields
 
