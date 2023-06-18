@@ -55,8 +55,8 @@ def static_job(
                 "nprocshared": multiprocessing.cpu_count(),
                 "xc": xc,
                 "basis": basis,
-                "charge": charge or round(sum(atoms.get_initial_charges())),
-                "mult": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
+                "charge": charge or int(sum(atoms.get_initial_charges())),
+                "mult": mult or int(1 + sum(atoms.get_initial_magnetic_moments())),
                 "sp": "",
                 "scf": ["maxcycle=250", "xqc"],
                 "integral": "ultrafine",
@@ -76,14 +76,16 @@ def static_job(
 
     swaps = swaps or {}
 
+    charge = charge or int(sum(atoms.get_initial_charges()))
+    mult = mult or int(1 + sum(atoms.get_initial_magnetic_moments()))
     defaults = {
         "mem": "16GB",
         "chk": "Gaussian.chk",
         "nprocshared": multiprocessing.cpu_count(),
         "xc": xc,
         "basis": basis,
-        "charge": charge or round(sum(atoms.get_initial_charges())),
-        "mult": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
+        "charge": charge,
+        "mult": mult,
         "sp": "",
         "scf": ["maxcycle=250", "xqc"],
         "integral": "ultrafine",
@@ -99,7 +101,15 @@ def static_job(
     atoms.calc = Gaussian(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
 
-    return summarize_run(atoms, LOG_FILE, additional_fields={"name": "Gaussian Static"})
+    return summarize_run(
+        atoms,
+        LOG_FILE,
+        additional_fields={
+            "name": "Gaussian Static",
+            "charge": charge,
+            "spin_multiplicity": mult,
+        },
+    )
 
 
 @ct.electron
@@ -139,8 +149,8 @@ def relax_job(
                 "nprocshared": multiprocessing.cpu_count(),
                 "xc": xc,
                 "basis": basis,
-                "charge": charge or round(sum(atoms.get_initial_charges())),
-                "mult": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
+                "charge": charge or int(sum(atoms.get_initial_charges())),
+                "mult": mult or int(1 + sum(atoms.get_initial_magnetic_moments())),
                 "opt": "",
                 "scf": ["maxcycle=250", "xqc"],
                 "integral": "ultrafine",
@@ -157,14 +167,17 @@ def relax_job(
 
     swaps = swaps or {}
 
+    charge = charge or int(sum(atoms.get_initial_charges()))
+    mult = mult or int(1 + sum(atoms.get_initial_magnetic_moments()))
+
     defaults = {
         "mem": "16GB",
         "chk": "Gaussian.chk",
         "nprocshared": multiprocessing.cpu_count(),
         "xc": xc,
         "basis": basis,
-        "charge": charge or round(sum(atoms.get_initial_charges())),
-        "mult": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
+        "charge": charge,
+        "mult": mult,
         "opt": "",
         "scf": ["maxcycle=250", "xqc"],
         "integral": "ultrafine",
@@ -177,4 +190,12 @@ def relax_job(
     atoms.calc = Gaussian(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
 
-    return summarize_run(atoms, LOG_FILE, additional_fields={"name": "Gaussian Relax"})
+    return summarize_run(
+        atoms,
+        LOG_FILE,
+        additional_fields={
+            "name": "Gaussian Relax",
+            "charge": charge,
+            "spin_multiplicity": mult,
+        },
+    )
