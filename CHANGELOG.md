@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added support for Python 3.10.
 - Added a name VASP setting `VASP_MIN_VERSION`.
 - Added a new VASP swap for `EFERMI = "MIDGAP"` if `VASP_MIN_VERSION >= 6.4`.
+- Monkeypatched in `.charge` and `.spin_multiplicity` properties for the `Atoms` object
 
 ### Changed
 
