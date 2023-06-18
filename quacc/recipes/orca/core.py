@@ -102,11 +102,7 @@ def static_job(
     return summarize_run(
         atoms,
         LOG_FILE,
-        additional_fields={
-            "name": "ORCA Static",
-            "charge": charge,
-            "spin_multiplicity": mult,
-        },
+        additional_fields={"name": "ORCA Static"},
     )
 
 
@@ -202,9 +198,5 @@ def relax_job(
     return summarize_run(
         atoms,
         LOG_FILE,
-        additional_fields={
-            "name": "ORCA Relax",
-            "charge": charge,
-            "spin_multiplicity": mult,
-        },
+        additional_fields={"name": "ORCA Relax"},
     )
