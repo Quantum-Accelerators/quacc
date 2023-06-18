@@ -35,20 +35,9 @@ def static_job(
         Filename of the potential library file, if required.
     keyword_swaps
         dictionary of custom keyword swap kwargs for the calculator.
-            defaults = {
-                "mem": "16GB",
-                "chk": "Gaussian.chk",
-                "nprocshared": multiprocessing.cpu_count(),
-                "xc": xc,
-                "basis": basis,
-                "charge": charge or round(sum(atoms.get_initial_charges())),
-                "mult": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
-                "opt": "",
-                "scf": ["maxcycle=250", "xqc"],
-                "integral": "ultrafine",
-                "nosymmetry": "",
-                "freq": "" if freq else None,
-                "ioplist": ["2/9=2000"],  # ASE issue #660
+            default_keywords = {
+                "gfnff": True if gfnff else None,
+                "gwolf": True if gfnff and atoms.pbc.any() else None,
             }
     option_swaps
         dictionary of custom option swap kwargs for the calculator.
