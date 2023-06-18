@@ -17,6 +17,7 @@ from quacc.util.dicts import clean_dict
 
 def atoms_to_metadata(
     atoms: Atoms,
+    charge_and_multiplicity: tuple[int, int] | None = None,
     get_metadata: bool = True,
     strip_info: bool = False,
     store_pmg: bool = True,
@@ -30,6 +31,8 @@ def atoms_to_metadata(
     ----------
     atoms
         ASE Atoms object to store in {"atoms": atoms}
+    charge_and_multiplicity
+        Charge and spin multiplicity of the Atoms object, only used for Molecule metadata.
     get_metadata
         Whether to store atoms metadata in the returned dict.
     strip_info
@@ -102,6 +105,11 @@ def atoms_to_metadata(
     additional_fields = additional_fields or {}
     atoms = copy_atoms(atoms)
     results = {}
+
+    # Get any charge or multiplicity keys
+    if charge_and_multiplicity:
+        atoms.charge = charge_and_multiplicity[0]
+        atoms.spin_multiplicity = charge_and_multiplicity[1]
 
     # Get Atoms metadata, if requested. emmet already has built-in tools for
     # generating pymatgen Structure/Molecule metadata, so we'll just use that.
