@@ -13,11 +13,19 @@ from monty.dev import requires
 from quacc.calculators.qchem import QChem
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
+from pymatgen.io.ase import AseAtomsAdaptor
 
 try:
     from sella import Sella, IRC
 except ImportError:
     Sella = None
+
+
+def true_charge_and_spin(atoms, charge, mult):
+    mol = AseAtomsAdaptor.get_molecule(atoms)
+    if charge is not None:
+        mol.set_charge_and_spin(charge=charge, spin_multiplicity=mult)
+    return mol.charge, mol.spin_multiplicity
 
 
 @ct.electron
@@ -79,6 +87,8 @@ def static_job(
     if pcm_dielectric is not None and smd_solvent is not None:
         raise RuntimeError("PCM and SMD cannot be employed simultaneously! Exiting...")
 
+    true_charge, true_spin = true_charge_and_spin(atoms, charge, mult)
+
     input_atoms = deepcopy(atoms)
 
     overwrite_inputs = {"rem": {"method": xc}}
@@ -114,7 +124,11 @@ def static_job(
     return summarize_run(
         atoms,
         input_atoms=input_atoms,
-        additional_fields={"name": "Q-Chem Static"},
+        additional_fields={
+            "name": "Q-Chem Static",
+            "charge": true_charge,
+            "spin_multiplicity": true_spin
+        },
     )
 
 
@@ -185,6 +199,8 @@ def relax_job(
 
     # Reminder to self: exposing TRICs?
 
+    true_charge, true_spin = true_charge_and_spin(atoms, charge, mult)
+
     opt_swaps = opt_swaps or {}
     opt_defaults = {
         "fmax": 0.01,
@@ -233,7 +249,11 @@ def relax_job(
     return summarize_opt_run(
         dyn,
         check_convergence=check_convergence,
-        additional_fields={"name": "Q-Chem Optimization"},
+        additional_fields={
+            "name": "Q-Chem Optimization",
+            "charge": true_charge,
+            "spin_multiplicity": true_spin
+        },
     )
 
 
@@ -304,6 +324,8 @@ def ts_job(
 
     # Reminder to self: exposing TRICs?
 
+    true_charge, true_spin = true_charge_and_spin(atoms, charge, mult)
+
     opt_swaps = opt_swaps or {}
     opt_defaults = {
         "fmax": 0.01,
@@ -352,7 +374,11 @@ def ts_job(
     return summarize_opt_run(
         dyn,
         check_convergence=check_convergence,
-        additional_fields={"name": "Q-Chem TS Optimization"},
+        additional_fields={
+            "name": "Q-Chem TS Optimization",
+            "charge": true_charge,
+            "spin_multiplicity": true_spin
+        },
     )
 
 
@@ -426,6 +452,8 @@ def irc_job(
 
     # Reminder to self: exposing TRICs?
 
+    true_charge, true_spin = true_charge_and_spin(atoms, charge, mult)
+
     if direction not in ["forward", "reverse"]:
         raise ValueError("direction must be 'forward' or 'reverse'! Exiting...")
 
@@ -478,5 +506,9 @@ def irc_job(
     return summarize_opt_run(
         dyn,
         check_convergence=check_convergence,
-        additional_fields={"name": "Q-Chem IRC Optimization"},
+        additional_fields={
+            "name": "Q-Chem IRC Optimization",
+            "charge": true_charge,
+            "spin_multiplicity": true_spin
+        },
     )
