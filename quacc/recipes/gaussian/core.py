@@ -76,8 +76,8 @@ def static_job(
 
     swaps = swaps or {}
 
-    charge = charge or int(sum(atoms.get_initial_charges()))
-    mult = mult or int(1 + sum(atoms.get_initial_magnetic_moments()))
+    charge = charge or int(atoms.get_initial_charges().sum())
+    mult = mult or int(1 + atoms.get_initial_magnetic_moments().sum())
     defaults = {
         "mem": "16GB",
         "chk": "Gaussian.chk",
@@ -167,8 +167,8 @@ def relax_job(
 
     swaps = swaps or {}
 
-    charge = charge or int(sum(atoms.get_initial_charges()))
-    mult = mult or int(1 + sum(atoms.get_initial_magnetic_moments()))
+    charge = charge or int(atoms.get_initial_charges().sum())
+    mult = mult or int(1 + atoms.get_initial_magnetic_moments().sum())
 
     defaults = {
         "mem": "16GB",

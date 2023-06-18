@@ -63,8 +63,10 @@ def static_job(
 
     swaps = swaps or {}
 
-    charge = charge or round(int(atoms.get_initial_charges()))
-    multiplicity = multiplicity or round(1 + int(atoms.get_initial_magnetic_moments()))
+    charge = charge or round(int(atoms.get_initial_charges().sum()))
+    multiplicity = multiplicity or round(
+        1 + int(atoms.get_initial_magnetic_moments().sum())
+    )
 
     defaults = {
         "mem": "16GB",
