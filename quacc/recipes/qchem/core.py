@@ -14,6 +14,7 @@ from quacc.calculators.qchem import QChem
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
 from pymatgen.io.ase import AseAtomsAdaptor
+from ase.optimize import FIRE
 
 try:
     from sella import Sella, IRC
@@ -316,7 +317,9 @@ def ts_job(
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
 
-    # Reminder to self: exposing TRICs?
+    # Reminders to self: 
+    #   - exposing TRICs?
+    #   - passing initial Hessian?
 
     true_charge, true_spin = true_charge_and_spin(atoms, charge, mult)
 
@@ -394,7 +397,7 @@ def irc_job(
     check_convergence: bool = True,
 ) -> dict:
     """
-    TS optimize a molecular structure.
+    IRC optimize a molecular structure.
 
     Parameters
     ----------
@@ -441,7 +444,9 @@ def irc_job(
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
 
-    # Reminder to self: exposing TRICs?
+    # Reminders to self: 
+    #   - exposing TRICs?
+    #   - passing initial Hessian?
 
     true_charge, true_spin = true_charge_and_spin(atoms, charge, mult)
 
@@ -500,3 +505,127 @@ def irc_job(
         charge_and_multiplicity=(true_charge, true_spin),
         additional_fields={"name": "Q-Chem IRC Optimization"},
     )
+
+
+@ct.electron
+@requires(
+    Sella,
+    "Sella must be installed. pip install sella",
+)
+def quasi_irc_job(
+    atoms: Atoms,
+    direction: str,
+    cores: int | None = None,
+    charge: int | None = None,
+    mult: int | None = None,
+    xc: str = "wb97mv",
+    basis: str = "def2-svpd",
+    scf_algorithm: str = "diis",
+    pcm_dielectric: str | None = None,
+    smd_solvent: str | None = None,
+    swaps: dict | None = None,
+    opt_swaps: dict | None = None,
+    check_convergence: bool = True,
+) -> dict:
+    """
+    Quasi-IRC optimize a molecular structure.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object.
+    direction
+        Direction of the IRC. Should be "forward" or "reverse".
+    cores
+        Number of cores to use for the Q-Chem calculation.
+        Effectively defaults to use all cores available on a given node, so this only needs to
+        be set by the user if less than all available cores should be used.
+    charge
+        The total charge of the molecular system.
+        Effectively defaults to zero.
+    mult
+        The spin multiplicity of the molecular system.
+        Effectively defaults to the lowest spin state given the molecular structure and charge.
+    xc
+        Exchange-correlation functional.
+        Defaults to wB97M-V.
+    basis
+        Basis set.
+        Defaults to def2-SVPD.
+    scf_algorithm
+        Algorithm used to converge the SCF.
+        Defaults to DIIS, but for particularly difficult cases, GDM should be employed instead.
+    pcm_dielectric
+        Dielectric constant of the optional polarizable continuum impicit solvation model.
+        Defaults no None, in which case PCM will not be employed.
+    smd_solvent
+        Solvent to use for SMD implicit solvation model. Examples include "water", "ethanol", "methanol",
+        and "acetonitrile". Refer to the Q-Chem manual for a complete list of solvents available.
+        Defulats to None, in which case SMD will not be employed.
+    swaps
+        Dictionary of custom kwargs for the calculator. Must be formatted consistently with Pymatgen's
+        QChemDictSet's overwrite_inputs. For example: {"rem": {"symmetry": "true"}}.
+    opt_swaps
+        Dictionary of custom kwargs for run_ase_opt
+            opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
+
+    Returns
+    -------
+    dict
+        Dictionary of results from quacc.schemas.ase.summarize_opt_run
+    """
+
+    # Reminders to self: 
+    #   - exposing TRICs?
+    #   - passing initial Hessian?
+
+    if direction not in ["forward", "reverse"]:
+        raise ValueError("direction must be 'forward' or 'reverse'! Exiting...")
+
+    if pcm_dielectric is not None and smd_solvent is not None:
+        raise ValueError("PCM and SMD cannot be employed simultaneously! Exiting...")
+
+    opt_swaps = opt_swaps or {}
+    irc_swaps = deepcopy(opt_swaps)
+    irc_swaps["fmax"] = 100
+    irc_swaps["max_steps"] = 100
+
+    relax_swaps = deepcopy(opt_swaps)
+    # relax_swaps["optimizer"] = FIRE
+
+    irc_summary = irc_job(
+        atoms=atoms,
+        direction=direction,
+        cores=cores,
+        charge=charge,
+        mult=mult,
+        xc=xc,
+        basis=basis,
+        scf_algorithm=scf_algorithm,
+        pcm_dielectric=pcm_dielectric,
+        smd_solvent=smd_solvent,
+        swaps=swaps,
+        opt_swaps=irc_swaps,
+        check_convergence=False
+    )
+
+    relax_summary = relax_job(
+        atoms=irc_summary["atoms"],
+        cores=cores,
+        charge=charge,
+        mult=mult,
+        xc=xc,
+        basis=basis,
+        scf_algorithm=scf_algorithm,
+        pcm_dielectric=pcm_dielectric,
+        smd_solvent=smd_solvent,
+        swaps=swaps,
+        opt_swaps=relax_swaps,
+        check_convergence=check_convergence
+    )
+
+    relax_summary["irc"] = irc_summary
+
+    return relax_summary
+
+
