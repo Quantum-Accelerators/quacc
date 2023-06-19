@@ -50,7 +50,6 @@ def test_static_Job():
         multiplicity=3,
         xc="m06l",
         basis="def2-svp",
-        write_molden=False,
         calc_swaps={"integral": "superfinegrid"},
     )
     assert output["natoms"] == len(atoms)
@@ -61,7 +60,10 @@ def test_static_Job():
     assert output["parameters"]["basis"] == "def2-svp"
     assert output["parameters"]["integral"] == "superfinegrid"
     assert "gfinput" not in output["parameters"]
-    assert output["parameters"]["ioplist"] == ["2/9=2000"]  # see ASE issue #660
+    assert output["parameters"]["ioplist"] == [
+        "6/7=3",
+        "2/9=2000",
+    ]  # see ASE issue #660
     assert "opt" not in output["parameters"]
 
 

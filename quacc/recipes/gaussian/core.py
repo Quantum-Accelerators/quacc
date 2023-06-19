@@ -22,7 +22,6 @@ def static_job(
     multiplicity: int | None = None,
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
-    write_molden: bool = True,
     calc_swaps: dict | None = None,
 ) -> dict:
     """
@@ -42,8 +41,6 @@ def static_job(
         Exchange-correlation functional
     basis
         Basis set
-    write_molden
-        Whether to write a molden file for orbital visualization
     calc_swaps
         Dictionary of custom kwargs for the calculator.
             defaults = {
@@ -59,10 +56,8 @@ def static_job(
                 "integral": "ultrafine",
                 "nosymmetry": "",
                 "pop": "CM5",
-                "gfinput": "" if write_molden else None,
+                "gfinput": "",
                 "ioplist": ["6/7=3", "2/9=2000"]
-                if write_molden
-                else ["2/9=2000"],  # see ASE issue #660
             }
 
     Returns
@@ -88,10 +83,8 @@ def static_job(
         "integral": "ultrafine",
         "nosymmetry": "",
         "pop": "CM5",
-        "gfinput": "" if write_molden else None,
-        "ioplist": ["6/7=3", "2/9=2000"]
-        if write_molden
-        else ["2/9=2000"],  # see ASE issue #660
+        "gfinput": "",
+        "ioplist": ["6/7=3", "2/9=2000"],  # see ASE issue #660
     }
     flags = remove_dict_empties(defaults | calc_swaps)
 
