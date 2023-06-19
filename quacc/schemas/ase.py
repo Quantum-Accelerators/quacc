@@ -4,6 +4,7 @@ Schemas for storing ASE-based data
 from __future__ import annotations
 
 import os
+import warnings
 
 import numpy as np
 from ase import units
@@ -531,12 +532,14 @@ def summarize_thermo_run(
     additional_fields = additional_fields or {}
 
     uri = get_uri(os.getcwd())
+
+    spin_multiplicity = int(2 * igt.spin + 1)
     inputs = {
         "parameters": {
             "temperature": temperature,
             "pressure": pressure,
             "sigma": igt.sigma,
-            "spin_multiplicity": int(2 * igt.spin + 1),
+            "spin_multiplicity": spin_multiplicity,
         },
         "nid": uri.split(":")[0],
         "dir_name": ":".join(uri.split(":")[1:]),
@@ -546,6 +549,7 @@ def summarize_thermo_run(
         "results": {
             "vib_freqs": [e / units.invcm for e in igt.vib_energies],
             "vib_energies": igt.vib_energies.tolist(),
+            "n_imag": igt.n_imag,
             "energy": igt.potentialenergy,
             "enthalpy": igt.get_enthalpy(temperature, verbose=True),
             "entropy": igt.get_entropy(temperature, pressure * 10**5, verbose=True),
@@ -555,6 +559,12 @@ def summarize_thermo_run(
             "zpe": igt.get_ZPE_correction(),
         }
     }
+
+    if charge_and_multiplicity and spin_multiplicity != charge_and_multiplicity[1]:
+        warnings.warn(
+            "The IdealGasThermo spin multiplicity does not match the user-specified multiplicity.",
+            UserWarning,
+        )
 
     atoms_db = atoms_to_metadata(
         igt.atoms, charge_and_multiplicity=charge_and_multiplicity
