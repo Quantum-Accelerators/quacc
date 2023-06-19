@@ -192,6 +192,7 @@ def summarize_opt_run(
         - input_structure: Molecule | Structure = Field(None, title = "The Pymatgen Structure or Molecule object from the input Atoms object if input_atoms is not None.")
         - nid: str = Field(None, title = "The node ID representing the machine where the calculation was run.")
         - parameters: dict = Field(None, title = "the parameters used to run the calculation.")
+        - opt_parameters: dict = Field(None, title = "the parameters used to run the optimization.")
         - results: dict = Field(None, title = "The results from the calculation.")
         - trajectory: List[Atoms] = Trajectory of Atoms objects
         - trajectory_results: List[dict] = List of ase.calc.results from the trajectory
@@ -240,8 +241,7 @@ def summarize_opt_run(
     """
 
     additional_fields = additional_fields or {}
-    dyn_parameters = dyn.todict()
-    parameters = dyn.atoms.calc.parameters
+    opt_parameters = dyn.todict()
 
     # Check trajectory
     if not os.path.exists(dyn.trajectory.filename):
@@ -268,7 +268,8 @@ def summarize_opt_run(
     # Get the calculator inputs
     uri = get_uri(os.getcwd())
     inputs = {
-        "parameters": dyn_parameters | parameters,
+        "parameters": dyn.atoms.calc.parameters,
+        "opt_parameters": opt_parameters,
         "nid": uri.split(":")[0],
         "dir_name": ":".join(uri.split(":")[1:]),
     }
@@ -329,6 +330,7 @@ def summarize_vib_run(
         - dir_name: str = Field(None, description="Directory where the output is parsed")
         - nid: str = Field(None, title = "The node ID representing the machine where the calculation was run.")
         - parameters: dict = Field(None, title = "the parameters used to run the calculation.")
+        - vib_parameters: dict = Field(None, title = "the parameters used to run the vibrations.")
             - delta: float = the Vibrations delta value
             - direction: str = the Vibrations direction value
             - method: str = the Vibrations method value
@@ -388,6 +390,7 @@ def summarize_vib_run(
 
     vib_freqs_raw = vib.get_frequencies().tolist()
     vib_energies_raw = vib.get_energies().tolist()
+    atoms = vib.atoms
 
     # Convert imaginary modes to negative values for DB storage
     for i, f in enumerate(vib_freqs_raw):
@@ -400,7 +403,8 @@ def summarize_vib_run(
 
     uri = get_uri(os.getcwd())
     inputs = {
-        "parameters": {
+        "parameters": atoms.calc.parameters,
+        "vib_parameters": {
             "delta": vib.delta,
             "direction": vib.direction,
             "method": vib.method,
@@ -411,7 +415,6 @@ def summarize_vib_run(
         "dir_name": ":".join(uri.split(":")[1:]),
     }
 
-    atoms = vib.atoms
     atoms_db = atoms_to_metadata(atoms, charge_and_multiplicity=charge_and_multiplicity)
 
     # Get the true vibrational modes
@@ -492,14 +495,15 @@ def summarize_thermo_run(
             - pull_request: int = Field(None, description="The pull request number associated with this data build.")
         - dir_name: str = Field(None, description="Directory where the output is parsed")
         - nid: str = Field(None, title = "The node ID representing the machine where the calculation was run.")
-        - parameters: dict = Field(None, title = "the parameters used to run the calculation.")
+        - thermo_parameters: dict = Field(None, title = "the parameters used to run the thermo calculation.")
             - temperature: float = Temperature in Kelvins
             - pressure: float = Pressure in bar
             - sigma: float = The rotational symmetry number of the molecule
             - spin_multiplicity: int = The spin multiplicity of the molecule
-        - results: dict = Field(None, title = "The results from the calculation.")
             - vib_freqs: List[float] = Vibrational frequencies in cm^-1
             - vib_energies: List[float] = Vibrational energies in eV
+            - n_imag: int = Number of imaginary vibrational frequencies
+        - results: dict = Field(None, title = "The results from the calculation.")
             - energy: float = The potential energy of the system in eV
             - enthalpy: float = The enthalpy of the system in eV
             - entropy: float = The entropy of the system in eV/K
@@ -532,14 +536,17 @@ def summarize_thermo_run(
     additional_fields = additional_fields or {}
 
     uri = get_uri(os.getcwd())
-
     spin_multiplicity = int(2 * igt.spin + 1)
+
     inputs = {
-        "parameters": {
+        "thermo_parameters": {
             "temperature": temperature,
             "pressure": pressure,
             "sigma": igt.sigma,
             "spin_multiplicity": spin_multiplicity,
+            "vib_freqs": [e / units.invcm for e in igt.vib_energies],
+            "vib_energies": igt.vib_energies.tolist(),
+            "n_imag": igt.n_imag,
         },
         "nid": uri.split(":")[0],
         "dir_name": ":".join(uri.split(":")[1:]),
@@ -547,9 +554,6 @@ def summarize_thermo_run(
 
     results = {
         "results": {
-            "vib_freqs": [e / units.invcm for e in igt.vib_energies],
-            "vib_energies": igt.vib_energies.tolist(),
-            "n_imag": igt.n_imag,
             "energy": igt.potentialenergy,
             "enthalpy": igt.get_enthalpy(temperature, verbose=True),
             "entropy": igt.get_entropy(temperature, pressure * 10**5, verbose=True),
