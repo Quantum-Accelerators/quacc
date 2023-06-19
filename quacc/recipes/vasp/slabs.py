@@ -4,7 +4,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 import covalent as ct
-from ase.atoms import Atoms
+from ase import Atoms
 from covalent._workflow.electron import Electron
 
 from quacc.calculators.vasp import Vasp

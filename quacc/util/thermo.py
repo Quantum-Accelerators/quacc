@@ -4,7 +4,7 @@ Utility functions for thermochemistry
 from __future__ import annotations
 
 import numpy as np
-from ase.atoms import Atoms, units
+from ase import Atoms, units
 from ase.thermochemistry import IdealGasThermo
 
 from quacc.schemas.atoms import atoms_to_metadata

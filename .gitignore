@@ -24,3 +24,6 @@ ipython_config.py
 
 # OS ignores
 .DS_Store
+
+# Editors ignores
+.vscode*
