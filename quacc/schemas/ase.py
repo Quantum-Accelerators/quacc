@@ -7,8 +7,7 @@ import os
 import warnings
 
 import numpy as np
-from ase import units
-from ase.atoms import Atoms
+from ase import Atoms, units
 from ase.constraints import Filter
 from ase.io import read
 from ase.optimize.optimize import Optimizer
@@ -241,14 +240,15 @@ def summarize_opt_run(
     """
 
     additional_fields = additional_fields or {}
-    opt_parameters = dyn.todict()
+    opt_parameters = dyn.todict() | {"fmax": dyn.fmax}
 
     # Check trajectory
     if not os.path.exists(dyn.trajectory.filename):
         raise FileNotFoundError("No trajectory file found.")
 
     # Check convergence
-    if check_convergence and not dyn.converged():
+    is_converged = dyn.converged()
+    if check_convergence and not is_converged:
         raise ValueError("Optimization did not converge.")
 
     traj = read(dyn.trajectory.filename, index=":")
@@ -263,13 +263,16 @@ def summarize_opt_run(
             for atoms in traj
         ],
     }
-    results = {"results": final_atoms.calc.results}
+    results = {
+        "results": final_atoms.calc.results
+        | {"converged": is_converged, "nsteps": dyn.get_number_of_steps()}
+    }
 
     # Get the calculator inputs
     uri = get_uri(os.getcwd())
     inputs = {
         "parameters": dyn.atoms.calc.parameters,
-        "opt_parameters": opt_parameters,
+        "parameters_opt": opt_parameters,
         "nid": uri.split(":")[0],
         "dir_name": ":".join(uri.split(":")[1:]),
     }
@@ -404,7 +407,7 @@ def summarize_vib_run(
     uri = get_uri(os.getcwd())
     inputs = {
         "parameters": atoms.calc.parameters,
-        "vib_parameters": {
+        "parameters_vib": {
             "delta": vib.delta,
             "direction": vib.direction,
             "method": vib.method,
@@ -500,9 +503,9 @@ def summarize_thermo_run(
             - pressure: float = Pressure in bar
             - sigma: float = The rotational symmetry number of the molecule
             - spin_multiplicity: int = The spin multiplicity of the molecule
-            - vib_freqs: List[float] = Vibrational frequencies in cm^-1
-            - vib_energies: List[float] = Vibrational energies in eV
-            - n_imag: int = Number of imaginary vibrational frequencies
+            - vib_freqs: List[float] = Vibrational frequencies in cm^-1 used for the thermo calculation
+            - vib_energies: List[float] = Vibrational energies in eV used for the thermo calculation
+            - n_imag: int = Number of imaginary vibrational frequencies ignored in the thermo calculation
         - results: dict = Field(None, title = "The results from the calculation.")
             - energy: float = The potential energy of the system in eV
             - enthalpy: float = The enthalpy of the system in eV
@@ -539,7 +542,7 @@ def summarize_thermo_run(
     spin_multiplicity = int(2 * igt.spin + 1)
 
     inputs = {
-        "thermo_parameters": {
+        "parameters_thermo": {
             "temperature": temperature,
             "pressure": pressure,
             "sigma": igt.sigma,

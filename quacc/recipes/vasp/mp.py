@@ -10,7 +10,7 @@ from dataclasses import dataclass
 
 import covalent as ct
 import numpy as np
-from ase.atoms import Atoms
+from ase import Atoms
 from covalent._workflow.electron import Electron
 
 from quacc.calculators.vasp import Vasp

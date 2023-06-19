@@ -8,7 +8,7 @@ from __future__ import annotations
 from copy import deepcopy
 
 import covalent as ct
-from ase.atoms import Atoms
+from ase import Atoms
 from ase.calculators.lj import LennardJones
 from ase.optimize import FIRE
 

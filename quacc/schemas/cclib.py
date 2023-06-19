@@ -6,7 +6,7 @@ from __future__ import annotations
 import os
 from typing import Literal
 
-from ase.atoms import Atoms
+from ase import Atoms
 from atomate2.common.schemas.cclib import TaskDocument
 
 from quacc.schemas.atoms import atoms_to_metadata

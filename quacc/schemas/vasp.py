@@ -6,7 +6,7 @@ from __future__ import annotations
 import os
 import warnings
 
-from ase.atoms import Atoms
+from ase import Atoms
 from emmet.core.tasks import TaskDoc
 
 from quacc import SETTINGS
