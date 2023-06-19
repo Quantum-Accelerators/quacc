@@ -77,7 +77,10 @@ def test_freq_job():
         assert output["parameters"]["sigma"] == 1.0
         assert output["parameters"]["rc"] == 3
         assert output["parameters"]["ro"] == 0.66 * 3
-    assert len(output["vib"]["vib_freqs_raw"]) == 3 * len(atoms)
-    assert len(output["vib"]["vib_freqs"]) == 3 * len(atoms) - 6
-    assert len(output["thermo"]["vib_freqs"]) == 3 * len(atoms) - 6
-    assert len(output["thermo"]["n_imag"]) == 0
+    assert len(output_all["vib"]["results"]["vib_freqs_raw"]) == 3 * len(atoms)
+    assert len(output_all["vib"]["results"]["vib_freqs"]) == 3 * len(atoms) - 6
+    assert (
+        len(output_all["thermo"]["thermo_parameters"]["vib_freqs"])
+        == 3 * len(atoms) - 6
+    )
+    assert len(output_all["thermo"]["thermo_parameters"]["n_imag"]) == 0

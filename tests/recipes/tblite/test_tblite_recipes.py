@@ -160,10 +160,10 @@ def test_freq_job():
     assert output["vib"]["results"]["imag_vib_freqs"] == []
 
     assert output["thermo"]["atoms"] == initial_atoms
-    assert output["thermo"]["parameters"]["temperature"] == 1000.0
-    assert output["thermo"]["parameters"]["pressure"] == 20.0
-    assert output["thermo"]["parameters"]["sigma"] == 6
-    assert output["thermo"]["parameters"]["spin_multiplicity"] == 2
+    assert output["thermo"]["thermo_parameters"]["temperature"] == 1000.0
+    assert output["thermo"]["thermo_parameters"]["pressure"] == 20.0
+    assert output["thermo"]["thermo_parameters"]["sigma"] == 6
+    assert output["thermo"]["thermo_parameters"]["spin_multiplicity"] == 2
     assert output["thermo"]["symmetry"]["linear"] is False
     assert output["thermo"]["symmetry"]["rotation_number"] == 6
     assert len(output["thermo"]["results"]["vib_freqs"]) == 6

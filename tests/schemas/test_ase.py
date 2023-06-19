@@ -170,11 +170,11 @@ def test_summarize_vib_run():
     results = summarize_vib_run(vib)
     assert results["atoms"] == input_atoms
     assert results["natoms"] == len(atoms)
-    assert results["parameters"]["delta"] == vib.delta
-    assert results["parameters"]["direction"] == "central"
-    assert results["parameters"]["method"] == "standard"
-    assert results["parameters"]["ndof"] == 6
-    assert results["parameters"]["nfree"] == 2
+    assert results["vib_parameters"]["delta"] == vib.delta
+    assert results["vib_parameters"]["direction"] == "central"
+    assert results["vib_parameters"]["method"] == "standard"
+    assert results["vib_parameters"]["ndof"] == 6
+    assert results["vib_parameters"]["nfree"] == 2
     assert "nid" in results
     assert "dir_name" in results
     assert "pull_request" in results["builder_meta"]
@@ -207,11 +207,11 @@ def test_summarize_vib_run():
     results = summarize_vib_run(vib, remove_empties=True)
     assert results["atoms"] == input_atoms
     assert results["natoms"] == len(atoms)
-    assert results["parameters"]["delta"] == vib.delta
-    assert results["parameters"]["direction"] == "central"
-    assert results["parameters"]["method"] == "standard"
-    assert results["parameters"]["ndof"] == 6
-    assert results["parameters"]["nfree"] == 2
+    assert results["vib_parameters"]["delta"] == vib.delta
+    assert results["vib_parameters"]["direction"] == "central"
+    assert results["vib_parameters"]["method"] == "standard"
+    assert results["vib_parameters"]["ndof"] == 6
+    assert results["vib_parameters"]["nfree"] == 2
     assert "nid" in results
     assert "dir_name" in results
     assert "pull_request" not in results["builder_meta"]
@@ -242,7 +242,7 @@ def test_summarize_vib_run():
     results = summarize_vib_run(vib)
     assert results["atoms"] == input_atoms
     assert results["nsites"] == len(atoms)
-    assert results["parameters"]["delta"] == vib.delta
+    assert results["vib_parameters"]["delta"] == vib.delta
     assert len(results["results"]["vib_freqs_raw"]) == 6
     assert len(results["results"]["vib_energies_raw"]) == 6
     assert len(results["results"]["vib_freqs"]) == 6
@@ -256,8 +256,8 @@ def test_summarize_thermo_run():
     results = summarize_thermo_run(igt)
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
-    assert results["results"]["vib_energies"] == [0.34]
-    assert results["results"]["vib_freqs"] == [0.34 / invcm]
+    assert results["thermo_parameters"]["vib_energies"] == [0.34]
+    assert results["thermo_parameters"]["vib_freqs"] == [0.34 / invcm]
     assert results["results"]["energy"] == 0
     assert "pull_request" in results["builder_meta"]
 
@@ -267,8 +267,8 @@ def test_summarize_thermo_run():
     results = summarize_thermo_run(igt, remove_empties=True)
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
-    assert results["results"]["vib_energies"] == [0.34]
-    assert results["results"]["vib_freqs"] == [0.34 / invcm]
+    assert results["thermo_parameters"]["vib_energies"] == [0.34]
+    assert results["thermo_parameters"]["vib_freqs"] == [0.34 / invcm]
     assert results["results"]["energy"] == 0
     assert "pull_request" not in results["builder_meta"]
 
@@ -280,8 +280,8 @@ def test_summarize_thermo_run():
     results = summarize_thermo_run(igt)
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
-    assert results["results"]["vib_energies"] == [0.34]
-    assert results["results"]["vib_freqs"] == [0.34 / invcm]
+    assert results["thermo_parameters"]["vib_energies"] == [0.34]
+    assert results["thermo_parameters"]["vib_freqs"] == [0.34 / invcm]
     assert results["results"]["energy"] == -1
 
     # # Make sure info tags are handled appropriately
@@ -323,17 +323,17 @@ def test_summarize_thermo_run():
     results = summarize_thermo_run(igt, temperature=1000.0, pressure=20.0)
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
-    assert len(results["results"]["vib_energies"]) == 6
-    assert results["results"]["vib_energies"][0] == vib_energies[-6]
-    assert results["results"]["vib_energies"][-1] == vib_energies[-1]
+    assert len(results["thermo_parameters"]["vib_energies"]) == 6
+    assert results["thermo_parameters"]["vib_energies"][0] == vib_energies[-6]
+    assert results["thermo_parameters"]["vib_energies"][-1] == vib_energies[-1]
     assert results["results"]["energy"] == -10.0
     assert results["results"]["enthalpy"] == pytest.approx(-8.749341973959462)
     assert results["results"]["entropy"] == pytest.approx(0.0023506788982171896)
     assert results["results"]["gibbs_energy"] == pytest.approx(-11.100020872176652)
-    assert results["parameters"]["temperature"] == 1000.0
-    assert results["parameters"]["pressure"] == 20.0
-    assert results["parameters"]["sigma"] == 6
-    assert results["parameters"]["spin_multiplicity"] == 2
+    assert results["thermo_parameters"]["temperature"] == 1000.0
+    assert results["thermo_parameters"]["pressure"] == 20.0
+    assert results["thermo_parameters"]["sigma"] == 6
+    assert results["thermo_parameters"]["spin_multiplicity"] == 2
     assert "nid" in results
     assert "dir_name" in results
 
