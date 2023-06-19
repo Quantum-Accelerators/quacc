@@ -255,11 +255,6 @@ def summarize_opt_run(
     initial_atoms = traj[0]
     final_atoms = dyn.atoms.atoms if isinstance(dyn.atoms, Filter) else dyn.atoms
 
-    print('aaaaaaaaaaaaaaaaaaaaa')
-    for atoms in traj:
-        print(atoms)
-        print(atoms.get_positions())
-
     # Get results
     traj_results = {
         "trajectory_results": [atoms.calc.results for atoms in traj],
@@ -269,7 +264,6 @@ def summarize_opt_run(
         ],
     }
     results = {"results": final_atoms.calc.results}
-    print('bbbbbbbbbbbbbbbbbbbbb')
     # Get the calculator inputs
     uri = get_uri(os.getcwd())
     inputs = {

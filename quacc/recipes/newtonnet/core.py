@@ -176,7 +176,7 @@ def ts_job(
     atoms.calc = mlcalculator
 
     if use_custom_hessian:
-        if opt_flags["optimizer"].lower() != "sella":
+        if opt_flags['optimizer'].__name__ != "Sella":
             raise ValueError("Custom hessian can only be used with Sella.")
 
         # atoms.calc.calculate()
@@ -194,9 +194,9 @@ def ts_job(
     atoms.calc = mlcalculator
     # Run the TS optimization
     dyn = run_ase_opt(atoms, **opt_flags)
-    print('dyn:\n', dyn)
+
     ts_summary = summarize_opt_run(dyn, additional_fields={"name": "NewtonNet TS"})
-    print('\n\n\n\nafter ts_summary call\n\n\n\n\n')
+
     # Run a frequency calculation
     thermo_summary = freq_job(
         ts_summary["atoms"],
