@@ -16,7 +16,7 @@ from quacc.util.dicts import remove_dict_empties
 @ct.electron
 def static_job(
     atoms: Atoms,
-    gfnff: bool = True,
+    use_gfnff: bool = True,
     library: str | None = None,
     keyword_swaps: dict | None = None,
     option_swaps: dict | None = None,
@@ -29,15 +29,15 @@ def static_job(
     ----------
     atoms
         Atoms object
-    gfnff
+    use_gfnff
         True if (p)GFN-FF should be used; False if not.
     library
         Filename of the potential library file, if required.
     keyword_swaps
         dictionary of custom keyword swap kwargs for the calculator.
             default_keywords = {
-                "gfnff": True if gfnff else None,
-                "gwolf": True if gfnff and atoms.pbc.any() else None,
+                "gfnff": True if use_gfnff else None,
+                "gwolf": True if use_gfnff and atoms.pbc.any() else None,
             }
     option_swaps
         dictionary of custom option swap kwargs for the calculator.
@@ -58,8 +58,8 @@ def static_job(
     input_atoms = deepcopy(atoms)
 
     default_keywords = {
-        "gfnff": True if gfnff else None,
-        "gwolf": True if gfnff and atoms.pbc.any() else None,
+        "gfnff": True if use_gfnff else None,
+        "gwolf": True if use_gfnff and atoms.pbc.any() else None,
     }
     default_options = {
         "dump every gulp.res": True,
@@ -86,7 +86,7 @@ def static_job(
 @ct.electron
 def relax_job(
     atoms: Atoms,
-    gfnff: bool = True,
+    use_gfnff: bool = True,
     library: str | None = None,
     relax_cell: bool = True,
     keyword_swaps: dict | None = None,
@@ -100,7 +100,7 @@ def relax_job(
     ----------
     atoms
         Atoms object
-    gfnff
+    use_gfnff
         True if (p)GFN-FF should be used; False if not.
     library
         Filename of the potential library file, if required.
@@ -127,8 +127,8 @@ def relax_job(
 
     default_keywords = {
         "opti": True,
-        "gfnff": True if gfnff else None,
-        "gwolf": True if gfnff and atoms.pbc.any() else None,
+        "gfnff": True if use_gfnff else None,
+        "gwolf": True if use_gfnff and atoms.pbc.any() else None,
         "conp": True if relax_cell and atoms.pbc.any() else None,
         "conv": None if relax_cell and atoms.pbc.any() else True,
     }
