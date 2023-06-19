@@ -13,7 +13,7 @@ from quacc import SETTINGS
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
 from quacc.util.dicts import clean_dict
-from quacc.util.pop_analysis import run_bader
+from quacc.util.pop_analysis import run_bader as run_bader_
 
 
 def summarize_run(
@@ -176,7 +176,7 @@ def summarize_run(
     # Get Bader analysis
     if run_bader:
         try:
-            bader_stats = run_bader(dir_path)
+            bader_stats = run_bader_(dir_path)
         except Exception:
             bader_stats = None
             warnings.warn("Bader analysis could not be performed.", UserWarning)
