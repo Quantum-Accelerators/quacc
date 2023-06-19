@@ -98,7 +98,7 @@ def test_freq_job():
     assert output["thermo"]["symmetry"]["point_group"] == "C2v"
     assert output["thermo"]["symmetry"]["rotation_number"] == 2
     assert output["thermo"]["symmetry"]["linear"] is False
-    assert len(output["thermo"]["results"]["vib_freqs"]) == 3
+    assert len(output["thermo"]["thermo_parameters"]["vib_freqs"]) == 3
     assert output["vib"]["results"]["vib_freqs"][0] == pytest.approx(1586.623114694335)
     assert output["thermo"]["thermo_parameters"]["vib_freqs"][-1] == pytest.approx(
         3526.9940431752034

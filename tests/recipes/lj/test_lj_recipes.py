@@ -69,18 +69,14 @@ def test_relax_job():
 def test_freq_job():
     atoms = molecule("H2O")
 
-    output_all = freq_job(relax_job(atoms)["atoms"])
-    for k in {"vib", "thermo"}:
-        output = output_all[k]
-        assert output["natoms"] == len(atoms)
-        assert output["parameters"]["epsilon"] == 1.0
-        assert output["parameters"]["sigma"] == 1.0
-        assert output["parameters"]["rc"] == 3
-        assert output["parameters"]["ro"] == 0.66 * 3
-    assert len(output_all["vib"]["results"]["vib_freqs_raw"]) == 3 * len(atoms)
-    assert len(output_all["vib"]["results"]["vib_freqs"]) == 3 * len(atoms) - 6
-    assert (
-        len(output_all["thermo"]["thermo_parameters"]["vib_freqs"])
-        == 3 * len(atoms) - 6
-    )
-    assert output_all["thermo"]["thermo_parameters"]["n_imag"] == 0
+    output = freq_job(relax_job(atoms)["atoms"])
+    assert output["vib"]["natoms"] == len(atoms)
+    assert output["thermo"]["natoms"] == len(atoms)
+    assert output["vib"]["parameters"]["epsilon"] == 1.0
+    assert output["vib"]["parameters"]["sigma"] == 1.0
+    assert output["vib"]["parameters"]["rc"] == 3
+    assert output["vib"]["parameters"]["ro"] == 0.66 * 3
+    assert len(output["vib"]["results"]["vib_freqs_raw"]) == 3 * len(atoms)
+    assert len(output["vib"]["results"]["vib_freqs"]) == 3 * len(atoms) - 6
+    assert len(output["thermo"]["thermo_parameters"]["vib_freqs"]) == 3 * len(atoms) - 6
+    assert output["thermo"]["thermo_parameters"]["n_imag"] == 0
