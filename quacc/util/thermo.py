@@ -26,11 +26,11 @@ def ideal_gas(
     atoms
         The Atoms object associated with the vibrational analysis.
     vib_freqs
-        The list of vibrations to use, typically obtained from Vibrations.get_frequencies().
+        The list of vibrations to use in cm^-1, typically obtained from Vibrations.get_frequencies().
     energy
         Potential energy in eV. If 0 eV, then the thermochemical correction is computed.
     spin_multiplicity
-        The spin multiplicity. If None, this will be determined automatically from the
+        The spin multiplicity (2S+1). If None, this will be determined automatically from the
         attached magnetic moments.
 
     Returns
