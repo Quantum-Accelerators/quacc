@@ -13,6 +13,7 @@ from ase.io import read
 from ase.optimize.optimize import Optimizer
 from ase.thermochemistry import IdealGasThermo
 from ase.vibrations import Vibrations
+from ase.vibrations.data import VibrationsData
 from atomate2.utils.path import get_uri
 
 from quacc.schemas.atoms import atoms_to_metadata
@@ -410,7 +411,7 @@ def summarize_vib_run(
     uri = get_uri(os.getcwd())
     inputs = {
         "parameters": atoms.calc.parameters,
-        "parameters_vib": {
+        "parameters_vib": None if isinstance(vib, VibrationsData) else {
             "delta": vib.delta,
             "direction": vib.direction,
             "method": vib.method,
