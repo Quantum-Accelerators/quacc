@@ -22,7 +22,6 @@ def static_job(
     multiplicity: int | None = None,
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
-    pop: str = "hirshfeld",
     write_molden: bool = True,
     calc_swaps: dict | None = None,
 ) -> dict:
@@ -43,8 +42,6 @@ def static_job(
         Exchange-correlation functional
     basis
         Basis set
-    pop
-        Type of population analysis to perform from `quacc.schemas.cclib.summarize_run`
     write_molden
         Whether to write a molden file for orbital visualization
     calc_swaps
@@ -61,7 +58,7 @@ def static_job(
                 "scf": ["maxcycle=250", "xqc"],
                 "integral": "ultrafine",
                 "nosymmetry": "",
-                "pop": pop,
+                "pop": "CM5",
                 "gfinput": "" if write_molden else None,
                 "ioplist": ["6/7=3", "2/9=2000"]
                 if write_molden
@@ -90,7 +87,7 @@ def static_job(
         "scf": ["maxcycle=250", "xqc"],
         "integral": "ultrafine",
         "nosymmetry": "",
-        "pop": pop,
+        "pop": "CM5",
         "gfinput": "" if write_molden else None,
         "ioplist": ["6/7=3", "2/9=2000"]
         if write_molden
@@ -148,6 +145,7 @@ def relax_job(
                 "charge": charge or int(sum(atoms.get_initial_charges())),
                 "mult": multiplicity or int(1 + sum(atoms.get_initial_magnetic_moments())),
                 "opt": "",
+                "pop": "CM5",
                 "scf": ["maxcycle=250", "xqc"],
                 "integral": "ultrafine",
                 "nosymmetry": "",
@@ -175,6 +173,7 @@ def relax_job(
         "charge": charge,
         "mult": multiplicity,
         "opt": "",
+        "pop": "CM5",
         "scf": ["maxcycle=250", "xqc"],
         "integral": "ultrafine",
         "nosymmetry": "",

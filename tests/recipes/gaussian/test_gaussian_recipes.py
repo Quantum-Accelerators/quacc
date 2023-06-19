@@ -50,7 +50,6 @@ def test_static_Job():
         multiplicity=3,
         xc="m06l",
         basis="def2-svp",
-        pop="regular",
         write_molden=False,
         calc_swaps={"integral": "superfinegrid"},
     )
