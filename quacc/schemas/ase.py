@@ -7,8 +7,7 @@ import os
 import warnings
 
 import numpy as np
-from ase import units
-from ase.atoms import Atoms
+from ase import Atoms, units
 from ase.constraints import Filter
 from ase.io import read
 from ase.optimize.optimize import Optimizer

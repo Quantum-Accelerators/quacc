@@ -5,7 +5,7 @@ import warnings
 from copy import deepcopy
 
 import covalent as ct
-from ase.atoms import Atoms
+from ase import Atoms
 from ase.calculators.gulp import GULP
 
 from quacc.schemas.ase import summarize_run

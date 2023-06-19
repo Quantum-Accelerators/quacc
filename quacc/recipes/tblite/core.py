@@ -7,7 +7,7 @@ from copy import deepcopy
 from typing import Literal
 
 import covalent as ct
-from ase.atoms import Atoms
+from ase import Atoms
 from ase.optimize import FIRE
 from monty.dev import requires
 

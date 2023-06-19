@@ -4,7 +4,7 @@ from __future__ import annotations
 import multiprocessing
 
 import covalent as ct
-from ase.atoms import Atoms
+from ase import Atoms
 from ase.calculators.orca import ORCA
 
 from quacc.schemas.cclib import summarize_run

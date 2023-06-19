@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import covalent as ct
-from ase.atoms import Atoms
+from ase import Atoms
 
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.vasp import summarize_run

@@ -7,7 +7,7 @@ import os
 from tempfile import mkdtemp
 
 import numpy as np
-from ase.atoms import Atoms
+from ase import Atoms
 from ase.io import read
 from ase.io.trajectory import Trajectory
 from ase.optimize import FIRE
