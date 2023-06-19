@@ -247,7 +247,8 @@ def summarize_opt_run(
         raise FileNotFoundError("No trajectory file found.")
 
     # Check convergence
-    if check_convergence and not dyn.converged():
+    is_converged = dyn.converged()
+    if check_convergence and not is_converged:
         raise ValueError("Optimization did not converge.")
 
     traj = read(dyn.trajectory.filename, index=":")
@@ -264,7 +265,7 @@ def summarize_opt_run(
     }
     results = {
         "results": final_atoms.calc.results
-        | {"converged": dyn.converged, "nsteps": dyn.get_number_of_steps()}
+        | {"converged": is_converged, "nsteps": dyn.get_number_of_steps()}
     }
 
     # Get the calculator inputs
