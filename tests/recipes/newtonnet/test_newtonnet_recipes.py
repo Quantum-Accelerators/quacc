@@ -7,6 +7,7 @@ import pytest
 from ase.build import molecule
 from ase.optimize import FIRE
 
+
 try:
     from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
 except ImportError:
@@ -59,6 +60,48 @@ def test_relax_Job():
     assert output["results"]["energy"] == pytest.approx(-9.418353066770434)
     assert not np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
     assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
+
+def test_ts_job_with_default_args():
+    # Define test inputs
+    atoms = molecule("H2O")
+
+    # Call the function
+    output = ts_job(atoms)
+
+    # Perform assertions on the result
+    assert isinstance(output, dict)
+    assert "ts" in output
+    assert "thermo" in output
+    # Add more assertions based on the expected output
+
+def test_ts_job_with_custom_hessian():
+    # Define test inputs
+    atoms = molecule("H2O")
+    use_custom_hessian = True
+
+    # Call the function
+    result = ts_job(atoms, use_custom_hessian=use_custom_hessian)
+
+    # Perform assertions on the result
+    assert isinstance(result, dict)
+    assert "ts" in result
+    assert "thermo" in result
+    # Add more assertions based on the expected output
+
+def test_ts_job_with_custom_optimizer():
+    # Define test inputs
+    atoms = molecule("H2O")
+    opt_swaps = {}
+
+    # Call the function
+    result = ts_job(atoms, opt_swaps=opt_swaps)
+
+    # Perform assertions on the result
+    assert isinstance(result, dict)
+    assert "ts" in result
+    assert "thermo" in result
+    # Add more assertions based on the expected output
+
 
 '''
 @pytest.mark.skipif(
