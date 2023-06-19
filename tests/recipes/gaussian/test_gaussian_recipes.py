@@ -59,6 +59,7 @@ def test_static_Job():
     assert output["parameters"]["xc"] == "m06l"
     assert output["parameters"]["basis"] == "def2-svp"
     assert output["parameters"]["integral"] == "superfinegrid"
+    assert output["parameters"]["gfinput"] == ""
     assert output["parameters"]["ioplist"] == [
         "6/7=3",
         "2/9=2000",
