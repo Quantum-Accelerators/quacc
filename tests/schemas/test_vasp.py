@@ -30,7 +30,7 @@ def mock_bader_analysis(*args, **kwargs):
 def patch_pop_analyses(monkeypatch):
     # Monkeypatch the Bader analysis
     monkeypatch.setattr(
-        "quacc.schemas.vasp.run_bader",
+        "quacc.schemas.vasp.bader_runner",
         mock_bader_analysis,
     )
 
