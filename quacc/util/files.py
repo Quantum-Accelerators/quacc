@@ -38,27 +38,27 @@ def check_logfile(logfile: str, check_str: str) -> bool:
     return False
 
 
-def copy_decompress(src_files: list[str], dst: str) -> None:
+def copy_decompress(source_files: list[str], destination: str) -> None:
     """
-    Copy and decompress files from src to dst.
+    Copy and decompress files from source to destination.
 
     Parameters
     ----------
-    src_files
+    source_files
         List of files to copy and decompress.
-    dst
+    destination
         Destination directory.
 
     Returns
     -------
     None
     """
-    for f in src_files:
+    for f in source_files:
         z_path = zpath(f)
         if os.path.exists(z_path):
             z_file = os.path.basename(z_path)
-            copy(z_path, os.path.join(dst, z_file))
-            decompress_file(os.path.join(dst, z_file))
+            copy(z_path, os.path.join(destination, z_file))
+            decompress_file(os.path.join(destination, z_file))
 
 
 def load_yaml_calc(yaml_path: str) -> dict:

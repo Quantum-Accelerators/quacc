@@ -15,7 +15,7 @@ from quacc.util.slabs import make_adsorbate_structures, make_max_slabs_from_bulk
 
 @ct.electron
 def slab_static_job(
-    atoms: Atoms, preset: str | None = None, swaps: dict | None = None
+    atoms: Atoms, preset: str | None = None, calc_swaps: dict | None = None
 ) -> dict:
     """
     Function to carry out a single-point calculation on a slab.
@@ -26,7 +26,7 @@ def slab_static_job(
         Atoms object
     preset
         Preset to use.
-    swaps
+    calc_swaps
         dictionary of custom kwargs for the calculator.
             defaults = {
                 "auto_dipole": True,
@@ -45,7 +45,7 @@ def slab_static_job(
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
 
-    swaps = swaps or {}
+    calc_swaps = calc_swaps or {}
 
     defaults = {
         "auto_dipole": True,
@@ -57,7 +57,7 @@ def slab_static_job(
         "nedos": 5001,
         "nsw": 0,
     }
-    flags = defaults | swaps
+    flags = defaults | calc_swaps
 
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
@@ -68,7 +68,7 @@ def slab_static_job(
 
 @ct.electron
 def slab_relax_job(
-    atoms: Atoms, preset: str | None = None, swaps: dict | None = None
+    atoms: Atoms, preset: str | None = None, calc_swaps: dict | None = None
 ) -> dict:
     """
     Function to relax a slab.
@@ -79,7 +79,7 @@ def slab_relax_job(
         Atoms object
     preset
         Preset to use.
-    swaps
+    calc_swaps
         Dictionary of custom kwargs for the calculator.
             defaults = {
                 "auto_dipole": True,
@@ -98,7 +98,7 @@ def slab_relax_job(
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
 
-    swaps = swaps or {}
+    calc_swaps = calc_swaps or {}
 
     defaults = {
         "auto_dipole": True,
@@ -110,7 +110,7 @@ def slab_relax_job(
         "lwave": False,
         "nsw": 200,
     }
-    flags = defaults | swaps
+    flags = defaults | calc_swaps
 
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc

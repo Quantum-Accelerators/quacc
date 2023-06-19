@@ -31,7 +31,7 @@ except ImportError:
 def static_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
-    tblite_kwargs: dict | None = None,
+    calc_kwargs: dict | None = None,
 ) -> dict:
     """
     Carry out a single-point calculation.
@@ -42,7 +42,7 @@ def static_job(
         Atoms object
     method
         GFN1-xTB, GFN2-xTB, and IPEA1-xTB.
-    tblite_kwargs
+    calc_kwargs
         Dictionary of custom kwargs for the tblite calculator.
 
     Returns
@@ -50,10 +50,10 @@ def static_job(
     dict
         Dictionary of results from quacc.schemas.ase.summarize_run
     """
-    tblite_kwargs = tblite_kwargs or {}
+    calc_kwargs = calc_kwargs or {}
     input_atoms = deepcopy(atoms)
 
-    atoms.calc = TBLite(method=method, **tblite_kwargs)
+    atoms.calc = TBLite(method=method, **calc_kwargs)
     atoms = run_calc(atoms)
     return summarize_run(
         atoms,
@@ -67,7 +67,7 @@ def static_job(
 def relax_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
-    tblite_kwargs: dict | None = None,
+    calc_kwargs: dict | None = None,
     opt_swaps: dict | None = None,
 ) -> dict:
     """
@@ -91,13 +91,13 @@ def relax_job(
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
 
-    tblite_kwargs = tblite_kwargs or {}
+    calc_kwargs = calc_kwargs or {}
     opt_swaps = opt_swaps or {}
 
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
     opt_flags = opt_defaults | opt_swaps
 
-    atoms.calc = TBLite(method=method, **tblite_kwargs)
+    atoms.calc = TBLite(method=method, **calc_kwargs)
     dyn = run_ase_opt(atoms, **opt_flags)
 
     return summarize_opt_run(dyn, additional_fields={"name": "TBLite Relax"})

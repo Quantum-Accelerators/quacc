@@ -19,7 +19,7 @@ from quacc.util.calc import run_ase_opt, run_calc
 @ct.electron
 def static_job(
     atoms: Atoms,
-    lj_kwargs: dict | None = None,
+    calc_kwargs: dict | None = None,
 ) -> dict:
     """
     Function to carry out a static calculation.
@@ -28,7 +28,7 @@ def static_job(
     ----------
     atoms
         Atoms object
-    lj_kwargs
+    calc_kwargs
         Dictionary of custom kwargs for the LJ calculator
 
     Returns
@@ -37,10 +37,10 @@ def static_job(
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
 
-    lj_kwargs = lj_kwargs or {}
+    calc_kwargs = calc_kwargs or {}
     input_atoms = deepcopy(atoms)
 
-    atoms.calc = LennardJones(**lj_kwargs)
+    atoms.calc = LennardJones(**calc_kwargs)
     atoms = run_calc(atoms)
 
     return summarize_run(
@@ -50,7 +50,7 @@ def static_job(
 
 @ct.electron
 def relax_job(
-    atoms: Atoms, lj_kwargs: dict | None = None, opt_swaps: dict | None = None
+    atoms: Atoms, calc_kwargs: dict | None = None, opt_swaps: dict | None = None
 ) -> dict:
     """
     Function to carry out a geometry optimization
@@ -59,7 +59,7 @@ def relax_job(
     ----------
     atoms
         Atoms object
-    lj_kwargs
+    calc_kwargs
         Dictionary of custom kwargs for the LJ calculator.
     opt_swaps
         Dictionary of swaps for run_ase_opt
@@ -71,14 +71,14 @@ def relax_job(
         Dictionary of results from `quacc.schemas.ase.summarize_opt_run`
     """
 
-    lj_kwargs = lj_kwargs or {}
+    calc_kwargs = calc_kwargs or {}
     opt_swaps = opt_swaps or {}
 
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
 
     opt_flags = opt_defaults | opt_swaps
 
-    atoms.calc = LennardJones(**lj_kwargs)
+    atoms.calc = LennardJones(**calc_kwargs)
     dyn = run_ase_opt(atoms, **opt_flags)
 
     return summarize_opt_run(dyn, additional_fields={"name": "LJ Relax"})

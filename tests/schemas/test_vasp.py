@@ -30,7 +30,7 @@ def mock_bader_analysis(*args, **kwargs):
 def patch_pop_analyses(monkeypatch):
     # Monkeypatch the Bader analysis
     monkeypatch.setattr(
-        "quacc.schemas.vasp.run_bader",
+        "quacc.schemas.vasp.bader_runner",
         mock_bader_analysis,
     )
 
@@ -106,7 +106,7 @@ def test_summarize_run():
 def test_summarize_bader_run():
     # Make sure Bader works
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
-    results = summarize_run(atoms, dir_path=run1, bader=True)
+    results = summarize_run(atoms, dir_path=run1, run_bader=True)
     struct = results["output"]["structure"]
     assert struct.site_properties["bader_charge"] == [-1.0] * len(atoms)
     assert struct.site_properties["bader_spin"] == [0.0] * len(atoms)

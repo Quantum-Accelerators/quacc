@@ -36,7 +36,7 @@ def test_static_Job():
     assert output["parameters"]["asap_cutoff"] is False
     assert output["results"]["energy"] == pytest.approx(0.07001766638245854)
 
-    output = static_job(atoms, emt_kwargs={"asap_cutoff": True})
+    output = static_job(atoms, calc_kwargs={"asap_cutoff": True})
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] is True
     assert output["results"]["energy"] == pytest.approx(0.11074520235398744)
@@ -64,7 +64,7 @@ def test_relax_Job():
         atoms,
         relax_cell=False,
         opt_swaps={"fmax": 0.03},
-        emt_kwargs={"asap_cutoff": True},
+        calc_kwargs={"asap_cutoff": True},
     )
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] is True
@@ -79,7 +79,7 @@ def test_relax_Job():
         atoms,
         relax_cell=False,
         opt_swaps={"fmax": 0.03},
-        emt_kwargs={"asap_cutoff": True},
+        calc_kwargs={"asap_cutoff": True},
     )
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] is True
@@ -105,7 +105,7 @@ def test_slab_dynamic_jobs():
         slab_static_electron=None,
         slab_relax_kwargs={
             "opt_swaps": {"fmax": 1.0},
-            "emt_kwargs": {"asap_cutoff": True},
+            "calc_kwargs": {"asap_cutoff": True},
             "relax_cell": False,
         },
     ).run(atoms)
@@ -119,7 +119,7 @@ def test_slab_dynamic_jobs():
     outputs = BulkToSlabsFlow(
         slab_relax_kwargs={
             "opt_swaps": {"fmax": 1.0},
-            "emt_kwargs": {"asap_cutoff": True},
+            "calc_kwargs": {"asap_cutoff": True},
             "relax_cell": False,
         },
     ).run(atoms, slabgen_kwargs={"max_slabs": 2})
@@ -145,7 +145,7 @@ def test_jf_slab_dynamic_jobs():
         slab_static_job=None,
         slab_relax_kwargs={
             "opt_swaps": {"fmax": 1.0},
-            "emt_kwargs": {"asap_cutoff": True},
+            "calc_kwargs": {"asap_cutoff": True},
             "relax_cell": False,
         },
     ).make(atoms)
@@ -154,7 +154,7 @@ def test_jf_slab_dynamic_jobs():
     flow = JFBulkToSlabsFlow(
         slab_relax_kwargs={
             "opt_swaps": {"fmax": 1.0},
-            "emt_kwargs": {"asap_cutoff": True},
+            "calc_kwargs": {"asap_cutoff": True},
             "relax_cell": False,
         },
     ).make(atoms, slabgen_kwargs={"max_slabs": 2})

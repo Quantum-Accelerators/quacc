@@ -49,7 +49,7 @@ def test_static_maker():
         multiplicity=3,
         method="pbe",
         basis="def2-svp",
-        swaps={"num_threads": 1, "mem": None, "pop": "regular"},
+        calc_swaps={"num_threads": 1, "mem": None, "pop": "regular"},
     )
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == -2
