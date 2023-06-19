@@ -240,14 +240,15 @@ def summarize_opt_run(
     """
 
     additional_fields = additional_fields or {}
-    opt_parameters = dyn.todict()
+    opt_parameters = dyn.todict() | {"fmax": dyn.fmax}
 
     # Check trajectory
     if not os.path.exists(dyn.trajectory.filename):
         raise FileNotFoundError("No trajectory file found.")
 
     # Check convergence
-    if check_convergence and not dyn.converged():
+    is_converged = dyn.converged()
+    if check_convergence and not is_converged:
         raise ValueError("Optimization did not converge.")
 
     traj = read(dyn.trajectory.filename, index=":")
@@ -262,13 +263,16 @@ def summarize_opt_run(
             for atoms in traj
         ],
     }
-    results = {"results": final_atoms.calc.results}
+    results = {
+        "results": final_atoms.calc.results
+        | {"converged": is_converged, "nsteps": dyn.get_number_of_steps()}
+    }
 
     # Get the calculator inputs
     uri = get_uri(os.getcwd())
     inputs = {
         "parameters": dyn.atoms.calc.parameters,
-        "opt_parameters": opt_parameters,
+        "parameters_opt": opt_parameters,
         "nid": uri.split(":")[0],
         "dir_name": ":".join(uri.split(":")[1:]),
     }
@@ -403,7 +407,7 @@ def summarize_vib_run(
     uri = get_uri(os.getcwd())
     inputs = {
         "parameters": atoms.calc.parameters,
-        "vib_parameters": {
+        "parameters_vib": {
             "delta": vib.delta,
             "direction": vib.direction,
             "method": vib.method,
@@ -538,7 +542,7 @@ def summarize_thermo_run(
     spin_multiplicity = int(2 * igt.spin + 1)
 
     inputs = {
-        "thermo_parameters": {
+        "parameters_thermo": {
             "temperature": temperature,
             "pressure": pressure,
             "sigma": igt.sigma,
