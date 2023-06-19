@@ -98,9 +98,9 @@ def test_freq_job():
     assert output["thermo"]["symmetry"]["point_group"] == "C2v"
     assert output["thermo"]["symmetry"]["rotation_number"] == 2
     assert output["thermo"]["symmetry"]["linear"] is False
-    assert len(output["thermo"]["thermo_parameters"]["vib_freqs"]) == 3
+    assert len(output["thermo"]["parameters_thermo"]["vib_freqs"]) == 3
     assert output["vib"]["results"]["vib_freqs"][0] == pytest.approx(1586.623114694335)
-    assert output["thermo"]["thermo_parameters"]["vib_freqs"][-1] == pytest.approx(
+    assert output["thermo"]["parameters_thermo"]["vib_freqs"][-1] == pytest.approx(
         3526.9940431752034
     )
     assert output["thermo"]["results"]["energy"] == 0.0
@@ -128,7 +128,7 @@ def test_freq_job():
     assert output["thermo"]["atoms"] == initial_atoms
     assert output["thermo"]["symmetry"]["linear"] is False
     assert output["thermo"]["symmetry"]["rotation_number"] == np.inf
-    assert len(output["thermo"]["thermo_parameters"]["vib_freqs"]) == 0
+    assert len(output["thermo"]["parameters_thermo"]["vib_freqs"]) == 0
     assert output["thermo"]["results"]["energy"] == -1.0
     assert output["thermo"]["results"]["enthalpy"] == pytest.approx(-0.9357685739989672)
     assert output["thermo"]["results"]["entropy"] == pytest.approx(
@@ -160,13 +160,13 @@ def test_freq_job():
     assert output["vib"]["results"]["imag_vib_freqs"] == []
 
     assert output["thermo"]["atoms"] == initial_atoms
-    assert output["thermo"]["thermo_parameters"]["temperature"] == 1000.0
-    assert output["thermo"]["thermo_parameters"]["pressure"] == 20.0
-    assert output["thermo"]["thermo_parameters"]["sigma"] == 6
-    assert output["thermo"]["thermo_parameters"]["spin_multiplicity"] == 2
+    assert output["thermo"]["parameters_thermo"]["temperature"] == 1000.0
+    assert output["thermo"]["parameters_thermo"]["pressure"] == 20.0
+    assert output["thermo"]["parameters_thermo"]["sigma"] == 6
+    assert output["thermo"]["parameters_thermo"]["spin_multiplicity"] == 2
     assert output["thermo"]["symmetry"]["linear"] is False
     assert output["thermo"]["symmetry"]["rotation_number"] == 6
-    assert len(output["thermo"]["thermo_parameters"]["vib_freqs"]) == 6
+    assert len(output["thermo"]["parameters_thermo"]["vib_freqs"]) == 6
     assert output["thermo"]["results"]["energy"] == -10.0
     assert output["thermo"]["results"]["enthalpy"] == pytest.approx(-8.749341973959462)
     assert output["thermo"]["results"]["entropy"] == pytest.approx(

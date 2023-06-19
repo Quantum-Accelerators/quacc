@@ -268,7 +268,7 @@ def summarize_opt_run(
     uri = get_uri(os.getcwd())
     inputs = {
         "parameters": dyn.atoms.calc.parameters,
-        "opt_parameters": opt_parameters,
+        "parameters_opt": opt_parameters,
         "nid": uri.split(":")[0],
         "dir_name": ":".join(uri.split(":")[1:]),
     }
@@ -403,7 +403,7 @@ def summarize_vib_run(
     uri = get_uri(os.getcwd())
     inputs = {
         "parameters": atoms.calc.parameters,
-        "vib_parameters": {
+        "parameters_vib": {
             "delta": vib.delta,
             "direction": vib.direction,
             "method": vib.method,
@@ -538,7 +538,7 @@ def summarize_thermo_run(
     spin_multiplicity = int(2 * igt.spin + 1)
 
     inputs = {
-        "thermo_parameters": {
+        "parameters_thermo": {
             "temperature": temperature,
             "pressure": pressure,
             "sigma": igt.sigma,
