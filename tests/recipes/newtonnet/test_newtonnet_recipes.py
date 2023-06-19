@@ -111,8 +111,10 @@ def test_ts_job_with_default_args():
     # Perform assertions on the result
     assert isinstance(output, dict)
     assert output['ts']['results']['energy'] == pytest.approx(-30.935106077591225)
-    assert output['thermo']['results']['vib_freqs'] == pytest.approx(-30.935106077591225)
-    assert len(output['thermo']['results']['vib_freqs']) == pytest.approx(-30.935106077591225)
+    #assert output['thermo']['vib']['results']['vib_freqs_raw'] == pytest.approx(0)
+    assert output['thermo']['vib']['results']['imag_vib_freqs'][0] == pytest.approx(-1686.434228258355)
+    #assert output['thermo']['vib']['results'].keys() == pytest.approx(-30.935106077591225)
+    #assert len(output['thermo']['results']['vib_freqs']) == pytest.approx(-30.935106077591225)
     assert "ts" in output
     assert "thermo" in output
     # Add more assertions based on the expected output
