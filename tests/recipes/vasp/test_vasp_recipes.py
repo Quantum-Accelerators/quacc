@@ -38,19 +38,19 @@ def test_static_job():
     assert output["parameters"]["nsw"] == 0
     assert output["parameters"]["lwave"] is True
 
-    output = static_job(atoms, preset="BulkSet", swaps={"ncore": 2, "kpar": 4})
+    output = static_job(atoms, preset="BulkSet", calc_swaps={"ncore": 2, "kpar": 4})
     assert output["parameters"]["encut"] == 520
     assert output["parameters"]["ncore"] == 2
     assert output["parameters"]["kpar"] == 4
 
     output = static_job(
-        atoms, preset="QMOFSet", swaps={"ismear": 0, "sigma": 0.01, "nedos": None}
+        atoms, preset="QMOFSet", calc_swaps={"ismear": 0, "sigma": 0.01, "nedos": None}
     )
     assert output["parameters"]["encut"] == 520
     assert output["parameters"]["ismear"] == 0
     assert output["parameters"]["sigma"] == 0.01
 
-    output = static_job(atoms, swaps={"lwave": None})
+    output = static_job(atoms, calc_swaps={"lwave": None})
     assert "lwave" not in output["parameters"]
 
 
@@ -64,7 +64,7 @@ def test_relax_job():
     assert output["parameters"]["isif"] == 3
     assert output["parameters"]["lwave"] is False
 
-    output = relax_job(atoms, preset="BulkSet", swaps={"nelmin": 6})
+    output = relax_job(atoms, preset="BulkSet", calc_swaps={"nelmin": 6})
     assert output["parameters"]["encut"] == 520
     assert output["parameters"]["nelmin"] == 6
 
@@ -87,7 +87,7 @@ def test_doublerelax_job():
     assert output["relax2"]["parameters"]["isif"] == 3
     assert output["relax2"]["parameters"]["lwave"] is True
 
-    output = double_relax_job(atoms, preset="BulkSet", swaps2={"nelmin": 6})
+    output = double_relax_job(atoms, preset="BulkSet", calc_swaps2={"nelmin": 6})
     assert output["relax1"]["parameters"]["encut"] == 520
     assert "nelmin" not in output["relax1"]["parameters"]
     assert output["relax2"]["parameters"]["encut"] == 520
@@ -97,7 +97,7 @@ def test_doublerelax_job():
     assert output["relax1"]["parameters"]["isif"] == 2
     assert output["relax2"]["parameters"]["isif"] == 2
 
-    output = double_relax_job(atoms, swaps1={"kpts": [1, 1, 1]})
+    output = double_relax_job(atoms, calc_swaps1={"kpts": [1, 1, 1]})
 
 
 def test_slab_static_job():
@@ -109,11 +109,11 @@ def test_slab_static_job():
     assert output["parameters"]["nsw"] == 0
     assert output["parameters"]["lvhar"] is True
 
-    output = slab_static_job(atoms, preset="SlabSet", swaps={"nelmin": 6})
+    output = slab_static_job(atoms, preset="SlabSet", calc_swaps={"nelmin": 6})
     assert output["parameters"]["encut"] == 450
     assert output["parameters"]["nelmin"] == 6
 
-    output = slab_static_job(atoms, preset="SlabSet", swaps={"encut": None})
+    output = slab_static_job(atoms, preset="SlabSet", calc_swaps={"encut": None})
     assert "encut" not in output["parameters"]
 
 
@@ -127,7 +127,7 @@ def test_slab_relax_job():
     assert output["parameters"]["isym"] == 0
     assert output["parameters"]["lwave"] is False
 
-    output = slab_relax_job(atoms, preset="SlabSet", swaps={"nelmin": 6})
+    output = slab_relax_job(atoms, preset="SlabSet", calc_swaps={"nelmin": 6})
     assert output["parameters"]["encut"] == 450
     assert output["parameters"]["nelmin"] == 6
 
@@ -157,7 +157,7 @@ def test_slab_dynamic_jobs():
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
     outputs = BulkToSlabsFlow(
-        slab_relax_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
+        slab_relax_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
         slab_static_electron=None,
     ).run(atoms)
     assert len(outputs) == 4
@@ -171,7 +171,7 @@ def test_slab_dynamic_jobs():
 
     outputs = BulkToSlabsFlow(
         slab_relax_electron=None,
-        slab_static_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
+        slab_static_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
     ).run(atoms)
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
@@ -183,7 +183,7 @@ def test_slab_dynamic_jobs():
     assert [output["parameters"]["encut"] == 450 for output in outputs]
 
     outputs = BulkToSlabsFlow(
-        slab_static_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
+        slab_static_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
     ).run(atoms)
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
@@ -213,7 +213,7 @@ def test_slab_dynamic_jobs():
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
     outputs = SlabToAdsFlow(
-        slab_relax_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
+        slab_relax_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
         slab_static_electron=None,
     ).run(atoms, adsorbate)
 
@@ -224,7 +224,7 @@ def test_slab_dynamic_jobs():
 
     outputs = SlabToAdsFlow(
         slab_relax_electron=None,
-        slab_static_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
+        slab_static_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
     ).run(atoms, adsorbate)
 
     assert [output["nsites"] == 82 for output in outputs]
@@ -233,7 +233,7 @@ def test_slab_dynamic_jobs():
     assert [output["parameters"]["encut"] == 450 for output in outputs]
 
     outputs = SlabToAdsFlow(
-        slab_static_kwargs={"preset": "SlabSet", "swaps": {"nelmin": 6}},
+        slab_static_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
     ).run(atoms, adsorbate)
 
     assert [output["nsites"] == 82 for output in outputs]
@@ -332,12 +332,12 @@ def test_jf_slab_dynamic_jobs():
 
     flow = JFBulkToSlabsFlow(
         slab_static_job=None,
-        slab_relax_kwargs={"swaps": {"nelmin": 6}},
+        slab_relax_kwargs={"calc_swaps": {"nelmin": 6}},
     ).make(atoms)
     jf.run_locally(flow, store=store, ensure_success=True)
 
     flow = JFBulkToSlabsFlow(
-        slab_relax_kwargs={"swaps": {"nelmin": 6}},
+        slab_relax_kwargs={"calc_swaps": {"nelmin": 6}},
     ).make(atoms, slabgen_kwargs={"max_slabs": 2})
     responses = jf.run_locally(flow, store=store, ensure_success=True)
 

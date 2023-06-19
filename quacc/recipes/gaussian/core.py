@@ -24,7 +24,7 @@ def static_job(
     basis: str = "def2-tzvp",
     pop: str = "hirshfeld",
     write_molden: bool = True,
-    swaps: dict | None = None,
+    calc_swaps: dict | None = None,
 ) -> dict:
     """
     Carry out a single-point calculation.
@@ -47,7 +47,7 @@ def static_job(
         Type of population analysis to perform from `quacc.schemas.cclib.summarize_run`
     write_molden
         Whether to write a molden file for orbital visualization
-    swaps
+    calc_swaps
         Dictionary of custom kwargs for the calculator.
             defaults = {
                 "mem": "16GB",
@@ -74,7 +74,7 @@ def static_job(
         Dictionary of results from `quacc.schemas.cclib.summarize_run`
     """
 
-    swaps = swaps or {}
+    calc_swaps = calc_swaps or {}
 
     charge = charge or int(atoms.get_initial_charges().sum())
     mult = mult or int(1 + atoms.get_initial_magnetic_moments().sum())
@@ -96,7 +96,7 @@ def static_job(
         if write_molden
         else ["2/9=2000"],  # see ASE issue #660
     }
-    flags = remove_dict_empties(defaults | swaps)
+    flags = remove_dict_empties(defaults | calc_swaps)
 
     atoms.calc = Gaussian(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
@@ -116,7 +116,7 @@ def relax_job(
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
     freq: bool = False,
-    swaps: dict | None = None,
+    calc_swaps: dict | None = None,
 ) -> dict:
     """
     Carry out a geometry optimization.
@@ -137,7 +137,7 @@ def relax_job(
         Basis set
     freq
         If a frequency calculation should be carried out.
-    swaps
+    calc_swaps
         Dictionary of custom kwargs for the calculator.
             defaults = {
                 "mem": "16GB",
@@ -161,7 +161,7 @@ def relax_job(
         Dictionary of results from `quacc.schemas.cclib.summarize_run`
     """
 
-    swaps = swaps or {}
+    calc_swaps = calc_swaps or {}
 
     charge = charge or int(atoms.get_initial_charges().sum())
     mult = mult or int(1 + atoms.get_initial_magnetic_moments().sum())
@@ -181,7 +181,7 @@ def relax_job(
         "freq": "" if freq else None,
         "ioplist": ["2/9=2000"],  # ASE issue #660
     }
-    flags = remove_dict_empties(defaults | swaps)
+    flags = remove_dict_empties(defaults | calc_swaps)
 
     atoms.calc = Gaussian(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)

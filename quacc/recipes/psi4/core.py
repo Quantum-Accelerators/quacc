@@ -24,7 +24,7 @@ def static_job(
     multiplicity: int | None = None,
     method: str = "wb97x-v",
     basis: str = "def2-tzvp",
-    swaps: dict | None = None,
+    calc_swaps: dict | None = None,
 ) -> dict:
     """
     Function to carry out a single-point calculation.
@@ -43,7 +43,7 @@ def static_job(
         The level of theory to use.
     basis
         Basis set
-    swaps
+    calc_swaps
         Dictionary of custom kwargs for the calculator.
             defaults = {
                 "mem": "16GB",
@@ -61,7 +61,7 @@ def static_job(
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
 
-    swaps = swaps or {}
+    calc_swaps = calc_swaps or {}
 
     charge = charge or round(int(atoms.get_initial_charges().sum()))
     multiplicity = multiplicity or round(
@@ -77,7 +77,7 @@ def static_job(
         "multiplicity": multiplicity,
         "reference": "uhf" if multiplicity > 1 else None,
     }
-    flags = remove_dict_empties(defaults | swaps)
+    flags = remove_dict_empties(defaults | calc_swaps)
 
     atoms.calc = Psi4(**flags)
     new_atoms = run_calc(atoms)

@@ -20,7 +20,7 @@ from quacc.util.calc import run_calc
 
 @ct.electron
 def mp_prerelax_job(
-    atoms: Atoms, preset: str | None = "MPScanSet", swaps: dict | None = None
+    atoms: Atoms, preset: str | None = "MPScanSet", calc_swaps: dict | None = None
 ) -> dict:
     """
     Function to pre-relax a structure with Materials Project settings.
@@ -32,7 +32,7 @@ def mp_prerelax_job(
         Atoms object
     preset
         Preset to use.
-    swaps
+    calc_swaps
         Dictionary of custom kwargs for the calculator.
             defaults = {"ediffg": -0.05, "xc": "pbesol"}
 
@@ -41,10 +41,10 @@ def mp_prerelax_job(
     dict
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
-    swaps = swaps or {}
+    calc_swaps = calc_swaps or {}
 
     defaults = {"ediffg": -0.05, "xc": "pbesol"}
-    flags = defaults | swaps
+    flags = defaults | calc_swaps
 
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
@@ -55,7 +55,7 @@ def mp_prerelax_job(
 
 @ct.electron
 def mp_relax_job(
-    atoms: Atoms, preset: str | None = "MPScanSet", swaps: dict | None = None
+    atoms: Atoms, preset: str | None = "MPScanSet", calc_swaps: dict | None = None
 ) -> dict:
     """
     Function to relax a structure with Materials Project settings.
@@ -67,7 +67,7 @@ def mp_relax_job(
         Atoms object
     preset
         Preset to use.
-    swaps
+    calc_swaps
         Dictionary of custom kwargs for the calculator.
 
     Returns
@@ -75,9 +75,9 @@ def mp_relax_job(
     dict
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
-    swaps = swaps or {}
+    calc_swaps = calc_swaps or {}
 
-    calc = Vasp(atoms, preset=preset, **swaps)
+    calc = Vasp(atoms, preset=preset, **calc_swaps)
     atoms.calc = calc
     atoms = run_calc(atoms)
 
@@ -143,7 +143,9 @@ class MPRelaxFlow:
                 "sigma": 0.05,
                 "kpts": None,
             }
-        self.relax_kwargs["swaps"] = kspacing_swaps | self.relax_kwargs.get("swaps", {})
+        self.relax_kwargs["calc_swaps"] = kspacing_swaps | self.relax_kwargs.get(
+            "calc_swaps", {}
+        )
 
         # TODO: Also, copy the WAVECAR from the prerelaxation to the relaxation
 
