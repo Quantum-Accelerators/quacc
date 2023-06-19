@@ -256,8 +256,9 @@ def summarize_opt_run(
     final_atoms = dyn.atoms.atoms if isinstance(dyn.atoms, Filter) else dyn.atoms
 
     print('aaaaaaaaaaaaaaaaaaaaa')
-    atoms_list = [atoms for atoms in traj]
-    print(*atoms_list, sep='\n')
+    for atoms in traj:
+        print(atoms)
+        print(atoms.get_positions())
 
     # Get results
     traj_results = {
