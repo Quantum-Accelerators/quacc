@@ -54,7 +54,7 @@ if __name__ == "__main__":
                 "ipython==8.14.0",
                 "jsonschema[format]==4.17.3",
                 "nbsphinx==0.9.2",
-                "myst_parser==1.0.0",
+                "myst_parser==2.0.0",
                 "numpydoc==1.5.0",
                 "sphinx_design==0.4.1",
                 "sphinx-copybutton==0.5.2",
