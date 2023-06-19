@@ -7,7 +7,7 @@ Reference: https://doi.org/10.1016/j.matt.2021.02.015
 from __future__ import annotations
 
 import covalent as ct
-from ase.atoms import Atoms
+from ase import Atoms
 from ase.optimize import BFGSLineSearch
 
 from quacc.calculators.vasp import Vasp

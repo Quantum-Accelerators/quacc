@@ -9,7 +9,7 @@ import warnings
 from copy import deepcopy
 
 import covalent as ct
-from ase.atoms import Atoms
+from ase import Atoms
 from ase.calculators.emt import EMT
 from ase.constraints import ExpCellFilter
 from ase.optimize import FIRE

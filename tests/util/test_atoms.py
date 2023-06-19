@@ -2,7 +2,7 @@ import os
 from copy import deepcopy
 from pathlib import Path
 
-from ase.atoms import Atoms
+from ase import Atoms
 from ase.build import bulk, molecule
 from ase.io import read
 
