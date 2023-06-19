@@ -495,7 +495,6 @@ def summarize_thermo_run(
             - pull_request: int = Field(None, description="The pull request number associated with this data build.")
         - dir_name: str = Field(None, description="Directory where the output is parsed")
         - nid: str = Field(None, title = "The node ID representing the machine where the calculation was run.")
-        - parameters: dict = Field(None, title = "the parameters used to run the calculation.")
         - thermo_parameters: dict = Field(None, title = "the parameters used to run the thermo calculation.")
             - temperature: float = Temperature in Kelvins
             - pressure: float = Pressure in bar
@@ -540,7 +539,6 @@ def summarize_thermo_run(
     spin_multiplicity = int(2 * igt.spin + 1)
 
     inputs = {
-        "parameters": igt.atoms.calc.parameters,
         "thermo_parameters": {
             "temperature": temperature,
             "pressure": pressure,
