@@ -4,7 +4,7 @@ from shutil import rmtree
 
 import pytest
 
-from quacc.util.pop_analysis import run_bader, run_chargemol
+from quacc.util.pop_analysis import bader_runner, chargemol_runner
 
 
 def mock_bader_analysis(*args, **kwargs):
@@ -75,7 +75,7 @@ def teardown_module():
 
 
 def test_run_bader():
-    bader_stats = run_bader()
+    bader_stats = bader_runner()
     assert bader_stats["min_dist"] == [1.0]
     assert bader_stats["partial_charges"] == [1.0]
     assert bader_stats["spin_moments"] == [0.0]
@@ -88,23 +88,23 @@ def test_run_bader():
 def test_bader_erorr():
     os.remove("CHGCAR")
     with pytest.raises(FileNotFoundError):
-        run_bader()
+        bader_runner()
     with open("CHGCAR", "w") as w:
         w.write("test")
 
 
 def test_run_chargemol():
-    chargemol_stats = run_chargemol(path=".", atomic_densities_path=".")
+    chargemol_stats = chargemol_runner(path=".", atomic_densities_path=".")
     assert chargemol_stats["ddec"]["partial_charges"] == [1.0]
     assert chargemol_stats["ddec"]["spin_moments"] == [0.0]
 
 
 def test_chargemol_erorr():
     with pytest.raises(ValueError):
-        run_chargemol()
+        chargemol_runner()
 
     os.remove("CHGCAR")
     with pytest.raises(FileNotFoundError):
-        run_chargemol(atomic_densities_path=".")
+        chargemol_runner(atomic_densities_path=".")
     with open("CHGCAR", "w") as w:
         w.write("test")
