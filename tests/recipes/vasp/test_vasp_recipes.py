@@ -295,7 +295,7 @@ def test_qmof():
     output = qmof_relax_job(atoms, run_prerelax=False)
     assert output["prerelax-lowacc"] is None
 
-    output = qmof_relax_job(atoms, preset="BulkSet", scalc_waps={"nelmin": 6})
+    output = qmof_relax_job(atoms, preset="BulkSet", calc_swaps={"nelmin": 6})
     assert output["double-relax"][0]["parameters"]["encut"] == 520
     assert output["double-relax"][0]["parameters"]["nelmin"] == 6
     assert output["double-relax"][0]["parameters"]["sigma"] == 0.05
