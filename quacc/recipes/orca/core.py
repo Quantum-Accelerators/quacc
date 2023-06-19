@@ -19,7 +19,7 @@ GEOM_FILE = f"{ORCA().name}.xyz"
 def static_job(
     atoms: Atoms,
     charge: int | None = None,
-    mult: int | None = None,
+    multiplicity: int | None = None,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
     input_swaps: dict | None = None,
@@ -35,7 +35,7 @@ def static_job(
     charge
         Charge of the system. If None, this is determined from the sum of
         `atoms.get_initial_charges()`.
-    mult
+    multiplicity
         Multiplicity of the system. If None, this is determined from 1+ the sum
         of `atoms.get_initial_magnetic_moments()`.
     xc
@@ -89,11 +89,11 @@ def static_job(
     orcablocks = " ".join(list(blocks.keys()))
 
     charge = charge or int(atoms.get_initial_charges().sum())
-    mult = mult or int(1 + atoms.get_initial_magnetic_moments().sum())
+    multiplicity = multiplicity or int(1 + atoms.get_initial_magnetic_moments().sum())
 
     atoms.calc = ORCA(
         charge=charge,
-        mult=mult,
+        mult=multiplicity,
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )
@@ -110,7 +110,7 @@ def static_job(
 def relax_job(
     atoms: Atoms,
     charge: int = None,
-    mult: int = None,
+    multiplicity: int = None,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
     run_freq: bool = False,
@@ -185,11 +185,11 @@ def relax_job(
     orcablocks = " ".join(list(blocks.keys()))
 
     charge = charge or int(atoms.get_initial_charges().sum())
-    mult = mult or int(1 + atoms.get_initial_magnetic_moments().sum())
+    multiplicity = multiplicity or int(1 + atoms.get_initial_magnetic_moments().sum())
 
     atoms.calc = ORCA(
         charge=charge,
-        mult=mult,
+        mult=multiplicity,
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )

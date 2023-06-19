@@ -19,12 +19,10 @@ GEOM_FILE = LOG_FILE
 def static_job(
     atoms: Atoms,
     charge: int | None = None,
-    mult: int | None = None,
+    multiplicity: int | None = None,
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
-    pop: str = "hirshfeld",
-    write_molden: bool = True,
-    swaps: dict | None = None,
+    calc_swaps: dict | None = None,
 ) -> dict:
     """
     Carry out a single-point calculation.
@@ -36,18 +34,14 @@ def static_job(
     charge
         Charge of the system. If None, this is determined from the sum of
         `atoms.get_initial_charges().`
-    mult
+    multiplicity
         Multiplicity of the system. If None, this is determined from 1+ the sum
         of `atoms.get_initial_magnetic_moments()`.
     xc
         Exchange-correlation functional
     basis
         Basis set
-    pop
-        Type of population analysis to perform from `quacc.schemas.cclib.summarize_run`
-    write_molden
-        Whether to write a molden file for orbital visualization
-    swaps
+    calc_swaps
         Dictionary of custom kwargs for the calculator.
             defaults = {
                 "mem": "16GB",
@@ -56,16 +50,14 @@ def static_job(
                 "xc": xc,
                 "basis": basis,
                 "charge": charge or int(sum(atoms.get_initial_charges())),
-                "mult": mult or int(1 + sum(atoms.get_initial_magnetic_moments())),
+                "mult": multiplicity or int(1 + sum(atoms.get_initial_magnetic_moments())),
                 "sp": "",
                 "scf": ["maxcycle=250", "xqc"],
                 "integral": "ultrafine",
                 "nosymmetry": "",
-                "pop": pop,
-                "gfinput": "" if write_molden else None,
+                "pop": "CM5",
+                "gfinput": "",
                 "ioplist": ["6/7=3", "2/9=2000"]
-                if write_molden
-                else ["2/9=2000"],  # see ASE issue #660
             }
 
     Returns
@@ -74,10 +66,10 @@ def static_job(
         Dictionary of results from `quacc.schemas.cclib.summarize_run`
     """
 
-    swaps = swaps or {}
+    calc_swaps = calc_swaps or {}
 
     charge = charge or int(atoms.get_initial_charges().sum())
-    mult = mult or int(1 + atoms.get_initial_magnetic_moments().sum())
+    multiplicity = multiplicity or int(1 + atoms.get_initial_magnetic_moments().sum())
     defaults = {
         "mem": "16GB",
         "chk": "Gaussian.chk",
@@ -85,18 +77,16 @@ def static_job(
         "xc": xc,
         "basis": basis,
         "charge": charge,
-        "mult": mult,
+        "mult": multiplicity,
         "sp": "",
         "scf": ["maxcycle=250", "xqc"],
         "integral": "ultrafine",
         "nosymmetry": "",
-        "pop": pop,
-        "gfinput": "" if write_molden else None,
-        "ioplist": ["6/7=3", "2/9=2000"]
-        if write_molden
-        else ["2/9=2000"],  # see ASE issue #660
+        "pop": "CM5",
+        "gfinput": "",
+        "ioplist": ["6/7=3", "2/9=2000"],  # see ASE issue #660
     }
-    flags = remove_dict_empties(defaults | swaps)
+    flags = remove_dict_empties(defaults | calc_swaps)
 
     atoms.calc = Gaussian(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
@@ -112,11 +102,11 @@ def static_job(
 def relax_job(
     atoms: Atoms,
     charge: int | None = None,
-    mult: int | None = None,
+    multiplicity: int | None = None,
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
     freq: bool = False,
-    swaps: dict | None = None,
+    calc_swaps: dict | None = None,
 ) -> dict:
     """
     Carry out a geometry optimization.
@@ -128,7 +118,7 @@ def relax_job(
     charge
         Charge of the system. If None, this is determined from the sum of
         `atoms.get_initial_charges()`.
-    mult
+    multiplicity
         Multiplicity of the system. If None, this is determined from 1+ the sum
         of `atoms.get_initial_magnetic_moments()`.
     xc
@@ -137,7 +127,7 @@ def relax_job(
         Basis set
     freq
         If a frequency calculation should be carried out.
-    swaps
+    calc_swaps
         Dictionary of custom kwargs for the calculator.
             defaults = {
                 "mem": "16GB",
@@ -146,8 +136,9 @@ def relax_job(
                 "xc": xc,
                 "basis": basis,
                 "charge": charge or int(sum(atoms.get_initial_charges())),
-                "mult": mult or int(1 + sum(atoms.get_initial_magnetic_moments())),
+                "mult": multiplicity or int(1 + sum(atoms.get_initial_magnetic_moments())),
                 "opt": "",
+                "pop": "CM5",
                 "scf": ["maxcycle=250", "xqc"],
                 "integral": "ultrafine",
                 "nosymmetry": "",
@@ -161,10 +152,10 @@ def relax_job(
         Dictionary of results from `quacc.schemas.cclib.summarize_run`
     """
 
-    swaps = swaps or {}
+    calc_swaps = calc_swaps or {}
 
     charge = charge or int(atoms.get_initial_charges().sum())
-    mult = mult or int(1 + atoms.get_initial_magnetic_moments().sum())
+    multiplicity = multiplicity or int(1 + atoms.get_initial_magnetic_moments().sum())
 
     defaults = {
         "mem": "16GB",
@@ -173,15 +164,16 @@ def relax_job(
         "xc": xc,
         "basis": basis,
         "charge": charge,
-        "mult": mult,
+        "mult": multiplicity,
         "opt": "",
+        "pop": "CM5",
         "scf": ["maxcycle=250", "xqc"],
         "integral": "ultrafine",
         "nosymmetry": "",
         "freq": "" if freq else None,
         "ioplist": ["2/9=2000"],  # ASE issue #660
     }
-    flags = remove_dict_empties(defaults | swaps)
+    flags = remove_dict_empties(defaults | calc_swaps)
 
     atoms.calc = Gaussian(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)

@@ -22,7 +22,7 @@ def qmof_relax_job(
     preset: str | None = "QMOFSet",
     relax_volume: bool = True,
     run_prerelax: bool = True,
-    swaps: dict | None = None,
+    calc_swaps: dict | None = None,
 ) -> dict:
     """
     Relax a structure in a multi-step process for increased
@@ -52,7 +52,7 @@ def qmof_relax_job(
         If True, a pre-relax will be carried out with BFGSLineSearch.
         Recommended if starting from hypothetical structures or materials
         with very high starting forces.
-    swaps
+    calc_swaps
         Dictionary of custom kwargs for the calculator. Applies for all jobs.
 
     Returns
@@ -61,31 +61,31 @@ def qmof_relax_job(
         Dictionary of results
     """
 
-    swaps = swaps or {}
+    calc_swaps = calc_swaps or {}
 
     # 1. Pre-relaxation
     if run_prerelax:
-        summary1 = _prerelax(atoms, preset, swaps, fmax=5.0)
+        summary1 = _prerelax(atoms, preset, calc_swaps, fmax=5.0)
         atoms = summary1["atoms"]
 
     # 2. Position relaxation (loose)
-    summary2 = _loose_relax_positions(atoms, preset, swaps)
+    summary2 = _loose_relax_positions(atoms, preset, calc_swaps)
     atoms = summary2["atoms"]
 
     # 3. Optional: Volume relaxation (loose)
     if relax_volume:
-        summary3 = _loose_relax_volume(atoms, preset, swaps)
+        summary3 = _loose_relax_volume(atoms, preset, calc_swaps)
         atoms = summary3["atoms"]
 
     # 4. Double Relaxation
     # This is done for two reasons: a) because it can resolve repadding
     # issues when dV is large; b) because we can use LREAL = Auto for the
     # first relaxation and the default LREAL for the second.
-    summary4 = _double_relax(atoms, preset, swaps, relax_volume=relax_volume)
+    summary4 = _double_relax(atoms, preset, calc_swaps, relax_volume=relax_volume)
     atoms = summary4[1]["atoms"]
 
     # 5. Static Calculation
-    summary5 = _static(atoms, preset, swaps)
+    summary5 = _static(atoms, preset, calc_swaps)
 
     return {
         "prerelax-lowacc": summary1 if run_prerelax else None,
@@ -99,7 +99,7 @@ def qmof_relax_job(
 def _prerelax(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
-    swaps: dict | None = None,
+    calc_swaps: dict | None = None,
     fmax: float = 5.0,
 ) -> dict:
     """
@@ -111,7 +111,7 @@ def _prerelax(
         Atoms object
     preset
         Preset to use.
-    swaps
+    calc_swaps
         Dictionary of custom kwargs for the calculator.
             defaults = {
                 "auto_kpts": {"grid_density": 100},
@@ -132,7 +132,7 @@ def _prerelax(
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
 
-    swaps = swaps or {}
+    calc_swaps = calc_swaps or {}
 
     defaults = {
         "auto_kpts": {"grid_density": 100},
@@ -144,7 +144,7 @@ def _prerelax(
         "nelm": 225,
         "nsw": 0,
     }
-    flags = defaults | swaps
+    flags = defaults | calc_swaps
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
     dyn = run_ase_opt(atoms, fmax=fmax, optimizer=BFGSLineSearch)
@@ -155,7 +155,7 @@ def _prerelax(
 def _loose_relax_positions(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
-    swaps: dict | None = None,
+    calc_swaps: dict | None = None,
 ) -> dict:
     """
     Position relaxation with default ENCUT and coarse k-point grid.
@@ -166,7 +166,7 @@ def _loose_relax_positions(
         Atoms object
     preset
         Preset to use.
-    swaps
+    calc_swaps
         dictionary of custom kwargs for the calculator.
             defaults = {
                 "auto_kpts": {"grid_density": 100},
@@ -187,7 +187,7 @@ def _loose_relax_positions(
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
 
-    swaps = swaps or {}
+    calc_swaps = calc_swaps or {}
 
     defaults = {
         "auto_kpts": {"grid_density": 100},
@@ -201,20 +201,20 @@ def _loose_relax_positions(
         "lwave": True,
         "nsw": 250,
     }
-    flags = defaults | swaps
+    flags = defaults | calc_swaps
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
     atoms = run_calc(atoms)
 
     return summarize_run(
-        atoms, bader=False, additional_fields={"name": "QMOF Loose Relax"}
+        atoms, run_bader=False, additional_fields={"name": "QMOF Loose Relax"}
     )
 
 
 def _loose_relax_volume(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
-    swaps: dict | None = None,
+    calc_swaps: dict | None = None,
 ) -> dict:
     """
     Volume relaxation with coarse k-point grid.
@@ -225,7 +225,7 @@ def _loose_relax_volume(
         Atoms object
     preset
         Preset to use.
-    swaps
+    calc_swaps
         Dictionary of custom kwargs for the calculator.
             defaults = {
                 "auto_kpts": {"grid_density": 100},
@@ -244,7 +244,7 @@ def _loose_relax_volume(
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
 
-    swaps = swaps or {}
+    calc_swaps = calc_swaps or {}
 
     defaults = {
         "auto_kpts": {"grid_density": 100},
@@ -256,14 +256,14 @@ def _loose_relax_volume(
         "lwave": True,
         "nsw": 500,
     }
-    flags = defaults | swaps
+    flags = defaults | calc_swaps
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
 
     return summarize_run(
         atoms,
-        bader=False,
+        run_bader=False,
         additional_fields={"name": "QMOF Loose Relax Volume"},
     )
 
@@ -271,7 +271,7 @@ def _loose_relax_volume(
 def _double_relax(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
-    swaps: dict | None = None,
+    calc_swaps: dict | None = None,
     relax_volume: bool = True,
 ) -> dict:
     """
@@ -283,7 +283,7 @@ def _double_relax(
         Atoms object
     preset
         Preset to use.
-    swaps
+    calc_swaps
         Dictionary of custom kwargs for the calculator.
             defaults = {
                 "ediffg": -0.03,
@@ -303,7 +303,7 @@ def _double_relax(
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
 
-    swaps = swaps or {}
+    calc_swaps = calc_swaps or {}
 
     defaults = {
         "ediffg": -0.03,
@@ -316,14 +316,14 @@ def _double_relax(
     }
 
     # Run first relaxation
-    flags = defaults | swaps
+    flags = defaults | calc_swaps
     calc1 = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc1
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
 
     # Update atoms for
     summary1 = summarize_run(
-        atoms, bader=False, additional_fields={"name": "QMOF DoubleRelax 1"}
+        atoms, run_bader=False, additional_fields={"name": "QMOF DoubleRelax 1"}
     )
     atoms = summary1["atoms"]
 
@@ -331,7 +331,7 @@ def _double_relax(
     del defaults["lreal"]
 
     # Run second relaxation
-    flags = defaults | swaps
+    flags = defaults | calc_swaps
     calc2 = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc2
 
@@ -341,7 +341,7 @@ def _double_relax(
 
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
     summary2 = summarize_run(
-        atoms, bader=False, additional_fields={"name": "QMOF DoubleRelax 2"}
+        atoms, run_bader=False, additional_fields={"name": "QMOF DoubleRelax 2"}
     )
 
     return [summary1, summary2]
@@ -350,7 +350,7 @@ def _double_relax(
 def _static(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
-    swaps: dict | None = None,
+    calc_swaps: dict | None = None,
 ) -> tuple[Atoms, dict]:
     """
     Static calculation using production-quality settings.
@@ -361,7 +361,7 @@ def _static(
         Atoms object
     preset
         Preset to use.
-    swaps
+    calc_swaps
         Dictionary of custom kwargs for the calculator.
             defaults = {
                 "laechg": True,
@@ -377,7 +377,7 @@ def _static(
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
 
-    swaps = swaps or {}
+    calc_swaps = calc_swaps or {}
 
     defaults = {
         "laechg": True,
@@ -388,7 +388,7 @@ def _static(
     }
 
     # Run static calculation
-    flags = defaults | swaps
+    flags = defaults | calc_swaps
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
     atoms = run_calc(atoms, copy_files=["WAVECAR"])

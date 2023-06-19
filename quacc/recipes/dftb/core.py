@@ -22,7 +22,7 @@ def static_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
     kpts: tuple | list[tuple] | dict | None = None,
-    swaps: dict | None = None,
+    calc_swaps: dict | None = None,
 ) -> dict:
     """
     Carry out a single-point calculation.
@@ -36,7 +36,7 @@ def static_job(
     kpts
         k-point grid to use. Defaults to None for molecules and
         (1, 1, 1) for solids.
-    swaps
+    calc_swaps
         Dictionary of custom kwargs for the calculator.
 
     Returns
@@ -45,7 +45,7 @@ def static_job(
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
 
-    swaps = swaps or {}
+    calc_swaps = calc_swaps or {}
     input_atoms = deepcopy(atoms)
 
     defaults = {
@@ -53,7 +53,7 @@ def static_job(
         "Hamiltonian_Method": method if "xtb" in method.lower() else None,
         "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
     }
-    flags = remove_dict_empties(defaults | swaps)
+    flags = remove_dict_empties(defaults | calc_swaps)
 
     atoms.calc = Dftb(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
@@ -74,7 +74,7 @@ def relax_job(
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
     kpts: tuple | list[tuple] | dict | None = None,
     lattice_opt: bool = False,
-    swaps: dict | None = None,
+    calc_swaps: dict | None = None,
 ) -> dict:
     """
     Carry out a structure relaxation.
@@ -91,7 +91,7 @@ def relax_job(
     lattice_opt
         Whether to relax the unit cell shape/volume in addition to
         the positions.
-    swaps
+    calc_swaps
         Dictionary of custom kwargs for the calculator.
             defaults = {
                 "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
@@ -108,7 +108,7 @@ def relax_job(
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
 
-    swaps = swaps or {}
+    calc_swaps = calc_swaps or {}
     input_atoms = deepcopy(atoms)
 
     defaults = {
@@ -120,7 +120,7 @@ def relax_job(
         "Driver_AppendGeometries": "Yes",
         "Driver_MaxSteps": 2000,
     }
-    flags = remove_dict_empties(defaults | swaps)
+    flags = remove_dict_empties(defaults | calc_swaps)
 
     atoms.calc = Dftb(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
