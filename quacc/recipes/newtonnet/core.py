@@ -164,8 +164,8 @@ def ts_job(
     opt_defaults = {
         "fmax": 0.01,
         "max_steps": 1000,
-        "optimizer": "Sella",
-        "optimizer_kwargs": {"diag_every_n": 0} if use_custom_hessian else {},
+        "optimizer": Sella,
+    "optimizer_kwargs": {"diag_every_n": 0} if use_custom_hessian else {},
     }
     opt_flags = opt_defaults | opt_swaps
     # Define calculator
@@ -194,8 +194,9 @@ def ts_job(
     atoms.calc = mlcalculator
     # Run the TS optimization
     dyn = run_ase_opt(atoms, **opt_flags)
+    print('dyn:\n', dyn)
     ts_summary = summarize_opt_run(dyn, additional_fields={"name": "NewtonNet TS"})
-
+    print('\n\n\n\nafter ts_summary call\n\n\n\n\n')
     # Run a frequency calculation
     thermo_summary = freq_job(
         ts_summary["atoms"],
