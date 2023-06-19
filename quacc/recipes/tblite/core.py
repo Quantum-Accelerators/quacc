@@ -7,7 +7,7 @@ from copy import deepcopy
 from typing import Literal
 
 import covalent as ct
-from ase.atoms import Atoms
+from ase import Atoms
 from ase.optimize import FIRE
 from monty.dev import requires
 
@@ -111,7 +111,7 @@ def freq_job(
     energy: float = 0.0,
     temperature: float = 298.15,
     pressure: float = 1.0,
-    xtb_kwargs: dict | None = None,
+    calc_kwargs: dict | None = None,
     vib_kwargs: dict | None = None,
 ) -> dict:
     """
@@ -129,7 +129,7 @@ def freq_job(
         Temperature in Kelvins.
     pressure
         Pressure in bar.
-    xtb_kwargs
+    calc_kwargs
         dictionary of custom kwargs for the xTB calculator.
     vib_kwargs
         dictionary of custom kwargs for the Vibrations object
@@ -141,10 +141,10 @@ def freq_job(
         quacc.schemas.ase.summarize_thermo_run
     """
 
-    xtb_kwargs = xtb_kwargs or {}
+    calc_kwargs = calc_kwargs or {}
     vib_kwargs = vib_kwargs or {}
 
-    atoms.calc = TBLite(method=method, **xtb_kwargs)
+    atoms.calc = TBLite(method=method, **calc_kwargs)
     vibrations = run_ase_vib(atoms, vib_kwargs=vib_kwargs)
 
     igt = ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)

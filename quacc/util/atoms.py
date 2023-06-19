@@ -8,7 +8,7 @@ import os
 from copy import deepcopy
 
 import numpy as np
-from ase.atoms import Atoms
+from ase import Atoms
 from ase.io.jsonio import encode
 from pymatgen.io.ase import AseAtomsAdaptor
 
