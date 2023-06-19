@@ -118,7 +118,7 @@ def test_summarize_opt_run():
     assert "dir_name" in results
     assert "pull_request" in results["builder_meta"]
     assert results["parameters_opt"]["fmax"] == dyn.fmax
-    assert results["parameters_opt"]["steps"] == 100
+    assert results["parameters_opt"]["max_steps"] == 100
 
     # Test remove_empties
     atoms = bulk("Cu") * (2, 2, 1)
