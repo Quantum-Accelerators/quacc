@@ -83,4 +83,4 @@ def test_freq_job():
         len(output_all["thermo"]["thermo_parameters"]["vib_freqs"])
         == 3 * len(atoms) - 6
     )
-    assert len(output_all["thermo"]["thermo_parameters"]["n_imag"]) == 0
+    assert output_all["thermo"]["thermo_parameters"]["n_imag"] == 0
