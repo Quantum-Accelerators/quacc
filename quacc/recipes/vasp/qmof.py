@@ -207,7 +207,7 @@ def _loose_relax_positions(
     atoms = run_calc(atoms)
 
     return summarize_run(
-        atoms, bader=False, additional_fields={"name": "QMOF Loose Relax"}
+        atoms, run_bader=False, additional_fields={"name": "QMOF Loose Relax"}
     )
 
 
@@ -263,7 +263,7 @@ def _loose_relax_volume(
 
     return summarize_run(
         atoms,
-        bader=False,
+        run_bader=False,
         additional_fields={"name": "QMOF Loose Relax Volume"},
     )
 
@@ -323,7 +323,7 @@ def _double_relax(
 
     # Update atoms for
     summary1 = summarize_run(
-        atoms, bader=False, additional_fields={"name": "QMOF DoubleRelax 1"}
+        atoms, run_bader=False, additional_fields={"name": "QMOF DoubleRelax 1"}
     )
     atoms = summary1["atoms"]
 
@@ -341,7 +341,7 @@ def _double_relax(
 
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
     summary2 = summarize_run(
-        atoms, bader=False, additional_fields={"name": "QMOF DoubleRelax 2"}
+        atoms, run_bader=False, additional_fields={"name": "QMOF DoubleRelax 2"}
     )
 
     return [summary1, summary2]

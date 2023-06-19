@@ -125,7 +125,7 @@ def summarize_run(
         - vasp_version: str: the version of VASP
         - volume: float = Field(None, title="Volume", description="Total volume for this structure in Angstroms^3.")
 
-        If bader is True, the following fields are added:
+        If run_bader is True, the following fields are added:
         - bader
             - atomic_volume: float = The atomic volume
             - bader_charge: float = The net bader charge
@@ -174,7 +174,7 @@ def summarize_run(
         results["output"].pop("frequency_dependent_dielectric", None)
 
     # Get Bader analysis
-    if bader:
+    if run_bader:
         try:
             bader_stats = run_bader(dir_path)
         except Exception:
