@@ -20,7 +20,7 @@ def summarize_run(
     atoms: Atoms,
     dir_path: str | None = None,
     prep_next_run: bool = True,
-    bader: bool = SETTINGS.VASP_BADER,
+    run_bader: bool = SETTINGS.VASP_BADER,
     check_convergence: bool = True,
     remove_empties: bool = False,
     additional_fields: dict | None = None,
@@ -37,7 +37,7 @@ def summarize_run(
     prep_next_run
         Whether the Atoms object stored in {"atoms": atoms} should be prepared for the next run.
         This clears out any attached calculator and moves the final magmoms to the initial magmoms.
-    bader
+    run_bader
         Whether a Bader analysis should be performed. Will not run if bader executable is not in PATH even if
         bader is set to True.
     check_convergence
