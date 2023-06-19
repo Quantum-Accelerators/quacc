@@ -240,7 +240,7 @@ def summarize_opt_run(
     """
 
     additional_fields = additional_fields or {}
-    opt_parameters = dyn.todict() | {"fmax": fmax}
+    opt_parameters = dyn.todict() | {"fmax": dyn.fmax}
 
     # Check trajectory
     if not os.path.exists(dyn.trajectory.filename):
