@@ -240,7 +240,7 @@ def summarize_opt_run(
     """
 
     additional_fields = additional_fields or {}
-    opt_parameters = dyn.todict()
+    opt_parameters = dyn.todict() | {"fmax": fmax}
 
     # Check trajectory
     if not os.path.exists(dyn.trajectory.filename):
@@ -262,7 +262,7 @@ def summarize_opt_run(
             for atoms in traj
         ],
     }
-    results = {"results": final_atoms.calc.results}
+    results = {"results": final_atoms.calc.results | {"converged": dyn.converged, "nsteps": dyn.get_number_of_steps()}}
 
     # Get the calculator inputs
     uri = get_uri(os.getcwd())
