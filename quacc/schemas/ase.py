@@ -262,7 +262,10 @@ def summarize_opt_run(
             for atoms in traj
         ],
     }
-    results = {"results": final_atoms.calc.results | {"converged": dyn.converged, "nsteps": dyn.get_number_of_steps()}}
+    results = {
+        "results": final_atoms.calc.results
+        | {"converged": dyn.converged, "nsteps": dyn.get_number_of_steps()}
+    }
 
     # Get the calculator inputs
     uri = get_uri(os.getcwd())
