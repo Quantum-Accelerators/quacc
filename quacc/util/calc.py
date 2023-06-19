@@ -96,9 +96,10 @@ def run_calc(
     if os.path.islink(symlink):
         os.remove(symlink)
 
-    # Some ASE calculators do not update the atoms object in-place.
-    # This is a workaround to ensure that the returned atoms object is
-    # has the correct positions, cell, and magmoms.
+    # Most ASE calculators do not update the atoms object in-place with
+    # a call to .get_potential_energy(). This section is done to ensure
+    # that the atoms object is updated with the correct positions and cell
+    # if a `geom_file` is provided.
     if geom_file and os.path.exists(zpath(geom_file)):
         # Note: We have to be careful to make sure we don't lose the
         # converged magnetic moments, if present. That's why we simply

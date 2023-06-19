@@ -11,7 +11,7 @@ from quacc.util.calc import run_calc
 
 @ct.electron
 def static_job(
-    atoms: Atoms, preset: str | None = None, swaps: dict | None = None
+    atoms: Atoms, preset: str | None = None, calc_swaps: dict | None = None
 ) -> dict:
     """
     Carry out a single-point calculation.
@@ -22,7 +22,7 @@ def static_job(
         Atoms object
     preset
         Preset to use.
-    swaps
+    calc_swaps
         Dictionary of custom kwargs for the calculator.
             defaults = {
                 "ismear": -5,
@@ -39,7 +39,7 @@ def static_job(
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
 
-    swaps = swaps or {}
+    calc_swaps = calc_swaps or {}
 
     defaults = {
         "ismear": -5,
@@ -49,7 +49,7 @@ def static_job(
         "nedos": 5001,
         "nsw": 0,
     }
-    flags = defaults | swaps
+    flags = defaults | calc_swaps
 
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
@@ -63,7 +63,7 @@ def relax_job(
     atoms: Atoms,
     preset: str | None = None,
     relax_volume: bool = True,
-    swaps: dict | None = None,
+    calc_swaps: dict | None = None,
 ) -> dict:
     """
     Relax a structure.
@@ -77,7 +77,7 @@ def relax_job(
     relax_volume
         True if a volume relaxation (ISIF = 3) should be performed.
         False if only the positions (ISIF = 2) should be updated.
-    swaps
+    calc_swaps
         Dictionary of custom kwargs for the calculator.
             defaults = {
                 "ediffg": -0.02,
@@ -95,7 +95,7 @@ def relax_job(
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
 
-    swaps = swaps or {}
+    calc_swaps = calc_swaps or {}
 
     defaults = {
         "ediffg": -0.02,
@@ -106,7 +106,7 @@ def relax_job(
         "lwave": False,
         "nsw": 200,
     }
-    flags = defaults | swaps
+    flags = defaults | calc_swaps
 
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
@@ -120,8 +120,8 @@ def double_relax_job(
     atoms: Atoms,
     preset: str | None = None,
     relax_volume: bool = True,
-    swaps1: dict | None = None,
-    swaps2: dict | None = None,
+    calc_swaps1: dict | None = None,
+    calc_swaps2: dict | None = None,
 ) -> dict:
     """
     Double-relax a structure. This is particularly useful for a few reasons:
@@ -143,9 +143,9 @@ def double_relax_job(
     relax_volume
         True if a volume relaxation (ISIF = 3) should be performed.
         False if only the positions (ISIF = 2) should be updated.
-    swaps1
+    calc_swaps1
         Dictionary of custom kwargs for the first relaxation.
-    swaps2
+    calc_swaps2
         Dictionary of custom kwargs for the second relaxation.
 
     Returns
@@ -154,8 +154,8 @@ def double_relax_job(
         Dictionaries of the type quacc.schemas.vasp.summarize_run.
     """
 
-    swaps1 = swaps1 or {}
-    swaps2 = swaps2 or {}
+    calc_swaps1 = calc_swaps1 or {}
+    calc_swaps2 = calc_swaps2 or {}
 
     defaults = {
         "ediffg": -0.02,
@@ -168,7 +168,7 @@ def double_relax_job(
     }
 
     # Run first relaxation
-    flags = defaults | swaps1
+    flags = defaults | calc_swaps1
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
     kpts1 = atoms.calc.kpts
@@ -176,7 +176,7 @@ def double_relax_job(
     summary1 = summarize_run(atoms, additional_fields={"name": "VASP DoubleRelax 1"})
 
     # Run second relaxation
-    flags = defaults | swaps2
+    flags = defaults | calc_swaps2
     calc = Vasp(summary1["atoms"], preset=preset, **flags)
     atoms.calc = calc
     kpts2 = atoms.calc.kpts

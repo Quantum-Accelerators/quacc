@@ -13,14 +13,14 @@ from quacc import SETTINGS
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
 from quacc.util.dicts import clean_dict
-from quacc.util.pop_analysis import run_bader
+from quacc.util.pop_analysis import bader_runner
 
 
 def summarize_run(
     atoms: Atoms,
     dir_path: str | None = None,
     prep_next_run: bool = True,
-    bader: bool = SETTINGS.VASP_BADER,
+    run_bader: bool = SETTINGS.VASP_BADER,
     check_convergence: bool = True,
     remove_empties: bool = False,
     additional_fields: dict | None = None,
@@ -37,7 +37,7 @@ def summarize_run(
     prep_next_run
         Whether the Atoms object stored in {"atoms": atoms} should be prepared for the next run.
         This clears out any attached calculator and moves the final magmoms to the initial magmoms.
-    bader
+    run_bader
         Whether a Bader analysis should be performed. Will not run if bader executable is not in PATH even if
         bader is set to True.
     check_convergence
@@ -125,7 +125,7 @@ def summarize_run(
         - vasp_version: str: the version of VASP
         - volume: float = Field(None, title="Volume", description="Total volume for this structure in Angstroms^3.")
 
-        If bader is True, the following fields are added:
+        If run_bader is True, the following fields are added:
         - bader
             - atomic_volume: float = The atomic volume
             - bader_charge: float = The net bader charge
@@ -174,9 +174,9 @@ def summarize_run(
         results["output"].pop("frequency_dependent_dielectric", None)
 
     # Get Bader analysis
-    if bader:
+    if run_bader:
         try:
-            bader_stats = run_bader(dir_path)
+            bader_stats = bader_runner(dir_path)
         except Exception:
             bader_stats = None
             warnings.warn("Bader analysis could not be performed.", UserWarning)
