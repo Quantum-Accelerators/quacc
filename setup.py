@@ -69,7 +69,7 @@ if __name__ == "__main__":
                 "jobflow==0.1.11",
                 "maggma==0.51.8",
                 "monty==2023.5.8",
-                "numpy==1.24.3",
+                "numpy==1.25.0",
                 "pydantic==1.10.2",
                 "pymatgen @ https://github.com/materialsproject/pymatgen/archive/refs/heads/master.zip",  # waiting on >2023.05.31
             ],
