@@ -503,9 +503,9 @@ def summarize_thermo_run(
             - pressure: float = Pressure in bar
             - sigma: float = The rotational symmetry number of the molecule
             - spin_multiplicity: int = The spin multiplicity of the molecule
-            - vib_freqs: List[float] = Vibrational frequencies in cm^-1
-            - vib_energies: List[float] = Vibrational energies in eV
-            - n_imag: int = Number of imaginary vibrational frequencies
+            - vib_freqs: List[float] = Vibrational frequencies in cm^-1 used for the thermo calculation
+            - vib_energies: List[float] = Vibrational energies in eV used for the thermo calculation
+            - n_imag: int = Number of imaginary vibrational frequencies ignored in the thermo calculation
         - results: dict = Field(None, title = "The results from the calculation.")
             - energy: float = The potential energy of the system in eV
             - enthalpy: float = The enthalpy of the system in eV
