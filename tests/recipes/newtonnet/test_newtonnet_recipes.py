@@ -335,9 +335,14 @@ def test_quasi_irc_job_with_custom_temperature_and_pressure():
     assert "irc" in output
     assert "opt" in output
     assert "thermo" in output
-    assert "forward" in output["irc"]["irc"]["trajectory"]
-    assert output["thermo"]["vib"]["results"]["vib_freqs"][0] == pytest.approx(1686.434228258355)
-    # Add more assertions based on the expected output
+    assert output['irc']['irc']['results']['energy'] == pytest.approx(-9.41835380477994)
+    assert output['irc']['thermo']['vib']['results']['vib_energies'][0] == pytest.approx(0.23457884629206466)
+    assert output['opt']['results']['energy'] == pytest.approx(-9.41835380477994)
+    assert output['thermo']['thermo']['results']['energy'] == pytest.approx(-9.418353073070744)
+    assert output['thermo']['thermo']['results']['enthalpy'] == pytest.approx(-8.642530002034201)
+    assert output['thermo']['thermo']['results']['entropy'] == pytest.approx(0.0019414230701050644)
+    assert output['thermo']['thermo']['results']['gibbs_energy'] == pytest.approx(-9.613241537086733)
+    assert output['thermo']['thermo']['results']['zpe'] == pytest.approx(0.6024451502493378)
 
 
 def test_quasi_irc_job_with_custom_newtonnet_kwargs():
