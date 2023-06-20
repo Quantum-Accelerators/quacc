@@ -20,7 +20,7 @@ In Atomate2, workflows are built around the Materials Project software stack and
 
 Atomate2 is built around [Jobflow](https://github.com/materialsproject/jobflow). Quacc is predominantly built around [Covalent](https://github.com/AgnostiqHQ/covalent) first but also supports Jobflow.
 
-Atomate2 is a database-first approch to materials science workflows. Quacc is fully compatible with the use of databases but does not require them, with the goal of reducing the barrier to getting started.
+Atomate2 is a database-first approach to materials science workflows. Quacc is fully compatible with the use of databases but does not require them, with the goal of reducing the barrier to getting started.
 
 Atomate2 is developed and supported by the [Materials Project](http://materialsproject.org/) team at Lawrence Berkeley National Laboratory. Quacc is developed and maintained by the [Rosen Research Group](https://cbe.princeton.edu/people/andrew-rosen) at Princeton University.
 

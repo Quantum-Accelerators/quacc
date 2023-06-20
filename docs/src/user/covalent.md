@@ -56,7 +56,7 @@ Because the workflow is only sent to the server with `ct.dispatch`, calling `wor
 ```
 
 ```{hint}
-By default, all Quacc jobs are defined as `Electron` objects, so we didn't need to use the `@ct.electron` decorator around the each function here.
+By default, all Quacc jobs are defined as `Electron` objects, so we didn't need to use the `@ct.electron` decorator around each function here.
 ```
 
 Covalent will also automatically construct a directed acyclic graph of the inputs and outputs for each calculation to determine which jobs are dependent on one another and the order the jobs should be run. In this example, Covalent will know not to run `job2` until `job1` has completed successfully.
@@ -138,7 +138,7 @@ To learn more about how to construct dynamic workflows in Covalent, see [this tu
 
 ## Setting Executors
 
-By defualt, Covalent will run all `Electron` tasks on your local machine using the [`DaskExecutor`](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/dask). This is a parameter that you can control. For instance, you may want to define the executor to be based on [Slurm](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/slurm) to submit a job to an HPC cluster. The example below highlights how one can change the executor.
+By default, Covalent will run all `Electron` tasks on your local machine using the [`DaskExecutor`](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/dask). This is a parameter that you can control. For instance, you may want to define the executor to be based on [Slurm](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/slurm) to submit a job to an HPC cluster. The example below highlights how one can change the executor.
 
 ### Setting Executors via the Lattice Object
 
