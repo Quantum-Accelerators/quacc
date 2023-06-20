@@ -55,7 +55,7 @@ class QChem(FileIOCalculator):
         cores: None | int = None,
         charge: None | int = None,
         spin_multiplicity: None | int = None,
-        qchem_input_params: dict = None,
+        qchem_input_params: dict | None = None,
         **kwargs,
     ):
         # Assign variables to self

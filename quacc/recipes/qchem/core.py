@@ -4,7 +4,6 @@ Core recipes for the Q-Chem
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Literal
 
 import covalent as ct
 from ase.atoms import Atoms
