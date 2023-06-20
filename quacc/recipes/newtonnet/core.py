@@ -2,26 +2,27 @@
 Core recipes for the NewtonNet code
 """
 from __future__ import annotations
-from typing import Literal
+
 from copy import deepcopy
+from typing import Literal
+
 import covalent as ct
 import numpy as np
 from ase.atoms import Atoms
-from ase.vibrations.data import VibrationsData
-from ase.units import _c, fs
-from monty.dev import requires
-from sella import Sella
-from sella import IRC
 from ase.optimize.optimize import Optimizer
+from ase.units import _c, fs
+from ase.vibrations.data import VibrationsData
+from monty.dev import requires
+from sella import IRC, Sella
+
+from quacc import SETTINGS
 from quacc.schemas.ase import (
     summarize_opt_run,
     summarize_run,
     summarize_thermo_run,
     summarize_vib_run,
 )
-from quacc import SETTINGS
-from quacc.util.calc import run_calc
-from quacc.util.calc import run_ase_opt
+from quacc.util.calc import run_ase_opt, run_calc
 from quacc.util.thermo import ideal_gas
 
 try:
@@ -32,11 +33,11 @@ except ImportError:
 
 def get_hessian(atoms):
     mlcalculator = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(':'),
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(':')
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
+        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(":"),
     )
     mlcalculator.calculate(atoms)
-    return mlcalculator.results['hessian'].reshape((-1, 3 * len(atoms)))
+    return mlcalculator.results["hessian"].reshape((-1, 3 * len(atoms)))
 
 
 @ct.electron
@@ -64,15 +65,14 @@ def static_job(
     input_atoms = deepcopy(atoms)
     # Define calculator
     mlcalculator = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(':'),
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(':'),
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
+        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(":"),
     )
     atoms.calc = mlcalculator
     atoms = run_calc(atoms)
     return summarize_run(
-        atoms,
-        input_atoms=input_atoms,
-        additional_fields={"name": "NewtonNet Relax"})
+        atoms, input_atoms=input_atoms, additional_fields={"name": "NewtonNet Relax"}
+    )
 
 
 @ct.electron
@@ -114,12 +114,12 @@ def relax_job(
 
     newtonnet_kwargs = newtonnet_kwargs or {}
     optimizer_kwargs = optimizer_kwargs or {}
-    if 'sella.optimize' in optimizer.__module__:
-        optimizer_kwargs['order'] = 0
+    if "sella.optimize" in optimizer.__module__:
+        optimizer_kwargs["order"] = 0
 
     mlcalculator = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(':'),
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(':'),
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
+        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(":"),
     )
     atoms.calc = mlcalculator
     dyn = run_ase_opt(
@@ -166,18 +166,18 @@ def ts_job(
         "fmax": 0.01,
         "max_steps": 1000,
         "optimizer": Sella,
-    "optimizer_kwargs": {"diag_every_n": 0} if use_custom_hessian else {},
+        "optimizer_kwargs": {"diag_every_n": 0} if use_custom_hessian else {},
     }
     opt_flags = opt_defaults | opt_swaps
     # Define calculator
     mlcalculator = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(':'),
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(':'),
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
+        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(":"),
     )
     atoms.calc = mlcalculator
 
     if use_custom_hessian:
-        if opt_flags['optimizer'].__name__ != "Sella":
+        if opt_flags["optimizer"].__name__ != "Sella":
             raise ValueError("Custom hessian can only be used with Sella.")
 
         # atoms.calc.calculate()
@@ -189,8 +189,8 @@ def ts_job(
         # run_ase_opt. Please check.
     # Define calculator again TEST THIS WHILE RUNNING THE CALCULATIONS
     mlcalculator = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(':'),
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(':'),
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
+        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(":"),
     )
     atoms.calc = mlcalculator
     # Run the TS optimization
@@ -239,36 +239,31 @@ def irc_job(
     opt_swaps = opt_swaps or {}
 
     opt_defaults = {
-        'optimizer': IRC,
-        'optimizer_kwargs': {
-            'dx': 0.1,
-            'eta': 1e-4,
-            'gamma': 0.4,
+        "optimizer": IRC,
+        "optimizer_kwargs": {
+            "dx": 0.1,
+            "eta": 1e-4,
+            "gamma": 0.4,
         },
         "run_kwargs": {
-            "direction": 'forward',
+            "direction": "forward",
         },
     }
     opt_flags = opt_defaults | opt_swaps
 
     # Define calculator
     mlcalculator = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(':'),
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(':'),
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
+        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(":"),
     )
     atoms.calc = mlcalculator
 
     # Run IRC
-    dyn = run_ase_opt(
-        atoms,
-        fmax=fmax,
-        max_steps=max_steps,
-        **opt_flags
-    )
+    dyn = run_ase_opt(atoms, fmax=fmax, max_steps=max_steps, **opt_flags)
     summary_irc = summarize_opt_run(
         dyn,
         check_convergence=check_convergence,
-        additional_fields={"name": "NewtonNet IRC"}
+        additional_fields={"name": "NewtonNet IRC"},
     )
 
     # Run frequency job
@@ -312,9 +307,7 @@ def quasi_irc_job(
     opt_swaps = opt_swaps or {}
 
     irc_defaults = {
-        "run_kwargs": {
-            "direction": direction.lower()
-        },
+        "run_kwargs": {"direction": direction.lower()},
     }
     irc_flags = irc_defaults | irc_swaps
 
@@ -324,15 +317,9 @@ def quasi_irc_job(
     opt_flags = opt_defaults | opt_swaps
 
     # Run IRC
-    irc_summary = irc_job(atoms,
-                          max_steps=5,
-                          opt_swaps=irc_flags
-                          )
+    irc_summary = irc_job(atoms, max_steps=5, opt_swaps=irc_flags)
     # Run opt
-    opt_summary = relax_job(
-        irc_summary["irc"]["atoms"],
-        **opt_flags
-    )
+    opt_summary = relax_job(irc_summary["irc"]["atoms"], **opt_flags)
 
     # Run frequency
     thermo_summary = freq_job(
@@ -369,8 +356,8 @@ def freq_job(
 
     # Define calculator
     mlcalculator = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(':'),
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(':'),
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
+        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(":"),
     )
     atoms.calc = mlcalculator
 
@@ -380,15 +367,10 @@ def freq_job(
     vib = VibrationsData(atoms, hessian)
 
     # Make IdealGasThermo object
-    igt = ideal_gas(
-        atoms,
-        vib.get_frequencies(),
-        energy=mlcalculator.results["energy"]
-    )
+    igt = ideal_gas(atoms, vib.get_frequencies(), energy=mlcalculator.results["energy"])
     return {
         "vib": summarize_vib_run(
-            vib,
-            additional_fields={"name": "NewtonNet Vibrations"}
+            vib, additional_fields={"name": "NewtonNet Vibrations"}
         ),
         "thermo": summarize_thermo_run(
             igt,
@@ -397,12 +379,11 @@ def freq_job(
             additional_fields={"name": "NewtonNet Thermo"},
         ),
     }
-    '''
+    """
     return summarize_thermo_run(
         igt,
         temperature=temperature,
         pressure=pressure,
         additional_fields={"name": "NewtonNet Thermo"},
     )
-    '''
-
+    """
