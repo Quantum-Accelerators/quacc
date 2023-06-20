@@ -83,6 +83,9 @@ class QChem(FileIOCalculator):
         # Get Q-Chem executable command
         self.command = self._manage_environment()
 
+        # Instantiate previous orbital coefficients
+        self.prev_orbital_coeffs = None
+
         # Instantiate the calculator
         FileIOCalculator.__init__(
             self,
@@ -122,6 +125,12 @@ class QChem(FileIOCalculator):
                 mol.set_charge_and_spin(charge=self.charge)
         qcin = ForceSet(mol, **self.qchem_input_params)
         qcin.write("mol.qin")
+        if self.prev_orbital_coeffs is not None:
+            with open("53.0", mode="wb") as file:
+                for val in self.prev_orbital_coeffs:
+                    data = struct.pack("d", val)
+                    file.write(data)
+
 
     def read_results(self):
         data = QCOutput("mol.qout").data
@@ -154,3 +163,10 @@ class QChem(FileIOCalculator):
                     )
                 gradient[ii, jj] = val
         self.results["forces"] = gradient * (-units.Hartree / units.Bohr)
+        self.prev_orbital_coeffs = []
+        with zopen("53.0", mode="rb") as file:
+            binary = file.read()
+            for ii in range(int(len(binary) / 8)):
+                self.prev_orbital_coeffs.append(
+                    struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
+                )

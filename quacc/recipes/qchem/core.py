@@ -14,7 +14,6 @@ from quacc.calculators.qchem import QChem
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
 from pymatgen.io.ase import AseAtomsAdaptor
-from ase.optimize import FIRE
 
 try:
     from sella import Sella, IRC
@@ -86,7 +85,7 @@ def static_job(
     """
 
     if pcm_dielectric is not None and smd_solvent is not None:
-        raise RuntimeError("PCM and SMD cannot be employed simultaneously! Exiting...")
+        raise ValueError("PCM and SMD cannot be employed simultaneously! Exiting...")
 
     true_charge, true_spin = true_charge_and_spin(atoms, charge, mult)
 
@@ -524,7 +523,8 @@ def quasi_irc_job(
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
     swaps: dict | None = None,
-    opt_swaps: dict | None = None,
+    irc_swaps: dict | None = None,
+    relax_swaps: dict | None = None,
     check_convergence: bool = True,
 ) -> dict:
     """
@@ -585,13 +585,12 @@ def quasi_irc_job(
     if pcm_dielectric is not None and smd_solvent is not None:
         raise ValueError("PCM and SMD cannot be employed simultaneously! Exiting...")
 
-    opt_swaps = opt_swaps or {}
-    irc_swaps = deepcopy(opt_swaps)
-    irc_swaps["fmax"] = 100
-    irc_swaps["max_steps"] = 100
-
-    relax_swaps = deepcopy(opt_swaps)
-    # relax_swaps["optimizer"] = FIRE
+    irc_swaps = irc_swaps or {}
+    irc_swaps_defaults = {
+        "fmax": 100,
+        "max_steps": 10,
+    }
+    irc_swaps = irc_swaps_defaults | irc_swaps
 
     irc_summary = irc_job(
         atoms=atoms,

@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+from monty.io import zopen
 import pytest
 from ase import units
 from ase.io import read
@@ -23,6 +24,7 @@ def test_qchem_write_input_basic():
         os.path.join(FILE_DIR, "examples", "basic", "mol.qin")
     )
     assert qcinp.as_dict() == ref_qcinp.as_dict()
+    assert not os.path.exists(os.path.join(FILE_DIR,"53.0"))
     os.remove("mol.qin")
 
 
@@ -73,12 +75,23 @@ def test_qchem_write_input_advanced():
     os.remove("mol.qin")
 
 
-def test_qchem_read_results_basic():
+def test_qchem_read_results_basic_and_write_53():
     calc = QChem(TEST_ATOMS, 40)
     os.chdir(os.path.join(FILE_DIR, "examples", "basic"))
     calc.read_results()
     assert calc.results["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
     assert calc.results["forces"][0][0] == pytest.approx(-1.3826330655069403)
+    assert calc.prev_orbital_coeffs is not None
+    os.chdir(FILE_DIR)
+    calc.write_input(TEST_ATOMS)
+    assert os.path.exists(os.path.join(FILE_DIR,"53.0"))
+    with zopen("53.0", mode="rb") as new_file:
+        new_binary = new_file.read()
+        with zopen(os.path.join(FILE_DIR, "examples", "basic", "53.0"), mode="rb") as old_file:
+            old_binary = old_file.read()
+            assert new_binary == old_binary
+    os.remove("53.0")
+    os.remove("mol.qin")
 
 
 def test_qchem_read_results_intermediate():
@@ -87,6 +100,7 @@ def test_qchem_read_results_intermediate():
     calc.read_results()
     assert calc.results["energy"] == pytest.approx(-605.6859554025 * units.Hartree)
     assert calc.results["forces"][0][0] == pytest.approx(-0.6955571014353796)
+    assert calc.prev_orbital_coeffs is not None
 
 
 def test_qchem_read_results_advanced():
@@ -95,3 +109,4 @@ def test_qchem_read_results_advanced():
     calc.read_results()
     assert calc.results["energy"] == pytest.approx(-605.7310332390 * units.Hartree)
     assert calc.results["forces"][0][0] == pytest.approx(-0.4270884974249971)
+    assert calc.prev_orbital_coeffs is not None
