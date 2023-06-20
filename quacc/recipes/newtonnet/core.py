@@ -320,9 +320,7 @@ def quasi_irc_job(
 
     opt_swaps = opt_swaps or {}
 
-    opt_defaults = {
-        'order': 0
-    }
+    opt_defaults = {}
     opt_flags = opt_defaults | opt_swaps
 
     # Run IRC
@@ -332,7 +330,8 @@ def quasi_irc_job(
                           )
     # Run opt
     opt_summary = relax_job(
-        irc_summary["irc"]["atoms"], newtonnet_kwargs=newtonnet_kwargs, **opt_flags
+        irc_summary["irc"]["atoms"],
+        **opt_flags
     )
 
     # Run frequency
@@ -344,13 +343,6 @@ def quasi_irc_job(
     )
 
     return {"irc": irc_summary, "opt": opt_summary, "thermo": thermo_summary}
-
-# TODO: I think it is possible to get rid of all the unit conversion functions
-# and instead use the `VibrationsData` class in `ase.vibrations.data.py`
-# See details here: https://gitlab.com/ase/ase/-/blob/master/ase/vibrations/data.py
-# Once that class is contructed, you can do `VibrationsData.get_frequencies()`
-# to return the frequencies in cm^-1, as desired. You can then get rid of
-# the `_get_freq_in_cm_inv` and `_mass_weighted_hessian` functions.
 
 
 @ct.electron
