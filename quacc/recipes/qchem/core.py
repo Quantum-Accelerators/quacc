@@ -72,7 +72,7 @@ def static_job(
     smd_solvent
         Solvent to use for SMD implicit solvation model. Examples include "water", "ethanol", "methanol",
         and "acetonitrile". Refer to the Q-Chem manual for a complete list of solvents available.
-        Defulats to None, in which case SMD will not be employed.
+        Defaults to None, in which case SMD will not be employed.
     swaps
         Dictionary of custom kwargs for the calculator. Must be formatted consistently with Pymatgen's
         QChemDictSet's overwrite_inputs. For example: {"rem": {"symmetry": "true"}}.
@@ -179,7 +179,7 @@ def relax_job(
     smd_solvent
         Solvent to use for SMD implicit solvation model. Examples include "water", "ethanol", "methanol",
         and "acetonitrile". Refer to the Q-Chem manual for a complete list of solvents available.
-        Defulats to None, in which case SMD will not be employed.
+        Defaults to None, in which case SMD will not be employed.
     swaps
         Dictionary of custom kwargs for the calculator. Must be formatted consistently with Pymatgen's
         QChemDictSet's overwrite_inputs. For example: {"rem": {"symmetry": "true"}}.
@@ -301,7 +301,7 @@ def ts_job(
     smd_solvent
         Solvent to use for SMD implicit solvation model. Examples include "water", "ethanol", "methanol",
         and "acetonitrile". Refer to the Q-Chem manual for a complete list of solvents available.
-        Defulats to None, in which case SMD will not be employed.
+        Defaults to None, in which case SMD will not be employed.
     swaps
         Dictionary of custom kwargs for the calculator. Must be formatted consistently with Pymatgen's
         QChemDictSet's overwrite_inputs. For example: {"rem": {"symmetry": "true"}}.
@@ -428,7 +428,7 @@ def irc_job(
     smd_solvent
         Solvent to use for SMD implicit solvation model. Examples include "water", "ethanol", "methanol",
         and "acetonitrile". Refer to the Q-Chem manual for a complete list of solvents available.
-        Defulats to None, in which case SMD will not be employed.
+        Defaults to None, in which case SMD will not be employed.
     swaps
         Dictionary of custom kwargs for the calculator. Must be formatted consistently with Pymatgen's
         QChemDictSet's overwrite_inputs. For example: {"rem": {"symmetry": "true"}}.
@@ -560,7 +560,7 @@ def quasi_irc_job(
     smd_solvent
         Solvent to use for SMD implicit solvation model. Examples include "water", "ethanol", "methanol",
         and "acetonitrile". Refer to the Q-Chem manual for a complete list of solvents available.
-        Defulats to None, in which case SMD will not be employed.
+        Defaults to None, in which case SMD will not be employed.
     swaps
         Dictionary of custom kwargs for the calculator. Must be formatted consistently with Pymatgen's
         QChemDictSet's overwrite_inputs. For example: {"rem": {"symmetry": "true"}}.
