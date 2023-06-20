@@ -4,15 +4,21 @@ from shutil import copy, rmtree
 
 import pytest
 from ase import units
-from ase.io import read
 from ase.calculators.calculator import FileIOCalculator
 from ase.calculators.lj import LennardJones
-from pymatgen.io.qchem.inputs import QCInput
-from pymatgen.io.ase import AseAtomsAdaptor
-from quacc.calculators.qchem import QChem
+from ase.io import read
 from ase.optimize import FIRE
+from pymatgen.io.ase import AseAtomsAdaptor
+from pymatgen.io.qchem.inputs import QCInput
 
-from quacc.recipes.qchem.core import static_job, relax_job, irc_job, ts_job, quasi_irc_job
+from quacc.calculators.qchem import QChem
+from quacc.recipes.qchem.core import (
+    irc_job,
+    quasi_irc_job,
+    relax_job,
+    static_job,
+    ts_job,
+)
 
 try:
     import sella
@@ -23,6 +29,7 @@ except ImportError:
 FILE_DIR = Path(__file__).resolve().parent
 QCHEM_DIR = os.path.join(FILE_DIR, "qchem_examples")
 TEST_ATOMS = read(os.path.join(FILE_DIR, "test.xyz"))
+
 
 def qcinput_nearly_equal(qcinput1, qcinput2):
     qcin1 = qcinput1.as_dict()
@@ -35,9 +42,14 @@ def qcinput_nearly_equal(qcinput1, qcinput2):
                         for sitekey in site:
                             if sitekey == "xyz":
                                 for jj, val in enumerate(site[sitekey]):
-                                    assert val == pytest.approx(qcin2[key][molkey][ii][sitekey][jj])
+                                    assert val == pytest.approx(
+                                        qcin2[key][molkey][ii][sitekey][jj]
+                                    )
                             else:
-                                assert qcin1[key][molkey][ii][sitekey] == qcin2[key][molkey][ii][sitekey]
+                                assert (
+                                    qcin1[key][molkey][ii][sitekey]
+                                    == qcin2[key][molkey][ii][sitekey]
+                                )
 
                 else:
                     assert qcin1[key][molkey] == qcin2[key][molkey]
@@ -45,15 +57,18 @@ def qcinput_nearly_equal(qcinput1, qcinput2):
         else:
             assert qcin1[key] == qcin2[key]
 
+
 def mock_execute1(_self, **kwargs):
     copy(os.path.join(QCHEM_DIR, "mol.qout.basic"), "mol.qout")
     copy(os.path.join(QCHEM_DIR, "131.0.basic"), "131.0")
     copy(os.path.join(QCHEM_DIR, "53.0.basic"), "53.0")
 
+
 def mock_execute2(_self, **kwargs):
     copy(os.path.join(QCHEM_DIR, "mol.qout.intermediate"), "mol.qout")
     copy(os.path.join(QCHEM_DIR, "131.0.intermediate"), "131.0")
     copy(os.path.join(QCHEM_DIR, "53.0.intermediate"), "53.0")
+
 
 def mock_execute3(self, **kwargs):
     qcin = QCInput.from_file("mol.qin")
@@ -62,6 +77,7 @@ def mock_execute3(self, **kwargs):
     atoms.calc = LennardJones()
     atoms.get_potential_energy()
     self.results = atoms.calc.results
+
 
 def mock_read(self, **kwargs):
     if self.results is None:
@@ -120,13 +136,9 @@ def test_static_job(monkeypatch):
     qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(os.path.join(QCHEM_DIR, "mol.qin.intermediate"))
     qcinput_nearly_equal(qcin, ref_qcin)
-    
+
     with pytest.raises(ValueError):
-        output = static_job(
-            atoms=TEST_ATOMS,
-            pcm_dielectric="3.0",
-            smd_solvent="water"
-        )
+        output = static_job(atoms=TEST_ATOMS, pcm_dielectric="3.0", smd_solvent="water")
 
 
 @pytest.mark.skipif(
@@ -185,11 +197,7 @@ def test_relax_job(monkeypatch):
     qcinput_nearly_equal(qcin, ref_qcin)
 
     with pytest.raises(ValueError):
-        output = relax_job(
-            atoms=TEST_ATOMS,
-            pcm_dielectric="3.0",
-            smd_solvent="water"
-        )
+        output = relax_job(atoms=TEST_ATOMS, pcm_dielectric="3.0", smd_solvent="water")
 
 
 @pytest.mark.skipif(
@@ -248,18 +256,14 @@ def test_ts_job(monkeypatch):
     qcinput_nearly_equal(qcin, ref_qcin)
 
     with pytest.raises(ValueError):
-        output = ts_job(
-            atoms=TEST_ATOMS,
-            pcm_dielectric="3.0",
-            smd_solvent="water"
-        )
+        output = ts_job(atoms=TEST_ATOMS, pcm_dielectric="3.0", smd_solvent="water")
 
     with pytest.raises(RuntimeError):
         output = ts_job(
             atoms=TEST_ATOMS,
             pcm_dielectric="3.0",
             smd_solvent="water",
-            opt_swaps={"optimizer": FIRE}
+            opt_swaps={"optimizer": FIRE},
         )
 
 
@@ -270,7 +274,7 @@ def test_ts_job(monkeypatch):
 def test_irc_job(monkeypatch):
     monkeypatch.setattr(QChem, "read_results", mock_read)
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
-    
+
     output = irc_job(
         atoms=TEST_ATOMS,
         direction="forward",
@@ -308,17 +312,14 @@ def test_irc_job(monkeypatch):
     qcinput_nearly_equal(qcin, ref_qcin)
 
     with pytest.raises(ValueError):
-        output = irc_job(
-            atoms=TEST_ATOMS,
-            direction="straight"
-        )
+        output = irc_job(atoms=TEST_ATOMS, direction="straight")
 
     with pytest.raises(ValueError):
         output = irc_job(
             atoms=TEST_ATOMS,
             direction="forward",
             pcm_dielectric="3.0",
-            smd_solvent="water"
+            smd_solvent="water",
         )
 
 
@@ -329,13 +330,13 @@ def test_irc_job(monkeypatch):
 def test_quasi_irc_job(monkeypatch):
     monkeypatch.setattr(QChem, "read_results", mock_read)
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
-    
+
     output = quasi_irc_job(
         atoms=TEST_ATOMS,
         direction="forward",
         basis="def2-tzvpd",
-        relax_swaps={"max_steps":5},
-        check_convergence=False
+        relax_swaps={"max_steps": 5},
+        check_convergence=False,
     )
 
     assert output["atoms"] != TEST_ATOMS
@@ -353,19 +354,12 @@ def test_quasi_irc_job(monkeypatch):
     qcinput_nearly_equal(qcin, ref_qcin)
 
     with pytest.raises(ValueError):
-        output = quasi_irc_job(
-            atoms=TEST_ATOMS,
-            direction="straight"
-        )
+        output = quasi_irc_job(atoms=TEST_ATOMS, direction="straight")
 
     with pytest.raises(ValueError):
         output = quasi_irc_job(
             atoms=TEST_ATOMS,
             direction="forward",
             pcm_dielectric="3.0",
-            smd_solvent="water"
+            smd_solvent="water",
         )
-
-
-
-

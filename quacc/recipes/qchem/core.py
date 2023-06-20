@@ -9,14 +9,14 @@ from typing import Literal
 import covalent as ct
 from ase.atoms import Atoms
 from monty.dev import requires
+from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc.calculators.qchem import QChem
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
-from pymatgen.io.ase import AseAtomsAdaptor
 
 try:
-    from sella import Sella, IRC
+    from sella import IRC, Sella
 except ImportError:
     Sella = None
 
@@ -316,7 +316,7 @@ def ts_job(
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
 
-    # Reminders to self: 
+    # Reminders to self:
     #   - exposing TRICs?
     #   - passing initial Hessian?
 
@@ -443,7 +443,7 @@ def irc_job(
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
 
-    # Reminders to self: 
+    # Reminders to self:
     #   - exposing TRICs?
     #   - passing initial Hessian?
 
@@ -458,7 +458,7 @@ def irc_job(
         "max_steps": 1000,
         "optimizer": IRC,
         "optimizer_kwargs": {},
-        "run_kwargs": {"direction": direction}
+        "run_kwargs": {"direction": direction},
     }
     opt_flags = opt_defaults | opt_swaps
     if "sella.optimize" not in opt_flags["optimizer"].__module__:
@@ -575,7 +575,7 @@ def quasi_irc_job(
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
 
-    # Reminders to self: 
+    # Reminders to self:
     #   - exposing TRICs?
     #   - passing initial Hessian?
 
@@ -605,7 +605,7 @@ def quasi_irc_job(
         smd_solvent=smd_solvent,
         swaps=swaps,
         opt_swaps=irc_swaps,
-        check_convergence=False
+        check_convergence=False,
     )
 
     relax_summary = relax_job(
@@ -620,11 +620,9 @@ def quasi_irc_job(
         smd_solvent=smd_solvent,
         swaps=swaps,
         opt_swaps=relax_swaps,
-        check_convergence=check_convergence
+        check_convergence=check_convergence,
     )
 
     relax_summary["irc"] = irc_summary
 
     return relax_summary
-
-

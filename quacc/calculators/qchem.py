@@ -131,7 +131,6 @@ class QChem(FileIOCalculator):
                     data = struct.pack("d", val)
                     file.write(data)
 
-
     def read_results(self):
         data = QCOutput("mol.qout").data
         self.results["energy"] = data["final_energy"] * units.Hartree

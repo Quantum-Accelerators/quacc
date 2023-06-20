@@ -1,10 +1,10 @@
 import os
 from pathlib import Path
 
-from monty.io import zopen
 import pytest
 from ase import units
 from ase.io import read
+from monty.io import zopen
 from pymatgen.io.qchem.inputs import QCInput
 
 from quacc.calculators.qchem import QChem
@@ -24,7 +24,7 @@ def test_qchem_write_input_basic():
         os.path.join(FILE_DIR, "examples", "basic", "mol.qin")
     )
     assert qcinp.as_dict() == ref_qcinp.as_dict()
-    assert not os.path.exists(os.path.join(FILE_DIR,"53.0"))
+    assert not os.path.exists(os.path.join(FILE_DIR, "53.0"))
     os.remove("mol.qin")
 
 
@@ -84,10 +84,12 @@ def test_qchem_read_results_basic_and_write_53():
     assert calc.prev_orbital_coeffs is not None
     os.chdir(FILE_DIR)
     calc.write_input(TEST_ATOMS)
-    assert os.path.exists(os.path.join(FILE_DIR,"53.0"))
+    assert os.path.exists(os.path.join(FILE_DIR, "53.0"))
     with zopen("53.0", mode="rb") as new_file:
         new_binary = new_file.read()
-        with zopen(os.path.join(FILE_DIR, "examples", "basic", "53.0"), mode="rb") as old_file:
+        with zopen(
+            os.path.join(FILE_DIR, "examples", "basic", "53.0"), mode="rb"
+        ) as old_file:
             old_binary = old_file.read()
             assert new_binary == old_binary
     os.remove("53.0")
