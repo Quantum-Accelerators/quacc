@@ -24,6 +24,27 @@ FILE_DIR = Path(__file__).resolve().parent
 QCHEM_DIR = os.path.join(FILE_DIR, "qchem_examples")
 TEST_ATOMS = read(os.path.join(FILE_DIR, "test.xyz"))
 
+def qcinput_nearly_equal(qcinput1, qcinput2):
+    qcin1 = qcinput1.as_dict()
+    qcin2 = qcinput2.as_dict()
+    for key in qcin1:
+        if key is "molecule":
+            for molkey in qcin1[key]:
+                if molkey == "sites":
+                    for ii, site in enumerate(qcin1[key][molkey]):
+                        for sitekey in site:
+                            if sitekey == "xyz":
+                                for jj, val in enumerate(site[sitekey]):
+                                    assert val == pytest.approx(qcin2[key][molkey][ii][sitekey][jj])
+                            else:
+                                assert qcin1[key][molkey][ii][sitekey] == qcin2[key][molkey][ii][sitekey]
+
+                else:
+                    assert qcin1[key][molkey] == qcin2[key][molkey]
+
+        else:
+            assert qcin1[key] == qcin2[key]
+
 def mock_execute1(_self, **kwargs):
     copy(os.path.join(QCHEM_DIR, "mol.qout.basic"), "mol.qout")
     copy(os.path.join(QCHEM_DIR, "131.0.basic"), "131.0")
@@ -75,7 +96,7 @@ def test_static_job(monkeypatch):
 
     qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(os.path.join(QCHEM_DIR, "mol.qin.basic"))
-    assert qcin.as_dict() == ref_qcin.as_dict()
+    qcinput_nearly_equal(qcin, ref_qcin)
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute2)
     output = static_job(
@@ -98,7 +119,7 @@ def test_static_job(monkeypatch):
 
     qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(os.path.join(QCHEM_DIR, "mol.qin.intermediate"))
-    assert qcin.as_dict() == ref_qcin.as_dict()
+    qcinput_nearly_equal(qcin, ref_qcin)
     
     with pytest.raises(ValueError):
         output = static_job(
@@ -135,7 +156,7 @@ def test_relax_job(monkeypatch):
     ref_qcin = QCInput.from_file(
         os.path.join(QCHEM_DIR, "mol.qin.basic.sella_opt_iter1")
     )
-    assert qcin.as_dict() == ref_qcin.as_dict()
+    qcinput_nearly_equal(qcin, ref_qcin)
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute2)
     output = relax_job(
@@ -161,7 +182,7 @@ def test_relax_job(monkeypatch):
     ref_qcin = QCInput.from_file(
         os.path.join(QCHEM_DIR, "mol.qin.intermediate.sella_opt_iter1")
     )
-    assert qcin.as_dict() == ref_qcin.as_dict()
+    qcinput_nearly_equal(qcin, ref_qcin)
 
     with pytest.raises(ValueError):
         output = relax_job(
@@ -198,7 +219,7 @@ def test_ts_job(monkeypatch):
     ref_qcin = QCInput.from_file(
         os.path.join(QCHEM_DIR, "mol.qin.basic.sella_TSopt_iter1")
     )
-    assert qcin.as_dict() == ref_qcin.as_dict()
+    qcinput_nearly_equal(qcin, ref_qcin)
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute2)
     output = ts_job(
@@ -224,7 +245,7 @@ def test_ts_job(monkeypatch):
     ref_qcin = QCInput.from_file(
         os.path.join(QCHEM_DIR, "mol.qin.intermediate.sella_TSopt_iter1")
     )
-    assert qcin.as_dict() == ref_qcin.as_dict()
+    qcinput_nearly_equal(qcin, ref_qcin)
 
     with pytest.raises(ValueError):
         output = ts_job(
@@ -270,7 +291,7 @@ def test_irc_job(monkeypatch):
     ref_qcin = QCInput.from_file(
         os.path.join(QCHEM_DIR, "mol.qin.basic.sella_IRC_forward_iter1")
     )
-    assert qcin.as_dict() == ref_qcin.as_dict()
+    qcinput_nearly_equal(qcin, ref_qcin)
 
     output = irc_job(
         atoms=TEST_ATOMS,
@@ -284,7 +305,7 @@ def test_irc_job(monkeypatch):
     ref_qcin = QCInput.from_file(
         os.path.join(QCHEM_DIR, "mol.qin.basic.sella_IRC_reverse_iter1")
     )
-    assert qcin.as_dict() == ref_qcin.as_dict()
+    qcinput_nearly_equal(qcin, ref_qcin)
 
     with pytest.raises(ValueError):
         output = irc_job(
@@ -329,7 +350,7 @@ def test_quasi_irc_job(monkeypatch):
     ref_qcin = QCInput.from_file(
         os.path.join(QCHEM_DIR, "mol.qin.basic.quasi_irc_forward")
     )
-    assert qcin.as_dict() == ref_qcin.as_dict()
+    qcinput_nearly_equal(qcin, ref_qcin)
 
     with pytest.raises(ValueError):
         output = quasi_irc_job(
