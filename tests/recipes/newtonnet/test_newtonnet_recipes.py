@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 from ase.build import molecule
 from ase.optimize import FIRE
+from ase import Atoms
 
 
 try:
@@ -61,7 +62,6 @@ def test_relax_Job():
     assert not np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
     assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
 
-from ase import Atoms
 
 # Define the XYZ data
 xyz_data = """
@@ -97,9 +97,6 @@ for line in xyz_lines[1:]:
 # Create the ASE Atoms object
 atoms = Atoms(symbols=symbols, positions=positions)
 
-# Print the Atoms object
-print(atoms)
-
 
 def test_ts_job_with_default_args():
     # Define test inputs
@@ -110,13 +107,13 @@ def test_ts_job_with_default_args():
 
     # Perform assertions on the result
     assert isinstance(output, dict)
-    assert output['ts']['results']['energy'] == pytest.approx(-30.935106077591225)
-    #assert output['thermo']['vib']['results']['vib_freqs_raw'] == pytest.approx(0)
-    assert output['thermo']['vib']['results']['imag_vib_freqs'][0] == pytest.approx(-1686.434228258355)
-    #assert output['thermo']['vib']['results'].keys() == pytest.approx(-30.935106077591225)
-    #assert len(output['thermo']['results']['vib_freqs']) == pytest.approx(-30.935106077591225)
     assert "ts" in output
     assert "thermo" in output
+    assert output['ts']['results']['energy'] == pytest.approx(-30.935106077591225)
+    assert output['thermo']['vib']['results']['imag_vib_freqs'][0] == pytest.approx(-1686.434228258355)
+    #assert output['thermo']['vib']['results']['vib_freqs_raw'] == pytest.approx(0)
+    #assert output['thermo']['vib']['results'].keys() == pytest.approx(-30.935106077591225)
+    #assert len(output['thermo']['results']['vib_freqs']) == pytest.approx(-30.935106077591225)
     # Add more assertions based on the expected output
 
 def test_ts_job_with_custom_hessian():
@@ -131,6 +128,7 @@ def test_ts_job_with_custom_hessian():
     assert isinstance(output, dict)
     assert "ts" in output
     assert output['ts']['results']['energy'] == pytest.approx(-30.935106077591225)
+    assert output['thermo']['vib']['results']['imag_vib_freqs'][0] == pytest.approx(-1686.3786461271718)
     assert "thermo" in output
     # Add more assertions based on the expected output
 
@@ -138,7 +136,9 @@ def test_ts_job_with_custom_hessian():
 def test_ts_job_with_custom_optimizer():
     # Define test inputs
     # atoms = molecule("H2O")
-    opt_swaps = {}
+    opt_swaps = {
+        "optimizer": FIRE,
+    }
 
     # Call the function
     output = ts_job(atoms, opt_swaps=opt_swaps)
@@ -146,8 +146,9 @@ def test_ts_job_with_custom_optimizer():
     # Perform assertions on the result
     assert isinstance(output, dict)
     assert "ts" in output
-    assert output['ts']['results']['energy'] == pytest.approx(-30.935106077591225)
     assert "thermo" in output
+    assert output['ts']['results']['energy'] == pytest.approx(-34.400800631142495)
+    assert output['thermo']['vib']['results']['vib_energies'][0] == pytest.approx(0.016038718562105512)
     # Add more assertions based on the expected output
 
 
