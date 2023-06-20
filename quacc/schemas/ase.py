@@ -399,11 +399,6 @@ def summarize_vib_run(
     vib_energies_raw = vib.get_energies().tolist()
 
     atoms = vib._atoms if isinstance(vib, VibrationsData) else vib.atoms
-    print('\n\n\n\n\n', type(atoms), '\n\n\n\n')
-    print(dir(atoms))
-    print('\n\n', dir(atoms.calc))
-
-    #atoms = vib._indices if isinstance(vib, VibrationsData) else vib.indices
 
     # Convert imaginary modes to negative values for DB storage
     for i, f in enumerate(vib_freqs_raw):

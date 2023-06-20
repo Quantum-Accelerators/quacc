@@ -11,6 +11,7 @@ from ase.vibrations.data import VibrationsData
 from ase.units import _c, fs
 from monty.dev import requires
 from sella import Sella
+from sella import IRC
 from ase.optimize.optimize import Optimizer
 from quacc.schemas.ase import (
     summarize_opt_run,
@@ -238,7 +239,7 @@ def irc_job(
     opt_swaps = opt_swaps or {}
 
     opt_defaults = {
-        'optimizer': 'sella_irc',
+        'optimizer': IRC,
         'optimizer_kwargs': {
             'dx': 0.1,
             'eta': 1e-4,

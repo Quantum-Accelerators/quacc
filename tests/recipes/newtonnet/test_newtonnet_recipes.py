@@ -111,10 +111,6 @@ def test_ts_job_with_default_args():
     assert "thermo" in output
     assert output['ts']['results']['energy'] == pytest.approx(-30.935106077591225)
     assert output['thermo']['vib']['results']['imag_vib_freqs'][0] == pytest.approx(-1686.434228258355)
-    #assert output['thermo']['vib']['results']['vib_freqs_raw'] == pytest.approx(0)
-    #assert output['thermo']['vib']['results'].keys() == pytest.approx(-30.935106077591225)
-    #assert len(output['thermo']['results']['vib_freqs']) == pytest.approx(-30.935106077591225)
-    # Add more assertions based on the expected output
 
 def test_ts_job_with_custom_hessian():
     # Define test inputs
@@ -130,7 +126,6 @@ def test_ts_job_with_custom_hessian():
     assert output['ts']['results']['energy'] == pytest.approx(-30.935106077591225)
     assert output['thermo']['vib']['results']['imag_vib_freqs'][0] == pytest.approx(-1686.3786461271718)
     assert "thermo" in output
-    # Add more assertions based on the expected output
 
 
 def test_ts_job_with_custom_optimizer():
@@ -149,7 +144,104 @@ def test_ts_job_with_custom_optimizer():
     assert "thermo" in output
     assert output['ts']['results']['energy'] == pytest.approx(-34.400800631142495)
     assert output['thermo']['vib']['results']['vib_energies'][0] == pytest.approx(0.016038718562105512)
+
+
+def test_irc_job_with_default_args():
+    # Define test inputs
+    # atoms = molecule("H2O")
+
+    # Call the function
+    output = irc_job(atoms)
+
+    # Perform assertions on the result
+    assert isinstance(output, dict)
+    assert "irc" in output
+    assert "thermo" in output
+    assert output['irc']['results']['energy'] == pytest.approx(-34.401686)
+    assert output['thermo']['vib']['results']['vib_energies'][0] == pytest.approx(0.016611002049098378)
+    assert output['thermo']['thermo']['results']['energy'] == pytest.approx(-34.401686032583896,)
+    assert output['thermo']['thermo']['results']['enthalpy'] == pytest.approx(-32.658804494518634,)
+    assert output['thermo']['thermo']['results']['entropy'] == pytest.approx(0.002951301138832678,)
+    assert output['thermo']['thermo']['results']['gibbs_energy'] == pytest.approx(-33.5387349290616,)
+    assert output['thermo']['thermo']['results']['zpe'] == pytest.approx(1.5924339540058858)
+
+
+def test_irc_job_with_custom_fmax():
+    # Define test inputs
+    atoms = molecule("H2O")
+    fmax = 0.001
+
+    # Call the function
+    output = irc_job(atoms, fmax=fmax)
+
+    # Perform assertions on the result
+    assert isinstance(output, dict)
+    assert "irc" in output
+    assert "thermo" in output
+    assert "forward" in output["irc"]["trajectory"]
+    assert output["thermo"]["vib"]["results"]["vib_freqs"][0] == pytest.approx(1686.434228258355)
     # Add more assertions based on the expected output
+
+
+def test_irc_job_with_custom_max_steps():
+    # Define test inputs
+    atoms = molecule("H2O")
+    max_steps = 500
+
+    # Call the function
+    output = irc_job(atoms, max_steps=max_steps)
+
+    # Perform assertions on the result
+    assert isinstance(output, dict)
+    assert "irc" in output
+    assert "thermo" in output
+    assert "forward" in output["irc"]["trajectory"]
+    assert output["thermo"]["vib"]["results"]["vib_freqs"][0] == pytest.approx(1686.434228258355)
+    # Add more assertions based on the expected output
+
+
+def test_irc_job_with_custom_temperature_and_pressure():
+    # Define test inputs
+    atoms = molecule("H2O")
+    temperature = 500.0
+    pressure = 10.0
+
+    # Call the function
+    output = irc_job(atoms, temperature=temperature, pressure=pressure)
+
+    # Perform assertions on the result
+    assert isinstance(output, dict)
+    assert "irc" in output
+    assert "thermo" in output
+    assert "forward" in output["irc"]["trajectory"]
+    assert output["thermo"]["vib"]["results"]["vib_freqs"][0] == pytest.approx(1686.434228258355)
+    # Add more assertions based on the expected output
+
+
+def test_irc_job_with_check_convergence():
+    # Define test inputs
+    atoms = molecule("H2O")
+    check_convergence = True
+
+    # Call the function
+    output = irc_job(atoms, check_convergence=check_convergence)
+
+    # Perform assertions on the result
+    assert isinstance(output, dict)
+    assert "irc" in output
+    assert "thermo" in output
+    assert "forward" in output["irc"]["trajectory"]
+    assert output["thermo"]["vib"]["results"]["vib_freqs"][0] == pytest.approx(1686.434228258355)
+    # Add more assertions based on the expected output
+
+'''
+def test_irc_job_with_custom_newtonnet_kwargs():
+    # Define test inputs
+    atoms = molecule("H2O")
+    newtonnet_kwargs = {
+        "model_path": "/path/to/custom/model",
+        "settings_path": "/path
+'''
 
 
 '''
