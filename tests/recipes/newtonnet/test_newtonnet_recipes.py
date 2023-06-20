@@ -159,10 +159,10 @@ def test_irc_job_with_default_args():
     assert "thermo" in output
     assert output['irc']['results']['energy'] == pytest.approx(-34.401686)
     assert output['thermo']['vib']['results']['vib_energies'][0] == pytest.approx(0.016611002049098378)
-    assert output['thermo']['thermo']['results']['energy'] == pytest.approx(-34.401686032583896,)
-    assert output['thermo']['thermo']['results']['enthalpy'] == pytest.approx(-32.658804494518634,)
-    assert output['thermo']['thermo']['results']['entropy'] == pytest.approx(0.002951301138832678,)
-    assert output['thermo']['thermo']['results']['gibbs_energy'] == pytest.approx(-33.5387349290616,)
+    assert output['thermo']['thermo']['results']['energy'] == pytest.approx(-34.401686032583896)
+    assert output['thermo']['thermo']['results']['enthalpy'] == pytest.approx(-32.658804494518634)
+    assert output['thermo']['thermo']['results']['entropy'] == pytest.approx(0.002951301138832678)
+    assert output['thermo']['thermo']['results']['gibbs_energy'] == pytest.approx(-33.5387349290616)
     assert output['thermo']['thermo']['results']['zpe'] == pytest.approx(1.5924339540058858)
 
 
@@ -178,9 +178,13 @@ def test_irc_job_with_custom_fmax():
     assert isinstance(output, dict)
     assert "irc" in output
     assert "thermo" in output
-    assert "forward" in output["irc"]["trajectory"]
-    assert output["thermo"]["vib"]["results"]["vib_freqs"][0] == pytest.approx(1686.434228258355)
-    # Add more assertions based on the expected output
+    assert output['irc']['results']['energy'] == pytest.approx(-9.41835380477994)
+    assert output['thermo']['vib']['results']['vib_energies'][0] == pytest.approx(0.23465203077606747)
+    assert output['thermo']['thermo']['results']['energy'] == pytest.approx(-9.41835380477994)
+    assert output['thermo']['thermo']['results']['enthalpy'] == pytest.approx(-8.713051986549818)
+    assert output['thermo']['thermo']['results']['entropy'] == pytest.approx(0.0019593027330702985)
+    assert output['thermo']['thermo']['results']['gibbs_energy'] == pytest.approx(-9.297218096414728)
+    assert output['thermo']['thermo']['results']['zpe'] == pytest.approx(0.6025061761480841)
 
 
 def test_irc_job_with_custom_max_steps():
