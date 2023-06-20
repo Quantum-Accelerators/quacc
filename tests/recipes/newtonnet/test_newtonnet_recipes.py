@@ -199,9 +199,13 @@ def test_irc_job_with_custom_max_steps():
     assert isinstance(output, dict)
     assert "irc" in output
     assert "thermo" in output
-    assert "forward" in output["irc"]["trajectory"]
-    assert output["thermo"]["vib"]["results"]["vib_freqs"][0] == pytest.approx(1686.434228258355)
-    # Add more assertions based on the expected output
+    assert output['irc']['results']['energy'] == pytest.approx(-9.41835380477994)
+    assert output['thermo']['vib']['results']['vib_energies'][0] == pytest.approx(0.23457884629206466)
+    assert output['thermo']['thermo']['results']['energy'] == pytest.approx(-9.418353073070744)
+    assert output['thermo']['thermo']['results']['enthalpy'] == pytest.approx(-8.713112216338487)
+    assert output['thermo']['thermo']['results']['entropy'] == pytest.approx(0.0019592905615021207)
+    assert output['thermo']['thermo']['results']['gibbs_energy'] == pytest.approx(-9.297274697250344)
+    assert output['thermo']['thermo']['results']['zpe'] == pytest.approx(0.6024451502493378)
 
 
 def test_irc_job_with_custom_temperature_and_pressure():
