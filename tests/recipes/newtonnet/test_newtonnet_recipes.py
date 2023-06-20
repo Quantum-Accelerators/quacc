@@ -250,14 +250,30 @@ def test_irc_job_with_check_convergence():
     assert output['thermo']['thermo']['results']['gibbs_energy'] == pytest.approx(-9.297274697250344)
     assert output['thermo']['thermo']['results']['zpe'] == pytest.approx(0.6024451502493378)
 
-'''
-def test_irc_job_with_custom_newtonnet_kwargs():
+
+def test_irc_job_with_custom_opt_swaps():
     # Define test inputs
     atoms = molecule("H2O")
-    newtonnet_kwargs = {
-        "model_path": "/path/to/custom/model",
-        "settings_path": "/path
-'''
+    opt_swaps = {
+        "run_kwargs": {
+            "direction": "forward",
+        },
+    }
+
+    # Call the function
+    output = irc_job(atoms, opt_swaps=opt_swaps)
+
+    # Perform assertions on the result
+    assert isinstance(output, dict)
+    assert "irc" in output
+    assert "thermo" in output
+    assert output['irc']['results']['energy'] == pytest.approx(-9.41835380477994)
+    assert output['thermo']['vib']['results']['vib_energies'][0] == pytest.approx(0.23457884629206466)
+    assert output['thermo']['thermo']['results']['energy'] == pytest.approx(-9.418353073070744)
+    assert output['thermo']['thermo']['results']['enthalpy'] == pytest.approx(-8.713112216338487)
+    assert output['thermo']['thermo']['results']['entropy'] == pytest.approx(0.0019592905615021207)
+    assert output['thermo']['thermo']['results']['gibbs_energy'] == pytest.approx(-9.297274697250344)
+    assert output['thermo']['thermo']['results']['zpe'] == pytest.approx(0.6024451502493378)
 
 
 '''
