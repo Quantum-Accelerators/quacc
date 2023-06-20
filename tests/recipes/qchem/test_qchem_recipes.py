@@ -28,7 +28,7 @@ def qcinput_nearly_equal(qcinput1, qcinput2):
     qcin1 = qcinput1.as_dict()
     qcin2 = qcinput2.as_dict()
     for key in qcin1:
-        if key is "molecule":
+        if key == "molecule":
             for molkey in qcin1[key]:
                 if molkey == "sites":
                     for ii, site in enumerate(qcin1[key][molkey]):
