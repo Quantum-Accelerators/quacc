@@ -45,7 +45,7 @@ if __name__ == "__main__":
         ],
         extras_require={
             "fireworks": ["fireworks"],
-            "optimizers": ["sella"],
+            "optimizers": ["sella>=2.3.2"],
             "tblite": ["tblite[ase]"],
             "dev": ["black", "isort", "pytest", "pytest-cov"],
             "docs": [
@@ -54,7 +54,7 @@ if __name__ == "__main__":
                 "ipython==8.14.0",
                 "jsonschema[format]==4.17.3",
                 "nbsphinx==0.9.2",
-                "myst_parser==1.0.0",
+                "myst_parser==2.0.0",
                 "numpydoc==1.5.0",
                 "sphinx_design==0.4.1",
                 "sphinx-copybutton==0.5.2",
@@ -65,11 +65,11 @@ if __name__ == "__main__":
                 "cclib==1.7.2",
                 "covalent==0.226.0rc0",  # waiting on > 0.222.0
                 "custodian==2023.6.5",
-                "emmet-core==0.55.5",
+                "emmet-core==0.57.1",
                 "jobflow==0.1.11",
-                "maggma==0.51.7",
+                "maggma==0.51.8",
                 "monty==2023.5.8",
-                "numpy==1.24.3",
+                "numpy==1.25.0",
                 "pydantic==1.10.2",
                 "pymatgen @ https://github.com/materialsproject/pymatgen/archive/refs/heads/master.zip",  # waiting on >2023.05.31
             ],
