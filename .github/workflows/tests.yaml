@@ -218,9 +218,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install .[strict,dev,qchem]
-          pip install chardet
-          pip install pytest-cov
+          pip install .[strict,dev,optimizers]
 
       - name: Install conda packages
         run: |
