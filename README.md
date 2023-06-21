@@ -46,7 +46,7 @@ from quacc.recipes.emt.slabs import BulkToSlabsFlow, relax_job
 @ct.lattice(executor="local")
 def workflow(atoms):
     relaxed_bulk = relax_job(atoms) # relax a bulk structure
-    relaxed_slabs = BulkToSlabsFlow().run(relaxed_bulk["atoms"]) # from the bulk, carve slabs and relax each slab
+    relaxed_slabs = BulkToSlabsFlow().run(relaxed_bulk["atoms"]) # carve slabs and relax each slab
     return relaxed_slabs
 
 # Make an Atoms object of a bulk Cu structure for the input
