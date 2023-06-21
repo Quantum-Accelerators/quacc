@@ -18,7 +18,7 @@ The three main goals of Quacc are to:
 
 1. Reduce the barrier for running complex, mixed-code workflows for molecules and materials across distributed compute environments.
 
-2. Promote rapid workflow development and testing via modern workflow management solutions (e.g. [Covalent](https://github.com/AgnostiqHQ/covalent), [Parsl](https://github.com/Parsl/parsl), [Jobflow](https://github.com/materialsproject/jobflow)).
+2. Promote rapid workflow development and testing via modern workflow management solutions.
 
 3. Enable a seamless interface between the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/) and the software infrastructure powering the [Materials Project](https://materialsproject.org).
 
@@ -37,7 +37,7 @@ Includes the following sections:
 
 ## Demonstration ✨
 
-🚀 Demo from the Quick Start guide, using Covalent as one of the several supported workflow managers.
+🚀 Demo from the Quick Start guide, using [Covalent](https://github.com/AgnostiqHQ/covalent) as one of the several supported workflow managers.
 
 ![Demo from Quick Start](docs/src/_static/start/start2.gif)
 
