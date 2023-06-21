@@ -2,11 +2,7 @@
 
 In Quacc, each code comes with pre-packaged jobs and workflows, which we call recipes for short. This tutorial walks you through how to use these provided recipes to run simple calculations that can be tested out on your local machine.
 
-Once you understand the basics, you should move on to the ["Using Quacc with Covalent"](covalent.md) (recommended) or ["Using Quacc with Jobflow"](advanced/jobflow.md) guides to learn how to use Quacc with a workflow manager, which allows you to stich together and run complex Quacc workflows across distributed computing resources.
-
-```{note}
-If you are familiar with ASE and want to dive right into the workflow manager details, you can likely skim this section.
-```
+Once you understand the basics, you should move on to the ["Using Quacc with Covalent"](covalent.md) (recommended) guide to learn how to use Quacc with a workflow manager, which allows you to stich together and run complex Quacc workflows across distributed computing resources. Refer to the ["Using Quacc with Parsl"](advanced/parsl.md) or ["Using Quacc with Jobflow"](advanced/jobflow.md) for alternate workflow manager options.
 
 ## Pre-Requisites
 
@@ -84,4 +80,6 @@ print(result2)
 The output of most compute jobs in Quacc is a dictionary summarizing the results of the calculation. It always has a key `"atoms"` that contains a copy of the output `Atoms` object. This can be used to pass structure information between jobs.
 ```
 
-What happens if the first job fails, however? Then the code will crash, no results will be stored, and you'd have to start from scratch. That'd be sad, but thankfully this is where using a workflow manager, such as [Covalent](covalent.md), can save the day. Read on to learn how to define workflows with complex connectivity and how to dispatch them across distributed computing resources.
+What happens if the first job fails, however? Then the code will crash, no results will be stored, and you'd have to start from scratch. That'd be sad, but thankfully this is where using a workflow manager can save the day.
+
+Read on to learn how to define workflows with complex connectivity and how to dispatch them across distributed computing resources.
