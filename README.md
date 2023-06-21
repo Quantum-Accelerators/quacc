@@ -37,10 +37,18 @@ Includes the following sections:
 
 ## Demonstration ✨
 
+```bash
+covalent start
+```
+
 ```python
+import os
 import covalent as ct
 from ase.build import bulk
 from quacc.recipes.emt.slabs import BulkToSlabsFlow, relax_job
+
+# Start the Covalent server
+os.system("covalent start")
 
 # Define the workflow and set how to execute
 @ct.lattice(executor="local")
@@ -57,7 +65,7 @@ atoms = bulk("Cu")
 dispatch_id = ct.dispatch(workflow)(atoms)
 
 # Fetch the result from the server
-result = ct.get_result(dispatch_id, wait=True)
+result = ct.get_result(dispatch_id)
 print(result)
 ```
 
