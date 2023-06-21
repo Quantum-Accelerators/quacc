@@ -30,3 +30,4 @@ ipython_config.py
 
 # Workflow ignores
 *parsl.log
+runinfo
