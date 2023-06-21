@@ -2,9 +2,9 @@
 
 ## Introduction
 
-[Parsl](https://github.com/Parsl/parsl) is a Python program developed by Argonne National Laboratory and the University of Chicago to easily write parallel workflows that can be dispatched on distributed compute resources. Like Jobflow+FireWorks, it can be used in place of Covalent, if preferred.
+[Parsl](https://github.com/Parsl/parsl) is a Python program developed at Argonne National Laboratory and the University of Chicago to easily write parallel workflows that can be dispatched on distributed compute resources. Like Jobflow+FireWorks, it can be used in place of Covalent, if preferred.
 
-Make sure you completed the ["Parsl Setup"](../../install/advanced/parsl.md) section of the installation instructions. Additionally, you should read the Parsl documentation's [Quick Start](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the `@python_app`, which describes individual compute tasks. You should also become familiar with the `@join_app` decorator if you plan to run dynamic workflows.
+Make sure you completed the ["Parsl Setup"](../../install/advanced/parsl.md) section of the installation instructions. Additionally, you should read the Parsl documentation's [Quick Start](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a `@python_app`, which describes individual compute tasks.
 
 ```{note}
 For a more detailed tutorial on how to use Parsl, refer to the [Parsl Tutorial](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html) and the even more detailed [Parsl user guide](https://parsl.readthedocs.io/en/stable/userguide/index.html).
@@ -13,7 +13,7 @@ For a more detailed tutorial on how to use Parsl, refer to the [Parsl Tutorial](
 ## Running a Simple Serial Workflow
 
 ```{hint}
-If you haven't loaded your Parsl config, you must do that first so Parsl can construct the job dependency graph. For testing purposes, you can run `parsl.load()` after doing `import parsl`.
+If you haven't loaded your Parsl config, you must do that first so Parsl can construct the job dependency graph. For testing purposes, you simply can run `import parsl` followed by `parsl.load()` before starting the examples below`.
 ```
 
 We will first try running a simple workflow where we relax a bulk Cu structure using EMT and take the output of that calculation as the input to a follow-up static calculation with EMT.

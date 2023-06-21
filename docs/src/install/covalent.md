@@ -5,7 +5,7 @@
 Quacc is made to directly interface with [Covalent](https://github.com/AgnostiqHQ/covalent), an open-source workflow management and dispatching solution with a convenient user interface for job monitoring.
 
 ```{note}
-If you plan to use Parsl or Jobflow as your workflow manager instead of Covalent, skip to the [Parsl Setup](advanced/parsl.md) or [Jobflow Setup](advanced/jobflow.md) section, respectively.
+If you plan to use Parsl or Jobflow as your workflow manager instead of Covalent, skip to the [Parsl Setup](advanced/parsl.md) or [Jobflow Setup](advanced/jobflow.md) sections, respectively.
 ```
 
 ## Starting the Server

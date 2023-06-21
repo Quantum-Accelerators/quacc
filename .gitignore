@@ -27,3 +27,4 @@ ipython_config.py
 
 # Editors ignores
 .vscode*
+runinfo/001/parsl.log
