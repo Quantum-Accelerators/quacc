@@ -7,8 +7,8 @@ from copy import deepcopy
 
 import covalent as ct
 from ase.atoms import Atoms
+from ase.optimize import FIRE
 from monty.dev import requires
-from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc.calculators.qchem import QChem
 from quacc.schemas.ase import summarize_opt_run, summarize_run
