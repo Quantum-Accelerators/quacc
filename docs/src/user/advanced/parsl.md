@@ -147,7 +147,7 @@ When running a Covalent-based class like {obj}`.emt.slabs.BulkToSlabsFlow` in th
 
 To address this, you can draw inspiration from the Covalent-based classes to design your own workflows tailored to Parsl. After all, it only requires you to stitch together the individual `@python_app` steps into a single function.
 
-```{note}
+```{seealso}
 For details on how to write your own dynamic workflows in Parsl, refer to the `@join_app` section of the [Parsl documentation](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html#Examples).
 ```
 

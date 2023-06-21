@@ -28,7 +28,7 @@ store = MongoStore(
 covalent_to_db(store)
 ```
 
-## With Parsl or No Workflow Manager
+## With Parsl or Without a Workflow Manager
 
 If you're using Parsl or not using a workflow manager at all, you can still store your results in a database of your choosing. For a given recipe, you can store the final output summary in your database using the {obj}`quacc.util.db.results_to_db` function, as shown in the example below.
 

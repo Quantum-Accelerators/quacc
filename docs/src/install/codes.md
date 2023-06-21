@@ -73,7 +73,7 @@ If you plan to use tblite with Quacc, you will need to install the tblite interf
 ## VASP
 
 ```{note}
-VASP is a very widely used code for plane-wave, periodic DFT calculations. Quacc has built-in support for automatically fixing failed VASP jobs via [Custodian](https://github.com/materialsproject/custodian).
+[VASP](https://www.vasp.at/) is a very widely used code for plane-wave, periodic DFT calculations. Quacc has built-in support for automatically fixing failed VASP jobs via [Custodian](https://github.com/materialsproject/custodian).
 ```
 
 To use VASP with Quacc, you will need to do the following:

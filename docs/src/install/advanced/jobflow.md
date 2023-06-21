@@ -9,7 +9,7 @@ If you would prefer to use [Jobflow](https://github.com/materialsproject/jobflow
 Jobflow and FireWorks both require the use of a database to store calculation results. If you haven't done so already, first create a Mongo database as described in the ["MongoDB Setup"](config_db.md) section.
 
 ```{note}
-If it is not possible to use MongoDB, you can use a variety of other data store options available within the [maggmma package](https://github.com/materialsproject/maggma), including a [`MontyStore`](https://materialsproject.github.io/maggma/reference/stores/#maggma.stores.mongolike.MontyStore) that relies on the local filesystem.
+If it is not possible to use MongoDB, you can use a variety of other data store options available within the [maggma package](https://github.com/materialsproject/maggma), including a [`MontyStore`](https://materialsproject.github.io/maggma/reference/stores/#maggma.stores.mongolike.MontyStore) that solely relies on the local filesystem.
 ```
 
 ## Jobflow DB Setup

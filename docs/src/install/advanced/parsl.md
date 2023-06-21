@@ -6,7 +6,7 @@ If you would prefer to use [Parsl](https://github.com/Parsl/parsl) to write and 
 
 ## Installation
 
-In your activated Python environment, install Parsl (with support for a web dashboard) as follows:
+In your activated Python environment, install Parsl (with optional support for a visual dashboard) as follows:
 
 ```bash
 pip install parsl[monitoring]
@@ -18,4 +18,4 @@ pip install parsl[monitoring]
 If you are just starting out, try running some test calculations locally first. Then come back and set up the relevant configuration files for your desired machines.
 ```
 
-Out-of-the-box, Parsl will run on your local machine. To configure Parsl for the high-performance computing environment of your choice, refer to the [Configuration](https://parsl.readthedocs.io/en/stable/userguide/configuring.html) page in the documentation.
+Out-of-the-box, Parsl will run on your local machine. To configure Parsl for the high-performance computing environment of your choice, refer to the executor [Configuration](https://parsl.readthedocs.io/en/stable/userguide/configuring.html) page in the Parsl documentation.
