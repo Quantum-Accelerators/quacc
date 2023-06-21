@@ -141,7 +141,7 @@ print(wf_result)
 
 We have imported the {obj}`.emt.slabs.BulkToSlabsFlow` class, which is instantiated with optional parameters and is applied to an `Atoms` object. Here, for demonstration purposes, we specify the `slab_static_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is stitch together the individual `@python_app` steps into a single function.
 
-### Known Limitations
+## Known Limitations
 
 When running a Covalent-based class like {obj}`.emt.slabs.BulkToSlabsFlow` in the previous example, the entire class will run as a single compute task even though it is composed of several individual sub-tasks. If these sub-tasks are compute-intensive, this might not be the most efficient use of resources.
 
@@ -153,6 +153,6 @@ For details on how to write your own dynamic workflows in Parsl, refer to the `@
 
 If you wish to construct Parsl-specific workflows that are mirrors of their Covalent counterparts, this is fully supported by Quacc.
 
-### Visualization
+## Visualization
 
 Parsl comes with a web dashboard utility to visualize executed workflows. Refer to the [Monitoring and Visualization](https://parsl.readthedocs.io/en/stable/userguide/monitoring.html#visualization) section of the Parsl documentation for details.
