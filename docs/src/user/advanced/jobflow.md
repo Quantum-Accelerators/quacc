@@ -107,6 +107,10 @@ result = responses[job2.uuid][1].output
 print(result)
 ```
 
+```{note}
+Here, we have used the `@jf.job` decorator instead of the `jf.job()` shorthand because it is not possible to convert a class to a `Job` object using the shorthand.
+```
+
 We have imported the {obj}`.emt.slabs.BulkToSlabsFlow` class, which is instantiated with optional parameters and is applied to an `Atoms` object. Here, for demonstration purposes, we specify the `slab_static_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is stitch together the individual `@job` steps into a single `Flow` object.
 
 ### Known Limitations
