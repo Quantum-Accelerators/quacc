@@ -8,7 +8,7 @@ If you are on a Windows machine, you will need to install and use the [Windows S
 
 1. Install Python, preferably in conjunction with an environment manager. For instance, download and run the [Miniconda installer](https://docs.conda.io/en/latest/miniconda.html).
 2. When asked to add Miniconda to your `PATH`, select yes.
-3. Create a fresh Python environment by running `conda create -n quacc python=3.9`.
+3. Create a fresh Python environment by running `conda create -n quacc python=3.10`.
 4. Activate this environment via `conda activate quacc`.
 
 ## Installing Quacc
