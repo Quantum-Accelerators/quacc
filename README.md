@@ -37,6 +37,30 @@ Includes the following sections:
 
 ## Demonstration ✨
 
+```python
+import covalent as ct
+from ase.build import bulk
+from quacc.recipes.emt.slabs import BulkToSlabsFlow, relax_job
+
+# Define the workflow and set how to execute
+@ct.lattice(executor="local")
+def workflow(atoms):
+    relaxed_bulk = relax_job(atoms) # relax a bulk structure
+    relaxed_slabs = BulkToSlabsFlow().run(relaxed_bulk["atoms"]) # from the bulk, carve slabs and relax each slab
+    return relaxed_slabs
+
+# Make an Atoms object of a bulk Cu structure for the input
+atoms = bulk("Cu")
+
+# Dispatch the workflow to the Covalent server
+# with the bulk Cu Atoms object as the input
+dispatch_id = ct.dispatch(workflow)(atoms)
+
+# Fetch the result from the server
+result = ct.get_result(dispatch_id, wait=True)
+print(result)
+```
+
 ![Demo from Quick Start](docs/src/_static/start/start2.gif)
 
 ## Citation
