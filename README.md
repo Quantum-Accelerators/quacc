@@ -41,7 +41,6 @@ Includes the following sections:
 import os
 import covalent as ct
 from ase.build import bulk
-
 from quacc.recipes.emt.core import relax_job
 from quacc.recipes.emt.slabs import BulkToSlabsFlow
 
@@ -51,13 +50,8 @@ os.system("covalent start")
 # Define the workflow and set how to execute
 @ct.lattice(executor="local")
 def workflow(atoms):
-
-    # Relax a bulk structure
-    relaxed_bulk = relax_job(atoms)
-
-    # With the relaxed bulk as input, generate and relax slabs
-    relaxed_slabs = BulkToSlabsFlow().run(relaxed_bulk["atoms"])
-
+    relaxed_bulk = relax_job(atoms) # Relax a bulk structure
+    relaxed_slabs = BulkToSlabsFlow().run(relaxed_bulk["atoms"]) # Make and relax slabs
     return relaxed_slabs
 
 # Make an Atoms object of a bulk Cu structure
