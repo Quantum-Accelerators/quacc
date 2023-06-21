@@ -49,9 +49,6 @@ def test_emt():
 
 
 def test_emt_flow():
-    import jobflow as jf
-    from ase.build import bulk
-
     from quacc.recipes.emt.core import relax_job
     from quacc.recipes.emt.slabs import BulkToSlabsFlow
 
@@ -67,7 +64,7 @@ def test_emt_flow():
     atoms = bulk("Cu")
 
     # Construct the Flow
-    job1 = relax_func(bulk("Cu"))
+    job1 = relax_func(atoms)
     job2 = bulk_to_slabs_func(job1.output["atoms"])
     workflow = jf.Flow([job1, job2])
 

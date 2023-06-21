@@ -95,7 +95,7 @@ def bulk_to_slabs_func(atoms):
 atoms = bulk("Cu")
 
 # Construct the Flow
-job1 = relax_func(bulk("Cu"))
+job1 = relax_func(atoms)
 job2 = bulk_to_slabs_func(job1.output["atoms"])
 workflow = jf.Flow([job1, job2])
 
