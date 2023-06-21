@@ -16,23 +16,21 @@ For reproducibility purposes, we strongly recommend installing Quacc in a fresh 
 
 Please abide by the following guidelines when contributing code to Quacc:
 
-1. All changes should have associated unit tests.
+1. Ensure that the code remains flexible for the user whenever possible.
 
-2. All code should include type hints and have documentation for the inputs and outputs.
+2. All changes should have associated unit tests.
 
-3. The input to most compute jobs should be an ASE `Atoms` object. The output of most compute tasks should be a schema from one of the module/functions within {obj}`quacc.schemas`.
+3. All code should include type hints and have documentation for the inputs and outputs.
 
-4. Individual compute jobs should be written as functions, and workflows should be written as classes. Refer to {obj}`quacc.recipes.emt.core` and {obj}`quacc.recipes.emt.slabs` for examples.
+4. The input to most compute jobs should be an ASE `Atoms` object. The output of most compute tasks should be a schema from one of the module/functions within {obj}`quacc.schemas`.
 
-5. Only define multi-step workflows if they go beyond simply stitching together existing functions.
+5. Individual compute jobs should be written as functions, and workflows should be written as classes. Refer to {obj}`quacc.recipes.emt.core` and {obj}`quacc.recipes.emt.slabs` for examples.
 
-6. When possible, you should use the "internal" geometry optimizers for a given code rather than the ASE optimizers.
+6. Only define multi-step workflows if they go beyond simply stitching together existing functions.
 
-7. Never use `@ct.lattice` in the code directly (unless it is wrapped by `@ct.electron` to make it a sublattice).
+7. When possible, you should use the "internal" geometry optimizers for a given code rather than the ASE optimizers.
 
-8. Ensure that the code remains flexible for the user.
-
-9. `gzip` large test files to save space.
+8. `gzip` large test files to save space.
 
 ## Changelog
 

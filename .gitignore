@@ -27,3 +27,6 @@ ipython_config.py
 
 # Editors ignores
 .vscode*
+
+# Workflow ignores
+*parsl.log

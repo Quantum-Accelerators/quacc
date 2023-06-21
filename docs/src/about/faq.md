@@ -1,8 +1,14 @@
 # FAQ
 
-**Q: How do I cite Quacc?**
+**Q: Which workflow manager should I use?**
 
-A: Until a paper is eventually written, please cite Quacc as follows: A.S. Rosen, Quacc – The Quantum Accelerator, DOI: [10.5281/zenodo.7720998](https://doi.org/10.5281/zenodo.7720998).
+A: Since there is no single best answer for everyone's needs, we designed Quacc such that it can support a variety of options.
+
+If you are new to workflow management tools, we recommend using [Covalent](https://github.com/AgnostiqHQ/covalent/) due to its ease of use and helpful dashboard.
+
+If you find Covalent isn't for you, we recommend [Parsl](https://github.com/Parsl/parsl) since it is well-documented with many options for distributing work on HPC machines. Parsl is particularly well-suited for a variety of HPC environments common in academia.
+
+If you are affiliated with the Materials Project team at Lawrence Berkeley National Laboratory, we recommend using [Jobflow](https://github.com/materialsproject/jobflow) coupled with [FireWorks](https://github.com/materialsproject/fireworks) since it widely used there.
 
 **Q: Do you have any tips for writing new workflows?**
 
@@ -20,7 +26,7 @@ In Atomate2, workflows are built around the Materials Project software stack and
 
 Atomate2 is built around [Jobflow](https://github.com/materialsproject/jobflow). Quacc is predominantly built around [Covalent](https://github.com/AgnostiqHQ/covalent) first but also supports Jobflow.
 
-Atomate2 is a database-first approch to materials science workflows. Quacc is fully compatible with the use of databases but does not require them, with the goal of reducing the barrier to getting started.
+Atomate2 is a database-first approach to materials science workflows. Quacc is fully compatible with the use of databases but does not require them, with the goal of reducing the barrier to getting started.
 
 Atomate2 is developed and supported by the [Materials Project](http://materialsproject.org/) team at Lawrence Berkeley National Laboratory. Quacc is developed and maintained by the [Rosen Research Group](https://cbe.princeton.edu/people/andrew-rosen) at Princeton University.
 

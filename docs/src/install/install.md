@@ -22,6 +22,8 @@ In your newly activated conda environment, you can install Quacc and its related
 Quacc can be installed with several "extras," as outlined in the `setup.py` file. These are described below:
 
 - `quacc[fireworks]`: Installs dependencies to enable the use of FireWorks.
+- `quacc[optimizers]`: Installs additional ASE-based optimizers, such as Sella.
+- `quacc[parsl]`: Installs dependencies to enable the use of Parsl.
 - `quacc[tblite]`: Installs dependencies to enable the use of tblite.
 - `quacc[dev]`: Installs dependencies to enable local development of Quacc.
 - `quacc[docs]`: Installs dependencies to build the documentation.

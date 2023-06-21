@@ -174,4 +174,5 @@ intersphinx_mapping = {
     "monty": ("https://materialsvirtuallab.github.io/monty/", None),
     "cclib": ("https://cclib.github.io/", None),
     "emmet": ("https://materialsproject.github.io/emmet/core/", None),
+    "parsl": ("https://parsl.readthedocs.io/en/stable/#", None),
 }
