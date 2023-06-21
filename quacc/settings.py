@@ -50,9 +50,7 @@ class QuaccSettings(BaseSettings):
 
     # VASP Settings: Main
     VASP_PARALLEL_CMD: str = Field(
-        os.path.expandvars("$VASP_PARALLEL_CMD")
-        if "VASP_PARALLEL_CMD" in os.environ
-        else "",
+        "",
         description="Parallel command to run VASP with Custodian (e.g. srun -N 2 --ntasks-per-node 24)",
     )
     VASP_CMD: str = Field(
@@ -63,12 +61,12 @@ class QuaccSettings(BaseSettings):
     )
 
     # VASP Settings: General
+    VASP_INCAR_COPILOT: bool = Field(
+        True, description="Whether co-pilot mode should be used for VASP INCAR handling"
+    )
     VASP_MIN_VERSION: Union[float, None] = Field(
         None,
         description="Oldest VASP version you plan to use. Used to ensure INCAR settings are version-compatible.",
-    )
-    VASP_INCAR_COPILOT: bool = Field(
-        True, description="Whether co-pilot mode should be used for VASP INCAR handling"
     )
     VASP_BADER: bool = Field(
         True,
