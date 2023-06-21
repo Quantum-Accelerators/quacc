@@ -16,9 +16,9 @@ Quacc is a flexible platform for high-throughput, database-driven computational 
 
 The three main goals of Quacc are to:
 
-1. Reduce the barrier for running complex, mixed-code workflows for molecules and materials across heterogeneous compute environments.
+1. Reduce the barrier for running complex, mixed-code workflows for molecules and materials across distributed compute environments.
 
-2. Promote rapid workflow development and testing via modern workflow managers, such as [Covalent](https://github.com/AgnostiqHQ/covalent) and [Jobflow](https://github.com/materialsproject/jobflow).
+2. Promote rapid workflow development and testing via modern workflow managers, such as [Covalent](https://github.com/AgnostiqHQ/covalent), [Parsl](https://github.com/Parsl/parsl), or [Jobflow](https://github.com/materialsproject/jobflow).
 
 3. Enable a seamless interface between the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/index.html) and the software infrastructure powering the [Materials Project](https://materialsproject.org).
 

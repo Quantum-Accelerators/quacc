@@ -84,4 +84,6 @@ print(result2)
 The output of most compute jobs in Quacc is a dictionary summarizing the results of the calculation. It always has a key `"atoms"` that contains a copy of the output `Atoms` object. This can be used to pass structure information between jobs.
 ```
 
-What happens if the first job fails, however? Then the code will crash, no results will be stored, and you'd have to start from scratch. That'd be sad, but thankfully this is where using a workflow manager, such as [Covalent](covalent.md), can save the day. Read on to learn how to define workflows with complex connectivity and how to dispatch them across distributed computing resources.
+What happens if the first job fails, however? Then the code will crash, no results will be stored, and you'd have to start from scratch. That'd be sad, but thankfully this is where using a workflow manager can save the day.
+
+Read on to learn how to define workflows with complex connectivity and how to dispatch them across distributed computing resources.

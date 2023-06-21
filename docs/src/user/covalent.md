@@ -3,7 +3,7 @@
 Here, we will show how to use [Covalent](https://github.com/AgnostiqHQ/covalent) to construct, dispatch, and monitor workflows in Quacc.
 
 ```{note}
-If you prefer to use Jobflow and/or FireWorks, skip to the ["Using Quacc with Jobflow"](advanced/jobflow.md) and ["Using Quacc with FireWorks"](advanced/fireworks.md) sections of the documentation.
+If you prefer to use Parsl or Jobflow, then skip to the ["Using Quacc with Parsl"](advanced/parsl.md) or ["Using Quacc with Jobflow"](advanced/jobflow.md) sections of the documentation.
 ```
 
 ## Pre-Requisites
@@ -17,6 +17,10 @@ In Covalent, the `@ct.lattice` decorator indicates that the function is a workfl
 All `Electron` and `Lattice` objects behave as normal Python functions when the necessary arguments are supplied. However, if the `ct.dispatch` command is used, the workflow will be dispatched to the Covalent server for execution and monitoring.
 
 ## Running a Simple Serial Workflow
+
+```{hint}
+If you haven't done so yet, make sure you started the Covalent server with `covalent start` in the command-line.
+```
 
 We will first try running a simple workflow where we relax a bulk Cu structure using EMT and take the output of that calculation as the input to a follow-up static calculation with EMT.
 
@@ -82,7 +86,7 @@ def workflow(atoms1, atoms2):
     result1 = relax_job(atoms1)
     result2 = relax_job(atoms2)
 
-    return [result1, result2]
+    return {"result1": result1, "result2": result2}
 
 # Define two Atoms objects
 atoms1 = bulk("Cu")
@@ -114,6 +118,7 @@ from quacc.recipes.emt.slabs import BulkToSlabsFlow
 def workflow(atoms):
     relaxed_bulk = relax_job(atoms)
     relaxed_slabs = BulkToSlabsFlow(slab_static_electron=None).run(relaxed_bulk["atoms"])
+
     return relaxed_slabs
 
 atoms = bulk("Cu")
