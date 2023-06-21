@@ -20,7 +20,7 @@ The three main goals of Quacc are to:
 
 2. Promote rapid workflow development and testing via modern workflow management solutions.
 
-3. Enable a seamless interface between the Atomic Simulation Environment and the software infrastructure powering the [Materials Project](https://materialsproject.org).
+3. Enable a seamless interface between the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/) and the software infrastructure powering the [Materials Project](https://materialsproject.org).
 
 ## Documentation
 
@@ -36,6 +36,8 @@ Includes the following sections:
 - 🤝 [Developer Guide](https://quantum-accelerators.github.io/quacc/dev/contributing.html)
 
 ## Demonstration ✨
+
+🚀 Demo from the Quick Start guide, using [Covalent](https://github.com/AgnostiqHQ/covalent) as one of the several supported workflow managers.
 
 ![Demo from Quick Start](docs/src/_static/start/start2.gif)
 
