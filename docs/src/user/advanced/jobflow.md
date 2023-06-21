@@ -10,7 +10,7 @@ Make sure you completed the ["Jobflow Setup"](../../install/advanced/jobflow.md)
 For a more detailed tutorial on how to use Jobflow, refer to the [Jobflow Tutorials](https://materialsproject.github.io/jobflow/tutorials) and [this helpful guide](https://github.com/JaGeo/Advanced_Jobflow_Tutorial) written by Dr. Janine George.
 ```
 
-### Running a Job
+## Running a Job
 
 Here, we will try running a simple job where we carry out a static calculation on a bulk Cu structure using EMT. This example is shown below.
 
@@ -39,7 +39,7 @@ The key thing to note is that we need to transform the Quacc recipe, which is a 
 Even though the Quacc recipes are defined as Covalent `Electron` objects via the `@ct.electron` decorator, this decorator will be ignored when using Jobflow.
 ```
 
-### Running a Flow
+## Running a Flow
 
 Here, we will try running a simple workflow where we relax a bulk Cu structure using EMT and take the output of that calculation as the input to a follow-up static calculation with EMT. This example is shown below.
 
@@ -68,7 +68,7 @@ print(result)
 
 Like before, we need to define the individual `Job` objects. Now though, we must stitch them together into a `Flow`, which can be easily achieved by passing them to the `jf.Flow()` constructor. The `Flow` object will automatically determine the order in which the jobs should be run based on the inputs and outputs of each job. In this case, it will know not to run `job2` until `job1` has completed.
 
-### Running a Workflow with Complex Connectivity
+## Running a Workflow with Complex Connectivity
 
 For this example, let's consider a toy scenario where we wish to relax a bulk Cu structure, carve all possible slabs, and then run a new relaxation calculation on each slab.
 
@@ -113,7 +113,7 @@ Here, we have used the `@jf.job` decorator instead of the `jf.job()` shorthand b
 
 We have imported the {obj}`.emt.slabs.BulkToSlabsFlow` class, which is instantiated with optional parameters and is applied to an `Atoms` object. Here, for demonstration purposes, we specify the `slab_static_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is stitch together the individual `@job` steps into a single `Flow` object.
 
-### Known Limitations
+## Known Limitations
 
 When running a Covalent-based class like {obj}`.emt.slabs.BulkToSlabsFlow` in the previous example, the entire class will run as a single compute task even though it is composed of several individual sub-tasks. If these sub-tasks are compute-intensive, this might not be the most efficient use of resources.
 
@@ -125,6 +125,6 @@ For details on how to write your own dynamic workflows in Jobflow, refer to the 
 
 If you wish to construct Jobflow-specific workflows that are mirrors of their Covalent counterparts, this is fully supported by Quacc. Refer to the {obj}`quacc.recipes.emt.jobflow.slabs` module for a representative Jobflow example that can be compared against the Covalent version at {obj}`quacc.recipes.emt.slabs`.
 
-### Learn More
+## Learn More
 
 That ends the Jobflow section of the documentation. Continue to the ["Using Quacc with FireWorks"](fireworks.md) section to learn how to use Quacc with FireWorks, which is one of the manager options available with Jobflow to dispatch jobs in HPC environments. If you want to learn more about Jobflow, you can read the [Jobflow Documentation](https://materialsproject.github.io/jobflow/).
