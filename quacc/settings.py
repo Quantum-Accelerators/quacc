@@ -50,7 +50,9 @@ class QuaccSettings(BaseSettings):
 
     # VASP Settings: Main
     VASP_PARALLEL_CMD: str = Field(
-        os.path.expandvars("$VASP_PARALLEL_CMD"),
+        os.path.expandvars("$VASP_PARALLEL_CMD")
+        if "VASP_PARALLEL_CMD" in os.environ
+        else "",
         description="Parallel command to run VASP with Custodian (e.g. srun -N 2 --ntasks-per-node 24)",
     )
     VASP_CMD: str = Field(
