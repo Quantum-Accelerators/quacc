@@ -12,6 +12,7 @@ from quacc.util.atoms import (
     get_atoms_id,
     get_highest_block,
     prep_next_run,
+    true_charge_and_spin,
 )
 
 FILE_DIR = Path(__file__).resolve().parent
@@ -141,3 +142,16 @@ def test_get_highest_block():
     assert get_highest_block(atoms) == "f"
     atoms = molecule("H2O")
     assert get_highest_block(atoms) == "p"
+
+
+def test_true_charge_and_spin():
+    atoms = molecule("CH3")
+    charge, multiplicity = true_charge_and_spin(atoms)
+    assert charge == 0
+    assert multiplicity == 2
+    charge, multiplicity = true_charge_and_spin(atoms, charge=-1)
+    assert charge == -1
+    assert multiplicity == 1
+    charge, multiplicity = true_charge_and_spin(atoms, charge=-1, multiplicity=3)
+    assert charge == -1
+    assert multiplicity == 3

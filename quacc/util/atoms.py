@@ -305,3 +305,32 @@ def copy_atoms(atoms: Atoms) -> Atoms:
         atoms.calc = calc
 
     return atoms
+
+
+def true_charge_and_spin(
+    atoms: Atoms,
+    charge: int | None = None,
+    multiplicity: int | None = None,
+):
+    """
+    Simple function to use the pymatgen molecule class to obtain and/or
+    validate the multiplicity given the prescribed charge.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object
+    charge
+        Molecular charge
+    multiplicity
+        Molecular multiplicity
+
+    Returns
+    -------
+    charge, multiplicity
+
+    """
+    mol = AseAtomsAdaptor.get_molecule(atoms)
+    if charge is not None:
+        mol.set_charge_and_spin(charge=charge, spin_multiplicity=multiplicity)
+    return mol.charge, mol.spin_multiplicity

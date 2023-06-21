@@ -13,6 +13,7 @@ from pymatgen.io.ase import AseAtomsAdaptor
 from quacc.calculators.qchem import QChem
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
+from quacc.util.atoms import true_charge_and_spin
 
 try:
     from sella import IRC, Sella
@@ -20,25 +21,18 @@ except ImportError:
     Sella = None
 
 
-def true_charge_and_spin(atoms, charge, mult):
-    mol = AseAtomsAdaptor.get_molecule(atoms)
-    if charge is not None:
-        mol.set_charge_and_spin(charge=charge, spin_multiplicity=mult)
-    return mol.charge, mol.spin_multiplicity
-
-
 @ct.electron
 def static_job(
     atoms: Atoms,
     cores: int | None = None,
     charge: int | None = None,
-    mult: int | None = None,
+    multiplicity: int | None = None,
     xc: str = "wb97mv",
     basis: str = "def2-tzvpd",
     scf_algorithm: str = "diis",
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
-    swaps: dict | None = None,
+    calc_swaps: dict | None = None,
 ) -> dict:
     """
     Carry out a single-point calculation.
@@ -54,7 +48,7 @@ def static_job(
     charge
         The total charge of the molecular system.
         Effectively defaults to zero.
-    mult
+    multiplicity
         The spin multiplicity of the molecular system.
         Effectively defaults to the lowest spin state given the molecular structure and charge.
     xc
@@ -73,7 +67,7 @@ def static_job(
         Solvent to use for SMD implicit solvation model. Examples include "water", "ethanol", "methanol",
         and "acetonitrile". Refer to the Q-Chem manual for a complete list of solvents available.
         Defaults to None, in which case SMD will not be employed.
-    swaps
+    calc_swaps
         Dictionary of custom kwargs for the calculator. Must be formatted consistently with Pymatgen's
         QChemDictSet's overwrite_inputs. For example: {"rem": {"symmetry": "true"}}.
 
@@ -86,18 +80,18 @@ def static_job(
     if pcm_dielectric is not None and smd_solvent is not None:
         raise ValueError("PCM and SMD cannot be employed simultaneously! Exiting...")
 
-    true_charge, true_spin = true_charge_and_spin(atoms, charge, mult)
+    true_charge, true_spin = true_charge_and_spin(atoms, charge, multiplicity)
 
     input_atoms = deepcopy(atoms)
 
     overwrite_inputs = {"rem": {"method": xc}}
 
-    swaps = swaps or {}
-    for key in swaps:
+    calc_swaps = calc_swaps or {}
+    for key in calc_swaps:
         if key not in overwrite_inputs:
             overwrite_inputs[key] = {}
-        for subkey in swaps[key]:
-            overwrite_inputs[key][subkey] = swaps[key][subkey]
+        for subkey in calc_swaps[key]:
+            overwrite_inputs[key][subkey] = calc_swaps[key][subkey]
 
     qchem_input_params = {
         "basis_set": basis,
@@ -115,7 +109,7 @@ def static_job(
         input_atoms=atoms,
         cores=cores,
         charge=charge,
-        spin_multiplicity=mult,
+        spin_multiplicity=multiplicity,
         qchem_input_params=qchem_input_params,
     )
     atoms.calc = calc
@@ -129,21 +123,17 @@ def static_job(
 
 
 @ct.electron
-@requires(
-    Sella,
-    "Sella must be installed. pip install sella",
-)
 def relax_job(
     atoms: Atoms,
     cores: int | None = None,
     charge: int | None = None,
-    mult: int | None = None,
+    multiplicity: int | None = None,
     xc: str = "wb97mv",
     basis: str = "def2-svpd",
     scf_algorithm: str = "diis",
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
-    swaps: dict | None = None,
+    calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
     check_convergence: bool = True,
 ) -> dict:
@@ -161,7 +151,7 @@ def relax_job(
     charge
         The total charge of the molecular system.
         Effectively defaults to zero.
-    mult
+    multiplicity
         The spin multiplicity of the molecular system.
         Effectively defaults to the lowest spin state given the molecular structure and charge.
     xc
@@ -180,7 +170,7 @@ def relax_job(
         Solvent to use for SMD implicit solvation model. Examples include "water", "ethanol", "methanol",
         and "acetonitrile". Refer to the Q-Chem manual for a complete list of solvents available.
         Defaults to None, in which case SMD will not be employed.
-    swaps
+    calc_swaps
         Dictionary of custom kwargs for the calculator. Must be formatted consistently with Pymatgen's
         QChemDictSet's overwrite_inputs. For example: {"rem": {"symmetry": "true"}}.
     opt_swaps
@@ -195,13 +185,13 @@ def relax_job(
 
     # Reminder to self: exposing TRICs?
 
-    true_charge, true_spin = true_charge_and_spin(atoms, charge, mult)
+    true_charge, true_spin = true_charge_and_spin(atoms, charge, multiplicity)
 
     opt_swaps = opt_swaps or {}
     opt_defaults = {
         "fmax": 0.01,
         "max_steps": 1000,
-        "optimizer": Sella,
+        "optimizer": Sella if Sella else FIRE,
         "optimizer_kwargs": {},
     }
     opt_flags = opt_defaults | opt_swaps
@@ -213,12 +203,12 @@ def relax_job(
 
     overwrite_inputs = {"rem": {"method": xc}}
 
-    swaps = swaps or {}
-    for key in swaps:
+    calc_swaps = calc_swaps or {}
+    for key in calc_swaps:
         if key not in overwrite_inputs:
             overwrite_inputs[key] = {}
-        for subkey in swaps[key]:
-            overwrite_inputs[key][subkey] = swaps[key][subkey]
+        for subkey in calc_swaps[key]:
+            overwrite_inputs[key][subkey] = calc_swaps[key][subkey]
 
     qchem_input_params = {
         "basis_set": basis,
@@ -236,7 +226,7 @@ def relax_job(
         input_atoms=atoms,
         cores=cores,
         charge=charge,
-        spin_multiplicity=mult,
+        spin_multiplicity=multiplicity,
         qchem_input_params=qchem_input_params,
     )
     atoms.calc = calc
@@ -259,13 +249,13 @@ def ts_job(
     atoms: Atoms,
     cores: int | None = None,
     charge: int | None = None,
-    mult: int | None = None,
+    multiplicity: int | None = None,
     xc: str = "wb97mv",
     basis: str = "def2-svpd",
     scf_algorithm: str = "diis",
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
-    swaps: dict | None = None,
+    calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
     check_convergence: bool = True,
 ) -> dict:
@@ -283,7 +273,7 @@ def ts_job(
     charge
         The total charge of the molecular system.
         Effectively defaults to zero.
-    mult
+    multiplicity
         The spin multiplicity of the molecular system.
         Effectively defaults to the lowest spin state given the molecular structure and charge.
     xc
@@ -302,7 +292,7 @@ def ts_job(
         Solvent to use for SMD implicit solvation model. Examples include "water", "ethanol", "methanol",
         and "acetonitrile". Refer to the Q-Chem manual for a complete list of solvents available.
         Defaults to None, in which case SMD will not be employed.
-    swaps
+    calc_swaps
         Dictionary of custom kwargs for the calculator. Must be formatted consistently with Pymatgen's
         QChemDictSet's overwrite_inputs. For example: {"rem": {"symmetry": "true"}}.
     opt_swaps
@@ -319,7 +309,7 @@ def ts_job(
     #   - exposing TRICs?
     #   - passing initial Hessian?
 
-    true_charge, true_spin = true_charge_and_spin(atoms, charge, mult)
+    true_charge, true_spin = true_charge_and_spin(atoms, charge, multiplicity)
 
     opt_swaps = opt_swaps or {}
     opt_defaults = {
@@ -337,12 +327,12 @@ def ts_job(
 
     overwrite_inputs = {"rem": {"method": xc}}
 
-    swaps = swaps or {}
-    for key in swaps:
+    calc_swaps = calc_swaps or {}
+    for key in calc_swaps:
         if key not in overwrite_inputs:
             overwrite_inputs[key] = {}
-        for subkey in swaps[key]:
-            overwrite_inputs[key][subkey] = swaps[key][subkey]
+        for subkey in calc_swaps[key]:
+            overwrite_inputs[key][subkey] = calc_swaps[key][subkey]
 
     qchem_input_params = {
         "basis_set": basis,
@@ -360,7 +350,7 @@ def ts_job(
         input_atoms=atoms,
         cores=cores,
         charge=charge,
-        spin_multiplicity=mult,
+        spin_multiplicity=multiplicity,
         qchem_input_params=qchem_input_params,
     )
     atoms.calc = calc
@@ -384,13 +374,13 @@ def irc_job(
     direction: str,
     cores: int | None = None,
     charge: int | None = None,
-    mult: int | None = None,
+    multiplicity: int | None = None,
     xc: str = "wb97mv",
     basis: str = "def2-svpd",
     scf_algorithm: str = "diis",
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
-    swaps: dict | None = None,
+    calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
     check_convergence: bool = True,
 ) -> dict:
@@ -410,7 +400,7 @@ def irc_job(
     charge
         The total charge of the molecular system.
         Effectively defaults to zero.
-    mult
+    multiplicity
         The spin multiplicity of the molecular system.
         Effectively defaults to the lowest spin state given the molecular structure and charge.
     xc
@@ -429,7 +419,7 @@ def irc_job(
         Solvent to use for SMD implicit solvation model. Examples include "water", "ethanol", "methanol",
         and "acetonitrile". Refer to the Q-Chem manual for a complete list of solvents available.
         Defaults to None, in which case SMD will not be employed.
-    swaps
+    calc_swaps
         Dictionary of custom kwargs for the calculator. Must be formatted consistently with Pymatgen's
         QChemDictSet's overwrite_inputs. For example: {"rem": {"symmetry": "true"}}.
     opt_swaps
@@ -446,7 +436,7 @@ def irc_job(
     #   - exposing TRICs?
     #   - passing initial Hessian?
 
-    true_charge, true_spin = true_charge_and_spin(atoms, charge, mult)
+    true_charge, true_spin = true_charge_and_spin(atoms, charge, multiplicity)
 
     if direction not in ["forward", "reverse"]:
         raise ValueError("direction must be 'forward' or 'reverse'! Exiting...")
@@ -468,12 +458,12 @@ def irc_job(
 
     overwrite_inputs = {"rem": {"method": xc}}
 
-    swaps = swaps or {}
-    for key in swaps:
+    calc_swaps = calc_swaps or {}
+    for key in calc_swaps:
         if key not in overwrite_inputs:
             overwrite_inputs[key] = {}
-        for subkey in swaps[key]:
-            overwrite_inputs[key][subkey] = swaps[key][subkey]
+        for subkey in calc_swaps[key]:
+            overwrite_inputs[key][subkey] = calc_swaps[key][subkey]
 
     qchem_input_params = {
         "basis_set": basis,
@@ -491,7 +481,7 @@ def irc_job(
         input_atoms=atoms,
         cores=cores,
         charge=charge,
-        spin_multiplicity=mult,
+        spin_multiplicity=multiplicity,
         qchem_input_params=qchem_input_params,
     )
     atoms.calc = calc
@@ -515,13 +505,13 @@ def quasi_irc_job(
     direction: str,
     cores: int | None = None,
     charge: int | None = None,
-    mult: int | None = None,
+    multiplicity: int | None = None,
     xc: str = "wb97mv",
     basis: str = "def2-svpd",
     scf_algorithm: str = "diis",
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
-    swaps: dict | None = None,
+    calc_swaps: dict | None = None,
     irc_swaps: dict | None = None,
     relax_swaps: dict | None = None,
     check_convergence: bool = True,
@@ -542,7 +532,7 @@ def quasi_irc_job(
     charge
         The total charge of the molecular system.
         Effectively defaults to zero.
-    mult
+    multiplicity
         The spin multiplicity of the molecular system.
         Effectively defaults to the lowest spin state given the molecular structure and charge.
     xc
@@ -561,12 +551,13 @@ def quasi_irc_job(
         Solvent to use for SMD implicit solvation model. Examples include "water", "ethanol", "methanol",
         and "acetonitrile". Refer to the Q-Chem manual for a complete list of solvents available.
         Defaults to None, in which case SMD will not be employed.
-    swaps
+    calc_swaps
         Dictionary of custom kwargs for the calculator. Must be formatted consistently with Pymatgen's
         QChemDictSet's overwrite_inputs. For example: {"rem": {"symmetry": "true"}}.
-    opt_swaps
-        Dictionary of custom kwargs for run_ase_opt
-            opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
+    irc_swaps
+        Dictionary of custom kwargs for the irc_job.
+    relax_swaps
+        Dictionary of custom kwargs for the relax_job.
 
     Returns
     -------
@@ -596,13 +587,13 @@ def quasi_irc_job(
         direction=direction,
         cores=cores,
         charge=charge,
-        mult=mult,
+        multiplicity=multiplicity,
         xc=xc,
         basis=basis,
         scf_algorithm=scf_algorithm,
         pcm_dielectric=pcm_dielectric,
         smd_solvent=smd_solvent,
-        swaps=swaps,
+        calc_swaps=calc_swaps,
         opt_swaps=irc_swaps,
         check_convergence=False,
     )
@@ -611,13 +602,13 @@ def quasi_irc_job(
         atoms=irc_summary["atoms"],
         cores=cores,
         charge=charge,
-        mult=mult,
+        multiplicity=multiplicity,
         xc=xc,
         basis=basis,
         scf_algorithm=scf_algorithm,
         pcm_dielectric=pcm_dielectric,
         smd_solvent=smd_solvent,
-        swaps=swaps,
+        calc_swaps=calc_swaps,
         opt_swaps=relax_swaps,
         check_convergence=check_convergence,
     )

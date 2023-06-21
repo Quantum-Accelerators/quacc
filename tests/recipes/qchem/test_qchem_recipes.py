@@ -142,8 +142,8 @@ def test_static_job(monkeypatch):
     qcinput_nearly_equal(qcin, ref_qcin)
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
-    swaps = {"rem":{"mem_total":"170000"}}
-    output = static_job(TEST_ATOMS, scf_algorithm="gdm", swaps=swaps)
+    calc_swaps = {"rem":{"mem_total":"170000"}}
+    output = static_job(TEST_ATOMS, scf_algorithm="gdm", calc_swaps=calc_swaps)
     assert output["atoms"] == TEST_ATOMS
     assert output["charge"] == 0
     assert output["spin_multiplicity"] == 1
@@ -218,11 +218,11 @@ def test_relax_job(monkeypatch):
     qcinput_nearly_equal(qcin, ref_qcin)
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
-    swaps = {"rem":{"mem_total":"170000"}}
+    calc_swaps = {"rem":{"mem_total":"170000"}}
     output = relax_job(
         atoms=TEST_ATOMS,
         scf_algorithm="gdm",
-        swaps=swaps,
+        calc_swaps=calc_swaps,
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
         check_convergence=False,
@@ -297,11 +297,11 @@ def test_ts_job(monkeypatch):
     qcinput_nearly_equal(qcin, ref_qcin)
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
-    swaps = {"rem":{"mem_total":"170000"}}
+    calc_swaps = {"rem":{"mem_total":"170000"}}
     output = ts_job(
         atoms=TEST_ATOMS,
         scf_algorithm="gdm",
-        swaps=swaps,
+        calc_swaps=calc_swaps,
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
         check_convergence=False,
@@ -372,12 +372,12 @@ def test_irc_job(monkeypatch):
     )
     qcinput_nearly_equal(qcin, ref_qcin)
 
-    swaps = {"rem":{"mem_total":"170000"}}
+    calc_swaps = {"rem":{"mem_total":"170000"}}
     output = irc_job(
         atoms=TEST_ATOMS,
         direction="reverse",
         scf_algorithm="gdm",
-        swaps=swaps,
+        calc_swaps=calc_swaps,
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
         check_convergence=False,
