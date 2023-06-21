@@ -37,10 +37,6 @@ Includes the following sections:
 
 ## Demonstration ✨
 
-```bash
-covalent start
-```
-
 ```python
 import os
 import covalent as ct
