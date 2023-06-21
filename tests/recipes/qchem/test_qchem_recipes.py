@@ -69,8 +69,12 @@ def mock_execute2(_self, **kwargs):
     copy(os.path.join(QCHEM_DIR, "131.0.intermediate"), "131.0")
     copy(os.path.join(QCHEM_DIR, "53.0.intermediate"), "53.0")
 
+def mock_execute3(_self, **kwargs):
+    copy(os.path.join(QCHEM_DIR, "mol.qout.alternate"), "mol.qout")
+    copy(os.path.join(QCHEM_DIR, "131.0.alternate"), "131.0")
+    copy(os.path.join(QCHEM_DIR, "53.0.alternate"), "53.0")
 
-def mock_execute3(self, **kwargs):
+def mock_execute4(self, **kwargs):
     qcin = QCInput.from_file("mol.qin")
     mol = qcin.molecule
     atoms = AseAtomsAdaptor.get_atoms(mol)
@@ -137,6 +141,23 @@ def test_static_job(monkeypatch):
     ref_qcin = QCInput.from_file(os.path.join(QCHEM_DIR, "mol.qin.intermediate"))
     qcinput_nearly_equal(qcin, ref_qcin)
 
+    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
+    swaps = {"rem":{"mem_total":"170000"}}
+    output = static_job(TEST_ATOMS, scf_algorithm="gdm", swaps=swaps)
+    assert output["atoms"] == TEST_ATOMS
+    assert output["charge"] == 0
+    assert output["spin_multiplicity"] == 1
+    assert output["formula_alphabetical"] == "C4 H4 O6"
+    assert output["nelectrons"] == 76
+    assert output["parameters"]["charge"] is None
+    assert output["parameters"]["spin_multiplicity"] is None
+    assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
+    assert output["results"]["forces"][0][0] == pytest.approx(-1.3826311086011256)
+
+    qcin = QCInput.from_file("mol.qin.gz")
+    ref_qcin = QCInput.from_file(os.path.join(QCHEM_DIR, "mol.qin.alternate"))
+    qcinput_nearly_equal(qcin, ref_qcin)
+    
     with pytest.raises(ValueError):
         output = static_job(atoms=TEST_ATOMS, pcm_dielectric="3.0", smd_solvent="water")
 
@@ -195,6 +216,26 @@ def test_relax_job(monkeypatch):
         os.path.join(QCHEM_DIR, "mol.qin.intermediate.sella_opt_iter1")
     )
     qcinput_nearly_equal(qcin, ref_qcin)
+
+    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
+    swaps = {"rem":{"mem_total":"170000"}}
+    output = relax_job(
+        atoms=TEST_ATOMS,
+        scf_algorithm="gdm",
+        swaps=swaps,
+        basis="def2-tzvpd",
+        opt_swaps={"max_steps": 1},
+        check_convergence=False,
+        )
+    assert output["atoms"] != TEST_ATOMS
+    assert output["charge"] == 0
+    assert output["spin_multiplicity"] == 1
+    assert output["formula_alphabetical"] == "C4 H4 O6"
+    assert output["nelectrons"] == 76
+    assert output["parameters"]["charge"] is None
+    assert output["parameters"]["spin_multiplicity"] is None
+    assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
+    assert output["results"]["forces"][0][0] == pytest.approx(-1.3826311086011256)
 
     with pytest.raises(ValueError):
         output = relax_job(atoms=TEST_ATOMS, pcm_dielectric="3.0", smd_solvent="water")
@@ -255,6 +296,26 @@ def test_ts_job(monkeypatch):
     )
     qcinput_nearly_equal(qcin, ref_qcin)
 
+    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
+    swaps = {"rem":{"mem_total":"170000"}}
+    output = ts_job(
+        atoms=TEST_ATOMS,
+        scf_algorithm="gdm",
+        swaps=swaps,
+        basis="def2-tzvpd",
+        opt_swaps={"max_steps": 1},
+        check_convergence=False,
+        )
+    assert output["atoms"] != TEST_ATOMS
+    assert output["charge"] == 0
+    assert output["spin_multiplicity"] == 1
+    assert output["formula_alphabetical"] == "C4 H4 O6"
+    assert output["nelectrons"] == 76
+    assert output["parameters"]["charge"] is None
+    assert output["parameters"]["spin_multiplicity"] is None
+    assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
+    assert output["results"]["forces"][0][0] == pytest.approx(-1.3826311086011256)
+
     with pytest.raises(ValueError):
         output = ts_job(atoms=TEST_ATOMS, pcm_dielectric="3.0", smd_solvent="water")
 
@@ -273,8 +334,8 @@ def test_ts_job(monkeypatch):
 )
 def test_irc_job(monkeypatch):
     monkeypatch.setattr(QChem, "read_results", mock_read)
-    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
-
+    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute4)
+    
     output = irc_job(
         atoms=TEST_ATOMS,
         direction="forward",
@@ -311,6 +372,24 @@ def test_irc_job(monkeypatch):
     )
     qcinput_nearly_equal(qcin, ref_qcin)
 
+    swaps = {"rem":{"mem_total":"170000"}}
+    output = irc_job(
+        atoms=TEST_ATOMS,
+        direction="reverse",
+        scf_algorithm="gdm",
+        swaps=swaps,
+        basis="def2-tzvpd",
+        opt_swaps={"max_steps": 1},
+        check_convergence=False,
+        )
+    assert output["atoms"] != TEST_ATOMS
+    assert output["charge"] == 0
+    assert output["spin_multiplicity"] == 1
+    assert output["formula_alphabetical"] == "C4 H4 O6"
+    assert output["nelectrons"] == 76
+    assert output["parameters"]["charge"] is None
+    assert output["parameters"]["spin_multiplicity"] is None
+
     with pytest.raises(ValueError):
         output = irc_job(atoms=TEST_ATOMS, direction="straight")
 
@@ -329,8 +408,8 @@ def test_irc_job(monkeypatch):
 )
 def test_quasi_irc_job(monkeypatch):
     monkeypatch.setattr(QChem, "read_results", mock_read)
-    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
-
+    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute4)
+    
     output = quasi_irc_job(
         atoms=TEST_ATOMS,
         direction="forward",

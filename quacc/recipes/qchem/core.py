@@ -96,8 +96,8 @@ def static_job(
     for key in swaps:
         if key not in overwrite_inputs:
             overwrite_inputs[key] = {}
-            for subkey in swaps[key]:
-                overwrite_inputs[key][subkey] = swaps[key][subkey]
+        for subkey in swaps[key]:
+            overwrite_inputs[key][subkey] = swaps[key][subkey]
 
     qchem_input_params = {
         "basis_set": basis,
@@ -217,8 +217,8 @@ def relax_job(
     for key in swaps:
         if key not in overwrite_inputs:
             overwrite_inputs[key] = {}
-            for subkey in swaps[key]:
-                overwrite_inputs[key][subkey] = swaps[key][subkey]
+        for subkey in swaps[key]:
+            overwrite_inputs[key][subkey] = swaps[key][subkey]
 
     qchem_input_params = {
         "basis_set": basis,
@@ -341,8 +341,8 @@ def ts_job(
     for key in swaps:
         if key not in overwrite_inputs:
             overwrite_inputs[key] = {}
-            for subkey in swaps[key]:
-                overwrite_inputs[key][subkey] = swaps[key][subkey]
+        for subkey in swaps[key]:
+            overwrite_inputs[key][subkey] = swaps[key][subkey]
 
     qchem_input_params = {
         "basis_set": basis,
@@ -472,8 +472,8 @@ def irc_job(
     for key in swaps:
         if key not in overwrite_inputs:
             overwrite_inputs[key] = {}
-            for subkey in swaps[key]:
-                overwrite_inputs[key][subkey] = swaps[key][subkey]
+        for subkey in swaps[key]:
+            overwrite_inputs[key][subkey] = swaps[key][subkey]
 
     qchem_input_params = {
         "basis_set": basis,
