@@ -68,9 +68,58 @@ print(result)
 
 Like before, we need to define the individual `Job` objects. Now though, we must stitch them together into a `Flow`, which can be easily achieved by passing them to the `jf.Flow()` constructor. The `Flow` object will automatically determine the order in which the jobs should be run based on the inputs and outputs of each job. In this case, it will know not to run `job2` until `job1` has completed.
 
+### Running a Workflow with Complex Connectivity
+
+For this example, let's consider a toy scenario where we wish to relax a bulk Cu structure, carve all possible slabs, and then run a new relaxation calculation on each slab.
+
+In Quacc, there are two types of recipes: 1) individual compute tasks that are functions; 2) workflows that are classes. Here, we are interested in importing a workflow, so it will be instantiated slightly differently from the prior examples. See the example below:
+
+```python
+import jobflow as jf
+from ase.build import bulk
+from quacc.recipes.emt.core import relax_job
+from quacc.recipes.emt.slabs import BulkToSlabsFlow
+
+@jf.job
+def relax_func(atoms):
+
+    return relax_job(atoms)
+
+@jf.job
+def bulk_to_slabs_func(atoms):
+
+    return BulkToSlabsFlow(slab_static_electron=None).run(atoms)
+
+
+# Define the Atoms object
+atoms = bulk("Cu")
+
+# Construct the Flow
+job1 = relax_func(bulk("Cu"))
+job2 = bulk_to_slabs_func(job1.output["atoms"])
+workflow = jf.Flow([job1, job2])
+
+# Run the workflow locally
+responses = jf.run_locally(workflow, create_folders=True)
+
+# Get the result
+result = responses[job2.uuid][1].output
+print(result)
+```
+
+We have imported the {obj}`.emt.slabs.BulkToSlabsFlow` class, which is instantiated with optional parameters and is applied to an `Atoms` object. Here, for demonstration purposes, we specify the `slab_static_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is stitch together the individual `@job` steps into a single `Flow` object.
+
 ### Known Limitations
 
-Jobflow cannot be used with Covalent-based Quacc recipes that involve classes since there is no direct way to convert them to a `job` or `flow`. Nonetheless, Quacc fully supports the development of Jobflow-specific workflows that are mirrors of their Covalent counterparts. Refer to the {obj}`quacc.recipes.emt.jobflow.slabs` module for a representative example that can be compared against the Covalent version at {obj}`quacc.recipes.emt.slabs`.
+When running a Covalent-based class like {obj}`.emt.slabs.BulkToSlabsFlow` in the previous example, the entire class will run as a single compute task even though it is composed of several individual sub-tasks. If these sub-tasks are compute-intensive, this might not be the most efficient use of resources.
+
+To address this, you can draw inspiration from the Covalent-based classes to design your own workflows tailored to Jobflow. After all, it only requires you to stitch together the individual `@job` steps into a single `Flow`.
+
+```{note}
+For details on how to write your own dynamic workflows in Jobflow, refer to the [corresponding tutorial](https://materialsproject.github.io/jobflow/tutorials/5-dynamic-flows.html) in the Jobflow documentation.
+```
+
+If you wish to construct Jobflow-specific workflows that are mirrors of their Covalent counterparts, this is fully supported by Quacc. Refer to the {obj}`quacc.recipes.emt.jobflow.slabs` module for a representative Jobflow example that can be compared against the Covalent version at {obj}`quacc.recipes.emt.slabs`.
 
 ### Learn More
 
