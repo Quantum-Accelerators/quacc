@@ -244,8 +244,8 @@ def summarize_opt_run(
     opt_parameters = dyn.todict() | {"fmax": dyn.fmax}
 
     # Check trajectory
-    #if not os.path.exists(dyn.trajectory.filename):
-    if not os.path.exists('opt.traj'):
+    # if not os.path.exists(dyn.trajectory.filename):
+    if not os.path.exists("opt.traj"):
         raise FileNotFoundError("No trajectory file found.")
 
     # Check convergence
@@ -253,8 +253,8 @@ def summarize_opt_run(
     if check_convergence and not is_converged:
         raise ValueError("Optimization did not converge.")
 
-    #traj = read(dyn.trajectory.filename, index=":")
-    traj = read('opt.traj', index=":")
+    # traj = read(dyn.trajectory.filename, index=":")
+    traj = read("opt.traj", index=":")
     initial_atoms = traj[0]
     final_atoms = dyn.atoms.atoms if isinstance(dyn.atoms, Filter) else dyn.atoms
 
@@ -411,8 +411,12 @@ def summarize_vib_run(
 
     uri = get_uri(os.getcwd())
     inputs = {
-        "parameters": None if isinstance(vib, VibrationsData) else atoms.calc.parameters,
-        "parameters_vib": None if isinstance(vib, VibrationsData) else {
+        "parameters": None
+        if isinstance(vib, VibrationsData)
+        else atoms.calc.parameters,
+        "parameters_vib": None
+        if isinstance(vib, VibrationsData)
+        else {
             "delta": vib.delta,
             "direction": vib.direction,
             "method": vib.method,
