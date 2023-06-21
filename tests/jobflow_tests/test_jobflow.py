@@ -48,6 +48,33 @@ def test_emt():
     jf.run_locally(workflow, create_folders=True, ensure_success=True)
 
 
+def test_emt_flow():
+    import jobflow as jf
+    from ase.build import bulk
+
+    from quacc.recipes.emt.core import relax_job
+    from quacc.recipes.emt.slabs import BulkToSlabsFlow
+
+    @jf.job
+    def relax_func(atoms):
+        return relax_job(atoms)
+
+    @jf.job
+    def bulk_to_slabs_func(atoms):
+        return BulkToSlabsFlow(slab_static_electron=None).run(atoms)
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Construct the Flow
+    job1 = relax_func(bulk("Cu"))
+    job2 = bulk_to_slabs_func(job1.output["atoms"])
+    workflow = jf.Flow([job1, job2])
+
+    # Run the workflow locally
+    jf.run_locally(workflow, create_folders=True, ensure_success=True)
+
+
 @pytest.mark.skipif(fireworks is None, reason="This test requires fireworks")
 def test_fireworks():
     from jobflow.managers.fireworks import flow_to_workflow, job_to_firework

@@ -10,12 +10,12 @@ If you plan to use Parsl or Jobflow as your workflow manager instead of Covalent
 
 ## Starting the Server
 
-Covalent uses a server to dispatch and retrieve calculation details and results. To start the server, simply run `covalent start` in your terminal. It will return a URL that you can use to access the Covalent dashboard, which is shown below.
+Covalent uses a server to dispatch and retrieve calculation details and results. To start the server, simply run `covalent start` in your terminal. It will return a URL (typically http://localhost:48008) that you can use to access the Covalent dashboard, which is shown below.
 
 ![Covalent UI](../_static/install/ui_blank.jpg)
 
 ```{tip}
-Once you start scaling up your calculations, we recommend hosting the Covalent server on a dedicated machine or in the cloud. Refer to the [Deployment Guide](https://docs.covalent.xyz/docs/user-documentation/server-deployment) for details.
+Once you start scaling up your calculations, we recommend hosting the Covalent server on a dedicated machine or in the cloud. Refer to the [Covalent Deployment Guide](https://docs.covalent.xyz/docs/user-documentation/server-deployment) for details.
 ```
 
 ## Plugin Installation

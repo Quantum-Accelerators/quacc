@@ -6,7 +6,7 @@
 
 Make sure you completed the ["Jobflow Setup"](../../install/advanced/jobflow.md) section of the installation instructions. Additionally, you should read the Jobflow documentation's [Quick Start](https://materialsproject.github.io/jobflow/tutorials/1-quickstart.html) to get a sense of how Jobflow works. Namely, you should understand the `Job` and `Flow` definitions, which describe individual compute tasks and workflows, respectively.
 
-```{note}
+```{seealso}
 For a more detailed tutorial on how to use Jobflow, refer to the [Jobflow Tutorials](https://materialsproject.github.io/jobflow/tutorials) and [this helpful guide](https://github.com/JaGeo/Advanced_Jobflow_Tutorial) written by Dr. Janine George.
 ```
 
@@ -119,7 +119,7 @@ When running a Covalent-based class like {obj}`.emt.slabs.BulkToSlabsFlow` in th
 
 To address this, you can draw inspiration from the Covalent-based classes to design your own workflows tailored to Jobflow. After all, it only requires you to stitch together the individual `@job` steps into a single `Flow`.
 
-```{note}
+```{seealso}
 For details on how to write your own dynamic workflows in Jobflow, refer to the [corresponding tutorial](https://materialsproject.github.io/jobflow/tutorials/5-dynamic-flows.html) in the Jobflow documentation.
 ```
 
