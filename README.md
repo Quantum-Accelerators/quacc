@@ -18,9 +18,9 @@ The three main goals of Quacc are to:
 
 1. Reduce the barrier for running complex, mixed-code workflows for molecules and materials across distributed compute environments.
 
-2. Promote rapid workflow development and testing via modern workflow management solutions.
+2. Promote rapid workflow development and testing via modern workflow management solutions (e.g. [Covalent](https://github.com/AgnostiqHQ/covalent), [Parsl](https://github.com/Parsl/parsl), [Jobflow](https://github.com/materialsproject/jobflow)).
 
-3. Enable a seamless interface between the Atomic Simulation Environment and the software infrastructure powering the [Materials Project](https://materialsproject.org).
+3. Enable a seamless interface between the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/) and the software infrastructure powering the [Materials Project](https://materialsproject.org).
 
 ## Documentation
 
@@ -37,34 +37,7 @@ Includes the following sections:
 
 ## Demonstration ✨
 
-```python
-import os
-import covalent as ct
-from ase.build import bulk
-from quacc.recipes.emt.core import relax_job
-from quacc.recipes.emt.slabs import BulkToSlabsFlow
-
-# Start the Covalent server
-os.system("covalent start")
-
-# Define the workflow and set how to execute
-@ct.lattice(executor="local")
-def workflow(atoms):
-    relaxed_bulk = relax_job(atoms) # Relax a bulk structure
-    relaxed_slabs = BulkToSlabsFlow().run(relaxed_bulk["atoms"]) # Make and relax slabs
-    return relaxed_slabs
-
-# Make an Atoms object of a bulk Cu structure
-atoms = bulk("Cu")
-
-# Dispatch the workflow to the Covalent server
-# with the bulk Cu Atoms object as the input
-dispatch_id = ct.dispatch(workflow)(atoms)
-
-# Fetch the result from the server
-result = ct.get_result(dispatch_id)
-print(result)
-```
+🚀 Demo from the Quick Start guide, using Covalent as one of the several supported workflow managers.
 
 ![Demo from Quick Start](docs/src/_static/start/start2.gif)
 
