@@ -244,6 +244,7 @@ def irc_job(
             "dx": 0.1,
             "eta": 1e-4,
             "gamma": 0.4,
+            "keep_going": True,
         },
         "run_kwargs": {
             "direction": "forward",
