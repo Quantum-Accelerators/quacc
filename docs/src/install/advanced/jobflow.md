@@ -2,7 +2,7 @@
 
 ## Introduction
 
-While we recommend using [Covalent](https://github.com/AgnostiqHQ/covalent) as the workflow manager with Quacc, it is not the only option for you to consider. If you would prefer to use [Jobflow](https://github.com/materialsproject/jobflow) to write your workflows and/or [FireWorks](https://github.com/materialsproject/fireworks) to manage them, follow the instructions below. For additional details, refer to the full [Jobflow documentation](https://materialsproject.github.io/jobflow/).
+If you would prefer to use [Jobflow](https://github.com/materialsproject/jobflow) to write your workflows and/or [FireWorks](https://github.com/materialsproject/fireworks) to manage them, follow the instructions below. For additional details, refer to the full [Jobflow documentation](https://materialsproject.github.io/jobflow/).
 
 ## MongoDB Setup
 

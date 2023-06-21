@@ -10,7 +10,7 @@ Make sure you completed the ["Jobflow Setup"](../../install/advanced/jobflow.md)
 For a more detailed tutorial on how to use Jobflow, refer to the [Jobflow Tutorials](https://materialsproject.github.io/jobflow/tutorials) and [this helpful guide](https://github.com/JaGeo/Advanced_Jobflow_Tutorial) written by Dr. Janine George.
 ```
 
-### Example 1: Running a Job
+### Running a Job
 
 Here, we will try running a simple job where we carry out a static calculation on a bulk Cu structure using EMT. This example is shown below.
 
@@ -39,7 +39,7 @@ The key thing to note is that we need to transform the Quacc recipe, which is a 
 Even though the Quacc recipes are defined as Covalent `Electron` objects via the `@ct.electron` decorator, this decorator will be ignored when using Jobflow.
 ```
 
-### Example 2: Running a Flow
+### Running a Flow
 
 Here, we will try running a simple workflow where we relax a bulk Cu structure using EMT and take the output of that calculation as the input to a follow-up static calculation with EMT. This example is shown below.
 
@@ -70,8 +70,8 @@ Like before, we need to define the individual `Job` objects. Now though, we must
 
 ### Known Limitations
 
-Jobflow cannot be used with Quacc recipes that involve classes since they are, by default, structured for [Covalent](https://github.com/AgnostiqHQ/covalent). To address this, we fully support the development of Jobflow-specific workflows that are mirrors of their Covalent counterparts. Refer to the {obj}`quacc.recipes.emt.jobflow.slabs` module for a representative example that can be compared against the Covalent version at {obj}`quacc.recipes.emt.slabs`.
+Jobflow cannot be used with Covalent-based Quacc recipes that involve classes since there is no direct way to convert them to a `job` or `flow`. Nonetheless, Quacc fully supports the development of Jobflow-specific workflows that are mirrors of their Covalent counterparts. Refer to the {obj}`quacc.recipes.emt.jobflow.slabs` module for a representative example that can be compared against the Covalent version at {obj}`quacc.recipes.emt.slabs`.
 
 ### Learn More
 
-That ends the Jobflow section of the documentation. If you want to learn more about Jobflow, you can read the [Jobflow Documentation](https://materialsproject.github.io/jobflow/). Continue to the ["Using Quacc with FireWorks"](fireworks.md) section to learn how to use Quacc with FireWorks.
+That ends the Jobflow section of the documentation. If you want to learn more about Jobflow, you can read the [Jobflow Documentation](https://materialsproject.github.io/jobflow/). Continue to the ["Using Quacc with FireWorks"](fireworks.md) section to learn how to use Quacc with FireWorks, which is one of the manager options available with Jobflow.
