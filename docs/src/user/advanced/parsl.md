@@ -110,17 +110,17 @@ For this example, let's consider a toy scenario where we wish to relax a bulk Cu
 In Quacc, there are two types of recipes: 1) individual compute tasks with the suffix `_job`; pre-made multi-step workflows with the suffix `_flow`. Here, we are interested in importing a pre-made workflow. Refer to the example below:
 
 ```python
-from quacc.recipes.emt.parsl.slabs import BulkToSlabsFlow
+from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_flow
 
-wf_result = BulkToSlabsFlow(bulk("Cu"), slab_static_app=None).result()
+wf_result = bulk_to_slabs_flow(bulk("Cu"), slab_static_app=None).result()
 print(wf_result)
 ```
 
 ```{note}
-We have called `.result()` here because `BulkToSlabsFlow` is a `@join_app` (similar to a `@python_app` for dynamic workflow steps) that returns an `AppFuture`.
+We have called `.result()` here because `bulk_to_slabs_flow` is a `@join_app` (similar to a `@python_app` for dynamic workflow steps) that returns an `AppFuture`.
 ```
 
-We have imported the {obj}`.emt.slabs.parsl.BulkToSlabsFlow` class, which is supplied an `Atoms` object. Here, for demonstration purposes, we specify the `slab_static_app=None` option to do a relaxation but disable the static calculation on each slab.
+We have imported the {obj}`.emt.slabs.parsl.bulk_to_slabs_flow` class, which is supplied an `Atoms` object. Here, for demonstration purposes, we specify the `slab_static_app=None` option to do a relaxation but disable the static calculation on each slab.
 
 ```{hint}
 If you are interested in rewriting a Covalent workflow into Parsl, it is often relatively straightforward. Compare {obj}`quacc.recipes.emt.slabs` and {obj}`quacc.recipes.emt.slabs.parsl` for the key differences.

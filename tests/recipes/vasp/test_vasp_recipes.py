@@ -8,10 +8,10 @@ from quacc.recipes.vasp.core import double_relax_job, relax_job, static_job
 from quacc.recipes.vasp.mp import MPRelaxFlow, mp_prerelax_job, mp_relax_job
 from quacc.recipes.vasp.qmof import qmof_relax_job
 from quacc.recipes.vasp.slabs import (
-    BulkToSlabsFlow,
-    SlabToAdsFlow,
+    bulk_to_slabs_flow,
     slab_relax_job,
     slab_static_job,
+    slab_to_ads_flow,
 )
 
 
@@ -134,7 +134,7 @@ def test_slab_dynamic_jobs():
 
     ### --------- Test BulkToSlabsFlow --------- ###
 
-    outputs = BulkToSlabsFlow(slab_static_electron=None).run(atoms)
+    outputs = bulk_to_slabs_flow(atoms, slab_static_electron=None)
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
     assert outputs[1]["nsites"] == 96
@@ -142,7 +142,7 @@ def test_slab_dynamic_jobs():
     assert outputs[3]["nsites"] == 64
     assert [output["parameters"]["isif"] == 2 for output in outputs]
 
-    outputs = BulkToSlabsFlow().run(atoms)
+    outputs = bulk_to_slabs_flow(atoms)
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
     assert outputs[1]["nsites"] == 96
@@ -150,10 +150,11 @@ def test_slab_dynamic_jobs():
     assert outputs[3]["nsites"] == 64
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
-    outputs = BulkToSlabsFlow(
+    outputs = bulk_to_slabs_flow(
+        atoms,
         slab_relax_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
         slab_static_electron=None,
-    ).run(atoms)
+    )
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
     assert outputs[1]["nsites"] == 96
@@ -163,9 +164,10 @@ def test_slab_dynamic_jobs():
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
     assert [output["parameters"]["encut"] == 450 for output in outputs]
 
-    outputs = BulkToSlabsFlow(
+    outputs = bulk_to_slabs_flow(
+        atoms,
         slab_static_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
-    ).run(atoms)
+    )
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
     assert outputs[1]["nsites"] == 96
@@ -179,28 +181,32 @@ def test_slab_dynamic_jobs():
     atoms = outputs[0]["atoms"]
     adsorbate = molecule("H2")
 
-    outputs = SlabToAdsFlow(slab_static_electron=None).run(atoms, adsorbate)
+    outputs = slab_to_ads_flow(atoms, adsorbate, slab_static_electron=None)
 
     assert [output["nsites"] == 82 for output in outputs]
     assert [output["parameters"]["isif"] == 2 for output in outputs]
 
-    outputs = SlabToAdsFlow().run(atoms, adsorbate)
+    outputs = slab_to_ads_flow(atoms, adsorbate)
     assert [output["nsites"] == 82 for output in outputs]
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
-    outputs = SlabToAdsFlow(
+    outputs = slab_to_ads_flow(
+        atoms,
+        adsorbate,
         slab_relax_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
         slab_static_electron=None,
-    ).run(atoms, adsorbate)
+    )
 
     assert [output["nsites"] == 82 for output in outputs]
     assert [output["parameters"]["isif"] == 2 for output in outputs]
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
     assert [output["parameters"]["encut"] == 450 for output in outputs]
 
-    outputs = SlabToAdsFlow(
+    outputs = slab_to_ads_flow(
+        atoms,
+        adsorbate,
         slab_static_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
-    ).run(atoms, adsorbate)
+    )
 
     assert [output["nsites"] == 82 for output in outputs]
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
@@ -209,7 +215,7 @@ def test_slab_dynamic_jobs():
 
     adsorbate2 = molecule("CH3")
     adsorbate2.set_initial_magnetic_moments([1, 0, 0, 0])
-    outputs = SlabToAdsFlow().run(atoms, adsorbate2)
+    outputs = slab_to_ads_flow(atoms, adsorbate2)
     assert [output["nsites"] == 84 for output in outputs]
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 

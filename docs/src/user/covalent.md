@@ -114,12 +114,12 @@ In Quacc, there are two types of recipes: 1) individual compute tasks that are f
 import covalent as ct
 from ase.build import bulk
 from quacc.recipes.emt.core import relax_job
-from quacc.recipes.emt.slabs import BulkToSlabsFlow
+from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 @ct.lattice
 def workflow(atoms):
     relaxed_bulk = relax_job(atoms)
-    relaxed_slabs = BulkToSlabsFlow(slab_static_electron=None).run(relaxed_bulk["atoms"])
+    relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], slab_static_electron=None)
 
     return relaxed_slabs
 
@@ -129,7 +129,7 @@ result = ct.get_result(dispatch_id, wait=True)
 print(result)
 ```
 
-We have imported the {obj}`.emt.slabs.BulkToSlabsFlow` class, which is instantiated with optional parameters and is applied to an `Atoms` object. Here, for demonstration purposes, we specify the `slab_static_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is wrap it inside a `@ct.lattice` decorator.
+We have imported the {obj}`.emt.slabs.bulk_to_slabs_flow` class, which is instantiated with optional parameters and is applied to an `Atoms` object. Here, for demonstration purposes, we specify the `slab_static_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is wrap it inside a `@ct.lattice` decorator.
 
 ```{hint}
 You don't need to set `wait=True` in practice. Once you call `ct.dispatch`, the workflow will begin running. The `ct.get_result` function is used to fetch the workflow status and results from the server.

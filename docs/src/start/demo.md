@@ -41,7 +41,7 @@ This demo workflow will relax a bulk Cu structure using the EMT calculator, use 
 ```python
 from ase.build import bulk
 from quacc.recipes.emt.core import relax_job
-from quacc.recipes.emt.slabs import BulkToSlabsFlow
+from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 # Define the workflow and set how to execute
 @ct.lattice(executor="local")
@@ -51,7 +51,7 @@ def workflow(atoms):
     relaxed_bulk = relax_job(atoms)
 
     # With the relaxed bulk as input, generate and relax slabs
-    relaxed_slabs = BulkToSlabsFlow().run(relaxed_bulk["atoms"])
+    relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"])
 
     return relaxed_slabs
 

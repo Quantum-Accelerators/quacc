@@ -10,7 +10,7 @@ from maggma.stores import MemoryStore
 
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.recipes.emt.jobflow.slabs import BulkToSlabsFlow as JFBulkToSlabsFlow
-from quacc.recipes.emt.slabs import BulkToSlabsFlow
+from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 
 def teardown_module():
@@ -89,7 +89,7 @@ def test_relax_Job():
 def test_slab_dynamic_jobs():
     atoms = bulk("Cu")
 
-    outputs = BulkToSlabsFlow(slab_static_electron=None).run(atoms)
+    outputs = bulk_to_slabs_flow(atoms, slab_static_electron=None)
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
     assert outputs[1]["nsites"] == 96
@@ -98,14 +98,15 @@ def test_slab_dynamic_jobs():
     assert [output["parameters"]["asap_cutoff"] is False for output in outputs]
     assert [output["name"] == "EMT Relax" for output in outputs]
 
-    outputs = BulkToSlabsFlow(
+    outputs = bulk_to_slabs_flow(
+        atoms,
         slab_static_electron=None,
         slab_relax_kwargs={
             "opt_swaps": {"fmax": 1.0},
             "calc_kwargs": {"asap_cutoff": True},
             "relax_cell": False,
         },
-    ).run(atoms)
+    )
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
     assert outputs[1]["nsites"] == 96
@@ -113,13 +114,15 @@ def test_slab_dynamic_jobs():
     assert outputs[3]["nsites"] == 64
     assert [output["parameters"]["asap_cutoff"] is True for output in outputs]
 
-    outputs = BulkToSlabsFlow(
+    outputs = bulk_to_slabs_flow(
+        atoms,
+        slabgen_kwargs={"max_slabs": 2},
         slab_relax_kwargs={
             "opt_swaps": {"fmax": 1.0},
             "calc_kwargs": {"asap_cutoff": True},
             "relax_cell": False,
         },
-    ).run(atoms, slabgen_kwargs={"max_slabs": 2})
+    )
     assert len(outputs) == 2
     assert outputs[0]["nsites"] == 64
     assert outputs[1]["nsites"] == 80
