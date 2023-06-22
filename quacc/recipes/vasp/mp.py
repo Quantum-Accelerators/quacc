@@ -6,8 +6,6 @@ Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 import covalent as ct
 import numpy as np
 from ase import Atoms
