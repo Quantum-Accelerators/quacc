@@ -74,31 +74,20 @@ Like before, we need to define the individual `Job` objects. Now though, we must
 
 For this example, let's consider a toy scenario where we wish to relax a bulk Cu structure, carve all possible slabs, and then run a new relaxation calculation on each slab.
 
-In Quacc, there are two types of recipes: 1) individual compute tasks that are functions; 2) workflows that are classes. Here, we are interested in importing a workflow, as demonstrated below:
+In Quacc, there are two types of recipes: 1) individual compute tasks with the suffix `_job`; pre-made multi-step workflows with the suffix `_flow`. Here, we are interested in importing a pre-made workflow. Refer to the example below:
 
 ```python
 import jobflow as jf
 from ase.build import bulk
 from quacc.recipes.emt.core import relax_job
-from quacc.recipes.emt.slabs import BulkToSlabsFlow
-
-@jf.job
-def relax_func(atoms):
-
-    return relax_job(atoms)
-
-@jf.job
-def bulk_to_slabs_func(atoms):
-
-    return bulk_to_slabs_flow(atoms, slab_static_electron=None)
-
+from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 # Define the Atoms object
 atoms = bulk("Cu")
 
 # Construct the Flow
-job1 = relax_func(atoms)
-job2 = bulk_to_slabs_func(job1.output["atoms"])
+job1 = jf.job(relax_job)(atoms)
+job2 = jf.job(bulk_to_slabs_flow)(job1.output["atoms"])
 workflow = jf.Flow([job1, job2])
 
 # Run the workflow locally
@@ -107,10 +96,6 @@ responses = jf.run_locally(workflow, create_folders=True)
 # Get the result
 result = responses[job2.uuid][1].output
 print(result)
-```
-
-```{note}
-Here, we have used the `@jf.job` decorator instead of the equivalent `jf.job()` shorthand simply for demonstration purposes.
 ```
 
 We have imported the {obj}`.emt.slabs.bulk_to_slabs_flow` function, which is instantiated with optional parameters and is applied to an `Atoms` object. Here, for demonstration purposes, we specify the `slab_static_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is stitch together the individual `@job` steps into a single `Flow` object.
