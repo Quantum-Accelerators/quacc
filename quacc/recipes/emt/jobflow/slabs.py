@@ -72,17 +72,17 @@ class BulkToSlabsFlow(jf.Maker):
         jobs = []
         outputs = []
         for slab in slabs:
-            if self.slab_relax_job and self.slab_static_job:
+            if self.slab_static_job is None:
+                job1 = self.slab_relax_job(slab, **self.slab_relax_kwargs)
+                jobs += [job1]
+                outputs.append(job1.output)
+            else:
                 job1 = self.slab_relax_job(slab, **self.slab_relax_kwargs)
                 job2 = self.slab_static_job(
                     job1.output["atoms"], **self.slab_static_kwargs
                 )
                 jobs += [job1, job2]
                 outputs.append(job2.output)
-            else:
-                job1 = self.slab_relax_job(slab, **self.slab_relax_kwargs)
-                jobs += [job1]
-                outputs.append(job1.output)
 
         return jf.Response(
             output={"input_bulk": atoms, "generated_slabs": slabs},

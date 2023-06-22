@@ -193,10 +193,10 @@ class BulkToSlabsFlow:
 
         slabs = ct.electron(make_max_slabs_from_bulk)(atoms, **slabgen_kwargs)
 
-        if self.slab_relax_electron and self.slab_static_electron:
-            return _relax_and_static_distributed(slabs)
-        else:
+        if self.slab_static_electron is None:
             return _relax_distributed(slabs)
+        else:
+            return _relax_and_static_distributed(slabs)
 
 
 @dataclass
@@ -270,7 +270,7 @@ class SlabToAdsFlow:
             slab, adsorbate, **make_ads_kwargs
         )
 
-        if self.slab_relax_electron and self.slab_static_electron:
-            return _relax_and_static_distributed(ads_slabs)
-        else:
+        if self.slab_static_electron is None:
             return _relax_distributed(ads_slabs)
+        else:
+            return _relax_and_static_distributed(ads_slabs)
