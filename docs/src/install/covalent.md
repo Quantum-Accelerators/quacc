@@ -30,7 +30,7 @@ For Perlmutter at NERSC, an example `SlurmExecutor` configuration might look lik
 
 ```python
 executor = ct.executor.SlurmExecutor(
-    username="UserName",
+    username="YourUserName",
     address="perlmutter-p1.nersc.gov",
     ssh_key_file="~/.ssh/nersc",
     cert_file="~/.ssh/nersc-cert.pub",
@@ -40,7 +40,7 @@ executor = ct.executor.SlurmExecutor(
         "nodes": 1,
         "qos": "debug",
         "constraint": "cpu",
-        "account": "matgen",
+        "account": "YourAccountName",
         "job-name": "quacc",
         "time": "00:10:00",
     },
