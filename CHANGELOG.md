@@ -24,6 +24,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Fixed a bug where symbolic links could be overwritten when parallel jobs are launched.
 
+### Removed
+
+- Removed `quacc.recipes.vasp.jobflow` module to prioritize Covalent and Parsl.
+
 ## [0.1.0]
 
 See https://github.com/quantum-accelerators/quacc/releases/tag/v0.1.0 for more details.
