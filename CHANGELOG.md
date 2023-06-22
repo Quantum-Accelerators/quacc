@@ -8,11 +8,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- Started `CHANGELOG.md`.
+- Added `CHANGELOG.md`.
+- Added the `quacc.recipes.emt.parsl` module.
 
 ### Changed
 
 - The `slab_relax_job` kwarg in `recipes.emt.slabs` and `recipes.vasp.slabs` workflows can no longer be set to `None`, as there are few situations where this would be desired.
+
+### Docs
+
+- Expanded upon Parsl documentation.
 
 ### Fixed
 
