@@ -153,7 +153,7 @@ from parsl.providers import SlurmProvider
 config = Config(
     executors=[
         HighThroughputExecutor(
-            label="quacc-test",
+            label="quacc",
             max_workers=1,
             provider=SlurmProvider(
                 partition="debug",
