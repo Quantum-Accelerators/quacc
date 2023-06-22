@@ -19,3 +19,5 @@ If you are just starting out, try running some test calculations locally first. 
 ```
 
 Out-of-the-box, Parsl will run on your local machine. To configure Parsl for the high-performance computing environment of your choice, refer to the executor [Configuration](https://parsl.readthedocs.io/en/stable/userguide/configuring.html) page in the Parsl documentation.
+
+For Perlmutter at NERSC, an example `HighThroughputExecutor` configuration can be found in the [NERSC Documentation](https://docs.nersc.gov/jobs/workflow/parsl/).
