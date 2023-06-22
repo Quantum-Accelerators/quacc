@@ -76,7 +76,7 @@ If you plan to use Q-Chem with Quacc, you will need to install `openbabel` prior
 [tblite](https://github.com/tblite/tblite) is a code that interfaces with the xtb package for running GFN-xTB calculations.
 ```
 
-If you plan to use tblite with Quacc, you will need to install the tblite interface with ASE support. This can be done via `pip install tblite[ase]`.
+If you plan to use tblite with Quacc, you will need to install the tblite interface with ASE support. This can be done via `pip install tblite[ase]` (available on Linux only).
 
 ## VASP
 
