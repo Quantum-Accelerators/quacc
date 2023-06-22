@@ -105,41 +105,10 @@ For this example, let's consider a toy scenario where we wish to relax a bulk Cu
 In Quacc, there are two types of recipes: 1) individual compute tasks that are functions; 2) workflows that are classes. Here, we are interested in importing a workflow, so it will be instantiated slightly differently from the prior examples. See the example below:
 
 ```python
-import parsl
-from parsl import python_app
-from ase.build import bulk
 
-@python_app
-def relax_app(atoms):
-
-    # All dependencies must be inside the Python app
-    from quacc.recipes.emt.core import relax_job
-
-    return relax_job(atoms)
-
-@python_app
-def bulk_to_slabs_app(atoms):
-
-    # All dependencies must be inside the Python app
-    from quacc.recipes.emt.slabs import BulkToSlabsFlow
-
-    return BulkToSlabsFlow(slab_static_electron=None).run(atoms)
-
-def workflow(atoms):
-    future1 = relax_app(atoms)
-    future2 = bulk_to_slabs_app(future1.result()["atoms"])
-
-    return future2.result()
-
-# Define the Atoms object
-atoms = bulk("Cu")
-
-# Run the workflow
-wf_result = workflow(atoms)
-print(wf_result)
 ```
 
-We have imported the {obj}`.emt.slabs.BulkToSlabsFlow` class, which is instantiated with optional parameters and is applied to an `Atoms` object. Here, for demonstration purposes, we specify the `slab_static_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is stitch together the individual `@python_app` steps into a single function.
+We have imported the {obj}`.emt.slabs.parsl.BulkToSlabsFlow` class, which is supplied an `Atoms` object. Here, for demonstration purposes, we specify the `slab_static_app=None` option to do a relaxation but disable the static calculation on each slab.
 
 ## Known Limitations
 
