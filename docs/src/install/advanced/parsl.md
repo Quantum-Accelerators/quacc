@@ -20,4 +20,27 @@ If you are just starting out, try running some test calculations locally first. 
 
 Out-of-the-box, Parsl will run on your local machine. To configure Parsl for the high-performance computing environment of your choice, refer to the executor [Configuration](https://parsl.readthedocs.io/en/stable/userguide/configuring.html) page in the Parsl documentation.
 
-For [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/), an example `HighThroughputExecutor` configuration can be found in the [NERSC Documentation](https://docs.nersc.gov/jobs/workflow/parsl/).
+For [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/), example `HighThroughputExecutor` configurations can be found in the [NERSC Documentation](https://docs.nersc.gov/jobs/workflow/parsl/). A simple one is reproduced below that allows for job submission from the login node:
+
+```python
+from parsl.config import Config
+from parsl.providers import SlurmProvider
+from parsl.executors import HighThroughputExecutor
+
+config = Config(
+    executors=[
+        HighThroughputExecutor(
+            label="quacc-test",
+            max_workers=1,
+            provider=SlurmProvider(
+                partition="debug",
+                account="MyAccountName",
+                nodes_per_block=1,
+                scheduler_options="#SBATCH -C cpu",
+                worker_init="source activate quacc",
+                walltime="00:10:00",
+            ),
+        )
+    ]
+)
+```
