@@ -18,7 +18,7 @@ class BulkToSlabsFlow:
 
     1. Slab generation
 
-    2. Slab relaxations (optional)
+    2. Slab relaxations
 
     3. Slab statics (optional)
 
@@ -34,7 +34,7 @@ class BulkToSlabsFlow:
         Additional keyword arguments to pass to the static calculation.
     """
 
-    slab_relax_electron: Electron | None = relax_job
+    slab_relax_electron: Electron = relax_job
     slab_static_electron: Electron | None = static_job
     slab_relax_kwargs: dict | None = None
     slab_static_kwargs: dict | None = None
@@ -65,11 +65,6 @@ class BulkToSlabsFlow:
         slabgen_kwargs = slabgen_kwargs or {}
         if "relax_cell" not in self.slab_relax_kwargs:
             self.slab_relax_kwargs["relax_cell"] = False
-
-        if not self.slab_relax_electron and not self.slab_static_electron:
-            raise ValueError(
-                "At least one of slab_relax_electron or slab_static_electron must be defined."
-            )
 
         @ct.electron
         @ct.lattice

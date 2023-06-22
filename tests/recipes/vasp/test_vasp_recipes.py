@@ -323,11 +323,7 @@ def test_jf_slab_dynamic_jobs():
 
     atoms = bulk("Cu")
 
-    with pytest.raises(RuntimeError):
-        flow = JFBulkToSlabsFlow(slab_relax_job=None, slab_static_job=None).make(atoms)
-        jf.run_locally(flow, store=store, ensure_success=True)
-
-    flow = JFBulkToSlabsFlow(slab_relax_job=None).make(atoms)
+    flow = JFBulkToSlabsFlow(slab_static_job=None).make(atoms)
     jf.run_locally(flow, store=store, ensure_success=True)
 
     flow = JFBulkToSlabsFlow(

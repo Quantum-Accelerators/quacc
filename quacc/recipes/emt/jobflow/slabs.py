@@ -17,7 +17,7 @@ class BulkToSlabsFlow(jf.Maker):
 
     1. Slab generation
 
-    2. Slab relaxations (optional)
+    2. Slab relaxations
 
     3. Slab statics (optional)
 
@@ -36,7 +36,7 @@ class BulkToSlabsFlow(jf.Maker):
     """
 
     name: str = "EMT BulkToSlabsFlow"
-    slab_relax_job: jf.Job | None = jf.job(relax_job)
+    slab_relax_job: jf.Job = jf.job(relax_job)
     slab_static_job: jf.Job | None = jf.job(static_job)
     slab_relax_kwargs: dict | None = None
     slab_static_kwargs: dict | None = None
@@ -66,11 +66,6 @@ class BulkToSlabsFlow(jf.Maker):
 
         # Generate all the slab
         slabs = make_max_slabs_from_bulk(atoms, **slabgen_kwargs)
-
-        if not self.slab_relax_job and not self.slab_static_job:
-            raise ValueError(
-                "At least one of slab_relax_job or slab_static_job must be defined."
-            )
 
         # Generate the jobs for each slab
         jobs = []

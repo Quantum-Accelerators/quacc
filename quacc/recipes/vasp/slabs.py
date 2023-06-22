@@ -126,7 +126,7 @@ class BulkToSlabsFlow:
 
     1. Slab generation
 
-    2. Slab relaxations (optional)
+    2. Slab relaxations
 
     3. Slab statics (optional)
 
@@ -142,7 +142,7 @@ class BulkToSlabsFlow:
         Additional keyword arguments to pass to the static calculation.
     """
 
-    slab_relax_electron: Electron | None = slab_relax_job
+    slab_relax_electron: Electron = slab_relax_job
     slab_static_electron: Electron | None = slab_static_job
     slab_relax_kwargs: dict | None = None
     slab_static_kwargs: dict | None = None
@@ -171,11 +171,6 @@ class BulkToSlabsFlow:
         self.slab_relax_kwargs = self.slab_relax_kwargs or {}
         self.slab_static_kwargs = self.slab_static_kwargs or {}
         slabgen_kwargs = slabgen_kwargs or {}
-
-        if not self.slab_relax_electron and not self.slab_static_electron:
-            raise ValueError(
-                "At least one of slab_relax_electron or slab_static_electron must be defined."
-            )
 
         @ct.electron
         @ct.lattice
@@ -219,7 +214,7 @@ class SlabToAdsFlow:
     """
     Workflow consisting of:
     1. Slab-adsorbate generation
-    2. Slab-adsorbate relaxations (optional)
+    2. Slab-adsorbate relaxations
     3. Slab-adsorbate statics (optional)
 
     Parameters
@@ -234,7 +229,7 @@ class SlabToAdsFlow:
         Additional keyword arguments to pass to the static calculation.
     """
 
-    slab_relax_electron: Electron | None = ct.electron(slab_relax_job)
+    slab_relax_electron: Electron = ct.electron(slab_relax_job)
     slab_static_electron: Electron | None = ct.electron(slab_static_job)
     slab_relax_kwargs: dict | None = None
     slab_static_kwargs: dict | None = None
@@ -261,11 +256,6 @@ class SlabToAdsFlow:
         self.slab_relax_kwargs = self.slab_relax_kwargs or {}
         self.slab_static_kwargs = self.slab_static_kwargs or {}
         make_ads_kwargs = make_ads_kwargs or {}
-
-        if not self.slab_relax_electron and not self.slab_static_electron:
-            raise ValueError(
-                "At least one of slab_relax_electron or slab_static_electron must be defined."
-            )
 
         @ct.electron
         @ct.lattice
