@@ -78,12 +78,8 @@ class BulkToSlabsFlow(jf.Maker):
                 )
                 jobs += [job1, job2]
                 outputs.append(job2.output)
-            elif self.slab_relax_job:
+            else:
                 job1 = self.slab_relax_job(slab, **self.slab_relax_kwargs)
-                jobs += [job1]
-                outputs.append(job1.output)
-            elif self.slab_static_job:
-                job1 = self.slab_static_job(slab, **self.slab_static_kwargs)
                 jobs += [job1]
                 outputs.append(job1.output)
 
