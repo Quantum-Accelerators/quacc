@@ -36,6 +36,10 @@ You can make an `Atoms` object from common files like a CIF, XYZ, or POSCAR by u
 
 With the `Atoms` object defined, we then imported a desired recipe and instantiated it. In this case, since we want to use EMT, we can look in {obj}`quacc.recipes.emt` to see all the available recipes. We are interested in doing a structure relaxation, so we imported the {obj}`.emt.core.relax_job` recipe. We then instantiated and ran the recipe by passing in the `Atoms` object we defined earlier.
 
+The recipe output (`result`) is a bit too large to print here; nonetheless, for context, it is a dictionary that has the following primary keys:
+
+`>>> ['atoms', 'atoms_info', 'builder_meta', 'chemsys', 'composition', 'composition_reduced', 'density', 'density_atomic', 'dir_name', 'elements', 'formula_anonymous', 'formula_pretty', 'input_structure', 'name', 'nelements', 'nid', 'nsites', 'parameters', 'parameters_opt', 'results', 'structure', 'symmetry', 'trajectory', 'trajectory_results', 'volume']`
+
 ## A Simple Mixed-Code Workflow
 
 Now let's return to our bulk Cu example from above and start adding on some complexity. Here, we will use EMT to run a relaxation on the bulk Cu structure and then use the output of this calculation as the input to a static calculation with the semi-empirical quantum mechanics method GFN2-xTB as implemented in {obj}`.tblite.core.static_job`. This example highlights how there are no restrictions in terms of how many codes you can use in a single workflow.
