@@ -267,14 +267,6 @@ class SlabToAdsFlow:
 
         @ct.electron
         @ct.lattice
-        def _static_distributed(slabs):
-            return [
-                self.slab_static_electron(slab, **self.slab_static_kwargs)
-                for slab in slabs
-            ]
-
-        @ct.electron
-        @ct.lattice
         def _relax_and_static_distributed(slabs):
             return [
                 self.slab_static_electron(
@@ -290,7 +282,5 @@ class SlabToAdsFlow:
 
         if self.slab_relax_electron and self.slab_static_electron:
             return _relax_and_static_distributed(ads_slabs)
-        elif self.slab_relax_electron:
+        else:
             return _relax_distributed(ads_slabs)
-        elif self.slab_static_electron:
-            return _static_distributed(ads_slabs)
