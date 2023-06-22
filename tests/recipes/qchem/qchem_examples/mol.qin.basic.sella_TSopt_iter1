@@ -29,4 +29,5 @@ $rem
    symmetry = false
    sym_ignore = true
    method = wb97mv
+   scf_guess = read
 $end

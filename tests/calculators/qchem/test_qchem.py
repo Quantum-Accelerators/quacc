@@ -92,6 +92,8 @@ def test_qchem_read_results_basic_and_write_53():
         ) as old_file:
             old_binary = old_file.read()
             assert new_binary == old_binary
+    qcinp = QCInput.from_file("mol.qin")
+    assert qcinp.rem.get("scf_guess") == "read"
     os.remove("53.0")
     os.remove("mol.qin")
 

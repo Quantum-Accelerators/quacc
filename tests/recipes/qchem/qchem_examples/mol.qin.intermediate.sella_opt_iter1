@@ -30,6 +30,7 @@ $rem
    sym_ignore = true
    method = b97mv
    solvent_method = pcm
+   scf_guess = read
 $end
 
 $pcm

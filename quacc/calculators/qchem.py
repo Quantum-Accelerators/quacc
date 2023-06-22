@@ -128,7 +128,6 @@ class QChem(FileIOCalculator):
                 for val in self.prev_orbital_coeffs:
                     data = struct.pack("d", val)
                     file.write(data)
-            print("prev_orbital_coeffs written!")
             if "overwrite_inputs" not in self.qchem_input_params:
                 self.qchem_input_params["overwrite_inputs"] = {}
             if "rem" not in self.qchem_input_params["overwrite_inputs"]:
@@ -176,4 +175,3 @@ class QChem(FileIOCalculator):
                 self.prev_orbital_coeffs.append(
                     struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
                 )
-            print("prev_orbital_coeffs read!")
