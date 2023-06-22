@@ -47,7 +47,7 @@ if __name__ == "__main__":
             "fireworks": ["fireworks"],
             "optimizers": ["sella>=2.3.2"],
             "parsl": ["parsl[monitoring]"],
-            "tblite": ["tblite[ase]"],
+            "tblite": ["tblite[ase]; platform_system=='Linux'"],
             "dev": ["black", "isort", "pytest", "pytest-cov"],
             "docs": [
                 "autodoc_pydantic==1.8.0",
