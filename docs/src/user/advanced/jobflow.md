@@ -74,7 +74,7 @@ Like before, we need to define the individual `Job` objects. Now though, we must
 
 For this example, let's consider a toy scenario where we wish to relax a bulk Cu structure, carve all possible slabs, and then run a new relaxation calculation on each slab.
 
-In Quacc, there are two types of recipes: 1) individual compute tasks that are functions; 2) workflows that are classes. Here, we are interested in importing a workflow, so it will be instantiated slightly differently from the prior examples. See the example below:
+In Quacc, there are two types of recipes: 1) individual compute tasks that are functions; 2) workflows that are classes. Here, we are interested in importing a workflow, as demonstrated below:
 
 ```python
 import jobflow as jf
@@ -90,7 +90,7 @@ def relax_func(atoms):
 @jf.job
 def bulk_to_slabs_func(atoms):
 
-    return BulkToSlabsFlow(slab_static_electron=None).run(atoms)
+    return bulk_to_slabs_flow(atoms, slab_static_electron=None)
 
 
 # Define the Atoms object
@@ -110,16 +110,14 @@ print(result)
 ```
 
 ```{note}
-Here, we have used the `@jf.job` decorator instead of the `jf.job()` shorthand because it is not possible to convert a class to a `Job` object using the shorthand.
+Here, we have used the `@jf.job` decorator instead of the equivalent `jf.job()` shorthand simply for demonstration purposes.
 ```
 
-We have imported the {obj}`.emt.slabs.BulkToSlabsFlow` class, which is instantiated with optional parameters and is applied to an `Atoms` object. Here, for demonstration purposes, we specify the `slab_static_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is stitch together the individual `@job` steps into a single `Flow` object.
+We have imported the {obj}`.emt.slabs.bulk_to_slabs_flow` function, which is instantiated with optional parameters and is applied to an `Atoms` object. Here, for demonstration purposes, we specify the `slab_static_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is stitch together the individual `@job` steps into a single `Flow` object.
 
 ## Known Limitations
 
-When running a Covalent-based class like {obj}`.emt.slabs.BulkToSlabsFlow` in the previous example, the entire class will run as a single compute task even though it is composed of several individual sub-tasks. If these sub-tasks are compute-intensive, this might not be the most efficient use of resources.
-
-To address this, you can draw inspiration from the Covalent-based classes to design your own workflows tailored to Jobflow. After all, it only requires you to stitch together the individual `@job` steps into a single `Flow`.
+When running a Covalent-based workflow like {obj}`.emt.slabs.bulk_to_slabs_flow` in the previous example, the entire function will run as a single compute task even though it is composed of several individual sub-tasks. If these sub-tasks are compute-intensive, this might not be the most efficient use of resources.
 
 ```{seealso}
 For details on how to write your own dynamic workflows in Jobflow, refer to the [corresponding tutorial](https://materialsproject.github.io/jobflow/tutorials/5-dynamic-flows.html) in the Jobflow documentation.

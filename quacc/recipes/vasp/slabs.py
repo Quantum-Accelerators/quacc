@@ -1,8 +1,6 @@
 """Recipes for slabs"""
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 import covalent as ct
 from ase import Atoms
 from covalent._workflow.electron import Electron

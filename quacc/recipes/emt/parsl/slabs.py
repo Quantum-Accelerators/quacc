@@ -8,7 +8,7 @@ from quacc.recipes.emt.core import relax_job, static_job
 
 
 @join_app
-def BulkToSlabsFlow(
+def bulk_to_slabs_flow(
     atoms: Atoms,
     slabgen_kwargs: dict | None = None,
     slab_relax_app: python_app = python_app(relax_job),

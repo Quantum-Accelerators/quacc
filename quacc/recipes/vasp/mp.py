@@ -84,8 +84,13 @@ def mp_relax_job(
     return summarize_run(atoms, additional_fields={"name": "MP-Relax"})
 
 
-@dataclass
-class MPRelaxFlow:
+def mp_relax_flow(
+    atoms: Atoms,
+    prerelax_electron: Electron | None = mp_prerelax_job,
+    relax_electron: Electron | None = mp_relax_job,
+    prerelax_kwargs: dict | None = None,
+    relax_kwargs: dict | None = None,
+) -> dict:
     """
     Workflow consisting of:
 
@@ -95,6 +100,8 @@ class MPRelaxFlow:
 
     Parameters
     ----------
+    atoms
+        Atoms object for the structure.
     prerelax_electron
         Default to use for the pre-relaxation.
     relax_electron
@@ -103,51 +110,35 @@ class MPRelaxFlow:
         Additional keyword arguments to pass to the pre-relaxation calculation.
     relax_kwargs
         Additional keyword arguments to pass to the relaxation calculation.
+
+    Returns
+    -------
+    dict
+        Dictionary results from quacc.schemas.vasp.summarize_run
     """
 
-    prerelax_electron: Electron | None = mp_prerelax_job
-    relax_electron: Electron | None = mp_relax_job
-    prerelax_kwargs: dict | None = None
-    relax_kwargs: dict | None = None
+    prerelax_kwargs = prerelax_kwargs or {}
+    relax_kwargs = relax_kwargs or {}
 
-    def run(self, atoms: Atoms) -> dict:
-        """
-        Run the workflow.
+    # Run the prerelax
+    prerelax_results = prerelax_electron(atoms, **prerelax_kwargs)
 
-        Parameters
-        ----------
-        atoms
-            Atoms object for the structure.
+    # Update KSPACING arguments
+    bandgap = prerelax_results["output"]["bandgap"]
+    if bandgap < 1e-4:
+        kspacing_swaps = {"kspacing": 0.22, "sigma": 0.2, "ismear": 2, "kpts": None}
+    else:
+        rmin = 25.22 - 2.87 * bandgap
+        kspacing = 2 * np.pi * 1.0265 / (rmin - 1.0183)
+        kspacing_swaps = {
+            "kspacing": min(kspacing, 0.44),
+            "ismear": -5,
+            "sigma": 0.05,
+            "kpts": None,
+        }
+    relax_kwargs["calc_swaps"] = kspacing_swaps | relax_kwargs.get("calc_swaps", {})
 
-        Returns
-        -------
-        dict
-            Dictionary results from quacc.schemas.vasp.summarize_run
-        """
-        self.prerelax_kwargs = self.prerelax_kwargs or {}
-        self.relax_kwargs = self.relax_kwargs or {}
+    # TODO: Also, copy the WAVECAR from the prerelaxation to the relaxation
 
-        # Run the prerelax
-        prerelax_results = self.prerelax_electron(atoms, **self.prerelax_kwargs)
-
-        # Update KSPACING arguments
-        bandgap = prerelax_results["output"]["bandgap"]
-        if bandgap < 1e-4:
-            kspacing_swaps = {"kspacing": 0.22, "sigma": 0.2, "ismear": 2, "kpts": None}
-        else:
-            rmin = 25.22 - 2.87 * bandgap
-            kspacing = 2 * np.pi * 1.0265 / (rmin - 1.0183)
-            kspacing_swaps = {
-                "kspacing": min(kspacing, 0.44),
-                "ismear": -5,
-                "sigma": 0.05,
-                "kpts": None,
-            }
-        self.relax_kwargs["calc_swaps"] = kspacing_swaps | self.relax_kwargs.get(
-            "calc_swaps", {}
-        )
-
-        # TODO: Also, copy the WAVECAR from the prerelaxation to the relaxation
-
-        # Run the relax
-        return self.relax_electron(prerelax_results["atoms"], **self.relax_kwargs)
+    # Run the relax
+    return relax_electron(prerelax_results["atoms"], **relax_kwargs)

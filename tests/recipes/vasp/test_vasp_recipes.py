@@ -5,7 +5,7 @@ import pytest
 from ase.build import bulk, molecule
 
 from quacc.recipes.vasp.core import double_relax_job, relax_job, static_job
-from quacc.recipes.vasp.mp import MPRelaxFlow, mp_prerelax_job, mp_relax_job
+from quacc.recipes.vasp.mp import mp_prerelax_job, mp_relax_flow, mp_relax_job
 from quacc.recipes.vasp.qmof import qmof_relax_job
 from quacc.recipes.vasp.slabs import (
     bulk_to_slabs_flow,
@@ -132,7 +132,7 @@ def test_slab_relax_job():
 def test_slab_dynamic_jobs():
     atoms = bulk("Cu")
 
-    ### --------- Test BulkToSlabsFlow --------- ###
+    ### --------- Test bulk_to_slabs_flow --------- ###
 
     outputs = bulk_to_slabs_flow(atoms, slab_static_electron=None)
     assert len(outputs) == 4
@@ -177,7 +177,7 @@ def test_slab_dynamic_jobs():
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
     assert [output["parameters"]["encut"] == 450 for output in outputs]
 
-    ### --------- Test SlabToAdsorbatesJob --------- ###
+    ### --------- Test slab_to_ads_flow --------- ###
     atoms = outputs[0]["atoms"]
     adsorbate = molecule("H2")
 
@@ -310,7 +310,7 @@ def test_mp():
     assert output["parameters"]["ismear"] == 2
     assert "kpts" not in output["parameters"]
 
-    output = MPRelaxFlow().run(atoms)
+    output = mp_relax_flow(atoms)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["xc"] == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02
@@ -320,7 +320,7 @@ def test_mp():
     assert output["parameters"]["kspacing"] == 0.22
 
     atoms = bulk("Fe")
-    output = MPRelaxFlow().run(atoms)
+    output = mp_relax_flow(atoms)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["xc"] == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02
@@ -332,7 +332,7 @@ def test_mp():
     atoms = molecule("O2")
     atoms.center(vacuum=10)
     atoms.pbc = True
-    output = MPRelaxFlow().run(atoms)
+    output = mp_relax_flow(atoms)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["xc"] == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02

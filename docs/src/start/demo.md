@@ -55,7 +55,7 @@ def workflow(atoms):
 
     return relaxed_slabs
 
-# Make an Atoms object of a bulk Cu structure
+# Make an Atoms object of a buulk Cu structure
 atoms = bulk("Cu")
 
 # Dispatch the workflow to the Covalent server
