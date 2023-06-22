@@ -123,14 +123,20 @@ class QChem(FileIOCalculator):
                 )
             else:
                 mol.set_charge_and_spin(charge=self.charge)
-        qcin = ForceSet(mol, **self.qchem_input_params)
-        qcin.write("mol.qin")
         if self.prev_orbital_coeffs is not None:
             with open("53.0", mode="wb") as file:
                 for val in self.prev_orbital_coeffs:
                     data = struct.pack("d", val)
                     file.write(data)
             print("prev_orbital_coeffs written!")
+            if "overwrite_inputs" not in self.qchem_input_params:
+                self.qchem_input_params["overwrite_inputs"] = {}
+            if "rem" not in self.qchem_input_params["overwrite_inputs"]:
+                self.qchem_input_params["overwrite_inputs"]["rem"] = {}
+            if "scf_guess" not in self.qchem_input_params["overwrite_inputs"]["rem"]:
+                self.qchem_input_params["overwrite_inputs"]["rem"]["scf_guess"] = "read"
+        qcin = ForceSet(mol, **self.qchem_input_params)
+        qcin.write("mol.qin")
 
     def read_results(self):
         data = QCOutput("mol.qout").data
