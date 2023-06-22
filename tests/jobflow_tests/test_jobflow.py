@@ -57,7 +57,7 @@ def test_emt_flow():
         return relax_job(atoms)
 
     @jf.job
-    def bulk_to_slabs_flow(atoms):
+    def bulk_to_slabs_func(atoms):
         return bulk_to_slabs_flow(atoms, slab_static_electron=None)
 
     # Define the Atoms object
@@ -65,7 +65,7 @@ def test_emt_flow():
 
     # Construct the Flow
     job1 = relax_func(atoms)
-    job2 = bulk_to_slabs_flow(job1.output["atoms"])
+    job2 = bulk_to_slabs_func(job1.output["atoms"])
     workflow = jf.Flow([job1, job2])
 
     # Run the workflow locally
