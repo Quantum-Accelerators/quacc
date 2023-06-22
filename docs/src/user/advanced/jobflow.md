@@ -104,11 +104,7 @@ We have imported the {obj}`.emt.slabs.bulk_to_slabs_flow` function, which is ins
 
 When running a Covalent-based workflow like {obj}`.emt.slabs.bulk_to_slabs_flow` in the previous example, the entire function will run as a single compute task even though it is composed of several individual sub-tasks. If these sub-tasks are compute-intensive, this might not be the most efficient use of resources.
 
-```{seealso}
-For details on how to write your own dynamic workflows in Jobflow, refer to the [corresponding tutorial](https://materialsproject.github.io/jobflow/tutorials/5-dynamic-flows.html) in the Jobflow documentation.
-```
-
-If you wish to construct Jobflow-specific workflows that are mirrors of their Covalent counterparts, this is possible to do in Quacc. Refer to the {obj}`quacc.recipes.emt.jobflow.slabs` module for a representative Jobflow example that can be compared against the Covalent version at {obj}`quacc.recipes.emt.slabs`.
+If you wish to construct Jobflow-specific workflows that are mirrors of their Covalent counterparts, this is possible to do using Quacc. Refer to the {obj}`quacc.recipes.emt.jobflow.slabs` module for a representative Jobflow example that can be compared against the Covalent version at {obj}`quacc.recipes.emt.slabs`.
 
 ## Learn More
 
