@@ -64,12 +64,12 @@ def run_calc(
 
     cwd = os.getcwd()
     scratch_dir = scratch_dir or cwd
-    symlink = os.path.join(cwd, "tmp_dir")
 
     if not os.path.exists(scratch_dir):
         os.makedirs(scratch_dir)
 
     tmpdir = mkdtemp(prefix="quacc-tmp-", dir=scratch_dir)
+    symlink = os.path.join(cwd, f"{os.path.basename(tmpdir)}-symlink")
 
     if os.name != "nt":
         if os.path.islink(symlink):
@@ -174,7 +174,6 @@ def run_ase_opt(
 
     cwd = os.getcwd()
     scratch_dir = scratch_dir or cwd
-    symlink = os.path.join(cwd, "tmp_dir")
     optimizer_kwargs = optimizer_kwargs or {}
     run_kwargs = run_kwargs or {}
 
@@ -199,6 +198,7 @@ def run_ase_opt(
         optimizer_kwargs["internal"] = True
 
     tmpdir = mkdtemp(prefix="quacc-tmp-", dir=scratch_dir)
+    symlink = os.path.join(cwd, f"{os.path.basename(tmpdir)}-symlink")
 
     if os.name != "nt":
         if os.path.islink(symlink):
@@ -273,13 +273,13 @@ def run_ase_vib(
 
     cwd = os.getcwd()
     scratch_dir = scratch_dir or cwd
-    symlink = os.path.join(cwd, "tmp_dir")
     vib_kwargs = vib_kwargs or {}
 
     if not os.path.exists(scratch_dir):
         os.makedirs(scratch_dir)
 
     tmpdir = mkdtemp(prefix="quacc-tmp-", dir=scratch_dir)
+    symlink = os.path.join(cwd, f"{os.path.basename(tmpdir)}-symlink")
 
     if os.name != "nt":
         if os.path.islink(symlink):

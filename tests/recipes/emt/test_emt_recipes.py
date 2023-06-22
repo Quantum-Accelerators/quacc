@@ -89,17 +89,14 @@ def test_relax_Job():
 def test_slab_dynamic_jobs():
     atoms = bulk("Cu")
 
-    with pytest.raises(ValueError):
-        BulkToSlabsFlow(slab_relax_electron=None, slab_static_electron=None).run(atoms)
-
-    outputs = BulkToSlabsFlow(slab_relax_electron=None).run(atoms)
+    outputs = BulkToSlabsFlow(slab_static_electron=None).run(atoms)
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
     assert outputs[1]["nsites"] == 96
     assert outputs[2]["nsites"] == 80
     assert outputs[3]["nsites"] == 64
     assert [output["parameters"]["asap_cutoff"] is False for output in outputs]
-    assert [output["name"] == "EMT Static" for output in outputs]
+    assert [output["name"] == "EMT Relax" for output in outputs]
 
     outputs = BulkToSlabsFlow(
         slab_static_electron=None,
@@ -134,11 +131,7 @@ def test_jf_slab_dynamic_jobs():
 
     atoms = bulk("Cu")
 
-    with pytest.raises(RuntimeError):
-        flow = JFBulkToSlabsFlow(slab_relax_job=None, slab_static_job=None).make(atoms)
-        jf.run_locally(flow, store=store, ensure_success=True)
-
-    flow = JFBulkToSlabsFlow(slab_relax_job=None).make(atoms)
+    flow = JFBulkToSlabsFlow(slab_static_job=None).make(atoms)
     jf.run_locally(flow, store=store, ensure_success=True)
 
     flow = JFBulkToSlabsFlow(
