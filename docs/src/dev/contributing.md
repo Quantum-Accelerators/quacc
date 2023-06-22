@@ -16,21 +16,23 @@ For reproducibility purposes, we strongly recommend installing Quacc in a fresh 
 
 Please abide by the following guidelines when contributing code to Quacc:
 
-1. Ensure that the code remains flexible for the user whenever possible.
+1. All changes should have associated unit tests.
 
-2. All changes should have associated unit tests.
+2. All code should include type hints and have internally consistent documentation for the inputs and outputs.
 
-3. All code should include type hints and have documentation for the inputs and outputs.
+3. The input to most compute jobs should be an ASE `Atoms` object. The output of most compute tasks should be a schema from one of the module/functions within {obj}`quacc.schemas`.
 
-4. The input to most compute jobs should be an ASE `Atoms` object. The output of most compute tasks should be a schema from one of the module/functions within {obj}`quacc.schemas`.
+4. Only define multi-step workflows if they go beyond simply stitching together existing functions. Otherwise, just define the individual functions.
 
-5. Individual compute jobs should be written as functions, and workflows should be written as classes. Refer to {obj}`quacc.recipes.emt.core` and {obj}`quacc.recipes.emt.slabs` for examples.
+5. If you define a new multi-step workflow, you may do so using Covalent or Parsl. It is trivial to convert between the two, so simply use whichever you are most comfortable with.
 
-6. Only define multi-step workflows if they go beyond simply stitching together existing functions.
+6. Ensure that the code remains flexible for the user whenever possible.
 
-7. When possible, you should use the "internal" geometry optimizers for a given code rather than the ASE optimizers.
+7. Where appropriate, you should use the "internal" geometry optimizers for a given code rather than the ASE optimizers.
 
 8. `gzip` large test files to save space.
+
+9. Update the `CHANGELOG.md` file.
 
 ## Changelog
 
@@ -40,7 +42,7 @@ We keep a [`CHANGELOG.md`](https://github.com/quantum-accelerators/quacc/blob/ma
 
 In general, please try to keep the code style consistent when possible. There are two main things to consider:
 
-1. Functions should be lowercase and with underscores. Classes should be in CamelCase and constructed using a {obj}`@dataclass` decorator where possible.
+1. Functions should be lowercase and with underscores. Classes should be in PascalCase and constructed using a {obj}`@dataclass` decorator where possible.
 
 2. All Python code should be formatted with [isort](https://github.com/PyCQA/isort) and then [black](https://github.com/psf/black), although this will be corrected automatically when merged.
 

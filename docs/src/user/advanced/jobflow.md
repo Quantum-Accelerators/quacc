@@ -123,7 +123,7 @@ To address this, you can draw inspiration from the Covalent-based classes to des
 For details on how to write your own dynamic workflows in Jobflow, refer to the [corresponding tutorial](https://materialsproject.github.io/jobflow/tutorials/5-dynamic-flows.html) in the Jobflow documentation.
 ```
 
-If you wish to construct Jobflow-specific workflows that are mirrors of their Covalent counterparts, this is fully supported by Quacc. Refer to the {obj}`quacc.recipes.emt.jobflow.slabs` module for a representative Jobflow example that can be compared against the Covalent version at {obj}`quacc.recipes.emt.slabs`.
+If you wish to construct Jobflow-specific workflows that are mirrors of their Covalent counterparts, this is possible to do in Quacc. Refer to the {obj}`quacc.recipes.emt.jobflow.slabs` module for a representative Jobflow example that can be compared against the Covalent version at {obj}`quacc.recipes.emt.slabs`.
 
 ## Learn More
 

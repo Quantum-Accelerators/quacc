@@ -5,7 +5,6 @@ from ase import Atoms
 from parsl import join_app, python_app
 
 from quacc.recipes.emt.core import relax_job, static_job
-from quacc.util.slabs import make_max_slabs_from_bulk
 
 
 @join_app
@@ -46,6 +45,8 @@ def BulkToSlabsFlow(
     list[dict]
         List of dictionary of results from quacc.schemas.ase.summarize_run or quacc.schemas.ase.summarize_opt_run
     """
+
+    from quacc.util.slabs import make_max_slabs_from_bulk
 
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}
