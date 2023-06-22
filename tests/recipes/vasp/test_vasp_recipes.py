@@ -137,9 +137,6 @@ def test_slab_dynamic_jobs():
 
     ### --------- Test BulkToSlabsFlow --------- ###
 
-    with pytest.raises(ValueError):
-        BulkToSlabsFlow(slab_relax_electron=None, slab_static_electron=None).run(atoms)
-
     outputs = BulkToSlabsFlow(slab_static_electron=None).run(atoms)
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
@@ -170,19 +167,6 @@ def test_slab_dynamic_jobs():
     assert [output["parameters"]["encut"] == 450 for output in outputs]
 
     outputs = BulkToSlabsFlow(
-        slab_relax_electron=None,
-        slab_static_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
-    ).run(atoms)
-    assert len(outputs) == 4
-    assert outputs[0]["nsites"] == 80
-    assert outputs[1]["nsites"] == 96
-    assert outputs[2]["nsites"] == 80
-    assert outputs[3]["nsites"] == 64
-    assert [output["parameters"]["nsw"] == 0 for output in outputs]
-    assert [output["parameters"]["nelmin"] == 6 for output in outputs]
-    assert [output["parameters"]["encut"] == 450 for output in outputs]
-
-    outputs = BulkToSlabsFlow(
         slab_static_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
     ).run(atoms)
     assert len(outputs) == 4
@@ -197,11 +181,6 @@ def test_slab_dynamic_jobs():
     ### --------- Test SlabToAdsorbatesJob --------- ###
     atoms = outputs[0]["atoms"]
     adsorbate = molecule("H2")
-
-    with pytest.raises(ValueError):
-        SlabToAdsFlow(slab_relax_electron=None, slab_static_electron=None).run(
-            atoms, adsorbate
-        )
 
     outputs = SlabToAdsFlow(slab_static_electron=None).run(atoms, adsorbate)
 
@@ -219,16 +198,6 @@ def test_slab_dynamic_jobs():
 
     assert [output["nsites"] == 82 for output in outputs]
     assert [output["parameters"]["isif"] == 2 for output in outputs]
-    assert [output["parameters"]["nelmin"] == 6 for output in outputs]
-    assert [output["parameters"]["encut"] == 450 for output in outputs]
-
-    outputs = SlabToAdsFlow(
-        slab_relax_electron=None,
-        slab_static_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
-    ).run(atoms, adsorbate)
-
-    assert [output["nsites"] == 82 for output in outputs]
-    assert [output["parameters"]["nsw"] == 0 for output in outputs]
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
     assert [output["parameters"]["encut"] == 450 for output in outputs]
 
@@ -323,11 +292,7 @@ def test_jf_slab_dynamic_jobs():
 
     atoms = bulk("Cu")
 
-    with pytest.raises(RuntimeError):
-        flow = JFBulkToSlabsFlow(slab_relax_job=None, slab_static_job=None).make(atoms)
-        jf.run_locally(flow, store=store, ensure_success=True)
-
-    flow = JFBulkToSlabsFlow(slab_relax_job=None).make(atoms)
+    flow = JFBulkToSlabsFlow(slab_static_job=None).make(atoms)
     jf.run_locally(flow, store=store, ensure_success=True)
 
     flow = JFBulkToSlabsFlow(
