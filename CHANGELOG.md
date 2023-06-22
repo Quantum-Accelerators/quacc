@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Started `CHANGELOG.md`.
 
+### Changed
+
+- The `slab_relax_job` kwarg in `recipes.emt.slabs` and `recipes.vasp.slabs` workflows can no longer be set to `None`, as there are few situations where this would be desired.
+
 ## [0.1.0]
 
 See https://github.com/quantum-accelerators/quacc/releases/tag/v0.1.0 for more details.
