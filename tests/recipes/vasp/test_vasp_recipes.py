@@ -4,10 +4,8 @@ from shutil import rmtree
 import jobflow as jf
 import pytest
 from ase.build import bulk, molecule
-from maggma.stores import MemoryStore
 
 from quacc.recipes.vasp.core import double_relax_job, relax_job, static_job
-from quacc.recipes.vasp.jobflow.slabs import BulkToSlabsFlow as JFBulkToSlabsFlow
 from quacc.recipes.vasp.mp import MPRelaxFlow, mp_prerelax_job, mp_relax_job
 from quacc.recipes.vasp.qmof import qmof_relax_job
 from quacc.recipes.vasp.slabs import (
@@ -285,28 +283,6 @@ def test_qmof():
 
     atoms = bulk("Cu") * (8, 8, 8)
     output = qmof_relax_job(atoms)
-
-
-def test_jf_slab_dynamic_jobs():
-    store = jf.JobStore(MemoryStore())
-
-    atoms = bulk("Cu")
-
-    flow = JFBulkToSlabsFlow(slab_static_job=None).make(atoms)
-    jf.run_locally(flow, store=store, ensure_success=True)
-
-    flow = JFBulkToSlabsFlow(
-        slab_static_job=None,
-        slab_relax_kwargs={"calc_swaps": {"nelmin": 6}},
-    ).make(atoms)
-    jf.run_locally(flow, store=store, ensure_success=True)
-
-    flow = JFBulkToSlabsFlow(
-        slab_relax_kwargs={"calc_swaps": {"nelmin": 6}},
-    ).make(atoms, slabgen_kwargs={"max_slabs": 2})
-    responses = jf.run_locally(flow, store=store, ensure_success=True)
-
-    assert len(responses) == 5
 
 
 def test_mp():
