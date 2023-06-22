@@ -24,31 +24,4 @@ Once you start scaling up your calculations, we recommend hosting the Covalent s
 If you are just starting out, try running some test calculations locally first. Then come back and install the relevant Covalent plugins for your machines.
 ```
 
-Depending on where you wish to run your Quacc calculations, you may need to install the corresponding Covalent plugin, as described in the [Covalent plugin documentation](https://docs.covalent.xyz/docs/features/executor-plugins/exe). For production-quality calculations, we anticipate that most users will rely on the `SlurmExecutor`, which can be installed via `pip install covalent-slurm-plugin`. Refer to the [Slurm executor documentation](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/slurm) for instructions on how to configure it for your desired high-performance computing machine.
-
-For submitting jobs to [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/) from your local machine, an example `SlurmExecutor` configuration with support for an [`sshproxy`](https://docs.nersc.gov/connect/mfa/#sshproxy)-based multi-factor authentication certificate might look like the following:
-
-```python
-executor = ct.executor.SlurmExecutor(
-    username="YourUserName",
-    address="perlmutter-p1.nersc.gov",
-    ssh_key_file="~/.ssh/nersc",
-    cert_file="~/.ssh/nersc-cert.pub",
-    remote_workdir="$SCRATCH",
-    conda_env="quacc",
-    options={
-        "nodes": 1,
-        "qos": "debug",
-        "constraint": "cpu",
-        "account": "YourAccountName",
-        "job-name": "quacc",
-        "time": "00:10:00",
-    },
-    prerun_commands=[
-        "export COVALENT_CONFIG_DIR=$SCRATCH",
-        "export OMP_PROC_BIND=spread",
-        "export OMP_PLACES=threads",
-        "export OMP_NUM_THREADS=1",
-    ],
-)
-```
+Depending on where you wish to run your Quacc calculations, you may need to install the corresponding Covalent plugin, as described in the [Covalent plugin documentation](https://docs.covalent.xyz/docs/features/executor-plugins/exe). For production-quality calculations, we anticipate that most users will rely on the `SlurmExecutor`, which can be installed via `pip install covalent-slurm-plugin`.

@@ -10,7 +10,9 @@ Make sure you completed the ["Parsl Setup"](../../install/advanced/parsl.md) sec
 For a more detailed tutorial on how to use Parsl, refer to the [Parsl Tutorial](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html) and the even more detailed [Parsl user guide](https://parsl.readthedocs.io/en/stable/userguide/index.html).
 ```
 
-## Running a Simple Serial Workflow
+## Examples
+
+### Running a Simple Serial Workflow
 
 ```{hint}
 If you haven't loaded your Parsl config, you must do that first so Parsl can construct the job dependency graph. For testing purposes, you simply can run `import parsl` followed by `parsl.load()` before starting the examples below, which will enable jobs to run on your local machine.
@@ -65,7 +67,7 @@ Note the use of `.result()`, which blocks until the result of a `@python_app` is
 
 You can see that it is quite trivial to set up a Parsl workflow using the recipes within Quacc. We define the full workflow as a simple function that stitches together the individual `@python_app` workflow steps.
 
-## Running a Simple Parallel Workflow
+### Running a Simple Parallel Workflow
 
 Now let's consider a similar but nonetheless distinct example. Here, we will define a workflow where we will carry out two EMT structure relaxations, but the two jobs are not dependent on one another. In this example, Parsl will know that it can run the two jobs in parallel, and even if Job 1 were to fail, Job 2 would still progress.
 
@@ -101,7 +103,7 @@ wf_result = workflow(atoms1, atoms2)
 print(wf_result)
 ```
 
-## Running Workflows with Complex Connectivity
+### Running Workflows with Complex Connectivity
 
 For this example, let's consider a toy scenario where we wish to relax a bulk Cu structure, carve all possible slabs, and then run a new relaxation calculation on each slab.
 
@@ -128,6 +130,45 @@ If you are interested in rewriting a Covalent workflow into Parsl, it is often r
 
 Parsl comes with a web dashboard utility to visualize executed workflows. Refer to the [Monitoring and Visualization](https://parsl.readthedocs.io/en/stable/userguide/monitoring.html#visualization) section of the Parsl documentation for details.
 
+## Setting Executors
+
+```{note}
+If you are just starting out, try running some test calculations locally first. Then come back and set up the relevant configuration files for your desired machines.
+```
+
+Out-of-the-box, Parsl will run on your local machine. TODO!!!
+
+### Configuring Executors
+
+To configure Parsl for the high-performance computing environment of your choice, refer to the executor [Configuration](https://parsl.readthedocs.io/en/stable/userguide/configuring.html) page in the Parsl documentation.
+
+For [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/), example `HighThroughputExecutor` configurations can be found in the [NERSC Documentation](https://docs.nersc.gov/jobs/workflow/parsl/). A simple one is reproduced below that allows for job submission from the login node:
+
+```python
+from parsl.config import Config
+from parsl.executors import HighThroughputExecutor
+from parsl.launchers import SimpleLauncher
+from parsl.providers import SlurmProvider
+
+config = Config(
+    executors=[
+        HighThroughputExecutor(
+            label="quacc-test",
+            max_workers=1,
+            provider=SlurmProvider(
+                partition="debug",
+                account="MyAccountName",
+                nodes_per_block=1,
+                scheduler_options="#SBATCH -C cpu",
+                worker_init="source activate quacc",
+                walltime="00:10:00",
+                launcher = SimpleLauncher()
+            ),
+        )
+    ]
+)
+
 ## Learn More
 
 That ends the Parsl section of the documentation. If you want to learn more about Parsl, you can read the [Parsl Documentation](https://parsl.readthedocs.io/en/stable/#). Please refer to the [Parsl Slack Channel](http://parsl-project.org/support.html) for any Parsl-specific questions.
+```

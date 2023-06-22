@@ -10,7 +10,9 @@ Make sure you completed the ["Jobflow Setup"](../../install/advanced/jobflow.md)
 For a more detailed tutorial on how to use Jobflow, refer to the [Jobflow Tutorials](https://materialsproject.github.io/jobflow/tutorials) and [this helpful guide](https://github.com/JaGeo/Advanced_Jobflow_Tutorial) written by Dr. Janine George.
 ```
 
-## Running a Job
+## Examples
+
+### Running a Job
 
 Here, we will try running a simple job where we carry out a static calculation on a bulk Cu structure using EMT. This example is shown below.
 
@@ -39,7 +41,7 @@ The key thing to note is that we need to transform the Quacc recipe, which is a 
 Even though the Quacc recipes are defined as Covalent `Electron` objects via the `@ct.electron` decorator, this decorator will be ignored when using Jobflow.
 ```
 
-## Running a Flow
+### Running a Flow
 
 Here, we will try running a simple workflow where we relax a bulk Cu structure using EMT and take the output of that calculation as the input to a follow-up static calculation with EMT. This example is shown below.
 
@@ -68,7 +70,7 @@ print(result)
 
 Like before, we need to define the individual `Job` objects. Now though, we must stitch them together into a `Flow`, which can be easily achieved by passing them to the `jf.Flow()` constructor. The `Flow` object will automatically determine the order in which the jobs should be run based on the inputs and outputs of each job. In this case, it will know not to run `job2` until `job1` has completed.
 
-## Running a Workflow with Complex Connectivity
+### Running a Workflow with Complex Connectivity
 
 For this example, let's consider a toy scenario where we wish to relax a bulk Cu structure, carve all possible slabs, and then run a new relaxation calculation on each slab.
 
