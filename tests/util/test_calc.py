@@ -105,7 +105,7 @@ def test_run_ase_opt():
     dyn = run_ase_opt(
         atoms, scratch_dir=os.path.abspath("test_calc"), copy_files=["test_file.txt"]
     )
-    traj = read(dyn.trajectory.filename, index=":")
+    traj = dyn.trajectory
     assert traj[-1].calc.results is not None
     assert os.path.exists("test_file.txt")
     assert os.path.exists("test_file.txt.gz")
@@ -125,8 +125,7 @@ def test_run_ase_opt():
         copy_files=["test_file.txt"],
         optimizer_kwargs={"restart": None},
     )
-    assert dyn.trajectory.filename == "opt.traj"
-    traj = read(dyn.trajectory.filename, index=":")
+    traj = dyn.trajectory
     assert traj[-1].calc.results is not None
 
     dyn = run_ase_opt(
@@ -137,8 +136,7 @@ def test_run_ase_opt():
         copy_files=["test_file.txt"],
         optimizer_kwargs={"restart": None, "trajectory": "new_test.traj"},
     )
-    assert dyn.trajectory.filename == "new_test.traj"
-    traj = read(dyn.trajectory.filename, index=":")
+    traj = dyn.trajectory
     assert traj[-1].calc.results is not None
 
     with pytest.raises(ValueError):
@@ -167,7 +165,7 @@ def test_sella():
         copy_files=["test_file.txt"],
         optimizer_kwargs={"restart": None},
     )
-    traj = read(dyn.trajectory.filename, index=":")
+    traj = dyn.trajectory
     assert traj[-1].calc.results is not None
     assert dyn.user_internal is False
 
@@ -181,7 +179,7 @@ def test_sella():
         copy_files=["test_file.txt"],
         optimizer_kwargs={"restart": None},
     )
-    traj = read(dyn.trajectory.filename, index=":")
+    traj = dyn.trajectory
     assert traj[-1].calc.results is not None
     assert dyn.user_internal is True
 

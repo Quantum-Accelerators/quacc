@@ -216,6 +216,9 @@ def run_ase_opt(
     os.chdir(tmpdir)
     dyn.run(fmax=fmax, steps=max_steps)
     os.chdir(cwd)
+
+    # We attach the actual trajectory here. This is
+    # admittedly a bit of a monkeypatch
     dyn.trajectory = read(traj.filename, index=":")
 
     # Gzip files in tmpdir
