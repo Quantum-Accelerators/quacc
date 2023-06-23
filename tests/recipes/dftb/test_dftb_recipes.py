@@ -24,7 +24,7 @@ def teardown_module():
             or f.endswith(".tag")
         ):
             os.remove(f)
-        if "quacc-" in f or f == "tmp_dir":
+        if "quacc-tmp-" in f or f == "tmp_dir":
             if os.path.islink(f):
                 os.unlink(f)
             else:

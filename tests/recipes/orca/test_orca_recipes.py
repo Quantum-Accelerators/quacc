@@ -21,7 +21,7 @@ def teardown_module():
         if os.path.exists(os.path.join(os.getcwd(), f)):
             os.remove(os.path.join(os.getcwd(), f))
     for f in os.listdir(os.getcwd()):
-        if "quacc-" in f or f == "tmp_dir":
+        if "quacc-tmp-" in f or f == "tmp_dir":
             if os.path.islink(f):
                 os.unlink(f)
             else:

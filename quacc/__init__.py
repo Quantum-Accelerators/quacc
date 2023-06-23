@@ -28,3 +28,16 @@ Atoms.from_dict = atoms_from_dict
 SETTINGS = QuaccSettings()
 
 ct_config = ct.get_config()
+
+# Make sure that the create_unique_workdir is set to True for any plugin
+# where this option exists
+for executor in ct_config["executors"]:
+    if (
+        "create_unique_workdir" in ct_config["executors"][executor]
+        and ct_config["executors"][executor]["create_unique_workdir"] is not True
+    ):
+        print(
+            f"Configuring Covalent... Setting executors.{executor}.create_unique_workdir: True"
+        )
+        ct.set_config({f"executors.{executor}.create_unique_workdir": True})
+        ct_config = ct.get_config()

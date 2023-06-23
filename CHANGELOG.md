@@ -10,13 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Added this `CHANGELOG.md` file.
 - Added the `quacc.recipes.emt.parsl` module.
-- Added a `WORK_DIR` variable to the global settings.
 
 ### Changed
 
 - The `slab_relax_job` kwarg in `recipes.emt.slabs` and `recipes.vasp.slabs` workflows can no longer be set to `None`, as there are few situations where this would be desired.
 - Class-based recipes have been converted to functions since they don't save state or have inheritance.
-- Renamed the `quacc-tmp-*` scratch/working directories to `quacc-*` for internal consistency.
 
 ### Docs
 
@@ -25,7 +23,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
-- Fixed a bug where parallel, multithreaded Python jobs could cause file overwriting.
+- Fixed a bug where parallel, multithreaded Python jobs could cause file I/O issues.
 
 ### Removed
 

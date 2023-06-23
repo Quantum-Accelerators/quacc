@@ -23,7 +23,6 @@ from quacc.util.files import copy_decompress
 def run_calc(
     atoms: Atoms,
     geom_file: str | None = None,
-    work_dir: str = SETTINGS.WORK_DIR,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
     copy_files: list[str] | None = None,
@@ -45,8 +44,6 @@ def run_calc(
         to update the atoms object's positions and cell after a job. It is better
         to specify this rather than relying on ASE's atoms.get_potential_energy()
         function to update the positions, as this varies between codes.
-    work_dir
-        Path to the working directory where files will be stored.
     scratch_dir
         Path where a tmpdir should be made for running the calculation. If None,
         the working directory will be used.
@@ -65,16 +62,14 @@ def run_calc(
         raise ValueError("Atoms object must have attached calculator.")
     atoms = copy_atoms(atoms)
 
-    scratch_dir = scratch_dir or work_dir
+    cwd = os.path.abspath(os.getcwd())
+    scratch_dir = scratch_dir or cwd
 
-    for f in {work_dir, scratch_dir}:
-        if not os.path.exists(f):
-            os.makedirs(f)
+    if not os.path.exists(scratch_dir):
+        os.makedirs(scratch_dir)
 
-    tmpdir = mkdtemp(prefix="quacc-", dir=scratch_dir)
-
-    if scratch_dir != work_dir:
-        symlink = os.path.join(work_dir, f"{os.path.basename(tmpdir)}-symlink")
+    tmpdir = mkdtemp(prefix="quacc-tmp-", dir=scratch_dir)
+    symlink = os.path.join(cwd, f"{os.path.basename(tmpdir)}-symlink")
 
     if os.name != "nt":
         if os.path.islink(symlink):
@@ -88,14 +83,14 @@ def run_calc(
     # Run calculation via get_potential_energy()
     os.chdir(tmpdir)
     atoms.get_potential_energy()
-    os.chdir(work_dir)
+    os.chdir(cwd)
 
     # Gzip files in tmpdir
     if gzip:
         gzip_dir(tmpdir)
 
     # Copy files back to run_dir
-    copy_r(tmpdir, os.path.join(work_dir, os.path.basename(tmpdir)))
+    copy_r(tmpdir, os.path.join(cwd, os.path.basename(tmpdir)))
 
     # Most ASE calculators do not update the atoms object in-place with
     # a call to .get_potential_energy(). This section is done to ensure
@@ -132,7 +127,6 @@ def run_ase_opt(
     max_steps: int = 500,
     optimizer: Optimizer = FIRE,
     optimizer_kwargs: dict | None = None,
-    work_dir: str = SETTINGS.WORK_DIR,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
     copy_files: list[str] | None = None,
@@ -157,8 +151,6 @@ def run_ase_opt(
         Optimizer class to use.
     optimizer_kwargs
         Dictionary of kwargs for the optimizer.
-    work_dir
-        Path to the working directory where files will be stored.
     scratch_dir
         Path where a tmpdir should be made for running the calculation. If None,
         the working directory will be used.
@@ -177,17 +169,15 @@ def run_ase_opt(
         raise ValueError("Atoms object must have attached calculator.")
     atoms = copy_atoms(atoms)
 
-    scratch_dir = scratch_dir or work_dir
+    cwd = os.path.abspath(os.getcwd())
+    scratch_dir = scratch_dir or cwd
     optimizer_kwargs = optimizer_kwargs or {}
 
-    for f in {work_dir, scratch_dir}:
-        if not os.path.exists(f):
-            os.makedirs(f)
+    if not os.path.exists(scratch_dir):
+        os.makedirs(scratch_dir)
 
-    tmpdir = mkdtemp(prefix="quacc-", dir=scratch_dir)
-
-    if scratch_dir != work_dir:
-        symlink = os.path.join(work_dir, f"{os.path.basename(tmpdir)}-symlink")
+    tmpdir = mkdtemp(prefix="quacc-tmp-", dir=scratch_dir)
+    symlink = os.path.join(cwd, f"{os.path.basename(tmpdir)}-symlink")
 
     if os.name != "nt":
         if os.path.islink(symlink):
@@ -224,15 +214,15 @@ def run_ase_opt(
     # Run calculation
     os.chdir(tmpdir)
     dyn.run(fmax=fmax, steps=max_steps)
+    os.chdir(cwd)
     dyn.trajectory = read(traj.filename, index=":")
-    os.chdir(work_dir)
 
     # Gzip files in tmpdir
     if gzip:
         gzip_dir(tmpdir)
 
     # Copy files back to run_dir
-    copy_r(tmpdir, os.path.join(work_dir, os.path.basename(tmpdir)))
+    copy_r(tmpdir, os.path.join(cwd, os.path.basename(tmpdir)))
 
     # Remove symlink
     if os.path.islink(symlink):
@@ -244,7 +234,6 @@ def run_ase_opt(
 def run_ase_vib(
     atoms: Atoms,
     vib_kwargs: dict | None = None,
-    work_dir: str = SETTINGS.WORK_DIR,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
     copy_files: list[str] | None = None,
@@ -263,8 +252,6 @@ def run_ase_vib(
         The Atoms object to run the calculation on.
     vib_kwargs
         Dictionary of kwargs for the vibration analysis.
-    work_dir
-        Path to the working directory where files will be stored.
     scratch_dir
         Path where a tmpdir should be made for running the calculation. If None,
         the working directory will be used.
@@ -283,17 +270,15 @@ def run_ase_vib(
         raise ValueError("Atoms object must have attached calculator.")
     atoms = copy_atoms(atoms)
 
-    scratch_dir = scratch_dir or work_dir
+    cwd = os.path.abspath(os.getcwd())
+    scratch_dir = scratch_dir or cwd
     vib_kwargs = vib_kwargs or {}
 
-    for f in {work_dir, scratch_dir}:
-        if not os.path.exists(f):
-            os.makedirs(f)
+    if not os.path.exists(scratch_dir):
+        os.makedirs(scratch_dir)
 
-    tmpdir = mkdtemp(prefix="quacc-", dir=scratch_dir)
-
-    if scratch_dir != work_dir:
-        symlink = os.path.join(work_dir, f"{os.path.basename(tmpdir)}-symlink")
+    tmpdir = mkdtemp(prefix="quacc-tmp-", dir=scratch_dir)
+    symlink = os.path.join(cwd, f"{os.path.basename(tmpdir)}-symlink")
 
     if os.name != "nt":
         if os.path.islink(symlink):
@@ -310,14 +295,14 @@ def run_ase_vib(
     os.chdir(tmpdir)
     vib.run()
     vib.summary(log=os.path.join(tmpdir, "vib_summary.log"))
-    os.chdir(work_dir)
+    os.chdir(cwd)
 
     # Gzip files in tmpdir
     if gzip:
         gzip_dir(tmpdir)
 
     # Copy files back to run_dir
-    copy_r(tmpdir, os.path.join(work_dir, os.path.basename(tmpdir)))
+    copy_r(tmpdir, os.path.join(cwd, os.path.basename(tmpdir)))
 
     # Remove symlink
     if os.path.islink(symlink):

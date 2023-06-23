@@ -32,10 +32,6 @@ class QuaccSettings(BaseSettings):
     CONFIG_FILE: str = Field(
         _DEFAULT_CONFIG_FILE_PATH, description="File to load alternative defaults from."
     )
-    WORK_DIR: str = Field(
-        os.path.abspath(os.getcwd()),
-        description="Working directory.",
-    )
     SCRATCH_DIR: str = Field(
         os.path.expandvars("$SCRATCH")
         if "SCRATCH" in os.environ
