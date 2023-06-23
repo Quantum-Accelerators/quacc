@@ -24,8 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
-- Fixed a bug where symbolic links could be overwritten when parallel jobs are launched.
-- Fixed a bug where multithreaded, parallel Python jobs would overwrite each other if run at the same time.
+- Fixed a bug where parallel, multithreaded Python jobs could cause file overwriting.
 
 ### Removed
 
