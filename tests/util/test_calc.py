@@ -34,6 +34,7 @@ def setup_module():
 
 def teardown_module():
     # Clean up
+    os.chdir(CWD)
     for f in os.listdir("."):
         if ".log" in f or ".pckl" in f or ".traj" in f:
             os.remove(f)
