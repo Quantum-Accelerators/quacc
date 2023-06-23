@@ -247,6 +247,7 @@ def summarize_opt_run(
     if check_convergence and not is_converged:
         raise ValueError("Optimization did not converge.")
 
+    # Get trajectory
     if isinstance(dyn.trajectory, list):
         traj = dyn.trajectory
     elif os.path.exists(dyn.trajectory.filename):

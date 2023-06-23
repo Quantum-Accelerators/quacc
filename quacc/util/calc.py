@@ -62,7 +62,7 @@ def run_calc(
         raise ValueError("Atoms object must have attached calculator.")
     atoms = copy_atoms(atoms)
 
-    cwd = os.path.abspath(os.getcwd())
+    cwd = os.getcwd()
     scratch_dir = scratch_dir or cwd
 
     if not os.path.exists(scratch_dir):
@@ -90,7 +90,7 @@ def run_calc(
         gzip_dir(tmpdir)
 
     # Copy files back to run_dir
-    copy_r(tmpdir, os.path.join(cwd, os.path.basename(tmpdir)))
+    copy_r(tmpdir, cwd)
 
     # Most ASE calculators do not update the atoms object in-place with
     # a call to .get_potential_energy(). This section is done to ensure
@@ -169,7 +169,7 @@ def run_ase_opt(
         raise ValueError("Atoms object must have attached calculator.")
     atoms = copy_atoms(atoms)
 
-    cwd = os.path.abspath(os.getcwd())
+    cwd = os.getcwd()
     scratch_dir = scratch_dir or cwd
     optimizer_kwargs = optimizer_kwargs or {}
 
@@ -196,6 +196,7 @@ def run_ase_opt(
     ):
         optimizer_kwargs["internal"] = True
 
+    # Set up trajectory
     if "trajectory" in optimizer_kwargs:
         if isinstance(optimizer_kwargs["trajectory"], str):
             traj = Trajectory(
@@ -222,7 +223,7 @@ def run_ase_opt(
         gzip_dir(tmpdir)
 
     # Copy files back to run_dir
-    copy_r(tmpdir, os.path.join(cwd, os.path.basename(tmpdir)))
+    copy_r(tmpdir, cwd)
 
     # Remove symlink
     if os.path.islink(symlink):
@@ -270,7 +271,7 @@ def run_ase_vib(
         raise ValueError("Atoms object must have attached calculator.")
     atoms = copy_atoms(atoms)
 
-    cwd = os.path.abspath(os.getcwd())
+    cwd = os.getcwd()
     scratch_dir = scratch_dir or cwd
     vib_kwargs = vib_kwargs or {}
 
@@ -290,9 +291,8 @@ def run_ase_vib(
         copy_decompress(copy_files, tmpdir)
 
     # Run calculation
-    vib = Vibrations(atoms, **vib_kwargs)
-
     os.chdir(tmpdir)
+    vib = Vibrations(atoms, **vib_kwargs)
     vib.run()
     vib.summary(log=os.path.join(tmpdir, "vib_summary.log"))
     os.chdir(cwd)
@@ -302,7 +302,7 @@ def run_ase_vib(
         gzip_dir(tmpdir)
 
     # Copy files back to run_dir
-    copy_r(tmpdir, os.path.join(cwd, os.path.basename(tmpdir)))
+    copy_r(tmpdir, cwd)
 
     # Remove symlink
     if os.path.islink(symlink):
