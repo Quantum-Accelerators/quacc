@@ -45,9 +45,6 @@ def test_tutorial1():
         job, store=STORE, create_folders=True, ensure_success=True
     )
 
-    # Get the result
-    responses[job.uuid][1].output
-
 
 def test_tutorial2():
     # Make an Atoms object of a bulk Cu structure
@@ -63,9 +60,6 @@ def test_tutorial2():
     # Run the workflow locally
     responses = jf.run_locally(workflow, store=STORE, create_folders=True)
 
-    # Get the result
-    responses[job2.uuid][1].output
-
 
 def test_tutorial3():
     # Define the Atoms object
@@ -78,9 +72,6 @@ def test_tutorial3():
 
     # Run the workflow locally
     responses = jf.run_locally(workflow, store=STORE, create_folders=True)
-
-    # Get the result
-    responses[job2.uuid][1].output
 
 
 def test_emt_flow():
