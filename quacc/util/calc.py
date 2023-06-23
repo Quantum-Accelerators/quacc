@@ -199,9 +199,7 @@ def run_ase_opt(
     # Set up trajectory
     if "trajectory" in optimizer_kwargs:
         if isinstance(optimizer_kwargs["trajectory"], str):
-            traj = Trajectory(
-                os.path.abspath(optimizer_kwargs["trajectory"]), "w", atoms=atoms
-            )
+            traj = Trajectory(optimizer_kwargs["trajectory"], "w", atoms=atoms)
         else:
             traj = optimizer_kwargs["trajectory"]
     else:
@@ -218,8 +216,8 @@ def run_ase_opt(
     os.chdir(cwd)
 
     # We attach the actual trajectory here. This is
-    # admittedly a bit of a monkeypatch
-    dyn.trajectory = read(traj.filename, index=":")
+    # admittedly a bit of a monkeypatch...
+    dyn.traj = read(traj.filename, index=":")
 
     # Gzip files in tmpdir
     if gzip:

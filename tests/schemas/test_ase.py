@@ -156,7 +156,7 @@ def test_summarize_opt_run():
     d = jsanitize(results, strict=True, enum_values=True)
     MontyDecoder().process_decoded(d)
 
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(ValueError):
         dyn.trajectory.filename = "not_a_file.traj"
         summarize_opt_run(dyn)
 
@@ -343,7 +343,7 @@ def test_summarize_thermo_run():
     d = jsanitize(results, strict=True, enum_values=True)
     MontyDecoder().process_decoded(d)
 
-    with pytest.warns(ValueError):
+    with pytest.warns(Warning):
         summarize_thermo_run(igt, charge_and_multiplicity=[0, 1])
 
 

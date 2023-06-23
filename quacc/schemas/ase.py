@@ -7,7 +7,8 @@ import os
 import warnings
 
 import numpy as np
-from ase import Atoms, units
+from ase import units
+from ase.atoms import Atoms
 from ase.constraints import Filter
 from ase.io import read
 from ase.optimize.optimize import Optimizer
@@ -248,8 +249,8 @@ def summarize_opt_run(
         raise ValueError("Optimization did not converge.")
 
     # Get trajectory
-    if isinstance(dyn.trajectory, list):
-        traj = dyn.trajectory
+    if hasattr(dyn, "traj"):
+        traj = dyn.traj
     elif os.path.exists(dyn.trajectory.filename):
         traj = read(dyn.trajectory.filename, index=":")
     else:
