@@ -39,7 +39,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install --no-cache-dir .[strict,dev,fireworks,optimizers] # remove --no-cache-dir after repos are removed from setup.py
+          pip install --no-cache-dir .[strict,dev,fireworks,optimizers,parsl] # remove --no-cache-dir after repos are removed from setup.py
           pip install covalent-slurm-plugin
 
       - name: Set up Covalent server
