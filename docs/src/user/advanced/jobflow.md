@@ -28,7 +28,7 @@ atoms = bulk("Cu")
 job = jf.job(static_job)(atoms)
 
 # Run the job locally
-responses = jf.run_locally(job, create_folders=True)
+responses = jf.run_locally(job)
 
 # Get the result
 result = responses[job.uuid][1].output
@@ -61,7 +61,7 @@ job2 = jf.job(static_job)(job1.output["atoms"])
 workflow = jf.Flow([job1, job2])
 
 # Run the workflow locally
-responses = jf.run_locally(workflow, create_folders=True)
+responses = jf.run_locally(workflow)
 
 # Get the result
 result = responses[job2.uuid][1].output
@@ -91,7 +91,7 @@ job2 = jf.job(bulk_to_slabs_flow)(job1.output["atoms"])
 workflow = jf.Flow([job1, job2])
 
 # Run the workflow locally
-responses = jf.run_locally(workflow, create_folders=True)
+responses = jf.run_locally(workflow)
 
 # Get the result
 result = responses[job2.uuid][1].output
