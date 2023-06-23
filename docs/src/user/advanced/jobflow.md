@@ -74,7 +74,7 @@ Like before, we need to define the individual `Job` objects. Now though, we must
 
 For this example, let's consider a toy scenario where we wish to relax a bulk Cu structure, carve all possible slabs, and then run a new relaxation calculation on each slab.
 
-In Quacc, there are two types of recipes: 1) individual compute tasks with the suffix `_job`; pre-made multi-step workflows with the suffix `_flow`. Here, we are interested in importing a pre-made workflow. Refer to the example below:
+In Quacc, there are two types of recipes: 1) individual compute tasks with the suffix `_job`; 2) pre-made multi-step workflows with the suffix `_flow`. Here, we are interested in importing a pre-made workflow. Refer to the example below:
 
 ```python
 import jobflow as jf

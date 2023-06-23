@@ -104,25 +104,25 @@ atoms2 = molecule("N2")
 
 # Run the workflow
 future1, future2 = workflow(atoms1, atoms2)
-print(wf_result["result1"].result(), wf_result["result2"].result())
+print(future1.result(), future2.result())
 ```
 
 ### Running Workflows with Complex Connectivity
 
 For this example, let's consider a toy scenario where we wish to relax a bulk Cu structure, carve all possible slabs, and then run a new relaxation calculation on each slab.
 
-In Quacc, there are two types of recipes: 1) individual compute tasks with the suffix `_job`; pre-made multi-step workflows with the suffix `_flow`. Here, we are interested in importing a pre-made workflow. Refer to the example below:
+In Quacc, there are two types of recipes: 1) individual compute tasks with the suffix `_job`; 2) pre-made multi-step workflows with the suffix `_flow`. Here, we are interested in importing a pre-made workflow. Refer to the example below:
 
 ```python
 from ase.build import bulk
 from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_flow
 
-wf_result = bulk_to_slabs_flow(bulk("Cu"), slab_static_app=None)
-print(wf_result)
+wf_future = bulk_to_slabs_flow(bulk("Cu"), slab_static_app=None)
+print(wf_future.result())
 ```
 
 ```{note}
-We have called `.result()` here because `bulk_to_slabs_flow` is a `@join_app` (similar to a `@python_app` for dynamic workflow steps) that returns an `AppFuture`.
+We have called `.result()` here because `bulk_to_slabs_flow` is a `@join_app` (similar to a `@python_app` for dynamic workflow steps) that itself returns an `AppFuture`.
 ```
 
 We have imported the {obj}`.emt.slabs.parsl.bulk_to_slabs_flow` class, which is supplied an `Atoms` object. Here, for demonstration purposes, we specify the `slab_static_app=None` option to do a relaxation but disable the static calculation on each slab.

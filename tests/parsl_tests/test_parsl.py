@@ -56,7 +56,6 @@ def test_tutorial1():
 
         # Call Job 2, which takes the output of Job 1 as input
         future2 = static_app(future1.result()["atoms"])
-        future2.result()
 
         return future2
 
@@ -64,8 +63,9 @@ def test_tutorial1():
     atoms = bulk("Cu")
 
     # Run the workflow
-    wf_result = workflow(atoms)
-    assert wf_result.done()
+    wf_future = workflow(atoms)
+    wf_future.result()
+    assert wf_future.done()
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
@@ -84,20 +84,24 @@ def test_tutorial2():
         future1 = relax_app(atoms1)
         future2 = relax_app(atoms2)
 
-        return {"result1": future1.result(), "result2": future2.result()}
+        return future1, future2
 
     # Define two Atoms objects
     atoms1 = bulk("Cu")
     atoms2 = molecule("N2")
 
     # Run the workflow
-    wf_result = workflow(atoms1, atoms2)
-    assert wf_result.done()
+    future1, future2 = workflow(atoms1, atoms2)
+    future1.result()
+    future2.result()
+    assert future1.done()
+    assert future2.done()
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
 def test_tutorial3():
     from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_flow
 
-    wf_result = bulk_to_slabs_flow(bulk("Cu"), slab_static_app=None)
-    assert wf_result.done()
+    wf_future = bulk_to_slabs_flow(bulk("Cu"), slab_static_app=None)
+    wf_future.result()
+    assert wf_future.done()
