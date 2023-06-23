@@ -251,9 +251,9 @@ def summarize_opt_run(
         traj = dyn.trajectory
     elif os.path.exists(dyn.trajectory.filename):
         traj = read(dyn.trajectory.filename, index=":")
-
     else:
         raise FileNotFoundError("No trajectory file found.")
+
     initial_atoms = traj[0]
     final_atoms = dyn.atoms.atoms if isinstance(dyn.atoms, Filter) else dyn.atoms
 

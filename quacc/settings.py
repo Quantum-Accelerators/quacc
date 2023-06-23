@@ -33,9 +33,7 @@ class QuaccSettings(BaseSettings):
         _DEFAULT_CONFIG_FILE_PATH, description="File to load alternative defaults from."
     )
     WORK_DIR: str = Field(
-        os.path.expanvars("$WORK")
-        if "WORK" in os.environ
-        else os.path.expanduser("~/quacc"),
+        os.path.abspath(os.getcwd()),
         description="Working directory.",
     )
     SCRATCH_DIR: str = Field(

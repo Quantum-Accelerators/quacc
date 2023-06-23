@@ -8,8 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- Added `CHANGELOG.md`.
+- Added this `CHANGELOG.md` file.
 - Added the `quacc.recipes.emt.parsl` module.
+- Added a `WORK_DIR` variable to the global settings.
 
 ### Changed
 
@@ -24,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 - Fixed a bug where symbolic links could be overwritten when parallel jobs are launched.
+- Fixed a bug where multithreaded, parallel Python jobs would overwrite each other if run at the same time.
 
 ### Removed
 

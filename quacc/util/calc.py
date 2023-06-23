@@ -92,10 +92,6 @@ def run_calc(
     if gzip:
         gzip_dir(tmpdir)
 
-    # Remove symlink
-    if os.path.islink(symlink):
-        os.remove(symlink)
-
     # Copy files back to run_dir
     copy_r(tmpdir, os.path.join(work_dir, os.path.basename(tmpdir)))
 
@@ -120,6 +116,10 @@ def run_calc(
 
         atoms.positions = atoms_new.positions
         atoms.cell = atoms_new.cell
+
+    # Remove symlink
+    if os.path.islink(symlink):
+        os.remove(symlink)
 
     return atoms
 
@@ -227,12 +227,12 @@ def run_ase_opt(
     if gzip:
         gzip_dir(tmpdir)
 
+    # Copy files back to run_dir
+    copy_r(tmpdir, os.path.join(work_dir, os.path.basename(tmpdir)))
+
     # Remove symlink
     if os.path.islink(symlink):
         os.remove(symlink)
-
-    # Copy files back to run_dir
-    copy_r(tmpdir, os.path.join(work_dir, os.path.basename(tmpdir)))
 
     return dyn
 
@@ -309,11 +309,11 @@ def run_ase_vib(
     if gzip:
         gzip_dir(tmpdir)
 
+    # Copy files back to run_dir
+    copy_r(tmpdir, os.path.join(work_dir, os.path.basename(tmpdir)))
+
     # Remove symlink
     if os.path.islink(symlink):
         os.remove(symlink)
-
-    # Copy files back to run_dir
-    copy_r(tmpdir, os.path.join(work_dir, os.path.basename(tmpdir)))
 
     return vib
