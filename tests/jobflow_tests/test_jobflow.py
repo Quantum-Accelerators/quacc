@@ -41,9 +41,7 @@ def test_tutorial1():
     job = jf.job(static_job)(atoms)
 
     # Run the job locally
-    responses = jf.run_locally(
-        job, store=STORE, create_folders=True, ensure_success=True
-    )
+    jf.run_locally(job, store=STORE, create_folders=True, ensure_success=True)
 
 
 def test_tutorial2():
@@ -58,7 +56,7 @@ def test_tutorial2():
     workflow = jf.Flow([job1, job2])
 
     # Run the workflow locally
-    responses = jf.run_locally(workflow, store=STORE, create_folders=True)
+    jf.run_locally(workflow, store=STORE, create_folders=True)
 
 
 def test_tutorial3():
@@ -71,7 +69,7 @@ def test_tutorial3():
     workflow = jf.Flow([job1, job2])
 
     # Run the workflow locally
-    responses = jf.run_locally(workflow, store=STORE, create_folders=True)
+    jf.run_locally(workflow, store=STORE, create_folders=True)
 
 
 def test_emt_flow():
