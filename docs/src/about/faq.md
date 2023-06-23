@@ -1,5 +1,9 @@
 # FAQ
 
+**Q: Why is Quacc better than [MyFavoriteWorkflowPage]?**
+
+A: Better is all in the eye of the beholder. If you are happy with the tools you are using, why switch? However, if you find that writing high-throughput computational workflows has a huge learning curve, requires you to rewrite your in-house functions, or simply takes too much time away from your science, then Quacc may be for you.
+
 **Q: Which workflow manager should I use?**
 
 A: Since there is no single best answer for everyone's needs, we designed Quacc such that it can support a variety of options.
