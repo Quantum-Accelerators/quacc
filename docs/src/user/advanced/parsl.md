@@ -110,9 +110,10 @@ For this example, let's consider a toy scenario where we wish to relax a bulk Cu
 In Quacc, there are two types of recipes: 1) individual compute tasks with the suffix `_job`; pre-made multi-step workflows with the suffix `_flow`. Here, we are interested in importing a pre-made workflow. Refer to the example below:
 
 ```python
+from ase.build import bulk
 from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_flow
 
-wf_result = bulk_to_slabs_flow(bulk("Cu"), slab_static_app=None).result()
+wf_result = bulk_to_slabs_flow(bulk("Cu"), slab_static_app=None)
 print(wf_result)
 ```
 
