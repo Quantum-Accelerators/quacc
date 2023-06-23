@@ -292,7 +292,8 @@ def run_ase_vib(
 
     tmpdir = mkdtemp(prefix="quacc-", dir=scratch_dir)
 
-    symlink = os.path.join(work_dir, f"{os.path.basename(tmpdir)}-symlink")
+    if scratch_dir != work_dir:
+        symlink = os.path.join(work_dir, f"{os.path.basename(tmpdir)}-symlink")
 
     if os.name != "nt":
         if os.path.islink(symlink):
