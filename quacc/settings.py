@@ -8,7 +8,7 @@ from pydantic import BaseSettings, Field, root_validator
 
 from quacc.presets import vasp as vasp_defaults
 
-_DEFAULT_CONFIG_FILE_PATH = "~/.quacc.yaml"
+_DEFAULT_CONFIG_FILE_PATH = os.path.expanduser("~/.quacc.yaml")
 
 __all__ = ["QuaccSettings"]
 
@@ -32,7 +32,12 @@ class QuaccSettings(BaseSettings):
     CONFIG_FILE: str = Field(
         _DEFAULT_CONFIG_FILE_PATH, description="File to load alternative defaults from."
     )
-    WORK_DIR: str = Field(os.getcwd(), description="Working directory.")
+    WORK_DIR: str = Field(
+        os.path.expanvars("$WORK")
+        if "WORK" in os.environ
+        else os.path.expanduser("~/quacc"),
+        description="Working directory.",
+    )
     SCRATCH_DIR: str = Field(
         os.path.expandvars("$SCRATCH")
         if "SCRATCH" in os.environ

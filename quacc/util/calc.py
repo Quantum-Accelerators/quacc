@@ -65,8 +65,9 @@ def run_calc(
 
     scratch_dir = scratch_dir or work_dir
 
-    if not os.path.exists(scratch_dir):
-        os.makedirs(scratch_dir)
+    for f in {work_dir, scratch_dir}:
+        if not os.path.exists(f):
+            os.makedirs(f)
 
     tmpdir = mkdtemp(prefix="quacc-", dir=scratch_dir)
 
@@ -175,8 +176,9 @@ def run_ase_opt(
     scratch_dir = scratch_dir or work_dir
     optimizer_kwargs = optimizer_kwargs or {}
 
-    if not os.path.exists(scratch_dir):
-        os.makedirs(scratch_dir)
+    for f in {work_dir, scratch_dir}:
+        if not os.path.exists(f):
+            os.makedirs(f)
 
     tmpdir = mkdtemp(prefix="quacc-", dir=scratch_dir)
 
@@ -202,11 +204,13 @@ def run_ase_opt(
 
     if "trajectory" in optimizer_kwargs:
         if isinstance(optimizer_kwargs["trajectory"], str):
-            traj = Trajectory(optimizer_kwargs["trajectory"], "w", atoms=atoms)
+            traj = Trajectory(
+                os.path.abspath(optimizer_kwargs["trajectory"]), "w", atoms=atoms
+            )
         else:
             traj = optimizer_kwargs["trajectory"]
     else:
-        traj = Trajectory("opt.traj", "w", atoms=atoms)
+        traj = Trajectory(os.path.join(tmpdir, "opt.traj"), "w", atoms=atoms)
     optimizer_kwargs["trajectory"] = traj
 
     # Define optimizer class
@@ -216,6 +220,7 @@ def run_ase_opt(
     # Run calculation
     os.chdir(tmpdir)
     dyn.run(fmax=fmax, steps=max_steps)
+    dyn.trajectory = read(traj.filename, index=":")
     os.chdir(work_dir)
 
     # Gzip files in tmpdir
@@ -275,8 +280,9 @@ def run_ase_vib(
     scratch_dir = scratch_dir or work_dir
     vib_kwargs = vib_kwargs or {}
 
-    if not os.path.exists(scratch_dir):
-        os.makedirs(scratch_dir)
+    for f in {work_dir, scratch_dir}:
+        if not os.path.exists(f):
+            os.makedirs(f)
 
     tmpdir = mkdtemp(prefix="quacc-", dir=scratch_dir)
 
@@ -296,9 +302,8 @@ def run_ase_vib(
 
     os.chdir(tmpdir)
     vib.run()
+    vib.summary(log=os.path.join(tmpdir, "vib_summary.log"))
     os.chdir(work_dir)
-
-    vib.summary(log="vib_summary.log")
 
     # Gzip files in tmpdir
     if gzip:
