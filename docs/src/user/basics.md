@@ -36,7 +36,7 @@ You can make an `Atoms` object from common files like a CIF, XYZ, or POSCAR by u
 
 With the `Atoms` object defined, we then imported a desired recipe and instantiated it. In this case, since we want to use EMT, we can look in {obj}`quacc.recipes.emt` to see all the available recipes. We are interested in doing a structure relaxation, so we imported the {obj}`.emt.core.relax_job` recipe. We then instantiated and ran the recipe by passing in the `Atoms` object we defined earlier.
 
-The recipe output (`result`) is a bit too large to print here; nonetheless, for context, it is a dictionary that has the following primary keys:
+The recipe output (`result`) is a bit too large to print here; nonetheless, for context, it is a dictionary that has the following primary keys. The `atoms` key contains a copy of the output `Atoms` object, the `results` key contains a dictionary of the results of the calculation, and the `parameters` key contains a dictionary of the parameters used in the calculation.
 
 `>>> ['atoms', 'atoms_info', 'builder_meta', 'chemsys', 'composition', 'composition_reduced', 'density', 'density_atomic', 'dir_name', 'elements', 'formula_anonymous', 'formula_pretty', 'input_structure', 'name', 'nelements', 'nid', 'nsites', 'parameters', 'parameters_opt', 'results', 'structure', 'symmetry', 'trajectory', 'trajectory_results', 'volume']`
 

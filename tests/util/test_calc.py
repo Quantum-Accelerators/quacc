@@ -52,7 +52,7 @@ def test_run_calc():
 
     new_atoms = run_calc(
         atoms,
-        scratch_dir=os.path.abspath("test_calc"),
+        scratch_dir="test_calc",
         gzip=False,
         copy_files=["test_file.txt"],
     )
@@ -64,7 +64,7 @@ def test_run_calc():
 
     new_atoms = run_calc(
         atoms,
-        scratch_dir=os.path.abspath("test_calc"),
+        scratch_dir="test_calc",
         gzip=False,
         copy_files=["test_file.txt"],
     )
@@ -80,7 +80,7 @@ def test_run_calc():
 
     new_atoms = run_calc(
         atoms,
-        scratch_dir=os.path.abspath("new_test_calc"),
+        scratch_dir="new_test_calc",
         gzip=False,
         copy_files=["test_file.txt"],
     )
@@ -90,7 +90,7 @@ def test_run_calc():
     with pytest.raises(ValueError):
         run_calc(
             atoms,
-            scratch_dir=os.path.abspath("test_calc"),
+            scratch_dir="test_calc",
             gzip=False,
             copy_files=["test_file.txt"],
         )
@@ -101,9 +101,7 @@ def test_run_ase_opt():
     atoms[0].position += 0.1
     atoms.calc = EMT()
 
-    dyn = run_ase_opt(
-        atoms, scratch_dir=os.path.abspath("test_calc"), copy_files=["test_file.txt"]
-    )
+    dyn = run_ase_opt(atoms, scratch_dir="test_calc", copy_files=["test_file.txt"])
     traj = dyn.traj
     assert traj[-1].calc.results is not None
     assert os.path.exists("test_file.txt")
@@ -119,7 +117,7 @@ def test_run_ase_opt():
     dyn = run_ase_opt(
         atoms,
         optimizer=BFGS,
-        scratch_dir=os.path.abspath("new_test_calc2"),
+        scratch_dir="new_test_calc2",
         gzip=False,
         copy_files=["test_file.txt"],
         optimizer_kwargs={"restart": None},
@@ -130,7 +128,7 @@ def test_run_ase_opt():
     dyn = run_ase_opt(
         traj[-1],
         optimizer=BFGSLineSearch,
-        scratch_dir=os.path.abspath("test_calc"),
+        scratch_dir="test_calc",
         gzip=False,
         copy_files=["test_file.txt"],
         optimizer_kwargs={"restart": None, "trajectory": "new_test.traj"},
@@ -141,7 +139,7 @@ def test_run_ase_opt():
     with pytest.raises(ValueError):
         run_ase_opt(
             bulk("Cu"),
-            scratch_dir=os.path.abspath("test_calc"),
+            scratch_dir="test_calc",
             copy_files=["test_file.txt"],
         )
 
@@ -159,7 +157,7 @@ def test_sella():
     dyn = run_ase_opt(
         atoms,
         optimizer=Sella,
-        scratch_dir=os.path.abspath("test_calc"),
+        scratch_dir="test_calc",
         gzip=False,
         copy_files=["test_file.txt"],
         optimizer_kwargs={"restart": None},
@@ -173,7 +171,7 @@ def test_sella():
     dyn = run_ase_opt(
         atoms,
         optimizer=Sella,
-        scratch_dir=os.path.abspath("test_calc2"),
+        scratch_dir="test_calc2",
         gzip=False,
         copy_files=["test_file.txt"],
         optimizer_kwargs={"restart": None},
@@ -186,9 +184,7 @@ def test_sella():
 def test_run_ase_vib():
     o2 = molecule("O2")
     o2.calc = LennardJones()
-    vib = run_ase_vib(
-        o2, scratch_dir=os.path.abspath("test_calc_vib"), copy_files=["test_file.txt"]
-    )
+    vib = run_ase_vib(o2, scratch_dir="test_calc_vib", copy_files=["test_file.txt"])
     assert np.real(vib.get_frequencies()[-1]) == pytest.approx(255.6863883406967)
     assert np.array_equal(vib.atoms.get_positions(), o2.get_positions()) is True
     assert os.path.exists("test_file.txt")

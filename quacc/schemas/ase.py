@@ -251,10 +251,14 @@ def summarize_opt_run(
     # Get trajectory
     if hasattr(dyn, "traj"):
         traj = dyn.traj
-    elif os.path.exists(dyn.trajectory.filename):
+    elif (
+        hasattr(dyn, "trajectory")
+        and hasattr(dyn.trajectory, "filename")
+        and os.path.exists(dyn.trajectory.filename)
+    ):
         traj = read(dyn.trajectory.filename, index=":")
     else:
-        raise ValueError("No trajectory found.")
+        raise FileNotFoundError("No trajectory found.")
 
     initial_atoms = traj[0]
     final_atoms = dyn.atoms.atoms if isinstance(dyn.atoms, Filter) else dyn.atoms

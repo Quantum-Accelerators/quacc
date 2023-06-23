@@ -24,7 +24,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 - Fixed a bug where parallel, multithreaded Python jobs could cause file I/O issues.
-- Fixed a bug where the `scratch_dir` kwarg in the `run_calc`-type functions was a relative path instead of absolute.
 
 ### Removed
 

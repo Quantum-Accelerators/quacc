@@ -1,8 +1,8 @@
 # FAQ
 
-**Q: Why is Quacc better than [MyFavoriteWorkflowPage]?**
+**Q: Why is Quacc better than `InsertMyFavoriteCode`?**
 
-A: Better is all in the eye of the beholder. If you are happy with the tools you are using, why switch? However, if you find that writing high-throughput computational workflows has a huge learning curve, requires you to rewrite your in-house functions, or simply takes too much time away from your science, then Quacc may be for you.
+A: Better is all in the eye of the beholder. If you are happy with the tools you are using, my goal is not to convince you to switch. That said, if you find that writing high-throughput computational workflows has a huge learning curve or simply takes too much time away from your science, then Quacc may be for you.
 
 **Q: Which workflow manager should I use?**
 

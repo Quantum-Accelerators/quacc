@@ -197,13 +197,17 @@ def run_ase_opt(
         optimizer_kwargs["internal"] = True
 
     # Set up trajectory
+    # TODO: Clean this messy logic up
     if "trajectory" in optimizer_kwargs:
         if isinstance(optimizer_kwargs["trajectory"], str):
-            traj = Trajectory(optimizer_kwargs["trajectory"], "w", atoms=atoms)
+            traj_filepath = optimizer_kwargs["trajectory"]
+            traj = Trajectory(traj_filepath, "w", atoms=atoms)
         else:
             traj = optimizer_kwargs["trajectory"]
+            traj_filepath = traj.filename
     else:
-        traj = Trajectory(os.path.join(tmpdir, "opt.traj"), "w", atoms=atoms)
+        traj_filepath = os.path.join(tmpdir, "opt.traj")
+        traj = Trajectory(traj_filepath, "w", atoms=atoms)
     optimizer_kwargs["trajectory"] = traj
 
     # Define optimizer class
@@ -217,7 +221,7 @@ def run_ase_opt(
 
     # We attach the actual trajectory here. This is
     # admittedly a bit of a monkeypatch...
-    dyn.traj = read(traj.filename, index=":")
+    dyn.traj = read(traj_filepath, index=":")
 
     # Gzip files in tmpdir
     if gzip:

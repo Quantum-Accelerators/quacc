@@ -141,7 +141,11 @@ Parsl comes with a web dashboard utility to visualize executed workflows. Refer 
 If you are just starting out, try running some test calculations locally first. Then come back and set up the relevant configuration files for your desired machines.
 ```
 
-Out-of-the-box, Parsl will run on your local machine. TODO!!!
+Out-of-the-box, Parsl will run on your local machine.
+
+```{todo}
+This section on how to dynamically set executor options is still a work in progress.
+```
 
 ### Configuring Executors
 
@@ -172,8 +176,12 @@ config = Config(
         )
     ]
 )
+```
+
+```{todo}
+This example still needs to be tested and will likely need to be updated slightly.
+```
 
 ## Learn More
 
 That ends the Parsl section of the documentation. If you want to learn more about Parsl, you can read the [Parsl Documentation](https://parsl.readthedocs.io/en/stable/#). Please refer to the [Parsl Slack Channel](http://parsl-project.org/support.html) for any Parsl-specific questions.
-```
