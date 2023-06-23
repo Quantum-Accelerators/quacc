@@ -45,9 +45,11 @@ def run_calc(
         to update the atoms object's positions and cell after a job. It is better
         to specify this rather than relying on ASE's atoms.get_potential_energy()
         function to update the positions, as this varies between codes.
+    work_dir
+        Path to the working directory where files will be stored.
     scratch_dir
         Path where a tmpdir should be made for running the calculation. If None,
-        the current working directory will be used.
+        the working directory will be used.
     gzip
         Whether to gzip the output files.
     copy_files
@@ -155,9 +157,11 @@ def run_ase_opt(
         Optimizer class to use.
     optimizer_kwargs
         Dictionary of kwargs for the optimizer.
+    work_dir
+        Path to the working directory where files will be stored.
     scratch_dir
         Path where a tmpdir should be made for running the calculation. If None,
-        the current working directory will be used.
+        the working directory will be used.
     gzip
         Whether to gzip the output files.
     copy_files
@@ -259,9 +263,11 @@ def run_ase_vib(
         The Atoms object to run the calculation on.
     vib_kwargs
         Dictionary of kwargs for the vibration analysis.
+    work_dir
+        Path to the working directory where files will be stored.
     scratch_dir
         Path where a tmpdir should be made for running the calculation. If None,
-        the current working directory will be used.
+        the working directory will be used.
     gzip
         Whether to gzip the output files.
     copy_files

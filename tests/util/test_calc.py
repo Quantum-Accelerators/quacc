@@ -34,9 +34,15 @@ def setup_module():
 
 def teardown_module():
     # Clean up
-    os.chdir(CWD)
-    if os.path.exists("blank_dir"):
-        rmtree("blank_dir")
+    for f in os.listdir("."):
+        if ".log" in f or ".pckl" in f or ".traj" in f:
+            os.remove(f)
+    for f in os.listdir(CWD):
+        if "quacc-" in f or f == "tmp_dir" or f == "vib" or f == "blank_dir":
+            if os.path.islink(f):
+                os.unlink(f)
+            else:
+                rmtree(f)
 
 
 def test_run_calc():
