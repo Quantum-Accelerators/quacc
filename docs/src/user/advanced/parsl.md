@@ -51,18 +51,22 @@ def workflow(atoms):
     # Call Job 2, which takes the output of Job 1 as input
     future2 = static_app(future1.result()["atoms"])
 
-    return future2.result()
+    return future2
 
 # Make an Atoms object of a bulk Cu structure
 atoms = bulk("Cu")
 
 # Run the workflow
-wf_result = workflow(atoms)
-print(wf_result)
+wf_future = workflow(atoms)
+print(wf_future.result())
 ```
 
 ```{note}
-Note the use of `.result()`, which blocks until the result of a `@python_app` is ready. By default, all `@python_app` objects return an `AppFuture`, which does not necessarily resolve synchronously.
+Note that the use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object.
+```
+
+```{hint}
+Don't call `.result()` in a `return` statement. It will not block like you might naively expect it to.
 ```
 
 You can see that it is quite trivial to set up a Parsl workflow using the recipes within Quacc. We define the full workflow as a simple function that stitches together the individual `@python_app` workflow steps.
@@ -92,15 +96,15 @@ def workflow(atoms1, atoms2):
     future1 = relax_app(atoms1)
     future2 = relax_app(atoms2)
 
-    return {"result1": future1.result(), "result2": future2.result()}
+    return future1, future2
 
 # Define two Atoms objects
 atoms1 = bulk("Cu")
 atoms2 = molecule("N2")
 
 # Run the workflow
-wf_result = workflow(atoms1, atoms2)
-print(wf_result)
+future1, future2 = workflow(atoms1, atoms2)
+print(wf_result["result1"].result(), wf_result["result2"].result())
 ```
 
 ### Running Workflows with Complex Connectivity

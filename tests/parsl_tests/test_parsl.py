@@ -28,7 +28,7 @@ def teardown_module():
             or ".gz" in f
         ):
             os.remove(f)
-        if "quacc-tmp" in f or "job_" in f or f == "tmp_dir":
+        if "quacc-tmp" in f or "job_" in f or f == "tmp_dir" or f == "runinfo":
             rmtree(f)
 
 
@@ -56,8 +56,9 @@ def test_tutorial1():
 
         # Call Job 2, which takes the output of Job 1 as input
         future2 = static_app(future1.result()["atoms"])
+        future2.result()
 
-        return future2.result()
+        return future2
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
