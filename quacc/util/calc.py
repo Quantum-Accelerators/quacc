@@ -89,12 +89,12 @@ def run_calc(
     if gzip:
         gzip_dir(tmpdir)
 
-    # Copy files back to run_dir
-    copy_r(tmpdir, cwd)
-
     # Remove symlink
     if os.path.islink(symlink):
         os.remove(symlink)
+
+    # Copy files back to run_dir
+    copy_r(tmpdir, os.path.join(cwd, os.path.basename(tmpdir)))
 
     # Most ASE calculators do not update the atoms object in-place with
     # a call to .get_potential_energy(). This section is done to ensure
@@ -176,23 +176,6 @@ def run_ase_opt(
     if not os.path.exists(scratch_dir):
         os.makedirs(scratch_dir)
 
-    if "trajectory" in optimizer_kwargs:
-        if isinstance(optimizer_kwargs["trajectory"], str):
-            traj = Trajectory(optimizer_kwargs["trajectory"], "w", atoms=atoms)
-        else:
-            traj = optimizer_kwargs["trajectory"]
-    else:
-        traj = Trajectory("opt.traj", "w", atoms=atoms)
-    optimizer_kwargs["trajectory"] = traj
-
-    # Set Sella kwargs
-    if (
-        optimizer.__name__ == "Sella"
-        and not atoms.pbc.any()
-        and "internal" not in optimizer_kwargs
-    ):
-        optimizer_kwargs["internal"] = True
-
     tmpdir = mkdtemp(prefix="quacc-tmp-", dir=scratch_dir)
     symlink = os.path.join(cwd, f"{os.path.basename(tmpdir)}-symlink")
 
@@ -204,6 +187,23 @@ def run_ase_opt(
     # Copy files to scratch and decompress them if needed
     if copy_files:
         copy_decompress(copy_files, tmpdir)
+
+    # Set Sella kwargs
+    if (
+        optimizer.__name__ == "Sella"
+        and not atoms.pbc.any()
+        and "internal" not in optimizer_kwargs
+    ):
+        optimizer_kwargs["internal"] = True
+
+    if "trajectory" in optimizer_kwargs:
+        if isinstance(optimizer_kwargs["trajectory"], str):
+            traj = Trajectory(optimizer_kwargs["trajectory"], "w", atoms=atoms)
+        else:
+            traj = optimizer_kwargs["trajectory"]
+    else:
+        traj = Trajectory("opt.traj", "w", atoms=atoms)
+    optimizer_kwargs["trajectory"] = traj
 
     # Define optimizer class
     dyn = optimizer(atoms, **optimizer_kwargs)
@@ -218,12 +218,12 @@ def run_ase_opt(
     if gzip:
         gzip_dir(tmpdir)
 
-    # Copy files back to run_dir
-    copy_r(tmpdir, cwd)
-
     # Remove symlink
     if os.path.islink(symlink):
         os.remove(symlink)
+
+    # Copy files back to run_dir
+    copy_r(tmpdir, os.path.join(cwd, os.path.basename(tmpdir)))
 
     return dyn
 
@@ -287,21 +287,23 @@ def run_ase_vib(
         copy_decompress(copy_files, tmpdir)
 
     # Run calculation
-    os.chdir(tmpdir)
     vib = Vibrations(atoms, **vib_kwargs)
+
+    os.chdir(tmpdir)
     vib.run()
-    vib.summary(log="vib_summary.log")
     os.chdir(cwd)
+
+    vib.summary(log="vib_summary.log")
 
     # Gzip files in tmpdir
     if gzip:
         gzip_dir(tmpdir)
 
-    # Copy files back to run_dir
-    copy_r(tmpdir, cwd)
-
     # Remove symlink
     if os.path.islink(symlink):
         os.remove(symlink)
+
+    # Copy files back to run_dir
+    copy_r(tmpdir, os.path.join(cwd, os.path.basename(tmpdir)))
 
     return vib
