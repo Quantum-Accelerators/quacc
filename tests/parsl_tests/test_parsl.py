@@ -92,8 +92,7 @@ def test_tutorial2():
 
     # Run the workflow
     future1, future2 = workflow(atoms1, atoms2)
-    future1.result()
-    future2.result()
+    future1.result(), future2.result()
     assert future1.done()
     assert future2.done()
 
