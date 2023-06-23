@@ -41,7 +41,9 @@ def test_tutorial1():
     job = jf.job(static_job)(atoms)
 
     # Run the job locally
-    responses = jf.run_locally(job, store=STORE, ensure_success=True)
+    responses = jf.run_locally(
+        job, store=STORE, create_folders=True, ensure_success=True
+    )
 
     # Get the result
     responses[job.uuid][1].output
@@ -59,7 +61,7 @@ def test_tutorial2():
     workflow = jf.Flow([job1, job2])
 
     # Run the workflow locally
-    responses = jf.run_locally(workflow, store=STORE)
+    responses = jf.run_locally(workflow, store=STORE, create_folders=True)
 
     # Get the result
     responses[job2.uuid][1].output
@@ -75,7 +77,7 @@ def test_tutorial3():
     workflow = jf.Flow([job1, job2])
 
     # Run the workflow locally
-    responses = jf.run_locally(workflow, store=STORE)
+    responses = jf.run_locally(workflow, store=STORE, create_folders=True)
 
     # Get the result
     responses[job2.uuid][1].output
@@ -97,7 +99,7 @@ def test_emt_flow():
     workflow = jf.Flow([job1, job2])
 
     # Run the workflow locally
-    jf.run_locally(workflow, store=STORE, ensure_success=True)
+    jf.run_locally(workflow, store=STORE, create_folders=True, ensure_success=True)
 
 
 @pytest.mark.skipif(fireworks is None, reason="This test requires fireworks")

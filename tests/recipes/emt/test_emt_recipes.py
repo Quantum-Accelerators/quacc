@@ -135,7 +135,7 @@ def test_jf_slab_dynamic_jobs():
     atoms = bulk("Cu")
 
     flow = JFBulkToSlabsFlow(slab_static_job=None).make(atoms)
-    jf.run_locally(flow, store=store, ensure_success=True)
+    jf.run_locally(flow, store=store, create_folders=True, ensure_success=True)
 
     flow = JFBulkToSlabsFlow(
         slab_static_job=None,
@@ -145,7 +145,7 @@ def test_jf_slab_dynamic_jobs():
             "relax_cell": False,
         },
     ).make(atoms)
-    jf.run_locally(flow, store=store, ensure_success=True)
+    jf.run_locally(flow, store=store, create_folders=True, ensure_success=True)
 
     flow = JFBulkToSlabsFlow(
         slab_relax_kwargs={
@@ -154,7 +154,9 @@ def test_jf_slab_dynamic_jobs():
             "relax_cell": False,
         },
     ).make(atoms, slabgen_kwargs={"max_slabs": 2})
-    responses = jf.run_locally(flow, store=store, ensure_success=True)
+    responses = jf.run_locally(
+        flow, store=store, create_folders=True, ensure_success=True
+    )
 
     assert len(responses) == 5
     uuids = list(responses.keys())
