@@ -28,12 +28,3 @@ Atoms.from_dict = atoms_from_dict
 SETTINGS = QuaccSettings()
 
 ct_config = ct.get_config()
-
-# Ensure that use_srun is False in Slurm executor if the plugin is installed
-if (
-    "slurm" in ct_config["executors"]
-    and ct_config["executors"]["slurm"].get("use_srun", True) is not False
-):
-    print("Configuring Covalent... Setting executors.slurm.use_srun: False")
-    ct.set_config({"executors.slurm.use_srun": False})
-    ct_config = ct.get_config()

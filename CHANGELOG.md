@@ -16,7 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - The `slab_relax_job` kwarg in `recipes.emt.slabs` and `recipes.vasp.slabs` workflows can no longer be set to `None`, as there are few situations where this would be desired.
 - Class-based recipes have been converted to functions since they don't save state or have inheritance.
-- Renamed the `quacc-tmp-*` directories to `quacc-*` for internal consistency.
+- Renamed the `quacc-tmp-*` scratch/working directories to `quacc-*` for internal consistency.
 
 ### Docs
 

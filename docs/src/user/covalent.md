@@ -229,7 +229,12 @@ executor = ct.executor.SlurmExecutor(
         "export OMP_PLACES=threads",
         "export OMP_NUM_THREADS=1",
     ],
+    use_srun=False,
 )
+```
+
+```{important}
+The `SlurmExecutor` *must* have `use_srun=False` in order for ASE-based calculators to be launched appropriately.
 ```
 
 ## Learn More
