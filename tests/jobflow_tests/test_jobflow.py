@@ -7,6 +7,8 @@ from ase.build import bulk
 from maggma.stores import MemoryStore
 
 from quacc.recipes.emt.core import relax_job, static_job
+from quacc.recipes.emt.jobflow.slabs import BulkToSlabsFlow
+from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 try:
     import fireworks
@@ -28,30 +30,44 @@ def teardown_module():
             rmtree(f)
 
 
-def test_emt():
-    store = jf.JobStore(MemoryStore())
+STORE = jf.JobStore(MemoryStore())
 
+
+def test_tutorial1():
+    # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
 
-    # Test individual jobs
+    # Define the compute job
     job = jf.job(static_job)(atoms)
-    jf.run_locally(job, store=store, ensure_success=True)
 
-    job = jf.job(relax_job)(atoms)
-    jf.run_locally(job, store=store, ensure_success=True)
+    # Run the job locally
+    responses = jf.run_locally(
+        job, store=STORE, create_folders=True, ensure_success=True
+    )
 
-    # Test a Flow
+    # Get the result
+    responses[job.uuid][1].output
+
+
+def test_tutorial2():
+    # Make an Atoms object of a bulk Cu structure
+    atoms = bulk("Cu")
+
+    # Define the compute jobs
     job1 = jf.job(relax_job)(atoms)
     job2 = jf.job(static_job)(job1.output["atoms"])
 
+    # Define the workflow
     workflow = jf.Flow([job1, job2])
-    jf.run_locally(workflow, create_folders=True, ensure_success=True)
+
+    # Run the workflow locally
+    responses = jf.run_locally(workflow, store=STORE, create_folders=True)
+
+    # Get the result
+    responses[job2.uuid][1].output
 
 
-def test_emt_flow():
-    from quacc.recipes.emt.core import relax_job
-    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
-
+def test_tutorial3():
     # Define the Atoms object
     atoms = bulk("Cu")
 
@@ -61,12 +77,14 @@ def test_emt_flow():
     workflow = jf.Flow([job1, job2])
 
     # Run the workflow locally
-    jf.run_locally(workflow, create_folders=True, ensure_success=True)
+    responses = jf.run_locally(workflow, store=STORE, create_folders=True)
+
+    # Get the result
+    responses[job2.uuid][1].output
 
 
-def test_emt_flow2():
-    from quacc.recipes.emt.core import relax_job
-    from quacc.recipes.emt.jobflow.slabs import BulkToSlabsFlow
+def test_emt_flow():
+    atoms = bulk("Cu")
 
     @jf.job
     def relax_func(atoms):
@@ -81,7 +99,7 @@ def test_emt_flow2():
     workflow = jf.Flow([job1, job2])
 
     # Run the workflow locally
-    jf.run_locally(workflow, create_folders=True, ensure_success=True)
+    jf.run_locally(workflow, store=STORE, create_folders=True, ensure_success=True)
 
 
 @pytest.mark.skipif(fireworks is None, reason="This test requires fireworks")
