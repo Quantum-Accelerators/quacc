@@ -1,5 +1,4 @@
 """Quacc CLI module."""
-import sys
 
 import click
 
