@@ -8,9 +8,7 @@ If you prefer to use [Parsl](https://github.com/Parsl/parsl) or [Jobflow](https:
 
 ## Pre-Requisites
 
-Make sure you completed the ["Covalent Setup"](../install/covalent.md) section of the documentation. If you haven't done so already, run `covalent start` prior to starting these examples to start the Covalent server and UI.
-
-Additionally, you should learn about the main [Covalent Concepts](https://docs.covalent.xyz/docs/user-documentation/concepts/concepts-index), namely the [`Electron`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#electron) and [`Lattice`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#lattice) objects, which describe individual compute tasks and workflows, respectively.
+Make sure you completed the ["Covalent Setup"](../install/covalent.md) section of the documentation. Additionally, you should learn about the main [Covalent Concepts](https://docs.covalent.xyz/docs/user-documentation/concepts/concepts-index), namely the [`Electron`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#electron) and [`Lattice`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#lattice) objects, which describe individual compute tasks and workflows, respectively.
 
 In Covalent, the `@ct.lattice` decorator indicates that the function is a workflow, and the `@ct.electron` decorator indicates that the function is a job (i.e. an individual compute task). If you plan to use a job scheduling system like Slurm, you can think of each `Electron` as an individual Slurm job.
 
@@ -199,6 +197,16 @@ print(result)
 
 ```{hint}
 If you are defining your own workflow functions to use, you can also set the executor for individual `Electron` objects by passing the `executor` keyword argument to the `@ct.electron` decorator.
+```
+
+## Configuration Options
+
+### Covalent Configuration
+
+Covalent has several [configuration options](https://docs.covalent.xyz/docs/user-documentation/how-to/customization/) that can be modified. Running `quacc config` automatically takes care of setting the ones that are critical for Quacc to run properly.
+
+```{important}
+If you ever delete your Covalent configuration (e.g. via `covalent purge`), you will need to re-run `quacc config`.
 ```
 
 ### Configuring Executors
