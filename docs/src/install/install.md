@@ -8,7 +8,7 @@ If you are on a Windows machine, you will need to install and use the [Windows S
 
 1. Install Python, preferably in conjunction with an environment manager. For instance, download and run the [Miniconda installer](https://docs.conda.io/en/latest/miniconda.html).
 2. When asked to add Miniconda to your `PATH`, select yes.
-3. Create a fresh Python environment by running `conda create -n quacc python=3.9`.
+3. Create a fresh Python environment by running `conda create -n quacc python=3.10`.
 4. Activate this environment via `conda activate quacc`.
 
 ## Installing Quacc
@@ -17,11 +17,25 @@ If you are on a Windows machine, you will need to install and use the [Windows S
 If you plan to use Quacc with a workflow manager, ensure that you install Quacc on all machines where the code will run.
 ```
 
-In your newly activated conda environment, you can install Quacc and its related dependencies by running `pip install quacc`. For the development version of Quacc (**currently required**), you should instead use `pip install git+https://github.com/quantum-accelerators/quacc.git`.
+In your newly activated conda environment, run the following commands:
+
+```
+# Install development version of Quacc
+pip install git+https://github.com/quantum-accelerators/quacc.git
+
+# Set default configuration parameters
+quacc config
+```
+
+```{important}
+Run `quacc config` upon install will configure Covalent appropriately for use with Quacc. If you ever delete your Covalent configuration (e.g. via `covalent purge`), you will need to re-run `quacc config`.
+```
 
 Quacc can be installed with several "extras," as outlined in the `setup.py` file. These are described below:
 
 - `quacc[fireworks]`: Installs dependencies to enable the use of FireWorks.
+- `quacc[optimizers]`: Installs additional ASE-based optimizers, such as Sella.
+- `quacc[parsl]`: Installs dependencies to enable the use of Parsl.
 - `quacc[tblite]`: Installs dependencies to enable the use of tblite.
 - `quacc[dev]`: Installs dependencies to enable local development of Quacc.
 - `quacc[docs]`: Installs dependencies to build the documentation.

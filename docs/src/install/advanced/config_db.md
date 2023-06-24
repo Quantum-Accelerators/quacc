@@ -2,9 +2,13 @@
 
 ## Introduction
 
-Some users may wish to use Quacc such that all calculation inputs and outputs are stored in an easily queryable database. While not a requirement for using Quacc, this can be readily achieved through the use of the [maggma](https://github.com/materialsproject/maggma) package.
+Some users may wish to use Quacc in way that ensures all calculation inputs and outputs are stored in an easily queryable database. While not a requirement, this can be readily achieved through the use of the [maggma](https://github.com/materialsproject/maggma) package. Maggma has many options for [data stores](https://materialsproject.github.io/maggma/reference/stores/), but we will only describe how to set up a MongoDB store since it is the most common.
 
 ## MongoDB Setup
+
+```{note}
+Users of NERSC HPC machines can instead [request a database](https://docs.nersc.gov/services/databases/) directly from NERSC staff.
+```
 
 For new users, the easiest route to create a Mongo database is to use a cloud storage solution called [MongoDB Atlas](https://www.mongodb.com/atlas), which has a free tier. To set up your MongoDB with MongoDB Atlas, follow the instructions below:
 

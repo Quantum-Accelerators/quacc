@@ -2,11 +2,7 @@
 
 In Quacc, each code comes with pre-packaged jobs and workflows, which we call recipes for short. This tutorial walks you through how to use these provided recipes to run simple calculations that can be tested out on your local machine.
 
-Once you understand the basics, you should move on to the ["Using Quacc with Covalent"](covalent.md) (recommended) or ["Using Quacc with Jobflow"](advanced/jobflow.md) guides to learn how to use Quacc with a workflow manager, which allows you to stich together and run complex Quacc workflows across distributed computing resources.
-
-```{note}
-If you are familiar with ASE and want to dive right into the workflow manager details, you can likely skim this section.
-```
+Once you understand the basics, you should move on to the ["Using Quacc with Covalent"](covalent.md) (recommended) guide to learn how to use Quacc with a workflow manager, which allows you to stich together and run complex Quacc workflows across distributed computing resources. Refer to the ["Using Quacc with Parsl"](advanced/parsl.md) or ["Using Quacc with Jobflow"](advanced/jobflow.md) for alternate workflow manager options.
 
 ## Pre-Requisites
 
@@ -18,17 +14,17 @@ If you are coming from the Pymatgen ecosystem, you can use the {class}`pymatgen.
 
 ## A Simple Calculation with EMT
 
-Let's start with a simple example. Here, we will use a cheap calculator based on [effective medium theory (EMT)](<https://doi.org/10.1016/0039-6028(96)00816-3>) to run a static calculation on a bulk structure of copper, as shown below.
+Let's start with a simple example. Here, we will use a cheap calculator based on [effective medium theory (EMT)](<https://doi.org/10.1016/0039-6028(96)00816-3>) to run a structure relaxation on a bulk structure of copper, as shown below.
 
 ```python
 from ase.build import bulk
-from quacc.recipes.emt.core import static_job
+from quacc.recipes.emt.core import relax_job
 
 # Make an Atoms object of a bulk Cu structure
 atoms = bulk("Cu")
 
-# Run a static calculation on the Atoms object
-result = static_job(atoms)
+# Run a structure relaxation on the Atoms object
+result = relax_job(atoms)
 print(result)
 ```
 
@@ -38,31 +34,19 @@ Walking through step-by-step, we first defined an `Atoms` object representation 
 You can make an `Atoms` object from common files like a CIF, XYZ, or POSCAR by using the [`ase.io.read`](https://wiki.fysik.dtu.dk/ase/ase/io/io.html) function. For instance, {obj}`from ase.io import read` followed by `atoms = read("</path/to/file>")`.
 ```
 
-With the `Atoms` object defined, we then imported a desired recipe and instantiated it. In this case, since we want to use EMT, we can look in {obj}`quacc.recipes.emt` to see all the available recipes. We are interested in a static calculation so we imported the {obj}`.emt.core.static_job` recipe. We then instantiated and ran the recipe by passing in the `Atoms` object we defined earlier.
+With the `Atoms` object defined, we then imported a desired recipe and instantiated it. In this case, since we want to use EMT, we can look in {obj}`quacc.recipes.emt` to see all the available recipes. We are interested in doing a structure relaxation, so we imported the {obj}`.emt.core.relax_job` recipe. We then instantiated and ran the recipe by passing in the `Atoms` object we defined earlier.
 
-## A Simple Calculation with GFN2-xTB
+The recipe output (`result`) is a bit too large to print here; nonetheless, for context, it is a dictionary that has the following primary keys. The `atoms` key contains a copy of the output `Atoms` object, the `results` key contains a dictionary of the results of the calculation, and the `parameters` key contains a dictionary of the parameters used in the calculation.
 
-If molecules are more your thing, let's consider another simple example. Here, we want to run a structure relaxation of a water molecule using the semi-empirical quantum mechanics method called [GFN2-xTB](https://doi.org/10.1021/acs.jctc.8b01176). This method is conveniently available in [tblite](https://github.com/tblite/tblite), which we will use here. The demonstration below shows how to run this calculation with Quacc.
-
-Note that for this example, you will need to install tblite, as noted in the ["Calculator Setup"](../install/codes.md#tblite) section of the installation instructions.
-
-```python
-from ase.build import molecule
-from quacc.recipes.tblite.core import relax_job
-
-# Make an Atoms object of a water molecule
-atoms = molecule("H2O")
-
-# Run a relaxation using the GFN2-xTB method
-result = relax_job(atoms, method="GFN2-xTB")
-print(result)
-```
-
-Here, we have imported the {obj}`.tblite.core.relax_job` recipe. Most recipes have several optional keyword arguments that you can specify. In this example, the `method="GFN2-xTB"` keyword indicates that we want to use the GFN2-xTB method, which also happened to be the default value.
+`>>> ['atoms', 'atoms_info', 'builder_meta', 'chemsys', 'composition', 'composition_reduced', 'density', 'density_atomic', 'dir_name', 'elements', 'formula_anonymous', 'formula_pretty', 'input_structure', 'name', 'nelements', 'nid', 'nsites', 'parameters', 'parameters_opt', 'results', 'structure', 'symmetry', 'trajectory', 'trajectory_results', 'volume']`
 
 ## A Simple Mixed-Code Workflow
 
-Now let's return to our bulk Cu example from above and start adding on some complexity. Here, we will use EMT to run a relaxation on the bulk Cu structure and then use the output of this calculation as the input to a static calculation with GFN2-xTB. This example highlights how there are no restrictions in terms of how many codes you can use in a single workflow.
+Now let's return to our bulk Cu example from above and start adding on some complexity. Here, we will use EMT to run a relaxation on the bulk Cu structure and then use the output of this calculation as the input to a static calculation with the semi-empirical quantum mechanics method GFN2-xTB as implemented in {obj}`.tblite.core.static_job`. This example highlights how there are no restrictions in terms of how many codes you can use in a single workflow.
+
+```{note}
+Some recipes require additional setup. Refer to the [Calculator Setup](../install/codes.md##tblite) section for details. Note that `tblite` is currently available via `pip install` on Linux only.
+```
 
 ```python
 from ase.build import bulk
@@ -72,7 +56,7 @@ from quacc.recipes.tblite.core import static_job
 # Make an Atoms object of a bulk Cu structure
 atoms = bulk("Cu")
 
-# Run a relaxation calculation with EMT
+# Run a structure relaxation with EMT
 result1 = relax_job(atoms)
 
 # Run a static calculation with GFN2-xTB
@@ -81,7 +65,9 @@ print(result2)
 ```
 
 ```{hint}
-The output of most compute jobs in Quacc is a dictionary summarizing the results of the calculation. It always has a key `"atoms"` that contains a copy of the output `Atoms` object. This can be used to pass structure information between jobs.
+The output of most compute jobs is a dictionary summarizing the results of the calculation. It always has a key `"atoms"` that contains a copy of the output `Atoms` object. This can be used to pass structure information between jobs.
 ```
 
-What happens if the first job fails, however? Then the code will crash, no results will be stored, and you'd have to start from scratch. That'd be sad, but thankfully this is where using a workflow manager, such as [Covalent](covalent.md), can save the day. Read on to learn how to define workflows with complex connectivity and how to dispatch them across distributed computing resources.
+What happens if the first job fails, however? Then the code will crash, no results will be stored, and you'd have to start from scratch. That'd be sad, but thankfully this is where using a workflow manager can save the day.
+
+Read on to learn how to define workflows with complex connectivity and how to dispatch them across distributed computing resources.

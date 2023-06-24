@@ -18,21 +18,21 @@ Please abide by the following guidelines when contributing code to Quacc:
 
 1. All changes should have associated unit tests.
 
-2. All code should include type hints and have documentation for the inputs and outputs.
+2. All code should include type hints and have internally consistent documentation for the inputs and outputs.
 
 3. The input to most compute jobs should be an ASE `Atoms` object. The output of most compute tasks should be a schema from one of the module/functions within {obj}`quacc.schemas`.
 
-4. Individual compute jobs should be written as functions, and workflows should be written as classes. Refer to {obj}`quacc.recipes.emt.core` and {obj}`quacc.recipes.emt.slabs` for examples.
+4. Only define multi-step workflows if they go beyond simply stitching together existing functions. Otherwise, just define the individual functions.
 
-5. Only define multi-step workflows if they go beyond simply stitching together existing functions.
+5. If you define a new multi-step workflow, you may do so using Covalent or Parsl. It is trivial to convert between the two, so simply use whichever you are most comfortable with.
 
-6. When possible, you should use the "internal" geometry optimizers for a given code rather than the ASE optimizers.
+6. Ensure that the code remains flexible for the user whenever possible.
 
-7. Never use `@ct.lattice` in the code directly (unless it is wrapped by `@ct.electron` to make it a sublattice).
+7. Where appropriate, you should use the "internal" geometry optimizers for a given code rather than the ASE optimizers.
 
-8. Ensure that the code remains flexible for the user.
+8. `gzip` large test files to save space.
 
-9. `gzip` large test files to save space.
+9. Update the `CHANGELOG.md` file.
 
 ## Changelog
 
@@ -42,13 +42,13 @@ We keep a [`CHANGELOG.md`](https://github.com/quantum-accelerators/quacc/blob/ma
 
 In general, please try to keep the code style consistent when possible. There are two main things to consider:
 
-1. Functions should be lowercase and with underscores. Classes should be in CamelCase and constructed using a {obj}`@dataclass` decorator where possible.
+1. Functions should be lowercase and with underscores. Classes should be in PascalCase and constructed using a {obj}`@dataclass` decorator where possible.
 
 2. All Python code should be formatted with [isort](https://github.com/PyCQA/isort) and then [black](https://github.com/psf/black), although this will be corrected automatically when merged.
 
 ## Unit Tests
 
-All changes you make to Quacc should be accompanied by unit tests and should not break existing tests. To run the test suite, run `pytest` from the the `quacc/tests` directory.
+All changes you make to Quacc should be accompanied by unit tests and should not break existing tests. To run the full test suite, run `pytest .` from the the `quacc/tests` directory.
 
 If you are adding recipes based on a code that can be readily installed via `pip` or `conda` (e.g. tblite, xtb-python, DFTB+, Psi4), then you can run these codes directly in the test suite. Preferably, you should use a small molecule or solid and cheap method so the unit tests run quickly. If the recipes you're adding are proprietary or not available via `pip` or `conda` (e.g. Gaussian, GULP), then you will need to [monkeypatch](https://docs.pytest.org/en/7.1.x/how-to/monkeypatch.html) certain functions to change their behavior during testing. For instance, we do not want to run VASP directly during unit tests and have mocked the `atoms.get_potential_energy()` function to always return a dummy value of -1.0 during unit tests. Any mocked functions can be found in the `conftest.py` files of the testing directory.
 

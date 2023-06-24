@@ -7,7 +7,7 @@
 # Quacc – The Quantum Accelerator 🦆
 
 ![tests](https://github.com/quantum-accelerators/quacc/actions/workflows/tests.yaml/badge.svg)
-[![codecov](https://codecov.io/gh/Quantum-Accelerators/quacc/branch/main/graph/badge.svg?token=OJaOZAH30u)](https://codecov.io/gh/Quantum-Accelerators/quacc)
+[![codecov](https://codecov.io/gh/Quantum-Accelerators/quacc/branch/main/graph/badge.svg?token=OJaOZAH30u)](https://codecov.io/gh/Quantum-Accelerators/quacc/tree/main)
 [![DeepSource](https://app.deepsource.com/gh/Quantum-Accelerators/quacc.svg/?label=active+issues&token=Y1NxOLIuFFEqWdjawIYnJNde)](https://app.deepsource.com/gh/Quantum-Accelerators/quacc/?ref=repository-badge)
 ![Supported python versions](https://img.shields.io/badge/python-3.9%20%7C%203.10-blue)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7720998.svg)](https://doi.org/10.5281/zenodo.7720998)
@@ -16,11 +16,11 @@ Quacc is a flexible platform for high-throughput, database-driven computational 
 
 The three main goals of Quacc are to:
 
-1. Reduce the barrier for running complex, mixed-code workflows for molecules and materials across heterogeneous compute environments.
+1. Reduce the barrier for running complex, mixed-code workflows for molecules and materials across distributed compute environments.
 
-2. Promote rapid workflow development and testing via modern workflow managers, such as [Covalent](https://github.com/AgnostiqHQ/covalent) and [Jobflow](https://github.com/materialsproject/jobflow).
+2. Promote rapid workflow development and testing via modern workflow management solutions.
 
-3. Enable a seamless interface between the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/index.html) and the software infrastructure powering the [Materials Project](https://materialsproject.org).
+3. Enable a seamless interface between the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/) and the software infrastructure powering the [Materials Project](https://materialsproject.org).
 
 ## Documentation
 
@@ -36,6 +36,8 @@ Includes the following sections:
 - 🤝 [Developer Guide](https://quantum-accelerators.github.io/quacc/dev/contributing.html)
 
 ## Demonstration ✨
+
+🚀 Demo from the Quick Start guide, using [Covalent](https://github.com/AgnostiqHQ/covalent) as one of the several supported workflow managers.
 
 ![Demo from Quick Start](docs/src/_static/start/start2.gif)
 

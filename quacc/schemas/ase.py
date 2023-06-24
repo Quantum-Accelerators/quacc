@@ -7,7 +7,8 @@ import os
 import warnings
 
 import numpy as np
-from ase import Atoms, units
+from ase import units
+from ase.atoms import Atoms
 from ase.constraints import Filter
 from ase.io import read
 from ase.optimize.optimize import Optimizer
@@ -242,16 +243,23 @@ def summarize_opt_run(
     additional_fields = additional_fields or {}
     opt_parameters = dyn.todict() | {"fmax": dyn.fmax}
 
-    # Check trajectory
-    if not os.path.exists(dyn.trajectory.filename):
-        raise FileNotFoundError("No trajectory file found.")
-
     # Check convergence
     is_converged = dyn.converged()
     if check_convergence and not is_converged:
         raise ValueError("Optimization did not converge.")
 
-    traj = read(dyn.trajectory.filename, index=":")
+    # Get trajectory
+    if hasattr(dyn, "traj"):
+        traj = dyn.traj
+    elif (
+        hasattr(dyn, "trajectory")
+        and hasattr(dyn.trajectory, "filename")
+        and os.path.exists(dyn.trajectory.filename)
+    ):
+        traj = read(dyn.trajectory.filename, index=":")
+    else:
+        raise FileNotFoundError("No trajectory found.")
+
     initial_atoms = traj[0]
     final_atoms = dyn.atoms.atoms if isinstance(dyn.atoms, Filter) else dyn.atoms
 

@@ -8,7 +8,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- Started `CHANGELOG.md`.
+- Added this `CHANGELOG.md` file.
+- Added the `quacc.recipes.emt.parsl` module.
+- Added a CLI for `quacc` along with a `quacc config` option to configure Covalent appropriately upon install.
+
+### Changed
+
+- The `slab_relax_job` kwarg in `recipes.emt.slabs` and `recipes.vasp.slabs` workflows can no longer be set to `None`, as there are few situations where this would be desired.
+- Class-based recipes have been converted to functions since they don't save state or have inheritance.
+
+### Docs
+
+- Expanded upon Parsl documentation.
+- Modified tutorials and added example configs for Slurm.
+
+### Fixed
+
+- Fixed a bug where parallel, multithreaded Python jobs could cause file I/O issues.
+
+### Removed
+
+- Removed `quacc.recipes.vasp.jobflow` module to prioritize Covalent and Parsl.
 
 ## [0.1.0]
 
@@ -17,10 +37,6 @@ See https://github.com/quantum-accelerators/quacc/releases/tag/v0.1.0 for more d
 ## [0.0.6]
 
 See https://github.com/quantum-accelerators/quacc/releases/tag/v0.0.6 for more details.
-
-## [0.0.5]
-
-See https://github.com/quantum-accelerators/quacc/releases/tag/v0.0.5 for more details.
 
 ## [0.0.5]
 
