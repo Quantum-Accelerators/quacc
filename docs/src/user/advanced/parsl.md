@@ -76,7 +76,6 @@ Don't call `.result()` in a `return` statement. It will not block like you might
 Now let's consider a similar but nonetheless distinct example. Here, we will define a workflow where we will carry out two EMT structure relaxations, but the two jobs are not dependent on one another. In this example, Parsl will know that it can run the two jobs in parallel, and even if Job 1 were to fail, Job 2 would still progress.
 
 ```python
-import parsl
 from parsl import python_app
 from ase.build import bulk, molecule
 
@@ -116,7 +115,6 @@ For this example, let's consider a toy scenario where we wish to relax a bulk Cu
 In Quacc, there are two types of recipes: individual compute tasks with the suffix `_job` and pre-made multi-step workflows with the suffix `_flow`. Here, we are interested in importing a pre-made workflow. Refer to the example below:
 
 ```python
-import parsl
 from parsl import python_app
 from ase.build import bulk
 
@@ -155,17 +153,29 @@ When running a Covalent-based workflow like {obj}`.emt.slabs.bulk_to_slabs_flow`
 Quacc fully supports the development of Parsl-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Parsl-specific {obj}`.emt.parsl.slabs.bulk_to_slabs_flow` workflow:
 
 ```python
+from parsl import python_app
 from ase.build import bulk
 from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_flow
 
-wf_future = bulk_to_slabs_flow(bulk("Cu"), slab_static_app=None)
+@python_app
+def relax_app(atoms):
+
+    from quacc.recipes.emt.core import relax_job
+
+    return relax_job(atoms)
+
+atoms = bulk("Cu")
+
+relax_future = relax_app(atoms)
+
+wf_future = bulk_to_slabs_flow(relax_future.result()["atoms"], slab_static_app=None)
 print(wf_future.result())
 ```
 
-In this example, all the individual tasks are run as separate jobs, which is more efficient. By comparing {obj}`.emt.parsl.slabs.bulk_to_slabs_flow` with its Covalent counterpart {obj}`.emt.slabs.bulk_to_slabs_flow`, you can see that the two are extremely similar such that it is often straightforward to interconvert between the two.
+In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing {obj}`.emt.parsl.slabs.bulk_to_slabs_flow` with its Covalent counterpart {obj}`.emt.slabs.bulk_to_slabs_flow`, you can see that the two are extremely similar such that it is often straightforward to interconvert between the two.
 
 ```{note}
-We used `.result()` here because `bulk_to_slabs_flow` is a `@join_app` (similar to a `@python_app` for dynamic workflow steps) that itself returns an `AppFuture`.
+We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is defined in Quacc as a `@join_app` (similar to a `@python_app` for dynamic workflow steps) that itself returns an `AppFuture`. This is also why we call `.result()` on it.
 ```
 
 ## Visualization
