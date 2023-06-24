@@ -16,7 +16,9 @@ In Covalent, the `@ct.lattice` decorator indicates that the function is a workfl
 
 All `Electron` and `Lattice` objects behave as normal Python functions when the necessary arguments are supplied. However, if the `ct.dispatch` command is used, the workflow will be dispatched to the Covalent server for execution and monitoring.
 
-## Running a Simple Serial Workflow
+## Examples
+
+### Running a Simple Serial Workflow
 
 ```{hint}
 If you haven't done so yet, make sure you started the Covalent server with `covalent start` in the command-line.
@@ -69,7 +71,7 @@ The job will be dispatched to the Covalent server with the [`ct.dispatch`](https
 
 ![Covalent UI](../_static/user/tutorial1.jpg)
 
-## Running a Simple Parallel Workflow
+### Running a Simple Parallel Workflow
 
 Now let's consider a similar but nonetheless distinct example. Here, we will define a workflow where we will carry out two EMT structure relaxations, but the two jobs are not dependent on one another. In this example, Covalent will know that it can run the two jobs separately, and even if Job 1 were to fail, Job 2 would still progress.
 
@@ -102,22 +104,22 @@ print(result)
 
 ![Covalent UI](../_static/user/tutorial2.jpg)
 
-## Running Workflows with Complex Connectivity
+### Running Workflows with Complex Connectivity
 
 For this example, let's consider a toy scenario where we wish to relax a bulk Cu structure, carve all possible slabs, and then run a new relaxation calculation on each slab.
 
-In Quacc, there are two types of recipes: 1) individual compute tasks that are functions; 2) workflows that are classes. Here, we are interested in importing a workflow, so it will be instantiated slightly differently from the prior examples. See the example below:
+In Quacc, there are two types of recipes: 1) individual compute tasks with the suffix `_job`; pre-made multi-step workflows with the suffix `_flow`. Here, we are interested in importing a pre-made workflow. Refer to the example below:
 
 ```python
 import covalent as ct
 from ase.build import bulk
 from quacc.recipes.emt.core import relax_job
-from quacc.recipes.emt.slabs import BulkToSlabsFlow
+from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 @ct.lattice
 def workflow(atoms):
     relaxed_bulk = relax_job(atoms)
-    relaxed_slabs = BulkToSlabsFlow(slab_static_electron=None).run(relaxed_bulk["atoms"])
+    relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], slab_static_electron=None)
 
     return relaxed_slabs
 
@@ -127,7 +129,7 @@ result = ct.get_result(dispatch_id, wait=True)
 print(result)
 ```
 
-We have imported the {obj}`.emt.slabs.BulkToSlabsFlow` class, which is instantiated with optional parameters and is applied to an `Atoms` object. Here, for demonstration purposes, we specify the `slab_static_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is wrap it inside a `@ct.lattice` decorator.
+We have imported the {obj}`.emt.slabs.bulk_to_slabs_flow` function, which takes an `Atoms` object along with several optional parameters. Here, for demonstration purposes, we specify the `slab_static_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is wrap it inside a `@ct.lattice` decorator.
 
 ```{hint}
 You don't need to set `wait=True` in practice. Once you call `ct.dispatch`, the workflow will begin running. The `ct.get_result` function is used to fetch the workflow status and results from the server.
@@ -197,6 +199,42 @@ print(result)
 
 ```{hint}
 If you are defining your own workflow functions to use, you can also set the executor for individual `Electron` objects by passing the `executor` keyword argument to the `@ct.electron` decorator.
+```
+
+### Configuring Executors
+
+Refer to the [executor documentation](https://docs.covalent.xyz/docs/features/executor-plugins/exe) for instructions on how to configure Covalent for your desired high-performance computing machine.
+
+For submitting jobs to [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/) from your local machine, an example `SlurmExecutor` configuration with support for an [`sshproxy`](https://docs.nersc.gov/connect/mfa/#sshproxy)-based multi-factor authentication certificate might look like the following:
+
+```python
+executor = ct.executor.SlurmExecutor(
+    username="YourUserName",
+    address="perlmutter-p1.nersc.gov",
+    ssh_key_file="~/.ssh/nersc",
+    cert_file="~/.ssh/nersc-cert.pub",
+    remote_workdir="$SCRATCH",
+    conda_env="quacc",
+    options={
+        "nodes": 1,
+        "qos": "debug",
+        "constraint": "cpu",
+        "account": "YourAccountName",
+        "job-name": "quacc",
+        "time": "00:10:00",
+    },
+    prerun_commands=[
+        "export COVALENT_CONFIG_DIR=$SCRATCH",
+        "export OMP_PROC_BIND=spread",
+        "export OMP_PLACES=threads",
+        "export OMP_NUM_THREADS=1",
+    ],
+    use_srun=False,
+)
+```
+
+```{important}
+The `SlurmExecutor` *must* have `use_srun=False` in order for ASE-based calculators to be launched appropriately.
 ```
 
 ## Learn More
