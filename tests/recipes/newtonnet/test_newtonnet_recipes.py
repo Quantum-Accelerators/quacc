@@ -423,8 +423,9 @@ def test_quasi_irc_job_with_default_args():
 
 def test_quasi_irc_job_with_custom_direction():
     # Define test inputs
-    atoms = molecule("H2O")
+    # atoms = molecule("H2O")
     direction = "reverse"
+    #direction = "forward"
 
     # Call the function
     output = quasi_irc_job(atoms, direction=direction)

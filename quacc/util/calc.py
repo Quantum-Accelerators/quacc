@@ -220,7 +220,7 @@ def run_ase_opt(
 
     # Run calculation
     os.chdir(tmpdir)
-    dyn.run(fmax=fmax, steps=max_steps)  # , **run_kwargs)
+    dyn.run(fmax=fmax, steps=max_steps , **run_kwargs)
     os.chdir(cwd)
 
     # We attach the actual trajectory here. This is

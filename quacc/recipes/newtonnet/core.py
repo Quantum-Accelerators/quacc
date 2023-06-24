@@ -259,6 +259,7 @@ def irc_job(
     )
     atoms.calc = mlcalculator
 
+    print('\n\n\n\n\n\nopt_flags\n\n\n\n\n\n\n\n', opt_flags)
     # Run IRC
     dyn = run_ase_opt(atoms, fmax=fmax, max_steps=max_steps, **opt_flags)
     summary_irc = summarize_opt_run(
@@ -311,7 +312,6 @@ def quasi_irc_job(
         "run_kwargs": {"direction": direction.lower()},
     }
     irc_flags = irc_defaults | irc_swaps
-
     opt_swaps = opt_swaps or {}
 
     opt_defaults = {}
