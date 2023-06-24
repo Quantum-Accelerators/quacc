@@ -8,8 +8,6 @@ try:
     import parsl
     from parsl import python_app
 
-    from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_flow
-
 except ImportError:
     parsl = None
 
