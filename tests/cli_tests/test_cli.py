@@ -1,10 +1,12 @@
-import os
+from subprocess import PIPE, Popen
 
 import covalent as ct
 
 
 def test_config():
-    os.system("quacc config")
+    process = Popen(["quacc", "config"], stdout=PIPE)
+    _, stderr = process.communicate()
+    assert stderr is None
     ct_config = ct.get_config()
     for executor in ct_config["executors"]:
         if "create_unique_workdir" in ct_config["executors"][executor]:
@@ -14,4 +16,7 @@ def test_config():
 
 
 def test_help():
-    os.system("quacc help")
+    process = Popen("quacc", stdout=PIPE)
+    stdout, stderr = process.communicate()
+    assert stderr is None
+    assert "Show this message and exit" in stdout.decode("utf-8")
