@@ -39,7 +39,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install .[strict,dev]
+          pip install .[strict,dev,strict,dev,fireworks,optimizers,parsl]
           pip install covalent-slurm-plugin
 
       - name: Configure Quacc
@@ -192,54 +192,6 @@ jobs:
 
       - name: Run tests with pytest
         run: pytest tests/recipes/dftb --cov=quacc --cov-report=xml
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        if: github.repository == 'quantum-accelerators/quacc'
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
-
-  tests-parsl:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-      matrix:
-        python-version: ["3.10"]
-
-    defaults:
-      run:
-        shell: bash -l {0}
-
-    steps:
-      - name: Check out repo
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-          cache: pip
-          cache-dependency-path: setup.py
-
-      - name: Install pip packages
-        run: |
-          pip install .[strict,dev,fireworks,optimizers,parsl]
-          pip install covalent-slurm-plugin
-
-      - name: Configure Quacc
-        run: quacc config
-
-      - name: Set up Covalent server
-        run: |
-          echo "y" | covalent purge
-          covalent start
-
-      - name: Run tests with pytest
-        run: pytest tests/fireworks_tests tests/parsl_tests tests/optimizers --cov=quacc --cov-report=xml
-
-      - name: Stop Covalent server
-        run: covalent stop
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
