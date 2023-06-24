@@ -5,8 +5,9 @@ Want to get up and running with Quacc as fast possible? Here we go!
 ## Installation
 
 1. Run `pip install git+https://github.com/quantum-accelerators/quacc.git`.
-2. Run `covalent start` and open the URL: http://localhost:48008.
-3. Run a sample workflow and check the webpage for results.
+2. Run `quacc config`.
+3. Run `covalent start` and open the URL: http://localhost:48008.
+4. Run a sample workflow and check the webpage for results.
 
 ## Demo Workflow 1: A Simple One
 
