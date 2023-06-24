@@ -6,4 +6,4 @@ If you would prefer to use [Parsl](https://github.com/Parsl/parsl) to write and 
 
 ## Installation
 
-In your activated Python environment, install Parsl via `pip install parsl` or `pip install parsl[monitoring]` for the depdencies that enable a visual dashboard.
+In your activated Python environment, install Parsl via `pip install parsl` or `pip install parsl[monitoring]` for the dependencies that enable a visual dashboard.
