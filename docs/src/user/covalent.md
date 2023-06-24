@@ -55,10 +55,6 @@ print(result)
 
 You can see that it is quite trivial to set up a workflow using the recipes within Quacc. We define the full workflow as a `Lattice` object that stitches together the individual workflow steps.
 
-```{note}
-Because the workflow is only sent to the server with `ct.dispatch`, calling `workflow(atoms)` would run the workflow as if Covalent were not being used at all.
-```
-
 ```{hint}
 By default, all Quacc jobs are defined as `Electron` objects, so we didn't need to use the `@ct.electron` decorator around each function here.
 ```
@@ -66,6 +62,10 @@ By default, all Quacc jobs are defined as `Electron` objects, so we didn't need 
 Covalent will also automatically construct a directed acyclic graph of the inputs and outputs for each calculation to determine which jobs are dependent on one another and the order the jobs should be run. In this example, Covalent will know not to run `job2` until `job1` has completed successfully.
 
 The job will be dispatched to the Covalent server with the [`ct.dispatch`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#dispatch) command, which takes in the workflow function and the input arguments to the workflow. The [`ct.get_result`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#result) command is used to fetch the results from the server.
+
+```{note}
+Because the workflow is only sent to the server with `ct.dispatch`, calling `workflow(atoms)` would run the workflow as if Covalent were not being used at all.
+```
 
 ![Covalent UI](../_static/user/tutorial1.jpg)
 
@@ -106,7 +106,7 @@ print(result)
 
 For this example, let's consider a toy scenario where we wish to relax a bulk Cu structure, carve all possible slabs, and then run a new relaxation calculation on each slab.
 
-In Quacc, there are two types of recipes: 1) individual compute tasks with the suffix `_job`; pre-made multi-step workflows with the suffix `_flow`. Here, we are interested in importing a pre-made workflow. Refer to the example below:
+In Quacc, there are two types of recipes: individual compute tasks with the suffix `_job` and pre-made multi-step workflows with the suffix `_flow`. Here, we are interested in importing a pre-made workflow. Refer to the example below:
 
 ```python
 import covalent as ct
@@ -127,17 +127,13 @@ result = ct.get_result(dispatch_id, wait=True)
 print(result)
 ```
 
-We have imported the {obj}`.emt.slabs.bulk_to_slabs_flow` function, which takes an `Atoms` object along with several optional parameters. Here, for demonstration purposes, we specify the `slab_static_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is wrap it inside a `@ct.lattice` decorator.
+We have imported the {obj}`.emt.slabs.bulk_to_slabs_flow` function, which takes an `Atoms` object along with several optional parameters. For demonstration purposes, we specify the `slab_static_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is wrap it inside a `@ct.lattice` decorator.
 
 ```{hint}
 You don't need to set `wait=True` in practice. Once you call `ct.dispatch`, the workflow will begin running. The `ct.get_result` function is used to fetch the workflow status and results from the server.
 ```
 
-If you want to understand what is going on underneath the hood, it is worth checking out the source code. Because the number of slabs is not pre-determined, this recipe is using a Covalent feature called a [Sublattice](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#sublattice) that enables dynamic workflows.
-
-```{seealso}
-To learn more about how to construct dynamic workflows in Covalent, see [this tutorial](https://docs.covalent.xyz/docs/user-documentation/tutorials/quantumchemistry/).
-```
+If you want to understand what is going on underneath the hood, it is worth checking out the source code. Because the number of slabs is not pre-determined, this recipe is using a Covalent feature called a [Sublattice](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#sublattice) that enables dynamic workflows. To learn more about how to construct dynamic workflows in Covalent, see [this tutorial](https://docs.covalent.xyz/docs/user-documentation/tutorials/quantumchemistry/).
 
 ![Covalent UI](../_static/user/tutorial3.gif)
 
@@ -242,7 +238,7 @@ executor = ct.executor.SlurmExecutor(
 ```
 
 ```{important}
-The `SlurmExecutor` *must* have `use_srun=False` in order for ASE-based calculators to be launched appropriately.
+The `SlurmExecutor` must have `use_srun=False` in order for ASE-based calculators to be launched appropriately.
 ```
 
 ## Learn More

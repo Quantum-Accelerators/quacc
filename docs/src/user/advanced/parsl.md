@@ -111,7 +111,7 @@ print(future1.result(), future2.result())
 
 For this example, let's consider a toy scenario where we wish to relax a bulk Cu structure, carve all possible slabs, and then run a new relaxation calculation on each slab.
 
-In Quacc, there are two types of recipes: 1) individual compute tasks with the suffix `_job`; 2) pre-made multi-step workflows with the suffix `_flow`. Here, we are interested in importing a pre-made workflow. Refer to the example below:
+In Quacc, there are two types of recipes: individual compute tasks with the suffix `_job` and pre-made multi-step workflows with the suffix `_flow`. Here, we are interested in importing a pre-made workflow. Refer to the example below:
 
 ```python
 from ase.build import bulk
@@ -121,10 +121,10 @@ wf_future = bulk_to_slabs_flow(bulk("Cu"), slab_static_app=None)
 print(wf_future.result())
 ```
 
-We have imported the {obj}`.emt.slabs.parsl.bulk_to_slabs_flow` class, which is supplied an `Atoms` object. Here, for demonstration purposes, we specify the `slab_static_app=None` option to do a relaxation but disable the static calculation on each slab.
+We have imported the {obj}`.emt.slabs.parsl.bulk_to_slabs_flow` function, which is supplied an `Atoms` object. For demonstration purposes, we specify the `slab_static_app=None` option to do a relaxation but disable the static calculation on each slab.
 
 ```{note}
-We usedd `.result()` here because `bulk_to_slabs_flow` is a `@join_app` (similar to a `@python_app` for dynamic workflow steps) that itself returns an `AppFuture`.
+We used `.result()` here because `bulk_to_slabs_flow` is a `@join_app` (similar to a `@python_app` for dynamic workflow steps) that itself returns an `AppFuture`.
 ```
 
 ```{hint}
@@ -137,14 +137,10 @@ Parsl comes with a web dashboard utility to visualize executed workflows. Refer 
 
 ## Setting Executors
 
+Out-of-the-box, Parsl will run on your local machine. However, in practice you will probably want to run your Parsl workflows on HPC machines.
+
 ```{note}
 If you are just starting out, try running some test calculations locally first. Then come back and set up the relevant configuration files for your desired machines.
-```
-
-Out-of-the-box, Parsl will run on your local machine.
-
-```{todo}
-This section on how to dynamically set executor options is still a work in progress.
 ```
 
 ### Configuring Executors
@@ -178,8 +174,14 @@ config = Config(
 )
 ```
 
-```{todo}
+```{warning}
 This example still needs to be tested and will likely need to be updated slightly.
+```
+
+### Swapping Executor Configurations
+
+```{warning}
+This section on how to dynamically set executor options is still a work in progress.
 ```
 
 ## Learn More
