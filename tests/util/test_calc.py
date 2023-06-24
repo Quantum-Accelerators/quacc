@@ -6,6 +6,7 @@ import pytest
 from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.calculators.lj import LennardJones
+from ase.io.trajectory import Trajectory
 from ase.optimize import BFGS, BFGSLineSearch
 
 from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
@@ -136,6 +137,20 @@ def test_run_ase_opt():
     traj = dyn.traj
     assert traj[-1].calc.results is not None
 
+    dyn = run_ase_opt(
+        traj[-1],
+        optimizer=BFGSLineSearch,
+        scratch_dir="test_calc",
+        gzip=False,
+        copy_files=["test_file.txt"],
+        optimizer_kwargs={
+            "restart": None,
+            "trajectory": Trajectory("new_test2.traj", "w", atoms=traj[-1]),
+        },
+    )
+    traj = dyn.traj
+    assert traj[-1].calc.results is not None
+
     with pytest.raises(ValueError):
         run_ase_opt(
             bulk("Cu"),
@@ -190,6 +205,9 @@ def test_run_ase_vib():
     assert os.path.exists("test_file.txt")
     assert os.path.exists("test_file.txt.gz")
     os.remove("test_file.txt.gz")
+
+    with pytest.raises(ValueError):
+        run_ase_vib(bulk("Cu"))
 
 
 def test_bad_run_calc():
