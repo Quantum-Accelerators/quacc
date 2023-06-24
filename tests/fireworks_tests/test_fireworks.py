@@ -1,4 +1,3 @@
-
 import jobflow as jf
 import pytest
 from ase.build import bulk
