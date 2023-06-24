@@ -10,7 +10,7 @@ Make sure you have completed the ["FireWorks Setup"](../../install/advanced/fire
 
 ## Converting Between Jobflow and FireWorks
 
-The `jobflow.managers.fireworks` module has all the tools you need to convert your Jobflow workflows to a format that is suitable for FireWorks.
+The {obj}`jobflow.managers.fireworks` module has all the tools you need to convert your Jobflow workflows to a format that is suitable for FireWorks.
 
 ### Converting a Job to a Firework
 
