@@ -1,3 +1,4 @@
+import os
 from subprocess import PIPE, Popen
 
 import covalent as ct
@@ -13,6 +14,7 @@ def test_config():
             assert ct_config["executors"][executor]["create_unique_workdir"] is True
     if "slurm" in ct_config["executors"]:
         assert ct_config["executors"]["slurm"].get("use_srun", True) is False
+    os.system("quacc config")
 
 
 def test_help():
@@ -20,3 +22,4 @@ def test_help():
     stdout, stderr = process.communicate()
     assert stderr is None
     assert "Show this message and exit" in stdout.decode("utf-8")
+    os.system("quacc")
