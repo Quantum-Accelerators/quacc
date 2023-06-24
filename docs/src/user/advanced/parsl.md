@@ -137,14 +137,10 @@ Parsl comes with a web dashboard utility to visualize executed workflows. Refer 
 
 ## Setting Executors
 
+Out-of-the-box, Parsl will run on your local machine. However, in practice you will probably want to run your Parsl workflows on HPC machines.
+
 ```{note}
 If you are just starting out, try running some test calculations locally first. Then come back and set up the relevant configuration files for your desired machines.
-```
-
-Out-of-the-box, Parsl will run on your local machine.
-
-```{warning}
-This section on how to dynamically set executor options is still a work in progress.
 ```
 
 ### Configuring Executors
@@ -180,6 +176,12 @@ config = Config(
 
 ```{warning}
 This example still needs to be tested and will likely need to be updated slightly.
+```
+
+### Swapping Executor Configurations
+
+```{warning}
+This section on how to dynamically set executor options is still a work in progress.
 ```
 
 ## Learn More

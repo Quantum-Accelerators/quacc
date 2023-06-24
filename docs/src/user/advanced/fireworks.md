@@ -8,7 +8,11 @@
 Make sure you have completed the ["FireWorks Setup"](../../install/advanced/fireworks.md) instructions. Additionally, refer to the ["Using Quacc with Jobflow"](jobflow.md) section before reviewing the content below.
 ```
 
-## Converting a Job to a Firework
+## Converting Between Jobflow and FireWorks
+
+The `jobflow.managers.fireworks` module has all the tools you need to convert your Jobflow workflows to a format that is suitable for FireWorks.
+
+### Converting a Job to a Firework
 
 To convert a `Job` to a `firework` and add it to your launch pad:
 
@@ -21,7 +25,7 @@ lpad = LaunchPad.auto_load()
 lpad.add_wf(fw)
 ```
 
-## Converting a Flow to a Workflow
+### Converting a Flow to a Workflow
 
 To convert a `Flow` to a `workflow` and add it to your launch pad:
 
