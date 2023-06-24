@@ -131,7 +131,17 @@ def test_tutorial3():
 def test_tutorial4():
     from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_flow
 
-    wf_future = bulk_to_slabs_flow(bulk("Cu"), slab_static_app=None)
+    @python_app
+    def relax_app(atoms):
+        from quacc.recipes.emt.core import relax_job
+
+        return relax_job(atoms)
+
+    atoms = bulk("Cu")
+
+    relax_future = relax_app(atoms)
+
+    wf_future = bulk_to_slabs_flow(relax_future.result()["atoms"], slab_static_app=None)
     wf_future.result()
     assert wf_future.done()
 
