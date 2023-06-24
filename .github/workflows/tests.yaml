@@ -39,8 +39,8 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install .[strict,dev,strict,dev,fireworks,optimizers,parsl]
-          pip install covalent-slurm-plugin
+          pip install --no-cache-dir .[strict,dev,strict,dev,fireworks,optimizers,parsl]
+          pip install --no-cache-dir covalent-slurm-plugin
 
       - name: Configure Quacc
         run: quacc config
@@ -87,7 +87,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install .[strict,dev,tblite]
+          pip install --no-cache-dir .[strict,dev,tblite]
 
       - name: Configure Quacc
         run: quacc config
@@ -132,7 +132,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install .[strict,dev]
+          pip install --no-cache-dir .[strict,dev]
 
       - name: Configure Quacc
         run: quacc config
@@ -181,7 +181,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install .[strict,dev]
+          pip install --no-cache-dir .[strict,dev]
 
       - name: Configure Quacc
         run: quacc config
@@ -256,7 +256,7 @@ jobs:
 
       - name: Build and upload dist
         run: |
-          pip install setuptools setuptools_scm wheel
+          pip install --no-cache-dir setuptools setuptools_scm wheel
           python setup.py sdist bdist_wheel
           twine upload --skip-existing dist/*.tar.gz
         env:

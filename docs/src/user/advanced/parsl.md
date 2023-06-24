@@ -6,8 +6,8 @@
 
 Make sure you completed the ["Parsl Setup"](../../install/advanced/parsl.md) section of the installation instructions. Additionally, you should read the Parsl documentation's [Quick Start](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a `@python_app` and `@join_app`, which describe individual compute tasks and dynamic job tasks, respectively.
 
-```{note}
-For a more detailed tutorial on how to use Parsl, refer to the [Parsl Tutorial](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html) and the even more detailed [Parsl user guide](https://parsl.readthedocs.io/en/stable/userguide/index.html).
+```{seealso}
+For a more detailed tutorial on how to use Parsl, refer to the [Parsl tutorial](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html) and the even more detailed [Parsl user guide](https://parsl.readthedocs.io/en/stable/userguide/index.html).
 ```
 
 ## Examples
@@ -61,15 +61,15 @@ wf_future = workflow(atoms)
 print(wf_future.result())
 ```
 
+You can see that it is quite trivial to set up a Parsl workflow using the recipes within Quacc. We define the full workflow as a simple function that stitches together the individual `@python_app` workflow steps.
+
 ```{note}
-Note that the use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object.
+The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object.
 ```
 
-```{hint}
+```{warning}
 Don't call `.result()` in a `return` statement. It will not block like you might naively expect it to.
 ```
-
-You can see that it is quite trivial to set up a Parsl workflow using the recipes within Quacc. We define the full workflow as a simple function that stitches together the individual `@python_app` workflow steps.
 
 ### Running a Simple Parallel Workflow
 
@@ -121,11 +121,11 @@ wf_future = bulk_to_slabs_flow(bulk("Cu"), slab_static_app=None)
 print(wf_future.result())
 ```
 
-```{note}
-We have called `.result()` here because `bulk_to_slabs_flow` is a `@join_app` (similar to a `@python_app` for dynamic workflow steps) that itself returns an `AppFuture`.
-```
-
 We have imported the {obj}`.emt.slabs.parsl.bulk_to_slabs_flow` class, which is supplied an `Atoms` object. Here, for demonstration purposes, we specify the `slab_static_app=None` option to do a relaxation but disable the static calculation on each slab.
+
+```{note}
+We usedd `.result()` here because `bulk_to_slabs_flow` is a `@join_app` (similar to a `@python_app` for dynamic workflow steps) that itself returns an `AppFuture`.
+```
 
 ```{hint}
 If you are interested in rewriting a Covalent workflow into Parsl, it is often relatively straightforward. Compare {obj}`quacc.recipes.emt.slabs` and {obj}`quacc.recipes.emt.slabs.parsl` for the key differences.
