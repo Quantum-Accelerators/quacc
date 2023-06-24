@@ -299,7 +299,7 @@ def run_ase_vib(
     os.chdir(tmpdir)
     vib = Vibrations(atoms, **vib_kwargs)
     vib.run()
-    vib.summary(log=os.path.join(tmpdir, "vib_summary.log"))
+    vib.summary(log="vib_summary.log")
     os.chdir(cwd)
 
     # Gzip files in tmpdir
