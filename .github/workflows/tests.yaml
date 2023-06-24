@@ -39,7 +39,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install .[strict,dev] # remove  after repos are removed from setup.py
+          pip install .[strict,dev]
           pip install covalent-slurm-plugin
 
       - name: Configure Quacc
@@ -87,7 +87,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install .[strict,dev,tblite] # remove  after repos are removed from setup.py
+          pip install .[strict,dev,tblite]
 
       - name: Configure Quacc
         run: quacc config
@@ -132,7 +132,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install .[strict,dev] # remove  after repos are removed from setup.py
+          pip install .[strict,dev]
 
       - name: Configure Quacc
         run: quacc config
@@ -181,7 +181,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install .[strict,dev] # remove  after repos are removed from setup.py
+          pip install .[strict,dev]
 
       - name: Configure Quacc
         run: quacc config
