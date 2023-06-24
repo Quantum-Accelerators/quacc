@@ -5,8 +5,9 @@ Want to get up and running with Quacc as fast possible? Here we go!
 ## Installation
 
 1. Run `pip install git+https://github.com/quantum-accelerators/quacc.git`.
-2. Run `covalent start` and open the URL: http://localhost:48008.
-3. Run a sample workflow and check the webpage for results.
+2. Run `quacc config`.
+3. Run `covalent start` and open the URL: http://localhost:48008.
+4. Run a sample workflow and check the webpage for results.
 
 ## Demo Workflow 1: A Simple One
 
@@ -41,7 +42,7 @@ This demo workflow will relax a bulk Cu structure using the EMT calculator, use 
 ```python
 from ase.build import bulk
 from quacc.recipes.emt.core import relax_job
-from quacc.recipes.emt.slabs import BulkToSlabsFlow
+from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 # Define the workflow and set how to execute
 @ct.lattice(executor="local")
@@ -51,7 +52,7 @@ def workflow(atoms):
     relaxed_bulk = relax_job(atoms)
 
     # With the relaxed bulk as input, generate and relax slabs
-    relaxed_slabs = BulkToSlabsFlow().run(relaxed_bulk["atoms"])
+    relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"])
 
     return relaxed_slabs
 
