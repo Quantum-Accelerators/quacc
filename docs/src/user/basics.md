@@ -30,17 +30,17 @@ print(result)
 
 Walking through step-by-step, we first defined an `Atoms` object representation of the material we wish to run the calculation on. In this example, we have imported the bulk Cu structure from ASE's predefined library of bulk structures.
 
-```{hint}
-You can make an `Atoms` object from common files like a CIF, XYZ, or POSCAR by using the [`ase.io.read`](https://wiki.fysik.dtu.dk/ase/ase/io/io.html) function. For instance, {obj}`from ase.io import read` followed by `atoms = read("</path/to/file>")`.
-```
-
 With the `Atoms` object defined, we then imported a desired recipe and instantiated it. In this case, since we want to use EMT, we can look in {obj}`quacc.recipes.emt` to see all the available recipes. We are interested in doing a structure relaxation, so we imported the {obj}`.emt.core.relax_job` recipe. We then instantiated and ran the recipe by passing in the `Atoms` object we defined earlier.
 
 The recipe output (`result`) is a bit too large to print here; nonetheless, for context, it is a dictionary that has the following primary keys:
 
 `>>> ['atoms', 'atoms_info', 'builder_meta', 'chemsys', 'composition', 'composition_reduced', 'density', 'density_atomic', 'dir_name', 'elements', 'formula_anonymous', 'formula_pretty', 'input_structure', 'name', 'nelements', 'nid', 'nsites', 'parameters', 'parameters_opt', 'results', 'structure', 'symmetry', 'trajectory', 'trajectory_results', 'volume']`
 
-The `atoms` key contains a copy of the output `Atoms` object, the `results` key contains a dictionary of the results of the calculation, and the `parameters` key contains a dictionary of the parameters used in the calculation.
+The `"atoms"` key contains a copy of the output `Atoms` object, the `"results"` key contains a dictionary of the results of the calculation, and the `"parameters"` key contains a dictionary of the parameters used in the calculation.
+
+```{hint}
+You can make an `Atoms` object from common files like a CIF, XYZ, or POSCAR by using the [`ase.io.read`](https://wiki.fysik.dtu.dk/ase/ase/io/io.html) function. For instance, {obj}`from ase.io import read` followed by `atoms = read("</path/to/file>")`.
+```
 
 ## A Simple Mixed-Code Workflow
 
@@ -70,6 +70,6 @@ print(result2)
 The output of most compute jobs is a dictionary summarizing the results of the calculation. It always has a key `"atoms"` that contains a copy of the output `Atoms` object. This can be used to pass structure information between jobs.
 ```
 
-What happens if the first job fails, however? Then the code will crash, no results will be stored, and you'd have to start from scratch. That'd be sad, but thankfully this is where using a workflow manager can save the day.
+What happens if the first job fails, you might ask? Then the code will crash, no results will be stored, and you'd have to start from scratch. That'd be sad, but thankfully this is where using a workflow manager can save the day.
 
 Read on to learn how to define workflows with complex connectivity and how to dispatch them across distributed computing resources.
