@@ -47,7 +47,7 @@ if __name__ == "__main__":
         extras_require={
             "fireworks": ["fireworks"],
             "optimizers": ["sella>=2.3.2"],
-            "parsl": ["parsl[monitoring]"],
+            "parsl": ["parsl"],
             "tblite": ["tblite[ase]; platform_system=='Linux'"],
             "dev": ["black", "isort", "pytest", "pytest-cov"],
             "docs": [
