@@ -1,31 +1,26 @@
-"""Quacc command-line interface"""
+"""Quacc CLI module."""
 import sys
 
+import click
 
-def main() -> None:
+
+@click.group(invoke_without_command=True)
+@click.pass_context
+def cli(ctx: click.Context) -> None:
     """
-    Set up command-line interface.
-
-    Parameters
-    ----------
-    None
-
-    Returns
-    -------
-    None
-
+    Welcome to the Quacc command-line interface.
     """
-    if len(sys.argv) > 1 and sys.argv[1] == "config":
-        configure_covalent()
-    else:
-        print("Invalid command.")
+
+    # Return help message if no command is provided
+    if ctx.invoked_subcommand is None:
+        ctx = click.get_current_context()
+        click.echo(ctx.get_help())
 
 
-def configure_covalent() -> None:
+@click.command(name="config")
+def config_command() -> None:
     """
-    Configure Covalent to work with Quacc.
-
-    This function is called by the `quacc config` command.
+    Modify the Covalent configuration to work with Quacc.
 
     Parameters
     ----------
@@ -62,5 +57,7 @@ def configure_covalent() -> None:
         ct_config = ct.get_config()
 
 
+cli.add_command(config_command)
+
 if __name__ == "__main__":
-    main()
+    cli()

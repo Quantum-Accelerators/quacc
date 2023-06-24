@@ -27,6 +27,10 @@ pip install git+https://github.com/quantum-accelerators/quacc.git
 quacc config
 ```
 
+```{important}
+Run `quacc config` upon install will configure Covalent appropriately for use with Quacc. If you ever delete your Covalent configuration (e.g. via `covalent purge`), you will need to re-run `quacc config`.
+```
+
 Quacc can be installed with several "extras," as outlined in the `setup.py` file. These are described below:
 
 - `quacc[fireworks]`: Installs dependencies to enable the use of FireWorks.
