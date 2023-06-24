@@ -8,7 +8,7 @@ from pydantic import BaseSettings, Field, root_validator
 
 from quacc.presets import vasp as vasp_defaults
 
-_DEFAULT_CONFIG_FILE_PATH = "~/.quacc.yaml"
+_DEFAULT_CONFIG_FILE_PATH = os.path.expanduser("~/.quacc.yaml")
 
 __all__ = ["QuaccSettings"]
 

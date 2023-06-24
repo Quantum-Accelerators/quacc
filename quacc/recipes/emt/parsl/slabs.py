@@ -1,19 +1,18 @@
 """Slab recipes for EMT"""
 from __future__ import annotations
 
-import covalent as ct
 from ase import Atoms
-from covalent._workflow.electron import Electron
+from parsl import join_app, python_app
 
 from quacc.recipes.emt.core import relax_job, static_job
-from quacc.util.slabs import make_max_slabs_from_bulk
 
 
+@join_app
 def bulk_to_slabs_flow(
     atoms: Atoms,
     slabgen_kwargs: dict | None = None,
-    slab_relax_electron: Electron = relax_job,
-    slab_static_electron: Electron | None = static_job,
+    slab_relax_app: python_app = python_app(relax_job),
+    slab_static_app: python_app | None = python_app(static_job),
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
 ) -> list[dict]:
@@ -47,6 +46,8 @@ def bulk_to_slabs_flow(
         List of dictionary of results from quacc.schemas.ase.summarize_run or quacc.schemas.ase.summarize_opt_run
     """
 
+    from quacc.util.slabs import make_max_slabs_from_bulk
+
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}
     slabgen_kwargs = slabgen_kwargs or {}
@@ -54,25 +55,21 @@ def bulk_to_slabs_flow(
     if "relax_cell" not in slab_relax_kwargs:
         slab_relax_kwargs["relax_cell"] = False
 
-    @ct.electron
-    @ct.lattice
     def _relax_distributed(slabs):
-        return [slab_relax_electron(slab, **slab_relax_kwargs) for slab in slabs]
+        return [slab_relax_app(slab, **slab_relax_kwargs) for slab in slabs]
 
-    @ct.electron
-    @ct.lattice
     def _relax_and_static_distributed(slabs):
         return [
-            slab_static_electron(
-                slab_relax_electron(slab, **slab_relax_kwargs)["atoms"],
+            slab_static_app(
+                slab_relax_app(slab, **slab_relax_kwargs).result()["atoms"],
                 **slab_static_kwargs,
             )
             for slab in slabs
         ]
 
-    slabs = ct.electron(make_max_slabs_from_bulk)(atoms, **slabgen_kwargs)
+    slabs = make_max_slabs_from_bulk(atoms, **slabgen_kwargs)
 
-    if slab_static_electron is None:
-        return _relax_distributed(slabs)
-    else:
+    if slab_relax_app and slab_static_app:
         return _relax_and_static_distributed(slabs)
+    else:
+        return _relax_distributed(slabs)

@@ -1,20 +1,17 @@
 import os
 from shutil import rmtree
 
-import jobflow as jf
 import pytest
 from ase.build import bulk, molecule
-from maggma.stores import MemoryStore
 
 from quacc.recipes.vasp.core import double_relax_job, relax_job, static_job
-from quacc.recipes.vasp.jobflow.slabs import BulkToSlabsFlow as JFBulkToSlabsFlow
-from quacc.recipes.vasp.mp import MPRelaxFlow, mp_prerelax_job, mp_relax_job
+from quacc.recipes.vasp.mp import mp_prerelax_job, mp_relax_flow, mp_relax_job
 from quacc.recipes.vasp.qmof import qmof_relax_job
 from quacc.recipes.vasp.slabs import (
-    BulkToSlabsFlow,
-    SlabToAdsFlow,
+    bulk_to_slabs_flow,
     slab_relax_job,
     slab_static_job,
+    slab_to_ads_flow,
 )
 
 
@@ -135,9 +132,9 @@ def test_slab_relax_job():
 def test_slab_dynamic_jobs():
     atoms = bulk("Cu")
 
-    ### --------- Test BulkToSlabsFlow --------- ###
+    ### --------- Test bulk_to_slabs_flow --------- ###
 
-    outputs = BulkToSlabsFlow(slab_static_electron=None).run(atoms)
+    outputs = bulk_to_slabs_flow(atoms, slab_static_electron=None)
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
     assert outputs[1]["nsites"] == 96
@@ -145,7 +142,7 @@ def test_slab_dynamic_jobs():
     assert outputs[3]["nsites"] == 64
     assert [output["parameters"]["isif"] == 2 for output in outputs]
 
-    outputs = BulkToSlabsFlow().run(atoms)
+    outputs = bulk_to_slabs_flow(atoms)
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
     assert outputs[1]["nsites"] == 96
@@ -153,10 +150,11 @@ def test_slab_dynamic_jobs():
     assert outputs[3]["nsites"] == 64
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
-    outputs = BulkToSlabsFlow(
+    outputs = bulk_to_slabs_flow(
+        atoms,
         slab_relax_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
         slab_static_electron=None,
-    ).run(atoms)
+    )
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
     assert outputs[1]["nsites"] == 96
@@ -166,9 +164,10 @@ def test_slab_dynamic_jobs():
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
     assert [output["parameters"]["encut"] == 450 for output in outputs]
 
-    outputs = BulkToSlabsFlow(
+    outputs = bulk_to_slabs_flow(
+        atoms,
         slab_static_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
-    ).run(atoms)
+    )
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
     assert outputs[1]["nsites"] == 96
@@ -178,32 +177,36 @@ def test_slab_dynamic_jobs():
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
     assert [output["parameters"]["encut"] == 450 for output in outputs]
 
-    ### --------- Test SlabToAdsorbatesJob --------- ###
+    ### --------- Test slab_to_ads_flow --------- ###
     atoms = outputs[0]["atoms"]
     adsorbate = molecule("H2")
 
-    outputs = SlabToAdsFlow(slab_static_electron=None).run(atoms, adsorbate)
+    outputs = slab_to_ads_flow(atoms, adsorbate, slab_static_electron=None)
 
     assert [output["nsites"] == 82 for output in outputs]
     assert [output["parameters"]["isif"] == 2 for output in outputs]
 
-    outputs = SlabToAdsFlow().run(atoms, adsorbate)
+    outputs = slab_to_ads_flow(atoms, adsorbate)
     assert [output["nsites"] == 82 for output in outputs]
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
-    outputs = SlabToAdsFlow(
+    outputs = slab_to_ads_flow(
+        atoms,
+        adsorbate,
         slab_relax_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
         slab_static_electron=None,
-    ).run(atoms, adsorbate)
+    )
 
     assert [output["nsites"] == 82 for output in outputs]
     assert [output["parameters"]["isif"] == 2 for output in outputs]
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
     assert [output["parameters"]["encut"] == 450 for output in outputs]
 
-    outputs = SlabToAdsFlow(
+    outputs = slab_to_ads_flow(
+        atoms,
+        adsorbate,
         slab_static_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
-    ).run(atoms, adsorbate)
+    )
 
     assert [output["nsites"] == 82 for output in outputs]
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
@@ -212,7 +215,7 @@ def test_slab_dynamic_jobs():
 
     adsorbate2 = molecule("CH3")
     adsorbate2.set_initial_magnetic_moments([1, 0, 0, 0])
-    outputs = SlabToAdsFlow().run(atoms, adsorbate2)
+    outputs = slab_to_ads_flow(atoms, adsorbate2)
     assert [output["nsites"] == 84 for output in outputs]
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
@@ -287,28 +290,6 @@ def test_qmof():
     output = qmof_relax_job(atoms)
 
 
-def test_jf_slab_dynamic_jobs():
-    store = jf.JobStore(MemoryStore())
-
-    atoms = bulk("Cu")
-
-    flow = JFBulkToSlabsFlow(slab_static_job=None).make(atoms)
-    jf.run_locally(flow, store=store, ensure_success=True)
-
-    flow = JFBulkToSlabsFlow(
-        slab_static_job=None,
-        slab_relax_kwargs={"calc_swaps": {"nelmin": 6}},
-    ).make(atoms)
-    jf.run_locally(flow, store=store, ensure_success=True)
-
-    flow = JFBulkToSlabsFlow(
-        slab_relax_kwargs={"calc_swaps": {"nelmin": 6}},
-    ).make(atoms, slabgen_kwargs={"max_slabs": 2})
-    responses = jf.run_locally(flow, store=store, ensure_success=True)
-
-    assert len(responses) == 5
-
-
 def test_mp():
     atoms = bulk("Cu")
     output = mp_prerelax_job(atoms)
@@ -329,7 +310,7 @@ def test_mp():
     assert output["parameters"]["ismear"] == 2
     assert "kpts" not in output["parameters"]
 
-    output = MPRelaxFlow().run(atoms)
+    output = mp_relax_flow(atoms)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["xc"] == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02
@@ -339,7 +320,7 @@ def test_mp():
     assert output["parameters"]["kspacing"] == 0.22
 
     atoms = bulk("Fe")
-    output = MPRelaxFlow().run(atoms)
+    output = mp_relax_flow(atoms)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["xc"] == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02
@@ -351,7 +332,7 @@ def test_mp():
     atoms = molecule("O2")
     atoms.center(vacuum=10)
     atoms.pbc = True
-    output = MPRelaxFlow().run(atoms)
+    output = mp_relax_flow(atoms)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["xc"] == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02

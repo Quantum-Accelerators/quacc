@@ -6,7 +6,7 @@ import pytest
 from ase.build import bulk, molecule
 
 from quacc.recipes.emt.core import relax_job, static_job
-from quacc.recipes.emt.slabs import BulkToSlabsFlow
+from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 
 def teardown_module():
@@ -21,15 +21,6 @@ def teardown_module():
             os.remove(f)
         if "quacc-tmp" in f or f == "tmp_dir":
             rmtree(f)
-
-
-def test_covalent_config():
-    ct_config = ct.get_config()
-    for executor in ct_config["executors"]:
-        if "create_unique_workdir" in ct_config["executors"][executor]:
-            assert ct_config["executors"][executor]["create_unique_workdir"] is True
-    if "slurm" in ct_config["executors"]:
-        assert ct_config["executors"]["slurm"].get("use_srun", True) is False
 
 
 @pytest.mark.skipif(
@@ -49,7 +40,7 @@ def test_tutorials():
     @ct.lattice(executor="local")
     def workflow_start2(atoms):
         relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = BulkToSlabsFlow().run(relaxed_bulk["atoms"])
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"])
         return relaxed_slabs
 
     atoms = bulk("Cu")
@@ -87,8 +78,8 @@ def test_tutorials():
     @ct.lattice
     def workflow3(atoms):
         relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = BulkToSlabsFlow(slab_static_electron=None).run(
-            relaxed_bulk["atoms"]
+        relaxed_slabs = bulk_to_slabs_flow(
+            relaxed_bulk["atoms"], slab_static_electron=None
         )
         return relaxed_slabs
 

@@ -31,6 +31,7 @@ if __name__ == "__main__":
             "Operating System :: MacOS",
         ],
         data_files=["LICENSE.md"],
+        entry_points={"console_scripts": ["quacc = quacc._cli.cli:cli"]},
         zip_safe=False,
         install_requires=[
             "ase @ https://gitlab.com/argon214/ase/-/archive/rosen-all-open-PRs/ase-rosen-all-open-PRs.zip",  # waiting on my PRs, then >3.22.1
@@ -46,7 +47,7 @@ if __name__ == "__main__":
         extras_require={
             "fireworks": ["fireworks"],
             "optimizers": ["sella>=2.3.2"],
-            "parsl": ["parsl[monitoring]"],
+            "parsl": ["parsl"],
             "tblite": ["tblite[ase]; platform_system=='Linux'"],
             "dev": ["black", "isort", "pytest", "pytest-cov"],
             "docs": [
