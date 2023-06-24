@@ -217,11 +217,11 @@ def run_ase_opt(
     # Run calculation
     os.chdir(tmpdir)
     dyn.run(fmax=fmax, steps=max_steps)
-    os.chdir(cwd)
 
     # We attach the actual trajectory here. This is
     # admittedly a bit of a monkeypatch...
     dyn.traj = read(traj_filepath, index=":")
+    os.chdir(cwd)
 
     # Gzip files in tmpdir
     if gzip:
