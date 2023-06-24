@@ -121,14 +121,14 @@ wf_future = bulk_to_slabs_flow(bulk("Cu"), slab_static_app=None)
 print(wf_future.result())
 ```
 
-We have imported the {obj}`.emt.slabs.parsl.bulk_to_slabs_flow` function, which is supplied an `Atoms` object. For demonstration purposes, we specify the `slab_static_app=None` option to do a relaxation but disable the static calculation on each slab.
+We have imported the {obj}`.emt.parsl.slabs.bulk_to_slabs_flow` function, which is supplied an `Atoms` object. For demonstration purposes, we specify the `slab_static_app=None` option to do a relaxation but disable the static calculation on each slab.
 
 ```{note}
 We used `.result()` here because `bulk_to_slabs_flow` is a `@join_app` (similar to a `@python_app` for dynamic workflow steps) that itself returns an `AppFuture`.
 ```
 
 ```{hint}
-If you are interested in rewriting a Covalent workflow into Parsl, it is often relatively straightforward. Compare {obj}`quacc.recipes.emt.slabs` and {obj}`quacc.recipes.emt.slabs.parsl` for the key differences.
+If you are interested in rewriting a Covalent workflow into Parsl, it is relatively straightforward. Compare {obj}`quacc.recipes.emt.slabs` and {obj}`quacc.recipes.emt.parsl.slabs` for an example.
 ```
 
 ## Visualization
