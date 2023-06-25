@@ -5,18 +5,18 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "quacc"
 description="A platform to enable high-throughput, database-driven quantum chemistry and computational materials science"
+version = "0.1.0"
 readme = "README.md"
-keywords = ["high-throughput", "automated", "workflow", "dft"]
 license = { text = "BSD-3" }
 authors = [{ name = "Andrew S. Rosen", email = "asrosen93@gmail.com" }]
 maintainers = [{ name = "Andrew S. Rosen", email = "asrosen93@gmail.com" }]
-version = "0.1.0"
+keywords = ["high-throughput", "automated", "workflow", "dft"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering",
     "Operating System :: Unix",
@@ -74,7 +74,6 @@ quacc = ["py.typed"]
 quacc = "quacc._cli.cli:cli"
 
 [project.urls]
-homepage = "https://github.com/Quantum-Accelerators/quacc"
 repository = "https://github.com/Quantum-Accelerators/quacc"
 documentation = "https://quantum-accelerators.github.io/quacc/"
 changelog = "https://github.com/Quantum-Accelerators/quacc/blob/main/CHANGELOG.md"
