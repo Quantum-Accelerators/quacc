@@ -3,15 +3,15 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-import jobflow as jf
 from ase import Atoms
+from jobflow import Flow, Maker, Response, job
 
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.util.slabs import make_max_slabs_from_bulk
 
 
 @dataclass
-class BulkToSlabsFlow(jf.Maker):
+class BulkToSlabsFlow(Maker):
     """
     Workflow consisting of:
 
@@ -36,13 +36,13 @@ class BulkToSlabsFlow(jf.Maker):
     """
 
     name: str = "EMT BulkToSlabsFlow"
-    slab_relax_job: jf.Job = jf.job(relax_job)
-    slab_static_job: jf.Job | None = jf.job(static_job)
+    slab_relax_job: job = job(relax_job)
+    slab_static_job: job | None = job(static_job)
     slab_relax_kwargs: dict | None = None
     slab_static_kwargs: dict | None = None
 
-    @jf.job
-    def make(self, atoms: Atoms, slabgen_kwargs: dict = None) -> jf.Response:
+    @job
+    def make(self, atoms: Atoms, slabgen_kwargs: dict = None) -> Response:
         """
         Make the run.
 
@@ -55,8 +55,8 @@ class BulkToSlabsFlow(jf.Maker):
 
         Returns
         -------
-        jf.Response
-            A Flow of relaxation and static jobs for the generated slabs.
+        Response
+            A Response containing Flow of relaxation and static jobs for the generated slabs.
         """
         self.slab_relax_kwargs = self.slab_relax_kwargs or {}
         self.slab_static_kwargs = self.slab_static_kwargs or {}
@@ -84,9 +84,9 @@ class BulkToSlabsFlow(jf.Maker):
                 jobs += [job1, job2]
                 outputs.append(job2.output)
 
-        return jf.Response(
+        return Response(
             output={"input_bulk": atoms, "generated_slabs": slabs},
-            replace=jf.Flow(
+            replace=Flow(
                 jobs,
                 output=outputs,
                 name=self.name,
