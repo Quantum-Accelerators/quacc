@@ -5,6 +5,7 @@ from pathlib import Path
 from ase import Atoms
 from ase.build import bulk, molecule
 from ase.io import read
+import pytest
 
 from quacc.calculators.vasp import Vasp
 from quacc.util.atoms import (
@@ -12,7 +13,7 @@ from quacc.util.atoms import (
     get_atoms_id,
     get_highest_block,
     prep_next_run,
-    true_charge_and_spin,
+    check_charge_and_spin,
 )
 
 FILE_DIR = Path(__file__).resolve().parent
@@ -23,6 +24,7 @@ ATOMS_NOMAG = read(
 ATOMS_NOSPIN = read(
     os.path.join(FILE_DIR, "..", "calculators", "vasp", "OUTCAR_nospin.gz")
 )
+OS_ATOMS = read(os.path.join(FILE_DIR, "OS_test.xyz"))
 
 
 def test_init():
@@ -144,14 +146,40 @@ def test_get_highest_block():
     assert get_highest_block(atoms) == "p"
 
 
-def test_true_charge_and_spin():
+def test_check_charge_and_spin():
     atoms = molecule("CH3")
-    charge, multiplicity = true_charge_and_spin(atoms)
+    charge, spin_multiplicity = check_charge_and_spin(atoms)
     assert charge == 0
-    assert multiplicity == 2
-    charge, multiplicity = true_charge_and_spin(atoms, charge=-1)
+    assert spin_multiplicity == 2
+    with pytest.raises(RuntimeError):
+        charge, spin_multiplicity = check_charge_and_spin(atoms, spin_multiplicity=1)
+    with pytest.raises(ValueError):
+        charge, spin_multiplicity = check_charge_and_spin(atoms, charge=0, spin_multiplicity=1)
+    with pytest.raises(RuntimeError):
+        charge, spin_multiplicity = check_charge_and_spin(atoms, spin_multiplicity=3)
+    with pytest.raises(ValueError):
+        charge, spin_multiplicity = check_charge_and_spin(atoms, charge=0, spin_multiplicity=3)
+    charge, spin_multiplicity = check_charge_and_spin(atoms, charge=-1)
     assert charge == -1
-    assert multiplicity == 1
-    charge, multiplicity = true_charge_and_spin(atoms, charge=-1, multiplicity=3)
+    assert spin_multiplicity == 1
+    charge, spin_multiplicity = check_charge_and_spin(atoms, charge=-1, spin_multiplicity=3)
     assert charge == -1
-    assert multiplicity == 3
+    assert spin_multiplicity == 3
+    charge, spin_multiplicity = check_charge_and_spin(OS_ATOMS)
+    assert charge == 0
+    assert spin_multiplicity == 2
+    charge, spin_multiplicity = check_charge_and_spin(OS_ATOMS, charge=1)
+    assert charge == 1
+    assert spin_multiplicity == 1
+    charge, spin_multiplicity = check_charge_and_spin(OS_ATOMS, charge=0, spin_multiplicity=4)
+    assert charge == 0
+    assert spin_multiplicity == 4
+    with pytest.raises(ValueError):
+        charge, spin_multiplicity = check_charge_and_spin(OS_ATOMS, charge=0, spin_multiplicity=3)
+    atoms = molecule("O2")
+    charge, spin_multiplicity = check_charge_and_spin(atoms)
+    assert charge == 0
+    assert spin_multiplicity == 3
+    charge, spin_multiplicity = check_charge_and_spin(atoms, charge=0)
+    assert charge == 0
+    assert spin_multiplicity == 1 # Somewhat controvertial if this should end up at 1 or 3

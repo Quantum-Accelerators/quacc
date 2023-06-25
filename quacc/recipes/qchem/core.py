@@ -13,7 +13,7 @@ from monty.dev import requires
 from quacc.calculators.qchem import QChem
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
-from quacc.util.atoms import true_charge_and_spin
+from quacc.util.atoms import check_charge_and_spin
 
 try:
     from sella import IRC, Sella
@@ -26,7 +26,7 @@ def static_job(
     atoms: Atoms,
     cores: int | None = None,
     charge: int | None = None,
-    multiplicity: int | None = None,
+    spin_multiplicity: int | None = None,
     xc: str = "wb97mv",
     basis: str = "def2-tzvpd",
     scf_algorithm: str = "diis",
@@ -48,7 +48,7 @@ def static_job(
     charge
         The total charge of the molecular system.
         Effectively defaults to zero.
-    multiplicity
+    spin_multiplicity
         The spin multiplicity of the molecular system.
         Effectively defaults to the lowest spin state given the molecular structure and charge.
     xc
@@ -80,7 +80,7 @@ def static_job(
     if pcm_dielectric is not None and smd_solvent is not None:
         raise ValueError("PCM and SMD cannot be employed simultaneously! Exiting...")
 
-    true_charge, true_spin = true_charge_and_spin(atoms, charge, multiplicity)
+    checked_charge, checked_spin_multiplicity = check_charge_and_spin(atoms, charge, spin_multiplicity)
 
     input_atoms = deepcopy(atoms)
 
@@ -109,7 +109,7 @@ def static_job(
         input_atoms=atoms,
         cores=cores,
         charge=charge,
-        spin_multiplicity=multiplicity,
+        spin_multiplicity=spin_multiplicity,
         qchem_input_params=qchem_input_params,
     )
     atoms.calc = calc
@@ -117,7 +117,7 @@ def static_job(
     return summarize_run(
         atoms,
         input_atoms=input_atoms,
-        charge_and_multiplicity=(true_charge, true_spin),
+        charge_and_multiplicity=(checked_charge, checked_spin_multiplicity),
         additional_fields={"name": "Q-Chem Static"},
     )
 
@@ -127,7 +127,7 @@ def relax_job(
     atoms: Atoms,
     cores: int | None = None,
     charge: int | None = None,
-    multiplicity: int | None = None,
+    spin_multiplicity: int | None = None,
     xc: str = "wb97mv",
     basis: str = "def2-svpd",
     scf_algorithm: str = "diis",
@@ -151,7 +151,7 @@ def relax_job(
     charge
         The total charge of the molecular system.
         Effectively defaults to zero.
-    multiplicity
+    spin_multiplicity
         The spin multiplicity of the molecular system.
         Effectively defaults to the lowest spin state given the molecular structure and charge.
     xc
@@ -185,7 +185,7 @@ def relax_job(
 
     # Reminder to self: exposing TRICs?
 
-    true_charge, true_spin = true_charge_and_spin(atoms, charge, multiplicity)
+    checked_charge, checked_spin_multiplicity = check_charge_and_spin(atoms, charge, spin_multiplicity)
 
     opt_swaps = opt_swaps or {}
     opt_defaults = {
@@ -226,7 +226,7 @@ def relax_job(
         input_atoms=atoms,
         cores=cores,
         charge=charge,
-        spin_multiplicity=multiplicity,
+        spin_multiplicity=spin_multiplicity,
         qchem_input_params=qchem_input_params,
     )
     atoms.calc = calc
@@ -235,7 +235,7 @@ def relax_job(
     return summarize_opt_run(
         dyn,
         check_convergence=check_convergence,
-        charge_and_multiplicity=(true_charge, true_spin),
+        charge_and_multiplicity=(checked_charge, checked_spin_multiplicity),
         additional_fields={"name": "Q-Chem Optimization"},
     )
 
@@ -249,7 +249,7 @@ def ts_job(
     atoms: Atoms,
     cores: int | None = None,
     charge: int | None = None,
-    multiplicity: int | None = None,
+    spin_multiplicity: int | None = None,
     xc: str = "wb97mv",
     basis: str = "def2-svpd",
     scf_algorithm: str = "diis",
@@ -273,7 +273,7 @@ def ts_job(
     charge
         The total charge of the molecular system.
         Effectively defaults to zero.
-    multiplicity
+    spin_multiplicity
         The spin multiplicity of the molecular system.
         Effectively defaults to the lowest spin state given the molecular structure and charge.
     xc
@@ -309,7 +309,7 @@ def ts_job(
     #   - exposing TRICs?
     #   - passing initial Hessian?
 
-    true_charge, true_spin = true_charge_and_spin(atoms, charge, multiplicity)
+    checked_charge, checked_spin_multiplicity = check_charge_and_spin(atoms, charge, spin_multiplicity)
 
     opt_swaps = opt_swaps or {}
     opt_defaults = {
@@ -350,7 +350,7 @@ def ts_job(
         input_atoms=atoms,
         cores=cores,
         charge=charge,
-        spin_multiplicity=multiplicity,
+        spin_multiplicity=spin_multiplicity,
         qchem_input_params=qchem_input_params,
     )
     atoms.calc = calc
@@ -359,7 +359,7 @@ def ts_job(
     return summarize_opt_run(
         dyn,
         check_convergence=check_convergence,
-        charge_and_multiplicity=(true_charge, true_spin),
+        charge_and_multiplicity=(checked_charge, checked_spin_multiplicity),
         additional_fields={"name": "Q-Chem TS Optimization"},
     )
 
@@ -374,7 +374,7 @@ def irc_job(
     direction: str,
     cores: int | None = None,
     charge: int | None = None,
-    multiplicity: int | None = None,
+    spin_multiplicity: int | None = None,
     xc: str = "wb97mv",
     basis: str = "def2-svpd",
     scf_algorithm: str = "diis",
@@ -400,7 +400,7 @@ def irc_job(
     charge
         The total charge of the molecular system.
         Effectively defaults to zero.
-    multiplicity
+    spin_multiplicity
         The spin multiplicity of the molecular system.
         Effectively defaults to the lowest spin state given the molecular structure and charge.
     xc
@@ -436,7 +436,7 @@ def irc_job(
     #   - exposing TRICs?
     #   - passing initial Hessian?
 
-    true_charge, true_spin = true_charge_and_spin(atoms, charge, multiplicity)
+    checked_charge, checked_spin_multiplicity = check_charge_and_spin(atoms, charge, spin_multiplicity)
 
     if direction not in ["forward", "reverse"]:
         raise ValueError("direction must be 'forward' or 'reverse'! Exiting...")
@@ -481,7 +481,7 @@ def irc_job(
         input_atoms=atoms,
         cores=cores,
         charge=charge,
-        spin_multiplicity=multiplicity,
+        spin_multiplicity=spin_multiplicity,
         qchem_input_params=qchem_input_params,
     )
     atoms.calc = calc
@@ -490,7 +490,7 @@ def irc_job(
     return summarize_opt_run(
         dyn,
         check_convergence=check_convergence,
-        charge_and_multiplicity=(true_charge, true_spin),
+        charge_and_multiplicity=(checked_charge, checked_spin_multiplicity),
         additional_fields={"name": "Q-Chem IRC Optimization"},
     )
 
@@ -505,7 +505,7 @@ def quasi_irc_job(
     direction: str,
     cores: int | None = None,
     charge: int | None = None,
-    multiplicity: int | None = None,
+    spin_multiplicity: int | None = None,
     xc: str = "wb97mv",
     basis: str = "def2-svpd",
     scf_algorithm: str = "diis",
@@ -532,7 +532,7 @@ def quasi_irc_job(
     charge
         The total charge of the molecular system.
         Effectively defaults to zero.
-    multiplicity
+    spin_multiplicity
         The spin multiplicity of the molecular system.
         Effectively defaults to the lowest spin state given the molecular structure and charge.
     xc
@@ -587,7 +587,7 @@ def quasi_irc_job(
         direction=direction,
         cores=cores,
         charge=charge,
-        multiplicity=multiplicity,
+        spin_multiplicity=spin_multiplicity,
         xc=xc,
         basis=basis,
         scf_algorithm=scf_algorithm,
@@ -602,7 +602,7 @@ def quasi_irc_job(
         atoms=irc_summary["atoms"],
         cores=cores,
         charge=charge,
-        multiplicity=multiplicity,
+        spin_multiplicity=spin_multiplicity,
         xc=xc,
         basis=basis,
         scf_algorithm=scf_algorithm,
