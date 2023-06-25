@@ -29,6 +29,7 @@ except ImportError:
 FILE_DIR = Path(__file__).resolve().parent
 QCHEM_DIR = os.path.join(FILE_DIR, "qchem_examples")
 TEST_ATOMS = read(os.path.join(FILE_DIR, "test.xyz"))
+OS_ATOMS = read(os.path.join(FILE_DIR, "OS_test.xyz"))
 
 
 def qcinput_nearly_equal(qcinput1, qcinput2):
@@ -160,6 +161,10 @@ def test_static_job(monkeypatch):
     
     with pytest.raises(ValueError):
         output = static_job(atoms=TEST_ATOMS, pcm_dielectric="3.0", smd_solvent="water")
+
+    monkeypatch.setattr(QChem, "read_results", mock_read)
+    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute4)
+    output = static_job(OS_ATOMS)
 
 
 @pytest.mark.skipif(

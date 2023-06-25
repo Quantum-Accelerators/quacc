@@ -14,6 +14,7 @@ from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.qchem.outputs import QCOutput
 from pymatgen.io.qchem.sets import ForceSet
 
+from quacc.util.atoms import check_charge_and_spin
 from quacc.custodian import qchem as custodian_qchem
 
 
@@ -65,6 +66,10 @@ class QChem(FileIOCalculator):
         self.spin_multiplicity = spin_multiplicity
         self.qchem_input_params = qchem_input_params or {}
         self.kwargs = kwargs
+
+        if self.charge is None and self.spin_multiplicity is not None:
+            raise RuntimeError("If setting spin_multiplicity, must also specify charge! Exiting...")
+
         self.default_parameters = {
             "cores": self.cores,
             "charge": self.charge,
@@ -79,6 +84,10 @@ class QChem(FileIOCalculator):
                         ] = self.qchem_input_params[key][subkey][subsubkey]
             else:
                 self.default_parameters[key] = self.qchem_input_params[key]
+
+        charge, spin_multiplicity = check_charge_and_spin(input_atoms, self.charge, self.spin_multiplicity)
+        self.charge = charge
+        self.spin_multiplicity = spin_multiplicity
 
         # Get Q-Chem executable command
         self.command = self._manage_environment()
@@ -115,14 +124,9 @@ class QChem(FileIOCalculator):
 
     def write_input(self, atoms, properties=None, system_changes=None):
         FileIOCalculator.write_input(self, atoms, properties, system_changes)
+        atoms.charge = self.charge
+        atoms.spin_multiplicity = self.spin_multiplicity
         mol = AseAtomsAdaptor.get_molecule(atoms)
-        if self.charge is not None:
-            if self.spin_multiplicity is not None:
-                mol.set_charge_and_spin(
-                    charge=self.charge, spin_multiplicity=self.spin_multiplicity
-                )
-            else:
-                mol.set_charge_and_spin(charge=self.charge)
         if self.prev_orbital_coeffs is not None:
             with open("53.0", mode="wb") as file:
                 for val in self.prev_orbital_coeffs:
