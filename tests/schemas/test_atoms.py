@@ -33,9 +33,9 @@ def test_atoms_to_metadata():
 
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].symbol = "X"
+    atoms.info["test"] = "hi"
     atoms_no_dummy = atoms.copy()
     del atoms_no_dummy[[atom.index for atom in atoms if atom.symbol == "X"]]
-    atoms.info["test"] = "hi"
     results = atoms_to_metadata(atoms)
     assert results["atoms"].info.get("test", None) == "hi"
     assert results["structure"] == AseAtomsAdaptor.get_structure(atoms_no_dummy)
