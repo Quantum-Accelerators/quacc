@@ -150,12 +150,12 @@ print(wf_future.result())
 
 When running a Covalent-based workflow like {obj}`.emt.slabs.bulk_to_slabs_flow` above, the entire function will run as a single compute task even though it is composed of several individual sub-tasks. If these sub-tasks are compute-intensive, this might not be the most efficient use of resources.
 
-Quacc fully supports the development of Parsl-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Parsl-specific {obj}`.emt.parsl.slabs.bulk_to_slabs_flow` workflow:
+Quacc fully supports the development of Parsl-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Parsl-specific {obj}`.emt.parsl.slabs.bulk_to_slabs_app` workflow:
 
 ```python
 from parsl import python_app
 from ase.build import bulk
-from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_flow
+from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_app
 
 @python_app
 def relax_app(atoms):
@@ -168,14 +168,14 @@ atoms = bulk("Cu")
 
 relax_future = relax_app(atoms)
 
-wf_future = bulk_to_slabs_flow(relax_future.result()["atoms"], slab_static_app=None)
+wf_future = bulk_to_slabs_app(relax_future.result()["atoms"], slab_static_app=None)
 print(wf_future.result())
 ```
 
-In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing {obj}`.emt.parsl.slabs.bulk_to_slabs_flow` with its Covalent counterpart {obj}`.emt.slabs.bulk_to_slabs_flow`, you can see that the two are extremely similar such that it is often straightforward to interconvert between the two.
+In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing {obj}`.emt.parsl.slabs.bulk_to_slabs_app` with its Covalent counterpart {obj}`.emt.slabs.bulk_to_slabs_flow`, you can see that the two are extremely similar such that it is often straightforward to interconvert between the two.
 
 ```{note}
-We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is defined in Quacc as a `@join_app` (similar to a `@python_app` for dynamic workflow steps) that itself returns an `AppFuture`. This is also why we call `.result()` on it.
+We didn't need to wrap `bulk_to_slabs_app` with a decorator because it is defined in Quacc as a `@join_app` (similar to a `@python_app` for dynamic workflow steps) that itself returns an `AppFuture`. This is also why we call `.result()` on it.
 ```
 
 ## Visualization
