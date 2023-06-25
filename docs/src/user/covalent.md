@@ -199,9 +199,13 @@ Covalent has several [configuration options](https://docs.covalent.xyz/docs/user
 If you ever delete your Covalent configuration (e.g. via `covalent purge`), you will need to re-run `quacc config`.
 ```
 
+By default, the Covalent configuration file can be found at `~/.config/covalent/covalent.conf`. There are additional Covalent configuration parameters you may be interested in changing as you become familair with Quacc. For instance, the `results_dir` is where Covalent stores all the pickled results that are displayed in the UI. This is, by default, located at `~/.local/share/covalent`.
+
 ### Configuring Executors
 
-Refer to the [executor documentation](https://docs.covalent.xyz/docs/features/executor-plugins/exe) for instructions on how to configure Covalent for your desired high-performance computing machine.
+Refer to the [executor documentation](https://docs.covalent.xyz/docs/features/executor-plugins/exe) for instructions on how to configure Covalent for your desired machines.
+
+By default, the `workdir` for the `Dask` (default) and `local` executors is set to `~/.cache/covalent/workdir`. This is where any files generated at runtime will be stored. You can change both of these parameters to the directories of your choosing by editing the Covalent configuration file directly or via the `ct.set_config()` command.
 
 For submitting jobs to [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/) from your local machine, an example `SlurmExecutor` configuration with support for an [`sshproxy`](https://docs.nersc.gov/connect/mfa/#sshproxy)-based multi-factor authentication certificate might look like the following:
 

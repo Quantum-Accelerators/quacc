@@ -55,6 +55,10 @@ def config_command() -> None:
         ct.set_config({"executors.slurm.use_srun": False})
         ct_config = ct.get_config()
 
+    print(
+        "Covalent configuration: Complete!\nIf you clear your Covalent configuration, make sure to re-run `quacc config`."
+    )
+
 
 cli.add_command(config_command)
 

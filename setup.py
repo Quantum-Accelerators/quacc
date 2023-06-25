@@ -73,7 +73,7 @@ if __name__ == "__main__":
                 "monty==2023.5.8",
                 "numpy==1.25.0",
                 "pydantic==1.10.2",
-                "pymatgen>=2023.6.23",  # waiting on >2023.05.31
+                "pymatgen>=2023.6.23",
             ],
         },
         tests_require=["pytest"],
