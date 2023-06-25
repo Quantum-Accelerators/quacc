@@ -68,8 +68,13 @@ def static_job(
 
     calc_swaps = calc_swaps or {}
 
-    charge = charge or int(atoms.get_initial_charges().sum())
-    multiplicity = multiplicity or int(1 + atoms.get_initial_magnetic_moments().sum())
+    charge = int(atoms.get_initial_charges().sum()) if charge is None else charge
+    multiplicity = (
+        int(1 + atoms.get_initial_magnetic_moments().sum())
+        if multiplicity is None
+        else multiplicity
+    )
+
     defaults = {
         "mem": "16GB",
         "chk": "Gaussian.chk",
@@ -154,8 +159,12 @@ def relax_job(
 
     calc_swaps = calc_swaps or {}
 
-    charge = charge or int(atoms.get_initial_charges().sum())
-    multiplicity = multiplicity or int(1 + atoms.get_initial_magnetic_moments().sum())
+    charge = int(atoms.get_initial_charges().sum()) if charge is None else charge
+    multiplicity = (
+        int(1 + atoms.get_initial_magnetic_moments().sum())
+        if multiplicity is None
+        else multiplicity
+    )
 
     defaults = {
         "mem": "16GB",
