@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import covalent as ct
 from ase import Atoms
-from covalent._workflow.electron import Electron
 
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.util.slabs import make_max_slabs_from_bulk
@@ -12,8 +11,8 @@ from quacc.util.slabs import make_max_slabs_from_bulk
 def bulk_to_slabs_flow(
     atoms: Atoms,
     slabgen_kwargs: dict | None = None,
-    slab_relax_electron: Electron = relax_job,
-    slab_static_electron: Electron | None = static_job,
+    slab_relax_electron: ct.electron = relax_job,
+    slab_static_electron: ct.electron | None = static_job,
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
 ) -> list[dict]:

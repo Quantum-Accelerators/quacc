@@ -3,19 +3,21 @@ from __future__ import annotations
 
 from ase import Atoms
 from parsl import join_app, python_app
+from parsl.app.python import PythonApp
+from parsl.dataflow.futures import AppFuture
 
 from quacc.recipes.emt.core import relax_job, static_job
 
 
 @join_app
-def bulk_to_slabs_flow(
+def bulk_to_slabs_app(
     atoms: Atoms,
     slabgen_kwargs: dict | None = None,
-    slab_relax_app: python_app = python_app(relax_job),
-    slab_static_app: python_app | None = python_app(static_job),
+    slab_relax_app: PythonApp = python_app(relax_job),
+    slab_static_app: PythonApp | None = python_app(static_job),
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
-) -> list[dict]:
+) -> AppFuture:
     """
     Workflow consisting of:
 
@@ -42,8 +44,8 @@ def bulk_to_slabs_flow(
 
     Returns
     -------
-    list[dict]
-        List of dictionary of results from quacc.schemas.ase.summarize_run or quacc.schemas.ase.summarize_opt_run
+    AppFuture
+        An AppFuture whose .result() is a list[dict]
     """
 
     from quacc.util.slabs import make_max_slabs_from_bulk
