@@ -63,9 +63,11 @@ def static_job(
 
     calc_swaps = calc_swaps or {}
 
-    charge = charge or round(int(atoms.get_initial_charges().sum()))
-    multiplicity = multiplicity or round(
-        1 + int(atoms.get_initial_magnetic_moments().sum())
+    charge = charge if charge is not None else int(atoms.get_initial_charges().sum())
+    multiplicity = (
+        multiplicity
+        if multiplicity is not None
+        else int(1 + atoms.get_initial_magnetic_moments().sum())
     )
 
     defaults = {
