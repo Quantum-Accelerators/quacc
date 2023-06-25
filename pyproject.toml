@@ -37,6 +37,7 @@ dependencies = [
 
 [project.optional-dependencies]
 fireworks = ["fireworks"]
+newtonnet = ["newtonnet @ git+https://github.com/ericyuan00000/NewtonNet.git"]
 optimizers = ["sella>=2.3.2"]
 parsl = ["parsl"]
 tblite = ["tblite[ase]; platform_system=='Linux'"]
