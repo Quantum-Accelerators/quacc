@@ -27,7 +27,7 @@ pip install git+https://github.com/quantum-accelerators/quacc.git
 quacc config
 ```
 
-Quacc can be installed with several "extras," as outlined in the `setup.py` file. These are described below:
+Quacc can be installed with several "extras," as outlined in the `pyproject.toml` file. These are described below:
 
 - `quacc[fireworks]`: Installs dependencies to enable the use of FireWorks.
 - `quacc[optimizers]`: Installs additional ASE-based optimizers, such as Sella.
