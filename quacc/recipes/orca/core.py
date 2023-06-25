@@ -88,8 +88,12 @@ def static_job(
     orcasimpleinput = " ".join(list(inputs.keys()))
     orcablocks = " ".join(list(blocks.keys()))
 
-    charge = charge or int(atoms.get_initial_charges().sum())
-    multiplicity = multiplicity or int(1 + atoms.get_initial_magnetic_moments().sum())
+    charge = int(atoms.get_initial_charges().sum()) if charge is None else charge
+    multiplicity = (
+        int(1 + atoms.get_initial_magnetic_moments().sum())
+        if multiplicity is None
+        else multiplicity
+    )
 
     atoms.calc = ORCA(
         charge=charge,
@@ -127,7 +131,7 @@ def relax_job(
     charge
         Charge of the system. If None, this is determined from the sum of
         atoms.get_initial_charges().
-    mult
+    multiplicity
         Multiplicity of the system. If None, this is determined from 1+ the sum
         of atoms.get_initial_magnetic_moments().
     xc
@@ -184,8 +188,12 @@ def relax_job(
     orcasimpleinput = " ".join(list(inputs.keys()))
     orcablocks = " ".join(list(blocks.keys()))
 
-    charge = charge or int(atoms.get_initial_charges().sum())
-    multiplicity = multiplicity or int(1 + atoms.get_initial_magnetic_moments().sum())
+    charge = int(atoms.get_initial_charges().sum()) if charge is None else charge
+    multiplicity = (
+        int(1 + atoms.get_initial_magnetic_moments().sum())
+        if multiplicity is None
+        else multiplicity
+    )
 
     atoms.calc = ORCA(
         charge=charge,
