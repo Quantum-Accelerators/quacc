@@ -4,10 +4,10 @@
 
 [Parsl](https://github.com/Parsl/parsl) is a Python program developed at Argonne National Laboratory and the University of Chicago to easily write parallel workflows that can be dispatched on distributed compute resources. Like Jobflow+FireWorks, it can be used in place of Covalent, if preferred.
 
-Make sure you completed the ["Parsl Setup"](../../install/advanced/parsl.md) section of the installation instructions. Additionally, you should read the Parsl documentation's [Quick Start](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a `@python_app` and `@join_app`, which describe individual compute tasks and dynamic job tasks, respectively.
+Make sure you completed the ["Parsl Setup"](../../install/advanced/parsl.md) section of the installation instructions. Additionally, you should read the Parsl documentation's ["Quick Start"](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a `@python_app` and `@join_app`, which describe individual compute tasks and dynamic job tasks, respectively.
 
 ```{seealso}
-For a more detailed tutorial on how to use Parsl, refer to the [Parsl tutorial](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html) and the even more detailed [Parsl user guide](https://parsl.readthedocs.io/en/stable/userguide/index.html).
+For a more detailed tutorial on how to use Parsl, refer to the ["Parsl Tutorial"](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html) and the even more detailed ["Parsl User Guide"](https://parsl.readthedocs.io/en/stable/userguide/index.html).
 ```
 
 ## Examples
@@ -61,7 +61,7 @@ wf_future = workflow(atoms)
 print(wf_future.result())
 ```
 
-You can see that it is quite trivial to set up a Parsl workflow using the recipes within Quacc. We define the full workflow as a simple function that stitches together the individual `@python_app` workflow steps.
+You can see that it is quite trivial to set up a Parsl workflow using the recipes within Quacc. We define the full workflow as a function that stitches together the individual `@python_app` workflow steps.
 
 ```{note}
 The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object.
@@ -76,7 +76,6 @@ Don't call `.result()` in a `return` statement. It will not block like you might
 Now let's consider a similar but nonetheless distinct example. Here, we will define a workflow where we will carry out two EMT structure relaxations, but the two jobs are not dependent on one another. In this example, Parsl will know that it can run the two jobs in parallel, and even if Job 1 were to fail, Job 2 would still progress.
 
 ```python
-import parsl
 from parsl import python_app
 from ase.build import bulk, molecule
 
@@ -107,24 +106,76 @@ future1, future2 = workflow(atoms1, atoms2)
 print(future1.result(), future2.result())
 ```
 
+If you monitor the output, you'll notice that the two jobs are being run in parallel, whereas they would be run sequentially if you were not using Parsl.
+
 ### Running Workflows with Complex Connectivity
 
-For this example, let's consider a toy scenario where we wish to relax a bulk Cu structure, carve all possible slabs, and then run a new relaxation calculation on each slab.
+For this example, let's consider a toy scenario where we wish to relax a bulk Cu structure, carve all possible slabs, and then run a new relaxation calculation on each slab (with no static calculation at the end).
 
 In Quacc, there are two types of recipes: individual compute tasks with the suffix `_job` and pre-made multi-step workflows with the suffix `_flow`. Here, we are interested in importing a pre-made workflow. Refer to the example below:
 
 ```python
+from parsl import python_app
 from ase.build import bulk
-from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_flow
 
-wf_future = bulk_to_slabs_flow(bulk("Cu"), slab_static_app=None)
+@python_app
+def relax_app(atoms):
+
+    # All dependencies must be inside the Python app
+    from quacc.recipes.emt.core import relax_job
+
+    return relax_job(atoms)
+
+@python_app
+def bulk_to_slabs_app(atoms):
+
+    # All dependencies must be inside the Python app
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+    return bulk_to_slabs_flow(atoms, slab_static_electron=None)
+
+def workflow(atoms):
+    future1 = relax_app(atoms)
+    future2 = bulk_to_slabs_app(future1.result()["atoms"])
+
+    return future2
+
+# Define the Atoms object
+atoms = bulk("Cu")
+
+# Run the workflow
+wf_future = workflow(atoms)
 print(wf_future.result())
 ```
 
-We have imported the {obj}`.emt.parsl.slabs.bulk_to_slabs_flow` function, which is supplied an `Atoms` object. For demonstration purposes, we specify the `slab_static_app=None` option to do a relaxation but disable the static calculation on each slab. By comparing {obj}`.emt.parsl.slabs.bulk_to_slabs_flow` with its Covalent counterpart {obj}`.emt.slabs.bulk_to_slabs_flow`, you can see that the two are extremely similar such that it is often trivial to interconvert between the two.
+When running a Covalent-based workflow like {obj}`.emt.slabs.bulk_to_slabs_flow` above, the entire function will run as a single compute task even though it is composed of several individual sub-tasks. If these sub-tasks are compute-intensive, this might not be the most efficient use of resources.
+
+Quacc fully supports the development of Parsl-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Parsl-specific {obj}`.emt.parsl.slabs.bulk_to_slabs_app` workflow:
+
+```python
+from parsl import python_app
+from ase.build import bulk
+from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_app
+
+@python_app
+def relax_app(atoms):
+
+    from quacc.recipes.emt.core import relax_job
+
+    return relax_job(atoms)
+
+atoms = bulk("Cu")
+
+relax_future = relax_app(atoms)
+
+wf_future = bulk_to_slabs_app(relax_future.result()["atoms"], slab_static_app=None)
+print(wf_future.result())
+```
+
+In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing {obj}`.emt.parsl.slabs.bulk_to_slabs_app` with its Covalent counterpart {obj}`.emt.slabs.bulk_to_slabs_flow`, you can see that the two are extremely similar such that it is often straightforward to interconvert between the two.
 
 ```{note}
-We used `.result()` here because `bulk_to_slabs_flow` is a `@join_app` (similar to a `@python_app` for dynamic workflow steps) that itself returns an `AppFuture`.
+We didn't need to wrap `bulk_to_slabs_app` with a decorator because it is defined in Quacc as a `@join_app` (similar to a `@python_app` for dynamic workflow steps) that itself returns an `AppFuture`. This is also why we call `.result()` on it.
 ```
 
 ## Visualization

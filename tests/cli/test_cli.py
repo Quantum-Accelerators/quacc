@@ -5,7 +5,8 @@ from quacc._cli.cli import cli
 
 
 def test_config():
-    CliRunner().invoke(cli, "config").output
+    response = CliRunner().invoke(cli, "config").output
+    assert "Covalent configuration: Complete" in response
     ct_config = ct.get_config()
     for executor in ct_config["executors"]:
         if "create_unique_workdir" in ct_config["executors"][executor]:

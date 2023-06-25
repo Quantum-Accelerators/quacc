@@ -98,17 +98,58 @@ def test_tutorial2():
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
 def test_tutorial3():
-    from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_flow
+    @python_app
+    def relax_app(atoms):
+        # All dependencies must be inside the Python app
+        from quacc.recipes.emt.core import relax_job
 
-    wf_future = bulk_to_slabs_flow(bulk("Cu"), slab_static_app=None)
+        return relax_job(atoms)
+
+    @python_app
+    def bulk_to_slabs_app(atoms):
+        # All dependencies must be inside the Python app
+        from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+        return bulk_to_slabs_flow(atoms, slab_static_electron=None)
+
+    def workflow(atoms):
+        future1 = relax_app(atoms)
+        future2 = bulk_to_slabs_app(future1.result()["atoms"])
+
+        return future2
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Run the workflow
+    wf_future = workflow(atoms)
+    wf_future.result()
+    assert wf_future.done()
+
+
+@pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
+def test_tutorial4():
+    from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_app
+
+    @python_app
+    def relax_app(atoms):
+        from quacc.recipes.emt.core import relax_job
+
+        return relax_job(atoms)
+
+    atoms = bulk("Cu")
+
+    relax_future = relax_app(atoms)
+
+    wf_future = bulk_to_slabs_app(relax_future.result()["atoms"], slab_static_app=None)
     wf_future.result()
     assert wf_future.done()
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
 def test_slabs():
-    from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_flow
+    from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_app
 
-    wf_future = bulk_to_slabs_flow(bulk("Cu"))
+    wf_future = bulk_to_slabs_app(bulk("Cu"))
     wf_future.result()
     assert wf_future.done()
