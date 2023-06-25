@@ -111,6 +111,9 @@ def atoms_to_metadata(
         atoms.charge = charge_and_multiplicity[0]
         atoms.spin_multiplicity = charge_and_multiplicity[1]
 
+    # Strip the dummy atoms, if present
+    del atoms[[atom.index for atom in atoms if atom.symbol == "X"]]
+
     # Get Atoms metadata, if requested. emmet already has built-in tools for
     # generating pymatgen Structure/Molecule metadata, so we'll just use that.
     if get_metadata:
