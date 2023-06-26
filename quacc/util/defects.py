@@ -153,7 +153,6 @@ def make_defects_from_bulk(
         # Apply rattle and bond distortion to all defects
         defect_dict, distortion_metadata = Dist.apply_distortions()
         defect_symbol = list(distortion_metadata["defects"].keys())[0]
-        charge_state = list(distortion_metadata["defects"][defect_symbol]["charges"].keys())[0]
         distortion_dict = defect_dict[defect_symbol]["charges"][charge_state]["structures"]["distortions"]
 
         # Make atoms objects and store defect stats
