@@ -220,20 +220,14 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-          cache-dependency-path: setup.py
-
-      - name: Set up conda
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-          activate-environment: quacc-env
+          cache-dependency-path: pyproject.toml
 
       - name: Install pip packages
         run: |
-          pip install --no-cache-dir .[strict,dev,ml] # remove --no-cache-dir after repos are removed from setup.py
+          pip install --no-cache-dir .[strict,dev,ml]
 
       - name: Run tests with pytest
-        run: pytest tests/recipes/chgnet --cov=quacc --cov-report=xml
+        run: pytest tests/recipes/chgnet tests/recipes/matgl --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -244,8 +238,8 @@ jobs:
 
   release:
     runs-on: ubuntu-latest
-    needs: [tests-base, tests-tblite, tests-psi4, tests-dftbplus]
-    if: github.event_name == 'release' && needs.tests-base.result == 'success' && needs.tests-tblite.result == 'success' && needs.tests-psi4.result == 'success' && needs.tests-dftbplus.result == 'success'
+    needs: [tests-base, tests-tblite, tests-psi4, tests-dftbplus, tests-ml]
+    if: github.event_name == 'release' && needs.tests-base.result == 'success' && needs.tests-tblite.result == 'success' && needs.tests-psi4.result == 'success' && needs.tests-dftbplus.result == 'success' && needs.tests-ml.result == 'success'
     steps:
       - name: Check out repo
         uses: actions/checkout@v3
