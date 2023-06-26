@@ -64,7 +64,7 @@ class QChem(FileIOCalculator):
         self.charge = charge
         self.spin_multiplicity = spin_multiplicity
         self.qchem_input_params = qchem_input_params or {}
-        self.kwargs = kwargs
+        self.fileiocalculator_kwargs = fileiocalculator_kwargs
 
         if self.charge is None and self.spin_multiplicity is not None:
             raise RuntimeError("If setting spin_multiplicity, must also specify charge! Exiting...")
@@ -107,7 +107,7 @@ class QChem(FileIOCalculator):
             ignore_bad_restart_file=FileIOCalculator._deprecated,
             label=None,
             atoms=self.input_atoms,
-            **self.kwargs,
+            **self.fileiocalculator_kwargs,
         )
 
     def _manage_environment(self) -> str:
