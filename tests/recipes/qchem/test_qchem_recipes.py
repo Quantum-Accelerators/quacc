@@ -123,7 +123,7 @@ def test_static_job(monkeypatch):
     output = static_job(
         atoms=TEST_ATOMS,
         charge=-1,
-        xc="b97mv",
+        method="b97mv",
         basis="def2-svpd",
         pcm_dielectric="3.0",
     )
@@ -200,7 +200,7 @@ def test_relax_job(monkeypatch):
     output = relax_job(
         atoms=TEST_ATOMS,
         charge=-1,
-        xc="b97mv",
+        method="b97mv",
         pcm_dielectric="3.0",
         opt_swaps={"max_steps": 1},
         check_convergence=False,
@@ -231,7 +231,8 @@ def test_relax_job(monkeypatch):
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
         check_convergence=False,
-        )
+    )
+
     assert output["atoms"] != TEST_ATOMS
     assert output["charge"] == 0
     assert output["spin_multiplicity"] == 1
@@ -279,7 +280,7 @@ def test_ts_job(monkeypatch):
     output = ts_job(
         atoms=TEST_ATOMS,
         charge=-1,
-        xc="b97mv",
+        method="b97mv",
         pcm_dielectric="3.0",
         opt_swaps={"max_steps": 1},
         check_convergence=False,
@@ -310,7 +311,8 @@ def test_ts_job(monkeypatch):
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
         check_convergence=False,
-        )
+    )
+
     assert output["atoms"] != TEST_ATOMS
     assert output["charge"] == 0
     assert output["spin_multiplicity"] == 1
@@ -386,7 +388,8 @@ def test_irc_job(monkeypatch):
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
         check_convergence=False,
-        )
+    )
+
     assert output["atoms"] != TEST_ATOMS
     assert output["charge"] == 0
     assert output["spin_multiplicity"] == 1
@@ -404,6 +407,15 @@ def test_irc_job(monkeypatch):
             direction="forward",
             pcm_dielectric="3.0",
             smd_solvent="water",
+        )
+
+    with pytest.raises(RuntimeError):
+        output = irc_job(
+            atoms=TEST_ATOMS,
+            direction="forward",
+            pcm_dielectric="3.0",
+            smd_solvent="water",
+            opt_swaps={"optimizer": FIRE},
         )
 
 

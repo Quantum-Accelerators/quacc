@@ -14,6 +14,7 @@ from quacc.calculators.qchem import QChem
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
 from quacc.util.atoms import check_charge_and_spin
+from typing import Literal
 
 try:
     from sella import IRC, Sella
@@ -27,7 +28,7 @@ def static_job(
     cores: int | None = None,
     charge: int | None = None,
     spin_multiplicity: int | None = None,
-    xc: str = "wb97mv",
+    method: str = "wb97mv",
     basis: str = "def2-tzvpd",
     scf_algorithm: str = "diis",
     pcm_dielectric: str | None = None,
@@ -51,15 +52,15 @@ def static_job(
     spin_multiplicity
         The spin multiplicity of the molecular system.
         Effectively defaults to the lowest spin state given the molecular structure and charge.
-    xc
-        Exchange-correlation functional.
+    method
+        DFT exchange-correlation functional or other electronic structure method.
         Defaults to wB97M-V.
     basis
         Basis set.
         Defaults to def2-TZVPD.
     scf_algorithm
         Algorithm used to converge the SCF.
-        Defaults to DIIS, but for particularly difficult cases, GDM should be employed instead.
+        Defaults to "diis", but for particularly difficult cases, "gdm" should be employed instead.
     pcm_dielectric
         Dielectric constant of the optional polarizable continuum impicit solvation model.
         Defaults to None, in which case PCM will not be employed.
@@ -84,7 +85,7 @@ def static_job(
 
     input_atoms = deepcopy(atoms)
 
-    overwrite_inputs = {"rem": {"method": xc}}
+    overwrite_inputs = {"rem": {"method": method}}
 
     calc_swaps = calc_swaps or {}
     for key in calc_swaps:
@@ -102,7 +103,7 @@ def static_job(
         "overwrite_inputs": overwrite_inputs,
     }
 
-    if scf_algorithm.lower() == "gdm":
+    if scf_algorithm.lower() == "gdm" and "max_scf_cycles" not in qchem_input_params:
         qchem_input_params["max_scf_cycles"] = 200
 
     calc = QChem(
@@ -128,7 +129,7 @@ def relax_job(
     cores: int | None = None,
     charge: int | None = None,
     spin_multiplicity: int | None = None,
-    xc: str = "wb97mv",
+    method: str = "wb97mv",
     basis: str = "def2-svpd",
     scf_algorithm: str = "diis",
     pcm_dielectric: str | None = None,
@@ -154,15 +155,15 @@ def relax_job(
     spin_multiplicity
         The spin multiplicity of the molecular system.
         Effectively defaults to the lowest spin state given the molecular structure and charge.
-    xc
-        Exchange-correlation functional.
+    method
+        DFT exchange-correlation functional or other electronic structure method.
         Defaults to wB97M-V.
     basis
         Basis set.
         Defaults to def2-SVPD.
     scf_algorithm
         Algorithm used to converge the SCF.
-        Defaults to DIIS, but for particularly difficult cases, GDM should be employed instead.
+        Defaults to "diis", but for particularly difficult cases, "gdm" should be employed instead.
     pcm_dielectric
         Dielectric constant of the optional polarizable continuum impicit solvation model.
         Defaults to None, in which case PCM will not be employed.
@@ -195,13 +196,14 @@ def relax_job(
         "optimizer_kwargs": {},
     }
     opt_flags = opt_defaults | opt_swaps
-    if "sella.optimize" in opt_flags["optimizer"].__module__:
-        opt_flags["optimizer_kwargs"]["order"] = 0
+    if Sella:
+        if opt_flags["optimizer"] == Sella and "order" not in opt_flags["optimizer_kwargs"]:
+            opt_flags["optimizer_kwargs"]["order"] = 0
 
     if pcm_dielectric is not None and smd_solvent is not None:
         raise ValueError("PCM and SMD cannot be employed simultaneously! Exiting...")
 
-    overwrite_inputs = {"rem": {"method": xc}}
+    overwrite_inputs = {"rem": {"method": method}}
 
     calc_swaps = calc_swaps or {}
     for key in calc_swaps:
@@ -219,7 +221,7 @@ def relax_job(
         "overwrite_inputs": overwrite_inputs,
     }
 
-    if scf_algorithm.lower() == "gdm":
+    if scf_algorithm.lower() == "gdm" and "max_scf_cycles" not in qchem_input_params:
         qchem_input_params["max_scf_cycles"] = 200
 
     calc = QChem(
@@ -250,7 +252,7 @@ def ts_job(
     cores: int | None = None,
     charge: int | None = None,
     spin_multiplicity: int | None = None,
-    xc: str = "wb97mv",
+    method: str = "wb97mv",
     basis: str = "def2-svpd",
     scf_algorithm: str = "diis",
     pcm_dielectric: str | None = None,
@@ -276,15 +278,15 @@ def ts_job(
     spin_multiplicity
         The spin multiplicity of the molecular system.
         Effectively defaults to the lowest spin state given the molecular structure and charge.
-    xc
-        Exchange-correlation functional.
+    method
+        DFT exchange-correlation functional or other electronic structure method.
         Defaults to wB97M-V.
     basis
         Basis set.
         Defaults to def2-SVPD.
     scf_algorithm
         Algorithm used to converge the SCF.
-        Defaults to DIIS, but for particularly difficult cases, GDM should be employed instead.
+        Defaults to "diis", but for particularly difficult cases, "gdm" should be employed instead.
     pcm_dielectric
         Dielectric constant of the optional polarizable continuum impicit solvation model.
         Defaults to None, in which case PCM will not be employed.
@@ -319,13 +321,13 @@ def ts_job(
         "optimizer_kwargs": {},
     }
     opt_flags = opt_defaults | opt_swaps
-    if "sella.optimize" not in opt_flags["optimizer"].__module__:
+    if opt_flags["optimizer"] != Sella:
         raise RuntimeError("Only Sella should be used for TS optimization! Exiting...")
 
     if pcm_dielectric is not None and smd_solvent is not None:
         raise ValueError("PCM and SMD cannot be employed simultaneously! Exiting...")
 
-    overwrite_inputs = {"rem": {"method": xc}}
+    overwrite_inputs = {"rem": {"method": method}}
 
     calc_swaps = calc_swaps or {}
     for key in calc_swaps:
@@ -343,7 +345,7 @@ def ts_job(
         "overwrite_inputs": overwrite_inputs,
     }
 
-    if scf_algorithm.lower() == "gdm":
+    if scf_algorithm.lower() == "gdm" and "max_scf_cycles" not in qchem_input_params:
         qchem_input_params["max_scf_cycles"] = 200
 
     calc = QChem(
@@ -371,11 +373,11 @@ def ts_job(
 )
 def irc_job(
     atoms: Atoms,
-    direction: str,
+    direction: Literal["forward", "reverse"],
     cores: int | None = None,
     charge: int | None = None,
     spin_multiplicity: int | None = None,
-    xc: str = "wb97mv",
+    method: str = "wb97mv",
     basis: str = "def2-svpd",
     scf_algorithm: str = "diis",
     pcm_dielectric: str | None = None,
@@ -403,15 +405,15 @@ def irc_job(
     spin_multiplicity
         The spin multiplicity of the molecular system.
         Effectively defaults to the lowest spin state given the molecular structure and charge.
-    xc
-        Exchange-correlation functional.
+    method
+        DFT exchange-correlation functional or other electronic structure method.
         Defaults to wB97M-V.
     basis
         Basis set.
         Defaults to def2-SVPD.
     scf_algorithm
         Algorithm used to converge the SCF.
-        Defaults to DIIS, but for particularly difficult cases, GDM should be employed instead.
+        Defaults to "diis", but for particularly difficult cases, "gdm" should be employed instead.
     pcm_dielectric
         Dielectric constant of the optional polarizable continuum impicit solvation model.
         Defaults to None, in which case PCM will not be employed.
@@ -450,13 +452,13 @@ def irc_job(
         "run_kwargs": {"direction": direction},
     }
     opt_flags = opt_defaults | opt_swaps
-    if "sella.optimize" not in opt_flags["optimizer"].__module__:
-        raise RuntimeError("Only Sella should be used for TS optimization! Exiting...")
+    if opt_flags["optimizer"] != IRC:
+        raise RuntimeError("Only Sella's IRC should be used for IRC optimization! Exiting...")
 
     if pcm_dielectric is not None and smd_solvent is not None:
         raise ValueError("PCM and SMD cannot be employed simultaneously! Exiting...")
 
-    overwrite_inputs = {"rem": {"method": xc}}
+    overwrite_inputs = {"rem": {"method": method}}
 
     calc_swaps = calc_swaps or {}
     for key in calc_swaps:
@@ -474,7 +476,7 @@ def irc_job(
         "overwrite_inputs": overwrite_inputs,
     }
 
-    if scf_algorithm.lower() == "gdm":
+    if scf_algorithm.lower() == "gdm" and "max_scf_cycles" not in qchem_input_params:
         qchem_input_params["max_scf_cycles"] = 200
 
     calc = QChem(
@@ -502,11 +504,11 @@ def irc_job(
 )
 def quasi_irc_job(
     atoms: Atoms,
-    direction: str,
+    direction: Literal["forward", "reverse"],
     cores: int | None = None,
     charge: int | None = None,
     spin_multiplicity: int | None = None,
-    xc: str = "wb97mv",
+    method: str = "wb97mv",
     basis: str = "def2-svpd",
     scf_algorithm: str = "diis",
     pcm_dielectric: str | None = None,
@@ -535,15 +537,15 @@ def quasi_irc_job(
     spin_multiplicity
         The spin multiplicity of the molecular system.
         Effectively defaults to the lowest spin state given the molecular structure and charge.
-    xc
-        Exchange-correlation functional.
+    method
+        DFT exchange-correlation functional or other electronic structure method.
         Defaults to wB97M-V.
     basis
         Basis set.
         Defaults to def2-SVPD.
     scf_algorithm
         Algorithm used to converge the SCF.
-        Defaults to DIIS, but for particularly difficult cases, GDM should be employed instead.
+        Defaults to "diis", but for particularly difficult cases, "gdm" should be employed instead.
     pcm_dielectric
         Dielectric constant of the optional polarizable continuum impicit solvation model.
         Defaults to None, in which case PCM will not be employed.
@@ -588,7 +590,7 @@ def quasi_irc_job(
         cores=cores,
         charge=charge,
         spin_multiplicity=spin_multiplicity,
-        xc=xc,
+        method=method,
         basis=basis,
         scf_algorithm=scf_algorithm,
         pcm_dielectric=pcm_dielectric,
@@ -603,7 +605,7 @@ def quasi_irc_job(
         cores=cores,
         charge=charge,
         spin_multiplicity=spin_multiplicity,
-        xc=xc,
+        method=method,
         basis=basis,
         scf_algorithm=scf_algorithm,
         pcm_dielectric=pcm_dielectric,
