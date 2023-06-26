@@ -3,6 +3,7 @@ Utility functions for dealing with defects
 """
 from __future__ import annotations
 
+import numpy as np
 from ase.atoms import Atoms
 from pymatgen.analysis.defects.core import Defect
 from pymatgen.analysis.defects.generators import AntiSiteGenerator, ChargeInterstitialGenerator, \
@@ -74,16 +75,16 @@ def get_defect_entry_from_defect(
 
 def make_defects_from_bulk(
         atoms: Atoms,
-        def_gen: (AntiSiteGenerator | ChargeInterstitialGenerator | InterstitialGenerator | SubstitutionGenerator
-                  | VacancyGenerator | VoronoiInterstitialGenerator),
-        sc_mat: 'np.ndarray | None' = None,
+        defectgen: (AntiSiteGenerator | ChargeInterstitialGenerator | InterstitialGenerator | SubstitutionGenerator
+                    | VacancyGenerator | VoronoiInterstitialGenerator),
+        charge_state: int = 0,
+        sc_mat: np.ndarray | None = None,
         dummy_species: DummySpecies = DummySpecies("X"),
         min_atoms: int = 80,
         max_atoms: int = 240,
         min_length: float = 10.0,
         force_diagonal: bool = False,
-        charge_state: int = 0,
-        **defectgen_kwargs,  # TODO: what are these?
+        **defectgen_kwargs,
 ) -> list[Atoms]:
     """
     Function to make defects from a bulk atoms object.
@@ -92,7 +93,7 @@ def make_defects_from_bulk(
     ----------
     atoms
         bulk atoms
-    def_gen
+    defectgen
         defect generator
     sc_mat
         supercell matrix
@@ -109,7 +110,8 @@ def make_defects_from_bulk(
         force supercell to be diagonal
     charge_state
         charge state of defect
-    **defectgen_kwargs: keyword arguments to pass to  # TODO: what are these?
+    **defectgen_kwargs
+        keyword arguments to pass to the pymatgen.analysis.defects.generators get_defects() method
 
     Returns
     -------
@@ -119,13 +121,12 @@ def make_defects_from_bulk(
 
     # Use pymatgen-analysis-defects and ShakeNBreak to generate defects
     struct = AseAtomsAdaptor.get_structure(atoms)
-    defects = def_gen().get_defects(struct)
+    atoms_info = atoms.info.copy()
 
-    # TODO: select defects
     # Make all the defects
-    defect_structs = []  # TODO: unnecessary?
-    # for defect in defects:
-    for defect in [defects[1]]:  # TODO: remove
+    defects = defectgen().get_defects(struct, **defectgen_kwargs)
+    final_defects = []
+    for defect in defects:
         defect.user_charges = [charge_state]
 
         # Generate the supercell for a defect
@@ -153,10 +154,19 @@ def make_defects_from_bulk(
         defect_dict, distortion_metadata = Dist.apply_distortions()
         defect_symbol = list(distortion_metadata["defects"].keys())[0]
         charge_state = list(distortion_metadata["defects"][defect_symbol]["charges"].keys())[0]
-        defect_structs = defect_dict[defect_symbol]["charges"][charge_state]["structures"]["distortions"].values()
+        distortion_dict = defect_dict[defect_symbol]["charges"][charge_state]["structures"]["distortions"]
 
-        # Make atoms objects
-        # TODO: add distortion metadata to atoms.info?
-        final_defects = [AseAtomsAdaptor.get_atoms(defect_struct) for defect_struct in defect_structs]
-        break  # TODO: remove
+        # Make atoms objects and store defect stats
+        for distortions, defect_struct in distortion_dict.items():
+            final_defect = AseAtomsAdaptor.get_atoms(defect_struct)
+            final_defect.info = atoms_info.copy()
+            defect_stats = {
+                "defect_symbol": defect_symbol,
+                "charge_state": charge_state,
+                "distortions": distortions,
+                "bulk": atoms,
+                "defect": defect,
+            }
+            final_defect.info["defect_stats"] = defect_stats
+            final_defects.append(final_defect)
     return final_defects

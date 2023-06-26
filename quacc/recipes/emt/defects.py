@@ -44,8 +44,9 @@ class BulkToDefectsFlow:
     def run(
             self,
             atoms: Atoms,
-            def_gen: (AntiSiteGenerator | ChargeInterstitialGenerator | InterstitialGenerator | SubstitutionGenerator
-                      | VacancyGenerator | VoronoiInterstitialGenerator),
+            defectgen: (AntiSiteGenerator | ChargeInterstitialGenerator | InterstitialGenerator | SubstitutionGenerator
+                        | VacancyGenerator | VoronoiInterstitialGenerator),
+            charge_state: int | None = None,
             defectgen_kwargs: dict | None = None,
     ) -> list[dict]:
         """
@@ -55,10 +56,12 @@ class BulkToDefectsFlow:
         ----------
         atoms
             Atoms object for the structure.
-        def_gen
+        defectgen
             Defect generator
+        charge_state
+            Charge state of the defect
         defectgen_kwargs
-            Additional keyword arguments to pass to make_defects_from_bulk()
+            Keyword arguments to pass to the pymatgen.analysis.defects.generators.get_defects() method
 
         Returns
         -------
@@ -102,7 +105,7 @@ class BulkToDefectsFlow:
                 for defect in defects
             ]
 
-        defects = ct.electron(make_defects_from_bulk)(atoms, def_gen, **defectgen_kwargs)
+        defects = ct.electron(make_defects_from_bulk)(atoms, defectgen, charge_state, **defectgen_kwargs)
 
         if self.defect_relax_electron and self.defect_static_electron:
             return _relax_and_static_distributed(defects)
