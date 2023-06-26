@@ -8,6 +8,7 @@ from copy import deepcopy
 import covalent as ct
 from ase.atoms import Atoms
 from ase.constraints import ExpCellFilter
+from ase.optimize import FIRE
 from monty.dev import requires
 
 from quacc.schemas.ase import summarize_opt_run, summarize_run
@@ -55,8 +56,10 @@ def static_job(
         model.from_file(model_path, **model_kwargs)
     else:
         model.load()
+
     atoms.calc = CHGNet(model=model, **chgnet_kwargs)
     atoms = run_calc(atoms)
+
     return summarize_run(
         atoms,
         input_atoms=input_atoms,
@@ -101,7 +104,7 @@ def relax_job(
     model_kwargs = model_kwargs or {}
     opt_swaps = opt_swaps or {}
 
-    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "FIRE"}
+    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
     opt_flags = opt_defaults | opt_swaps
 
     if relax_cell:
@@ -111,6 +114,7 @@ def relax_job(
         model.from_file(model_path, **model_kwargs)
     else:
         model.load()
+
     atoms.calc = CHGNet(model=model, **chgnet_kwargs)
     dyn = run_ase_opt(atoms, **opt_flags)
 
