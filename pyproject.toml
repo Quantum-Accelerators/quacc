@@ -37,6 +37,7 @@ dependencies = [
 
 [project.optional-dependencies]
 fireworks = ["fireworks"]
+ml = ["chgnet", "matgl"]
 optimizers = ["sella>=2.3.2"]
 parsl = ["parsl"]
 tblite = ["tblite[ase]; platform_system=='Linux'"]
