@@ -34,13 +34,12 @@ class QChem(FileIOCalculator):
         The spin multiplicity of the molecular system.
         Effectively defaults to the lowest spin state given the molecular structure and charge.
     qchem_input_params
-        Dictionary of Q-Chem input parameters to be passed to pymatgen's ForceSet.
+        Dictionary of Q-Chem input parameters to be passed to pymatgen.io.qchem.sets.ForceSet.
     use_custodian
         Whether to use Custodian to run Q-Chem.
         Default is True in settings.
-    **kwargs
-        Additional arguments to be passed to the Q-Chem calculator. Takes all valid
-        ASE calculator arguments, in addition to those custom to Quacc.
+    **fileiocalculator_kwargs
+        Additional arguments to be passed to ase.calculators.calculator.FileIOCalculator.
 
     Returns
     -------
@@ -57,7 +56,7 @@ class QChem(FileIOCalculator):
         charge: None | int = None,
         spin_multiplicity: None | int = None,
         qchem_input_params: dict | None = None,
-        **kwargs,
+        **fileiocalculator_kwargs,
     ):
         # Assign variables to self
         self.input_atoms = input_atoms
@@ -70,11 +69,17 @@ class QChem(FileIOCalculator):
         if self.charge is None and self.spin_multiplicity is not None:
             raise RuntimeError("If setting spin_multiplicity, must also specify charge! Exiting...")
 
+        # We will save the parameters that have been passed to the Q-Chem calculator via FileIOCalculator's
+        # self.default_parameters
         self.default_parameters = {
             "cores": self.cores,
             "charge": self.charge,
             "spin_multiplicity": self.spin_multiplicity,
         }
+
+        # We also want to save the contents of self.qchem_input_params. However, the overwrite_inputs
+        # key will have a corresponding value which is either an empty dictionary or a nested dict of
+        # dicts, requiring a bit of careful unwrapping.
         for key in self.qchem_input_params:
             if key == "overwrite_inputs":
                 for subkey in self.qchem_input_params[key]:
@@ -145,12 +150,14 @@ class QChem(FileIOCalculator):
         data = QCOutput("mol.qout").data
         self.results["energy"] = data["final_energy"] * units.Hartree
         tmp_grad_data = []
+        # Read the gradient scratch file in 8 byte chunks
         with zopen("131.0", mode="rb") as file:
             binary = file.read()
             for ii in range(int(len(binary) / 8)):
                 tmp_grad_data.append(
                     struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
                 )
+        # Reshape the gradient into N x 3
         grad = []
         for ii in range(int(len(tmp_grad_data) / 3)):
             grad.append(
@@ -160,6 +167,8 @@ class QChem(FileIOCalculator):
                     float(tmp_grad_data[ii * 3 + 2]),
                 ]
             )
+        # Ensure that the scratch values match the correct values from the output file
+        # but with higher precision
         if data["pcm_gradients"] is not None:
             gradient = data["pcm_gradients"][0]
         else:
@@ -171,8 +180,10 @@ class QChem(FileIOCalculator):
                         "Difference between gradient value in scratch file vs. output file should not be this large! Exiting..."
                     )
                 gradient[ii, jj] = val
+        # Convert gradient to force + deal with units
         self.results["forces"] = gradient * (-units.Hartree / units.Bohr)
         self.prev_orbital_coeffs = []
+        # Read orbital coefficients scratch file in 8 byte chunks
         with zopen("53.0", mode="rb") as file:
             binary = file.read()
             for ii in range(int(len(binary) / 8)):

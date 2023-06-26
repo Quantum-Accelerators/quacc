@@ -138,7 +138,7 @@ class QuaccSettings(BaseSettings):
     )
 
     QCHEM_LOCAL_SCRATCH: str = Field(
-        "/tmp",
+        "/tmp" if os.path.exists("/tmp") else ".",
         description="Compute-node local scratch directory in which Q-Chem should perform IO.",
     )
 

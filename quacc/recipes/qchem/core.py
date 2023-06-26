@@ -62,14 +62,14 @@ def static_job(
         Defaults to DIIS, but for particularly difficult cases, GDM should be employed instead.
     pcm_dielectric
         Dielectric constant of the optional polarizable continuum impicit solvation model.
-        Defaults no None, in which case PCM will not be employed.
+        Defaults to None, in which case PCM will not be employed.
     smd_solvent
         Solvent to use for SMD implicit solvation model. Examples include "water", "ethanol", "methanol",
         and "acetonitrile". Refer to the Q-Chem manual for a complete list of solvents available.
         Defaults to None, in which case SMD will not be employed.
     calc_swaps
-        Dictionary of custom kwargs for the calculator. Must be formatted consistently with Pymatgen's
-        QChemDictSet's overwrite_inputs. For example: {"rem": {"symmetry": "true"}}.
+        Dictionary of custom kwargs for the calculator. Must be formatted consistently with
+        pymatgen.io.qchem.QChemDictSet's overwrite_inputs. For example: {"rem": {"symmetry": "true"}}.
 
     Returns
     -------
@@ -165,14 +165,14 @@ def relax_job(
         Defaults to DIIS, but for particularly difficult cases, GDM should be employed instead.
     pcm_dielectric
         Dielectric constant of the optional polarizable continuum impicit solvation model.
-        Defaults no None, in which case PCM will not be employed.
+        Defaults to None, in which case PCM will not be employed.
     smd_solvent
         Solvent to use for SMD implicit solvation model. Examples include "water", "ethanol", "methanol",
         and "acetonitrile". Refer to the Q-Chem manual for a complete list of solvents available.
         Defaults to None, in which case SMD will not be employed.
     calc_swaps
-        Dictionary of custom kwargs for the calculator. Must be formatted consistently with Pymatgen's
-        QChemDictSet's overwrite_inputs. For example: {"rem": {"symmetry": "true"}}.
+        Dictionary of custom kwargs for the calculator. Must be formatted consistently with
+        pymatgen.io.qchem.QChemDictSet's overwrite_inputs. For example: {"rem": {"symmetry": "true"}}.
     opt_swaps
         Dictionary of custom kwargs for run_ase_opt
             opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
@@ -287,14 +287,14 @@ def ts_job(
         Defaults to DIIS, but for particularly difficult cases, GDM should be employed instead.
     pcm_dielectric
         Dielectric constant of the optional polarizable continuum impicit solvation model.
-        Defaults no None, in which case PCM will not be employed.
+        Defaults to None, in which case PCM will not be employed.
     smd_solvent
         Solvent to use for SMD implicit solvation model. Examples include "water", "ethanol", "methanol",
         and "acetonitrile". Refer to the Q-Chem manual for a complete list of solvents available.
         Defaults to None, in which case SMD will not be employed.
     calc_swaps
-        Dictionary of custom kwargs for the calculator. Must be formatted consistently with Pymatgen's
-        QChemDictSet's overwrite_inputs. For example: {"rem": {"symmetry": "true"}}.
+        Dictionary of custom kwargs for the calculator. Must be formatted consistently with
+        pymatgen.io.qchem.QChemDictSet's overwrite_inputs. For example: {"rem": {"symmetry": "true"}}.
     opt_swaps
         Dictionary of custom kwargs for run_ase_opt
             opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
@@ -414,14 +414,14 @@ def irc_job(
         Defaults to DIIS, but for particularly difficult cases, GDM should be employed instead.
     pcm_dielectric
         Dielectric constant of the optional polarizable continuum impicit solvation model.
-        Defaults no None, in which case PCM will not be employed.
+        Defaults to None, in which case PCM will not be employed.
     smd_solvent
         Solvent to use for SMD implicit solvation model. Examples include "water", "ethanol", "methanol",
         and "acetonitrile". Refer to the Q-Chem manual for a complete list of solvents available.
         Defaults to None, in which case SMD will not be employed.
     calc_swaps
-        Dictionary of custom kwargs for the calculator. Must be formatted consistently with Pymatgen's
-        QChemDictSet's overwrite_inputs. For example: {"rem": {"symmetry": "true"}}.
+        Dictionary of custom kwargs for the calculator. Must be formatted consistently with
+        pymatgen.io.qchem.QChemDictSet's overwrite_inputs. For example: {"rem": {"symmetry": "true"}}.
     opt_swaps
         Dictionary of custom kwargs for run_ase_opt
             opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
@@ -546,14 +546,14 @@ def quasi_irc_job(
         Defaults to DIIS, but for particularly difficult cases, GDM should be employed instead.
     pcm_dielectric
         Dielectric constant of the optional polarizable continuum impicit solvation model.
-        Defaults no None, in which case PCM will not be employed.
+        Defaults to None, in which case PCM will not be employed.
     smd_solvent
         Solvent to use for SMD implicit solvation model. Examples include "water", "ethanol", "methanol",
         and "acetonitrile". Refer to the Q-Chem manual for a complete list of solvents available.
         Defaults to None, in which case SMD will not be employed.
     calc_swaps
-        Dictionary of custom kwargs for the calculator. Must be formatted consistently with Pymatgen's
-        QChemDictSet's overwrite_inputs. For example: {"rem": {"symmetry": "true"}}.
+        Dictionary of custom kwargs for the calculator. Must be formatted consistently with
+        pymatgen.io.qchem.QChemDictSet's overwrite_inputs. For example: {"rem": {"symmetry": "true"}}.
     irc_swaps
         Dictionary of custom kwargs for the irc_job.
     relax_swaps
