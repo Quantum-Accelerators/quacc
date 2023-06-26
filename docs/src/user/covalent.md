@@ -8,9 +8,7 @@ If you prefer to use [Parsl](https://github.com/Parsl/parsl) or [Jobflow](https:
 
 ## Pre-Requisites
 
-Make sure you completed the ["Covalent Setup"](../install/covalent.md) section of the documentation. If you haven't done so already, run `covalent start` prior to starting these examples to start the Covalent server and UI.
-
-Additionally, you should learn about the main [Covalent Concepts](https://docs.covalent.xyz/docs/user-documentation/concepts/concepts-index), namely the [`Electron`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#electron) and [`Lattice`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#lattice) objects, which describe individual compute tasks and workflows, respectively.
+Make sure you completed the ["Covalent Setup"](../install/covalent.md) section of the documentation. Additionally, you should learn about the main [Covalent Concepts](https://docs.covalent.xyz/docs/user-documentation/concepts/concepts-index), namely the [`Electron`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#electron) and [`Lattice`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#lattice) objects, which describe individual compute tasks and workflows, respectively.
 
 In Covalent, the `@ct.lattice` decorator indicates that the function is a workflow, and the `@ct.electron` decorator indicates that the function is a job (i.e. an individual compute task). If you plan to use a job scheduling system like Slurm, you can think of each `Electron` as an individual Slurm job.
 
@@ -55,19 +53,15 @@ result = ct.get_result(dispatch_id, wait=True)
 print(result)
 ```
 
-You can see that it is quite trivial to set up a workflow using the recipes within Quacc. We define the full workflow as a `Lattice` object that stitches together the individual workflow steps.
-
-```{note}
-Because the workflow is only sent to the server with `ct.dispatch`, calling `workflow(atoms)` would run the workflow as if Covalent were not being used at all.
-```
-
-```{hint}
-By default, all Quacc jobs are defined as `Electron` objects, so we didn't need to use the `@ct.electron` decorator around each function here.
-```
+You can see that it is quite trivial to set up a workflow using the recipes within Quacc. We define the full workflow as a `Lattice` object that stitches together the individual workflow steps. The {obj}`.emt.core.relax_job` and {obj}`.emt.core.static_job` were both already defined with a `@ct.electron` decorator, so they will be interpreted by Covalent as `Electron` objects.
 
 Covalent will also automatically construct a directed acyclic graph of the inputs and outputs for each calculation to determine which jobs are dependent on one another and the order the jobs should be run. In this example, Covalent will know not to run `job2` until `job1` has completed successfully.
 
 The job will be dispatched to the Covalent server with the [`ct.dispatch`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#dispatch) command, which takes in the workflow function and the input arguments to the workflow. The [`ct.get_result`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#result) command is used to fetch the results from the server.
+
+```{note}
+Because the workflow is only sent to the server with `ct.dispatch`, calling `workflow(atoms)` would run the workflow as if Covalent were not being used at all.
+```
 
 ![Covalent UI](../_static/user/tutorial1.jpg)
 
@@ -108,7 +102,7 @@ print(result)
 
 For this example, let's consider a toy scenario where we wish to relax a bulk Cu structure, carve all possible slabs, and then run a new relaxation calculation on each slab.
 
-In Quacc, there are two types of recipes: 1) individual compute tasks with the suffix `_job`; pre-made multi-step workflows with the suffix `_flow`. Here, we are interested in importing a pre-made workflow. Refer to the example below:
+In Quacc, there are two types of recipes: individual compute tasks with the suffix `_job` and pre-made multi-step workflows with the suffix `_flow`. Here, we are interested in importing a pre-made workflow. Refer to the example below:
 
 ```python
 import covalent as ct
@@ -129,16 +123,10 @@ result = ct.get_result(dispatch_id, wait=True)
 print(result)
 ```
 
-We have imported the {obj}`.emt.slabs.bulk_to_slabs_flow` function, which takes an `Atoms` object along with several optional parameters. Here, for demonstration purposes, we specify the `slab_static_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is wrap it inside a `@ct.lattice` decorator.
+We have imported the {obj}`.emt.slabs.bulk_to_slabs_flow` function, which takes an `Atoms` object along with several optional parameters. For demonstration purposes, we specify the `slab_static_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is wrap it inside a `@ct.lattice` decorator.
 
 ```{hint}
 You don't need to set `wait=True` in practice. Once you call `ct.dispatch`, the workflow will begin running. The `ct.get_result` function is used to fetch the workflow status and results from the server.
-```
-
-If you want to understand what is going on underneath the hood, it is worth checking out the source code. Because the number of slabs is not pre-determined, this recipe is using a Covalent feature called a [Sublattice](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#sublattice) that enables dynamic workflows.
-
-```{seealso}
-To learn more about how to construct dynamic workflows in Covalent, see [this tutorial](https://docs.covalent.xyz/docs/user-documentation/tutorials/quantumchemistry/).
 ```
 
 ![Covalent UI](../_static/user/tutorial3.gif)
@@ -201,9 +189,23 @@ print(result)
 If you are defining your own workflow functions to use, you can also set the executor for individual `Electron` objects by passing the `executor` keyword argument to the `@ct.electron` decorator.
 ```
 
+## Configuration Options
+
+### Covalent Configuration
+
+Covalent has several [configuration options](https://docs.covalent.xyz/docs/user-documentation/how-to/customization/) that can be modified. Running `quacc config` automatically takes care of setting the ones that are critical for Quacc to run properly.
+
+```{important}
+If you ever delete your Covalent configuration (e.g. via `covalent purge`), you will need to re-run `quacc config`.
+```
+
+By default, the Covalent configuration file can be found at `~/.config/covalent/covalent.conf`. There are additional Covalent configuration parameters you may be interested in changing as you become familair with Quacc. For instance, the `results_dir` is where Covalent stores all the pickled results that are displayed in the UI. This is, by default, located at `~/.local/share/covalent`.
+
 ### Configuring Executors
 
-Refer to the [executor documentation](https://docs.covalent.xyz/docs/features/executor-plugins/exe) for instructions on how to configure Covalent for your desired high-performance computing machine.
+Refer to the [executor documentation](https://docs.covalent.xyz/docs/features/executor-plugins/exe) for instructions on how to configure Covalent for your desired machines.
+
+By default, the `workdir` for the `Dask` (default) and `local` executors is set to `~/.cache/covalent/workdir`. This is where any files generated at runtime will be stored. You can change both of these parameters to the directories of your choosing by editing the Covalent configuration file directly or via the `ct.set_config()` command.
 
 For submitting jobs to [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/) from your local machine, an example `SlurmExecutor` configuration with support for an [`sshproxy`](https://docs.nersc.gov/connect/mfa/#sshproxy)-based multi-factor authentication certificate might look like the following:
 
@@ -234,7 +236,7 @@ executor = ct.executor.SlurmExecutor(
 ```
 
 ```{important}
-The `SlurmExecutor` *must* have `use_srun=False` in order for ASE-based calculators to be launched appropriately.
+The `SlurmExecutor` must have `use_srun=False` in order for ASE-based calculators to be launched appropriately.
 ```
 
 ## Learn More

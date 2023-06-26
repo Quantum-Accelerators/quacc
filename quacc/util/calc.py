@@ -175,18 +175,6 @@ def run_ase_opt(
     if not os.path.exists(scratch_dir):
         os.makedirs(scratch_dir)
 
-    tmpdir = mkdtemp(prefix="quacc-tmp-", dir=scratch_dir)
-    symlink = os.path.join(cwd, f"{os.path.basename(tmpdir)}-symlink")
-
-    if os.name != "nt":
-        if os.path.islink(symlink):
-            os.unlink(symlink)
-        os.symlink(tmpdir, symlink)
-
-    # Copy files to scratch and decompress them if needed
-    if copy_files:
-        copy_decompress(copy_files, tmpdir)
-
     # Set Sella kwargs
     if (
         optimizer.__name__ == "Sella"
@@ -195,19 +183,27 @@ def run_ase_opt(
     ):
         optimizer_kwargs["internal"] = True
 
+    tmpdir = mkdtemp(prefix="quacc-tmp-", dir=scratch_dir)
+    symlink = os.path.join(cwd, f"{os.path.basename(tmpdir)}-symlink")
+
+    if os.name != "nt":
+        if os.path.islink(symlink):
+            os.unlink(symlink)
+        os.symlink(tmpdir, symlink)
+
     # Set up trajectory
-    # TODO: Clean this messy logic up
     if "trajectory" in optimizer_kwargs:
         if isinstance(optimizer_kwargs["trajectory"], str):
-            traj_filepath = optimizer_kwargs["trajectory"]
-            traj = Trajectory(traj_filepath, "w", atoms=atoms)
+            traj = Trajectory(optimizer_kwargs["trajectory"], "w", atoms=atoms)
         else:
             traj = optimizer_kwargs["trajectory"]
-            traj_filepath = traj.filename
     else:
-        traj_filepath = os.path.join(tmpdir, "opt.traj")
-        traj = Trajectory(traj_filepath, "w", atoms=atoms)
+        traj = Trajectory(os.path.join(tmpdir, "opt.traj"), "w", atoms=atoms)
     optimizer_kwargs["trajectory"] = traj
+
+    # Copy files to scratch and decompress them if needed
+    if copy_files:
+        copy_decompress(copy_files, tmpdir)
 
     # Define optimizer class
     dyn = optimizer(atoms, **optimizer_kwargs)
@@ -220,7 +216,7 @@ def run_ase_opt(
 
     # We attach the actual trajectory here. This is
     # admittedly a bit of a monkeypatch...
-    dyn.traj = read(traj_filepath, index=":")
+    dyn.traj = read(traj.filename, index=":")
 
     # Gzip files in tmpdir
     if gzip:

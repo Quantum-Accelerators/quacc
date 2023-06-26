@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import covalent as ct
 from ase import Atoms
-from covalent._workflow.electron import Electron
 
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.vasp import summarize_run
@@ -120,8 +119,8 @@ def slab_relax_job(
 def bulk_to_slabs_flow(
     atoms: Atoms,
     slabgen_kwargs: dict | None = None,
-    slab_relax_electron: Electron = slab_relax_job,
-    slab_static_electron: Electron | None = slab_static_job,
+    slab_relax_electron: ct.electron = slab_relax_job,
+    slab_static_electron: ct.electron | None = slab_static_job,
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
 ) -> list[dict]:
@@ -187,8 +186,8 @@ def slab_to_ads_flow(
     slab: Atoms,
     adsorbate: Atoms,
     make_ads_kwargs: dict | None = None,
-    slab_relax_electron: Electron = ct.electron(slab_relax_job),
-    slab_static_electron: Electron | None = ct.electron(slab_static_job),
+    slab_relax_electron: ct.electron = ct.electron(slab_relax_job),
+    slab_static_electron: ct.electron | None = ct.electron(slab_static_job),
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
 ) -> dict:
