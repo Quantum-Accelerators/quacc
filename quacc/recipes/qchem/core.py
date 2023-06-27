@@ -438,7 +438,7 @@ def irc_job(
         "fmax": 0.01,
         "max_steps": 1000,
         "optimizer": IRC,
-        "optimizer_kwargs": {},
+        "optimizer_kwargs": {"keep_going": True},
         "run_kwargs": {"direction": direction},
     }
     opt_flags = opt_defaults | opt_swaps
