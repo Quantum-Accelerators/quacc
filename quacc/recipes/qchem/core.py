@@ -193,6 +193,8 @@ def relax_job(
     }
     opt_flags = opt_defaults | opt_swaps
     if Sella:
+        # The purpose of separating these If statements is to allow this function to be used
+        # even without Sella installed, in which case Sella would not be imported
         if opt_flags["optimizer"] == Sella and "order" not in opt_flags["optimizer_kwargs"]:
             opt_flags["optimizer_kwargs"]["order"] = 0
 
