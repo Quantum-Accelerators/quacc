@@ -50,7 +50,6 @@ def test_qchem_write_input_intermediate():
 def test_qchem_write_input_advanced():
     params = {
         "scf_algorithm": "gdm",
-        "qchem_version": 6,
         "basis_set": "def2-svpd",
         "smd_solvent": "water",
         "overwrite_inputs": {"rem": {"method": "b97mv", "mem_total": "170000"}},
@@ -61,7 +60,6 @@ def test_qchem_write_input_advanced():
     assert calc.parameters["cores"] == 40
     assert calc.parameters["charge"] == -1
     assert calc.parameters["spin_multiplicity"] == 2
-    assert calc.parameters["qchem_version"] == 6
     assert calc.parameters["scf_algorithm"] == "gdm"
     assert calc.parameters["basis_set"] == "def2-svpd"
     assert calc.parameters["smd_solvent"] == "water"

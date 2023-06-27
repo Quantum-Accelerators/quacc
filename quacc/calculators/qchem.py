@@ -143,7 +143,7 @@ class QChem(FileIOCalculator):
                 self.qchem_input_params["overwrite_inputs"]["rem"] = {}
             if "scf_guess" not in self.qchem_input_params["overwrite_inputs"]["rem"]:
                 self.qchem_input_params["overwrite_inputs"]["rem"]["scf_guess"] = "read"
-        qcin = ForceSet(mol, **self.qchem_input_params)
+        qcin = ForceSet(mol, qchem_version=6, **self.qchem_input_params)
         qcin.write("mol.qin")
 
     def read_results(self):

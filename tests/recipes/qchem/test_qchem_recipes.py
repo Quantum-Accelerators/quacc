@@ -143,8 +143,8 @@ def test_static_job(monkeypatch):
     qcinput_nearly_equal(qcin, ref_qcin)
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
-    calc_swaps = {"rem":{"mem_total":"170000"}}
-    output = static_job(TEST_ATOMS, scf_algorithm="gdm", calc_swaps=calc_swaps)
+    overwrite_inputs = {"rem":{"mem_total":"170000"}}
+    output = static_job(TEST_ATOMS, scf_algorithm="gdm", overwrite_inputs=overwrite_inputs)
     assert output["atoms"] == TEST_ATOMS
     assert output["charge"] == 0
     assert output["spin_multiplicity"] == 1
@@ -223,11 +223,11 @@ def test_relax_job(monkeypatch):
     qcinput_nearly_equal(qcin, ref_qcin)
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
-    calc_swaps = {"rem":{"mem_total":"170000"}}
+    overwrite_inputs = {"rem":{"mem_total":"170000"}}
     output = relax_job(
         atoms=TEST_ATOMS,
         scf_algorithm="gdm",
-        calc_swaps=calc_swaps,
+        overwrite_inputs=overwrite_inputs,
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
         check_convergence=False,
@@ -303,11 +303,11 @@ def test_ts_job(monkeypatch):
     qcinput_nearly_equal(qcin, ref_qcin)
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
-    calc_swaps = {"rem":{"mem_total":"170000"}}
+    overwrite_inputs = {"rem":{"mem_total":"170000"}}
     output = ts_job(
         atoms=TEST_ATOMS,
         scf_algorithm="gdm",
-        calc_swaps=calc_swaps,
+        overwrite_inputs=overwrite_inputs,
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
         check_convergence=False,
@@ -379,12 +379,12 @@ def test_irc_job(monkeypatch):
     )
     qcinput_nearly_equal(qcin, ref_qcin)
 
-    calc_swaps = {"rem":{"mem_total":"170000"}}
+    overwrite_inputs = {"rem":{"mem_total":"170000"}}
     output = irc_job(
         atoms=TEST_ATOMS,
         direction="reverse",
         scf_algorithm="gdm",
-        calc_swaps=calc_swaps,
+        overwrite_inputs=overwrite_inputs,
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
         check_convergence=False,

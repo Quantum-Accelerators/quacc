@@ -33,7 +33,7 @@ def static_job(
     scf_algorithm: str = "diis",
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
-    calc_swaps: dict | None = None,
+    overwrite_inputs: dict | None = None,
 ) -> dict:
     """
     Carry out a single-point calculation.
@@ -68,9 +68,9 @@ def static_job(
         Solvent to use for SMD implicit solvation model. Examples include "water", "ethanol", "methanol",
         and "acetonitrile". Refer to the Q-Chem manual for a complete list of solvents available.
         Defaults to None, in which case SMD will not be employed.
-    calc_swaps
-        Dictionary of custom kwargs for the calculator. Must be formatted consistently with
-        pymatgen.io.qchem.QChemDictSet's overwrite_inputs. For example: {"rem": {"symmetry": "true"}}.
+    overwrite_inputs
+        Dictionary passed to pymatgen.io.qchem.QChemDictSet which can modify default values set therein
+        as well as set additional Q-Chem parameters. See QChemDictSet documentation for more details.
 
     Returns
     -------
@@ -85,19 +85,15 @@ def static_job(
 
     input_atoms = deepcopy(atoms)
 
-    overwrite_inputs = {"rem": {"method": method}}
-
-    calc_swaps = calc_swaps or {}
-    for key in calc_swaps:
-        if key not in overwrite_inputs:
-            overwrite_inputs[key] = {}
-        for subkey in calc_swaps[key]:
-            overwrite_inputs[key][subkey] = calc_swaps[key][subkey]
+    overwrite_inputs = overwrite_inputs or {}
+    if "rem" not in overwrite_inputs:
+        overwrite_inputs["rem"] = {}
+    if "method" not in overwrite_inputs["rem"]:
+        overwrite_inputs["rem"]["method"] = method
 
     qchem_input_params = {
         "basis_set": basis,
         "scf_algorithm": scf_algorithm,
-        "qchem_version": 6,
         "pcm_dielectric": pcm_dielectric,
         "smd_solvent": smd_solvent,
         "overwrite_inputs": overwrite_inputs,
@@ -134,7 +130,7 @@ def relax_job(
     scf_algorithm: str = "diis",
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
-    calc_swaps: dict | None = None,
+    overwrite_inputs: dict | None = None,
     opt_swaps: dict | None = None,
     check_convergence: bool = True,
 ) -> dict:
@@ -171,9 +167,9 @@ def relax_job(
         Solvent to use for SMD implicit solvation model. Examples include "water", "ethanol", "methanol",
         and "acetonitrile". Refer to the Q-Chem manual for a complete list of solvents available.
         Defaults to None, in which case SMD will not be employed.
-    calc_swaps
-        Dictionary of custom kwargs for the calculator. Must be formatted consistently with
-        pymatgen.io.qchem.QChemDictSet's overwrite_inputs. For example: {"rem": {"symmetry": "true"}}.
+    overwrite_inputs
+        Dictionary passed to pymatgen.io.qchem.QChemDictSet which can modify default values set therein
+        as well as set additional Q-Chem parameters. See QChemDictSet documentation for more details.
     opt_swaps
         Dictionary of custom kwargs for run_ase_opt
             opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
@@ -203,19 +199,15 @@ def relax_job(
     if pcm_dielectric is not None and smd_solvent is not None:
         raise ValueError("PCM and SMD cannot be employed simultaneously! Exiting...")
 
-    overwrite_inputs = {"rem": {"method": method}}
-
-    calc_swaps = calc_swaps or {}
-    for key in calc_swaps:
-        if key not in overwrite_inputs:
-            overwrite_inputs[key] = {}
-        for subkey in calc_swaps[key]:
-            overwrite_inputs[key][subkey] = calc_swaps[key][subkey]
+    overwrite_inputs = overwrite_inputs or {}
+    if "rem" not in overwrite_inputs:
+        overwrite_inputs["rem"] = {}
+    if "method" not in overwrite_inputs["rem"]:
+        overwrite_inputs["rem"]["method"] = method
 
     qchem_input_params = {
         "basis_set": basis,
         "scf_algorithm": scf_algorithm,
-        "qchem_version": 6,
         "pcm_dielectric": pcm_dielectric,
         "smd_solvent": smd_solvent,
         "overwrite_inputs": overwrite_inputs,
@@ -257,7 +249,7 @@ def ts_job(
     scf_algorithm: str = "diis",
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
-    calc_swaps: dict | None = None,
+    overwrite_inputs: dict | None = None,
     opt_swaps: dict | None = None,
     check_convergence: bool = True,
 ) -> dict:
@@ -294,9 +286,9 @@ def ts_job(
         Solvent to use for SMD implicit solvation model. Examples include "water", "ethanol", "methanol",
         and "acetonitrile". Refer to the Q-Chem manual for a complete list of solvents available.
         Defaults to None, in which case SMD will not be employed.
-    calc_swaps
-        Dictionary of custom kwargs for the calculator. Must be formatted consistently with
-        pymatgen.io.qchem.QChemDictSet's overwrite_inputs. For example: {"rem": {"symmetry": "true"}}.
+    overwrite_inputs
+        Dictionary passed to pymatgen.io.qchem.QChemDictSet which can modify default values set therein
+        as well as set additional Q-Chem parameters. See QChemDictSet documentation for more details.
     opt_swaps
         Dictionary of custom kwargs for run_ase_opt
             opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
@@ -327,19 +319,15 @@ def ts_job(
     if pcm_dielectric is not None and smd_solvent is not None:
         raise ValueError("PCM and SMD cannot be employed simultaneously! Exiting...")
 
-    overwrite_inputs = {"rem": {"method": method}}
-
-    calc_swaps = calc_swaps or {}
-    for key in calc_swaps:
-        if key not in overwrite_inputs:
-            overwrite_inputs[key] = {}
-        for subkey in calc_swaps[key]:
-            overwrite_inputs[key][subkey] = calc_swaps[key][subkey]
+    overwrite_inputs = overwrite_inputs or {}
+    if "rem" not in overwrite_inputs:
+        overwrite_inputs["rem"] = {}
+    if "method" not in overwrite_inputs["rem"]:
+        overwrite_inputs["rem"]["method"] = method
 
     qchem_input_params = {
         "basis_set": basis,
         "scf_algorithm": scf_algorithm,
-        "qchem_version": 6,
         "pcm_dielectric": pcm_dielectric,
         "smd_solvent": smd_solvent,
         "overwrite_inputs": overwrite_inputs,
@@ -382,7 +370,7 @@ def irc_job(
     scf_algorithm: str = "diis",
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
-    calc_swaps: dict | None = None,
+    overwrite_inputs: dict | None = None,
     opt_swaps: dict | None = None,
     check_convergence: bool = True,
 ) -> dict:
@@ -421,9 +409,9 @@ def irc_job(
         Solvent to use for SMD implicit solvation model. Examples include "water", "ethanol", "methanol",
         and "acetonitrile". Refer to the Q-Chem manual for a complete list of solvents available.
         Defaults to None, in which case SMD will not be employed.
-    calc_swaps
-        Dictionary of custom kwargs for the calculator. Must be formatted consistently with
-        pymatgen.io.qchem.QChemDictSet's overwrite_inputs. For example: {"rem": {"symmetry": "true"}}.
+    overwrite_inputs
+        Dictionary passed to pymatgen.io.qchem.QChemDictSet which can modify default values set therein
+        as well as set additional Q-Chem parameters. See QChemDictSet documentation for more details.
     opt_swaps
         Dictionary of custom kwargs for run_ase_opt
             opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
@@ -458,19 +446,15 @@ def irc_job(
     if pcm_dielectric is not None and smd_solvent is not None:
         raise ValueError("PCM and SMD cannot be employed simultaneously! Exiting...")
 
-    overwrite_inputs = {"rem": {"method": method}}
-
-    calc_swaps = calc_swaps or {}
-    for key in calc_swaps:
-        if key not in overwrite_inputs:
-            overwrite_inputs[key] = {}
-        for subkey in calc_swaps[key]:
-            overwrite_inputs[key][subkey] = calc_swaps[key][subkey]
+    overwrite_inputs = overwrite_inputs or {}
+    if "rem" not in overwrite_inputs:
+        overwrite_inputs["rem"] = {}
+    if "method" not in overwrite_inputs["rem"]:
+        overwrite_inputs["rem"]["method"] = method
 
     qchem_input_params = {
         "basis_set": basis,
         "scf_algorithm": scf_algorithm,
-        "qchem_version": 6,
         "pcm_dielectric": pcm_dielectric,
         "smd_solvent": smd_solvent,
         "overwrite_inputs": overwrite_inputs,
@@ -513,7 +497,7 @@ def quasi_irc_job(
     scf_algorithm: str = "diis",
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
-    calc_swaps: dict | None = None,
+    overwrite_inputs: dict | None = None,
     irc_swaps: dict | None = None,
     relax_swaps: dict | None = None,
     check_convergence: bool = True,
@@ -553,9 +537,9 @@ def quasi_irc_job(
         Solvent to use for SMD implicit solvation model. Examples include "water", "ethanol", "methanol",
         and "acetonitrile". Refer to the Q-Chem manual for a complete list of solvents available.
         Defaults to None, in which case SMD will not be employed.
-    calc_swaps
-        Dictionary of custom kwargs for the calculator. Must be formatted consistently with
-        pymatgen.io.qchem.QChemDictSet's overwrite_inputs. For example: {"rem": {"symmetry": "true"}}.
+    overwrite_inputs
+        Dictionary passed to pymatgen.io.qchem.QChemDictSet which can modify default values set therein
+        as well as set additional Q-Chem parameters. See QChemDictSet documentation for more details.
     irc_swaps
         Dictionary of custom kwargs for the irc_job.
     relax_swaps
@@ -595,7 +579,7 @@ def quasi_irc_job(
         scf_algorithm=scf_algorithm,
         pcm_dielectric=pcm_dielectric,
         smd_solvent=smd_solvent,
-        calc_swaps=calc_swaps,
+        overwrite_inputs=overwrite_inputs,
         opt_swaps=irc_swaps,
         check_convergence=False,
     )
@@ -610,11 +594,11 @@ def quasi_irc_job(
         scf_algorithm=scf_algorithm,
         pcm_dielectric=pcm_dielectric,
         smd_solvent=smd_solvent,
-        calc_swaps=calc_swaps,
+        overwrite_inputs=overwrite_inputs,
         opt_swaps=relax_swaps,
         check_convergence=check_convergence,
     )
 
-    relax_summary["irc"] = irc_summary
+    relax_summary["initial_irc"] = irc_summary
 
     return relax_summary
