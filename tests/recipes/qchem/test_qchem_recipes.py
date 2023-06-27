@@ -419,6 +419,7 @@ def test_irc_job(monkeypatch):
         )
 
 
+
 @pytest.mark.skipif(
     sella is None,
     reason="Sella must be installed.",
@@ -426,12 +427,15 @@ def test_irc_job(monkeypatch):
 def test_quasi_irc_job(monkeypatch):
     monkeypatch.setattr(QChem, "read_results", mock_read)
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute4)
+
+    common_kwargs = {"basis": "def2-tzvpd"}
+    relax_opt_swaps = {"max_steps": 5}
     
     output = quasi_irc_job(
         atoms=TEST_ATOMS,
         direction="forward",
-        basis="def2-tzvpd",
-        relax_swaps={"max_steps": 5},
+        common_kwargs=common_kwargs,
+        relax_opt_swaps=relax_opt_swaps,
         check_convergence=False,
     )
 
@@ -449,13 +453,143 @@ def test_quasi_irc_job(monkeypatch):
     )
     qcinput_nearly_equal(qcin, ref_qcin)
 
-    with pytest.raises(ValueError):
-        output = quasi_irc_job(atoms=TEST_ATOMS, direction="straight")
+    common_kwargs = {
+        "charge": -1,
+        "basis": "def2-svpd",
+        "scf_algorithm": "gdm"
+    }
+    irc_opt_swaps = {"max_steps": 6}
+    relax_opt_swaps = {"max_steps": 6}
+    
+    output = quasi_irc_job(
+        atoms=TEST_ATOMS,
+        direction="reverse",
+        common_kwargs=common_kwargs,
+        irc_opt_swaps=irc_opt_swaps,
+        relax_opt_swaps=relax_opt_swaps,
+        check_convergence=False,
+    )
 
-    with pytest.raises(ValueError):
-        output = quasi_irc_job(
-            atoms=TEST_ATOMS,
-            direction="forward",
-            pcm_dielectric="3.0",
-            smd_solvent="water",
-        )
+    assert output["atoms"] != TEST_ATOMS
+    assert output["charge"] == -1
+    assert output["spin_multiplicity"] == 2
+    assert output["formula_alphabetical"] == "C4 H4 O6"
+    assert output["nelectrons"] == 77
+    assert output["parameters"]["charge"] == -1
+    assert output["parameters"]["spin_multiplicity"] is None
+
+    qcin = QCInput.from_file("mol.qin.gz")
+    ref_qcin = QCInput.from_file(
+        os.path.join(QCHEM_DIR, "mol.qin.quasi_irc_reverse")
+    )
+    qcinput_nearly_equal(qcin, ref_qcin)
+
+
+
+# @pytest.mark.skipif(
+#     sella is None,
+#     reason="Sella must be installed.",
+# )
+# def test_quasi_irc_job(monkeypatch):
+#     monkeypatch.setattr(QChem, "read_results", mock_read)
+#     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute4)
+
+#     irc_kwargs = {"direction": "forward", "basis": "def2-tzvpd"}
+#     relax_kwargs = {"basis": "def2-tzvpd", "opt_swaps": {"max_steps": 5}, "check_convergence": False}
+    
+#     output = quasi_irc_job(
+#         atoms=TEST_ATOMS,
+#         irc_kwargs=irc_kwargs,
+#         relax_kwargs=relax_kwargs,
+#     )
+
+#     assert output["atoms"] != TEST_ATOMS
+#     assert output["charge"] == 0
+#     assert output["spin_multiplicity"] == 1
+#     assert output["formula_alphabetical"] == "C4 H4 O6"
+#     assert output["nelectrons"] == 76
+#     assert output["parameters"]["charge"] is None
+#     assert output["parameters"]["spin_multiplicity"] is None
+
+#     qcin = QCInput.from_file("mol.qin.gz")
+#     ref_qcin = QCInput.from_file(
+#         os.path.join(QCHEM_DIR, "mol.qin.basic.quasi_irc_forward")
+#     )
+#     qcinput_nearly_equal(qcin, ref_qcin)
+
+#     irc_kwargs = {
+#         "direction": "reverse",
+#         "charge": -1,
+#         "basis": "def2-svpd",
+#         "scf_algorithm": "gdm"
+#     }
+#     relax_kwargs = {
+#         "charge": -1,
+#         "basis": "def2-svpd",
+#         "scf_algorithm": "gdm",
+#         "opt_swaps": {"max_steps": 6},
+#         "check_convergence": False
+#     }
+    
+#     output = quasi_irc_job(
+#         atoms=TEST_ATOMS,
+#         irc_kwargs=irc_kwargs,
+#         relax_kwargs=relax_kwargs,
+#     )
+
+#     assert output["atoms"] != TEST_ATOMS
+#     assert output["charge"] == -1
+#     assert output["spin_multiplicity"] == 2
+#     assert output["formula_alphabetical"] == "C4 H4 O6"
+#     assert output["nelectrons"] == 77
+#     assert output["parameters"]["charge"] == -1
+#     assert output["parameters"]["spin_multiplicity"] is None
+
+#     qcin = QCInput.from_file("mol.qin.gz")
+#     ref_qcin = QCInput.from_file(
+#         os.path.join(QCHEM_DIR, "mol.qin.quasi_irc_reverse")
+#     )
+#     qcinput_nearly_equal(qcin, ref_qcin)
+
+
+
+# @pytest.mark.skipif(
+#     sella is None,
+#     reason="Sella must be installed.",
+# )
+# def test_quasi_irc_job(monkeypatch):
+#     monkeypatch.setattr(QChem, "read_results", mock_read)
+#     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute4)
+    
+#     output = quasi_irc_job(
+#         atoms=TEST_ATOMS,
+#         direction="forward",
+#         basis="def2-tzvpd",
+#         relax_swaps={"max_steps": 5},
+#         check_convergence=False,
+#     )
+
+#     assert output["atoms"] != TEST_ATOMS
+#     assert output["charge"] == 0
+#     assert output["spin_multiplicity"] == 1
+#     assert output["formula_alphabetical"] == "C4 H4 O6"
+#     assert output["nelectrons"] == 76
+#     assert output["parameters"]["charge"] is None
+#     assert output["parameters"]["spin_multiplicity"] is None
+
+#     qcin = QCInput.from_file("mol.qin.gz")
+#     ref_qcin = QCInput.from_file(
+#         os.path.join(QCHEM_DIR, "mol.qin.basic.quasi_irc_forward")
+#     )
+#     qcinput_nearly_equal(qcin, ref_qcin)
+
+#     with pytest.raises(ValueError):
+#         output = quasi_irc_job(atoms=TEST_ATOMS, direction="straight")
+
+#     with pytest.raises(ValueError):
+#         output = quasi_irc_job(
+#             atoms=TEST_ATOMS,
+#             direction="forward",
+#             pcm_dielectric="3.0",
+#             smd_solvent="water",
+#         )

@@ -483,6 +483,7 @@ def irc_job(
     )
 
 
+
 @ct.electron
 @requires(
     Sella,
@@ -491,116 +492,194 @@ def irc_job(
 def quasi_irc_job(
     atoms: Atoms,
     direction: Literal["forward", "reverse"],
-    cores: int | None = None,
-    charge: int | None = None,
-    spin_multiplicity: int | None = None,
-    method: str = "wb97mv",
-    basis: str = "def2-svpd",
-    scf_algorithm: str = "diis",
-    pcm_dielectric: str | None = None,
-    smd_solvent: str | None = None,
-    overwrite_inputs: dict | None = None,
-    irc_swaps: dict | None = None,
-    relax_swaps: dict | None = None,
+    common_kwargs: dict | None = None,
+    irc_opt_swaps: dict | None = None,
+    relax_opt_swaps: dict | None = None,
     check_convergence: bool = True,
 ) -> dict:
-    """
-    Quasi-IRC optimize a molecular structure.
+    
+    common_kwargs = common_kwargs or {}
+    irc_opt_swaps = irc_opt_swaps or {}
+    relax_opt_swaps = relax_opt_swaps or {}
 
-    Parameters
-    ----------
-    atoms
-        Atoms object.
-    direction
-        Direction of the IRC. Should be "forward" or "reverse".
-    cores
-        Number of cores to use for the Q-Chem calculation.
-        Effectively defaults to use all cores available on a given node, so this only needs to
-        be set by the user if less than all available cores should be used.
-    charge
-        The total charge of the molecular system.
-        Effectively defaults to zero.
-    spin_multiplicity
-        The spin multiplicity of the molecular system.
-        Effectively defaults to the lowest spin state given the molecular structure and charge.
-    method
-        DFT exchange-correlation functional or other electronic structure method.
-        Defaults to wB97M-V.
-    basis
-        Basis set.
-        Defaults to def2-SVPD.
-    scf_algorithm
-        Algorithm used to converge the SCF.
-        Defaults to "diis", but for particularly difficult cases, "gdm" should be employed instead.
-    pcm_dielectric
-        Dielectric constant of the optional polarizable continuum impicit solvation model.
-        Defaults to None, in which case PCM will not be employed.
-    smd_solvent
-        Solvent to use for SMD implicit solvation model. Examples include "water", "ethanol", "methanol",
-        and "acetonitrile". Refer to the Q-Chem manual for a complete list of solvents available.
-        Defaults to None, in which case SMD will not be employed.
-    overwrite_inputs
-        Dictionary passed to pymatgen.io.qchem.QChemDictSet which can modify default values set therein
-        as well as set additional Q-Chem parameters. See QChemDictSet documentation for more details.
-    irc_swaps
-        Dictionary of custom kwargs for the irc_job.
-    relax_swaps
-        Dictionary of custom kwargs for the relax_job.
-
-    Returns
-    -------
-    dict
-        Dictionary of results from quacc.schemas.ase.summarize_opt_run
-    """
-
-    # Reminders to self:
-    #   - exposing TRICs?
-    #   - passing initial Hessian?
-
-    if direction not in ["forward", "reverse"]:
-        raise ValueError("direction must be 'forward' or 'reverse'! Exiting...")
-
-    if pcm_dielectric is not None and smd_solvent is not None:
-        raise ValueError("PCM and SMD cannot be employed simultaneously! Exiting...")
-
-    irc_swaps = irc_swaps or {}
-    irc_swaps_defaults = {
+    irc_opt_swaps_defaults = {
         "fmax": 100,
         "max_steps": 10,
     }
-    irc_swaps = irc_swaps_defaults | irc_swaps
+    irc_opt_swaps = irc_opt_swaps_defaults | irc_opt_swaps
 
     irc_summary = irc_job(
         atoms=atoms,
         direction=direction,
-        cores=cores,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
-        method=method,
-        basis=basis,
-        scf_algorithm=scf_algorithm,
-        pcm_dielectric=pcm_dielectric,
-        smd_solvent=smd_solvent,
-        overwrite_inputs=overwrite_inputs,
-        opt_swaps=irc_swaps,
+        opt_swaps=irc_opt_swaps,
         check_convergence=False,
+        **common_kwargs,
     )
 
     relax_summary = relax_job(
         atoms=irc_summary["atoms"],
-        cores=cores,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
-        method=method,
-        basis=basis,
-        scf_algorithm=scf_algorithm,
-        pcm_dielectric=pcm_dielectric,
-        smd_solvent=smd_solvent,
-        overwrite_inputs=overwrite_inputs,
-        opt_swaps=relax_swaps,
+        opt_swaps=relax_opt_swaps,
         check_convergence=check_convergence,
+        **common_kwargs,
     )
 
     relax_summary["initial_irc"] = irc_summary
 
     return relax_summary
+
+
+# @ct.electron
+# @requires(
+#     Sella,
+#     "Sella must be installed. pip install sella",
+# )
+# def quasi_irc_job(
+#     atoms: Atoms,
+#     irc_electron: ct.electron = irc_job,
+#     relax_electron: ct.electron = relax_job,
+#     irc_kwargs: dict | None = None,
+#     relax_kwargs: dict | None = None,
+# ) -> dict:
+    
+#     irc_kwargs = irc_kwargs or {}
+#     relax_kwargs = relax_kwargs or {}
+
+#     irc_opt_swaps_defaults = {
+#         "fmax": 100,
+#         "max_steps": 10,
+#     }
+#     if "opt_swaps" not in irc_kwargs:
+#         irc_kwargs["opt_swaps"] = {}
+#     irc_kwargs["opt_swaps"] = irc_opt_swaps_defaults | irc_kwargs["opt_swaps"]
+#     irc_kwargs["check_convergence"] = False
+
+#     irc_summary = irc_electron(atoms, **irc_kwargs)
+
+#     relax_summary = relax_electron(irc_summary["atoms"], **relax_kwargs)
+#     relax_summary["initial_irc"] = irc_summary
+
+#     return relax_summary
+
+
+
+
+
+
+
+
+# def quasi_irc_job(
+#     atoms: Atoms,
+#     direction: Literal["forward", "reverse"],
+#     cores: int | None = None,
+#     charge: int | None = None,
+#     spin_multiplicity: int | None = None,
+#     method: str = "wb97mv",
+#     basis: str = "def2-svpd",
+#     scf_algorithm: str = "diis",
+#     pcm_dielectric: str | None = None,
+#     smd_solvent: str | None = None,
+#     overwrite_inputs: dict | None = None,
+#     irc_swaps: dict | None = None,
+#     relax_swaps: dict | None = None,
+#     check_convergence: bool = True,
+# ) -> dict:
+#     """
+#     Quasi-IRC optimize a molecular structure.
+
+#     Parameters
+#     ----------
+#     atoms
+#         Atoms object.
+#     direction
+#         Direction of the IRC. Should be "forward" or "reverse".
+#     cores
+#         Number of cores to use for the Q-Chem calculation.
+#         Effectively defaults to use all cores available on a given node, so this only needs to
+#         be set by the user if less than all available cores should be used.
+#     charge
+#         The total charge of the molecular system.
+#         Effectively defaults to zero.
+#     spin_multiplicity
+#         The spin multiplicity of the molecular system.
+#         Effectively defaults to the lowest spin state given the molecular structure and charge.
+#     method
+#         DFT exchange-correlation functional or other electronic structure method.
+#         Defaults to wB97M-V.
+#     basis
+#         Basis set.
+#         Defaults to def2-SVPD.
+#     scf_algorithm
+#         Algorithm used to converge the SCF.
+#         Defaults to "diis", but for particularly difficult cases, "gdm" should be employed instead.
+#     pcm_dielectric
+#         Dielectric constant of the optional polarizable continuum impicit solvation model.
+#         Defaults to None, in which case PCM will not be employed.
+#     smd_solvent
+#         Solvent to use for SMD implicit solvation model. Examples include "water", "ethanol", "methanol",
+#         and "acetonitrile". Refer to the Q-Chem manual for a complete list of solvents available.
+#         Defaults to None, in which case SMD will not be employed.
+#     overwrite_inputs
+#         Dictionary passed to pymatgen.io.qchem.QChemDictSet which can modify default values set therein
+#         as well as set additional Q-Chem parameters. See QChemDictSet documentation for more details.
+#     irc_swaps
+#         Dictionary of custom kwargs for the irc_job.
+#     relax_swaps
+#         Dictionary of custom kwargs for the relax_job.
+
+#     Returns
+#     -------
+#     dict
+#         Dictionary of results from quacc.schemas.ase.summarize_opt_run
+#     """
+
+#     # Reminders to self:
+#     #   - exposing TRICs?
+#     #   - passing initial Hessian?
+
+#     if direction not in ["forward", "reverse"]:
+#         raise ValueError("direction must be 'forward' or 'reverse'! Exiting...")
+
+#     if pcm_dielectric is not None and smd_solvent is not None:
+#         raise ValueError("PCM and SMD cannot be employed simultaneously! Exiting...")
+
+#     irc_swaps = irc_swaps or {}
+#     irc_swaps_defaults = {
+#         "fmax": 100,
+#         "max_steps": 10,
+#     }
+#     irc_swaps = irc_swaps_defaults | irc_swaps
+
+#     irc_summary = irc_job(
+#         atoms=atoms,
+#         direction=direction,
+#         cores=cores,
+#         charge=charge,
+#         spin_multiplicity=spin_multiplicity,
+#         method=method,
+#         basis=basis,
+#         scf_algorithm=scf_algorithm,
+#         pcm_dielectric=pcm_dielectric,
+#         smd_solvent=smd_solvent,
+#         overwrite_inputs=overwrite_inputs,
+#         opt_swaps=irc_swaps,
+#         check_convergence=False,
+#     )
+
+#     relax_summary = relax_job(
+#         atoms=irc_summary["atoms"],
+#         cores=cores,
+#         charge=charge,
+#         spin_multiplicity=spin_multiplicity,
+#         method=method,
+#         basis=basis,
+#         scf_algorithm=scf_algorithm,
+#         pcm_dielectric=pcm_dielectric,
+#         smd_solvent=smd_solvent,
+#         overwrite_inputs=overwrite_inputs,
+#         opt_swaps=relax_swaps,
+#         check_convergence=check_convergence,
+#     )
+
+#     relax_summary["initial_irc"] = irc_summary
+
+#     return relax_summary
