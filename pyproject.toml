@@ -67,9 +67,6 @@ strict = [
     "pymatgen>=2023.6.23",
 ]
 
-[tool.setuptools.package-data]
-quacc = ["py.typed"]
-
 [project.scripts]
 quacc = "quacc._cli.cli:cli"
 
@@ -78,9 +75,22 @@ repository = "https://github.com/Quantum-Accelerators/quacc"
 documentation = "https://quantum-accelerators.github.io/quacc/"
 changelog = "https://github.com/Quantum-Accelerators/quacc/blob/main/CHANGELOG.md"
 
+[tool.setuptools.package-data]
+quacc = ["py.typed"]
+
+[tool.pyright]
+include = ["quacc"]
+exclude = ["**/__pycache__"]
+
 [tool.versioningit.vcs]
 method = "git"
 default-tag = "0.0.1"
+
+[tools.pytest.ini.options]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore:.*COPILOT.*:UserWarning",
+]
 
 [tool.black]
 exclude = '''

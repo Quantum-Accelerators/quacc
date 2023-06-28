@@ -84,7 +84,9 @@ def relax_job(
     opt_flags = opt_defaults | opt_swaps
 
     if relax_cell and not atoms.pbc.any():
-        warnings.warn("Volume relaxation requested but no PBCs found. Ignoring.")
+        warnings.warn(
+            "Volume relaxation requested but no PBCs found. Ignoring.", UserWarning
+        )
         relax_cell = False
 
     atoms.calc = EMT(**calc_kwargs)
