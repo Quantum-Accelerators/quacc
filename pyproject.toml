@@ -89,7 +89,7 @@ default-tag = "0.0.1"
 [tools.pytest.ini_options]
 filterwarnings = [
     "ignore::DeprecationWarning",
-    "ignore:.*Copilot.*:UserWarning",
+    "ignore::UserWarning",
 ]
 
 [tool.black]
