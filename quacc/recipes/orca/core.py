@@ -70,7 +70,7 @@ def static_job(
     block_swaps = block_swaps or {}
 
     if not any(k for k in block_swaps if "nprocs" in k.lower()):
-        nprocs = 1
+        nprocs = multiprocessing.cpu_count()
         block_swaps[f"%pal nprocs {nprocs} end"] = True
 
     default_inputs = {
@@ -169,7 +169,7 @@ def relax_job(
     block_swaps = block_swaps or {}
 
     if not any(k for k in block_swaps if "nprocs" in k.lower()):
-        nprocs = 1
+        nprocs = multiprocessing.cpu_count()
         block_swaps[f"%pal nprocs {nprocs} end"] = True
 
     default_inputs = {
