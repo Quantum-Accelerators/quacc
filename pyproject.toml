@@ -86,11 +86,8 @@ exclude = ["**/__pycache__"]
 method = "git"
 default-tag = "0.0.1"
 
-[tools.pytest.ini_options]
-filterwarnings = [
-    "ignore::DeprecationWarning",
-    "ignore:.*Copilot.*:UserWarning",
-]
+[tool.pytest.ini_options]
+addopts = "-p no:warnings"
 
 [tool.black]
 exclude = '''
