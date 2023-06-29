@@ -51,7 +51,7 @@ def test_tutorial1():
 def test_tutorial2():
     # Define workflow
     @flow
-    def workflow(atoms1, atoms2):
+    def workflow2(atoms1, atoms2):
         # Define two independent relaxation jobs
         result1 = task(relax_job)(atoms1)
         result2 = task(relax_job)(atoms2)
@@ -63,4 +63,4 @@ def test_tutorial2():
     atoms2 = molecule("N2")
 
     # Run the workflow with Prefect tracking
-    workflow(atoms1, atoms2)
+    workflow2(atoms1, atoms2)
