@@ -45,10 +45,10 @@ def static_app(atoms):
 # Define the workflow
 def workflow(atoms):
 
-    # Call Job 1
+    # Call App 1
     future1 = relax_app(atoms)
 
-    # Call Job 2, which takes the output of Job 1 as input
+    # Call App 2, which takes the output of App 1 as input
     future2 = static_app(future1.result()["atoms"])
 
     return future2

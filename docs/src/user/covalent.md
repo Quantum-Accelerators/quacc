@@ -20,40 +20,9 @@ All `Electron` and `Lattice` objects behave as normal Python functions when the 
 If you haven't done so yet, make sure you started the Covalent server with `covalent start` in the command-line.
 ```
 
-### Running a Single Job
-
-We will first try running a simple one-job workflow where we relax a bulk Cu structure using EMT.
-
-```python
-import covalent as ct
-from ase.build import bulk
-from quacc.recipes.emt.core import relax_job, static_job
-
-# Define the workflow
-@ct.lattice
-def workflow(atoms):
-
-    return relax_job(atoms)
-
-# Make an Atoms object of a bulk Cu structure
-atoms = bulk("Cu")
-
-# Dispatch the workflow to the Covalent server
-# with the bulk Cu Atoms object as the input
-dispatch_id = ct.dispatch(workflow)(atoms)
-
-# Fetch the result from the server
-result = ct.get_result(dispatch_id, wait=True)
-print(result)
-```
-
-```{hint}
-Because this is only a one-step worfklow, we don't even need the `workflow` function definition. We can insted write this more compactly as `workflow = ct.lattice(relax_job)` if desired.
-```
-
 ### Running a Simple Serial Workflow
 
-We will first try running a simple workflow where we relax a bulk Cu structure using EMT and take the output of that calculation as the input to a follow-up static calculation with EMT.
+We will now try running a simple workflow where we relax a bulk Cu structure using EMT and take the output of that calculation as the input to a follow-up static calculation with EMT.
 
 ```python
 import covalent as ct
