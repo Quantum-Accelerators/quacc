@@ -1,22 +1,14 @@
-# Using Quacc with Parsl
+# Using Quacc with Prefect
 
 ## Introduction
 
-[Parsl](https://github.com/Parsl/parsl) is a Python program developed at Argonne National Laboratory and the University of Chicago to easily write parallel workflows that can be dispatched on distributed compute resources. Like Jobflow+FireWorks, it can be used in place of Covalent, if preferred.
-
-Make sure you completed the ["Parsl Setup"](../../install/alt_workflows/parsl.md) section of the installation instructions. Additionally, you should read the Parsl documentation's ["Quick Start"](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a `@python_app` and `@join_app`, which describe individual compute tasks and dynamic job tasks, respectively.
-
-```{seealso}
-For a more detailed tutorial on how to use Parsl, refer to the ["Parsl Tutorial"](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html) and the even more detailed ["Parsl User Guide"](https://parsl.readthedocs.io/en/stable/userguide/index.html).
-```
-
 ## Examples
 
-```{hint}
-If you haven't loaded your Parsl config, you must do that first so Parsl can construct the job dependency graph. For testing purposes, you simply can run `import parsl` followed by `parsl.load()` before starting the examples below, which will enable jobs to run on your local machine.
-```
-
 ### Running a Simple Serial Workflow
+
+```{hint}
+If you haven't logged into [Prefect Cloud](https://app.prefect.cloud/) yet, you may wish to do so via `prefect cloud login`.
+```
 
 We will first try running a simple workflow where we relax a bulk Cu structure using EMT and take the output of that calculation as the input to a follow-up static calculation with EMT.
 
@@ -177,71 +169,3 @@ In this example, all the individual tasks and sub-tasks are run as separate jobs
 ```{note}
 We didn't need to wrap `bulk_to_slabs_app` with a decorator because it is defined in Quacc as a `@join_app` (similar to a `@python_app` for dynamic workflow steps) that itself returns an `AppFuture`. This is also why we call `.result()` on it.
 ```
-
-## Visualization
-
-Parsl comes with a web dashboard utility to visualize executed workflows. Refer to the [Monitoring and Visualization](https://parsl.readthedocs.io/en/stable/userguide/monitoring.html#visualization) section of the Parsl documentation for details.
-
-## Setting Executors
-
-Out-of-the-box, Parsl will run on your local machine. However, in practice you will probably want to run your Parsl workflows on HPC machines.
-
-```{note}
-If you are just starting out, try running some test calculations locally first. Then come back and set up the relevant configuration files for your desired machines.
-```
-
-### Configuring Executors
-
-To configure Parsl for the high-performance computing environment of your choice, refer to the executor [Configuration](https://parsl.readthedocs.io/en/stable/userguide/configuring.html) page in the Parsl documentation.
-
-For [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/), example `HighThroughputExecutor` configurations can be found in the [NERSC Documentation](https://docs.nersc.gov/jobs/workflow/parsl/). A simple one is reproduced below that allows for job submission from the login node:
-
-```python
-from parsl.config import Config
-from parsl.executors import HighThroughputExecutor
-from parsl.launchers import SimpleLauncher
-from parsl.providers import SlurmProvider
-
-config = Config(
-    executors=[
-        HighThroughputExecutor(
-            label="quacc_HTEX",
-            max_workers=1,
-            usage_tracking=True,
-            provider=SlurmProvider(
-                account="MyAccountName",
-                nodes_per_block=1,
-                scheduler_options="#SBATCH -q debug\n#SBATCH -C cpu",
-                worker_init="source activate quacc",
-                walltime="00:10:00",
-                cmd_timeout=120,
-                launcher = SimpleLauncher(),
-            ),
-        )
-    ]
-)
-```
-
-The individual arguments are as follows:
-
-- `label`: A label for the executor instance, used during file I/O.
-- `max_workers`: Maximum number of workers to allow on a node.
-- `usage_tracking`: Help the Parsl folks out by sending back job metadata for their funding agencies.
-- `SlurmProvider()`: The provider to use for job submission. This can be changed to `LocalProvider()` if you wish to have the Parsl process run on a compute node rather than the login node.
-- `account`: Your NERSC account name.
-- `nodes_per_block`: The number of nodes to request per job. By default, all cores on the node will be requested (seetting `cores_per_node` will override this).
-- `scheduler_options`: Any additional `#SBATCH` options can be included here. For multiple options, you can either use `\n` between them to specify a new line.
-- `worker_init`: Commands to run before the job starts, typically used for activating a given Python environment.
-- `walltime`: The maximum amount of time to allow the job to run in `HH:MM:SS` format.
-- `cmd_timeout`: The maximum time to wait (in seconds) for the job scheduler info to be retrieved/sent.
-- `launcher`: The type of Launcher to use. Note that `SimpleLauncher()` must be used instead of the commonly used `SrunLauncher()` to allow Quacc subprocesses to launch their own `srun` commands.
-
-```{note}
-To swap executor configurations, simply pass the `Config` Python object to `parsl.load()` before the workflow is run.
-```
-
-Unlike some other workflow engines, Parsl (by default) is built for "jobpacking" where the allocated nodes continually pull in new workers (until the walltime is reached). This makes it possible to request a large number of nodes that continually pull in new jobs rather than submitting a large number of small jobs to the scheduler, which can be more efficient. In other words, don't be surprised if the Slurm job continues to run even when your submitted task has completed.
-
-## Learn More
-
-That ends the Parsl section of the documentation. If you want to learn more about Parsl, you can read the [Parsl Documentation](https://parsl.readthedocs.io/en/stable/#). Please refer to the [Parsl Slack Channel](http://parsl-project.org/support.html) for any Parsl-specific questions.
