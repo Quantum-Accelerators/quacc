@@ -27,12 +27,12 @@ from quacc.recipes.emt.core import relax_job, static_job
 def workflow(atoms):
 
     # Call Task 1
-    result1 = task(relax_job).submit(atoms)
+    future1 = task(relax_job).submit(atoms)
 
     # Call Task 2, which takes the output of Task 1 as input
-    result2 = task(static_job).submit(result1["atoms"])
+    future2 = task(static_job).submit(future1.result()["atoms"])
 
-    return result2
+    return future2.result()
 
 # Make an Atoms object of a bulk Cu structure
 atoms = bulk("Cu")
@@ -45,7 +45,7 @@ print(result)
 ![Prefect UI](../_static/user/prefect_tutorial.jpg)
 
 ```{note}
-We have used a short-hand notation here of `task(<function>)`. This is equivalent to using the `@task` decorator and definining a new function for each task.
+We have used a short-hand notation here of `task(<function>)`. This is equivalent to using the `@task` decorator and definining a new function for each task. Calling `.submit()` enables concurrent execution of the tasks, which also requires the use of `.result()` to retrieve the output of the task.
 ```
 
 ### Running a Simple Parallel Workflow
@@ -62,10 +62,10 @@ from quacc.recipes.emt.core import relax_job
 def workflow(atoms1, atoms2):
 
     # Define two independent relaxation jobs
-    result1 = task(relax_job).submit(atoms1)
-    result2 = task(relax_job).submit(atoms2)
+    future1 = task(relax_job).submit(atoms1)
+    future2 = task(relax_job).submit(atoms2)
 
-    return {"result1": result1, "result2": result2}
+    return {"result1": future1.result(), "result2": future2.result()}
 
 # Define two Atoms objects
 atoms1 = bulk("Cu")
