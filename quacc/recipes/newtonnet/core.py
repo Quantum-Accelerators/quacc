@@ -139,6 +139,7 @@ def ts_job(
     use_custom_hessian: bool = False,
     temperature: float = 298.15,
     pressure: float = 1.0,
+    check_convergence: bool = True,
     newtonnet_kwargs: dict | None = None,
     opt_swaps: dict | None = None,
 ) -> dict:
@@ -196,7 +197,9 @@ def ts_job(
     # Run the TS optimization
     dyn = run_ase_opt(atoms, **opt_flags)
 
-    ts_summary = summarize_opt_run(dyn, additional_fields={"name": "NewtonNet TS"})
+    ts_summary = summarize_opt_run(dyn,
+                                   check_convergence=check_convergence,
+                                   additional_fields={"name": "NewtonNet TS"})
 
     # Run a frequency calculation
     thermo_summary = freq_job(

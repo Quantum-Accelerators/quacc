@@ -7,6 +7,8 @@ import pytest
 from ase import Atoms
 from ase.build import molecule
 from ase.optimize import FIRE
+from ase.io import write
+from quacc import SETTINGS
 
 try:
     from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
@@ -21,7 +23,7 @@ from quacc.recipes.newtonnet.core import (
     ts_job,
 )
 
-
+'''
 def teardown_module():
     for f in os.listdir("."):
         if (
@@ -38,6 +40,7 @@ def teardown_module():
                 os.unlink(f)
             else:
                 rmtree(f)
+'''
 
 
 @pytest.mark.skipif(
@@ -69,18 +72,7 @@ def test_relax_Job():
     assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
 
 
-# Define the XYZ data
-xyz_data = """
-8
-C       0.87589219      -0.13926227       0.10160247
-O      -0.07821864      -1.06257641       0.39840308
-C       0.38522759      -2.67766458      -0.24094265
-O       1.25339054      -2.63650946      -0.93076096
-H       0.46675900       0.87142023       0.48210765
-H       1.06360062      -0.03733460      -0.95079003
-H       1.80266010      -0.30212484       0.61902953
-H       0.92072327      -2.76503751       1.36753343
-"""
+
 xyz_data = """
 18
 C       0.60975077       2.99728462      -0.61541781
@@ -102,6 +94,19 @@ H       1.58668407       2.08346940      -0.42918377
 H       3.18086711       1.34460608       0.37834213
 H       2.76575603       0.84759417      -1.23589468
 """
+# Define the XYZ data
+xyz_data = """
+8
+C       0.87589219      -0.13926227       0.10160247
+O      -0.07821864      -1.06257641       0.39840308
+C       0.38522759      -2.67766458      -0.24094265
+O       1.25339054      -2.63650946      -0.93076096
+H       0.46675900       0.87142023       0.48210765
+H       1.06360062      -0.03733460      -0.95079003
+H       1.80266010      -0.30212484       0.61902953
+H       0.92072327      -2.76503751       1.36753343
+"""
+
 
 # Split the XYZ data into lines
 xyz_lines = xyz_data.strip().split("\n")
@@ -146,9 +151,31 @@ def test_ts_job_with_custom_hessian():
     # Define test inputs
     # atoms = molecule("H2O")
     use_custom_hessian = True
-
+    opt_swaps = {
+        "max_steps": 4
+    }
     # Call the function
-    output = ts_job(atoms, use_custom_hessian=use_custom_hessian)
+    output = ts_job(atoms,
+                    use_custom_hessian=use_custom_hessian,
+                    opt_swaps=opt_swaps)
+    traj = output['ts']['trajectory']
+
+    # Save the trajectory in XYZ format
+    write('trajectory.xyz', traj)
+
+    for ii, value in enumerate(traj):
+        mlcalculator = NewtonNet(
+            model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
+            settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(":"),
+        )
+        mlcalculator.calculate(value['atoms'])
+        energy = mlcalculator.results['energy']
+        energy_std = mlcalculator.results['energy_std']
+        outlier = mlcalculator.results['outlier']
+        print(f'index: {ii},'
+              f' energy: {energy},'
+              f' energy_std: {energy_std},'
+              f' outlier: {outlier}')
 
     # Perform assertions on the result
     assert isinstance(output, dict)
