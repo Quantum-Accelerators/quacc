@@ -27,10 +27,10 @@ from quacc.recipes.emt.core import relax_job, static_job
 def workflow(atoms):
 
     # Call Task 1
-    result1 = task(relax_job)(atoms)
+    result1 = task(relax_job).submit(atoms)
 
     # Call Task 2, which takes the output of Task 1 as input
-    result2 = task(static_job)(result1["atoms"])
+    result2 = task(static_job).submit(result1["atoms"])
 
     return result2
 
@@ -62,8 +62,8 @@ from quacc.recipes.emt.core import relax_job
 def workflow(atoms1, atoms2):
 
     # Define two independent relaxation jobs
-    result1 = task(relax_job)(atoms1)
-    result2 = task(relax_job)(atoms2)
+    result1 = task(relax_job).submit(atoms1)
+    result2 = task(relax_job).submit(atoms2)
 
     return {"result1": result1, "result2": result2}
 
@@ -92,8 +92,8 @@ from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 @flow
 def workflow(atoms):
-    relaxed_bulk = task(relax_job)(atoms)
-    relaxed_slabs = task(bulk_to_slabs_flow)(relaxed_bulk["atoms"], slab_static_electron=None)
+    relaxed_bulk = task(relax_job).submit(atoms)
+    relaxed_slabs = task(bulk_to_slabs_flow).submit(relaxed_bulk["atoms"], slab_static_electron=None)
 
     return relaxed_slabs
 
@@ -114,7 +114,7 @@ from quacc.recipes.emt.prefect.slabs import bulk_to_slabs_flow
 
 @flow
 def workflow(atoms):
-    relaxed_bulk = task(relax_job)(atoms)
+    relaxed_bulk = task(relax_job).submit(atoms)
     relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], slab_static_electron=None)
 
     return relaxed_slabs
@@ -129,3 +129,9 @@ In this example, all the individual tasks and sub-tasks are run as separate jobs
 ```{note}
 We didn't need to wrap `bulk_to_slabs_flow` with a `task()` because it is defined in Quacc as a Prefect `Flow`.
 ```
+
+## Setting Runners
+
+By default, Parsl will run all tasks on your local machine using the [`ConcurrentTaskRunner`]. To run calculations on an HPC machine, you will need to use the [`DaskTaskRunner`](https://prefecthq.github.io/prefect-dask/) in the `prefect-dask` plugin. This is a parameter that you can control. For instance, you may want to define the executor to be based on [Slurm](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/slurm) to submit a job to an HPC cluster. The example below highlights how one can change the executor.
+
+### Setting Executors via the Lattice Object

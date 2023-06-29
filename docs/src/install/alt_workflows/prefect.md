@@ -6,4 +6,4 @@ If you would prefer to use [Prefect](https://www.prefect.io/) to write and dispa
 
 ## Installation
 
-In your activated Python environment, install Parsl via `pip install prefect`. Make an account on [Prefect Cloud](https://app.prefect.cloud/) and then do `prefect cloud login` from the command-line.
+In your activated Python environment, install Parsl via `pip install prefect prefect-dask`. Make an account on [Prefect Cloud](https://app.prefect.cloud/) and then do `prefect cloud login` from the command-line.

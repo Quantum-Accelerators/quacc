@@ -10,6 +10,8 @@ from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 try:
     import prefect
     from prefect import flow, task
+    from prefect.testing.utilities import prefect_test_harness
+
 except ImportError:
     prefect = None
 
@@ -26,6 +28,13 @@ def teardown_module():
             os.remove(f)
         if "quacc-tmp" in f or "job_" in f or f == "tmp_dir" or f == "runinfo":
             rmtree(f)
+
+
+@pytest.fixture(autouse=True, scope="session")
+def prefect_test_fixture():
+    if prefect:
+        with prefect_test_harness():
+            yield
 
 
 @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
