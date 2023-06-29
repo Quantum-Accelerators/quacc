@@ -132,6 +132,6 @@ We didn't need to wrap `bulk_to_slabs_flow` with a `task()` because it is define
 
 ## Setting Runners
 
-By default, Parsl will run all tasks on your local machine using the [`ConcurrentTaskRunner`]. To run calculations on an HPC machine, you will need to use the [`DaskTaskRunner`](https://prefecthq.github.io/prefect-dask/) in the `prefect-dask` plugin. 
+By default, Parsl will run all tasks on your local machine using the [`ConcurrentTaskRunner`]. To run calculations on an HPC machine, you will need to use the [`DaskTaskRunner`](https://prefecthq.github.io/prefect-dask/) in the `prefect-dask` plugin.
 
 ### Setting Executors via the Lattice Object
