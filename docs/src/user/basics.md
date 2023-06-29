@@ -2,7 +2,7 @@
 
 In Quacc, each code comes with pre-packaged jobs and workflows, which we call recipes for short. This tutorial walks you through how to use these provided recipes to run simple calculations that can be tested out on your local machine.
 
-Once you understand the basics, you should move on to the ["Using Quacc with Covalent"](covalent.md) (recommended) guide to learn how to use Quacc with a workflow manager, which allows you to stich together and run complex Quacc workflows across distributed computing resources. Refer to the ["Using Quacc with Parsl"](advanced/parsl.md) or ["Using Quacc with Jobflow"](advanced/jobflow.md) for alternate workflow manager options.
+Once you understand the basics, you should move on to the ["Using Quacc with Covalent"](covalent.md) (recommended) guide to learn how to use Quacc with a workflow manager, which allows you to stich together and run complex Quacc workflows across distributed computing resources. Refer to the ["Using Quacc with Parsl"](alt_workflows/parsl.md) or ["Using Quacc with Jobflow"](alt_workflows/jobflow.md) for alternate workflow manager options.
 
 ## Pre-Requisites
 

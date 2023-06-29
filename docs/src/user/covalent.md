@@ -3,7 +3,7 @@
 Here, we will show how to use [Covalent](https://github.com/AgnostiqHQ/covalent) to construct, dispatch, and monitor workflows in Quacc.
 
 ```{note}
-If you prefer to use [Parsl](https://github.com/Parsl/parsl) or [Jobflow](https://github.com/materialsproject/jobflow), then skip to the ["Using Quacc with Parsl"](advanced/parsl.md) or ["Using Quacc with Jobflow"](advanced/jobflow.md) sections of the documentation.
+If you prefer to use [Parsl](https://github.com/Parsl/parsl) or [Jobflow](https://github.com/materialsproject/jobflow), then skip to the ["Using Quacc with Parsl"](alt_workflows/parsl.md) or ["Using Quacc with Jobflow"](alt_workflows/jobflow.md) sections of the documentation.
 ```
 
 ## Pre-Requisites
