@@ -5,6 +5,7 @@ import pytest
 from ase.build import bulk, molecule
 
 from quacc.recipes.emt.core import relax_job, static_job
+from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 try:
     import prefect
@@ -64,3 +65,35 @@ def test_tutorial2():
 
     # Run the workflow with Prefect tracking
     workflow2(atoms1, atoms2)
+
+
+@pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
+def test_tutorial3():
+    @flow
+    def workflow(atoms):
+        relaxed_bulk = task(relax_job)(atoms)
+        relaxed_slabs = task(bulk_to_slabs_flow)(
+            relaxed_bulk["atoms"], slab_static_electron=None
+        )
+
+        return relaxed_slabs
+
+    atoms = bulk("Cu")
+    workflow(atoms)
+
+
+@pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
+def test_tutorial4():
+    from quacc.recipes.emt.prefect.slabs import bulk_to_slabs_flow
+
+    @flow
+    def workflow(atoms):
+        relaxed_bulk = task(relax_job)(atoms)
+        relaxed_slabs = bulk_to_slabs_flow(
+            relaxed_bulk["atoms"], slab_static_electron=None
+        )
+
+        return relaxed_slabs
+
+    atoms = bulk("Cu")
+    workflow(atoms)
