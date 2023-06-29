@@ -4,6 +4,8 @@ from shutil import rmtree
 import pytest
 from ase.build import bulk, molecule
 
+from quacc.recipes.emt.core import relax_job, static_job
+
 try:
     import prefect
     from prefect import flow, task
@@ -27,10 +29,6 @@ def teardown_module():
 
 @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
 def test_tutorial1():
-    from ase.build import bulk
-
-    from quacc.recipes.emt.core import relax_job, static_job
-
     # Define the workflow
     @flow
     def workflow(atoms):

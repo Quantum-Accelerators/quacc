@@ -85,13 +85,13 @@ def test_tutorials():
     # ------------------------------------------------------------
 
     @ct.lattice
-    def workflow(atoms):
+    def workflow1(atoms):
         result1 = relax_job(atoms)
         result2 = static_job(result1["atoms"])
         return result2
 
     atoms = bulk("Cu")
-    dispatch_id = ct.dispatch(workflow)(atoms)
+    dispatch_id = ct.dispatch(workflow1)(atoms)
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
 
