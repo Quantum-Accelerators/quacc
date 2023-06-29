@@ -6,4 +6,7 @@ If you would prefer to use [Prefect](https://www.prefect.io/) to write and dispa
 
 ## Installation
 
-In your activated Python environment, install Parsl via `pip install prefect prefect-dask`. Make an account on [Prefect Cloud](https://app.prefect.cloud/) and then do `prefect cloud login` from the command-line.
+1. In your activated Python environment, install Prefect via `pip install prefect prefect-dask dask-jobqueue`.
+2. Make an account on [Prefect Cloud](https://app.prefect.cloud/).
+3. Make an [API Keý](https://docs.prefect.io/cloud/users/api-keys/)
+4. Run `prefect cloud login` from the command-line and enter your API key (or use the browser, if possible).
