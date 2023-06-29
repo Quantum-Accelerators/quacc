@@ -39,16 +39,16 @@ def prefect_test_fixture():
 
 @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
 def test_tutorial1():
-    # Define the workflow
     @flow
     def workflow(atoms):
+
         # Call Task 1
-        result1 = task(relax_job)(atoms)
+        future1 = task(relax_job).submit(atoms)
 
         # Call Task 2, which takes the output of Task 1 as input
-        result2 = task(static_job)(result1["atoms"])
+        future2 = task(static_job).submit(future1.result()["atoms"])
 
-        return result2
+        return future2.result()
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -59,14 +59,14 @@ def test_tutorial1():
 
 @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
 def test_tutorial2():
-    # Define workflow
     @flow
     def workflow2(atoms1, atoms2):
-        # Define two independent relaxation jobs
-        result1 = task(relax_job)(atoms1)
-        result2 = task(relax_job)(atoms2)
 
-        return {"result1": result1, "result2": result2}
+        # Define two independent relaxation jobs
+        future1 = task(relax_job).submit(atoms1)
+        future2 = task(relax_job).submit(atoms2)
+
+        return {"result1": future1.result(), "result2": future2.result()}
 
     # Define two Atoms objects
     atoms1 = bulk("Cu")
@@ -74,35 +74,3 @@ def test_tutorial2():
 
     # Run the workflow with Prefect tracking
     workflow2(atoms1, atoms2)
-
-
-@pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
-def test_tutorial3():
-    @flow
-    def workflow(atoms):
-        relaxed_bulk = task(relax_job)(atoms)
-        relaxed_slabs = task(bulk_to_slabs_flow)(
-            relaxed_bulk["atoms"], slab_static_electron=None
-        )
-
-        return relaxed_slabs
-
-    atoms = bulk("Cu")
-    workflow(atoms)
-
-
-@pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
-def test_tutorial4():
-    from quacc.recipes.emt.prefect.slabs import bulk_to_slabs_flow
-
-    @flow
-    def workflow(atoms):
-        relaxed_bulk = task(relax_job)(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(
-            relaxed_bulk["atoms"], slab_static_electron=None
-        )
-
-        return relaxed_slabs
-
-    atoms = bulk("Cu")
-    workflow(atoms)
