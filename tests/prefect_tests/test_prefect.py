@@ -26,7 +26,7 @@ def teardown_module():
             or ".gz" in f
         ):
             os.remove(f)
-        if "quacc-tmp" in f or "job_" in f or f == "tmp_dir" or f == "runinfo":
+        if "quacc-tmp" in f or "job_" in f or f == "tmp_dir":
             rmtree(f)
 
 
