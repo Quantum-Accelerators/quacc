@@ -18,7 +18,7 @@ Cons:
 
 - Stil actively in development
 - Not as widely used as other workflow management solutions
-- Currently only supports the Slurm job scheduler out-of-the-box
+- Currently only supports the Slurm job scheduler out-of-the-box, although custom plugins can be defined
 - High-security HPC environments may be difficult to access with the centralized server approach
 
 ## Parsl
@@ -27,10 +27,10 @@ Cons:
 
 Pros:
 
-- Widely used and tested across HPC environments
+- Widely used and tested across a variety of HPC environments
 - Relatively simple to define the workflows
 - Active community, particularly across academia
-- Ideal for jobpacking and has excellent scaling performance
+- Ideal for jobpacking and has near-ideal scaling performance
 - Thorough documentation
 
 Cons:
