@@ -131,13 +131,13 @@ cluster_params = {
     "processes": 1,
     # SLURM options
     "shebang": "#!/bin/bash",
-    "python": "python",
     "account": "MyAccountName",
+    "walltime": "00:10:00",
     "job_mem": "0",
     "job_script_prologue": ["source ~/.bashrc", "conda activate quacc"],
-    "walltime": "00:10:00",
     "job_directives_skip": ["-n", "--cpus-per-task"],
     "job_extra_directives": ["-q debug", f"-N {n_nodes}", "-C cpu"],
+    "python": "python",
 }
 
 cluster = make_dask_cluster(cluster_params, n_jobs=n_jobs)
