@@ -186,3 +186,5 @@ def workflow(atoms):
 ```
 
 Now, when the worklow is run from the login node, it will be submitted to the job scheduling system, and the results will be sent back to Prefect Cloud once completed. To modify an already imported `Flow` object, the `Flow.task_runner` attribute can be modified directly.
+
+### Using a Prefect Agent
