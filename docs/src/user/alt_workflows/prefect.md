@@ -143,9 +143,9 @@ We didn't need to wrap `bulk_to_slabs_flow` with a `task()` because it is define
 
 By default, Prefect will run all tasks locally. To submit calculations to the job scheduler, you will need to use the [`DaskTaskRunner`](https://prefecthq.github.io/prefect-dask/) via the `prefect-dask` plugin, as described below.
 
-### Setting Task Runners via the Flow Object
+### Defining a Task Runner
 
-To modify where tasks are run, set the `task_runner` keyword argument of the corresponding `@flow` decorator. An example is shown below for setting up a `SLURMCluster` compatible with the NERSC Perlmutter machine.
+To modify where tasks are run, set the `task_runner` keyword argument of the corresponding `@flow` decorator. An example is shown below for setting up a `SLURMCluster` compatible with the NERSC Perlmutter machine. The jobs in this scenario would be submitted from a login node, and `prefect cloud login` should be run before submitting the workflow.
 
 ```python
 from quacc.util.wflows import make_dask_cluster
@@ -181,3 +181,5 @@ With this cluster object, we can now set the task runner of a `Flow` as follows.
 ```python
 @flow(task_runner=DaskTaskRunner(cluster.scheduler_address))
 ```
+
+Now, when the worklow is run from the login node, it will be submitted to the job scheduling system, and the results will be sent back to Prefect Cloud once completed.
