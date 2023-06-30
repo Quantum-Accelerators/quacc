@@ -147,7 +147,6 @@ By default, Prefect will run all tasks locally. To submit calculations to the jo
 To modify where tasks are run, set the `task_runner` keyword argument of the corresponding `@flow` decorator. An example is shown below for setting up a `SLURMCluster` compatible with the NERSC Perlmutter machine. The jobs in this scenario would be submitted from a login node, and `prefect cloud login` should be run before submitting the workflow.
 
 ```python
-from prefect_dask.task_runners import DaskTaskRunner
 from quacc.util.wflows import make_dask_cluster
 
 n_jobs = 1 # Number of Slurm jobs
@@ -179,7 +178,11 @@ Refer to the [Dask-jobqueue Documentation](https://jobqueue.dask.org/en/latest/i
 With this cluster object, we can now set the task runner of a `Flow` as follows.
 
 ```python
+from prefect_dask.task_runners import DaskTaskRunner
+
 @flow(task_runner=DaskTaskRunner(cluster.scheduler_address))
+def workflow(atoms):
+    ...
 ```
 
 Now, when the worklow is run from the login node, it will be submitted to the job scheduling system, and the results will be sent back to Prefect Cloud once completed. To modify an already imported `Flow` object, the `Flow.task_runner` attribute can be modified directly.
