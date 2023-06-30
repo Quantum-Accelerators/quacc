@@ -41,7 +41,6 @@ def prefect_test_fixture():
 def test_tutorial1():
     @flow
     def workflow(atoms):
-
         # Call Task 1
         future1 = task(relax_job).submit(atoms)
 
@@ -61,7 +60,6 @@ def test_tutorial1():
 def test_tutorial2():
     @flow
     def workflow2(atoms1, atoms2):
-
         # Define two independent relaxation jobs
         future1 = task(relax_job).submit(atoms1)
         future2 = task(relax_job).submit(atoms2)
@@ -74,4 +72,3 @@ def test_tutorial2():
 
     # Run the workflow with Prefect tracking
     workflow2(atoms1, atoms2)
-

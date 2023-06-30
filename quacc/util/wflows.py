@@ -9,7 +9,9 @@ from dask_jobqueue import SLURMCluster
 from dask_jobqueue.core import Job
 
 
-def make_dask_cluster(cluster_params:dict, cluster:Job=SLURMCluster, n_jobs:int=1) -> Job:
+def make_dask_cluster(
+    cluster_params: dict, cluster: Job = SLURMCluster, n_jobs: int = 1
+) -> Job:
     """
     Make a Dask cluster for use with Dask workflows.
 
@@ -22,13 +24,10 @@ def make_dask_cluster(cluster_params:dict, cluster:Job=SLURMCluster, n_jobs:int=
     n_jobs
         Number of Slurm jobs to run on the Dask cluster.
     """
-    async def make_cluster(n_jobs:int,cluster:Job,cluster_params:dict)->Job:
 
+    async def make_cluster(n_jobs: int, cluster: Job, cluster_params: dict) -> Job:
         custom_cluster = await cluster(**cluster_params)
         custom_cluster.scale(n_jobs)
         return custom_cluster
 
-    return asyncio.run(make_cluster(n_jobs,cluster,cluster_params))
-
-
-
+    return asyncio.run(make_cluster(n_jobs, cluster, cluster_params))
