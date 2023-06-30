@@ -112,7 +112,11 @@ When running a Covalent-based workflow like {obj}`.emt.slabs.bulk_to_slabs_flow`
 
 #### The Efficient Way
 
-Quacc fully supports the development of Prefect-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Prefect-specific {obj}`.emt.prefect.slabs.bulk_to_slabs_flow` workflow:
+```{warning}
+This section is still under development.
+```
+
+<!-- Quacc fully supports the development of Prefect-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Prefect-specific {obj}`.emt.prefect.slabs.bulk_to_slabs_flow` workflow:
 
 ```python
 from prefect import flow, task
@@ -125,7 +129,7 @@ from quacc.recipes.emt.prefect.slabs import bulk_to_slabs_flow
 def workflow(atoms):
     future1 = task(relax_job).submit(atoms)
     future2 = bulk_to_slabs_flow(
-        future1.result()["atoms"], slab_static_electron=None
+        future1.result()["atoms"], slab_static_task=None
     )
 
     return future2.result()
@@ -136,7 +140,7 @@ result = workflow(atoms)
 print(result)
 ```
 
-In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing {obj}`.emt.prefect.slabs.bulk_to_slabs_flow` with its Covalent counterpart {obj}`.emt.slabs.bulk_to_slabs_flow`, you can see that the two are extremely similar such that it is often straightforward to interconvert between the two. The `bulk_to_slabs_flow` used here is a Prefect `Flow` object, which is why we didn't need to wrap it with a `task()`. Since this is a `Flow` within a `Flow`, we call the inner flow a "subflow."
+In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing {obj}`.emt.prefect.slabs.bulk_to_slabs_flow` with its Covalent counterpart {obj}`.emt.slabs.bulk_to_slabs_flow`, you can see that the two are extremely similar such that it is often straightforward to interconvert between the two. The `bulk_to_slabs_flow` used here is a Prefect `Flow` object, which is why we didn't need to wrap it with a `task()`. Since this is a `Flow` within a `Flow`, we call the inner flow a "subflow." -->
 
 ## Setting Runners
 

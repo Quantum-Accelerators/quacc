@@ -72,3 +72,19 @@ def test_tutorial2():
 
     # Run the workflow with Prefect tracking
     workflow2(atoms1, atoms2)
+
+
+@pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
+def test_tutorial3():
+    @flow
+    def workflow(atoms):
+        future1 = task(relax_job).submit(atoms)
+        future2 = task(bulk_to_slabs_flow).submit(future1.result()["atoms"])
+
+        return future2.result()
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Run the workflow
+    workflow(atoms)
