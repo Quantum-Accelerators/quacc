@@ -13,7 +13,7 @@ def make_dask_cluster(
     cluster_params: dict, cluster: Job = SLURMCluster, num_jobs: int = 1
 ) -> Job:
     """
-    Make a Dask cluster for use with Dask workflows.
+    Make a Dask cluster for use with Prefect workflows.
 
     Parameters
     ----------

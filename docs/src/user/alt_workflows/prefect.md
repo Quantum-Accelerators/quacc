@@ -123,12 +123,12 @@ from quacc.recipes.emt.prefect.slabs import bulk_to_slabs_flow
 
 @flow
 def workflow(atoms):
-    relaxed_bulk_future = task(relax_job).submit(atoms)
-    relaxed_slabs = bulk_to_slabs_flow(
-        relaxed_bulk_future.result()["atoms"], slab_static_electron=None
+    future1 = task(relax_job).submit(atoms)
+    future2 = bulk_to_slabs_flow(
+        future1.result()["atoms"], slab_static_electron=None
     )
 
-    return relaxed_slabs
+    return future2.result()
 
 
 atoms = bulk("Cu")
@@ -136,11 +136,7 @@ result = workflow(atoms)
 print(result)
 ```
 
-In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing {obj}`.emt.prefect.slabs.bulk_to_slabs_flow` with its Covalent counterpart {obj}`.emt.slabs.bulk_to_slabs_flow`, you can see that the two are extremely similar such that it is often straightforward to interconvert between the two.
-
-```{note}
-We didn't need to wrap `bulk_to_slabs_flow` with a `task()` because it is defined in Quacc as a Prefect `Flow`.
-```
+In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing {obj}`.emt.prefect.slabs.bulk_to_slabs_flow` with its Covalent counterpart {obj}`.emt.slabs.bulk_to_slabs_flow`, you can see that the two are extremely similar such that it is often straightforward to interconvert between the two. The `bulk_to_slabs_flow` used here is a Prefect `Flow` object, which is why we didn't need to wrap it with a `task()`. Since this is a `Flow` within a `Flow`, we call the inner flow a "subflow."
 
 ## Setting Runners
 
@@ -186,4 +182,4 @@ With this cluster object, we can now set the task runner of a `Flow` as follows.
 @flow(task_runner=DaskTaskRunner(cluster.scheduler_address))
 ```
 
-Now, when the worklow is run from the login node, it will be submitted to the job scheduling system, and the results will be sent back to Prefect Cloud once completed.
+Now, when the worklow is run from the login node, it will be submitted to the job scheduling system, and the results will be sent back to Prefect Cloud once completed. To modify an already imported `Flow` object, the `Flow.task_runner` attribute can be modified directly.
