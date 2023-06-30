@@ -59,17 +59,14 @@ strict = [
     "cclib==1.7.2",
     "covalent==0.226.0rc0",  # waiting on > 0.222.0
     "custodian==2023.6.5",
-    "emmet-core==0.57.1",
+    "emmet-core==0.57.2",
     "jobflow==0.1.11",
-    "maggma==0.51.8",
+    "maggma==0.51.9",
     "monty==2023.5.8",
     "numpy==1.25.0",
     "pydantic==1.10.2",
     "pymatgen>=2023.6.23",
 ]
-
-[tool.setuptools.package-data]
-quacc = ["py.typed"]
 
 [project.scripts]
 quacc = "quacc._cli.cli:cli"
@@ -79,9 +76,19 @@ repository = "https://github.com/Quantum-Accelerators/quacc"
 documentation = "https://quantum-accelerators.github.io/quacc/"
 changelog = "https://github.com/Quantum-Accelerators/quacc/blob/main/CHANGELOG.md"
 
+[tool.setuptools.package-data]
+quacc = ["py.typed"]
+
+[tool.pyright]
+include = ["quacc"]
+exclude = ["**/__pycache__"]
+
 [tool.versioningit.vcs]
 method = "git"
 default-tag = "0.0.1"
+
+[tool.pytest.ini_options]
+addopts = "-p no:warnings"
 
 [tool.black]
 exclude = '''

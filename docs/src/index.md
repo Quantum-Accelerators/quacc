@@ -11,6 +11,7 @@ install/install
 install/covalent
 install/codes
 install/advanced/index
+install/alt_workflows/index
 ```
 
 ```{toctree}
@@ -20,6 +21,7 @@ user/basics
 user/covalent
 user/settings
 user/advanced/index
+user/alt_workflows/index
 user/api/index
 ```
 

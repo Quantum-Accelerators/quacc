@@ -1,10 +1,7 @@
 # Advanced Topics
 
-Instructions for advaned topics when using Quacc.
+Instructions for advanced topics when using Quacc.
 
 ```{toctree}
 database
-parsl
-jobflow
-fireworks
 ```
