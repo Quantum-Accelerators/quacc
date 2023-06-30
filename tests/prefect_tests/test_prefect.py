@@ -74,3 +74,4 @@ def test_tutorial2():
 
     # Run the workflow with Prefect tracking
     workflow2(atoms1, atoms2)
+

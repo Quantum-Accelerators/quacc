@@ -78,7 +78,7 @@ print(result)
 
 ![Prefect UI](../_static/user/prefect_tutorial2.jpg)
 
-### Running Workflows with Complex Connectivity
+<!-- ### Running Workflows with Complex Connectivity
 
 For this example, let's consider a toy scenario where we wish to relax a bulk Cu structure, carve all possible slabs, and then run a new relaxation calculation on each slab (with no static calculation at the end).
 
@@ -88,36 +88,18 @@ In Quacc, there are two types of recipes: individual compute tasks with the suff
 from prefect import flow, task
 from ase.build import bulk
 from quacc.recipes.emt.core import relax_job
-from quacc.recipes.emt.slabs import bulk_to_slabs_flow
-
-@flow
-def workflow(atoms):
-    relaxed_bulk = task(relax_job).submit(atoms)
-    relaxed_slabs = task(bulk_to_slabs_flow).submit(relaxed_bulk["atoms"], slab_static_electron=None)
-
-    return relaxed_slabs
-
-atoms = bulk("Cu")
-result = workflow(atoms)
-print(result)
-```
-
-When running a Covalent-based workflow like {obj}`.emt.slabs.bulk_to_slabs_flow` above, the entire function will run as a single compute task even though it is composed of several individual sub-tasks. If these sub-tasks are compute-intensive, this might not be the most efficient use of resources.
-
-Quacc fully supports the development of Prefect-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Prefect-specific {obj}`.emt.prefect.slabs.bulk_to_slabs_flow` workflow:
-
-```python
-from prefect import flow, task
-from ase.build import bulk
-from quacc.recipes.emt.core import relax_job
 from quacc.recipes.emt.prefect.slabs import bulk_to_slabs_flow
 
+
 @flow
 def workflow(atoms):
-    relaxed_bulk = task(relax_job).submit(atoms)
-    relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], slab_static_electron=None)
+    relaxed_bulk_future = task(relax_job).submit(atoms)
+    relaxed_slabs = bulk_to_slabs_flow(
+        relaxed_bulk_future.result()["atoms"], slab_static_electron=None
+    )
 
     return relaxed_slabs
+
 
 atoms = bulk("Cu")
 result = workflow(atoms)
@@ -128,10 +110,43 @@ In this example, all the individual tasks and sub-tasks are run as separate jobs
 
 ```{note}
 We didn't need to wrap `bulk_to_slabs_flow` with a `task()` because it is defined in Quacc as a Prefect `Flow`.
-```
+``` -->
 
 ## Setting Runners
 
-By default, Parsl will run all tasks on your local machine using the [`ConcurrentTaskRunner`]. To run calculations on an HPC machine, you will need to use the [`DaskTaskRunner`](https://prefecthq.github.io/prefect-dask/) in the `prefect-dask` plugin.
+By default, Prefect will run all tasks locally. To submit calculations to the job scheduler, you will need to use the [`DaskTaskRunner`](https://prefecthq.github.io/prefect-dask/) via the `prefect-dask` plugin.
 
-### Setting Executors via the Lattice Object
+### Setting Task Runners via the Flow Object
+
+```python
+from quacc.util.wflows import make_dask_cluster
+
+n_jobs = 1
+n_nodes = 1
+
+cluster_params = {
+    # Dask worker options
+    "cores": 1,
+    "memory": "4GB",
+    "processes": 1,
+    # SLURM options
+    "shebang": "#!/bin/bash",
+    "python": "python",
+    "account": "matgen",
+    "job_mem": "0",
+    "job_script_prologue": ["source ~/.bashrc", "conda activate quacc"],
+    "walltime": "00:10:00",
+    "job_directives_skip": ["-n", "--cpus-per-task"],
+    "job_extra_directives": ["-q debug", f"-N {n_nodes}", "-C cpu"],
+}
+
+cluster = make_dask_cluster(cluster_params, n_jobs=n_jobs)
+```
+
+```python
+@flow(task_runner=DaskTaskRunner(cluster.scheduler_address))
+```
+
+```{seealso}
+Refer to the [Dask-jobqueue Documentation](https://jobqueue.dask.org/en/latest/index.html) for details about setting up a Dask-generated `SLURMCluster`.
+```
