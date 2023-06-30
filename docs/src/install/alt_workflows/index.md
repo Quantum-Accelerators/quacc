@@ -3,8 +3,8 @@
 Installation instructions for alternate workflow engines.
 
 ```{toctree}
-prefect
 parsl
+prefect
 jobflow
 fireworks
 ```

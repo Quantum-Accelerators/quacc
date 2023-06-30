@@ -3,8 +3,8 @@
 Instructions for using Quacc with alternate workflow engines.
 
 ```{toctree}
-prefect
 parsl
+prefect
 jobflow
 fireworks
 ```
