@@ -78,11 +78,38 @@ print(result)
 
 ![Prefect UI](../_static/user/prefect_tutorial2.jpg)
 
-<!-- ### Running Workflows with Complex Connectivity
+### Running Workflows with Complex Connectivity
+
+#### The Inefficient Way
 
 For this example, let's consider a toy scenario where we wish to relax a bulk Cu structure, carve all possible slabs, and then run a new relaxation calculation on each slab (with no static calculation at the end).
 
 In Quacc, there are two types of recipes: individual compute tasks with the suffix `_job` and pre-made multi-step workflows with the suffix `_flow`. Here, we are interested in importing a pre-made workflow. Refer to the example below:
+
+```python
+from prefect import task, flow
+from ase.build import bulk
+
+# Define the workflow
+def workflow(atoms):
+    future1 = task(relax_app).submit(atoms)
+    future2 = task(bulk_to_slabs_app).submit(future1.result()["atoms"])
+
+    return future2
+
+# Define the Atoms object
+atoms = bulk("Cu")
+
+# Run the workflow
+result = workflow(atoms)
+print(result)
+```
+
+When running a Covalent-based workflow like {obj}`.emt.slabs.bulk_to_slabs_flow` above, the entire function will run as a single compute task even though it is composed of several individual sub-tasks. If these sub-tasks are compute-intensive, this might not be the most efficient use of resources.
+
+#### The Efficient Way
+
+Quacc fully supports the development of Prefect-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Prefect-specific {obj}`.emt.prefect.slabs.bulk_to_slabs_flow` workflow:
 
 ```python
 from prefect import flow, task
@@ -110,7 +137,7 @@ In this example, all the individual tasks and sub-tasks are run as separate jobs
 
 ```{note}
 We didn't need to wrap `bulk_to_slabs_flow` with a `task()` because it is defined in Quacc as a Prefect `Flow`.
-``` -->
+```
 
 ## Setting Runners
 
