@@ -55,14 +55,16 @@ def bulk_to_slabs_flow(
         slab_relax_kwargs["relax_cell"] = False
 
     def _relax_distributed(slabs):
-        return [slab_relax_task(slab, **slab_relax_kwargs) for slab in slabs]
+        return [
+            slab_relax_task.submit(slab, **slab_relax_kwargs).result() for slab in slabs
+        ]
 
     def _relax_and_static_distributed(slabs):
         return [
-            slab_static_task(
-                slab_relax_task(slab, **slab_relax_kwargs)["atoms"],
+            slab_static_task.submit(
+                slab_relax_task.submit(slab, **slab_relax_kwargs).result()["atoms"],
                 **slab_static_kwargs,
-            )
+            ).result()
             for slab in slabs
         ]
 

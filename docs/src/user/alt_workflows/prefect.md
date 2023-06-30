@@ -98,7 +98,7 @@ def workflow(atoms):
     future1 = task(relax_job).submit(atoms)
     future2 = task(bulk_to_slabs_flow).submit(future1.result()["atoms"])
 
-    return future2
+    return future2.result()
 
 # Define the Atoms object
 atoms = bulk("Cu")
