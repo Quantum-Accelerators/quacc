@@ -150,8 +150,8 @@ To modify where tasks are run, set the `task_runner` keyword argument of the cor
 ```python
 from quacc.util.wflows import make_dask_cluster
 
-n_jobs = 1
-n_nodes = 1
+n_jobs = 1 # Number of Slurm jobs
+n_nodes = 1 # Number of nodes per Slurm job
 
 cluster_params = {
     # Dask worker options
