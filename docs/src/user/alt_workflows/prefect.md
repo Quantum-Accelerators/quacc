@@ -132,7 +132,7 @@ cluster_params = {
     # SLURM options
     "shebang": "#!/bin/bash",
     "python": "python",
-    "account": "matgen",
+    "account": "MyAccountName",
     "job_mem": "0",
     "job_script_prologue": ["source ~/.bashrc", "conda activate quacc"],
     "walltime": "00:10:00",
