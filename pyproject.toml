@@ -39,7 +39,7 @@ dependencies = [
 fireworks = ["fireworks"]
 optimizers = ["sella>=2.3.2"]
 parsl = ["parsl"]
-prefect = ["prefect", "prefect-dask", "dask-jobqueue]
+prefect = ["prefect", "prefect-dask", "dask-jobqueue"]
 tblite = ["tblite[ase]; platform_system=='Linux'"]
 dev = ["black", "isort", "pytest", "pytest-cov"]
 docs = [

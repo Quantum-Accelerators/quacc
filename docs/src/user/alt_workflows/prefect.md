@@ -89,11 +89,14 @@ In Quacc, there are two types of recipes: individual compute tasks with the suff
 ```python
 from prefect import task, flow
 from ase.build import bulk
+from quacc.recipes.emt.core import relax_job
+from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
-# Define the workflow
+
+@flow
 def workflow(atoms):
-    future1 = task(relax_app).submit(atoms)
-    future2 = task(bulk_to_slabs_app).submit(future1.result()["atoms"])
+    future1 = task(relax_job).submit(atoms)
+    future2 = task(bulk_to_slabs_flow).submit(future1.result()["atoms"])
 
     return future2
 
