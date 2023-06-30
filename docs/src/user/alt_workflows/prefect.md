@@ -141,9 +141,11 @@ We didn't need to wrap `bulk_to_slabs_flow` with a `task()` because it is define
 
 ## Setting Runners
 
-By default, Prefect will run all tasks locally. To submit calculations to the job scheduler, you will need to use the [`DaskTaskRunner`](https://prefecthq.github.io/prefect-dask/) via the `prefect-dask` plugin.
+By default, Prefect will run all tasks locally. To submit calculations to the job scheduler, you will need to use the [`DaskTaskRunner`](https://prefecthq.github.io/prefect-dask/) via the `prefect-dask` plugin, as described below.
 
 ### Setting Task Runners via the Flow Object
+
+To modify where tasks are run, set the `task_runner` keyword argument of the corresponding `@flow` decorator. An example is shown below for setting up a `SLURMCluster` compatible with the NERSC Perlmutter machine.
 
 ```python
 from quacc.util.wflows import make_dask_cluster
@@ -170,10 +172,12 @@ cluster_params = {
 cluster = make_dask_cluster(cluster_params, n_jobs=n_jobs)
 ```
 
-```python
-@flow(task_runner=DaskTaskRunner(cluster.scheduler_address))
+```{seealso}
+Refer to the [Dask-jobqueue Documentation](https://jobqueue.dask.org/en/latest/index.html) for the available keyword arguments to the Dask-generated clusters.
 ```
 
-```{seealso}
-Refer to the [Dask-jobqueue Documentation](https://jobqueue.dask.org/en/latest/index.html) for details about setting up a Dask-generated `SLURMCluster`.
+With this cluster object, we can now set the task runner of a `Flow` as follows.
+
+```python
+@flow(task_runner=DaskTaskRunner(cluster.scheduler_address))
 ```
