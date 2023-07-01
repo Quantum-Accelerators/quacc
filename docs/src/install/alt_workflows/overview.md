@@ -54,9 +54,8 @@ Pros:
 
 Cons:
 
-- Support for HPC environments is possible but more of an afterthought
+- Support for HPC environments is possible but minimal documentation
 - Defining the right configuration options for your HPC machine can be a challenge
-- Focuses more on event-based triggers found in the tech industry
 - Setting up a continually running agent can be confusing for new users
 
 ## Jobflow + FireWorks
