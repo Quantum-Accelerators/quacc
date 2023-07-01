@@ -1,7 +1,7 @@
 ---
 # MegaLinter GitHub Action configuration file
 # More info at https://megalinter.io
-name: Linter (non-Python)
+name: linter (non-Python)
 
 on:
   # Trigger mega-linter at every push. Action will also be visible from Pull Requests to main
