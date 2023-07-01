@@ -33,10 +33,10 @@ def bulk_to_slabs_app(
         Atoms object for the structure.
     slabgen_kwargs
         Additional keyword arguments to pass to make_max_slabs_from_bulk()
-    slab_relax_electron
-        Default Electron to use for the relaxation of the slab structures.
-    slab_static_electron
-        Default Electron to use for the static calculation of the slab structures.
+    slab_relax_app
+        Default PythonApp to use for the relaxation of the slab structures.
+    slab_static_app
+        Default PythonApp to use for the static calculation of the slab structures.
     slab_relax_kwargs
         Additional keyword arguments to pass to the relaxation calculation.
     slab_static_kwargs

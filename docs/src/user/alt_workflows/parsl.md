@@ -12,11 +12,11 @@ For a more detailed tutorial on how to use Parsl, refer to the ["Parsl Tutorial"
 
 ## Examples
 
-### Running a Simple Serial Workflow
-
 ```{hint}
 If you haven't loaded your Parsl config, you must do that first so Parsl can construct the job dependency graph. For testing purposes, you simply can run `import parsl` followed by `parsl.load()` before starting the examples below, which will enable jobs to run on your local machine.
 ```
+
+### Running a Simple Serial Workflow
 
 We will first try running a simple workflow where we relax a bulk Cu structure using EMT and take the output of that calculation as the input to a follow-up static calculation with EMT.
 
@@ -45,10 +45,10 @@ def static_app(atoms):
 # Define the workflow
 def workflow(atoms):
 
-    # Call Job 1
+    # Call App 1
     future1 = relax_app(atoms)
 
-    # Call Job 2, which takes the output of Job 1 as input
+    # Call App 2, which takes the output of App 1 as input
     future2 = static_app(future1.result()["atoms"])
 
     return future2
@@ -110,7 +110,9 @@ If you monitor the output, you'll notice that the two jobs are being run in para
 
 ### Running Workflows with Complex Connectivity
 
-For this example, let's consider a toy scenario where we wish to relax a bulk Cu structure, carve all possible slabs, and then run a new relaxation calculation on each slab (with no static calculation at the end).
+#### The Inefficient Way
+
+For this example, let's consider a toy scenario where we wish to relax a bulk Cu structure, carve all possible slabs, and then run a new relaxation calculation on each slab (with no static calculation at the end). This is an example of a dynamic workflow.
 
 In Quacc, there are two types of recipes: individual compute tasks with the suffix `_job` and pre-made multi-step workflows with the suffix `_flow`. Here, we are interested in importing a pre-made workflow. Refer to the example below:
 
@@ -149,6 +151,8 @@ print(wf_future.result())
 ```
 
 When running a Covalent-based workflow like {obj}`.emt.slabs.bulk_to_slabs_flow` above, the entire function will run as a single compute task even though it is composed of several individual sub-tasks. If these sub-tasks are compute-intensive, this might not be the most efficient use of resources.
+
+#### The Efficient Way
 
 Quacc fully supports the development of Parsl-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Parsl-specific {obj}`.emt.parsl.slabs.bulk_to_slabs_app` workflow:
 
