@@ -42,7 +42,7 @@ result = workflow(atoms)
 print(result)
 ```
 
-![Prefect UI](../_static/user/prefect_tutorial.jpg)
+![Prefect UI](../../_static/user/prefect_tutorial1.jpg)
 
 ```{note}
 We have used a short-hand notation here of `task(<function>)`. This is equivalent to using the `@task` decorator and definining a new function for each task. Calling `.submit()` enables concurrent execution of the tasks, which also requires the use of `.result()` to retrieve the output of the task.
@@ -76,7 +76,7 @@ result = workflow(atoms1, atoms2)
 print(result)
 ```
 
-![Prefect UI](../_static/user/prefect_tutorial2.jpg)
+![Prefect UI](../../_static/user/prefect_tutorial2.jpg)
 
 ### Running Workflows with Complex Connectivity
 
@@ -193,7 +193,6 @@ Now, when the worklow is run from the login node, it will be submitted to the jo
 
 ### Using a Prefect Agent
 
-https://app.prefect.cloud/account/227f2ae0-6c1d-47d6-9450-447f0e74c644/workspace/a37d7b1d-e681-442c-b1e5-ae5d71c5cb65/flow-runs
 So far, we have dispatched calculations immediately upon calling them. However, in practice, it is often more useful to have a [Prefect agent](https://docs.prefect.io/2.10.18/concepts/work-pools/#agent-overview) running in the background that will continually poll for work to submit to the generated Dask cluster and job scheduler. This allows you to submit only a subset of workflows at a time, and the agent will automatically submit more jobs as the resources become available.
 
 To run Prefect workflows with an agent, on the HPC environment where you wish to submit jobs, run `prefect agent start -p "quacc-pool"`. Then submit your workflows as usual. It is best to run the agent on some perpetual resource like a login node or a dedicated workflow node.
