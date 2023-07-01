@@ -190,9 +190,7 @@ Refer to the [Dask-Jobqueue Documentation](https://jobqueue.dask.org/en/latest/i
 With this instantiated cluster object, you can set the task runner of a `Flow` as follows.
 
 ```python
-from prefect_dask.task_runners import DaskTaskRunner
-
-@flow(task_runner=DaskTaskRunner(cluster.scheduler_address))
+@flow(task_runner=cluster)
 def workflow(atoms):
     ...
 ```
