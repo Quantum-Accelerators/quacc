@@ -186,7 +186,7 @@ We didn't need to wrap `bulk_to_slabs_app` with a decorator because it is define
 
 Parsl comes with a web dashboard utility to visualize executed workflows. Refer to the [Monitoring and Visualization](https://parsl.readthedocs.io/en/stable/userguide/monitoring.html#visualization) section of the Parsl documentation for details.
 
-## Setting Executors
+## Job Management
 
 Out-of-the-box, Parsl will run on your local machine. However, in practice you will probably want to run your Parsl workflows on HPC machines.
 
