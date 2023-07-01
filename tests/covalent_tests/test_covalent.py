@@ -49,14 +49,49 @@ def test_tutorials():
     assert result.status == "COMPLETED"
 
     # Tutorials ---------------------------------------------------
+
+    # Define the workflow
     @ct.lattice
     def workflow(atoms):
+        return relax_job(atoms)
+
+    # Make an Atoms object of a bulk Cu structure
+    atoms = bulk("Cu")
+
+    # Dispatch the workflow to the Covalent server
+    # with the bulk Cu Atoms object as the input
+    dispatch_id = ct.dispatch(workflow)(atoms)
+
+    # Fetch the result from the server
+    result = ct.get_result(dispatch_id, wait=True)
+    assert result.status == "COMPLETED"
+
+    # ------------------------------------------------------------
+
+    # Define the workflow
+    workflow = ct.lattice(relax_job)
+
+    # Make an Atoms object of a bulk Cu structure
+    atoms = bulk("Cu")
+
+    # Dispatch the workflow to the Covalent server
+    # with the bulk Cu Atoms object as the input
+    dispatch_id = ct.dispatch(workflow)(atoms)
+
+    # Fetch the result from the server
+    result = ct.get_result(dispatch_id, wait=True)
+    assert result.status == "COMPLETED"
+
+    # ------------------------------------------------------------
+
+    @ct.lattice
+    def workflow1(atoms):
         result1 = relax_job(atoms)
         result2 = static_job(result1["atoms"])
         return result2
 
     atoms = bulk("Cu")
-    dispatch_id = ct.dispatch(workflow)(atoms)
+    dispatch_id = ct.dispatch(workflow1)(atoms)
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
 

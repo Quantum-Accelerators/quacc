@@ -122,7 +122,9 @@ def relax_job(
     input_atoms = deepcopy(atoms)
 
     if relax_cell and not atoms.pbc.any():
-        warnings.warn("Volume relaxation requested but no PBCs found. Ignoring.")
+        warnings.warn(
+            "Volume relaxation requested but no PBCs found. Ignoring.", UserWarning
+        )
         relax_cell = False
 
     default_keywords = {

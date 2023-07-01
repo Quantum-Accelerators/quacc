@@ -1,10 +1,7 @@
 # Advanced Topics
 
-Installation instructions for advanced users of Quacc and workflow tools.
+Installation instructions for advanced topics involving Quacc.
 
 ```{toctree}
 config_db
-parsl
-jobflow
-fireworks
 ```
