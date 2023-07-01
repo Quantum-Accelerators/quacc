@@ -13,7 +13,7 @@ If you would prefer to use [Prefect](https://www.prefect.io/) to write and dispa
 
 ## Optional Configuration
 
-1. To store all Prefect results, run `prefect config set PREFECT_RESULTS_PERSIST_BY_DEFAULT=True`
-2. To change the default local storage path for the results (`~/.prefect/storage`), run `prefect config set PREFECT_LOCAL_STORAGE_PATH=<path>`
+1. To persist all Prefect results (as pickle files), run `prefect config set PREFECT_RESULTS_PERSIST_BY_DEFAULT=True`
+2. To change the default local storage path for the persisted results (default: `~/.prefect/storage`), run `prefect config set PREFECT_LOCAL_STORAGE_PATH=<path>`
 
 Additional configuration parameters can be modified, as described in the [Prefect documentation](https://docs.prefect.io/concepts/settings/).
