@@ -1,7 +1,7 @@
 """Slab recipes for EMT"""
 from __future__ import annotations
 
-from prefect import Flow, Task, flow, task
+from prefect import Task, flow, task
 
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.util.slabs import make_max_slabs_from_bulk
@@ -57,12 +57,6 @@ def bulk_to_slabs_flow(
     if "relax_cell" not in slab_relax_kwargs:
         slab_relax_kwargs["relax_cell"] = False
 
-    # TODO: Uncomment once aforementioned Prefect issues are solved
-    # def _relax_distributed(slabs):
-    #     return [
-    #         slab_relax_task.submit(slab, **slab_relax_kwargs).result() for slab in slabs
-    #     ]
-
     def _relax_and_static_distributed(slabs):
         return [
             slab_static_task.submit(
@@ -74,7 +68,4 @@ def bulk_to_slabs_flow(
 
     slabs = make_max_slabs_from_bulk(atoms, **slabgen_kwargs)
 
-    if slab_relax_task and slab_static_task:
-        return _relax_and_static_distributed(slabs)
-    else:
-        return _relax_distributed(slabs)
+    return _relax_and_static_distributed(slabs)
