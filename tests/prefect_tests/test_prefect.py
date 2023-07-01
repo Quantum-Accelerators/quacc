@@ -127,6 +127,7 @@ def test_comparison2():
 
     assert workflow(1, 2, 3) == [6, 6, 6]
 
+
 @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
 def test_emt_flow():
     @flow
