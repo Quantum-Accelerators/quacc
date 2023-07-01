@@ -39,7 +39,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install --no-cache-dir .[strict,dev,strict,dev,fireworks,optimizers,parsl]
+          pip install --no-cache-dir .[strict,dev,optimizers]
           pip install covalent-slurm-plugin
 
       - name: Configure Quacc
@@ -242,10 +242,50 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml
 
+  tests-altwflows:
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.10"]
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install pip packages
+        run: |
+          pip install --no-cache-dir .[strict,dev,fireworks,prefect,parsl]
+
+      - name: Configure Quacc
+        run: quacc config
+
+      - name: Run tests with pytest
+        run: pytest tests/parsl_tests tests/prefect_tests tests/jobflow_tests/test_fireworks.py tests/util/test_wflows.py --cov=quacc --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        if: github.repository == 'quantum-accelerators/quacc'
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+
   release:
     runs-on: ubuntu-latest
-    needs: [tests-base, tests-tblite, tests-psi4, tests-dftbplus, tests-newtonnet]
-    if: github.event_name == 'release' && needs.tests-base.result == 'success' && needs.tests-tblite.result == 'success' && needs.tests-psi4.result == 'success' && needs.tests-dftbplus.result == 'success' && needs.tests-newtonnet.result == 'success'
+    needs:
+      [tests-base, tests-tblite, tests-psi4, tests-dftbplus, tests-newtonnet, tests-altwflows]
+    if: github.event_name == 'release' && needs.tests-base.result == 'success' && needs.tests-tblite.result == 'success' && needs.tests-psi4.result == 'success' && needs.tests-dftbplus.result == 'success' && needs.tests-newtonnet.result == 'success' && needs.tests-altwflows.result == 'success'
     steps:
       - name: Check out repo
         uses: actions/checkout@v3

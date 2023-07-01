@@ -3,7 +3,7 @@
 Here, we will show how to use [Covalent](https://github.com/AgnostiqHQ/covalent) to construct, dispatch, and monitor workflows in Quacc.
 
 ```{note}
-If you prefer to use [Parsl](https://github.com/Parsl/parsl) or [Jobflow](https://github.com/materialsproject/jobflow), then skip to the ["Using Quacc with Parsl"](alt_workflows/parsl.md) or ["Using Quacc with Jobflow"](alt_workflows/jobflow.md) sections of the documentation.
+If you prefer to use a workflow engine other than Covalent, then refer to the ["Alternate Workflow Engines"](alt_workflows) section of the documentation.
 ```
 
 ## Pre-Requisites
@@ -16,13 +16,13 @@ All `Electron` and `Lattice` objects behave as normal Python functions when the 
 
 ## Examples
 
-### Running a Simple Serial Workflow
-
 ```{hint}
 If you haven't done so yet, make sure you started the Covalent server with `covalent start` in the command-line.
 ```
 
-We will first try running a simple workflow where we relax a bulk Cu structure using EMT and take the output of that calculation as the input to a follow-up static calculation with EMT.
+### Running a Simple Serial Workflow
+
+We will now try running a simple workflow where we relax a bulk Cu structure using EMT and take the output of that calculation as the input to a follow-up static calculation with EMT.
 
 ```python
 import covalent as ct
@@ -100,7 +100,7 @@ print(result)
 
 ### Running Workflows with Complex Connectivity
 
-For this example, let's consider a toy scenario where we wish to relax a bulk Cu structure, carve all possible slabs, and then run a new relaxation calculation on each slab.
+For this example, let's consider a toy scenario where we wish to relax a bulk Cu structure, carve all possible slabs, and then run a new relaxation calculation on each slab (with no static calculation at the end). This is an example of a dynamic workflow.
 
 In Quacc, there are two types of recipes: individual compute tasks with the suffix `_job` and pre-made multi-step workflows with the suffix `_flow`. Here, we are interested in importing a pre-made workflow. Refer to the example below:
 

@@ -27,12 +27,26 @@ pip install git+https://github.com/quantum-accelerators/quacc.git
 quacc config
 ```
 
-Quacc can be installed with several "extras," as outlined in the `pyproject.toml` file. These are described below:
+## Optional Dependencies
+
+Quacc can be installed with several "extras," as outlined in the `pyproject.toml` file. These are described below.
+
+### Calculators
+
+- `quacc[tblite]`: Installs dependencies to enable the use of tblite.
+
+### Workflow Managers
 
 - `quacc[fireworks]`: Installs dependencies to enable the use of FireWorks.
-- `quacc[optimizers]`: Installs additional ASE-based optimizers, such as Sella.
 - `quacc[parsl]`: Installs dependencies to enable the use of Parsl.
-- `quacc[tblite]`: Installs dependencies to enable the use of tblite.
+- `quacc[prefect]`: Installs dependencies to enable the use of Prefect.
+
+### Miscellaneous
+
+- `quacc[optimizers]`: Installs additional ASE-based optimizers, such as Sella.
+
+### Development
+
 - `quacc[dev]`: Installs dependencies to enable local development of Quacc.
 - `quacc[docs]`: Installs dependencies to build the documentation.
 - `quacc[strict]`: Installs dependencies that match the test suite on GitHub.

@@ -4,16 +4,6 @@
 
 A: Better is all in the eye of the beholder. If you are happy with the tools you are using, my goal is not to convince you to switch. That said, if you find that writing high-throughput computational workflows has a huge learning curve or simply takes too much time away from your science, then Quacc may be for you.
 
-**Q: Which workflow manager should I use?**
-
-A: Since there is no single best answer for everyone's needs, we designed Quacc such that it can support a variety of options.
-
-If you are new to workflow management tools, we recommend using [Covalent](https://github.com/AgnostiqHQ/covalent/) due to its ease of use and helpful dashboard.
-
-If you find Covalent isn't for you, we recommend [Parsl](https://github.com/Parsl/parsl) since it is well-documented with many options for distributing work on HPC machines. Parsl is particularly well-suited for a variety of HPC environments common in academia.
-
-If you are affiliated with the Materials Project team at Lawrence Berkeley National Laboratory, we recommend using [Jobflow](https://github.com/materialsproject/jobflow) coupled with [FireWorks](https://github.com/materialsproject/fireworks) since it widely used there.
-
 **Q: Do you have any tips for writing new workflows?**
 
 A: When developing new workflows, I strongly recommend writing an initial draft based on a low-cost ASE calculator like `EMT` or `LJ`, which will allow you to test on your local machine with fast turnaround. Also try to keep things modular. Trying to do too much in one function can make it difficult to debug.
