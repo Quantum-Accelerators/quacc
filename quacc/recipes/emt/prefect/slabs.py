@@ -1,22 +1,22 @@
 """Slab recipes for EMT"""
 from __future__ import annotations
 
-from ase import Atoms
 from prefect import Flow, Task, flow, task
 
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.util.slabs import make_max_slabs_from_bulk
 
 
+# TODO: Add in type hints once #9266 and #10116 are solved
+# TODO: Make `slab_relax_task` and `slab_static_task` the kwargs
+# when #10116 is solved
 @flow
 def bulk_to_slabs_flow(
-    atoms: Atoms,
+    atoms,
     slabgen_kwargs: dict | None = None,
-    slab_relax_task: Task = task(relax_job),
-    slab_static_task: Task | None = task(static_job),
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
-) -> Flow:
+) -> list[dict]:
     """
     Workflow consisting of:
 
@@ -32,9 +32,9 @@ def bulk_to_slabs_flow(
         Atoms object for the structure.
     slabgen_kwargs
         Additional keyword arguments to pass to make_max_slabs_from_bulk()
-    slab_relax_task
+    TODO: slab_relax_task
         Default Task to use for the relaxation of the slab structures.
-    slab_static_task
+    TODO: slab_static_task
         Default Task to use for the static calculation of the slab structures.
     slab_relax_kwargs
         Additional keyword arguments to pass to the relaxation calculation.
@@ -43,9 +43,12 @@ def bulk_to_slabs_flow(
 
     Returns
     -------
-    Flow
-        A Prefect Flow
+    list[dict]
+        List of dictionary of results from quacc.schemas.ase.summarize_run or quacc.schemas.ase.summarize_opt_run
     """
+
+    slab_relax_task: Task = task(relax_job)
+    slab_static_task: Task | None = task(static_job)
 
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}

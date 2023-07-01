@@ -71,10 +71,6 @@ If you are adding recipes based on a code that can be readily installed via `pip
 
 ## Workflow Engines
 
-```{note}
-Converting between workflow engines is relatively straightforward. Refer to {obj}`quacc.recipes.emt` for examples.
-```
-
 All individual compute tasks should be defined as simple functions decorated with `@ct.electron` even if you don't use Covalent, as the decorator will be ignored in such scenarios.
 
-For multi-step workflows, we prefer to have a corresponding Covalent-based definition in all cases, but in general, we will accept workflow recipes defined using any of the supported workflow engines described in the documentation since it is relatively trivial to interconvert between them. In short, please feel free to submit a PR for a recipe in whatever supported format you feel most comfortable with, and we will try to convert it to the default Covalent format if necessary.
+For multi-step workflows, we prefer to have a corresponding Covalent-based definition in all cases, but in general, we will accept workflow recipes defined using any of the supported workflow engines described in the documentation since it is relatively trivial to [interconvert between them](../user/alt_workflows/comparison.md). In short, please feel free to submit a PR for a recipe in whatever supported format you feel most comfortable with, and we will try to convert it to the default Covalent format if necessary.

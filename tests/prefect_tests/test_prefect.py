@@ -126,3 +126,16 @@ def test_comparison2():
         return [add.submit(val, c).result() for val in future2.result()]
 
     assert workflow(1, 2, 3) == [6, 6, 6]
+
+
+def test_emt_flow():
+    @flow
+    def workflow(atoms):
+        future1 = task(relax_job).submit(atoms)
+        result = bulk_to_slabs_flow(future1.result()["atoms"])
+
+        return result
+
+    atoms = bulk("Cu")
+    result = workflow(atoms)
+    print(result)

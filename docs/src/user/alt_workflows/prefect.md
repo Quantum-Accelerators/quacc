@@ -130,16 +130,12 @@ from ase.build import bulk
 from quacc.recipes.emt.core import relax_job
 from quacc.recipes.emt.prefect.slabs import bulk_to_slabs_flow
 
-
 @flow
 def workflow(atoms):
     future1 = task(relax_job).submit(atoms)
-    future2 = bulk_to_slabs_flow(
-        future1.result()["atoms"], slab_static_task=None
-    )
+    result = bulk_to_slabs_flow(future1.result()["atoms"])
 
-    return future2.result()
-
+    return result
 
 atoms = bulk("Cu")
 result = workflow(atoms)
@@ -148,7 +144,7 @@ print(result)
 
 In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing {obj}`.emt.prefect.slabs.bulk_to_slabs_flow` with its Covalent counterpart {obj}`.emt.slabs.bulk_to_slabs_flow`, you can see that the two are extremely similar such that it is often straightforward to interconvert between the two. The `bulk_to_slabs_flow` used here is a Prefect `Flow` object, which is why we didn't need to wrap it with a `task()`. Since this is a `Flow` within a `Flow`, we call the inner flow a ["subflow"](https://docs.prefect.io/concepts/flows/?h=subflow#composing-flows).
 
-![Prefect UI](../../_static/user/prefect_tutorial4.jpg)
+![Prefect UI](../../_static/user/prefect_tutorial4.gif)
 
 ## Job Management
 
