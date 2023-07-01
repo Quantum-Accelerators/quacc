@@ -156,3 +156,62 @@ def test_tutorials():
     dispatch_id = ct.dispatch(workflow5)(atoms)
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
+
+
+@pytest.mark.skipif(
+    os.environ.get("GITHUB_ACTIONS", False) is False,
+    reason="This test is only meant to be run on GitHub Actions",
+)
+def test_comparison1():
+    @ct.electron
+    def add(a, b):
+        return a + b
+
+    @ct.electron
+    def mult(a, b):
+        return a * b
+
+    @ct.lattice
+    def workflow(a, b, c):
+        return mult(add(a, b), c)
+
+    # Locally
+    assert workflow(1, 2, 3) == 9
+
+    # Dispatched
+    dispatch_id = ct.dispatch(workflow)(1, 2, 3)
+    result = ct.get_result(dispatch_id, wait=True)
+    assert result.status == "COMPLETED"
+
+
+@pytest.mark.skipif(
+    os.environ.get("GITHUB_ACTIONS", False) is False,
+    reason="This test is only meant to be run on GitHub Actions",
+)
+def test_comparison2():
+    @ct.electron
+    def add(a, b):
+        return a + b
+
+    @ct.electron
+    def make_more(val):
+        return [val] * 3
+
+    @ct.electron
+    @ct.lattice
+    def add_distributed(vals, c):
+        return [add(val, c) for val in vals]
+
+    @ct.lattice
+    def workflow(a, b, c):
+        result1 = add(a, b)
+        result2 = make_more(result1)
+        return add_distributed(result2, c)
+
+    # Locally
+    assert workflow(1, 2, 3) == [6, 6, 6]
+
+    # Dispatched
+    dispatch_id = ct.dispatch(workflow)(1, 2, 3)
+    result = ct.get_result(dispatch_id, wait=True)
+    assert result.status == "COMPLETED"

@@ -4,6 +4,12 @@
 
 [Parsl](https://github.com/Parsl/parsl) is a Python program developed at Argonne National Laboratory and the University of Chicago to easily write parallel workflows that can be dispatched on distributed compute resources. Like Jobflow+FireWorks, it can be used in place of Covalent, if preferred.
 
+```{note}
+For some minimal working examples of how to write your own Parsl workflows and how they compare to other workflow tools, refer to the [Worfklow Engine Comparison Guide](../comparison.md)
+```
+
+## Pre-Requisites
+
 Make sure you completed the ["Parsl Setup"](../../install/alt_workflows/parsl.md) section of the installation instructions. Additionally, you should read the Parsl documentation's ["Quick Start"](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a `@python_app` and `@join_app`, which describe individual compute tasks and dynamic job tasks, respectively.
 
 ```{seealso}
@@ -154,7 +160,7 @@ When running a Covalent-based workflow like {obj}`.emt.slabs.bulk_to_slabs_flow`
 
 #### The Efficient Way
 
-Quacc fully supports the development of Parsl-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Parsl-specific {obj}`.emt.parsl.slabs.bulk_to_slabs_app` workflow:
+Quacc fully supports Parsl-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Parsl-specific {obj}`.emt.parsl.slabs.bulk_to_slabs_app` workflow:
 
 ```python
 from parsl import python_app
@@ -186,7 +192,7 @@ We didn't need to wrap `bulk_to_slabs_app` with a decorator because it is define
 
 Parsl comes with a web dashboard utility to visualize executed workflows. Refer to the [Monitoring and Visualization](https://parsl.readthedocs.io/en/stable/userguide/monitoring.html#visualization) section of the Parsl documentation for details.
 
-## Setting Executors
+## Job Management
 
 Out-of-the-box, Parsl will run on your local machine. However, in practice you will probably want to run your Parsl workflows on HPC machines.
 
