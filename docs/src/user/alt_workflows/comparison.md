@@ -144,7 +144,7 @@ def workflow(a, b, c):
     result2 = make_more(result1)
     return [add(val, c) for val in result2]
 
-result = workflow(1, 2, 3) # [6, 6, 6]
+result = workflow(1, 2, 3) # e.g. [6, 6, 6]
 ```
 
 ### Covalent
@@ -173,11 +173,11 @@ def workflow(a, b, c):
     return add_distributed(result2, c)
 
 # Locally
-result = workflow(1, 2, 3) # [6, 6, 6]
+result = workflow(1, 2, 3) # e.g. [6, 6, 6]
 
 # Dispatched
 dispatch_id = ct.dispatch(workflow)(1, 2, 3)
-result = ct.get_result(dispatch_id, wait=True) # [6, 6, 6]
+result = ct.get_result(dispatch_id, wait=True) # e.g. [6, 6, 6]
 ```
 
 ### Parsl
@@ -202,7 +202,7 @@ def workflow(a, b, c):
     future2 = make_more(future1.result())
     return [add(val, c) for val in future2.result()]
 
-result = workflow(1, 2, 3).result() # [6, 6, 6]
+result = workflow(1, 2, 3).result() # e.g. [6, 6, 6]
 ```
 
 ### Prefect
@@ -225,7 +225,7 @@ def workflow(a, b, c):
     future2 = make_more.submit(future1.result())
     return [add.submit(val, c).result() for val in future2.result()]
 
-result = workflow(1, 2, 3) # [6, 6, 6]
+result = workflow(1, 2, 3) # e.g. [6, 6, 6]
 ```
 
 ### Jobflow
@@ -254,5 +254,5 @@ job2 = make_more(job1.output)
 job3 = add_distributed(job2.output, 3)
 flow = Flow([job1, job2, job3])
 
-responses = run_locally(flow) # [6, 6, 6] across the final 3 jobs
+responses = run_locally(flow) # e.g. [6, 6, 6] (job3.output)
 ```
