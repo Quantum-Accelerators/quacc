@@ -236,7 +236,7 @@ The individual arguments are as follows:
 - `SlurmProvider()`: The provider to use for job submission. This can be changed to `LocalProvider()` if you wish to have the Parsl process run on a compute node rather than the login node.
 - `account`: Your NERSC account name.
 - `nodes_per_block`: The number of nodes to request per job. By default, all cores on the node will be requested (seetting `cores_per_node` will override this).
-- `scheduler_options`: Any additional `#SBATCH` options can be included here. For multiple options, you can either use `\n` between them to specify a new line.
+- `scheduler_options`: Any additional `#SBATCH` options can be included here. For multiple options, you can use `\n` between them to specify a new line.
 - `worker_init`: Commands to run before the job starts, typically used for activating a given Python environment.
 - `walltime`: The maximum amount of time to allow the job to run in `HH:MM:SS` format.
 - `cmd_timeout`: The maximum time to wait (in seconds) for the job scheduler info to be retrieved/sent.
