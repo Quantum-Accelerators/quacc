@@ -12,11 +12,12 @@ except ImportError:
     dask is None,
     reason="dask-jobqueue must be installed.",
 )
-def test_make_cluster():
+def test_make_cluster(capsys):
     cluster_params = {
         "cores": 1,
         "memory": "1GB",
         "processes": 1,
         "account": "MyAccount",
     }
-    make_dask_cluster(cluster_params)
+    with capsys.disabled():
+        make_dask_cluster(cluster_params)
