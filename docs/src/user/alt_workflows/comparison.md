@@ -225,7 +225,7 @@ def workflow(a, b, c):
     future2 = make_more.submit(future1.result())
     return [add.submit(val, c).result() for val in future2.result()]
 
-result = workflow(1, 2, 3) # 9
+result = workflow(1, 2, 3) # [6, 6, 6]
 ```
 
 ### Jobflow

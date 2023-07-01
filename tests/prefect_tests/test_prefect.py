@@ -125,4 +125,4 @@ def test_comparison2():
         future2 = make_more.submit(future1.result())
         return [add.submit(val, c).result() for val in future2.result()]
 
-    assert workflow(1, 2, 3) == 9
+    assert workflow(1, 2, 3) == [6, 6, 6]
