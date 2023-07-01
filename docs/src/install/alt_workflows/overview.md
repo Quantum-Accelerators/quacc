@@ -54,10 +54,10 @@ Pros:
 
 Cons:
 
-- Support for HPC environments is possible, but there is minimal documentation
+- Not as widely used for HPC environments
 - Defining the right configuration options for your HPC machine can be a challenge
 - Setting up a continually running agent can be a challenge for new users
-- Can be expensive for many users if not self-hosting the server, although there are [discounts](https://www.prefect.io/guide/blog/simple-success-based-pricing/).
+- Can be expensive for many users if not self-hosting the server, although there is an academic discount.
 
 ## Jobflow + FireWorks
 
