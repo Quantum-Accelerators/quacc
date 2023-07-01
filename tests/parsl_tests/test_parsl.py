@@ -6,7 +6,7 @@ from ase.build import bulk, molecule
 
 try:
     import parsl
-    from parsl import python_app
+    from parsl import join_app, python_app
 
 except ImportError:
     parsl = None
@@ -144,6 +144,47 @@ def test_tutorial4():
     wf_future = bulk_to_slabs_app(relax_future.result()["atoms"], slab_static_app=None)
     wf_future.result()
     assert wf_future.done()
+
+
+@pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
+def test_comparison1():
+    @python_app
+    def add(a, b):
+        return a + b
+
+    @python_app
+    def mult(a, b):
+        return a * b
+
+    def workflow(a, b, c):
+        future1 = add(a, b)
+        return mult(future1.result(), c)
+
+    result = workflow(1, 2, 3).result()  # 9
+    assert result == 9
+
+
+@pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
+def test_comparison2():
+    @python_app
+    def add(a, b):
+        return a + b
+
+    @python_app
+    def make_more(val):
+        return [val] * 3
+
+    @join_app
+    def workflow(a, b, c):
+        def _add_distributed(vals):
+            return [add(val, c) for val in vals]
+
+        result1 = add(a, b)
+        result2 = make_more(result1.result())
+        return _add_distributed(result2.result())
+
+    result = workflow(1, 2, 3).result()  # [6, 6, 6]
+    assert result == [6, 6, 6]
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")

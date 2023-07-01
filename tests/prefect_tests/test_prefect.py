@@ -88,3 +88,22 @@ def test_tutorial3():
 
     # Run the workflow
     workflow(atoms)
+
+
+@pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
+def test_comparison1():
+    @task
+    def add(a, b):
+        return a + b
+
+    @task
+    def mult(a, b):
+        return a * b
+
+    @flow
+    def workflow(a, b, c):
+        future1 = add.submit(a, b)
+        return mult.submit(future1.result(), c)
+
+    result = workflow(1, 2, 3).result()  # 9
+    assert result == 9

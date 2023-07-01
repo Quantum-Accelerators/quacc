@@ -156,3 +156,57 @@ def test_tutorials():
     dispatch_id = ct.dispatch(workflow5)(atoms)
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
+
+
+def test_comparison1():
+    @ct.electron
+    def add(a, b):
+        return a + b
+
+    @ct.electron
+    def mult(a, b):
+        return a * b
+
+    @ct.lattice
+    def workflow(a, b, c):
+        return mult(add(a, b), c)
+
+    # Locally
+    result = workflow(1, 2, 3)  # 9
+    assert result == 9
+
+    # Dispatched
+    dispatch_id = ct.dispatch(workflow)(1, 2, 3)
+    result = ct.get_result(dispatch_id, wait=True)  # 9
+    assert result.status == "COMPLETED"
+    assert result == 9
+
+
+def test_comparison2():
+    @ct.electron
+    def add(a, b):
+        return a + b
+
+    @ct.electron
+    def make_more(val):
+        return [val] * 3
+
+    @ct.lattice
+    def workflow(a, b, c):
+        @ct.electron
+        @ct.lattice
+        def _add_distributed(vals):
+            return [add(val, c) for val in vals]
+
+        result1 = add(a, b)
+        result2 = make_more(result1)
+        return _add_distributed(result2)
+
+    # Locally
+    result = workflow(1, 2, 3)  # [6, 6, 6]
+    assert result == [6, 6, 6]
+
+    # Dispatched
+    dispatch_id = ct.dispatch(workflow)(1, 2, 3)
+    result = ct.get_result(dispatch_id, wait=True)  # [6, 6, 6]
+    assert result.status == "COMPLETED"

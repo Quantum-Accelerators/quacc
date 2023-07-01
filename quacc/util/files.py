@@ -1,5 +1,5 @@
 """
-Basic utility functions
+Utility functions for file and path handling
 """
 from __future__ import annotations
 
