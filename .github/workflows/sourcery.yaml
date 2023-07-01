@@ -1,4 +1,4 @@
-name: Check codebase using Sourcery
+name: Sourcery
 
 on:
   push:
