@@ -11,7 +11,7 @@ Make sure you completed the ["Prefect Setup"](../../install/alt_workflows/prefec
 ## Examples
 
 ```{hint}
-If you haven't logged into [Prefect Cloud](https://app.prefect.cloud/) yet, you may wish to do so via `prefect cloud login`.
+If you haven't logged into [Prefect Cloud](https://app.prefect.cloud/) yet, you should do so via `prefect cloud login`.
 ```
 
 ### Running a Simple Serial Workflow
@@ -118,7 +118,7 @@ When running a Covalent-based workflow like {obj}`.emt.slabs.bulk_to_slabs_flow`
 
 #### The Efficient Way
 
-Quacc fully supports the development of Prefect-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Prefect-specific {obj}`.emt.prefect.slabs.bulk_to_slabs_flow` workflow.
+Quacc fully supports Prefect-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Prefect-specific {obj}`.emt.prefect.slabs.bulk_to_slabs_flow` workflow.
 
 ```python
 from prefect import flow, task
@@ -148,7 +148,11 @@ In this example, all the individual tasks and sub-tasks are run as separate jobs
 
 ## Job Management
 
-By default, Prefect will run all tasks locally. To submit calculations to the job scheduler, you will need to use the [`DaskTaskRunner`](https://prefecthq.github.io/prefect-dask/) via the `prefect-dask` plugin, as described below.
+### Using a Prefect Agent
+
+So far, we have dispatched calculations immediately upon calling them. However, in practice, it is often more useful to have a [Prefect agent](https://docs.prefect.io/concepts/work-pools/#agent-overview) running in the background that will continually poll for work to submit to the generated Dask cluster and job scheduler. This allows you to submit only a subset of workflows at a time, and the agent will automatically submit more jobs as the resources become available.
+
+To run Prefect workflows with an agent, on the HPC environment where you wish to submit jobs, run `prefect agent start -p "quacc-pool"` to start a worker pool named "quacc-pool". Then submit your workflows as usual. It is best to run the agent on some perpetual resource like a login node or a dedicated workflow node.
 
 ### Defining a Task Runner
 
@@ -183,7 +187,7 @@ cluster = make_dask_cluster(cluster_params, n_jobs=n_jobs)
 Refer to the [Dask-jobqueue Documentation](https://jobqueue.dask.org/en/latest/index.html) for the available keyword arguments to the Dask-generated clusters.
 ```
 
-With this cluster object, we can now set the task runner of a `Flow` as follows.
+With this instantiated cluster object, you can set the task runner of a `Flow` as follows.
 
 ```python
 from prefect_dask.task_runners import DaskTaskRunner
@@ -193,13 +197,7 @@ def workflow(atoms):
     ...
 ```
 
-Now, when the worklow is run from the login node, it will be submitted to the job scheduling system, and the results will be sent back to Prefect Cloud once completed. To modify an already imported `Flow` object, the `Flow.task_runner` attribute can be modified directly.
-
-### Using a Prefect Agent
-
-So far, we have dispatched calculations immediately upon calling them. However, in practice, it is often more useful to have a [Prefect agent](https://docs.prefect.io/2.10.18/concepts/work-pools/#agent-overview) running in the background that will continually poll for work to submit to the generated Dask cluster and job scheduler. This allows you to submit only a subset of workflows at a time, and the agent will automatically submit more jobs as the resources become available.
-
-To run Prefect workflows with an agent, on the HPC environment where you wish to submit jobs, run `prefect agent start -p "quacc-pool"`. Then submit your workflows as usual. It is best to run the agent on some perpetual resource like a login node or a dedicated workflow node.
+Now, when the worklow is run from the login node, it will be submitted to the job scheduling system (Slurm in this case), and the results will be sent back to Prefect Cloud once completed. To modify an already imported `Flow` object, the `Flow.task_runner` attribute can also be modified directly.
 
 ## Learn More
 

@@ -156,7 +156,7 @@ When running a Covalent-based workflow like {obj}`.emt.slabs.bulk_to_slabs_flow`
 
 #### The Efficient Way
 
-Quacc fully supports the development of Parsl-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Parsl-specific {obj}`.emt.parsl.slabs.bulk_to_slabs_app` workflow:
+Quacc fully supports Parsl-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Parsl-specific {obj}`.emt.parsl.slabs.bulk_to_slabs_app` workflow:
 
 ```python
 from parsl import python_app
