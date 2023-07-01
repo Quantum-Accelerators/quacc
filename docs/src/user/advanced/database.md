@@ -28,9 +28,13 @@ store = MongoStore(
 covalent_to_db(store)
 ```
 
-## With Parsl or Without a Workflow Manager
+## With Jobflow as the Workflow Manager
 
-If you're using Parsl or not using a workflow manager at all, you can still store your results in a database of your choosing. For a given recipe, you can store the final output summary in your database using the {obj}`quacc.util.db.results_to_db` function, as shown in the example below.
+If you are using Jobflow to construct your workflows, it will automatically store the results in the database you defined during the [setup process](../../install/alt_workflows/jobflow.md).
+
+## General Solution
+
+For other workflow managers (or no workflow manager at all), you can still store your results in a database of your choosing. For a given recipe, you can store the final output summary in your database using the {obj}`quacc.util.db.results_to_db` function, as shown in the example below.
 
 ```python
 from maggma.stores import MongoStore
@@ -51,7 +55,3 @@ store = MongoStore(
 # Store the results
 results_to_db(store, results)
 ```
-
-## With Jobflow as the Workflow Manager
-
-If you are using Jobflow to construct your workflows, it will automatically store the results in the database you defined during the [setup process](../../install/alt_workflows/jobflow.md).

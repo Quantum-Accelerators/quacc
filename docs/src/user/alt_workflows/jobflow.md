@@ -4,6 +4,12 @@
 
 [Jobflow](https://github.com/materialsproject/jobflow) is a program developed by the [Materials Project](https://materialsproject.org/) team to write computational workflows. It can be used in place of Covalent, if preferred.
 
+```{note}
+For some minimal working examples of how to write your own Jobflow workflows and how they compare to other tools, refer to the [Worfklow Engine Comparison Guide](alt_workflows/comparison.md).
+```
+
+## Pre-Requisites
+
 Make sure you completed the ["Jobflow Setup"](../../install/alt_workflows/jobflow.md) section of the installation instructions. Additionally, you should read the Jobflow documentation's [Quick Start](https://materialsproject.github.io/jobflow/tutorials/1-quickstart.html) to get a sense of how Jobflow works. Namely, you should understand the `Job` and `Flow` definitions, which describe individual compute tasks and workflows, respectively.
 
 ```{seealso}
@@ -72,6 +78,8 @@ Like before, we need to define the individual `Job` objects. Now though, we must
 
 ### Running a Workflow with Complex Connectivity
 
+#### The Inefficient Way
+
 For this example, let's consider a toy scenario where we wish to relax a bulk Cu structure, carve all possible slabs, and then run a new relaxation calculation on each slab (with no static calculation at the end). This is an example of a dynamic workflow.
 
 In Quacc, there are two types of recipes: individual compute tasks with the suffix `_job` and pre-made multi-step workflows with the suffix `_flow`. Here, we are interested in importing a pre-made workflow. Refer to the example below:
@@ -100,11 +108,35 @@ print(result)
 
 We have imported the {obj}`.emt.slabs.bulk_to_slabs_flow` function, which takes an `Atoms` object along with several optional parameters. For demonstration purposes, we specify the `slab_static_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is stitch together the individual `@job` steps into a single `Flow` object.
 
-## Known Limitations
+#### The Efficient Way
 
-When running a Covalent-based workflow like {obj}`.emt.slabs.bulk_to_slabs_flow` in the previous example, the entire function will run as a single compute task even though it is composed of several individual sub-tasks. If these sub-tasks are compute-intensive, this might not be the most efficient use of resources.
+Quacc fully supports Jobflow-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Jobflow-specific {obj}`.emt.jobflow.slabs.BulkToSlabsFlow` workflow:
 
-If you wish to construct Jobflow-specific workflows that are mirrors of their Covalent counterparts, this is possible to do using Quacc. Refer to the {obj}`quacc.recipes.emt.jobflow.slabs` module for a representative Jobflow example that can be compared against the Covalent version at {obj}`quacc.recipes.emt.slabs`.
+```python
+import jobflow as jf
+from ase.build import bulk
+from quacc.recipes.emt.core import relax_job
+from quacc.recipes.emt.jobflow.slabs import BulkToSlabsFlow
+
+atoms = bulk("Cu")
+
+@jf.job
+def relax_func(atoms):
+    return relax_job(atoms)
+
+# Define the Atoms object
+atoms = bulk("Cu")
+
+# Construct the Flow
+job1 = relax_func(atoms)
+job2 = BulkToSlabsFlow().make(job1.output["atoms"])
+workflow = jf.Flow([job1, job2])
+
+# Run the workflow locally
+jf.run_locally(workflow, store=STORE, create_folders=True, ensure_success=True)
+```
+
+In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing {obj}`.emt.jobflow.slabs.BulkToSlabsFlow` with its Covalent counterpart {obj}`.emt.slabs.bulk_to_slabs_flow`, you can see that the two are extremely similar such that it is often straightforward to [interconvert](comparison.md) between the two. In the case of `BulkToSlabsFlow`, it actually returns a [`Response(replace)`](<https://materialsproject.github.io/jobflow/tutorials/5-dynamic-flows.html#The-Response(replace)-option>) object that dynamically replaces the `Flow` with several downstream jobs.
 
 ## Learn More
 

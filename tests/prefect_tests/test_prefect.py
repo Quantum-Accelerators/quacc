@@ -88,3 +88,57 @@ def test_tutorial3():
 
     # Run the workflow
     workflow(atoms)
+
+
+@pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
+def test_comparison1():
+    @task
+    def add(a, b):
+        return a + b
+
+    @task
+    def mult(a, b):
+        return a * b
+
+    @flow
+    def workflow(a, b, c):
+        future1 = add.submit(a, b)
+        future2 = mult.submit(future1.result(), c)
+        return future2
+
+    assert workflow(1, 2, 3).result() == 9
+
+
+@pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
+def test_comparison2():
+    @task
+    def add(a, b):
+        return a + b
+
+    @task
+    def make_more(val):
+        return [val] * 3
+
+    @flow
+    def workflow(a, b, c):
+        future1 = add.submit(a, b)
+        future2 = make_more.submit(future1.result())
+        return [add.submit(val, c).result() for val in future2.result()]
+
+    assert workflow(1, 2, 3) == [6, 6, 6]
+
+
+@pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
+def test_emt_flow():
+    from quacc.recipes.emt.prefect.slabs import bulk_to_slabs_flow
+
+    @flow
+    def workflow(atoms):
+        future1 = task(relax_job).submit(atoms)
+        result = bulk_to_slabs_flow(future1.result()["atoms"])
+
+        return result
+
+    atoms = bulk("Cu")
+    result = workflow(atoms)
+    print(result)

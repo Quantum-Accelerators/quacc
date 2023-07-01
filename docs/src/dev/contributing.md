@@ -1,5 +1,9 @@
 # Contributing
 
+## General Tips
+
+When developing new recipes, it is often helpful to start from an existing example. In general, we recommend referring to {obj}`quacc.recipes.emt` or {obj}`quacc.recipes.tblite`. Some advanced use cases can also be found in the VASP recipes.
+
 ## Steps to Contribute
 
 To contribute to Quacc, we recommend doing the following:
@@ -12,19 +16,26 @@ To contribute to Quacc, we recommend doing the following:
 
 For reproducibility purposes, we strongly recommend installing Quacc in a fresh virtual environment.
 
-## General Rules
+## Guidelines
 
 Please abide by the following guidelines when contributing code to Quacc:
 
-1. All changes should have associated unit tests.
+1. All changes should have associated unit tests that pass. Code coverage should be maintained.
 
 2. All code should include type hints and have internally consistent documentation for the inputs and outputs.
 
 3. The input to most compute jobs should be an ASE `Atoms` object. The output of most compute tasks should be a schema from one of the module/functions within {obj}`quacc.schemas`.
 
-4. Only define multi-step workflows if they go beyond simply stitching together existing functions. Otherwise, just define the individual functions.
+4. All inputs and outputs to recipes must be JSON (de)serializable (or have an `.as_dict()` and `.from_dict()` method, such that they are [`MSONable`](https://materialsvirtuallab.github.io/monty/monty.json.html)). This can be confirmed by running the following code snippet, where where `test_item` is the object you wish to test.
 
-5. If you define a new multi-step workflow, you may do so using Covalent or Parsl. It is trivial to convert between the two, so simply use whichever you are most comfortable with.
+```python
+from monty.json import MontyDecoder, jsanitize
+
+d = jsanitize(test_item, strict=True, enum_values=True)
+MontyDecoder().process_decoded(d)
+```
+
+5. Only define multi-step workflows if they go beyond simply stitching together existing functions or if they are widely used in other recipes. Otherwise, just define the individual functions.
 
 6. Ensure that the code remains flexible for the user whenever possible.
 
@@ -34,6 +45,8 @@ Please abide by the following guidelines when contributing code to Quacc:
 
 9. Update the `CHANGELOG.md` file.
 
+10. Try to be cognizant of how many arguments your functions take.
+
 ## Changelog
 
 We keep a [`CHANGELOG.md`](https://github.com/quantum-accelerators/quacc/blob/main/CHANGELOG.md) file in the base directory of the `quacc` code. Before submitting your PR, be sure to update the `CHANGELOG.md` file under the "Unreleased" section with a brief description of your changes. The `CHANGELOG.md` file follows the [Keep a Changelog](https://keepachangelog.com) format.
@@ -42,9 +55,13 @@ We keep a [`CHANGELOG.md`](https://github.com/quantum-accelerators/quacc/blob/ma
 
 In general, please try to keep the code style consistent when possible. There are two main things to consider:
 
-1. Functions should be lowercase and with underscores. Classes should be in PascalCase and constructed using a {obj}`@dataclass` decorator where possible.
+1. All Python code should be formatted with [isort](https://github.com/PyCQA/isort) and then [black](https://github.com/psf/black), although this will be corrected automatically when merged.
 
-2. All Python code should be formatted with [isort](https://github.com/PyCQA/isort) and then [black](https://github.com/psf/black), although this will be corrected automatically when merged.
+2. Use NumPy-style Docstrings.
+
+3. Address any relevant style issues raised by the "Deepsource: Python" and "Sourcery" GitHub actions, if present.
+
+4. Functions should be lowercase and with underscores. Classes should be in PascalCase and constructed using a {obj}`@dataclass` decorator where possible.
 
 ## Unit Tests
 
@@ -52,6 +69,8 @@ All changes you make to Quacc should be accompanied by unit tests and should not
 
 If you are adding recipes based on a code that can be readily installed via `pip` or `conda` (e.g. tblite, xtb-python, DFTB+, Psi4), then you can run these codes directly in the test suite. Preferably, you should use a small molecule or solid and cheap method so the unit tests run quickly. If the recipes you're adding are proprietary or not available via `pip` or `conda` (e.g. Gaussian, GULP), then you will need to [monkeypatch](https://docs.pytest.org/en/7.1.x/how-to/monkeypatch.html) certain functions to change their behavior during testing. For instance, we do not want to run VASP directly during unit tests and have mocked the `atoms.get_potential_energy()` function to always return a dummy value of -1.0 during unit tests. Any mocked functions can be found in the `conftest.py` files of the testing directory.
 
-## Tips
+## Workflow Engines
 
-When developing new recipes, it is often helpful to start from an existing example. In general, we recommend referring to {obj}`quacc.recipes.emt` or {obj}`quacc.recipes.tblite`. Some advanced use cases can also be found in the VASP recipes.
+All individual compute tasks should be defined as simple functions decorated with `@ct.electron` even if you don't use Covalent, as the decorator will be ignored in such scenarios.
+
+For multi-step workflows, we prefer to have a corresponding Covalent-based definition in all cases, but in general, we will accept workflow recipes defined using any of the supported workflow engines described in the documentation since it is relatively trivial to [interconvert between them](../user/alt_workflows/comparison.md). In short, please feel free to submit a PR for a recipe in whatever supported format you feel most comfortable with, and we will try to convert it to the default Covalent format if necessary.
