@@ -145,11 +145,11 @@ def test_emt_flow():
     workflow(atoms)
 
     @flow
-    def workflow(atoms):
+    def workflow2(atoms):
         future1 = task(relax_job).submit(atoms)
         result = bulk_to_slabs_flow(future1.result()["atoms"], task(relax_job), None)
 
         return result
 
     atoms = bulk("Cu")
-    workflow(atoms)
+    workflow2(atoms)

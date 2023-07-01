@@ -45,7 +45,8 @@ def bulk_to_slabs_flow(
     Returns
     -------
     list[dict]
-        List of dictionary of results from quacc.schemas.ase.summarize_run or quacc.schemas.ase.summarize_opt_run
+        List of dictionary of results from quacc.schemas.ase.summarize_run
+        or quacc.schemas.ase.summarize_opt_run
     """
 
     slab_relax_kwargs = slab_relax_kwargs or {}
@@ -71,5 +72,5 @@ def bulk_to_slabs_flow(
 
     if slab_static_task is None:
         return _relax_distributed(slabs)
-    else:
-        return _relax_and_static_distributed(slabs)
+
+    return _relax_and_static_distributed(slabs)
