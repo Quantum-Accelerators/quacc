@@ -123,19 +123,21 @@ result = responses[job2.uuid][1].output # 9
 Let's do the following:
 
 1. Add two numbers (e.g. 1 + 2)
-2. Make a list of three copies of the output of Step 1 (e.g. [3, 3, 3])
+2. Make a list of copies of the output from Step 1 (e.g. [3, 3, 3]) where the size of the list is not known until runtime
 3. Add a third number to each element of the list from Step 2 (e.g. [3 + 3, 3 + 3, 3 + 3])
 
-We will treat this as a dynamic workflow where, in a practical application, the number of elements in the list from Step 2 may not necessarily be known until runtime. In practice, we would want each of the individual addition tasks to be their own compute job.
+We will treat this as a dynamic workflow where the number of elements in the list from Step 2 may not necessarily be known until runtime. In practice, we would want each of the individual addition tasks to be their own compute job.
 
 ### No Workflow Engine
 
 ```python
+import random
+
 def add(a, b):
     return a + b
 
 def make_more(val):
-    return [val] * 3
+    return [val] * random.randint(2, 5)
 
 def workflow(a, b, c):
     result1 = add(a, b)
@@ -148,6 +150,7 @@ result = workflow(1, 2, 3) # [6, 6, 6]
 ### Covalent
 
 ```python
+import random
 import covalent as ct
 
 @ct.electron
@@ -156,7 +159,7 @@ def add(a, b):
 
 @ct.electron
 def make_more(val):
-    return [val] * 3
+    return [val] * random.randint(2, 5)
 
 @ct.electron
 @ct.lattice
@@ -189,7 +192,9 @@ def add(a, b):
 
 @python_app
 def make_more(val):
-    return [val] * 3
+    import random
+
+    return [val] * random.randint(2, 5)
 
 @join_app
 def workflow(a, b, c):
@@ -203,6 +208,7 @@ result = workflow(1, 2, 3).result() # [6, 6, 6]
 ### Prefect
 
 ```python
+import random
 from prefect import task, flow
 
 @task
@@ -211,7 +217,7 @@ def add(a, b):
 
 @task
 def make_more(val):
-    return [val] * 3
+    return [val] * random.randint(2, 5)
 
 @flow
 def workflow(a, b, c):
@@ -225,6 +231,7 @@ result = workflow(1, 2, 3) # 9
 ### Jobflow
 
 ```python
+import random
 from jobflow import job, Flow, Response, run_locally
 
 @job
@@ -233,7 +240,7 @@ def add(a, b):
 
 @job
 def make_more(val):
-    return [val] * 3
+    return [val] * random.randint(2, 5)
 
 @job
 def add_distributed(vals, c):
