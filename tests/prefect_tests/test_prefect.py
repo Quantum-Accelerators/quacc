@@ -130,6 +130,8 @@ def test_comparison2():
 
 @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
 def test_emt_flow():
+    from quacc.recipes.emt.prefect.slabs import bulk_to_slabs_flow
+
     @flow
     def workflow(atoms):
         future1 = task(relax_job).submit(atoms)
