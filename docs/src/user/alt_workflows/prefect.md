@@ -112,6 +112,8 @@ print(result)
 
 When running a Covalent-based workflow like {obj}`.emt.slabs.bulk_to_slabs_flow` above, the entire function will run as a single compute task even though it is composed of several individual sub-tasks. If these sub-tasks are compute-intensive, this might not be the most efficient use of resources.
 
+![Prefect UI](../../_static/user/prefect_tutorial3.jpg)
+
 #### The Efficient Way
 
 ```{warning}
