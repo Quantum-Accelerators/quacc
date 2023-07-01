@@ -47,7 +47,6 @@ def bulk_to_slabs_app(
     AppFuture
         An AppFuture whose .result() is a list[dict]
     """
-
     from quacc.util.slabs import make_max_slabs_from_bulk
 
     slab_relax_kwargs = slab_relax_kwargs or {}
