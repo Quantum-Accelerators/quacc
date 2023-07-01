@@ -1,11 +1,7 @@
----
-# MegaLinter GitHub Action configuration file
-# More info at https://megalinter.io
 name: linter (non-Python)
 
 on:
-  # Trigger mega-linter at every push. Action will also be visible from Pull Requests to main
-  push: # Comment this line to trigger action only on pull-requests (not recommended if you don't pay for GH Actions)
+  push:
     branches: [main]
 
 jobs:
@@ -13,28 +9,21 @@ jobs:
     name: MegaLinter
     runs-on: ubuntu-latest
     permissions:
-      # Give the default GITHUB_TOKEN write permission to commit and push, comment issues & post new PR
-      # Remove the ones you do not need
       contents: write
       issues: write
       pull-requests: write
     steps:
-      # Git Checkout
       - name: Checkout Code
         uses: actions/checkout@v3
         with:
           token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
 
-      # MegaLinter
       - name: MegaLinter
         id: ml
-        # You can override MegaLinter flavor used to have faster performances
-        # More info at https://megalinter.io/flavors/
         uses: oxsecurity/megalinter/flavors/cupcake@v7.1.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Upload MegaLinter artifacts
       - name: Archive production artifacts
         if: ${{ success() }} || ${{ failure() }}
         uses: actions/upload-artifact@v3
