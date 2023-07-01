@@ -16,9 +16,9 @@ Pros:
 
 Cons:
 
-- Stil actively in development
+- Still actively in development
 - Not as widely used as other workflow management solutions
-- Currently only supports the Slurm job scheduler out-of-the-box, although custom plugins can be defined
+- For HPC, it currently only supports the Slurm job scheduler out-of-the-box, although custom plugins can be defined
 - High-security HPC environments may be difficult to access with the centralized server approach
 
 ## Parsl
@@ -54,9 +54,10 @@ Pros:
 
 Cons:
 
-- Support for HPC environments is possible but minimal documentation
+- Support for HPC environments is possible, but there is minimal documentation
 - Defining the right configuration options for your HPC machine can be a challenge
-- Setting up a continually running agent can be confusing for new users
+- Setting up a continually running agent can be a challenge for new users
+- Can be expensive for many users if not self-hosting the server
 
 ## Jobflow + FireWorks
 

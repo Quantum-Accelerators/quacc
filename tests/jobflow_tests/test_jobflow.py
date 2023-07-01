@@ -66,6 +66,49 @@ def test_tutorial3():
     jf.run_locally(workflow, store=STORE, create_folders=True)
 
 
+def comparison1():
+    @jf.job
+    def add(a, b):
+        return a + b
+
+    @jf.job
+    def mult(a, b):
+        return a * b
+
+    job1 = add(1, 2)
+    job2 = mult(job1.output, 3)
+    flow = jf.Flow([job1, job2], output=job2.output)
+
+    responses = jf.run_locally(flow, ensure_success=True)
+    assert responses[job2.uuid][1].output == 9
+
+
+def comparison2():
+    @jf.job
+    def add(a, b):
+        return a + b
+
+    @jf.job
+    def make_more(val):
+        return [val] * 3
+
+    @jf.job
+    def add_distributed(vals, c):
+        jobs = []
+        for val in vals:
+            jobs.append(add(val, c))
+
+        flow = jf.Flow(jobs)
+        return jf.Response(detour=flow)
+
+    job1 = add(1, 2)
+    job2 = make_more(job1.output)
+    job3 = add_distributed(job2.output, 3)
+    flow = jf.Flow([job1, job2, job3])
+
+    jf.run_locally(flow, ensure_success=True)  # [6, 6, 6] in final 3 jobs
+
+
 def test_emt_flow():
     atoms = bulk("Cu")
 
