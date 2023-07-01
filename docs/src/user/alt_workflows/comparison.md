@@ -6,6 +6,13 @@ All of the recommended workflow solutions have a similar decorator-based syntax 
 
 ## Simple Workflow
 
+Let's do the following:
+
+1. Add two numbers (e.g. 1 + 2)
+2. Multiply the output of Step 1 by a third number (e.g. 3 \* 3)
+
+In practice, we would want each of the two tasks to be their own compute job.
+
 ### No Workflow Engine
 
 ```python
@@ -62,7 +69,8 @@ def mult(a, b):
 
 def workflow(a, b, c):
     future1 = add(a, b)
-    return mult(future1.result(), c)
+    future2 = mult(future1.result(), c)
+    return future2
 
 result = workflow(1, 2, 3).result() # 9
 ```
@@ -83,7 +91,8 @@ def mult(a, b):
 @flow
 def workflow(a, b, c):
     future1 = add.submit(a, b)
-    return mult.submit(future1.result(), c)
+    future2 = mult.submit(future1.result(), c)
+    return future2
 
 result = workflow(1, 2, 3).result() # 9
 ```
@@ -110,6 +119,14 @@ result = responses[job2.uuid][1].output # 9
 ```
 
 ## Dynamic Workflow
+
+Let's do the following:
+
+1. Add two numbers (e.g. 1 + 2)
+2. Make a list of three copies of the output of Step 1 (e.g. [3, 3, 3])
+3. Add a third number to each element of the list from Step 2 (e.g. [3 + 3, 3 + 3, 3 + 3])
+
+We will treat this as a dynamic workflow where, in a practical application, the number of elements in the list from Step 2 may not necessarily be known until runtime. In practice, we would want each of the individual addition tasks to be their own compute job.
 
 ### No Workflow Engine
 
@@ -141,17 +158,16 @@ def add(a, b):
 def make_more(val):
     return [val] * 3
 
+@ct.electron
+@ct.lattice
+def add_distributed(vals, c):
+    return [add(val, c) for val in vals]
+
 @ct.lattice
 def workflow(a, b, c):
-
-    @ct.electron
-    @ct.lattice
-    def _add_distributed(vals):
-        return [add(val, c) for val in vals]
-
     result1 = add(a, b)
     result2 = make_more(result1)
-    return _add_distributed(result2)
+    return add_distributed(result2, c)
 
 # Locally
 result = workflow(1, 2, 3) # [6, 6, 6]
@@ -177,18 +193,34 @@ def make_more(val):
 
 @join_app
 def workflow(a, b, c):
-
-    def _add_distributed(vals):
-        return [add(val, c) for val in vals]
-
-    result1 = add(a, b)
-    result2 = make_more(result1.result())
-    return _add_distributed(result2.result())
+    future1 = add(a, b)
+    future2 = make_more(future1.result())
+    return [add(val, c) for val in future2.result()]
 
 result = workflow(1, 2, 3).result() # [6, 6, 6]
 ```
 
 ### Prefect
+
+```python
+from prefect import task, flow
+
+@task
+def add(a, b):
+    return a + b
+
+@task
+def make_more(val):
+    return [val] * 3
+
+@flow
+def workflow(a, b, c):
+    future1 = add.submit(a, b)
+    future2 = make_more.submit(future1.result())
+    return [add.submit(val, c).result() for val in future2.result()]
+
+result = workflow(1, 2, 3) # 9
+```
 
 ### Jobflow
 
@@ -208,14 +240,12 @@ def add_distributed(vals, c):
     jobs = []
     for val in vals:
         jobs.append(add(val, c))
-
-    flow = Flow(jobs)
-    return Response(detour=flow)
+    return Response(detour=Flow(jobs))
 
 job1 = add(1, 2)
 job2 = make_more(job1.output)
 job3 = add_distributed(job2.output, 3)
 flow = Flow([job1, job2, job3])
 
-responses = run_locally(flow) # [6, 6, 6] in final 3 jobs
+responses = run_locally(flow) # [6, 6, 6] across the final 3 jobs
 ```

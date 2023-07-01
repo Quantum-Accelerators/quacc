@@ -154,8 +154,7 @@ def test_tutorials():
 
     atoms = bulk("Cu")
     dispatch_id = ct.dispatch(workflow5)(atoms)
-    result = ct.get_result(dispatch_id, wait=True)
-    assert result.status == "COMPLETED"
+    assert ct.get_result(dispatch_id, wait=True) == [6, 6, 6]
 
 
 def test_comparison1():
@@ -172,14 +171,11 @@ def test_comparison1():
         return mult(add(a, b), c)
 
     # Locally
-    result = workflow(1, 2, 3)  # 9
-    assert result == 9
+    assert workflow(1, 2, 3) == 9
 
     # Dispatched
     dispatch_id = ct.dispatch(workflow)(1, 2, 3)
-    result = ct.get_result(dispatch_id, wait=True)  # 9
-    assert result.status == "COMPLETED"
-    assert result == 9
+    assert ct.get_result(dispatch_id, wait=True) == 9
 
 
 def test_comparison2():
@@ -191,22 +187,20 @@ def test_comparison2():
     def make_more(val):
         return [val] * 3
 
+    @ct.electron
+    @ct.lattice
+    def add_distributed(vals, c):
+        return [add(val, c) for val in vals]
+
     @ct.lattice
     def workflow(a, b, c):
-        @ct.electron
-        @ct.lattice
-        def _add_distributed(vals):
-            return [add(val, c) for val in vals]
-
         result1 = add(a, b)
         result2 = make_more(result1)
-        return _add_distributed(result2)
+        return add_distributed(result2, c)
 
     # Locally
-    result = workflow(1, 2, 3)  # [6, 6, 6]
-    assert result == [6, 6, 6]
+    assert workflow(1, 2, 3) == [6, 6, 6]
 
     # Dispatched
     dispatch_id = ct.dispatch(workflow)(1, 2, 3)
-    result = ct.get_result(dispatch_id, wait=True)  # [6, 6, 6]
-    assert result.status == "COMPLETED"
+    assert ct.get_result(dispatch_id, wait=True) == [6, 6, 6]

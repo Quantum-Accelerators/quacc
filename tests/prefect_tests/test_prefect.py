@@ -103,7 +103,26 @@ def test_comparison1():
     @flow
     def workflow(a, b, c):
         future1 = add.submit(a, b)
-        return mult.submit(future1.result(), c)
+        future2 = mult.submit(future1.result(), c)
+        return future2
 
-    result = workflow(1, 2, 3).result()  # 9
-    assert result == 9
+    assert workflow(1, 2, 3).result() == 9
+
+
+@pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
+def test_comparison2():
+    @task
+    def add(a, b):
+        return a + b
+
+    @task
+    def make_more(val):
+        return [val] * 3
+
+    @flow
+    def workflow(a, b, c):
+        future1 = add.submit(a, b)
+        future2 = make_more.submit(future1.result())
+        return [add.submit(val, c).result() for val in future2.result()]
+
+    assert workflow(1, 2, 3) == 9

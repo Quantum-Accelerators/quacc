@@ -158,10 +158,10 @@ def test_comparison1():
 
     def workflow(a, b, c):
         future1 = add(a, b)
-        return mult(future1.result(), c)
+        future2 = mult(future1.result(), c)
+        return future2
 
-    result = workflow(1, 2, 3).result()  # 9
-    assert result == 9
+    assert workflow(1, 2, 3).result() == 9
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
@@ -176,15 +176,11 @@ def test_comparison2():
 
     @join_app
     def workflow(a, b, c):
-        def _add_distributed(vals):
-            return [add(val, c) for val in vals]
+        future1 = add(a, b)
+        future2 = make_more(future1.result())
+        return [add(val, c) for val in future2.result()]
 
-        result1 = add(a, b)
-        result2 = make_more(result1.result())
-        return _add_distributed(result2.result())
-
-    result = workflow(1, 2, 3).result()  # [6, 6, 6]
-    assert result == [6, 6, 6]
+    assert workflow(1, 2, 3).result() == [6, 6, 6]
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
