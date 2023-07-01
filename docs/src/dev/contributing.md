@@ -20,25 +20,32 @@ For reproducibility purposes, we strongly recommend installing Quacc in a fresh 
 
 Please abide by the following guidelines when contributing code to Quacc:
 
-1. All changes should have associated unit tests.
+1. All changes should have associated unit tests that pass. Code coverage should be maintained.
 
 2. All code should include type hints and have internally consistent documentation for the inputs and outputs.
 
 3. The input to most compute jobs should be an ASE `Atoms` object. The output of most compute tasks should be a schema from one of the module/functions within {obj}`quacc.schemas`.
 
-4. All inputs and outputs to recipes must be JSON serializable (or have an `.as_dict()` and `.from_dict()` method, such that they are [`MSONable`](https://materialsvirtuallab.github.io/monty/monty.json.html)).
+4. All inputs and outputs to recipes must be JSON (de)serializable (or have an `.as_dict()` and `.from_dict()` method, such that they are [`MSONable`](https://materialsvirtuallab.github.io/monty/monty.json.html)). This can be confirmed by running the following code snippet, where where `test_item` is the object you wish to test.
+
+```python
+from monty.json import MontyDecoder, jsanitize
+
+d = jsanitize(test_item, strict=True, enum_values=True)
+MontyDecoder().process_decoded(d)
+```
 
 5. Only define multi-step workflows if they go beyond simply stitching together existing functions or if they are widely used in other recipes. Otherwise, just define the individual functions.
 
-6. If you define a new multi-step workflow, you may do so using Covalent or Parsl. It is trivial to convert between the two, so simply use whichever you are most comfortable with.
+6. Ensure that the code remains flexible for the user whenever possible.
 
-7. Ensure that the code remains flexible for the user whenever possible.
+7. Where appropriate, you should use the "internal" geometry optimizers for a given code rather than the ASE optimizers.
 
-8. Where appropriate, you should use the "internal" geometry optimizers for a given code rather than the ASE optimizers.
+8. `gzip` large test files to save space.
 
-9. `gzip` large test files to save space.
+9. Update the `CHANGELOG.md` file.
 
-10. Update the `CHANGELOG.md` file.
+10. Try to be cognizant of how many arguments your functions take.
 
 ## Changelog
 
@@ -68,4 +75,6 @@ If you are adding recipes based on a code that can be readily installed via `pip
 Converting between workflow engines is relatively straightforward. Refer to {obj}`quacc.recipes.emt` for examples.
 ```
 
-All individual compute tasks should be defined as simple functions decorated with `@ct.electron` even if you don't use Covalent, as the decorator will be ignored in such scenarios. For multi-step workflows, we prefer to have a corresponding Covalent-based definition in all cases, but in general, we will accept workflow recipes defined using any of the supported workflow engines described in the documentation since it is relatively trivial to interconvert between them. In short, please feel free to submit a PR for a recipe in whatever supported format you feel most comfortable with, and we will try to convert it to the default Covalent format if necessary.
+All individual compute tasks should be defined as simple functions decorated with `@ct.electron` even if you don't use Covalent, as the decorator will be ignored in such scenarios.
+
+For multi-step workflows, we prefer to have a corresponding Covalent-based definition in all cases, but in general, we will accept workflow recipes defined using any of the supported workflow engines described in the documentation since it is relatively trivial to interconvert between them. In short, please feel free to submit a PR for a recipe in whatever supported format you feel most comfortable with, and we will try to convert it to the default Covalent format if necessary.
