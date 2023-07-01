@@ -57,10 +57,11 @@ def bulk_to_slabs_flow(
     if "relax_cell" not in slab_relax_kwargs:
         slab_relax_kwargs["relax_cell"] = False
 
-    def _relax_distributed(slabs):
-        return [
-            slab_relax_task.submit(slab, **slab_relax_kwargs).result() for slab in slabs
-        ]
+    # TODO: Uncomment once aforementioned Prefect issues are solved
+    # def _relax_distributed(slabs):
+    #     return [
+    #         slab_relax_task.submit(slab, **slab_relax_kwargs).result() for slab in slabs
+    #     ]
 
     def _relax_and_static_distributed(slabs):
         return [
