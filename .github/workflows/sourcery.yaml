@@ -3,6 +3,7 @@ name: Check codebase using Sourcery
 on:
   push:
     branches: [main]
+  pull_request:
 
 jobs:
   sourcery:
@@ -17,3 +18,5 @@ jobs:
       - uses: sourcery-ai/action@v1
         with:
           token: ${{ secrets.SOURCERY_TOKEN }}
+          check: false
+          in_place: true
