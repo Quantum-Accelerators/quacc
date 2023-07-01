@@ -5,17 +5,25 @@
 Quacc is made to directly interface with [Covalent](https://github.com/AgnostiqHQ/covalent), an open-source workflow management and dispatching solution with a convenient user interface for job monitoring.
 
 ```{note}
-If you plan to use Parsl or Jobflow as your workflow manager instead of Covalent, skip to the [Parsl Setup](alt_workflows/parsl.md) or [Jobflow Setup](alt_workflows/jobflow.md) sections, respectively.
+If you prefer to use a workflow engine other than Covalent, then refer to the ["Alternate Workflow Engines"](alt_workflows/alt_workflows/comparison.md) section of the documentation.
 ```
 
 ## Starting the Server
 
-Covalent uses a server to dispatch and retrieve calculation details and results. To start the server, simply run `covalent start` in your terminal. It will return a URL (typically [http://localhost:48008](http://localhost:48008)) that you can use to access the Covalent dashboard, which is shown below.
+Covalent uses a server to dispatch and store calculation details and results. To start the server, simply run `covalent start` in your terminal. It will return a URL (typically [http://localhost:48008](http://localhost:48008)) that you can use to access the Covalent dashboard, which is shown below.
 
 ![Covalent UI](../_static/install/ui_blank.jpg)
 
 ```{tip}
-Once you start scaling up your calculations, we recommend hosting the Covalent server on a dedicated machine or in the cloud. Refer to the [Covalent Deployment Guide](https://docs.covalent.xyz/docs/user-documentation/server-deployment) for details.
+Once you start scaling up your calculations, we recommend hosting the Covalent server on a dedicated machine or using [Covalent Cloud](https://www.covalent.xyz/cloud/). Refer to the [Covalent Deployment Guide](https://docs.covalent.xyz/docs/user-documentation/server-deployment) for details.
+```
+
+## Optional Configuration
+
+Covalent has several [configuration options](https://docs.covalent.xyz/docs/user-documentation/how-to/customization/) that can be modified. Running `quacc config` automatically takes care of setting the ones that are critical for Quacc to run properly.
+
+```{important}
+If you ever delete your Covalent configuration (e.g. via `covalent purge`), you will need to re-run `quacc config`.
 ```
 
 ## Plugin Installation

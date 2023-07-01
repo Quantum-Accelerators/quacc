@@ -5,7 +5,7 @@
 [Jobflow](https://github.com/materialsproject/jobflow) is a program developed by the [Materials Project](https://materialsproject.org/) team to write computational workflows. It can be used in place of Covalent, if preferred.
 
 ```{note}
-For some minimal working examples of how to write your own Jobflow workflows and how they compare to other tools, refer to the [Worfklow Engine Comparison Guide](../comparison.md)
+For some minimal working examples of how to write your own Jobflow workflows and how they compare to other tools, refer to the [Worfklow Engine Comparison Guide](alt_workflows/comparison.md).
 ```
 
 ## Pre-Requisites
@@ -110,7 +110,7 @@ We have imported the {obj}`.emt.slabs.bulk_to_slabs_flow` function, which takes 
 
 #### The Efficient Way
 
-Quacc fully supports the development of Jobflow-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Jobflow-specific {obj}`.emt.jobflow.slabs.BulkToSlabsFlow` workflow:
+Quacc fully supports Jobflow-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Jobflow-specific {obj}`.emt.jobflow.slabs.BulkToSlabsFlow` workflow:
 
 ```python
 import jobflow as jf
@@ -136,7 +136,7 @@ workflow = jf.Flow([job1, job2])
 jf.run_locally(workflow, store=STORE, create_folders=True, ensure_success=True)
 ```
 
-In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing {obj}`.emt.jobflow.slabs.BulkToSlabsFlow` with its Covalent counterpart {obj}`.emt.slabs.bulk_to_slabs_flow`, you can see that the two are extremely similar such that it is often straightforward to interconvert between the two. In the case of `BulkToSlabsFlow`, it actually returns a [`Response(replace)`](<https://materialsproject.github.io/jobflow/tutorials/5-dynamic-flows.html#The-Response(replace)-option>) object that dynamically replaces the `Flow` with several downstream jobs.
+In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing {obj}`.emt.jobflow.slabs.BulkToSlabsFlow` with its Covalent counterpart {obj}`.emt.slabs.bulk_to_slabs_flow`, you can see that the two are extremely similar such that it is often straightforward to [interconvert](comparison.md) between the two. In the case of `BulkToSlabsFlow`, it actually returns a [`Response(replace)`](<https://materialsproject.github.io/jobflow/tutorials/5-dynamic-flows.html#The-Response(replace)-option>) object that dynamically replaces the `Flow` with several downstream jobs.
 
 ## Learn More
 

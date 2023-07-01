@@ -5,7 +5,7 @@
 [Prefect](https://www.prefect.io/) is a workflow management system that is widely adopted in the data science industry. It can be used in place of Covalent, if preferred.
 
 ```{note}
-For some minimal working examples of how to write your own Prefect workflows and how they compare to other workflow tools, refer to the [Worfklow Engine Comparison Guide](../comparison.md)
+For some minimal working examples of how to write your own Prefect workflows and how they compare to other workflow tools, refer to the [Worfklow Engine Comparison Guide](alt_workflows/comparison.md).
 ```
 
 ## Pre-Requisites
@@ -54,11 +54,9 @@ print(result)
 We have used a short-hand notation here of `task(<function>)`. This is equivalent to using the `@task` decorator and definining a new function for each task. Calling `.submit()` enables concurrent execution of the tasks, which also requires the use of `.result()` to retrieve the output of the task.
 ```
 
-![Prefect UI](../../_static/user/prefect_tutorial1.jpg)
-
 ### Running a Simple Parallel Workflow
 
-Now let's consider a similar but nonetheless distinct example. Here, we will define a workflow where we will carry out two EMT structure relaxations, but the two jobs are not dependent on one another. In this example, Covalent will know that it can run the two jobs separately, and even if Job 1 were to fail, Job 2 would still progress.
+Now let's consider a similar but nonetheless distinct example. Here, we will define a workflow where we will carry out two EMT structure relaxations, but the two jobs are not dependent on one another. In this example, Prefect will know that it can run the two jobs separately, and even if Job 1 were to fail, Job 2 would still progress.
 
 ```python
 from prefect import flow
@@ -142,7 +140,7 @@ result = workflow(atoms)
 print(result)
 ```
 
-In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing {obj}`.emt.prefect.slabs.bulk_to_slabs_flow` with its Covalent counterpart {obj}`.emt.slabs.bulk_to_slabs_flow`, you can see that the two are extremely similar such that it is often straightforward to interconvert between the two. The `bulk_to_slabs_flow` used here is a Prefect `Flow` object, which is why we didn't need to wrap it with a `task()`. Since this is a `Flow` within a `Flow`, we call the inner flow a ["subflow"](https://docs.prefect.io/concepts/flows/?h=subflow#composing-flows).
+In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing {obj}`.emt.prefect.slabs.bulk_to_slabs_flow` with its Covalent counterpart {obj}`.emt.slabs.bulk_to_slabs_flow`, you can see that the two are extremely similar such that it is often straightforward to [interconvert](comparison.md) between the two. The `bulk_to_slabs_flow` used here is a Prefect `Flow` object, which is why we didn't need to wrap it with a `task()`. Since this is a `Flow` within a `Flow`, we call the inner flow a ["subflow"](https://docs.prefect.io/concepts/flows/?h=subflow#composing-flows).
 
 ![Prefect UI](../../_static/user/prefect_tutorial4.gif)
 
@@ -150,13 +148,17 @@ In this example, all the individual tasks and sub-tasks are run as separate jobs
 
 ### Using a Prefect Agent
 
-So far, we have dispatched calculations immediately upon calling them. However, in practice, it is often more useful to have a [Prefect agent](https://docs.prefect.io/concepts/work-pools/#agent-overview) running in the background that will continually poll for work to submit to the generated Dask cluster and job scheduler. This allows you to submit only a subset of workflows at a time, and the agent will automatically submit more jobs as the resources become available.
+So far, we have dispatched calculations immediately upon calling them. However, in practice, it is often more useful to have a [Prefect agent](https://docs.prefect.io/concepts/work-pools/#agent-overview) running in the background that will continually poll for work to submit to the task runner. This allows you to submit only a subset of workflows at a time, and the agent will automatically submit more jobs as the resources become available.
 
-To run Prefect workflows with an agent, on the HPC environment where you wish to submit jobs, run `prefect agent start -p "quacc-pool"` to start a worker pool named "quacc-pool". Then submit your workflows as usual. It is best to run the agent on some perpetual resource like a login node or a dedicated workflow node.
+To run Prefect workflows with an agent, on the computing environment where you wish to submit jobs, run `prefect agent start -p "quacc-pool"` to start a worker pool named "quacc-pool". Then submit your workflows as usual. It is best to run the agent on some perpetual resource like a login node or a dedicated workflow node.
 
 ### Defining a Task Runner
 
 To modify where tasks are run, set the `task_runner` keyword argument of the corresponding `@flow` decorator. An example is shown below for setting up a `SLURMCluster` compatible with the NERSC Perlmutter machine. The jobs in this scenario would be submitted from a login node, and `prefect cloud login` should be run before submitting the workflow.
+
+```{seealso}
+Refer to the [Dask-Jobqueue Documentation](https://jobqueue.dask.org/en/latest/index.html) for the available keyword arguments to the Dask-generated clusters.
+```
 
 ```python
 from quacc.util.wflows import make_dask_cluster
@@ -181,10 +183,6 @@ cluster_params = {
 }
 
 cluster = make_dask_cluster(cluster_params, n_jobs=n_jobs)
-```
-
-```{seealso}
-Refer to the [Dask-Jobqueue Documentation](https://jobqueue.dask.org/en/latest/index.html) for the available keyword arguments to the Dask-generated clusters.
 ```
 
 With this instantiated cluster object, you can set the task runner of a `Flow` as follows.
