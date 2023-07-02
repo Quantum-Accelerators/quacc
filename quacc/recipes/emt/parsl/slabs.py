@@ -47,7 +47,6 @@ def bulk_to_slabs_app(
     AppFuture
         An AppFuture whose .result() is a list[dict]
     """
-
     from quacc.util.slabs import make_max_slabs_from_bulk
 
     slab_relax_kwargs = slab_relax_kwargs or {}
@@ -71,7 +70,7 @@ def bulk_to_slabs_app(
 
     slabs = make_max_slabs_from_bulk(atoms, **slabgen_kwargs)
 
-    if slab_relax_app and slab_static_app:
-        return _relax_and_static_distributed(slabs)
-    else:
+    if slab_static_app is None:
         return _relax_distributed(slabs)
+
+    return _relax_and_static_distributed(slabs)
