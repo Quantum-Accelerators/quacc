@@ -1,5 +1,5 @@
 <div align="center">
-  <img src=docs/src/_static/quacc_logo_wide.svg width="500"><br>
+  <img src=docs/src/_static/quacc_logo_wide.svg width="250"><br>
 </div>
 
 ---
