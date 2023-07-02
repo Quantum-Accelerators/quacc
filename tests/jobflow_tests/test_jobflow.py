@@ -99,7 +99,7 @@ def comparison2():
             jobs.append(add(val, c))
 
         flow = jf.Flow(jobs)
-        return jf.Response(detour=flow)
+        return jf.Response(replace=flow)
 
     job1 = add(1, 2)
     job2 = make_more(job1.output)
