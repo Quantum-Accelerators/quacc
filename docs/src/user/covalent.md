@@ -3,7 +3,7 @@
 Here, we will show how to use [Covalent](https://github.com/AgnostiqHQ/covalent) to construct, dispatch, and monitor workflows in Quacc.
 
 ```{note}
-If you prefer to use a workflow engine other than Covalent, then refer to the ["Alternate Workflow Engines"](alt_workflows/alt_workflows/comparison.md) section of the documentation.
+If you prefer to use a workflow engine other than Covalent, then refer to the ["Alternate Workflow Engines"](alt_workflows/index.md) section of the documentation.
 ```
 
 ## Pre-Requisites
