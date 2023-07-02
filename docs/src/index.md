@@ -11,7 +11,6 @@ install/install
 install/covalent
 install/codes
 install/advanced/index
-install/alt_workflows/index
 ```
 
 ```{toctree}
@@ -21,7 +20,6 @@ user/basics
 user/covalent
 user/settings
 user/advanced/index
-user/alt_workflows/index
 user/api/index
 ```
 
@@ -50,7 +48,7 @@ about/license
 [Issues & Ideas](https://github.com/quantum-accelerators/quacc/issues) |
 [Discussion Forum](https://github.com/quantum-accelerators/quacc/discussions)
 
-Quacc is a flexible platform for high-throughput, database-driven computational materials science and quantum chemistry.
+Quacc is a flexible and extensible platform for high-throughput computational materials science and quantum chemistry.
 
 ```{note}
 Quacc is currently in active development. It is fully functional and ready to use, but note that the API is subject to change depending on user feedback.

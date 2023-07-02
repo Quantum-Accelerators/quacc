@@ -5,12 +5,12 @@
 [Parsl](https://github.com/Parsl/parsl) is a Python program developed at Argonne National Laboratory, the University of Chicago, and the University of Illinois to easily write parallel workflows that can be dispatched on distributed compute resources. Like Jobflow+FireWorks, it can be used in place of Covalent, if preferred.
 
 ```{note}
-For some minimal working examples of how to write your own Parsl workflows and how they compare to other workflow tools, refer to the [Worfklow Engine Comparison Guide](alt_workflows/comparison.md).
+For some minimal working examples of how to write your own Parsl workflows and how they compare to other workflow tools, refer to the [Worfklow Engine Comparison Guide](comparison.md).
 ```
 
 ## Pre-Requisites
 
-Make sure you completed the ["Parsl Setup"](../../install/alt_workflows/parsl.md) section of the installation instructions. Additionally, you should read the Parsl documentation's ["Quick Start"](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a `@python_app` and `@join_app`, which describe individual compute tasks and dynamic job tasks, respectively.
+Make sure you completed the ["Parsl Setup"](../../../install/advanced/alt_workflows/parsl.md) section of the installation instructions. Additionally, you should read the Parsl documentation's ["Quick Start"](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a `@python_app` and `@join_app`, which describe individual compute tasks and dynamic job tasks, respectively.
 
 ```{seealso}
 For a more detailed tutorial on how to use Parsl, refer to the ["Parsl Tutorial"](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html) and the even more detailed ["Parsl User Guide"](https://parsl.readthedocs.io/en/stable/userguide/index.html).
@@ -184,7 +184,7 @@ print(wf_future.result())
 In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing {obj}`.emt.parsl.slabs.bulk_to_slabs_app` with its Covalent counterpart {obj}`.emt.slabs.bulk_to_slabs_flow`, you can see that the two are extremely similar such that it is often straightforward to [interconvert](comparison.md) between the two.
 
 ```{note}
-We didn't need to wrap `bulk_to_slabs_app` with a decorator because it is defined in Quacc as a `@join_app` (similar to a `@python_app` for dynamic workflow steps) that itself returns an `AppFuture`. This is also why we call `.result()` on it.
+We didn't need to wrap `bulk_to_slabs_app` with a decorator because, as the name suggests, it is already an app that returns an `AppFuture`. This is also why we call `.result()` on it.
 ```
 
 ## Job Management
@@ -247,7 +247,7 @@ Unlike some other workflow engines, Parsl (by default) is built for "jobpacking"
 
 ## Visualization
 
-Parsl comes with a web dashboard utility to visualize executed workflows when using the `HighThroughputExecutor`. Refer to the [Monitoring and Visualization](https://parsl.readthedocs.io/en/stable/userguide/monitoring.html#visualization) section of the Parsl documentation for details.
+Parsl comes with a dashboard utility to visualize executed workflows when using the `HighThroughputExecutor`. Refer to the [Monitoring and Visualization](https://parsl.readthedocs.io/en/stable/userguide/monitoring.html#visualization) section of the Parsl documentation for details.
 
 ## Learn More
 

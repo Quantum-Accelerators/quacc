@@ -3,14 +3,14 @@
 Here, we will show how to use [Covalent](https://github.com/AgnostiqHQ/covalent) to construct, dispatch, and monitor workflows in Quacc.
 
 ```{note}
-If you prefer to use a workflow engine other than Covalent, then refer to the ["Alternate Workflow Engines"](alt_workflows/alt_workflows/comparison.md) section of the documentation.
+If you prefer to use a workflow engine other than Covalent, then refer to the ["Alternate Workflow Engines"](advanced/alt_workflows/index.md) section of the documentation.
 ```
 
 ## Pre-Requisites
 
 Make sure you completed the ["Covalent Setup"](../install/covalent.md) section of the documentation. Additionally, you should learn about the main [Covalent Concepts](https://docs.covalent.xyz/docs/user-documentation/concepts/concepts-index), namely the [`Electron`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#electron) and [`Lattice`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#lattice) objects, which describe individual compute tasks and workflows, respectively.
 
-In Covalent, the `@ct.lattice` decorator indicates that the function is a workflow, and the `@ct.electron` decorator indicates that the function is a job (i.e. an individual compute task). If you plan to use a job scheduling system like Slurm, you can think of each `Electron` as an individual Slurm job. For some minimal working examples of how to write your own Covalent workflows and how they compare to other workflow tools, refer to the [Worfklow Engine Comparison Guide](alt_workflows/comparison.md).
+In Covalent, the `@ct.lattice` decorator indicates that the function is a workflow, and the `@ct.electron` decorator indicates that the function is a job (i.e. an individual compute task). If you plan to use a job scheduling system like Slurm, you can think of each `Electron` as an individual Slurm job. For some minimal working examples of how to write your own Covalent workflows and how they compare to other workflow tools, refer to the [Worfklow Engine Comparison Guide](advanced/alt_workflows/comparison.md).
 
 All `Electron` and `Lattice` objects behave as normal Python functions when the necessary arguments are supplied. However, if the `ct.dispatch` command is used, the workflow will be dispatched to the Covalent server for execution and monitoring.
 

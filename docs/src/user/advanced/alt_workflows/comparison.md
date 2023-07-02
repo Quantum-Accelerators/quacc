@@ -2,7 +2,7 @@
 
 ## Introduction
 
-All of the recommended workflow solutions have a similar decorator-based syntax for compute tasks and workflows. Here, we highlight these differences. For a comparison of the pros and cons of each approach, [Workflow Overview](../../install/alt_workflows/overview.md) page.
+All of the solutions below have a similar decorator-based syntax for compute tasks and workflows. Here, we highlight these differences. For a comparison of the pros and cons of each approach, refer to the [Workflow Overview](../../../install/advanced/alt_workflows/overview.md) page.
 
 ## Simple Workflow
 
@@ -247,7 +247,7 @@ def add_distributed(vals, c):
     jobs = []
     for val in vals:
         jobs.append(add(val, c))
-    return Response(detour=Flow(jobs))
+    return Response(replace=Flow(jobs))
 
 job1 = add(1, 2)
 job2 = make_more(job1.output)

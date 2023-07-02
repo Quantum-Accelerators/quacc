@@ -30,7 +30,7 @@ covalent_to_db(store)
 
 ## With Jobflow as the Workflow Manager
 
-If you are using Jobflow to construct your workflows, it will automatically store the results in the database you defined during the [setup process](../../install/alt_workflows/jobflow.md).
+If you are using Jobflow to construct your workflows, it will automatically store the results in the database you defined during the [setup process](../../install/advanced/alt_workflows/jobflow.md).
 
 ## General Solution
 
