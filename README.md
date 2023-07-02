@@ -1,5 +1,5 @@
 <div align="center">
-  <img src=docs/src/_static/quacc_logo_wide.svg width="500"><br>
+  <img src=docs/src/_static/quacc_logo_wide.svg width="300"><br>
 </div>
 
 ---
@@ -12,7 +12,7 @@
 ![Supported python versions](https://img.shields.io/badge/python-3.9%20%7C%203.10-blue)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7720998.svg)](https://doi.org/10.5281/zenodo.7720998)
 
-Quacc is a flexible platform for high-throughput, database-driven computational materials science and quantum chemistry.
+Quacc is a flexible and extensible platform for high-throughput computational materials science and quantum chemistry.
 
 The three main goals of Quacc are to:
 

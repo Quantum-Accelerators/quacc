@@ -50,7 +50,7 @@ about/license
 [Issues & Ideas](https://github.com/quantum-accelerators/quacc/issues) |
 [Discussion Forum](https://github.com/quantum-accelerators/quacc/discussions)
 
-Quacc is a flexible platform for high-throughput, database-driven computational materials science and quantum chemistry.
+Quacc is a flexible and extensible platform for high-throughput computational materials science and quantum chemistry.
 
 ```{note}
 Quacc is currently in active development. It is fully functional and ready to use, but note that the API is subject to change depending on user feedback.

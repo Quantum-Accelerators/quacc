@@ -72,6 +72,6 @@ print(result)
 
 ## What Next?
 
-Read through the documentation to learn more about Quacc and how to use it! And of course, feel free to explore the calculations you just ran in the Covalent UI.
+Read through the [User Guide](../user/basics.md) learn more about using Quacc! And of course, feel free to explore the calculations you just ran in the Covalent UI.
 
 ![Covalent UI](../_static/start/ui.jpg)

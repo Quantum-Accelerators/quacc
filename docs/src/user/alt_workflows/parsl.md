@@ -247,7 +247,7 @@ Unlike some other workflow engines, Parsl (by default) is built for "jobpacking"
 
 ## Visualization
 
-Parsl comes with a web dashboard utility to visualize executed workflows when using the `HighThroughputExecutor`. Refer to the [Monitoring and Visualization](https://parsl.readthedocs.io/en/stable/userguide/monitoring.html#visualization) section of the Parsl documentation for details.
+Parsl comes with a dashboard utility to visualize executed workflows when using the `HighThroughputExecutor`. Refer to the [Monitoring and Visualization](https://parsl.readthedocs.io/en/stable/userguide/monitoring.html#visualization) section of the Parsl documentation for details.
 
 ## Learn More
 

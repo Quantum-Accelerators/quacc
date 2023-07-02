@@ -1,6 +1,4 @@
-"""
-Utility functions for workflow engines
-"""
+"""Utility functions for workflow engines"""
 from __future__ import annotations
 
 import asyncio
@@ -10,20 +8,21 @@ from dask_jobqueue.core import Job
 from prefect_dask.task_runners import DaskTaskRunner
 
 
-def make_dask_cluster(
-    cluster_params: dict, cluster: Job = SLURMCluster, num_jobs: int = 1
+def launch_runner(
+    cluster_kwargs: dict, cluster_class: callable = SLURMCluster, verbose: bool = False
 ) -> DaskTaskRunner:
     """
-    Spin up a Dask cluster for use with Prefect workflows.
+    Make a DaskTaskRunner for use with Prefect workflows. This function will immediately
+    submit a Slurm job upon being called and will wait for work to be run.
 
     Parameters
     ----------
-    cluster_params
+    cluster_kwargs
         Keyword arguments to pass to `cluster`.
-    cluster
-        The Dask cluster to use. Defaults to `SLURMCluster`.
-    n_jobs
-        Number of Slurm jobs to run on the Dask cluster.
+    cluster_class
+        The Dask cluster class to use. Defaults to `dask_jobqueue.SLURMCluster`.
+    verbose
+        Whether to print out the job script or not (useful for debugging purposes).
 
     Returns
     -------
@@ -31,11 +30,35 @@ def make_dask_cluster(
         A DaskTaskRunner object for use with Prefect workflows.
     """
 
-    async def make_cluster(num_jobs: int, cluster: Job, cluster_params: dict) -> Job:
-        custom_cluster = await cluster(**cluster_params)
-        custom_cluster.scale(num_jobs)
-        return custom_cluster
+    async def make_cluster(cluster_class: callable, cluster_kwargs: dict) -> Job:
+        cluster = await cluster_class(**cluster_kwargs)
+        if verbose:
+            print(cluster.job_script())
+        return cluster
 
-    asyncio.run(make_cluster(num_jobs, cluster, cluster_params))
+    cluster = asyncio.run(make_cluster(cluster_class, cluster_kwargs))
 
     return DaskTaskRunner(cluster.scheduler_address)
+
+
+def make_runner(
+    cluster_kwargs: dict,
+    cluster_class: callable = SLURMCluster,
+) -> DaskTaskRunner:
+    """
+    Make a DaskTaskRunner for use with Prefect workflows. This DaskTaskRunner
+    will only submit a Slurm job once the `Flow` begins.
+
+    Parameters
+    ----------
+    cluster_kwargs
+        Keyword arguments to pass to `cluster_class`.
+    cluster_class
+        The Dask cluster class to use. Defaults to `dask_jobqueue.SLURMCluster`.
+
+    Returns
+    -------
+    DaskTaskRunner
+        A DaskTaskRunner object for use with Prefect workflows.
+    """
+    return DaskTaskRunner(cluster_class=cluster_class, cluster_kwargs=cluster_kwargs)
