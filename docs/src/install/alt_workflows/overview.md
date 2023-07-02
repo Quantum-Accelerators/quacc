@@ -40,23 +40,6 @@ Cons:
 - It is not designed for workflows with steps running across multiple resources
 - The concept of always returning a "future" object can be confusing for new users
 
-## Prefect
-
-[Prefect](https://github.com/PrefectHQ/prefect) is arguably one of the most popular workflow management solutions in industry. It is extremely powerful and flexible, but most users of Prefect do not use it to run on HPC environments with job schedulers, although this is possible.
-
-Pros:
-
-- Very popular in the data science industry with an extremely active community
-- Simple to define tasks and workflows
-- Clear documentation
-- Easy-to-use dashboard for job monitoring
-
-Cons:
-
-- Not as widely used for HPC environments and lacks documentation in this area
-- Defining the right configuration options for your desired HPC setup can be a challenge
-- Setting up a continually running agent can be a challenge for new users
-
 ## Jobflow + FireWorks
 
 If you are affiliated with the Materials Project team at Lawrence Berkeley National Laboratory, we recommend using [Jobflow](https://github.com/materialsproject/jobflow) coupled with [FireWorks](https://github.com/materialsproject/fireworks) since it widely used there.
