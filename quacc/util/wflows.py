@@ -12,7 +12,7 @@ try:
 
     prefect = True
 
-except:
+except ImportError:
     prefect = None
 
 
