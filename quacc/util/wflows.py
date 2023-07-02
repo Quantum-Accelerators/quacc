@@ -10,6 +10,8 @@ try:
     from dask_jobqueue.core import Job
     from prefect_dask.task_runners import DaskTaskRunner
 
+    prefect = True
+
 except:
     prefect = None
 

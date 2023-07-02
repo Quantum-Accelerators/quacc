@@ -3,14 +3,14 @@ import pytest
 try:
     from quacc.util.wflows import launch_runner, make_runner
 
-    dask = True
+    dask_prefect = True
 except ImportError:
-    dask = None
+    dask_prefect = None
 
 
 @pytest.mark.skipif(
-    dask is None,
-    reason="dask-jobqueue must be installed.",
+    dask_prefect is None,
+    reason="Dask and Prefect dependencies must be installed.",
 )
 def test_make_runner(capsys):
     # NOTE: I don't know how to either turn off the stderr
@@ -26,8 +26,8 @@ def test_make_runner(capsys):
 
 
 @pytest.mark.skipif(
-    dask is None,
-    reason="dask-jobqueue must be installed.",
+    dask_prefect is None,
+    reason="Dask and Prefect dependencies must be installed.",
 )
 def test_launch_runner(capsys):
     # NOTE: I don't know how to either turn off the stderr
