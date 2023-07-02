@@ -79,7 +79,9 @@ def test_tutorial3():
     @flow
     def workflow(atoms):
         future1 = task(relax_job).submit(atoms)
-        future2 = task(bulk_to_slabs_flow).submit(future1.result()["atoms"])
+        future2 = task(bulk_to_slabs_flow).submit(
+            future1.result()["atoms"], slab_static_electron=None
+        )
 
         return future2.result()
 
@@ -135,9 +137,7 @@ def test_emt_flow():
     @flow
     def workflow(atoms):
         future1 = task(relax_job).submit(atoms)
-        result = bulk_to_slabs_flow(
-            future1.result()["atoms"], task(relax_job), task(static_job)
-        )
+        result = bulk_to_slabs_flow(future1.result()["atoms"], task(relax_job), None)
 
         return result
 

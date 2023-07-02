@@ -1,5 +1,9 @@
 # Using Quacc with Prefect
 
+```{warning}
+Support for Prefect is currently *experimental*.
+```
+
 ## Introduction
 
 [Prefect](https://www.prefect.io/) is a workflow management system that is widely adopted in the data science industry. It can be used in place of Covalent, if preferred.
@@ -88,7 +92,7 @@ print(result)
 
 #### The Inefficient Way
 
-For this example, let's consider a toy scenario where we wish to relax a bulk Cu structure, carve all possible slabs, and then run a new relaxation calculation on each slab. This is an example of a dynamic workflow.
+For this example, let's consider a toy scenario where we wish to relax a bulk Cu structure, carve all possible slabs, and then run a new relaxation calculation on each slab (with no static calculation at the end). This is an example of a dynamic workflow.
 
 In Quacc, there are two types of recipes: individual compute tasks with the suffix `_job` and pre-made multi-step workflows with the suffix `_flow`. Here, we are interested in importing a pre-made workflow. Refer to the example below:
 
@@ -102,7 +106,7 @@ from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 @flow
 def workflow(atoms):
     future1 = task(relax_job).submit(atoms)
-    future2 = task(bulk_to_slabs_flow).submit(future1.result()["atoms"])
+    future2 = task(bulk_to_slabs_flow).submit(future1.result()["atoms"], slab_static_electron=None)
 
     return future2.result()
 
@@ -131,7 +135,7 @@ from quacc.recipes.emt.prefect.slabs import bulk_to_slabs_flow
 @flow
 def workflow(atoms):
     future1 = task(relax_job).submit(atoms)
-    result = bulk_to_slabs_flow(future1.result()["atoms"], task(relax_job))
+    result = bulk_to_slabs_flow(future1.result()["atoms"], task(relax_job), None)
 
     return result
 
@@ -154,10 +158,12 @@ To run Prefect workflows with an agent, on the computing environment where you w
 
 ### Defining a Task Runner
 
-To modify where tasks are run, set the `task_runner` keyword argument of the corresponding `@flow` decorator. An example is shown below for setting up a `SLURMCluster` compatible with the NERSC Perlmutter machine. The jobs in this scenario would be submitted from a login node, and `prefect cloud login` should be run before submitting the workflow.
+To modify where tasks are run, set the `task_runner` keyword argument of the corresponding `@flow` decorator. The jobs in this scenario would be submitted from a login node.
+
+An example is shown below for setting up a task runner compatible with the NERSC Perlmutter machine. By default, {obj}`make_dask_cluster` will generated a {obj}`dask-jobqueue.SLURMCluster` object.
 
 ```{seealso}
-Refer to the [Dask-Jobqueue Documentation](https://jobqueue.dask.org/en/latest/index.html) for the available keyword arguments to the Dask-generated clusters.
+Refer to the [Dask-Jobqueue Documentation](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html) for the available keyword arguments to the Dask-generated clusters.
 ```
 
 ```python
@@ -166,14 +172,14 @@ from quacc.util.wflows import make_dask_cluster
 n_jobs = 1 # Number of Slurm jobs
 n_nodes = 1 # Number of nodes per Slurm job
 
-cluster_params = {
+cluster_kwargs = {
     # Dask worker options
-    "cores": 1,
-    "memory": "4GB",
-    "processes": 1,
+    "n_workers": 1, # number of Slurm jobs to launch
+    "cores": 1, # total number of cores (per Slurm job) for Dask worker
+    "memory": "4GB", # total memory (per Slurm job) for Dask worker
     # SLURM options
     "shebang": "#!/bin/bash",
-    "account": "MyAccountName",
+    "account": "AccountName",
     "walltime": "00:10:00",
     "job_mem": "0",
     "job_script_prologue": ["source ~/.bashrc", "conda activate quacc"],
@@ -182,7 +188,7 @@ cluster_params = {
     "python": "python",
 }
 
-cluster = make_dask_cluster(cluster_params, n_jobs=n_jobs)
+runner = launch_runner(cluster_kwargs)
 ```
 
 With this instantiated cluster object, you can set the task runner of a `Flow` as follows.
@@ -194,6 +200,20 @@ def workflow(atoms):
 ```
 
 Now, when the worklow is run from the login node, it will be submitted to the job scheduling system (Slurm in this case), and the results will be sent back to Prefect Cloud once completed. To modify an already imported `Flow` object, the `Flow.task_runner` attribute can also be modified directly.
+
+### Troubleshooting
+
+One of the most difficult parts of scaling up Prefect jobs is figuring out the right `cluster_kwargs` for your machine. If you are having trouble, the best option is to print the job script to the screen, as noted in the [`dask-jobqueue` documentation](https://jobqueue.dask.org/en/latest/debug.html#checking-job-script). An example, entirely independent of Prefect, is shown below for the `SLURMCluster`.
+
+```python
+from dask_jobqueue import SLURMCluster
+
+cluster_kwargs = {...}
+cluster = SLURMCluster(**cluster_kwargs)
+print(cluster.job_script())
+```
+
+This will allow you to fine-tune `cluster_kwargs` until you get your job submission script just right. Note that instantiating the `SLURMCluster` will immediately submit a Slurm job, so you'll probably want to `scancel` it.
 
 ## Learn More
 
