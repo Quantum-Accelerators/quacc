@@ -11,7 +11,7 @@ from prefect_dask.task_runners import DaskTaskRunner
 
 
 def make_dask_cluster(
-    cluster_params: dict, cluster: Job = SLURMCluster, num_jobs: int = 1
+    cluster_params: dict, num_jobs: int = 1, cluster: Job = SLURMCluster
 ) -> DaskTaskRunner:
     """
     Spin up a Dask cluster for use with Prefect workflows.
@@ -20,10 +20,10 @@ def make_dask_cluster(
     ----------
     cluster_params
         Keyword arguments to pass to `cluster`.
-    cluster
-        The Dask cluster to use. Defaults to `SLURMCluster`.
     n_jobs
         Number of Slurm jobs to run on the Dask cluster.
+    cluster
+        The Dask cluster to use. Defaults to `SLURMCluster`.
 
     Returns
     -------
@@ -31,11 +31,27 @@ def make_dask_cluster(
         A DaskTaskRunner object for use with Prefect workflows.
     """
 
-    async def make_cluster(num_jobs: int, cluster: Job, cluster_params: dict) -> Job:
+    async def make_cluster(
+        cluster_params: dict,
+        num_jobs: int,
+        cluster: Job,
+    ) -> Job:
+        """
+        Make a Dask cluster.
+
+        Parameters
+        ----------
+        cluster_params
+            Keyword arguments to pass to `cluster`.
+        num_jobs
+            Number of Slurm jobs to run on the Dask cluster.
+        cluster
+            The Dask cluster to use. Defaults to `SLURMCluster`.
+        """
         custom_cluster = await cluster(**cluster_params)
         custom_cluster.scale(num_jobs)
         return custom_cluster
 
-    asyncio.run(make_cluster(num_jobs, cluster, cluster_params))
+    asyncio.run(make_cluster(cluster_params, num_jobs, cluster))
 
     return DaskTaskRunner(cluster.scheduler_address)
