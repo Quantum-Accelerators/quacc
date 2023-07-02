@@ -4,5 +4,5 @@ Installation instructions for advanced topics involving Quacc.
 
 ```{toctree}
 config_db
-alt_workflows
+alt_workflows/index
 ```
