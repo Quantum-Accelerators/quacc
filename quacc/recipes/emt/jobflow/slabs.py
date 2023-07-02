@@ -74,7 +74,6 @@ def bulk_to_slabs_flow(
         output={"input_bulk": atoms, "generated_slabs": slabs},
         replace=Flow(
             jobs,
-            output=outputs,
-            name="EMT Slab Flow",
+            output=outputs
         ),
     )
