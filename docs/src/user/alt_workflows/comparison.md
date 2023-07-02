@@ -247,7 +247,7 @@ def add_distributed(vals, c):
     jobs = []
     for val in vals:
         jobs.append(add(val, c))
-    return Response(detour=Flow(jobs))
+    return Response(replace=Flow(jobs))
 
 job1 = add(1, 2)
 job2 = make_more(job1.output)
