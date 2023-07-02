@@ -177,7 +177,7 @@ cluster_kwargs = {
     "job_mem": "0", # all memory on node
     "job_script_prologue": ["source ~/.bashrc", "conda activate quacc"], # run before calculation
     "job_directives_skip": ["-n", "--cpus-per-task"], # Slurm directives we can skip
-    "job_extra_directives": [f"-N {n_nodes}", "-q debug", "-C cpu"], # num. of nodes for calc (-N), queue (-q), and constraints (-c)
+    "job_extra_directives": [f"-N 1", "-q debug", "-C cpu"], # num. of nodes for calc (-N), queue (-q), and constraints (-c)
     "python": "python", # Python executable name
 }
 
