@@ -131,7 +131,7 @@ from quacc.recipes.emt.prefect.slabs import bulk_to_slabs_flow
 @flow
 def workflow(atoms):
     future1 = task(relax_job).submit(atoms)
-    result = bulk_to_slabs_flow(future1.result()["atoms"])
+    result = bulk_to_slabs_flow(future1.result()["atoms"], task(relax_job))
 
     return result
 

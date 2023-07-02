@@ -2,7 +2,7 @@
 
 ## Introduction
 
-All of the recommended workflow solutions have a similar decorator-based syntax for compute tasks and workflows. Here, we highlight these differences.
+All of the recommended workflow solutions have a similar decorator-based syntax for compute tasks and workflows. Here, we highlight these differences. For a comparison of the pros and cons of each approach, [Workflow Overview](../../install/alt_workflows/overview.md) page.
 
 ## Simple Workflow
 
