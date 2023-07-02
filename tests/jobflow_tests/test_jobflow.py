@@ -111,13 +111,50 @@ def comparison2():
 def test_emt_flow():
     from quacc.recipes.emt.jobflow.slabs import bulk_to_slabs_flow
 
-    # Define the Atoms object
+    store = jf.JobStore(MemoryStore())
+
     atoms = bulk("Cu")
 
-    # Construct the Flow
-    job1 = jf.job(relax_job)(atoms)
-    job2 = jf.job(bulk_to_slabs_flow)(job1.output["atoms"])
-    workflow = jf.Flow([job1, job2])
+    flow = bulk_to_slabs_flow(atoms, slab_static_job=None)
+    jf.run_locally(flow, store=store, create_folders=True, ensure_success=True)
 
-    # Run the workflow locally
-    jf.run_locally(workflow, store=STORE, create_folders=True, ensure_success=True)
+    flow = bulk_to_slabs_flow(
+        atoms,
+        slab_static_job=None,
+        slab_relax_kwargs={
+            "opt_swaps": {"fmax": 1.0},
+            "calc_kwargs": {"asap_cutoff": True},
+            "relax_cell": False,
+        },
+    )
+    jf.run_locally(flow, store=store, create_folders=True, ensure_success=True)
+
+    flow = bulk_to_slabs_flow(
+        atoms,
+        slabgen_kwargs={"max_slabs": 2},
+        slab_relax_kwargs={
+            "opt_swaps": {"fmax": 1.0},
+            "calc_kwargs": {"asap_cutoff": True},
+            "relax_cell": False,
+        },
+    )
+    responses = jf.run_locally(
+        flow, store=store, create_folders=True, ensure_success=True
+    )
+
+    assert len(responses) == 5
+    uuids = list(responses.keys())
+
+    output0 = responses[uuids[0]][1].output
+    assert "generated_slabs" in output0
+    assert len(output0["generated_slabs"][0]) == 64
+
+    output1 = responses[uuids[1]][1].output
+    assert output1["nsites"] == 64
+    assert output1["parameters"]["asap_cutoff"] is True
+    assert output1["name"] == "EMT Relax"
+
+    output2 = responses[uuids[-1]][1].output
+    assert output2["nsites"] == 80
+    assert output2["parameters"]["asap_cutoff"] is False
+    assert output2["name"] == "EMT Static"
