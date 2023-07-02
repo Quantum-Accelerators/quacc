@@ -1,15 +1,12 @@
 import os
 from shutil import rmtree
 
-import jobflow as jf
 import numpy as np
 import pytest
 from ase.build import bulk, molecule
 from ase.constraints import FixAtoms
-from maggma.stores import MemoryStore
 
 from quacc.recipes.emt.core import relax_job, static_job
-from quacc.recipes.emt.jobflow.slabs import BulkToSlabsFlow as JFBulkToSlabsFlow
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 
@@ -127,50 +124,3 @@ def test_slab_dynamic_jobs():
     assert outputs[0]["nsites"] == 64
     assert outputs[1]["nsites"] == 80
     assert [output["parameters"]["asap_cutoff"] is False for output in outputs]
-
-
-def test_jf_slab_dynamic_jobs():
-    store = jf.JobStore(MemoryStore())
-
-    atoms = bulk("Cu")
-
-    flow = JFBulkToSlabsFlow(slab_static_job=None).make(atoms)
-    jf.run_locally(flow, store=store, create_folders=True, ensure_success=True)
-
-    flow = JFBulkToSlabsFlow(
-        slab_static_job=None,
-        slab_relax_kwargs={
-            "opt_swaps": {"fmax": 1.0},
-            "calc_kwargs": {"asap_cutoff": True},
-            "relax_cell": False,
-        },
-    ).make(atoms)
-    jf.run_locally(flow, store=store, create_folders=True, ensure_success=True)
-
-    flow = JFBulkToSlabsFlow(
-        slab_relax_kwargs={
-            "opt_swaps": {"fmax": 1.0},
-            "calc_kwargs": {"asap_cutoff": True},
-            "relax_cell": False,
-        },
-    ).make(atoms, slabgen_kwargs={"max_slabs": 2})
-    responses = jf.run_locally(
-        flow, store=store, create_folders=True, ensure_success=True
-    )
-
-    assert len(responses) == 5
-    uuids = list(responses.keys())
-
-    output0 = responses[uuids[0]][1].output
-    assert "generated_slabs" in output0
-    assert len(output0["generated_slabs"][0]) == 64
-
-    output1 = responses[uuids[1]][1].output
-    assert output1["nsites"] == 64
-    assert output1["parameters"]["asap_cutoff"] is True
-    assert output1["name"] == "EMT Relax"
-
-    output2 = responses[uuids[-1]][1].output
-    assert output2["nsites"] == 80
-    assert output2["parameters"]["asap_cutoff"] is False
-    assert output2["name"] == "EMT Static"
