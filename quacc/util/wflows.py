@@ -1,6 +1,4 @@
-"""
-Utility functions for workflow engines
-"""
+"""Utility functions for workflow engines"""
 from __future__ import annotations
 
 import asyncio
@@ -62,5 +60,4 @@ def make_runner(
     DaskTaskRunner
         A DaskTaskRunner object for use with Prefect workflows.
     """
-
     return DaskTaskRunner(cluster_class=cluster_class, cluster_kwargs=cluster_kwargs)
