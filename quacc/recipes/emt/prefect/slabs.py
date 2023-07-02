@@ -1,18 +1,19 @@
 """Slab recipes for EMT"""
 from __future__ import annotations
 
-from prefect import Task, flow, task
+from prefect import flow
 
-from quacc.recipes.emt.core import relax_job, static_job
 from quacc.util.slabs import make_max_slabs_from_bulk
 
 
-# TODO: Add in type hints once #9266 and #10116 are solved
-# TODO: Make `slab_relax_task` and `slab_static_task` the kwargs
-# when #10116 is solved
+# TODO: Add type hints. Relies on #9266 and #10116 in Prefect
+# TODO: Make `slab_relax_task` and `slab_static_task` kwargs
+# like in other workflow engines. Relies on #10135 in Prefect
 @flow
 def bulk_to_slabs_flow(
     atoms,
+    slab_relax_task,
+    slab_static_task,
     slabgen_kwargs: dict | None = None,
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
@@ -30,12 +31,12 @@ def bulk_to_slabs_flow(
     ----------
     atoms
         Atoms object for the structure.
+    slab_relax_task
+        Default Task to use for the relaxation of the slab structures.
+    slab_static_task
+        Default Task to use for the static calculation of the slab structures.
     slabgen_kwargs
         Additional keyword arguments to pass to make_max_slabs_from_bulk()
-    TODO: slab_relax_task
-        Default Task to use for the relaxation of the slab structures.
-    TODO: slab_static_task
-        Default Task to use for the static calculation of the slab structures.
     slab_relax_kwargs
         Additional keyword arguments to pass to the relaxation calculation.
     slab_static_kwargs
@@ -44,18 +45,18 @@ def bulk_to_slabs_flow(
     Returns
     -------
     list[dict]
-        List of dictionary of results from quacc.schemas.ase.summarize_run or quacc.schemas.ase.summarize_opt_run
+        List of dictionary of results from quacc.schemas.ase.summarize_run
+        or quacc.schemas.ase.summarize_opt_run
     """
-
-    slab_relax_task: Task = task(relax_job)
-    slab_static_task: Task | None = task(static_job)
-
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}
     slabgen_kwargs = slabgen_kwargs or {}
 
     if "relax_cell" not in slab_relax_kwargs:
         slab_relax_kwargs["relax_cell"] = False
+
+    def _relax_distributed(slabs):
+        return [slab_relax_task(slab, **slab_relax_kwargs) for slab in slabs]
 
     def _relax_and_static_distributed(slabs):
         return [
@@ -67,5 +68,8 @@ def bulk_to_slabs_flow(
         ]
 
     slabs = make_max_slabs_from_bulk(atoms, **slabgen_kwargs)
+
+    if slab_static_task is None:
+        return _relax_distributed(slabs)
 
     return _relax_and_static_distributed(slabs)

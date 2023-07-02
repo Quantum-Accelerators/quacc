@@ -27,7 +27,6 @@ If you haven't loaded your Parsl config, you must do that first so Parsl can con
 We will first try running a simple workflow where we relax a bulk Cu structure using EMT and take the output of that calculation as the input to a follow-up static calculation with EMT.
 
 ```python
-import parsl
 from parsl import python_app
 from ase.build import bulk
 
@@ -213,11 +212,10 @@ config = Config(
         HighThroughputExecutor(
             label="quacc_HTEX",
             max_workers=1,
-            usage_tracking=True,
             provider=SlurmProvider(
                 account="MyAccountName",
                 nodes_per_block=1,
-                scheduler_options="#SBATCH -q debug\n#SBATCH -C cpu",
+                scheduler_options="#SBATCH -q debug -C cpu",
                 worker_init="source activate quacc",
                 walltime="00:10:00",
                 cmd_timeout=120,
@@ -232,11 +230,10 @@ The individual arguments are as follows:
 
 - `label`: A label for the executor instance, used during file I/O.
 - `max_workers`: Maximum number of workers to allow on a node.
-- `usage_tracking`: Help the Parsl folks out by sending back job metadata for their funding agencies.
 - `SlurmProvider()`: The provider to use for job submission. This can be changed to `LocalProvider()` if you wish to have the Parsl process run on a compute node rather than the login node.
 - `account`: Your NERSC account name.
 - `nodes_per_block`: The number of nodes to request per job. By default, all cores on the node will be requested (seetting `cores_per_node` will override this).
-- `scheduler_options`: Any additional `#SBATCH` options can be included here. For multiple options, you can either use `\n` between them to specify a new line.
+- `scheduler_options`: Any additional `#SBATCH` options can be included here.
 - `worker_init`: Commands to run before the job starts, typically used for activating a given Python environment.
 - `walltime`: The maximum amount of time to allow the job to run in `HH:MM:SS` format.
 - `cmd_timeout`: The maximum time to wait (in seconds) for the job scheduler info to be retrieved/sent.

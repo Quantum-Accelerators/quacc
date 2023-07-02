@@ -10,7 +10,7 @@ If you prefer to use a workflow engine other than Covalent, then refer to the ["
 
 ## Starting the Server
 
-Covalent uses a server to dispatch and store calculation details and results. To start the server, simply run `covalent start` in your terminal. It will return a URL (typically [http://localhost:48008](http://localhost:48008)) that you can use to access the Covalent dashboard, which is shown below.
+Covalent uses a server to dispatch and store calculation details and results. To start the server, simply run `covalent start` in your terminal. It will return a URL that you can use to access the Covalent dashboard, which is shown below.
 
 ![Covalent UI](../_static/install/ui_blank.jpg)
 
