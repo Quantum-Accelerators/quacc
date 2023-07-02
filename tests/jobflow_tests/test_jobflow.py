@@ -6,7 +6,6 @@ from ase.build import bulk
 from maggma.stores import MemoryStore
 
 from quacc.recipes.emt.core import relax_job, static_job
-from quacc.recipes.emt.jobflow.slabs import BulkToSlabsFlow
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 
@@ -110,18 +109,14 @@ def comparison2():
 
 
 def test_emt_flow():
-    atoms = bulk("Cu")
-
-    @jf.job
-    def relax_func(atoms):
-        return relax_job(atoms)
+    from quacc.recipes.emt.jobflow.slabs import bulk_to_slabs_flow
 
     # Define the Atoms object
     atoms = bulk("Cu")
 
     # Construct the Flow
-    job1 = relax_func(atoms)
-    job2 = BulkToSlabsFlow().make(job1.output["atoms"])
+    job1 = jf.job(relax_job)(atoms)
+    job2 = jf.job(bulk_to_slabs_flow)(job1.output["atoms"])
     workflow = jf.Flow([job1, job2])
 
     # Run the workflow locally

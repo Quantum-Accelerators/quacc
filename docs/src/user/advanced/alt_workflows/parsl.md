@@ -184,7 +184,7 @@ print(wf_future.result())
 In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing {obj}`.emt.parsl.slabs.bulk_to_slabs_app` with its Covalent counterpart {obj}`.emt.slabs.bulk_to_slabs_flow`, you can see that the two are extremely similar such that it is often straightforward to [interconvert](comparison.md) between the two.
 
 ```{note}
-We didn't need to wrap `bulk_to_slabs_app` with a decorator because it is defined in Quacc as a `@join_app` (similar to a `@python_app` for dynamic workflow steps) that itself returns an `AppFuture`. This is also why we call `.result()` on it.
+We didn't need to wrap `bulk_to_slabs_app` with a decorator because, as the name suggests, it is already an app that returns an `AppFuture`. This is also why we call `.result()` on it.
 ```
 
 ## Job Management
