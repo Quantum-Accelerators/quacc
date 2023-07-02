@@ -115,10 +115,10 @@ def test_emt_flow():
 
     atoms = bulk("Cu")
 
-    flow = bulk_to_slabs_flow(atoms, slab_static_job=None)
-    jf.run_locally(flow, store=store, create_folders=True, ensure_success=True)
+    job = jf.job(bulk_to_slabs_flow)(atoms, slab_static_job=None)
+    jf.run_locally(job, store=store, create_folders=True, ensure_success=True)
 
-    flow = bulk_to_slabs_flow(
+    job = jf.job(bulk_to_slabs_flow)(
         atoms,
         slab_static_job=None,
         slab_relax_kwargs={
@@ -127,9 +127,9 @@ def test_emt_flow():
             "relax_cell": False,
         },
     )
-    jf.run_locally(flow, store=store, create_folders=True, ensure_success=True)
+    jf.run_locally(job, store=store, create_folders=True, ensure_success=True)
 
-    flow = bulk_to_slabs_flow(
+    job = jf.job(bulk_to_slabs_flow)(
         atoms,
         slabgen_kwargs={"max_slabs": 2},
         slab_relax_kwargs={
@@ -139,7 +139,7 @@ def test_emt_flow():
         },
     )
     responses = jf.run_locally(
-        flow, store=store, create_folders=True, ensure_success=True
+        job, store=store, create_folders=True, ensure_success=True
     )
 
     assert len(responses) == 5
