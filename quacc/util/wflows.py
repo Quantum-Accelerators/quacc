@@ -3,20 +3,15 @@ from __future__ import annotations
 
 import asyncio
 
-from monty.dev import requires
-
 try:
     from dask_jobqueue import SLURMCluster
     from dask_jobqueue.core import Job
     from prefect_dask.task_runners import DaskTaskRunner
 
-    prefect = True
-
 except ImportError:
-    prefect = None
+    raise ImportError("Install quacc[prefect] extras.")
 
 
-@requires(prefect, "Install quacc[prefect] extras")
 def launch_runner(
     cluster_kwargs: dict, cluster_class: callable = SLURMCluster, verbose: bool = False
 ) -> DaskTaskRunner:
@@ -50,7 +45,6 @@ def launch_runner(
     return DaskTaskRunner(cluster.scheduler_address)
 
 
-@requires(prefect, "Install quacc[prefect] extras")
 def make_runner(
     cluster_kwargs: dict,
     cluster_class: callable = SLURMCluster,

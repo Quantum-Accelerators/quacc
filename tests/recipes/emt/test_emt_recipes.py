@@ -9,7 +9,7 @@ from ase.constraints import FixAtoms
 from maggma.stores import MemoryStore
 
 from quacc.recipes.emt.core import relax_job, static_job
-from quacc.recipes.emt.jobflow.slabs import BulkToSlabsFlow as JFBulkToSlabsFlow
+from quacc.recipes.emt.jobflow.slabs import bulk_to_slabs_flow as jf_bulk_to_slabs_flow
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 
@@ -134,26 +134,29 @@ def test_jf_slab_dynamic_jobs():
 
     atoms = bulk("Cu")
 
-    flow = JFBulkToSlabsFlow(slab_static_job=None).make(atoms)
+    flow = jf_bulk_to_slabs_flow(atoms, slab_static_job=None)
     jf.run_locally(flow, store=store, create_folders=True, ensure_success=True)
 
-    flow = JFBulkToSlabsFlow(
+    flow = jf_bulk_to_slabs_flow(
+        atoms,
         slab_static_job=None,
         slab_relax_kwargs={
             "opt_swaps": {"fmax": 1.0},
             "calc_kwargs": {"asap_cutoff": True},
             "relax_cell": False,
         },
-    ).make(atoms)
+    )
     jf.run_locally(flow, store=store, create_folders=True, ensure_success=True)
 
-    flow = JFBulkToSlabsFlow(
+    flow = jf_bulk_to_slabs_flow(
+        atoms,
+        slabgen_kwargs={"max_slabs": 2},
         slab_relax_kwargs={
             "opt_swaps": {"fmax": 1.0},
             "calc_kwargs": {"asap_cutoff": True},
             "relax_cell": False,
         },
-    ).make(atoms, slabgen_kwargs={"max_slabs": 2})
+    )
     responses = jf.run_locally(
         flow, store=store, create_folders=True, ensure_success=True
     )
