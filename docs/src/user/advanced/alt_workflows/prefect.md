@@ -209,7 +209,7 @@ print(cluster.job_script())
 This will allow you to fine-tune `cluster_kwargs` until you get your job submission script just right. Note that instantiating the `SLURMCluster` will immediately submit a Slurm job, so you'll probably want to `scancel` it.
 
 ```{seealso}
-Refer to the [Dask-Jobqueue Documentation](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html) for the available `cluster_kwargs` that can be defined and how they related to a typical job script.
+Refer to the [Dask-Jobqueue Documentation](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html) for the available `cluster_kwargs` that can be defined and how they relate to a typical job script.
 ```
 
 ## Learn More
