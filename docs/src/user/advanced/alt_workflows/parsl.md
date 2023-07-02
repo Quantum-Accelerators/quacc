@@ -5,12 +5,12 @@
 [Parsl](https://github.com/Parsl/parsl) is a Python program developed at Argonne National Laboratory, the University of Chicago, and the University of Illinois to easily write parallel workflows that can be dispatched on distributed compute resources. Like Jobflow+FireWorks, it can be used in place of Covalent, if preferred.
 
 ```{note}
-For some minimal working examples of how to write your own Parsl workflows and how they compare to other workflow tools, refer to the [Worfklow Engine Comparison Guide](alt_workflows/comparison.md).
+For some minimal working examples of how to write your own Parsl workflows and how they compare to other workflow tools, refer to the [Worfklow Engine Comparison Guide](comparison.md).
 ```
 
 ## Pre-Requisites
 
-Make sure you completed the ["Parsl Setup"](../../install/alt_workflows/parsl.md) section of the installation instructions. Additionally, you should read the Parsl documentation's ["Quick Start"](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a `@python_app` and `@join_app`, which describe individual compute tasks and dynamic job tasks, respectively.
+Make sure you completed the ["Parsl Setup"](../../../install/advanced/alt_workflows/parsl.md) section of the installation instructions. Additionally, you should read the Parsl documentation's ["Quick Start"](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a `@python_app` and `@join_app`, which describe individual compute tasks and dynamic job tasks, respectively.
 
 ```{seealso}
 For a more detailed tutorial on how to use Parsl, refer to the ["Parsl Tutorial"](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html) and the even more detailed ["Parsl User Guide"](https://parsl.readthedocs.io/en/stable/userguide/index.html).
