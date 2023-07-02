@@ -59,18 +59,26 @@ Cons:
 
 ## Jobflow + FireWorks
 
-If you are affiliated with the Materials Project team at Lawrence Berkeley National Laboratory, we recommend using [Jobflow](https://github.com/materialsproject/jobflow) coupled with [FireWorks](https://github.com/materialsproject/fireworks) since it widely used there.
+If you are affiliated with the Materials Project team at Lawrence Berkeley National Laboratory, we recommend using [Jobflow](https://github.com/materialsproject/jobflow) to define the workflows coupled with [FireWorks](https://github.com/materialsproject/fireworks) to dispatch them since it widely used there.
 
-Pros:
+Pros (Jobflow):
 
-- FireWorks is well-suited for a variety of job management approaches
-- Simple interface for defining individual jobs and workflows via Jobflow
-- Helpful dashboard for monitoring job progress
+- Simple interface for defining individual jobs and workflows
 - Native support for databases
+- Directly compatible with Atomate2
 
-Cons:
+Cons (Jobflow):
 
-- FireWorks can have a steep learning curve due to its many configuration options
-- FireWorks documentation can be difficult to navigate without prior experience
 - Defining dynamic workflows with Jobflow is slightly more complex than other solutions
 - The strong emphasis on using a database can be a barrier to entry
+
+Pros (FireWorks):
+
+- FireWorks is well-suited for a variety of job management approaches
+- Helpful dashboard for monitoring job progress
+
+Cons (FireWorks):
+
+- FireWorks documentation can be difficult to navigate without prior experience
+- FireWorks can have a steep learning curve due to its many configuration options
+- The need for a connection to a database can be a challenge in certain HPC environments
