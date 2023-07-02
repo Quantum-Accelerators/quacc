@@ -8,10 +8,6 @@ Support for Prefect is currently *experimental*.
 
 [Prefect](https://www.prefect.io/) is a workflow management system that is widely adopted in the data science industry. It can be used in place of Covalent, if preferred.
 
-```{note}
-For some minimal working examples of how to write your own Prefect workflows and how they compare to other workflow tools, refer to the [Worfklow Engine Comparison Guide](comparison.md).
-```
-
 ## Pre-Requisites
 
 Make sure you completed the ["Prefect Setup"](../../../install/advanced/alt_workflows/prefect.md) section of the documentation. Additionally, you should learn about the main Prefect concepts of a [`Flow`](https://docs.prefect.io/concepts/flows/) and a [`Task`](https://docs.prefect.io/concepts/tasks/), as described in the [Prefect Tutorial](https://docs.prefect.io/tutorial/).
@@ -52,11 +48,13 @@ result = workflow(atoms)
 print(result)
 ```
 
-![Prefect UI](../../../_static/user/prefect_tutorial1.jpg)
-
 ```{note}
 We have used a short-hand notation here of `task(<function>)`. This is equivalent to using the `@task` decorator and definining a new function for each task. Calling `.submit()` enables concurrent execution of the tasks, which also requires the use of `.result()` to retrieve the output of the task.
 ```
+
+Opening up the Prefect Cloud UI will show you the status of the workflow. You can also click on the workflow to see the details of each task.
+
+![Prefect UI](../../../_static/user/prefect_tutorial1.jpg)
 
 ### Running a Simple Parallel Workflow
 
@@ -85,6 +83,8 @@ atoms2 = molecule("N2")
 result = workflow(atoms1, atoms2)
 print(result)
 ```
+
+As expected, the Prefect Cloud UI shows two jobs that are not dependent on one another.
 
 ![Prefect UI](../../../_static/user/prefect_tutorial2.jpg)
 
@@ -160,17 +160,10 @@ To run Prefect workflows with an agent, on the computing environment where you w
 
 To modify where tasks are run, set the `task_runner` keyword argument of the corresponding `@flow` decorator. The jobs in this scenario would be submitted from a login node.
 
-An example is shown below for setting up a task runner compatible with the NERSC Perlmutter machine. By default, {obj}`make_dask_cluster` will generated a {obj}`dask-jobqueue.SLURMCluster` object.
-
-```{seealso}
-Refer to the [Dask-Jobqueue Documentation](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html) for the available keyword arguments to the Dask-generated clusters.
-```
+An example is shown below for setting up a task runner compatible with the NERSC Perlmutter machine. By default, {obj}`make_runner` will generate a {obj}`dask-jobqueue.SLURMCluster` object.
 
 ```python
-from quacc.util.wflows import make_dask_cluster
-
-n_jobs = 1 # Number of Slurm jobs
-n_nodes = 1 # Number of nodes per Slurm job
+from quacc.util.wflows import make_runner
 
 cluster_kwargs = {
     # Dask worker options
@@ -180,15 +173,15 @@ cluster_kwargs = {
     # SLURM options
     "shebang": "#!/bin/bash",
     "account": "AccountName",
-    "walltime": "00:10:00",
-    "job_mem": "0",
-    "job_script_prologue": ["source ~/.bashrc", "conda activate quacc"],
-    "job_directives_skip": ["-n", "--cpus-per-task"],
-    "job_extra_directives": ["-q debug", f"-N {n_nodes}", "-C cpu"],
-    "python": "python",
+    "walltime": "00:10:00", # DD:HH:SS
+    "job_mem": "0", # all memory on node
+    "job_script_prologue": ["source ~/.bashrc", "conda activate quacc"], # run before calculation
+    "job_directives_skip": ["-n", "--cpus-per-task"], # Slurm directives we can skip
+    "job_extra_directives": [f"-N 1", "-q debug", "-C cpu"], # num. of nodes for calc (-N), queue (-q), and constraints (-c)
+    "python": "python", # Python executable name
 }
 
-runner = launch_runner(cluster_kwargs)
+runner = make_runner(cluster_kwargs)
 ```
 
 With this instantiated cluster object, you can set the task runner of a `Flow` as follows.
@@ -214,6 +207,10 @@ print(cluster.job_script())
 ```
 
 This will allow you to fine-tune `cluster_kwargs` until you get your job submission script just right. Note that instantiating the `SLURMCluster` will immediately submit a Slurm job, so you'll probably want to `scancel` it.
+
+```{seealso}
+Refer to the [Dask-Jobqueue Documentation](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html) for the available `cluster_kwargs` that can be defined and how they relate to a typical job script.
+```
 
 ## Learn More
 

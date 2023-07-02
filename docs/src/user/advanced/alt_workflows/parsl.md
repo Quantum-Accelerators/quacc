@@ -4,10 +4,6 @@
 
 [Parsl](https://github.com/Parsl/parsl) is a Python program developed at Argonne National Laboratory, the University of Chicago, and the University of Illinois to easily write parallel workflows that can be dispatched on distributed compute resources. Like Jobflow+FireWorks, it can be used in place of Covalent, if preferred.
 
-```{note}
-For some minimal working examples of how to write your own Parsl workflows and how they compare to other workflow tools, refer to the [Worfklow Engine Comparison Guide](comparison.md).
-```
-
 ## Pre-Requisites
 
 Make sure you completed the ["Parsl Setup"](../../../install/advanced/alt_workflows/parsl.md) section of the installation instructions. Additionally, you should read the Parsl documentation's ["Quick Start"](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a `@python_app` and `@join_app`, which describe individual compute tasks and dynamic job tasks, respectively.
@@ -199,7 +195,7 @@ If you are just starting out, try running some test calculations locally first. 
 
 To configure Parsl for the high-performance computing environment of your choice, refer to the executor [Configuration](https://parsl.readthedocs.io/en/stable/userguide/configuring.html) page in the Parsl documentation.
 
-For [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/), example `HighThroughputExecutor` configurations can be found in the [NERSC Documentation](https://docs.nersc.gov/jobs/workflow/parsl/). A simple one is reproduced below that allows for job submission from the login node:
+For [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/), example `HighThroughputExecutor` configurations can be found in the [NERSC Documentation](https://docs.nersc.gov/jobs/workflow/parsl/). A simple one is reproduced below that allows for job submission from the login node. This example will create a single Slurm job that will run a single `PythonApp` on a single node and is good for testing out one of the examples above.
 
 ```python
 from parsl.config import Config
@@ -239,11 +235,47 @@ The individual arguments are as follows:
 - `cmd_timeout`: The maximum time to wait (in seconds) for the job scheduler info to be retrieved/sent.
 - `launcher`: The type of Launcher to use. Note that `SimpleLauncher()` must be used instead of the commonly used `SrunLauncher()` to allow Quacc subprocesses to launch their own `srun` commands.
 
-```{note}
-To swap executor configurations, simply pass the `Config` Python object to `parsl.load()` before the workflow is run.
+Unlike some other workflow engines, Parsl (by default) is built for "jobpacking" where the allocated nodes continually pull in new workers (until the walltime is reached). This makes it possible to request a large number of nodes that continually pull in new jobs rather than submitting a large number of small jobs to the scheduler, which can be more efficient. In other words, don't be surprised if the Slurm job continues to run even when your submitted task has completed.
+
+### Scaling Up
+
+Now let's consider a more realistic scenario. Suppose we want to have a single Slurm job that reserves 10 nodes, and each `PythonApp` (e.g. VASP calculation) will run on 2 nodes (let's assume each node has 48 cores total, so that's a total of 96 cores for each calculation). Parsl will act as an orchestrator on a single, independent node. Our config will now look like the following.
+
+```python
+n_parallel_calcs = 5 # Number of Quacc calculations to run in parallel
+n_nodes_per_calc = 2 # Number of nodes to reserve for each calculation
+n_cores_per_node = 48 # Number of cores per node
+
+config = Config(
+    executors=[
+        HighThroughputExecutor(
+            label="quacc_HTEX",
+            max_workers=n_nodes_per_calc,
+            cores_per_worker=1e-6,
+            provider=SlurmProvider(
+                account="MyAccountName",
+                nodes_per_block=n_nodes_per_calc*n_parallel_calcs,
+                scheduler_options="#SBATCH -q debug -C cpu",
+                worker_init="source activate quacc",
+                walltime="00:10:00",
+                cmd_timeout=120,
+                launcher = SimpleLauncher(),
+                init_blocks=0,
+                min_blocks=1,
+                max_blocks=1,
+            ),
+        )
+    ]
+)
 ```
 
-Unlike some other workflow engines, Parsl (by default) is built for "jobpacking" where the allocated nodes continually pull in new workers (until the walltime is reached). This makes it possible to request a large number of nodes that continually pull in new jobs rather than submitting a large number of small jobs to the scheduler, which can be more efficient. In other words, don't be surprised if the Slurm job continues to run even when your submitted task has completed.
+In addition to some modified parameters, there are some new ones here too. We set `cores_per_worker` to a small value here so that the pilot job (e.g. the Parsl job orchestrator) is allowed to be oversubscribed with scheduling processes. Setting `init_blocks`, `min_blocks`, and `max_blocks` like above ensures the right number of tasks are run.
+
+When defining the parallel command for the VASP calculation (e.g. the `QUACC_VASP_PARALLEL_CMD` setting), it would look like `f"srun -N {n_nodes_per_calc} --ntasks={n_cores_per_node*n_nodes_per_calc} --ntasks-per-node={n_cores_per_node}"`. The `--ntasks` is needed to ensure that the calculations don't interfere with eachother.
+
+```{seealso}
+Dr. Logan Ward has a nice example on YouTube describing a very similar example [here](https://youtu.be/0V4Hs4kTyJs?t=398).
+```
 
 ## Visualization
 
