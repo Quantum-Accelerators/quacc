@@ -52,7 +52,7 @@ result = workflow(atoms)
 print(result)
 ```
 
-![Prefect UI](../../_static/user/prefect_tutorial1.jpg)
+![Prefect UI](../../../_static/user/prefect_tutorial1.jpg)
 
 ```{note}
 We have used a short-hand notation here of `task(<function>)`. This is equivalent to using the `@task` decorator and definining a new function for each task. Calling `.submit()` enables concurrent execution of the tasks, which also requires the use of `.result()` to retrieve the output of the task.
@@ -86,7 +86,7 @@ result = workflow(atoms1, atoms2)
 print(result)
 ```
 
-![Prefect UI](../../_static/user/prefect_tutorial2.jpg)
+![Prefect UI](../../../_static/user/prefect_tutorial2.jpg)
 
 ### Running Workflows with Complex Connectivity
 
@@ -120,7 +120,7 @@ print(result)
 
 When running a Covalent-based workflow like {obj}`.emt.slabs.bulk_to_slabs_flow` above, the entire function will run as a single compute task even though it is composed of several individual sub-tasks. If these sub-tasks are compute-intensive, this might not be the most efficient use of resources.
 
-![Prefect UI](../../_static/user/prefect_tutorial3.jpg)
+![Prefect UI](../../../_static/user/prefect_tutorial3.jpg)
 
 #### The Efficient Way
 
@@ -146,7 +146,7 @@ print(result)
 
 In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing {obj}`.emt.prefect.slabs.bulk_to_slabs_flow` with its Covalent counterpart {obj}`.emt.slabs.bulk_to_slabs_flow`, you can see that the two are extremely similar such that it is often straightforward to [interconvert](comparison.md) between the two. The `bulk_to_slabs_flow` used here is a Prefect `Flow` object, which is why we didn't need to wrap it with a `task()`. Since this is a `Flow` within a `Flow`, we call the inner flow a ["subflow"](https://docs.prefect.io/concepts/flows/?h=subflow#composing-flows).
 
-![Prefect UI](../../_static/user/prefect_tutorial4.gif)
+![Prefect UI](../../../_static/user/prefect_tutorial4.gif)
 
 ## Job Management
 
