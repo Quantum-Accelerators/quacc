@@ -27,7 +27,7 @@ Cons:
 
 Pros:
 
-- Widely used and tested across a variety of HPC environments
+- Extremely configurable for virtually any HPC environment
 - Relatively simple to define the workflows
 - Active community, particularly across academia
 - Ideal for jobpacking and has near-ideal scaling performance
@@ -35,9 +35,9 @@ Pros:
 
 Cons:
 
-- Defining the right configuration options for your HPC machine can be a challenge
+- Defining the right configuration options for your desired HPC setup can be a challenge
 - The visual dashboard is not as user friendly as some other solutions
-- It is not trivial to run across distributed HPC environments
+- It is not designed for workflows with steps running across multiple resources
 - The concept of always returning a "future" object can be confusing for new users
 
 ## Prefect
@@ -46,18 +46,16 @@ Cons:
 
 Pros:
 
-- Very popular with an extremely active community
+- Very popular in the data science industry with an extremely active community
 - Simple to define tasks and workflows
 - Clear documentation
 - Easy-to-use dashboard for job monitoring
-- Ideal for running on cloud-based resources
 
 Cons:
 
-- Not as widely used for HPC environments
-- Defining the right configuration options for your HPC machine can be a challenge
+- Not as widely used for HPC environments and lacks documentation in this area
+- Defining the right configuration options for your desired HPC setup can be a challenge
 - Setting up a continually running agent can be a challenge for new users
-- Can be expensive for many users if not self-hosting the server, although there is an academic discount.
 
 ## Jobflow + FireWorks
 
@@ -65,14 +63,14 @@ If you are affiliated with the Materials Project team at Lawrence Berkeley Natio
 
 Pros:
 
-- Supported and battle-tested by the well-established Materials Project team
 - FireWorks is well-suited for a variety of job management approaches
 - Simple interface for defining individual jobs and workflows via Jobflow
+- Helpful dashboard for monitoring job progress
 - Native support for databases
 
 Cons:
 
-- FireWorks has a steep learning curve with many configuration options
+- FireWorks can have a steep learning curve due to its many configuration options
 - FireWorks documentation can be difficult to navigate without prior experience
 - Defining dynamic workflows with Jobflow is slightly more complex than other solutions
 - The strong emphasis on using a database can be a barrier to entry
