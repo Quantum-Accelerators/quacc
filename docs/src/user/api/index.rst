@@ -12,6 +12,7 @@ This section gives an overview of the API for Quacc.
    :toctree:
    :nosignatures:
 
+   _cli
    calculators
    custodian
    recipes
