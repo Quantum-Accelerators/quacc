@@ -8,37 +8,38 @@ import asyncio
 from dask_jobqueue import SLURMCluster
 from prefect_dask.task_runners import DaskTaskRunner
 
-# def launch_runner(
-#     cluster_kwargs: dict, cluster_class: callable = SLURMCluster, verbose: bool = False
-# ) -> DaskTaskRunner:
-#     """
-#     Make a DaskTaskRunner for use with Prefect workflows. This function will immediately
-#     submit a Slurm job upon being called and will wait for work to be run.
 
-#     Parameters
-#     ----------
-#     cluster_kwargs
-#         Keyword arguments to pass to `cluster`.
-#     cluster_class
-#         The Dask cluster class to use. Defaults to `dask_jobqueue.SLURMCluster`.
-#     verbose
-#         Whether to print out the job script or not (useful for debugging purposes).
+def launch_runner(
+    cluster_kwargs: dict, cluster_class: callable = SLURMCluster, verbose: bool = False
+) -> DaskTaskRunner:
+    """
+    Make a DaskTaskRunner for use with Prefect workflows. This function will immediately
+    submit a Slurm job upon being called and will wait for work to be run.
 
-#     Returns
-#     -------
-#     DaskTaskRunner
-#         A DaskTaskRunner object for use with Prefect workflows.
-#     """
+    Parameters
+    ----------
+    cluster_kwargs
+        Keyword arguments to pass to `cluster`.
+    cluster_class
+        The Dask cluster class to use. Defaults to `dask_jobqueue.SLURMCluster`.
+    verbose
+        Whether to print out the job script or not (useful for debugging purposes).
 
-#     async def make_cluster(cluster_class: callable, cluster_kwargs: dict) -> Job:
-#         cluster = await cluster_class(**cluster_kwargs)
-#         if verbose:
-#             print(cluster.job_script())
-#         return cluster
+    Returns
+    -------
+    DaskTaskRunner
+        A DaskTaskRunner object for use with Prefect workflows.
+    """
 
-#     cluster = asyncio.run(make_cluster(cluster_class, cluster_kwargs))
+    async def make_cluster(cluster_class: callable, cluster_kwargs: dict) -> Job:
+        cluster = await cluster_class(**cluster_kwargs)
+        if verbose:
+            print(cluster.job_script())
+        return cluster
 
-#     return DaskTaskRunner(cluster.scheduler_address)
+    cluster = asyncio.run(make_cluster(cluster_class, cluster_kwargs))
+
+    return DaskTaskRunner(cluster.scheduler_address)
 
 
 def make_runner(
