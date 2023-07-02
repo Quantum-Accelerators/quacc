@@ -4,9 +4,6 @@
 
 [Jobflow](https://github.com/materialsproject/jobflow) is a program developed by the [Materials Project](https://materialsproject.org/) team to write computational workflows. It can be used in place of Covalent, if preferred.
 
-```{note}
-For some minimal working examples of how to write your own Jobflow workflows and how they compare to other tools, refer to the [Worfklow Engine Comparison Guide](comparison.md).
-```
 
 ## Pre-Requisites
 

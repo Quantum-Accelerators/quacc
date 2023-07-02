@@ -8,10 +8,6 @@ Support for Prefect is currently *experimental*.
 
 [Prefect](https://www.prefect.io/) is a workflow management system that is widely adopted in the data science industry. It can be used in place of Covalent, if preferred.
 
-```{note}
-For some minimal working examples of how to write your own Prefect workflows and how they compare to other workflow tools, refer to the [Worfklow Engine Comparison Guide](comparison.md).
-```
-
 ## Pre-Requisites
 
 Make sure you completed the ["Prefect Setup"](../../../install/advanced/alt_workflows/prefect.md) section of the documentation. Additionally, you should learn about the main Prefect concepts of a [`Flow`](https://docs.prefect.io/concepts/flows/) and a [`Task`](https://docs.prefect.io/concepts/tasks/), as described in the [Prefect Tutorial](https://docs.prefect.io/tutorial/).
