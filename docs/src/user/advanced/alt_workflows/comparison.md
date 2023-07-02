@@ -56,7 +56,6 @@ result = ct.get_result(dispatch_id, wait=True) # 9
 ### Parsl
 
 ```python
-import parsl
 from parsl import python_app
 
 @python_app
@@ -183,7 +182,6 @@ result = ct.get_result(dispatch_id, wait=True) # e.g. [6, 6, 6]
 ### Parsl
 
 ```python
-import parsl
 from parsl import join_app, python_app
 
 @python_app
