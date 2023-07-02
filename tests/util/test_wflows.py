@@ -39,4 +39,4 @@ def test_launch_runner(capsys):
         "account": "MyAccount",
     }
     with capsys.disabled():
-        launch_runner(cluster_kwargs)
+        launch_runner(cluster_kwargs, verbose=True)
