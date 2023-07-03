@@ -4,10 +4,6 @@
 
 [Jobflow](https://github.com/materialsproject/jobflow) is a program developed by the [Materials Project](https://materialsproject.org/) team to write computational workflows. It can be used in place of Covalent, if preferred.
 
-```{note}
-For some minimal working examples of how to write your own Jobflow workflows and how they compare to other tools, refer to the [Worfklow Engine Comparison Guide](comparison.md).
-```
-
 ## Pre-Requisites
 
 Make sure you completed the ["Jobflow Setup"](../../../install/advanced/alt_workflows/jobflow.md) section of the installation instructions. Additionally, you should read the Jobflow documentation's [Quick Start](https://materialsproject.github.io/jobflow/tutorials/1-quickstart.html) to get a sense of how Jobflow works. Namely, you should understand the `Job` and `Flow` definitions, which describe individual compute tasks and workflows, respectively.
@@ -113,7 +109,7 @@ We have imported the {obj}`.emt.slabs.bulk_to_slabs_flow` function, which takes 
 Quacc fully supports Jobflow-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Jobflow-specific {obj}`.emt.jobflow.slabs.bulk_to_slabs_flow` workflow:
 
 ```python
-import jobflow as jf
+from jobflow import job, Flow, run_locally
 from ase.build import bulk
 from quacc.recipes.emt.core import relax_job
 from quacc.recipes.emt.jobflow.slabs import bulk_to_slabs_flow

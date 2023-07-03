@@ -51,7 +51,7 @@ class QuaccSettings(BaseSettings):
     # VASP Settings: Main
     VASP_PARALLEL_CMD: str = Field(
         "",
-        description="Parallel command to run VASP with Custodian (e.g. srun -N 2 --ntasks-per-node 24)",
+        description="Parallel command to run VASP with Custodian (e.g. srun -N 2 --ntasks-per-node 48)",
     )
     VASP_CMD: str = Field(
         "vasp_std", description="Command to run the standard version of VASP."
