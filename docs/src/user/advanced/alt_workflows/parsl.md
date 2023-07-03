@@ -239,7 +239,7 @@ Unlike some other workflow engines, Parsl (by default) is built for "jobpacking"
 
 ### Scaling Up
 
-Now let's consider a more realistic scenario. Suppose we want to have a single Slurm job that reserves 10 nodes, and each `PythonApp` (e.g. VASP calculation) will run on 2 nodes (let's assume each node has 48 cores total, so that's a total of 96 cores for each calculation). Parsl will act as an orchestrator on a single, independent node. Our config will now look like the following.
+Now let's consider a more realistic scenario. Suppose we want to have a single Slurm job that reserves 10 nodes, and each `PythonApp` (e.g. VASP calculation) will run on 2 nodes (let's assume each node has 48 cores total, so that's a total of 96 cores for each calculation). Parsl will act as an orchestrator in the background of one of the nodes. Our config will now look like the following.
 
 ```python
 n_parallel_calcs = 5 # Number of quacc calculations to run in parallel
@@ -250,13 +250,13 @@ config = Config(
     executors=[
         HighThroughputExecutor(
             label="quacc_HTEX",
-            max_workers=n_nodes_per_calc,
+            max_workers=n_parallel_calcs,
             cores_per_worker=1e-6,
             provider=SlurmProvider(
                 account="MyAccountName",
                 nodes_per_block=n_nodes_per_calc*n_parallel_calcs,
                 scheduler_options="#SBATCH -q debug -C cpu",
-                worker_init="source activate quacc && module load vasp",
+                worker_init="source activate quacc && module load vasp && export QUACC_VASP_PARALLEL_CMD=f'srun -N {n_nodes_per_calc} --ntasks={n_cores_per_node*n_nodes_per_calc} --ntasks-per-node={n_cores_per_node}'",
                 walltime="00:10:00",
                 cmd_timeout=120,
                 launcher = SimpleLauncher(),
@@ -270,8 +270,6 @@ config = Config(
 ```
 
 In addition to some modified parameters, there are some new ones here too. We set `cores_per_worker` to a small value here so that the pilot job (e.g. the Parsl job orchestrator) is allowed to be oversubscribed with scheduling processes. Setting `init_blocks`, `min_blocks`, and `max_blocks` like above ensures the right number of tasks are run.
-
-When defining the parallel command for the VASP calculation (e.g. the `QUACC_VASP_PARALLEL_CMD` setting), it would look like `f"srun -N {n_nodes_per_calc} --ntasks={n_cores_per_node*n_nodes_per_calc} --ntasks-per-node={n_cores_per_node}"`. The `--ntasks` is needed to ensure that the calculations don't interfere with eachother.
 
 ```{seealso}
 Dr. Logan Ward has a nice example on YouTube describing a very similar example [here](https://youtu.be/0V4Hs4kTyJs?t=398).
