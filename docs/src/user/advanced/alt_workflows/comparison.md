@@ -66,12 +66,9 @@ def add(a, b):
 def mult(a, b):
     return a * b
 
-def workflow(a, b, c):
-    future1 = add(a, b)
-    future2 = mult(future1, c)
-    return future2
-
-result = workflow(1, 2, 3).result() # 9
+future1 = add(a, b)
+future2 = mult(future1, c)
+result = future2.result() # 9
 ```
 
 ### Prefect
