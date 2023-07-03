@@ -153,13 +153,18 @@ def test_comparison2():
 
     @python_app
     def make_more(val):
-        return [val] * 3
+        import random
+
+        return [val] * random.randint(2, 5)
 
     @join_app
+    def add_distributed(vals, c):
+        return [add(val, c) for val in vals]
+
     def workflow(a, b, c):
         future1 = add(a, b)
         future2 = make_more(future1)
-        return [add(val, c) for val in future2.result()]
+        return add_distributed(future2, c)
 
     assert workflow(1, 2, 3).result() == [6, 6, 6]
 
