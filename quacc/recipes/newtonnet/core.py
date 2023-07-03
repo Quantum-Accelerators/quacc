@@ -40,6 +40,20 @@ def get_hessian(atoms):
     return mlcalculator.results["hessian"].reshape((-1, 3 * len(atoms)))
 
 
+def add_stdev_and_hess(summary):
+    for i in range(len(summary['trajectory'])):
+        mlcalculator = NewtonNet(
+            model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
+            settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(":"),
+        )
+        mlcalculator.calculate(summary['trajectory'][i]['atoms'])
+        summary['trajectory_results'][i]['hessian'] = mlcalculator.results['hessian']
+        summary['trajectory_results'][i]['energy_std'] = mlcalculator.results['energy_std']
+        summary['trajectory_results'][i]['forces_std'] = mlcalculator.results['forces_std']
+        summary['trajectory_results'][i]['hessian_std'] = mlcalculator.results['hessian_std']
+    return summary
+
+
 @ct.electron
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def static_job(
@@ -129,7 +143,8 @@ def relax_job(
         optimizer=optimizer,
         optimizer_kwargs=optimizer_kwargs,
     )
-    return summarize_opt_run(dyn, additional_fields={"name": "NewtonNet Relax"})
+    summary = add_stdev_and_hess(summarize_opt_run(dyn, additional_fields={"name": "NewtonNet Relax"}))
+    return summary
 
 
 @ct.electron
@@ -196,17 +211,7 @@ def ts_job(
                                    check_convergence=check_convergence,
                                    additional_fields={"name": "NewtonNet TS"})
 
-    for i in range(len(ts_summary['trajectory'])):
-        # Define calculator again TEST THIS WHILE RUNNING THE CALCULATIONS
-        mlcalculator = NewtonNet(
-            model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
-            settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(":"),
-        )
-        mlcalculator.calculate(ts_summary['trajectory'][i]['atoms'])
-        ts_summary['trajectory_results'][i]['hessian'] = mlcalculator.results['hessian']
-        ts_summary['trajectory_results'][i]['energy_std'] = mlcalculator.results['energy_std']
-        ts_summary['trajectory_results'][i]['forces_std'] = mlcalculator.results['forces_std']
-        ts_summary['trajectory_results'][i]['hessian_std'] = mlcalculator.results['hessian_std']
+    ts_summary = add_stdev_and_hess(ts_summary)
 
     # Run a frequency calculation
     thermo_summary = freq_job(
@@ -277,6 +282,8 @@ def irc_job(
         additional_fields={"name": "NewtonNet IRC"},
     )
 
+    summary_irc = add_stdev_and_hess(summary_irc)
+
     # Run frequency job
     thermo_summary = freq_job(
         summary_irc["atoms"],
@@ -328,6 +335,7 @@ def quasi_irc_job(
 
     # Run IRC
     irc_summary = irc_job(atoms, max_steps=5, opt_swaps=irc_flags)
+
     # Run opt
     opt_summary = relax_job(irc_summary["irc"]["atoms"], **opt_flags)
 
