@@ -66,8 +66,8 @@ def add(a, b):
 def mult(a, b):
     return a * b
 
-future1 = add(a, b)
-future2 = mult(future1, c)
+future1 = add(1, 2)
+future2 = mult(future1, 3)
 result = future2.result() # 9
 ```
 

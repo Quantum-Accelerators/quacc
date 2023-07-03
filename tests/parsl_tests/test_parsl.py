@@ -139,8 +139,8 @@ def test_comparison1():
     def mult(a, b):
         return a * b
 
-    future1 = add(a, b)
-    future2 = mult(future1, c)
+    future1 = add(1, 2)
+    future2 = mult(future1, 3)
     assert future2.result() == 9
 
 
