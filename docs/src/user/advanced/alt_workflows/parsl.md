@@ -242,9 +242,9 @@ Unlike some other workflow engines, Parsl (by default) is built for "jobpacking"
 Now let's consider a more realistic scenario. Suppose we want to have a single Slurm job that reserves 10 nodes, and each `PythonApp` (e.g. VASP calculation) will run on 2 nodes (let's assume each node has 48 cores total, so that's a total of 96 cores for each calculation). Parsl will act as an orchestrator on a single, independent node. Our config will now look like the following.
 
 ```python
-n_parallel_calcs = 5 # Number of Quacc calculations to run in parallel
+n_parallel_calcs = 5 # Number of quacc calculations to run in parallel
 n_nodes_per_calc = 2 # Number of nodes to reserve for each calculation
-n_cores_per_node = 48 # Number of cores per node
+n_cores_per_node = 48 # Number of CPU cores per node
 
 config = Config(
     executors=[
@@ -255,9 +255,9 @@ config = Config(
             provider=SlurmProvider(
                 account="MyAccountName",
                 nodes_per_block=n_nodes_per_calc*n_parallel_calcs,
-                scheduler_options="#SBATCH -q regular -C cpu",
+                scheduler_options="#SBATCH -q debug -C cpu",
                 worker_init="source activate quacc && module load vasp",
-                walltime="24:00:00",
+                walltime="00:10:00",
                 cmd_timeout=120,
                 launcher = SimpleLauncher(),
                 init_blocks=0,
