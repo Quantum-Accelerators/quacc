@@ -1,9 +1,5 @@
 # Using Quacc with Prefect
 
-```{warning}
-Support for Prefect is currently *experimental*.
-```
-
 ## Introduction
 
 [Prefect](https://www.prefect.io/) is a workflow management system that is widely adopted in the data science industry. It can be used in place of Covalent, if preferred.
@@ -160,7 +156,7 @@ To run Prefect workflows with an agent, on the computing environment where you w
 
 To modify where tasks are run, set the `task_runner` keyword argument of the corresponding `@flow` decorator. The jobs in this scenario would be submitted from a login node.
 
-An example is shown below for setting up a task runner compatible with the NERSC Perlmutter machine. By default, {obj}`make_runner` will generate a {obj}`dask-jobqueue.SLURMCluster` object.
+An example is shown below for setting up a task runner compatible with the NERSC Perlmutter machine. By default, {obj}`make_runner` will generate a `prefect_dask.DaskTaskRunner` composed of a `jobqueue.SLURMCluster` object.
 
 ```python
 from quacc.util.wflows import make_runner
