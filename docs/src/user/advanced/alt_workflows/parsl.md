@@ -58,10 +58,6 @@ You can see that it is quite trivial to set up a Parsl workflow using the recipe
 The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object.
 ```
 
-```{warning}
-Don't call `.result()` in a `return` statement. It will not block like you might naively expect it to.
-```
-
 ### Running a Simple Parallel Workflow
 
 Now let's consider a similar but nonetheless distinct example. Here, we will define a workflow where we will carry out two EMT structure relaxations, but the two jobs are not dependent on one another. In this example, Parsl will know that it can run the two jobs in parallel, and even if Job 1 were to fail, Job 2 would still progress.
