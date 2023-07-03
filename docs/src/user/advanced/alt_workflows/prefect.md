@@ -1,5 +1,9 @@
 # Using Quacc with Prefect
 
+```{warning}
+Support for Prefect is currently *experimental*.
+```
+
 ## Introduction
 
 [Prefect](https://www.prefect.io/) is a workflow management system that is widely adopted in the data science industry. It can be used in place of Covalent, if preferred.
