@@ -173,7 +173,7 @@ If you are just starting out, try running some test calculations locally first. 
 
 To configure Parsl for the high-performance computing environment of your choice, refer to the executor [Configuration](https://parsl.readthedocs.io/en/stable/userguide/configuring.html) page in the Parsl documentation.
 
-For [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/), example `HighThroughputExecutor` configurations can be found in the [NERSC Documentation](https://docs.nersc.gov/jobs/workflow/parsl/). A simple one is reproduced below that allows for job submission from the login node. This example will create a single Slurm job that will run a single `PythonApp` on a single node and is good for testing out one of the examples above.
+For [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/), example `HighThroughputExecutor` configurations can be found in the [NERSC Documentation](https://docs.nersc.gov/jobs/workflow/parsl/). A simple one is reproduced below that allows for job submission from the login node. This example will create a single Slurm job that will run one `PythonApp` at a time on a single node and is good for testing out some of the examples above.
 
 ```python
 from parsl.config import Config
@@ -182,6 +182,7 @@ from parsl.launchers import SimpleLauncher
 from parsl.providers import SlurmProvider
 
 config = Config(
+    max_idletime=120,
     executors=[
         HighThroughputExecutor(
             label="quacc_HTEX",
@@ -196,12 +197,13 @@ config = Config(
                 launcher = SimpleLauncher(),
             ),
         )
-    ]
+    ],
 )
 ```
 
 The individual arguments are as follows:
 
+- `max_idletime`: The maximum amount of time (in seconds) to allow the executor to be idle before the Slurm job is cancelled.
 - `label`: A label for the executor instance, used during file I/O.
 - `max_workers`: Maximum number of workers to allow on a node.
 - `SlurmProvider()`: The provider to use for job submission. This can be changed to `LocalProvider()` if you wish to have the Parsl process run on a compute node rather than the login node.
@@ -226,6 +228,7 @@ n_cores_per_node = 48 # Number of CPU cores per node
 vasp_parallel_cmd = f"srun -N {n_nodes_per_calc} --ntasks={n_cores_per_node*n_nodes_per_calc} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
 
 config = Config(
+    max_idletime=300,
     executors=[
         HighThroughputExecutor(
             label="quacc_HTEX",
@@ -237,14 +240,14 @@ config = Config(
                 scheduler_options="#SBATCH -q debug -C cpu",
                 worker_init=f"source activate quacc && module load vasp && export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}",
                 walltime="00:10:00",
-                cmd_timeout=120,
                 launcher = SimpleLauncher(),
+                cmd_timeout=120,
                 init_blocks=0,
                 min_blocks=1,
                 max_blocks=1,
             ),
         )
-    ]
+    ],
 )
 ```
 
