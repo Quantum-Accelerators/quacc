@@ -135,7 +135,7 @@ Quacc fully supports Parsl-based workflows to resolve this limitation. For examp
 ```python
 from parsl import python_app
 from ase.build import bulk
-from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_app
+from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_flow
 
 # Define the Python App
 @python_app
@@ -149,7 +149,7 @@ atoms = bulk("Cu")
 
 # Define the workflow
 future1 = relax_app(atoms)
-future2 = bulk_to_slabs_app(future1.result()["atoms"], slab_static_app=None)
+future2 = bulk_to_slabs_flow(future1.result()["atoms"], slab_static_app=None)
 
 # Print the results
 print(future2.result())
@@ -158,7 +158,7 @@ print(future2.result())
 In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing {obj}`.emt.parsl.slabs.bulk_to_slabs_app` with its Covalent counterpart {obj}`.emt.slabs.bulk_to_slabs_flow`, you can see that the two are extremely similar such that it is often straightforward to [interconvert](comparison.md) between the two.
 
 ```{note}
-We didn't need to wrap `bulk_to_slabs_app` with a decorator because, as the name suggests, it is already an app that returns an `AppFuture`. This is also why we call `.result()` on it.
+We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it returns an `AppFuture`. This is also why we call `.result()` on it.
 ```
 
 ## Job Management

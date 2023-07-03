@@ -9,8 +9,7 @@ from parsl.dataflow.futures import AppFuture
 from quacc.recipes.emt.core import relax_job, static_job
 
 
-@join_app
-def bulk_to_slabs_app(
+def bulk_to_slabs_flow(
     atoms: Atoms,
     slabgen_kwargs: dict | None = None,
     slab_relax_app: PythonApp = python_app(relax_job),
@@ -56,13 +55,15 @@ def bulk_to_slabs_app(
     if "relax_cell" not in slab_relax_kwargs:
         slab_relax_kwargs["relax_cell"] = False
 
+    @join_app
     def _relax_distributed(slabs):
         return [slab_relax_app(slab, **slab_relax_kwargs) for slab in slabs]
 
+    @join_app
     def _relax_and_static_distributed(slabs):
         return [
             slab_static_app(
-                slab_relax_app(slab, **slab_relax_kwargs).result()["atoms"],
+                slab_relax_app(slab, **slab_relax_kwargs)["atoms"],
                 **slab_static_kwargs,
             )
             for slab in slabs

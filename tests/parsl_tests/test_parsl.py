@@ -109,7 +109,7 @@ def test_tutorial3():
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
 def test_tutorial4():
-    from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_app
+    from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_flow
 
     # Define the Python App
     @python_app
@@ -123,7 +123,7 @@ def test_tutorial4():
 
     # Define the workflow
     future1 = relax_app(atoms)
-    future2 = bulk_to_slabs_app(future1.result()["atoms"], slab_static_app=None)
+    future2 = bulk_to_slabs_flow(future1.result()["atoms"], slab_static_app=None)
 
     # Print the results
     print(future2.result())
@@ -153,9 +153,7 @@ def test_comparison2():
 
     @python_app
     def make_more(val):
-        import random
-
-        return [val] * random.randint(2, 5)
+        return [val] * 3
 
     @join_app
     def add_distributed(vals, c):
@@ -171,8 +169,8 @@ def test_comparison2():
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
 def test_slabs():
-    from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_app
+    from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_flow
 
-    wf_future = bulk_to_slabs_app(bulk("Cu"))
+    wf_future = bulk_to_slabs_flow(bulk("Cu"))
     wf_future.result()
     assert wf_future.done()
