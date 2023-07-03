@@ -257,7 +257,7 @@ config = Config(
                 account="MyAccountName",
                 nodes_per_block=n_nodes_per_calc*n_parallel_calcs,
                 scheduler_options="#SBATCH -q debug -C cpu",
-                worker_init="source activate quacc && module load vasp && export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}",
+                worker_init=f"source activate quacc && module load vasp && export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}",
                 walltime="00:10:00",
                 cmd_timeout=120,
                 launcher = SimpleLauncher(),
