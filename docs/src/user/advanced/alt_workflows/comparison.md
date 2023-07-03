@@ -68,7 +68,7 @@ def mult(a, b):
 
 def workflow(a, b, c):
     future1 = add(a, b)
-    future2 = mult(future1.result(), c)
+    future2 = mult(future1, c)
     return future2
 
 result = workflow(1, 2, 3).result() # 9
@@ -197,7 +197,7 @@ def make_more(val):
 @join_app
 def workflow(a, b, c):
     future1 = add(a, b)
-    future2 = make_more(future1.result())
+    future2 = make_more(future1)
     return [add(val, c) for val in future2.result()]
 
 result = workflow(1, 2, 3).result() # e.g. [6, 6, 6]

@@ -158,7 +158,7 @@ def test_comparison1():
 
     def workflow(a, b, c):
         future1 = add(a, b)
-        future2 = mult(future1.result(), c)
+        future2 = mult(future1, c)
         return future2
 
     assert workflow(1, 2, 3).result() == 9
@@ -177,7 +177,7 @@ def test_comparison2():
     @join_app
     def workflow(a, b, c):
         future1 = add(a, b)
-        future2 = make_more(future1.result())
+        future2 = make_more(future1)
         return [add(val, c) for val in future2.result()]
 
     assert workflow(1, 2, 3).result() == [6, 6, 6]
