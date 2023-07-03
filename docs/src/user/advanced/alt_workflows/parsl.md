@@ -46,7 +46,7 @@ atoms = bulk("Cu")
 future1 = relax_app(atoms)
 
 # Call App 2, which takes the output of App 1 as input
-future2 = static_app(future1.result()["atoms"])
+future2 = static_app(future1)
 
 # Print result
 print(future2.result())
@@ -116,7 +116,7 @@ atoms = bulk("Cu")
 
 # Define the workflow
 future1 = relax_app(atoms)
-future2 = bulk_to_slabs_app(future1.result()["atoms"])
+future2 = bulk_to_slabs_app(future1)
 
 # Print the results
 print(future2.result())
@@ -145,7 +145,7 @@ atoms = bulk("Cu")
 
 # Define the workflow
 future1 = relax_app(atoms)
-future2 = bulk_to_slabs_flow(future1.result()["atoms"], slab_static_app=None)
+future2 = bulk_to_slabs_flow(future1, slab_static_app=None)
 
 # Print the results
 print(future2.result())

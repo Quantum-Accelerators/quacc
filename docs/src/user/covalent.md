@@ -37,7 +37,7 @@ def workflow(atoms):
     result1 = relax_job(atoms)
 
     # Define Job 2, which takes the output of Job 1 as input
-    result2 = static_job(result1["atoms"])
+    result2 = static_job(result1)
 
     return result2
 
@@ -113,7 +113,7 @@ from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 @ct.lattice
 def workflow(atoms):
     relaxed_bulk = relax_job(atoms)
-    relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], slab_static_electron=None)
+    relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, slab_static_electron=None)
 
     return relaxed_slabs
 
@@ -150,7 +150,7 @@ from quacc.recipes.emt.core import relax_job, static_job
 def workflow(atoms):
 
     result1 = relax_job(atoms)
-    result2 = static_job(result1["atoms"])
+    result2 = static_job(result1)
 
     return result2
 
@@ -178,7 +178,7 @@ def workflow(atoms):
     job2.electron_object.executor = "local"
 
     output1 = job1(atoms)
-    output2 = job2(output1["atoms"])
+    output2 = job2(output1)
     return output2
 
 atoms = bulk("Cu")

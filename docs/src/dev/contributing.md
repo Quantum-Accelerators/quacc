@@ -24,7 +24,7 @@ Please abide by the following guidelines when contributing code to Quacc:
 
 2. All code should include type hints and have internally consistent documentation for the inputs and outputs.
 
-3. The input to most compute jobs should be an ASE `Atoms` object. The output of most compute tasks should be a schema from one of the module/functions within {obj}`quacc.schemas`.
+3. The first positional argument to most compute jobs should be of type `Atoms | dict[Literal["atoms"], Atoms]`. The output of most compute tasks should be a schema from one of the module/functions within {obj}`quacc.schemas`.
 
 4. All inputs and outputs to recipes must be JSON (de)serializable (or have an `.as_dict()` and `.from_dict()` method, such that they are [`MSONable`](https://materialsvirtuallab.github.io/monty/monty.json.html)). This can be confirmed by running the following code snippet, where where `test_item` is the object you wish to test.
 
