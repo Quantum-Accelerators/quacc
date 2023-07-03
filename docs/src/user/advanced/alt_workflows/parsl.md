@@ -245,6 +245,7 @@ Now let's consider a more realistic scenario. Suppose we want to have a single S
 n_parallel_calcs = 5 # Number of quacc calculations to run in parallel
 n_nodes_per_calc = 2 # Number of nodes to reserve for each calculation
 n_cores_per_node = 48 # Number of CPU cores per node
+vasp_parallel_cmd = f"srun -N {n_nodes_per_calc} --ntasks={n_cores_per_node*n_nodes_per_calc} --ntasks-per-node={n_cores_per_node}"
 
 config = Config(
     executors=[
@@ -256,7 +257,7 @@ config = Config(
                 account="MyAccountName",
                 nodes_per_block=n_nodes_per_calc*n_parallel_calcs,
                 scheduler_options="#SBATCH -q debug -C cpu",
-                worker_init="source activate quacc && module load vasp && export QUACC_VASP_PARALLEL_CMD=f'srun -N {n_nodes_per_calc} --ntasks={n_cores_per_node*n_nodes_per_calc} --ntasks-per-node={n_cores_per_node}'",
+                worker_init="source activate quacc && module load vasp && export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}",
                 walltime="00:10:00",
                 cmd_timeout=120,
                 launcher = SimpleLauncher(),
@@ -269,7 +270,7 @@ config = Config(
 )
 ```
 
-In addition to some modified parameters, there are some new ones here too. We set `cores_per_worker` to a small value here so that the pilot job (e.g. the Parsl job orchestrator) is allowed to be oversubscribed with scheduling processes. Setting `init_blocks`, `min_blocks`, and `max_blocks` like above ensures the right number of tasks are run.
+In addition to some modified parameters, there are some new ones here too. We set `cores_per_worker` to a small value here so that the pilot job (e.g. the Parsl orchestrator) is allowed to be oversubscribed with scheduling processes. Setting `init_blocks`, `min_blocks`, and `max_blocks` like above ensures the right number of tasks are run.
 
 ```{seealso}
 Dr. Logan Ward has a nice example on YouTube describing a very similar example [here](https://youtu.be/0V4Hs4kTyJs?t=398).
