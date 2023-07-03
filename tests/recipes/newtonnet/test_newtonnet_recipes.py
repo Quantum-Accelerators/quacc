@@ -71,8 +71,6 @@ def test_relax_Job():
     assert not np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
     assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
 
-
-
 xyz_data = """
 18
 C       0.60975077       2.99728462      -0.61541781
@@ -107,7 +105,6 @@ H       1.80266010      -0.30212484       0.61902953
 H       0.92072327      -2.76503751       1.36753343
 """
 
-
 # Split the XYZ data into lines
 xyz_lines = xyz_data.strip().split("\n")
 
@@ -136,6 +133,9 @@ def test_ts_job_with_default_args():
 
     # Call the function
     output = ts_job(atoms)
+    print(output['ts'].keys())
+    print("output['ts']['trajectory_results'][0]", output['ts']['trajectory_results'][0])
+    print("output['ts']['trajectory_results'][1]", output['ts']['trajectory_results'][1])
 
     # Perform assertions on the result
     assert isinstance(output, dict)

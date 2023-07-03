@@ -181,13 +181,8 @@ def ts_job(
         if opt_flags["optimizer"].__name__ != "Sella":
             raise ValueError("Custom hessian can only be used with Sella.")
 
-        # atoms.calc.calculate()
-        # hessian = atoms.calc.results["hessian"].reshape((-1, 3 * len(atoms)))
         opt_flags["optimizer_kwargs"]["hessian_function"] = get_hessian
 
-        # TODO: I think you may need to re-initialize the calculator
-        # object after this so that it's "blank" when you do
-        # run_ase_opt. Please check.
     # Define calculator again TEST THIS WHILE RUNNING THE CALCULATIONS
     mlcalculator = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
@@ -200,6 +195,18 @@ def ts_job(
     ts_summary = summarize_opt_run(dyn,
                                    check_convergence=check_convergence,
                                    additional_fields={"name": "NewtonNet TS"})
+
+    for i in range(len(ts_summary['trajectory'])):
+        # Define calculator again TEST THIS WHILE RUNNING THE CALCULATIONS
+        mlcalculator = NewtonNet(
+            model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
+            settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(":"),
+        )
+        mlcalculator.calculate(ts_summary['trajectory'][i]['atoms'])
+        ts_summary['trajectory_results'][i]['hessian'] = mlcalculator.results['hessian']
+        ts_summary['trajectory_results'][i]['energy_std'] = mlcalculator.results['energy_std']
+        ts_summary['trajectory_results'][i]['forces_std'] = mlcalculator.results['forces_std']
+        ts_summary['trajectory_results'][i]['hessian_std'] = mlcalculator.results['hessian_std']
 
     # Run a frequency calculation
     thermo_summary = freq_job(
@@ -262,7 +269,6 @@ def irc_job(
     )
     atoms.calc = mlcalculator
 
-    print('\n\n\n\n\n\nopt_flags\n\n\n\n\n\n\n\n', opt_flags)
     # Run IRC
     dyn = run_ase_opt(atoms, fmax=fmax, max_steps=max_steps, **opt_flags)
     summary_irc = summarize_opt_run(
