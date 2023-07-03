@@ -54,6 +54,7 @@ def test_tutorial1():
 
     # Call App 2, which takes the output of App 1 as input
     future2 = static_app(future1.result()["atoms"])
+    future2.result()
     assert future2.done()
 
 
@@ -169,5 +170,4 @@ def test_slabs():
 
     wf_future = bulk_to_slabs_app(bulk("Cu"))
     wf_future.result()
-    assert wf_future.done()
     assert wf_future.done()
