@@ -140,9 +140,10 @@ def test_comparison1():
     def mult(a, b):
         return a * b
 
-    future1 = add(1, 2)
-    future2 = mult(future1, 3)
-    assert future2.result() == 9
+    def workflow(a, b, c):
+        return mult(add(a, b), c)
+
+    assert workflow(1, 2, 3).result() == 9
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
