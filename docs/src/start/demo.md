@@ -52,7 +52,7 @@ def workflow(atoms):
     relaxed_bulk = relax_job(atoms)
 
     # With the relaxed bulk as input, generate and relax slabs
-    relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"])
+    relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk)
 
     return relaxed_slabs
 
@@ -72,6 +72,6 @@ print(result)
 
 ## What Next?
 
-Read through the documentation to learn more about Quacc and how to use it! And of course, feel free to explore the calculations you just ran in the Covalent UI.
+Read through the [User Guide](../user/basics.md) to learn more about using Quacc! And of course, feel free to explore the calculations you just ran in the Covalent UI.
 
 ![Covalent UI](../_static/start/ui.jpg)

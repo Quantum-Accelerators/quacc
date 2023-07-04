@@ -44,7 +44,7 @@ prefect = ["prefect", "prefect-dask", "dask-jobqueue"]
 tblite = ["tblite[ase]; platform_system=='Linux'"]
 dev = ["black", "isort", "pytest", "pytest-cov"]
 docs = [
-    "autodoc_pydantic==1.8.0",
+    "autodoc_pydantic==1.9.0",
     "furo==2023.5.20",
     "ipython==8.14.0",
     "jsonschema[format]==4.17.3",
@@ -60,9 +60,9 @@ strict = [
     "cclib==1.7.2",
     "covalent==0.226.0rc0",  # waiting on > 0.222.0
     "custodian==2023.6.5",
-    "emmet-core==0.57.2",
+    "emmet-core==0.58.1",
     "jobflow==0.1.11",
-    "maggma==0.51.9",
+    "maggma==0.51.12",
     "monty==2023.5.8",
     "numpy==1.25.0",
     "pydantic==1.10.2",

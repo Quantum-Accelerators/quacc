@@ -51,7 +51,7 @@ jobs:
           covalent start
 
       - name: Run tests with pytest
-        run: pytest --cov=quacc --cov-report=xml
+        run: pytest --ignore=tests/jobflow_tests --cov=quacc --cov-report=xml
 
       - name: Stop Covalent server
         run: covalent stop
@@ -272,7 +272,7 @@ jobs:
         run: quacc config
 
       - name: Run tests with pytest
-        run: pytest tests/parsl_tests tests/prefect_tests tests/jobflow_tests/test_fireworks.py tests/util/test_wflows.py --cov=quacc --cov-report=xml
+        run: pytest tests/parsl_tests tests/prefect_tests tests/jobflow_tests tests/util/test_wflows.py --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3

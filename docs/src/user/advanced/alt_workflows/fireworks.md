@@ -4,8 +4,8 @@
 
 [FireWorks](https://materialsproject.github.io/fireworks/) is a powerful software package to manage and execute complex workflows. It is best used in tandem with Jobflow because Jobflow comes with native support to convert a `Job` or `Flow` into a FireWorks `firework` or `workflow`, respectively.
 
-```{hint}
-Make sure you have completed the ["FireWorks Setup"](../../install/alt_workflows/fireworks.md) instructions. Additionally, refer to the ["Using Quacc with Jobflow"](jobflow.md) section before reviewing the content below.
+```{note}
+Make sure you have completed the ["FireWorks Setup"](../../../install/advanced/alt_workflows/fireworks.md) instructions. Additionally, refer to the ["Using Quacc with Jobflow"](jobflow.md) section before reviewing the content below.
 ```
 
 ## Converting Between Jobflow and FireWorks
@@ -42,7 +42,9 @@ lpad.add_wf(wf)
 
 ### Dispatching Calculations
 
-With a workflow added to your launch pad, on the desired machine of choice, you can run `qlaunch rapidfire --nlaunches <N>` (where `<N>` is the number of jobs to submit) in the command line to submit your workflows to the job scheduler. Running `qlaunch rapidfire -m <N>` will ensure that `<N>` jobs are always submitted to the queue. To modify the order in which jobs are run, a priority can be set via `lpad set_priority <priority> -i <FWID>` where `<priority>` is a number.
+With a workflow added to your launch pad, on the desired machine of choice, you can run `qlaunch rapidfire --nlaunches <N>` (where `<N>` is the number of jobs to submit) in the command line to submit your workflows to the job scheduler. Running `qlaunch rapidfire -m <N>` will ensure that `<N>` jobs are always in the queue or running. To modify the order in which jobs are run, a priority can be set via `lpad set_priority <priority> -i <FWID>` where `<priority>` is a number.
+
+By default, `qlaunch` will launch Slurm jobs that then poll for work. This means that more Slurm jobs may be submitted than there are jobs to run. To modify the behavior of `qlaunch` to only submit a Slurm job for each "READY" FireWork in the launchpad, use the `-r` ("reserved") flag.
 
 ### Monitoring the Launchpad
 

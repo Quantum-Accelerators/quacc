@@ -1,12 +1,14 @@
 """Core recipes for Psi4"""
 from __future__ import annotations
 
+from typing import Literal
+
 import covalent as ct
 from ase import Atoms
 from ase.calculators.psi4 import Psi4
 from monty.dev import requires
 
-from quacc.schemas.ase import summarize_run
+from quacc.schemas.ase import RunSchema, summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.dicts import remove_dict_empties
 
@@ -19,20 +21,20 @@ except ImportError:
 @ct.electron
 @requires(psi4, "Psi4 not installed. Try conda install -c psi4 psi4")
 def static_job(
-    atoms: Atoms,
+    atoms: Atoms | dict,
     charge: int | None = None,
     multiplicity: int | None = None,
     method: str = "wb97x-v",
     basis: str = "def2-tzvp",
     calc_swaps: dict | None = None,
-) -> dict:
+) -> RunSchema:
     """
     Function to carry out a single-point calculation.
 
     Parameters
     ----------
     atoms
-        Atoms object
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     charge
         Charge of the system. If None, this is determined from the sum of
         `atoms.get_initial_charges()`.
@@ -57,10 +59,10 @@ def static_job(
 
     Returns
     -------
-    dict
+    RunSchema
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
-
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     calc_swaps = calc_swaps or {}
 
     charge = int(atoms.get_initial_charges().sum()) if charge is None else charge
@@ -82,10 +84,10 @@ def static_job(
     flags = remove_dict_empties(defaults | calc_swaps)
 
     atoms.calc = Psi4(**flags)
-    new_atoms = run_calc(atoms)
+    final_atoms = run_calc(atoms)
 
     return summarize_run(
-        new_atoms,
+        final_atoms,
         input_atoms=atoms,
         charge_and_multiplicity=(charge, multiplicity),
         additional_fields={"name": "Psi4 Static"},

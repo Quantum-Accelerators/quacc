@@ -2,7 +2,7 @@
 
 ## Introduction
 
-All of the recommended workflow solutions have a similar decorator-based syntax for compute tasks and workflows. Here, we highlight these differences. For a comparison of the pros and cons of each approach, [Workflow Overview](../../install/alt_workflows/overview.md) page.
+All of the solutions below have a similar decorator-based syntax for compute tasks and workflows. Here, we highlight these differences. For a comparison of the pros and cons of each approach, refer to the [Workflow Overview](../../../install/advanced/alt_workflows/overview.md) page.
 
 ## Simple Workflow
 
@@ -56,7 +56,6 @@ result = ct.get_result(dispatch_id, wait=True) # 9
 ### Parsl
 
 ```python
-import parsl
 from parsl import python_app
 
 @python_app
@@ -68,9 +67,7 @@ def mult(a, b):
     return a * b
 
 def workflow(a, b, c):
-    future1 = add(a, b)
-    future2 = mult(future1.result(), c)
-    return future2
+    return mult(add(a, b), c)
 
 result = workflow(1, 2, 3).result() # 9
 ```
@@ -183,7 +180,6 @@ result = ct.get_result(dispatch_id, wait=True) # e.g. [6, 6, 6]
 ### Parsl
 
 ```python
-import parsl
 from parsl import join_app, python_app
 
 @python_app
@@ -197,10 +193,13 @@ def make_more(val):
     return [val] * random.randint(2, 5)
 
 @join_app
+def add_distributed(vals, c):
+    return [add(val, c) for val in vals]
+
 def workflow(a, b, c):
     future1 = add(a, b)
-    future2 = make_more(future1.result())
-    return [add(val, c) for val in future2.result()]
+    future2 = make_more(future1)
+    return add_distributed(future2, c)
 
 result = workflow(1, 2, 3).result() # e.g. [6, 6, 6]
 ```
@@ -247,7 +246,7 @@ def add_distributed(vals, c):
     jobs = []
     for val in vals:
         jobs.append(add(val, c))
-    return Response(detour=Flow(jobs))
+    return Response(replace=Flow(jobs))
 
 job1 = add(1, 2)
 job2 = make_more(job1.output)

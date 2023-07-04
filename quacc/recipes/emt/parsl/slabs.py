@@ -7,11 +7,11 @@ from parsl.app.python import PythonApp
 from parsl.dataflow.futures import AppFuture
 
 from quacc.recipes.emt.core import relax_job, static_job
+from quacc.util.slabs import make_max_slabs_from_bulk
 
 
-@join_app
-def bulk_to_slabs_app(
-    atoms: Atoms,
+def bulk_to_slabs_flow(
+    atoms: Atoms | dict,
     slabgen_kwargs: dict | None = None,
     slab_relax_app: PythonApp = python_app(relax_job),
     slab_static_app: PythonApp | None = python_app(static_job),
@@ -30,7 +30,7 @@ def bulk_to_slabs_app(
     Parameters
     ----------
     atoms
-        Atoms object for the structure.
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     slabgen_kwargs
         Additional keyword arguments to pass to make_max_slabs_from_bulk()
     slab_relax_app
@@ -47,8 +47,7 @@ def bulk_to_slabs_app(
     AppFuture
         An AppFuture whose .result() is a list[dict]
     """
-    from quacc.util.slabs import make_max_slabs_from_bulk
-
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}
     slabgen_kwargs = slabgen_kwargs or {}
@@ -56,13 +55,15 @@ def bulk_to_slabs_app(
     if "relax_cell" not in slab_relax_kwargs:
         slab_relax_kwargs["relax_cell"] = False
 
+    @join_app
     def _relax_distributed(slabs):
         return [slab_relax_app(slab, **slab_relax_kwargs) for slab in slabs]
 
+    @join_app
     def _relax_and_static_distributed(slabs):
         return [
             slab_static_app(
-                slab_relax_app(slab, **slab_relax_kwargs).result()["atoms"],
+                slab_relax_app(slab, **slab_relax_kwargs),
                 **slab_static_kwargs,
             )
             for slab in slabs

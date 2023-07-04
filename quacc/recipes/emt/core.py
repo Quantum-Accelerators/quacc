@@ -6,7 +6,7 @@ NOTE: This set of minimal recipes is mainly for demonstration purposes.
 from __future__ import annotations
 
 import warnings
-from copy import deepcopy
+from typing import Literal
 
 import covalent as ct
 from ase import Atoms
@@ -14,55 +14,54 @@ from ase.calculators.emt import EMT
 from ase.constraints import ExpCellFilter
 from ase.optimize import FIRE
 
-from quacc.schemas.ase import summarize_opt_run, summarize_run
+from quacc.schemas.ase import OptSchema, RunSchema, summarize_opt_run, summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
 
 
 @ct.electron
-def static_job(atoms: Atoms, calc_kwargs: dict | None = None) -> dict:
+def static_job(atoms: Atoms | dict, calc_kwargs: dict | None = None) -> RunSchema:
     """
     Carry out a static calculation.
 
     Parameters
     ----------
     atoms
-        Atoms object
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     calc_kwargs
         Dictionary of custom kwargs for the EMT calculator
 
     Returns
     -------
-    dict
+    RunSchema
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
-
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     calc_kwargs = calc_kwargs or {}
-    input_atoms = deepcopy(atoms)
 
     atoms.calc = EMT(**calc_kwargs)
-    atoms = run_calc(atoms)
+    final_atoms = run_calc(atoms)
 
     return summarize_run(
-        atoms,
-        input_atoms=input_atoms,
+        final_atoms,
+        input_atoms=atoms,
         additional_fields={"name": "EMT Static"},
     )
 
 
 @ct.electron
 def relax_job(
-    atoms: Atoms,
+    atoms: Atoms | dict,
     relax_cell: bool = True,
     calc_kwargs: dict | None = None,
     opt_swaps: dict | None = None,
-) -> dict:
+) -> OptSchema:
     """
     Carry out a geometry optimization.
 
     Parameters
     ----------
     atoms
-        Atoms object
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     relax_cell
         Whether to relax the cell
     calc_kwargs
@@ -73,10 +72,10 @@ def relax_job(
 
     Returns
     -------
-    dict
+    OptSchema
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
-
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     calc_kwargs = calc_kwargs or {}
     opt_swaps = opt_swaps or {}
 

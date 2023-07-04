@@ -2,7 +2,7 @@
 
 In Quacc, each code comes with pre-packaged jobs and workflows, which we call recipes for short. This tutorial walks you through how to use these provided recipes to run simple calculations that can be tested out on your local machine.
 
-Once you understand the basics, you should move on to the ["Using Quacc with Covalent"](covalent.md) (recommended) guide to learn how to use Quacc with a workflow manager, which allows you to stich together and run complex Quacc workflows across distributed computing resources. Refer to the ["Alternate Workflow Engines"](alt_workflows/comparison.md) section for alternate workflow manager options.
+Once you understand the basics, you should move on to the ["Using Quacc with Covalent"](covalent.md) (recommended) guide to learn how to use Quacc with a workflow manager, which allows you to stich together and run complex Quacc workflows across distributed computing resources. Refer to the ["Alternate Workflow Engines"](advanced/alt_workflows/index.md) section for alternate workflow manager options.
 
 ## Pre-Requisites
 
@@ -62,12 +62,12 @@ atoms = bulk("Cu")
 result1 = relax_job(atoms)
 
 # Run a static calculation with GFN2-xTB
-result2 = static_job(result1["atoms"], method="GFN2-xTB")
+result2 = static_job(result1, method="GFN2-xTB")
 print(result2)
 ```
 
 ```{hint}
-The output of most compute jobs is a dictionary summarizing the results of the calculation. It always has a key `"atoms"` that contains a copy of the output `Atoms` object. This can be used to pass structure information between jobs.
+The output of most compute jobs is a dictionary summarizing the results of the calculation. It always has a key `"atoms"` that contains a copy of the output `Atoms` object. The first argument to all recipes accepts either the `Atoms` object directly or a dictionary containing it.
 ```
 
 What happens if the first job fails, you might ask? Then the code will crash, no results will be stored, and you'd have to start from scratch. That'd be sad, but thankfully this is where using a workflow manager can save the day.
