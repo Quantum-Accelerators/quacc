@@ -145,4 +145,3 @@ def mp_relax_flow(
 
     # Run the relax
     return relax_electron(prerelax_results, **relax_kwargs)
-    return relax_electron(prerelax_results, **relax_kwargs)
