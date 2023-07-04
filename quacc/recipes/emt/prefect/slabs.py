@@ -14,7 +14,7 @@ from quacc.util.slabs import make_max_slabs_from_bulk
 # like in other workflow engines. Relies on #10135 in Prefect
 @flow
 def bulk_to_slabs_flow(
-    input_atoms: Atoms | dict[Literal["atoms"], Atoms],
+    atoms,
     slab_relax_task,
     slab_static_task,
     slabgen_kwargs: dict | None = None,
@@ -32,7 +32,7 @@ def bulk_to_slabs_flow(
 
     Parameters
     ----------
-    input_atoms
+    atoms
         Atoms object or a dictionary with the key "atoms" and an Atoms object as the value.
     slab_relax_task
         Default Task to use for the relaxation of the slab structures.
@@ -51,7 +51,7 @@ def bulk_to_slabs_flow(
         List of dictionary of results from quacc.schemas.ase.summarize_run
         or quacc.schemas.ase.summarize_opt_run
     """
-    input_atoms = input_atoms["atoms"] if isinstance(input_atoms, dict) else input_atoms
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}
     slabgen_kwargs = slabgen_kwargs or {}
@@ -65,13 +65,13 @@ def bulk_to_slabs_flow(
     def _relax_and_static_distributed(slabs):
         return [
             slab_static_task.submit(
-                slab_relax_task.submit(slab, **slab_relax_kwargs).result()["atoms"],
+                slab_relax_task.submit(slab, **slab_relax_kwargs).result(),
                 **slab_static_kwargs,
             ).result()
             for slab in slabs
         ]
 
-    slabs = make_max_slabs_from_bulk(input_atoms, **slabgen_kwargs)
+    slabs = make_max_slabs_from_bulk(atoms, **slabgen_kwargs)
 
     if slab_static_task is None:
         return _relax_distributed(slabs)

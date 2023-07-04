@@ -11,7 +11,7 @@ from quacc.util.slabs import make_max_slabs_from_bulk
 
 
 def bulk_to_slabs_flow(
-    input_atoms: Atoms | dict[Literal["atoms"], Atoms],
+    atoms: Atoms | dict[Literal["atoms"], Atoms],
     slabgen_kwargs: dict | None = None,
     slab_relax_job: job = job(relax_job),
     slab_static_job: job | None = job(static_job),
@@ -29,7 +29,7 @@ def bulk_to_slabs_flow(
 
     Parameters
     ----------
-    input_atoms
+    atoms
         Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     slabgen_kwargs
         Additional keyword arguments to pass to `make_max_slabs_from_bulk()`
@@ -47,7 +47,7 @@ def bulk_to_slabs_flow(
     Response
         A Response containing Flow of relaxation and static jobs for the generated slabs.
     """
-    input_atoms = input_atoms["atoms"] if isinstance(input_atoms, dict) else input_atoms
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}
     slabgen_kwargs = slabgen_kwargs or {}
@@ -56,7 +56,7 @@ def bulk_to_slabs_flow(
         slab_relax_kwargs["relax_cell"] = False
 
     # Generate all the slab
-    slabs = make_max_slabs_from_bulk(input_atoms, **slabgen_kwargs)
+    slabs = make_max_slabs_from_bulk(atoms, **slabgen_kwargs)
 
     # Generate the jobs for each slab
     jobs = []
@@ -73,6 +73,6 @@ def bulk_to_slabs_flow(
             outputs.append(job2.output)
 
     return Response(
-        output={"input_bulk": input_atoms, "generated_slabs": slabs},
+        output={"input_bulk": atoms, "generated_slabs": slabs},
         replace=Flow(jobs, output=outputs),
     )

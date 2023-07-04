@@ -20,14 +20,14 @@ from quacc.util.calc import run_ase_opt, run_calc
 
 @ct.electron
 def static_job(
-    input_atoms: Atoms | dict[Literal["atoms"], Atoms], calc_kwargs: dict | None = None
+    atoms: Atoms | dict[Literal["atoms"], Atoms], calc_kwargs: dict | None = None
 ) -> dict:
     """
     Carry out a static calculation.
 
     Parameters
     ----------
-    input_atoms
+    atoms
         Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     calc_kwargs
         Dictionary of custom kwargs for the EMT calculator
@@ -37,22 +37,22 @@ def static_job(
     dict
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
-    input_atoms = input_atoms["atoms"] if isinstance(input_atoms, dict) else input_atoms
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     calc_kwargs = calc_kwargs or {}
 
-    input_atoms.calc = EMT(**calc_kwargs)
-    atoms = run_calc(input_atoms)
+    atoms.calc = EMT(**calc_kwargs)
+    final_atoms = run_calc(atoms)
 
     return summarize_run(
-        atoms,
-        input_atoms=input_atoms,
+        final_atoms,
+        input_atoms=atoms,
         additional_fields={"name": "EMT Static"},
     )
 
 
 @ct.electron
 def relax_job(
-    input_atoms: Atoms | dict[Literal["atoms"], Atoms],
+    atoms: Atoms | dict[Literal["atoms"], Atoms],
     relax_cell: bool = True,
     calc_kwargs: dict | None = None,
     opt_swaps: dict | None = None,
@@ -62,7 +62,7 @@ def relax_job(
 
     Parameters
     ----------
-    input_atoms
+    atoms
         Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     relax_cell
         Whether to relax the cell
@@ -77,24 +77,24 @@ def relax_job(
     dict
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
-    input_atoms = input_atoms["atoms"] if isinstance(input_atoms, dict) else input_atoms
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     calc_kwargs = calc_kwargs or {}
     opt_swaps = opt_swaps or {}
 
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
     opt_flags = opt_defaults | opt_swaps
 
-    if relax_cell and not input_atoms.pbc.any():
+    if relax_cell and not atoms.pbc.any():
         warnings.warn(
             "Volume relaxation requested but no PBCs found. Ignoring.", UserWarning
         )
         relax_cell = False
 
-    input_atoms.calc = EMT(**calc_kwargs)
+    atoms.calc = EMT(**calc_kwargs)
 
     if relax_cell:
-        input_atoms = ExpCellFilter(input_atoms)
+        atoms = ExpCellFilter(atoms)
 
-    dyn = run_ase_opt(input_atoms, **opt_flags)
+    dyn = run_ase_opt(atoms, **opt_flags)
 
     return summarize_opt_run(dyn, additional_fields={"name": "EMT Relax"})

@@ -11,7 +11,7 @@ from quacc.util.slabs import make_max_slabs_from_bulk
 
 
 def bulk_to_slabs_flow(
-    input_atoms: Atoms | dict[Literal["atoms"], Atoms],
+    atoms: Atoms | dict[Literal["atoms"], Atoms],
     slabgen_kwargs: dict | None = None,
     slab_relax_electron: ct.electron = relax_job,
     slab_static_electron: ct.electron | None = static_job,
@@ -29,7 +29,7 @@ def bulk_to_slabs_flow(
 
     Parameters
     ----------
-    input_atoms
+    atoms
         Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     slabgen_kwargs
         Additional keyword arguments to pass to make_max_slabs_from_bulk()
@@ -47,7 +47,7 @@ def bulk_to_slabs_flow(
     list[dict]
         List of dictionary of results from quacc.schemas.ase.summarize_run or quacc.schemas.ase.summarize_opt_run
     """
-    input_atoms = input_atoms["atoms"] if isinstance(input_atoms, dict) else input_atoms
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}
     slabgen_kwargs = slabgen_kwargs or {}
@@ -71,7 +71,7 @@ def bulk_to_slabs_flow(
             for slab in slabs
         ]
 
-    slabs = ct.electron(make_max_slabs_from_bulk)(input_atoms, **slabgen_kwargs)
+    slabs = ct.electron(make_max_slabs_from_bulk)(atoms, **slabgen_kwargs)
 
     if slab_static_electron is None:
         return _relax_distributed(slabs)
