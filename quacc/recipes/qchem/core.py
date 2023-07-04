@@ -78,8 +78,6 @@ def static_job(
         Dictionary of results from quacc.schemas.ase.summarize_run
     """
     atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
-    if pcm_dielectric is not None and smd_solvent is not None:
-        raise ValueError("PCM and SMD cannot be employed simultaneously! Exiting...")
 
     checked_charge, checked_spin_multiplicity = check_charge_and_spin(
         atoms, charge, spin_multiplicity
@@ -203,9 +201,6 @@ def relax_job(
         ):
             opt_flags["optimizer_kwargs"]["order"] = 0
 
-    if pcm_dielectric is not None and smd_solvent is not None:
-        raise ValueError("PCM and SMD cannot be employed simultaneously! Exiting...")
-
     overwrite_inputs = overwrite_inputs or {}
     if "rem" not in overwrite_inputs:
         overwrite_inputs["rem"] = {}
@@ -325,9 +320,6 @@ def ts_job(
     if opt_flags["optimizer"] != Sella:
         raise RuntimeError("Only Sella should be used for TS optimization! Exiting...")
 
-    if pcm_dielectric is not None and smd_solvent is not None:
-        raise ValueError("PCM and SMD cannot be employed simultaneously! Exiting...")
-
     overwrite_inputs = overwrite_inputs or {}
     if "rem" not in overwrite_inputs:
         overwrite_inputs["rem"] = {}
@@ -438,9 +430,6 @@ def irc_job(
         atoms, charge, spin_multiplicity
     )
 
-    if direction not in ["forward", "reverse"]:
-        raise ValueError("direction must be 'forward' or 'reverse'! Exiting...")
-
     opt_swaps = opt_swaps or {}
     opt_defaults = {
         "fmax": 0.01,
@@ -454,9 +443,6 @@ def irc_job(
         raise RuntimeError(
             "Only Sella's IRC should be used for IRC optimization! Exiting..."
         )
-
-    if pcm_dielectric is not None and smd_solvent is not None:
-        raise ValueError("PCM and SMD cannot be employed simultaneously! Exiting...")
 
     overwrite_inputs = overwrite_inputs or {}
     if "rem" not in overwrite_inputs:

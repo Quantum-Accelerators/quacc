@@ -63,9 +63,18 @@ class QChem(FileIOCalculator):
         self.qchem_input_params = qchem_input_params or {}
         self.fileiocalculator_kwargs = fileiocalculator_kwargs
 
+        # Sanity checks
         if self.charge is None and self.spin_multiplicity is not None:
             raise ValueError(
                 "If setting spin_multiplicity, must also specify charge! Exiting..."
+            )
+
+        if (
+            self.qchem_input_params["smd_solvent"]
+            and self.qchem_input_params["pcm_dielectric"]
+        ):
+            raise ValueError(
+                "PCM and SMD cannot be employed simultaneously! Exiting..."
             )
 
         # We will save the parameters that have been passed to the Q-Chem calculator via FileIOCalculator's
