@@ -90,7 +90,7 @@ def mock_execute4(self, **kwargs):
 
 def mock_read(self, **kwargs):
     if self.results is None:
-        raise RuntimeError("Results should not be None here!")
+        raise RuntimeError("Results should not be None here.")
 
 
 def setup_module():

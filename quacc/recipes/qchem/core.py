@@ -292,7 +292,7 @@ def ts_job(
     }
     opt_flags = opt_defaults | opt_swaps
     if opt_flags["optimizer"] != Sella:
-        raise ValueError("Only Sella should be used for TS optimization!")
+        raise ValueError("Only Sella should be used for TS optimization.")
 
     qchem_defaults = {
         "method": method,
@@ -402,7 +402,7 @@ def irc_job(
     }
     opt_flags = opt_defaults | opt_swaps
     if opt_flags["optimizer"] != IRC:
-        raise ValueError("Only Sella's IRC should be used for IRC optimization!")
+        raise ValueError("Only Sella's IRC should be used for IRC optimization.")
 
     qchem_defaults = {
         "method": method,
