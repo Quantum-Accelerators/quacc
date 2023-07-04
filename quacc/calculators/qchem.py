@@ -70,9 +70,8 @@ class QChem(FileIOCalculator):
                 "If setting spin_multiplicity, must also specify charge! Exiting..."
             )
 
-        if (
-            self.qchem_input_params["smd_solvent"]
-            and self.qchem_input_params["pcm_dielectric"]
+        if self.qchem_input_params.get("smd_solvent") and self.qchem_input_params.get(
+            "pcm_dielectric"
         ):
             raise ValueError(
                 "PCM and SMD cannot be employed simultaneously! Exiting..."
