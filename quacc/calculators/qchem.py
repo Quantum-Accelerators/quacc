@@ -81,7 +81,7 @@ class QChem(FileIOCalculator):
             )
 
         if "rem" not in self.qchem_input_params["overwrite_inputs"]:
-            self.qchem_input_paramsoverwrite_inputs["rem"] = {}
+            self.qchem_input_params["overwrite_inputs"]["rem"] = {}
         if (
             method
             and "method" not in self.qchem_input_params["overwrite_inputs"]["rem"]
