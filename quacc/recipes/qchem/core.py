@@ -473,7 +473,7 @@ def quasi_irc_job(
         "fmax": 100,
         "max_steps": 10,
     }
-    irc_opt_swaps = remove_dict_empties(irc_opt_swaps_defaults | irc_opt_swaps)
+    irc_opt_swaps = irc_opt_swaps_defaults | irc_opt_swaps
 
     SETTINGS.CHECK_CONVERGENCE = False
     irc_summary = irc_job(
