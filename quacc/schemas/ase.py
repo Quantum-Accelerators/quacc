@@ -15,6 +15,7 @@ from ase.thermochemistry import IdealGasThermo
 from ase.vibrations import Vibrations
 from atomate2.utils.path import get_uri
 
+from quacc import SETTINGS
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
 from quacc.util.dicts import clean_dict
@@ -154,7 +155,7 @@ def summarize_run(
 
 def summarize_opt_run(
     dyn: Optimizer,
-    check_convergence: bool = True,
+    check_convergence: bool = SETTINGS.CHECK_ASE_OPT_CONVERGENCE,
     charge_and_multiplicity: tuple[int, int] | None = None,
     prep_next_run: bool = True,
     remove_empties: bool = False,
@@ -169,7 +170,7 @@ def summarize_opt_run(
     dyn
         ASE Optimizer object.
     check_convergence
-        Whether to check the convergence of the calculation.
+        Whether to check the convergence of the calculation. Defaults to True in settings.
     charge_and_multiplicity
         Charge and spin multiplicity of the Atoms object, only used for Molecule metadata.
     prep_next_run

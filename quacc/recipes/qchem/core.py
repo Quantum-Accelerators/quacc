@@ -9,6 +9,7 @@ from ase.atoms import Atoms
 from ase.optimize import FIRE
 from monty.dev import requires
 
+from quacc import SETTINGS
 from quacc.calculators.qchem import QChem
 from quacc.schemas.ase import OptSchema, RunSchema, summarize_opt_run, summarize_run
 from quacc.util.atoms import check_charge_and_spin
@@ -121,7 +122,6 @@ def relax_job(
     smd_solvent: str | None = None,
     overwrite_inputs: dict | None = None,
     opt_swaps: dict | None = None,
-    check_convergence: bool = True,
     n_cores: int | None = None,
 ) -> OptSchema:
     """
@@ -159,8 +159,6 @@ def relax_job(
     opt_swaps
         Dictionary of custom kwargs for run_ase_opt
             opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
-    check_convergence
-        Whether to check convergence of the optimization.
     n_cores
         Number of cores to use for the Q-Chem calculation.
         Defaults to use all cores available on a given node.
@@ -209,7 +207,6 @@ def relax_job(
 
     return summarize_opt_run(
         dyn,
-        check_convergence=check_convergence,
         charge_and_multiplicity=(checked_charge, checked_spin_multiplicity),
         additional_fields={"name": "Q-Chem Optimization"},
     )
@@ -231,7 +228,6 @@ def ts_job(
     smd_solvent: str | None = None,
     overwrite_inputs: dict | None = None,
     opt_swaps: dict | None = None,
-    check_convergence: bool = True,
     n_cores: int | None = None,
 ) -> OptSchema:
     """
@@ -269,8 +265,6 @@ def ts_job(
     opt_swaps
         Dictionary of custom kwargs for run_ase_opt
             opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
-    check_convergence
-        Whether to check convergence of the optimization.
     n_cores
         Number of cores to use for the Q-Chem calculation.
         Defaults to use all cores available on a given node.
@@ -321,7 +315,6 @@ def ts_job(
 
     return summarize_opt_run(
         dyn,
-        check_convergence=check_convergence,
         charge_and_multiplicity=(checked_charge, checked_spin_multiplicity),
         additional_fields={"name": "Q-Chem TS Optimization"},
     )
@@ -344,7 +337,6 @@ def irc_job(
     smd_solvent: str | None = None,
     overwrite_inputs: dict | None = None,
     opt_swaps: dict | None = None,
-    check_convergence: bool = True,
     n_cores: int | None = None,
 ) -> OptSchema:
     """
@@ -384,8 +376,6 @@ def irc_job(
     opt_swaps
         Dictionary of custom kwargs for run_ase_opt
             opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
-    check_convergence
-        Whether to check convergence of the optimization.
     n_cores
         Number of cores to use for the Q-Chem calculation.
         Defaults to use all cores available on a given node.
@@ -435,7 +425,6 @@ def irc_job(
 
     return summarize_opt_run(
         dyn,
-        check_convergence=check_convergence,
         charge_and_multiplicity=(checked_charge, checked_spin_multiplicity),
         additional_fields={"name": "Q-Chem IRC Optimization"},
     )
@@ -452,7 +441,6 @@ def quasi_irc_job(
     common_kwargs: dict | None = None,
     irc_opt_swaps: dict | None = None,
     relax_opt_swaps: dict | None = None,
-    check_convergence: bool = True,
 ) -> OptSchema:
     """
     Quasi-IRC optimize a molecular structure.
@@ -469,8 +457,6 @@ def quasi_irc_job(
         Dictionary of opt_swap kwargs for the irc_job.
     relax_opt_swaps
         Dictionary of opt_swap kwargs for the relax_job.
-    check_convergence
-        Whether to check convergence of the optimization.
 
     Returns
     -------
@@ -481,6 +467,7 @@ def quasi_irc_job(
     common_kwargs = common_kwargs or {}
     irc_opt_swaps = irc_opt_swaps or {}
     relax_opt_swaps = relax_opt_swaps or {}
+    default_convergence = SETTINGS.CHECK_ASE_OPT_CONVERGENCE
 
     irc_opt_swaps_defaults = {
         "fmax": 100,
@@ -488,18 +475,18 @@ def quasi_irc_job(
     }
     irc_opt_swaps = irc_opt_swaps_defaults | irc_opt_swaps
 
+    SETTINGS.CHECK_ASE_OPT_CONVERGENCE = False
     irc_summary = irc_job(
         atoms,
         direction=direction,
         opt_swaps=irc_opt_swaps,
-        check_convergence=False,
         **common_kwargs,
     )
 
+    SETTINGS.CHECK_ASE_OPT_CONVERGENCE = default_convergence
     relax_summary = relax_job(
         irc_summary,
         opt_swaps=relax_opt_swaps,
-        check_convergence=check_convergence,
         **common_kwargs,
     )
 

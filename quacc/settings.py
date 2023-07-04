@@ -43,6 +43,10 @@ class QuaccSettings(BaseSettings):
     GZIP_FILES: bool = Field(
         True, description="Whether generated files should be gzip'd."
     )
+    CHECK_ASE_OPT_CONVERGENCE: bool = Field(
+        True,
+        description="Whether to check for geometry optimization convergence when using ASE's built-in optimizer.",
+    )
 
     # ---------------------------
     # VASP Settings
