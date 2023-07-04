@@ -105,7 +105,7 @@ def test_qchem_write_input_open_shell_and_different_charges():
     assert qcinp.as_dict() == ref_qcinp.as_dict()
     os.remove("mol.qin")
 
-    with pytest.raises(RuntimeError):
+    with pytest.raises(ValueError):
         calc = QChem(OS_ATOMS, spin_multiplicity=1)
 
     with pytest.raises(ValueError):

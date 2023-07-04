@@ -3,7 +3,6 @@ Core recipes for the Q-Chem
 """
 from __future__ import annotations
 
-from copy import deepcopy
 from typing import Literal
 
 import covalent as ct
@@ -12,7 +11,7 @@ from ase.optimize import FIRE
 from monty.dev import requires
 
 from quacc.calculators.qchem import QChem
-from quacc.schemas.ase import summarize_opt_run, summarize_run
+from quacc.schemas.ase import OptSchema, RunSchema, summarize_opt_run, summarize_run
 from quacc.util.atoms import check_charge_and_spin
 from quacc.util.calc import run_ase_opt, run_calc
 
@@ -24,8 +23,7 @@ except ImportError:
 
 @ct.electron
 def static_job(
-    atoms: Atoms,
-    cores: int | None = None,
+    atoms: Atoms | dict,
     charge: int | None = None,
     spin_multiplicity: int | None = None,
     method: str = "wb97mv",
@@ -34,18 +32,15 @@ def static_job(
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
     overwrite_inputs: dict | None = None,
-) -> dict:
+    n_cores: int | None = None,
+) -> RunSchema:
     """
     Carry out a single-point calculation.
 
     Parameters
     ----------
     atoms
-        Atoms object.
-    cores
-        Number of cores to use for the Q-Chem calculation.
-        Effectively defaults to use all cores available on a given node, so this only needs to
-        be set by the user if less than all available cores should be used.
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     charge
         The total charge of the molecular system.
         Effectively defaults to zero.
@@ -71,21 +66,23 @@ def static_job(
     overwrite_inputs
         Dictionary passed to pymatgen.io.qchem.QChemDictSet which can modify default values set therein
         as well as set additional Q-Chem parameters. See QChemDictSet documentation for more details.
+    n_cores
+        Number of cores to use for the Q-Chem calculation.
+        Effectively defaults to use all cores available on a given node, so this only needs to
+        be set by the user if less than all available cores should be used.
 
     Returns
     -------
-    dict
+    RunSchema
         Dictionary of results from quacc.schemas.ase.summarize_run
     """
-
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     if pcm_dielectric is not None and smd_solvent is not None:
         raise ValueError("PCM and SMD cannot be employed simultaneously! Exiting...")
 
     checked_charge, checked_spin_multiplicity = check_charge_and_spin(
         atoms, charge, spin_multiplicity
     )
-
-    input_atoms = deepcopy(atoms)
 
     overwrite_inputs = overwrite_inputs or {}
     if "rem" not in overwrite_inputs:
@@ -106,16 +103,16 @@ def static_job(
 
     calc = QChem(
         input_atoms=atoms,
-        cores=cores,
+        cores=n_cores,
         charge=charge,
         spin_multiplicity=spin_multiplicity,
         qchem_input_params=qchem_input_params,
     )
     atoms.calc = calc
-    atoms = run_calc(atoms)
+    final_atoms = run_calc(atoms)
     return summarize_run(
-        atoms,
-        input_atoms=input_atoms,
+        final_atoms,
+        input_atoms=atoms,
         charge_and_multiplicity=(checked_charge, checked_spin_multiplicity),
         additional_fields={"name": "Q-Chem Static"},
     )
@@ -123,8 +120,7 @@ def static_job(
 
 @ct.electron
 def relax_job(
-    atoms: Atoms,
-    cores: int | None = None,
+    atoms: Atoms | dict,
     charge: int | None = None,
     spin_multiplicity: int | None = None,
     method: str = "wb97mv",
@@ -135,18 +131,15 @@ def relax_job(
     overwrite_inputs: dict | None = None,
     opt_swaps: dict | None = None,
     check_convergence: bool = True,
-) -> dict:
+    n_cores: int | None = None,
+) -> OptSchema:
     """
     Optimize aka "relax" a molecular structure.
 
     Parameters
     ----------
     atoms
-        Atoms object.
-    cores
-        Number of cores to use for the Q-Chem calculation.
-        Effectively defaults to use all cores available on a given node, so this only needs to
-        be set by the user if less than all available cores should be used.
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     charge
         The total charge of the molecular system.
         Effectively defaults to zero.
@@ -175,15 +168,21 @@ def relax_job(
     opt_swaps
         Dictionary of custom kwargs for run_ase_opt
             opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
+    check_convergence
+        Whether to check convergence of the optimization.
+    n_cores
+        Number of cores to use for the Q-Chem calculation.
+        Effectively defaults to use all cores available on a given node, so this only needs to
+        be set by the user if less than all available cores should be used.
 
     Returns
     -------
-    dict
+    OptSchema
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
 
-    # Reminder to self: exposing TRICs?
-
+    # TODO: exposing TRICs?
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     checked_charge, checked_spin_multiplicity = check_charge_and_spin(
         atoms, charge, spin_multiplicity
     )
@@ -227,7 +226,7 @@ def relax_job(
 
     calc = QChem(
         input_atoms=atoms,
-        cores=cores,
+        cores=n_cores,
         charge=charge,
         spin_multiplicity=spin_multiplicity,
         qchem_input_params=qchem_input_params,
@@ -249,8 +248,7 @@ def relax_job(
     "Sella must be installed. pip install sella",
 )
 def ts_job(
-    atoms: Atoms,
-    cores: int | None = None,
+    atoms: Atoms | dict,
     charge: int | None = None,
     spin_multiplicity: int | None = None,
     method: str = "wb97mv",
@@ -261,18 +259,15 @@ def ts_job(
     overwrite_inputs: dict | None = None,
     opt_swaps: dict | None = None,
     check_convergence: bool = True,
-) -> dict:
+    n_cores: int | None = None,
+) -> OptSchema:
     """
     TS optimize a molecular structure.
 
     Parameters
     ----------
     atoms
-        Atoms object.
-    cores
-        Number of cores to use for the Q-Chem calculation.
-        Effectively defaults to use all cores available on a given node, so this only needs to
-        be set by the user if less than all available cores should be used.
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     charge
         The total charge of the molecular system.
         Effectively defaults to zero.
@@ -301,16 +296,23 @@ def ts_job(
     opt_swaps
         Dictionary of custom kwargs for run_ase_opt
             opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
+    check_convergence
+        Whether to check convergence of the optimization.
+    n_cores
+        Number of cores to use for the Q-Chem calculation.
+        Effectively defaults to use all cores available on a given node, so this only needs to
+        be set by the user if less than all available cores should be used.
 
     Returns
     -------
-    dict
+    OptSchema
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
 
-    # Reminders to self:
+    # TODO:
     #   - exposing TRICs?
     #   - passing initial Hessian?
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
 
     checked_charge, checked_spin_multiplicity = check_charge_and_spin(
         atoms, charge, spin_multiplicity
@@ -349,7 +351,7 @@ def ts_job(
 
     calc = QChem(
         input_atoms=atoms,
-        cores=cores,
+        cores=n_cores,
         charge=charge,
         spin_multiplicity=spin_multiplicity,
         qchem_input_params=qchem_input_params,
@@ -371,9 +373,8 @@ def ts_job(
     "Sella must be installed. pip install sella",
 )
 def irc_job(
-    atoms: Atoms,
+    atoms: Atoms | dict,
     direction: Literal["forward", "reverse"],
-    cores: int | None = None,
     charge: int | None = None,
     spin_multiplicity: int | None = None,
     method: str = "wb97mv",
@@ -384,20 +385,17 @@ def irc_job(
     overwrite_inputs: dict | None = None,
     opt_swaps: dict | None = None,
     check_convergence: bool = True,
-) -> dict:
+    n_cores: int | None = None,
+) -> OptSchema:
     """
     IRC optimize a molecular structure.
 
     Parameters
     ----------
     atoms
-        Atoms object.
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     direction
         Direction of the IRC. Should be "forward" or "reverse".
-    cores
-        Number of cores to use for the Q-Chem calculation.
-        Effectively defaults to use all cores available on a given node, so this only needs to
-        be set by the user if less than all available cores should be used.
     charge
         The total charge of the molecular system.
         Effectively defaults to zero.
@@ -426,17 +424,21 @@ def irc_job(
     opt_swaps
         Dictionary of custom kwargs for run_ase_opt
             opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
+    n_cores
+        Number of cores to use for the Q-Chem calculation.
+        Effectively defaults to use all cores available on a given node, so this only needs to
+        be set by the user if less than all available cores should be used.
 
     Returns
     -------
-    dict
+    OptSchema
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
 
-    # Reminders to self:
+    # TODO:
     #   - exposing TRICs?
     #   - passing initial Hessian?
-
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     checked_charge, checked_spin_multiplicity = check_charge_and_spin(
         atoms, charge, spin_multiplicity
     )
@@ -480,7 +482,7 @@ def irc_job(
 
     calc = QChem(
         input_atoms=atoms,
-        cores=cores,
+        cores=n_cores,
         charge=charge,
         spin_multiplicity=spin_multiplicity,
         qchem_input_params=qchem_input_params,
@@ -502,13 +504,13 @@ def irc_job(
     "Sella must be installed. pip install sella",
 )
 def quasi_irc_job(
-    atoms: Atoms,
+    atoms: Atoms | dict,
     direction: Literal["forward", "reverse"],
     common_kwargs: dict | None = None,
     irc_opt_swaps: dict | None = None,
     relax_opt_swaps: dict | None = None,
     check_convergence: bool = True,
-) -> dict:
+) -> OptSchema:
     """
     Quasi-IRC optimize a molecular structure.
 
@@ -527,7 +529,7 @@ def quasi_irc_job(
 
     Returns
     -------
-    dict
+    OptSchema
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
 

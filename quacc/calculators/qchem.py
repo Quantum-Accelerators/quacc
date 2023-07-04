@@ -35,9 +35,6 @@ class QChem(FileIOCalculator):
         Effectively defaults to the lowest spin state given the molecular structure and charge.
     qchem_input_params
         Dictionary of Q-Chem input parameters to be passed to pymatgen.io.qchem.sets.ForceSet.
-    use_custodian
-        Whether to use Custodian to run Q-Chem.
-        Default is True in settings.
     **fileiocalculator_kwargs
         Additional arguments to be passed to ase.calculators.calculator.FileIOCalculator.
 
@@ -67,7 +64,7 @@ class QChem(FileIOCalculator):
         self.fileiocalculator_kwargs = fileiocalculator_kwargs
 
         if self.charge is None and self.spin_multiplicity is not None:
-            raise RuntimeError(
+            raise ValueError(
                 "If setting spin_multiplicity, must also specify charge! Exiting..."
             )
 
@@ -87,7 +84,7 @@ class QChem(FileIOCalculator):
                 for subkey in self.qchem_input_params[key]:
                     for subsubkey in self.qchem_input_params[key][subkey]:
                         self.default_parameters[
-                            "overwrite_" + subkey + "_" + subsubkey
+                            f"overwrite_{subkey}_{subsubkey}"
                         ] = self.qchem_input_params[key][subkey][subsubkey]
             else:
                 self.default_parameters[key] = self.qchem_input_params[key]
