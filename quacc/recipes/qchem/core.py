@@ -417,6 +417,8 @@ def irc_job(
     opt_swaps
         Dictionary of custom kwargs for run_ase_opt
             opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
+    check_convergence
+        Whether to check convergence of the optimization.
     n_cores
         Number of cores to use for the Q-Chem calculation.
         Effectively defaults to use all cores available on a given node, so this only needs to
@@ -516,6 +518,8 @@ def quasi_irc_job(
         Dictionary of opt_swap kwargs for the irc_job.
     relax_opt_swaps
         Dictionary of opt_swap kwargs for the relax_job.
+    check_convergence
+        Whether to check convergence of the optimization.
 
     Returns
     -------
