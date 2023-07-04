@@ -306,9 +306,9 @@ def ts_job(
         "optimizer": Sella,
         "optimizer_kwargs": {},
     }
+    opt_flags = opt_defaults | opt_swaps
     if opt_flags["optimizer"] != Sella:
         raise ValueError("Only Sella should be used for TS optimization.")
-    opt_flags = remove_dict_empties(opt_defaults | opt_swaps)
 
     atoms.calc = QChem(atoms, **qchem_flags)
     dyn = run_ase_opt(atoms, **opt_flags)
@@ -416,9 +416,9 @@ def irc_job(
         "optimizer_kwargs": {"keep_going": True},
         "run_kwargs": {"direction": direction},
     }
+    opt_flags = opt_defaults | opt_swaps
     if opt_flags["optimizer"] != IRC:
         raise ValueError("Only Sella's IRC should be used for IRC optimization.")
-    opt_flags = remove_dict_empties(opt_defaults | opt_swaps)
 
     atoms.calc = QChem(atoms, **qchem_flags)
     dyn = run_ase_opt(atoms, **opt_flags)
