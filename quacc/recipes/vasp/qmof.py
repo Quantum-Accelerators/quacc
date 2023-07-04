@@ -6,7 +6,7 @@ Reference: https://doi.org/10.1016/j.matt.2021.02.015
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import Literal
 
 import covalent as ct
 from ase import Atoms

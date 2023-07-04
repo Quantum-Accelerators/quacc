@@ -1,7 +1,7 @@
 """Core recipes for VASP"""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import Literal
 
 import covalent as ct
 from ase import Atoms
