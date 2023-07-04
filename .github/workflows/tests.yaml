@@ -271,6 +271,9 @@ jobs:
         run: |
           pip install .[strict,dev,optimizers]
 
+      - name: Configure Quacc
+        run: export QUACC_CHECK_CONVERGENCE=False
+
       - name: Install conda packages
         run: |
           conda install -c conda-forge openbabel

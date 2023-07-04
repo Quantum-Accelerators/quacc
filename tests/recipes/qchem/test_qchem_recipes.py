@@ -93,12 +93,7 @@ def mock_read(self, **kwargs):
         raise RuntimeError("Results should not be None here.")
 
 
-def setup_module():
-    SETTINGS.CHECK_CONVERGENCE = False
-
-
 def teardown_module():
-    SETTINGS.CHECK_CONVERGENCE = DEFAULT_CONVERGENCE
     for f in os.listdir("."):
         if ".log" in f or ".traj" in f or ".gz" in f:
             os.remove(f)
