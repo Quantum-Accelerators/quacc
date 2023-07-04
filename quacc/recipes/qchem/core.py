@@ -467,7 +467,7 @@ def quasi_irc_job(
     common_kwargs = common_kwargs or {}
     irc_opt_swaps = irc_opt_swaps or {}
     relax_opt_swaps = relax_opt_swaps or {}
-    default_convergence = SETTINGS.CHECK_ASE_OPT_CONVERGENCE
+    default_convergence = SETTINGS.CHECK_CONVERGENCE
 
     irc_opt_swaps_defaults = {
         "fmax": 100,
@@ -475,7 +475,7 @@ def quasi_irc_job(
     }
     irc_opt_swaps = remove_dict_empties(irc_opt_swaps_defaults | irc_opt_swaps)
 
-    SETTINGS.CHECK_ASE_OPT_CONVERGENCE = False
+    SETTINGS.CHECK_CONVERGENCE = False
     irc_summary = irc_job(
         atoms,
         direction=direction,
@@ -483,7 +483,7 @@ def quasi_irc_job(
         **common_kwargs,
     )
 
-    SETTINGS.CHECK_ASE_OPT_CONVERGENCE = default_convergence
+    SETTINGS.CHECK_CONVERGENCE = default_convergence
     relax_summary = relax_job(
         irc_summary,
         opt_swaps=relax_opt_swaps,
