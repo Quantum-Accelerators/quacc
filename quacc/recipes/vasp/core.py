@@ -1,6 +1,8 @@
 """Core recipes for VASP"""
 from __future__ import annotations
 
+from typing import Literal
+
 import covalent as ct
 from ase import Atoms
 
@@ -11,7 +13,9 @@ from quacc.util.calc import run_calc
 
 @ct.electron
 def static_job(
-    atoms: Atoms, preset: str | None = None, calc_swaps: dict | None = None
+    atoms: Atoms | dict[Literal["atoms"], Atoms],
+    preset: str | None = None,
+    calc_swaps: dict | None = None,
 ) -> dict:
     """
     Carry out a single-point calculation.
@@ -19,7 +23,7 @@ def static_job(
     Parameters
     ----------
     atoms
-        Atoms object
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     preset
         Preset to use.
     calc_swaps
@@ -38,7 +42,7 @@ def static_job(
     dict
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
-
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     calc_swaps = calc_swaps or {}
 
     defaults = {
@@ -60,7 +64,7 @@ def static_job(
 
 @ct.electron
 def relax_job(
-    atoms: Atoms,
+    atoms: Atoms | dict[Literal["atoms"], Atoms],
     preset: str | None = None,
     relax_volume: bool = True,
     calc_swaps: dict | None = None,
@@ -71,7 +75,7 @@ def relax_job(
     Parameters
     ----------
     atoms
-        Atoms object
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     preset
         Preset to use.
     relax_volume
@@ -94,7 +98,7 @@ def relax_job(
     dict
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
-
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     calc_swaps = calc_swaps or {}
 
     defaults = {
@@ -117,7 +121,7 @@ def relax_job(
 
 @ct.electron
 def double_relax_job(
-    atoms: Atoms,
+    atoms: Atoms | dict[Literal["atoms"], Atoms],
     preset: str | None = None,
     relax_volume: bool = True,
     calc_swaps1: dict | None = None,
@@ -137,7 +141,7 @@ def double_relax_job(
     Parameters
     ----------
     atoms
-        Atoms object
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     preset
         Preset to use.
     relax_volume
@@ -153,7 +157,7 @@ def double_relax_job(
     {"relax1": dict, "relax2": dict}
         Dictionaries of the type quacc.schemas.vasp.summarize_run.
     """
-
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     calc_swaps1 = calc_swaps1 or {}
     calc_swaps2 = calc_swaps2 or {}
 

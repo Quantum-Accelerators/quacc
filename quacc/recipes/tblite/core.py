@@ -3,7 +3,6 @@ Core recipes for the tblite code
 """
 from __future__ import annotations
 
-from copy import deepcopy
 from typing import Literal
 
 import covalent as ct
@@ -29,7 +28,7 @@ except ImportError:
 @ct.electron
 @requires(TBLite, "tblite must be installed. Try pip install tblite[ase]")
 def static_job(
-    atoms: Atoms,
+    atoms: Atoms | dict[Literal["atoms"], Atoms],
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
     calc_kwargs: dict | None = None,
 ) -> dict:
@@ -39,7 +38,7 @@ def static_job(
     Parameters
     ----------
     atoms
-        Atoms object
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     method
         GFN1-xTB, GFN2-xTB, and IPEA1-xTB.
     calc_kwargs
@@ -50,14 +49,14 @@ def static_job(
     dict
         Dictionary of results from quacc.schemas.ase.summarize_run
     """
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     calc_kwargs = calc_kwargs or {}
-    input_atoms = deepcopy(atoms)
 
     atoms.calc = TBLite(method=method, **calc_kwargs)
-    atoms = run_calc(atoms)
+    final_atoms = run_calc(atoms)
     return summarize_run(
-        atoms,
-        input_atoms=input_atoms,
+        final_atoms,
+        input_atoms=atoms,
         additional_fields={"name": "TBLite Static"},
     )
 
@@ -65,7 +64,7 @@ def static_job(
 @ct.electron
 @requires(TBLite, "tblite must be installed. Try pip install tblite[ase]")
 def relax_job(
-    atoms: Atoms,
+    atoms: Atoms | dict[Literal["atoms"], Atoms],
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
     calc_kwargs: dict | None = None,
     opt_swaps: dict | None = None,
@@ -76,7 +75,7 @@ def relax_job(
     Parameters
     ----------
     atoms
-        Atoms object
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     method
         GFN0-xTB, GFN1-xTB, GFN2-xTB.
     tblite_kwargs
@@ -90,7 +89,7 @@ def relax_job(
     dict
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
-
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     calc_kwargs = calc_kwargs or {}
     opt_swaps = opt_swaps or {}
 
@@ -106,7 +105,7 @@ def relax_job(
 @ct.electron
 @requires(TBLite, "tblite must be installed. Try pip install tblite[ase]")
 def freq_job(
-    atoms: Atoms,
+    atoms: Atoms | dict[Literal["atoms"], Atoms],
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
     energy: float = 0.0,
     temperature: float = 298.15,
@@ -120,7 +119,7 @@ def freq_job(
     Parameters
     ----------
     atoms
-        Atoms object
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     method
         GFN0-xTB, GFN1-xTB, GFN2-xTB, GFN-FF.
     energy
@@ -140,7 +139,7 @@ def freq_job(
         Dictionary of results from quacc.schemas.ase.summarize_vib_run and
         quacc.schemas.ase.summarize_thermo_run
     """
-
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     calc_kwargs = calc_kwargs or {}
     vib_kwargs = vib_kwargs or {}
 

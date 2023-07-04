@@ -69,7 +69,7 @@ def test_relax_job():
 def test_freq_job():
     atoms = molecule("H2O")
 
-    output = freq_job(relax_job(atoms)["atoms"])
+    output = freq_job(relax_job(atoms))
     assert output["vib"]["natoms"] == len(atoms)
     assert output["thermo"]["natoms"] == len(atoms)
     assert output["vib"]["parameters"]["epsilon"] == 1.0

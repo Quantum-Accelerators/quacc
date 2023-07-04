@@ -1,7 +1,6 @@
 """Core recipes for DFTB+"""
 from __future__ import annotations
 
-from copy import deepcopy
 from typing import Literal
 
 import covalent as ct
@@ -19,7 +18,7 @@ GEOM_FILE = "geo_end.gen"
 
 @ct.electron
 def static_job(
-    atoms: Atoms,
+    atoms: Atoms | dict[Literal["atoms"], Atoms],
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
     kpts: tuple | list[tuple] | dict | None = None,
     calc_swaps: dict | None = None,
@@ -30,7 +29,7 @@ def static_job(
     Parameters
     ----------
     atoms
-        Atoms object
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     method
         Method to use.
     kpts
@@ -44,9 +43,8 @@ def static_job(
     dict
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
-
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     calc_swaps = calc_swaps or {}
-    input_atoms = deepcopy(atoms)
 
     defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
@@ -56,21 +54,21 @@ def static_job(
     flags = remove_dict_empties(defaults | calc_swaps)
 
     atoms.calc = Dftb(**flags)
-    atoms = run_calc(atoms, geom_file=GEOM_FILE)
+    final_atoms = run_calc(atoms, geom_file=GEOM_FILE)
 
     if check_logfile(LOG_FILE, "SCC is NOT converged"):
         raise ValueError("SCC is not converged")
 
     return summarize_run(
-        atoms,
-        input_atoms=input_atoms,
+        final_atoms,
+        input_atoms=atoms,
         additional_fields={"name": "DFTB+ Static"},
     )
 
 
 @ct.electron
 def relax_job(
-    atoms: Atoms,
+    atoms: Atoms | dict[Literal["atoms"], Atoms],
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
     kpts: tuple | list[tuple] | dict | None = None,
     lattice_opt: bool = False,
@@ -82,7 +80,7 @@ def relax_job(
     Parameters
     ----------
     atoms
-        Atoms object
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     method
         Method to use.
     kpts
@@ -107,9 +105,8 @@ def relax_job(
     dict
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
-
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     calc_swaps = calc_swaps or {}
-    input_atoms = deepcopy(atoms)
 
     defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
@@ -123,13 +120,13 @@ def relax_job(
     flags = remove_dict_empties(defaults | calc_swaps)
 
     atoms.calc = Dftb(**flags)
-    atoms = run_calc(atoms, geom_file=GEOM_FILE)
+    final_atoms = run_calc(atoms, geom_file=GEOM_FILE)
 
     if not check_logfile(LOG_FILE, "Geometry converged"):
         raise ValueError("Geometry did not converge")
 
     return summarize_run(
-        atoms,
-        input_atoms=input_atoms,
+        final_atoms,
+        input_atoms=atoms,
         additional_fields={"name": "DFTB+ Relax"},
     )

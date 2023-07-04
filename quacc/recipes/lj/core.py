@@ -5,7 +5,7 @@ NOTE: This set of minimal recipes is mainly for demonstration purposes
 """
 from __future__ import annotations
 
-from copy import deepcopy
+from typing import Literal
 
 import covalent as ct
 from ase import Atoms
@@ -24,7 +24,7 @@ from quacc.util.thermo import ideal_gas
 
 @ct.electron
 def static_job(
-    atoms: Atoms,
+    atoms: Atoms | dict[Literal["atoms"], Atoms],
     calc_kwargs: dict | None = None,
 ) -> dict:
     """
@@ -33,7 +33,7 @@ def static_job(
     Parameters
     ----------
     atoms
-        Atoms object
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     calc_kwargs
         Dictionary of custom kwargs for the LJ calculator
 
@@ -42,21 +42,22 @@ def static_job(
     dict
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
-
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     calc_kwargs = calc_kwargs or {}
-    input_atoms = deepcopy(atoms)
 
     atoms.calc = LennardJones(**calc_kwargs)
-    atoms = run_calc(atoms)
+    final_atoms = run_calc(atoms)
 
     return summarize_run(
-        atoms, input_atoms=input_atoms, additional_fields={"name": "LJ Static"}
+        final_atoms, input_atoms=atoms, additional_fields={"name": "LJ Static"}
     )
 
 
 @ct.electron
 def relax_job(
-    atoms: Atoms, calc_kwargs: dict | None = None, opt_swaps: dict | None = None
+    atoms: Atoms | dict[Literal["atoms"], Atoms],
+    calc_kwargs: dict | None = None,
+    opt_swaps: dict | None = None,
 ) -> dict:
     """
     Function to carry out a geometry optimization
@@ -76,7 +77,7 @@ def relax_job(
     dict
         Dictionary of results from `quacc.schemas.ase.summarize_opt_run`
     """
-
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     calc_kwargs = calc_kwargs or {}
     opt_swaps = opt_swaps or {}
 
@@ -92,7 +93,7 @@ def relax_job(
 
 @ct.electron
 def freq_job(
-    atoms: Atoms,
+    atoms: Atoms | dict[Literal["atoms"], Atoms],
     energy: float = 0.0,
     temperature: float = 298.15,
     pressure: float = 1.0,
@@ -105,7 +106,7 @@ def freq_job(
     Parameters
     ----------
     atoms
-        Atoms object
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     energy
         Potential energy in eV. If 0, then the output is just the correction.
     temperature
@@ -123,7 +124,7 @@ def freq_job(
         Dictionary of results from quacc.schemas.ase.summarize_vib_run and
         quacc.schemas.ase.summarize_thermo_run
     """
-
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     calc_kwargs = calc_kwargs or {}
     vib_kwargs = vib_kwargs or {}
 

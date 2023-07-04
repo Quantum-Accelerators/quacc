@@ -6,6 +6,8 @@ Reference: https://doi.org/10.1016/j.matt.2021.02.015
 """
 from __future__ import annotations
 
+from typing import Literal
+
 import covalent as ct
 from ase import Atoms
 from ase.optimize import BFGSLineSearch
@@ -18,7 +20,7 @@ from quacc.util.calc import run_ase_opt, run_calc
 
 @ct.electron
 def qmof_relax_job(
-    atoms: Atoms,
+    atoms: Atoms | dict[Literal["atoms"], Atoms],
     preset: str | None = "QMOFSet",
     relax_volume: bool = True,
     run_prerelax: bool = True,
@@ -42,7 +44,7 @@ def qmof_relax_job(
     Parameters
     ----------
     atoms
-        Atoms object
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     preset
         Preset to use. Applies for all jobs.
     relax_volume
@@ -60,7 +62,7 @@ def qmof_relax_job(
     dict
         Dictionary of results
     """
-
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     calc_swaps = calc_swaps or {}
 
     # 1. Pre-relaxation

@@ -1,8 +1,6 @@
 """Slab recipes for EMT"""
 from __future__ import annotations
 
-from typing import Literal
-
 from ase import Atoms
 from prefect import flow
 

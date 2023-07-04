@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import multiprocessing
+from typing import Literal
 
 import covalent as ct
 from ase import Atoms
@@ -17,7 +18,7 @@ GEOM_FILE = f"{ORCA().name}.xyz"
 
 @ct.electron
 def static_job(
-    atoms: Atoms,
+    atoms: Atoms | dict[Literal["atoms"], Atoms],
     charge: int | None = None,
     multiplicity: int | None = None,
     xc: str = "wb97x-d3bj",
@@ -31,7 +32,7 @@ def static_job(
     Parameters
     ----------
     atoms
-        Atoms object
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     charge
         Charge of the system. If None, this is determined from the sum of
         `atoms.get_initial_charges()`.
@@ -65,7 +66,7 @@ def static_job(
     dict
         Dictionary of results from quacc.schemas.cclib.summarize_run
     """
-
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     input_swaps = input_swaps or {}
     block_swaps = block_swaps or {}
 
@@ -112,7 +113,7 @@ def static_job(
 
 @ct.electron
 def relax_job(
-    atoms: Atoms,
+    atoms: Atoms | dict[Literal["atoms"], Atoms],
     charge: int = None,
     multiplicity: int = None,
     xc: str = "wb97x-d3bj",
@@ -164,7 +165,7 @@ def relax_job(
     dict
         Dictionary of results from quacc.schemas.cclib.summarize_run
     """
-
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     input_swaps = input_swaps or {}
     block_swaps = block_swaps or {}
 
