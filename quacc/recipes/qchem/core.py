@@ -3,6 +3,7 @@ Core recipes for the Q-Chem
 """
 from __future__ import annotations
 
+import multiprocessing
 from typing import Literal
 
 import covalent as ct
@@ -18,8 +19,10 @@ from quacc.util.dicts import remove_dict_empties
 
 try:
     from sella import IRC, Sella
+
+    has_sella = True
 except ImportError:
-    Sella = None
+    has_sella = False
 
 
 @ct.electron
@@ -69,8 +72,7 @@ def static_job(
         as well as set additional Q-Chem parameters. See QChemDictSet documentation for more details.
     n_cores
         Number of cores to use for the Q-Chem calculation.
-        Effectively defaults to use all cores available on a given node, so this only needs to
-        be set by the user if less than all available cores should be used.
+        Defaults to use all cores available on a given node.
 
     Returns
     -------
@@ -86,7 +88,7 @@ def static_job(
         "method": method,
         "charge": charge,
         "spin_multiplicity": spin_multiplicity,
-        "cores": n_cores,
+        "cores": n_cores or multiprocessing.cpu_count(),
         "qchem_input_params": {
             "basis_set": basis,
             "scf_algorithm": scf_algorithm,
@@ -163,8 +165,7 @@ def relax_job(
         Whether to check convergence of the optimization.
     n_cores
         Number of cores to use for the Q-Chem calculation.
-        Effectively defaults to use all cores available on a given node, so this only needs to
-        be set by the user if less than all available cores should be used.
+        Defaults to use all cores available on a given node.
 
     Returns
     -------
@@ -182,24 +183,18 @@ def relax_job(
     opt_defaults = {
         "fmax": 0.01,
         "max_steps": 1000,
-        "optimizer": Sella if Sella else FIRE,
+        "optimizer": Sella if has_sella else FIRE,
         "optimizer_kwargs": {},
     }
     opt_flags = opt_defaults | opt_swaps
-    if Sella:
-        # The purpose of separating these If statements is to allow this function to be used
-        # even without Sella installed, in which case Sella would not be imported
-        if (
-            opt_flags["optimizer"] == Sella
-            and "order" not in opt_flags["optimizer_kwargs"]
-        ):
-            opt_flags["optimizer_kwargs"]["order"] = 0
+    if opt_flags["optimizer"] == Sella and "order" not in opt_flags["optimizer_kwargs"]:
+        opt_flags["optimizer_kwargs"]["order"] = 0
 
     qchem_defaults = {
         "method": method,
         "charge": charge,
         "spin_multiplicity": spin_multiplicity,
-        "cores": n_cores,
+        "cores": n_cores or multiprocessing.cpu_count(),
         "qchem_input_params": {
             "basis_set": basis,
             "scf_algorithm": scf_algorithm,
@@ -224,8 +219,8 @@ def relax_job(
 
 @ct.electron
 @requires(
-    Sella,
-    "Sella must be installed. pip install sella",
+    has_sella,
+    "Sella must be installed. Try pip install sella.",
 )
 def ts_job(
     atoms: Atoms | dict,
@@ -280,8 +275,7 @@ def ts_job(
         Whether to check convergence of the optimization.
     n_cores
         Number of cores to use for the Q-Chem calculation.
-        Effectively defaults to use all cores available on a given node, so this only needs to
-        be set by the user if less than all available cores should be used.
+        Defaults to use all cores available on a given node.
 
     Returns
     -------
@@ -306,13 +300,13 @@ def ts_job(
     }
     opt_flags = opt_defaults | opt_swaps
     if opt_flags["optimizer"] != Sella:
-        raise RuntimeError("Only Sella should be used for TS optimization! Exiting...")
+        raise ValueError("Only Sella should be used for TS optimization!")
 
     qchem_defaults = {
         "method": method,
         "charge": charge,
         "spin_multiplicity": spin_multiplicity,
-        "cores": n_cores,
+        "cores": n_cores or multiprocessing.cpu_count(),
         "qchem_input_params": {
             "basis_set": basis,
             "scf_algorithm": scf_algorithm,
@@ -337,8 +331,8 @@ def ts_job(
 
 @ct.electron
 @requires(
-    Sella,
-    "Sella must be installed. pip install sella",
+    has_sella,
+    "Sella must be installed. Try pip install sella.",
 )
 def irc_job(
     atoms: Atoms | dict,
@@ -396,8 +390,7 @@ def irc_job(
         Whether to check convergence of the optimization.
     n_cores
         Number of cores to use for the Q-Chem calculation.
-        Effectively defaults to use all cores available on a given node, so this only needs to
-        be set by the user if less than all available cores should be used.
+        Defaults to use all cores available on a given node.
 
     Returns
     -------
@@ -405,9 +398,7 @@ def irc_job(
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
 
-    # TODO:
-    #   - exposing TRICs?
-    #   - passing initial Hessian?
+    # TODO: 1) expose TRICs?; 2) passing initial Hessian?
     atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     checked_charge, checked_spin_multiplicity = check_charge_and_spin(
         atoms, charge, spin_multiplicity
@@ -423,15 +414,13 @@ def irc_job(
     }
     opt_flags = opt_defaults | opt_swaps
     if opt_flags["optimizer"] != IRC:
-        raise RuntimeError(
-            "Only Sella's IRC should be used for IRC optimization! Exiting..."
-        )
+        raise ValueError("Only Sella's IRC should be used for IRC optimization!")
 
     qchem_defaults = {
         "method": method,
         "charge": charge,
         "spin_multiplicity": spin_multiplicity,
-        "cores": n_cores,
+        "cores": n_cores or multiprocessing.cpu_count(),
         "qchem_input_params": {
             "basis_set": basis,
             "scf_algorithm": scf_algorithm,
@@ -457,7 +446,7 @@ def irc_job(
 @ct.electron
 @requires(
     Sella,
-    "Sella must be installed. pip install sella",
+    "Sella must be installed. Try pip install sella.",
 )
 def quasi_irc_job(
     atoms: Atoms | dict,

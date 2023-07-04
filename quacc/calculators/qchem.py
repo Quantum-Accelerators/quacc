@@ -52,7 +52,7 @@ class QChem(FileIOCalculator):
         charge: None | int = None,
         spin_multiplicity: None | int = None,
         method: str | None = None,
-        cores: None | int = None,
+        cores: int = 1,
         qchem_input_params: dict | None = None,
         **fileiocalculator_kwargs,
     ):
@@ -69,16 +69,12 @@ class QChem(FileIOCalculator):
             self.qchem_input_params["overwrite_inputs"] = {}
 
         if self.charge is None and self.spin_multiplicity is not None:
-            raise ValueError(
-                "If setting spin_multiplicity, must also specify charge! Exiting..."
-            )
+            raise ValueError("If setting spin_multiplicity, must also specify charge!")
 
         if self.qchem_input_params.get("smd_solvent") and self.qchem_input_params.get(
             "pcm_dielectric"
         ):
-            raise ValueError(
-                "PCM and SMD cannot be employed simultaneously! Exiting..."
-            )
+            raise ValueError("PCM and SMD cannot be employed simultaneously!")
 
         if "rem" not in self.qchem_input_params["overwrite_inputs"]:
             self.qchem_input_params["overwrite_inputs"]["rem"] = {}
@@ -198,7 +194,7 @@ class QChem(FileIOCalculator):
             for jj, val in enumerate(subgrad):
                 if abs(gradient[ii, jj] - val) > 1e-6:
                     raise ValueError(
-                        "Difference between gradient value in scratch file vs. output file should not be this large! Exiting..."
+                        "Difference between gradient value in scratch file vs. output file should not be this large!"
                     )
                 gradient[ii, jj] = val
         # Convert gradient to force + deal with units

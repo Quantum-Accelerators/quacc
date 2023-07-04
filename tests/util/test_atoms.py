@@ -157,7 +157,7 @@ def test_check_charge_and_spin():
         charge, spin_multiplicity = check_charge_and_spin(
             atoms, charge=0, spin_multiplicity=1
         )
-    with pytest.raises(RuntimeError):
+    with pytest.raises(ValueError):
         charge, spin_multiplicity = check_charge_and_spin(atoms, spin_multiplicity=3)
     with pytest.raises(ValueError):
         charge, spin_multiplicity = check_charge_and_spin(

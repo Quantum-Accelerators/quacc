@@ -331,9 +331,7 @@ def check_charge_and_spin(
 
     """
     if charge is None and spin_multiplicity is not None:
-        raise RuntimeError(
-            "If setting spin_multiplicity, must also specify charge! Exiting..."
-        )
+        raise ValueError("If setting spin_multiplicity, must also specify charge!")
 
     try:
         mol = AseAtomsAdaptor.get_molecule(atoms)
@@ -355,6 +353,6 @@ def check_charge_and_spin(
     if (mol.nelectrons + mol.spin_multiplicity) % 2 != 1:
         raise ValueError(
             f"Charge of {mol.charge} and spin multiplicity of {mol.spin_multiplicity} is"
-            " not possible for this molecule! Exiting..."
+            " not possible for this molecule!"
         )
     return mol.charge, mol.spin_multiplicity

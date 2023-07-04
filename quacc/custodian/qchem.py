@@ -22,7 +22,7 @@ except ImportError:
     "Openbabel must be installed. Try conda install -c conda-forge openbabel",
 )
 def run_custodian(
-    qchem_cores: None | int = None,
+    qchem_cores: int = 1,
     qchem_cmd: str = SETTINGS.QCHEM_CMD,
     qchem_local_scratch: str = SETTINGS.QCHEM_LOCAL_SCRATCH,
     qchem_use_error_handlers: bool = SETTINGS.QCHEM_USE_ERROR_HANDLERS,
@@ -34,8 +34,7 @@ def run_custodian(
     Parameters
     ----------
     qchem_cores
-        Number of cores to use for the Q-Chem calculation. Defaults to multiprocessing.cpu_count(). Can be
-        set by the user via the command line.
+        Number of cores to use for the Q-Chem calculation.
     qchem_cmd
         Q-Chem command. Defaults to "qchem" in settings.
     qchem_local_scratch
@@ -53,8 +52,6 @@ def run_custodian(
 
     from custodian.qchem.handlers import QChemErrorHandler
     from custodian.qchem.jobs import QCJob
-
-    qchem_cores = qchem_cores or multiprocessing.cpu_count()
 
     # Error handlers for Q-Chem
     if qchem_use_error_handlers:

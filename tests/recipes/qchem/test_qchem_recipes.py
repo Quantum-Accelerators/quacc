@@ -88,7 +88,7 @@ def mock_execute4(self, **kwargs):
 
 def mock_read(self, **kwargs):
     if self.results is None:
-        raise RuntimeError("Results should not be None here! Exiting...")
+        raise RuntimeError("Results should not be None here!")
     pass
 
 
@@ -413,7 +413,7 @@ def test_irc_job(monkeypatch):
             smd_solvent="water",
         )
 
-    with pytest.raises(RuntimeError):
+    with pytest.raises(ValueError):
         output = irc_job(
             atoms=TEST_ATOMS,
             direction="forward",
