@@ -532,10 +532,22 @@ class Vasp(Vasp_):
         if calc.bool_params["lsorbit"]:
             if self.verbose:
                 warnings.warn(
-                    "Copilot: Setting ISYM = -1 because you are running a SOC calculation.",
+                    "Copilot: Setting ISYM = -1 because you are running an SOC calculation.",
                     UserWarning,
                 )
             calc.set(isym=-1)
+
+        if (
+            (calc.int_params["ncore"] and calc.int_params["ncore"] > 1)
+            or (calc.int_params["npar"] and calc.int_params["npar"] > 1)
+        ) and (calc.bool_params["lelf"] is True):
+            if self.verbose:
+                warnings.warn(
+                    "Copilot: Setting NPAR = 1 because NCORE/NPAR is not compatible with this job type.",
+                    UserWarning,
+                )
+            calc.set(npar=1)
+            calc.set(ncore=None)
 
         if calc.string_params["efermi"]:
             if (
