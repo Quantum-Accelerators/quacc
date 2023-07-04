@@ -3,7 +3,6 @@ Custodian handlers for QChem
 """
 from __future__ import annotations
 
-import multiprocessing
 import sys
 
 from custodian import Custodian
@@ -79,7 +78,6 @@ def run_custodian(
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
-        qchem_cores = sys.argv[1]
-        run_custodian(qchem_cores=qchem_cores)
+        run_custodian(qchem_cores=sys.argv[1])
     else:
         run_custodian()

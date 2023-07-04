@@ -89,7 +89,6 @@ def mock_execute4(self, **kwargs):
 def mock_read(self, **kwargs):
     if self.results is None:
         raise RuntimeError("Results should not be None here!")
-    pass
 
 
 def teardown_module():

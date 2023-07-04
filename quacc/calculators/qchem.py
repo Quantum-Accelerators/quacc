@@ -139,10 +139,11 @@ class QChem(FileIOCalculator):
 
         # Return the command flag
         run_qchem_custodian_file = os.path.abspath(inspect.getfile(custodian_qchem))
-        if self.cores is not None:
-            return f"python {run_qchem_custodian_file} {self.cores}"
-        else:
-            return f"python {run_qchem_custodian_file}"
+        return (
+            f"python {run_qchem_custodian_file} {self.cores}"
+            if self.cores is not None
+            else f"python {run_qchem_custodian_file}"
+        )
 
     def write_input(self, atoms, properties=None, system_changes=None):
         FileIOCalculator.write_input(self, atoms, properties, system_changes)

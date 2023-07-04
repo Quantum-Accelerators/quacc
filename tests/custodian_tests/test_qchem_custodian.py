@@ -8,7 +8,9 @@ except ImportError:
 
 
 class MockRun:
-    # Add a mock Custodian.run() function
+    """
+    Mock Custodian run() function
+    """
 
     @staticmethod
     def run():
@@ -16,15 +18,20 @@ class MockRun:
 
 
 def mock_custodian_run(*args, **kwargs):
-    # Instead of running Custodian, we will mock it to return True
-    # when .run() is called
+    """
+    Instead of running Custodian, we will mock it to return True
+    when .run() is called
+
+    """
     return MockRun()
 
 
 @pytest.fixture(autouse=True)
 def patch_custodian_run(monkeypatch):
-    # Monkeypatch the Custodian.run() function so that it doesn't actually
-    # launch Custodian during a test
+    """
+    Monkeypatch the Custodian.run() function so that it doesn't actually
+    launch Custodian during a test
+    """
     monkeypatch.setattr(Custodian, "run", mock_custodian_run)
 
 
