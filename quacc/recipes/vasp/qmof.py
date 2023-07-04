@@ -405,4 +405,3 @@ def _static(
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
 
     return summarize_run(atoms, additional_fields={"name": "QMOF Static"})
-    return summarize_run(atoms, additional_fields={"name": "QMOF Static"})

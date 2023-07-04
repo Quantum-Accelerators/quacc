@@ -193,4 +193,3 @@ def double_relax_job(
     summary2 = summarize_run(atoms, additional_fields={"name": "VASP DoubleRelax 2"})
 
     return {"relax1": summary1, "relax2": summary2}
-    return {"relax1": summary1, "relax2": summary2}
