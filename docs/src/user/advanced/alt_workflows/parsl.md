@@ -56,7 +56,7 @@ You can see that it is quite trivial to set up a Parsl workflow using the recipe
 
 The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object. Technically, we did not need to call `future1.result()` because Parsl will automatically know that it cannot run `static_app` until `future1` is resolved. Nonetheless, we have included it here for clarity.
 
-```{warning}
+```{note}
 It is not considered good practice to include a `.result()` call in a `@python_app` or `@join_app` definition.
 ```
 
