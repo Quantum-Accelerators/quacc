@@ -155,7 +155,7 @@ def summarize_run(
 
 def summarize_opt_run(
     dyn: Optimizer,
-    check_convergence: bool = SETTINGS.CHECK_ASE_OPT_CONVERGENCE,
+    check_convergence: bool = SETTINGS.SETTINGS.CHECK_CONVERGENCE,
     charge_and_multiplicity: tuple[int, int] | None = None,
     prep_next_run: bool = True,
     remove_empties: bool = False,

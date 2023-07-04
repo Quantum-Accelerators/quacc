@@ -107,7 +107,7 @@ def test_summarize_opt_run():
     dyn.run(steps=100)
     traj = read("test.traj", index=":")
 
-    results = summarize_opt_run(dyn, check_convergence=True)
+    results = summarize_opt_run(dyn)
     assert results["nsites"] == len(atoms)
     assert results["atoms"] == traj[-1]
     assert results["results"]["energy"] == atoms.get_potential_energy()

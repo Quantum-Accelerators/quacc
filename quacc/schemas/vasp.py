@@ -22,7 +22,7 @@ def summarize_run(
     dir_path: str | None = None,
     prep_next_run: bool = True,
     run_bader: bool = SETTINGS.VASP_BADER,
-    check_convergence: bool = True,
+    check_convergence: bool = SETTINGS.CHECK_CONVERGENCE,
     remove_empties: bool = False,
     additional_fields: dict | None = None,
 ) -> VaspSchema:

@@ -11,6 +11,7 @@ from ase.optimize import FIRE
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.qchem.inputs import QCInput
 
+from quacc import SETTINGS
 from quacc.calculators.qchem import QChem
 from quacc.recipes.qchem.core import (
     irc_job,
@@ -30,6 +31,7 @@ FILE_DIR = Path(__file__).resolve().parent
 QCHEM_DIR = os.path.join(FILE_DIR, "qchem_examples")
 TEST_ATOMS = read(os.path.join(FILE_DIR, "test.xyz"))
 OS_ATOMS = read(os.path.join(FILE_DIR, "OS_test.xyz"))
+DEFAULT_CONVERGENCE = SETTINGS.CHECK_CONVERGENCE
 
 
 def qcinput_nearly_equal(qcinput1, qcinput2):
@@ -91,7 +93,12 @@ def mock_read(self, **kwargs):
         raise RuntimeError("Results should not be None here!")
 
 
+def setup_module():
+    SETTINGS.CHECK_CONVERGENCE = False
+
+
 def teardown_module():
+    SETTINGS.CHECK_CONVERGENCE = DEFAULT_CONVERGENCE
     for f in os.listdir("."):
         if ".log" in f or ".traj" in f or ".gz" in f:
             os.remove(f)
@@ -180,7 +187,6 @@ def test_relax_job(monkeypatch):
         TEST_ATOMS,
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
-        check_convergence=False,
     )
 
     assert output["atoms"] != TEST_ATOMS
@@ -206,7 +212,6 @@ def test_relax_job(monkeypatch):
         method="b97mv",
         pcm_dielectric="3.0",
         opt_swaps={"max_steps": 1},
-        check_convergence=False,
     )
 
     assert output["atoms"] != TEST_ATOMS
@@ -233,7 +238,6 @@ def test_relax_job(monkeypatch):
         overwrite_inputs=overwrite_inputs,
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
-        check_convergence=False,
     )
 
     assert output["atoms"] != TEST_ATOMS
@@ -260,7 +264,6 @@ def test_ts_job(monkeypatch):
         TEST_ATOMS,
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
-        check_convergence=False,
     )
 
     assert output["atoms"] != TEST_ATOMS
@@ -286,7 +289,6 @@ def test_ts_job(monkeypatch):
         method="b97mv",
         pcm_dielectric="3.0",
         opt_swaps={"max_steps": 1},
-        check_convergence=False,
     )
 
     assert output["atoms"] != TEST_ATOMS
@@ -313,7 +315,6 @@ def test_ts_job(monkeypatch):
         overwrite_inputs=overwrite_inputs,
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
-        check_convergence=False,
     )
 
     assert output["atoms"] != TEST_ATOMS
@@ -351,7 +352,6 @@ def test_irc_job(monkeypatch):
         direction="forward",
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
-        check_convergence=False,
     )
 
     assert output["atoms"] != TEST_ATOMS
@@ -373,7 +373,6 @@ def test_irc_job(monkeypatch):
         direction="reverse",
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
-        check_convergence=False,
     )
 
     qcin = QCInput.from_file("mol.qin.gz")
@@ -390,7 +389,6 @@ def test_irc_job(monkeypatch):
         overwrite_inputs=overwrite_inputs,
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
-        check_convergence=False,
     )
 
     assert output["atoms"] != TEST_ATOMS
@@ -438,7 +436,6 @@ def test_quasi_irc_job(monkeypatch):
         direction="forward",
         common_kwargs=common_kwargs,
         relax_opt_swaps=relax_opt_swaps,
-        check_convergence=False,
     )
 
     assert output["atoms"] != TEST_ATOMS
@@ -465,7 +462,6 @@ def test_quasi_irc_job(monkeypatch):
         common_kwargs=common_kwargs,
         irc_opt_swaps=irc_opt_swaps,
         relax_opt_swaps=relax_opt_swaps,
-        check_convergence=False,
     )
 
     assert output["atoms"] != TEST_ATOMS

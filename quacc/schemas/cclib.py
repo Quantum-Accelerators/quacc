@@ -7,6 +7,7 @@ from typing import Literal, TypeVar
 from ase.atoms import Atoms
 from atomate2.common.schemas.cclib import TaskDocument
 
+from quacc import SETTINGS
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
 from quacc.util.dicts import clean_dict
@@ -31,7 +32,7 @@ def summarize_run(
             "hirshfeld",
         ]
     ] = None,
-    check_convergence: bool = True,
+    check_convergence: bool = SETTINGS.CHECK_CONVERGENCE,
     prep_next_run: bool = True,
     remove_empties: bool = False,
     additional_fields: dict | None = None,
