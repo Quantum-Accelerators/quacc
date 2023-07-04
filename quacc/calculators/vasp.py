@@ -531,8 +531,6 @@ class Vasp(Vasp_):
 
         if (
             calc.bool_params["lsorbit"]
-            and calc.int_params["isym"]
-            and calc.int_params["isym"] != -1
         ):
             if self.verbose:
                 warnings.warn(
