@@ -550,7 +550,7 @@ class Vasp(Vasp_):
                     "Copilot: Setting NPAR = 1 because NCORE/NPAR is not compatible with this job type.",
                     UserWarning,
                 )
-            calc.set(nnpar=1)
+            calc.set(npar=1)
             calc.set(ncore=None)
 
         if calc.string_params["efermi"]:
