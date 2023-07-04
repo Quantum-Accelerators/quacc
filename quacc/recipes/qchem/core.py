@@ -198,9 +198,9 @@ def relax_job(
         "optimizer": Sella if has_sella else FIRE,
         "optimizer_kwargs": None,
     }
-    opt_flags = remove_dict_empties(opt_defaults | opt_swaps)
     if opt_flags["optimizer"] == Sella and "order" not in opt_flags["optimizer_kwargs"]:
         opt_flags["optimizer_kwargs"]["order"] = 0
+    opt_flags = remove_dict_empties(opt_defaults | opt_swaps)
 
     atoms.calc = QChem(atoms, **qchem_flags)
     dyn = run_ase_opt(atoms, **opt_flags)
