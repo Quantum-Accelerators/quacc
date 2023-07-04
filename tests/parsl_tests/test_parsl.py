@@ -57,8 +57,9 @@ def test_tutorial1():
 
     # Call App 2, which takes the output of App 1 as input
     future2 = static_app(future1)
-    future2.result()
+    result = future2.result()
     assert future2.done()
+    assert "atoms" in result
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
@@ -81,7 +82,9 @@ def test_tutorial2():
     # Print the results
     future1.result(), future2.result()
     assert future1.done()
+    assert "atoms" in future1.result()
     assert future2.done()
+    assert "atoms" in future2.result()
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
@@ -108,6 +111,7 @@ def test_tutorial3():
     # Print the results
     future2.result()
     assert future2.done()
+    assert len(future2.result()) == 4
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
@@ -131,6 +135,7 @@ def test_tutorial4():
     # Print the results
     print(future2.result())
     assert future2.done()
+    assert len(future2.result()) == 4
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")

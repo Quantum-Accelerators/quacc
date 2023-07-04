@@ -55,7 +55,7 @@ print(future2.result())
 You can see that it is quite trivial to set up a Parsl workflow using the recipes within Quacc. We define the full workflow as a function that stitches together the individual `@python_app` workflow steps.
 
 ```{note}
-The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object.
+The use of `.result()` serves to block any further calculations from running until it is resolved. It can be used in your scripts but should never be included in a `@python_app` definition. Calling `.result()` also returns the function output as opposed to the `AppFuture` object.
 ```
 
 ### Running a Simple Parallel Workflow
