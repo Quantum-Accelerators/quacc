@@ -1,6 +1,4 @@
-"""
-Core recipes for the Q-Chem
-"""
+"""Core recipes for the Q-Chem"""
 from __future__ import annotations
 
 import multiprocessing
