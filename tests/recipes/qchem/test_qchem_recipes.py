@@ -329,7 +329,7 @@ def test_ts_job(monkeypatch):
     with pytest.raises(ValueError):
         output = ts_job(TEST_ATOMS, pcm_dielectric="3.0", smd_solvent="water")
 
-    with pytest.raises(RuntimeError):
+    with pytest.raises(ValueError):
         output = ts_job(
             TEST_ATOMS,
             pcm_dielectric="3.0",

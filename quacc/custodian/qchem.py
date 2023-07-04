@@ -1,6 +1,4 @@
-"""
-Custodian handlers for QChem
-"""
+"""Custodian handlers for QChem"""
 from __future__ import annotations
 
 import sys

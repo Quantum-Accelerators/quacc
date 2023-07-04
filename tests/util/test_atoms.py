@@ -151,7 +151,7 @@ def test_check_charge_and_spin():
     charge, spin_multiplicity = check_charge_and_spin(atoms)
     assert charge == 0
     assert spin_multiplicity == 2
-    with pytest.raises(RuntimeError):
+    with pytest.raises(ValueError):
         charge, spin_multiplicity = check_charge_and_spin(atoms, spin_multiplicity=1)
     with pytest.raises(ValueError):
         charge, spin_multiplicity = check_charge_and_spin(
