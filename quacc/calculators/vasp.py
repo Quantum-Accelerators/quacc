@@ -529,11 +529,7 @@ class Vasp(Vasp_):
                 )
             calc.set(isym=3)
 
-        if (
-            calc.bool_params["lsorbit"]
-            and calc.int_params["isym"]
-            and calc.int_params["isym"] != -1
-        ):
+        if calc.bool_params["lsorbit"]:
             if self.verbose:
                 warnings.warn(
                     "Copilot: Setting ISYM = -1 because you are running an SOC calculation.",
