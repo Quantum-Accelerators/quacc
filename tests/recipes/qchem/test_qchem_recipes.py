@@ -11,7 +11,6 @@ from ase.optimize import FIRE
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.qchem.inputs import QCInput
 
-from quacc import SETTINGS
 from quacc.calculators.qchem import QChem
 from quacc.recipes.qchem.core import (
     irc_job,
@@ -31,7 +30,6 @@ FILE_DIR = Path(__file__).resolve().parent
 QCHEM_DIR = os.path.join(FILE_DIR, "qchem_examples")
 TEST_ATOMS = read(os.path.join(FILE_DIR, "test.xyz"))
 OS_ATOMS = read(os.path.join(FILE_DIR, "OS_test.xyz"))
-DEFAULT_CONVERGENCE = SETTINGS.CHECK_CONVERGENCE
 
 
 def qcinput_nearly_equal(qcinput1, qcinput2):
@@ -93,7 +91,18 @@ def mock_read(self, **kwargs):
         raise RuntimeError("Results should not be None here.")
 
 
-def teardown_module():
+def setup_module(monkeypatch):
+    monkeypatch.setenv("QUACC_CHECK_CONVERGENCE", False)
+    from quacc import SETTINGS
+
+    SETTINGS.CHECK_CONVERGENCE = False
+
+
+def teardown_module(monkeypatch):
+    monkeypatch.delenv("QUACC_CHECK_CONVERGENCE")
+    from quacc import SETTINGS
+
+    SETTINGS.CHECK_CONVERGENCE = True
     for f in os.listdir("."):
         if ".log" in f or ".traj" in f or ".gz" in f:
             os.remove(f)
@@ -106,8 +115,6 @@ def teardown_module():
 
 
 def test_static_job(monkeypatch):
-    monkeypatch.setenv("QUACC_CHECK_CONVERGENCE", False)
-
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
     output = static_job(TEST_ATOMS)
     assert output["atoms"] == TEST_ATOMS
