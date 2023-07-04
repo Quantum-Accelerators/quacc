@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import warnings
-from typing import Literal
 
 import covalent as ct
 from ase import Atoms
