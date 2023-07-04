@@ -91,7 +91,7 @@ def static_job(
     if "method" not in overwrite_inputs["rem"]:
         overwrite_inputs["rem"]["method"] = method
 
-    defaults = {
+    qchem_defaults = {
         "cores": n_cores,
         "charge": charge,
         "spin_multiplicity": spin_multiplicity,
@@ -104,10 +104,9 @@ def static_job(
             "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
         },
     }
-    flags = remove_dict_empties(defaults)
+    qchem_flags = remove_dict_empties(qchem_defaults)
 
-    calc = QChem(atoms, **flags)
-    atoms.calc = calc
+    atoms.calc = QChem(atoms, **qchem_flags)
     final_atoms = run_calc(atoms)
 
     return summarize_run(
@@ -213,25 +212,22 @@ def relax_job(
     if "method" not in overwrite_inputs["rem"]:
         overwrite_inputs["rem"]["method"] = method
 
-    qchem_input_params = {
-        "basis_set": basis,
-        "scf_algorithm": scf_algorithm,
-        "pcm_dielectric": pcm_dielectric,
-        "smd_solvent": smd_solvent,
-        "overwrite_inputs": overwrite_inputs,
+    qchem_defaults = {
+        "cores": n_cores,
+        "charge": charge,
+        "spin_multiplicity": spin_multiplicity,
+        "qchem_input_params": {
+            "basis_set": basis,
+            "scf_algorithm": scf_algorithm,
+            "pcm_dielectric": pcm_dielectric,
+            "smd_solvent": smd_solvent,
+            "overwrite_inputs": overwrite_inputs,
+            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
+        },
     }
+    qchem_flags = remove_dict_empties(qchem_defaults)
 
-    if scf_algorithm.lower() == "gdm" and "max_scf_cycles" not in qchem_input_params:
-        qchem_input_params["max_scf_cycles"] = 200
-
-    calc = QChem(
-        input_atoms=atoms,
-        cores=n_cores,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
-        qchem_input_params=qchem_input_params,
-    )
-    atoms.calc = calc
+    atoms.calc = QChem(atoms, **qchem_flags)
     dyn = run_ase_opt(atoms, **opt_flags)
 
     return summarize_opt_run(
@@ -338,25 +334,22 @@ def ts_job(
     if "method" not in overwrite_inputs["rem"]:
         overwrite_inputs["rem"]["method"] = method
 
-    qchem_input_params = {
-        "basis_set": basis,
-        "scf_algorithm": scf_algorithm,
-        "pcm_dielectric": pcm_dielectric,
-        "smd_solvent": smd_solvent,
-        "overwrite_inputs": overwrite_inputs,
+    qchem_defaults = {
+        "cores": n_cores,
+        "charge": charge,
+        "spin_multiplicity": spin_multiplicity,
+        "qchem_input_params": {
+            "basis_set": basis,
+            "scf_algorithm": scf_algorithm,
+            "pcm_dielectric": pcm_dielectric,
+            "smd_solvent": smd_solvent,
+            "overwrite_inputs": overwrite_inputs,
+            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
+        },
     }
+    qchem_flags = remove_dict_empties(qchem_defaults)
 
-    if scf_algorithm.lower() == "gdm" and "max_scf_cycles" not in qchem_input_params:
-        qchem_input_params["max_scf_cycles"] = 200
-
-    calc = QChem(
-        input_atoms=atoms,
-        cores=n_cores,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
-        qchem_input_params=qchem_input_params,
-    )
-    atoms.calc = calc
+    atoms.calc = QChem(atoms, **qchem_flags)
     dyn = run_ase_opt(atoms, **opt_flags)
 
     return summarize_opt_run(
@@ -469,25 +462,22 @@ def irc_job(
     if "method" not in overwrite_inputs["rem"]:
         overwrite_inputs["rem"]["method"] = method
 
-    qchem_input_params = {
-        "basis_set": basis,
-        "scf_algorithm": scf_algorithm,
-        "pcm_dielectric": pcm_dielectric,
-        "smd_solvent": smd_solvent,
-        "overwrite_inputs": overwrite_inputs,
+    qchem_defaults = {
+        "cores": n_cores,
+        "charge": charge,
+        "spin_multiplicity": spin_multiplicity,
+        "qchem_input_params": {
+            "basis_set": basis,
+            "scf_algorithm": scf_algorithm,
+            "pcm_dielectric": pcm_dielectric,
+            "smd_solvent": smd_solvent,
+            "overwrite_inputs": overwrite_inputs,
+            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
+        },
     }
+    qchem_flags = remove_dict_empties(qchem_defaults)
 
-    if scf_algorithm.lower() == "gdm" and "max_scf_cycles" not in qchem_input_params:
-        qchem_input_params["max_scf_cycles"] = 200
-
-    calc = QChem(
-        input_atoms=atoms,
-        cores=n_cores,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
-        qchem_input_params=qchem_input_params,
-    )
-    atoms.calc = calc
+    atoms.calc = QChem(atoms, **qchem_flags)
     dyn = run_ase_opt(atoms, **opt_flags)
 
     return summarize_opt_run(
