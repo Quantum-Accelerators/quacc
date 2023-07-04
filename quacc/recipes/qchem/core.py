@@ -78,12 +78,9 @@ def static_job(
         Dictionary of results from quacc.schemas.ase.summarize_run
     """
     atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
-
     checked_charge, checked_spin_multiplicity = check_charge_and_spin(
         atoms, charge, spin_multiplicity
     )
-
-    overwrite_inputs = overwrite_inputs or {}
 
     qchem_defaults = {
         "method": method,
@@ -198,8 +195,6 @@ def relax_job(
         ):
             opt_flags["optimizer_kwargs"]["order"] = 0
 
-    overwrite_inputs = overwrite_inputs or {}
-
     qchem_defaults = {
         "method": method,
         "charge": charge,
@@ -298,7 +293,6 @@ def ts_job(
     #   - exposing TRICs?
     #   - passing initial Hessian?
     atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
-
     checked_charge, checked_spin_multiplicity = check_charge_and_spin(
         atoms, charge, spin_multiplicity
     )
@@ -313,10 +307,6 @@ def ts_job(
     opt_flags = opt_defaults | opt_swaps
     if opt_flags["optimizer"] != Sella:
         raise RuntimeError("Only Sella should be used for TS optimization! Exiting...")
-
-    overwrite_inputs = overwrite_inputs or {}
-    if "method" not in overwrite_inputs["rem"]:
-        overwrite_inputs["rem"]["method"] = method
 
     qchem_defaults = {
         "method": method,
@@ -436,8 +426,6 @@ def irc_job(
         raise RuntimeError(
             "Only Sella's IRC should be used for IRC optimization! Exiting..."
         )
-
-    overwrite_inputs = overwrite_inputs or {}
 
     qchem_defaults = {
         "method": method,
