@@ -7,6 +7,7 @@ from parsl.app.python import PythonApp
 from parsl.dataflow.futures import AppFuture
 
 from quacc.recipes.emt.core import relax_job, static_job
+from quacc.util.slabs import make_max_slabs_from_bulk
 
 
 def bulk_to_slabs_flow(
@@ -46,7 +47,6 @@ def bulk_to_slabs_flow(
     AppFuture
         An AppFuture whose .result() is a list[dict]
     """
-    from quacc.util.slabs import make_max_slabs_from_bulk
 
     atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     slab_relax_kwargs = slab_relax_kwargs or {}
