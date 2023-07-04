@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import os
-from typing import TYPE_CHECKING, Literal, TypeVar
+from typing import Literal, TypeVar
 
 from ase.atoms import Atoms
 from atomate2.common.schemas.cclib import TaskDocument

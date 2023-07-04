@@ -1,8 +1,6 @@
 """Slab recipes for EMT based on Jobflow"""
 from __future__ import annotations
 
-from typing import Literal
-
 from ase import Atoms
 from jobflow import Flow, Response, job
 

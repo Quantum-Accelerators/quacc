@@ -1,8 +1,6 @@
 """Core recipes for Psi4"""
 from __future__ import annotations
 
-from typing import Literal
-
 import covalent as ct
 from ase import Atoms
 from ase.calculators.psi4 import Psi4

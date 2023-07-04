@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import os
 import warnings
-from typing import TypedDict, TypeVar
+from typing import TypeVar
 
 import numpy as np
 from ase import units

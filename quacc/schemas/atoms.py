@@ -1,7 +1,7 @@
 """Schemas for storing metadata about Atoms objects"""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Generic, TypedDict, TypeVar
+from typing import Any, TypeVar
 
 import numpy as np
 from ase.atoms import Atom, Atoms
