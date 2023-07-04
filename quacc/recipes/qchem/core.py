@@ -491,7 +491,7 @@ def quasi_irc_job(
     irc_opt_swaps = irc_opt_swaps_defaults | irc_opt_swaps
 
     irc_summary = irc_job(
-        atoms=atoms,
+        atoms,
         direction=direction,
         opt_swaps=irc_opt_swaps,
         check_convergence=False,
@@ -499,7 +499,7 @@ def quasi_irc_job(
     )
 
     relax_summary = relax_job(
-        atoms=irc_summary,
+        irc_summary,
         opt_swaps=relax_opt_swaps,
         check_convergence=check_convergence,
         **common_kwargs,
