@@ -14,6 +14,12 @@ TEST_ATOMS = read(os.path.join(FILE_DIR, "test.xyz"))
 OS_ATOMS = read(os.path.join(FILE_DIR, "OS_test.xyz"))
 
 
+def teardown_module():
+    for f in os.listdir("."):
+        if ".gz" in f:
+            os.remove(f)
+
+
 def test_qchem_write_input_basic():
     calc = QChem(TEST_ATOMS, cores=40)
     assert calc.parameters["cores"] == 40

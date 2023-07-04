@@ -195,11 +195,14 @@ def relax_job(
     opt_defaults = {
         "fmax": 0.01,
         "max_steps": 1000,
-        "optimizer": Sella if has_sella else FIRE,
+        "optimizer": FIRE if not has_sella else Sella,
         "optimizer_kwargs": {},
     }
     opt_flags = opt_defaults | opt_swaps
-    if opt_flags["optimizer"] == Sella and "order" not in opt_flags["optimizer_kwargs"]:
+    if (
+        opt_flags["optimizer"].__name__ == "Sella"
+        and "order" not in opt_flags["optimizer_kwargs"]
+    ):
         opt_flags["optimizer_kwargs"]["order"] = 0
 
     atoms.calc = QChem(atoms, **qchem_flags)
@@ -432,7 +435,7 @@ def irc_job(
 
 @ct.electron
 @requires(
-    Sella,
+    has_sella,
     "Sella must be installed. Try pip install sella.",
 )
 def quasi_irc_job(
