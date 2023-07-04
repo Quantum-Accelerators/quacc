@@ -536,7 +536,7 @@ class Vasp(Vasp_):
         ):
             if self.verbose:
                 warnings.warn(
-                    "Copilot: Setting ISYM = -1 because you are running a SOC calculation.",
+                    "Copilot: Setting ISYM = -1 because you are running an SOC calculation.",
                     UserWarning,
                 )
             calc.set(isym=-1)
