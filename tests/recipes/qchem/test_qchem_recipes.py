@@ -92,8 +92,6 @@ def mock_read(self, **kwargs):
 
 
 def teardown_module(monkeypatch):
-    monkeypatch.delenv("QUACC_CHECK_CONVERGENCE", raising=False)
-
     for f in os.listdir("."):
         if ".log" in f or ".traj" in f or ".gz" in f:
             os.remove(f)
