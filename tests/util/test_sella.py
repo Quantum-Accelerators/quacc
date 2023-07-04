@@ -52,7 +52,7 @@ def test_sella():
         optimizer=Sella,
         scratch_dir="test_calc",
         gzip=False,
-        optimizer_kwargs={"restart": None},
+        optimizer_kwargs={"restart": None, "order": 0},
     )
     traj = dyn.traj
     assert traj[-1].calc.results is not None
@@ -65,7 +65,7 @@ def test_sella():
         optimizer=Sella,
         scratch_dir="test_calc2",
         gzip=False,
-        optimizer_kwargs={"restart": None},
+        optimizer_kwargs={"restart": None, "order": 0},
     )
     traj = dyn.traj
     assert traj[-1].calc.results is not None
