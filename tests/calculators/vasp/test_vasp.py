@@ -511,6 +511,7 @@ def test_ncore():
     assert calc.int_params["ncore"] is None
 
 
+
 def test_ismear():
     atoms = bulk("Cu")
 
