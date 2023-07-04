@@ -41,6 +41,7 @@ def teardown_module():
             else:
                 rmtree(f)
 
+
 def test_run_calc():
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1

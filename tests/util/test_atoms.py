@@ -2,18 +2,18 @@ import os
 from copy import deepcopy
 from pathlib import Path
 
+import pytest
 from ase import Atoms
 from ase.build import bulk, molecule
 from ase.io import read
-import pytest
 
 from quacc.calculators.vasp import Vasp
 from quacc.util.atoms import (
+    check_charge_and_spin,
     check_is_metal,
     get_atoms_id,
     get_highest_block,
     prep_next_run,
-    check_charge_and_spin,
 )
 
 FILE_DIR = Path(__file__).resolve().parent
@@ -154,15 +154,21 @@ def test_check_charge_and_spin():
     with pytest.raises(RuntimeError):
         charge, spin_multiplicity = check_charge_and_spin(atoms, spin_multiplicity=1)
     with pytest.raises(ValueError):
-        charge, spin_multiplicity = check_charge_and_spin(atoms, charge=0, spin_multiplicity=1)
+        charge, spin_multiplicity = check_charge_and_spin(
+            atoms, charge=0, spin_multiplicity=1
+        )
     with pytest.raises(RuntimeError):
         charge, spin_multiplicity = check_charge_and_spin(atoms, spin_multiplicity=3)
     with pytest.raises(ValueError):
-        charge, spin_multiplicity = check_charge_and_spin(atoms, charge=0, spin_multiplicity=3)
+        charge, spin_multiplicity = check_charge_and_spin(
+            atoms, charge=0, spin_multiplicity=3
+        )
     charge, spin_multiplicity = check_charge_and_spin(atoms, charge=-1)
     assert charge == -1
     assert spin_multiplicity == 1
-    charge, spin_multiplicity = check_charge_and_spin(atoms, charge=-1, spin_multiplicity=3)
+    charge, spin_multiplicity = check_charge_and_spin(
+        atoms, charge=-1, spin_multiplicity=3
+    )
     assert charge == -1
     assert spin_multiplicity == 3
     charge, spin_multiplicity = check_charge_and_spin(OS_ATOMS)
@@ -171,15 +177,21 @@ def test_check_charge_and_spin():
     charge, spin_multiplicity = check_charge_and_spin(OS_ATOMS, charge=1)
     assert charge == 1
     assert spin_multiplicity == 1
-    charge, spin_multiplicity = check_charge_and_spin(OS_ATOMS, charge=0, spin_multiplicity=4)
+    charge, spin_multiplicity = check_charge_and_spin(
+        OS_ATOMS, charge=0, spin_multiplicity=4
+    )
     assert charge == 0
     assert spin_multiplicity == 4
     with pytest.raises(ValueError):
-        charge, spin_multiplicity = check_charge_and_spin(OS_ATOMS, charge=0, spin_multiplicity=3)
+        charge, spin_multiplicity = check_charge_and_spin(
+            OS_ATOMS, charge=0, spin_multiplicity=3
+        )
     atoms = molecule("O2")
     charge, spin_multiplicity = check_charge_and_spin(atoms)
     assert charge == 0
     assert spin_multiplicity == 3
     charge, spin_multiplicity = check_charge_and_spin(atoms, charge=0)
     assert charge == 0
-    assert spin_multiplicity == 1 # Somewhat controvertial if this should end up at 1 or 3
+    assert (
+        spin_multiplicity == 1
+    )  # Somewhat controvertial if this should end up at 1 or 3

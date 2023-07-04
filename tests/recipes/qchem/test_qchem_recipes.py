@@ -70,10 +70,12 @@ def mock_execute2(_self, **kwargs):
     copy(os.path.join(QCHEM_DIR, "131.0.intermediate"), "131.0")
     copy(os.path.join(QCHEM_DIR, "53.0.intermediate"), "53.0")
 
+
 def mock_execute3(_self, **kwargs):
     copy(os.path.join(QCHEM_DIR, "mol.qout.alternate"), "mol.qout")
     copy(os.path.join(QCHEM_DIR, "131.0.alternate"), "131.0")
     copy(os.path.join(QCHEM_DIR, "53.0.alternate"), "53.0")
+
 
 def mock_execute4(self, **kwargs):
     qcin = QCInput.from_file("mol.qin")
@@ -143,8 +145,10 @@ def test_static_job(monkeypatch):
     qcinput_nearly_equal(qcin, ref_qcin)
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
-    overwrite_inputs = {"rem":{"mem_total":"170000"}}
-    output = static_job(TEST_ATOMS, scf_algorithm="gdm", overwrite_inputs=overwrite_inputs)
+    overwrite_inputs = {"rem": {"mem_total": "170000"}}
+    output = static_job(
+        TEST_ATOMS, scf_algorithm="gdm", overwrite_inputs=overwrite_inputs
+    )
     assert output["atoms"] == TEST_ATOMS
     assert output["charge"] == 0
     assert output["spin_multiplicity"] == 1
@@ -158,7 +162,7 @@ def test_static_job(monkeypatch):
     qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(os.path.join(QCHEM_DIR, "mol.qin.alternate"))
     qcinput_nearly_equal(qcin, ref_qcin)
-    
+
     with pytest.raises(ValueError):
         output = static_job(atoms=TEST_ATOMS, pcm_dielectric="3.0", smd_solvent="water")
 
@@ -223,7 +227,7 @@ def test_relax_job(monkeypatch):
     qcinput_nearly_equal(qcin, ref_qcin)
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
-    overwrite_inputs = {"rem":{"mem_total":"170000"}}
+    overwrite_inputs = {"rem": {"mem_total": "170000"}}
     output = relax_job(
         atoms=TEST_ATOMS,
         scf_algorithm="gdm",
@@ -303,7 +307,7 @@ def test_ts_job(monkeypatch):
     qcinput_nearly_equal(qcin, ref_qcin)
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
-    overwrite_inputs = {"rem":{"mem_total":"170000"}}
+    overwrite_inputs = {"rem": {"mem_total": "170000"}}
     output = ts_job(
         atoms=TEST_ATOMS,
         scf_algorithm="gdm",
@@ -342,7 +346,7 @@ def test_ts_job(monkeypatch):
 def test_irc_job(monkeypatch):
     monkeypatch.setattr(QChem, "read_results", mock_read)
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute4)
-    
+
     output = irc_job(
         atoms=TEST_ATOMS,
         direction="forward",
@@ -379,7 +383,7 @@ def test_irc_job(monkeypatch):
     )
     qcinput_nearly_equal(qcin, ref_qcin)
 
-    overwrite_inputs = {"rem":{"mem_total":"170000"}}
+    overwrite_inputs = {"rem": {"mem_total": "170000"}}
     output = irc_job(
         atoms=TEST_ATOMS,
         direction="reverse",
@@ -419,7 +423,6 @@ def test_irc_job(monkeypatch):
         )
 
 
-
 @pytest.mark.skipif(
     sella is None,
     reason="Sella must be installed.",
@@ -430,7 +433,7 @@ def test_quasi_irc_job(monkeypatch):
 
     common_kwargs = {"basis": "def2-tzvpd"}
     relax_opt_swaps = {"max_steps": 5}
-    
+
     output = quasi_irc_job(
         atoms=TEST_ATOMS,
         direction="forward",
@@ -453,14 +456,10 @@ def test_quasi_irc_job(monkeypatch):
     )
     qcinput_nearly_equal(qcin, ref_qcin)
 
-    common_kwargs = {
-        "charge": -1,
-        "basis": "def2-svpd",
-        "scf_algorithm": "gdm"
-    }
+    common_kwargs = {"charge": -1, "basis": "def2-svpd", "scf_algorithm": "gdm"}
     irc_opt_swaps = {"max_steps": 6}
     relax_opt_swaps = {"max_steps": 6}
-    
+
     output = quasi_irc_job(
         atoms=TEST_ATOMS,
         direction="reverse",
@@ -479,7 +478,5 @@ def test_quasi_irc_job(monkeypatch):
     assert output["parameters"]["spin_multiplicity"] is None
 
     qcin = QCInput.from_file("mol.qin.gz")
-    ref_qcin = QCInput.from_file(
-        os.path.join(QCHEM_DIR, "mol.qin.quasi_irc_reverse")
-    )
+    ref_qcin = QCInput.from_file(os.path.join(QCHEM_DIR, "mol.qin.quasi_irc_reverse"))
     qcinput_nearly_equal(qcin, ref_qcin)

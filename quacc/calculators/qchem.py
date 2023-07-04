@@ -14,8 +14,8 @@ from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.qchem.outputs import QCOutput
 from pymatgen.io.qchem.sets import ForceSet
 
-from quacc.util.atoms import check_charge_and_spin
 from quacc.custodian import qchem as custodian_qchem
+from quacc.util.atoms import check_charge_and_spin
 
 
 class QChem(FileIOCalculator):
@@ -67,7 +67,9 @@ class QChem(FileIOCalculator):
         self.fileiocalculator_kwargs = fileiocalculator_kwargs
 
         if self.charge is None and self.spin_multiplicity is not None:
-            raise RuntimeError("If setting spin_multiplicity, must also specify charge! Exiting...")
+            raise RuntimeError(
+                "If setting spin_multiplicity, must also specify charge! Exiting..."
+            )
 
         # We will save the parameters that have been passed to the Q-Chem calculator via FileIOCalculator's
         # self.default_parameters
@@ -90,7 +92,9 @@ class QChem(FileIOCalculator):
             else:
                 self.default_parameters[key] = self.qchem_input_params[key]
 
-        charge, spin_multiplicity = check_charge_and_spin(input_atoms, self.charge, self.spin_multiplicity)
+        charge, spin_multiplicity = check_charge_and_spin(
+            input_atoms, self.charge, self.spin_multiplicity
+        )
         self.charge = charge
         self.spin_multiplicity = spin_multiplicity
 

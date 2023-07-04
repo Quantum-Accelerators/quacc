@@ -81,9 +81,7 @@ def test_qchem_write_input_open_shell_and_different_charges():
     assert calc.parameters["spin_multiplicity"] is None
     calc.write_input(OS_ATOMS)
     qcinp = QCInput.from_file("mol.qin")
-    ref_qcinp = QCInput.from_file(
-        os.path.join(FILE_DIR, "examples", "OSDC1.qin")
-    )
+    ref_qcinp = QCInput.from_file(os.path.join(FILE_DIR, "examples", "OSDC1.qin"))
     assert qcinp.as_dict() == ref_qcinp.as_dict()
     os.remove("mol.qin")
 
@@ -93,9 +91,7 @@ def test_qchem_write_input_open_shell_and_different_charges():
     assert calc.parameters["spin_multiplicity"] is None
     calc.write_input(OS_ATOMS)
     qcinp = QCInput.from_file("mol.qin")
-    ref_qcinp = QCInput.from_file(
-        os.path.join(FILE_DIR, "examples", "OSDC1.qin")
-    )
+    ref_qcinp = QCInput.from_file(os.path.join(FILE_DIR, "examples", "OSDC1.qin"))
     assert qcinp.as_dict() == ref_qcinp.as_dict()
     os.remove("mol.qin")
 
@@ -105,9 +101,7 @@ def test_qchem_write_input_open_shell_and_different_charges():
     assert calc.parameters["spin_multiplicity"] == 4
     calc.write_input(OS_ATOMS)
     qcinp = QCInput.from_file("mol.qin")
-    ref_qcinp = QCInput.from_file(
-        os.path.join(FILE_DIR, "examples", "OSDC2.qin")
-    )
+    ref_qcinp = QCInput.from_file(os.path.join(FILE_DIR, "examples", "OSDC2.qin"))
     assert qcinp.as_dict() == ref_qcinp.as_dict()
     os.remove("mol.qin")
 
@@ -123,9 +117,7 @@ def test_qchem_write_input_open_shell_and_different_charges():
     assert calc.parameters["spin_multiplicity"] is None
     calc.write_input(OS_ATOMS)
     qcinp = QCInput.from_file("mol.qin")
-    ref_qcinp = QCInput.from_file(
-        os.path.join(FILE_DIR, "examples", "OSDC3.qin")
-    )
+    ref_qcinp = QCInput.from_file(os.path.join(FILE_DIR, "examples", "OSDC3.qin"))
     assert qcinp.as_dict() == ref_qcinp.as_dict()
     os.remove("mol.qin")
 
@@ -135,9 +127,7 @@ def test_qchem_write_input_open_shell_and_different_charges():
     assert calc.parameters["spin_multiplicity"] == 1
     calc.write_input(OS_ATOMS)
     qcinp = QCInput.from_file("mol.qin")
-    ref_qcinp = QCInput.from_file(
-        os.path.join(FILE_DIR, "examples", "OSDC3.qin")
-    )
+    ref_qcinp = QCInput.from_file(os.path.join(FILE_DIR, "examples", "OSDC3.qin"))
     assert qcinp.as_dict() == ref_qcinp.as_dict()
     os.remove("mol.qin")
 
@@ -147,9 +137,7 @@ def test_qchem_write_input_open_shell_and_different_charges():
     assert calc.parameters["spin_multiplicity"] == 3
     calc.write_input(OS_ATOMS)
     qcinp = QCInput.from_file("mol.qin")
-    ref_qcinp = QCInput.from_file(
-        os.path.join(FILE_DIR, "examples", "OSDC4.qin")
-    )
+    ref_qcinp = QCInput.from_file(os.path.join(FILE_DIR, "examples", "OSDC4.qin"))
     assert qcinp.as_dict() == ref_qcinp.as_dict()
     os.remove("mol.qin")
 

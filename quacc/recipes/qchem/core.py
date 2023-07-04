@@ -4,6 +4,7 @@ Core recipes for the Q-Chem
 from __future__ import annotations
 
 from copy import deepcopy
+from typing import Literal
 
 import covalent as ct
 from ase.atoms import Atoms
@@ -12,9 +13,8 @@ from monty.dev import requires
 
 from quacc.calculators.qchem import QChem
 from quacc.schemas.ase import summarize_opt_run, summarize_run
-from quacc.util.calc import run_ase_opt, run_calc
 from quacc.util.atoms import check_charge_and_spin
-from typing import Literal
+from quacc.util.calc import run_ase_opt, run_calc
 
 try:
     from sella import IRC, Sella
@@ -81,7 +81,9 @@ def static_job(
     if pcm_dielectric is not None and smd_solvent is not None:
         raise ValueError("PCM and SMD cannot be employed simultaneously! Exiting...")
 
-    checked_charge, checked_spin_multiplicity = check_charge_and_spin(atoms, charge, spin_multiplicity)
+    checked_charge, checked_spin_multiplicity = check_charge_and_spin(
+        atoms, charge, spin_multiplicity
+    )
 
     input_atoms = deepcopy(atoms)
 
@@ -182,7 +184,9 @@ def relax_job(
 
     # Reminder to self: exposing TRICs?
 
-    checked_charge, checked_spin_multiplicity = check_charge_and_spin(atoms, charge, spin_multiplicity)
+    checked_charge, checked_spin_multiplicity = check_charge_and_spin(
+        atoms, charge, spin_multiplicity
+    )
 
     opt_swaps = opt_swaps or {}
     opt_defaults = {
@@ -195,7 +199,10 @@ def relax_job(
     if Sella:
         # The purpose of separating these If statements is to allow this function to be used
         # even without Sella installed, in which case Sella would not be imported
-        if opt_flags["optimizer"] == Sella and "order" not in opt_flags["optimizer_kwargs"]:
+        if (
+            opt_flags["optimizer"] == Sella
+            and "order" not in opt_flags["optimizer_kwargs"]
+        ):
             opt_flags["optimizer_kwargs"]["order"] = 0
 
     if pcm_dielectric is not None and smd_solvent is not None:
@@ -305,7 +312,9 @@ def ts_job(
     #   - exposing TRICs?
     #   - passing initial Hessian?
 
-    checked_charge, checked_spin_multiplicity = check_charge_and_spin(atoms, charge, spin_multiplicity)
+    checked_charge, checked_spin_multiplicity = check_charge_and_spin(
+        atoms, charge, spin_multiplicity
+    )
 
     opt_swaps = opt_swaps or {}
     opt_defaults = {
@@ -428,7 +437,9 @@ def irc_job(
     #   - exposing TRICs?
     #   - passing initial Hessian?
 
-    checked_charge, checked_spin_multiplicity = check_charge_and_spin(atoms, charge, spin_multiplicity)
+    checked_charge, checked_spin_multiplicity = check_charge_and_spin(
+        atoms, charge, spin_multiplicity
+    )
 
     if direction not in ["forward", "reverse"]:
         raise ValueError("direction must be 'forward' or 'reverse'! Exiting...")
@@ -443,7 +454,9 @@ def irc_job(
     }
     opt_flags = opt_defaults | opt_swaps
     if opt_flags["optimizer"] != IRC:
-        raise RuntimeError("Only Sella's IRC should be used for IRC optimization! Exiting...")
+        raise RuntimeError(
+            "Only Sella's IRC should be used for IRC optimization! Exiting..."
+        )
 
     if pcm_dielectric is not None and smd_solvent is not None:
         raise ValueError("PCM and SMD cannot be employed simultaneously! Exiting...")
@@ -481,7 +494,6 @@ def irc_job(
         charge_and_multiplicity=(checked_charge, checked_spin_multiplicity),
         additional_fields={"name": "Q-Chem IRC Optimization"},
     )
-
 
 
 @ct.electron
