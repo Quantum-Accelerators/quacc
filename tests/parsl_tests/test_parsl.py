@@ -56,7 +56,7 @@ def test_tutorial1():
     future1 = relax_app(atoms)
 
     # Call App 2, which takes the output of App 1 as input
-    future2 = static_app(future1)
+    future2 = static_app(future1.result())
     result = future2.result()
     assert future2.done()
     assert "atoms" in result
@@ -106,7 +106,7 @@ def test_tutorial3():
 
     # Define the workflow
     future1 = relax_app(atoms)
-    future2 = bulk_to_slabs_app(future1)
+    future2 = bulk_to_slabs_app(future1.result())
 
     # Print the results
     future2.result()

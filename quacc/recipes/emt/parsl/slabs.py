@@ -47,7 +47,6 @@ def bulk_to_slabs_flow(
     AppFuture
         An AppFuture whose .result() is a list[dict]
     """
-
     atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}

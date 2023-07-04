@@ -46,7 +46,7 @@ atoms = bulk("Cu")
 future1 = relax_app(atoms)
 
 # Call App 2, which takes the output of App 1 as input
-future2 = static_app(future1)
+future2 = static_app(future1.result())
 
 # Print result
 print(future2.result())
@@ -54,8 +54,10 @@ print(future2.result())
 
 You can see that it is quite trivial to set up a Parsl workflow using the recipes within Quacc. We define the full workflow as a function that stitches together the individual `@python_app` workflow steps.
 
-```{note}
-The use of `.result()` serves to block any further calculations from running until it is resolved. It can be used in your scripts but should never be included in a `@python_app` definition. Calling `.result()` also returns the function output as opposed to the `AppFuture` object.
+The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object. Technically, we did not need to call `future1.result()` because Parsl will automatically know that it cannot run `static_app` until `future1` is resolved. Nonetheless, we have included it here for clarity.
+
+```{warning}
+It is not considered good practice to include a `.result()` call in a `@python_app` or `@join_app` definition.
 ```
 
 ### Running a Simple Parallel Workflow
@@ -116,7 +118,7 @@ atoms = bulk("Cu")
 
 # Define the workflow
 future1 = relax_app(atoms)
-future2 = bulk_to_slabs_app(future1)
+future2 = bulk_to_slabs_app(future1.result())
 
 # Print the results
 print(future2.result())
