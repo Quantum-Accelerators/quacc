@@ -1,9 +1,7 @@
-"""
-Schemas for storing metadata about Atoms objects
-"""
+"""Schemas for storing metadata about Atoms objects"""
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any, Generic, TypedDict, TypeVar
 
 import numpy as np
 from ase.atoms import Atom, Atoms
@@ -14,6 +12,8 @@ from pymatgen.io.ase import AseAtomsAdaptor
 from quacc.util.atoms import copy_atoms
 from quacc.util.dicts import clean_dict
 
+AtomsSchema = TypeVar("AtomsSchema")
+
 
 def atoms_to_metadata(
     atoms: Atoms,
@@ -23,7 +23,7 @@ def atoms_to_metadata(
     store_pmg: bool = True,
     remove_empties: bool = False,
     additional_fields: dict | None = None,
-) -> dict:
+) -> AtomsSchema:
     """
     Convert an ASE Atoms object to a dict suitable for storage in MongoDB.
 

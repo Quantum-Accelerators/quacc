@@ -28,7 +28,10 @@ def teardown_module():
         ):
             os.remove(f)
         if "quacc-tmp" in f or "job_" in f or f == "tmp_dir" or f == "runinfo":
-            rmtree(f)
+            if os.path.islink(f):
+                os.unlink(f)
+            else:
+                rmtree(f)
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
@@ -36,35 +39,27 @@ def test_tutorial1():
     # Define the Python apps
     @python_app
     def relax_app(atoms):
-        # All dependencies must be inside the Python app
         from quacc.recipes.emt.core import relax_job
 
         return relax_job(atoms)
 
     @python_app
     def static_app(atoms):
-        # All dependencies must be inside the Python app
         from quacc.recipes.emt.core import static_job
 
         return static_job(atoms)
 
-    # Define the workflow
-    def workflow(atoms):
-        # Call Job 1
-        future1 = relax_app(atoms)
-
-        # Call Job 2, which takes the output of Job 1 as input
-        future2 = static_app(future1.result()["atoms"])
-
-        return future2
-
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
 
-    # Run the workflow
-    wf_future = workflow(atoms)
-    wf_future.result()
-    assert wf_future.done()
+    # Call App 1
+    future1 = relax_app(atoms)
+
+    # Call App 2, which takes the output of App 1 as input
+    future2 = static_app(future1.result())
+    result = future2.result()
+    assert future2.done()
+    assert "atoms" in result
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
@@ -72,78 +67,75 @@ def test_tutorial2():
     # Define the Python app
     @python_app
     def relax_app(atoms):
-        # All dependencies must be inside the Python app
         from quacc.recipes.emt.core import relax_job
 
         return relax_job(atoms)
-
-    # Define workflow
-    def workflow(atoms1, atoms2):
-        # Define two independent relaxation jobs
-        future1 = relax_app(atoms1)
-        future2 = relax_app(atoms2)
-
-        return future1, future2
 
     # Define two Atoms objects
     atoms1 = bulk("Cu")
     atoms2 = molecule("N2")
 
-    # Run the workflow
-    future1, future2 = workflow(atoms1, atoms2)
+    # Define two independent relaxation jobs
+    future1 = relax_app(atoms1)
+    future2 = relax_app(atoms2)
+
+    # Print the results
     future1.result(), future2.result()
     assert future1.done()
+    assert "atoms" in future1.result()
     assert future2.done()
+    assert "atoms" in future2.result()
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
 def test_tutorial3():
     @python_app
     def relax_app(atoms):
-        # All dependencies must be inside the Python app
         from quacc.recipes.emt.core import relax_job
 
         return relax_job(atoms)
 
     @python_app
     def bulk_to_slabs_app(atoms):
-        # All dependencies must be inside the Python app
         from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
         return bulk_to_slabs_flow(atoms, slab_static_electron=None)
 
-    def workflow(atoms):
-        future1 = relax_app(atoms)
-        future2 = bulk_to_slabs_app(future1.result()["atoms"])
-
-        return future2
-
     # Define the Atoms object
     atoms = bulk("Cu")
 
-    # Run the workflow
-    wf_future = workflow(atoms)
-    wf_future.result()
-    assert wf_future.done()
+    # Define the workflow
+    future1 = relax_app(atoms)
+    future2 = bulk_to_slabs_app(future1.result())
+
+    # Print the results
+    future2.result()
+    assert future2.done()
+    assert len(future2.result()) == 4
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
 def test_tutorial4():
-    from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_app
+    from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_flow
 
+    # Define the Python App
     @python_app
     def relax_app(atoms):
         from quacc.recipes.emt.core import relax_job
 
         return relax_job(atoms)
 
+    # Define the Atoms object
     atoms = bulk("Cu")
 
-    relax_future = relax_app(atoms)
+    # Define the workflow
+    future1 = relax_app(atoms)
+    future2 = bulk_to_slabs_flow(future1.result(), slab_static_app=None)
 
-    wf_future = bulk_to_slabs_app(relax_future.result()["atoms"], slab_static_app=None)
-    wf_future.result()
-    assert wf_future.done()
+    # Print the results
+    print(future2.result())
+    assert future2.done()
+    assert len(future2.result()) == 4
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
@@ -157,9 +149,7 @@ def test_comparison1():
         return a * b
 
     def workflow(a, b, c):
-        future1 = add(a, b)
-        future2 = mult(future1.result(), c)
-        return future2
+        return mult(add(a, b), c)
 
     assert workflow(1, 2, 3).result() == 9
 
@@ -175,18 +165,21 @@ def test_comparison2():
         return [val] * 3
 
     @join_app
+    def add_distributed(vals, c):
+        return [add(val, c) for val in vals]
+
     def workflow(a, b, c):
         future1 = add(a, b)
-        future2 = make_more(future1.result())
-        return [add(val, c) for val in future2.result()]
+        future2 = make_more(future1)
+        return add_distributed(future2, c)
 
     assert workflow(1, 2, 3).result() == [6, 6, 6]
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
 def test_slabs():
-    from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_app
+    from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_flow
 
-    wf_future = bulk_to_slabs_app(bulk("Cu"))
+    wf_future = bulk_to_slabs_flow(bulk("Cu"))
     wf_future.result()
     assert wf_future.done()

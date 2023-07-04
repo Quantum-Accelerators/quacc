@@ -1,26 +1,30 @@
 """Recipes for slabs"""
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Literal
+
 import covalent as ct
 from ase import Atoms
 
 from quacc.calculators.vasp import Vasp
-from quacc.schemas.vasp import summarize_run
+from quacc.schemas.vasp import VaspSchema, summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.slabs import make_adsorbate_structures, make_max_slabs_from_bulk
 
 
 @ct.electron
 def slab_static_job(
-    atoms: Atoms, preset: str | None = None, calc_swaps: dict | None = None
-) -> dict:
+    atoms: Atoms | dict,
+    preset: str | None = None,
+    calc_swaps: dict | None = None,
+) -> VaspSchema:
     """
     Function to carry out a single-point calculation on a slab.
 
     Parameters
     ----------
     atoms
-        Atoms object
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     preset
         Preset to use.
     calc_swaps
@@ -38,10 +42,10 @@ def slab_static_job(
 
     Returns
     -------
-    dict
+    VaspSchema
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
-
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     calc_swaps = calc_swaps or {}
 
     defaults = {
@@ -65,15 +69,16 @@ def slab_static_job(
 
 @ct.electron
 def slab_relax_job(
-    atoms: Atoms, preset: str | None = None, calc_swaps: dict | None = None
-) -> dict:
+    atoms: Atoms | dict,
+    preset: str | None = None,
+    calc_swaps: dict | None = None,
+) -> VaspSchema:
     """
     Function to relax a slab.
 
     Parameters
-    ----------
     atoms
-        Atoms object
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     preset
         Preset to use.
     calc_swaps
@@ -91,10 +96,10 @@ def slab_relax_job(
 
     Returns
     -------
-    dict
+    VaspSchema
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
-
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     calc_swaps = calc_swaps or {}
 
     defaults = {
@@ -123,7 +128,7 @@ def bulk_to_slabs_flow(
     slab_static_electron: ct.electron | None = slab_static_job,
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
-) -> list[dict]:
+) -> list[VaspSchema]:
     """
     Workflow consisting of:
 
@@ -150,7 +155,7 @@ def bulk_to_slabs_flow(
 
     Returns
     -------
-    list[dict]
+    list[VaspSchema]
         List of dictionary results from quacc.schemas.vasp.summarize_run
     """
 
@@ -168,7 +173,7 @@ def bulk_to_slabs_flow(
     def _relax_and_static_distributed(slabs):
         return [
             slab_static_electron(
-                slab_relax_electron(slab, **slab_relax_kwargs)["atoms"],
+                slab_relax_electron(slab, **slab_relax_kwargs),
                 **slab_static_kwargs,
             )
             for slab in slabs
@@ -178,8 +183,7 @@ def bulk_to_slabs_flow(
 
     if slab_static_electron is None:
         return _relax_distributed(slabs)
-    else:
-        return _relax_and_static_distributed(slabs)
+    return _relax_and_static_distributed(slabs)
 
 
 def slab_to_ads_flow(
@@ -190,7 +194,7 @@ def slab_to_ads_flow(
     slab_static_electron: ct.electron | None = ct.electron(slab_static_job),
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
-) -> dict:
+) -> list[VaspSchema]:
     """
     Workflow consisting of:
     1. Slab-adsorbate generation
@@ -213,6 +217,11 @@ def slab_to_ads_flow(
         Additional keyword arguments to pass to the relaxation calculation.
     slab_static_kwargs
         Additional keyword arguments to pass to the static calculation.
+
+    Returns
+    -------
+    list[VaspSchema]
+        List of dictionaries of results from quacc.schemas.vasp.summarize_run
     """
 
     slab_relax_kwargs = slab_relax_kwargs or {}
@@ -229,7 +238,7 @@ def slab_to_ads_flow(
     def _relax_and_static_distributed(slabs):
         return [
             slab_static_electron(
-                slab_relax_electron(slab, **slab_relax_kwargs)["atoms"],
+                slab_relax_electron(slab, **slab_relax_kwargs),
                 **slab_static_kwargs,
             )
             for slab in slabs
@@ -241,5 +250,4 @@ def slab_to_ads_flow(
 
     if slab_static_electron is None:
         return _relax_distributed(ads_slabs)
-    else:
-        return _relax_and_static_distributed(ads_slabs)
+    return _relax_and_static_distributed(ads_slabs)

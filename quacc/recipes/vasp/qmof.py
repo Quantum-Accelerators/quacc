@@ -1,29 +1,40 @@
 """
 QMOF-compatible recipes
 
-his set of recipes is meant to be compatible with the QMOF Database workflow.
+This set of recipes is meant to be compatible with the QMOF Database workflow.
 Reference: https://doi.org/10.1016/j.matt.2021.02.015
 """
 from __future__ import annotations
+
+from typing import TYPE_CHECKING, Literal
 
 import covalent as ct
 from ase import Atoms
 from ase.optimize import BFGSLineSearch
 
 from quacc.calculators.vasp import Vasp
-from quacc.schemas.ase import summarize_opt_run
-from quacc.schemas.vasp import summarize_run
+from quacc.schemas.ase import OptSchema, summarize_opt_run
+from quacc.schemas.vasp import VaspSchema, summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
 
 
 @ct.electron
 def qmof_relax_job(
-    atoms: Atoms,
+    atoms: Atoms | dict,
     preset: str | None = "QMOFSet",
     relax_volume: bool = True,
     run_prerelax: bool = True,
     calc_swaps: dict | None = None,
-) -> dict:
+) -> dict[
+    Literal[
+        "prerelax-lowacc",
+        "position-relax-lowacc",
+        "volume-relax-lowacc",
+        "double-relax",
+        "static",
+    ],
+    VaspSchema,
+]:
     """
     Relax a structure in a multi-step process for increased
     computational efficiency. This is all done in a single compute job.
@@ -42,7 +53,7 @@ def qmof_relax_job(
     Parameters
     ----------
     atoms
-        Atoms object
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     preset
         Preset to use. Applies for all jobs.
     relax_volume
@@ -60,7 +71,7 @@ def qmof_relax_job(
     dict
         Dictionary of results
     """
-
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     calc_swaps = calc_swaps or {}
 
     # 1. Pre-relaxation
@@ -101,7 +112,7 @@ def _prerelax(
     preset: str | None = "QMOFSet",
     calc_swaps: dict | None = None,
     fmax: float = 5.0,
-) -> dict:
+) -> OptSchema:
     """
     A "pre-relaxation" with BFGSLineSearch to resolve very high forces.
 
@@ -128,7 +139,7 @@ def _prerelax(
 
     Returns
     -------
-    dict
+    OptSchema
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
 
@@ -156,7 +167,7 @@ def _loose_relax_positions(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
     calc_swaps: dict | None = None,
-) -> dict:
+) -> VaspSchema:
     """
     Position relaxation with default ENCUT and coarse k-point grid.
 
@@ -183,7 +194,7 @@ def _loose_relax_positions(
 
     Returns
     -------
-    dict
+    VaspSchema
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
 
@@ -215,7 +226,7 @@ def _loose_relax_volume(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
     calc_swaps: dict | None = None,
-) -> dict:
+) -> VaspSchema:
     """
     Volume relaxation with coarse k-point grid.
 
@@ -240,7 +251,7 @@ def _loose_relax_volume(
 
     Returns
     -------
-    dict
+    VaspSchema
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
 
@@ -273,7 +284,7 @@ def _double_relax(
     preset: str | None = "QMOFSet",
     calc_swaps: dict | None = None,
     relax_volume: bool = True,
-) -> dict:
+) -> VaspSchema:
     """
     Double relaxation using production-quality settings.
 
@@ -299,7 +310,7 @@ def _double_relax(
 
     Returns
     -------
-    dict
+    VaspSchema
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
 
@@ -351,7 +362,7 @@ def _static(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
     calc_swaps: dict | None = None,
-) -> tuple[Atoms, dict]:
+) -> VaspSchema:
     """
     Static calculation using production-quality settings.
 
@@ -373,7 +384,7 @@ def _static(
 
     Returns
     -------
-    dict
+    VaspSchema
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
 

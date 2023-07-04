@@ -1,17 +1,17 @@
-"""
-Schemas for molecular DFT codes parsed by cclib
-"""
+"""Schemas for molecular DFT codes parsed by cclib"""
 from __future__ import annotations
 
 import os
-from typing import Literal
+from typing import TYPE_CHECKING, Literal, TypeVar
 
-from ase import Atoms
+from ase.atoms import Atoms
 from atomate2.common.schemas.cclib import TaskDocument
 
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
 from quacc.util.dicts import clean_dict
+
+cclibSchema = TypeVar("cclibSchema")
 
 
 def summarize_run(
@@ -35,7 +35,7 @@ def summarize_run(
     prep_next_run: bool = True,
     remove_empties: bool = False,
     additional_fields: dict | None = None,
-) -> dict:
+) -> cclibSchema:
     """
     Get tabulated results from a molecular DFT run and store them in a database-friendly format.
     This is meant to be a general parser built on top of cclib.

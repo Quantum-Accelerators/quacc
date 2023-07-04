@@ -62,12 +62,12 @@ atoms = bulk("Cu")
 result1 = relax_job(atoms)
 
 # Run a static calculation with GFN2-xTB
-result2 = static_job(result1["atoms"], method="GFN2-xTB")
+result2 = static_job(result1, method="GFN2-xTB")
 print(result2)
 ```
 
 ```{hint}
-The output of most compute jobs is a dictionary summarizing the results of the calculation. It always has a key `"atoms"` that contains a copy of the output `Atoms` object. This can be used to pass structure information between jobs.
+The output of most compute jobs is a dictionary summarizing the results of the calculation. It always has a key `"atoms"` that contains a copy of the output `Atoms` object. The first argument to all recipes accepts either the `Atoms` object directly or a dictionary containing it.
 ```
 
 What happens if the first job fails, you might ask? Then the code will crash, no results will be stored, and you'd have to start from scratch. That'd be sad, but thankfully this is where using a workflow manager can save the day.

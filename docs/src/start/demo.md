@@ -52,7 +52,7 @@ def workflow(atoms):
     relaxed_bulk = relax_job(atoms)
 
     # With the relaxed bulk as input, generate and relax slabs
-    relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"])
+    relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk)
 
     return relaxed_slabs
 

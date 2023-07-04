@@ -37,7 +37,7 @@ def workflow(atoms):
     result1 = relax_job(atoms)
 
     # Define Job 2, which takes the output of Job 1 as input
-    result2 = static_job(result1["atoms"])
+    result2 = static_job(result1)
 
     return result2
 
@@ -113,7 +113,7 @@ from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 @ct.lattice
 def workflow(atoms):
     relaxed_bulk = relax_job(atoms)
-    relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], slab_static_electron=None)
+    relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, slab_static_electron=None)
 
     return relaxed_slabs
 
@@ -150,7 +150,7 @@ from quacc.recipes.emt.core import relax_job, static_job
 def workflow(atoms):
 
     result1 = relax_job(atoms)
-    result2 = static_job(result1["atoms"])
+    result2 = static_job(result1)
 
     return result2
 
@@ -178,7 +178,7 @@ def workflow(atoms):
     job2.electron_object.executor = "local"
 
     output1 = job1(atoms)
-    output2 = job2(output1["atoms"])
+    output2 = job2(output1)
     return output2
 
 atoms = bulk("Cu")
@@ -200,6 +200,9 @@ By default, the `workdir` for the `Dask` (default) and `local` executors is set 
 For submitting jobs to [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/) from your local machine, an example `SlurmExecutor` configuration with support for an [`sshproxy`](https://docs.nersc.gov/connect/mfa/#sshproxy)-based multi-factor authentication certificate might look like the following:
 
 ```python
+n_nodes = 1
+n_cores_per_node = 48
+
 executor = ct.executor.SlurmExecutor(
     username="YourUserName",
     address="perlmutter-p1.nersc.gov",
@@ -208,7 +211,7 @@ executor = ct.executor.SlurmExecutor(
     remote_workdir="$SCRATCH",
     conda_env="quacc",
     options={
-        "nodes": 1,
+        f"nodes": {n_nodes},
         "qos": "debug",
         "constraint": "cpu",
         "account": "YourAccountName",
@@ -217,6 +220,7 @@ executor = ct.executor.SlurmExecutor(
     },
     prerun_commands=[
         "export COVALENT_CONFIG_DIR=$SCRATCH",
+        f"export QUACC_VASP_PARALLEL_CMD='srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'",
     ],
     use_srun=False,
 )

@@ -43,7 +43,7 @@ def test_tutorial2():
 
     # Define the compute jobs
     job1 = jf.job(relax_job)(atoms)
-    job2 = jf.job(static_job)(job1.output["atoms"])
+    job2 = jf.job(static_job)(job1.output)
 
     # Define the workflow
     workflow = jf.Flow([job1, job2])
@@ -58,7 +58,7 @@ def test_tutorial3():
 
     # Construct the Flow
     job1 = jf.job(relax_job)(atoms)
-    job2 = jf.job(bulk_to_slabs_flow)(job1.output["atoms"])
+    job2 = jf.job(bulk_to_slabs_flow)(job1.output)
     workflow = jf.Flow([job1, job2])
 
     # Run the workflow locally
