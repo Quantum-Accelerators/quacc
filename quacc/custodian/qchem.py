@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import sys
 
-from custodian import Custodian
 from monty.dev import requires
 
 from quacc import SETTINGS
@@ -46,7 +45,7 @@ def run_custodian(
     None
     """
     # Adapted from atomate.qchem.firetasks.run_calc
-
+    from custodian import Custodian
     from custodian.qchem.handlers import QChemErrorHandler
     from custodian.qchem.jobs import QCJob
 

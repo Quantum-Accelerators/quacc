@@ -15,7 +15,7 @@ OS_ATOMS = read(os.path.join(FILE_DIR, "OS_test.xyz"))
 
 
 def test_qchem_write_input_basic():
-    calc = QChem(TEST_ATOMS, 40)
+    calc = QChem(TEST_ATOMS, cores=40)
     assert calc.parameters["cores"] == 40
     assert calc.parameters["charge"] is None
     assert calc.parameters["spin_multiplicity"] is None
@@ -75,7 +75,7 @@ def test_qchem_write_input_advanced():
 
 
 def test_qchem_write_input_open_shell_and_different_charges():
-    calc = QChem(OS_ATOMS, 40)
+    calc = QChem(OS_ATOMS, cores=40)
     assert calc.parameters["cores"] == 40
     assert calc.parameters["charge"] is None
     assert calc.parameters["spin_multiplicity"] is None
@@ -143,7 +143,7 @@ def test_qchem_write_input_open_shell_and_different_charges():
 
 
 def test_qchem_read_results_basic_and_write_53():
-    calc = QChem(TEST_ATOMS, 40)
+    calc = QChem(TEST_ATOMS, cores=40)
     os.chdir(os.path.join(FILE_DIR, "examples", "basic"))
     calc.read_results()
     assert calc.results["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
@@ -166,7 +166,7 @@ def test_qchem_read_results_basic_and_write_53():
 
 
 def test_qchem_read_results_intermediate():
-    calc = QChem(TEST_ATOMS, 40)
+    calc = QChem(TEST_ATOMS, cores=40)
     os.chdir(os.path.join(FILE_DIR, "examples", "intermediate"))
     calc.read_results()
     assert calc.results["energy"] == pytest.approx(-605.6859554025 * units.Hartree)
@@ -175,7 +175,7 @@ def test_qchem_read_results_intermediate():
 
 
 def test_qchem_read_results_advanced():
-    calc = QChem(TEST_ATOMS, 40)
+    calc = QChem(TEST_ATOMS, cores=40)
     os.chdir(os.path.join(FILE_DIR, "examples", "advanced"))
     calc.read_results()
     assert calc.results["energy"] == pytest.approx(-605.7310332390 * units.Hartree)
