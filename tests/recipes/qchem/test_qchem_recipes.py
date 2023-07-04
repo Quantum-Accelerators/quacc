@@ -123,7 +123,7 @@ def test_static_job(monkeypatch):
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute2)
     output = static_job(
-        atoms=TEST_ATOMS,
+        TEST_ATOMS,
         charge=-1,
         method="b97mv",
         basis="def2-svpd",
@@ -164,7 +164,7 @@ def test_static_job(monkeypatch):
     qcinput_nearly_equal(qcin, ref_qcin)
 
     with pytest.raises(ValueError):
-        output = static_job(atoms=TEST_ATOMS, pcm_dielectric="3.0", smd_solvent="water")
+        output = static_job(TEST_ATOMS, pcm_dielectric="3.0", smd_solvent="water")
 
     monkeypatch.setattr(QChem, "read_results", mock_read)
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute4)
@@ -178,7 +178,7 @@ def test_static_job(monkeypatch):
 def test_relax_job(monkeypatch):
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
     output = relax_job(
-        atoms=TEST_ATOMS,
+        TEST_ATOMS,
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
         check_convergence=False,
@@ -202,7 +202,7 @@ def test_relax_job(monkeypatch):
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute2)
     output = relax_job(
-        atoms=TEST_ATOMS,
+        TEST_ATOMS,
         charge=-1,
         method="b97mv",
         pcm_dielectric="3.0",
@@ -229,7 +229,7 @@ def test_relax_job(monkeypatch):
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
     overwrite_inputs = {"rem": {"mem_total": "170000"}}
     output = relax_job(
-        atoms=TEST_ATOMS,
+        TEST_ATOMS,
         scf_algorithm="gdm",
         overwrite_inputs=overwrite_inputs,
         basis="def2-tzvpd",
@@ -248,7 +248,7 @@ def test_relax_job(monkeypatch):
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826311086011256)
 
     with pytest.raises(ValueError):
-        output = relax_job(atoms=TEST_ATOMS, pcm_dielectric="3.0", smd_solvent="water")
+        output = relax_job(TEST_ATOMS, pcm_dielectric="3.0", smd_solvent="water")
 
 
 @pytest.mark.skipif(
@@ -258,7 +258,7 @@ def test_relax_job(monkeypatch):
 def test_ts_job(monkeypatch):
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
     output = ts_job(
-        atoms=TEST_ATOMS,
+        TEST_ATOMS,
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
         check_convergence=False,
@@ -282,7 +282,7 @@ def test_ts_job(monkeypatch):
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute2)
     output = ts_job(
-        atoms=TEST_ATOMS,
+        TEST_ATOMS,
         charge=-1,
         method="b97mv",
         pcm_dielectric="3.0",
@@ -309,7 +309,7 @@ def test_ts_job(monkeypatch):
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
     overwrite_inputs = {"rem": {"mem_total": "170000"}}
     output = ts_job(
-        atoms=TEST_ATOMS,
+        TEST_ATOMS,
         scf_algorithm="gdm",
         overwrite_inputs=overwrite_inputs,
         basis="def2-tzvpd",
@@ -328,11 +328,11 @@ def test_ts_job(monkeypatch):
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826311086011256)
 
     with pytest.raises(ValueError):
-        output = ts_job(atoms=TEST_ATOMS, pcm_dielectric="3.0", smd_solvent="water")
+        output = ts_job(TEST_ATOMS, pcm_dielectric="3.0", smd_solvent="water")
 
     with pytest.raises(RuntimeError):
         output = ts_job(
-            atoms=TEST_ATOMS,
+            TEST_ATOMS,
             pcm_dielectric="3.0",
             smd_solvent="water",
             opt_swaps={"optimizer": FIRE},
@@ -348,7 +348,7 @@ def test_irc_job(monkeypatch):
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute4)
 
     output = irc_job(
-        atoms=TEST_ATOMS,
+        TEST_ATOMS,
         direction="forward",
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
@@ -370,7 +370,7 @@ def test_irc_job(monkeypatch):
     qcinput_nearly_equal(qcin, ref_qcin)
 
     output = irc_job(
-        atoms=TEST_ATOMS,
+        TEST_ATOMS,
         direction="reverse",
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
@@ -385,7 +385,7 @@ def test_irc_job(monkeypatch):
 
     overwrite_inputs = {"rem": {"mem_total": "170000"}}
     output = irc_job(
-        atoms=TEST_ATOMS,
+        TEST_ATOMS,
         direction="reverse",
         scf_algorithm="gdm",
         overwrite_inputs=overwrite_inputs,
@@ -403,11 +403,11 @@ def test_irc_job(monkeypatch):
     assert output["parameters"]["spin_multiplicity"] is None
 
     with pytest.raises(ValueError):
-        output = irc_job(atoms=TEST_ATOMS, direction="straight")
+        output = irc_job(TEST_ATOMS, direction="straight")
 
     with pytest.raises(ValueError):
         output = irc_job(
-            atoms=TEST_ATOMS,
+            TEST_ATOMS,
             direction="forward",
             pcm_dielectric="3.0",
             smd_solvent="water",
@@ -415,7 +415,7 @@ def test_irc_job(monkeypatch):
 
     with pytest.raises(ValueError):
         output = irc_job(
-            atoms=TEST_ATOMS,
+            TEST_ATOMS,
             direction="forward",
             pcm_dielectric="3.0",
             smd_solvent="water",
@@ -435,7 +435,7 @@ def test_quasi_irc_job(monkeypatch):
     relax_opt_swaps = {"max_steps": 5}
 
     output = quasi_irc_job(
-        atoms=TEST_ATOMS,
+        TEST_ATOMS,
         direction="forward",
         common_kwargs=common_kwargs,
         relax_opt_swaps=relax_opt_swaps,
@@ -461,7 +461,7 @@ def test_quasi_irc_job(monkeypatch):
     relax_opt_swaps = {"max_steps": 6}
 
     output = quasi_irc_job(
-        atoms=TEST_ATOMS,
+        TEST_ATOMS,
         direction="reverse",
         common_kwargs=common_kwargs,
         irc_opt_swaps=irc_opt_swaps,
