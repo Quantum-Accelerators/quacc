@@ -1,8 +1,6 @@
 """Slab recipes for EMT"""
 from __future__ import annotations
 
-from typing import Literal
-
 from ase import Atoms
 from parsl import join_app, python_app
 from parsl.app.python import PythonApp
@@ -11,8 +9,7 @@ from parsl.dataflow.futures import AppFuture
 from quacc.recipes.emt.core import relax_job, static_job
 
 
-@python_app
-def bulk_to_slabs_app(
+def bulk_to_slabs_flow(
     atoms: Atoms | dict,
     slabgen_kwargs: dict | None = None,
     slab_relax_app: PythonApp = python_app(relax_job),

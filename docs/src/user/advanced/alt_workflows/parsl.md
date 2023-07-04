@@ -126,12 +126,12 @@ When running a Covalent-based workflow like {obj}`.emt.slabs.bulk_to_slabs_flow`
 
 #### The Efficient Way
 
-Quacc fully supports Parsl-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Parsl-specific {obj}`.emt.parsl.slabs.bulk_to_slabs_app` workflow:
+Quacc fully supports Parsl-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Parsl-specific {obj}`.emt.parsl.slabs.bulk_to_slabs_flow` workflow:
 
 ```python
 from parsl import python_app
 from ase.build import bulk
-from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_app
+from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_flow
 
 # Define the Python App
 @python_app
@@ -145,16 +145,16 @@ atoms = bulk("Cu")
 
 # Define the workflow
 future1 = relax_app(atoms)
-future2 = bulk_to_slabs_app(future1, slab_static_app=None)
+future2 = bulk_to_slabs_flow(future1.result(), slab_static_app=None)
 
 # Print the results
 print(future2.result())
 ```
 
-In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing {obj}`.emt.parsl.slabs.bulk_to_slabs_app` with its Covalent counterpart {obj}`.emt.slabs.bulk_to_slabs_flow`, you can see that the two are extremely similar such that it is often straightforward to [interconvert](comparison.md) between the two.
+In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing {obj}`.emt.parsl.slabs.bulk_to_slabs_flow` with its Covalent counterpart {obj}`.emt.slabs.bulk_to_slabs_flow`, you can see that the two are extremely similar such that it is often straightforward to [interconvert](comparison.md) between the two.
 
 ```{note}
-We didn't need to wrap `bulk_to_slabs_app` with a decorator because it is already a `PythonApp`, as the name suggests.
+We didn't need to wrap `bulk_to_slabs_flow` with a `@python_app` decorator because it is simply a collection of `PythonApp` objects and is already returning an `AppFuture`.
 ```
 
 ## Job Management
