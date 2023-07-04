@@ -175,17 +175,6 @@ def relax_job(
         atoms, charge, spin_multiplicity
     )
 
-    opt_swaps = opt_swaps or {}
-    opt_defaults = {
-        "fmax": 0.01,
-        "max_steps": 1000,
-        "optimizer": Sella if has_sella else FIRE,
-        "optimizer_kwargs": {},
-    }
-    opt_flags = opt_defaults | opt_swaps
-    if opt_flags["optimizer"] == Sella and "order" not in opt_flags["optimizer_kwargs"]:
-        opt_flags["optimizer_kwargs"]["order"] = 0
-
     qchem_defaults = {
         "method": method,
         "charge": charge,
@@ -201,6 +190,17 @@ def relax_job(
         },
     }
     qchem_flags = remove_dict_empties(qchem_defaults)
+
+    opt_swaps = opt_swaps or {}
+    opt_defaults = {
+        "fmax": 0.01,
+        "max_steps": 1000,
+        "optimizer": Sella if has_sella else FIRE,
+        "optimizer_kwargs": None,
+    }
+    opt_flags = remove_dict_empties(opt_defaults | opt_swaps)
+    if opt_flags["optimizer"] == Sella and "order" not in opt_flags["optimizer_kwargs"]:
+        opt_flags["optimizer_kwargs"]["order"] = 0
 
     atoms.calc = QChem(atoms, **qchem_flags)
     dyn = run_ase_opt(atoms, **opt_flags)
@@ -283,17 +283,6 @@ def ts_job(
         atoms, charge, spin_multiplicity
     )
 
-    opt_swaps = opt_swaps or {}
-    opt_defaults = {
-        "fmax": 0.01,
-        "max_steps": 1000,
-        "optimizer": Sella,
-        "optimizer_kwargs": {},
-    }
-    opt_flags = opt_defaults | opt_swaps
-    if opt_flags["optimizer"] != Sella:
-        raise ValueError("Only Sella should be used for TS optimization.")
-
     qchem_defaults = {
         "method": method,
         "charge": charge,
@@ -309,6 +298,17 @@ def ts_job(
         },
     }
     qchem_flags = remove_dict_empties(qchem_defaults)
+
+    opt_swaps = opt_swaps or {}
+    opt_defaults = {
+        "fmax": 0.01,
+        "max_steps": 1000,
+        "optimizer": Sella,
+        "optimizer_kwargs": None,
+    }
+    opt_flags = remove_dict_empties(opt_defaults | opt_swaps)
+    if opt_flags["optimizer"] != Sella:
+        raise ValueError("Only Sella should be used for TS optimization.")
 
     atoms.calc = QChem(atoms, **qchem_flags)
     dyn = run_ase_opt(atoms, **opt_flags)
@@ -392,18 +392,6 @@ def irc_job(
         atoms, charge, spin_multiplicity
     )
 
-    opt_swaps = opt_swaps or {}
-    opt_defaults = {
-        "fmax": 0.01,
-        "max_steps": 1000,
-        "optimizer": IRC,
-        "optimizer_kwargs": {"keep_going": True},
-        "run_kwargs": {"direction": direction},
-    }
-    opt_flags = opt_defaults | opt_swaps
-    if opt_flags["optimizer"] != IRC:
-        raise ValueError("Only Sella's IRC should be used for IRC optimization.")
-
     qchem_defaults = {
         "method": method,
         "charge": charge,
@@ -419,6 +407,18 @@ def irc_job(
         },
     }
     qchem_flags = remove_dict_empties(qchem_defaults)
+
+    opt_swaps = opt_swaps or {}
+    opt_defaults = {
+        "fmax": 0.01,
+        "max_steps": 1000,
+        "optimizer": IRC,
+        "optimizer_kwargs": {"keep_going": True},
+        "run_kwargs": {"direction": direction},
+    }
+    opt_flags = remove_dict_empties(opt_defaults | opt_swaps)
+    if opt_flags["optimizer"] != IRC:
+        raise ValueError("Only Sella's IRC should be used for IRC optimization.")
 
     atoms.calc = QChem(atoms, **qchem_flags)
     dyn = run_ase_opt(atoms, **opt_flags)
@@ -473,7 +473,7 @@ def quasi_irc_job(
         "fmax": 100,
         "max_steps": 10,
     }
-    irc_opt_swaps = irc_opt_swaps_defaults | irc_opt_swaps
+    irc_opt_swaps = remove_dict_empties(irc_opt_swaps_defaults | irc_opt_swaps)
 
     SETTINGS.CHECK_ASE_OPT_CONVERGENCE = False
     irc_summary = irc_job(
