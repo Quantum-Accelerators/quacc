@@ -21,7 +21,7 @@ class QChem(FileIOCalculator):
 
     Parameters
     ----------
-    input_atoms
+    atoms
         The Atoms object to be used for the calculation.
     cores
         Number of cores to use for the Q-Chem calculation.
@@ -46,7 +46,7 @@ class QChem(FileIOCalculator):
 
     def __init__(
         self,
-        input_atoms: Atoms,
+        atoms: Atoms,
         charge: None | int = None,
         spin_multiplicity: None | int = None,
         method: str | None = None,
@@ -55,7 +55,7 @@ class QChem(FileIOCalculator):
         **fileiocalculator_kwargs,
     ):
         # Assign variables to self
-        self.input_atoms = input_atoms
+        self.atoms = atoms
         self.cores = cores
         self.charge = charge
         self.spin_multiplicity = spin_multiplicity
@@ -104,7 +104,7 @@ class QChem(FileIOCalculator):
                 self.default_parameters[key] = self.qchem_input_params[key]
 
         charge, spin_multiplicity = check_charge_and_spin(
-            input_atoms, self.charge, self.spin_multiplicity
+            atoms, self.charge, self.spin_multiplicity
         )
         self.charge = charge
         self.spin_multiplicity = spin_multiplicity
@@ -121,7 +121,7 @@ class QChem(FileIOCalculator):
             restart=None,
             ignore_bad_restart_file=FileIOCalculator._deprecated,
             label=None,
-            atoms=self.input_atoms,
+            atoms=self.atoms,
             **self.fileiocalculator_kwargs,
         )
 
