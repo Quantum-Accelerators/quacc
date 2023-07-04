@@ -34,8 +34,8 @@ def static_job(
     scf_algorithm: str = "diis",
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
-    overwrite_inputs: dict | None = None,
     n_cores: int | None = None,
+    overwrite_inputs: dict | None = None,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -66,12 +66,12 @@ def static_job(
         Solvent to use for SMD implicit solvation model. Examples include "water", "ethanol", "methanol",
         and "acetonitrile". Refer to the Q-Chem manual for a complete list of solvents available.
         Defaults to None, in which case SMD will not be employed.
-    overwrite_inputs
-        Dictionary passed to pymatgen.io.qchem.QChemDictSet which can modify default values set therein
-        as well as set additional Q-Chem parameters. See QChemDictSet documentation for more details.
     n_cores
         Number of cores to use for the Q-Chem calculation.
         Defaults to use all cores available on a given node.
+    overwrite_inputs
+        Dictionary passed to pymatgen.io.qchem.QChemDictSet which can modify default values set therein
+        as well as set additional Q-Chem parameters. See QChemDictSet documentation for more details.
 
     Returns
     -------
@@ -120,9 +120,9 @@ def relax_job(
     scf_algorithm: str = "diis",
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
+    n_cores: int | None = None,
     overwrite_inputs: dict | None = None,
     opt_swaps: dict | None = None,
-    n_cores: int | None = None,
 ) -> OptSchema:
     """
     Optimize aka "relax" a molecular structure.
@@ -153,16 +153,15 @@ def relax_job(
         Solvent to use for SMD implicit solvation model. Examples include "water", "ethanol", "methanol",
         and "acetonitrile". Refer to the Q-Chem manual for a complete list of solvents available.
         Defaults to None, in which case SMD will not be employed.
+    n_cores
+        Number of cores to use for the Q-Chem calculation.
+        Defaults to use all cores available on a given node.
     overwrite_inputs
         Dictionary passed to pymatgen.io.qchem.QChemDictSet which can modify default values set therein
         as well as set additional Q-Chem parameters. See QChemDictSet documentation for more details.
     opt_swaps
         Dictionary of custom kwargs for run_ase_opt
             opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
-    n_cores
-        Number of cores to use for the Q-Chem calculation.
-        Defaults to use all cores available on a given node.
-
     Returns
     -------
     OptSchema
@@ -229,9 +228,9 @@ def ts_job(
     scf_algorithm: str = "diis",
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
+    n_cores: int | None = None,
     overwrite_inputs: dict | None = None,
     opt_swaps: dict | None = None,
-    n_cores: int | None = None,
 ) -> OptSchema:
     """
     TS optimize a molecular structure.
@@ -262,15 +261,15 @@ def ts_job(
         Solvent to use for SMD implicit solvation model. Examples include "water", "ethanol", "methanol",
         and "acetonitrile". Refer to the Q-Chem manual for a complete list of solvents available.
         Defaults to None, in which case SMD will not be employed.
+    n_cores
+        Number of cores to use for the Q-Chem calculation.
+        Defaults to use all cores available on a given node.
     overwrite_inputs
         Dictionary passed to pymatgen.io.qchem.QChemDictSet which can modify default values set therein
         as well as set additional Q-Chem parameters. See QChemDictSet documentation for more details.
     opt_swaps
         Dictionary of custom kwargs for run_ase_opt
             opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
-    n_cores
-        Number of cores to use for the Q-Chem calculation.
-        Defaults to use all cores available on a given node.
 
     Returns
     -------
@@ -338,9 +337,9 @@ def irc_job(
     scf_algorithm: str = "diis",
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
+    n_cores: int | None = None,
     overwrite_inputs: dict | None = None,
     opt_swaps: dict | None = None,
-    n_cores: int | None = None,
 ) -> OptSchema:
     """
     IRC optimize a molecular structure.
@@ -373,15 +372,15 @@ def irc_job(
         Solvent to use for SMD implicit solvation model. Examples include "water", "ethanol", "methanol",
         and "acetonitrile". Refer to the Q-Chem manual for a complete list of solvents available.
         Defaults to None, in which case SMD will not be employed.
+    n_cores
+        Number of cores to use for the Q-Chem calculation.
+        Defaults to use all cores available on a given node.
     overwrite_inputs
         Dictionary passed to pymatgen.io.qchem.QChemDictSet which can modify default values set therein
         as well as set additional Q-Chem parameters. See QChemDictSet documentation for more details.
     opt_swaps
         Dictionary of custom kwargs for run_ase_opt
             opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
-    n_cores
-        Number of cores to use for the Q-Chem calculation.
-        Defaults to use all cores available on a given node.
 
     Returns
     -------
@@ -441,7 +440,7 @@ def irc_job(
 def quasi_irc_job(
     atoms: Atoms | dict,
     direction: Literal["forward", "reverse"],
-    common_kwargs: dict | None = None,
+    shared_kwargs: dict | None = None,
     irc_opt_swaps: dict | None = None,
     relax_opt_swaps: dict | None = None,
 ) -> OptSchema:
@@ -454,7 +453,7 @@ def quasi_irc_job(
         Atoms object.
     direction
         Direction of the IRC. Should be "forward" or "reverse".
-    common_kwargs
+    shared_kwargs
         Dictionary of kwargs that are passed as input to both irc_job and relax_job.
     irc_opt_swaps
         Dictionary of opt_swap kwargs for the irc_job.
@@ -467,7 +466,7 @@ def quasi_irc_job(
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
 
-    common_kwargs = common_kwargs or {}
+    shared_kwargs = shared_kwargs or {}
     irc_opt_swaps = irc_opt_swaps or {}
     relax_opt_swaps = relax_opt_swaps or {}
     default_convergence = SETTINGS.CHECK_CONVERGENCE
@@ -483,14 +482,14 @@ def quasi_irc_job(
         atoms,
         direction=direction,
         opt_swaps=irc_opt_swaps,
-        **common_kwargs,
+        **shared_kwargs,
     )
 
     SETTINGS.CHECK_CONVERGENCE = default_convergence
     relax_summary = relax_job(
         irc_summary,
         opt_swaps=relax_opt_swaps,
-        **common_kwargs,
+        **shared_kwargs,
     )
 
     relax_summary["initial_irc"] = irc_summary

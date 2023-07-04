@@ -93,7 +93,12 @@ def mock_read(self, **kwargs):
         raise RuntimeError("Results should not be None here.")
 
 
+def setup_module():
+    SETTINGS.CHECK_CONVERGENCE = False
+
+
 def teardown_module():
+    SETTINGS.CHECK_CONVERGENCE = DEFAULT_CONVERGENCE
     for f in os.listdir("."):
         if ".log" in f or ".traj" in f or ".gz" in f:
             os.remove(f)
@@ -423,13 +428,13 @@ def test_quasi_irc_job(monkeypatch):
     monkeypatch.setattr(QChem, "read_results", mock_read)
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute4)
 
-    common_kwargs = {"basis": "def2-tzvpd"}
+    shared_kwargs = {"basis": "def2-tzvpd"}
     relax_opt_swaps = {"max_steps": 5}
 
     output = quasi_irc_job(
         TEST_ATOMS,
         direction="forward",
-        common_kwargs=common_kwargs,
+        shared_kwargs=shared_kwargs,
         relax_opt_swaps=relax_opt_swaps,
     )
 
@@ -447,14 +452,14 @@ def test_quasi_irc_job(monkeypatch):
     )
     qcinput_nearly_equal(qcin, ref_qcin)
 
-    common_kwargs = {"charge": -1, "basis": "def2-svpd", "scf_algorithm": "gdm"}
+    shared_kwargs = {"charge": -1, "basis": "def2-svpd", "scf_algorithm": "gdm"}
     irc_opt_swaps = {"max_steps": 6}
     relax_opt_swaps = {"max_steps": 6}
 
     output = quasi_irc_job(
         TEST_ATOMS,
         direction="reverse",
-        common_kwargs=common_kwargs,
+        shared_kwargs=shared_kwargs,
         irc_opt_swaps=irc_opt_swaps,
         relax_opt_swaps=relax_opt_swaps,
     )
