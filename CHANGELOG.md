@@ -12,10 +12,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added the `quacc.recipes.emt.parsl` module.
 - Added a CLI for `quacc` along with a `quacc config` option to configure Covalent appropriately upon install.
 - Added a `quacc.util.wflows.make_dask_cluster` function to easily generate a Dask cluster.
+- Added generic type hints for schemas.
 
 ### Changed
 
-- All recipes now support the `Atoms` object being passed in as a `dict[Literal["atoms"], Atoms]`.
+- All recipes now support the `Atoms` object being passed in as a `AtomsSchema`.
 - The `slab_relax_job` kwarg in `recipes.emt.slabs` and `recipes.vasp.slabs` workflows can no longer be set to `None`, as there are few situations where this would be desired.
 - Class-based recipes have been converted to functions since they don't save state or have inheritance.
 

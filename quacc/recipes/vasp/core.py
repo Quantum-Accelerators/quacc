@@ -1,22 +1,22 @@
 """Core recipes for VASP"""
 from __future__ import annotations
 
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 import covalent as ct
 from ase import Atoms
 
 from quacc.calculators.vasp import Vasp
-from quacc.schemas.vasp import summarize_run
+from quacc.schemas.vasp import VaspSchema, summarize_run
 from quacc.util.calc import run_calc
 
 
 @ct.electron
 def static_job(
-    atoms: Atoms | dict[Literal["atoms"], Atoms],
+    atoms: Atoms | dict,
     preset: str | None = None,
     calc_swaps: dict | None = None,
-) -> dict:
+) -> VaspSchema:
     """
     Carry out a single-point calculation.
 
@@ -39,7 +39,7 @@ def static_job(
 
     Returns
     -------
-    dict
+    VaspSchema
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
     atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
@@ -64,11 +64,11 @@ def static_job(
 
 @ct.electron
 def relax_job(
-    atoms: Atoms | dict[Literal["atoms"], Atoms],
+    atoms: Atoms | dict,
     preset: str | None = None,
     relax_volume: bool = True,
     calc_swaps: dict | None = None,
-) -> dict:
+) -> VaspSchema:
     """
     Relax a structure.
 
@@ -95,7 +95,7 @@ def relax_job(
 
     Returns
     -------
-    dict
+    VaspSchema
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
     atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
@@ -121,12 +121,12 @@ def relax_job(
 
 @ct.electron
 def double_relax_job(
-    atoms: Atoms | dict[Literal["atoms"], Atoms],
+    atoms: Atoms | dict,
     preset: str | None = None,
     relax_volume: bool = True,
     calc_swaps1: dict | None = None,
     calc_swaps2: dict | None = None,
-) -> dict:
+) -> dict[Literal["relax1", "relax2"], VaspSchema]:
     """
     Double-relax a structure. This is particularly useful for a few reasons:
 
@@ -154,7 +154,7 @@ def double_relax_job(
 
     Returns
     -------
-    {"relax1": dict, "relax2": dict}
+    {"relax1": VaspSchema, "relax2": VaspSchema}
         Dictionaries of the type quacc.schemas.vasp.summarize_run.
     """
     atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
@@ -192,4 +192,5 @@ def double_relax_job(
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
     summary2 = summarize_run(atoms, additional_fields={"name": "VASP DoubleRelax 2"})
 
+    return {"relax1": summary1, "relax2": summary2}
     return {"relax1": summary1, "relax2": summary2}

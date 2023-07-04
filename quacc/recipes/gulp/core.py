@@ -9,19 +9,19 @@ import covalent as ct
 from ase import Atoms
 from ase.calculators.gulp import GULP
 
-from quacc.schemas.ase import summarize_run
+from quacc.schemas.ase import OptSchema, RunSchema, summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.dicts import remove_dict_empties
 
 
 @ct.electron
 def static_job(
-    atoms: Atoms | dict[Literal["atoms"], Atoms],
+    atoms: Atoms | dict,
     use_gfnff: bool = True,
     library: str | None = None,
     keyword_swaps: dict | None = None,
     option_swaps: dict | None = None,
-) -> dict:
+) -> RunSchema:
     """
     Carry out a single-point calculation.
     Note: 'Conditions' are not yet natively supported.
@@ -50,7 +50,7 @@ def static_job(
 
     Returns
     -------
-    dict
+    RunSchema
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
     atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
@@ -87,13 +87,13 @@ def static_job(
 
 @ct.electron
 def relax_job(
-    atoms: Atoms | dict[Literal["atoms"], Atoms],
+    atoms: Atoms | dict,
     use_gfnff: bool = True,
     library: str | None = None,
     relax_cell: bool = True,
     keyword_swaps: dict | None = None,
     option_swaps: dict | None = None,
-) -> dict:
+) -> RunSchema:
     """
     Carry out a single-point calculation.
     Note: 'Conditions' are not yet natively supported.

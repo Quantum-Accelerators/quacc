@@ -7,7 +7,7 @@ import covalent as ct
 from ase import Atoms
 from ase.calculators.dftb import Dftb
 
-from quacc.schemas.ase import summarize_run
+from quacc.schemas.ase import RunSchema, summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.dicts import remove_dict_empties
 from quacc.util.files import check_logfile
@@ -18,11 +18,11 @@ GEOM_FILE = "geo_end.gen"
 
 @ct.electron
 def static_job(
-    atoms: Atoms | dict[Literal["atoms"], Atoms],
+    atoms: Atoms | dict,
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
     kpts: tuple | list[tuple] | dict | None = None,
     calc_swaps: dict | None = None,
-) -> dict:
+) -> RunSchema:
     """
     Carry out a single-point calculation.
 
@@ -40,7 +40,7 @@ def static_job(
 
     Returns
     -------
-    dict
+    RunSchema
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
     atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
@@ -68,12 +68,12 @@ def static_job(
 
 @ct.electron
 def relax_job(
-    atoms: Atoms | dict[Literal["atoms"], Atoms],
+    atoms: Atoms | dict,
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
     kpts: tuple | list[tuple] | dict | None = None,
     lattice_opt: bool = False,
     calc_swaps: dict | None = None,
-) -> dict:
+) -> RunSchema:
     """
     Carry out a structure relaxation.
 
@@ -102,7 +102,7 @@ def relax_job(
             }
     Returns
     -------
-    dict
+    RunSchema
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
     atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]

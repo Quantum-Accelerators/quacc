@@ -14,14 +14,12 @@ from ase.calculators.emt import EMT
 from ase.constraints import ExpCellFilter
 from ase.optimize import FIRE
 
-from quacc.schemas.ase import summarize_opt_run, summarize_run
+from quacc.schemas.ase import OptSchema, RunSchema, summarize_opt_run, summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
 
 
 @ct.electron
-def static_job(
-    atoms: Atoms | dict[Literal["atoms"], Atoms], calc_kwargs: dict | None = None
-) -> dict:
+def static_job(atoms: Atoms | dict, calc_kwargs: dict | None = None) -> RunSchema:
     """
     Carry out a static calculation.
 
@@ -34,7 +32,7 @@ def static_job(
 
     Returns
     -------
-    dict
+    RunSchema
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
     atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
@@ -52,11 +50,11 @@ def static_job(
 
 @ct.electron
 def relax_job(
-    atoms: Atoms | dict[Literal["atoms"], Atoms],
+    atoms: Atoms | dict,
     relax_cell: bool = True,
     calc_kwargs: dict | None = None,
     opt_swaps: dict | None = None,
-) -> dict:
+) -> OptSchema:
     """
     Carry out a geometry optimization.
 
@@ -74,7 +72,7 @@ def relax_job(
 
     Returns
     -------
-    dict
+    OptSchema
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
     atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]

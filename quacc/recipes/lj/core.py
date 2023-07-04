@@ -13,6 +13,10 @@ from ase.calculators.lj import LennardJones
 from ase.optimize import FIRE
 
 from quacc.schemas.ase import (
+    OptSchema,
+    RunSchema,
+    ThermoSchema,
+    VibSchema,
     summarize_opt_run,
     summarize_run,
     summarize_thermo_run,
@@ -24,9 +28,9 @@ from quacc.util.thermo import ideal_gas
 
 @ct.electron
 def static_job(
-    atoms: Atoms | dict[Literal["atoms"], Atoms],
+    atoms: Atoms | dict,
     calc_kwargs: dict | None = None,
-) -> dict:
+) -> RunSchema:
     """
     Function to carry out a static calculation.
 
@@ -39,7 +43,7 @@ def static_job(
 
     Returns
     -------
-    dict
+    RunSchema
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
     atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
@@ -55,10 +59,10 @@ def static_job(
 
 @ct.electron
 def relax_job(
-    atoms: Atoms | dict[Literal["atoms"], Atoms],
+    atoms: Atoms | dict,
     calc_kwargs: dict | None = None,
     opt_swaps: dict | None = None,
-) -> dict:
+) -> OptSchema:
     """
     Function to carry out a geometry optimization
 
@@ -74,7 +78,7 @@ def relax_job(
 
     Returns
     -------
-    dict
+    OptSchema
         Dictionary of results from `quacc.schemas.ase.summarize_opt_run`
     """
     atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
@@ -93,13 +97,13 @@ def relax_job(
 
 @ct.electron
 def freq_job(
-    atoms: Atoms | dict[Literal["atoms"], Atoms],
+    atoms: Atoms | dict,
     energy: float = 0.0,
     temperature: float = 298.15,
     pressure: float = 1.0,
     calc_kwargs: dict | None = None,
     vib_kwargs: dict | None = None,
-) -> dict:
+) -> dict[Literal["vib", "thermo"], VibSchema | ThermoSchema]:
     """
     Run a frequency job and calculate thermochemistry.
 

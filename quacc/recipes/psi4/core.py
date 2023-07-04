@@ -8,7 +8,8 @@ from ase import Atoms
 from ase.calculators.psi4 import Psi4
 from monty.dev import requires
 
-from quacc.schemas.ase import summarize_run
+from quacc.schemas.ase import RunSchema, summarize_run
+from quacc.schemas.atoms import AtomsSchema
 from quacc.util.calc import run_calc
 from quacc.util.dicts import remove_dict_empties
 
@@ -21,13 +22,13 @@ except ImportError:
 @ct.electron
 @requires(psi4, "Psi4 not installed. Try conda install -c psi4 psi4")
 def static_job(
-    atoms: Atoms | dict[Literal["atoms"], Atoms],
+    atoms: Atoms | dict,
     charge: int | None = None,
     multiplicity: int | None = None,
     method: str = "wb97x-v",
     basis: str = "def2-tzvp",
     calc_swaps: dict | None = None,
-) -> dict:
+) -> RunSchema:
     """
     Function to carry out a single-point calculation.
 
@@ -59,7 +60,7 @@ def static_job(
 
     Returns
     -------
-    dict
+    RunSchema
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
     atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]

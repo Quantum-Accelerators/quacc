@@ -1,23 +1,22 @@
 """Slab recipes for EMT"""
 from __future__ import annotations
 
-from typing import Literal
-
 import covalent as ct
 from ase import Atoms
 
 from quacc.recipes.emt.core import relax_job, static_job
+from quacc.schemas.ase import OptSchema, RunSchema
 from quacc.util.slabs import make_max_slabs_from_bulk
 
 
 def bulk_to_slabs_flow(
-    atoms: Atoms | dict[Literal["atoms"], Atoms],
+    atoms: Atoms | dict,
     slabgen_kwargs: dict | None = None,
     slab_relax_electron: ct.electron = relax_job,
     slab_static_electron: ct.electron | None = static_job,
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
-) -> list[dict]:
+) -> list[RunSchema | OptSchema]:
     """
     Workflow consisting of:
 

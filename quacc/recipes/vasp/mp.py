@@ -6,24 +6,22 @@ Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
 """
 from __future__ import annotations
 
-from typing import Literal
-
 import covalent as ct
 import numpy as np
 from ase import Atoms
 from covalent._workflow.electron import Electron
 
 from quacc.calculators.vasp import Vasp
-from quacc.schemas.vasp import summarize_run
+from quacc.schemas.vasp import VaspSchema, summarize_run
 from quacc.util.calc import run_calc
 
 
 @ct.electron
 def mp_prerelax_job(
-    atoms: Atoms | dict[Literal["atoms"], Atoms],
+    atoms: Atoms | dict,
     preset: str | None = "MPScanSet",
     calc_swaps: dict | None = None,
-) -> dict:
+) -> VaspSchema:
     """
     Function to pre-relax a structure with Materials Project settings.
     By default, this uses a PBEsol pre-relax step.
@@ -40,7 +38,7 @@ def mp_prerelax_job(
 
     Returns
     -------
-    dict
+    VaspSchema
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
     atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
@@ -58,10 +56,10 @@ def mp_prerelax_job(
 
 @ct.electron
 def mp_relax_job(
-    atoms: Atoms | dict[Literal["atoms"], Atoms],
+    atoms: Atoms | dict,
     preset: str | None = "MPScanSet",
     calc_swaps: dict | None = None,
-) -> dict:
+) -> VaspSchema:
     """
     Function to relax a structure with Materials Project settings.
     By default, this uses an r2SCAN relax step.
@@ -77,7 +75,7 @@ def mp_relax_job(
 
     Returns
     -------
-    dict
+    VaspSchema
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
     atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
@@ -91,12 +89,12 @@ def mp_relax_job(
 
 
 def mp_relax_flow(
-    atoms: Atoms | dict[Literal["atoms"], Atoms],
+    atoms: Atoms | dict,
     prerelax_electron: Electron | None = mp_prerelax_job,
     relax_electron: Electron | None = mp_relax_job,
     prerelax_kwargs: dict | None = None,
     relax_kwargs: dict | None = None,
-) -> dict:
+) -> VaspSchema:
     """
     Workflow consisting of:
 
@@ -119,7 +117,7 @@ def mp_relax_flow(
 
     Returns
     -------
-    dict
+    VaspSchema
         Dictionary results from quacc.schemas.vasp.summarize_run
     """
     prerelax_kwargs = prerelax_kwargs or {}
@@ -146,4 +144,5 @@ def mp_relax_flow(
     # TODO: Also, copy the WAVECAR from the prerelaxation to the relaxation
 
     # Run the relax
+    return relax_electron(prerelax_results, **relax_kwargs)
     return relax_electron(prerelax_results, **relax_kwargs)

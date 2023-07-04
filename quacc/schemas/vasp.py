@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import os
 import warnings
+from typing import TypeVar
 
 from ase import Atoms
 from emmet.core.tasks import TaskDoc
@@ -15,6 +16,8 @@ from quacc.util.atoms import prep_next_run as prep_next_run_
 from quacc.util.dicts import clean_dict
 from quacc.util.pop_analysis import bader_runner
 
+VaspSchema = TypeVar("VaspSchema")
+
 
 def summarize_run(
     atoms: Atoms,
@@ -24,7 +27,7 @@ def summarize_run(
     check_convergence: bool = True,
     remove_empties: bool = False,
     additional_fields: dict | None = None,
-) -> dict:
+) -> VaspSchema:
     """
     Get tabulated results from a VASP run and store them in a database-friendly format.
 

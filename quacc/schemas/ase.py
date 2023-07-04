@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import os
 import warnings
+from typing import TypedDict, TypeVar
 
 import numpy as np
 from ase import units
@@ -16,9 +17,14 @@ from ase.thermochemistry import IdealGasThermo
 from ase.vibrations import Vibrations
 from atomate2.utils.path import get_uri
 
-from quacc.schemas.atoms import atoms_to_metadata
+from quacc.schemas.atoms import AtomsSchema, atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
 from quacc.util.dicts import clean_dict
+
+RunSchema = TypeVar("RunSchema")
+OptSchema = TypeVar("OptSchema")
+VibSchema = TypeVar("VibSchema")
+ThermoSchema = TypeVar("ThermoSchema")
 
 
 def summarize_run(
@@ -28,7 +34,7 @@ def summarize_run(
     prep_next_run: bool = True,
     remove_empties: bool = False,
     additional_fields: dict | None = None,
-) -> dict:
+) -> RunSchema:
     """
     Get tabulated results from an Atoms object and calculator and store them in a database-friendly format.
     This is meant to be compatible with all calculator types.
@@ -155,7 +161,7 @@ def summarize_opt_run(
     prep_next_run: bool = True,
     remove_empties: bool = False,
     additional_fields: dict | None = None,
-) -> dict:
+) -> OptSchema:
     """
     Get tabulated results from an ASE Atoms trajectory and store them in a database-friendly format.
     This is meant to be compatible with all calculator types.
@@ -311,7 +317,7 @@ def summarize_vib_run(
     charge_and_multiplicity: tuple[int, int] | None = None,
     remove_empties: bool = False,
     additional_fields: dict | None = None,
-) -> dict:
+) -> VibSchema:
     """
     Get tabulated results from an ASE Vibrations object and store them in a database-friendly format.
 
@@ -473,7 +479,7 @@ def summarize_thermo_run(
     charge_and_multiplicity: tuple[int, int] | None = None,
     remove_empties: bool = False,
     additional_fields: dict | None = None,
-) -> dict:
+) -> ThermoSchema:
     """
     Get tabulated results from an ASE IdealGasThermo object and store them in a database-friendly format.
 

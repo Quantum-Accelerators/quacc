@@ -13,7 +13,7 @@ from quacc.recipes.emt.core import relax_job, static_job
 
 @python_app
 def bulk_to_slabs_app(
-    atoms: Atoms | dict[Literal["atoms"], Atoms],
+    atoms: Atoms | dict,
     slabgen_kwargs: dict | None = None,
     slab_relax_app: PythonApp = python_app(relax_job),
     slab_static_app: PythonApp | None = python_app(static_job),

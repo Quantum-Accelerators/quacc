@@ -4,6 +4,7 @@ from __future__ import annotations
 from ase import Atoms
 from prefect import flow
 
+from quacc.schemas.ase import OptSchema, RunSchema
 from quacc.util.slabs import make_max_slabs_from_bulk
 
 
@@ -18,7 +19,7 @@ def bulk_to_slabs_flow(
     slabgen_kwargs: dict | None = None,
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
-) -> list[dict]:
+) -> list[RunSchema | OptSchema]:
     """
     Workflow consisting of:
 

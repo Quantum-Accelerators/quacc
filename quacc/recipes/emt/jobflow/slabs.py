@@ -11,7 +11,7 @@ from quacc.util.slabs import make_max_slabs_from_bulk
 
 
 def bulk_to_slabs_flow(
-    atoms: Atoms | dict[Literal["atoms"], Atoms],
+    atoms: Atoms | dict,
     slabgen_kwargs: dict | None = None,
     slab_relax_job: job = job(relax_job),
     slab_static_job: job | None = job(static_job),
