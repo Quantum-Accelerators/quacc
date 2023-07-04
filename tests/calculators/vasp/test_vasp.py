@@ -503,6 +503,13 @@ def test_ncore():
     assert calc.int_params["ncore"] == 1
     assert calc.int_params["npar"] is None
 
+    calc = Vasp(atoms, npar=4, lelf=True)
+    assert calc.int_params["npar"] == 1
+
+    calc = Vasp(atoms, ncore=4, lelf=True)
+    assert calc.int_params["npar"] == 1
+    assert calc.int_params["ncore"] is None
+
 
 def test_ismear():
     atoms = bulk("Cu")
