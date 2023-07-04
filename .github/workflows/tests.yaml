@@ -51,7 +51,7 @@ jobs:
           covalent start
 
       - name: Run tests with pytest
-        run: pytest --ignore=tests/jobflow_tests --cov=quacc --cov-report=xml
+        run: pytest --ignore=tests/jobflow_tests --ignore=tests/recipes/qchem --cov=quacc --cov-report=xml
 
       - name: Stop Covalent server
         run: covalent stop
@@ -276,7 +276,7 @@ jobs:
           conda install -c conda-forge openbabel
 
       - name: Run tests with pytest
-        run: pytest tests/custodian_tests/test_qchem_custodian.py --cov=quacc --cov-report=xml
+        run: pytest tests/custodian_tests/test_qchem_custodian.py tests/recipes/qchem --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -288,7 +288,14 @@ jobs:
   release:
     runs-on: ubuntu-latest
     needs:
-      [tests-base, tests-tblite, tests-psi4, tests-dftbplus, tests-altwflows, tests-qchem]
+      [
+        tests-base,
+        tests-tblite,
+        tests-psi4,
+        tests-dftbplus,
+        tests-altwflows,
+        tests-qchem,
+      ]
     if: github.event_name == 'release' && needs.tests-base.result == 'success' && needs.tests-tblite.result == 'success' && needs.tests-psi4.result == 'success' && needs.tests-dftbplus.result == 'success' && needs.tests-altwflows.result == 'success' && needs.tests-qchem.result == 'success'
     steps:
       - name: Check out repo
