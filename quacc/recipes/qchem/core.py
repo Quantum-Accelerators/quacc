@@ -91,7 +91,7 @@ def static_job(
     if "method" not in overwrite_inputs["rem"]:
         overwrite_inputs["rem"]["method"] = method
 
-    flags = {
+    defaults = {
         "cores": n_cores,
         "charge": charge,
         "spin_multiplicity": spin_multiplicity,
@@ -101,10 +101,10 @@ def static_job(
             "pcm_dielectric": pcm_dielectric,
             "smd_solvent": smd_solvent,
             "overwrite_inputs": overwrite_inputs,
-            "max_scf_cycle": 200 if scf_algorithm.lower() == "gdm" else None,
+            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
         },
     }
-    flags = remove_dict_empties(flags)
+    flags = remove_dict_empties(defaults)
 
     calc = QChem(atoms, **flags)
     atoms.calc = calc
