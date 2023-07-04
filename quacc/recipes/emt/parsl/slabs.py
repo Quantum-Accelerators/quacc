@@ -10,6 +10,8 @@ from quacc.recipes.emt.core import relax_job, static_job
 from quacc.util.slabs import make_max_slabs_from_bulk
 
 
+# See https://github.com/Parsl/parsl/issues/2793 for why we need to strip the @ct.electron
+# decorator off the PythonApp kwargs
 def bulk_to_slabs_flow(
     atoms: Atoms | dict,
     slabgen_kwargs: dict | None = None,
