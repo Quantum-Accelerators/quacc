@@ -106,7 +106,7 @@ def teardown_module():
 
 
 def test_static_job(monkeypatch):
-    monkeypatch.setenv("QUACC_CHECK_CONVERGENCE", "False")
+    monkeypatch.setenv("QUACC_CHECK_CONVERGENCE", False)
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
     output = static_job(TEST_ATOMS)
@@ -179,7 +179,7 @@ def test_static_job(monkeypatch):
     reason="Sella must be installed.",
 )
 def test_relax_job(monkeypatch):
-    monkeypatch.setenv("QUACC_CHECK_CONVERGENCE", "False")
+    monkeypatch.setenv("QUACC_CHECK_CONVERGENCE", False)
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
     output = relax_job(
@@ -258,7 +258,7 @@ def test_relax_job(monkeypatch):
     reason="Sella must be installed.",
 )
 def test_ts_job(monkeypatch):
-    monkeypatch.setenv("QUACC_CHECK_CONVERGENCE", "False")
+    monkeypatch.setenv("QUACC_CHECK_CONVERGENCE", False)
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
     output = ts_job(
@@ -345,7 +345,7 @@ def test_ts_job(monkeypatch):
     reason="Sella must be installed.",
 )
 def test_irc_job(monkeypatch):
-    monkeypatch.setenv("QUACC_CHECK_CONVERGENCE", "False")
+    monkeypatch.setenv("QUACC_CHECK_CONVERGENCE", False)
 
     monkeypatch.setattr(QChem, "read_results", mock_read)
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute4)
