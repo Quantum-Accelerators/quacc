@@ -49,9 +49,10 @@ class QChem(FileIOCalculator):
     def __init__(
         self,
         input_atoms: Atoms,
-        cores: None | int = None,
         charge: None | int = None,
         spin_multiplicity: None | int = None,
+        method: str | None = None,
+        cores: None | int = None,
         qchem_input_params: dict | None = None,
         **fileiocalculator_kwargs,
     ):
@@ -76,6 +77,14 @@ class QChem(FileIOCalculator):
             raise ValueError(
                 "PCM and SMD cannot be employed simultaneously! Exiting..."
             )
+
+        if "rem" not in self.qchem_input_params["overwrite_inputs"]:
+            self.qchem_input_paramsoverwrite_inputs["rem"] = {}
+        if (
+            method
+            and "method" not in self.qchem_input_params["overwrite_inputs"]["rem"]
+        ):
+            self.qchem_input_params["overwrite_inputs"]["rem"]["method"] = method
 
         # We will save the parameters that have been passed to the Q-Chem calculator via FileIOCalculator's
         # self.default_parameters

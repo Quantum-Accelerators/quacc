@@ -84,15 +84,12 @@ def static_job(
     )
 
     overwrite_inputs = overwrite_inputs or {}
-    if "rem" not in overwrite_inputs:
-        overwrite_inputs["rem"] = {}
-    if "method" not in overwrite_inputs["rem"]:
-        overwrite_inputs["rem"]["method"] = method
 
     qchem_defaults = {
-        "cores": n_cores,
+        "method": method,
         "charge": charge,
         "spin_multiplicity": spin_multiplicity,
+        "cores": n_cores,
         "qchem_input_params": {
             "basis_set": basis,
             "scf_algorithm": scf_algorithm,
@@ -202,15 +199,12 @@ def relax_job(
             opt_flags["optimizer_kwargs"]["order"] = 0
 
     overwrite_inputs = overwrite_inputs or {}
-    if "rem" not in overwrite_inputs:
-        overwrite_inputs["rem"] = {}
-    if "method" not in overwrite_inputs["rem"]:
-        overwrite_inputs["rem"]["method"] = method
 
     qchem_defaults = {
-        "cores": n_cores,
+        "method": method,
         "charge": charge,
         "spin_multiplicity": spin_multiplicity,
+        "cores": n_cores,
         "qchem_input_params": {
             "basis_set": basis,
             "scf_algorithm": scf_algorithm,
@@ -321,15 +315,14 @@ def ts_job(
         raise RuntimeError("Only Sella should be used for TS optimization! Exiting...")
 
     overwrite_inputs = overwrite_inputs or {}
-    if "rem" not in overwrite_inputs:
-        overwrite_inputs["rem"] = {}
     if "method" not in overwrite_inputs["rem"]:
         overwrite_inputs["rem"]["method"] = method
 
     qchem_defaults = {
-        "cores": n_cores,
+        "method": method,
         "charge": charge,
         "spin_multiplicity": spin_multiplicity,
+        "cores": n_cores,
         "qchem_input_params": {
             "basis_set": basis,
             "scf_algorithm": scf_algorithm,
@@ -445,15 +438,12 @@ def irc_job(
         )
 
     overwrite_inputs = overwrite_inputs or {}
-    if "rem" not in overwrite_inputs:
-        overwrite_inputs["rem"] = {}
-    if "method" not in overwrite_inputs["rem"]:
-        overwrite_inputs["rem"]["method"] = method
 
     qchem_defaults = {
-        "cores": n_cores,
+        "method": method,
         "charge": charge,
         "spin_multiplicity": spin_multiplicity,
+        "cores": n_cores,
         "qchem_input_params": {
             "basis_set": basis,
             "scf_algorithm": scf_algorithm,
