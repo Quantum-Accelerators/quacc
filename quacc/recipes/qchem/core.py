@@ -14,6 +14,7 @@ from quacc.calculators.qchem import QChem
 from quacc.schemas.ase import OptSchema, RunSchema, summarize_opt_run, summarize_run
 from quacc.util.atoms import check_charge_and_spin
 from quacc.util.calc import run_ase_opt, run_calc
+from quacc.util.dicts import remove_dict_empties
 
 try:
     from sella import IRC, Sella
@@ -90,26 +91,25 @@ def static_job(
     if "method" not in overwrite_inputs["rem"]:
         overwrite_inputs["rem"]["method"] = method
 
-    qchem_input_params = {
-        "basis_set": basis,
-        "scf_algorithm": scf_algorithm,
-        "pcm_dielectric": pcm_dielectric,
-        "smd_solvent": smd_solvent,
-        "overwrite_inputs": overwrite_inputs,
+    flags = {
+        "cores": n_cores,
+        "charge": charge,
+        "spin_multiplicity": spin_multiplicity,
+        "qchem_input_params": {
+            "basis_set": basis,
+            "scf_algorithm": scf_algorithm,
+            "pcm_dielectric": pcm_dielectric,
+            "smd_solvent": smd_solvent,
+            "overwrite_inputs": overwrite_inputs,
+            "max_scf_cycle": 200 if scf_algorithm.lower() == "gdm" else None,
+        },
     }
+    flags = remove_dict_empties(flags)
 
-    if scf_algorithm.lower() == "gdm" and "max_scf_cycles" not in qchem_input_params:
-        qchem_input_params["max_scf_cycles"] = 200
-
-    calc = QChem(
-        input_atoms=atoms,
-        cores=n_cores,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
-        qchem_input_params=qchem_input_params,
-    )
+    calc = QChem(atoms, **flags)
     atoms.calc = calc
     final_atoms = run_calc(atoms)
+
     return summarize_run(
         final_atoms,
         input_atoms=atoms,
