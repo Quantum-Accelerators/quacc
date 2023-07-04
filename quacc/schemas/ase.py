@@ -1,6 +1,4 @@
-"""
-Schemas for storing ASE-based data
-"""
+"""Schemas for storing ASE-based data"""
 from __future__ import annotations
 
 import os
@@ -17,7 +15,7 @@ from ase.thermochemistry import IdealGasThermo
 from ase.vibrations import Vibrations
 from atomate2.utils.path import get_uri
 
-from quacc.schemas.atoms import AtomsSchema, atoms_to_metadata
+from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
 from quacc.util.dicts import clean_dict
 

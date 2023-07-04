@@ -183,8 +183,7 @@ def bulk_to_slabs_flow(
 
     if slab_static_electron is None:
         return _relax_distributed(slabs)
-    else:
-        return _relax_and_static_distributed(slabs)
+    return _relax_and_static_distributed(slabs)
 
 
 def slab_to_ads_flow(
@@ -251,5 +250,4 @@ def slab_to_ads_flow(
 
     if slab_static_electron is None:
         return _relax_distributed(ads_slabs)
-    else:
-        return _relax_and_static_distributed(ads_slabs)
+    return _relax_and_static_distributed(ads_slabs)

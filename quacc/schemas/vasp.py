@@ -1,6 +1,4 @@
-"""
-Schemas for VASP
-"""
+"""Schemas for VASP"""
 from __future__ import annotations
 
 import os

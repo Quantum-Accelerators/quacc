@@ -1,6 +1,4 @@
-"""
-Core recipes for the tblite code
-"""
+"""Core recipes for the tblite code"""
 from __future__ import annotations
 
 from typing import Literal
@@ -20,7 +18,6 @@ from quacc.schemas.ase import (
     summarize_thermo_run,
     summarize_vib_run,
 )
-from quacc.schemas.atoms import AtomsSchema
 from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
 from quacc.util.thermo import ideal_gas
 

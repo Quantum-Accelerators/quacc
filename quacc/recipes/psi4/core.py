@@ -9,7 +9,6 @@ from ase.calculators.psi4 import Psi4
 from monty.dev import requires
 
 from quacc.schemas.ase import RunSchema, summarize_run
-from quacc.schemas.atoms import AtomsSchema
 from quacc.util.calc import run_calc
 from quacc.util.dicts import remove_dict_empties
 
