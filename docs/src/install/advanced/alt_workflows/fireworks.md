@@ -83,7 +83,7 @@ job_name: quacc_firework
 qos: regular
 pre_rocket: |
   module load vasp
-  export QUACC_VASP_PARALLEL_CMD="srun -N 2 --ntasks-per-node=24"
+  export QUACC_VASP_PARALLEL_CMD="srun -N 2 --ntasks-per-node=24 --cpu_bind=cores"
 ```
 
 In the above example, you would need to change the path in the `rocket_launch` field to the correct path to your `my_fworker.yaml`. The nodes, walltime, account, and qos are the corresponding parameters for your queuing system. Finally, anything in the `pre_rocket` field will be executed before the job begins running. It is a good place to load modules and set environment variables. A representative example has been provided above.

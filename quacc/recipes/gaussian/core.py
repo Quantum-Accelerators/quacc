@@ -2,12 +2,13 @@
 from __future__ import annotations
 
 import multiprocessing
+from typing import Literal
 
 import covalent as ct
 from ase import Atoms
 from ase.calculators.gaussian import Gaussian
 
-from quacc.schemas.cclib import summarize_run
+from quacc.schemas.cclib import cclibSchema, summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.dicts import remove_dict_empties
 
@@ -17,20 +18,20 @@ GEOM_FILE = LOG_FILE
 
 @ct.electron
 def static_job(
-    atoms: Atoms,
+    atoms: Atoms | dict,
     charge: int | None = None,
     multiplicity: int | None = None,
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
     calc_swaps: dict | None = None,
-) -> dict:
+) -> cclibSchema:
     """
     Carry out a single-point calculation.
 
     Parameters
     ----------
     atoms
-        Atoms object
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     charge
         Charge of the system. If None, this is determined from the sum of
         `atoms.get_initial_charges().`
@@ -62,10 +63,10 @@ def static_job(
 
     Returns
     -------
-    dict
+    RunSchema
         Dictionary of results from `quacc.schemas.cclib.summarize_run`
     """
-
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     calc_swaps = calc_swaps or {}
 
     charge = int(atoms.get_initial_charges().sum()) if charge is None else charge
@@ -112,14 +113,14 @@ def relax_job(
     basis: str = "def2-tzvp",
     freq: bool = False,
     calc_swaps: dict | None = None,
-) -> dict:
+) -> cclibSchema:
     """
     Carry out a geometry optimization.
 
     Parameters
     ----------
     atoms
-        Atoms object
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     charge
         Charge of the system. If None, this is determined from the sum of
         `atoms.get_initial_charges()`.
@@ -153,10 +154,10 @@ def relax_job(
 
     Returns
     -------
-    dict
+    RunSchema
         Dictionary of results from `quacc.schemas.cclib.summarize_run`
     """
-
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     calc_swaps = calc_swaps or {}
 
     charge = int(atoms.get_initial_charges().sum()) if charge is None else charge

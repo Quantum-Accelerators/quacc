@@ -1,25 +1,29 @@
 """Core recipes for VASP"""
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Literal
+
 import covalent as ct
 from ase import Atoms
 
 from quacc.calculators.vasp import Vasp
-from quacc.schemas.vasp import summarize_run
+from quacc.schemas.vasp import VaspSchema, summarize_run
 from quacc.util.calc import run_calc
 
 
 @ct.electron
 def static_job(
-    atoms: Atoms, preset: str | None = None, calc_swaps: dict | None = None
-) -> dict:
+    atoms: Atoms | dict,
+    preset: str | None = None,
+    calc_swaps: dict | None = None,
+) -> VaspSchema:
     """
     Carry out a single-point calculation.
 
     Parameters
     ----------
     atoms
-        Atoms object
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     preset
         Preset to use.
     calc_swaps
@@ -35,10 +39,10 @@ def static_job(
 
     Returns
     -------
-    dict
+    VaspSchema
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
-
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     calc_swaps = calc_swaps or {}
 
     defaults = {
@@ -60,18 +64,18 @@ def static_job(
 
 @ct.electron
 def relax_job(
-    atoms: Atoms,
+    atoms: Atoms | dict,
     preset: str | None = None,
     relax_volume: bool = True,
     calc_swaps: dict | None = None,
-) -> dict:
+) -> VaspSchema:
     """
     Relax a structure.
 
     Parameters
     ----------
     atoms
-        Atoms object
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     preset
         Preset to use.
     relax_volume
@@ -91,10 +95,10 @@ def relax_job(
 
     Returns
     -------
-    dict
+    VaspSchema
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
-
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     calc_swaps = calc_swaps or {}
 
     defaults = {
@@ -117,12 +121,12 @@ def relax_job(
 
 @ct.electron
 def double_relax_job(
-    atoms: Atoms,
+    atoms: Atoms | dict,
     preset: str | None = None,
     relax_volume: bool = True,
     calc_swaps1: dict | None = None,
     calc_swaps2: dict | None = None,
-) -> dict:
+) -> dict[Literal["relax1", "relax2"], VaspSchema]:
     """
     Double-relax a structure. This is particularly useful for a few reasons:
 
@@ -137,7 +141,7 @@ def double_relax_job(
     Parameters
     ----------
     atoms
-        Atoms object
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     preset
         Preset to use.
     relax_volume
@@ -150,10 +154,10 @@ def double_relax_job(
 
     Returns
     -------
-    {"relax1": dict, "relax2": dict}
+    {"relax1": VaspSchema, "relax2": VaspSchema}
         Dictionaries of the type quacc.schemas.vasp.summarize_run.
     """
-
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     calc_swaps1 = calc_swaps1 or {}
     calc_swaps2 = calc_swaps2 or {}
 

@@ -56,7 +56,6 @@ result = ct.get_result(dispatch_id, wait=True) # 9
 ### Parsl
 
 ```python
-import parsl
 from parsl import python_app
 
 @python_app
@@ -68,9 +67,7 @@ def mult(a, b):
     return a * b
 
 def workflow(a, b, c):
-    future1 = add(a, b)
-    future2 = mult(future1.result(), c)
-    return future2
+    return mult(add(a, b), c)
 
 result = workflow(1, 2, 3).result() # 9
 ```
@@ -183,7 +180,6 @@ result = ct.get_result(dispatch_id, wait=True) # e.g. [6, 6, 6]
 ### Parsl
 
 ```python
-import parsl
 from parsl import join_app, python_app
 
 @python_app
@@ -197,10 +193,13 @@ def make_more(val):
     return [val] * random.randint(2, 5)
 
 @join_app
+def add_distributed(vals, c):
+    return [add(val, c) for val in vals]
+
 def workflow(a, b, c):
     future1 = add(a, b)
-    future2 = make_more(future1.result())
-    return [add(val, c) for val in future2.result()]
+    future2 = make_more(future1)
+    return add_distributed(future2, c)
 
 result = workflow(1, 2, 3).result() # e.g. [6, 6, 6]
 ```

@@ -57,7 +57,7 @@ atoms = bulk("Cu")
 
 # Define the compute jobs
 job1 = job(relax_job)(atoms)
-job2 = job(static_job)(job1.output["atoms"])
+job2 = job(static_job)(job1.output)
 
 # Define the workflow
 workflow = Flow([job1, job2])
@@ -91,7 +91,7 @@ atoms = bulk("Cu")
 
 # Construct the Flow
 job1 = job(relax_job)(atoms)
-job2 = job(bulk_to_slabs_flow)(job1.output["atoms"])
+job2 = job(bulk_to_slabs_flow)(job1.output)
 workflow = Flow([job1, job2])
 
 # Run the workflow locally
@@ -119,7 +119,7 @@ atoms = bulk("Cu")
 
 # Construct the Flow
 job1 = job(relax_job)(atoms)
-job2 = job(bulk_to_slabs_flow)(job1.output["atoms"])
+job2 = job(bulk_to_slabs_flow)(job1.output)
 workflow = Flow([job1, job2])
 
 # Run the workflow locally

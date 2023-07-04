@@ -36,7 +36,7 @@ def workflow(atoms):
     future1 = task(relax_job).submit(atoms)
 
     # Call Task 2, which takes the output of Task 1 as input
-    future2 = task(static_job).submit(future1.result()["atoms"])
+    future2 = task(static_job).submit(future1.result())
 
     return future2.result()
 
@@ -106,7 +106,7 @@ from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 @flow
 def workflow(atoms):
     future1 = task(relax_job).submit(atoms)
-    future2 = task(bulk_to_slabs_flow).submit(future1.result()["atoms"], slab_static_electron=None)
+    future2 = task(bulk_to_slabs_flow).submit(future1.result(), slab_static_electron=None)
 
     return future2.result()
 
@@ -135,7 +135,7 @@ from quacc.recipes.emt.prefect.slabs import bulk_to_slabs_flow
 @flow
 def workflow(atoms):
     future1 = task(relax_job).submit(atoms)
-    result = bulk_to_slabs_flow(future1.result()["atoms"], task(relax_job), None)
+    result = bulk_to_slabs_flow(future1.result(), task(relax_job), None)
 
     return result
 
@@ -160,7 +160,7 @@ To run Prefect workflows with an agent, on the computing environment where you w
 
 To modify where tasks are run, set the `task_runner` keyword argument of the corresponding `@flow` decorator. The jobs in this scenario would be submitted from a login node.
 
-An example is shown below for setting up a task runner compatible with the NERSC Perlmutter machine. By default, {obj}`make_runner` will generate a {obj}`dask-jobqueue.SLURMCluster` object.
+An example is shown below for setting up a task runner compatible with the NERSC Perlmutter machine. By default, {obj}`make_runner` will generate a `prefect_dask.DaskTaskRunner` composed of a `jobqueue.SLURMCluster` object.
 
 ```python
 from quacc.util.wflows import make_runner
