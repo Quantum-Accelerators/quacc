@@ -26,7 +26,7 @@ def teardown_module():
 STORE = jf.JobStore(MemoryStore())
 
 
-def test_tutorial1():
+def test_jobflow_tutorial1():
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
 
@@ -37,7 +37,7 @@ def test_tutorial1():
     jf.run_locally(job, store=STORE, create_folders=True, ensure_success=True)
 
 
-def test_tutorial2():
+def test_jobflow_tutorial2():
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
 
@@ -52,7 +52,7 @@ def test_tutorial2():
     jf.run_locally(workflow, store=STORE, create_folders=True)
 
 
-def test_tutorial3():
+def test_jobflow_tutorial3():
     # Define the Atoms object
     atoms = bulk("Cu")
 
@@ -65,7 +65,7 @@ def test_tutorial3():
     jf.run_locally(workflow, store=STORE, create_folders=True)
 
 
-def comparison1():
+def test_jobflow_comparison1():
     @jf.job
     def add(a, b):
         return a + b
@@ -82,7 +82,7 @@ def comparison1():
     assert responses[job2.uuid][1].output == 9
 
 
-def comparison2():
+def test_jobflow_comparison2():
     @jf.job
     def add(a, b):
         return a + b
@@ -108,7 +108,7 @@ def comparison2():
     jf.run_locally(flow, ensure_success=True)  # [6, 6, 6] in final 3 jobs
 
 
-def test_emt_flow():
+def test_jobflow_emt_flow():
     from quacc.recipes.emt.jobflow.slabs import bulk_to_slabs_flow
 
     store = jf.JobStore(MemoryStore())
