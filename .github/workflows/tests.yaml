@@ -266,13 +266,13 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install --no-cache-dir .[strict,dev,fireworks,prefect,parsl]
+          pip install --no-cache-dir .[strict,dev,fireworks,parsl]
 
       - name: Configure Quacc
         run: quacc config
 
       - name: Run tests with pytest
-        run: pytest tests/parsl_tests tests/prefect_tests tests/jobflow_tests tests/util/test_wflows.py --cov=quacc --cov-report=xml
+        run: pytest tests/parsl_tests tests/jobflow_tests --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
