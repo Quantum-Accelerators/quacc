@@ -139,7 +139,7 @@ class QChem(FileIOCalculator):
         run_qchem_custodian_file = os.path.abspath(inspect.getfile(custodian_qchem))
         return (
             f"python {run_qchem_custodian_file} {self.cores}"
-            if self.cores is not None
+            if self.cores > 1
             else f"python {run_qchem_custodian_file}"
         )
 
