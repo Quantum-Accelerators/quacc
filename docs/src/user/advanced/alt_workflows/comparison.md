@@ -72,28 +72,6 @@ def workflow(a, b, c):
 result = workflow(1, 2, 3).result() # 9
 ```
 
-### Prefect
-
-```python
-from prefect import task, flow
-
-@task
-def add(a, b):
-    return a + b
-
-@task
-def mult(a, b):
-    return a * b
-
-@flow
-def workflow(a, b, c):
-    future1 = add.submit(a, b)
-    future2 = mult.submit(future1.result(), c)
-    return future2
-
-result = workflow(1, 2, 3).result() # 9
-```
-
 ### Jobflow
 
 ```python
@@ -202,29 +180,6 @@ def workflow(a, b, c):
     return add_distributed(future2, c)
 
 result = workflow(1, 2, 3).result() # e.g. [6, 6, 6]
-```
-
-### Prefect
-
-```python
-import random
-from prefect import task, flow
-
-@task
-def add(a, b):
-    return a + b
-
-@task
-def make_more(val):
-    return [val] * random.randint(2, 5)
-
-@flow
-def workflow(a, b, c):
-    future1 = add.submit(a, b)
-    future2 = make_more.submit(future1.result())
-    return [add.submit(val, c).result() for val in future2.result()]
-
-result = workflow(1, 2, 3) # e.g. [6, 6, 6]
 ```
 
 ### Jobflow
