@@ -37,8 +37,7 @@ Cons:
 
 - Defining the right configuration options for your desired HPC setup can be a challenge
 - The visual dashboard is not as user friendly as some other solutions
-- It is not designed for workflows with steps running across multiple resources
-- The concept of always returning a "future" object can be confusing for new users
+- Challenging to orchestrate workflows with steps running across heterogeneous resources
 
 ## Jobflow + FireWorks
 

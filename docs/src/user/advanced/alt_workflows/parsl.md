@@ -223,7 +223,7 @@ Now let's consider a more realistic scenario. Suppose we want to have a single S
 n_parallel_calcs = 4 # Number of quacc calculations to run in parallel
 n_nodes_per_calc = 2 # Number of nodes to reserve for each calculation
 n_cores_per_node = 48 # Number of CPU cores per node
-vasp_parallel_cmd = f"srun -N {n_nodes_per_calc} --ntasks={n_cores_per_node*n_nodes_per_calc} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
+vasp_parallel_cmd = f"srun -N {n_nodes_per_calc} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
 
 config = Config(
     max_idletime=300,
