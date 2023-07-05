@@ -13,7 +13,7 @@ _DEFAULT_CONFIG_FILE_PATH = os.path.expanduser("~/.quacc.yaml")
 __all__ = ["QuaccSettings"]
 
 
-class quaccSettings(BaseSettings):
+class QuaccSettings(BaseSettings):
     """
     Settings for quacc.
 
