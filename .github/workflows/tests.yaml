@@ -86,7 +86,7 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Install pip packages
-        run: pip install --no-cache-dir .[strict,dev,tblite]
+        run: pip install --no-cache-dir .[dev,tblite]
 
       - name: Configure Quacc
         run: quacc config
@@ -133,7 +133,7 @@ jobs:
           activate-environment: quacc-env
 
       - name: Install pip packages
-        run: pip install --no-cache-dir .[strict,dev]
+        run: pip install --no-cache-dir .[dev]
 
       - name: Configure Quacc
         run: quacc config
@@ -219,7 +219,7 @@ jobs:
           activate-environment: quacc-env
 
       - name: Install pip packages
-        run: pip install .[strict,dev,optimizers]
+        run: pip install .[dev,optimizers]
 
       - name: Install conda packages
         run: conda install -c conda-forge openbabel
