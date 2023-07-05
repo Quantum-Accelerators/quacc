@@ -1,10 +1,13 @@
 import os
 from shutil import rmtree
+from subprocess import Popen
 
 import pytest
 from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.calculators.lj import LennardJones
+from ase.io import read
+from monty.os.path import zpath
 
 from quacc.util.calc import run_ase_opt
 
@@ -54,7 +57,8 @@ def test_sella():
         gzip=False,
         optimizer_kwargs={"restart": None},
     )
-    traj = dyn.traj
+    Popen(f"gunzip {dyn.trajectory.filename}", shell=True).wait()
+    traj = read(zpath(dyn.trajectory.filename), index=":")
     assert traj[-1].calc.results is not None
     assert dyn.user_internal is False
 
@@ -67,6 +71,7 @@ def test_sella():
         gzip=False,
         optimizer_kwargs={"restart": None},
     )
-    traj = dyn.traj
+    Popen(f"gunzip {dyn.trajectory.filename}", shell=True).wait()
+    traj = read(zpath(dyn.trajectory.filename), index=":")
     assert traj[-1].calc.results is not None
     assert dyn.user_internal is True
