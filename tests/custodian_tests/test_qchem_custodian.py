@@ -8,9 +8,7 @@ except ImportError:
 
 
 class MockRun:
-    """
-    Mock Custodian run() function
-    """
+    "Mock Custodian run() function"
 
     @staticmethod
     def run():
