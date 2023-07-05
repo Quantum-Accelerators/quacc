@@ -249,7 +249,7 @@ config = Config(
 )
 ```
 
-In addition to some modified parameters, there are some new ones here too. We set `cores_per_worker` to a small value here so that the pilot job (e.g. the Parsl orchestrator) is allowed to be oversubscribed with scheduling processes. Setting `init_blocks`, `min_blocks`, and `max_blocks` like above ensures the right number of tasks are run.
+In addition to some modified parameters, there are some new ones here too. The most notable is the definition of `init_blocks`, `min_blocks`, and `max_blocks`, which set the number of active blocks (e.g. Slurm jobs) and can be modified to enable [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We also set `cores_per_worker` to a small value so that the pilot job (e.g. the Parsl orchestrator) is allowed to be oversubscribed with scheduling processes.
 
 ```{seealso}
 Dr. Logan Ward has a nice example on YouTube describing a very similar example [here](https://youtu.be/0V4Hs4kTyJs?t=398).
