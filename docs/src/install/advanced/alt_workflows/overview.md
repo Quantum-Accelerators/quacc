@@ -1,6 +1,6 @@
 # Overview
 
-Everyone's computing needs are different, so we ensured that Quacc is interoperable with a variety of modern workflow management tools. There are over [300+](https://workflows.community/systems) workflow management tools out there, so we can't possibly cover them all. Instead, we have focused on the most popular tools that we have tested and found to be compatible with Quacc with minimal additional coding required. The recommended solutions below each use a decorator-based approach to defining workflows, and the basic syntax is very similar across all of them.
+Everyone's computing needs are different, so we ensured that quacc is interoperable with a variety of modern workflow management tools. There are over [300+](https://workflows.community/systems) workflow management tools out there, so we can't possibly cover them all. Instead, we have focused on the most popular tools that we have tested and found to be compatible with quacc with minimal additional coding required. The recommended solutions below each use a decorator-based approach to defining workflows, and the basic syntax is very similar across all of them.
 
 ## Covalent
 
@@ -38,6 +38,7 @@ Cons:
 - Defining the right configuration options for your desired HPC setup can be a challenge
 - The visual dashboard is not as user friendly as some other solutions
 - Challenging to orchestrate workflows with steps running across heterogeneous resources
+- The concept of always returning a "future" object can be confusing for new users
 
 ## Jobflow + FireWorks
 

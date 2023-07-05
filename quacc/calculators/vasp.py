@@ -35,7 +35,7 @@ class Vasp(Vasp_):
         The input Atoms object to be used for the calculation.
     preset
         The name of a YAML file containing a list of INCAR parameters to use as a "preset" for the calculator.
-        Quacc will automatically look in the `VASP_PRESET_DIR` (default: quacc/presets/vasp) for the file, such
+        quacc will automatically look in the `VASP_PRESET_DIR` (default: quacc/presets/vasp) for the file, such
         that preset="BulkSet" is supported, for instance. The .yaml extension is not necessary. Any user-suppplied
         calculator **kwargs will override any corresponding preset values.
     use_custodian
@@ -60,7 +60,7 @@ class Vasp(Vasp_):
         If True, warnings will be raised when INCAR parameters are automatically changed.
     **kwargs
         Additional arguments to be passed to the VASP calculator, e.g. `xc='PBE'`, `encut=520`. Takes all valid
-        ASE calculator arguments, in addition to those custom to Quacc.
+        ASE calculator arguments, in addition to those custom to quacc.
 
     Returns
     -------
@@ -215,13 +215,13 @@ class Vasp(Vasp_):
             # Return the command flag
             run_vasp_custodian_file = os.path.abspath(inspect.getfile(custodian_vasp))
             return f"python {run_vasp_custodian_file}"
-        else:
-            if "ASE_VASP_COMMAND" not in os.environ and "VASP_SCRIPT" not in os.environ:
-                warnings.warn(
-                    "ASE_VASP_COMMAND or VASP_SCRIPT must be set in the environment to run VASP. See the ASE Vasp calculator documentation for details.",
-                    UserWarning,
-                )
-            return None
+
+        if "ASE_VASP_COMMAND" not in os.environ and "VASP_SCRIPT" not in os.environ:
+            warnings.warn(
+                "ASE_VASP_COMMAND or VASP_SCRIPT must be set in the environment to run VASP. See the ASE Vasp calculator documentation for details.",
+                UserWarning,
+            )
+        return None
 
     def _remove_unused_flags(self) -> dict:
         """

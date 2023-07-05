@@ -1,6 +1,6 @@
 ---
 name: Idea or Feature
-about: Propose a new feature to improve Quacc
+about: Propose a new feature to improve quacc
 title: ""
 labels: ["enhancement"]
 body:

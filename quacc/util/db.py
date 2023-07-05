@@ -1,6 +1,4 @@
-"""
-Utility functions for interfacing with databases
-"""
+"""Utility functions for interfacing with databases"""
 from __future__ import annotations
 
 import os
@@ -66,13 +64,13 @@ def covalent_to_db(
 
 def results_to_db(store: Store, results: dict | list[dict]) -> None:
     """
-    Store the results of a Quacc recipe in a user-specified Maggma Store.
+    Store the results of a quacc recipe in a user-specified Maggma Store.
     A UUID will be generated for each entry.
 
     Parameters
     ----------
     results
-        The output summary dictionary or list of dictionaries from a Quacc recipe
+        The output summary dictionary or list of dictionaries from a quacc recipe
     store
         The Maggma Store object to store the results in
 

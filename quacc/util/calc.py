@@ -1,6 +1,4 @@
-"""
-Utility functions for running ASE calculators
-"""
+"""Utility functions for running ASE calculators"""
 from __future__ import annotations
 
 import os
@@ -68,7 +66,7 @@ def run_calc(
     if not os.path.exists(scratch_dir):
         os.makedirs(scratch_dir)
 
-    tmpdir = mkdtemp(prefix="quacc-tmp-", dir=scratch_dir)
+    tmpdir = os.path.abspath(mkdtemp(prefix="quacc-tmp-", dir=scratch_dir))
     symlink = os.path.join(cwd, f"{os.path.basename(tmpdir)}-symlink")
 
     if os.name != "nt":
@@ -184,7 +182,7 @@ def run_ase_opt(
     ):
         optimizer_kwargs["internal"] = True
 
-    tmpdir = mkdtemp(prefix="quacc-tmp-", dir=scratch_dir)
+    tmpdir = os.path.abspath(mkdtemp(prefix="quacc-tmp-", dir=scratch_dir))
     symlink = os.path.join(cwd, f"{os.path.basename(tmpdir)}-symlink")
 
     if os.name != "nt":
@@ -214,10 +212,6 @@ def run_ase_opt(
     os.chdir(tmpdir)
     dyn.run(fmax=fmax, steps=max_steps)
     os.chdir(cwd)
-
-    # We attach the actual trajectory here. This is
-    # admittedly a bit of a monkeypatch...
-    dyn.traj = read(traj.filename, index=":")
 
     # Gzip files in tmpdir
     if gzip:
@@ -279,7 +273,7 @@ def run_ase_vib(
     if not os.path.exists(scratch_dir):
         os.makedirs(scratch_dir)
 
-    tmpdir = mkdtemp(prefix="quacc-tmp-", dir=scratch_dir)
+    tmpdir = os.path.abspath(mkdtemp(prefix="quacc-tmp-", dir=scratch_dir))
     symlink = os.path.join(cwd, f"{os.path.basename(tmpdir)}-symlink")
 
     if os.name != "nt":
