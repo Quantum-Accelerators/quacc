@@ -175,7 +175,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install --no-cache-dir .[strict,dev,fireworks,prefect,parsl]
+          pip install --no-cache-dir .[dev,fireworks,prefect,parsl]
 
       - name: Configure Quacc
         run: quacc config
