@@ -257,12 +257,14 @@ def summarize_opt_run(
     if check_convergence and not is_converged:
         raise ValueError("Optimization did not converge.")
 
-    # Get trajectory (need to gunzip/gzip to workaround ASE bug #1263)
+    # Get trajectory
     if not trajectory:
-        traj_filepath = zpath(dyn.trajectory.filename)
-        Popen(f"gunzip {traj_filepath}", shell=True).wait()
-        trajectory = read(traj_filepath, index=":")
-        Popen(f"gzip {traj_filepath}", shell=True).wait()
+        traj_filepath = dyn.trajectory.filename
+        try:
+            trajectory = read(zpath(traj_filepath), index=":")
+        except ValueError: Workaround for ASE bug #1263
+            Popen(f"gunzip {traj_filepath}.gz", shell=True).wait()
+            trajectory = read(traj_filepath, index=":")
     initial_atoms = trajectory[0]
     final_atoms = dyn.atoms.atoms if isinstance(dyn.atoms, Filter) else dyn.atoms
 
