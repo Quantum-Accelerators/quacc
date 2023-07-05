@@ -215,13 +215,13 @@ class Vasp(Vasp_):
             # Return the command flag
             run_vasp_custodian_file = os.path.abspath(inspect.getfile(custodian_vasp))
             return f"python {run_vasp_custodian_file}"
-        else:
-            if "ASE_VASP_COMMAND" not in os.environ and "VASP_SCRIPT" not in os.environ:
-                warnings.warn(
-                    "ASE_VASP_COMMAND or VASP_SCRIPT must be set in the environment to run VASP. See the ASE Vasp calculator documentation for details.",
-                    UserWarning,
-                )
-            return None
+
+        if "ASE_VASP_COMMAND" not in os.environ and "VASP_SCRIPT" not in os.environ:
+            warnings.warn(
+                "ASE_VASP_COMMAND or VASP_SCRIPT must be set in the environment to run VASP. See the ASE Vasp calculator documentation for details.",
+                UserWarning,
+            )
+        return None
 
     def _remove_unused_flags(self) -> dict:
         """
