@@ -42,7 +42,7 @@ jobs:
           pip install --no-cache-dir .[strict,dev,optimizers]
           pip install covalent-slurm-plugin
 
-      - name: Configure Quacc
+      - name: Configure quacc
         run: quacc config
 
       - name: Set up Covalent server
@@ -89,7 +89,7 @@ jobs:
         run: |
           pip install --no-cache-dir .[strict,dev,tblite]
 
-      - name: Configure Quacc
+      - name: Configure quacc
         run: quacc config
 
       - name: Run tests with pytest
@@ -134,7 +134,7 @@ jobs:
         run: |
           pip install --no-cache-dir .[strict,dev]
 
-      - name: Configure Quacc
+      - name: Configure quacc
         run: quacc config
 
       - name: Install conda packages
@@ -183,7 +183,7 @@ jobs:
         run: |
           pip install --no-cache-dir .[strict,dev]
 
-      - name: Configure Quacc
+      - name: Configure quacc
         run: quacc config
 
       - name: Install conda packages
@@ -268,7 +268,7 @@ jobs:
         run: |
           pip install --no-cache-dir .[strict,dev,fireworks,parsl]
 
-      - name: Configure Quacc
+      - name: Configure quacc
         run: quacc config
 
       - name: Run tests with pytest

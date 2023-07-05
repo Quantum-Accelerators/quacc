@@ -4,7 +4,7 @@
 
 ---
 
-# Quacc – The Quantum Accelerator 🦆
+# quacc – The Quantum Accelerator 🦆
 
 ![tests](https://github.com/quantum-accelerators/quacc/actions/workflows/tests.yaml/badge.svg)
 [![codecov](https://codecov.io/gh/Quantum-Accelerators/quacc/branch/main/graph/badge.svg?token=OJaOZAH30u)](https://codecov.io/gh/Quantum-Accelerators/quacc/tree/main)
@@ -14,7 +14,7 @@
 
 Quacc is a flexible and extensible platform for high-throughput computational materials science and quantum chemistry.
 
-The three main goals of Quacc are to:
+The three main goals of quacc are to:
 
 1. Reduce the barrier for running complex, mixed-code workflows for molecules and materials across distributed compute environments.
 
@@ -43,9 +43,9 @@ Includes the following sections:
 
 ## Citation
 
-If you use Quacc in your work, please cite it as follows:
+If you use quacc in your work, please cite it as follows:
 
-- A.S. Rosen, Quacc – The Quantum Accelerator, https://doi.org/10.5281/zenodo.7720998.
+- A.S. Rosen, quacc – The Quantum Accelerator, https://doi.org/10.5281/zenodo.7720998.
 
 ## Inspiration
 

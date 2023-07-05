@@ -1,4 +1,4 @@
-# Using Quacc with Jobflow
+# Using quacc with Jobflow
 
 ## Introduction
 
@@ -37,10 +37,10 @@ result = responses[job1.uuid][1].output
 print(result)
 ```
 
-The key thing to note is that we need to transform the Quacc recipe, which is a normal function, into a `Job` object. This can be done using the `@job` decorator and a new function definition or, more compactly, via `job(<function>)`. We chose to run the job locally, but other workflow managers supported by Jobflow can be imported and used.
+The key thing to note is that we need to transform the quacc recipe, which is a normal function, into a `Job` object. This can be done using the `@job` decorator and a new function definition or, more compactly, via `job(<function>)`. We chose to run the job locally, but other workflow managers supported by Jobflow can be imported and used.
 
 ```{note}
-Even though the Quacc recipes are defined as Covalent `Electron` objects via the `@ct.electron` decorator, this decorator will be ignored when using Jobflow.
+Even though the quacc recipes are defined as Covalent `Electron` objects via the `@ct.electron` decorator, this decorator will be ignored when using Jobflow.
 ```
 
 ### Running a Flow
@@ -78,7 +78,7 @@ Like before, we need to define the individual `Job` objects. Now though, we must
 
 For this example, let's consider a toy scenario where we wish to relax a bulk Cu structure, carve all possible slabs, and then run a new relaxation calculation on each slab (with no static calculation at the end). This is an example of a dynamic workflow.
 
-In Quacc, there are two types of recipes: individual compute tasks with the suffix `_job` and pre-made multi-step workflows with the suffix `_flow`. Here, we are interested in importing a pre-made workflow. Refer to the example below:
+In quacc, there are two types of recipes: individual compute tasks with the suffix `_job` and pre-made multi-step workflows with the suffix `_flow`. Here, we are interested in importing a pre-made workflow. Refer to the example below:
 
 ```python
 from jobflow immport job, Flow, run_locally
@@ -130,6 +130,6 @@ In this example, all the individual tasks and sub-tasks are run as separate jobs
 
 ## Learn More
 
-That ends the Jobflow section of the documentation. Continue to the ["Using Quacc with FireWorks"](fireworks.md) section to learn how to use Quacc with FireWorks, which is one of the manager options available with Jobflow to dispatch jobs in HPC environments.
+That ends the Jobflow section of the documentation. Continue to the ["Using quacc with FireWorks"](fireworks.md) section to learn how to use quacc with FireWorks, which is one of the manager options available with Jobflow to dispatch jobs in HPC environments.
 
 If you want to learn more about Jobflow, you can read the [Jobflow Documentation](https://materialsproject.github.io/jobflow/). Please refer to the [Jobflow Discussions Board](https://github.com/materialsproject/jobflow/discussions) for Jobflow-specific questions.

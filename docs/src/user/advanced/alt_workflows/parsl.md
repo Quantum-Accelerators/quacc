@@ -1,4 +1,4 @@
-# Using Quacc with Parsl
+# Using quacc with Parsl
 
 ## Introduction
 
@@ -52,7 +52,7 @@ future2 = static_app(future1.result())
 print(future2.result())
 ```
 
-You can see that it is quite trivial to set up a Parsl workflow using the recipes within Quacc. We define the full workflow as a function that stitches together the individual `@python_app` workflow steps.
+You can see that it is quite trivial to set up a Parsl workflow using the recipes within quacc. We define the full workflow as a function that stitches together the individual `@python_app` workflow steps.
 
 The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object. Technically, we did not need to call `future1.result()` because Parsl will automatically know that it cannot run `static_app` until `future1` is resolved. Nonetheless, we have included it here for clarity.
 
@@ -95,7 +95,7 @@ If you monitor the output, you'll notice that the two jobs are being run in para
 
 For this example, let's consider a toy scenario where we wish to relax a bulk Cu structure, carve all possible slabs, and then run a new relaxation calculation on each slab (with no static calculation at the end). This is an example of a dynamic workflow.
 
-In Quacc, there are two types of recipes: individual compute tasks with the suffix `_job` and pre-made multi-step workflows with the suffix `_flow`. Here, we are interested in importing a pre-made workflow. Refer to the example below:
+In quacc, there are two types of recipes: individual compute tasks with the suffix `_job` and pre-made multi-step workflows with the suffix `_flow`. Here, we are interested in importing a pre-made workflow. Refer to the example below:
 
 ```python
 from parsl import python_app
@@ -211,7 +211,7 @@ The individual arguments are as follows:
 - `worker_init`: Commands to run before the job starts, typically used for activating a given Python environment.
 - `walltime`: The maximum amount of time to allow the job to run in `HH:MM:SS` format.
 - `cmd_timeout`: The maximum time to wait (in seconds) for the job scheduler info to be retrieved/sent.
-- `launcher`: The type of Launcher to use. Note that `SimpleLauncher()` must be used instead of the commonly used `SrunLauncher()` to allow Quacc subprocesses to launch their own `srun` commands.
+- `launcher`: The type of Launcher to use. Note that `SimpleLauncher()` must be used instead of the commonly used `SrunLauncher()` to allow quacc subprocesses to launch their own `srun` commands.
 
 Unlike some other workflow engines, Parsl (by default) is built for "jobpacking" where the allocated nodes continually pull in new workers (until the walltime is reached). This makes it possible to request a large number of nodes that continually pull in new jobs rather than submitting a large number of small jobs to the scheduler, which can be more efficient. In other words, don't be surprised if the Slurm job continues to run even when your submitted task has completed.
 
@@ -223,7 +223,7 @@ Now let's consider a more realistic scenario. Suppose we want to have a single S
 n_parallel_calcs = 4 # Number of quacc calculations to run in parallel
 n_nodes_per_calc = 2 # Number of nodes to reserve for each calculation
 n_cores_per_node = 48 # Number of CPU cores per node
-vasp_parallel_cmd = f"srun -N {n_nodes_per_calc} --ntasks={n_cores_per_node*n_nodes_per_calc} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
+vasp_parallel_cmd = f"srun -N {n_nodes_per_calc} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
 
 config = Config(
     max_idletime=300,
@@ -249,7 +249,7 @@ config = Config(
 )
 ```
 
-In addition to some modified parameters, there are some new ones here too. We set `cores_per_worker` to a small value here so that the pilot job (e.g. the Parsl orchestrator) is allowed to be oversubscribed with scheduling processes. Setting `init_blocks`, `min_blocks`, and `max_blocks` like above ensures the right number of tasks are run.
+In addition to some modified parameters, there are some new ones here too. The most notable is the definition of `init_blocks`, `min_blocks`, and `max_blocks`, which set the number of active blocks (e.g. Slurm jobs) and can be modified to enable [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We also set `cores_per_worker` to a small value so that the pilot job (e.g. the Parsl orchestrator) is allowed to be oversubscribed with scheduling processes.
 
 ```{seealso}
 Dr. Logan Ward has a nice example on YouTube describing a very similar example [here](https://youtu.be/0V4Hs4kTyJs?t=398).

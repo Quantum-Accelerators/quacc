@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import os
 import warnings
+from subprocess import Popen
 from typing import TypeVar
 
 import numpy as np
@@ -15,6 +16,7 @@ from ase.thermochemistry import IdealGasThermo
 from ase.vibrations import Vibrations
 from ase.vibrations.data import VibrationsData
 from atomate2.utils.path import get_uri
+from monty.os.path import zpath
 
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
@@ -303,18 +305,10 @@ def summarize_opt_run(
     if check_convergence and not is_converged:
         raise ValueError("Optimization did not converge.")
 
-    # Get trajectory
-    if hasattr(dyn, "traj"):
-        traj = dyn.traj
-    elif (
-        hasattr(dyn, "trajectory")
-        and hasattr(dyn.trajectory, "filename")
-        and os.path.exists(dyn.trajectory.filename)
-    ):
-        traj = read(dyn.trajectory.filename, index=":")
-    else:
-        raise FileNotFoundError("No trajectory found.")
-
+    # Get trajectory (need to gunzip/gzip to workaround ASE bug #1263)
+    Popen(f"gunzip {dyn.trajectory.filename}", shell=True).wait()
+    traj = read(zpath(dyn.trajectory.filename), index=":")
+    Popen(f"gzip {dyn.trajectory.filename}", shell=True).wait()
     initial_atoms = traj[0]
     final_atoms = dyn.atoms.atoms if isinstance(dyn.atoms, Filter) else dyn.atoms
 

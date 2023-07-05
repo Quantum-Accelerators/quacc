@@ -1,6 +1,6 @@
 # Advanced Topics
 
-Instructions for advanced topics when using Quacc.
+Instructions for advanced topics when using quacc.
 
 ```{toctree}
 database
