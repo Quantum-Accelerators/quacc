@@ -53,7 +53,7 @@ docs = [
     "sphinx-copybutton==0.5.2",
 ]
 strict = [
-    "ase @ https://gitlab.com/argon214/ase/-/archive/rosen-all-open-PRs/ase-rosen-all-open-PRs.zip",  # waiting on my PRs, then >3.22.1
+    "ase @ https://gitlab.com/ase/ase/-/archive/master/ase-master.zip",  # waiting on my PRs, then >3.22.1
     "atomate2 @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
     "cclib==1.7.2",
     "covalent==0.226.0rc0",  # waiting on > 0.222.0
