@@ -68,7 +68,7 @@ If you plan to use Psi4 with Quacc, you will need to install it prior to use. Th
 [Q-Chem](https://www.q-chem.com/) is a powerful, general-purpose molecular DFT code with a variety of features.
 ```
 
-If you plan to use Q-Chem with Quacc, you will need to install `openbabel` prior to use. This can be done via `conda install -c conda-forge openbabel`.
+If you plan to use Q-Chem with Quacc, you will need to install `openbabel` and `sella` (recommended) prior to use. This can be done via `pip install sella && conda install -c conda-forge openbabel`.
 
 ## tblite
 
