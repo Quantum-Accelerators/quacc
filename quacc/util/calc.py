@@ -1,6 +1,4 @@
-"""
-Utility functions for running ASE calculators
-"""
+"""Utility functions for running ASE calculators"""
 from __future__ import annotations
 
 import os
