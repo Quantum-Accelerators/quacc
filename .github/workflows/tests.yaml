@@ -51,7 +51,7 @@ jobs:
           covalent start
 
       - name: Run tests with pytest
-        run: pytest --ignore=tests/jobflow_tests --ignore=tests/recipes/qchem --cov=quacc --cov-report=xml
+        run: pytest --ignore=tests/jobflow_tests --cov=quacc --cov-report=xml
 
       - name: Stop Covalent server
         run: covalent stop
