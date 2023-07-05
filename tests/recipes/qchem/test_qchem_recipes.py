@@ -104,6 +104,7 @@ def teardown_module():
 
 
 def test_static_job(monkeypatch):
+    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
     output = static_job(TEST_ATOMS)
     assert output["atoms"] == TEST_ATOMS
     assert output["charge"] == 0
