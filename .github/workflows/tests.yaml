@@ -51,7 +51,7 @@ jobs:
           covalent start
 
       - name: Run tests with pytest
-        run: pytest -k 'not test_jobflow' --cov=quacc --cov-report=xml
+        run: pytest -k 'not tblite' -k 'not psi4' -k 'not dftb' -k 'not qchem' -k 'not jobflow' -k 'not fireworks' -k 'not parsl' -k 'not prefect' --cov=quacc --cov-report=xml
 
       - name: Stop Covalent server
         run: covalent stop
@@ -93,7 +93,7 @@ jobs:
         run: quacc config
 
       - name: Run tests with pytest
-        run: pytest tests/recipes/tblite --cov=quacc --cov-report=xml
+        run: pytest -k 'tblite' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -142,7 +142,7 @@ jobs:
           conda install -c psi4 psi4
 
       - name: Run tests with pytest
-        run: pytest tests/recipes/psi4 --cov=quacc --cov-report=xml
+        run: pytest -k 'psi4' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -191,7 +191,7 @@ jobs:
           conda install -c conda-forge dftbplus
 
       - name: Run tests with pytest
-        run: pytest tests/recipes/dftb --cov=quacc --cov-report=xml
+        run: pytest -k 'dftb' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -230,7 +230,7 @@ jobs:
         run: quacc config
 
       - name: Run tests with pytest
-        run: pytest tests/parsl_tests tests/prefect_tests tests/jobflow_tests tests/util/test_wflows.py --cov=quacc --cov-report=xml
+        run: pytest -k 'jobflow' -k 'fireworks' -k 'parsl' -k 'prefect' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -276,7 +276,7 @@ jobs:
           conda install -c conda-forge openbabel
 
       - name: Run tests with pytest
-        run: pytest tests/custodian_tests/test_qchem_custodian.py tests/recipes/qchem --cov=quacc --cov-report=xml
+        run: pytest -k 'qchem' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3

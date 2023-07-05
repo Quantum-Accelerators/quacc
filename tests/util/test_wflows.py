@@ -12,7 +12,7 @@ except ImportError:
     dask_prefect is None,
     reason="Dask and Prefect dependencies must be installed.",
 )
-def test_make_runner(capsys):
+def test_make_prefect_runner(capsys):
     # NOTE: I don't know how to either turn off the stdout/stderr
     # from dask-jobqueue or mock it.
     cluster_kwargs = {
@@ -28,7 +28,7 @@ def test_make_runner(capsys):
     dask_prefect is None,
     reason="Dask and Prefect dependencies must be installed.",
 )
-def test_launch_runner():
+def test_launch_prefect_runner():
     # NOTE: I don't know how to either turn off the stdout/stderr
     # from dask-jobqueue or mock it.
     cluster_kwargs = {
