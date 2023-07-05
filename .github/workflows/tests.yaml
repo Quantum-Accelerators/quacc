@@ -63,7 +63,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml
 
-  tests-tblite-dftbplus:
+  tests-tblite:
     strategy:
       fail-fast: true
       matrix:
@@ -86,16 +86,63 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Install pip packages
-        run: pip install --no-cache-dir .[dev,tblite]
+        run: |
+          pip install --no-cache-dir .[strict,dev,tblite]
+
+      - name: Configure Quacc
+        run: quacc config
+
+      - name: Run tests with pytest
+        run: pytest -k 'tblite' --cov=quacc --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        if: github.repository == 'quantum-accelerators/quacc'
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+
+  tests-dftbplus:
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.10"]
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Set up conda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          activate-environment: quacc-env
+
+      - name: Install pip packages
+        run: |
+          pip install --no-cache-dir .[strict,dev]
 
       - name: Configure Quacc
         run: quacc config
 
       - name: Install conda packages
-        run: conda install -c conda-forge dftbplus
+        run: |
+          conda install -c conda-forge dftbplus
 
       - name: Run tests with pytest
-        run: pytest -k 'tblite or dftb' --cov=quacc --cov-report=xml
+        run: pytest -k 'dftb' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -133,7 +180,7 @@ jobs:
           activate-environment: quacc-env
 
       - name: Install pip packages
-        run: pip install --no-cache-dir .[dev]
+        run: pip install --no-cache-dir .[strict,dev]
 
       - name: Configure Quacc
         run: quacc config
@@ -175,7 +222,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install --no-cache-dir .[dev,fireworks,prefect,parsl]
+          pip install --no-cache-dir .[strict,dev,fireworks,prefect,parsl]
 
       - name: Configure Quacc
         run: quacc config
@@ -242,12 +289,13 @@ jobs:
     needs:
       [
         tests-base,
-        tests-tblite-dftbplus,
+        tests-tblite,
+        tests-dftbplus,
         tests-psi4,
         tests-altwflows,
         tests-qchem,
       ]
-    if: github.event_name == 'release' && needs.tests-base.result == 'success' && needs.tests-tblite-dftbplus.result == 'success' && needs.tests-psi4.result == 'success' && needs.tests-altwflows.result == 'success' && needs.tests-qchem.result == 'success'
+    if: github.event_name == 'release' && needs.tests-base.result == 'success' && needs.tests-tblite.result == 'success' && needs.tests-dftbplus.result == 'success' && needs.tests-psi4.result == 'success' && needs.tests-altwflows.result == 'success' && needs.tests-qchem.result == 'success'
     steps:
       - name: Check out repo
         uses: actions/checkout@v3
