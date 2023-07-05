@@ -123,7 +123,7 @@ def test_run_ase_opt():
         optimizer_kwargs={"restart": None},
     )
     Popen(f"gunzip {dyn.trajectory.filename}", shell=True).wait()
-    traj = read(zpath(dyn.trajectory_filename), index=":")
+    traj = read(zpath(dyn.trajectory.filename), index=":")
     assert traj[-1].calc.results is not None
 
     dyn = run_ase_opt(
@@ -135,7 +135,7 @@ def test_run_ase_opt():
         optimizer_kwargs={"restart": None, "trajectory": "new_test.traj"},
     )
     Popen(f"gunzip {dyn.trajectory.filename}", shell=True).wait()
-    traj = read(zpath(dyn.trajectory_filename), index=":")
+    traj = read(zpath(dyn.trajectory.filename), index=":")
     assert traj[-1].calc.results is not None
 
     dyn = run_ase_opt(
@@ -150,7 +150,7 @@ def test_run_ase_opt():
         },
     )
     Popen(f"gunzip {dyn.trajectory.filename}", shell=True).wait()
-    traj = read(zpath(dyn.trajectory_filename), index=":")
+    traj = read(zpath(dyn.trajectory.filename), index=":")
     assert traj[-1].calc.results is not None
 
     with pytest.raises(ValueError):
