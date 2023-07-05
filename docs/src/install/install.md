@@ -11,16 +11,16 @@ If you are on a Windows machine, you will need to install and use the [Windows S
 3. Create a fresh Python environment by running `conda create -n quacc python=3.10`.
 4. Activate this environment via `conda activate quacc`.
 
-## Installing Quacc
+## Installing quacc
 
 ```{note}
-If you plan to use Quacc with a workflow manager, ensure that you install Quacc on all machines where the code will run.
+If you plan to use quacc with a workflow manager, ensure that you install quacc on all machines where the code will run.
 ```
 
 In your newly activated conda environment, run the following commands:
 
 ```bash
-# Install development version of Quacc
+# Install development version of quacc
 pip install git+https://github.com/quantum-accelerators/quacc.git
 
 # Set default configuration parameters
@@ -46,6 +46,6 @@ Quacc can be installed with several "extras," as outlined in the `pyproject.toml
 
 ### Development
 
-- `quacc[dev]`: Installs dependencies to enable local development of Quacc.
+- `quacc[dev]`: Installs dependencies to enable local development of quacc.
 - `quacc[docs]`: Installs dependencies to build the documentation.
 - `quacc[strict]`: Installs dependencies that match the test suite on GitHub.

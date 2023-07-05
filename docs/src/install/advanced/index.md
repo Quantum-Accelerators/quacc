@@ -1,6 +1,6 @@
 # Advanced Topics
 
-Installation instructions for advanced topics involving Quacc.
+Installation instructions for advanced topics involving quacc.
 
 ```{toctree}
 config_db

@@ -1,6 +1,6 @@
 # Alternate Workflow Engines
 
-Instructions for using Quacc with alternate workflow engines.
+Instructions for using quacc with alternate workflow engines.
 
 ```{toctree}
 comparison

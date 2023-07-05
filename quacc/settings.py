@@ -1,4 +1,4 @@
-"""Settings for Quacc"""
+"""Settings for quacc"""
 from __future__ import annotations
 
 import os
@@ -13,7 +13,7 @@ _DEFAULT_CONFIG_FILE_PATH = os.path.expanduser("~/.quacc.yaml")
 __all__ = ["QuaccSettings"]
 
 
-class QuaccSettings(BaseSettings):
+class quaccSettings(BaseSettings):
     """
     Settings for quacc.
 

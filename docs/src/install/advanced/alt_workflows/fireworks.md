@@ -2,11 +2,11 @@
 
 ## Introduction
 
-[FireWorks](https://github.com/materialsproject/fireworks) can be used to dispatch and monitor workflows, particularly those made using Jobflow. Follow the instructions below for how to use FireWorks with Quacc. For additional details, refer to the full [Fireworks documentation](https://github.com/materialsproject/fireworks).
+[FireWorks](https://github.com/materialsproject/fireworks) can be used to dispatch and monitor workflows, particularly those made using Jobflow. Follow the instructions below for how to use FireWorks with quacc. For additional details, refer to the full [Fireworks documentation](https://github.com/materialsproject/fireworks).
 
 ## Installation
 
-To install Quacc with support for FireWorks, run `pip install fireworks`.
+To install quacc with support for FireWorks, run `pip install fireworks`.
 
 ## FireWorks DB Setup
 

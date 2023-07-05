@@ -20,7 +20,7 @@ Once you start scaling up your calculations, we recommend hosting the Covalent s
 
 ## Optional Configuration
 
-Covalent has several [configuration options](https://docs.covalent.xyz/docs/user-documentation/how-to/customization/) that can be modified. Running `quacc config` automatically takes care of setting the ones that are critical for Quacc to run properly.
+Covalent has several [configuration options](https://docs.covalent.xyz/docs/user-documentation/how-to/customization/) that can be modified. Running `quacc config` automatically takes care of setting the ones that are critical for quacc to run properly.
 
 ```{important}
 If you ever delete your Covalent configuration (e.g. via `covalent purge`), you will need to re-run `quacc config`.
@@ -32,4 +32,4 @@ If you ever delete your Covalent configuration (e.g. via `covalent purge`), you 
 If you are just starting out, try running some test calculations locally first. Then come back and install the relevant Covalent plugins for your machines.
 ```
 
-Depending on where you wish to run your Quacc calculations, you may need to install the corresponding Covalent plugin, as described in the [Covalent plugin documentation](https://docs.covalent.xyz/docs/features/executor-plugins/exe). For production-quality calculations, we anticipate that most users will rely on the `SlurmExecutor`, which can be installed via `pip install covalent-slurm-plugin`.
+Depending on where you wish to run your quacc calculations, you may need to install the corresponding Covalent plugin, as described in the [Covalent plugin documentation](https://docs.covalent.xyz/docs/features/executor-plugins/exe). For production-quality calculations, we anticipate that most users will rely on the `SlurmExecutor`, which can be installed via `pip install covalent-slurm-plugin`.

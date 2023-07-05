@@ -1,6 +1,6 @@
 # Using a Database
 
-Oftentimes, it is beneficial to store the results in a database for easy querying (like the example below). This is quite simple to do in Quacc regardless of the workflow manager you are using.
+Oftentimes, it is beneficial to store the results in a database for easy querying (like the example below). This is quite simple to do in quacc regardless of the workflow manager you are using.
 
 ![Mongo example](../../_static/user/schema.gif)
 
@@ -40,7 +40,7 @@ For other workflow managers (or no workflow manager at all), you can still store
 from maggma.stores import MongoStore
 from quacc.util.db import results_to_db
 
-# Let `results` be an output (or list of outputs) from Quacc recipes
+# Let `results` be an output (or list of outputs) from quacc recipes
 
 # Define your database credentials
 store = MongoStore(

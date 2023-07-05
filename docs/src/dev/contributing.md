@@ -6,19 +6,19 @@ When developing new recipes, it is often helpful to start from an existing examp
 
 ## Steps to Contribute
 
-To contribute to Quacc, we recommend doing the following:
+To contribute to quacc, we recommend doing the following:
 
 1. [Fork the repository](https://docs.github.com/en/get-started/quickstart/fork-a-repo) to your personal GitHub account.
 2. [Clone this forked repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) to your local machine, e.g. via `git clone <repo url>.git`.
-3. In the newly downloaded `quacc` base directory, run `pip install -e .[dev]` to install Quacc in editable mode and with the development dependencies.
+3. In the newly downloaded `quacc` base directory, run `pip install -e .[dev]` to install quacc in editable mode and with the development dependencies.
 4. [Commit your changes](https://github.com/git-guides/git-commit) and [push them](https://github.com/git-guides/git-push) to your personal forked repository.
-5. Create a [pull request (PR)](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) to merge your changes into the main Quacc repository.
+5. Create a [pull request (PR)](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) to merge your changes into the main quacc repository.
 
-For reproducibility purposes, we strongly recommend installing Quacc in a fresh virtual environment.
+For reproducibility purposes, we strongly recommend installing quacc in a fresh virtual environment.
 
 ## Guidelines
 
-Please abide by the following guidelines when contributing code to Quacc:
+Please abide by the following guidelines when contributing code to quacc:
 
 1. All changes should have associated unit tests that pass. Code coverage should be maintained.
 
@@ -65,7 +65,7 @@ In general, please try to keep the code style consistent when possible. There ar
 
 ## Unit Tests
 
-All changes you make to Quacc should be accompanied by unit tests and should not break existing tests. To run the full test suite, run `pytest .` from the the `quacc/tests` directory.
+All changes you make to quacc should be accompanied by unit tests and should not break existing tests. To run the full test suite, run `pytest .` from the the `quacc/tests` directory.
 
 If you are adding recipes based on a code that can be readily installed via `pip` or `conda` (e.g. tblite, xtb-python, DFTB+, Psi4), then you can run these codes directly in the test suite. Preferably, you should use a small molecule or solid and cheap method so the unit tests run quickly. If the recipes you're adding are proprietary or not available via `pip` or `conda` (e.g. Gaussian, GULP), then you will need to [monkeypatch](https://docs.pytest.org/en/7.1.x/how-to/monkeypatch.html) certain functions to change their behavior during testing. For instance, we do not want to run VASP directly during unit tests and have mocked the `atoms.get_potential_energy()` function to always return a dummy value of -1.0 during unit tests. Any mocked functions can be found in the `conftest.py` files of the testing directory.
 
