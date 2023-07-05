@@ -39,7 +39,7 @@ about/faq
 about/license
 ```
 
-# Quacc Documentation
+# quacc Documentation
 
 **Last Updated**: {sub-ref}`today`
 
@@ -66,7 +66,7 @@ Quacc is currently in active development. It is fully functional and ready to us
 :class-header: bg-light
 **Test Drive** 🏎️
 ^^^
-Easy-to-run demonstrations of Quacc.
+Easy-to-run demonstrations of quacc.
 :::
 
 :::{grid-item-card}
@@ -75,7 +75,7 @@ Easy-to-run demonstrations of Quacc.
 :class-header: bg-light
 **Installation Guide** 🔧
 ^^^
-How to install Quacc and its dependencies.
+How to install quacc and its dependencies.
 :::
 
 :::{grid-item-card}
@@ -84,7 +84,7 @@ How to install Quacc and its dependencies.
 :class-header: bg-light
 **User Guide** 🧠
 ^^^
-How to use the major features of Quacc.
+How to use the major features of quacc.
 :::
 
 :::{grid-item-card}
@@ -93,6 +93,6 @@ How to use the major features of Quacc.
 :class-header: bg-light
 **Developer Guide** 🤝
 ^^^
-A guide for how to contribute to Quacc.
+A guide for how to contribute to quacc.
 :::
 ::::

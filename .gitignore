@@ -1,4 +1,4 @@
-# Quacc specific ignores
+# quacc specific ignores
 quacc-*
 POTCAR*
 scratch_path.txt

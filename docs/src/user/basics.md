@@ -1,12 +1,12 @@
 # The Basics
 
-In Quacc, each code comes with pre-packaged jobs and workflows, which we call recipes for short. This tutorial walks you through how to use these provided recipes to run simple calculations that can be tested out on your local machine.
+In quacc, each code comes with pre-packaged jobs and workflows, which we call recipes for short. This tutorial walks you through how to use these provided recipes to run simple calculations that can be tested out on your local machine.
 
-Once you understand the basics, you should move on to the ["Using Quacc with Covalent"](covalent.md) (recommended) guide to learn how to use Quacc with a workflow manager, which allows you to stich together and run complex Quacc workflows across distributed computing resources. Refer to the ["Alternate Workflow Engines"](advanced/alt_workflows/index.md) section for alternate workflow manager options.
+Once you understand the basics, you should move on to the ["Using quacc with Covalent"](covalent.md) (recommended) guide to learn how to use quacc with a workflow manager, which allows you to stich together and run complex quacc workflows across distributed computing resources. Refer to the ["Alternate Workflow Engines"](advanced/alt_workflows/index.md) section for alternate workflow manager options.
 
 ## Pre-Requisites
 
-If you are not yet familiar with the ASE [`Atoms`](https://wiki.fysik.dtu.dk/ase/ase/atoms.html) object, you should read the [ASE tutorial](https://wiki.fysik.dtu.dk/ase/ase/atoms.html), as this is the main object used to represent molecules and structures within Quacc. Additionally, it is worthwhile to be familiar with the basics of an ASE [Calculator](https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html).
+If you are not yet familiar with the ASE [`Atoms`](https://wiki.fysik.dtu.dk/ase/ase/atoms.html) object, you should read the [ASE tutorial](https://wiki.fysik.dtu.dk/ase/ase/atoms.html), as this is the main object used to represent molecules and structures within quacc. Additionally, it is worthwhile to be familiar with the basics of an ASE [Calculator](https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html).
 
 ```{hint}
 If you are coming from the Pymatgen ecosystem, you can use the {class}`pymatgen.io.ase.AseAtomsAdaptor` class to convert between Pymatgen {obj}`Structure`/{obj}`Molecule` objects and the ASE `Atoms` object.

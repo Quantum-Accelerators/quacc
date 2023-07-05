@@ -4,7 +4,7 @@
 Just getting started? Try using the EMT or LJ recipes before worrying about setting up one of the calculators below.
 ```
 
-Here, we outline how to ensure that Quacc can run the quantum chemistry package of your choosing. You only need to follow the instructions for the code(s) you intend to use.
+Here, we outline how to ensure that quacc can run the quantum chemistry package of your choosing. You only need to follow the instructions for the code(s) you intend to use.
 
 ## DFTB+
 
@@ -12,7 +12,7 @@ Here, we outline how to ensure that Quacc can run the quantum chemistry package 
 [DFTB+](https://dftbplus.org/) is especially useful for periodic GFN-xTB calculations and the DFTB+ method based on Slater-Koster parameters.
 ```
 
-If you plan to use DFTB+ with Quacc, you will need to install the code via `conda install -c conda-forge dftbplus`.
+If you plan to use DFTB+ with quacc, you will need to install the code via `conda install -c conda-forge dftbplus`.
 
 ## EMT
 
@@ -60,7 +60,7 @@ As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculator
 [Psi4](https://github.com/psi4/psi4) is an open-source quantum chemistry electronic structure package.
 ```
 
-If you plan to use Psi4 with Quacc, you will need to install it prior to use. This can be done via `conda install -c psi4 psi4`.
+If you plan to use Psi4 with quacc, you will need to install it prior to use. This can be done via `conda install -c psi4 psi4`.
 
 ## Q-Chem
 
@@ -76,23 +76,23 @@ If you plan to use Q-Chem with Quacc, you will need to install `openbabel` and `
 [tblite](https://github.com/tblite/tblite) is a code that interfaces with the xtb package for running GFN-xTB calculations.
 ```
 
-If you plan to use tblite with Quacc, you will need to install the tblite interface with ASE support. This can be done via `pip install tblite[ase]` (available on Linux only).
+If you plan to use tblite with quacc, you will need to install the tblite interface with ASE support. This can be done via `pip install tblite[ase]` (available on Linux only).
 
 ## VASP
 
 ```{note}
-[VASP](https://www.vasp.at/) is a very widely used code for plane-wave, periodic DFT calculations. Quacc has built-in support for automatically fixing failed VASP jobs via [Custodian](https://github.com/materialsproject/custodian).
+[VASP](https://www.vasp.at/) is a very widely used code for plane-wave, periodic DFT calculations. quacc has built-in support for automatically fixing failed VASP jobs via [Custodian](https://github.com/materialsproject/custodian).
 ```
 
-To use VASP with Quacc, you will need to do the following, as described in greater detail in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials):
+To use VASP with quacc, you will need to do the following, as described in greater detail in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials):
 
 - Define the `VASP_PP_PATH` environment variable that points to your pseudopotential library. We recommend including this in your `~/.bashrc` file since this rarely changes.
 - If you wish to use vdW functionals, define the `ASE_VASP_VDW` environment variable to point to the `vdw_kernel.bindat` file distributed with VASP. We recommend including this in your `~/.bashrc` file since this rarely changes.
 
-To run VASP with Custodian (the default behavior in Quacc), you will also need to:
+To run VASP with Custodian (the default behavior in quacc), you will also need to:
 
 - Define a `QUACC_VASP_PARALLEL_CMD` environment variable that tells Custodian how to parallelize VASP. For instance, this might look something like `export QUACC_VASP_PARALLEL_CMD="srun -N 2 --ntasks-per-node 24"`. Note, the VASP executables are not included in this environment variable. For convenience, we recommend specifying this environment variable at runtime so you can easily modify it.
-- By default, Custodian will assume that the VASP executables can be run with `vasp_std` or `vasp_gam` for standard or gamma-point calculations. If you need to use different executable names or wish to change any other VASP-related settings from the selected defaults, refer to the section on ["Modifying Quacc Settings"](../user/settings.md).
+- By default, Custodian will assume that the VASP executables can be run with `vasp_std` or `vasp_gam` for standard or gamma-point calculations. If you need to use different executable names or wish to change any other VASP-related settings from the selected defaults, refer to the section on ["Modifying quacc Settings"](../user/settings.md).
 
 ## Other Codes
 
