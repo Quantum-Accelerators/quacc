@@ -9,15 +9,17 @@ try:
     from prefect_dask.task_runners import DaskTaskRunner
 
 except ImportError:
-    raise ImportError("Install quacc[prefect] extras.")
+    raise ImportError("Install quacc[prefect]")
 
 
-def launch_runner(
+def make_async_runner(
     cluster_kwargs: dict, cluster_class: callable = SLURMCluster, verbose: bool = False
 ) -> DaskTaskRunner:
     """
-    Make a DaskTaskRunner for use with Prefect workflows. This function will immediately
-    submit a Slurm job upon being called and will wait for work to be run.
+    Make a DaskTaskRunner for use with Prefect workflows. This DaskTaskRunner will immediately
+    submit a Slurm job upon being called and will wait for work to be run. It will remain
+    active until the walltime is reached or the Slurm job is cancelled. For queuing purposes,
+    this is often preferred over `make_runner`.
 
     Parameters
     ----------
@@ -51,7 +53,8 @@ def make_runner(
 ) -> DaskTaskRunner:
     """
     Make a DaskTaskRunner for use with Prefect workflows. This DaskTaskRunner
-    will only submit a Slurm job once the `Flow` begins.
+    will only submit a Slurm job once the `Flow` begins. It will terminate
+    once the `Flow` is finished.
 
     Parameters
     ----------

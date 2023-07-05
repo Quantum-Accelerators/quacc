@@ -150,12 +150,6 @@ In this example, all the individual tasks and sub-tasks are run as separate jobs
 
 ## Job Management
 
-### Using a Prefect Agent
-
-So far, we have dispatched calculations immediately upon calling them. However, in practice, it is often more useful to have a [Prefect agent](https://docs.prefect.io/concepts/work-pools/#agent-overview) running in the background that will continually poll for work to submit to the task runner. This allows you to submit only a subset of workflows at a time, and the agent will automatically submit more jobs as the resources become available.
-
-To run Prefect workflows with an agent, on the computing environment where you wish to submit jobs, run `prefect agent start -p "quacc-pool"` to start a worker pool named "quacc-pool". Then submit your workflows as usual. It is best to run the agent on some perpetual resource like a login node or a dedicated workflow node.
-
 ### Defining a Task Runner
 
 To modify where tasks are run, set the `task_runner` keyword argument of the corresponding `@flow` decorator. The jobs in this scenario would be submitted from a login node.
@@ -165,19 +159,24 @@ An example is shown below for setting up a task runner compatible with the NERSC
 ```python
 from quacc.util.wflows import make_runner
 
+n_slurm_jobs = 1 # Number of Slurm jobs to launch in parallel
+n_nodes_per_calc = 1 # Number of nodes to reserve for each Slurm job
+n_cores_per_node = 48 # Number of CPU cores per node
+mem_per_node = "64 GB" # Total memory per node
+
 cluster_kwargs = {
     # Dask worker options
-    "n_workers": 1, # number of Slurm jobs to launch
-    "cores": 1, # total number of cores (per Slurm job) for Dask worker
-    "memory": "4GB", # total memory (per Slurm job) for Dask worker
+    "n_workers": n_slurm_jobs, # number of Slurm jobs to launch
+    "cores": n_cores_per_node, # total number of cores (per Slurm job) for Dask worker
+    "memory": mem_per_node, # total memory (per Slurm job) for Dask worker
     # SLURM options
     "shebang": "#!/bin/bash",
     "account": "AccountName",
     "walltime": "00:10:00", # DD:HH:SS
     "job_mem": "0", # all memory on node
-    "job_script_prologue": ["source ~/.bashrc", "conda activate quacc"], # run before calculation
+    "job_script_prologue": ["source ~/.bashrc", "conda activate quacc"], # commands to run before calculation, including exports
     "job_directives_skip": ["-n", "--cpus-per-task"], # Slurm directives we can skip
-    "job_extra_directives": [f"-N 1", "-q debug", "-C cpu"], # num. of nodes for calc (-N), queue (-q), and constraints (-c)
+    "job_extra_directives": [f"-N {n_nodes_per_calc}", "-q debug", "-C cpu"], # num. of nodes for calc (-N), queue (-q), and constraints (-c)
     "python": "python", # Python executable name
 }
 
@@ -194,9 +193,21 @@ def workflow(atoms):
 
 Now, when the worklow is run from the login node, it will be submitted to the job scheduling system (Slurm in this case), and the results will be sent back to Prefect Cloud once completed. To modify an already imported `Flow` object, the `Flow.task_runner` attribute can also be modified directly.
 
-### Troubleshooting
+```{seealso}
+Refer to the [Dask-Jobqueue Documentation](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html) for the available `cluster_kwargs` that can be defined and how they relate to a typical job script.
+```
 
-One of the most difficult parts of scaling up Prefect jobs is figuring out the right `cluster_kwargs` for your machine. If you are having trouble, the best option is to print the job script to the screen, as noted in the [`dask-jobqueue` documentation](https://jobqueue.dask.org/en/latest/debug.html#checking-job-script). An example, entirely independent of Prefect, is shown below for the `SLURMCluster`.
+To asynchronously spawn a Slurm job that continually pulls in work for the duration of its walltime (rather than starting and terminating over the lifetime of the associated `Flow`), you can instead use:
+
+```python
+from quacc.util.wflows import make_async_runner
+```
+
+The input arguments are identical to {obj}`make_runner`, so the same `cluster_kwargs` configuration can be used. Note, however, that {obj}`make_async_runner` is not compatible with Jupyter Notebooks; it is best used with an IPython console if interactivity is desired. When the IPython console is closed, the Slurm job will terminate.
+
+#### Troubleshooting
+
+If you are having trouble figuring out the right `cluster_kwargs` to use, the best option is to have the generated job script printed to the screen. This can be done by passing `verbose=True` to `make_async_runer()`. Alternatively, independent of Prefect, you can use the following code snippet:
 
 ```python
 from dask_jobqueue import SLURMCluster
@@ -206,11 +217,17 @@ cluster = SLURMCluster(**cluster_kwargs)
 print(cluster.job_script())
 ```
 
-This will allow you to fine-tune `cluster_kwargs` until you get your job submission script just right. Note that instantiating the `SLURMCluster` will immediately submit a Slurm job, so you'll probably want to `scancel` it.
+Note, however, that in both cases a Slurm job will be submitted, so you will probably want to `scancel` it as you debug your job script.
 
-```{seealso}
-Refer to the [Dask-Jobqueue Documentation](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html) for the available `cluster_kwargs` that can be defined and how they relate to a typical job script.
-```
+#### Executor Configuration File
+
+Speaking of configurations, if you use mostly the same HPC settings for your calculations, it can be annoying to define a large dictionary in every workflow you run. Instead, you can define a configuration file at `~/.config/dask/jobqueue.yaml` as described in the [dask-jobqueue](https://jobqueue.dask.org/en/latest/configuration-setup.html#managing-configuration-files) documentation that can be used to define default values common to your HPC setup.
+
+### Using a Prefect Agent
+
+So far, we have dispatched calculations immediately upon calling them. However, in practice, it is often more useful to have a [Prefect agent](https://docs.prefect.io/concepts/work-pools/#agent-overview) running in the background that will continually poll for work to submit to the task runner. This allows you to submit only a subset of workflows at a time, and the agent will automatically submit more jobs as the resources become available.
+
+To run Prefect workflows with an agent, on the computing environment where you wish to submit jobs, run `prefect agent start -p "quacc-pool"` to start a worker pool named "quacc-pool". Then submit your workflows as usual. It is best to run the agent on some perpetual resource like a login node or a dedicated workflow node.
 
 ## Learn More
 

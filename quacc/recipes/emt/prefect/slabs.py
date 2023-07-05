@@ -63,10 +63,10 @@ def bulk_to_slabs_flow(
 
     def _relax_and_static_distributed(slabs):
         return [
-            slab_static_task.submit(
-                slab_relax_task.submit(slab, **slab_relax_kwargs).result(),
+            slab_static_task(
+                slab_relax_task(slab, **slab_relax_kwargs),
                 **slab_static_kwargs,
-            ).result()
+            )
             for slab in slabs
         ]
 
