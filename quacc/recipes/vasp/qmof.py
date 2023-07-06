@@ -96,7 +96,7 @@ def qmof_relax_job(
     atoms = summary4[1]["atoms"]
 
     # 5. Static Calculation
-    summary5 = _static(atoms, preset, calc_swaps)
+    summary5 = images(atoms, preset, calc_swaps)
 
     return {
         "prerelax-lowacc": summary1 if run_prerelax else None,
@@ -358,7 +358,7 @@ def _double_relax(
     return [summary1, summary2]
 
 
-def _static(
+def images(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
     calc_swaps: dict | None = None,

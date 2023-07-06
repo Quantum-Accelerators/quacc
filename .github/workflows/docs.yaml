@@ -5,9 +5,8 @@ on:
       - main
     paths:
       - docs/**
-  pull_request:
-  release:
-    types: [published]
+permissions:
+  contents: write
 
 jobs:
   docs:
@@ -17,9 +16,6 @@ jobs:
       - name: Check out repo
         uses: actions/checkout@v3
 
-      - name: Install pandoc
-        run: sudo apt-get install pandoc
-
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -28,16 +24,7 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Install pip packages
-        run: |
-          pip install .[docs]
-
-      - name: Build docs
-        run: sphinx-build docs/src docs_build
-        id: build_docs
+        run: pip install .[docs]
 
       - name: Deploy docs
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs_build
-        if: github.ref == 'refs/heads/main' && steps.build_docs.outcome == 'success'
+        run: mkdocs gh-deploy --force

@@ -16,9 +16,9 @@ def bulk_to_slabs_flow(
     atoms: Atoms | dict,
     slabgen_kwargs: dict | None = None,
     slab_relax_app: PythonApp = python_app(relax_job.electron_object.function),
-    slab_static_app: PythonApp | None = python_app(static_job.electron_object.function),
+    slabimages_app: PythonApp | None = python_app(static_job.electron_object.function),
     slab_relax_kwargs: dict | None = None,
-    slab_static_kwargs: dict | None = None,
+    slabimages_kwargs: dict | None = None,
 ) -> AppFuture:
     """
     Workflow consisting of:
@@ -37,11 +37,11 @@ def bulk_to_slabs_flow(
         Additional keyword arguments to pass to make_max_slabs_from_bulk()
     slab_relax_app
         Default PythonApp to use for the relaxation of the slab structures.
-    slab_static_app
+    slabimages_app
         Default PythonApp to use for the static calculation of the slab structures.
     slab_relax_kwargs
         Additional keyword arguments to pass to the relaxation calculation.
-    slab_static_kwargs
+    slabimages_kwargs
         Additional keyword arguments to pass to the static calculation.
 
     Returns
@@ -51,7 +51,7 @@ def bulk_to_slabs_flow(
     """
     atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     slab_relax_kwargs = slab_relax_kwargs or {}
-    slab_static_kwargs = slab_static_kwargs or {}
+    slabimages_kwargs = slabimages_kwargs or {}
     slabgen_kwargs = slabgen_kwargs or {}
 
     if "relax_cell" not in slab_relax_kwargs:
@@ -62,18 +62,18 @@ def bulk_to_slabs_flow(
         return [slab_relax_app(slab, **slab_relax_kwargs) for slab in slabs]
 
     @join_app
-    def _relax_and_static_distributed(slabs):
+    def _relax_andimages_distributed(slabs):
         return [
-            slab_static_app(
+            slabimages_app(
                 slab_relax_app(slab, **slab_relax_kwargs),
-                **slab_static_kwargs,
+                **slabimages_kwargs,
             )
             for slab in slabs
         ]
 
     slabs = make_max_slabs_from_bulk(atoms, **slabgen_kwargs)
 
-    if slab_static_app is None:
+    if slabimages_app is None:
         return _relax_distributed(slabs)
 
-    return _relax_and_static_distributed(slabs)
+    return _relax_andimages_distributed(slabs)

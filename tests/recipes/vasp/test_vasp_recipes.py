@@ -10,8 +10,8 @@ from quacc.recipes.vasp.qmof import qmof_relax_job
 from quacc.recipes.vasp.slabs import (
     bulk_to_slabs_flow,
     slab_relax_job,
-    slab_static_job,
     slab_to_ads_flow,
+    slabimages_job,
 )
 
 
@@ -26,7 +26,7 @@ def teardown_module():
             os.remove(f)
 
 
-def test_static_job():
+def testimages_job():
     atoms = bulk("Cu") * (2, 2, 2)
 
     output = static_job(atoms)
@@ -97,20 +97,20 @@ def test_doublerelax_job():
     output = double_relax_job(atoms, calc_swaps1={"kpts": [1, 1, 1]})
 
 
-def test_slab_static_job():
+def test_slabimages_job():
     atoms = bulk("Cu") * (2, 2, 2)
 
-    output = slab_static_job(atoms)
+    output = slabimages_job(atoms)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["idipol"] == 3
     assert output["parameters"]["nsw"] == 0
     assert output["parameters"]["lvhar"] is True
 
-    output = slab_static_job(atoms, preset="SlabSet", calc_swaps={"nelmin": 6})
+    output = slabimages_job(atoms, preset="SlabSet", calc_swaps={"nelmin": 6})
     assert output["parameters"]["encut"] == 450
     assert output["parameters"]["nelmin"] == 6
 
-    output = slab_static_job(atoms, preset="SlabSet", calc_swaps={"encut": None})
+    output = slabimages_job(atoms, preset="SlabSet", calc_swaps={"encut": None})
     assert "encut" not in output["parameters"]
 
 
@@ -134,7 +134,7 @@ def test_slab_dynamic_jobs():
 
     ### --------- Test bulk_to_slabs_flow --------- ###
 
-    outputs = bulk_to_slabs_flow(atoms, slab_static_electron=None)
+    outputs = bulk_to_slabs_flow(atoms, slabimages_electron=None)
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
     assert outputs[1]["nsites"] == 96
@@ -153,7 +153,7 @@ def test_slab_dynamic_jobs():
     outputs = bulk_to_slabs_flow(
         atoms,
         slab_relax_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
-        slab_static_electron=None,
+        slabimages_electron=None,
     )
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
@@ -166,7 +166,7 @@ def test_slab_dynamic_jobs():
 
     outputs = bulk_to_slabs_flow(
         atoms,
-        slab_static_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
+        slabimages_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
     )
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
@@ -181,7 +181,7 @@ def test_slab_dynamic_jobs():
     atoms = outputs[0]["atoms"]
     adsorbate = molecule("H2")
 
-    outputs = slab_to_ads_flow(atoms, adsorbate, slab_static_electron=None)
+    outputs = slab_to_ads_flow(atoms, adsorbate, slabimages_electron=None)
 
     assert [output["nsites"] == 82 for output in outputs]
     assert [output["parameters"]["isif"] == 2 for output in outputs]
@@ -194,7 +194,7 @@ def test_slab_dynamic_jobs():
         atoms,
         adsorbate,
         slab_relax_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
-        slab_static_electron=None,
+        slabimages_electron=None,
     )
 
     assert [output["nsites"] == 82 for output in outputs]
@@ -205,7 +205,7 @@ def test_slab_dynamic_jobs():
     outputs = slab_to_ads_flow(
         atoms,
         adsorbate,
-        slab_static_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
+        slabimages_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
     )
 
     assert [output["nsites"] == 82 for output in outputs]

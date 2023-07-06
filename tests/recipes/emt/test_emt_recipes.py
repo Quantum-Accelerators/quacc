@@ -24,7 +24,7 @@ def teardown_module():
             rmtree(f)
 
 
-def test_static_Job():
+def testimages_Job():
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += [0.1, 0.1, 0.1]
 
@@ -86,7 +86,7 @@ def test_relax_Job():
 def test_slab_dynamic_jobs():
     atoms = bulk("Cu")
 
-    outputs = bulk_to_slabs_flow(atoms, slab_static_electron=None)
+    outputs = bulk_to_slabs_flow(atoms, slabimages_electron=None)
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
     assert outputs[1]["nsites"] == 96
@@ -97,7 +97,7 @@ def test_slab_dynamic_jobs():
 
     outputs = bulk_to_slabs_flow(
         atoms,
-        slab_static_electron=None,
+        slabimages_electron=None,
         slab_relax_kwargs={
             "opt_swaps": {"fmax": 1.0},
             "calc_kwargs": {"asap_cutoff": True},

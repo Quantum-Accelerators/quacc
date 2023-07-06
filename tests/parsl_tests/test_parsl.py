@@ -99,7 +99,7 @@ def test_tutorial3():
     def bulk_to_slabs_app(atoms):
         from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
-        return bulk_to_slabs_flow(atoms, slab_static_electron=None)
+        return bulk_to_slabs_flow(atoms, slabimages_electron=None)
 
     # Define the Atoms object
     atoms = bulk("Cu")
@@ -130,7 +130,7 @@ def test_tutorial4():
 
     # Define the workflow
     future1 = relax_app(atoms)
-    future2 = bulk_to_slabs_flow(future1.result(), slab_static_app=None)
+    future2 = bulk_to_slabs_flow(future1.result(), slabimages_app=None)
 
     # Print the results
     print(future2.result())

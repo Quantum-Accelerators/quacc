@@ -1,0 +1,107 @@
+site_name: quacc
+site_author: Andrew S. Rosen
+site_description: >-
+  Quacc is a flexible and extensible platform
+  for high-throughput computational materials
+  science and quantum chemistry.
+repo_url: https://github.com/Quantum-Accelerators/quacc
+theme:
+  name: material
+  palette:
+    scheme: slate
+    primary: orange
+  logo: images/quacc_logo_wide.svg
+  favicon: images/quacc_favicon.png
+  plugins:
+    - search:
+        separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+    - minify:
+        minify_html: true
+    - social
+    - blog
+    - tags
+    - git-revision-date-localized:
+        enable_creation_date: true
+    - offline
+
+  features:
+    - content.action.edit
+    - content.action.view
+    - content.code.copy
+    - content.code.select
+    - content.code.annotate
+    - content.tabs.link
+    - content.tooltips
+    - navigation.instant
+    - navigation.path
+    - navigation.tracking
+    - navigation.sections
+    - search.highlight
+    - search.suggest
+    - search.share
+    - header.autohide
+extra:
+  social:
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/RosenGroupPU
+    - icon: fontawesome/brands/github
+      link: https://github.com/Quantum-Accelerators/
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+nav:
+  - Home: index.md
+  - Test Drive 🏎️:
+      - start/demo.md
+  - Installation Guide 🔧:
+      - install/install.md
+      - install/covalent.md
+      - install/codes.md
+      - Advanced:
+          - install/advanced/config_db.md
+  - User Guide 🧠:
+      - user/basics.md
+      - Workflow Basics:
+          - user/wflow_overview.md
+          - user/wflow_syntax.md
+      - user/wflow_engines.md
+      - user/settings.md
+      - Advanced:
+          - user/advanced/database.md
+  - Developer Guide 🤝:
+      - dev/contributing.md
+      - dev/docs.md
+      - dev/conduct.md
+  - About 📜:
+      - about/faq.md
+      - about/contributors.md
+      - about/changelog.md
+      - about/license.md
