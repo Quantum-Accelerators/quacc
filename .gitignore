@@ -1,4 +1,4 @@
-# Quacc specific ignores
+# quacc specific ignores
 quacc-*
 POTCAR*
 scratch_path.txt
@@ -24,3 +24,10 @@ ipython_config.py
 
 # OS ignores
 .DS_Store
+
+# Editors ignores
+.vscode*
+
+# Workflow ignores
+*parsl.log
+runinfo

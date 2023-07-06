@@ -1,6 +1,6 @@
 ---
 name: Issue Report
-about: Raise an issue to help improve Quacc
+about: Raise an issue to help improve quacc
 title: ""
 labels: ["bug"]
 body:
@@ -23,6 +23,6 @@ body:
     attributes:
       label: Environment
       description: Please include details about your Python environment.
-      placeholder: Quacc version and Python version
+      placeholder: quacc version and Python version
       value: ""
 ---

@@ -2,11 +2,11 @@
 from __future__ import annotations
 
 import covalent as ct
-from ase.atoms import Atoms
+from ase import Atoms
 from ase.calculators.psi4 import Psi4
 from monty.dev import requires
 
-from quacc.schemas.ase import summarize_run
+from quacc.schemas.ase import RunSchema, summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.dicts import remove_dict_empties
 
@@ -19,62 +19,74 @@ except ImportError:
 @ct.electron
 @requires(psi4, "Psi4 not installed. Try conda install -c psi4 psi4")
 def static_job(
-    atoms: Atoms,
+    atoms: Atoms | dict,
     charge: int | None = None,
-    mult: int | None = None,
+    multiplicity: int | None = None,
     method: str = "wb97x-v",
     basis: str = "def2-tzvp",
-    swaps: dict | None = None,
-) -> dict:
+    calc_swaps: dict | None = None,
+) -> RunSchema:
     """
     Function to carry out a single-point calculation.
 
     Parameters
     ----------
     atoms
-        Atoms object
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     charge
         Charge of the system. If None, this is determined from the sum of
         `atoms.get_initial_charges()`.
-    mult
+    multiplicity
         Multiplicity of the system. If None, this is determined from 1+ the sum
         of `atoms.get_initial_magnetic_moments()`.
     method
         The level of theory to use.
     basis
         Basis set
-    swaps
+    calc_swaps
         Dictionary of custom kwargs for the calculator.
             defaults = {
                 "mem": "16GB",
                 "num_threads": "max",
                 "method": method,
                 "basis": basis,
-                "charge": charge or round(sum(atoms.get_initial_charges())),
-                "multiplicity": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
+                "charge": charge or int(sum(atoms.get_initial_charges())),
+                "multiplicity": mult or int(1 + sum(atoms.get_initial_magnetic_moments())),
+                "reference": "uhf" if mult > 1 else None,
             }
 
     Returns
     -------
-    dict
+    RunSchema
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    calc_swaps = calc_swaps or {}
 
-    swaps = swaps or {}
+    charge = int(atoms.get_initial_charges().sum()) if charge is None else charge
+    multiplicity = (
+        int(1 + atoms.get_initial_magnetic_moments().sum())
+        if multiplicity is None
+        else multiplicity
+    )
 
     defaults = {
         "mem": "16GB",
         "num_threads": "max",
         "method": method,
         "basis": basis,
-        "charge": charge or round(sum(atoms.get_initial_charges())),
-        "multiplicity": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
+        "charge": charge,
+        "multiplicity": multiplicity,
+        "reference": "uhf" if multiplicity > 1 else None,
     }
-    flags = remove_dict_empties(defaults | swaps)
+    flags = remove_dict_empties(defaults | calc_swaps)
 
     atoms.calc = Psi4(**flags)
-    new_atoms = run_calc(atoms)
+    final_atoms = run_calc(atoms)
 
     return summarize_run(
-        new_atoms, input_atoms=atoms, additional_fields={"name": "Psi4 Static"}
+        final_atoms,
+        input_atoms=atoms,
+        charge_and_multiplicity=(charge, multiplicity),
+        additional_fields={"name": "Psi4 Static"},
     )

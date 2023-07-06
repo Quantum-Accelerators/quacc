@@ -1,0 +1,97 @@
+[build-system]
+requires = ["setuptools >= 42", "versioningit ~= 1.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quacc"
+description="A platform to enable high-throughput, database-driven quantum chemistry and computational materials science"
+version = "0.1.0"
+readme = "README.md"
+license = { text = "BSD-3" }
+authors = [{ name = "Andrew S. Rosen", email = "asrosen93@gmail.com" }]
+maintainers = [{ name = "Andrew S. Rosen", email = "asrosen93@gmail.com" }]
+keywords = ["high-throughput", "automated", "workflow", "dft"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering",
+    "Operating System :: Unix",
+    "Operating System :: MacOS",
+]
+requires-python = ">=3.9, <3.11"
+dependencies = [
+    "ase @ https://gitlab.com/ase/ase/-/archive/master/ase-master.zip",  # waiting on >3.22.1
+    "atomate2[cclib] @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
+    "covalent>=0.224.0-rc.0",  # waiting on > 0.222.0
+    "custodian>=2023.6.5",
+    "emmet-core>=0.51.11",
+    "monty>=2023.4.10",
+    "numpy",
+    "pydantic",
+    "pymatgen>=2023.6.23",
+]
+
+[project.optional-dependencies]
+fireworks = ["fireworks>=2.0.3"]
+optimizers = ["sella>=2.3.2"]
+parsl = ["parsl>=2023.7.3"]
+tblite = ["tblite[ase]>=0.3.0; platform_system=='Linux'"]
+dev = ["black", "isort", "pytest", "pytest-cov"]
+docs = [
+    "mkdocs-material",
+    "mkdocs-git-revision-date-localized-plugin",
+    "mkdocstrings[python]",
+    "mkdocs-click",
+]
+strict = [
+    "ase @ https://gitlab.com/ase/ase/-/archive/master/ase-master.zip",  # waiting on >3.22.1
+    "atomate2 @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
+    "cclib==1.7.2",
+    "covalent==0.226.0rc0",  # waiting on > 0.222.0
+    "custodian==2023.6.5",
+    "emmet-core==0.58.1",
+    "jobflow==0.1.11",
+    "maggma==0.51.12",
+    "monty==2023.5.8",
+    "numpy==1.25.0",
+    "pydantic==1.10.2",
+    "pymatgen>=2023.6.23",
+]
+
+[project.scripts]
+quacc = "quacc._cli.cli:cli"
+
+[project.urls]
+repository = "https://github.com/Quantum-Accelerators/quacc"
+documentation = "https://quantum-accelerators.github.io/quacc/"
+changelog = "https://github.com/Quantum-Accelerators/quacc/blob/main/CHANGELOG.md"
+
+[tool.setuptools.package-data]
+quacc = ["py.typed"]
+
+[tool.pyright]
+include = ["quacc"]
+exclude = ["**/__pycache__"]
+
+[tool.versioningit.vcs]
+method = "git"
+default-tag = "0.0.1"
+
+[tool.pytest.ini_options]
+addopts = "-p no:warnings"
+
+[tool.black]
+exclude = '''
+/(
+    \.git
+  | \.tox
+)/
+'''
+
+[tool.isort]
+profile = 'black'
+skip_gitignore = true

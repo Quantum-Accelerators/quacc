@@ -1,5 +1,6 @@
 codecov:
   notify:
+    after_n_builds: 6 # one for each job
     require_ci_to_pass: no
 
 coverage:
@@ -11,7 +12,7 @@ coverage:
     project:
       default:
         target: auto
-        threshold: 2%
+        threshold: 0.5%
     patch:
       default:
         enabled: no

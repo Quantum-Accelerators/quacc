@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+title: >-
+  quacc – The Quantum Accelerator
+message: >-
+  Please cite this work as follows if you use quacc.
+authors:
+  - given-names: Andrew
+    family-names: Rosen
+    email: asrosen93@gmail.com
+    orcid: "https://orcid.org/0000-0002-0141-7006"
+    affiliation: >-
+      Department of Chemical and Biological Engineering
+      Princeton University
+doi: 10.5281/zenodo.7720998
+url: https://github.com/Quantum-Accelerators/quacc

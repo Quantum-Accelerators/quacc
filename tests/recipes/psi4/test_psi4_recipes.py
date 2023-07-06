@@ -31,7 +31,7 @@ def teardown_module():
     psi4 is None,
     reason="Psi4 must be installed. Try conda install -c psi4 psi4",
 )
-def test_static_maker():
+def testimages_maker():
     atoms = molecule("H2")
     output = static_job(atoms)
     assert output["natoms"] == len(atoms)
@@ -40,20 +40,24 @@ def test_static_maker():
     assert output["parameters"]["method"] == "wb97x-v"
     assert output["parameters"]["basis"] == "def2-tzvp"
     assert output["parameters"]["num_threads"] == "max"
+    assert output["spin_multiplicity"] == 1
+    assert output["charge"] == 0
 
     output = static_job(
         atoms,
         charge=-2,
-        mult=3,
-        method="m06l",
+        multiplicity=3,
+        method="pbe",
         basis="def2-svp",
-        swaps={"num_threads": 1, "mem": None, "pop": "regular"},
+        calc_swaps={"num_threads": 1, "mem": None, "pop": "regular"},
     )
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == -2
     assert output["parameters"]["multiplicity"] == 3
-    assert output["parameters"]["method"] == "m06l"
+    assert output["parameters"]["method"] == "pbe"
     assert output["parameters"]["basis"] == "def2-svp"
     assert output["parameters"]["num_threads"] == 1
     assert output["parameters"]["pop"] == "regular"
     assert "mem" not in output["parameters"]
+    assert output["spin_multiplicity"] == 3
+    assert output["charge"] == -2

@@ -1,9 +1,7 @@
-"""
-Schemas for storing metadata about Atoms objects
-"""
+"""Schemas for storing metadata about Atoms objects"""
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, TypeVar
 
 import numpy as np
 from ase.atoms import Atom, Atoms
@@ -14,14 +12,18 @@ from pymatgen.io.ase import AseAtomsAdaptor
 from quacc.util.atoms import copy_atoms
 from quacc.util.dicts import clean_dict
 
+AtomsSchema = TypeVar("AtomsSchema")
+
 
 def atoms_to_metadata(
     atoms: Atoms,
+    charge_and_multiplicity: tuple[int, int] | None = None,
     get_metadata: bool = True,
     strip_info: bool = False,
     store_pmg: bool = True,
     remove_empties: bool = False,
-) -> dict:
+    additional_fields: dict | None = None,
+) -> AtomsSchema:
     """
     Convert an ASE Atoms object to a dict suitable for storage in MongoDB.
 
@@ -29,6 +31,8 @@ def atoms_to_metadata(
     ----------
     atoms
         ASE Atoms object to store in {"atoms": atoms}
+    charge_and_multiplicity
+        Charge and spin multiplicity of the Atoms object, only used for Molecule metadata.
     get_metadata
         Whether to store atoms metadata in the returned dict.
     strip_info
@@ -39,6 +43,8 @@ def atoms_to_metadata(
         or {"molecule": Molecule}, respectively.
     remove_empties
         Whether to remove None values and empty lists/dicts from the TaskDocument.
+    additional_fields
+        Additional fields to add to the document.
 
     Returns
     -------
@@ -96,8 +102,17 @@ def atoms_to_metadata(
             - tolerance: float = Field(None, title="Point Group Analyzer Tolerance", description="Distance tolerance to consider sites as symmetrically equivalent.")
     """
 
+    additional_fields = additional_fields or {}
     atoms = copy_atoms(atoms)
     results = {}
+
+    # Get any charge or multiplicity keys
+    if charge_and_multiplicity:
+        atoms.charge = charge_and_multiplicity[0]
+        atoms.spin_multiplicity = charge_and_multiplicity[1]
+
+    # Strip the dummy atoms, if present
+    del atoms[[atom.index for atom in atoms if atom.symbol == "X"]]
 
     # Get Atoms metadata, if requested. emmet already has built-in tools for
     # generating pymatgen Structure/Molecule metadata, so we'll just use that.
@@ -130,7 +145,7 @@ def atoms_to_metadata(
         results["atoms"] = atoms
 
     # Combine the metadata and results dictionaries
-    atoms_doc = metadata | results
+    atoms_doc = metadata | results | additional_fields
 
     return clean_dict(atoms_doc, remove_empties=remove_empties)
 

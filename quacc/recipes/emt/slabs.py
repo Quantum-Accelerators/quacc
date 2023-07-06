@@ -1,29 +1,37 @@
 """Slab recipes for EMT"""
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 import covalent as ct
-from ase.atoms import Atoms
-from covalent._workflow.electron import Electron
+from ase import Atoms
 
 from quacc.recipes.emt.core import relax_job, static_job
+from quacc.schemas.ase import OptSchema, RunSchema
 from quacc.util.slabs import make_max_slabs_from_bulk
 
 
-@dataclass
-class BulkToSlabsFlow:
+def bulk_to_slabs_flow(
+    atoms: Atoms | dict,
+    slabgen_kwargs: dict | None = None,
+    slab_relax_electron: ct.electron = relax_job,
+    slab_static_electron: ct.electron | None = static_job,
+    slab_relax_kwargs: dict | None = None,
+    slab_static_kwargs: dict | None = None,
+) -> list[RunSchema | OptSchema]:
     """
     Workflow consisting of:
 
     1. Slab generation
 
-    2. Slab relaxations (optional)
+    2. Slab relaxations
 
     3. Slab statics (optional)
 
     Parameters
     ----------
+    atoms
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+    slabgen_kwargs
+        Additional keyword arguments to pass to make_max_slabs_from_bulk()
     slab_relax_electron
         Default Electron to use for the relaxation of the slab structures.
     slab_static_electron
@@ -32,75 +40,39 @@ class BulkToSlabsFlow:
         Additional keyword arguments to pass to the relaxation calculation.
     slab_static_kwargs
         Additional keyword arguments to pass to the static calculation.
+
+    Returns
+    -------
+    list[dict]
+        List of dictionary of results from quacc.schemas.ase.summarize_run or quacc.schemas.ase.summarize_opt_run
     """
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    slab_relax_kwargs = slab_relax_kwargs or {}
+    slab_static_kwargs = slab_static_kwargs or {}
+    slabgen_kwargs = slabgen_kwargs or {}
 
-    slab_relax_electron: Electron | None = relax_job
-    slab_static_electron: Electron | None = static_job
-    slab_relax_kwargs: dict | None = None
-    slab_static_kwargs: dict | None = None
+    if "relax_cell" not in slab_relax_kwargs:
+        slab_relax_kwargs["relax_cell"] = False
 
-    def run(
-        self,
-        atoms: Atoms,
-        slabgen_kwargs: dict | None = None,
-    ) -> list[dict]:
-        """
-        Make the workflow.
+    @ct.electron
+    @ct.lattice
+    def _relax_distributed(slabs):
+        return [slab_relax_electron(slab, **slab_relax_kwargs) for slab in slabs]
 
-        Parameters
-        ----------
-        atoms
-            Atoms object for the structure.
-        slabgen_kwargs
-            Additional keyword arguments to pass to make_max_slabs_from_bulk()
-
-        Returns
-        -------
-        list[dict]
-            List of dictionary of results from quacc.schemas.ase.summarize_run or quacc.schemas.ase.summarize_opt_run
-        """
-
-        self.slab_relax_kwargs = self.slab_relax_kwargs or {}
-        self.slab_static_kwargs = self.slab_static_kwargs or {}
-        slabgen_kwargs = slabgen_kwargs or {}
-
-        if not self.slab_relax_electron and not self.slab_static_electron:
-            raise ValueError(
-                "At least one of slab_relax_electron or slab_static_electron must be defined."
+    @ct.electron
+    @ct.lattice
+    def _relax_and_static_distributed(slabs):
+        return [
+            slab_static_electron(
+                slab_relax_electron(slab, **slab_relax_kwargs),
+                **slab_static_kwargs,
             )
+            for slab in slabs
+        ]
 
-        @ct.electron
-        @ct.lattice
-        def _relax_distributed(slabs):
-            return [
-                self.slab_relax_electron(slab, **self.slab_relax_kwargs)
-                for slab in slabs
-            ]
+    slabs = ct.electron(make_max_slabs_from_bulk)(atoms, **slabgen_kwargs)
 
-        @ct.electron
-        @ct.lattice
-        def _static_distributed(slabs):
-            return [
-                self.slab_static_electron(slab, **self.slab_static_kwargs)
-                for slab in slabs
-            ]
+    if slab_static_electron is None:
+        return _relax_distributed(slabs)
 
-        @ct.electron
-        @ct.lattice
-        def _relax_and_static_distributed(slabs):
-            return [
-                self.slab_static_electron(
-                    self.slab_relax_electron(slab, **self.slab_relax_kwargs)["atoms"],
-                    **self.slab_static_kwargs,
-                )
-                for slab in slabs
-            ]
-
-        slabs = ct.electron(make_max_slabs_from_bulk)(atoms, **slabgen_kwargs)
-
-        if self.slab_relax_electron and self.slab_static_electron:
-            return _relax_and_static_distributed(slabs)
-        elif self.slab_relax_electron:
-            return _relax_distributed(slabs)
-        elif self.slab_static_electron:
-            return _static_distributed(slabs)
+    return _relax_and_static_distributed(slabs)

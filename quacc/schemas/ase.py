@@ -1,31 +1,40 @@
-"""
-Schemas for storing ASE-based data
-"""
+"""Schemas for storing ASE-based data"""
 from __future__ import annotations
 
 import os
+import warnings
+from subprocess import Popen
+from typing import TypeVar
 
 import numpy as np
 from ase import units
 from ase.atoms import Atoms
+from ase.constraints import Filter
 from ase.io import read
 from ase.optimize.optimize import Optimizer
 from ase.thermochemistry import IdealGasThermo
 from ase.vibrations import Vibrations
 from atomate2.utils.path import get_uri
+from monty.os.path import zpath
 
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
 from quacc.util.dicts import clean_dict
 
+RunSchema = TypeVar("RunSchema")
+OptSchema = TypeVar("OptSchema")
+VibSchema = TypeVar("VibSchema")
+ThermoSchema = TypeVar("ThermoSchema")
+
 
 def summarize_run(
     atoms: Atoms,
     input_atoms: Atoms | None = None,
+    charge_and_multiplicity: tuple[int, int] | None = None,
     prep_next_run: bool = True,
     remove_empties: bool = False,
     additional_fields: dict | None = None,
-) -> dict:
+) -> RunSchema:
     """
     Get tabulated results from an Atoms object and calculator and store them in a database-friendly format.
     This is meant to be compatible with all calculator types.
@@ -36,6 +45,8 @@ def summarize_run(
         ASE Atoms following a calculation. A calculator must be attached.
     input_atoms
         Input ASE Atoms object to store.
+    charge_and_multiplicity
+        Charge and spin multiplicity of the Atoms object, only used for Molecule metadata.
     prep_next_run
         Whether the Atoms object stored in {"atoms": atoms} should be prepared for the next run
         This clears out any attached calculator and moves the final magmoms to the initial magmoms.
@@ -123,7 +134,9 @@ def summarize_run(
         "dir_name": ":".join(uri.split(":")[1:]),
     }
     if input_atoms:
-        input_atoms_db = atoms_to_metadata(input_atoms)
+        input_atoms_db = atoms_to_metadata(
+            input_atoms, charge_and_multiplicity=charge_and_multiplicity
+        )
         inputs["input_atoms"] = input_atoms_db
 
     # Prepares the Atoms object for the next run by moving the
@@ -133,7 +146,7 @@ def summarize_run(
         atoms = prep_next_run_(atoms)
 
     # Get tabulated properties of the structure itself
-    atoms_db = atoms_to_metadata(atoms)
+    atoms_db = atoms_to_metadata(atoms, charge_and_multiplicity=charge_and_multiplicity)
 
     # Create a dictionary of the inputs/outputs
     task_doc = atoms_db | inputs | results | additional_fields
@@ -144,10 +157,11 @@ def summarize_run(
 def summarize_opt_run(
     dyn: Optimizer,
     check_convergence: bool = True,
+    charge_and_multiplicity: tuple[int, int] | None = None,
     prep_next_run: bool = True,
     remove_empties: bool = False,
     additional_fields: dict | None = None,
-) -> dict:
+) -> OptSchema:
     """
     Get tabulated results from an ASE Atoms trajectory and store them in a database-friendly format.
     This is meant to be compatible with all calculator types.
@@ -158,6 +172,8 @@ def summarize_opt_run(
         ASE Optimizer object.
     check_convergence
         Whether to check the convergence of the calculation.
+    charge_and_multiplicity
+        Charge and spin multiplicity of the Atoms object, only used for Molecule metadata.
     prep_next_run
         Whether the Atoms object stored in {"atoms": atoms} should be prepared for the next run
         This clears out any attached calculator and moves the final magmoms to the initial magmoms.
@@ -182,6 +198,7 @@ def summarize_opt_run(
         - input_structure: Molecule | Structure = Field(None, title = "The Pymatgen Structure or Molecule object from the input Atoms object if input_atoms is not None.")
         - nid: str = Field(None, title = "The node ID representing the machine where the calculation was run.")
         - parameters: dict = Field(None, title = "the parameters used to run the calculation.")
+        - opt_parameters: dict = Field(None, title = "the parameters used to run the optimization.")
         - results: dict = Field(None, title = "The results from the calculation.")
         - trajectory: List[Atoms] = Trajectory of Atoms objects
         - trajectory_results: List[dict] = List of ase.calc.results from the trajectory
@@ -230,36 +247,44 @@ def summarize_opt_run(
     """
 
     additional_fields = additional_fields or {}
-    dyn_parameters = dyn.todict()
-    parameters = dyn.atoms.calc.parameters
-
-    # Check trajectory
-    if not os.path.exists(dyn.trajectory.filename):
-        raise FileNotFoundError("No trajectory file found.")
+    opt_parameters = dyn.todict() | {"fmax": dyn.fmax}
 
     # Check convergence
-    if check_convergence and not dyn.converged():
+    is_converged = dyn.converged()
+    if check_convergence and not is_converged:
         raise ValueError("Optimization did not converge.")
 
-    traj = read(dyn.trajectory.filename, index=":")
+    # Get trajectory (need to gunzip/gzip to workaround ASE bug #1263)
+    Popen(f"gunzip {dyn.trajectory.filename}", shell=True).wait()
+    traj = read(zpath(dyn.trajectory.filename), index=":")
+    Popen(f"gzip {dyn.trajectory.filename}", shell=True).wait()
     initial_atoms = traj[0]
-    final_atoms = dyn.atoms
+    final_atoms = dyn.atoms.atoms if isinstance(dyn.atoms, Filter) else dyn.atoms
 
     # Get results
     traj_results = {
         "trajectory_results": [atoms.calc.results for atoms in traj],
-        "trajectory": [atoms_to_metadata(atoms) for atoms in traj],
+        "trajectory": [
+            atoms_to_metadata(atoms, charge_and_multiplicity=charge_and_multiplicity)
+            for atoms in traj
+        ],
     }
-    results = {"results": final_atoms.calc.results}
+    results = {
+        "results": final_atoms.calc.results
+        | {"converged": is_converged, "nsteps": dyn.get_number_of_steps()}
+    }
 
     # Get the calculator inputs
     uri = get_uri(os.getcwd())
     inputs = {
-        "parameters": dyn_parameters | parameters,
+        "parameters": dyn.atoms.calc.parameters,
+        "parameters_opt": opt_parameters,
         "nid": uri.split(":")[0],
         "dir_name": ":".join(uri.split(":")[1:]),
     }
-    input_atoms_db = atoms_to_metadata(initial_atoms)
+    input_atoms_db = atoms_to_metadata(
+        initial_atoms, charge_and_multiplicity=charge_and_multiplicity
+    )
     inputs["input_structure"] = input_atoms_db
 
     # Prepares the Atoms object for the next run by moving the
@@ -269,7 +294,9 @@ def summarize_opt_run(
         final_atoms = prep_next_run_(final_atoms)
 
     # Get tabulated properties of the structure itself
-    atoms_db = atoms_to_metadata(final_atoms)
+    atoms_db = atoms_to_metadata(
+        final_atoms, charge_and_multiplicity=charge_and_multiplicity
+    )
 
     # Create a dictionary of the inputs/outputs
     task_doc = atoms_db | inputs | results | traj_results | additional_fields
@@ -279,9 +306,10 @@ def summarize_opt_run(
 
 def summarize_vib_run(
     vib: Vibrations,
+    charge_and_multiplicity: tuple[int, int] | None = None,
     remove_empties: bool = False,
     additional_fields: dict | None = None,
-) -> dict:
+) -> VibSchema:
     """
     Get tabulated results from an ASE Vibrations object and store them in a database-friendly format.
 
@@ -289,6 +317,8 @@ def summarize_vib_run(
     ----------
     vib
         ASE Vibrations object.
+    charge_and_multiplicity
+        Charge and spin multiplicity of the Atoms object, only used for Molecule metadata.
     remove_empties
         Whether to remove None values and empty lists/dicts from the task document.
     additional_fields
@@ -309,6 +339,7 @@ def summarize_vib_run(
         - dir_name: str = Field(None, description="Directory where the output is parsed")
         - nid: str = Field(None, title = "The node ID representing the machine where the calculation was run.")
         - parameters: dict = Field(None, title = "the parameters used to run the calculation.")
+        - vib_parameters: dict = Field(None, title = "the parameters used to run the vibrations.")
             - delta: float = the Vibrations delta value
             - direction: str = the Vibrations direction value
             - method: str = the Vibrations method value
@@ -368,7 +399,9 @@ def summarize_vib_run(
 
     vib_freqs_raw = vib.get_frequencies().tolist()
     vib_energies_raw = vib.get_energies().tolist()
+    atoms = vib.atoms
 
+    # Convert imaginary modes to negative values for DB storage
     for i, f in enumerate(vib_freqs_raw):
         if np.imag(f) > 0:
             vib_freqs_raw[i] = -np.abs(f)
@@ -379,7 +412,8 @@ def summarize_vib_run(
 
     uri = get_uri(os.getcwd())
     inputs = {
-        "parameters": {
+        "parameters": atoms.calc.parameters,
+        "parameters_vib": {
             "delta": vib.delta,
             "direction": vib.direction,
             "method": vib.method,
@@ -390,8 +424,7 @@ def summarize_vib_run(
         "dir_name": ":".join(uri.split(":")[1:]),
     }
 
-    atoms = vib.atoms
-    atoms_db = atoms_to_metadata(atoms)
+    atoms_db = atoms_to_metadata(atoms, charge_and_multiplicity=charge_and_multiplicity)
 
     # Get the true vibrational modes
     natoms = len(atoms)
@@ -402,9 +435,16 @@ def summarize_vib_run(
         vib_freqs = vib_freqs_raw
         vib_energies = vib_energies_raw
     else:
+        # Sort by absolute value
+        vib_freqs_raw_sorted = vib_freqs_raw.copy()
+        vib_energies_raw_sorted = vib_energies_raw.copy()
+        vib_freqs_raw_sorted.sort(key=np.abs)
+        vib_energies_raw_sorted.sort(key=np.abs)
+
+        # Cut the 3N-5 or 3N-6 modes based on their absolute value
         n_modes = 3 * natoms - 5 if atoms_db["symmetry"]["linear"] else 3 * natoms - 6
-        vib_freqs = vib_freqs_raw[-n_modes:]
-        vib_energies = vib_energies_raw[-n_modes:]
+        vib_freqs = vib_freqs_raw_sorted[-n_modes:]
+        vib_energies = vib_energies_raw_sorted[-n_modes:]
 
     imag_vib_freqs = [f for f in vib_freqs if f < 0]
 
@@ -428,9 +468,10 @@ def summarize_thermo_run(
     igt: IdealGasThermo,
     temperature: float = 298.15,
     pressure: float = 1.0,
+    charge_and_multiplicity: tuple[int, int] | None = None,
     remove_empties: bool = False,
     additional_fields: dict | None = None,
-) -> dict:
+) -> ThermoSchema:
     """
     Get tabulated results from an ASE IdealGasThermo object and store them in a database-friendly format.
 
@@ -442,6 +483,8 @@ def summarize_thermo_run(
         Temperature in Kelvins.
     pressure
         Pressure in bar.
+    charge_and_multiplicity
+        Charge and spin multiplicity of the Atoms object, only used for Molecule metadata.
     remove_empties
         Whether to remove None values and empty lists/dicts from the task document.
     additional_fields
@@ -461,14 +504,15 @@ def summarize_thermo_run(
             - pull_request: int = Field(None, description="The pull request number associated with this data build.")
         - dir_name: str = Field(None, description="Directory where the output is parsed")
         - nid: str = Field(None, title = "The node ID representing the machine where the calculation was run.")
-        - parameters: dict = Field(None, title = "the parameters used to run the calculation.")
+        - thermo_parameters: dict = Field(None, title = "the parameters used to run the thermo calculation.")
             - temperature: float = Temperature in Kelvins
             - pressure: float = Pressure in bar
             - sigma: float = The rotational symmetry number of the molecule
             - spin_multiplicity: int = The spin multiplicity of the molecule
+            - vib_freqs: List[float] = Vibrational frequencies in cm^-1 used for the thermo calculation
+            - vib_energies: List[float] = Vibrational energies in eV used for the thermo calculation
+            - n_imag: int = Number of imaginary vibrational frequencies ignored in the thermo calculation
         - results: dict = Field(None, title = "The results from the calculation.")
-            - vib_freqs: List[float] = Vibrational frequencies in cm^-1
-            - vib_energies: List[float] = Vibrational energies in eV
             - energy: float = The potential energy of the system in eV
             - enthalpy: float = The enthalpy of the system in eV
             - entropy: float = The entropy of the system in eV/K
@@ -501,12 +545,17 @@ def summarize_thermo_run(
     additional_fields = additional_fields or {}
 
     uri = get_uri(os.getcwd())
+    spin_multiplicity = int(2 * igt.spin + 1)
+
     inputs = {
-        "parameters": {
+        "parameters_thermo": {
             "temperature": temperature,
             "pressure": pressure,
             "sigma": igt.sigma,
-            "spin_multiplicity": int(2 * igt.spin + 1),
+            "spin_multiplicity": spin_multiplicity,
+            "vib_freqs": [e / units.invcm for e in igt.vib_energies],
+            "vib_energies": igt.vib_energies.tolist(),
+            "n_imag": igt.n_imag,
         },
         "nid": uri.split(":")[0],
         "dir_name": ":".join(uri.split(":")[1:]),
@@ -514,8 +563,6 @@ def summarize_thermo_run(
 
     results = {
         "results": {
-            "vib_freqs": [e / units.invcm for e in igt.vib_energies],
-            "vib_energies": igt.vib_energies.tolist(),
             "energy": igt.potentialenergy,
             "enthalpy": igt.get_enthalpy(temperature, verbose=True),
             "entropy": igt.get_entropy(temperature, pressure * 10**5, verbose=True),
@@ -526,7 +573,15 @@ def summarize_thermo_run(
         }
     }
 
-    atoms_db = atoms_to_metadata(igt.atoms)
+    if charge_and_multiplicity and spin_multiplicity != charge_and_multiplicity[1]:
+        warnings.warn(
+            "The IdealGasThermo spin multiplicity does not match the user-specified multiplicity.",
+            UserWarning,
+        )
+
+    atoms_db = atoms_to_metadata(
+        igt.atoms, charge_and_multiplicity=charge_and_multiplicity
+    )
 
     task_doc = atoms_db | inputs | results | additional_fields
 

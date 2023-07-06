@@ -1,1 +1,1 @@
-"""Enhanced versions of the base ASE calculators"""
+"""Enhanced versions of select ASE calculators"""

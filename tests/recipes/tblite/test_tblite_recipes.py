@@ -13,6 +13,11 @@ try:
 except ImportError:
     TBLite = None
 
+try:
+    import sella
+except ImportError:
+    sella = None
+
 
 def teardown_module():
     for f in os.listdir("."):
@@ -36,7 +41,7 @@ def teardown_module():
     TBLite is None,
     reason="tblite must be installed.",
 )
-def test_static_Job():
+def test_static_job():
     atoms = molecule("H2O")
     output = static_job(atoms)
     assert output["spin_multiplicity"] == 1
@@ -93,9 +98,9 @@ def test_freq_job():
     assert output["thermo"]["symmetry"]["point_group"] == "C2v"
     assert output["thermo"]["symmetry"]["rotation_number"] == 2
     assert output["thermo"]["symmetry"]["linear"] is False
-    assert len(output["thermo"]["results"]["vib_freqs"]) == 3
+    assert len(output["thermo"]["parameters_thermo"]["vib_freqs"]) == 3
     assert output["vib"]["results"]["vib_freqs"][0] == pytest.approx(1586.623114694335)
-    assert output["thermo"]["results"]["vib_freqs"][-1] == pytest.approx(
+    assert output["thermo"]["parameters_thermo"]["vib_freqs"][-1] == pytest.approx(
         3526.9940431752034
     )
     assert output["thermo"]["results"]["energy"] == 0.0
@@ -123,7 +128,7 @@ def test_freq_job():
     assert output["thermo"]["atoms"] == initial_atoms
     assert output["thermo"]["symmetry"]["linear"] is False
     assert output["thermo"]["symmetry"]["rotation_number"] == np.inf
-    assert len(output["thermo"]["results"]["vib_freqs"]) == 0
+    assert len(output["thermo"]["parameters_thermo"]["vib_freqs"]) == 0
     assert output["thermo"]["results"]["energy"] == -1.0
     assert output["thermo"]["results"]["enthalpy"] == pytest.approx(-0.9357685739989672)
     assert output["thermo"]["results"]["entropy"] == pytest.approx(
@@ -155,13 +160,13 @@ def test_freq_job():
     assert output["vib"]["results"]["imag_vib_freqs"] == []
 
     assert output["thermo"]["atoms"] == initial_atoms
-    assert output["thermo"]["parameters"]["temperature"] == 1000.0
-    assert output["thermo"]["parameters"]["pressure"] == 20.0
-    assert output["thermo"]["parameters"]["sigma"] == 6
-    assert output["thermo"]["parameters"]["spin_multiplicity"] == 2
+    assert output["thermo"]["parameters_thermo"]["temperature"] == 1000.0
+    assert output["thermo"]["parameters_thermo"]["pressure"] == 20.0
+    assert output["thermo"]["parameters_thermo"]["sigma"] == 6
+    assert output["thermo"]["parameters_thermo"]["spin_multiplicity"] == 2
     assert output["thermo"]["symmetry"]["linear"] is False
     assert output["thermo"]["symmetry"]["rotation_number"] == 6
-    assert len(output["thermo"]["results"]["vib_freqs"]) == 6
+    assert len(output["thermo"]["parameters_thermo"]["vib_freqs"]) == 6
     assert output["thermo"]["results"]["energy"] == -10.0
     assert output["thermo"]["results"]["enthalpy"] == pytest.approx(-8.749341973959462)
     assert output["thermo"]["results"]["entropy"] == pytest.approx(

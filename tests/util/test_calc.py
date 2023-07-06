@@ -1,5 +1,6 @@
 import os
 from shutil import rmtree
+from subprocess import Popen
 
 import numpy as np
 import pytest
@@ -7,13 +8,11 @@ from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.calculators.lj import LennardJones
 from ase.io import read
+from ase.io.trajectory import Trajectory
+from ase.optimize import BFGS, BFGSLineSearch
+from monty.os.path import zpath
 
 from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
-
-try:
-    import sella
-except ImportError:
-    sella = None
 
 CWD = os.getcwd()
 
@@ -34,7 +33,15 @@ def setup_module():
 def teardown_module():
     # Clean up
     os.chdir(CWD)
-    rmtree("blank_dir")
+    for f in os.listdir("."):
+        if ".log" in f or ".pckl" in f or ".traj" in f:
+            os.remove(f)
+    for f in os.listdir(CWD):
+        if "quacc-tmp" in f or f == "tmp_dir" or f == "vib" or f == "blank_dir":
+            if os.path.islink(f):
+                os.unlink(f)
+            else:
+                rmtree(f)
 
 
 def test_run_calc():
@@ -43,7 +50,10 @@ def test_run_calc():
     atoms.calc = EMT()
 
     new_atoms = run_calc(
-        atoms, scratch_dir="test_calc", gzip=False, copy_files=["test_file.txt"]
+        atoms,
+        scratch_dir="test_calc",
+        gzip=False,
+        copy_files=["test_file.txt"],
     )
     assert atoms.calc.results is not None
     assert os.path.exists("test_file.txt")
@@ -52,7 +62,10 @@ def test_run_calc():
     assert np.array_equal(new_atoms.cell.array, atoms.cell.array) is True
 
     new_atoms = run_calc(
-        atoms, scratch_dir="test_calc", gzip=False, copy_files=["test_file.txt"]
+        atoms,
+        scratch_dir="test_calc",
+        gzip=False,
+        copy_files=["test_file.txt"],
     )
     assert new_atoms.calc.results is not None
     assert os.path.exists("test_file.txt")
@@ -65,14 +78,20 @@ def test_run_calc():
     atoms.calc = EMT()
 
     new_atoms = run_calc(
-        atoms, scratch_dir="new_test_calc", gzip=False, copy_files=["test_file.txt"]
+        atoms,
+        scratch_dir="new_test_calc",
+        gzip=False,
+        copy_files=["test_file.txt"],
     )
     assert atoms.calc.results is not None
 
     atoms = bulk("Cu")
     with pytest.raises(ValueError):
         run_calc(
-            atoms, scratch_dir="test_calc", gzip=False, copy_files=["test_file.txt"]
+            atoms,
+            scratch_dir="test_calc",
+            gzip=False,
+            copy_files=["test_file.txt"],
         )
 
 
@@ -82,7 +101,8 @@ def test_run_ase_opt():
     atoms.calc = EMT()
 
     dyn = run_ase_opt(atoms, scratch_dir="test_calc", copy_files=["test_file.txt"])
-    traj = read(dyn.trajectory.filename, index=":")
+    Popen(f"gunzip {dyn.trajectory.filename}", shell=True).wait()
+    traj = read(zpath(dyn.trajectory.filename), index=":")
     assert traj[-1].calc.results is not None
     assert os.path.exists("test_file.txt")
     assert os.path.exists("test_file.txt.gz")
@@ -96,69 +116,63 @@ def test_run_ase_opt():
 
     dyn = run_ase_opt(
         atoms,
-        optimizer="BFGS",
+        optimizer=BFGS,
         scratch_dir="new_test_calc2",
         gzip=False,
         copy_files=["test_file.txt"],
         optimizer_kwargs={"restart": None},
     )
-    traj = read(dyn.trajectory.filename, index=":")
+    Popen(f"gunzip {dyn.trajectory.filename}", shell=True).wait()
+    traj = read(zpath(dyn.trajectory.filename), index=":")
     assert traj[-1].calc.results is not None
 
     dyn = run_ase_opt(
         traj[-1],
-        optimizer="BFGSLineSearch",
+        optimizer=BFGSLineSearch,
         scratch_dir="test_calc",
         gzip=False,
         copy_files=["test_file.txt"],
-        optimizer_kwargs={"restart": None},
+        optimizer_kwargs={"restart": None, "trajectory": "new_test.traj"},
     )
-    traj = read(dyn.trajectory.filename, index=":")
+    Popen(f"gunzip {dyn.trajectory.filename}", shell=True).wait()
+    traj = read(zpath(dyn.trajectory.filename), index=":")
     assert traj[-1].calc.results is not None
 
-    with pytest.raises(ValueError):
-        dyn = run_ase_opt(
-            traj[-1],
-            optimizer="Fake",
-            scratch_dir="test_calc",
-            gzip=False,
-            copy_files=["test_file.txt"],
-            optimizer_kwargs={"restart": None},
-        )
-        traj = read(dyn.trajectory.filename, index=":")
-        assert traj[-1].calc.results is not None
-    with pytest.raises(ValueError):
-        run_ase_opt(bulk("Cu"), scratch_dir="test_calc", copy_files=["test_file.txt"])
-
-
-@pytest.mark.skipif(
-    sella is None,
-    reason="Sella must be installed.",
-)
-def test_sella():
-    atoms = bulk("Cu") * (2, 1, 1)
-    atoms[0].position += 0.1
     dyn = run_ase_opt(
-        atoms,
-        optimizer="Sella",
+        traj[-1],
+        optimizer=BFGSLineSearch,
         scratch_dir="test_calc",
         gzip=False,
         copy_files=["test_file.txt"],
-        optimizer_kwargs={"restart": None},
+        optimizer_kwargs={
+            "restart": None,
+            "trajectory": Trajectory("new_test2.traj", "w", atoms=traj[-1]),
+        },
     )
-    traj = read(dyn.trajectory.filename, index=":")
+    Popen(f"gunzip {dyn.trajectory.filename}", shell=True).wait()
+    traj = read(zpath(dyn.trajectory.filename), index=":")
     assert traj[-1].calc.results is not None
+
+    with pytest.raises(ValueError):
+        run_ase_opt(
+            bulk("Cu"),
+            scratch_dir="test_calc",
+            copy_files=["test_file.txt"],
+        )
 
 
 def test_run_ase_vib():
     o2 = molecule("O2")
     o2.calc = LennardJones()
-    vib = run_ase_vib(o2, scratch_dir="test_calc", copy_files=["test_file.txt"])
+    vib = run_ase_vib(o2, scratch_dir="test_calc_vib", copy_files=["test_file.txt"])
     assert np.real(vib.get_frequencies()[-1]) == pytest.approx(255.6863883406967)
     assert np.array_equal(vib.atoms.get_positions(), o2.get_positions()) is True
     assert os.path.exists("test_file.txt")
     assert os.path.exists("test_file.txt.gz")
     os.remove("test_file.txt.gz")
+
+    with pytest.raises(ValueError):
+        run_ase_vib(bulk("Cu"))
 
 
 def test_bad_run_calc():

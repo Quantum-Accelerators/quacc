@@ -1,16 +1,13 @@
-"""
-Utility functions for running ASE calculators
-"""
+"""Utility functions for running ASE calculators"""
 from __future__ import annotations
 
 import os
 from tempfile import mkdtemp
-from typing import Literal
 
 import numpy as np
-from ase import optimize
-from ase.atoms import Atoms
-from ase.io import read
+from ase import Atoms
+from ase.io import Trajectory, read
+from ase.optimize import FIRE
 from ase.optimize.optimize import Optimizer
 from ase.vibrations import Vibrations
 from monty.os.path import zpath
@@ -47,7 +44,7 @@ def run_calc(
         function to update the positions, as this varies between codes.
     scratch_dir
         Path where a tmpdir should be made for running the calculation. If None,
-        the current working directory will be used.
+        the working directory will be used.
     gzip
         Whether to gzip the output files.
     copy_files
@@ -65,12 +62,12 @@ def run_calc(
 
     cwd = os.getcwd()
     scratch_dir = scratch_dir or cwd
-    symlink = os.path.join(cwd, "tmp_dir")
 
     if not os.path.exists(scratch_dir):
         os.makedirs(scratch_dir)
 
-    tmpdir = mkdtemp(prefix="quacc-tmp-", dir=scratch_dir)
+    tmpdir = os.path.abspath(mkdtemp(prefix="quacc-tmp-", dir=scratch_dir))
+    symlink = os.path.join(cwd, f"{os.path.basename(tmpdir)}-symlink")
 
     if os.name != "nt":
         if os.path.islink(symlink):
@@ -93,14 +90,10 @@ def run_calc(
     # Copy files back to run_dir
     copy_r(tmpdir, cwd)
 
-    # Remove symlink
-    if os.path.islink(symlink):
-        os.remove(symlink)
-
-    # Some ASE calculators do not update the atoms object in-place with
-    # a call to .get_potential_energy(). This is a workaround to ensure
-    # that the atoms object is updated with the correct positions, cell,
-    # and magmoms.
+    # Most ASE calculators do not update the atoms object in-place with
+    # a call to .get_potential_energy(). This section is done to ensure
+    # that the atoms object is updated with the correct positions and cell
+    # if a `geom_file` is provided.
     if geom_file and os.path.exists(zpath(geom_file)):
         # Note: We have to be careful to make sure we don't lose the
         # converged magnetic moments, if present. That's why we simply
@@ -119,6 +112,10 @@ def run_calc(
         atoms.positions = atoms_new.positions
         atoms.cell = atoms_new.cell
 
+    # Remove symlink
+    if os.path.islink(symlink):
+        os.remove(symlink)
+
     return atoms
 
 
@@ -126,19 +123,7 @@ def run_ase_opt(
     atoms: Atoms,
     fmax: float = 0.01,
     max_steps: int = 500,
-    optimizer: Literal[
-        "Berny",
-        "BFGS",
-        "BFGSLineSearch",
-        "FIRE",
-        "GPMin",
-        "LBFGS",
-        "LBFGSLineSearch",
-        "MDMin",
-        "QuasiNewton",
-        "Sella",
-        "SellaIRC",
-    ] = "FIRE",
+    optimizer: Optimizer = FIRE,
     optimizer_kwargs: dict | None = None,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
@@ -161,12 +146,12 @@ def run_ase_opt(
     max_steps
         Maximum number of steps to take.
     optimizer
-        Name of optimizer class to use.
+        Optimizer class to use.
     optimizer_kwargs
         Dictionary of kwargs for the optimizer.
     scratch_dir
         Path where a tmpdir should be made for running the calculation. If None,
-        the current working directory will be used.
+        the working directory will be used.
     gzip
         Whether to gzip the output files.
     copy_files
@@ -184,39 +169,44 @@ def run_ase_opt(
 
     cwd = os.getcwd()
     scratch_dir = scratch_dir or cwd
-    symlink = os.path.join(cwd, "tmp_dir")
     optimizer_kwargs = optimizer_kwargs or {}
 
     if not os.path.exists(scratch_dir):
         os.makedirs(scratch_dir)
 
-    if "trajectory" not in optimizer_kwargs:
-        optimizer_kwargs["trajectory"] = "opt.traj"
+    # Set Sella kwargs
+    if (
+        optimizer.__name__ == "Sella"
+        and not atoms.pbc.any()
+        and "internal" not in optimizer_kwargs
+    ):
+        optimizer_kwargs["internal"] = True
 
-    # Get optimizer
-    try:
-        opt_class = getattr(optimize, optimizer)
-    except AttributeError as e:
-        raise ValueError(
-            f"Unknown {optimizer=}, must be one of {list(dir(optimize))}"
-        ) from e
-
-    tmpdir = mkdtemp(prefix="quacc-tmp-", dir=scratch_dir)
+    tmpdir = os.path.abspath(mkdtemp(prefix="quacc-tmp-", dir=scratch_dir))
+    symlink = os.path.join(cwd, f"{os.path.basename(tmpdir)}-symlink")
 
     if os.name != "nt":
         if os.path.islink(symlink):
             os.unlink(symlink)
         os.symlink(tmpdir, symlink)
 
+    # Set up trajectory
+    if "trajectory" in optimizer_kwargs:
+        if isinstance(optimizer_kwargs["trajectory"], str):
+            traj = Trajectory(optimizer_kwargs["trajectory"], "w", atoms=atoms)
+        else:
+            traj = optimizer_kwargs["trajectory"]
+    else:
+        traj = Trajectory(os.path.join(tmpdir, "opt.traj"), "w", atoms=atoms)
+    optimizer_kwargs["trajectory"] = traj
+
     # Copy files to scratch and decompress them if needed
     if copy_files:
         copy_decompress(copy_files, tmpdir)
 
     # Define optimizer class
-    dyn = opt_class(atoms, **optimizer_kwargs)
-    dyn.trajectory.filename = optimizer_kwargs[
-        "trajectory"
-    ]  # can remove after ASE MR 2901
+    dyn = optimizer(atoms, **optimizer_kwargs)
+    dyn.trajectory = traj
 
     # Run calculation
     os.chdir(tmpdir)
@@ -260,7 +250,7 @@ def run_ase_vib(
         Dictionary of kwargs for the vibration analysis.
     scratch_dir
         Path where a tmpdir should be made for running the calculation. If None,
-        the current working directory will be used.
+        the working directory will be used.
     gzip
         Whether to gzip the output files.
     copy_files
@@ -278,13 +268,13 @@ def run_ase_vib(
 
     cwd = os.getcwd()
     scratch_dir = scratch_dir or cwd
-    symlink = os.path.join(cwd, "tmp_dir")
     vib_kwargs = vib_kwargs or {}
 
     if not os.path.exists(scratch_dir):
         os.makedirs(scratch_dir)
 
-    tmpdir = mkdtemp(prefix="quacc-tmp-", dir=scratch_dir)
+    tmpdir = os.path.abspath(mkdtemp(prefix="quacc-tmp-", dir=scratch_dir))
+    symlink = os.path.join(cwd, f"{os.path.basename(tmpdir)}-symlink")
 
     if os.name != "nt":
         if os.path.islink(symlink):

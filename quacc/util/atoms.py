@@ -8,7 +8,7 @@ import os
 from copy import deepcopy
 
 import numpy as np
-from ase.atoms import Atoms
+from ase import Atoms
 from ase.io.jsonio import encode
 from pymatgen.io.ase import AseAtomsAdaptor
 
@@ -272,14 +272,15 @@ def get_highest_block(atoms: Atoms) -> str:
         struct = AseAtomsAdaptor.get_molecule(atoms)
 
     blocks = [site.specie.block for site in struct]
-    if "f" in blocks:
-        return "f"
-    elif "d" in blocks:
-        return "d"
-    elif "p" in blocks:
-        return "p"
-    else:
-        return "s"
+    return (
+        "f"
+        if "f" in blocks
+        else "d"
+        if "d" in blocks
+        else "p"
+        if "p" in blocks
+        else "s"
+    )
 
 
 def copy_atoms(atoms: Atoms) -> Atoms:

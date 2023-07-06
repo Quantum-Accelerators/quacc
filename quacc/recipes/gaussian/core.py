@@ -4,10 +4,10 @@ from __future__ import annotations
 import multiprocessing
 
 import covalent as ct
-from ase.atoms import Atoms
+from ase import Atoms
 from ase.calculators.gaussian import Gaussian
 
-from quacc.schemas.cclib import summarize_run
+from quacc.schemas.cclib import cclibSchema, summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.dicts import remove_dict_empties
 
@@ -17,37 +17,31 @@ GEOM_FILE = LOG_FILE
 
 @ct.electron
 def static_job(
-    atoms: Atoms,
+    atoms: Atoms | dict,
     charge: int | None = None,
-    mult: int | None = None,
+    multiplicity: int | None = None,
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
-    pop: str = "hirshfeld",
-    write_molden: bool = True,
-    swaps: dict | None = None,
-) -> dict:
+    calc_swaps: dict | None = None,
+) -> cclibSchema:
     """
     Carry out a single-point calculation.
 
     Parameters
     ----------
     atoms
-        Atoms object
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     charge
         Charge of the system. If None, this is determined from the sum of
         `atoms.get_initial_charges().`
-    mult
+    multiplicity
         Multiplicity of the system. If None, this is determined from 1+ the sum
         of `atoms.get_initial_magnetic_moments()`.
     xc
         Exchange-correlation functional
     basis
         Basis set
-    pop
-        Type of population analysis to perform from `quacc.schemas.cclib.summarize_run`
-    write_molden
-        Whether to write a molden file for orbital visualization
-    swaps
+    calc_swaps
         Dictionary of custom kwargs for the calculator.
             defaults = {
                 "mem": "16GB",
@@ -55,26 +49,31 @@ def static_job(
                 "nprocshared": multiprocessing.cpu_count(),
                 "xc": xc,
                 "basis": basis,
-                "charge": charge or round(sum(atoms.get_initial_charges())),
-                "mult": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
+                "charge": charge or int(sum(atoms.get_initial_charges())),
+                "mult": multiplicity or int(1 + sum(atoms.get_initial_magnetic_moments())),
                 "sp": "",
                 "scf": ["maxcycle=250", "xqc"],
                 "integral": "ultrafine",
                 "nosymmetry": "",
-                "pop": pop,
-                "gfinput": "" if write_molden else None,
+                "pop": "CM5",
+                "gfinput": "",
                 "ioplist": ["6/7=3", "2/9=2000"]
-                if write_molden
-                else ["2/9=2000"],  # see ASE issue #660
             }
 
     Returns
     -------
-    dict
+    RunSchema
         Dictionary of results from `quacc.schemas.cclib.summarize_run`
     """
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    calc_swaps = calc_swaps or {}
 
-    swaps = swaps or {}
+    charge = int(atoms.get_initial_charges().sum()) if charge is None else charge
+    multiplicity = (
+        int(1 + atoms.get_initial_magnetic_moments().sum())
+        if multiplicity is None
+        else multiplicity
+    )
 
     defaults = {
         "mem": "16GB",
@@ -82,47 +81,49 @@ def static_job(
         "nprocshared": multiprocessing.cpu_count(),
         "xc": xc,
         "basis": basis,
-        "charge": charge or round(sum(atoms.get_initial_charges())),
-        "mult": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
+        "charge": charge,
+        "mult": multiplicity,
         "sp": "",
         "scf": ["maxcycle=250", "xqc"],
         "integral": "ultrafine",
         "nosymmetry": "",
-        "pop": pop,
-        "gfinput": "" if write_molden else None,
-        "ioplist": ["6/7=3", "2/9=2000"]
-        if write_molden
-        else ["2/9=2000"],  # see ASE issue #660
+        "pop": "CM5",
+        "gfinput": "",
+        "ioplist": ["6/7=3", "2/9=2000"],  # see ASE issue #660
     }
-    flags = remove_dict_empties(defaults | swaps)
+    flags = remove_dict_empties(defaults | calc_swaps)
 
     atoms.calc = Gaussian(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
 
-    return summarize_run(atoms, LOG_FILE, additional_fields={"name": "Gaussian Static"})
+    return summarize_run(
+        atoms,
+        LOG_FILE,
+        additional_fields={"name": "Gaussian Static"},
+    )
 
 
 @ct.electron
 def relax_job(
     atoms: Atoms,
     charge: int | None = None,
-    mult: int | None = None,
+    multiplicity: int | None = None,
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
     freq: bool = False,
-    swaps: dict | None = None,
-) -> dict:
+    calc_swaps: dict | None = None,
+) -> cclibSchema:
     """
     Carry out a geometry optimization.
 
     Parameters
     ----------
     atoms
-        Atoms object
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     charge
         Charge of the system. If None, this is determined from the sum of
         `atoms.get_initial_charges()`.
-    mult
+    multiplicity
         Multiplicity of the system. If None, this is determined from 1+ the sum
         of `atoms.get_initial_magnetic_moments()`.
     xc
@@ -131,7 +132,7 @@ def relax_job(
         Basis set
     freq
         If a frequency calculation should be carried out.
-    swaps
+    calc_swaps
         Dictionary of custom kwargs for the calculator.
             defaults = {
                 "mem": "16GB",
@@ -139,9 +140,10 @@ def relax_job(
                 "nprocshared": multiprocessing.cpu_count(),
                 "xc": xc,
                 "basis": basis,
-                "charge": charge or round(sum(atoms.get_initial_charges())),
-                "mult": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
+                "charge": charge or int(sum(atoms.get_initial_charges())),
+                "mult": multiplicity or int(1 + sum(atoms.get_initial_magnetic_moments())),
                 "opt": "",
+                "pop": "CM5",
                 "scf": ["maxcycle=250", "xqc"],
                 "integral": "ultrafine",
                 "nosymmetry": "",
@@ -151,11 +153,18 @@ def relax_job(
 
     Returns
     -------
-    dict
+    RunSchema
         Dictionary of results from `quacc.schemas.cclib.summarize_run`
     """
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    calc_swaps = calc_swaps or {}
 
-    swaps = swaps or {}
+    charge = int(atoms.get_initial_charges().sum()) if charge is None else charge
+    multiplicity = (
+        int(1 + atoms.get_initial_magnetic_moments().sum())
+        if multiplicity is None
+        else multiplicity
+    )
 
     defaults = {
         "mem": "16GB",
@@ -163,18 +172,23 @@ def relax_job(
         "nprocshared": multiprocessing.cpu_count(),
         "xc": xc,
         "basis": basis,
-        "charge": charge or round(sum(atoms.get_initial_charges())),
-        "mult": mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
+        "charge": charge,
+        "mult": multiplicity,
         "opt": "",
+        "pop": "CM5",
         "scf": ["maxcycle=250", "xqc"],
         "integral": "ultrafine",
         "nosymmetry": "",
         "freq": "" if freq else None,
         "ioplist": ["2/9=2000"],  # ASE issue #660
     }
-    flags = remove_dict_empties(defaults | swaps)
+    flags = remove_dict_empties(defaults | calc_swaps)
 
     atoms.calc = Gaussian(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
 
-    return summarize_run(atoms, LOG_FILE, additional_fields={"name": "Gaussian Relax"})
+    return summarize_run(
+        atoms,
+        LOG_FILE,
+        additional_fields={"name": "Gaussian Relax"},
+    )

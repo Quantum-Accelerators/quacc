@@ -27,7 +27,7 @@ def teardown_module():
                 rmtree(f)
 
 
-def test_static_Job():
+def test_static_job():
     atoms = molecule("H2O")
 
     output = static_job(atoms)
@@ -46,7 +46,7 @@ def test_static_Job():
     assert "output xyz gulp.xyz" in output["parameters"]["options"]
     assert "output cif gulp.cif" not in output["parameters"]["options"]
 
-    output = static_job(atoms, gfnff=False)
+    output = static_job(atoms, use_gfnff=False)
     assert output["natoms"] == len(atoms)
     assert "gfnff" not in output["parameters"]["keywords"]
     assert "gwolf" not in output["parameters"]["keywords"]
@@ -71,7 +71,7 @@ def test_static_Job():
     assert "output xyz gulp.xyz" not in output["parameters"]["options"]
     assert "output cif gulp.cif" in output["parameters"]["options"]
 
-    output = static_job(atoms, gfnff=False)
+    output = static_job(atoms, use_gfnff=False)
     assert output["nsites"] == len(atoms)
     assert "gfnff" not in output["parameters"]["keywords"]
     assert "gwolf" not in output["parameters"]["keywords"]
@@ -94,7 +94,7 @@ def test_relax_Job():
     assert "output xyz gulp.xyz" in output["parameters"]["options"]
     assert "output cif gulp.cif" not in output["parameters"]["options"]
 
-    output = relax_job(atoms, volume_relax=False, keyword_swaps={"gwolf": True})
+    output = relax_job(atoms, relax_cell=False, keyword_swaps={"gwolf": True})
     assert output["natoms"] == len(atoms)
     assert "gfnff" in output["parameters"]["keywords"]
     assert "opti" in output["parameters"]["keywords"]
@@ -105,7 +105,7 @@ def test_relax_Job():
     assert "output xyz gulp.xyz" in output["parameters"]["options"]
     assert "output cif gulp.cif" not in output["parameters"]["options"]
 
-    output = relax_job(atoms, gfnff=False)
+    output = relax_job(atoms, use_gfnff=False)
     assert output["natoms"] == len(atoms)
     assert "gfnff" not in output["parameters"]["keywords"]
     assert "opti" in output["parameters"]["keywords"]
@@ -128,7 +128,7 @@ def test_relax_Job():
     assert "output xyz gulp.xyz" not in output["parameters"]["options"]
     assert "output cif gulp.cif" in output["parameters"]["options"]
 
-    output = relax_job(atoms, volume_relax=False, keyword_swaps={"gwolf": True})
+    output = relax_job(atoms, relax_cell=False, keyword_swaps={"gwolf": True})
     assert output["nsites"] == len(atoms)
     assert "gfnff" in output["parameters"]["keywords"]
     assert "opti" in output["parameters"]["keywords"]
@@ -139,7 +139,7 @@ def test_relax_Job():
     assert "output xyz gulp.xyz" not in output["parameters"]["options"]
     assert "output cif gulp.cif" in output["parameters"]["options"]
 
-    output = relax_job(atoms, gfnff=False)
+    output = relax_job(atoms, use_gfnff=False)
     assert output["nsites"] == len(atoms)
     assert "gfnff" not in output["parameters"]["keywords"]
     assert "opti" in output["parameters"]["keywords"]

@@ -4,10 +4,10 @@ from __future__ import annotations
 import multiprocessing
 
 import covalent as ct
-from ase.atoms import Atoms
+from ase import Atoms
 from ase.calculators.orca import ORCA
 
-from quacc.schemas.cclib import summarize_run
+from quacc.schemas.cclib import cclibSchema, summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.dicts import remove_dict_empties
 
@@ -17,25 +17,25 @@ GEOM_FILE = f"{ORCA().name}.xyz"
 
 @ct.electron
 def static_job(
-    atoms: Atoms,
+    atoms: Atoms | dict,
     charge: int | None = None,
-    mult: int | None = None,
+    multiplicity: int | None = None,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
     input_swaps: dict | None = None,
     block_swaps: dict | None = None,
-) -> dict:
+) -> cclibSchema:
     """
     Carry out a single-point calculation.
 
     Parameters
     ----------
     atoms
-        Atoms object
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     charge
         Charge of the system. If None, this is determined from the sum of
         `atoms.get_initial_charges()`.
-    mult
+    multiplicity
         Multiplicity of the system. If None, this is determined from 1+ the sum
         of `atoms.get_initial_magnetic_moments()`.
     xc
@@ -62,10 +62,10 @@ def static_job(
 
     Returns
     -------
-    dict
+    cclibSchema
         Dictionary of results from quacc.schemas.cclib.summarize_run
     """
-
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     input_swaps = input_swaps or {}
     block_swaps = block_swaps or {}
 
@@ -88,28 +88,39 @@ def static_job(
     orcasimpleinput = " ".join(list(inputs.keys()))
     orcablocks = " ".join(list(blocks.keys()))
 
+    charge = int(atoms.get_initial_charges().sum()) if charge is None else charge
+    multiplicity = (
+        int(1 + atoms.get_initial_magnetic_moments().sum())
+        if multiplicity is None
+        else multiplicity
+    )
+
     atoms.calc = ORCA(
-        charge=charge or round(sum(atoms.get_initial_charges())),
-        mult=mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
+        charge=charge,
+        mult=multiplicity,
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
 
-    return summarize_run(atoms, LOG_FILE, additional_fields={"name": "ORCA Static"})
+    return summarize_run(
+        atoms,
+        LOG_FILE,
+        additional_fields={"name": "ORCA Static"},
+    )
 
 
 @ct.electron
 def relax_job(
-    atoms: Atoms,
+    atoms: Atoms | dict,
     charge: int = None,
-    mult: int = None,
+    multiplicity: int = None,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
     run_freq: bool = False,
     input_swaps: dict = None,
     block_swaps: dict = None,
-) -> dict:
+) -> cclibSchema:
     """
     Carry out a geometry optimization.
 
@@ -120,7 +131,7 @@ def relax_job(
     charge
         Charge of the system. If None, this is determined from the sum of
         atoms.get_initial_charges().
-    mult
+    multiplicity
         Multiplicity of the system. If None, this is determined from 1+ the sum
         of atoms.get_initial_magnetic_moments().
     xc
@@ -150,10 +161,10 @@ def relax_job(
 
     Returns
     -------
-    dict
+    cclibSchema
         Dictionary of results from quacc.schemas.cclib.summarize_run
     """
-
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     input_swaps = input_swaps or {}
     block_swaps = block_swaps or {}
 
@@ -177,12 +188,23 @@ def relax_job(
     orcasimpleinput = " ".join(list(inputs.keys()))
     orcablocks = " ".join(list(blocks.keys()))
 
+    charge = int(atoms.get_initial_charges().sum()) if charge is None else charge
+    multiplicity = (
+        int(1 + atoms.get_initial_magnetic_moments().sum())
+        if multiplicity is None
+        else multiplicity
+    )
+
     atoms.calc = ORCA(
-        charge=charge or round(sum(atoms.get_initial_charges())),
-        mult=mult or round(1 + sum(atoms.get_initial_magnetic_moments())),
+        charge=charge,
+        mult=multiplicity,
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )
     atoms = run_calc(atoms, geom_file=GEOM_FILE)
 
-    return summarize_run(atoms, LOG_FILE, additional_fields={"name": "ORCA Relax"})
+    return summarize_run(
+        atoms,
+        LOG_FILE,
+        additional_fields={"name": "ORCA Relax"},
+    )

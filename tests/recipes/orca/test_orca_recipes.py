@@ -28,7 +28,7 @@ def teardown_module():
                 rmtree(f)
 
 
-def test_static_Job():
+def test_static_job():
     atoms = molecule("H2")
     nprocs = multiprocessing.cpu_count()
 
@@ -41,11 +41,13 @@ def test_static_Job():
     assert output["parameters"]["orcablocks"] == f"%pal nprocs {nprocs} end"
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
+    assert output["spin_multiplicity"] == 1
+    assert output["charge"] == 0
 
     output = static_job(
         atoms,
         charge=-2,
-        mult=3,
+        multiplicity=3,
         input_swaps={"def2-svp": True, "def2-tzvp": None},
         block_swaps={"%scf maxiter 300 end": True},
     )
@@ -79,7 +81,7 @@ def test_relax_Job():
     output = relax_job(
         atoms,
         charge=-2,
-        mult=3,
+        multiplicity=3,
         input_swaps={
             "hf": True,
             "wb97x-d3bj": None,
@@ -89,8 +91,6 @@ def test_relax_Job():
         block_swaps={"%scf maxiter 300 end": True},
     )
     assert output["natoms"] == len(atoms)
-    assert output["parameters"]["charge"] == -2
-    assert output["parameters"]["mult"] == 3
     assert (
         output["parameters"]["orcasimpleinput"]
         == "opt slowconv normalprint xyzfile hf def2-svp"

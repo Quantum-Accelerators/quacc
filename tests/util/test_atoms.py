@@ -2,6 +2,7 @@ import os
 from copy import deepcopy
 from pathlib import Path
 
+from ase import Atoms
 from ase.build import bulk, molecule
 from ase.io import read
 
@@ -21,6 +22,14 @@ ATOMS_NOMAG = read(
 ATOMS_NOSPIN = read(
     os.path.join(FILE_DIR, "..", "calculators", "vasp", "OUTCAR_nospin.gz")
 )
+
+
+def test_init():
+    atoms = bulk("Cu")
+    assert Atoms.from_dict(atoms.as_dict()) == atoms
+
+    atoms = molecule("CH3")
+    assert Atoms.from_dict(atoms.as_dict()) == atoms
 
 
 def test_get_atoms_id():

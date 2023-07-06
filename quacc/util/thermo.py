@@ -4,7 +4,7 @@ Utility functions for thermochemistry
 from __future__ import annotations
 
 import numpy as np
-from ase.atoms import Atoms, units
+from ase import Atoms, units
 from ase.thermochemistry import IdealGasThermo
 
 from quacc.schemas.atoms import atoms_to_metadata
@@ -19,17 +19,18 @@ def ideal_gas(
     """
     Calculate thermodynamic properties for a molecule from a given vibrational analysis.
     This is for free gases only and will not be valid for solids or adsorbates on surfaces.
+    Any imaginary vibrational modes after the 3N-5/3N-6 cut will simply be ignored.
 
     Parameters
     ----------
     atoms
         The Atoms object associated with the vibrational analysis.
     vib_freqs
-        The list of vibrations to use, typically obtained from Vibrations.get_frequencies().
+        The list of vibrations to use in cm^-1, typically obtained from Vibrations.get_frequencies().
     energy
         Potential energy in eV. If 0 eV, then the thermochemical correction is computed.
     spin_multiplicity
-        The spin multiplicity. If None, this will be determined automatically from the
+        The spin multiplicity (2S+1). If None, this will be determined automatically from the
         attached magnetic moments.
 
     Returns
@@ -40,17 +41,13 @@ def ideal_gas(
     # Switch off PBC since this is only for molecules
     atoms.set_pbc(False)
 
-    # Ensure all imaginary modes are actually negatives
-    for i, f in enumerate(vib_freqs):
-        if isinstance(f, complex) and np.imag(f) != 0:
-            vib_freqs[i] = complex(0 - f * 1j)
-
-    vib_energies = [f * units.invcm for f in vib_freqs]
-    real_vib_energies = np.real(vib_energies)
-
+    # Ensure all negative modes are made complex
     for i, f in enumerate(vib_freqs):
         if not isinstance(f, complex) and f < 0:
             vib_freqs[i] = complex(0 - f * 1j)
+
+    # Convert vibrational frequencies to energies
+    vib_energies = [f * units.invcm for f in vib_freqs]
 
     # Get the spin from the Atoms object.
     if spin_multiplicity:
@@ -85,10 +82,11 @@ def ideal_gas(
         geometry = "nonlinear"
 
     return IdealGasThermo(
-        real_vib_energies,
+        vib_energies,
         geometry,
         potentialenergy=energy,
         atoms=atoms,
         symmetrynumber=metadata["symmetry"]["rotation_number"],
         spin=spin,
+        ignore_imag_modes=True,
     )

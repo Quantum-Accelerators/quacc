@@ -104,8 +104,7 @@ def test_summarize_opt_run():
     atoms[0].position += [0.1, 0.1, 0.1]
     atoms.calc = EMT()
     dyn = BFGS(atoms, trajectory="test.traj")
-    dyn.trajectory.filename = "test.traj"  # can remove after ASE MR 2901
-    dyn.run()
+    dyn.run(steps=100)
     traj = read("test.traj", index=":")
 
     results = summarize_opt_run(dyn, check_convergence=True)
@@ -118,13 +117,14 @@ def test_summarize_opt_run():
     assert "nid" in results
     assert "dir_name" in results
     assert "pull_request" in results["builder_meta"]
+    assert results["parameters_opt"]["fmax"] == dyn.fmax
+    assert results["parameters_opt"]["max_steps"] == 100
 
     # Test remove_empties
     atoms = bulk("Cu") * (2, 2, 1)
     atoms[0].position += [0.1, 0.1, 0.1]
     atoms.calc = EMT()
     dyn = BFGS(atoms, trajectory="test.traj")
-    dyn.trajectory.filename = "test.traj"  # can remove after ASE MR 2901
     dyn.run()
     traj = read(dyn.trajectory.filename, index=":")
 
@@ -145,7 +145,6 @@ def test_summarize_opt_run():
     atoms[0].position += [0.1, 0.1, 0.1]
     atoms.calc = EMT()
     dyn = BFGS(atoms, trajectory="test.traj")
-    dyn.trajectory.filename = "test.traj"  # can remove after ASE MR 2901
     dyn.run()
 
     results = summarize_opt_run(dyn)
@@ -173,11 +172,11 @@ def test_summarize_vib_run():
     results = summarize_vib_run(vib)
     assert results["atoms"] == input_atoms
     assert results["natoms"] == len(atoms)
-    assert results["parameters"]["delta"] == vib.delta
-    assert results["parameters"]["direction"] == "central"
-    assert results["parameters"]["method"] == "standard"
-    assert results["parameters"]["ndof"] == 6
-    assert results["parameters"]["nfree"] == 2
+    assert results["parameters_vib"]["delta"] == vib.delta
+    assert results["parameters_vib"]["direction"] == "central"
+    assert results["parameters_vib"]["method"] == "standard"
+    assert results["parameters_vib"]["ndof"] == 6
+    assert results["parameters_vib"]["nfree"] == 2
     assert "nid" in results
     assert "dir_name" in results
     assert "pull_request" in results["builder_meta"]
@@ -210,11 +209,11 @@ def test_summarize_vib_run():
     results = summarize_vib_run(vib, remove_empties=True)
     assert results["atoms"] == input_atoms
     assert results["natoms"] == len(atoms)
-    assert results["parameters"]["delta"] == vib.delta
-    assert results["parameters"]["direction"] == "central"
-    assert results["parameters"]["method"] == "standard"
-    assert results["parameters"]["ndof"] == 6
-    assert results["parameters"]["nfree"] == 2
+    assert results["parameters_vib"]["delta"] == vib.delta
+    assert results["parameters_vib"]["direction"] == "central"
+    assert results["parameters_vib"]["method"] == "standard"
+    assert results["parameters_vib"]["ndof"] == 6
+    assert results["parameters_vib"]["nfree"] == 2
     assert "nid" in results
     assert "dir_name" in results
     assert "pull_request" not in results["builder_meta"]
@@ -245,7 +244,7 @@ def test_summarize_vib_run():
     results = summarize_vib_run(vib)
     assert results["atoms"] == input_atoms
     assert results["nsites"] == len(atoms)
-    assert results["parameters"]["delta"] == vib.delta
+    assert results["parameters_vib"]["delta"] == vib.delta
     assert len(results["results"]["vib_freqs_raw"]) == 6
     assert len(results["results"]["vib_energies_raw"]) == 6
     assert len(results["results"]["vib_freqs"]) == 6
@@ -259,8 +258,8 @@ def test_summarize_thermo_run():
     results = summarize_thermo_run(igt)
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
-    assert results["results"]["vib_energies"] == [0.34]
-    assert results["results"]["vib_freqs"] == [0.34 / invcm]
+    assert results["parameters_thermo"]["vib_energies"] == [0.34]
+    assert results["parameters_thermo"]["vib_freqs"] == [0.34 / invcm]
     assert results["results"]["energy"] == 0
     assert "pull_request" in results["builder_meta"]
 
@@ -270,8 +269,8 @@ def test_summarize_thermo_run():
     results = summarize_thermo_run(igt, remove_empties=True)
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
-    assert results["results"]["vib_energies"] == [0.34]
-    assert results["results"]["vib_freqs"] == [0.34 / invcm]
+    assert results["parameters_thermo"]["vib_energies"] == [0.34]
+    assert results["parameters_thermo"]["vib_freqs"] == [0.34 / invcm]
     assert results["results"]["energy"] == 0
     assert "pull_request" not in results["builder_meta"]
 
@@ -283,8 +282,8 @@ def test_summarize_thermo_run():
     results = summarize_thermo_run(igt)
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
-    assert results["results"]["vib_energies"] == [0.34]
-    assert results["results"]["vib_freqs"] == [0.34 / invcm]
+    assert results["parameters_thermo"]["vib_energies"] == [0.34]
+    assert results["parameters_thermo"]["vib_freqs"] == [0.34 / invcm]
     assert results["results"]["energy"] == -1
 
     # # Make sure info tags are handled appropriately
@@ -326,23 +325,26 @@ def test_summarize_thermo_run():
     results = summarize_thermo_run(igt, temperature=1000.0, pressure=20.0)
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
-    assert len(results["results"]["vib_energies"]) == 6
-    assert results["results"]["vib_energies"][0] == vib_energies[-6]
-    assert results["results"]["vib_energies"][-1] == vib_energies[-1]
+    assert len(results["parameters_thermo"]["vib_energies"]) == 6
+    assert results["parameters_thermo"]["vib_energies"][0] == vib_energies[-6]
+    assert results["parameters_thermo"]["vib_energies"][-1] == vib_energies[-1]
     assert results["results"]["energy"] == -10.0
     assert results["results"]["enthalpy"] == pytest.approx(-8.749341973959462)
     assert results["results"]["entropy"] == pytest.approx(0.0023506788982171896)
     assert results["results"]["gibbs_energy"] == pytest.approx(-11.100020872176652)
-    assert results["parameters"]["temperature"] == 1000.0
-    assert results["parameters"]["pressure"] == 20.0
-    assert results["parameters"]["sigma"] == 6
-    assert results["parameters"]["spin_multiplicity"] == 2
+    assert results["parameters_thermo"]["temperature"] == 1000.0
+    assert results["parameters_thermo"]["pressure"] == 20.0
+    assert results["parameters_thermo"]["sigma"] == 6
+    assert results["parameters_thermo"]["spin_multiplicity"] == 2
     assert "nid" in results
     assert "dir_name" in results
 
     # test document can be jsanitized and decoded
     d = jsanitize(results, strict=True, enum_values=True)
     MontyDecoder().process_decoded(d)
+
+    with pytest.warns(UserWarning):
+        summarize_thermo_run(igt, charge_and_multiplicity=[0, 1])
 
 
 def test_errors():

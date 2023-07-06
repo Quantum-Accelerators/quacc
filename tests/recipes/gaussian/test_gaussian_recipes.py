@@ -27,7 +27,7 @@ def teardown_module():
                 rmtree(f)
 
 
-def test_static_Job():
+def test_static_job():
     atoms = molecule("H2")
 
     output = static_job(atoms)
@@ -47,12 +47,10 @@ def test_static_Job():
     output = static_job(
         atoms,
         charge=-2,
-        mult=3,
+        multiplicity=3,
         xc="m06l",
         basis="def2-svp",
-        pop="regular",
-        write_molden=False,
-        swaps={"integral": "superfinegrid"},
+        calc_swaps={"integral": "superfinegrid"},
     )
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == -2
@@ -61,8 +59,11 @@ def test_static_Job():
     assert output["parameters"]["xc"] == "m06l"
     assert output["parameters"]["basis"] == "def2-svp"
     assert output["parameters"]["integral"] == "superfinegrid"
-    assert "gfinput" not in output["parameters"]
-    assert output["parameters"]["ioplist"] == ["2/9=2000"]  # see ASE issue #660
+    assert output["parameters"]["gfinput"] == ""
+    assert output["parameters"]["ioplist"] == [
+        "6/7=3",
+        "2/9=2000",
+    ]  # see ASE issue #660
     assert "opt" not in output["parameters"]
 
 
@@ -83,11 +84,11 @@ def test_relax_Job():
     output = relax_job(
         atoms,
         charge=-2,
-        mult=3,
+        multiplicity=3,
         xc="m06l",
         basis="def2-svp",
         freq=True,
-        swaps={"integral": "superfinegrid"},
+        calc_swaps={"integral": "superfinegrid"},
     )
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == -2

@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from ase.atoms import Atoms
+from ase import Atoms
 from ase.build import bulk
 from ase.calculators.emt import EMT
 from ase.optimize import BFGS
@@ -32,7 +32,6 @@ def mock_dynrun(atoms, **kwargs):
     dummy_atoms = bulk("Cu")
     dummy_atoms.calc = EMT()
     dyn = BFGS(dummy_atoms, restart=False, trajectory="opt.traj")
-    dyn.trajectory.filename = "opt.traj"  # can remove after ASE MR 2901
     dyn.run(fmax=100.0)
     dyn.atoms.calc.parameters = atoms.calc.parameters
     return dyn
