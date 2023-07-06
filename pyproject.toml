@@ -49,7 +49,7 @@ docs = [
 ]
 strict = [
     "ase @ https://gitlab.com/ase/ase/-/archive/master/ase-master.zip",  # waiting on >3.22.1
-    "atomate2 @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
+    "atomate2 @ https://github.com/materialsproject/atomate2/archive/refs/heads/main.zip",  # waiting on >0.0.10
     "cclib==1.7.2",
     "covalent==0.226.0rc0",  # waiting on > 0.222.0
     "custodian==2023.6.5",
