@@ -5,7 +5,7 @@ site_description: >-
   for high-throughput computational materials
   science and quantum chemistry.
 repo_url: https://github.com/Quantum-Accelerators/quacc/
-edit_uri: tree/main/docs/
+edit_uri: blob/main/docs/
 theme:
   name: material
   palette:
