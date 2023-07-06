@@ -27,29 +27,52 @@ STORE = jf.JobStore(MemoryStore())
 
 
 def test_tutorial1():
+    from ase.build import bulk
+    from jobflow import Flow, job, run_locally
+
+    from quacc.recipes.emt.core import relax_job, static_job
+
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
 
-    # Define the compute job
-    job = jf.job(static_job)(atoms)
+    # Define Job 1
+    job1 = job(relax_job)(atoms)
 
-    # Run the job locally
-    jf.run_locally(job, store=STORE, create_folders=True, ensure_success=True)
+    # Define Job 2, which takes the output of Job 1 as input
+    job2 = job(static_job)(job1.output)
+
+    # Define the workflow
+    workflow = Flow([job1, job2])
+
+    # Run the workflow locally
+    responses = run_locally(workflow, store=STORE, create_folders=True)
+
+    # Get the result
+    result = responses[job2.uuid][1].output
 
 
 def test_tutorial2():
-    # Make an Atoms object of a bulk Cu structure
-    atoms = bulk("Cu")
+    from ase.build import bulk, molecule
+    from jobflow import Flow, job, run_locally
 
-    # Define the compute jobs
-    job1 = jf.job(relax_job)(atoms)
-    job2 = jf.job(static_job)(job1.output)
+    from quacc.recipes.emt.core import relax_job
+
+    # Define two Atoms objects
+    atoms1 = bulk("Cu")
+    atoms2 = molecule("N2")
+
+    # Define two independent relaxation jobs
+    job1 = job(relax_job)(atoms1)
+    job2 = job(relax_job)(atoms2)
 
     # Define the workflow
-    workflow = jf.Flow([job1, job2])
+    workflow = Flow([job1, job2])
 
     # Run the workflow locally
-    jf.run_locally(workflow, store=STORE, create_folders=True)
+    responses = run_locally(workflow, store=STORE, create_folders=True)
+
+    # Get the result
+    result = responses[job2.uuid][1].output
 
 
 def test_tutorial3():

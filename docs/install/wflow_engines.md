@@ -1,6 +1,10 @@
 # Workflow Engine Setup
 
-Using a workflow engine is a crucial component for scaling up quacc calculations in a high-throughput setting. If you are just getting started with workflow engines, we recommend installing Covalent, but installation instructions for other compatible workflow engines are also provided. For a comparison of the different compatible workflow engines, refer to the [Workflow Engines Overview](../user/wflow_overview.md) section.
+Using a workflow engine is a crucial component for scaling up quacc calculations in a high-throughput setting. We describe the necessary installation steps here.
+
+!!! Tip
+
+    If you are just getting started with workflow engines, we recommend trying Covalent. For a comparison of the different compatible workflow engines, refer to the [Workflow Engines Overview](../user/wflow_overview.md) section.
 
 === "Covalent"
 
