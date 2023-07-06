@@ -135,7 +135,7 @@ We will now try running a simple workflow where we relax a bulk Cu structure usi
 === "Jobflow"
 
     ```python
-    from jobflow import flow, job, run_locally
+    from jobflow import Flow, job, run_locally
     from ase.build import bulk
     from quacc.recipes.emt.core import relax_job, static_job
 
@@ -143,7 +143,7 @@ We will now try running a simple workflow where we relax a bulk Cu structure usi
     atoms = bulk("Cu")
 
     # Define Job 1
-    job1 = job(static_job)(atoms)
+    job1 = job(relax_job)(atoms)
 
     # Define Job 2, which takes the output of Job 1 as input
     job2 = job(static_job)(job1.output)
