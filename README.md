@@ -1,5 +1,5 @@
 <div align="center">
-  <img src=docs/src/images/quacc_logo_wide.svg width="300"><br>
+  <img src=docs/images/quacc_logo_wide.svg width="300"><br>
 </div>
 
 ---
@@ -39,7 +39,7 @@ Includes the following sections:
 
 🚀 Demo from the Quick Start guide, using [Covalent](https://github.com/AgnostiqHQ/covalent) as one of the several supported workflow managers.
 
-![Demo from Quick Start](docs/src/images/start/start2.gif)
+![Demo from Quick Start](docs/images/start/start2.gif)
 
 ## Citation
 
