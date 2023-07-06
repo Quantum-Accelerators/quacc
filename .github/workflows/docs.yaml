@@ -5,6 +5,10 @@ on:
       - main
     paths:
       - docs/**
+  pull_request:
+  release:
+    types: [published]
+
 permissions:
   contents: write
 
@@ -26,5 +30,10 @@ jobs:
       - name: Install pip packages
         run: pip install .[docs]
 
-      - name: Deploy docs
+      - name: Build docs
+        run: mkdocs build
+        id: build_docs
+
+      - name: Rebuild and deploy docs
         run: mkdocs gh-deploy --force
+        if: github.ref == 'refs/heads/main' && steps.build_docs.outcome == 'success'
