@@ -4,7 +4,8 @@ site_description: >-
   Quacc is a flexible and extensible platform
   for high-throughput computational materials
   science and quantum chemistry.
-repo_url: https://github.com/Quantum-Accelerators/quacc
+repo_url: https://github.com/Quantum-Accelerators/quacc/
+edit_uri: tree/main/docs/
 theme:
   name: material
   palette:
