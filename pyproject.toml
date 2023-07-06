@@ -24,7 +24,7 @@ classifiers = [
 ]
 requires-python = ">=3.9, <3.11"
 dependencies = [
-    "ase @ https://gitlab.com/argon214/ase/-/archive/quacc/quacc.zip",  # waiting on ASE MRs !2908, !2912 and then >3.22.1
+    "ase @ https://gitlab.com/ase/ase/-/archive/master/ase-master.zip",  # waiting on >3.22.1
     "atomate2[cclib] @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
     "covalent>=0.224.0-rc.0",  # waiting on > 0.222.0
     "custodian>=2023.6.5",
@@ -48,7 +48,7 @@ docs = [
     "mkdocs-click",
 ]
 strict = [
-    "ase @ https://gitlab.com/argon214/ase/-/archive/quacc/quacc.zip",  # waiting on ASE MRs !2908, !2912 and then >3.22.1
+    "ase @ https://gitlab.com/ase/ase/-/archive/master/ase-master.zip",  # waiting on >3.22.1
     "atomate2 @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
     "cclib==1.7.2",
     "covalent==0.226.0rc0",  # waiting on > 0.222.0
