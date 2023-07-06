@@ -11,7 +11,7 @@ from quacc.util.slabs import make_adsorbate_structures, make_max_slabs_from_bulk
 
 
 @ct.electron
-def slabimages_job(
+def slabstatic_job(
     atoms: Atoms | dict,
     preset: str | None = None,
     calc_swaps: dict | None = None,
@@ -123,9 +123,9 @@ def bulk_to_slabs_flow(
     atoms: Atoms,
     slabgen_kwargs: dict | None = None,
     slab_relax_electron: ct.electron = slab_relax_job,
-    slabimages_electron: ct.electron | None = slabimages_job,
+    slab_static_electron: ct.electron | None = slabstatic_job,
     slab_relax_kwargs: dict | None = None,
-    slabimages_kwargs: dict | None = None,
+    slab_static_kwargs: dict | None = None,
 ) -> list[VaspSchema]:
     """
     Workflow consisting of:
@@ -144,11 +144,11 @@ def bulk_to_slabs_flow(
         Additional keyword arguments to pass to make_max_slabs_from_bulk()
     slab_relax_electron
         Default to use for the relaxation of the slab structures.
-    slabimages_electron
+    slab_static_electron
         Default to use for the static calculation of the slab structures.
     slab_relax_kwargs
         Additional keyword arguments to pass to the relaxation calculation.
-    slabimages_kwargs
+    slab_static_kwargs
         Additional keyword arguments to pass to the static calculation.
 
     Returns
@@ -158,7 +158,7 @@ def bulk_to_slabs_flow(
     """
 
     slab_relax_kwargs = slab_relax_kwargs or {}
-    slabimages_kwargs = slabimages_kwargs or {}
+    slab_static_kwargs = slab_static_kwargs or {}
     slabgen_kwargs = slabgen_kwargs or {}
 
     @ct.electron
@@ -170,16 +170,16 @@ def bulk_to_slabs_flow(
     @ct.lattice
     def _relax_andimages_distributed(slabs):
         return [
-            slabimages_electron(
+            slab_static_electron(
                 slab_relax_electron(slab, **slab_relax_kwargs),
-                **slabimages_kwargs,
+                **slab_static_kwargs,
             )
             for slab in slabs
         ]
 
     slabs = ct.electron(make_max_slabs_from_bulk)(atoms, **slabgen_kwargs)
 
-    if slabimages_electron is None:
+    if slab_static_electron is None:
         return _relax_distributed(slabs)
     return _relax_andimages_distributed(slabs)
 
@@ -189,9 +189,9 @@ def slab_to_ads_flow(
     adsorbate: Atoms,
     make_ads_kwargs: dict | None = None,
     slab_relax_electron: ct.electron = ct.electron(slab_relax_job),
-    slabimages_electron: ct.electron | None = ct.electron(slabimages_job),
+    slab_static_electron: ct.electron | None = ct.electron(slabstatic_job),
     slab_relax_kwargs: dict | None = None,
-    slabimages_kwargs: dict | None = None,
+    slab_static_kwargs: dict | None = None,
 ) -> list[VaspSchema]:
     """
     Workflow consisting of:
@@ -209,11 +209,11 @@ def slab_to_ads_flow(
         Additional keyword arguments to pass to make_adsorbate_structures()
     slab_relax_electron
         Default to use for the relaxation of the slab structure.
-    slabimages_electron
+    slab_static_electron
         Default to use for the static calculation of the slab structures.
     slab_relax_kwargs
         Additional keyword arguments to pass to the relaxation calculation.
-    slabimages_kwargs
+    slab_static_kwargs
         Additional keyword arguments to pass to the static calculation.
 
     Returns
@@ -223,7 +223,7 @@ def slab_to_ads_flow(
     """
 
     slab_relax_kwargs = slab_relax_kwargs or {}
-    slabimages_kwargs = slabimages_kwargs or {}
+    slab_static_kwargs = slab_static_kwargs or {}
     make_ads_kwargs = make_ads_kwargs or {}
 
     @ct.electron
@@ -235,9 +235,9 @@ def slab_to_ads_flow(
     @ct.lattice
     def _relax_andimages_distributed(slabs):
         return [
-            slabimages_electron(
+            slab_static_electron(
                 slab_relax_electron(slab, **slab_relax_kwargs),
-                **slabimages_kwargs,
+                **slab_static_kwargs,
             )
             for slab in slabs
         ]
@@ -246,6 +246,6 @@ def slab_to_ads_flow(
         slab, adsorbate, **make_ads_kwargs
     )
 
-    if slabimages_electron is None:
+    if slab_static_electron is None:
         return _relax_distributed(ads_slabs)
     return _relax_andimages_distributed(ads_slabs)

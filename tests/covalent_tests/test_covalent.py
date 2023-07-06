@@ -113,7 +113,7 @@ def test_tutorials():
     @ct.lattice
     def workflow3(atoms):
         relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, slabimages_electron=None)
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, slab_static_electron=None)
         return relaxed_slabs
 
     atoms = bulk("Cu")

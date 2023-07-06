@@ -27,7 +27,7 @@ def teardown_module():
                 rmtree(f)
 
 
-def testimages_Job():
+def teststatic_job():
     atoms = molecule("H2")
 
     output = static_job(atoms)

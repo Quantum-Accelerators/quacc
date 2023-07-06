@@ -35,7 +35,7 @@ def teardown_module():
     DFTBPLUS_EXISTS is False,
     reason="DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
 )
-def testimages_Job():
+def teststatic_job():
     atoms = molecule("H2O")
 
     output = static_job(atoms)

@@ -203,7 +203,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     @ct.lattice
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, slabimages_electron=None)
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, slab_static_electron=None)
 
         return relaxed_slabs
 
@@ -213,7 +213,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     print(result)
     ```
 
-    We have imported the `.emt.slabs.bulk_to_slabs_flow` function, which takes an `Atoms` object along with several optional parameters. For demonstration purposes, we specify the `slabimages_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is wrap it inside a `@ct.lattice` decorator.
+    We have imported the `.emt.slabs.bulk_to_slabs_flow` function, which takes an `Atoms` object along with several optional parameters. For demonstration purposes, we specify the `slab_static_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is wrap it inside a `@ct.lattice` decorator.
 
     Due to the dynamic nature of `bulk_to_slabs_flow`, the number of returned slabs will be dependent on the input `Atoms` object. The pattern for creating a dynamic workflow in Covalent is called a ["sublattice"](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-arch/covalent-sdk#sublattice). The sublattice, which is really just a fancy name for a sub-workflow within a larger workflow, and its individual compute tasks can also be viewed in the Covalent UI.
 
@@ -241,7 +241,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     def bulk_to_slabs_app(atoms):
         from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
-        return bulk_to_slabs_flow(atoms, slabimages_electron=None)
+        return bulk_to_slabs_flow(atoms, slab_static_electron=None)
 
     # Define the Atoms object
     atoms = bulk("Cu")
@@ -277,7 +277,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
     # Define the workflow
     future1 = relax_app(atoms)
-    future2 = bulk_to_slabs_flow(future1.result(), slabimages_app=None)
+    future2 = bulk_to_slabs_flow(future1.result(), slab_static_app=None)
 
     # Print the results
     print(future2.result())
