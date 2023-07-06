@@ -1,6 +1,6 @@
 # quacc — the Quantum Accelerator
 
-Quacc is a flexible and extensible platform for high-throughput computational materials science and quantum chemistry.
+Quacc (pronounced "quack") is a flexible and extensible platform for high-throughput computational materials science and quantum chemistry.
 
 !!! note
 
