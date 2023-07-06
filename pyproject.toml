@@ -43,7 +43,9 @@ tblite = ["tblite[ase]>=0.3.0; platform_system=='Linux'"]
 dev = ["black", "isort", "pytest", "pytest-cov"]
 docs = [
     "mkdocs-material",
-    "mkdocs-git-revision-date-localized-plugin"
+    "mkdocs-git-revision-date-localized-plugin",
+    "mkdocstrings[python]",
+    "mkdocs-click",
 ]
 strict = [
     "ase @ https://gitlab.com/argon214/ase/-/archive/quacc/quacc.zip",  # waiting on ASE MRs !2908, !2912 and then >3.22.1

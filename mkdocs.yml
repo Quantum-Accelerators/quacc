@@ -23,6 +23,8 @@ theme:
     - git-revision-date-localized:
         enable_creation_date: true
     - offline
+    - mkdocstrings
+    - mkdocs-click
 
   features:
     - content.action.edit
@@ -105,3 +107,5 @@ nav:
       - about/contributors.md
       - about/changelog.md
       - about/license.md
+  - Code Reference:
+      - Calculators: reference/reference.md

@@ -1,0 +1,3 @@
+# Calculators module
+
+::: quacc.calculators
