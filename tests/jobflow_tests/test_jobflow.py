@@ -115,12 +115,12 @@ def test_emt_flow():
 
     atoms = bulk("Cu")
 
-    job = jf.job(bulk_to_slabs_flow)(atoms, slabstatic_job=None)
+    job = jf.job(bulk_to_slabs_flow)(atoms, slab_static_job=None)
     jf.run_locally(job, store=store, create_folders=True, ensure_success=True)
 
     job = jf.job(bulk_to_slabs_flow)(
         atoms,
-        slabstatic_job=None,
+        slab_static_job=None,
         slab_relax_kwargs={
             "opt_swaps": {"fmax": 1.0},
             "calc_kwargs": {"asap_cutoff": True},

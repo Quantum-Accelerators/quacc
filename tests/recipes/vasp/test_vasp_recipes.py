@@ -10,8 +10,8 @@ from quacc.recipes.vasp.qmof import qmof_relax_job
 from quacc.recipes.vasp.slabs import (
     bulk_to_slabs_flow,
     slab_relax_job,
+    slab_static_job,
     slab_to_ads_flow,
-    slabstatic_job,
 )
 
 
@@ -26,7 +26,7 @@ def teardown_module():
             os.remove(f)
 
 
-def teststatic_job():
+def test_static_job():
     atoms = bulk("Cu") * (2, 2, 2)
 
     output = static_job(atoms)
@@ -97,20 +97,20 @@ def test_doublerelax_job():
     output = double_relax_job(atoms, calc_swaps1={"kpts": [1, 1, 1]})
 
 
-def test_slabstatic_job():
+def test_slab_static_job():
     atoms = bulk("Cu") * (2, 2, 2)
 
-    output = slabstatic_job(atoms)
+    output = slab_static_job(atoms)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["idipol"] == 3
     assert output["parameters"]["nsw"] == 0
     assert output["parameters"]["lvhar"] is True
 
-    output = slabstatic_job(atoms, preset="SlabSet", calc_swaps={"nelmin": 6})
+    output = slab_static_job(atoms, preset="SlabSet", calc_swaps={"nelmin": 6})
     assert output["parameters"]["encut"] == 450
     assert output["parameters"]["nelmin"] == 6
 
-    output = slabstatic_job(atoms, preset="SlabSet", calc_swaps={"encut": None})
+    output = slab_static_job(atoms, preset="SlabSet", calc_swaps={"encut": None})
     assert "encut" not in output["parameters"]
 
 
