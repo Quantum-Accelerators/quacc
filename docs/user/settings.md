@@ -1,6 +1,6 @@
 # Quacc Settings
 
-## Modifying quacc Settings
+## Modifying Quacc Settings
 
 By default, the global quacc settings can be found in the [`settings.py`](https://github.com/quantum-accelerators/quacc/blob/main/quacc/settings.py) file. If you wish to modify any of the global quacc settings, there are two ways to do so.
 
@@ -8,7 +8,7 @@ By default, the global quacc settings can be found in the [`settings.py`](https:
 
 The easiest way is to create a custom YAML file with custom settings. For instance, it might look something like the following if you wanted to modify the `SCRATCH_DIR` and `GZIP_FILES` settings.
 
-```yaml
+```yaml title="quacc.yaml"
 SCRATCH_DIR: /tmp
 GZIP_FILES: false
 ```

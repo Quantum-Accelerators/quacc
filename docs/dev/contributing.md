@@ -8,11 +8,15 @@ When developing new recipes, it is often helpful to start from an existing examp
 
 To contribute to quacc, we recommend doing the following:
 
-1. [Fork the repository](https://docs.github.com/en/get-started/quickstart/fork-a-repo) to your personal GitHub account.
-2. [Clone this forked repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) to your local machine, e.g. via `git clone <repo url>.git`.
-3. In the newly downloaded `quacc` base directory, run `pip install -e .[dev]` to install quacc in editable mode and with the development dependencies.
-4. [Commit your changes](https://github.com/git-guides/git-commit) and [push them](https://github.com/git-guides/git-push) to your personal forked repository.
-5. Create a [pull request (PR)](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) to merge your changes into the main quacc repository.
+- [Fork the repository](https://docs.github.com/en/get-started/quickstart/fork-a-repo) to your personal GitHub account.
+
+- [Clone this forked repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) to your local machine, e.g. via `git clone <repo url>.git`.
+
+- In the newly downloaded `quacc` base directory, run `pip install -e .[dev]` to install quacc in editable mode and with the development dependencies.
+
+- [Commit your changes](https://github.com/git-guides/git-commit) and [push them](https://github.com/git-guides/git-push) to your personal forked repository.
+
+- Create a [pull request (PR)](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) to merge your changes into the main quacc repository.
 
 For reproducibility purposes, we strongly recommend installing quacc in a fresh virtual environment.
 
@@ -20,13 +24,13 @@ For reproducibility purposes, we strongly recommend installing quacc in a fresh 
 
 Please abide by the following guidelines when contributing code to quacc:
 
-1. All changes should have associated unit tests that pass. Code coverage should be maintained.
+- All changes should have associated unit tests that pass. Code coverage should be maintained.
 
-2. All code should include type hints and have internally consistent documentation for the inputs and outputs.
+- All code should include type hints and have internally consistent documentation for the inputs and outputs.
 
-3. The first positional argument to most compute jobs should be of type `Atoms | AtomsSchema`. The output of most compute tasks should be a schema from one of the module/functions within `quacc.schemas`.
+- The first positional argument to most compute jobs should be of type `Atoms | AtomsSchema`. The output of most compute tasks should be a schema from one of the module/functions within `quacc.schemas`.
 
-4. All inputs and outputs to recipes must be JSON (de)serializable (or have an `.as_dict()` and `.from_dict()` method, such that they are [`MSONable`](https://materialsvirtuallab.github.io/monty/monty.json.html)). This can be confirmed by running the following code snippet, where where `test_item` is the object you wish to test.
+- All inputs and outputs to recipes must be JSON (de)serializable (or have an `.as_dict()` and `.from_dict()` method, such that they are [`MSONable`](https://materialsvirtuallab.github.io/monty/monty.json.html)). This can be confirmed by running the following code snippet, where where `test_item` is the object you wish to test.
 
 ```python
 from monty.json import MontyDecoder, jsanitize
@@ -35,21 +39,21 @@ d = jsanitize(test_item, strict=True, enum_values=True)
 MontyDecoder().process_decoded(d)
 ```
 
-5. Only define multi-step workflows if they go beyond simply stitching together existing functions or if they are widely used in other recipes. Otherwise, just define the individual functions.
+- Only define multi-step workflows if they go beyond simply stitching together existing functions or if they are widely used in other recipes. Otherwise, just define the individual functions.
 
-6. Ensure that the code remains flexible for the user whenever possible.
+- Ensure that the code remains flexible for the user whenever possible.
 
-7. Where appropriate, you should use the "internal" geometry optimizers for a given code rather than the ASE optimizers.
+- Where appropriate, you should use the "internal" geometry optimizers for a given code rather than the ASE optimizers.
 
-8. `gzip` large test files to save space.
+- `gzip` large test files to save space.
 
-9. Update the `CHANGELOG.md` file.
+- Update the `CHANGELOG.md` file.
 
-10. Try to be cognizant of how many arguments your functions take.
+- Try to be cognizant of how many arguments your functions take.
 
 ## Changelog
 
-We keep a [`CHANGELOG.md`](https://github.com/quantum-accelerators/quacc/blob/main/CHANGELOG.md) file in the base directory of the `quacc` code. Before submitting your PR, be sure to update the `CHANGELOG.md` file under the "Unreleased" section with a brief description of your changes. The `CHANGELOG.md` file follows the [Keep a Changelog](https://keepachangelog.com) format.
+We keep a [`CHANGELOG.md`](https://github.com/quantum-accelerators/quacc/blob/main/CHANGELOG.md) file in the base directory of the quacc code. Before submitting your PR, be sure to update the `CHANGELOG.md` file under the "Unreleased" section with a brief description of your changes. The `CHANGELOG.md` file follows the [Keep a Changelog](https://keepachangelog.com) format.
 
 ## Style Guidelines
 
@@ -73,4 +77,4 @@ If you are adding recipes based on a code that can be readily installed via `pip
 
 All individual compute tasks should be defined as simple functions decorated with `@ct.electron` even if you don't use Covalent, as the decorator will be ignored in such scenarios.
 
-For multi-step workflows, we prefer to have a corresponding Covalent-based definition in all cases, but in general, we will accept workflow recipes defined using any of the supported workflow engines described in the documentation since it is relatively trivial to [interconvert between them](../user/advanced/alt_workflows/comparison.md). In short, please feel free to submit a PR for a recipe in whatever supported format you feel most comfortable with, and we will try to convert it to the default Covalent format if necessary.
+For multi-step workflows, we prefer to have a corresponding Covalent-based definition in all cases, but in general, we will accept workflow recipes defined using any of the supported workflow engines described in the documentation since it is relatively trivial to [interconvert between them](../user/wflow_syntax.md). In short, please feel free to submit a PR for a recipe in whatever supported format you feel most comfortable with, and we will try to convert it to the default Covalent format if necessary.

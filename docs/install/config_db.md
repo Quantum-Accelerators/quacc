@@ -6,9 +6,9 @@ Some users may wish to use quacc in way that ensures all calculation inputs and 
 
 ## MongoDB Setup
 
-```{note}
-Users of NERSC HPC machines can instead [request a database](https://docs.nersc.gov/services/databases/) directly from NERSC staff.
-```
+!!! Note
+
+    Users of NERSC HPC machines can instead [request a database](https://docs.nersc.gov/services/databases/) directly from NERSC staff.
 
 For new users, the easiest route to create a Mongo database is to use a cloud storage solution called [MongoDB Atlas](https://www.mongodb.com/atlas), which has a free tier. To set up your MongoDB with MongoDB Atlas, follow the instructions below:
 

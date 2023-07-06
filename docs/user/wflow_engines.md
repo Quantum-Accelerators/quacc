@@ -2,11 +2,15 @@
 
 Here, we will show how to use quacc with one of a variety of workflow engines to construct, dispatch, and monitor your calculations.
 
+!!! Tip
+
+    If you are just getting started with workflow engines, we recommend first trying Covalent.
+
 ## Pre-Requisites
 
 === "Covalent"
 
-    Make sure you completed the ["Covalent Setup"](../install/covalent.md) section of the documentation. Additionally, you should learn about the main [Covalent Concepts](https://docs.covalent.xyz/docs/user-documentation/concepts/concepts-index), namely the [`Electron`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#electron) and [`Lattice`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#lattice) objects, which describe individual compute tasks and workflows, respectively.
+    Take a moment to learn about the main [Covalent Concepts](https://docs.covalent.xyz/docs/user-documentation/concepts/concepts-index), namely the [`Electron`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#electron) and [`Lattice`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#lattice) objects, which describe individual compute tasks and workflows, respectively.
 
     In Covalent, the `@ct.lattice` decorator indicates that the function is a workflow, and the `@ct.electron` decorator indicates that the function is a job (i.e. an individual compute task). If you plan to use a job scheduling system like Slurm, you can think of each `Electron` as an individual Slurm job.
 
@@ -14,11 +18,11 @@ Here, we will show how to use quacc with one of a variety of workflow engines to
 
     !!! Info
 
-        For a more detailed tutorial on how to use Covalent, refer to the ["Covalent Quick Start"](https://docs.covalent.xyz/docs/get-started/quick-start) in the Covalent documentation.
+        For a more detailed tutorial on how to use Covalent, refer to the ["Covalent Quick Start"](https://docs.covalent.xyz/docs/get-started/quick-start).
 
 === "Parsl"
 
-    Make sure you completed the ["Parsl Setup"](../../../install/advanced/alt_workflows/parsl.md) section of the installation instructions. Additionally, you should read the Parsl documentation's ["Quick Start"](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a `@python_app` and `@join_app`, which describe individual compute tasks and dynamic job tasks, respectively.
+    Take a moment to read Parsl documentation's ["Quick Start"](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a `@python_app` and `@join_app`, which describe individual compute tasks and dynamic job tasks, respectively.
 
     !!! Info
 
@@ -26,7 +30,7 @@ Here, we will show how to use quacc with one of a variety of workflow engines to
 
 === "Jobflow"
 
-    Make sure you completed the ["Jobflow Setup"](../../../install/advanced/alt_workflows/jobflow.md) section of the installation instructions. Additionally, you should read the Jobflow documentation's [Quick Start](https://materialsproject.github.io/jobflow/tutorials/1-quickstart.html) to get a sense of how Jobflow works. Namely, you should understand the `Job` and `Flow` definitions, which describe individual compute tasks and workflows, respectively.
+    Take a moment to read the Jobflow documentation's [Quick Start](https://materialsproject.github.io/jobflow/tutorials/1-quickstart.html) to get a sense of how Jobflow works. Namely, you should understand the `Job` and `Flow` definitions, which describe individual compute tasks and workflows, respectively.
 
     !!! Info
 
@@ -87,6 +91,10 @@ We will now try running a simple workflow where we relax a bulk Cu structure usi
 
 === "Parsl"
 
+    !!! Hint
+
+        If you haven't done so yet, make sure you loaded the default Parsl configuration via `parsl.load()` in your Python script.
+
     ```python
     from parsl import python_app
     from ase.build import bulk
@@ -123,6 +131,39 @@ We will now try running a simple workflow where we relax a bulk Cu structure usi
 
     !!! Note
         It is not considered good practice to include a `.result()` call in a `@python_app` or `@join_app` definition.
+
+=== "Jobflow"
+
+    ```python
+    from jobflow import flow, job, run_locally
+    from ase.build import bulk
+    from quacc.recipes.emt.core import relax_job, static_job
+
+    # Make an Atoms object of a bulk Cu structure
+    atoms = bulk("Cu")
+
+    # Define Job 1
+    job1 = job(static_job)(atoms)
+
+    # Define Job 2, which takes the output of Job 1 as input
+    job2 = job(static_job)(job1.output)
+
+    # Define the workflow
+    workflow = Flow([job1, job2])
+
+    # Run the workflow locally
+    responses = run_locally(workflow, create_folders=True)
+
+    # Get the result
+    result = responses[job2.uuid][1].output
+    print(result)
+    ```
+
+    The key thing to note is that we need to transform the quacc recipe, which is a normal function, into a `Job` object. This can be done using the `@job` decorator and a new function definition or, more compactly, via `job(<function>)`.
+
+    We also must stitch the individual `Job` objects together into a `Flow`, which can be easily achieved by passing them to the `Flow()` constructor. The `Flow` object will automatically determine the order in which the jobs should be run based on the inputs and outputs of each job. In this case, it will know not to run `job2` until `job1` has completed.
+
+    We chose to run the job locally, but other workflow managers supported by Jobflow can be imported and used.
 
 ### Running a Simple Parallel Workflow
 
@@ -185,6 +226,32 @@ Now let's consider a similar but nonetheless distinct example. Here, we will def
     ```
 
     If you monitor the output, you'll notice that the two jobs are being run in parallel, whereas they would be run sequentially if you were not using Parsl.
+
+=== "Jobflow"
+
+    ```python
+    from jobflow import job, Flow, run_locally
+    from ase.build import bulk, molecule
+    from quacc.recipes.emt.core import relax_job
+
+    # Define two Atoms objects
+    atoms1 = bulk("Cu")
+    atoms2 = molecule("N2")
+
+    # Define two independent relaxation jobs
+    job1 = job(relax_job)(atoms1)
+    job2 = job(relax_job)(atoms2)
+
+    # Define the workflow
+    workflow = Flow([job1, job2])
+
+    # Run the workflow locally
+    responses = run_locally(workflow, create_folders=True)
+
+    # Get the result
+    result = responses[job2.uuid][1].output
+    print(result)
+    ```
 
 ### Running Workflows with Complex Connectivity
 
@@ -283,12 +350,64 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     print(future2.result())
     ```
 
-    In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing `.emt.parsl.slabs.bulk_to_slabs_flow` with its Covalent counterpart `.emt.slabs.bulk_to_slabs_flow`, you can see that the two are extremely similar such that it is often straightforward to [interconvert](comparison.md) between the two.
+    In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing `.emt.parsl.slabs.bulk_to_slabs_flow` with its Covalent counterpart `.emt.slabs.bulk_to_slabs_flow`, you can see that the two are extremely similar such that it is often straightforward to [interconvert](wflow_syntax.md) between the two.
 
     !!! Note
         We didn't need to wrap `bulk_to_slabs_flow` with a `@python_app` decorator because it is simply a collection of `PythonApp` objects and is already returning an `AppFuture`.
 
-## Going High-Throughput
+=== "Jobflow"
+
+    **The Inefficient Way**
+
+    ```python
+    from jobflow immport job, Flow, run_locally
+    from ase.build import bulk
+    from quacc.recipes.emt.core import relax_job
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Construct the Flow
+    job1 = job(relax_job)(atoms)
+    job2 = job(bulk_to_slabs_flow)(job1.output)
+    workflow = Flow([job1, job2])
+
+    # Run the workflow locally
+    responses = run_locally(workflow, create_folders=True)
+
+    # Get the result
+    result = responses[job2.uuid][1].output
+    print(result)
+    ```
+
+    We have imported the `.emt.slabs.bulk_to_slabs_flow` function, which takes an `Atoms` object along with several optional parameters. For demonstration purposes, we specify the `slab_static_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is stitch together the individual `@job` steps into a single `Flow` object.
+
+    **The Efficient Way**
+
+    Quacc fully supports Jobflow-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Jobflow-specific `.emt.jobflow.slabs.bulk_to_slabs_flow` workflow:
+
+    ```python
+    from jobflow import job, Flow, run_locally
+    from ase.build import bulk
+    from quacc.recipes.emt.core import relax_job
+    from quacc.recipes.emt.jobflow.slabs import bulk_to_slabs_flow
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Construct the Flow
+    job1 = job(relax_job)(atoms)
+    job2 = job(bulk_to_slabs_flow)(job1.output)
+    workflow = Flow([job1, job2])
+
+    # Run the workflow locally
+    run_locally(workflow, create_folders=True)
+    ```
+
+    In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing `.emt.jobflow.slabs.bulk_to_slabs_flow` with its Covalent counterpart `.emt.slabs.bulk_to_slabs_flow`, you can see that the two are extremely similar such that it is often straightforward to [interconvert](wflow_syntax.md) between the two. In the case of `bulk_to_slabs_flow`, it actually returns a [`Response(replace)`](<https://materialsproject.github.io/jobflow/tutorials/5-dynamic-flows.html#The-Response(replace)-option>) object that dynamically replaces the `Flow` with several downstream jobs.
+
+## Deploying Calculations
 
 === "Covalent"
 
@@ -475,13 +594,65 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
                 )
             ],
         )
-        ```
+    ```
 
-        In addition to some modified parameters, there are some new ones here too. The most notable is the definition of `init_blocks`, `min_blocks`, and `max_blocks`, which set the number of active blocks (e.g. Slurm jobs) and can be modified to enable [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We also set `cores_per_worker` to a small value so that the pilot job (e.g. the Parsl orchestrator) is allowed to be oversubscribed with scheduling processes.
+    In addition to some modified parameters, there are some new ones here too. The most notable is the definition of `init_blocks`, `min_blocks`, and `max_blocks`, which set the number of active blocks (e.g. Slurm jobs) and can be modified to enable [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We also set `cores_per_worker` to a small value so that the pilot job (e.g. the Parsl orchestrator) is allowed to be oversubscribed with scheduling processes.
 
-        !!! Info
+    !!! Tip
 
-            Dr. Logan Ward has a nice example on YouTube describing a very similar example [here](https://youtu.be/0V4Hs4kTyJs?t=398).
+        Dr. Logan Ward has a nice example on YouTube describing a very similar example [here](https://youtu.be/0V4Hs4kTyJs?t=398).
+
+=== "Jobflow"
+
+    Out-of-the box, Jobflow can be used to run on your local machine. You will, however, need a "manager" to run your workflows on HPC machines. The currently recommended manager for Jobflow is FireWorks, which is described here.
+
+    **Converting Between Jobflow and FireWorks**
+
+    The `jobflow.managers.fireworks` module has all the tools you need to convert your Jobflow workflows to a format that is suitable for FireWorks.
+
+    **Converting a Job to a Firework**
+
+    To convert a `Job` to a `firework` and add it to your launch pad:
+
+    ```python
+    from fireworks import LaunchPad
+    from jobflow.managers.fireworks import job_to_firework
+
+    fw = job_to_firework(job)
+    lpad = LaunchPad.auto_load()
+    lpad.add_wf(fw)
+    ```
+
+    **Converting a Flow to a Workflow**
+
+    To convert a `Flow` to a `workflow` and add it to your launch pad:
+
+    ```python
+    from fireworks import LaunchPad
+    from jobflow.managers.fireworks import flow_to_workflow
+
+    wf = flow_to_workflow(flow)
+    lpad = LaunchPad.auto_load()
+    lpad.add_wf(wf)
+    ```
+
+    **Dispatching Calculations**
+
+    With a workflow added to your launch pad, on the desired machine of choice, you can run `qlaunch rapidfire --nlaunches <N>` (where `<N>` is the number of jobs to submit) in the command line to submit your workflows to the job scheduler. Running `qlaunch rapidfire -m <N>` will ensure that `<N>` jobs are always in the queue or running. To modify the order in which jobs are run, a priority can be set via `lpad set_priority <priority> -i <FWID>` where `<priority>` is a number.
+
+    By default, `qlaunch` will launch Slurm jobs that then poll for work. This means that more Slurm jobs may be submitted than there are jobs to run. To modify the behavior of `qlaunch` to only submit a Slurm job for each "READY" FireWork in the launchpad, use the `-r` ("reserved") flag.
+
+    **Monitoring the Launchpad**
+
+    The easiest way to monitor the state of your launched FireWorks and workflows is through the GUI, which can be viewed with `lpad webgui`. To get the status of running fireworks from the command line, you can run `lpad get_fws -s RUNNING`. Other statuses can also be provided as well as individual FireWorks IDs.
+
+    To rerun a specific FireWork, one can use the `rerun_fws` command like so: `lpad rerun_fws -i <FWID>` where `<FWID>` is the FireWork ID. Similarly, one can rerun all fizzled jobs via `lpad rerun_fws -s FIZZLED`. More complicated Mongo-style queries can also be carried out. Cancelling a workflow can be done with `lpad delete_wflows -i <FWID>`.
+
+    Refer to the `lpad -h` help menu for more details.
+
+    **Continuous Job Submission**
+
+    To ensure that jobs are continually submitted to the queue you can use `tmux` to preserve the job submission process even when the SSH session is terminated. For example, running `tmux new -s launcher` will create a new `tmux` session named `launcher`. To exit the `tmux` session while still preserving any running tasks on the login node, press `ctrl+b` followed by `d`. To re-enter the tmux session, run `tmux attach -t launcher`. Additional `tmux` commands can be found on the [tmux cheatsheet](https://tmuxcheatsheet.com/).
 
 ## Learn More
 

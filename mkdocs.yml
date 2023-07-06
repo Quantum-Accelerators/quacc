@@ -25,6 +25,7 @@ theme:
     - offline
     - mkdocstrings
     - mkdocs-click
+    - autorefs
 
   features:
     - content.action.edit
@@ -34,7 +35,7 @@ theme:
     - content.code.annotate
     - content.tabs.link
     - content.tooltips
-    - navigation.instant
+    - navigation.footer
     - navigation.path
     - navigation.tracking
     - navigation.sections
@@ -67,10 +68,14 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
-  - pymdownx.highlight
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
   - pymdownx.inlinehilite
   - pymdownx.keys
   - pymdownx.mark
+  - pymdownx.snippets
   - pymdownx.smartsymbols
   - pymdownx.superfences
   - pymdownx.tabbed:
@@ -85,10 +90,10 @@ nav:
       - start/demo.md
   - Installation Guide 🔧:
       - install/install.md
-      - install/covalent.md
+      - install/wflow_engines.md
       - install/codes.md
-      - Advanced:
-          - install/advanced/config_db.md
+      - Optional:
+          - install/config_db.md
   - User Guide 🧠:
       - user/basics.md
       - Workflow Basics:
@@ -96,8 +101,7 @@ nav:
           - user/wflow_syntax.md
       - user/wflow_engines.md
       - user/settings.md
-      - Advanced:
-          - user/advanced/database.md
+      - user/database.md
   - Developer Guide 🤝:
       - dev/contributing.md
       - dev/docs.md
@@ -107,5 +111,3 @@ nav:
       - about/contributors.md
       - about/changelog.md
       - about/license.md
-  - Code Reference:
-      - Calculators: reference/reference.md

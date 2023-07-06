@@ -2,14 +2,14 @@
 
 ## Introduction
 
-All of the solutions below have a similar decorator-based syntax for compute tasks and workflows. Here, we highlight these differences. For a comparison of the pros and cons of each approach, refer to the [Workflow Overview](../../../install/advanced/alt_workflows/overview.md) page.
+All of the solutions below have a similar decorator-based syntax for compute tasks and workflows. Here, we highlight these differences. For a comparison of the pros and cons of each approach, refer to the [Workflow Engines Overview](wflow_overview.md) page.
 
 ## Simple Workflow
 
 Let's do the following:
 
-1. Add two numbers (e.g. 1 + 2)
-2. Multiply the output of Step 1 by a third number (e.g. 3 \* 3)
+1. Add two numbers (e.g. `#!Python 1 + 2`)
+2. Multiply the output of Step 1 by a third number (e.g. `#!Python 3 * 3`)
 
 In practice, we would want each of the two tasks to be their own compute job.
 
@@ -97,9 +97,9 @@ In practice, we would want each of the two tasks to be their own compute job.
 
 Let's do the following:
 
-1. Add two numbers (e.g. 1 + 2)
-2. Make a list of copies of the output from Step 1 (e.g. [3, 3, 3]) where the size of the list is not known until runtime
-3. Add a third number to each element of the list from Step 2 (e.g. [3 + 3, 3 + 3, 3 + 3])
+1. Add two numbers (e.g. `#!Python 1 + 2`)
+2. Make a list of copies of the output from Step 1 (e.g. `#!Python [3, 3, 3]`) where the size of the list is not known until runtime
+3. Add a third number to each element of the list from Step 2 (e.g. `#!Python [3 + 3, 3 + 3, 3 + 3]`)
 
 We will treat this as a dynamic workflow where the number of elements in the list from Step 2 may not necessarily be known until runtime. In practice, we would want each of the individual addition tasks to be their own compute job.
 
