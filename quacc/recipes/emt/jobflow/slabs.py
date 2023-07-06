@@ -12,7 +12,7 @@ def bulk_to_slabs_flow(
     atoms: Atoms | dict,
     slabgen_kwargs: dict | None = None,
     slab_relax_job: job = job(relax_job),
-    slab_static_job: job | None = job(static_job),
+    slabstatic_job: job | None = job(static_job),
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
 ) -> Response:
@@ -33,7 +33,7 @@ def bulk_to_slabs_flow(
         Additional keyword arguments to pass to `make_max_slabs_from_bulk()`
     slab_relax_job
         Maker to use for the relaxation of the slab.
-    slab_static_job
+    slabstatic_job
         Maker to use for the static calculation of the slab.
     slab_relax_kwargs
         Additional keyword arguments to pass to the relaxation calculation.
@@ -60,13 +60,13 @@ def bulk_to_slabs_flow(
     jobs = []
     outputs = []
     for slab in slabs:
-        if slab_static_job is None:
+        if slabstatic_job is None:
             job1 = slab_relax_job(slab, **slab_relax_kwargs)
             jobs += [job1]
             outputs.append(job1.output)
         else:
             job1 = slab_relax_job(slab, **slab_relax_kwargs)
-            job2 = slab_static_job(job1.output, **slab_static_kwargs)
+            job2 = slabstatic_job(job1.output, **slab_static_kwargs)
             jobs += [job1, job2]
             outputs.append(job2.output)
 

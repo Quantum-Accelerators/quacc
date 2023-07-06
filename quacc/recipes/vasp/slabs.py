@@ -11,7 +11,7 @@ from quacc.util.slabs import make_adsorbate_structures, make_max_slabs_from_bulk
 
 
 @ct.electron
-def slab_static_job(
+def slabstatic_job(
     atoms: Atoms | dict,
     preset: str | None = None,
     calc_swaps: dict | None = None,
@@ -123,7 +123,7 @@ def bulk_to_slabs_flow(
     atoms: Atoms,
     slabgen_kwargs: dict | None = None,
     slab_relax_electron: ct.electron = slab_relax_job,
-    slab_static_electron: ct.electron | None = slab_static_job,
+    slab_static_electron: ct.electron | None = slabstatic_job,
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
 ) -> list[VaspSchema]:
@@ -168,7 +168,7 @@ def bulk_to_slabs_flow(
 
     @ct.electron
     @ct.lattice
-    def _relax_and_static_distributed(slabs):
+    def _relax_andimages_distributed(slabs):
         return [
             slab_static_electron(
                 slab_relax_electron(slab, **slab_relax_kwargs),
@@ -181,7 +181,7 @@ def bulk_to_slabs_flow(
 
     if slab_static_electron is None:
         return _relax_distributed(slabs)
-    return _relax_and_static_distributed(slabs)
+    return _relax_andimages_distributed(slabs)
 
 
 def slab_to_ads_flow(
@@ -189,7 +189,7 @@ def slab_to_ads_flow(
     adsorbate: Atoms,
     make_ads_kwargs: dict | None = None,
     slab_relax_electron: ct.electron = ct.electron(slab_relax_job),
-    slab_static_electron: ct.electron | None = ct.electron(slab_static_job),
+    slab_static_electron: ct.electron | None = ct.electron(slabstatic_job),
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
 ) -> list[VaspSchema]:
@@ -233,7 +233,7 @@ def slab_to_ads_flow(
 
     @ct.electron
     @ct.lattice
-    def _relax_and_static_distributed(slabs):
+    def _relax_andimages_distributed(slabs):
         return [
             slab_static_electron(
                 slab_relax_electron(slab, **slab_relax_kwargs),
@@ -248,4 +248,4 @@ def slab_to_ads_flow(
 
     if slab_static_electron is None:
         return _relax_distributed(ads_slabs)
-    return _relax_and_static_distributed(ads_slabs)
+    return _relax_andimages_distributed(ads_slabs)

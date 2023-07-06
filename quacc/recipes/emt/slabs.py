@@ -61,7 +61,7 @@ def bulk_to_slabs_flow(
 
     @ct.electron
     @ct.lattice
-    def _relax_and_static_distributed(slabs):
+    def _relax_andimages_distributed(slabs):
         return [
             slab_static_electron(
                 slab_relax_electron(slab, **slab_relax_kwargs),
@@ -75,4 +75,4 @@ def bulk_to_slabs_flow(
     if slab_static_electron is None:
         return _relax_distributed(slabs)
 
-    return _relax_and_static_distributed(slabs)
+    return _relax_andimages_distributed(slabs)

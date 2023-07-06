@@ -41,7 +41,7 @@ def teardown_module():
     TBLite is None,
     reason="tblite must be installed.",
 )
-def test_static_Job():
+def teststatic_job():
     atoms = molecule("H2O")
     output = static_job(atoms)
     assert output["spin_multiplicity"] == 1
