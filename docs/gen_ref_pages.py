@@ -1,5 +1,6 @@
 """Generate the code reference pages."""
 
+
 from pathlib import Path
 
 import mkdocs_gen_files
@@ -18,6 +19,6 @@ for path in sorted(Path("quacc").rglob("*.py")):  #
 
     with mkdocs_gen_files.open(full_doc_path, "w") as fd:  #
         identifier = ".".join(parts)  #
-        print("::: " + identifier, file=fd)  #
+        print(f"::: {identifier}", file=fd)
 
     mkdocs_gen_files.set_edit_path(full_doc_path, path)  #
