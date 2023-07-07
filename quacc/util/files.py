@@ -80,7 +80,7 @@ def make_job_dir(base_path: str = None) -> str:
     if base_path is None:
         base_path = os.getcwd()
     time_now = datetime.utcnow().strftime("%Y-%m-%d-%H-%M-%S-%f")
-    job_dir = os.path.join(base_path, f"job_{time_now}-{randint(10000, 99999)}")
+    job_dir = os.path.join(base_path, f"quacc_{time_now}-{randint(10000, 99999)}")
     os.mkdir(job_dir)
 
     return job_dir

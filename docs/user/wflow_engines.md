@@ -152,7 +152,7 @@ We will now try running a simple workflow where we relax a bulk Cu structure usi
     workflow = Flow([job1, job2])
 
     # Run the workflow locally
-    responses = run_locally(workflow, create_folders=True)
+    responses = run_locally(workflow)
 
     # Get the result
     result = responses[job2.uuid][1].output
@@ -246,7 +246,7 @@ Now let's consider a similar but nonetheless distinct example. Here, we will def
     workflow = Flow([job1, job2])
 
     # Run the workflow locally
-    responses = run_locally(workflow, create_folders=True)
+    responses = run_locally(workflow)
 
     # Get the result
     result = responses[job2.uuid][1].output
@@ -374,7 +374,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     workflow = Flow([job1, job2])
 
     # Run the workflow locally
-    responses = run_locally(workflow, create_folders=True)
+    responses = run_locally(workflow)
 
     # Get the result
     result = responses[job2.uuid][1].output
@@ -402,7 +402,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     workflow = Flow([job1, job2])
 
     # Run the workflow locally
-    run_locally(workflow, create_folders=True)
+    run_locally(workflow)
     ```
 
     In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing `.emt.jobflow.slabs.bulk_to_slabs_flow` with its Covalent counterpart `.emt.slabs.bulk_to_slabs_flow`, you can see that the two are extremely similar such that it is often straightforward to [interconvert](wflow_syntax.md) between the two. In the case of `bulk_to_slabs_flow`, it actually returns a [`Response(replace)`](<https://materialsproject.github.io/jobflow/tutorials/5-dynamic-flows.html#The-Response(replace)-option>) object that dynamically replaces the `Flow` with several downstream jobs.

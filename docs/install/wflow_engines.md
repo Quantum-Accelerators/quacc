@@ -24,7 +24,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     **Optional Configuration**
 
-    Covalent has several [configuration options](https://docs.covalent.xyz/docs/user-documentation/how-to/customization/) that can be modified. Running `quacc config` automatically takes care of setting the ones that are critical for quacc to run properly. If you ever delete your Covalent configuration (e.g. via `covalent purge`), you will need to re-run `quacc config`.
+    Covalent has several [configuration options](https://docs.covalent.xyz/docs/user-documentation/how-to/customization/) that can be modified.
 
 === "Parsl"
 

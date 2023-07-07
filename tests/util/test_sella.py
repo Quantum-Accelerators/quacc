@@ -33,7 +33,13 @@ def teardown_module():
         if ".log" in f or ".pckl" in f or ".traj" in f:
             os.remove(f)
     for f in os.listdir(CWD):
-        if "quacc-tmp" in f or f == "tmp_dir" or f == "vib" or f == "blank_dir":
+        if (
+            "quacc-tmp" in f
+            or "quacc_" in f
+            or f == "tmp_dir"
+            or f == "vib"
+            or f == "blank_dir"
+        ):
             if os.path.islink(f):
                 os.unlink(f)
             else:
@@ -57,7 +63,7 @@ def test_sella():
         gzip=False,
         optimizer_kwargs={"restart": None},
     )
-    Popen(f"gunzip opt.traj.gz", shell=True).wait()
+    Popen("gunzip opt.traj.gz", shell=True).wait()
     traj = read("opt.traj", index=":")
     assert traj[-1].calc.results is not None
     assert dyn.user_internal is False
@@ -71,7 +77,7 @@ def test_sella():
         gzip=False,
         optimizer_kwargs={"restart": None},
     )
-    Popen(f"gunzip opt.traj.gz", shell=True).wait()
+    Popen("gunzip opt.traj.gz", shell=True).wait()
     traj = read("opt.traj", index=":")
     assert traj[-1].calc.results is not None
     assert dyn.user_internal is True

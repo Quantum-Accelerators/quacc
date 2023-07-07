@@ -22,7 +22,7 @@ from quacc.util.files import copy_decompress, make_job_dir
 def run_calc(
     atoms: Atoms,
     geom_file: str | None = None,
-    make_unique_workdir: str = SETTINGS.MAKE_UNIQUE_WORKDIR,
+    CREATE_UNIQUE_WORKDIR: str = SETTINGS.CREATE_UNIQUE_WORKDIR,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
     copy_files: list[str] | None = None,
@@ -44,7 +44,7 @@ def run_calc(
         to update the atoms object's positions and cell after a job. It is better
         to specify this rather than relying on ASE's atoms.get_potential_energy()
         function to update the positions, as this varies between codes.
-    make_unique_workdir
+    CREATE_UNIQUE_WORKDIR
         Whether to automatically create a unique working directory for each calculation.
     scratch_dir
         Path where a tmpdir should be made for running the calculation. If None,
@@ -67,7 +67,7 @@ def run_calc(
     cwd = os.getcwd()
 
     # Set where to store the results
-    job_dir = make_job_dir() if make_unique_workdir else cwd
+    job_dir = make_job_dir() if CREATE_UNIQUE_WORKDIR else cwd
 
     # Set where to run the calculation
     scratch_dir = scratch_dir or job_dir
@@ -137,7 +137,7 @@ def run_ase_opt(
     max_steps: int = 500,
     optimizer: Optimizer = FIRE,
     optimizer_kwargs: dict | None = None,
-    make_unique_workdir: str = SETTINGS.MAKE_UNIQUE_WORKDIR,
+    create_unique_workdir: str = SETTINGS.CREATE_UNIQUE_WORKDIR,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
     copy_files: list[str] | None = None,
@@ -162,7 +162,7 @@ def run_ase_opt(
         Optimizer class to use.
     optimizer_kwargs
         Dictionary of kwargs for the optimizer.
-    make_unique_workdir
+    create_unique_workdir
         Whether to automatically create a unique working directory for each calculation.
     scratch_dir
         Path where a tmpdir should be made for running the calculation. If None,
@@ -183,7 +183,7 @@ def run_ase_opt(
     atoms = copy_atoms(atoms)
 
     cwd = os.getcwd()
-    job_dir = make_job_dir() if make_unique_workdir else cwd
+    job_dir = make_job_dir() if create_unique_workdir else cwd
     scratch_dir = scratch_dir or job_dir
     optimizer_kwargs = optimizer_kwargs or {}
 
@@ -255,7 +255,7 @@ def run_ase_opt(
 def run_ase_vib(
     atoms: Atoms,
     vib_kwargs: dict | None = None,
-    make_unique_workdir: str = SETTINGS.MAKE_UNIQUE_WORKDIR,
+    create_unique_workdir: str = SETTINGS.CREATE_UNIQUE_WORKDIR,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
     copy_files: list[str] | None = None,
@@ -274,7 +274,7 @@ def run_ase_vib(
         The Atoms object to run the calculation on.
     vib_kwargs
         Dictionary of kwargs for the vibration analysis.
-    make_unique_workdir
+    create_unique_workdir
         Whether to automatically create a unique working directory for each calculation.
     scratch_dir
         Path where a tmpdir should be made for running the calculation. If None,
@@ -295,7 +295,7 @@ def run_ase_vib(
     atoms = copy_atoms(atoms)
 
     cwd = os.getcwd()
-    job_dir = make_job_dir() if make_unique_workdir else cwd
+    job_dir = make_job_dir() if create_unique_workdir else cwd
     scratch_dir = scratch_dir or job_dir
     vib_kwargs = vib_kwargs or {}
 

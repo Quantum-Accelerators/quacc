@@ -8,7 +8,6 @@ Run the following commands in the terminal:
 
 ```bash
 pip install git+https://github.com/quantum-accelerators/quacc.git
-quacc config
 covalent start
 ```
 

@@ -19,7 +19,7 @@ def teardown_module():
             or ".gz" in f
         ):
             os.remove(f)
-        if "quacc-tmp" in f or "job_" in f or f == "tmp_dir":
+        if "quacc-tmp" in f or "quacc_" in f or "job_" in f or f == "tmp_dir":
             rmtree(f)
 
 
@@ -45,7 +45,7 @@ def test_tutorial1():
     workflow = Flow([job1, job2])
 
     # Run the workflow locally
-    responses = run_locally(workflow, store=STORE, create_folders=True)
+    responses = run_locally(workflow, store=STORE)
 
     # Get the result
     result = responses[job2.uuid][1].output
@@ -69,7 +69,7 @@ def test_tutorial2():
     workflow = Flow([job1, job2])
 
     # Run the workflow locally
-    responses = run_locally(workflow, store=STORE, create_folders=True)
+    responses = run_locally(workflow, store=STORE)
 
     # Get the result
     result = responses[job2.uuid][1].output
@@ -85,7 +85,7 @@ def test_tutorial3():
     workflow = jf.Flow([job1, job2])
 
     # Run the workflow locally
-    jf.run_locally(workflow, store=STORE, create_folders=True)
+    jf.run_locally(workflow, store=STORE)
 
 
 def comparison1():
@@ -139,7 +139,7 @@ def test_emt_flow():
     atoms = bulk("Cu")
 
     job = jf.job(bulk_to_slabs_flow)(atoms, slab_static_job=None)
-    jf.run_locally(job, store=store, create_folders=True, ensure_success=True)
+    jf.run_locally(job, store=store, ensure_success=True)
 
     job = jf.job(bulk_to_slabs_flow)(
         atoms,
@@ -150,7 +150,7 @@ def test_emt_flow():
             "relax_cell": False,
         },
     )
-    jf.run_locally(job, store=store, create_folders=True, ensure_success=True)
+    jf.run_locally(job, store=store, ensure_success=True)
 
     job = jf.job(bulk_to_slabs_flow)(
         atoms,
@@ -161,9 +161,7 @@ def test_emt_flow():
             "relax_cell": False,
         },
     )
-    responses = jf.run_locally(
-        job, store=store, create_folders=True, ensure_success=True
-    )
+    responses = jf.run_locally(job, store=store, ensure_success=True)
 
     assert len(responses) == 5
     uuids = list(responses.keys())
