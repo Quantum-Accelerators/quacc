@@ -6,9 +6,9 @@ tmp_path.txt
 tmp*
 cache*
 
-# Docs ignores
-docs/src/reference/*
-docs_build
+# Docs 
+.cache/
+docs/reference/*
 *doctrees*
 
 # Python ignores

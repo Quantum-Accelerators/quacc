@@ -1,4 +1,5 @@
 """Utility functions for dealing with Atoms"""
+
 from __future__ import annotations
 
 import hashlib
@@ -357,3 +358,4 @@ def check_charge_and_spin(
             " not possible for this molecule."
         )
     return mol.charge, mol.spin_multiplicity
+

@@ -56,7 +56,7 @@ def summarize_run(
     dir_path
         The path to the folder containing the calculation outputs. A value of None specifies the
         current working directory.
-    pop_analysis
+    pop_analyses
         The name(s) of any cclib post-processing analysis to run. Note that for
         bader, ddec6, and hirshfeld, a cube file (.cube, .cub) must reside in dir_path.
         Supports: "cpsa", "mpa", "lpa", "bickelhaupt", "density", "mbo", "bader", "ddec6",
