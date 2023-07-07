@@ -53,7 +53,7 @@ MontyDecoder().process_decoded(d)
 
 ## Changelog
 
-We keep a [`CHANGELOG.md`](https://github.com/quantum-accelerators/src/quacc/blob/main/src/CHANGELOG.md) file in the base directory of the quacc code. Before submitting your PR, be sure to update the `CHANGELOG.md` file under the "Unreleased" section with a brief description of your changes. The `CHANGELOG.md` file follows the [Keep a Changelog](https://keepachangelog.com) format.
+We keep a `CHANGELOG.md` file in the base directory of the quacc code. Before submitting your PR, be sure to update the `CHANGELOG.md` file under the "Unreleased" section with a brief description of your changes. The `CHANGELOG.md` file follows the [Keep a Changelog](https://keepachangelog.com) format.
 
 ## Style Guidelines
 
