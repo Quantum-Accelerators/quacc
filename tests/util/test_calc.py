@@ -138,20 +138,18 @@ def test_run_ase_opt():
     traj = read(dyn.trajectory.filename, index=":")
     assert traj[-1].calc.results is not None
 
-    dyn = run_ase_opt(
-        traj[-1],
-        optimizer=BFGSLineSearch,
-        scratch_dir="test_calc",
-        gzip=False,
-        copy_files=["test_file.txt"],
-        optimizer_kwargs={
-            "restart": None,
-            "trajectory": Trajectory("new_test2.traj", "w", atoms=traj[-1]),
-        },
-    )
-    Popen(f"gunzip {dyn.trajectory.filename}.gz", shell=True).wait()
-    traj = read(dyn.trajectory.filename, index=":")
-    assert traj[-1].calc.results is not None
+    with pytest.raises(ValueError):
+        dyn = run_ase_opt(
+            traj[-1],
+            optimizer=BFGSLineSearch,
+            scratch_dir="test_calc",
+            gzip=False,
+            copy_files=["test_file.txt"],
+            optimizer_kwargs={
+                "restart": None,
+                "trajectory": Trajectory("new_test2.traj", "w", atoms=traj[-1]),
+            },
+        )
 
     with pytest.raises(ValueError):
         run_ase_opt(

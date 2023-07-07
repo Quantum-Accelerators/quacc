@@ -137,7 +137,7 @@ def run_ase_opt(
     max_steps: int = 500,
     optimizer: Optimizer = FIRE,
     optimizer_kwargs: dict | None = None,
-    make_unique_workdir: str = SETTINGS.UNIQUE_WORKDIR,
+    make_unique_workdir: str = SETTINGS.MAKE_UNIQUE_WORKDIR,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
     copy_files: list[str] | None = None,
@@ -210,18 +210,18 @@ def run_ase_opt(
     if copy_files:
         copy_decompress(copy_files, tmpdir)
 
+    # Get trajectory filename
+    if "trajectory" in optimizer_kwargs:
+        if not isinstance(optimizer_kwargs["trajectory"], str):
+            raise ValueError("`trajectory` kwarg must be a string.")
+        traj_filename = optimizer_kwargs["trajectory"]
+    else:
+        traj_filename = "opt.traj"
+
     os.chdir(tmpdir)
 
     # Set up trajectory
-    if "trajectory" in optimizer_kwargs:
-        if isinstance(optimizer_kwargs["trajectory"], str):
-            traj = Trajectory(optimizer_kwargs["trajectory"], "w", atoms=atoms)
-        else:
-            traj = optimizer_kwargs["trajectory"]
-    else:
-        traj = Trajectory("opt.traj", "w", atoms=atoms)
-
-    traj_filename = traj.filename
+    traj = Trajectory(traj_filename, "w", atoms=atoms)
     optimizer_kwargs["trajectory"] = traj
 
     # Define optimizer class
@@ -255,7 +255,7 @@ def run_ase_opt(
 def run_ase_vib(
     atoms: Atoms,
     vib_kwargs: dict | None = None,
-    make_unique_workdir: str = SETTINGS.UNIQUE_WORKDIR,
+    make_unique_workdir: str = SETTINGS.MAKE_UNIQUE_WORKDIR,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
     copy_files: list[str] | None = None,
