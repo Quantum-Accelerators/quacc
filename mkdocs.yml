@@ -73,7 +73,8 @@ nav:
       - about/license.md
   - Code Reference:
       - Calculators:
-          - references/calculators.md
+          - reference/calculators.md
+
 repo_url: https://github.com/Quantum-Accelerators/quacc/
 site_author: Andrew S. Rosen
 site_description: >-
@@ -82,7 +83,6 @@ site_description: >-
 site_name: quacc
 theme:
   favicon: images/quacc_favicon.png
-
   features:
     - content.action.edit
     - content.code.copy
