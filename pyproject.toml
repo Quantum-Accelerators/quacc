@@ -43,9 +43,9 @@ tblite = ["tblite[ase]>=0.3.0; platform_system=='Linux'"]
 dev = ["black", "isort", "pytest", "pytest-cov"]
 docs = [
     "mkdocs-material",
-    "mkdocs-git-revision-date-localized-plugin",
     "mkdocstrings[python]",
     "mkdocs-section-index",
+    "mkdocs-gen-files",
     "pillow",
     "cairosvg"
 ]
