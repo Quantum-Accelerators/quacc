@@ -44,7 +44,6 @@ dev = ["black", "isort", "pytest", "pytest-cov"]
 docs = [
     "mkdocs-material",
     "mkdocstrings[python]",
-    "mkdocs-section-index",
     "mkdocs-gen-files",
     "pillow",
     "cairosvg"
