@@ -62,14 +62,6 @@ As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculator
 
 If you plan to use Psi4 with quacc, you will need to install it prior to use. This can be done via `conda install -c psi4 psi4`.
 
-## Q-Chem
-
-!!! Note
-
-    [Q-Chem](https://www.q-chem.com/) is a powerful, general-purpose molecular DFT code with a variety of features.
-
-If you plan to use Q-Chem with Quacc, you will need to install `openbabel` and `sella` (recommended) prior to use. This can be done via `pip install sella && conda install -c conda-forge openbabel`.
-
 ## tblite
 
 !!! Note
