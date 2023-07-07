@@ -22,7 +22,7 @@ from quacc.util.files import copy_decompress, make_job_dir
 def run_calc(
     atoms: Atoms,
     geom_file: str | None = None,
-    CREATE_UNIQUE_WORKDIR: str = SETTINGS.CREATE_UNIQUE_WORKDIR,
+    create_unique_workdir: str = SETTINGS.CREATE_UNIQUE_WORKDIR,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
     copy_files: list[str] | None = None,
@@ -44,7 +44,7 @@ def run_calc(
         to update the atoms object's positions and cell after a job. It is better
         to specify this rather than relying on ASE's atoms.get_potential_energy()
         function to update the positions, as this varies between codes.
-    CREATE_UNIQUE_WORKDIR
+    create_unique_workdir
         Whether to automatically create a unique working directory for each calculation.
     scratch_dir
         Path where a tmpdir should be made for running the calculation. If None,
@@ -67,7 +67,7 @@ def run_calc(
     cwd = os.getcwd()
 
     # Set where to store the results
-    job_dir = make_job_dir() if CREATE_UNIQUE_WORKDIR else cwd
+    job_dir = make_job_dir() if create_unique_workdir else cwd
 
     # Set where to run the calculation
     scratch_dir = scratch_dir or job_dir
