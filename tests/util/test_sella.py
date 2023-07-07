@@ -57,7 +57,7 @@ def test_sella():
         gzip=False,
         optimizer_kwargs={"restart": None},
     )
-    Popen(f"gunzip opt.traj.gz", shell=True).wait()
+    Popen("gunzip opt.traj.gz", shell=True).wait()
     traj = read("opt.traj", index=":")
     assert traj[-1].calc.results is not None
     assert dyn.user_internal is False
@@ -71,7 +71,7 @@ def test_sella():
         gzip=False,
         optimizer_kwargs={"restart": None},
     )
-    Popen(f"gunzip opt.traj.gz", shell=True).wait()
+    Popen("gunzip opt.traj.gz", shell=True).wait()
     traj = read("opt.traj", index=":")
     assert traj[-1].calc.results is not None
     assert dyn.user_internal is True
