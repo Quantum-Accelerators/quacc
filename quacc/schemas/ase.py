@@ -10,7 +10,7 @@ import numpy as np
 from ase import units
 from ase.atoms import Atoms
 from ase.constraints import Filter
-from ase.io import read
+from ase.io import Trajectory, read
 from ase.optimize.optimize import Optimizer
 from ase.thermochemistry import IdealGasThermo
 from ase.vibrations import Vibrations
@@ -156,6 +156,7 @@ def summarize_run(
 
 def summarize_opt_run(
     dyn: Optimizer,
+    trajectory: Trajectory | list[Atoms] = None,
     check_convergence: bool = True,
     charge_and_multiplicity: tuple[int, int] | None = None,
     prep_next_run: bool = True,
@@ -170,6 +171,9 @@ def summarize_opt_run(
     ----------
     dyn
         ASE Optimizer object.
+    trajectory
+        ASE Trajectory object or list[Atoms] from reading a trajectory file.
+        If None, the trajectory will be read from `dyn.trajectory.filename`.
     check_convergence
         Whether to check the convergence of the calculation.
     charge_and_multiplicity
@@ -254,19 +258,21 @@ def summarize_opt_run(
     if check_convergence and not is_converged:
         raise ValueError("Optimization did not converge.")
 
-    # Get trajectory (need to gunzip/gzip to workaround ASE bug #1263)
-    Popen(f"gunzip {dyn.trajectory.filename}", shell=True).wait()
-    traj = read(zpath(dyn.trajectory.filename), index=":")
-    Popen(f"gzip {dyn.trajectory.filename}", shell=True).wait()
-    initial_atoms = traj[0]
+    # Get trajectory
+    if not trajectory:
+        # Get trajectory (need to gunzip/gzip to workaround ASE bug #1263)
+        Popen(f"gunzip {dyn.trajectory.filename}.gz", shell=True).wait()
+        trajectory = read(zpath(dyn.trajectory.filename), index=":")
+        Popen(f"gzip {dyn.trajectory.filename}", shell=True).wait()
+    initial_atoms = trajectory[0]
     final_atoms = dyn.atoms.atoms if isinstance(dyn.atoms, Filter) else dyn.atoms
 
     # Get results
     traj_results = {
-        "trajectory_results": [atoms.calc.results for atoms in traj],
+        "trajectory_results": [atoms.calc.results for atoms in trajectory],
         "trajectory": [
             atoms_to_metadata(atoms, charge_and_multiplicity=charge_and_multiplicity)
-            for atoms in traj
+            for atoms in trajectory
         ],
     }
     results = {
