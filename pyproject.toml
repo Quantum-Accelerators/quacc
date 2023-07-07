@@ -45,7 +45,7 @@ docs = [
     "mkdocs-material",
     "mkdocs-git-revision-date-localized-plugin",
     "mkdocstrings[python]",
-    "pip install mkdocs-section-index",
+    "mkdocs-section-index",
     "pillow",
     "cairosvg"
 ]
