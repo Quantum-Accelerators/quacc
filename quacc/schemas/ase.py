@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import os
 import warnings
-from subprocess import Popen
 from typing import TypeVar
 
 import numpy as np
@@ -15,7 +14,6 @@ from ase.optimize.optimize import Optimizer
 from ase.thermochemistry import IdealGasThermo
 from ase.vibrations import Vibrations
 from atomate2.utils.path import get_uri
-from monty.os.path import zpath
 
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_

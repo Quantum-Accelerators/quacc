@@ -10,7 +10,6 @@ from ase.calculators.lj import LennardJones
 from ase.io import read
 from ase.io.trajectory import Trajectory
 from ase.optimize import BFGS, BFGSLineSearch
-from monty.os.path import zpath
 
 from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
 

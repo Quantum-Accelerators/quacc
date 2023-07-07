@@ -7,7 +7,6 @@ from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.calculators.lj import LennardJones
 from ase.io import read
-from monty.os.path import zpath
 
 from quacc.util.calc import run_ase_opt
 
