@@ -2,7 +2,7 @@
 
 ## Introduction
 
-All of the solutions below have a similar decorator-based syntax for compute tasks and workflows. Here, we highlight these differences. For a comparison of the pros and cons of each approach, refer to the [Workflow Engines Overview](wflow_overview.md) page.
+Here, we provide code snippets for several decorator-based workflow engines. For a comparison of the pros and cons of each approach, refer to the [Workflow Engines Overview](wflow_overview.md) page.
 
 ## Simple Workflow
 
@@ -12,6 +12,11 @@ Let's do the following:
 2. Multiply the output of Step 1 by a third number (e.g. `#!Python 3 * 3`)
 
 In practice, we would want each of the two tasks to be their own compute job.
+
+```mermaid
+graph LR
+  A[Input] --> B(add) --> C(mult) --> D[Output];
+```
 
 === "No Workflow Engine"
 
@@ -87,7 +92,7 @@ In practice, we would want each of the two tasks to be their own compute job.
 
     job1 = add(1, 2)
     job2 = mult(job1.output, 3)
-    flow = Flow([job1, job2], output=job2.output)
+    flow = Flow([job1, job2])
 
     responses = run_locally(flow)
     result = responses[job2.uuid][1].output # 9
@@ -102,6 +107,14 @@ Let's do the following:
 3. Add a third number to each element of the list from Step 2 (e.g. `#!Python [3 + 3, 3 + 3, 3 + 3]`)
 
 We will treat this as a dynamic workflow where the number of elements in the list from Step 2 may not necessarily be known until runtime. In practice, we would want each of the individual addition tasks to be their own compute job.
+
+```mermaid
+graph LR
+  A[Input] --> B(add) --> C(make_more)
+  C --> D(add) --> G[Output];
+  C --> E(add) --> G[Output];
+  C --> F(add) --> G[Output];
+```
 
 === "No Workflow Engine"
 

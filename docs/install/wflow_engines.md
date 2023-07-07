@@ -18,17 +18,13 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
         Once you start scaling up your calculations, we recommend hosting the Covalent server on a dedicated machine or using [Covalent Cloud](https://www.covalent.xyz/cloud/). Refer to the [Covalent Deployment Guide](https://docs.covalent.xyz/docs/user-documentation/server-deployment) for details.
 
+    **Plugin Installation**
+
+    Depending on where you wish to run your quacc calculations, you may need to install the corresponding Covalent plugin, as described in the [Covalent plugin documentation](https://docs.covalent.xyz/docs/features/executor-plugins/exe). For production-quality calculations, we anticipate that most users will rely on the [`SlurmExecutor`](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/slurm), which can be installed via `pip install covalent-slurm-plugin`.
+
     **Optional Configuration**
 
     Covalent has several [configuration options](https://docs.covalent.xyz/docs/user-documentation/how-to/customization/) that can be modified. Running `quacc config` automatically takes care of setting the ones that are critical for quacc to run properly. If you ever delete your Covalent configuration (e.g. via `covalent purge`), you will need to re-run `quacc config`.
-
-    **Plugin Installation**
-
-    !!! Tip
-
-        If you are just starting out, try running some test calculations locally first. Then come back and install the relevant Covalent plugins for your machines.
-
-    Depending on where you wish to run your quacc calculations, you may need to install the corresponding Covalent plugin, as described in the [Covalent plugin documentation](https://docs.covalent.xyz/docs/features/executor-plugins/exe). For production-quality calculations, we anticipate that most users will rely on the [`SlurmExecutor`](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/slurm), which can be installed via `pip install covalent-slurm-plugin`.
 
 === "Parsl"
 

@@ -77,7 +77,11 @@ markdown_extensions:
   - pymdownx.mark
   - pymdownx.snippets
   - pymdownx.smartsymbols
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.tabbed:
       alternate_style: true
   - pymdownx.tasklist:
@@ -111,3 +115,6 @@ nav:
       - about/contributors.md
       - about/changelog.md
       - about/license.md
+  # - Code Reference:
+  #     - Calculators:
+  #         - references/calculators.md

@@ -99,7 +99,7 @@ def comparison1():
 
     job1 = add(1, 2)
     job2 = mult(job1.output, 3)
-    flow = jf.Flow([job1, job2], output=job2.output)
+    flow = jf.Flow([job1, job2])
 
     responses = jf.run_locally(flow, ensure_success=True)
     assert responses[job2.uuid][1].output == 9

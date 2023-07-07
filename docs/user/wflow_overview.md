@@ -42,27 +42,31 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     - Challenging to orchestrate workflows with steps running across heterogeneous resources
     - The concept of always returning a "future" object can be confusing for new users
 
-=== "Jobflow + FireWorks"
+=== "Jobflow"
 
     If you are affiliated with the Materials Project team at Lawrence Berkeley National Laboratory, we recommend using [Jobflow](https://github.com/materialsproject/jobflow) to define the workflows coupled with [FireWorks](https://github.com/materialsproject/fireworks) to dispatch them since it widely used there.
 
-    Pros (Jobflow):
+    **Jobflow**
+
+    Pros:
 
     - Simple interface for defining individual jobs and workflows
     - Native support for databases
     - Directly compatible with Atomate2
 
-    Cons (Jobflow):
+    Cons:
 
-    - Defining dynamic workflows with Jobflow is slightly more complex than other solutions
-    - The strong emphasis on using a database can be a barrier to entry
+    - Parsing the output of a workflow is not as intuitive as other solutions
+    - Defining dynamic workflows with Jobflow's `Response` object is slightly more complex than other solutions
 
-    Pros (FireWorks):
+    **FireWorks**:
+
+    Pros:
 
     - FireWorks is well-suited for a variety of job management approaches
     - Helpful dashboard for monitoring job progress
 
-    Cons (FireWorks):
+    Cons:
 
     - FireWorks documentation can be difficult to navigate without prior experience
     - FireWorks can have a steep learning curve due to its many configuration options
