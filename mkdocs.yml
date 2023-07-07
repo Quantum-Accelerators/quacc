@@ -1,48 +1,4 @@
-site_name: quacc
-site_author: Andrew S. Rosen
-site_description: >-
-  Quacc is a flexible and extensible platform
-  for high-throughput computational materials
-  science and quantum chemistry.
-repo_url: https://github.com/Quantum-Accelerators/quacc/
 edit_uri: blob/main/docs/
-theme:
-  name: material
-  palette:
-    scheme: slate
-    primary: orange
-  logo: images/quacc_logo_wide.svg
-  favicon: images/quacc_favicon.png
-  plugins:
-    - search:
-        separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
-    - minify:
-        minify_html: true
-    - social
-    - blog
-    - tags
-    - git-revision-date-localized:
-        enable_creation_date: true
-    - offline
-    - mkdocstrings
-    - mkdocs-click
-    - autorefs
-
-  features:
-    - content.action.edit
-    - content.code.copy
-    - content.code.select
-    - content.code.annotate
-    - content.tabs.link
-    - content.tooltips
-    - navigation.footer
-    - navigation.path
-    - navigation.tracking
-    - navigation.sections
-    - search.highlight
-    - search.suggest
-    - search.share
-    - header.autohide
 extra:
   social:
     - icon: fontawesome/brands/twitter
@@ -66,8 +22,8 @@ markdown_extensions:
   - pymdownx.caret
   - pymdownx.details
   - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
+      emoji_generator: !!python/name:materialx.emoji.to_svg ""
+      emoji_index: !!python/name:materialx.emoji.twemoji ""
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
@@ -79,9 +35,9 @@ markdown_extensions:
   - pymdownx.smartsymbols
   - pymdownx.superfences:
       custom_fences:
-        - name: mermaid
-          class: mermaid
-          format: !!python/name:pymdownx.superfences.fence_code_format
+        - class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format ""
+          name: mermaid
   - pymdownx.tabbed:
       alternate_style: true
   - pymdownx.tasklist:
@@ -115,6 +71,49 @@ nav:
       - about/contributors.md
       - about/changelog.md
       - about/license.md
-  # - Code Reference:
-  #     - Calculators:
-  #         - references/calculators.md
+  - Code Reference:
+      - Calculators:
+          - references/calculators.md
+repo_url: https://github.com/Quantum-Accelerators/quacc/
+site_author: Andrew S. Rosen
+site_description: >-
+  Quacc is a flexible and extensible platform for
+  high-throughput computational materials science and quantum chemistry.
+site_name: quacc
+theme:
+  favicon: images/quacc_favicon.png
+
+  features:
+    - content.action.edit
+    - content.code.copy
+    - content.code.select
+    - content.code.annotate
+    - content.tabs.link
+    - content.tooltips
+    - navigation.footer
+    - navigation.path
+    - navigation.tracking
+    - navigation.sections
+    - search.highlight
+    - search.suggest
+    - search.share
+    - header.autohide
+  logo: images/quacc_logo_wide.svg
+  name: material
+  palette:
+    primary: orange
+    scheme: slate
+  plugins:
+    - search:
+        separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+    - minify:
+        minify_html: true
+    - social
+    - blog
+    - tags
+    - git-revision-date-localized:
+        enable_creation_date: true
+    - offline
+    - mkdocstrings
+    - mkdocs-click
+    - autorefs

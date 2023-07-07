@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Docs
 
+- Switched the docs from Furo to Material for MkDocs.
 - Expanded upon Parsl documentation.
 - Modified tutorials and added example configs for Slurm.
 
