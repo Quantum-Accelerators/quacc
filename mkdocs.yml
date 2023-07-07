@@ -1,0 +1,118 @@
+theme:
+  favicon: images/quacc_favicon.png
+  features:
+    - content.action.edit
+    - content.code.copy
+    - content.code.select
+    - content.code.annotate
+    - content.tabs.link
+    - content.tooltips
+    - navigation.footer
+    - navigation.path
+    - navigation.tracking
+    - navigation.sections
+    - search.highlight
+    - search.suggest
+    - search.share
+    - header.autohide
+  logo: images/quacc_logo_wide.svg
+  name: material
+  palette:
+    primary: orange
+    scheme: slate
+  plugins:
+    - search:
+        separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+    - minify:
+        minify_html: true
+    - social
+    - blog
+    - tags
+    - git-revision-date-localized:
+        enable_creation_date: true
+    - offline
+    - mkdocstrings
+    - mkdocs-click
+    - autorefs
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:materialx.emoji.to_svg ""
+      emoji_index: !!python/name:materialx.emoji.twemoji ""
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.snippets
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format ""
+          name: mermaid
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+edit_uri: blob/main/docs/
+extra:
+  social:
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/RosenGroupPU
+    - icon: fontawesome/brands/github
+      link: https://github.com/Quantum-Accelerators/
+repo_url: https://github.com/Quantum-Accelerators/quacc/
+site_author: Andrew S. Rosen
+site_description: >-
+  Quacc is a flexible and extensible platform for
+  high-throughput computational materials science and quantum chemistry.
+site_name: quacc
+nav:
+  - Home: index.md
+  - Test Drive 🏎️:
+      - start/demo.md
+  - Installation Guide 🔧:
+      - install/install.md
+      - install/wflow_engines.md
+      - install/codes.md
+      - Optional:
+          - install/config_db.md
+  - User Guide 🧠:
+      - user/basics.md
+      - Workflow Basics:
+          - user/wflow_overview.md
+          - user/wflow_syntax.md
+      - user/wflow_engines.md
+      - user/settings.md
+      - user/database.md
+  - Developer Guide 🤝:
+      - dev/contributing.md
+      - dev/docs.md
+      - dev/conduct.md
+  - About 📜:
+      - about/faq.md
+      - about/contributors.md
+      - about/changelog.md
+      - about/license.md
+  - Code Reference:
+      - Calculators:
+          - reference/calculators.md
