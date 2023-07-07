@@ -29,13 +29,7 @@ def cli(ctx: click.Context) -> None:
 def config_command() -> None:
     """
     Modify the Covalent configuration to work with quacc.
-<<<<<<< HEAD:quacc/_cli/cli.py
-    Parameters
-    ----------
-    None
-=======
 
->>>>>>> main:src/quacc/_cli/cli.py
     Returns
     -------
     None
