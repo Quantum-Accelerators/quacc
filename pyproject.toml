@@ -45,6 +45,7 @@ docs = [
     "mkdocs-material",
     "mkdocstrings[python]",
     "mkdocs-gen-files",
+    "mkdocs-literate-nav",
     "pillow",
     "cairosvg"
 ]
