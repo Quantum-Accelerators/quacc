@@ -30,7 +30,9 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     **Installation**
 
-    In your activated Python environment, install Parsl via `pip install parsl` or `pip install parsl[monitoring]` for the dependencies that enable a visual dashboard. Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
+    In your activated Python environment, install Parsl via `pip install parsl`. Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
+
+    Also, you will need to set the `CREATE_UNIQUE_WORKDIR` [quacc setting](../user/settings.md) to `True` to ensure proper task isolation.
 
 === "Jobflow"
 
