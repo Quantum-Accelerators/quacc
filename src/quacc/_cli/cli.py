@@ -6,7 +6,18 @@ import click
 @click.group(invoke_without_command=True)
 @click.pass_context
 def cli(ctx: click.Context) -> None:
-    """Welcome to the quacc command-line interface."""
+    """
+    Welcome to the quacc command-line interface.
+
+    Parameters
+    ----------
+    ctx
+        Click context object
+
+    Returns
+    -------
+    None
+    """
 
     # Return help message if no command is provided
     if ctx.invoked_subcommand is None:
@@ -18,10 +29,6 @@ def cli(ctx: click.Context) -> None:
 def config_command() -> None:
     """
     Modify the Covalent configuration to work with quacc.
-
-    Parameters
-    ----------
-    None
 
     Returns
     -------

@@ -11,11 +11,13 @@ theme:
     - navigation.path
     - navigation.tracking
     - navigation.sections
+    - navigation.top
     - search.highlight
     - search.suggest
     - search.share
     - header.autohide
-  logo: images/quacc_logo_wide.svg
+    - toc.follow
+  logo: images/quacc_logo_wide.png
   name: material
   palette:
     primary: orange
@@ -62,16 +64,20 @@ markdown_extensions:
 plugins:
   - search:
       separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+  - autorefs
   - social
   - offline
-  - mkdocstrings
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          options:
+            docstring_style: numpy
   - gen-files:
       scripts:
         - docs/gen_ref_pages.py
   - literate-nav:
       nav_file: SUMMARY.md
-  - section-index
-  - autorefs
 
 edit_uri: blob/main/docs/
 extra:
