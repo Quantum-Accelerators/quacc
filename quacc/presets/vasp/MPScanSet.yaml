@@ -4,7 +4,7 @@
 # Source: https://github.com/materialsproject/pymatgen/blob/master/pymatgen/io/vasp/MPSCANRelaxSet.yaml
 inputs:
   algo: all
-  ediff: 1e-5
+  ediff: 1.0e-5
   ediffg: -0.02
   enaug: 1360
   encut: 680

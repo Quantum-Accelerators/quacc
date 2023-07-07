@@ -1,10 +1,39 @@
-edit_uri: blob/main/docs/
-extra:
-  social:
-    - icon: fontawesome/brands/twitter
-      link: https://twitter.com/RosenGroupPU
-    - icon: fontawesome/brands/github
-      link: https://github.com/Quantum-Accelerators/
+theme:
+  favicon: images/quacc_favicon.png
+  features:
+    - content.action.edit
+    - content.code.copy
+    - content.code.select
+    - content.code.annotate
+    - content.tabs.link
+    - content.tooltips
+    - navigation.footer
+    - navigation.path
+    - navigation.tracking
+    - navigation.sections
+    - search.highlight
+    - search.suggest
+    - search.share
+    - header.autohide
+  logo: images/quacc_logo_wide.svg
+  name: material
+  palette:
+    primary: orange
+    scheme: slate
+  plugins:
+    - search:
+        separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+    - minify:
+        minify_html: true
+    - social
+    - blog
+    - tags
+    - git-revision-date-localized:
+        enable_creation_date: true
+    - offline
+    - mkdocstrings
+    - mkdocs-click
+    - autorefs
 
 markdown_extensions:
   - abbr
@@ -44,6 +73,19 @@ markdown_extensions:
       custom_checkbox: true
   - pymdownx.tilde
 
+edit_uri: blob/main/docs/
+extra:
+  social:
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/RosenGroupPU
+    - icon: fontawesome/brands/github
+      link: https://github.com/Quantum-Accelerators/
+repo_url: https://github.com/Quantum-Accelerators/quacc/
+site_author: Andrew S. Rosen
+site_description: >-
+  Quacc is a flexible and extensible platform for
+  high-throughput computational materials science and quantum chemistry.
+site_name: quacc
 nav:
   - Home: index.md
   - Test Drive 🏎️:
@@ -74,46 +116,3 @@ nav:
   - Code Reference:
       - Calculators:
           - reference/calculators.md
-
-repo_url: https://github.com/Quantum-Accelerators/quacc/
-site_author: Andrew S. Rosen
-site_description: >-
-  Quacc is a flexible and extensible platform for
-  high-throughput computational materials science and quantum chemistry.
-site_name: quacc
-theme:
-  favicon: images/quacc_favicon.png
-  features:
-    - content.action.edit
-    - content.code.copy
-    - content.code.select
-    - content.code.annotate
-    - content.tabs.link
-    - content.tooltips
-    - navigation.footer
-    - navigation.path
-    - navigation.tracking
-    - navigation.sections
-    - search.highlight
-    - search.suggest
-    - search.share
-    - header.autohide
-  logo: images/quacc_logo_wide.svg
-  name: material
-  palette:
-    primary: orange
-    scheme: slate
-  plugins:
-    - search:
-        separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
-    - minify:
-        minify_html: true
-    - social
-    - blog
-    - tags
-    - git-revision-date-localized:
-        enable_creation_date: true
-    - offline
-    - mkdocstrings
-    - mkdocs-click
-    - autorefs

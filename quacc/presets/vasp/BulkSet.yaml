@@ -2,7 +2,7 @@ inputs:
   algo: fast
   auto_kpts:
     max_mixed_density: [100, 1000]
-  ediff: 1e-5
+  ediff: 1.0e-5
   efermi: midgap
   encut: 520
   ismear: 0

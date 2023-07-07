@@ -2,7 +2,7 @@ inputs:
   algo: all
   auto_kpts:
     grid_density: 1000
-  ediff: 1e-6
+  ediff: 1.0e-6
   encut: 520
   ismear: 0
   isym: 0
