@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added the `quacc.recipes.emt.parsl` module.
 - Added a CLI for `quacc` along with a `quacc config` option to configure Covalent appropriately upon install.
 - Added generic type hints for schemas.
-- Added a `CREATE_UNIQUE_WORKDIR` global setting to have quacc automatically make a unique working directory for each calculation. This is `True` by default.
+- Added a `CREATE_UNIQUE_WORKDIR` global setting to have quacc automatically make a unique working directory for each calculation.
 
 ### Changed
 

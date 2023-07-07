@@ -41,7 +41,7 @@ class QuaccSettings(BaseSettings):
         description="Scratch directory for calculations.",
     )
     CREATE_UNIQUE_WORKDIR: bool = Field(
-        True,
+        False,
         description="Whether to automatically create a unique working directory for each calculation.",
     )
     GZIP_FILES: bool = Field(
