@@ -1,4 +1,3 @@
-parent: BulkSet.yaml
 inputs:
   auto_dipole: true
   auto_kpts:
@@ -6,3 +5,4 @@ inputs:
   encut: 450
   ivdw: 0
   xc: rpbe
+parent: BulkSet.yaml
