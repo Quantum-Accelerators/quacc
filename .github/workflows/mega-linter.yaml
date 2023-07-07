@@ -2,7 +2,11 @@ name: linter (non-Python)
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+  pull_request:
+  release:
+    types: [published]
 
 jobs:
   build:
