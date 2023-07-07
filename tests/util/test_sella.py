@@ -33,13 +33,7 @@ def teardown_module():
         if ".log" in f or ".pckl" in f or ".traj" in f:
             os.remove(f)
     for f in os.listdir(CWD):
-        if (
-            "quacc-tmp" in f
-            or
-            or f == "tmp_dir"
-            or f == "vib"
-            or f == "blank_dir"
-        ):
+        if "quacc-tmp" in f or f == "tmp_dir" or f == "vib" or f == "blank_dir":
             if os.path.islink(f):
                 os.unlink(f)
             else:
