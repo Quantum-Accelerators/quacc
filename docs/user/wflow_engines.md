@@ -152,7 +152,7 @@ We will now try running a simple workflow where we relax a bulk Cu structure usi
     workflow = Flow([job1, job2])
 
     # Run the workflow locally
-    responses = run_locally(workflow)
+    responses = run_locally(workflow, create_folders=True)
 
     # Get the result
     result = responses[job2.uuid][1].output
@@ -246,7 +246,7 @@ Now let's consider a similar but nonetheless distinct example. Here, we will def
     workflow = Flow([job1, job2])
 
     # Run the workflow locally
-    responses = run_locally(workflow)
+    responses = run_locally(workflow, create_folders=True)
 
     # Get the result
     result = responses[job2.uuid][1].output
@@ -374,7 +374,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     workflow = Flow([job1, job2])
 
     # Run the workflow locally
-    responses = run_locally(workflow)
+    responses = run_locally(workflow, create_folders=True)
 
     # Get the result
     result = responses[job2.uuid][1].output

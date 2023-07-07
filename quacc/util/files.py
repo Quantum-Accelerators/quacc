@@ -65,7 +65,7 @@ def copy_decompress(source_files: list[str], destination: str) -> None:
 
 def make_job_dir(base_path: str = None) -> str:
     """
-    Make a job directory with a unique name.
+    Make a job directory with a unique name. Uses the same format as Jobflow.
 
     Parameters
     ----------
