@@ -4,6 +4,8 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
 
 ![Mongo example](../images/user/schema.gif)
 
+For assistance with setting up a MongoDB instance of your own, refer to the ["Database Setup"](../install/config_db.md) section of the installation instructions.
+
 === "General Purpose"
 
     For a given recipe, you can store the final output summary in your database using the `quacc.util.db.results_to_db` function, as shown in the example below.
@@ -32,7 +34,7 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
 
     Covalent automatically stores all the inputs and outputs in an SQLite database, which you can find at the `"db_path"` when you run `covalent config`, and the results can be queried using the `ct.get_result(<dispatch ID>)` syntax. However, if you want to store the results in a different database of your choosing, you can use [maggma](https://github.com/materialsproject/maggma) to do so quite easily.
 
-    An example is shown below for storing the results in a MongoDB via the `quacc.util.db.covalent_to_db` function. For assistance with setting up a MongoDB of your own, refer to the ["MongoDB Setup"](../install/config_db.md) section of the installation instructions.
+    An example is shown below for storing the results in a MongoDB via the `quacc.util.db.covalent_to_db` function.
 
     ```python
     from maggma.stores import MongoStore
