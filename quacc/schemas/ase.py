@@ -262,9 +262,8 @@ def summarize_opt_run(
     if not trajectory:
         # Get trajectory (need to gunzip/gzip to workaround ASE bug #1263)
         Popen(f"gunzip {dyn.trajectory.filename}", shell=True).wait()
-        traj = read(zpath(dyn.trajectory.filename), index=":")
+        trajectory = read(zpath(dyn.trajectory.filename), index=":")
         Popen(f"gzip {dyn.trajectory.filename}", shell=True).wait()
-        initial_atoms = traj[0]
     initial_atoms = trajectory[0]
     final_atoms = dyn.atoms.atoms if isinstance(dyn.atoms, Filter) else dyn.atoms
 
