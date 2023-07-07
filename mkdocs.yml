@@ -20,20 +20,6 @@ theme:
   palette:
     primary: orange
     scheme: slate
-  plugins:
-    - search:
-        separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
-    - minify:
-        minify_html: true
-    - social
-    - blog
-    - tags
-    - git-revision-date-localized:
-        enable_creation_date: true
-    - offline
-    - mkdocstrings
-    - mkdocs-click
-    - autorefs
 
 markdown_extensions:
   - abbr
@@ -73,6 +59,20 @@ markdown_extensions:
       custom_checkbox: true
   - pymdownx.tilde
 
+plugins:
+  - search:
+      separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+  - social
+  - offline
+  - mkdocstrings
+  - gen-files:
+      scripts:
+        - docs/gen_ref_pages.py
+  - literate-nav:
+      nav_file: SUMMARY.md
+  - section-index
+  - autorefs
+
 edit_uri: blob/main/docs/
 extra:
   social:
@@ -86,6 +86,7 @@ site_description: >-
   Quacc is a flexible and extensible platform for
   high-throughput computational materials science and quantum chemistry.
 site_name: quacc
+site_url: https://quantum-accelerators.github.io/quacc/
 nav:
   - Home: index.md
   - Test Drive 🏎️:
@@ -113,6 +114,4 @@ nav:
       - about/contributors.md
       - about/changelog.md
       - about/license.md
-  - Code Reference:
-      - Calculators:
-          - reference/calculators.md
+  - Code Reference: reference/

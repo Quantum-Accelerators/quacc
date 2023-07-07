@@ -45,7 +45,9 @@ docs = [
     "mkdocs-material",
     "mkdocs-git-revision-date-localized-plugin",
     "mkdocstrings[python]",
-    "mkdocs-click",
+    "pip install mkdocs-section-index",
+    "pillow",
+    "cairosvg"
 ]
 strict = [
     "ase @ https://gitlab.com/ase/ase/-/archive/master/ase-master.zip",  # waiting on >3.22.1
