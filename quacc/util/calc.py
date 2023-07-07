@@ -194,6 +194,12 @@ def run_ase_opt(
             os.unlink(symlink)
         os.symlink(tmpdir, symlink)
 
+    # Copy files to scratch and decompress them if needed
+    if copy_files:
+        copy_decompress(copy_files, tmpdir)
+
+    os.chdir(tmpdir)
+
     # Set up trajectory
     if "trajectory" in optimizer_kwargs:
         if isinstance(optimizer_kwargs["trajectory"], str):
@@ -202,19 +208,19 @@ def run_ase_opt(
             traj = optimizer_kwargs["trajectory"]
     else:
         traj = Trajectory("opt.traj", "w", atoms=atoms)
-    optimizer_kwargs["trajectory"] = traj
 
-    # Copy files to scratch and decompress them if needed
-    if copy_files:
-        copy_decompress(copy_files, tmpdir)
+    traj_filename = traj.filename
+    optimizer_kwargs["trajectory"] = traj
 
     # Define optimizer class
     dyn = optimizer(atoms, **optimizer_kwargs)
-    dyn.trajectory = traj
 
     # Run calculation
-    os.chdir(tmpdir)
     dyn.run(fmax=fmax, steps=max_steps)
+
+    # Store the trajectory atoms
+    dyn.traj_atoms = read(traj_filename, index=":")
+
     os.chdir(cwd)
 
     # Gzip files in tmpdir
