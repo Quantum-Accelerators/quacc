@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+from shutil import rmtree
 from tempfile import mkdtemp
 
 import numpy as np
@@ -53,7 +54,7 @@ def run_calc(
     Returns
     -------
     Atoms
-        The updated Atoms object,
+        The updated Atoms object.
     """
 
     if atoms.calc is None:
@@ -115,6 +116,9 @@ def run_calc(
     # Remove symlink
     if os.path.islink(symlink):
         os.remove(symlink)
+
+    # Remove the tmpdir
+    rmtree(tmpdir)
 
     return atoms
 
@@ -197,7 +201,7 @@ def run_ase_opt(
         else:
             traj = optimizer_kwargs["trajectory"]
     else:
-        traj = Trajectory(os.path.join(tmpdir, "opt.traj"), "w", atoms=atoms)
+        traj = Trajectory("opt.traj", "w", atoms=atoms)
     optimizer_kwargs["trajectory"] = traj
 
     # Copy files to scratch and decompress them if needed
@@ -223,6 +227,9 @@ def run_ase_opt(
     # Remove symlink
     if os.path.islink(symlink):
         os.remove(symlink)
+
+    # Remove the tmpdir
+    rmtree(tmpdir)
 
     return dyn
 
@@ -302,5 +309,8 @@ def run_ase_vib(
     # Remove symlink
     if os.path.islink(symlink):
         os.remove(symlink)
+
+    # Remove the tmpdir
+    rmtree(tmpdir)
 
     return vib

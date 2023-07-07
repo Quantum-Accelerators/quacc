@@ -4,6 +4,8 @@ Utility functions for file and path handling
 from __future__ import annotations
 
 import os
+from datetime import datetime
+from random import randint
 from shutil import copy
 
 import yaml
@@ -59,6 +61,29 @@ def copy_decompress(source_files: list[str], destination: str) -> None:
             z_file = os.path.basename(z_path)
             copy(z_path, os.path.join(destination, z_file))
             decompress_file(os.path.join(destination, z_file))
+
+
+def make_job_dir(base_path: str = None) -> str:
+    """
+    Make a job directory with a unique name.
+
+    Parameters
+    ----------
+    base_path
+        Path to the base directory. If None, the current working directory is used.
+
+    Returns
+    -------
+    str
+        Path to the job directory.
+    """
+    if base_path is None:
+        base_path = os.getcwd()
+    time_now = datetime.utcnow().strftime("%Y-%m-%d-%H-%M-%S-%f")
+    job_dir = os.path.join(base_path, f"job_{time_now}-{randint(10000, 99999)}")
+    os.mkdir(job_dir)
+
+    return job_dir
 
 
 def load_yaml_calc(yaml_path: str) -> dict:
