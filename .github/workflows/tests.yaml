@@ -39,7 +39,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install --no-cache-dir .[strict,dev,optimizers]
+          pip install .[strict,dev,optimizers]
           pip install covalent-slurm-plugin
 
       - name: Configure quacc
@@ -87,7 +87,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install --no-cache-dir .[strict,dev,tblite]
+          pip install .[strict,dev,tblite]
 
       - name: Configure quacc
         run: quacc config
@@ -132,7 +132,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install --no-cache-dir .[strict,dev]
+          pip install .[strict,dev]
 
       - name: Configure quacc
         run: quacc config
@@ -181,7 +181,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install --no-cache-dir .[strict,dev]
+          pip install .[strict,dev]
 
       - name: Configure quacc
         run: quacc config
@@ -266,7 +266,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install --no-cache-dir .[strict,dev,fireworks,parsl]
+          pip install .[strict,dev,fireworks,parsl]
 
       - name: Configure quacc
         run: quacc config

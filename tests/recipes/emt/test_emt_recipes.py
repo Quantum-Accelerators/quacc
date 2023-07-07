@@ -24,7 +24,7 @@ def teardown_module():
             rmtree(f)
 
 
-def test_static_Job():
+def test_static_job():
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += [0.1, 0.1, 0.1]
 

@@ -31,7 +31,7 @@ def teardown_module():
     psi4 is None,
     reason="Psi4 must be installed. Try conda install -c psi4 psi4",
 )
-def test_static_maker():
+def testimages_maker():
     atoms = molecule("H2")
     output = static_job(atoms)
     assert output["natoms"] == len(atoms)

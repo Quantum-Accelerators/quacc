@@ -1,20 +1,20 @@
-parent_magmoms: magmoms_qmof.yaml
-parent_setups: setups_qmof.yaml
 inputs:
+  algo: all
   auto_kpts:
     grid_density: 1000
-  algo: all
   ediff: 1.0e-6
   encut: 520
   ismear: 0
   isym: 0
   ivdw: 12
-  lorbit: 11
   lasph: false
+  lorbit: 11
   lreal: false
   nelm: 150
   nelmin: 3
   prec: accurate
   sigma: 0.01
-  symprec: 1.0e-8
+  symprec: 1e-8
   xc: pbe
+parent_magmoms: magmoms_qmof.yaml
+parent_setups: setups_qmof.yaml

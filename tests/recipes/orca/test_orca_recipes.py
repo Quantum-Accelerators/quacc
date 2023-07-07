@@ -28,7 +28,7 @@ def teardown_module():
                 rmtree(f)
 
 
-def test_static_Job():
+def test_static_job():
     atoms = molecule("H2")
     nprocs = multiprocessing.cpu_count()
 
