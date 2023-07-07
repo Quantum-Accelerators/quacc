@@ -26,6 +26,10 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     Covalent has several [configuration options](https://docs.covalent.xyz/docs/user-documentation/how-to/customization/) that can be modified. Running `quacc config` automatically takes care of setting the ones that are critical for quacc to run properly. If you ever delete your Covalent configuration (e.g. via `covalent purge`), you will need to re-run `quacc config`.
 
+    !!! Tip
+
+    If you are using Perlmutter at NERSC, you will need to set `export COVALENT_CONFIG_DIR="$SCRATCH/.config/covalent"` in your `~/.bashrc` because the home directory does not support file locking.
+
 === "Parsl"
 
     **Installation**
