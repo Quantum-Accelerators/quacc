@@ -1,4 +1,4 @@
-"""Core recipes forCA"""
+"""Core recipes for ORCA"""
 from __future__ import annotations
 
 import multiprocessing
