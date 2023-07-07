@@ -30,7 +30,7 @@ def teardown_module():
         ):
             os.remove(f)
     for f in os.listdir(os.getcwd()):
-        if "quacc-tmp" in f or "quacc_" in f or f == "tmp_dir" or f == "vib":
+        if "quacc-tmp" in f or f == "tmp_dir" or f == "vib":
             if os.path.islink(f):
                 os.unlink(f)
             else:

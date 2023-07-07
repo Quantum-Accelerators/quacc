@@ -20,7 +20,7 @@ def teardown_module():
         if f.endswith(".dat"):
             os.remove(f)
     for f in os.listdir(os.getcwd()):
-        if "quacc-tmp" in f or "quacc_" in f or f == "tmp_dir":
+        if "quacc-tmp" in f or f == "tmp_dir":
             if os.path.islink(f):
                 os.unlink(f)
             else:

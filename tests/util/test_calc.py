@@ -39,7 +39,7 @@ def teardown_module():
     for f in os.listdir(CWD):
         if (
             "quacc-tmp" in f
-            or "quacc_" in f
+            or
             or f == "tmp_dir"
             or f == "vib"
             or f == "blank_dir"
