@@ -227,6 +227,7 @@ def get_atoms_id(atoms: Atoms) -> str:
         .replace("float64", "float")
         .replace("float32", "float")
     )
+
     return hashlib.md5(encoded_atoms.encode("utf-8")).hexdigest()
 
 
@@ -272,6 +273,7 @@ def get_highest_block(atoms: Atoms) -> str:
         struct = AseAtomsAdaptor.get_molecule(atoms)
 
     blocks = [site.specie.block for site in struct]
+
     return (
         "f"
         if "f" in blocks
