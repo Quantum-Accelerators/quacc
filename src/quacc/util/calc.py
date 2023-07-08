@@ -11,7 +11,6 @@ from ase.io import Trajectory, read
 from ase.optimize import FIRE
 from ase.optimize.optimize import Optimizer
 from ase.vibrations import Vibrations
-from monty.os.path import zpath
 from monty.shutil import copy_r, gzip_dir
 
 from quacc import SETTINGS
@@ -78,7 +77,7 @@ def run_calc(
         # Note: We have to be careful to make sure we don't lose the
         # converged magnetic moments, if present. That's why we simply
         # update the positions and cell in-place.
-        atoms_new = read(os.path.join(tmpdir, zpath(geom_file)))
+        atoms_new = read(os.path.join(tmpdir, geom_file))
         if isinstance(atoms_new, list):
             atoms_new = atoms_new[-1]
 
@@ -271,10 +270,10 @@ def _calc_setup(
     -------
     Atoms
         Copy of the Atoms object with the calculator's directory set.
-    tmpdir
+    str
         The path to the tmpdir, where the calculation will be run. It will be
         deleted after the calculation is complete.
-    results_dir
+    str
         The path to the results_dir, where the files will ultimately be stored.
         A symlink to the tmpdir will be made here during the calculation for
         convenience.
@@ -314,10 +313,7 @@ def _calc_setup(
             "ASE calculator does not have a `directory` attribute. "
             "This is required for running calculations in a tmpdir."
         )
-    try:
-        atoms.calc.set(directory=tmpdir)
-    except RuntimeError:
-        atoms.calc.directory = tmpdir
+    atoms.calc.directory = tmpdir
 
     # Reset the label since there's some logic internally
     # based on the directory
