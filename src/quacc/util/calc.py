@@ -60,6 +60,7 @@ def run_calc(
         The updated Atoms object.
     """
 
+    # Perform staging operations
     atoms, tmpdir, job_dir = _calc_setup(
         atoms,
         create_unique_workdir=create_unique_workdir,
@@ -92,6 +93,7 @@ def run_calc(
         atoms.positions = atoms_new.positions
         atoms.cell = atoms_new.cell
 
+    # Perform cleanup operations
     _calc_cleanup(tmpdir, job_dir, gzip=gzip)
 
     return atoms
@@ -145,6 +147,8 @@ def run_ase_opt(
     """
 
     optimizer_kwargs = optimizer_kwargs or {}
+
+    # Perform staging operations
     atoms, tmpdir, job_dir = _calc_setup(
         atoms,
         create_unique_workdir=create_unique_workdir,
@@ -160,13 +164,11 @@ def run_ase_opt(
     ):
         optimizer_kwargs["internal"] = True
 
-    # Get trajectory filename
+    # Set up trajectory
     if "trajectory" in optimizer_kwargs:
         raise ValueError("Quacc does not support setting the `trajectory` kwarg.")
 
     traj_filename = os.path.join(tmpdir, "opt.traj")
-
-    # Set up trajectory
     optimizer_kwargs["trajectory"] = Trajectory(traj_filename, "w", atoms=atoms)
 
     # Define optimizer class
@@ -178,6 +180,7 @@ def run_ase_opt(
     # Store the trajectory atoms
     dyn.traj_atoms = read(traj_filename, index=":")
 
+    # Perform cleanup operations
     _calc_cleanup(tmpdir, job_dir, gzip=gzip)
 
     return dyn
@@ -222,6 +225,8 @@ def run_ase_vib(
     """
 
     vib_kwargs = vib_kwargs or {}
+
+    # Perform staging operations
     atoms, tmpdir, job_dir = _calc_setup(
         atoms,
         create_unique_workdir=create_unique_workdir,
@@ -234,6 +239,7 @@ def run_ase_vib(
     vib.run()
     vib.summary(log=os.path.join(tmpdir, "vib_summary.log"))
 
+    # Perform cleanup operations
     _calc_cleanup(tmpdir, job_dir, gzip=gzip)
 
     return vib
@@ -244,9 +250,37 @@ def _calc_setup(
     create_unique_workdir: bool = False,
     copy_files: list[str] | None = None,
     scratch_dir: str | None = None,
-):
+) -> tuple[Atoms, str, str]:
+    """
+    Perform staging operations for a calculation, including copying files
+    to the scratch directory, setting the calculator's directory,
+    decompressing files, and creating a symlink to the scratch directory.
+
+    Parameters
+    ----------
+    atoms
+        The Atoms object to run the calculation on with calculator attached.
+    create_unique_workdir
+        Whether to automatically create a unique working directory for each calculation.
+    copy_files
+        Filenames to copy from source to scratch directory.
+    scratch_dir
+        Path where a tmpdir should be made for running the calculation. If None,
+
+    Returns
+    -------
+    Atoms
+        The updated Atoms object.
+    str
+        The path to the tmpdir.
+    str
+        The path to the job_dir.
+    """
+
     if atoms.calc is None:
         raise ValueError("Atoms object must have attached calculator.")
+
+    # Don't modify the original atoms object
     atoms = copy_atoms(atoms)
 
     # Set where to store the results
@@ -254,10 +288,10 @@ def _calc_setup(
 
     # Set where to run the calculation
     scratch_dir = scratch_dir or job_dir
-
     if not os.path.exists(scratch_dir):
         os.makedirs(scratch_dir)
 
+    # Create a tmpdir for the calculation
     tmpdir = os.path.abspath(mkdtemp(prefix="quacc-tmp-", dir=scratch_dir))
     symlink = os.path.join(job_dir, f"{os.path.basename(tmpdir)}-symlink")
 
@@ -266,6 +300,7 @@ def _calc_setup(
             os.unlink(symlink)
         os.symlink(tmpdir, symlink)
 
+    # Set the calculator's working directory
     if not hasattr(atoms.calc, "directory"):
         raise ValueError("Calculator must have a `directory` attribute.")
 
@@ -282,6 +317,23 @@ def _calc_setup(
 
 
 def _calc_cleanup(tmpdir: str, job_dir: str, gzip: bool = True) -> None:
+    """
+    Perform cleanup operations for a calculation, including gzipping files,
+    copying files back to the original directory, and removing the tmpdir.
+
+    Parameters
+    ----------
+    tmpdir
+        The path to the tmpdir.
+    job_dir
+        The path to the job_dir.
+    gzip
+        Whether to gzip the output files.
+
+    Returns
+    -------
+    None
+    """
     # Gzip files in tmpdir
     if gzip:
         gzip_dir(tmpdir)
