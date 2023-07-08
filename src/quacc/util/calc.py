@@ -11,6 +11,7 @@ from ase.io import Trajectory, read
 from ase.optimize import FIRE
 from ase.optimize.optimize import Optimizer
 from ase.vibrations import Vibrations
+from monty.os.path import zpath
 from monty.shutil import copy_r, gzip_dir
 
 from quacc import SETTINGS
@@ -81,7 +82,7 @@ def run_calc(
         # Note: We have to be careful to make sure we don't lose the
         # converged magnetic moments, if present. That's why we simply
         # update the positions and cell in-place.
-        atoms_new = read(os.path.join(results_dir, geom_file))
+        atoms_new = read(os.path.join(results_dir, zpath(geom_file)))
         if isinstance(atoms_new, list):
             atoms_new = atoms_new[-1]
 
