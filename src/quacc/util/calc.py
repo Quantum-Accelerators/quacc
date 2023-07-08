@@ -61,6 +61,7 @@ def run_calc(
     """
 
     # Perform staging operations
+    start_dir = os.getcwd()
     atoms, tmpdir, job_dir = _calc_setup(
         atoms,
         create_unique_workdir=create_unique_workdir,
@@ -94,7 +95,7 @@ def run_calc(
         atoms.cell = atoms_new.cell
 
     # Perform cleanup operations
-    _calc_cleanup(tmpdir, job_dir, gzip=gzip)
+    _calc_cleanup(start_dir, tmpdir, job_dir, gzip=gzip)
 
     return atoms
 
@@ -147,6 +148,7 @@ def run_ase_opt(
     """
 
     optimizer_kwargs = optimizer_kwargs or {}
+    start_dir = os.getcwd()
 
     # Perform staging operations
     atoms, tmpdir, job_dir = _calc_setup(
@@ -181,7 +183,7 @@ def run_ase_opt(
     dyn.traj_atoms = read(traj_filename, index=":")
 
     # Perform cleanup operations
-    _calc_cleanup(tmpdir, job_dir, gzip=gzip)
+    _calc_cleanup(start_dir, tmpdir, job_dir, gzip=gzip)
 
     return dyn
 
@@ -225,6 +227,7 @@ def run_ase_vib(
     """
 
     vib_kwargs = vib_kwargs or {}
+    start_dir = os.getcwd()
 
     # Perform staging operations
     atoms, tmpdir, job_dir = _calc_setup(
@@ -240,7 +243,7 @@ def run_ase_vib(
     vib.summary(log=os.path.join(tmpdir, "vib_summary.log"))
 
     # Perform cleanup operations
-    _calc_cleanup(tmpdir, job_dir, gzip=gzip)
+    _calc_cleanup(start_dir, tmpdir, job_dir, gzip=gzip)
 
     return vib
 
@@ -300,29 +303,31 @@ def _calc_setup(
             os.unlink(symlink)
         os.symlink(tmpdir, symlink)
 
-    # Set the calculator's working directory
-    if not hasattr(atoms.calc, "directory"):
-        raise ValueError("Calculator must have a `directory` attribute.")
-
-    try:
-        atoms.calc.set(directory=tmpdir)
-    except RuntimeError:
-        atoms.calc.directory = tmpdir
-
     # Copy files to scratch and decompress them if needed
     if copy_files:
         copy_decompress(copy_files, tmpdir)
 
+    # Set the calculator's working directory
+    if hasattr(atoms.calc, "directory"):
+        try:
+            atoms.calc.set(directory=tmpdir)
+        except RuntimeError:
+            atoms.calc.directory = tmpdir
+    else:
+        os.chdir(tmpdir)
+
     return atoms, tmpdir, job_dir
 
 
-def _calc_cleanup(tmpdir: str, job_dir: str, gzip: bool = True) -> None:
+def _calc_cleanup(start_dir: str, tmpdir: str, job_dir: str, gzip: bool = True) -> None:
     """
     Perform cleanup operations for a calculation, including gzipping files,
     copying files back to the original directory, and removing the tmpdir.
 
     Parameters
     ----------
+    start_dir
+        The path to the starting directory.
     tmpdir
         The path to the tmpdir.
     job_dir
@@ -334,6 +339,10 @@ def _calc_cleanup(tmpdir: str, job_dir: str, gzip: bool = True) -> None:
     -------
     None
     """
+
+    # Return to the original directory (if not there already)
+    os.chdir(start_dir)
+
     # Gzip files in tmpdir
     if gzip:
         gzip_dir(tmpdir)
