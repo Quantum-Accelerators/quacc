@@ -47,8 +47,7 @@ def run_calc(
     create_unique_workdir
         Whether to automatically create a unique working directory for each calculation.
     scratch_dir
-        Path where a tmpdir should be made for running the calculation. If None,
-        the working directory will be used.
+        Base path where a tmpdir should be made for running the calculation.
     gzip
         Whether to gzip the output files.
     copy_files
@@ -61,7 +60,6 @@ def run_calc(
     """
 
     # Perform staging operations
-    start_dir = os.getcwd()
     atoms, tmpdir, results_dir = _calc_setup(
         atoms,
         create_unique_workdir=create_unique_workdir,
@@ -73,9 +71,9 @@ def run_calc(
     atoms.get_potential_energy()
 
     # Most ASE calculators do not update the atoms object in-place with
-    # a call to .get_potential_energy(). This section is done to ensure
-    # that the atoms object is updated with the correct positions and cell
-    # if a `geom_file` is provided.
+    # a call to .get_potential_energy(), which is important if an internal
+    # optimizer is used. This section is done to ensure that the atoms object
+    # is updated with the correct positions and cell if a `geom_file` is provided.
     if geom_file:
         # Note: We have to be careful to make sure we don't lose the
         # converged magnetic moments, if present. That's why we simply
@@ -84,7 +82,8 @@ def run_calc(
         if isinstance(atoms_new, list):
             atoms_new = atoms_new[-1]
 
-        # Make sure the atom indices didn't get updated somehow (sanity check)
+        # Make sure the atom indices didn't get updated somehow (sanity check). If this
+        # happens, there is a serious problem.
         if (
             np.array_equal(atoms_new.get_atomic_numbers(), atoms.get_atomic_numbers())
             is False
@@ -95,7 +94,7 @@ def run_calc(
         atoms.cell = atoms_new.cell
 
     # Perform cleanup operations
-    _calc_cleanup(start_dir, tmpdir, results_dir, gzip=gzip)
+    _calc_cleanup(tmpdir, results_dir, gzip=gzip)
 
     return atoms
 
@@ -148,7 +147,6 @@ def run_ase_opt(
     """
 
     optimizer_kwargs = optimizer_kwargs or {}
-    start_dir = os.getcwd()
 
     # Perform staging operations
     atoms, tmpdir, results_dir = _calc_setup(
@@ -183,7 +181,7 @@ def run_ase_opt(
     dyn.traj_atoms = read(traj_filename, index=":")
 
     # Perform cleanup operations
-    _calc_cleanup(start_dir, tmpdir, results_dir, gzip=gzip)
+    _calc_cleanup(tmpdir, results_dir, gzip=gzip)
 
     return dyn
 
@@ -227,7 +225,6 @@ def run_ase_vib(
     """
 
     vib_kwargs = vib_kwargs or {}
-    start_dir = os.getcwd()
 
     # Perform staging operations
     atoms, tmpdir, results_dir = _calc_setup(
@@ -243,7 +240,7 @@ def run_ase_vib(
     vib.summary(log=os.path.join(tmpdir, "vib_summary.log"))
 
     # Perform cleanup operations
-    _calc_cleanup(start_dir, tmpdir, results_dir, gzip=gzip)
+    _calc_cleanup(tmpdir, results_dir, gzip=gzip)
 
     return vib
 
@@ -268,16 +265,19 @@ def _calc_setup(
     copy_files
         Filenames to copy from source to scratch directory.
     scratch_dir
-        Path where a tmpdir should be made for running the calculation. If None,
+        Base path where a tmpdir should be made for running the calculation.
 
     Returns
     -------
     Atoms
-        The updated Atoms object.
-    str
-        The path to the tmpdir.
-    str
-        The path to the results_dir.
+        Copy of the Atoms object with the calculator's directory set.
+    tmpdir
+        The path to the tmpdir, where the calculation will be run. It will be
+        deleted after the calculation is complete.
+    results_dir
+        The path to the results_dir, where the files will ultimately be stored.
+        A symlink to the tmpdir will be made here during the calculation for
+        convenience.
     """
 
     if atoms.calc is None:
@@ -289,25 +289,31 @@ def _calc_setup(
     # Set where to store the results
     results_dir = make_unique_dir() if create_unique_workdir else os.getcwd()
 
-    # Set where to run the calculation
-    scratch_dir = scratch_dir or results_dir
+    # Set the base scratch directory where the tmpdir will be made
+    scratch_dir = scratch_dir or os.getcwd()
     if not os.path.exists(scratch_dir):
         os.makedirs(scratch_dir)
 
-    # Create a tmpdir for the calculation
+    # Create a tmpdir for the calculation within the scratch_dir
     tmpdir = os.path.abspath(mkdtemp(prefix="quacc-tmp-", dir=scratch_dir))
-    symlink = os.path.join(results_dir, f"{os.path.basename(tmpdir)}-symlink")
 
+    # Create a symlink (if not on Windows) to the tmpdir in the results_dir
+    symlink = os.path.join(results_dir, f"{os.path.basename(tmpdir)}-symlink")
     if os.name != "nt":
         if os.path.islink(symlink):
             os.unlink(symlink)
         os.symlink(tmpdir, symlink)
 
-    # Copy files to scratch and decompress them if needed
+    # Copy files to tmpdir and decompress them if needed
     if copy_files:
         copy_decompress(copy_files, tmpdir)
 
     # Set the calculator's working directory
+    if not hasattr(atoms.calc, "directory"):
+        raise RuntimeError(
+            "ASE calculator does not have a `directory` attribute. "
+            "This is required for running calculations in a tmpdir."
+        )
     try:
         atoms.calc.set(directory=tmpdir)
     except RuntimeError:
@@ -321,21 +327,20 @@ def _calc_setup(
     return atoms, tmpdir, results_dir
 
 
-def _calc_cleanup(
-    start_dir: str, tmpdir: str, results_dir: str, gzip: bool = True
-) -> None:
+def _calc_cleanup(tmpdir: str, results_dir: str, gzip: bool = True) -> None:
     """
     Perform cleanup operations for a calculation, including gzipping files,
     copying files back to the original directory, and removing the tmpdir.
 
     Parameters
     ----------
-    start_dir
-        The path to the starting directory.
     tmpdir
-        The path to the tmpdir.
+        The path to the tmpdir, where the calculation will be run. It will be
+        deleted after the calculation is complete.
     results_dir
-        The path to the results_dir.
+        The path to the results_dir, where the files will ultimately be stored.
+        A symlink to the tmpdir will be made here during the calculation for
+        convenience.
     gzip
         Whether to gzip the output files.
 
@@ -344,17 +349,14 @@ def _calc_cleanup(
     None
     """
 
-    # Return to the original directory (if not there already)
-    os.chdir(start_dir)
-
     # Gzip files in tmpdir
     if gzip:
         gzip_dir(tmpdir)
 
-    # Copy files back to run_dir
+    # Copy files back to results_dir
     copy_r(tmpdir, results_dir)
 
-    # Remove symlink
+    # Remove symlink to tmpdir
     symlink = os.path.join(results_dir, f"{os.path.basename(tmpdir)}-symlink")
     if os.path.islink(symlink):
         os.remove(symlink)
