@@ -16,7 +16,7 @@ from monty.shutil import copy_r, gzip_dir
 
 from quacc import SETTINGS
 from quacc.util.atoms import copy_atoms
-from quacc.util.files import copy_decompress, make_job_dir
+from quacc.util.files import copy_decompress, make_unique_dir
 
 
 def run_calc(
@@ -62,7 +62,7 @@ def run_calc(
 
     # Perform staging operations
     start_dir = os.getcwd()
-    atoms, tmpdir, job_dir = _calc_setup(
+    atoms, tmpdir, results_dir = _calc_setup(
         atoms,
         create_unique_workdir=create_unique_workdir,
         copy_files=copy_files,
@@ -76,7 +76,7 @@ def run_calc(
     # a call to .get_potential_energy(). This section is done to ensure
     # that the atoms object is updated with the correct positions and cell
     # if a `geom_file` is provided.
-    if geom_file and os.path.exists(os.path.join(tmpdir, zpath(geom_file))):
+    if geom_file:
         # Note: We have to be careful to make sure we don't lose the
         # converged magnetic moments, if present. That's why we simply
         # update the positions and cell in-place.
@@ -95,7 +95,7 @@ def run_calc(
         atoms.cell = atoms_new.cell
 
     # Perform cleanup operations
-    _calc_cleanup(start_dir, tmpdir, job_dir, gzip=gzip)
+    _calc_cleanup(start_dir, tmpdir, results_dir, gzip=gzip)
 
     return atoms
 
@@ -151,7 +151,7 @@ def run_ase_opt(
     start_dir = os.getcwd()
 
     # Perform staging operations
-    atoms, tmpdir, job_dir = _calc_setup(
+    atoms, tmpdir, results_dir = _calc_setup(
         atoms,
         create_unique_workdir=create_unique_workdir,
         copy_files=copy_files,
@@ -183,7 +183,7 @@ def run_ase_opt(
     dyn.traj_atoms = read(traj_filename, index=":")
 
     # Perform cleanup operations
-    _calc_cleanup(start_dir, tmpdir, job_dir, gzip=gzip)
+    _calc_cleanup(start_dir, tmpdir, results_dir, gzip=gzip)
 
     return dyn
 
@@ -230,7 +230,7 @@ def run_ase_vib(
     start_dir = os.getcwd()
 
     # Perform staging operations
-    atoms, tmpdir, job_dir = _calc_setup(
+    atoms, tmpdir, results_dir = _calc_setup(
         atoms,
         create_unique_workdir=create_unique_workdir,
         copy_files=copy_files,
@@ -243,7 +243,7 @@ def run_ase_vib(
     vib.summary(log=os.path.join(tmpdir, "vib_summary.log"))
 
     # Perform cleanup operations
-    _calc_cleanup(start_dir, tmpdir, job_dir, gzip=gzip)
+    _calc_cleanup(start_dir, tmpdir, results_dir, gzip=gzip)
 
     return vib
 
@@ -277,7 +277,7 @@ def _calc_setup(
     str
         The path to the tmpdir.
     str
-        The path to the job_dir.
+        The path to the results_dir.
     """
 
     if atoms.calc is None:
@@ -287,16 +287,16 @@ def _calc_setup(
     atoms = copy_atoms(atoms)
 
     # Set where to store the results
-    job_dir = make_job_dir() if create_unique_workdir else os.getcwd()
+    results_dir = make_unique_dir() if create_unique_workdir else os.getcwd()
 
     # Set where to run the calculation
-    scratch_dir = scratch_dir or job_dir
+    scratch_dir = scratch_dir or results_dir
     if not os.path.exists(scratch_dir):
         os.makedirs(scratch_dir)
 
     # Create a tmpdir for the calculation
     tmpdir = os.path.abspath(mkdtemp(prefix="quacc-tmp-", dir=scratch_dir))
-    symlink = os.path.join(job_dir, f"{os.path.basename(tmpdir)}-symlink")
+    symlink = os.path.join(results_dir, f"{os.path.basename(tmpdir)}-symlink")
 
     if os.name != "nt":
         if os.path.islink(symlink):
@@ -313,13 +313,23 @@ def _calc_setup(
             atoms.calc.set(directory=tmpdir)
         except RuntimeError:
             atoms.calc.directory = tmpdir
+
+        # Reset the label since there's some logic internally
+        # based on the directory
+        if hasattr(atoms.calc, "label"):
+            if hasattr(atoms.calc, "set_label"):
+                atoms.calc.set_label(atoms.calc.label)
+            else:
+                atoms.calc.set(label=atoms.calc.label)
     else:
         os.chdir(tmpdir)
 
-    return atoms, tmpdir, job_dir
+    return atoms, tmpdir, results_dir
 
 
-def _calc_cleanup(start_dir: str, tmpdir: str, job_dir: str, gzip: bool = True) -> None:
+def _calc_cleanup(
+    start_dir: str, tmpdir: str, results_dir: str, gzip: bool = True
+) -> None:
     """
     Perform cleanup operations for a calculation, including gzipping files,
     copying files back to the original directory, and removing the tmpdir.
@@ -330,8 +340,8 @@ def _calc_cleanup(start_dir: str, tmpdir: str, job_dir: str, gzip: bool = True) 
         The path to the starting directory.
     tmpdir
         The path to the tmpdir.
-    job_dir
-        The path to the job_dir.
+    results_dir
+        The path to the results_dir.
     gzip
         Whether to gzip the output files.
 
@@ -348,10 +358,10 @@ def _calc_cleanup(start_dir: str, tmpdir: str, job_dir: str, gzip: bool = True) 
         gzip_dir(tmpdir)
 
     # Copy files back to run_dir
-    copy_r(tmpdir, job_dir)
+    copy_r(tmpdir, results_dir)
 
     # Remove symlink
-    symlink = os.path.join(job_dir, f"{os.path.basename(tmpdir)}-symlink")
+    symlink = os.path.join(results_dir, f"{os.path.basename(tmpdir)}-symlink")
     if os.path.islink(symlink):
         os.remove(symlink)
 
