@@ -22,7 +22,7 @@ from quacc.util.files import copy_decompress, make_job_dir
 def run_calc(
     atoms: Atoms,
     geom_file: str | None = None,
-    create_unique_workdir: str = SETTINGS.CREATE_UNIQUE_WORKDIR,
+    create_unique_workdir: bool = SETTINGS.CREATE_UNIQUE_WORKDIR,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
     copy_files: list[str] | None = None,
@@ -60,51 +60,25 @@ def run_calc(
         The updated Atoms object.
     """
 
-    if atoms.calc is None:
-        raise ValueError("Atoms object must have attached calculator.")
-    atoms = copy_atoms(atoms)
-
-    # Set where to store the results
-    job_dir = make_job_dir() if create_unique_workdir else os.getcwd()
-
-    # Set where to run the calculation
-    scratch_dir = scratch_dir or job_dir
-
-    if not os.path.exists(scratch_dir):
-        os.makedirs(scratch_dir)
-
-    tmpdir = os.path.abspath(mkdtemp(prefix="quacc-tmp-", dir=scratch_dir))
-    symlink = os.path.join(job_dir, f"{os.path.basename(tmpdir)}-symlink")
-    atoms.calc.set(directory=tmpdir)
-
-    if os.name != "nt":
-        if os.path.islink(symlink):
-            os.unlink(symlink)
-        os.symlink(tmpdir, symlink)
-
-    # Copy files to scratch and decompress them if needed
-    if copy_files:
-        copy_decompress(copy_files, tmpdir)
+    atoms, tmpdir, job_dir = _calc_setup(
+        atoms,
+        create_unique_workdir=create_unique_workdir,
+        copy_files=copy_files,
+        scratch_dir=scratch_dir,
+    )
 
     # Run calculation via get_potential_energy()
     atoms.get_potential_energy()
-
-    # Gzip files in tmpdir
-    if gzip:
-        gzip_dir(tmpdir)
-
-    # Copy files back to run_dir
-    copy_r(tmpdir, job_dir)
 
     # Most ASE calculators do not update the atoms object in-place with
     # a call to .get_potential_energy(). This section is done to ensure
     # that the atoms object is updated with the correct positions and cell
     # if a `geom_file` is provided.
-    if geom_file and os.path.exists(os.path.join(job_dir, zpath(geom_file))):
+    if geom_file and os.path.exists(os.path.join(tmpdir, zpath(geom_file))):
         # Note: We have to be careful to make sure we don't lose the
         # converged magnetic moments, if present. That's why we simply
         # update the positions and cell in-place.
-        atoms_new = read(os.path.join(job_dir, zpath(geom_file)))
+        atoms_new = read(os.path.join(tmpdir, zpath(geom_file)))
         if isinstance(atoms_new, list):
             atoms_new = atoms_new[-1]
 
@@ -118,12 +92,7 @@ def run_calc(
         atoms.positions = atoms_new.positions
         atoms.cell = atoms_new.cell
 
-    # Remove symlink
-    if os.path.islink(symlink):
-        os.remove(symlink)
-
-    # Remove the tmpdir
-    rmtree(tmpdir)
+    _calc_cleanup(tmpdir, job_dir, gzip=gzip)
 
     return atoms
 
@@ -134,7 +103,7 @@ def run_ase_opt(
     max_steps: int = 500,
     optimizer: Optimizer = FIRE,
     optimizer_kwargs: dict | None = None,
-    create_unique_workdir: str = SETTINGS.CREATE_UNIQUE_WORKDIR,
+    create_unique_workdir: bool = SETTINGS.CREATE_UNIQUE_WORKDIR,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
     copy_files: list[str] | None = None,
@@ -175,16 +144,13 @@ def run_ase_opt(
         The ASE Optimizer object.
     """
 
-    if atoms.calc is None:
-        raise ValueError("Atoms object must have attached calculator.")
-    atoms = copy_atoms(atoms)
-
-    job_dir = make_job_dir() if create_unique_workdir else os.getcwd()
-    scratch_dir = scratch_dir or job_dir
     optimizer_kwargs = optimizer_kwargs or {}
-
-    if not os.path.exists(scratch_dir):
-        os.makedirs(scratch_dir)
+    atoms, tmpdir, job_dir = _calc_setup(
+        atoms,
+        create_unique_workdir=create_unique_workdir,
+        copy_files=copy_files,
+        scratch_dir=scratch_dir,
+    )
 
     # Set Sella kwargs
     if (
@@ -194,27 +160,14 @@ def run_ase_opt(
     ):
         optimizer_kwargs["internal"] = True
 
-    tmpdir = os.path.abspath(mkdtemp(prefix="quacc-tmp-", dir=scratch_dir))
-    symlink = os.path.join(job_dir, f"{os.path.basename(tmpdir)}-symlink")
-    atoms.calc.set(directory=tmpdir)
-
-    if os.name != "nt":
-        if os.path.islink(symlink):
-            os.unlink(symlink)
-        os.symlink(tmpdir, symlink)
-
-    # Copy files to scratch and decompress them if needed
-    if copy_files:
-        copy_decompress(copy_files, tmpdir)
-
     # Get trajectory filename
     if "trajectory" in optimizer_kwargs:
         raise ValueError("Quacc does not support setting the `trajectory` kwarg.")
+
     traj_filename = os.path.join(tmpdir, "opt.traj")
 
     # Set up trajectory
-    traj = Trajectory(traj_filename, "w", atoms=atoms)
-    optimizer_kwargs["trajectory"] = traj
+    optimizer_kwargs["trajectory"] = Trajectory(traj_filename, "w", atoms=atoms)
 
     # Define optimizer class
     dyn = optimizer(atoms, **optimizer_kwargs)
@@ -225,19 +178,7 @@ def run_ase_opt(
     # Store the trajectory atoms
     dyn.traj_atoms = read(traj_filename, index=":")
 
-    # Gzip files in tmpdir
-    if gzip:
-        gzip_dir(tmpdir)
-
-    # Copy files back to run_dir
-    copy_r(tmpdir, job_dir)
-
-    # Remove symlink
-    if os.path.islink(symlink):
-        os.remove(symlink)
-
-    # Remove the tmpdir
-    rmtree(tmpdir)
+    _calc_cleanup(tmpdir, job_dir, gzip=gzip)
 
     return dyn
 
@@ -245,7 +186,7 @@ def run_ase_opt(
 def run_ase_vib(
     atoms: Atoms,
     vib_kwargs: dict | None = None,
-    create_unique_workdir: str = SETTINGS.CREATE_UNIQUE_WORKDIR,
+    create_unique_workdir: bool = SETTINGS.CREATE_UNIQUE_WORKDIR,
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
     copy_files: list[str] | None = None,
@@ -280,35 +221,67 @@ def run_ase_vib(
         The updated Vibrations module
     """
 
-    if atoms.calc is None:
-        raise ValueError("Atoms object must have attached calculator.")
-    atoms = copy_atoms(atoms)
-
-    job_dir = make_job_dir() if create_unique_workdir else os.getcwd()
-    scratch_dir = scratch_dir or job_dir
     vib_kwargs = vib_kwargs or {}
-
-    if not os.path.exists(scratch_dir):
-        os.makedirs(scratch_dir)
-
-    tmpdir = os.path.abspath(mkdtemp(prefix="quacc-tmp-", dir=scratch_dir))
-    symlink = os.path.join(job_dir, f"{os.path.basename(tmpdir)}-symlink")
-    atoms.calc.set(directory=tmpdir)
-
-    if os.name != "nt":
-        if os.path.islink(symlink):
-            os.unlink(symlink)
-        os.symlink(tmpdir, symlink)
-
-    # Copy files to scratch and decompress them if needed
-    if copy_files:
-        copy_decompress(copy_files, tmpdir)
+    atoms, tmpdir, job_dir = _calc_setup(
+        atoms,
+        create_unique_workdir=create_unique_workdir,
+        copy_files=copy_files,
+        scratch_dir=scratch_dir,
+    )
 
     # Run calculation
     vib = Vibrations(atoms, name=os.path.join(tmpdir, "vib"), **vib_kwargs)
     vib.run()
     vib.summary(log=os.path.join(tmpdir, "vib_summary.log"))
 
+    _calc_cleanup(tmpdir, job_dir, gzip=gzip)
+
+    return vib
+
+
+def _calc_setup(
+    atoms: Atoms,
+    create_unique_workdir: bool = False,
+    copy_files: list[str] | None = None,
+    scratch_dir: str | None = None,
+):
+    if atoms.calc is None:
+        raise ValueError("Atoms object must have attached calculator.")
+    atoms = copy_atoms(atoms)
+
+    # Set where to store the results
+    job_dir = make_job_dir() if create_unique_workdir else os.getcwd()
+
+    # Set where to run the calculation
+    scratch_dir = scratch_dir or job_dir
+
+    if not os.path.exists(scratch_dir):
+        os.makedirs(scratch_dir)
+
+    tmpdir = os.path.abspath(mkdtemp(prefix="quacc-tmp-", dir=scratch_dir))
+    symlink = os.path.join(job_dir, f"{os.path.basename(tmpdir)}-symlink")
+
+    if os.name != "nt":
+        if os.path.islink(symlink):
+            os.unlink(symlink)
+        os.symlink(tmpdir, symlink)
+
+    if not hasattr(atoms.calc, "directory"):
+        raise ValueError("Calculator must have a `directory` attribute.")
+
+    try:
+        atoms.calc.set(directory=tmpdir)
+    except RuntimeError:
+        atoms.calc.directory = tmpdir
+
+    # Copy files to scratch and decompress them if needed
+    if copy_files:
+        copy_decompress(copy_files, tmpdir)
+
+    return atoms, tmpdir, job_dir
+
+
+def _calc_cleanup(tmpdir: str, job_dir: str, gzip: bool = True) -> None:
     # Gzip files in tmpdir
     if gzip:
         gzip_dir(tmpdir)
@@ -317,10 +290,9 @@ def run_ase_vib(
     copy_r(tmpdir, job_dir)
 
     # Remove symlink
+    symlink = os.path.join(job_dir, f"{os.path.basename(tmpdir)}-symlink")
     if os.path.islink(symlink):
         os.remove(symlink)
 
     # Remove the tmpdir
     rmtree(tmpdir)
-
-    return vib
