@@ -309,10 +309,13 @@ def _calc_setup(
 
     # Set the calculator's working directory
     if not hasattr(atoms.calc, "directory"):
-        raise RuntimeError(
-            "ASE calculator does not have a `directory` attribute. "
-            "This is required for running calculations in a tmpdir."
-        )
+        # All caulculators *should* have a `directory` attribute, but
+        # if some don't, we can use `os.chdir(tmpdir)` as a backup and then
+        # `os.chdir(start_dir)` in _calc_cleanup() where `start_dir` is
+        # whatever `os.getcwd()` is before all the file staging happens.
+        # I'd prefer not to have the parent Python process change directories,
+        # however, if it's not actually needed.
+        raise RuntimeError("ASE calculator does not have a `directory` attribute.")
     atoms.calc.directory = tmpdir
 
     # Reset the label since there's some logic internally
