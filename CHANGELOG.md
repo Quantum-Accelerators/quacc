@@ -11,8 +11,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added this `CHANGELOG.md` file.
 - Added the `quacc.recipes.emt.parsl` module.
 - Added a CLI for `quacc` along with a `quacc config` option to configure Covalent appropriately upon install.
-- Added a `quacc.util.wflows.make_dask_cluster` function to easily generate a Dask cluster.
 - Added generic type hints for schemas.
+- Added a `CREATE_UNIQUE_WORKDIR` global setting to have quacc automatically make a unique working directory for each calculation.
 - Added `CHECK_CONVERGENCE` to global settings.
 - Added a custom Q-Chem calculator based on Pymatgen and Custodian.
 - Added Q-chem core recipes.
@@ -33,6 +33,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 - Fixed a bug where parallel, multithreaded Python jobs could cause file I/O issues.
+- Temporary directories are cleaned up after the run is completed.
 
 ### Removed
 

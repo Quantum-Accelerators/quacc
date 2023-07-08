@@ -6,15 +6,16 @@ from ase.build import bulk, molecule
 
 try:
     import parsl
-    from parsl import join_app, python_app
-
+    from parsl import Config, join_app, python_app
+    from parsl.executors.threads import ThreadPoolExecutor
 except ImportError:
     parsl = None
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
 def setup_module():
-    parsl.load()
+    config = Config(executors=[ThreadPoolExecutor(max_threads=1)])
+    parsl.load(config)
 
 
 def teardown_module():

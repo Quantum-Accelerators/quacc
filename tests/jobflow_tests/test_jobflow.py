@@ -139,7 +139,7 @@ def test_emt_flow():
     atoms = bulk("Cu")
 
     job = jf.job(bulk_to_slabs_flow)(atoms, slab_static_job=None)
-    jf.run_locally(job, store=store, create_folders=True, ensure_success=True)
+    jf.run_locally(job, store=store, ensure_success=True, create_folders=True)
 
     job = jf.job(bulk_to_slabs_flow)(
         atoms,
@@ -150,7 +150,7 @@ def test_emt_flow():
             "relax_cell": False,
         },
     )
-    jf.run_locally(job, store=store, create_folders=True, ensure_success=True)
+    jf.run_locally(job, store=store, ensure_success=True, create_folders=True)
 
     job = jf.job(bulk_to_slabs_flow)(
         atoms,
@@ -162,7 +162,7 @@ def test_emt_flow():
         },
     )
     responses = jf.run_locally(
-        job, store=store, create_folders=True, ensure_success=True
+        job, store=store, ensure_success=True, create_folders=True
     )
 
     assert len(responses) == 5

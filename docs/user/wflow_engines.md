@@ -93,7 +93,13 @@ We will now try running a simple workflow where we relax a bulk Cu structure usi
 
     !!! Hint
 
-        If you haven't done so yet, make sure you loaded the default Parsl configuration via `parsl.load()` in your Python script.
+        If you haven't done so yet, make sure you have loaded a Parsl configuration in your Python script. An example for running on your local machine is included below. Note that dynamic workflow recipes may fail if multi-threading is enabled, which is why we don't use the default `parsl.load()` configuration.
+
+        ```python
+        from parsl import Config
+        from parsl.executors.threads import ThreadPoolExecutor
+        parsl.load(config=Config(executors=[ThreadPoolExecutor(max_threads=1)]))
+        ```
 
     ```python
     from parsl import python_app
@@ -224,8 +230,6 @@ Now let's consider a similar but nonetheless distinct example. Here, we will def
     # Print the results
     print(future1.result(), future2.result())
     ```
-
-    If you monitor the output, you'll notice that the two jobs are being run in parallel, whereas they would be run sequentially if you were not using Parsl.
 
 === "Jobflow"
 
@@ -601,6 +605,11 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     !!! Tip
 
         Dr. Logan Ward has a nice example on YouTube describing a very similar example [here](https://youtu.be/0V4Hs4kTyJs?t=398).
+
+
+    !!! Warning
+
+        By default, the [`ThreadPoolExecutor`](https://parsl.readthedocs.io/en/stable/stubs/parsl.executors.ThreadPoolExecutor.html#parsl.executors.ThreadPoolExecutor) (which is used when calling `parsl.load()`) is run in a multi-threaded mode, which may cause I/O errors when running multiple calculations simultaneously. We do not recommend using Parsl-based multi-threading at this time if there is any file I/O in your workflow.
 
 === "Jobflow"
 

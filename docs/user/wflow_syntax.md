@@ -4,6 +4,11 @@
 
 Here, we provide code snippets for several decorator-based workflow engines. For a comparison of the pros and cons of each approach, refer to the [Workflow Engines Overview](wflow_overview.md) page.
 
+You can run the examples below as-is, with the following notes:
+
+- For Covalent, run `covalent start` in the terminal to have the results show up in the GUI.
+- For Parsl, do `import parsl` followed by `parsl.load()` in Python before running the scripts in order to load a default Parsl configuration.
+
 ## Simple Workflow
 
 Let's do the following:
