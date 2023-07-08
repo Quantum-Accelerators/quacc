@@ -308,21 +308,15 @@ def _calc_setup(
         copy_decompress(copy_files, tmpdir)
 
     # Set the calculator's working directory
-    if hasattr(atoms.calc, "directory"):
-        try:
-            atoms.calc.set(directory=tmpdir)
-        except RuntimeError:
-            atoms.calc.directory = tmpdir
+    try:
+        atoms.calc.set(directory=tmpdir)
+    except RuntimeError:
+        atoms.calc.directory = tmpdir
 
-        # Reset the label since there's some logic internally
-        # based on the directory
-        if hasattr(atoms.calc, "label"):
-            if hasattr(atoms.calc, "set_label"):
-                atoms.calc.set_label(atoms.calc.label)
-            else:
-                atoms.calc.set(label=atoms.calc.label)
-    else:
-        os.chdir(tmpdir)
+    # Reset the label since there's some logic internally
+    # based on the directory
+    if hasattr(atoms.calc, "set_label"):
+        atoms.calc.set_label(atoms.calc.label)
 
     return atoms, tmpdir, results_dir
 
