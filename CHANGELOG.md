@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [UNRELEASED]
 
+## [0.1.1]
+
 ### Added
 
 - Added this `CHANGELOG.md` file.
