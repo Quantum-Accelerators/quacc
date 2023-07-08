@@ -93,7 +93,13 @@ We will now try running a simple workflow where we relax a bulk Cu structure usi
 
     !!! Hint
 
-        If you haven't done so yet, make sure you loaded the default Parsl configuration via `parsl.load()` in your Python script.
+        If you haven't done so yet, make sure you have loaded a Parsl configuration in your Python script. An example for running on your local machine is included below. Note that dynamic workflow recipes may fail if multi-threading is enabled, which is why we don't use the default `parsl.load()` configuration.
+
+        ```python
+        from parsl import Config
+        from parsl.executors.threads import ThreadPoolExecutor
+        parsl.load(config=Config(executors=[ThreadPoolExecutor(max_threads=1)]))
+        ```
 
     ```python
     from parsl import python_app
