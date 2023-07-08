@@ -1,6 +1,5 @@
 import os
 from shutil import rmtree
-from subprocess import Popen
 
 import numpy as np
 import pytest
@@ -8,7 +7,6 @@ from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.calculators.lj import LennardJones
 from ase.io import read
-from ase.io.trajectory import Trajectory
 from ase.optimize import BFGS, BFGSLineSearch
 
 from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
@@ -100,8 +98,7 @@ def test_run_ase_opt():
     atoms.calc = EMT()
 
     dyn = run_ase_opt(atoms, scratch_dir="test_calc", copy_files=["test_file.txt"])
-    Popen(f"gunzip {dyn.trajectory.filename}.gz", shell=True).wait()
-    traj = read(dyn.trajectory.filename, index=":")
+    traj = dyn.traj_atoms
     assert traj[-1].calc.results is not None
     assert os.path.exists("test_file.txt")
     assert os.path.exists("test_file.txt.gz")
@@ -121,8 +118,7 @@ def test_run_ase_opt():
         copy_files=["test_file.txt"],
         optimizer_kwargs={"restart": None},
     )
-    Popen(f"gunzip {dyn.trajectory.filename}.gz", shell=True).wait()
-    traj = read(dyn.trajectory.filename, index=":")
+    traj = dyn.traj_atoms
     assert traj[-1].calc.results is not None
 
     dyn = run_ase_opt(
@@ -131,10 +127,9 @@ def test_run_ase_opt():
         scratch_dir="test_calc",
         gzip=False,
         copy_files=["test_file.txt"],
-        optimizer_kwargs={"restart": None, "trajectory": "new_test.traj"},
+        optimizer_kwargs={"restart": None},
     )
-    Popen(f"gunzip {dyn.trajectory.filename}.gz", shell=True).wait()
-    traj = read(dyn.trajectory.filename, index=":")
+    traj = dyn.traj_atoms
     assert traj[-1].calc.results is not None
 
     with pytest.raises(ValueError):
@@ -146,7 +141,7 @@ def test_run_ase_opt():
             copy_files=["test_file.txt"],
             optimizer_kwargs={
                 "restart": None,
-                "trajectory": Trajectory("new_test2.traj", "w", atoms=traj[-1]),
+                "trajectory": "test.traj",
             },
         )
 

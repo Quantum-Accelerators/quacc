@@ -64,10 +64,8 @@ def run_calc(
         raise ValueError("Atoms object must have attached calculator.")
     atoms = copy_atoms(atoms)
 
-    cwd = os.getcwd()
-
     # Set where to store the results
-    job_dir = make_job_dir() if create_unique_workdir else cwd
+    job_dir = make_job_dir() if create_unique_workdir else os.getcwd()
 
     # Set where to run the calculation
     scratch_dir = scratch_dir or job_dir
@@ -77,6 +75,7 @@ def run_calc(
 
     tmpdir = os.path.abspath(mkdtemp(prefix="quacc-tmp-", dir=scratch_dir))
     symlink = os.path.join(job_dir, f"{os.path.basename(tmpdir)}-symlink")
+    atoms.calc.set(directory=tmpdir)
 
     if os.name != "nt":
         if os.path.islink(symlink):
@@ -88,9 +87,7 @@ def run_calc(
         copy_decompress(copy_files, tmpdir)
 
     # Run calculation via get_potential_energy()
-    os.chdir(tmpdir)
     atoms.get_potential_energy()
-    os.chdir(cwd)
 
     # Gzip files in tmpdir
     if gzip:
@@ -182,8 +179,7 @@ def run_ase_opt(
         raise ValueError("Atoms object must have attached calculator.")
     atoms = copy_atoms(atoms)
 
-    cwd = os.getcwd()
-    job_dir = make_job_dir() if create_unique_workdir else cwd
+    job_dir = make_job_dir() if create_unique_workdir else os.getcwd()
     scratch_dir = scratch_dir or job_dir
     optimizer_kwargs = optimizer_kwargs or {}
 
@@ -200,6 +196,7 @@ def run_ase_opt(
 
     tmpdir = os.path.abspath(mkdtemp(prefix="quacc-tmp-", dir=scratch_dir))
     symlink = os.path.join(job_dir, f"{os.path.basename(tmpdir)}-symlink")
+    atoms.calc.set(directory=tmpdir)
 
     if os.name != "nt":
         if os.path.islink(symlink):
@@ -212,13 +209,8 @@ def run_ase_opt(
 
     # Get trajectory filename
     if "trajectory" in optimizer_kwargs:
-        if not isinstance(optimizer_kwargs["trajectory"], str):
-            raise ValueError("`trajectory` kwarg must be a string.")
-        traj_filename = optimizer_kwargs["trajectory"]
-    else:
-        traj_filename = "opt.traj"
-
-    os.chdir(tmpdir)
+        raise ValueError("Quacc does not support setting the `trajectory` kwarg.")
+    traj_filename = os.path.join(tmpdir, "opt.traj")
 
     # Set up trajectory
     traj = Trajectory(traj_filename, "w", atoms=atoms)
@@ -232,8 +224,6 @@ def run_ase_opt(
 
     # Store the trajectory atoms
     dyn.traj_atoms = read(traj_filename, index=":")
-
-    os.chdir(cwd)
 
     # Gzip files in tmpdir
     if gzip:
@@ -294,8 +284,7 @@ def run_ase_vib(
         raise ValueError("Atoms object must have attached calculator.")
     atoms = copy_atoms(atoms)
 
-    cwd = os.getcwd()
-    job_dir = make_job_dir() if create_unique_workdir else cwd
+    job_dir = make_job_dir() if create_unique_workdir else os.getcwd()
     scratch_dir = scratch_dir or job_dir
     vib_kwargs = vib_kwargs or {}
 
@@ -304,6 +293,7 @@ def run_ase_vib(
 
     tmpdir = os.path.abspath(mkdtemp(prefix="quacc-tmp-", dir=scratch_dir))
     symlink = os.path.join(job_dir, f"{os.path.basename(tmpdir)}-symlink")
+    atoms.calc.set(directory=tmpdir)
 
     if os.name != "nt":
         if os.path.islink(symlink):
@@ -315,11 +305,9 @@ def run_ase_vib(
         copy_decompress(copy_files, tmpdir)
 
     # Run calculation
-    os.chdir(tmpdir)
-    vib = Vibrations(atoms, **vib_kwargs)
+    vib = Vibrations(atoms, name=os.path.join(tmpdir, "vib"), **vib_kwargs)
     vib.run()
-    vib.summary(log="vib_summary.log")
-    os.chdir(cwd)
+    vib.summary(log=os.path.join(tmpdir, "vib_summary.log"))
 
     # Gzip files in tmpdir
     if gzip:
