@@ -231,8 +231,6 @@ Now let's consider a similar but nonetheless distinct example. Here, we will def
     print(future1.result(), future2.result())
     ```
 
-    If you monitor the output, you'll notice that the two jobs are being run in parallel, whereas they would be run sequentially if you were not using Parsl.
-
 === "Jobflow"
 
     ```python
@@ -408,7 +406,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     workflow = Flow([job1, job2])
 
     # Run the workflow locally
-    run_locally(workflow)
+    run_locally(workflow, create_folders=True)
     ```
 
     In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing `.emt.jobflow.slabs.bulk_to_slabs_flow` with its Covalent counterpart `.emt.slabs.bulk_to_slabs_flow`, you can see that the two are extremely similar such that it is often straightforward to [interconvert](wflow_syntax.md) between the two. In the case of `bulk_to_slabs_flow`, it actually returns a [`Response(replace)`](<https://materialsproject.github.io/jobflow/tutorials/5-dynamic-flows.html#The-Response(replace)-option>) object that dynamically replaces the `Flow` with several downstream jobs.
@@ -607,6 +605,11 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     !!! Tip
 
         Dr. Logan Ward has a nice example on YouTube describing a very similar example [here](https://youtu.be/0V4Hs4kTyJs?t=398).
+
+
+    !!! Warning
+
+        By default, the [`ThreadPoolExecutor`](https://parsl.readthedocs.io/en/stable/stubs/parsl.executors.ThreadPoolExecutor.html#parsl.executors.ThreadPoolExecutor) (which is used when calling `parsl.load()`) is run in a multi-threaded mode, which may cause I/O errors when running multiple calculations simultaneously. We do not recommend using Parsl-based multi-threading at this time if there is any file I/O in your workflow.
 
 === "Jobflow"
 
