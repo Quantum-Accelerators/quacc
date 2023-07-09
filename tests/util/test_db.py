@@ -3,7 +3,8 @@ import os
 import covalent as ct
 import pytest
 from ase.build import bulk
-from maggma.stores import MemoryStore, MontyStore
+from maggma.stores import MemoryStore
+from maggma.stores.mongolike import MontyStore
 
 from quacc.recipes.emt.core import static_job
 from quacc.util.db import covalent_to_db, results_to_db
