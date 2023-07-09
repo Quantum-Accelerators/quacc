@@ -22,7 +22,7 @@ Here, we will show how to use quacc with one of a variety of workflow engines to
 
 === "Parsl"
 
-    Take a moment to read Parsl documentation's ["Quick Start"](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a `@python_app` and `@join_app`, which describe individual compute tasks and dynamic job tasks, respectively.
+    Take a moment to read Parsl documentation's ["Quick Start"](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a [`@python_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html#Python-Apps) and [`@join_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html?highlight=join_app#Dynamic-workflows-with-apps-that-generate-other-apps), which describe individual compute tasks and dynamic job tasks, respectively.
 
     !!! Info
 
@@ -82,7 +82,7 @@ graph LR
     print(result)
     ```
 
-    You can see that it is quite trivial to set up a workflow using the recipes within quacc. We define the full workflow as a `Lattice` object that stitches together the individual workflow steps. The `.emt.core.relax_job` and `.emt.core.static_job` were both already defined with a `@ct.electron` decorator, so they will be interpreted by Covalent as `Electron` objects.
+    You can see that it is quite trivial to set up a workflow using the recipes within quacc. We define the full workflow as a `Lattice` object that stitches together the individual workflow steps. The [`quacc.recipes.emt.core.relax_job`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.core.relax_job) and [`quacc.recipes.emt.core.static_job`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.core.static_job) were both already defined with a `@ct.electron` decorator, so they will be interpreted by Covalent as `Electron` objects.
 
     Covalent will also automatically construct a directed acyclic graph of the inputs and outputs for each calculation to determine which jobs are dependent on one another and the order the jobs should be run. In this example, Covalent will know not to run `job2` until `job1` has completed successfully.
 
@@ -141,7 +141,7 @@ graph LR
     The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object. Technically, we did not need to call `future1.result()` because Parsl will automatically know that it cannot run `static_app` until `future1` is resolved. Nonetheless, we have included it here for clarity.
 
     !!! Note
-        It is not considered good practice to include a `.result()` call in a `@python_app` or `@join_app` definition.
+        It is not considered good practice to include a `.result()` call in a `@python_app` or `@join_app` definition, which is why we didn't do so here.
 
 === "Jobflow"
 
@@ -242,6 +242,10 @@ graph LR
     print(future1.result(), future2.result())
     ```
 
+    !!! Note
+
+        If you find defining a new function for each `PythonApp` a bit annoying, you can use the following shorthand: `#!Python relax_app=python_app(relax_job.electron_object.function)`.
+
 === "Jobflow"
 
     ```python
@@ -304,7 +308,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     print(result)
     ```
 
-    We have imported the `.emt.slabs.bulk_to_slabs_flow` function, which takes an `Atoms` object along with several optional parameters. For demonstration purposes, we specify the `slab_static_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is wrap it inside a `@ct.lattice` decorator.
+    We have imported the [`quacc.recipes.emt.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.slabs.bulk_to_slabs_flow) function, which takes an `Atoms` object along with several optional parameters. For demonstration purposes, we specify the `slab_static_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is wrap it inside a `@ct.lattice` decorator.
 
     Due to the dynamic nature of `bulk_to_slabs_flow`, the number of returned slabs will be dependent on the input `Atoms` object. The pattern for creating a dynamic workflow in Covalent is called a ["sublattice"](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-arch/covalent-sdk#sublattice). The sublattice, which is really just a fancy name for a sub-workflow within a larger workflow, and its individual compute tasks can also be viewed in the Covalent UI.
 
@@ -345,11 +349,11 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     print(future2.result())
     ```
 
-    When running a Covalent-based workflow like `.emt.slabs.bulk_to_slabs_flow` above, the entire function will run as a single compute task even though it is composed of several individual sub-tasks. If these sub-tasks are compute-intensive, this might not be the most efficient use of resources.
+    When running a Covalent-based workflow like [`.emt.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.slabs.bulk_to_slabs_flow) above, the entire function will run as a single compute task even though it is composed of several individual sub-tasks. If these sub-tasks are compute-intensive, this might not be the most efficient use of resources.
 
     **The Efficient Way**
 
-    Quacc fully supports Parsl-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Parsl-specific `.emt.parsl.slabs.bulk_to_slabs_flow` workflow:
+    Quacc fully supports Parsl-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Parsl-specific [`.emt.parsl.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.parsl.slabs.bulk_to_slabs_flow) workflow:
 
     ```python
     from parsl import python_app
@@ -374,7 +378,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     print(future2.result())
     ```
 
-    In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing `.emt.parsl.slabs.bulk_to_slabs_flow` with its Covalent counterpart `.emt.slabs.bulk_to_slabs_flow`, you can see that the two are extremely similar such that it is often straightforward to [interconvert](wflow_syntax.md) between the two.
+    In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing [`.emt.parsl.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.parsl.slabs.bulk_to_slabs_flow) with its Covalent counterpart [`.emt.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.slabs.bulk_to_slabs_flow), you can see that the two are extremely similar such that it is often straightforward to [interconvert](wflow_syntax.md) between the two.
 
     !!! Note
         We didn't need to wrap `bulk_to_slabs_flow` with a `@python_app` decorator because it is simply a collection of `PythonApp` objects and is already returning an `AppFuture`.
@@ -405,11 +409,11 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     print(result)
     ```
 
-    We have imported the `.emt.slabs.bulk_to_slabs_flow` function, which takes an `Atoms` object along with several optional parameters. For demonstration purposes, we specify the `slab_static_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is stitch together the individual `@job` steps into a single `Flow` object.
+    We have imported the [`.emt.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.slabs.bulk_to_slabs_flow) function, which takes an `Atoms` object along with several optional parameters. For demonstration purposes, we specify the `slab_static_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is stitch together the individual `@job` steps into a single `Flow` object.
 
     **The Efficient Way**
 
-    Quacc fully supports Jobflow-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Jobflow-specific `.emt.jobflow.slabs.bulk_to_slabs_flow` workflow:
+    Quacc fully supports Jobflow-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Jobflow-specific [`.emt.jobflow.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.jobflow.slabs.bulk_to_slabs_flow) workflow:
 
     ```python
     from jobflow import job, Flow, run_locally
@@ -429,13 +433,13 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     run_locally(workflow, create_folders=True)
     ```
 
-    In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing `.emt.jobflow.slabs.bulk_to_slabs_flow` with its Covalent counterpart `.emt.slabs.bulk_to_slabs_flow`, you can see that the two are extremely similar such that it is often straightforward to [interconvert](wflow_syntax.md) between the two. In the case of `bulk_to_slabs_flow`, it actually returns a [`Response(replace)`](<https://materialsproject.github.io/jobflow/tutorials/5-dynamic-flows.html#The-Response(replace)-option>) object that dynamically replaces the `Flow` with several downstream jobs.
+    In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing [`.emt.jobflow.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.jobflow.slabs.bulk_to_slabs_flow) with its Covalent counterpart [`.emt.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.slabs.bulk_to_slabs_flow), you can see that the two are extremely similar such that it is often straightforward to [interconvert](wflow_syntax.md) between the two. In the case of `bulk_to_slabs_flow`, it actually returns a [`Response(replace)`](<https://materialsproject.github.io/jobflow/tutorials/5-dynamic-flows.html#The-Response(replace)-option>) object that dynamically replaces the `Flow` with several downstream jobs.
 
 ## Deploying Calculations
 
 === "Covalent"
 
-    By default, Covalent will run all `Electron` tasks on your local machine using the [`DaskExecutor`](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/dask). This is a parameter that you can control. For instance, you may want to define the executor to be based on [Slurm](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/slurm) to submit a job to an HPC cluster. The example below highlights how one can change the executor.
+    By default, Covalent will run all `Electron` tasks on your local machine using the [`DaskExecutor`](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/dask). This is a parameter that you can control. For instance, you may want to define the executor to be based on Slurm using the [`SlurmExecutor`](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/slurm) to submit a job to an HPC cluster. The example below highlights how one can change the executor.
 
     **Setting Executors via the Lattice Object**
 
@@ -637,7 +641,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
     **Converting Between Jobflow and FireWorks**
 
-    The `jobflow.managers.fireworks` module has all the tools you need to convert your Jobflow workflows to a format that is suitable for FireWorks.
+    The [`jobflow.managers.fireworks`](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks) module has all the tools you need to convert your Jobflow workflows to a format that is suitable for FireWorks.
 
     **Converting a Job to a Firework**
 
