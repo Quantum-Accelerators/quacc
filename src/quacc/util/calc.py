@@ -106,11 +106,8 @@ def run_ase_opt(
     max_steps: int = 500,
     optimizer: Optimizer = FIRE,
     optimizer_kwargs: dict | None = None,
-<<<<<<< HEAD:quacc/util/calc.py
     run_kwargs: dict | None = None,
-=======
     create_unique_workdir: bool = SETTINGS.CREATE_UNIQUE_WORKDIR,
->>>>>>> main:src/quacc/util/calc.py
     scratch_dir: str = SETTINGS.SCRATCH_DIR,
     gzip: bool = SETTINGS.GZIP_FILES,
     copy_files: list[str] | None = None,
@@ -135,13 +132,10 @@ def run_ase_opt(
         Optimizer class to use.
     optimizer_kwargs
         Dictionary of kwargs for the optimizer.
-<<<<<<< HEAD:quacc/util/calc.py
     run_kwargs
         Dictionary of kwargs for the run() method of the optimizer.
-=======
     create_unique_workdir
         Whether to automatically create a unique working directory for each calculation.
->>>>>>> main:src/quacc/util/calc.py
     scratch_dir
         Path where a tmpdir should be made for running the calculation. If None,
         the working directory will be used.
@@ -157,11 +151,8 @@ def run_ase_opt(
     """
 
     optimizer_kwargs = optimizer_kwargs or {}
-<<<<<<< HEAD:quacc/util/calc.py
     run_kwargs = run_kwargs or {}
-=======
     start_dir = os.getcwd()
->>>>>>> main:src/quacc/util/calc.py
 
     # Perform staging operations
     atoms, tmpdir, results_dir = _calc_setup(
@@ -190,13 +181,7 @@ def run_ase_opt(
     dyn = optimizer(atoms, **optimizer_kwargs)
 
     # Run calculation
-<<<<<<< HEAD:quacc/util/calc.py
-    os.chdir(tmpdir)
-    dyn.run(fmax=fmax, steps=max_steps , **run_kwargs)
-    os.chdir(cwd)
-=======
-    dyn.run(fmax=fmax, steps=max_steps)
->>>>>>> main:src/quacc/util/calc.py
+    dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
 
     # Store the trajectory atoms
     dyn.traj_atoms = read(traj_filename, index=":")
