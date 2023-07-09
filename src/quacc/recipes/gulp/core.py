@@ -11,8 +11,8 @@ from quacc.schemas.ase import RunSchema, summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.dicts import remove_dict_empties
 
-GEOM_FILE_PBC = f"{GULP().name}.cif"
-GEOM_FILE_NOPBC = f"{GULP().name}.xyz"
+GEOM_FILE_PBC = "gulp.cif"
+GEOM_FILE_NOPBC = "gulp.xyz"
 
 
 @ct.electron
