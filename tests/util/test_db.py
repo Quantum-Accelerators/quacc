@@ -11,7 +11,7 @@ from quacc.recipes.emt.core import static_job
 from quacc.util.db import covalent_to_db, results_to_db
 
 try:
-    import montdb
+    import montydb
 except:
     montydb = None
 
