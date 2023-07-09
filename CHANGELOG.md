@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [UNRELEASED]
 
+### Added
+
+- Added a custom Q-Chem calculator based on Pymatgen and Custodian.
+- Added Q-chem core recipes.
+
 ## [0.1.1]
 
 ### Added
@@ -16,8 +21,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added generic type hints for schemas.
 - Added a `CREATE_UNIQUE_WORKDIR` global setting to have quacc automatically make a unique working directory for each calculation.
 - Added `CHECK_CONVERGENCE` to global settings.
-- Added a custom Q-Chem calculator based on Pymatgen and Custodian.
-- Added Q-chem core recipes.
 
 ### Changed
 
