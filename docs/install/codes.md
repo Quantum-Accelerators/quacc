@@ -48,9 +48,9 @@ No setup needed!
 
 ## NewtonNet
 
-```{note}
-[NewtonNet](https://github.com/ericyuan00000/NewtonNet) is a message passing networking for deep learning of interatomic potentials and forces, as described [here](https://pubs.rsc.org/en/content/articlehtml/2022/dd/d2dd00008c).
-```
+!!! Note
+
+    [NewtonNet](https://github.com/ericyuan00000/NewtonNet) is a message passing networking for deep learning of interatomic potentials and forces, as described [here](https://pubs.rsc.org/en/content/articlehtml/2022/dd/d2dd00008c).
 
 If you plan to use NewtonNet with Quacc, you will need to install it prior to use. This can be done via `pip install quacc[newtonnet]`.
 
