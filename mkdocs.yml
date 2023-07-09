@@ -112,12 +112,12 @@ nav:
       - user/settings.md
       - user/database.md
   - Developer Guide 🤝:
-      - dev/contributing.md
       - dev/docs.md
       - dev/conduct.md
   - About 📜:
       - about/faq.md
       - about/contributors.md
       - about/changelog.md
+      - dev/contributing.md
       - about/license.md
   - Code Reference: reference/

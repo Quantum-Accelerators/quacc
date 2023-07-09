@@ -3,7 +3,7 @@ import os
 import covalent as ct
 import pytest
 from ase.build import bulk
-from maggma.stores import MemoryStore
+from maggma.stores import MemoryStore, MontyStore
 
 from quacc.recipes.emt.core import static_job
 from quacc.util.db import covalent_to_db, results_to_db
@@ -33,10 +33,24 @@ def test_covalent_to_db():
 
 
 def test_results_to_db():
-    atoms = bulk("Cu") * (2, 2, 2)
-    atoms[0].position += [0.1, 0.1, 0.1]
-
+    atoms = bulk("Cu")
     output = static_job(atoms)
     store = MemoryStore(collection_name="db3")
     results_to_db(store, output)
     assert store.count() == 1
+
+
+@pytest.mark.skipif(
+    os.environ.get("GITHUB_ACTIONS", False) is False,
+    reason="This test is only meant to be run on GitHub Actions",
+)
+def test_monty_db():
+    store = MontyStore("quacc_collection", database_path=".", database_name="quacc_db")
+    covalent_to_db(store, results_dir=ct.get_config()["dispatcher"]["results_dir"])
+    count = store.count()
+    assert count == 1
+
+    atoms = bulk("Cu")
+    output = static_job(atoms)
+    results_to_db(store, output)
+    assert store.count() == 2

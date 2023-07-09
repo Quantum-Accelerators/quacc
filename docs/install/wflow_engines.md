@@ -36,8 +36,6 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     In your activated Python environment, install Parsl via `pip install parsl`. Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
 
-    Also, you will need to set the `CREATE_UNIQUE_WORKDIR` [quacc setting](../user/settings.md) to `True` to ensure proper task isolation.
-
 === "Jobflow"
 
     **MongoDB Setup**
@@ -64,17 +62,19 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
         collection_name: <collection name>
     ```
 
-    If you are using a URI (as is common with MongoDB Atlas), then you will instead have a `jobflow.yaml` file that looks like the example below. Here, you will put the full URI in the `host` field. The `username` and `password` are part of the URI and so should not be included elsewhere in the YAML file.
+    !!! Note
 
-    ```yaml title="jobflow.yaml"
-    JOB_STORE:
-    docs_store:
-        type: MongoStore
-        host: <URI>
-        port: 27017
-        database: <database name>
-        collection_name: <collection name>
-    ```
+        If you are using a URI (as is common with MongoDB Atlas), then you will instead have a `jobflow.yaml` file that looks like the example below. Here, you will put the full URI in the `host` field. The `username` and `password` are part of the URI and so should not be included elsewhere in the YAML file.
+
+        ```yaml title="jobflow.yaml"
+        JOB_STORE:
+        docs_store:
+            type: MongoStore
+            host: <URI>
+            port: 27017
+            database: <database name>
+            collection_name: <collection name>
+        ```
 
     You will then need to define a `JOBFLOW_CONFIG_FILE` environment variable pointing to the file you made. For instance, in your `~/.bashrc` file, add the following line:
     `export JOBFLOW_CONFIG_FILE="/path/to/my/jobflow.yaml"`.
@@ -106,6 +106,9 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     QUEUE_UPDATE_INTERVAL: 2
     ```
 
+    You will also need to define a `FW_CONFIG_FILE` environment variable pointing to the `FW_config.yaml` file you made. For instance, in your `~/.bashrc` file, add the following line:
+    `export FW_CONFIG_FILE="/path/to/config/fw_config/FW_config.yaml"`.
+
     **FWorker**
 
     For the `my_fworker.yaml`, you can use the following template. You do not need to make any modifications.
@@ -132,18 +135,20 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     wf_user_indices: []
     ```
 
-    If you are accessing your MongoDB via a URI (e.g. as with MongoDB Atlas), then you will use the following `my_launchpad.yaml` template instead.
+    !!! Note
 
-    ```yaml title="my_launchpad.yaml"
-    host: <URI>
-    port: 27017
-    name: <database name>
-    uri_store: true
-    logdir: null
-    Istrm_lvl: DEBUG
-    user_indices: []
-    wf_user_indices: []
-    ```
+        If you are accessing your MongoDB via a URI (e.g. as with MongoDB Atlas), then you will use the following `my_launchpad.yaml` template instead.
+
+        ```yaml title="my_launchpad.yaml"
+        host: <URI>
+        port: 27017
+        name: <database name>
+        uri_store: true
+        logdir: null
+        Istrm_lvl: DEBUG
+        user_indices: []
+        wf_user_indices: []
+        ```
 
     **QAdapter**
 
@@ -164,9 +169,6 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     ```
 
     In the above example, you would need to change the path in the `rocket_launch` field to the correct path to your `my_fworker.yaml`. The nodes, walltime, account, and qos are the corresponding parameters for your queuing system. Finally, anything in the `pre_rocket` field will be executed before the job begins running. It is a good place to load modules and set environment variables. A representative example has been provided above.
-
-    Finally, you will need to define a `FW_CONFIG_FILE` environment variable pointing to the `FW_config.yaml` file you made. For instance, in your `~/.bashrc` file, add the following line:
-    `export FW_CONFIG_FILE="/path/to/config/fw_config/FW_config.yaml"`.
 
     **Database Initialization**
 

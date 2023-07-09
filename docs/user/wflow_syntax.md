@@ -7,7 +7,7 @@ Here, we provide code snippets for several decorator-based workflow engines. For
 You can run the examples below as-is, with the following notes:
 
 - For Covalent, run `covalent start` in the terminal to have the results show up in the GUI.
-- For Parsl, do `import parsl` followed by `parsl.load()` in Python before running the scripts in order to load a default Parsl configuration.
+- For Parsl, do `#!Python import parsl` followed by `#!Python parsl.load()` in Python before running the scripts in order to load a default Parsl configuration.
 
 ## Simple Workflow
 

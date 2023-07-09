@@ -2,15 +2,19 @@
 
 ## Introduction
 
-Some users may wish to use quacc in way that ensures all calculation inputs and outputs are stored in an easily queryable database. While not a requirement, this can be readily achieved through the use of the [maggma](https://github.com/materialsproject/maggma) package. Maggma has many options for [data stores](https://materialsproject.github.io/maggma/reference/stores/), but we will only describe how to set up a MongoDB store since it is the most common.
+Some users may wish to use quacc in way that ensures all calculation inputs and outputs are stored in an easily queryable database. While not a requirement, this can be readily achieved through the use of the [maggma](https://github.com/materialsproject/maggma) package. Maggma has many options for [data stores](https://materialsproject.github.io/maggma/reference/stores/).
 
-## MongoDB Setup
+## MontyDB
+
+The easiest option is to use the [MontyDB store](https://materialsproject.github.io/maggma/reference/stores/#maggma.stores.mongolike.MontyStore), which is an on-disk Mongo-style database. The best part is that no setup is required!
+
+## MongoDB
 
 !!! Note
 
     Users of NERSC HPC machines can instead [request a database](https://docs.nersc.gov/services/databases/) directly from NERSC staff.
 
-For new users, the easiest route to create a Mongo database is to use a cloud storage solution called [MongoDB Atlas](https://www.mongodb.com/atlas), which has a free tier. To set up your MongoDB with MongoDB Atlas, follow the instructions below:
+For the database enthusiasts, MongoDB is often preferred over a solution like MontyDB. The easiest route to create a Mongo database is via a cloud storage solution called [MongoDB Atlas](https://www.mongodb.com/atlas), which has a free tier. To set up your MongoDB with MongoDB Atlas, follow the instructions below:
 
 1. Sign up for a free account on [MongoDB Atlas](https://www.mongodb.com/atlas).
 2. Once logged in, select the "Build a Database" option under the "Database Deployments" section and choose the "Shared" free option.
