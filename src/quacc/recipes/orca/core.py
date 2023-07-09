@@ -113,13 +113,13 @@ def static_job(
 @ct.electron
 def relax_job(
     atoms: Atoms | dict,
-    charge: int = None,
-    multiplicity: int = None,
+    charge: int | None = None,
+    multiplicity: int | None = None,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
     run_freq: bool = False,
-    input_swaps: dict = None,
-    block_swaps: dict = None,
+    input_swaps: dict | None = None,
+    block_swaps: dict | None = None,
 ) -> cclibSchema:
     """
     Carry out a geometry optimization.
