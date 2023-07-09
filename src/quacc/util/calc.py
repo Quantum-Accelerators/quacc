@@ -151,6 +151,8 @@ def run_ase_opt(
     """
 
     optimizer_kwargs = optimizer_kwargs or {}
+    run_kwargs = run_kwargs or {}
+    start_dir = os.getcwd()
 
     # Perform staging operations
     atoms, tmpdir, results_dir = _calc_setup(
