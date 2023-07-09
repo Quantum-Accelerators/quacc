@@ -225,7 +225,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install --no-cache-dir .[strict,dev,newtonnet] # remove --no-cache-dir after repos are removed from setup.py
+          pip install --no-cache-dir .[strict,dev,newtonnet,optimizers]
 
       - name: Run tests with pytest
         run: pytest -k 'newtonnet' --cov=quacc --cov-report=xml
@@ -278,7 +278,14 @@ jobs:
   release:
     runs-on: ubuntu-latest
     needs:
-      [tests-base, tests-tblite, tests-psi4, tests-dftbplus, tests-newtonnet, tests-altwflows]
+      [
+        tests-base,
+        tests-tblite,
+        tests-psi4,
+        tests-dftbplus,
+        tests-newtonnet,
+        tests-altwflows,
+      ]
     if: github.event_name == 'release' && needs.tests-base.result == 'success' && needs.tests-tblite.result == 'success' && needs.tests-psi4.result == 'success' && needs.tests-dftbplus.result == 'success' && needs.tests-newtonnet.result == 'success' && needs.tests-altwflows.result == 'success'
     steps:
       - name: Check out repo
