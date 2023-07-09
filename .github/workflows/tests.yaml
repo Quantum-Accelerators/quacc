@@ -228,7 +228,7 @@ jobs:
           pip install --no-cache-dir .[strict,dev,newtonnet] # remove --no-cache-dir after repos are removed from setup.py
 
       - name: Run tests with pytest
-        run: pytest -k newtonnet --cov=quacc --cov-report=xml
+        run: pytest -k 'newtonnet' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3

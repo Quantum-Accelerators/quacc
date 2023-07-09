@@ -41,23 +41,29 @@ def get_hessian(atoms):
 
 
 def add_stdev_and_hess(summary):
-    for i in range(len(summary['trajectory'])):
+    for i in range(len(summary["trajectory"])):
         mlcalculator = NewtonNet(
             model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
             settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(":"),
         )
-        mlcalculator.calculate(summary['trajectory'][i]['atoms'])
-        summary['trajectory_results'][i]['hessian'] = mlcalculator.results['hessian']
-        summary['trajectory_results'][i]['energy_std'] = mlcalculator.results['energy_std']
-        summary['trajectory_results'][i]['forces_std'] = mlcalculator.results['forces_std']
-        summary['trajectory_results'][i]['hessian_std'] = mlcalculator.results['hessian_std']
+        mlcalculator.calculate(summary["trajectory"][i]["atoms"])
+        summary["trajectory_results"][i]["hessian"] = mlcalculator.results["hessian"]
+        summary["trajectory_results"][i]["energy_std"] = mlcalculator.results[
+            "energy_std"
+        ]
+        summary["trajectory_results"][i]["forces_std"] = mlcalculator.results[
+            "forces_std"
+        ]
+        summary["trajectory_results"][i]["hessian_std"] = mlcalculator.results[
+            "hessian_std"
+        ]
     return summary
 
 
 @ct.electron
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def static_job(
-        atoms: Atoms, newtonnet_kwargs: dict | None = None, opt_swaps: dict | None = None
+    atoms: Atoms, newtonnet_kwargs: dict | None = None, opt_swaps: dict | None = None
 ) -> dict:
     """
     Carry out a single-point calculation.
@@ -95,12 +101,12 @@ def static_job(
     "newtonnet must be installed. Checkout https://github.com/ericyuan00000/NewtonNet",
 )
 def relax_job(
-        atoms: Atoms,
-        fmax: float = 0.01,
-        max_steps: int = 1000,
-        optimizer: Optimizer = Sella,
-        newtonnet_kwargs: dict | None = None,
-        optimizer_kwargs: dict | None = None,
+    atoms: Atoms,
+    fmax: float = 0.01,
+    max_steps: int = 1000,
+    optimizer: Optimizer = Sella,
+    newtonnet_kwargs: dict | None = None,
+    optimizer_kwargs: dict | None = None,
 ) -> dict:
     """
     Relax a structure.
@@ -143,19 +149,21 @@ def relax_job(
         optimizer=optimizer,
         optimizer_kwargs=optimizer_kwargs,
     )
-    summary = add_stdev_and_hess(summarize_opt_run(dyn, additional_fields={"name": "NewtonNet Relax"}))
+    summary = add_stdev_and_hess(
+        summarize_opt_run(dyn, additional_fields={"name": "NewtonNet Relax"})
+    )
     return summary
 
 
 @ct.electron
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def ts_job(
-        atoms: Atoms,
-        use_custom_hessian: bool = False,
-        temperature: float = 298.15,
-        pressure: float = 1.0,
-        check_convergence: bool = True,
-        opt_swaps: dict | None = None,
+    atoms: Atoms,
+    use_custom_hessian: bool = False,
+    temperature: float = 298.15,
+    pressure: float = 1.0,
+    check_convergence: bool = True,
+    opt_swaps: dict | None = None,
 ) -> dict:
     """
     Perform a transition state (TS) job using the given atoms object.
@@ -205,9 +213,11 @@ def ts_job(
     # Run the TS optimization
     dyn = run_ase_opt(atoms, **opt_flags)
 
-    ts_summary = summarize_opt_run(dyn,
-                                   check_convergence=check_convergence,
-                                   additional_fields={"name": "NewtonNet TS"})
+    ts_summary = summarize_opt_run(
+        dyn,
+        check_convergence=check_convergence,
+        additional_fields={"name": "NewtonNet TS"},
+    )
 
     ts_summary = add_stdev_and_hess(ts_summary)
 
@@ -224,13 +234,13 @@ def ts_job(
 @ct.electron
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def irc_job(
-        atoms: Atoms,
-        fmax: float = 0.01,
-        max_steps: int = 1000,
-        temperature: float = 298.15,
-        pressure: float = 1.0,
-        check_convergence: bool = False,
-        opt_swaps: dict | None = None,
+    atoms: Atoms,
+    fmax: float = 0.01,
+    max_steps: int = 1000,
+    temperature: float = 298.15,
+    pressure: float = 1.0,
+    check_convergence: bool = False,
+    opt_swaps: dict | None = None,
 ) -> dict:
     """
     Perform an intrinsic reaction coordinate (IRC) job using the given atoms object.
@@ -290,12 +300,12 @@ def irc_job(
 @ct.electron
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def quasi_irc_job(
-        atoms: Atoms,
-        direction: Literal["forward", "reverse"] = "forward",
-        temperature: float = 298.15,
-        pressure: float = 1.0,
-        irc_swaps: dict | None = None,
-        opt_swaps: dict | None = None,
+    atoms: Atoms,
+    direction: Literal["forward", "reverse"] = "forward",
+    temperature: float = 298.15,
+    pressure: float = 1.0,
+    irc_swaps: dict | None = None,
+    opt_swaps: dict | None = None,
 ) -> dict:
     """
     Perform a quasi-IRC job using the given atoms object.
@@ -343,9 +353,9 @@ def quasi_irc_job(
 @ct.electron
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def freq_job(
-        atoms: Atoms,
-        temperature: float = 298.15,
-        pressure: float = 1.0,
+    atoms: Atoms,
+    temperature: float = 298.15,
+    pressure: float = 1.0,
 ) -> dict:
     """
     Perform a frequency calculation using the given atoms object.
@@ -372,11 +382,7 @@ def freq_job(
     vib = VibrationsData(atoms, hessian)
 
     # Make IdealGasThermo object
-    igt = ideal_gas(
-        atoms,
-        vib.get_frequencies(),
-        energy=mlcalculator.results["energy"]
-    )
+    igt = ideal_gas(atoms, vib.get_frequencies(), energy=mlcalculator.results["energy"])
     return {
         "vib": summarize_vib_run(
             vib, additional_fields={"name": "NewtonNet Vibrations"}
