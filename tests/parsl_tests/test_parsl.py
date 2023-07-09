@@ -38,17 +38,10 @@ def teardown_module():
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
 def test_tutorial1():
     # Define the Python apps
-    @python_app
-    def relax_app(atoms):
-        from quacc.recipes.emt.core import relax_job
+    from quacc.recipes.emt.core import relax_job, static_job
 
-        return relax_job(atoms)
-
-    @python_app
-    def static_app(atoms):
-        from quacc.recipes.emt.core import static_job
-
-        return static_job(atoms)
+    relax_app = python_app(relax_job.electron_object.function)
+    static_app = python_app(static_job.electron_object.function)
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -66,11 +59,9 @@ def test_tutorial1():
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
 def test_tutorial2():
     # Define the Python app
-    @python_app
-    def relax_app(atoms):
-        from quacc.recipes.emt.core import relax_job
+    from quacc.recipes.emt.core import relax_job
 
-        return relax_job(atoms)
+    relax_app = python_app(relax_job.electron_object.function)
 
     # Define two Atoms objects
     atoms1 = bulk("Cu")
@@ -90,24 +81,21 @@ def test_tutorial2():
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
 def test_tutorial3():
-    @python_app
-    def relax_app(atoms):
-        from quacc.recipes.emt.core import relax_job
+    from quacc.recipes.emt.core import relax_job
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
-        return relax_job(atoms)
-
-    @python_app
-    def bulk_to_slabs_app(atoms):
-        from quacc.recipes.emt.slabs import bulk_to_slabs_flow
-
-        return bulk_to_slabs_flow(atoms, slab_static_electron=None)
+    relax_app = python_app(relax_job.electron_object.function)
+    bulk_to_slabs_app = python_app(bulk_to_slabs_flow.electron_object.function)
 
     # Define the Atoms object
     atoms = bulk("Cu")
 
     # Define the workflow
     future1 = relax_app(atoms)
-    future2 = bulk_to_slabs_app(future1.result())
+    future2 = bulk_to_slabs_app(future1.result(), slab_static_electron=None)
+
+    # Print the results
+    print(future2.result())
 
     # Print the results
     future2.result()
@@ -117,14 +105,11 @@ def test_tutorial3():
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
 def test_tutorial4():
+    from quacc.recipes.emt.core import relax_job
     from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_flow
 
     # Define the Python App
-    @python_app
-    def relax_app(atoms):
-        from quacc.recipes.emt.core import relax_job
-
-        return relax_job(atoms)
+    relax_app = python_app(relax_job.electron_object.function)
 
     # Define the Atoms object
     atoms = bulk("Cu")
