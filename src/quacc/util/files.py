@@ -63,7 +63,7 @@ def copy_decompress(source_files: list[str], destination: str) -> None:
             decompress_file(os.path.join(destination, z_file))
 
 
-def make_unique_dir(base_path: str = None) -> str:
+def make_unique_dir(base_path: str | None = None) -> str:
     """
     Make a directory with a unique name. Uses the same format as Jobflow.
 
