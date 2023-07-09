@@ -6,7 +6,7 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
 
 === "MontyDB"
 
-    The easiest option for getting started is to use the on-disk [`MontyStore`](https://materialsproject.github.io/maggma/reference/stores/#maggma.stores.mongolike.MontyStore) option in Maggma, which acts as an interface to [MontyDB](https://github.com/davidlatwe/montydb). No setup is required.
+    The easiest option for getting started is to use the on-disk [`MontyStore`](https://materialsproject.github.io/maggma/reference/stores/#maggma.stores.mongolike.MontyStore) option in Maggma, which acts as an interface to [MontyDB](https://github.com/davidlatwe/montydb). The only setup required is to run `pip install montydb` beforehand.
 
     === "General Purpose"
 
@@ -20,7 +20,7 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
 
         # Define your database credentials
         store = MontyStore(
-            "quacc_collection",
+            "quacc_results",
             database_path=".",
             database_name="quacc_db"
         )
@@ -41,7 +41,7 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
 
         # Define your database credentials
         store = MontyStore(
-            "quacc_collection",
+            "quacc_results",
             database_path=".",
             database_name="quacc_db"
         )

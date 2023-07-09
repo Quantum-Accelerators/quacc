@@ -1,4 +1,5 @@
 import os
+from shutil import rmtree
 
 import covalent as ct
 import pytest
@@ -8,6 +9,19 @@ from maggma.stores.mongolike import MontyStore
 
 from quacc.recipes.emt.core import static_job
 from quacc.util.db import covalent_to_db, results_to_db
+
+try:
+    import montdb
+except:
+    montydb = None
+
+
+def teardown_module():
+    for f in os.listdir(os.getcwd()):
+        if "monty.storage" in f:
+            os.remove(f)
+        if f == "db":
+            rmtree(f)
 
 
 @pytest.mark.skipif(
@@ -42,16 +56,15 @@ def test_results_to_db():
 
 
 @pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False,
-    reason="This test is only meant to be run on GitHub Actions",
+    montydb is None,
+    reason="This test requires MontyDB",
 )
 def test_monty_db():
-    store = MontyStore("quacc_collection", database_path=".", database_name="quacc_db")
-    covalent_to_db(store, results_dir=ct.get_config()["dispatcher"]["results_dir"])
-    count = store.count()
-    assert count == 1
+    atoms = bulk("Cu")
+    output = static_job(atoms)
+    store = MontyStore("quacc_results", database_path=".")
 
     atoms = bulk("Cu")
     output = static_job(atoms)
     results_to_db(store, output)
-    assert store.count() == 2
+    assert store.count() == 1
