@@ -42,6 +42,11 @@ Here, we will show how to use quacc with one of a variety of workflow engines to
 
 We will now try running a simple workflow where we relax a bulk Cu structure using EMT and take the output of that calculation as the input to a follow-up static calculation with EMT.
 
+```mermaid
+graph LR
+  A[Input] --> B(Relax) --> C(Static) --> D[Output];
+```
+
 === "Covalent"
 
     !!! Hint
@@ -175,6 +180,12 @@ We will now try running a simple workflow where we relax a bulk Cu structure usi
 
 Now let's consider a similar but nonetheless distinct example. Here, we will define a workflow where we will carry out two EMT structure relaxations, but the two jobs are not dependent on one another. In this example, Covalent will know that it can run the two jobs separately, and even if Job 1 were to fail, Job 2 would still progress.
 
+```mermaid
+graph LR
+  A[Input] --> B(Relax) --> D[Output]
+  A[Input] --> C(Relax) --> D[Output];
+```
+
 === "Covalent"
 
     ```python
@@ -260,6 +271,15 @@ Now let's consider a similar but nonetheless distinct example. Here, we will def
 ### Running Workflows with Complex Connectivity
 
 For this example, let's consider a toy scenario where we wish to relax a bulk Cu structure, carve all possible slabs, and then run a new relaxation calculation on each slab (with no static calculation at the end). This is an example of a dynamic workflow.
+
+```mermaid
+graph LR
+  A[Input] --> B(Relax) --> C(Make Slabs)
+  C(Make Slabs) --> D(Slab Relax) --> H[Output]
+  C(Make Slabs) --> E(Slab Relax) --> H[Output]
+  C(Make Slabs) --> F(Slab Relax) --> H[Output]
+  C(Make Slabs) --> G(Slab Relax) --> H[Output];
+```
 
 In quacc, there are two types of recipes: individual compute tasks with the suffix `_job` and pre-made multi-step workflows with the suffix `_flow`. Here, we are interested in importing a pre-made workflow. Refer to the example below:
 
