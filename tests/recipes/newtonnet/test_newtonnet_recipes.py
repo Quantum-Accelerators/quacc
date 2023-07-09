@@ -6,8 +6,9 @@ import numpy as np
 import pytest
 from ase import Atoms
 from ase.build import molecule
-from ase.optimize import FIRE
 from ase.io import write
+from ase.optimize import FIRE
+
 from quacc import SETTINGS
 
 try:
@@ -23,7 +24,7 @@ from quacc.recipes.newtonnet.core import (
     ts_job,
 )
 
-'''
+"""
 def teardown_module():
     for f in os.listdir("."):
         if (
@@ -40,7 +41,7 @@ def teardown_module():
                 os.unlink(f)
             else:
                 rmtree(f)
-'''
+"""
 
 
 @pytest.mark.skipif(
@@ -70,6 +71,7 @@ def test_relax_Job():
     assert output["results"]["energy"] == pytest.approx(-9.418353066770434)
     assert not np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
     assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
+
 
 xyz_data = """
 18
@@ -127,15 +129,23 @@ for line in xyz_lines[1:]:
 atoms = Atoms(symbols=symbols, positions=positions)
 
 
+@pytest.mark.skipif(
+    NewtonNet is None,
+    reason="NewtonNet must be installed.",
+)
 def test_ts_job_with_default_args():
     # Define test inputs
     # atoms = molecule("H2O")
 
     # Call the function
     output = ts_job(atoms)
-    print(output['ts'].keys())
-    print("output['ts']['trajectory_results'][0]", output['ts']['trajectory_results'][0])
-    print("output['ts']['trajectory_results'][1]", output['ts']['trajectory_results'][1])
+    print(output["ts"].keys())
+    print(
+        "output['ts']['trajectory_results'][0]", output["ts"]["trajectory_results"][0]
+    )
+    print(
+        "output['ts']['trajectory_results'][1]", output["ts"]["trajectory_results"][1]
+    )
 
     # Perform assertions on the result
     assert isinstance(output, dict)
@@ -147,35 +157,37 @@ def test_ts_job_with_default_args():
     )
 
 
+@pytest.mark.skipif(
+    NewtonNet is None,
+    reason="NewtonNet must be installed.",
+)
 def test_ts_job_with_custom_hessian():
     # Define test inputs
     # atoms = molecule("H2O")
     use_custom_hessian = True
-    opt_swaps = {
-        "max_steps": 4
-    }
+    opt_swaps = {"max_steps": 4}
     # Call the function
-    output = ts_job(atoms,
-                    use_custom_hessian=use_custom_hessian,
-                    opt_swaps=opt_swaps)
-    traj = output['ts']['trajectory']
+    output = ts_job(atoms, use_custom_hessian=use_custom_hessian, opt_swaps=opt_swaps)
+    traj = output["ts"]["trajectory"]
 
     # Save the trajectory in XYZ format
-    write('trajectory.xyz', traj)
+    write("trajectory.xyz", traj)
 
     for ii, value in enumerate(traj):
         mlcalculator = NewtonNet(
             model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
             settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(":"),
         )
-        mlcalculator.calculate(value['atoms'])
-        energy = mlcalculator.results['energy']
-        energy_std = mlcalculator.results['energy_std']
-        outlier = mlcalculator.results['outlier']
-        print(f'index: {ii},'
-              f' energy: {energy},'
-              f' energy_std: {energy_std},'
-              f' outlier: {outlier}')
+        mlcalculator.calculate(value["atoms"])
+        energy = mlcalculator.results["energy"]
+        energy_std = mlcalculator.results["energy_std"]
+        outlier = mlcalculator.results["outlier"]
+        print(
+            f"index: {ii},"
+            f" energy: {energy},"
+            f" energy_std: {energy_std},"
+            f" outlier: {outlier}"
+        )
 
     # Perform assertions on the result
     assert isinstance(output, dict)
@@ -187,6 +199,10 @@ def test_ts_job_with_custom_hessian():
     assert "thermo" in output
 
 
+@pytest.mark.skipif(
+    NewtonNet is None,
+    reason="NewtonNet must be installed.",
+)
 def test_ts_job_with_custom_optimizer():
     # Define test inputs
     # atoms = molecule("H2O")
@@ -207,6 +223,10 @@ def test_ts_job_with_custom_optimizer():
     )
 
 
+@pytest.mark.skipif(
+    NewtonNet is None,
+    reason="NewtonNet must be installed.",
+)
 def test_irc_job_with_default_args():
     # Define test inputs
     # atoms = molecule("H2O")
@@ -239,6 +259,10 @@ def test_irc_job_with_default_args():
     )
 
 
+@pytest.mark.skipif(
+    NewtonNet is None,
+    reason="NewtonNet must be installed.",
+)
 def test_irc_job_with_custom_fmax():
     # Define test inputs
     atoms = molecule("H2O")
@@ -272,6 +296,10 @@ def test_irc_job_with_custom_fmax():
     )
 
 
+@pytest.mark.skipif(
+    NewtonNet is None,
+    reason="NewtonNet must be installed.",
+)
 def test_irc_job_with_custom_max_steps():
     # Define test inputs
     atoms = molecule("H2O")
@@ -305,6 +333,10 @@ def test_irc_job_with_custom_max_steps():
     )
 
 
+@pytest.mark.skipif(
+    NewtonNet is None,
+    reason="NewtonNet must be installed.",
+)
 def test_irc_job_with_custom_temperature_and_pressure():
     # Define test inputs
     atoms = molecule("H2O")
@@ -339,6 +371,10 @@ def test_irc_job_with_custom_temperature_and_pressure():
     )
 
 
+@pytest.mark.skipif(
+    NewtonNet is None,
+    reason="NewtonNet must be installed.",
+)
 def test_irc_job_with_check_convergence():
     # Define test inputs
     atoms = molecule("H2O")
@@ -372,6 +408,10 @@ def test_irc_job_with_check_convergence():
     )
 
 
+@pytest.mark.skipif(
+    NewtonNet is None,
+    reason="NewtonNet must be installed.",
+)
 def test_irc_job_with_custom_opt_swaps():
     # Define test inputs
     atoms = molecule("H2O")
@@ -409,6 +449,10 @@ def test_irc_job_with_custom_opt_swaps():
     )
 
 
+@pytest.mark.skipif(
+    NewtonNet is None,
+    reason="NewtonNet must be installed.",
+)
 def test_quasi_irc_job_with_default_args():
     # Define test inputs
     # atoms = molecule("H2O")
@@ -469,11 +513,15 @@ def test_quasi_irc_job_with_default_args():
     )
 
 
+@pytest.mark.skipif(
+    NewtonNet is None,
+    reason="NewtonNet must be installed.",
+)
 def test_quasi_irc_job_with_custom_direction():
     # Define test inputs
     # atoms = molecule("H2O")
     direction = "reverse"
-    #direction = "forward"
+    # direction = "forward"
 
     # Call the function
     output = quasi_irc_job(atoms, direction=direction)
@@ -505,6 +553,10 @@ def test_quasi_irc_job_with_custom_direction():
     )
 
 
+@pytest.mark.skipif(
+    NewtonNet is None,
+    reason="NewtonNet must be installed.",
+)
 def test_quasi_irc_job_with_custom_temperature_and_pressure():
     # Define test inputs
     atoms = molecule("H2O")
@@ -541,6 +593,10 @@ def test_quasi_irc_job_with_custom_temperature_and_pressure():
     )
 
 
+@pytest.mark.skipif(
+    NewtonNet is None,
+    reason="NewtonNet must be installed.",
+)
 def test_quasi_irc_job_with_custom_irc_swaps():
     # Define test inputs
     atoms = molecule("H2O")
