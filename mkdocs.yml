@@ -114,10 +114,10 @@ nav:
   - Developer Guide 🤝:
       - dev/contributing.md
       - dev/docs.md
+  - Code Reference: reference/
   - About 📜:
       - about/faq.md
       - about/contributors.md
       - about/changelog.md
       - about/conduct.md
       - about/license.md
-  - Code Reference: reference/
