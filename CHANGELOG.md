@@ -6,16 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [UNRELEASED]
 
+## [0.1.1]
+
 ### Added
 
 - Added this `CHANGELOG.md` file.
 - Added the `quacc.recipes.emt.parsl` module.
 - Added a CLI for `quacc` along with a `quacc config` option to configure Covalent appropriately upon install.
-- Added a `quacc.util.wflows.make_dask_cluster` function to easily generate a Dask cluster.
 - Added generic type hints for schemas.
+- Added a `CREATE_UNIQUE_WORKDIR` global setting to have quacc automatically make a unique working directory for each calculation.
 
 ### Changed
 
+- The `quacc` directory is now found in a `src` basefolder.
 - All recipes now support the `Atoms` object being passed in as an `AtomsSchema`.
 - The `slab_relax_job` kwarg in `recipes.emt.slabs` and `recipes.vasp.slabs` workflows can no longer be set to `None`, as there are few situations where this would be desired.
 - Class-based recipes have been converted to functions since they don't save state or have inheritance.
@@ -29,6 +32,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 - Fixed a bug where parallel, multithreaded Python jobs could cause file I/O issues.
+- Temporary directories are cleaned up after the run is completed.
 
 ### Removed
 

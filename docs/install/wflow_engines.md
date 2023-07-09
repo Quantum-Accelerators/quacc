@@ -26,11 +26,17 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     Covalent has several [configuration options](https://docs.covalent.xyz/docs/user-documentation/how-to/customization/) that can be modified. Running `quacc config` automatically takes care of setting the ones that are critical for quacc to run properly. If you ever delete your Covalent configuration (e.g. via `covalent purge`), you will need to re-run `quacc config`.
 
+    !!! Tip
+
+        If you are using Perlmutter at NERSC, you will need to set `export COVALENT_CONFIG_DIR="$SCRATCH/.config/covalent"` in your `~/.bashrc` because the home directory does not support file locking.
+
 === "Parsl"
 
     **Installation**
 
-    In your activated Python environment, install Parsl via `pip install parsl` or `pip install parsl[monitoring]` for the dependencies that enable a visual dashboard. Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
+    In your activated Python environment, install Parsl via `pip install parsl`. Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
+
+    Also, you will need to set the `CREATE_UNIQUE_WORKDIR` [quacc setting](../user/settings.md) to `True` to ensure proper task isolation.
 
 === "Jobflow"
 

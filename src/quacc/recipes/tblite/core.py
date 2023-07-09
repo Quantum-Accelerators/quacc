@@ -80,7 +80,7 @@ def relax_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     method
         GFN0-xTB, GFN1-xTB, GFN2-xTB.
-    tblite_kwargs
+    calc_kwargs
         Dictionary of custom kwargs for the tblite calculator.
     opt_swaps
         Dictionary of custom kwargs for run_ase_opt

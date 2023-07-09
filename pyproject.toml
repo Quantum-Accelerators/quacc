@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "quacc"
 description="A platform to enable high-throughput, database-driven quantum chemistry and computational materials science"
-version = "0.1.0"
+version = "0.1.1"
 readme = "README.md"
 license = { text = "BSD-3" }
 authors = [{ name = "Andrew S. Rosen", email = "asrosen93@gmail.com" }]
@@ -44,9 +44,11 @@ tblite = ["tblite[ase]>=0.3.0; platform_system=='Linux'"]
 dev = ["black", "isort", "pytest", "pytest-cov"]
 docs = [
     "mkdocs-material",
-    "mkdocs-git-revision-date-localized-plugin",
     "mkdocstrings[python]",
-    "mkdocs-click",
+    "mkdocs-gen-files",
+    "mkdocs-literate-nav",
+    "pillow",
+    "cairosvg"
 ]
 strict = [
     "ase @ https://gitlab.com/ase/ase/-/archive/master/ase-master.zip",  # waiting on >3.22.1

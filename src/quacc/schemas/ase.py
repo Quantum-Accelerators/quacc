@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import os
 import warnings
-from subprocess import Popen
 from typing import TypeVar
 
 import numpy as np
@@ -16,7 +15,6 @@ from ase.thermochemistry import IdealGasThermo
 from ase.vibrations import Vibrations
 from ase.vibrations.data import VibrationsData
 from atomate2.utils.path import get_uri
-from monty.os.path import zpath
 
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
@@ -199,7 +197,7 @@ def summarize_opt_run(
         ASE Optimizer object.
     trajectory
         ASE Trajectory object or list[Atoms] from reading a trajectory file.
-        If None, the trajectory will be read from `dyn.trajectory.filename`.
+        If None, the trajectory must be found in dyn.traj_atoms.
     check_convergence
         Whether to check the convergence of the calculation.
     charge_and_multiplicity
@@ -311,10 +309,12 @@ def summarize_opt_run(
 
     # Get trajectory
     if not trajectory:
-        # Get trajectory (need to gunzip/gzip to workaround ASE bug #1263)
-        Popen(f"gunzip {dyn.trajectory.filename}.gz", shell=True).wait()
-        trajectory = read(zpath(dyn.trajectory.filename), index=":")
-        Popen(f"gzip {dyn.trajectory.filename}", shell=True).wait()
+        trajectory = (
+            dyn.traj_atoms
+            if hasattr(dyn, "traj_atoms")
+            else read(dyn.trajectory.filename, index=":")
+        )
+
     initial_atoms = trajectory[0]
     final_atoms = dyn.atoms.atoms if isinstance(dyn.atoms, Filter) else dyn.atoms
 
