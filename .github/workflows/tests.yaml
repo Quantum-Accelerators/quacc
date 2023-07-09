@@ -225,7 +225,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install --no-cache-dir .[strict,dev,newtonnet,optimizers]
+          pip install .[strict,dev,newtonnet,optimizers]
 
       - name: Run tests with pytest
         run: pytest -k 'newtonnet' --cov=quacc --cov-report=xml
