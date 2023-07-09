@@ -394,7 +394,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
     # Construct the Flow
     job1 = job(relax_job)(atoms)
-    job2 = job(bulk_to_slabs_flow)(job1.output)
+    job2 = job(bulk_to_slabs_flow)(job1.output, slab_static_electron=None)
     workflow = Flow([job1, job2])
 
     # Run the workflow locally
@@ -422,7 +422,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
     # Construct the Flow
     job1 = job(relax_job)(atoms)
-    job2 = job(bulk_to_slabs_flow)(job1.output)
+    job2 = job(bulk_to_slabs_flow)(job1.output, slab_static_job=None)
     workflow = Flow([job1, job2])
 
     # Run the workflow locally
