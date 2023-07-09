@@ -51,7 +51,7 @@ jobs:
           covalent start
 
       - name: Run tests with pytest
-        run: pytest --ignore=tests/jobflow_tests --cov=quacc --cov-report=xml
+        run: pytest -k 'not jobflow and not fireworks and not parsl and not tblite and not psi4 and not dftb and not qchem and not newtonnet' --cov=quacc --cov-report=xml
 
       - name: Stop Covalent server
         run: covalent stop
@@ -92,7 +92,7 @@ jobs:
         run: quacc config
 
       - name: Run tests with pytest
-        run: pytest tests/recipes/tblite --cov=quacc --cov-report=xml
+        run: pytest -k 'tblite' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -139,7 +139,7 @@ jobs:
         run: quacc config
 
       - name: Run tests with pytest
-        run: pytest tests/recipes/psi4 --cov=quacc --cov-report=xml
+        run: pytest -k 'psi4' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -186,7 +186,7 @@ jobs:
         run: conda install -c conda-forge dftbplus
 
       - name: Run tests with pytest
-        run: pytest tests/recipes/dftb --cov=quacc --cov-report=xml
+        run: pytest -k 'dftb' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -224,7 +224,7 @@ jobs:
         run: quacc config
 
       - name: Run tests with pytest
-        run: pytest tests/parsl_tests tests/jobflow_tests --cov=quacc --cov-report=xml
+        run: pytest -k 'jobflow or fireworks or parsl' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
