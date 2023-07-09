@@ -64,8 +64,8 @@ def static_job(
     }
     default_options = {
         "dump every gulp.res": True,
-        "output cif gulp.cif": True if atoms.pbc.any() else None,
-        "output xyz gulp.xyz": None if atoms.pbc.any() else True,
+        f"output cif {GEOM_FILE_PBC}": True if atoms.pbc.any() else None,
+        f"output xyz {GEOM_FILE_NOPBC}": None if atoms.pbc.any() else True,
     }
 
     keywords = remove_dict_empties(default_keywords | keyword_swaps)
@@ -138,8 +138,8 @@ def relax_job(
     }
     default_options = {
         "dump every gulp.res": True,
-        "output cif gulp.cif": True if atoms.pbc.any() else None,
-        "output xyz gulp.xyz": None if atoms.pbc.any() else True,
+        f"output cif {GEOM_FILE_PBC}": True if atoms.pbc.any() else None,
+        f"output xyz {GEOM_FILE_NOPBC}": None if atoms.pbc.any() else True,
     }
 
     keywords = remove_dict_empties(default_keywords | keyword_swaps)
