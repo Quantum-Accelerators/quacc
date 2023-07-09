@@ -118,6 +118,6 @@ nav:
       - about/faq.md
       - about/contributors.md
       - about/changelog.md
-      - dev/contributing.md
+      - about/contributing.md
       - about/license.md
   - Code Reference: reference/
