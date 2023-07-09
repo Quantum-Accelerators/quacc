@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Added a custom Q-Chem calculator based on Pymatgen and Custodian.
 - Added Q-chem core recipes.
+- Added the ability to pass option `run_kwargs` to the `.run()` method of the ASE optimizers.
 
 ## [0.1.1]
 
