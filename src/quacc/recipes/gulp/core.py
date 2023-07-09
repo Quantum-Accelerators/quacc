@@ -11,6 +11,9 @@ from quacc.schemas.ase import RunSchema, summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.dicts import remove_dict_empties
 
+GEOM_FILE_PBC = f"{GULP().name}.cif"
+GEOM_FILE_NOPBC = f"{GULP().name}.xyz"
+
 
 @ct.electron
 def static_job(
@@ -73,7 +76,7 @@ def static_job(
 
     atoms.calc = GULP(keywords=gulp_keywords, options=gulp_options, library=library)
     final_atoms = run_calc(
-        atoms, geom_file="gulp.cif" if atoms.pbc.any() else "gulp.xyz"
+        atoms, geom_file=GEOM_FILE_PBC if atoms.pbc.any() else GEOM_FILE_NOPBC
     )
 
     return summarize_run(
@@ -147,7 +150,7 @@ def relax_job(
 
     atoms.calc = GULP(keywords=gulp_keywords, options=gulp_options, library=library)
     final_atoms = run_calc(
-        atoms, geom_file="gulp.cif" if atoms.pbc.any() else "gulp.xyz"
+        atoms, geom_file=GEOM_FILE_PBC if atoms.pbc.any() else GEOM_FILE_NOPBC
     )
 
     if not final_atoms.calc.get_opt_state():
