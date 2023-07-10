@@ -10,10 +10,8 @@ from quacc.presets import vasp as vasp_defaults
 
 _DEFAULT_CONFIG_FILE_PATH = os.path.expanduser("~/.quacc.yaml")
 
-__all__ = ["QuaccSettings"]
 
-
-class QuaccSettings(BaseSettings):
+class Settings(BaseSettings):
     """
     Settings for quacc.
 
@@ -148,10 +146,8 @@ class QuaccSettings(BaseSettings):
     @root_validator(pre=True)
     def load_default_settings(cls, values: dict) -> dict:
         """
-        Load settings from file or environment variables.
         Loads settings from a root file if available and uses that as defaults in
         place of built in defaults.
-        This allows setting of the config file path through environment variables.
 
         Parameters
         ----------
