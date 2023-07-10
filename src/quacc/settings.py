@@ -46,7 +46,7 @@ class QuaccSettings(BaseSettings):
         True, description="Whether generated files should be gzip'd."
     )
     CHECK_CONVERGENCE: bool = Field(
-        False,  # TODO: CHANGE THIS BACK TO TRUE!!!!
+        True,
         description="Whether to check for convergence in the `summarize_run`-type functions, if supported.",
     )
 
