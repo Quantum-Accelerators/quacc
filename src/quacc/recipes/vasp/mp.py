@@ -9,7 +9,6 @@ from __future__ import annotations
 import covalent as ct
 import numpy as np
 from ase import Atoms
-from covalent._workflow.electron import Electron
 
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.vasp import VaspSchema, summarize_run
@@ -90,8 +89,8 @@ def mp_relax_job(
 
 def mp_relax_flow(
     atoms: Atoms | dict,
-    prerelax_electron: Electron | None = mp_prerelax_job,
-    relax_electron: Electron | None = mp_relax_job,
+    prerelax_job: ct.electron | None = mp_prerelax_job,
+    relax_job: ct.electron | None = mp_relax_job,
     prerelax_kwargs: dict | None = None,
     relax_kwargs: dict | None = None,
 ) -> VaspSchema:
@@ -106,9 +105,9 @@ def mp_relax_flow(
     ----------
     atoms
         Atoms object for the structure.
-    prerelax_electron
+    prerelax_job
         Default to use for the pre-relaxation.
-    relax_electron
+    relax_job
         Default to use for the relaxation.
     prerelax_kwargs
         Additional keyword arguments to pass to the pre-relaxation calculation.
@@ -124,7 +123,7 @@ def mp_relax_flow(
     relax_kwargs = relax_kwargs or {}
 
     # Run the prerelax
-    prerelax_results = prerelax_electron(atoms, **prerelax_kwargs)
+    prerelax_results = prerelax_job(atoms, **prerelax_kwargs)
 
     # Update KSPACING arguments
     bandgap = prerelax_results["output"]["bandgap"]
@@ -144,4 +143,4 @@ def mp_relax_flow(
     # TODO: Also, copy the WAVECAR from the prerelaxation to the relaxation
 
     # Run the relax
-    return relax_electron(prerelax_results, **relax_kwargs)
+    return relax_job(prerelax_results, **relax_kwargs)
