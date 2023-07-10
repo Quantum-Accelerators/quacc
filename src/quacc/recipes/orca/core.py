@@ -72,7 +72,8 @@ def static_job(
     block_swaps = block_swaps or {}
 
     if not any(k for k in block_swaps if "nprocs" in k.lower()) and os.environ.get(
-        "mpirun"):
+        "mpirun"
+    ):
         nprocs = multiprocessing.cpu_count()
         block_swaps[f"%pal nprocs {nprocs} end"] = True
 
@@ -173,7 +174,8 @@ def relax_job(
     block_swaps = block_swaps or {}
 
     if not any(k for k in block_swaps if "nprocs" in k.lower()) and os.environ.get(
-        "mpirun"):
+        "mpirun"
+    ):
         nprocs = multiprocessing.cpu_count()
         block_swaps[f"%pal nprocs {nprocs} end"] = True
 
