@@ -1,0 +1,25 @@
+codecov:
+  notify:
+    after_n_builds: 6 # one for each job
+  require_ci_to_pass: false
+comment:
+  behavior: default
+  layout: reach, diff, flags, files
+  require_base: false
+  require_changes: false
+  require_head: true
+coverage:
+  precision: 2
+  range:
+    - 50.0
+    - 100.0
+  round: down
+  status:
+    patch:
+      default:
+        enabled: false
+        if_not_found: success
+    project:
+      default:
+        target: auto
+        threshold: 0.25
