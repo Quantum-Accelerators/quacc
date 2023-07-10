@@ -2,9 +2,9 @@
 from __future__ import annotations
 
 import os
-from typing import List, Optional, Union
+from typing import Field, List, Optional, Union, root_validator
 
-from pydantic import BaseSettings, Field, root_validator
+from pydantic_settings import BaseSettings
 
 from quacc.presets import vasp as vasp_defaults
 
