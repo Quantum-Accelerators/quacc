@@ -54,9 +54,6 @@ class Vasp(Vasp_):
     mag_cutoff
         Set all initial magmoms to 0 if all have a magnitude below this value.
         Default is 0.05 in settings.
-    vasp_min_version
-        Oldest VASP version you plan to use. Used to ensure INCAR settings are version-compatible.
-        Default is None in settings.
     verbose
         If True, warnings will be raised when INCAR parameters are automatically changed.
         Default is True in settings.
@@ -79,7 +76,6 @@ class Vasp(Vasp_):
         copy_magmoms: bool | None = None,
         preset_mag_default: float | None = None,
         mag_cutoff: None | float = None,
-        vasp_min_version: None | float = None,
         verbose: bool | None = None,
         **kwargs,
     ):
@@ -99,9 +95,6 @@ class Vasp(Vasp_):
             else preset_mag_default
         )
         mag_cutoff = SETTINGS.VASP_MAG_CUTOFF if mag_cutoff is None else mag_cutoff
-        vasp_min_version = (
-            SETTINGS.VASP_MIN_VERSION if vasp_min_version is None else vasp_min_version
-        )
         verbose = SETTINGS.VASP_VERBOSE if verbose is None else verbose
 
         # Assign variables to self
@@ -112,7 +105,6 @@ class Vasp(Vasp_):
         self.copy_magmoms = copy_magmoms
         self.preset_mag_default = preset_mag_default
         self.mag_cutoff = mag_cutoff
-        self.vasp_min_version = vasp_min_version or np.inf
         self.verbose = verbose
         self.kwargs = kwargs
 
@@ -572,18 +564,7 @@ class Vasp(Vasp_):
             calc.set(npar=1)
             calc.set(ncore=None)
 
-        if calc.string_params["efermi"]:
-            if (
-                isinstance(calc.string_params["efermi"], str)
-                and self.vasp_min_version < 6.4
-            ):
-                if self.verbose:
-                    warnings.warn(
-                        "Copilot: Unsetting EFERMI because VASP_MIN_VERSION < 6.4.",
-                        UserWarning,
-                    )
-                calc.set(efermi=None)
-        elif self.vasp_min_version >= 6.4:
+        if not calc.string_params["efermi"]:
             if self.verbose:
                 warnings.warn(
                     "Copilot: Setting EFERMI = MIDGAP per the VASP manual.", UserWarning

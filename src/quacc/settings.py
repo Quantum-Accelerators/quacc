@@ -2,8 +2,9 @@
 from __future__ import annotations
 
 import os
-from typing import List, Optional, Union
+from typing import List
 
+import numpy as np
 from pydantic import BaseSettings, Field, root_validator
 
 from quacc.presets import vasp as vasp_defaults
@@ -74,12 +75,8 @@ class QuaccSettings(BaseSettings):
     VASP_INCAR_COPILOT: bool = Field(
         True, description="Whether co-pilot mode should be used for VASP INCAR handling"
     )
-    VASP_MIN_VERSION: Union[float, None] = Field(
-        None,
-        description="Oldest VASP version you plan to use. Used to ensure INCAR settings are version-compatible.",
-    )
     VASP_BADER: bool = Field(
-        True,
+        os.environ.get("bader"),
         description="Whether to run a Bader analysis when summarizing VASP results. Requires bader to be in PATH.",
     )
     VASP_PRESET_MAG_DEFAULT: float = Field(
@@ -133,8 +130,8 @@ class QuaccSettings(BaseSettings):
         ["VasprunXMLValidator", "VaspFilesValidator"],
         description="Validators for Custodian",
     )
-    VASP_CUSTODIAN_WALL_TIME: Optional[int] = Field(
-        None,
+    VASP_CUSTODIAN_WALL_TIME: float = Field(
+        np.inf,
         description="After this many seconds, Custodian will stop running and ensure that VASP writes a STOPCAR",
     )
 
