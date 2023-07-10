@@ -11,6 +11,9 @@ from quacc.schemas.ase import RunSchema, summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.dicts import remove_dict_empties
 
+GEOM_FILE_PBC = "gulp.cif"
+GEOM_FILE_NOPBC = "gulp.xyz"
+
 
 @ct.electron
 def static_job(
@@ -61,8 +64,8 @@ def static_job(
     }
     default_options = {
         "dump every gulp.res": True,
-        "output cif gulp.cif": True if atoms.pbc.any() else None,
-        "output xyz gulp.xyz": None if atoms.pbc.any() else True,
+        f"output cif {GEOM_FILE_PBC}": True if atoms.pbc.any() else None,
+        f"output xyz {GEOM_FILE_NOPBC}": None if atoms.pbc.any() else True,
     }
 
     keywords = remove_dict_empties(default_keywords | keyword_swaps)
@@ -73,7 +76,7 @@ def static_job(
 
     atoms.calc = GULP(keywords=gulp_keywords, options=gulp_options, library=library)
     final_atoms = run_calc(
-        atoms, geom_file="gulp.cif" if atoms.pbc.any() else "gulp.xyz"
+        atoms, geom_file=GEOM_FILE_PBC if atoms.pbc.any() else GEOM_FILE_NOPBC
     )
 
     return summarize_run(
@@ -135,8 +138,8 @@ def relax_job(
     }
     default_options = {
         "dump every gulp.res": True,
-        "output cif gulp.cif": True if atoms.pbc.any() else None,
-        "output xyz gulp.xyz": None if atoms.pbc.any() else True,
+        f"output cif {GEOM_FILE_PBC}": True if atoms.pbc.any() else None,
+        f"output xyz {GEOM_FILE_NOPBC}": None if atoms.pbc.any() else True,
     }
 
     keywords = remove_dict_empties(default_keywords | keyword_swaps)
@@ -147,7 +150,7 @@ def relax_job(
 
     atoms.calc = GULP(keywords=gulp_keywords, options=gulp_options, library=library)
     final_atoms = run_calc(
-        atoms, geom_file="gulp.cif" if atoms.pbc.any() else "gulp.xyz"
+        atoms, geom_file=GEOM_FILE_PBC if atoms.pbc.any() else GEOM_FILE_NOPBC
     )
 
     if not final_atoms.calc.get_opt_state():

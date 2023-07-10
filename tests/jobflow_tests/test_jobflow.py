@@ -81,7 +81,22 @@ def test_tutorial3():
 
     # Construct the Flow
     job1 = jf.job(relax_job)(atoms)
-    job2 = jf.job(bulk_to_slabs_flow)(job1.output)
+    job2 = jf.job(bulk_to_slabs_flow)(job1.output, slab_static_electron=None)
+    workflow = jf.Flow([job1, job2])
+
+    # Run the workflow locally
+    jf.run_locally(workflow, store=STORE, create_folders=True)
+
+
+def test_tutorial4():
+    from quacc.recipes.emt.jobflow.slabs import bulk_to_slabs_flow
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Construct the Flow
+    job1 = jf.job(relax_job)(atoms)
+    job2 = jf.job(bulk_to_slabs_flow)(job1.output, slab_static_job=None)
     workflow = jf.Flow([job1, job2])
 
     # Run the workflow locally
@@ -137,9 +152,6 @@ def test_emt_flow():
     store = jf.JobStore(MemoryStore())
 
     atoms = bulk("Cu")
-
-    job = jf.job(bulk_to_slabs_flow)(atoms, slab_static_job=None)
-    jf.run_locally(job, store=store, ensure_success=True, create_folders=True)
 
     job = jf.job(bulk_to_slabs_flow)(
         atoms,
