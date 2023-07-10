@@ -9,7 +9,6 @@ from __future__ import annotations
 import covalent as ct
 import numpy as np
 from ase import Atoms
-from covalent._workflow.electron import Electron
 
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.vasp import VaspSchema, summarize_run
@@ -90,8 +89,8 @@ def mp_relax_job(
 
 def mp_relax_flow(
     atoms: Atoms | dict,
-    prerelax_electron: Electron | None = mp_prerelax_job,
-    relax_electron: Electron | None = mp_relax_job,
+    prerelax_electron: ct.electron | None = mp_prerelax_job,
+    relax_electron: ct.electron | None = mp_relax_job,
     prerelax_kwargs: dict | None = None,
     relax_kwargs: dict | None = None,
 ) -> VaspSchema:
