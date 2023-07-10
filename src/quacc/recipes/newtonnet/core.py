@@ -13,8 +13,11 @@ from ase.optimize.optimize import Optimizer
 from ase.units import _c, fs
 from ase.vibrations.data import VibrationsData
 from monty.dev import requires
-from sella import IRC, Sella
 
+try:
+    from sella import IRC, Sella
+except:
+    Sella = None
 from quacc import SETTINGS
 from quacc.schemas.ase import (
     summarize_opt_run,
