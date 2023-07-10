@@ -50,16 +50,18 @@ def atoms_to_metadata(
     -------
     dict
         Dictionary representation of the atoms object with the following fields:
+
         - atoms: Atoms = Field(None, title = "The Atoms object from the calculation result.")
         - atoms_info: dict = Field(None, title = "The Atoms object info obtained from atoms.info.")
         - builder_meta: EmmetMeta = Field(default_factory=EmmetMeta, description="Builder metadata."):
-            - build_date: str = Field(default_factory=datetime.utcnow, description="The build date for this document.")
-            - database_version: str = Field(None, description="The database version for the built data.")
-            - emmet_version: str = Field(__version__, description="The version of emmet this document was built with.")
-            - pymatgen_version: str = Field(pmg_version, description="The version of pymatgen this document was built with.")
-            - pull_request: int = Field(None, description="The pull request number associated with this data build.")
+            - builder_meta.build_date: str = Field(default_factory=datetime.utcnow, description="The build date for this document.")
+            - builder_meta.database_version: str = Field(None, description="The database version for the built data.")
+            - builder_meta.emmet_version: str = Field(__version__, description="The version of emmet this document was built with.")
+            - builder_meta.pymatgen_version: str = Field(pmg_version, description="The version of pymatgen this document was built with.")
+            - builder_meta.pull_request: int = Field(None, description="The pull request number associated with this data build.")
 
         For periodic structures, the task document also has the following fields:
+
         - chemsys: str = Field(None, title="Chemical System", description="dash-delimited string of elements in the material.")
         - composition: Composition = Field(None, description="Full composition for the material.")
         - composition_reduced: Composition = Field(None, title="Reduced Composition", description="Simplified representation of the composition.")
@@ -72,14 +74,15 @@ def atoms_to_metadata(
         - nsites: int = Field(None, description="Total number of sites in the structure.")
         - structure: Structure = Field(None, title = "The Pymatgen Structure object from the Atoms object, if periodic and store_pmg is True.")
         - symmetry: SymmetryData = Field(None, description="Symmetry data for this material.")
-            - crystal_system: CrystalSystem = Field(None, title="Crystal System", description="The crystal system for this lattice.")
-            - number: int = Field(None, title="Space Group Number", description="The spacegroup number for the lattice.")
-            - point_group: str = Field(None, title="Point Group Symbol", description="The point group for the lattice.")
-            - symbol: str = Field(None, title="Space Group Symbol", description="The spacegroup symbol for the lattice.")
-            - symprec: float = Field(None, title="Symmetry Finding Precision", description="The precision given to spglib to determine the symmetry of this lattice.")
+            - symmetry.crystal_system: CrystalSystem = Field(None, title="Crystal System", description="The crystal system for this lattice.")
+            - symmetry.number: int = Field(None, title="Space Group Number", description="The spacegroup number for the lattice.")
+            - symmetry.point_group: str = Field(None, title="Point Group Symbol", description="The point group for the lattice.")
+            - symmetry.symbol: str = Field(None, title="Space Group Symbol", description="The spacegroup symbol for the lattice.")
+            - symmetry.symprec: float = Field(None, title="Symmetry Finding Precision", description="The precision given to spglib to determine the symmetry of this lattice.")
         - volume: float = Field(None, title="Volume", description="Total volume for this structure in Angstroms^3.")
 
         For molecules that lack periodicity, the task document also has the following fields:
+
         - charge: int = Field(None, description="Charge of the molecule")
         - chemsys: str = Field(None, title="Chemical System", description="dash-delimited string of elements in the molecule")
         - composition: Composition = Field(None, description="Full composition for the molecule")
@@ -94,12 +97,12 @@ def atoms_to_metadata(
         - nelements: int = Field(None, title="Number of Elements")
         - spin_multiplicity: int = Field(None, description="Spin multiplicity of the molecule")
         - symmetry: PointGroupData = Field(None, description="Symmetry data for this molecule")
-            - eigen_tolerance: float = Field(None, title="Interia Tensor Eigenvalue Tolerance", description="Tolerance to compare eigen values of the inertia tensor.")
-            - linear: bool = Field(None, title="Molecule Linearity", description="Is the molecule linear?")
-            - matrix_tolerance: float = Field(None, title="Symmetry Operation Matrix Element Tolerance" description="Tolerance used to generate the full set of symmetry operations of the point group.")
-            - rotation_number: float = Field(None, title="Rotational Symmetry Number", description="Rotational symmetry number for the molecule")
-            - point_group: str = Field(None, title="Point Group Symbol", description="The point group for the lattice")
-            - tolerance: float = Field(None, title="Point Group Analyzer Tolerance", description="Distance tolerance to consider sites as symmetrically equivalent.")
+            - symmetry.eigen_tolerance: float = Field(None, title="Interia Tensor Eigenvalue Tolerance", description="Tolerance to compare eigen values of the inertia tensor.")
+            - symmetry.linear: bool = Field(None, title="Molecule Linearity", description="Is the molecule linear?")
+            - symmetry.matrix_tolerance: float = Field(None, title="Symmetry Operation Matrix Element Tolerance" description="Tolerance used to generate the full set of symmetry operations of the point group.")
+            - symmetry.rotation_number: float = Field(None, title="Rotational Symmetry Number", description="Rotational symmetry number for the molecule")
+            - symmetry.point_group: str = Field(None, title="Point Group Symbol", description="The point group for the lattice")
+            - symmetry.tolerance: float = Field(None, title="Point Group Analyzer Tolerance", description="Distance tolerance to consider sites as symmetrically equivalent.")
     """
 
     additional_fields = additional_fields or {}

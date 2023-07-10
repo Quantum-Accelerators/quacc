@@ -74,15 +74,16 @@ def summarize_run(
     -------
     dict
         Dictionary representation of the task document with the following fields:
+
         - atoms: Atoms = Field(None, title = "The Atoms object obtained from atoms.")
         - atoms_info: dict = Field(None, title = "The Atoms object info obtained from atoms.info.")
         - attributes: Dict = Field(None, description="Computed properties and calculation outputs. See https://cclib.github.io/data_notes.html")
         - builder_meta: EmmetMeta = Field(default_factory=EmmetMeta, description="Builder metadata."):
-            - build_date: str = Field(default_factory=datetime.utcnow, description="The build date for this document.")
-            - database_version: str = Field(None, description="The database version for the built data.")
-            - emmet_version: str = Field(__version__, description="The version of emmet this document was built with.")
-            - pymatgen_version: str = Field(pmg_version, description="The version of pymatgen this document was built with.")
-            - pull_request: int = Field(None, description="The pull request number associated with this data build.")
+            - builder_meta.build_date: str = Field(default_factory=datetime.utcnow, description="The build date for this document.")
+            - builder_meta.database_version: str = Field(None, description="The database version for the built data.")
+            - builder_meta.emmet_version: str = Field(__version__, description="The version of emmet this document was built with.")
+            - builder_meta.pymatgen_version: str = Field(pmg_version, description="The version of pymatgen this document was built with.")
+            - builder_meta.pull_request: int = Field(None, description="The pull request number associated with this data build.")
         - charge: int = Field(None, description="Charge of the molecule")
         - chemsys: str = Field(None, title="Chemical System", description="dash-delimited string of elements in the molecule")
         - composition: Composition = Field(None, description="Full composition for the molecule")
@@ -104,12 +105,12 @@ def summarize_run(
         - parameters: dict = Field(None, title = "The input parameters obtained from atoms.calc.parameters.")
         - spin_multiplicity: int = Field(None, description="Spin multiplicity of the molecule")
         - symmetry: PointGroupData = Field(None, description="Symmetry data for this molecule")
-            - eigen_tolerance: float = Field(None, title="Interia Tensor Eigenvalue Tolerance", description="Tolerance to compare eigen values of the inertia tensor.")
-            - linear: bool = Field(None, title="Molecule Linearity", description="Is the molecule linear?")
-            - matrix_tolerance: float = Field(None, title="Symmetry Operation Matrix Element Tolerance" description="Tolerance used to generate the full set of symmetry operations of the point group.")
-            - point_group: str = Field(None, title="Point Group Symbol", description="The point group for the lattice")
-            - rotation_number: float = Field(None, title="Rotational Symmetry Number", description="Rotational symmetry number for the molecule")
-            - tolerance: float = Field(None, title="Point Group Analyzer Tolerance", description="Distance tolerance to consider sites as symmetrically equivalent.")
+            - symmetry.eigen_tolerance: float = Field(None, title="Interia Tensor Eigenvalue Tolerance", description="Tolerance to compare eigen values of the inertia tensor.")
+            - symmetry.linear: bool = Field(None, title="Molecule Linearity", description="Is the molecule linear?")
+            - symmetry.matrix_tolerance: float = Field(None, title="Symmetry Operation Matrix Element Tolerance" description="Tolerance used to generate the full set of symmetry operations of the point group.")
+            - symmetry.point_group: str = Field(None, title="Point Group Symbol", description="The point group for the lattice")
+            - symmetry.rotation_number: float = Field(None, title="Rotational Symmetry Number", description="Rotational symmetry number for the molecule")
+            - symmetry.tolerance: float = Field(None, title="Point Group Analyzer Tolerance", description="Distance tolerance to consider sites as symmetrically equivalent.")
         - tags: List[str] = Field(None, description="Optional tags for this task document")
         - task_label: str = Field(None, description="A description of the task")
     """
