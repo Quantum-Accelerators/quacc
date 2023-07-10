@@ -1,20 +1,27 @@
 """Defect recipes for EMT"""
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 import covalent as ct
 from ase.atoms import Atoms
-from covalent._workflow.electron import Electron
 from pymatgen.analysis.defects.generators import AntiSiteGenerator, ChargeInterstitialGenerator, \
     InterstitialGenerator, SubstitutionGenerator, VacancyGenerator, VoronoiInterstitialGenerator
 
 from quacc.recipes.emt.core import relax_job, static_job
+from quacc.schemas.ase import OptSchema, RunSchema
 from quacc.util.defects import make_defects_from_bulk
 
 
-@dataclass
-class BulkToDefectsFlow:
+def bulk_to_defects_flow(
+        atoms: Atoms | dict,
+        defectgen: (AntiSiteGenerator | ChargeInterstitialGenerator | InterstitialGenerator | SubstitutionGenerator
+                    | VacancyGenerator | VoronoiInterstitialGenerator),
+        charge_state: int | None = None,
+        defectgen_kwargs: dict | None = None,
+        defect_relax_electron: ct.electron | None = relax_job,
+        defect_static_electron: ct.electron | None = static_job,
+        defect_relax_kwargs: dict | None = None,
+        defect_static_kwargs: dict | None = None,
+) -> list[RunSchema | OptSchema]:
     """
     Workflow consisting of:
 
@@ -26,6 +33,14 @@ class BulkToDefectsFlow:
 
     Parameters
     ----------
+    atoms
+        Atoms object for the structure.
+    defectgen
+        Defect generator
+    charge_state
+        Charge state of the defect
+    defectgen_kwargs
+        Keyword arguments to pass to the pymatgen.analysis.defects.generators.get_defects() method
     defect_relax_electron
         Default Electron to use for the relaxation of the defect structures.
     defect_static_electron
@@ -34,82 +49,54 @@ class BulkToDefectsFlow:
         Additional keyword arguments to pass to the relaxation calculation.
     defect_static_kwargs
         Additional keyword arguments to pass to the static calculation.
+
+    Returns
+    -------
+    list[dict]
+        List of dictionary of results from quacc.schemas.ase.summarize_run or quacc.schemas.ase.summarize_opt_run
     """
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    defect_relax_kwargs = defect_relax_kwargs or {}
+    defect_static_kwargs = defect_static_kwargs or {}
+    defectgen_kwargs = defectgen_kwargs or {}
 
-    defect_relax_electron: Electron | None = relax_job
-    defect_static_electron: Electron | None = static_job
-    defect_relax_kwargs: dict | None = None
-    defect_static_kwargs: dict | None = None
+    if not defect_relax_electron and not defect_static_electron:
+        raise ValueError(
+            "At least one of defect_relax_electron or defect_static_electron must be defined."
+        )
 
-    def run(
-            self,
-            atoms: Atoms,
-            defectgen: (AntiSiteGenerator | ChargeInterstitialGenerator | InterstitialGenerator | SubstitutionGenerator
-                        | VacancyGenerator | VoronoiInterstitialGenerator),
-            charge_state: int | None = None,
-            defectgen_kwargs: dict | None = None,
-    ) -> list[dict]:
-        """
-        Make the workflow.
+    @ct.electron
+    @ct.lattice
+    def _relax_distributed(defects):
+        return [
+            defect_relax_electron(defect, **defect_relax_kwargs)
+            for defect in defects
+        ]
 
-        Parameters
-        ----------
-        atoms
-            Atoms object for the structure.
-        defectgen
-            Defect generator
-        charge_state
-            Charge state of the defect
-        defectgen_kwargs
-            Keyword arguments to pass to the pymatgen.analysis.defects.generators.get_defects() method
+    @ct.electron
+    @ct.lattice
+    def _static_distributed(defects):
+        return [
+            defect_static_electron(defect, **defect_static_kwargs)
+            for defect in defects
+        ]
 
-        Returns
-        -------
-        list[dict]
-            List of dictionary of results from quacc.schemas.ase.summarize_run or quacc.schemas.ase.summarize_opt_run
-        """
-
-        self.defect_relax_kwargs = self.defect_relax_kwargs or {}
-        self.defect_static_kwargs = self.defect_static_kwargs or {}
-        defectgen_kwargs = defectgen_kwargs or {}
-
-        if not self.defect_relax_electron and not self.defect_static_electron:
-            raise ValueError(
-                "At least one of defect_relax_electron or defect_static_electron must be defined."
+    @ct.electron
+    @ct.lattice
+    def _relax_and_static_distributed(defects):
+        return [
+            defect_static_electron(
+                defect_relax_electron(defect, **defect_relax_kwargs)["atoms"],
+                **defect_static_kwargs,
             )
+            for defect in defects
+        ]
 
-        @ct.electron
-        @ct.lattice
-        def _relax_distributed(defects):
-            return [
-                self.defect_relax_electron(defect, **self.defect_relax_kwargs)
-                for defect in defects
-            ]
+    defects = ct.electron(make_defects_from_bulk)(atoms, defectgen, charge_state, **defectgen_kwargs)
 
-        @ct.electron
-        @ct.lattice
-        def _static_distributed(defects):
-            return [
-                self.defect_static_electron(defect, **self.defect_static_kwargs)
-                for defect in defects
-            ]
-
-        @ct.electron
-        @ct.lattice
-        def _relax_and_static_distributed(defects):
-            return [
-                self.defect_static_electron(
-                    self.defect_relax_electron(defect, **self.defect_relax_kwargs)["atoms"],
-                    **self.defect_static_kwargs,
-                )
-                for defect in defects
-            ]
-
-        defects = ct.electron(make_defects_from_bulk)(atoms, defectgen, charge_state, **defectgen_kwargs)
-
-        if self.defect_relax_electron and self.defect_static_electron:
-            return _relax_and_static_distributed(defects)
-        elif self.defect_relax_electron:
-            return _relax_distributed(defects)
-        elif self.defect_static_electron:
-            return _static_distributed(defects)
+    if defect_relax_electron and defect_static_electron:
+        return _relax_and_static_distributed(defects)
+    elif defect_relax_electron:
+        return _relax_distributed(defects)
+    elif defect_static_electron:
+        return _static_distributed(defects)
