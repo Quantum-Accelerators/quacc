@@ -46,7 +46,7 @@ def test_static_job():
         charge=-2,
         multiplicity=3,
         input_swaps={"def2-svp": True, "def2-tzvp": None},
-        block_swaps={f"%scf maxiter 300 end": True},
+        block_swaps={"%scf maxiter 300 end": True},
     )
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == -2
@@ -80,7 +80,7 @@ def test_relax_Job():
             "def2-svp": True,
             "def2-tzvp": None,
         },
-        block_swaps={f"%scf maxiter 300 end": True},
+        block_swaps={"%scf maxiter 300 end": True},
     )
     assert output["natoms"] == len(atoms)
     assert (
