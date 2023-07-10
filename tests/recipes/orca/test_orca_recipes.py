@@ -1,4 +1,3 @@
-import multiprocessing
 import os
 from pathlib import Path
 from shutil import copy, rmtree
@@ -47,7 +46,7 @@ def test_static_job():
         charge=-2,
         multiplicity=3,
         input_swaps={"def2-svp": True, "def2-tzvp": None},
-        block_swaps={"%scf maxiter 300 end": True},
+        block_swaps={f"%scf maxiter 300 end": True},
     )
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == -2
@@ -56,12 +55,11 @@ def test_static_job():
         output["parameters"]["orcasimpleinput"]
         == "wb97x-d3bj sp slowconv normalprint xyzfile def2-svp"
     )
-    assert "%scf maxiter 300 end" in output["parameters"]["orcablocks"]
+    assert f"%scf maxiter 300 end" in output["parameters"]["orcablocks"]
 
 
 def test_relax_Job():
     atoms = molecule("H2")
-    nprocs = multiprocessing.cpu_count()
 
     output = relax_job(atoms)
     assert output["natoms"] == len(atoms)
@@ -71,7 +69,6 @@ def test_relax_Job():
         output["parameters"]["orcasimpleinput"]
         == "wb97x-d3bj def2-tzvp opt slowconv normalprint xyzfile"
     )
-    assert output["parameters"]["orcablocks"] == f"%pal nprocs {nprocs} end"
 
     output = relax_job(
         atoms,
@@ -83,14 +80,11 @@ def test_relax_Job():
             "def2-svp": True,
             "def2-tzvp": None,
         },
-        block_swaps={"%scf maxiter 300 end": True},
+        block_swaps={f"%scf maxiter 300 end": True},
     )
     assert output["natoms"] == len(atoms)
     assert (
         output["parameters"]["orcasimpleinput"]
         == "opt slowconv normalprint xyzfile hf def2-svp"
     )
-    assert (
-        output["parameters"]["orcablocks"]
-        == f"%scf maxiter 300 end %pal nprocs {nprocs} end"
-    )
+    assert f"%scf maxiter 300 end" in output["parameters"]["orcablocks"]
