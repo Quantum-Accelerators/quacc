@@ -2,11 +2,13 @@
 from __future__ import annotations
 
 import multiprocessing
+import os
 
 import covalent as ct
 from ase import Atoms
-from ase.calculators.orca import ORCA
+from ase.calculators.orca import ORCA, OrcaProfile
 
+from quacc import SETTINGS
 from quacc.schemas.cclib import cclibSchema, summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.dicts import remove_dict_empties
@@ -69,7 +71,9 @@ def static_job(
     input_swaps = input_swaps or {}
     block_swaps = block_swaps or {}
 
-    if not any(k for k in block_swaps if "nprocs" in k.lower()):
+    if not any(k for k in block_swaps if "nprocs" in k.lower()) and os.environ.get(
+        "mpirun"
+    ):
         nprocs = multiprocessing.cpu_count()
         block_swaps[f"%pal nprocs {nprocs} end"] = True
 
@@ -96,6 +100,7 @@ def static_job(
     )
 
     atoms.calc = ORCA(
+        profile=OrcaProfile([SETTINGS.ORCA_CMD]),
         charge=charge,
         mult=multiplicity,
         orcasimpleinput=orcasimpleinput,
@@ -168,7 +173,9 @@ def relax_job(
     input_swaps = input_swaps or {}
     block_swaps = block_swaps or {}
 
-    if not any(k for k in block_swaps if "nprocs" in k.lower()):
+    if not any(k for k in block_swaps if "nprocs" in k.lower()) and os.environ.get(
+        "mpirun"
+    ):
         nprocs = multiprocessing.cpu_count()
         block_swaps[f"%pal nprocs {nprocs} end"] = True
 
@@ -196,6 +203,7 @@ def relax_job(
     )
 
     atoms.calc = ORCA(
+        profile=OrcaProfile([SETTINGS.ORCA_CMD]),
         charge=charge,
         mult=multiplicity,
         orcasimpleinput=orcasimpleinput,
