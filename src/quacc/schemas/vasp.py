@@ -21,7 +21,7 @@ def summarize_run(
     atoms: Atoms,
     dir_path: str | None = None,
     prep_next_run: bool = True,
-    run_bader: bool = SETTINGS.VASP_BADER,
+    run_bader: bool | None = None,
     check_convergence: bool = True,
     remove_empties: bool = False,
     additional_fields: dict | None = None,
@@ -41,6 +41,7 @@ def summarize_run(
     run_bader
         Whether a Bader analysis should be performed. Will not run if bader executable is not in PATH even if
         bader is set to True.
+        Defaults to VASP_BADER in settings.
     check_convergence
         Whether to throw an error if convergence is not reached.
     remove_empties
@@ -138,6 +139,7 @@ def summarize_run(
     """
 
     additional_fields = additional_fields or {}
+    run_bader = SETTINGS.VASP_BADER if run_bader is None else run_bader
     dir_path = dir_path or os.getcwd()
 
     # Fetch all tabulated results from VASP outputs files
