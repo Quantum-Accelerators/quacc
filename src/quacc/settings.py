@@ -4,7 +4,7 @@ from __future__ import annotations
 import os
 from typing import Field, List, Optional, Union, root_validator
 
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from quacc.presets import vasp as vasp_defaults
 
@@ -24,6 +24,8 @@ class QuaccSettings(BaseSettings):
     The variables can also be modified individually though environment variables by
     using the "QUACC" prefix. e.g. QUACC_SCRATCH_DIR=/path/to/scratch.
     """
+
+    model_config = SettingsConfigDict(env_prefix="quacc_")
 
     # ---------------------------
     # General Settings
@@ -139,11 +141,6 @@ class QuaccSettings(BaseSettings):
         None,
         description="After this many seconds, Custodian will stop running and ensure that VASP writes a STOPCAR",
     )
-
-    class Config:
-        """Pydantic config settings."""
-
-        env_prefix = "quacc_"
 
     @root_validator(pre=True)
     def load_default_settings(cls, values: dict) -> dict:
