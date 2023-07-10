@@ -56,8 +56,10 @@ class Vasp(Vasp_):
         Default is 0.05 in settings.
     vasp_min_version
         Oldest VASP version you plan to use. Used to ensure INCAR settings are version-compatible.
+        Default is None in settings.
     verbose
         If True, warnings will be raised when INCAR parameters are automatically changed.
+        Default is True in settings.
     **kwargs
         Additional arguments to be passed to the VASP calculator, e.g. `xc='PBE'`, `encut=520`. Takes all valid
         ASE calculator arguments, in addition to those custom to quacc.
@@ -72,15 +74,36 @@ class Vasp(Vasp_):
         self,
         input_atoms: Atoms,
         preset: None | str = None,
-        use_custodian: bool = SETTINGS.VASP_CUSTODIAN,
-        incar_copilot: bool = SETTINGS.VASP_INCAR_COPILOT,
-        copy_magmoms: bool = SETTINGS.VASP_COPY_MAGMOMS,
-        preset_mag_default: float = SETTINGS.VASP_PRESET_MAG_DEFAULT,
-        mag_cutoff: None | float = SETTINGS.VASP_MAG_CUTOFF,
-        vasp_min_version: None | float = SETTINGS.VASP_MIN_VERSION,
-        verbose: bool = SETTINGS.VASP_VERBOSE,
+        use_custodian: bool | None = None,
+        incar_copilot: bool | None = None,
+        copy_magmoms: bool | None = None,
+        preset_mag_default: float | None = None,
+        mag_cutoff: None | float = None,
+        vasp_min_version: None | float = None,
+        verbose: bool | None = None,
         **kwargs,
     ):
+        # Set defaults
+        use_custodian = (
+            SETTINGS.VASP_USE_CUSTODIAN if use_custodian is None else use_custodian
+        )
+        incar_copilot = (
+            SETTINGS.VASP_INCAR_COPILOT if incar_copilot is None else incar_copilot
+        )
+        copy_magmoms = (
+            SETTINGS.VASP_COPY_MAGMOMS if copy_magmoms is None else copy_magmoms
+        )
+        preset_mag_default = (
+            SETTINGS.VASP_PRESET_MAG_DEFAULT
+            if preset_mag_default is None
+            else preset_mag_default
+        )
+        mag_cutoff = SETTINGS.VASP_MAG_CUTOFF if mag_cutoff is None else mag_cutoff
+        vasp_min_version = (
+            SETTINGS.VASP_MIN_VERSION if vasp_min_version is None else vasp_min_version
+        )
+        verbose = SETTINGS.VASP_VERBOSE if verbose is None else verbose
+
         # Assign variables to self
         self.input_atoms = input_atoms
         self.preset = preset

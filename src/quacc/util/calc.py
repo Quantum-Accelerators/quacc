@@ -22,9 +22,9 @@ from quacc.util.files import copy_decompress, make_unique_dir
 def run_calc(
     atoms: Atoms,
     geom_file: str | None = None,
-    create_unique_workdir: bool = SETTINGS.CREATE_UNIQUE_WORKDIR,
-    scratch_dir: str = SETTINGS.SCRATCH_DIR,
-    gzip: bool = SETTINGS.GZIP_FILES,
+    create_unique_workdir: bool | None = None,
+    scratch_dir: str | None = None,
+    gzip: bool | None = None,
     copy_files: list[str] | None = None,
 ) -> Atoms:
     """
@@ -46,10 +46,13 @@ def run_calc(
         function to update the positions, as this varies between codes.
     create_unique_workdir
         Whether to automatically create a unique working directory for each calculation.
+        If None, defaults to SETTINGS.CREATE_UNIQUE_WORKDIR.
     scratch_dir
         Base path where a tmpdir should be made for running the calculation.
+        If None, defaults to SETTINGS.SCRATCH_DIR.
     gzip
         Whether to gzip the output files.
+        If None, defaults to SETTINGS.GZIP_FILES.
     copy_files
         Filenames to copy from source to scratch directory.
 
@@ -58,6 +61,15 @@ def run_calc(
     Atoms
         The updated Atoms object.
     """
+
+    # Set defaults
+    create_unique_workdir = (
+        SETTINGS.CREATE_UNIQUE_WORKDIR
+        if create_unique_workdir is None
+        else create_unique_workdir
+    )
+    scratch_dir = SETTINGS.SCRATCH_DIR if scratch_dir is None else scratch_dir
+    gzip = SETTINGS.GZIP_FILES if gzip is None else gzip
 
     # Perform staging operations
     start_dir = os.getcwd()
@@ -107,9 +119,9 @@ def run_ase_opt(
     optimizer: Optimizer = FIRE,
     optimizer_kwargs: dict | None = None,
     run_kwargs: dict | None = None,
-    create_unique_workdir: bool = SETTINGS.CREATE_UNIQUE_WORKDIR,
-    scratch_dir: str = SETTINGS.SCRATCH_DIR,
-    gzip: bool = SETTINGS.GZIP_FILES,
+    create_unique_workdir: bool | None = None,
+    scratch_dir: str | None = None,
+    gzip: bool | None = None,
     copy_files: list[str] | None = None,
 ) -> Optimizer:
     """
@@ -136,11 +148,13 @@ def run_ase_opt(
         Dictionary of kwargs for the run() method of the optimizer.
     create_unique_workdir
         Whether to automatically create a unique working directory for each calculation.
+        If None, defaults to SETTINGS.CREATE_UNIQUE_WORKDIR.
     scratch_dir
-        Path where a tmpdir should be made for running the calculation. If None,
-        the working directory will be used.
+        Base path where a tmpdir should be made for running the calculation.
+        If None, defaults to SETTINGS.SCRATCH_DIR.
     gzip
         Whether to gzip the output files.
+        If None, defaults to SETTINGS.GZIP_FILES.
     copy_files
         Filenames to copy from source to scratch directory.
 
@@ -150,7 +164,15 @@ def run_ase_opt(
         The ASE Optimizer object.
     """
 
+    # Set defaults
     optimizer_kwargs = optimizer_kwargs or {}
+    create_unique_workdir = (
+        SETTINGS.CREATE_UNIQUE_WORKDIR
+        if create_unique_workdir is None
+        else create_unique_workdir
+    )
+    scratch_dir = SETTINGS.SCRATCH_DIR if scratch_dir is None else scratch_dir
+    gzip = SETTINGS.GZIP_FILES if gzip is None else gzip
     run_kwargs = run_kwargs or {}
     start_dir = os.getcwd()
 
@@ -195,9 +217,9 @@ def run_ase_opt(
 def run_ase_vib(
     atoms: Atoms,
     vib_kwargs: dict | None = None,
-    create_unique_workdir: bool = SETTINGS.CREATE_UNIQUE_WORKDIR,
-    scratch_dir: str = SETTINGS.SCRATCH_DIR,
-    gzip: bool = SETTINGS.GZIP_FILES,
+    create_unique_workdir: bool | None = None,
+    scratch_dir: str | None = None,
+    gzip: bool | None = None,
     copy_files: list[str] | None = None,
 ) -> Vibrations:
     """
@@ -216,11 +238,13 @@ def run_ase_vib(
         Dictionary of kwargs for the vibration analysis.
     create_unique_workdir
         Whether to automatically create a unique working directory for each calculation.
+        If None, defaults to SETTINGS.CREATE_UNIQUE_WORKDIR.
     scratch_dir
-        Path where a tmpdir should be made for running the calculation. If None,
-        the working directory will be used.
+        Base path where a tmpdir should be made for running the calculation.
+        If None, defaults to SETTINGS.SCRATCH_DIR.
     gzip
         Whether to gzip the output files.
+        If None, defaults to SETTINGS.GZIP_FILES.
     copy_files
         Filenames to copy from source to scratch directory.
 
@@ -230,7 +254,15 @@ def run_ase_vib(
         The updated Vibrations module
     """
 
+    # Set defaults
     vib_kwargs = vib_kwargs or {}
+    create_unique_workdir = (
+        SETTINGS.CREATE_UNIQUE_WORKDIR
+        if create_unique_workdir is None
+        else create_unique_workdir
+    )
+    scratch_dir = SETTINGS.SCRATCH_DIR if scratch_dir is None else scratch_dir
+    gzip = SETTINGS.GZIP_FILES if gzip is None else gzip
     start_dir = os.getcwd()
 
     # Perform staging operations
