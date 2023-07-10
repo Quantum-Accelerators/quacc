@@ -42,6 +42,16 @@ def setup_module():
 def teardown_module():
     SETTINGS.CHECK_CONVERGENCE = DEFAULT_SETTINGS.CHECK_CONVERGENCE
 
+    for f in os.listdir("."):
+        if ".log" in f or ".traj" in f or ".gz" in f:
+            os.remove(f)
+    for f in os.listdir(os.getcwd()):
+        if "quacc-tmp" in f or f == "tmp_dir":
+            if os.path.islink(f):
+                os.unlink(f)
+            else:
+                rmtree(f)
+
 
 def qcinput_nearly_equal(qcinput1, qcinput2):
     qcin1 = qcinput1.as_dict()
@@ -100,18 +110,6 @@ def mock_execute4(self, **kwargs):
 def mock_read(self, **kwargs):
     if self.results is None:
         raise RuntimeError("Results should not be None here.")
-
-
-def teardown_module():
-    for f in os.listdir("."):
-        if ".log" in f or ".traj" in f or ".gz" in f:
-            os.remove(f)
-    for f in os.listdir(os.getcwd()):
-        if "quacc-tmp" in f or f == "tmp_dir":
-            if os.path.islink(f):
-                os.unlink(f)
-            else:
-                rmtree(f)
 
 
 def test_static_job(monkeypatch):
