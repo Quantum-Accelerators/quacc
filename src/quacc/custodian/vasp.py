@@ -32,7 +32,7 @@ def run_custodian(
     vasp_cmd: str | None = None,
     vasp_gamma_cmd: str | None = None,
     vasp_custodian_max_errors: int | None = None,
-    vasp_custodian_wall_time: int | None = None,
+    vasp_custodian_wall_time: float | None = None,
     vtst_fixes: bool | None = None,
     vasp_custodian_handlers: list[str] | None = None,
     vasp_custodian_validators: list[str] | None = None,
@@ -55,7 +55,7 @@ def run_custodian(
     vasp_custodian_max_errors
         Maximum number of errors to allow before stopping the run. Defaults to 5 in settings.
     vasp_custodian_wall_time
-        Maximum wall time to allow before creating a STOPCAR. Defaults to None in settings.
+        Maximum wall time to allow before creating a STOPCAR. Defaults to infinity in settings.
     vtst_fixes
         Whether to apply VTST input swaps. Defaults to False in settings.
     vasp_custodian_handlers
@@ -152,7 +152,7 @@ def run_custodian(
     # Run with Custodian
     jobs = [VaspJob(split_vasp_cmd, **vasp_job_kwargs)]
 
-    if vasp_custodian_wall_time is not None:
+    if vasp_custodian_wall_time:
         handlers = list(handlers) + [
             WalltimeHandler(wall_time=vasp_custodian_wall_time)
         ]

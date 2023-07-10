@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import os
-from typing import List, Optional, Union
+from typing import List, Optional
 
 from pydantic import BaseSettings, Field, root_validator
 
@@ -74,12 +74,8 @@ class QuaccSettings(BaseSettings):
     VASP_INCAR_COPILOT: bool = Field(
         True, description="Whether co-pilot mode should be used for VASP INCAR handling"
     )
-    VASP_MIN_VERSION: Union[float, None] = Field(
-        None,
-        description="Oldest VASP version you plan to use. Used to ensure INCAR settings are version-compatible.",
-    )
     VASP_BADER: bool = Field(
-        True,
+        os.environ.get("bader"),
         description="Whether to run a Bader analysis when summarizing VASP results. Requires bader to be in PATH.",
     )
     VASP_PRESET_MAG_DEFAULT: float = Field(
