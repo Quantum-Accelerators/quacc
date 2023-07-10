@@ -19,10 +19,10 @@ except ImportError:
 )
 def run_custodian(
     qchem_cores: int = 1,
-    qchem_cmd: str = SETTINGS.QCHEM_CMD,
-    qchem_local_scratch: str = SETTINGS.QCHEM_LOCAL_SCRATCH,
-    qchem_use_error_handlers: bool = SETTINGS.QCHEM_USE_ERROR_HANDLERS,
-    qchem_custodian_max_errors: int = SETTINGS.QCHEM_CUSTODIAN_MAX_ERRORS,
+    qchem_cmd: str | None = None,
+    qchem_local_scratch: str | None = None,
+    qchem_use_error_handlers: bool | None = None,
+    qchem_custodian_max_errors: int | None = None,
 ) -> None:
     """
     Function to run QChem Custodian
@@ -48,6 +48,24 @@ def run_custodian(
     from custodian import Custodian
     from custodian.qchem.handlers import QChemErrorHandler
     from custodian.qchem.jobs import QCJob
+
+    # Set defaults
+    qchem_cmd = SETTINGS.QCHEM_CMD if qchem_cmd is None else qchem_cmd
+    qchem_local_scratch = (
+        SETTINGS.QCHEM_LOCAL_SCRATCH
+        if qchem_local_scratch is None
+        else qchem_local_scratch
+    )
+    qchem_use_error_handlers = (
+        SETTINGS.QCHEM_USE_ERROR_HANDLERS
+        if qchem_use_error_handlers is None
+        else qchem_use_error_handlers
+    )
+    qchem_custodian_max_errors = (
+        SETTINGS.QCHEM_CUSTODIAN_MAX_ERRORS
+        if qchem_custodian_max_errors is None
+        else qchem_custodian_max_errors
+    )
 
     # Error handlers for Q-Chem
     if qchem_use_error_handlers:

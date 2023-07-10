@@ -85,7 +85,7 @@ def bader_runner(path: str | None = None, scratch_dir: str | None = None) -> dic
 def chargemol_runner(
     path: str | None = None,
     atomic_densities_path: str | None = None,
-    scratch_dir: str = SETTINGS.SCRATCH_DIR,
+    scratch_dir: str | None = None,
 ) -> dict:
     """
     Runs a Chargemol (i.e. DDEC6 + CM5) analysis using the VASP output files
@@ -110,6 +110,7 @@ def chargemol_runner(
         See the Chargemol documentation for more information.
     scratch_dir
         The path where the Chargemol analysis will be run.
+        Defaults to SETTINGS.SCRATCH_DIR.
 
     Returns
     -------
@@ -128,6 +129,8 @@ def chargemol_runner(
                         }
             }
     """
+    scratch_dir = SETTINGS.SCRATCH_DIR if scratch_dir is None else scratch_dir
+
     path = path or os.getcwd()
     scratch_dir = scratch_dir or path
 

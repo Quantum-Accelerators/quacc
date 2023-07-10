@@ -159,7 +159,7 @@ def summarize_run(
 def summarize_opt_run(
     dyn: Optimizer,
     trajectory: Trajectory | list[Atoms] = None,
-    check_convergence: bool = SETTINGS.CHECK_CONVERGENCE,
+    check_convergence: bool | None = None,
     charge_and_multiplicity: tuple[int, int] | None = None,
     prep_next_run: bool = True,
     remove_empties: bool = False,
@@ -255,6 +255,9 @@ def summarize_opt_run(
             - symmetry.tolerance: float = Field(None, title="Point Group Analyzer Tolerance", description="Distance tolerance to consider sites as symmetrically equivalent.")
     """
 
+    check_convergence = (
+        SETTINGS.CHECK_CONVERGENCE if check_convergence is None else check_convergence
+    )
     additional_fields = additional_fields or {}
     opt_parameters = dyn.todict() | {"fmax": dyn.fmax}
 

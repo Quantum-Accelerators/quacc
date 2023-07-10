@@ -11,6 +11,7 @@ from ase.optimize import FIRE
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.qchem.inputs import QCInput
 
+from quacc import SETTINGS
 from quacc.calculators.qchem import QChem
 from quacc.recipes.qchem.core import (
     irc_job,
@@ -30,6 +31,16 @@ FILE_DIR = Path(__file__).resolve().parent
 QCHEM_DIR = os.path.join(FILE_DIR, "qchem_examples")
 TEST_ATOMS = read(os.path.join(FILE_DIR, "test.xyz"))
 OS_ATOMS = read(os.path.join(FILE_DIR, "OS_test.xyz"))
+
+DEFAULT_SETTINGS = SETTINGS.copy()
+
+
+def setup_module():
+    SETTINGS.CHECK_CONVERGENCE = False
+
+
+def teardown_module():
+    SETTINGS.CHECK_CONVERGENCE = DEFAULT_SETTINGS.CHECK_CONVERGENCE
 
 
 def qcinput_nearly_equal(qcinput1, qcinput2):

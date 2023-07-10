@@ -469,7 +469,7 @@ def quasi_irc_job(
     shared_kwargs = shared_kwargs or {}
     irc_opt_swaps = irc_opt_swaps or {}
     relax_opt_swaps = relax_opt_swaps or {}
-    default_convergence = SETTINGS.CHECK_CONVERGENCE
+    default_settings = SETTINGS.copy()
 
     irc_opt_swaps_defaults = {
         "fmax": 100,
@@ -485,7 +485,7 @@ def quasi_irc_job(
         **shared_kwargs,
     )
 
-    SETTINGS.CHECK_CONVERGENCE = default_convergence
+    SETTINGS.CHECK_CONVERGENCE = default_settings.CHECK_CONVERGENCE
     relax_summary = relax_job(
         irc_summary,
         opt_swaps=relax_opt_swaps,
