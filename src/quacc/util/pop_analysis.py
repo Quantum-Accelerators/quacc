@@ -13,9 +13,7 @@ from quacc import SETTINGS
 from quacc.util.files import copy_decompress
 
 
-def bader_runner(
-    path: str | None = None, scratch_dir: str = SETTINGS.SCRATCH_DIR
-) -> dict:
+def bader_runner(path: str | None = None, scratch_dir: str | None = None) -> dict:
     """
     Runs a Bader partial charge and spin moment analysis using the VASP
     output files in the given path. This function requires that `bader`
@@ -33,6 +31,7 @@ def bader_runner(
         If None, the current working directory is used.
     scratch_dir
         The path where the Bader analysis will be run.
+        Defaults to SETTINGS.SCRATCH_DIR.
 
     Returns
     -------
@@ -49,6 +48,7 @@ def bader_runner(
             }
     """
 
+    scratch_dir = SETTINGS.SCRATCH_DIR if scratch_dir is None else scratch_dir
     path = path or os.getcwd()
     scratch_dir = scratch_dir or os.getcwd()
 
