@@ -134,20 +134,16 @@ def test_tutorials():
     assert result.status == "COMPLETED"
 
     # ------------------------------------------------------------
-    @ct.electron
-    def relax_job(atoms):
-        return relax_job(atoms)
-
-    @ct.electron
-    def static_job(atoms):
-        return static_job(atoms)
-
     @ct.lattice
     def workflow5(atoms):
-        relax_job.executor = "dask"
-        static_job.executor = "local"
-        output1 = relax_job(atoms)
-        output2 = static_job(output1)
+        job1 = relax_job
+        job1.electron_object.executor = "dask"
+
+        job2 = static_job
+        job2.electron_object.executor = "local"
+
+        output1 = job1(atoms)
+        output2 = job2(output1)
         return output2
 
     atoms = bulk("Cu")
