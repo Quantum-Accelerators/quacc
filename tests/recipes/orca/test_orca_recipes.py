@@ -55,7 +55,7 @@ def test_static_job():
         output["parameters"]["orcasimpleinput"]
         == "wb97x-d3bj sp slowconv normalprint xyzfile def2-svp"
     )
-    assert f"%scf maxiter 300 end" in output["parameters"]["orcablocks"]
+    assert "%scf maxiter 300 end" in output["parameters"]["orcablocks"]
 
 
 def test_relax_Job():
@@ -87,4 +87,4 @@ def test_relax_Job():
         output["parameters"]["orcasimpleinput"]
         == "opt slowconv normalprint xyzfile hf def2-svp"
     )
-    assert f"%scf maxiter 300 end" in output["parameters"]["orcablocks"]
+    assert "%scf maxiter 300 end" in output["parameters"]["orcablocks"]
