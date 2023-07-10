@@ -91,15 +91,7 @@ def relax_job(
         the positions.
     calc_swaps
         Dictionary of custom kwargs for the calculator.
-            defaults = {
-                "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
-                "Hamiltonian_Method": method if "xtb" in method.lower() else None,
-                "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
-                "Driver_": "GeometryOptimization",
-                "Driver_LatticeOpt": "Yes" if lattice_opt else "No",
-                "Driver_AppendGeometries": "Yes",
-                "Driver_MaxSteps": 2000,
-            }
+
     Returns
     -------
     RunSchema

@@ -47,6 +47,7 @@ markdown_extensions:
       pygments_lang_class: true
   - pymdownx.inlinehilite
   - pymdownx.keys
+  - pymdownx.magiclink
   - pymdownx.mark
   - pymdownx.snippets
   - pymdownx.smartsymbols
@@ -71,8 +72,31 @@ plugins:
       default_handler: python
       handlers:
         python:
+          import:
+            - https://docs.python.org/3/objects.inv
+            - https://wiki.fysik.dtu.dk/ase/objects.inv
+            - https://pymatgen.org/objects.inv
+            - https://materialsproject.github.io/atomate2/objects.inv
+            - https://cclib.github.io/objects.inv
+            - https://materialsproject.github.io/maggma/objects.inv
+            - https://materialsproject.github.io/emmet/objects.inv
+            - https://materialsproject.github.io/jobflow/objects.inv
+            - https://materialsproject.github.io/fireworks/objects.inv
+            - https://parsl.readthedocs.io/en/latest/objects.inv
+            - https://tblite.readthedocs.io/en/latest/objects.inv
+            - https://numpy.org/doc/stable/objects.inv
+            - https://docs.pydantic.dev/latest/objects.inv
+            - https://materialsvirtuallab.github.io/monty/objects.inv
+            - http://materialsproject.github.io/custodian/objects.inv
+            - https://covalent.readthedocs.io/en/latest/objects.inv
+            - https://click.palletsprojects.com/en/latest/objects.inv
           options:
             docstring_style: numpy
+            docstring_section_style: list
+            separate_signature: true
+            merge_init_into_class: true
+            docstring_options:
+              ignore_init_summary: true
   - gen-files:
       scripts:
         - docs/gen_ref_pages.py
