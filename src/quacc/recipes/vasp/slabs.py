@@ -122,8 +122,8 @@ def slab_relax_job(
 def bulk_to_slabs_flow(
     atoms: Atoms,
     slabgen_kwargs: dict | None = None,
-    slab_relax_electron: ct.electron = slab_relax_job,
-    slab_static_electron: ct.electron | None = slab_static_job,
+    slab_relax_job: ct.electron = slab_relax_job,
+    slab_static_job: ct.electron | None = slab_static_job,
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
 ) -> list[VaspSchema]:
@@ -142,9 +142,9 @@ def bulk_to_slabs_flow(
         Atoms object for the structure.
     slabgen_kwargs
         Additional keyword arguments to pass to make_max_slabs_from_bulk()
-    slab_relax_electron
+    slab_relax_job
         Default to use for the relaxation of the slab structures.
-    slab_static_electron
+    slab_static_job
         Default to use for the static calculation of the slab structures.
     slab_relax_kwargs
         Additional keyword arguments to pass to the relaxation calculation.
@@ -164,14 +164,14 @@ def bulk_to_slabs_flow(
     @ct.electron
     @ct.lattice
     def _relax_distributed(slabs):
-        return [slab_relax_electron(slab, **slab_relax_kwargs) for slab in slabs]
+        return [slab_relax_job(slab, **slab_relax_kwargs) for slab in slabs]
 
     @ct.electron
     @ct.lattice
     def _relax_and_static_distributed(slabs):
         return [
-            slab_static_electron(
-                slab_relax_electron(slab, **slab_relax_kwargs),
+            slab_static_job(
+                slab_relax_job(slab, **slab_relax_kwargs),
                 **slab_static_kwargs,
             )
             for slab in slabs
@@ -179,7 +179,7 @@ def bulk_to_slabs_flow(
 
     slabs = ct.electron(make_max_slabs_from_bulk)(atoms, **slabgen_kwargs)
 
-    if slab_static_electron is None:
+    if slab_static_job is None:
         return _relax_distributed(slabs)
     return _relax_and_static_distributed(slabs)
 
@@ -188,8 +188,8 @@ def slab_to_ads_flow(
     slab: Atoms,
     adsorbate: Atoms,
     make_ads_kwargs: dict | None = None,
-    slab_relax_electron: ct.electron = ct.electron(slab_relax_job),
-    slab_static_electron: ct.electron | None = ct.electron(slab_static_job),
+    slab_relax_job: ct.electron = ct.electron(slab_relax_job),
+    slab_static_job: ct.electron | None = ct.electron(slab_static_job),
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
 ) -> list[VaspSchema]:
@@ -207,9 +207,9 @@ def slab_to_ads_flow(
         Atoms object for the adsorbate.
     make_ads_kwargs
         Additional keyword arguments to pass to make_adsorbate_structures()
-    slab_relax_electron
+    slab_relax_job
         Default to use for the relaxation of the slab structure.
-    slab_static_electron
+    slab_static_job
         Default to use for the static calculation of the slab structures.
     slab_relax_kwargs
         Additional keyword arguments to pass to the relaxation calculation.
@@ -229,14 +229,14 @@ def slab_to_ads_flow(
     @ct.electron
     @ct.lattice
     def _relax_distributed(slabs):
-        return [slab_relax_electron(slab, **slab_relax_kwargs) for slab in slabs]
+        return [slab_relax_job(slab, **slab_relax_kwargs) for slab in slabs]
 
     @ct.electron
     @ct.lattice
     def _relax_and_static_distributed(slabs):
         return [
-            slab_static_electron(
-                slab_relax_electron(slab, **slab_relax_kwargs),
+            slab_static_job(
+                slab_relax_job(slab, **slab_relax_kwargs),
                 **slab_static_kwargs,
             )
             for slab in slabs
@@ -246,6 +246,6 @@ def slab_to_ads_flow(
         slab, adsorbate, **make_ads_kwargs
     )
 
-    if slab_static_electron is None:
+    if slab_static_job is None:
         return _relax_distributed(ads_slabs)
     return _relax_and_static_distributed(ads_slabs)

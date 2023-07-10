@@ -113,7 +113,7 @@ def test_tutorials():
     @ct.lattice
     def workflow3(atoms):
         relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, slab_static_electron=None)
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, slab_static_job=None)
         return relaxed_slabs
 
     atoms = bulk("Cu")
@@ -135,19 +135,19 @@ def test_tutorials():
 
     # ------------------------------------------------------------
     @ct.electron
-    def relax_electron(atoms):
+    def relax_job(atoms):
         return relax_job(atoms)
 
     @ct.electron
-    def static_electron(atoms):
+    def static_job(atoms):
         return static_job(atoms)
 
     @ct.lattice
     def workflow5(atoms):
-        relax_electron.executor = "dask"
-        static_electron.executor = "local"
-        output1 = relax_electron(atoms)
-        output2 = static_electron(output1)
+        relax_job.executor = "dask"
+        static_job.executor = "local"
+        output1 = relax_job(atoms)
+        output2 = static_job(output1)
         return output2
 
     atoms = bulk("Cu")

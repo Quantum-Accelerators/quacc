@@ -86,7 +86,7 @@ def test_relax_Job():
 def test_slab_dynamic_jobs():
     atoms = bulk("Cu")
 
-    outputs = bulk_to_slabs_flow(atoms, slab_static_electron=None)
+    outputs = bulk_to_slabs_flow(atoms, slab_static_job=None)
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
     assert outputs[1]["nsites"] == 96
@@ -97,7 +97,7 @@ def test_slab_dynamic_jobs():
 
     outputs = bulk_to_slabs_flow(
         atoms,
-        slab_static_electron=None,
+        slab_static_job=None,
         slab_relax_kwargs={
             "opt_swaps": {"fmax": 1.0},
             "calc_kwargs": {"asap_cutoff": True},
