@@ -30,7 +30,6 @@ def teardown_module():
 
 def test_static_job():
     atoms = molecule("H2")
-    nprocs = multiprocessing.cpu_count()
 
     output = static_job(atoms)
     assert output["natoms"] == len(atoms)
