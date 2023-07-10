@@ -45,15 +45,6 @@ def static_job(
         Basis set
     calc_swaps
         Dictionary of custom kwargs for the calculator.
-            defaults = {
-                "mem": "16GB",
-                "num_threads": "max",
-                "method": method,
-                "basis": basis,
-                "charge": charge or int(sum(atoms.get_initial_charges())),
-                "multiplicity": mult or int(1 + sum(atoms.get_initial_magnetic_moments())),
-                "reference": "uhf" if mult > 1 else None,
-            }
 
     Returns
     -------
