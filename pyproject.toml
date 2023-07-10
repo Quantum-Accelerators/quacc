@@ -56,13 +56,13 @@ strict = [
     "cclib==1.7.2",
     "covalent==0.226.0rc0",  # waiting on > 0.222.0
     "custodian==2023.6.5",
-    "emmet-core==0.58.1",
+    "emmet-core==0.58.2",
     "jobflow==0.1.11",
-    "maggma==0.51.12",
+    "maggma==0.51.18",
     "monty==2023.5.8",
-    "numpy==1.25.0",
+    "numpy==1.25.1",
     "pydantic==1.10.2",
-    "pymatgen>=2023.6.23",
+    "pymatgen==2023.6.28",
 ]
 
 [project.scripts]

@@ -28,14 +28,14 @@ from quacc import SETTINGS
 
 
 def run_custodian(
-    vasp_parallel_cmd: str = SETTINGS.VASP_PARALLEL_CMD,
-    vasp_cmd: str = SETTINGS.VASP_CMD,
-    vasp_gamma_cmd: str = SETTINGS.VASP_GAMMA_CMD,
-    vasp_custodian_max_errors: int = SETTINGS.VASP_CUSTODIAN_MAX_ERRORS,
-    vasp_custodian_wall_time: int = SETTINGS.VASP_CUSTODIAN_WALL_TIME,
-    vtst_fixes: bool = SETTINGS.VASP_CUSTODIAN_VTST,
-    vasp_custodian_handlers: list[str] = SETTINGS.VASP_CUSTODIAN_HANDLERS,
-    vasp_custodian_validators: list[str] = SETTINGS.VASP_CUSTODIAN_VALIDATORS,
+    vasp_parallel_cmd: str | None = None,
+    vasp_cmd: str | None = None,
+    vasp_gamma_cmd: str | None = None,
+    vasp_custodian_max_errors: int | None = None,
+    vasp_custodian_wall_time: float | None = None,
+    vtst_fixes: bool | None = None,
+    vasp_custodian_handlers: list[str] | None = None,
+    vasp_custodian_validators: list[str] | None = None,
     scratch_dir: str | None = None,
     vasp_job_kwargs: dict | None = None,
     custodian_kwargs: dict | None = None,
@@ -55,7 +55,7 @@ def run_custodian(
     vasp_custodian_max_errors
         Maximum number of errors to allow before stopping the run. Defaults to 5 in settings.
     vasp_custodian_wall_time
-        Maximum wall time to allow before creating a STOPCAR. Defaults to None in settings.
+        Maximum wall time to allow before creating a STOPCAR. Defaults to infinity in settings.
     vtst_fixes
         Whether to apply VTST input swaps. Defaults to False in settings.
     vasp_custodian_handlers
@@ -75,7 +75,35 @@ def run_custodian(
     """
     # Adapted from atomate2.vasp.run.run_vasp
 
-    vasp_parallel_cmd = os.path.expandvars(vasp_parallel_cmd)
+    # Set defaults
+    vasp_parallel_cmd = os.path.expandvars(
+        SETTINGS.VASP_PARALLEL_CMD if vasp_parallel_cmd is None else vasp_parallel_cmd
+    )
+    vasp_cmd = SETTINGS.VASP_CMD if vasp_cmd is None else vasp_cmd
+    vasp_gamma_cmd = (
+        SETTINGS.VASP_GAMMA_CMD if vasp_gamma_cmd is None else vasp_gamma_cmd
+    )
+    vasp_custodian_max_errors = (
+        SETTINGS.VASP_CUSTODIAN_MAX_ERRORS
+        if vasp_custodian_max_errors is None
+        else vasp_custodian_max_errors
+    )
+    vasp_custodian_wall_time = (
+        SETTINGS.VASP_CUSTODIAN_WALL_TIME
+        if vasp_custodian_wall_time is None
+        else vasp_custodian_wall_time
+    )
+    vtst_fixes = SETTINGS.VASP_CUSTODIAN_VTST if vtst_fixes is None else vtst_fixes
+    vasp_custodian_handlers = (
+        SETTINGS.VASP_CUSTODIAN_HANDLERS
+        if vasp_custodian_handlers is None
+        else vasp_custodian_handlers
+    )
+    vasp_custodian_validators = (
+        SETTINGS.VASP_CUSTODIAN_VALIDATORS
+        if vasp_custodian_validators is None
+        else vasp_custodian_validators
+    )
 
     # Handlers for VASP
     handlers = []
@@ -124,7 +152,7 @@ def run_custodian(
     # Run with Custodian
     jobs = [VaspJob(split_vasp_cmd, **vasp_job_kwargs)]
 
-    if vasp_custodian_wall_time is not None:
+    if vasp_custodian_wall_time:
         handlers = list(handlers) + [
             WalltimeHandler(wall_time=vasp_custodian_wall_time)
         ]
