@@ -11,7 +11,7 @@ from quacc.presets import vasp as vasp_defaults
 _DEFAULT_CONFIG_FILE_PATH = os.path.expanduser("~/.quacc.yaml")
 
 
-class Settings(BaseSettings):
+class QuaccSettings(BaseSettings):
     """
     Settings for quacc.
 
@@ -104,7 +104,7 @@ class Settings(BaseSettings):
     )
 
     # VASP Settings: Custodian
-    VASP_CUSTODIAN: bool = Field(
+    VASP_USE_CUSTODIAN: bool = Field(
         True, description="Whether Custodian should be used to run VASP"
     )
     VASP_CUSTODIAN_VTST: bool = Field(
