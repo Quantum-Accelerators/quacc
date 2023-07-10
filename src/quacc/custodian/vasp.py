@@ -6,7 +6,6 @@ from __future__ import annotations
 import os
 import shlex
 
-import numpy as np
 from custodian import Custodian
 from custodian.vasp.handlers import (
     FrozenJobErrorHandler,
@@ -153,7 +152,7 @@ def run_custodian(
     # Run with Custodian
     jobs = [VaspJob(split_vasp_cmd, **vasp_job_kwargs)]
 
-    if vasp_custodian_wall_time < np.inf:
+    if vasp_custodian_wall_time:
         handlers = list(handlers) + [
             WalltimeHandler(wall_time=vasp_custodian_wall_time)
         ]
