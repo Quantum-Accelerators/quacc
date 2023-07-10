@@ -28,14 +28,6 @@ def static_job(
         Preset to use.
     calc_swaps
         Dictionary of custom kwargs for the calculator.
-            defaults = {
-                "ismear": -5,
-                "laechg": True,
-                "lcharg": True,
-                "lwave": True,
-                "nedos": 5001,
-                "nsw": 0,
-            }
 
     Returns
     -------
@@ -83,15 +75,6 @@ def relax_job(
         False if only the positions (ISIF = 2) should be updated.
     calc_swaps
         Dictionary of custom kwargs for the calculator.
-            defaults = {
-                "ediffg": -0.02,
-                "isif": 3 if relax_volume else 2,
-                "ibrion": 2,
-                "isym": 0,
-                "lcharg": False,
-                "lwave": False,
-                "nsw": 200,
-            }
 
     Returns
     -------

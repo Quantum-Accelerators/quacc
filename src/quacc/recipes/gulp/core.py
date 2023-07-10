@@ -43,11 +43,6 @@ def static_job(
             }
     option_swaps
         dictionary of custom option swap kwargs for the calculator.
-            default_options = {
-                "dump every gulp.res": True,
-                "output cif gulp.cif": True if atoms.pbc.any() else None,
-                "output xyz gulp.xyz": None if atoms.pbc.any() else True,
-            }
 
     Returns
     -------

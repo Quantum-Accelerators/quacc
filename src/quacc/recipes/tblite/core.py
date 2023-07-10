@@ -84,7 +84,6 @@ def relax_job(
         Dictionary of custom kwargs for the tblite calculator.
     opt_swaps
         Dictionary of custom kwargs for run_ase_opt
-            opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
 
     Returns
     -------
