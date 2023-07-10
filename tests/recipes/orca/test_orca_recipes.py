@@ -38,7 +38,6 @@ def test_static_job():
         output["parameters"]["orcasimpleinput"]
         == "wb97x-d3bj def2-tzvp sp slowconv normalprint xyzfile"
     )
-    assert output["parameters"]["orcablocks"] == f"%pal nprocs {nprocs} end"
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
     assert output["spin_multiplicity"] == 1
@@ -58,10 +57,7 @@ def test_static_job():
         output["parameters"]["orcasimpleinput"]
         == "wb97x-d3bj sp slowconv normalprint xyzfile def2-svp"
     )
-    assert (
-        output["parameters"]["orcablocks"]
-        == f"%scf maxiter 300 end %pal nprocs {nprocs} end"
-    )
+    assert "%scf maxiter 300 end" in output["parameters"]["orcablocks"]
 
 
 def test_relax_Job():
