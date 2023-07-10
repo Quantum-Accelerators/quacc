@@ -48,7 +48,6 @@ def static_job(
         Dictionary of orcasimpleinput swaps for the calculator.
         To enable new entries, set the value as True.
         To remove entries from the defaults, set the value as None.
-
     block_swaps
         Dictionary of orcablock swaps for the calculator.
         To enable new entries, set the value as True.
@@ -141,7 +140,6 @@ def relax_job(
         Dictionary of orcasimpleinput swaps for the calculator.
         To enable new entries, set the value as True.
         To remove entries from the defaults, set the value as None.
-
     block_swaps
         Dictionary of orcablock swaps for the calculator.
         To enable new entries, set the value as True.

@@ -419,18 +419,6 @@ def test_efermi():
     calc = Vasp(atoms, efermi=10.0)
     assert calc.string_params["efermi"] == 10.0
 
-    atoms = bulk("Cu")
-    calc = Vasp(atoms, vasp_min_version=5.4)
-    assert calc.string_params["efermi"] is None
-
-    atoms = bulk("Cu")
-    calc = Vasp(atoms, vasp_min_version=5.4, efermi="midgap")
-    assert calc.string_params["efermi"] is None
-
-    atoms = bulk("Cu")
-    calc = Vasp(atoms, vasp_min_version=5.4, efermi=10.0)
-    assert calc.string_params["efermi"] == 10.0
-
 
 def test_algo():
     atoms = bulk("Cu")

@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import os
-from typing import List, Optional, Union
+from typing import List, Optional
 
 from pydantic import Field, root_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -10,8 +10,6 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from quacc.presets import vasp as vasp_defaults
 
 _DEFAULT_CONFIG_FILE_PATH = os.path.expanduser("~/.quacc.yaml")
-
-__all__ = ["QuaccSettings"]
 
 
 class QuaccSettings(BaseSettings):
@@ -79,12 +77,8 @@ class QuaccSettings(BaseSettings):
     VASP_INCAR_COPILOT: bool = Field(
         True, description="Whether co-pilot mode should be used for VASP INCAR handling"
     )
-    VASP_MIN_VERSION: Union[float, None] = Field(
-        None,
-        description="Oldest VASP version you plan to use. Used to ensure INCAR settings are version-compatible.",
-    )
     VASP_BADER: bool = Field(
-        True,
+        os.environ.get("bader"),
         description="Whether to run a Bader analysis when summarizing VASP results. Requires bader to be in PATH.",
     )
     VASP_PRESET_MAG_DEFAULT: float = Field(
@@ -109,7 +103,7 @@ class QuaccSettings(BaseSettings):
     )
 
     # VASP Settings: Custodian
-    VASP_CUSTODIAN: bool = Field(
+    VASP_USE_CUSTODIAN: bool = Field(
         True, description="Whether Custodian should be used to run VASP"
     )
     VASP_CUSTODIAN_VTST: bool = Field(
@@ -146,10 +140,8 @@ class QuaccSettings(BaseSettings):
     @root_validator(pre=True)
     def load_default_settings(cls, values: dict) -> dict:
         """
-        Load settings from file or environment variables.
         Loads settings from a root file if available and uses that as defaults in
         place of built in defaults.
-        This allows setting of the config file path through environment variables.
 
         Parameters
         ----------
