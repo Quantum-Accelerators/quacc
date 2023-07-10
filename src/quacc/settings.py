@@ -49,6 +49,14 @@ class QuaccSettings(BaseSettings):
     )
 
     # ---------------------------
+    # ORCA Settings
+    # ---------------------------
+    ORCA_CMD: str = Field(
+        "orca",
+        description="Path to the ORCA executable. This must be the full, absolute path for parallel calculations to work.",
+    )
+
+    # ---------------------------
     # VASP Settings
     # ---------------------------
 
