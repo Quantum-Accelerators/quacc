@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "quacc"
 description="A platform to enable high-throughput, database-driven quantum chemistry and computational materials science"
-version = "0.1.1"
+version = "0.1.2"
 readme = "README.md"
 license = { text = "BSD-3" }
 authors = [{ name = "Andrew S. Rosen", email = "asrosen93@gmail.com" }]
@@ -31,7 +31,7 @@ dependencies = [
     "emmet-core>=0.51.11",
     "monty>=2023.4.10",
     "numpy",
-    "pydantic",
+    "pydantic<2",
     "pymatgen>=2023.6.23",
 ]
 
@@ -39,6 +39,7 @@ dependencies = [
 fireworks = ["fireworks>=2.0.3"]
 optimizers = ["sella>=2.3.2"]
 parsl = ["parsl>=2023.7.3"]
+prefect = ["prefect>=2.10.18", "prefect-dask>=0.2.4", "dask-jobqueue>=0.8.2"]
 tblite = ["tblite[ase]>=0.3.0; platform_system=='Linux'"]
 dev = ["black", "isort", "pytest", "pytest-cov"]
 docs = [

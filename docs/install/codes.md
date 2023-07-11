@@ -1,6 +1,6 @@
 # Calculator Setup
 
-!!! Hint
+!!! Tip
 
     Just getting started? Try using the EMT or LJ recipes before worrying about setting up one of the calculators below.
 

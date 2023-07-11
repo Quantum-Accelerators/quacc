@@ -51,7 +51,7 @@ jobs:
           covalent start
 
       - name: Run tests with pytest
-        run: pytest -k 'not jobflow and not fireworks and not parsl and not tblite and not psi4 and not dftb and not qchem and not newtonnet' --cov=quacc --cov-report=xml
+        run: pytest -k 'not jobflow and not fireworks and not parsl and not prefect and not tblite and not psi4 and not dftb and not qchem and not newtonnet' --cov=quacc --cov-report=xml
 
       - name: Stop Covalent server
         run: covalent stop
@@ -258,13 +258,13 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Install pip packages
-        run: pip install .[strict,dev,fireworks,parsl]
+        run: pip install .[strict,dev,fireworks,parsl,prefect]
 
       - name: Configure quacc
         run: quacc config
 
       - name: Run tests with pytest
-        run: pytest -k 'jobflow or fireworks or parsl' --cov=quacc --cov-report=xml
+        run: pytest -k 'jobflow or fireworks or parsl or prefect' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
