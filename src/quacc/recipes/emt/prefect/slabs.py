@@ -2,20 +2,17 @@
 from __future__ import annotations
 
 from ase import Atoms
-from prefect import flow
+from prefect import flow, task
 
+from quacc.recipes.emt.slabs import relax_job, static_job
 from quacc.schemas.ase import OptSchema, RunSchema
 from quacc.util.slabs import make_max_slabs_from_bulk
 
 
-# TODO: Add type hints. Relies on #9266 and #10116 in Prefect
-# TODO: Make `slab_relax_task` and `slab_static_task` kwargs
-# like in other workflow engines. Relies on #10135 in Prefect
 @flow
 def bulk_to_slabs_flow(
     atoms,
-    slab_relax_task,
-    slab_static_task,
+    run_slab_static: bool = True,
     slabgen_kwargs: dict | None = None,
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
@@ -33,10 +30,8 @@ def bulk_to_slabs_flow(
     ----------
     atoms
         Atoms object or a dictionary with the key "atoms" and an Atoms object as the value.
-    slab_relax_task
-        Default Task to use for the relaxation of the slab structures.
-    slab_static_task
-        Default Task to use for the static calculation of the slab structures.
+    run_slab_static
+        Whether to run the slab static calculations.
     slabgen_kwargs
         Additional keyword arguments to pass to make_max_slabs_from_bulk()
     slab_relax_kwargs
@@ -51,9 +46,12 @@ def bulk_to_slabs_flow(
         or quacc.schemas.ase.summarize_opt_run
     """
     atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    slabgen_kwargs = slabgen_kwargs or {}
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}
-    slabgen_kwargs = slabgen_kwargs or {}
+
+    slab_relax_task = task(relax_job)
+    slab_static_task = task(static_job)
 
     if "relax_cell" not in slab_relax_kwargs:
         slab_relax_kwargs["relax_cell"] = False
@@ -72,7 +70,7 @@ def bulk_to_slabs_flow(
 
     slabs = make_max_slabs_from_bulk(atoms, **slabgen_kwargs)
 
-    if slab_static_task is None:
+    if not run_slab_static:
         return _relax_distributed(slabs)
 
     return _relax_and_static_distributed(slabs)
