@@ -81,7 +81,7 @@ def test_tutorial3():
 
     # Construct the Flow
     job1 = jf.job(relax_job)(atoms)
-    job2 = jf.job(bulk_to_slabs_flow)(job1.output, slab_static_electron=None)
+    job2 = jf.job(bulk_to_slabs_flow)(job1.output, slab_static=None)
     workflow = jf.Flow([job1, job2])
 
     # Run the workflow locally
@@ -96,7 +96,7 @@ def test_tutorial4():
 
     # Construct the Flow
     job1 = jf.job(relax_job)(atoms)
-    job2 = jf.job(bulk_to_slabs_flow)(job1.output, slab_static_job=None)
+    job2 = jf.job(bulk_to_slabs_flow)(job1.output, slab_static=None)
     workflow = jf.Flow([job1, job2])
 
     # Run the workflow locally
@@ -155,7 +155,7 @@ def test_emt_flow():
 
     job = jf.job(bulk_to_slabs_flow)(
         atoms,
-        slab_static_job=None,
+        slab_static=None,
         slab_relax_kwargs={
             "opt_swaps": {"fmax": 1.0},
             "calc_kwargs": {"asap_cutoff": True},
