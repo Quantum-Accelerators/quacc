@@ -56,21 +56,16 @@ def bulk_to_slabs_flow(
     if "relax_cell" not in slab_relax_kwargs:
         slab_relax_kwargs["relax_cell"] = False
 
-    def _relax_distributed(slabs):
-        return [slab_relax_task(slab, **slab_relax_kwargs) for slab in slabs]
-
-    def _relax_and_static_distributed(slabs):
-        return [
-            slab_static_task(
-                slab_relax_task(slab, **slab_relax_kwargs),
-                **slab_static_kwargs,
-            )
-            for slab in slabs
-        ]
-
+    # Generate all the slab
     slabs = make_max_slabs_from_bulk(atoms, **slabgen_kwargs)
 
-    if not run_slab_static:
-        return _relax_distributed(slabs)
+    results = []
+    for slab in slabs:
+        slab_relax_future = slab_relax_task.submit(slab, **slab_relax_kwargs)
+        if run_slab_static:
+            slab_static_future = slab_static_task.submit(
+                slab_relax_future, **slab_static_kwargs
+            )
+        else:
 
-    return _relax_and_static_distributed(slabs)
+    return results

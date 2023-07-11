@@ -51,6 +51,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     - Very popular in the data science industry
     - Useful dashboard to monitor job progress
     - Supports a variety of job schedulers via Dask
+    - Uses a directed acyclic graph-free model for flexibility
 
     Cons:
 

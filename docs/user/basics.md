@@ -8,7 +8,7 @@ Once you understand the basics, you should move on to the ["Going High-Throughpu
 
 If you are not yet familiar with the ASE [`Atoms`](https://wiki.fysik.dtu.dk/ase/ase/atoms.html) object, you should read the [ASE tutorial](https://wiki.fysik.dtu.dk/ase/ase/atoms.html), as this is the main object used to represent molecules and structures within quacc. Additionally, it is worthwhile to be familiar with the basics of an ASE [Calculator](https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html).
 
-!!! Hint
+!!! Tip
 
     If you are coming from the Pymatgen ecosystem, you can use the [`pymatgen.io.ase.AseAtomsAdaptor`](https://pymatgen.org/pymatgen.io.ase.html#pymatgen.io.ase.AseAtomsAdaptor) class to convert between Pymatgen `#!Python Structure`/`#!Python Molecule` objects and the ASE `Atoms` object.
 
@@ -40,7 +40,7 @@ The recipe output (`result`) is a bit too large to print here; nonetheless, for 
 
 The `"atoms"` key contains a copy of the output `Atoms` object, the `"results"` key contains a dictionary of the results of the calculation, and the `"parameters"` key contains a dictionary of the parameters used in the calculation.
 
-!!! Hint
+!!! Tip
 
     You can make an `Atoms` object from common files like a CIF, XYZ, or POSCAR by using the [`ase.io.read`](https://wiki.fysik.dtu.dk/ase/ase/io/io.html) function. For instance, `#!Python from ase.io import read` followed by `#!Python atoms = read("</path/to/file>")`.
 
@@ -68,7 +68,7 @@ result2 = static_job(result1, method="GFN2-xTB")
 print(result2)
 ```
 
-!!! Hint
+!!! Tip
 
     The output of most compute jobs is a dictionary summarizing the results of the calculation. It always has a key `"atoms"` that contains a copy of the output `Atoms` object. The first argument to all recipes accepts either the `Atoms` object directly or a dictionary containing it.
 

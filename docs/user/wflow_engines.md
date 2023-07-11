@@ -34,7 +34,7 @@ Here, we will show how to use quacc with one of a variety of workflow engines to
 
     !!! Info
 
-        For a more details, be sure to refer to the [Prefect Tutorial](https://docs.prefect.io/tutorial/).
+        For a more details, be sure to refer to the [Prefect Tutorial](https://docs.prefect.io/tutorial/). The [Workflow Orchestration without DAGs](https://www.prefect.io/guide/blog/workflow-orchestration-without-dags/) blog post is also a good read.
 
 === "Jobflow"
 
@@ -57,7 +57,7 @@ graph LR
 
 === "Covalent"
 
-    !!! Hint
+    !!! Tip
 
         If you haven't done so yet, make sure you started the Covalent server with `covalent start` in the command-line.
 
@@ -104,7 +104,7 @@ graph LR
 
 === "Parsl"
 
-    !!! Hint
+    !!! Tip
 
         If you haven't done so yet, make sure you have loaded a Parsl configuration in your Python script. An example for running on your local machine is included below. Note that dynamic workflow recipes may fail if multi-threading is enabled, which is why we don't use the default `parsl.load()` configuration.
 
@@ -149,11 +149,12 @@ graph LR
     The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object. Technically, we did not need to call `future1.result()` because Parsl will automatically know that it cannot run `static_app` until `future1` is resolved. Nonetheless, we have included it here for clarity.
 
     !!! Note
-        It is not considered good practice to include a `.result()` call in a `@python_app` or `@join_app` definition, which is why we didn't do so here.
+
+        You should not include a `.result()` call in a `@python_app` or `@join_app` definition, which is why we didn't do so here. Parsl will implicitly know to call `.result()` on any `AppFuture`.
 
 === "Prefect"
 
-    !!! Hint
+    !!! Tip
         If you haven't logged into [Prefect Cloud](https://app.prefect.cloud/) yet, you should do so via `prefect cloud login`.
 
     ```python
@@ -170,7 +171,7 @@ graph LR
         future1 = task(relax_job).submit(atoms)
 
         # Call Task 2, which takes the output of Task 1 as input
-        future2 = task(static_job).submit(future1.result())
+        future2 = task(static_job).submit(future1)
 
         return future2
 
@@ -186,7 +187,11 @@ graph LR
 
     !!! Note
 
-    We have used a short-hand notation here of `task(<function>)`. This is equivalent to using the `@task` decorator and definining a new function for each task.
+        You should not call `.result()` when passing the results of tasks to other tasks, only when interacting with the result of a task inside of the flow itself. Prefect will implicitly know to call `.result()` on any `PrefectFuture`.
+
+    !!! Tip
+
+        We have used a short-hand notation here of `task(<function>)`. This is equivalent to using the `@task` decorator and definining a new function for each task.
 
     ![Prefect UI](../images/user/prefect_tutorial1.jpg)
 
@@ -296,7 +301,7 @@ graph LR
 === "Prefect"
 
     ```python
-    from prefect import flow
+    from prefect import flow, task
     from ase.build import bulk, molecule
     from quacc.recipes.emt.core import relax_job
 
@@ -389,7 +394,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
     Due to the dynamic nature of `bulk_to_slabs_flow`, the number of returned slabs will be dependent on the input `Atoms` object. The pattern for creating a dynamic workflow in Covalent is called a ["sublattice"](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-arch/covalent-sdk#sublattice). The sublattice, which is really just a fancy name for a sub-workflow within a larger workflow, and its individual compute tasks can also be viewed in the Covalent UI.
 
-    !!! Hint
+    !!! Tip
 
         You don't need to set `wait=True` in practice. Once you call `ct.dispatch`, the workflow will begin running. The `ct.get_result` function is used to fetch the workflow status and results from the server.
 
@@ -470,11 +475,10 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     from quacc.recipes.emt.core import relax_job
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
-
     @flow
     def workflow(atoms):
         future1 = task(relax_job).submit(atoms)
-        future2 = task(bulk_to_slabs_flow).submit(future1.result(), slab_static_electron=None)
+        future2 = task(bulk_to_slabs_flow).submit(future1, slab_static=None)
 
         return future2
 
@@ -497,7 +501,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     **The Inefficient Way**
 
     ```python
-    from jobflow immport job, Flow, run_locally
+    from jobflow import job, Flow, run_locally
     from ase.build import bulk
     from quacc.recipes.emt.core import relax_job
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
@@ -600,7 +604,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     print(result)
     ```
 
-    !!! Hint
+    !!! Tip
 
         If you are defining your own workflow functions to use, you can also set the executor for individual `Electron` objects by passing the `executor` keyword argument to the `@ct.electron` decorator.
 
