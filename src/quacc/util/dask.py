@@ -14,7 +14,7 @@ def make_runner(
     cluster_class: callable = None,
     adapt_kwargs: dict[str, int | None] | None = None,
     client_kwargs: dict = None,
-    temporary: bool = True,
+    temporary: bool = False,
 ) -> DaskTaskRunner:
     """
     Make a DaskTaskRunner for use with Prefect workflows. This DaskTaskRunner
