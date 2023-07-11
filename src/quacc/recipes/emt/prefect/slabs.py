@@ -59,13 +59,15 @@ def bulk_to_slabs_flow(
     # Generate all the slab
     slabs = make_max_slabs_from_bulk(atoms, **slabgen_kwargs)
 
-    results = []
+    futures = []
     for slab in slabs:
         slab_relax_future = slab_relax_task.submit(slab, **slab_relax_kwargs)
         if run_slab_static:
             slab_static_future = slab_static_task.submit(
                 slab_relax_future, **slab_static_kwargs
             )
+            futures.append(slab_static_future)
         else:
+            futures.append(slab_relax_future)
 
-    return results
+    return [future.result() for future in futures]

@@ -55,9 +55,10 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
     Cons:
 
-    - Can be expensive for large groups
+    - Can be expensive for large groups if you don't self-host
     - Lacks documentation for HPC environments
     - Meant for data-intensive workflows rather than compute-intensive workflows
+    - Using Dask for job scheduling can be challenging to configure
 
 === "Jobflow"
 
