@@ -218,7 +218,7 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Install pip packages
-        run: pip install .[strict,dev,fireworks,parsl]
+        run: pip install .[strict,dev,fireworks,parsl,prefect]
 
       - name: Configure quacc
         run: quacc config
