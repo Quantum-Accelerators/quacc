@@ -11,7 +11,7 @@ except ImportError:
 
 def make_runner(
     cluster_kwargs: dict,
-    cluster_class: callable = SLURMCluster,
+    cluster_class: callable = None,
     adapt_kwargs: dict[str, int | None] | None = None,
     client_kwargs: dict = None,
     temporary: bool = True,
@@ -42,6 +42,9 @@ def make_runner(
     DaskTaskRunner
         A DaskTaskRunner object for use with Prefect workflows.
     """
+
+    if cluster_class is None:
+        cluster_class = SLURMCluster
 
     # Make the one-time-use DaskTaskRunner
     if temporary:
