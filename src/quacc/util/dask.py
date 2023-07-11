@@ -9,7 +9,6 @@ except ImportError:
     raise ImportError("Install quacc[prefect]")
 
 
-<<<<<<< HEAD:src/quacc/util/dask.py
 def make_runner(
     cluster_kwargs: dict,
     cluster_class: callable = SLURMCluster,
@@ -21,16 +20,6 @@ def make_runner(
     Make a DaskTaskRunner for use with Prefect workflows. This DaskTaskRunner
     will only submit a Slurm job once the `Flow` begins. It will terminate
     once the `Flow` is finished.
-=======
-def make_async_runner(
-    cluster_kwargs: dict, cluster_class: callable = SLURMCluster, verbose: bool = False
-) -> DaskTaskRunner:
-    """
-    Make a DaskTaskRunner for use with Prefect workflows. This DaskTaskRunner will immediately
-    submit a Slurm job upon being called and will wait for work to be run. It will remain
-    active until the walltime is reached or the Slurm job is cancelled. For queuing purposes,
-    this is often preferred over `make_runner`.
->>>>>>> prefect:quacc/util/wflows.py
 
     Parameters
     ----------
@@ -76,13 +65,7 @@ def make_async_runner(
 
 def _make_cluster(cluster_class: callable, cluster_kwargs: dict, verbose=False) -> Job:
     """
-<<<<<<< HEAD:src/quacc/util/dask.py
     Make a Dask cluster for use with Prefect workflows.
-=======
-    Make a DaskTaskRunner for use with Prefect workflows. This DaskTaskRunner
-    will only submit a Slurm job once the `Flow` begins. It will terminate
-    once the `Flow` is finished.
->>>>>>> prefect:quacc/util/wflows.py
 
     Parameters
     ----------
