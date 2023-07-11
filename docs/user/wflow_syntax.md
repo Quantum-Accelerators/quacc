@@ -4,11 +4,6 @@
 
 Here, we provide code snippets for several decorator-based workflow engines. For a comparison of the pros and cons of each approach, refer to the [Workflow Engines Overview](wflow_overview.md) page.
 
-You can run the examples below as-is, with the following notes:
-
-- For Covalent, run `covalent start` in the terminal to have the results show up in the GUI.
-- For Parsl, do `#!Python import parsl` followed by `#!Python parsl.load()` in Python before running the scripts in order to load a default Parsl configuration.
-
 ## Simple Workflow
 
 Let's do the following:
@@ -40,6 +35,10 @@ graph LR
 
 === "Covalent"
 
+    !!! Tip
+
+        Make sure you run `covalent start` in the terminal to have the results show up in the GUI.
+
     ```python
     import covalent as ct
 
@@ -65,6 +64,9 @@ graph LR
 
 === "Parsl"
 
+    !!! Tip
+        Make sure you run `#!Python import parsl` followed by `#!Python parsl.load()` in Python to load a default Parsl configuration.
+
     ```python
     from parsl import python_app
 
@@ -78,6 +80,26 @@ graph LR
 
     def workflow(a, b, c):
         return mult(add(a, b), c)
+
+    result = workflow(1, 2, 3).result() # 9
+    ```
+
+=== "Prefect"
+
+    ```python
+    from prefect import flow, task
+
+    @task
+    def add(a, b):
+        return a + b
+
+    @task
+    def mult(a, b):
+        return a * b
+
+    @flow
+    def workflow(a, b, c):
+        return mult.submit(add.submit(a, b), c)
 
     result = workflow(1, 2, 3).result() # 9
     ```
@@ -129,13 +151,10 @@ graph LR
     def add(a, b):
         return a + b
 
-    def make_more(val):
-        return [val] * random.randint(2, 5)
-
     def workflow(a, b, c):
-        result1 = add(a, b)
-        result2 = make_more(result1)
-        return [add(val, c) for val in result2]
+        add_result = add(a, b)
+        vals = [add_result] * random.randint(2, 5)
+        return [add(val, c) for val in vals]
 
     result = workflow(1, 2, 3) # e.g. [6, 6, 6]
     ```
@@ -199,6 +218,25 @@ graph LR
         return add_distributed(future2, c)
 
     result = workflow(1, 2, 3).result() # e.g. [6, 6, 6]
+    ```
+
+=== "Prefect"
+
+    ```python
+    import random
+    from prefect import flow, task
+
+    @task
+    def add(a, b):
+        return a + b
+
+    @flow
+    def workflow(a, b, c):
+        future1 = add.submit(a, b)
+        vals_to_add = [future1.result()] * random.randint(2, 5)
+        return [add.submit(val, c).result() for val in vals_to_add]
+
+    result = workflow(1, 2, 3) # e.g. [6, 6, 6]
     ```
 
 === "Jobflow"

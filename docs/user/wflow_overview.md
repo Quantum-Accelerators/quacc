@@ -42,6 +42,24 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     - Challenging to orchestrate workflows with steps running across heterogeneous resources
     - The concept of always returning a "future" object can be confusing for new users
 
+=== "Prefect"
+
+    [Prefect](https://www.prefect.io/) is a workflow management system that is widely adopted in the data science industry.
+
+    Pros:
+
+    - Very popular in the data science industry
+    - Useful dashboard to monitor job progress
+    - Supports a variety of job schedulers via Dask
+    - Uses a directed acyclic graph-free model for flexibility
+
+    Cons:
+
+    - Can be expensive for large groups if you don't self-host
+    - Lacks documentation for HPC environments
+    - Meant for data-intensive workflows rather than compute-intensive workflows
+    - Using Dask for job scheduling can be challenging to configure
+
 === "Jobflow"
 
     If you are affiliated with the Materials Project team at Lawrence Berkeley National Laboratory, we recommend using [Jobflow](https://github.com/materialsproject/jobflow) to define the workflows coupled with [FireWorks](https://github.com/materialsproject/fireworks) to dispatch them since it widely used there.
