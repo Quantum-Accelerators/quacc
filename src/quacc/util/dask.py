@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Literal
 
 try:
@@ -12,7 +14,7 @@ except ImportError:
 def make_runner(
     cluster_kwargs: dict,
     cluster_class: callable = SLURMCluster,
-    adapt_kwargs: dict[Literal["minimum"] : int, Literal["maximum"] : int] = None,
+    adapt_kwargs: dict[str, int | None] | None = None,
     client_kwargs: dict = None,
     temporary: bool = True,
 ) -> DaskTaskRunner:
@@ -28,8 +30,8 @@ def make_runner(
     cluster_class
         The Dask cluster class to use. Defaults to `dask_jobqueue.SLURMCluster`.
     adapt_kwargs
-        Keyword arguments to pass to `cluster.adapt`. If `None`, no adaptive scaling
-        will be done.
+        Keyword arguments to pass to `cluster.adapt` of the form `{"minimum": int, "maximum": int}`.
+        If `None`, no adaptive scaling will be done.
     client_kwargs
         Keyword arguments to pass to `dask.distributed.Client`.
     temporary
