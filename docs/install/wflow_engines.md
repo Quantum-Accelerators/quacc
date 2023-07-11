@@ -32,9 +32,16 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
 === "Parsl"
 
-    **Installation**
-
     In your activated Python environment, install Parsl via `pip install parsl`. Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
+
+=== "Prefect"
+
+    1. In your activated Python environment, install Prefect and the necessary Dask dependencies via `pip install prefect prefect-dask dask-jobqueue`
+    2. Make an account on [Prefect Cloud](https://app.prefect.cloud/)
+    3. Make an [API Key](https://docs.prefect.io/cloud/users/api-keys/) and (optionally) store it in a `PREFECT_API_KEY` environment variable (e.g. in your `~/.bashrc`)
+    4. Run `prefect cloud login` from the command-line and enter your API key (or use the browser, if possible)
+
+    Additional configuration parameters can be modified, as described in the [Prefect documentation](https://docs.prefect.io/concepts/settings/).
 
 === "Jobflow"
 
@@ -79,11 +86,9 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     You will then need to define a `JOBFLOW_CONFIG_FILE` environment variable pointing to the file you made. For instance, in your `~/.bashrc` file, add the following line:
     `export JOBFLOW_CONFIG_FILE="/path/to/my/jobflow.yaml"`.
 
-=== "FireWorks"
+    **FireWorks Installation**
 
-    **Installation**
-
-    To install quacc with support for FireWorks, run `pip install fireworks`.
+    To install quacc with support for FireWorks to launch Jobflow-generated workflows, run `pip install fireworks`.
 
     **FireWorks DB Setup**
 
