@@ -484,7 +484,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     print(result)
     ```
 
-    ![Prefect UI](../images/user/prefect_tutorial3.gif)
+    ![Prefect UI](../images/user/prefect_tutorial3.jpg)
 
     **The Efficient Way**
 
