@@ -27,16 +27,6 @@ def slab_static_job(
         Preset to use.
     calc_swaps
         dictionary of custom kwargs for the calculator.
-            defaults = {
-                "auto_dipole": True,
-                "ismear": -5,
-                "laechg": True,
-                "lcharg": True,
-                "lvhar": True,
-                "lwave": True,
-                "nedos": 5001,
-                "nsw": 0,
-            }
 
     Returns
     -------
@@ -81,16 +71,6 @@ def slab_relax_job(
         Preset to use.
     calc_swaps
         Dictionary of custom kwargs for the calculator.
-            defaults = {
-                "auto_dipole": True,
-                "ediffg": -0.02,
-                "isif": 2,
-                "ibrion": 2,
-                "isym": 0,
-                "lcharg": False,
-                "lwave": False,
-                "nsw": 200,
-            }
 
     Returns
     -------

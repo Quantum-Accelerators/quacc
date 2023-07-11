@@ -54,10 +54,9 @@ class Vasp(Vasp_):
     mag_cutoff
         Set all initial magmoms to 0 if all have a magnitude below this value.
         Default is 0.05 in settings.
-    vasp_min_version
-        Oldest VASP version you plan to use. Used to ensure INCAR settings are version-compatible.
     verbose
         If True, warnings will be raised when INCAR parameters are automatically changed.
+        Default is True in settings.
     **kwargs
         Additional arguments to be passed to the VASP calculator, e.g. `xc='PBE'`, `encut=520`. Takes all valid
         ASE calculator arguments, in addition to those custom to quacc.
@@ -72,15 +71,32 @@ class Vasp(Vasp_):
         self,
         input_atoms: Atoms,
         preset: None | str = None,
-        use_custodian: bool = SETTINGS.VASP_CUSTODIAN,
-        incar_copilot: bool = SETTINGS.VASP_INCAR_COPILOT,
-        copy_magmoms: bool = SETTINGS.VASP_COPY_MAGMOMS,
-        preset_mag_default: float = SETTINGS.VASP_PRESET_MAG_DEFAULT,
-        mag_cutoff: None | float = SETTINGS.VASP_MAG_CUTOFF,
-        vasp_min_version: None | float = SETTINGS.VASP_MIN_VERSION,
-        verbose: bool = SETTINGS.VASP_VERBOSE,
+        use_custodian: bool | None = None,
+        incar_copilot: bool | None = None,
+        copy_magmoms: bool | None = None,
+        preset_mag_default: float | None = None,
+        mag_cutoff: None | float = None,
+        verbose: bool | None = None,
         **kwargs,
     ):
+        # Set defaults
+        use_custodian = (
+            SETTINGS.VASP_USE_CUSTODIAN if use_custodian is None else use_custodian
+        )
+        incar_copilot = (
+            SETTINGS.VASP_INCAR_COPILOT if incar_copilot is None else incar_copilot
+        )
+        copy_magmoms = (
+            SETTINGS.VASP_COPY_MAGMOMS if copy_magmoms is None else copy_magmoms
+        )
+        preset_mag_default = (
+            SETTINGS.VASP_PRESET_MAG_DEFAULT
+            if preset_mag_default is None
+            else preset_mag_default
+        )
+        mag_cutoff = SETTINGS.VASP_MAG_CUTOFF if mag_cutoff is None else mag_cutoff
+        verbose = SETTINGS.VASP_VERBOSE if verbose is None else verbose
+
         # Assign variables to self
         self.input_atoms = input_atoms
         self.preset = preset
@@ -89,7 +105,6 @@ class Vasp(Vasp_):
         self.copy_magmoms = copy_magmoms
         self.preset_mag_default = preset_mag_default
         self.mag_cutoff = mag_cutoff
-        self.vasp_min_version = vasp_min_version or np.inf
         self.verbose = verbose
         self.kwargs = kwargs
 
@@ -549,18 +564,7 @@ class Vasp(Vasp_):
             calc.set(npar=1)
             calc.set(ncore=None)
 
-        if calc.string_params["efermi"]:
-            if (
-                isinstance(calc.string_params["efermi"], str)
-                and self.vasp_min_version < 6.4
-            ):
-                if self.verbose:
-                    warnings.warn(
-                        "Copilot: Unsetting EFERMI because VASP_MIN_VERSION < 6.4.",
-                        UserWarning,
-                    )
-                calc.set(efermi=None)
-        elif self.vasp_min_version >= 6.4:
+        if not calc.string_params["efermi"]:
             if self.verbose:
                 warnings.warn(
                     "Copilot: Setting EFERMI = MIDGAP per the VASP manual.", UserWarning
