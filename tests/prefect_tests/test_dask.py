@@ -65,7 +65,8 @@ def test_make_runner():
         "memory": "1GB",
         "processes": 1,
     }
-    runner = make_runner(cluster_kwargs)
+    adapt_kwargs = {"minimum": 1, "maximum": 2}
+    runner = make_runner(cluster_kwargs, adapt_kwargs=adapt_kwargs)
 
 
 @pytest.mark.skipif(
