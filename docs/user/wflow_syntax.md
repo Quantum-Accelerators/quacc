@@ -233,8 +233,9 @@ graph LR
     @flow
     def workflow(a, b, c):
         future1 = add.submit(a, b)
-        vals = [future1.result()] * random.randint(2, 5)
-        return [add.submit(val, c) for val in vals]
+
+        vals_to_add = [future1.result()] * random.randint(2, 5)
+        return [add.submit(val, c).result() for val in vals_to_add]
 
     result = workflow(1, 2, 3) # e.g. [6, 6, 6]
     ```
