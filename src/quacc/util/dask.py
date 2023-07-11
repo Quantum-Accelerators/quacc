@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Literal
-
 try:
     from dask_jobqueue import SLURMCluster
     from dask_jobqueue.core import Job
