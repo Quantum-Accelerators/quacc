@@ -1,5 +1,7 @@
 # Contributing
 
+We welcome all contributions, big or small (provided they come with unit tests!). Here are some general guidelines and tips. Note that it is never too early to open a PR if you're looking for input or feedback!
+
 ## General Tips
 
 When developing new recipes, it is often helpful to start from an existing example. In general, we recommend referring to `quacc.recipes.emt` or `quacc.recipes.tblite`. Some advanced use cases can also be found in the VASP recipes.
