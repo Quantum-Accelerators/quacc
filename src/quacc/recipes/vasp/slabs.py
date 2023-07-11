@@ -168,8 +168,8 @@ def slab_to_ads_flow(
     slab: Atoms,
     adsorbate: Atoms,
     make_ads_kwargs: dict | None = None,
-    slab_relax_electron: ct.electron = ct.electron(slab_relax_job),
-    slab_static_electron: ct.electron | None = ct.electron(slab_static_job),
+    slab_relax_electron: ct.electron = slab_relax_job,
+    slab_static_electron: ct.electron | None = slab_static_job,
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
 ) -> list[VaspSchema]:
