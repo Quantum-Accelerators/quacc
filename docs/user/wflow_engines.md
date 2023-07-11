@@ -28,6 +28,14 @@ Here, we will show how to use quacc with one of a variety of workflow engines to
 
         For a more detailed tutorial on how to use Parsl, refer to the ["Parsl Tutorial"](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html) and the even more detailed ["Parsl User Guide"](https://parsl.readthedocs.io/en/stable/userguide/index.html).
 
+=== "Prefect"
+
+    Take a moment to learn about the main Prefect concepts of a [`Flow`](https://docs.prefect.io/concepts/flows/) and a [`Task`](https://docs.prefect.io/concepts/tasks/).
+
+    !!! Info
+
+        For a more details, be sure to refer to the [Prefect Tutorial](https://docs.prefect.io/tutorial/).
+
 === "Jobflow"
 
     Take a moment to read the Jobflow documentation's [Quick Start](https://materialsproject.github.io/jobflow/tutorials/1-quickstart.html) to get a sense of how Jobflow works. Namely, you should understand the `Job` and `Flow` definitions, which describe individual compute tasks and workflows, respectively.
@@ -143,6 +151,45 @@ graph LR
     !!! Note
         It is not considered good practice to include a `.result()` call in a `@python_app` or `@join_app` definition, which is why we didn't do so here.
 
+=== "Prefect"
+
+    !!! Hint
+        If you haven't logged into [Prefect Cloud](https://app.prefect.cloud/) yet, you should do so via `prefect cloud login`.
+
+    ```python
+    from prefect import flow, task
+    from ase.build import bulk
+    from quacc.recipes.emt.core import relax_job, static_job
+
+
+    # Define the workflow
+    @flow
+    def workflow(atoms):
+
+        # Call Task 1
+        future1 = task(relax_job).submit(atoms)
+
+        # Call Task 2, which takes the output of Task 1 as input
+        future2 = task(static_job).submit(future1.result())
+
+        return future2
+
+    # Make an Atoms object of a bulk Cu structure
+    atoms = bulk("Cu")
+
+    # Run the workflow with Prefect tracking
+    result = workflow(atoms).result()
+    print(result)
+    ```
+
+    You can see that it is quite trivial to set up a Prefect workflow using the recipes within quacc. We define the full `Flow` as a function that stitches together the individual `Task` workflow steps. Calling `.submit()` enables concurrent execution of the tasks, which also requires the use of `.result()` to retrieve the output of the task.
+
+    !!! Note
+
+    We have used a short-hand notation here of `task(<function>)`. This is equivalent to using the `@task` decorator and definining a new function for each task.
+
+    ![Prefect UI](../images/user/prefect_tutorial1.jpg)
+
 === "Jobflow"
 
     ```python
@@ -245,6 +292,36 @@ graph LR
     !!! Note
 
         If you find defining a new function for each `PythonApp` a bit annoying, you can use the following shorthand: `#!Python relax_app=python_app(relax_job.electron_object.function)`.
+
+=== "Prefect"
+
+    ```python
+    from prefect import flow
+    from ase.build import bulk, molecule
+    from quacc.recipes.emt.core import relax_job
+
+    # Define workflow
+    @flow
+    def workflow(atoms1, atoms2):
+
+        # Define two independent relaxation jobs
+        future1 = task(relax_job).submit(atoms1)
+        future2 = task(relax_job).submit(atoms2)
+
+        return future1, future2
+
+    # Define two Atoms objects
+    atoms1 = bulk("Cu")
+    atoms2 = molecule("N2")
+
+    # Run the workflow with Prefect tracking
+    future1, future2 = workflow(atoms1, atoms2)
+    print(future1.result(), future2.result())
+    ```
+
+    As expected, the Prefect Cloud UI shows two jobs that are not dependent on one another.
+
+    ![Prefect UI](../images/user/prefect_tutorial2.jpg)
 
 === "Jobflow"
 
@@ -382,6 +459,38 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
     !!! Note
         We didn't need to wrap `bulk_to_slabs_flow` with a `@python_app` decorator because it is simply a collection of `PythonApp` objects and is already returning an `AppFuture`.
+
+=== "Prefect"
+
+    **The Inefficient Way**
+
+    ```python
+    from prefect import task, flow
+    from ase.build import bulk
+    from quacc.recipes.emt.core import relax_job
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+
+    @flow
+    def workflow(atoms):
+        future1 = task(relax_job).submit(atoms)
+        future2 = task(bulk_to_slabs_flow).submit(future1.result(), slab_static_electron=None)
+
+        return future2
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Run the workflow
+    result = workflow(atoms).result()
+    print(result)
+    ```
+
+    ![Prefect UI](../images/user/prefect_tutorial3.gif)
+
+    **The Efficient Way**
+
+    ![Prefect UI](../images/user/prefect_tutorial4.gif)
 
 === "Jobflow"
 
@@ -635,6 +744,100 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
         By default, the [`ThreadPoolExecutor`](https://parsl.readthedocs.io/en/stable/stubs/parsl.executors.ThreadPoolExecutor.html#parsl.executors.ThreadPoolExecutor) (which is used when calling `parsl.load()`) is run in a multi-threaded mode, which may cause I/O errors when running multiple calculations simultaneously. We do not recommend using Parsl-based multi-threading at this time if there is any file I/O in your workflow.
 
+=== "Prefect"
+
+    **Defining Task Runners**
+
+    Out-of-the-box, Prefect will run on your local machine. However, in practice you will probably want to run your Prefect workflows on HPC machines.
+
+    !!! Note
+
+        If you are just starting out, try running some test calculations locally first. Then come back and set up the relevant configuration files for your desired machines.
+
+    To modify where tasks are run, set the `task_runner` keyword argument of the corresponding `@flow` decorator. The jobs in this scenario would be submitted from a login node.
+
+    An example is shown below for setting up a task runner compatible with the NERSC Perlmutter machine. By default, `make_runner` will generate a `prefect_dask.DaskTaskRunner` composed of a `jobqueue.SLURMCluster` object.
+
+    ```python
+    from quacc.util.dask import make_runner
+
+    n_slurm_jobs = 1 # Number of Slurm jobs to launch in parallel
+    n_nodes_per_calc = 1 # Number of nodes to reserve for each Slurm job
+    n_cores_per_node = 48 # Number of CPU cores per node
+    mem_per_node = "64 GB" # Total memory per node
+
+    cluster_kwargs = {
+        # Dask worker options
+        "n_workers": n_slurm_jobs, # number of Slurm jobs to launch
+        "cores": n_cores_per_node, # total number of cores (per Slurm job) for Dask worker
+        "memory": mem_per_node, # total memory (per Slurm job) for Dask worker
+        # SLURM options
+        "shebang": "#!/bin/bash",
+        "account": "AccountName",
+        "walltime": "00:10:00", # DD:HH:SS
+        "job_mem": "0", # all memory on node
+        "job_script_prologue": ["source ~/.bashrc", "conda activate quacc"], # commands to run before calculation, including exports
+        "job_directives_skip": ["-n", "--cpus-per-task"], # Slurm directives we can skip
+        "job_extra_directives": [f"-N {n_nodes_per_calc}", "-q debug", "-C cpu"], # num. of nodes for calc (-N), queue (-q), and constraints (-c)
+        "python": "python", # Python executable name
+    }
+
+    runner = make_runner(cluster_kwargs, temporary=True)
+    ```
+
+    With this instantiated cluster object, you can set the task runner of a `Flow` as follows.
+
+    ```python
+    @flow(task_runner=cluster)
+    def workflow(atoms):
+        ...
+    ```
+
+    Now, when the worklow is run from the login node, it will be submitted to the job scheduling system (Slurm by default), and the results will be sent back to Prefect Cloud once completed.
+
+    ```{seealso}
+    Refer to the [Dask-Jobqueue Documentation](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html) for the available `cluster_kwargs` that can be defined and how they relate to a typical job script.
+    ```
+
+    To asynchronously spawn a Slurm job that continually pulls in work for the duration of its walltime (rather than starting and terminating over the lifetime of the associated `Flow`), you can instead use the `make_runner` command without a `temporary` keyword argument:
+
+    ```python
+    runner = make_runner(cluster_kwargs)
+    ```
+
+    This is often more efficient for running large numbers of workflows because you can request a single, large Slurm job that continually pulls in work rather than submitting a large number of small jobs to the scheduler.
+
+    Additionally, you can have the generated Dask cluster adaptively scale based on the amount of work available by setting `adapt_kwargs` as follows:
+
+    ```python
+    runner = make_runner(cluster_kwargs, adapt_kwargs={"minimum": 1, "maximum": 5})
+    ```
+
+    This will ensure that at least one Slurm job is always running, but the number of jobs will scale up to 5 if there is enough work available.
+
+    **Troubleshooting**
+
+    If you are having trouble figuring out the right `cluster_kwargs` to use, the best option is to have the generated job script printed to the screen. This can be done as follows.
+
+    ```python
+    from dask_jobqueue import SLURMCluster
+    from quacc.util.dask import _make_cluster
+
+    cluster = make_cluster(SLURMCluster, cluster_kwargs, verbose=True)
+    ```
+
+    Note, however, that a Slurm job will be immediately submitted, so you will probably want to `scancel` it as you debug your job script.
+
+    **Executor Configuration File**
+
+    Speaking of configurations, if you use mostly the same HPC settings for your calculations, it can be annoying to define a large dictionary in every workflow you run. Instead, you can define a configuration file at `~/.config/dask/jobqueue.yaml` as described in the [dask-jobqueue](https://jobqueue.dask.org/en/latest/configuration-setup.html#managing-configuration-files) documentation that can be used to define default values common to your HPC setup.
+
+    **Using a Prefect Agent**
+
+    So far, we have dispatched calculations immediately upon calling them. However, in practice, it is often more useful to have a [Prefect agent](https://docs.prefect.io/concepts/work-pools/#agent-overview) running in the background that will continually poll for work to submit to the task runner. This allows you to submit only a subset of workflows at a time, and the agent will automatically submit more jobs as the resources become available.
+
+    To run Prefect workflows with an agent, on the computing environment where you wish to submit jobs, run `prefect agent start -p "quacc-pool"` to start a worker pool named "quacc-pool". Then submit your workflows as usual. It is best to run the agent on some perpetual resource like a login node or a dedicated workflow node.
+
 === "Jobflow"
 
     Out-of-the box, Jobflow can be used to run on your local machine. You will, however, need a "manager" to run your workflows on HPC machines. The currently recommended manager for Jobflow is FireWorks, which is described here.
@@ -696,6 +899,10 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 === "Parsl"
 
     That ends the Parsl section of the documentation. If you want to learn more about Parsl, you can read the [Parsl Documentation](https://parsl.readthedocs.io/en/stable/#). Please refer to the [Parsl Slack Channel](http://parsl-project.org/support.html) for any Parsl-specific questions.
+
+=== "Prefect"
+
+    That ends the Perfect section of the documentation. If you want to learn more about Perfect, you can read the [Prefect Documentation](https://docs.prefect.io/). Please refer to the [Prefect Slack Channel](https://www.prefect.io/slack/) and/or [Prefect Community Discourse](https://discourse.prefect.io/) page for any Prefect-specific questions.
 
 === "Jobflow"
 

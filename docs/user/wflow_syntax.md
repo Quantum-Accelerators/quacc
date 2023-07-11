@@ -82,6 +82,26 @@ graph LR
     result = workflow(1, 2, 3).result() # 9
     ```
 
+=== "Prefect"
+
+    ```python
+    from prefect import flow, task
+
+    @task
+    def add(a, b):
+        return a + b
+
+    @task
+    def mult(a, b):
+        return a * b
+
+    @flow
+    def workflow(a, b, c):
+        return mult(add(a, b), c)
+
+    result = workflow(1, 2, 3) # 9
+    ```
+
 === "Jobflow"
 
     ```python
@@ -200,6 +220,8 @@ graph LR
 
     result = workflow(1, 2, 3).result() # e.g. [6, 6, 6]
     ```
+
+=== "Prefect"
 
 === "Jobflow"
 
