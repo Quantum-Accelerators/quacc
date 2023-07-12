@@ -18,23 +18,30 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
         Once you start scaling up your calculations, we recommend hosting the Covalent server on a dedicated machine or using [Covalent Cloud](https://www.covalent.xyz/cloud/). Refer to the [Covalent Deployment Guide](https://docs.covalent.xyz/docs/user-documentation/server-deployment) for details.
 
+    **Plugin Installation**
+
+    Depending on where you wish to run your quacc calculations, you may need to install the corresponding Covalent plugin, as described in the [Covalent plugin documentation](https://docs.covalent.xyz/docs/features/executor-plugins/exe). For production-quality calculations, we anticipate that most users will rely on the [`SlurmExecutor`](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/slurm), which can be installed via `pip install covalent-slurm-plugin`.
+
     **Optional Configuration**
 
     Covalent has several [configuration options](https://docs.covalent.xyz/docs/user-documentation/how-to/customization/) that can be modified. Running `quacc config` automatically takes care of setting the ones that are critical for quacc to run properly. If you ever delete your Covalent configuration (e.g. via `covalent purge`), you will need to re-run `quacc config`.
 
-    **Plugin Installation**
-
     !!! Tip
 
-        If you are just starting out, try running some test calculations locally first. Then come back and install the relevant Covalent plugins for your machines.
-
-    Depending on where you wish to run your quacc calculations, you may need to install the corresponding Covalent plugin, as described in the [Covalent plugin documentation](https://docs.covalent.xyz/docs/features/executor-plugins/exe). For production-quality calculations, we anticipate that most users will rely on the [`SlurmExecutor`](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/slurm), which can be installed via `pip install covalent-slurm-plugin`.
+        If you are using Perlmutter at NERSC, you will need to set `export COVALENT_CONFIG_DIR="$SCRATCH/.config/covalent"` in your `~/.bashrc` because the home directory does not support file locking.
 
 === "Parsl"
 
-    **Installation**
+    In your activated Python environment, install Parsl via `pip install parsl`. Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
 
-    In your activated Python environment, install Parsl via `pip install parsl` or `pip install parsl[monitoring]` for the dependencies that enable a visual dashboard. Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
+=== "Prefect"
+
+    1. In your activated Python environment, install Prefect and the necessary Dask dependencies via `pip install prefect prefect-dask dask-jobqueue`
+    2. Make an account on [Prefect Cloud](https://app.prefect.cloud/)
+    3. Make an [API Key](https://docs.prefect.io/cloud/users/api-keys/) and (optionally) store it in a `PREFECT_API_KEY` environment variable (e.g. in your `~/.bashrc`)
+    4. Run `prefect cloud login` from the command-line and enter your API key (or use the browser, if possible)
+
+    Additional configuration parameters can be modified, as described in the [Prefect documentation](https://docs.prefect.io/concepts/settings/).
 
 === "Jobflow"
 
@@ -62,26 +69,26 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
         collection_name: <collection name>
     ```
 
-    If you are using a URI (as is common with MongoDB Atlas), then you will instead have a `jobflow.yaml` file that looks like the example below. Here, you will put the full URI in the `host` field. The `username` and `password` are part of the URI and so should not be included elsewhere in the YAML file.
+    !!! Note
 
-    ```yaml title="jobflow.yaml"
-    JOB_STORE:
-    docs_store:
-        type: MongoStore
-        host: <URI>
-        port: 27017
-        database: <database name>
-        collection_name: <collection name>
-    ```
+        If you are using a URI (as is common with MongoDB Atlas), then you will instead have a `jobflow.yaml` file that looks like the example below. Here, you will put the full URI in the `host` field. The `username` and `password` are part of the URI and so should not be included elsewhere in the YAML file.
+
+        ```yaml title="jobflow.yaml"
+        JOB_STORE:
+        docs_store:
+            type: MongoStore
+            host: <URI>
+            port: 27017
+            database: <database name>
+            collection_name: <collection name>
+        ```
 
     You will then need to define a `JOBFLOW_CONFIG_FILE` environment variable pointing to the file you made. For instance, in your `~/.bashrc` file, add the following line:
     `export JOBFLOW_CONFIG_FILE="/path/to/my/jobflow.yaml"`.
 
-=== "FireWorks"
+    **FireWorks Installation**
 
-    **Installation**
-
-    To install quacc with support for FireWorks, run `pip install fireworks`.
+    To install quacc with support for FireWorks to launch Jobflow-generated workflows, run `pip install fireworks`.
 
     **FireWorks DB Setup**
 
@@ -103,6 +110,9 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     CONFIG_FILE_DIR: </path/to/fw_config>
     QUEUE_UPDATE_INTERVAL: 2
     ```
+
+    You will also need to define a `FW_CONFIG_FILE` environment variable pointing to the `FW_config.yaml` file you made. For instance, in your `~/.bashrc` file, add the following line:
+    `export FW_CONFIG_FILE="/path/to/config/fw_config/FW_config.yaml"`.
 
     **FWorker**
 
@@ -130,18 +140,20 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     wf_user_indices: []
     ```
 
-    If you are accessing your MongoDB via a URI (e.g. as with MongoDB Atlas), then you will use the following `my_launchpad.yaml` template instead.
+    !!! Note
 
-    ```yaml title="my_launchpad.yaml"
-    host: <URI>
-    port: 27017
-    name: <database name>
-    uri_store: true
-    logdir: null
-    Istrm_lvl: DEBUG
-    user_indices: []
-    wf_user_indices: []
-    ```
+        If you are accessing your MongoDB via a URI (e.g. as with MongoDB Atlas), then you will use the following `my_launchpad.yaml` template instead.
+
+        ```yaml title="my_launchpad.yaml"
+        host: <URI>
+        port: 27017
+        name: <database name>
+        uri_store: true
+        logdir: null
+        Istrm_lvl: DEBUG
+        user_indices: []
+        wf_user_indices: []
+        ```
 
     **QAdapter**
 
@@ -162,9 +174,6 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     ```
 
     In the above example, you would need to change the path in the `rocket_launch` field to the correct path to your `my_fworker.yaml`. The nodes, walltime, account, and qos are the corresponding parameters for your queuing system. Finally, anything in the `pre_rocket` field will be executed before the job begins running. It is a good place to load modules and set environment variables. A representative example has been provided above.
-
-    Finally, you will need to define a `FW_CONFIG_FILE` environment variable pointing to the `FW_config.yaml` file you made. For instance, in your `~/.bashrc` file, add the following line:
-    `export FW_CONFIG_FILE="/path/to/config/fw_config/FW_config.yaml"`.
 
     **Database Initialization**
 

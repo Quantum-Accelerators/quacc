@@ -13,11 +13,7 @@
 
 ## Installing quacc
 
-!!! note
-
-    If you plan to use quacc with a workflow manager, ensure that you install quacc on all machines where the code will run.
-
-In your newly activated conda environment, run the following commands:
+In your newly activated conda environment, run the following commands to install quacc. Note that you will need to install quacc on all machines where you plan to run calculations.
 
 ```bash
 # Install development version of quacc
@@ -26,6 +22,10 @@ pip install git+https://github.com/quantum-accelerators/quacc.git
 # Set default configuration parameters
 quacc config
 ```
+
+!!! Tip
+
+    Everything beyond this point in the installation guide is to add on useful features to quacc. So, if you are just getting started, check out the [Quacc Basics](../user/basics.md) page. Then come back to installing additional features as you need them.
 
 ## Optional Dependencies
 
@@ -39,10 +39,11 @@ Quacc can be installed with several "extras," as outlined in the `pyproject.toml
 
 - `quacc[fireworks]`: Installs dependencies to enable the use of FireWorks.
 - `quacc[parsl]`: Installs dependencies to enable the use of Parsl.
+- `quacc[prefect]`: Installs dependencies to enable the use of Prefect.
 
 ### Miscellaneous
 
-- `quacc[optimizers]`: Installs additional ASE-based optimizers, such as Sella.
+- `quacc[optimizers]`: Installs dependencies to enable the use of the Sella optimizer.
 
 ### Development
 

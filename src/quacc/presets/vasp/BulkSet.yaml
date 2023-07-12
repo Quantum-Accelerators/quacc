@@ -1,0 +1,20 @@
+inputs:
+  algo: fast
+  auto_kpts:
+    max_mixed_density: [100, 1000]
+  ediff: 1.0e-5
+  efermi: midgap
+  encut: 520
+  ismear: 0
+  isym: 0
+  ivdw: 12
+  lasph: true
+  lcharg: false
+  lorbit: 11
+  lwave: false
+  nelm: 150
+  prec: accurate
+  sigma: 0.05
+  xc: pbe
+parent_magmoms: magmoms_base.yaml
+parent_setups: setups_pbe54_MP.yaml

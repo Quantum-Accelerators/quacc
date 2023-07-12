@@ -1,5 +1,5 @@
 <div align="center">
-  <img src=docs/images/quacc_logo_wide.svg width="300"><br>
+  <img src=docs/images/quacc_logo_wide.png width="300"><br>
 </div>
 
 ---
@@ -12,7 +12,7 @@
 ![Supported python versions](https://img.shields.io/badge/python-3.9%20%7C%203.10-blue)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7720998.svg)](https://doi.org/10.5281/zenodo.7720998)
 
-Quacc is a flexible and extensible platform for high-throughput computational materials science and quantum chemistry.
+Quacc (pronounced "quack") is a flexible and extensible platform for high-throughput computational materials science and quantum chemistry.
 
 The three main goals of quacc are to:
 
@@ -30,10 +30,10 @@ The three main goals of quacc are to:
 
 Includes the following sections:
 
-- 🏎️ [Quick Start](https://quantum-accelerators.github.io/quacc/start/demo/)
-- 🔧 [Installation Guide](https://quantum-accelerators.github.io/quacc/install/install/)
-- 🧠 [User Guide](https://quantum-accelerators.github.io/quacc/user/basics/)
-- 🤝 [Developer Guide](https://quantum-accelerators.github.io/quacc/dev/contributing/)
+- 🏎️ [Quick Start](https://quantum-accelerators.github.io/quacc/start/demo.html)
+- 🔧 [Installation Guide](https://quantum-accelerators.github.io/quacc/install/install.html)
+- 🧠 [User Guide](https://quantum-accelerators.github.io/quacc/user/basics.html)
+- 🤝 [Developer Guide](https://quantum-accelerators.github.io/quacc/dev/contributing.html)
 
 ## Demonstration ✨
 
@@ -49,7 +49,7 @@ If you use quacc in your work, please cite it as follows:
 
 ## Inspiration
 
-Quacc was originally inspired by [Atomate2](https://github.com/materialsproject/atomate2). Refer to the [FAQ section](https://quantum-accelerators.github.io/quacc/about/faq/) of the documentation for how these codes differ.
+Quacc was originally inspired by [Atomate2](https://github.com/materialsproject/atomate2). Refer to the [FAQ section](https://quantum-accelerators.github.io/quacc/about/faq.html) of the documentation for how these codes differ.
 
 ## License ⚖️
 

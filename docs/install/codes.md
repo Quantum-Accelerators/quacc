@@ -1,6 +1,6 @@
 # Calculator Setup
 
-!!! Hint
+!!! Tip
 
     Just getting started? Try using the EMT or LJ recipes before worrying about setting up one of the calculators below.
 
@@ -52,7 +52,7 @@ No setup needed!
 
     [ORCA](https://orcaforum.kofo.mpg.de/app.php/portal) is a free code that is especially useful for molecular DFT calculations with recently developed methods. ORCA can be downloaded and installed [here](https://orcaforum.kofo.mpg.de/app.php/dlext/).
 
-As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/orca.html), to use ORCA in parallel mode, you will need to define an environment variable named `ASE_ORCA_COMMAND`. It should be of the form `ASE_ORCA_COMMAND="/path/to/my/orca orca.inp > orca.out"`.
+To use quacc with ORCA, you will need to define the `ORCA_CMD` setting to be the full, absolute path to your ORCA executable. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings.md), such as by defining an environment variable `QUACC_ORCA_CMD=/path/to/my/orca/orca`.
 
 ## Psi4
 
@@ -74,7 +74,7 @@ If you plan to use tblite with quacc, you will need to install the tblite interf
 
 !!! Note
 
-    [VASP](https://www.vasp.at/) is a very widely used code for plane-wave, periodic DFT calculations. quacc has built-in support for automatically fixing failed VASP jobs via [Custodian](https://github.com/materialsproject/custodian).
+    [VASP](https://www.vasp.at/) is a very widely used code for plane-wave, periodic DFT calculations. Quacc has built-in support for automatically fixing failed VASP jobs via [Custodian](https://github.com/materialsproject/custodian).
 
 To use VASP with quacc, you will need to do the following, as described in greater detail in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials):
 

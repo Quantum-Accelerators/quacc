@@ -22,11 +22,19 @@ Here, we will show how to use quacc with one of a variety of workflow engines to
 
 === "Parsl"
 
-    Take a moment to read Parsl documentation's ["Quick Start"](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a `@python_app` and `@join_app`, which describe individual compute tasks and dynamic job tasks, respectively.
+    Take a moment to read Parsl documentation's ["Quick Start"](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a [`@python_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html#Python-Apps) and [`@join_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html?highlight=join_app#Dynamic-workflows-with-apps-that-generate-other-apps), which describe individual compute tasks and dynamic job tasks, respectively.
 
     !!! Info
 
         For a more detailed tutorial on how to use Parsl, refer to the ["Parsl Tutorial"](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html) and the even more detailed ["Parsl User Guide"](https://parsl.readthedocs.io/en/stable/userguide/index.html).
+
+=== "Prefect"
+
+    Take a moment to learn about the main Prefect concepts of a [`Flow`](https://docs.prefect.io/concepts/flows/) and a [`Task`](https://docs.prefect.io/concepts/tasks/).
+
+    !!! Info
+
+        For a more details, be sure to refer to the [Prefect Tutorial](https://docs.prefect.io/tutorial/). The [Workflow Orchestration without DAGs](https://www.prefect.io/guide/blog/workflow-orchestration-without-dags/) blog post is also a good read.
 
 === "Jobflow"
 
@@ -42,9 +50,14 @@ Here, we will show how to use quacc with one of a variety of workflow engines to
 
 We will now try running a simple workflow where we relax a bulk Cu structure using EMT and take the output of that calculation as the input to a follow-up static calculation with EMT.
 
+```mermaid
+graph LR
+  A[Input] --> B(Relax) --> C(Static) --> D[Output];
+```
+
 === "Covalent"
 
-    !!! Hint
+    !!! Tip
 
         If you haven't done so yet, make sure you started the Covalent server with `covalent start` in the command-line.
 
@@ -70,30 +83,36 @@ We will now try running a simple workflow where we relax a bulk Cu structure usi
 
     # Dispatch the workflow to the Covalent server
     # with the bulk Cu Atoms object as the input
-    dispatch_id = ct.dispatch(workflow)(atoms)
+    dispatch_id = ct.dispatch(workflow)(atoms) # (1)
 
     # Fetch the result from the server
-    result = ct.get_result(dispatch_id, wait=True)
+    result = ct.get_result(dispatch_id, wait=True) # (2)
     print(result)
     ```
 
-    You can see that it is quite trivial to set up a workflow using the recipes within quacc. We define the full workflow as a `Lattice` object that stitches together the individual workflow steps. The `.emt.core.relax_job` and `.emt.core.static_job` were both already defined with a `@ct.electron` decorator, so they will be interpreted by Covalent as `Electron` objects.
+    1.  Because the workflow is only sent to the server with `ct.dispatch`, calling `workflow(atoms)` would run the workflow as if Covalent were not being used at all.
+
+    2.  You don't need to set `wait=True` in practice. Once you call `ct.dispatch`, the workflow will begin running. The `ct.get_result` function is used to fetch the workflow status and results from the server.
+
+    You can see that it is quite trivial to set up a workflow using the recipes within quacc. We define the full workflow as a `Lattice` object that stitches together the individual workflow steps. The [`quacc.recipes.emt.core.relax_job`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.core.relax_job) and [`quacc.recipes.emt.core.static_job`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.core.static_job) were both already defined with a `@ct.electron` decorator, so they will be interpreted by Covalent as `Electron` objects.
 
     Covalent will also automatically construct a directed acyclic graph of the inputs and outputs for each calculation to determine which jobs are dependent on one another and the order the jobs should be run. In this example, Covalent will know not to run `job2` until `job1` has completed successfully.
 
     The job will be dispatched to the Covalent server with the [`ct.dispatch`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#dispatch) command, which takes in the workflow function and the input arguments to the workflow. The [`ct.get_result`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#result) command is used to fetch the results from the server.
 
-    !!! Note
-
-        Because the workflow is only sent to the server with `ct.dispatch`, calling `workflow(atoms)` would run the workflow as if Covalent were not being used at all.
-
     ![Covalent UI](../images/user/tutorial1.jpg)
 
 === "Parsl"
 
-    !!! Hint
+    !!! Important
 
-        If you haven't done so yet, make sure you loaded the default Parsl configuration via `parsl.load()` in your Python script.
+        If you haven't done so yet, make sure you have loaded a Parsl configuration in your Python script. An example for running on your local machine is included below. Note that parallel/dynamic workflow recipes may fail if multi-threading is enabled, which is why we don't use the default `parsl.load()` configuration here.
+
+        ```python
+        from parsl import Config
+        from parsl.executors.threads import ThreadPoolExecutor
+        parsl.load(config=Config(executors=[ThreadPoolExecutor(max_threads=1)]))
+        ```
 
     ```python
     from parsl import python_app
@@ -130,7 +149,49 @@ We will now try running a simple workflow where we relax a bulk Cu structure usi
     The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object. Technically, we did not need to call `future1.result()` because Parsl will automatically know that it cannot run `static_app` until `future1` is resolved. Nonetheless, we have included it here for clarity.
 
     !!! Note
-        It is not considered good practice to include a `.result()` call in a `@python_app` or `@join_app` definition.
+
+        You should not include a `.result()` call in a `@python_app` or `@join_app` definition, which is why we didn't do so here. Parsl will implicitly know to call `.result()` on any `AppFuture`.
+
+=== "Prefect"
+
+    ```python
+    from prefect import flow, task
+    from prefect.task_runners import SequentialTaskRunner
+    from ase.build import bulk
+    from quacc.recipes.emt.core import relax_job, static_job
+
+
+    # Define the workflow
+    @flow(task_runner=SequentialTaskRunner()) # (1)
+    def workflow(atoms):
+
+        # Call Task 1
+        future1 = task(relax_job).submit(atoms) # (2)
+
+        # Call Task 2, which takes the output of Task 1 as input
+        future2 = task(static_job).submit(future1)
+
+        return future2
+
+    # Make an Atoms object of a bulk Cu structure
+    atoms = bulk("Cu")
+
+    # Run the workflow with Prefect tracking
+    result = workflow(atoms).result()
+    print(result)
+    ```
+
+    1.  By default, the task runner for Prefect is the `ConcurrentTaskRunner`, which runs in a multi-threaded mode that is incompatible with parallel/dynamic quacc workflows. For local testing purposes, we recommend using the `SequentialTaskRunner` instead.
+
+    2.  We have used a short-hand notation here of `task(<function>)`. This is equivalent to using the `@task` decorator and defining a new function for each task.
+
+    You can see that it is quite trivial to set up a Prefect workflow using the recipes within quacc. We define the full `Flow` as a function that stitches together the individual `Task` workflow steps.Calling `.submit()` enables concurrent execution of the tasks, and `.result()` blocks further calculations until the result is returned. Both `.submit()` and `.result()` aren't necessary when testing Prefect workflows locally, but we have included them here to make the transition to HPC environments more seamless.
+
+    !!! Note
+
+        You should not call `.result()` when passing the results of tasks to other tasks, only when interacting with the result of a task inside of the flow itself. Prefect will implicitly know to call `.result()` on any `PrefectFuture`.
+
+    ![Prefect UI](../images/user/prefect_tutorial1.jpg)
 
 === "Jobflow"
 
@@ -168,6 +229,12 @@ We will now try running a simple workflow where we relax a bulk Cu structure usi
 ### Running a Simple Parallel Workflow
 
 Now let's consider a similar but nonetheless distinct example. Here, we will define a workflow where we will carry out two EMT structure relaxations, but the two jobs are not dependent on one another. In this example, Covalent will know that it can run the two jobs separately, and even if Job 1 were to fail, Job 2 would still progress.
+
+```mermaid
+graph LR
+  A[Input] --> B(Relax) --> D[Output]
+  A[Input] --> C(Relax) --> D[Output];
+```
 
 === "Covalent"
 
@@ -225,7 +292,39 @@ Now let's consider a similar but nonetheless distinct example. Here, we will def
     print(future1.result(), future2.result())
     ```
 
-    If you monitor the output, you'll notice that the two jobs are being run in parallel, whereas they would be run sequentially if you were not using Parsl.
+    !!! Note
+
+        If you find defining a new function for each `PythonApp` a bit annoying, you can use the following shorthand: `#!Python relax_app=python_app(relax_job.electron_object.function)`.
+
+=== "Prefect"
+
+    ```python
+    from prefect import flow, task
+    from prefect.task_runners import SequentialTaskRunner
+    from ase.build import bulk, molecule
+    from quacc.recipes.emt.core import relax_job
+
+    # Define workflow
+    @flow(task_runner=SequentialTaskRunner())
+    def workflow(atoms1, atoms2):
+
+        # Define two independent relaxation jobs
+        future1 = task(relax_job).submit(atoms1)
+        future2 = task(relax_job).submit(atoms2)
+
+        return future1, future2
+
+    # Define two Atoms objects
+    atoms1 = bulk("Cu")
+    atoms2 = molecule("N2")
+
+    # Run the workflow with Prefect tracking
+    future1, future2 = workflow(atoms1, atoms2)
+    print(future1.result(), future2.result())
+    ```
+    As expected, the Prefect Cloud UI shows two jobs that are not dependent on one another.
+
+    ![Prefect UI](../images/user/prefect_tutorial2.jpg)
 
 === "Jobflow"
 
@@ -257,6 +356,15 @@ Now let's consider a similar but nonetheless distinct example. Here, we will def
 
 For this example, let's consider a toy scenario where we wish to relax a bulk Cu structure, carve all possible slabs, and then run a new relaxation calculation on each slab (with no static calculation at the end). This is an example of a dynamic workflow.
 
+```mermaid
+graph LR
+  A[Input] --> B(Relax) --> C(Make Slabs)
+  C(Make Slabs) --> D(Slab Relax) --> H[Output]
+  C(Make Slabs) --> E(Slab Relax) --> H[Output]
+  C(Make Slabs) --> F(Slab Relax) --> H[Output]
+  C(Make Slabs) --> G(Slab Relax) --> H[Output];
+```
+
 In quacc, there are two types of recipes: individual compute tasks with the suffix `_job` and pre-made multi-step workflows with the suffix `_flow`. Here, we are interested in importing a pre-made workflow. Refer to the example below:
 
 === "Covalent"
@@ -270,7 +378,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     @ct.lattice
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, slab_static_electron=None)
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, slab_static=None)
 
         return relaxed_slabs
 
@@ -280,13 +388,9 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     print(result)
     ```
 
-    We have imported the `.emt.slabs.bulk_to_slabs_flow` function, which takes an `Atoms` object along with several optional parameters. For demonstration purposes, we specify the `slab_static_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is wrap it inside a `@ct.lattice` decorator.
+    We have imported the [`quacc.recipes.emt.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.slabs.bulk_to_slabs_flow) function, which takes an `Atoms` object along with several optional parameters. For demonstration purposes, we specify the `slab_static=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is wrap it inside a `@ct.lattice` decorator.
 
     Due to the dynamic nature of `bulk_to_slabs_flow`, the number of returned slabs will be dependent on the input `Atoms` object. The pattern for creating a dynamic workflow in Covalent is called a ["sublattice"](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-arch/covalent-sdk#sublattice). The sublattice, which is really just a fancy name for a sub-workflow within a larger workflow, and its individual compute tasks can also be viewed in the Covalent UI.
-
-    !!! Hint
-
-        You don't need to set `wait=True` in practice. Once you call `ct.dispatch`, the workflow will begin running. The `ct.get_result` function is used to fetch the workflow status and results from the server.
 
     ![Covalent UI](../images/user/tutorial3.gif)
 
@@ -308,7 +412,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     def bulk_to_slabs_app(atoms):
         from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
-        return bulk_to_slabs_flow(atoms, slab_static_electron=None)
+        return bulk_to_slabs_flow(atoms, slab_static=None)
 
     # Define the Atoms object
     atoms = bulk("Cu")
@@ -321,11 +425,11 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     print(future2.result())
     ```
 
-    When running a Covalent-based workflow like `.emt.slabs.bulk_to_slabs_flow` above, the entire function will run as a single compute task even though it is composed of several individual sub-tasks. If these sub-tasks are compute-intensive, this might not be the most efficient use of resources.
+    When running a Covalent-based workflow like [`.emt.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.slabs.bulk_to_slabs_flow) above, the entire function will run as a single compute task even though it is composed of several individual sub-tasks. If these sub-tasks are compute-intensive, this might not be the most efficient use of resources.
 
     **The Efficient Way**
 
-    Quacc fully supports Parsl-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Parsl-specific `.emt.parsl.slabs.bulk_to_slabs_flow` workflow:
+    Quacc fully supports Parsl-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Parsl-specific [`.emt.parsl.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.parsl.slabs.bulk_to_slabs_flow) workflow:
 
     ```python
     from parsl import python_app
@@ -344,23 +448,78 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
     # Define the workflow
     future1 = relax_app(atoms)
-    future2 = bulk_to_slabs_flow(future1.result(), slab_static_app=None)
+    future2 = bulk_to_slabs_flow(future1.result(), slab_static=None) # (1)
 
     # Print the results
     print(future2.result())
     ```
 
-    In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing `.emt.parsl.slabs.bulk_to_slabs_flow` with its Covalent counterpart `.emt.slabs.bulk_to_slabs_flow`, you can see that the two are extremely similar such that it is often straightforward to [interconvert](wflow_syntax.md) between the two.
+    1.  We didn't need to wrap `bulk_to_slabs_flow` with a `@python_app` decorator because it is simply a collection of `PythonApp` objects and is already returning an `AppFuture`.
 
-    !!! Note
-        We didn't need to wrap `bulk_to_slabs_flow` with a `@python_app` decorator because it is simply a collection of `PythonApp` objects and is already returning an `AppFuture`.
+    In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing [`.emt.parsl.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.parsl.slabs.bulk_to_slabs_flow) with its Covalent counterpart [`.emt.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.slabs.bulk_to_slabs_flow), you can see that the two are extremely similar such that it is often straightforward to [interconvert](wflow_syntax.md) between the two.
+
+=== "Prefect"
+
+    **The Inefficient Way**
+
+    ```python
+    from prefect import task, flow
+    from prefect.task_runners import SequentialTaskRunner
+    from ase.build import bulk
+    from quacc.recipes.emt.core import relax_job
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+    @flow(task_runner=SequentialTaskRunner())
+    def workflow(atoms):
+        future1 = task(relax_job).submit(atoms)
+        future2 = task(bulk_to_slabs_flow).submit(future1, slab_static=None)
+
+        return future2
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Run the workflow
+    result = workflow(atoms).result()
+    print(result)
+    ```
+
+    ![Prefect UI](../images/user/prefect_tutorial3.jpg)
+
+    **The Efficient Way**
+
+    ```python
+    from prefect import task, flow
+    from prefect.task_runners import SequentialTaskRunner
+    from ase.build import bulk
+    from quacc.recipes.emt.core import relax_job
+    from quacc.recipes.emt.prefect.slabs import bulk_to_slabs_flow
+
+    bulk_to_slabs_flow.task_runner = SequentialTaskRunner()
+
+    @flow(task_runner=SequentialTaskRunner())
+    def workflow(atoms):
+        future1 = task(relax_job).submit(atoms)
+        result = bulk_to_slabs_flow(future1, run_slab_static=False)
+
+        return result
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Run the workflow
+    result = workflow(atoms)
+    print(result)
+    ```
+
+    ![Prefect UI](../images/user/prefect_tutorial4.gif)
 
 === "Jobflow"
 
     **The Inefficient Way**
 
     ```python
-    from jobflow immport job, Flow, run_locally
+    from jobflow import job, Flow, run_locally
     from ase.build import bulk
     from quacc.recipes.emt.core import relax_job
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
@@ -370,7 +529,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
     # Construct the Flow
     job1 = job(relax_job)(atoms)
-    job2 = job(bulk_to_slabs_flow)(job1.output)
+    job2 = job(bulk_to_slabs_flow)(job1.output, slab_static=None)
     workflow = Flow([job1, job2])
 
     # Run the workflow locally
@@ -381,11 +540,11 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     print(result)
     ```
 
-    We have imported the `.emt.slabs.bulk_to_slabs_flow` function, which takes an `Atoms` object along with several optional parameters. For demonstration purposes, we specify the `slab_static_electron=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is stitch together the individual `@job` steps into a single `Flow` object.
+    We have imported the [`.emt.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.slabs.bulk_to_slabs_flow) function, which takes an `Atoms` object along with several optional parameters. For demonstration purposes, we specify the `slab_static=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is stitch together the individual `@job` steps into a single `Flow` object.
 
     **The Efficient Way**
 
-    Quacc fully supports Jobflow-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Jobflow-specific `.emt.jobflow.slabs.bulk_to_slabs_flow` workflow:
+    Quacc fully supports Jobflow-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Jobflow-specific [`.emt.jobflow.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.jobflow.slabs.bulk_to_slabs_flow) workflow:
 
     ```python
     from jobflow import job, Flow, run_locally
@@ -398,20 +557,20 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
     # Construct the Flow
     job1 = job(relax_job)(atoms)
-    job2 = job(bulk_to_slabs_flow)(job1.output)
+    job2 = job(bulk_to_slabs_flow)(job1.output, slab_static=None)
     workflow = Flow([job1, job2])
 
     # Run the workflow locally
     run_locally(workflow, create_folders=True)
     ```
 
-    In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing `.emt.jobflow.slabs.bulk_to_slabs_flow` with its Covalent counterpart `.emt.slabs.bulk_to_slabs_flow`, you can see that the two are extremely similar such that it is often straightforward to [interconvert](wflow_syntax.md) between the two. In the case of `bulk_to_slabs_flow`, it actually returns a [`Response(replace)`](<https://materialsproject.github.io/jobflow/tutorials/5-dynamic-flows.html#The-Response(replace)-option>) object that dynamically replaces the `Flow` with several downstream jobs.
+    In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing [`.emt.jobflow.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.jobflow.slabs.bulk_to_slabs_flow) with its Covalent counterpart [`.emt.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.slabs.bulk_to_slabs_flow), you can see that the two are extremely similar such that it is often straightforward to [interconvert](wflow_syntax.md) between the two. In the case of `bulk_to_slabs_flow`, it actually returns a [`Response(replace)`](<https://materialsproject.github.io/jobflow/tutorials/5-dynamic-flows.html#The-Response(replace)-option>) object that dynamically replaces the `Flow` with several downstream jobs.
 
 ## Deploying Calculations
 
 === "Covalent"
 
-    By default, Covalent will run all `Electron` tasks on your local machine using the [`DaskExecutor`](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/dask). This is a parameter that you can control. For instance, you may want to define the executor to be based on [Slurm](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/slurm) to submit a job to an HPC cluster. The example below highlights how one can change the executor.
+    By default, Covalent will run all `Electron` tasks on your local machine using the [`DaskExecutor`](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/dask). This is a parameter that you can control. For instance, you may want to define the executor to be based on Slurm using the [`SlurmExecutor`](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/slurm) to submit a job to an HPC cluster. The example below highlights how one can change the executor.
 
     **Setting Executors via the Lattice Object**
 
@@ -448,7 +607,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     @ct.lattice
     def workflow(atoms):
         job1 = relax_job
-        job1.electron_object.executor = "dask"
+        job1.electron_object.executor = "dask" # (1)
 
         job2 = static_job
         job2.electron_object.executor = "local"
@@ -463,9 +622,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     print(result)
     ```
 
-    !!! Hint
-
-        If you are defining your own workflow functions to use, you can also set the executor for individual `Electron` objects by passing the `executor` keyword argument to the `@ct.electron` decorator.
+    1.  If you are defining your own workflow functions to use, you can also set the executor for individual `Electron` objects by passing the `executor` keyword argument to the `@ct.electron` decorator.
 
     **Configuring Executors**
 
@@ -498,13 +655,11 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
             "export COVALENT_CONFIG_DIR=$SCRATCH",
             f"export QUACC_VASP_PARALLEL_CMD='srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'",
         ],
-        use_srun=False,
+        use_srun=False, # (1)
     )
     ```
 
-    !!! Important
-
-        The `SlurmExecutor` must have `use_srun=False` in order for ASE-based calculators to be launched appropriately.
+    1.  The `SlurmExecutor` must have `use_srun=False` in order for ASE-based calculators to be launched appropriately.
 
 === "Parsl"
 
@@ -602,13 +757,111 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
         Dr. Logan Ward has a nice example on YouTube describing a very similar example [here](https://youtu.be/0V4Hs4kTyJs?t=398).
 
+
+    !!! Warning
+
+        By default, the [`ThreadPoolExecutor`](https://parsl.readthedocs.io/en/stable/stubs/parsl.executors.ThreadPoolExecutor.html#parsl.executors.ThreadPoolExecutor) (which is used when calling `parsl.load()`) is run in a multi-threaded mode, which may cause I/O errors when running multiple calculations simultaneously. We do not recommend using Parsl-based multi-threading at this time if there is any file I/O in your workflow.
+
+=== "Prefect"
+
+    **Defining Task Runners**
+
+    Out-of-the-box, Prefect will run on your local machine. However, in practice you will probably want to run your Prefect workflows on HPC machines.
+
+    !!! Tip
+
+        Check out the [Task Runner](https://docs.prefect.io/latest/concepts/task-runners/) documentation for more information on how Prefect handles task execution.
+
+    To modify where tasks are run, set the `task_runner` keyword argument of the corresponding `@flow` decorator. The jobs in this scenario would be submitted from a login node.
+
+    An example is shown below for setting up a task runner compatible with the NERSC Perlmutter machine. By default, `make_runner` will generate a `prefect_dask.DaskTaskRunner` composed of a `jobqueue.SLURMCluster` object.
+
+    ```python
+    from quacc.util.dask import make_runner
+
+    n_slurm_jobs = 1 # Number of Slurm jobs to launch in parallel
+    n_nodes_per_calc = 1 # Number of nodes to reserve for each Slurm job
+    n_cores_per_node = 48 # Number of CPU cores per node
+    mem_per_node = "64 GB" # Total memory per node
+
+    cluster_kwargs = {
+        # Dask worker options
+        "n_workers": n_slurm_jobs, # number of Slurm jobs to launch
+        "cores": n_cores_per_node, # total number of cores (per Slurm job) for Dask worker
+        "memory": mem_per_node, # total memory (per Slurm job) for Dask worker
+        # SLURM options
+        "shebang": "#!/bin/bash",
+        "account": "AccountName",
+        "walltime": "00:10:00", # DD:HH:SS
+        "job_mem": "0", # all memory on node
+        "job_script_prologue": ["source ~/.bashrc", "conda activate quacc"], # commands to run before calculation, including exports
+        "job_directives_skip": ["-n", "--cpus-per-task"], # Slurm directives we can skip
+        "job_extra_directives": [f"-N {n_nodes_per_calc}", "-q debug", "-C cpu"], # num. of nodes for calc (-N), queue (-q), and constraints (-c)
+        "python": "python", # Python executable name
+    }
+
+    runner = make_runner(cluster_kwargs, temporary=True)
+    ```
+
+    With this instantiated cluster object, you can set the task runner of the `Flow` as follows.
+
+    ```python
+    @flow(task_runner=cluster)
+    def workflow(atoms):
+        ...
+    ```
+
+    Now, when the worklow is run from the login node, it will be submitted to the job scheduling system (Slurm by default), and the results will be sent back to Prefect Cloud once completed.
+
+    !!! Tip
+
+        Refer to the [Dask-Jobqueue Documentation](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html) for the available `cluster_kwargs` that can be defined and how they relate to a typical job script.
+
+
+    To asynchronously spawn a Slurm job that continually pulls in work for the duration of its walltime (rather than starting and terminating over the lifetime of the associated `Flow`), you can instead use the `make_runner` command without a `temporary` keyword argument:
+
+    ```python
+    runner = make_runner(cluster_kwargs)
+    ```
+
+    This is often more efficient for running large numbers of workflows because you can request a single, large Slurm job that continually pulls in work rather than submitting a large number of small jobs to the scheduler.
+
+    Additionally, you can have the generated Dask cluster adaptively scale based on the amount of work available by setting `adapt_kwargs` as follows:
+
+    ```python
+    runner = make_runner(cluster_kwargs, adapt_kwargs={"minimum": 1, "maximum": 5})
+    ```
+
+    This will ensure that at least one Slurm job is always running, but the number of jobs will scale up to 5 if there is enough work available.
+
+    **Troubleshooting**
+
+    If you are having trouble figuring out the right `cluster_kwargs` to use, the best option is to have the generated job script printed to the screen. This can be done as follows.
+
+    ```python
+    from dask_jobqueue import SLURMCluster
+    from quacc.util.dask import _make_cluster
+
+    cluster = make_cluster(SLURMCluster, cluster_kwargs, verbose=True)
+    ```
+
+    Note, however, that a Slurm job will be immediately submitted, so you will probably want to `scancel` it as you debug your job script.
+
+    **Executor Configuration File**
+
+    Speaking of configurations, if you use mostly the same HPC settings for your calculations, it can be annoying to define a large dictionary in every workflow you run. Instead, you can define a configuration file at `~/.config/dask/jobqueue.yaml` as described in the [dask-jobqueue](https://jobqueue.dask.org/en/latest/configuration-setup.html#managing-configuration-files) documentation that can be used to define default values common to your HPC setup.
+
+    **Using a Prefect Agent**
+
+    So far, we have dispatched calculations immediately upon calling them. However, in practice, it is often more useful to have a [Prefect agent](https://docs.prefect.io/concepts/work-pools/#agent-overview) running in the background that will continually poll for work to submit to the task runner. This allows you to submit only a subset of workflows at a time, and the agent will automatically submit more jobs as the resources become available. You will want to run Prefect workflows with an agent on the computing environment where you wish to submit jobs, specifically on a perpetual resource like a login node or dedicated workflow node.
+
 === "Jobflow"
 
     Out-of-the box, Jobflow can be used to run on your local machine. You will, however, need a "manager" to run your workflows on HPC machines. The currently recommended manager for Jobflow is FireWorks, which is described here.
 
     **Converting Between Jobflow and FireWorks**
 
-    The `jobflow.managers.fireworks` module has all the tools you need to convert your Jobflow workflows to a format that is suitable for FireWorks.
+    The [`jobflow.managers.fireworks`](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks) module has all the tools you need to convert your Jobflow workflows to a format that is suitable for FireWorks.
 
     **Converting a Job to a Firework**
 
@@ -663,6 +916,10 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 === "Parsl"
 
     That ends the Parsl section of the documentation. If you want to learn more about Parsl, you can read the [Parsl Documentation](https://parsl.readthedocs.io/en/stable/#). Please refer to the [Parsl Slack Channel](http://parsl-project.org/support.html) for any Parsl-specific questions.
+
+=== "Prefect"
+
+    That ends the Perfect section of the documentation. If you want to learn more about Perfect, you can read the [Prefect Documentation](https://docs.prefect.io/). Please refer to the [Prefect Slack Channel](https://www.prefect.io/slack/) and/or [Prefect Community Discourse](https://discourse.prefect.io/) page for any Prefect-specific questions.
 
 === "Jobflow"
 

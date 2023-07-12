@@ -6,15 +6,16 @@ from ase.build import bulk, molecule
 
 try:
     import parsl
-    from parsl import join_app, python_app
-
+    from parsl import Config, join_app, python_app
+    from parsl.executors.threads import ThreadPoolExecutor
 except ImportError:
     parsl = None
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
 def setup_module():
-    parsl.load()
+    config = Config(executors=[ThreadPoolExecutor(max_threads=1)])
+    parsl.load(config)
 
 
 def teardown_module():
@@ -99,7 +100,7 @@ def test_tutorial3():
     def bulk_to_slabs_app(atoms):
         from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
-        return bulk_to_slabs_flow(atoms, slab_static_electron=None)
+        return bulk_to_slabs_flow(atoms, slab_static=None)
 
     # Define the Atoms object
     atoms = bulk("Cu")
@@ -130,7 +131,7 @@ def test_tutorial4():
 
     # Define the workflow
     future1 = relax_app(atoms)
-    future2 = bulk_to_slabs_flow(future1.result(), slab_static_app=None)
+    future2 = bulk_to_slabs_flow(future1.result(), slab_static=None)
 
     # Print the results
     print(future2.result())

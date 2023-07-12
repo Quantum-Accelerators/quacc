@@ -81,7 +81,22 @@ def test_tutorial3():
 
     # Construct the Flow
     job1 = jf.job(relax_job)(atoms)
-    job2 = jf.job(bulk_to_slabs_flow)(job1.output)
+    job2 = jf.job(bulk_to_slabs_flow)(job1.output, slab_static=None)
+    workflow = jf.Flow([job1, job2])
+
+    # Run the workflow locally
+    jf.run_locally(workflow, store=STORE, create_folders=True)
+
+
+def test_tutorial4():
+    from quacc.recipes.emt.jobflow.slabs import bulk_to_slabs_flow
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Construct the Flow
+    job1 = jf.job(relax_job)(atoms)
+    job2 = jf.job(bulk_to_slabs_flow)(job1.output, slab_static=None)
     workflow = jf.Flow([job1, job2])
 
     # Run the workflow locally
@@ -99,7 +114,7 @@ def comparison1():
 
     job1 = add(1, 2)
     job2 = mult(job1.output, 3)
-    flow = jf.Flow([job1, job2], output=job2.output)
+    flow = jf.Flow([job1, job2])
 
     responses = jf.run_locally(flow, ensure_success=True)
     assert responses[job2.uuid][1].output == 9
@@ -138,19 +153,16 @@ def test_emt_flow():
 
     atoms = bulk("Cu")
 
-    job = jf.job(bulk_to_slabs_flow)(atoms, slab_static_job=None)
-    jf.run_locally(job, store=store, create_folders=True, ensure_success=True)
-
     job = jf.job(bulk_to_slabs_flow)(
         atoms,
-        slab_static_job=None,
+        slab_static=None,
         slab_relax_kwargs={
             "opt_swaps": {"fmax": 1.0},
             "calc_kwargs": {"asap_cutoff": True},
             "relax_cell": False,
         },
     )
-    jf.run_locally(job, store=store, create_folders=True, ensure_success=True)
+    jf.run_locally(job, store=store, ensure_success=True, create_folders=True)
 
     job = jf.job(bulk_to_slabs_flow)(
         atoms,
@@ -162,7 +174,7 @@ def test_emt_flow():
         },
     )
     responses = jf.run_locally(
-        job, store=store, create_folders=True, ensure_success=True
+        job, store=store, ensure_success=True, create_folders=True
     )
 
     assert len(responses) == 5

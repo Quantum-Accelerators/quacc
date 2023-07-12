@@ -1,33 +1,5 @@
-site_name: quacc
-site_author: Andrew S. Rosen
-site_description: >-
-  Quacc is a flexible and extensible platform
-  for high-throughput computational materials
-  science and quantum chemistry.
-repo_url: https://github.com/Quantum-Accelerators/quacc/
-edit_uri: blob/main/docs/
 theme:
-  name: material
-  palette:
-    scheme: slate
-    primary: orange
-  logo: images/quacc_logo_wide.svg
   favicon: images/quacc_favicon.png
-  plugins:
-    - search:
-        separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
-    - minify:
-        minify_html: true
-    - social
-    - blog
-    - tags
-    - git-revision-date-localized:
-        enable_creation_date: true
-    - offline
-    - mkdocstrings
-    - mkdocs-click
-    - autorefs
-
   features:
     - content.action.edit
     - content.code.copy
@@ -39,16 +11,17 @@ theme:
     - navigation.path
     - navigation.tracking
     - navigation.sections
+    - navigation.top
     - search.highlight
     - search.suggest
     - search.share
     - header.autohide
-extra:
-  social:
-    - icon: fontawesome/brands/twitter
-      link: https://twitter.com/RosenGroupPU
-    - icon: fontawesome/brands/github
-      link: https://github.com/Quantum-Accelerators/
+    - toc.follow
+  logo: images/quacc_logo_wide.png
+  name: material
+  palette:
+    primary: orange
+    scheme: slate
 
 markdown_extensions:
   - abbr
@@ -66,24 +39,88 @@ markdown_extensions:
   - pymdownx.caret
   - pymdownx.details
   - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
+      emoji_generator: !!python/name:materialx.emoji.to_svg ""
+      emoji_index: !!python/name:materialx.emoji.twemoji ""
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
       pygments_lang_class: true
   - pymdownx.inlinehilite
   - pymdownx.keys
+  - pymdownx.magiclink
   - pymdownx.mark
   - pymdownx.snippets
   - pymdownx.smartsymbols
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format ""
+          name: mermaid
   - pymdownx.tabbed:
       alternate_style: true
   - pymdownx.tasklist:
       custom_checkbox: true
   - pymdownx.tilde
 
+plugins:
+  - search:
+      separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+  - autorefs
+  - social
+  - offline
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          import:
+            - https://docs.python.org/3/objects.inv
+            - https://wiki.fysik.dtu.dk/ase/objects.inv
+            - https://pymatgen.org/objects.inv
+            - https://materialsproject.github.io/atomate2/objects.inv
+            - https://cclib.github.io/objects.inv
+            - https://materialsproject.github.io/maggma/objects.inv
+            - https://materialsproject.github.io/emmet/objects.inv
+            - https://materialsproject.github.io/jobflow/objects.inv
+            - https://materialsproject.github.io/fireworks/objects.inv
+            - https://parsl.readthedocs.io/en/latest/objects.inv
+            - https://tblite.readthedocs.io/en/latest/objects.inv
+            - https://numpy.org/doc/stable/objects.inv
+            - https://docs.pydantic.dev/latest/objects.inv
+            - https://materialsvirtuallab.github.io/monty/objects.inv
+            - http://materialsproject.github.io/custodian/objects.inv
+            - https://covalent.readthedocs.io/en/latest/objects.inv
+            - https://click.palletsprojects.com/en/latest/objects.inv
+            - https://docs.prefect.io/latest/objects.inv
+            - https://prefecthq.github.io/prefect-dask/objects.inv
+            - https://docs.dask.org/en/latest/objects.inv
+            - https://jobqueue.dask.org/en/latest/objects.inv
+          options:
+            docstring_style: numpy
+            docstring_section_style: list
+            separate_signature: true
+            merge_init_into_class: true
+            docstring_options:
+              ignore_init_summary: true
+  - gen-files:
+      scripts:
+        - docs/gen_ref_pages.py
+  - literate-nav:
+      nav_file: SUMMARY.md
+
+edit_uri: blob/main/docs/
+extra:
+  social:
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/RosenGroupPU
+    - icon: fontawesome/brands/github
+      link: https://github.com/Quantum-Accelerators/
+repo_url: https://github.com/Quantum-Accelerators/quacc/
+site_author: Andrew S. Rosen
+site_description: >-
+  Quacc is a flexible and extensible platform for
+  high-throughput computational materials science and quantum chemistry.
+site_name: quacc
+site_url: https://quantum-accelerators.github.io/quacc/
 nav:
   - Home: index.md
   - Test Drive 🏎️:
@@ -105,9 +142,10 @@ nav:
   - Developer Guide 🤝:
       - dev/contributing.md
       - dev/docs.md
-      - dev/conduct.md
+  - Code Reference: reference/
   - About 📜:
       - about/faq.md
       - about/contributors.md
       - about/changelog.md
+      - about/conduct.md
       - about/license.md

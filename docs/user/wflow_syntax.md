@@ -2,7 +2,7 @@
 
 ## Introduction
 
-All of the solutions below have a similar decorator-based syntax for compute tasks and workflows. Here, we highlight these differences. For a comparison of the pros and cons of each approach, refer to the [Workflow Engines Overview](wflow_overview.md) page.
+Here, we provide code snippets for several decorator-based workflow engines. For a comparison of the pros and cons of each approach, refer to the [Workflow Engines Overview](wflow_overview.md) page.
 
 ## Simple Workflow
 
@@ -12,6 +12,11 @@ Let's do the following:
 2. Multiply the output of Step 1 by a third number (e.g. `#!Python 3 * 3`)
 
 In practice, we would want each of the two tasks to be their own compute job.
+
+```mermaid
+graph LR
+  A[Input] --> B(add) --> C(mult) --> D[Output];
+```
 
 === "No Workflow Engine"
 
@@ -29,6 +34,10 @@ In practice, we would want each of the two tasks to be their own compute job.
     ```
 
 === "Covalent"
+
+    !!! Tip
+
+        Make sure you run `covalent start` in the terminal to have the results show up in the GUI.
 
     ```python
     import covalent as ct
@@ -55,6 +64,9 @@ In practice, we would want each of the two tasks to be their own compute job.
 
 === "Parsl"
 
+    !!! Tip
+        Make sure you run `#!Python import parsl` followed by `#!Python parsl.load()` in Python to load a default Parsl configuration.
+
     ```python
     from parsl import python_app
 
@@ -68,6 +80,26 @@ In practice, we would want each of the two tasks to be their own compute job.
 
     def workflow(a, b, c):
         return mult(add(a, b), c)
+
+    result = workflow(1, 2, 3).result() # 9
+    ```
+
+=== "Prefect"
+
+    ```python
+    from prefect import flow, task
+
+    @task
+    def add(a, b):
+        return a + b
+
+    @task
+    def mult(a, b):
+        return a * b
+
+    @flow
+    def workflow(a, b, c):
+        return mult.submit(add.submit(a, b), c)
 
     result = workflow(1, 2, 3).result() # 9
     ```
@@ -87,7 +119,7 @@ In practice, we would want each of the two tasks to be their own compute job.
 
     job1 = add(1, 2)
     job2 = mult(job1.output, 3)
-    flow = Flow([job1, job2], output=job2.output)
+    flow = Flow([job1, job2])
 
     responses = run_locally(flow)
     result = responses[job2.uuid][1].output # 9
@@ -103,6 +135,14 @@ Let's do the following:
 
 We will treat this as a dynamic workflow where the number of elements in the list from Step 2 may not necessarily be known until runtime. In practice, we would want each of the individual addition tasks to be their own compute job.
 
+```mermaid
+graph LR
+  A[Input] --> B(add) --> C(make_more)
+  C --> D(add) --> G[Output];
+  C --> E(add) --> G[Output];
+  C --> F(add) --> G[Output];
+```
+
 === "No Workflow Engine"
 
     ```python
@@ -111,13 +151,10 @@ We will treat this as a dynamic workflow where the number of elements in the lis
     def add(a, b):
         return a + b
 
-    def make_more(val):
-        return [val] * random.randint(2, 5)
-
     def workflow(a, b, c):
-        result1 = add(a, b)
-        result2 = make_more(result1)
-        return [add(val, c) for val in result2]
+        add_result = add(a, b)
+        vals = [add_result] * random.randint(2, 5)
+        return [add(val, c) for val in vals]
 
     result = workflow(1, 2, 3) # e.g. [6, 6, 6]
     ```
@@ -181,6 +218,25 @@ We will treat this as a dynamic workflow where the number of elements in the lis
         return add_distributed(future2, c)
 
     result = workflow(1, 2, 3).result() # e.g. [6, 6, 6]
+    ```
+
+=== "Prefect"
+
+    ```python
+    import random
+    from prefect import flow, task
+
+    @task
+    def add(a, b):
+        return a + b
+
+    @flow
+    def workflow(a, b, c):
+        future1 = add.submit(a, b)
+        vals_to_add = [future1.result()] * random.randint(2, 5)
+        return [add.submit(val, c).result() for val in vals_to_add]
+
+    result = workflow(1, 2, 3) # e.g. [6, 6, 6]
     ```
 
 === "Jobflow"

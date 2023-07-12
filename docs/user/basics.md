@@ -8,9 +8,9 @@ Once you understand the basics, you should move on to the ["Going High-Throughpu
 
 If you are not yet familiar with the ASE [`Atoms`](https://wiki.fysik.dtu.dk/ase/ase/atoms.html) object, you should read the [ASE tutorial](https://wiki.fysik.dtu.dk/ase/ase/atoms.html), as this is the main object used to represent molecules and structures within quacc. Additionally, it is worthwhile to be familiar with the basics of an ASE [Calculator](https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html).
 
-!!! Hint
+!!! Tip
 
-    If you are coming from the Pymatgen ecosystem, you can use the `#!Python pymatgen.io.ase.AseAtomsAdaptor` class to convert between Pymatgen `#!Python Structure`/`#!Python Molecule` objects and the ASE `Atoms` object.
+    If you are coming from the Pymatgen ecosystem, you can use the [`pymatgen.io.ase.AseAtomsAdaptor`](https://pymatgen.org/pymatgen.io.ase.html#pymatgen.io.ase.AseAtomsAdaptor) class to convert between Pymatgen `#!Python Structure`/`#!Python Molecule` objects and the ASE `Atoms` object.
 
 ## A Simple Calculation with EMT
 
@@ -30,7 +30,7 @@ print(result)
 
 Walking through step-by-step, we first defined an `Atoms` object representation of the material we wish to run the calculation on. In this example, we have imported the bulk Cu structure from ASE's predefined library of bulk structures.
 
-With the `Atoms` object defined, we then imported a desired recipe and instantiated it. In this case, since we want to use EMT, we can look in `quacc.recipes.emt` to see all the available recipes. We are interested in doing a structure relaxation, so we imported the `.emt.core.relax_job` recipe. We then instantiated and ran the recipe by passing in the `Atoms` object we defined earlier.
+With the `Atoms` object defined, we then imported a desired recipe and instantiated it. In this case, since we want to use EMT, we can look in `quacc.recipes.emt` to see all the available recipes. We are interested in doing a structure relaxation, so we imported the [`quacc.recipes.emt.core.relax_job`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.core.relax_job) recipe. We then instantiated and ran the recipe by passing in the `Atoms` object we defined earlier.
 
 The recipe output (`result`) is a bit too large to print here; nonetheless, for context, it is a dictionary that has the following primary keys:
 
@@ -40,13 +40,13 @@ The recipe output (`result`) is a bit too large to print here; nonetheless, for 
 
 The `"atoms"` key contains a copy of the output `Atoms` object, the `"results"` key contains a dictionary of the results of the calculation, and the `"parameters"` key contains a dictionary of the parameters used in the calculation.
 
-!!! Hint
+!!! Tip
 
     You can make an `Atoms` object from common files like a CIF, XYZ, or POSCAR by using the [`ase.io.read`](https://wiki.fysik.dtu.dk/ase/ase/io/io.html) function. For instance, `#!Python from ase.io import read` followed by `#!Python atoms = read("</path/to/file>")`.
 
 ## A Simple Mixed-Code Workflow
 
-Now let's return to our bulk Cu example from above and start adding on some complexity. Here, we will use EMT to run a relaxation on the bulk Cu structure and then use the output of this calculation as the input to a static calculation with the semi-empirical quantum mechanics method GFN2-xTB as implemented in `.tblite.core.static_job`. This example highlights how there are no restrictions in terms of how many codes you can use in a single workflow.
+Now let's return to our bulk Cu example from above and start adding on some complexity. Here, we will use EMT to run a relaxation on the bulk Cu structure and then use the output of this calculation as the input to a static calculation with the semi-empirical quantum mechanics method GFN2-xTB as implemented in [`quacc.recipes.tblite.core.static_job`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.tblite.core.static_job). This example highlights how there are no restrictions in terms of how many codes you can use in a single workflow.
 
 !!! Note
 
@@ -68,7 +68,7 @@ result2 = static_job(result1, method="GFN2-xTB")
 print(result2)
 ```
 
-!!! Hint
+!!! Tip
 
     The output of most compute jobs is a dictionary summarizing the results of the calculation. It always has a key `"atoms"` that contains a copy of the output `Atoms` object. The first argument to all recipes accepts either the `Atoms` object directly or a dictionary containing it.
 

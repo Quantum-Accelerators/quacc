@@ -1,6 +1,6 @@
 # Workflow Engines Overview
 
-Everyone's computing needs are different, so we ensured that quacc is interoperable with a variety of modern workflow management tools. There are over [300+](https://workflows.community/systems) workflow management tools out there, so we can't possibly cover them all. Instead, we have focused on the most popular tools that we have tested and found to be compatible with quacc with minimal additional coding required. The recommended solutions below each use a decorator-based approach to defining workflows, and the basic syntax is very similar across all of them.
+Everyone's computing needs are different, so we ensured that quacc is interoperable with a variety of modern workflow management tools. There are over [300+ workflow management tools](https://workflows.community/systems) out there, so we can't possibly cover them all. Instead, we have focused on the most popular tools that we have tested and found to be compatible with quacc with minimal additional coding required. The recommended solutions below each use a decorator-based approach to defining workflows, and the basic syntax is very similar across all of them.
 
 ## Pros and Cons
 
@@ -42,27 +42,49 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     - Challenging to orchestrate workflows with steps running across heterogeneous resources
     - The concept of always returning a "future" object can be confusing for new users
 
-=== "Jobflow + FireWorks"
+=== "Prefect"
+
+    [Prefect](https://www.prefect.io/) is a workflow management system that is widely adopted in the data science industry.
+
+    Pros:
+
+    - Very popular in the data science industry
+    - Useful dashboard to monitor job progress
+    - Supports a variety of job schedulers via Dask
+    - Uses a directed acyclic graph-free model for flexibility
+
+    Cons:
+
+    - Can be expensive for large groups if you don't self-host
+    - Lacks documentation for HPC environments
+    - Meant for data-intensive workflows rather than compute-intensive workflows
+    - Using Dask for job scheduling can be challenging to configure
+
+=== "Jobflow"
 
     If you are affiliated with the Materials Project team at Lawrence Berkeley National Laboratory, we recommend using [Jobflow](https://github.com/materialsproject/jobflow) to define the workflows coupled with [FireWorks](https://github.com/materialsproject/fireworks) to dispatch them since it widely used there.
 
-    Pros (Jobflow):
+    **Jobflow**
+
+    Pros:
 
     - Simple interface for defining individual jobs and workflows
     - Native support for databases
     - Directly compatible with Atomate2
 
-    Cons (Jobflow):
+    Cons:
 
-    - Defining dynamic workflows with Jobflow is slightly more complex than other solutions
-    - The strong emphasis on using a database can be a barrier to entry
+    - Parsing the output of a workflow is not as intuitive as other solutions
+    - Defining dynamic workflows with Jobflow's `Response` object is slightly more complex than other solutions
 
-    Pros (FireWorks):
+    **FireWorks**:
+
+    Pros:
 
     - FireWorks is well-suited for a variety of job management approaches
     - Helpful dashboard for monitoring job progress
 
-    Cons (FireWorks):
+    Cons:
 
     - FireWorks documentation can be difficult to navigate without prior experience
     - FireWorks can have a steep learning curve due to its many configuration options
