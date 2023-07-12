@@ -133,10 +133,10 @@ def summarize_run(
     results["dir_name"] = ":".join(uri.split(":")[1:])
     results["builder_meta"]["build_date"] = str(results["builder_meta"]["build_date"])
     results["logfile"] = results["logfile"].split(":")[-1]
-    if "trajectory" in results:
-        results["trajectory"] = [
+    if results["attributes"].get("trajectory"):
+        results["attributes"]["trajectory"] = [
             atoms_to_metadata(AseAtomsAdaptor().get_atoms(molecule))
-            for molecule in results["trajectory"]
+            for molecule in results["attributes"]["trajectory"]
         ]
 
     # Check convergence if requested
