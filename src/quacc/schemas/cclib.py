@@ -125,7 +125,7 @@ def summarize_run(
 
     # Fortunately, there is already a cclib parser in Atomate2
     results = TaskDocument.from_logfile(
-        dir_path, logfile_extensions, analysis=pop_analyses
+        dir_path, logfile_extensions, store_trajectory=True, analysis=pop_analyses
     ).dict()
     uri = results["dir_name"]
     results["nid"] = uri.split(":")[0]
