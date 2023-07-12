@@ -1,6 +1,6 @@
 # Workflow Engine Setup
 
-Using a workflow engine is a crucial component for scaling up quacc calculations in a high-throughput setting. We describe the necessary installation steps here.
+Using a workflow engine is a crucial component for scaling up quacc calculations in a high-throughput setting. We describe the necessary installation steps here for the workflow manager of your choosing.
 
 !!! Tip
 
@@ -181,4 +181,4 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
         Running `lpad reset` will clear your FireWorks launchpad, so only use this command if you are a new user.
 
-    To check that everything is working right with FireWorks, run `lpad reset` to ensure there is a connection to the database.
+    To check that FireWorks can connect to your database, run `lpad reset` if this is your first time using FireWorks.
