@@ -6,6 +6,7 @@ from typing import Literal, TypeVar
 
 from ase.atoms import Atoms
 from atomate2.common.schemas.cclib import TaskDocument
+from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
@@ -132,6 +133,11 @@ def summarize_run(
     results["dir_name"] = ":".join(uri.split(":")[1:])
     results["builder_meta"]["build_date"] = str(results["builder_meta"]["build_date"])
     results["logfile"] = results["logfile"].split(":")[-1]
+    if "trajectory" in results:
+        results["trajectory"] = [
+            atoms_to_metadata(AseAtomsAdaptor().get_atoms(molecule))
+            for molecule in results["trajectory"]
+        ]
 
     # Check convergence if requested
     if check_convergence and results["attributes"].get("optdone") is False:
