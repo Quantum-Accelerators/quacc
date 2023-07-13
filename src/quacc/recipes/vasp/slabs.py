@@ -65,6 +65,7 @@ def slab_relax_job(
     Function to relax a slab.
 
     Parameters
+    ----------
     atoms
         Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     preset
@@ -100,7 +101,7 @@ def slab_relax_job(
 
 
 def bulk_to_slabs_flow(
-    atoms: Atoms,
+    atoms: Atoms | dict,
     slabgen_kwargs: dict | None = None,
     slab_relax: ct.electron = slab_relax_job,
     slab_static: ct.electron | None = slab_static_job,
@@ -119,7 +120,7 @@ def bulk_to_slabs_flow(
     Parameters
     ----------
     atoms
-        Atoms object for the structure.
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     slabgen_kwargs
         Additional keyword arguments to pass to make_max_slabs_from_bulk()
     slab_relax
@@ -136,7 +137,7 @@ def bulk_to_slabs_flow(
     list[VaspSchema]
         List of dictionary results from quacc.schemas.vasp.summarize_run
     """
-
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}
     slabgen_kwargs = slabgen_kwargs or {}
