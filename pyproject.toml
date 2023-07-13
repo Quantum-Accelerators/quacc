@@ -36,6 +36,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+defects = ["pymatgen-analysis-defects>=2023.7.12", "shakenbreak>=23.6.23"]
 fireworks = ["fireworks>=2.0.3"]
 optimizers = ["sella>=2.3.2"]
 parsl = ["parsl>=2023.7.3"]

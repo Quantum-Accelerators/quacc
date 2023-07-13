@@ -43,6 +43,7 @@ Quacc can be installed with several "extras," as outlined in the `pyproject.toml
 
 ### Miscellaneous
 
+- `quacc[defects]`: Installs dependencies to enable the use of defect workflows.
 - `quacc[optimizers]`: Installs dependencies to enable the use of the Sella optimizer.
 
 ### Development

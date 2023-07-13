@@ -6,15 +6,20 @@ from __future__ import annotations
 import numpy as np
 from ase.atoms import Atoms
 from pymatgen.analysis.defects.core import Defect
-from pymatgen.analysis.defects.generators import AntiSiteGenerator, ChargeInterstitialGenerator, \
-    InterstitialGenerator, SubstitutionGenerator, VacancyGenerator, VoronoiInterstitialGenerator
+from pymatgen.analysis.defects.generators import (
+    AntiSiteGenerator,
+    ChargeInterstitialGenerator,
+    InterstitialGenerator,
+    SubstitutionGenerator,
+    VacancyGenerator,
+    VoronoiInterstitialGenerator,
+)
 from pymatgen.analysis.defects.thermo import DefectEntry
 from pymatgen.core import Structure
 from pymatgen.core.periodic_table import DummySpecies
 from pymatgen.entries.computed_entries import ComputedStructureEntry
 from pymatgen.io.ase import AseAtomsAdaptor
 from shakenbreak.input import Distortions
-
 
 # NOTES:
 # - Anytime an Atoms object is converted to a pmg structure, make sure
@@ -27,10 +32,10 @@ from shakenbreak.input import Distortions
 
 
 def get_defect_entry_from_defect(
-        defect: Defect,
-        defect_supercell: Structure,
-        charge_state: int,
-        dummy_species: DummySpecies,
+    defect: Defect,
+    defect_supercell: Structure,
+    charge_state: int,
+    dummy_species: DummySpecies,
 ) -> DefectEntry:
     """
     Function to generate DefectEntry object from Defect object
@@ -53,7 +58,8 @@ def get_defect_entry_from_defect(
     """
     # Find defect's fractional coordinates and remove it from supercell
     dummy_site = [
-        site for site in defect_supercell
+        site
+        for site in defect_supercell
         if site.species.elements[0].symbol == dummy_species.symbol
     ][0]
     sc_defect_frac_coords = dummy_site.frac_coords
@@ -69,22 +75,27 @@ def get_defect_entry_from_defect(
         charge_state=charge_state,
         sc_entry=computed_structure_entry,
         sc_defect_frac_coords=sc_defect_frac_coords,
-
     )
 
 
 def make_defects_from_bulk(
-        atoms: Atoms,
-        defectgen: (AntiSiteGenerator | ChargeInterstitialGenerator | InterstitialGenerator | SubstitutionGenerator
-                    | VacancyGenerator | VoronoiInterstitialGenerator),
-        charge_state: int = 0,
-        sc_mat: np.ndarray | None = None,
-        dummy_species: DummySpecies = DummySpecies("X"),
-        min_atoms: int = 80,
-        max_atoms: int = 240,
-        min_length: float = 10.0,
-        force_diagonal: bool = False,
-        **defectgen_kwargs,
+    atoms: Atoms,
+    defectgen: (
+        AntiSiteGenerator
+        | ChargeInterstitialGenerator
+        | InterstitialGenerator
+        | SubstitutionGenerator
+        | VacancyGenerator
+        | VoronoiInterstitialGenerator
+    ),
+    charge_state: int = 0,
+    sc_mat: np.ndarray | None = None,
+    dummy_species: DummySpecies = DummySpecies("X"),
+    min_atoms: int = 80,
+    max_atoms: int = 240,
+    min_length: float = 10.0,
+    force_diagonal: bool = False,
+    **defectgen_kwargs,
 ) -> list[Atoms]:
     """
     Function to make defects from a bulk atoms object.
@@ -153,7 +164,9 @@ def make_defects_from_bulk(
         # Apply rattle and bond distortion to all defects
         defect_dict, distortion_metadata = Dist.apply_distortions()
         defect_symbol = list(distortion_metadata["defects"].keys())[0]
-        distortion_dict = defect_dict[defect_symbol]["charges"][charge_state]["structures"]["distortions"]
+        distortion_dict = defect_dict[defect_symbol]["charges"][charge_state][
+            "structures"
+        ]["distortions"]
 
         # Make atoms objects and store defect stats
         for distortions, defect_struct in distortion_dict.items():

@@ -3,8 +3,14 @@ from __future__ import annotations
 
 import covalent as ct
 from ase.atoms import Atoms
-from pymatgen.analysis.defects.generators import AntiSiteGenerator, ChargeInterstitialGenerator, \
-    InterstitialGenerator, SubstitutionGenerator, VacancyGenerator, VoronoiInterstitialGenerator
+from pymatgen.analysis.defects.generators import (
+    AntiSiteGenerator,
+    ChargeInterstitialGenerator,
+    InterstitialGenerator,
+    SubstitutionGenerator,
+    VacancyGenerator,
+    VoronoiInterstitialGenerator,
+)
 
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.schemas.ase import OptSchema, RunSchema
@@ -12,15 +18,21 @@ from quacc.util.defects import make_defects_from_bulk
 
 
 def bulk_to_defects_flow(
-        atoms: Atoms | dict,
-        defectgen: (AntiSiteGenerator | ChargeInterstitialGenerator | InterstitialGenerator | SubstitutionGenerator
-                    | VacancyGenerator | VoronoiInterstitialGenerator),
-        charge_state: int | None = None,
-        defectgen_kwargs: dict | None = None,
-        defect_relax_electron: ct.electron | None = relax_job,
-        defect_static_electron: ct.electron | None = static_job,
-        defect_relax_kwargs: dict | None = None,
-        defect_static_kwargs: dict | None = None,
+    atoms: Atoms | dict,
+    defectgen: (
+        AntiSiteGenerator
+        | ChargeInterstitialGenerator
+        | InterstitialGenerator
+        | SubstitutionGenerator
+        | VacancyGenerator
+        | VoronoiInterstitialGenerator
+    ),
+    charge_state: int | None = None,
+    defectgen_kwargs: dict | None = None,
+    defect_relax_electron: ct.electron | None = relax_job,
+    defect_static_electron: ct.electron | None = static_job,
+    defect_relax_kwargs: dict | None = None,
+    defect_static_kwargs: dict | None = None,
 ) -> list[RunSchema | OptSchema]:
     """
     Workflow consisting of:
@@ -69,16 +81,14 @@ def bulk_to_defects_flow(
     @ct.lattice
     def _relax_distributed(defects):
         return [
-            defect_relax_electron(defect, **defect_relax_kwargs)
-            for defect in defects
+            defect_relax_electron(defect, **defect_relax_kwargs) for defect in defects
         ]
 
     @ct.electron
     @ct.lattice
     def _static_distributed(defects):
         return [
-            defect_static_electron(defect, **defect_static_kwargs)
-            for defect in defects
+            defect_static_electron(defect, **defect_static_kwargs) for defect in defects
         ]
 
     @ct.electron
@@ -92,7 +102,9 @@ def bulk_to_defects_flow(
             for defect in defects
         ]
 
-    defects = ct.electron(make_defects_from_bulk)(atoms, defectgen, charge_state, **defectgen_kwargs)
+    defects = ct.electron(make_defects_from_bulk)(
+        atoms, defectgen, charge_state, **defectgen_kwargs
+    )
 
     if defect_relax_electron and defect_static_electron:
         return _relax_and_static_distributed(defects)
