@@ -102,7 +102,7 @@ def slab_relax_job(
 
 def bulk_to_slabs_flow(
     atoms: Atoms | dict,
-    slabgen_kwargs: dict | None = None,
+    make_slabs_kwargs: dict | None = None,
     slab_relax: ct.electron = slab_relax_job,
     slab_static: ct.electron | None = slab_static_job,
     slab_relax_kwargs: dict | None = None,
@@ -121,7 +121,7 @@ def bulk_to_slabs_flow(
     ----------
     atoms
         Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
-    slabgen_kwargs
+    make_slabs_kwargs
         Additional keyword arguments to pass to make_max_slabs_from_bulk()
     slab_relax
         Default to use for the relaxation of the slab structures.
@@ -140,7 +140,7 @@ def bulk_to_slabs_flow(
     atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}
-    slabgen_kwargs = slabgen_kwargs or {}
+    make_slabs_kwargs = make_slabs_kwargs or {}
 
     @ct.electron
     @ct.lattice
@@ -158,7 +158,7 @@ def bulk_to_slabs_flow(
             for slab in slabs
         ]
 
-    slabs = ct.electron(make_max_slabs_from_bulk)(atoms, **slabgen_kwargs)
+    slabs = ct.electron(make_max_slabs_from_bulk)(atoms, **make_slabs_kwargs)
 
     if slab_static is None:
         return _relax_distributed(slabs)
