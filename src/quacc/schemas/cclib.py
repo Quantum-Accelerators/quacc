@@ -6,6 +6,7 @@ from typing import Literal, TypeVar
 
 from ase.atoms import Atoms
 from atomate2.common.schemas.cclib import TaskDocument
+from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
@@ -125,13 +126,18 @@ def summarize_run(
 
     # Fortunately, there is already a cclib parser in Atomate2
     results = TaskDocument.from_logfile(
-        dir_path, logfile_extensions, analysis=pop_analyses
+        dir_path, logfile_extensions, store_trajectory=True, analysis=pop_analyses
     ).dict()
     uri = results["dir_name"]
     results["nid"] = uri.split(":")[0]
     results["dir_name"] = ":".join(uri.split(":")[1:])
     results["builder_meta"]["build_date"] = str(results["builder_meta"]["build_date"])
     results["logfile"] = results["logfile"].split(":")[-1]
+    if results["attributes"].get("trajectory"):
+        results["attributes"]["trajectory"] = [
+            atoms_to_metadata(AseAtomsAdaptor().get_atoms(molecule))
+            for molecule in results["attributes"]["trajectory"]
+        ]
 
     # Check convergence if requested
     if check_convergence and results["attributes"].get("optdone") is False:

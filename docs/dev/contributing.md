@@ -32,14 +32,7 @@ Please abide by the following guidelines when contributing code to quacc:
 
 - The first positional argument to most compute jobs should be of type `Atoms | AtomsSchema`. The output of most compute tasks should be a schema from one of the module/functions within `quacc.schemas`.
 
-- All inputs and outputs to recipes must be JSON (de)serializable (or have an `.as_dict()` and `.from_dict()` method, such that they are [`MSONable`](https://materialsvirtuallab.github.io/monty/monty.json.html)). This can be confirmed by running the following code snippet, where where `test_item` is the object you wish to test.
-
-```python
-from monty.json import MontyDecoder, jsanitize
-
-d = jsanitize(test_item, strict=True, enum_values=True)
-MontyDecoder().process_decoded(d)
-```
+- All inputs and outputs to recipes should be pickle-able and, ideally, JSON serializable.
 
 - Only define multi-step workflows if they go beyond simply stitching together existing functions or if they are widely used in other recipes. Otherwise, just define the individual functions.
 
