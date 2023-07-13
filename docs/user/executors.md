@@ -75,7 +75,7 @@ In the previous examples, we have been running calculations on our local machine
         address="perlmutter-p1.nersc.gov",
         ssh_key_file="~/.ssh/nersc",
         cert_file="~/.ssh/nersc-cert.pub",
-        remote_workdir="$SCRATCH",
+        remote_workdir="$SCRATCH/quacc",
         conda_env="quacc",
         options={
             f"nodes": {n_nodes},
