@@ -21,7 +21,10 @@ def teardown_module():
         ):
             os.remove(f)
         if "quacc-tmp" in f or "job_" in f or f == "tmp_dir":
-            rmtree(f)
+            if os.path.islink(f):
+                os.unlink(f)
+            else:
+                rmtree(f)
 
 
 def test_static_job():

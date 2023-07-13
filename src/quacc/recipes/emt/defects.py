@@ -72,9 +72,6 @@ def bulk_to_defects_flow(
     defect_static_kwargs = defect_static_kwargs or {}
     make_defects_kwargs = make_defects_kwargs or {}
 
-    # TODO: Do you normally keep the unit cell fixed when doing a defect calculation?
-    # If so, you will want defect_relax_kwargs = defect_relax_kwargs or {"relax_cell": False}
-
     @ct.electron
     @ct.lattice
     def _relax_distributed(defects):

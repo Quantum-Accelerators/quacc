@@ -87,10 +87,9 @@ def make_defects_from_bulk(
         | SubstitutionGenerator
         | VacancyGenerator
         | VoronoiInterstitialGenerator
-    ),
+    ) = VacancyGenerator,
     charge_state: int = 0,
     sc_mat: np.ndarray | None = None,
-    dummy_species: DummySpecies = DummySpecies("X"),
     min_atoms: int = 80,
     max_atoms: int = 240,
     min_length: float = 10.0,
@@ -108,9 +107,6 @@ def make_defects_from_bulk(
         defect generator
     sc_mat
         supercell matrix
-    dummy_species
-        A special specie for representing non-traditional elements or species. For example, representation of vacancies
-        (charged or otherwise), or special sites, etc.
     min_atoms
         minimum number of atoms in supercell
     max_atoms
@@ -143,7 +139,7 @@ def make_defects_from_bulk(
         # Generate the supercell for a defect
         defect_supercell = defect.get_supercell_structure(
             sc_mat=sc_mat,
-            dummy_species=dummy_species,
+            dummy_species=DummySpecies("X"),
             min_atoms=min_atoms,
             max_atoms=max_atoms,
             min_length=min_length,
@@ -155,7 +151,7 @@ def make_defects_from_bulk(
             defect=defect,
             defect_supercell=defect_supercell,
             charge_state=charge_state,
-            dummy_species=dummy_species,
+            dummy_species=DummySpecies("X"),
         )
 
         # Instantiate class to apply rattle and bond distortion to all defects
