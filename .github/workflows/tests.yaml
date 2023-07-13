@@ -51,7 +51,7 @@ jobs:
           covalent start
 
       - name: Run tests with pytest
-        run: pytest -k --cov=quacc --cov-report=xml
+        run: pytest --cov=quacc --cov-report=xml
 
       - name: Stop Covalent server
         run: covalent stop
