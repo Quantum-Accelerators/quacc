@@ -35,7 +35,6 @@ def get_defect_entry_from_defect(
     defect: Defect,
     defect_supercell: Structure,
     charge_state: int,
-    dummy_species: DummySpecies,
 ) -> DefectEntry:
     """
     Function to generate DefectEntry object from Defect object
@@ -48,8 +47,6 @@ def get_defect_entry_from_defect(
         defect supercell
     charge_state
         charge state of defect
-    dummy_species
-        Dummy species (used to keep track of the defect coords in the supercell)
 
     Returns
     -------
@@ -60,7 +57,7 @@ def get_defect_entry_from_defect(
     dummy_site = [
         site
         for site in defect_supercell
-        if site.species.elements[0].symbol == dummy_species.symbol
+        if site.species.elements[0].symbol == DummySpecies().symbol
     ][0]
     sc_defect_frac_coords = dummy_site.frac_coords
     defect_supercell.remove(dummy_site)
@@ -139,7 +136,7 @@ def make_defects_from_bulk(
         # Generate the supercell for a defect
         defect_supercell = defect.get_supercell_structure(
             sc_mat=sc_mat,
-            dummy_species=DummySpecies("X"),
+            dummy_species=DummySpecies(),
             min_atoms=min_atoms,
             max_atoms=max_atoms,
             min_length=min_length,
@@ -151,7 +148,7 @@ def make_defects_from_bulk(
             defect=defect,
             defect_supercell=defect_supercell,
             charge_state=charge_state,
-            dummy_species=DummySpecies("X"),
+            dummy_species=DummySpecies(),
         )
 
         # Instantiate class to apply rattle and bond distortion to all defects
