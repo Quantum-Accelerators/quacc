@@ -31,50 +31,6 @@ from shakenbreak.input import Distortions
 # on a copy because Atoms objects are mutable.
 
 
-def get_defect_entry_from_defect(
-    defect: Defect,
-    defect_supercell: Structure,
-    charge_state: int,
-) -> DefectEntry:
-    """
-    Function to generate DefectEntry object from Defect object
-
-    Parameters
-    ----------
-    defect
-        defect object
-    defect_supercell
-        defect supercell
-    charge_state
-        charge state of defect
-
-    Returns
-    -------
-    DefectEntry
-        defect entry
-    """
-    # Find defect's fractional coordinates and remove it from supercell
-    dummy_site = [
-        site
-        for site in defect_supercell
-        if site.species.elements[0].symbol == DummySpecies().symbol
-    ][0]
-    sc_defect_frac_coords = dummy_site.frac_coords
-    defect_supercell.remove(dummy_site)
-
-    computed_structure_entry = ComputedStructureEntry(
-        structure=defect_supercell,
-        energy=0.0,  # needs to be set, so set to 0.0
-    )
-
-    return DefectEntry(
-        defect=defect,
-        charge_state=charge_state,
-        sc_entry=computed_structure_entry,
-        sc_defect_frac_coords=sc_defect_frac_coords,
-    )
-
-
 def make_defects_from_bulk(
     atoms: Atoms,
     defectgen: (
@@ -144,11 +100,8 @@ def make_defects_from_bulk(
         )
 
         # Generate DefectEntry object from Defect object
-        defect_entry = get_defect_entry_from_defect(
-            defect=defect,
-            defect_supercell=defect_supercell,
-            charge_state=charge_state,
-            dummy_species=DummySpecies(),
+        defect_entry = _get_defect_entry_from_defect(
+            defect=defect, defect_supercell=defect_supercell, charge_state=charge_state
         )
 
         # Instantiate class to apply rattle and bond distortion to all defects
@@ -175,3 +128,47 @@ def make_defects_from_bulk(
             final_defect.info["defect_stats"] = defect_stats
             final_defects.append(final_defect)
     return final_defects
+
+
+def _get_defect_entry_from_defect(
+    defect: Defect,
+    defect_supercell: Structure,
+    charge_state: int,
+) -> DefectEntry:
+    """
+    Function to generate DefectEntry object from Defect object
+
+    Parameters
+    ----------
+    defect
+        defect object
+    defect_supercell
+        defect supercell
+    charge_state
+        charge state of defect
+
+    Returns
+    -------
+    DefectEntry
+        defect entry
+    """
+    # Find defect's fractional coordinates and remove it from supercell
+    dummy_site = [
+        site
+        for site in defect_supercell
+        if site.species.elements[0].symbol == DummySpecies().symbol
+    ][0]
+    sc_defect_frac_coords = dummy_site.frac_coords
+    defect_supercell.remove(dummy_site)
+
+    computed_structure_entry = ComputedStructureEntry(
+        structure=defect_supercell,
+        energy=0.0,  # needs to be set, so set to 0.0
+    )
+
+    return DefectEntry(
+        defect=defect,
+        charge_state=charge_state,
+        sc_entry=computed_structure_entry,
+        sc_defect_frac_coords=sc_defect_frac_coords,
+    )
