@@ -4,7 +4,8 @@ from __future__ import annotations
 import os
 from typing import List, Optional, Union
 
-from pydantic import BaseSettings, Field, root_validator
+from pydantic import Field, root_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from quacc.presets import vasp as vasp_defaults
 
@@ -22,6 +23,8 @@ class QuaccSettings(BaseSettings):
     The variables can also be modified individually though environment variables by
     using the "QUACC" prefix. e.g. QUACC_SCRATCH_DIR=/path/to/scratch.
     """
+
+    model_config = SettingsConfigDict(env_prefix="quacc_")
 
     # ---------------------------
     # General Settings
