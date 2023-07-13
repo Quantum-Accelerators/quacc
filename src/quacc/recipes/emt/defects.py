@@ -26,11 +26,11 @@ def bulk_to_defects_flow(
         | SubstitutionGenerator
         | VacancyGenerator
         | VoronoiInterstitialGenerator
-    ),
-    charge_state: int | None = None,
-    defectgen_kwargs: dict | None = None,
-    defect_relax_electron: ct.electron | None = relax_job,
-    defect_static_electron: ct.electron | None = static_job,
+    ) = VacancyGenerator,  # NOTE: I added a default. VacancyGenerator seemed like it might be the most popular.
+    charge_state: int = 0,  # NOTE: I changed this from int | None = None because None does not work
+    make_defects_kwargs: dict | None = None,
+    defect_relax: ct.electron | None = relax_job,
+    defect_static: ct.electron | None = static_job,
     defect_relax_kwargs: dict | None = None,
     defect_static_kwargs: dict | None = None,
 ) -> list[RunSchema | OptSchema]:
@@ -39,7 +39,7 @@ def bulk_to_defects_flow(
 
     1. Defect generation
 
-    2. Defect relaxations (optional)
+    2. Defect relaxations
 
     3. Defect statics (optional)
 
@@ -51,11 +51,11 @@ def bulk_to_defects_flow(
         Defect generator
     charge_state
         Charge state of the defect
-    defectgen_kwargs
-        Keyword arguments to pass to the pymatgen.analysis.defects.generators.get_defects() method
-    defect_relax_electron
+    make_defects_kwargs
+        Keyword arguments to pass to the make_defects_from_bulk
+    defect_relax
         Default Electron to use for the relaxation of the defect structures.
-    defect_static_electron
+    defect_static
         Default Electron to use for the static calculation of the defect structures.
     defect_relax_kwargs
         Additional keyword arguments to pass to the relaxation calculation.
@@ -68,47 +68,34 @@ def bulk_to_defects_flow(
         List of dictionary of results from quacc.schemas.ase.summarize_run or quacc.schemas.ase.summarize_opt_run
     """
     atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
-    defect_relax_kwargs = defect_relax_kwargs or {}
+    defect_relax_kwargs = defect_relax_kwargs or {"relax_cell": False}
     defect_static_kwargs = defect_static_kwargs or {}
-    defectgen_kwargs = defectgen_kwargs or {}
+    make_defects_kwargs = make_defects_kwargs or {}
 
-    if not defect_relax_electron and not defect_static_electron:
-        raise ValueError(
-            "At least one of defect_relax_electron or defect_static_electron must be defined."
-        )
+    # TODO: Do you normally keep the unit cell fixed when doing a defect calculation?
+    # If so, you will want defect_relax_kwargs = defect_relax_kwargs or {"relax_cell": False}
 
     @ct.electron
     @ct.lattice
     def _relax_distributed(defects):
-        return [
-            defect_relax_electron(defect, **defect_relax_kwargs) for defect in defects
-        ]
-
-    @ct.electron
-    @ct.lattice
-    def _static_distributed(defects):
-        return [
-            defect_static_electron(defect, **defect_static_kwargs) for defect in defects
-        ]
+        return [defect_relax(defect, **defect_relax_kwargs) for defect in defects]
 
     @ct.electron
     @ct.lattice
     def _relax_and_static_distributed(defects):
         return [
-            defect_static_electron(
-                defect_relax_electron(defect, **defect_relax_kwargs)["atoms"],
+            defect_static(
+                defect_relax(defect, **defect_relax_kwargs),
                 **defect_static_kwargs,
             )
             for defect in defects
         ]
 
     defects = ct.electron(make_defects_from_bulk)(
-        atoms, defectgen, charge_state, **defectgen_kwargs
+        atoms, defectgen, charge_state=charge_state, **make_defects_kwargs
     )
 
-    if defect_relax_electron and defect_static_electron:
-        return _relax_and_static_distributed(defects)
-    elif defect_relax_electron:
+    if defect_static is None:
         return _relax_distributed(defects)
-    elif defect_static_electron:
-        return _static_distributed(defects)
+
+    return _relax_and_static_distributed(defects)
