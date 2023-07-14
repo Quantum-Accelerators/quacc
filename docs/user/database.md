@@ -21,7 +21,7 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
         store = MontyStore(
             "quacc_results",
             database_path=".",
-            database_name="quacc_db"
+            database_name="quacc_db",
         )
 
         # Store the results
@@ -43,7 +43,7 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
             username="my_username",
             password="my_password",
             host="localhost",
-            port=27017
+            port=27017,
         )
 
         # Store the results
@@ -66,7 +66,7 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
         store = MontyStore(
             "quacc_results",
             database_path=".",
-            database_name="quacc_db"
+            database_name="quacc_db",
         )
 
         # Store the results
@@ -86,7 +86,7 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
             username="my_username",
             password="my_password",
             host="localhost",
-            port=27017
+            port=27017,
         )
 
         # Store the results
