@@ -237,7 +237,7 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Install pip packages
-        run: pip install .[strict,dev,defects]
+        run: pip install .[dev,defects]
 
       - name: Configure quacc
         run: quacc config
