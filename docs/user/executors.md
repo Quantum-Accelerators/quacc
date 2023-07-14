@@ -78,7 +78,7 @@ In the previous examples, we have been running calculations on our local machine
         remote_workdir="$SCRATCH/quacc",
         conda_env="quacc",
         options={
-            f"nodes": {n_nodes},
+            "nodes": f"{n_nodes}",
             "qos": "debug",
             "constraint": "cpu",
             "account": "YourAccountName",
