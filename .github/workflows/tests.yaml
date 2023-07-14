@@ -11,6 +11,7 @@ on:
       - .deepsource.toml
       - docs/**
   pull_request:
+    branches: [main]
   release:
     types: [published]
 
