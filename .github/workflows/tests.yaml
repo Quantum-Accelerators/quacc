@@ -12,8 +12,6 @@ on:
       - docs/**
   pull_request:
     branches: [main]
-  release:
-    types: [published]
 
 jobs:
   tests-base:
