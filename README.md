@@ -7,7 +7,7 @@
 # quacc – The Quantum Accelerator 🦆
 
 ![tests](https://github.com/quantum-accelerators/quacc/actions/workflows/tests.yaml/badge.svg)
-[![codecov](https://codecov.io/gh/Quantum-Accelerators/quacc/branch/main/graph/badge.svg?token=OJaOZAH30u)](https://codecov.io/gh/Quantum-Accelerators/quacc/tree/main)
+[![codecov](https://codecov.io/gh/Quantum-Accelerators/quacc/branch/main/graph/badge.svg?token=OJaOZAH30u)](https://codecov.io/gh/Quantum-Accelerators/quacc)
 [![DeepSource](https://app.deepsource.com/gh/Quantum-Accelerators/quacc.svg/?label=active+issues&token=Y1NxOLIuFFEqWdjawIYnJNde)](https://app.deepsource.com/gh/Quantum-Accelerators/quacc/?ref=repository-badge)
 ![Supported python versions](https://img.shields.io/badge/python-3.9%20%7C%203.10-blue)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7720998.svg)](https://doi.org/10.5281/zenodo.7720998)
@@ -18,7 +18,7 @@ The three main goals of quacc are to:
 
 1. Reduce the barrier for running complex, mixed-code workflows for molecules and materials across distributed compute environments.
 
-2. Promote rapid workflow development and testing via modern workflow management solutions.
+2. Promote rapid workflow development and testing via modern [workflow management solutions](https://workflows.community/).
 
 3. Enable a seamless interface between the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/) and the software infrastructure powering the [Materials Project](https://materialsproject.org).
 

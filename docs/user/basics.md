@@ -2,7 +2,7 @@
 
 In quacc, each code comes with pre-packaged jobs and workflows, which we call recipes for short. This tutorial walks you through how to use these provided recipes to run simple calculations that can be tested out on your local machine.
 
-Once you understand the basics, you should move on to the ["Going High-Throughput"](wflow_engines.md) guide to learn how to use quacc with a workflow manager, which allows you to stich together and run complex quacc workflows across distributed computing resources.
+Once you understand the basics, you should move on to the ["Using a Workflow Engine"](wflow_engines.md) guide to learn how to stich together and run complex quacc workflows across distributed computing resources.
 
 ## Pre-Requisites
 

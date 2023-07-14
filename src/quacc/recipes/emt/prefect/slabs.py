@@ -13,7 +13,7 @@ from quacc.util.slabs import make_max_slabs_from_bulk
 def bulk_to_slabs_flow(
     atoms,
     run_slab_static: bool = True,
-    slabgen_kwargs: dict | None = None,
+    make_slabs_kwargs: dict | None = None,
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
 ) -> list[RunSchema | OptSchema]:
@@ -32,7 +32,7 @@ def bulk_to_slabs_flow(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as the value.
     run_slab_static
         Whether to run the slab static calculations.
-    slabgen_kwargs
+    make_slabs_kwargs
         Additional keyword arguments to pass to make_max_slabs_from_bulk()
     slab_relax_kwargs
         Additional keyword arguments to pass to the relaxation calculation.
@@ -46,7 +46,7 @@ def bulk_to_slabs_flow(
         or quacc.schemas.ase.summarize_opt_run
     """
     atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
-    slabgen_kwargs = slabgen_kwargs or {}
+    make_slabs_kwargs = make_slabs_kwargs or {}
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}
 
@@ -57,7 +57,7 @@ def bulk_to_slabs_flow(
         slab_relax_kwargs["relax_cell"] = False
 
     # Generate all the slab
-    slabs = make_max_slabs_from_bulk(atoms, **slabgen_kwargs)
+    slabs = make_max_slabs_from_bulk(atoms, **make_slabs_kwargs)
 
     futures = []
     for slab in slabs:
