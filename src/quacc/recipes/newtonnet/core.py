@@ -52,13 +52,13 @@ def add_stdev_and_hess(summary):
         mlcalculator.calculate(summary["trajectory"][i]["atoms"])
         summary["trajectory_results"][i]["hessian"] = mlcalculator.results["hessian"]
         summary["trajectory_results"][i]["energy_std"] = mlcalculator.results[
-            "energy_std"
+            "energy_disagreement"
         ]
         summary["trajectory_results"][i]["forces_std"] = mlcalculator.results[
-            "forces_std"
+            "forces_disagreement"
         ]
         summary["trajectory_results"][i]["hessian_std"] = mlcalculator.results[
-            "hessian_std"
+            "hessian_disagreement"
         ]
     return summary
 
