@@ -414,10 +414,11 @@ def test_irc_job_with_check_convergence():
 )
 def test_irc_job_with_custom_opt_swaps():
     # Define test inputs
-    atoms = molecule("H2O")
+    # atoms = molecule("H2O")
     opt_swaps = {
         "run_kwargs": {
             "direction": "forward",
+            "keep_going": True
         },
     }
 
