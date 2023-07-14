@@ -1,7 +1,8 @@
 name: tests
 on:
   push:
-    branches: [main]
+    branches:
+      - main
     paths-ignore:
       - CHANGELOG.md
       - .gitignore
@@ -11,8 +12,8 @@ on:
       - .deepsource.toml
       - docs/**
   pull_request:
-  release:
-    types: [published]
+    branches:
+      - main
 
 jobs:
   tests-base:
@@ -51,17 +52,13 @@ jobs:
           covalent start
 
       - name: Run tests with pytest
-        run: pytest -k 'not jobflow and not fireworks and not parsl and not prefect and not tblite and not psi4 and not dftb and not qchem and not newtonnet' --cov=quacc --cov-report=xml
+        run: pytest --cov=quacc --cov-report=xml
 
       - name: Stop Covalent server
         run: covalent stop
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
-        if: github.repository == 'quantum-accelerators/quacc'
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
 
   tests-tblite:
     strategy:
@@ -96,10 +93,6 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
-        if: github.repository == 'quantum-accelerators/quacc'
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
 
   tests-psi4:
     strategy:
@@ -143,10 +136,6 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
-        if: github.repository == 'quantum-accelerators/quacc'
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
 
   tests-dftbplus:
     strategy:
@@ -190,10 +179,6 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
-        if: github.repository == 'quantum-accelerators/quacc'
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
 
   tests-newtonnet:
     strategy:
@@ -270,10 +255,6 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
-        if: github.repository == 'quantum-accelerators/quacc'
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
 
   release:
     runs-on: ubuntu-latest

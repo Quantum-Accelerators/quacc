@@ -66,10 +66,10 @@ graph LR
     from ase.build import bulk
     from quacc.recipes.emt.core import relax_job, static_job
 
+
     # Define the workflow
     @ct.lattice
     def workflow(atoms):
-
         # Define Job 1
         result1 = relax_job(atoms)
 
@@ -78,15 +78,16 @@ graph LR
 
         return result2
 
+
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
 
     # Dispatch the workflow to the Covalent server
     # with the bulk Cu Atoms object as the input
-    dispatch_id = ct.dispatch(workflow)(atoms) # (1)
+    dispatch_id = ct.dispatch(workflow)(atoms)  # (1)
 
     # Fetch the result from the server
-    result = ct.get_result(dispatch_id, wait=True) # (2)
+    result = ct.get_result(dispatch_id, wait=True)  # (2)
     print(result)
     ```
 
@@ -115,8 +116,9 @@ graph LR
         ```
 
     ```python
-    from parsl import python_app
     from ase.build import bulk
+    from parsl import python_app
+
 
     # Define the Python apps
     @python_app
@@ -125,11 +127,13 @@ graph LR
 
         return relax_job(atoms)
 
+
     @python_app
     def static_app(atoms):
         from quacc.recipes.emt.core import static_job
 
         return static_job(atoms)
+
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -155,23 +159,23 @@ graph LR
 === "Prefect"
 
     ```python
+    from ase.build import bulk
     from prefect import flow, task
     from prefect.task_runners import SequentialTaskRunner
-    from ase.build import bulk
     from quacc.recipes.emt.core import relax_job, static_job
 
 
     # Define the workflow
-    @flow(task_runner=SequentialTaskRunner()) # (1)
+    @flow(task_runner=SequentialTaskRunner())  # (1)
     def workflow(atoms):
-
         # Call Task 1
-        future1 = task(relax_job).submit(atoms) # (2)
+        future1 = task(relax_job).submit(atoms)  # (2)
 
         # Call Task 2, which takes the output of Task 1 as input
         future2 = task(static_job).submit(future1)
 
         return future2
+
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -196,8 +200,8 @@ graph LR
 === "Jobflow"
 
     ```python
-    from jobflow import Flow, job, run_locally
     from ase.build import bulk
+    from jobflow import Flow, job, run_locally
     from quacc.recipes.emt.core import relax_job, static_job
 
     # Make an Atoms object of a bulk Cu structure
@@ -243,15 +247,16 @@ graph LR
     from ase.build import bulk, molecule
     from quacc.recipes.emt.core import relax_job
 
+
     # Define workflow
     @ct.lattice
     def workflow(atoms1, atoms2):
-
         # Define two independent relaxation jobs
         result1 = relax_job(atoms1)
         result2 = relax_job(atoms2)
 
         return {"result1": result1, "result2": result2}
+
 
     # Define two Atoms objects
     atoms1 = bulk("Cu")
@@ -270,8 +275,9 @@ graph LR
 === "Parsl"
 
     ```python
-    from parsl import python_app
     from ase.build import bulk, molecule
+    from parsl import python_app
+
 
     # Define the Python app
     @python_app
@@ -279,6 +285,7 @@ graph LR
         from quacc.recipes.emt.core import relax_job
 
         return relax_job(atoms)
+
 
     # Define two Atoms objects
     atoms1 = bulk("Cu")
@@ -299,20 +306,21 @@ graph LR
 === "Prefect"
 
     ```python
+    from ase.build import bulk, molecule
     from prefect import flow, task
     from prefect.task_runners import SequentialTaskRunner
-    from ase.build import bulk, molecule
     from quacc.recipes.emt.core import relax_job
+
 
     # Define workflow
     @flow(task_runner=SequentialTaskRunner())
     def workflow(atoms1, atoms2):
-
         # Define two independent relaxation jobs
         future1 = task(relax_job).submit(atoms1)
         future2 = task(relax_job).submit(atoms2)
 
         return future1, future2
+
 
     # Define two Atoms objects
     atoms1 = bulk("Cu")
@@ -329,8 +337,8 @@ graph LR
 === "Jobflow"
 
     ```python
-    from jobflow import job, Flow, run_locally
     from ase.build import bulk, molecule
+    from jobflow import Flow, job, run_locally
     from quacc.recipes.emt.core import relax_job
 
     # Define two Atoms objects
@@ -375,12 +383,14 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     from quacc.recipes.emt.core import relax_job
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
+
     @ct.lattice
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
         relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, slab_static=None)
 
         return relaxed_slabs
+
 
     atoms = bulk("Cu")
     dispatch_id = ct.dispatch(workflow)(atoms)
@@ -399,8 +409,9 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     **The Inefficient Way**
 
     ```python
-    from parsl import python_app
     from ase.build import bulk
+    from parsl import python_app
+
 
     @python_app
     def relax_app(atoms):
@@ -408,11 +419,13 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
         return relax_job(atoms)
 
+
     @python_app
     def bulk_to_slabs_app(atoms):
         from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
         return bulk_to_slabs_flow(atoms, slab_static=None)
+
 
     # Define the Atoms object
     atoms = bulk("Cu")
@@ -432,9 +445,10 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     Quacc fully supports Parsl-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Parsl-specific [`.emt.parsl.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.parsl.slabs.bulk_to_slabs_flow) workflow:
 
     ```python
-    from parsl import python_app
     from ase.build import bulk
+    from parsl import python_app
     from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_flow
+
 
     # Define the Python App
     @python_app
@@ -443,12 +457,13 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
         return relax_job(atoms)
 
+
     # Define the Atoms object
     atoms = bulk("Cu")
 
     # Define the workflow
     future1 = relax_app(atoms)
-    future2 = bulk_to_slabs_flow(future1.result(), slab_static=None) # (1)
+    future2 = bulk_to_slabs_flow(future1.result(), slab_static=None)  # (1)
 
     # Print the results
     print(future2.result())
@@ -463,11 +478,12 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     **The Inefficient Way**
 
     ```python
-    from prefect import task, flow
-    from prefect.task_runners import SequentialTaskRunner
     from ase.build import bulk
+    from prefect import flow, task
+    from prefect.task_runners import SequentialTaskRunner
     from quacc.recipes.emt.core import relax_job
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
 
     @flow(task_runner=SequentialTaskRunner())
     def workflow(atoms):
@@ -475,6 +491,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
         future2 = task(bulk_to_slabs_flow).submit(future1, slab_static=None)
 
         return future2
+
 
     # Define the Atoms object
     atoms = bulk("Cu")
@@ -489,13 +506,14 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     **The Efficient Way**
 
     ```python
-    from prefect import task, flow
-    from prefect.task_runners import SequentialTaskRunner
     from ase.build import bulk
+    from prefect import flow, task
+    from prefect.task_runners import SequentialTaskRunner
     from quacc.recipes.emt.core import relax_job
     from quacc.recipes.emt.prefect.slabs import bulk_to_slabs_flow
 
     bulk_to_slabs_flow.task_runner = SequentialTaskRunner()
+
 
     @flow(task_runner=SequentialTaskRunner())
     def workflow(atoms):
@@ -503,6 +521,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
         result = bulk_to_slabs_flow(future1, run_slab_static=False)
 
         return result
+
 
     # Define the Atoms object
     atoms = bulk("Cu")
@@ -519,8 +538,8 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     **The Inefficient Way**
 
     ```python
-    from jobflow import job, Flow, run_locally
     from ase.build import bulk
+    from jobflow import Flow, job, run_locally
     from quacc.recipes.emt.core import relax_job
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
@@ -547,8 +566,8 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     Quacc fully supports Jobflow-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Jobflow-specific [`.emt.jobflow.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.jobflow.slabs.bulk_to_slabs_flow) workflow:
 
     ```python
-    from jobflow import job, Flow, run_locally
     from ase.build import bulk
+    from jobflow import Flow, job, run_locally
     from quacc.recipes.emt.core import relax_job
     from quacc.recipes.emt.jobflow.slabs import bulk_to_slabs_flow
 

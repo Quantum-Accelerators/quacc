@@ -75,10 +75,10 @@ In the previous examples, we have been running calculations on our local machine
         address="perlmutter-p1.nersc.gov",
         ssh_key_file="~/.ssh/nersc",
         cert_file="~/.ssh/nersc-cert.pub",
-        remote_workdir="$SCRATCH",
+        remote_workdir="$SCRATCH/quacc",
         conda_env="quacc",
         options={
-            f"nodes": {n_nodes},
+            "nodes": f"{n_nodes}",
             "qos": "debug",
             "constraint": "cpu",
             "account": "YourAccountName",
@@ -86,7 +86,6 @@ In the previous examples, we have been running calculations on our local machine
             "time": "00:10:00",
         },
         prerun_commands=[
-            "export COVALENT_CONFIG_DIR=$SCRATCH",
             f"export QUACC_VASP_PARALLEL_CMD='srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'",
         ],
         use_srun=False, # (1)
