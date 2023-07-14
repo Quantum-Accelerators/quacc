@@ -51,7 +51,7 @@ jobs:
           covalent start
 
       - name: Run tests with pytest
-        run: pytest -k 'not jobflow and not fireworks and not parsl and not prefect and not tblite and not psi4 and not dftb and not qchem and not newtonnet' --cov=quacc --cov-report=xml
+        run: pytest --cov=quacc --cov-report=xml
 
       - name: Stop Covalent server
         run: covalent stop
