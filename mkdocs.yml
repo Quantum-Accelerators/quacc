@@ -137,6 +137,7 @@ nav:
           - user/wflow_overview.md
           - user/wflow_syntax.md
       - user/wflow_engines.md
+      - user/executors.md
       - user/settings.md
       - user/database.md
   - Developer Guide 🤝:

@@ -116,7 +116,7 @@ def test_slab_dynamic_jobs():
 
     outputs = bulk_to_slabs_flow(
         atoms,
-        slabgen_kwargs={"max_slabs": 2},
+        make_slabs_kwargs={"max_slabs": 2},
         slab_relax_kwargs={
             "opt_swaps": {"fmax": 1.0},
             "calc_kwargs": {"asap_cutoff": True},

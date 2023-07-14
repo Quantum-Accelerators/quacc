@@ -68,7 +68,7 @@ def static_job(
         "basis": basis,
         "charge": charge,
         "multiplicity": multiplicity,
-        "reference": "uhf" if multiplicity > 1 else None,
+        "reference": "uks" if multiplicity > 1 else "rks",
     }
     flags = remove_dict_empties(defaults | calc_swaps)
 
