@@ -89,7 +89,7 @@ def bulk_to_defects_flow(
         ]
 
     defects = ct.electron(make_defects_from_bulk)(
-        atoms, defectgen, charge_state=charge_state, **make_defects_kwargs
+        atoms, defectgen=defectgen, charge_state=charge_state, **make_defects_kwargs
     )
 
     if defect_static is None:
