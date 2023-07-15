@@ -25,6 +25,22 @@ def teardown_function():
                 rmtree(f)
 
 
+def test_file(monkeypatch):
+    from quacc.settings import QuaccSettings
+
+    assert QuaccSettings().GZIP_FILES is True
+
+    with open("quacc_test.yaml", "w") as f:
+        f.write("GZIP_FILES: false")
+    monkeypatch.setenv(
+        "QUACC_CONFIG_FILE", os.path.join(os.getcwd(), "quacc_test.yaml")
+    )
+    from quacc.settings import QuaccSettings
+
+    assert QuaccSettings().GZIP_FILES is False
+    os.remove("quacc_test.yaml")
+
+
 def test_store():
     store = MemoryStore()
     SETTINGS.RESULTS_STORE = store.to_json()

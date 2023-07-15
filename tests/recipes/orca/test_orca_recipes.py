@@ -10,9 +10,10 @@ FILE_DIR = Path(__file__).resolve().parent
 ORCA_DIR = os.path.join(FILE_DIR, "orca_run")
 
 
-def setup_module():
+def setup_module(monkeypatch):
     for f in os.listdir(ORCA_DIR):
         copy(os.path.join(ORCA_DIR, f), os.path.join(os.getcwd(), f))
+    monkeypatch.setenv("mpirun", "test")
 
 
 def teardown_module():

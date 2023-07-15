@@ -128,3 +128,8 @@ def test_relax_job():
         np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is False
     )
     assert np.array_equal(output["atoms"].cell.array, atoms.cell.array) is False
+
+    with pytest.raises(ValueError):
+        atoms = bulk("Cu") * (2, 1, 1)
+        atoms[0].position += 0.5
+        relax_job(atoms, kpts=(3, 3, 3), calc_swaps={"MaxSteps": 1})
