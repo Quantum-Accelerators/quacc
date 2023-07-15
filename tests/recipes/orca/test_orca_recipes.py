@@ -56,7 +56,7 @@ def test_static_job(monkeypatch, tmpdir):
     assert f"%pal nprocs {nprocs} end" in output["parameters"]["orcablocks"]
 
 
-def test_relax_job(tmpdir):
+def test_relax_job(monkeypatch, tmpdir):
     tmpdir.chdir()
     prep_files()
 
@@ -95,3 +95,9 @@ def test_relax_job(tmpdir):
         output["attributes"]["trajectory"][0] != output["attributes"]["trajectory"][-1]
     )
     assert output["attributes"]["trajectory"][-1]["atoms"] == output["atoms"]
+
+    atoms = molecule("H2")
+    monkeypatch.setenv("mpirun", "test")
+    output = relax_job(atoms)
+    nprocs = multiprocessing.cpu_count()
+    assert f"%pal nprocs {nprocs} end" in output["parameters"]["orcablocks"]
