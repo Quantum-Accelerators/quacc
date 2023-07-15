@@ -129,7 +129,7 @@ nav:
       - install/install.md
       - install/wflow_engines.md
       - install/codes.md
-      - Optional:
+      - Advanced:
           - install/config_db.md
   - User Guide 🧠:
       - user/basics.md
@@ -139,7 +139,8 @@ nav:
       - user/wflow_engines.md
       - user/executors.md
       - user/settings.md
-      - user/database.md
+      - Advanced:
+          - user/database.md
   - Developer Guide 🤝:
       - dev/contributing.md
       - dev/docs.md
