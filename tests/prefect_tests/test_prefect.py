@@ -121,7 +121,7 @@ def test_tutorial4(tmpdir):
     atoms = bulk("Cu")
 
     # Run the workflow
-    result = workflow(atoms)
+    workflow(atoms)
 
 
 @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
