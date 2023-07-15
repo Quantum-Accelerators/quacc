@@ -1,5 +1,4 @@
 import os
-from shutil import rmtree
 
 import numpy as np
 import pytest
@@ -10,15 +9,8 @@ from ase.optimize import BFGS, BFGSLineSearch
 
 from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
 
-CWD = os.getcwd()
 
-
-def setup_function():
-    # Run this test from a fresh directory
-    if not os.path.exists("blank_dir"):
-        os.mkdir("blank_dir")
-    os.chdir("blank_dir")
-
+def prep_files():
     # Make some test files to play with
     if not os.path.exists("test_calc"):
         os.mkdir("test_calc")
@@ -26,21 +18,10 @@ def setup_function():
         f.write("test")
 
 
-def teardown_function():
-    # Clean up
-    os.chdir(CWD)
-    for f in os.listdir("."):
-        if ".log" in f or ".pckl" in f or ".traj" in f:
-            os.remove(f)
-    for f in os.listdir(CWD):
-        if "quacc-tmp" in f or f == "tmp_dir" or f == "vib" or f == "blank_dir":
-            if os.path.islink(f):
-                os.unlink(f)
-            else:
-                rmtree(f)
+def test_run_calc(tmpdir):
+    tmpdir.chdir()
+    prep_files()
 
-
-def test_run_calc():
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
     atoms.calc = EMT()
@@ -91,7 +72,10 @@ def test_run_calc():
         )
 
 
-def test_run_ase_opt():
+def test_run_ase_opt(tmpdir):
+    tmpdir.chdir()
+    prep_files()
+
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
     atoms.calc = EMT()
@@ -152,7 +136,10 @@ def test_run_ase_opt():
         )
 
 
-def test_run_ase_vib():
+def test_run_ase_vib(tmpdir):
+    tmpdir.chdir()
+    prep_files()
+
     o2 = molecule("O2")
     o2.calc = LennardJones()
     vib = run_ase_vib(
@@ -168,7 +155,9 @@ def test_run_ase_vib():
         run_ase_vib(bulk("Cu"))
 
 
-def test_bad_run_calc():
+def test_bad_run_calc(tmpdir):
+    tmpdir.chdir()
+
     atoms = bulk("Cu")
     with pytest.raises(ValueError):
         atoms = run_calc(atoms)

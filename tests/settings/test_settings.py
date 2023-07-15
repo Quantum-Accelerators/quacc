@@ -1,6 +1,5 @@
 import os
 from glob import glob
-from shutil import rmtree
 
 from ase.build import bulk
 from maggma.stores import MemoryStore
@@ -16,17 +15,11 @@ def teardown_function():
     SETTINGS.RESULTS_STORE = DEFAULT_SETTINGS.RESULTS_STORE
     SETTINGS.GZIP_FILES = DEFAULT_SETTINGS.GZIP_FILES
     SETTINGS.CREATE_UNIQUE_WORKDIR = DEFAULT_SETTINGS.CREATE_UNIQUE_WORKDIR
-    for f in os.listdir(os.getcwd()):
-        if "opt.traj" in f:
-            os.remove(f)
-        if "quacc-tmp" in f or "quacc_" in f or f == "tmp_dir":
-            if os.path.islink(f):
-                os.unlink(f)
-            else:
-                rmtree(f)
 
 
-def test_file(monkeypatch):
+def test_file(monkeypatch, tmpdir):
+    tmpdir.chdir()
+
     assert QuaccSettings().GZIP_FILES is True
 
     with open("quacc_test.yaml", "w") as f:
@@ -46,7 +39,9 @@ def test_store():
     static_job(atoms)
 
 
-def test_results_dir():
+def test_results_dir(tmpdir):
+    tmpdir.chdir()
+
     atoms = bulk("Cu")
     relax_job(atoms)
     assert "opt.traj.gz" in os.listdir(os.getcwd())
@@ -57,7 +52,9 @@ def test_results_dir():
     os.remove("opt.traj")
 
 
-def test_create_unique_workdir():
+def test_create_unique_workdir(tmpdir):
+    tmpdir.chdir()
+
     atoms = bulk("Cu")
     relax_job(atoms)
     assert not glob("quacc_*")

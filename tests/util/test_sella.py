@@ -1,5 +1,4 @@
 import os
-from shutil import rmtree
 
 import pytest
 from ase.build import bulk, molecule
@@ -16,32 +15,12 @@ except ImportError:
 CWD = os.getcwd()
 
 
-def setup_function():
-    # Run this test from a fresh directory
-    if not os.path.exists("blank_dir"):
-        os.mkdir("blank_dir")
-    os.chdir("blank_dir")
-
-
-def teardown_function():
-    # Clean up
-    os.chdir(CWD)
-    for f in os.listdir("."):
-        if ".log" in f or ".pckl" in f or ".traj" in f:
-            os.remove(f)
-    for f in os.listdir(CWD):
-        if "quacc-tmp" in f or f == "tmp_dir" or f == "vib" or f == "blank_dir":
-            if os.path.islink(f):
-                os.unlink(f)
-            else:
-                rmtree(f)
-
-
 @pytest.mark.skipif(
     sella is None,
     reason="Sella must be installed.",
 )
-def test_sella():
+def test_sella(tmpdir):
+    tmpdir.chdir()
     from sella.optimize import Sella
 
     atoms = bulk("Cu") * (2, 1, 1)

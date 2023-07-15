@@ -1,6 +1,4 @@
-import os
 from copy import deepcopy
-from shutil import rmtree
 
 import numpy as np
 import pytest
@@ -19,29 +17,13 @@ except ImportError:
     sella = None
 
 
-def teardown_function():
-    for f in os.listdir("."):
-        if (
-            ".log" in f
-            or ".pckl" in f
-            or ".traj" in f
-            or "gfnff_topo" in f
-            or ".gz" in f
-        ):
-            os.remove(f)
-    for f in os.listdir(os.getcwd()):
-        if "quacc-tmp" in f or f == "tmp_dir" or f == "vib":
-            if os.path.islink(f):
-                os.unlink(f)
-            else:
-                rmtree(f)
-
-
 @pytest.mark.skipif(
     TBLite is None,
     reason="tblite must be installed.",
 )
-def test_static_job():
+def test_static_job(tmpdir):
+    tmpdir.chdir()
+
     atoms = molecule("H2O")
     output = static_job(atoms)
     assert output["spin_multiplicity"] == 1
@@ -60,7 +42,9 @@ def test_static_job():
     TBLite is None,
     reason="tblite must be installed.",
 )
-def test_relax_Job():
+def test_relax_job(tmpdir):
+    tmpdir.chdir()
+
     atoms = molecule("H2O")
     output = relax_job(atoms)
     assert output["spin_multiplicity"] == 1
@@ -75,7 +59,9 @@ def test_relax_Job():
     TBLite is None,
     reason="tblite must be installed.",
 )
-def test_freq_job():
+def test_freq_job(tmpdir):
+    tmpdir.chdir()
+
     atoms = molecule("H2O")
     output = freq_job(atoms)
     assert output["vib"]["atoms"] == molecule("H2O")

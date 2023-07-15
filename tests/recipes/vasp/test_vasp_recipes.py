@@ -1,6 +1,3 @@
-import os
-from shutil import rmtree
-
 import pytest
 from ase.build import bulk, molecule
 
@@ -15,18 +12,9 @@ from quacc.recipes.vasp.slabs import (
 )
 
 
-def teardown_function():
-    for f in os.listdir(os.getcwd()):
-        if "quacc-tmp" in f or f == "tmp_dir":
-            if os.path.islink(f):
-                os.unlink(f)
-            else:
-                rmtree(f)
-        if f == "opt.traj":
-            os.remove(f)
+def test_static_job(tmpdir):
+    tmpdir.chdir()
 
-
-def test_static_job():
     atoms = bulk("Cu") * (2, 2, 2)
 
     output = static_job(atoms)
@@ -51,7 +39,9 @@ def test_static_job():
     assert "lwave" not in output["parameters"]
 
 
-def test_relax_job():
+def test_relax_job(tmpdir):
+    tmpdir.chdir()
+
     atoms = bulk("Cu") * (2, 2, 2)
 
     output = relax_job(atoms)
@@ -69,7 +59,9 @@ def test_relax_job():
     assert output["parameters"]["isif"] == 2
 
 
-def test_doublerelax_job():
+def test_doublerelax_job(tmpdir):
+    tmpdir.chdir()
+
     atoms = bulk("Cu") * (2, 2, 2)
 
     output = double_relax_job(atoms)
@@ -97,7 +89,9 @@ def test_doublerelax_job():
     output = double_relax_job(atoms, calc_swaps1={"kpts": [1, 1, 1]})
 
 
-def test_slab_static_job():
+def test_slab_static_job(tmpdir):
+    tmpdir.chdir()
+
     atoms = bulk("Cu") * (2, 2, 2)
 
     output = slab_static_job(atoms)
@@ -114,7 +108,9 @@ def test_slab_static_job():
     assert "encut" not in output["parameters"]
 
 
-def test_slab_relax_job():
+def test_slab_relax_job(tmpdir):
+    tmpdir.chdir()
+
     atoms = bulk("Cu") * (2, 2, 2)
 
     output = slab_relax_job(atoms)
@@ -129,7 +125,9 @@ def test_slab_relax_job():
     assert output["parameters"]["nelmin"] == 6
 
 
-def test_slab_dynamic_jobs():
+def test_slab_dynamic_jobs(tmpdir):
+    tmpdir.chdir()
+
     atoms = bulk("Cu")
 
     ### --------- Test bulk_to_slabs_flow --------- ###
@@ -220,7 +218,9 @@ def test_slab_dynamic_jobs():
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
 
-def test_qmof():
+def test_qmof(tmpdir):
+    tmpdir.chdir()
+
     atoms = bulk("Cu")
     output = qmof_relax_job(atoms)
     assert output["prerelax-lowacc"]["nsites"] == len(atoms)
@@ -290,7 +290,9 @@ def test_qmof():
     output = qmof_relax_job(atoms)
 
 
-def test_mp():
+def test_mp(tmpdir):
+    tmpdir.chdir()
+
     atoms = bulk("Cu")
     output = mp_prerelax_job(atoms)
     assert output["nsites"] == len(atoms)
