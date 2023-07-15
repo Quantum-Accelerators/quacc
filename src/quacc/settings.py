@@ -4,6 +4,8 @@ from __future__ import annotations
 import os
 from typing import List, Optional
 
+from maggma.core import Store
+from maggma.stores import MontyStore
 from pydantic import BaseSettings, Field, root_validator
 
 from quacc.presets import vasp as vasp_defaults
@@ -45,6 +47,11 @@ class QuaccSettings(BaseSettings):
     GZIP_FILES: bool = Field(
         True, description="Whether generated files should be gzip'd."
     )
+
+    # ---------------------------
+    # Data Store Settings
+    # ---------------------------
+    RESULTS_STORE: Store | None = Field(None, description="Primary Maggma data store")
 
     # ---------------------------
     # ORCA Settings

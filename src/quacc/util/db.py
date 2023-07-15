@@ -58,7 +58,6 @@ def covalent_to_db(
         store.connect()
         with store:
             store.update(docs, key="dispatch_id")
-        print(f"Stored {len(docs)} results in your database.")
         store.close()
 
 
@@ -87,5 +86,4 @@ def results_to_db(store: Store, results: dict | list[dict]) -> None:
     store.connect()
     with store:
         store.update(results, key="uuid")
-    print(f"Stored {len(results)} results in your database.")
     store.close()
