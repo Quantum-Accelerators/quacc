@@ -68,7 +68,7 @@ def test_static_job():
 
     with pytest.raises(ValueError):
         atoms = molecule("H2O")
-        output = static_job(atoms, calc_swaps={"MaxSccIterations": 1})
+        output = static_job(atoms, calc_swaps={"Hamiltonian_MaxSccIterations": 1})
 
 
 @pytest.mark.skipif(
