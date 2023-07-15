@@ -1,3 +1,4 @@
+import multiprocessing
 import os
 from pathlib import Path
 from shutil import copy, rmtree
@@ -10,10 +11,9 @@ FILE_DIR = Path(__file__).resolve().parent
 ORCA_DIR = os.path.join(FILE_DIR, "orca_run")
 
 
-def setup_module(monkeypatch):
+def setup_module():
     for f in os.listdir(ORCA_DIR):
         copy(os.path.join(ORCA_DIR, f), os.path.join(os.getcwd(), f))
-    monkeypatch.setenv("mpirun", "test")
 
 
 def teardown_module():
@@ -31,7 +31,7 @@ def teardown_function():
                 rmtree(f)
 
 
-def test_static_job():
+def test_static_job(monkeypatch):
     atoms = molecule("H2")
 
     output = static_job(atoms)
@@ -60,6 +60,12 @@ def test_static_job():
         == "wb97x-d3bj sp slowconv normalprint xyzfile def2-svp"
     )
     assert "%scf maxiter 300 end" in output["parameters"]["orcablocks"]
+
+    atoms = molecule("H2")
+    monkeypatch.setenv("mpirun", "test")
+    output = static_job(atoms)
+    nprocs = multiprocessing.cpu_count()
+    assert f"%pal nprocs {nprocs} end" in output["parameters"]["orcablocks"]
 
 
 def test_relax_Job():
