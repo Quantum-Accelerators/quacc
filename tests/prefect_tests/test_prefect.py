@@ -16,7 +16,7 @@ except ImportError:
     prefect = None
 
 
-def teardown_module():
+def teardown_function():
     for f in os.listdir(os.getcwd()):
         if (
             f.endswith(".log")

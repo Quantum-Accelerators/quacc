@@ -26,7 +26,7 @@ FILE_DIR = Path(__file__).resolve().parent
 run1 = os.path.join(FILE_DIR, "vasp_run1")
 
 
-def teardown_module():
+def teardown_function():
     for f in os.listdir("."):
         if ".log" in f or ".pckl" in f or ".traj" in f or ".gz" in f:
             os.remove(f)

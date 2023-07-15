@@ -65,7 +65,7 @@ def setup_module():
             gf.write("test".encode())
 
 
-def teardown_module():
+def teardown_function():
     for f in ["CHGCAR", "AECCAR0.gz", "AECCAR2.gz", "POTCAR"]:
         if os.path.isfile(f):
             os.remove(f)

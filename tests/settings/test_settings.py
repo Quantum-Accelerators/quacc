@@ -1,4 +1,5 @@
 import os
+from shutil import rmtree
 
 import pytest
 from ase.build import bulk
@@ -17,9 +18,15 @@ def teardown_function():
     SETTINGS.RESULTS_STORE = DEFAULT_SETTINGS.RESULTS_STORE
     SETTINGS.GZIP_FILES = DEFAULT_SETTINGS.GZIP_FILES
     SETTINGS.CREATE_UNIQUE_WORKDIR = DEFAULT_SETTINGS.CREATE_UNIQUE_WORKDIR
+    for f in os.listdir(os.getcwd()):
+        if "quacc-tmp" in f or f == "tmp_dir":
+            if os.path.islink(f):
+                os.unlink(f)
+            else:
+                rmtree(f)
 
 
-@pytest.skipif(montydb is None, reason="MontyDB not installed")
+@pytest.mark.skipif(montydb is None, reason="MontyDB not installed")
 def test_store():
     store = MontyStore("quacc_test_settings", database_path=".")
     SETTINGS.RESULTS_STORE = store.to_json()

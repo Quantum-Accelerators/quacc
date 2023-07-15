@@ -26,7 +26,7 @@ def setup_module():
         f.write("test")
 
 
-def teardown_module():
+def teardown_function():
     # Clean up
     os.chdir(CWD)
     for f in os.listdir("."):

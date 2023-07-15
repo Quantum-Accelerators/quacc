@@ -15,7 +15,7 @@ def setup_module():
         copy(os.path.join(ORCA_DIR, f), os.path.join(os.getcwd(), f))
 
 
-def teardown_module():
+def teardown_function():
     for f in os.listdir(ORCA_DIR):
         if os.path.exists(os.path.join(os.getcwd(), f)):
             os.remove(os.path.join(os.getcwd(), f))

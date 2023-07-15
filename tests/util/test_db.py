@@ -15,7 +15,7 @@ except:
     montydb = None
 
 
-def teardown_module():
+def teardown_function():
     for f in os.listdir(os.getcwd()):
         if "monty.storage" in f:
             os.remove(f)
