@@ -15,11 +15,11 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
     ```python
     from maggma.stores import MontyStore
     my_store = MontyStore("quacc_results", database_path=".")
-    print(my_store.to_json())
+    print(my_store.to_json()) # This is the JSON string you would store in RESULTS_STORE
     ```
 
     ```yaml title="quacc.yaml"
-    RESULTS_STORE: '{"@module": "maggma.stores.mongolike", "@class": "MontyStore", "@version": "0.51.19", "collection_name": "quacc_results", "database_path": ".", "database_name": "db", "storage": "sqlite", "storage_kwargs": {"use_bson": true, "monty_version": "4.0"}, "client_kwargs": {}}'
+    RESULTS_STORE: '{"@module": "maggma.stores.mongolike", "@class": "MongoStore", "@version": "0.51.19", "database": "my_db_name", "collection_name": "my_collection_name", "host": "localhost", "port": 27017, "username": "my_username", "password": "my_password", "ssh_tunnel": null, "safe_update": false, "auth_source": "my_db_name", "mongoclient_kwargs": {}, "default_sort": null}'
     ```
 
     **Manual Approach**
@@ -47,7 +47,7 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
 
     ```python
     from maggma.stores import MongoStore
-    from quacc.util.db import covavlent_to_db
+    from quacc.util.db import covalent_to_db
 
     # Define your database credentials
     store = MongoStore(
