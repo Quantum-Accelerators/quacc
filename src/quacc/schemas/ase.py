@@ -14,9 +14,12 @@ from ase.optimize.optimize import Optimizer
 from ase.thermochemistry import IdealGasThermo
 from ase.vibrations import Vibrations
 from atomate2.utils.path import get_uri
+from maggma.core import Store
 
+from quacc import SETTINGS
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
+from quacc.util.db import results_to_db
 from quacc.util.dicts import clean_dict
 
 RunSchema = TypeVar("RunSchema")
@@ -32,6 +35,7 @@ def summarize_run(
     prep_next_run: bool = True,
     remove_empties: bool = False,
     additional_fields: dict | None = None,
+    store: Store | None = None,
 ) -> RunSchema:
     """
     Get tabulated results from an Atoms object and calculator and store them in a database-friendly format.
@@ -52,6 +56,8 @@ def summarize_run(
         Whether to remove None values and empty lists/dicts from the task document.
     additional_fields
         Additional fields to add to the task document.
+    store
+        Maggma Store object to store the results in. If None, `SETTINGS.RESULTS_STORE` will be used.
 
     Returns
     -------
@@ -121,6 +127,7 @@ def summarize_run(
         raise ValueError("ASE Atoms object has no attached calculator.")
     if not atoms.calc.results:
         raise ValueError("ASE Atoms object's calculator has no results.")
+    store = SETTINGS.RESULTS_STORE if store is None else store
 
     additional_fields = additional_fields or {}
 
@@ -150,9 +157,14 @@ def summarize_run(
     atoms_db = atoms_to_metadata(atoms, charge_and_multiplicity=charge_and_multiplicity)
 
     # Create a dictionary of the inputs/outputs
-    task_doc = atoms_db | inputs | results | additional_fields
+    task_doc = clean_dict(
+        atoms_db | inputs | results | additional_fields, remove_empties=remove_empties
+    )
 
-    return clean_dict(task_doc, remove_empties=remove_empties)
+    if store:
+        results_to_db(store, task_doc)
+
+    return task_doc
 
 
 def summarize_opt_run(
@@ -163,6 +175,7 @@ def summarize_opt_run(
     prep_next_run: bool = True,
     remove_empties: bool = False,
     additional_fields: dict | None = None,
+    store: Store | None = None,
 ) -> OptSchema:
     """
     Get tabulated results from an ASE Atoms trajectory and store them in a database-friendly format.
@@ -186,6 +199,8 @@ def summarize_opt_run(
         Whether to remove None values and empty lists/dicts from the task document.
     additional_fields
         Additional fields to add to the task document.
+    store
+        Maggma Store object to store the results in. If None, `SETTINGS.RESULTS_STORE` will be used.
 
     Returns
     -------
@@ -256,6 +271,7 @@ def summarize_opt_run(
 
     additional_fields = additional_fields or {}
     opt_parameters = dyn.todict() | {"fmax": dyn.fmax}
+    store = SETTINGS.RESULTS_STORE if store is None else store
 
     # Check convergence
     is_converged = dyn.converged()
@@ -311,9 +327,15 @@ def summarize_opt_run(
     )
 
     # Create a dictionary of the inputs/outputs
-    task_doc = atoms_db | inputs | results | traj_results | additional_fields
+    task_doc = clean_dict(
+        atoms_db | inputs | results | traj_results | additional_fields,
+        remove_empties=remove_empties,
+    )
 
-    return clean_dict(task_doc, remove_empties=remove_empties)
+    if store:
+        results_to_db(store, task_doc)
+
+    return task_doc
 
 
 def summarize_vib_run(
@@ -321,6 +343,7 @@ def summarize_vib_run(
     charge_and_multiplicity: tuple[int, int] | None = None,
     remove_empties: bool = False,
     additional_fields: dict | None = None,
+    store: Store | None = None,
 ) -> VibSchema:
     """
     Get tabulated results from an ASE Vibrations object and store them in a database-friendly format.
@@ -335,6 +358,8 @@ def summarize_vib_run(
         Whether to remove None values and empty lists/dicts from the task document.
     additional_fields
         Additional fields to add to the task document.
+    store
+        Maggma Store object to store the results in. If None, `SETTINGS.RESULTS_STORE` will be used.
 
     Returns
     -------
@@ -411,6 +436,7 @@ def summarize_vib_run(
             - symmetry.tolerance: float = Field(None, title="Point Group Analyzer Tolerance", description="Distance tolerance to consider sites as symmetrically equivalent.")
     """
     additional_fields = additional_fields or {}
+    store = SETTINGS.RESULTS_STORE if store is None else store
 
     vib_freqs_raw = vib.get_frequencies().tolist()
     vib_energies_raw = vib.get_energies().tolist()
@@ -474,9 +500,14 @@ def summarize_vib_run(
         }
     }
 
-    task_doc = atoms_db | inputs | results | additional_fields
+    task_doc = clean_dict(
+        atoms_db | inputs | results | additional_fields, remove_empties=remove_empties
+    )
 
-    return clean_dict(task_doc, remove_empties=remove_empties)
+    if store:
+        results_to_db(store, task_doc)
+
+    return task_doc
 
 
 def summarize_thermo_run(
@@ -486,6 +517,7 @@ def summarize_thermo_run(
     charge_and_multiplicity: tuple[int, int] | None = None,
     remove_empties: bool = False,
     additional_fields: dict | None = None,
+    store: Store | None = None,
 ) -> ThermoSchema:
     """
     Get tabulated results from an ASE IdealGasThermo object and store them in a database-friendly format.
@@ -504,6 +536,8 @@ def summarize_thermo_run(
         Whether to remove None values and empty lists/dicts from the task document.
     additional_fields
         Additional fields to add to the task document.
+    store
+        Maggma Store object to store the results in. If None, `SETTINGS.RESULTS_STORE` will be used.
 
     Returns
     -------
@@ -560,6 +594,7 @@ def summarize_thermo_run(
     """
 
     additional_fields = additional_fields or {}
+    store = SETTINGS.RESULTS_STORE if store is None else store
 
     uri = get_uri(os.getcwd())
     spin_multiplicity = int(2 * igt.spin + 1)
@@ -600,6 +635,11 @@ def summarize_thermo_run(
         igt.atoms, charge_and_multiplicity=charge_and_multiplicity
     )
 
-    task_doc = atoms_db | inputs | results | additional_fields
+    task_doc = clean_dict(
+        atoms_db | inputs | results | additional_fields, remove_empties=remove_empties
+    )
 
-    return clean_dict(task_doc, remove_empties=remove_empties)
+    if store:
+        results_to_db(store, task_doc)
+
+    return task_doc

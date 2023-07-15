@@ -53,7 +53,7 @@ def patch_pop_analyses(monkeypatch):
 CWD = os.getcwd()
 
 
-def setup_module():
+def setup_function():
     if not os.path.exists("rundir"):
         os.mkdir("rundir")
     os.chdir("rundir")
@@ -65,7 +65,7 @@ def setup_module():
             gf.write("test".encode())
 
 
-def teardown_module():
+def teardown_function():
     for f in ["CHGCAR", "AECCAR0.gz", "AECCAR2.gz", "POTCAR"]:
         if os.path.isfile(f):
             os.remove(f)

@@ -47,6 +47,14 @@ class QuaccSettings(BaseSettings):
     )
 
     # ---------------------------
+    # Data Store Settings
+    # ---------------------------
+    RESULTS_STORE: str = Field(
+        None,
+        description="String-based JSON representation of the primary Maggma data store where calculation results will be stored. Taken from the `.to_json()` method of the corresponding Store object.",
+    )
+
+    # ---------------------------
     # ORCA Settings
     # ---------------------------
     ORCA_CMD: str = Field(

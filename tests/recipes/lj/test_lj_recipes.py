@@ -8,7 +8,7 @@ from ase.build import molecule
 from quacc.recipes.lj.core import freq_job, relax_job, static_job
 
 
-def teardown_module():
+def teardown_function():
     for f in os.listdir(os.getcwd()):
         if (
             f.endswith(".log")

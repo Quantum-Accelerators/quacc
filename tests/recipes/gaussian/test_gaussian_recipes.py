@@ -19,6 +19,9 @@ def teardown_module():
     for f in os.listdir(GAUSSIAN_DIR):
         if os.path.exists(os.path.join(os.getcwd(), f)):
             os.remove(os.path.join(os.getcwd(), f))
+
+
+def teardown_function():
     for f in os.listdir(os.getcwd()):
         if "quacc-tmp" in f or f == "tmp_dir":
             if os.path.islink(f):

@@ -6,10 +6,13 @@ from typing import Literal, TypeVar
 
 from ase.atoms import Atoms
 from atomate2.common.schemas.cclib import TaskDocument
+from maggma.core import Store
 from pymatgen.io.ase import AseAtomsAdaptor
 
+from quacc import SETTINGS
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
+from quacc.util.db import results_to_db
 from quacc.util.dicts import clean_dict
 
 cclibSchema = TypeVar("cclibSchema")
@@ -36,6 +39,7 @@ def summarize_run(
     prep_next_run: bool = True,
     remove_empties: bool = False,
     additional_fields: dict | None = None,
+    store: Store | None = None,
 ) -> cclibSchema:
     """
     Get tabulated results from a molecular DFT run and store them in a database-friendly format.
@@ -70,6 +74,8 @@ def summarize_run(
         Whether to remove None values and empty lists/dicts from the TaskDocument.
     additional_fields
         Additional fields to add to the task document.
+    store
+        Maggma Store object to store the results in. If None, `SETTINGS.RESULTS_STORE` will be used.
 
     Returns
     -------
@@ -120,6 +126,7 @@ def summarize_run(
         raise ValueError("ASE Atoms object has no attached calculator.")
     if not atoms.calc.results:
         raise ValueError("ASE Atoms object's calculator has no results.")
+    store = SETTINGS.RESULTS_STORE if store is None else store
 
     additional_fields = additional_fields or {}
     dir_path = dir_path or os.getcwd()
@@ -157,6 +164,13 @@ def summarize_run(
     atoms_db = atoms_to_metadata(atoms, get_metadata=False, store_pmg=False)
 
     # Create a dictionary of the inputs/outputs
-    task_doc = atoms_db | inputs | results | additional_fields
+    task_doc = clean_dict(
+        atoms_db | inputs | results | additional_fields,
+        remove_empties=remove_empties,
+    )
 
-    return clean_dict(task_doc, remove_empties=remove_empties)
+    # Store the results
+    if store:
+        results_to_db(store, task_doc)
+
+    return task_doc

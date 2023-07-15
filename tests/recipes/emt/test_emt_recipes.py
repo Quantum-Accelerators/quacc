@@ -10,7 +10,7 @@ from quacc.recipes.emt.core import relax_job, static_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 
-def teardown_module():
+def teardown_function():
     for f in os.listdir(os.getcwd()):
         if (
             f.endswith(".log")

@@ -15,7 +15,7 @@ from quacc.recipes.vasp.slabs import (
 )
 
 
-def teardown_module():
+def teardown_function():
     for f in os.listdir(os.getcwd()):
         if "quacc-tmp" in f or f == "tmp_dir":
             if os.path.islink(f):

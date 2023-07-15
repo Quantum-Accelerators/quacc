@@ -15,7 +15,7 @@ except ImportError:
 FILE_DIR = Path(__file__).resolve().parent
 
 
-def teardown_module():
+def teardown_function():
     for f in os.listdir(os.getcwd()):
         if f.endswith(".dat"):
             os.remove(f)

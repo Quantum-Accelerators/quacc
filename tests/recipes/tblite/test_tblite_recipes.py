@@ -19,7 +19,7 @@ except ImportError:
     sella = None
 
 
-def teardown_module():
+def teardown_function():
     for f in os.listdir("."):
         if (
             ".log" in f

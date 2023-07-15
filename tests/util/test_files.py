@@ -4,7 +4,7 @@ from shutil import rmtree
 from quacc.util.files import make_unique_dir
 
 
-def teardown_module():
+def teardown_function():
     for f in os.listdir(os.getcwd()):
         if "quacc_" in f or "tmp_dir" in f:
             rmtree(f)

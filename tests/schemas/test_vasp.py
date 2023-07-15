@@ -3,6 +3,7 @@ from pathlib import Path
 
 import pytest
 from ase.io import read
+from maggma.stores import MemoryStore
 from monty.json import MontyDecoder, jsanitize
 
 from quacc.calculators.vasp import Vasp
@@ -49,6 +50,12 @@ def test_summarize_run():
     os.chdir(run1)
     summarize_run(atoms)
     os.chdir(cwd)
+
+    # Test DB
+    atoms = read(os.path.join(run1, "OUTCAR.gz"))
+    store = MemoryStore()
+    summarize_run(atoms, dir_path=run1, store=store)
+    assert store.count() == 1
 
     # Make sure metadata is made
     atoms = read(os.path.join(run1, "OUTCAR.gz"))

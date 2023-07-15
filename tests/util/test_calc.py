@@ -13,7 +13,7 @@ from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
 CWD = os.getcwd()
 
 
-def setup_module():
+def setup_function():
     # Run this test from a fresh directory
     if not os.path.exists("blank_dir"):
         os.mkdir("blank_dir")
@@ -26,7 +26,7 @@ def setup_module():
         f.write("test")
 
 
-def teardown_module():
+def teardown_function():
     # Clean up
     os.chdir(CWD)
     for f in os.listdir("."):
@@ -155,12 +155,14 @@ def test_run_ase_opt():
 def test_run_ase_vib():
     o2 = molecule("O2")
     o2.calc = LennardJones()
-    vib = run_ase_vib(o2, scratch_dir="test_calc_vib", copy_files=["test_file.txt"])
+    vib = run_ase_vib(
+        o2, gzip=False, scratch_dir="test_calc_vib", copy_files=["test_file.txt"]
+    )
     assert np.real(vib.get_frequencies()[-1]) == pytest.approx(255.6863883406967)
     assert np.array_equal(vib.atoms.get_positions(), o2.get_positions()) is True
     assert os.path.exists("test_file.txt")
-    assert os.path.exists("test_file.txt.gz")
-    os.remove("test_file.txt.gz")
+    assert not os.path.exists("test_file.txt.gz")
+    os.remove("test_file.txt")
 
     with pytest.raises(ValueError):
         run_ase_vib(bulk("Cu"))
