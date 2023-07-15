@@ -13,9 +13,16 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
     For instance, let's pretend you have decided to make a [`MontyStore`](https://materialsproject.github.io/maggma/reference/stores/#maggma.stores.mongolike.MontyStore) be your database of choice. After defining or loading your Maggma store, you would call `.to_json()` to get a dictionary representation. You can then store this JSON, formatted as a string, in the `RESULTS_STORE` global quacc setting.
 
     ```python
-    from maggma.stores import MontyStore
-    my_store = MontyStore("quacc_results", database_path=".")
-    print(my_store.to_json()) # This is the JSON string you would store in RESULTS_STORE
+    from maggma.stores import MongoStore
+    store = MongoStore(
+        "my_db_name",
+        "my_collection_name",
+        username="my_username",
+        password="my_password",
+        host="localhost",
+        port=27017,
+    )
+    print(store.to_json()) # This is the JSON string you would store in RESULTS_STORE
     ```
 
     ```yaml title="quacc.yaml"
@@ -27,13 +34,20 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
     If you would prefer to store results in your database manually (perhaps because you are limited in terms of how much data you can store), you can use the [`quacc.util.db.results_to_db`](https://quantum-accelerators.github.io/quacc/reference/quacc/util/db.html#quacc.util.db.results_to_db) function, as shown in the example below.
 
     ```python
-    from maggma.stores import MontyStore
+    from maggma.stores import MongoStore
     from quacc.util.db import results_to_db
 
     # Let `results` be an output (or list of outputs) from quacc recipes
 
     # Define your database details
-    store = MontyStore("quacc_results", database_path=".")
+    store = MongoStore(
+        "my_db_name",
+        "my_collection_name",
+        username="my_username",
+        password="my_password",
+        host="localhost",
+        port=27017,
+    )
 
     # Store the results
     results_to_db(store, results)
