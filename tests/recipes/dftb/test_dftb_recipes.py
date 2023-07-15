@@ -66,6 +66,10 @@ def test_static_job():
     )
     assert np.array_equal(output["atoms"].cell.array, atoms.cell.array) is True
 
+    with pytest.raises(ValueError):
+        atoms = molecule("H2O")
+        output = static_job(atoms, calc_swaps={"MaxSccIterations": 1})
+
 
 @pytest.mark.skipif(
     DFTBPLUS_EXISTS is False,
