@@ -1,6 +1,4 @@
-import os
 from copy import deepcopy
-from shutil import rmtree
 
 import numpy as np
 import pytest

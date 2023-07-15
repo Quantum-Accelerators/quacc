@@ -1,5 +1,4 @@
 import os
-from shutil import rmtree
 
 from quacc.util.files import make_unique_dir
 

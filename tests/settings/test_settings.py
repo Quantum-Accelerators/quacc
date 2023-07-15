@@ -1,6 +1,5 @@
 import os
 from glob import glob
-from shutil import rmtree
 
 from ase.build import bulk
 from maggma.stores import MemoryStore

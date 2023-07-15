@@ -1,5 +1,3 @@
-import os
-from shutil import rmtree
 
 import jobflow as jf
 from ase.build import bulk

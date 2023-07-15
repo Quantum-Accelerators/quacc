@@ -1,5 +1,4 @@
-import os
-from shutil import rmtree, which
+from shutil import which
 
 import numpy as np
 import pytest

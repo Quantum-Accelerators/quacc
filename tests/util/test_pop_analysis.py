@@ -1,6 +1,5 @@
 import gzip
 import os
-from shutil import rmtree
 
 import pytest
 

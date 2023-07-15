@@ -1,7 +1,7 @@
 import multiprocessing
 import os
 from pathlib import Path
-from shutil import copy, rmtree
+from shutil import copy
 
 from ase.build import molecule
 

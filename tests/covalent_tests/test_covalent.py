@@ -1,5 +1,4 @@
 import os
-from shutil import rmtree
 
 import covalent as ct
 import pytest
