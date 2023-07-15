@@ -1,4 +1,5 @@
 import os
+from glob import glob
 from shutil import rmtree
 
 from ase.build import bulk
@@ -45,7 +46,7 @@ def test_results_dir():
 def test_create_unique_workdir():
     atoms = bulk("Cu")
     relax_job(atoms)
-    assert "quacc_" not in os.listdir(os.getcwd())[1]
+    assert not glob("quacc_*")
     SETTINGS.CREATE_UNIQUE_WORKDIR = True
     relax_job(atoms)
-    assert "quacc_" in os.listdir(os.getcwd())[1]
+    assert glob("quacc_*")
