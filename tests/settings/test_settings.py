@@ -11,7 +11,6 @@ try:
 except:
     montydb = None
 DEFAULT_SETTINGS = SETTINGS.copy()
-STORE = MontyStore("quacc_test_settings", database_path=".")
 
 
 def teardown_function():
@@ -22,12 +21,13 @@ def teardown_function():
 
 @pytest.skipif(montydb is None, reason="MontyDB not installed")
 def test_store():
-    SETTINGS.RESULTS_STORE = STORE.to_json()
+    store = MontyStore("quacc_test_settings", database_path=".")
+    SETTINGS.RESULTS_STORE = store.to_json()
     atoms = bulk("Cu")
     static_job(atoms)
-    STORE.connect()
-    assert STORE.count() == 1
-    STORE.close()
+    store.connect()
+    assert store.count() == 1
+    store.close()
 
 
 def test_results_dir():
