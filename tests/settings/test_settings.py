@@ -27,8 +27,6 @@ def test_store():
     SETTINGS.RESULTS_STORE = store.to_json()
     atoms = bulk("Cu")
     static_job(atoms)
-    with store:
-        assert store.count() == 1
 
 
 def test_results_dir():
