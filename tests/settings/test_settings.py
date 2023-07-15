@@ -7,6 +7,7 @@ from maggma.stores import MemoryStore
 
 from quacc import SETTINGS
 from quacc.recipes.emt.core import relax_job, static_job
+from quacc.settings import QuaccSettings
 
 DEFAULT_SETTINGS = SETTINGS.copy()
 
@@ -23,6 +24,19 @@ def teardown_function():
                 os.unlink(f)
             else:
                 rmtree(f)
+
+
+def test_file(monkeypatch):
+    assert QuaccSettings().GZIP_FILES is True
+
+    with open("quacc_test.yaml", "w") as f:
+        f.write("GZIP_FILES: false")
+    monkeypatch.setenv(
+        "QUACC_CONFIG_FILE", os.path.join(os.getcwd(), "quacc_test.yaml")
+    )
+
+    assert QuaccSettings().GZIP_FILES is False
+    os.remove("quacc_test.yaml")
 
 
 def test_store():

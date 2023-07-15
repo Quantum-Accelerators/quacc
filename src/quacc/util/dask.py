@@ -1,14 +1,18 @@
 from __future__ import annotations
 
+from monty.dev import requires
+
 try:
     from dask_jobqueue import SLURMCluster
     from dask_jobqueue.core import Job
     from prefect_dask.task_runners import DaskTaskRunner
 
+    dask_deps = True
 except ImportError:
-    raise ImportError("Install quacc[prefect]")
+    dask_deps = False
 
 
+@requires(dask_deps, "Need quacc[prefect] dependencies")
 def make_runner(
     cluster_kwargs: dict,
     cluster_class: callable = None,
@@ -66,6 +70,7 @@ def make_runner(
     return DaskTaskRunner(address=cluster.scheduler_address)
 
 
+@requires(dask_deps, "Need quacc[prefect] dependencies")
 def _make_cluster(cluster_class: callable, cluster_kwargs: dict, verbose=False) -> Job:
     """
     Make a Dask cluster for use with Prefect workflows.

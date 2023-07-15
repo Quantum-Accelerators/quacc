@@ -99,3 +99,9 @@ exclude = '''
 [tool.isort]
 profile = 'black'
 skip_gitignore = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+]
