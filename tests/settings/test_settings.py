@@ -3,14 +3,11 @@ from shutil import rmtree
 
 import pytest
 from ase.build import bulk
+from maggma.stores import MemoryStore
 
 from quacc import SETTINGS
 from quacc.recipes.emt.core import relax_job, static_job
 
-try:
-    import montydb
-except:
-    montydb = None
 DEFAULT_SETTINGS = SETTINGS.copy()
 
 
@@ -28,8 +25,6 @@ def teardown_function():
 
 @pytest.mark.skipif(montydb is None, reason="MontyDB not installed")
 def test_store():
-    from maggma.stores import MemoryStore
-
     store = MemoryStore()
     SETTINGS.RESULTS_STORE = store.to_json()
     atoms = bulk("Cu")
