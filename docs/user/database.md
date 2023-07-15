@@ -10,19 +10,17 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
 
     For a given recipe, you can have quacc automatically store the final output summaries in your desired database by defining a [Maggma Data Store](https://materialsproject.github.io/maggma/reference/stores/) in the `RESULTS_STORE` quacc setting.
 
-    For instance, let's pretend you have decided to make a `MontyStore` be your database of choice. After defining or loading your Maggma store, you would call `.as_dict()` to get a dictionary representation. You can then store this dictionary, formatted as a string, in the `RESULTS_STORE` global quacc setting.
+    For instance, let's pretend you have decided to make a [`MontyStore`](https://materialsproject.github.io/maggma/reference/stores/#maggma.stores.mongolike.MontyStore) be your database of choice. After defining or loading your Maggma store, you would call `.to_json()` to get a dictionary representation. You can then store this JSON, formatted as a string, in the `RESULTS_STORE` global quacc setting.
 
     ```python
     from maggma.stores import MontyStore
     my_store = MontyStore("quacc_results", database_path=".")
-    print(my_store.to_json())  # (1)
+    print(my_store.to_json())
     ```
 
     ```yaml title="quacc.yaml"
     RESULTS_STORE: '{"@module": "maggma.stores.mongolike", "@class": "MontyStore", "@version": "0.51.19", "collection_name": "quacc_results", "database_path": ".", "database_name": "db", "storage": "sqlite", "storage_kwargs": {"use_bson": true, "monty_version": "4.0"}, "client_kwargs": {}}'
     ```
-
-    1. This is the string you will store in the `RESULTS_STORE` quacc setting.
 
     **Manual Approach**
 
