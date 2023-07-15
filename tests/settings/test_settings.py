@@ -6,14 +6,14 @@ from maggma.stores import MontyStore
 from quacc import SETTINGS
 from quacc.recipes.emt.core import relax_job, static_job
 
-DEFAULT_RESULTS_STORE = SETTINGS.RESULTS_STORE
-DEFAULT_GZIP_FILES = SETTINGS.GZIP_FILES
+DEFAULT_SETTINGS = SETTINGS.copy()
 STORE = MontyStore("quacc_test_settings", database_path=".")
 
 
 def teardown_function():
-    SETTINGS.RESULTS_STORE = DEFAULT_RESULTS_STORE
-    SETTINGS.GZIP_FILES = DEFAULT_GZIP_FILES
+    SETTINGS.RESULTS_STORE = DEFAULT_SETTINGS.RESULTS_STORE
+    SETTINGS.GZIP_FILES = DEFAULT_SETTINGS.GZIP_FILES
+    SETTINGS.CREATE_UNIQUE_WORKDIR = DEFAULT_SETTINGS.CREATE_UNIQUE_WORKDIR
 
 
 def test_store():
@@ -34,3 +34,12 @@ def test_results_dir():
     relax_job(atoms)
     assert "opt.traj" in os.listdir(os.getcwd())
     os.remove("opt.traj")
+
+
+def test_create_unique_workdir():
+    atoms = bulk("Cu")
+    relax_job(atoms)
+    assert "quacc_" not in os.listdir(os.getcwd())
+    SETTINGS.CREATE_UNIQUE_WORKDIR = True
+    relax_job(atoms)
+    assert "quacc_" in os.listdir(os.getcwd())
