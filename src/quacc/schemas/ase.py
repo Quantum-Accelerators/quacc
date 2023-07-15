@@ -57,7 +57,7 @@ def summarize_run(
     additional_fields
         Additional fields to add to the task document.
     store
-        Maggma Store object to store the results in.
+        Maggma Store object to store the results in. If None, `SETTINGS.RESULTS_STORE` will be used.
 
     Returns
     -------
@@ -200,7 +200,7 @@ def summarize_opt_run(
     additional_fields
         Additional fields to add to the task document.
     store
-        Maggma Store object to store the results in.
+        Maggma Store object to store the results in. If None, `SETTINGS.RESULTS_STORE` will be used.
 
     Returns
     -------
@@ -358,6 +358,8 @@ def summarize_vib_run(
         Whether to remove None values and empty lists/dicts from the task document.
     additional_fields
         Additional fields to add to the task document.
+    store
+        Maggma Store object to store the results in. If None, `SETTINGS.RESULTS_STORE` will be used.
 
     Returns
     -------
@@ -534,6 +536,8 @@ def summarize_thermo_run(
         Whether to remove None values and empty lists/dicts from the task document.
     additional_fields
         Additional fields to add to the task document.
+    store
+        Maggma Store object to store the results in. If None, `SETTINGS.RESULTS_STORE` will be used.
 
     Returns
     -------
