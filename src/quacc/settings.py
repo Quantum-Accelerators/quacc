@@ -4,7 +4,6 @@ from __future__ import annotations
 import os
 from typing import List, Optional
 
-from maggma.core import Store
 from pydantic import BaseSettings, Field, root_validator
 
 from quacc.presets import vasp as vasp_defaults

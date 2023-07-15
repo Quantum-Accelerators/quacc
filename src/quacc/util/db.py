@@ -1,7 +1,6 @@
 """Utility functions for interfacing with databases"""
 from __future__ import annotations
 
-import importlib
 import os
 import uuid
 import warnings
