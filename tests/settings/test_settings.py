@@ -15,6 +15,8 @@ def teardown_function():
     SETTINGS.GZIP_FILES = DEFAULT_SETTINGS.GZIP_FILES
     SETTINGS.CREATE_UNIQUE_WORKDIR = DEFAULT_SETTINGS.CREATE_UNIQUE_WORKDIR
     for f in os.listdir(os.getcwd()):
+        if "opt.traj" in f:
+            os.remove(f)
         if "quacc-tmp" in f or "quacc_" in f or f == "tmp_dir":
             if os.path.islink(f):
                 os.unlink(f)
