@@ -52,7 +52,7 @@ def summarize_run(
     additional_fields
         Additional fields to add to the task document.
     store
-        Maggma Store object to store the results in. If None, `SETTINGS.RESULTS_STORE` will be used.
+        Maggma Store object to store the results in. If None, `SETTINGS.PRIMARY_STORE` will be used.
 
     Returns
     -------
@@ -146,7 +146,7 @@ def summarize_run(
     additional_fields = additional_fields or {}
     run_bader = SETTINGS.VASP_BADER if run_bader is None else run_bader
     dir_path = dir_path or os.getcwd()
-    store = SETTINGS.RESULTS_STORE if store is None else store
+    store = SETTINGS.PRIMARY_STORE if store is None else store
 
     # Fetch all tabulated results from VASP outputs files
     # Fortunately, emmet already has a handy function for this

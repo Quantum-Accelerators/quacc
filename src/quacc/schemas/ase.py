@@ -57,7 +57,7 @@ def summarize_run(
     additional_fields
         Additional fields to add to the task document.
     store
-        Maggma Store object to store the results in. If None, `SETTINGS.RESULTS_STORE` will be used.
+        Maggma Store object to store the results in. If None, `SETTINGS.PRIMARY_STORE` will be used.
 
     Returns
     -------
@@ -127,7 +127,7 @@ def summarize_run(
         raise ValueError("ASE Atoms object has no attached calculator.")
     if not atoms.calc.results:
         raise ValueError("ASE Atoms object's calculator has no results.")
-    store = SETTINGS.RESULTS_STORE if store is None else store
+    store = SETTINGS.PRIMARY_STORE if store is None else store
 
     additional_fields = additional_fields or {}
 
@@ -200,7 +200,7 @@ def summarize_opt_run(
     additional_fields
         Additional fields to add to the task document.
     store
-        Maggma Store object to store the results in. If None, `SETTINGS.RESULTS_STORE` will be used.
+        Maggma Store object to store the results in. If None, `SETTINGS.PRIMARY_STORE` will be used.
 
     Returns
     -------
@@ -271,7 +271,7 @@ def summarize_opt_run(
 
     additional_fields = additional_fields or {}
     opt_parameters = dyn.todict() | {"fmax": dyn.fmax}
-    store = SETTINGS.RESULTS_STORE if store is None else store
+    store = SETTINGS.PRIMARY_STORE if store is None else store
 
     # Check convergence
     is_converged = dyn.converged()
@@ -359,7 +359,7 @@ def summarize_vib_run(
     additional_fields
         Additional fields to add to the task document.
     store
-        Maggma Store object to store the results in. If None, `SETTINGS.RESULTS_STORE` will be used.
+        Maggma Store object to store the results in. If None, `SETTINGS.PRIMARY_STORE` will be used.
 
     Returns
     -------
@@ -436,7 +436,7 @@ def summarize_vib_run(
             - symmetry.tolerance: float = Field(None, title="Point Group Analyzer Tolerance", description="Distance tolerance to consider sites as symmetrically equivalent.")
     """
     additional_fields = additional_fields or {}
-    store = SETTINGS.RESULTS_STORE if store is None else store
+    store = SETTINGS.PRIMARY_STORE if store is None else store
 
     vib_freqs_raw = vib.get_frequencies().tolist()
     vib_energies_raw = vib.get_energies().tolist()
@@ -537,7 +537,7 @@ def summarize_thermo_run(
     additional_fields
         Additional fields to add to the task document.
     store
-        Maggma Store object to store the results in. If None, `SETTINGS.RESULTS_STORE` will be used.
+        Maggma Store object to store the results in. If None, `SETTINGS.PRIMARY_STORE` will be used.
 
     Returns
     -------
@@ -594,7 +594,7 @@ def summarize_thermo_run(
     """
 
     additional_fields = additional_fields or {}
-    store = SETTINGS.RESULTS_STORE if store is None else store
+    store = SETTINGS.PRIMARY_STORE if store is None else store
 
     uri = get_uri(os.getcwd())
     spin_multiplicity = int(2 * igt.spin + 1)

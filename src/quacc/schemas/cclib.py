@@ -75,7 +75,7 @@ def summarize_run(
     additional_fields
         Additional fields to add to the task document.
     store
-        Maggma Store object to store the results in. If None, `SETTINGS.RESULTS_STORE` will be used.
+        Maggma Store object to store the results in. If None, `SETTINGS.PRIMARY_STORE` will be used.
 
     Returns
     -------
@@ -126,7 +126,7 @@ def summarize_run(
         raise ValueError("ASE Atoms object has no attached calculator.")
     if not atoms.calc.results:
         raise ValueError("ASE Atoms object's calculator has no results.")
-    store = SETTINGS.RESULTS_STORE if store is None else store
+    store = SETTINGS.PRIMARY_STORE if store is None else store
 
     additional_fields = additional_fields or {}
     dir_path = dir_path or os.getcwd()
