@@ -56,10 +56,8 @@ def covalent_to_db(
 
     # Store the results
     if docs:
-        store.connect()
         with store:
             store.update(docs, key="dispatch_id")
-        store.close()
 
 
 def results_to_db(store: Store | str, results: dict | list[dict]) -> None:
@@ -87,7 +85,5 @@ def results_to_db(store: Store | str, results: dict | list[dict]) -> None:
     for result in results:
         result["uuid"] = str(uuid.uuid4())
 
-    store.connect()
     with store:
         store.update(results, key="uuid")
-    store.close()

@@ -16,7 +16,7 @@ except ImportError:
 CWD = os.getcwd()
 
 
-def setup_module():
+def setup_function():
     # Run this test from a fresh directory
     if not os.path.exists("blank_dir"):
         os.mkdir("blank_dir")

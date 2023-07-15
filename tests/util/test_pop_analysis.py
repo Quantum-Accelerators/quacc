@@ -53,7 +53,7 @@ def patch_pop_analyses(monkeypatch):
 CWD = os.getcwd()
 
 
-def setup_module():
+def setup_function():
     if not os.path.exists("rundir"):
         os.mkdir("rundir")
     os.chdir("rundir")
