@@ -229,8 +229,6 @@ def bader_runner(path: str | None = None, scratch_dir: str | None = None) -> dic
     output files in the given path. This function requires that `bader`
     is located in your PATH environment variable. See
     http://theory.cm.utexas.edu/henkelman/code/bader for the bader code.
-    Note: If you want to use Bader on a code other than VASP, this function
-    will need to be slightly modified.
 
     Parameters
     ----------
@@ -303,8 +301,7 @@ def chargemol_runner(
     given by the name `Chargemol_09_26_2017_linux_parallel`,
     `Chargemol_09_26_2017_linux_serial`, or `chargemol` is in the system PATH
     environment variable. See https://sourceforge.net/projects/ddec/files for
-    the Chargemol code. Note: If you want to use Chargemol on a code other
-    than VASP, this function will need to be slightly modified.
+    the Chargemol code.
 
     Parameters
     ----------
