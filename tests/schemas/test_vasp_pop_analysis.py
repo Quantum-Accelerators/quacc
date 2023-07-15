@@ -3,7 +3,7 @@ import os
 
 import pytest
 
-from quacc.schemas.vaso import bader_runner, chargemol_runner
+from quacc.schemas.vasp import bader_runner, chargemol_runner
 
 
 def mock_bader_analysis(*args, **kwargs):

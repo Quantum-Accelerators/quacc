@@ -3,18 +3,21 @@ from __future__ import annotations
 
 import os
 import warnings
+from tempfile import TemporaryDirectory
 from typing import TypeVar
 
 from ase import Atoms
 from emmet.core.tasks import TaskDoc
 from maggma.core import Store
+from pymatgen.command_line.bader_caller import bader_analysis_from_path
+from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
 
 from quacc import SETTINGS
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
 from quacc.util.db import results_to_db
 from quacc.util.dicts import clean_dict
-from quacc.util.pop_analysis import bader_runner
+from quacc.util.files import copy_decompress
 
 VaspSchema = TypeVar("VaspSchema")
 
@@ -218,21 +221,6 @@ def summarize_run(
         results_to_db(store, task_doc)
 
     return task_doc
-
-
-"""
-Utility functions for population analyses
-"""
-from __future__ import annotations
-
-import os
-from tempfile import TemporaryDirectory
-
-from pymatgen.command_line.bader_caller import bader_analysis_from_path
-from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
-
-from quacc import SETTINGS
-from quacc.util.files import copy_decompress
 
 
 def bader_runner(path: str | None = None, scratch_dir: str | None = None) -> dict:
