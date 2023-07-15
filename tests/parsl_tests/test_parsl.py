@@ -18,25 +18,10 @@ def setup_module():
     parsl.load(config)
 
 
-def teardown_function():
-    for f in os.listdir(os.getcwd()):
-        if (
-            f.endswith(".log")
-            or f.endswith(".pckl")
-            or f.endswith(".traj")
-            or f.endswith(".out")
-            or ".gz" in f
-        ):
-            os.remove(f)
-        if "quacc-tmp" in f or "job_" in f or f == "tmp_dir" or f == "runinfo":
-            if os.path.islink(f):
-                os.unlink(f)
-            else:
-                rmtree(f)
-
-
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
-def test_tutorial1():
+def test_tutorial1(tmpdir):
+    tmpdir.chdir()
+
     # Define the Python apps
     @python_app
     def relax_app(atoms):
@@ -64,7 +49,9 @@ def test_tutorial1():
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
-def test_tutorial2():
+def test_tutorial2(tmpdir):
+    tmpdir.chdir()
+
     # Define the Python app
     @python_app
     def relax_app(atoms):
@@ -89,7 +76,9 @@ def test_tutorial2():
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
-def test_tutorial3():
+def test_tutorial3(tmpdir):
+    tmpdir.chdir()
+
     @python_app
     def relax_app(atoms):
         from quacc.recipes.emt.core import relax_job
@@ -116,7 +105,9 @@ def test_tutorial3():
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
-def test_tutorial4():
+def test_tutorial4(tmpdir):
+    tmpdir.chdir()
+
     from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_flow
 
     # Define the Python App
@@ -178,7 +169,9 @@ def test_comparison2():
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
-def test_slabs():
+def test_slabs(tmpdir):
+    tmpdir.chdir()
+
     from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_flow
 
     wf_future = bulk_to_slabs_flow(bulk("Cu"))

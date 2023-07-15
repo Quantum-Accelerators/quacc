@@ -12,26 +12,14 @@ try:
 except ImportError:
     psi4 = None
 
-FILE_DIR = Path(__file__).resolve().parent
-
-
-def teardown_function():
-    for f in os.listdir(os.getcwd()):
-        if f.endswith(".dat"):
-            os.remove(f)
-    for f in os.listdir(os.getcwd()):
-        if "quacc-tmp" in f or f == "tmp_dir":
-            if os.path.islink(f):
-                os.unlink(f)
-            else:
-                rmtree(f)
-
 
 @pytest.mark.skipif(
     psi4 is None,
     reason="Psi4 must be installed. Try conda install -c psi4 psi4",
 )
-def testimages_maker():
+def testimages_maker(tmpdir):
+    tmpdir.chdir()
+
     atoms = molecule("H2")
     output = static_job(atoms)
     assert output["natoms"] == len(atoms)

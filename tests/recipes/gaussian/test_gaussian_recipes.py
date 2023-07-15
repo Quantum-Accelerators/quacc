@@ -10,27 +10,15 @@ FILE_DIR = Path(__file__).resolve().parent
 GAUSSIAN_DIR = os.path.join(FILE_DIR, "gaussian_run")
 
 
-def setup_module():
+def prep_files():
     for f in os.listdir(GAUSSIAN_DIR):
-        copy(os.path.join(GAUSSIAN_DIR, f), os.path.join(os.getcwd(), f))
+        copy(os.path.join(GAUSSIAN_DIR, f), f)
 
 
-def teardown_module():
-    for f in os.listdir(GAUSSIAN_DIR):
-        if os.path.exists(os.path.join(os.getcwd(), f)):
-            os.remove(os.path.join(os.getcwd(), f))
+def test_static_job(tmpdir):
+    tmpdir.chdir()
+    prep_files()
 
-
-def teardown_function():
-    for f in os.listdir(os.getcwd()):
-        if "quacc-tmp" in f or f == "tmp_dir":
-            if os.path.islink(f):
-                os.unlink(f)
-            else:
-                rmtree(f)
-
-
-def test_static_job():
     atoms = molecule("H2")
 
     output = static_job(atoms)
@@ -70,7 +58,10 @@ def test_static_job():
     assert "opt" not in output["parameters"]
 
 
-def test_relax_Job():
+def test_relax_job(tmpdir):
+    tmpdir.chdir()
+    prep_files()
+
     atoms = molecule("H2")
 
     output = relax_job(atoms)

@@ -26,19 +26,9 @@ FILE_DIR = Path(__file__).resolve().parent
 run1 = os.path.join(FILE_DIR, "vasp_run1")
 
 
-def teardown_function():
-    for f in os.listdir("."):
-        if ".log" in f or ".pckl" in f or ".traj" in f or ".gz" in f:
-            os.remove(f)
-    for f in os.listdir(os.getcwd()):
-        if "quacc-tmp" in f or f == "tmp_dir" or f == "vib":
-            if os.path.islink(f):
-                os.unlink(f)
-            else:
-                rmtree(f)
+def test_summarize_run(tmpdir):
+    tmpdir.chdir()
 
-
-def test_summarize_run():
     # Make sure metadata is made
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
     results = summarize_run(atoms)
@@ -104,7 +94,9 @@ def test_summarize_run():
     MontyDecoder().process_decoded(d)
 
 
-def test_summarize_opt_run():
+def test_summarize_opt_run(tmpdir):
+    tmpdir.chdir()
+
     # Make sure metadata is made
     atoms = bulk("Cu") * (2, 2, 1)
     atoms[0].position += [0.1, 0.1, 0.1]
@@ -190,7 +182,9 @@ def test_summarize_opt_run():
         summarize_opt_run(dyn)
 
 
-def test_summarize_vib_run():
+def test_summarize_vib_run(tmpdir):
+    tmpdir.chdir()
+
     # Make sure metadata is made
     atoms = molecule("N2")
     atoms.calc = EMT()
@@ -291,7 +285,9 @@ def test_summarize_vib_run():
     assert len(results["results"]["vib_energies"]) == 6
 
 
-def test_summarize_thermo_run():
+def test_summarize_thermo_run(tmpdir):
+    tmpdir.chdir()
+
     # Make sure metadata is made
     atoms = molecule("N2")
     igt = IdealGasThermo([0.34], "linear", atoms=atoms, spin=0, symmetrynumber=2)
@@ -395,7 +391,9 @@ def test_summarize_thermo_run():
         summarize_thermo_run(igt, charge_and_multiplicity=[0, 1])
 
 
-def test_errors():
+def test_errors(tmpdir):
+    tmpdir.chdir()
+
     atoms = bulk("Cu")
     with pytest.raises(ValueError):
         summarize_run(atoms)

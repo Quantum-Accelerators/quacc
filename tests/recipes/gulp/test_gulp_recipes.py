@@ -10,27 +10,15 @@ FILE_DIR = Path(__file__).resolve().parent
 GULP_DIR = os.path.join(FILE_DIR, "gulp_run")
 
 
-def setup_module():
+def prep_files():
     for f in os.listdir(GULP_DIR):
-        copy(os.path.join(GULP_DIR, f), os.path.join(os.getcwd(), f))
+        copy(os.path.join(GULP_DIR, f), f)
 
 
-def teardown_module():
-    for f in os.listdir(GULP_DIR):
-        if os.path.exists(os.path.join(os.getcwd(), f)):
-            os.remove(os.path.join(os.getcwd(), f))
+def test_static_job(tmpdir):
+    tmpdir.chdir()
+    prep_files()
 
-
-def teardown_function():
-    for f in os.listdir(os.getcwd()):
-        if "quacc-tmp" in f or f == "tmp_dir":
-            if os.path.islink(f):
-                os.unlink(f)
-            else:
-                rmtree(f)
-
-
-def test_static_job():
     atoms = molecule("H2O")
 
     output = static_job(atoms)
@@ -83,7 +71,10 @@ def test_static_job():
     assert "output cif gulp.cif" in output["parameters"]["options"]
 
 
-def test_relax_Job():
+def test_relax_Job(tmpdir):
+    tmpdir.chdir()
+    prep_files()
+
     atoms = molecule("H2O")
 
     output = relax_job(atoms)

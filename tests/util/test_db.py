@@ -15,14 +15,6 @@ except:
     montydb = None
 
 
-def teardown_function():
-    for f in os.listdir(os.getcwd()):
-        if "monty.storage" in f:
-            os.remove(f)
-        if f == "db":
-            rmtree(f)
-
-
 @pytest.mark.skipif(
     os.environ.get("GITHUB_ACTIONS", False) is False,
     reason="This test is only meant to be run on GitHub Actions",
@@ -58,7 +50,9 @@ def test_results_to_db():
     montydb is None,
     reason="This test requires MontyDB",
 )
-def test_monty_db():
+def test_monty_db(tmpdir):
+    tmpdir.chdir()
+
     atoms = bulk("Cu")
     output = static_job(atoms)
     store = MontyStore("quacc_results", database_path=".")

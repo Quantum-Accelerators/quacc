@@ -10,32 +10,13 @@ from quacc.recipes.dftb.core import relax_job, static_job
 DFTBPLUS_EXISTS = bool(which("dftb+"))
 
 
-def teardown_function():
-    for f in os.listdir(os.getcwd()):
-        if (
-            f.endswith(".log")
-            or f.endswith(".pckl")
-            or f.endswith(".traj")
-            or f.endswith(".out")
-            or f.endswith(".bin")
-            or f.endswith(".hsd")
-            or f.endswith(".gz")
-            or f.endswith(".gen")
-            or f.endswith(".tag")
-        ):
-            os.remove(f)
-        if "quacc-tmp" in f or f == "tmp_dir":
-            if os.path.islink(f):
-                os.unlink(f)
-            else:
-                rmtree(f)
-
-
 @pytest.mark.skipif(
     DFTBPLUS_EXISTS is False,
     reason="DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
 )
-def test_static_job():
+def test_static_job(tmpdir):
+    tmpdir.chdir()
+
     atoms = molecule("H2O")
 
     output = static_job(atoms)
@@ -75,7 +56,9 @@ def test_static_job():
     DFTBPLUS_EXISTS is False,
     reason="DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
 )
-def test_relax_job():
+def test_relax_job(tmpdir):
+    tmpdir.chdir()
+
     atoms = molecule("H2O")
 
     output = relax_job(atoms)
