@@ -38,5 +38,6 @@ store = MongoStore(
 )
 
 # Query the database
-store.count()
+with store:
+    store.count()
 ```
