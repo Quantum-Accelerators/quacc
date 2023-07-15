@@ -23,7 +23,6 @@ def teardown_function():
                 rmtree(f)
 
 
-@pytest.mark.skipif(montydb is None, reason="MontyDB not installed")
 def test_store():
     store = MemoryStore()
     SETTINGS.RESULTS_STORE = store.to_json()
