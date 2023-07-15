@@ -1,11 +1,15 @@
 import os
 
+import pytest
 from ase.build import bulk
-from maggma.stores import MontyStore
 
 from quacc import SETTINGS
 from quacc.recipes.emt.core import relax_job, static_job
 
+try:
+    import montydb
+except:
+    montydb = None
 DEFAULT_SETTINGS = SETTINGS.copy()
 STORE = MontyStore("quacc_test_settings", database_path=".")
 
@@ -16,6 +20,7 @@ def teardown_function():
     SETTINGS.CREATE_UNIQUE_WORKDIR = DEFAULT_SETTINGS.CREATE_UNIQUE_WORKDIR
 
 
+@pytest.skipif(montydb is None, reason="MontyDB not installed")
 def test_store():
     SETTINGS.RESULTS_STORE = STORE.to_json()
     atoms = bulk("Cu")
