@@ -15,11 +15,11 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
     ```python
     from maggma.stores import MontyStore
     my_store = MontyStore("quacc_results", database_path=".")
-    print(my_store.as_dict())  # (1)
+    print(my_store.to_json())  # (1)
     ```
 
     ```yaml title="quacc.yaml"
-    RESULTS_STORE: "{'@module': 'maggma.stores.mongolike', '@class': 'MontyStore', '@version': '0.51.19', 'collection_name': 'quacc_results', 'database_path': '.', 'database_name': 'db', 'storage': 'sqlite', 'storage_kwargs': {'use_bson': True, 'monty_version': '4.0'}, 'client_kwargs': {}}"
+    RESULTS_STORE: '{"@module": "maggma.stores.mongolike", "@class": "MontyStore", "@version": "0.51.19", "collection_name": "quacc_results", "database_path": ".", "database_name": "db", "storage": "sqlite", "storage_kwargs": {"use_bson": true, "monty_version": "4.0"}, "client_kwargs": {}}'
     ```
 
     1. This is the string you will store in the `RESULTS_STORE` quacc setting.
