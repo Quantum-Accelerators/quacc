@@ -50,6 +50,12 @@ def test_summarize_run():
     summarize_run(atoms)
     os.chdir(cwd)
 
+    # Test DB
+    atoms = read(os.path.join(run1, "OUTCAR.gz"))
+    store = MemoryStore()
+    summarize_run(atoms, dir_path=run1, store=store)
+    assert store.count() == 1
+
     # Make sure metadata is made
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
     results = summarize_run(atoms, dir_path=run1, remove_empties=True)

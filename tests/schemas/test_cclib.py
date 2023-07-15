@@ -18,7 +18,7 @@ log1 = os.path.join(run1, "Gaussian.log")
 def test_summarize_run():
     # Make sure metadata is made
     atoms = read(log1)
-    results = summarize_run(atoms, ".log", dir_path=run1, check_convergence=True)
+    results = summarize_run(atoms, ".log", dir_path=run1)
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["spin_multiplicity"] == 1
@@ -35,6 +35,12 @@ def test_summarize_run():
     os.chdir(run1)
     summarize_run(atoms, ".log")
     os.chdir(cwd)
+
+    # Test DB
+    atoms = read(log1)
+    store = MemoryStore()
+    summarize_run(atoms, ".log", dir_path=run1, store=store)
+    assert store.count() == 1
 
     # Make sure info tags are handled appropriately
     atoms = read(log1)
