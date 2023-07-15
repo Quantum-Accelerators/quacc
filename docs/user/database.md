@@ -6,49 +6,40 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
 
 === "General Purpose"
 
-    For a given recipe, you can store the final output summary in your desired using the [`quacc.util.db.results_to_db`](https://quantum-accelerators.github.io/quacc/reference/quacc/util/db.html#quacc.util.db.results_to_db) function, as shown in the example below.
+    **Automated Approach**
 
+    For a given recipe, you can have quacc automatically store the final output summaries in your desired database by defining a [Maggma Data Store](https://materialsproject.github.io/maggma/reference/stores/) in the `RESULTS_STORE` quacc setting.
 
-    === "MontyDB"
+    For instance, let's pretend you have decided to make a `MontyStore` be your database of choice. After defining or loading your Maggma store, you would call `.as_dict()` to get a dictionary representation. You can then store this dictionary, formatted as a string, in the `RESULTS_STORE` global quacc setting.
 
-        ```python
-        from maggma.stores import MontyStore
-        from quacc.util.db import results_to_db
+    ```python
+    from maggma.stores import MontyStore
+    my_store = MontyStore("quacc_results", database_path=".")
+    print(my_store.as_dict())  # (1)
+    ```
 
-        # Let `results` be an output (or list of outputs) from quacc recipes
+    ```yaml title="quacc.yaml"
+    RESULTS_STORE: "{'@module': 'maggma.stores.mongolike', '@class': 'MontyStore', '@version': '0.51.19', 'collection_name': 'quacc_results', 'database_path': '.', 'database_name': 'db', 'storage': 'sqlite', 'storage_kwargs': {'use_bson': True, 'monty_version': '4.0'}, 'client_kwargs': {}}"
+    ```
 
-        # Define your database credentials
-        store = MontyStore(
-            "quacc_results",
-            database_path=".",
-            database_name="quacc_db",
-        )
+    1. This is the string you will store in the `RESULTS_STORE` quacc setting.
 
-        # Store the results
-        results_to_db(store, results)
-        ```
+    **Manual Approach**
 
-    === "MongoDB"
+    If you would prefer to store results in your database manually (perhaps because you are limited in terms of how much data you can store), you can use the [`quacc.util.db.results_to_db`](https://quantum-accelerators.github.io/quacc/reference/quacc/util/db.html#quacc.util.db.results_to_db) function, as shown in the example below.
 
-        ```python
-        from maggma.stores import MongoStore
-        from quacc.util.db import results_to_db
+    ```python
+    from maggma.stores import MontyStore
+    from quacc.util.db import results_to_db
 
-        # Let `results` be an output (or list of outputs) from quacc recipes
+    # Let `results` be an output (or list of outputs) from quacc recipes
 
-        # Define your database credentials
-        store = MongoStore(
-            "my_db_name",
-            "my_collection_name",
-            username="my_username",
-            password="my_password",
-            host="localhost",
-            port=27017,
-        )
+    # Define your database details
+    store = MontyStore("quacc_results", database_path=".")
 
-        # Store the results
-        results_to_db(store, results)
-        ```
+    # Store the results
+    results_to_db(store, results)
+    ```
 
 === "Covalent"
 
@@ -56,42 +47,23 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
 
     An example is shown below for storing the results in your custom database via the [`quacc.util.db.covalent_to_db`](https://quantum-accelerators.github.io/quacc/reference/quacc/util/db.html#quacc.util.db.covalent_to_db) function.
 
-    === "MontyDB"
+    ```python
+    from maggma.stores import MongoStore
+    from quacc.util.db import covavlent_to_db
 
-        ```python
-        from maggma.stores import MontyStore
-        from quacc.util.db import covavlent_to_db
+    # Define your database credentials
+    store = MongoStore(
+        "my_db_name",
+        "my_collection_name",
+        username="my_username",
+        password="my_password",
+        host="localhost",
+        port=27017,
+    )
 
-        # Define your database credentials
-        store = MontyStore(
-            "quacc_results",
-            database_path=".",
-            database_name="quacc_db",
-        )
-
-        # Store the results
-        covalent_to_db(store)
-        ```
-
-    === "MongoDB"
-
-        ```python
-        from maggma.stores import MongoStore
-        from quacc.util.db import covavlent_to_db
-
-        # Define your database credentials
-        store = MongoStore(
-            "my_db_name",
-            "my_collection_name",
-            username="my_username",
-            password="my_password",
-            host="localhost",
-            port=27017,
-        )
-
-        # Store the results
-        covalent_to_db(store)
-        ```
+    # Store the results
+    covalent_to_db(store)
+    ```
 
 === "Jobflow"
 

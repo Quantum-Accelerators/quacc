@@ -5,7 +5,6 @@ import os
 from typing import List, Optional
 
 from maggma.core import Store
-from maggma.stores import MontyStore
 from pydantic import BaseSettings, Field, root_validator
 
 from quacc.presets import vasp as vasp_defaults
@@ -51,7 +50,10 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # Data Store Settings
     # ---------------------------
-    RESULTS_STORE: Store | None = Field(None, description="Primary Maggma data store")
+    RESULTS_STORE: str = Field(
+        dict,
+        description="Dictionary representation of the primary Maggma data store where calculation results will be stored. Taken from the `.as_dict()` method of the corresponding Store object.",
+    )
 
     # ---------------------------
     # ORCA Settings
