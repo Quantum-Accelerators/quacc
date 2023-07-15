@@ -30,7 +30,7 @@ def test_store():
     atoms = bulk("Cu")
     static_job(atoms)
     with store:
-        store.count() == 1
+        assert store.count() == 1
 
 
 def test_results_dir():
