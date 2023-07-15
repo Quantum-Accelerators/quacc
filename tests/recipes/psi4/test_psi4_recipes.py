@@ -1,4 +1,3 @@
-
 import pytest
 from ase.build import molecule
 

@@ -1,4 +1,3 @@
-
 import jobflow as jf
 from ase.build import bulk
 from maggma.stores import MemoryStore
