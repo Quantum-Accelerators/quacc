@@ -1,5 +1,4 @@
 import os
-from shutil import rmtree
 
 import covalent as ct
 import pytest
@@ -9,25 +8,13 @@ from quacc.recipes.emt.core import relax_job, static_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 
-def teardown_module():
-    for f in os.listdir(os.getcwd()):
-        if (
-            f.endswith(".log")
-            or f.endswith(".pckl")
-            or f.endswith(".traj")
-            or f.endswith(".out")
-            or ".gz" in f
-        ):
-            os.remove(f)
-        if "quacc-tmp" in f or f == "tmp_dir":
-            rmtree(f)
-
-
 @pytest.mark.skipif(
     os.environ.get("GITHUB_ACTIONS", False) is False,
     reason="This test is only meant to be run on GitHub Actions",
 )
-def test_tutorials():
+def test_tutorials(tmpdir):
+    tmpdir.chdir()
+
     # Test of the various tutorials
 
     # Quick start -------------------------------------------------

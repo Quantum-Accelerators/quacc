@@ -285,6 +285,18 @@ In the previous examples, we have been running calculations on our local machine
 
     So far, we have dispatched calculations immediately upon calling them. However, in practice, it is often more useful to have a [Prefect agent](https://docs.prefect.io/concepts/work-pools/#agent-overview) running in the background that will continually poll for work to submit to the task runner. This allows you to submit only a subset of workflows at a time, and the agent will automatically submit more jobs as the resources become available. You will want to run Prefect workflows with an agent on the computing environment where you wish to submit jobs, specifically on a perpetual resource like a login node or dedicated workflow node.
 
+    To create a new work pool, run the following from the command line:
+
+    ```bash
+    prefect worker start
+    ```
+
+    It is often easiest to have this process be run in the background. Once the work pool is created, an agent can be initiated as follows:
+
+    ```bash
+    prefect agent start -p 'work-pool-name'
+    ```
+
 === "Jobflow"
 
     Out-of-the box, Jobflow can be used to run on your local machine. You will, however, need a "manager" to run your workflows on HPC machines. The currently recommended manager for Jobflow is FireWorks, which is described here.

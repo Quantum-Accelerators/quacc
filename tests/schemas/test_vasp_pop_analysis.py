@@ -1,10 +1,9 @@
 import gzip
 import os
-from shutil import rmtree
 
 import pytest
 
-from quacc.util.pop_analysis import bader_runner, chargemol_runner
+from quacc.schemas.vasp import bader_runner, chargemol_runner
 
 
 def mock_bader_analysis(*args, **kwargs):
@@ -41,19 +40,16 @@ def mock_chargemol_analysis(*args, **kwargs):
 def patch_pop_analyses(monkeypatch):
     # Monkeypatch the Bader and Chargemol analyses so they don't run via pytest
     monkeypatch.setattr(
-        "quacc.util.pop_analysis.bader_analysis_from_path",
+        "quacc.schemas.vasp.bader_analysis_from_path",
         mock_bader_analysis,
     )
     monkeypatch.setattr(
-        "quacc.util.pop_analysis.ChargemolAnalysis",
+        "quacc.schemas.vasp.ChargemolAnalysis",
         mock_chargemol_analysis,
     )
 
 
-CWD = os.getcwd()
-
-
-def setup_module():
+def prep_files():
     if not os.path.exists("rundir"):
         os.mkdir("rundir")
     os.chdir("rundir")
@@ -65,16 +61,10 @@ def setup_module():
             gf.write("test".encode())
 
 
-def teardown_module():
-    for f in ["CHGCAR", "AECCAR0.gz", "AECCAR2.gz", "POTCAR"]:
-        if os.path.isfile(f):
-            os.remove(f)
-    if os.path.exists("rundir"):
-        rmtree("rundir")
-    os.chdir(CWD)
+def test_run_bader(tmpdir):
+    tmpdir.chdir()
+    prep_files()
 
-
-def test_run_bader():
     bader_stats = bader_runner()
     assert bader_stats["min_dist"] == [1.0]
     assert bader_stats["partial_charges"] == [1.0]
@@ -85,21 +75,28 @@ def test_run_bader():
     assert bader_stats.get("magmom") is None
 
 
-def test_bader_erorr():
-    os.remove("CHGCAR")
+def test_bader_erorr(tmpdir):
+    tmpdir.chdir()
+
     with pytest.raises(FileNotFoundError):
         bader_runner()
     with open("CHGCAR", "w") as w:
         w.write("test")
 
 
-def test_run_chargemol():
+def test_run_chargemol(tmpdir):
+    tmpdir.chdir()
+    prep_files()
+
     chargemol_stats = chargemol_runner(path=".", atomic_densities_path=".")
     assert chargemol_stats["ddec"]["partial_charges"] == [1.0]
     assert chargemol_stats["ddec"]["spin_moments"] == [0.0]
 
 
-def test_chargemol_erorr():
+def test_chargemol_erorr(tmpdir):
+    tmpdir.chdir()
+    prep_files()
+
     with pytest.raises(ValueError):
         chargemol_runner()
 
