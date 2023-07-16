@@ -90,7 +90,7 @@ def make_unique_dir(base_path: str | None = None) -> str:
 
 def load_yaml_calc(yaml_path: str) -> dict:
     """
-    Loads a YAML file containing ASE VASP calcultor settings.
+    Loads a YAML file containing calcultor settings.
 
     Parameters
     ----------
