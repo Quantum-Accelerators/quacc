@@ -57,7 +57,7 @@ def test_create_unique_workdir(tmpdir):
 
     atoms = bulk("Cu")
     relax_job(atoms)
-    assert not glob("quacc_*")
+    assert not glob("quacc-*")
     SETTINGS.CREATE_UNIQUE_WORKDIR = True
     relax_job(atoms)
-    assert glob("quacc_*")
+    assert glob("quacc-*")
