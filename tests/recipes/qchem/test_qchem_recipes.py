@@ -42,16 +42,6 @@ def setup_module():
 def teardown_module():
     SETTINGS.CHECK_CONVERGENCE = DEFAULT_SETTINGS.CHECK_CONVERGENCE
 
-    for f in os.listdir("."):
-        if ".log" in f or ".traj" in f or ".gz" in f:
-            os.remove(f)
-    for f in os.listdir(os.getcwd()):
-        if "quacc-tmp" in f or f == "tmp_dir":
-            if os.path.islink(f):
-                os.unlink(f)
-            else:
-                rmtree(f)
-
 
 def qcinput_nearly_equal(qcinput1, qcinput2):
     qcin1 = qcinput1.as_dict()
@@ -112,7 +102,9 @@ def mock_read(self, **kwargs):
         raise RuntimeError("Results should not be None here.")
 
 
-def test_static_job(monkeypatch):
+def test_static_job(monkeypatch, tmpdir):
+    tmpdir.chdir()
+
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
     output = static_job(TEST_ATOMS)
     assert output["atoms"] == TEST_ATOMS
@@ -183,7 +175,9 @@ def test_static_job(monkeypatch):
     sella is None,
     reason="Sella must be installed.",
 )
-def test_relax_job(monkeypatch):
+def test_relax_job(monkeypatch, tmpdir):
+    tmpdir.chdir()
+
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
     output = relax_job(
         TEST_ATOMS,
@@ -260,7 +254,9 @@ def test_relax_job(monkeypatch):
     sella is None,
     reason="Sella must be installed.",
 )
-def test_ts_job(monkeypatch):
+def test_ts_job(monkeypatch, tmpdir):
+    tmpdir.chdir()
+
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
     output = ts_job(
         TEST_ATOMS,
@@ -345,7 +341,9 @@ def test_ts_job(monkeypatch):
     sella is None,
     reason="Sella must be installed.",
 )
-def test_irc_job(monkeypatch):
+def test_irc_job(monkeypatch, tmpdir):
+    tmpdir.chdir()
+
     monkeypatch.setattr(QChem, "read_results", mock_read)
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute4)
 
@@ -426,7 +424,9 @@ def test_irc_job(monkeypatch):
     sella is None,
     reason="Sella must be installed.",
 )
-def test_quasi_irc_job(monkeypatch):
+def test_quasi_irc_job(monkeypatch, tmpdir):
+    tmpdir.chdir()
+
     monkeypatch.setattr(QChem, "read_results", mock_read)
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute4)
 
