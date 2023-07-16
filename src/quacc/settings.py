@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+from shutil import which
 from typing import List, Optional
 
 from pydantic import BaseSettings, Field, root_validator
@@ -87,7 +88,7 @@ class QuaccSettings(BaseSettings):
         True, description="Whether co-pilot mode should be used for VASP INCAR handling"
     )
     VASP_BADER: bool = Field(
-        os.environ.get("bader"),
+        bool(which("bader")),
         description="Whether to run a Bader analysis when summarizing VASP results. Requires bader to be in PATH.",
     )
     VASP_PRESET_MAG_DEFAULT: float = Field(
