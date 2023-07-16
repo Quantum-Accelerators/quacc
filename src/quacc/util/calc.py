@@ -72,7 +72,6 @@ def run_calc(
     gzip = SETTINGS.GZIP_FILES if gzip is None else gzip
 
     # Perform staging operations
-    start_dir = os.getcwd()
     atoms, tmpdir, results_dir = _calc_setup(
         atoms,
         create_unique_workdir=create_unique_workdir,
@@ -84,7 +83,7 @@ def run_calc(
     atoms.get_potential_energy()
 
     # Perform cleanup operations
-    _calc_cleanup(start_dir, tmpdir, results_dir, gzip=gzip)
+    _calc_cleanup(tmpdir, results_dir, gzip=gzip)
 
     # Most ASE calculators do not update the atoms object in-place with
     # a call to .get_potential_energy(), which is important if an internal
@@ -170,7 +169,6 @@ def run_ase_opt(
     )
     scratch_dir = SETTINGS.SCRATCH_DIR if scratch_dir is None else scratch_dir
     gzip = SETTINGS.GZIP_FILES if gzip is None else gzip
-    start_dir = os.getcwd()
 
     # Perform staging operations
     atoms, tmpdir, results_dir = _calc_setup(
@@ -192,7 +190,7 @@ def run_ase_opt(
     if "trajectory" in optimizer_kwargs:
         raise ValueError("Quacc does not support setting the `trajectory` kwarg.")
 
-    traj_filename = "opt.traj"
+    traj_filename = os.path.join(tmpdir, "opt.traj")
     optimizer_kwargs["trajectory"] = Trajectory(traj_filename, "w", atoms=atoms)
 
     # Define optimizer class
@@ -205,7 +203,7 @@ def run_ase_opt(
     dyn.traj_atoms = read(traj_filename, index=":")
 
     # Perform cleanup operations
-    _calc_cleanup(start_dir, tmpdir, results_dir, gzip=gzip)
+    _calc_cleanup(tmpdir, results_dir, gzip=gzip)
 
     return dyn
 
@@ -259,7 +257,6 @@ def run_ase_vib(
     )
     scratch_dir = SETTINGS.SCRATCH_DIR if scratch_dir is None else scratch_dir
     gzip = SETTINGS.GZIP_FILES if gzip is None else gzip
-    start_dir = os.getcwd()
 
     # Perform staging operations
     atoms, tmpdir, results_dir = _calc_setup(
@@ -270,12 +267,12 @@ def run_ase_vib(
     )
 
     # Run calculation
-    vib = Vibrations(atoms, name="vib", **vib_kwargs)
+    vib = Vibrations(atoms, name=os.path.join(tmpdir, "vib"), **vib_kwargs)
     vib.run()
-    vib.summary(log="vib_summary.log")
+    vib.summary(log=os.path.join(tmpdir, "vib_summary.log"))
 
     # Perform cleanup operations
-    _calc_cleanup(start_dir, tmpdir, results_dir, gzip=gzip)
+    _calc_cleanup(tmpdir, results_dir, gzip=gzip)
 
     return vib
 
@@ -343,22 +340,18 @@ def _calc_setup(
     if copy_files:
         copy_decompress(copy_files, tmpdir)
 
-    os.chdir(tmpdir)
+    atoms.calc.directory = tmpdir
 
     return atoms, tmpdir, results_dir
 
 
-def _calc_cleanup(
-    start_dir: str, tmpdir: str, results_dir: str, gzip: bool = True
-) -> None:
+def _calc_cleanup(tmpdir: str, results_dir: str, gzip: bool = True) -> None:
     """
     Perform cleanup operations for a calculation, including gzipping files,
     copying files back to the original directory, and removing the tmpdir.
 
     Parameters
     ----------
-    start_dir
-        The path to the directory where the calculation was started.
     tmpdir
         The path to the tmpdir, where the calculation will be run. It will be
         deleted after the calculation is complete.
@@ -373,9 +366,6 @@ def _calc_cleanup(
     -------
     None
     """
-
-    # Change back to the original directory
-    os.chdir(start_dir)
 
     # Gzip files in tmpdir
     if gzip:
