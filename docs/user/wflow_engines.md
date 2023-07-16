@@ -107,7 +107,7 @@ graph LR
 
     !!! Important
 
-        If you haven't done so yet, make sure you have loaded a Parsl configuration in your Python script.
+        If you haven't done so yet, make sure you have loaded a Parsl configuration in your Python script. The example below will load the default (i.e. local, multi-threaded) configuration.
 
         ```python
         import parsl
