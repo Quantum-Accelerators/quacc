@@ -1,33 +1,32 @@
+import multiprocessing
 import os
 from pathlib import Path
-from shutil import copy, rmtree
+from shutil import copy
 
+import pytest
 from ase.build import molecule
 
 from quacc.recipes.orca.core import relax_job, static_job
 
 FILE_DIR = Path(__file__).resolve().parent
 ORCA_DIR = os.path.join(FILE_DIR, "orca_run")
+BAD_ORCA_DIR = os.path.join(FILE_DIR, "orca_failed_run")
 
 
-def setup_module():
+def prep_files():
     for f in os.listdir(ORCA_DIR):
-        copy(os.path.join(ORCA_DIR, f), os.path.join(os.getcwd(), f))
+        copy(os.path.join(ORCA_DIR, f), f)
 
 
-def teardown_module():
-    for f in os.listdir(ORCA_DIR):
-        if os.path.exists(os.path.join(os.getcwd(), f)):
-            os.remove(os.path.join(os.getcwd(), f))
-    for f in os.listdir(os.getcwd()):
-        if "quacc-tmp" in f or f == "tmp_dir":
-            if os.path.islink(f):
-                os.unlink(f)
-            else:
-                rmtree(f)
+def prep_files_bad():
+    for f in os.listdir(BAD_ORCA_DIR):
+        copy(os.path.join(BAD_ORCA_DIR, f), f)
 
 
-def test_static_job():
+def test_static_job(monkeypatch, tmpdir):
+    tmpdir.chdir()
+    prep_files()
+
     atoms = molecule("H2")
 
     output = static_job(atoms)
@@ -57,8 +56,17 @@ def test_static_job():
     )
     assert "%scf maxiter 300 end" in output["parameters"]["orcablocks"]
 
+    atoms = molecule("H2")
+    monkeypatch.setenv("mpirun", "test")
+    output = static_job(atoms)
+    nprocs = multiprocessing.cpu_count()
+    assert f"%pal nprocs {nprocs} end" in output["parameters"]["orcablocks"]
 
-def test_relax_Job():
+
+def test_relax_job(monkeypatch, tmpdir):
+    tmpdir.chdir()
+    prep_files()
+
     atoms = molecule("H2")
 
     output = relax_job(atoms)
@@ -94,3 +102,18 @@ def test_relax_Job():
         output["attributes"]["trajectory"][0] != output["attributes"]["trajectory"][-1]
     )
     assert output["attributes"]["trajectory"][-1]["atoms"] == output["atoms"]
+
+    atoms = molecule("H2")
+    monkeypatch.setenv("mpirun", "test")
+    output = relax_job(atoms)
+    nprocs = multiprocessing.cpu_count()
+    assert f"%pal nprocs {nprocs} end" in output["parameters"]["orcablocks"]
+
+
+def test_bad_relax_job(tmpdir):
+    tmpdir.chdir()
+    prep_files_bad()
+
+    atoms = molecule("H2")
+    with pytest.raises(ValueError):
+        relax_job(atoms)

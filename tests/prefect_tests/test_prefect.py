@@ -1,33 +1,12 @@
-import os
-from shutil import rmtree
-
 import pytest
-from ase.build import bulk, molecule
-
-from quacc.recipes.emt.core import relax_job, static_job
-from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+from ase.build import bulk
 
 try:
     import prefect
-    from prefect import flow, task
     from prefect.testing.utilities import prefect_test_harness
 
 except ImportError:
     prefect = None
-
-
-def teardown_module():
-    for f in os.listdir(os.getcwd()):
-        if (
-            f.endswith(".log")
-            or f.endswith(".pckl")
-            or f.endswith(".traj")
-            or f.endswith(".out")
-            or ".gz" in f
-        ):
-            os.remove(f)
-        if "quacc-tmp" in f or "job_" in f or f == "tmp_dir":
-            rmtree(f)
 
 
 @pytest.fixture(autouse=True, scope="session")
@@ -38,7 +17,9 @@ def prefect_test_fixture():
 
 
 @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
-def test_tutorial1():
+def test_tutorial1(tmpdir):
+    tmpdir.chdir()
+
     from ase.build import bulk
     from prefect import flow, task
     from prefect.task_runners import SequentialTaskRunner
@@ -64,7 +45,9 @@ def test_tutorial1():
 
 
 @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
-def test_tutorial2():
+def test_tutorial2(tmpdir):
+    tmpdir.chdir()
+
     from ase.build import bulk, molecule
     from prefect import flow, task
     from prefect.task_runners import SequentialTaskRunner
@@ -90,7 +73,9 @@ def test_tutorial2():
 
 
 @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
-def test_tutorial3():
+def test_tutorial3(tmpdir):
+    tmpdir.chdir()
+
     from ase.build import bulk
     from prefect import flow, task
     from prefect.task_runners import SequentialTaskRunner
@@ -113,7 +98,9 @@ def test_tutorial3():
 
 
 @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
-def test_tutorial4():
+def test_tutorial4(tmpdir):
+    tmpdir.chdir()
+
     from ase.build import bulk
     from prefect import flow, task
     from prefect.task_runners import SequentialTaskRunner
@@ -134,7 +121,7 @@ def test_tutorial4():
     atoms = bulk("Cu")
 
     # Run the workflow
-    result = workflow(atoms)
+    workflow(atoms)
 
 
 @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
@@ -175,7 +162,9 @@ def test_comparison2():
 
 
 @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
-def test_emt_flow():
+def test_emt_flow(tmpdir):
+    tmpdir.chdir()
+
     from prefect.task_runners import SequentialTaskRunner
 
     from quacc.recipes.emt.prefect.slabs import bulk_to_slabs_flow
