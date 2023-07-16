@@ -192,7 +192,7 @@ def run_ase_opt(
     if "trajectory" in optimizer_kwargs:
         raise ValueError("Quacc does not support setting the `trajectory` kwarg.")
 
-    traj_filename = "opt.traj"
+    traj_filename = os.path.join(tmpdir, "opt.traj")
     optimizer_kwargs["trajectory"] = Trajectory(traj_filename, "w", atoms=atoms)
 
     # Define optimizer class
@@ -270,9 +270,9 @@ def run_ase_vib(
     )
 
     # Run calculation
-    vib = Vibrations(atoms, name="vib", **vib_kwargs)
+    vib = Vibrations(atoms, name=os.path.join(tmpdir, "vib"), **vib_kwargs)
     vib.run()
-    vib.summary(log="vib_summary.log")
+    vib.summary(log=os.path.join(tmpdir, "vib_summary.log"))
 
     # Perform cleanup operations
     _calc_cleanup(start_dir, tmpdir, results_dir, gzip=gzip)
