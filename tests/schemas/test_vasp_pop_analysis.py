@@ -3,7 +3,7 @@ import os
 
 import pytest
 
-from quacc.util.pop_analysis import bader_runner, chargemol_runner
+from quacc.schemas.vasp import bader_runner, chargemol_runner
 
 
 def mock_bader_analysis(*args, **kwargs):
@@ -40,11 +40,11 @@ def mock_chargemol_analysis(*args, **kwargs):
 def patch_pop_analyses(monkeypatch):
     # Monkeypatch the Bader and Chargemol analyses so they don't run via pytest
     monkeypatch.setattr(
-        "quacc.util.pop_analysis.bader_analysis_from_path",
+        "quacc.schemas.vasp.bader_analysis_from_path",
         mock_bader_analysis,
     )
     monkeypatch.setattr(
-        "quacc.util.pop_analysis.ChargemolAnalysis",
+        "quacc.schemas.vasp.ChargemolAnalysis",
         mock_chargemol_analysis,
     )
 

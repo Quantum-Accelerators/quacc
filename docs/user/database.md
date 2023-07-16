@@ -8,9 +8,9 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
 
     **Automated Approach**
 
-    For a given recipe, you can have quacc automatically store the final output summaries in your desired database by defining a [Maggma Data Store](https://materialsproject.github.io/maggma/reference/stores/) in the `RESULTS_STORE` quacc setting.
+    For a given recipe, you can have quacc automatically store the final output summaries in your desired database by defining a [Maggma Data Store](https://materialsproject.github.io/maggma/reference/stores/) in the `PRIMARY_STORE` quacc setting.
 
-    For instance, let's pretend you have decided to make a [`MontyStore`](https://materialsproject.github.io/maggma/reference/stores/#maggma.stores.mongolike.MontyStore) be your database of choice. After defining or loading your Maggma store, you would call `.to_json()` to get a dictionary representation. You can then store this JSON, formatted as a string, in the `RESULTS_STORE` global quacc setting.
+    For instance, let's pretend you have decided to make a [`MontyStore`](https://materialsproject.github.io/maggma/reference/stores/#maggma.stores.mongolike.MontyStore) be your database of choice. After defining or loading your Maggma store, you would call `.to_json()` to get a dictionary representation. You can then store this JSON, formatted as a string, in the `PRIMARY_STORE` global quacc setting.
 
     ```python
     from maggma.stores import MongoStore
@@ -22,11 +22,11 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
         host="localhost",
         port=27017,
     )
-    print(store.to_json()) # This is the JSON string you would store in RESULTS_STORE
+    print(store.to_json()) # This is the JSON string you would store in PRIMARY_STORE
     ```
 
     ```yaml title="quacc.yaml"
-    RESULTS_STORE: '{"@module": "maggma.stores.mongolike", "@class": "MongoStore", "@version": "0.51.19", "database": "my_db_name", "collection_name": "my_collection_name", "host": "localhost", "port": 27017, "username": "my_username", "password": "my_password", "ssh_tunnel": null, "safe_update": false, "auth_source": "my_db_name", "mongoclient_kwargs": {}, "default_sort": null}'
+    PRIMARY_STORE: '{"@module": "maggma.stores.mongolike", "@class": "MongoStore", "@version": "0.51.19", "database": "my_db_name", "collection_name": "my_collection_name", "host": "localhost", "port": 27017, "username": "my_username", "password": "my_password", "ssh_tunnel": null, "safe_update": false, "auth_source": "my_db_name", "mongoclient_kwargs": {}, "default_sort": null}'
     ```
 
     **Manual Approach**

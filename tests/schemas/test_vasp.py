@@ -27,19 +27,12 @@ def mock_bader_analysis(*args, **kwargs):
     }
 
 
-@pytest.fixture(autouse=True)
-def patch_pop_analyses(monkeypatch):
-    # Monkeypatch the Bader analysis
-    monkeypatch.setattr(
-        "quacc.schemas.vasp.bader_runner",
-        mock_bader_analysis,
-    )
-
-
 def test_summarize_run():
-    # Make sure metadata is made
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
-    results = summarize_run(atoms, dir_path=run1)
+    results = summarize_run(
+        atoms,
+        dir_path=run1,
+    )
     assert results["nsites"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["output"]["energy"] == -33.15807349
@@ -110,10 +103,17 @@ def test_summarize_run():
     MontyDecoder().process_decoded(d)
 
 
-def test_summarize_bader_run():
+def test_summarize_bader_run(monkeypatch):
     # Make sure Bader works
+    monkeypatch.setattr("quacc.schemas.vasp.bader_runner", mock_bader_analysis)
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
     results = summarize_run(atoms, dir_path=run1, run_bader=True)
     struct = results["output"]["structure"]
     assert struct.site_properties["bader_charge"] == [-1.0] * len(atoms)
     assert struct.site_properties["bader_spin"] == [0.0] * len(atoms)
+
+
+def test_no_bader():
+    atoms = read(os.path.join(run1, "OUTCAR.gz"))
+    with pytest.warns(UserWarning):
+        summarize_run(atoms, dir_path=run1, run_bader=True)

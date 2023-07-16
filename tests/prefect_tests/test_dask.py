@@ -1,10 +1,10 @@
 import pytest
 
 try:
-    from dask_jobqueue import PBSCluster, SLURMCluster
-    from prefect_dask.task_runners import DaskTaskRunner
-
     from quacc.util.dask import _make_cluster, make_runner
+
+    from dask_jobqueue import PBSCluster, SLURMCluster  # isort: skip
+    from prefect_dask.task_runners import DaskTaskRunner  # isort: skip
 
     dask_prefect = True
 except ImportError:
@@ -74,6 +74,8 @@ def test_make_runner():
     reason="Dask and Prefect dependencies must be installed.",
 )
 def test_make_cluster():
+    from dask_jobqueue import SLURMCluster
+
     cluster_kwargs = {
         "cores": 1,
         "memory": "1GB",

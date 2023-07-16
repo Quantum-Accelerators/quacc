@@ -12,7 +12,7 @@ DEFAULT_SETTINGS = SETTINGS.copy()
 
 
 def teardown_function():
-    SETTINGS.RESULTS_STORE = DEFAULT_SETTINGS.RESULTS_STORE
+    SETTINGS.PRIMARY_STORE = DEFAULT_SETTINGS.PRIMARY_STORE
     SETTINGS.GZIP_FILES = DEFAULT_SETTINGS.GZIP_FILES
     SETTINGS.CREATE_UNIQUE_WORKDIR = DEFAULT_SETTINGS.CREATE_UNIQUE_WORKDIR
 
@@ -34,7 +34,7 @@ def test_file(monkeypatch, tmpdir):
 
 def test_store():
     store = MemoryStore()
-    SETTINGS.RESULTS_STORE = store.to_json()
+    SETTINGS.PRIMARY_STORE = store.to_json()
     atoms = bulk("Cu")
     static_job(atoms)
 

@@ -1,12 +1,8 @@
 import pytest
-from ase.build import bulk, molecule
-
-from quacc.recipes.emt.core import relax_job, static_job
-from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+from ase.build import bulk
 
 try:
     import prefect
-    from prefect import flow, task
     from prefect.testing.utilities import prefect_test_harness
 
 except ImportError:
@@ -125,7 +121,7 @@ def test_tutorial4(tmpdir):
     atoms = bulk("Cu")
 
     # Run the workflow
-    result = workflow(atoms)
+    workflow(atoms)
 
 
 @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
