@@ -1,5 +1,4 @@
 import os
-from shutil import rmtree
 
 import numpy as np
 import pytest
@@ -10,15 +9,8 @@ from ase.optimize import BFGS, BFGSLineSearch
 
 from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
 
-CWD = os.getcwd()
 
-
-def setup_module():
-    # Run this test from a fresh directory
-    if not os.path.exists("blank_dir"):
-        os.mkdir("blank_dir")
-    os.chdir("blank_dir")
-
+def prep_files():
     # Make some test files to play with
     if not os.path.exists("test_calc"):
         os.mkdir("test_calc")
@@ -26,22 +18,10 @@ def setup_module():
         f.write("test")
 
 
-def teardown_module():
-    # Clean up
-    os.chdir(CWD)
+def test_run_calc(tmpdir):
+    tmpdir.chdir()
+    prep_files()
 
-    for f in os.listdir("."):
-        if ".log" in f or ".pckl" in f or ".traj" in f:
-            os.remove(f)
-    for f in os.listdir(CWD):
-        if "quacc-tmp" in f or f == "tmp_dir" or f == "vib" or f == "blank_dir":
-            if os.path.islink(f):
-                os.unlink(f)
-            else:
-                rmtree(f)
-
-
-def test_run_calc():
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
     atoms.calc = EMT()
@@ -92,7 +72,10 @@ def test_run_calc():
         )
 
 
-def test_run_ase_opt():
+def test_run_ase_opt(tmpdir):
+    tmpdir.chdir()
+    prep_files()
+
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
     atoms.calc = EMT()
@@ -153,21 +136,28 @@ def test_run_ase_opt():
         )
 
 
-def test_run_ase_vib():
+def test_run_ase_vib(tmpdir):
+    tmpdir.chdir()
+    prep_files()
+
     o2 = molecule("O2")
     o2.calc = LennardJones()
-    vib = run_ase_vib(o2, scratch_dir="test_calc_vib", copy_files=["test_file.txt"])
+    vib = run_ase_vib(
+        o2, gzip=False, scratch_dir="test_calc_vib", copy_files=["test_file.txt"]
+    )
     assert np.real(vib.get_frequencies()[-1]) == pytest.approx(255.6863883406967)
     assert np.array_equal(vib.atoms.get_positions(), o2.get_positions()) is True
     assert os.path.exists("test_file.txt")
-    assert os.path.exists("test_file.txt.gz")
-    os.remove("test_file.txt.gz")
+    assert not os.path.exists("test_file.txt.gz")
+    os.remove("test_file.txt")
 
     with pytest.raises(ValueError):
         run_ase_vib(bulk("Cu"))
 
 
-def test_bad_run_calc():
+def test_bad_run_calc(tmpdir):
+    tmpdir.chdir()
+
     atoms = bulk("Cu")
     with pytest.raises(ValueError):
         atoms = run_calc(atoms)

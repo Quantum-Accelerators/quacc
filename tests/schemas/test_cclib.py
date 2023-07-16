@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 from ase.build import bulk
 from ase.io import read
+from maggma.stores import MemoryStore
 from monty.json import MontyDecoder, jsanitize
 
 from quacc.calculators.vasp import Vasp
@@ -35,6 +36,12 @@ def test_summarize_run():
     os.chdir(run1)
     summarize_run(atoms, ".log")
     os.chdir(cwd)
+
+    # Test DB
+    atoms = read(log1)
+    store = MemoryStore()
+    summarize_run(atoms, ".log", dir_path=run1, store=store)
+    assert store.count() == 1
 
     # Make sure info tags are handled appropriately
     atoms = read(log1)

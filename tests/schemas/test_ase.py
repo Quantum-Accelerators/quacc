@@ -1,7 +1,6 @@
 import os
 from copy import deepcopy
 from pathlib import Path
-from shutil import rmtree
 
 import pytest
 from ase.build import bulk, molecule
@@ -11,6 +10,7 @@ from ase.optimize import BFGS
 from ase.thermochemistry import IdealGasThermo
 from ase.units import invcm
 from ase.vibrations import Vibrations
+from maggma.stores import MemoryStore
 from monty.json import MontyDecoder, jsanitize
 
 from quacc.schemas.ase import (
@@ -25,19 +25,9 @@ FILE_DIR = Path(__file__).resolve().parent
 run1 = os.path.join(FILE_DIR, "vasp_run1")
 
 
-def teardown_module():
-    for f in os.listdir("."):
-        if ".log" in f or ".pckl" in f or ".traj" in f or ".gz" in f:
-            os.remove(f)
-    for f in os.listdir(os.getcwd()):
-        if "quacc-tmp" in f or f == "tmp_dir" or f == "vib":
-            if os.path.islink(f):
-                os.unlink(f)
-            else:
-                rmtree(f)
+def test_summarize_run(tmpdir):
+    tmpdir.chdir()
 
-
-def test_summarize_run():
     # Make sure metadata is made
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
     results = summarize_run(atoms)
@@ -45,6 +35,11 @@ def test_summarize_run():
     assert results["atoms"] == atoms
     assert results["results"]["energy"] == atoms.get_potential_energy()
     assert "pull_request" in results["builder_meta"]
+
+    # Test DB
+    store = MemoryStore()
+    summarize_run(atoms, store=store)
+    assert store.count() == 1
 
     # Test remove_empties
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
@@ -98,7 +93,9 @@ def test_summarize_run():
     MontyDecoder().process_decoded(d)
 
 
-def test_summarize_opt_run():
+def test_summarize_opt_run(tmpdir):
+    tmpdir.chdir()
+
     # Make sure metadata is made
     atoms = bulk("Cu") * (2, 2, 1)
     atoms[0].position += [0.1, 0.1, 0.1]
@@ -119,6 +116,29 @@ def test_summarize_opt_run():
     assert "pull_request" in results["builder_meta"]
     assert results["parameters_opt"]["fmax"] == dyn.fmax
     assert results["parameters_opt"]["max_steps"] == 100
+
+    # Test DB
+    atoms = bulk("Cu") * (2, 2, 1)
+    atoms[0].position += [0.1, 0.1, 0.1]
+    atoms.calc = EMT()
+    dyn = BFGS(atoms, trajectory="test.traj")
+    dyn.run(steps=5)
+    traj = read("test.traj", index=":")
+
+    store = MemoryStore()
+    summarize_opt_run(dyn, store=store, check_convergence=False)
+    assert store.count() == 1
+
+    # Test no convergence
+    atoms = bulk("Cu") * (2, 2, 1)
+    atoms[0].position += [0.1, 0.1, 0.1]
+    atoms.calc = EMT()
+    dyn = BFGS(atoms, trajectory="test.traj")
+    dyn.run(steps=5)
+    traj = read("test.traj", index=":")
+
+    with pytest.raises(ValueError):
+        summarize_opt_run(dyn)
 
     # Test remove_empties
     atoms = bulk("Cu") * (2, 2, 1)
@@ -161,7 +181,9 @@ def test_summarize_opt_run():
         summarize_opt_run(dyn)
 
 
-def test_summarize_vib_run():
+def test_summarize_vib_run(tmpdir):
+    tmpdir.chdir()
+
     # Make sure metadata is made
     atoms = molecule("N2")
     atoms.calc = EMT()
@@ -198,6 +220,17 @@ def test_summarize_vib_run():
     assert results["results"]["vib_freqs"][0] == pytest.approx(928.1447554058556)
     assert len(results["results"]["vib_energies"]) == 1
     assert results["results"]["vib_energies"][0] == pytest.approx(0.11507528256667966)
+
+    # Test DB
+    atoms = molecule("N2")
+    atoms.calc = EMT()
+    input_atoms = deepcopy(atoms)
+    vib = Vibrations(atoms)
+    vib.run()
+
+    store = MemoryStore()
+    summarize_vib_run(vib, store=store)
+    assert store.count() == 1
 
     # Test remove_empties
     atoms = molecule("N2")
@@ -251,7 +284,9 @@ def test_summarize_vib_run():
     assert len(results["results"]["vib_energies"]) == 6
 
 
-def test_summarize_thermo_run():
+def test_summarize_thermo_run(tmpdir):
+    tmpdir.chdir()
+
     # Make sure metadata is made
     atoms = molecule("N2")
     igt = IdealGasThermo([0.34], "linear", atoms=atoms, spin=0, symmetrynumber=2)
@@ -262,6 +297,14 @@ def test_summarize_thermo_run():
     assert results["parameters_thermo"]["vib_freqs"] == [0.34 / invcm]
     assert results["results"]["energy"] == 0
     assert "pull_request" in results["builder_meta"]
+
+    # Test DB
+    atoms = molecule("N2")
+    igt = IdealGasThermo([0.34], "linear", atoms=atoms, spin=0, symmetrynumber=2)
+    summarize_thermo_run(igt)
+    store = MemoryStore()
+    summarize_thermo_run(igt, store=store)
+    assert store.count() == 1
 
     # Test remove_empties
     atoms = molecule("N2")
@@ -347,7 +390,9 @@ def test_summarize_thermo_run():
         summarize_thermo_run(igt, charge_and_multiplicity=[0, 1])
 
 
-def test_errors():
+def test_errors(tmpdir):
+    tmpdir.chdir()
+
     atoms = bulk("Cu")
     with pytest.raises(ValueError):
         summarize_run(atoms)
