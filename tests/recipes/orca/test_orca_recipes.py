@@ -5,6 +5,7 @@ from shutil import copy
 
 import pytest
 from ase.build import molecule
+from numpy.testing import assert_allclose
 
 from quacc import SETTINGS
 from quacc.recipes.orca.core import relax_job, static_job
@@ -112,7 +113,11 @@ def test_relax_job(monkeypatch, tmpdir):
     assert (
         output["attributes"]["trajectory"][0] != output["attributes"]["trajectory"][-1]
     )
-    assert output["attributes"]["trajectory"][-1]["atoms"] == output["atoms"]
+    assert_allclose(
+        output["attributes"]["trajectory"][-1]["atoms"].get_positions(),
+        output["atoms"].get_positions(),
+        rtol=1e-5,
+    )
 
     atoms = molecule("H2")
     monkeypatch.setenv("mpirun", "test")

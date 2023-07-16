@@ -82,7 +82,7 @@ def test_static_job(tmpdir):
     assert "output cif gulp.cif" in output["parameters"]["options"]
 
 
-def test_relax_Job(tmpdir):
+def test_relax_job(tmpdir):
     tmpdir.chdir()
     prep_files()
 
