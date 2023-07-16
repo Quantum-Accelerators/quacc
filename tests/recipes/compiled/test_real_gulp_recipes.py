@@ -1,34 +1,30 @@
 import os
-from pathlib import Path
-from shutil import copy
+from shutil import which
 
+import pytest
 from ase.build import bulk, molecule
 
 from quacc import SETTINGS
 from quacc.recipes.gulp.core import relax_job, static_job
 
-FILE_DIR = Path(__file__).resolve().parent
-GULP_DIR = os.path.join(FILE_DIR, "gulp_run")
-
+has_gulp = bool(
+    (bool(which("gulp")) or os.environ.get("ASE_GULP_COMMAND"))
+    and os.environ.get("GULP_LIB")
+)
 DEFAULT_SETTINGS = SETTINGS.copy()
 
 
-def setup_module():
+def setup_function():
     SETTINGS.CREATE_UNIQUE_WORKDIR = False
 
 
-def teardown_module():
+def teardown_function():
     SETTINGS.CREATE_UNIQUE_WORKDIR = DEFAULT_SETTINGS.CREATE_UNIQUE_WORKDIR
 
 
-def prep_files():
-    for f in os.listdir(GULP_DIR):
-        copy(os.path.join(GULP_DIR, f), f)
-
-
+@pytest.mark.skipif(has_gulp is False, reason="GULP not installed")
 def test_static_job(tmpdir):
     tmpdir.chdir()
-    prep_files()
 
     atoms = molecule("H2O")
 
@@ -82,9 +78,9 @@ def test_static_job(tmpdir):
     assert "output cif gulp.cif" in output["parameters"]["options"]
 
 
-def test_relax_Job(tmpdir):
+@pytest.mark.skipif(has_gulp is False, reason="GULP not installed")
+def test_relax_job(tmpdir):
     tmpdir.chdir()
-    prep_files()
 
     atoms = molecule("H2O")
 
@@ -154,3 +150,9 @@ def test_relax_Job(tmpdir):
     assert "dump every gulp.res" in output["parameters"]["options"]
     assert "output xyz gulp.xyz" not in output["parameters"]["options"]
     assert "output cif gulp.cif" in output["parameters"]["options"]
+
+
+def test_unique_workdir(tmpdir):
+    SETTINGS.CREATE_UNIQUE_WORKDIR = True
+    test_static_job(tmpdir)
+    test_relax_job(tmpdir)

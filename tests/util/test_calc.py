@@ -7,7 +7,18 @@ from ase.calculators.emt import EMT
 from ase.calculators.lj import LennardJones
 from ase.optimize import BFGS, BFGSLineSearch
 
+from quacc import SETTINGS
 from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
+
+DEFAULT_SETTINGS = SETTINGS.copy()
+
+
+def setup_function():
+    SETTINGS.CREATE_UNIQUE_WORKDIR = False
+
+
+def teardown_function():
+    SETTINGS.CREATE_UNIQUE_WORKDIR = DEFAULT_SETTINGS.CREATE_UNIQUE_WORKDIR
 
 
 def prep_files():
@@ -161,3 +172,41 @@ def test_bad_run_calc(tmpdir):
     atoms = bulk("Cu")
     with pytest.raises(ValueError):
         atoms = run_calc(atoms)
+
+
+def test_unique_workdir(tmpdir):
+    tmpdir.chdir()
+    SETTINGS.CREATE_UNIQUE_WORKDIR = True
+
+    # Static
+    atoms = bulk("Cu") * (2, 1, 1)
+    atoms[0].position += 0.1
+    atoms.calc = EMT()
+
+    run_calc(
+        atoms,
+        scratch_dir="test_calc",
+        gzip=False,
+        copy_files=["test_file.txt"],
+    )
+    assert atoms.calc.results is not None
+
+    # Opt
+    atoms = bulk("Cu") * (2, 1, 1)
+    atoms[0].position += 0.1
+    atoms.calc = EMT()
+
+    dyn = run_ase_opt(atoms, scratch_dir="test_calc", copy_files=["test_file.txt"])
+    traj = dyn.traj_atoms
+    assert traj[-1].calc.results is not None
+    assert np.array_equal(traj[-1].get_positions(), atoms.get_positions()) is False
+    assert np.array_equal(traj[-1].cell.array, atoms.cell.array) is True
+
+    # Vib
+    o2 = molecule("O2")
+    o2.calc = LennardJones()
+    vib = run_ase_vib(
+        o2, gzip=False, scratch_dir="test_calc_vib", copy_files=["test_file.txt"]
+    )
+    assert np.real(vib.get_frequencies()[-1]) == pytest.approx(255.6863883406967)
+    assert np.array_equal(vib.atoms.get_positions(), o2.get_positions()) is True

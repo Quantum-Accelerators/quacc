@@ -4,9 +4,19 @@ import numpy as np
 import pytest
 from ase.build import bulk, molecule
 
+from quacc import SETTINGS
 from quacc.recipes.dftb.core import relax_job, static_job
 
 DFTBPLUS_EXISTS = bool(which("dftb+"))
+DEFAULT_SETTINGS = SETTINGS.copy()
+
+
+def setup_function():
+    SETTINGS.CREATE_UNIQUE_WORKDIR = False
+
+
+def teardown_function():
+    SETTINGS.CREATE_UNIQUE_WORKDIR = DEFAULT_SETTINGS.CREATE_UNIQUE_WORKDIR
 
 
 @pytest.mark.skipif(

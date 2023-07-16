@@ -4,10 +4,22 @@ from shutil import copy
 
 from ase.build import molecule
 
+from quacc import SETTINGS
 from quacc.recipes.gaussian.core import relax_job, static_job
 
 FILE_DIR = Path(__file__).resolve().parent
 GAUSSIAN_DIR = os.path.join(FILE_DIR, "gaussian_run")
+
+
+DEFAULT_SETTINGS = SETTINGS.copy()
+
+
+def setup_module():
+    SETTINGS.CREATE_UNIQUE_WORKDIR = False
+
+
+def teardown_module():
+    SETTINGS.CREATE_UNIQUE_WORKDIR = DEFAULT_SETTINGS.CREATE_UNIQUE_WORKDIR
 
 
 def prep_files():
