@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from shutil import copy, rmtree
+from shutil import copy
 
 import pytest
 from ase import units
