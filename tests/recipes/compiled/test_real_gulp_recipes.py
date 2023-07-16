@@ -1,5 +1,4 @@
 import os
-from shutil import which
 
 import pytest
 from ase.build import bulk, molecule
