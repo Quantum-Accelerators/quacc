@@ -6,7 +6,7 @@ from ase.build import bulk, molecule
 
 from quacc.recipes.gulp.core import relax_job, static_job
 
-has_gulp = bool(which("gulp") or os.environ.get("ASE_GULP_COMMAND"))
+has_gulp = bool(os.environ.get("ASE_GULP_COMMAND"))
 
 
 @pytest.mark.skipif(has_gulp is False, reason="GULP not installed")
