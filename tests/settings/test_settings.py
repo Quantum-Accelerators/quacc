@@ -11,6 +11,12 @@ from quacc.settings import QuaccSettings
 DEFAULT_SETTINGS = SETTINGS.copy()
 
 
+def setup_function():
+    SETTINGS.PRIMARY_STORE = None
+    SETTINGS.GZIP_FILES = True
+    SETTINGS.CREATE_UNIQUE_WORKDIR = False
+
+
 def teardown_function():
     SETTINGS.PRIMARY_STORE = DEFAULT_SETTINGS.PRIMARY_STORE
     SETTINGS.GZIP_FILES = DEFAULT_SETTINGS.GZIP_FILES
@@ -57,7 +63,21 @@ def test_create_unique_workdir(tmpdir):
 
     atoms = bulk("Cu")
     relax_job(atoms)
-    assert not glob("quacc_*")
+    assert not glob("quacc-*")
     SETTINGS.CREATE_UNIQUE_WORKDIR = True
     relax_job(atoms)
-    assert glob("quacc_*")
+    assert glob("quacc-*")
+
+
+def test_env_var(monkeypatch):
+    monkeypatch.setenv("QUACC_SCRATCH_DIR", "/my/scratch/dir")
+    assert QuaccSettings().SCRATCH_DIR == "/my/scratch/dir"
+
+
+def test_yaml(tmpdir, monkeypatch):
+    tmpdir.chdir()
+
+    with open("quacc_test.yaml", "w") as f:
+        f.write('SCRATCH_DIR: "/my/new/scratch/dir"')
+    monkeypatch.setenv("QUACC_CONFIG_FILE", "quacc_test.yaml")
+    assert QuaccSettings().SCRATCH_DIR == "/my/new/scratch/dir"
