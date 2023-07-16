@@ -1,6 +1,3 @@
-import os
-from shutil import rmtree
-
 import numpy as np
 import pytest
 from ase.build import molecule
@@ -8,21 +5,9 @@ from ase.build import molecule
 from quacc.recipes.lj.core import freq_job, relax_job, static_job
 
 
-def teardown_module():
-    for f in os.listdir(os.getcwd()):
-        if (
-            f.endswith(".log")
-            or f.endswith(".pckl")
-            or f.endswith(".traj")
-            or f.endswith(".out")
-            or ".gz" in f
-        ):
-            os.remove(f)
-        if "quacc-tmp" in f or f == "tmp_dir":
-            rmtree(f)
+def test_static_job(tmpdir):
+    tmpdir.chdir()
 
-
-def test_static_job():
     atoms = molecule("H2O")
 
     output = static_job(atoms)
@@ -42,7 +27,9 @@ def test_static_job():
     assert output["results"]["energy"] == pytest.approx(0.0)
 
 
-def test_relax_job():
+def test_relax_job(tmpdir):
+    tmpdir.chdir()
+
     atoms = molecule("H2O")
 
     output = relax_job(atoms)
@@ -66,7 +53,9 @@ def test_relax_job():
     assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.03
 
 
-def test_freq_job():
+def test_freq_job(tmpdir):
+    tmpdir.chdir()
+
     atoms = molecule("H2O")
 
     output = freq_job(relax_job(atoms))

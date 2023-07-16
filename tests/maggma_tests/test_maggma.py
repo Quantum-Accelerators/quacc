@@ -13,7 +13,6 @@ def test_tutorial():
     # Connect to the database
 
     store = MemoryStore()
-    store.connect()
 
     # Fetch the results
     results_dir = ct.get_config()["dispatcher"]["results_dir"]
@@ -27,6 +26,3 @@ def test_tutorial():
     # Store the results
     with store:
         store.update(docs, key="dispatch_id")
-
-    # Close the database connection
-    store.close()

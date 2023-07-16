@@ -21,3 +21,23 @@ For the database enthusiasts, MongoDB is often preferred over a solution like Mo
 3. Select "Create Cluster" and enter your desired login credentials that will use to access your database. After waiting a minute or two, your cluster will be created, which is essentially a mini computer in the cloud.
 4. Go to the "Collections" tab of your cluster and create a new database. Give the database a unique name (e.g. "LastName_db") and create a collection where your quacc data will be stored (e.g. "quacc").
 5. Retrieve your MongoDB URI, which is the address of your MongoDB cluster. You can find your database's URI by clicking the "Database" section in the sidebar and then selecting "Connect > Connect Your Application > Driver > Python > 3.11 or later" and copying the link that appears. It will be of the form `mongodb+srv://<username>:<password>@<host>/<database_name>`. Don't forget to include the <database_name> at the end, which you selected in Step 4.
+
+To test that you can connect to your database, run the following code:
+
+```python
+from maggma.stores import MongoStore
+
+# Define your database credentials
+store = MongoStore(
+    "my_db_name",
+    "my_collection_name",
+    username="my_username",
+    password="my_password",
+    host="localhost",
+    port=27017,
+)
+
+# Query the database
+with store:
+    store.count()
+```

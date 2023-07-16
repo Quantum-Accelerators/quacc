@@ -1,11 +1,9 @@
 import os
-from shutil import rmtree
 
 import covalent as ct
 import pytest
 from ase.build import bulk
-from maggma.stores import MemoryStore
-from maggma.stores.mongolike import MontyStore
+from maggma.stores import MemoryStore, MontyStore
 
 from quacc.recipes.emt.core import static_job
 from quacc.util.db import covalent_to_db, results_to_db
@@ -14,14 +12,6 @@ try:
     import montydb
 except:
     montydb = None
-
-
-def teardown_module():
-    for f in os.listdir(os.getcwd()):
-        if "monty.storage" in f:
-            os.remove(f)
-        if f == "db":
-            rmtree(f)
 
 
 @pytest.mark.skipif(
@@ -59,7 +49,9 @@ def test_results_to_db():
     montydb is None,
     reason="This test requires MontyDB",
 )
-def test_monty_db():
+def test_monty_db(tmpdir):
+    tmpdir.chdir()
+
     atoms = bulk("Cu")
     output = static_job(atoms)
     store = MontyStore("quacc_results", database_path=".")
