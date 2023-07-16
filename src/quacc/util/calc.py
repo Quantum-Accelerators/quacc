@@ -340,6 +340,9 @@ def _calc_setup(
     if copy_files:
         copy_decompress(copy_files, tmpdir)
 
+    # Set the working directory for the calculator (see PR #607).
+    # Note that we do this instead of `os.chdir` because the latter is
+    # not thread-safe.
     atoms.calc.directory = tmpdir
 
     return atoms, tmpdir, results_dir
