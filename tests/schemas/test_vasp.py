@@ -38,7 +38,7 @@ def test_summarize_run():
     # Make sure default dir works
     cwd = os.getcwd()
     os.chdir(run1)
-    summarize_run(atoms)
+    summarize_run(atoms, run_bader=False)
     os.chdir(cwd)
 
     # Test DB
@@ -116,4 +116,4 @@ def test_summarize_bader_run(monkeypatch):
 def test_no_bader():
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
     with pytest.warns(UserWarning):
-        summarize_run(atoms, dir_path=run1, run_bader=True)
+        summarize_run(atoms, dir_path=run1)
