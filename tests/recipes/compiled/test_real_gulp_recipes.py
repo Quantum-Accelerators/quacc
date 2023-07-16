@@ -5,7 +5,6 @@ import pytest
 from ase.build import bulk, molecule
 
 from quacc import SETTINGS
-
 from quacc.recipes.gulp.core import relax_job, static_job
 
 has_gulp = bool(
@@ -157,4 +156,3 @@ def test_unique_workdir(tmpdir):
     SETTINGS.CREATE_UNIQUE_WORKDIR = True
     test_static_job(tmpdir)
     test_relax_job(tmpdir)
-
