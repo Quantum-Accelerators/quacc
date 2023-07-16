@@ -36,15 +36,15 @@ Please abide by the following guidelines when contributing code to quacc:
 
 - Only define multi-step workflows if they go beyond simply stitching together existing functions or if they are widely used in other recipes. Otherwise, just define the individual functions.
 
-- Ensure that the code remains flexible for the user whenever possible.
+- Never use `os.chdir` (except for unit tests), as it can cause issues with multi-threading. For the same reason, also use absolute paths whenever possible.
 
 - Where appropriate, you should use the "internal" geometry optimizers for a given code rather than the ASE optimizers.
+
+- Ensure that the code remains flexible for the user whenever possible. At the same time, try to be cognizant of how many arguments your functions take.
 
 - `gzip` large test files to save space.
 
 - Update the `CHANGELOG.md` file.
-
-- Try to be cognizant of how many arguments your functions take.
 
 ## Changelog
 
