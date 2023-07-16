@@ -1,23 +1,20 @@
 import os
-from pathlib import Path
-from shutil import copy
+from shutil import which
 
+import pytest
 from ase.build import bulk, molecule
 
 from quacc.recipes.gulp.core import relax_job, static_job
 
-FILE_DIR = Path(__file__).resolve().parent
-GULP_DIR = os.path.join(FILE_DIR, "gulp_run")
+has_gulp = bool(
+    (bool(which("gulp")) or os.environ.get("ASE_GULP_COMMAND"))
+    and os.environ.get("GULP_LIB")
+)
 
 
-def prep_files():
-    for f in os.listdir(GULP_DIR):
-        copy(os.path.join(GULP_DIR, f), f)
-
-
+@pytest.mark.skipif(has_gulp is False, reason="GULP not installed")
 def test_static_job(tmpdir):
     tmpdir.chdir()
-    prep_files()
 
     atoms = molecule("H2O")
 
@@ -71,9 +68,9 @@ def test_static_job(tmpdir):
     assert "output cif gulp.cif" in output["parameters"]["options"]
 
 
+@pytest.mark.skipif(has_gulp is False, reason="GULP not installed")
 def test_relax_job(tmpdir):
     tmpdir.chdir()
-    prep_files()
 
     atoms = molecule("H2O")
 

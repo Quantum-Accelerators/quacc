@@ -82,7 +82,7 @@ def make_unique_dir(base_path: str | None = None) -> str:
     if not os.path.exists(base_path):
         os.mkdir(base_path)
     time_now = datetime.utcnow().strftime("%Y-%m-%d-%H-%M-%S-%f")
-    job_dir = os.path.join(base_path, f"quacc_{time_now}-{randint(10000, 99999)}")
+    job_dir = os.path.join(base_path, f"quacc-{time_now}-{randint(10000, 99999)}")
     os.mkdir(job_dir)
 
     return job_dir

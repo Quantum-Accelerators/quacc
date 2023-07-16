@@ -1,6 +1,6 @@
 # quacc specific ignores
 quacc-tmp*
-quacc_20*
+quacc-20*
 POTCAR*
 scratch_path.txt
 tmp_path.txt
