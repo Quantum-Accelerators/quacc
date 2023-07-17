@@ -67,7 +67,6 @@ def prep_next_run(
     if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None) is not None:
         if store_results:
             # Dump calculator results into the .info tag
-            atoms.calc.results["rundir"] = os.getcwd()
             if atoms.info.get("results", None) is None:
                 prior_calcs = 0
                 atoms.info["results"] = {}
