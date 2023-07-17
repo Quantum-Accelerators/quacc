@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 from ase.build import molecule
 
+from quacc import SETTINGS
 from quacc.recipes.tblite.core import freq_job, relax_job, static_job
 
 try:
@@ -11,10 +12,7 @@ try:
 except ImportError:
     TBLite = None
 
-try:
-    import sella
-except ImportError:
-    sella = None
+DEFAULT_SETTINGS = SETTINGS.copy()
 
 
 @pytest.mark.skipif(
@@ -165,3 +163,10 @@ def test_freq_job(tmpdir):
     assert "dir_name" in output["thermo"]
     assert "nid" in output["vib"]
     assert "dir_name" in output["vib"]
+
+
+def test_unique_workdir(tmpdir):
+    SETTINGS.CREATE_UNIQUE_WORKDIR = True
+    test_static_job(tmpdir)
+    test_relax_job(tmpdir)
+    SETTINGS.CREATE_UNIQUE_WORKDIR = DEFAULT_SETTINGS.CREATE_UNIQUE_WORKDIR
