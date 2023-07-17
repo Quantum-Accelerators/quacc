@@ -7,22 +7,11 @@ import pytest
 from ase.build import molecule
 from numpy.testing import assert_allclose
 
-from quacc import SETTINGS
 from quacc.recipes.orca.core import relax_job, static_job
 
 FILE_DIR = Path(__file__).resolve().parent
 ORCA_DIR = os.path.join(FILE_DIR, "orca_run")
 BAD_ORCA_DIR = os.path.join(FILE_DIR, "orca_failed_run")
-
-DEFAULT_SETTINGS = SETTINGS.copy()
-
-
-def setup_function():
-    SETTINGS.CREATE_UNIQUE_WORKDIR = False
-
-
-def teardown_function():
-    SETTINGS.CREATE_UNIQUE_WORKDIR = DEFAULT_SETTINGS.CREATE_UNIQUE_WORKDIR
 
 
 def prep_files():
