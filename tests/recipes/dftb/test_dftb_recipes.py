@@ -8,6 +8,7 @@ from quacc import SETTINGS
 from quacc.recipes.dftb.core import relax_job, static_job
 
 DFTBPLUS_EXISTS = bool(which("dftb+"))
+DEFAULT_SETTINGS = SETTINGS.copy()
 
 
 @pytest.mark.skipif(
