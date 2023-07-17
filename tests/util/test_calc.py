@@ -1,4 +1,5 @@
 import os
+from shutil import rmtree
 
 import numpy as np
 import pytest
@@ -21,6 +22,14 @@ def prep_files():
         f.write("test")
 
 
+def teardown_function():
+    if os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, "test_calc")):
+        rmtree(os.path.join(SETTINGS.RESULTS_DIR, "test_calc"))
+    for f in {"test_file.txt", "test_file.txt.gz"}:
+        if os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, f)):
+            os.remove(os.path.join(SETTINGS.RESULTS_DIR, f))
+
+
 def test_run_calc(tmpdir):
     tmpdir.chdir()
     prep_files()
@@ -32,8 +41,8 @@ def test_run_calc(tmpdir):
     new_atoms = run_calc(atoms, copy_files=["test_file.txt"])
     assert atoms.calc.results is not None
     assert new_atoms.calc.results is not None
-    assert not os.path.exists("test_file.txt")
-    assert os.path.exists("test_file.txt.gz")
+    assert not os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, "test_file.txt"))
+    assert os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, "test_file.txt.gz"))
     assert np.array_equal(new_atoms.get_positions(), atoms.get_positions()) is True
     assert np.array_equal(new_atoms.cell.array, atoms.cell.array) is True
 
@@ -50,8 +59,8 @@ def test_run_calc_no_gzip(tmpdir):
     new_atoms = run_calc(atoms, copy_files=["test_file.txt"])
     assert atoms.calc.results is not None
     assert new_atoms.calc.results is not None
-    assert os.path.exists("test_file.txt")
-    assert not os.path.exists("test_file.txt.gz")
+    assert os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, "test_file.txt"))
+    assert not os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, "test_file.txt.gz"))
     assert np.array_equal(new_atoms.get_positions(), atoms.get_positions()) is True
     assert np.array_equal(new_atoms.cell.array, atoms.cell.array) is True
     SETTINGS.GZIP_FILES = DEFAULT_SETTINGS.GZIP_FILES
@@ -68,8 +77,8 @@ def test_run_ase_opt1(tmpdir):
     dyn = run_ase_opt(atoms, copy_files=["test_file.txt"])
     traj = dyn.traj_atoms
     assert traj[-1].calc.results is not None
-    assert not os.path.exists("test_file.txt")
-    assert os.path.exists("test_file.txt.gz")
+    assert not os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, "test_file.txt"))
+    assert os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, "test_file.txt.gz"))
     assert np.array_equal(traj[-1].get_positions(), atoms.get_positions()) is False
     assert np.array_equal(traj[-1].cell.array, atoms.cell.array) is True
 
@@ -108,8 +117,8 @@ def test_run_ase_vib(tmpdir):
     vib = run_ase_vib(o2, copy_files=["test_file.txt"])
     assert np.real(vib.get_frequencies()[-1]) == pytest.approx(255.6863883406967)
     assert np.array_equal(vib.atoms.get_positions(), o2.get_positions()) is True
-    assert not os.path.exists("test_file.txt")
-    assert os.path.exists("test_file.txt.gz")
+    assert not os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, "test_file.txt"))
+    assert os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, "test_file.txt.gz"))
 
 
 def test_bad_runs(tmpdir):
