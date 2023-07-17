@@ -54,9 +54,6 @@ def run_calc(
     # Run calculation via get_potential_energy()
     atoms.get_potential_energy()
 
-    # Perform cleanup operations
-    _calc_cleanup(tmpdir, job_results_dir)
-
     # Most ASE calculators do not update the atoms object in-place with
     # a call to .get_potential_energy(), which is important if an internal
     # optimizer is used. This section is done to ensure that the atoms object
@@ -65,7 +62,7 @@ def run_calc(
         # Note: We have to be careful to make sure we don't lose the
         # converged magnetic moments, if present. That's why we simply
         # update the positions and cell in-place.
-        atoms_new = read(zpath(os.path.join(job_results_dir, geom_file)))
+        atoms_new = read(zpath(os.path.join(tmpdir, geom_file)))
         if isinstance(atoms_new, list):
             atoms_new = atoms_new[-1]
 
@@ -79,6 +76,9 @@ def run_calc(
 
         atoms.positions = atoms_new.positions
         atoms.cell = atoms_new.cell
+
+    # Perform cleanup operations
+    _calc_cleanup(tmpdir, job_results_dir)
 
     return atoms
 

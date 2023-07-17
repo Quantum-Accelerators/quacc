@@ -4,6 +4,7 @@ Utility functions for file and path handling
 from __future__ import annotations
 
 import os
+import warnings
 from datetime import datetime
 from random import randint
 from shutil import copy
@@ -61,6 +62,8 @@ def copy_decompress(source_files: list[str], destination: str) -> None:
             z_file = os.path.basename(z_path)
             copy(z_path, os.path.join(destination, z_file))
             decompress_file(os.path.join(destination, z_file))
+        else:
+            warnings.warn(f"Cannot find file: {z_path}", UserWarning)
 
 
 def make_unique_dir(base_path: str | None = None) -> str:

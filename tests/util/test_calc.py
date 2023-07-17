@@ -105,12 +105,12 @@ def test_bad_runs(tmpdir):
     atoms.calc = EMT()
 
     # No file
-    with pytest.raises(ValueError):
+    with pytest.warns(UserWarning):
         run_calc(atoms, copy_files=["test_file.txt"])
 
     # No file again
-    with pytest.raises(ValueError):
-        run_ase_opt(bulk("Cu"), copy_files=["test_file.txt"])
+    with pytest.warns(UserWarning):
+        run_ase_opt(atoms, copy_files=["test_file.txt"])
 
     # No trajectory kwarg
     with pytest.raises(ValueError):
