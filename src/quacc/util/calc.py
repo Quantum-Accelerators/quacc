@@ -235,11 +235,7 @@ def _calc_setup(
 
     # Set where to store the results
     job_results_dir = (
-        make_unique_dir(base_path=SETTINGS.RESULTS_DIR)
-        if SETTINGS.CREATE_UNIQUE_WORKDIR
-        else SETTINGS.RESULTS_DIR
-        if SETTINGS.RESULTS_DIR
-        else os.getcwd()
+        make_unique_dir() if SETTINGS.CREATE_UNIQUE_WORKDIR else os.getcwd()
     )
 
     # Create a tmpdir for the calculation within the scratch_dir

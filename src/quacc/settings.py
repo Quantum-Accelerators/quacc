@@ -31,10 +31,6 @@ class QuaccSettings(BaseSettings):
     CONFIG_FILE: str = Field(
         _DEFAULT_CONFIG_FILE_PATH, description="File to load alternative defaults from."
     )
-    RESULTS_DIR: str = Field(
-        None,
-        description="Directory to store results in. If None, the current working directory at runtime will be used. Some workflow engines have an option to do set this for you already.",
-    )
     SCRATCH_DIR: str = Field(
         os.path.normpath("/tmp") if os.path.exists(os.path.normpath("/tmp")) else None,
         description="Scratch directory for calculations. If None, the current working directory at runtime will be used.",

@@ -32,6 +32,5 @@ Atoms.from_dict = atoms_from_dict
 SETTINGS = QuaccSettings()
 
 # Make sure relevant folders exist
-for f in {SETTINGS.SCRATCH_DIR, SETTINGS.RESULTS_DIR}:
-    if f:
-        os.makedirs(f, exist_ok=True)
+if SETTINGS.SCRATCH_DIR:
+    os.makedirs(SETTINGS.SCRATCH_DIR, exist_ok=True)
