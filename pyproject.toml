@@ -62,7 +62,7 @@ strict = [
     "maggma==0.51.18",
     "monty==2023.5.8",
     "numpy==1.25.1",
-    "pydantic==1.10.2",
+    "pydantic==2.0.3",
     "pymatgen==2023.6.28",
 ]
 
