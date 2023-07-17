@@ -256,6 +256,7 @@ def bader_runner(path: str | None = None, scratch_dir: str | None = None) -> dic
             }
     """
     scratch_dir = SETTINGS.SCRATCH_DIR if scratch_dir is None else scratch_dir
+    path = path or os.getcwd()
 
     # Make sure files are present
     relevant_files = ["AECCAR0", "AECCAR2", "CHGCAR", "POTCAR"]
@@ -333,6 +334,7 @@ def chargemol_runner(
             }
     """
     scratch_dir = SETTINGS.SCRATCH_DIR if scratch_dir is None else scratch_dir
+    path = path or os.getcwd()
 
     # Make sure files are present
     relevant_files = ["AECCAR0", "AECCAR2", "CHGCAR", "POTCAR"]
