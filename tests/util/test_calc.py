@@ -99,7 +99,7 @@ def test_bad_runs(tmpdir):
     atoms = bulk("Cu")
 
     # No calculator
-    with pytest.raises(ValueError, str="must have attached calculator"):
+    with pytest.raises(ValueError):
         run_calc(atoms)
 
     atoms.calc = EMT()
@@ -113,7 +113,7 @@ def test_bad_runs(tmpdir):
         run_ase_opt(bulk("Cu"), copy_files=["test_file.txt"])
 
     # No trajectory kwarg
-    with pytest.raises(ValueError, str="does not support setting"):
+    with pytest.raises(ValueError):
         run_ase_opt(
             atoms,
             optimizer=BFGSLineSearch,
