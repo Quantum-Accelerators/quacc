@@ -9,7 +9,7 @@ from pydantic import BaseSettings, Field, root_validator
 
 from quacc.presets import vasp as vasp_defaults
 
-_DEFAULT_CONFIG_FILE_PATH = os.path.expanduser("~/.quacc.yaml")
+_DEFAULT_CONFIG_FILE_PATH = os.path.join(os.path.expanduser("~"), ".quacc.yaml")
 
 
 class QuaccSettings(BaseSettings):
@@ -31,13 +31,13 @@ class QuaccSettings(BaseSettings):
     CONFIG_FILE: str = Field(
         _DEFAULT_CONFIG_FILE_PATH, description="File to load alternative defaults from."
     )
+    RESULTS_DIR: str = Field(
+        None,
+        description="Directory to store results in. If None, the current working directory at runtime will be used.",
+    )
     SCRATCH_DIR: str = Field(
-        os.path.expandvars("$SCRATCH")
-        if "SCRATCH" in os.environ
-        else "/tmp"
-        if os.path.exists("/tmp")
-        else ".",
-        description="Scratch directory for calculations.",
+        os.path.normpath("/tmp") if os.path.exists(os.path.normpath("/tmp")) else None,
+        description="Scratch directory for calculations. If None, the current working directory at runtime will be used.",
     )
     CREATE_UNIQUE_WORKDIR: bool = Field(
         False,
@@ -59,7 +59,7 @@ class QuaccSettings(BaseSettings):
     # ORCA Settings
     # ---------------------------
     ORCA_CMD: str = Field(
-        "orca",
+        which("orca"),
         description="Path to the ORCA executable. This must be the full, absolute path for parallel calculations to work.",
     )
 
@@ -164,15 +164,14 @@ class QuaccSettings(BaseSettings):
         dict
             Loaded settings.
         """
-        from pathlib import Path
 
         from monty.serialization import loadfn
 
         config_file_path = values.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH)
 
         new_values = {}
-        if Path(config_file_path).expanduser().exists():
-            new_values |= loadfn(Path(config_file_path).expanduser())
+        if os.path.exists(os.path.expanduser(config_file_path)):
+            new_values |= loadfn(os.path.expanduser(config_file_path))
 
         new_values.update(values)
         return new_values

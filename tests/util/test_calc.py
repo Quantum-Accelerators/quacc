@@ -29,53 +29,15 @@ def test_run_calc(tmpdir):
     atoms[0].position += 0.1
     atoms.calc = EMT()
 
-    new_atoms = run_calc(
-        atoms,
-        scratch_dir="test_calc",
-        gzip=False,
-        copy_files=["test_file.txt"],
-    )
+    new_atoms = run_calc(atoms, copy_files=["test_file.txt"])
     assert atoms.calc.results is not None
-    assert os.path.exists("test_file.txt")
-    assert not os.path.exists("test_file.txt.gz")
-    assert np.array_equal(new_atoms.get_positions(), atoms.get_positions()) is True
-    assert np.array_equal(new_atoms.cell.array, atoms.cell.array) is True
-
-    new_atoms = run_calc(
-        atoms,
-        scratch_dir="test_calc",
-        gzip=False,
-        copy_files=["test_file.txt"],
-    )
     assert new_atoms.calc.results is not None
-    assert os.path.exists("test_file.txt")
-    assert not os.path.exists("test_file.txt.gz")
+    assert os.path.exists("test_file.txt.gz")
     assert np.array_equal(new_atoms.get_positions(), atoms.get_positions()) is True
     assert np.array_equal(new_atoms.cell.array, atoms.cell.array) is True
 
-    atoms = bulk("Cu") * (2, 1, 1)
-    atoms[0].position += 0.1
-    atoms.calc = EMT()
 
-    new_atoms = run_calc(
-        atoms,
-        scratch_dir="new_test_calc",
-        gzip=False,
-        copy_files=["test_file.txt"],
-    )
-    assert atoms.calc.results is not None
-
-    atoms = bulk("Cu")
-    with pytest.raises(ValueError):
-        run_calc(
-            atoms,
-            scratch_dir="test_calc",
-            gzip=False,
-            copy_files=["test_file.txt"],
-        )
-
-
-def test_run_ase_opt(tmpdir):
+def test_run_ase_opt1(tmpdir):
     tmpdir.chdir()
     prep_files()
 
@@ -83,15 +45,17 @@ def test_run_ase_opt(tmpdir):
     atoms[0].position += 0.1
     atoms.calc = EMT()
 
-    dyn = run_ase_opt(atoms, scratch_dir="test_calc", copy_files=["test_file.txt"])
+    dyn = run_ase_opt(atoms, copy_files=["test_file.txt"])
     traj = dyn.traj_atoms
     assert traj[-1].calc.results is not None
     assert os.path.exists("test_file.txt")
     assert os.path.exists("test_file.txt.gz")
     assert np.array_equal(traj[-1].get_positions(), atoms.get_positions()) is False
     assert np.array_equal(traj[-1].cell.array, atoms.cell.array) is True
-    os.remove("test_file.txt.gz")
 
+
+def test_run_ase_opt2(tmpdir):
+    tmpdir.chdir()
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
     atoms.calc = EMT()
@@ -99,8 +63,6 @@ def test_run_ase_opt(tmpdir):
     dyn = run_ase_opt(
         atoms,
         optimizer=BFGS,
-        scratch_dir="new_test_calc2",
-        gzip=False,
         copy_files=["test_file.txt"],
         optimizer_kwargs={"restart": None},
     )
@@ -110,77 +72,59 @@ def test_run_ase_opt(tmpdir):
     dyn = run_ase_opt(
         traj[-1],
         optimizer=BFGSLineSearch,
-        scratch_dir="test_calc",
-        gzip=False,
         copy_files=["test_file.txt"],
         optimizer_kwargs={"restart": None},
     )
     traj = dyn.traj_atoms
     assert traj[-1].calc.results is not None
 
+
+def test_run_ase_vib(tmpdir):
+    tmpdir.chdir()
+    prep_files()
+
+    SETTINGS.GZIP_FILES = False
+    o2 = molecule("O2")
+    o2.calc = LennardJones()
+    vib = run_ase_vib(o2, copy_files=["test_file.txt"])
+    assert np.real(vib.get_frequencies()[-1]) == pytest.approx(255.6863883406967)
+    assert np.array_equal(vib.atoms.get_positions(), o2.get_positions()) is True
+    assert os.path.exists("test_file.txt")
+    assert not os.path.exists("test_file.txt.gz")
+
+
+def test_bad_runs(tmpdir):
+    tmpdir.chdir()
+
+    atoms = bulk("Cu")
     with pytest.raises(ValueError):
-        dyn = run_ase_opt(
-            traj[-1],
+        run_calc(atoms, copy_files=["test_file.txt"])
+
+    with pytest.raises(ValueError):
+        run_ase_opt(bulk("Cu"), copy_files=["test_file.txt"])
+
+    with pytest.raises(ValueError):
+        run_ase_opt(
+            atoms,
             optimizer=BFGSLineSearch,
-            scratch_dir="test_calc",
-            gzip=False,
-            copy_files=["test_file.txt"],
             optimizer_kwargs={
                 "restart": None,
                 "trajectory": "test.traj",
             },
         )
 
-    with pytest.raises(ValueError):
-        run_ase_opt(
-            bulk("Cu"),
-            scratch_dir="test_calc",
-            copy_files=["test_file.txt"],
-        )
-
-
-def test_run_ase_vib(tmpdir):
-    tmpdir.chdir()
-    prep_files()
-
-    o2 = molecule("O2")
-    o2.calc = LennardJones()
-    vib = run_ase_vib(
-        o2, gzip=False, scratch_dir="test_calc_vib", copy_files=["test_file.txt"]
-    )
-    assert np.real(vib.get_frequencies()[-1]) == pytest.approx(255.6863883406967)
-    assert np.array_equal(vib.atoms.get_positions(), o2.get_positions()) is True
-    assert os.path.exists("test_file.txt")
-    assert not os.path.exists("test_file.txt.gz")
-    os.remove("test_file.txt")
-
-    with pytest.raises(ValueError):
-        run_ase_vib(bulk("Cu"))
-
-
-def test_bad_run_calc(tmpdir):
-    tmpdir.chdir()
-
-    atoms = bulk("Cu")
-    with pytest.raises(ValueError):
-        atoms = run_calc(atoms)
-
 
 def test_unique_workdir(tmpdir):
     SETTINGS.CREATE_UNIQUE_WORKDIR = True
     tmpdir.chdir()
+    prep_files()
 
     # Static
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
     atoms.calc = EMT()
 
-    run_calc(
-        atoms,
-        scratch_dir="test_calc",
-        gzip=False,
-        copy_files=["test_file.txt"],
-    )
+    run_calc(atoms, copy_files=["test_file.txt"])
     assert atoms.calc.results is not None
 
     # Opt
@@ -188,7 +132,7 @@ def test_unique_workdir(tmpdir):
     atoms[0].position += 0.1
     atoms.calc = EMT()
 
-    dyn = run_ase_opt(atoms, scratch_dir="test_calc", copy_files=["test_file.txt"])
+    dyn = run_ase_opt(atoms, copy_files=["test_file.txt"])
     traj = dyn.traj_atoms
     assert traj[-1].calc.results is not None
     assert np.array_equal(traj[-1].get_positions(), atoms.get_positions()) is False
@@ -197,10 +141,8 @@ def test_unique_workdir(tmpdir):
     # Vib
     o2 = molecule("O2")
     o2.calc = LennardJones()
-    vib = run_ase_vib(
-        o2, gzip=False, scratch_dir="test_calc_vib", copy_files=["test_file.txt"]
-    )
+    vib = run_ase_vib(o2)
     assert np.real(vib.get_frequencies()[-1]) == pytest.approx(255.6863883406967)
     assert np.array_equal(vib.atoms.get_positions(), o2.get_positions()) is True
 
-    SETTINGS.CREATE_UNIQUE_WORKDIR = False
+    SETTINGS.CREATE_UNIQUE_WORKDIR = DEFAULT_SETTINGS.CREATE_UNIQUE_WORKDIR

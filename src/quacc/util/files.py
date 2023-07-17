@@ -70,7 +70,7 @@ def make_unique_dir(base_path: str | None = None) -> str:
     Parameters
     ----------
     base_path
-        Path to the base directory. If None, the current working directory is used.
+        Path to the base directory.
 
     Returns
     -------
@@ -79,11 +79,9 @@ def make_unique_dir(base_path: str | None = None) -> str:
     """
     if base_path is None:
         base_path = os.getcwd()
-    if not os.path.exists(base_path):
-        os.mkdir(base_path)
     time_now = datetime.utcnow().strftime("%Y-%m-%d-%H-%M-%S-%f")
     job_dir = os.path.join(base_path, f"quacc-{time_now}-{randint(10000, 99999)}")
-    os.mkdir(job_dir)
+    os.makedirs(job_dir)
 
     return job_dir
 

@@ -1,4 +1,6 @@
 """Init data for quacc"""
+import os
+
 from ase import Atoms
 from ase.io.jsonio import decode, encode
 
@@ -25,3 +27,6 @@ def atoms_from_dict(d):
 Atoms.as_dict = atoms_as_dict
 Atoms.from_dict = atoms_from_dict
 SETTINGS = QuaccSettings()
+for f in {SETTINGS.SCRATCH_DIR, SETTINGS.RESULTS_DIR}:
+    if f:
+        os.makedirs(f, exist_ok=True)
