@@ -36,11 +36,7 @@ class QuaccSettings(BaseSettings):
         description="Directory to store results in.",
     )
     SCRATCH_DIR: str = Field(
-        os.path.join(os.environ.get("TMPDIR"), "quacc")
-        if os.environ.get("TMPDIR")
-        else os.path.join(os.environ.get("TMP"), "quacc")
-        if os.environ.get("TMP")
-        else os.path.join("/tmp", "quacc"),
+        os.path.join("/tmp", "quacc") if os.path.exists("/tmp") else os.getcwd(),
         description="Scratch directory for calculations.",
     )
     CREATE_UNIQUE_WORKDIR: bool = Field(
