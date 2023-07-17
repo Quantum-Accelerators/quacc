@@ -123,8 +123,8 @@ def test_relax_job(tmpdir):
         relax_job(atoms, kpts=(3, 3, 3), calc_swaps={"MaxSteps": 1})
 
 
-# def test_unique_workdir(tmpdir):
-#     SETTINGS.CREATE_UNIQUE_WORKDIR = True
-#     test_static_job(tmpdir)
-#     test_relax_job(tmpdir)
-#     SETTINGS.CREATE_UNIQUE_WORKDIR = DEFAULT_SETTINGS.CREATE_UNIQUE_WORKDIR
+def test_unique_workdir(tmpdir):
+    SETTINGS.CREATE_UNIQUE_WORKDIR = True
+    test_static_job(tmpdir)
+    test_relax_job(tmpdir)
+    SETTINGS.CREATE_UNIQUE_WORKDIR = DEFAULT_SETTINGS.CREATE_UNIQUE_WORKDIR
