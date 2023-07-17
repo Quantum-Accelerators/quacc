@@ -165,6 +165,10 @@ def test_freq_job(tmpdir):
     assert "dir_name" in output["vib"]
 
 
+@pytest.mark.skipif(
+    TBLite is None,
+    reason="tblite must be installed.",
+)
 def test_unique_workdir(tmpdir):
     SETTINGS.CREATE_UNIQUE_WORKDIR = True
     test_static_job(tmpdir)

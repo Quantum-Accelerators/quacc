@@ -58,17 +58,6 @@ def test_results_dir(tmpdir):
     os.remove("opt.traj")
 
 
-def test_create_unique_workdir(tmpdir):
-    tmpdir.chdir()
-
-    atoms = bulk("Cu")
-    relax_job(atoms)
-    assert not glob("quacc-*")
-    SETTINGS.CREATE_UNIQUE_WORKDIR = True
-    relax_job(atoms)
-    assert glob("quacc-*")
-
-
 def test_env_var(monkeypatch):
     monkeypatch.setenv("QUACC_SCRATCH_DIR", "/my/scratch/dir")
     assert QuaccSettings().SCRATCH_DIR == "/my/scratch/dir"
