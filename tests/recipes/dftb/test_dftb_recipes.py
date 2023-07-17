@@ -123,6 +123,10 @@ def test_relax_job(tmpdir):
         relax_job(atoms, kpts=(3, 3, 3), calc_swaps={"MaxSteps": 1})
 
 
+@pytest.mark.skipif(
+    DFTBPLUS_EXISTS is False,
+    reason="DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
+)
 def test_unique_workdir(tmpdir):
     SETTINGS.CREATE_UNIQUE_WORKDIR = True
     test_static_job(tmpdir)
