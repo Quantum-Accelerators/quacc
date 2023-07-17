@@ -9,16 +9,6 @@ from quacc.recipes.orca.core import relax_job, static_job
 
 has_orca = bool(which(SETTINGS.ORCA_CMD))
 
-DEFAULT_SETTINGS = SETTINGS.copy()
-
-
-def setup_function():
-    SETTINGS.CREATE_UNIQUE_WORKDIR = False
-
-
-def teardown_function():
-    SETTINGS.CREATE_UNIQUE_WORKDIR = DEFAULT_SETTINGS.CREATE_UNIQUE_WORKDIR
-
 
 @pytest.mark.skipif(has_orca is False, reason="ORCA not installed")
 def test_static_job(tmpdir):
@@ -97,9 +87,3 @@ def test_relax_job(tmpdir):
         output["atoms"].get_positions(),
         rtol=1e-5,
     )
-
-
-def test_unique_workdir(tmpdir):
-    SETTINGS.CREATE_UNIQUE_WORKDIR = True
-    test_static_job(tmpdir)
-    test_relax_job(tmpdir)

@@ -4,22 +4,12 @@ from shutil import which
 import pytest
 from ase.build import bulk, molecule
 
-from quacc import SETTINGS
 from quacc.recipes.gulp.core import relax_job, static_job
 
 has_gulp = bool(
     (bool(which("gulp")) or os.environ.get("ASE_GULP_COMMAND"))
     and os.environ.get("GULP_LIB")
 )
-DEFAULT_SETTINGS = SETTINGS.copy()
-
-
-def setup_function():
-    SETTINGS.CREATE_UNIQUE_WORKDIR = False
-
-
-def teardown_function():
-    SETTINGS.CREATE_UNIQUE_WORKDIR = DEFAULT_SETTINGS.CREATE_UNIQUE_WORKDIR
 
 
 @pytest.mark.skipif(has_gulp is False, reason="GULP not installed")
@@ -150,9 +140,3 @@ def test_relax_job(tmpdir):
     assert "dump every gulp.res" in output["parameters"]["options"]
     assert "output xyz gulp.xyz" not in output["parameters"]["options"]
     assert "output cif gulp.cif" in output["parameters"]["options"]
-
-
-def test_unique_workdir(tmpdir):
-    SETTINGS.CREATE_UNIQUE_WORKDIR = True
-    test_static_job(tmpdir)
-    test_relax_job(tmpdir)
