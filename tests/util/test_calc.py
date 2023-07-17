@@ -113,7 +113,7 @@ def test_bad_runs(tmpdir):
         run_ase_opt(bulk("Cu"), copy_files=["test_file.txt"])
 
     # No trajectory kwarg
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, str="does not support setting"):
         run_ase_opt(
             atoms,
             optimizer=BFGSLineSearch,
