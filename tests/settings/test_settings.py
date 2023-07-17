@@ -1,4 +1,5 @@
 import os
+from glob import glob
 
 from ase.build import bulk
 from maggma.stores import MemoryStore
@@ -8,6 +9,7 @@ from quacc.recipes.emt.core import relax_job, static_job
 from quacc.settings import QuaccSettings
 
 DEFAULT_SETTINGS = SETTINGS.copy()
+START_DIR = os.getcwd()
 
 
 def setup_function():
@@ -69,3 +71,15 @@ def test_yaml(tmpdir, monkeypatch):
         f.write('SCRATCH_DIR: "/my/new/scratch/dir"')
     monkeypatch.setenv("QUACC_CONFIG_FILE", "quacc_test.yaml")
     assert QuaccSettings().SCRATCH_DIR == "/my/new/scratch/dir"
+
+
+def test_create_unique_workdir(tmpdir):
+    tmpdir.chdir()
+
+    atoms = bulk("Cu")
+    relax_job(atoms)
+    assert not glob("quacc-*")
+    SETTINGS.CREATE_UNIQUE_WORKDIR = True
+    relax_job(atoms)
+    os.chdir(START_DIR)
+    assert glob("quacc-*")
