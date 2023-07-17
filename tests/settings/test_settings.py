@@ -39,7 +39,8 @@ def test_file(monkeypatch, tmpdir):
     os.remove("quacc_test.yaml")
 
 
-def test_store():
+def test_store(tmpdir):
+    tmpdir.chdir()
     store = MemoryStore()
     SETTINGS.PRIMARY_STORE = store.to_json()
     atoms = bulk("Cu")

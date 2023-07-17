@@ -7,8 +7,6 @@ from ase.io.jsonio import decode, encode
 from quacc._version import __version__
 from quacc.settings import QuaccSettings
 
-_START_DIR = os.getcwd()
-
 
 def atoms_as_dict(s):
     # Uses Monty's MSONable spec
@@ -34,5 +32,6 @@ Atoms.from_dict = atoms_from_dict
 SETTINGS = QuaccSettings()
 
 # Make sure relevant folders exist
-if SETTINGS.SCRATCH_DIR:
-    os.makedirs(SETTINGS.SCRATCH_DIR, exist_ok=True)
+for f in {SETTINGS.SCRATCH_DIR, SETTINGS.RESULTS_DIR}:
+    if f:
+        os.makedirs(f, exist_ok=True)

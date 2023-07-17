@@ -31,6 +31,10 @@ class QuaccSettings(BaseSettings):
     CONFIG_FILE: str = Field(
         _DEFAULT_CONFIG_FILE_PATH, description="File to load alternative defaults from."
     )
+    RESULTS_DIR: str = Field(
+        os.getcwd(),
+        description="Directory to store results in.",
+    )
     SCRATCH_DIR: str = Field(
         os.path.normpath("/tmp")
         if os.path.exists(os.path.normpath("/tmp"))
