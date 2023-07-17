@@ -51,6 +51,9 @@ def run_calc(
     # Perform staging operations
     atoms, tmpdir, job_results_dir = _calc_setup(atoms, copy_files=copy_files)
 
+    # Run calculation via get_potential_energy()
+    atoms.get_potential_energy()
+
     # Most ASE calculators do not update the atoms object in-place with
     # a call to .get_potential_energy(), which is important if an internal
     # optimizer is used. This section is done to ensure that the atoms object
@@ -73,9 +76,6 @@ def run_calc(
 
         atoms.positions = atoms_new.positions
         atoms.cell = atoms_new.cell
-
-    # Run calculation via get_potential_energy()
-    atoms.get_potential_energy()
 
     # Perform cleanup operations
     _calc_cleanup(tmpdir, job_results_dir)
