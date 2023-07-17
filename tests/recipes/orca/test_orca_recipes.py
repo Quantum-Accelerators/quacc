@@ -1,7 +1,6 @@
 import multiprocessing
 
 from ase.build import molecule
-from numpy.testing import assert_allclose
 
 from quacc.recipes.orca.core import relax_job, static_job
 

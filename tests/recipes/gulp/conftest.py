@@ -6,10 +6,7 @@ from unittest import mock
 import numpy as np
 import pytest
 from ase import Atoms
-from ase.build import bulk, molecule
 from ase.calculators.gulp import GULP
-
-from quacc.recipes.gulp.core import relax_job, static_job
 
 FILE_DIR = Path(__file__).resolve().parent
 GULP_DIR = os.path.join(FILE_DIR, "gulp_run")
