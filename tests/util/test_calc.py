@@ -99,7 +99,7 @@ def test_bad_runs(tmpdir):
     atoms = bulk("Cu")
 
     # No calculator
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, str="must have attached calculator"):
         run_calc(atoms)
 
     atoms.calc = EMT()
