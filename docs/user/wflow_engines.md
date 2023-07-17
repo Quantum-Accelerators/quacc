@@ -167,7 +167,7 @@ graph LR
     @flow
     def workflow(atoms):
         # Call Task 1
-        future1 = task(relax_job).submit(atoms)  # (2)
+        future1 = task(relax_job).submit(atoms)  # (1)
 
         # Call Task 2, which takes the output of Task 1 as input
         future2 = task(static_job).submit(future1)
