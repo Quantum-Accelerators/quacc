@@ -97,12 +97,22 @@ def test_bad_runs(tmpdir):
     tmpdir.chdir()
 
     atoms = bulk("Cu")
+
+    # No calculator
+    with pytest.raises(ValueError):
+        run_calc(atoms)
+
+    atoms.calc = EMT()
+
+    # No file
     with pytest.raises(ValueError):
         run_calc(atoms, copy_files=["test_file.txt"])
 
+    # No file again
     with pytest.raises(ValueError):
         run_ase_opt(bulk("Cu"), copy_files=["test_file.txt"])
 
+    # No trajectory kwarg
     with pytest.raises(ValueError):
         run_ase_opt(
             atoms,
