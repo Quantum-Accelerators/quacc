@@ -12,8 +12,6 @@ try:
 except ImportError:
     sella = None
 
-CWD = os.getcwd()
-
 
 @pytest.mark.skipif(
     sella is None,

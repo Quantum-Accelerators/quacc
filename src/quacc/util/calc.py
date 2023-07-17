@@ -49,14 +49,7 @@ def run_calc(
     """
 
     # Perform staging operations
-    start_dir = os.getcwd()
     atoms, tmpdir, job_results_dir = _calc_setup(atoms, copy_files=copy_files)
-
-    # Run calculation via get_potential_energy()
-    atoms.get_potential_energy()
-
-    # Perform cleanup operations
-    _calc_cleanup(start_dir, tmpdir, job_results_dir)
 
     # Most ASE calculators do not update the atoms object in-place with
     # a call to .get_potential_energy(), which is important if an internal
@@ -66,7 +59,7 @@ def run_calc(
         # Note: We have to be careful to make sure we don't lose the
         # converged magnetic moments, if present. That's why we simply
         # update the positions and cell in-place.
-        atoms_new = read(zpath(os.path.join(job_results_dir, geom_file)))
+        atoms_new = read(zpath(os.path.join(tmpdir, geom_file)))
         if isinstance(atoms_new, list):
             atoms_new = atoms_new[-1]
 
@@ -80,6 +73,12 @@ def run_calc(
 
         atoms.positions = atoms_new.positions
         atoms.cell = atoms_new.cell
+
+    # Run calculation via get_potential_energy()
+    atoms.get_potential_energy()
+
+    # Perform cleanup operations
+    _calc_cleanup(tmpdir, job_results_dir)
 
     return atoms
 
@@ -123,7 +122,6 @@ def run_ase_opt(
 
     # Set defaults
     optimizer_kwargs = optimizer_kwargs or {}
-    start_dir = os.getcwd()
 
     # Perform staging operations
     atoms, tmpdir, job_results_dir = _calc_setup(atoms, copy_files=copy_files)
@@ -153,7 +151,7 @@ def run_ase_opt(
     dyn.traj_atoms = read(traj_filename, index=":")
 
     # Perform cleanup operations
-    _calc_cleanup(start_dir, tmpdir, job_results_dir)
+    _calc_cleanup(tmpdir, job_results_dir)
 
     return dyn
 
@@ -186,7 +184,6 @@ def run_ase_vib(
 
     # Set defaults
     vib_kwargs = vib_kwargs or {}
-    start_dir = os.getcwd()
 
     # Perform staging operations
     atoms, tmpdir, job_results_dir = _calc_setup(atoms, copy_files=copy_files)
@@ -197,7 +194,7 @@ def run_ase_vib(
     vib.summary(log=os.path.join(tmpdir, "vib_summary.log"))
 
     # Perform cleanup operations
-    _calc_cleanup(start_dir, tmpdir, job_results_dir)
+    _calc_cleanup(tmpdir, job_results_dir)
 
     return vib
 
@@ -269,15 +266,13 @@ def _calc_setup(
     return atoms, tmpdir, job_results_dir
 
 
-def _calc_cleanup(start_dir: str, tmpdir: str, job_results_dir: str) -> None:
+def _calc_cleanup(tmpdir: str, job_results_dir: str) -> None:
     """
     Perform cleanup operations for a calculation, including gzipping files,
     copying files back to the original directory, and removing the tmpdir.
 
     Parameters
     ----------
-    start_dir
-        The path to the original directory.
     tmpdir
         The path to the tmpdir, where the calculation will be run. It will be
         deleted after the calculation is complete.
@@ -291,8 +286,8 @@ def _calc_cleanup(start_dir: str, tmpdir: str, job_results_dir: str) -> None:
     None
     """
 
-    # Change back to the original directory
-    os.chdir(start_dir)
+    # Change to the results directory
+    os.chdir(job_results_dir)
 
     # Gzip files in tmpdir
     if SETTINGS.GZIP_FILES:
