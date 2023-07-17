@@ -14,7 +14,7 @@ from ase.vibrations import Vibrations
 from monty.os.path import zpath
 from monty.shutil import copy_r, gzip_dir
 
-from quacc import SETTINGS
+from quacc import _START_DIR, SETTINGS
 from quacc.util.atoms import copy_atoms
 from quacc.util.files import copy_decompress, make_unique_dir
 
@@ -235,16 +235,13 @@ def _calc_setup(
 
     # Set where to store the results
     job_results_dir = (
-        make_unique_dir() if SETTINGS.CREATE_UNIQUE_WORKDIR else os.getcwd()
+        make_unique_dir(base_path=_START_DIR)
+        if SETTINGS.CREATE_UNIQUE_WORKDIR
+        else _START_DIR
     )
 
     # Create a tmpdir for the calculation within the scratch_dir
-    tmpdir = os.path.abspath(
-        mkdtemp(
-            prefix="quacc-tmp-",
-            dir=SETTINGS.SCRATCH_DIR if SETTINGS.SCRATCH_DIR else os.getcwd(),
-        )
-    )
+    tmpdir = os.path.abspath(mkdtemp(prefix="quacc-tmp-", dir=SETTINGS.SCRATCH_DIR))
 
     # Create a symlink (if not on Windows) to the tmpdir in the results_dir
     symlink = os.path.join(job_results_dir, f"{os.path.basename(tmpdir)}-symlink")

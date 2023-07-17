@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
+- Fix path-related issues when running in local multi-threaded mode.
 - Psi4 recipes now use `uks` for unrestricted calculations instead of `uhf`.
 
 ## [0.1.2]
@@ -54,7 +55,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
-- Fixed a bug where parallel, multithreaded Python jobs could cause file I/O issues.
 - Temporary directories are cleaned up after the run is completed.
 
 ### Removed

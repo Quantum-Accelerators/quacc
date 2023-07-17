@@ -32,8 +32,10 @@ class QuaccSettings(BaseSettings):
         _DEFAULT_CONFIG_FILE_PATH, description="File to load alternative defaults from."
     )
     SCRATCH_DIR: str = Field(
-        os.path.normpath("/tmp") if os.path.exists(os.path.normpath("/tmp")) else None,
-        description="Scratch directory for calculations. If None, the current working directory at runtime will be used.",
+        os.path.normpath("/tmp")
+        if os.path.exists(os.path.normpath("/tmp"))
+        else os.getcwd(),
+        description="Scratch directory for calculations.",
     )
     CREATE_UNIQUE_WORKDIR: bool = Field(
         False,

@@ -107,12 +107,11 @@ graph LR
 
     !!! Important
 
-        If you haven't done so yet, make sure you have loaded a Parsl configuration in your Python script. An example for running on your local machine is included below. Note that parallel/dynamic workflow recipes may fail if multi-threading is enabled, which is why we don't use the default `parsl.load()` configuration here.
+        If you haven't done so yet, make sure you have loaded a Parsl configuration in your Python script. An example for running on your local machine is included below.
 
         ```python
-        from parsl import Config
-        from parsl.executors.threads import ThreadPoolExecutor
-        parsl.load(config=Config(executors=[ThreadPoolExecutor(max_threads=1)]))
+        import parsl
+        parsl.load()
         ```
 
     ```python
@@ -161,12 +160,11 @@ graph LR
     ```python
     from ase.build import bulk
     from prefect import flow, task
-    from prefect.task_runners import SequentialTaskRunner
     from quacc.recipes.emt.core import relax_job, static_job
 
 
     # Define the workflow
-    @flow(task_runner=SequentialTaskRunner())  # (1)
+    @flow
     def workflow(atoms):
         # Call Task 1
         future1 = task(relax_job).submit(atoms)  # (2)
@@ -185,9 +183,7 @@ graph LR
     print(result)
     ```
 
-    1.  By default, the task runner for Prefect is the `ConcurrentTaskRunner`, which runs in a multi-threaded mode that is incompatible with parallel/dynamic quacc workflows. For local testing purposes, we recommend using the `SequentialTaskRunner` instead.
-
-    2.  We have used a short-hand notation here of `task(<function>)`. This is equivalent to using the `@task` decorator and defining a new function for each task.
+    1.  We have used a short-hand notation here of `task(<function>)`. This is equivalent to using the `@task` decorator and defining a new function for each task.
 
     You can see that it is quite trivial to set up a Prefect workflow using the recipes within quacc. We define the full `Flow` as a function that stitches together the individual `Task` workflow steps.Calling `.submit()` enables concurrent execution of the tasks, and `.result()` blocks further calculations until the result is returned. Both `.submit()` and `.result()` aren't necessary when testing Prefect workflows locally, but we have included them here to make the transition to HPC environments more seamless.
 
@@ -308,12 +304,11 @@ graph LR
     ```python
     from ase.build import bulk, molecule
     from prefect import flow, task
-    from prefect.task_runners import SequentialTaskRunner
     from quacc.recipes.emt.core import relax_job
 
 
     # Define workflow
-    @flow(task_runner=SequentialTaskRunner())
+    @flow
     def workflow(atoms1, atoms2):
         # Define two independent relaxation jobs
         future1 = task(relax_job).submit(atoms1)
@@ -480,12 +475,11 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     ```python
     from ase.build import bulk
     from prefect import flow, task
-    from prefect.task_runners import SequentialTaskRunner
     from quacc.recipes.emt.core import relax_job
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 
-    @flow(task_runner=SequentialTaskRunner())
+    @flow
     def workflow(atoms):
         future1 = task(relax_job).submit(atoms)
         future2 = task(bulk_to_slabs_flow).submit(future1, slab_static=None)
@@ -508,14 +502,11 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     ```python
     from ase.build import bulk
     from prefect import flow, task
-    from prefect.task_runners import SequentialTaskRunner
     from quacc.recipes.emt.core import relax_job
     from quacc.recipes.emt.prefect.slabs import bulk_to_slabs_flow
 
-    bulk_to_slabs_flow.task_runner = SequentialTaskRunner()
 
-
-    @flow(task_runner=SequentialTaskRunner())
+    @flow
     def workflow(atoms):
         future1 = task(relax_job).submit(atoms)
         result = bulk_to_slabs_flow(future1, run_slab_static=False)

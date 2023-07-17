@@ -7,6 +7,8 @@ from ase.io.jsonio import decode, encode
 from quacc._version import __version__
 from quacc.settings import QuaccSettings
 
+_START_DIR = os.getcwd()
+
 
 def atoms_as_dict(s):
     # Uses Monty's MSONable spec
