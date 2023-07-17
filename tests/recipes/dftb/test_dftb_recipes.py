@@ -11,17 +11,6 @@ DFTBPLUS_EXISTS = bool(which("dftb+"))
 DEFAULT_SETTINGS = SETTINGS.copy()
 
 
-def setup_function():
-    SETTINGS.CREATE_UNIQUE_WORKDIR = False
-
-
-def teardown_function():
-    SETTINGS.CREATE_UNIQUE_WORKDIR = DEFAULT_SETTINGS.CREATE_UNIQUE_WORKDIR
-
-
-DEFAULT_SETTINGS = SETTINGS.copy()
-
-
 @pytest.mark.skipif(
     DFTBPLUS_EXISTS is False,
     reason="DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
@@ -134,3 +123,4 @@ def test_unique_workdir(tmpdir):
     SETTINGS.CREATE_UNIQUE_WORKDIR = True
     test_static_job(tmpdir)
     test_relax_job(tmpdir)
+    SETTINGS.CREATE_UNIQUE_WORKDIR = DEFAULT_SETTINGS.CREATE_UNIQUE_WORKDIR
