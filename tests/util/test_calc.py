@@ -13,14 +13,6 @@ from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
 DEFAULT_SETTINGS = SETTINGS.copy()
 
 
-def setup_function():
-    SETTINGS.CREATE_UNIQUE_WORKDIR = False
-
-
-def teardown_function():
-    SETTINGS.CREATE_UNIQUE_WORKDIR = DEFAULT_SETTINGS.CREATE_UNIQUE_WORKDIR
-
-
 def prep_files():
     # Make some test files to play with
     if not os.path.exists("test_calc"):
@@ -175,8 +167,8 @@ def test_bad_run_calc(tmpdir):
 
 
 def test_unique_workdir(tmpdir):
-    tmpdir.chdir()
     SETTINGS.CREATE_UNIQUE_WORKDIR = True
+    tmpdir.chdir()
 
     # Static
     atoms = bulk("Cu") * (2, 1, 1)
@@ -210,3 +202,5 @@ def test_unique_workdir(tmpdir):
     )
     assert np.real(vib.get_frequencies()[-1]) == pytest.approx(255.6863883406967)
     assert np.array_equal(vib.atoms.get_positions(), o2.get_positions()) is True
+
+    SETTINGS.CREATE_UNIQUE_WORKDIR = False
