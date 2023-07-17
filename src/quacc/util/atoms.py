@@ -4,7 +4,6 @@ Utility functions for dealing with Atoms
 from __future__ import annotations
 
 import hashlib
-import os
 from copy import deepcopy
 
 import numpy as np
