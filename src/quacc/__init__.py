@@ -30,8 +30,3 @@ Atoms.from_dict = atoms_from_dict
 
 # Load the settings
 SETTINGS = QuaccSettings()
-
-# Make sure relevant folders exist
-for f in {SETTINGS.SCRATCH_DIR, SETTINGS.RESULTS_DIR}:
-    if f:
-        os.makedirs(f, exist_ok=True)

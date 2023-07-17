@@ -255,10 +255,7 @@ def bader_runner(path: str | None = None, scratch_dir: str | None = None) -> dic
                 "spin_moments": List[float],
             }
     """
-
     scratch_dir = SETTINGS.SCRATCH_DIR if scratch_dir is None else scratch_dir
-    path = path or os.getcwd()
-    scratch_dir = scratch_dir or os.getcwd()
 
     # Make sure files are present
     relevant_files = ["AECCAR0", "AECCAR2", "CHGCAR", "POTCAR"]
@@ -293,7 +290,7 @@ def bader_runner(path: str | None = None, scratch_dir: str | None = None) -> dic
 def chargemol_runner(
     path: str | None = None,
     atomic_densities_path: str | None = None,
-    scratch_dir: str = SETTINGS.SCRATCH_DIR,
+    scratch_dir: str | None = None,
 ) -> dict:
     """
     Runs a Chargemol (i.e. DDEC6 + CM5) analysis using the VASP output files
@@ -335,8 +332,7 @@ def chargemol_runner(
                         }
             }
     """
-    path = path or os.getcwd()
-    scratch_dir = scratch_dir or path
+    scratch_dir = SETTINGS.SCRATCH_DIR if scratch_dir is None else scratch_dir
 
     # Make sure files are present
     relevant_files = ["AECCAR0", "AECCAR2", "CHGCAR", "POTCAR"]
