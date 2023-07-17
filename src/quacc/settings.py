@@ -33,7 +33,7 @@ class QuaccSettings(BaseSettings):
     )
     RESULTS_DIR: str = Field(
         None,
-        description="Directory to store results in. If None, the current working directory at runtime will be used.",
+        description="Directory to store results in. If None, the current working directory at runtime will be used. Some workflow engines have an option to do set this for you already.",
     )
     SCRATCH_DIR: str = Field(
         os.path.normpath("/tmp") if os.path.exists(os.path.normpath("/tmp")) else None,
@@ -41,7 +41,7 @@ class QuaccSettings(BaseSettings):
     )
     CREATE_UNIQUE_WORKDIR: bool = Field(
         False,
-        description="Whether to automatically create a unique working directory for each calculation. Most workflow engines have an option to do this for you already.",
+        description="Whether to automatically create a unique working directory for each calculation. Some workflow engines have an option to do this for you already.",
     )
     GZIP_FILES: bool = Field(
         True, description="Whether generated files should be gzip'd."
