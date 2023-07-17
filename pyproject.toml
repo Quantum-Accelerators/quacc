@@ -59,7 +59,7 @@ strict = [
     "custodian==2023.6.5",
     "emmet-core==0.60.1",
     "jobflow==0.1.11",
-    "maggma==0.51.18",
+    "maggma==0.51.19",
     "monty==2023.5.8",
     "numpy==1.25.1",
     "pydantic==1.10.2",
