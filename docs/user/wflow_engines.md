@@ -153,7 +153,7 @@ graph LR
 
     !!! Note
 
-        You should not include a `.result()` call in a `@python_app` or `@join_app` definition or when passing outputs between `PythonApp`/`JoinApp` objects. Parsl `PythonApp`/`JoinApp` objects will implicitly know to call `.result()` on any `AppFuture` it receives.
+        Parsl `PythonApp`/`JoinApp` objects will implicitly know to call `.result()` on any `AppFuture` it receives. As such, you should avoid calling `.result()` within a `PythonApp`/`JoinApp` definition or between `PythonApp`/`JoinApp` objects.
 
 === "Prefect"
 
@@ -189,7 +189,7 @@ graph LR
 
     !!! Note
 
-        You should not call `.result()` when passing the results of tasks to other tasks, only when interacting with the result of a task inside of the flow itself. Prefect will implicitly know to call `.result()` on any `PrefectFuture`.
+        Prefect will implicitly know to call `.result()` on any `PrefectFuture` in a `Flow`. As such, you should avoid calling `.result()` when passing the results of tasks to other tasks.
 
     ![Prefect UI](../images/user/prefect_tutorial1.jpg)
 
@@ -458,7 +458,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
     # Define the workflow
     future1 = relax_app(atoms)
-    future2 = bulk_to_slabs_flow(future1, slab_static=None)  # (1)
+    future2 = bulk_to_slabs_flow(future1.result(), slab_static=None)  # (1)
 
     # Print the results
     print(future2.result())

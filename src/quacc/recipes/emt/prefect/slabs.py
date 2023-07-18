@@ -45,7 +45,6 @@ def bulk_to_slabs_flow(
         List of dictionary of results from quacc.schemas.ase.summarize_run
         or quacc.schemas.ase.summarize_opt_run
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     make_slabs_kwargs = make_slabs_kwargs or {}
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}
@@ -57,6 +56,7 @@ def bulk_to_slabs_flow(
         slab_relax_kwargs["relax_cell"] = False
 
     # Generate all the slab
+    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     slabs = make_max_slabs_from_bulk(atoms, **make_slabs_kwargs)
 
     futures = []
