@@ -37,7 +37,7 @@ def test_tutorial1(tmpdir):
     future1 = relax_app(atoms)
 
     # Call App 2, which takes the output of App 1 as input
-    future2 = static_app(future1.result())
+    future2 = static_app(future1)
     result = future2.result()
     assert future2.done()
     assert "atoms" in result
@@ -91,12 +91,12 @@ def test_tutorial3(tmpdir):
 
     # Define the workflow
     future1 = relax_app(atoms)
-    future2 = bulk_to_slabs_app(future1.result())
+    future2 = bulk_to_slabs_app(future1)
 
     # Print the results
     future2.result()
-    assert future2.done()
     assert len(future2.result()) == 4
+    assert future2.done()
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
@@ -117,10 +117,10 @@ def test_tutorial4(tmpdir):
 
     # Define the workflow
     future1 = relax_app(atoms)
-    future2 = bulk_to_slabs_flow(future1.result(), slab_static=None)
+    future2 = bulk_to_slabs_flow(future1, slab_static=None)
 
     # Print the results
-    print(future2.result())
+    future2.result()
     assert future2.done()
     assert len(future2.result()) == 4
 
