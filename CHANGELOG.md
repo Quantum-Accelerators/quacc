@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [UNRELEASED]
 
+## [0.1.3]
+
 ### Added
 
 - Added a `PRIMARY_STORE` quacc setting that, when specified, will automatically store all results in the specified Maggma store.
