@@ -149,11 +149,11 @@ graph LR
 
     You can see that it is quite trivial to set up a Parsl workflow using the recipes within quacc. We define the full workflow as a function that stitches together the individual `@python_app` workflow steps.
 
-    The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object. Parsl will automatically know that it cannot run `static_app` until `future1` is resolved, which is why it was not included here.
+    The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object.
 
     !!! Note
 
-        You should not include a `.result()` call in a `@python_app` or `@join_app` definition, which is why we didn't do so here. Parsl will implicitly know to call `.result()` on any `AppFuture`.
+        You should not include a `.result()` call in a `@python_app` or `@join_app` definition or when passing outputs between `PythonApp`/`JoinApp` objects. Parsl `PythonApp`/`JoinApp` objects will implicitly know to call `.result()` on any `AppFuture` it receives.
 
 === "Prefect"
 
