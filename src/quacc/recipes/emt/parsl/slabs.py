@@ -57,16 +57,16 @@ def bulk_to_slabs_flow(
         slab_relax_kwargs["relax_cell"] = False
 
     @python_app
-    def _make_slabs(atoms, make_slabs_kwargs):
+    def _make_slabs(atoms):
         atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
         return make_max_slabs_from_bulk(atoms, **make_slabs_kwargs)
 
     @join_app
-    def _relax_distributed(slabs, slab_relax_kwargs):
+    def _relax_distributed(slabs):
         return [slab_relax(slab, **slab_relax_kwargs) for slab in slabs]
 
     @join_app
-    def _relax_and_static_distributed(slabs, slab_relax_kwargs, slab_static_kwargs):
+    def _relax_and_static_distributed(slabs):
         return [
             slab_static(
                 slab_relax(slab, **slab_relax_kwargs),
@@ -75,9 +75,9 @@ def bulk_to_slabs_flow(
             for slab in slabs
         ]
 
-    slabs = _make_slabs(atoms, make_slabs_kwargs)
+    slabs = _make_slabs(atoms)
 
     if slab_static is None:
-        return _relax_distributed(slabs, slab_relax_kwargs)
+        return _relax_distributed(slabs)
 
-    return _relax_and_static_distributed(slabs, slab_relax_kwargs, slab_static_kwargs)
+    return _relax_and_static_distributed(slabs)
