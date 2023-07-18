@@ -1,11 +1,15 @@
 # quacc specific ignores
 quacc-tmp*
-quacc_20*
+quacc-20*
 POTCAR*
-scratch_path.txt
-tmp_path.txt
 tmp*
 cache*
+.results_dir
+.scratch_dir
+
+# Workflow ignores
+*parsl.log
+runinfo
 
 # Docs 
 .cache/
@@ -28,7 +32,3 @@ ipython_config.py
 
 # Editors ignores
 .vscode*
-
-# Workflow ignores
-*parsl.log
-runinfo

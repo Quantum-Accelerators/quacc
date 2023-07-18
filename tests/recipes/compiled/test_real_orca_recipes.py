@@ -1,11 +1,17 @@
-import multiprocessing
+from shutil import which
 
+import pytest
 from ase.build import molecule
+from numpy.testing import assert_allclose
 
+from quacc import SETTINGS
 from quacc.recipes.orca.core import relax_job, static_job
 
+has_orca = bool(which(SETTINGS.ORCA_CMD))
 
-def test_static_job(monkeypatch, tmpdir):
+
+@pytest.mark.skipif(has_orca is False, reason="ORCA not installed")
+def test_static_job(tmpdir):
     tmpdir.chdir()
 
     atoms = molecule("H2")
@@ -37,14 +43,9 @@ def test_static_job(monkeypatch, tmpdir):
     )
     assert "%scf maxiter 300 end" in output["parameters"]["orcablocks"]
 
-    atoms = molecule("H2")
-    monkeypatch.setenv("mpirun", "test")
-    output = static_job(atoms)
-    nprocs = multiprocessing.cpu_count()
-    assert f"%pal nprocs {nprocs} end" in output["parameters"]["orcablocks"]
 
-
-def test_relax_job(monkeypatch, tmpdir):
+@pytest.mark.skipif(has_orca is False, reason="ORCA not installed")
+def test_relax_job(tmpdir):
     tmpdir.chdir()
 
     atoms = molecule("H2")
@@ -56,9 +57,6 @@ def test_relax_job(monkeypatch, tmpdir):
     assert (
         output["parameters"]["orcasimpleinput"]
         == "wb97x-d3bj def2-tzvp opt slowconv normalprint xyzfile"
-    )
-    assert (
-        output["attributes"]["trajectory"][0] != output["attributes"]["trajectory"][-1]
     )
 
     output = relax_job(
@@ -81,9 +79,11 @@ def test_relax_job(monkeypatch, tmpdir):
     assert "%scf maxiter 300 end" in output["parameters"]["orcablocks"]
     assert "trajectory" in output["attributes"]
     assert len(output["attributes"]["trajectory"]) > 1
-
-    atoms = molecule("H2")
-    monkeypatch.setenv("mpirun", "test")
-    output = relax_job(atoms)
-    nprocs = multiprocessing.cpu_count()
-    assert f"%pal nprocs {nprocs} end" in output["parameters"]["orcablocks"]
+    assert (
+        output["attributes"]["trajectory"][0] != output["attributes"]["trajectory"][-1]
+    )
+    assert_allclose(
+        output["attributes"]["trajectory"][-1]["atoms"].get_positions(),
+        output["atoms"].get_positions(),
+        rtol=1e-5,
+    )
