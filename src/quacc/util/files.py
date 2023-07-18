@@ -4,6 +4,7 @@ Utility functions for file and path handling
 from __future__ import annotations
 
 import os
+import warnings
 from datetime import datetime
 from random import randint
 from shutil import copy
@@ -61,6 +62,8 @@ def copy_decompress(source_files: list[str], destination: str) -> None:
             z_file = os.path.basename(z_path)
             copy(z_path, os.path.join(destination, z_file))
             decompress_file(os.path.join(destination, z_file))
+        else:
+            warnings.warn(f"Cannot find file: {z_path}", UserWarning)
 
 
 def make_unique_dir(base_path: str | None = None) -> str:
@@ -70,20 +73,18 @@ def make_unique_dir(base_path: str | None = None) -> str:
     Parameters
     ----------
     base_path
-        Path to the base directory. If None, the current working directory is used.
+        Path to the base directory.
 
     Returns
     -------
     str
         Path to the job directory.
     """
-    if base_path is None:
-        base_path = os.getcwd()
-    if not os.path.exists(base_path):
-        os.mkdir(base_path)
     time_now = datetime.utcnow().strftime("%Y-%m-%d-%H-%M-%S-%f")
-    job_dir = os.path.join(base_path, f"quacc-{time_now}-{randint(10000, 99999)}")
-    os.mkdir(job_dir)
+    job_dir = f"quacc-{time_now}-{randint(10000, 99999)}"
+    if base_path:
+        job_dir = os.path.join(base_path, job_dir)
+    os.makedirs(job_dir)
 
     return job_dir
 

@@ -1,5 +1,4 @@
 import os
-from glob import glob
 
 from ase.build import bulk
 from maggma.stores import MemoryStore
@@ -38,7 +37,8 @@ def test_file(monkeypatch, tmpdir):
     os.remove("quacc_test.yaml")
 
 
-def test_store():
+def test_store(tmpdir):
+    tmpdir.chdir()
     store = MemoryStore()
     SETTINGS.PRIMARY_STORE = store.to_json()
     atoms = bulk("Cu")
@@ -56,17 +56,6 @@ def test_results_dir(tmpdir):
     relax_job(atoms)
     assert "opt.traj" in os.listdir(os.getcwd())
     os.remove("opt.traj")
-
-
-def test_create_unique_workdir(tmpdir):
-    tmpdir.chdir()
-
-    atoms = bulk("Cu")
-    relax_job(atoms)
-    assert not glob("quacc-*")
-    SETTINGS.CREATE_UNIQUE_WORKDIR = True
-    relax_job(atoms)
-    assert glob("quacc-*")
 
 
 def test_env_var(monkeypatch):

@@ -1,23 +1,10 @@
-import os
-from pathlib import Path
-from shutil import copy
-
 from ase.build import bulk, molecule
 
 from quacc.recipes.gulp.core import relax_job, static_job
 
-FILE_DIR = Path(__file__).resolve().parent
-GULP_DIR = os.path.join(FILE_DIR, "gulp_run")
-
-
-def prep_files():
-    for f in os.listdir(GULP_DIR):
-        copy(os.path.join(GULP_DIR, f), f)
-
 
 def test_static_job(tmpdir):
     tmpdir.chdir()
-    prep_files()
 
     atoms = molecule("H2O")
 
@@ -73,7 +60,6 @@ def test_static_job(tmpdir):
 
 def test_relax_job(tmpdir):
     tmpdir.chdir()
-    prep_files()
 
     atoms = molecule("H2O")
 

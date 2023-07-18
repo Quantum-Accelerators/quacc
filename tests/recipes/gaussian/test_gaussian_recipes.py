@@ -1,23 +1,10 @@
-import os
-from pathlib import Path
-from shutil import copy
-
 from ase.build import molecule
 
 from quacc.recipes.gaussian.core import relax_job, static_job
 
-FILE_DIR = Path(__file__).resolve().parent
-GAUSSIAN_DIR = os.path.join(FILE_DIR, "gaussian_run")
-
-
-def prep_files():
-    for f in os.listdir(GAUSSIAN_DIR):
-        copy(os.path.join(GAUSSIAN_DIR, f), f)
-
 
 def test_static_job(tmpdir):
     tmpdir.chdir()
-    prep_files()
 
     atoms = molecule("H2")
 
@@ -60,7 +47,6 @@ def test_static_job(tmpdir):
 
 def test_relax_job(tmpdir):
     tmpdir.chdir()
-    prep_files()
 
     atoms = molecule("H2")
 
