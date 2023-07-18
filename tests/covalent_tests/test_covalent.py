@@ -12,9 +12,7 @@ from quacc.recipes.emt.slabs import bulk_to_slabs_flow
     os.environ.get("GITHUB_ACTIONS", False) is False,
     reason="This test is only meant to be run on GitHub Actions",
 )
-def test_tutorials(tmpdir):
-    tmpdir.chdir()
-
+def test_tutorials():
     # Test of the various tutorials
 
     # Quick start -------------------------------------------------

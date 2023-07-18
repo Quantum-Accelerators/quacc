@@ -1,10 +1,15 @@
 import os
+from pathlib import Path
+from shutil import copy
 from unittest import mock
 
 import numpy as np
 import pytest
 from ase import Atoms
 from ase.calculators.gulp import GULP
+
+FILE_DIR = Path(__file__).resolve().parent
+GULP_DIR = os.path.join(FILE_DIR, "gulp_run")
 
 
 @pytest.fixture(autouse=True)
@@ -23,6 +28,8 @@ def mock_get_potential_energy(self, **kwargs):
         "energy": e,
         "forces": np.array([[0.0, 0.0, 0.0]] * len(self)),
     }
+    for f in os.listdir(GULP_DIR):
+        copy(os.path.join(GULP_DIR, f), f)
     return e
 
 
