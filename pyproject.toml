@@ -25,7 +25,8 @@ classifiers = [
 requires-python = ">=3.9, <3.11"
 dependencies = [
     "ase @ https://gitlab.com/ase/ase/-/archive/master/ase-master.zip",  # waiting on >3.22.1
-    "atomate2[cclib] @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
+    "atomate2 @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
+    "cclib @ git+https://github.com/cclib/cclib.git", # waiting on > 1.7.2; can switch to atomate2[cclib] after
     "covalent>=0.224.0-rc.0",  # waiting on > 0.222.0
     "custodian>=2023.6.5",
     "emmet-core>=0.51.11",
@@ -54,16 +55,16 @@ docs = [
 strict = [
     "ase @ https://gitlab.com/ase/ase/-/archive/master/ase-master.zip",  # waiting on >3.22.1
     "atomate2 @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
-    "cclib==1.7.2",
+    "cclib @ git+https://github.com/cclib/cclib.git", # waiting on > 1.7.2
     "covalent==0.226.0rc0",  # waiting on > 0.222.0
     "custodian==2023.6.5",
     "emmet-core==0.60.1",
     "jobflow==0.1.11",
-    "maggma==0.51.18",
+    "maggma==0.51.19",
     "monty==2023.5.8",
     "numpy==1.25.1",
     "pydantic==1.10.2",
-    "pymatgen==2023.6.28",
+    "pymatgen==2023.7.14",
 ]
 
 [project.scripts]

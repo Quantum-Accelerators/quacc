@@ -22,12 +22,11 @@ def test_tutorial1(tmpdir):
 
     from ase.build import bulk
     from prefect import flow, task
-    from prefect.task_runners import SequentialTaskRunner
 
     from quacc.recipes.emt.core import relax_job, static_job
 
     # Define the workflow
-    @flow(task_runner=SequentialTaskRunner())  # (3)!
+    @flow  # (3)!
     def workflow(atoms):
         # Call Task 1
         future1 = task(relax_job).submit(atoms)  # (4)!
@@ -50,12 +49,11 @@ def test_tutorial2(tmpdir):
 
     from ase.build import bulk, molecule
     from prefect import flow, task
-    from prefect.task_runners import SequentialTaskRunner
 
     from quacc.recipes.emt.core import relax_job
 
     # Define workflow
-    @flow(task_runner=SequentialTaskRunner())
+    @flow
     def workflow(atoms1, atoms2):
         # Define two independent relaxation jobs
         future1 = task(relax_job).submit(atoms1)
@@ -78,12 +76,11 @@ def test_tutorial3(tmpdir):
 
     from ase.build import bulk
     from prefect import flow, task
-    from prefect.task_runners import SequentialTaskRunner
 
     from quacc.recipes.emt.core import relax_job
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
-    @flow(task_runner=SequentialTaskRunner())
+    @flow
     def workflow(atoms):
         future1 = task(relax_job).submit(atoms)
         future2 = task(bulk_to_slabs_flow).submit(future1, slab_static=None)
@@ -103,14 +100,11 @@ def test_tutorial4(tmpdir):
 
     from ase.build import bulk
     from prefect import flow, task
-    from prefect.task_runners import SequentialTaskRunner
 
     from quacc.recipes.emt.core import relax_job
     from quacc.recipes.emt.prefect.slabs import bulk_to_slabs_flow
 
-    bulk_to_slabs_flow.task_runner = SequentialTaskRunner()
-
-    @flow(task_runner=SequentialTaskRunner())
+    @flow
     def workflow(atoms):
         future1 = task(relax_job).submit(atoms)
         result = bulk_to_slabs_flow(future1, run_slab_static=False)
@@ -165,9 +159,6 @@ def test_comparison2():
 def test_emt_flow(tmpdir):
     tmpdir.chdir()
 
-    from prefect.task_runners import SequentialTaskRunner
-
     from quacc.recipes.emt.prefect.slabs import bulk_to_slabs_flow
 
-    bulk_to_slabs_flow.task_runner = SequentialTaskRunner()
     bulk_to_slabs_flow(bulk("Cu"))

@@ -40,6 +40,8 @@ Please abide by the following guidelines when contributing code to quacc:
 
 - Where appropriate, you should use the "internal" geometry optimizers for a given code rather than the ASE optimizers.
 
+- Use absolute paths where possible and avoid using `os.chdir`. This helps ensure that quacc can be run in a multi-threading mode.
+
 - `gzip` large test files to save space.
 
 - Update the `CHANGELOG.md` file.
