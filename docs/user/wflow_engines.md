@@ -141,7 +141,7 @@ graph LR
     future1 = relax_app(atoms)
 
     # Call App 2, which takes the output of App 1 as input
-    future2 = static_app(future1.result())
+    future2 = static_app(future1)
 
     # Print result
     print(future2.result())
@@ -149,7 +149,7 @@ graph LR
 
     You can see that it is quite trivial to set up a Parsl workflow using the recipes within quacc. We define the full workflow as a function that stitches together the individual `@python_app` workflow steps.
 
-    The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object. Technically, we did not need to call `future1.result()` because Parsl will automatically know that it cannot run `static_app` until `future1` is resolved. Nonetheless, we have included it here for clarity.
+    The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object. Parsl will automatically know that it cannot run `static_app` until `future1` is resolved, which is why it was not included here.
 
     !!! Note
 
@@ -427,7 +427,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
     # Define the workflow
     future1 = relax_app(atoms)
-    future2 = bulk_to_slabs_app(future1.result())
+    future2 = bulk_to_slabs_app(future1)
 
     # Print the results
     print(future2.result())
@@ -458,7 +458,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
     # Define the workflow
     future1 = relax_app(atoms)
-    future2 = bulk_to_slabs_flow(future1.result(), slab_static=None)  # (1)
+    future2 = bulk_to_slabs_flow(future1, slab_static=None)  # (1)
 
     # Print the results
     print(future2.result())
