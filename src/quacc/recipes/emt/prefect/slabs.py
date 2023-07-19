@@ -6,7 +6,6 @@ from prefect import flow, task
 from prefect.futures import PrefectFuture
 
 from quacc.recipes.emt.slabs import relax_job, static_job
-from quacc.schemas.ase import OptSchema, RunSchema
 from quacc.util.slabs import make_max_slabs_from_bulk
 
 
