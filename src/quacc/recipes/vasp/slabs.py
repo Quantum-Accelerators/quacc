@@ -213,7 +213,7 @@ def slab_to_ads_flow(
     make_ads_kwargs = make_ads_kwargs or {}
 
     @ct.electron
-    def _make_adsorbate_structures(atoms, adsorbate):
+    def _make_ads_slabs(atoms, adsorbate):
         atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
         return make_adsorbate_structures(atoms, adsorbate, **make_ads_kwargs)
 
@@ -233,7 +233,7 @@ def slab_to_ads_flow(
             for slab in slabs
         ]
 
-    ads_slabs = _make_adsorbate_structures(slab, adsorbate)
+    ads_slabs = _make_ads_slabs(slab, adsorbate)
 
     if slab_static is None:
         return _relax_distributed(ads_slabs)
