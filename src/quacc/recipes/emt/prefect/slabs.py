@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from ase import Atoms
 from prefect import flow, task
+from prefect.futures import PrefectFuture
 
 from quacc.recipes.emt.slabs import relax_job, static_job
 from quacc.schemas.ase import OptSchema, RunSchema
@@ -16,7 +17,7 @@ def bulk_to_slabs_flow(
     make_slabs_kwargs: dict | None = None,
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
-) -> list[RunSchema | OptSchema]:
+) -> list[PrefectFuture]:
     """
     Workflow consisting of:
 
@@ -41,9 +42,9 @@ def bulk_to_slabs_flow(
 
     Returns
     -------
-    list[dict]
-        List of dictionary of results from quacc.schemas.ase.summarize_run
-        or quacc.schemas.ase.summarize_opt_run
+    list[PrefectFuture]
+        List of PrefectFuture objects, each of which resolves to a dictionary of results
+        from quacc.schemas.ase.summarize_run or quacc.schemas.ase.summarize_opt_run
     """
     make_slabs_kwargs = make_slabs_kwargs or {}
     slab_relax_kwargs = slab_relax_kwargs or {}
@@ -70,4 +71,4 @@ def bulk_to_slabs_flow(
         else:
             futures.append(slab_relax_future)
 
-    return [future.result() for future in futures]
+    return futures

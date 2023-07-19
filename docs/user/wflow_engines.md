@@ -509,20 +509,27 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     @flow
     def workflow(atoms):
         future1 = task(relax_job).submit(atoms)
-        result = bulk_to_slabs_flow(future1, run_slab_static=False)
+        slab_futures = bulk_to_slabs_flow(future1, run_slab_static=False)  # (1)
 
-        return result
+        return slab_futures
 
 
     # Define the Atoms object
     atoms = bulk("Cu")
 
     # Run the workflow
-    result = workflow(atoms)
+    slab_futures = workflow(atoms)
+    result = [slab_future.result() for slab_future in slab_futures]  # (2)
     print(result)
     ```
 
     ![Prefect UI](../images/user/prefect_tutorial4.gif)
+
+    1. Since `bulk_to_slabs_flow` is a `Flow` and not a `Task`, we do not call `.submit()` on it.
+
+    2.  Since `bulk_to_slabs_flow` returns a list of `PrefectFuture` objects (one for each slab), we have to call `.result()` on each. didn't need to wrap `bulk_to_slabs_flow` with a `@python_app` decorator because it is simply a collection of `PythonApp` objects and is already returning an `AppFuture`.
+
+    In this example, all the individual tasks are run as separate jobs, which is more efficient. By comparing [`.emt.prefect.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.prefect.slabs.bulk_to_slabs_flow) with its Covalent counterpart [`.emt.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.slabs.bulk_to_slabs_flow), you can see that the two are extremely similar such that it is often straightforward to [interconvert](wflow_syntax.md) between the two.
 
 === "Jobflow"
 
