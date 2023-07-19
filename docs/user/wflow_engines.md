@@ -458,7 +458,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
     # Define the workflow
     future1 = relax_app(atoms)
-    future2 = bulk_to_slabs_flow(future1.result(), slab_static=None)  # (1)
+    future2 = bulk_to_slabs_flow(future1, slab_static=None)  # (1)
 
     # Print the results
     print(future2.result())
