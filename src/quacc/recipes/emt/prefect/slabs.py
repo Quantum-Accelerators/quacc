@@ -42,7 +42,7 @@ def bulk_to_slabs_flow(
 
     Returns
     -------
-    list[PrefectFuture]
+    list[PrefectFuture[RunSchema | OptSchema, Sync]]
         List of PrefectFuture objects, each of which resolves to a dictionary of results
         from quacc.schemas.ase.summarize_run or quacc.schemas.ase.summarize_opt_run
     """
@@ -53,8 +53,8 @@ def bulk_to_slabs_flow(
     if "relax_cell" not in slab_relax_kwargs:
         slab_relax_kwargs["relax_cell"] = False
 
-    slab_relax_task = task(relax_job)
-    slab_static_task = task(static_job)
+    slab_relax = task(relax_job)
+    slab_static = task(static_job)
 
     @task
     def _make_slabs(atoms):
@@ -65,10 +65,10 @@ def bulk_to_slabs_flow(
 
     futures = []
     for slab in slabs:
-        slab_relax_future = slab_relax_task.submit(slab, **slab_relax_kwargs)
+        slab_relax_future = slab_relax.submit(slab, **slab_relax_kwargs)
 
         if run_slab_static:
-            slab_static_future = slab_static_task.submit(
+            slab_static_future = slab_static.submit(
                 slab_relax_future, **slab_static_kwargs
             )
             futures.append(slab_static_future)
