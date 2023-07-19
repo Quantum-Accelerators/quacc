@@ -46,13 +46,17 @@ def bulk_to_slabs_flow(
     list[dict]
         List of dictionary of results from quacc.schemas.ase.summarize_run or quacc.schemas.ase.summarize_opt_run
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}
     make_slabs_kwargs = make_slabs_kwargs or {}
 
     if "relax_cell" not in slab_relax_kwargs:
         slab_relax_kwargs["relax_cell"] = False
+
+    @ct.electron
+    def _make_slabs(atoms):
+        atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+        return make_max_slabs_from_bulk(atoms, **make_slabs_kwargs)
 
     @ct.electron
     @ct.lattice
@@ -70,7 +74,7 @@ def bulk_to_slabs_flow(
             for slab in slabs
         ]
 
-    slabs = ct.electron(make_max_slabs_from_bulk)(atoms, **make_slabs_kwargs)
+    slabs = _make_slabs(atoms)
 
     if slab_static is None:
         return _relax_distributed(slabs)

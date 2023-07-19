@@ -141,7 +141,7 @@ graph LR
     future1 = relax_app(atoms)
 
     # Call App 2, which takes the output of App 1 as input
-    future2 = static_app(future1.result())
+    future2 = static_app(future1)
 
     # Print result
     print(future2.result())
@@ -149,11 +149,11 @@ graph LR
 
     You can see that it is quite trivial to set up a Parsl workflow using the recipes within quacc. We define the full workflow as a function that stitches together the individual `@python_app` workflow steps.
 
-    The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object. Technically, we did not need to call `future1.result()` because Parsl will automatically know that it cannot run `static_app` until `future1` is resolved. Nonetheless, we have included it here for clarity.
+    The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object.
 
     !!! Note
 
-        You should not include a `.result()` call in a `@python_app` or `@join_app` definition, which is why we didn't do so here. Parsl will implicitly know to call `.result()` on any `AppFuture`.
+        Parsl `PythonApp`/`JoinApp` objects will implicitly know to call `.result()` on any `AppFuture` it receives. As such, you should avoid calling `.result()` within a `PythonApp`/`JoinApp` definition or between `PythonApp`/`JoinApp` objects.
 
 === "Prefect"
 
@@ -189,7 +189,7 @@ graph LR
 
     !!! Note
 
-        You should not call `.result()` when passing the results of tasks to other tasks, only when interacting with the result of a task inside of the flow itself. Prefect will implicitly know to call `.result()` on any `PrefectFuture`.
+        Prefect will implicitly know to call `.result()` on any `PrefectFuture` in a `Flow`. As such, you should avoid calling `.result()` when passing the results of tasks to other tasks.
 
     ![Prefect UI](../images/user/prefect_tutorial1.jpg)
 
@@ -427,7 +427,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
     # Define the workflow
     future1 = relax_app(atoms)
-    future2 = bulk_to_slabs_app(future1.result())
+    future2 = bulk_to_slabs_app(future1)
 
     # Print the results
     print(future2.result())

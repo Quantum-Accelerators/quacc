@@ -49,13 +49,17 @@ def bulk_to_slabs_flow(
     AppFuture
         An AppFuture whose .result() is a list[dict]
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}
     make_slabs_kwargs = make_slabs_kwargs or {}
 
     if "relax_cell" not in slab_relax_kwargs:
         slab_relax_kwargs["relax_cell"] = False
+
+    @python_app
+    def _make_slabs(atoms):
+        atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+        return make_max_slabs_from_bulk(atoms, **make_slabs_kwargs)
 
     @join_app
     def _relax_distributed(slabs):
@@ -71,7 +75,7 @@ def bulk_to_slabs_flow(
             for slab in slabs
         ]
 
-    slabs = make_max_slabs_from_bulk(atoms, **make_slabs_kwargs)
+    slabs = _make_slabs(atoms)
 
     if slab_static is None:
         return _relax_distributed(slabs)
