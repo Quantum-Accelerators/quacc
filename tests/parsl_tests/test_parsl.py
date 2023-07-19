@@ -117,12 +117,11 @@ def test_tutorial4(tmpdir):
 
     # Define the workflow
     future1 = relax_app(atoms)
-    future2 = bulk_to_slabs_flow(future1, slab_static=None)
+    slab_futures = bulk_to_slabs_flow(future1, slab_static=None)
 
     # Print the results
-    future2.result()
-    assert future2.done()
-    assert len(future2.result()) == 4
+    result = [slab_future.result() for slab_future in slab_futures]
+    assert len(result) == 4
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
@@ -169,6 +168,6 @@ def test_slabs(tmpdir):
 
     from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_flow
 
-    wf_future = bulk_to_slabs_flow(bulk("Cu"))
-    wf_future.result()
-    assert wf_future.done()
+    slab_futures = bulk_to_slabs_flow(bulk("Cu"))
+    result = [slab_future.result() for slab_future in slab_futures]
+    assert len(result) == 4

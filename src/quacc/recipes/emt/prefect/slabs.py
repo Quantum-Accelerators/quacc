@@ -3,9 +3,10 @@ from __future__ import annotations
 
 from ase import Atoms
 from prefect import flow, task
-from prefect.futures import PrefectFuture
+from prefect.futures import PrefectFuture, Sync
 
 from quacc.recipes.emt.slabs import relax_job, static_job
+from quacc.schemas.ase import OptSchema, RunSchema
 from quacc.util.slabs import make_max_slabs_from_bulk
 
 
@@ -16,7 +17,7 @@ def bulk_to_slabs_flow(
     make_slabs_kwargs: dict | None = None,
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
-) -> list[PrefectFuture]:
+) -> list[PrefectFuture[RunSchema | OptSchema, Sync]]:
     """
     Workflow consisting of:
 
@@ -41,7 +42,7 @@ def bulk_to_slabs_flow(
 
     Returns
     -------
-    list[PrefectFuture]
+    list[PrefectFuture[RunSchema | OptSchema, Sync]]
         List of PrefectFuture objects, each of which resolves to a dictionary of results
         from quacc.schemas.ase.summarize_run or quacc.schemas.ase.summarize_opt_run
     """
@@ -49,21 +50,25 @@ def bulk_to_slabs_flow(
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}
 
-    slab_relax_task = task(relax_job)
-    slab_static_task = task(static_job)
-
     if "relax_cell" not in slab_relax_kwargs:
         slab_relax_kwargs["relax_cell"] = False
 
-    # Generate all the slab
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
-    slabs = make_max_slabs_from_bulk(atoms, **make_slabs_kwargs)
+    slab_relax = task(relax_job)
+    slab_static = task(static_job)
+
+    @task
+    def _make_slabs(atoms):
+        atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+        return make_max_slabs_from_bulk(atoms, **make_slabs_kwargs)
+
+    slabs = _make_slabs(atoms)
 
     futures = []
     for slab in slabs:
-        slab_relax_future = slab_relax_task.submit(slab, **slab_relax_kwargs)
+        slab_relax_future = slab_relax.submit(slab, **slab_relax_kwargs)
+
         if run_slab_static:
-            slab_static_future = slab_static_task.submit(
+            slab_static_future = slab_static.submit(
                 slab_relax_future, **slab_static_kwargs
             )
             futures.append(slab_static_future)
