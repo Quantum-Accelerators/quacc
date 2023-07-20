@@ -1,4 +1,4 @@
-# Connecting Quacc with Atomate2
+# Quacc + Atomate2
 
 [Atomate2](https://github.com/materialsproject/atomate2) is a fantastic computational materials science workflow program that shares many similarities with quacc. If you wish to combine workflows from quacc with those from Atomate2, that is possible through the use of Jobflow.
 
