@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from ase import Atoms
-from parsl import python_app
+from parsl import join_app, python_app
 from parsl.app.python import PythonApp
 from parsl.dataflow.futures import AppFuture
 
@@ -20,7 +20,7 @@ def bulk_to_slabs_flow(
     slab_static: PythonApp | None = python_app(static_job.electron_object.function),
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
-) -> AppFuture[RunSchema | OptSchema]:
+) -> AppFuture[list[RunSchema | OptSchema]]:
     """
     Workflow consisting of:
 
@@ -47,9 +47,9 @@ def bulk_to_slabs_flow(
 
     Returns
     -------
-    AppFuture[RunSchema | OptSchema]
-        List of AppFuture objects, each of which resolves to a dictionary of results
-        from quacc.schemas.ase.summarize_run or quacc.schemas.ase.summarize_opt_run
+    AppFuture[list[RunSchema | OptSchema]]
+        An AppFuture whose .result() is a list of dictionary of results from
+        quacc.schemas.ase.summarize_run or quacc.schemas.ase.summarize_opt_run
     """
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}
@@ -63,16 +63,23 @@ def bulk_to_slabs_flow(
         atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
         return make_max_slabs_from_bulk(atoms, **make_slabs_kwargs)
 
-    slabs = _make_slabs(atoms).result()
+    @join_app
+    def _relax_distributed(slabs):
+        return [slab_relax(slab, **slab_relax_kwargs) for slab in slabs]
 
-    futures = []
-    for slab in slabs:
-        slab_relax_future = slab_relax(slab, **slab_relax_kwargs)
+    @join_app
+    def _relax_and_static_distributed(slabs):
+        return [
+            slab_static(
+                slab_relax(slab, **slab_relax_kwargs),
+                **slab_static_kwargs,
+            )
+            for slab in slabs
+        ]
 
-        if slab_static:
-            slab_static_future = slab_static(slab_relax_future, **slab_static_kwargs)
-            futures.append(slab_static_future)
-        else:
-            futures.append(slab_relax_future)
+    slabs = _make_slabs(atoms)
 
-    return futures
+    if slab_static is None:
+        return _relax_distributed(slabs)
+
+    return _relax_and_static_distributed(slabs)
