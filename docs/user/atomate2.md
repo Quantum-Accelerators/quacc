@@ -12,8 +12,7 @@ For instance, consider a toy example where you want to relax a bulk Cu structure
 from ase.build import bulk
 from atomate2.vasp.flows.core import RelaxBandStructureMaker
 from jobflow import Flow
-
-from quacc.recipes.emt.core import relax_job
+from quacc.recipes.tblite.core import relax_job
 
 atoms = bulk("Cu")
 
