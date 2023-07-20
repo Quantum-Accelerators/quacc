@@ -141,7 +141,7 @@ nav:
       - user/settings.md
       - Advanced:
           - user/database.md
-          - user/filestore.md
+          - user/file_transfer.md
   - Developer Guide 🤝:
       - dev/contributing.md
       - dev/docs.md
