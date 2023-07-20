@@ -120,7 +120,7 @@ def test_tutorial4(tmpdir):
     slab_futures = bulk_to_slabs_flow(future1, slab_static=None)
 
     # Print the results
-    result = [slab_future.result() for slab_future in slab_futures]
+    result = slab_futures.result()
     assert len(result) == 4
 
 
@@ -169,5 +169,5 @@ def test_slabs(tmpdir):
     from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_flow
 
     slab_futures = bulk_to_slabs_flow(bulk("Cu"))
-    result = [slab_future.result() for slab_future in slab_futures]
+    result = slab_futures.result()
     assert len(result) == 4
