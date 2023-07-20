@@ -84,10 +84,10 @@ graph LR
 
     # Dispatch the workflow to the Covalent server
     # with the bulk Cu Atoms object as the input
-    dispatch_id = ct.dispatch(workflow)(atoms)  # (1)
+    dispatch_id = ct.dispatch(workflow)(atoms) # (1)!
 
     # Fetch the result from the server
-    result = ct.get_result(dispatch_id, wait=True)  # (2)
+    result = ct.get_result(dispatch_id, wait=True) # (2)!
     print(result)
     ```
 
@@ -167,7 +167,7 @@ graph LR
     @flow
     def workflow(atoms):
         # Call Task 1
-        future1 = task(relax_job).submit(atoms)  # (1)
+        future1 = task(relax_job).submit(atoms) # (1)!
 
         # Call Task 2, which takes the output of Task 1 as input
         future2 = task(static_job).submit(future1)
@@ -458,10 +458,10 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
     # Define the workflow
     future1 = relax_app(atoms)
-    slab_futures = bulk_to_slabs_flow(future1, slab_static=None)  # (1)
+    slab_futures = bulk_to_slabs_flow(future1, slab_static=None) # (1)!
 
     # Print the results
-    result = [slab_future.result() for slab_future in slab_futures]  # (2)
+    result = [slab_future.result() for slab_future in slab_futures] # (2)!
     print(result)
     ```
 
@@ -512,7 +512,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     @flow
     def workflow(atoms):
         future1 = task(relax_job).submit(atoms)
-        slab_futures = bulk_to_slabs_flow(future1, run_slab_static=False)  # (1)
+        slab_futures = bulk_to_slabs_flow(future1, run_slab_static=False) # (1)!
 
         return slab_futures
 
@@ -522,7 +522,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
     # Run the workflow
     slab_futures = workflow(atoms)
-    result = [slab_future.result() for slab_future in slab_futures]  # (2)
+    result = [slab_future.result() for slab_future in slab_futures] # (2)!
     print(result)
     ```
 

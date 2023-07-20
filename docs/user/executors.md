@@ -41,7 +41,7 @@ In the previous examples, we have been running calculations on our local machine
     @ct.lattice
     def workflow(atoms):
         job1 = relax_job
-        job1.electron_object.executor = "dask" # (1)
+        job1.electron_object.executor = "dask" # (1)!
 
         job2 = static_job
         job2.electron_object.executor = "local"
@@ -90,7 +90,7 @@ In the previous examples, we have been running calculations on our local machine
         prerun_commands=[
             f"export QUACC_VASP_PARALLEL_CMD='srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'",
         ],
-        use_srun=False, # (1)
+        use_srun=False, # (1)!
     )
     ```
 
