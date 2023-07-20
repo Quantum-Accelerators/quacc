@@ -142,6 +142,7 @@ nav:
       - Advanced:
           - user/database.md
           - user/file_transfer.md
+          - user/atomate2.md
   - Developer Guide 🤝:
       - dev/contributing.md
       - dev/docs.md
