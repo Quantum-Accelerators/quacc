@@ -461,13 +461,11 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     slab_futures = bulk_to_slabs_flow(future1, slab_static=None) # (1)!
 
     # Print the results
-    result = [slab_future.result() for slab_future in slab_futures] # (2)!
+    result = slab_futures.result()
     print(result)
     ```
 
     1.  We didn't need to wrap `bulk_to_slabs_flow` with a `@python_app` decorator because it is simply a collection of `PythonApp` objects and is already returning an `AppFuture`.
-
-    2.  Since `bulk_to_slabs_flow` returns a list of `AppFuture` objects (one for each slab), we have to call `.result()` on each.
 
     In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient.
 

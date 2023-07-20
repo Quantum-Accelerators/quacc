@@ -26,10 +26,10 @@ def test_tutorial1(tmpdir):
     from quacc.recipes.emt.core import relax_job, static_job
 
     # Define the workflow
-    @flow  # (3)!!
+    @flow
     def workflow(atoms):
         # Call Task 1
-        future1 = task(relax_job).submit(atoms)  # (4)!!
+        future1 = task(relax_job).submit(atoms)
 
         # Call Task 2, which takes the output of Task 1 as input
         future2 = task(static_job).submit(future1)
