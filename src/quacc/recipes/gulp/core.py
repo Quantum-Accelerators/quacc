@@ -36,13 +36,9 @@ def static_job(
     library
         Filename of the potential library file, if required.
     keyword_swaps
-        dictionary of custom keyword swap kwargs for the calculator.
-            default_keywords = {
-                "gfnff": True if use_gfnff else None,
-                "gwolf": True if use_gfnff and atoms.pbc.any() else None,
-            }
+        Dictionary of custom keyword swap kwargs for the calculator.
     option_swaps
-        dictionary of custom option swap kwargs for the calculator.
+        Dictionary of custom option swap kwargs for the calculator.
 
     Returns
     -------

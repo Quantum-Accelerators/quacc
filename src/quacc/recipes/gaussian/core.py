@@ -43,22 +43,6 @@ def static_job(
         Basis set
     calc_swaps
         Dictionary of custom kwargs for the calculator.
-            defaults = {
-                "mem": "16GB",
-                "chk": "Gaussian.chk",
-                "nprocshared": multiprocessing.cpu_count(),
-                "xc": xc,
-                "basis": basis,
-                "charge": charge or int(sum(atoms.get_initial_charges())),
-                "mult": multiplicity or int(1 + sum(atoms.get_initial_magnetic_moments())),
-                "sp": "",
-                "scf": ["maxcycle=250", "xqc"],
-                "integral": "ultrafine",
-                "nosymmetry": "",
-                "pop": "CM5",
-                "gfinput": "",
-                "ioplist": ["6/7=3", "2/9=2000"]
-            }
 
     Returns
     -------
@@ -134,22 +118,6 @@ def relax_job(
         If a frequency calculation should be carried out.
     calc_swaps
         Dictionary of custom kwargs for the calculator.
-            defaults = {
-                "mem": "16GB",
-                "chk": "Gaussian.chk",
-                "nprocshared": multiprocessing.cpu_count(),
-                "xc": xc,
-                "basis": basis,
-                "charge": charge or int(sum(atoms.get_initial_charges())),
-                "mult": multiplicity or int(1 + sum(atoms.get_initial_magnetic_moments())),
-                "opt": "",
-                "pop": "CM5",
-                "scf": ["maxcycle=250", "xqc"],
-                "integral": "ultrafine",
-                "nosymmetry": "",
-                "freq": "" if freq else None,
-                "ioplist": ["2/9=2000"],  # ASE issue #660
-            }
 
     Returns
     -------

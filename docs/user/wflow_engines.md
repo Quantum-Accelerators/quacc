@@ -84,10 +84,10 @@ graph LR
 
     # Dispatch the workflow to the Covalent server
     # with the bulk Cu Atoms object as the input
-    dispatch_id = ct.dispatch(workflow)(atoms)  # (1)
+    dispatch_id = ct.dispatch(workflow)(atoms) # (1)!
 
     # Fetch the result from the server
-    result = ct.get_result(dispatch_id, wait=True)  # (2)
+    result = ct.get_result(dispatch_id, wait=True) # (2)!
     print(result)
     ```
 
@@ -141,7 +141,7 @@ graph LR
     future1 = relax_app(atoms)
 
     # Call App 2, which takes the output of App 1 as input
-    future2 = static_app(future1.result())
+    future2 = static_app(future1)
 
     # Print result
     print(future2.result())
@@ -149,11 +149,11 @@ graph LR
 
     You can see that it is quite trivial to set up a Parsl workflow using the recipes within quacc. We define the full workflow as a function that stitches together the individual `@python_app` workflow steps.
 
-    The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object. Technically, we did not need to call `future1.result()` because Parsl will automatically know that it cannot run `static_app` until `future1` is resolved. Nonetheless, we have included it here for clarity.
+    The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object.
 
     !!! Note
 
-        You should not include a `.result()` call in a `@python_app` or `@join_app` definition, which is why we didn't do so here. Parsl will implicitly know to call `.result()` on any `AppFuture`.
+        Parsl `PythonApp`/`JoinApp` objects will implicitly know to call `.result()` on any `AppFuture` it receives. As such, you should avoid calling `.result()` within a `PythonApp`/`JoinApp` definition or between `PythonApp`/`JoinApp` objects if possible.
 
 === "Prefect"
 
@@ -167,7 +167,7 @@ graph LR
     @flow
     def workflow(atoms):
         # Call Task 1
-        future1 = task(relax_job).submit(atoms)  # (1)
+        future1 = task(relax_job).submit(atoms) # (1)!
 
         # Call Task 2, which takes the output of Task 1 as input
         future2 = task(static_job).submit(future1)
@@ -189,7 +189,7 @@ graph LR
 
     !!! Note
 
-        You should not call `.result()` when passing the results of tasks to other tasks, only when interacting with the result of a task inside of the flow itself. Prefect will implicitly know to call `.result()` on any `PrefectFuture`.
+        Prefect will implicitly know to call `.result()` on any `PrefectFuture` in a `Flow`. As such, you should avoid calling `.result()` when passing the results of tasks to other tasks if possible.
 
     ![Prefect UI](../images/user/prefect_tutorial1.jpg)
 
@@ -427,7 +427,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
     # Define the workflow
     future1 = relax_app(atoms)
-    future2 = bulk_to_slabs_app(future1.result())
+    future2 = bulk_to_slabs_app(future1)
 
     # Print the results
     print(future2.result())
@@ -458,15 +458,16 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
     # Define the workflow
     future1 = relax_app(atoms)
-    future2 = bulk_to_slabs_flow(future1.result(), slab_static=None)  # (1)
+    slab_futures = bulk_to_slabs_flow(future1, slab_static=None) # (1)!
 
     # Print the results
-    print(future2.result())
+    result = slab_futures.result()
+    print(result)
     ```
 
     1.  We didn't need to wrap `bulk_to_slabs_flow` with a `@python_app` decorator because it is simply a collection of `PythonApp` objects and is already returning an `AppFuture`.
 
-    In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing [`.emt.parsl.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.parsl.slabs.bulk_to_slabs_flow) with its Covalent counterpart [`.emt.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.slabs.bulk_to_slabs_flow), you can see that the two are extremely similar such that it is often straightforward to [interconvert](wflow_syntax.md) between the two.
+    In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient.
 
 === "Prefect"
 
@@ -509,20 +510,27 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     @flow
     def workflow(atoms):
         future1 = task(relax_job).submit(atoms)
-        result = bulk_to_slabs_flow(future1, run_slab_static=False)
+        slab_futures = bulk_to_slabs_flow(future1, run_slab_static=False) # (1)!
 
-        return result
+        return slab_futures
 
 
     # Define the Atoms object
     atoms = bulk("Cu")
 
     # Run the workflow
-    result = workflow(atoms)
+    slab_futures = workflow(atoms)
+    result = [slab_future.result() for slab_future in slab_futures] # (2)!
     print(result)
     ```
 
     ![Prefect UI](../images/user/prefect_tutorial4.gif)
+
+    1. Since `bulk_to_slabs_flow` is a `Flow` and not a `Task`, we do not call `.submit()` on it and did not need to wrap it with a `@task` decorator.
+
+    2.  Since `bulk_to_slabs_flow` returns a list of `PrefectFuture` objects (one for each slab), we have to call `.result()` on each. didn't need to wrap `bulk_to_slabs_flow` with a `@python_app` decorator because it is simply a collection of `PythonApp` objects and is already returning an `AppFuture`.
+
+    In this example, all the individual tasks are run as separate jobs, which is more efficient.
 
 === "Jobflow"
 

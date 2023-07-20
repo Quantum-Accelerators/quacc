@@ -26,10 +26,10 @@ def test_tutorial1(tmpdir):
     from quacc.recipes.emt.core import relax_job, static_job
 
     # Define the workflow
-    @flow  # (3)!
+    @flow
     def workflow(atoms):
         # Call Task 1
-        future1 = task(relax_job).submit(atoms)  # (4)!
+        future1 = task(relax_job).submit(atoms)
 
         # Call Task 2, which takes the output of Task 1 as input
         future2 = task(static_job).submit(future1)
@@ -40,7 +40,8 @@ def test_tutorial1(tmpdir):
     atoms = bulk("Cu")
 
     # Run the workflow with Prefect tracking
-    workflow(atoms).result()
+    result = workflow(atoms).result()
+    assert "atoms" in result
 
 
 @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
@@ -67,7 +68,8 @@ def test_tutorial2(tmpdir):
 
     # Run the workflow with Prefect tracking
     future1, future2 = workflow(atoms1, atoms2)
-    future1.result(), future2.result()
+    assert "atoms" in future1.result()
+    assert "atoms" in future2.result()
 
 
 @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
@@ -91,7 +93,8 @@ def test_tutorial3(tmpdir):
     atoms = bulk("Cu")
 
     # Run the workflow
-    workflow(atoms).result()
+    result = workflow(atoms).result()
+    assert len(result) == 4
 
 
 @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
@@ -115,7 +118,9 @@ def test_tutorial4(tmpdir):
     atoms = bulk("Cu")
 
     # Run the workflow
-    workflow(atoms)
+    slab_futures = workflow(atoms)
+    result = [slab_future.result() for slab_future in slab_futures]
+    assert len(result) == 4
 
 
 @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")

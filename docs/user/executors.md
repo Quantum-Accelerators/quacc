@@ -41,7 +41,7 @@ In the previous examples, we have been running calculations on our local machine
     @ct.lattice
     def workflow(atoms):
         job1 = relax_job
-        job1.electron_object.executor = "dask" # (1)
+        job1.electron_object.executor = "dask" # (1)!
 
         job2 = static_job
         job2.electron_object.executor = "local"
@@ -60,7 +60,9 @@ In the previous examples, we have been running calculations on our local machine
 
     **Configuring Executors**
 
-    Refer to the [executor documentation](https://docs.covalent.xyz/docs/features/executor-plugins/exe) for instructions on how to configure Covalent for your desired machines.
+    !!! Tip
+
+        Refer to the [executor documentation](https://docs.covalent.xyz/docs/features/executor-plugins/exe) for instructions on how to configure Covalent for your desired machines.
 
     By default, the `workdir` for the `Dask` (default) and `local` executors is set to `~/.cache/covalent/workdir`. This is where any files generated at runtime will be stored. You can change both of these parameters to the directories of your choosing by editing the Covalent configuration file directly or via the `ct.set_config()` command.
 
@@ -88,7 +90,7 @@ In the previous examples, we have been running calculations on our local machine
         prerun_commands=[
             f"export QUACC_VASP_PARALLEL_CMD='srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'",
         ],
-        use_srun=False, # (1)
+        use_srun=False, # (1)!
     )
     ```
 
@@ -100,7 +102,9 @@ In the previous examples, we have been running calculations on our local machine
 
     **Configuring Executors**
 
-    To configure Parsl for the high-performance computing environment of your choice, refer to the executor [Configuration](https://parsl.readthedocs.io/en/stable/userguide/configuring.html) page in the Parsl documentation.
+    !!! Tip
+
+        To configure Parsl for the high-performance computing environment of your choice, refer to the executor [Configuration](https://parsl.readthedocs.io/en/stable/userguide/configuring.html) page in the Parsl documentation.
 
     For [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/), example [`HighThroughputExecutor`](https://parsl.readthedocs.io/en/stable/stubs/parsl.executors.HighThroughputExecutor.html#parsl.executors.HighThroughputExecutor) configurations can be found in the [NERSC Documentation](https://docs.nersc.gov/jobs/workflow/parsl/). A simple one is reproduced below that allows for job submission from the login node. This example will create a single Slurm job that will run one `PythonApp` at a time on a single node and is good for testing out some of the examples above.
 

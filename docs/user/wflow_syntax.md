@@ -46,7 +46,7 @@ graph LR
     import covalent as ct
 
 
-    @ct.electron
+    @ct.electron  # (1)!
     def add(a, b):
         return a + b
 
@@ -56,18 +56,28 @@ graph LR
         return a * b
 
 
-    @ct.lattice
+    @ct.lattice  # (2)!
     def workflow(a, b, c):
         return mult(add(a, b), c)
 
 
     # Locally
-    result = workflow(1, 2, 3)  # 9
+    result = workflow(1, 2, 3)  # 9  (3)!
 
     # Dispatched
-    dispatch_id = ct.dispatch(workflow)(1, 2, 3)
-    result = ct.get_result(dispatch_id, wait=True)  # 9
+    dispatch_id = ct.dispatch(workflow)(1, 2, 3)  # (4)!
+    result = ct.get_result(dispatch_id, wait=True)  # 9  (5)!
     ```
+
+    1. `#!Python @ct.electron` is a decorator that tells Covalent to treat the function as a compute job.
+
+    2. `#!Python @ct.lattice` is a decorator that tells Covalent to treat the function as a workflow.
+
+    3. By default, Covalent workflows run locally.
+
+    4. The `#!Python ct.dispatch` function tells Covalent to dispatch the workflow to the Covalent server.
+
+    5. The `#!Python ct.get_result` function tells Covalent to fetch the result from the server.
 
 === "Parsl"
 
@@ -78,7 +88,7 @@ graph LR
     from parsl import python_app
 
 
-    @python_app
+    @python_app  # (1)!
     def add(a, b):
         return a + b
 
@@ -92,8 +102,12 @@ graph LR
         return mult(add(a, b), c)
 
 
-    result = workflow(1, 2, 3).result()  # 9
+    result = workflow(1, 2, 3).result()  # 9  (2)
     ```
+
+    1. `#!Python @python_app` is a decorator that tells Parsl to treat the function as a compute job.
+
+    2. `#!Python .result()` is a method that tells Parsl to wait for the result of the job. If `#!Python .result()` were not called, an `#!Python AppFuture` would be returned instead of the actual result.
 
 === "Prefect"
 
@@ -101,7 +115,7 @@ graph LR
     from prefect import flow, task
 
 
-    @task
+    @task  # (1)!
     def add(a, b):
         return a + b
 
@@ -111,13 +125,21 @@ graph LR
         return a * b
 
 
-    @flow
+    @flow  # (2)!
     def workflow(a, b, c):
-        return mult.submit(add.submit(a, b), c)
+        return mult.submit(add.submit(a, b), c)  # (3)!
 
 
-    result = workflow(1, 2, 3).result()  # 9
+    result = workflow(1, 2, 3).result()  # 9  (4)
     ```
+
+    1. `#!Python @task` is a decorator that tells Prefect to treat the function as a compute job.
+
+    2. `#!Python @flow` is a decorator that tells Prefect to treat the function as a workflow.
+
+    3. `#!Python .submit()` is a method that tells Prefect to submit the job to the Prefect task runner.
+
+    4. `#!Python .result()` is a method that tells Prefect to wait for the result of the job. If `#!Python .result()` were not called, a `#!Python PrefectFuture` would be returned instead of the actual result.
 
 === "Jobflow"
 
@@ -125,7 +147,7 @@ graph LR
     from jobflow import Flow, job, run_locally
 
 
-    @job
+    @job  # (1)!
     def add(a, b):
         return a + b
 
@@ -137,11 +159,17 @@ graph LR
 
     job1 = add(1, 2)
     job2 = mult(job1.output, 3)
-    flow = Flow([job1, job2])
+    flow = Flow([job1, job2])  # (2)!
 
-    responses = run_locally(flow)
+    responses = run_locally(flow)  # (3)!
     result = responses[job2.uuid][1].output  # 9
     ```
+
+    1. `#!Python @job` is a decorator that tells Jobflow to treat the function as a compute job.
+
+    2. `#!Python Flow` is a class that tells Jobflow to treat the list of jobs as a workflow.
+
+    3. `#!Python run_locally` is a function that tells Jobflow to run the workflow locally.
 
 ## Dynamic Workflow
 
@@ -198,7 +226,7 @@ graph LR
         return [val] * random.randint(2, 5)
 
 
-    @ct.electron
+    @ct.electron  # (1)!
     @ct.lattice
     def add_distributed(vals, c):
         return [add(val, c) for val in vals]
@@ -219,6 +247,8 @@ graph LR
     result = ct.get_result(dispatch_id, wait=True)  # e.g. [6, 6, 6]
     ```
 
+    1. `#!Python @ct.electron` followed by `#!Python @ct.lattice` is called a sublattice and tells Covalent to treat the function as a dynamic, sub-workflow.
+
 === "Parsl"
 
     ```python
@@ -237,7 +267,7 @@ graph LR
         return [val] * random.randint(2, 5)
 
 
-    @join_app
+    @join_app  # (1)!
     def add_distributed(vals, c):
         return [add(val, c) for val in vals]
 
@@ -250,6 +280,8 @@ graph LR
 
     result = workflow(1, 2, 3).result()  # e.g. [6, 6, 6]
     ```
+
+    1. `#!Python @join_app` is a decorator that tells Parsl to treat the function as a dynamic, sub-workflow. Calling `#!Python .result()` will wait for all of the jobs to finish before returning the result. If you were to use a `#!Python @python_app`, a `#!Python list[AppFuture[int]]` would be returned instead of an `#!Python AppFuture[list[int]]`.
 
 === "Prefect"
 
@@ -297,7 +329,7 @@ graph LR
         jobs = []
         for val in vals:
             jobs.append(add(val, c))
-        return Response(replace=Flow(jobs))
+        return Response(replace=Flow(jobs))  # (1)
 
 
     job1 = add(1, 2)
@@ -307,3 +339,5 @@ graph LR
 
     responses = run_locally(flow)  # e.g. [6, 6, 6] (job3.output)
     ```
+
+    1. `#!Python Response(replace)` is a class that tells Jobflow to replace the current job with the jobs in the flow.
