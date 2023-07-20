@@ -22,6 +22,7 @@ def static_job(
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
     kpts: tuple | list[tuple] | dict | None = None,
     calc_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -37,6 +38,8 @@ def static_job(
         (1, 1, 1) for solids.
     calc_swaps
         Dictionary of custom kwargs for the calculator.
+    copy_files
+        Absolute paths to files to copy to the runtime directory.
 
     Returns
     -------
@@ -54,7 +57,7 @@ def static_job(
     flags = remove_dict_empties(defaults | calc_swaps)
 
     atoms.calc = Dftb(**flags)
-    final_atoms = run_calc(atoms, geom_file=GEOM_FILE)
+    final_atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
 
     if check_logfile(LOG_FILE, "SCC is NOT converged"):
         raise ValueError("SCC is not converged")
@@ -73,6 +76,7 @@ def relax_job(
     kpts: tuple | list[tuple] | dict | None = None,
     lattice_opt: bool = False,
     calc_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
     Carry out a structure relaxation.
@@ -91,6 +95,8 @@ def relax_job(
         the positions.
     calc_swaps
         Dictionary of custom kwargs for the calculator.
+    copy_files
+        Absolute paths to files to copy to the runtime directory.
 
     Returns
     -------
@@ -112,7 +118,7 @@ def relax_job(
     flags = remove_dict_empties(defaults | calc_swaps)
 
     atoms.calc = Dftb(**flags)
-    final_atoms = run_calc(atoms, geom_file=GEOM_FILE)
+    final_atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
 
     if not check_logfile(LOG_FILE, "Geometry converged"):
         raise ValueError("Geometry did not converge")

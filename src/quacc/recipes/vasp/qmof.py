@@ -25,6 +25,7 @@ def qmof_relax_job(
     relax_volume: bool = True,
     run_prerelax: bool = True,
     calc_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> dict[
     Literal[
         "prerelax-lowacc",

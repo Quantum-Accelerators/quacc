@@ -18,7 +18,11 @@ from quacc.util.calc import run_ase_opt, run_calc
 
 
 @ct.electron
-def static_job(atoms: Atoms | dict, calc_kwargs: dict | None = None) -> RunSchema:
+def static_job(
+    atoms: Atoms | dict,
+    calc_kwargs: dict | None = None,
+    copy_files: list[str] | None = None,
+) -> RunSchema:
     """
     Carry out a static calculation.
 
@@ -28,6 +32,8 @@ def static_job(atoms: Atoms | dict, calc_kwargs: dict | None = None) -> RunSchem
         Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     calc_kwargs
         Dictionary of custom kwargs for the EMT calculator
+    copy_files
+        Absolute paths to files to copy to the runtime directory.
 
     Returns
     -------
@@ -38,7 +44,7 @@ def static_job(atoms: Atoms | dict, calc_kwargs: dict | None = None) -> RunSchem
     calc_kwargs = calc_kwargs or {}
 
     atoms.calc = EMT(**calc_kwargs)
-    final_atoms = run_calc(atoms)
+    final_atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(
         final_atoms,
@@ -53,6 +59,7 @@ def relax_job(
     relax_cell: bool = True,
     calc_kwargs: dict | None = None,
     opt_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> OptSchema:
     """
     Carry out a geometry optimization.
@@ -67,6 +74,8 @@ def relax_job(
         Dictionary of custom kwargs for the EMT calculator
     opt_swaps
         Dictionary of swaps for `run_ase_opt`
+    copy_files
+        Absolute paths to files to copy to the runtime directory.
 
     Returns
     -------
@@ -91,6 +100,6 @@ def relax_job(
     if relax_cell:
         atoms = ExpCellFilter(atoms)
 
-    dyn = run_ase_opt(atoms, **opt_flags)
+    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
 
     return summarize_opt_run(dyn, additional_fields={"name": "EMT Relax"})

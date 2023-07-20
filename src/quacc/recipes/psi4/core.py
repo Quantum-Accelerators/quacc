@@ -25,6 +25,7 @@ def static_job(
     method: str = "wb97x-v",
     basis: str = "def2-tzvp",
     calc_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
     Function to carry out a single-point calculation.
@@ -45,6 +46,8 @@ def static_job(
         Basis set
     calc_swaps
         Dictionary of custom kwargs for the calculator.
+    copy_files
+        Absolute paths to files to copy to the runtime directory.
 
     Returns
     -------
@@ -73,7 +76,7 @@ def static_job(
     flags = remove_dict_empties(defaults | calc_swaps)
 
     atoms.calc = Psi4(**flags)
-    final_atoms = run_calc(atoms)
+    final_atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(
         final_atoms,
