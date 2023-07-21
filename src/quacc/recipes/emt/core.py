@@ -20,7 +20,7 @@ from quacc.util.calc import run_ase_opt, run_calc
 @ct.electron
 def static_job(
     atoms: Atoms | dict,
-    calc_kwargs: dict | None = None,
+    calc_swaps: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
@@ -30,7 +30,7 @@ def static_job(
     ----------
     atoms
         Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
-    calc_kwargs
+    calc_swaps
         Dictionary of custom kwargs for the EMT calculator
     copy_files
         Absolute paths to files to copy to the runtime directory.
@@ -41,9 +41,9 @@ def static_job(
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
     atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
-    calc_kwargs = calc_kwargs or {}
+    calc_swaps = calc_swaps or {}
 
-    atoms.calc = EMT(**calc_kwargs)
+    atoms.calc = EMT(**calc_swaps)
     final_atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(
@@ -57,7 +57,7 @@ def static_job(
 def relax_job(
     atoms: Atoms | dict,
     relax_cell: bool = True,
-    calc_kwargs: dict | None = None,
+    calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
@@ -70,7 +70,7 @@ def relax_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     relax_cell
         Whether to relax the cell
-    calc_kwargs
+    calc_swaps
         Dictionary of custom kwargs for the EMT calculator
     opt_swaps
         Dictionary of swaps for `run_ase_opt`
@@ -83,7 +83,7 @@ def relax_job(
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
     atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
-    calc_kwargs = calc_kwargs or {}
+    calc_swaps = calc_swaps or {}
     opt_swaps = opt_swaps or {}
 
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
@@ -95,7 +95,7 @@ def relax_job(
         )
         relax_cell = False
 
-    atoms.calc = EMT(**calc_kwargs)
+    atoms.calc = EMT(**calc_swaps)
 
     if relax_cell:
         atoms = ExpCellFilter(atoms)
