@@ -21,7 +21,7 @@ relax_job(atoms, copy_files=["/path/to/my/file/stage/WAVECAR"])
 Sometimes, however, you may not necessarily know _a priori_ where the source file is. For instance, perhaps you want to copy the file `WAVECAR` from a previous job in your workflow that is stored in a unique directory only determined at runtime. In this scenario, you can still use the `copy_files` keyword argument, but you will need to fetch the prior job's directory. This can be done as follows:
 
 ```python
-impor tos
+import os
 from ase.build import bulk
 from quacc.recipes.vasp.core import relax_job, static_job
 
