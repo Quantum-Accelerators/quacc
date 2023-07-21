@@ -33,6 +33,7 @@ def static_job(
     atoms: Atoms | dict,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
     calc_kwargs: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -45,6 +46,8 @@ def static_job(
         GFN1-xTB, GFN2-xTB, and IPEA1-xTB.
     calc_kwargs
         Dictionary of custom kwargs for the tblite calculator.
+    copy_files
+        Absolute paths to files to copy to the runtime directory.
 
     Returns
     -------
@@ -55,7 +58,7 @@ def static_job(
     calc_kwargs = calc_kwargs or {}
 
     atoms.calc = TBLite(method=method, **calc_kwargs)
-    final_atoms = run_calc(atoms)
+    final_atoms = run_calc(atoms, copy_files=copy_files)
     return summarize_run(
         final_atoms,
         input_atoms=atoms,
@@ -70,6 +73,7 @@ def relax_job(
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
     calc_kwargs: dict | None = None,
     opt_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> OptSchema:
     """
     Relax a structure.
@@ -84,6 +88,8 @@ def relax_job(
         Dictionary of custom kwargs for the tblite calculator.
     opt_swaps
         Dictionary of custom kwargs for run_ase_opt
+    copy_files
+        Absolute paths to files to copy to the runtime directory.
 
     Returns
     -------
@@ -98,7 +104,7 @@ def relax_job(
     opt_flags = opt_defaults | opt_swaps
 
     atoms.calc = TBLite(method=method, **calc_kwargs)
-    dyn = run_ase_opt(atoms, **opt_flags)
+    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
 
     return summarize_opt_run(dyn, additional_fields={"name": "TBLite Relax"})
 
@@ -113,6 +119,7 @@ def freq_job(
     pressure: float = 1.0,
     calc_kwargs: dict | None = None,
     vib_kwargs: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> dict[Literal["vib", "thermo"], VibSchema | ThermoSchema]:
     """
     Run a frequency job and calculate thermochemistry.
@@ -132,7 +139,9 @@ def freq_job(
     calc_kwargs
         dictionary of custom kwargs for the xTB calculator.
     vib_kwargs
-        dictionary of custom kwargs for the Vibrations object
+        dictionary of custom kwargs for the Vibrations object.
+    copy_files
+        Absolute paths to files to copy to the runtime directory.
 
     Returns
     -------
@@ -145,7 +154,7 @@ def freq_job(
     vib_kwargs = vib_kwargs or {}
 
     atoms.calc = TBLite(method=method, **calc_kwargs)
-    vibrations = run_ase_vib(atoms, vib_kwargs=vib_kwargs)
+    vibrations = run_ase_vib(atoms, vib_kwargs=vib_kwargs, copy_files=copy_files)
 
     igt = ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)
 

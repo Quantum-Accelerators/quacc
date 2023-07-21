@@ -20,6 +20,7 @@ def mp_prerelax_job(
     atoms: Atoms | dict,
     preset: str | None = "MPScanSet",
     calc_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> VaspSchema:
     """
     Function to pre-relax a structure with Materials Project settings.
@@ -33,6 +34,8 @@ def mp_prerelax_job(
         Preset to use.
     calc_swaps
         Dictionary of custom kwargs for the calculator.
+    copy_files
+        Absolute paths to files to copy to the runtime directory.
 
     Returns
     -------
@@ -47,7 +50,7 @@ def mp_prerelax_job(
 
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
-    atoms = run_calc(atoms)
+    atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(atoms, additional_fields={"name": "MP-Prerelax"})
 
@@ -57,6 +60,7 @@ def mp_relax_job(
     atoms: Atoms | dict,
     preset: str | None = "MPScanSet",
     calc_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> VaspSchema:
     """
     Function to relax a structure with Materials Project settings.
@@ -70,6 +74,8 @@ def mp_relax_job(
         Preset to use.
     calc_swaps
         Dictionary of custom kwargs for the calculator.
+    copy_files
+        Absolute paths to files to copy to the runtime directory.
 
     Returns
     -------
@@ -81,7 +87,7 @@ def mp_relax_job(
 
     calc = Vasp(atoms, preset=preset, **calc_swaps)
     atoms.calc = calc
-    atoms = run_calc(atoms)
+    atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(atoms, additional_fields={"name": "MP-Relax"})
 
@@ -139,7 +145,5 @@ def mp_relax_flow(
         }
     relax_kwargs["calc_swaps"] = kspacing_swaps | relax_kwargs.get("calc_swaps", {})
 
-    # TODO: Also, copy the WAVECAR from the prerelaxation to the relaxation
-
     # Run the relax
-    return relax(prerelax_results, **relax_kwargs)
+    return relax(prerelax_results, copy_files=["WAVECAR"], **relax_kwargs)
