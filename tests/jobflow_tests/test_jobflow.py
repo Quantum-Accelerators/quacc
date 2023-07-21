@@ -154,7 +154,7 @@ def test_emt_flow(tmpdir):
         slab_static=None,
         slab_relax_kwargs={
             "opt_swaps": {"fmax": 1.0},
-            "calc_kwargs": {"asap_cutoff": True},
+            "calc_swaps": {"asap_cutoff": True},
             "relax_cell": False,
         },
     )
@@ -165,7 +165,7 @@ def test_emt_flow(tmpdir):
         make_slabs_kwargs={"max_slabs": 2},
         slab_relax_kwargs={
             "opt_swaps": {"fmax": 1.0},
-            "calc_kwargs": {"asap_cutoff": True},
+            "calc_swaps": {"asap_cutoff": True},
             "relax_cell": False,
         },
     )
