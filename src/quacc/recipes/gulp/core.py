@@ -22,6 +22,7 @@ def static_job(
     library: str | None = None,
     keyword_swaps: dict | None = None,
     option_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -67,7 +68,9 @@ def static_job(
 
     atoms.calc = GULP(keywords=gulp_keywords, options=gulp_options, library=library)
     final_atoms = run_calc(
-        atoms, geom_file=GEOM_FILE_PBC if atoms.pbc.any() else GEOM_FILE_NOPBC
+        atoms,
+        geom_file=GEOM_FILE_PBC if atoms.pbc.any() else GEOM_FILE_NOPBC,
+        copy_files=copy_files,
     )
 
     return summarize_run(
@@ -85,6 +88,7 @@ def relax_job(
     relax_cell: bool = True,
     keyword_swaps: dict | None = None,
     option_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -104,6 +108,8 @@ def relax_job(
         Dictionary of custom keyword swap kwargs for the calculator.
     option_swaps
         Dictionary of custom option swap kwargs for the calculator.
+    copy_files
+        Absolute paths to files to copy to the runtime directory.
 
     Returns
     -------
@@ -141,7 +147,9 @@ def relax_job(
 
     atoms.calc = GULP(keywords=gulp_keywords, options=gulp_options, library=library)
     final_atoms = run_calc(
-        atoms, geom_file=GEOM_FILE_PBC if atoms.pbc.any() else GEOM_FILE_NOPBC
+        atoms,
+        geom_file=GEOM_FILE_PBC if atoms.pbc.any() else GEOM_FILE_NOPBC,
+        copy_files=copy_files,
     )
 
     if not final_atoms.calc.get_opt_state():

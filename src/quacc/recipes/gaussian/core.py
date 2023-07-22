@@ -23,6 +23,7 @@ def static_job(
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
     calc_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> cclibSchema:
     """
     Carry out a single-point calculation.
@@ -43,6 +44,8 @@ def static_job(
         Basis set
     calc_swaps
         Dictionary of custom kwargs for the calculator.
+    copy_files
+        Absolute paths to files to copy to the runtime directory.
 
     Returns
     -------
@@ -78,7 +81,7 @@ def static_job(
     flags = remove_dict_empties(defaults | calc_swaps)
 
     atoms.calc = Gaussian(**flags)
-    atoms = run_calc(atoms, geom_file=GEOM_FILE)
+    atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
 
     return summarize_run(
         atoms,
@@ -96,6 +99,7 @@ def relax_job(
     basis: str = "def2-tzvp",
     freq: bool = False,
     calc_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> cclibSchema:
     """
     Carry out a geometry optimization.
@@ -118,6 +122,8 @@ def relax_job(
         If a frequency calculation should be carried out.
     calc_swaps
         Dictionary of custom kwargs for the calculator.
+    copy_files
+        Absolute paths to files to copy to the runtime directory.
 
     Returns
     -------
@@ -153,7 +159,7 @@ def relax_job(
     flags = remove_dict_empties(defaults | calc_swaps)
 
     atoms.calc = Gaussian(**flags)
-    atoms = run_calc(atoms, geom_file=GEOM_FILE)
+    atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
 
     return summarize_run(
         atoms,
