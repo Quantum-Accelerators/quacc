@@ -15,7 +15,7 @@ In the previous examples, we have been running calculations on our local machine
     from ase.build import bulk
     from quacc.recipes.emt.core import relax_job, static_job
 
-    @ct.lattice(executor="local")
+    @ct.lattice(executor="local") # (1)!
     def workflow(atoms):
 
         result1 = relax_job(atoms)
@@ -28,6 +28,8 @@ In the previous examples, we have been running calculations on our local machine
     result = ct.get_result(dispatch_id, wait=True)
     print(result)
     ```
+
+    1. This was merely for demonstration purposes. There is never really a need to use the "local" executor since the "dask" executor runs locally and is faster.
 
     **Setting Executors via the Electron Objects**
 
@@ -72,8 +74,10 @@ In the previous examples, we have been running calculations on our local machine
 
     ```python
     import covalent as ct
-    n_nodes = 1
-    n_cores_per_node = 48
+
+    n_nodes = 1 # Number of nodes for the Slurm job
+    n_cores_per_node = 48 # Number of CPU cores per node
+    vasp_parallel_cmd = f'srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'"
 
     executor = ct.executor.SlurmExecutor(
         username="YourUserName", # (1)!
@@ -90,8 +94,8 @@ In the previous examples, we have been running calculations on our local machine
             "job-name": "quacc", # (11)!
             "time": "00:10:00", # (12)!
         },
-        prerun_commands=[
-            f"source ~/.bashrc && export QUACC_VASP_PARALLEL_CMD='srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'", # (13)!
+        prerun_commands=[ # (13)!
+            f"source ~/.bashrc && export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd},
         ],
         use_srun=False, # (14)!
     )
@@ -113,7 +117,7 @@ In the previous examples, we have been running calculations on our local machine
 
     8. The queue (`-q`) name, typically something like "regular", "debug", "test", etc. depending on the machine.
 
-    9. The SLURM constraint (`-c)` flag, if relevant. Most HPC machines do not require this, but it is needed at NERSC facilities.
+    9. The Slurm constraint (`-c)` flag, if relevant. Most HPC machines do not require this, but it is needed at NERSC facilities.
 
     10. The account to charge for the Slurm jobs.
 
@@ -152,7 +156,7 @@ In the previous examples, we have been running calculations on our local machine
                 max_workers=1, # (3)!
                 provider=SlurmProvider( # (4)!
                     account="MyAccountName", # (5)!
-                    nodes_per_block=1, # (6)
+                    nodes_per_block=1, # (6)!
                     scheduler_options="#SBATCH -q debug -C cpu", # (7)!
                     worker_init="source ~/.bashrc && conda activate quacc", # (8)!
                     walltime="00:10:00", # (9)!
@@ -262,59 +266,52 @@ In the previous examples, we have been running calculations on our local machine
     ```python
     from quacc.util.dask import make_runner
 
-    n_slurm_jobs = 1 # (1)!
-    n_nodes_per_calc = 1 # (2)!
-    n_cores_per_node = 48 # (3)!
-    mem_per_node = "64 GB" # (4)!
+    n_slurm_jobs = 1 # Number of Slurm jobs to launch in parallel.
+    n_nodes_per_calc = 1 # Number of nodes to reserve for each Slurm job.
+    n_cores_per_node = 48 # Number of CPU cores per node.
+    mem_per_node = "64 GB" # Total memory per node.
+    vasp_parallel_cmd = f'srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'"
 
     cluster_kwargs = {
         # Dask worker options
-        "n_workers": n_slurm_jobs, # (5)!
-        "cores": n_cores_per_node, # (6)!
-        "memory": mem_per_node, # (7)!
+        "n_workers": n_slurm_jobs, # (1)!
+        "cores": n_cores_per_node, # (2)!
+        "memory": mem_per_node, # (3)!
         # SLURM options
-        "shebang": "#!/bin/bash", # (8)!
-        "account": "AccountName", # (9)!
-        "walltime": "00:10:00", # (10)!
-        "job_mem": "0", # (11)!
-        "job_script_prologue": ["source ~/.bashrc", "conda activate quacc"], # (12)!
-        "job_directives_skip": ["-n", "--cpus-per-task"], # (13)!
-        "job_extra_directives": [f"-N {n_nodes_per_calc}", "-q debug", "-C cpu"], # (14)!
-        "python": "python", # (15)!
+        "shebang": "#!/bin/bash", # (4)!
+        "account": "AccountName", # (5)!
+        "walltime": "00:10:00", # (6)!
+        "job_mem": "0", # (7)!
+        "job_script_prologue": ["source ~/.bashrc", "conda activate quacc", f"export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}], # (8)!
+        "job_directives_skip": ["-n", "--cpus-per-task"], # (9)!
+        "job_extra_directives": [f"-N {n_nodes_per_calc}", "-q debug", "-C cpu"], # (10)!
+        "python": "python", # (11)!
     }
 
     runner = make_runner(cluster_kwargs, temporary=True)
     ```
 
-    1. Number of Slurm jobs to launch in parallel.
+    1. Number of Slurm jobs to launch.
 
-    2. Number of nodes to reserve for each Slurm job.
+    2. Total number of cores (per Slurm job) for Dask worker.
 
-    3. Number of CPU cores per node.
+    3. Total memory (per Slurm job) for Dask worker.
 
-    4. Total memory per node.
+    4. The shebang line at the top of the submit script, in this case specifying that Bash is used.
 
-    5. Number of Slurm jobs to launch.
+    5. The account to charge for the Slurm job.
 
-    6. Total number of cores (per Slurm job) for Dask worker.
+    6. The walltime in DD:HH:SS.
 
-    7. Total memory (per Slurm job) for Dask worker.
+    7. Request all memory on the node.
 
-    8. The shebang line at the top of the submit script, in this case specifying that Bash is used.
+    8. Commands to run before calculation. This is a good place to include environment variable definitions.
 
-    9. The account to charge for the Slurm job.
+    9. Slurm directives that are automatically added but that we chose to skip.
 
-    10. The walltime in DD:HH:SS.
+    10. The number of nodes for each calculation (-N), queue name (-q), and constraint (-c). Oftentimes, the constraint flag is not needed.
 
-    11. Request all memory on the node.
-
-    12. Commands to run before calculation. This is a good place to include environment variable definitions.
-
-    13. Slurm directives that are automatically added but that we chose to skip.
-
-    14. The number of nodes for each calculation (-N), queue name (-q), and constraint (-c). Oftentimes, the constraint flag is not needed.
-
-    15. The Python executable name. This often does not need to be changed.
+    11. The Python executable name. This often does not need to be changed.
 
     With this instantiated cluster object, you can set the task runner of the `Flow` as follows.
 
