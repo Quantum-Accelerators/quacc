@@ -74,7 +74,7 @@ In the previous examples, we have been running calculations on our local machine
 
     ```python
     import covalent as ct
-    
+
     n_nodes = 1 # Number of nodes for the Slurm job
     n_cores_per_node = 48 # Number of CPU cores per node
     vasp_parallel_cmd = f'srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'"
