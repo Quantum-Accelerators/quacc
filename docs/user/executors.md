@@ -77,7 +77,9 @@ In the previous examples, we have been running calculations on our local machine
 
     n_nodes = 1 # Number of nodes for the Slurm job
     n_cores_per_node = 48 # Number of CPU cores per node
-    vasp_parallel_cmd = f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
+    vasp_parallel_cmd = (
+        f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'"
+    )
 
     executor = ct.executor.SlurmExecutor(
         username="YourUserName",  # (1)!
@@ -210,7 +212,9 @@ In the previous examples, we have been running calculations on our local machine
     n_parallel_calcs = 4 # Number of quacc calculations to run in parallel
     n_nodes_per_calc = 2 # Number of nodes to reserve for each calculation
     n_cores_per_node = 48 # Number of CPU cores per node
-    vasp_parallel_cmd = f"srun -N {n_nodes_per_calc} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
+    vasp_parallel_cmd = (
+        f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'"
+    )
 
     config = Config(
         max_idletime=300,
@@ -272,7 +276,9 @@ In the previous examples, we have been running calculations on our local machine
     n_nodes_per_calc = 1 # Number of nodes to reserve for each Slurm job.
     n_cores_per_node = 48 # Number of CPU cores per node.
     mem_per_node = "64 GB" # Total memory per node.
-    vasp_parallel_cmd = f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
+    vasp_parallel_cmd = (
+        f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'"
+    )
 
     cluster_kwargs = {
         # Dask worker options
