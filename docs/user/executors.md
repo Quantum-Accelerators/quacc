@@ -95,7 +95,7 @@ In the previous examples, we have been running calculations on our local machine
             "time": "00:10:00", # (12)!
         },
         prerun_commands=[ # (13)!
-            f"source ~/.bashrc && export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd},
+            f"source ~/.bashrc && module load vasp && export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd},
         ],
         use_srun=False, # (14)!
     )
@@ -125,7 +125,7 @@ In the previous examples, we have been running calculations on our local machine
 
     12. The walltime for the job in DD:HH:SS.
 
-    13. Any commands to run at the top of the Slurm submit script before your Covalent workflow is run. This is a good place to set various environment variables.
+    13. Any commands to run at the top of the Slurm submit script before your Covalent workflow is run. This is a good place to set various environment variables and any modules to load.
 
     14. All quacc jobs must have `use_srun=False` in order for ASE-based calculators to be launched appropriately.
 
@@ -282,7 +282,7 @@ In the previous examples, we have been running calculations on our local machine
         "account": "AccountName", # (5)!
         "walltime": "00:10:00", # (6)!
         "job_mem": "0", # (7)!
-        "job_script_prologue": ["source ~/.bashrc", "conda activate quacc", f"export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}"], # (8)!
+        "job_script_prologue": ["source ~/.bashrc", "conda activate quacc", "module load vasp", f"export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}"], # (8)!
         "job_directives_skip": ["-n", "--cpus-per-task"], # (9)!
         "job_extra_directives": [f"-N {n_nodes_per_calc}", "-q debug", "-C cpu"], # (10)!
         "python": "python", # (11)!
@@ -305,7 +305,7 @@ In the previous examples, we have been running calculations on our local machine
 
     7. Request all memory on the node.
 
-    8. Commands to run before calculation. This is a good place to include environment variable definitions.
+    8. Commands to run before calculation. This is a good place to include environment variable definitions and modules to load.
 
     9. Slurm directives that are automatically added but that we chose to skip.
 
