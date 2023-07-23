@@ -69,6 +69,7 @@ In the previous examples, we have been running calculations on our local machine
     For submitting jobs to [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/) from your local machine, an example `SlurmExecutor` configuration with support for an [`sshproxy`](https://docs.nersc.gov/connect/mfa/#sshproxy)-based multi-factor authentication certificate might look like the following:
 
     ```python
+    import covalent as ct
     n_nodes = 1
     n_cores_per_node = 48
 
@@ -109,6 +110,7 @@ In the previous examples, we have been running calculations on our local machine
     For [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/), example [`HighThroughputExecutor`](https://parsl.readthedocs.io/en/stable/stubs/parsl.executors.HighThroughputExecutor.html#parsl.executors.HighThroughputExecutor) configurations can be found in the [NERSC Documentation](https://docs.nersc.gov/jobs/workflow/parsl/). A simple one is reproduced below that allows for job submission from the login node. This example will create a single Slurm job that will run one `PythonApp` at a time on a single node and is good for testing out some of the examples above.
 
     ```python
+    import parsl
     from parsl.config import Config
     from parsl.executors import HighThroughputExecutor
     from parsl.launchers import SimpleLauncher
@@ -132,6 +134,8 @@ In the previous examples, we have been running calculations on our local machine
             )
         ],
     )
+
+    parsl.load(config)
     ```
 
     The individual arguments are as follows:
@@ -155,6 +159,12 @@ In the previous examples, we have been running calculations on our local machine
     Now let's consider a more realistic scenario. Suppose we want to have a single Slurm job that reserves 8 nodes, and each `PythonApp` (e.g. VASP calculation) will run on 2 nodes (let's assume each node has 48 cores total, so that's a total of 96 cores for each calculation). Parsl will act as an orchestrator in the background of one of the nodes. Our config will now look like the following.
 
     ```python
+    import parsl
+    from parsl.config import Config
+    from parsl.executors import HighThroughputExecutor
+    from parsl.launchers import SimpleLauncher
+    from parsl.providers import SlurmProvider
+    
     n_parallel_calcs = 4 # Number of quacc calculations to run in parallel
     n_nodes_per_calc = 2 # Number of nodes to reserve for each calculation
     n_cores_per_node = 48 # Number of CPU cores per node
@@ -182,6 +192,8 @@ In the previous examples, we have been running calculations on our local machine
                 )
             ],
         )
+
+    parsl.load(config)
     ```
 
     In addition to some modified parameters, there are some new ones here too. The most notable is the definition of `init_blocks`, `min_blocks`, and `max_blocks`, which set the number of active blocks (e.g. Slurm jobs) and can be modified to enable [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We also set `cores_per_worker` to a small value so that the pilot job (e.g. the Parsl orchestrator) is allowed to be oversubscribed with scheduling processes.
