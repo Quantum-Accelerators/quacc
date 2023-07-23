@@ -173,25 +173,25 @@ In the previous examples, we have been running calculations on our local machine
     config = Config(
         max_idletime=300,
         executors=[
-                HighThroughputExecutor(
-                    label="quacc_HTEX",
-                    max_workers=n_parallel_calcs,
-                    cores_per_worker=1e-6,
-                    provider=SlurmProvider(
-                        account="MyAccountName",
-                        nodes_per_block=n_nodes_per_calc*n_parallel_calcs,
-                        scheduler_options="#SBATCH -q debug -C cpu",
-                        worker_init=f"source activate quacc && module load vasp && export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}",
-                        walltime="00:10:00",
-                        launcher = SimpleLauncher(),
-                        cmd_timeout=120,
-                        init_blocks=0,
-                        min_blocks=1,
-                        max_blocks=1,
-                    ),
-                )
-            ],
-        )
+            HighThroughputExecutor(
+                label="quacc_HTEX",
+                max_workers=n_parallel_calcs,
+                cores_per_worker=1e-6,
+                provider=SlurmProvider(
+                    account="MyAccountName",
+                    nodes_per_block=n_nodes_per_calc*n_parallel_calcs,
+                    scheduler_options="#SBATCH -q debug -C cpu",
+                    worker_init=f"source activate quacc && module load vasp && export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}",
+                    walltime="00:10:00",
+                    launcher = SimpleLauncher(),
+                    cmd_timeout=120,
+                    init_blocks=0,
+                    min_blocks=1,
+                    max_blocks=1,
+                ),
+            )
+        ],
+    )
 
     parsl.load(config)
     ```
