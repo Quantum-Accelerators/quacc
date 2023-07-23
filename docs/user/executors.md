@@ -97,9 +97,9 @@ In the previous examples, we have been running calculations on our local machine
             "time": "00:10:00",  # (12)!
         },
         prerun_commands=[
-            f"source ~/.bashrc",
+            "source ~/.bashrc",
             "module load vasp",
-            "export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}",
+            f"export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}",
         ],  # (13)!
         use_srun=False,  # (14)!
     )
