@@ -89,7 +89,7 @@ In the previous examples, we have been running calculations on our local machine
             "time": "00:10:00",
         },
         prerun_commands=[
-            f"export QUACC_VASP_PARALLEL_CMD='srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'",
+            f"source ~/.bashrc && export QUACC_VASP_PARALLEL_CMD='srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'",
         ],
         use_srun=False, # (1)!
     )
@@ -126,7 +126,7 @@ In the previous examples, we have been running calculations on our local machine
                     account="MyAccountName",
                     nodes_per_block=1,
                     scheduler_options="#SBATCH -q debug -C cpu",
-                    worker_init="source activate quacc",
+                    worker_init="source ~/.bashrc && conda activate quacc",
                     walltime="00:10:00",
                     cmd_timeout=120,
                     launcher = SimpleLauncher(),
@@ -181,7 +181,7 @@ In the previous examples, we have been running calculations on our local machine
                     account="MyAccountName",
                     nodes_per_block=n_nodes_per_calc*n_parallel_calcs,
                     scheduler_options="#SBATCH -q debug -C cpu",
-                    worker_init=f"source activate quacc && module load vasp && export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}",
+                    worker_init=f"source ~/.bashrc && conda activate quacc && module load vasp && export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}",
                     walltime="00:10:00",
                     launcher = SimpleLauncher(),
                     cmd_timeout=120,
