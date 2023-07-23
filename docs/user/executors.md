@@ -77,7 +77,7 @@ In the previous examples, we have been running calculations on our local machine
 
     n_nodes = 1 # Number of nodes for the Slurm job
     n_cores_per_node = 48 # Number of CPU cores per node
-    vasp_parallel_cmd = f'srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'"
+    vasp_parallel_cmd = f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
 
     executor = ct.executor.SlurmExecutor(
         username="YourUserName",  # (1)!
@@ -272,7 +272,7 @@ In the previous examples, we have been running calculations on our local machine
     n_nodes_per_calc = 1 # Number of nodes to reserve for each Slurm job.
     n_cores_per_node = 48 # Number of CPU cores per node.
     mem_per_node = "64 GB" # Total memory per node.
-    vasp_parallel_cmd = f'srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'"
+    vasp_parallel_cmd = f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
 
     cluster_kwargs = {
         # Dask worker options
@@ -284,7 +284,11 @@ In the previous examples, we have been running calculations on our local machine
         "account": "AccountName", # (5)!
         "walltime": "00:10:00", # (6)!
         "job_mem": "0", # (7)!
-        "job_script_prologue": ["source ~/.bashrc", "conda activate quacc", "module load vasp", f"export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}"], # (8)!
+        "job_script_prologue": [
+            "source ~/.bashrc",
+            "conda activate quacc",
+            f"export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}",
+        ], # (8)!
         "job_directives_skip": ["-n", "--cpus-per-task"], # (9)!
         "job_extra_directives": [f"-N {n_nodes_per_calc}", "-q debug", "-C cpu"], # (10)!
         "python": "python", # (11)!
