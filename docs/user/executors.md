@@ -117,19 +117,19 @@ In the previous examples, we have been running calculations on our local machine
     from parsl.providers import SlurmProvider
 
     config = Config(
-        max_idletime=120,
+        max_idletime=120, # (1)!
         executors=[
             HighThroughputExecutor(
-                label="quacc_HTEX",
-                max_workers=1,
-                provider=SlurmProvider(
-                    account="MyAccountName",
-                    nodes_per_block=1,
-                    scheduler_options="#SBATCH -q debug -C cpu",
-                    worker_init="source ~/.bashrc && conda activate quacc",
-                    walltime="00:10:00",
-                    cmd_timeout=120,
-                    launcher = SimpleLauncher(),
+                label="quacc_HTEX", # (2)!
+                max_workers=1, # (3)!
+                provider=SlurmProvider( # (4)!
+                    account="MyAccountName", # (5)!
+                    nodes_per_block=1, # (6)
+                    scheduler_options="#SBATCH -q debug -C cpu", # (7)!
+                    worker_init="source ~/.bashrc && conda activate quacc", # (8)!
+                    walltime="00:10:00", # (9)!
+                    cmd_timeout=120, # (10)!
+                    launcher = SimpleLauncher(), # (11)!
                 ),
             )
         ],
@@ -138,19 +138,27 @@ In the previous examples, we have been running calculations on our local machine
     parsl.load(config)
     ```
 
-    The individual arguments are as follows:
+    1. The maximum amount of time (in seconds) to allow the executor to be idle before the Slurm job is cancelled.
 
-    - `max_idletime`: The maximum amount of time (in seconds) to allow the executor to be idle before the Slurm job is cancelled.
-    - `label`: A label for the executor instance, used during file I/O.
-    - `max_workers`: Maximum number of workers to allow on a node.
-    - `SlurmProvider()`: The provider to use for job submission. This can be changed to `LocalProvider()` if you wish to have the Parsl process run on a compute node rather than the login node.
-    - `account`: Your NERSC account name.
-    - `nodes_per_block`: The number of nodes to request per job. By default, all cores on the node will be requested (setting `cores_per_node` will override this).
-    - `scheduler_options`: Any additional `#SBATCH` options can be included here.
-    - `worker_init`: Commands to run before the job starts, typically used for activating a given Python environment.
-    - `walltime`: The maximum amount of time to allow the job to run in `HH:MM:SS` format.
-    - `cmd_timeout`: The maximum time to wait (in seconds) for the job scheduler info to be retrieved/sent.
-    - `launcher`: The type of Launcher to use. Note that `SimpleLauncher()` must be used instead of the commonly used `SrunLauncher()` to allow quacc subprocesses to launch their own `srun` commands.
+    2. A label for the executor instance, used during file I/O.
+
+    3. Maximum number of workers to allow on a node.
+
+    4. The provider to use for job submission. This can be changed to `LocalProvider()` if you wish to have the Parsl process run on a compute node rather than the login node.
+
+    5. Your Slurm account name.
+
+    6. The number of nodes to request per job. By default, all cores on the node will be requested (setting `cores_per_node` will override this).
+
+    7. Any additional `#SBATCH` options can be included here.
+
+    8. Commands to run before the job starts, typically used for activating a given Python environment.
+
+    9. The maximum amount of time to allow the job to run in `HH:MM:SS` format.
+
+    10. The maximum time to wait (in seconds) for the job scheduler info to be retrieved/sent.
+
+    11. The type of Launcher to use. Note that `SimpleLauncher()` must be used instead of the commonly used `SrunLauncher()` to allow quacc subprocesses to launch their own `srun` commands.
 
     Unlike some other workflow engines, Parsl (by default) is built for "jobpacking" where the allocated nodes continually pull in new workers (until the walltime is reached or the parent Python process is killed). This makes it possible to request a large number of nodes that continually pull in new jobs rather than submitting a large number of small jobs to the scheduler, which can be more efficient. In other words, don't be surprised if the Slurm job continues to run even when your submitted task has completed, particularly if you are using a Jupyter Notebook or IPython kernel.
 
@@ -176,7 +184,7 @@ In the previous examples, we have been running calculations on our local machine
             HighThroughputExecutor(
                 label="quacc_HTEX",
                 max_workers=n_parallel_calcs,
-                cores_per_worker=1e-6,
+                cores_per_worker=1e-6, # (1)!
                 provider=SlurmProvider(
                     account="MyAccountName",
                     nodes_per_block=n_nodes_per_calc*n_parallel_calcs,
@@ -185,9 +193,9 @@ In the previous examples, we have been running calculations on our local machine
                     walltime="00:10:00",
                     launcher = SimpleLauncher(),
                     cmd_timeout=120,
-                    init_blocks=0,
-                    min_blocks=1,
-                    max_blocks=1,
+                    init_blocks=0, # (2)!
+                    min_blocks=1, # (3)!
+                    max_blocks=1, # (4)!
                 ),
             )
         ],
@@ -196,7 +204,13 @@ In the previous examples, we have been running calculations on our local machine
     parsl.load(config)
     ```
 
-    In addition to some modified parameters, there are some new ones here too. The most notable is the definition of `init_blocks`, `min_blocks`, and `max_blocks`, which set the number of active blocks (e.g. Slurm jobs) and can be modified to enable [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We also set `cores_per_worker` to a small value so that the pilot job (e.g. the Parsl orchestrator) is allowed to be oversubscribed with scheduling processes.
+    1. We set this to a small value so that the pilot job (e.g. the Parsl orchestrator) is allowed to be oversubscribed with scheduling processes.
+
+    2. Sets the number of blocks (e.g. Slurm jobs) to provision during initialization of the workflow. We set this to 0 so that we only begin queuing once a workflow is submitted.
+
+    3. Sets the minimum number of blocks (e.g. Slurm jobs) to maintain during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 1 so that the pilot job is always running. 
+
+    4. Sets the maximum number of active blocks (e.g. Slurm jobs) during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 1 here for demonstration purposes, but it can be increased to have multiple Slurm jobpacks running simultaneously.
 
     !!! Tip
 
