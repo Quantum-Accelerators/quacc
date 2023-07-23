@@ -80,24 +80,26 @@ In the previous examples, we have been running calculations on our local machine
     vasp_parallel_cmd = f'srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'"
 
     executor = ct.executor.SlurmExecutor(
-        username="YourUserName", # (1)!
-        address="perlmutter-p1.nersc.gov", # (2)!
-        ssh_key_file="~/.ssh/nersc", # (3)!
-        cert_file="~/.ssh/nersc-cert.pub", # (4)!
-        remote_workdir="$SCRATCH/quacc", # (5)!
-        conda_env="quacc", # (6)!
+        username="YourUserName",  # (1)!
+        address="perlmutter-p1.nersc.gov",  # (2)!
+        ssh_key_file="~/.ssh/nersc",  # (3)!
+        cert_file="~/.ssh/nersc-cert.pub",  # (4)!
+        remote_workdir="$SCRATCH/quacc",  # (5)!
+        conda_env="quacc",  # (6)!
         options={
-            "nodes": f"{n_nodes}", # (7)!
-            "qos": "debug", # (8)!
-            "constraint": "cpu", # (9)!
-            "account": "YourAccountName", # (10)!
-            "job-name": "quacc", # (11)!
-            "time": "00:10:00", # (12)!
+            "nodes": f"{n_nodes}",  # (7)!
+            "qos": "debug",  # (8)!
+            "constraint": "cpu",  # (9)!
+            "account": "YourAccountName",  # (10)!
+            "job-name": "quacc",  # (11)!
+            "time": "00:10:00",  # (12)!
         },
-        prerun_commands=[ # (13)!
-            f"source ~/.bashrc && module load vasp && export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd},
-        ],
-        use_srun=False, # (14)!
+        prerun_commands=[
+            f"source ~/.bashrc",
+            "module load vasp",
+            "export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}",
+        ],  # (13)!
+        use_srun=False,  # (14)!
     )
     ```
 
