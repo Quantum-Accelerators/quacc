@@ -19,7 +19,7 @@ For the database enthusiasts, MongoDB is often preferred over a solution like Mo
 1. Sign up for a free account on [MongoDB Atlas](https://www.mongodb.com/atlas).
 2. Once logged in, select the "Create a Project" option and give your project a name (e.g. "MyProject"). Add your email address as the Project Owner.
 3. Click the "Build a Database" button under the "Deployment > Database" section and choose the free (i.e. M0) option. Give your cluster a unique name (e.g. "MyCluster").
-4. Select "Create" and enter your desired login credentials that you will use to access your database. You should use different credentials than your usual, since it's not uncommon to share credentials with trusted colleagues when trying to debug something. Select "Finish and Close."
+4. Select "Create" and enter your desired login credentials that you will use to access your database. You are probably best off not using special characters here since it will be URL-encoded. You should also use different credentials than your usual, since it's not uncommon to share credentials with trusted colleagues. Select "Finish and Close" when done.
 5. Go to the "Collections" tab of your cluster, which is where you will create a database (e.g. "my_database") and corresponding data collection (e.g. "my_collection") by clicking the "Add My Own Data" button.
 6. Under the "Security > Network Access" section, edit the IP Access List to allow access from anywhere for maximum flexibility.
 
