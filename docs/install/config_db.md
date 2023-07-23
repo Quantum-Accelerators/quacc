@@ -17,7 +17,7 @@ The easiest option is to use the [MontyDB store](https://materialsproject.github
 For the database enthusiasts, MongoDB is often preferred over a solution like MontyDB. The easiest route to create a Mongo database is via a cloud storage solution called [MongoDB Atlas](https://www.mongodb.com/atlas), which has a free tier. To set up your MongoDB with MongoDB Atlas, follow the instructions below:
 
 1. Sign up for a free account on [MongoDB Atlas](https://www.mongodb.com/atlas).
-2. Once logged in, select the "Create a Project" option and give your project a  name (e.g. "MyProject"). Add your email address as the Project Owner.
+2. Once logged in, select the "Create a Project" option and give your project a name (e.g. "MyProject"). Add your email address as the Project Owner.
 3. Click the "Build a Database" button under the "Deployment > Database" section and choose the free (i.e. M0) option. Give your cluster a unique name (e.g. "MyCluster").
 4. Select "Create" and enter your desired login credentials that you will use to access your database. You should use different credentials than your usual, since it's not uncommon to share credentials with trusted colleagues when trying to debug something. Select "Finish and Close."
 5. Go to the "Collections" tab of your cluster, which is where you will create a database (e.g. "my_database") and corresponding data collection (e.g. "my_collection") by clicking the "Add My Own Data" button.
