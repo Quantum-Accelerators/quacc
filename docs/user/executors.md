@@ -164,7 +164,7 @@ In the previous examples, we have been running calculations on our local machine
     from parsl.executors import HighThroughputExecutor
     from parsl.launchers import SimpleLauncher
     from parsl.providers import SlurmProvider
-    
+
     n_parallel_calcs = 4 # Number of quacc calculations to run in parallel
     n_nodes_per_calc = 2 # Number of nodes to reserve for each calculation
     n_cores_per_node = 48 # Number of CPU cores per node
