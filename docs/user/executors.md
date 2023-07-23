@@ -282,7 +282,7 @@ In the previous examples, we have been running calculations on our local machine
         "account": "AccountName", # (5)!
         "walltime": "00:10:00", # (6)!
         "job_mem": "0", # (7)!
-        "job_script_prologue": ["source ~/.bashrc", "conda activate quacc", f"export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}], # (8)!
+        "job_script_prologue": ["source ~/.bashrc", "conda activate quacc", f"export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}"], # (8)!
         "job_directives_skip": ["-n", "--cpus-per-task"], # (9)!
         "job_extra_directives": [f"-N {n_nodes_per_calc}", "-q debug", "-C cpu"], # (10)!
         "python": "python", # (11)!
