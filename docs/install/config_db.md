@@ -38,7 +38,7 @@ store = MongoURIStore(
 
 # Query the database
 with store:
-    store.count()
+    print(store.count())
 ```
 
 !!! Note
