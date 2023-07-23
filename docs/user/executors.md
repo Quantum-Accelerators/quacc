@@ -15,7 +15,7 @@ In the previous examples, we have been running calculations on our local machine
     from ase.build import bulk
     from quacc.recipes.emt.core import relax_job, static_job
 
-    @ct.lattice(executor="local")
+    @ct.lattice(executor="local") # (1)!
     def workflow(atoms):
 
         result1 = relax_job(atoms)
@@ -28,6 +28,8 @@ In the previous examples, we have been running calculations on our local machine
     result = ct.get_result(dispatch_id, wait=True)
     print(result)
     ```
+
+    1. This was merely for demonstration purposes. There is never really a need to use the "local" executor since the "dask" executor runs locally and is faster.
 
     **Setting Executors via the Electron Objects**
 
@@ -90,8 +92,8 @@ In the previous examples, we have been running calculations on our local machine
             "job-name": "quacc", # (11)!
             "time": "00:10:00", # (12)!
         },
-        prerun_commands=[
-            f"source ~/.bashrc && export QUACC_VASP_PARALLEL_CMD='srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'", # (13)!
+        prerun_commands=[ # (13)!
+            f"source ~/.bashrc && export QUACC_VASP_PARALLEL_CMD='srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'",
         ],
         use_srun=False, # (14)!
     )
@@ -152,7 +154,7 @@ In the previous examples, we have been running calculations on our local machine
                 max_workers=1, # (3)!
                 provider=SlurmProvider( # (4)!
                     account="MyAccountName", # (5)!
-                    nodes_per_block=1, # (6)
+                    nodes_per_block=1, # (6)!
                     scheduler_options="#SBATCH -q debug -C cpu", # (7)!
                     worker_init="source ~/.bashrc && conda activate quacc", # (8)!
                     walltime="00:10:00", # (9)!
