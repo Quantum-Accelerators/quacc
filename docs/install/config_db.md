@@ -17,27 +17,30 @@ The easiest option is to use the [MontyDB store](https://materialsproject.github
 For the database enthusiasts, MongoDB is often preferred over a solution like MontyDB. The easiest route to create a Mongo database is via a cloud storage solution called [MongoDB Atlas](https://www.mongodb.com/atlas), which has a free tier. To set up your MongoDB with MongoDB Atlas, follow the instructions below:
 
 1. Sign up for a free account on [MongoDB Atlas](https://www.mongodb.com/atlas).
-2. Once logged in, select the "Build a Database" option under the "Database Deployments" section and choose the "Shared" free option.
-3. Select "Create Cluster" and enter your desired login credentials that will use to access your database. After waiting a minute or two, your cluster will be created, which is essentially a mini computer in the cloud.
-4. Go to the "Collections" tab of your cluster and create a new database. Give the database a unique name (e.g. "LastName_db") and create a collection where your quacc data will be stored (e.g. "quacc").
-5. Retrieve your MongoDB URI, which is the address of your MongoDB cluster. You can find your database's URI by clicking the "Database" section in the sidebar and then selecting "Connect > Connect Your Application > Driver > Python > 3.11 or later" and copying the link that appears. It will be of the form `mongodb+srv://<username>:<password>@<host>/<database_name>`. Don't forget to include the <database_name> at the end, which you selected in Step 4.
+2. Once logged in, select the "Create a Project" option and give your project a name (e.g. "MyProject"). Add your email address as the Project Owner.
+3. Click the "Build a Database" button under the "Deployment > Database" section and choose the free (i.e. M0) option. Give your cluster a unique name (e.g. "MyCluster").
+4. Select "Create" and enter your desired login credentials that you will use to access your database. You are probably best off not using special characters here since it will be URL-encoded. You should also use different credentials than your usual, since it's not uncommon to share credentials with trusted colleagues. Select "Finish and Close" when done.
+5. Go to the "Collections" tab of your cluster, which is where you will create a database (e.g. "my_database") and corresponding data collection (e.g. "my_collection") by clicking the "Add My Own Data" button.
+6. Under the "Security > Network Access" section, edit the IP Access List to allow access from anywhere for maximum flexibility.
+7. Finally, retrieve your MongoDB URI, which is the address of your MongoDB cluster. You can find your database's URI by clicking the "Database" section in the sidebar and then selecting "Connect > Compass" and copying the link of the form `mongodb+srv://<username>:<password>@<host>`.
 
 To test that you can connect to your database, run the following code:
 
 ```python
-from maggma.stores import MongoStore
+from maggma.stores import MongoURIStore
 
 # Define your database credentials
-store = MongoStore(
-    "my_db_name",
-    "my_collection_name",
-    username="my_username",
-    password="my_password",
-    host="localhost",
-    port=27017,
+store = MongoURIStore(
+    "mongodb+srv://<username>:<password>@<host>",
+    "my_collection",
+    database = "my_database"
 )
 
 # Query the database
 with store:
-    store.count()
+    print(store.count())
 ```
+
+!!! Note
+
+    If you are using self-hosted Mongo database, you will probably want to use a [`MongoStore`](https://materialsproject.github.io/maggma/reference/stores/#maggma.stores.mongolike.MongoStore)` instead of the `MongoURIStore`, which takes slightly different arguments.
