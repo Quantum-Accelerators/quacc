@@ -328,7 +328,7 @@ In the previous examples, we have been running calculations on our local machine
     With this instantiated cluster object, you can set the task runner of the `Flow` as follows.
 
     ```python
-    @flow(task_runner=cluster)
+    @flow(task_runner=runner)
     def workflow(atoms):
         ...
     ```
