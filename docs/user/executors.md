@@ -269,7 +269,7 @@ In the previous examples, we have been running calculations on our local machine
 
     cluster_kwargs = {
         # Dask worker options
-        "n_workers": n_slurm_jobs, # (5)! 
+        "n_workers": n_slurm_jobs, # (5)!
         "cores": n_cores_per_node, # (6)!
         "memory": mem_per_node, # (7)!
         # SLURM options
