@@ -180,7 +180,7 @@ In the previous examples, we have been running calculations on our local machine
 
     3. Maximum number of workers to allow on a node.
 
-    4. The provider to use for job submission. This can be changed to `LocalProvider()` if you wish to have the Parsl process run on a compute node rather than the login node.
+    4. The provider to use for job submission. This can be changed to `LocalProvider()` if you wish to have the Parsl process run on a login node rather than a compute node.
 
     5. Your Slurm account name.
 
