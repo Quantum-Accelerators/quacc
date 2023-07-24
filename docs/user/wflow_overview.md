@@ -15,13 +15,14 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     - Easy to use in distributed, heterogeneous compute environments
     - Excellent documentation
     - Automatic and simple database integration
+    - The compute nodes do not need to be able to connect to the internet
 
     Cons:
 
     - Still actively in development
     - Not as widely used as other workflow management solutions
     - For HPC, it currently only supports the Slurm job scheduler out-of-the-box, although custom plugins can be defined
-    - High-security HPC environments may be difficult to access with the centralized server approach
+    - High-security HPC environments may be difficult to access via SSH with the centralized server approach
 
 === "Parsl"
 
@@ -34,11 +35,12 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     - Active community, particularly across academia
     - Ideal for jobpacking (e.g. packing many compute tasks into a single Slurm job) and has near-ideal scaling performance
     - Thorough documentation
+    - Can be run locally without any server overhead
 
     Cons:
 
     - Defining the right configuration options for your desired HPC setup can be a challenge
-    - The visual dashboard is not as user friendly or detailed as other solutions
+    - Monitoring job progress is more challenging and less detailed than other solutions
     - Challenging to orchestrate workflows with steps running across heterogeneous resources
     - The concept of always returning a "future" object can be confusing for new users
 
@@ -56,7 +58,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     Cons:
 
     - Lacks documentation for HPC environments, although it supports them
-    - Using the `dask-jobqueue` backend for job scheduling can be challenging to configure the first time
+    - Challenging to use if the compute nodes do not support network connections
     - The dashboard stores results for only a 7 day history by default and does not store the full output of each task
     - The concept of always returning a "future" object can be confusing for new users
 

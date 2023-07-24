@@ -373,21 +373,9 @@ In the previous examples, we have been running calculations on our local machine
 
     Speaking of configurations, if you use mostly the same HPC settings for your calculations, it can be annoying to define a large dictionary in every workflow you run. Instead, you can define a configuration file at `~/.config/dask/jobqueue.yaml` as described in the [dask-jobqueue documentation](https://jobqueue.dask.org/en/latest/configuration-setup.html#managing-configuration-files) that can be used to define default values common to your HPC setup.
 
-    **Using a Prefect Agent**
+    **Using a Prefect Work Pool and Agent**
 
-    So far, we have dispatched calculations immediately upon calling them. However, in practice, it is often more useful to have a [Prefect agent](https://docs.prefect.io/concepts/work-pools/#agent-overview) running in the background that will continually poll for work to submit to the task runner. This allows you to submit only a subset of workflows at a time, and the agent will automatically submit more jobs as the resources become available. You will want to run Prefect workflows with an agent on the computing environment where you wish to submit jobs, specifically on a perpetual resource like a login node or dedicated workflow node.
-
-    To create a new work pool, run the following from the command line:
-
-    ```bash
-    prefect worker start
-    ```
-
-    It is often easiest to have this process be run in the background. Once the work pool is created, an agent can be initiated as follows:
-
-    ```bash
-    prefect agent start -p 'work-pool-name'
-    ```
+    So far, we have dispatched calculations immediately upon calling them. However, in practice, it is often more useful to have a Prefect agent running in the background that will continually poll for work to submit to the task runner. This allows you to submit only a subset of workflows at a time, and the agent will automatically submit more jobs as the resources become available. You will want to run Prefect workflows with an agent on the computing environment where you wish to submit jobs, specifically on a perpetual resource like a login node or dedicated workflow node. Refer to the ["Work Pools, Workers, and Agents"](https://docs.prefect.io/latest/concepts/work-pools/) section of the Prefect documentation for more details.
 
 === "Jobflow"
 
