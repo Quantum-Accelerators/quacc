@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [UNRELEASED]
 
+### Changed
+
+- Do not set automatically `LMAXTAU` to 8 for f-containing elements in `Vasp` calculator.
+
 ## [0.1.3]
 
 ### Added
