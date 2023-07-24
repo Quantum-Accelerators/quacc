@@ -329,19 +329,6 @@ class Vasp(Vasp_):
                 )
             calc.set(lasph=True)
 
-        if (
-            calc.bool_params["lasph"]
-            and calc.string_params["metagga"] is not None
-            and (not calc.int_params["lmaxtau"] or calc.int_params["lmaxtau"] < 8)
-            and max_block == "f"
-        ):
-            if self.verbose:
-                warnings.warn(
-                    "Copilot: Setting LMAXTAU = 8 because you have LASPH = True and an f-element with a meta-GGA calculation.",
-                    UserWarning,
-                )
-            calc.set(lmaxtau=8)
-
         if calc.string_params["metagga"] and (
             not calc.string_params["algo"]
             or calc.string_params["algo"].lower() != "all"
