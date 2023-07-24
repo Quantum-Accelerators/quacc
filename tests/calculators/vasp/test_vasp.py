@@ -386,6 +386,7 @@ def test_lasph():
     calc = Vasp(atoms, ldau_luj={"Cu": {"L": 2, "U": 5, "J": 0.0}})
     assert calc.bool_params["lasph"] is True
 
+
 def test_efermi():
     atoms = bulk("Cu")
     calc = Vasp(atoms)
