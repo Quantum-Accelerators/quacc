@@ -250,6 +250,7 @@ def check_is_metal(atoms: Atoms) -> bool:
 
     return all(k.is_metal for k in struct.composition.keys())
 
+
 def copy_atoms(atoms: Atoms) -> Atoms:
     """
     Simple function to copy an atoms object to prevent mutability.
