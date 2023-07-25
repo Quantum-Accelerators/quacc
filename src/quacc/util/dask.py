@@ -21,9 +21,7 @@ def make_runner(
     temporary: bool = False,
 ) -> DaskTaskRunner:
     """
-    Make a DaskTaskRunner for use with Prefect workflows. This DaskTaskRunner
-    will only submit a Slurm job once the `Flow` begins. It will terminate
-    once the `Flow` is finished.
+    Make a DaskTaskRunner for use with Prefect workflows.
 
     Parameters
     ----------
