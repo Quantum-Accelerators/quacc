@@ -298,7 +298,7 @@ class Vasp(Vasp_):
 
         if (
             not calc.int_params["lmaxmix"] or calc.int_params["lmaxmix"] < 6
-        ) and max_Z > 57:
+        ) and max_Z > 56:
             if self.verbose:
                 warnings.warn(
                     "Copilot: Setting LMAXMIX = 6 because you have f electrons.",
