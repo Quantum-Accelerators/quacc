@@ -294,7 +294,7 @@ class Vasp(Vasp_):
         """
         is_metal = check_is_metal(self.input_atoms)
         calc = Vasp_(**self.user_calc_params)
-        max_Z = max(el.Z for el in AseAtomsAdaptor().get_structure(self.input_atoms))
+        max_Z = self.input_atoms.get_atomic_numbers().max()
 
         if (
             not calc.int_params["lmaxmix"] or calc.int_params["lmaxmix"] < 6
