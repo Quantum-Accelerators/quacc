@@ -84,8 +84,8 @@ In the previous examples, we have been running calculations on our local machine
     executor = ct.executor.SlurmExecutor(
         username="YourUserName",  # (1)!
         address="perlmutter-p1.nersc.gov",  # (2)!
-        ssh_key_file="~/.ssh/nersc",  # (3)!
-        cert_file="~/.ssh/nersc-cert.pub",  # (4)!
+        ssh_key_file="/home/UserName/.ssh/nersc",  # (3)!
+        cert_file="/home/UserName/.ssh/nersc-cert.pub",  # (4)!
         remote_workdir="$SCRATCH/quacc",  # (5)!
         conda_env="quacc",  # (6)!
         options={
