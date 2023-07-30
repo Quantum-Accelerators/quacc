@@ -41,7 +41,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
     - Defining the right configuration options for your desired HPC setup can be an initial hurdle
     - Monitoring job progress is more challenging and less detailed than other solutions
-    - Challenging to orchestrate workflows with steps running across heterogeneous resources
+    - Challenging to orchestrate workflows with steps running across heterogeneous resources (this is better served by [Globus Compute](https://www.globus.org/compute))
     - The concept of always returning a "future" object can be confusing for new users
 
 === "Jobflow"
