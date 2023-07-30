@@ -39,7 +39,6 @@ Quacc can be installed with several "extras," as outlined in the `pyproject.toml
 
 - `quacc[fireworks]`: Installs dependencies to enable the use of FireWorks.
 - `quacc[parsl]`: Installs dependencies to enable the use of Parsl.
-- `quacc[prefect]`: Installs dependencies to enable the use of Prefect.
 
 ### Miscellaneous
 
