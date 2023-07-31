@@ -62,7 +62,7 @@ strict = [
     "jobflow==0.1.11",
     "maggma==0.51.24",
     "monty==2023.5.8",
-    "numpy==1.25.1",
+    "numpy==1.25.2",
     "pydantic==1.10.2",
     "pymatgen==2023.7.20",
 ]
