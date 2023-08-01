@@ -43,9 +43,6 @@ jobs:
           pip install .[strict,dev]
           pip install covalent-slurm-plugin
 
-      - name: Configure quacc
-        run: quacc config
-
       - name: Set up Covalent server
         run: |
           echo "y" | covalent purge
@@ -84,9 +81,6 @@ jobs:
 
       - name: Install pip packages
         run: pip install .[strict,dev,tblite]
-
-      - name: Configure quacc
-        run: quacc config
 
       - name: Run tests with pytest
         run: pytest -k 'tblite' --cov=quacc --cov-report=xml
@@ -128,9 +122,6 @@ jobs:
       - name: Install pip packages
         run: pip install .[strict,dev]
 
-      - name: Configure quacc
-        run: quacc config
-
       - name: Run tests with pytest
         run: pytest -k 'psi4' --cov=quacc --cov-report=xml
 
@@ -170,9 +161,6 @@ jobs:
 
       - name: Install pip packages
         run: pip install .[strict,dev]
-
-      - name: Configure quacc
-        run: quacc config
 
       - name: Run tests with pytest
         run: pytest -k 'dftb' --cov=quacc --cov-report=xml
@@ -244,9 +232,6 @@ jobs:
 
       - name: Install pip packages
         run: pip install .[strict,dev,fireworks,parsl]
-
-      - name: Configure quacc
-        run: quacc config
 
       - name: Run tests with pytest
         run: pytest -k 'jobflow or fireworks or parsl' --cov=quacc --cov-report=xml
