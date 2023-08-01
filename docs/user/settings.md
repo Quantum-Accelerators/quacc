@@ -6,12 +6,19 @@ By default, the global quacc settings can be found in the [`settings.py`](https:
 
 ### Using a YAML File
 
-The easiest way is to create a custom YAML file with custom settings. For instance, it might look something like the following if you wanted to modify the `SCRATCH_DIR` and `GZIP_FILES` settings.
+The easiest way is to create a custom YAML file with custom settings. For instance, it might look something like the following if you wanted to modify the `SCRATCH_DIR`, `GZIP_FILES`, and `CREATE_UNIQUE_WORKDIR` settings.
 
 ```yaml title="quacc.yaml"
-SCRATCH_DIR: /tmp
-GZIP_FILES: false
+SCRATCH_DIR: /tmp # (1)!
+GZIP_FILES: false # (2)!
+CREATE_UNIQUE_WORKDIR: true # (3)!
 ```
+
+1. This would set the quacc scratch directory to `/tmp` on whatever machine the calculations are run on.
+
+2. This would disable the automatic gzip-ing of all files stored in the quacc results directory.
+
+3. This would ensure that each job in your quacc workflow is run in a unique, isolated working directory. This is often useful when running workflows in parallel, although some workflow engines like Covalent have their own mechanisms for this.
 
 By default, quacc looks for this YAML file at `~/quacc.yaml`. If you wish to store the `quacc.yaml` file somewhere else, you can define the environment variable `QUACC_CONFIG_FILE` and point it to the `quacc.yaml` path of your choosing.
 
