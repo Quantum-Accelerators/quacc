@@ -2,11 +2,17 @@
 
 Everyone's computing needs are different, so we ensured that quacc is interoperable with a variety of modern workflow management tools. There are over [300+ workflow management tools](https://workflows.community/systems) out there, so we can't possibly cover them all. Instead, we have focused on the most popular tools that we have tested and found to be compatible with quacc with minimal additional coding required. The recommended solutions below each use a decorator-based approach to defining workflows, and the basic syntax is very similar across all of them.
 
+## How to Choose a Workflow Engine
+
+If you aren't sure which workflow engine to choose, check out the Pros and Cons lists below.
+
+Generally, we recommend either Covalent or Parsl, which have nearly identical syntax. If you're using an HPC cluster and can SSH into the login node without the need for multi-factor authentication each connection, then try Covalent. If automated SSH connections to the login node are not viable, Parsl is likely the best option. Jobflow with FireWorks is best-suited if you are working at Lawrence Berkeley National Laboratory where it is already in active use.
+
 ## Pros and Cons
 
 === "Covalent"
 
-    The default suggested workflow management solution is [Covalent](https://github.com/AgnostiqHQ/covalent/) due to its ease of use and helpful dashboard. If you are new to workflow management tools or primarily care about computing across distributed resources, this will likely be the best option for you.
+    The default suggested workflow management solution is [Covalent](https://github.com/AgnostiqHQ/covalent/) due to its ease of use and helpful dashboard. If you are new to workflow management tools or primarily care about computing across distributed resources, this may be a good option to conisder.
 
     Pros:
 
@@ -15,13 +21,14 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     - Easy to use in distributed, heterogeneous compute environments
     - Excellent documentation
     - Automatic and simple database integration
+    - The compute nodes do not need to be able to connect to the internet
 
     Cons:
 
     - Still actively in development
     - Not as widely used as other workflow management solutions
     - For HPC, it currently only supports the Slurm job scheduler out-of-the-box, although custom plugins can be defined
-    - High-security HPC environments may be difficult to access with the centralized server approach
+    - High-security HPC environments may be difficult to access via SSH with the centralized server approach
 
 === "Parsl"
 
@@ -34,30 +41,13 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     - Active community, particularly across academia
     - Ideal for jobpacking (e.g. packing many compute tasks into a single Slurm job) and has near-ideal scaling performance
     - Thorough documentation
+    - Can be run locally without any server overhead
 
     Cons:
 
-    - Defining the right configuration options for your desired HPC setup can be a challenge
-    - The visual dashboard is not as user friendly or detailed as other solutions
+    - Defining the right configuration options for your desired HPC setup can be an initial hurdle
+    - Monitoring job progress is more challenging and less detailed than other solutions
     - Challenging to orchestrate workflows with steps running across heterogeneous resources
-    - The concept of always returning a "future" object can be confusing for new users
-
-=== "Prefect"
-
-    [Prefect](https://www.prefect.io/) is a workflow management system that is widely adopted in the data science industry.
-
-    Pros:
-
-    - Very popular in the data science industry with an active community
-    - Useful dashboard to monitor job progress
-    - Supports a variety of job schedulers via `dask-jobqueue`
-    - Uses a directed acyclic graph-free model for increased flexibility in workflow definitions
-
-    Cons:
-
-    - Lacks documentation for HPC environments, although it supports them
-    - Using the `dask-jobqueue` backend for job scheduling can be challenging to configure the first time
-    - The dashboard stores results for only a 7 day history by default and does not store the full output of each task
     - The concept of always returning a "future" object can be confusing for new users
 
 === "Jobflow"

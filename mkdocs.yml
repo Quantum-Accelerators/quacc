@@ -90,10 +90,6 @@ plugins:
             - http://materialsproject.github.io/custodian/objects.inv
             - https://covalent.readthedocs.io/en/latest/objects.inv
             - https://click.palletsprojects.com/en/latest/objects.inv
-            - https://docs.prefect.io/latest/objects.inv
-            - https://prefecthq.github.io/prefect-dask/objects.inv
-            - https://docs.dask.org/en/latest/objects.inv
-            - https://jobqueue.dask.org/en/latest/objects.inv
           options:
             docstring_style: numpy
             docstring_section_style: list

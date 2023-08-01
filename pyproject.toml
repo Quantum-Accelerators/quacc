@@ -28,6 +28,7 @@ dependencies = [
     "atomate2 @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
     "cclib @ git+https://github.com/cclib/cclib.git", # waiting on > 1.7.2; can switch to atomate2[cclib] after
     "covalent>=0.224.0-rc.0",  # waiting on > 0.222.0
+    "covalent-slurm-plugin>=0.16.0rc0",
     "custodian>=2023.6.5",
     "emmet-core>=0.51.11",
     "maggma>=0.51.18",
@@ -41,7 +42,6 @@ dependencies = [
 fireworks = ["fireworks>=2.0.3"]
 optimizers = ["sella>=2.3.2"]
 parsl = ["parsl>=2023.7.3"]
-prefect = ["prefect>=2.10.18", "prefect-dask>=0.2.4", "dask-jobqueue>=0.8.2"]
 tblite = ["tblite[ase]>=0.3.0; platform_system=='Linux'"]
 dev = ["black", "isort", "pytest", "pytest-cov"]
 docs = [
@@ -57,14 +57,14 @@ strict = [
     "atomate2 @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
     "cclib @ git+https://github.com/cclib/cclib.git", # waiting on > 1.7.2
     "covalent==0.226.0rc0",  # waiting on > 0.222.0
-    "custodian==2023.6.5",
-    "emmet-core==0.60.1",
+    "custodian==2023.7.22",
+    "emmet-core==0.63.1",
     "jobflow==0.1.11",
-    "maggma==0.51.19",
+    "maggma==0.51.24",
     "monty==2023.5.8",
-    "numpy==1.25.1",
+    "numpy==1.25.2",
     "pydantic-settings==2.0.1",
-    "pymatgen==2023.7.14",
+    "pymatgen==2023.7.20",
 ]
 
 [project.scripts]
