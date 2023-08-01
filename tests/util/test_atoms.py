@@ -8,13 +8,7 @@ from ase.build import bulk, molecule
 from ase.io import read
 
 from quacc.calculators.vasp import Vasp
-from quacc.util.atoms import (
-    check_charge_and_spin,
-    check_is_metal,
-    get_atoms_id,
-    get_highest_block,
-    prep_next_run,
-)
+from quacc.util.atoms import check_charge_and_spin, check_is_metal, get_atoms_id, prep_next_run
 
 FILE_DIR = Path(__file__).resolve().parent
 ATOMS_MAG = read(os.path.join(FILE_DIR, "..", "calculators", "vasp", "OUTCAR_mag.gz"))
@@ -134,17 +128,6 @@ def test_check_is_metal():
     assert check_is_metal(atoms) is False
     atoms = molecule("H2O")
     assert check_is_metal(atoms) is False
-
-
-def test_get_highest_block():
-    atoms = bulk("Cu")
-    assert get_highest_block(atoms) == "d"
-    atoms = bulk("Cu") * (2, 2, 2)
-    atoms[-1].symbol = "U"
-    assert get_highest_block(atoms) == "f"
-    atoms = molecule("H2O")
-    assert get_highest_block(atoms) == "p"
-
 
 def test_check_charge_and_spin():
     atoms = molecule("CH3")

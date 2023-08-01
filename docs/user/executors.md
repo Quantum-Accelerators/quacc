@@ -15,7 +15,7 @@ In the previous examples, we have been running calculations on our local machine
     from ase.build import bulk
     from quacc.recipes.emt.core import relax_job, static_job
 
-    @ct.lattice(executor="local")
+    @ct.lattice(executor="local") # (1)!
     def workflow(atoms):
 
         result1 = relax_job(atoms)
@@ -29,6 +29,8 @@ In the previous examples, we have been running calculations on our local machine
     print(result)
     ```
 
+    1. This was merely for demonstration purposes. There is never really a need to use the "local" executor since the "dask" executor runs locally and is faster.
+
     **Setting Executors via the Electron Objects**
 
     The individual `Electron` executor options can be modified after they are imported as follows:
@@ -41,10 +43,10 @@ In the previous examples, we have been running calculations on our local machine
     @ct.lattice
     def workflow(atoms):
         job1 = relax_job
-        job1.electron_object.executor = "dask" # (1)
+        job1.electron_object.executor = "dask" # (1)!
 
         job2 = static_job
-        job2.electron_object.executor = "local"
+        job2.electron_object.executor = "local" # (2)!
 
         output1 = job1(atoms)
         output2 = job2(output1)
@@ -56,7 +58,9 @@ In the previous examples, we have been running calculations on our local machine
     print(result)
     ```
 
-    1.  If you are defining your own workflow functions to use, you can also set the executor for individual `Electron` objects by passing the `executor` keyword argument to the `@ct.electron` decorator.
+    1. If you are defining your own workflow functions to use, you can also set the executor for individual `Electron` objects by passing the `executor` keyword argument to the `@ct.electron` decorator.
+
+    2. This was merely for demonstration purposes. There is never really a need to use the "local" executor since the "dask" executor runs locally and is faster.
 
     **Configuring Executors**
 
@@ -69,32 +73,65 @@ In the previous examples, we have been running calculations on our local machine
     For submitting jobs to [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/) from your local machine, an example `SlurmExecutor` configuration with support for an [`sshproxy`](https://docs.nersc.gov/connect/mfa/#sshproxy)-based multi-factor authentication certificate might look like the following:
 
     ```python
-    n_nodes = 1
-    n_cores_per_node = 48
+    import covalent as ct
+
+    n_nodes = 1 # Number of nodes for the Slurm job
+    n_cores_per_node = 48 # Number of CPU cores per node
+    vasp_parallel_cmd = (
+        f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'"
+    )
 
     executor = ct.executor.SlurmExecutor(
-        username="YourUserName",
-        address="perlmutter-p1.nersc.gov",
-        ssh_key_file="~/.ssh/nersc",
-        cert_file="~/.ssh/nersc-cert.pub",
-        remote_workdir="$SCRATCH/quacc",
-        conda_env="quacc",
+        username="YourUserName",  # (1)!
+        address="perlmutter-p1.nersc.gov",  # (2)!
+        ssh_key_file="/home/UserName/.ssh/nersc",  # (3)!
+        cert_file="/home/UserName/.ssh/nersc-cert.pub",  # (4)!
+        remote_workdir="$SCRATCH/quacc",  # (5)!
+        conda_env="quacc",  # (6)!
         options={
-            "nodes": f"{n_nodes}",
-            "qos": "debug",
-            "constraint": "cpu",
-            "account": "YourAccountName",
-            "job-name": "quacc",
-            "time": "00:10:00",
+            "nodes": f"{n_nodes}",  # (7)!
+            "qos": "debug",  # (8)!
+            "constraint": "cpu",  # (9)!
+            "account": "YourAccountName",  # (10)!
+            "job-name": "quacc",  # (11)!
+            "time": "00:10:00",  # (12)!
         },
         prerun_commands=[
-            f"export QUACC_VASP_PARALLEL_CMD='srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'",
-        ],
-        use_srun=False, # (1)
+            "source ~/.bashrc",
+            "module load vasp",
+            f"export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}",
+        ],  # (13)!
+        use_srun=False,  # (14)!
     )
     ```
 
-    1.  The `SlurmExecutor` must have `use_srun=False` in order for ASE-based calculators to be launched appropriately.
+    1. This is your username on the HPC machine that you can SSH into.
+
+    2. This is the address, excluding your username, for the HPC machine you wish to SSH into.
+
+    3. This is the private SSH key on your local machine (made via the `ssh-keygen` utility), typically found at `~/.ssh/id_rsa` unless you're using NERSC resources.
+
+    4. This a ceritficate file used to validate your credentials. This is often not needed but is required at NERSC facilities.
+
+    5. This is the base directory on the remote machine where your calculations will be run. Set it somewhere with fast file I/O.
+
+    6. This is the name of your Conda environment, assuming that you're using one.
+
+    7. The total number of nodes for the job.
+
+    8. The queue (`-q`) name, typically something like "regular", "debug", "test", etc. depending on the machine.
+
+    9. The Slurm constraint (`-c)` flag, if relevant. Most HPC machines do not require this, but it is needed at NERSC facilities.
+
+    10. The account to charge for the Slurm jobs.
+
+    11. The job name that will show up when you use `squeue`.
+
+    12. The walltime for the job in DD:HH:SS.
+
+    13. Any commands to run at the top of the Slurm submit script before your Covalent workflow is run. This is a good place to set various environment variables and any modules to load.
+
+    14. All quacc jobs must have `use_srun=False` in order for ASE-based calculators to be launched appropriately.
 
 === "Parsl"
 
@@ -109,192 +146,113 @@ In the previous examples, we have been running calculations on our local machine
     For [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/), example [`HighThroughputExecutor`](https://parsl.readthedocs.io/en/stable/stubs/parsl.executors.HighThroughputExecutor.html#parsl.executors.HighThroughputExecutor) configurations can be found in the [NERSC Documentation](https://docs.nersc.gov/jobs/workflow/parsl/). A simple one is reproduced below that allows for job submission from the login node. This example will create a single Slurm job that will run one `PythonApp` at a time on a single node and is good for testing out some of the examples above.
 
     ```python
+    import parsl
     from parsl.config import Config
     from parsl.executors import HighThroughputExecutor
     from parsl.launchers import SimpleLauncher
     from parsl.providers import SlurmProvider
 
     config = Config(
-        max_idletime=120,
+        max_idletime=120, # (1)!
         executors=[
             HighThroughputExecutor(
-                label="quacc_HTEX",
-                max_workers=1,
-                provider=SlurmProvider(
-                    account="MyAccountName",
-                    nodes_per_block=1,
-                    scheduler_options="#SBATCH -q debug -C cpu",
-                    worker_init="source activate quacc",
-                    walltime="00:10:00",
-                    cmd_timeout=120,
-                    launcher = SimpleLauncher(),
+                label="quacc_HTEX", # (2)!
+                max_workers=1, # (3)!
+                provider=SlurmProvider( # (4)!
+                    account="MyAccountName", # (5)!
+                    nodes_per_block=1, # (6)!
+                    scheduler_options="#SBATCH -q debug -C cpu", # (7)!
+                    worker_init="source ~/.bashrc && conda activate quacc", # (8)!
+                    walltime="00:10:00", # (9)!
+                    cmd_timeout=120, # (10)!
+                    launcher = SimpleLauncher(), # (11)!
                 ),
             )
         ],
     )
+
+    parsl.load(config)
     ```
 
-    The individual arguments are as follows:
+    1. The maximum amount of time (in seconds) to allow the executor to be idle before the Slurm job is cancelled.
 
-    - `max_idletime`: The maximum amount of time (in seconds) to allow the executor to be idle before the Slurm job is cancelled.
-    - `label`: A label for the executor instance, used during file I/O.
-    - `max_workers`: Maximum number of workers to allow on a node.
-    - `SlurmProvider()`: The provider to use for job submission. This can be changed to `LocalProvider()` if you wish to have the Parsl process run on a compute node rather than the login node.
-    - `account`: Your NERSC account name.
-    - `nodes_per_block`: The number of nodes to request per job. By default, all cores on the node will be requested (setting `cores_per_node` will override this).
-    - `scheduler_options`: Any additional `#SBATCH` options can be included here.
-    - `worker_init`: Commands to run before the job starts, typically used for activating a given Python environment.
-    - `walltime`: The maximum amount of time to allow the job to run in `HH:MM:SS` format.
-    - `cmd_timeout`: The maximum time to wait (in seconds) for the job scheduler info to be retrieved/sent.
-    - `launcher`: The type of Launcher to use. Note that `SimpleLauncher()` must be used instead of the commonly used `SrunLauncher()` to allow quacc subprocesses to launch their own `srun` commands.
+    2. A label for the executor instance, used during file I/O.
 
-    Unlike some other workflow engines, Parsl (by default) is built for "jobpacking" where the allocated nodes continually pull in new workers (until the walltime is reached). This makes it possible to request a large number of nodes that continually pull in new jobs rather than submitting a large number of small jobs to the scheduler, which can be more efficient. In other words, don't be surprised if the Slurm job continues to run even when your submitted task has completed.
+    3. Maximum number of workers to allow on a node.
+
+    4. The provider to use for job submission. This can be changed to `LocalProvider()` if you wish to have the Parsl process run on a login node rather than a compute node.
+
+    5. Your Slurm account name.
+
+    6. The number of nodes to request per job. By default, all cores on the node will be requested (setting `cores_per_node` will override this).
+
+    7. Any additional `#SBATCH` options can be included here.
+
+    8. Commands to run before the job starts, typically used for activating a given Python environment.
+
+    9. The maximum amount of time to allow the job to run in `HH:MM:SS` format.
+
+    10. The maximum time to wait (in seconds) for the job scheduler info to be retrieved/sent.
+
+    11. The type of Launcher to use. Note that `SimpleLauncher()` must be used instead of the commonly used `SrunLauncher()` to allow quacc subprocesses to launch their own `srun` commands.
+
+    Unlike some other workflow engines, Parsl (by default) is built for "jobpacking" where the allocated nodes continually pull in new workers (until the walltime is reached or the parent Python process is killed). This makes it possible to request a large number of nodes that continually pull in new jobs rather than submitting a large number of small jobs to the scheduler, which can be more efficient. In other words, don't be surprised if the Slurm job continues to run even when your submitted task has completed, particularly if you are using a Jupyter Notebook or IPython kernel.
 
     **Scaling Up**
 
     Now let's consider a more realistic scenario. Suppose we want to have a single Slurm job that reserves 8 nodes, and each `PythonApp` (e.g. VASP calculation) will run on 2 nodes (let's assume each node has 48 cores total, so that's a total of 96 cores for each calculation). Parsl will act as an orchestrator in the background of one of the nodes. Our config will now look like the following.
 
     ```python
+    import parsl
+    from parsl.config import Config
+    from parsl.executors import HighThroughputExecutor
+    from parsl.launchers import SimpleLauncher
+    from parsl.providers import SlurmProvider
+
     n_parallel_calcs = 4 # Number of quacc calculations to run in parallel
     n_nodes_per_calc = 2 # Number of nodes to reserve for each calculation
     n_cores_per_node = 48 # Number of CPU cores per node
-    vasp_parallel_cmd = f"srun -N {n_nodes_per_calc} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
+    vasp_parallel_cmd = (
+        f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'"
+    )
 
     config = Config(
         max_idletime=300,
         executors=[
-                HighThroughputExecutor(
-                    label="quacc_HTEX",
-                    max_workers=n_parallel_calcs,
-                    cores_per_worker=1e-6,
-                    provider=SlurmProvider(
-                        account="MyAccountName",
-                        nodes_per_block=n_nodes_per_calc*n_parallel_calcs,
-                        scheduler_options="#SBATCH -q debug -C cpu",
-                        worker_init=f"source activate quacc && module load vasp && export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}",
-                        walltime="00:10:00",
-                        launcher = SimpleLauncher(),
-                        cmd_timeout=120,
-                        init_blocks=0,
-                        min_blocks=1,
-                        max_blocks=1,
-                    ),
-                )
-            ],
-        )
+            HighThroughputExecutor(
+                label="quacc_HTEX",
+                max_workers=n_parallel_calcs,
+                cores_per_worker=1e-6, # (1)!
+                provider=SlurmProvider(
+                    account="MyAccountName",
+                    nodes_per_block=n_nodes_per_calc*n_parallel_calcs,
+                    scheduler_options="#SBATCH -q debug -C cpu",
+                    worker_init=f"source ~/.bashrc && conda activate quacc && module load vasp && export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}",
+                    walltime="00:10:00",
+                    launcher = SimpleLauncher(),
+                    cmd_timeout=120,
+                    init_blocks=0, # (2)!
+                    min_blocks=1, # (3)!
+                    max_blocks=1, # (4)!
+                ),
+            )
+        ],
+    )
+
+    parsl.load(config)
     ```
 
-    In addition to some modified parameters, there are some new ones here too. The most notable is the definition of `init_blocks`, `min_blocks`, and `max_blocks`, which set the number of active blocks (e.g. Slurm jobs) and can be modified to enable [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We also set `cores_per_worker` to a small value so that the pilot job (e.g. the Parsl orchestrator) is allowed to be oversubscribed with scheduling processes.
+    1. We set this to a small value so that the pilot job (e.g. the Parsl orchestrator) is allowed to be oversubscribed with scheduling processes.
+
+    2. Sets the number of blocks (e.g. Slurm jobs) to provision during initialization of the workflow. We set this to 0 so that we only begin queuing once a workflow is submitted.
+
+    3. Sets the minimum number of blocks (e.g. Slurm jobs) to maintain during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 1 so that the pilot job is always running.
+
+    4. Sets the maximum number of active blocks (e.g. Slurm jobs) during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 1 here for demonstration purposes, but it can be increased to have multiple Slurm jobpacks running simultaneously.
 
     !!! Tip
 
         Dr. Logan Ward has a nice example on YouTube describing a very similar example [here](https://youtu.be/0V4Hs4kTyJs?t=398).
-
-=== "Prefect"
-
-    Out-of-the-box, Prefect will run on your local machine. However, in practice you will probably want to run your Prefect workflows on HPC machines.
-
-
-    **Defining Task Runners**
-
-    !!! Tip
-
-        Check out the [Task Runner](https://docs.prefect.io/latest/concepts/task-runners/) documentation for more information on how Prefect handles task execution.
-
-    To modify where tasks are run, set the `task_runner` keyword argument of the corresponding `@flow` decorator. The jobs in this scenario would be submitted from a login node.
-
-    An example is shown below for setting up a task runner compatible with the NERSC Perlmutter machine. By default, [`quacc.util.dask.make_runner`](https://quantum-accelerators.github.io/quacc/reference/quacc/util/dask.html#quacc.util.dask.make_runner) will generate a [`prefect_dask.DaskTaskRunner`](https://prefecthq.github.io/prefect-dask/task_runners/#prefect_dask.task_runners.DaskTaskRunner) composed of a [`dask_jobqueue.SLURMCluster`](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html) object.
-
-    ```python
-    from quacc.util.dask import make_runner
-
-    n_slurm_jobs = 1 # Number of Slurm jobs to launch in parallel
-    n_nodes_per_calc = 1 # Number of nodes to reserve for each Slurm job
-    n_cores_per_node = 48 # Number of CPU cores per node
-    mem_per_node = "64 GB" # Total memory per node
-
-    cluster_kwargs = {
-        # Dask worker options
-        "n_workers": n_slurm_jobs, # number of Slurm jobs to launch
-        "cores": n_cores_per_node, # total number of cores (per Slurm job) for Dask worker
-        "memory": mem_per_node, # total memory (per Slurm job) for Dask worker
-        # SLURM options
-        "shebang": "#!/bin/bash",
-        "account": "AccountName",
-        "walltime": "00:10:00", # DD:HH:SS
-        "job_mem": "0", # all memory on node
-        "job_script_prologue": ["source ~/.bashrc", "conda activate quacc"], # commands to run before calculation, including exports
-        "job_directives_skip": ["-n", "--cpus-per-task"], # Slurm directives we can skip
-        "job_extra_directives": [f"-N {n_nodes_per_calc}", "-q debug", "-C cpu"], # num. of nodes for calc (-N), queue (-q), and constraints (-c)
-        "python": "python", # Python executable name
-    }
-
-    runner = make_runner(cluster_kwargs, temporary=True)
-    ```
-
-    With this instantiated cluster object, you can set the task runner of the `Flow` as follows.
-
-    ```python
-    @flow(task_runner=cluster)
-    def workflow(atoms):
-        ...
-    ```
-
-    Now, when the worklow is run from the login node, it will be submitted to the job scheduling system (Slurm by default), and the results will be sent back to Prefect Cloud once completed.
-
-    !!! Tip
-
-        Refer to the [Dask-Jobqueue Documentation](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html) for the available `cluster_kwargs` that can be defined and how they relate to a typical job script.
-
-
-    To asynchronously spawn a Slurm job that continually pulls in work for the duration of its walltime (rather than starting and terminating over the lifetime of the associated `Flow`), you can instead use the `make_runner` command without a `temporary` keyword argument:
-
-    ```python
-    runner = make_runner(cluster_kwargs)
-    ```
-
-    This is often more efficient for running large numbers of workflows because you can request a single, large Slurm job that continually pulls in work rather than submitting a large number of small jobs to the scheduler.
-
-    Additionally, you can have the generated Dask cluster adaptively scale based on the amount of work available by setting `adapt_kwargs` as follows:
-
-    ```python
-    runner = make_runner(cluster_kwargs, adapt_kwargs={"minimum": 1, "maximum": 5})
-    ```
-
-    This will ensure that at least one Slurm job is always running, but the number of jobs will scale up to 5 if there is enough work available.
-
-    **Troubleshooting**
-
-    If you are having trouble figuring out the right `cluster_kwargs` to use, the best option is to have the generated job script printed to the screen. This can be done as follows.
-
-    ```python
-    from dask_jobqueue import SLURMCluster
-    from quacc.util.dask import _make_cluster
-
-    cluster = make_cluster(SLURMCluster, cluster_kwargs, verbose=True)
-    ```
-
-    Note, however, that a Slurm job will be immediately submitted, so you will probably want to `scancel` it as you debug your job script.
-
-    **Executor Configuration File**
-
-    Speaking of configurations, if you use mostly the same HPC settings for your calculations, it can be annoying to define a large dictionary in every workflow you run. Instead, you can define a configuration file at `~/.config/dask/jobqueue.yaml` as described in the [dask-jobqueue documentation](https://jobqueue.dask.org/en/latest/configuration-setup.html#managing-configuration-files) that can be used to define default values common to your HPC setup.
-
-    **Using a Prefect Agent**
-
-    So far, we have dispatched calculations immediately upon calling them. However, in practice, it is often more useful to have a [Prefect agent](https://docs.prefect.io/concepts/work-pools/#agent-overview) running in the background that will continually poll for work to submit to the task runner. This allows you to submit only a subset of workflows at a time, and the agent will automatically submit more jobs as the resources become available. You will want to run Prefect workflows with an agent on the computing environment where you wish to submit jobs, specifically on a perpetual resource like a login node or dedicated workflow node.
-
-    To create a new work pool, run the following from the command line:
-
-    ```bash
-    prefect worker start
-    ```
-
-    It is often easiest to have this process be run in the background. Once the work pool is created, an agent can be initiated as follows:
-
-    ```bash
-    prefect agent start -p 'work-pool-name'
-    ```
 
 === "Jobflow"
 

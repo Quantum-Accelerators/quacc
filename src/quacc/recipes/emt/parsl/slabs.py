@@ -7,6 +7,7 @@ from parsl.app.python import PythonApp
 from parsl.dataflow.futures import AppFuture
 
 from quacc.recipes.emt.core import relax_job, static_job
+from quacc.schemas.ase import OptSchema, RunSchema
 from quacc.util.slabs import make_max_slabs_from_bulk
 
 
@@ -19,7 +20,7 @@ def bulk_to_slabs_flow(
     slab_static: PythonApp | None = python_app(static_job.electron_object.function),
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
-) -> AppFuture:
+) -> AppFuture[list[RunSchema | OptSchema]]:
     """
     Workflow consisting of:
 
@@ -46,16 +47,21 @@ def bulk_to_slabs_flow(
 
     Returns
     -------
-    AppFuture
-        An AppFuture whose .result() is a list[dict]
+    AppFuture[list[RunSchema | OptSchema]]
+        An AppFuture whose .result() is a list of dictionary of results from
+        quacc.schemas.ase.summarize_run or quacc.schemas.ase.summarize_opt_run
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}
     make_slabs_kwargs = make_slabs_kwargs or {}
 
     if "relax_cell" not in slab_relax_kwargs:
         slab_relax_kwargs["relax_cell"] = False
+
+    @python_app
+    def _make_slabs(atoms):
+        atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+        return make_max_slabs_from_bulk(atoms, **make_slabs_kwargs)
 
     @join_app
     def _relax_distributed(slabs):
@@ -71,7 +77,7 @@ def bulk_to_slabs_flow(
             for slab in slabs
         ]
 
-    slabs = make_max_slabs_from_bulk(atoms, **make_slabs_kwargs)
+    slabs = _make_slabs(atoms)
 
     if slab_static is None:
         return _relax_distributed(slabs)

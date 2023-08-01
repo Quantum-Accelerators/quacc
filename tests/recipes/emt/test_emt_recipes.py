@@ -18,7 +18,7 @@ def test_static_job(tmpdir):
     assert output["parameters"]["asap_cutoff"] is False
     assert output["results"]["energy"] == pytest.approx(0.07001766638245854)
 
-    output = static_job(atoms, calc_kwargs={"asap_cutoff": True})
+    output = static_job(atoms, calc_swaps={"asap_cutoff": True})
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] is True
     assert output["results"]["energy"] == pytest.approx(0.11074520235398744)
@@ -48,7 +48,7 @@ def test_relax_job(tmpdir):
         atoms,
         relax_cell=False,
         opt_swaps={"fmax": 0.03},
-        calc_kwargs={"asap_cutoff": True},
+        calc_swaps={"asap_cutoff": True},
     )
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] is True
@@ -63,7 +63,7 @@ def test_relax_job(tmpdir):
         atoms,
         relax_cell=False,
         opt_swaps={"fmax": 0.03},
-        calc_kwargs={"asap_cutoff": True},
+        calc_swaps={"asap_cutoff": True},
     )
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] is True
@@ -89,7 +89,7 @@ def test_slab_dynamic_jobs(tmpdir):
         slab_static=None,
         slab_relax_kwargs={
             "opt_swaps": {"fmax": 1.0},
-            "calc_kwargs": {"asap_cutoff": True},
+            "calc_swaps": {"asap_cutoff": True},
             "relax_cell": False,
         },
     )
@@ -105,7 +105,7 @@ def test_slab_dynamic_jobs(tmpdir):
         make_slabs_kwargs={"max_slabs": 2},
         slab_relax_kwargs={
             "opt_swaps": {"fmax": 1.0},
-            "calc_kwargs": {"asap_cutoff": True},
+            "calc_swaps": {"asap_cutoff": True},
             "relax_cell": False,
         },
     )

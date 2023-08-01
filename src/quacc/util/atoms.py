@@ -250,38 +250,6 @@ def check_is_metal(atoms: Atoms) -> bool:
     return all(k.is_metal for k in struct.composition.keys())
 
 
-def get_highest_block(atoms: Atoms) -> str:
-    """
-    Get the highest block (e.g. p-block, d-block f-block) of a structure
-
-    Parameters
-    ----------
-    atoms
-        Atoms object
-
-    Returns
-    -------
-    str
-        highest block of the structure
-    """
-    if atoms.pbc.any():
-        struct = AseAtomsAdaptor.get_structure(atoms)
-    else:
-        struct = AseAtomsAdaptor.get_molecule(atoms)
-
-    blocks = [site.specie.block for site in struct]
-
-    return (
-        "f"
-        if "f" in blocks
-        else "d"
-        if "d" in blocks
-        else "p"
-        if "p" in blocks
-        else "s"
-    )
-
-
 def copy_atoms(atoms: Atoms) -> Atoms:
     """
     Simple function to copy an atoms object to prevent mutability.
