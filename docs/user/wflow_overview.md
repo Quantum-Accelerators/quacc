@@ -4,9 +4,13 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
 ## Pros and Cons
 
+If you aren't sure which workflow engine to choose, check out the Pros and Cons lists below.
+
+Generally, we recommend either Covalent or Parsl, which have nearly identical syntax. If you're using an HPC cluster and can SSH into the login node without the need for multi-factor authentication each connection, then try Covalent. If automated SSH connections to the login node are not viable, Parsl is likely the best option. Jobflow with FireWorks is best-suited if you are working at Lawrence Berkeley National Laboratory where it is already in active use.
+
 === "Covalent"
 
-    The default suggested workflow management solution is [Covalent](https://github.com/AgnostiqHQ/covalent/) due to its ease of use and helpful dashboard. If you are new to workflow management tools or primarily care about computing across distributed resources, this will likely be the best option for you.
+    The default suggested workflow management solution is [Covalent](https://github.com/AgnostiqHQ/covalent/) due to its ease of use and helpful dashboard. If you are new to workflow management tools or primarily care about computing across distributed resources, this may be a good option to conisder.
 
     Pros:
 
