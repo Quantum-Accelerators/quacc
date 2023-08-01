@@ -101,7 +101,8 @@ In the previous examples, we have been running calculations on our local machine
             "module load vasp",
             f"export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}",
         ],  # (13)!
-        use_srun=False,  # (14)!
+        create_unique_workdir = True, # (14)!
+        use_srun=False,  # (15)!
     )
     ```
 
@@ -131,7 +132,9 @@ In the previous examples, we have been running calculations on our local machine
 
     13. Any commands to run at the top of the Slurm submit script before your Covalent workflow is run. This is a good place to set various environment variables and any modules to load.
 
-    14. All quacc jobs must have `use_srun=False` in order for ASE-based calculators to be launched appropriately.
+    14. You generally want each quacc job to be run in its own unique working directory to ensure files don't overwrite one another, so  `create_unique_workdir` should be set to `True`.
+
+    15. All quacc jobs must have `use_srun=False` in order for ASE-based calculators to be launched appropriately.
 
 === "Parsl"
 

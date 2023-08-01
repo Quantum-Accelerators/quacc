@@ -18,9 +18,6 @@ In your newly activated conda environment, run the following commands to install
 ```bash
 # Install development version of quacc
 pip install git+https://github.com/quantum-accelerators/quacc.git
-
-# Set default configuration parameters
-quacc config
 ```
 
 !!! Tip
