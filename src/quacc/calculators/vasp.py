@@ -19,7 +19,7 @@ from pymatgen.symmetry.bandstructure import HighSymmKpath
 
 from quacc import SETTINGS
 from quacc.custodian import vasp as custodian_vasp
-from quacc.util.atoms import check_is_metal, get_highest_block, set_magmoms
+from quacc.util.atoms import check_is_metal, set_magmoms
 from quacc.util.files import load_yaml_calc
 
 
@@ -293,24 +293,24 @@ class Vasp(Vasp_):
             Dictionary of new user-specified calculation parameters
         """
         is_metal = check_is_metal(self.input_atoms)
-        max_block = get_highest_block(self.input_atoms)
         calc = Vasp_(**self.user_calc_params)
+        max_Z = self.input_atoms.get_atomic_numbers().max()
 
         if (
             not calc.int_params["lmaxmix"] or calc.int_params["lmaxmix"] < 6
-        ) and max_block == "f":
+        ) and max_Z > 56:
             if self.verbose:
                 warnings.warn(
-                    "Copilot: Setting LMAXMIX = 6 because you have an f-element.",
+                    "Copilot: Setting LMAXMIX = 6 because you have f electrons.",
                     UserWarning,
                 )
             calc.set(lmaxmix=6)
         elif (
             not calc.int_params["lmaxmix"] or calc.int_params["lmaxmix"] < 4
-        ) and max_block == "d":
+        ) and max_Z > 20:
             if self.verbose:
                 warnings.warn(
-                    "Copilot: Setting LMAXMIX = 4 because you have a d-element",
+                    "Copilot: Setting LMAXMIX = 4 because you have d electrons.",
                     UserWarning,
                 )
             calc.set(lmaxmix=4)
@@ -328,19 +328,6 @@ class Vasp(Vasp_):
                     UserWarning,
                 )
             calc.set(lasph=True)
-
-        if (
-            calc.bool_params["lasph"]
-            and calc.string_params["metagga"] is not None
-            and (not calc.int_params["lmaxtau"] or calc.int_params["lmaxtau"] < 8)
-            and max_block == "f"
-        ):
-            if self.verbose:
-                warnings.warn(
-                    "Copilot: Setting LMAXTAU = 8 because you have LASPH = True and an f-element with a meta-GGA calculation.",
-                    UserWarning,
-                )
-            calc.set(lmaxtau=8)
 
         if calc.string_params["metagga"] and (
             not calc.string_params["algo"]

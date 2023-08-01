@@ -15,6 +15,7 @@ def slab_static_job(
     atoms: Atoms | dict,
     preset: str | None = None,
     calc_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> VaspSchema:
     """
     Function to carry out a single-point calculation on a slab.
@@ -27,6 +28,8 @@ def slab_static_job(
         Preset to use.
     calc_swaps
         dictionary of custom kwargs for the calculator.
+    copy_files
+        Absolute paths to files to copy to the runtime directory.
 
     Returns
     -------
@@ -50,7 +53,7 @@ def slab_static_job(
 
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
-    atoms = run_calc(atoms)
+    atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(atoms, additional_fields={"name": "VASP Slab Static"})
 
@@ -60,6 +63,7 @@ def slab_relax_job(
     atoms: Atoms | dict,
     preset: str | None = None,
     calc_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> VaspSchema:
     """
     Function to relax a slab.
@@ -72,6 +76,8 @@ def slab_relax_job(
         Preset to use.
     calc_swaps
         Dictionary of custom kwargs for the calculator.
+    copy_files
+        Absolute paths to files to copy to the runtime directory.
 
     Returns
     -------
@@ -95,7 +101,7 @@ def slab_relax_job(
 
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
-    atoms = run_calc(atoms)
+    atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(atoms, additional_fields={"name": "VASP Slab Relax"})
 
@@ -137,10 +143,14 @@ def bulk_to_slabs_flow(
     list[VaspSchema]
         List of dictionary results from quacc.schemas.vasp.summarize_run
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}
     make_slabs_kwargs = make_slabs_kwargs or {}
+
+    @ct.electron
+    def _make_slabs(atoms):
+        atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+        return make_max_slabs_from_bulk(atoms, **make_slabs_kwargs)
 
     @ct.electron
     @ct.lattice
@@ -158,10 +168,11 @@ def bulk_to_slabs_flow(
             for slab in slabs
         ]
 
-    slabs = ct.electron(make_max_slabs_from_bulk)(atoms, **make_slabs_kwargs)
+    slabs = _make_slabs(atoms)
 
     if slab_static is None:
         return _relax_distributed(slabs)
+
     return _relax_and_static_distributed(slabs)
 
 
@@ -208,6 +219,11 @@ def slab_to_ads_flow(
     make_ads_kwargs = make_ads_kwargs or {}
 
     @ct.electron
+    def _make_ads_slabs(atoms, adsorbate):
+        atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+        return make_adsorbate_structures(atoms, adsorbate, **make_ads_kwargs)
+
+    @ct.electron
     @ct.lattice
     def _relax_distributed(slabs):
         return [slab_relax(slab, **slab_relax_kwargs) for slab in slabs]
@@ -223,10 +239,9 @@ def slab_to_ads_flow(
             for slab in slabs
         ]
 
-    ads_slabs = ct.electron(make_adsorbate_structures)(
-        slab, adsorbate, **make_ads_kwargs
-    )
+    ads_slabs = _make_ads_slabs(slab, adsorbate)
 
     if slab_static is None:
         return _relax_distributed(ads_slabs)
+
     return _relax_and_static_distributed(ads_slabs)

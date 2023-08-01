@@ -32,7 +32,8 @@ except ImportError:
 def static_job(
     atoms: Atoms | dict,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
-    calc_kwargs: dict | None = None,
+    calc_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -43,8 +44,10 @@ def static_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     method
         GFN1-xTB, GFN2-xTB, and IPEA1-xTB.
-    calc_kwargs
+    calc_swaps
         Dictionary of custom kwargs for the tblite calculator.
+    copy_files
+        Absolute paths to files to copy to the runtime directory.
 
     Returns
     -------
@@ -52,10 +55,10 @@ def static_job(
         Dictionary of results from quacc.schemas.ase.summarize_run
     """
     atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
-    calc_kwargs = calc_kwargs or {}
+    calc_swaps = calc_swaps or {}
 
-    atoms.calc = TBLite(method=method, **calc_kwargs)
-    final_atoms = run_calc(atoms)
+    atoms.calc = TBLite(method=method, **calc_swaps)
+    final_atoms = run_calc(atoms, copy_files=copy_files)
     return summarize_run(
         final_atoms,
         input_atoms=atoms,
@@ -68,8 +71,9 @@ def static_job(
 def relax_job(
     atoms: Atoms | dict,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
-    calc_kwargs: dict | None = None,
+    calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> OptSchema:
     """
     Relax a structure.
@@ -80,10 +84,12 @@ def relax_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     method
         GFN0-xTB, GFN1-xTB, GFN2-xTB.
-    calc_kwargs
+    calc_swaps
         Dictionary of custom kwargs for the tblite calculator.
     opt_swaps
         Dictionary of custom kwargs for run_ase_opt
+    copy_files
+        Absolute paths to files to copy to the runtime directory.
 
     Returns
     -------
@@ -91,14 +97,14 @@ def relax_job(
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
     atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
-    calc_kwargs = calc_kwargs or {}
+    calc_swaps = calc_swaps or {}
     opt_swaps = opt_swaps or {}
 
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
     opt_flags = opt_defaults | opt_swaps
 
-    atoms.calc = TBLite(method=method, **calc_kwargs)
-    dyn = run_ase_opt(atoms, **opt_flags)
+    atoms.calc = TBLite(method=method, **calc_swaps)
+    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
 
     return summarize_opt_run(dyn, additional_fields={"name": "TBLite Relax"})
 
@@ -111,8 +117,9 @@ def freq_job(
     energy: float = 0.0,
     temperature: float = 298.15,
     pressure: float = 1.0,
-    calc_kwargs: dict | None = None,
+    calc_swaps: dict | None = None,
     vib_kwargs: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> dict[Literal["vib", "thermo"], VibSchema | ThermoSchema]:
     """
     Run a frequency job and calculate thermochemistry.
@@ -129,10 +136,12 @@ def freq_job(
         Temperature in Kelvins.
     pressure
         Pressure in bar.
-    calc_kwargs
+    calc_swaps
         dictionary of custom kwargs for the xTB calculator.
     vib_kwargs
-        dictionary of custom kwargs for the Vibrations object
+        dictionary of custom kwargs for the Vibrations object.
+    copy_files
+        Absolute paths to files to copy to the runtime directory.
 
     Returns
     -------
@@ -141,11 +150,11 @@ def freq_job(
         quacc.schemas.ase.summarize_thermo_run
     """
     atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
-    calc_kwargs = calc_kwargs or {}
+    calc_swaps = calc_swaps or {}
     vib_kwargs = vib_kwargs or {}
 
-    atoms.calc = TBLite(method=method, **calc_kwargs)
-    vibrations = run_ase_vib(atoms, vib_kwargs=vib_kwargs)
+    atoms.calc = TBLite(method=method, **calc_swaps)
+    vibrations = run_ase_vib(atoms, vib_kwargs=vib_kwargs, copy_files=copy_files)
 
     igt = ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)
 

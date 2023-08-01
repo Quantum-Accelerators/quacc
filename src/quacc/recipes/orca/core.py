@@ -26,6 +26,7 @@ def static_job(
     basis: str = "def2-tzvp",
     input_swaps: dict | None = None,
     block_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> cclibSchema:
     """
     Carry out a single-point calculation.
@@ -52,6 +53,8 @@ def static_job(
         Dictionary of orcablock swaps for the calculator.
         To enable new entries, set the value as True.
         To remove entries from the defaults, set the value as None.
+    copy_files
+        Absolute paths to files to copy to the runtime directory.
 
     Returns
     -------
@@ -97,7 +100,7 @@ def static_job(
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )
-    atoms = run_calc(atoms, geom_file=GEOM_FILE)
+    atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
 
     return summarize_run(
         atoms,
@@ -116,6 +119,7 @@ def relax_job(
     run_freq: bool = False,
     input_swaps: dict | None = None,
     block_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> cclibSchema:
     """
     Carry out a geometry optimization.
@@ -144,6 +148,8 @@ def relax_job(
         Dictionary of orcablock swaps for the calculator.
         To enable new entries, set the value as True.
         To remove entries from the defaults, set the value as None.
+    copy_files
+        Absolute paths to files to copy to the runtime directory.
 
     Returns
     -------
@@ -190,7 +196,7 @@ def relax_job(
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )
-    atoms = run_calc(atoms, geom_file=GEOM_FILE)
+    atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
 
     return summarize_run(
         atoms,

@@ -16,6 +16,7 @@ def static_job(
     atoms: Atoms | dict,
     preset: str | None = None,
     calc_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> VaspSchema:
     """
     Carry out a single-point calculation.
@@ -28,6 +29,8 @@ def static_job(
         Preset to use.
     calc_swaps
         Dictionary of custom kwargs for the calculator.
+    copy_files
+        Absolute paths to files to copy to the runtime directory.
 
     Returns
     -------
@@ -49,7 +52,7 @@ def static_job(
 
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
-    atoms = run_calc(atoms)
+    atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(atoms, additional_fields={"name": "VASP Static"})
 
@@ -60,6 +63,7 @@ def relax_job(
     preset: str | None = None,
     relax_volume: bool = True,
     calc_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> VaspSchema:
     """
     Relax a structure.
@@ -75,6 +79,8 @@ def relax_job(
         False if only the positions (ISIF = 2) should be updated.
     calc_swaps
         Dictionary of custom kwargs for the calculator.
+    copy_files
+        Absolute paths to files to copy to the runtime directory.
 
     Returns
     -------
@@ -97,7 +103,7 @@ def relax_job(
 
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
-    atoms = run_calc(atoms)
+    atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(atoms, additional_fields={"name": "VASP Relax"})
 
@@ -109,6 +115,7 @@ def double_relax_job(
     relax_volume: bool = True,
     calc_swaps1: dict | None = None,
     calc_swaps2: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> dict[Literal["relax1", "relax2"], VaspSchema]:
     """
     Double-relax a structure. This is particularly useful for a few reasons:
@@ -134,6 +141,8 @@ def double_relax_job(
         Dictionary of custom kwargs for the first relaxation.
     calc_swaps2
         Dictionary of custom kwargs for the second relaxation.
+    copy_files
+        Absolute paths to files to copy to the (first) runtime directory.
 
     Returns
     -------
@@ -159,7 +168,7 @@ def double_relax_job(
     calc = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc
     kpts1 = atoms.calc.kpts
-    atoms = run_calc(atoms)
+    atoms = run_calc(atoms, copy_files=copy_files)
     summary1 = summarize_run(atoms, additional_fields={"name": "VASP DoubleRelax 1"})
 
     # Run second relaxation
