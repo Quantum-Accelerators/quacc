@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [UNRELEASED]
 
+### Changed
+
+- Set `LMAXMIX` based on the `Z` value, not the s/p/d/f-block type.
+- Do not set automatically `LMAXTAU` to 8 for f-containing elements in `Vasp` calculator.
+
+### Removed
+
+- Removed experimental Prefect support.
+
+## [0.1.3]
+
 ### Added
 
 - Added a `PRIMARY_STORE` quacc setting that, when specified, will automatically store all results in the specified Maggma store.

@@ -23,6 +23,7 @@ def static_job(
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
     calc_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> cclibSchema:
     """
     Carry out a single-point calculation.
@@ -43,22 +44,8 @@ def static_job(
         Basis set
     calc_swaps
         Dictionary of custom kwargs for the calculator.
-            defaults = {
-                "mem": "16GB",
-                "chk": "Gaussian.chk",
-                "nprocshared": multiprocessing.cpu_count(),
-                "xc": xc,
-                "basis": basis,
-                "charge": charge or int(sum(atoms.get_initial_charges())),
-                "mult": multiplicity or int(1 + sum(atoms.get_initial_magnetic_moments())),
-                "sp": "",
-                "scf": ["maxcycle=250", "xqc"],
-                "integral": "ultrafine",
-                "nosymmetry": "",
-                "pop": "CM5",
-                "gfinput": "",
-                "ioplist": ["6/7=3", "2/9=2000"]
-            }
+    copy_files
+        Absolute paths to files to copy to the runtime directory.
 
     Returns
     -------
@@ -94,7 +81,7 @@ def static_job(
     flags = remove_dict_empties(defaults | calc_swaps)
 
     atoms.calc = Gaussian(**flags)
-    atoms = run_calc(atoms, geom_file=GEOM_FILE)
+    atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
 
     return summarize_run(
         atoms,
@@ -112,6 +99,7 @@ def relax_job(
     basis: str = "def2-tzvp",
     freq: bool = False,
     calc_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> cclibSchema:
     """
     Carry out a geometry optimization.
@@ -134,22 +122,8 @@ def relax_job(
         If a frequency calculation should be carried out.
     calc_swaps
         Dictionary of custom kwargs for the calculator.
-            defaults = {
-                "mem": "16GB",
-                "chk": "Gaussian.chk",
-                "nprocshared": multiprocessing.cpu_count(),
-                "xc": xc,
-                "basis": basis,
-                "charge": charge or int(sum(atoms.get_initial_charges())),
-                "mult": multiplicity or int(1 + sum(atoms.get_initial_magnetic_moments())),
-                "opt": "",
-                "pop": "CM5",
-                "scf": ["maxcycle=250", "xqc"],
-                "integral": "ultrafine",
-                "nosymmetry": "",
-                "freq": "" if freq else None,
-                "ioplist": ["2/9=2000"],  # ASE issue #660
-            }
+    copy_files
+        Absolute paths to files to copy to the runtime directory.
 
     Returns
     -------
@@ -185,7 +159,7 @@ def relax_job(
     flags = remove_dict_empties(defaults | calc_swaps)
 
     atoms.calc = Gaussian(**flags)
-    atoms = run_calc(atoms, geom_file=GEOM_FILE)
+    atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
 
     return summarize_run(
         atoms,
