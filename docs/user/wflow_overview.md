@@ -6,7 +6,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
 If you aren't sure which workflow engine to choose, check out the Pros and Cons lists below.
 
-Generally, we recommend either Covalent or Parsl, which have nearly identical syntax. If you're using an HPC cluster and can SSH into the login node without the need for multi-factor authentication each connection, then try Covalent. If automated SSH connections to the login node are not viable, Parsl is likely the best option. Jobflow with FireWorks is best-suited if you are working at Lawrence Berkeley National Laboratory where it is already in active use.
+Generally, we recommend either Covalent or Parsl, which have nearly identical syntax. If you're using an HPC cluster and can SSH into the login node without the need for multi-factor authentication each connection, then try Covalent. If automated SSH connections to the login node are not viable or relying on a centralized server isn't desirable, Parsl is likely the best option. Jobflow with FireWorks is best-suited if you are working at Lawrence Berkeley National Laboratory where it is already in active use.
 
 ## Pros and Cons
 
@@ -27,7 +27,7 @@ Generally, we recommend either Covalent or Parsl, which have nearly identical sy
 
     - Still actively in development
     - Not as widely used as other workflow management solutions
-    - For HPC, it currently only supports the Slurm job scheduler out-of-the-box, although custom plugins can be defined
+    - It requires a centralized server to be running continuously in order to manage the workflows
     - High-security HPC environments may be difficult to access via SSH with the centralized server approach
 
 === "Parsl"
@@ -39,9 +39,9 @@ Generally, we recommend either Covalent or Parsl, which have nearly identical sy
     - Extremely configurable for virtually any HPC environment
     - Relatively simple to define the workflows
     - Active community, particularly across academia
-    - Ideal for jobpacking (e.g. packing many compute tasks into a single Slurm job) and has near-ideal scaling performance
+    - Ideal for jobpacking (e.g. packing many compute tasks into a single compute job) and has near-ideal scaling performance
     - Thorough documentation
-    - Can be run locally without any server overhead
+    - Does not rely on maintaining a centralized server of any kind
 
     Cons:
 
