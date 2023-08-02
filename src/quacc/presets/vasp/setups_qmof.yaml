@@ -1,4 +1,7 @@
 # QMOF-compatible PAW PBE potentials
+# This is based on VASP-recommended PBE .54 potentials with the following changes:
+# Li-->Li_sv, Yb_2-->Yb_3, Eu_2-->Eu_3
+# Last modified: 08-01-2023
 inputs:
   setups:
     Ac: Ac

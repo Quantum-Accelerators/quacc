@@ -1,6 +1,7 @@
 # Chosen based on the highest number of unparied electrons
 # for 3d, 4f, and 5f elements if in the oxidation state of
 # 2+ or 3+.
+# Last modified: 08-01-2023
 inputs:
   elemental_magmoms:
     Am: 7
