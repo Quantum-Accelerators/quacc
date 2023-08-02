@@ -2,6 +2,7 @@
 # using the r2SCAN functional.
 # Caution: The pseudopotentials should be used with the .54 PAW PBE set
 # Source: https://github.com/materialsproject/pymatgen/blob/master/pymatgen/io/vasp/MPSCANRelaxSet.yaml
+# Last modified: 08-01-2023
 inputs:
   algo: all
   ediff: 1.0e-5

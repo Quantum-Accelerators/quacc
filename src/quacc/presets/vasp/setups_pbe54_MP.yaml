@@ -1,4 +1,6 @@
+# Materials Project pseudopotentials (r2SCAN workflow)
 # Note: These are specifically the .54 PAW PBE potentials
+# Last modified: 08-01-2023
 inputs:
   setups:
     Ac: Ac

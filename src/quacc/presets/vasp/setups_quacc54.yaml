@@ -1,4 +1,6 @@
-# VASP-recommended .54 PAW PBE potentials
+# Quacc default pseudopotentials.
+# Based on VASP-recommended .54 PAW PBE potentials with the following changes:
+# Li_sv-->Li, Yb_2-->Yb_3, Eu_2-->Eu_3
 # Last modified: 08-01-2023
 inputs:
   setups:
@@ -28,7 +30,7 @@ inputs:
     Cu: Cu
     Dy: Dy_3
     Er: Er_3
-    Eu: Eu_2
+    Eu: Eu_3
     F: F
     Fe: Fe
     Fr: Fr_sv
@@ -46,7 +48,7 @@ inputs:
     K: K_sv
     Kr: Kr
     La: La
-    Li: Li_sv
+    Li: Li
     Lu: Lu_3
     Mg: Mg
     Mn: Mn_pv
@@ -96,6 +98,6 @@ inputs:
     W: W_sv
     Xe: Xe
     Y: Y_sv
-    Yb: Yb_2
+    Yb: Yb_3
     Zn: Zn
     Zr: Zr_sv
