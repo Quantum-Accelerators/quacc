@@ -76,18 +76,18 @@ In the previous examples, we have been running calculations on our local machine
         username="YourUserName",
         address="perlmutter-p1.nersc.gov",
         ssh_key_file="~/.ssh/nersc",
-        cert_file="~/.ssh/nersc-cert.pub", #  (1)!
+        cert_file="~/.ssh/nersc-cert.pub", # (1)!
         # PSI/J parameters
         instance="slurm",
         resource_spec_kwargs={
             "nodes": n_nodes,
             "processes_per_node": n_cores_per_node,
-        },  # (2)!
+        }, # (2)!
         job_attributes_kwargs={
             "duration": 10, # minutes
             "project_name": "YourAccountName",
             "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
-        },  #  (3)!
+        }, # (3)!
         environment={"QUACC_VASP_PARALLEL_CMD": vasp_parallel_cmd},
         # Pre-/post-launch commands
         pre_launch_cmds=["module load vasp"],
@@ -95,7 +95,7 @@ In the previous examples, we have been running calculations on our local machine
         remote_conda_env="quacc",
         # Covalent parameters
         remote_workdir="$SCRATCH/quacc",
-        create_unique_workdir=True,  #  (4)!
+        create_unique_workdir=True, # (4)!
     )
     ```
 
