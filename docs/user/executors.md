@@ -90,7 +90,7 @@ In the previous examples, we have been running calculations on our local machine
         },  #  (3)!
         environment={"QUACC_VASP_PARALLEL_CMD": vasp_parallel_cmd}, 
         # Pre-/post-launch commands
-        prelaunch_cmds=["module load vasp"],
+        pre_launch_cmds=["module load vasp"],
         # Remote Python env parameters
         remote_conda_env="quacc",
         # Covalent parameters
