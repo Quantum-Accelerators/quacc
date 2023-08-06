@@ -68,7 +68,7 @@ In the previous examples, we have been running calculations on our local machine
 
         Refer to the [executor documentation](https://docs.covalent.xyz/docs/features/executor-plugins/exe) for instructions on how to install and use the relevant plugins that allow Covalent to submit jobs on your desired machines.
 
-    Most users of quacc will probably want to use the [`HPCExecutor`](https://github.com/Quantum-Accelerators/quacc.git), which is a plugin for Covalent that supports Slurm, PBS, LSF, Flux, and more. For submitting jobs to [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/) from your local machine, an example `HPCExecutor` configuration with support for an [`sshproxy`](https://docs.nersc.gov/connect/mfa/#sshproxy)-based multi-factor authentication certificate might look like the following:
+    Most users of quacc will probably want to use the [`HPCExecutor`](https://github.com/Quantum-Accelerators/covalent-hpc-plugin), which is a plugin for Covalent that supports Slurm, PBS, LSF, Flux, and more. For submitting jobs to [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/) from your local machine, an example `HPCExecutor` configuration with support for an [`sshproxy`](https://docs.nersc.gov/connect/mfa/#sshproxy)-based multi-factor authentication certificate might look like the following:
 
     ```python
     executor = ct.executor.HPCExecutor(
