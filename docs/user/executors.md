@@ -88,10 +88,7 @@ In the previous examples, we have been running calculations on our local machine
             "project_name": "YourAccountName",
             "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
         },  #  (7)!
-        environment={
-            "QUACC_VASP_PARALLEL_CMD": vasp_parallel_cmd,
-            "COVALENT_CONFIG_DIR": "$SCRATCH/.config/covalent",
-        },  # (8)!
+        environment={"QUACC_VASP_PARALLEL_CMD": vasp_parallel_cmd},  # (8)!
         # Pre-/post-launch commands
         prelaunch_cmds=["source ~/.bashrc", "module load vasp"],  # (9)!
         # Remote Python env parameters
