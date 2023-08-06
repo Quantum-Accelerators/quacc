@@ -98,6 +98,7 @@ In the previous examples, we have been running calculations on our local machine
         create_unique_workdir=True,  #  (4)!
     )
     ```
+
     1. This a certificate file used to validate your SSH credentials. This is often not needed but is required at NERSC facilities.
 
     2. These are the resource specifications for the compute job, which are keyword arguments passed to PSI/J's [`ResourceSpecV1` class](https://exaworks.org/psij-python/docs/v/0.9.0/.generated/psij.html#psij.resource_spec.ResourceSpecV1).
