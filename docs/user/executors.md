@@ -4,7 +4,7 @@ In the previous examples, we have been running calculations on our local machine
 
 === "Covalent"
 
-    By default, Covalent will run all `Electron` tasks on your local machine using the [`DaskExecutor`](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/dask). This is a parameter that you can control. For instance, you may want to define the executor to be based on Slurm using the [`SlurmExecutor`](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/slurm) to submit a job to an HPC cluster. The example below highlights how one can change the executor.
+    By default, Covalent will run all `Electron` tasks on your local machine using the [`DaskExecutor`](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/dask). This is a parameter that you can control. For instance, Covalent offers many [plugin executors](https://docs.covalent.xyz/docs/features/executor-plugins/exe) that can be used to interface with a wide range of HPC, cloud, and quantum devices.
 
     **Setting Executors via the Lattice Object**
 
@@ -90,7 +90,7 @@ In the previous examples, we have been running calculations on our local machine
         },  #  (7)!
         environment={"QUACC_VASP_PARALLEL_CMD": vasp_parallel_cmd},  # (8)!
         # Pre-/post-launch commands
-        prelaunch_cmds=["source ~/.bashrc", "module load vasp"],  # (9)!
+        prelaunch_cmds=["module load vasp"],  # (9)!
         # Remote Python env parameters
         remote_conda_env="quacc",  # (10)!
         # Covalent parameters
