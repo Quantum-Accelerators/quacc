@@ -88,7 +88,7 @@ In the previous examples, we have been running calculations on our local machine
             "project_name": "YourAccountName",
             "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
         },  #  (3)!
-        environment={"QUACC_VASP_PARALLEL_CMD": vasp_parallel_cmd}, 
+        environment={"QUACC_VASP_PARALLEL_CMD": vasp_parallel_cmd},
         # Pre-/post-launch commands
         prelaunch_cmds=["module load vasp"],
         # Remote Python env parameters
