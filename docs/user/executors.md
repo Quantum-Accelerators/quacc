@@ -66,43 +66,39 @@ In the previous examples, we have been running calculations on our local machine
 
     !!! Tip
 
-        Refer to the [executor documentation](https://docs.covalent.xyz/docs/features/executor-plugins/exe) for instructions on how to configure Covalent for your desired machines.
+        Refer to the [executor documentation](https://docs.covalent.xyz/docs/features/executor-plugins/exe) for instructions on how to install and use the relevant plugins that allow Covalent to submit jobs on your desired machines.
 
-    By default, the `workdir` for the `Dask` (default) and `local` executors is set to `~/.cache/covalent/workdir`. This is where any files generated at runtime will be stored. You can change both of these parameters to the directories of your choosing by editing the Covalent configuration file directly or via the `ct.set_config()` command.
-
-    For submitting jobs to [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/) from your local machine, an example `SlurmExecutor` configuration with support for an [`sshproxy`](https://docs.nersc.gov/connect/mfa/#sshproxy)-based multi-factor authentication certificate might look like the following:
+    Most users of quacc will probably want to use the [`HPCExecutor`](https://github.com/Quantum-Accelerators/quacc.git), which is a plugin for Covalent that supports Slurm, PBS, LSF, Flux, and more. For submitting jobs to [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/) from your local machine, an example `HPCExecutor` configuration with support for an [`sshproxy`](https://docs.nersc.gov/connect/mfa/#sshproxy)-based multi-factor authentication certificate might look like the following:
 
     ```python
-    import covalent as ct
-
-    n_nodes = 1 # Number of nodes for the Slurm job
-    n_cores_per_node = 48 # Number of CPU cores per node
-    vasp_parallel_cmd = (
-        f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'"
-    )
-
-    executor = ct.executor.SlurmExecutor(
+    executor = ct.executor.HPCExecutor(
+        # SSH credentials
         username="YourUserName",  # (1)!
         address="perlmutter-p1.nersc.gov",  # (2)!
-        ssh_key_file="/home/UserName/.ssh/nersc",  # (3)!
-        cert_file="/home/UserName/.ssh/nersc-cert.pub",  # (4)!
-        remote_workdir="$SCRATCH/quacc",  # (5)!
-        conda_env="quacc",  # (6)!
-        options={
-            "nodes": f"{n_nodes}",  # (7)!
-            "qos": "debug",  # (8)!
-            "constraint": "cpu",  # (9)!
-            "account": "YourAccountName",  # (10)!
-            "job-name": "quacc",  # (11)!
-            "time": "00:10:00",  # (12)!
-        },
-        prerun_commands=[
-            "source ~/.bashrc",
-            "module load vasp",
-            f"export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}",
-        ],  # (13)!
-        create_unique_workdir = True, # (14)!
-        use_srun=False,  # (15)!
+        ssh_key_file="~/.ssh/nersc",  # (3)!
+        cert_file="~/.ssh/nersc-cert.pub",  # (4)!
+        # PSI/J parameters
+        instance="slurm",  # (5)!
+        resource_spec_kwargs={
+            "nodes": n_nodes,
+            "processes_per_node": n_cores_per_node,
+        },  # (6)!
+        job_attributes_kwargs={
+            "duration": 10,
+            "project_name": "YourAccountName",
+            "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
+        },  #  (7)!
+        environment={
+            "QUACC_VASP_PARALLEL_CMD": vasp_parallel_cmd,
+            "COVALENT_CONFIG_DIR": "$SCRATCH/.config/covalent",
+        },  # (8)!
+        # Pre-/post-launch commands
+        prelaunch_cmds=["source ~/.bashrc", "module load vasp"],  # (9)!
+        # Remote Python env parameters
+        remote_conda_env="quacc",  # (10)!
+        # Covalent parameters
+        remote_workdir="$SCRATCH/quacc",  # (11)!
+        create_unique_workdir=True,  #  (12)!
     )
     ```
 
@@ -112,29 +108,23 @@ In the previous examples, we have been running calculations on our local machine
 
     3. This is the private SSH key on your local machine (made via the `ssh-keygen` utility), typically found at `~/.ssh/id_rsa` unless you're using NERSC resources.
 
-    4. This a ceritficate file used to validate your credentials. This is often not needed but is required at NERSC facilities.
+    4. This a certificate file used to validate your credentials. This is often not needed but is required at NERSC facilities.
 
-    5. This is the base directory on the remote machine where your calculations will be run. Set it somewhere with fast file I/O.
+    5. This is the job scheduler used on the remote machine.
 
-    6. This is the name of your Conda environment, assuming that you're using one.
+    6. These are the resource specifications for the compute job, which are keyword arguments passed to PSI/J's [`ResourceSpecV1` class](https://exaworks.org/psij-python/docs/v/0.9.0/.generated/psij.html#psij.resource_spec.ResourceSpecV1).
 
-    7. The total number of nodes for the job.
+    7. These are the job attributes that the job scheduler needs, which are keyword arguments passed to PSI/J's [`JobAttributes` class](https://exaworks.org/psij-python/docs/v/0.9.0/.generated/psij.html#psij.JobAttributes).
 
-    8. The queue (`-q`) name, typically something like "regular", "debug", "test", etc. depending on the machine.
+    8. This is any environment variables you wish to set before the job runs.
 
-    9. The Slurm constraint (`-c)` flag, if relevant. Most HPC machines do not require this, but it is needed at NERSC facilities.
+    9. This is a list of (shell) commands to run before the job runs.
 
-    10. The account to charge for the Slurm jobs.
+    10. This is the name of your remote Conda environment, assuming that you're using one. The remote Conda environment must have `python-psij` installed.
 
-    11. The job name that will show up when you use `squeue`.
+    11. This is the working directory on the remote machine where the job will be run. This should be a location with fast file I/O performance.
 
-    12. The walltime for the job in DD:HH:SS.
-
-    13. Any commands to run at the top of the Slurm submit script before your Covalent workflow is run. This is a good place to set various environment variables and any modules to load.
-
-    14. You generally want each quacc job to be run in its own unique working directory to ensure files don't overwrite one another, so  `create_unique_workdir` should be set to `True`.
-
-    15. All quacc jobs must have `use_srun=False` in order for ASE-based calculators to be launched appropriately.
+    12. You generally want each quacc job to be run in its own unique working directory to ensure files don't overwrite one another, so  `create_unique_workdir` should be set to `True`.
 
 === "Parsl"
 
