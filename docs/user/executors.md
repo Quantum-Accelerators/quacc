@@ -84,7 +84,7 @@ In the previous examples, we have been running calculations on our local machine
             "processes_per_node": n_cores_per_node,
         },  # (6)!
         job_attributes_kwargs={
-            "duration": 10,
+            "duration": 10, # minutes
             "project_name": "YourAccountName",
             "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
         },  #  (7)!
