@@ -73,55 +73,38 @@ In the previous examples, we have been running calculations on our local machine
     ```python
     executor = ct.executor.HPCExecutor(
         # SSH credentials
-        username="YourUserName",  # (1)!
-        address="perlmutter-p1.nersc.gov",  # (2)!
-        ssh_key_file="~/.ssh/nersc",  # (3)!
-        cert_file="~/.ssh/nersc-cert.pub",  # (4)!
+        username="YourUserName",
+        address="perlmutter-p1.nersc.gov",
+        ssh_key_file="~/.ssh/nersc",
+        cert_file="~/.ssh/nersc-cert.pub", #  (1)!
         # PSI/J parameters
-        instance="slurm",  # (5)!
+        instance="slurm",
         resource_spec_kwargs={
             "nodes": n_nodes,
             "processes_per_node": n_cores_per_node,
-        },  # (6)!
+        },  # (2)!
         job_attributes_kwargs={
             "duration": 10, # minutes
             "project_name": "YourAccountName",
             "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
-        },  #  (7)!
-        environment={"QUACC_VASP_PARALLEL_CMD": vasp_parallel_cmd},  # (8)!
+        },  #  (3)!
+        environment={"QUACC_VASP_PARALLEL_CMD": vasp_parallel_cmd}, 
         # Pre-/post-launch commands
-        prelaunch_cmds=["module load vasp"],  # (9)!
+        prelaunch_cmds=["module load vasp"],
         # Remote Python env parameters
-        remote_conda_env="quacc",  # (10)!
+        remote_conda_env="quacc",
         # Covalent parameters
-        remote_workdir="$SCRATCH/quacc",  # (11)!
-        create_unique_workdir=True,  #  (12)!
+        remote_workdir="$SCRATCH/quacc",
+        create_unique_workdir=True,  #  (4)!
     )
     ```
+    1. This a certificate file used to validate your SSH credentials. This is often not needed but is required at NERSC facilities.
 
-    1. This is your username on the HPC machine that you can SSH into.
+    2. These are the resource specifications for the compute job, which are keyword arguments passed to PSI/J's [`ResourceSpecV1` class](https://exaworks.org/psij-python/docs/v/0.9.0/.generated/psij.html#psij.resource_spec.ResourceSpecV1).
 
-    2. This is the address, excluding your username, for the HPC machine you wish to SSH into.
+    3. These are the job attributes that the job scheduler needs, which are keyword arguments passed to PSI/J's [`JobAttributes` class](https://exaworks.org/psij-python/docs/v/0.9.0/.generated/psij.html#psij.JobAttributes).
 
-    3. This is the private SSH key on your local machine (made via the `ssh-keygen` utility), typically found at `~/.ssh/id_rsa` unless you're using NERSC resources.
-
-    4. This a certificate file used to validate your credentials. This is often not needed but is required at NERSC facilities.
-
-    5. This is the job scheduler used on the remote machine.
-
-    6. These are the resource specifications for the compute job, which are keyword arguments passed to PSI/J's [`ResourceSpecV1` class](https://exaworks.org/psij-python/docs/v/0.9.0/.generated/psij.html#psij.resource_spec.ResourceSpecV1).
-
-    7. These are the job attributes that the job scheduler needs, which are keyword arguments passed to PSI/J's [`JobAttributes` class](https://exaworks.org/psij-python/docs/v/0.9.0/.generated/psij.html#psij.JobAttributes).
-
-    8. This is any environment variables you wish to set before the job runs.
-
-    9. This is a list of (shell) commands to run before the job runs.
-
-    10. This is the name of your remote Conda environment, assuming that you're using one. The remote Conda environment must have `python-psij` installed.
-
-    11. This is the working directory on the remote machine where the job will be run. This should be a location with fast file I/O performance.
-
-    12. You generally want each quacc job to be run in its own unique working directory to ensure files don't overwrite one another, so  `create_unique_workdir` should be set to `True`.
+    4. You generally want each quacc job to be run in its own unique working directory to ensure files don't overwrite one another, so  `create_unique_workdir` should be set to `True`.
 
 === "Parsl"
 
@@ -149,13 +132,13 @@ In the previous examples, we have been running calculations on our local machine
                 label="quacc_HTEX", # (2)!
                 max_workers=1, # (3)!
                 provider=SlurmProvider( # (4)!
-                    account="MyAccountName", # (5)!
-                    nodes_per_block=1, # (6)!
-                    scheduler_options="#SBATCH -q debug -C cpu", # (7)!
-                    worker_init="source ~/.bashrc && conda activate quacc", # (8)!
-                    walltime="00:10:00", # (9)!
-                    cmd_timeout=120, # (10)!
-                    launcher = SimpleLauncher(), # (11)!
+                    account="MyAccountName",
+                    nodes_per_block=1, # (5)!
+                    scheduler_options="#SBATCH -q debug -C cpu", # (6)!
+                    worker_init="source ~/.bashrc && conda activate quacc",
+                    walltime="00:10:00",
+                    cmd_timeout=120, # (7)!
+                    launcher = SimpleLauncher(), # (8)!
                 ),
             )
         ],
@@ -172,21 +155,15 @@ In the previous examples, we have been running calculations on our local machine
 
     4. The provider to use for job submission. This can be changed to `LocalProvider()` if you wish to have the Parsl process run on a login node rather than a compute node.
 
-    5. Your Slurm account name.
+    5. The number of nodes to request per job. By default, all cores on the node will be requested (setting `cores_per_node` will override this).
 
-    6. The number of nodes to request per job. By default, all cores on the node will be requested (setting `cores_per_node` will override this).
+    6. Any additional `#SBATCH` options not captured elsewhere can be included here.
 
-    7. Any additional `#SBATCH` options can be included here.
+    7. The maximum time to wait (in seconds) for the job scheduler info to be retrieved/sent.
 
-    8. Commands to run before the job starts, typically used for activating a given Python environment.
+    8. The type of Launcher to use. Note that `SimpleLauncher()` must be used instead of the commonly used `SrunLauncher()` to allow quacc subprocesses to launch their own `srun` commands.
 
-    9. The maximum amount of time to allow the job to run in `HH:MM:SS` format.
-
-    10. The maximum time to wait (in seconds) for the job scheduler info to be retrieved/sent.
-
-    11. The type of Launcher to use. Note that `SimpleLauncher()` must be used instead of the commonly used `SrunLauncher()` to allow quacc subprocesses to launch their own `srun` commands.
-
-    Unlike some other workflow engines, Parsl (by default) is built for "jobpacking" where the allocated nodes continually pull in new workers (until the walltime is reached or the parent Python process is killed). This makes it possible to request a large number of nodes that continually pull in new jobs rather than submitting a large number of small jobs to the scheduler, which can be more efficient. In other words, don't be surprised if the Slurm job continues to run even when your submitted task has completed, particularly if you are using a Jupyter Notebook or IPython kernel.
+    Unlike some other workflow engines, Parsl (by default) is built for "jobpacking" (also known as the pilot job model) where the allocated nodes continually pull in new workers (until the walltime is reached or the parent Python process is killed). This makes it possible to request a large number of nodes that continually pull in new jobs rather than submitting a large number of small jobs to the scheduler, which can be more efficient. In other words, don't be surprised if the Slurm job continues to run even when your submitted task has completed, particularly if you are using a Jupyter Notebook or IPython kernel.
 
     **Scaling Up**
 
