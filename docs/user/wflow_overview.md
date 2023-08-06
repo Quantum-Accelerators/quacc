@@ -6,7 +6,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
 If you aren't sure which workflow engine to choose, check out the Pros and Cons lists below.
 
-Generally, we recommend either Covalent or Parsl, which have nearly identical syntax. If you're using an HPC cluster and can SSH into the login node without the need for multi-factor authentication each connection, then try Covalent. If automated SSH connections to the login node are not viable, Parsl is likely the best option. Jobflow with FireWorks is best-suited if you are working at Lawrence Berkeley National Laboratory where it is already in active use.
+Generally, we recommend either Covalent or Parsl, which have nearly identical syntax. If you're using an HPC cluster and can SSH into the login node without the need for multi-factor authentication each connection, then try Covalent. If automated SSH connections to the login node are not viable or relying on a centralized server isn't desirable, Parsl is likely the best option. Jobflow with FireWorks is best-suited if you are working at Lawrence Berkeley National Laboratory where it is already in active use.
 
 ## Pros and Cons
 
@@ -27,21 +27,21 @@ Generally, we recommend either Covalent or Parsl, which have nearly identical sy
 
     - Still actively in development
     - Not as widely used as other workflow management solutions
-    - For HPC, it currently only supports the Slurm job scheduler out-of-the-box, although custom plugins can be defined
+    - It requires a centralized server to be running continuously in order to manage the workflows
     - High-security HPC environments may be difficult to access via SSH with the centralized server approach
 
 === "Parsl"
 
-    [Parsl](https://github.com/Parsl/parsl) is a workflow management solution out of Argonne National Laboratory, the University of Chicago, and the University of Illinois. It is well-adapted for running on HPC environments with a job scheduler. Parsl is especially useful for "jobpacking," where instead of each task being an individual (e.g. Slurm) job, a long-running worker will continually pull in and distribute tasks within a single Slurm job until the walltime is reached. This can be useful because it is often easier to move through the queue by requesting a single large job rather than many small jobs.
+    [Parsl](https://github.com/Parsl/parsl) is a workflow management solution out of Argonne National Laboratory, the University of Chicago, and the University of Illinois. It is well-adapted for running on virtually any HPC environment with a job scheduler.
 
     Pros:
 
     - Extremely configurable for virtually any HPC environment
     - Relatively simple to define the workflows
     - Active community, particularly across academia
-    - Ideal for jobpacking (e.g. packing many compute tasks into a single Slurm job) and has near-ideal scaling performance
+    - Ideal for jobpacking (e.g. packing many compute tasks into a single compute job) and has near-ideal scaling performance
     - Thorough documentation
-    - Can be run locally without any server overhead
+    - Does not rely on maintaining a centralized server of any kind
 
     Cons:
 
@@ -52,7 +52,7 @@ Generally, we recommend either Covalent or Parsl, which have nearly identical sy
 
 === "Jobflow"
 
-    If you are affiliated with the Materials Project team at Lawrence Berkeley National Laboratory, we recommend using [Jobflow](https://github.com/materialsproject/jobflow) to define the workflows coupled with [FireWorks](https://github.com/materialsproject/fireworks) to dispatch them since it widely used there.
+    [Jobflow](https://github.com/materialsproject/jobflow) is developed and maintained by the Materials Project team at Lawrence Berkeley National Laboratory and serves as a seamless interface to [FireWorks](https://github.com/materialsproject/fireworks) for dispatching and monitoring compute jobs.
 
     **Jobflow**
 
