@@ -16,7 +16,6 @@ inputs:
   laechg: True
   lasph: True
   lcharg: True
-  lelf: True
   lmixtau: True
   lorbit: 11
   lreal: auto
