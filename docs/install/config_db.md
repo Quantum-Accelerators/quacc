@@ -43,4 +43,4 @@ with store:
 
 !!! Note
 
-    If you are using self-hosted Mongo database, you will probably want to use a [`MongoStore`](https://materialsproject.github.io/maggma/reference/stores/#maggma.stores.mongolike.MongoStore)` instead of the `MongoURIStore`, which takes slightly different arguments.
+    If you are using a self-hosted Mongo database, you will probably want to use a [`MongoStore`](https://materialsproject.github.io/maggma/reference/stores/#maggma.stores.mongolike.MongoStore) instead of the `MongoURIStore`, which takes slightly different arguments.
