@@ -4,7 +4,7 @@ Here, we will show how to use quacc with one of a variety of workflow engines to
 
 !!! Tip
 
-    If you are just getting started with workflow engines, we recommend first trying Covalent.
+    Check out the ["Workflow Engines Overview"](wflow_overview.md) section of the documentation to identify which workflow engine is suitable for you.
 
 ## Pre-Requisites
 

@@ -4,7 +4,7 @@ In the previous examples, we have been running calculations on our local machine
 
 === "Covalent"
 
-    By default, Covalent will run all `Electron` tasks on your local machine using the [`DaskExecutor`](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/dask). This is a parameter that you can control. For instance, you may want to define the executor to be based on Slurm using the [`SlurmExecutor`](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/slurm) to submit a job to an HPC cluster. The example below highlights how one can change the executor.
+    By default, Covalent will run all `Electron` tasks on your local machine using the [`DaskExecutor`](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/dask). This is a parameter that you can control. For instance, Covalent offers many [plugin executors](https://docs.covalent.xyz/docs/features/executor-plugins/exe) that can be used to interface with a wide range of HPC, cloud, and quantum devices.
 
     **Setting Executors via the Lattice Object**
 
@@ -66,75 +66,46 @@ In the previous examples, we have been running calculations on our local machine
 
     !!! Tip
 
-        Refer to the [executor documentation](https://docs.covalent.xyz/docs/features/executor-plugins/exe) for instructions on how to configure Covalent for your desired machines.
+        Refer to the [executor documentation](https://docs.covalent.xyz/docs/features/executor-plugins/exe) for instructions on how to install and use the relevant plugins that allow Covalent to submit jobs on your desired machines.
 
-    By default, the `workdir` for the `Dask` (default) and `local` executors is set to `~/.cache/covalent/workdir`. This is where any files generated at runtime will be stored. You can change both of these parameters to the directories of your choosing by editing the Covalent configuration file directly or via the `ct.set_config()` command.
-
-    For submitting jobs to [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/) from your local machine, an example `SlurmExecutor` configuration with support for an [`sshproxy`](https://docs.nersc.gov/connect/mfa/#sshproxy)-based multi-factor authentication certificate might look like the following:
+    Most users of quacc will probably want to use the [`HPCExecutor`](https://github.com/Quantum-Accelerators/covalent-hpc-plugin), which is a plugin for Covalent that supports Slurm, PBS, LSF, Flux, and more. For submitting jobs to [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/) from your local machine, an example `HPCExecutor` configuration with support for an [`sshproxy`](https://docs.nersc.gov/connect/mfa/#sshproxy)-based multi-factor authentication certificate might look like the following:
 
     ```python
-    import covalent as ct
-
-    n_nodes = 1 # Number of nodes for the Slurm job
-    n_cores_per_node = 48 # Number of CPU cores per node
-    vasp_parallel_cmd = (
-        f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'"
-    )
-
-    executor = ct.executor.SlurmExecutor(
-        username="YourUserName",  # (1)!
-        address="perlmutter-p1.nersc.gov",  # (2)!
-        ssh_key_file="/home/UserName/.ssh/nersc",  # (3)!
-        cert_file="/home/UserName/.ssh/nersc-cert.pub",  # (4)!
-        remote_workdir="$SCRATCH/quacc",  # (5)!
-        conda_env="quacc",  # (6)!
-        options={
-            "nodes": f"{n_nodes}",  # (7)!
-            "qos": "debug",  # (8)!
-            "constraint": "cpu",  # (9)!
-            "account": "YourAccountName",  # (10)!
-            "job-name": "quacc",  # (11)!
-            "time": "00:10:00",  # (12)!
-        },
-        prerun_commands=[
-            "source ~/.bashrc",
-            "module load vasp",
-            f"export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}",
-        ],  # (13)!
-        create_unique_workdir = True, # (14)!
-        use_srun=False,  # (15)!
+    executor = ct.executor.HPCExecutor(
+        # SSH credentials
+        username="YourUserName",
+        address="perlmutter-p1.nersc.gov",
+        ssh_key_file="~/.ssh/nersc",
+        cert_file="~/.ssh/nersc-cert.pub", # (1)!
+        # PSI/J parameters
+        instance="slurm",
+        resource_spec_kwargs={
+            "nodes": n_nodes,
+            "processes_per_node": n_cores_per_node,
+        }, # (2)!
+        job_attributes_kwargs={
+            "duration": 10, # minutes
+            "project_name": "YourAccountName",
+            "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
+        }, # (3)!
+        environment={"QUACC_VASP_PARALLEL_CMD": vasp_parallel_cmd},
+        # Pre-/post-launch commands
+        pre_launch_cmds=["module load vasp"],
+        # Remote Python env parameters
+        remote_conda_env="quacc",
+        # Covalent parameters
+        remote_workdir="$SCRATCH/quacc",
+        create_unique_workdir=True, # (4)!
     )
     ```
 
-    1. This is your username on the HPC machine that you can SSH into.
+    1. This a certificate file used to validate your SSH credentials. This is often not needed but is required at NERSC facilities.
 
-    2. This is the address, excluding your username, for the HPC machine you wish to SSH into.
+    2. These are the resource specifications for the compute job, which are keyword arguments passed to PSI/J's [`ResourceSpecV1` class](https://exaworks.org/psij-python/docs/v/0.9.0/.generated/psij.html#psij.resource_spec.ResourceSpecV1).
 
-    3. This is the private SSH key on your local machine (made via the `ssh-keygen` utility), typically found at `~/.ssh/id_rsa` unless you're using NERSC resources.
+    3. These are the job attributes that the job scheduler needs, which are keyword arguments passed to PSI/J's [`JobAttributes` class](https://exaworks.org/psij-python/docs/v/0.9.0/.generated/psij.html#psij.JobAttributes).
 
-    4. This a ceritficate file used to validate your credentials. This is often not needed but is required at NERSC facilities.
-
-    5. This is the base directory on the remote machine where your calculations will be run. Set it somewhere with fast file I/O.
-
-    6. This is the name of your Conda environment, assuming that you're using one.
-
-    7. The total number of nodes for the job.
-
-    8. The queue (`-q`) name, typically something like "regular", "debug", "test", etc. depending on the machine.
-
-    9. The Slurm constraint (`-c)` flag, if relevant. Most HPC machines do not require this, but it is needed at NERSC facilities.
-
-    10. The account to charge for the Slurm jobs.
-
-    11. The job name that will show up when you use `squeue`.
-
-    12. The walltime for the job in DD:HH:SS.
-
-    13. Any commands to run at the top of the Slurm submit script before your Covalent workflow is run. This is a good place to set various environment variables and any modules to load.
-
-    14. You generally want each quacc job to be run in its own unique working directory to ensure files don't overwrite one another, so  `create_unique_workdir` should be set to `True`.
-
-    15. All quacc jobs must have `use_srun=False` in order for ASE-based calculators to be launched appropriately.
+    4. You generally want each quacc job to be run in its own unique working directory to ensure files don't overwrite one another, so  `create_unique_workdir` should be set to `True`.
 
 === "Parsl"
 
@@ -162,13 +133,13 @@ In the previous examples, we have been running calculations on our local machine
                 label="quacc_HTEX", # (2)!
                 max_workers=1, # (3)!
                 provider=SlurmProvider( # (4)!
-                    account="MyAccountName", # (5)!
-                    nodes_per_block=1, # (6)!
-                    scheduler_options="#SBATCH -q debug -C cpu", # (7)!
-                    worker_init="source ~/.bashrc && conda activate quacc", # (8)!
-                    walltime="00:10:00", # (9)!
-                    cmd_timeout=120, # (10)!
-                    launcher = SimpleLauncher(), # (11)!
+                    account="MyAccountName",
+                    nodes_per_block=1, # (5)!
+                    scheduler_options="#SBATCH -q debug -C cpu", # (6)!
+                    worker_init="source ~/.bashrc && conda activate quacc",
+                    walltime="00:10:00",
+                    cmd_timeout=120, # (7)!
+                    launcher = SimpleLauncher(), # (8)!
                 ),
             )
         ],
@@ -185,21 +156,15 @@ In the previous examples, we have been running calculations on our local machine
 
     4. The provider to use for job submission. This can be changed to `LocalProvider()` if you wish to have the Parsl process run on a login node rather than a compute node.
 
-    5. Your Slurm account name.
+    5. The number of nodes to request per job. By default, all cores on the node will be requested (setting `cores_per_node` will override this).
 
-    6. The number of nodes to request per job. By default, all cores on the node will be requested (setting `cores_per_node` will override this).
+    6. Any additional `#SBATCH` options not captured elsewhere can be included here.
 
-    7. Any additional `#SBATCH` options can be included here.
+    7. The maximum time to wait (in seconds) for the job scheduler info to be retrieved/sent.
 
-    8. Commands to run before the job starts, typically used for activating a given Python environment.
+    8. The type of Launcher to use. Note that `SimpleLauncher()` must be used instead of the commonly used `SrunLauncher()` to allow quacc subprocesses to launch their own `srun` commands.
 
-    9. The maximum amount of time to allow the job to run in `HH:MM:SS` format.
-
-    10. The maximum time to wait (in seconds) for the job scheduler info to be retrieved/sent.
-
-    11. The type of Launcher to use. Note that `SimpleLauncher()` must be used instead of the commonly used `SrunLauncher()` to allow quacc subprocesses to launch their own `srun` commands.
-
-    Unlike some other workflow engines, Parsl (by default) is built for "jobpacking" where the allocated nodes continually pull in new workers (until the walltime is reached or the parent Python process is killed). This makes it possible to request a large number of nodes that continually pull in new jobs rather than submitting a large number of small jobs to the scheduler, which can be more efficient. In other words, don't be surprised if the Slurm job continues to run even when your submitted task has completed, particularly if you are using a Jupyter Notebook or IPython kernel.
+    Unlike some other workflow engines, Parsl (by default) is built for "jobpacking" (also known as the pilot job model) where the allocated nodes continually pull in new workers (until the walltime is reached or the parent Python process is killed). This makes it possible to request a large number of nodes that continually pull in new jobs rather than submitting a large number of small jobs to the scheduler, which can be more efficient. In other words, don't be surprised if the Slurm job continues to run even when your submitted task has completed, particularly if you are using a Jupyter Notebook or IPython kernel.
 
     **Scaling Up**
 

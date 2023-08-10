@@ -41,7 +41,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install .[strict,dev,optimizers]
-          pip install covalent-slurm-plugin>=0.16.0rc0
+          pip install git+https://github.com/Quantum-Accelerators/covalent-hpc-plugin.git
 
       - name: Set up Covalent server
         run: |

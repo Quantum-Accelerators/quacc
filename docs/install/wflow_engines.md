@@ -20,7 +20,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     **Plugin Installation**
 
-    Depending on where you wish to run your quacc calculations, you may need to install the corresponding Covalent plugin, as described in the [Covalent plugin documentation](https://docs.covalent.xyz/docs/features/executor-plugins/exe). For production-quality calculations, we anticipate that most users will rely on the [`SlurmExecutor`](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/slurm), which can be installed via `covalent-slurm-plugin>=0.16.0rc0`.
+    Depending on where you wish to run your quacc calculations, you may need to install the corresponding Covalent plugin, as described in the [Covalent plugin documentation](https://docs.covalent.xyz/docs/features/executor-plugins/exe). If you are using a typical HPC system with a job scheduler, you will probably want to use the [`HPCExecutor` plugin](https://github.com/arosen93/covalent-hpc-plugin), which supports Slurm, PBS, LSF, Flux, and more.
 
     **Optional Configuration**
 
