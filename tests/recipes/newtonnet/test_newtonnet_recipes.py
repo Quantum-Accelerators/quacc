@@ -24,7 +24,10 @@ from quacc.recipes.newtonnet.core import (
     ts_job,
 )
 
-import sella
+try:
+    import sella
+except ImportError:
+    sella = None
 
 def teardown_module():
     for f in os.listdir("."):
@@ -45,8 +48,8 @@ def teardown_module():
 
 
 @pytest.mark.skipif(
-    NewtonNet is None,
-    reason="NewtonNet must be installed.",
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
 )
 def test_static_Job():
     atoms = molecule("H2O")
@@ -59,8 +62,8 @@ def test_static_Job():
 
 
 @pytest.mark.skipif(
-    NewtonNet is None,
-    reason="NewtonNet must be installed.",
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
 )
 def test_relax_Job():
     atoms = molecule("H2O")
@@ -130,8 +133,8 @@ atoms = Atoms(symbols=symbols, positions=positions)
 
 
 @pytest.mark.skipif(
-    NewtonNet is None,
-    reason="NewtonNet must be installed.",
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
 )
 def test_ts_job_with_default_args():
     # Define test inputs
@@ -152,8 +155,8 @@ def test_ts_job_with_default_args():
 
 
 @pytest.mark.skipif(
-    NewtonNet is None,
-    reason="NewtonNet must be installed.",
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
 )
 def test_ts_job_with_custom_hessian():
     # Define test inputs
@@ -199,8 +202,8 @@ def test_ts_job_with_custom_hessian():
 
 
 @pytest.mark.skipif(
-    NewtonNet is None,
-    reason="NewtonNet must be installed.",
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
 )
 def test_ts_job_with_custom_optimizer():
     # Define test inputs
@@ -224,8 +227,8 @@ def test_ts_job_with_custom_optimizer():
 
 
 @pytest.mark.skipif(
-    NewtonNet is None,
-    reason="NewtonNet must be installed.",
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
 )
 def test_ts_job_with_custom_optimizer_and_custom_hessian():
     # Define test inputs
@@ -250,8 +253,8 @@ def test_ts_job_with_custom_optimizer_and_custom_hessian():
 
 
 @pytest.mark.skipif(
-    NewtonNet is None,
-    reason="NewtonNet must be installed.",
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
 )
 def test_irc_job_with_default_args():
     # Define test inputs
@@ -287,8 +290,8 @@ def test_irc_job_with_default_args():
 
 
 @pytest.mark.skipif(
-    NewtonNet is None,
-    reason="NewtonNet must be installed.",
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
 )
 def test_irc_job_with_custom_fmax():
     # Define test inputs
@@ -325,8 +328,8 @@ def test_irc_job_with_custom_fmax():
 
 
 @pytest.mark.skipif(
-    NewtonNet is None,
-    reason="NewtonNet must be installed.",
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
 )
 def test_irc_job_with_custom_max_steps():
     # Define test inputs
@@ -363,8 +366,8 @@ def test_irc_job_with_custom_max_steps():
 
 
 @pytest.mark.skipif(
-    NewtonNet is None,
-    reason="NewtonNet must be installed.",
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
 )
 def test_irc_job_with_custom_temperature_and_pressure():
     # Define test inputs
@@ -402,8 +405,8 @@ def test_irc_job_with_custom_temperature_and_pressure():
 
 
 @pytest.mark.skipif(
-    NewtonNet is None,
-    reason="NewtonNet must be installed.",
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
 )
 def test_irc_job_with_check_convergence():
     # Define test inputs
@@ -440,8 +443,8 @@ def test_irc_job_with_check_convergence():
 
 
 @pytest.mark.skipif(
-    NewtonNet is None,
-    reason="NewtonNet must be installed.",
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
 )
 def test_irc_job_with_custom_opt_swaps():
     # Define test inputs
@@ -484,8 +487,8 @@ def test_irc_job_with_custom_opt_swaps():
 
 
 @pytest.mark.skipif(
-    NewtonNet is None,
-    reason="NewtonNet must be installed.",
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
 )
 def test_quasi_irc_job_with_default_args():
     # Define test inputs
@@ -551,8 +554,8 @@ def test_quasi_irc_job_with_default_args():
 
 
 @pytest.mark.skipif(
-    NewtonNet is None,
-    reason="NewtonNet must be installed.",
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
 )
 def test_quasi_irc_job_with_custom_direction():
     # Define test inputs
@@ -592,8 +595,8 @@ def test_quasi_irc_job_with_custom_direction():
 
 
 @pytest.mark.skipif(
-    NewtonNet is None,
-    reason="NewtonNet must be installed.",
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
 )
 def test_quasi_irc_job_with_custom_temperature_and_pressure():
     # Define test inputs
@@ -633,8 +636,8 @@ def test_quasi_irc_job_with_custom_temperature_and_pressure():
 
 
 @pytest.mark.skipif(
-    NewtonNet is None,
-    reason="NewtonNet must be installed.",
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
 )
 def test_quasi_irc_job_with_custom_irc_swaps():
     # Define test inputs
@@ -677,8 +680,8 @@ def test_quasi_irc_job_with_custom_irc_swaps():
 
 
 @pytest.mark.skipif(
-    NewtonNet is None,
-    reason="NewtonNet must be installed.",
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
 )
 def test_freq_job():
     atoms = molecule("H2O")
