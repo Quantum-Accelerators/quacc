@@ -1,0 +1,65 @@
+general:
+  me: /global/home/users/ericyuan/20230310_Transition1x/config0.yml # path to this file
+  device: [cuda:0, cuda:1] # cpu / cuda:0 / [cuda:0, cuda:1, cuda:2, cuda:3] / list of cuda
+  driver: /global/home/users/ericyuan/NewtonNet/cli/newtonnet_train # path to the run script
+  output: [/global/home/users/ericyuan/20230310_Transition1x/output_final, 1] # path and iterator for the output directory
+
+data:
+  train_path: /global/scratch/users/ericyuan/Transition1x/conformation_split_0aug/train_data.npz # path to the training data
+  val_path: /global/scratch/users/ericyuan/Transition1x/conformation_split_0aug/val_data.npz # path to the validation data
+  test_path: /global/scratch/users/ericyuan/Transition1x/conformation_split_0aug/test_data.npz # path to the test data
+  train_size: -1 # -1 for all
+  test_size: -1
+  val_size: -1
+  cutoff: 7.0 # cutoff radius
+  random_states: 90 # random seed for data splitting
+
+model:
+  pre_trained: /global/home/users/ericyuan/20230310_Transition1x/0.1-iv+ln-cont/training_1/models/best_model_state.tar # path to the previously trained model for warm-up start
+  activation: swish # activation function: swish, ssp, relu, ...
+  requires_dr: True # if derivative of the output is required
+  w_energy: 1.0 # the weight of energy loss in the loss function
+  w_force: 20.0 # EDITED from 100 # the weight of force loss in the loss function
+  wf_decay: 0.0 # rate of exponential decay of force wight by training epoch
+  w_f_mag: 0.0 # the weight of force magnitude loss in the loss function
+  lambda_l1: 0.0 # the coefficient of L1 regularization
+  w_f_dir: 0.0 # the weight of force direction loss in the loss function
+  resolution: 20 # number of basis functions that describe interatomic distances
+  n_features: 128 # number of features
+  max_z: 10 # maximum atomic number in the chemical systems
+  n_interactions: 3 # number of interaction blocks of newtonnet
+  cutoff_network: poly # the cutoff function: poly (polynomial), cosine
+  normalize_atomic: True # EDITED from false # if True the atomic energy needs to be inverse normalized, otherwise total energy will be scaled back
+  shared_interactions: False # if True parameters of interaction blocks will be shared.
+  normalize_filter: False #
+  return_hessian: False # if True, hessian matrix will be returned
+  double_update_latent: True
+  layer_norm: True # EDITED from false # normalize hidden layer with a 1D layer_norm function
+
+training:
+  epochs: 100 # number of times the entire training data will be shown to the model
+  tr_batch_size: 100 # number of training points (snapshots) in a batch of data that is feed to the model
+  val_batch_size: 100 # number of validation points (snapshots) in a batch of data that is feed to the model
+  tr_rotations: 0 # number of times the training data needs to be randomly rotated (redundant for NewtonNet model)
+  val_rotations: 0 # number of times the validation data needs to be randomly rotated (redundant for NewtonNet model)
+  tr_frz_rot: False # if True, fixed rotations matrix will be used at each epoch
+  val_frz_rot: False #
+  tr_keep_original: True # if True, the original orientation of data will be preserved as part of training set (beside other rotations)
+  val_keep_original: True #
+  shuffle: True # shuffle training data before each epoch
+  drop_last: True # if True, drop the left over data points that are less than a full batch size
+  lr: 1.0e-4 # learning rate
+  lr_scheduler: [plateau, 15, 30, 0.7, 1.0e-6] # the learning rate decay based on the plateau algorithm: n_epoch_averaging, patience, decay_rate, stop_lr
+  #  lr_scheduler: [decay, 0.05]                    # the learning rate decay based on exponential decay: the rate of decay
+  weight_decay: 1.0e-5 # the l2 norm
+  dropout: 0.0 # dropout between 0 and 1
+
+hooks:
+  vismolvector3d: False # if the latent force vectors need to be visualized (only works when the return_latent is on)
+
+checkpoint:
+  log: 1 # log the results every this many epochs
+  val: 1 # evaluate the performance on the validation set every this many epochs
+  test: 10 # evaluate the performance on the test set every this many epochs
+  model: 10 # save the model every this many epochs
+  verbose: False # verbosity of the logging

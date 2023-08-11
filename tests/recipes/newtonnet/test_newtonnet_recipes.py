@@ -1,12 +1,13 @@
+import gzip
 import os
 from copy import deepcopy
+from pathlib import Path
 from shutil import rmtree
 
 import numpy as np
 import pytest
 from ase import Atoms
 from ase.build import molecule
-from ase.io import write
 from ase.optimize import FIRE
 
 from quacc import SETTINGS
@@ -29,30 +30,39 @@ try:
 except ImportError:
     sella = None
 
-
-def teardown_module():
-    for f in os.listdir("."):
-        if (
-            ".log" in f
-            or ".pckl" in f
-            or ".traj" in f
-            or "gfnff_topo" in f
-            or ".gz" in f
-        ):
-            os.remove(f)
-    for f in os.listdir(os.getcwd()):
-        if "quacc-tmp" in f or f == "tmp_dir" or f == "vib":
-            if os.path.islink(f):
-                os.unlink(f)
-            else:
-                rmtree(f)
+CURRENT_FILE_PATH = Path(__file__).parent.resolve()
+SETTINGS.NEWTONNET_CONFIG_PATH = os.path.join(CURRENT_FILE_PATH, "config0.yml")
+SETTINGS.NEWTONNET_MODEL_PATH = os.path.join(CURRENT_FILE_PATH, "best_model_state.tar")
 
 
-# @pytest.mark.skipif(
-#     NewtonNet is None or sella is None,
-#     reason="NewtonNet and Sella must be installed.",
-# )
-def test_static_job():
+# def startup_module():
+#     """gunzip best_model_state.tar.gz with the gzip module"""
+# with gzip.open(
+#     os.path.join(CURRENT_FILE_PATH, "best_model_state.tar.gz"), "rb"
+# ) as f_in:
+#     with open(
+#         os.path.join(CURRENT_FILE_PATH, "best_model_state.tar"), "wb"
+#     ) as f_out:
+#         f_out.write(f_in.read())
+
+
+# def teardown_module():
+#     """gzip back up the best_model_state.tar file with the gzip module"""
+# with open(os.path.join(CURRENT_FILE_PATH, "best_model_state.tar"), "rb") as f_in:
+#     with gzip.open(
+#         os.path.join(CURRENT_FILE_PATH, "best_model_state.tar.gz"), "wb"
+#     ) as f_out:
+#         f_out.write(f_in.read())
+# os.remove(os.path.join(CURRENT_FILE_PATH, "best_model_state.tar"))
+
+
+@pytest.mark.skipif(
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
+)
+def test_static_job(tmpdir):
+    tmpdir.chdir()
+
     atoms = molecule("H2O")
     output = static_job(atoms)
     assert output["spin_multiplicity"] == 1
@@ -66,7 +76,9 @@ def test_static_job():
     NewtonNet is None or sella is None,
     reason="NewtonNet and Sella must be installed.",
 )
-def test_relax_Job():
+def test_relax_job(tmpdir):
+    tmpdir.chdir()
+
     atoms = molecule("H2O")
     # output = relax_job(atoms, optimizer=FIRE)
     output = relax_job(atoms)
@@ -137,7 +149,9 @@ atoms = Atoms(symbols=symbols, positions=positions)
     NewtonNet is None or sella is None,
     reason="NewtonNet and Sella must be installed.",
 )
-def test_ts_job_with_default_args():
+def test_ts_job_with_default_args(tmpdir):
+    tmpdir.chdir()
+
     # Define test inputs
     atoms = molecule("H2O")
 
@@ -159,7 +173,8 @@ def test_ts_job_with_default_args():
     NewtonNet is None or sella is None,
     reason="NewtonNet and Sella must be installed.",
 )
-def test_ts_job_with_custom_hessian():
+def test_ts_job_with_custom_hessian(tmpdir):
+    tmpdir.chdir()
     # Define test inputs
     atoms = molecule("H2O")
     use_custom_hessian = True
@@ -211,7 +226,8 @@ def test_ts_job_with_custom_hessian():
     NewtonNet is None or sella is None,
     reason="NewtonNet and Sella must be installed.",
 )
-def test_ts_job_with_custom_optimizer():
+def test_ts_job_with_custom_optimizer(tmpdir):
+    tmpdir.chdir()
     # Define test inputs
     atoms = molecule("H2O")
     opt_swaps = {
@@ -236,7 +252,8 @@ def test_ts_job_with_custom_optimizer():
     NewtonNet is None or sella is None,
     reason="NewtonNet and Sella must be installed.",
 )
-def test_ts_job_with_custom_optimizer_and_custom_hessian():
+def test_ts_job_with_custom_optimizer_and_custom_hessian(tmpdir):
+    tmpdir.chdir()
     # Define test inputs
     atoms = molecule("H2O")
     opt_swaps = {
@@ -264,7 +281,8 @@ def test_ts_job_with_custom_optimizer_and_custom_hessian():
     NewtonNet is None or sella is None,
     reason="NewtonNet and Sella must be installed.",
 )
-def test_irc_job_with_default_args():
+def test_irc_job_with_default_args(tmpdir):
+    tmpdir.chdir()
     # Define test inputs
     atoms = molecule("H2O")
 
@@ -301,7 +319,8 @@ def test_irc_job_with_default_args():
     NewtonNet is None or sella is None,
     reason="NewtonNet and Sella must be installed.",
 )
-def test_irc_job_with_custom_fmax():
+def test_irc_job_with_custom_fmax(tmpdir):
+    tmpdir.chdir()
     # Define test inputs
     atoms = molecule("H2O")
     fmax = 0.001
@@ -339,7 +358,8 @@ def test_irc_job_with_custom_fmax():
     NewtonNet is None or sella is None,
     reason="NewtonNet and Sella must be installed.",
 )
-def test_irc_job_with_custom_max_steps():
+def test_irc_job_with_custom_max_steps(tmpdir):
+    tmpdir.chdir()
     # Define test inputs
     atoms = molecule("H2O")
     max_steps = 500
@@ -377,7 +397,8 @@ def test_irc_job_with_custom_max_steps():
     NewtonNet is None or sella is None,
     reason="NewtonNet and Sella must be installed.",
 )
-def test_irc_job_with_custom_temperature_and_pressure():
+def test_irc_job_with_custom_temperature_and_pressure(tmpdir):
+    tmpdir.chdir()
     # Define test inputs
     atoms = molecule("H2O")
     temperature = 500.0
@@ -416,7 +437,8 @@ def test_irc_job_with_custom_temperature_and_pressure():
     NewtonNet is None or sella is None,
     reason="NewtonNet and Sella must be installed.",
 )
-def test_irc_job_with_check_convergence():
+def test_irc_job_with_check_convergence(tmpdir):
+    tmpdir.chdir()
     # Define test inputs
     atoms = molecule("H2O")
     check_convergence = True
@@ -454,7 +476,8 @@ def test_irc_job_with_check_convergence():
     NewtonNet is None or sella is None,
     reason="NewtonNet and Sella must be installed.",
 )
-def test_irc_job_with_custom_opt_swaps():
+def test_irc_job_with_custom_opt_swaps(tmpdir):
+    tmpdir.chdir()
     # Define test inputs
     atoms = molecule("H2O")
     opt_swaps = {
@@ -498,7 +521,8 @@ def test_irc_job_with_custom_opt_swaps():
     NewtonNet is None or sella is None,
     reason="NewtonNet and Sella must be installed.",
 )
-def test_quasi_irc_job_with_default_args():
+def test_quasi_irc_job_with_default_args(tmpdir):
+    tmpdir.chdir()
     # Define test inputs
     atoms = molecule("H2O")
 
@@ -565,7 +589,8 @@ def test_quasi_irc_job_with_default_args():
     NewtonNet is None or sella is None,
     reason="NewtonNet and Sella must be installed.",
 )
-def test_quasi_irc_job_with_custom_direction():
+def test_quasi_irc_job_with_custom_direction(tmpdir):
+    tmpdir.chdir()
     # Define test inputs
     atoms = molecule("H2O")
     direction = "reverse"
@@ -608,7 +633,8 @@ def test_quasi_irc_job_with_custom_direction():
     NewtonNet is None or sella is None,
     reason="NewtonNet and Sella must be installed.",
 )
-def test_quasi_irc_job_with_custom_temperature_and_pressure():
+def test_quasi_irc_job_with_custom_temperature_and_pressure(tmpdir):
+    tmpdir.chdir()
     # Define test inputs
     atoms = molecule("H2O")
     temperature = 500.0
@@ -651,7 +677,8 @@ def test_quasi_irc_job_with_custom_temperature_and_pressure():
     NewtonNet is None or sella is None,
     reason="NewtonNet and Sella must be installed.",
 )
-def test_quasi_irc_job_with_custom_irc_swaps():
+def test_quasi_irc_job_with_custom_irc_swaps(tmpdir):
+    tmpdir.chdir()
     # Define test inputs
     atoms = molecule("H2O")
     irc_swaps = {
@@ -697,7 +724,8 @@ def test_quasi_irc_job_with_custom_irc_swaps():
     NewtonNet is None or sella is None,
     reason="NewtonNet and Sella must be installed.",
 )
-def test_freq_job():
+def test_freq_job(tmpdir):
+    tmpdir.chdir()
     atoms = molecule("H2O")
     output = freq_job(atoms)
     assert output["vib"]["atoms"] == molecule("H2O")
@@ -755,4 +783,5 @@ def test_freq_job():
     # )
     # assert output["vib"]["results"]["n_imag"] == 0
     # assert output["vib"]["results"]["imag_vib_freqs"] == []
+    # assert output["thermo"]["atoms"] == initial_atoms
     # assert output["thermo"]["atoms"] == initial_atoms
