@@ -63,7 +63,7 @@ strict = [
     "monty==2023.8.8",
     "numpy==1.25.2",
     "pydantic==1.10.2",
-    "pymatgen==2023.7.20",
+    "pymatgen==2023.8.10",
 ]
 
 [project.scripts]
