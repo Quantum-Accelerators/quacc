@@ -29,6 +29,7 @@ try:
 except ImportError:
     sella = None
 
+
 def teardown_module():
     for f in os.listdir("."):
         if (
@@ -47,11 +48,11 @@ def teardown_module():
                 rmtree(f)
 
 
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
-def test_static_Job():
+# @pytest.mark.skipif(
+#     NewtonNet is None or sella is None,
+#     reason="NewtonNet and Sella must be installed.",
+# )
+def test_static_job():
     atoms = molecule("H2O")
     output = static_job(atoms)
     assert output["spin_multiplicity"] == 1
@@ -164,7 +165,12 @@ def test_ts_job_with_custom_hessian():
     use_custom_hessian = True
     opt_swaps = {"max_steps": 4}
     # Call the function
-    output = ts_job(atoms, use_custom_hessian=use_custom_hessian, check_convergence=False, opt_swaps=opt_swaps)
+    output = ts_job(
+        atoms,
+        use_custom_hessian=use_custom_hessian,
+        check_convergence=False,
+        opt_swaps=opt_swaps,
+    )
     # traj = output["ts"]["trajectory"]
 
     # # Save the trajectory in XYZ format
@@ -190,7 +196,7 @@ def test_ts_job_with_custom_hessian():
     assert isinstance(output, dict)
     assert "ts" in output
     assert output["ts"]["results"]["energy"] == pytest.approx(-8.897101358408396)
-    assert output["thermo"]["vib"]["results"]['vib_energies'][0] == pytest.approx(
+    assert output["thermo"]["vib"]["results"]["vib_energies"][0] == pytest.approx(
         0.2758627558950788
     )
 
@@ -239,7 +245,9 @@ def test_ts_job_with_custom_optimizer_and_custom_hessian():
 
     with pytest.raises(ValueError, match="Custom hessian can only be used with Sella."):
         # Call the function
-        output = ts_job(atoms, check_convergence=False, use_custom_hessian=True, opt_swaps=opt_swaps)
+        output = ts_job(
+            atoms, check_convergence=False, use_custom_hessian=True, opt_swaps=opt_swaps
+        )
 
         # Perform assertions on the result
         assert isinstance(output, dict)
@@ -420,7 +428,7 @@ def test_irc_job_with_check_convergence():
     assert isinstance(output, dict)
     assert "irc" in output
     assert "thermo" in output
-    assert output["irc"]["results"]["energy"] == pytest.approx( -9.498925675881335)
+    assert output["irc"]["results"]["energy"] == pytest.approx(-9.498925675881335)
     # assert output["irc"]["results"]["energy"] == pytest.approx(-9.41835380477994)
     # assert output["thermo"]["vib"]["results"]["vib_energies"][0] == pytest.approx(
     #     0.23457884629206466
@@ -452,8 +460,8 @@ def test_irc_job_with_custom_opt_swaps():
     opt_swaps = {
         "run_kwargs": {
             "direction": "reverse",
-            #"direction": "forward",
-            #"keep_going": True
+            # "direction": "forward",
+            # "keep_going": True
         },
     }
 
@@ -571,7 +579,9 @@ def test_quasi_irc_job_with_custom_direction():
     assert "irc" in output
     assert "opt" in output
     assert "thermo" in output
-    assert output["irc"]["irc"]["results"]["energy"] == pytest.approx(-9.498925675881335)
+    assert output["irc"]["irc"]["results"]["energy"] == pytest.approx(
+        -9.498925675881335
+    )
     # assert output["irc"]["irc"]["results"]["energy"] == pytest.approx(-9.41835380477994)
     # assert output["irc"]["thermo"]["vib"]["results"]["vib_energies"][
     #     0
@@ -612,7 +622,9 @@ def test_quasi_irc_job_with_custom_temperature_and_pressure():
     assert "irc" in output
     assert "opt" in output
     assert "thermo" in output
-    assert output["irc"]["irc"]["results"]["energy"] == pytest.approx(-9.498925675881335)
+    assert output["irc"]["irc"]["results"]["energy"] == pytest.approx(
+        -9.498925675881335
+    )
     # assert output["irc"]["irc"]["results"]["energy"] == pytest.approx(-9.41835380477994)
     # assert output["irc"]["thermo"]["vib"]["results"]["vib_energies"][
     #     0
@@ -656,7 +668,9 @@ def test_quasi_irc_job_with_custom_irc_swaps():
     assert "irc" in output
     assert "opt" in output
     assert "thermo" in output
-    assert output["irc"]["irc"]["results"]["energy"] == pytest.approx(-9.498925675881335)
+    assert output["irc"]["irc"]["results"]["energy"] == pytest.approx(
+        -9.498925675881335
+    )
     # assert output["irc"]["irc"]["results"]["energy"] == pytest.approx(-9.41835380477994)
     # assert output["irc"]["thermo"]["vib"]["results"]["vib_energies"][
     #     0
@@ -742,4 +756,3 @@ def test_freq_job():
     # assert output["vib"]["results"]["n_imag"] == 0
     # assert output["vib"]["results"]["imag_vib_freqs"] == []
     # assert output["thermo"]["atoms"] == initial_atoms
-
