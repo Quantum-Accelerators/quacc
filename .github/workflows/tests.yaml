@@ -56,6 +56,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
+        if: github.repository == 'Quantum-Accelerators/quacc'
 
   tests-tblite:
     strategy:
@@ -87,6 +88,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
+        if: github.repository == 'Quantum-Accelerators/quacc'
 
   tests-psi4:
     strategy:
@@ -127,6 +129,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
+        if: github.repository == 'Quantum-Accelerators/quacc'
 
   tests-dftbplus:
     strategy:
@@ -167,6 +170,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
+        if: github.repository == 'Quantum-Accelerators/quacc'
 
   tests-altwflows:
     runs-on: ubuntu-latest
@@ -198,6 +202,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
+        if: github.repository == 'Quantum-Accelerators/quacc'
 
   release:
     runs-on: ubuntu-latest
