@@ -101,6 +101,6 @@ Generally, we recommend either Covalent or Parsl, which have nearly identical sy
     Cons:
 
     - Lacks documentation for HPC environments, although it supports them
-    - Challenging to use if the compute nodes do not support network connections
+    - Learning the intricacies of Dask can be challenging for new users
+    - Requires the compute nodes to be able to make an outbound network connection
     - The dashboard stores results for only a 7 day history by default and does not store the full output of each task
-    - The concept of always returning a "future" object can be confusing for new users
