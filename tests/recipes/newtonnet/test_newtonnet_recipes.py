@@ -67,7 +67,6 @@ def test_static_job(tmpdir):
     output = static_job(atoms)
     assert output["spin_multiplicity"] == 1
     assert output["natoms"] == len(atoms)
-    print("energy", output["results"]["energy"])
     assert output["results"]["energy"] == pytest.approx(-9.515200426406743)
     assert np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
 
@@ -584,7 +583,6 @@ def test_quasi_irc_job_with_custom_irc_swaps(tmpdir):
         0
     ] == pytest.approx(0.22677540045636221)
     assert output["opt"]["results"]["energy"] == pytest.approx(-9.517354965639784)
-    print(output['thermo'])
     assert output["thermo"]["thermo"]["results"]["energy"] == pytest.approx(
         -9.517354965639784
     )
