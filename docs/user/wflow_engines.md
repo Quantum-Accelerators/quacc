@@ -45,6 +45,10 @@ Here, we will show how to use quacc with one of a variety of workflow engines to
 
     Additional configuration parameters can be modified, as described in the [Prefect documentation](https://docs.prefect.io/concepts/settings/).
 
+    !!! Info
+
+        For a more detailed tutorial on how to use Prefect, refer to the ["Prefect Tutorial](https://docs.prefect.io/2.11.3/tutorial/).
+
 ## Examples
 
 ### Running a Simple Serial Workflow
@@ -402,7 +406,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
 === "Jobflow"
 
-    **The Inefficient Way**
+    **The Simple Way**
 
     ```python
     from ase.build import bulk
@@ -428,7 +432,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
     We have imported the [`.emt.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.slabs.bulk_to_slabs_flow) function, which takes an `Atoms` object along with several optional parameters. For demonstration purposes, we specify the `slab_static=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is stitch together the individual `@job` steps into a single `Flow` object.
 
-    **The Efficient Way**
+    **The Recommended Way**
 
     Quacc fully supports Jobflow-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Jobflow-specific [`.emt.jobflow.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.jobflow.slabs.bulk_to_slabs_flow) workflow:
 
@@ -454,7 +458,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
 === "Parsl"
 
-    **The Inefficient Way**
+    **The Simple Way**
 
     ```python
     from ase.build import bulk
@@ -488,7 +492,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
     When running a Covalent-based workflow like [`.emt.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.slabs.bulk_to_slabs_flow) above, the entire function will run as a single compute task even though it is composed of several individual sub-tasks. If these sub-tasks are compute-intensive, this might not be the most efficient use of resources.
 
-    **The Efficient Way**
+    **The Recommended Way**
 
     Quacc fully supports Parsl-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Parsl-specific [`.emt.parsl.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.parsl.slabs.bulk_to_slabs_flow) workflow:
 
@@ -524,7 +528,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
 === "Prefect"
 
-    **The Inefficient Way**
+    **The Simple Way**
 
     ```python
     from ase.build import bulk
@@ -551,7 +555,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
     ![Prefect UI](../images/user/prefect_tutorial3.jpg)
 
-    **The Efficient Way**
+    **The Recommended Way**
 
     ```python
     from ase.build import bulk
@@ -582,8 +586,6 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     1. Since `bulk_to_slabs_flow` is a `Flow` and not a `Task`, we do not call `.submit()` on it and did not need to wrap it with a `@task` decorator.
 
     2.  Since `bulk_to_slabs_flow` returns a list of `PrefectFuture` objects (one for each slab), we have to call `.result()` on each. didn't need to wrap `bulk_to_slabs_flow` with a `@python_app` decorator because it is simply a collection of `PythonApp` objects and is already returning an `AppFuture`.
-
-    In this example, all the individual tasks are run as separate jobs, which is more efficient.
 
 ## Learn More
 
