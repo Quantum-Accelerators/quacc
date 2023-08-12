@@ -8,11 +8,6 @@ from ase.build import molecule
 from ase.optimize import FIRE
 
 from quacc import SETTINGS
-
-try:
-    from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
-except ImportError:
-    NewtonNet = None
 from quacc.recipes.newtonnet.core import (
     freq_job,
     irc_job,
@@ -21,6 +16,12 @@ from quacc.recipes.newtonnet.core import (
     static_job,
     ts_job,
 )
+
+try:
+    from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
+except ImportError:
+    NewtonNet = None
+
 
 try:
     import sella
