@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 from ase.build import molecule
 from ase.optimize import FIRE
+from monty.shutil import compress_file, decompress_file
 
 from quacc import SETTINGS
 from quacc.recipes.newtonnet.core import (
@@ -33,25 +34,14 @@ SETTINGS.NEWTONNET_CONFIG_PATH = os.path.join(CURRENT_FILE_PATH, "config0.yml")
 SETTINGS.NEWTONNET_MODEL_PATH = os.path.join(CURRENT_FILE_PATH, "best_model_state.tar")
 
 
-# def startup_module():
-#     """gunzip best_model_state.tar.gz with the gzip module"""
-# with gzip.open(
-#     os.path.join(CURRENT_FILE_PATH, "best_model_state.tar.gz"), "rb"
-# ) as f_in:
-#     with open(
-#         os.path.join(CURRENT_FILE_PATH, "best_model_state.tar"), "wb"
-#     ) as f_out:
-#         f_out.write(f_in.read())
+def setup_module():
+    decompress_file(os.path.join(CURRENT_FILE_PATH, "best_model_state.tar.gz"))
 
 
-# def teardown_module():
-#     """gzip back up the best_model_state.tar file with the gzip module"""
-# with open(os.path.join(CURRENT_FILE_PATH, "best_model_state.tar"), "rb") as f_in:
-#     with gzip.open(
-#         os.path.join(CURRENT_FILE_PATH, "best_model_state.tar.gz"), "wb"
-#     ) as f_out:
-#         f_out.write(f_in.read())
-# os.remove(os.path.join(CURRENT_FILE_PATH, "best_model_state.tar"))
+def teardown_module():
+    compress_file(
+        os.path.join(CURRENT_FILE_PATH, "best_model_state.tar"), compression="gz"
+    )
 
 
 @pytest.mark.skipif(
@@ -104,7 +94,9 @@ def test_ts_job_with_default_args(tmpdir):
     assert "ts" in output
     assert "thermo" in output
     assert output["ts"]["results"]["energy"] == pytest.approx(-6.796914263061945)
-    assert output["thermo"]["vib"]["results"]["imag_vib_freqs"][0] == pytest.approx(-2426.7398321816004)
+    assert output["thermo"]["vib"]["results"]["imag_vib_freqs"][0] == pytest.approx(
+        -2426.7398321816004
+    )
 
 
 @pytest.mark.skipif(
@@ -129,7 +121,9 @@ def test_ts_job_with_custom_hessian(tmpdir):
     assert isinstance(output, dict)
     assert "ts" in output
     assert output["ts"]["results"]["energy"] == pytest.approx(-8.855604432470276)
-    assert output["thermo"]["vib"]["results"]["vib_energies"][0] == pytest.approx(0.2256022513686731)
+    assert output["thermo"]["vib"]["results"]["vib_energies"][0] == pytest.approx(
+        0.2256022513686731
+    )
     assert "thermo" in output
 
 
@@ -153,7 +147,9 @@ def test_ts_job_with_custom_optimizer(tmpdir):
     assert "ts" in output
     assert "thermo" in output
     assert output["ts"]["results"]["energy"] == pytest.approx(-9.51735515322368)
-    assert output["thermo"]["vib"]["results"]["vib_energies"][0] == pytest.approx(0.22679888726664774)
+    assert output["thermo"]["vib"]["results"]["vib_energies"][0] == pytest.approx(
+        0.22679888726664774
+    )
 
 
 @pytest.mark.skipif(
@@ -179,7 +175,9 @@ def test_ts_job_with_custom_optimizer_and_custom_hessian(tmpdir):
         assert "ts" in output
         assert "thermo" in output
         assert output["ts"]["results"]["energy"] == pytest.approx(-9.498920641930049)
-        assert output["thermo"]["vib"]["results"]["vib_energies"][0] == pytest.approx(0.016038718562105512)
+        assert output["thermo"]["vib"]["results"]["vib_energies"][0] == pytest.approx(
+            0.016038718562105512
+        )
 
 
 @pytest.mark.skipif(
@@ -200,7 +198,9 @@ def test_irc_job_with_default_args(tmpdir):
     assert "thermo" in output
     assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
     # assert output["thermo"]["vib"]["results"]["vib_energies"][0] == pytest.approx(0.22686180652213603)
-    assert output["thermo"]["thermo"]["results"]["energy"] == pytest.approx(-9.517354091813969)
+    assert output["thermo"]["thermo"]["results"]["energy"] == pytest.approx(
+        -9.517354091813969
+    )
     # assert output["thermo"]["thermo"]["results"]["enthalpy"] == pytest.approx(-8.802336094223135)
     # assert output["thermo"]["thermo"]["results"]["entropy"] == pytest.approx(0.0019575114680838216)
     # assert output["thermo"]["thermo"]["results"]["gibbs_energy"] == pytest.approx(-9.385968138432325)
@@ -226,7 +226,9 @@ def test_irc_job_with_custom_fmax(tmpdir):
     assert "thermo" in output
     assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
     # assert output["thermo"]["vib"]["results"]["vib_energies"][0] == pytest.approx(0.22679645169367102)
-    assert output["thermo"]["thermo"]["results"]["energy"] == pytest.approx(-9.517354091813969)
+    assert output["thermo"]["thermo"]["results"]["energy"] == pytest.approx(
+        -9.517354091813969
+    )
     # assert output["thermo"]["thermo"]["results"]["enthalpy"] == pytest.approx(-8.802454617215966)
     # assert output["thermo"]["thermo"]["results"]["entropy"] == pytest.approx(0.001957512450005214)
     # assert output["thermo"]["thermo"]["results"]["gibbs_energy"] == pytest.approx(-9.386086954185021)
@@ -252,7 +254,9 @@ def test_irc_job_with_custom_max_steps(tmpdir):
     assert "thermo" in output
     assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
     # assert output["thermo"]["vib"]["results"]["vib_energies"][0] == pytest.approx(0.22686180652213603)
-    assert output["thermo"]["thermo"]["results"]["energy"] == pytest.approx(-9.517354091813969)
+    assert output["thermo"]["thermo"]["results"]["energy"] == pytest.approx(
+        -9.517354091813969
+    )
     # assert output["thermo"]["thermo"]["results"]["enthalpy"] == pytest.approx(-8.802336094223135)
     # assert output["thermo"]["thermo"]["results"]["entropy"] == pytest.approx(0.0019575114680838216)
     # assert output["thermo"]["thermo"]["results"]["gibbs_energy"] == pytest.approx(-9.385968138432325)
@@ -279,7 +283,9 @@ def test_irc_job_with_custom_temperature_and_pressure(tmpdir):
     assert "thermo" in output
     assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
     # assert output["thermo"]["vib"]["results"]["vib_energies"][0] == pytest.approx(0.22686180652213603)
-    assert output["thermo"]["thermo"]["results"]["energy"] == pytest.approx(-9.517354091813969)
+    assert output["thermo"]["thermo"]["results"]["energy"] == pytest.approx(
+        -9.517354091813969
+    )
     # assert output["thermo"]["thermo"]["results"]["enthalpy"] == pytest.approx(-8.731604478079722)
     # assert output["thermo"]["thermo"]["results"]["entropy"] == pytest.approx(0.0019400016901593643)
     # assert output["thermo"]["thermo"]["results"]["gibbs_energy"] == pytest.approx(-9.701605323159404)
@@ -305,7 +311,9 @@ def test_irc_job_with_check_convergence(tmpdir):
     assert "thermo" in output
     assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
     # assert output["thermo"]["vib"]["results"]["vib_energies"][0] == pytest.approx(0.22686180652213603)
-    assert output["thermo"]["thermo"]["results"]["energy"] == pytest.approx(-9.517354091813969)
+    assert output["thermo"]["thermo"]["results"]["energy"] == pytest.approx(
+        -9.517354091813969
+    )
     # assert output["thermo"]["thermo"]["results"]["enthalpy"] == pytest.approx(-8.802336094223135)
     # assert output["thermo"]["thermo"]["results"]["entropy"] == pytest.approx(0.0019575114680838216)
     # assert output["thermo"]["thermo"]["results"]["gibbs_energy"] == pytest.approx(-9.385968138432325)
@@ -337,7 +345,9 @@ def test_irc_job_with_custom_opt_swaps(tmpdir):
     assert "thermo" in output
     assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354965639784)
     # assert output["thermo"]["vib"]["results"]["vib_energies"][0] == pytest.approx(0.22677540045636221)
-    assert output["thermo"]["thermo"]["results"]["energy"] == pytest.approx(-9.517354965639784)
+    assert output["thermo"]["thermo"]["results"]["energy"] == pytest.approx(
+        -9.517354965639784
+    )
     # assert output["thermo"]["thermo"]["results"]["enthalpy"] == pytest.approx(-8.802300778293297)
     # assert output["thermo"]["thermo"]["results"]["entropy"] == pytest.approx(0.001957480086301709)
     # assert output["thermo"]["thermo"]["results"]["gibbs_energy"] == pytest.approx(-9.38592346602415)
@@ -361,10 +371,14 @@ def test_quasi_irc_job_with_default_args(tmpdir):
     assert "irc" in output
     assert "opt" in output
     assert "thermo" in output
-    assert output["irc"]["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
+    assert output["irc"]["irc"]["results"]["energy"] == pytest.approx(
+        -9.517354091813969
+    )
     # assert output["irc"]["thermo"]["vib"]["results"]["vib_energies"][0] == pytest.approx(0.22686180652213603)
     assert output["opt"]["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["thermo"]["thermo"]["results"]["energy"] == pytest.approx(-9.517354091813969)
+    assert output["thermo"]["thermo"]["results"]["energy"] == pytest.approx(
+        -9.517354091813969
+    )
     # assert output["thermo"]["thermo"]["results"]["enthalpy"] == pytest.approx(-8.802336094223135)
     # assert output["thermo"]["thermo"]["results"]["entropy"] == pytest.approx(0.0019575114680838216)
     # assert output["thermo"]["thermo"]["results"]["gibbs_energy"] == pytest.approx(-9.385968138432325)
@@ -390,11 +404,17 @@ def test_quasi_irc_job_with_custom_direction(tmpdir):
     assert "irc" in output
     assert "opt" in output
     assert "thermo" in output
-    assert output["irc"]["irc"]["results"]["energy"] == pytest.approx(-9.517354965639784)
-    assert output["irc"]["irc"]["results"]["energy"] == pytest.approx(-9.517354965639784)
+    assert output["irc"]["irc"]["results"]["energy"] == pytest.approx(
+        -9.517354965639784
+    )
+    assert output["irc"]["irc"]["results"]["energy"] == pytest.approx(
+        -9.517354965639784
+    )
     # assert output["irc"]["thermo"]["vib"]["results"]["vib_energies"][0] == pytest.approx(0.22677540045636221)
     assert output["opt"]["results"]["energy"] == pytest.approx(-9.517354965639784)
-    assert output["thermo"]["thermo"]["results"]["energy"] == pytest.approx(-9.517354965639784)
+    assert output["thermo"]["thermo"]["results"]["energy"] == pytest.approx(
+        -9.517354965639784
+    )
     # assert output["thermo"]["thermo"]["results"]["enthalpy"] == pytest.approx(-8.802300778293297)
     # assert output["thermo"]["thermo"]["results"]["entropy"] == pytest.approx(0.001957480086301709)
     # assert output["thermo"]["thermo"]["results"]["gibbs_energy"] == pytest.approx(-9.38592346602415)
@@ -420,10 +440,14 @@ def test_quasi_irc_job_with_custom_temperature_and_pressure(tmpdir):
     assert "irc" in output
     assert "opt" in output
     assert "thermo" in output
-    assert output["irc"]["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
+    assert output["irc"]["irc"]["results"]["energy"] == pytest.approx(
+        -9.517354091813969
+    )
     # assert output["irc"]["thermo"]["vib"]["results"]["vib_energies"][0] == pytest.approx(0.22686180652213603)
     assert output["opt"]["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["thermo"]["thermo"]["results"]["energy"] == pytest.approx(-9.517354091813969)
+    assert output["thermo"]["thermo"]["results"]["energy"] == pytest.approx(
+        -9.517354091813969
+    )
     # assert output["thermo"]["thermo"]["results"]["enthalpy"] == pytest.approx(-8.731604478079722)
     # assert output["thermo"]["thermo"]["results"]["entropy"] == pytest.approx(0.0019400016901593643)
     # assert output["thermo"]["thermo"]["results"]["gibbs_energy"] == pytest.approx(-9.701605323159404)
@@ -452,10 +476,14 @@ def test_quasi_irc_job_with_custom_irc_swaps(tmpdir):
     assert "irc" in output
     assert "opt" in output
     assert "thermo" in output
-    assert output["irc"]["irc"]["results"]["energy"] == pytest.approx(-9.517354965639784)
+    assert output["irc"]["irc"]["results"]["energy"] == pytest.approx(
+        -9.517354965639784
+    )
     # assert output["irc"]["thermo"]["vib"]["results"]["vib_energies"][0] == pytest.approx(0.22677540045636221)
     assert output["opt"]["results"]["energy"] == pytest.approx(-9.517354965639784)
-    assert output["thermo"]["thermo"]["results"]["energy"] == pytest.approx(-9.517354965639784)
+    assert output["thermo"]["thermo"]["results"]["energy"] == pytest.approx(
+        -9.517354965639784
+    )
     # assert output["thermo"]["thermo"]["results"]["enthalpy"] == pytest.approx(-8.802300778293297)
     # assert output["thermo"]["thermo"]["results"]["entropy"] == pytest.approx(0.001957480086301709)
     # assert output["thermo"]["thermo"]["results"]["gibbs_energy"] == pytest.approx(-9.38592346602415)
@@ -473,7 +501,9 @@ def test_freq_job(tmpdir):
     assert output["vib"]["atoms"] == molecule("H2O")
     assert len(output["vib"]["results"]["vib_freqs_raw"]) == 9
     assert len(output["vib"]["results"]["vib_freqs"]) == 3
-    assert output["vib"]["results"]["vib_freqs_raw"][-1] == pytest.approx(4090.37777396351)
+    assert output["vib"]["results"]["vib_freqs_raw"][-1] == pytest.approx(
+        4090.37777396351
+    )
     assert output["vib"]["results"]["vib_freqs"][0] == pytest.approx(1814.0941260498644)
     assert output["vib"]["results"]["vib_freqs"][-1] == pytest.approx(4090.37777396351)
     assert output["vib"]["results"]["n_imag"] == 0
@@ -485,8 +515,12 @@ def test_freq_job(tmpdir):
     assert output["thermo"]["symmetry"]["linear"] is False
     assert output["thermo"]["results"]["energy"] == pytest.approx(-9.515200426406743)
     assert output["thermo"]["results"]["enthalpy"] == pytest.approx(-8.807932688921495)
-    assert output["thermo"]["results"]["entropy"] == pytest.approx(0.0019582788098945945)
-    assert output["thermo"]["results"]["gibbs_energy"] == pytest.approx(-9.391793516091568)
+    assert output["thermo"]["results"]["entropy"] == pytest.approx(
+        0.0019582788098945945
+    )
+    assert output["thermo"]["results"]["gibbs_energy"] == pytest.approx(
+        -9.391793516091568
+    )
 
     atoms = molecule("CH3")
     initial_atoms = deepcopy(atoms)
@@ -494,10 +528,20 @@ def test_freq_job(tmpdir):
     assert output["vib"]["atoms"] == initial_atoms
     assert len(output["vib"]["results"]["vib_freqs_raw"]) == 12
     assert len(output["vib"]["results"]["vib_freqs"]) == 6
-    assert output["vib"]["results"]["vib_energies_raw"][0] == pytest.approx(-0.09441402482739979)
-    assert output["vib"]["results"]["vib_energies_raw"][-1] == pytest.approx(0.3925829460532815)
-    assert output["vib"]["results"]["vib_energies"][0] == pytest.approx(-0.09441402482739979)
-    assert output["vib"]["results"]["vib_energies"][-1] == pytest.approx(0.3925829460532815)
+    assert output["vib"]["results"]["vib_energies_raw"][0] == pytest.approx(
+        -0.09441402482739979
+    )
+    assert output["vib"]["results"]["vib_energies_raw"][-1] == pytest.approx(
+        0.3925829460532815
+    )
+    assert output["vib"]["results"]["vib_energies"][0] == pytest.approx(
+        -0.09441402482739979
+    )
+    assert output["vib"]["results"]["vib_energies"][-1] == pytest.approx(
+        0.3925829460532815
+    )
     assert output["vib"]["results"]["n_imag"] == 1
-    assert output["vib"]["results"]["imag_vib_freqs"] == pytest.approx([-761.5004719152678])
+    assert output["vib"]["results"]["imag_vib_freqs"] == pytest.approx(
+        [-761.5004719152678]
+    )
     assert output["thermo"]["atoms"] == initial_atoms
