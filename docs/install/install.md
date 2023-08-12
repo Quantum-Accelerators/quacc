@@ -30,16 +30,17 @@ Quacc can be installed with several "extras," as outlined in the `pyproject.toml
 
 ### Calculators
 
-- `quacc[tblite]`: Installs dependencies to enable the use of tblite.
+- `quacc[tblite]`: Installs dependencies to enable the use of [tblite](https://github.com/tblite/tblite).
 
 ### Workflow Managers
 
-- `quacc[fireworks]`: Installs dependencies to enable the use of FireWorks.
-- `quacc[parsl]`: Installs dependencies to enable the use of Parsl.
+- `quacc[fireworks]`: Installs dependencies to enable the use of [FireWorks](https://github.com/materialsproject/fireworks).
+- `quacc[parsl]`: Installs dependencies to enable the use of [Parsl](https://github.com/Parsl/parsl).
+- `quacc[prefect]`: Installs dependencies to enable the use of [Prefect](https://www.prefect.io/).
 
 ### Miscellaneous
 
-- `quacc[optimizers]`: Installs dependencies to enable the use of the Sella optimizer.
+- `quacc[optimizers]`: Installs dependencies to enable the use of the [Sella optimizer](https://github.com/zadorlab/sella).
 
 ### Development
 

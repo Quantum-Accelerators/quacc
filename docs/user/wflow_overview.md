@@ -12,7 +12,7 @@ Generally, we recommend either Covalent or Parsl, which have nearly identical sy
 
 === "Covalent"
 
-    The default suggested workflow management solution is [Covalent](https://github.com/AgnostiqHQ/covalent/) due to its ease of use and helpful dashboard. If you are new to workflow management tools or primarily care about computing across distributed resources, this may be a good option to conisder.
+    [Covalent](https://github.com/AgnostiqHQ/covalent/) is a workflow management solution from the company [Agnostiq](https://agnostiq.ai/). It is currently the default option in quacc due to its simplicity for new users and diverse range of execution options.
 
     Pros:
 
@@ -82,3 +82,25 @@ Generally, we recommend either Covalent or Parsl, which have nearly identical sy
     - FireWorks can have a steep learning curve due to its many configuration options
     - The reliance on MongoDB can be challenging for new users and certain HPC environments
     - New features are not currently planned
+
+=== "Prefect"
+
+    [Prefect](https://www.prefect.io/) is a workflow management system that is widely adopted in the data science industry.
+
+    !!! Warning
+
+        Prefect support should be considered experimental at this time.
+
+    Pros:
+
+    - Very popular in the data science industry with an active community
+    - Useful dashboard to monitor job progress
+    - Supports a variety of job schedulers via `dask-jobqueue`
+    - Uses a directed acyclic graph-free model for increased flexibility in workflow definitions
+
+    Cons:
+
+    - Lacks documentation for HPC environments, although it supports them
+    - Learning the intricacies of Dask can be challenging for new users
+    - Requires the compute nodes to be able to make an outbound network connection
+    - The dashboard stores results for only a 7 day history by default and does not store the full output of each task

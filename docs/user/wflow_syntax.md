@@ -139,6 +139,38 @@ graph LR
 
     3. `#!Python run_locally` is a function that tells Jobflow to run the workflow locally.
 
+=== "Prefect"
+
+    ```python
+    from prefect import flow, task
+
+
+    @task  # (1)!
+    def add(a, b):
+        return a + b
+
+
+    @task
+    def mult(a, b):
+        return a * b
+
+
+    @flow  # (2)!
+    def workflow(a, b, c):
+        return mult.submit(add.submit(a, b), c)  # (3)!
+
+
+    result = workflow(1, 2, 3).result()  # 9  (4)
+    ```
+
+    1. `#!Python @task` is a decorator that tells Prefect to treat the function as a compute task.
+
+    2. `#!Python @flow` is a decorator that tells Prefect to treat the function as a workflow.
+
+    3. `#!Python .submit()` is a method that tells Prefect to submit the job to the Prefect task runner.
+
+    4. `#!Python .result()` is a method that tells Prefect to wait for the result of the job. If `#!Python .result()` were not called, a `#!Python PrefectFuture` would be returned instead of the actual result.
+
 ## Dynamic Workflow
 
 Let's do the following:
@@ -286,3 +318,26 @@ graph LR
     ```
 
     1. `#!Python Response(replace)` is a class that tells Jobflow to replace the current job with the jobs in the flow.
+
+=== "Prefect"
+
+    ```python
+    import random
+
+    from prefect import flow, task
+
+
+    @task
+    def add(a, b):
+        return a + b
+
+
+    @flow
+    def workflow(a, b, c):
+        future1 = add.submit(a, b)
+        vals_to_add = [future1.result()] * random.randint(2, 5)
+        return [add.submit(val, c).result() for val in vals_to_add]
+
+
+    result = workflow(1, 2, 3)  # e.g. [6, 6, 6]
+    ```

@@ -36,6 +36,15 @@ Here, we will show how to use quacc with one of a variety of workflow engines to
 
         For a more detailed tutorial on how to use Jobflow, refer to the [Jobflow Tutorials](https://materialsproject.github.io/jobflow/tutorials) and [this helpful guide](https://github.com/JaGeo/Advanced_Jobflow_Tutorial) written by Dr. Janine George.
 
+=== "Prefect"
+
+    1. In your activated Python environment, install Prefect and the necessary Dask dependencies via `pip install prefect prefect-dask dask-jobqueue`
+    2. Make an account on [Prefect Cloud](https://app.prefect.cloud/)
+    3. Make an [API Key](https://docs.prefect.io/cloud/users/api-keys/) and (optionally) store it in a `PREFECT_API_KEY` environment variable (e.g. in your `~/.bashrc`)
+    4. Run `prefect cloud login` from the command-line and enter your API key (or use the browser, if possible)
+
+    Additional configuration parameters can be modified, as described in the [Prefect documentation](https://docs.prefect.io/concepts/settings/).
+
 ## Examples
 
 ### Running a Simple Serial Workflow
@@ -180,6 +189,44 @@ graph LR
 
     We chose to run the job locally, but other workflow managers supported by Jobflow can be imported and used.
 
+=== "Prefect"
+
+    ```python
+    from ase.build import bulk
+    from prefect import flow, task
+    from quacc.recipes.emt.core import relax_job, static_job
+
+
+    # Define the workflow
+    @flow
+    def workflow(atoms):
+        # Call Task 1
+        future1 = task(relax_job).submit(atoms) # (1)!
+
+        # Call Task 2, which takes the output of Task 1 as input
+        future2 = task(static_job).submit(future1)
+
+        return future2
+
+
+    # Make an Atoms object of a bulk Cu structure
+    atoms = bulk("Cu")
+
+    # Run the workflow with Prefect tracking
+    result = workflow(atoms).result()
+    print(result)
+    ```
+
+    1.  We have used a short-hand notation here of `task(<function>)`. This is equivalent to using the `@task` decorator and defining a new function for each task.
+
+    You can see that it is quite trivial to set up a Prefect workflow using the recipes within quacc. We define the full `Flow` as a function that stitches together the individual `Task` workflow steps.Calling `.submit()` enables concurrent execution of the tasks, and `.result()` blocks further calculations until the result is returned. Both `.submit()` and `.result()` aren't necessary when testing Prefect workflows locally, but we have included them here to make the transition to HPC environments more seamless.
+
+    !!! Note
+
+        Prefect will implicitly know to call `.result()` on any `PrefectFuture` in a `Flow`. As such, you should avoid calling `.result()` when passing the results of tasks to other tasks if possible.
+
+    ![Prefect UI](../images/user/prefect_tutorial1.jpg)
+
 ### Running a Simple Parallel Workflow
 
 Now let's consider a similar but nonetheless distinct example. Here, we will define a workflow where we will carry out two EMT structure relaxations, but the two jobs are not dependent on one another. In this example, Covalent will know that it can run the two jobs separately, and even if Job 1 were to fail, Job 2 would still progress.
@@ -278,6 +325,36 @@ graph LR
     result = responses[job2.uuid][1].output
     print(result)
     ```
+
+=== "Prefect"
+
+    ```python
+    from ase.build import bulk, molecule
+    from prefect import flow, task
+    from quacc.recipes.emt.core import relax_job
+
+
+    # Define workflow
+    @flow
+    def workflow(atoms1, atoms2):
+        # Define two independent relaxation jobs
+        future1 = task(relax_job).submit(atoms1)
+        future2 = task(relax_job).submit(atoms2)
+
+        return future1, future2
+
+
+    # Define two Atoms objects
+    atoms1 = bulk("Cu")
+    atoms2 = molecule("N2")
+
+    # Run the workflow with Prefect tracking
+    future1, future2 = workflow(atoms1, atoms2)
+    print(future1.result(), future2.result())
+    ```
+    As expected, the Prefect Cloud UI shows two jobs that are not dependent on one another.
+
+    ![Prefect UI](../images/user/prefect_tutorial2.jpg)
 
 ### Running Workflows with Complex Connectivity
 
@@ -445,6 +522,69 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
     In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing [`.emt.jobflow.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.jobflow.slabs.bulk_to_slabs_flow) with its Covalent counterpart [`.emt.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.slabs.bulk_to_slabs_flow), you can see that the two are extremely similar such that it is often straightforward to [interconvert](wflow_syntax.md) between the two. In the case of `bulk_to_slabs_flow`, it actually returns a [`Response(replace)`](<https://materialsproject.github.io/jobflow/tutorials/5-dynamic-flows.html#The-Response(replace)-option>) object that dynamically replaces the `Flow` with several downstream jobs.
 
+=== "Prefect"
+
+    **The Inefficient Way**
+
+    ```python
+    from ase.build import bulk
+    from prefect import flow, task
+    from quacc.recipes.emt.core import relax_job
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+
+    @flow
+    def workflow(atoms):
+        future1 = task(relax_job).submit(atoms)
+        future2 = task(bulk_to_slabs_flow).submit(future1, slab_static=None)
+
+        return future2
+
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Run the workflow
+    result = workflow(atoms).result()
+    print(result)
+    ```
+
+    ![Prefect UI](../images/user/prefect_tutorial3.jpg)
+
+    **The Efficient Way**
+
+    ```python
+    from ase.build import bulk
+    from prefect import flow, task
+    from quacc.recipes.emt.core import relax_job
+    from quacc.recipes.emt.prefect.slabs import bulk_to_slabs_flow
+
+
+    @flow
+    def workflow(atoms):
+        future1 = task(relax_job).submit(atoms)
+        slab_futures = bulk_to_slabs_flow(future1, run_slab_static=False) # (1)!
+
+        return slab_futures
+
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Run the workflow
+    slab_futures = workflow(atoms)
+    result = [slab_future.result() for slab_future in slab_futures] # (2)!
+    print(result)
+    ```
+
+    ![Prefect UI](../images/user/prefect_tutorial4.gif)
+
+    1. Since `bulk_to_slabs_flow` is a `Flow` and not a `Task`, we do not call `.submit()` on it and did not need to wrap it with a `@task` decorator.
+
+    2.  Since `bulk_to_slabs_flow` returns a list of `PrefectFuture` objects (one for each slab), we have to call `.result()` on each. didn't need to wrap `bulk_to_slabs_flow` with a `@python_app` decorator because it is simply a collection of `PythonApp` objects and is already returning an `AppFuture`.
+
+    In this example, all the individual tasks are run as separate jobs, which is more efficient.
+
 ## Learn More
 
 === "Covalent"
@@ -458,3 +598,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 === "Jobflow"
 
     If you want to learn more about Jobflow, you can read the [Jobflow Documentation](https://materialsproject.github.io/jobflow/). Please refer to the [Jobflow Discussions Board](https://github.com/materialsproject/jobflow/discussions) for Jobflow-specific questions.
+
+=== "Prefect"
+
+    If you want to learn more about Perfect, you can read the [Prefect Documentation](https://docs.prefect.io/). Please refer to the [Prefect Slack Channel](https://www.prefect.io/slack/) and/or [Prefect Community Discourse](https://discourse.prefect.io/) page for any Prefect-specific questions.
