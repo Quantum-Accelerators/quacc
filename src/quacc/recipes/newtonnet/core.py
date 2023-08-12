@@ -3,19 +3,16 @@ Core recipes for the NewtonNet code
 """
 from __future__ import annotations
 
+from typing import Dict, Any, Literal
 from copy import deepcopy
 
-import covalent as ct
 import numpy as np
 from ase.atoms import Atoms
 from ase.optimize.optimize import Optimizer
 from ase.vibrations.data import VibrationsData
 from monty.dev import requires
-from typing import List, Dict, Any, Literal
-try:
-    from sella import IRC, Sella
-except:
-    Sella = None
+
+import covalent as ct
 from quacc import SETTINGS
 from quacc.schemas.ase import (
     summarize_opt_run,
@@ -25,6 +22,11 @@ from quacc.schemas.ase import (
 )
 from quacc.util.calc import run_ase_opt, run_calc
 from quacc.util.thermo import ideal_gas
+
+try:
+    from sella import IRC, Sella
+except ImportError:
+    Sella = None
 
 try:
     from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
@@ -338,7 +340,6 @@ def quasi_irc_job(
         direction (str): The direction of the IRC calculation ("forward" or "reverse") (default: "forward").
         temperature (float): The temperature for the frequency calculation (default: 298.15 K).
         pressure (float): The pressure for the frequency calculation (default: 1.0 atm).
-        newtonnet_kwargs (dict, optional): Additional keyword arguments for NewtonNet calculator (default: None).
         irc_swaps (dict, optional): Optional swaps for the IRC optimization parameters (default: None).
         opt_swaps (dict, optional): Optional swaps for the optimization parameters (default: None).
 
@@ -387,7 +388,6 @@ def freq_job(
         atoms (ase.Atoms): The atoms object representing the system.
         temperature (float): The temperature for the thermodynamic analysis (default: 298.15 K).
         pressure (float): The pressure for the thermodynamic analysis (default: 1.0 atm).
-        newtonnet_kwargs (dict, optional): Additional keyword arguments for the NewtonNet calculator (default: None).
 
     Returns:
         dict: A dictionary containing the thermodynamic summary.
