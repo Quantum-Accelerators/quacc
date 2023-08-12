@@ -12,7 +12,7 @@ Generally, we recommend either Covalent or Parsl, which have nearly identical sy
 
 === "Covalent"
 
-    The default suggested workflow management solution is [Covalent](https://github.com/AgnostiqHQ/covalent/) due to its ease of use and helpful dashboard. If you are new to workflow management tools or primarily care about computing across distributed resources, this may be a good option to conisder.
+    [Covalent](https://github.com/AgnostiqHQ/covalent/) is a workflow management solution from the company [Agnostiq](https://agnostiq.ai/). It is currently the default option in quacc due to its simplicity for new users and diverse range of execution options.
 
     Pros:
 

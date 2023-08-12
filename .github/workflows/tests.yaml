@@ -187,10 +187,10 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Install pip packages
-        run: pip install .[strict,dev,fireworks,parsl]
+        run: pip install .[strict,dev,fireworks,parsl,prefect]
 
       - name: Run tests with pytest
-        run: pytest -k 'jobflow or fireworks or parsl' --cov=quacc --cov-report=xml
+        run: pytest -k 'jobflow or fireworks or parsl or prefect' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
