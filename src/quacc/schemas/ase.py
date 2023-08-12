@@ -11,6 +11,7 @@ from ase.atoms import Atoms
 from ase.constraints import Filter
 from ase.io import Trajectory, read
 from ase.optimize.optimize import Optimizer
+from ase.md.md import MolecularDynamics
 from ase.thermochemistry import IdealGasThermo
 from ase.vibrations import Vibrations
 from atomate2.utils.path import get_uri
@@ -23,7 +24,7 @@ from quacc.util.db import results_to_db
 from quacc.util.dicts import clean_dict
 
 RunSchema = TypeVar("RunSchema")
-OptSchema = TypeVar("OptSchema")
+DynSchema = TypeVar("DynSchema")
 VibSchema = TypeVar("VibSchema")
 ThermoSchema = TypeVar("ThermoSchema")
 
@@ -167,8 +168,8 @@ def summarize_run(
     return task_doc
 
 
-def summarize_opt_run(
-    dyn: Optimizer,
+def summarize_dyn_run(
+    dyn: Optimizer | MolecularDynamics,
     trajectory: Trajectory | list[Atoms] = None,
     check_convergence: bool = True,
     charge_and_multiplicity: tuple[int, int] | None = None,
@@ -176,7 +177,7 @@ def summarize_opt_run(
     remove_empties: bool = False,
     additional_fields: dict | None = None,
     store: Store | None = None,
-) -> OptSchema:
+) -> DynSchema:
     """
     Get tabulated results from an ASE Atoms trajectory and store them in a database-friendly format.
     This is meant to be compatible with all calculator types.
@@ -184,7 +185,7 @@ def summarize_opt_run(
     Parameters
     ----------
     dyn
-        ASE Optimizer object.
+        ASE Optimizer or MolecularDynamics object.
     trajectory
         ASE Trajectory object or list[Atoms] from reading a trajectory file.
         If None, the trajectory must be found in dyn.traj_atoms.
@@ -219,7 +220,7 @@ def summarize_opt_run(
         - input_structure: Molecule | Structure = Field(None, title = "The Pymatgen Structure or Molecule object from the input Atoms object if input_atoms is not None.")
         - nid: str = Field(None, title = "The node ID representing the machine where the calculation was run.")
         - parameters: dict = Field(None, title = "the parameters used to run the calculation.")
-        - opt_parameters: dict = Field(None, title = "the parameters used to run the optimization.")
+        - dyn_parameters: dict = Field(None, title = "the parameters used to run the dynamic simulation (optimization / molecular dynamics).")
         - results: dict = Field(None, title = "The results from the calculation.")
         - trajectory: List[Atoms] = Trajectory of Atoms objects
         - trajectory_results: List[dict] = List of ase.calc.results from the trajectory
@@ -270,7 +271,10 @@ def summarize_opt_run(
     """
 
     additional_fields = additional_fields or {}
-    opt_parameters = dyn.todict() | {"fmax": dyn.fmax}
+    if isinstance(dyn, Optimizer):
+        dyn_parameters = dyn.todict() | {"fmax": dyn.fmax}
+    if isinstance(dyn, MolecularDynamics):
+        dyn_parameters = dyn.todict()
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
     # Check convergence
@@ -306,7 +310,7 @@ def summarize_opt_run(
     uri = get_uri(os.getcwd())
     inputs = {
         "parameters": dyn.atoms.calc.parameters,
-        "parameters_opt": opt_parameters,
+        "parameters_dyn": dyn_parameters,
         "nid": uri.split(":")[0],
         "dir_name": ":".join(uri.split(":")[1:]),
     }

@@ -13,7 +13,7 @@ from ase import Atoms
 from ase.optimize import BFGSLineSearch
 
 from quacc.calculators.vasp import Vasp
-from quacc.schemas.ase import OptSchema, summarize_opt_run
+from quacc.schemas.ase import DynSchema, summarize_dyn_run
 from quacc.schemas.vasp import VaspSchema, summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
 
@@ -112,7 +112,7 @@ def _prerelax(
     preset: str | None = "QMOFSet",
     calc_swaps: dict | None = None,
     fmax: float = 5.0,
-) -> OptSchema:
+) -> DynSchema:
     """
     A "pre-relaxation" with BFGSLineSearch to resolve very high forces.
 
@@ -129,8 +129,8 @@ def _prerelax(
 
     Returns
     -------
-    OptSchema
-        Dictionary of results from quacc.schemas.ase.summarize_opt_run
+    DynSchema
+        Dictionary of results from quacc.schemas.ase.summarize_dyn_run
     """
 
     calc_swaps = calc_swaps or {}
@@ -150,7 +150,7 @@ def _prerelax(
     atoms.calc = calc
     dyn = run_ase_opt(atoms, fmax=fmax, optimizer=BFGSLineSearch)
 
-    return summarize_opt_run(dyn, additional_fields={"name": "QMOF Prerelax"})
+    return summarize_dyn_run(dyn, additional_fields={"name": "QMOF Prerelax"})
 
 
 def _loose_relax_positions(

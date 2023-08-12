@@ -14,7 +14,7 @@ from maggma.stores import MemoryStore
 from monty.json import MontyDecoder, jsanitize
 
 from quacc.schemas.ase import (
-    summarize_opt_run,
+    summarize_dyn_run,
     summarize_run,
     summarize_thermo_run,
     summarize_vib_run,
@@ -93,7 +93,7 @@ def test_summarize_run(tmpdir):
     MontyDecoder().process_decoded(d)
 
 
-def test_summarize_opt_run(tmpdir):
+def test_summarize_dyn_run(tmpdir):
     tmpdir.chdir()
 
     # Make sure metadata is made
@@ -104,7 +104,7 @@ def test_summarize_opt_run(tmpdir):
     dyn.run(steps=100)
     traj = read("test.traj", index=":")
 
-    results = summarize_opt_run(dyn)
+    results = summarize_dyn_run(dyn)
     assert results["nsites"] == len(atoms)
     assert results["atoms"] == traj[-1]
     assert results["results"]["energy"] == atoms.get_potential_energy()
@@ -126,7 +126,7 @@ def test_summarize_opt_run(tmpdir):
     traj = read("test.traj", index=":")
 
     store = MemoryStore()
-    summarize_opt_run(dyn, store=store, check_convergence=False)
+    summarize_dyn_run(dyn, store=store, check_convergence=False)
     assert store.count() == 1
 
     # Test no convergence
@@ -138,7 +138,7 @@ def test_summarize_opt_run(tmpdir):
     traj = read("test.traj", index=":")
 
     with pytest.raises(ValueError):
-        summarize_opt_run(dyn)
+        summarize_dyn_run(dyn)
 
     # Test remove_empties
     atoms = bulk("Cu") * (2, 2, 1)
@@ -148,7 +148,7 @@ def test_summarize_opt_run(tmpdir):
     dyn.run()
     traj = read(dyn.trajectory.filename, index=":")
 
-    results = summarize_opt_run(dyn, remove_empties=True)
+    results = summarize_dyn_run(dyn, remove_empties=True)
     assert results["nsites"] == len(atoms)
     assert results["atoms"] == traj[-1]
     assert results["results"]["energy"] == atoms.get_potential_energy()
@@ -167,7 +167,7 @@ def test_summarize_opt_run(tmpdir):
     dyn = BFGS(atoms, trajectory="test.traj")
     dyn.run()
 
-    results = summarize_opt_run(dyn)
+    results = summarize_dyn_run(dyn)
     assert results.get("atoms_info", {}) != {}
     assert results["atoms_info"].get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
@@ -178,7 +178,7 @@ def test_summarize_opt_run(tmpdir):
 
     with pytest.raises(FileNotFoundError):
         dyn.trajectory.filename = "not_a_file.traj"
-        summarize_opt_run(dyn)
+        summarize_dyn_run(dyn)
 
 
 def test_summarize_vib_run(tmpdir):

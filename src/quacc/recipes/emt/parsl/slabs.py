@@ -7,7 +7,7 @@ from parsl.app.python import PythonApp
 from parsl.dataflow.futures import AppFuture
 
 from quacc.recipes.emt.core import relax_job, static_job
-from quacc.schemas.ase import OptSchema, RunSchema
+from quacc.schemas.ase import DynSchema, RunSchema
 from quacc.util.slabs import make_max_slabs_from_bulk
 
 
@@ -20,7 +20,7 @@ def bulk_to_slabs_flow(
     slab_static: PythonApp | None = python_app(static_job.electron_object.function),
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
-) -> AppFuture[list[RunSchema | OptSchema]]:
+) -> AppFuture[list[RunSchema | DynSchema]]:
     """
     Workflow consisting of:
 
@@ -47,9 +47,9 @@ def bulk_to_slabs_flow(
 
     Returns
     -------
-    AppFuture[list[RunSchema | OptSchema]]
+    AppFuture[list[RunSchema | DynSchema]]
         An AppFuture whose .result() is a list of dictionary of results from
-        quacc.schemas.ase.summarize_run or quacc.schemas.ase.summarize_opt_run
+        quacc.schemas.ase.summarize_run or quacc.schemas.ase.summarize_dyn_run
     """
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}

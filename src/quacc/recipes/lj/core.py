@@ -13,11 +13,11 @@ from ase.calculators.lj import LennardJones
 from ase.optimize import FIRE
 
 from quacc.schemas.ase import (
-    OptSchema,
+    DynSchema,
     RunSchema,
     ThermoSchema,
     VibSchema,
-    summarize_opt_run,
+    summarize_dyn_run,
     summarize_run,
     summarize_thermo_run,
     summarize_vib_run,
@@ -66,7 +66,7 @@ def relax_job(
     calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
     copy_files: list[str] | None = None,
-) -> OptSchema:
+) -> DynSchema:
     """
     Function to carry out a geometry optimization
 
@@ -83,8 +83,8 @@ def relax_job(
 
     Returns
     -------
-    OptSchema
-        Dictionary of results from `quacc.schemas.ase.summarize_opt_run`
+    DynSchema
+        Dictionary of results from `quacc.schemas.ase.summarize_dyn_run`
     """
     atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     calc_swaps = calc_swaps or {}
@@ -97,7 +97,7 @@ def relax_job(
     atoms.calc = LennardJones(**calc_swaps)
     dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
 
-    return summarize_opt_run(dyn, additional_fields={"name": "LJ Relax"})
+    return summarize_dyn_run(dyn, additional_fields={"name": "LJ Relax"})
 
 
 @ct.electron
