@@ -39,7 +39,7 @@ Includes the following sections:
 
 ## Demonstration ✨
 
-🚀 Demo from the Quick Start guide, using [Covalent](https://github.com/AgnostiqHQ/covalent) as one of the several supported workflow managers.
+🚀 Demo from the Quick Start guide, using [Covalent](https://github.com/AgnostiqHQ/covalent) as one of the [several supported workflow managers](https://quantum-accelerators.github.io/quacc/user/wflow_overview.html).
 
 ![Demo from Quick Start](docs/images/start/start2.gif)
 
