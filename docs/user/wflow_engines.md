@@ -30,7 +30,7 @@ Here, we will show how to use quacc with one of a variety of workflow engines to
 
 === "Parsl"
 
-    Take a moment to read Parsl documentation's ["Quick Start"](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a [`@python_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html#Python-Apps) and [`@join_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html?highlight=join_app#Dynamic-workflows-with-apps-that-generate-other-apps), which describe individual compute tasks and dynamic job tasks, respectively.
+    Take a moment to read the Parsl documentation's ["Quick Start"](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a [`@python_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html#Python-Apps) and [`@join_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html?highlight=join_app#Dynamic-workflows-with-apps-that-generate-other-apps), which describe individual compute tasks and dynamic job tasks, respectively.
 
     !!! Info
 
@@ -38,16 +38,11 @@ Here, we will show how to use quacc with one of a variety of workflow engines to
 
 === "Prefect"
 
-    1. In your activated Python environment, install Prefect and the necessary Dask dependencies via `pip install prefect prefect-dask dask-jobqueue`
-    2. Make an account on [Prefect Cloud](https://app.prefect.cloud/)
-    3. Make an [API Key](https://docs.prefect.io/cloud/users/api-keys/) and (optionally) store it in a `PREFECT_API_KEY` environment variable (e.g. in your `~/.bashrc`)
-    4. Run `prefect cloud login` from the command-line and enter your API key (or use the browser, if possible)
+Take a moment to learn about the main Prefect concepts of a [`Flow`](https://docs.prefect.io/concepts/flows/) and a [`Task`](https://docs.prefect.io/concepts/tasks/).
 
-    Additional configuration parameters can be modified, as described in the [Prefect documentation](https://docs.prefect.io/concepts/settings/).
+!!! Info
 
-    !!! Info
-
-        For a more detailed tutorial on how to use Prefect, refer to the ["Prefect Tutorial](https://docs.prefect.io/2.11.3/tutorial/).
+    For more details, be sure to refer to the [Prefect Tutorial](https://docs.prefect.io/tutorial/). The [Workflow Orchestration without DAGs](https://www.prefect.io/guide/blog/workflow-orchestration-without-dags/) blog post is also a good read.
 
 ## Examples
 
