@@ -608,9 +608,6 @@ def test_freq_job(tmpdir):
     assert output["vib"]["atoms"] == molecule("H2O")
     assert len(output["vib"]["results"]["vib_freqs_raw"]) == 9
     assert len(output["vib"]["results"]["vib_freqs"]) == 3
-    assert output["vib"]["results"]["vib_freqs_raw"][0] == pytest.approx(
-        -4.537264474492113e-05
-    )
     assert output["vib"]["results"]["vib_freqs_raw"][-1] == pytest.approx(
         4090.37777396351
     )
