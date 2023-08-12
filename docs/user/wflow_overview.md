@@ -6,7 +6,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
 If you aren't sure which workflow engine to choose, check out the Pros and Cons lists below.
 
-Generally, we recommend either Covalent or Parsl, which have nearly identical syntax. If you're using an HPC cluster and can SSH into the login node without the need for multi-factor authentication each connection, then try Covalent. If automated SSH connections to the login node are not viable or relying on a centralized server isn't desirable, Parsl is likely the best option. Jobflow with FireWorks is best-suited if you are working at Lawrence Berkeley National Laboratory where it is already in active use.
+Generally, we recommend either **Covalent** or **Parsl**, which have nearly identical syntax. If you're using an HPC cluster and can SSH into the login node without the need for multi-factor authentication each connection, then try Covalent. If automated SSH connections to the login node are not viable or relying on a centralized server isn't desirable, Parsl is likely the best option. Jobflow with FireWorks is best-suited if you are working at Lawrence Berkeley National Laboratory where it is already in active use.
 
 ## Pros and Cons
 
@@ -29,26 +29,6 @@ Generally, we recommend either Covalent or Parsl, which have nearly identical sy
     - Not as widely used as other workflow management solutions
     - It requires a centralized server to be running continuously in order to manage the workflows
     - High-security HPC environments may be difficult to access via SSH with the centralized server approach
-
-=== "Parsl"
-
-    [Parsl](https://github.com/Parsl/parsl) is a workflow management solution out of Argonne National Laboratory, the University of Chicago, and the University of Illinois. It is well-adapted for running on virtually any HPC environment with a job scheduler.
-
-    Pros:
-
-    - Extremely configurable for virtually any HPC environment
-    - Relatively simple to define the workflows
-    - Active community, particularly across academia
-    - Ideal for jobpacking (e.g. packing many compute tasks into a single compute job) and has near-ideal scaling performance
-    - Thorough documentation
-    - Does not rely on maintaining a centralized server of any kind
-
-    Cons:
-
-    - Defining the right configuration options for your desired HPC setup can be an initial hurdle
-    - Monitoring job progress is more challenging and less detailed than other solutions
-    - Challenging to orchestrate workflows with steps running across heterogeneous resources
-    - The concept of always returning a "future" object can be confusing for new users
 
 === "Jobflow"
 
@@ -82,6 +62,26 @@ Generally, we recommend either Covalent or Parsl, which have nearly identical sy
     - FireWorks can have a steep learning curve due to its many configuration options
     - The reliance on MongoDB can be challenging for new users and certain HPC environments
     - New features are not currently planned
+
+=== "Parsl"
+
+    [Parsl](https://github.com/Parsl/parsl) is a workflow management solution out of Argonne National Laboratory, the University of Chicago, and the University of Illinois. It is well-adapted for running on virtually any HPC environment with a job scheduler.
+
+    Pros:
+
+    - Extremely configurable for virtually any HPC environment
+    - Relatively simple to define the workflows
+    - Active community, particularly across academia
+    - Ideal for jobpacking (e.g. packing many compute tasks into a single compute job) and has near-ideal scaling performance
+    - Thorough documentation
+    - Does not rely on maintaining a centralized server of any kind
+
+    Cons:
+
+    - Defining the right configuration options for your desired HPC setup can be an initial hurdle
+    - Monitoring job progress is more challenging and less detailed than other solutions
+    - Challenging to orchestrate workflows with steps running across heterogeneous resources
+    - The concept of always returning a "future" object can be confusing for new users
 
 === "Prefect"
 

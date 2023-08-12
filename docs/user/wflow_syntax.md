@@ -79,36 +79,6 @@ graph LR
 
     5. The `#!Python ct.get_result` function tells Covalent to fetch the result from the server.
 
-=== "Parsl"
-
-    !!! Tip
-        Make sure you run `#!Python import parsl` followed by `#!Python parsl.load()` in Python to load a default Parsl configuration.
-
-    ```python
-    from parsl import python_app
-
-
-    @python_app  # (1)!
-    def add(a, b):
-        return a + b
-
-
-    @python_app
-    def mult(a, b):
-        return a * b
-
-
-    def workflow(a, b, c):
-        return mult(add(a, b), c)
-
-
-    result = workflow(1, 2, 3).result()  # 9  (2)
-    ```
-
-    1. `#!Python @python_app` is a decorator that tells Parsl to treat the function as a compute job.
-
-    2. `#!Python .result()` is a method that tells Parsl to wait for the result of the job. If `#!Python .result()` were not called, an `#!Python AppFuture` would be returned instead of the actual result.
-
 === "Jobflow"
 
     ```python
@@ -138,6 +108,36 @@ graph LR
     2. `#!Python Flow` is a class that tells Jobflow to treat the list of jobs as a workflow.
 
     3. `#!Python run_locally` is a function that tells Jobflow to run the workflow locally.
+
+=== "Parsl"
+
+    !!! Tip
+        Make sure you run `#!Python import parsl` followed by `#!Python parsl.load()` in Python to load a default Parsl configuration.
+
+    ```python
+    from parsl import python_app
+
+
+    @python_app  # (1)!
+    def add(a, b):
+        return a + b
+
+
+    @python_app
+    def mult(a, b):
+        return a * b
+
+
+    def workflow(a, b, c):
+        return mult(add(a, b), c)
+
+
+    result = workflow(1, 2, 3).result()  # 9  (2)
+    ```
+
+    1. `#!Python @python_app` is a decorator that tells Parsl to treat the function as a compute job.
+
+    2. `#!Python .result()` is a method that tells Parsl to wait for the result of the job. If `#!Python .result()` were not called, an `#!Python AppFuture` would be returned instead of the actual result.
 
 === "Prefect"
 
@@ -249,40 +249,6 @@ graph LR
 
     1. `#!Python @ct.electron` followed by `#!Python @ct.lattice` is called a sublattice and tells Covalent to treat the function as a dynamic, sub-workflow.
 
-=== "Parsl"
-
-    ```python
-    from parsl import join_app, python_app
-
-
-    @python_app
-    def add(a, b):
-        return a + b
-
-
-    @python_app
-    def make_more(val):
-        import random
-
-        return [val] * random.randint(2, 5)
-
-
-    @join_app  # (1)!
-    def add_distributed(vals, c):
-        return [add(val, c) for val in vals]
-
-
-    def workflow(a, b, c):
-        future1 = add(a, b)
-        future2 = make_more(future1)
-        return add_distributed(future2, c)
-
-
-    result = workflow(1, 2, 3).result()  # e.g. [6, 6, 6]
-    ```
-
-    1. `#!Python @join_app` is a decorator that tells Parsl to treat the function as a dynamic, sub-workflow. Calling `#!Python .result()` will wait for all of the jobs to finish before returning the result. If you were to use a `#!Python @python_app`, a `#!Python list[AppFuture[int]]` would be returned instead of an `#!Python AppFuture[list[int]]`.
-
 === "Jobflow"
 
     ```python
@@ -318,6 +284,40 @@ graph LR
     ```
 
     1. `#!Python Response(replace)` is a class that tells Jobflow to replace the current job with the jobs in the flow.
+
+=== "Parsl"
+
+    ```python
+    from parsl import join_app, python_app
+
+
+    @python_app
+    def add(a, b):
+        return a + b
+
+
+    @python_app
+    def make_more(val):
+        import random
+
+        return [val] * random.randint(2, 5)
+
+
+    @join_app  # (1)!
+    def add_distributed(vals, c):
+        return [add(val, c) for val in vals]
+
+
+    def workflow(a, b, c):
+        future1 = add(a, b)
+        future2 = make_more(future1)
+        return add_distributed(future2, c)
+
+
+    result = workflow(1, 2, 3).result()  # e.g. [6, 6, 6]
+    ```
+
+    1. `#!Python @join_app` is a decorator that tells Parsl to treat the function as a dynamic, sub-workflow. Calling `#!Python .result()` will wait for all of the jobs to finish before returning the result. If you were to use a `#!Python @python_app`, a `#!Python list[AppFuture[int]]` would be returned instead of an `#!Python AppFuture[list[int]]`.
 
 === "Prefect"
 

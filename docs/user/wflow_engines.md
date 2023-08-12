@@ -20,14 +20,6 @@ Here, we will show how to use quacc with one of a variety of workflow engines to
 
         For a more detailed tutorial on how to use Covalent, refer to the ["Covalent Quick Start"](https://docs.covalent.xyz/docs/get-started/quick-start).
 
-=== "Parsl"
-
-    Take a moment to read Parsl documentation's ["Quick Start"](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a [`@python_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html#Python-Apps) and [`@join_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html?highlight=join_app#Dynamic-workflows-with-apps-that-generate-other-apps), which describe individual compute tasks and dynamic job tasks, respectively.
-
-    !!! Info
-
-        For a more detailed tutorial on how to use Parsl, refer to the ["Parsl Tutorial"](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html) and the even more detailed ["Parsl User Guide"](https://parsl.readthedocs.io/en/stable/userguide/index.html).
-
 === "Jobflow"
 
     Take a moment to read the Jobflow documentation's [Quick Start](https://materialsproject.github.io/jobflow/tutorials/1-quickstart.html) to get a sense of how Jobflow works. Namely, you should understand the `Job` and `Flow` definitions, which describe individual compute tasks and workflows, respectively.
@@ -35,6 +27,14 @@ Here, we will show how to use quacc with one of a variety of workflow engines to
     !!! Info
 
         For a more detailed tutorial on how to use Jobflow, refer to the [Jobflow Tutorials](https://materialsproject.github.io/jobflow/tutorials) and [this helpful guide](https://github.com/JaGeo/Advanced_Jobflow_Tutorial) written by Dr. Janine George.
+
+=== "Parsl"
+
+    Take a moment to read Parsl documentation's ["Quick Start"](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a [`@python_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html#Python-Apps) and [`@join_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html?highlight=join_app#Dynamic-workflows-with-apps-that-generate-other-apps), which describe individual compute tasks and dynamic job tasks, respectively.
+
+    !!! Info
+
+        For a more detailed tutorial on how to use Parsl, refer to the ["Parsl Tutorial"](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html) and the even more detailed ["Parsl User Guide"](https://parsl.readthedocs.io/en/stable/userguide/index.html).
 
 === "Prefect"
 
@@ -104,6 +104,39 @@ graph LR
 
     ![Covalent UI](../images/user/tutorial1.jpg)
 
+=== "Jobflow"
+
+    ```python
+    from ase.build import bulk
+    from jobflow import Flow, job, run_locally
+    from quacc.recipes.emt.core import relax_job, static_job
+
+    # Make an Atoms object of a bulk Cu structure
+    atoms = bulk("Cu")
+
+    # Define Job 1
+    job1 = job(relax_job)(atoms)
+
+    # Define Job 2, which takes the output of Job 1 as input
+    job2 = job(static_job)(job1.output)
+
+    # Define the workflow
+    workflow = Flow([job1, job2])
+
+    # Run the workflow locally
+    responses = run_locally(workflow, create_folders=True)
+
+    # Get the result
+    result = responses[job2.uuid][1].output
+    print(result)
+    ```
+
+    The key thing to note is that we need to transform the quacc recipe, which is a normal function, into a `Job` object. This can be done using the `@job` decorator and a new function definition or, more compactly, via `job(<function>)`.
+
+    We also must stitch the individual `Job` objects together into a `Flow`, which can be easily achieved by passing them to the `Flow()` constructor. The `Flow` object will automatically determine the order in which the jobs should be run based on the inputs and outputs of each job. In this case, it will know not to run `job2` until `job1` has completed.
+
+    We chose to run the job locally, but other workflow managers supported by Jobflow can be imported and used.
+
 === "Parsl"
 
     !!! Important
@@ -155,39 +188,6 @@ graph LR
     !!! Note
 
         Parsl `PythonApp`/`JoinApp` objects will implicitly know to call `.result()` on any `AppFuture` it receives. As such, you should avoid calling `.result()` within a `PythonApp`/`JoinApp` definition or between `PythonApp`/`JoinApp` objects if possible.
-
-=== "Jobflow"
-
-    ```python
-    from ase.build import bulk
-    from jobflow import Flow, job, run_locally
-    from quacc.recipes.emt.core import relax_job, static_job
-
-    # Make an Atoms object of a bulk Cu structure
-    atoms = bulk("Cu")
-
-    # Define Job 1
-    job1 = job(relax_job)(atoms)
-
-    # Define Job 2, which takes the output of Job 1 as input
-    job2 = job(static_job)(job1.output)
-
-    # Define the workflow
-    workflow = Flow([job1, job2])
-
-    # Run the workflow locally
-    responses = run_locally(workflow, create_folders=True)
-
-    # Get the result
-    result = responses[job2.uuid][1].output
-    print(result)
-    ```
-
-    The key thing to note is that we need to transform the quacc recipe, which is a normal function, into a `Job` object. This can be done using the `@job` decorator and a new function definition or, more compactly, via `job(<function>)`.
-
-    We also must stitch the individual `Job` objects together into a `Flow`, which can be easily achieved by passing them to the `Flow()` constructor. The `Flow` object will automatically determine the order in which the jobs should be run based on the inputs and outputs of each job. In this case, it will know not to run `job2` until `job1` has completed.
-
-    We chose to run the job locally, but other workflow managers supported by Jobflow can be imported and used.
 
 === "Prefect"
 
@@ -269,6 +269,32 @@ graph LR
 
     ![Covalent UI](../images/user/tutorial2.jpg)
 
+=== "Jobflow"
+
+    ```python
+    from ase.build import bulk, molecule
+    from jobflow import Flow, job, run_locally
+    from quacc.recipes.emt.core import relax_job
+
+    # Define two Atoms objects
+    atoms1 = bulk("Cu")
+    atoms2 = molecule("N2")
+
+    # Define two independent relaxation jobs
+    job1 = job(relax_job)(atoms1)
+    job2 = job(relax_job)(atoms2)
+
+    # Define the workflow
+    workflow = Flow([job1, job2])
+
+    # Run the workflow locally
+    responses = run_locally(workflow, create_folders=True)
+
+    # Get the result
+    result = responses[job2.uuid][1].output
+    print(result)
+    ```
+
 === "Parsl"
 
     ```python
@@ -299,32 +325,6 @@ graph LR
     !!! Note
 
         If you find defining a new function for each `PythonApp` a bit annoying, you can use the following shorthand: `#!Python relax_app=python_app(relax_job.electron_object.function)`.
-
-=== "Jobflow"
-
-    ```python
-    from ase.build import bulk, molecule
-    from jobflow import Flow, job, run_locally
-    from quacc.recipes.emt.core import relax_job
-
-    # Define two Atoms objects
-    atoms1 = bulk("Cu")
-    atoms2 = molecule("N2")
-
-    # Define two independent relaxation jobs
-    job1 = job(relax_job)(atoms1)
-    job2 = job(relax_job)(atoms2)
-
-    # Define the workflow
-    workflow = Flow([job1, job2])
-
-    # Run the workflow locally
-    responses = run_locally(workflow, create_folders=True)
-
-    # Get the result
-    result = responses[job2.uuid][1].output
-    print(result)
-    ```
 
 === "Prefect"
 
@@ -400,6 +400,58 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
     ![Covalent UI](../images/user/tutorial3.gif)
 
+=== "Jobflow"
+
+    **The Inefficient Way**
+
+    ```python
+    from ase.build import bulk
+    from jobflow import Flow, job, run_locally
+    from quacc.recipes.emt.core import relax_job
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Construct the Flow
+    job1 = job(relax_job)(atoms)
+    job2 = job(bulk_to_slabs_flow)(job1.output, slab_static=None)
+    workflow = Flow([job1, job2])
+
+    # Run the workflow locally
+    responses = run_locally(workflow, create_folders=True)
+
+    # Get the result
+    result = responses[job2.uuid][1].output
+    print(result)
+    ```
+
+    We have imported the [`.emt.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.slabs.bulk_to_slabs_flow) function, which takes an `Atoms` object along with several optional parameters. For demonstration purposes, we specify the `slab_static=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is stitch together the individual `@job` steps into a single `Flow` object.
+
+    **The Efficient Way**
+
+    Quacc fully supports Jobflow-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Jobflow-specific [`.emt.jobflow.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.jobflow.slabs.bulk_to_slabs_flow) workflow:
+
+    ```python
+    from ase.build import bulk
+    from jobflow import Flow, job, run_locally
+    from quacc.recipes.emt.core import relax_job
+    from quacc.recipes.emt.jobflow.slabs import bulk_to_slabs_flow
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Construct the Flow
+    job1 = job(relax_job)(atoms)
+    job2 = job(bulk_to_slabs_flow)(job1.output, slab_static=None)
+    workflow = Flow([job1, job2])
+
+    # Run the workflow locally
+    run_locally(workflow, create_folders=True)
+    ```
+
+    In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing [`.emt.jobflow.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.jobflow.slabs.bulk_to_slabs_flow) with its Covalent counterpart [`.emt.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.slabs.bulk_to_slabs_flow), you can see that the two are extremely similar such that it is often straightforward to [interconvert](wflow_syntax.md) between the two. In the case of `bulk_to_slabs_flow`, it actually returns a [`Response(replace)`](<https://materialsproject.github.io/jobflow/tutorials/5-dynamic-flows.html#The-Response(replace)-option>) object that dynamically replaces the `Flow` with several downstream jobs.
+
 === "Parsl"
 
     **The Inefficient Way**
@@ -470,58 +522,6 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
     In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient.
 
-=== "Jobflow"
-
-    **The Inefficient Way**
-
-    ```python
-    from ase.build import bulk
-    from jobflow import Flow, job, run_locally
-    from quacc.recipes.emt.core import relax_job
-    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
-
-    # Define the Atoms object
-    atoms = bulk("Cu")
-
-    # Construct the Flow
-    job1 = job(relax_job)(atoms)
-    job2 = job(bulk_to_slabs_flow)(job1.output, slab_static=None)
-    workflow = Flow([job1, job2])
-
-    # Run the workflow locally
-    responses = run_locally(workflow, create_folders=True)
-
-    # Get the result
-    result = responses[job2.uuid][1].output
-    print(result)
-    ```
-
-    We have imported the [`.emt.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.slabs.bulk_to_slabs_flow) function, which takes an `Atoms` object along with several optional parameters. For demonstration purposes, we specify the `slab_static=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is stitch together the individual `@job` steps into a single `Flow` object.
-
-    **The Efficient Way**
-
-    Quacc fully supports Jobflow-based workflows to resolve this limitation. For example, the workflow above can be equivalently run as follows using the Jobflow-specific [`.emt.jobflow.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.jobflow.slabs.bulk_to_slabs_flow) workflow:
-
-    ```python
-    from ase.build import bulk
-    from jobflow import Flow, job, run_locally
-    from quacc.recipes.emt.core import relax_job
-    from quacc.recipes.emt.jobflow.slabs import bulk_to_slabs_flow
-
-    # Define the Atoms object
-    atoms = bulk("Cu")
-
-    # Construct the Flow
-    job1 = job(relax_job)(atoms)
-    job2 = job(bulk_to_slabs_flow)(job1.output, slab_static=None)
-    workflow = Flow([job1, job2])
-
-    # Run the workflow locally
-    run_locally(workflow, create_folders=True)
-    ```
-
-    In this example, all the individual tasks and sub-tasks are run as separate jobs, which is more efficient. By comparing [`.emt.jobflow.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.jobflow.slabs.bulk_to_slabs_flow) with its Covalent counterpart [`.emt.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.slabs.bulk_to_slabs_flow), you can see that the two are extremely similar such that it is often straightforward to [interconvert](wflow_syntax.md) between the two. In the case of `bulk_to_slabs_flow`, it actually returns a [`Response(replace)`](<https://materialsproject.github.io/jobflow/tutorials/5-dynamic-flows.html#The-Response(replace)-option>) object that dynamically replaces the `Flow` with several downstream jobs.
-
 === "Prefect"
 
     **The Inefficient Way**
@@ -591,13 +591,13 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
     If you want to learn more about Covalent, you can read the [Covalent Documentation](https://docs.covalent.xyz/docs/). Please refer to the Covalent [Discussion Board](https://github.com/AgnostiqHQ/covalent/discussions) for any Covalent-specific questions.
 
-=== "Parsl"
-
-    If you want to learn more about Parsl, you can read the [Parsl Documentation](https://parsl.readthedocs.io/en/stable/#). Please refer to the [Parsl Slack Channel](http://parsl-project.org/support.html) for any Parsl-specific questions.
-
 === "Jobflow"
 
     If you want to learn more about Jobflow, you can read the [Jobflow Documentation](https://materialsproject.github.io/jobflow/). Please refer to the [Jobflow Discussions Board](https://github.com/materialsproject/jobflow/discussions) for Jobflow-specific questions.
+
+=== "Parsl"
+
+    If you want to learn more about Parsl, you can read the [Parsl Documentation](https://parsl.readthedocs.io/en/stable/#). Please refer to the [Parsl Slack Channel](http://parsl-project.org/support.html) for any Parsl-specific questions.
 
 === "Prefect"
 
