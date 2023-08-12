@@ -67,10 +67,16 @@ def bulk_to_defects_flow(
     list[dict]
         List of dictionary of results from quacc.schemas.ase.summarize_run or quacc.schemas.ase.summarize_opt_run
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
     defect_relax_kwargs = defect_relax_kwargs or {"relax_cell": False}
     defect_static_kwargs = defect_static_kwargs or {}
     make_defects_kwargs = make_defects_kwargs or {}
+
+    @ct.electron
+    def _make_defects(atoms):
+        atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+        return make_defects_from_bulk(
+            atoms, defectgen=defectgen, charge_state=charge_state, **make_defects_kwargs
+        )
 
     @ct.electron
     @ct.lattice
@@ -88,9 +94,7 @@ def bulk_to_defects_flow(
             for defect in defects
         ]
 
-    defects = ct.electron(make_defects_from_bulk)(
-        atoms, defectgen=defectgen, charge_state=charge_state, **make_defects_kwargs
-    )
+    defects = _make_defects(atoms)
 
     if defect_static is None:
         return _relax_distributed(defects)
