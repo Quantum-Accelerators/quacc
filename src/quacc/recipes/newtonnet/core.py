@@ -13,7 +13,7 @@ from ase.optimize.optimize import Optimizer
 from ase.units import _c, fs
 from ase.vibrations.data import VibrationsData
 from monty.dev import requires
-
+from typing import Dict, Any
 try:
     from sella import IRC, Sella
 except:
@@ -43,23 +43,31 @@ def get_hessian(atoms):
     return mlcalculator.results["hessian"].reshape((-1, 3 * len(atoms)))
 
 
-def add_stdev_and_hess(summary):
-    for i in range(len(summary["trajectory"])):
+def add_stdev_and_hess(summary: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Calculate and add standard deviation values and Hessians to the summary.
+
+    This function takes a summary dictionary containing information about a molecular trajectory
+    and calculates the standard deviation of various properties using the NewtonNet machine learning
+    calculator. It adds the calculated standard deviation values and Hessians to each configuration
+    in the trajectory.
+
+    Args:
+        summary (Dict[str, Any]): A dictionary containing information about the molecular trajectory.
+
+    Returns:
+        Dict[str, Any]: The modified summary dictionary with added standard deviation and Hessian values.
+    """
+    for conf in summary["trajectory"]:
         mlcalculator = NewtonNet(
             model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
             settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(":"),
         )
-        mlcalculator.calculate(summary["trajectory"][i]["atoms"])
-        summary["trajectory_results"][i]["hessian"] = mlcalculator.results["hessian"]
-        summary["trajectory_results"][i]["energy_std"] = mlcalculator.results[
-            "energy_disagreement"
-        ]
-        summary["trajectory_results"][i]["forces_std"] = mlcalculator.results[
-            "forces_disagreement"
-        ]
-        summary["trajectory_results"][i]["hessian_std"] = mlcalculator.results[
-            "hessian_disagreement"
-        ]
+        mlcalculator.calculate(conf["atoms"])
+        conf["hessian"] = mlcalculator.results["hessian"]
+        conf["energy_std"] = mlcalculator.results["energy_disagreement"]
+        conf["forces_std"] = mlcalculator.results["forces_disagreement"]
+        conf["hessian_std"] = mlcalculator.results["hessian_disagreement"]
     return summary
 
 
