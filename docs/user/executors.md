@@ -107,6 +107,62 @@ In the previous examples, we have been running calculations on our local machine
 
     4. You generally want each quacc job to be run in its own unique working directory to ensure files don't overwrite one another, so  `create_unique_workdir` should be set to `True`.
 
+=== "Jobflow"
+
+    Out-of-the box, Jobflow can be used to run on your local machine. You will, however, need a "manager" to run your workflows on HPC machines. The currently recommended manager for Jobflow is FireWorks, which is described here.
+
+    **Converting Between Jobflow and FireWorks**
+
+    The [`jobflow.managers.fireworks`](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks) module has all the tools you need to convert your Jobflow workflows to a format that is suitable for FireWorks.
+
+    **Converting a Job to a Firework**
+
+    To convert a `Job` to a `firework` and add it to your launch pad:
+
+    ```python
+    from fireworks import LaunchPad
+    from jobflow.managers.fireworks import job_to_firework
+
+    fw = job_to_firework(job)
+    lpad = LaunchPad.auto_load()
+    lpad.add_wf(fw)
+    ```
+
+    **Converting a Flow to a Workflow**
+
+    To convert a `Flow` to a `workflow` and add it to your launch pad:
+
+    ```python
+    from fireworks import LaunchPad
+    from jobflow.managers.fireworks import flow_to_workflow
+
+    wf = flow_to_workflow(flow)
+    lpad = LaunchPad.auto_load()
+    lpad.add_wf(wf)
+    ```
+
+    **Setting Where Jobs are Dispatched**
+
+    The `my_qadapter.yaml` file you made in the [installation instructions](../install/install.md) specifies how FireWorks will submit jobs added to your launch pad. Additional details can be found in the [Jobflow Documentation](https://materialsproject.github.io/jobflow/tutorials/8-fireworks.html#setting-where-jobs-are-dispatched) for how to dynamically set where and how Jobflow `Job` and `Flow` objects can be dispatched.
+
+    **Dispatching Calculations**
+
+    With a workflow added to your launch pad, on the desired machine of choice, you can run `qlaunch rapidfire --nlaunches <N>` (where `<N>` is the number of jobs to submit) in the command line to submit your workflows to the job scheduler. Running `qlaunch rapidfire -m <N>` will ensure that `<N>` jobs are always in the queue or running. To modify the order in which jobs are run, a priority can be set via `lpad set_priority <priority> -i <FWID>` where `<priority>` is a number.
+
+    By default, `qlaunch` will launch compute jobs that each poll for a single FireWork to run. This means that more Slurm jobs may be submitted than there are jobs to run. To modify the behavior of `qlaunch` to only submit a Slurm job for each "READY" FireWork in the launchpad, use the `-r` ("reserved") flag.
+
+    **Monitoring the Launchpad**
+
+    The easiest way to monitor the state of your launched FireWorks and workflows is through the GUI, which can be viewed with `lpad webgui`. To get the status of running fireworks from the command line, you can run `lpad get_fws -s RUNNING`. Other statuses can also be provided as well as individual FireWorks IDs.
+
+    To rerun a specific FireWork, one can use the `rerun_fws` command like so: `lpad rerun_fws -i <FWID>` where `<FWID>` is the FireWork ID. Similarly, one can rerun all fizzled jobs via `lpad rerun_fws -s FIZZLED`. More complicated Mongo-style queries can also be carried out. Cancelling a workflow can be done with `lpad delete_wflows -i <FWID>`.
+
+    Refer to the `lpad -h` help menu for more details.
+
+    **Continuous Job Submission**
+
+    To ensure that jobs are continually submitted to the queue you can use `tmux` to preserve the job submission process even when the SSH session is terminated. For example, running `tmux new -s launcher` will create a new `tmux` session named `launcher`. To exit the `tmux` session while still preserving any running tasks on the login node, press `ctrl+b` followed by `d`. To re-enter the tmux session, run `tmux attach -t launcher`. Additional `tmux` commands can be found on the [tmux cheatsheet](https://tmuxcheatsheet.com/).
+
 === "Parsl"
 
     Out-of-the-box, Parsl will run on your local machine. However, in practice you will probably want to run your Parsl workflows on HPC machines.
@@ -222,58 +278,118 @@ In the previous examples, we have been running calculations on our local machine
 
         Dr. Logan Ward has a nice example on YouTube describing a very similar example [here](https://youtu.be/0V4Hs4kTyJs?t=398).
 
-=== "Jobflow"
+=== "Prefect"
 
-    Out-of-the box, Jobflow can be used to run on your local machine. You will, however, need a "manager" to run your workflows on HPC machines. The currently recommended manager for Jobflow is FireWorks, which is described here.
+    Out-of-the-box, Prefect will run on your local machine. However, in practice you will probably want to run your Prefect workflows on HPC machines.
 
-    **Converting Between Jobflow and FireWorks**
+    **Defining Task Runners**
 
-    The [`jobflow.managers.fireworks`](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks) module has all the tools you need to convert your Jobflow workflows to a format that is suitable for FireWorks.
+    !!! Tip
 
-    **Converting a Job to a Firework**
+        Check out the [Task Runner](https://docs.prefect.io/latest/concepts/task-runners/) documentation for more information on how Prefect handles task execution.
 
-    To convert a `Job` to a `firework` and add it to your launch pad:
+    To modify where tasks are run, set the `task_runner` keyword argument of the corresponding `@flow` decorator. The jobs in this scenario would be submitted from a login node.
 
-    ```python
-    from fireworks import LaunchPad
-    from jobflow.managers.fireworks import job_to_firework
-
-    fw = job_to_firework(job)
-    lpad = LaunchPad.auto_load()
-    lpad.add_wf(fw)
-    ```
-
-    **Converting a Flow to a Workflow**
-
-    To convert a `Flow` to a `workflow` and add it to your launch pad:
+    An example is shown below for setting up a task runner compatible with the NERSC Perlmutter machine. By default, [`quacc.util.dask.make_runner`](https://quantum-accelerators.github.io/quacc/reference/quacc/util/dask.html#quacc.util.dask.make_runner) will generate a [`prefect_dask.DaskTaskRunner`](https://prefecthq.github.io/prefect-dask/task_runners/#prefect_dask.task_runners.DaskTaskRunner) composed of a [`dask_jobqueue.SLURMCluster`](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html) object.
 
     ```python
-    from fireworks import LaunchPad
-    from jobflow.managers.fireworks import flow_to_workflow
+    from quacc.util.dask import make_runner
 
-    wf = flow_to_workflow(flow)
-    lpad = LaunchPad.auto_load()
-    lpad.add_wf(wf)
+    n_slurm_jobs = 1 # Number of Slurm jobs to launch in parallel.
+    n_nodes_per_calc = 1 # Number of nodes to reserve for each Slurm job.
+    n_cores_per_node = 48 # Number of CPU cores per node.
+    mem_per_node = "64 GB" # Total memory per node.
+    vasp_parallel_cmd = (
+        f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'"
+    )
+
+    cluster_kwargs = {
+        # Dask worker options
+        "n_workers": n_slurm_jobs, # (1)!
+        "cores": n_cores_per_node, # (2)!
+        "memory": mem_per_node, # (3)!
+        # SLURM options
+        "shebang": "#!/bin/bash",
+        "account": "AccountName",
+        "walltime": "00:10:00",
+        "job_mem": "0", # (4)!
+        "job_script_prologue": [
+            "source ~/.bashrc",
+            "conda activate quacc",
+            f"export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}",
+        ], # (5)!
+        "job_directives_skip": ["-n", "--cpus-per-task"], # (6)!
+        "job_extra_directives": [f"-N {n_nodes_per_calc}", "-q debug", "-C cpu"], # (7)!
+        "python": "python", # (8)!
+    }
+
+    runner = make_runner(cluster_kwargs, temporary=True)
     ```
 
-    **Setting Where Jobs are Dispatched**
+    1. Number of Slurm jobs to launch.
 
-    The `my_qadapter.yaml` file you made in the [installation instructions](../install/install.md) specifies how FireWorks will submit jobs added to your launch pad. Additional details can be found in the [Jobflow Documentation](https://materialsproject.github.io/jobflow/tutorials/8-fireworks.html#setting-where-jobs-are-dispatched) for how to dynamically set where and how Jobflow `Job` and `Flow` objects can be dispatched.
+    2. Total number of cores (per Slurm job) for Dask worker.
 
-    **Dispatching Calculations**
+    3. Total memory (per Slurm job) for Dask worker.
 
-    With a workflow added to your launch pad, on the desired machine of choice, you can run `qlaunch rapidfire --nlaunches <N>` (where `<N>` is the number of jobs to submit) in the command line to submit your workflows to the job scheduler. Running `qlaunch rapidfire -m <N>` will ensure that `<N>` jobs are always in the queue or running. To modify the order in which jobs are run, a priority can be set via `lpad set_priority <priority> -i <FWID>` where `<priority>` is a number.
+    4. Request all memory on the node.
 
-    By default, `qlaunch` will launch compute jobs that each poll for a single FireWork to run. This means that more Slurm jobs may be submitted than there are jobs to run. To modify the behavior of `qlaunch` to only submit a Slurm job for each "READY" FireWork in the launchpad, use the `-r` ("reserved") flag.
+    5. Commands to run before calculation. This is a good place to include environment variable definitions and modules to load.
 
-    **Monitoring the Launchpad**
+    6. Slurm directives that are automatically added but that we chose to skip.
 
-    The easiest way to monitor the state of your launched FireWorks and workflows is through the GUI, which can be viewed with `lpad webgui`. To get the status of running fireworks from the command line, you can run `lpad get_fws -s RUNNING`. Other statuses can also be provided as well as individual FireWorks IDs.
+    7. The number of nodes for each calculation (-N), queue name (-q), and constraint (-c). Oftentimes, the constraint flag is not needed.
 
-    To rerun a specific FireWork, one can use the `rerun_fws` command like so: `lpad rerun_fws -i <FWID>` where `<FWID>` is the FireWork ID. Similarly, one can rerun all fizzled jobs via `lpad rerun_fws -s FIZZLED`. More complicated Mongo-style queries can also be carried out. Cancelling a workflow can be done with `lpad delete_wflows -i <FWID>`.
+    8. The Python executable name. This often does not need to be changed.
 
-    Refer to the `lpad -h` help menu for more details.
+    With this instantiated cluster object, you can set the task runner of the `Flow` as follows.
 
-    **Continuous Job Submission**
+    ```python
+    @flow(task_runner=runner)
+    def workflow(atoms):
+        ...
+    ```
 
-    To ensure that jobs are continually submitted to the queue you can use `tmux` to preserve the job submission process even when the SSH session is terminated. For example, running `tmux new -s launcher` will create a new `tmux` session named `launcher`. To exit the `tmux` session while still preserving any running tasks on the login node, press `ctrl+b` followed by `d`. To re-enter the tmux session, run `tmux attach -t launcher`. Additional `tmux` commands can be found on the [tmux cheatsheet](https://tmuxcheatsheet.com/).
+    Now, when the worklow is run from the login node, it will be submitted to the job scheduling system (Slurm by default), and the results will be sent back to Prefect Cloud once completed.
+
+    !!! Tip
+
+        Refer to the [Dask-Jobqueue Documentation](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html) for the available `cluster_kwargs` that can be defined and how they relate to a typical job script.
+
+
+    To asynchronously spawn a Slurm job that continually pulls in work for the duration of its walltime (rather than starting and terminating over the lifetime of the associated `Flow`), you can instead use the `make_runner` command without a `temporary` keyword argument:
+
+    ```python
+    runner = make_runner(cluster_kwargs)
+    ```
+
+    This is often more efficient for running large numbers of workflows because you can request a single, large Slurm job that continually pulls in work rather than submitting a large number of small jobs to the scheduler.
+
+    Additionally, you can have the generated Dask cluster adaptively scale based on the amount of work available by setting `adapt_kwargs` as follows:
+
+    ```python
+    runner = make_runner(cluster_kwargs, adapt_kwargs={"minimum": 1, "maximum": 5})
+    ```
+
+    This will ensure that at least one Slurm job is always running, but the number of jobs will scale up to 5 if there is enough work available.
+
+    **Troubleshooting**
+
+    If you are having trouble figuring out the right `cluster_kwargs` to use, the best option is to have the generated job script printed to the screen. This can be done as follows.
+
+    ```python
+    from dask_jobqueue import SLURMCluster
+    from quacc.util.dask import _make_cluster
+
+    cluster = make_cluster(SLURMCluster, cluster_kwargs, verbose=True)
+    ```
+
+    Note, however, that a Slurm job will be immediately submitted, so you will probably want to `scancel` it as you debug your job script.
+
+    **Executor Configuration File**
+
+    Speaking of configurations, if you use mostly the same HPC settings for your calculations, it can be annoying to define a large dictionary in every workflow you run. Instead, you can define a configuration file at `~/.config/dask/jobqueue.yaml` as described in the [dask-jobqueue documentation](https://jobqueue.dask.org/en/latest/configuration-setup.html#managing-configuration-files) that can be used to define default values common to your HPC setup.
+
+    **Using a Prefect Work Pool and Agent**
+
+    So far, we have dispatched calculations immediately upon calling them. However, in practice, it is often more useful to have a Prefect agent running in the background that will continually poll for work to submit to the task runner. This allows you to submit only a subset of workflows at a time, and the agent will automatically submit more jobs as the resources become available. You will want to run Prefect workflows with an agent on the computing environment where you wish to submit jobs, specifically on a perpetual resource like a login node or dedicated workflow node. Refer to the ["Work Pools, Workers, and Agents"](https://docs.prefect.io/latest/concepts/work-pools/) section of the Prefect documentation for more details.
