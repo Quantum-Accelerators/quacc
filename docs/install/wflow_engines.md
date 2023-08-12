@@ -30,10 +30,6 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
         If you are using Perlmutter at NERSC, you will need to set `export COVALENT_CONFIG_DIR="$SCRATCH/.config/covalent"` (e.g. in your `~/.bashrc`) because the home directory does not support file locking.
 
-=== "Parsl"
-
-    In your activated Python environment, install Parsl via `pip install parsl`. Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
-
 === "Jobflow"
 
     **MongoDB Setup**
@@ -173,3 +169,16 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
         Running `lpad reset` will clear your FireWorks launchpad, so only use this command if you are a new user.
 
     To check that FireWorks can connect to your database, run `lpad reset` if this is your first time using FireWorks.
+
+=== "Parsl"
+
+    In your activated Python environment, install Parsl via `pip install parsl`. Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
+
+=== "Prefect"
+
+    1. In your activated Python environment, install Prefect and the necessary Dask dependencies via `pip install prefect prefect-dask dask-jobqueue`
+    2. Make an account on [Prefect Cloud](https://app.prefect.cloud/)
+    3. Make an [API Key](https://docs.prefect.io/cloud/users/api-keys/) and (optionally) store it in a `PREFECT_API_KEY` environment variable (e.g. in your `~/.bashrc`)
+    4. Run `prefect cloud login` from the command-line and enter your API key (or use the browser, if possible)
+
+    Additional configuration parameters can be modified, as described in the [Prefect documentation](https://docs.prefect.io/concepts/settings/).

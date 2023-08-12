@@ -82,4 +82,4 @@ Read through the [User Guide](../user/basics.md) to learn more about using quacc
 
 !!! Hint
 
-    Don't want to use Covalent? No problem! Quacc supports a [variety of workflow managers](../user/wflow_overview.md) (or you can use none at all!).
+    Don't want to use Covalent? No problem! Quacc supports a [variety of workflow managers](../user/wflow_overview.md) (or none at all!).
