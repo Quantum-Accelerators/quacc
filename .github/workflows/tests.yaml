@@ -3,14 +3,6 @@ on:
   push:
     branches:
       - main
-    paths-ignore:
-      - CHANGELOG.md
-      - .gitignore
-      - CODE_OF_CONDUCT.md
-      - LICENSE.md
-      - README.md
-      - .deepsource.toml
-      - docs/**
   pull_request:
     branches:
       - main
