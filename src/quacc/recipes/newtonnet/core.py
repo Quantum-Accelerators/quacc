@@ -9,7 +9,6 @@ import covalent as ct
 import numpy as np
 from ase.atoms import Atoms
 from ase.optimize.optimize import Optimizer
-from ase.units import _c, fs
 from ase.vibrations.data import VibrationsData
 from monty.dev import requires
 from typing import List, Dict, Any, Literal
