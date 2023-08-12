@@ -6,7 +6,12 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
 If you aren't sure which workflow engine to choose, check out the Pros and Cons lists below.
 
-Generally, we recommend either **Covalent** or **Parsl**, which have nearly identical syntax. If you're using an HPC cluster and can SSH into the login node without the need for multi-factor authentication each connection, then try Covalent. If automated SSH connections to the login node are not viable or relying on a centralized server isn't desirable, Parsl is likely the best option. Jobflow with FireWorks is best-suited if you are working at Lawrence Berkeley National Laboratory where it is already in active use.
+Generally, we recommend either **Covalent** or **Parsl**, which have nearly identical syntax:
+
+- If you're using an HPC cluster and can SSH into the login node without the need for multi-factor authentication each connection, then try Covalent.
+- If automated SSH connections to the login node are not viable or relying on a centralized server isn't desirable, Parsl is likely the best option.
+- Jobflow with FireWorks is best-suited if you are working at Lawrence Berkeley National Laboratory where it is already in active use.
+- Prefect support is currently experimental.
 
 ## Pros and Cons
 
