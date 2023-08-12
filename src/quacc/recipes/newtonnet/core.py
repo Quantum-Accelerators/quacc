@@ -49,8 +49,8 @@ def _get_hessian(atoms: Atoms) -> np.ndarray:
         np.ndarray: The calculated Hessian matrix, reshaped into a 2D array.
     """
     mlcalculator = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(":"),
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
+        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
     mlcalculator.calculate(atoms)
     reshaped_hessian = mlcalculator.results["hessian"].reshape((-1, 3 * len(atoms)))
@@ -74,8 +74,8 @@ def _add_stdev_and_hess(summary: Dict[str, Any]) -> Dict[str, Any]:
     """
     for conf in summary["trajectory"]:
         mlcalculator = NewtonNet(
-            model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
-            settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(":"),
+            model_path=SETTINGS.NEWTONNET_MODEL_PATH,
+            settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
         )
         mlcalculator.calculate(conf["atoms"])
         conf["hessian"] = mlcalculator.results["hessian"]
@@ -110,8 +110,8 @@ def static_job(
     input_atoms = deepcopy(atoms)
     # Define calculator
     mlcalculator = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(":"),
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
+        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
     atoms.calc = mlcalculator
     atoms = run_calc(atoms)
@@ -121,10 +121,7 @@ def static_job(
 
 
 @ct.electron
-@requires(
-    NewtonNet,
-    "newtonnet must be installed. Checkout https://github.com/ericyuan00000/NewtonNet",
-)
+@requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def relax_job(
     atoms: Atoms,
     fmax: float = 0.01,
@@ -163,8 +160,8 @@ def relax_job(
         optimizer_kwargs["order"] = 0
 
     mlcalculator = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(":"),
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
+        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
     atoms.calc = mlcalculator
     dyn = run_ase_opt(
@@ -218,8 +215,8 @@ def ts_job(
     opt_flags = opt_defaults | opt_swaps
     # Define calculator
     mlcalculator = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(":"),
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
+        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
     atoms.calc = mlcalculator
 
@@ -231,8 +228,8 @@ def ts_job(
 
     # Define calculator again TEST THIS WHILE RUNNING THE CALCULATIONS
     mlcalculator = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(":"),
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
+        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
     atoms.calc = mlcalculator
     # Run the TS optimization
@@ -298,8 +295,8 @@ def irc_job(
 
     # Define calculator
     mlcalculator = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(":"),
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
+        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
     atoms.calc = mlcalculator
 
@@ -394,8 +391,8 @@ def freq_job(
     """
     # Define calculator
     mlcalculator = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(":"),
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
+        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
     atoms.calc = mlcalculator
 
