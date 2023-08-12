@@ -3,14 +3,6 @@ on:
   push:
     branches:
       - main
-    paths-ignore:
-      - CHANGELOG.md
-      - .gitignore
-      - CODE_OF_CONDUCT.md
-      - LICENSE.md
-      - README.md
-      - .deepsource.toml
-      - docs/**
   pull_request:
     branches:
       - main
@@ -56,6 +48,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
+        if: github.repository == 'Quantum-Accelerators/quacc'
 
   tests-tblite:
     strategy:
@@ -87,6 +80,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
+        if: github.repository == 'Quantum-Accelerators/quacc'
 
   tests-psi4:
     strategy:
@@ -127,6 +121,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
+        if: github.repository == 'Quantum-Accelerators/quacc'
 
   tests-dftbplus:
     strategy:
@@ -167,6 +162,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
+        if: github.repository == 'Quantum-Accelerators/quacc'
 
   tests-newtonnet:
     strategy:
@@ -240,6 +236,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
+        if: github.repository == 'Quantum-Accelerators/quacc'
 
   release:
     runs-on: ubuntu-latest

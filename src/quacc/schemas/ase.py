@@ -296,7 +296,9 @@ def summarize_opt_run(
     """
 
     additional_fields = additional_fields or {}
-    opt_parameters = dyn.todict() | {"fmax": dyn.fmax}
+    opt_parameters = dyn.todict()
+    if hasattr(dyn, "fmax"):
+        opt_parameters = opt_parameters | {"fmax": dyn.fmax}
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
     # Check convergence
