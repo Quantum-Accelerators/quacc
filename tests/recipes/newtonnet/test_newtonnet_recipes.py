@@ -1,12 +1,9 @@
-import gzip
 import os
 from copy import deepcopy
 from pathlib import Path
-from shutil import rmtree
 
 import numpy as np
 import pytest
-from ase import Atoms
 from ase.build import molecule
 from ase.optimize import FIRE
 
