@@ -4,7 +4,6 @@ Core recipes for the NewtonNet code
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Literal
 
 import covalent as ct
 import numpy as np
@@ -13,7 +12,7 @@ from ase.optimize.optimize import Optimizer
 from ase.units import _c, fs
 from ase.vibrations.data import VibrationsData
 from monty.dev import requires
-from typing import Dict, Any
+from typing import List, Dict, Any, Literal
 try:
     from sella import IRC, Sella
 except:
@@ -34,13 +33,27 @@ except ImportError:
     NewtonNet = None
 
 
-def get_hessian(atoms):
+def get_hessian(atoms: Atoms) -> np.ndarray:
+    """
+    Calculate and retrieve the Hessian matrix for the given molecular configuration.
+
+    This function takes an ASE Atoms object representing a molecular configuration and uses the
+    NewtonNet machine learning calculator to calculate the Hessian matrix. The calculated Hessian
+    matrix is then returned.
+
+    Args:
+        atoms (Atoms): The ASE Atoms object representing the molecular configuration.
+
+    Returns:
+        np.ndarray: The calculated Hessian matrix, reshaped into a 2D array.
+    """
     mlcalculator = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
         settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(":"),
     )
     mlcalculator.calculate(atoms)
-    return mlcalculator.results["hessian"].reshape((-1, 3 * len(atoms)))
+    reshaped_hessian = mlcalculator.results["hessian"].reshape((-1, 3 * len(atoms)))
+    return reshaped_hessian
 
 
 def add_stdev_and_hess(summary: Dict[str, Any]) -> Dict[str, Any]:
