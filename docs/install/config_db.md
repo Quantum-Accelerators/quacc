@@ -4,10 +4,6 @@
 
 Some users may wish to use quacc in way that ensures all calculation inputs and outputs are stored in an easily queryable database. While not a requirement, this can be readily achieved through the use of the [maggma](https://github.com/materialsproject/maggma) package. Maggma has many options for [data stores](https://materialsproject.github.io/maggma/reference/stores/).
 
-## MontyDB
-
-The easiest option is to use the [MontyDB store](https://materialsproject.github.io/maggma/reference/stores/#maggma.stores.mongolike.MontyStore), which is an on-disk Mongo-style database. The best part is that all you have to do for setup is run `pip install montydb`.
-
 ## MongoDB
 
 !!! Note
