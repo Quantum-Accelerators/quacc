@@ -34,7 +34,7 @@ except ImportError:
     NewtonNet = None
 
 
-def get_hessian(atoms: Atoms) -> np.ndarray:
+def _get_hessian(atoms: Atoms) -> np.ndarray:
     """
     Calculate and retrieve the Hessian matrix for the given molecular configuration.
 
@@ -57,7 +57,7 @@ def get_hessian(atoms: Atoms) -> np.ndarray:
     return reshaped_hessian
 
 
-def add_stdev_and_hess(summary: Dict[str, Any]) -> Dict[str, Any]:
+def _add_stdev_and_hess(summary: Dict[str, Any]) -> Dict[str, Any]:
     """
     Calculate and add standard deviation values and Hessians to the summary.
 
@@ -174,7 +174,7 @@ def relax_job(
         optimizer=optimizer,
         optimizer_kwargs=optimizer_kwargs,
     )
-    summary = add_stdev_and_hess(
+    summary = _add_stdev_and_hess(
         summarize_opt_run(dyn, additional_fields={"name": "NewtonNet Relax"})
     )
     return summary
@@ -227,7 +227,7 @@ def ts_job(
         if opt_flags["optimizer"].__name__ != "Sella":
             raise ValueError("Custom hessian can only be used with Sella.")
 
-        opt_flags["optimizer_kwargs"]["hessian_function"] = get_hessian
+        opt_flags["optimizer_kwargs"]["hessian_function"] = _get_hessian
 
     # Define calculator again TEST THIS WHILE RUNNING THE CALCULATIONS
     mlcalculator = NewtonNet(
@@ -244,7 +244,7 @@ def ts_job(
         additional_fields={"name": "NewtonNet TS"},
     )
 
-    ts_summary = add_stdev_and_hess(ts_summary)
+    ts_summary = _add_stdev_and_hess(ts_summary)
 
     # Run a frequency calculation
     thermo_summary = freq_job(
@@ -311,7 +311,7 @@ def irc_job(
         additional_fields={"name": "NewtonNet IRC"},
     )
 
-    summary_irc = add_stdev_and_hess(summary_irc)
+    summary_irc = _add_stdev_and_hess(summary_irc)
 
     # Run frequency job
     thermo_summary = freq_job(
