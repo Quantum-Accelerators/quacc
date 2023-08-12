@@ -82,3 +82,25 @@ Generally, we recommend either Covalent or Parsl, which have nearly identical sy
     - FireWorks can have a steep learning curve due to its many configuration options
     - The reliance on MongoDB can be challenging for new users and certain HPC environments
     - New features are not currently planned
+
+=== "Prefect"
+
+    [Prefect](https://www.prefect.io/) is a workflow management system that is widely adopted in the data science industry.
+
+    !!! Warning
+
+        Prefect support should be considered experimental at this time.
+
+    Pros:
+
+    - Very popular in the data science industry with an active community
+    - Useful dashboard to monitor job progress
+    - Supports a variety of job schedulers via `dask-jobqueue`
+    - Uses a directed acyclic graph-free model for increased flexibility in workflow definitions
+
+    Cons:
+
+    - Lacks documentation for HPC environments, although it supports them
+    - Challenging to use if the compute nodes do not support network connections
+    - The dashboard stores results for only a 7 day history by default and does not store the full output of each task
+    - The concept of always returning a "future" object can be confusing for new users
