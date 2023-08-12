@@ -8,11 +8,10 @@ Run the following commands in the terminal:
 
 ```bash
 pip install git+https://github.com/quantum-accelerators/quacc.git
-quacc config
 covalent start
 ```
 
-Then open the URL printed in the terminal and run a sample workflow below!
+Then open the URL printed in the terminal (usually http://localhost:48008) and run a sample workflow below!
 
 ## Demo Workflow 1: A Simple One
 

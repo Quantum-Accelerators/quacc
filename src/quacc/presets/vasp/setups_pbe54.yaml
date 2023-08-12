@@ -1,4 +1,5 @@
 # VASP-recommended .54 PAW PBE potentials
+# Last modified: 08-01-2023
 inputs:
   setups:
     Ac: Ac

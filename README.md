@@ -12,7 +12,7 @@
 ![Supported python versions](https://img.shields.io/badge/python-3.9%20%7C%203.10-blue)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7720998.svg)](https://doi.org/10.5281/zenodo.7720998)
 
-Quacc (pronounced "quack") is a flexible and extensible platform for high-throughput computational materials science and quantum chemistry.
+Quacc is a flexible and extensible platform for high-throughput computational materials science and quantum chemistry.
 
 The three main goals of quacc are to:
 
@@ -21,6 +21,8 @@ The three main goals of quacc are to:
 2. Promote rapid workflow development and testing via modern [workflow management solutions](https://workflows.community/).
 
 3. Enable a seamless interface between the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/) and the software infrastructure powering the [Materials Project](https://materialsproject.org).
+
+Quacc currently has pre-made recipes for the following packages: DFTB+, Gaussian, GULP, ORCA, Psi4, tblite, and VASP. It's simple to add your favorite!
 
 ## Documentation
 
