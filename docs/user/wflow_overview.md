@@ -1,19 +1,32 @@
 # Workflow Engines Overview
 
-Everyone's computing needs are different, so we ensured that quacc is interoperable with a variety of modern workflow management tools. There are over [300+ workflow management tools](https://workflows.community/systems) out there, so we can't possibly cover them all. Instead, we have focused on the most popular tools that we have tested and found to be compatible with quacc with minimal additional coding required. The recommended solutions below each use a decorator-based approach to defining workflows, and the basic syntax is very similar across all of them.
+Everyone's computing needs are different, so we ensured that quacc is interoperable with a variety of modern workflow management tools. There are [300+ workflow management tools](https://workflows.community/systems) out there, so we can't possibly support them all. Instead, we have focused on a select few that adopt a similar decorator-based approach to defining workflows with substantial support for HPC systems.
 
-## How to Choose a Workflow Engine
+## Choosing a Workflow Engine
 
-If you aren't sure which workflow engine to choose, check out the Pros and Cons lists below.
+### Summary
 
-Generally, we recommend either **Covalent** or **Parsl**, which have nearly identical syntax:
+!!! Tip
 
-- If you're using an HPC cluster and can SSH into the login node without the need for multi-factor authentication each connection, then try Covalent.
-- If automated SSH connections to the login node are not viable or relying on a centralized server isn't desirable, Parsl is likely the best option.
-- Jobflow with FireWorks is best-suited if you are working at Lawrence Berkeley National Laboratory where it is already in active use.
-- Prefect support is currently experimental.
+    Generally, we recommend either **Covalent** or **Parsl** for most users, depending on your prior experience and goals.
 
-## Pros and Cons
+My highly subjective ranking system for various features of the supported workflow engines is summarized below.
+
+| Workflow Engine     | Ease-of-Use[^1] | GUI[^2] | Flexibility[^3] | HPC Batch[^4] | Cloud[^5] | Pilot Jobs[^6] |
+|:---------------------:|:-------------:|:-----:|:-------------:|:-----------:|:-------:|:-------------:| 
+| Covalent            | 😍          | 😍 | 😀          | 😀       | 😍    | 😢         | 😍
+| Jobflow + FireWorks | 😐          | 😐 | 😀          | 😍       | 😢   | 😐         | 😐
+| Parsl               | 😀          | ☹️ | 😍          | 😍       | 😐    | 😍         | 😍
+| Prefect             | 😐          | 😀 | 😀          | ☹️       | 😍    | ☹️         | ☹️
+
+    [^1]: How easy is it to learn the syntax, set configuration options, and dispatch a workflow? 
+    [^2]: How useful is the GUI for monitoring and analyzing workflows?
+    [^3]: How flexible is the workflow engine in terms of ways to configure job execution?
+    [^4]: How well does the workflow engine operate with HPC batch job schedulers?
+    [^5]: How well does the workflow engine operate with cloud compute resources?
+    [^6]: How easy is it to use a [pilot job](https://en.wikipedia.org/wiki/Pilot_job) model?
+
+### Pros and Cons
 
 === "Covalent"
 
@@ -77,7 +90,7 @@ Generally, we recommend either **Covalent** or **Parsl**, which have nearly iden
     - Extremely configurable for virtually any HPC environment
     - Relatively simple to define the workflows
     - Active community, particularly across academia
-    - Ideal for jobpacking (e.g. packing many compute tasks into a single compute job) and has near-ideal scaling performance
+    - Well-suited for [pilot jobs](https://en.wikipedia.org/wiki/Pilot_job) and has near-ideal scaling performance
     - Thorough documentation
     - Does not rely on maintaining a centralized server of any kind
 
