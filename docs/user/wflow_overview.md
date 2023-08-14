@@ -12,19 +12,12 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
 My highly subjective ranking system for various features of the supported workflow engines is summarized below.
 
-| Workflow Engine     | Ease-of-Use[^1] | GUI[^2] | Flexibility[^3] | HPC Batch[^4] | Cloud[^5] | Pilot Jobs[^6] |
-|:---------------------:|:-------------:|:-----:|:-------------:|:-----------:|:-------:|:-------------:| 
-| Covalent            | 😍          | 😍 | 😀          | 😀       | 😍    | 😢         | 😍
-| Jobflow + FireWorks | 😐          | 😐 | 😀          | 😍       | 😢   | 😐         | 😐
-| Parsl               | 😀          | ☹️ | 😍          | 😍       | 😐    | 😍         | 😍
-| Prefect             | 😐          | 😀 | 😀          | ☹️       | 😍    | ☹️         | ☹️
-
-    [^1]: How easy is it to learn the syntax, set configuration options, and dispatch a workflow? 
-    [^2]: How useful is the GUI for monitoring and analyzing workflows?
-    [^3]: How flexible is the workflow engine in terms of ways to configure job execution?
-    [^4]: How well does the workflow engine operate with HPC batch job schedulers?
-    [^5]: How well does the workflow engine operate with cloud compute resources?
-    [^6]: How easy is it to use a [pilot job](https://en.wikipedia.org/wiki/Pilot_job) model?
+|   Workflow Engine   | Ease-of-Use | GUI | Flexibility | HPC Batch | Cloud | Pilot Jobs |
+| :-----------------: | :---------: | :-: | :---------: | :-------: | :---: | :--------: | --- |
+|      Covalent       |     😍      | 😍  |     😀      |    😀     |  😍   |     😢     | 😍  |
+| Jobflow + FireWorks |     😐      | 😐  |     😀      |    😍     |  😢   |     😐     | 😐  |
+|        Parsl        |     😀      | ☹️  |     😍      |    😍     |  😐   |     😍     | 😍  |
+|       Prefect       |     😐      | 😀  |     😀      |    ☹️     |  😍   |     ☹️     | ☹️  |
 
 ### Pros and Cons
 
@@ -43,10 +36,10 @@ My highly subjective ranking system for various features of the supported workfl
 
     Cons:
 
-    - Still actively in development
     - Not as widely used as other workflow management solutions
     - It requires a centralized server to be running continuously in order to manage the workflows
     - High-security HPC environments may be difficult to access via SSH with the centralized server approach
+    - Not ideal for large numbers of short-duration jobs on remote HPC machines
 
 === "Jobflow"
 
