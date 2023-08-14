@@ -13,6 +13,10 @@ covalent start
 
 Then open the URL printed in the terminal (usually http://localhost:48008) and run a sample workflow below!
 
+!!! Hint
+
+    Don't want to use Covalent? No problem! Quacc supports a [variety of workflow managers](../user/wflow_overview.md) (or none at all!).
+
 ## Demo Workflow 1: A Simple One
 
 This demo workflow will relax a bulk Cu structure using the EMT calculator.
@@ -79,7 +83,3 @@ print(result)
 Read through the [User Guide](../user/basics.md) to learn more about using quacc! And of course, feel free to explore the calculations you just ran in the Covalent UI.
 
 ![Covalent UI](../images/start/ui.jpg)
-
-!!! Hint
-
-    Don't want to use Covalent? No problem! Quacc supports a [variety of workflow managers](../user/wflow_overview.md) (or none at all!).
