@@ -59,7 +59,7 @@ strict = [
     "covalent==0.226.0rc0",  # waiting on > 0.222.0
     "custodian==2023.7.22",
     "emmet-core==0.64.0",
-    "jobflow==0.1.11",
+    "jobflow==0.1.12",
     "maggma==0.53.0",
     "monty==2023.8.8",
     "numpy==1.25.2",
