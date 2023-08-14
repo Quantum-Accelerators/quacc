@@ -8,6 +8,7 @@ from parsl.dataflow.futures import AppFuture
 
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.schemas.ase import OptSchema, RunSchema
+from quacc.schemas.atoms import fetch_atoms
 from quacc.util.slabs import make_max_slabs_from_bulk
 
 
@@ -60,7 +61,7 @@ def bulk_to_slabs_flow(
 
     @python_app
     def _make_slabs(atoms):
-        atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+        atoms = fetch_atoms(atoms)
         return make_max_slabs_from_bulk(atoms, **make_slabs_kwargs)
 
     @join_app

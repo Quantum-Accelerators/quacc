@@ -20,7 +20,6 @@ from pymatgen.io.ase import AseAtomsAdaptor
 # - If you modify the properties of an input Atoms object in any way, make sure to do so
 # on a copy because Atoms objects are mutable.
 
-
 def prep_next_run(
     atoms: Atoms,
     assign_id: bool = True,

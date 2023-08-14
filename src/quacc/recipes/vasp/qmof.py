@@ -14,6 +14,7 @@ from ase.optimize import BFGSLineSearch
 
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.ase import OptSchema, summarize_opt_run
+from quacc.schemas.atoms import fetch_atoms
 from quacc.schemas.vasp import VaspSchema, summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
 
@@ -71,7 +72,7 @@ def qmof_relax_job(
     dict
         Dictionary of results
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     # 1. Pre-relaxation
