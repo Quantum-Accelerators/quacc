@@ -13,7 +13,7 @@ covalent start
 
 Then open the URL printed in the terminal (usually http://localhost:48008) and run a sample workflow below!
 
-!!! Hint
+!!! Tip
 
     Don't want to use Covalent? No problem! Quacc supports a [variety of workflow managers](../user/wflow_overview.md) (or none at all!).
 
