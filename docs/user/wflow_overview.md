@@ -13,11 +13,11 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 My highly subjective ranking system for various features of the supported workflow engines is summarized below.
 
 |   Workflow Engine   | Ease-of-Use | GUI | Flexibility | HPC Batch | Cloud | Pilot Jobs |
-| :-----------------: | :-------------: | :-----: | :-------------: | :-----------: | :-------: | :------------: | --- |
-|      Covalent       |       😍        |   😍    |       😀        |      😀       |    😍     |       😢       | 😍  |
-| Jobflow + FireWorks |       😐        |   😐    |       😀        |      😍       |    😢     |       😐       | 😐  |
-|        Parsl        |       😀        |   ☹️    |       😍        |      😍       |    😐     |       😍       | 😍  |
-|       Prefect       |       😐        |   😀    |       😀        |      ☹️       |    😍     |       ☹️       | ☹️  |
+| :-----------------: | :---------: | :-: | :---------: | :-------: | :---: | :--------: | --- |
+|      Covalent       |     😍      | 😍  |     😀      |    😀     |  😍   |     😢     | 😍  |
+| Jobflow + FireWorks |     😐      | 😐  |     😀      |    😍     |  😢   |     😐     | 😐  |
+|        Parsl        |     😀      | ☹️  |     😍      |    😍     |  😐   |     😍     | 😍  |
+|       Prefect       |     😐      | 😀  |     😀      |    ☹️     |  😍   |     ☹️     | ☹️  |
 
 ### Pros and Cons
 
