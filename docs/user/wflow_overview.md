@@ -43,10 +43,10 @@ My highly subjective ranking system for various features of the supported workfl
 
     Cons:
 
-    - Still actively in development
     - Not as widely used as other workflow management solutions
     - It requires a centralized server to be running continuously in order to manage the workflows
     - High-security HPC environments may be difficult to access via SSH with the centralized server approach
+    - Not ideal for large numbers of short-duration jobs on remote HPC machines
 
 === "Jobflow"
 
