@@ -25,7 +25,6 @@ def atoms_from_dict(d):
     return decode(d["atoms_json"])
 
 
-
 # Load the version
 __version__ = version("quacc")
 
