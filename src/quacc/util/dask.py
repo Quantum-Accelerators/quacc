@@ -69,7 +69,7 @@ def make_runner(
 
 
 @requires(dask_deps, "Need quacc[prefect] dependencies")
-def _make_cluster(cluster_class: callable, cluster_kwargs: dict, verbose=False) -> Job:
+def _make_cluster(cluster_class: callable, cluster_kwargs: dict, verbose=True) -> Job:
     """
     Make a Dask cluster for use with Prefect workflows.
 
@@ -84,5 +84,9 @@ def _make_cluster(cluster_class: callable, cluster_kwargs: dict, verbose=False) 
     """
     cluster = cluster_class(**cluster_kwargs)
     if verbose:
+        print("Workers are submitted with the following job script:\n")
         print(cluster.job_script())
+        print("Scheduler is running at {cluster.scheduler.address}")
+        print("Dashboard is located at {cluster.dashboard_link}")
+
     return cluster
