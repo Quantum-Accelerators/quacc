@@ -195,21 +195,3 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         if: github.repository == 'Quantum-Accelerators/quacc'
-
-  release:
-    runs-on: ubuntu-latest
-    needs:
-      [tests-base, tests-tblite, tests-psi4, tests-dftbplus, tests-altwflows]
-    if: github.event_name == 'release' && needs.tests-base.result == 'success' && needs.tests-tblite.result == 'success' && needs.tests-psi4.result == 'success' && needs.tests-dftbplus.result == 'success' && needs.tests-altwflows.result == 'success'
-    steps:
-      - name: Check out repo
-        uses: actions/checkout@v3
-
-      - name: Build and upload dist
-        run: |
-          pip install setuptools setuptools_scm wheel
-          python pyproject.toml sdist bdist_wheel
-          twine upload --skip-existing dist/*.tar.gz
-        env:
-          TWINE_USERNAME: __token __
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
