@@ -81,5 +81,5 @@ def test_make_cluster():
         "memory": "1GB",
         "processes": 1,
     }
-    cluster = _make_cluster(SLURMCluster, cluster_kwargs, verbose=True)
+    cluster = _make_cluster(SLURMCluster, cluster_kwargs, verbose=False)
     assert isinstance(cluster, SLURMCluster)
