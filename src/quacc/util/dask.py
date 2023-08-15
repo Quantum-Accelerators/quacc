@@ -84,8 +84,8 @@ def _make_cluster(cluster_class: callable, cluster_kwargs: dict, verbose=True) -
     """
     cluster = cluster_class(**cluster_kwargs)
     if verbose:
-        print("Workers are submitted with the following job script:\n{cluster.job_script()}")
-        print("Scheduler is running at {cluster.scheduler.address}")
-        print("Dashboard is located at {cluster.dashboard_link}")
+        print(f"Workers are submitted with the following job script:\n{cluster.job_script()}")
+        print(f"Scheduler is running at {cluster.scheduler.address}")
+        print(f"Dashboard is located at {cluster.dashboard_link}")
 
     return cluster
