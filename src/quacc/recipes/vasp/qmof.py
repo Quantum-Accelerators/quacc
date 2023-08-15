@@ -284,7 +284,8 @@ def _double_relax(
 
     # Run first relaxation
     flags = defaults | calc_swaps
-    atoms.calc = Vasp(atoms, preset=preset, **flags)
+    calc1 = Vasp(atoms, preset=preset, **flags)
+    atoms.calc = calc1
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
 
     # Update atoms for
@@ -298,7 +299,8 @@ def _double_relax(
 
     # Run second relaxation
     flags = defaults | calc_swaps
-    atoms.calc = Vasp(atoms, preset=preset, **flags)
+    calc2 = Vasp(atoms, preset=preset, **flags)
+    atoms.calc = calc2
 
     # Use ISTART = 0 if this goes from vasp_gam --> vasp_std
     if calc1.kpts == [1, 1, 1] and calc2.kpts != [1, 1, 1]:
