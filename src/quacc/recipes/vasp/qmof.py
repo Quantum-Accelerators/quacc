@@ -146,8 +146,7 @@ def _prerelax(
         "nsw": 0,
     }
     flags = defaults | calc_swaps
-    calc = Vasp(atoms, preset=preset, **flags)
-    atoms.calc = calc
+    atoms.calc = Vasp(atoms, preset=preset, **flags)
     dyn = run_ase_opt(atoms, fmax=fmax, optimizer=BFGSLineSearch)
 
     return summarize_opt_run(dyn, additional_fields={"name": "QMOF Prerelax"})
@@ -191,8 +190,7 @@ def _loose_relax_positions(
         "nsw": 250,
     }
     flags = defaults | calc_swaps
-    calc = Vasp(atoms, preset=preset, **flags)
-    atoms.calc = calc
+    atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms)
 
     return summarize_run(
@@ -236,8 +234,7 @@ def _loose_relax_volume(
         "nsw": 500,
     }
     flags = defaults | calc_swaps
-    calc = Vasp(atoms, preset=preset, **flags)
-    atoms.calc = calc
+    atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
 
     return summarize_run(
@@ -352,8 +349,7 @@ def _static(
 
     # Run static calculation
     flags = defaults | calc_swaps
-    calc = Vasp(atoms, preset=preset, **flags)
-    atoms.calc = calc
+    atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
 
     return summarize_run(atoms, additional_fields={"name": "QMOF Static"})
