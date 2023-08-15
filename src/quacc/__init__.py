@@ -1,6 +1,7 @@
 """Init data for quacc"""
 
 import os
+from importlib.metadata import version
 
 from ase import Atoms
 from ase.io.jsonio import decode, encode
