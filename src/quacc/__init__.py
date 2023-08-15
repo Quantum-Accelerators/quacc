@@ -5,7 +5,6 @@ import os
 from ase import Atoms
 from ase.io.jsonio import decode, encode
 
-from quacc._version import __version__
 from quacc.settings import QuaccSettings
 
 
@@ -24,6 +23,8 @@ def atoms_from_dict(d):
     # does not currently work properly with constraints.
     return decode(d["atoms_json"])
 
+# Load the version
+__version__ = version("quacc")
 
 # Make Atoms MSONable
 Atoms.as_dict = atoms_as_dict
