@@ -1,7 +1,5 @@
 """Slab recipes for EMT based on Prefect"""
 from __future__ import annotations
-
-from ase import Atoms
 from prefect import flow, task
 from prefect.futures import PrefectFuture, Sync
 
