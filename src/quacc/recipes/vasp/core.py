@@ -50,8 +50,7 @@ def static_job(
     }
     flags = defaults | calc_swaps
 
-    calc = Vasp(atoms, preset=preset, **flags)
-    atoms.calc = calc
+    atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(atoms, additional_fields={"name": "VASP Static"})
@@ -101,8 +100,7 @@ def relax_job(
     }
     flags = defaults | calc_swaps
 
-    calc = Vasp(atoms, preset=preset, **flags)
-    atoms.calc = calc
+    atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(atoms, additional_fields={"name": "VASP Relax"})
@@ -165,16 +163,14 @@ def double_relax_job(
 
     # Run first relaxation
     flags = defaults | calc_swaps1
-    calc = Vasp(atoms, preset=preset, **flags)
-    atoms.calc = calc
+    atoms.calc = Vasp(atoms, preset=preset, **flags)
     kpts1 = atoms.calc.kpts
     atoms = run_calc(atoms, copy_files=copy_files)
     summary1 = summarize_run(atoms, additional_fields={"name": "VASP DoubleRelax 1"})
 
     # Run second relaxation
     flags = defaults | calc_swaps2
-    calc = Vasp(summary1["atoms"], preset=preset, **flags)
-    atoms.calc = calc
+    atoms.calc = Vasp(summary1["atoms"], preset=preset, **flags)
     kpts2 = atoms.calc.kpts
 
     # Use ISTART = 0 if this goes from vasp_gam --> vasp_std
