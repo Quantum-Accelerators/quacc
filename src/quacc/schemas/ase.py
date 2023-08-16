@@ -24,11 +24,12 @@ if TYPE_CHECKING:
     from ase.thermochemistry import IdealGasThermo
     from ase.vibrations import Vibrations
     from maggma.core import Store
-    
+
 RunSchema = TypeVar("RunSchema")
 OptSchema = TypeVar("OptSchema")
 VibSchema = TypeVar("VibSchema")
 ThermoSchema = TypeVar("ThermoSchema")
+
 
 def summarize_run(
     atoms: Atoms,
