@@ -16,6 +16,7 @@ from ase.optimize import FIRE
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_ase_opt, run_calc
+from quacc.util.dicts import get_parameters
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -90,10 +91,9 @@ def relax_job(
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
-    opt_swaps = opt_swaps or {}
 
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
-    opt_flags = opt_defaults | opt_swaps
+    opt_flags = get_parameters(opt_defaults, swaps=opt_swaps)
 
     if relax_cell and not atoms.pbc.any():
         warnings.warn(

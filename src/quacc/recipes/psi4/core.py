@@ -10,7 +10,7 @@ from monty.dev import requires
 from quacc.schemas.ase import summarize_run
 from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_calc
-from quacc.util.dicts import remove_dict_empties
+from quacc.util.dicts import get_parameters
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -62,7 +62,6 @@ def static_job(
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
     atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
 
     charge = int(atoms.get_initial_charges().sum()) if charge is None else charge
     multiplicity = (
@@ -80,7 +79,7 @@ def static_job(
         "multiplicity": multiplicity,
         "reference": "uks" if multiplicity > 1 else "rks",
     }
-    flags = remove_dict_empties(defaults | calc_swaps)
+    flags = get_parameters(defaults, calc_swaps)
 
     atoms.calc = Psi4(**flags)
     final_atoms = run_calc(atoms, copy_files=copy_files)
