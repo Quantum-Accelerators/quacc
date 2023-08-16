@@ -10,7 +10,6 @@ from typing import TYPE_CHECKING
 
 import covalent as ct
 from ase.calculators.emt import EMT
-from ase.constraints import ExpCellFilter
 from ase.optimize import FIRE
 
 from quacc.schemas.ase import summarize_opt_run, summarize_run
@@ -103,9 +102,6 @@ def relax_job(
 
     atoms.calc = EMT(**calc_swaps)
 
-    if relax_cell:
-        atoms = ExpCellFilter(atoms)
-
-    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
+    dyn = run_ase_opt(atoms, relax_cell=True, copy_files=copy_files, **opt_flags)
 
     return summarize_opt_run(dyn, additional_fields={"name": "EMT Relax"})
