@@ -4,7 +4,9 @@ Utility functions for dealing with dictionaries
 from __future__ import annotations
 
 
-def get_parameters(defaults: dict, swaps: dict | None) -> dict:
+def get_parameters(
+    defaults: dict, swaps: dict | None, remove_empties: bool = True
+) -> dict:
     """
     Given a dictionary of default parameters and a dictionary of swapped parameters,
     return a dictionary of parameters with the swapped parameters overriding the defaults.
@@ -15,6 +17,8 @@ def get_parameters(defaults: dict, swaps: dict | None) -> dict:
         Dictionary of default parameters
     swaps
         Dictionary of swapped parameters
+    remove_empties
+        If True, remove all null values from the dictionary
 
     Returns
     -------
@@ -23,7 +27,11 @@ def get_parameters(defaults: dict, swaps: dict | None) -> dict:
     """
 
     swaps = swaps or {}
-    return remove_dict_empties(defaults | swaps)
+    if remove_empties:
+        flags = remove_dict_empties(defaults | swaps)
+    else:
+        flags = defaults | swaps
+    return flags
 
 
 def clean_dict(start_dict: dict, remove_empties: bool = False) -> dict:

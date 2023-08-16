@@ -16,6 +16,7 @@ from quacc.schemas.ase import summarize_opt_run
 from quacc.schemas.atoms import fetch_atoms
 from quacc.schemas.vasp import summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
+from quacc.util.dicts import get_parameters
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -78,7 +79,6 @@ def qmof_relax_job(
         Dictionary of results
     """
     atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
 
     # 1. Pre-relaxation
     if run_prerelax:
@@ -139,8 +139,6 @@ def _prerelax(
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
 
-    calc_swaps = calc_swaps or {}
-
     defaults = {
         "auto_kpts": {"grid_density": 100},
         "ediff": 1e-4,
@@ -151,7 +149,7 @@ def _prerelax(
         "nelm": 225,
         "nsw": 0,
     }
-    flags = defaults | calc_swaps
+    flags = get_parameters(defaults, calc_swaps, remove_empties=False)
     calc = Vasp(atoms, preset=preset, **flags)
     dyn = run_ase_opt(atoms, calc, fmax=fmax, optimizer=BFGSLineSearch)
 
@@ -181,8 +179,6 @@ def _loose_relax_positions(
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
 
-    calc_swaps = calc_swaps or {}
-
     defaults = {
         "auto_kpts": {"grid_density": 100},
         "ediff": 1e-4,
@@ -195,7 +191,7 @@ def _loose_relax_positions(
         "lwave": True,
         "nsw": 250,
     }
-    flags = defaults | calc_swaps
+    flags = get_parameters(defaults, calc_swaps, remove_empties=False)
     calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, calc)
 
@@ -227,8 +223,6 @@ def _loose_relax_volume(
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
 
-    calc_swaps = calc_swaps or {}
-
     defaults = {
         "auto_kpts": {"grid_density": 100},
         "ediffg": -0.03,
@@ -239,7 +233,7 @@ def _loose_relax_volume(
         "lwave": True,
         "nsw": 500,
     }
-    flags = defaults | calc_swaps
+    flags = get_parameters(defaults, calc_swaps, remove_empties=False)
     calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, calc, copy_files=["WAVECAR"])
 
@@ -276,8 +270,6 @@ def _double_relax(
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
 
-    calc_swaps = calc_swaps or {}
-
     defaults = {
         "ediffg": -0.03,
         "ibrion": 2,
@@ -289,7 +281,7 @@ def _double_relax(
     }
 
     # Run first relaxation
-    flags = defaults | calc_swaps
+    flags = get_parameters(defaults, calc_swaps, remove_empties=False)
     calc1 = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, calc1, copy_files=["WAVECAR"])
 
@@ -303,7 +295,7 @@ def _double_relax(
     del defaults["lreal"]
 
     # Run second relaxation
-    flags = defaults | calc_swaps
+    flags = get_parameters(defaults, calc_swaps, remove_empties=False)
     calc2 = Vasp(atoms, preset=preset, **flags)
 
     # Use ISTART = 0 if this goes from vasp_gam --> vasp_std
@@ -341,8 +333,6 @@ def _static(
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
 
-    calc_swaps = calc_swaps or {}
-
     defaults = {
         "laechg": True,
         "lcharg": True,
@@ -352,7 +342,7 @@ def _static(
     }
 
     # Run static calculation
-    flags = defaults | calc_swaps
+    flags = get_parameters(defaults, calc_swaps, remove_empties=False)
     calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, calc, copy_files=["WAVECAR"])
 
