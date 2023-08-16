@@ -7,6 +7,7 @@ from tempfile import mkdtemp
 from typing import TYPE_CHECKING
 
 import numpy as np
+from ase.constraints import ExpCellFilter
 from ase.io import Trajectory, read
 from ase.optimize import FIRE
 from ase.vibrations import Vibrations
@@ -88,6 +89,7 @@ def run_calc(
 
 def run_ase_opt(
     atoms: Atoms,
+    relax_cell: bool = False,
     fmax: float = 0.01,
     max_steps: int = 500,
     optimizer: Optimizer = FIRE,
@@ -145,6 +147,9 @@ def run_ase_opt(
     optimizer_kwargs["trajectory"] = Trajectory(traj_filename, "w", atoms=atoms)
 
     # Define optimizer class
+    if relax_cell and atoms.pbc.any():
+        atoms = ExpCellFilter(atoms)
+
     dyn = optimizer(atoms, **optimizer_kwargs)
 
     # Run calculation
