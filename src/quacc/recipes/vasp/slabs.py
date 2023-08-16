@@ -56,7 +56,7 @@ def slab_static_job(
         "nedos": 5001,
         "nsw": 0,
     }
-    flags = get_parameters(defaults, swaps=calc_swaps)
+    flags = get_parameters(defaults, calc_swaps)
 
     atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, copy_files=copy_files)
@@ -102,7 +102,7 @@ def slab_relax_job(
         "lwave": False,
         "nsw": 200,
     }
-    flags = get_parameters(defaults, swaps=calc_swaps)
+    flags = get_parameters(defaults, calc_swaps)
 
     atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, copy_files=copy_files)

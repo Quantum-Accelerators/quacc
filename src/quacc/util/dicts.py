@@ -4,7 +4,7 @@ Utility functions for dealing with dictionaries
 from __future__ import annotations
 
 
-def get_parameters(defaults: dict, swaps: dict | None = None) -> dict:
+def get_parameters(defaults: dict, swaps: dict | None) -> dict:
     """
     Given a dictionary of default parameters and a dictionary of swapped parameters,
     return a dictionary of parameters with the swapped parameters overriding the defaults.

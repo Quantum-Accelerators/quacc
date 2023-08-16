@@ -53,7 +53,7 @@ def static_job(
         "nedos": 5001,
         "nsw": 0,
     }
-    flags = get_parameters(defaults, swaps=calc_swaps)
+    flags = get_parameters(defaults, calc_swaps)
 
     atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, copy_files=copy_files)
@@ -102,7 +102,7 @@ def relax_job(
         "lwave": False,
         "nsw": 200,
     }
-    flags = get_parameters(defaults, swaps=calc_swaps)
+    flags = get_parameters(defaults, calc_swaps)
 
     atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, copy_files=copy_files)
@@ -164,14 +164,14 @@ def double_relax_job(
     }
 
     # Run first relaxation
-    flags = get_parameters(defaults, swaps=calc_swaps1)
+    flags = get_parameters(defaults, calc_swaps1)
     atoms.calc = Vasp(atoms, preset=preset, **flags)
     kpts1 = atoms.calc.kpts
     atoms = run_calc(atoms, copy_files=copy_files)
     summary1 = summarize_run(atoms, additional_fields={"name": "VASP DoubleRelax 1"})
 
     # Run second relaxation
-    flags = get_parameters(defaults, swaps=calc_swaps2)
+    flags = get_parameters(defaults, calc_swaps2)
     atoms.calc = Vasp(summary1["atoms"], preset=preset, **flags)
     kpts2 = atoms.calc.kpts
 

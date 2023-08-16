@@ -53,7 +53,7 @@ def mp_prerelax_job(
     atoms = fetch_atoms(atoms)
 
     defaults = {"ediffg": -0.05, "xc": "pbesol"}
-    flags = get_parameters(defaults, swaps=calc_swaps)
+    flags = get_parameters(defaults, calc_swaps)
 
     atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, copy_files=copy_files)

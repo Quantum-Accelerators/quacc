@@ -83,7 +83,7 @@ def static_job(
         "gfinput": "",
         "ioplist": ["6/7=3", "2/9=2000"],  # see ASE issue #660
     }
-    flags = get_parameters(defaults, swaps=calc_swaps)
+    flags = get_parameters(defaults, calc_swaps)
 
     atoms.calc = Gaussian(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
@@ -160,7 +160,7 @@ def relax_job(
         "freq": "" if freq else None,
         "ioplist": ["2/9=2000"],  # ASE issue #660
     }
-    flags = get_parameters(defaults, swaps=calc_swaps)
+    flags = get_parameters(defaults, calc_swaps)
 
     atoms.calc = Gaussian(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
