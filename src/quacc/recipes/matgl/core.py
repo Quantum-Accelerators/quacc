@@ -24,6 +24,7 @@ if TYPE_CHECKING:
 
     from quacc.schemas.ase import OptSchema
 
+
 @ct.electron
 @requires(matgl, "matgl must be installed. Try pip install matgl")
 def relax_job(
