@@ -15,7 +15,6 @@ from quacc.calculators.vasp import Vasp
 from quacc.schemas.atoms import fetch_atoms
 from quacc.schemas.vasp import summarize_run
 from quacc.util.calc import run_calc
-from quacc.util.dicts import get_parameters
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -53,7 +52,7 @@ def mp_prerelax_job(
     atoms = fetch_atoms(atoms)
 
     defaults = {"ediffg": -0.05, "xc": "pbesol"}
-    flags = get_parameters(defaults, calc_swaps)
+    flags = defaults | calc_swaps
 
     calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, calc, copy_files=copy_files)

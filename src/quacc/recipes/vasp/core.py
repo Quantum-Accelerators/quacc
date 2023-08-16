@@ -9,7 +9,6 @@ from quacc.calculators.vasp import Vasp
 from quacc.schemas.atoms import fetch_atoms
 from quacc.schemas.vasp import summarize_run
 from quacc.util.calc import run_calc
-from quacc.util.dicts import get_parameters
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -53,7 +52,7 @@ def static_job(
         "nedos": 5001,
         "nsw": 0,
     }
-    flags = get_parameters(defaults, calc_swaps)
+    flags = defaults | calc_swaps
 
     calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, calc, copy_files=copy_files)
@@ -102,7 +101,7 @@ def relax_job(
         "lwave": False,
         "nsw": 200,
     }
-    flags = get_parameters(defaults, calc_swaps)
+    flags = defaults | calc_swaps
 
     calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, calc, copy_files=copy_files)
@@ -164,15 +163,15 @@ def double_relax_job(
     }
 
     # Run first relaxation
-    flags = get_parameters(defaults, calc_swaps1)
-    calc = Vasp(atoms, calc, preset=preset, **flags)
+    flags = defaults | calc_swaps1
+    calc = Vasp(atoms, preset=preset, **flags)
     kpts1 = calc.kpts
-    atoms = run_calc(atoms, copy_files=copy_files)
+    atoms = run_calc(atoms, calc, copy_files=copy_files)
     summary1 = summarize_run(atoms, additional_fields={"name": "VASP DoubleRelax 1"})
 
     # Run second relaxation
-    flags = get_parameters(defaults, calc_swaps2)
-    calc = Vasp(summary1["atoms"], calc, preset=preset, **flags)
+    flags = defaults | calc_swaps2
+    calc = Vasp(summary1["atoms"], preset=preset, **flags)
     kpts2 = calc.kpts
 
     # Use ISTART = 0 if this goes from vasp_gam --> vasp_std

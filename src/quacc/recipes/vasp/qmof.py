@@ -291,8 +291,7 @@ def _double_relax(
     # Run first relaxation
     flags = defaults | calc_swaps
     calc1 = Vasp(atoms, preset=preset, **flags)
-    calc = calc1
-    atoms = run_calc(atoms, calc, copy_files=["WAVECAR"])
+    atoms = run_calc(atoms, calc1, copy_files=["WAVECAR"])
 
     # Update atoms for
     summary1 = summarize_run(
@@ -306,13 +305,12 @@ def _double_relax(
     # Run second relaxation
     flags = defaults | calc_swaps
     calc2 = Vasp(atoms, preset=preset, **flags)
-    calc = calc2
 
     # Use ISTART = 0 if this goes from vasp_gam --> vasp_std
     if calc1.kpts == [1, 1, 1] and calc2.kpts != [1, 1, 1]:
-        calc.set(istart=0)
+        calc2.set(istart=0)
 
-    atoms = run_calc(atoms, calc, copy_files=["WAVECAR"])
+    atoms = run_calc(atoms, calc2, copy_files=["WAVECAR"])
     summary2 = summarize_run(
         atoms, run_bader=False, additional_fields={"name": "QMOF DoubleRelax 2"}
     )
