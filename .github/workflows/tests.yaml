@@ -33,7 +33,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install .[strict,dev,optimizers]
-          pip install git+https://github.com/Quantum-Accelerators/covalent-hpc-plugin.git
+          pip install covalent-hpc-plugin
 
       - name: Set up Covalent server
         run: |
