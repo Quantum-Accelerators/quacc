@@ -7,6 +7,7 @@ import covalent as ct
 from ase.calculators.dftb import Dftb
 
 from quacc.schemas.ase import summarize_run
+from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_calc
 from quacc.util.dicts import get_parameters
 from quacc.util.files import check_logfile
@@ -51,6 +52,7 @@ def static_job(
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
 
+    atoms = fetch_atoms(atoms)
     defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
         "Hamiltonian_Method": method if "xtb" in method.lower() else None,
@@ -106,6 +108,7 @@ def relax_job(
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
 
+    atoms = fetch_atoms(atoms)
     defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
         "Hamiltonian_Method": method if "xtb" in method.lower() else None,

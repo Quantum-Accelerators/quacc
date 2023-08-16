@@ -8,6 +8,7 @@ import covalent as ct
 from ase.calculators.gulp import GULP
 
 from quacc.schemas.ase import summarize_run
+from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_calc
 from quacc.util.dicts import get_parameters
 
@@ -52,6 +53,7 @@ def static_job(
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
 
+    atoms = fetch_atoms(atoms)
     default_keywords = {
         "gfnff": True if use_gfnff else None,
         "gwolf": True if use_gfnff and atoms.pbc.any() else None,
@@ -120,6 +122,7 @@ def relax_job(
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
 
+    atoms = fetch_atoms(atoms)
     if relax_cell and not atoms.pbc.any():
         warnings.warn(
             "Volume relaxation requested but no PBCs found. Ignoring.", UserWarning

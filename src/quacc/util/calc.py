@@ -15,7 +15,6 @@ from monty.os.path import zpath
 from monty.shutil import copy_r, gzip_dir
 
 from quacc import SETTINGS
-from quacc.schemas.atoms import fetch_atoms
 from quacc.util.atoms import copy_atoms
 from quacc.util.files import copy_decompress, make_unique_dir
 
@@ -25,7 +24,7 @@ if TYPE_CHECKING:
 
 
 def run_calc(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     calc: callable,
     geom_file: str | None = None,
     copy_files: list[str] | None = None,
@@ -58,14 +57,11 @@ def run_calc(
         The updated Atoms object.
     """
 
-    # Attach calculator
-    atoms = fetch_atoms(atoms)
-    atoms.calc = calc
-
     # Perform staging operations
     atoms, tmpdir, job_results_dir = _calc_setup(atoms, copy_files=copy_files)
 
     # Run calculation via get_potential_energy()
+    atoms.calc = calc
     atoms.get_potential_energy()
 
     # Most ASE calculators do not update the atoms object in-place with
@@ -98,7 +94,7 @@ def run_calc(
 
 
 def run_ase_opt(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     calc: callable,
     relax_cell: bool = True,
     fmax: float = 0.01,
@@ -140,10 +136,6 @@ def run_ase_opt(
         The ASE Optimizer object.
     """
 
-    # Attach calculator
-    atoms = fetch_atoms(atoms)
-    atoms.calc = calc
-
     # Set defaults
     optimizer_kwargs = optimizer_kwargs or {}
 
@@ -170,6 +162,7 @@ def run_ase_opt(
     optimizer_kwargs["trajectory"] = Trajectory(traj_filename, "w", atoms=atoms)
 
     # Define optimizer class
+    atoms.calc = calc
     dyn = optimizer(atoms, **optimizer_kwargs)
 
     # Run calculation
@@ -185,7 +178,7 @@ def run_ase_opt(
 
 
 def run_ase_vib(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     calc: callable,
     vib_kwargs: dict | None = None,
     copy_files: list[str] | None = None,
@@ -215,10 +208,6 @@ def run_ase_vib(
         The updated Vibrations module
     """
 
-    # Attach calculator
-    atoms = fetch_atoms(atoms)
-    atoms.calc = calc
-
     # Set defaults
     vib_kwargs = vib_kwargs or {}
 
@@ -226,6 +215,7 @@ def run_ase_vib(
     atoms, tmpdir, job_results_dir = _calc_setup(atoms, copy_files=copy_files)
 
     # Run calculation
+    atoms.calc = calc
     vib = Vibrations(atoms, name=os.path.join(tmpdir, "vib"), **vib_kwargs)
     vib.run()
     vib.summary(log=os.path.join(tmpdir, "vib_summary.log"))

@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 import covalent as ct
 from ase.calculators.gaussian import Gaussian
 
+from quacc.schemas.atoms import fetch_atoms
 from quacc.schemas.cclib import summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.dicts import get_parameters
@@ -58,6 +59,7 @@ def static_job(
         Dictionary of results from `quacc.schemas.cclib.summarize_run`
     """
 
+    atoms = fetch_atoms(atoms)
     charge = int(atoms.get_initial_charges().sum()) if charge is None else charge
     multiplicity = (
         int(1 + atoms.get_initial_magnetic_moments().sum())
@@ -134,6 +136,7 @@ def relax_job(
         Dictionary of results from `quacc.schemas.cclib.summarize_run`
     """
 
+    atoms = fetch_atoms(atoms)
     charge = int(atoms.get_initial_charges().sum()) if charge is None else charge
     multiplicity = (
         int(1 + atoms.get_initial_magnetic_moments().sum())

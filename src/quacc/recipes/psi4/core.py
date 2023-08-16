@@ -8,6 +8,7 @@ from ase.calculators.psi4 import Psi4
 from monty.dev import requires
 
 from quacc.schemas.ase import summarize_run
+from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_calc
 from quacc.util.dicts import get_parameters
 
@@ -61,6 +62,7 @@ def static_job(
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
 
+    atoms = fetch_atoms(atoms)
     charge = int(atoms.get_initial_charges().sum()) if charge is None else charge
     multiplicity = (
         int(1 + atoms.get_initial_magnetic_moments().sum())

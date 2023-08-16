@@ -9,6 +9,7 @@ import covalent as ct
 from ase.calculators.orca import ORCA, OrcaProfile
 
 from quacc import SETTINGS
+from quacc.schemas.atoms import fetch_atoms
 from quacc.schemas.cclib import summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.dicts import get_parameters
@@ -68,6 +69,7 @@ def static_job(
         Dictionary of results from quacc.schemas.cclib.summarize_run
     """
 
+    atoms = fetch_atoms(atoms)
     default_inputs = {
         xc: True,
         basis: True,
@@ -161,6 +163,7 @@ def relax_job(
         Dictionary of results from quacc.schemas.cclib.summarize_run
     """
 
+    atoms = fetch_atoms(atoms)
     default_inputs = {
         xc: True,
         basis: True,

@@ -13,6 +13,7 @@ from ase.calculators.emt import EMT
 from ase.optimize import FIRE
 
 from quacc.schemas.ase import summarize_opt_run, summarize_run
+from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_ase_opt, run_calc
 from quacc.util.dicts import get_parameters
 
@@ -45,6 +46,8 @@ def static_job(
     RunSchema
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
+
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     calc = EMT(**calc_swaps)
@@ -86,6 +89,8 @@ def relax_job(
     OptSchema
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
+
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}

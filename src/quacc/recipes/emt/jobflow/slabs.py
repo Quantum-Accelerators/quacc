@@ -51,6 +51,7 @@ def bulk_to_slabs_flow(
     Response
         A Response containing Flow of relaxation and static jobs for the generated slabs.
     """
+
     atoms = fetch_atoms(atoms)
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}

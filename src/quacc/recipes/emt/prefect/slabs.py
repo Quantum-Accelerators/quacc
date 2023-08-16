@@ -48,6 +48,7 @@ def bulk_to_slabs_flow(
         List of PrefectFuture objects, each of which resolves to a dictionary of results
         from quacc.schemas.ase.summarize_run or quacc.schemas.ase.summarize_opt_run
     """
+
     make_slabs_kwargs = make_slabs_kwargs or {}
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}

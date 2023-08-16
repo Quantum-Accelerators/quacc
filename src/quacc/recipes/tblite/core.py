@@ -13,6 +13,7 @@ from quacc.schemas.ase import (
     summarize_thermo_run,
     summarize_vib_run,
 )
+from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
 from quacc.util.dicts import get_parameters
 from quacc.util.thermo import ideal_gas
@@ -56,6 +57,7 @@ def static_job(
         Dictionary of results from quacc.schemas.ase.summarize_run
     """
 
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     calc = TBLite(method=method, **calc_swaps)
@@ -98,6 +100,7 @@ def relax_job(
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
 
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
@@ -150,6 +153,7 @@ def freq_job(
         quacc.schemas.ase.summarize_thermo_run
     """
 
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
     vib_kwargs = vib_kwargs or {}
 
