@@ -23,7 +23,7 @@ VibSchema = TypeVar("VibSchema")
 ThermoSchema = TypeVar("ThermoSchema")
 
 if TYPE_CHECKING:
-    from ase.atoms import Atoms
+    from ase import Atoms
     from ase.io import Trajectory
     from ase.optimize.optimize import Optimizer
     from ase.thermochemistry import IdealGasThermo

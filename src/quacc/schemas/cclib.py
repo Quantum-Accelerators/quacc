@@ -15,7 +15,7 @@ from quacc.util.db import results_to_db
 from quacc.util.dicts import clean_dict
 
 if TYPE_CHECKING:
-    from ase.atoms import Atoms
+    from ase import Atoms
 
 
 cclibSchema = TypeVar("cclibSchema")
