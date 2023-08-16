@@ -254,9 +254,6 @@ def _calc_setup(
         convenience.
     """
 
-    if atoms.calc is None:
-        raise ValueError("Atoms object must have attached calculator.")
-
     # Don't modify the original atoms object
     atoms = copy_atoms(atoms)
 
