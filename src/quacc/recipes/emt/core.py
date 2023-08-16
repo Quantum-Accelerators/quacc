@@ -5,7 +5,6 @@ NOTE: This set of minimal recipes is mainly for demonstration purposes.
 """
 from __future__ import annotations
 
-import warnings
 from typing import TYPE_CHECKING
 
 import covalent as ct
