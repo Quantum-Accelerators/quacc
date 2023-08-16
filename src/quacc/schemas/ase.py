@@ -17,11 +17,6 @@ from quacc.util.atoms import prep_next_run as prep_next_run_
 from quacc.util.db import results_to_db
 from quacc.util.dicts import clean_dict
 
-RunSchema = TypeVar("RunSchema")
-OptSchema = TypeVar("OptSchema")
-VibSchema = TypeVar("VibSchema")
-ThermoSchema = TypeVar("ThermoSchema")
-
 if TYPE_CHECKING:
     from ase import Atoms
     from ase.io import Trajectory
@@ -29,7 +24,11 @@ if TYPE_CHECKING:
     from ase.thermochemistry import IdealGasThermo
     from ase.vibrations import Vibrations
     from maggma.core import Store
-
+    
+RunSchema = TypeVar("RunSchema")
+OptSchema = TypeVar("OptSchema")
+VibSchema = TypeVar("VibSchema")
+ThermoSchema = TypeVar("ThermoSchema")
 
 def summarize_run(
     atoms: Atoms,
