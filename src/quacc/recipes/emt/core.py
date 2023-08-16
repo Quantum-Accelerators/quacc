@@ -94,14 +94,8 @@ def relax_job(
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
     opt_flags = opt_defaults | opt_swaps
 
-    if relax_cell and not atoms.pbc.any():
-        warnings.warn(
-            "Volume relaxation requested but no PBCs found. Ignoring.", UserWarning
-        )
-        relax_cell = False
-
     atoms.calc = EMT(**calc_swaps)
 
-    dyn = run_ase_opt(atoms, relax_cell=True, copy_files=copy_files, **opt_flags)
+    dyn = run_ase_opt(atoms, relax_cell=relax_cell, copy_files=copy_files, **opt_flags)
 
     return summarize_opt_run(dyn, additional_fields={"name": "EMT Relax"})
