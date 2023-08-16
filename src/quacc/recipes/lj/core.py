@@ -17,6 +17,7 @@ from quacc.schemas.ase import (
     summarize_thermo_run,
     summarize_vib_run,
 )
+from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
 from quacc.util.thermo import ideal_gas
 

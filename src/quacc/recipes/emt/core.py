@@ -14,6 +14,7 @@ from ase.constraints import ExpCellFilter
 from ase.optimize import FIRE
 
 from quacc.schemas.ase import summarize_opt_run, summarize_run
+from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_ase_opt, run_calc
 
 if TYPE_CHECKING:

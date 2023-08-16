@@ -13,6 +13,7 @@ import numpy as np
 
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.vasp import summarize_run
+from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_calc
 
 if TYPE_CHECKING:

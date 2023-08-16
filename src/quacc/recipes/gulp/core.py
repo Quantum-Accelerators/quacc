@@ -8,6 +8,7 @@ import covalent as ct
 from ase.calculators.gulp import GULP
 
 from quacc.schemas.ase import summarize_run
+from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_calc
 from quacc.util.dicts import remove_dict_empties
 
