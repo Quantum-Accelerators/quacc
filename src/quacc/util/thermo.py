@@ -3,11 +3,16 @@ Utility functions for thermochemistry
 """
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
-from ase import Atoms, units
+from ase import units
 from ase.thermochemistry import IdealGasThermo
 
 from quacc.schemas.atoms import atoms_to_metadata
+
+if TYPE_CHECKING:
+    from ase import Atoms
 
 
 def ideal_gas(

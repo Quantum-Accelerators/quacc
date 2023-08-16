@@ -1,13 +1,18 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from monty.dev import requires
 
 try:
     from dask_jobqueue import SLURMCluster
-    from dask_jobqueue.core import Job
     from prefect_dask.task_runners import DaskTaskRunner
 
     dask_deps = True
+
+    if TYPE_CHECKING:
+        from dask_jobqueue.core import Job
+
 except ImportError:
     dask_deps = False
 
@@ -84,7 +89,9 @@ def _make_cluster(cluster_class: callable, cluster_kwargs: dict, verbose=True) -
     """
     cluster = cluster_class(**cluster_kwargs)
     if verbose:
-        print(f"Workers are submitted with the following job script:\n{cluster.job_script()}")
+        print(
+            f"Workers are submitted with the following job script:\n{cluster.job_script()}"
+        )
         print(f"Scheduler is running at {cluster.scheduler.address}")
         print(f"Dashboard is located at {cluster.dashboard_link}")
 

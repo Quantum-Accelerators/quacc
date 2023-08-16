@@ -1,19 +1,22 @@
 """Slab recipes for EMT"""
 from __future__ import annotations
 
-from ase import Atoms
+from typing import TYPE_CHECKING
+
 from parsl import join_app, python_app
-from parsl.app.python import PythonApp
-from parsl.dataflow.futures import AppFuture
 
 from quacc.recipes.emt.core import relax_job, static_job
-from quacc.schemas.ase import OptSchema, RunSchema
 from quacc.schemas.atoms import fetch_atoms
 from quacc.util.slabs import make_max_slabs_from_bulk
 
+if TYPE_CHECKING:
+    from ase import Atoms
+    from parsl.app.python import PythonApp
+    from parsl.dataflow.futures import AppFuture
 
-# See https://github.com/Parsl/parsl/issues/2793 for why we need to strip the @ct.electron
-# decorator off the PythonApp kwargs
+    from quacc.schemas.ase import OptSchema, RunSchema
+
+
 def bulk_to_slabs_flow(
     atoms: Atoms | dict,
     make_slabs_kwargs: dict | None = None,
