@@ -6,15 +6,20 @@ NOTE: This set of minimal recipes is mainly for demonstration purposes.
 from __future__ import annotations
 
 import warnings
+from typing import TYPE_CHECKING
 
 import covalent as ct
-from ase import Atoms
 from ase.calculators.emt import EMT
 from ase.constraints import ExpCellFilter
 from ase.optimize import FIRE
 
-from quacc.schemas.ase import OptSchema, RunSchema, summarize_opt_run, summarize_run
+from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
+
+if TYPE_CHECKING:
+    from ase import Atoms
+
+    from quacc.schemas.ase import OptSchema, RunSchema
 
 
 @ct.electron
@@ -40,7 +45,7 @@ def static_job(
     RunSchema
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     atoms.calc = EMT(**calc_swaps)
@@ -82,7 +87,7 @@ def relax_job(
     OptSchema
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
     opt_swaps = opt_swaps or {}
 

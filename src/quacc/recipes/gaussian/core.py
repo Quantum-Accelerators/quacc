@@ -2,14 +2,19 @@
 from __future__ import annotations
 
 import multiprocessing
+from typing import TYPE_CHECKING
 
 import covalent as ct
-from ase import Atoms
 from ase.calculators.gaussian import Gaussian
 
-from quacc.schemas.cclib import cclibSchema, summarize_run
+from quacc.schemas.cclib import summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.dicts import remove_dict_empties
+
+if TYPE_CHECKING:
+    from ase import Atoms
+
+    from quacc.schemas.cclib import cclibSchema
 
 LOG_FILE = f"{Gaussian().label}.log"
 GEOM_FILE = LOG_FILE
@@ -52,7 +57,7 @@ def static_job(
     RunSchema
         Dictionary of results from `quacc.schemas.cclib.summarize_run`
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     charge = int(atoms.get_initial_charges().sum()) if charge is None else charge
@@ -130,7 +135,7 @@ def relax_job(
     RunSchema
         Dictionary of results from `quacc.schemas.cclib.summarize_run`
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     charge = int(atoms.get_initial_charges().sum()) if charge is None else charge

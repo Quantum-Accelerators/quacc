@@ -1,11 +1,16 @@
 """Slab recipes for EMT based on Jobflow"""
 from __future__ import annotations
 
-from ase import Atoms
-from jobflow import Flow, Job, Response, job
+from typing import TYPE_CHECKING
+
+from jobflow import Flow, Response, job
 
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.util.slabs import make_max_slabs_from_bulk
+
+if TYPE_CHECKING:
+    from ase import Atoms
+    from jobflow import Job
 
 
 def bulk_to_slabs_flow(
@@ -45,7 +50,7 @@ def bulk_to_slabs_flow(
     Response
         A Response containing Flow of relaxation and static jobs for the generated slabs.
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}
     make_slabs_kwargs = make_slabs_kwargs or {}

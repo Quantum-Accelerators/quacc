@@ -1,16 +1,20 @@
 """Core recipes for DFTB+"""
 from __future__ import annotations
 
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 import covalent as ct
-from ase import Atoms
 from ase.calculators.dftb import Dftb
 
-from quacc.schemas.ase import RunSchema, summarize_run
+from quacc.schemas.ase import summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.dicts import remove_dict_empties
 from quacc.util.files import check_logfile
+
+if TYPE_CHECKING:
+    from ase import Atoms
+
+    from quacc.schemas.ase import RunSchema
 
 LOG_FILE = "dftb.out"
 GEOM_FILE = "geo_end.gen"
@@ -46,7 +50,7 @@ def static_job(
     RunSchema
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     defaults = {
@@ -103,7 +107,7 @@ def relax_job(
     RunSchema
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     defaults = {

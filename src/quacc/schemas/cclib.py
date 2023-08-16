@@ -2,9 +2,8 @@
 from __future__ import annotations
 
 import os
-from typing import Literal, TypeVar
+from typing import TYPE_CHECKING, Literal, TypeVar
 
-from ase.atoms import Atoms
 from atomate2.common.schemas.cclib import TaskDocument
 from maggma.core import Store
 from pymatgen.io.ase import AseAtomsAdaptor
@@ -14,6 +13,10 @@ from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
 from quacc.util.db import results_to_db
 from quacc.util.dicts import clean_dict
+
+if TYPE_CHECKING:
+    from ase.atoms import Atoms
+
 
 cclibSchema = TypeVar("cclibSchema")
 

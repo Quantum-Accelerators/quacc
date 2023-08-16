@@ -5,18 +5,13 @@ NOTE: This set of minimal recipes is mainly for demonstration purposes
 """
 from __future__ import annotations
 
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 import covalent as ct
-from ase import Atoms
 from ase.calculators.lj import LennardJones
 from ase.optimize import FIRE
 
 from quacc.schemas.ase import (
-    OptSchema,
-    RunSchema,
-    ThermoSchema,
-    VibSchema,
     summarize_opt_run,
     summarize_run,
     summarize_thermo_run,
@@ -24,6 +19,11 @@ from quacc.schemas.ase import (
 )
 from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
 from quacc.util.thermo import ideal_gas
+
+if TYPE_CHECKING:
+    from ase import Atoms
+
+    from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
 
 
 @ct.electron
@@ -49,7 +49,7 @@ def static_job(
     RunSchema
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     atoms.calc = LennardJones(**calc_swaps)
@@ -86,7 +86,7 @@ def relax_job(
     OptSchema
         Dictionary of results from `quacc.schemas.ase.summarize_opt_run`
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
     opt_swaps = opt_swaps or {}
 
@@ -136,7 +136,7 @@ def freq_job(
         Dictionary of results from quacc.schemas.ase.summarize_vib_run and
         quacc.schemas.ase.summarize_thermo_run
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
     vib_kwargs = vib_kwargs or {}
 

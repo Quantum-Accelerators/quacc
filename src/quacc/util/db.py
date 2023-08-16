@@ -4,11 +4,14 @@ from __future__ import annotations
 import os
 import uuid
 import warnings
+from typing import TYPE_CHECKING
 
 import covalent as ct
 from covalent._shared_files.exceptions import MissingLatticeRecordError
-from maggma.core import Store
 from monty.json import MontyDecoder
+
+if TYPE_CHECKING:
+    from maggma.core import Store
 
 
 def covalent_to_db(
