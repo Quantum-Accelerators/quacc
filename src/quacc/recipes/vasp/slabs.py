@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING
 import covalent as ct
 
 from quacc.calculators.vasp import Vasp
-from quacc.schemas.vasp import summarize_run
 from quacc.schemas.atoms import fetch_atoms
+from quacc.schemas.vasp import summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.slabs import make_adsorbate_structures, make_max_slabs_from_bulk
 

@@ -9,8 +9,8 @@ import covalent as ct
 from ase.calculators.orca import ORCA, OrcaProfile
 
 from quacc import SETTINGS
-from quacc.schemas.cclib import summarize_run
 from quacc.schemas.atoms import fetch_atoms
+from quacc.schemas.cclib import summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.dicts import remove_dict_empties
 

@@ -13,8 +13,8 @@ from ase.optimize import BFGSLineSearch
 
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.ase import summarize_opt_run
-from quacc.schemas.vasp import summarize_run
 from quacc.schemas.atoms import fetch_atoms
+from quacc.schemas.vasp import summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
 
 if TYPE_CHECKING:
