@@ -7,6 +7,7 @@ import covalent as ct
 from ase import Atoms
 from ase.calculators.gaussian import Gaussian
 
+from quacc.schemas.atoms import fetch_atoms
 from quacc.schemas.cclib import cclibSchema, summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.dicts import remove_dict_empties
@@ -52,7 +53,7 @@ def static_job(
     RunSchema
         Dictionary of results from `quacc.schemas.cclib.summarize_run`
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     charge = int(atoms.get_initial_charges().sum()) if charge is None else charge
@@ -130,7 +131,7 @@ def relax_job(
     RunSchema
         Dictionary of results from `quacc.schemas.cclib.summarize_run`
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     charge = int(atoms.get_initial_charges().sum()) if charge is None else charge

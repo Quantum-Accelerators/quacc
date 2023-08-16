@@ -7,6 +7,7 @@ from ase.calculators.psi4 import Psi4
 from monty.dev import requires
 
 from quacc.schemas.ase import RunSchema, summarize_run
+from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_calc
 from quacc.util.dicts import remove_dict_empties
 
@@ -54,7 +55,7 @@ def static_job(
     RunSchema
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     charge = int(atoms.get_initial_charges().sum()) if charge is None else charge

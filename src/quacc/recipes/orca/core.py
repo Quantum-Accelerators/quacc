@@ -9,6 +9,7 @@ from ase import Atoms
 from ase.calculators.orca import ORCA, OrcaProfile
 
 from quacc import SETTINGS
+from quacc.schemas.atoms import fetch_atoms
 from quacc.schemas.cclib import cclibSchema, summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.dicts import remove_dict_empties
@@ -61,7 +62,7 @@ def static_job(
     cclibSchema
         Dictionary of results from quacc.schemas.cclib.summarize_run
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     input_swaps = input_swaps or {}
     block_swaps = block_swaps or {}
 
@@ -156,7 +157,7 @@ def relax_job(
     cclibSchema
         Dictionary of results from quacc.schemas.cclib.summarize_run
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     input_swaps = input_swaps or {}
     block_swaps = block_swaps or {}
 

@@ -7,6 +7,7 @@ import covalent as ct
 from ase import Atoms
 
 from quacc.calculators.vasp import Vasp
+from quacc.schemas.atoms import fetch_atoms
 from quacc.schemas.vasp import VaspSchema, summarize_run
 from quacc.util.calc import run_calc
 
@@ -37,7 +38,7 @@ def static_job(
     VaspSchema
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     defaults = {
@@ -86,7 +87,7 @@ def relax_job(
     VaspSchema
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     defaults = {
@@ -147,7 +148,7 @@ def double_relax_job(
     {"relax1": VaspSchema, "relax2": VaspSchema}
         Dictionaries of the type quacc.schemas.vasp.summarize_run.
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps1 = calc_swaps1 or {}
     calc_swaps2 = calc_swaps2 or {}
 
