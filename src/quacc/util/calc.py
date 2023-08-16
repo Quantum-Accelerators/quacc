@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+from copy import deepcopy
 from shutil import rmtree
 from tempfile import mkdtemp
 from typing import TYPE_CHECKING
@@ -15,7 +16,6 @@ from monty.os.path import zpath
 from monty.shutil import copy_r, gzip_dir
 
 from quacc import SETTINGS
-from quacc.util.atoms import copy_atoms
 from quacc.util.files import copy_decompress, make_unique_dir
 
 if TYPE_CHECKING:
@@ -255,7 +255,7 @@ def _calc_setup(
     """
 
     # Don't modify the original atoms object
-    atoms = copy_atoms(atoms)
+    atoms = deepcopy(atoms)
 
     # Set where to store the results
     job_results_dir = (
