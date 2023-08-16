@@ -46,6 +46,14 @@ As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculator
 
 No setup needed!
 
+## matgl
+
+!!! Note
+
+    [matgl](https://github.com/materialsvirtuallab/matgl) is a graph deep learning library for materials science. It includes the M3GNet universal interatomic potential and MEGNet for property prediction.
+
+If you plan to use matgl with quacc, you will need to install the code via `pip install matgl`.
+
 ## ORCA
 
 !!! Note

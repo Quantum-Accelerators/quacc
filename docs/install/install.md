@@ -30,6 +30,7 @@ Quacc can be installed with several "extras," as outlined in the `pyproject.toml
 
 ### Calculators
 
+- `quacc[matgl]`: Installs dependencies to enable the use of the [matgl](https://github.com/materialsvirtuallab/matgl).
 - `quacc[tblite]`: Installs dependencies to enable the use of [tblite](https://github.com/tblite/tblite).
 
 ### Workflow Managers
