@@ -152,6 +152,7 @@ def atoms_to_metadata(
 
     return clean_dict(atoms_doc, remove_empties=remove_empties)
 
+
 def fetch_atoms(atoms: Atoms | dict) -> Atoms:
     """
     Returns an Atoms object from a typical quacc recipe input, which can
@@ -177,6 +178,7 @@ def fetch_atoms(atoms: Atoms | dict) -> Atoms:
         Atoms object
     """
     return atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+
 
 def _quacc_sanitize(obj: Any) -> Any:
     """
