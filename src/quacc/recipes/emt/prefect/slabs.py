@@ -4,15 +4,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from prefect import flow, task
+from prefect.futures import PrefectFuture, Sync
 
 from quacc.recipes.emt.slabs import relax_job, static_job
 from quacc.schemas.atoms import fetch_atoms
 from quacc.util.slabs import make_max_slabs_from_bulk
 
 if TYPE_CHECKING:
-    from ase import Atoms
-    from prefect.futures import PrefectFuture, Sync
-
     from quacc.schemas.ase import OptSchema, RunSchema
 
 
