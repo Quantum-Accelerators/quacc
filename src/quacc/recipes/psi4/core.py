@@ -1,15 +1,21 @@
 """Core recipes for Psi4"""
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import covalent as ct
-from ase import Atoms
 from ase.calculators.psi4 import Psi4
 from monty.dev import requires
 
-from quacc.schemas.ase import RunSchema, summarize_run
+from quacc.schemas.ase import summarize_run
 from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_calc
 from quacc.util.dicts import remove_dict_empties
+
+if TYPE_CHECKING:
+    from ase import Atoms
+
+    from quacc.schemas.ase import RunSchema
 
 try:
     import psi4

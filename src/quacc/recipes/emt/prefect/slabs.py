@@ -1,6 +1,8 @@
 """Slab recipes for EMT based on Prefect"""
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from prefect import flow, task
 from prefect.futures import PrefectFuture, Sync
 

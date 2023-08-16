@@ -1,14 +1,20 @@
 """Recipes for slabs"""
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import covalent as ct
-from ase import Atoms
 
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.atoms import fetch_atoms
-from quacc.schemas.vasp import VaspSchema, summarize_run
+from quacc.schemas.vasp import summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.slabs import make_adsorbate_structures, make_max_slabs_from_bulk
+
+if TYPE_CHECKING:
+    from ase import Atoms
+
+    from quacc.schemas.vasp import VaspSchema
 
 
 @ct.electron

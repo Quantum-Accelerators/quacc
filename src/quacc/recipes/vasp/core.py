@@ -1,15 +1,19 @@
 """Core recipes for VASP"""
 from __future__ import annotations
 
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 import covalent as ct
-from ase import Atoms
 
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.atoms import fetch_atoms
-from quacc.schemas.vasp import VaspSchema, summarize_run
+from quacc.schemas.vasp import summarize_run
 from quacc.util.calc import run_calc
+
+if TYPE_CHECKING:
+    from ase import Atoms
+
+    from quacc.schemas.vasp import VaspSchema
 
 
 @ct.electron

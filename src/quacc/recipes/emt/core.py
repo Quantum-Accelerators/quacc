@@ -6,16 +6,21 @@ NOTE: This set of minimal recipes is mainly for demonstration purposes.
 from __future__ import annotations
 
 import warnings
+from typing import TYPE_CHECKING
 
 import covalent as ct
-from ase import Atoms
 from ase.calculators.emt import EMT
 from ase.constraints import ExpCellFilter
 from ase.optimize import FIRE
 
-from quacc.schemas.ase import OptSchema, RunSchema, summarize_opt_run, summarize_run
+from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_ase_opt, run_calc
+
+if TYPE_CHECKING:
+    from ase import Atoms
+
+    from quacc.schemas.ase import OptSchema, RunSchema
 
 
 @ct.electron
