@@ -13,17 +13,16 @@ from quacc.util.calc import run_ase_opt
 
 try:
     import matgl
-    from ase import Atoms
     from matgl.ext.ase import M3GNetCalculator
-
-    from quacc.schemas.ase import OptSchema
 
 except ImportError:
     matgl = None
 
 if TYPE_CHECKING:
+    from ase import Atoms
     from torch import Tensor
 
+    from quacc.schemas.ase import OptSchema
 
 @ct.electron
 @requires(matgl, "matgl must be installed. Try pip install matgl")
