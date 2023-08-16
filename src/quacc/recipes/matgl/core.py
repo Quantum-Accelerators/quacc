@@ -4,16 +4,19 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import covalent as ct
-from ase import Atoms
 from ase.optimize import FIRE
 from monty.dev import requires
 
-from quacc.schemas.ase import OptSchema, summarize_opt_run
+from quacc.schemas.ase import summarize_opt_run
+from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_ase_opt
 
 try:
     import matgl
+    from ase import Atoms
     from matgl.ext.ase import M3GNetCalculator
+
+    from quacc.schemas.ase import OptSchema
 
 except ImportError:
     matgl = None
@@ -52,7 +55,7 @@ def relax_job(
     OptSchema
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atom)
     opt_swaps = opt_swaps or {}
 
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
