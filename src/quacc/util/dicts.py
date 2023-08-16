@@ -27,11 +27,11 @@ def get_parameters(
     """
 
     swaps = swaps or {}
-    if remove_empties:
-        flags = remove_dict_empties(defaults | swaps)
-    else:
-        flags = defaults | swaps
-    return flags
+    return (
+        remove_dict_empties(defaults | swaps)
+        if remove_empties
+        else defaults | swaps
+    )
 
 
 def clean_dict(start_dict: dict, remove_empties: bool = False) -> dict:
