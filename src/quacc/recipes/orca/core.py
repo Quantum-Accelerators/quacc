@@ -161,9 +161,6 @@ def relax_job(
         Dictionary of results from quacc.schemas.cclib.summarize_run
     """
 
-    input_swaps = input_swaps or {}
-    block_swaps = block_swaps or {}
-
     default_inputs = {
         xc: True,
         basis: True,
