@@ -126,7 +126,7 @@ def double_relax_job(
     1. To carry out a cheaper pre-relaxation before the high-quality run.
 
     2. To carry out a GGA calculation before a meta-GGA or hybrid calculation
-    that requies the GGA wavefunction.
+    that requires the GGA wavefunction.
 
     3. To carry out volume relaxations where large changes in volume
     can require a second relaxation to resolve forces.
