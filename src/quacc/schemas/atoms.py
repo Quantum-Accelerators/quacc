@@ -153,6 +153,33 @@ def atoms_to_metadata(
     return clean_dict(atoms_doc, remove_empties=remove_empties)
 
 
+def fetch_atoms(atoms: Atoms | dict) -> Atoms:
+    """
+    Returns an Atoms object from a typical quacc recipe input, which can
+    either be an `Atoms` object or a dictionary with an entry `{"atoms": Atoms}`.
+    It may seem a bit silly to do this, but there is a purpose. If you want to
+    write a workflow where the output of one recipe is passed to the input of
+    another recipe, you can always do output["atoms"] to fetch the output Atoms
+    object to pass to the input to the second function. However, this process
+    will often be its own compute step in workflow management tools because they
+    need to resolve the output in order to query it. Depending on the workflow manager,
+    this can be a waste of compute resources, so it's oftentimes better to do this
+    parsing inside the compute task itself, which is why passing in the raw dictionary
+    can be preferred.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object or dictionary with an entry {"atoms": Atoms}
+
+    Returns
+    -------
+    Atoms
+        Atoms object
+    """
+    return atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+
+
 def _quacc_sanitize(obj: Any) -> Any:
     """
     Sanitizes an object for storage in MongoDB.
@@ -179,30 +206,3 @@ def _quacc_sanitize(obj: Any) -> Any:
     else:
         obj = jsanitize(obj)
     return obj
-
-
-def fetch_atoms(atoms: Atoms | dict) -> Atoms:
-    """
-    Returns an Atoms object from a typical quacc recipe input, which can
-    either be an `Atoms` object or a dictionary with an entry {"atoms": Atoms}.
-    It may seem a bit silly to do this, but there is a purpose. If you want to
-    write a workflow where the output of one recipe is passed to the input of
-    another recipe, you can always do output["atoms"] to fetch the output Atoms
-    object to pass to the input to the second function. However, this process
-    will often be its own compute step in workflow management tools because they
-    need to resolve the output in order to query it. Depending on the workflow manager,
-    this can be a waste of compute resources, so it's oftentimes better to do this
-    parsing inside the compute task itself, which is why passing in the raw dictionary
-    can be preferred.
-
-    Parameters
-    ----------
-    atoms
-        Atoms object or dictionary with an entry {"atoms": Atoms}
-
-    Returns
-    -------
-    Atoms
-        Atoms object
-    """
-    return atoms if isinstance(atoms, Atoms) else atoms["atoms"]
