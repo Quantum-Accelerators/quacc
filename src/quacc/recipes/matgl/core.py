@@ -11,18 +11,18 @@ from quacc.schemas.ase import summarize_opt_run
 from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_ase_opt
 
+if TYPE_CHECKING:
+    from ase import Atoms
+    from torch import Tensor
+
+    from quacc.schemas.ase import OptSchema
+
 try:
     import matgl
     from matgl.ext.ase import M3GNetCalculator
 
 except ImportError:
     matgl = None
-
-if TYPE_CHECKING:
-    from ase import Atoms
-    from torch import Tensor
-
-    from quacc.schemas.ase import OptSchema
 
 
 @ct.electron
@@ -55,7 +55,7 @@ def relax_job(
     OptSchema
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
-    atoms = fetch_atoms(atom)
+    atoms = fetch_atoms(atoms)
     opt_swaps = opt_swaps or {}
 
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
