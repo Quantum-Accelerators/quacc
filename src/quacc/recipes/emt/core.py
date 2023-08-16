@@ -10,11 +10,9 @@ from typing import TYPE_CHECKING
 
 import covalent as ct
 from ase.calculators.emt import EMT
-from ase.constraints import ExpCellFilter
 from ase.optimize import FIRE
 
 from quacc.schemas.ase import summarize_opt_run, summarize_run
-from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_ase_opt, run_calc
 from quacc.util.dicts import get_parameters
 
@@ -47,11 +45,10 @@ def static_job(
     RunSchema
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
-    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
-    atoms.calc = EMT(**calc_swaps)
-    final_atoms = run_calc(atoms, copy_files=copy_files)
+    calc = EMT(**calc_swaps)
+    final_atoms = run_calc(atoms, calc, copy_files=copy_files)
 
     return summarize_run(
         final_atoms,
@@ -89,7 +86,6 @@ def relax_job(
     OptSchema
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
-    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
@@ -101,11 +97,10 @@ def relax_job(
         )
         relax_cell = False
 
-    atoms.calc = EMT(**calc_swaps)
+    calc = EMT(**calc_swaps)
 
-    if relax_cell:
-        atoms = ExpCellFilter(atoms)
-
-    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
+    dyn = run_ase_opt(
+        atoms, calc, relax_cell=relax_cell, copy_files=copy_files, **opt_flags
+    )
 
     return summarize_opt_run(dyn, additional_fields={"name": "EMT Relax"})

@@ -7,6 +7,7 @@ from tempfile import mkdtemp
 from typing import TYPE_CHECKING
 
 import numpy as np
+from ase.constraints import ExpCellFilter
 from ase.io import Trajectory, read
 from ase.optimize import FIRE
 from ase.vibrations import Vibrations
@@ -14,6 +15,7 @@ from monty.os.path import zpath
 from monty.shutil import copy_r, gzip_dir
 
 from quacc import SETTINGS
+from quacc.schemas.atoms import fetch_atoms
 from quacc.util.atoms import copy_atoms
 from quacc.util.files import copy_decompress, make_unique_dir
 
@@ -23,7 +25,10 @@ if TYPE_CHECKING:
 
 
 def run_calc(
-    atoms: Atoms, geom_file: str | None = None, copy_files: list[str] | None = None
+    atoms: Atoms | dict,
+    calc: callable,
+    geom_file: str | None = None,
+    copy_files: list[str] | None = None,
 ) -> Atoms:
     """
     Run a calculation in a scratch directory and copy the results back to the
@@ -37,6 +42,8 @@ def run_calc(
     ----------
     atoms
         The Atoms object to run the calculation on.
+    calc
+        The instantiated calculator object to use.
     geom_file
         The filename of the log file that contains the output geometry, used
         to update the atoms object's positions and cell after a job. It is better
@@ -50,6 +57,10 @@ def run_calc(
     Atoms
         The updated Atoms object.
     """
+
+    # Attach calculator
+    atoms = fetch_atoms(atoms)
+    atoms.calc = calc
 
     # Perform staging operations
     atoms, tmpdir, job_results_dir = _calc_setup(atoms, copy_files=copy_files)
@@ -87,7 +98,9 @@ def run_calc(
 
 
 def run_ase_opt(
-    atoms: Atoms,
+    atoms: Atoms | dict,
+    calc: callable,
+    relax_cell: bool = True,
     fmax: float = 0.01,
     max_steps: int = 500,
     optimizer: Optimizer = FIRE,
@@ -106,6 +119,10 @@ def run_ase_opt(
     ----------
     atoms
         The Atoms object to run the calculation on.
+    calc
+        The instantiated calculator object to use.
+    relax_cell
+        Whether to relax the unit cell. Only relevant for periodic systems.
     fmax
         Tolerance for the force convergence (in eV/A).
     max_steps
@@ -123,8 +140,16 @@ def run_ase_opt(
         The ASE Optimizer object.
     """
 
+    # Attach calculator
+    atoms = fetch_atoms(atoms)
+    atoms.calc = calc
+
     # Set defaults
     optimizer_kwargs = optimizer_kwargs or {}
+
+    # Attach filter if needed
+    if relax_cell and atoms.pbc.any():
+        atoms = ExpCellFilter(atoms)
 
     # Perform staging operations
     atoms, tmpdir, job_results_dir = _calc_setup(atoms, copy_files=copy_files)
@@ -160,7 +185,10 @@ def run_ase_opt(
 
 
 def run_ase_vib(
-    atoms: Atoms, vib_kwargs: dict | None = None, copy_files: list[str] | None = None
+    atoms: Atoms | dict,
+    calc: callable,
+    vib_kwargs: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> Vibrations:
     """
     Run an ASE-based vibration analysis in a scratch directory and copy the results
@@ -174,6 +202,8 @@ def run_ase_vib(
     ----------
     atoms
         The Atoms object to run the calculation on.
+    calc
+        The instantiated calculator object to use.
     vib_kwargs
         Dictionary of kwargs for the vibration analysis.
     copy_files
@@ -184,6 +214,10 @@ def run_ase_vib(
     Vibrations
         The updated Vibrations module
     """
+
+    # Attach calculator
+    atoms = fetch_atoms(atoms)
+    atoms.calc = calc
 
     # Set defaults
     vib_kwargs = vib_kwargs or {}

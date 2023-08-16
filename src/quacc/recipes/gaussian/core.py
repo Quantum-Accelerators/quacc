@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 import covalent as ct
 from ase.calculators.gaussian import Gaussian
 
-from quacc.schemas.atoms import fetch_atoms
 from quacc.schemas.cclib import summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.dicts import get_parameters
@@ -58,7 +57,6 @@ def static_job(
     RunSchema
         Dictionary of results from `quacc.schemas.cclib.summarize_run`
     """
-    atoms = fetch_atoms(atoms)
 
     charge = int(atoms.get_initial_charges().sum()) if charge is None else charge
     multiplicity = (
@@ -85,8 +83,8 @@ def static_job(
     }
     flags = get_parameters(defaults, calc_swaps)
 
-    atoms.calc = Gaussian(**flags)
-    atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
+    calc = Gaussian(**flags)
+    atoms = run_calc(atoms, calc, geom_file=GEOM_FILE, copy_files=copy_files)
 
     return summarize_run(
         atoms,
@@ -135,7 +133,6 @@ def relax_job(
     RunSchema
         Dictionary of results from `quacc.schemas.cclib.summarize_run`
     """
-    atoms = fetch_atoms(atoms)
 
     charge = int(atoms.get_initial_charges().sum()) if charge is None else charge
     multiplicity = (
@@ -162,8 +159,8 @@ def relax_job(
     }
     flags = get_parameters(defaults, calc_swaps)
 
-    atoms.calc = Gaussian(**flags)
-    atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
+    calc = Gaussian(**flags)
+    atoms = run_calc(atoms, calc, geom_file=GEOM_FILE, copy_files=copy_files)
 
     return summarize_run(
         atoms,

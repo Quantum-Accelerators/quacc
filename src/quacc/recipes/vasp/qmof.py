@@ -152,8 +152,8 @@ def _prerelax(
         "nsw": 0,
     }
     flags = defaults | calc_swaps
-    atoms.calc = Vasp(atoms, preset=preset, **flags)
-    dyn = run_ase_opt(atoms, fmax=fmax, optimizer=BFGSLineSearch)
+    calc = Vasp(atoms, preset=preset, **flags)
+    dyn = run_ase_opt(atoms, calc, fmax=fmax, optimizer=BFGSLineSearch)
 
     return summarize_opt_run(dyn, additional_fields={"name": "QMOF Prerelax"})
 
@@ -196,8 +196,8 @@ def _loose_relax_positions(
         "nsw": 250,
     }
     flags = defaults | calc_swaps
-    atoms.calc = Vasp(atoms, preset=preset, **flags)
-    atoms = run_calc(atoms)
+    calc = Vasp(atoms, preset=preset, **flags)
+    atoms = run_calc(atoms, calc)
 
     return summarize_run(
         atoms, run_bader=False, additional_fields={"name": "QMOF Loose Relax"}
@@ -240,8 +240,8 @@ def _loose_relax_volume(
         "nsw": 500,
     }
     flags = defaults | calc_swaps
-    atoms.calc = Vasp(atoms, preset=preset, **flags)
-    atoms = run_calc(atoms, copy_files=["WAVECAR"])
+    calc = Vasp(atoms, preset=preset, **flags)
+    atoms = run_calc(atoms, calc, copy_files=["WAVECAR"])
 
     return summarize_run(
         atoms,
@@ -291,8 +291,8 @@ def _double_relax(
     # Run first relaxation
     flags = defaults | calc_swaps
     calc1 = Vasp(atoms, preset=preset, **flags)
-    atoms.calc = calc1
-    atoms = run_calc(atoms, copy_files=["WAVECAR"])
+    calc = calc1
+    atoms = run_calc(atoms, calc, copy_files=["WAVECAR"])
 
     # Update atoms for
     summary1 = summarize_run(
@@ -306,13 +306,13 @@ def _double_relax(
     # Run second relaxation
     flags = defaults | calc_swaps
     calc2 = Vasp(atoms, preset=preset, **flags)
-    atoms.calc = calc2
+    calc = calc2
 
     # Use ISTART = 0 if this goes from vasp_gam --> vasp_std
     if calc1.kpts == [1, 1, 1] and calc2.kpts != [1, 1, 1]:
-        atoms.calc.set(istart=0)
+        calc.set(istart=0)
 
-    atoms = run_calc(atoms, copy_files=["WAVECAR"])
+    atoms = run_calc(atoms, calc, copy_files=["WAVECAR"])
     summary2 = summarize_run(
         atoms, run_bader=False, additional_fields={"name": "QMOF DoubleRelax 2"}
     )
@@ -355,7 +355,7 @@ def _static(
 
     # Run static calculation
     flags = defaults | calc_swaps
-    atoms.calc = Vasp(atoms, preset=preset, **flags)
-    atoms = run_calc(atoms, copy_files=["WAVECAR"])
+    calc = Vasp(atoms, preset=preset, **flags)
+    atoms = run_calc(atoms, calc, copy_files=["WAVECAR"])
 
     return summarize_run(atoms, additional_fields={"name": "QMOF Static"})

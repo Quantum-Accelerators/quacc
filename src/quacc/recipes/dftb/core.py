@@ -7,7 +7,6 @@ import covalent as ct
 from ase.calculators.dftb import Dftb
 
 from quacc.schemas.ase import summarize_run
-from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_calc
 from quacc.util.dicts import get_parameters
 from quacc.util.files import check_logfile
@@ -51,7 +50,6 @@ def static_job(
     RunSchema
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
-    atoms = fetch_atoms(atoms)
 
     defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
@@ -60,8 +58,8 @@ def static_job(
     }
     flags = get_parameters(defaults, calc_swaps)
 
-    atoms.calc = Dftb(**flags)
-    final_atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
+    calc = Dftb(**flags)
+    final_atoms = run_calc(atoms, calc, geom_file=GEOM_FILE, copy_files=copy_files)
 
     if check_logfile(LOG_FILE, "SCC is NOT converged"):
         raise ValueError("SCC is not converged")
@@ -107,7 +105,6 @@ def relax_job(
     RunSchema
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
-    atoms = fetch_atoms(atoms)
 
     defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
@@ -120,8 +117,8 @@ def relax_job(
     }
     flags = get_parameters(defaults, calc_swaps)
 
-    atoms.calc = Dftb(**flags)
-    final_atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
+    calc = Dftb(**flags)
+    final_atoms = run_calc(atoms, calc, geom_file=GEOM_FILE, copy_files=copy_files)
 
     if not check_logfile(LOG_FILE, "Geometry converged"):
         raise ValueError("Geometry did not converge")

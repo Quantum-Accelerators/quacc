@@ -8,7 +8,6 @@ import covalent as ct
 from ase.calculators.gulp import GULP
 
 from quacc.schemas.ase import summarize_run
-from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_calc
 from quacc.util.dicts import get_parameters
 
@@ -52,7 +51,6 @@ def static_job(
     RunSchema
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
-    atoms = fetch_atoms(atoms)
 
     default_keywords = {
         "gfnff": True if use_gfnff else None,
@@ -70,9 +68,10 @@ def static_job(
     gulp_keywords = " ".join(list(keywords.keys()))
     gulp_options = list(options.keys())
 
-    atoms.calc = GULP(keywords=gulp_keywords, options=gulp_options, library=library)
+    calc = GULP(keywords=gulp_keywords, options=gulp_options, library=library)
     final_atoms = run_calc(
         atoms,
+        calc,
         geom_file=GEOM_FILE_PBC if atoms.pbc.any() else GEOM_FILE_NOPBC,
         copy_files=copy_files,
     )
@@ -120,7 +119,6 @@ def relax_job(
     dict
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
-    atoms = fetch_atoms(atoms)
 
     if relax_cell and not atoms.pbc.any():
         warnings.warn(
@@ -147,9 +145,10 @@ def relax_job(
     gulp_keywords = " ".join(list(keywords.keys()))
     gulp_options = list(options.keys())
 
-    atoms.calc = GULP(keywords=gulp_keywords, options=gulp_options, library=library)
+    calc = GULP(keywords=gulp_keywords, options=gulp_options, library=library)
     final_atoms = run_calc(
         atoms,
+        calc,
         geom_file=GEOM_FILE_PBC if atoms.pbc.any() else GEOM_FILE_NOPBC,
         copy_files=copy_files,
     )

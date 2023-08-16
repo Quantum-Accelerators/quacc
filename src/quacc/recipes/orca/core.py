@@ -9,7 +9,6 @@ import covalent as ct
 from ase.calculators.orca import ORCA, OrcaProfile
 
 from quacc import SETTINGS
-from quacc.schemas.atoms import fetch_atoms
 from quacc.schemas.cclib import summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.dicts import get_parameters
@@ -68,7 +67,6 @@ def static_job(
     cclibSchema
         Dictionary of results from quacc.schemas.cclib.summarize_run
     """
-    atoms = fetch_atoms(atoms)
 
     if not any(k for k in block_swaps if "nprocs" in k.lower()) and os.environ.get(
         "mpirun"
@@ -99,14 +97,14 @@ def static_job(
         else multiplicity
     )
 
-    atoms.calc = ORCA(
+    calc = ORCA(
         profile=OrcaProfile([SETTINGS.ORCA_CMD]),
         charge=charge,
         mult=multiplicity,
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )
-    atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
+    atoms = run_calc(atoms, calc, geom_file=GEOM_FILE, copy_files=copy_files)
 
     return summarize_run(
         atoms,
@@ -162,7 +160,7 @@ def relax_job(
     cclibSchema
         Dictionary of results from quacc.schemas.cclib.summarize_run
     """
-    atoms = fetch_atoms(atoms)
+
     input_swaps = input_swaps or {}
     block_swaps = block_swaps or {}
 
@@ -183,8 +181,8 @@ def relax_job(
     }
     default_blocks = {}
 
-    inputs = remove_dict_empties(default_inputs | input_swaps)
-    blocks = remove_dict_empties(default_blocks | block_swaps)
+    inputs = get_parameters(default_inputs, swaps=input_swaps)
+    blocks = get_parameters(default_blocks, swaps=block_swaps)
     orcasimpleinput = " ".join(list(inputs.keys()))
     orcablocks = " ".join(list(blocks.keys()))
 
@@ -195,14 +193,14 @@ def relax_job(
         else multiplicity
     )
 
-    atoms.calc = ORCA(
+    calc = ORCA(
         profile=OrcaProfile([SETTINGS.ORCA_CMD]),
         charge=charge,
         mult=multiplicity,
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )
-    atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
+    atoms = run_calc(atoms, calc, geom_file=GEOM_FILE, copy_files=copy_files)
 
     return summarize_run(
         atoms,
