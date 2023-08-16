@@ -139,10 +139,6 @@ def run_ase_opt(
     # Set defaults
     optimizer_kwargs = optimizer_kwargs or {}
 
-    # Attach filter if needed
-    if relax_cell and atoms.pbc.any():
-        atoms = ExpCellFilter(atoms)
-
     # Perform staging operations
     atoms, tmpdir, job_results_dir = _calc_setup(atoms, copy_files=copy_files)
 
@@ -163,6 +159,10 @@ def run_ase_opt(
 
     # Define optimizer class
     atoms.calc = calc
+
+    if relax_cell and atoms.pbc.any():
+        atoms = ExpCellFilter(atoms)
+
     dyn = optimizer(atoms, **optimizer_kwargs)
 
     # Run calculation

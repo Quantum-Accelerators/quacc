@@ -70,6 +70,8 @@ def static_job(
     """
 
     atoms = fetch_atoms(atoms)
+    block_swaps = block_swaps or {}
+
     default_inputs = {
         xc: True,
         basis: True,
@@ -80,14 +82,14 @@ def static_job(
     }
     default_blocks = {}
 
-    inputs = get_parameters(default_inputs, swaps=input_swaps)
-    blocks = get_parameters(default_blocks, swaps=block_swaps)
-
     if not any(k for k in block_swaps if "nprocs" in k.lower()) and os.environ.get(
         "mpirun"
     ):
         nprocs = multiprocessing.cpu_count()
         block_swaps[f"%pal nprocs {nprocs} end"] = True
+
+    inputs = get_parameters(default_inputs, swaps=input_swaps)
+    blocks = get_parameters(default_blocks, swaps=block_swaps)
 
     orcasimpleinput = " ".join(list(inputs.keys()))
     orcablocks = " ".join(list(blocks.keys()))
@@ -164,6 +166,8 @@ def relax_job(
     """
 
     atoms = fetch_atoms(atoms)
+    block_swaps = block_swaps or {}
+
     default_inputs = {
         xc: True,
         basis: True,
@@ -175,14 +179,14 @@ def relax_job(
     }
     default_blocks = {}
 
-    inputs = get_parameters(default_inputs, swaps=input_swaps)
-    blocks = get_parameters(default_blocks, swaps=block_swaps)
-
     if not any(k for k in block_swaps if "nprocs" in k.lower()) and os.environ.get(
         "mpirun"
     ):
         nprocs = multiprocessing.cpu_count()
         block_swaps[f"%pal nprocs {nprocs} end"] = True
+
+    inputs = get_parameters(default_inputs, swaps=input_swaps)
+    blocks = get_parameters(default_blocks, swaps=block_swaps)
 
     orcasimpleinput = " ".join(list(inputs.keys()))
     orcablocks = " ".join(list(blocks.keys()))
