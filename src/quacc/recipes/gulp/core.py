@@ -8,6 +8,7 @@ from ase import Atoms
 from ase.calculators.gulp import GULP
 
 from quacc.schemas.ase import RunSchema, summarize_run
+from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_calc
 from quacc.util.dicts import remove_dict_empties
 
@@ -46,7 +47,7 @@ def static_job(
     RunSchema
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     keyword_swaps = keyword_swaps or {}
     option_swaps = option_swaps or {}
 
@@ -116,7 +117,7 @@ def relax_job(
     dict
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     keyword_swaps = keyword_swaps or {}
     option_swaps = option_swaps or {}
 

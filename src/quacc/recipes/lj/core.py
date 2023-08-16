@@ -22,6 +22,7 @@ from quacc.schemas.ase import (
     summarize_thermo_run,
     summarize_vib_run,
 )
+from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
 from quacc.util.thermo import ideal_gas
 
@@ -49,7 +50,7 @@ def static_job(
     RunSchema
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     atoms.calc = LennardJones(**calc_swaps)
@@ -86,7 +87,7 @@ def relax_job(
     OptSchema
         Dictionary of results from `quacc.schemas.ase.summarize_opt_run`
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
     opt_swaps = opt_swaps or {}
 
@@ -136,7 +137,7 @@ def freq_job(
         Dictionary of results from quacc.schemas.ase.summarize_vib_run and
         quacc.schemas.ase.summarize_thermo_run
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
     vib_kwargs = vib_kwargs or {}
 

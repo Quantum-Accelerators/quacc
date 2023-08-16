@@ -5,6 +5,7 @@ from ase import Atoms
 from jobflow import Flow, Job, Response, job
 
 from quacc.recipes.emt.core import relax_job, static_job
+from quacc.schemas.atoms import fetch_atoms
 from quacc.util.slabs import make_max_slabs_from_bulk
 
 
@@ -45,7 +46,7 @@ def bulk_to_slabs_flow(
     Response
         A Response containing Flow of relaxation and static jobs for the generated slabs.
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}
     make_slabs_kwargs = make_slabs_kwargs or {}
