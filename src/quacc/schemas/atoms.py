@@ -194,5 +194,15 @@ def fetch_atoms(atoms: Atoms | dict) -> Atoms:
     this can be a waste of compute resources, so it's oftentimes better to do this
     parsing inside the compute task itself, which is why passing in the raw dictionary
     can be preferred.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object or dictionary with an entry {"atoms": Atoms}
+
+    Returns
+    -------
+    Atoms
+        Atoms object
     """
     return atoms if isinstance(atoms, Atoms) else atoms["atoms"]
