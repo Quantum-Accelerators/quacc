@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from ase.io import Trajectory, read
 from ase.optimize import FIRE
+from ase.vibrations import Vibrations
 from monty.os.path import zpath
 from monty.shutil import copy_r, gzip_dir
 
@@ -19,7 +20,6 @@ from quacc.util.files import copy_decompress, make_unique_dir
 if TYPE_CHECKING:
     from ase import Atoms
     from ase.optimize.optimize import Optimizer
-    from ase.vibrations import Vibrations
 
 
 def run_calc(
