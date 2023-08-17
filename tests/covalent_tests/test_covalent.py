@@ -8,7 +8,15 @@ from quacc import SETTINGS, flow, job, subflow
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
-SETTINGS.WORKFLOW_MANAGER = "covalent"
+DEFAULT_SETTINGS = SETTINGS.copy()
+
+
+def startup_module():
+    SETTINGS.WORKFLOW_MANAGER = "covalent"
+
+
+def teardown_module():
+    SETTINGS.WORKFLOW_MANAGER = DEFAULT_SETTINGS.WORKFLOW_MANAGER
 
 
 @pytest.mark.skipif(

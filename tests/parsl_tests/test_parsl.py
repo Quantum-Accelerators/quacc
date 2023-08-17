@@ -8,12 +8,17 @@ try:
 except ImportError:
     parsl = None
 
-SETTINGS.WORKFLOW_MANAGER = "parsl"
+DEFAULT_SETTINGS = SETTINGS.copy()
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
 def setup_module():
     parsl.load()
+    SETTINGS.WORKFLOW_MANAGER = "parsl"
+
+
+def teardown_module():
+    SETTINGS.WORKFLOW_MANAGER = DEFAULT_SETTINGS.WORKFLOW_MANAGER
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
