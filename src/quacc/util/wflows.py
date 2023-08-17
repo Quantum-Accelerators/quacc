@@ -70,7 +70,9 @@ def flow(_func: callable | None = None, **kwargs):
 
             return ct.lattice(_func, **kwargs)(*func_args, **func_kwargs)
         if wflow_manager == "jobflow":
-            raise NotImplementedError("Support for jobflow is not yet implemented.")
+            raise NotImplementedError(
+                "There is no @flow decorator for jobflow is implemented."
+            )
         if wflow_manager == "prefect":
             from prefect import prefect_flow
 
@@ -96,7 +98,9 @@ def subflow(_func: callable | None = None, **kwargs):
 
             return ct.electron(ct.lattice(_func), **kwargs)(*func_args, **func_kwargs)
         if wflow_manager == "jobflow":
-            raise NotImplementedError("Support for jobflow is not yet implemented.")
+            raise NotImplementedError(
+                "There is no @subflow decorator for jobflow is implemented."
+            )
         if wflow_manager == "parsl":
             from parsl import join_app
 
