@@ -48,7 +48,7 @@ Now let's return to our bulk Cu example from above and start adding on some comp
 
 !!! Note
 
-    Some recipes require additional setup. Refer to the [Calculator Setup](../install/codes.md##tblite) section for details. Note that `tblite` is currently available via `pip install` on Linux only.
+    Some recipes require additional setup. Refer to the [Calculator Setup](../install/codes.md##tblite) section for details.
 
 ```python
 from ase.build import bulk

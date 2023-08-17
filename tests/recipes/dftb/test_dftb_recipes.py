@@ -95,7 +95,7 @@ def test_relax_job(tmpdir):
 
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
-    output = relax_job(atoms, method="GFN1-xTB", kpts=(3, 3, 3), lattice_opt=True)
+    output = relax_job(atoms, method="GFN1-xTB", kpts=(3, 3, 3), relax_cell=True)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN1-xTB"

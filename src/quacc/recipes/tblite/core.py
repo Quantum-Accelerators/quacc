@@ -72,6 +72,7 @@ def static_job(
 def relax_job(
     atoms: Atoms | dict,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
+    relax_cell: bool = False,
     calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
     copy_files: list[str] | None = None,
@@ -85,6 +86,8 @@ def relax_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     method
         GFN0-xTB, GFN1-xTB, GFN2-xTB.
+    relax_cell
+        Whether to relax the cell.
     calc_swaps
         Dictionary of custom kwargs for the tblite calculator.
     opt_swaps
@@ -105,7 +108,7 @@ def relax_job(
     opt_flags = opt_defaults | opt_swaps
 
     atoms.calc = TBLite(method=method, **calc_swaps)
-    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
+    dyn = run_ase_opt(atoms, relax_cell=relax_cell, copy_files=copy_files, **opt_flags)
 
     return summarize_opt_run(dyn, additional_fields={"name": "TBLite Relax"})
 
