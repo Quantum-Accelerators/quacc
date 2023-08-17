@@ -47,8 +47,7 @@ def config_command() -> None:
     for executor in ct_config["executors"]:
         if (
             "create_unique_workdir" in ct_config["executors"][executor]
-            and ct_config["executors"][executor]["create_unique_workdir"]
-            is not True
+            and ct_config["executors"][executor]["create_unique_workdir"] is not True
         ):
             print(
                 f"Configuring Covalent... Setting executors.{executor}.create_unique_workdir: True"
