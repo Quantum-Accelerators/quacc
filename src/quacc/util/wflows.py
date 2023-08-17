@@ -65,17 +65,12 @@ def flow(_func: callable | None = None, **kwargs):
             import covalent as ct
 
             return ct.lattice(_func, **kwargs)(*func_args, **func_kwargs)
-
-        if wflow_manager == "parsl":
-            return _func(*func_args, **func_kwargs)
         if wflow_manager == "jobflow":
             raise NotImplementedError(
                 "Jobflow is not compatible with the use of a @flow decorator. Instead, you should use the `Flow()` object in Jobflow to stitch together individual compute jobs."
             )
         if wflow_manager == "parsl":
-            raise NotImplementedError(
-                "Parsl is not compatible with the use of a @flow decorator. Instead, you should simply stitch together your desired `PythonApp` objects directly."
-            )
+            return _func(*func_args, **func_kwargs)
         if wflow_manager == "prefect":
             from prefect import prefect_flow
 
