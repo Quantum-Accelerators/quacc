@@ -117,6 +117,17 @@ def subflow(_func: callable | None = None, **kwargs) -> callable:
     @subflow = @ct.electron(@ct.lattice) [Covalent] = @join_app [Parsl] = @flow [Prefect].
     This decorator is not compatible with jobflow.
 
+    Parameters
+    ----------
+    _func
+        The function to decorate.
+    **kwargs
+        Keyword arguments to pass to the decorator.
+
+    Returns
+    -------
+    callable
+        The decorated function.
     """
     from quacc import SETTINGS
 
