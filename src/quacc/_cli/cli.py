@@ -36,7 +36,7 @@ def config_command() -> None:
     -------
     None
     """
-    if SETTINGS.WORKFLOW_MANAGER.lower() != "covalent":
+    if SETTINGS.WORKFLOW_ENGINE.lower() != "covalent":
         return
     import covalent as ct
 

@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- A quacc global setting, `WORKFLOW_MANAGER`, to set the workflow manager. It is set to `None` by default but can be set to `"covalent"`, `"parsl"`, `"jobflow"`, or `"prefect"`.
+- A quacc global setting, `WORKFLOW_ENGINE`, to set the workflow manager. It is set to `None` by default but can be set to `"covalent"`, `"parsl"`, `"jobflow"`, or `"prefect"`.
 - Added support for the new `covalent-hpc-plugin` in `pyproject.toml`.
 
 ### Changed

@@ -14,11 +14,11 @@ DEFAULT_SETTINGS = SETTINGS.copy()
 
 
 def startup_module():
-    SETTINGS.WORKFLOW_MANAGER = "prefect"
+    SETTINGS.WORKFLOW_ENGINE = "prefect"
 
 
 def teardown_module():
-    SETTINGS.WORKFLOW_MANAGER = DEFAULT_SETTINGS.WORKFLOW_MANAGER
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 @pytest.fixture(autouse=True, scope="session")

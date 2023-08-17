@@ -42,8 +42,9 @@ graph LR
         If you haven't done so yet, make sure you started the Covalent server with `covalent start` in the command-line.
 
     ```python
+    import covalent as ct
     from ase.build import bulk
-    from quacc import job, flow, SETTINGS
+    from quacc import flow, SETTINGS
     from quacc.recipes.emt.core import relax_job, static_job
 
     SETTINGS.WORKFLOW_ENGINE = "covalent" # (1)!
@@ -104,7 +105,7 @@ graph LR
 
     ```python
     from ase.build import bulk
-    from quacc import job, SETTINGS
+    from quacc import SETTINGS
     from quacc.recipes.emt.core import relax_job, static_job
 
     SETTINGS.WORKFLOW_ENGINE = "parsl" # (1)!
@@ -116,7 +117,7 @@ graph LR
     future1 = relax_job(atoms) # (2)!
 
     # Call App 2, which takes the output of App 1 as input
-    future2 = static_app(future1)
+    future2 = static_job(future1)
 
     # Print result
     print(future2.result()) # (3)!

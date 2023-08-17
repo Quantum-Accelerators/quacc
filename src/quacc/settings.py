@@ -48,7 +48,7 @@ class QuaccSettings(BaseSettings):
     CONFIG_FILE: str = Field(
         _DEFAULT_CONFIG_FILE_PATH, description="File to load alternative defaults from."
     )
-    WORKFLOW_MANAGER: Optional[
+    WORKFLOW_ENGINE: Optional[
         Literal["covalent", "parsl", "jobflow", "prefect"]
     ] = Field(
         "covalent" if covalent else "parsl" if parsl else None,

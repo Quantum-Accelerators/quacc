@@ -14,11 +14,11 @@ DEFAULT_SETTINGS = SETTINGS.copy()
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
 def setup_module():
     parsl.load()
-    SETTINGS.WORKFLOW_MANAGER = "parsl"
+    SETTINGS.WORKFLOW_ENGINE = "parsl"
 
 
 def teardown_module():
-    SETTINGS.WORKFLOW_MANAGER = DEFAULT_SETTINGS.WORKFLOW_MANAGER
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")

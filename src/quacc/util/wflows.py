@@ -24,7 +24,7 @@ def job(_func: callable | None = None, **kwargs):
     from quacc import SETTINGS
 
     wflow_manager = (
-        SETTINGS.WORKFLOW_MANAGER.lower() if SETTINGS.WORKFLOW_MANAGER else None
+        SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
     )
 
     def wrapper(*func_args, **func_kwargs):
@@ -57,7 +57,7 @@ def flow(_func: callable | None = None, **kwargs):
     from quacc import SETTINGS
 
     wflow_manager = (
-        SETTINGS.WORKFLOW_MANAGER.lower() if SETTINGS.WORKFLOW_MANAGER else None
+        SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
     )
 
     def wrapper(*func_args, **func_kwargs):
@@ -90,7 +90,7 @@ def subflow(_func: callable | None = None, **kwargs):
     from quacc import SETTINGS
 
     wflow_manager = (
-        SETTINGS.WORKFLOW_MANAGER.lower() if SETTINGS.WORKFLOW_MANAGER else None
+        SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
     )
 
     def wrapper(*func_args, **func_kwargs):
