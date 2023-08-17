@@ -17,9 +17,23 @@ except ImportError:
     prefect_deps = False
 
 
-def job(_func: callable | None = None, **kwargs):
+def job(_func: callable | None = None, **kwargs) -> callable:
     """
-    Decorator for workflow jobs
+    Decorator for individual compute jobs. This is a @job decorator.
+
+    @job = @ct.electron [Covalent] = @python_app [Parsk] = @job [Jobflow] = @task [Prefect]
+
+    Parameters
+    ----------
+    _func
+        The function to decorate.
+    **kwargs
+        Keyword arguments to pass to the decorator.
+
+    Returns
+    -------
+    callable
+        The decorated function.
     """
     from quacc import SETTINGS
 
@@ -50,9 +64,24 @@ def job(_func: callable | None = None, **kwargs):
     return wrapper
 
 
-def flow(_func: callable | None = None, **kwargs):
+def flow(_func: callable | None = None, **kwargs) -> callable:
     """
-    Decorator for workflow flows
+    Decorator for workflows, which consist of at least one compute job. This is a @flow decorator.
+
+    @flow = @ct.lattice [Covalent] = @flow [Prefect]. For Prefect, the decorator returns the
+    undecorated function. This decorator is not compatible with jobflow.
+
+    Parameters
+    ----------
+    _func
+        The function to decorate.
+    **kwargs
+        Keyword arguments to pass to the decorator.
+
+    Returns
+    -------
+    callable
+        The decorated function.
     """
     from quacc import SETTINGS
 
@@ -81,7 +110,14 @@ def flow(_func: callable | None = None, **kwargs):
     return wrapper
 
 
-def subflow(_func: callable | None = None, **kwargs):
+def subflow(_func: callable | None = None, **kwargs) -> callable:
+    """
+    Decorator for (dynamic) sub-workflows. This is a @subflow decorator.
+
+    @subflow = @ct.electron(@ct.lattice) [Covalent] = @join_app [Parsl] = @flow [Prefect].
+    This decorator is not compatible with jobflow.
+
+    """
     from quacc import SETTINGS
 
     wflow_manager = (
