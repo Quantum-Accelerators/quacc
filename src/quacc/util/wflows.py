@@ -33,6 +33,10 @@ def job(_func: callable | None = None, **kwargs):
             import covalent as ct
 
             return ct.electron(_func, **kwargs)(*func_args, **func_kwargs)
+        elif wflow_manager == "jobflow":
+            from jobflow import job as jf_job
+
+            return jf_job(_func, **kwargs)(*func_args, **func_kwargs)
         elif wflow_manager == "parsl":
             from parsl import python_app
 
@@ -41,12 +45,8 @@ def job(_func: callable | None = None, **kwargs):
             from prefect import task
 
             return task(_func, **kwargs)(*func_args, **func_kwargs)
-        elif wflow_manager == "jobflow":
-            from jobflow import job as jf_job
-
-            return jf_job(_func, **kwargs)(*func_args, **func_kwargs)
         else:
-            raise ValueError(f"Unknown workflow manager {wflow_manager}.")
+            raise ValueError(f"Unsupported workflow manager: {wflow_manager}.")
 
     return wrapper
 
@@ -67,12 +67,42 @@ def flow(_func: callable | None = None, **kwargs):
             import covalent as ct
 
             return ct.lattice(_func, **kwargs)(*func_args, **func_kwargs)
+        elif wflow_manager == "jobflow":
+            raise NotImplementedError("Support for jobflow is not yet implemented.")
         elif wflow_manager == "prefect":
             from prefect import flow
 
             return flow(_func, **kwargs)(*func_args, **func_kwargs)
         else:
-            raise ValueError(f"Unknown workflow manager {wflow_manager}.")
+            raise ValueError(f"Unsupported workflow manager: {wflow_manager}.")
+
+    return wrapper
+
+
+def subflow(_func: callable | None = None, **kwargs):
+    wflow_manager = (
+        SETTINGS.WORKFLOW_MANAGER.lower() if SETTINGS.WORKFLOW_MANAGER else None
+    )
+
+    def wrapper(*func_args, **func_kwargs):
+        if not wflow_manager:
+            return _func(*func_args, **func_kwargs)
+        elif wflow_manager == "covalent":
+            import covalent as ct
+
+            return ct.electron(ct.lattice(_func), **kwargs)(*func_args, **func_kwargs)
+        elif wflow_manager == "jobflow":
+            raise NotImplementedError("Support for jobflow is not yet implemented.")
+        elif wflow_manager == "parsl":
+            from parsl import join_app
+
+            return join_app(_func, **kwargs)(*func_args, **func_kwargs)
+        elif wflow_manager == "prefect":
+            from prefect import flow
+
+            return flow(_func, **kwargs)(*func_args, **func_kwargs)
+        else:
+            raise ValueError(f"Unsupported workflow manager: {wflow_manager}.")
 
     return wrapper
 

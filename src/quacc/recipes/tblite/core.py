@@ -7,6 +7,7 @@ import covalent as ct
 from ase.optimize import FIRE
 from monty.dev import requires
 
+from quacc import job
 from quacc.schemas.ase import (
     summarize_opt_run,
     summarize_run,
@@ -28,7 +29,7 @@ except ImportError:
     TBLite = None
 
 
-@ct.electron
+@job
 @requires(TBLite, "tblite must be installed. Try pip install tblite[ase]")
 def static_job(
     atoms: Atoms | dict,
@@ -67,7 +68,7 @@ def static_job(
     )
 
 
-@ct.electron
+@job
 @requires(TBLite, "tblite must be installed. Try pip install tblite[ase]")
 def relax_job(
     atoms: Atoms | dict,
@@ -110,7 +111,7 @@ def relax_job(
     return summarize_opt_run(dyn, additional_fields={"name": "TBLite Relax"})
 
 
-@ct.electron
+@job
 @requires(TBLite, "tblite must be installed. Try pip install tblite[ase]")
 def freq_job(
     atoms: Atoms | dict,

@@ -7,10 +7,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import covalent as ct
 from ase.calculators.emt import EMT
 from ase.optimize import FIRE
 
+from quacc import job
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_ase_opt, run_calc
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from quacc.schemas.ase import OptSchema, RunSchema
 
 
-@ct.electron
+@job
 def static_job(
     atoms: Atoms | dict,
     calc_swaps: dict | None = None,
@@ -57,7 +57,7 @@ def static_job(
     )
 
 
-@ct.electron
+@job
 def relax_job(
     atoms: Atoms | dict,
     relax_cell: bool = True,

@@ -7,6 +7,7 @@ import covalent as ct
 from ase.calculators.psi4 import Psi4
 from monty.dev import requires
 
+from quacc import job
 from quacc.schemas.ase import summarize_run
 from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_calc
@@ -23,7 +24,7 @@ except ImportError:
     psi4 = None
 
 
-@ct.electron
+@job
 @requires(psi4, "Psi4 not installed. Try conda install -c psi4 psi4")
 def static_job(
     atoms: Atoms | dict,

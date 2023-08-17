@@ -8,9 +8,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import covalent as ct
 import numpy as np
 
+from quacc import job
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.atoms import fetch_atoms
 from quacc.schemas.vasp import summarize_run
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from quacc.schemas.vasp import VaspSchema
 
 
-@ct.electron
+@job
 def mp_prerelax_job(
     atoms: Atoms | dict,
     preset: str | None = "MPScanSet",
@@ -61,7 +61,7 @@ def mp_prerelax_job(
     return summarize_run(atoms, additional_fields={"name": "MP-Prerelax"})
 
 
-@ct.electron
+@job
 def mp_relax_job(
     atoms: Atoms | dict,
     preset: str | None = "MPScanSet",

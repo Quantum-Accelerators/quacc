@@ -7,6 +7,7 @@ from ase import Atoms
 from ase.io.jsonio import decode, encode
 
 from quacc.settings import QuaccSettings
+from quacc.util.wflows import flow, job, subflow
 
 
 def atoms_as_dict(s):
