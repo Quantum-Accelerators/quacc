@@ -94,7 +94,7 @@ def test_tutorial4(tmpdir):
     workflow = jf.Flow([job1, job2])
 
     # Run the workflow locally
-    jf.run_locally(workflow, store=STORE, create_folders=True, ensure_success=True)a
+    jf.run_locally(workflow, store=STORE, create_folders=True, ensure_success=True)
 
 
 def comparison1(tmpdir):
