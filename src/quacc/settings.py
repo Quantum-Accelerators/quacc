@@ -9,6 +9,23 @@ from pydantic import BaseSettings, Field, root_validator
 
 from quacc.presets import vasp as vasp_defaults
 
+try:
+    import covalent
+except ImportError:
+    covalent = None
+try:
+    import parsl
+except ImportError:
+    parsl = None
+try:
+    import jobflow
+except ImportError:
+    jobflow = None
+try:
+    import prefect
+except ImportError:
+    prefect = None
+
 _DEFAULT_CONFIG_FILE_PATH = os.path.join(os.path.expanduser("~"), ".quacc.yaml")
 
 
@@ -28,11 +45,22 @@ class QuaccSettings(BaseSettings):
     # General Settings
     # ---------------------------
 
-    WORKFLOW_MANAGER: Optional[Literal["covalent", "parsl"]] = Field(
-        "covalent", description="The workflow manager to use."
-    )
     CONFIG_FILE: str = Field(
         _DEFAULT_CONFIG_FILE_PATH, description="File to load alternative defaults from."
+    )
+    WORKFLOW_MANAGER: Optional[
+        Literal["covalent", "parsl", "jobflow", "prefect"]
+    ] = Field(
+        "covalent"
+        if covalent
+        else "parsl"
+        if parsl
+        else "jobflow"
+        if jobflow
+        else "prefect"
+        if prefect
+        else None,
+        description="The workflow manager to use.",
     )
     RESULTS_DIR: str = Field(
         os.getcwd(),

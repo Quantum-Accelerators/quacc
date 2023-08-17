@@ -28,8 +28,6 @@ def job(_func: callable | None = None, **kwargs):
     )
 
     def wrapper(*func_args, **func_kwargs):
-        if not wflow_manager:
-            return _func(*func_args, **func_kwargs)
         if wflow_manager == "covalent":
             import covalent as ct
 
@@ -47,7 +45,7 @@ def job(_func: callable | None = None, **kwargs):
 
             return task(_func, **kwargs)(*func_args, **func_kwargs)
 
-        raise ValueError(f"Unsupported workflow manager: {wflow_manager}.")
+        return _func(*func_args, **func_kwargs)
 
     return wrapper
 
@@ -63,12 +61,13 @@ def flow(_func: callable | None = None, **kwargs):
     )
 
     def wrapper(*func_args, **func_kwargs):
-        if not wflow_manager or wflow_manager == "parsl":
-            return _func(*func_args, **func_kwargs)
         if wflow_manager == "covalent":
             import covalent as ct
 
             return ct.lattice(_func, **kwargs)(*func_args, **func_kwargs)
+
+        if wflow_manager == "parsl":
+            return _func(*func_args, **func_kwargs)
         if wflow_manager == "jobflow":
             raise NotImplementedError(
                 "Jobflow is not compatible with the use of a @flow decorator. Instead, you should use the `Flow()` object in Jobflow to stitch together individual compute jobs."
@@ -82,7 +81,7 @@ def flow(_func: callable | None = None, **kwargs):
 
             return prefect_flow(_func, **kwargs)(*func_args, **func_kwargs)
 
-        raise ValueError(f"Unsupported workflow manager: {wflow_manager}.")
+        return _func(*func_args, **func_kwargs)
 
     return wrapper
 
@@ -95,8 +94,6 @@ def subflow(_func: callable | None = None, **kwargs):
     )
 
     def wrapper(*func_args, **func_kwargs):
-        if not wflow_manager:
-            return _func(*func_args, **func_kwargs)
         if wflow_manager == "covalent":
             import covalent as ct
 
@@ -114,7 +111,7 @@ def subflow(_func: callable | None = None, **kwargs):
 
             return prefect_flow(_func, **kwargs)(*func_args, **func_kwargs)
 
-        raise ValueError(f"Unsupported workflow manager: {wflow_manager}.")
+        return _func(*func_args, **func_kwargs)
 
     return wrapper
 
