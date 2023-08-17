@@ -1,13 +1,20 @@
 """Recipes for slabs"""
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import covalent as ct
-from ase import Atoms
 
 from quacc.calculators.vasp import Vasp
-from quacc.schemas.vasp import VaspSchema, summarize_run
+from quacc.schemas.atoms import fetch_atoms
+from quacc.schemas.vasp import summarize_run
 from quacc.util.calc import run_calc
 from quacc.util.slabs import make_adsorbate_structures, make_max_slabs_from_bulk
+
+if TYPE_CHECKING:
+    from ase import Atoms
+
+    from quacc.schemas.vasp import VaspSchema
 
 
 @ct.electron
@@ -36,7 +43,7 @@ def slab_static_job(
     VaspSchema
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     defaults = {
@@ -51,8 +58,7 @@ def slab_static_job(
     }
     flags = defaults | calc_swaps
 
-    calc = Vasp(atoms, preset=preset, **flags)
-    atoms.calc = calc
+    atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(atoms, additional_fields={"name": "VASP Slab Static"})
@@ -84,7 +90,7 @@ def slab_relax_job(
     VaspSchema
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     defaults = {
@@ -99,8 +105,7 @@ def slab_relax_job(
     }
     flags = defaults | calc_swaps
 
-    calc = Vasp(atoms, preset=preset, **flags)
-    atoms.calc = calc
+    atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(atoms, additional_fields={"name": "VASP Slab Relax"})
@@ -149,7 +154,7 @@ def bulk_to_slabs_flow(
 
     @ct.electron
     def _make_slabs(atoms):
-        atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+        atoms = fetch_atoms(atoms)
         return make_max_slabs_from_bulk(atoms, **make_slabs_kwargs)
 
     @ct.electron
@@ -220,7 +225,7 @@ def slab_to_ads_flow(
 
     @ct.electron
     def _make_ads_slabs(atoms, adsorbate):
-        atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+        atoms = fetch_atoms(atoms)
         return make_adsorbate_structures(atoms, adsorbate, **make_ads_kwargs)
 
     @ct.electron

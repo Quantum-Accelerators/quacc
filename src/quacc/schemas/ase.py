@@ -3,24 +3,27 @@ from __future__ import annotations
 
 import os
 import warnings
-from typing import TypeVar
+from typing import TYPE_CHECKING, TypeVar
 
 import numpy as np
 from ase import units
-from ase.atoms import Atoms
 from ase.constraints import Filter
-from ase.io import Trajectory, read
-from ase.optimize.optimize import Optimizer
-from ase.thermochemistry import IdealGasThermo
-from ase.vibrations import Vibrations
+from ase.io import read
 from atomate2.utils.path import get_uri
-from maggma.core import Store
 
 from quacc import SETTINGS
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
 from quacc.util.db import results_to_db
 from quacc.util.dicts import clean_dict
+
+if TYPE_CHECKING:
+    from ase import Atoms
+    from ase.io import Trajectory
+    from ase.optimize.optimize import Optimizer
+    from ase.thermochemistry import IdealGasThermo
+    from ase.vibrations import Vibrations
+    from maggma.core import Store
 
 RunSchema = TypeVar("RunSchema")
 OptSchema = TypeVar("OptSchema")

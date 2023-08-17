@@ -41,6 +41,7 @@ dependencies = [
 fireworks = ["fireworks>=2.0.3"]
 optimizers = ["sella>=2.3.2"]
 parsl = ["parsl>=2023.7.3"]
+prefect = ["prefect>=2.10.18", "prefect-dask>=0.2.4", "dask-jobqueue>=0.8.2"]
 tblite = ["tblite[ase]>=0.3.0; platform_system=='Linux'"]
 dev = ["black", "isort", "pytest", "pytest-cov"]
 docs = [
@@ -57,8 +58,8 @@ strict = [
     "cclib @ git+https://github.com/cclib/cclib.git", # waiting on > 1.7.2
     "covalent==0.226.0rc0",  # waiting on > 0.222.0
     "custodian==2023.7.22",
-    "emmet-core==0.64.0",
-    "jobflow==0.1.11",
+    "emmet-core==0.64.4",
+    "jobflow==0.1.12",
     "maggma==0.53.0",
     "monty==2023.8.8",
     "numpy==1.25.2",

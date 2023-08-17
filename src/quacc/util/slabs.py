@@ -5,15 +5,18 @@ from __future__ import annotations
 
 import random
 import warnings
+from typing import TYPE_CHECKING
 
 import numpy as np
 from ase import Atoms
 from pymatgen.analysis.adsorption import AdsorbateSiteFinder
-from pymatgen.core import Structure
 from pymatgen.core.surface import Slab, center_slab, generate_all_slabs
 from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc.util.atoms import copy_atoms
+
+if TYPE_CHECKING:
+    from pymatgen.core import Structure
 
 # NOTES:
 # - Anytime an Atoms object is converted to a pmg structure, make sure

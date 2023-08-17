@@ -6,16 +6,22 @@ Reference: https://doi.org/10.1016/j.matt.2021.02.015
 """
 from __future__ import annotations
 
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 import covalent as ct
-from ase import Atoms
 from ase.optimize import BFGSLineSearch
 
 from quacc.calculators.vasp import Vasp
-from quacc.schemas.ase import OptSchema, summarize_opt_run
-from quacc.schemas.vasp import VaspSchema, summarize_run
+from quacc.schemas.ase import summarize_opt_run
+from quacc.schemas.atoms import fetch_atoms
+from quacc.schemas.vasp import summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
+
+if TYPE_CHECKING:
+    from ase import Atoms
+
+    from quacc.schemas.ase import OptSchema
+    from quacc.schemas.vasp import VaspSchema
 
 
 @ct.electron
@@ -71,7 +77,7 @@ def qmof_relax_job(
     dict
         Dictionary of results
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     # 1. Pre-relaxation
@@ -146,8 +152,7 @@ def _prerelax(
         "nsw": 0,
     }
     flags = defaults | calc_swaps
-    calc = Vasp(atoms, preset=preset, **flags)
-    atoms.calc = calc
+    atoms.calc = Vasp(atoms, preset=preset, **flags)
     dyn = run_ase_opt(atoms, fmax=fmax, optimizer=BFGSLineSearch)
 
     return summarize_opt_run(dyn, additional_fields={"name": "QMOF Prerelax"})
@@ -191,8 +196,7 @@ def _loose_relax_positions(
         "nsw": 250,
     }
     flags = defaults | calc_swaps
-    calc = Vasp(atoms, preset=preset, **flags)
-    atoms.calc = calc
+    atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms)
 
     return summarize_run(
@@ -236,8 +240,7 @@ def _loose_relax_volume(
         "nsw": 500,
     }
     flags = defaults | calc_swaps
-    calc = Vasp(atoms, preset=preset, **flags)
-    atoms.calc = calc
+    atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
 
     return summarize_run(
@@ -352,8 +355,7 @@ def _static(
 
     # Run static calculation
     flags = defaults | calc_swaps
-    calc = Vasp(atoms, preset=preset, **flags)
-    atoms.calc = calc
+    atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
 
     return summarize_run(atoms, additional_fields={"name": "QMOF Static"})

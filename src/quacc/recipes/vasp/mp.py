@@ -6,13 +6,20 @@ Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
 """
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import covalent as ct
 import numpy as np
-from ase import Atoms
 
 from quacc.calculators.vasp import Vasp
-from quacc.schemas.vasp import VaspSchema, summarize_run
+from quacc.schemas.atoms import fetch_atoms
+from quacc.schemas.vasp import summarize_run
 from quacc.util.calc import run_calc
+
+if TYPE_CHECKING:
+    from ase import Atoms
+
+    from quacc.schemas.vasp import VaspSchema
 
 
 @ct.electron
@@ -42,14 +49,13 @@ def mp_prerelax_job(
     VaspSchema
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     defaults = {"ediffg": -0.05, "xc": "pbesol"}
     flags = defaults | calc_swaps
 
-    calc = Vasp(atoms, preset=preset, **flags)
-    atoms.calc = calc
+    atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(atoms, additional_fields={"name": "MP-Prerelax"})
@@ -82,11 +88,10 @@ def mp_relax_job(
     VaspSchema
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
-    calc = Vasp(atoms, preset=preset, **calc_swaps)
-    atoms.calc = calc
+    atoms.calc = Vasp(atoms, preset=preset, **calc_swaps)
     atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(atoms, additional_fields={"name": "MP-Relax"})
