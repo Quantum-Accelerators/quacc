@@ -8,12 +8,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- A quacc global setting, `WORKFLOW_MANAGER`, to set the workflow manager.
+- A quacc global setting, `WORKFLOW_MANAGER`, to set the workflow manager. It is set to `None` by default but can be set to `"covalent"`, `"parsl"`, `"jobflow"`, or `"prefect"`.
+- Added support for the new `covalent-hpc-plugin` in `pyproject.toml`.
 
 ### Changed
 
 - Quacc recipes are now decorated with generic `@job`, `@subflow`, or `@flow` decorators to be workflow engine-agnostic.
+- Covalent is now an optional dependency to allow the base `quacc` package to be dependency-light.
 - Default VASP pseudopotentials changed to `setups_pbe54.yaml`.
+
+### Fixed
+
 - Set `LMAXMIX` based on the `Z` value, not the s/p/d/f-block type.
 - Do not set automatically `LMAXTAU` to 8 for f-containing elements in `Vasp` calculator.
 
