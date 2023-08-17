@@ -19,6 +19,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering",
+    "Operating System :: Windows",
     "Operating System :: Unix",
     "Operating System :: MacOS",
 ]
@@ -37,7 +38,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-covalent = ["covalent>=0.226.0rc0", "covalent-hpc-plugin>=0.2"]
+covalent = ["covalent>=0.226.0rc0; platform_system!='Windows'", "covalent-hpc-plugin>=0.2; platform_system!='Windows'"]
 fireworks = ["jobflow>=0.1.13", "fireworks>=2.0.3"]
 optimizers = ["sella>=2.3.2"]
 parsl = ["parsl[monitoring]>=2023.7.3"]
