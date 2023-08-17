@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from monty.dev import requires
 
 try:
@@ -28,24 +30,24 @@ def job(_func: callable | None = None, **kwargs):
     def wrapper(*func_args, **func_kwargs):
         if not wflow_manager:
             return _func(*func_args, **func_kwargs)
-        elif wflow_manager == "covalent":
+        if wflow_manager == "covalent":
             import covalent as ct
 
             return ct.electron(_func, **kwargs)(*func_args, **func_kwargs)
-        elif wflow_manager == "jobflow":
+        if wflow_manager == "jobflow":
             from jobflow import job as jf_job
 
             return jf_job(_func, **kwargs)(*func_args, **func_kwargs)
-        elif wflow_manager == "parsl":
+        if wflow_manager == "parsl":
             from parsl import python_app
 
             return python_app(_func, **kwargs)(*func_args, **func_kwargs)
-        elif wflow_manager == "prefect":
+        if wflow_manager == "prefect":
             from prefect import task
 
             return task(_func, **kwargs)(*func_args, **func_kwargs)
-        else:
-            raise ValueError(f"Unsupported workflow manager: {wflow_manager}.")
+
+        raise ValueError(f"Unsupported workflow manager: {wflow_manager}.")
 
     return wrapper
 
@@ -63,18 +65,18 @@ def flow(_func: callable | None = None, **kwargs):
     def wrapper(*func_args, **func_kwargs):
         if not wflow_manager or wflow_manager == "parsl":
             return _func(*func_args, **func_kwargs)
-        elif wflow_manager == "covalent":
+        if wflow_manager == "covalent":
             import covalent as ct
 
             return ct.lattice(_func, **kwargs)(*func_args, **func_kwargs)
-        elif wflow_manager == "jobflow":
+        if wflow_manager == "jobflow":
             raise NotImplementedError("Support for jobflow is not yet implemented.")
-        elif wflow_manager == "prefect":
-            from prefect import flow
+        if wflow_manager == "prefect":
+            from prefect import prefect_flow
 
-            return flow(_func, **kwargs)(*func_args, **func_kwargs)
-        else:
-            raise ValueError(f"Unsupported workflow manager: {wflow_manager}.")
+            return prefect_flow(_func, **kwargs)(*func_args, **func_kwargs)
+
+        raise ValueError(f"Unsupported workflow manager: {wflow_manager}.")
 
     return wrapper
 
@@ -89,22 +91,22 @@ def subflow(_func: callable | None = None, **kwargs):
     def wrapper(*func_args, **func_kwargs):
         if not wflow_manager:
             return _func(*func_args, **func_kwargs)
-        elif wflow_manager == "covalent":
+        if wflow_manager == "covalent":
             import covalent as ct
 
             return ct.electron(ct.lattice(_func), **kwargs)(*func_args, **func_kwargs)
-        elif wflow_manager == "jobflow":
+        if wflow_manager == "jobflow":
             raise NotImplementedError("Support for jobflow is not yet implemented.")
-        elif wflow_manager == "parsl":
+        if wflow_manager == "parsl":
             from parsl import join_app
 
             return join_app(_func, **kwargs)(*func_args, **func_kwargs)
-        elif wflow_manager == "prefect":
-            from prefect import flow
+        if wflow_manager == "prefect":
+            from prefect import prefect_flow
 
-            return flow(_func, **kwargs)(*func_args, **func_kwargs)
-        else:
-            raise ValueError(f"Unsupported workflow manager: {wflow_manager}.")
+            return prefect_flow(_func, **kwargs)(*func_args, **func_kwargs)
+
+        raise ValueError(f"Unsupported workflow manager: {wflow_manager}.")
 
     return wrapper
 

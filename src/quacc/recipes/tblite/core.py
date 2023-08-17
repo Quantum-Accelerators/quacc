@@ -3,7 +3,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Literal
 
-import covalent as ct
 from ase.optimize import FIRE
 from monty.dev import requires
 

@@ -99,8 +99,8 @@ def mp_relax_job(
 
 def mp_relax_flow(
     atoms: Atoms | dict,
-    prerelax: ct.electron | None = mp_prerelax_job,
-    relax: ct.electron | None = mp_relax_job,
+    prerelax: callable | None = mp_prerelax_job,
+    relax: callable | None = mp_relax_job,
     prerelax_kwargs: dict | None = None,
     relax_kwargs: dict | None = None,
 ) -> VaspSchema:

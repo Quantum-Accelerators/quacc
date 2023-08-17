@@ -3,7 +3,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import covalent as ct
 from ase.calculators.psi4 import Psi4
 from monty.dev import requires
 
