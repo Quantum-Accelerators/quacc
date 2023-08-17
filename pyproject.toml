@@ -38,6 +38,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+covalent = ["covalent-hpc-plugin>=0.2"]
 fireworks = ["fireworks>=2.0.3"]
 optimizers = ["sella>=2.3.2"]
 parsl = ["parsl>=2023.7.3"]

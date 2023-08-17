@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from monty.dev import requires
 
-from quacc import SETTINGS
-
 try:
     from dask_jobqueue import SLURMCluster
     from prefect_dask.task_runners import DaskTaskRunner
@@ -21,6 +19,7 @@ def job(_func: callable | None = None, **kwargs):
     """
     Decorator for workflow jobs
     """
+    from quacc import SETTINGS
 
     wflow_manager = (
         SETTINGS.WORKFLOW_MANAGER.lower() if SETTINGS.WORKFLOW_MANAGER else None
@@ -55,6 +54,7 @@ def flow(_func: callable | None = None, **kwargs):
     """
     Decorator for workflow flows
     """
+    from quacc import SETTINGS
 
     wflow_manager = (
         SETTINGS.WORKFLOW_MANAGER.lower() if SETTINGS.WORKFLOW_MANAGER else None
@@ -80,6 +80,8 @@ def flow(_func: callable | None = None, **kwargs):
 
 
 def subflow(_func: callable | None = None, **kwargs):
+    from quacc import SETTINGS
+
     wflow_manager = (
         SETTINGS.WORKFLOW_MANAGER.lower() if SETTINGS.WORKFLOW_MANAGER else None
     )

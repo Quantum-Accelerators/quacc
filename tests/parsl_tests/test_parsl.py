@@ -1,11 +1,15 @@
 import pytest
 from ase.build import bulk, molecule
 
+from quacc import SETTINGS
+
 try:
     import parsl
     from parsl import join_app, python_app
 except ImportError:
     parsl = None
+
+SETTINGS.WORKFLOW_MANAGER = "parsl"
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
