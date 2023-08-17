@@ -7,7 +7,6 @@ from quacc.recipes.emt.core import relax_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 STORE = jf.JobStore(MemoryStore())
-SETTINGS.WORKFLOW_MANAGER = "jobflow"
 
 
 def test_tutorial1(tmpdir):

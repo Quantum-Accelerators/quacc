@@ -1,11 +1,10 @@
 import pytest
 from ase.build import bulk, molecule
 
-from quacc import SETTINGS
+from quacc import SETTINGS, job, subflow
 
 try:
     import parsl
-    from parsl import join_app, python_app
 except ImportError:
     parsl = None
 
@@ -22,13 +21,13 @@ def test_tutorial1(tmpdir):
     tmpdir.chdir()
 
     # Define the Python apps
-    @python_app
+    @job
     def relax_app(atoms):
         from quacc.recipes.emt.core import relax_job
 
         return relax_job(atoms)
 
-    @python_app
+    @job
     def static_app(atoms):
         from quacc.recipes.emt.core import static_job
 
@@ -52,7 +51,7 @@ def test_tutorial2(tmpdir):
     tmpdir.chdir()
 
     # Define the Python app
-    @python_app
+    @job
     def relax_app(atoms):
         from quacc.recipes.emt.core import relax_job
 
@@ -78,13 +77,13 @@ def test_tutorial2(tmpdir):
 def test_tutorial3(tmpdir):
     tmpdir.chdir()
 
-    @python_app
+    @job
     def relax_app(atoms):
         from quacc.recipes.emt.core import relax_job
 
         return relax_job(atoms)
 
-    @python_app
+    @job
     def bulk_to_slabs_app(atoms):
         from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
@@ -107,10 +106,10 @@ def test_tutorial3(tmpdir):
 def test_tutorial4(tmpdir):
     tmpdir.chdir()
 
-    from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_flow
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
     # Define the Python App
-    @python_app
+    @job
     def relax_app(atoms):
         from quacc.recipes.emt.core import relax_job
 
@@ -130,11 +129,11 @@ def test_tutorial4(tmpdir):
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
 def test_comparison1():
-    @python_app
+    @job
     def add(a, b):
         return a + b
 
-    @python_app
+    @job
     def mult(a, b):
         return a * b
 
@@ -146,15 +145,15 @@ def test_comparison1():
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
 def test_comparison2():
-    @python_app
+    @job
     def add(a, b):
         return a + b
 
-    @python_app
+    @job
     def make_more(val):
         return [val] * 3
 
-    @join_app
+    @subflow
     def add_distributed(vals, c):
         return [add(val, c) for val in vals]
 
@@ -164,14 +163,3 @@ def test_comparison2():
         return add_distributed(future2, c)
 
     assert workflow(1, 2, 3).result() == [6, 6, 6]
-
-
-@pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
-def test_slabs(tmpdir):
-    tmpdir.chdir()
-
-    from quacc.recipes.emt.parsl.slabs import bulk_to_slabs_flow
-
-    slab_futures = bulk_to_slabs_flow(bulk("Cu"))
-    result = slab_futures.result()
-    assert len(result) == 4

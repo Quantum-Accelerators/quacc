@@ -4,8 +4,11 @@ import covalent as ct
 import pytest
 from ase.build import bulk, molecule
 
+from quacc import SETTINGS, flow, job, subflow
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+SETTINGS.WORKFLOW_MANAGER = "covalent"
 
 
 @pytest.mark.skipif(
@@ -16,13 +19,13 @@ def test_tutorials():
     # Test of the various tutorials
 
     # Quick start -------------------------------------------------
-    workflow_start = ct.lattice(relax_job)
+    workflow_start = flow(relax_job)
     atoms = bulk("Cu")
     dispatch_id = ct.dispatch(workflow_start)(atoms)
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
 
-    @ct.lattice(executor="local")
+    @job(executor="local")
     def workflow_start2(atoms):
         relaxed_bulk = relax_job(atoms)
         relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk)
@@ -36,7 +39,7 @@ def test_tutorials():
     # Tutorials ---------------------------------------------------
 
     # Define the workflow
-    @ct.lattice
+    @flow
     def workflow(atoms):
         return relax_job(atoms)
 
@@ -54,7 +57,7 @@ def test_tutorials():
     # ------------------------------------------------------------
 
     # Define the workflow
-    workflow = ct.lattice(relax_job)
+    workflow = flow(relax_job)
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -69,7 +72,7 @@ def test_tutorials():
 
     # ------------------------------------------------------------
 
-    @ct.lattice
+    @flow
     def workflow1(atoms):
         result1 = relax_job(atoms)
         result2 = static_job(result1)
@@ -81,7 +84,7 @@ def test_tutorials():
     assert result.status == "COMPLETED"
 
     # ------------------------------------------------------------
-    @ct.lattice
+    @flow
     def workflow2(atoms1, atoms2):
         result1 = relax_job(atoms1)
         result2 = relax_job(atoms2)
@@ -95,7 +98,7 @@ def test_tutorials():
     assert result.status == "COMPLETED"
 
     # ------------------------------------------------------------
-    @ct.lattice
+    @flow
     def workflow3(atoms):
         relaxed_bulk = relax_job(atoms)
         relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, slab_static=None)
@@ -107,7 +110,7 @@ def test_tutorials():
     assert result.status == "COMPLETED"
 
     # ------------------------------------------------------------
-    @ct.lattice(executor="local")
+    @flow(executor="local")
     def workflow4(atoms):
         result1 = relax_job(atoms)
         result2 = static_job(result1)
@@ -119,15 +122,15 @@ def test_tutorials():
     assert result.status == "COMPLETED"
 
     # ------------------------------------------------------------
-    @ct.electron
+    @job
     def relax_electron(atoms):
         return relax_job(atoms)
 
-    @ct.electron
+    @job
     def static_electron(atoms):
         return static_job(atoms)
 
-    @ct.lattice
+    @flow
     def workflow5(atoms):
         relax_electron.executor = "dask"
         static_electron.executor = "local"
@@ -146,15 +149,15 @@ def test_tutorials():
     reason="This test is only meant to be run on GitHub Actions",
 )
 def test_comparison1():
-    @ct.electron
+    @job
     def add(a, b):
         return a + b
 
-    @ct.electron
+    @job
     def mult(a, b):
         return a * b
 
-    @ct.lattice
+    @flow
     def workflow(a, b, c):
         return mult(add(a, b), c)
 
@@ -172,20 +175,19 @@ def test_comparison1():
     reason="This test is only meant to be run on GitHub Actions",
 )
 def test_comparison2():
-    @ct.electron
+    @job
     def add(a, b):
         return a + b
 
-    @ct.electron
+    @job
     def make_more(val):
         return [val] * 3
 
-    @ct.electron
-    @ct.lattice
+    @subflow
     def add_distributed(vals, c):
         return [add(val, c) for val in vals]
 
-    @ct.lattice
+    @flow
     def workflow(a, b, c):
         result1 = add(a, b)
         result2 = make_more(result1)

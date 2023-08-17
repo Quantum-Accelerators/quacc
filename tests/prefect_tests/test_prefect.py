@@ -1,16 +1,12 @@
 import pytest
 from ase.build import bulk
 
-from quacc import SETTINGS
-
 try:
     import prefect
     from prefect.testing.utilities import prefect_test_harness
 
 except ImportError:
     prefect = None
-
-SETTINGS.WORKFLOW_MANAGER = "prefect"
 
 
 @pytest.fixture(autouse=True, scope="session")
