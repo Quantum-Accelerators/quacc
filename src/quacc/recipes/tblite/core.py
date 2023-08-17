@@ -108,11 +108,9 @@ def relax_job(
     opt_flags = opt_defaults | opt_swaps
 
     atoms.calc = TBLite(method=method, **calc_swaps)
-    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
+    dyn = run_ase_opt(atoms, relax_cell=relax_cell, copy_files=copy_files, **opt_flags)
 
-    return summarize_opt_run(
-        dyn, relax_cell=relax_cell, additional_fields={"name": "TBLite Relax"}
-    )
+    return summarize_opt_run(dyn, additional_fields={"name": "TBLite Relax"})
 
 
 @ct.electron
