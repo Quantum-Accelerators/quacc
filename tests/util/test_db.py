@@ -1,6 +1,5 @@
 import os
 
-import covalent as ct
 import pytest
 from ase.build import bulk
 from maggma.stores import MemoryStore
@@ -14,6 +13,8 @@ from quacc.util.db import covalent_to_db, results_to_db
     reason="This test is only meant to be run on GitHub Actions",
 )
 def test_covalent_to_db():
+    import covalent as ct
+
     store = MemoryStore(collection_name="db1")
     covalent_to_db(store)
     count1 = store.count()

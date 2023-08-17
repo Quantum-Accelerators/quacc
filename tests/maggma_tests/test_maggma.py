@@ -1,6 +1,5 @@
 import os
 
-import covalent as ct
 import pytest
 from maggma.stores import MemoryStore
 
@@ -11,6 +10,7 @@ from maggma.stores import MemoryStore
 )
 def test_tutorial():
     # Connect to the database
+    import covalent as ct
 
     store = MemoryStore()
 

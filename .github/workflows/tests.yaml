@@ -32,8 +32,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install .[strict,dev,optimizers]
-          pip install covalent-hpc-plugin
+          pip install .[strict,dev,covalent,optimizers]
 
       - name: Set up Covalent server
         run: |
