@@ -123,7 +123,7 @@ graph LR
         return mult(add(a, b), c)
 
 
-    result = workflow(1, 2, 3).result()  # 9  (2)
+    result = workflow(1, 2, 3).result()  # 9  (2)!
     ```
 
     1. `#!Python @python_app` is a decorator that tells Parsl to treat the function as a compute job.
