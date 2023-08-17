@@ -31,6 +31,7 @@ def relax_job(
     atoms: Atoms | dict,
     model: str = "M3GNet-MP-2021.2.8-PES",
     state_attr: Tensor | None = None,
+    relax_cell: bool = True,
     opt_swaps: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
@@ -43,6 +44,8 @@ def relax_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     model
         Pre-trained M3GNet model to use for the calculation
+    relax_cell
+        Whether to relax the unit cell.
     state_attr
         State attribute to use for the calculation
     opt_swaps
@@ -63,6 +66,6 @@ def relax_job(
 
     potential = matgl.load_model(model)
     atoms.calc = M3GNetCalculator(potential=potential, state_attr=state_attr)
-    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
+    dyn = run_ase_opt(atoms, relax_cell=relax_cell, copy_files=copy_files, **opt_flags)
 
     return summarize_opt_run(dyn, additional_fields={"name": "M3GNet Relax"})
