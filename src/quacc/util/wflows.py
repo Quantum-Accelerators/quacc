@@ -1,23 +1,83 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from monty.dev import requires
+
+from quacc import SETTINGS
 
 try:
     from dask_jobqueue import SLURMCluster
     from prefect_dask.task_runners import DaskTaskRunner
 
-    dask_deps = True
-
     if TYPE_CHECKING:
         from dask_jobqueue.core import Job
 
+    prefect_deps = True
+
 except ImportError:
-    dask_deps = False
+    prefect_deps = False
 
 
-@requires(dask_deps, "Need quacc[prefect] dependencies")
+def job(_func: callable | None = None, **kwargs):
+    """
+    Decorator for workflow jobs
+    """
+
+    wflow_manager = (
+        SETTINGS.WORKFLOW_MANAGER.lower() if SETTINGS.WORKFLOW_MANAGER else None
+    )
+
+    def wrapper(*func_args, **func_kwargs):
+        if not wflow_manager:
+            return _func(*func_args, **func_kwargs)
+        elif wflow_manager == "covalent":
+            import covalent as ct
+
+            return ct.electron(_func, **kwargs)(*func_args, **func_kwargs)
+        elif wflow_manager == "parsl":
+            from parsl import python_app
+
+            return python_app(_func, **kwargs)(*func_args, **func_kwargs)
+        elif wflow_manager == "prefect":
+            from prefect import task
+
+            return task(_func, **kwargs)(*func_args, **func_kwargs)
+        elif wflow_manager == "jobflow":
+            from jobflow import job as jf_job
+
+            return jf_job(_func, **kwargs)(*func_args, **func_kwargs)
+        else:
+            raise ValueError(f"Unknown workflow manager {wflow_manager}.")
+
+    return wrapper
+
+
+def flow(_func: callable | None = None, **kwargs):
+    """
+    Decorator for workflow flows
+    """
+
+    wflow_manager = (
+        SETTINGS.WORKFLOW_MANAGER.lower() if SETTINGS.WORKFLOW_MANAGER else None
+    )
+
+    def wrapper(*func_args, **func_kwargs):
+        if not wflow_manager or wflow_manager == "parsl":
+            return _func(*func_args, **func_kwargs)
+        elif wflow_manager == "covalent":
+            import covalent as ct
+
+            return ct.lattice(_func, **kwargs)(*func_args, **func_kwargs)
+        elif wflow_manager == "prefect":
+            from prefect import flow
+
+            return flow(_func, **kwargs)(*func_args, **func_kwargs)
+        else:
+            raise ValueError(f"Unknown workflow manager {wflow_manager}.")
+
+    return wrapper
+
+
+@requires(prefect_deps, "Need quacc[prefect] dependencies")
 def make_runner(
     cluster_kwargs: dict,
     cluster_class: callable = None,
@@ -73,7 +133,7 @@ def make_runner(
     return DaskTaskRunner(address=cluster.scheduler_address)
 
 
-@requires(dask_deps, "Need quacc[prefect] dependencies")
+@requires(prefect_deps, "Need quacc[prefect] dependencies")
 def _make_cluster(cluster_class: callable, cluster_kwargs: dict, verbose=True) -> Job:
     """
     Make a Dask cluster for use with Prefect workflows.

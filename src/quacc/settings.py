@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import os
 from shutil import which
-from typing import List, Optional
+from typing import List, Literal, Optional, Union
 
 from pydantic import BaseSettings, Field, root_validator
 
@@ -28,6 +28,9 @@ class QuaccSettings(BaseSettings):
     # General Settings
     # ---------------------------
 
+    WORKFLOW_MANAGER: Optional[Literal["covalent", "parsl"]] = Field(
+        "covalent", description="The workflow manager to use."
+    )
     CONFIG_FILE: str = Field(
         _DEFAULT_CONFIG_FILE_PATH, description="File to load alternative defaults from."
     )

@@ -290,10 +290,10 @@ In the previous examples, we have been running calculations on our local machine
 
     To modify where tasks are run, set the `task_runner` keyword argument of the corresponding `@flow` decorator. The jobs in this scenario would be submitted from a login node.
 
-    An example is shown below for setting up a task runner compatible with the NERSC Perlmutter machine. By default, [`quacc.util.dask.make_runner`](https://quantum-accelerators.github.io/quacc/reference/quacc/util/dask.html#quacc.util.dask.make_runner) will generate a [`prefect_dask.DaskTaskRunner`](https://prefecthq.github.io/prefect-dask/task_runners/#prefect_dask.task_runners.DaskTaskRunner) composed of a [`dask_jobqueue.SLURMCluster`](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html) object.
+    An example is shown below for setting up a task runner compatible with the NERSC Perlmutter machine. By default, [`quacc.util.wflows.make_runner`](https://quantum-accelerators.github.io/quacc/reference/quacc/util/dask.html#quacc.util.wflows.make_runner) will generate a [`prefect_dask.DaskTaskRunner`](https://prefecthq.github.io/prefect-dask/task_runners/#prefect_dask.task_runners.DaskTaskRunner) composed of a [`dask_jobqueue.SLURMCluster`](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html) object.
 
     ```python
-    from quacc.util.dask import make_runner
+    from quacc.util.wflows import make_runner
 
     n_slurm_jobs = 1 # Number of Slurm jobs to launch in parallel.
     n_nodes_per_calc = 1 # Number of nodes to reserve for each Slurm job.
@@ -379,7 +379,7 @@ In the previous examples, we have been running calculations on our local machine
 
     ```python
     from dask_jobqueue import SLURMCluster
-    from quacc.util.dask import _make_cluster
+    from quacc.util.wflows import _make_cluster
 
     cluster = make_cluster(SLURMCluster, cluster_kwargs, verbose=True)
     ```
