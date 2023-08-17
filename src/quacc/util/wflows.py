@@ -71,7 +71,11 @@ def flow(_func: callable | None = None, **kwargs):
             return ct.lattice(_func, **kwargs)(*func_args, **func_kwargs)
         if wflow_manager == "jobflow":
             raise NotImplementedError(
-                "There is no @flow decorator for jobflow is implemented."
+                "Jobflow is not compatible with the use of a @flow decorator. Instead, you should use the `Flow()` object in Jobflow to stitch together individual compute jobs."
+            )
+        if wflow_manager == "parsl":
+            raise NotImplementedError(
+                "Parsl is not compatible with the use of a @flow decorator. Instead, you should simply stitch together your desired `PythonApp` objects directly."
             )
         if wflow_manager == "prefect":
             from prefect import prefect_flow
@@ -99,7 +103,7 @@ def subflow(_func: callable | None = None, **kwargs):
             return ct.electron(ct.lattice(_func), **kwargs)(*func_args, **func_kwargs)
         if wflow_manager == "jobflow":
             raise NotImplementedError(
-                "There is no @subflow decorator for jobflow is implemented."
+                "Jobflow is not compatible with the use of a @subflow decorator. Instead, you should use the `Response` object in Jobflow to create a dynamic workflow."
             )
         if wflow_manager == "parsl":
             from parsl import join_app

@@ -8,6 +8,10 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
 === "Covalent"
 
+    **Installation**
+
+    To install Covalent, run `pip install git+https://github.com/Quantum-Accelerators/quacc.git[covalent]`.
+
     **Starting the Server**
 
     Covalent uses a server to dispatch and store calculation details and results. To start the server, simply run `covalent start` in your terminal. It will return a URL that you can use to access the Covalent dashboard, which is shown below.
@@ -27,6 +31,10 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
         If you are using Perlmutter at NERSC, you will need to set `export COVALENT_CONFIG_DIR="$SCRATCH/.config/covalent"` (e.g. in your `~/.bashrc`) because the home directory does not support file locking, which Covalent relies on.
 
 === "Jobflow"
+
+    **Installation**
+
+    To install Jobflow with support for FireWorks, run `pip install pip install git+https://github.com/Quantum-Accelerators/quacc.git[fireworks]`.
 
     **MongoDB Setup**
 
@@ -168,11 +176,11 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
 === "Parsl"
 
-    In your activated Python environment, install Parsl via `pip install parsl`. Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
+    In your activated Python environment, install Parsl via `pip install git+https://github.com/Quantum-Accelerators/quacc.git[parsl]`. Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
 
 === "Prefect"
 
-    1. In your activated Python environment, install Prefect and the necessary Dask dependencies via `pip install prefect prefect-dask dask-jobqueue`
+    1. In your activated Python environment, install Prefect and the necessary Dask dependencies via `pip install git+https://github.com/Quantum-Accelerators/quacc.git[prefect]`
     2. Make an account on [Prefect Cloud](https://app.prefect.cloud/)
     3. Make an [API Key](https://docs.prefect.io/cloud/users/api-keys/) and (optionally) store it in a `PREFECT_API_KEY` environment variable (e.g. in your `~/.bashrc`)
     4. Run `prefect cloud login` from the command-line and enter your API key (or use the browser, if possible)

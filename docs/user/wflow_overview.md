@@ -8,22 +8,13 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
 !!! Tip
 
-    Generally, we recommend either **Covalent** or **Parsl** for most users, depending on your prior experience and goals.
-
-My highly subjective ranking system for various features of the supported workflow engines is summarized below.
-
-|   Workflow Engine   | Ease-of-Use | GUI | Flexibility | HPC Batch | Cloud | Pilot Jobs | Overall |
-| :-----------------: | :---------: | :-: | :---------: | :-------: | :---: | :--------: | :-----: |
-|      Covalent       |     😍      | 😍  |     😀      |    😀     |  😍   |     😢     |   😀    |
-| Jobflow + FireWorks |     😐      | 😐  |     😀      |    😍     |  😢   |     😐     |   😐    |
-|        Parsl        |     😀      | ☹️  |     😍      |    😍     |  😐   |     😍     |   😀    |
-|       Prefect       |     😐      | 😀  |     😀      |    ☹️     |  😍   |     ☹️     |   ☹️    |
+    Generally, we recommend either **Covalent** or **Parsl** for most users depending on your needs.
 
 ### Pros and Cons
 
 === "Covalent"
 
-    [Covalent](https://github.com/AgnostiqHQ/covalent/) is a workflow management solution from the company [Agnostiq](https://agnostiq.ai/). It is currently the default option in quacc due to its simplicity for new users and diverse range of execution options.
+    [Covalent](https://github.com/AgnostiqHQ/covalent/) is a workflow management solution from the company [Agnostiq](https://agnostiq.ai/).
 
     Pros:
 
@@ -40,6 +31,26 @@ My highly subjective ranking system for various features of the supported workfl
     - It requires a centralized server to be running continuously in order to manage the workflows
     - High-security HPC environments may be difficult to access via SSH with the centralized server approach
     - Not ideal for large numbers of short-duration jobs on remote HPC machines
+
+=== "Parsl"
+
+    [Parsl](https://github.com/Parsl/parsl) is a workflow management solution out of Argonne National Laboratory, the University of Chicago, and the University of Illinois. It is well-adapted for running on virtually any HPC environment with a job scheduler.
+
+    Pros:
+
+    - Extremely configurable for virtually any HPC environment
+    - Relatively simple to define the workflows
+    - Active community, particularly across academia
+    - Well-suited for [pilot jobs](https://en.wikipedia.org/wiki/Pilot_job) and has near-ideal scaling performance
+    - Thorough documentation
+    - Does not rely on maintaining a centralized server of any kind
+
+    Cons:
+
+    - Defining the right configuration options for your desired HPC setup can be an initial hurdle
+    - Monitoring job progress is more challenging and less detailed than other solutions
+    - Challenging to orchestrate workflows with steps running across heterogeneous resources
+    - The concept of always returning a "future" object can be confusing for new users
 
 === "Jobflow"
 
@@ -73,26 +84,6 @@ My highly subjective ranking system for various features of the supported workfl
     - FireWorks can have a steep learning curve due to its many configuration options
     - The reliance on MongoDB can be challenging for new users and certain HPC environments
     - New features are not currently planned
-
-=== "Parsl"
-
-    [Parsl](https://github.com/Parsl/parsl) is a workflow management solution out of Argonne National Laboratory, the University of Chicago, and the University of Illinois. It is well-adapted for running on virtually any HPC environment with a job scheduler.
-
-    Pros:
-
-    - Extremely configurable for virtually any HPC environment
-    - Relatively simple to define the workflows
-    - Active community, particularly across academia
-    - Well-suited for [pilot jobs](https://en.wikipedia.org/wiki/Pilot_job) and has near-ideal scaling performance
-    - Thorough documentation
-    - Does not rely on maintaining a centralized server of any kind
-
-    Cons:
-
-    - Defining the right configuration options for your desired HPC setup can be an initial hurdle
-    - Monitoring job progress is more challenging and less detailed than other solutions
-    - Challenging to orchestrate workflows with steps running across heterogeneous resources
-    - The concept of always returning a "future" object can be confusing for new users
 
 === "Prefect"
 

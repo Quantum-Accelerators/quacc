@@ -68,7 +68,7 @@ If you plan to use Psi4 with quacc, you will need to install it prior to use. Th
 
     [tblite](https://github.com/tblite/tblite) is a code that interfaces with the xtb package for running GFN-xTB calculations.
 
-If you plan to use tblite with quacc, you will need to install the tblite interface with ASE support. This can be done via `pip install tblite[ase]` if on Linux. If you are using a Mac, it can be installed via `conda install -c conda-forge tblite-python`.
+If you plan to use tblite with quacc, you will need to install the tblite interface with ASE support. This can be done via `pip install git+https://github.com/Quantum-Accelerators/quacc.git[tblite]` if on Linux. If you are using a Mac, it can be installed via `conda install -c conda-forge tblite-python`.
 
 ## VASP
 
