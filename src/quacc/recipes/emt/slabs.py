@@ -1,12 +1,18 @@
 """Slab recipes for EMT"""
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import covalent as ct
-from ase import Atoms
 
 from quacc.recipes.emt.core import relax_job, static_job
-from quacc.schemas.ase import OptSchema, RunSchema
+from quacc.schemas.atoms import fetch_atoms
 from quacc.util.slabs import make_max_slabs_from_bulk
+
+if TYPE_CHECKING:
+    from ase import Atoms
+
+    from quacc.schemas.ase import OptSchema, RunSchema
 
 
 def bulk_to_slabs_flow(
@@ -55,7 +61,7 @@ def bulk_to_slabs_flow(
 
     @ct.electron
     def _make_slabs(atoms):
-        atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+        atoms = fetch_atoms(atoms)
         return make_max_slabs_from_bulk(atoms, **make_slabs_kwargs)
 
     @ct.electron

@@ -39,7 +39,7 @@ Includes the following sections:
 
 ## Demonstration ✨
 
-🚀 Demo from the Quick Start guide, using [Covalent](https://github.com/AgnostiqHQ/covalent) as one of the several supported workflow managers.
+🚀 Demo from the Quick Start guide, using [Covalent](https://github.com/AgnostiqHQ/covalent) as one of the [several supported workflow managers](https://quantum-accelerators.github.io/quacc/user/wflow_overview.html).
 
 ![Demo from Quick Start](docs/images/start/start2.gif)
 
@@ -48,10 +48,6 @@ Includes the following sections:
 If you use quacc in your work, please cite it as follows:
 
 - A.S. Rosen, quacc – The Quantum Accelerator, https://doi.org/10.5281/zenodo.7720998.
-
-## Inspiration
-
-Quacc was originally inspired by [Atomate2](https://github.com/materialsproject/atomate2). Refer to the [FAQ section](https://quantum-accelerators.github.io/quacc/about/faq.html) of the documentation for how these codes differ.
 
 ## License ⚖️
 

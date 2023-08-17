@@ -4,12 +4,12 @@ from __future__ import annotations
 import os
 from shutil import rmtree
 from tempfile import mkdtemp
+from typing import TYPE_CHECKING
 
 import numpy as np
-from ase import Atoms
+from ase.constraints import ExpCellFilter
 from ase.io import Trajectory, read
 from ase.optimize import FIRE
-from ase.optimize.optimize import Optimizer
 from ase.vibrations import Vibrations
 from monty.os.path import zpath
 from monty.shutil import copy_r, gzip_dir
@@ -17,6 +17,10 @@ from monty.shutil import copy_r, gzip_dir
 from quacc import SETTINGS
 from quacc.util.atoms import copy_atoms
 from quacc.util.files import copy_decompress, make_unique_dir
+
+if TYPE_CHECKING:
+    from ase import Atoms
+    from ase.optimize.optimize import Optimizer
 
 
 def run_calc(
@@ -85,6 +89,7 @@ def run_calc(
 
 def run_ase_opt(
     atoms: Atoms,
+    relax_cell: bool = False,
     fmax: float = 0.01,
     max_steps: int = 500,
     optimizer: Optimizer = FIRE,
@@ -146,6 +151,9 @@ def run_ase_opt(
     optimizer_kwargs["trajectory"] = Trajectory(traj_filename, "w", atoms=atoms)
 
     # Define optimizer class
+    if relax_cell and atoms.pbc.any():
+        atoms = ExpCellFilter(atoms)
+
     dyn = optimizer(atoms, **optimizer_kwargs)
 
     # Run calculation
