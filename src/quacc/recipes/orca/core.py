@@ -96,8 +96,8 @@ def static_job(
 
     atoms.calc = ORCA(
         profile=OrcaProfile([SETTINGS.ORCA_CMD]),
-        charge=charge if charge is not None else get_charge(atoms),
-        mult=multiplicity if multiplicity is not None else get_multiplicity(atoms),
+        charge=get_charge(atoms) if charge is None else charge,
+        mult=get_multiplicity(atoms) if multiplicity is None else multiplicity,
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )
@@ -185,8 +185,8 @@ def relax_job(
 
     atoms.calc = ORCA(
         profile=OrcaProfile([SETTINGS.ORCA_CMD]),
-        charge=charge if charge is not None else get_charge(atoms),
-        mult=multiplicity if multiplicity is not None else get_multiplicity(atoms),
+        charge=get_charge(atoms) if charge is None else charge,
+        mult=get_multiplicity(atoms) if multiplicity is None else multiplicity,
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )
