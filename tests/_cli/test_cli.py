@@ -1,7 +1,12 @@
-import covalent as ct
+import pytest
 from click.testing import CliRunner
 
 from quacc._cli.cli import cli
+
+try:
+    import covalent as ct
+except ImportError:
+    ct = None
 
 
 def test_help():
@@ -9,6 +14,7 @@ def test_help():
     assert "Show this message and exit" in response
 
 
+@pytest.mark.skipif(ct is None, reason="Covalent is not installed")
 def test_config():
     response = CliRunner().invoke(cli, "config").output
     assert "Covalent configuration: Complete" in response
