@@ -72,8 +72,6 @@ def static_job(
     atoms = fetch_atoms(atoms)
     input_swaps = input_swaps or {}
     block_swaps = block_swaps or {}
-    charge = charge if charge is not None else get_charge(atoms)
-    multiplicity = multiplicity if multiplicity is not None else get_multiplicity(atoms)
 
     if not any(k for k in block_swaps if "nprocs" in k.lower()) and os.environ.get(
         "mpirun"
@@ -98,8 +96,8 @@ def static_job(
 
     atoms.calc = ORCA(
         profile=OrcaProfile([SETTINGS.ORCA_CMD]),
-        charge=charge,
-        mult=multiplicity,
+        charge=charge if charge is not None else get_charge(atoms),
+        mult=multiplicity if multiplicity is not None else get_multiplicity(atoms),
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )
@@ -162,8 +160,6 @@ def relax_job(
     atoms = fetch_atoms(atoms)
     input_swaps = input_swaps or {}
     block_swaps = block_swaps or {}
-    charge = charge if charge is not None else get_charge(atoms)
-    multiplicity = multiplicity if multiplicity is not None else get_multiplicity(atoms)
 
     if not any(k for k in block_swaps if "nprocs" in k.lower()) and os.environ.get(
         "mpirun"
@@ -189,8 +185,8 @@ def relax_job(
 
     atoms.calc = ORCA(
         profile=OrcaProfile([SETTINGS.ORCA_CMD]),
-        charge=charge,
-        mult=multiplicity,
+        charge=charge if charge is not None else get_charge(atoms),
+        mult=multiplicity if multiplicity is not None else get_multiplicity(atoms),
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )
