@@ -38,10 +38,7 @@ def test_tutorial1(tmpdir):
     workflow = Flow([job1, job2])
 
     # Run the workflow locally
-    responses = run_locally(workflow, create_folders=True)
-
-    # Get the result
-    responses[job2.uuid][1].output
+    run_locally(workflow, create_folders=True)
 
 
 @pytest.mark.skipif(
@@ -68,10 +65,7 @@ def test_tutorial2(tmpdir):
     workflow = Flow([job1, job2])
 
     # Run the workflow locally
-    responses = run_locally(workflow, create_folders=True)
-
-    # Get the result
-    responses[job2.uuid][1].output
+    run_locally(workflow, create_folders=True)
 
 
 @pytest.mark.skipif(
