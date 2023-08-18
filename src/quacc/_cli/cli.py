@@ -2,9 +2,6 @@
 
 import click
 
-from quacc import SETTINGS
-
-
 @click.group(invoke_without_command=True)
 @click.pass_context
 def cli(ctx: click.Context) -> None:
