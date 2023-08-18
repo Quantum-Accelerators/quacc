@@ -41,20 +41,20 @@ graph LR
 
         If you haven't done so yet, make sure you started the Covalent server with `covalent start` in the command-line.
 
+        Also make sure you have specified `"covalent"` as the `WORKFLOW_ENGINE` in your [quacc settings](settings.md).
+
     ```python
     import covalent as ct
     from ase.build import bulk
-    from quacc import flow, SETTINGS
+    from quacc import flow
     from quacc.recipes.emt.core import relax_job, static_job
 
-    SETTINGS.WORKFLOW_ENGINE = "covalent" # (1)!
 
     # Define the workflow
-    @flow # (2)!
+    @flow  # (1)!
     def workflow(atoms):
-
         # Define Job 1
-        result1 = relax_job(atoms) # (3)!
+        result1 = relax_job(atoms)  # (2)!
 
         # Define Job 2, which takes the output of Job 1 as input
         result2 = static_job(result1)
@@ -67,22 +67,20 @@ graph LR
 
     # Dispatch the workflow to the Covalent server
     # with the bulk Cu Atoms object as the input
-    dispatch_id = ct.dispatch(workflow)(atoms) # (4)!
+    dispatch_id = ct.dispatch(workflow)(atoms)  # (3)!
 
     # Fetch the result from the server
-    result = ct.get_result(dispatch_id, wait=True) # (5)!
+    result = ct.get_result(dispatch_id, wait=True)  # (4)!
     print(result)
     ```
 
-    1. Refer to the ["Modifying Quacc Settings"](settings.md) section for how to modify the global quacc settings via a configuration file or environment variables, if desired.
+    1. This will be automatically transformed into a `@ct.lattice` decorator.
 
-    2. This will be automatically transformed into a `@ct.lattice` decorator.
+    2. This was defined in quacc with a `@job` decorator already, which will be transformed into a `@ct.electron` decorator.
 
-    3. This was defined in quacc with a `@job` decorator already, which will be transformed into a `@ct.electron` decorator.
+    3. Because the workflow is only sent to the server with `ct.dispatch`, calling `workflow(atoms)` would run the workflow as if Covalent were not being used at all.
 
-    4. Because the workflow is only sent to the server with `ct.dispatch`, calling `workflow(atoms)` would run the workflow as if Covalent were not being used at all.
-
-    5. You don't need to set `wait=True` in practice. Once you call `ct.dispatch`, the workflow will begin running. The `ct.get_result` function is used to fetch the workflow status and results from the server.
+    4. You don't need to set `wait=True` in practice. Once you call `ct.dispatch`, the workflow will begin running. The `ct.get_result` function is used to fetch the workflow status and results from the server.
 
     You can see that it is quite trivial to set up a workflow using the recipes within quacc. We define the full workflow as a `@flow`-decorated function that stitches together the individual workflow steps. The [`quacc.recipes.emt.core.relax_job`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.core.relax_job) and [`quacc.recipes.emt.core.static_job`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.core.static_job) were both already defined with a `@job` decorator, which is why we did not need to specify that here. At runtime, quacc will automatically transform the `@flow` decorator into the Covalent-compatible `@ct.lattice` decorator and all `@job` decorators into the Covalent-compatible `@ct.electron` decorators.
 
@@ -103,31 +101,28 @@ graph LR
         parsl.load()
         ```
 
+        Also make sure you have specified `"parsl"` as the `WORKFLOW_ENGINE` in your [quacc settings](settings.md).
+
     ```python
     from ase.build import bulk
-    from quacc import SETTINGS
     from quacc.recipes.emt.core import relax_job, static_job
-
-    SETTINGS.WORKFLOW_ENGINE = "parsl" # (1)!
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
 
     # Call App 1
-    future1 = relax_job(atoms) # (2)!
+    future1 = relax_job(atoms) # (1)!
 
     # Call App 2, which takes the output of App 1 as input
     future2 = static_job(future1)
 
     # Print result
-    print(future2.result()) # (3)!
+    print(future2.result()) # (2)!
     ```
 
-    1. Refer to the ["Modifying Quacc Settings"](settings.md) section for how to modify the global quacc settings via a configuration file or environment variables, if desired.
+    1. This was defined in quacc with a `@job` decorator already, which will be transformed into a `@PythonApp` decorator since the `WORKFLOW_ENGINE` is set to `"parsl"`.
 
-    2. This was defined in quacc with a `@job` decorator already, which will be transformed into a `@PythonApp` decorator since the `WORKFLOW_ENGINE` is set to `"parsl"`.
-
-    3. The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object.
+    2. The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object.
 
     You can see that it is quite trivial to set up a Parsl workflow using the recipes within quacc. We define the full workflow as simply a collection of individual compute jobs. The [`quacc.recipes.emt.core.relax_job`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.core.relax_job) and [`quacc.recipes.emt.core.static_job`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.core.static_job) were both already defined with a `@job` decorator, which is why we did not need to specify that here. At runtime, quacc will automatically transform the `@job` decorator into the Parsl-compatible `@python_app` decorator.
 
@@ -137,22 +132,23 @@ graph LR
 
 === "Jobflow"
 
+    !!! Important
+
+        Make sure you have specified `"jobflow"` as the `WORKFLOW_ENGINE` in your [quacc settings](settings.md).
+
     ```python
     from ase.build import bulk
     from jobflow import Flow, run_locally
-    from quacc import SETTINGS
     from quacc.recipes.emt.core import relax_job, static_job
-
-    SETTINGS.WORKFLOW_ENGINE = "jobflow" # (1)!
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
 
     # Define Job 1
-    job1 = relax_job(atoms) # (2)!
+    job1 = relax_job(atoms)  # (1)!
 
     # Define Job 2, which takes the output of Job 1 as input
-    job2 = static_job(job1.output) # (3)!
+    job2 = static_job(job1.output)  # (2)!
 
     # Define the workflow
     workflow = Flow([job1, job2])
@@ -165,11 +161,9 @@ graph LR
     print(result)
     ```
 
-    1. Refer to the ["Modifying Quacc Settings"](settings.md) section for how to modify the global quacc settings via a configuration file or environment variables, if desired.
+    1. This was defined in quacc with a `@job` decorator already, which will be transformed into a `Job` object since the `WORKFLOW_ENGINE` is set to `"jobflow"`.
 
-    2. This was defined in quacc with a `@job` decorator already, which will be transformed into a `Job` object since the `WORKFLOW_ENGINE` is set to `"jobflow"`.
-
-    3. In Jobflow, each `Job` is only a reference and so the `.output` must be explicitly passed between jobs.
+    2. In Jobflow, each `Job` is only a reference and so the `.output` must be explicitly passed between jobs.
 
     You can see that it is quite trivial to set up a Jobflow workflow using the recipes within quacc. We define the full workflow as simply a collection of individual compute jobs. The [`quacc.recipes.emt.core.relax_job`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.core.relax_job) and [`quacc.recipes.emt.core.static_job`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.core.static_job) were both already defined with a `@job` decorator, which is why we did not need to specify that here. At runtime, quacc will automatically transform the `@job` decorator into the Jobflow-compatible `Job` object.
 
@@ -179,19 +173,21 @@ graph LR
 
 === "Prefect"
 
+    !!! Important
+
+        Make sure you have specified `"prefect"` as the `WORKFLOW_ENGINE` in your [quacc settings](settings.md).
+
     ```python
     from ase.build import bulk
-    from quacc import flow, SETTINGS
+    from quacc import flow
     from quacc.recipes.emt.core import relax_job, static_job
 
-    SETTINGS.WORKFLOW_ENGINE = "prefect" # (1)!
 
     # Define the workflow
-    @flow # (2)!
+    @flow  # (1)!
     def workflow(atoms):
-
         # Call Task 1
-        future1 = relax_job.submit(atoms) # (3)!
+        future1 = relax_job.submit(atoms)  # (2)!
 
         # Call Task 2, which takes the output of Task 1 as input
         future2 = static_job.submit(future1)
@@ -203,17 +199,15 @@ graph LR
     atoms = bulk("Cu")
 
     # Run the workflow with Prefect tracking
-    result = workflow(atoms).result() # (4)!
+    result = workflow(atoms).result()  # (3)!
     print(result)
     ```
 
-    1. Refer to the ["Modifying Quacc Settings"](settings.md) section for how to modify the global quacc settings via a configuration file or environment variables, if desired.
+    1. This will be automatically transformed into a Prefect `@flow` decorator since `WORKFLOW_ENGINE="prefect"`.
 
-    2. This will be automatically transformed into a Prefect `@flow` decorator since `WORKFLOW_ENGINE="prefect"`.
+    2. This was defined in quacc with a `@job` decorator already, which will be transformed into a `@task` decorator since the `WORKFLOW_ENGINE` is set to `"prefect"`. It's necessary to call `.submit` on all Prefect `Task` objects to ensure they are executed concurrently (if possible).
 
-    3. This was defined in quacc with a `@job` decorator already, which will be transformed into a `@task` decorator since the `WORKFLOW_ENGINE` is set to `"prefect"`. It's necessary to call `.submit` on all Prefect `Task` objects to ensure they are executed concurrently (if possible).
-
-    4. The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `PrefectFuture` object.
+    3. The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `PrefectFuture` object.
 
     You can see that it is quite trivial to set up a Prefect workflow using the recipes within quacc. We define the full `Flow` as a function that stitches together the individual `Task` workflow steps.Calling `.submit()` enables concurrent execution of the tasks, and `.result()` blocks further calculations until the result is returned. Both `.submit()` and `.result()` aren't necessary when testing Prefect workflows locally, but we have included them here to make the transition to HPC environments more seamless.
 
@@ -237,15 +231,13 @@ graph LR
 
     ```python
     from ase.build import bulk, molecule
-    from quacc import flow, SETTINGS
+    from quacc import flow
     from quacc.recipes.emt.core import relax_job
 
-    SETTINGS.WORKFLOW_ENGINE = "covalent"
 
     # Define workflow
     @flow
     def workflow(atoms1, atoms2):
-
         # Define two independent relaxation jobs
         result1 = relax_job(atoms1)
         result2 = relax_job(atoms2)
@@ -272,10 +264,7 @@ graph LR
     ```python
     from ase.build import bulk, molecule
     from parsl import python_app
-    from quacc import SETTINGS
     from quacc.recipes.emt.core import relax_job
-
-    SETTINGS.WORKFLOW_ENGINE = "parsl"
 
     # Define two Atoms objects
     atoms1 = bulk("Cu")
@@ -294,10 +283,7 @@ graph LR
     ```python
     from ase.build import bulk, molecule
     from jobflow import Flow, run_locally
-    from quacc import SETTINGS
     from quacc.recipes.emt.core import relax_job
-
-    SETTINGS.WORKFLOW_ENGINE = "jobflow"
 
     # Define two Atoms objects
     atoms1 = bulk("Cu")
@@ -322,16 +308,15 @@ graph LR
 
     ```python
     from ase.build import bulk, molecule
-    from quacc import flow, SETTINGS
+    from quacc import flow
     from quacc.recipes.emt.core import relax_job
 
-    SETTINGS.WORKFLOW_ENGINE = "prefect"
 
     # Define workflow
     @flow
     def workflow(atoms1, atoms2):
         # Define two independent relaxation jobs
-        future1 = relax_job..submit(atoms1)
+        future1 = relax_job.submit(atoms1)
         future2 = relax_job.submit(atoms2)
 
         return future1, future2
@@ -369,16 +354,15 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     ```python
     import covalent as ct
     from ase.build import bulk
-    from quacc import flow, SETTINGS
+    from quacc import flow
     from quacc.recipes.emt.core import relax_job
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
-    SETTINGS.WORKFLOW_ENGINE = "covalent"
 
     @flow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, slab_static=None) # (1)!
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, slab_static=None)  # (1)!
 
         return relaxed_slabs
 
@@ -397,23 +381,18 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
 === "Parsl"
 
-    **The Simple Way**
-
     ```python
     from ase.build import bulk
     from parsl import python_app
-    from quacc import SETTINGS
     from quacc.recipes.emt.core import relax_job
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
-
-    SETTINGS.WORKFLOW_ENGINE = "parsl"
 
     # Define the Atoms object
     atoms = bulk("Cu")
 
     # Define the workflow
     future1 = relax_job(atoms)
-    future2 = bulk_to_slabs_flow(future1, slab_static=None) # (1)!
+    future2 = bulk_to_slabs_flow(future1, slab_static=None)  # (1)!
 
     # Print the results
     print(future2.result())
@@ -430,11 +409,8 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     ```python
     from ase.build import bulk
     from jobflow import Flow, run_locally
-    from quacc import SETTINGS
     from quacc.recipes.emt.core import relax_job
     from quacc.recipes.emt.jobflow.slabs import bulk_to_slabs_flow
-
-    SETTINGS.WORKFLOW_ENGINE = "jobflow"
 
     # Define the Atoms object
     atoms = bulk("Cu")
@@ -456,16 +432,15 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
     ```python
     from ase.build import bulk
-    from quacc import flow, SETTINGS
+    from quacc import flow
     from quacc.recipes.emt.core import relax_job
     from quacc.recipes.emt.prefect.slabs import bulk_to_slabs_flow
 
-    SETTINGS.WORKFLOW_ENGINE = "prefect"
 
     @flow
     def workflow(atoms):
         future1 = relax_job.submit(atoms)
-        slab_futures = bulk_to_slabs_flow(future1, run_slab_static=False) # (1)!
+        slab_futures = bulk_to_slabs_flow(future1, run_slab_static=False)  # (1)!
 
         return slab_futures
 
@@ -475,7 +450,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
     # Run the workflow
     slab_futures = workflow(atoms)
-    result = [slab_future.result() for slab_future in slab_futures] # (2)!
+    result = [slab_future.result() for slab_future in slab_futures]  # (2)!
     print(result)
     ```
 
