@@ -115,6 +115,41 @@ def prep_next_run(
     return atoms
 
 
+def get_charge_and_mult(atoms: Atoms) -> tuple[float, int]:
+    """
+    Get the charge and multiplicity of an Atoms object. This is meant
+    for molecules where the charge and multiplicity are fixed.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object
+
+    Returns
+    -------
+    charge
+        Charge of the Atoms object
+    multiplicity
+        Multiplicity of the Atoms object
+    """
+
+    charge = (
+        atoms.charge
+        if atoms.has("charge")
+        else int(atoms.get_initial_charges().sum())
+        if charge is None
+        else 0
+    )
+    multiplicity = (
+        atoms.spin_multiplicity
+        if atoms.has("spin_multiplicity")
+        else int(1 + atoms.get_initial_magnetic_moments().sum())
+        if multiplicity is None
+        else 1
+    )
+    return charge, multiplicity
+
+
 def set_magmoms(
     atoms: Atoms,
     elemental_mags_dict: dict | None = None,

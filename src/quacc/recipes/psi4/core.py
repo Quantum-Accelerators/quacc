@@ -64,12 +64,7 @@ def static_job(
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
-    charge = int(atoms.get_initial_charges().sum()) if charge is None else charge
-    multiplicity = (
-        int(1 + atoms.get_initial_magnetic_moments().sum())
-        if multiplicity is None
-        else multiplicity
-    )
+    charge, multiplicity = get_charge_and_mult(atoms)
 
     defaults = {
         "mem": "16GB",

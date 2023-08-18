@@ -11,6 +11,7 @@ from ase.calculators.orca import ORCA, OrcaProfile
 from quacc import SETTINGS
 from quacc.schemas.atoms import fetch_atoms
 from quacc.schemas.cclib import summarize_run
+from quacc.util.atoms import get_charge_and_mult
 from quacc.util.calc import run_calc
 from quacc.util.dicts import remove_dict_empties
 
@@ -93,12 +94,7 @@ def static_job(
     orcasimpleinput = " ".join(list(inputs.keys()))
     orcablocks = " ".join(list(blocks.keys()))
 
-    charge = int(atoms.get_initial_charges().sum()) if charge is None else charge
-    multiplicity = (
-        int(1 + atoms.get_initial_magnetic_moments().sum())
-        if multiplicity is None
-        else multiplicity
-    )
+    charge, multiplicity = get_charge_and_mult(atoms)
 
     atoms.calc = ORCA(
         profile=OrcaProfile([SETTINGS.ORCA_CMD]),
@@ -189,12 +185,7 @@ def relax_job(
     orcasimpleinput = " ".join(list(inputs.keys()))
     orcablocks = " ".join(list(blocks.keys()))
 
-    charge = int(atoms.get_initial_charges().sum()) if charge is None else charge
-    multiplicity = (
-        int(1 + atoms.get_initial_magnetic_moments().sum())
-        if multiplicity is None
-        else multiplicity
-    )
+    charge, multiplicity = get_charge_and_mult(atoms)
 
     atoms.calc = ORCA(
         profile=OrcaProfile([SETTINGS.ORCA_CMD]),
