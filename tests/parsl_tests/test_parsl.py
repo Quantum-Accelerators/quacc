@@ -1,6 +1,6 @@
 import pytest
 
-from quacc import SETTINGS, job, subflow
+from quacc import SETTINGS
 
 try:
     import parsl
