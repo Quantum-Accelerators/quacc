@@ -4,7 +4,7 @@
 
 !!! note
 
-    If you are on a Windows machine, you will need to install and use the [Windows Subsystem for Linux (WSL)](https://ubuntu.com/wsl) to benefit from all the features of quacc.
+    If you are on a Windows machine, we recommend using the [Windows Subsystem for Linux (WSL)](https://ubuntu.com/wsl) to benefit from all the features of quacc.
 
 1. Install Python, preferably in conjunction with an environment manager. For instance, download and run the [Miniconda installer](https://docs.conda.io/en/latest/miniconda.html)
 2. When asked to add Miniconda to your `PATH`, select yes
