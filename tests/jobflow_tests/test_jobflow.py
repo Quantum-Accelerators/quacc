@@ -103,7 +103,7 @@ def test_tutorial3(tmpdir):
     jf is None,
     reason="Jobflow is not installed",
 )
-def comparison1(tmpdir):
+def test_comparison1(tmpdir):
     tmpdir.chdir()
 
     @jf.job
@@ -126,7 +126,7 @@ def comparison1(tmpdir):
     jf is None,
     reason="Jobflow is not installed",
 )
-def comparison2(tmpdir):
+def test_comparison2(tmpdir):
     tmpdir.chdir()
 
     @jf.job
