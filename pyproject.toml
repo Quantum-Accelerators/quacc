@@ -87,7 +87,7 @@ method = "git"
 default-tag = "0.0.1"
 
 [tool.pytest.ini_options]
-addopts = "-s -p no:warnings"
+addopts = "-p no:warnings"
 log_level = "ERROR"
 
 [tool.black]
