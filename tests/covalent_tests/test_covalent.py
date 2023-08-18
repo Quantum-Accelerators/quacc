@@ -1,8 +1,4 @@
 from quacc import SETTINGS
-
-DEFAULT_SETTINGS = SETTINGS.copy()
-
-SETTINGS.WORKFLOW_ENGINE = "covalent"
 import os
 
 import pytest
@@ -18,6 +14,11 @@ except ImportError:
     ct = None
 
 os.system("covalent start")
+
+DEFAULT_SETTINGS = SETTINGS.copy()
+
+def setup_module():
+    SETTINGS.WORKFLOW_ENGINE = "jobflow"
 
 def teardown_module():
     SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE

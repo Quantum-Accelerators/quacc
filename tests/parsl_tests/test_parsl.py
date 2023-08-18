@@ -1,8 +1,5 @@
 from quacc import SETTINGS
 
-DEFAULT_SETTINGS = SETTINGS.copy()
-
-SETTINGS.WORKFLOW_ENGINE = "parsl"
 import pytest
 
 from quacc import job, subflow
@@ -12,10 +9,12 @@ try:
 except ImportError:
     parsl = None
 
+DEFAULT_SETTINGS = SETTINGS.copy()
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
 def setup_module():
     parsl.load()
+    SETTINGS.WORKFLOW_ENGINE = "jobflow"
 
 
 def teardown_module():

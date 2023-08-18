@@ -1,9 +1,5 @@
 from quacc import SETTINGS
 
-DEFAULT_SETTINGS = SETTINGS.copy()
-
-SETTINGS.WORKFLOW_ENGINE = "prefect"
-
 import pytest
 from ase.build import bulk
 
@@ -14,10 +10,14 @@ try:
 except ImportError:
     prefect = None
 
+DEFAULT_SETTINGS = SETTINGS.copy()
+
+def setup_module():
+    SETTINGS.WORKFLOW_ENGINE = "jobflow"
+
 
 def teardown_module():
     SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
-
 
 @pytest.fixture(autouse=True, scope="session")
 def prefect_test_fixture():

@@ -42,17 +42,21 @@ class QuaccSettings(BaseSettings):
     """
 
     # ---------------------------
-    # General Settings
+    # Workflow Engine
     # ---------------------------
-
-    CONFIG_FILE: str = Field(
-        _DEFAULT_CONFIG_FILE_PATH, description="File to load alternative defaults from."
-    )
     WORKFLOW_ENGINE: Optional[
         Literal["covalent", "parsl", "jobflow", "prefect"]
     ] = Field(
         "covalent" if covalent else "parsl" if parsl else None,
         description="The workflow manager to use.",
+    )
+
+    # ---------------------------
+    # General Settings
+    # ---------------------------
+
+    CONFIG_FILE: str = Field(
+        _DEFAULT_CONFIG_FILE_PATH, description="File to load alternative defaults from."
     )
     RESULTS_DIR: str = Field(
         os.getcwd(),
