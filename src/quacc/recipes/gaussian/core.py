@@ -61,8 +61,6 @@ def static_job(
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
-    charge = charge if charge is not None else get_charge(atoms)
-    multiplicity = multiplicity if multiplicity is not None else get_multiplicity(atoms)
 
     defaults = {
         "mem": "16GB",
@@ -70,8 +68,8 @@ def static_job(
         "nprocshared": multiprocessing.cpu_count(),
         "xc": xc,
         "basis": basis,
-        "charge": charge,
-        "mult": multiplicity,
+        "charge": get_charge(atoms) if charge is None else charge,
+        "mult": get_multiplicity(atoms) if multiplicity is None else multiplicity,
         "sp": "",
         "scf": ["maxcycle=250", "xqc"],
         "integral": "ultrafine",
@@ -134,8 +132,6 @@ def relax_job(
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
-    charge = charge if charge is not None else get_charge(atoms)
-    multiplicity = multiplicity if multiplicity is not None else get_multiplicity(atoms)
 
     defaults = {
         "mem": "16GB",
@@ -143,8 +139,8 @@ def relax_job(
         "nprocshared": multiprocessing.cpu_count(),
         "xc": xc,
         "basis": basis,
-        "charge": charge,
-        "mult": multiplicity,
+        "charge": get_charge(atoms) if charge is None else charge,
+        "mult": get_multiplicity(atoms) if multiplicity is None else multiplicity,
         "opt": "",
         "pop": "CM5",
         "scf": ["maxcycle=250", "xqc"],

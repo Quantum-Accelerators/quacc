@@ -64,8 +64,10 @@ def static_job(
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
-    charge = charge if charge is not None else get_charge(atoms)
-    multiplicity = multiplicity if multiplicity is not None else get_multiplicity(atoms)
+    if charge is None:
+        charge = get_charge(atoms)
+    if multiplicity is None:
+        multiplicity = get_multiplicity(atoms)
 
     defaults = {
         "mem": "16GB",
