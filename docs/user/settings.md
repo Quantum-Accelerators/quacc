@@ -35,3 +35,7 @@ from quacc import SETTINGS
 
 SETTINGS.CREATE_UNIQUE_WORKDIR = True
 ```
+
+!!! Important
+
+  If you modify a global quacc setting this way, ensure that you define any `SETTINGS` parameters _before_ you import any quacc modules to ensure that your custom settings are appropriately applied. In other words, the modification to `SETTINGS` should be at the very top of your script.
