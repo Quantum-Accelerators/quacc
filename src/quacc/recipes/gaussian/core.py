@@ -9,7 +9,7 @@ from ase.calculators.gaussian import Gaussian
 
 from quacc.schemas.atoms import fetch_atoms
 from quacc.schemas.cclib import summarize_run
-from quacc.util.atoms import get_charge_and_mult
+from quacc.util.atoms import get_charge, get_multiplicity
 from quacc.util.calc import run_calc
 from quacc.util.dicts import remove_dict_empties
 
@@ -61,8 +61,8 @@ def static_job(
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
-
-    charge, multiplicity = get_charge_and_mult(atoms)
+    charge = charge if charge is not None else get_charge(atoms)
+    multiplicity = multiplicity if multiplicity is not None else get_multiplicity(atoms)
 
     defaults = {
         "mem": "16GB",
@@ -134,8 +134,8 @@ def relax_job(
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
-
-    charge, multiplicity = get_charge_and_mult(atoms)
+    charge = charge if charge is not None else get_charge(atoms)
+    multiplicity = multiplicity if multiplicity is not None else get_multiplicity(atoms)
 
     defaults = {
         "mem": "16GB",
