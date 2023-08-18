@@ -21,7 +21,7 @@ def job(_func: callable | None = None, **kwargs) -> callable:
     """
     Decorator for individual compute jobs. This is a @job decorator.
 
-    @job = @ct.electron [Covalent] = @python_app [Parsk] = @job [Jobflow] = @task [Prefect]
+    @job = @ct.electron [Covalent] = @python_app [Parsl] = @job [Jobflow] = @task [Prefect]
 
     Parameters
     ----------

@@ -157,7 +157,7 @@ def test_emt_flow(tmpdir):
 
     atoms = bulk("Cu")
 
-    job = jf.job(bulk_to_slabs_flow)(
+    job = bulk_to_slabs_flow(
         atoms,
         slab_static=None,
         slab_relax_kwargs={
@@ -168,7 +168,7 @@ def test_emt_flow(tmpdir):
     )
     jf.run_locally(job, store=store, ensure_success=True, create_folders=True)
 
-    job = jf.job(bulk_to_slabs_flow)(
+    job = bulk_to_slabs_flow(
         atoms,
         make_slabs_kwargs={"max_slabs": 2},
         slab_relax_kwargs={
