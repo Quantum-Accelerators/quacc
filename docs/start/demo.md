@@ -22,12 +22,12 @@ Then open the URL printed in the terminal (usually http://localhost:48008) and r
 This demo workflow will relax a bulk Cu structure using the EMT calculator.
 
 ```python
-import covalent as ct
 from ase.build import bulk
+from quacc import flow
 from quacc.recipes.emt.core import relax_job
 
 # Define the workflow
-workflow = ct.lattice(relax_job)
+workflow = flow(relax_job)
 
 # Make an Atoms object of a bulk Cu structure
 atoms = bulk("Cu")
@@ -49,11 +49,12 @@ This demo workflow will relax a bulk Cu structure using the EMT calculator, use 
 
 ```python
 from ase.build import bulk
+from quacc import flow
 from quacc.recipes.emt.core import relax_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 # Define the workflow and set how to execute
-@ct.lattice(executor="local")
+@flow(executor="local")
 def workflow(atoms):
 
     # Relax a bulk structure

@@ -17,26 +17,26 @@ try:
 except ImportError:
     ct = None
 
+os.system("covalent start")
 
 def teardown_module():
     SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 @pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False,
+    ct is None,
     reason="This test is only meant to be run on GitHub Actions",
 )
-def test_tutorials():
-    # Test of the various tutorials
+def test_quickstart(tmpdir):
+    tmpdir.chdir()
 
-    # Quick start -------------------------------------------------
     workflow_start = flow(relax_job)
     atoms = bulk("Cu")
     dispatch_id = ct.dispatch(workflow_start)(atoms)
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
 
-    @job(executor="local")
+    @flow(executor="local")
     def workflow_start2(atoms):
         relaxed_bulk = relax_job(atoms)
         relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk)
@@ -47,7 +47,13 @@ def test_tutorials():
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
 
-    # Tutorials ---------------------------------------------------
+
+@pytest.mark.skipif(
+    ct is None,
+    reason="This test is only meant to be run on GitHub Actions",
+)
+def test_tutorial1(tmpdir):
+    tmpdir.chdir()
 
     # Define the workflow
     @flow
@@ -65,7 +71,13 @@ def test_tutorials():
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
 
-    # ------------------------------------------------------------
+
+@pytest.mark.skipif(
+    ct is None,
+    reason="This test is only meant to be run on GitHub Actions",
+)
+def test_tutorial2(tmpdir):
+    tmpdir.chdir()
 
     # Define the workflow
     workflow = flow(relax_job)
@@ -81,7 +93,13 @@ def test_tutorials():
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
 
-    # ------------------------------------------------------------
+
+@pytest.mark.skipif(
+    ct is None,
+    reason="This test is only meant to be run on GitHub Actions",
+)
+def test_tutorial3(tmpdir):
+    tmpdir.chdir()
 
     @flow
     def workflow1(atoms):
@@ -94,7 +112,14 @@ def test_tutorials():
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
 
-    # ------------------------------------------------------------
+
+@pytest.mark.skipif(
+    ct is None,
+    reason="This test is only meant to be run on GitHub Actions",
+)
+def test_tutorial4(tmpdir):
+    tmpdir.chdir()
+
     @flow
     def workflow2(atoms1, atoms2):
         result1 = relax_job(atoms1)
@@ -108,7 +133,14 @@ def test_tutorials():
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
 
-    # ------------------------------------------------------------
+
+@pytest.mark.skipif(
+    ct is None,
+    reason="This test is only meant to be run on GitHub Actions",
+)
+def test_tutorial5(tmpdir):
+    tmpdir.chdir()
+
     @flow
     def workflow3(atoms):
         relaxed_bulk = relax_job(atoms)
@@ -120,7 +152,14 @@ def test_tutorials():
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
 
-    # ------------------------------------------------------------
+
+@pytest.mark.skipif(
+    ct is None,
+    reason="This test is only meant to be run on GitHub Actions",
+)
+def test_tutorial6(tmpdir):
+    tmpdir.chdir()
+
     @flow(executor="local")
     def workflow4(atoms):
         result1 = relax_job(atoms)
@@ -132,7 +171,14 @@ def test_tutorials():
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
 
-    # ------------------------------------------------------------
+
+@pytest.mark.skipif(
+    ct is None,
+    reason="This test is only meant to be run on GitHub Actions",
+)
+def test_tutorial7(tmpdir):
+    tmpdir.chdir()
+
     @job
     def relax_electron(atoms):
         return relax_job(atoms)
@@ -156,7 +202,7 @@ def test_tutorials():
 
 
 @pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False,
+    ct is None,
     reason="This test is only meant to be run on GitHub Actions",
 )
 def test_comparison1():
@@ -182,7 +228,7 @@ def test_comparison1():
 
 
 @pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False,
+    ct is None,
     reason="This test is only meant to be run on GitHub Actions",
 )
 def test_comparison2():
@@ -210,4 +256,5 @@ def test_comparison2():
     # Dispatched
     dispatch_id = ct.dispatch(workflow)(1, 2, 3)
     result = ct.get_result(dispatch_id, wait=True)
+    assert result.status == "COMPLETED"
     assert result.status == "COMPLETED"
