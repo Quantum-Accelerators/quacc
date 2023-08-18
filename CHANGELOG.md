@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- A quacc global setting, `WORKFLOW_ENGINE`, to set the workflow manager. It is set to `None` by default but can be set to `"covalent"`, `"parsl"`, `"jobflow"`, or `"prefect"`.
+- Added a quacc global setting, `WORKFLOW_ENGINE`, to set the workflow manager. It is set to `None` by default but can be set to `"covalent"`, `"parsl"`, `"jobflow"`, or `"prefect"`.
 - Added support for the new `covalent-hpc-plugin` in `pyproject.toml`.
 
 ### Changed
@@ -17,7 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Covalent is now an optional dependency to allow the base `quacc` package to be dependency-light.
 - Default VASP pseudopotentials changed to `setups_pbe54.yaml`.
 - Changed `quacc.recipes.emt.jobflow` and `quacc.recipes.emt.prefect` to `quacc.recipes.emt._jobflow` and `quacc.recipes.emt._prefect`
-- Changed the `quacc[parsl]` extras to install `parsl[monitoring]` instead of just `parsl`
+- Changed the `quacc[parsl]` extras to install `parsl[monitoring]` instead of just `parsl`.
 
 ### Fixed
 
