@@ -402,13 +402,13 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
 === "Jobflow"
 
-    Due to the difference in how Jobflow handles workflows compared to Covalent and Prefect, any quacc recipes with multiple `@job` (or any `@subflow`) decorators cannot be used with jobflow directly. However, quacc fully supports custom Jobflow-based workflows to resolve this limitation. For example, instead of using [`.emt.jobflow.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.jobflow.slabs.bulk_to_slabs_flow), this workflow can be equivalently run as follows using the Jobflow-specific [`.emt.jobflow.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.jobflow.slabs.bulk_to_slabs_flow):
+    Due to the difference in how Jobflow handles workflows compared to Covalent and Prefect, any quacc recipes with multiple `@job` (or any `@subflow`) decorators cannot be used with jobflow directly. However, quacc fully supports custom Jobflow-based workflows to resolve this limitation. For example, instead of using [`.emt.jobflow.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt._jobflow.slabs.bulk_to_slabs_flow), this workflow can be equivalently run as follows using the Jobflow-specific [`.emt.jobflow.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt._jobflow.slabs.bulk_to_slabs_flow):
 
     ```python
     from ase.build import bulk
     from jobflow import Flow, run_locally
     from quacc.recipes.emt.core import relax_job
-    from quacc.recipes.emt.jobflow.slabs import bulk_to_slabs_flow
+    from quacc.recipes.emt._jobflow.slabs import bulk_to_slabs_flow
 
     # Define the Atoms object
     atoms = bulk("Cu")
@@ -422,17 +422,17 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     run_locally(workflow, create_folders=True)
     ```
 
-    By comparing [`.emt.jobflow.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.jobflow.slabs.bulk_to_slabs_flow) with its Covalent counterpart [`.emt.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.slabs.bulk_to_slabs_flow), you can see that the two are extremely similar such that it is often straightforward to [interconvert](wflow_syntax.md) between the two. In the case of `bulk_to_slabs_flow`, it actually returns a [`Response(replace)`](<https://materialsproject.github.io/jobflow/tutorials/5-dynamic-flows.html#The-Response(replace)-option>) object that dynamically replaces the `Flow` with several downstream jobs.
+    By comparing [`.emt.jobflow.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt._jobflow.slabs.bulk_to_slabs_flow) with its Covalent counterpart [`.emt.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.slabs.bulk_to_slabs_flow), you can see that the two are extremely similar such that it is often straightforward to [interconvert](wflow_syntax.md) between the two. In the case of `bulk_to_slabs_flow`, it actually returns a [`Response(replace)`](<https://materialsproject.github.io/jobflow/tutorials/5-dynamic-flows.html#The-Response(replace)-option>) object that dynamically replaces the `Flow` with several downstream jobs.
 
 === "Prefect"
 
-    Due to the difference in how Prefect handles workflows compared to Covalent and Prefect, any quacc recipes with multiple `@job` (or any `@subflow`) decorators cannot be used with jobflow directly. However, quacc fully supports custom Prefect-based workflows to resolve this limitation. For example, instead of using [`.emt.jobflow.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.jobflow.slabs.bulk_to_slabs_flow), this workflow can be equivalently run as follows using the Jobflow-specific [`.emt.jobflow.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.prefect.slabs.bulk_to_slabs_flow):
+    Due to the difference in how Prefect handles workflows compared to Covalent and Prefect, any quacc recipes with multiple `@job` (or any `@subflow`) decorators cannot be used with jobflow directly. However, quacc fully supports custom Prefect-based workflows to resolve this limitation. For example, instead of using [`.emt.jobflow.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt._jobflow.slabs.bulk_to_slabs_flow), this workflow can be equivalently run as follows using the Jobflow-specific [`.emt.jobflow.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt._prefect.slabs.bulk_to_slabs_flow):
 
     ```python
     from ase.build import bulk
     from quacc import flow
     from quacc.recipes.emt.core import relax_job
-    from quacc.recipes.emt.prefect.slabs import bulk_to_slabs_flow
+    from quacc.recipes.emt._prefect.slabs import bulk_to_slabs_flow
 
 
     @flow

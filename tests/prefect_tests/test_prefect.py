@@ -91,8 +91,8 @@ def test_tutorial3(tmpdir):
     from ase.build import bulk
 
     from quacc import flow
+    from quacc.recipes.emt._prefect.slabs import bulk_to_slabs_flow
     from quacc.recipes.emt.core import relax_job
-    from quacc.recipes.emt.prefect.slabs import bulk_to_slabs_flow
 
     @flow
     def workflow(atoms):
@@ -151,6 +151,6 @@ def test_comparison2():
 def test_emt_flow(tmpdir):
     tmpdir.chdir()
 
-    from quacc.recipes.emt.prefect.slabs import bulk_to_slabs_flow
+    from quacc.recipes.emt._prefect.slabs import bulk_to_slabs_flow
 
     bulk_to_slabs_flow(bulk("Cu"))

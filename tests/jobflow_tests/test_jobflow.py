@@ -84,7 +84,7 @@ def test_tutorial3(tmpdir):
     from jobflow import Flow, run_locally
 
     from quacc.recipes.emt.core import relax_job
-    from quacc.recipes.emt.jobflow.slabs import bulk_to_slabs_flow
+    from quacc.recipes.emt._jobflow.slabs import bulk_to_slabs_flow
 
     # Define the Atoms object
     atoms = bulk("Cu")
@@ -151,7 +151,7 @@ def comparison2(tmpdir):
 def test_emt_flow(tmpdir):
     tmpdir.chdir()
 
-    from quacc.recipes.emt.jobflow.slabs import bulk_to_slabs_flow
+    from quacc.recipes.emt._jobflow.slabs import bulk_to_slabs_flow
 
     store = jf.JobStore(MemoryStore())
 
