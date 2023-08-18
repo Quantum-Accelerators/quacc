@@ -1,11 +1,11 @@
-import pytest
-from ase.build import bulk
-
 from quacc import SETTINGS
 
 DEFAULT_SETTINGS = SETTINGS.copy()
 
 SETTINGS.WORKFLOW_ENGINE = "prefect"
+
+import pytest
+from ase.build import bulk
 
 try:
     import prefect

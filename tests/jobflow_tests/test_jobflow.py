@@ -8,9 +8,6 @@ import pytest
 from ase.build import bulk
 from maggma.stores import MemoryStore
 
-from quacc.recipes.emt.core import relax_job
-from quacc.recipes.emt.slabs import bulk_to_slabs_flow
-
 try:
     import jobflow as jf
 except ImportError:
