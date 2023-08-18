@@ -5,20 +5,13 @@ from quacc import SETTINGS
 
 try:
     import prefect
+    from prefect import flow, task
     from prefect.testing.utilities import prefect_test_harness
 
 except ImportError:
     prefect = None
 
-DEFAULT_SETTINGS = SETTINGS.copy()
-
-
-def setup_module():
-    SETTINGS.WORKFLOW_ENGINE = "jobflow"
-
-
-def teardown_module():
-    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
+WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE.lower()
 
 
 @pytest.fixture(autouse=True, scope="session")
@@ -28,7 +21,10 @@ def prefect_test_fixture():
             yield
 
 
-@pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
+@pytest.mark.skipif(
+    prefect is None or WFLOW_ENGINE != "prefect",
+    reason="Prefect is not installed or specified in config",
+)
 def test_tutorial1(tmpdir):
     tmpdir.chdir()
 
@@ -56,7 +52,10 @@ def test_tutorial1(tmpdir):
     assert "atoms" in result
 
 
-@pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
+@pytest.mark.skipif(
+    prefect is None or WFLOW_ENGINE != "prefect",
+    reason="Prefect is not installed or specified in config",
+)
 def test_tutorial2(tmpdir):
     tmpdir.chdir()
 
@@ -84,7 +83,10 @@ def test_tutorial2(tmpdir):
     assert "atoms" in future2.result()
 
 
-@pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
+@pytest.mark.skipif(
+    prefect is None or WFLOW_ENGINE != "prefect",
+    reason="Prefect is not installed or specified in config",
+)
 def test_tutorial3(tmpdir):
     tmpdir.chdir()
 
@@ -110,9 +112,12 @@ def test_tutorial3(tmpdir):
     assert len(result) == 4
 
 
-@pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
-def test_comparison1():
-    from prefect import flow, task
+@pytest.mark.skipif(
+    prefect is None,
+    reason="Prefect is not installed",
+)
+def test_comparison1(tmpdir):
+    tmpdir.chdir()
 
     @task
     def add(a, b):
@@ -129,9 +134,12 @@ def test_comparison1():
     assert workflow(1, 2, 3).result() == 9
 
 
-@pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
-def test_comparison2():
-    from prefect import flow, task
+@pytest.mark.skipif(
+    prefect is None,
+    reason="Prefect is not installed",
+)
+def test_comparison2(tmpdir):
+    tmpdir.chdir()
 
     @task
     def add(a, b):
@@ -147,7 +155,10 @@ def test_comparison2():
     assert workflow(1, 2, 3) == [6, 6, 6]
 
 
-@pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
+@pytest.mark.skipif(
+    prefect is None or WFLOW_ENGINE != "prefect",
+    reason="Prefect is not installed or specified in config",
+)
 def test_emt_flow(tmpdir):
     tmpdir.chdir()
 

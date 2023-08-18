@@ -10,18 +10,13 @@ except ImportError:
     jf = None
 
 STORE = jf.JobStore(MemoryStore())
-DEFAULT_SETTINGS = SETTINGS.copy()
+WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE.lower()
 
 
-def setup_module():
-    SETTINGS.WORKFLOW_ENGINE = "jobflow"
-
-
-def teardown_module():
-    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
-
-
-@pytest.mark.skipif(jf is None, reason="Jobflow is not installed")
+@pytest.mark.skipif(
+    jf is None or WFLOW_ENGINE != "jobflow",
+    reason="Jobflow is not installed or specified in config",
+)
 def test_tutorial1(tmpdir):
     tmpdir.chdir()
 
@@ -49,7 +44,10 @@ def test_tutorial1(tmpdir):
     responses[job2.uuid][1].output
 
 
-@pytest.mark.skipif(jf is None, reason="Jobflow is not installed")
+@pytest.mark.skipif(
+    jf is None or WFLOW_ENGINE != "jobflow",
+    reason="Jobflow is not installed or specified in config",
+)
 def test_tutorial2(tmpdir):
     tmpdir.chdir()
 
@@ -76,7 +74,10 @@ def test_tutorial2(tmpdir):
     responses[job2.uuid][1].output
 
 
-@pytest.mark.skipif(jf is None, reason="Jobflow is not installed")
+@pytest.mark.skipif(
+    jf is None or WFLOW_ENGINE != "jobflow",
+    reason="Jobflow is not installed or specified in config",
+)
 def test_tutorial3(tmpdir):
     tmpdir.chdir()
 
@@ -98,7 +99,10 @@ def test_tutorial3(tmpdir):
     run_locally(workflow, create_folders=True)
 
 
-@pytest.mark.skipif(jf is None, reason="Jobflow is not installed")
+@pytest.mark.skipif(
+    jf is None,
+    reason="Jobflow is not installed",
+)
 def comparison1(tmpdir):
     tmpdir.chdir()
 
@@ -118,7 +122,10 @@ def comparison1(tmpdir):
     assert responses[job2.uuid][1].output == 9
 
 
-@pytest.mark.skipif(jf is None, reason="Jobflow is not installed")
+@pytest.mark.skipif(
+    jf is None,
+    reason="Jobflow is not installed",
+)
 def comparison2(tmpdir):
     tmpdir.chdir()
 
@@ -147,7 +154,10 @@ def comparison2(tmpdir):
     jf.run_locally(flow, ensure_success=True)  # [6, 6, 6] in final 3 jobs
 
 
-@pytest.mark.skipif(jf is None, reason="Jobflow is not installed")
+@pytest.mark.skipif(
+    jf is None or WFLOW_ENGINE != "jobflow",
+    reason="Jobflow is not installed or specified in config",
+)
 def test_emt_flow(tmpdir):
     tmpdir.chdir()
 

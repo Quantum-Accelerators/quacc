@@ -12,22 +12,15 @@ try:
 except ImportError:
     ct = None
 
-os.system("covalent start")
+if ct:
+    os.system("covalent start")
 
-DEFAULT_SETTINGS = SETTINGS.copy()
-
-
-def setup_module():
-    SETTINGS.WORKFLOW_ENGINE = "jobflow"
-
-
-def teardown_module():
-    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
+WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE.lower()
 
 
 @pytest.mark.skipif(
-    ct is None,
-    reason="This test is only meant to be run on GitHub Actions",
+    ct is None or WFLOW_ENGINE != "covalent",
+    reason="Covalent is not installed or specified in config",
 )
 def test_quickstart(tmpdir):
     tmpdir.chdir()
@@ -51,8 +44,8 @@ def test_quickstart(tmpdir):
 
 
 @pytest.mark.skipif(
-    ct is None,
-    reason="This test is only meant to be run on GitHub Actions",
+    ct is None or WFLOW_ENGINE != "covalent",
+    reason="Covalent is not installed or specified in config",
 )
 def test_tutorial1(tmpdir):
     tmpdir.chdir()
@@ -75,8 +68,8 @@ def test_tutorial1(tmpdir):
 
 
 @pytest.mark.skipif(
-    ct is None,
-    reason="This test is only meant to be run on GitHub Actions",
+    ct is None or WFLOW_ENGINE != "covalent",
+    reason="Covalent is not installed or specified in config",
 )
 def test_tutorial2(tmpdir):
     tmpdir.chdir()
@@ -97,8 +90,8 @@ def test_tutorial2(tmpdir):
 
 
 @pytest.mark.skipif(
-    ct is None,
-    reason="This test is only meant to be run on GitHub Actions",
+    ct is None or WFLOW_ENGINE != "covalent",
+    reason="Covalent is not installed or specified in config",
 )
 def test_tutorial3(tmpdir):
     tmpdir.chdir()
@@ -116,8 +109,8 @@ def test_tutorial3(tmpdir):
 
 
 @pytest.mark.skipif(
-    ct is None,
-    reason="This test is only meant to be run on GitHub Actions",
+    ct is None or WFLOW_ENGINE != "covalent",
+    reason="Covalent is not installed or specified in config",
 )
 def test_tutorial4(tmpdir):
     tmpdir.chdir()
@@ -137,8 +130,8 @@ def test_tutorial4(tmpdir):
 
 
 @pytest.mark.skipif(
-    ct is None,
-    reason="This test is only meant to be run on GitHub Actions",
+    ct is None or WFLOW_ENGINE != "covalent",
+    reason="Covalent is not installed or specified in config",
 )
 def test_tutorial5(tmpdir):
     tmpdir.chdir()
@@ -156,8 +149,8 @@ def test_tutorial5(tmpdir):
 
 
 @pytest.mark.skipif(
-    ct is None,
-    reason="This test is only meant to be run on GitHub Actions",
+    ct is None or WFLOW_ENGINE != "covalent",
+    reason="Covalent is not installed or specified in config",
 )
 def test_tutorial6(tmpdir):
     tmpdir.chdir()
@@ -175,8 +168,8 @@ def test_tutorial6(tmpdir):
 
 
 @pytest.mark.skipif(
-    ct is None,
-    reason="This test is only meant to be run on GitHub Actions",
+    ct is None or WFLOW_ENGINE != "covalent",
+    reason="Covalent is not installed or specified in config",
 )
 def test_tutorial7(tmpdir):
     tmpdir.chdir()
@@ -204,19 +197,21 @@ def test_tutorial7(tmpdir):
 
 
 @pytest.mark.skipif(
-    ct is None,
-    reason="This test is only meant to be run on GitHub Actions",
+    ct is None or WFLOW_ENGINE != "covalent",
+    reason="Covalent is not installed or specified in config",
 )
-def test_comparison1():
-    @job
+def test_comparison1(tmpdir):
+    tmpdir.chdir()
+
+    @ct.electron
     def add(a, b):
         return a + b
 
-    @job
+    @ct.electron
     def mult(a, b):
         return a * b
 
-    @flow
+    @ct.lattice
     def workflow(a, b, c):
         return mult(add(a, b), c)
 
@@ -230,15 +225,17 @@ def test_comparison1():
 
 
 @pytest.mark.skipif(
-    ct is None,
-    reason="This test is only meant to be run on GitHub Actions",
+    ct is None or WFLOW_ENGINE != "covalent",
+    reason="Covalent is not installed or specified in config",
 )
-def test_comparison2():
-    @job
+def test_comparison2(tmpdir):
+    tmpdir.chdir()
+
+    @ct.electron
     def add(a, b):
         return a + b
 
-    @job
+    @ct.electron
     def make_more(val):
         return [val] * 3
 
@@ -246,7 +243,7 @@ def test_comparison2():
     def add_distributed(vals, c):
         return [add(val, c) for val in vals]
 
-    @flow
+    @ct.lattice
     def workflow(a, b, c):
         result1 = add(a, b)
         result2 = make_more(result1)
@@ -258,5 +255,4 @@ def test_comparison2():
     # Dispatched
     dispatch_id = ct.dispatch(workflow)(1, 2, 3)
     result = ct.get_result(dispatch_id, wait=True)
-    assert result.status == "COMPLETED"
     assert result.status == "COMPLETED"

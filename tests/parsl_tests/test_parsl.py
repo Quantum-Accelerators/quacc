@@ -4,23 +4,17 @@ from quacc import SETTINGS, job, subflow
 
 try:
     import parsl
+    from parsl import join_app, python_app
 except ImportError:
     parsl = None
 
-DEFAULT_SETTINGS = SETTINGS.copy()
+WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE.lower()
 
 
-@pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
-def setup_module():
-    parsl.load()
-    SETTINGS.WORKFLOW_ENGINE = "jobflow"
-
-
-def teardown_module():
-    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
-
-
-@pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
+@pytest.mark.skipif(
+    parsl is None or WFLOW_ENGINE != "parsl",
+    reason="Parsl is not installed or specified in config",
+)
 def test_tutorial1(tmpdir):
     tmpdir.chdir()
 
@@ -40,7 +34,10 @@ def test_tutorial1(tmpdir):
     assert "atoms" in future2.result()
 
 
-@pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
+@pytest.mark.skipif(
+    parsl is None or WFLOW_ENGINE != "parsl",
+    reason="Parsl is not installed or specified in config",
+)
 def test_tutorial2(tmpdir):
     tmpdir.chdir()
 
@@ -61,7 +58,10 @@ def test_tutorial2(tmpdir):
     assert "atoms" in future2.result()
 
 
-@pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
+@pytest.mark.skipif(
+    parsl is None or WFLOW_ENGINE != "parsl",
+    reason="Parsl is not installed or specified in config",
+)
 def test_tutorial3(tmpdir):
     tmpdir.chdir()
 
@@ -81,13 +81,18 @@ def test_tutorial3(tmpdir):
     assert future2.done()
 
 
-@pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
-def test_comparison1():
-    @job
+@pytest.mark.skipif(
+    parsl is None,
+    reason="Parsl is not installed",
+)
+def test_comparison1(tmpdir):
+    tmpdir.chdir()
+
+    @python_app
     def add(a, b):
         return a + b
 
-    @job
+    @python_app
     def mult(a, b):
         return a * b
 
@@ -97,17 +102,22 @@ def test_comparison1():
     assert workflow(1, 2, 3).result() == 9
 
 
-@pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
-def test_comparison2():
-    @job
+@pytest.mark.skipif(
+    parsl is None,
+    reason="Parsl is not installed",
+)
+def test_comparison2(tmpdir):
+    tmpdir.chdir()
+
+    @python_app
     def add(a, b):
         return a + b
 
-    @job
+    @python_app
     def make_more(val):
         return [val] * 3
 
-    @subflow
+    @join_app
     def add_distributed(vals, c):
         return [add(val, c) for val in vals]
 
