@@ -8,7 +8,7 @@ Here, we will show how to use quacc with one of a variety of workflow engines to
 
 ## Specifying Your Workflow Engine
 
-Once you have installed the workflow engine of your choosing, you will need to specify it in your [quacc settings](settings.md). By default, this is set to `None` (no workflow engine).
+Once you have installed the workflow engine of your choosing, you will need to specify it in your [quacc settings](settings.md) under the `WORKFLOW_ENGINE` variable.
 
 ## Unified Workflow Syntax
 
@@ -22,7 +22,7 @@ As described in the ["Workflow Syntax"](wflow_syntax.md) section, each workflow 
 
 The `@job` decorator indicates that the decorated function is a single step in a workflow. The `@flow` decorator indicates that the decorated function is a full workflow, consisting of many individual `@job`-decorated functions (and/or `@subflow`-decorated functions). The `@subflow` decorator indicates that the decorated function is a sub-workflow within a larger workflow and is often used to define dynamic workflows.
 
-Based on the value for the `WORKFLOW_ENGINE` global variable in your quacc settings, the appropriate decorators will be selected. If no workflow engine is specified, the decorators will have no effect.
+Based on the value for the `WORKFLOW_ENGINE` global variable in your quacc settings, the appropriate decorator will be automatically selected. For instance, if `WORKFLOW_ENGINE` is set equal to `"covalent"`, all `@job` and `@flow` decorators will be internally equivalent to Covalent's `@ct.electron` and `@ct.lattice` decorators, respectively. If no workflow engine is specified, the decorator will have no effect.
 
 ## Examples
 

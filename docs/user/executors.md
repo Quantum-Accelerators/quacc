@@ -8,14 +8,14 @@ In the previous examples, we have been running calculations on our local machine
 
     **Setting Executors via the Lattice Object**
 
-    If you want to use the same executor for all the `Electron` objects in a `Lattice`, you can pass the `executor` keyword argument to the `@ct.lattice` decorator, as shown below.
+    If you want to use the same executor for all the `Electron` objects in a `Lattice`, you can pass the `executor` keyword argument to the `@ct.lattice` decorator (which is what `@flow` is equivalent to `SETTINGS.WORKFLOW_ENGINE = "covalent"`), as shown below.
 
     ```python
-    import covalent as ct
     from ase.build import bulk
+    from quacc import flow
     from quacc.recipes.emt.core import relax_job, static_job
 
-    @ct.lattice(executor="local") # (1)!
+    @flow(executor="local") # (1)!
     def workflow(atoms):
 
         result1 = relax_job(atoms)
@@ -36,11 +36,11 @@ In the previous examples, we have been running calculations on our local machine
     The individual `Electron` executor options can be modified after they are imported as follows:
 
     ```python
-    import covalent as ct
     from ase.build import bulk
+    from quacc import flow
     from quacc.recipes.emt.core import relax_job, static_job
 
-    @ct.lattice
+    @flow
     def workflow(atoms):
         job1 = relax_job
         job1.electron_object.executor = "dask" # (1)!
