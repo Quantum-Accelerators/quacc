@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import os
 from shutil import which
-from typing import List, Literal, Optional
+from typing import List, Optional
 
 from pydantic import BaseSettings, Field, root_validator
 
@@ -13,18 +13,6 @@ try:
     import covalent
 except ImportError:
     covalent = None
-try:
-    import parsl
-except ImportError:
-    parsl = None
-try:
-    import jobflow
-except ImportError:
-    jobflow = None
-try:
-    import prefect
-except ImportError:
-    prefect = None
 
 _DEFAULT_CONFIG_FILE_PATH = os.path.join(os.path.expanduser("~"), ".quacc.yaml")
 
@@ -44,9 +32,9 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # Workflow Engine
     # ---------------------------
-    WORKFLOW_ENGINE: Literal["covalent", "jobflow", "parsl", "prefect", None] = Field(
+    WORKFLOW_ENGINE: Optional[str] = Field(
         "covalent" if covalent else None,
-        description="The workflow manager to use.",
+        description="The workflow manager to use. Takes 'covalent', 'parsl', 'jobflow', 'prefect', or None",
     )
 
     # ---------------------------

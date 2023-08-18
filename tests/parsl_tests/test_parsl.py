@@ -8,7 +8,7 @@ try:
 except ImportError:
     parsl = None
 
-wflow_manager = SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
+WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
