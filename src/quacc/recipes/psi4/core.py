@@ -64,9 +64,9 @@ def static_job(
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
-    if not charge:
+    if charge is None:
         charge = get_charge(atoms)
-    if not multiplicity:
+    if multiplicity is None:
         multiplicity = get_multiplicity(atoms)
 
     defaults = {
