@@ -12,15 +12,12 @@ try:
 except ImportError:
     ct = None
 
-if ct:
-    os.system("covalent start")
-
 WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE.lower()
 
 
 @pytest.mark.skipif(
-    ct is None or WFLOW_ENGINE != "covalent",
-    reason="Covalent is not installed or specified in config",
+    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+    reason="This test is only meant to be run on GitHub Actions",
 )
 def test_quickstart(tmpdir):
     tmpdir.chdir()
@@ -44,8 +41,8 @@ def test_quickstart(tmpdir):
 
 
 @pytest.mark.skipif(
-    ct is None or WFLOW_ENGINE != "covalent",
-    reason="Covalent is not installed or specified in config",
+    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+    reason="This test is only meant to be run on GitHub Actions",
 )
 def test_tutorial1(tmpdir):
     tmpdir.chdir()
@@ -68,8 +65,8 @@ def test_tutorial1(tmpdir):
 
 
 @pytest.mark.skipif(
-    ct is None or WFLOW_ENGINE != "covalent",
-    reason="Covalent is not installed or specified in config",
+    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+    reason="This test is only meant to be run on GitHub Actions",
 )
 def test_tutorial2(tmpdir):
     tmpdir.chdir()
@@ -90,8 +87,8 @@ def test_tutorial2(tmpdir):
 
 
 @pytest.mark.skipif(
-    ct is None or WFLOW_ENGINE != "covalent",
-    reason="Covalent is not installed or specified in config",
+    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+    reason="This test is only meant to be run on GitHub Actions",
 )
 def test_tutorial3(tmpdir):
     tmpdir.chdir()
@@ -109,8 +106,8 @@ def test_tutorial3(tmpdir):
 
 
 @pytest.mark.skipif(
-    ct is None or WFLOW_ENGINE != "covalent",
-    reason="Covalent is not installed or specified in config",
+    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+    reason="This test is only meant to be run on GitHub Actions",
 )
 def test_tutorial4(tmpdir):
     tmpdir.chdir()
@@ -130,8 +127,8 @@ def test_tutorial4(tmpdir):
 
 
 @pytest.mark.skipif(
-    ct is None or WFLOW_ENGINE != "covalent",
-    reason="Covalent is not installed or specified in config",
+    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+    reason="This test is only meant to be run on GitHub Actions",
 )
 def test_tutorial5(tmpdir):
     tmpdir.chdir()
@@ -149,8 +146,8 @@ def test_tutorial5(tmpdir):
 
 
 @pytest.mark.skipif(
-    ct is None or WFLOW_ENGINE != "covalent",
-    reason="Covalent is not installed or specified in config",
+    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+    reason="This test is only meant to be run on GitHub Actions",
 )
 def test_tutorial6(tmpdir):
     tmpdir.chdir()
@@ -168,8 +165,8 @@ def test_tutorial6(tmpdir):
 
 
 @pytest.mark.skipif(
-    ct is None or WFLOW_ENGINE != "covalent",
-    reason="Covalent is not installed or specified in config",
+    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+    reason="This test is only meant to be run on GitHub Actions",
 )
 def test_tutorial7(tmpdir):
     tmpdir.chdir()
@@ -197,8 +194,8 @@ def test_tutorial7(tmpdir):
 
 
 @pytest.mark.skipif(
-    ct is None or WFLOW_ENGINE != "covalent",
-    reason="Covalent is not installed or specified in config",
+    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+    reason="This test is only meant to be run on GitHub Actions",
 )
 def test_comparison1(tmpdir):
     tmpdir.chdir()
@@ -225,8 +222,8 @@ def test_comparison1(tmpdir):
 
 
 @pytest.mark.skipif(
-    ct is None or WFLOW_ENGINE != "covalent",
-    reason="Covalent is not installed or specified in config",
+    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+    reason="This test is only meant to be run on GitHub Actions",
 )
 def test_comparison2(tmpdir):
     tmpdir.chdir()
