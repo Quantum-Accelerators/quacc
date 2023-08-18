@@ -117,7 +117,7 @@ def prep_next_run(
 
 def get_charge_and_mult(atoms: Atoms) -> tuple[int, int]:
     """
-    Get the charge and multiplicity of an Atoms object. This is meant
+    Get the (net) charge and multiplicity of an Atoms object. This is meant
     for molecules where the charge and multiplicity are fixed.
 
     First, this function checks if the Atoms object has "charge" or "spin_multiplicity"
