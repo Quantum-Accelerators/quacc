@@ -1,8 +1,8 @@
-from quacc import SETTINGS
-
 import pytest
 from ase.build import bulk
 from maggma.stores import MemoryStore
+
+from quacc import SETTINGS
 
 try:
     import jobflow as jf
@@ -12,8 +12,10 @@ except ImportError:
 STORE = jf.JobStore(MemoryStore())
 DEFAULT_SETTINGS = SETTINGS.copy()
 
+
 def setup_module():
     SETTINGS.WORKFLOW_ENGINE = "jobflow"
+
 
 def teardown_module():
     SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE

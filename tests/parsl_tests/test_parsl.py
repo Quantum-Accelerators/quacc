@@ -1,8 +1,6 @@
-from quacc import SETTINGS
-
 import pytest
 
-from quacc import job, subflow
+from quacc import SETTINGS, job, subflow
 
 try:
     import parsl
@@ -10,6 +8,7 @@ except ImportError:
     parsl = None
 
 DEFAULT_SETTINGS = SETTINGS.copy()
+
 
 @pytest.mark.skipif(parsl is None, reason="Parsl is not installed")
 def setup_module():

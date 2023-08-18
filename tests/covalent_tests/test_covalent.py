@@ -1,10 +1,9 @@
-from quacc import SETTINGS
 import os
 
 import pytest
 from ase.build import bulk, molecule
 
-from quacc import flow, job, subflow
+from quacc import SETTINGS, flow, job, subflow
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
@@ -17,8 +16,10 @@ os.system("covalent start")
 
 DEFAULT_SETTINGS = SETTINGS.copy()
 
+
 def setup_module():
     SETTINGS.WORKFLOW_ENGINE = "jobflow"
+
 
 def teardown_module():
     SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
