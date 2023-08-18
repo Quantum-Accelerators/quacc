@@ -115,6 +115,49 @@ def prep_next_run(
     return atoms
 
 
+def get_charge(atoms: Atoms) -> int:
+    """
+    Get the (net) charge of an Atoms object. This is meant for molecules where the charge
+    is a fixed property.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object
+
+    Returns
+    -------
+    int
+        Charge of the Atoms object
+    """
+
+    return (
+        atoms.charge if atoms.has("charge") else int(atoms.get_initial_charges().sum())
+    )
+
+
+def get_multiplicity(atoms: Atoms) -> int:
+    """
+    Get the spin multiplicity of an Atoms object. This is meant for molecules where the spin
+    multiplicity is a fixed property.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object
+
+    Returns
+    -------
+    int
+        Charge of the Atoms object
+    """
+    return (
+        atoms.spin_multiplicity
+        if atoms.has("spin_multiplicity")
+        else int(1 + np.abs(atoms.get_initial_magnetic_moments()).sum())
+    )
+
+
 def set_magmoms(
     atoms: Atoms,
     elemental_mags_dict: dict | None = None,
