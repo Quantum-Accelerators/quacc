@@ -134,18 +134,12 @@ def get_charge_and_mult(atoms: Atoms) -> tuple[float, int]:
     """
 
     charge = (
-        atoms.charge
-        if atoms.has("charge")
-        else int(atoms.get_initial_charges().sum())
-        if charge is None
-        else 0
+        atoms.charge if atoms.has("charge") else int(atoms.get_initial_charges().sum())
     )
     multiplicity = (
         atoms.spin_multiplicity
         if atoms.has("spin_multiplicity")
         else int(1 + atoms.get_initial_magnetic_moments().sum())
-        if multiplicity is None
-        else 1
     )
     return charge, multiplicity
 
