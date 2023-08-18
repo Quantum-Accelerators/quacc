@@ -263,7 +263,6 @@ graph LR
 
     ```python
     from ase.build import bulk, molecule
-    from parsl import python_app
     from quacc.recipes.emt.core import relax_job
 
     # Define two Atoms objects
@@ -383,7 +382,6 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
     ```python
     from ase.build import bulk
-    from parsl import python_app
     from quacc.recipes.emt.core import relax_job
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 

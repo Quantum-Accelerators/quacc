@@ -3,18 +3,16 @@ from ase.build import bulk
 
 from quacc import SETTINGS
 
+DEFAULT_SETTINGS = SETTINGS.copy()
+
+SETTINGS.WORKFLOW_ENGINE = "prefect"
+
 try:
     import prefect
     from prefect.testing.utilities import prefect_test_harness
 
 except ImportError:
     prefect = None
-
-DEFAULT_SETTINGS = SETTINGS.copy()
-
-
-def startup_module():
-    SETTINGS.WORKFLOW_ENGINE = "prefect"
 
 
 def teardown_module():
@@ -33,18 +31,18 @@ def test_tutorial1(tmpdir):
     tmpdir.chdir()
 
     from ase.build import bulk
-    from prefect import flow, task
 
+    from quacc import flow
     from quacc.recipes.emt.core import relax_job, static_job
 
     # Define the workflow
-    @flow
+    @flow  # (1)!
     def workflow(atoms):
         # Call Task 1
-        future1 = task(relax_job).submit(atoms)
+        future1 = relax_job.submit(atoms)  # (2)!
 
         # Call Task 2, which takes the output of Task 1 as input
-        future2 = task(static_job).submit(future1)
+        future2 = static_job.submit(future1)
 
         return future2
 
@@ -52,7 +50,7 @@ def test_tutorial1(tmpdir):
     atoms = bulk("Cu")
 
     # Run the workflow with Prefect tracking
-    result = workflow(atoms).result()
+    result = workflow(atoms).result()  # (3)!
     assert "atoms" in result
 
 
@@ -61,16 +59,16 @@ def test_tutorial2(tmpdir):
     tmpdir.chdir()
 
     from ase.build import bulk, molecule
-    from prefect import flow, task
 
+    from quacc import flow
     from quacc.recipes.emt.core import relax_job
 
     # Define workflow
     @flow
     def workflow(atoms1, atoms2):
         # Define two independent relaxation jobs
-        future1 = task(relax_job).submit(atoms1)
-        future2 = task(relax_job).submit(atoms2)
+        future1 = relax_job.submit(atoms1)
+        future2 = relax_job.submit(atoms2)
 
         return future1, future2
 
@@ -89,49 +87,24 @@ def test_tutorial3(tmpdir):
     tmpdir.chdir()
 
     from ase.build import bulk
-    from prefect import flow, task
 
-    from quacc.recipes.emt.core import relax_job
-    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
-
-    @flow
-    def workflow(atoms):
-        future1 = task(relax_job).submit(atoms)
-        future2 = task(bulk_to_slabs_flow).submit(future1, slab_static=None)
-
-        return future2
-
-    # Define the Atoms object
-    atoms = bulk("Cu")
-
-    # Run the workflow
-    result = workflow(atoms).result()
-    assert len(result) == 4
-
-
-@pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
-def test_tutorial4(tmpdir):
-    tmpdir.chdir()
-
-    from ase.build import bulk
-    from prefect import flow, task
-
+    from quacc import flow
     from quacc.recipes.emt.core import relax_job
     from quacc.recipes.emt.prefect.slabs import bulk_to_slabs_flow
 
     @flow
     def workflow(atoms):
-        future1 = task(relax_job).submit(atoms)
-        result = bulk_to_slabs_flow(future1, run_slab_static=False)
+        future1 = relax_job.submit(atoms)
+        slab_futures = bulk_to_slabs_flow(future1, run_slab_static=False)  # (1)!
 
-        return result
+        return slab_futures
 
     # Define the Atoms object
     atoms = bulk("Cu")
 
     # Run the workflow
     slab_futures = workflow(atoms)
-    result = [slab_future.result() for slab_future in slab_futures]
+    result = [slab_future.result() for slab_future in slab_futures]  # (2)!
     assert len(result) == 4
 
 
