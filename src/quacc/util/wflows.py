@@ -38,22 +38,22 @@ def job(_func: callable | None = None, **kwargs) -> callable:
 
     from quacc import SETTINGS
 
-    wflow_manager = (
+    wflow_engine = (
         SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
     )
-    if wflow_manager == "covalent":
+    if wflow_engine == "covalent":
         import covalent as ct
 
         return ct.electron(_func, **kwargs)
-    if wflow_manager == "jobflow":
+    if wflow_engine == "jobflow":
         from jobflow import job as jf_job
 
         return jf_job(_func, **kwargs)
-    if wflow_manager == "parsl":
+    if wflow_engine == "parsl":
         from parsl import python_app
 
         return python_app(_func, **kwargs)
-    if wflow_manager == "prefect":
+    if wflow_engine == "prefect":
         from prefect import task
 
         return task(_func, **kwargs)
@@ -83,20 +83,20 @@ def flow(_func: callable | None = None, **kwargs) -> callable:
 
     from quacc import SETTINGS
 
-    wflow_manager = (
+    wflow_engine = (
         SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
     )
-    if wflow_manager == "covalent":
+    if wflow_engine == "covalent":
         import covalent as ct
 
         return ct.lattice(_func, **kwargs)
-    if wflow_manager == "jobflow":
+    if wflow_engine == "jobflow":
         raise NotImplementedError(
             "Jobflow is not compatible with the use of a @flow decorator. Instead, you should use the `Flow()` object in Jobflow to stitch together individual compute jobs."
         )
-    if wflow_manager == "parsl":
+    if wflow_engine == "parsl":
         return _func
-    if wflow_manager == "prefect":
+    if wflow_engine == "prefect":
         from prefect import flow as prefect_flow
 
         return prefect_flow(_func, **kwargs)
@@ -126,22 +126,22 @@ def subflow(_func: callable | None = None, **kwargs) -> callable:
 
     from quacc import SETTINGS
 
-    wflow_manager = (
+    wflow_engine = (
         SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
     )
-    if wflow_manager == "covalent":
+    if wflow_engine == "covalent":
         import covalent as ct
 
         return ct.electron(ct.lattice(_func), **kwargs)
-    if wflow_manager == "jobflow":
+    if wflow_engine == "jobflow":
         raise NotImplementedError(
             "Jobflow is not compatible with the use of a @subflow decorator. Instead, you should use the `Response` object in Jobflow to create a dynamic workflow."
         )
-    if wflow_manager == "parsl":
+    if wflow_engine == "parsl":
         from parsl import join_app
 
         return join_app(_func, **kwargs)
-    if wflow_manager == "prefect":
+    if wflow_engine == "prefect":
         from prefect import flow as prefect_flow
 
         return prefect_flow(_func, **kwargs)

@@ -11,7 +11,7 @@ try:
 except ImportError:
     prefect = None
 
-WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE.lower()
+WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
 
 
 @pytest.fixture(autouse=True, scope="session")
