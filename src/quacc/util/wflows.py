@@ -157,7 +157,7 @@ def subflow(
     raise ValueError(f"Unknown workflow engine: {wflow_engine}")
 
 
-def make_runner(
+def make_dask_runner(
     cluster_kwargs: dict,
     cluster_class: callable = None,
     adapt_kwargs: dict[str, int | None] | None = None,
@@ -188,14 +188,8 @@ def make_runner(
     DaskTaskRunner
         A DaskTaskRunner object for use with Prefect workflows.
     """
-    try:
-        from dask_jobqueue import SLURMCluster
-        from prefect_dask.task_runners import DaskTaskRunner
-
-    except Exception as e:
-        raise ImportError(
-            "Need quacc[prefect] dependencies to use make_runner()."
-        ) from e
+    from dask_jobqueue import SLURMCluster
+    from prefect_dask.task_runners import DaskTaskRunner
 
     if cluster_class is None:
         cluster_class = SLURMCluster
@@ -210,7 +204,7 @@ def make_runner(
         )
 
     # Make the Dask cluster
-    cluster = _make_cluster(cluster_class, cluster_kwargs)
+    cluster = _make_dask_cluster(cluster_class, cluster_kwargs)
 
     # Set up adaptive scaling
     if adapt_kwargs and (adapt_kwargs["minimum"] or adapt_kwargs["maximum"]):
@@ -220,7 +214,7 @@ def make_runner(
     return DaskTaskRunner(address=cluster.scheduler_address)
 
 
-def _make_cluster(
+def _make_dask_cluster(
     cluster_class: callable, cluster_kwargs: dict, verbose=True
 ) -> DaskJobqueueJob:
     """

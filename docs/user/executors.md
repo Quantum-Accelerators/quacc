@@ -288,10 +288,10 @@ In the previous examples, we have been running calculations on our local machine
 
     To modify where tasks are run, set the `task_runner` keyword argument of the corresponding `#!Python @flow` decorator. The jobs in this scenario would be submitted from a login node.
 
-    An example is shown below for setting up a task runner compatible with the NERSC Perlmutter machine. By default, [`quacc.util.wflows.make_runner`](https://quantum-accelerators.github.io/quacc/reference/quacc/util/dask.html#quacc.util.wflows.make_runner) will generate a [`prefect_dask.DaskTaskRunner`](https://prefecthq.github.io/prefect-dask/task_runners/#prefect_dask.task_runners.DaskTaskRunner) composed of a [`dask_jobqueue.SLURMCluster`](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html) object.
+    An example is shown below for setting up a task runner compatible with the NERSC Perlmutter machine. By default, [`quacc.util.wflows.make_dask_runner`](https://quantum-accelerators.github.io/quacc/reference/quacc/util/dask.html#quacc.util.wflows.make_dask_runner) will generate a [`prefect_dask.DaskTaskRunner`](https://prefecthq.github.io/prefect-dask/task_runners/#prefect_dask.task_runners.DaskTaskRunner) composed of a [`dask_jobqueue.SLURMCluster`](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html) object.
 
     ```python
-    from quacc.util.wflows import make_runner
+    from quacc.util.wflows import make_dask_runner
 
     n_slurm_jobs = 1 # Number of Slurm jobs to launch in parallel.
     n_nodes_per_calc = 1 # Number of nodes to reserve for each Slurm job.
@@ -321,7 +321,7 @@ In the previous examples, we have been running calculations on our local machine
         "python": "python", # (8)!
     }
 
-    runner = make_runner(cluster_kwargs, temporary=True)
+    runner = make_dask_runner(cluster_kwargs, temporary=True)
     ```
 
     1. Number of Slurm jobs to launch.
@@ -355,10 +355,10 @@ In the previous examples, we have been running calculations on our local machine
         Refer to the [Dask-Jobqueue Documentation](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html) for the available `cluster_kwargs` that can be defined and how they relate to a typical job script.
 
 
-    To asynchronously spawn a Slurm job that continually pulls in work for the duration of its walltime (rather than starting and terminating over the lifetime of the associated `Flow`), you can instead use the `make_runner` command without a `temporary` keyword argument:
+    To asynchronously spawn a Slurm job that continually pulls in work for the duration of its walltime (rather than starting and terminating over the lifetime of the associated `Flow`), you can instead use the `make_dask_runner` command without a `temporary` keyword argument:
 
     ```python
-    runner = make_runner(cluster_kwargs)
+    runner = make_dask_runner(cluster_kwargs)
     ```
 
     This is often more efficient for running large numbers of workflows because you can request a single, large Slurm job that continually pulls in work rather than submitting a large number of small jobs to the scheduler.
@@ -366,7 +366,7 @@ In the previous examples, we have been running calculations on our local machine
     Additionally, you can have the generated Dask cluster adaptively scale based on the amount of work available by setting `adapt_kwargs` as follows:
 
     ```python
-    runner = make_runner(cluster_kwargs, adapt_kwargs={"minimum": 1, "maximum": 5})
+    runner = make_dask_runner(cluster_kwargs, adapt_kwargs={"minimum": 1, "maximum": 5})
     ```
 
     This will ensure that at least one Slurm job is always running, but the number of jobs will scale up to 5 if there is enough work available.
@@ -377,7 +377,7 @@ In the previous examples, we have been running calculations on our local machine
 
     ```python
     from dask_jobqueue import SLURMCluster
-    from quacc.util.wflows import _make_cluster
+    from quacc.util.wflows import _make_dask_cluster
 
     cluster = make_cluster(SLURMCluster, cluster_kwargs, verbose=True)
     ```
