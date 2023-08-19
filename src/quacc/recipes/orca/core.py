@@ -5,10 +5,9 @@ import multiprocessing
 import os
 from typing import TYPE_CHECKING
 
-import covalent as ct
 from ase.calculators.orca import ORCA, OrcaProfile
 
-from quacc import SETTINGS
+from quacc import SETTINGS, job
 from quacc.schemas.atoms import fetch_atoms
 from quacc.schemas.cclib import summarize_run
 from quacc.util.atoms import get_charge, get_multiplicity
@@ -25,7 +24,7 @@ LOG_FILE = f"{ORCA().name}.out"
 GEOM_FILE = f"{ORCA().name}.xyz"
 
 
-@ct.electron
+@job
 def static_job(
     atoms: Atoms | dict,
     charge: int | None = None,
@@ -110,7 +109,7 @@ def static_job(
     )
 
 
-@ct.electron
+@job
 def relax_job(
     atoms: Atoms | dict,
     charge: int | None = None,

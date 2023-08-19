@@ -2,15 +2,11 @@
 
 ## Introduction
 
-Some users may wish to use quacc in way that ensures all calculation inputs and outputs are stored in an easily queryable database. While not a requirement, this can be readily achieved through the use of the [maggma](https://github.com/materialsproject/maggma) package. Maggma has many options for [data stores](https://materialsproject.github.io/maggma/reference/stores/).
+Some users may wish to use quacc in way that ensures all calculation inputs and outputs are stored in an easily queryable database. While entirely optional, this can be readily achieved through the use of the [maggma](https://github.com/materialsproject/maggma) package. Maggma has many options for [data stores](https://materialsproject.github.io/maggma/reference/stores/).
 
 ## MongoDB
 
-!!! Note
-
-    Users of NERSC HPC machines can instead [request a database](https://docs.nersc.gov/services/databases/) directly from NERSC staff.
-
-For the database enthusiasts, MongoDB is often preferred over a solution like MontyDB. The easiest route to create a Mongo database is via a cloud storage solution called [MongoDB Atlas](https://www.mongodb.com/atlas), which has a free tier. To set up your MongoDB with MongoDB Atlas, follow the instructions below:
+The easiest route to create a Mongo database is via a cloud storage solution called [MongoDB Atlas](https://www.mongodb.com/atlas), which has a free tier. To set up your MongoDB with MongoDB Atlas, follow the instructions below:
 
 1. Sign up for a free account on [MongoDB Atlas](https://www.mongodb.com/atlas).
 2. Once logged in, select the "Create a Project" option and give your project a name (e.g. "MyProject"). Add your email address as the Project Owner.
@@ -39,4 +35,4 @@ with store:
 
 !!! Note
 
-    If you are using a self-hosted Mongo database, you will probably want to use a [`MongoStore`](https://materialsproject.github.io/maggma/reference/stores/#maggma.stores.mongolike.MongoStore) instead of the `MongoURIStore`, which takes slightly different arguments.
+    If you are using a self-hosted Mongo database, you will probably want to use a [`MongoStore`](https://materialsproject.github.io/maggma/reference/stores/#maggma.stores.mongolike.MongoStore) instead of the [`MongoURIStore`](https://materialsproject.github.io/maggma/reference/stores/#maggma.stores.mongolike.MongoURIStore), which takes slightly different arguments.

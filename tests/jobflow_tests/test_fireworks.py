@@ -1,4 +1,3 @@
-import jobflow as jf
 import pytest
 from ase.build import bulk
 
@@ -6,6 +5,7 @@ from quacc.recipes.emt.core import relax_job, static_job
 
 try:
     import fireworks
+    import jobflow as jf
 except ImportError:
     fireworks = None
 

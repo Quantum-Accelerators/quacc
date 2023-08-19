@@ -4,20 +4,29 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [UNRELEASED]
+## [0.2.0]
+
+### Added
+
+- Added a quacc global setting, `WORKFLOW_ENGINE`, to set the workflow manager.
+- Added support for the new `covalent-hpc-plugin` in `pyproject.toml`.
 
 ### Changed
 
+- Quacc recipes are now decorated with generic `#!Python @job`, `#!Python @subflow`, or `#!Python @flow` decorators to be workflow engine-agnostic.
+- Covalent is now an optional dependency to allow the base `quacc` package to be dependency-light.
 - Default VASP pseudopotentials changed to `setups_pbe54.yaml`.
 
-## Fixed
+### Fixed
 
 - Set `LMAXMIX` based on the `Z` value, not the s/p/d/f-block type.
 - Do not set automatically `LMAXTAU` to 8 for f-containing elements in `Vasp` calculator.
 
-## Removed
+### Removed
 
 - Removed atomate2 as a dependency.
+- Removed `quacc.recipes.emt.parsl` since it is now obsolete.
+- Removed `quacc config` command-line option.
 
 ## [0.1.3]
 
@@ -40,7 +49,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - Added support for Prefect.
-- Added `quacc.util.dask` module.
+- Added `quacc.util.wflows` module.
 
 ### Changed
 
