@@ -8,7 +8,7 @@ By default, the global quacc settings can be found in the [`settings.py`](https:
 
 If you are planning to modify parameters for most of your calculations, the easiest way is to create a YAML file with custom settings. For instance, it might look something like the following if you wanted to modify the `WORKFLOW_ENGINE`, `SCRATCH_DIR`, and `CREATE_UNIQUE_WORKDIR` settings for all your workflows.
 
-```yaml title="quacc.yaml"
+```yaml title="~/.quacc.yaml"
 WORKFLOW_ENGINE: covalent # (1)!
 SCRATCH_DIR: /tmp # (2)!
 CREATE_UNIQUE_WORKDIR: true # (3)!
@@ -20,7 +20,7 @@ CREATE_UNIQUE_WORKDIR: true # (3)!
 
 3. This would ensure that each job in your quacc workflow is run in a unique, isolated working directory. This is often useful when running workflows in parallel, although some workflow engines like Covalent have their own mechanisms for this.
 
-By default, quacc looks for this YAML file at `~/quacc.yaml`. If you wish to store the `quacc.yaml` file somewhere else, you can define the environment variable `QUACC_CONFIG_FILE` and point it to the `quacc.yaml` path of your choosing.
+By default, quacc looks for this YAML file at `~/.quacc.yaml`. If you wish to store the `quacc.yaml` file somewhere else, you can define the environment variable `QUACC_CONFIG_FILE` and point it to the `quacc.yaml` path of your choosing.
 
 ### Using Environment Variables
 

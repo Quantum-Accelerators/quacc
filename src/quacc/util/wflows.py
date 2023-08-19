@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from monty.dev import requires
-
 if TYPE_CHECKING:
     from covalent import electron as ct_electron
     from covalent import lattice as ct_lattice
@@ -12,15 +10,7 @@ if TYPE_CHECKING:
     from parsl.app.python import PythonApp
     from prefect import Flow as PrefectFlow
     from prefect import Task as PrefectTask
-
-try:
-    from dask_jobqueue import SLURMCluster
     from prefect_dask.task_runners import DaskTaskRunner
-
-    prefect_deps = True
-
-except ImportError:
-    prefect_deps = False
 
 
 def job(
@@ -167,7 +157,6 @@ def subflow(
     raise ValueError(f"Unknown workflow engine: {wflow_engine}")
 
 
-@requires(prefect_deps, "Need quacc[prefect] dependencies")
 def make_runner(
     cluster_kwargs: dict,
     cluster_class: callable = None,
@@ -199,6 +188,14 @@ def make_runner(
     DaskTaskRunner
         A DaskTaskRunner object for use with Prefect workflows.
     """
+    try:
+        from dask_jobqueue import SLURMCluster
+        from prefect_dask.task_runners import DaskTaskRunner
+
+    except Exception as e:
+        raise ImportError(
+            "Need quacc[prefect] dependencies to use make_runner()."
+        ) from e
 
     if cluster_class is None:
         cluster_class = SLURMCluster
@@ -223,7 +220,6 @@ def make_runner(
     return DaskTaskRunner(address=cluster.scheduler_address)
 
 
-@requires(prefect_deps, "Need quacc[prefect] dependencies")
 def _make_cluster(
     cluster_class: callable, cluster_kwargs: dict, verbose=True
 ) -> DaskJobqueueJob:
@@ -239,6 +235,7 @@ def _make_cluster(
     verbose
         Whether to print the job script to stdout.
     """
+
     cluster = cluster_class(**cluster_kwargs)
     if verbose:
         print(
