@@ -13,7 +13,7 @@
 
 !!! Tip
 
-    We recommend using Python 3.9 or 3.10. Some optional dependencies (i.e. Covalent, Psi4) do not support Python 3.11 at the time of writing.
+    We currently recommend using Python 3.9 or 3.10. A few optional dependencies (i.e. Covalent, Psi4) do not support Python 3.11 at the time of writing.
 
 ## Installing quacc
 

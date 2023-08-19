@@ -43,7 +43,7 @@ def test_covalent_to_db():
     ct is None or os.environ.get("GITHUB_ACTIONS", False) is False,
     reason="This test is only meant to be run on GitHub Actions with Covalent",
 )
-def test_tutorial():
+def test_covalent_db_tutorial():
     # Connect to the database
 
     store = MemoryStore()
