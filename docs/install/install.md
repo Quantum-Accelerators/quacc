@@ -11,6 +11,10 @@
 3. Create a fresh Python environment by running `conda create -n quacc python=3.10`
 4. Activate this environment via `conda activate quacc`
 
+!!! Tip
+
+    We recommend using Python 3.9 or 3.10. Some optional dependencies (i.e. Covalent, Psi4) do not support Python 3.11 at the time of writing.
+
 ## Installing quacc
 
 In your newly activated conda environment, run the following commands to install quacc. Note that you will need to install quacc on all machines where you plan to run calculations.

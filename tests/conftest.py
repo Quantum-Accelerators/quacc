@@ -15,14 +15,14 @@ WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else
 
 
 def pytest_sessionstart():
-    os.makedirs(test_results_dir, exist_ok=True)
-    os.makedirs(test_scratch_dir, exist_ok=True)
-    SETTINGS.RESULTS_DIR = test_results_dir
-    SETTINGS.SCRATCH_DIR = test_scratch_dir
     if WFLOW_ENGINE == "parsl":
         import parsl
 
         parsl.load()
+    os.makedirs(test_results_dir, exist_ok=True)
+    os.makedirs(test_scratch_dir, exist_ok=True)
+    SETTINGS.RESULTS_DIR = test_results_dir
+    SETTINGS.SCRATCH_DIR = test_scratch_dir
 
 
 def pytest_sessionfinish():
