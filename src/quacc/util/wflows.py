@@ -65,8 +65,10 @@ def job(
         from prefect import task
 
         return task(_func, **kwargs)
+    if not wflow_engine:
+        return _func
 
-    return _func
+    raise ValueError(f"Unknown workflow engine: {wflow_engine}")
 
 
 def flow(
@@ -110,8 +112,10 @@ def flow(
         from prefect import flow as prefect_flow
 
         return prefect_flow(_func, **kwargs)
+    if not wflow_engine:
+        return _func
 
-    return _func
+    raise ValueError(f"Unknown workflow engine: {wflow_engine}")
 
 
 def subflow(
