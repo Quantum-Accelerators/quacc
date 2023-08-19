@@ -56,7 +56,7 @@ In general, please try to keep the code style consistent when possible. There ar
 
 3. Address any relevant style issues raised by the "Deepsource: Python" and "Sourcery" GitHub actions, if present.
 
-4. Functions should be lowercase and with underscores. Classes should be in PascalCase and constructed using a `@dataclass` decorator where possible.
+4. Functions should be lowercase and with underscores. Classes should be in PascalCase and constructed using a `#!Python @dataclass` decorator where possible.
 
 ## Unit Tests
 

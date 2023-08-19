@@ -13,7 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- Quacc recipes are now decorated with generic `@job`, `@subflow`, or `@flow` decorators to be workflow engine-agnostic.
+- Quacc recipes are now decorated with generic `#!Python @job`, `#!Python @subflow`, or `#!Python @flow` decorators to be workflow engine-agnostic.
 - Covalent is now an optional dependency to allow the base `quacc` package to be dependency-light.
 - Default VASP pseudopotentials changed to `setups_pbe54.yaml`.
 - Changed `quacc.recipes.emt.jobflow` and `quacc.recipes.emt.prefect` to `quacc.recipes.emt._jobflow` and `quacc.recipes.emt._prefect`

@@ -22,6 +22,7 @@ Then open the URL printed in the terminal (usually http://localhost:48008) and r
 This demo workflow will relax a bulk Cu structure using the EMT calculator.
 
 ```python
+import covalent as ct
 from ase.build import bulk
 from quacc import flow
 from quacc.recipes.emt.core import relax_job
@@ -48,6 +49,7 @@ print(result)
 This demo workflow will relax a bulk Cu structure using the EMT calculator, use the relaxed structure to generate a set of surface slabs, and then run a relaxation and static calculation on each generated slab.
 
 ```python
+import covalent as ct
 from ase.build import bulk
 from quacc import flow
 from quacc.recipes.emt.core import relax_job
@@ -73,7 +75,7 @@ atoms = bulk("Cu")
 dispatch_id = ct.dispatch(workflow)(atoms)
 
 # Fetch the result from the server
-result = ct.get_result(dispatch_id)
+result = ct.get_result(dispatch_id, wait=True)
 print(result)
 ```
 

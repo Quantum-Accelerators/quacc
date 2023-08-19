@@ -10,11 +10,15 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     **Installation**
 
-    To install Covalent, run `pip install git+https://github.com/Quantum-Accelerators/quacc.git[covalent]`.
+    To install Covalent, run
+
+    ```
+    pip install git+https://github.com/Quantum-Accelerators/quacc.git[covalent]
+    ```
 
     **Starting the Server**
 
-    Covalent uses a server to dispatch and store calculation details and results. To start the server, simply run `covalent start` in your terminal. It will return a URL that you can use to access the Covalent dashboard, which is shown below.
+    Covalent uses a server to dispatch and store calculation details and results. To start the server, simply run `covalent start` in your terminal. It will return a URL (usually http://localhost:48008) that you can use to access the Covalent dashboard, which is shown below.
 
     ![Covalent UI](../images/install/ui_blank.jpg)
 

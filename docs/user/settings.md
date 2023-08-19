@@ -6,7 +6,7 @@ By default, the global quacc settings can be found in the [`settings.py`](https:
 
 ### Using a YAML File
 
-If you are planning to modify parameters for most of your calculations, the easiest way is to create a YAML file with custom settings. For instance, it might look something like the following if you wanted to modify the `SCRATCH_DIR`, `GZIP_FILES`, and `CREATE_UNIQUE_WORKDIR` settings for all your workflows.
+If you are planning to modify parameters for most of your calculations, the easiest way is to create a YAML file with custom settings. For instance, it might look something like the following if you wanted to modify the `WORKFLOW_ENGINE`, `SCRATCH_DIR`, and `CREATE_UNIQUE_WORKDIR` settings for all your workflows.
 
 ```yaml title="quacc.yaml"
 WORKFLOW_ENGINE: covalent # (1)!
@@ -14,7 +14,7 @@ SCRATCH_DIR: /tmp # (2)!
 CREATE_UNIQUE_WORKDIR: true # (3)!
 ```
 
-1. This would set the workflow engine to Covalent. By default, no workflow engine is specified.
+1. This would set the workflow engine to Covalent.
 
 2. This would set the quacc scratch directory to `/tmp` on whatever machine the calculations are run on.
 
@@ -38,4 +38,4 @@ SETTINGS.CREATE_UNIQUE_WORKDIR = True
 
 !!! Important
 
-    This approach works for all settings except for `WORKFLOW_ENGINE`, which must be defined before importing any quacc recipes. Therefore, it is recommended to use the YAML file or environment variable approach for specifying the workflow engine.
+    This approach should work as expected for all settings except `WORKFLOW_ENGINE`, which must be defined before any other imports. Therefore, it is recommended to use the YAML file or environment variable approach for specifying the workflow engine.

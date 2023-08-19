@@ -30,11 +30,17 @@ pip install git+https://github.com/quantum-accelerators/quacc.git
 
 ## Optional Dependencies
 
-Quacc can be installed with several "extras," as outlined in the `pyproject.toml` file. To install the extras, you can run `pip install git+https://github.com/Quantum-Accelerators/quacc.git[<extra>]` where `<extra>` is one of the following:
+Quacc can be installed with several "extras," as outlined in the [`pyproject.toml`](https://github.com/Quantum-Accelerators/quacc/blob/main/pyproject.toml) file. To install the extras, you can run
+
+```
+pip install git+https://github.com/Quantum-Accelerators/quacc.git[<extra>]`
+```
+
+where `<extra>` is one of the following:
 
 ### Calculators
 
-- `quacc[tblite]`: Installs dependencies to enable the use of [tblite](https://github.com/tblite/tblite).
+- `quacc[tblite]`: Installs dependencies to enable the use of [tblite](https://github.com/tblite/tblite) (on Linux).
 
 ### Workflow Managers
 

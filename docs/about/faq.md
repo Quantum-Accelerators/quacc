@@ -30,9 +30,9 @@ A: Atomate2 is a fantastic code that can be used to run libraries of computation
 
 Despite these differences, quacc and Atomate2 are largely interoperable! Feel free to stitch together workflows from both codes as you see fit using Jobflow!
 
-**Q: I see `@ct.electron` across the code. What if I don't want to use Covalent?**
+**Q: I see `#!Python @ct.electron` across the code. What if I don't want to use Covalent?**
 
-A: The beauty is that you don't have to use Covalent if you don't want to! By default, the `@ct.electron` wrapper is entirely ignored if you use quacc without a workflow manager or if you use another workflow manager, such as Jobflow. For this reason, you can use most of the functions within quacc regardless of your choice of workflow manager.
+A: The beauty is that you don't have to use Covalent if you don't want to! By default, the `#!Python @ct.electron` wrapper is entirely ignored if you use quacc without a workflow manager or if you use another workflow manager, such as Jobflow. For this reason, you can use most of the functions within quacc regardless of your choice of workflow manager.
 
 **Q: I want to contribute a new recipe to quacc, but it will require additional dependencies. Is that a problem?**
 

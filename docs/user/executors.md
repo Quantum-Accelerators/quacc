@@ -4,13 +4,14 @@ In the previous examples, we have been running calculations on our local machine
 
 === "Covalent"
 
-    By default, Covalent will run all `Electron` tasks on your local machine using the [`DaskExecutor`](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/dask). This is a parameter that you can control. For instance, Covalent offers many [plugin executors](https://docs.covalent.xyz/docs/features/executor-plugins/exe) that can be used to interface with a wide range of HPC, cloud, and quantum devices.
+    By default, Covalent will run all `Electron` tasks on your local machine using the Dask backend. This is a parameter that you can control. For instance, Covalent offers many [plugin executors](https://docs.covalent.xyz/docs/features/executor-plugins/exe) that can be used to interface with a wide range of HPC, cloud, and quantum devices.
 
     **Setting Executors via the Lattice Object**
 
-    If you want to use the same executor for all the `Electron` objects in a `Lattice`, you can pass the `executor` keyword argument to the `@ct.lattice` decorator (which is what `@flow` is equivalent to `SETTINGS.WORKFLOW_ENGINE = "covalent"`), as shown below.
+    If you want to use the same executor for all the `Electron` objects in a `Lattice`, you can pass the `executor` keyword argument to the `#!Python @ct.lattice` decorator (which is what `#!Python @flow` is equivalent to when setting your `WORKFLOW_ENGINE` quacc config variable to `"covalent"`).
 
     ```python
+    import covalent as ct
     from ase.build import bulk
     from quacc import flow
     from quacc.recipes.emt.core import relax_job, static_job
@@ -36,6 +37,7 @@ In the previous examples, we have been running calculations on our local machine
     The individual `Electron` executor options can be modified after they are imported as follows:
 
     ```python
+    import covalent as ct
     from ase.build import bulk
     from quacc import flow
     from quacc.recipes.emt.core import relax_job, static_job
@@ -58,7 +60,7 @@ In the previous examples, we have been running calculations on our local machine
     print(result)
     ```
 
-    1. If you are defining your own workflow functions to use, you can also set the executor for individual `Electron` objects by passing the `executor` keyword argument to the `@ct.electron` decorator.
+    1. If you are defining your own workflow functions to use, you can also set the executor for individual `Electron` objects by passing the `executor` keyword argument to the `#!Python @ct.electron` decorator.
 
     2. This was merely for demonstration purposes. There is never really a need to use the "local" executor since the "dask" executor runs locally and is faster.
 
@@ -164,7 +166,7 @@ In the previous examples, we have been running calculations on our local machine
 
     8. The type of Launcher to use. Note that `SimpleLauncher()` must be used instead of the commonly used `SrunLauncher()` to allow quacc subprocesses to launch their own `srun` commands.
 
-    Unlike some other workflow engines, Parsl (by default) is built for "jobpacking" (also known as the pilot job model) where the allocated nodes continually pull in new workers (until the walltime is reached or the parent Python process is killed). This makes it possible to request a large number of nodes that continually pull in new jobs rather than submitting a large number of small jobs to the scheduler, which can be more efficient. In other words, don't be surprised if the Slurm job continues to run even when your submitted task has completed, particularly if you are using a Jupyter Notebook or IPython kernel.
+    Unlike some other workflow engines, Parsl is built for the pilot job model where the allocated nodes continually pull in new workers (until the walltime is reached or the parent Python process is killed). This makes it possible to avoid submitting a large number of small jobs to the scheduler, which can be inefficient. As a result, don't be surprised if the Slurm job continues to run even when your submitted task has completed, particularly if you are using a Jupyter Notebook or IPython kernel.
 
     **Scaling Up**
 
@@ -217,10 +219,6 @@ In the previous examples, we have been running calculations on our local machine
     3. Sets the minimum number of blocks (e.g. Slurm jobs) to maintain during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 1 so that the pilot job is always running.
 
     4. Sets the maximum number of active blocks (e.g. Slurm jobs) during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 1 here for demonstration purposes, but it can be increased to have multiple Slurm jobpacks running simultaneously.
-
-    !!! Tip
-
-        Dr. Logan Ward has a nice example on YouTube describing a very similar example [here](https://youtu.be/0V4Hs4kTyJs?t=398).
 
 === "Jobflow"
 
@@ -288,7 +286,7 @@ In the previous examples, we have been running calculations on our local machine
 
         Check out the [Task Runner](https://docs.prefect.io/latest/concepts/task-runners/) documentation for more information on how Prefect handles task execution.
 
-    To modify where tasks are run, set the `task_runner` keyword argument of the corresponding `@flow` decorator. The jobs in this scenario would be submitted from a login node.
+    To modify where tasks are run, set the `task_runner` keyword argument of the corresponding `#!Python @flow` decorator. The jobs in this scenario would be submitted from a login node.
 
     An example is shown below for setting up a task runner compatible with the NERSC Perlmutter machine. By default, [`quacc.util.wflows.make_runner`](https://quantum-accelerators.github.io/quacc/reference/quacc/util/dask.html#quacc.util.wflows.make_runner) will generate a [`prefect_dask.DaskTaskRunner`](https://prefecthq.github.io/prefect-dask/task_runners/#prefect_dask.task_runners.DaskTaskRunner) composed of a [`dask_jobqueue.SLURMCluster`](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html) object.
 
