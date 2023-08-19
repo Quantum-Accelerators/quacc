@@ -42,6 +42,6 @@ SETTINGS.CREATE_UNIQUE_WORKDIR = True
 
 ## List of Quacc Settings
 
-```title="quacc/src/settings.py"
---8<-- "../quacc/src/settings.py:settings"
+```title="quacc/settings.py"
+--8<-- "../quacc/src/quacc/settings.py:settings"
 ```

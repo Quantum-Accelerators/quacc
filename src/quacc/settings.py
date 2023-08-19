@@ -40,7 +40,10 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     WORKFLOW_ENGINE: Optional[str] = Field(
         "parsl" if parsl else "covalent" if covalent else None,
-        description="The workflow manager to use. Takes 'covalent', 'parsl', 'jobflow', 'prefect', or None",
+        description=(
+            "The workflow manager to use."
+            "Options include: 'covalent', 'parsl', 'jobflow', 'prefect', or None"
+        ),
     )
 
     # ---------------------------
@@ -49,11 +52,20 @@ class QuaccSettings(BaseSettings):
 
     CONFIG_FILE: str = Field(
         _DEFAULT_CONFIG_FILE_PATH,
-        description="Path to the YAML file to load alternative quacc configuration defaults from.",
+        description=(
+            "Path to the YAML file to load alternative quacc configuration "
+            "defaults from."
+        ),
     )
     RESULTS_DIR: str = Field(
         os.getcwd(),
-        description="Directory to store results in. Note that the precise behavior may be modified by the chosen workflow engine (e.g. Covalent specifies the base directory as the `workdir` of the executor). In this case, the `RESULTS_DIR` will be a subdirectory of the base directory.",
+        description=(
+            "Directory to store I/O-based calculation results in."
+            "Note that this behavior may be modified by the chosen workflow engine."
+            "For instance, Covalent specifies the base directory as the `workdir` "
+            "of a local executor or the `remote_workdir` of a remote executor."
+            "In this case, the `RESULTS_DIR` will be a subdirectory of that directory."
+        ),
     )
     SCRATCH_DIR: str = Field(
         "/tmp" if os.path.exists("/tmp") else os.getcwd(),
@@ -61,7 +73,10 @@ class QuaccSettings(BaseSettings):
     )
     CREATE_UNIQUE_WORKDIR: bool = Field(
         False,
-        description="Whether to automatically create a unique working directory within RESULTS_DIR for each job. Some workflow engines have an option to do this for you already.",
+        description=(
+            "Whether to have a unique working directory in RESULTS_DIR for each job."
+            "Some workflow engines have an option to do this for you already."
+        ),
     )
     GZIP_FILES: bool = Field(
         True, description="Whether generated files should be gzip'd."
@@ -72,7 +87,11 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     PRIMARY_STORE: str = Field(
         None,
-        description="String-based JSON representation of the primary Maggma data store where calculation results will be stored. Taken from the `.to_json()` method of the corresponding Store object.",
+        description=(
+            "String-based JSON representation of the primary Maggma data store "
+            "where calculation results will be stored."
+            "Taken from the `.to_json()` method of the corresponding Store object."
+        ),
     )
 
     # ---------------------------
@@ -80,7 +99,10 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     ORCA_CMD: str = Field(
         "orca",
-        description="Path to the ORCA executable. This must be the full, absolute path for parallel calculations to work.",
+        description=(
+            "Path to the ORCA executable. This must be the full, absolute path "
+            "for parallel calculations to work."
+        ),
     )
 
     # ---------------------------
@@ -90,7 +112,11 @@ class QuaccSettings(BaseSettings):
     # VASP Settings: Main
     VASP_PARALLEL_CMD: str = Field(
         "",
-        description="Parallel command to run VASP with Custodian (e.g. srun -N 2 --ntasks-per-node 48)",
+        description=(
+            "Parallel command to run VASP with Custodian."
+            "For example: srun -N 2 --ntasks-per-node 48"
+            "Note that this does not include the executable name."
+        ),
     )
     VASP_CMD: str = Field(
         "vasp_std", description="Command to run the standard version of VASP."
@@ -101,23 +127,40 @@ class QuaccSettings(BaseSettings):
 
     # VASP Settings: General
     VASP_INCAR_COPILOT: bool = Field(
-        True, description="Whether co-pilot mode should be used for VASP INCAR handling"
+        True,
+        description=(
+            "Whether co-pilot mode should be used for VASP INCAR handling."
+            "This will modify INCAR flags on-the-fly if they disobey the VASP manual."
+            "A warning will be raised in each case."
+        ),
     )
     VASP_BADER: bool = Field(
         bool(which("bader")),
-        description="Whether to run a Bader analysis when summarizing VASP results. Requires bader to be in PATH.",
+        description=(
+            "Whether to run a Bader analysis when summarizing VASP results."
+            "Requires bader to be in PATH."
+        ),
     )
     VASP_PRESET_MAG_DEFAULT: float = Field(
         1.0,
-        description="Default initial magmom to use for a given element if a preset with magmoms is provided but an element is missing from the list",
+        description=(
+            "Default initial magmom to use for a given element if a preset "
+            "with magmoms is provided but an element is missing from the list"
+        ),
     )
     VASP_MAG_CUTOFF: float = Field(
         0.05,
-        description="If the absolute value of all magnetic moments are below this value, they will be set to 0 such that a spin-unpolarized calculation will be performed",
+        description=(
+            "If the absolute value of all magnetic moments are below this value, "
+            "they will be set to 0 such that a spin-unpolarized calculation will be performed"
+        ),
     )
     VASP_COPY_MAGMOMS: bool = Field(
         True,
-        description="If True, any pre-existing atoms.get_magnetic_moments() will be set in atoms.set_initial_magnetic_moments().",
+        description=(
+            "If True, any pre-existing atoms.get_magnetic_moments() will be set"
+            "in atoms.set_initial_magnetic_moments()."
+        ),
     )
     VASP_VERBOSE: bool = Field(
         True,
@@ -134,7 +177,10 @@ class QuaccSettings(BaseSettings):
     )
     VASP_CUSTODIAN_VTST: bool = Field(
         False,
-        description="If VTST-related input swaps should be used when running Custodian. Requires VASP to be compiled with VTST",
+        description=(
+            "If VTST-related input swaps should be used when running Custodian."
+            "Requires VASP to be compiled with VTST"
+        ),
     )
     VASP_CUSTODIAN_MAX_ERRORS: int = Field(
         5, description="Maximum errors for Custodian"
@@ -160,7 +206,10 @@ class QuaccSettings(BaseSettings):
     )
     VASP_CUSTODIAN_WALL_TIME: Optional[int] = Field(
         None,
-        description="After this many seconds, Custodian will stop running and ensure that VASP writes a STOPCAR",
+        description=(
+            "After this many seconds, Custodian will stop running "
+            "and ensure that VASP writes a STOPCAR"
+        ),
     )
 
     # --8<-- [end:settings]
