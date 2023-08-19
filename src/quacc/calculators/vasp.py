@@ -6,10 +6,9 @@ from __future__ import annotations
 import inspect
 import os
 import warnings
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 import numpy as np
-from ase import Atoms
 from ase.calculators.vasp import Vasp as Vasp_
 from ase.calculators.vasp import setups as ase_setups
 from ase.constraints import FixAtoms
@@ -21,6 +20,9 @@ from quacc import SETTINGS
 from quacc.custodian import vasp as custodian_vasp
 from quacc.util.atoms import check_is_metal, set_magmoms
 from quacc.util.files import load_yaml_calc
+
+if TYPE_CHECKING:
+    from ase import Atoms
 
 
 class Vasp(Vasp_):

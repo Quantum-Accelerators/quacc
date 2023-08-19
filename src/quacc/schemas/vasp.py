@@ -4,9 +4,8 @@ from __future__ import annotations
 import os
 import warnings
 from tempfile import TemporaryDirectory
-from typing import TypeVar
+from typing import TYPE_CHECKING, TypeVar
 
-from ase import Atoms
 from emmet.core.tasks import TaskDoc
 from maggma.core import Store
 from pymatgen.command_line.bader_caller import bader_analysis_from_path
@@ -18,6 +17,10 @@ from quacc.util.atoms import prep_next_run as prep_next_run_
 from quacc.util.db import results_to_db
 from quacc.util.dicts import clean_dict
 from quacc.util.files import copy_decompress
+
+if TYPE_CHECKING:
+    from ase import Atoms
+
 
 VaspSchema = TypeVar("VaspSchema")
 

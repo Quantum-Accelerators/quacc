@@ -5,17 +5,20 @@ from __future__ import annotations
 
 import hashlib
 from copy import deepcopy
+from typing import TYPE_CHECKING
 
 import numpy as np
-from ase import Atoms
 from ase.io.jsonio import encode
 from pymatgen.io.ase import AseAtomsAdaptor
+
+if TYPE_CHECKING:
+    from ase import Atoms
 
 # NOTES:
 # - Anytime an Atoms object is converted to a pmg structure, make sure
 # to reattach any .info flags to the Atoms object, e.g. via `new_atoms.info = atoms.info.copy()``.
 # Note that atoms.info is mutable, so copy it!
-# - All major functions should take in Atoms by default and reutrn Atoms
+# - All major functions should take in Atoms by default and return Atoms
 # by default. Pymatgen structures can be returned with an optional kwarg.
 # - If you modify the properties of an input Atoms object in any way, make sure to do so
 # on a copy because Atoms objects are mutable.
@@ -110,6 +113,49 @@ def prep_next_run(
         atoms.info["_id"] = get_atoms_id(atoms)
 
     return atoms
+
+
+def get_charge(atoms: Atoms) -> int:
+    """
+    Get the (net) charge of an Atoms object. This is meant for molecules where the charge
+    is a fixed property.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object
+
+    Returns
+    -------
+    int
+        Charge of the Atoms object
+    """
+
+    return (
+        atoms.charge if atoms.has("charge") else int(atoms.get_initial_charges().sum())
+    )
+
+
+def get_multiplicity(atoms: Atoms) -> int:
+    """
+    Get the spin multiplicity of an Atoms object. This is meant for molecules where the spin
+    multiplicity is a fixed property.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object
+
+    Returns
+    -------
+    int
+        Charge of the Atoms object
+    """
+    return (
+        atoms.spin_multiplicity
+        if atoms.has("spin_multiplicity")
+        else int(1 + np.abs(atoms.get_initial_magnetic_moments()).sum())
+    )
 
 
 def set_magmoms(

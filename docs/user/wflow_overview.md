@@ -1,18 +1,20 @@
 # Workflow Engines Overview
 
-Everyone's computing needs are different, so we ensured that quacc is interoperable with a variety of modern workflow management tools. There are over [300+ workflow management tools](https://workflows.community/systems) out there, so we can't possibly cover them all. Instead, we have focused on the most popular tools that we have tested and found to be compatible with quacc with minimal additional coding required. The recommended solutions below each use a decorator-based approach to defining workflows, and the basic syntax is very similar across all of them.
+Everyone's computing needs are different, so we ensured that quacc is interoperable with a variety of modern workflow management tools. There are [300+ workflow management tools](https://workflows.community/systems) out there, so we can't possibly support them all. Instead, we have focused on a select few that adopt a similar decorator-based approach to defining workflows with substantial support for HPC systems.
 
-## How to Choose a Workflow Engine
+## Choosing a Workflow Engine
 
-If you aren't sure which workflow engine to choose, check out the Pros and Cons lists below.
+### Summary
 
-Generally, we recommend either Covalent or Parsl, which have nearly identical syntax. If you're using an HPC cluster and can SSH into the login node without the need for multi-factor authentication each connection, then try Covalent. If automated SSH connections to the login node are not viable or relying on a centralized server isn't desirable, Parsl is likely the best option. Jobflow with FireWorks is best-suited if you are working at Lawrence Berkeley National Laboratory where it is already in active use.
+!!! Tip
 
-## Pros and Cons
+    Generally, we highly recommend either **Covalent** or **Parsl** for most users. If you are new to workflow engines or would like a helpful UI to monitor workflows, try Covalent. If you have a need for speed and are savvy with supercomputers, try Parsl.
+
+### Pros and Cons
 
 === "Covalent"
 
-    The default suggested workflow management solution is [Covalent](https://github.com/AgnostiqHQ/covalent/) due to its ease of use and helpful dashboard. If you are new to workflow management tools or primarily care about computing across distributed resources, this may be a good option to conisder.
+    [Covalent](https://github.com/AgnostiqHQ/covalent/) is a workflow management solution from the company [Agnostiq](https://agnostiq.ai/).
 
     Pros:
 
@@ -25,10 +27,10 @@ Generally, we recommend either Covalent or Parsl, which have nearly identical sy
 
     Cons:
 
-    - Still actively in development
     - Not as widely used as other workflow management solutions
     - It requires a centralized server to be running continuously in order to manage the workflows
     - High-security HPC environments may be difficult to access via SSH with the centralized server approach
+    - Not ideal for large numbers of short-duration jobs on remote HPC machines
 
 === "Parsl"
 
@@ -39,7 +41,7 @@ Generally, we recommend either Covalent or Parsl, which have nearly identical sy
     - Extremely configurable for virtually any HPC environment
     - Relatively simple to define the workflows
     - Active community, particularly across academia
-    - Ideal for jobpacking (e.g. packing many compute tasks into a single compute job) and has near-ideal scaling performance
+    - Well-suited for [pilot jobs](https://en.wikipedia.org/wiki/Pilot_job) and has near-ideal scaling performance
     - Thorough documentation
     - Does not rely on maintaining a centralized server of any kind
 
@@ -82,3 +84,25 @@ Generally, we recommend either Covalent or Parsl, which have nearly identical sy
     - FireWorks can have a steep learning curve due to its many configuration options
     - The reliance on MongoDB can be challenging for new users and certain HPC environments
     - New features are not currently planned
+
+=== "Prefect"
+
+    [Prefect](https://www.prefect.io/) is a workflow management system that is widely adopted in the data science industry.
+
+    !!! Warning
+
+        Prefect support should be considered experimental at this time.
+
+    Pros:
+
+    - Very popular in the data science industry with an active community
+    - Useful dashboard to monitor job progress
+    - Supports a variety of job schedulers via `dask-jobqueue`
+    - Uses a directed acyclic graph-free model for increased flexibility in workflow definitions
+
+    Cons:
+
+    - Lacks documentation for HPC environments, although it supports them
+    - Learning the intricacies of Dask can be challenging for new users
+    - Requires the compute nodes to be able to make an outbound network connection
+    - The dashboard stores results for only a 7 day history by default and does not store the full output of each task

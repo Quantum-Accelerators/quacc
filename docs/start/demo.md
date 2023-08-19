@@ -7,11 +7,15 @@ Want to get up and running with quacc as fast possible? Here we go!
 Run the following commands in the terminal:
 
 ```bash
-pip install git+https://github.com/quantum-accelerators/quacc.git
+pip install git+https://github.com/quantum-accelerators/quacc.git[covalent]
 covalent start
 ```
 
 Then open the URL printed in the terminal (usually http://localhost:48008) and run a sample workflow below!
+
+!!! Tip
+
+    Don't want to use Covalent? No problem! Quacc supports a [variety of workflow managers](../user/wflow_overview.md) (or none at all!).
 
 ## Demo Workflow 1: A Simple One
 
@@ -20,10 +24,11 @@ This demo workflow will relax a bulk Cu structure using the EMT calculator.
 ```python
 import covalent as ct
 from ase.build import bulk
+from quacc import flow
 from quacc.recipes.emt.core import relax_job
 
 # Define the workflow
-workflow = ct.lattice(relax_job)
+workflow = flow(relax_job)
 
 # Make an Atoms object of a bulk Cu structure
 atoms = bulk("Cu")
@@ -44,12 +49,14 @@ print(result)
 This demo workflow will relax a bulk Cu structure using the EMT calculator, use the relaxed structure to generate a set of surface slabs, and then run a relaxation and static calculation on each generated slab.
 
 ```python
+import covalent as ct
 from ase.build import bulk
+from quacc import flow
 from quacc.recipes.emt.core import relax_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 # Define the workflow and set how to execute
-@ct.lattice(executor="local")
+@flow(executor="local")
 def workflow(atoms):
 
     # Relax a bulk structure
@@ -68,7 +75,7 @@ atoms = bulk("Cu")
 dispatch_id = ct.dispatch(workflow)(atoms)
 
 # Fetch the result from the server
-result = ct.get_result(dispatch_id)
+result = ct.get_result(dispatch_id, wait=True)
 print(result)
 ```
 

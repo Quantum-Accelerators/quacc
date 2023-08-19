@@ -4,6 +4,10 @@
 
 Here, we provide code snippets for several decorator-based workflow engines. For a comparison of the pros and cons of each approach, refer to the [Workflow Engines Overview](wflow_overview.md) page. We describe the specific of each workflow engine in more detail later in the documentation. Nonetheless, this page serves as a useful point of reference that is independent of quacc-specific details.
 
+!!! Tip
+
+    You don't need to learn the syntax for all the different workflow solutions. You only need to learn the syntax for the one you plan to use. The syntax is very similar across all of them regardless.
+
 ## Simple Workflow
 
 Let's do the following:
@@ -38,9 +42,19 @@ graph LR
 
 === "Covalent"
 
+    !!! Info
+
+        For a more detailed tutorial on how to use Covalent, refer to the ["Covalent Quick Start"](https://docs.covalent.xyz/docs/get-started/quick-start).
+
+    Take a moment to learn about the main [Covalent Concepts](https://docs.covalent.xyz/docs/user-documentation/concepts/concepts-index), namely the [`Electron`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#electron) and [`Lattice`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#lattice) objects, which describe individual compute tasks and workflows, respectively.
+
+    In Covalent, the `#!Python @ct.lattice` decorator indicates that the function is a workflow, and the `#!Python @ct.electron` decorator indicates that the function is a job (i.e. an individual compute task). If you plan to use a job scheduling system like Slurm, you can think of each `Electron` as an individual Slurm job.
+
+    All `Electron` and `Lattice` objects behave as normal Python functions when the necessary arguments are supplied. However, if the `#!Python ct.dispatch` command is used, the workflow will be dispatched to the Covalent server for execution and monitoring.
+
     !!! Tip
 
-        Make sure you run `covalent start` in the terminal to have the results show up in the GUI.
+        Make sure you run `covalent start` in the terminal before running the examples below.
 
     ```python
     import covalent as ct
@@ -81,6 +95,13 @@ graph LR
 
 === "Parsl"
 
+    !!! Info
+
+        For a more detailed tutorial on how to use Parsl, refer to the ["Parsl Tutorial"](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html) and the even more detailed ["Parsl User Guide"](https://parsl.readthedocs.io/en/stable/userguide/index.html).
+
+    Take a moment to read the Parsl documentation's ["Quick Start"](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a [`#!Python @python_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html#Python-Apps) and [`#!Python @join_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html?highlight=join_app#Dynamic-workflows-with-apps-that-generate-other-apps), which describe individual compute tasks and dynamic job tasks, respectively.
+
+
     !!! Tip
         Make sure you run `#!Python import parsl` followed by `#!Python parsl.load()` in Python to load a default Parsl configuration.
 
@@ -102,7 +123,7 @@ graph LR
         return mult(add(a, b), c)
 
 
-    result = workflow(1, 2, 3).result()  # 9  (2)
+    result = workflow(1, 2, 3).result()  # 9  (2)!
     ```
 
     1. `#!Python @python_app` is a decorator that tells Parsl to treat the function as a compute job.
@@ -110,6 +131,12 @@ graph LR
     2. `#!Python .result()` is a method that tells Parsl to wait for the result of the job. If `#!Python .result()` were not called, an `#!Python AppFuture` would be returned instead of the actual result.
 
 === "Jobflow"
+
+    !!! Info
+
+        For a more detailed tutorial on how to use Jobflow, refer to the [Jobflow Tutorials](https://materialsproject.github.io/jobflow/tutorials) and [this helpful guide](https://github.com/JaGeo/Advanced_Jobflow_Tutorial) written by Dr. Janine George.
+
+    Take a moment to read the Jobflow documentation's [Quick Start](https://materialsproject.github.io/jobflow/tutorials/1-quickstart.html) to get a sense of how Jobflow works. Namely, you should understand the `Job` and `Flow` definitions, which describe individual compute tasks and workflows, respectively.
 
     ```python
     from jobflow import Flow, job, run_locally
@@ -138,6 +165,45 @@ graph LR
     2. `#!Python Flow` is a class that tells Jobflow to treat the list of jobs as a workflow.
 
     3. `#!Python run_locally` is a function that tells Jobflow to run the workflow locally.
+
+=== "Prefect"
+
+    !!! Info
+
+        For more a more detailed tutorial on how to use Prefect, refer to the [Prefect Tutorial](https://docs.prefect.io/tutorial/) in the official Prefect documentation.
+
+    Take a moment to learn about the main Prefect concepts of a [`Flow`](https://docs.prefect.io/concepts/flows/) and a [`Task`](https://docs.prefect.io/concepts/tasks/).
+
+
+    ```python
+    from prefect import flow, task
+
+
+    @task  # (1)!
+    def add(a, b):
+        return a + b
+
+
+    @task
+    def mult(a, b):
+        return a * b
+
+
+    @flow  # (2)!
+    def workflow(a, b, c):
+        return mult.submit(add.submit(a, b), c)  # (3)!
+
+
+    result = workflow(1, 2, 3).result()  # 9  (4)
+    ```
+
+    1. `#!Python @task` is a decorator that tells Prefect to treat the function as a compute task.
+
+    2. `#!Python @flow` is a decorator that tells Prefect to treat the function as a workflow.
+
+    3. `#!Python .submit()` is a method that tells Prefect to submit the job to the Prefect task runner.
+
+    4. `#!Python .result()` is a method that tells Prefect to wait for the result of the job. If `#!Python .result()` were not called, a `#!Python PrefectFuture` would be returned instead of the actual result.
 
 ## Dynamic Workflow
 
@@ -286,3 +352,26 @@ graph LR
     ```
 
     1. `#!Python Response(replace)` is a class that tells Jobflow to replace the current job with the jobs in the flow.
+
+=== "Prefect"
+
+    ```python
+    import random
+
+    from prefect import flow, task
+
+
+    @task
+    def add(a, b):
+        return a + b
+
+
+    @flow
+    def workflow(a, b, c):
+        future1 = add.submit(a, b)
+        vals_to_add = [future1.result()] * random.randint(2, 5)
+        return [add.submit(val, c).result() for val in vals_to_add]
+
+
+    result = workflow(1, 2, 3)  # e.g. [6, 6, 6]
+    ```
