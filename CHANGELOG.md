@@ -17,7 +17,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Covalent is now an optional dependency to allow the base `quacc` package to be dependency-light.
 - Default VASP pseudopotentials changed to `setups_pbe54.yaml`.
 - Changed `quacc.recipes.emt.jobflow` and `quacc.recipes.emt.prefect` to `quacc.recipes.emt._jobflow` and `quacc.recipes.emt._prefect`
-- Changed the `quacc[parsl]` extras to install `parsl[monitoring]` instead of just `parsl`.
 
 ### Fixed
 
