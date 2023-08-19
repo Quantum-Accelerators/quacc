@@ -19,9 +19,7 @@ def pytest_sessionstart():
     os.makedirs(test_scratch_dir, exist_ok=True)
     SETTINGS.RESULTS_DIR = test_results_dir
     SETTINGS.SCRATCH_DIR = test_scratch_dir
-    if WFLOW_ENGINE == "covalent":
-        os.system("covalent start")
-    elif WFLOW_ENGINE == "parsl":
+    if WFLOW_ENGINE == "parsl":
         import parsl
 
         parsl.load()
@@ -32,5 +30,3 @@ def pytest_sessionfinish():
     SETTINGS.SCRATCH_DIR = DEFAULT_SETTINGS.SCRATCH_DIR
     rmtree(test_results_dir)
     rmtree(test_scratch_dir)
-    if WFLOW_ENGINE == "covalent":
-        os.system("covalent stop")
