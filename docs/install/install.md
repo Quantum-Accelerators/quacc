@@ -39,7 +39,7 @@ Quacc can be installed with several "extras," as outlined in the `pyproject.toml
 ### Workflow Managers
 
 - `quacc[covalent]`: Installs dependencies to enable the use of [Covalent](https://www.covalent.xyz).
-- `quacc[fireworks]`: Installs dependencies to enable the use of [Jobflow](https://github.com/materialsproject/jobflow) with [FireWorks](https://github.com/materialsproject/fireworks).
+- `quacc[jobflow]`: Installs dependencies to enable the use of [Jobflow](https://github.com/materialsproject/jobflow) with [FireWorks](https://github.com/materialsproject/fireworks).
 - `quacc[parsl]`: Installs dependencies to enable the use of [Parsl](https://github.com/Parsl/parsl).
 - `quacc[prefect]`: Installs dependencies to enable the use of [Prefect](https://www.prefect.io/).
 
