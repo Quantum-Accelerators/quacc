@@ -59,7 +59,7 @@ strict = [
     "atomate2 @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
     "cclib @ git+https://github.com/cclib/cclib.git", # waiting on > 1.7.2
     "custodian==2023.7.22",
-    "emmet-core==0.64.4",
+    "emmet-core==0.64.6",
     "maggma==0.53.1",
     "monty==2023.8.8",
     "numpy==1.25.2",
