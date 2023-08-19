@@ -3,7 +3,7 @@ import os
 import pytest
 from ase.build import bulk, molecule
 
-from quacc import SETTINGS, flow, subflow
+from quacc import SETTINGS, flow
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
@@ -232,7 +232,8 @@ def test_comparison2(tmpdir):
     def make_more(val):
         return [val] * 3
 
-    @subflow
+    @ct.electron
+    @ct.lattice
     def add_distributed(vals, c):
         return [add(val, c) for val in vals]
 
