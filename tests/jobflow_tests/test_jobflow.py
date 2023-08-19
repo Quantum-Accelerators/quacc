@@ -9,7 +9,7 @@ try:
 except ImportError:
     jf = None
 
-if job:
+if jf:
     STORE = jf.JobStore(MemoryStore())
 WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
 
