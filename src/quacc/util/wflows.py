@@ -7,18 +7,15 @@ from monty.dev import requires
 if TYPE_CHECKING:
     from covalent import electron as ct_electron
     from covalent import lattice as ct_lattice
+    from dask_jobqueue.core import DaskJobqueueJob
     from jobflow import Job as JobflowJob
     from parsl.app.python import PythonApp
     from prefect import Flow as PrefectFlow
     from prefect import Task as PrefectTask
 
-
 try:
     from dask_jobqueue import SLURMCluster
     from prefect_dask.task_runners import DaskTaskRunner
-
-    if TYPE_CHECKING:
-        from dask_jobqueue.core import DaskJobqueueJob
 
     prefect_deps = True
 
