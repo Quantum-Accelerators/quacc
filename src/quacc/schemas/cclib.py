@@ -337,6 +337,8 @@ class _cclibTaskDocument(MoleculeMetadata):
 
         For a full description of each field, see https://cclib.github.io/data.html.
 
+        This is a mirror of atomate2.common.schemas.cclib.TaskDocument
+
         Parameters
         ----------
         dir_name
