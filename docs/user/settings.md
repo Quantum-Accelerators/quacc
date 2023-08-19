@@ -38,4 +38,4 @@ SETTINGS.CREATE_UNIQUE_WORKDIR = True
 
 !!! Important
 
-    This approach should work as expected for all settings except `WORKFLOW_ENGINE`, which must be defined before any other imports. Therefore, it is recommended to use the YAML file or environment variable approach for specifying the workflow engine.
+    This approach should work as expected for all settings except `WORKFLOW_ENGINE`, which must be defined before any importing any recipes. Therefore, it is recommended to use the YAML file or environment variable approach for specifying the workflow engine.
