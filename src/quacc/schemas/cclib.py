@@ -394,10 +394,9 @@ class cclibTaskDocument(MoleculeMetadata):
             cubefile_path = find_recent_logfile(dir_name, [".cube", ".cub"])
 
             for analysis_name in analysis:
-                calc_attributes = cclib_calculate(
+                if calc_attributes := cclib_calculate(
                     cclib_obj, analysis_name, cubefile_path, proatom_dir
-                )
-                if calc_attributes:
+                ):
                     attributes[analysis_name] = calc_attributes
                 else:
                     attributes[analysis_name] = None
@@ -445,7 +444,7 @@ def cclib_calculate(
         raise FileNotFoundError(
             f"A cube file must be provided for {method}. Returning None."
         )
-    if method in ["ddec6", "hirshfeld"] and not proatom_dir:
+    if method in {"ddec6", "hirshfeld"} and not proatom_dir:
         if os.getenv("PROATOM_DIR") is None:
             raise OSError("PROATOM_DIR environment variable not set. Returning None.")
         proatom_dir = os.path.expandvars(os.environ["PROATOM_DIR"])
@@ -497,11 +496,11 @@ def cclib_calculate(
         "matches",
         "refcharges",
     ]
-    calc_attributes = {}
-    for attribute in avail_attributes:
-        if hasattr(m, attribute):
-            calc_attributes[attribute] = getattr(m, attribute)
-    return calc_attributes
+    return {
+        attribute: getattr(m, attribute)
+        for attribute in avail_attributes
+        if hasattr(m, attribute)
+    }
 
 
 def _get_homos_lumos(
