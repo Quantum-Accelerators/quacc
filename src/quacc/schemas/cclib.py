@@ -499,8 +499,7 @@ class _cclibTaskDocument(MoleculeMetadata):
             metadata=metadata,
         )
         doc.molecule = final_molecule
-        doc.copy(update=additional_fields)
-        return doc.dict()
+        return doc.copy(update=additional_fields).dict()
 
 
 def _get_homos_lumos(
