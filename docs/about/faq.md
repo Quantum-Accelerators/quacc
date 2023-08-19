@@ -18,7 +18,7 @@ A: quacc is designed to supercharge ASE for the efficient design of high-through
 
 **Q: How is quacc different than [Atomate2](https://github.com/materialsproject/atomate2)?**
 
-A: Atomate2 is a fantastic code that can be used to run libraries of computational materials science workflows. Quacc was originally inspired by Atomate2 and can be thought of as a "sister code" to it. That said, there are some important differences.
+A: Atomate2 is a fantastic code that can be used to run libraries of computational materials science workflows. Quacc was originally inspired by Atomate2 and can be thought of as a "sister code" to it. That said, there are several important differences.
 
 - In Atomate2, workflows are built around the Materials Project software stack and can be cumbersome to interface with the [Atomic Simulation Environment (ASE)](https://wiki.fysik.dtu.dk/ase/). In contrast, quacc was built around ASE from the ground up while still making it possible to leverage much of the software underlying the Materials Project. Since quacc is built around ASE, it is also trivial to add new recipes based on any code that has an existing ASE Calculator even if it is not in quacc yet.
 
@@ -28,11 +28,7 @@ A: Atomate2 is a fantastic code that can be used to run libraries of computation
 
 - Atomate2 is developed and supported by the [Materials Project](http://materialsproject.org/) team at Lawrence Berkeley National Laboratory. Quacc is developed and maintained by the [Rosen Research Group](https://cbe.princeton.edu/people/andrew-rosen) at Princeton University.
 
-Despite these differences, quacc and Atomate2 are largely interoperable! Feel free to stitch together workflows from both codes as you see fit using Jobflow!
-
-**Q: I see `#!Python @ct.electron` across the code. What if I don't want to use Covalent?**
-
-A: The beauty is that you don't have to use Covalent if you don't want to! By default, the `#!Python @ct.electron` wrapper is entirely ignored if you use quacc without a workflow manager or if you use another workflow manager, such as Jobflow. For this reason, you can use most of the functions within quacc regardless of your choice of workflow manager.
+Despite these differences, quacc and Atomate2 are largely interoperable! Feel free to [stitch together workflows](../user/atomate2.md) from both codes as you see fit using Jobflow!
 
 **Q: I want to contribute a new recipe to quacc, but it will require additional dependencies. Is that a problem?**
 
