@@ -16,7 +16,7 @@ except ImportError:
 
 @pytest.mark.skipif(
     ct is None or os.environ.get("GITHUB_ACTIONS", False) is False,
-    reason="This test is only meant to be run on GitHub Actions",
+    reason="This test is only meant to be run on GitHub Actions with Covalent",
 )
 def test_covalent_to_db():
     from quacc.util.db import covalent_to_db
@@ -37,6 +37,29 @@ def test_covalent_to_db():
 
     with pytest.raises(ValueError):
         covalent_to_db(store, dispatch_ids=["bad-value"], results_dir="bad-value")
+
+
+@pytest.mark.skipif(
+    ct is None or os.environ.get("GITHUB_ACTIONS", False) is False,
+    reason="This test is only meant to be run on GitHub Actions with Covalent",
+)
+def test_tutorial():
+    # Connect to the database
+
+    store = MemoryStore()
+
+    # Fetch the results
+    results_dir = ct.get_config()["dispatcher"]["results_dir"]
+    docs = []
+    for i, dispatch_id in enumerate(os.listdir(results_dir)):
+        result = ct.get_result(dispatch_id).result
+        docs.append({"dispatch_id": dispatch_id, "result": result})
+        if i >= 2:
+            break
+
+    # Store the results
+    with store:
+        store.update(docs, key="dispatch_id")
 
 
 def test_results_to_db():
