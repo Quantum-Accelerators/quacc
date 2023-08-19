@@ -7,14 +7,18 @@ from maggma.stores import MemoryStore
 from quacc.recipes.emt.core import static_job
 from quacc.util.db import covalent_to_db, results_to_db
 
+try:
+    import covalent as ct
+
+except ImportError:
+    ct = None
+
 
 @pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False,
+    ct is None or os.environ.get("GITHUB_ACTIONS", False) is False,
     reason="This test is only meant to be run on GitHub Actions",
 )
 def test_covalent_to_db():
-    import covalent as ct
-
     store = MemoryStore(collection_name="db1")
     covalent_to_db(store)
     count1 = store.count()

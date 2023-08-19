@@ -75,7 +75,7 @@ jobs:
           covalent start
 
       - name: Run tests with pytest
-        run: pytest --cov=quacc --cov-report=xml
+        run: pytest tests/recipes tests/covalent_tests --cov=quacc --cov-report=xml
 
       - name: Stop Covalent server
         run: covalent stop
@@ -114,7 +114,7 @@ jobs:
           echo "WORKFLOW_ENGINE: parsl" > ~/.quacc.yaml
 
       - name: Run tests with pytest
-        run: pytest --cov=quacc --cov-report=xml
+        run: pytest tests/recipes tests/parsl_tests --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
