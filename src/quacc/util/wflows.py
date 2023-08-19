@@ -75,7 +75,7 @@ def flow(
     """
     Decorator for workflows, which consist of at least one compute job. This is a @flow decorator.
 
-    @flow = @ct.lattice [Covalent] = @flow [Prefect]. For Prefect, the decorator returns the
+    @flow = @ct.lattice [Covalent] = @flow [Prefect]. For Parsl, the decorator returns the
     undecorated function. This decorator is not compatible with jobflow.
 
     Parameters
