@@ -1,6 +1,6 @@
 codecov:
   notify:
-    after_n_builds: 8 # one for each job
+    after_n_builds: 9 # one for each job
 coverage:
   status:
     project:
