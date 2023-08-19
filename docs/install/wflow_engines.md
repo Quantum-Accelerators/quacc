@@ -185,7 +185,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 === "Prefect"
 
     1. In your activated Python environment, install Prefect and the necessary Dask dependencies via `pip install git+https://github.com/Quantum-Accelerators/quacc.git[prefect]`
-    2. Make an account on [Prefect Cloud](https://app.prefect.cloud/).
+    2. Make an account on [Prefect Cloud](https://app.prefect.cloud/)
     3. Make an [API Key](https://docs.prefect.io/cloud/users/api-keys/) and (optionally) store it in a `PREFECT_API_KEY` environment variable (e.g. in your `~/.bashrc`)
     4. Run `prefect cloud login` from the command-line and enter your API key (or use the browser, if possible)
 

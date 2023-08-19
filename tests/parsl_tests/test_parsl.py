@@ -89,6 +89,32 @@ def test_tutorial3(tmpdir):
 
 
 @pytest.mark.skipif(
+    parsl is None or WFLOW_ENGINE != "parsl",
+    reason="Parsl is not installed or specified in config",
+)
+def test_tutorial3_v2(tmpdir):
+    tmpdir.chdir()
+
+    from ase.build import bulk
+
+    from quacc import flow
+    from quacc.recipes.emt.core import relax_job
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    @flow
+    def workflow(atoms):
+        future1 = relax_job(atoms)
+        future2 = bulk_to_slabs_flow(future1, slab_static=None)
+        return future2.result()
+
+    output = workflow(atoms)
+    assert len(output) == 4
+
+
+@pytest.mark.skipif(
     parsl is None,
     reason="Parsl is not installed",
 )
