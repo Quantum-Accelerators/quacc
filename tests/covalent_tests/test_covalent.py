@@ -3,7 +3,7 @@ import os
 import pytest
 from ase.build import bulk, molecule
 
-from quacc import SETTINGS, flow, job, subflow
+from quacc import SETTINGS, flow, subflow
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
