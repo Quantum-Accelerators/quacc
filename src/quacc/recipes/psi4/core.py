@@ -3,12 +3,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import covalent as ct
 from ase.calculators.psi4 import Psi4
 from monty.dev import requires
 
+from quacc import job
 from quacc.schemas.ase import summarize_run
 from quacc.schemas.atoms import fetch_atoms
+from quacc.util.atoms import get_charge, get_multiplicity
 from quacc.util.calc import run_calc
 from quacc.util.dicts import remove_dict_empties
 
@@ -23,7 +24,7 @@ except ImportError:
     psi4 = None
 
 
-@ct.electron
+@job
 @requires(psi4, "Psi4 not installed. Try conda install -c psi4 psi4")
 def static_job(
     atoms: Atoms | dict,
@@ -63,13 +64,10 @@ def static_job(
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
-
-    charge = int(atoms.get_initial_charges().sum()) if charge is None else charge
-    multiplicity = (
-        int(1 + atoms.get_initial_magnetic_moments().sum())
-        if multiplicity is None
-        else multiplicity
-    )
+    if charge is None:
+        charge = get_charge(atoms)
+    if multiplicity is None:
+        multiplicity = get_multiplicity(atoms)
 
     defaults = {
         "mem": "16GB",

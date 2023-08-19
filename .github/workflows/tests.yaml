@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version: ["3.9", "3.10"]
+        python-version: ["3.9", "3.11"]
 
     defaults:
       run:
@@ -31,20 +31,10 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Install pip packages
-        run: |
-          pip install .[strict,dev]
-          pip install covalent-hpc-plugin
-
-      - name: Set up Covalent server
-        run: |
-          echo "y" | covalent purge
-          covalent start
+        run: pip install .[strict,dev]
 
       - name: Run tests with pytest
         run: pytest --cov=quacc --cov-report=xml
-
-      - name: Stop Covalent server
-        run: covalent stop
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -54,7 +44,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version: ["3.10"]
+        python-version: ["3.11"]
     runs-on: ubuntu-latest
 
     defaults:
@@ -127,7 +117,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version: ["3.10"]
+        python-version: ["3.11"]
     runs-on: ubuntu-latest
 
     defaults:
@@ -204,7 +194,7 @@ jobs:
       - name: Run tests with pytest
         run: pytest -k 'qchem' --cov=quacc --cov-report=xml
 
-  tests-altwflows:
+  tests-covalent:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
@@ -227,10 +217,130 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Install pip packages
-        run: pip install .[strict,dev,fireworks,parsl,prefect]
+        run: pip install .[strict,dev,covalent]
+
+      - name: Make quacc config
+        run: |
+          echo "WORKFLOW_ENGINE: covalent" > ~/.quacc.yaml
+
+      - name: Set up Covalent server
+        run: |
+          echo "y" | covalent purge
+          covalent start
 
       - name: Run tests with pytest
-        run: pytest -k 'jobflow or fireworks or parsl or prefect' --cov=quacc --cov-report=xml
+        run: pytest -k 'covalent' --cov=quacc --cov-report=xml
+
+      - name: Stop Covalent server
+        run: covalent stop
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        if: github.repository == 'Quantum-Accelerators/quacc'
+
+  tests-parsl:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.11"]
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install pip packages
+        run: pip install .[strict,dev,parsl]
+
+      - name: Make quacc config
+        run: |
+          echo "WORKFLOW_ENGINE: parsl" > ~/.quacc.yaml
+
+      - name: Run tests with pytest
+        run: pytest -k 'parsl' --cov=quacc --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        if: github.repository == 'Quantum-Accelerators/quacc'
+
+  tests-jobflow:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.11"]
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install pip packages
+        run: pip install .[strict,dev,jobflow]
+
+      - name: Make quacc config
+        run: |
+          echo "WORKFLOW_ENGINE: jobflow" > ~/.quacc.yaml
+
+      - name: Run tests with pytest
+        run: pytest -k 'jobflow or fireworks' --cov=quacc --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        if: github.repository == 'Quantum-Accelerators/quacc'
+
+  tests-prefect:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.11"]
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install pip packages
+        run: pip install .[strict,dev,prefect]
+
+      - name: Make quacc config
+        run: |
+          echo "WORKFLOW_ENGINE: prefect" > ~/.quacc.yaml
+
+      - name: Run tests with pytest
+        run: pytest -k 'prefect' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3

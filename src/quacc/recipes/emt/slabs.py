@@ -3,8 +3,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import covalent as ct
-
+from quacc import job, subflow
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.schemas.atoms import fetch_atoms
 from quacc.util.slabs import make_max_slabs_from_bulk
@@ -18,8 +17,8 @@ if TYPE_CHECKING:
 def bulk_to_slabs_flow(
     atoms: Atoms | dict,
     make_slabs_kwargs: dict | None = None,
-    slab_relax: ct.electron = relax_job,
-    slab_static: ct.electron | None = static_job,
+    slab_relax: callable = relax_job,
+    slab_static: callable | None = static_job,
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
 ) -> list[RunSchema | OptSchema]:
@@ -59,18 +58,16 @@ def bulk_to_slabs_flow(
     if "relax_cell" not in slab_relax_kwargs:
         slab_relax_kwargs["relax_cell"] = False
 
-    @ct.electron
+    @job
     def _make_slabs(atoms):
         atoms = fetch_atoms(atoms)
         return make_max_slabs_from_bulk(atoms, **make_slabs_kwargs)
 
-    @ct.electron
-    @ct.lattice
+    @subflow
     def _relax_distributed(slabs):
         return [slab_relax(slab, **slab_relax_kwargs) for slab in slabs]
 
-    @ct.electron
-    @ct.lattice
+    @subflow
     def _relax_and_static_distributed(slabs):
         return [
             slab_static(

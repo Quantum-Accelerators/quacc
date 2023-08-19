@@ -3,9 +3,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Literal
 
-import covalent as ct
 from ase.calculators.dftb import Dftb
 
+from quacc import job
 from quacc.schemas.ase import summarize_run
 from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_calc
@@ -21,7 +21,7 @@ LOG_FILE = "dftb.out"
 GEOM_FILE = "geo_end.gen"
 
 
-@ct.electron
+@job
 def static_job(
     atoms: Atoms | dict,
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
@@ -74,12 +74,12 @@ def static_job(
     )
 
 
-@ct.electron
+@job
 def relax_job(
     atoms: Atoms | dict,
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
     kpts: tuple | list[tuple] | dict | None = None,
-    lattice_opt: bool = False,
+    relax_cell: bool = False,
     calc_swaps: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
@@ -95,7 +95,7 @@ def relax_job(
     kpts
         k-point grid to use. Defaults to None for molecules and
         (1, 1, 1) for solids.
-    lattice_opt
+    relax_cell
         Whether to relax the unit cell shape/volume in addition to
         the positions.
     calc_swaps
@@ -116,7 +116,7 @@ def relax_job(
         "Hamiltonian_Method": method if "xtb" in method.lower() else None,
         "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
         "Driver_": "GeometryOptimization",
-        "Driver_LatticeOpt": "Yes" if lattice_opt else "No",
+        "Driver_LatticeOpt": "Yes" if relax_cell else "No",
         "Driver_AppendGeometries": "Yes",
         "Driver_MaxSteps": 2000,
     }

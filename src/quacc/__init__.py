@@ -7,6 +7,9 @@ from ase import Atoms
 from ase.io.jsonio import decode, encode
 
 from quacc.settings import QuaccSettings
+from quacc.util.wflows import flow, job, subflow
+
+__all__ = ["flow", "job", "subflow"]
 
 
 def atoms_as_dict(s):
@@ -34,7 +37,3 @@ Atoms.from_dict = atoms_from_dict
 
 # Load the settings
 SETTINGS = QuaccSettings()
-
-for f in {SETTINGS.SCRATCH_DIR, SETTINGS.RESULTS_DIR}:
-    if f:
-        os.makedirs(f, exist_ok=True)
