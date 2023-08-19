@@ -15,9 +15,18 @@ try:
 
 except ImportError:
     prefect_deps = False
+if TYPE_CHECKING:
+    from covalent import electron as ct_electron
+    from covalent import lattice as ct_lattice
+    from jobflow import Job as JobflowJob
+    from parsl.app.python import PythonApp
+    from prefect import Flow as PrefectFlow
+    from prefect import Task as PrefectTask
 
 
-def job(_func: callable | None = None, **kwargs) -> callable:
+def job(
+    _func: callable | None = None, **kwargs
+) -> callable | ct_electron | JobflowJob | PythonApp | PrefectTask:
     """
     Decorator for individual compute jobs. This is a @job decorator.
 
@@ -61,7 +70,9 @@ def job(_func: callable | None = None, **kwargs) -> callable:
     return _func
 
 
-def flow(_func: callable | None = None, **kwargs) -> callable:
+def flow(
+    _func: callable | None = None, **kwargs
+) -> callable | ct_lattice | PrefectFlow:
     """
     Decorator for workflows, which consist of at least one compute job. This is a @flow decorator.
 
@@ -104,7 +115,9 @@ def flow(_func: callable | None = None, **kwargs) -> callable:
     return _func
 
 
-def subflow(_func: callable | None = None, **kwargs) -> callable:
+def subflow(
+    _func: callable | None = None, **kwargs
+) -> callable | ct_electron | PrefectFlow:
     """
     Decorator for (dynamic) sub-workflows. This is a @subflow decorator.
 
