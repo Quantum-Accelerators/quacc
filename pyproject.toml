@@ -58,7 +58,6 @@ strict = [
     "cclib @ git+https://github.com/cclib/cclib.git", # waiting on > 1.7.2
     "custodian==2023.7.22",
     "emmet-core==0.64.4",
-    "jobflow==0.1.13",
     "maggma==0.53.0",
     "monty==2023.8.8",
     "numpy==1.25.2",
