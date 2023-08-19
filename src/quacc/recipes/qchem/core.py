@@ -4,12 +4,11 @@ from __future__ import annotations
 import multiprocessing
 from typing import Literal
 
-import covalent as ct
 from ase.atoms import Atoms
 from ase.optimize import FIRE
 from monty.dev import requires
 
-from quacc import SETTINGS
+from quacc import job, SETTINGS
 from quacc.calculators.qchem import QChem
 from quacc.schemas.ase import OptSchema, RunSchema, summarize_opt_run, summarize_run
 from quacc.util.atoms import check_charge_and_spin
@@ -24,7 +23,7 @@ except ImportError:
     has_sella = False
 
 
-@ct.electron
+@job
 def static_job(
     atoms: Atoms | dict,
     charge: int | None = None,
@@ -110,7 +109,7 @@ def static_job(
     )
 
 
-@ct.electron
+@job
 def relax_job(
     atoms: Atoms | dict,
     charge: int | None = None,
@@ -214,7 +213,7 @@ def relax_job(
     )
 
 
-@ct.electron
+@job
 @requires(
     has_sella,
     "Sella must be installed. Try pip install sella.",
@@ -322,7 +321,7 @@ def ts_job(
     )
 
 
-@ct.electron
+@job
 @requires(
     has_sella,
     "Sella must be installed. Try pip install sella.",
@@ -432,7 +431,7 @@ def irc_job(
     )
 
 
-@ct.electron
+@job
 @requires(
     has_sella,
     "Sella must be installed. Try pip install sella.",
