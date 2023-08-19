@@ -4,17 +4,6 @@ from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
-try:
-    from dask_jobqueue import SLURMCluster
-    from prefect_dask.task_runners import DaskTaskRunner
-
-    if TYPE_CHECKING:
-        from dask_jobqueue.core import Job
-
-    prefect_deps = True
-
-except ImportError:
-    prefect_deps = False
 if TYPE_CHECKING:
     from covalent import electron as ct_electron
     from covalent import lattice as ct_lattice
@@ -22,6 +11,19 @@ if TYPE_CHECKING:
     from parsl.app.python import PythonApp
     from prefect import Flow as PrefectFlow
     from prefect import Task as PrefectTask
+
+
+try:
+    from dask_jobqueue import SLURMCluster
+    from prefect_dask.task_runners import DaskTaskRunner
+
+    if TYPE_CHECKING:
+        from dask_jobqueue.core import DaskJobqueueJob
+
+    prefect_deps = True
+
+except ImportError:
+    prefect_deps = False
 
 
 def job(
@@ -219,7 +221,9 @@ def make_runner(
 
 
 @requires(prefect_deps, "Need quacc[prefect] dependencies")
-def _make_cluster(cluster_class: callable, cluster_kwargs: dict, verbose=True) -> Job:
+def _make_cluster(
+    cluster_class: callable, cluster_kwargs: dict, verbose=True
+) -> DaskJobqueueJob:
     """
     Make a Dask cluster for use with Prefect workflows.
 
