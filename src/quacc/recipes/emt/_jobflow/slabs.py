@@ -3,8 +3,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from jobflow import Flow, Response, job
+from jobflow import Flow, Response
 
+from quacc import job
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.schemas.atoms import fetch_atoms
 from quacc.util.slabs import make_max_slabs_from_bulk
@@ -14,11 +15,12 @@ if TYPE_CHECKING:
     from jobflow import Job
 
 
+@job
 def bulk_to_slabs_flow(
     atoms: Atoms | dict,
     make_slabs_kwargs: dict | None = None,
-    slab_relax: Job = job(relax_job),
-    slab_static: Job | None = job(static_job),
+    slab_relax: Job = relax_job,
+    slab_static: Job | None = static_job,
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
 ) -> Response:

@@ -76,7 +76,7 @@ If you plan to use Psi4 with quacc, you will need to install it prior to use. Th
 
     [tblite](https://github.com/tblite/tblite) is a code that interfaces with the xtb package for running GFN-xTB calculations.
 
-If you plan to use tblite with quacc, you will need to install the tblite interface with ASE support. This can be done via `pip install tblite[ase]` if on Linux. If you are using a Mac, it can be installed via `conda install -c conda-forge tblite-python`.
+If you plan to use tblite with quacc, you will need to install the tblite interface with ASE support. This can be done via `pip install git+https://github.com/Quantum-Accelerators/quacc.git[tblite]` if on Linux. If you are using a Mac, it can be installed via `conda install -c conda-forge tblite-python`.
 
 ## VASP
 
@@ -89,10 +89,11 @@ To use VASP with quacc, you will need to do the following, as described in great
 - Define the `VASP_PP_PATH` environment variable that points to your pseudopotential library. We recommend including this in your `~/.bashrc` file since this rarely changes.
 - If you wish to use vdW functionals, define the `ASE_VASP_VDW` environment variable to point to the `vdw_kernel.bindat` file distributed with VASP. We recommend including this in your `~/.bashrc` file since this rarely changes.
 
-To run VASP with Custodian (the default behavior in quacc), you will also need to:
+To run VASP with Custodian, you will also need to modify the following [quacc configuration settings](../user/settings.md):
 
-- Define a `QUACC_VASP_PARALLEL_CMD` environment variable that tells Custodian how to parallelize VASP. For instance, this might look something like `export QUACC_VASP_PARALLEL_CMD="srun -N 2 --ntasks-per-node 24"`. Note, the VASP executables are not included in this environment variable. For convenience, we recommend specifying this environment variable at runtime so you can easily modify it.
-- By default, Custodian will assume that the VASP executables can be run with `vasp_std` or `vasp_gam` for standard or gamma-point calculations. If you need to use different executable names or wish to change any other VASP-related settings from the selected defaults, refer to the section on ["Modifying Quacc Settings"](../user/settings.md).
+- Define the `VASP_PARALLEL_CMD` quacc setting that tells Custodian how to parallelize VASP, such as by defining an environment variable `QUACC_VASP_PARALLEL_CMD="srun -N 2 --ntasks-per-node 24"`. Note, the VASP executables are not included in this environment variable.
+
+Additional VASP-related settings can be found in the [`SETTINGS.py`](https://github.com/Quantum-Accelerators/quacc/blob/main/src/quacc/settings.py) file.
 
 ## Other Codes
 

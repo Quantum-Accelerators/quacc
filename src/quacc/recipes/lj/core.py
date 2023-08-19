@@ -7,10 +7,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Literal
 
-import covalent as ct
 from ase.calculators.lj import LennardJones
 from ase.optimize import FIRE
 
+from quacc import job
 from quacc.schemas.ase import (
     summarize_opt_run,
     summarize_run,
@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
 
 
-@ct.electron
+@job
 def static_job(
     atoms: Atoms | dict,
     calc_swaps: dict | None = None,
@@ -61,7 +61,7 @@ def static_job(
     )
 
 
-@ct.electron
+@job
 def relax_job(
     atoms: Atoms | dict,
     calc_swaps: dict | None = None,
@@ -101,7 +101,7 @@ def relax_job(
     return summarize_opt_run(dyn, additional_fields={"name": "LJ Relax"})
 
 
-@ct.electron
+@job
 def freq_job(
     atoms: Atoms | dict,
     energy: float = 0.0,
