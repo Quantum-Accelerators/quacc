@@ -82,6 +82,10 @@ graph LR
 
     4. You don't need to set `wait=True` in practice. Once you call `ct.dispatch`, the workflow will begin running. The `ct.get_result` function is used to fetch the workflow status and results from the server.
 
+    !!! Tip
+
+        Covalent has several [configuration parameters](https://docs.covalent.xyz/docs/user-documentation/how-to/customization/) of its own that influences runtime behavior. In this example, the `opt.traj` file containing the optimization trajectory that was written out by `relax_job` at runtime will be stored in Covalent's `workdir` location (see `#!Python ct.get_config()["executors"]["dask"]["workdir"]`). Additionally, Covalent-tabulated results visible in the UI are stored in the `results_dir` (see `#!Python ct.get_config()["dispatcher"]["results_dir"]`). You can modify these parameters by editing the `~/.config/covalent/covalent.conf` file.
+
     You can see that it is quite trivial to set up a workflow using the recipes within quacc. We define the full workflow as a `#!Python @flow`-decorated function that stitches together the individual workflow steps. The [`quacc.recipes.emt.core.relax_job`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.core.relax_job) and [`quacc.recipes.emt.core.static_job`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.core.static_job) were both already defined with a `#!Python @job` decorator, which is why we did not need to specify that here. At runtime, quacc will automatically transform the `#!Python @flow` decorator into the Covalent-compatible `#!Python @ct.lattice` decorator and all `#!Python @job` decorators into the Covalent-compatible `#!Python @ct.electron` decorators.
 
     With Covalent as the workflow engine, quacc will also automatically construct a directed acyclic graph of the inputs and outputs for each calculation to determine which jobs are dependent on one another and the order the jobs should be run. In this example, Covalent will know not to run `job2` until `job1` has completed successfully.

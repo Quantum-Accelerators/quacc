@@ -46,11 +46,12 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
 
     CONFIG_FILE: str = Field(
-        _DEFAULT_CONFIG_FILE_PATH, description="File to load alternative defaults from."
+        _DEFAULT_CONFIG_FILE_PATH,
+        description="Path to the YAML file to load alternative quacc configuration defaults from.",
     )
     RESULTS_DIR: str = Field(
         os.getcwd(),
-        description="Directory to store results in.",
+        description="Directory to store results in. Note that the precise behavior may be modified by the chosen workflow engine (e.g. Covalent specifies the base directory as the `workdir` of the executor). In this case, the `RESULTS_DIR` will be a subdirectory of the base directory.",
     )
     SCRATCH_DIR: str = Field(
         "/tmp" if os.path.exists("/tmp") else os.getcwd(),
@@ -58,7 +59,7 @@ class QuaccSettings(BaseSettings):
     )
     CREATE_UNIQUE_WORKDIR: bool = Field(
         False,
-        description="Whether to automatically create a unique working directory for each calculation. Some workflow engines have an option to do this for you already.",
+        description="Whether to automatically create a unique working directory within RESULTS_DIR for each job. Some workflow engines have an option to do this for you already.",
     )
     GZIP_FILES: bool = Field(
         True, description="Whether generated files should be gzip'd."
