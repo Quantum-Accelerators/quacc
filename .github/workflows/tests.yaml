@@ -198,6 +198,10 @@ jobs:
 
   tests-covalent:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.10"]
 
     defaults:
       run:
@@ -212,27 +216,29 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-          cache-dependency-path: setup.py
-
-      - name: Set up conda
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-          activate-environment: quacc-env
+          cache-dependency-path: pyproject.toml
 
       - name: Install pip packages
+        run: pip install .[strict,dev,covalent]
+
+      - name: Make quacc config
         run: |
-          pip install .[strict,dev,newtonnet,optimizers]
+          echo "WORKFLOW_ENGINE: covalent" > ~/.quacc.yaml
+
+      - name: Set up Covalent server
+        run: |
+          echo "y" | covalent purge
+          covalent start
 
       - name: Run tests with pytest
-        run: pytest -k 'newtonnet' --cov=quacc --cov-report=xml
+        run: pytest -k 'covalent' --cov=quacc --cov-report=xml
+
+      - name: Stop Covalent server
+        run: covalent stop
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
-        if: github.repository == 'quantum-accelerators/quacc'
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
+        if: github.repository == 'Quantum-Accelerators/quacc'
 
   tests-altwflows:
     strategy:
