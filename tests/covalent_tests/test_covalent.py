@@ -117,7 +117,7 @@ def test_tutorial4(tmpdir):
         result1 = relax_job(atoms1)
         result2 = relax_job(atoms2)
 
-        return [result1, result2]
+        return {"result1": result1, "result2": result2}
 
     atoms1 = bulk("Cu")
     atoms2 = molecule("N2")
@@ -171,20 +171,16 @@ def test_tutorial6(tmpdir):
 def test_tutorial7(tmpdir):
     tmpdir.chdir()
 
-    @job
-    def relax_electron(atoms):
-        return relax_job(atoms)
+    job1 = relax_job
+    job1.electron_object.executor = "dask"
 
-    @job
-    def static_electron(atoms):
-        return static_job(atoms)
+    job2 = static_job
+    job2.electron_object.executor = "local"
 
     @flow
     def workflow5(atoms):
-        relax_electron.executor = "dask"
-        static_electron.executor = "local"
-        output1 = relax_electron(atoms)
-        output2 = static_electron(output1)
+        output1 = job1(atoms)
+        output2 = job2(output1)
         return output2
 
     atoms = bulk("Cu")
