@@ -10,7 +10,7 @@ from maggma.stores import MemoryStore
 from monty.json import MontyDecoder, jsanitize
 
 from quacc.calculators.vasp import Vasp
-from quacc.schemas.cclib import cclibTaskDocument, summarize_run
+from quacc.schemas.cclib import _cclibTaskDocument, summarize_run
 
 FILE_DIR = Path(__file__).resolve().parent
 
@@ -108,7 +108,7 @@ def test_cclib_taskdoc(tmpdir):
     # Plain parsing of task doc. We do not check all cclib entries
     # because they will evolve over time. We only check the ones we have
     # added and some important ones.
-    doc = cclibTaskDocument.from_logfile(p, ".log.gz")
+    doc = _cclibTaskDocument.from_logfile(p, ".log.gz")
     assert doc["energy"] == pytest.approx(-4091.763)
     assert doc["natoms"] == 2
     assert doc["charge"] == 0
@@ -137,21 +137,21 @@ def test_cclib_taskdoc(tmpdir):
     with open(p / "test.txt", "w") as f:
         f.write("I am a dummy log file")
     with pytest.raises(Exception) as e:
-        doc = cclibTaskDocument.from_logfile(p, [".log", ".txt"])
+        doc = _cclibTaskDocument.from_logfile(p, [".log", ".txt"])
     os.remove(p / "test.txt")
     assert "Could not parse" in str(e.value)
 
     # Test a population analysis
-    doc = cclibTaskDocument.from_logfile(p, "psi_test.out", analysis="MBO")
+    doc = _cclibTaskDocument.from_logfile(p, "psi_test.out", analysis="MBO")
     assert doc["attributes"]["mbo"] is not None
 
     # Let's try with two analysis (also check case-insensitivity)
-    doc = cclibTaskDocument.from_logfile(p, "psi_test.out", analysis=["mbo", "density"])
+    doc = _cclibTaskDocument.from_logfile(p, "psi_test.out", analysis=["mbo", "density"])
     assert doc["attributes"]["mbo"] is not None
     assert doc["attributes"]["density"] is not None
 
     # Test a population analysis that will fail
-    doc = cclibTaskDocument.from_logfile(p, ".log", analysis="MBO")
+    doc = _cclibTaskDocument.from_logfile(p, ".log", analysis="MBO")
     assert doc["attributes"]["mbo"] is None
 
     # Let's try a volumetric analysis
@@ -161,18 +161,18 @@ def test_cclib_taskdoc(tmpdir):
         p / "psi_test.cube", "wb"
     ) as f_out:
         shutil.copyfileobj(f_in, f_out)
-    doc = cclibTaskDocument.from_logfile(p, "psi_test.out", analysis=["Bader"])
+    doc = _cclibTaskDocument.from_logfile(p, "psi_test.out", analysis=["Bader"])
     os.remove(p / "psi_test.cube")
     assert doc["attributes"]["bader"] is not None
 
     # Make sure storing the trajectory works
-    doc = cclibTaskDocument.from_logfile(p, ".log", store_trajectory=True)
+    doc = _cclibTaskDocument.from_logfile(p, ".log", store_trajectory=True)
     assert len(doc["attributes"]["trajectory"]) == 7
     assert doc["attributes"]["trajectory"][0] == doc["attributes"]["molecule_initial"]
     assert doc["attributes"]["trajectory"][-1] == doc["molecule"]
 
     # Make sure additional fields can be stored
-    doc = cclibTaskDocument.from_logfile(p, ".log", additional_fields={"test": "hi"})
+    doc = _cclibTaskDocument.from_logfile(p, ".log", additional_fields={"test": "hi"})
     assert doc["test"] == "hi"
 
     # test document can be jsanitized

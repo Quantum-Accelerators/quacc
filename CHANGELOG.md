@@ -9,8 +9,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 
 - Default VASP pseudopotentials changed to `setups_pbe54.yaml`.
+
+## Fixed
+
 - Set `LMAXMIX` based on the `Z` value, not the s/p/d/f-block type.
 - Do not set automatically `LMAXTAU` to 8 for f-containing elements in `Vasp` calculator.
+
+## Removed
+
+- Removed atomate2 as a dependency.
 
 ## [0.1.3]
 
