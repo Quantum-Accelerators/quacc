@@ -33,6 +33,8 @@ class QuaccSettings(BaseSettings):
     using the "QUACC" prefix. e.g. QUACC_SCRATCH_DIR=/path/to/scratch.
     """
 
+    # --8<-- [start:settings]
+
     # ---------------------------
     # Workflow Engine
     # ---------------------------
@@ -160,6 +162,8 @@ class QuaccSettings(BaseSettings):
         None,
         description="After this many seconds, Custodian will stop running and ensure that VASP writes a STOPCAR",
     )
+
+    # --8<-- [end:settings]
 
     class Config:
         """Pydantic config settings."""
