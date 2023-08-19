@@ -12,8 +12,7 @@ from ase.optimize.optimize import Optimizer
 from ase.vibrations.data import VibrationsData
 from monty.dev import requires
 
-import covalent as ct
-from quacc import SETTINGS
+from quacc import job, SETTINGS
 from quacc.schemas.ase import (
     summarize_opt_run,
     summarize_run,
@@ -85,7 +84,7 @@ def _add_stdev_and_hess(summary: Dict[str, Any]) -> Dict[str, Any]:
     return summary
 
 
-@ct.electron
+@job
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def static_job(
     atoms: Atoms, newtonnet_kwargs: dict | None = None, opt_swaps: dict | None = None
@@ -120,7 +119,7 @@ def static_job(
     )
 
 
-@ct.electron
+@job
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def relax_job(
     atoms: Atoms,
@@ -177,7 +176,7 @@ def relax_job(
     return summary
 
 
-@ct.electron
+@job
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def ts_job(
     atoms: Atoms,
@@ -253,7 +252,7 @@ def ts_job(
     return {"ts": ts_summary, "thermo": thermo_summary}
 
 
-@ct.electron
+@job
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def irc_job(
     atoms: Atoms,
@@ -319,7 +318,7 @@ def irc_job(
     return {"irc": summary_irc, "thermo": thermo_summary}
 
 
-@ct.electron
+@job
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def quasi_irc_job(
     atoms: Atoms,
@@ -371,7 +370,7 @@ def quasi_irc_job(
     return {"irc": irc_summary, "opt": opt_summary, "thermo": thermo_summary}
 
 
-@ct.electron
+@job
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def freq_job(
     atoms: Atoms,
