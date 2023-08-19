@@ -4,6 +4,10 @@
 
 Here, we provide code snippets for several decorator-based workflow engines. For a comparison of the pros and cons of each approach, refer to the [Workflow Engines Overview](wflow_overview.md) page. We describe the specific of each workflow engine in more detail later in the documentation. Nonetheless, this page serves as a useful point of reference that is independent of quacc-specific details.
 
+!!! Tip
+
+    You don't need to learn the syntax for all the different workflow solutions. You only need to learn the syntax for the one you plan to use. The syntax is very similar across all of them regardless.
+
 ## Simple Workflow
 
 Let's do the following:
@@ -38,9 +42,19 @@ graph LR
 
 === "Covalent"
 
+    !!! Info
+
+        For a more detailed tutorial on how to use Covalent, refer to the ["Covalent Quick Start"](https://docs.covalent.xyz/docs/get-started/quick-start).
+
+    Take a moment to learn about the main [Covalent Concepts](https://docs.covalent.xyz/docs/user-documentation/concepts/concepts-index), namely the [`Electron`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#electron) and [`Lattice`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#lattice) objects, which describe individual compute tasks and workflows, respectively.
+
+    In Covalent, the `#!Python @ct.lattice` decorator indicates that the function is a workflow, and the `#!Python @ct.electron` decorator indicates that the function is a job (i.e. an individual compute task). If you plan to use a job scheduling system like Slurm, you can think of each `Electron` as an individual Slurm job.
+
+    All `Electron` and `Lattice` objects behave as normal Python functions when the necessary arguments are supplied. However, if the `#!Python ct.dispatch` command is used, the workflow will be dispatched to the Covalent server for execution and monitoring.
+
     !!! Tip
 
-        Make sure you run `covalent start` in the terminal to have the results show up in the GUI.
+        Make sure you run `covalent start` in the terminal before running the examples below.
 
     ```python
     import covalent as ct
@@ -79,7 +93,50 @@ graph LR
 
     5. The `#!Python ct.get_result` function tells Covalent to fetch the result from the server.
 
+=== "Parsl"
+
+    !!! Info
+
+        For a more detailed tutorial on how to use Parsl, refer to the ["Parsl Tutorial"](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html) and the even more detailed ["Parsl User Guide"](https://parsl.readthedocs.io/en/stable/userguide/index.html).
+
+    Take a moment to read the Parsl documentation's ["Quick Start"](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a [`#!Python @python_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html#Python-Apps) and [`#!Python @join_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html?highlight=join_app#Dynamic-workflows-with-apps-that-generate-other-apps), which describe individual compute tasks and dynamic job tasks, respectively.
+
+
+    !!! Tip
+        Make sure you run `#!Python import parsl` followed by `#!Python parsl.load()` in Python to load a default Parsl configuration.
+
+    ```python
+    from parsl import python_app
+
+
+    @python_app  # (1)!
+    def add(a, b):
+        return a + b
+
+
+    @python_app
+    def mult(a, b):
+        return a * b
+
+
+    def workflow(a, b, c):
+        return mult(add(a, b), c)
+
+
+    result = workflow(1, 2, 3).result()  # 9  (2)!
+    ```
+
+    1. `#!Python @python_app` is a decorator that tells Parsl to treat the function as a compute job.
+
+    2. `#!Python .result()` is a method that tells Parsl to wait for the result of the job. If `#!Python .result()` were not called, an `#!Python AppFuture` would be returned instead of the actual result.
+
 === "Jobflow"
+
+    !!! Info
+
+        For a more detailed tutorial on how to use Jobflow, refer to the [Jobflow Tutorials](https://materialsproject.github.io/jobflow/tutorials) and [this helpful guide](https://github.com/JaGeo/Advanced_Jobflow_Tutorial) written by Dr. Janine George.
+
+    Take a moment to read the Jobflow documentation's [Quick Start](https://materialsproject.github.io/jobflow/tutorials/1-quickstart.html) to get a sense of how Jobflow works. Namely, you should understand the `Job` and `Flow` definitions, which describe individual compute tasks and workflows, respectively.
 
     ```python
     from jobflow import Flow, job, run_locally
@@ -109,37 +166,14 @@ graph LR
 
     3. `#!Python run_locally` is a function that tells Jobflow to run the workflow locally.
 
-=== "Parsl"
-
-    !!! Tip
-        Make sure you run `#!Python import parsl` followed by `#!Python parsl.load()` in Python to load a default Parsl configuration.
-
-    ```python
-    from parsl import python_app
-
-
-    @python_app  # (1)!
-    def add(a, b):
-        return a + b
-
-
-    @python_app
-    def mult(a, b):
-        return a * b
-
-
-    def workflow(a, b, c):
-        return mult(add(a, b), c)
-
-
-    result = workflow(1, 2, 3).result()  # 9  (2)
-    ```
-
-    1. `#!Python @python_app` is a decorator that tells Parsl to treat the function as a compute job.
-
-    2. `#!Python .result()` is a method that tells Parsl to wait for the result of the job. If `#!Python .result()` were not called, an `#!Python AppFuture` would be returned instead of the actual result.
-
 === "Prefect"
+
+    !!! Info
+
+        For more a more detailed tutorial on how to use Prefect, refer to the [Prefect Tutorial](https://docs.prefect.io/tutorial/) in the official Prefect documentation.
+
+    Take a moment to learn about the main Prefect concepts of a [`Flow`](https://docs.prefect.io/concepts/flows/) and a [`Task`](https://docs.prefect.io/concepts/tasks/).
+
 
     ```python
     from prefect import flow, task
@@ -249,6 +283,40 @@ graph LR
 
     1. `#!Python @ct.electron` followed by `#!Python @ct.lattice` is called a sublattice and tells Covalent to treat the function as a dynamic, sub-workflow.
 
+=== "Parsl"
+
+    ```python
+    from parsl import join_app, python_app
+
+
+    @python_app
+    def add(a, b):
+        return a + b
+
+
+    @python_app
+    def make_more(val):
+        import random
+
+        return [val] * random.randint(2, 5)
+
+
+    @join_app  # (1)!
+    def add_distributed(vals, c):
+        return [add(val, c) for val in vals]
+
+
+    def workflow(a, b, c):
+        future1 = add(a, b)
+        future2 = make_more(future1)
+        return add_distributed(future2, c)
+
+
+    result = workflow(1, 2, 3).result()  # e.g. [6, 6, 6]
+    ```
+
+    1. `#!Python @join_app` is a decorator that tells Parsl to treat the function as a dynamic, sub-workflow. Calling `#!Python .result()` will wait for all of the jobs to finish before returning the result. If you were to use a `#!Python @python_app`, a `#!Python list[AppFuture[int]]` would be returned instead of an `#!Python AppFuture[list[int]]`.
+
 === "Jobflow"
 
     ```python
@@ -284,40 +352,6 @@ graph LR
     ```
 
     1. `#!Python Response(replace)` is a class that tells Jobflow to replace the current job with the jobs in the flow.
-
-=== "Parsl"
-
-    ```python
-    from parsl import join_app, python_app
-
-
-    @python_app
-    def add(a, b):
-        return a + b
-
-
-    @python_app
-    def make_more(val):
-        import random
-
-        return [val] * random.randint(2, 5)
-
-
-    @join_app  # (1)!
-    def add_distributed(vals, c):
-        return [add(val, c) for val in vals]
-
-
-    def workflow(a, b, c):
-        future1 = add(a, b)
-        future2 = make_more(future1)
-        return add_distributed(future2, c)
-
-
-    result = workflow(1, 2, 3).result()  # e.g. [6, 6, 6]
-    ```
-
-    1. `#!Python @join_app` is a decorator that tells Parsl to treat the function as a dynamic, sub-workflow. Calling `#!Python .result()` will wait for all of the jobs to finish before returning the result. If you were to use a `#!Python @python_app`, a `#!Python list[AppFuture[int]]` would be returned instead of an `#!Python AppFuture[list[int]]`.
 
 === "Prefect"
 

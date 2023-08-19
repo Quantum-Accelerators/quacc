@@ -4,12 +4,16 @@
 
 !!! note
 
-    If you are on a Windows machine, you will need to install and use the [Windows Subsystem for Linux (WSL)](https://ubuntu.com/wsl).
+    If you are on a Windows machine, we recommend using the [Windows Subsystem for Linux (WSL)](https://ubuntu.com/wsl) to benefit from all the features of quacc.
 
 1. Install Python, preferably in conjunction with an environment manager. For instance, download and run the [Miniconda installer](https://docs.conda.io/en/latest/miniconda.html)
 2. When asked to add Miniconda to your `PATH`, select yes
 3. Create a fresh Python environment by running `conda create -n quacc python=3.10`
 4. Activate this environment via `conda activate quacc`
+
+!!! Tip
+
+    We currently recommend using Python 3.9 or 3.10. A few optional dependencies (i.e. Covalent, Psi4) do not support Python 3.11 at the time of writing.
 
 ## Installing quacc
 
@@ -26,15 +30,22 @@ pip install git+https://github.com/quantum-accelerators/quacc.git
 
 ## Optional Dependencies
 
-Quacc can be installed with several "extras," as outlined in the `pyproject.toml` file. These are described below.
+Quacc can be installed with several "extras," as outlined in the [`pyproject.toml`](https://github.com/Quantum-Accelerators/quacc/blob/main/pyproject.toml) file. To install the extras, you can run
+
+```
+pip install git+https://github.com/Quantum-Accelerators/quacc.git[<extra>]`
+```
+
+where `<extra>` is one of the following:
 
 ### Calculators
 
-- `quacc[tblite]`: Installs dependencies to enable the use of [tblite](https://github.com/tblite/tblite).
+- `quacc[tblite]`: Installs dependencies to enable the use of [tblite](https://github.com/tblite/tblite) (on Linux).
 
 ### Workflow Managers
 
-- `quacc[fireworks]`: Installs dependencies to enable the use of [FireWorks](https://github.com/materialsproject/fireworks).
+- `quacc[covalent]`: Installs dependencies to enable the use of [Covalent](https://www.covalent.xyz).
+- `quacc[jobflow]`: Installs dependencies to enable the use of [Jobflow](https://github.com/materialsproject/jobflow) with [FireWorks](https://github.com/materialsproject/fireworks).
 - `quacc[parsl]`: Installs dependencies to enable the use of [Parsl](https://github.com/Parsl/parsl).
 - `quacc[prefect]`: Installs dependencies to enable the use of [Prefect](https://www.prefect.io/).
 

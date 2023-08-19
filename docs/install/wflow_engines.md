@@ -8,9 +8,17 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
 === "Covalent"
 
+    **Installation**
+
+    To install Covalent, run
+
+    ```
+    pip install git+https://github.com/Quantum-Accelerators/quacc.git[covalent]
+    ```
+
     **Starting the Server**
 
-    Covalent uses a server to dispatch and store calculation details and results. To start the server, simply run `covalent start` in your terminal. It will return a URL that you can use to access the Covalent dashboard, which is shown below.
+    Covalent uses a server to dispatch and store calculation details and results. To start the server, simply run `covalent start` in your terminal. It will return a URL (usually http://localhost:48008) that you can use to access the Covalent dashboard, which is shown below.
 
     ![Covalent UI](../images/install/ui_blank.jpg)
 
@@ -22,11 +30,15 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     Depending on where you wish to run your quacc calculations, you may need to install the corresponding Covalent plugin, as described in the [Covalent plugin documentation](https://docs.covalent.xyz/docs/features/executor-plugins/exe). If you are using a typical HPC system with a job scheduler, you will probably want to use the [`HPCExecutor` plugin](https://github.com/arosen93/covalent-hpc-plugin), which supports Slurm, PBS, LSF, Flux, and more.
 
-    !!! Tip
+    !!! Note
 
         If you are using Perlmutter at NERSC, you will need to set `export COVALENT_CONFIG_DIR="$SCRATCH/.config/covalent"` (e.g. in your `~/.bashrc`) because the home directory does not support file locking, which Covalent relies on.
 
 === "Jobflow"
+
+    **Installation**
+
+    To install Jobflow with support for FireWorks, run `pip install pip install git+https://github.com/Quantum-Accelerators/quacc.git[jobflow]`.
 
     **MongoDB Setup**
 
@@ -168,13 +180,15 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
 === "Parsl"
 
-    In your activated Python environment, install Parsl via `pip install parsl`. Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
+    In your activated Python environment, install Parsl via `pip install git+https://github.com/Quantum-Accelerators/quacc.git[parsl]`. Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
 
 === "Prefect"
 
-    1. In your activated Python environment, install Prefect and the necessary Dask dependencies via `pip install prefect prefect-dask dask-jobqueue`
+    1. In your activated Python environment, install Prefect and the necessary Dask dependencies via `pip install git+https://github.com/Quantum-Accelerators/quacc.git[prefect]`
     2. Make an account on [Prefect Cloud](https://app.prefect.cloud/)
     3. Make an [API Key](https://docs.prefect.io/cloud/users/api-keys/) and (optionally) store it in a `PREFECT_API_KEY` environment variable (e.g. in your `~/.bashrc`)
     4. Run `prefect cloud login` from the command-line and enter your API key (or use the browser, if possible)
+
+    If you do not wish to use Prefect Cloud, you can can spin up a local server with `prefect server start` and skip steps 2-4.
 
     Additional configuration parameters can be modified, as described in the [Prefect documentation](https://docs.prefect.io/concepts/settings/).

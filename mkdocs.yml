@@ -86,8 +86,6 @@ plugins:
             - https://tblite.readthedocs.io/en/latest/objects.inv
             - https://numpy.org/doc/stable/objects.inv
             - https://docs.pydantic.dev/latest/objects.inv
-            - https://materialsvirtuallab.github.io/monty/objects.inv
-            - http://materialsproject.github.io/custodian/objects.inv
             - https://covalent.readthedocs.io/en/latest/objects.inv
             - https://click.palletsprojects.com/en/latest/objects.inv
             - https://docs.prefect.io/latest/objects.inv

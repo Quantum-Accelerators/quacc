@@ -3,8 +3,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Literal
 
-import covalent as ct
-
+from quacc import job
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.atoms import fetch_atoms
 from quacc.schemas.vasp import summarize_run
@@ -16,7 +15,7 @@ if TYPE_CHECKING:
     from quacc.schemas.vasp import VaspSchema
 
 
-@ct.electron
+@job
 def static_job(
     atoms: Atoms | dict,
     preset: str | None = None,
@@ -61,7 +60,7 @@ def static_job(
     return summarize_run(atoms, additional_fields={"name": "VASP Static"})
 
 
-@ct.electron
+@job
 def relax_job(
     atoms: Atoms | dict,
     preset: str | None = None,
@@ -111,7 +110,7 @@ def relax_job(
     return summarize_run(atoms, additional_fields={"name": "VASP Relax"})
 
 
-@ct.electron
+@job
 def double_relax_job(
     atoms: Atoms | dict,
     preset: str | None = None,

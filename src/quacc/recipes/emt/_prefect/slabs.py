@@ -1,11 +1,9 @@
 """Slab recipes for EMT based on Prefect"""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
-from prefect import flow, task
 from prefect.futures import PrefectFuture, Sync
 
+from quacc import flow, job
 from quacc.recipes.emt.slabs import relax_job, static_job
 from quacc.schemas.ase import OptSchema, RunSchema
 from quacc.schemas.atoms import fetch_atoms
@@ -55,10 +53,7 @@ def bulk_to_slabs_flow(
     if "relax_cell" not in slab_relax_kwargs:
         slab_relax_kwargs["relax_cell"] = False
 
-    slab_relax = task(relax_job)
-    slab_static = task(static_job)
-
-    @task
+    @job
     def _make_slabs(atoms):
         atoms = fetch_atoms(atoms)
         return make_max_slabs_from_bulk(atoms, **make_slabs_kwargs)
@@ -67,10 +62,10 @@ def bulk_to_slabs_flow(
 
     futures = []
     for slab in slabs:
-        slab_relax_future = slab_relax.submit(slab, **slab_relax_kwargs)
+        slab_relax_future = relax_job.submit(slab, **slab_relax_kwargs)
 
         if run_slab_static:
-            slab_static_future = slab_static.submit(
+            slab_static_future = static_job.submit(
                 slab_relax_future, **slab_static_kwargs
             )
             futures.append(slab_static_future)

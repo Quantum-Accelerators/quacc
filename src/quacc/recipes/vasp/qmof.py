@@ -8,9 +8,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Literal
 
-import covalent as ct
 from ase.optimize import BFGSLineSearch
 
+from quacc import job
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.ase import summarize_opt_run
 from quacc.schemas.atoms import fetch_atoms
@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     from quacc.schemas.vasp import VaspSchema
 
 
-@ct.electron
+@job
 def qmof_relax_job(
     atoms: Atoms | dict,
     preset: str | None = "QMOFSet",
