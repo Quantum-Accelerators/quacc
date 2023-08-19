@@ -146,7 +146,9 @@ def test_cclib_taskdoc(tmpdir):
     assert doc["attributes"]["mbo"] is not None
 
     # Let's try with two analysis (also check case-insensitivity)
-    doc = _cclibTaskDocument.from_logfile(p, "psi_test.out", analysis=["mbo", "density"])
+    doc = _cclibTaskDocument.from_logfile(
+        p, "psi_test.out", analysis=["mbo", "density"]
+    )
     assert doc["attributes"]["mbo"] is not None
     assert doc["attributes"]["density"] is not None
 
