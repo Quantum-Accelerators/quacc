@@ -188,9 +188,6 @@ jobs:
       - name: Install conda packages
         run: conda install -c conda-forge openbabel
 
-      - name: Configure Quacc
-        run: quacc config
-
       - name: Run tests with pytest
         run: pytest -k 'qchem' --cov=quacc --cov-report=xml
 
