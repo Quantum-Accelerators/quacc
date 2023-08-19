@@ -161,9 +161,10 @@ def subflow(
         from prefect import flow as prefect_flow
 
         return prefect_flow(_func, **kwargs)
-
-    return _func
-
+    if not wflow_engine:
+        return _func
+    
+    raise ValueError(f"Unknown workflow engine: {wflow_engine}")
 
 @requires(prefect_deps, "Need quacc[prefect] dependencies")
 def make_runner(

@@ -11,6 +11,13 @@ except ImportError:
 WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
 
 
+def setup_module():
+    try:
+        parsl.load()
+    except RuntimeError:
+        pass
+
+
 @pytest.mark.skipif(
     parsl is None or WFLOW_ENGINE != "parsl",
     reason="Parsl is not installed or specified in config",
