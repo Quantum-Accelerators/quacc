@@ -172,8 +172,8 @@ def test_cclib_taskdoc(tmpdir):
     assert doc["attributes"]["trajectory"][-1] == doc["molecule"]
 
     # Make sure additional fields can be stored
-    # doc = cclibTaskDocument.from_logfile(p, ".log", additional_fields={"test": "hi"})
-    # assert doc["test"] == "hi"
+    doc = cclibTaskDocument.from_logfile(p, ".log", additional_fields={"test": "hi"})
+    assert doc["test"] == "hi"
 
     # test document can be jsanitized
     d = jsanitize(doc, enum_values=True)
