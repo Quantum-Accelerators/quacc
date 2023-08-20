@@ -31,7 +31,9 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Install pip packages
-        run: pip install .[strict,dev,optimizers]
+        run: |
+          pip install --upgrade https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
+          pip install .[strict,dev,optimizers]
 
       - name: Run tests with pytest
         run: pytest --cov=quacc --cov-report=xml
@@ -63,7 +65,9 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Install pip packages
-        run: pip install .[strict,dev,tblite]
+        run: |
+          pip install --upgrade https://gitlab.com/ase/ase/-/archive/master/ase-master.zip  
+          pip install .[strict,dev,tblite]
 
       - name: Run tests with pytest
         run: pytest -k 'tblite' --cov=quacc --cov-report=xml
@@ -104,7 +108,9 @@ jobs:
         run: conda install -c psi4 psi4
 
       - name: Install pip packages
-        run: pip install .[strict,dev]
+        run: |
+          pip install --upgrade https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
+          pip install .[strict,dev]
 
       - name: Run tests with pytest
         run: pytest -k 'psi4' --cov=quacc --cov-report=xml
@@ -145,7 +151,9 @@ jobs:
         run: conda install -c conda-forge dftbplus
 
       - name: Install pip packages
-        run: pip install .[strict,dev]
+        run: |
+          pip install --upgrade https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
+          pip install .[strict,dev]
 
       - name: Run tests with pytest
         run: pytest -k 'dftb' --cov=quacc --cov-report=xml
@@ -177,7 +185,9 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Install pip packages
-        run: pip install .[strict,dev,covalent]
+        run: |
+          pip install --upgrade https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
+          pip install .[strict,dev,covalent]
 
       - name: Make quacc config
         run: |
@@ -221,7 +231,9 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Install pip packages
-        run: pip install .[strict,dev,parsl]
+        run: |
+          pip install --upgrade https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
+          pip install .[strict,dev,parsl]
 
       - name: Make quacc config
         run: |
@@ -257,7 +269,9 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Install pip packages
-        run: pip install .[strict,dev,jobflow]
+        run: |
+          pip install --upgrade https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
+          pip install .[strict,dev,jobflow]
 
       - name: Make quacc config
         run: |
@@ -293,7 +307,9 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Install pip packages
-        run: pip install .[strict,dev,prefect]
+        run: |
+          pip install --upgrade https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
+          pip install .[strict,dev,prefect]
 
       - name: Make quacc config
         run: |
