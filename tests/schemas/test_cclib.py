@@ -6,7 +6,6 @@ from pathlib import Path
 import pytest
 from ase.build import bulk
 from ase.io import read
-from cclib.method.calculationmethod import MissingAttributeError
 from maggma.stores import MemoryStore
 from monty.json import MontyDecoder, jsanitize
 

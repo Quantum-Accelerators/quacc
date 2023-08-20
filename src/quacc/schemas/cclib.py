@@ -434,8 +434,7 @@ def _cclib_calculate(
                 raise ValueError(
                     "PROATOM_DIR environment variable or proatom_dir kwarg needs to be set."
                 )
-            else:
-                proatom_dir = os.path.expandvars(os.environ["PROATOM_DIR"])
+            proatom_dir = os.path.expandvars(os.environ["PROATOM_DIR"])
         if not os.path.exists(proatom_dir):
             raise FileNotFoundError(
                 f"Protatom directory {proatom_dir} does not exist. Returning None."
