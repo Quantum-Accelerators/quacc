@@ -3,7 +3,6 @@ import os
 import shutil
 from pathlib import Path
 
-import cclib
 import pytest
 from ase.build import bulk
 from ase.io import read
