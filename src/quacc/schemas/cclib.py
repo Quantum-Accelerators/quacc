@@ -421,8 +421,6 @@ def _cclib_calculate(
 
     method = method.lower()
     cube_methods = ["bader", "ddec6", "hirshfeld"]
-    proatom_methods = ["ddec6", "hirshfeld"]
-
     if method in cube_methods:
         if not cube_file:
             raise ValueError(f"A cube file must be provided for {method}.")
@@ -441,16 +439,21 @@ def _cclib_calculate(
                 f"Protatom directory {proatom_dir} does not exist. Returning None."
             )
     cclib_methods = getmembers(cclib.method, isclass)
-    method_class = None
-    for cclib_method in cclib_methods:
-        if cclib_method[0].lower() == method:
-            method_class = cclib_method[1]
-            break
+    method_class = next(
+        (
+            cclib_method[1]
+            for cclib_method in cclib_methods
+            if cclib_method[0].lower() == method
+        ),
+        None,
+    )
     if method_class is None:
         raise ValueError(f"{method} is not a valid cclib population analysis method.")
 
     if method in cube_methods:
         vol = cclib.method.volume.read_from_cube(str(cube_file))
+        proatom_methods = ["ddec6", "hirshfeld"]
+
         if method in proatom_methods:
             m = method_class(cclib_obj, vol, str(proatom_dir))
         else:
