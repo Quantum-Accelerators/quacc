@@ -463,7 +463,7 @@ def _cclib_calculate(
     try:
         m.calculate()
     except Exception as e:
-        warnings.warn(f"Could not calculate {method}: {e}")
+        warnings.warn(f"Could not calculate {method}: {e}", UserWarning)
         return None
 
     # The list of available attributes after a calculation. This is hardcoded for now

@@ -3,9 +3,11 @@ import os
 import shutil
 from pathlib import Path
 
+import cclib
 import pytest
 from ase.build import bulk
 from ase.io import read
+from cclib.io import ccread
 from maggma.stores import MemoryStore
 from monty.json import MontyDecoder, jsanitize
 
@@ -16,6 +18,7 @@ FILE_DIR = Path(__file__).resolve().parent
 
 run1 = os.path.join(FILE_DIR, "gaussian_run1")
 log1 = os.path.join(run1, "Gaussian.log")
+cclib_obj = ccread(log1)
 
 
 def setup_module():
@@ -32,6 +35,10 @@ def teardown_module():
 
     if os.path.exists(p / "psi_test.cube"):
         os.remove(p / "psi_test.cube")
+
+
+def bad_mock_cclib_calculate(*args, **kwargs):
+    raise ValueError("This is a bad run.")
 
 
 def test_summarize_run():
@@ -199,14 +206,17 @@ def test_cclib_calculate(tmpdir):
     tmpdir.chdir()
 
     with pytest.raises(ValueError):
-        _cclib_calculate({}, method="bader")
+        _cclib_calculate(cclib_obj, method="fakemethod")
+
+    with pytest.raises(ValueError):
+        _cclib_calculate(cclib_obj, method="bader")
 
     with pytest.raises(FileNotFoundError):
-        _cclib_calculate({}, method="bader", cube_file="does_not_exists.txt")
+        _cclib_calculate(cclib_obj, method="bader", cube_file="does_not_exists.txt")
 
     with pytest.raises(FileNotFoundError):
         _cclib_calculate(
-            {},
+            cclib_obj,
             method="ddec6",
             cube_file=FILE_DIR / "cclib_data" / "psi_test.cube",
             proatom_dir="does_not_exists",
@@ -214,26 +224,37 @@ def test_cclib_calculate(tmpdir):
 
     with pytest.raises(ValueError):
         _cclib_calculate(
-            {},
+            cclib_obj,
             method="ddec6",
             cube_file=FILE_DIR / "cclib_data" / "psi_test.cube",
         )
 
     with pytest.raises(Exception):
         _cclib_calculate(
-            {},
+            cclib_obj,
             method="ddec6",
             cube_file=FILE_DIR / "cclib_data" / "psi_test.cube",
             proatom_dir=FILE_DIR / "cclib_data" / "psi_test.cube",
         )
 
 
-def test_env(tmpdir, monkeypatch):
+def test_monkeypatches(tmpdir, monkeypatch):
     tmpdir.chdir()
     monkeypatch.setenv("PROATOM_DIR", str(FILE_DIR / "cclib_data" / "proatomdata"))
     with pytest.raises(FileNotFoundError):
         _cclib_calculate(
-            {},
+            cclib_obj,
             method="ddec6",
             cube_file=FILE_DIR / "cclib_data" / "psi_test.cube",
+        )
+
+    monkeypatch.setattr("cclib.method.Bader.calculate", bad_mock_cclib_calculate)
+    with pytest.warns(UserWarning):
+        assert (
+            _cclib_calculate(
+                cclib_obj,
+                method="bader",
+                cube_file=FILE_DIR / "cclib_data" / "psi_test.cube",
+            )
+            is None
         )
