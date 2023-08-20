@@ -1,24 +1,15 @@
 """Schemas for molecular DFT codes parsed by cclib"""
 from __future__ import annotations
 
+import inspect
 import logging
 import os
+from inspect import getmembers, isclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Dict, List, Literal, TypeVar
 
+import cclib
 from cclib.io import ccread
-from cclib.method import (
-    CSPA,
-    DDEC6,
-    LPA,
-    MBO,
-    MPA,
-    Bader,
-    Bickelhaupt,
-    Density,
-    Hirshfeld,
-    volume,
-)
 from emmet.core.structure import MoleculeMetadata
 from maggma.core import Store
 from monty.json import jsanitize
@@ -430,6 +421,7 @@ def _cclib_calculate(
 
     method = method.lower()
     cube_methods = ["bader", "ddec6", "hirshfeld"]
+    proatom_methods = ["ddec6", "hirshfeld"]
 
     if method in cube_methods:
         if not cube_file:
@@ -449,29 +441,23 @@ def _cclib_calculate(
         else:
             proatom_dir = os.path.expandvars(os.environ["PROATOM_DIR"])
 
-    if cube_file and method in cube_methods:
-        vol = volume.read_from_cube(str(cube_file))
+    cclib_methods = getmembers(cclib.method, isclass)
+    method_class = None
+    for cclib_method in cclib_methods:
+        if cclib_method[0].lower() == method:
+            method_class = cclib_method[1]
+            break
+    if method_class is None:
+        raise ValueError(f"{method} is not a valid cclib population analysis method.")
 
-    if method == "bader":
-        m = Bader(cclib_obj, vol)
-    elif method == "bickelhaupt":
-        m = Bickelhaupt(cclib_obj)
-    elif method == "cpsa":
-        m = CSPA(cclib_obj)
-    elif method == "ddec6":
-        m = DDEC6(cclib_obj, vol, str(proatom_dir))
-    elif method == "density":
-        m = Density(cclib_obj)
-    elif method == "hirshfeld":
-        m = Hirshfeld(cclib_obj, vol, str(proatom_dir))
-    elif method == "lpa":
-        m = LPA(cclib_obj)
-    elif method == "mbo":
-        m = MBO(cclib_obj)
-    elif method == "mpa":
-        m = MPA(cclib_obj)
+    if method in cube_methods:
+        vol = cclib.method.volume.read_from_cube(str(cube_file))
+        if method in proatom_methods:
+            m = method_class(cclib_obj, vol, str(proatom_dir))
+        else:
+            m = method_class(cclib_obj, vol)
     else:
-        raise ValueError(f"{method} is not supported.")
+        m = method_class(cclib_obj)
 
     try:
         m.calculate()

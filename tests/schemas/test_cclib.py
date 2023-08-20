@@ -187,7 +187,7 @@ def test_cclib_taskdoc(tmpdir):
     assert doc["test"] == "hi"
 
     with pytest.raises(FileNotFoundError):
-        _cclibTaskDocument.from_logfile("test", "does_not_exists.txt")
+        _cclibTaskDocument.from_logfile(p, "does_not_exists.txt")
 
     # test document can be jsanitized
     d = jsanitize(doc, enum_values=True)
@@ -227,3 +227,5 @@ def test_cclib_calculate(tmpdir):
             cube_file=FILE_DIR / "cclib_data" / "psi_test.cube",
             proatom_dir=FILE_DIR / "cclib_data" / "psi_test.cube",
         )
+
+    # set PROATOM_DIR env var
