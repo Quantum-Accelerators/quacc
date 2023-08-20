@@ -68,7 +68,7 @@ To use quacc with ORCA, you will need to define the `ORCA_CMD` setting to be the
 
     [Psi4](https://github.com/psi4/psi4) is an open-source quantum chemistry electronic structure package.
 
-If you plan to use Psi4 with quacc, you will need to install it prior to use. This can be done via `conda install -c psi4 psi4`.
+If you plan to use Psi4 with quacc, you will need to install it prior to use. This can be done as described in the [Psi4 installation guide](https://psicode.org/installs/latest/).
 
 ## tblite
 

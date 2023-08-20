@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleasd]
+
+### Changed
+
+- Standardized `relax_cell` to be `False` by default for all recipes.
+
+### Fixed
+
+- Fixed a bug on Windows where the trajectory file would not be closed after a relaxation, causing permission errors.
+
+### Removed
+
+- Removed atomate2 as a dependency.
+
 ## [0.2.0]
 
 ### Added
@@ -25,7 +39,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
-- Removed atomate2 as a dependency.
 - Removed `quacc.recipes.emt.parsl` since it is now obsolete.
 - Removed `quacc config` command-line option.
 

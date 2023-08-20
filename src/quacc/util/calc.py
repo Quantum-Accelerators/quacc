@@ -159,6 +159,10 @@ def run_ase_opt(
     # Run calculation
     dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
 
+    # Prevent permission errors on Windows
+    if hasattr(dyn.trajectory, "close"):
+        dyn.trajectory.close()
+
     # Store the trajectory atoms
     dyn.traj_atoms = read(traj_filename, index=":")
 
