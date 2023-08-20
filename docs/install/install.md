@@ -20,20 +20,20 @@
 In your newly activated conda environment, run the following commands to install quacc. Note that you will need to install quacc on all machines where you plan to run calculations.
 
 ```bash
-# Instal most recent release of quacc
+# Install most recent PyPI release of quacc
+pip install --upgrade https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
 pip install quacc
-pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
 ```
 
 If you wish to install the development version of quacc, you can run the following commands instead:
 
 ```bash
 # Install development version of quacc
-pip install git+https://github.com/quantum-accelerators/quacc.git
-pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
+pip install --upgrade https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
+pip install --upgrade git+https://github.com/quantum-accelerators/quacc.git
 ```
 
-Note that we have to install the development version of ASE here, at least until version >3.22.1 is released.
+Note that in both cases we had to also install the development version of ASE, at least until version >3.22.1 is released.
 
 !!! Tip
 
