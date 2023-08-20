@@ -17,6 +17,14 @@ try:
     import parsl
 except ImportError:
     parsl = None
+try:
+    import jobflow
+except ImportError:
+    jobflow = None
+try:
+    import prefect
+except ImportError:
+    prefect = None
 
 _DEFAULT_CONFIG_FILE_PATH = os.path.join(os.path.expanduser("~"), ".quacc.yaml")
 
@@ -39,7 +47,15 @@ class QuaccSettings(BaseSettings):
     # Workflow Engine
     # ---------------------------
     WORKFLOW_ENGINE: Optional[str] = Field(
-        "parsl" if parsl else "covalent" if covalent else None,
+        "parsl"
+        if parsl
+        else "covalent"
+        if covalent
+        else "jobflow"
+        if jobflow
+        else "prefect"
+        if prefect
+        else None,
         description=(
             "The workflow manager to use."
             "Options include: 'covalent', 'parsl', 'jobflow', 'prefect', or None"

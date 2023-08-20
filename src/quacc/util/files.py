@@ -3,9 +3,12 @@ Utility functions for file and path handling
 """
 from __future__ import annotations
 
+import contextlib
 import os
+import socket
 import warnings
 from datetime import datetime
+from pathlib import Path
 from random import randint
 from shutil import copy
 
@@ -137,3 +140,58 @@ def load_yaml_calc(yaml_path: str) -> dict:
             config["inputs"]["setups"][k] = v.split(k)[-1]
 
     return config
+
+
+def find_recent_logfile(dir_name: Path | str, logfile_extensions: str | list[str]):
+    """
+    Find the most recent logfile in a given directory.
+
+    Parameters
+    ----------
+    dir_name
+        The path to the directory to search
+    logfile_extensions
+        The extension (or list of possible extensions) of the logfile to search for.
+        For an exact match only, put in the full file name.
+
+    Returns
+    -------
+    logfile
+        The path to the most recent logfile with the desired extension
+    """
+    mod_time = 0.0
+    logfile = None
+    if isinstance(logfile_extensions, str):
+        logfile_extensions = [logfile_extensions]
+    for f in os.listdir(dir_name):
+        f_path = os.path.join(dir_name, f)
+        for ext in logfile_extensions:
+            if ext in f and os.path.getmtime(f_path) > mod_time:
+                mod_time = os.path.getmtime(f_path)
+                logfile = os.path.abspath(f_path)
+    return logfile
+
+
+def get_uri(dir_name: str | Path) -> str:
+    """
+    Return the URI path for a directory.
+
+    This allows files hosted on different file servers to have distinct locations.
+
+    Adapted from Atomate2.
+
+    Parameters
+    ----------
+    dir_name : str
+        A directory name.
+
+    Returns
+    -------
+    str
+        Full URI path, e.g., "fileserver.host.com:/full/path/of/dir_name".
+    """
+    fullpath = Path(dir_name).absolute()
+    hostname = socket.gethostname()
+    with contextlib.suppress(socket.gaierror, socket.herror):
+        hostname = socket.gethostbyaddr(hostname)[0]
+    return f"{hostname}:{fullpath}"

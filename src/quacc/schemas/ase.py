@@ -10,13 +10,14 @@ from ase import units
 from ase.constraints import Filter
 from ase.io import read
 from ase.vibrations.data import VibrationsData
-from atomate2.utils.path import get_uri
+from quacc.util.files import get_uri
 
 from quacc import SETTINGS
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
 from quacc.util.db import results_to_db
 from quacc.util.dicts import clean_dict
+from quacc.util.files import get_uri
 
 if TYPE_CHECKING:
     from ase import Atoms
