@@ -198,100 +198,6 @@ def summarize_run(
     return task_doc
 
 
-def _cclib_calculate(
-    cclib_obj,
-    method: str,
-    cube_file: Path | str = None,
-    proatom_dir: Path | str = None,
-) -> dict | None:
-    """
-    Run a cclib population analysis.
-
-    Parameters
-    ----------
-    cclib_obj
-        The cclib object to run the population analysis on.
-    method
-        The population analysis method to use.
-    cube_file
-        The path to the cube file to use for the population analysis.
-        Needed only for Bader, DDEC6, and Hirshfeld
-    proatom_dir
-        The path to the proatom directory to use for the population analysis.
-        Needed only for DDEC6 and Hirshfeld.
-    """
-
-    method = method.lower()
-    cube_methods = ["bader", "ddec6", "hirshfeld"]
-
-    if method in cube_methods:
-        if not cube_file:
-            raise ValueError(f"A cube file must be provided for {method}.")
-        if not os.path.exists(cube_file):
-            raise FileNotFoundError(f"Cube file {cube_file} does not exist.")
-    if method in {"ddec6", "hirshfeld"}:
-        if proatom_dir:
-            if not os.path.exists(proatom_dir):
-                raise FileNotFoundError(
-                    f"Protatom directory {proatom_dir} does not exist. Returning None."
-                )
-        elif os.getenv("PROATOM_DIR") is None:
-            raise ValueError(
-                "PROATOM_DIR environment variable or proatom_dir kwarg needs to be set."
-            )
-        else:
-            proatom_dir = os.path.expandvars(os.environ["PROATOM_DIR"])
-
-    if cube_file and method in cube_methods:
-        vol = volume.read_from_cube(str(cube_file))
-
-    if method == "bader":
-        m = Bader(cclib_obj, vol)
-    elif method == "bickelhaupt":
-        m = Bickelhaupt(cclib_obj)
-    elif method == "cpsa":
-        m = CSPA(cclib_obj)
-    elif method == "ddec6":
-        m = DDEC6(cclib_obj, vol, str(proatom_dir))
-    elif method == "density":
-        m = Density(cclib_obj)
-    elif method == "hirshfeld":
-        m = Hirshfeld(cclib_obj, vol, str(proatom_dir))
-    elif method == "lpa":
-        m = LPA(cclib_obj)
-    elif method == "mbo":
-        m = MBO(cclib_obj)
-    elif method == "mpa":
-        m = MPA(cclib_obj)
-    else:
-        raise ValueError(f"{method} is not supported.")
-
-    try:
-        m.calculate()
-    except AttributeError:
-        return None
-
-    # The list of available attributes after a calculation. This is hardcoded for now
-    # until https://github.com/cclib/cclib/issues/1097 is resolved. Once it is, we can
-    # delete this and just do `return calc_attributes.getattributes()`.
-    avail_attributes = [
-        "aoresults",
-        "fragresults",
-        "fragcharges",
-        "density",
-        "donations",
-        "bdonations",
-        "repulsions",
-        "matches",
-        "refcharges",
-    ]
-    return {
-        attribute: getattr(m, attribute)
-        for attribute in avail_attributes
-        if hasattr(m, attribute)
-    }
-
-
 class _cclibTaskDocument(MoleculeMetadata):
     """
     Definition of a cclib-generated task document.
@@ -497,6 +403,100 @@ class _cclibTaskDocument(MoleculeMetadata):
         )
         doc.molecule = final_molecule
         return doc.copy(update=additional_fields).dict()
+
+
+def _cclib_calculate(
+    cclib_obj,
+    method: str,
+    cube_file: Path | str = None,
+    proatom_dir: Path | str = None,
+) -> dict | None:
+    """
+    Run a cclib population analysis.
+
+    Parameters
+    ----------
+    cclib_obj
+        The cclib object to run the population analysis on.
+    method
+        The population analysis method to use.
+    cube_file
+        The path to the cube file to use for the population analysis.
+        Needed only for Bader, DDEC6, and Hirshfeld
+    proatom_dir
+        The path to the proatom directory to use for the population analysis.
+        Needed only for DDEC6 and Hirshfeld.
+    """
+
+    method = method.lower()
+    cube_methods = ["bader", "ddec6", "hirshfeld"]
+
+    if method in cube_methods:
+        if not cube_file:
+            raise ValueError(f"A cube file must be provided for {method}.")
+        if not os.path.exists(cube_file):
+            raise FileNotFoundError(f"Cube file {cube_file} does not exist.")
+    if method in {"ddec6", "hirshfeld"}:
+        if proatom_dir:
+            if not os.path.exists(proatom_dir):
+                raise FileNotFoundError(
+                    f"Protatom directory {proatom_dir} does not exist. Returning None."
+                )
+        elif os.getenv("PROATOM_DIR") is None:
+            raise ValueError(
+                "PROATOM_DIR environment variable or proatom_dir kwarg needs to be set."
+            )
+        else:
+            proatom_dir = os.path.expandvars(os.environ["PROATOM_DIR"])
+
+    if cube_file and method in cube_methods:
+        vol = volume.read_from_cube(str(cube_file))
+
+    if method == "bader":
+        m = Bader(cclib_obj, vol)
+    elif method == "bickelhaupt":
+        m = Bickelhaupt(cclib_obj)
+    elif method == "cpsa":
+        m = CSPA(cclib_obj)
+    elif method == "ddec6":
+        m = DDEC6(cclib_obj, vol, str(proatom_dir))
+    elif method == "density":
+        m = Density(cclib_obj)
+    elif method == "hirshfeld":
+        m = Hirshfeld(cclib_obj, vol, str(proatom_dir))
+    elif method == "lpa":
+        m = LPA(cclib_obj)
+    elif method == "mbo":
+        m = MBO(cclib_obj)
+    elif method == "mpa":
+        m = MPA(cclib_obj)
+    else:
+        raise ValueError(f"{method} is not supported.")
+
+    try:
+        m.calculate()
+    except AttributeError:
+        return None
+
+    # The list of available attributes after a calculation. This is hardcoded for now
+    # until https://github.com/cclib/cclib/issues/1097 is resolved. Once it is, we can
+    # delete this and just do `return calc_attributes.getattributes()`.
+    avail_attributes = [
+        "aoresults",
+        "fragresults",
+        "fragcharges",
+        "density",
+        "donations",
+        "bdonations",
+        "repulsions",
+        "matches",
+        "refcharges",
+    ]
+    return {
+        attribute: getattr(m, attribute)
+        for attribute in avail_attributes
+        if hasattr(m, attribute)
+    }
 
 
 def _get_homos_lumos(
