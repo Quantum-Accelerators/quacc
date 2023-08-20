@@ -64,7 +64,7 @@ def static_job(
 def relax_job(
     atoms: Atoms | dict,
     preset: str | None = None,
-    relax_volume: bool = True,
+    relax_cell: bool = True,
     calc_swaps: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
@@ -77,7 +77,7 @@ def relax_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     preset
         Preset to use.
-    relax_volume
+    relax_cell
         True if a volume relaxation (ISIF = 3) should be performed.
         False if only the positions (ISIF = 2) should be updated.
     calc_swaps
@@ -95,7 +95,7 @@ def relax_job(
 
     defaults = {
         "ediffg": -0.02,
-        "isif": 3 if relax_volume else 2,
+        "isif": 3 if relax_cell else 2,
         "ibrion": 2,
         "isym": 0,
         "lcharg": False,
@@ -114,7 +114,7 @@ def relax_job(
 def double_relax_job(
     atoms: Atoms | dict,
     preset: str | None = None,
-    relax_volume: bool = True,
+    relax_cell: bool = True,
     calc_swaps1: dict | None = None,
     calc_swaps2: dict | None = None,
     copy_files: list[str] | None = None,
@@ -136,7 +136,7 @@ def double_relax_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     preset
         Preset to use.
-    relax_volume
+    relax_cell
         True if a volume relaxation (ISIF = 3) should be performed.
         False if only the positions (ISIF = 2) should be updated.
     calc_swaps1
@@ -157,7 +157,7 @@ def double_relax_job(
 
     defaults = {
         "ediffg": -0.02,
-        "isif": 3 if relax_volume else 2,
+        "isif": 3 if relax_cell else 2,
         "ibrion": 2,
         "isym": 0,
         "lcharg": False,
