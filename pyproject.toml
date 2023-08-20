@@ -26,7 +26,7 @@ classifiers = [
 ]
 requires-python = ">=3.9, <3.12"
 dependencies = [
-    "ase",  # waiting on >3.22.1
+    "ase>3.22.1",
     "cclib @ git+https://github.com/cclib/cclib.git", # waiting on > 1.7.2;
     "custodian>=2023.6.5",
     "emmet-core>=0.51.11",
