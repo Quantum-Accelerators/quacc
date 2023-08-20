@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Standardized `relax_cell` to be `False` by default for all recipes.
 
+### Fixed
+
+- Fixed a bug on Windows where the trajectory file would not be closed after a relaxation, causing permission errors.
+
 ### Removed
 
 - Removed atomate2 as a dependency.
