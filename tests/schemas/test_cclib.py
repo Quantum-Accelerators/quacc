@@ -6,16 +6,33 @@ from pathlib import Path
 import pytest
 from ase.build import bulk
 from ase.io import read
+from cclib.method.calculationmethod import MissingAttributeError
 from maggma.stores import MemoryStore
 from monty.json import MontyDecoder, jsanitize
 
 from quacc.calculators.vasp import Vasp
-from quacc.schemas.cclib import _cclibTaskDocument, summarize_run
+from quacc.schemas.cclib import _cclib_calculate, _cclibTaskDocument, summarize_run
 
 FILE_DIR = Path(__file__).resolve().parent
 
 run1 = os.path.join(FILE_DIR, "gaussian_run1")
 log1 = os.path.join(run1, "Gaussian.log")
+
+
+def setup_module():
+    p = FILE_DIR / "cclib_data"
+
+    with gzip.open(p / "psi_test.cube.gz", "r") as f_in, open(
+        p / "psi_test.cube", "wb"
+    ) as f_out:
+        shutil.copyfileobj(f_in, f_out)
+
+
+def teardown_module():
+    p = FILE_DIR / "cclib_data"
+
+    if os.path.exists(p / "psi_test.cube"):
+        os.remove(p / "psi_test.cube")
 
 
 def test_summarize_run():
@@ -156,15 +173,7 @@ def test_cclib_taskdoc(tmpdir):
     doc = _cclibTaskDocument.from_logfile(p, ".log", analysis="MBO")
     assert doc["attributes"]["mbo"] is None
 
-    # Let's try a volumetric analysis
-    # We'll gunzip the .cube.gz file because cclib can't read cube.gz files yet.
-    # Can remove the gzip part when https://github.com/cclib/cclib/issues/108 is closed.
-    with gzip.open(p / "psi_test.cube.gz", "r") as f_in, open(
-        p / "psi_test.cube", "wb"
-    ) as f_out:
-        shutil.copyfileobj(f_in, f_out)
     doc = _cclibTaskDocument.from_logfile(p, "psi_test.out", analysis=["Bader"])
-    os.remove(p / "psi_test.cube")
     assert doc["attributes"]["bader"] is not None
 
     # Make sure storing the trajectory works
@@ -178,10 +187,43 @@ def test_cclib_taskdoc(tmpdir):
     assert doc["test"] == "hi"
 
     with pytest.raises(FileNotFoundError):
-        doc = _cclibTaskDocument.from_logfile("test", "does_not_exists.txt")
+        _cclibTaskDocument.from_logfile("test", "does_not_exists.txt")
 
     # test document can be jsanitized
     d = jsanitize(doc, enum_values=True)
 
     # and decoded
     MontyDecoder().process_decoded(d)
+
+
+def test_cclib_calculate(tmpdir):
+    tmpdir.chdir()
+
+    with pytest.raises(ValueError):
+        _cclib_calculate({}, method="bader")
+
+    with pytest.raises(FileNotFoundError):
+        _cclib_calculate({}, method="bader", cube_file="does_not_exists.txt")
+
+    with pytest.raises(FileNotFoundError):
+        _cclib_calculate(
+            {},
+            method="ddec6",
+            cube_file=FILE_DIR / "cclib_data" / "psi_test.cube",
+            proatom_dir="does_not_exists",
+        )
+
+    with pytest.raises(ValueError):
+        _cclib_calculate(
+            {},
+            method="ddec6",
+            cube_file=FILE_DIR / "cclib_data" / "psi_test.cube",
+        )
+
+    with pytest.raises(MissingAttributeError):
+        _cclib_calculate(
+            {},
+            method="ddec6",
+            cube_file=FILE_DIR / "cclib_data" / "psi_test.cube",
+            proatom_dir=FILE_DIR / "cclib_data" / "psi_test.cube",
+        )

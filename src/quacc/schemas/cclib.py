@@ -198,11 +198,11 @@ def summarize_run(
     return task_doc
 
 
-def cclib_calculate(
+def _cclib_calculate(
     cclib_obj,
     method: str,
-    cube_file: Path | str,
-    proatom_dir: Path | str,
+    cube_file: Path | str = None,
+    proatom_dir: Path | str = None,
 ) -> dict | None:
     """
     Run a cclib population analysis.
@@ -224,18 +224,23 @@ def cclib_calculate(
     method = method.lower()
     cube_methods = ["bader", "ddec6", "hirshfeld"]
 
-    if method in cube_methods and not cube_file:
-        raise FileNotFoundError(
-            f"A cube file must be provided for {method}. Returning None."
-        )
-    if method in {"ddec6", "hirshfeld"} and not proatom_dir:
-        if os.getenv("PROATOM_DIR") is None:
-            raise OSError("PROATOM_DIR environment variable not set. Returning None.")
-        proatom_dir = os.path.expandvars(os.environ["PROATOM_DIR"])
-    if proatom_dir and not os.path.exists(proatom_dir):
-        raise FileNotFoundError(
-            f"Protatom directory {proatom_dir} does not exist. Returning None."
-        )
+    if method in cube_methods:
+        if not cube_file:
+            raise ValueError(f"A cube file must be provided for {method}.")
+        if not os.path.exists(cube_file):
+            raise FileNotFoundError(f"Cube file {cube_file} does not exist.")
+    if method in {"ddec6", "hirshfeld"}:
+        if proatom_dir:
+            if not os.path.exists(proatom_dir):
+                raise FileNotFoundError(
+                    f"Protatom directory {proatom_dir} does not exist. Returning None."
+                )
+        else:
+            if os.getenv("PROATOM_DIR") is None:
+                raise ValueError(
+                    "PROATOM_DIR environment variable or proatom_dir kwarg needs to be set."
+                )
+            proatom_dir = os.path.expandvars(os.environ["PROATOM_DIR"])
 
     if cube_file and method in cube_methods:
         vol = volume.read_from_cube(str(cube_file))
@@ -475,7 +480,7 @@ class _cclibTaskDocument(MoleculeMetadata):
             cubefile_path = find_recent_logfile(dir_name, [".cube", ".cub"])
 
             for analysis_name in analysis:
-                if calc_attributes := cclib_calculate(
+                if calc_attributes := _cclib_calculate(
                     cclib_obj, analysis_name, cubefile_path, proatom_dir
                 ):
                     attributes[analysis_name] = calc_attributes
