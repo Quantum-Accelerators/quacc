@@ -7,7 +7,8 @@ Want to get up and running with quacc as fast possible? Here we go!
 Run the following commands in the terminal:
 
 ```bash
-pip install git+https://github.com/quantum-accelerators/quacc.git[covalent]
+pip install --upgrade https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
+pip install quacc[covalent]
 covalent start
 ```
 
