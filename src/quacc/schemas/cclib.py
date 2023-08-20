@@ -428,7 +428,7 @@ def _cclib_calculate(
             raise ValueError(f"A cube file must be provided for {method}.")
         if not os.path.exists(cube_file):
             raise FileNotFoundError(f"Cube file {cube_file} does not exist.")
-    if method in {"ddec6", "hirshfeld"}:
+    if method in proatom_methods:
         if not proatom_dir:
             if os.getenv("PROATOM_DIR") is None:
                 raise ValueError(
