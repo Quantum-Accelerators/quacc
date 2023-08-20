@@ -108,7 +108,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version: ["3.10"]
+        python-version: ["3.11"]
     runs-on: ubuntu-latest
 
     defaults:
@@ -133,7 +133,7 @@ jobs:
           activate-environment: quacc-env
 
       - name: Install conda packages
-        run: conda install -c psi4 psi4
+        run: conda install psi4 python=3.11 -c conda-forge/label/libint_dev -c conda-forge
 
       - name: Install pip packages
         run: pip install .[strict,dev]
