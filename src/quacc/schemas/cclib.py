@@ -4,17 +4,7 @@ from __future__ import annotations
 import logging
 import os
 from pathlib import Path
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    List,
-    Literal,
-    Optional,
-    Tuple,
-    TypeVar,
-    Union,
-)
+from typing import TYPE_CHECKING, Dict, List, Literal, TypeVar
 
 from cclib.io import ccread
 from cclib.method import (
@@ -211,9 +201,9 @@ def summarize_run(
 def cclib_calculate(
     cclib_obj,
     method: str,
-    cube_file: Union[Path, str],
-    proatom_dir: Union[Path, str],
-) -> Optional[Dict[str, Any]]:
+    cube_file: Path | str,
+    proatom_dir: Path | str,
+) -> dict | None:
     """
     Run a cclib population analysis.
 
@@ -325,12 +315,12 @@ class _cclibTaskDocument(MoleculeMetadata):
     @classmethod
     def from_logfile(
         cls,
-        dir_name: Union[str, Path],
-        logfile_extensions: Union[str, List[str]],
+        dir_name: str | Path,
+        logfile_extensions: str | List[str],
         store_trajectory: bool = False,
-        additional_fields: Optional[Dict[str, Any]] = None,
-        analysis: Optional[Union[str, List[str]]] = None,
-        proatom_dir: Optional[Union[Path, str]] = None,
+        additional_fields: dict | None = None,
+        analysis: str | list[str] | None = None,
+        proatom_dir: Path | str | None = None,
     ) -> dict:
         """
         Create a TaskDocument from a log file.
@@ -505,8 +495,8 @@ class _cclibTaskDocument(MoleculeMetadata):
 
 
 def _get_homos_lumos(
-    moenergies: List[List[float]], homo_indices: List[int]
-) -> Tuple[List[float], Optional[List[float]], Optional[List[float]]]:
+    moenergies: list[list[float]], homo_indices: list[int]
+) -> tuple[list[float], list[float], list[float]] | tuple[list[float], None, None]:
     """
     Calculate the HOMO, LUMO, and HOMO-LUMO gap energies in eV.
 

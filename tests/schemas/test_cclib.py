@@ -177,6 +177,9 @@ def test_cclib_taskdoc(tmpdir):
     doc = _cclibTaskDocument.from_logfile(p, ".log", additional_fields={"test": "hi"})
     assert doc["test"] == "hi"
 
+    with pytest.raises(FileNotFoundError):
+        doc = _cclibTaskDocument.from_logfile("test", "does_not_exists.txt")
+
     # test document can be jsanitized
     d = jsanitize(doc, enum_values=True)
 
