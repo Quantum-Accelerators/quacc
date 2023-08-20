@@ -27,8 +27,7 @@ classifiers = [
 requires-python = ">=3.9, <3.12"
 dependencies = [
     "ase @ https://gitlab.com/ase/ase/-/archive/master/ase-master.zip",  # waiting on >3.22.1
-    "atomate2 @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
-    "cclib @ git+https://github.com/cclib/cclib.git", # waiting on > 1.7.2; can switch to atomate2[cclib] after
+    "cclib @ git+https://github.com/cclib/cclib.git", # waiting on > 1.7.2;
     "custodian>=2023.6.5",
     "emmet-core>=0.51.11",
     "maggma>=0.51.18",
@@ -42,25 +41,24 @@ dependencies = [
 covalent = ["covalent>=0.226.0rc0", "covalent-hpc-plugin>=0.0.2"]
 jobflow = ["jobflow>=0.1.13", "fireworks>=2.0.3"]
 optimizers = ["sella>=2.3.2"]
-parsl = ["parsl[monitoring]>=2023.7.3"]
+parsl = ["parsl>=2023.8.14"]
 prefect = ["prefect>=2.10.18", "prefect-dask>=0.2.4", "dask-jobqueue>=0.8.2"]
 tblite = ["tblite[ase]>=0.3.0; platform_system=='Linux'"]
-dev = ["black", "isort", "pytest", "pytest-cov"]
+dev = ["black>=23.7.0", "isort>=5.12.0", "pytest>=7.4.0", "pytest-cov>=4.1.0"]
 docs = [
-    "mkdocs-material",
-    "mkdocstrings[python]",
-    "mkdocs-gen-files",
-    "mkdocs-literate-nav",
-    "pillow",
-    "cairosvg"
+    "mkdocs-material>=9.1.21",
+    "mkdocstrings[python]>=0.22.0",
+    "mkdocs-gen-files>=0.5.0",
+    "mkdocs-literate-nav>=0.6.0",
+    "pillow>=10.0.0",
+    "cairosvg>=2.7.1"
 ]
 strict = [
     "ase @ https://gitlab.com/ase/ase/-/archive/master/ase-master.zip",  # waiting on >3.22.1
-    "atomate2 @ git+https://github.com/materialsproject/atomate2.git",  # waiting on >0.0.10
     "cclib @ git+https://github.com/cclib/cclib.git", # waiting on > 1.7.2
     "custodian==2023.7.22",
-    "emmet-core==0.64.4",
-    "maggma==0.53.0",
+    "emmet-core==0.64.6",
+    "maggma==0.53.1",
     "monty==2023.8.8",
     "numpy==1.25.2",
     "pydantic==1.10.2",

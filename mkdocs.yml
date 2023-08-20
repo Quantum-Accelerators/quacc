@@ -76,7 +76,6 @@ plugins:
             - https://docs.python.org/3/objects.inv
             - https://wiki.fysik.dtu.dk/ase/objects.inv
             - https://pymatgen.org/objects.inv
-            - https://materialsproject.github.io/atomate2/objects.inv
             - https://cclib.github.io/objects.inv
             - https://materialsproject.github.io/maggma/objects.inv
             - https://materialsproject.github.io/emmet/objects.inv
