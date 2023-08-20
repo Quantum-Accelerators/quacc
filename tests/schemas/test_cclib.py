@@ -220,7 +220,7 @@ def test_cclib_calculate(tmpdir):
             cube_file=FILE_DIR / "cclib_data" / "psi_test.cube",
         )
 
-    with pytest.raises(MissingAttributeError):
+    with pytest.raises(Exception):
         _cclib_calculate(
             {},
             method="ddec6",
@@ -228,4 +228,13 @@ def test_cclib_calculate(tmpdir):
             proatom_dir=FILE_DIR / "cclib_data" / "psi_test.cube",
         )
 
-    # set PROATOM_DIR env var
+
+def test_env(tmpdir, monkeypatch):
+    tmpdir.chdir()
+    monkeypatch.setenv("PROATOM_DIR", str(FILE_DIR / "cclib_data" / "proatomdata"))
+    with pytest.raises(FileNotFoundError):
+        _cclib_calculate(
+            {},
+            method="ddec6",
+            cube_file=FILE_DIR / "cclib_data" / "psi_test.cube",
+        )

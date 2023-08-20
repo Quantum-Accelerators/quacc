@@ -1,9 +1,9 @@
 """Schemas for molecular DFT codes parsed by cclib"""
 from __future__ import annotations
 
-import inspect
 import logging
 import os
+import warnings
 from inspect import getmembers, isclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Dict, List, Literal, TypeVar
@@ -429,18 +429,17 @@ def _cclib_calculate(
         if not os.path.exists(cube_file):
             raise FileNotFoundError(f"Cube file {cube_file} does not exist.")
     if method in {"ddec6", "hirshfeld"}:
-        if proatom_dir:
-            if not os.path.exists(proatom_dir):
-                raise FileNotFoundError(
-                    f"Protatom directory {proatom_dir} does not exist. Returning None."
+        if not proatom_dir:
+            if os.getenv("PROATOM_DIR") is None:
+                raise ValueError(
+                    "PROATOM_DIR environment variable or proatom_dir kwarg needs to be set."
                 )
-        elif os.getenv("PROATOM_DIR") is None:
-            raise ValueError(
-                "PROATOM_DIR environment variable or proatom_dir kwarg needs to be set."
+            else:
+                proatom_dir = os.path.expandvars(os.environ["PROATOM_DIR"])
+        if not os.path.exists(proatom_dir):
+            raise FileNotFoundError(
+                f"Protatom directory {proatom_dir} does not exist. Returning None."
             )
-        else:
-            proatom_dir = os.path.expandvars(os.environ["PROATOM_DIR"])
-
     cclib_methods = getmembers(cclib.method, isclass)
     method_class = None
     for cclib_method in cclib_methods:
@@ -461,7 +460,8 @@ def _cclib_calculate(
 
     try:
         m.calculate()
-    except AttributeError:
+    except Exception as e:
+        warnings.warn(f"Could not calculate {method}: {e}")
         return None
 
     # The list of available attributes after a calculation. This is hardcoded for now
