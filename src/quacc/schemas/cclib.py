@@ -235,11 +235,11 @@ def _cclib_calculate(
                 raise FileNotFoundError(
                     f"Protatom directory {proatom_dir} does not exist. Returning None."
                 )
+        elif os.getenv("PROATOM_DIR") is None:
+            raise ValueError(
+                "PROATOM_DIR environment variable or proatom_dir kwarg needs to be set."
+            )
         else:
-            if os.getenv("PROATOM_DIR") is None:
-                raise ValueError(
-                    "PROATOM_DIR environment variable or proatom_dir kwarg needs to be set."
-                )
             proatom_dir = os.path.expandvars(os.environ["PROATOM_DIR"])
 
     if cube_file and method in cube_methods:
