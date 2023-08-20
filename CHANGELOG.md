@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+- Removed atomate2 as a dependency.
 - Removed `quacc.recipes.emt.parsl` since it is now obsolete.
 - Removed `quacc config` command-line option.
 
