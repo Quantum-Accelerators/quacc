@@ -36,6 +36,14 @@ def test_relax_job(tmpdir):
     assert output["results"]["energy"] == pytest.approx(-0.04543069081693929)
     assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
 
+    atoms = bulk("Cu") * (2, 2, 2)
+    atoms[0].position += [0.1, 0.1, 0.1]
+
+    output = relax_job(atoms, relax_cell=True)
+    assert output["nsites"] == len(atoms)
+    assert output["parameters"]["asap_cutoff"] is False
+    assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
+
     atoms = molecule("N2")
     output = relax_job(atoms)
     assert output["natoms"] == len(atoms)
