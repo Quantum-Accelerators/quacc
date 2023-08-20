@@ -30,7 +30,7 @@ def test_relax_job(tmpdir):
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += [0.1, 0.1, 0.1]
 
-    output = relax_job(atoms, relax_cell=False)
+    output = relax_job(atoms)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] is False
     assert output["results"]["energy"] == pytest.approx(-0.04543069081693929)
@@ -46,7 +46,6 @@ def test_relax_job(tmpdir):
     atoms[0].position += [0.1, 0.1, 0.1]
     output = relax_job(
         atoms,
-        relax_cell=False,
         opt_swaps={"fmax": 0.03},
         calc_swaps={"asap_cutoff": True},
     )
@@ -61,7 +60,6 @@ def test_relax_job(tmpdir):
     atoms.set_constraint(c)
     output = relax_job(
         atoms,
-        relax_cell=False,
         opt_swaps={"fmax": 0.03},
         calc_swaps={"asap_cutoff": True},
     )
@@ -90,7 +88,6 @@ def test_slab_dynamic_jobs(tmpdir):
         slab_relax_kwargs={
             "opt_swaps": {"fmax": 1.0},
             "calc_swaps": {"asap_cutoff": True},
-            "relax_cell": False,
         },
     )
     assert len(outputs) == 4
@@ -106,7 +103,6 @@ def test_slab_dynamic_jobs(tmpdir):
         slab_relax_kwargs={
             "opt_swaps": {"fmax": 1.0},
             "calc_swaps": {"asap_cutoff": True},
-            "relax_cell": False,
         },
     )
     assert len(outputs) == 2
