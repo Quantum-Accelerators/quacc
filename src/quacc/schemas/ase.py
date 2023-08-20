@@ -10,7 +10,6 @@ from ase import units
 from ase.constraints import Filter
 from ase.io import read
 from ase.vibrations.data import VibrationsData
-from quacc.util.files import get_uri
 
 from quacc import SETTINGS
 from quacc.schemas.atoms import atoms_to_metadata
