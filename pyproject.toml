@@ -32,7 +32,7 @@ dependencies = [
     "emmet-core>=0.51.11",
     "maggma>=0.51.18",
     "monty>=2023.4.10",
-    "numpy",
+    "numpy>=1.20.1",
     "pydantic<2",
     "pymatgen>=2023.6.23",
 ]
@@ -60,7 +60,7 @@ strict = [
     "emmet-core==0.64.6",
     "maggma==0.53.1",
     "monty==2023.8.8",
-    "numpy==1.25.2",
+    "numpy==1.20.1",
     "pydantic==1.10.2",
     "pymatgen==2023.8.10",
 ]
