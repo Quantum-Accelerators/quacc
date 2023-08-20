@@ -60,7 +60,7 @@ def static_job(
 @job
 def relax_job(
     atoms: Atoms | dict,
-    relax_cell: bool = True,
+    relax_cell: bool = False,
     calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
     copy_files: list[str] | None = None,
