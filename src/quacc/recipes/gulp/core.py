@@ -91,7 +91,7 @@ def relax_job(
     atoms: Atoms | dict,
     use_gfnff: bool = True,
     library: str | None = None,
-    relax_cell: bool = True,
+    relax_cell: bool = False,
     keyword_swaps: dict | None = None,
     option_swaps: dict | None = None,
     copy_files: list[str] | None = None,

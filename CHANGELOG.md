@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleasd]
 
+### Changed
+
+- Standardized `relax_cell` to be `False` by default for all recipes.
+
 ### Removed
 
 - Removed atomate2 as a dependency.
