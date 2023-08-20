@@ -10,6 +10,7 @@
 [![codecov](https://codecov.io/gh/Quantum-Accelerators/quacc/branch/main/graph/badge.svg?token=OJaOZAH30u)](https://codecov.io/gh/Quantum-Accelerators/quacc)
 [![DeepSource](https://app.deepsource.com/gh/Quantum-Accelerators/quacc.svg/?label=active+issues&token=Y1NxOLIuFFEqWdjawIYnJNde)](https://app.deepsource.com/gh/Quantum-Accelerators/quacc/?ref=repository-badge)
 ![Supported python versions](https://img.shields.io/badge/python-3.9%20%7C%203.10-blue)
+[![PyPI version](https://badge.fury.io/py/quacc.svg)](https://badge.fury.io/py/quacc)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7720998.svg)](https://doi.org/10.5281/zenodo.7720998)
 
 Quacc is a flexible and extensible platform for high-throughput computational materials science and quantum chemistry.
