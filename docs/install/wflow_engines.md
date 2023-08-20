@@ -13,7 +13,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     To install Covalent, run
 
     ```
-    pip install git+https://github.com/Quantum-Accelerators/quacc.git[covalent]
+    pip install quacc[covalent]
     ```
 
     **Starting the Server**
@@ -38,7 +38,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     **Installation**
 
-    To install Jobflow with support for FireWorks, run `pip install pip install git+https://github.com/Quantum-Accelerators/quacc.git[jobflow]`.
+    To install Jobflow with support for FireWorks, run `pip install quacc[jobflow]`.
 
     **MongoDB Setup**
 
@@ -180,11 +180,11 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
 === "Parsl"
 
-    In your activated Python environment, install Parsl via `pip install git+https://github.com/Quantum-Accelerators/quacc.git[parsl]`. Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
+    In your activated Python environment, install Parsl via `pip install quacc[parsl]`. Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
 
 === "Prefect"
 
-    1. In your activated Python environment, install Prefect and the necessary Dask dependencies via `pip install git+https://github.com/Quantum-Accelerators/quacc.git[prefect]`
+    1. In your activated Python environment, install Prefect and the necessary Dask dependencies via `pip install quacc[prefect]`
     2. Make an account on [Prefect Cloud](https://app.prefect.cloud/)
     3. Make an [API Key](https://docs.prefect.io/cloud/users/api-keys/) and (optionally) store it in a `PREFECT_API_KEY` environment variable (e.g. in your `~/.bashrc`)
     4. Run `prefect cloud login` from the command-line and enter your API key (or use the browser, if possible)
