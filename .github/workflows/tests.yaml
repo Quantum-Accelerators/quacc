@@ -133,7 +133,9 @@ jobs:
           activate-environment: quacc-env
 
       - name: Install conda packages
-        run: conda install psi4 -c psi4
+        run: |
+          conda install -n base conda-libmamba-solver
+          conda install psi4 -c psi4 --solver libmamba
 
       - name: Install pip packages
         run: pip install .[strict,dev]
