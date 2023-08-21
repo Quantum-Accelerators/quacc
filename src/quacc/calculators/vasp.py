@@ -3,7 +3,6 @@ A wrapper around ASE's Vasp calculator that makes it better suited for high-thro
 """
 from __future__ import annotations
 
-import glob
 import inspect
 import os
 import warnings
@@ -26,7 +25,7 @@ from quacc.util.files import load_vasp_yaml_calc
 if TYPE_CHECKING:
     from ase import Atoms
 
-PMG_SETS = list(PMG_SETS_DIR.glob("*.yaml"))
+PMG_SETS = [f for f in os.listdir(PMG_SETS_DIR) if f.endswith(".yaml")]
 
 
 class Vasp(Vasp_):
