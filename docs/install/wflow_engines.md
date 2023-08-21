@@ -38,7 +38,11 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     **Installation**
 
-    To install Jobflow with support for FireWorks, run `pip install "quacc[jobflow] @ git+https://github.com/Quantum-Accelerators/quacc.git"`
+    To install Jobflow with support for FireWorks, run the following:
+
+    ```bash
+    pip install "quacc[jobflow] @ git+https://github.com/Quantum-Accelerators/quacc.git"
+    ```
 
     **MongoDB Setup**
 
@@ -79,7 +83,10 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
         ```
 
     You will then need to define a `JOBFLOW_CONFIG_FILE` environment variable pointing to the file you made. For instance, in your `~/.bashrc` file, add the following line:
-    `export JOBFLOW_CONFIG_FILE="/path/to/my/jobflow.yaml"`.
+
+    ```bash
+    export JOBFLOW_CONFIG_FILE="/path/to/my/jobflow.yaml"
+    ```
 
     **FireWorks DB Setup**
 
@@ -103,7 +110,10 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     ```
 
     You will also need to define a `FW_CONFIG_FILE` environment variable pointing to the `FW_config.yaml` file you made. For instance, in your `~/.bashrc` file, add the following line:
-    `export FW_CONFIG_FILE="/path/to/config/fw_config/FW_config.yaml"`.
+
+    ```bash
+    export FW_CONFIG_FILE="/path/to/config/fw_config/FW_config.yaml"
+    ```
 
     **FWorker**
 
@@ -176,15 +186,28 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
 === "Parsl"
 
-    In your activated Python environment, install Parsl via `pip install "quacc[parsl] @ git+https://github.com/Quantum-Accelerators/quacc.git"`. Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
+    In your activated Python environment, install Parsl as follows:
+
+    ```bash
+    pip install "quacc[parsl] @ git+https://github.com/Quantum-Accelerators/quacc.git"
+    ```
+
+    Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
 
 === "Prefect"
 
-    1. In your activated Python environment, install Prefect and the necessary Dask dependencies via `pip install "quacc[prefect] @ git+https://github.com/Quantum-Accelerators/quacc.git"`
-    2. Make an account on [Prefect Cloud](https://app.prefect.cloud/)
-    3. Make an [API Key](https://docs.prefect.io/cloud/users/api-keys/) and (optionally) store it in a `PREFECT_API_KEY` environment variable (e.g. in your `~/.bashrc`)
-    4. Run `prefect cloud login` from the command-line and enter your API key (or use the browser, if possible)
+    In your activated Python environment, install Prefect and the necessary Dask dependencies as follows:
 
-    If you do not wish to use Prefect Cloud, you can can spin up a local server with `prefect server start` and skip steps 2-4.
+    ```bash
+    pip install "quacc[prefect] @ git+https://github.com/Quantum-Accelerators/quacc.git"
+    ```
+
+    Then, cary out the following steps to prepare Prefect for use with Prefect Cloud:
+
+    1. Make an account on [Prefect Cloud](https://app.prefect.cloud/)
+    2. Make an [API Key](https://docs.prefect.io/cloud/users/api-keys/) and (optionally) store it in a `PREFECT_API_KEY` environment variable (e.g. in your `~/.bashrc`)
+    3. Run `prefect cloud login` from the command-line and enter your API key (or use the browser, if possible)
+
+    If you do not wish to use Prefect Cloud, you can can spin up a local server with `prefect server start` and skip the above steps.
 
     Additional configuration parameters can be modified, as described in the [Prefect documentation](https://docs.prefect.io/concepts/settings/).

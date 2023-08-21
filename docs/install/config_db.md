@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Some users may wish to use quacc in way that ensures all calculation inputs and outputs are stored in an easily queryable database. While entirely optional, this can be readily achieved through the use of the [maggma](https://github.com/materialsproject/maggma) package. Maggma has many options for [data stores](https://materialsproject.github.io/maggma/reference/stores/).
+Some users may wish to run quacc in a way that ensures all calculation inputs and outputs are stored in an easily queryable database. While entirely optional, this can be readily achieved through the use of the [maggma](https://github.com/materialsproject/maggma) package. Maggma has many options for [data stores](https://materialsproject.github.io/maggma/reference/stores/).
 
 ## MongoDB
 
