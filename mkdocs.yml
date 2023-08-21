@@ -138,7 +138,13 @@ nav:
       - user/settings.md
       - Recipes:
           - user/recipes/emt.md
+          - user/recipes/lj.md
+          - user/recipes/dftb.md
+          - user/recipes/gaussian.md
+          - user/recipes/gulp.md
+          - user/recipes/psi4.md
           - user/recipes/tblite.md
+          - user/recipes/vasp.md
       - Advanced:
           - user/database.md
           - user/file_transfers.md
