@@ -346,7 +346,7 @@ graph LR
   C(Make Slabs) --> G(Slab Relax) --> H[Output];
 ```
 
-In quacc, there are two types of recipes: individual compute tasks with the suffix `_job` and pre-made multi-step workflows with the suffix `_flow`. Here, we are interested in importing a pre-made workflow. Refer to the example below:
+In quacc, there are two types of recipes: individual compute tasks with the suffix `_job` (which are already wrapped with `#!Python @job` decoratorss) and pre-made multi-step workflows with the suffix `_flow` (that are a collection of `#!Python @job` and/or `#!Python @subflow` decorators to be included within a user-defined `#!Python @flow). Here, we are interested in importing a pre-made workflow. Refer to the example below:
 
 === "Covalent"
 
@@ -361,7 +361,7 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     @flow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, slab_static=None)  # (1)!
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, slab_static=None)
 
         return relaxed_slabs
 
@@ -371,8 +371,6 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
     result = ct.get_result(dispatch_id, wait=True)
     print(result)
     ```
-
-    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is defined as a collection of `#!Python @ct.electron` objects within quacc.
 
     We have imported the [`quacc.recipes.emt.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/slabs.html#quacc.recipes.emt.slabs.bulk_to_slabs_flow) function, which takes an `Atoms` object along with several optional parameters. For demonstration purposes, we specify the `slab_static=None` option to do a relaxation but disable the static calculation on each slab. All we have to do to define the workflow is wrap it inside a `#!Python @flow` decorator.
 
@@ -390,13 +388,11 @@ In quacc, there are two types of recipes: individual compute tasks with the suff
 
     # Define the workflow
     future1 = relax_job(atoms)
-    future2 = bulk_to_slabs_flow(future1, slab_static=None)  # (1)!
+    future2 = bulk_to_slabs_flow(future1, slab_static=None)
 
     # Print the results
     print(future2.result())
     ```
-
-    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is defined as a collection of `PythonApp` objects within quacc and is already returning an `AppFuture`.
 
     We have imported the [`quacc.recipes.emt.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/slabs.html#quacc.recipes.emt.slabs.bulk_to_slabs_flow) function, which takes an `Atoms` object along with several optional parameters. For demonstration purposes, we specify the `slab_static=None` option to do a relaxation but disable the static calculation on each slab.
 
