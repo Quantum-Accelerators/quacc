@@ -136,6 +136,9 @@ nav:
       - user/wflow_engines.md
       - user/executors.md
       - user/settings.md
+      - Recipes:
+          - user/recipes/emt.md
+          - user/recipes/tblite.md
       - Advanced:
           - user/database.md
           - user/file_transfers.md
