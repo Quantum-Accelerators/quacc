@@ -15,25 +15,25 @@ try:
 
     WFLOW_IMPORT = "covalent"
 except ImportError:
-    covalent = None
+    pass
 try:
     import parsl
 
     WFLOW_IMPORT = "parsl"
 except ImportError:
-    parsl = None
+    pass
 try:
     import jobflow
 
     WFLOW_IMPORT = "jobflow"
 except ImportError:
-    jobflow = None
+    pass
 try:
     import prefect
 
     WFLOW_IMPORT = "prefect"
 except ImportError:
-    prefect = None
+    pass
 
 
 _DEFAULT_CONFIG_FILE_PATH = os.path.join(os.path.expanduser("~"), ".quacc.yaml")
