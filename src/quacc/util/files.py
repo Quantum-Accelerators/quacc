@@ -134,12 +134,42 @@ def load_yaml_calc(yaml_path: str) -> dict:
                         if kk not in config[k]:
                             config[k][kk] = vv
 
-    # Allow for either "Cu_pv" and "_pv" style setups
-    for k, v in config["inputs"].get("setups", {}).items():
-        if k in v:
-            config["inputs"]["setups"][k] = v.split(k)[-1]
-
     return config
+
+
+def load_vasp_yaml_calc(yaml_path: str) -> dict:
+    """
+    Loads a YAML file containing calculator settings.
+
+    Parameters
+    ----------
+    yaml_path
+        Path to the YAML file.
+
+    Returns
+    -------
+    dict
+        The calculator configuration (i.e. settings).
+    """
+
+    config = load_yaml_calc(yaml_path)
+    if "INCAR" in config:
+        config["inputs"] = config["INCAR"]
+        del config["INCAR"]
+    if "POTCAR" in config:
+        config["setups"] = config["POTCAR"]
+        del config["POTCAR"]
+    if "MAGMOM" in config:
+        config["inputs"]["elemental_magmoms"] = config["MAGMOM"]
+        del config["MAGMOM"]
+    for k in config["inputs"]:
+        config["inputs"][k] = k.lower()
+
+    # Allow for either "Cu_pv" and "_pv" style setups
+    if "inputs" in config and config["setups"]:
+        for k, v in config["inputs"]["setups"].items():
+            if k in v:
+                config["inputs"]["setups"][k] = v.split(k)[-1]
 
 
 def find_recent_logfile(dir_name: Path | str, logfile_extensions: str | list[str]):

@@ -3,6 +3,7 @@ A wrapper around ASE's Vasp calculator that makes it better suited for high-thro
 """
 from __future__ import annotations
 
+import glob
 import inspect
 import os
 import warnings
@@ -14,15 +15,18 @@ from ase.calculators.vasp import setups as ase_setups
 from ase.constraints import FixAtoms
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.vasp.inputs import Kpoints
+from pymatgen.io.vasp.sets import MODULE_DIR as PMG_SETS_DIR
 from pymatgen.symmetry.bandstructure import HighSymmKpath
 
 from quacc import SETTINGS
 from quacc.custodian import vasp as custodian_vasp
 from quacc.util.atoms import check_is_metal, set_magmoms
-from quacc.util.files import load_yaml_calc
+from quacc.util.files import load_vasp_yaml_calc
 
 if TYPE_CHECKING:
     from ase import Atoms
+
+PMG_SETS = list(PMG_SETS_DIR.glob("*.yaml"))
 
 
 class Vasp(Vasp_):
@@ -126,9 +130,11 @@ class Vasp(Vasp_):
 
         # Get user-defined preset parameters for the calculator
         if preset:
-            calc_preset = load_yaml_calc(
-                os.path.join(SETTINGS.VASP_PRESET_DIR, preset)
-            )["inputs"]
+            if preset in PMG_SETS:
+                yaml_path = os.path.join(PMG_SETS_DIR, preset)
+            else:
+                yaml_path = os.path.join(SETTINGS.VASP_PRESET_DIR, preset)
+            calc_preset = load_vasp_yaml_calc(yaml_path)["inputs"]
         else:
             calc_preset = {}
 
@@ -145,7 +151,7 @@ class Vasp(Vasp_):
             isinstance(self.user_calc_params.get("setups"), str)
             and self.user_calc_params["setups"] not in ase_setups.setups_defaults
         ):
-            self.user_calc_params["setups"] = load_yaml_calc(
+            self.user_calc_params["setups"] = load_vasp_yaml_calc(
                 os.path.join(SETTINGS.VASP_PRESET_DIR, self.user_calc_params["setups"])
             )["inputs"]["setups"]
 
