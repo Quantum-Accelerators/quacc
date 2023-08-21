@@ -154,14 +154,15 @@ def load_vasp_yaml_calc(yaml_path: str) -> dict:
 
     config = load_yaml_calc(yaml_path)
     if "INCAR" in config:
+        if "MAGMOM" in config["INCAR"]:
+            config["inputs"]["elemental_magmoms"] = config["INCAR"]["MAGMOM"]
+            del config["MAGMOM"]
         config["inputs"] = config["INCAR"]
         del config["INCAR"]
     if "POTCAR" in config:
         config["setups"] = config["POTCAR"]
         del config["POTCAR"]
-    if "MAGMOM" in config:
-        config["inputs"]["elemental_magmoms"] = config["MAGMOM"]
-        del config["MAGMOM"]
+
     for k in config["inputs"]:
         config["inputs"][k] = k.lower()
 
