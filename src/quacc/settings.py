@@ -11,21 +11,25 @@ from quacc.presets import vasp as vasp_defaults
 
 try:
     import parsl
+
     WFLOW_IMPORT = "parsl"
 except ImportError:
     parsl = None
 try:
     import jobflow
+
     WFLOW_IMPORT = "jobflow"
 except ImportError:
     jobflow = None
 try:
     import prefect
+
     WFLOW_IMPORT = "prefect"
 except ImportError:
     prefect = None
 try:
     import covalent
+
     WFLOW_IMPORT = "covalent"
 except ImportError:
     covalent = None
