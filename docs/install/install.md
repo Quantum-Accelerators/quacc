@@ -40,7 +40,7 @@ Note that in both cases we had to also install the development version of ASE, a
 Quacc can be installed with several "extras," as outlined in the [`pyproject.toml`](https://github.com/Quantum-Accelerators/quacc/blob/main/pyproject.toml) file. To install the extras, you can run
 
 ```
-pip install quacc[<extra>]`
+pip install quacc[<extra>]
 ```
 
 where `<extra>` is one of the following:
