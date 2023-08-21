@@ -15,7 +15,7 @@ Here, we outline how to ensure that quacc can run the quantum chemistry package 
 If you plan to use DFTB+ with quacc, you will need to install the code as follows:
 
 ```bash
-conda install -c conda-forge dftbplus`
+conda install -c conda-forge dftbplus
 ```
 
 ## EMT
@@ -35,7 +35,7 @@ No setup needed!
 As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/gaussian.html), you will need to define an environment variable named `ASE_GAUSSIAN_COMMAND`. It should be formatted as follows:
 
 ```bash
-ASE_GAUSSIAN_COMMAND="/path/to/my/gaussian_executable Gaussian.com > Gaussian.log"`
+ASE_GAUSSIAN_COMMAND="/path/to/my/gaussian_executable Gaussian.com > Gaussian.log"
 ```
 
 ## GULP
@@ -67,7 +67,7 @@ No setup needed!
 To use quacc with ORCA, you will need to define the `ORCA_CMD` setting to be the full, absolute path to your ORCA executable. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings.md), such as by defining the following environment variable:
 
 ```bash
-QUACC_ORCA_CMD=/path/to/my/orca/orca`
+QUACC_ORCA_CMD=/path/to/my/orca/orca
 ```
 
 ## Psi4
