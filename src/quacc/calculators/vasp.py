@@ -130,7 +130,7 @@ class Vasp(Vasp_):
 
         # Get user-defined preset parameters for the calculator
         if preset:
-            if preset in PMG_SETS:
+            if preset.split(".yaml")[0] in PMG_SETS:
                 yaml_path = os.path.join(PMG_SETS_DIR, preset)
             else:
                 yaml_path = os.path.join(SETTINGS.VASP_PRESET_DIR, preset)

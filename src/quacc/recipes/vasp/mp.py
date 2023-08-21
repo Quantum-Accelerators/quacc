@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 @job
 def mp_prerelax_job(
     atoms: Atoms | dict,
-    preset: str | None = "MPScanSet",
+    preset: str | None = "MPSCANRelaxSet",
     calc_swaps: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
@@ -64,7 +64,7 @@ def mp_prerelax_job(
 @job
 def mp_relax_job(
     atoms: Atoms | dict,
-    preset: str | None = "MPScanSet",
+    preset: str | None = "MPSCANRelaxSet",
     calc_swaps: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
