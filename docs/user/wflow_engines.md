@@ -346,7 +346,12 @@ graph LR
   C(Make Slabs) --> G(Slab Relax) --> H[Output];
 ```
 
-In quacc, there are two types of recipes: individual compute tasks with the suffix `_job` (which are already wrapped with `#!Python @job` decoratorss) and pre-made multi-step workflows with the suffix `_flow` (that are a collection of `#!Python @job` and/or `#!Python @subflow` decorators to be included within a user-defined `#!Python @flow). Here, we are interested in importing a pre-made workflow. Refer to the example below:
+In quacc, there are two types of recipes:
+
+1. Individual compute tasks with the suffix `_job`, which are already wrapped with `#!Python @job` decorators.
+2. Pre-made multi-step workflows with the suffix `_flow, which are a collection of `#!Python @job` and/or `#!Python @subflow` decorators to be included within a user-defined `#!Python @flow.
+
+Here, we are interested in importing a pre-made workflow. Refer to the example below:
 
 === "Covalent"
 
