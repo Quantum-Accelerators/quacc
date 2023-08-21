@@ -349,7 +349,7 @@ graph LR
 In quacc, there are two types of recipes:
 
 1. Individual compute tasks with the suffix `_job`, which are already wrapped with `#!Python @job` decorators.
-2. Pre-made multi-step workflows with the suffix `_flow, which are a collection of `#!Python @job` and/or `#!Python @subflow` decorators to be included within a user-defined `#!Python @flow.
+2. Pre-made multi-step workflows with the suffix `_flow, which are a collection of `#!Python @job`and/or`#!Python @subflow`decorators to be included within a user-defined`#!Python @flow.
 
 Here, we are interested in importing a pre-made workflow. Refer to the example below:
 
