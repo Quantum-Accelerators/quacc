@@ -149,10 +149,20 @@ nav:
           - user/database.md
           - user/file_transfers.md
           - user/atomate2.md
+  - Code Reference 📖:
+      - Recipes:
+          - user/recipes/emt.md
+          - user/recipes/lj.md
+          - user/recipes/dftb.md
+          - user/recipes/gaussian.md
+          - user/recipes/gulp.md
+          - user/recipes/psi4.md
+          - user/recipes/tblite.md
+          - user/recipes/vasp.md
+      - reference/
   - Developer Guide 🤝:
       - dev/contributing.md
       - dev/docs.md
-  - Code Reference 📖: reference/
   - About 📜:
       - about/faq.md
       - about/contributors.md
