@@ -10,11 +10,11 @@ from pydantic import BaseSettings, Field, root_validator
 from quacc.presets import vasp as vasp_defaults
 
 try:
-    import parsl
+    import prefect
 
-    WFLOW_IMPORT = "parsl"
+    WFLOW_IMPORT = "prefect"
 except ImportError:
-    parsl = None
+    prefect = None
 try:
     import jobflow
 
@@ -22,11 +22,11 @@ try:
 except ImportError:
     jobflow = None
 try:
-    import prefect
+    import parsl
 
-    WFLOW_IMPORT = "prefect"
+    WFLOW_IMPORT = "parsl"
 except ImportError:
-    prefect = None
+    parsl = None
 try:
     import covalent
 
