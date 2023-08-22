@@ -43,7 +43,9 @@ def test_static_job(tmpdir):
     assert "output cif gulp.cif" not in output["parameters"]["options"]
 
     atoms = bulk("Cu") * (2, 2, 2)
-    output = static_job(atoms)
+    output = static_job(
+        atoms,
+    )
     assert output["nsites"] == len(atoms)
     assert "gfnff" in output["parameters"]["keywords"]
     assert "gwolf" in output["parameters"]["keywords"]
@@ -108,7 +110,7 @@ def test_relax_job(tmpdir):
     assert "output cif gulp.cif" not in output["parameters"]["options"]
 
     atoms = bulk("Cu") * (2, 2, 2)
-    output = relax_job(atoms)
+    output = relax_job(atoms, relax_clel=True)
     assert output["nsites"] == len(atoms)
     assert "gfnff" in output["parameters"]["keywords"]
     assert "opti" in output["parameters"]["keywords"]
@@ -119,7 +121,7 @@ def test_relax_job(tmpdir):
     assert "output xyz gulp.xyz" not in output["parameters"]["options"]
     assert "output cif gulp.cif" in output["parameters"]["options"]
 
-    output = relax_job(atoms, relax_cell=False, keyword_swaps={"gwolf": True})
+    output = relax_job(atoms, keyword_swaps={"gwolf": True})
     assert output["nsites"] == len(atoms)
     assert "gfnff" in output["parameters"]["keywords"]
     assert "opti" in output["parameters"]["keywords"]
