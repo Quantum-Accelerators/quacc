@@ -304,7 +304,7 @@ def test_mp(tmpdir):
 
     output = mp_relax_job(atoms)
     assert output["nsites"] == len(atoms)
-    assert output["parameters"]["xc"] == "r2scan"
+    assert output["parameters"]["metagga"] == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02
     assert output["parameters"]["encut"] == 680
     assert output["parameters"]["kspacing"] == 0.22
@@ -312,7 +312,7 @@ def test_mp(tmpdir):
 
     output = mp_relax_flow(atoms)
     assert output["nsites"] == len(atoms)
-    assert output["parameters"]["xc"] == "r2scan"
+    assert output["parameters"]["metagga"] == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02
     assert output["parameters"]["encut"] == 680
     assert output["parameters"]["ismear"] == 2
