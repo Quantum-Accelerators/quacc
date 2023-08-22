@@ -1,7 +1,5 @@
 parent: pymatgen.io.vasp/MPSCANRelaxSet.yaml
-inputs:
-  ismear: 0 # Remove once PR is merged in Pymatgen
-  kspacing: 0.22 # Remove once PR is merged in Pymatgen
-  kpts: None
-  sigma: 0.05 # Remove once PR is merged in Pymatgen
-  xc: None
+INCAR:
+  ISMEAR: 0 # Remove once PR is merged in Pymatgen
+  KSPACING: 0.22 # Remove once PR is merged in Pymatgen
+  SIGMA: 0.05 # Remove once PR is merged in Pymatgen
