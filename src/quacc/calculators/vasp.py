@@ -577,7 +577,7 @@ class Vasp(Vasp_):
         | dict[Literal["max_mixed_density"], list[float, float]]
         | dict[Literal["length_density"], list[float, float, float]],
         force_gamma: bool = True,
-    ) -> tuple[list[tuple[int, int, int]], None | bool, None | bool]:
+    ) -> tuple[list[int, int, int], None | bool, None | bool]:
         """
         Shortcuts for pymatgen k-point generation schemes.
 
