@@ -108,12 +108,10 @@ def load_yaml_calc(yaml_path: str | Path) -> dict:
         The calculator configuration (i.e. settings).
     """
 
-    _, ext = os.path.splitext(yaml_path)
-    if not ext:
-        yaml_path += ".yaml"
+    yaml_path = Path(yaml_path).with_suffix(".yaml")
 
-    if not os.path.exists(yaml_path):
-        raise ValueError(f"Cannot find {yaml_path}.")
+    if not yaml_path.exists():
+        raise ValueError(f"Cannot find {yaml_path}")
 
     # Load YAML file
     with open(yaml_path, "r") as stream:
@@ -122,7 +120,7 @@ def load_yaml_calc(yaml_path: str | Path) -> dict:
     # Inherit arguments from any parent YAML files
     # but do not overwrite those in the child file.
     for config_arg in config.copy():
-        if "parent" in config_arg:
+        if "parent" in config_arg.lower():
             parent_val = config[config_arg]
 
             # Relative Path
@@ -140,11 +138,17 @@ def load_yaml_calc(yaml_path: str | Path) -> dict:
                         pkg_data_path = files(pkg_name)
                         yaml_parent_path = (
                             pkg_data_path
-                            / Path("/".join(parent_val.split(f_name)[0].split(".")))
+                            / Path(
+                                "/".join(
+                                    parent_val.replace(f"{pkg_name}.", "", 1)
+                                    .split(f_name)[0]
+                                    .split(".")
+                                )
+                            )
                             / Path(f_name)
                         )
 
-            parent_config = load_vasp_yaml_calc(yaml_parent_path)
+            parent_config = load_yaml_calc(yaml_parent_path)
             for k, v in parent_config.items():
                 if k not in config:
                     config[k] = v
@@ -160,6 +164,8 @@ def load_yaml_calc(yaml_path: str | Path) -> dict:
 def load_vasp_yaml_calc(yaml_path: str | Path) -> dict:
     """
     Loads a YAML file containing calculator settings.
+    Used for VASP calculations and is compatible with the
+    pymatgen.io.vasp.sets module.
 
     Parameters
     ----------
@@ -173,25 +179,43 @@ def load_vasp_yaml_calc(yaml_path: str | Path) -> dict:
     """
 
     config = load_yaml_calc(yaml_path)
+
+    # Handle Pymatgen VASP input set formatting
+    if "inputs" not in config and ("INCAR" in config or "POTCAR" in config):
+        config["inputs"] = {}
+
     if "INCAR" in config:
         if "MAGMOM" in config["INCAR"]:
+            if "elemental_magmoms" not in config["inputs"]:
+                config["inputs"]["elemental_magmoms"] = {}
             config["inputs"]["elemental_magmoms"] = config["INCAR"]["MAGMOM"]
             del config["INCAR"]["MAGMOM"]
+
         config["inputs"] = config["INCAR"]
         del config["INCAR"]
+
     if "POTCAR" in config:
-        config["setups"] = config["POTCAR"]
+        if "setups" not in config["inputs"]:
+            config["inputs"]["setups"] = {}
+        config["inputs"]["setups"] = config["POTCAR"]
+
         del config["POTCAR"]
 
-    for k in config["inputs"]:
-        config["inputs"][k] = k.lower()
+    if "POTCAR_FUNCTIONAL" in config:
+        del config["POTCAR_FUNCTIONAL"]
 
     # Allow for either "Cu_pv" and "_pv" style setups
-    raise ValueError(config)
-    if "inputs" in config and config["inputs"].get(["setups"]):
-        for k, v in config["inputs"]["setups"].items():
-            if k in v:
-                config["inputs"]["setups"][k] = v.split(k)[-1]
+    if "inputs" in config:
+        config["inputs"] = {
+            k.lower(): v.lower() if isinstance(v, str) else v
+            for k, v in config["inputs"].items()
+        }
+        if config["inputs"].get("setups"):
+            for k, v in config["inputs"]["setups"].items():
+                if k in v:
+                    config["inputs"]["setups"][k] = v.split(k)[-1]
+
+    return config
 
 
 def find_recent_logfile(dir_name: Path | str, logfile_extensions: str | list[str]):
