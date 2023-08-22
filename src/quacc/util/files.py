@@ -188,10 +188,6 @@ def load_vasp_yaml_calc(yaml_path: str | Path) -> dict:
 
     # Allow for either "Cu_pv" and "_pv" style setups
     raise ValueError(config)
-    if "inputs" in config and config["inputs"].get(["setups"]):
-        for k, v in config["inputs"]["setups"].items():
-            if k in v:
-                config["inputs"]["setups"][k] = v.split(k)[-1]
 
 
 def find_recent_logfile(dir_name: Path | str, logfile_extensions: str | list[str]):
