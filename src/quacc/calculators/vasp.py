@@ -658,8 +658,8 @@ class Vasp(Vasp_):
 def _load_vasp_yaml_calc(yaml_path: str | Path) -> dict:
     """
     Loads a YAML file containing calculator settings.
-    Used for VASP calculations and is (mostly) compatible with
-    pymatgen.io.vasp.sets.
+    Used for VASP calculations and can read both quacc-formatted
+    YAMLs as well as those formatted in pymatgen.io.vasp.sets.
 
     Note that oxidation state-specific magmoms are not currently
     supported. If importing a YAML from another package besides
