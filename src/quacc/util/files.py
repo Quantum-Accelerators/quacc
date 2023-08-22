@@ -135,14 +135,10 @@ def load_yaml_calc(yaml_path: str | Path) -> dict:
                 else:
                     # Try package data
                     pkg_name = config[config_arg].split(".")[0]
-                    try:
+                    with contextlib.suppress(ImportError):
                         pkg_data_path = files(pkg_name)
                         y_path = Path("/".join(config[config_arg].split(".")))
                         yaml_parent_path = pkg_data_path / y_path
-                        # ^ fix this .yaml extension
-                    except ImportError:
-                        pass
-
             parent_config = load_vasp_yaml_calc(yaml_parent_path)
             for k, v in parent_config.items():
                 if k not in config:
