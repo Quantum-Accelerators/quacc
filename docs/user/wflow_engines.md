@@ -12,9 +12,9 @@ As described in the ["Workflow Syntax"](wflow_syntax.md) section, each workflow 
 
 | Quacc               | Covalent                             | Parsl                  | Jobflow         | Prefect          |
 | ------------------- | ------------------------------------ | ---------------------- | --------------- | ---------------- |
-| `#!Python @job`     | `#!Python @ct.electron`              | `#!Python @python_app` | `#!Python @job` | `#!Python @task` |
-| `#!Python @flow`    | `#!Python @ct.lattice`               | N/A                    | N/A             | `#!Python @flow` |
-| `#!Python @subflow` | `#!Python @ct.electron(@ct.lattice)` | `#!Python @join_app`   | N/A             | `#!Python @flow` |
+| [`#!Python @job`](https://quantum-accelerators.github.io/quacc/reference/quacc/util/wflows.html#quacc.util.wflows.job)     | [`#!Python @ct.electron`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#electron)              | [`#!Python @python_app`](https://parsl.readthedocs.io/en/stable/userguide/apps.html#python-apps) | [`#!Python @job`](https://materialsproject.github.io/jobflow/jobflow.core.html#module-jobflow.core.job) | [`#!Python @task`](https://docs.prefect.io/latest/tutorial/tasks/) |
+| [`#!Python @flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/util/wflows.html#quacc.util.wflows.flow)    | [`#!Python @ct.lattice`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#lattice)               | N/A                    | N/A             | [`#!Python @flow`](https://docs.prefect.io/latest/tutorial/flows/) |
+| [`#!Python @subflow`](https://quantum-accelerators.github.io/quacc/reference/quacc/util/wflows.html#quacc.util.wflows.subflow) | [`#!Python @ct.electron(@ct.lattice)`](https://docs.covalent.xyz/docs/user-documentation/how-to/execution/execute-sublattice/) | [`#!Python @join_app`](https://parsl.readthedocs.io/en/latest/userguide/joins.html#join-apps)   | N/A             | [`#!Python @flow`](https://docs.prefect.io/latest/tutorial/flows/) |
 
 The `#!Python @job` decorator indicates that the decorated function is a single step in a workflow. The `#!Python @flow` decorator indicates that the decorated function is a full workflow, consisting of many individual `#!Python @job`-decorated functions (and/or `#!Python @subflow`-decorated functions). The `#!Python @subflow` decorator indicates that the decorated function is a sub-workflow within a larger workflow and is often used to define dynamic workflows.
 
