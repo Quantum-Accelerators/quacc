@@ -43,9 +43,7 @@ def test_static_job(tmpdir):
     assert "output cif gulp.cif" not in output["parameters"]["options"]
 
     atoms = bulk("Cu") * (2, 2, 2)
-    output = static_job(
-        atoms,
-    )
+    output = static_job(atoms)
     assert output["nsites"] == len(atoms)
     assert "gfnff" in output["parameters"]["keywords"]
     assert "gwolf" in output["parameters"]["keywords"]
