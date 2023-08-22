@@ -8,6 +8,7 @@ import os
 import socket
 import warnings
 from datetime import datetime
+from importlib.resources import files
 from pathlib import Path
 from random import randint
 from shutil import copy
@@ -92,7 +93,7 @@ def make_unique_dir(base_path: str | None = None) -> str:
     return job_dir
 
 
-def load_yaml_calc(yaml_path: str) -> dict:
+def load_yaml_calc(yaml_path: str | Path) -> dict:
     """
     Loads a YAML file containing calculator settings.
 
@@ -122,9 +123,27 @@ def load_yaml_calc(yaml_path: str) -> dict:
     # but do not overwrite those in the child file.
     for config_arg in config.copy():
         if "parent" in config_arg:
-            parent_config = load_yaml_calc(
-                os.path.join(os.path.dirname(yaml_path), config[config_arg])
+            # Relative Path
+            yaml_parent_path = os.path.join(
+                os.path.dirname(yaml_path), config[config_arg]
             )
+
+            # Absolute path
+            if not os.path.exists(yaml_parent_path):
+                if os.path.exists(Path(config[config_arg])):
+                    yaml_parent_path = Path(config[config_arg])
+                else:
+                    # Try package data
+                    pkg_name = config[config_arg].split(".")[0]
+                    try:
+                        pkg_data_path = files(pkg_name)
+                        y_path = Path("/".join(config[config_arg].split(".")))
+                        yaml_parent_path = pkg_data_path / y_path
+                        # ^ fix this .yaml extension
+                    except ImportError:
+                        pass
+
+            parent_config = load_vasp_yaml_calc(yaml_parent_path)
             for k, v in parent_config.items():
                 if k not in config:
                     config[k] = v
@@ -137,7 +156,7 @@ def load_yaml_calc(yaml_path: str) -> dict:
     return config
 
 
-def load_vasp_yaml_calc(yaml_path: str) -> dict:
+def load_vasp_yaml_calc(yaml_path: str | Path) -> dict:
     """
     Loads a YAML file containing calculator settings.
 
@@ -167,7 +186,7 @@ def load_vasp_yaml_calc(yaml_path: str) -> dict:
         config["inputs"][k] = k.lower()
 
     # Allow for either "Cu_pv" and "_pv" style setups
-    if "inputs" in config and config["setups"]:
+    if "inputs" in config and config.get(["setups"]):
         for k, v in config["inputs"]["setups"].items():
             if k in v:
                 config["inputs"]["setups"][k] = v.split(k)[-1]

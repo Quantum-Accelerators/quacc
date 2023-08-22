@@ -14,7 +14,6 @@ from ase.calculators.vasp import setups as ase_setups
 from ase.constraints import FixAtoms
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.vasp.inputs import Kpoints
-from pymatgen.io.vasp.sets import MODULE_DIR as PMG_SETS_DIR
 from pymatgen.symmetry.bandstructure import HighSymmKpath
 
 from quacc import SETTINGS
@@ -24,8 +23,6 @@ from quacc.util.files import load_vasp_yaml_calc
 
 if TYPE_CHECKING:
     from ase import Atoms
-
-PMG_SETS = [f for f in os.listdir(PMG_SETS_DIR) if f.endswith(".yaml")]
 
 
 class Vasp(Vasp_):
@@ -129,11 +126,7 @@ class Vasp(Vasp_):
 
         # Get user-defined preset parameters for the calculator
         if preset:
-            if preset.split(".yaml")[0] in PMG_SETS:
-                yaml_path = os.path.join(PMG_SETS_DIR, preset)
-            else:
-                yaml_path = os.path.join(SETTINGS.VASP_PRESET_DIR, preset)
-            calc_preset = load_vasp_yaml_calc(yaml_path)["inputs"]
+            calc_preset = load_vasp_yaml_calc( os.path.join(SETTINGS.VASP_PRESET_DIR, preset))["inputs"]
         else:
             calc_preset = {}
 
