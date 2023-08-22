@@ -127,7 +127,7 @@ class Vasp(Vasp_):
 
         # Get user-defined preset parameters for the calculator
         if preset:
-            calc_preset = _load_vasp_yaml_calc(
+            calc_preset = load_vasp_yaml_calc(
                 os.path.join(SETTINGS.VASP_PRESET_DIR, preset)
             )["inputs"]
         else:
@@ -146,7 +146,7 @@ class Vasp(Vasp_):
             isinstance(self.user_calc_params.get("setups"), str)
             and self.user_calc_params["setups"] not in ase_setups.setups_defaults
         ):
-            self.user_calc_params["setups"] = _load_vasp_yaml_calc(
+            self.user_calc_params["setups"] = load_vasp_yaml_calc(
                 os.path.join(SETTINGS.VASP_PRESET_DIR, self.user_calc_params["setups"])
             )["inputs"]["setups"]
 
@@ -655,22 +655,47 @@ class Vasp(Vasp_):
         return kpts, gamma, reciprocal
 
 
-def _load_vasp_yaml_calc(yaml_path: str | Path) -> dict:
+def load_vasp_yaml_calc(yaml_path: str | Path) -> dict:
     """
     Loads a YAML file containing calculator settings.
-    Used for VASP calculations and can read both quacc-formatted
-    YAMLs as well as those formatted in pymatgen.io.vasp.sets.
+    Used for VASP calculations and can read quacc-formatted
+    YAMLs that are of the following format:
 
-    Note that oxidation state-specific magmoms are not currently
-    supported. If importing a YAML from another package besides
-    quacc, please double-check that all your input parameters
+    ```
+    inputs:
+        xc: pbe
+        algo: all
+        ...
+    setups:
+        Cu: Cu_pv
+        ...
+    magmoms:
+        Fe: 5
+        Cu: 1
+        ...
+    ```
+
+    where `inputs` is a dictionary of ASE-style input parameters,
+    `setups` is a dictionary of ASE-style pseudopotentials,
+    and `magmoms` is a dictionary of element-wise initial magmetic
+    moments.
+
+    This function is loosely compatible with Pymatgen/Atomate2-formatted
+    VASP input sets. The main points of incompatibility are related to
+    site-specific properties (e.g. oxidation state-specific magmoms,
+    environment-specific U values).
+
+    If importing a YAML from another package besides quacc, please
+    take a moment to double-check that all your input parameters
     are correctly imported, as we can't guarantee 100%
     compatibility if changes are made upstream.
 
     Parameters
     ----------
     yaml_path
-        Path to the YAML file.
+        Path to the YAML file. This function will look in the
+        `VASP_PRESET_DIR` (default: quacc/presets/vasp) for the file,
+        thereby assuming that `yaml_path` is a relative path within that folder.
 
     Returns
     -------

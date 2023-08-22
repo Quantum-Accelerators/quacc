@@ -96,6 +96,9 @@ def make_unique_dir(base_path: str | None = None) -> str:
 def load_yaml_calc(yaml_path: str | Path) -> dict:
     """
     Loads a YAML file containing calculator settings.
+    This YAML loader looks for a special flag "parent" in the YAML file.
+    If this flag is present, the YAML file specified in the "parent" flag
+    is loaded and its contents are inherited by the child YAML file.
 
     Parameters
     ----------
@@ -122,32 +125,24 @@ def load_yaml_calc(yaml_path: str | Path) -> dict:
     for config_arg in config.copy():
         if "parent" in config_arg.lower():
             parent_val = config[config_arg]
-
-            # Relative Path
             yaml_parent_path = Path(yaml_path).parent / Path(parent_val)
 
             if not yaml_parent_path.exists():
-                # Absolute path
-                if Path(parent_val).exists():
-                    yaml_parent_path = Path(parent_val)
-
-                # Try package data
-                else:
-                    pkg_name = parent_val.split(".")[0]
-                    f_name = parent_val.split("/")[-1]
-                    with contextlib.suppress(ImportError):
-                        pkg_data_path = files(pkg_name)
-                        yaml_parent_path = (
-                            pkg_data_path
-                            / Path(
-                                "/".join(
-                                    parent_val.replace(f"{pkg_name}.", "", 1)
-                                    .split(f_name)[0]
-                                    .split(".")
-                                )
+                pkg_name = parent_val.split(".")[0]
+                f_name = parent_val.split("/")[-1]
+                with contextlib.suppress(ImportError):
+                    pkg_data_path = files(pkg_name)
+                    yaml_parent_path = (
+                        pkg_data_path
+                        / Path(
+                            "/".join(
+                                parent_val.replace(f"{pkg_name}.", "", 1)
+                                .split(f_name)[0]
+                                .split(".")
                             )
-                            / Path(f_name)
                         )
+                        / Path(f_name)
+                    )
 
             parent_config = load_yaml_calc(yaml_parent_path)
             for k, v in parent_config.items():
