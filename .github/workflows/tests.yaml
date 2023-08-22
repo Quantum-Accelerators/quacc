@@ -39,7 +39,7 @@ jobs:
       - name: Upload coverage to Codecov
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli upload-process
+          codecovcli -t {$CODECOV_TOKEN} upload-process
 
   tests-base-windows:
     runs-on: windows-latest
@@ -72,7 +72,7 @@ jobs:
       - name: Upload coverage to Codecov
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli upload-process
+          codecovcli -t {$CODECOV_TOKEN} upload-process
 
   tests-tblite:
     strategy:
@@ -105,7 +105,7 @@ jobs:
       - name: Upload coverage to Codecov
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli upload-process
+          codecovcli -t {$CODECOV_TOKEN} upload-process
 
   tests-psi4:
     strategy:
@@ -149,7 +149,7 @@ jobs:
       - name: Upload coverage to Codecov
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli upload-process
+          codecovcli -t {$CODECOV_TOKEN} upload-process
 
   tests-dftbplus:
     strategy:
@@ -191,7 +191,7 @@ jobs:
       - name: Upload coverage to Codecov
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli upload-process
+          codecovcli -t {$CODECOV_TOKEN} upload-process
 
   tests-covalent:
     runs-on: ubuntu-latest
@@ -236,7 +236,7 @@ jobs:
       - name: Upload coverage to Codecov
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli upload-process
+          codecovcli -t {$CODECOV_TOKEN} upload-process
 
   tests-parsl:
     runs-on: ubuntu-latest
@@ -273,7 +273,7 @@ jobs:
       - name: Upload coverage to Codecov
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli upload-process
+          codecovcli -t {$CODECOV_TOKEN} upload-process
 
   tests-jobflow:
     runs-on: ubuntu-latest
@@ -310,7 +310,7 @@ jobs:
       - name: Upload coverage to Codecov
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli upload-process
+          codecovcli -t {$CODECOV_TOKEN} upload-process
 
   tests-prefect:
     runs-on: ubuntu-latest
@@ -347,4 +347,4 @@ jobs:
       - name: Upload coverage to Codecov
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli upload-process
+          codecovcli -t {$CODECOV_TOKEN} upload-process
