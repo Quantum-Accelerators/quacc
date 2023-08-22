@@ -126,12 +126,13 @@ def load_yaml_calc(yaml_path: str | Path) -> dict:
             # Relative Path
             yaml_parent_path = Path(yaml_path).parent / Path(parent_val)
 
-            if not os.path.exists(yaml_parent_path):
-                if os.path.exists(Path(parent_val)):
-                    # Absolute path
+            if not yaml_parent_path.exists():
+                # Absolute path
+                if Path(parent_val).exists():
                     yaml_parent_path = Path(parent_val)
+
+                # Try package data
                 else:
-                    # Try package data
                     pkg_name = parent_val.split(".")[0]
                     f_name = parent_val.split("/")[-1]
                     with contextlib.suppress(ImportError):
@@ -158,6 +159,8 @@ def load_yaml_calc(yaml_path: str | Path) -> dict:
                         if kk not in config[k]:
                             config[k][kk] = vv
 
+            del config[config_arg]
+
     return config
 
 
@@ -166,6 +169,9 @@ def load_vasp_yaml_calc(yaml_path: str | Path) -> dict:
     Loads a YAML file containing calculator settings.
     Used for VASP calculations and is compatible with the
     pymatgen.io.vasp.sets module.
+
+    Note that oxidation state-specific magmoms are not currently
+    supported.
 
     Parameters
     ----------
@@ -180,21 +186,16 @@ def load_vasp_yaml_calc(yaml_path: str | Path) -> dict:
 
     config = load_yaml_calc(yaml_path)
 
-    # Handle Pymatgen VASP input set formatting
-    if "inputs" not in config and ("INCAR" in config or "POTCAR" in config):
-        config["inputs"] = {}
-
     if "INCAR" in config:
-        if "MAGMOM" in config["INCAR"]:
-            if "elemental_magmoms" not in config["inputs"]:
-                config["inputs"]["elemental_magmoms"] = {}
-            config["inputs"]["elemental_magmoms"] = config["INCAR"]["MAGMOM"]
-            del config["INCAR"]["MAGMOM"]
-
         config["inputs"] = config["INCAR"]
+        if "MAGMOM" in config["inputs"]:
+            config["inputs"]["elemental_magmoms"] = config["INCAR"]["MAGMOM"]
+            del config["inputs"]["MAGMOM"]
         del config["INCAR"]
 
     if "POTCAR" in config:
+        if "inputs" not in config:
+            config["inputs"] = {}
         if "setups" not in config["inputs"]:
             config["inputs"]["setups"] = {}
         config["inputs"]["setups"] = config["POTCAR"]
@@ -210,10 +211,9 @@ def load_vasp_yaml_calc(yaml_path: str | Path) -> dict:
             k.lower(): v.lower() if isinstance(v, str) else v
             for k, v in config["inputs"].items()
         }
-        if config["inputs"].get("setups"):
-            for k, v in config["inputs"]["setups"].items():
-                if k in v:
-                    config["inputs"]["setups"][k] = v.split(k)[-1]
+        for k, v in config["inputs"].get("setups", {}).items():
+            if k in v:
+                config["inputs"]["setups"][k] = v.split(k)[-1]
 
     return config
 
