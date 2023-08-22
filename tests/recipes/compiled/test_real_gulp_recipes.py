@@ -130,7 +130,7 @@ def test_relax_job(tmpdir):
     assert "output xyz gulp.xyz" not in output["parameters"]["options"]
     assert "output cif gulp.cif" in output["parameters"]["options"]
 
-    output = relax_job(atoms, use_gfnff=False)
+    output = relax_job(atoms, relax_cell=True, use_gfnff=False)
     assert output["nsites"] == len(atoms)
     assert "gfnff" not in output["parameters"]["keywords"]
     assert "opti" in output["parameters"]["keywords"]
