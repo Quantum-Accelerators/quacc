@@ -92,9 +92,12 @@ def make_unique_dir(base_path: str | None = None) -> str:
     return job_dir
 
 
-def load_yaml_calc(yaml_path: str) -> dict:
+def load_yaml_calc(yaml_path: str | Path) -> dict:
     """
     Loads a YAML file containing calculator settings.
+    This YAML loader looks for a special flag "parent" in the YAML file.
+    If this flag is present, the YAML file specified in the "parent" flag
+    is loaded and its contents are inherited by the child YAML file.
 
     Parameters
     ----------
@@ -107,12 +110,10 @@ def load_yaml_calc(yaml_path: str) -> dict:
         The calculator configuration (i.e. settings).
     """
 
-    _, ext = os.path.splitext(yaml_path)
-    if not ext:
-        yaml_path += ".yaml"
+    yaml_path = Path(yaml_path).with_suffix(".yaml")
 
-    if not os.path.exists(yaml_path):
-        raise ValueError(f"Cannot find {yaml_path}.")
+    if not yaml_path.exists():
+        raise ValueError(f"Cannot find {yaml_path}")
 
     # Load YAML file
     with open(yaml_path, "r") as stream:
@@ -121,10 +122,10 @@ def load_yaml_calc(yaml_path: str) -> dict:
     # Inherit arguments from any parent YAML files
     # but do not overwrite those in the child file.
     for config_arg in config.copy():
-        if "parent" in config_arg:
-            parent_config = load_yaml_calc(
-                os.path.join(os.path.dirname(yaml_path), config[config_arg])
-            )
+        if "parent" in config_arg.lower():
+            yaml_parent_path = Path(yaml_path).parent / Path(config[config_arg])
+            parent_config = load_yaml_calc(yaml_parent_path)
+
             for k, v in parent_config.items():
                 if k not in config:
                     config[k] = v
@@ -134,10 +135,7 @@ def load_yaml_calc(yaml_path: str) -> dict:
                         if kk not in config[k]:
                             config[k][kk] = vv
 
-    # Allow for either "Cu_pv" and "_pv" style setups
-    for k, v in config["inputs"].get("setups", {}).items():
-        if k in v:
-            config["inputs"]["setups"][k] = v.split(k)[-1]
+            del config[config_arg]
 
     return config
 
