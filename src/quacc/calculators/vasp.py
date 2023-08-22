@@ -126,7 +126,9 @@ class Vasp(Vasp_):
 
         # Get user-defined preset parameters for the calculator
         if preset:
-            calc_preset = load_vasp_yaml_calc( os.path.join(SETTINGS.VASP_PRESET_DIR, preset))["inputs"]
+            calc_preset = load_vasp_yaml_calc(
+                os.path.join(SETTINGS.VASP_PRESET_DIR, preset)
+            )["inputs"]
         else:
             calc_preset = {}
 
