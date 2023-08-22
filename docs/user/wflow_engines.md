@@ -98,6 +98,7 @@ graph LR
 
         ```python
         import parsl
+
         parsl.load()
         ```
 
@@ -111,13 +112,13 @@ graph LR
     atoms = bulk("Cu")
 
     # Call App 1
-    future1 = relax_job(atoms) # (1)!
+    future1 = relax_job(atoms)  # (1)!
 
     # Call App 2, which takes the output of App 1 as input
     future2 = static_job(future1)
 
     # Print result
-    print(future2.result()) # (2)!
+    print(future2.result())  # (2)!
     ```
 
     1. This was defined in quacc with a `#!Python @job` decorator already, which will be transformed into a `#!Python @PythonApp` decorator since the `WORKFLOW_ENGINE` is set to `"parsl"`.
