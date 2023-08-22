@@ -123,22 +123,27 @@ def load_yaml_calc(yaml_path: str | Path) -> dict:
     # but do not overwrite those in the child file.
     for config_arg in config.copy():
         if "parent" in config_arg:
-            # Relative Path
-            yaml_parent_path = os.path.join(
-                os.path.dirname(yaml_path), config[config_arg]
-            )
+            parent_val = config[config_arg]
 
-            # Absolute path
+            # Relative Path
+            yaml_parent_path = Path(yaml_path).parent / Path(parent_val)
+
             if not os.path.exists(yaml_parent_path):
-                if os.path.exists(Path(config[config_arg])):
-                    yaml_parent_path = Path(config[config_arg])
+                if os.path.exists(Path(parent_val)):
+                    # Absolute path
+                    yaml_parent_path = Path(parent_val)
                 else:
                     # Try package data
-                    pkg_name = config[config_arg].split(".")[0]
+                    pkg_name = parent_val.split(".")[0]
+                    f_name = parent_val.split("/")[-1]
                     with contextlib.suppress(ImportError):
                         pkg_data_path = files(pkg_name)
-                        y_path = Path("/".join(config[config_arg].split(".")))
-                        yaml_parent_path = pkg_data_path / y_path
+                        yaml_parent_path = (
+                            pkg_data_path
+                            / Path("/".join(parent_val.split(f_name)[0].split(".")))
+                            / Path(f_name)
+                        )
+
             parent_config = load_vasp_yaml_calc(yaml_parent_path)
             for k, v in parent_config.items():
                 if k not in config:
@@ -171,7 +176,7 @@ def load_vasp_yaml_calc(yaml_path: str | Path) -> dict:
     if "INCAR" in config:
         if "MAGMOM" in config["INCAR"]:
             config["inputs"]["elemental_magmoms"] = config["INCAR"]["MAGMOM"]
-            del config["MAGMOM"]
+            del config["INCAR"]["MAGMOM"]
         config["inputs"] = config["INCAR"]
         del config["INCAR"]
     if "POTCAR" in config:
@@ -182,7 +187,8 @@ def load_vasp_yaml_calc(yaml_path: str | Path) -> dict:
         config["inputs"][k] = k.lower()
 
     # Allow for either "Cu_pv" and "_pv" style setups
-    if "inputs" in config and config.get(["setups"]):
+    raise ValueError(config)
+    if "inputs" in config and config["inputs"].get(["setups"]):
         for k, v in config["inputs"]["setups"].items():
             if k in v:
                 config["inputs"]["setups"][k] = v.split(k)[-1]

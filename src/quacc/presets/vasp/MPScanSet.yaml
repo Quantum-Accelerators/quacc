@@ -1,1 +1,1 @@
-parent: pymatgen.io.vasp.sets.MPScanRelaxSet.yaml
+parent: pymatgen.io.vasp.sets/MPScanRelaxSet.yaml
