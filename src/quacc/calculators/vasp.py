@@ -6,6 +6,7 @@ from __future__ import annotations
 import inspect
 import os
 import warnings
+from pathlib import Path
 from typing import TYPE_CHECKING, Literal
 
 import numpy as np
@@ -19,7 +20,7 @@ from pymatgen.symmetry.bandstructure import HighSymmKpath
 from quacc import SETTINGS
 from quacc.custodian import vasp as custodian_vasp
 from quacc.util.atoms import check_is_metal, set_magmoms
-from quacc.util.files import load_vasp_yaml_calc
+from quacc.util.files import load_yaml_calc
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -126,7 +127,7 @@ class Vasp(Vasp_):
 
         # Get user-defined preset parameters for the calculator
         if preset:
-            calc_preset = load_vasp_yaml_calc(
+            calc_preset = _load_vasp_yaml_calc(
                 os.path.join(SETTINGS.VASP_PRESET_DIR, preset)
             )["inputs"]
         else:
@@ -145,7 +146,7 @@ class Vasp(Vasp_):
             isinstance(self.user_calc_params.get("setups"), str)
             and self.user_calc_params["setups"] not in ase_setups.setups_defaults
         ):
-            self.user_calc_params["setups"] = load_vasp_yaml_calc(
+            self.user_calc_params["setups"] = _load_vasp_yaml_calc(
                 os.path.join(SETTINGS.VASP_PRESET_DIR, self.user_calc_params["setups"])
             )["inputs"]["setups"]
 
@@ -652,3 +653,61 @@ class Vasp(Vasp_):
             gamma = pmg_kpts.style.name.lower() == "gamma"
 
         return kpts, gamma, reciprocal
+
+
+def _load_vasp_yaml_calc(yaml_path: str | Path) -> dict:
+    """
+    Loads a YAML file containing calculator settings.
+    Used for VASP calculations and is (mostly) compatible with
+    pymatgen.io.vasp.sets.
+
+    Note that oxidation state-specific magmoms are not currently
+    supported. If importing a YAML from another package besides
+    quacc, please double-check that all your input parameters
+    are correctly imported, as we can't guarantee 100%
+    compatibility if changes are made upstream.
+
+    Parameters
+    ----------
+    yaml_path
+        Path to the YAML file.
+
+    Returns
+    -------
+    dict
+        The calculator configuration (i.e. settings).
+    """
+
+    config = load_yaml_calc(yaml_path)
+
+    # Handle Pymatgen-formated YAML files
+    if "INCAR" in config:
+        config["inputs"] = config["INCAR"]
+        if "MAGMOM" in config["inputs"]:
+            config["inputs"]["elemental_magmoms"] = config["INCAR"]["MAGMOM"]
+            del config["inputs"]["MAGMOM"]
+        del config["INCAR"]
+
+    if "POTCAR" in config:
+        if "inputs" not in config:
+            config["inputs"] = {}
+        if "setups" not in config["inputs"]:
+            config["inputs"]["setups"] = {}
+        config["inputs"]["setups"] = config["POTCAR"]
+
+        del config["POTCAR"]
+
+    if "POTCAR_FUNCTIONAL" in config:
+        del config["POTCAR_FUNCTIONAL"]
+
+    # Allow for either "Cu_pv" and "_pv" style setups
+    if "inputs" in config:
+        config["inputs"] = {
+            k.lower(): v.lower() if isinstance(v, str) else v
+            for k, v in config["inputs"].items()
+        }
+        for k, v in config["inputs"].get("setups", {}).items():
+            if k in v:
+                config["inputs"]["setups"][k] = v.split(k)[-1]
+
+    return config

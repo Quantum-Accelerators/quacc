@@ -136,7 +136,7 @@ def mp_relax_flow(
     prerelax_results = prerelax(atoms, **prerelax_kwargs)
 
     # Update KSPACING arguments
-    bandgap = prerelax_results["output"]["bandgap"]
+    bandgap = prerelax_results["output"].get("bandgap", 0)
     if bandgap < 1e-4:
         kspacing_swaps = {"kspacing": 0.22, "sigma": 0.2, "ismear": 2, "kpts": None}
     else:

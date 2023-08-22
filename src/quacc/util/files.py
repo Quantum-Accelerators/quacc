@@ -164,60 +164,6 @@ def load_yaml_calc(yaml_path: str | Path) -> dict:
     return config
 
 
-def load_vasp_yaml_calc(yaml_path: str | Path) -> dict:
-    """
-    Loads a YAML file containing calculator settings.
-    Used for VASP calculations and is compatible with the
-    pymatgen.io.vasp.sets module.
-
-    Note that oxidation state-specific magmoms are not currently
-    supported.
-
-    Parameters
-    ----------
-    yaml_path
-        Path to the YAML file.
-
-    Returns
-    -------
-    dict
-        The calculator configuration (i.e. settings).
-    """
-
-    config = load_yaml_calc(yaml_path)
-
-    if "INCAR" in config:
-        config["inputs"] = config["INCAR"]
-        if "MAGMOM" in config["inputs"]:
-            config["inputs"]["elemental_magmoms"] = config["INCAR"]["MAGMOM"]
-            del config["inputs"]["MAGMOM"]
-        del config["INCAR"]
-
-    if "POTCAR" in config:
-        if "inputs" not in config:
-            config["inputs"] = {}
-        if "setups" not in config["inputs"]:
-            config["inputs"]["setups"] = {}
-        config["inputs"]["setups"] = config["POTCAR"]
-
-        del config["POTCAR"]
-
-    if "POTCAR_FUNCTIONAL" in config:
-        del config["POTCAR_FUNCTIONAL"]
-
-    # Allow for either "Cu_pv" and "_pv" style setups
-    if "inputs" in config:
-        config["inputs"] = {
-            k.lower(): v.lower() if isinstance(v, str) else v
-            for k, v in config["inputs"].items()
-        }
-        for k, v in config["inputs"].get("setups", {}).items():
-            if k in v:
-                config["inputs"]["setups"][k] = v.split(k)[-1]
-
-    return config
-
-
 def find_recent_logfile(dir_name: Path | str, logfile_extensions: str | list[str]):
     """
     Find the most recent logfile in a given directory.

@@ -300,7 +300,7 @@ def test_mp(tmpdir):
     assert output["parameters"]["ediffg"] == -0.05
     assert output["parameters"]["encut"] == 680
     assert output["parameters"]["kspacing"] == 0.22
-    assert output["parameters"]["ismear"] == 2
+    assert output["parameters"]["ismear"] == 0
     assert "kpts" not in output["parameters"]
 
     output = mp_relax_job(atoms)
@@ -309,7 +309,7 @@ def test_mp(tmpdir):
     assert output["parameters"]["ediffg"] == -0.02
     assert output["parameters"]["encut"] == 680
     assert output["parameters"]["kspacing"] == 0.22
-    assert output["parameters"]["ismear"] == 2
+    assert output["parameters"]["ismear"] == 0
     assert "kpts" not in output["parameters"]
 
     output = mp_relax_flow(atoms)
