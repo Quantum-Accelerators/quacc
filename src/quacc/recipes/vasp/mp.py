@@ -142,7 +142,12 @@ def mp_relax_flow(
     else:
         rmin = 25.22 - 2.87 * bandgap
         kspacing = 2 * np.pi * 1.0265 / (rmin - 1.0183)
-        kspacing_swaps = {"kspacing": min(kspacing, 0.44), "ismear": -5, "sigma": 0.05, "kpts": None}
+        kspacing_swaps = {
+            "kspacing": min(kspacing, 0.44),
+            "ismear": -5,
+            "sigma": 0.05,
+            "kpts": None,
+        }
     relax_kwargs["calc_swaps"] = kspacing_swaps | relax_kwargs.get("calc_swaps", {})
 
     # Run the relax
