@@ -321,7 +321,7 @@ def test_mp(tmpdir):
     atoms = bulk("Fe")
     output = mp_relax_flow(atoms)
     assert output["nsites"] == len(atoms)
-    assert output["parameters"]["xc"] == "r2scan"
+    assert output["parameters"]["metagga"] == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02
     assert output["parameters"]["encut"] == 680
     assert output["parameters"]["ismear"] == 1
@@ -332,7 +332,7 @@ def test_mp(tmpdir):
     atoms.pbc = True
     output = mp_relax_flow(atoms)
     assert output["nsites"] == len(atoms)
-    assert output["parameters"]["xc"] == "r2scan"
+    assert output["parameters"]["metagga"] == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02
     assert output["parameters"]["encut"] == 680
     assert output["parameters"]["ismear"] == -5
