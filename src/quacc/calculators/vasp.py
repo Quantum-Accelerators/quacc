@@ -663,13 +663,15 @@ def load_vasp_yaml_calc(yaml_path: str | Path) -> dict:
 
     ```
     inputs:
-        xc: pbe
-        algo: all
-        ...
-    setups:
+      xc: pbe
+      algo: all
+      ...
+
+      setups:
         Cu: Cu_pv
-        ...
-    magmoms:
+      ...
+
+      elemental_magmoms:
         Fe: 5
         Cu: 1
         ...
