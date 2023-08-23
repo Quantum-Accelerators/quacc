@@ -36,8 +36,8 @@ except ImportError:
 
 def get_hessian(atoms):
     mlcalculator = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(":"),
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
+        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
     mlcalculator.calculate(atoms)
     return mlcalculator.results["hessian"].reshape((-1, 3 * len(atoms)))
@@ -46,8 +46,8 @@ def get_hessian(atoms):
 def add_stdev_and_hess(summary):
     for i in range(len(summary["trajectory"])):
         mlcalculator = NewtonNet(
-            model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
-            settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(":"),
+            model_path=SETTINGS.NEWTONNET_MODEL_PATH,
+            settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
         )
         mlcalculator.calculate(summary["trajectory"][i]["atoms"])
         summary["trajectory_results"][i]["hessian"] = mlcalculator.results["hessian"]
@@ -88,8 +88,8 @@ def static_job(
     input_atoms = deepcopy(atoms)
     # Define calculator
     mlcalculator = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(":"),
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
+        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
     atoms.calc = mlcalculator
     atoms = run_calc(atoms)
@@ -141,8 +141,8 @@ def relax_job(
         optimizer_kwargs["order"] = 0
 
     mlcalculator = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(":"),
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
+        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
     atoms.calc = mlcalculator
     dyn = run_ase_opt(
@@ -193,11 +193,16 @@ def ts_job(
         "optimizer": Sella,
         "optimizer_kwargs": {"diag_every_n": 0} if use_custom_hessian else {},
     }
+
+    if 'optimizer_kwargs' in opt_swaps:
+        opt_swaps['optimizer_kwargs'] = opt_defaults['optimizer_kwargs'] | opt_swaps['optimizer_kwargs']
+
     opt_flags = opt_defaults | opt_swaps
+
     # Define calculator
     mlcalculator = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(":"),
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
+        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
     atoms.calc = mlcalculator
 
@@ -209,8 +214,8 @@ def ts_job(
 
     # Define calculator again TEST THIS WHILE RUNNING THE CALCULATIONS
     mlcalculator = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(":"),
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
+        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
     atoms.calc = mlcalculator
     # Run the TS optimization
@@ -272,12 +277,14 @@ def irc_job(
             "direction": "forward",
         },
     }
+    if 'optimizer_kwargs' in opt_swaps:
+        opt_swaps['optimizer_kwargs'] = opt_defaults['optimizer_kwargs'] | opt_swaps['optimizer_kwargs']
     opt_flags = opt_defaults | opt_swaps
 
     # Define calculator
     mlcalculator = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(":"),
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
+        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
     atoms.calc = mlcalculator
 
@@ -374,8 +381,8 @@ def freq_job(
     """
     # Define calculator
     mlcalculator = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH.split(":"),
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH.split(":"),
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
+        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
     atoms.calc = mlcalculator
 
