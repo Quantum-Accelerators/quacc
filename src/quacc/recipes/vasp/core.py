@@ -155,33 +155,22 @@ def double_relax_job(
     calc_swaps1 = calc_swaps1 or {}
     calc_swaps2 = calc_swaps2 or {}
 
-    defaults = {
-        "ediffg": -0.02,
-        "isif": 3 if relax_cell else 2,
-        "ibrion": 2,
-        "isym": 0,
-        "lcharg": False,
-        "lwave": True,
-        "nsw": 200,
-    }
-
     # Run first relaxation
-    flags = defaults | calc_swaps1
-    atoms.calc = Vasp(atoms, preset=preset, **flags)
-    kpts1 = atoms.calc.kpts
-    atoms = run_calc(atoms, copy_files=copy_files)
-    summary1 = summarize_run(atoms, additional_fields={"name": "VASP DoubleRelax 1"})
+    summary1 = relax_job.original_func(
+        atoms,
+        preset=preset,
+        relax_cell=relax_cell,
+        calc_swaps1=calc_swaps1,
+        copy_files=copy_files,
+    )
 
     # Run second relaxation
-    flags = defaults | calc_swaps2
-    atoms.calc = Vasp(summary1["atoms"], preset=preset, **flags)
-    kpts2 = atoms.calc.kpts
-
-    # Use ISTART = 0 if this goes from vasp_gam --> vasp_std
-    if kpts1 == [1, 1, 1] and kpts2 != [1, 1, 1]:
-        atoms.calc.set(istart=0)
-
-    atoms = run_calc(atoms, copy_files=["WAVECAR"])
-    summary2 = summarize_run(atoms, additional_fields={"name": "VASP DoubleRelax 2"})
+    summary2 = relax_job.original_func(
+        atoms,
+        preset=preset,
+        relax_cell=relax_cell,
+        calc_swaps1=calc_swaps1,
+        copy_files=["WAVECAR"],
+    )
 
     return {"relax1": summary1, "relax2": summary2}
