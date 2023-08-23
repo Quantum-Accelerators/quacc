@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import multiprocessing
-import os
 from shutil import which
 from typing import TYPE_CHECKING
 
