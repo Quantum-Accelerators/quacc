@@ -38,7 +38,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         env:
-          CODECOV_TOKEN: ${CODECOV_TOKEN}
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
           codecovcli --verbose create-commit --fail-on-error 
@@ -75,7 +75,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         env:
-          CODECOV_TOKEN: ${CODECOV_TOKEN}
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
           codecovcli --verbose create-commit --fail-on-error 
@@ -112,7 +112,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         env:
-          CODECOV_TOKEN: ${CODECOV_TOKEN}
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
           codecovcli --verbose create-commit --fail-on-error 
@@ -160,7 +160,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         env:
-          CODECOV_TOKEN: ${CODECOV_TOKEN}
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
           codecovcli --verbose create-commit --fail-on-error 
@@ -206,7 +206,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         env:
-          CODECOV_TOKEN: ${CODECOV_TOKEN}
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
           codecovcli --verbose create-commit --fail-on-error 
@@ -255,7 +255,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         env:
-          CODECOV_TOKEN: ${CODECOV_TOKEN}
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
           codecovcli --verbose create-commit --fail-on-error 
@@ -296,7 +296,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         env:
-          CODECOV_TOKEN: ${CODECOV_TOKEN}
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
           codecovcli --verbose create-commit --fail-on-error 
@@ -337,7 +337,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         env:
-          CODECOV_TOKEN: ${CODECOV_TOKEN}
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
           codecovcli --verbose create-commit --fail-on-error 
@@ -378,7 +378,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         env:
-          CODECOV_TOKEN: ${CODECOV_TOKEN}
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
           codecovcli --verbose create-commit --fail-on-error 
