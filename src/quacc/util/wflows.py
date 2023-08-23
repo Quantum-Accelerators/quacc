@@ -96,21 +96,26 @@ def flow(
     if wflow_engine == "covalent":
         import covalent as ct
 
-        return ct.lattice(_func, **kwargs)
-    if wflow_engine == "jobflow":
+        decorated = ct.lattice(_func, **kwargs)
+    elif wflow_engine == "jobflow":
         raise NotImplementedError(
             "Jobflow is not compatible with the use of a @flow decorator. Instead, you should use the `Flow()` object in Jobflow to stitch together individual compute jobs."
         )
-    if wflow_engine == "parsl":
-        return _func
-    if wflow_engine == "prefect":
+    elif wflow_engine == "parsl":
+        decorated = _func
+    elif wflow_engine == "prefect":
         from prefect import flow as prefect_flow
 
-        return prefect_flow(_func, **kwargs)
-    if not wflow_engine:
-        return _func
+        decorated = prefect_flow(_func, **kwargs)
+    elif not wflow_engine:
+        decorated = _func
+    else:
+        msg = f"Unknown workflow engine: {wflow_engine}"
+        raise ValueError(msg)
 
-    raise ValueError(f"Unknown workflow engine: {wflow_engine}")
+    decorated.original_func = _func
+
+    return decorated
 
 
 def subflow(
@@ -143,23 +148,27 @@ def subflow(
     if wflow_engine == "covalent":
         import covalent as ct
 
-        return ct.electron(ct.lattice(_func), **kwargs)
-    if wflow_engine == "jobflow":
+        decorated = ct.electron(ct.lattice(_func), **kwargs)
+    elif wflow_engine == "jobflow":
         raise NotImplementedError(
             "Jobflow is not compatible with the use of a @subflow decorator. Instead, you should use the `Response` object in Jobflow to create a dynamic workflow."
         )
-    if wflow_engine == "parsl":
+    elif wflow_engine == "parsl":
         from parsl import join_app
 
-        return join_app(_func, **kwargs)
-    if wflow_engine == "prefect":
+        decorated = join_app(_func, **kwargs)
+    elif wflow_engine == "prefect":
         from prefect import flow as prefect_flow
 
-        return prefect_flow(_func, **kwargs)
-    if not wflow_engine:
-        return _func
+        decorated = prefect_flow(_func, **kwargs)
+    elif not wflow_engine:
+        decorated = _func
+    else:
+        msg = f"Unknown workflow engine: {wflow_engine}"
+        raise ValueError(msg)
 
-    raise ValueError(f"Unknown workflow engine: {wflow_engine}")
+    decorated.original_func = _func
+    return decorated
 
 
 def make_dask_runner(
