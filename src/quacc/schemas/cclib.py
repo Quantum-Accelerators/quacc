@@ -6,7 +6,7 @@ import os
 import warnings
 from inspect import getmembers, isclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Literal, TypeVar
+from typing import TYPE_CHECKING, Dict, List, Literal, TypeVar
 
 import cclib
 from cclib.io import ccread
@@ -207,16 +207,16 @@ class _cclibTaskDocument(MoleculeMetadata):
     logfile: str = Field(
         None, description="Path to the log file used in the post-processing analysis"
     )
-    attributes: dict = Field(
+    attributes: Dict = Field(
         None, description="Computed properties and calculation outputs"
     )
-    metadata: dict = Field(
+    metadata: Dict = Field(
         None,
         description="Calculation metadata, including input parameters and runtime "
         "statistics",
     )
     task_label: str = Field(None, description="A description of the task")
-    tags: list[str] = Field(None, description="Optional tags for this task document")
+    tags: List[str] = Field(None, description="Optional tags for this task document")
 
     @classmethod
     def from_logfile(
