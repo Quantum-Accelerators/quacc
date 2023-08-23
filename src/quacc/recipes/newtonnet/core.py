@@ -8,6 +8,7 @@ from typing import Any, Dict, Literal
 
 import numpy as np
 from ase.atoms import Atoms
+from ase.optimize import FIRE
 from ase.optimize.optimize import Optimizer
 from ase.vibrations.data import VibrationsData
 from monty.dev import requires
@@ -21,7 +22,7 @@ from quacc.schemas.ase import (
 )
 from quacc.util.calc import run_ase_opt, run_calc
 from quacc.util.thermo import ideal_gas
-from ase.optimize import FIRE
+
 try:
     from sella import IRC, Sella
 except ImportError:
@@ -184,6 +185,7 @@ def relax_job(
 
 @job
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
+@requires(Sella, "Sella must be installed. Try pip install quacc[optimizers]")
 def ts_job(
     atoms: Atoms,
     use_custom_hessian: bool = False,
@@ -270,6 +272,7 @@ def ts_job(
 
 @job
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
+@requires(Sella, "Sella must be installed. Try pip install quacc[optimizers]")
 def irc_job(
     atoms: Atoms,
     fmax: float = 0.01,
