@@ -3,8 +3,8 @@ Core recipes for the NewtonNet code
 """
 from __future__ import annotations
 
-from typing import Dict, Any, Literal
 from copy import deepcopy
+from typing import Any, Dict, Literal
 
 import numpy as np
 from ase.atoms import Atoms
@@ -12,7 +12,7 @@ from ase.optimize.optimize import Optimizer
 from ase.vibrations.data import VibrationsData
 from monty.dev import requires
 
-from quacc import job, SETTINGS
+from quacc import SETTINGS, job
 from quacc.schemas.ase import (
     summarize_opt_run,
     summarize_run,
@@ -41,11 +41,15 @@ def _get_hessian(atoms: Atoms) -> np.ndarray:
     NewtonNet machine learning calculator to calculate the Hessian matrix. The calculated Hessian
     matrix is then returned.
 
-    Args:
-        atoms (Atoms): The ASE Atoms object representing the molecular configuration.
+    Parameters
+    ----------
+    atoms
+        The ASE Atoms object representing the molecular configuration.
 
-    Returns:
-        np.ndarray: The calculated Hessian matrix, reshaped into a 2D array.
+    Returns
+    -------
+    np.ndarray
+        The calculated Hessian matrix, reshaped into a 2D array.
     """
     mlcalculator = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
@@ -65,11 +69,15 @@ def _add_stdev_and_hess(summary: Dict[str, Any]) -> Dict[str, Any]:
     calculator. It adds the calculated standard deviation values and Hessians to each configuration
     in the trajectory.
 
-    Args:
-        summary (Dict[str, Any]): A dictionary containing information about the molecular trajectory.
+    Parameters
+    ----------
+    summary
+        A dictionary containing information about the molecular trajectory.
 
-    Returns:
-        Dict[str, Any]: The modified summary dictionary with added standard deviation and Hessian values.
+    Returns
+    -------
+    Dict[str, Any]
+        The modified summary dictionary with added standard deviation and Hessian values.
     """
     for conf in summary["trajectory"]:
         mlcalculator = NewtonNet(
@@ -189,19 +197,25 @@ def ts_job(
     """
     Perform a transition state (TS) job using the given atoms object.
 
-    Args:
-        atoms (ase.Atoms): The atoms object representing the system.
-        use_custom_hessian (bool): Whether to use a custom Hessian matrix.
-        temperature (float): The temperature for the frequency calculation (default: 298.15 K).
-        pressure (float): The pressure for the frequency calculation (default: 1.0 atm).
-        newtonnet_kwargs (dict, optional): Additional keyword arguments for NewtonNet calculator (default: None).
-        opt_swaps (dict, optional): Optional swaps for the optimization parameters (default: None).
+    Parameters
+    ----------
+    atoms
+        The atoms object representing the system.
+    use_custom_hessian
+        Whether to use a custom Hessian matrix.
+    temperature
+        The temperature for the frequency calculation (default: 298.15 K).
+    pressure
+        The pressure for the frequency calculation (default: 1.0 atm).
+    newtonnet_kwargs
+        Additional keyword arguments for NewtonNet calculator (default: None).
+    opt_swaps
+        Optional swaps for the optimization parameters (default: None).
 
-    Returns:
-        dict: A dictionary containing the TS summary and thermodynamic summary.
-
-    Raises:
-        ValueError: If the custom Hessian is enabled but the optimizer is not "Sella".
+    Returns
+    -------
+    dict
+        A dictionary containing the TS summary and thermodynamic summary.
     """
     opt_swaps = opt_swaps or {}
 
@@ -212,8 +226,10 @@ def ts_job(
         "optimizer_kwargs": {"diag_every_n": 0} if use_custom_hessian else {},
     }
 
-    if 'optimizer_kwargs' in opt_swaps:
-        opt_swaps['optimizer_kwargs'] = opt_defaults['optimizer_kwargs'] | opt_swaps['optimizer_kwargs']
+    if "optimizer_kwargs" in opt_swaps:
+        opt_swaps["optimizer_kwargs"] = (
+            opt_defaults["optimizer_kwargs"] | opt_swaps["optimizer_kwargs"]
+        )
 
     opt_flags = opt_defaults | opt_swaps
 
@@ -271,15 +287,23 @@ def irc_job(
     """
     Perform an intrinsic reaction coordinate (IRC) job using the given atoms object.
 
-    Args:
-        atoms (ase.Atoms): The atoms object representing the system.
-        direction (str): The direction of the IRC calculation ("forward" or "reverse") (default: "forward").
-        temperature (float): The temperature for the frequency calculation (default: 298.15 K).
-        pressure (float): The pressure for the frequency calculation (default: 1.0 atm).
-        opt_swaps (dict, optional): Optional swaps for the optimization parameters (default: None).
+    Parameters
+    ----------
+    atoms
+        The atoms object representing the system.
+    direction
+        The direction of the IRC calculation ("forward" or "reverse") (default: "forward").
+    temperature
+        The temperature for the frequency calculation (default: 298.15 K).
+    pressure
+        The pressure for the frequency calculation (default: 1.0 atm).
+    opt_swaps
+        Optional swaps for the optimization parameters (default: None).
 
-    Returns:
-        dict: A dictionary containing the IRC summary and thermodynamic summary.
+    Returns
+    -------
+    dict
+        A dictionary containing the IRC summary and thermodynamic summary.
     """
     opt_swaps = opt_swaps or {}
 
@@ -295,8 +319,10 @@ def irc_job(
             "direction": "forward",
         },
     }
-    if 'optimizer_kwargs' in opt_swaps:
-        opt_swaps['optimizer_kwargs'] = opt_defaults['optimizer_kwargs'] | opt_swaps['optimizer_kwargs']
+    if "optimizer_kwargs" in opt_swaps:
+        opt_swaps["optimizer_kwargs"] = (
+            opt_defaults["optimizer_kwargs"] | opt_swaps["optimizer_kwargs"]
+        )
     opt_flags = opt_defaults | opt_swaps
 
     # Define calculator
@@ -338,16 +364,25 @@ def quasi_irc_job(
     """
     Perform a quasi-IRC job using the given atoms object.
 
-    Args:
-        atoms (ase.Atoms): The atoms object representing the system.
-        direction (str): The direction of the IRC calculation ("forward" or "reverse") (default: "forward").
-        temperature (float): The temperature for the frequency calculation (default: 298.15 K).
-        pressure (float): The pressure for the frequency calculation (default: 1.0 atm).
-        irc_swaps (dict, optional): Optional swaps for the IRC optimization parameters (default: None).
-        opt_swaps (dict, optional): Optional swaps for the optimization parameters (default: None).
+    Parameters
+    ----------
+    atoms
+        The atoms object representing the system.
+    direction
+        The direction of the IRC calculation ("forward" or "reverse") (default: "forward").
+    temperature
+        The temperature for the frequency calculation (default: 298.15 K).
+    pressure
+        The pressure for the frequency calculation (default: 1.0 atm).
+    irc_swaps
+        Optional swaps for the IRC optimization parameters (default: None).
+    opt_swaps
+        Optional swaps for the optimization parameters (default: None).
 
-    Returns:
-        dict: A dictionary containing the IRC summary, optimization summary, and thermodynamic summary.
+    Returns
+    -------
+    dict
+        A dictionary containing the IRC summary, optimization summary, and thermodynamic summary.
     """
     irc_swaps = irc_swaps or {}
     opt_swaps = opt_swaps or {}
@@ -387,13 +422,19 @@ def freq_job(
     """
     Perform a frequency calculation using the given atoms object.
 
-    Args:
-        atoms (ase.Atoms): The atoms object representing the system.
-        temperature (float): The temperature for the thermodynamic analysis (default: 298.15 K).
-        pressure (float): The pressure for the thermodynamic analysis (default: 1.0 atm).
+    Parameters
+    ----------
+    atoms
+        The atoms object representing the system.
+    temperature
+        The temperature for the thermodynamic analysis (default: 298.15 K).
+    pressure
+        The pressure for the thermodynamic analysis (default: 1.0 atm).
 
-    Returns:
-        dict: A dictionary containing the thermodynamic summary.
+    Returns
+    -------
+    dict
+        A dictionary containing the thermodynamic summary.
     """
     # Define calculator
     mlcalculator = NewtonNet(
