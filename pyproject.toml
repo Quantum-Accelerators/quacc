@@ -87,7 +87,7 @@ default-tag = "0.0.1"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = ["-p no:warnings", "--showlocals", "--strict-markers", "--strict-config"]
+addopts = ["-p no:warnings", "-ra", "--showlocals", "--strict-markers", "--strict-config"]
 xfail_strict = true
 log_cli_level = "warn"
 testpaths = ["tests"]
