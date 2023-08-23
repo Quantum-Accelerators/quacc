@@ -124,10 +124,9 @@ def relax_job(
         optimizer=optimizer,
         optimizer_kwargs=optimizer_kwargs,
     )
-    summary = _add_stdev_and_hess(
+    return _add_stdev_and_hess(
         summarize_opt_run(dyn, additional_fields={"name": "NewtonNet Relax"})
     )
-    return summary
 
 
 @job
