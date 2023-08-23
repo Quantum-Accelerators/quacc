@@ -150,4 +150,4 @@ unfixable = [
 exclude = []
 flake8-unused-arguments.ignore-variadic-names = true
 isort.required-imports = ["from __future__ import annotations"]
-extend-exclude = ["tests"]
+extend-exclude = ["tests", "src/quacc/settings.py"]
