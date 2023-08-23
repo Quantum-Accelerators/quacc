@@ -362,6 +362,7 @@ def irc_job(
     return {"irc": summary_irc, "thermo": thermo_summary}
 
 
+@job
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 @requires(Sella, "Sella must be installed. Try pip install quacc[optimizers]")
 def quasi_irc_job(
