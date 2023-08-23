@@ -350,6 +350,7 @@ def irc_job(
 
 @job
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
+@requires(Sella, "Sella must be installed. Try pip install quacc[optimizers]")
 def quasi_irc_job(
     atoms: Atoms,
     direction: Literal["forward", "reverse"] = "forward",
