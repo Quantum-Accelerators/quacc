@@ -686,6 +686,7 @@ def load_vasp_yaml_calc(yaml_path: str | Path) -> dict:
         thereby assuming that `yaml_path` is a relative path within that folder.
     Returns
     -------
+
     dict
         The calculator configuration (i.e. settings).
     """
