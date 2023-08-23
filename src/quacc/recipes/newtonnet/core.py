@@ -212,10 +212,11 @@ def ts_job(
     opt_swaps
         Optional swaps for the optimization parameters (default: None).
 
-    Returns
-    -------
-    dict
-        A dictionary containing the TS summary and thermodynamic summary.
+    Returns:
+        dict: A dictionary containing the TS summary and thermodynamic summary.
+
+    Raises:
+        ValueError: If the custom Hessian is enabled but the optimizer is not "Sella".
     """
     opt_swaps = opt_swaps or {}
 
