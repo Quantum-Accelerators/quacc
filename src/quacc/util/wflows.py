@@ -32,7 +32,7 @@ def job(
     Returns
     -------
     callable
-        The decorated function.
+        The decorated function. The original function is stored in the `_original` attribute.
     """
 
     from quacc import SETTINGS
