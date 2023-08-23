@@ -12,7 +12,11 @@ Here, we outline how to ensure that quacc can run the quantum chemistry package 
 
     [DFTB+](https://dftbplus.org/) is especially useful for periodic GFN-xTB calculations and the DFTB+ method based on Slater-Koster parameters.
 
-If you plan to use DFTB+ with quacc, you will need to install the code via `conda install -c conda-forge dftbplus`.
+If you plan to use DFTB+ with quacc, you will need to install the code as follows:
+
+```bash
+conda install -c conda-forge dftbplus
+```
 
 ## EMT
 
@@ -28,7 +32,11 @@ No setup needed!
 
     [Gaussian](https://gaussian.com/) is an extremely popular molecular DFT code that is quite robust and easy to use.
 
-As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/gaussian.html), you will need to define an environment variable named `ASE_GAUSSIAN_COMMAND`. It should be of the form `ASE_GAUSSIAN_COMMAND="/path/to/my/gaussian_executable Gaussian.com > Gaussian.log"`.
+As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/gaussian.html), you will need to define an environment variable named `ASE_GAUSSIAN_COMMAND`. It should be formatted as follows:
+
+```bash
+ASE_GAUSSIAN_COMMAND="/path/to/my/gaussian_executable Gaussian.com > Gaussian.log"
+```
 
 ## GULP
 
@@ -36,7 +44,11 @@ As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculator
 
     [GULP](https://gulp.curtin.edu.au/) is especially useful for periodic GFN-FF calculations and force field methods. GULP can be downloaded and installed [here](https://gulp.curtin.edu.au/download.html).
 
-As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/gulp.html), you must set the environment variables `GULP_LIB="/path/to/my/gulp-#.#.#/Libraries"` and `ASE_GULP_COMMAND="/path/to/my/gulp-#.#.#/Src/gulp < gulp.gin > gulp.got"` based on where you installed GULP.
+As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/gulp.html), you must set the environment variables `GULP_LIB` and `ASE_GULP_COMMAND` as follows:
+
+```bash
+GULP_LIB="/path/to/my/gulp-#.#.#/Libraries" ASE_GULP_COMMAND="/path/to/my/gulp-#.#.#/Src/gulp < gulp.gin > gulp.got"
+```
 
 ## Lennard Jones
 
@@ -52,7 +64,7 @@ No setup needed!
 
     [NewtonNet](https://github.com/ericyuan00000/NewtonNet) is a message passing networking for deep learning of interatomic potentials and forces, as described [here](https://pubs.rsc.org/en/content/articlehtml/2022/dd/d2dd00008c).
 
-If you plan to use NewtonNet with Quacc, you will need to install it prior to use. This can be done via `pip install quacc[newtonnet]`.
+If you plan to use NewtonNet with Quacc, you will need to install it prior to use. This can be done via `pip install "quacc[newtonnet] @ git+https://github.com/Quantum-Accelerators/quacc.git"`.
 
 ## ORCA
 
@@ -60,7 +72,11 @@ If you plan to use NewtonNet with Quacc, you will need to install it prior to us
 
     [ORCA](https://orcaforum.kofo.mpg.de/app.php/portal) is a free code that is especially useful for molecular DFT calculations with recently developed methods. ORCA can be downloaded and installed [here](https://orcaforum.kofo.mpg.de/app.php/dlext/).
 
-To use quacc with ORCA, you will need to define the `ORCA_CMD` setting to be the full, absolute path to your ORCA executable. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings.md), such as by defining an environment variable `QUACC_ORCA_CMD=/path/to/my/orca/orca`.
+To use quacc with ORCA, you will need to define the `ORCA_CMD` setting to be the full, absolute path to your ORCA executable. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings.md), such as by defining the following environment variable:
+
+```bash
+QUACC_ORCA_CMD=/path/to/my/orca/orca
+```
 
 ## Psi4
 
@@ -68,7 +84,7 @@ To use quacc with ORCA, you will need to define the `ORCA_CMD` setting to be the
 
     [Psi4](https://github.com/psi4/psi4) is an open-source quantum chemistry electronic structure package.
 
-If you plan to use Psi4 with quacc, you will need to install it prior to use. This can be done via `conda install -c psi4 psi4`.
+If you plan to use Psi4 with quacc, you will need to install it prior to use. This can be done as described in the [Psi4 installation guide](https://psicode.org/installs/latest/).
 
 ## tblite
 
@@ -76,7 +92,19 @@ If you plan to use Psi4 with quacc, you will need to install it prior to use. Th
 
     [tblite](https://github.com/tblite/tblite) is a code that interfaces with the xtb package for running GFN-xTB calculations.
 
-If you plan to use tblite with quacc, you will need to install the tblite interface with ASE support. This can be done via `pip install tblite[ase]` (available on Linux only).
+If you plan to use tblite with quacc, you will need to install the tblite interface with ASE support.
+
+If you are using a Linux mmachine, run the following:
+
+```bash
+pip install "quacc[tblite] @ git+https://github.com/Quantum-Accelerators/quacc.git"
+```
+
+If you are using a Mac, run the following:
+
+```bash
+conda install -c conda-forge tblite-python
+```
 
 ## VASP
 
@@ -89,10 +117,9 @@ To use VASP with quacc, you will need to do the following, as described in great
 - Define the `VASP_PP_PATH` environment variable that points to your pseudopotential library. We recommend including this in your `~/.bashrc` file since this rarely changes.
 - If you wish to use vdW functionals, define the `ASE_VASP_VDW` environment variable to point to the `vdw_kernel.bindat` file distributed with VASP. We recommend including this in your `~/.bashrc` file since this rarely changes.
 
-To run VASP with Custodian (the default behavior in quacc), you will also need to:
+To run VASP with Custodian, you will also need to modify the following [quacc configuration setting](../user/settings.md):
 
-- Define a `QUACC_VASP_PARALLEL_CMD` environment variable that tells Custodian how to parallelize VASP. For instance, this might look something like `export QUACC_VASP_PARALLEL_CMD="srun -N 2 --ntasks-per-node 24"`. Note, the VASP executables are not included in this environment variable. For convenience, we recommend specifying this environment variable at runtime so you can easily modify it.
-- By default, Custodian will assume that the VASP executables can be run with `vasp_std` or `vasp_gam` for standard or gamma-point calculations. If you need to use different executable names or wish to change any other VASP-related settings from the selected defaults, refer to the section on ["Modifying Quacc Settings"](../user/settings.md).
+- Define the `VASP_PARALLEL_CMD` quacc setting that tells Custodian how to parallelize VASP, such as by defining an environment variable `QUACC_VASP_PARALLEL_CMD="srun -N 2 --ntasks-per-node 24"`. Note, the VASP executables are not included in this environment variable.
 
 ## Other Codes
 

@@ -3,25 +3,28 @@ from __future__ import annotations
 
 import os
 import warnings
-from typing import TypeVar
+from typing import TYPE_CHECKING, TypeVar
 
 import numpy as np
 from ase import units
-from ase.atoms import Atoms
 from ase.constraints import Filter
-from ase.io import Trajectory, read
-from ase.optimize.optimize import Optimizer
-from ase.thermochemistry import IdealGasThermo
-from ase.vibrations import Vibrations
+from ase.io import read
 from ase.vibrations.data import VibrationsData
-from atomate2.utils.path import get_uri
-from maggma.core import Store
 
 from quacc import SETTINGS
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.util.atoms import prep_next_run as prep_next_run_
 from quacc.util.db import results_to_db
 from quacc.util.dicts import clean_dict
+from quacc.util.files import get_uri
+
+if TYPE_CHECKING:
+    from ase import Atoms
+    from ase.io import Trajectory
+    from ase.optimize.optimize import Optimizer
+    from ase.thermochemistry import IdealGasThermo
+    from ase.vibrations import Vibrations
+    from maggma.core import Store
 
 RunSchema = TypeVar("RunSchema")
 OptSchema = TypeVar("OptSchema")
@@ -296,7 +299,9 @@ def summarize_opt_run(
     """
 
     additional_fields = additional_fields or {}
-    opt_parameters = dyn.todict() | {"fmax": dyn.fmax}
+    opt_parameters = dyn.todict()
+    if hasattr(dyn, "fmax"):
+        opt_parameters = opt_parameters | {"fmax": dyn.fmax}
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
     # Check convergence

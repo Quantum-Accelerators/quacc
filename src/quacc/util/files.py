@@ -3,9 +3,12 @@ Utility functions for file and path handling
 """
 from __future__ import annotations
 
+import contextlib
 import os
+import socket
 import warnings
 from datetime import datetime
+from pathlib import Path
 from random import randint
 from shutil import copy
 
@@ -89,9 +92,12 @@ def make_unique_dir(base_path: str | None = None) -> str:
     return job_dir
 
 
-def load_yaml_calc(yaml_path: str) -> dict:
+def load_yaml_calc(yaml_path: str | Path) -> dict:
     """
     Loads a YAML file containing calculator settings.
+    This YAML loader looks for a special flag "parent" in the YAML file.
+    If this flag is present, the YAML file specified in the "parent" flag
+    is loaded and its contents are inherited by the child YAML file.
 
     Parameters
     ----------
@@ -104,12 +110,10 @@ def load_yaml_calc(yaml_path: str) -> dict:
         The calculator configuration (i.e. settings).
     """
 
-    _, ext = os.path.splitext(yaml_path)
-    if not ext:
-        yaml_path += ".yaml"
+    yaml_path = Path(yaml_path).with_suffix(".yaml")
 
-    if not os.path.exists(yaml_path):
-        raise ValueError(f"Cannot find {yaml_path}.")
+    if not yaml_path.exists():
+        raise ValueError(f"Cannot find {yaml_path}")
 
     # Load YAML file
     with open(yaml_path, "r") as stream:
@@ -118,10 +122,10 @@ def load_yaml_calc(yaml_path: str) -> dict:
     # Inherit arguments from any parent YAML files
     # but do not overwrite those in the child file.
     for config_arg in config.copy():
-        if "parent" in config_arg:
-            parent_config = load_yaml_calc(
-                os.path.join(os.path.dirname(yaml_path), config[config_arg])
-            )
+        if "parent" in config_arg.lower():
+            yaml_parent_path = Path(yaml_path).parent / Path(config[config_arg])
+            parent_config = load_yaml_calc(yaml_parent_path)
+
             for k, v in parent_config.items():
                 if k not in config:
                     config[k] = v
@@ -131,9 +135,61 @@ def load_yaml_calc(yaml_path: str) -> dict:
                         if kk not in config[k]:
                             config[k][kk] = vv
 
-    # Allow for either "Cu_pv" and "_pv" style setups
-    for k, v in config["inputs"].get("setups", {}).items():
-        if k in v:
-            config["inputs"]["setups"][k] = v.split(k)[-1]
+            del config[config_arg]
 
     return config
+
+
+def find_recent_logfile(dir_name: Path | str, logfile_extensions: str | list[str]):
+    """
+    Find the most recent logfile in a given directory.
+
+    Parameters
+    ----------
+    dir_name
+        The path to the directory to search
+    logfile_extensions
+        The extension (or list of possible extensions) of the logfile to search for.
+        For an exact match only, put in the full file name.
+
+    Returns
+    -------
+    logfile
+        The path to the most recent logfile with the desired extension
+    """
+    mod_time = 0.0
+    logfile = None
+    if isinstance(logfile_extensions, str):
+        logfile_extensions = [logfile_extensions]
+    for f in os.listdir(dir_name):
+        f_path = os.path.join(dir_name, f)
+        for ext in logfile_extensions:
+            if ext in f and os.path.getmtime(f_path) > mod_time:
+                mod_time = os.path.getmtime(f_path)
+                logfile = os.path.abspath(f_path)
+    return logfile
+
+
+def get_uri(dir_name: str | Path) -> str:
+    """
+    Return the URI path for a directory.
+
+    This allows files hosted on different file servers to have distinct locations.
+
+    Adapted from Atomate2.
+
+    Parameters
+    ----------
+    dir_name : str
+        A directory name.
+
+    Returns
+    -------
+    str
+        Full URI path, e.g., "fileserver.host.com:/full/path/of/dir_name".
+    """
+    fullpath = Path(dir_name).absolute()
+    hostname = socket.gethostname()
+    with contextlib.suppress(socket.gaierror, socket.herror):
+        hostname = socket.gethostbyaddr(hostname)[0]
+    return f"{hostname}:{fullpath}"

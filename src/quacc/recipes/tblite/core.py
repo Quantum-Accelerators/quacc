@@ -1,25 +1,26 @@
 """Core recipes for the tblite code"""
 from __future__ import annotations
 
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
-import covalent as ct
-from ase import Atoms
 from ase.optimize import FIRE
 from monty.dev import requires
 
+from quacc import job
 from quacc.schemas.ase import (
-    OptSchema,
-    RunSchema,
-    ThermoSchema,
-    VibSchema,
     summarize_opt_run,
     summarize_run,
     summarize_thermo_run,
     summarize_vib_run,
 )
+from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
 from quacc.util.thermo import ideal_gas
+
+if TYPE_CHECKING:
+    from ase import Atoms
+
+    from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
 
 try:
     from tblite.ase import TBLite
@@ -27,7 +28,7 @@ except ImportError:
     TBLite = None
 
 
-@ct.electron
+@job
 @requires(TBLite, "tblite must be installed. Try pip install tblite[ase]")
 def static_job(
     atoms: Atoms | dict,
@@ -54,7 +55,7 @@ def static_job(
     RunSchema
         Dictionary of results from quacc.schemas.ase.summarize_run
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     atoms.calc = TBLite(method=method, **calc_swaps)
@@ -66,11 +67,12 @@ def static_job(
     )
 
 
-@ct.electron
+@job
 @requires(TBLite, "tblite must be installed. Try pip install tblite[ase]")
 def relax_job(
     atoms: Atoms | dict,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
+    relax_cell: bool = False,
     calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
     copy_files: list[str] | None = None,
@@ -84,6 +86,8 @@ def relax_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     method
         GFN0-xTB, GFN1-xTB, GFN2-xTB.
+    relax_cell
+        Whether to relax the cell.
     calc_swaps
         Dictionary of custom kwargs for the tblite calculator.
     opt_swaps
@@ -96,7 +100,7 @@ def relax_job(
     OptSchema
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
     opt_swaps = opt_swaps or {}
 
@@ -104,12 +108,12 @@ def relax_job(
     opt_flags = opt_defaults | opt_swaps
 
     atoms.calc = TBLite(method=method, **calc_swaps)
-    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
+    dyn = run_ase_opt(atoms, relax_cell=relax_cell, copy_files=copy_files, **opt_flags)
 
     return summarize_opt_run(dyn, additional_fields={"name": "TBLite Relax"})
 
 
-@ct.electron
+@job
 @requires(TBLite, "tblite must be installed. Try pip install tblite[ase]")
 def freq_job(
     atoms: Atoms | dict,
@@ -149,7 +153,7 @@ def freq_job(
         Dictionary of results from quacc.schemas.ase.summarize_vib_run and
         quacc.schemas.ase.summarize_thermo_run
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
     vib_kwargs = vib_kwargs or {}
 

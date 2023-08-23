@@ -11,7 +11,7 @@ inputs:
   encut: 680
   ibrion: 2
   isif: 3
-  ismear: 2
+  ismear: 0
   kspacing: 0.22
   laechg: True
   lasph: True
@@ -24,7 +24,7 @@ inputs:
   nelm: 200
   nsw: 99
   prec: accurate
-  sigma: 0.2
+  sigma: 0.05
   xc: r2scan
 parent_magmoms: magmoms_MP.yaml
 parent_setups: setups_pbe54_MP.yaml

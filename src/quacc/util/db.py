@@ -4,11 +4,12 @@ from __future__ import annotations
 import os
 import uuid
 import warnings
+from typing import TYPE_CHECKING
 
-import covalent as ct
-from covalent._shared_files.exceptions import MissingLatticeRecordError
-from maggma.core import Store
 from monty.json import MontyDecoder
+
+if TYPE_CHECKING:
+    from maggma.core import Store
 
 
 def covalent_to_db(
@@ -30,6 +31,8 @@ def covalent_to_db(
     -------
     None
     """
+    import covalent as ct
+    from covalent._shared_files.exceptions import MissingLatticeRecordError
 
     if dispatch_ids and results_dir:
         raise ValueError("Cannot specify both dispatch_id and results_dir")

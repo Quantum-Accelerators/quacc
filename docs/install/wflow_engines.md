@@ -8,9 +8,17 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
 === "Covalent"
 
+    **Installation**
+
+    To install Covalent, run
+
+    ```bash
+    pip install "quacc[covalent] @ git+https://github.com/Quantum-Accelerators/quacc.git"
+    ```
+
     **Starting the Server**
 
-    Covalent uses a server to dispatch and store calculation details and results. To start the server, simply run `covalent start` in your terminal. It will return a URL that you can use to access the Covalent dashboard, which is shown below.
+    Covalent uses a server to dispatch and store calculation details and results. To start the server, simply run `covalent start` in your terminal. It will return a URL (usually http://localhost:48008) that you can use to access the Covalent dashboard, which is shown below.
 
     ![Covalent UI](../images/install/ui_blank.jpg)
 
@@ -22,19 +30,19 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     Depending on where you wish to run your quacc calculations, you may need to install the corresponding Covalent plugin, as described in the [Covalent plugin documentation](https://docs.covalent.xyz/docs/features/executor-plugins/exe). If you are using a typical HPC system with a job scheduler, you will probably want to use the [`HPCExecutor` plugin](https://github.com/arosen93/covalent-hpc-plugin), which supports Slurm, PBS, LSF, Flux, and more.
 
-    **Optional Configuration**
+    !!! Note
 
-    Covalent has several [configuration options](https://docs.covalent.xyz/docs/user-documentation/how-to/customization/) that can be modified. Running `quacc config` automatically takes care of setting the ones that are critical for quacc to run properly. If you ever delete your Covalent configuration (e.g. via `covalent purge`), you will need to re-run `quacc config`.
-
-    !!! Tip
-
-        If you are using Perlmutter at NERSC, you will need to set `export COVALENT_CONFIG_DIR="$SCRATCH/.config/covalent"` (e.g. in your `~/.bashrc`) because the home directory does not support file locking.
-
-=== "Parsl"
-
-    In your activated Python environment, install Parsl via `pip install parsl`. Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
+        If you are using Perlmutter at NERSC, you will need to set `export COVALENT_CONFIG_DIR="$SCRATCH/.config/covalent"` (e.g. in your `~/.bashrc`) because the home directory does not support file locking, which Covalent relies on.
 
 === "Jobflow"
+
+    **Installation**
+
+    To install Jobflow with support for FireWorks, run the following:
+
+    ```bash
+    pip install "quacc[jobflow] @ git+https://github.com/Quantum-Accelerators/quacc.git"
+    ```
 
     **MongoDB Setup**
 
@@ -75,11 +83,10 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
         ```
 
     You will then need to define a `JOBFLOW_CONFIG_FILE` environment variable pointing to the file you made. For instance, in your `~/.bashrc` file, add the following line:
-    `export JOBFLOW_CONFIG_FILE="/path/to/my/jobflow.yaml"`.
 
-    **FireWorks Installation**
-
-    To install quacc with support for FireWorks to launch Jobflow-generated workflows, run `pip install fireworks`.
+    ```bash
+    export JOBFLOW_CONFIG_FILE="/path/to/my/jobflow.yaml"
+    ```
 
     **FireWorks DB Setup**
 
@@ -103,7 +110,10 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     ```
 
     You will also need to define a `FW_CONFIG_FILE` environment variable pointing to the `FW_config.yaml` file you made. For instance, in your `~/.bashrc` file, add the following line:
-    `export FW_CONFIG_FILE="/path/to/config/fw_config/FW_config.yaml"`.
+
+    ```bash
+    export FW_CONFIG_FILE="/path/to/config/fw_config/FW_config.yaml"
+    ```
 
     **FWorker**
 
@@ -173,3 +183,31 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
         Running `lpad reset` will clear your FireWorks launchpad, so only use this command if you are a new user.
 
     To check that FireWorks can connect to your database, run `lpad reset` if this is your first time using FireWorks.
+
+=== "Parsl"
+
+    In your activated Python environment, install Parsl as follows:
+
+    ```bash
+    pip install "quacc[parsl] @ git+https://github.com/Quantum-Accelerators/quacc.git"
+    ```
+
+    Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
+
+=== "Prefect"
+
+    In your activated Python environment, install Prefect and the necessary Dask dependencies as follows:
+
+    ```bash
+    pip install "quacc[prefect] @ git+https://github.com/Quantum-Accelerators/quacc.git"
+    ```
+
+    Then, cary out the following steps to prepare Prefect for use with Prefect Cloud:
+
+    1. Make an account on [Prefect Cloud](https://app.prefect.cloud/)
+    2. Make an [API Key](https://docs.prefect.io/cloud/users/api-keys/) and (optionally) store it in a `PREFECT_API_KEY` environment variable (e.g. in your `~/.bashrc`)
+    3. Run `prefect cloud login` from the command-line and enter your API key (or use the browser, if possible)
+
+    If you do not wish to use Prefect Cloud, you can can spin up a local server with `prefect server start` and skip the above steps.
+
+    Additional configuration parameters can be modified, as described in the [Prefect documentation](https://docs.prefect.io/concepts/settings/).

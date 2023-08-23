@@ -5,19 +5,23 @@ NOTE: This set of minimal recipes is mainly for demonstration purposes.
 """
 from __future__ import annotations
 
-import warnings
+from typing import TYPE_CHECKING
 
-import covalent as ct
-from ase import Atoms
 from ase.calculators.emt import EMT
-from ase.constraints import ExpCellFilter
 from ase.optimize import FIRE
 
-from quacc.schemas.ase import OptSchema, RunSchema, summarize_opt_run, summarize_run
+from quacc import job
+from quacc.schemas.ase import summarize_opt_run, summarize_run
+from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_ase_opt, run_calc
 
+if TYPE_CHECKING:
+    from ase import Atoms
 
-@ct.electron
+    from quacc.schemas.ase import OptSchema, RunSchema
+
+
+@job
 def static_job(
     atoms: Atoms | dict,
     calc_swaps: dict | None = None,
@@ -40,7 +44,7 @@ def static_job(
     RunSchema
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     atoms.calc = EMT(**calc_swaps)
@@ -53,10 +57,10 @@ def static_job(
     )
 
 
-@ct.electron
+@job
 def relax_job(
     atoms: Atoms | dict,
-    relax_cell: bool = True,
+    relax_cell: bool = False,
     calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
     copy_files: list[str] | None = None,
@@ -82,24 +86,15 @@ def relax_job(
     OptSchema
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
     opt_swaps = opt_swaps or {}
 
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
     opt_flags = opt_defaults | opt_swaps
 
-    if relax_cell and not atoms.pbc.any():
-        warnings.warn(
-            "Volume relaxation requested but no PBCs found. Ignoring.", UserWarning
-        )
-        relax_cell = False
-
     atoms.calc = EMT(**calc_swaps)
 
-    if relax_cell:
-        atoms = ExpCellFilter(atoms)
-
-    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
+    dyn = run_ase_opt(atoms, relax_cell=relax_cell, copy_files=copy_files, **opt_flags)
 
     return summarize_opt_run(dyn, additional_fields={"name": "EMT Relax"})

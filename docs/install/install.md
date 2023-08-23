@@ -4,7 +4,7 @@
 
 !!! note
 
-    If you are on a Windows machine, you will need to install and use the [Windows Subsystem for Linux (WSL)](https://ubuntu.com/wsl).
+    If you are on a Windows machine, we recommend using the [Windows Subsystem for Linux (WSL)](https://ubuntu.com/wsl) to benefit from all the features of quacc.
 
 1. Install Python, preferably in conjunction with an environment manager. For instance, download and run the [Miniconda installer](https://docs.conda.io/en/latest/miniconda.html)
 2. When asked to add Miniconda to your `PATH`, select yes
@@ -26,20 +26,28 @@ pip install git+https://github.com/quantum-accelerators/quacc.git
 
 ## Optional Dependencies
 
-Quacc can be installed with several "extras," as outlined in the `pyproject.toml` file. These are described below.
+Quacc can be installed with several "extras," as outlined in the [`pyproject.toml`](https://github.com/Quantum-Accelerators/quacc/blob/main/pyproject.toml) file. To install the extras, you can run
+
+```bash
+pip install "quacc[<extra>] @ git+https://github.com/Quantum-Accelerators/quacc.git"
+```
+
+where `<extra>` is one of the following:
 
 ### Calculators
 
-- `quacc[tblite]`: Installs dependencies to enable the use of tblite.
+- `quacc[tblite]`: Installs dependencies to enable the use of [tblite](https://github.com/tblite/tblite) (on Linux).
 
 ### Workflow Managers
 
-- `quacc[fireworks]`: Installs dependencies to enable the use of FireWorks.
-- `quacc[parsl]`: Installs dependencies to enable the use of Parsl.
+- `quacc[covalent]`: Installs dependencies to enable the use of [Covalent](https://www.covalent.xyz).
+- `quacc[jobflow]`: Installs dependencies to enable the use of [Jobflow](https://github.com/materialsproject/jobflow) with [FireWorks](https://github.com/materialsproject/fireworks).
+- `quacc[parsl]`: Installs dependencies to enable the use of [Parsl](https://github.com/Parsl/parsl).
+- `quacc[prefect]`: Installs dependencies to enable the use of [Prefect](https://www.prefect.io/).
 
 ### Miscellaneous
 
-- `quacc[optimizers]`: Installs dependencies to enable the use of the Sella optimizer.
+- `quacc[optimizers]`: Installs dependencies to enable the use of the [Sella optimizer](https://github.com/zadorlab/sella).
 
 ### Development
 

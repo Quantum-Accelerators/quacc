@@ -6,10 +6,9 @@ from __future__ import annotations
 import inspect
 import os
 import warnings
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 import numpy as np
-from ase import Atoms
 from ase.calculators.vasp import Vasp as Vasp_
 from ase.calculators.vasp import setups as ase_setups
 from ase.constraints import FixAtoms
@@ -21,6 +20,11 @@ from quacc import SETTINGS
 from quacc.custodian import vasp as custodian_vasp
 from quacc.util.atoms import check_is_metal, set_magmoms
 from quacc.util.files import load_yaml_calc
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from ase import Atoms
 
 
 class Vasp(Vasp_):
@@ -124,7 +128,7 @@ class Vasp(Vasp_):
 
         # Get user-defined preset parameters for the calculator
         if preset:
-            calc_preset = load_yaml_calc(
+            calc_preset = load_vasp_yaml_calc(
                 os.path.join(SETTINGS.VASP_PRESET_DIR, preset)
             )["inputs"]
         else:
@@ -143,7 +147,7 @@ class Vasp(Vasp_):
             isinstance(self.user_calc_params.get("setups"), str)
             and self.user_calc_params["setups"] not in ase_setups.setups_defaults
         ):
-            self.user_calc_params["setups"] = load_yaml_calc(
+            self.user_calc_params["setups"] = load_vasp_yaml_calc(
                 os.path.join(SETTINGS.VASP_PRESET_DIR, self.user_calc_params["setups"])
             )["inputs"]["setups"]
 
@@ -573,7 +577,7 @@ class Vasp(Vasp_):
         | dict[Literal["max_mixed_density"], list[float, float]]
         | dict[Literal["length_density"], list[float, float, float]],
         force_gamma: bool = True,
-    ) -> tuple[list[tuple[int, int, int]], None | bool, None | bool]:
+    ) -> tuple[list[int, int, int], None | bool, None | bool]:
         """
         Shortcuts for pymatgen k-point generation schemes.
 
@@ -650,3 +654,53 @@ class Vasp(Vasp_):
             gamma = pmg_kpts.style.name.lower() == "gamma"
 
         return kpts, gamma, reciprocal
+
+
+def load_vasp_yaml_calc(yaml_path: str | Path) -> dict:
+    """
+    Loads a YAML file containing calculator settings.
+    Used for VASP calculations and can read quacc-formatted
+    YAMLs that are of the following format:
+    ```
+    inputs:
+      xc: pbe
+      algo: all
+      ...
+      setups:
+        Cu: Cu_pv
+      ...
+      elemental_magmoms:
+        Fe: 5
+        Cu: 1
+        ...
+    ```
+    where `inputs` is a dictionary of ASE-style input parameters,
+    `setups` is a dictionary of ASE-style pseudopotentials, and
+    and `elemental_magmoms` is a dictionary of element-wise initial magmoms.
+
+    Parameters
+    ----------
+    yaml_path
+        Path to the YAML file. This function will look in the
+        `VASP_PRESET_DIR` (default: quacc/presets/vasp) for the file,
+        thereby assuming that `yaml_path` is a relative path within that folder.
+    Returns
+    -------
+
+    dict
+        The calculator configuration (i.e. settings).
+    """
+
+    config = load_yaml_calc(yaml_path)
+
+    # Allow for either "Cu_pv" and "_pv" style setups
+    if "inputs" in config:
+        config["inputs"] = {
+            k.lower(): v.lower() if isinstance(v, str) else v
+            for k, v in config["inputs"].items()
+        }
+        for k, v in config["inputs"].get("setups", {}).items():
+            if k in v:
+                config["inputs"]["setups"][k] = v.split(k)[-1]
+
+    return config

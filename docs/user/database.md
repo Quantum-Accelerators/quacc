@@ -10,10 +10,11 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
 
     For a given recipe, you can have quacc automatically store the final output summaries in your desired database by defining a [Maggma Data Store](https://materialsproject.github.io/maggma/reference/stores/) in the `PRIMARY_STORE` quacc setting.
 
-    For instance, let's pretend you have decided to make a [`MontyStore`](https://materialsproject.github.io/maggma/reference/stores/#maggma.stores.mongolike.MontyStore) be your database of choice. After defining or loading your Maggma store, you would call `.to_json()` to get a dictionary representation. You can then store this JSON, formatted as a string, in the `PRIMARY_STORE` global quacc setting.
+    For instance, let's pretend you have decided to make a [`MongoStore`](https://materialsproject.github.io/maggma/reference/stores/#maggma.stores.mongolike.MongoStore) be your database of choice. After defining or loading your Maggma store, you would call `.to_json()` to get a dictionary representation. You can then store this JSON, formatted as a string, in the `PRIMARY_STORE` global quacc setting.
 
     ```python
     from maggma.stores import MongoStore
+
     store = MongoStore(
         "my_db_name",
         "my_collection_name",
@@ -22,7 +23,7 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
         host="localhost",
         port=27017,
     )
-    print(store.to_json()) # This is the JSON string you would store in PRIMARY_STORE
+    print(store.to_json())  # This is the JSON string you would store in PRIMARY_STORE
     ```
 
     ```yaml title="quacc.yaml"
@@ -55,7 +56,7 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
 
 === "Covalent"
 
-    Covalent automatically stores all the inputs and outputs in an SQLite database, which you can find at the `"db_path"` when you run `covalent config`, and the results can be queried using the `ct.get_result(<dispatch ID>)` syntax. However, if you want to store the results in a different database of your choosing, you can do so quite easily.
+    Covalent automatically stores all the inputs and outputs in an SQLite database, which you can find at the `"db_path"` when you run `covalent config`, and the results can be queried using the `#!Python ct.get_result(<dispatch ID>)` syntax. However, if you want to store the results in a different database of your choosing, you can do so quite easily.
 
     An example is shown below for storing the results in your custom database via the [`quacc.util.db.covalent_to_db`](https://quantum-accelerators.github.io/quacc/reference/quacc/util/db.html#quacc.util.db.covalent_to_db) function.
 

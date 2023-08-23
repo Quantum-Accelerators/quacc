@@ -6,23 +6,29 @@ Reference: https://doi.org/10.1016/j.matt.2021.02.015
 """
 from __future__ import annotations
 
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
-import covalent as ct
-from ase import Atoms
 from ase.optimize import BFGSLineSearch
 
+from quacc import job
 from quacc.calculators.vasp import Vasp
-from quacc.schemas.ase import OptSchema, summarize_opt_run
-from quacc.schemas.vasp import VaspSchema, summarize_run
+from quacc.schemas.ase import summarize_opt_run
+from quacc.schemas.atoms import fetch_atoms
+from quacc.schemas.vasp import summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
 
+if TYPE_CHECKING:
+    from ase import Atoms
 
-@ct.electron
+    from quacc.schemas.ase import OptSchema
+    from quacc.schemas.vasp import VaspSchema
+
+
+@job
 def qmof_relax_job(
     atoms: Atoms | dict,
     preset: str | None = "QMOFSet",
-    relax_volume: bool = True,
+    relax_cell: bool = True,
     run_prerelax: bool = True,
     calc_swaps: dict | None = None,
 ) -> dict[
@@ -56,7 +62,7 @@ def qmof_relax_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     preset
         Preset to use. Applies for all jobs.
-    relax_volume
+    relax_cell
         True if a volume relaxation should be performed.
         False if only the positions should be updated.
     run_prerelax
@@ -71,7 +77,7 @@ def qmof_relax_job(
     dict
         Dictionary of results
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     # 1. Pre-relaxation
@@ -84,15 +90,15 @@ def qmof_relax_job(
     atoms = summary2["atoms"]
 
     # 3. Optional: Volume relaxation (loose)
-    if relax_volume:
-        summary3 = _loose_relax_volume(atoms, preset, calc_swaps)
+    if relax_cell:
+        summary3 = _loose_relax_cell(atoms, preset, calc_swaps)
         atoms = summary3["atoms"]
 
     # 4. Double Relaxation
     # This is done for two reasons: a) because it can resolve repadding
     # issues when dV is large; b) because we can use LREAL = Auto for the
     # first relaxation and the default LREAL for the second.
-    summary4 = _double_relax(atoms, preset, calc_swaps, relax_volume=relax_volume)
+    summary4 = _double_relax(atoms, preset, calc_swaps, relax_cell=relax_cell)
     atoms = summary4[1]["atoms"]
 
     # 5. Static Calculation
@@ -101,7 +107,7 @@ def qmof_relax_job(
     return {
         "prerelax-lowacc": summary1 if run_prerelax else None,
         "position-relax-lowacc": summary2,
-        "volume-relax-lowacc": summary3 if relax_volume else None,
+        "volume-relax-lowacc": summary3 if relax_cell else None,
         "double-relax": summary4,
         "static": summary5,
     }
@@ -146,8 +152,7 @@ def _prerelax(
         "nsw": 0,
     }
     flags = defaults | calc_swaps
-    calc = Vasp(atoms, preset=preset, **flags)
-    atoms.calc = calc
+    atoms.calc = Vasp(atoms, preset=preset, **flags)
     dyn = run_ase_opt(atoms, fmax=fmax, optimizer=BFGSLineSearch)
 
     return summarize_opt_run(dyn, additional_fields={"name": "QMOF Prerelax"})
@@ -191,8 +196,7 @@ def _loose_relax_positions(
         "nsw": 250,
     }
     flags = defaults | calc_swaps
-    calc = Vasp(atoms, preset=preset, **flags)
-    atoms.calc = calc
+    atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms)
 
     return summarize_run(
@@ -200,7 +204,7 @@ def _loose_relax_positions(
     )
 
 
-def _loose_relax_volume(
+def _loose_relax_cell(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
     calc_swaps: dict | None = None,
@@ -236,8 +240,7 @@ def _loose_relax_volume(
         "nsw": 500,
     }
     flags = defaults | calc_swaps
-    calc = Vasp(atoms, preset=preset, **flags)
-    atoms.calc = calc
+    atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
 
     return summarize_run(
@@ -251,7 +254,7 @@ def _double_relax(
     atoms: Atoms,
     preset: str | None = "QMOFSet",
     calc_swaps: dict | None = None,
-    relax_volume: bool = True,
+    relax_cell: bool = True,
 ) -> VaspSchema:
     """
     Double relaxation using production-quality settings.
@@ -264,7 +267,7 @@ def _double_relax(
         Preset to use.
     calc_swaps
         Dictionary of custom kwargs for the calculator.
-    relax_volume
+    relax_cell
         True if a volume relaxation should be performed.
 
     Returns
@@ -278,11 +281,11 @@ def _double_relax(
     defaults = {
         "ediffg": -0.03,
         "ibrion": 2,
-        "isif": 3 if relax_volume else 2,
+        "isif": 3 if relax_cell else 2,
         "lcharg": False,
         "lreal": "auto",
         "lwave": True,
-        "nsw": 500 if relax_volume else 250,
+        "nsw": 500 if relax_cell else 250,
     }
 
     # Run first relaxation
@@ -352,8 +355,7 @@ def _static(
 
     # Run static calculation
     flags = defaults | calc_swaps
-    calc = Vasp(atoms, preset=preset, **flags)
-    atoms.calc = calc
+    atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
 
     return summarize_run(atoms, additional_fields={"name": "QMOF Static"})

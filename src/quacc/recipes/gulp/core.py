@@ -2,20 +2,26 @@
 from __future__ import annotations
 
 import warnings
+from typing import TYPE_CHECKING
 
-import covalent as ct
-from ase import Atoms
 from ase.calculators.gulp import GULP
 
-from quacc.schemas.ase import RunSchema, summarize_run
+from quacc import job
+from quacc.schemas.ase import summarize_run
+from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_calc
 from quacc.util.dicts import remove_dict_empties
+
+if TYPE_CHECKING:
+    from ase import Atoms
+
+    from quacc.schemas.ase import RunSchema
 
 GEOM_FILE_PBC = "gulp.cif"
 GEOM_FILE_NOPBC = "gulp.xyz"
 
 
-@ct.electron
+@job
 def static_job(
     atoms: Atoms | dict,
     use_gfnff: bool = True,
@@ -46,7 +52,7 @@ def static_job(
     RunSchema
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     keyword_swaps = keyword_swaps or {}
     option_swaps = option_swaps or {}
 
@@ -80,12 +86,12 @@ def static_job(
     )
 
 
-@ct.electron
+@job
 def relax_job(
     atoms: Atoms | dict,
     use_gfnff: bool = True,
     library: str | None = None,
-    relax_cell: bool = True,
+    relax_cell: bool = False,
     keyword_swaps: dict | None = None,
     option_swaps: dict | None = None,
     copy_files: list[str] | None = None,
@@ -116,7 +122,7 @@ def relax_job(
     dict
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     keyword_swaps = keyword_swaps or {}
     option_swaps = option_swaps or {}
 

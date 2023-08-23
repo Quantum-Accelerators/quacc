@@ -1,17 +1,21 @@
 """Core recipes for VASP"""
 from __future__ import annotations
 
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
-import covalent as ct
-from ase import Atoms
-
+from quacc import job
 from quacc.calculators.vasp import Vasp
-from quacc.schemas.vasp import VaspSchema, summarize_run
+from quacc.schemas.atoms import fetch_atoms
+from quacc.schemas.vasp import summarize_run
 from quacc.util.calc import run_calc
 
+if TYPE_CHECKING:
+    from ase import Atoms
 
-@ct.electron
+    from quacc.schemas.vasp import VaspSchema
+
+
+@job
 def static_job(
     atoms: Atoms | dict,
     preset: str | None = None,
@@ -37,7 +41,7 @@ def static_job(
     VaspSchema
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     defaults = {
@@ -50,18 +54,17 @@ def static_job(
     }
     flags = defaults | calc_swaps
 
-    calc = Vasp(atoms, preset=preset, **flags)
-    atoms.calc = calc
+    atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(atoms, additional_fields={"name": "VASP Static"})
 
 
-@ct.electron
+@job
 def relax_job(
     atoms: Atoms | dict,
     preset: str | None = None,
-    relax_volume: bool = True,
+    relax_cell: bool = True,
     calc_swaps: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
@@ -74,7 +77,7 @@ def relax_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     preset
         Preset to use.
-    relax_volume
+    relax_cell
         True if a volume relaxation (ISIF = 3) should be performed.
         False if only the positions (ISIF = 2) should be updated.
     calc_swaps
@@ -87,12 +90,12 @@ def relax_job(
     VaspSchema
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     defaults = {
         "ediffg": -0.02,
-        "isif": 3 if relax_volume else 2,
+        "isif": 3 if relax_cell else 2,
         "ibrion": 2,
         "isym": 0,
         "lcharg": False,
@@ -101,18 +104,17 @@ def relax_job(
     }
     flags = defaults | calc_swaps
 
-    calc = Vasp(atoms, preset=preset, **flags)
-    atoms.calc = calc
+    atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(atoms, additional_fields={"name": "VASP Relax"})
 
 
-@ct.electron
+@job
 def double_relax_job(
     atoms: Atoms | dict,
     preset: str | None = None,
-    relax_volume: bool = True,
+    relax_cell: bool = True,
     calc_swaps1: dict | None = None,
     calc_swaps2: dict | None = None,
     copy_files: list[str] | None = None,
@@ -123,7 +125,7 @@ def double_relax_job(
     1. To carry out a cheaper pre-relaxation before the high-quality run.
 
     2. To carry out a GGA calculation before a meta-GGA or hybrid calculation
-    that requies the GGA wavefunction.
+    that requires the GGA wavefunction.
 
     3. To carry out volume relaxations where large changes in volume
     can require a second relaxation to resolve forces.
@@ -134,7 +136,7 @@ def double_relax_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     preset
         Preset to use.
-    relax_volume
+    relax_cell
         True if a volume relaxation (ISIF = 3) should be performed.
         False if only the positions (ISIF = 2) should be updated.
     calc_swaps1
@@ -149,13 +151,13 @@ def double_relax_job(
     {"relax1": VaspSchema, "relax2": VaspSchema}
         Dictionaries of the type quacc.schemas.vasp.summarize_run.
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps1 = calc_swaps1 or {}
     calc_swaps2 = calc_swaps2 or {}
 
     defaults = {
         "ediffg": -0.02,
-        "isif": 3 if relax_volume else 2,
+        "isif": 3 if relax_cell else 2,
         "ibrion": 2,
         "isym": 0,
         "lcharg": False,
@@ -165,16 +167,14 @@ def double_relax_job(
 
     # Run first relaxation
     flags = defaults | calc_swaps1
-    calc = Vasp(atoms, preset=preset, **flags)
-    atoms.calc = calc
+    atoms.calc = Vasp(atoms, preset=preset, **flags)
     kpts1 = atoms.calc.kpts
     atoms = run_calc(atoms, copy_files=copy_files)
     summary1 = summarize_run(atoms, additional_fields={"name": "VASP DoubleRelax 1"})
 
     # Run second relaxation
     flags = defaults | calc_swaps2
-    calc = Vasp(summary1["atoms"], preset=preset, **flags)
-    atoms.calc = calc
+    atoms.calc = Vasp(summary1["atoms"], preset=preset, **flags)
     kpts2 = atoms.calc.kpts
 
     # Use ISTART = 0 if this goes from vasp_gam --> vasp_std

@@ -9,10 +9,10 @@
 ![tests](https://github.com/quantum-accelerators/quacc/actions/workflows/tests.yaml/badge.svg)
 [![codecov](https://codecov.io/gh/Quantum-Accelerators/quacc/branch/main/graph/badge.svg?token=OJaOZAH30u)](https://codecov.io/gh/Quantum-Accelerators/quacc)
 [![DeepSource](https://app.deepsource.com/gh/Quantum-Accelerators/quacc.svg/?label=active+issues&token=Y1NxOLIuFFEqWdjawIYnJNde)](https://app.deepsource.com/gh/Quantum-Accelerators/quacc/?ref=repository-badge)
-![Supported python versions](https://img.shields.io/badge/python-3.9%20%7C%203.10-blue)
+![Supported python versions](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11-blue)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7720998.svg)](https://doi.org/10.5281/zenodo.7720998)
 
-Quacc (pronounced "quack") is a flexible and extensible platform for high-throughput computational materials science and quantum chemistry.
+Quacc is a flexible and extensible platform for high-throughput computational materials science and quantum chemistry.
 
 The three main goals of quacc are to:
 
@@ -21,6 +21,8 @@ The three main goals of quacc are to:
 2. Promote rapid workflow development and testing via modern [workflow management solutions](https://workflows.community/).
 
 3. Enable a seamless interface between the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/) and the software infrastructure powering the [Materials Project](https://materialsproject.org).
+
+Quacc currently has pre-made recipes for the following packages: DFTB+, Gaussian, GULP, ORCA, Psi4, tblite, and VASP. It's simple to add your favorite!
 
 ## Documentation
 
@@ -37,7 +39,7 @@ Includes the following sections:
 
 ## Demonstration ✨
 
-🚀 Demo from the Quick Start guide, using [Covalent](https://github.com/AgnostiqHQ/covalent) as one of the several supported workflow managers.
+🚀 Demo from the Quick Start guide, using [Covalent](https://github.com/AgnostiqHQ/covalent) as one of the [several supported workflow managers](https://quantum-accelerators.github.io/quacc/user/wflow_overview.html).
 
 ![Demo from Quick Start](docs/images/start/start2.gif)
 
@@ -46,10 +48,6 @@ Includes the following sections:
 If you use quacc in your work, please cite it as follows:
 
 - A.S. Rosen, quacc – The Quantum Accelerator, https://doi.org/10.5281/zenodo.7720998.
-
-## Inspiration
-
-Quacc was originally inspired by [Atomate2](https://github.com/materialsproject/atomate2). Refer to the [FAQ section](https://quantum-accelerators.github.io/quacc/about/faq.html) of the documentation for how these codes differ.
 
 ## License ⚖️
 
