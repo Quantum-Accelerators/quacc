@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from ase.atoms import Atoms
     from covalent import electron as ct_electron
     from covalent import lattice as ct_lattice
     from dask_jobqueue.core import DaskJobqueueJob
@@ -42,21 +43,23 @@ def job(
     if wflow_engine == "covalent":
         import covalent as ct
 
-        return ct.electron(_func, **kwargs)
+        decorated = ct.electron(_func, **kwargs)
     if wflow_engine == "jobflow":
         from jobflow import job as jf_job
 
-        return jf_job(_func, **kwargs)
+        decorated = jf_job(_func, **kwargs)
     if wflow_engine == "parsl":
         from parsl import python_app
 
-        return python_app(_func, **kwargs)
+        decorated = python_app(_func, **kwargs)
     if wflow_engine == "prefect":
         from prefect import task
 
-        return task(_func, **kwargs)
+        decorated = task(_func, **kwargs)
     if not wflow_engine:
-        return _func
+        decorated = _func
+
+    decorated._original = _func
 
     raise ValueError(f"Unknown workflow engine: {wflow_engine}")
 

@@ -23,6 +23,7 @@ from quacc.schemas.ase import (
     summarize_thermo_run,
     summarize_vib_run,
 )
+from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_ase_opt, run_calc
 from quacc.util.thermo import ideal_gas
 
@@ -40,7 +41,9 @@ except ImportError:
 @job
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def static_job(
-    atoms: Atoms, newtonnet_kwargs: dict | None = None, opt_swaps: dict | None = None
+    atoms: Atoms | dict,
+    newtonnet_kwargs: dict | None = None,
+    opt_swaps: dict | None = None,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -48,7 +51,7 @@ def static_job(
     Parameters
     ----------
     atoms
-        The atomic configuration to be relaxed.
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     newtonnet_kwargs
         Additional keyword arguments for the tblite calculator
     opt_swaps
@@ -59,6 +62,7 @@ def static_job(
     RunSchema
         A dictionary containing the results of the calculation.
     """
+    atoms = fetch_atoms(atoms)
     newtonnet_kwargs = newtonnet_kwargs or {}
     opt_swaps = opt_swaps or {}
 
@@ -77,7 +81,7 @@ def static_job(
 @job
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def relax_job(
-    atoms: Atoms,
+    atoms: Atoms | dict,
     fmax: float = 0.01,
     max_steps: int = 1000,
     optimizer: Optimizer = Sella or FIRE,
@@ -90,7 +94,7 @@ def relax_job(
     Parameters
     ----------
     atoms
-        Atoms object
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     fmax
         Tolerance for the force convergence (in eV/A).
     max_steps
@@ -107,7 +111,7 @@ def relax_job(
     OptSchema
         A dictionary containing the results of the calculation.
     """
-
+    atoms = fetch_atoms(atoms)
     newtonnet_kwargs = newtonnet_kwargs or {}
     optimizer_kwargs = optimizer_kwargs or {}
     if "sella.optimize" in optimizer.__module__:
@@ -132,7 +136,7 @@ def relax_job(
 @job
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def freq_job(
-    atoms: Atoms,
+    atoms: Atoms | dict,
     temperature: float = 298.15,
     pressure: float = 1.0,
 ) -> dict[Literal["vib", "thermo"], VibSchema | ThermoSchema]:
@@ -153,6 +157,8 @@ def freq_job(
     dict
         Summary of the frequency calculation and thermo calculations.
     """
+    atoms = fetch_atoms(atoms)
+
     # Define calculator
     ml_calculator = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
@@ -187,7 +193,7 @@ def freq_job(
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 @requires(Sella, "Sella must be installed. Try pip install quacc[optimizers]")
 def ts_job(
-    atoms: Atoms,
+    atoms: Atoms | dict,
     use_custom_hessian: bool = False,
     temperature: float = 298.15,
     pressure: float = 1.0,
@@ -217,6 +223,7 @@ def ts_job(
     dict
         A dictionary containing the TS summary and thermodynamic summary.
     """
+    atoms = fetch_atoms(atoms)
     opt_swaps = opt_swaps or {}
 
     opt_defaults = {
@@ -276,7 +283,7 @@ def ts_job(
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 @requires(Sella, "Sella must be installed. Try pip install quacc[optimizers]")
 def irc_job(
-    atoms: Atoms,
+    atoms: Atoms | dict,
     fmax: float = 0.01,
     max_steps: int = 1000,
     temperature: float = 298.15,
@@ -309,6 +316,7 @@ def irc_job(
     dict
         A dictionary containing the IRC summary and thermodynamic summary.
     """
+    atoms = fetch_atoms(atoms)
     opt_swaps = opt_swaps or {}
 
     opt_defaults = {
@@ -354,11 +362,10 @@ def irc_job(
     return {"irc": summary_irc, "thermo": thermo_summary}
 
 
-@job
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 @requires(Sella, "Sella must be installed. Try pip install quacc[optimizers]")
 def quasi_irc_job(
-    atoms: Atoms,
+    atoms: Atoms | dict,
     direction: Literal["forward", "reverse"] = "forward",
     temperature: float = 298.15,
     pressure: float = 1.0,
@@ -399,14 +406,14 @@ def quasi_irc_job(
     opt_flags = opt_defaults | opt_swaps
 
     # Run IRC
-    irc_summary = irc_job(atoms, max_steps=5, opt_swaps=irc_flags)
+    irc_summary = irc_job._original(atoms, max_steps=5, opt_swaps=irc_flags)
 
     # Run opt
-    opt_summary = relax_job(irc_summary["irc"]["atoms"], **opt_flags)
+    opt_summary = relax_job._original(irc_summary["irc"]["atoms"], **opt_flags)
 
     # Run frequency
     thermo_summary = freq_job(
-        opt_summary["atoms"],
+        opt_summary,
         temperature=temperature,
         pressure=pressure,
     )
