@@ -28,7 +28,7 @@ pip install git+https://github.com/quantum-accelerators/quacc.git
 
 Quacc can be installed with several "extras," as outlined in the [`pyproject.toml`](https://github.com/Quantum-Accelerators/quacc/blob/main/pyproject.toml) file. To install the extras, you can run
 
-```
+```bash
 pip install "quacc[<extra>] @ git+https://github.com/Quantum-Accelerators/quacc.git"
 ```
 

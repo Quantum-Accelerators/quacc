@@ -55,10 +55,10 @@ from quacc import flow
 from quacc.recipes.emt.core import relax_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
+
 # Define the workflow and set how to execute
 @flow(executor="local")
 def workflow(atoms):
-
     # Relax a bulk structure
     relaxed_bulk = relax_job(atoms)
 
@@ -66,6 +66,7 @@ def workflow(atoms):
     relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk)
 
     return relaxed_slabs
+
 
 # Make an Atoms object of a bulk Cu structure
 atoms = bulk("Cu")

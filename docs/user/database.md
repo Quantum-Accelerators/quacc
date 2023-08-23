@@ -14,6 +14,7 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
 
     ```python
     from maggma.stores import MongoStore
+
     store = MongoStore(
         "my_db_name",
         "my_collection_name",
@@ -22,7 +23,7 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
         host="localhost",
         port=27017,
     )
-    print(store.to_json()) # This is the JSON string you would store in PRIMARY_STORE
+    print(store.to_json())  # This is the JSON string you would store in PRIMARY_STORE
     ```
 
     ```yaml title="quacc.yaml"

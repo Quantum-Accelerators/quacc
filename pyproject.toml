@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools >= 42", "versioningit ~= 1.0", "wheel"]
+requires = ["setuptools >= 42", "versioningit ~= 1.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -58,7 +58,7 @@ strict = [
     "ase @ https://gitlab.com/ase/ase/-/archive/master/ase-master.zip",  # waiting on >3.22.1
     "cclib @ git+https://github.com/cclib/cclib.git", # waiting on > 1.7.2
     "custodian==2023.7.22",
-    "emmet-core==0.64.6",
+    "emmet-core==0.66.0",
     "maggma==0.53.1",
     "monty==2023.8.8",
     "numpy==1.25.2",
@@ -87,8 +87,11 @@ method = "git"
 default-tag = "0.0.1"
 
 [tool.pytest.ini_options]
-addopts = "-p no:warnings"
-log_level = "ERROR"
+minversion = "6.0"
+addopts = ["-p no:warnings", "-ra", "--showlocals", "--strict-markers", "--strict-config"]
+xfail_strict = true
+log_cli_level = "warn"
+testpaths = ["tests"]
 
 [tool.black]
 exclude = '''
