@@ -189,19 +189,30 @@ def ts_job(
     """
     Perform a transition state (TS) job using the given atoms object.
 
-    Args:
-        atoms (ase.Atoms): The atoms object representing the system.
-        use_custom_hessian (bool): Whether to use a custom Hessian matrix.
-        temperature (float): The temperature for the frequency calculation (default: 298.15 K).
-        pressure (float): The pressure for the frequency calculation (default: 1.0 atm).
-        newtonnet_kwargs (dict, optional): Additional keyword arguments for NewtonNet calculator (default: None).
-        opt_swaps (dict, optional): Optional swaps for the optimization parameters (default: None).
+    Parameters
+    ----------
+    atoms : ase.Atoms
+        The atoms object representing the system.
+    use_custom_hessian : bool, optional
+        Whether to use a custom Hessian matrix.
+    temperature : float, optional
+        The temperature for the frequency calculation (default: 298.15 K).
+    pressure : float, optional
+        The pressure for the frequency calculation (default: 1.0 atm).
+    check_convergence : bool, optional
+        Whether to check for convergence (default: True).
+    opt_swaps : dict, optional
+        Optional swaps for the optimization parameters (default: None).
 
-    Returns:
-        dict: A dictionary containing the TS summary and thermodynamic summary.
+    Returns
+    -------
+    dict
+        A dictionary containing the TS summary and thermodynamic summary.
 
-    Raises:
-        ValueError: If the custom Hessian is enabled but the optimizer is not "Sella".
+    Raises
+    ------
+    ValueError
+        If the custom Hessian is enabled but the optimizer is not "Sella".
     """
     opt_swaps = opt_swaps or {}
 
