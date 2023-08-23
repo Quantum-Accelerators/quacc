@@ -32,7 +32,7 @@ def job(
     Returns
     -------
     callable
-        The decorated function. The original function is stored in the `_original` attribute.
+        The decorated function. The original function is stored in the `original_func` attribute.
     """
 
     from quacc import SETTINGS
@@ -59,7 +59,7 @@ def job(
     if not wflow_engine:
         decorated = _func
 
-    decorated._original = _func
+    decorated.original_func = _func
 
     raise ValueError(f"Unknown workflow engine: {wflow_engine}")
 

@@ -407,10 +407,10 @@ def quasi_irc_job(
     opt_flags = opt_defaults | opt_swaps
 
     # Run IRC
-    irc_summary = irc_job._original(atoms, max_steps=5, opt_swaps=irc_flags)
+    irc_summary = irc_job.original_func(atoms, max_steps=5, opt_swaps=irc_flags)
 
     # Run opt
-    opt_summary = relax_job._original(irc_summary["irc"]["atoms"], **opt_flags)
+    opt_summary = relax_job.original_func(irc_summary["irc"]["atoms"], **opt_flags)
 
     # Run frequency
     thermo_summary = freq_job(
