@@ -249,6 +249,8 @@ def ts_job(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
         settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
+    atoms.calc = mlcalculator
+
     # Run the TS optimization
     dyn = run_ase_opt(atoms, **opt_flags)
 
