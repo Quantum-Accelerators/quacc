@@ -9,9 +9,6 @@ on:
 
 jobs:
   tests-base:
-    env:
-      CODECOV_TOKEN: $
-
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
@@ -40,13 +37,15 @@ jobs:
         run: pytest --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
+        env:
+          CODECOV_TOKEN: ${CODECOV_TOKEN}
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli upload-process -t {$CODECOV_TOKEN}
+          codecovcli --verbose create-commit --fail-on-error 
+          codecovcli --verbose create-report --fail-on-error 
+          codecovcli --verbose do-upload --fail-on-error
 
   tests-base-windows:
-    env:
-      CODECOV_TOKEN: $
     runs-on: windows-latest
     strategy:
       fail-fast: true
@@ -75,6 +74,8 @@ jobs:
         run: pytest --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
+        env:
+          CODECOV_TOKEN: ${CODECOV_TOKEN}
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
           codecovcli --verbose create-commit --fail-on-error 
@@ -82,8 +83,6 @@ jobs:
           codecovcli --verbose do-upload --fail-on-error
 
   tests-tblite:
-    env:
-      CODECOV_TOKEN: $
     strategy:
       fail-fast: true
       matrix:
@@ -112,6 +111,8 @@ jobs:
         run: pytest -k 'tblite' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
+        env:
+          CODECOV_TOKEN: ${CODECOV_TOKEN}
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
           codecovcli --verbose create-commit --fail-on-error 
@@ -119,8 +120,6 @@ jobs:
           codecovcli --verbose do-upload --fail-on-error
 
   tests-psi4:
-    env:
-      CODECOV_TOKEN: $
     strategy:
       fail-fast: true
       matrix:
@@ -160,6 +159,8 @@ jobs:
         run: pytest -k 'psi4' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
+        env:
+          CODECOV_TOKEN: ${CODECOV_TOKEN}
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
           codecovcli --verbose create-commit --fail-on-error 
@@ -167,8 +168,6 @@ jobs:
           codecovcli --verbose do-upload --fail-on-error
 
   tests-dftbplus:
-    env:
-      CODECOV_TOKEN: $
     strategy:
       fail-fast: true
       matrix:
@@ -206,6 +205,8 @@ jobs:
         run: pytest -k 'dftb' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
+        env:
+          CODECOV_TOKEN: ${CODECOV_TOKEN}
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
           codecovcli --verbose create-commit --fail-on-error 
@@ -213,8 +214,6 @@ jobs:
           codecovcli --verbose do-upload --fail-on-error
 
   tests-covalent:
-    env:
-      CODECOV_TOKEN: $
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
@@ -255,6 +254,8 @@ jobs:
         run: covalent stop
 
       - name: Upload coverage to Codecov
+        env:
+          CODECOV_TOKEN: ${CODECOV_TOKEN}
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
           codecovcli --verbose create-commit --fail-on-error 
@@ -262,8 +263,6 @@ jobs:
           codecovcli --verbose do-upload --fail-on-error
 
   tests-parsl:
-    env:
-      CODECOV_TOKEN: $
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
@@ -296,6 +295,8 @@ jobs:
         run: pytest -k 'parsl' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
+        env:
+          CODECOV_TOKEN: ${CODECOV_TOKEN}
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
           codecovcli --verbose create-commit --fail-on-error 
@@ -303,8 +304,6 @@ jobs:
           codecovcli --verbose do-upload --fail-on-error
 
   tests-jobflow:
-    env:
-      CODECOV_TOKEN: $
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
@@ -337,6 +336,8 @@ jobs:
         run: pytest -k 'jobflow or fireworks' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
+        env:
+          CODECOV_TOKEN: ${CODECOV_TOKEN}
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
           codecovcli --verbose create-commit --fail-on-error 
@@ -344,8 +345,6 @@ jobs:
           codecovcli --verbose do-upload --fail-on-error
 
   tests-prefect:
-    env:
-      CODECOV_TOKEN: $
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
@@ -378,6 +377,8 @@ jobs:
         run: pytest -k 'prefect' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
+        env:
+          CODECOV_TOKEN: ${CODECOV_TOKEN}
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
           codecovcli --verbose create-commit --fail-on-error 
