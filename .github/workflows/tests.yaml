@@ -9,6 +9,9 @@ on:
 
 jobs:
   tests-base:
+    env:
+      CODECOV_TOKEN: $
+
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
@@ -42,6 +45,8 @@ jobs:
           codecovcli upload-process -t {$CODECOV_TOKEN}
 
   tests-base-windows:
+    env:
+      CODECOV_TOKEN: $
     runs-on: windows-latest
     strategy:
       fail-fast: true
@@ -72,9 +77,13 @@ jobs:
       - name: Upload coverage to Codecov
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli upload-process -t {$CODECOV_TOKEN}
+          codecovcli --verbose create-commit --fail-on-error 
+          codecovcli --verbose create-report --fail-on-error 
+          codecovcli --verbose do-upload --fail-on-error
 
   tests-tblite:
+    env:
+      CODECOV_TOKEN: $
     strategy:
       fail-fast: true
       matrix:
@@ -105,9 +114,13 @@ jobs:
       - name: Upload coverage to Codecov
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli upload-process -t {$CODECOV_TOKEN}
+          codecovcli --verbose create-commit --fail-on-error 
+          codecovcli --verbose create-report --fail-on-error 
+          codecovcli --verbose do-upload --fail-on-error
 
   tests-psi4:
+    env:
+      CODECOV_TOKEN: $
     strategy:
       fail-fast: true
       matrix:
@@ -149,9 +162,13 @@ jobs:
       - name: Upload coverage to Codecov
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli upload-process -t {$CODECOV_TOKEN}
+          codecovcli --verbose create-commit --fail-on-error 
+          codecovcli --verbose create-report --fail-on-error 
+          codecovcli --verbose do-upload --fail-on-error
 
   tests-dftbplus:
+    env:
+      CODECOV_TOKEN: $
     strategy:
       fail-fast: true
       matrix:
@@ -191,9 +208,13 @@ jobs:
       - name: Upload coverage to Codecov
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli upload-process -t {$CODECOV_TOKEN}
+          codecovcli --verbose create-commit --fail-on-error 
+          codecovcli --verbose create-report --fail-on-error 
+          codecovcli --verbose do-upload --fail-on-error
 
   tests-covalent:
+    env:
+      CODECOV_TOKEN: $
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
@@ -236,9 +257,13 @@ jobs:
       - name: Upload coverage to Codecov
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli upload-process -t {$CODECOV_TOKEN}
+          codecovcli --verbose create-commit --fail-on-error 
+          codecovcli --verbose create-report --fail-on-error 
+          codecovcli --verbose do-upload --fail-on-error
 
   tests-parsl:
+    env:
+      CODECOV_TOKEN: $
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
@@ -273,9 +298,13 @@ jobs:
       - name: Upload coverage to Codecov
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli upload-process -t {$CODECOV_TOKEN}
+          codecovcli --verbose create-commit --fail-on-error 
+          codecovcli --verbose create-report --fail-on-error 
+          codecovcli --verbose do-upload --fail-on-error
 
   tests-jobflow:
+    env:
+      CODECOV_TOKEN: $
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
@@ -310,9 +339,13 @@ jobs:
       - name: Upload coverage to Codecov
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli upload-process -t {$CODECOV_TOKEN}
+          codecovcli --verbose create-commit --fail-on-error 
+          codecovcli --verbose create-report --fail-on-error 
+          codecovcli --verbose do-upload --fail-on-error
 
   tests-prefect:
+    env:
+      CODECOV_TOKEN: $
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
@@ -347,4 +380,6 @@ jobs:
       - name: Upload coverage to Codecov
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli upload-process -t {$CODECOV_TOKEN}
+          codecovcli --verbose create-commit --fail-on-error 
+          codecovcli --verbose create-report --fail-on-error 
+          codecovcli --verbose do-upload --fail-on-error
