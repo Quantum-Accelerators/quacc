@@ -44,24 +44,26 @@ def job(
         import covalent as ct
 
         decorated = ct.electron(_func, **kwargs)
-    if wflow_engine == "jobflow":
+    elif wflow_engine == "jobflow":
         from jobflow import job as jf_job
 
         decorated = jf_job(_func, **kwargs)
-    if wflow_engine == "parsl":
+    elif wflow_engine == "parsl":
         from parsl import python_app
 
         decorated = python_app(_func, **kwargs)
-    if wflow_engine == "prefect":
+    elif wflow_engine == "prefect":
         from prefect import task
 
         decorated = task(_func, **kwargs)
-    if not wflow_engine:
+    elif not wflow_engine:
         decorated = _func
+    else:
+        msg = f"Unknown workflow engine: {wflow_engine}"
+        raise ValueError(msg)
 
     decorated.original_func = _func
-
-    raise ValueError(f"Unknown workflow engine: {wflow_engine}")
+    return decorated
 
 
 def flow(
