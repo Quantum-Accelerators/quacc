@@ -35,7 +35,7 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Install pip packages
-        run: pip install .[strict,dev,optimizers]
+        run: pip install .[strict,dev]
 
       - name: Run tests with pytest
         run: pytest --cov=quacc --cov-report=xml
@@ -191,6 +191,48 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         if: github.repository == 'Quantum-Accelerators/quacc'
+
+  tests-newtonnet:
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.11"]
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: setup.py
+
+      - name: Set up conda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          activate-environment: quacc-env
+
+      - name: Install pip packages
+        run: |
+          pip install .[strict,dev,newtonnet,optimizers]
+
+      - name: Run tests with pytest
+        run: pytest -k 'newtonnet' --cov=quacc --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        if: github.repository == 'quantum-accelerators/quacc'
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
 
   tests-covalent:
     runs-on: ubuntu-latest
