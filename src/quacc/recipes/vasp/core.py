@@ -169,7 +169,7 @@ def double_relax_job(
         atoms,
         preset=preset,
         relax_cell=relax_cell,
-        calc_swaps1=calc_swaps1,
+        calc_swaps=calc_swaps2,
         copy_files=["WAVECAR"],
     )
 
