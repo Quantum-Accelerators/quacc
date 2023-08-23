@@ -21,7 +21,7 @@ from quacc.schemas.ase import (
 )
 from quacc.util.calc import run_ase_opt, run_calc
 from quacc.util.thermo import ideal_gas
-
+from ase.optimize import FIRE
 try:
     from sella import IRC, Sella
 except ImportError:
@@ -132,7 +132,7 @@ def relax_job(
     atoms: Atoms,
     fmax: float = 0.01,
     max_steps: int = 1000,
-    optimizer: Optimizer = Sella,
+    optimizer: Optimizer = Sella or FIRE,
     newtonnet_kwargs: dict | None = None,
     optimizer_kwargs: dict | None = None,
 ) -> dict:
@@ -243,8 +243,7 @@ def ts_job(
 
         opt_flags["optimizer_kwargs"]["hessian_function"] = _get_hessian
 
-    # Define calculator again TEST THIS WHILE RUNNING THE CALCULATIONS
-    atoms.calc = NewtonNet(
+    mlcalculator = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
         settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
