@@ -155,7 +155,10 @@ def run_custodian(
     jobs = [VaspJob(split_vasp_cmd, **vasp_job_kwargs)]
 
     if vasp_custodian_wall_time:
-        handlers = [*list(handlers), WalltimeHandler(wall_time=vasp_custodian_wall_time)]
+        handlers = [
+            *list(handlers),
+            WalltimeHandler(wall_time=vasp_custodian_wall_time),
+        ]
 
     c = Custodian(
         handlers,

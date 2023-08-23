@@ -119,9 +119,7 @@ class Vasp(Vasp_):
             and not all(isinstance(c, FixAtoms) for c in input_atoms.constraints)
         ):
             msg = "Atoms object has a constraint that is not compatible with Custodian. Set use_custodian = False."
-            raise ValueError(
-                msg
-            )
+            raise ValueError(msg)
 
         # Get VASP executable command, if necessary, and specify child environment
         # variables

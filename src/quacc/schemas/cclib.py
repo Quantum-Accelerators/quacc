@@ -36,7 +36,20 @@ def summarize_run(
     atoms: Atoms,
     logfile_extensions: str | list[str],
     dir_path: str | None = None,
-    pop_analyses: list[Literal["cpsa", "mpa", "lpa", "bickelhaupt", "density", "mbo", "bader", "ddec6", "hirshfeld"]] | None = None,
+    pop_analyses: list[
+        Literal[
+            "cpsa",
+            "mpa",
+            "lpa",
+            "bickelhaupt",
+            "density",
+            "mbo",
+            "bader",
+            "ddec6",
+            "hirshfeld",
+        ]
+    ]
+    | None = None,
     check_convergence: bool = True,
     prep_next_run: bool = True,
     remove_empties: bool = False,
@@ -257,10 +270,10 @@ class _cclibTaskDocument(MoleculeMetadata):
         # specified directory.
         logfile = find_recent_logfile(dir_name, logfile_extensions)
         if not logfile:
-            msg = f"Could not find file with extension {logfile_extensions} in {dir_name}"
-            raise FileNotFoundError(
-                msg
+            msg = (
+                f"Could not find file with extension {logfile_extensions} in {dir_name}"
             )
+            raise FileNotFoundError(msg)
 
         additional_fields = {} if additional_fields is None else additional_fields
 
@@ -427,15 +440,11 @@ def _cclib_calculate(
         if not proatom_dir:
             if os.getenv("PROATOM_DIR") is None:
                 msg = "PROATOM_DIR environment variable or proatom_dir kwarg needs to be set."
-                raise ValueError(
-                    msg
-                )
+                raise ValueError(msg)
             proatom_dir = os.path.expandvars(os.environ["PROATOM_DIR"])
         if not os.path.exists(proatom_dir):
             msg = f"Protatom directory {proatom_dir} does not exist. Returning None."
-            raise FileNotFoundError(
-                msg
-            )
+            raise FileNotFoundError(msg)
     cclib_methods = getmembers(cclib.method, isclass)
     method_class = next(
         (

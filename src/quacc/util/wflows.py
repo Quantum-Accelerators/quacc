@@ -95,9 +95,7 @@ def flow(
         return ct.lattice(_func, **kwargs)
     if wflow_engine == "jobflow":
         msg = "Jobflow is not compatible with the use of a @flow decorator. Instead, you should use the `Flow()` object in Jobflow to stitch together individual compute jobs."
-        raise NotImplementedError(
-            msg
-        )
+        raise NotImplementedError(msg)
     if wflow_engine == "parsl":
         return _func
     if wflow_engine == "prefect":
@@ -144,9 +142,7 @@ def subflow(
         return ct.electron(ct.lattice(_func), **kwargs)
     if wflow_engine == "jobflow":
         msg = "Jobflow is not compatible with the use of a @subflow decorator. Instead, you should use the `Response` object in Jobflow to create a dynamic workflow."
-        raise NotImplementedError(
-            msg
-        )
+        raise NotImplementedError(msg)
     if wflow_engine == "parsl":
         from parsl import join_app
 
