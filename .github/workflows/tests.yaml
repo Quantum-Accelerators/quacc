@@ -45,9 +45,9 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli --verbose create-commit --fail-on-error 
-          codecovcli --verbose create-report --fail-on-error 
-          codecovcli --verbose do-upload --fail-on-error
+          codecovcli create-commit
+          codecovcli create-report
+          codecovcli --codecov-yml-path=codecov_cli.yml do-upload --fail-on-errorr
 
   tests-base-windows:
     runs-on: windows-latest
@@ -82,9 +82,9 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli --verbose create-commit --fail-on-error 
-          codecovcli --verbose create-report --fail-on-error 
-          codecovcli --verbose do-upload --fail-on-error
+          codecovcli create-commit --fail-on-error 
+          codecovcli create-report --fail-on-error 
+          codecovcli --codecov-yml-path=codecov_cli.yml do-upload --fail-on-errorr
 
   tests-tblite:
     strategy:
@@ -119,9 +119,9 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli --verbose create-commit --fail-on-error 
-          codecovcli --verbose create-report --fail-on-error 
-          codecovcli --verbose do-upload --fail-on-error
+          codecovcli create-commit --fail-on-error 
+          codecovcli create-report --fail-on-error 
+          codecovcli --codecov-yml-path=codecov_cli.yml do-upload --fail-on-errorr
 
   tests-psi4:
     strategy:
@@ -167,9 +167,9 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli --verbose create-commit --fail-on-error 
-          codecovcli --verbose create-report --fail-on-error 
-          codecovcli --verbose do-upload --fail-on-error
+          codecovcli create-commit --fail-on-error 
+          codecovcli create-report --fail-on-error 
+          codecovcli --codecov-yml-path=codecov_cli.yml do-upload --fail-on-errorr
 
   tests-dftbplus:
     strategy:
@@ -213,9 +213,9 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli --verbose create-commit --fail-on-error 
-          codecovcli --verbose create-report --fail-on-error 
-          codecovcli --verbose do-upload --fail-on-error
+          codecovcli create-commit --fail-on-error 
+          codecovcli create-report --fail-on-error 
+          codecovcli --codecov-yml-path=codecov_cli.yml do-upload --fail-on-errorr
 
   tests-covalent:
     runs-on: ubuntu-latest
@@ -262,9 +262,9 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli --verbose create-commit --fail-on-error 
-          codecovcli --verbose create-report --fail-on-error 
-          codecovcli --verbose do-upload --fail-on-error
+          codecovcli create-commit --fail-on-error 
+          codecovcli create-report --fail-on-error 
+          codecovcli --codecov-yml-path=codecov_cli.yml do-upload --fail-on-errorr
 
   tests-parsl:
     runs-on: ubuntu-latest
@@ -303,9 +303,9 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli --verbose create-commit --fail-on-error 
-          codecovcli --verbose create-report --fail-on-error 
-          codecovcli --verbose do-upload --fail-on-error
+          codecovcli create-commit --fail-on-error 
+          codecovcli create-report --fail-on-error 
+          codecovcli --codecov-yml-path=codecov_cli.yml do-upload --fail-on-errorr
 
   tests-jobflow:
     runs-on: ubuntu-latest
@@ -344,9 +344,9 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli --verbose create-commit --fail-on-error 
-          codecovcli --verbose create-report --fail-on-error 
-          codecovcli --verbose do-upload --fail-on-error
+          codecovcli create-commit --fail-on-error 
+          codecovcli create-report --fail-on-error 
+          codecovcli --codecov-yml-path=codecov_cli.yml do-upload --fail-on-errorr
 
   tests-prefect:
     runs-on: ubuntu-latest
@@ -385,6 +385,6 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
           export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli --verbose create-commit --fail-on-error 
-          codecovcli --verbose create-report --fail-on-error 
-          codecovcli --verbose do-upload --fail-on-error
+          codecovcli create-commit --fail-on-error 
+          codecovcli create-report --fail-on-error 
+          codecovcli --codecov-yml-path=codecov_cli.yml do-upload --fail-on-errorr
