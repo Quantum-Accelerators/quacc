@@ -118,8 +118,9 @@ class Vasp(Vasp_):
             and input_atoms.constraints
             and not all(isinstance(c, FixAtoms) for c in input_atoms.constraints)
         ):
+            msg = "Atoms object has a constraint that is not compatible with Custodian. Set use_custodian = False."
             raise ValueError(
-                "Atoms object has a constraint that is not compatible with Custodian. Set use_custodian = False."
+                msg
             )
 
         # Get VASP executable command, if necessary, and specify child environment
@@ -389,7 +390,7 @@ class Vasp(Vasp_):
 
         if (
             calc.int_params["ismear"] == -5
-            and np.product(calc.kpts) < 4
+            and np.prod(calc.kpts) < 4
             and calc.float_params["kspacing"] is None
         ):
             if self.verbose:
@@ -613,7 +614,8 @@ class Vasp(Vasp_):
             reciprocal = None
             if auto_kpts.get("max_mixed_density", None):
                 if len(auto_kpts["max_mixed_density"]) != 2:
-                    raise ValueError("Must specify two values for max_mixed_density.")
+                    msg = "Must specify two values for max_mixed_density."
+                    raise ValueError(msg)
 
                 if (
                     auto_kpts["max_mixed_density"][0]
@@ -629,7 +631,7 @@ class Vasp(Vasp_):
                 pmg_kpts2 = Kpoints.automatic_density(
                     struct, auto_kpts["max_mixed_density"][1], force_gamma=force_gamma
                 )
-                if np.product(pmg_kpts1.kpts[0]) >= np.product(pmg_kpts2.kpts[0]):
+                if np.prod(pmg_kpts1.kpts[0]) >= np.prod(pmg_kpts2.kpts[0]):
                     pmg_kpts = pmg_kpts1
                 else:
                     pmg_kpts = pmg_kpts2
@@ -643,12 +645,14 @@ class Vasp(Vasp_):
                 )
             elif auto_kpts.get("length_density", None):
                 if len(auto_kpts["length_density"]) != 3:
-                    raise ValueError("Must specify three values for length_density.")
+                    msg = "Must specify three values for length_density."
+                    raise ValueError(msg)
                 pmg_kpts = Kpoints.automatic_density_by_lengths(
                     struct, auto_kpts["length_density"], force_gamma=force_gamma
                 )
             else:
-                raise ValueError(f"Unsupported k-point generation scheme: {auto_kpts}.")
+                msg = f"Unsupported k-point generation scheme: {auto_kpts}."
+                raise ValueError(msg)
 
             kpts = pmg_kpts.kpts[0]
             gamma = pmg_kpts.style.name.lower() == "gamma"

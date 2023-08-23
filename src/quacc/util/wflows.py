@@ -58,7 +58,8 @@ def job(
     if not wflow_engine:
         return _func
 
-    raise ValueError(f"Unknown workflow engine: {wflow_engine}")
+    msg = f"Unknown workflow engine: {wflow_engine}"
+    raise ValueError(msg)
 
 
 def flow(
@@ -93,8 +94,9 @@ def flow(
 
         return ct.lattice(_func, **kwargs)
     if wflow_engine == "jobflow":
+        msg = "Jobflow is not compatible with the use of a @flow decorator. Instead, you should use the `Flow()` object in Jobflow to stitch together individual compute jobs."
         raise NotImplementedError(
-            "Jobflow is not compatible with the use of a @flow decorator. Instead, you should use the `Flow()` object in Jobflow to stitch together individual compute jobs."
+            msg
         )
     if wflow_engine == "parsl":
         return _func
@@ -105,7 +107,8 @@ def flow(
     if not wflow_engine:
         return _func
 
-    raise ValueError(f"Unknown workflow engine: {wflow_engine}")
+    msg = f"Unknown workflow engine: {wflow_engine}"
+    raise ValueError(msg)
 
 
 def subflow(
@@ -140,8 +143,9 @@ def subflow(
 
         return ct.electron(ct.lattice(_func), **kwargs)
     if wflow_engine == "jobflow":
+        msg = "Jobflow is not compatible with the use of a @subflow decorator. Instead, you should use the `Response` object in Jobflow to create a dynamic workflow."
         raise NotImplementedError(
-            "Jobflow is not compatible with the use of a @subflow decorator. Instead, you should use the `Response` object in Jobflow to create a dynamic workflow."
+            msg
         )
     if wflow_engine == "parsl":
         from parsl import join_app
@@ -154,14 +158,15 @@ def subflow(
     if not wflow_engine:
         return _func
 
-    raise ValueError(f"Unknown workflow engine: {wflow_engine}")
+    msg = f"Unknown workflow engine: {wflow_engine}"
+    raise ValueError(msg)
 
 
 def make_dask_runner(
     cluster_kwargs: dict,
-    cluster_class: callable = None,
+    cluster_class: callable | None = None,
     adapt_kwargs: dict[str, int | None] | None = None,
-    client_kwargs: dict = None,
+    client_kwargs: dict | None = None,
     temporary: bool = False,
 ) -> DaskTaskRunner:
     """

@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import os
 from shutil import which
-from typing import List, Optional
 
 from pydantic import BaseSettings, Field, root_validator
 
@@ -56,7 +55,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # Workflow Engine
     # ---------------------------
-    WORKFLOW_ENGINE: Optional[str] = Field(
+    WORKFLOW_ENGINE: str | None = Field(
         WFLOW_IMPORT,
         description=(
             "The workflow manager to use."
@@ -203,7 +202,7 @@ class QuaccSettings(BaseSettings):
     VASP_CUSTODIAN_MAX_ERRORS: int = Field(
         5, description="Maximum errors for Custodian"
     )
-    VASP_CUSTODIAN_HANDLERS: List[str] = Field(
+    VASP_CUSTODIAN_HANDLERS: list[str] = Field(
         [
             "VaspErrorHandler",
             "MeshSymmetryErrorHandler",
@@ -218,11 +217,11 @@ class QuaccSettings(BaseSettings):
         ],
         description="Handlers for Custodian",
     )
-    VASP_CUSTODIAN_VALIDATORS: List[str] = Field(
+    VASP_CUSTODIAN_VALIDATORS: list[str] = Field(
         ["VasprunXMLValidator", "VaspFilesValidator"],
         description="Validators for Custodian",
     )
-    VASP_CUSTODIAN_WALL_TIME: Optional[int] = Field(
+    VASP_CUSTODIAN_WALL_TIME: int | None = Field(
         None,
         description=(
             "After this many seconds, Custodian will stop running "

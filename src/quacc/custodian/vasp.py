@@ -129,13 +129,15 @@ def run_custodian(
     handlers = []
     for handler_flag in vasp_custodian_handlers:
         if handler_flag not in handlers_dict:
-            raise ValueError(f"Unknown VASP error handler: {handler_flag}")
+            msg = f"Unknown VASP error handler: {handler_flag}"
+            raise ValueError(msg)
         handlers.append(handlers_dict[handler_flag])
 
     validators = []
     for validator_flag in vasp_custodian_validators:
         if validator_flag not in validators_dict:
-            raise ValueError(f"Unknown VASP validator: {validator_flag}")
+            msg = f"Unknown VASP validator: {validator_flag}"
+            raise ValueError(msg)
         validators.append(validators_dict[validator_flag])
 
     # Populate settings
@@ -153,9 +155,7 @@ def run_custodian(
     jobs = [VaspJob(split_vasp_cmd, **vasp_job_kwargs)]
 
     if vasp_custodian_wall_time:
-        handlers = list(handlers) + [
-            WalltimeHandler(wall_time=vasp_custodian_wall_time)
-        ]
+        handlers = [*list(handlers), WalltimeHandler(wall_time=vasp_custodian_wall_time)]
 
     c = Custodian(
         handlers,

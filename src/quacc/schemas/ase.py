@@ -127,9 +127,11 @@ def summarize_run(
     """
     # Make sure there is a calculator with results
     if not atoms.calc:
-        raise ValueError("ASE Atoms object has no attached calculator.")
+        msg = "ASE Atoms object has no attached calculator."
+        raise ValueError(msg)
     if not atoms.calc.results:
-        raise ValueError("ASE Atoms object's calculator has no results.")
+        msg = "ASE Atoms object's calculator has no results."
+        raise ValueError(msg)
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
     additional_fields = additional_fields or {}
@@ -281,7 +283,8 @@ def summarize_opt_run(
     # Check convergence
     is_converged = dyn.converged()
     if check_convergence and not is_converged:
-        raise ValueError("Optimization did not converge.")
+        msg = "Optimization did not converge."
+        raise ValueError(msg)
 
     # Get trajectory
     if not trajectory:
