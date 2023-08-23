@@ -132,6 +132,60 @@ def relax_job(
 
 @job
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
+def freq_job(
+    atoms: Atoms,
+    temperature: float = 298.15,
+    pressure: float = 1.0,
+) -> dict[Literal["vib", "thermo"], VibSchema | ThermoSchema]:
+    """
+    Perform a frequency calculation using the given atoms object.
+
+    Parameters
+    ----------
+    atoms
+        The atoms object representing the system.
+    temperature
+        The temperature for the thermodynamic analysis (default: 298.15 K).
+    pressure
+        The pressure for the thermodynamic analysis (default: 1.0 atm).
+
+    Returns
+    -------
+    dict
+        Summary of the frequency calculation and thermo calculations.
+    """
+    # Define calculator
+    ml_calculator = NewtonNet(
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
+        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
+    )
+    atoms.calc = ml_calculator
+
+    # Run calculator
+    ml_calculator.calculate(atoms)
+    hessian = ml_calculator.results["hessian"]
+    vib = VibrationsData(atoms, hessian)
+
+    # Make IdealGasThermo object
+    igt = ideal_gas(
+        atoms, vib.get_frequencies(), energy=ml_calculator.results["energy"]
+    )
+
+    return {
+        "vib": summarize_vib_run(
+            vib, additional_fields={"name": "NewtonNet Vibrations"}
+        ),
+        "thermo": summarize_thermo_run(
+            igt,
+            temperature=temperature,
+            pressure=pressure,
+            additional_fields={"name": "NewtonNet Thermo"},
+        ),
+    }
+
+
+@job
+@requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 @requires(Sella, "Sella must be installed. Try pip install quacc[optimizers]")
 def ts_job(
     atoms: Atoms,
@@ -359,60 +413,6 @@ def quasi_irc_job(
     )
 
     return {"irc": irc_summary, "opt": opt_summary, "thermo": thermo_summary}
-
-
-@job
-@requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
-def freq_job(
-    atoms: Atoms,
-    temperature: float = 298.15,
-    pressure: float = 1.0,
-) -> dict[Literal["vib", "thermo"], VibSchema | ThermoSchema]:
-    """
-    Perform a frequency calculation using the given atoms object.
-
-    Parameters
-    ----------
-    atoms
-        The atoms object representing the system.
-    temperature
-        The temperature for the thermodynamic analysis (default: 298.15 K).
-    pressure
-        The pressure for the thermodynamic analysis (default: 1.0 atm).
-
-    Returns
-    -------
-    dict
-        Summary of the frequency calculation and thermo calculations.
-    """
-    # Define calculator
-    ml_calculator = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
-    )
-    atoms.calc = ml_calculator
-
-    # Run calculator
-    ml_calculator.calculate(atoms)
-    hessian = ml_calculator.results["hessian"]
-    vib = VibrationsData(atoms, hessian)
-
-    # Make IdealGasThermo object
-    igt = ideal_gas(
-        atoms, vib.get_frequencies(), energy=ml_calculator.results["energy"]
-    )
-
-    return {
-        "vib": summarize_vib_run(
-            vib, additional_fields={"name": "NewtonNet Vibrations"}
-        ),
-        "thermo": summarize_thermo_run(
-            igt,
-            temperature=temperature,
-            pressure=pressure,
-            additional_fields={"name": "NewtonNet Thermo"},
-        ),
-    }
 
 
 def _get_hessian(atoms: Atoms) -> np.ndarray:
