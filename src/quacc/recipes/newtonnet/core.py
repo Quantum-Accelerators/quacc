@@ -3,9 +3,8 @@ Core recipes for the NewtonNet code
 """
 from __future__ import annotations
 
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
-import numpy as np
 from ase.atoms import Atoms
 from ase.optimize import FIRE
 from ase.optimize.optimize import Optimizer
@@ -14,10 +13,6 @@ from monty.dev import requires
 
 from quacc import SETTINGS, job
 from quacc.schemas.ase import (
-    OptSchema,
-    RunSchema,
-    ThermoSchema,
-    VibSchema,
     summarize_opt_run,
     summarize_run,
     summarize_thermo_run,
@@ -36,6 +31,12 @@ try:
     from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
 except ImportError:
     NewtonNet = None
+
+
+if TYPE_CHECKING:
+    import numpy as np
+
+    from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
 
 
 @job
