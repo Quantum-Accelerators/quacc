@@ -25,7 +25,7 @@ from maggma.stores import MongoURIStore
 store = MongoURIStore(
     "mongodb+srv://<username>:<password>@<host>",
     "my_collection",
-    database = "my_database"
+    database="my_database",
 )
 
 # Query the database
