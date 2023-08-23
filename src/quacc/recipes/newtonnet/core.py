@@ -116,11 +116,10 @@ def static_job(
     opt_swaps = opt_swaps or {}
     input_atoms = deepcopy(atoms)
     # Define calculator
-    mlcalculator = NewtonNet(
+    atoms.calc = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
         settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
-    atoms.calc = mlcalculator
     atoms = run_calc(atoms)
     return summarize_run(
         atoms, input_atoms=input_atoms, additional_fields={"name": "NewtonNet Relax"}
@@ -166,11 +165,10 @@ def relax_job(
     if "sella.optimize" in optimizer.__module__:
         optimizer_kwargs["order"] = 0
 
-    mlcalculator = NewtonNet(
+    atoms.calc = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
         settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
-    atoms.calc = mlcalculator
     dyn = run_ase_opt(
         atoms,
         fmax=fmax,
@@ -212,11 +210,10 @@ def ts_job(
     opt_swaps
         Optional swaps for the optimization parameters (default: None).
 
-    Returns:
-        dict: A dictionary containing the TS summary and thermodynamic summary.
-
-    Raises:
-        ValueError: If the custom Hessian is enabled but the optimizer is not "Sella".
+    Returns
+    -------
+    dict
+        A dictionary containing the TS summary and thermodynamic summary.
     """
     opt_swaps = opt_swaps or {}
 
@@ -235,11 +232,10 @@ def ts_job(
     opt_flags = opt_defaults | opt_swaps
 
     # Define calculator
-    mlcalculator = NewtonNet(
+    atoms.calc = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
         settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
-    atoms.calc = mlcalculator
 
     if use_custom_hessian:
         if opt_flags["optimizer"].__name__ != "Sella":
@@ -248,11 +244,10 @@ def ts_job(
         opt_flags["optimizer_kwargs"]["hessian_function"] = _get_hessian
 
     # Define calculator again TEST THIS WHILE RUNNING THE CALCULATIONS
-    mlcalculator = NewtonNet(
+    atoms.calc = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
         settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
-    atoms.calc = mlcalculator
     # Run the TS optimization
     dyn = run_ase_opt(atoms, **opt_flags)
 
@@ -327,11 +322,10 @@ def irc_job(
     opt_flags = opt_defaults | opt_swaps
 
     # Define calculator
-    mlcalculator = NewtonNet(
+    atoms.calc = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
         settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
-    atoms.calc = mlcalculator
 
     # Run IRC
     dyn = run_ase_opt(atoms, fmax=fmax, max_steps=max_steps, **opt_flags)
