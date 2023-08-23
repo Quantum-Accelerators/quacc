@@ -3,8 +3,7 @@ Core recipes for the NewtonNet code
 """
 from __future__ import annotations
 
-from copy import deepcopy
-from typing import Any, Dict, Literal
+from typing import Literal
 
 import numpy as np
 from ase.atoms import Atoms
@@ -15,6 +14,10 @@ from monty.dev import requires
 
 from quacc import SETTINGS, job
 from quacc.schemas.ase import (
+    OptSchema,
+    RunSchema,
+    ThermoSchema,
+    VibSchema,
     summarize_opt_run,
     summarize_run,
     summarize_thermo_run,
@@ -34,96 +37,40 @@ except ImportError:
     NewtonNet = None
 
 
-def _get_hessian(atoms: Atoms) -> np.ndarray:
-    """
-    Calculate and retrieve the Hessian matrix for the given molecular configuration.
-
-    This function takes an ASE Atoms object representing a molecular configuration and uses the
-    NewtonNet machine learning calculator to calculate the Hessian matrix. The calculated Hessian
-    matrix is then returned.
-
-    Parameters
-    ----------
-    atoms
-        The ASE Atoms object representing the molecular configuration.
-
-    Returns
-    -------
-    np.ndarray
-        The calculated Hessian matrix, reshaped into a 2D array.
-    """
-    mlcalculator = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
-    )
-    mlcalculator.calculate(atoms)
-    reshaped_hessian = mlcalculator.results["hessian"].reshape((-1, 3 * len(atoms)))
-    return reshaped_hessian
-
-
-def _add_stdev_and_hess(summary: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Calculate and add standard deviation values and Hessians to the summary.
-
-    This function takes a summary dictionary containing information about a molecular trajectory
-    and calculates the standard deviation of various properties using the NewtonNet machine learning
-    calculator. It adds the calculated standard deviation values and Hessians to each configuration
-    in the trajectory.
-
-    Parameters
-    ----------
-    summary
-        A dictionary containing information about the molecular trajectory.
-
-    Returns
-    -------
-    Dict[str, Any]
-        The modified summary dictionary with added standard deviation and Hessian values.
-    """
-    for conf in summary["trajectory"]:
-        mlcalculator = NewtonNet(
-            model_path=SETTINGS.NEWTONNET_MODEL_PATH,
-            settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
-        )
-        mlcalculator.calculate(conf["atoms"])
-        conf["hessian"] = mlcalculator.results["hessian"]
-        conf["energy_std"] = mlcalculator.results["energy_disagreement"]
-        conf["forces_std"] = mlcalculator.results["forces_disagreement"]
-        conf["hessian_std"] = mlcalculator.results["hessian_disagreement"]
-    return summary
-
-
 @job
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def static_job(
     atoms: Atoms, newtonnet_kwargs: dict | None = None, opt_swaps: dict | None = None
-) -> dict:
+) -> RunSchema:
     """
     Carry out a single-point calculation.
 
     Parameters
     ----------
-    atoms : Atoms
+    atoms
         The atomic configuration to be relaxed.
-    newtonnet_kwargs : dict, optional
-        Additional keyword arguments for the tblite calculator. Defaults to None.
+    newtonnet_kwargs
+        Additional keyword arguments for the tblite calculator
+    opt_swaps
+        Optional swaps for the optimization parameters
 
     Returns
     -------
-    dict
-        A summary of the run, including relevant information about the calculation results.
+    RunSchema
+        A dictionary containing the results of the calculation.
     """
     newtonnet_kwargs = newtonnet_kwargs or {}
     opt_swaps = opt_swaps or {}
-    input_atoms = deepcopy(atoms)
+
     # Define calculator
     atoms.calc = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
         settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
-    atoms = run_calc(atoms)
+    final_atoms = run_calc(atoms)
+
     return summarize_run(
-        atoms, input_atoms=input_atoms, additional_fields={"name": "NewtonNet Relax"}
+        final_atoms, input_atoms=atoms, additional_fields={"name": "NewtonNet Relax"}
     )
 
 
@@ -136,7 +83,7 @@ def relax_job(
     optimizer: Optimizer = Sella or FIRE,
     newtonnet_kwargs: dict | None = None,
     optimizer_kwargs: dict | None = None,
-) -> dict:
+) -> OptSchema:
     """
     Relax a structure.
 
@@ -149,16 +96,16 @@ def relax_job(
     max_steps
         Maximum number of steps to take.
     optimizer
-        .Optimizer class to use for the relaxation.
+        Optimizer class to use for the relaxation.
     newtonnet_kwargs
         Dictionary of custom kwargs for the newtonnet calculator.
-    opt_kwargs
+    optimizer_kwargs
         Dictionary of kwargs for the optimizer.
 
     Returns
     -------
-    dict
-        Dictionary of results from quacc.schemas.ase.summarize_opt_run
+    OptSchema
+        A dictionary containing the results of the calculation.
     """
 
     newtonnet_kwargs = newtonnet_kwargs or {}
@@ -193,7 +140,7 @@ def ts_job(
     pressure: float = 1.0,
     check_convergence: bool = True,
     opt_swaps: dict | None = None,
-) -> dict:
+) -> dict[Literal["ts", "thermo"], OptSchema | ThermoSchema]:
     """
     Perform a transition state (TS) job using the given atoms object.
 
@@ -207,8 +154,8 @@ def ts_job(
         The temperature for the frequency calculation (default: 298.15 K).
     pressure
         The pressure for the frequency calculation (default: 1.0 atm).
-    newtonnet_kwargs
-        Additional keyword arguments for NewtonNet calculator (default: None).
+    check_convergence
+        Whether to check the convergence of the optimization (default: True).
     opt_swaps
         Optional swaps for the optimization parameters (default: None).
 
@@ -245,11 +192,11 @@ def ts_job(
 
         opt_flags["optimizer_kwargs"]["hessian_function"] = _get_hessian
 
-    mlcalculator = NewtonNet(
+    ml_calculator = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
         settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
-    atoms.calc = mlcalculator
+    atoms.calc = ml_calculator
 
     # Run the TS optimization
     dyn = run_ase_opt(atoms, **opt_flags)
@@ -283,7 +230,7 @@ def irc_job(
     pressure: float = 1.0,
     check_convergence: bool = False,
     opt_swaps: dict | None = None,
-) -> dict:
+) -> dict[Literal["irc", "thermo"], OptSchema | ThermoSchema]:
     """
     Perform an intrinsic reaction coordinate (IRC) job using the given atoms object.
 
@@ -291,12 +238,16 @@ def irc_job(
     ----------
     atoms
         The atoms object representing the system.
-    direction
-        The direction of the IRC calculation ("forward" or "reverse") (default: "forward").
+    fmax
+        Tolerance for the force convergence (in eV/A) (default: 0.01).
+    max_steps
+        Maximum number of steps to take (default: 1000).
     temperature
         The temperature for the frequency calculation (default: 298.15 K).
     pressure
         The pressure for the frequency calculation (default: 1.0 atm).
+    check_convergence
+        Whether to check the convergence of the optimization (default: False).
     opt_swaps
         Optional swaps for the optimization parameters (default: None).
 
@@ -310,9 +261,9 @@ def irc_job(
     opt_defaults = {
         "optimizer": IRC,
         "optimizer_kwargs": {
-            "dx": 0.1,  # default value
-            "eta": 1e-4,  # default value
-            "gamma": 0.4,  # default value
+            "dx": 0.1,
+            "eta": 1e-4,
+            "gamma": 0.4,
             "keep_going": True,
         },
         "run_kwargs": {
@@ -360,7 +311,7 @@ def quasi_irc_job(
     pressure: float = 1.0,
     irc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
-) -> dict:
+) -> dict[Literal["irc", "opt", "thermo"], OptSchema | ThermoSchema]:
     """
     Perform a quasi-IRC job using the given atoms object.
 
@@ -387,9 +338,7 @@ def quasi_irc_job(
     irc_swaps = irc_swaps or {}
     opt_swaps = opt_swaps or {}
 
-    irc_defaults = {
-        "run_kwargs": {"direction": direction.lower()},
-    }
+    irc_defaults = {"run_kwargs": {"direction": direction.lower()}}
     irc_flags = irc_defaults | irc_swaps
     opt_swaps = opt_swaps or {}
 
@@ -418,7 +367,7 @@ def freq_job(
     atoms: Atoms,
     temperature: float = 298.15,
     pressure: float = 1.0,
-) -> dict:
+) -> dict[Literal["vib", "thermo"], VibSchema | ThermoSchema]:
     """
     Perform a frequency calculation using the given atoms object.
 
@@ -434,22 +383,25 @@ def freq_job(
     Returns
     -------
     dict
-        A dictionary containing the thermodynamic summary.
+        Summary of the frequency calculation and thermo calculations.
     """
     # Define calculator
-    mlcalculator = NewtonNet(
+    ml_calculator = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
         settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
     )
-    atoms.calc = mlcalculator
+    atoms.calc = ml_calculator
 
     # Run calculator
-    mlcalculator.calculate(atoms)
-    hessian = mlcalculator.results["hessian"]
+    ml_calculator.calculate(atoms)
+    hessian = ml_calculator.results["hessian"]
     vib = VibrationsData(atoms, hessian)
 
     # Make IdealGasThermo object
-    igt = ideal_gas(atoms, vib.get_frequencies(), energy=mlcalculator.results["energy"])
+    igt = ideal_gas(
+        atoms, vib.get_frequencies(), energy=ml_calculator.results["energy"]
+    )
+
     return {
         "vib": summarize_vib_run(
             vib, additional_fields={"name": "NewtonNet Vibrations"}
@@ -461,3 +413,64 @@ def freq_job(
             additional_fields={"name": "NewtonNet Thermo"},
         ),
     }
+
+
+def _get_hessian(atoms: Atoms) -> np.ndarray:
+    """
+    Calculate and retrieve the Hessian matrix for the given molecular configuration.
+
+    This function takes an ASE Atoms object representing a molecular configuration and uses the
+    NewtonNet machine learning calculator to calculate the Hessian matrix. The calculated Hessian
+    matrix is then returned.
+
+    Parameters
+    ----------
+    atoms
+        The ASE Atoms object representing the molecular configuration.
+
+    Returns
+    -------
+    np.ndarray
+        The calculated Hessian matrix, reshaped into a 2D array.
+    """
+    ml_calculator = NewtonNet(
+        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
+        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
+    )
+    ml_calculator.calculate(atoms)
+
+    return ml_calculator.results["hessian"].reshape((-1, 3 * len(atoms)))
+
+
+def _add_stdev_and_hess(summary: dict[str, any]) -> dict[str, any]:
+    """
+    Calculate and add standard deviation values and Hessians to the summary.
+
+    This function takes a summary dictionary containing information about a molecular trajectory
+    and calculates the standard deviation of various properties using the NewtonNet machine learning
+    calculator. It adds the calculated standard deviation values and Hessians to each configuration
+    in the trajectory.
+
+    Parameters
+    ----------
+    summary
+        A dictionary containing information about the molecular trajectory.
+
+    Returns
+    -------
+    Dict[str, Any]
+        The modified summary dictionary with added standard deviation and Hessian values.
+    """
+
+    for conf in summary["trajectory"]:
+        ml_calculator = NewtonNet(
+            model_path=SETTINGS.NEWTONNET_MODEL_PATH,
+            settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
+        )
+        ml_calculator.calculate(conf["atoms"])
+        conf["hessian"] = ml_calculator.results["hessian"]
+        conf["energy_std"] = ml_calculator.results["energy_disagreement"]
+        conf["forces_std"] = ml_calculator.results["forces_disagreement"]
+        conf["hessian_std"] = ml_calculator.results["hessian_disagreement"]
+
+    return summary
