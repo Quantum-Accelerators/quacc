@@ -247,8 +247,7 @@ def ts_job(
         if opt_flags["optimizer"].__name__ != "Sella":
             raise ValueError("Custom hessian can only be used with Sella.")
 
-        else:
-            opt_flags["optimizer_kwargs"]["hessian_function"] = _get_hessian
+        opt_flags["optimizer_kwargs"]["hessian_function"] = _get_hessian
 
     ml_calculator = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
