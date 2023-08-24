@@ -48,9 +48,11 @@ graph LR
 
     All `Electron` and `Lattice` objects behave as normal Python functions when the necessary arguments are supplied. However, if the `#!Python ct.dispatch` command is used, the workflow will be dispatched to the Covalent server for execution and monitoring.
 
-    !!! Tip
+    !!! Important
 
-        Make sure you run `covalent start` in the terminal before running the examples below.
+        If you haven't done so yet, make sure you started the Covalent server with `covalent start` in the command-line.
+
+        Also make sure you have specified `"covalent"` as the `WORKFLOW_ENGINE` in your [quacc settings](../basics/settings.md).
 
     ```python
     import covalent as ct
@@ -99,8 +101,10 @@ graph LR
     Take a moment to read the Parsl documentation's ["Quick Start"](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a [`#!Python @python_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html#Python-Apps) and [`#!Python @join_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html?highlight=join_app#Dynamic-workflows-with-apps-that-generate-other-apps), which describe individual compute tasks and dynamic job tasks, respectively.
 
 
-    !!! Tip
+    !!! Important
         Make sure you run `#!Python import parsl` followed by `#!Python parsl.load()` in Python to load a default Parsl configuration.
+
+        Also make sure you have specified `"parsl"` as the `WORKFLOW_ENGINE` in your [quacc settings](../basics/settings.md).
 
     ```python
     from quacc import job
@@ -134,6 +138,10 @@ graph LR
         For a more detailed tutorial on how to use Jobflow, refer to the [Jobflow Tutorials](https://materialsproject.github.io/jobflow/tutorials) and [this helpful guide](https://github.com/JaGeo/Advanced_Jobflow_Tutorial) written by Dr. Janine George.
 
     Take a moment to read the Jobflow documentation's [Quick Start](https://materialsproject.github.io/jobflow/tutorials/1-quickstart.html) to get a sense of how Jobflow works. Namely, you should understand the `Job` and `Flow` definitions, which describe individual compute tasks and workflows, respectively.
+
+    !!! Important
+
+        Make sure you have specified `"jobflow"` as the `WORKFLOW_ENGINE` in your [quacc settings](../basics/settings.md).
 
     ```python
     import jobflow as jf
