@@ -65,7 +65,8 @@ def static_job(
     final_atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
 
     if check_logfile(LOG_FILE, "SCC is NOT converged"):
-        raise ValueError("SCC is not converged")
+        msg = "SCC is not converged"
+        raise ValueError(msg)
 
     return summarize_run(
         final_atoms,
@@ -126,7 +127,8 @@ def relax_job(
     final_atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
 
     if not check_logfile(LOG_FILE, "Geometry converged"):
-        raise ValueError("Geometry did not converge")
+        msg = "Geometry did not converge"
+        raise ValueError(msg)
 
     return summarize_run(
         final_atoms,

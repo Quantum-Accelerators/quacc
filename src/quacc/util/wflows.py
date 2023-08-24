@@ -171,9 +171,9 @@ def subflow(
 
 def make_dask_runner(
     cluster_kwargs: dict,
-    cluster_class: callable = None,
+    cluster_class: callable | None = None,
     adapt_kwargs: dict[str, int | None] | None = None,
-    client_kwargs: dict = None,
+    client_kwargs: dict | None = None,
     temporary: bool = False,
 ) -> DaskTaskRunner:
     """

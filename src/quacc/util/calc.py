@@ -76,7 +76,8 @@ def run_calc(
             np.array_equal(atoms_new.get_atomic_numbers(), atoms.get_atomic_numbers())
             is False
         ):
-            raise ValueError("Atomic numbers do not match between atoms and geom_file.")
+            msg = "Atomic numbers do not match between atoms and geom_file."
+            raise ValueError(msg)
 
         atoms.positions = atoms_new.positions
         atoms.cell = atoms_new.cell
@@ -145,7 +146,8 @@ def run_ase_opt(
 
     # Set up trajectory
     if "trajectory" in optimizer_kwargs:
-        raise ValueError("Quacc does not support setting the `trajectory` kwarg.")
+        msg = "Quacc does not support setting the `trajectory` kwarg."
+        raise ValueError(msg)
 
     traj_filename = os.path.join(tmpdir, "opt.traj")
     optimizer_kwargs["trajectory"] = Trajectory(traj_filename, "w", atoms=atoms)
@@ -244,7 +246,8 @@ def _calc_setup(
     """
 
     if atoms.calc is None:
-        raise ValueError("Atoms object must have attached calculator.")
+        msg = "Atoms object must have attached calculator."
+        raise ValueError(msg)
 
     # Don't modify the original atoms object
     atoms = copy_atoms(atoms)

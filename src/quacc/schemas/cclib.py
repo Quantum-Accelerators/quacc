@@ -48,7 +48,8 @@ def summarize_run(
             "ddec6",
             "hirshfeld",
         ]
-    ] = None,
+    ]
+    | None = None,
     check_convergence: bool = True,
     prep_next_run: bool = True,
     remove_empties: bool = False,
@@ -136,9 +137,11 @@ def summarize_run(
     """
     # Make sure there is a calculator with results
     if not atoms.calc:
-        raise ValueError("ASE Atoms object has no attached calculator.")
+        msg = "ASE Atoms object has no attached calculator."
+        raise ValueError(msg)
     if not atoms.calc.results:
-        raise ValueError("ASE Atoms object's calculator has no results.")
+        msg = "ASE Atoms object's calculator has no results."
+        raise ValueError(msg)
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
     additional_fields = additional_fields or {}
@@ -161,7 +164,8 @@ def summarize_run(
 
     # Check convergence if requested
     if check_convergence and results["attributes"].get("optdone") is False:
-        raise ValueError("Optimization not complete.")
+        msg = "Optimization not complete."
+        raise ValueError(msg)
 
     # Get the calculator inputs
     inputs = {"parameters": atoms.calc.parameters}
@@ -218,7 +222,7 @@ class _cclibTaskDocument(MoleculeMetadata):
     def from_logfile(
         cls,
         dir_name: str | Path,
-        logfile_extensions: str | List[str],
+        logfile_extensions: str | list[str],
         store_trajectory: bool = False,
         additional_fields: dict | None = None,
         analysis: str | list[str] | None = None,
@@ -266,16 +270,18 @@ class _cclibTaskDocument(MoleculeMetadata):
         # specified directory.
         logfile = find_recent_logfile(dir_name, logfile_extensions)
         if not logfile:
-            raise FileNotFoundError(
+            msg = (
                 f"Could not find file with extension {logfile_extensions} in {dir_name}"
             )
+            raise FileNotFoundError(msg)
 
         additional_fields = {} if additional_fields is None else additional_fields
 
         # Let's parse the log file with cclib
         cclib_obj = ccread(logfile, logging.ERROR)
         if not cclib_obj:
-            raise ValueError(f"Could not parse {logfile}")
+            msg = f"Could not parse {logfile}"
+            raise ValueError(msg)
 
         # Fetch all the attributes (i.e. all input/outputs from cclib)
         attributes = jsanitize(cclib_obj.getattributes())
@@ -399,8 +405,8 @@ class _cclibTaskDocument(MoleculeMetadata):
 def _cclib_calculate(
     cclib_obj,
     method: str,
-    cube_file: Path | str = None,
-    proatom_dir: Path | str = None,
+    cube_file: Path | str | None = None,
+    proatom_dir: Path | str | None = None,
 ) -> dict | None:
     """
     Run a cclib population analysis.
@@ -425,20 +431,20 @@ def _cclib_calculate(
 
     if method in cube_methods:
         if not cube_file:
-            raise ValueError(f"A cube file must be provided for {method}.")
+            msg = f"A cube file must be provided for {method}."
+            raise ValueError(msg)
         if not os.path.exists(cube_file):
-            raise FileNotFoundError(f"Cube file {cube_file} does not exist.")
+            msg = f"Cube file {cube_file} does not exist."
+            raise FileNotFoundError(msg)
     if method in proatom_methods:
         if not proatom_dir:
             if os.getenv("PROATOM_DIR") is None:
-                raise ValueError(
-                    "PROATOM_DIR environment variable or proatom_dir kwarg needs to be set."
-                )
+                msg = "PROATOM_DIR environment variable or proatom_dir kwarg needs to be set."
+                raise ValueError(msg)
             proatom_dir = os.path.expandvars(os.environ["PROATOM_DIR"])
         if not os.path.exists(proatom_dir):
-            raise FileNotFoundError(
-                f"Protatom directory {proatom_dir} does not exist. Returning None."
-            )
+            msg = f"Protatom directory {proatom_dir} does not exist. Returning None."
+            raise FileNotFoundError(msg)
     cclib_methods = getmembers(cclib.method, isclass)
     method_class = next(
         (
@@ -449,7 +455,8 @@ def _cclib_calculate(
         None,
     )
     if method_class is None:
-        raise ValueError(f"{method} is not a valid cclib population analysis method.")
+        msg = f"{method} is not a valid cclib population analysis method."
+        raise ValueError(msg)
 
     if method in cube_methods:
         vol = cclib.method.volume.read_from_cube(str(cube_file))

@@ -35,7 +35,8 @@ def covalent_to_db(
     from covalent._shared_files.exceptions import MissingLatticeRecordError
 
     if dispatch_ids and results_dir:
-        raise ValueError("Cannot specify both dispatch_id and results_dir")
+        msg = "Cannot specify both dispatch_id and results_dir"
+        raise ValueError(msg)
     dispatch_ids = dispatch_ids or []
 
     # Get the dispatch IDs
