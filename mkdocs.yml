@@ -133,17 +133,17 @@ nav:
           - user/wflow_engine/wflow_engines1.md
           - user/wflow_engine/wflow_engines2.md
           - user/wflow_engine/executors.md
-      - Recipes:
-          - user/recipes/dftb.md
-          - user/recipes/emt.md
-          - user/recipes/gaussian.md
-          - user/recipes/gulp.md
-          - user/recipes/lj.md
-          - user/recipes/newtonnet.md
-          - user/recipes/orca.md
-          - user/recipes/psi4.md
-          - user/recipes/tblite.md
-          - user/recipes/vasp.md
+      # - Recipes:
+      #     - user/recipes/dftb.md
+      #     - user/recipes/emt.md
+      #     - user/recipes/gaussian.md
+      #     - user/recipes/gulp.md
+      #     - user/recipes/lj.md
+      #     - user/recipes/newtonnet.md
+      #     - user/recipes/orca.md
+      #     - user/recipes/psi4.md
+      #     - user/recipes/tblite.md
+      #     - user/recipes/vasp.md
       - Advanced:
           - user/advanced/database.md
           - user/advanced/file_transfers.md
