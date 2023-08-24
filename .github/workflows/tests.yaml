@@ -288,7 +288,7 @@ jobs:
 
       - name: Make quacc config
         run: |
-          echo "WORKFLOW_ENGINE: covalent" > ~/.quacc.yaml
+          export QUACC_WORKFLOW_ENGINE="covalent"
 
       - name: Set up Covalent server
         run: covalent start
@@ -335,7 +335,7 @@ jobs:
 
       - name: Make quacc config
         run: |
-          echo "WORKFLOW_ENGINE: parsl" > ~/.quacc.yaml
+          export QUACC_WORKFLOW_ENGINE="parsl"
 
       - name: Run tests with pytest
         run: pytest -k 'parsl' --cov=quacc --cov-report=xml
@@ -376,7 +376,7 @@ jobs:
 
       - name: Make quacc config
         run: |
-          echo "WORKFLOW_ENGINE: jobflow" > ~/.quacc.yaml
+          export QUACC_WORKFLOW_ENGINE="jobflow"
 
       - name: Run tests with pytest
         run: pytest -k 'jobflow or fireworks' --cov=quacc --cov-report=xml
