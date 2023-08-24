@@ -4,29 +4,36 @@ Utility functions for dealing with dictionaries
 from __future__ import annotations
 
 
-def merge_dicts(dict1: dict, dict2: dict, remove_empties: bool = False) -> dict:
+def merge_dicts(dict1: dict, dict2: dict, remove_empties: bool = True) -> dict:
     """
-    Merge two dictionaries recursively.
+    Recursively merges two dictionaries.
 
     Parameters
     ----------
+
     dict1
         First dictionary
     dict2
         Second dictionary
+    remove_empties
+        If True, remove empty lists and dictionaries
 
     Returns
     -------
     dict
         Merged dictionary
     """
-
     merged = dict1.copy()
-    for k, v in dict2.items():
-        if k in merged and isinstance(merged[k], dict) and isinstance(v, dict):
-            merged[k] = merge_dicts(merged[k], v)
+
+    for key, value in dict2.items():
+        if key in merged:
+            if isinstance(merged[key], dict) and isinstance(value, dict):
+                merged[key] = recursive_merge(merged[key], value)
+            else:
+                merged[key] = value
         else:
-            merged[k] = v
+            merged[key] = value
+
     if remove_empties:
         merged = remove_dict_empties(merged)
 
