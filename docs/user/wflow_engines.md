@@ -327,8 +327,8 @@ graph LR
     atoms2 = molecule("N2")
 
     # Run the workflow with Prefect tracking
-    future = workflow(atoms1, atoms2)
-    print(future.result())
+    future1, future2 = workflow(atoms1, atoms2)
+    print(future1.result(), future2.result())
     ```
     As expected, the Prefect Cloud UI shows two jobs that are not dependent on one another.
 

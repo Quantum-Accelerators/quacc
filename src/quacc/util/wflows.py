@@ -149,7 +149,7 @@ def subflow(
     elif wflow_engine == "prefect":
         from prefect import flow as prefect_flow
 
-        decorated = prefect_flow(_func, **kwargs)
+        decorated = prefect_flow(_func, validate_parameters=False, **kwargs)
     elif wflow_engine == "jobflow" or not wflow_engine:
         decorated = _func
     else:
