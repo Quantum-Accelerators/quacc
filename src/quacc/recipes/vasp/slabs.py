@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from quacc import job, subflow
+from quacc import flow, job, subflow
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.atoms import fetch_atoms
 from quacc.schemas.vasp import summarize_run
@@ -36,7 +36,7 @@ def slab_static_job(
     calc_swaps
         dictionary of custom kwargs for the calculator.
     copy_files
-        Absolute paths to files to copy to the runtime directory.
+        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -83,7 +83,7 @@ def slab_relax_job(
     calc_swaps
         Dictionary of custom kwargs for the calculator.
     copy_files
-        Absolute paths to files to copy to the runtime directory.
+        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -111,6 +111,7 @@ def slab_relax_job(
     return summarize_run(atoms, additional_fields={"name": "VASP Slab Relax"})
 
 
+@flow
 def bulk_to_slabs_flow(
     atoms: Atoms | dict,
     make_slabs_kwargs: dict | None = None,
@@ -179,6 +180,7 @@ def bulk_to_slabs_flow(
     return _relax_and_static_distributed(slabs)
 
 
+@flow
 def slab_to_ads_flow(
     slab: Atoms,
     adsorbate: Atoms,

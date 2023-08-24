@@ -87,10 +87,6 @@ plugins:
             - https://docs.pydantic.dev/latest/objects.inv
             - https://covalent.readthedocs.io/en/latest/objects.inv
             - https://click.palletsprojects.com/en/latest/objects.inv
-            - https://docs.prefect.io/latest/objects.inv
-            - https://prefecthq.github.io/prefect-dask/objects.inv
-            - https://docs.dask.org/en/latest/objects.inv
-            - https://jobqueue.dask.org/en/latest/objects.inv
           options:
             docstring_style: numpy
             docstring_section_style: list
@@ -126,8 +122,6 @@ nav:
       - install/install.md
       - install/wflow_engines.md
       - install/codes.md
-      - Advanced:
-          - install/config_db.md
   - User Guide 🧠:
       - user/basics.md
       - Workflow Basics:
@@ -137,9 +131,9 @@ nav:
       - user/executors.md
       - user/settings.md
       - Advanced:
-          - user/database.md
-          - user/file_transfers.md
-          - user/atomate2.md
+          - user/advanced/database.md
+          - user/advanced/file_transfers.md
+          - user/advanced/atomate2.md
   - Code Reference 📖:
       - Recipes:
           - user/recipes/emt.md

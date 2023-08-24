@@ -5,9 +5,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Literal
 
-from ase.atoms import Atoms
 from ase.optimize import FIRE
-from ase.optimize.optimize import Optimizer
 from ase.vibrations.data import VibrationsData
 from monty.dev import requires
 
@@ -25,6 +23,8 @@ from quacc.util.thermo import ideal_gas
 
 if TYPE_CHECKING:
     import numpy as np
+    from ase import Atoms
+    from ase.optimize.optimize import Optimizer
 
     from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
 

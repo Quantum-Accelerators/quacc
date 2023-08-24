@@ -28,12 +28,6 @@ try:
     WFLOW_IMPORT = "jobflow"
 except ImportError:
     pass
-try:
-    import prefect
-
-    WFLOW_IMPORT = "prefect"
-except ImportError:
-    pass
 
 
 _DEFAULT_CONFIG_FILE_PATH = os.path.join(os.path.expanduser("~"), ".quacc.yaml")
@@ -60,7 +54,7 @@ class QuaccSettings(BaseSettings):
         WFLOW_IMPORT,
         description=(
             "The workflow manager to use."
-            "Options include: 'covalent', 'parsl', 'jobflow', 'prefect', or None"
+            "Options include: 'covalent', 'parsl', 'jobflow', or None"
         ),
     )
 
