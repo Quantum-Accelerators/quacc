@@ -126,8 +126,6 @@ nav:
       - install/install.md
       - install/wflow_engines.md
       - install/codes.md
-      - Advanced:
-          - install/config_db.md
   - User Guide 🧠:
       - user/basics.md
       - Workflow Basics:
@@ -137,13 +135,13 @@ nav:
       - user/executors.md
       - user/settings.md
       - Advanced:
-          - user/database.md
-          - user/file_transfers.md
-          - user/atomate2.md
+          - user/advanced/database.md
+          - user/advanced/file_transfers.md
+          - user/advanced/atomate2.md
+  - Code Reference 📖: reference/
   - Developer Guide 🤝:
       - dev/contributing.md
       - dev/docs.md
-  - Code Reference 📖: reference/
   - About 📜:
       - about/faq.md
       - about/contributors.md

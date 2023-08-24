@@ -46,7 +46,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     **MongoDB Setup**
 
-    Jobflow and FireWorks both require the use of a database to store calculation results. If you haven't done so already, first create a Mongo database as described in the ["MongoDB Setup"](config_db.md) section.
+    Jobflow and FireWorks both require the use of a database (most commonly a MongoDB instance) to store calculation results.
 
     !!! Note
 

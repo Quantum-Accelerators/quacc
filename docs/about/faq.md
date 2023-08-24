@@ -28,7 +28,7 @@ A: Atomate2 is a fantastic code that can be used to run libraries of computation
 
 - Atomate2 is developed and supported by the [Materials Project](http://materialsproject.org/) team at Lawrence Berkeley National Laboratory. Quacc is developed and maintained by the [Rosen Research Group](https://cbe.princeton.edu/people/andrew-rosen) at Princeton University.
 
-Despite these differences, quacc and Atomate2 are largely interoperable! Feel free to [stitch together workflows](../user/atomate2.md) from both codes as you see fit using Jobflow!
+Despite these differences, quacc and Atomate2 are largely interoperable! Feel free to [stitch together workflows](../user/advanced/atomate2.md) from both codes as you see fit using Jobflow!
 
 **Q: I want to contribute a new recipe to quacc, but it will require additional dependencies. Is that a problem?**
 

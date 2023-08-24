@@ -2,11 +2,11 @@
 
 ## Introduction
 
-Here, we provide code snippets for several decorator-based workflow engines. For a comparison of the pros and cons of each approach, refer to the [Workflow Engines Overview](wflow_overview.md) page. We describe the specific of each workflow engine in more detail later in the documentation. Nonetheless, this page serves as a useful point of reference that is independent of quacc-specific details.
+Here, we provide code snippets for several decorator-based workflow engines. For a comparison of the pros and cons of each approach, refer to the [Workflow Engines Overview](wflow_overview.md) page. We describe the specifics of each workflow engine in more detail later in the documentation. Nonetheless, this page serves as a useful point of reference that is independent of quacc-specific details.
 
 !!! Tip
 
-    You don't need to learn the syntax for all the different workflow solutions. You only need to learn the syntax for the one you plan to use. The syntax is very similar across all of them regardless.
+    You don't need to learn the syntax for all the different workflow solutions. You only need to learn the syntax for the one you plan to use! Regardless, the syntax is quite similar across all of the workflow engines.
 
 ## Simple Workflow
 
@@ -21,24 +21,6 @@ In practice, we would want each of the two tasks to be their own compute job.
 graph LR
   A[Input] --> B(add) --> C(mult) --> D[Output];
 ```
-
-=== "No Workflow Engine"
-
-    ```python
-    def add(a, b):
-        return a + b
-
-
-    def mult(a, b):
-        return a * b
-
-
-    def workflow(a, b, c):
-        return mult(add(a, b), c)
-
-
-    result = workflow(1, 2, 3)  # 9
-    ```
 
 === "Covalent"
 
@@ -222,25 +204,6 @@ graph LR
   C --> E(add) --> G[Output];
   C --> F(add) --> G[Output];
 ```
-
-=== "No Workflow Engine"
-
-    ```python
-    import random
-
-
-    def add(a, b):
-        return a + b
-
-
-    def workflow(a, b, c):
-        add_result = add(a, b)
-        vals = [add_result] * random.randint(2, 5)
-        return [add(val, c) for val in vals]
-
-
-    result = workflow(1, 2, 3)  # e.g. [6, 6, 6]
-    ```
 
 === "Covalent"
 
