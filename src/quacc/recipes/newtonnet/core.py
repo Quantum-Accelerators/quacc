@@ -23,7 +23,6 @@ from quacc.util.thermo import ideal_gas
 
 if TYPE_CHECKING:
     import numpy as np
-
     from ase.atoms import Atoms
     from ase.optimize.optimize import Optimizer
 
