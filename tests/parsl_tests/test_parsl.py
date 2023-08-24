@@ -66,7 +66,7 @@ def test_tutorial1b(tmpdir):
     future = bulk_to_slabs_flow(atoms)  # (1)!
 
     # Print the results
-    assert "atoms" in future.result()  # (2)!
+    assert "atoms" in future.result()[0]  # (2)!
 
 
 @pytest.mark.skipif(
