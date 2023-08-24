@@ -11,7 +11,7 @@ from quacc.schemas.atoms import fetch_atoms
 from quacc.schemas.cclib import summarize_run
 from quacc.util.atoms import get_charge, get_multiplicity
 from quacc.util.calc import run_calc
-from quacc.util.dicts import remove_dict_empties
+from quacc.util.dicts import merge_dicts
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -78,7 +78,7 @@ def static_job(
         "gfinput": "",
         "ioplist": ["6/7=3", "2/9=2000"],  # see ASE issue #660
     }
-    flags = remove_dict_empties(defaults | calc_swaps)
+    flags = merge_dicts(defaults, calc_swaps)
 
     atoms.calc = Gaussian(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
@@ -149,7 +149,7 @@ def relax_job(
         "freq": "" if freq else None,
         "ioplist": ["2/9=2000"],  # ASE issue #660
     }
-    flags = remove_dict_empties(defaults | calc_swaps)
+    flags = merge_dicts(defaults, calc_swaps)
 
     atoms.calc = Gaussian(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
