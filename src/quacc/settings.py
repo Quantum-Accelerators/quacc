@@ -256,6 +256,7 @@ class QuaccSettings(BaseSettings):
 
     QCHEM_CUSTODIAN_MAX_ERRORS: int = Field(
         5, description="Maximum errors for Q-Chem Custodian."
+    )
 
     # ---------------------------
     # NewtonNet Settings
