@@ -8,7 +8,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
 !!! Tip
 
-    Generally, we highly recommend either **Covalent** or **Parsl** for most users. If you are new to workflow engines or would like a helpful UI to monitor workflows, try Covalent. If you have a need for speed and are savvy with supercomputers, try Parsl. If you are at Lawrence Berkeley National Laboratory, you'll probably want to use Jobflow.
+    Generally, we highly recommend either **Covalent** or **Parsl** for most users. If you are new to workflow engines or would like a helpful UI to monitor workflows, try Covalent. If you have a need for speed and are savvy with supercomputers, try Parsl.
 
 ### Pros and Cons
 
