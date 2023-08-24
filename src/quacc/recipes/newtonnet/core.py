@@ -245,7 +245,8 @@ def ts_job(
 
     if use_custom_hessian:
         if opt_flags["optimizer"].__name__ != "Sella":
-            raise ValueError("Custom hessian can only be used with Sella.")
+            msg = "Custom hessian can only be used with Sella."
+            raise ValueError(msg)
 
         opt_flags["optimizer_kwargs"]["hessian_function"] = _get_hessian
 

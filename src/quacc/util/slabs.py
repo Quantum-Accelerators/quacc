@@ -368,14 +368,10 @@ def make_adsorbate_structures(
     # Check for double-used parameters
     if min_distance and "distance" in find_ads_sites_kwargs:
         msg = "Cannot specify both min_distance and find_ads_sites_kwargs['distance']"
-        raise ValueError(
-            msg,
-        )
+        raise ValueError(msg)
     if modes and "positions" in find_ads_sites_kwargs:
         msg = "Cannot specify both modes and find_ads_sites_kwargs['positions']"
-        raise ValueError(
-            msg,
-        )
+        raise ValueError(msg)
     find_ads_sites_kwargs["distance"] = min_distance
     find_ads_sites_kwargs["positions"] = [mode.lower() for mode in modes]
 
@@ -385,11 +381,7 @@ def make_adsorbate_structures(
         idx not in atom_indices for idx in allowed_surface_indices
     ):
         msg = "All indices in allowed_surface_indices must be in atoms."
-        raise ValueError(
-            msg,
-            allowed_surface_indices,
-            atom_indices,
-        )
+        raise ValueError(msg, allowed_surface_indices, atom_indices)
 
     # Add 0.0 initial magmoms to atoms/adsorbate if needed
     if atoms.has("initial_magmoms") and not adsorbate.has("initial_magmoms"):
