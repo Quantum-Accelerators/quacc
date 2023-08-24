@@ -232,7 +232,7 @@ def ts_job(
         "fmax": 0.01,
         "max_steps": 1000,
         "optimizer": Sella,
-        "optimizer_kwargs": {"diag_every_n": 0} if use_custom_hessian else {},
+        "optimizer_kwargs": {"diag_every_n": 0} if use_custom_hessian else None,
     }
 
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
