@@ -47,7 +47,13 @@ class QuaccSettings(BaseSettings):
     # Workflow Engine
     # ---------------------------
     WORKFLOW_ENGINE: Optional[str] = Field(
-        covalent or parsl or jobflow,
+        "covalent"
+        if covalent
+        else "parsl"
+        if parsl
+        else "jobflow"
+        if jobflow
+        else None,
         description=(
             "The workflow manager to use."
             "Options include: 'covalent', 'parsl', 'jobflow', or None"
