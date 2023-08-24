@@ -70,9 +70,9 @@ graph LR
     print(result)
     ```
 
-    1. This will be automatically transformed into a `#!Python @ct.lattice` decorator.
+    1. The `#!Python @flow` decorator defines the workflow that will be executed.
 
-    2. This was defined in quacc with a `#!Python @job` decorator already, which will be transformed into a `#!Python @ct.electron` decorator.
+    2. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why did not need to include it here.
 
     3. Because the workflow is only sent to the server with `ct.dispatch`, calling `workflow(atoms)` would run the workflow as if Covalent were not being used at all.
 
@@ -121,7 +121,7 @@ graph LR
     print(future2.result())  # (2)!
     ```
 
-    1. This was defined in quacc with a `#!Python @job` decorator already, which will be transformed into a `#!Python @PythonApp` decorator since the `WORKFLOW_ENGINE` is set to `"parsl"`.
+    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why did not need to include it here.
 
     2. The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object.
 
@@ -162,7 +162,7 @@ graph LR
     print(result)
     ```
 
-    1. This was defined in quacc with a `#!Python @job` decorator already, which will be transformed into a `Job` object since the `WORKFLOW_ENGINE` is set to `"jobflow"`.
+    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why did not need to include it here.
 
     2. In Jobflow, each `Job` is only a reference and so the `.output` must be explicitly passed between jobs.
 
@@ -206,7 +206,7 @@ graph LR
 
     1. This will be automatically transformed into a Prefect `#!Python @flow` decorator since `WORKFLOW_ENGINE="prefect"`.
 
-    2. This was defined in quacc with a `#!Python @job` decorator already, which will be transformed into a `#!Python @task` decorator since the `WORKFLOW_ENGINE` is set to `"prefect"`. It's necessary to call `.submit` on all Prefect `Task` objects to ensure they are executed concurrently (if possible).
+    2. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why did not need to include it here. It's necessary to call `.submit` on all Prefect `Task` objects to ensure they are executed concurrently (if possible).
 
     3. The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `PrefectFuture` object.
 
@@ -327,8 +327,8 @@ graph LR
     atoms2 = molecule("N2")
 
     # Run the workflow with Prefect tracking
-    future1, future2 = workflow(atoms1, atoms2)
-    print(future1.result(), future2.result())
+    future = workflow(atoms1, atoms2)
+    print(future.result())
     ```
     As expected, the Prefect Cloud UI shows two jobs that are not dependent on one another.
 

@@ -78,9 +78,10 @@ def test_tutorial2(tmpdir):
     atoms2 = molecule("N2")
 
     # Run the workflow with Prefect tracking
-    future1, future2 = workflow(atoms1, atoms2)
-    assert "atoms" in future1.result()
-    assert "atoms" in future2.result()
+    future = workflow(atoms1, atoms2)
+    result = future.result()
+    assert "atoms" in result[0]
+    assert "atoms" in result[1]
 
 
 @pytest.mark.skipif(
