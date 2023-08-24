@@ -202,7 +202,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     pip install "quacc[prefect] @ git+https://github.com/Quantum-Accelerators/quacc.git"
     ```
 
-    Then, cary out the following steps to prepare Prefect for use with Prefect Cloud:
+    Then carry out the following steps to prepare Prefect for use with Prefect Cloud:
 
     1. Make an account on [Prefect Cloud](https://app.prefect.cloud/)
     2. Make an [API Key](https://docs.prefect.io/cloud/users/api-keys/) and (optionally) store it in a `PREFECT_API_KEY` environment variable (e.g. in your `~/.bashrc`)
