@@ -2,7 +2,7 @@
 
 Oftentimes, it is beneficial to store the results in a database for easy querying (like the example below). This is quite simple to do in quacc regardless of the workflow manager you are using by taking advantage of the numerous data store options in [maggma](https://github.com/materialsproject/maggma).
 
-![Mongo example](../images/user/schema.gif)
+![Mongo example](../../images/user/schema.gif)
 
 === "General Purpose"
 
@@ -80,4 +80,4 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
 
 === "Jobflow"
 
-    If you are using Jobflow to construct your workflows, it will automatically store the results in the database you defined during the [setup process](../install/wflow_engines.md). No additional steps are needed.
+    If you are using Jobflow to construct your workflows, it will automatically store the results in the database you defined during the [setup process](../../install/wflow_engines.md). No additional steps are needed.

@@ -23,7 +23,7 @@ from quacc.util.thermo import ideal_gas
 
 if TYPE_CHECKING:
     import numpy as np
-    from ase.atoms import Atoms
+    from ase import Atoms
     from ase.optimize.optimize import Optimizer
 
     from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
@@ -245,8 +245,7 @@ def ts_job(
 
     if use_custom_hessian:
         if opt_flags["optimizer"].__name__ != "Sella":
-            msg = "Custom hessian can only be used with Sella."
-            raise ValueError(msg)
+            raise ValueError("Custom hessian can only be used with Sella.")
 
         opt_flags["optimizer_kwargs"]["hessian_function"] = _get_hessian
 
