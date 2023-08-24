@@ -98,17 +98,11 @@ def flow(
         import covalent as ct
 
         decorated = ct.lattice(_func, **kwargs)
-    elif wflow_engine == "jobflow":
-        raise NotImplementedError(
-            "Jobflow is not compatible with the use of a @flow decorator. Instead, you should use the `Flow()` object in Jobflow to stitch together individual compute jobs."
-        )
-    elif wflow_engine == "parsl":
-        decorated = _func
     elif wflow_engine == "prefect":
         from prefect import flow as prefect_flow
 
         decorated = prefect_flow(_func, **kwargs)
-    elif not wflow_engine:
+    elif wflow_engine in {"jobflow", "parsl"} or not wflow_engine:
         decorated = _func
     else:
         msg = f"Unknown workflow engine: {wflow_engine}"
@@ -148,10 +142,6 @@ def subflow(
         import covalent as ct
 
         decorated = ct.electron(ct.lattice(_func), **kwargs)
-    elif wflow_engine == "jobflow":
-        raise NotImplementedError(
-            "Jobflow is not compatible with the use of a @subflow decorator. Instead, you should use the `Response` object in Jobflow to create a dynamic workflow."
-        )
     elif wflow_engine == "parsl":
         from parsl import join_app
 
@@ -160,7 +150,7 @@ def subflow(
         from prefect import flow as prefect_flow
 
         decorated = prefect_flow(_func, **kwargs)
-    elif not wflow_engine:
+    elif wflow_engine == "jobflow" or not wflow_engine:
         decorated = _func
     else:
         msg = f"Unknown workflow engine: {wflow_engine}"
