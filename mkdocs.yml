@@ -127,8 +127,10 @@ nav:
       - Workflow Basics:
           - user/wflow_overview.md
           - user/wflow_syntax.md
-      - user/wflow_engines.md
-      - user/executors.md
+      - Using a Workflow Engine:
+          - user/wflow_engine/wflow_engines1.md
+          - user/wflow_engine/wflow_engines2.md
+          - user/wflow_engine/executors.md
       - user/settings.md
       - Advanced:
           - user/advanced/database.md

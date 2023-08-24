@@ -18,11 +18,49 @@ WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else
     jf is None or WFLOW_ENGINE != "jobflow",
     reason="Jobflow is not installed or specified in config",
 )
-def test_tutorial1(tmpdir):
+def test_tutorial1a(tmpdir):
+    tmpdir.chdir()
+    import jobflow as jf
+    from ase.build import bulk
+
+    from quacc.recipes.emt.core import relax_job
+
+    # Make an Atoms object of a bulk Cu structure
+    atoms = bulk("Cu")
+
+    # Define the Job
+    job = relax_job(atoms)  # (1)!
+
+    # Run the job locally
+    jf.run_locally(job, create_folders=True, ensure_success=True)
+
+
+def test_tutorial1b(tmpdir):
+    tmpdir.chdir()
+    import jobflow as jf
+    from ase.build import bulk
+
+    from quacc.recipes.emt._jobflow.slabs import bulk_to_slabs_flow
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Construct the Flow
+    flow = bulk_to_slabs_flow(atoms)
+
+    # Run the workflow locally
+    jf.run_locally(flow, create_folders=True, ensure_success=True)
+
+
+@pytest.mark.skipif(
+    jf is None or WFLOW_ENGINE != "jobflow",
+    reason="Jobflow is not installed or specified in config",
+)
+def test_tutorial2a(tmpdir):
     tmpdir.chdir()
 
+    import jobflow as jf
     from ase.build import bulk
-    from jobflow import Flow, run_locally
 
     from quacc.recipes.emt.core import relax_job, static_job
 
@@ -36,21 +74,21 @@ def test_tutorial1(tmpdir):
     job2 = static_job(job1.output)  # (2)!
 
     # Define the workflow
-    workflow = Flow([job1, job2])
+    workflow = jf.Flow([job1, job2])
 
     # Run the workflow locally
-    run_locally(workflow, create_folders=True)
+    jf.run_locally(workflow, create_folders=True, ensure_success=True)
 
 
 @pytest.mark.skipif(
     jf is None or WFLOW_ENGINE != "jobflow",
     reason="Jobflow is not installed or specified in config",
 )
-def test_tutorial2(tmpdir):
+def test_tutorial2b(tmpdir):
     tmpdir.chdir()
 
+    import jobflow as jf
     from ase.build import bulk, molecule
-    from jobflow import Flow, run_locally
 
     from quacc.recipes.emt.core import relax_job
 
@@ -63,21 +101,21 @@ def test_tutorial2(tmpdir):
     job2 = relax_job(atoms2)
 
     # Define the workflow
-    workflow = Flow([job1, job2])
+    workflow = jf.Flow([job1, job2])
 
     # Run the workflow locally
-    run_locally(workflow, create_folders=True)
+    jf.run_locally(workflow, create_folders=True, ensure_success=True)
 
 
 @pytest.mark.skipif(
     jf is None or WFLOW_ENGINE != "jobflow",
     reason="Jobflow is not installed or specified in config",
 )
-def test_tutorial3(tmpdir):
+def test_tutorial2c(tmpdir):
     tmpdir.chdir()
 
+    import jobflow as jf
     from ase.build import bulk
-    from jobflow import Flow, run_locally
 
     from quacc.recipes.emt._jobflow.slabs import bulk_to_slabs_flow
     from quacc.recipes.emt.core import relax_job
@@ -88,10 +126,10 @@ def test_tutorial3(tmpdir):
     # Construct the Flow
     job1 = relax_job(atoms)
     job2 = bulk_to_slabs_flow(job1.output, slab_static=None)
-    workflow = Flow([job1, job2])
+    workflow = jf.Flow([job1, job2])
 
     # Run the workflow locally
-    run_locally(workflow, create_folders=True)
+    jf.run_locally(workflow, create_folders=True, ensure_success=True)
 
 
 @pytest.mark.skipif(
@@ -101,17 +139,21 @@ def test_tutorial3(tmpdir):
 def test_comparison1(tmpdir):
     tmpdir.chdir()
 
-    @jf.job
+    import jobflow as jf
+
+    from quacc import job
+
+    @job  # (1)!
     def add(a, b):
         return a + b
 
-    @jf.job
+    @job
     def mult(a, b):
         return a * b
 
     job1 = add(1, 2)
     job2 = mult(job1.output, 3)
-    flow = jf.Flow([job1, job2])
+    flow = jf.Flow([job1, job2])  # (2)!
 
     responses = jf.run_locally(flow, ensure_success=True)
     assert responses[job2.uuid][1].output == 9

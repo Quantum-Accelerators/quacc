@@ -4,7 +4,7 @@
 
 !!! Tip
 
-    Refer to the [Using a Workflow Engine](wflow_engines.md) guide for more information on how to use Jobflow with quacc.
+    Refer to the [Using a Workflow Engine](../wflow_engine/wflow_engines1.md) guide for more information on how to use Jobflow with quacc.
 
 For instance, consider a toy example where you want to relax a bulk Cu structure using the `tblite` calculator in quacc, which you then use to run a VASP relaxation and bandstructure workflow in Atomate2. That would look like the following.
 
