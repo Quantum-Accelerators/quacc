@@ -86,6 +86,10 @@ def test_tutorial1b(tmpdir):
     assert result.status == "COMPLETED"
 
 
+@pytest.mark.skipif(
+    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+    reason="This test is only meant to be run on GitHub Actions",
+)
 def test_tutorial2a(tmpdir):
     tmpdir.chdir()
     import covalent as ct

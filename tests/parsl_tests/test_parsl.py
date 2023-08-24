@@ -39,6 +39,10 @@ def test_tutorial1a(tmpdir):
     assert "atoms" in future.result()  # (2)!
 
 
+@pytest.mark.skipif(
+    parsl is None or WFLOW_ENGINE != "parsl",
+    reason="Parsl is not installed or specified in config",
+)
 def test_tutorial1b(tmpdir):
     tmpdir.chdir()
 
@@ -141,8 +145,8 @@ def test_tutorial2c(tmpdir):
 
 
 @pytest.mark.skipif(
-    parsl is None,
-    reason="Parsl is not installed",
+    parsl is None or WFLOW_ENGINE != "parsl",
+    reason="Parsl is not installed or specified in config",
 )
 def test_comparison1(tmpdir):
     tmpdir.chdir()
@@ -164,8 +168,8 @@ def test_comparison1(tmpdir):
 
 
 @pytest.mark.skipif(
-    parsl is None,
-    reason="Parsl is not installed",
+    parsl is None or WFLOW_ENGINE != "parsl",
+    reason="Parsl is not installed or specified in config",
 )
 def test_comparison2(tmpdir):
     tmpdir.chdir()

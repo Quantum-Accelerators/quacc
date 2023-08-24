@@ -35,6 +35,10 @@ def test_tutorial1a(tmpdir):
     jf.run_locally(job, create_folders=True, ensure_success=True)
 
 
+@pytest.mark.skipif(
+    jf is None or WFLOW_ENGINE != "jobflow",
+    reason="Jobflow is not installed or specified in config",
+)
 def test_tutorial1b(tmpdir):
     tmpdir.chdir()
     import jobflow as jf
@@ -133,8 +137,8 @@ def test_tutorial2c(tmpdir):
 
 
 @pytest.mark.skipif(
-    jf is None,
-    reason="Jobflow is not installed",
+    jf is None or WFLOW_ENGINE != "jobflow",
+    reason="Jobflow is not installed or specified in config",
 )
 def test_comparison1(tmpdir):
     tmpdir.chdir()
@@ -160,8 +164,8 @@ def test_comparison1(tmpdir):
 
 
 @pytest.mark.skipif(
-    jf is None,
-    reason="Jobflow is not installed",
+    jf is None or WFLOW_ENGINE != "jobflow",
+    reason="Jobflow is not installed or specified in config",
 )
 def test_comparison2(tmpdir):
     tmpdir.chdir()
