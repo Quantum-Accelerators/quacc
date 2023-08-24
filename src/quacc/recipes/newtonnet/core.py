@@ -20,7 +20,14 @@ from quacc.schemas.ase import (
 )
 from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_ase_opt, run_calc
+from quacc.util.dicts import merge_dicts
 from quacc.util.thermo import ideal_gas
+
+if TYPE_CHECKING:
+    import numpy as np
+
+    from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
+
 
 try:
     from sella import IRC, Sella
@@ -31,12 +38,6 @@ try:
     from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
 except ImportError:
     NewtonNet = None
-
-
-if TYPE_CHECKING:
-    import numpy as np
-
-    from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
 
 
 @job
@@ -149,9 +150,9 @@ def freq_job(
     atoms
         The atoms object representing the system.
     temperature
-        The temperature for the thermodynamic analysis (default: 298.15 K).
+        The temperature for the thermodynamic analysis.
     pressure
-        The pressure for the thermodynamic analysis (default: 1.0 atm).
+        The pressure for the thermodynamic analysis.
 
     Returns
     -------
@@ -211,13 +212,13 @@ def ts_job(
     use_custom_hessian
         Whether to use a custom Hessian matrix.
     temperature
-        The temperature for the frequency calculation (default: 298.15 K).
+        The temperature for the frequency calculation in Kelvins.
     pressure
-        The pressure for the frequency calculation (default: 1.0 atm).
+        The pressure for the frequency calculation in bar.
     check_convergence
-        Whether to check the convergence of the optimization (default: True).
+        Whether to check the convergence of the optimization.
     opt_swaps
-        Optional swaps for the optimization parameters (default: None).
+        Optional swaps for the optimization parameters.
 
     Returns
     -------
@@ -234,12 +235,7 @@ def ts_job(
         "optimizer_kwargs": {"diag_every_n": 0} if use_custom_hessian else {},
     }
 
-    if "optimizer_kwargs" in opt_swaps:
-        opt_swaps["optimizer_kwargs"] = (
-            opt_defaults["optimizer_kwargs"] | opt_swaps["optimizer_kwargs"]
-        )
-
-    opt_flags = opt_defaults | opt_swaps
+    opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
     # Define calculator
     atoms.calc = NewtonNet(
@@ -271,9 +267,7 @@ def ts_job(
     ts_summary = _add_stdev_and_hess(ts_summary)
 
     # Run a frequency calculation
-    thermo_summary = freq_job.original_func(
-        ts_summary, temperature=temperature, pressure=pressure
-    )
+    thermo_summary = freq_job(ts_summary, temperature=temperature, pressure=pressure)
 
     return {"ts": ts_summary, "thermo": thermo_summary}
 
@@ -298,17 +292,17 @@ def irc_job(
     atoms
         The atoms object representing the system.
     fmax
-        Tolerance for the force convergence (in eV/A) (default: 0.01).
+        Tolerance for the force convergence (in eV/A).
     max_steps
-        Maximum number of steps to take (default: 1000).
+        Maximum number of steps to take.
     temperature
-        The temperature for the frequency calculation (default: 298.15 K).
+        The temperature for the frequency calculation in Kelvins.
     pressure
-        The pressure for the frequency calculation (default: 1.0 atm).
+        The pressure for the frequency calculation in bar.
     check_convergence
-        Whether to check the convergence of the optimization (default: False).
+        Whether to check the convergence of the optimization.
     opt_swaps
-        Optional swaps for the optimization parameters (default: None).
+        Optional swaps for the optimization parameters.
 
     Returns
     -------
@@ -330,11 +324,8 @@ def irc_job(
             "direction": "forward",
         },
     }
-    if "optimizer_kwargs" in opt_swaps:
-        opt_swaps["optimizer_kwargs"] = (
-            opt_defaults["optimizer_kwargs"] | opt_swaps["optimizer_kwargs"]
-        )
-    opt_flags = opt_defaults | opt_swaps
+
+    opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
     # Define calculator
     atoms.calc = NewtonNet(
@@ -378,15 +369,15 @@ def quasi_irc_job(
     atoms
         The atoms object representing the system.
     direction
-        The direction of the IRC calculation ("forward" or "reverse") (default: "forward").
+        The direction of the IRC calculation ("forward" or "reverse").
     temperature
-        The temperature for the frequency calculation (default: 298.15 K).
+        The temperature for the frequency calculation in Kelvins.
     pressure
-        The pressure for the frequency calculation (default: 1.0 atm).
+        The pressure for the frequency calculation in bar.
     irc_swaps
-        Optional swaps for the IRC optimization parameters (default: None).
+        Optional swaps for the IRC optimization parameters.
     opt_swaps
-        Optional swaps for the optimization parameters (default: None).
+        Optional swaps for the optimization parameters.
 
     Returns
     -------
@@ -397,17 +388,17 @@ def quasi_irc_job(
     opt_swaps = opt_swaps or {}
 
     irc_defaults = {"run_kwargs": {"direction": direction.lower()}}
-    irc_flags = irc_defaults | irc_swaps
+    irc_flags = merge_dicts(irc_defaults, irc_swaps)
     opt_swaps = opt_swaps or {}
 
     opt_defaults = {}
-    opt_flags = opt_defaults | opt_swaps
+    opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
     # Run IRC
     irc_summary = irc_job.original_func(atoms, max_steps=5, opt_swaps=irc_flags)
 
     # Run opt
-    opt_summary = relax_job.original_func(irc_summary["irc"]["atoms"], **opt_flags)
+    opt_summary = relax_job.original_func(irc_summary["irc"], **opt_flags)
 
     # Run frequency
     thermo_summary = freq_job(

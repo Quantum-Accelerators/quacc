@@ -48,6 +48,7 @@ where `<extra>` is one of the following:
 ### Miscellaneous
 
 - `quacc[optimizers]`: Installs dependencies to enable the use of the [Sella optimizer](https://github.com/zadorlab/sella).
+- `quacc[newtonnet]`: Installs dependencies to enable the use [NewtonNet](https://doi.org/10.1039/D2DD00008C) recipes.
 
 ### Development
 

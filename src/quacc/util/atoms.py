@@ -294,7 +294,7 @@ def check_is_metal(atoms: Atoms) -> bool:
     else:
         struct = AseAtomsAdaptor.get_molecule(atoms)
 
-    return all(k.is_metal for k in struct.composition.keys())
+    return all(k.is_metal for k in struct.composition)
 
 
 def copy_atoms(atoms: Atoms) -> Atoms:
