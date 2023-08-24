@@ -38,7 +38,7 @@ def static_job(
     calc_swaps
         Dictionary of custom kwargs for the EMT calculator
     copy_files
-        Absolute paths to files to copy to the runtime directory.
+        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -80,7 +80,7 @@ def relax_job(
     opt_swaps
         Dictionary of swaps for `run_ase_opt`
     copy_files
-        Absolute paths to files to copy to the runtime directory.
+        Files to copy to the runtime directory.
 
     Returns
     -------
