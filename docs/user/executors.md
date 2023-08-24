@@ -225,7 +225,7 @@ In the previous examples, we have been running calculations on our local machine
 
 === "Jobflow"
 
-    Out-of-the box, Jobflow can be used to run on your local machine. You will, however, need a "manager" to run your workflows on HPC machines. The currently recommended manager for Jobflow is FireWorks, which is described here.
+    Out-of-the-box, Jobflow can be used to run on your local machine. You will, however, need a "manager" to run your workflows on HPC machines. The currently recommended manager for Jobflow is FireWorks, which is described here.
 
     **Converting Between Jobflow and FireWorks**
 
