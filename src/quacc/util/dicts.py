@@ -28,7 +28,7 @@ def merge_dicts(dict1: dict, dict2: dict, remove_empties: bool = True) -> dict:
     for key, value in dict2.items():
         if key in merged:
             if isinstance(merged[key], dict) and isinstance(value, dict):
-                merged[key] = recursive_merge(merged[key], value)
+                merged[key] = merge_dicts(merged[key], value)
             else:
                 merged[key] = value
         else:
