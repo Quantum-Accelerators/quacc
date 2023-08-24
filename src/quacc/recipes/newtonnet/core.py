@@ -271,10 +271,8 @@ def ts_job(
     ts_summary = _add_stdev_and_hess(ts_summary)
 
     # Run a frequency calculation
-    thermo_summary = freq_job(
-        ts_summary["atoms"],
-        temperature=temperature,
-        pressure=pressure,
+    thermo_summary = freq_job.original_func(
+        ts_summary, temperature=temperature, pressure=pressure
     )
 
     return {"ts": ts_summary, "thermo": thermo_summary}
@@ -355,10 +353,8 @@ def irc_job(
     summary_irc = _add_stdev_and_hess(summary_irc)
 
     # Run frequency job
-    thermo_summary = freq_job(
-        summary_irc["atoms"],
-        temperature=temperature,
-        pressure=pressure,
+    thermo_summary = freq_job.original_func(
+        summary_irc, temperature=temperature, pressure=pressure
     )
     return {"irc": summary_irc, "thermo": thermo_summary}
 
