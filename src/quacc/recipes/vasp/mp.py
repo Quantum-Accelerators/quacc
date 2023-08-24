@@ -15,6 +15,7 @@ from quacc.calculators.vasp import Vasp
 from quacc.schemas.atoms import fetch_atoms
 from quacc.schemas.vasp import summarize_run
 from quacc.util.calc import run_calc
+from quacc.util.dicts import merge_dicts
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -53,7 +54,7 @@ def mp_prerelax_job(
     calc_swaps = calc_swaps or {}
 
     defaults = {"ediffg": -0.05, "xc": "pbesol"}
-    flags = defaults | calc_swaps
+    flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
 
     atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, copy_files=copy_files)
@@ -97,6 +98,7 @@ def mp_relax_job(
     return summarize_run(atoms, additional_fields={"name": "MP-Relax"})
 
 
+@job
 def mp_relax_flow(
     atoms: Atoms | dict,
     prerelax: callable | None = mp_prerelax_job,
@@ -133,22 +135,18 @@ def mp_relax_flow(
     relax_kwargs = relax_kwargs or {}
 
     # Run the prerelax
-    prerelax_results = prerelax(atoms, **prerelax_kwargs)
+    prerelax_results = prerelax.original_func(atoms, **prerelax_kwargs)
 
     # Update KSPACING arguments
-    bandgap = prerelax_results["output"]["bandgap"]
+    bandgap = prerelax_results["output"].get("bandgap", 0)
     if bandgap < 1e-4:
-        kspacing_swaps = {"kspacing": 0.22, "sigma": 0.2, "ismear": 2, "kpts": None}
+        kspacing_swaps = {"kspacing": 0.22, "sigma": 0.2, "ismear": 2}
     else:
         rmin = 25.22 - 2.87 * bandgap
         kspacing = 2 * np.pi * 1.0265 / (rmin - 1.0183)
-        kspacing_swaps = {
-            "kspacing": min(kspacing, 0.44),
-            "ismear": -5,
-            "sigma": 0.05,
-            "kpts": None,
-        }
+        kspacing_swaps = {"kspacing": min(kspacing, 0.44), "ismear": -5, "sigma": 0.05}
+
     relax_kwargs["calc_swaps"] = kspacing_swaps | relax_kwargs.get("calc_swaps", {})
 
     # Run the relax
-    return relax(prerelax_results, copy_files=["WAVECAR"], **relax_kwargs)
+    return relax.original_func(prerelax_results, copy_files=["WAVECAR"], **relax_kwargs)

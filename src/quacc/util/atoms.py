@@ -82,7 +82,7 @@ def prep_next_run(
             # If there are initial magmoms set, then we should see what the final
             # magmoms are. If they are present, move them to initial. If they are not
             # present, it means the calculator doesn't support the "magmoms" property
-            # so we have to retain the initial magmoms given no futher info.
+            # so we have to retain the initial magmoms given no further info.
             if atoms.has("initial_magmoms"):
                 atoms.set_initial_magnetic_moments(
                     atoms.calc.results.get(
@@ -294,7 +294,7 @@ def check_is_metal(atoms: Atoms) -> bool:
     else:
         struct = AseAtomsAdaptor.get_molecule(atoms)
 
-    return all(k.is_metal for k in struct.composition.keys())
+    return all(k.is_metal for k in struct.composition)
 
 
 def copy_atoms(atoms: Atoms) -> Atoms:

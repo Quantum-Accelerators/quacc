@@ -10,11 +10,11 @@ Here, we will show how to use quacc with one of a variety of workflow engines to
 
 As described in the ["Workflow Syntax"](wflow_syntax.md) section, each workflow engine has its own unique syntax. To help streamline the process, quacc offers a unified set of decorators.
 
-| Quacc               | Covalent                             | Parsl                  | Jobflow         | Prefect          |
-| ------------------- | ------------------------------------ | ---------------------- | --------------- | ---------------- |
-| `#!Python @job`     | `#!Python @ct.electron`              | `#!Python @python_app` | `#!Python @job` | `#!Python @task` |
-| `#!Python @flow`    | `#!Python @ct.lattice`               | N/A                    | N/A             | `#!Python @flow` |
-| `#!Python @subflow` | `#!Python @ct.electron(@ct.lattice)` | `#!Python @join_app`   | N/A             | `#!Python @flow` |
+| Quacc                                                                                                                          | Covalent                                                                                                                       | Parsl                                                                                            | Jobflow                                                                                                 | Prefect                                                            |
+| ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| [`#!Python @job`](https://quantum-accelerators.github.io/quacc/reference/quacc/util/wflows.html#quacc.util.wflows.job)         | [`#!Python @ct.electron`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#electron)                 | [`#!Python @python_app`](https://parsl.readthedocs.io/en/stable/userguide/apps.html#python-apps) | [`#!Python @job`](https://materialsproject.github.io/jobflow/jobflow.core.html#module-jobflow.core.job) | [`#!Python @task`](https://docs.prefect.io/latest/tutorial/tasks/) |
+| [`#!Python @flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/util/wflows.html#quacc.util.wflows.flow)       | [`#!Python @ct.lattice`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#lattice)                   | N/A                                                                                              | N/A                                                                                                     | [`#!Python @flow`](https://docs.prefect.io/latest/tutorial/flows/) |
+| [`#!Python @subflow`](https://quantum-accelerators.github.io/quacc/reference/quacc/util/wflows.html#quacc.util.wflows.subflow) | [`#!Python @ct.electron(@ct.lattice)`](https://docs.covalent.xyz/docs/user-documentation/how-to/execution/execute-sublattice/) | [`#!Python @join_app`](https://parsl.readthedocs.io/en/latest/userguide/joins.html#join-apps)    | N/A                                                                                                     | [`#!Python @flow`](https://docs.prefect.io/latest/tutorial/flows/) |
 
 The `#!Python @job` decorator indicates that the decorated function is a single step in a workflow. The `#!Python @flow` decorator indicates that the decorated function is a full workflow, consisting of many individual `#!Python @job`-decorated functions (and/or `#!Python @subflow`-decorated functions). The `#!Python @subflow` decorator indicates that the decorated function is a sub-workflow within a larger workflow and is often used to define dynamic workflows.
 
@@ -98,6 +98,7 @@ graph LR
 
         ```python
         import parsl
+
         parsl.load()
         ```
 
@@ -111,13 +112,13 @@ graph LR
     atoms = bulk("Cu")
 
     # Call App 1
-    future1 = relax_job(atoms) # (1)!
+    future1 = relax_job(atoms)  # (1)!
 
     # Call App 2, which takes the output of App 1 as input
     future2 = static_job(future1)
 
     # Print result
-    print(future2.result()) # (2)!
+    print(future2.result())  # (2)!
     ```
 
     1. This was defined in quacc with a `#!Python @job` decorator already, which will be transformed into a `#!Python @PythonApp` decorator since the `WORKFLOW_ENGINE` is set to `"parsl"`.

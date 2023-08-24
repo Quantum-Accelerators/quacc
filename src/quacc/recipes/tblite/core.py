@@ -15,6 +15,7 @@ from quacc.schemas.ase import (
 )
 from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
+from quacc.util.dicts import merge_dicts
 from quacc.util.thermo import ideal_gas
 
 if TYPE_CHECKING:
@@ -105,7 +106,7 @@ def relax_job(
     opt_swaps = opt_swaps or {}
 
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
-    opt_flags = opt_defaults | opt_swaps
+    opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
     atoms.calc = TBLite(method=method, **calc_swaps)
     dyn = run_ase_opt(atoms, relax_cell=relax_cell, copy_files=copy_files, **opt_flags)

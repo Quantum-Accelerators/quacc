@@ -12,7 +12,7 @@ from quacc.schemas.atoms import fetch_atoms
 from quacc.schemas.cclib import summarize_run
 from quacc.util.atoms import get_charge, get_multiplicity
 from quacc.util.calc import run_calc
-from quacc.util.dicts import remove_dict_empties
+from quacc.util.dicts import merge_dicts
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -88,8 +88,8 @@ def static_job(
     }
     default_blocks = {}
 
-    inputs = remove_dict_empties(default_inputs | input_swaps)
-    blocks = remove_dict_empties(default_blocks | block_swaps)
+    inputs = merge_dicts(default_inputs, input_swaps)
+    blocks = merge_dicts(default_blocks, block_swaps)
     orcasimpleinput = " ".join(list(inputs.keys()))
     orcablocks = " ".join(list(blocks.keys()))
 
@@ -177,8 +177,8 @@ def relax_job(
     }
     default_blocks = {}
 
-    inputs = remove_dict_empties(default_inputs | input_swaps)
-    blocks = remove_dict_empties(default_blocks | block_swaps)
+    inputs = merge_dicts(default_inputs, input_swaps)
+    blocks = merge_dicts(default_blocks, block_swaps)
     orcasimpleinput = " ".join(list(inputs.keys()))
     orcablocks = " ".join(list(blocks.keys()))
 

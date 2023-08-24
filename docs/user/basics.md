@@ -38,7 +38,33 @@ With the `Atoms` object defined, we then imported a desired recipe and instantia
 The recipe output (`result`) is a bit too large to print here; nonetheless, for context, it is a dictionary that has the following primary keys:
 
 ```python
-['atoms', 'atoms_info', 'builder_meta', 'chemsys', 'composition', 'composition_reduced', 'density', 'density_atomic', 'dir_name', 'elements', 'formula_anonymous', 'formula_pretty', 'input_structure', 'name', 'nelements', 'nid', 'nsites', 'parameters', 'parameters_opt', 'results', 'structure', 'symmetry', 'trajectory', 'trajectory_results', 'volume']
+[
+    "atoms",
+    "atoms_info",
+    "builder_meta",
+    "chemsys",
+    "composition",
+    "composition_reduced",
+    "density",
+    "density_atomic",
+    "dir_name",
+    "elements",
+    "formula_anonymous",
+    "formula_pretty",
+    "input_structure",
+    "name",
+    "nelements",
+    "nid",
+    "nsites",
+    "parameters",
+    "parameters_opt",
+    "results",
+    "structure",
+    "symmetry",
+    "trajectory",
+    "trajectory_results",
+    "volume",
+]
 ```
 
 The `"atoms"` key contains a copy of the output `Atoms` object, the `"results"` key contains a dictionary of the results of the calculation, and the `"parameters"` key contains a dictionary of the parameters used in the calculation.

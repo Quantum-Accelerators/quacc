@@ -149,6 +149,25 @@ def test_tutorial5(tmpdir):
     os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
     reason="This test is only meant to be run on GitHub Actions",
 )
+def test_tutorial5b(tmpdir):
+    tmpdir.chdir()
+
+    @flow
+    def workflow5b(atoms):
+        relaxed_bulk = relax_job(atoms)
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, slab_static=static_job)
+        return relaxed_slabs
+
+    atoms = bulk("Cu")
+    dispatch_id = ct.dispatch(workflow5b)(atoms)
+    result = ct.get_result(dispatch_id, wait=True)
+    assert result.status == "COMPLETED"
+
+
+@pytest.mark.skipif(
+    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+    reason="This test is only meant to be run on GitHub Actions",
+)
 def test_tutorial6(tmpdir):
     tmpdir.chdir()
 
