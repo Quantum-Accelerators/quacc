@@ -97,6 +97,7 @@ def mp_relax_job(
     return summarize_run(atoms, additional_fields={"name": "MP-Relax"})
 
 
+@job
 def mp_relax_flow(
     atoms: Atoms | dict,
     prerelax: callable | None = mp_prerelax_job,
@@ -133,7 +134,7 @@ def mp_relax_flow(
     relax_kwargs = relax_kwargs or {}
 
     # Run the prerelax
-    prerelax_results = prerelax(atoms, **prerelax_kwargs)
+    prerelax_results = prerelax.original_func(atoms, **prerelax_kwargs)
 
     # Update KSPACING arguments
     bandgap = prerelax_results["output"].get("bandgap", 0)
@@ -147,4 +148,4 @@ def mp_relax_flow(
     relax_kwargs["calc_swaps"] = kspacing_swaps | relax_kwargs.get("calc_swaps", {})
 
     # Run the relax
-    return relax(prerelax_results, copy_files=["WAVECAR"], **relax_kwargs)
+    return relax.original_func(prerelax_results, copy_files=["WAVECAR"], **relax_kwargs)
