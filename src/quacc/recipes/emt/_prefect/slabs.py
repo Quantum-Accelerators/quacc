@@ -1,18 +1,24 @@
 """Slab recipes for EMT based on Prefect"""
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from prefect.futures import PrefectFuture, Sync
 
 from quacc import flow, job
 from quacc.recipes.emt.slabs import relax_job, static_job
-from quacc.schemas.ase import OptSchema, RunSchema
 from quacc.schemas.atoms import fetch_atoms
 from quacc.util.slabs import make_max_slabs_from_bulk
+
+if TYPE_CHECKING:
+    from ase import Atoms
+
+    from quacc.schemas.ase import OptSchema, RunSchema
 
 
 @flow
 def bulk_to_slabs_flow(
-    atoms,
+    atoms: Atoms,
     run_slab_static: bool = True,
     make_slabs_kwargs: dict | None = None,
     slab_relax_kwargs: dict | None = None,
