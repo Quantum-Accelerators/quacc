@@ -17,9 +17,11 @@ from quacc.recipes.tblite.core import relax_job
 atoms = bulk("Cu")
 
 job1 = relax_job(atoms)
-bandstructure_flow = RelaxBandStructureMaker().make_flow(job1.output["structure"]) # (1)!
+bandstructure_flow = RelaxBandStructureMaker().make_flow(
+    job1.output["structure"]
+)  # (1)!
 
-flow = Flow([job1]) + bandstructure_flow # (2)!
+flow = Flow([job1]) + bandstructure_flow  # (2)!
 ```
 
 1. All Atomate2 workflows take a Pymatgen `Structure` or `Molecule` object as input. This is one of the properties in the returned output of a quacc recipe, which is why we can do `job1.output["structure"]`.

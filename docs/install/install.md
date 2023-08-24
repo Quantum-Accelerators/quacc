@@ -28,8 +28,8 @@ pip install git+https://github.com/quantum-accelerators/quacc.git
 
 Quacc can be installed with several "extras," as outlined in the [`pyproject.toml`](https://github.com/Quantum-Accelerators/quacc/blob/main/pyproject.toml) file. To install the extras, you can run
 
-```
-pip install git+https://github.com/Quantum-Accelerators/quacc.git[<extra>]`
+```bash
+pip install "quacc[<extra>] @ git+https://github.com/Quantum-Accelerators/quacc.git"
 ```
 
 where `<extra>` is one of the following:
@@ -48,6 +48,7 @@ where `<extra>` is one of the following:
 ### Miscellaneous
 
 - `quacc[optimizers]`: Installs dependencies to enable the use of the [Sella optimizer](https://github.com/zadorlab/sella).
+- `quacc[newtonnet]`: Installs dependencies to enable the use [NewtonNet](https://doi.org/10.1039/D2DD00008C) recipes.
 
 ### Development
 

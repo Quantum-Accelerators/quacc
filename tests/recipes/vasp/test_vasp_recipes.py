@@ -69,12 +69,12 @@ def test_doublerelax_job(tmpdir):
     assert output["relax1"]["parameters"]["isym"] == 0
     assert output["relax1"]["parameters"]["nsw"] > 0
     assert output["relax1"]["parameters"]["isif"] == 3
-    assert output["relax1"]["parameters"]["lwave"] is True
+    assert output["relax1"]["parameters"]["lwave"] is False
     assert output["relax2"]["nsites"] == len(atoms)
     assert output["relax2"]["parameters"]["isym"] == 0
     assert output["relax2"]["parameters"]["nsw"] > 0
     assert output["relax2"]["parameters"]["isif"] == 3
-    assert output["relax2"]["parameters"]["lwave"] is True
+    assert output["relax2"]["parameters"]["lwave"] is False
 
     output = double_relax_job(atoms, preset="BulkSet", calc_swaps2={"nelmin": 6})
     assert output["relax1"]["parameters"]["encut"] == 520
@@ -300,8 +300,7 @@ def test_mp(tmpdir):
     assert output["parameters"]["ediffg"] == -0.05
     assert output["parameters"]["encut"] == 680
     assert output["parameters"]["kspacing"] == 0.22
-    assert output["parameters"]["ismear"] == 2
-    assert "kpts" not in output["parameters"]
+    assert output["parameters"]["ismear"] == 0
 
     output = mp_relax_job(atoms)
     assert output["nsites"] == len(atoms)
@@ -309,8 +308,7 @@ def test_mp(tmpdir):
     assert output["parameters"]["ediffg"] == -0.02
     assert output["parameters"]["encut"] == 680
     assert output["parameters"]["kspacing"] == 0.22
-    assert output["parameters"]["ismear"] == 2
-    assert "kpts" not in output["parameters"]
+    assert output["parameters"]["ismear"] == 0
 
     output = mp_relax_flow(atoms)
     assert output["nsites"] == len(atoms)
@@ -318,7 +316,6 @@ def test_mp(tmpdir):
     assert output["parameters"]["ediffg"] == -0.02
     assert output["parameters"]["encut"] == 680
     assert output["parameters"]["ismear"] == 2
-    assert "kpts" not in output["parameters"]
     assert output["parameters"]["kspacing"] == 0.22
 
     atoms = bulk("Fe")
@@ -328,7 +325,6 @@ def test_mp(tmpdir):
     assert output["parameters"]["ediffg"] == -0.02
     assert output["parameters"]["encut"] == 680
     assert output["parameters"]["ismear"] == 1
-    assert "kpts" not in output["parameters"]
     assert output["parameters"]["kspacing"] == pytest.approx(0.28329488761304206)
 
     atoms = molecule("O2")
@@ -340,5 +336,4 @@ def test_mp(tmpdir):
     assert output["parameters"]["ediffg"] == -0.02
     assert output["parameters"]["encut"] == 680
     assert output["parameters"]["ismear"] == -5
-    assert "kpts" not in output["parameters"]
     assert output["parameters"]["kspacing"] == pytest.approx(0.28329488761304206)

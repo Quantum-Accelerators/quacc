@@ -14,6 +14,7 @@ from quacc import job
 from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_ase_opt, run_calc
+from quacc.util.dicts import merge_dicts
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -91,7 +92,7 @@ def relax_job(
     opt_swaps = opt_swaps or {}
 
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
-    opt_flags = opt_defaults | opt_swaps
+    opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
     atoms.calc = EMT(**calc_swaps)
 

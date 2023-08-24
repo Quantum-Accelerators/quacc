@@ -277,8 +277,7 @@ def make_max_slabs_from_bulk(
 
     if randomize:
         subsample = max_slabs or len(slabs)
-        slabs = random.sample(slabs, subsample)
-        return slabs
+        return random.sample(slabs, subsample)
 
     # Try to reduce the number of slabs if the user really wants it...
     # (desperate times call for desperate measures)
@@ -368,12 +367,14 @@ def make_adsorbate_structures(
 
     # Check for double-used parameters
     if min_distance and "distance" in find_ads_sites_kwargs:
+        msg = "Cannot specify both min_distance and find_ads_sites_kwargs['distance']"
         raise ValueError(
-            "Cannot specify both min_distance and find_ads_sites_kwargs['distance']",
+            msg,
         )
     if modes and "positions" in find_ads_sites_kwargs:
+        msg = "Cannot specify both modes and find_ads_sites_kwargs['positions']"
         raise ValueError(
-            "Cannot specify both modes and find_ads_sites_kwargs['positions']",
+            msg,
         )
     find_ads_sites_kwargs["distance"] = min_distance
     find_ads_sites_kwargs["positions"] = [mode.lower() for mode in modes]
@@ -383,8 +384,9 @@ def make_adsorbate_structures(
     if allowed_surface_indices and any(
         idx not in atom_indices for idx in allowed_surface_indices
     ):
+        msg = "All indices in allowed_surface_indices must be in atoms."
         raise ValueError(
-            "All indices in allowed_surface_indices must be in atoms.",
+            msg,
             allowed_surface_indices,
             atom_indices,
         )
