@@ -38,11 +38,13 @@ graph LR
     from quacc import flow
     from quacc.recipes.emt.core import relax_job, static_job
 
+
     @flow
     def workflow(atoms):
         output1 = relax_job(atoms, relax_cell=True)
         output2 = static_job(output1)
         return output2
+
 
     atoms = bulk("Cu")
 
@@ -87,11 +89,13 @@ graph LR
     from quacc import flow
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
+
     @flow
     def workflow(atoms):
         atoms = bulk("Ni")
         output = bulk_to_slabs_flow(atoms)
         return output
+
 
     dispatch_id = ct.dispatch(workflow)(atoms)
     ct.get_result(dispatch_id, wait=True)
@@ -133,12 +137,16 @@ graph LR
     from quacc import flow
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
+
     @flow
     def workflow(atoms):
         output = bulk_to_slabs_flow(
-            atoms, make_slabs_kwargs={"max_index": 2, "min_slab_size": 15.0}, slab_static=None
+            atoms,
+            make_slabs_kwargs={"max_index": 2, "min_slab_size": 15.0},
+            slab_static=None,
         )
         return output
+
 
     atoms = bulk("Cu")
 

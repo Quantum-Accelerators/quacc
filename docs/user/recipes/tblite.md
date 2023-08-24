@@ -37,10 +37,12 @@ graph LR
     from quacc import flow
     from quacc.recipes.tblite.core import relax_job
 
+
     @flow
     def workflow(atoms):
         output = relax_job(atoms, relax_cell=True)
         return output
+
 
     atoms = bulk("C")
 
@@ -88,6 +90,7 @@ graph LR
     from quacc import flow
     from quacc.recipes.tblite.core import freq_job, relax_job, static_job
 
+
     @flow
     def workflow(atoms):
         output1 = relax_job(atoms, method="GFN1-xTB", opt_swaps={"optimizer": BFGS})
@@ -96,6 +99,7 @@ graph LR
             atoms, energy=output2["results"]["energy"], temperature=300.0, pressure=2.0
         )
         return outpu3
+
 
     atoms = molecule("CH4")
 
