@@ -193,21 +193,3 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
         Running `lpad reset` will clear your FireWorks launchpad, so only use this command if you are a new user.
 
     To check that FireWorks can connect to your database, run `lpad reset` if this is your first time using FireWorks.
-
-=== "Prefect"
-
-    In your activated Python environment, install Prefect and the necessary Dask dependencies as follows:
-
-    ```bash
-    pip install "quacc[prefect] @ git+https://github.com/Quantum-Accelerators/quacc.git"
-    ```
-
-    Then carry out the following steps to prepare Prefect for use with Prefect Cloud:
-
-    1. Make an account on [Prefect Cloud](https://app.prefect.cloud/)
-    2. Make an [API Key](https://docs.prefect.io/cloud/users/api-keys/) and (optionally) store it in a `PREFECT_API_KEY` environment variable (e.g. in your `~/.bashrc`)
-    3. Run `prefect cloud login` from the command-line and enter your API key (or use the browser, if possible)
-
-    If you do not wish to use Prefect Cloud, you can can spin up a local server with `prefect server start` and skip the above steps.
-
-    Additional configuration parameters can be modified, as described in the [Prefect documentation](https://docs.prefect.io/concepts/settings/).
