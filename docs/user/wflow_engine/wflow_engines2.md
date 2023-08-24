@@ -1,4 +1,4 @@
-# User-Constructed Workflows
+# Combining Recipes
 
 Here, we will show how to use combine quacc jobs and workflows into your own custom workflows that can be run with your chosen workflow engine.
 
