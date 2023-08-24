@@ -205,17 +205,6 @@ def test_jobflow_decorators(tmpdir):
     assert not isinstance(mult, Job)
     assert isinstance(add(1, 2), Job)
     assert isinstance(mult(1, 2), Job)
-    with pytest.raises(NotImplementedError):
-
-        @subflow
-        def add_distributed(vals, c):
-            return [add(val, c) for val in vals]
-
-    with pytest.raises(NotImplementedError):
-
-        @flow
-        def workflow(a, b, c):
-            return mult(add(a, b), c)
 
 
 @pytest.mark.skipif(prefect is None, reason="Prefect not installed")
