@@ -103,7 +103,7 @@ def relax_job(
         "lwave": False,
         "nsw": 200,
     }
-    flags = merge_dicts(defaults, calc_swaps,remove_empties=False)
+    flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
 
     atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, copy_files=copy_files)
