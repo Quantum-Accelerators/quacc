@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ase.atoms import Atoms
     from covalent import electron as ct_electron
     from covalent import lattice as ct_lattice
     from dask_jobqueue.core import DaskJobqueueJob
@@ -32,7 +31,7 @@ def job(
     Returns
     -------
     callable
-        The decorated function. The original function is stored in the `original_func` attribute.
+        The decorated function.
     """
 
     from quacc import SETTINGS
@@ -62,7 +61,6 @@ def job(
         msg = f"Unknown workflow engine: {wflow_engine}"
         raise ValueError(msg)
 
-    decorated.original_func = _func
     return decorated
 
 
@@ -112,8 +110,6 @@ def flow(
     else:
         msg = f"Unknown workflow engine: {wflow_engine}"
         raise ValueError(msg)
-
-    decorated.original_func = _func
 
     return decorated
 
@@ -167,7 +163,6 @@ def subflow(
         msg = f"Unknown workflow engine: {wflow_engine}"
         raise ValueError(msg)
 
-    decorated.original_func = _func
     return decorated
 
 
