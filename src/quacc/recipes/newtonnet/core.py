@@ -271,11 +271,7 @@ def ts_job(
     ts_summary = _add_stdev_and_hess(ts_summary)
 
     # Run a frequency calculation
-    thermo_summary = freq_job(
-        ts_summary["atoms"],
-        temperature=temperature,
-        pressure=pressure,
-    )
+    thermo_summary = freq_job(ts_summary, temperature=temperature, pressure=pressure)
 
     return {"ts": ts_summary, "thermo": thermo_summary}
 
@@ -409,7 +405,7 @@ def quasi_irc_job(
     irc_summary = irc_job.original_func(atoms, max_steps=5, opt_swaps=irc_flags)
 
     # Run opt
-    opt_summary = relax_job.original_func(irc_summary["irc"]["atoms"], **opt_flags)
+    opt_summary = relax_job.original_func(irc_summary["irc"], **opt_flags)
 
     # Run frequency
     thermo_summary = freq_job(
