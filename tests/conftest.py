@@ -26,9 +26,5 @@ def pytest_sessionstart():
 
 
 def pytest_sessionfinish():
-    SETTINGS.RESULTS_DIR = DEFAULT_SETTINGS.RESULTS_DIR
-    SETTINGS.SCRATCH_DIR = DEFAULT_SETTINGS.SCRATCH_DIR
-    if os.path.exists(test_results_dir):
-        rmtree(test_results_dir)
-    if os.path.exists(test_scratch_dir):
-        rmtree(test_scratch_dir)
+    rmtree(test_results_dir)
+    rmtree(test_scratch_dir)
