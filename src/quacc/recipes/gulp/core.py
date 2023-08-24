@@ -10,7 +10,7 @@ from quacc import job
 from quacc.schemas.ase import summarize_run
 from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_calc
-from quacc.util.dicts import remove_dict_empties
+from quacc.util.dicts import merge_dicts
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -66,8 +66,8 @@ def static_job(
         f"output xyz {GEOM_FILE_NOPBC}": None if atoms.pbc.any() else True,
     }
 
-    keywords = remove_dict_empties(default_keywords | keyword_swaps)
-    options = remove_dict_empties(default_options | option_swaps)
+    keywords = merge_dicts(default_keywords, keyword_swaps)
+    options = merge_dicts(default_options, option_swaps)
 
     gulp_keywords = " ".join(list(keywords.keys()))
     gulp_options = list(options.keys())
@@ -145,8 +145,8 @@ def relax_job(
         f"output xyz {GEOM_FILE_NOPBC}": None if atoms.pbc.any() else True,
     }
 
-    keywords = remove_dict_empties(default_keywords | keyword_swaps)
-    options = remove_dict_empties(default_options | option_swaps)
+    keywords = merge_dicts(default_keywords, keyword_swaps)
+    options = merge_dicts(default_options, option_swaps)
 
     gulp_keywords = " ".join(list(keywords.keys()))
     gulp_options = list(options.keys())
