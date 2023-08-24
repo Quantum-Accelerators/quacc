@@ -140,7 +140,7 @@ graph LR
 
     4. We chose to run the job locally, but other workflow managers supported by Jobflow can be imported and used.
 
-### Running a User-Constructed Parallel Workflow
+## Running a User-Constructed Parallel Workflow
 
 Now let's consider a similar but nonetheless distinct example. Here, we will define a workflow where we will carry out two EMT structure relaxations, but the two jobs are not dependent on one another. In this example, Covalent will know that it can run the two jobs separately, and even if Job 1 were to fail, Job 2 would still progress.
 
