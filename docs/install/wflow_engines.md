@@ -34,6 +34,16 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
         If you are using Perlmutter at NERSC, you will need to set `export COVALENT_CONFIG_DIR="$SCRATCH/.config/covalent"` (e.g. in your `~/.bashrc`) because the home directory does not support file locking, which Covalent relies on.
 
+=== "Parsl"
+
+    In your activated Python environment, install Parsl as follows:
+
+    ```bash
+    pip install "quacc[parsl] @ git+https://github.com/Quantum-Accelerators/quacc.git"
+    ```
+
+    Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
+
 === "Jobflow"
 
     **Installation**
@@ -183,16 +193,6 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
         Running `lpad reset` will clear your FireWorks launchpad, so only use this command if you are a new user.
 
     To check that FireWorks can connect to your database, run `lpad reset` if this is your first time using FireWorks.
-
-=== "Parsl"
-
-    In your activated Python environment, install Parsl as follows:
-
-    ```bash
-    pip install "quacc[parsl] @ git+https://github.com/Quantum-Accelerators/quacc.git"
-    ```
-
-    Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
 
 === "Prefect"
 
