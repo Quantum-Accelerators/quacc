@@ -7,9 +7,10 @@ import mkdocs_gen_files
 
 nav = mkdocs_gen_files.Nav()
 
-for path in sorted(Path("src").rglob("*.py")):
-    module_path = path.relative_to("src").with_suffix("")
-    doc_path = path.relative_to("src").with_suffix(".md")
+base_dir = Path("src/quacc")
+for path in sorted(base_dir.rglob("*.py")):
+    module_path = path.relative_to(base_dir).with_suffix("")
+    doc_path = path.relative_to(base_dir).with_suffix(".md")
     full_doc_path = Path("reference", doc_path)
 
     parts = tuple(module_path.parts)
