@@ -1,4 +1,5 @@
 """Generate the code reference pages and navigation."""
+from __future__ import annotations
 
 from pathlib import Path
 

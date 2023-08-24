@@ -113,10 +113,11 @@ def load_yaml_calc(yaml_path: str | Path) -> dict:
     yaml_path = Path(yaml_path).with_suffix(".yaml")
 
     if not yaml_path.exists():
-        raise ValueError(f"Cannot find {yaml_path}")
+        msg = f"Cannot find {yaml_path}"
+        raise ValueError(msg)
 
     # Load YAML file
-    with open(yaml_path, "r") as stream:
+    with open(yaml_path) as stream:
         config = yaml.safe_load(stream)
 
     # Inherit arguments from any parent YAML files

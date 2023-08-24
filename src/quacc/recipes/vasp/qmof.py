@@ -16,6 +16,7 @@ from quacc.schemas.ase import summarize_opt_run
 from quacc.schemas.atoms import fetch_atoms
 from quacc.schemas.vasp import summarize_run
 from quacc.util.calc import run_ase_opt, run_calc
+from quacc.util.dicts import merge_dicts
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -151,7 +152,7 @@ def _prerelax(
         "nelm": 225,
         "nsw": 0,
     }
-    flags = defaults | calc_swaps
+    flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
     atoms.calc = Vasp(atoms, preset=preset, **flags)
     dyn = run_ase_opt(atoms, fmax=fmax, optimizer=BFGSLineSearch)
 
@@ -195,7 +196,7 @@ def _loose_relax_positions(
         "lwave": True,
         "nsw": 250,
     }
-    flags = defaults | calc_swaps
+    flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
     atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms)
 
@@ -239,7 +240,7 @@ def _loose_relax_cell(
         "lwave": True,
         "nsw": 500,
     }
-    flags = defaults | calc_swaps
+    flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
     atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
 
@@ -289,7 +290,7 @@ def _double_relax(
     }
 
     # Run first relaxation
-    flags = defaults | calc_swaps
+    flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
     calc1 = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc1
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
@@ -304,7 +305,7 @@ def _double_relax(
     del defaults["lreal"]
 
     # Run second relaxation
-    flags = defaults | calc_swaps
+    flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
     calc2 = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc2
 
@@ -354,7 +355,7 @@ def _static(
     }
 
     # Run static calculation
-    flags = defaults | calc_swaps
+    flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
     atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
 

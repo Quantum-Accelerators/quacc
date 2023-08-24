@@ -8,6 +8,7 @@ from quacc.calculators.vasp import Vasp
 from quacc.schemas.atoms import fetch_atoms
 from quacc.schemas.vasp import summarize_run
 from quacc.util.calc import run_calc
+from quacc.util.dicts import merge_dicts
 from quacc.util.slabs import make_adsorbate_structures, make_max_slabs_from_bulk
 
 if TYPE_CHECKING:
@@ -55,7 +56,7 @@ def slab_static_job(
         "nedos": 5001,
         "nsw": 0,
     }
-    flags = defaults | calc_swaps
+    flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
 
     atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, copy_files=copy_files)
@@ -102,7 +103,7 @@ def slab_relax_job(
         "lwave": False,
         "nsw": 200,
     }
-    flags = defaults | calc_swaps
+    flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
 
     atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, copy_files=copy_files)

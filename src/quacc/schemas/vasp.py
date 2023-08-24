@@ -164,7 +164,8 @@ def summarize_run(
 
     # Check for calculation convergence
     if check_convergence and results["state"] != "successful":
-        raise ValueError("VASP calculation did not converge. Will not store task data.")
+        msg = "VASP calculation did not converge. Will not store task data."
+        raise ValueError(msg)
 
     # Remove unnecessary fields
     for k in [
@@ -267,7 +268,8 @@ def bader_runner(path: str | None = None, scratch_dir: str | None = None) -> dic
         if not os.path.exists(os.path.join(path, f)) and not os.path.exists(
             os.path.join(path, f"{f}.gz")
         ):
-            raise FileNotFoundError(f"Could not find {f} in {path}.")
+            msg = f"Could not find {f} in {path}."
+            raise FileNotFoundError(msg)
 
     # Run Bader analysis
     with TemporaryDirectory(dir=scratch_dir) as tmpdir:
@@ -345,11 +347,13 @@ def chargemol_runner(
         if not os.path.exists(os.path.join(path, f)) and not os.path.exists(
             os.path.join(path, f"{f}.gz")
         ):
-            raise FileNotFoundError(f"Could not find {f} in {path}.")
+            msg = f"Could not find {f} in {path}."
+            raise FileNotFoundError(msg)
 
     # Check environment variable
     if atomic_densities_path is None and "DDEC6_ATOMIC_DENSITIES_DIR" not in os.environ:
-        raise ValueError("DDEC6_ATOMIC_DENSITIES_DIR environment variable not defined.")
+        msg = "DDEC6_ATOMIC_DENSITIES_DIR environment variable not defined."
+        raise ValueError(msg)
 
     # Run Chargemol analysis
     with TemporaryDirectory(dir=scratch_dir) as tmpdir:

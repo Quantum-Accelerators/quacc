@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import os
 from shutil import which
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from pydantic import BaseSettings, Field, root_validator
 
@@ -256,6 +256,15 @@ class QuaccSettings(BaseSettings):
 
     QCHEM_CUSTODIAN_MAX_ERRORS: int = Field(
         5, description="Maximum errors for Q-Chem Custodian."
+
+    # ---------------------------
+    # NewtonNet Settings
+    # ---------------------------
+    NEWTONNET_MODEL_PATH: Union[str, List[str]] = Field(
+        "best_model_state.tar", description="Path to NewtonNet .tar model"
+    )
+    NEWTONNET_CONFIG_PATH: Union[str, List[str]] = Field(
+        "config.yml", description="Path to NewtonNet YAML settings file"
     )
 
     # --8<-- [end:settings]

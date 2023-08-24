@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleasd]
 
+### Added
+
+- Added NewtonNet recipes and better sella support (@kumaranu)
+
 ### Changed
 
 - Standardized `relax_cell` to be `False` by default for all recipes.
