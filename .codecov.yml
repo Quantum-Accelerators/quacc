@@ -1,6 +1,3 @@
-codecov:
-  notify:
-    after_n_builds: 10 # one for each job
 coverage:
   status:
     project:
