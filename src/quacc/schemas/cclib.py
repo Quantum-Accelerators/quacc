@@ -50,7 +50,7 @@ def summarize_run(
         ]
     ]
     | None = None,
-    check_convergence: bool = True,
+    check_convergence: bool | None = None,
     prep_next_run: bool = True,
     remove_empties: bool = False,
     additional_fields: dict | None = None,
