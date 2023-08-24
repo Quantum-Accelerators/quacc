@@ -56,7 +56,7 @@ def slab_static_job(
         "nedos": 5001,
         "nsw": 0,
     }
-    flags = merge_dicts(defaults, calc_swaps)
+    flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
 
     atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, copy_files=copy_files)
@@ -103,7 +103,7 @@ def slab_relax_job(
         "lwave": False,
         "nsw": 200,
     }
-    flags = merge_dicts(defaults, calc_swaps)
+    flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
 
     atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, copy_files=copy_files)

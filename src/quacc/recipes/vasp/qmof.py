@@ -152,7 +152,7 @@ def _prerelax(
         "nelm": 225,
         "nsw": 0,
     }
-    flags = merge_dicts(defaults, calc_swaps)
+    flags = merge_dicts(defaults, calc_swaps,remove_empties=False)
     atoms.calc = Vasp(atoms, preset=preset, **flags)
     dyn = run_ase_opt(atoms, fmax=fmax, optimizer=BFGSLineSearch)
 
@@ -196,7 +196,7 @@ def _loose_relax_positions(
         "lwave": True,
         "nsw": 250,
     }
-    flags = merge_dicts(defaults, calc_swaps)
+    flags = merge_dicts(defaults, calc_swaps,remove_empties=False)
     atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms)
 
@@ -240,7 +240,7 @@ def _loose_relax_cell(
         "lwave": True,
         "nsw": 500,
     }
-    flags = merge_dicts(defaults, calc_swaps)
+    flags = merge_dicts(defaults, calc_swaps,remove_empties=False)
     atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
 
@@ -290,7 +290,7 @@ def _double_relax(
     }
 
     # Run first relaxation
-    flags = merge_dicts(defaults, calc_swaps)
+    flags = merge_dicts(defaults, calc_swaps,remove_empties=False)
     calc1 = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc1
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
@@ -305,7 +305,7 @@ def _double_relax(
     del defaults["lreal"]
 
     # Run second relaxation
-    flags = merge_dicts(defaults, calc_swaps)
+    flags = merge_dicts(defaults, calc_swaps,remove_empties=False)
     calc2 = Vasp(atoms, preset=preset, **flags)
     atoms.calc = calc2
 
@@ -355,7 +355,7 @@ def _static(
     }
 
     # Run static calculation
-    flags = merge_dicts(defaults, calc_swaps)
+    flags = merge_dicts(defaults, calc_swaps,remove_empties=False)
     atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
 
