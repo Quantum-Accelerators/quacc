@@ -115,6 +115,7 @@ graph LR
     def mult(a, b):
         return a * b
 
+
     def workflow(a, b, c):
         return mult(add(a, b), c)
 
@@ -188,6 +189,7 @@ graph LR
     import covalent as ct
     from quacc import flow, job, subflow
 
+
     @job
     def add(a, b):
         return a + b
@@ -241,6 +243,7 @@ graph LR
     @subflow  # (1)!
     def add_distributed(vals, c):
         return [add(val, c) for val in vals]
+
 
     def workflow(a, b, c):
         future1 = add(a, b)

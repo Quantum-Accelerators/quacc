@@ -5,7 +5,6 @@ Here, we will show how to use quacc with one of a variety of workflow engines to
 In quacc, there are two types of recipes:
 
 1. Individual compute jobs with the suffix `_job` that have been pre-defined with a `#!Python @job` decorator.
-
 2. Multi-step workflows with the suffix `_flow` that have been pre-defined with a `#!Python @flow` decorator.
 
 ## Running a Pre-Defined Job
@@ -114,7 +113,7 @@ graph LR
     job = relax_job(atoms)  # (1)!
 
     # Run the job locally
-    responses = jf.run_locally(job, create_folders=True) # (2)!
+    responses = jf.run_locally(job, create_folders=True)  # (2)!
 
     # Get the result
     result = responses[job.uuid][1].output
@@ -146,7 +145,7 @@ graph LR
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
     atoms = bulk("Cu")
-    dispatch_id = ct.dispatch(bulk_to_slabs_flow)(atoms) # (1)!
+    dispatch_id = ct.dispatch(bulk_to_slabs_flow)(atoms)  # (1)!
     result = ct.get_result(dispatch_id, wait=True)
     print(result)
     ```
