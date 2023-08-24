@@ -8,8 +8,6 @@ TEST_SCRATCH_DIR = FILE_DIR / ".test_scratch"
 
 
 def pytest_sessionstart():
-    os.environ["QUACC_CONFIG_FILE"] = str(FILE_DIR / "test_config.yaml")
-
     from quacc import SETTINGS
 
     SETTINGS.RESULTS_DIR = str(TEST_RESULTS_DIR)
