@@ -16,9 +16,9 @@ if TYPE_CHECKING:
     from quacc.schemas.ase import OptSchema, RunSchema
 
 
-@flow
+@flow(validate_parameters=False)
 def bulk_to_slabs_flow(
-    atoms: Atoms,
+    atoms: Atoms | dict,
     run_slab_static: bool = True,
     make_slabs_kwargs: dict | None = None,
     slab_relax_kwargs: dict | None = None,
