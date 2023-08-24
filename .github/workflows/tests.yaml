@@ -378,7 +378,7 @@ jobs:
           echo "WORKFLOW_ENGINE: prefect" > ~/.quacc.yaml
 
       - name: Run tests with pytest
-        run: pytest -k 'prefect' --cov=quacc --cov-report=xml
+        run: pytest tests/prefect_tests --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
