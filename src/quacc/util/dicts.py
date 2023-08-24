@@ -29,7 +29,7 @@ def merge_dicts(dict1: dict, dict2: dict, remove_empties: bool = False) -> dict:
             merged[k] = v
     if remove_empties:
         merged = remove_dict_empties(merged)
-    
+
     return merged
 
 
