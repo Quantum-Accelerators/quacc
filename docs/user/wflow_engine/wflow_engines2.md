@@ -17,7 +17,7 @@ graph LR
 
         If you haven't done so yet, make sure you started the Covalent server with `covalent start` in the command-line.
 
-        Also make sure you have specified `"covalent"` as the `WORKFLOW_ENGINE` in your [quacc settings](../settings.md).
+        Also make sure you have specified `"covalent"` as the `WORKFLOW_ENGINE` in your [quacc settings](../basics/settings.md).
 
     ```python
     import covalent as ct
@@ -74,7 +74,7 @@ graph LR
         parsl.load()
         ```
 
-        Also make sure you have specified `"parsl"` as the `WORKFLOW_ENGINE` in your [quacc settings](../settings.md).
+        Also make sure you have specified `"parsl"` as the `WORKFLOW_ENGINE` in your [quacc settings](../basics/settings.md).
 
     ```python
     from ase.build import bulk
@@ -105,7 +105,7 @@ graph LR
 
     !!! Important
 
-        Make sure you have specified `"jobflow"` as the `WORKFLOW_ENGINE` in your [quacc settings](../settings.md).
+        Make sure you have specified `"jobflow"` as the `WORKFLOW_ENGINE` in your [quacc settings](../basics/settings.md).
 
     ```python
     import jobflow as jf
