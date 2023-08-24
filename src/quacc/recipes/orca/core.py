@@ -61,7 +61,7 @@ def static_job(
         To enable new entries, set the value as True.
         To remove entries from the defaults, set the value as None.
     copy_files
-        Absolute paths to files to copy to the runtime directory.
+        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -149,7 +149,7 @@ def relax_job(
         To enable new entries, set the value as True.
         To remove entries from the defaults, set the value as None.
     copy_files
-        Absolute paths to files to copy to the runtime directory.
+        Files to copy to the runtime directory.
 
     Returns
     -------

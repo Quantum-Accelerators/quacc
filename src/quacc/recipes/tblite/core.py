@@ -49,7 +49,7 @@ def static_job(
     calc_swaps
         Dictionary of custom kwargs for the tblite calculator.
     copy_files
-        Absolute paths to files to copy to the runtime directory.
+        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -94,7 +94,7 @@ def relax_job(
     opt_swaps
         Dictionary of custom kwargs for run_ase_opt
     copy_files
-        Absolute paths to files to copy to the runtime directory.
+        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -146,7 +146,7 @@ def freq_job(
     vib_kwargs
         dictionary of custom kwargs for the Vibrations object.
     copy_files
-        Absolute paths to files to copy to the runtime directory.
+        Files to copy to the runtime directory.
 
     Returns
     -------

@@ -37,7 +37,8 @@ def teardown_module():
 
 
 def bad_mock_cclib_calculate(*args, **kwargs):
-    raise ValueError("This is a bad run.")
+    msg = "This is a bad run."
+    raise ValueError(msg)
 
 
 def test_summarize_run():
