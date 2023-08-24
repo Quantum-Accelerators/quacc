@@ -88,8 +88,8 @@ def static_job(
     }
     default_blocks = {}
 
-    inputs = merge_dicts(default_inputs, input_swaps, remove_empties=True)
-    blocks = merge_dicts(default_blocks, block_swaps, remove_empties=True)
+    inputs = merge_dicts(default_inputs, input_swaps)
+    blocks = merge_dicts(default_blocks, block_swaps)
     orcasimpleinput = " ".join(list(inputs.keys()))
     orcablocks = " ".join(list(blocks.keys()))
 
@@ -177,8 +177,8 @@ def relax_job(
     }
     default_blocks = {}
 
-    inputs = merge_dicts(default_inputs, input_swaps, remove_empties=True)
-    blocks = merge_dicts(default_blocks, block_swaps, remove_empties=True)
+    inputs = merge_dicts(default_inputs, input_swaps)
+    blocks = merge_dicts(default_blocks, block_swaps)
     orcasimpleinput = " ".join(list(inputs.keys()))
     orcablocks = " ".join(list(blocks.keys()))
 

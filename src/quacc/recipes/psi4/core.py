@@ -78,7 +78,7 @@ def static_job(
         "multiplicity": multiplicity,
         "reference": "uks" if multiplicity > 1 else "rks",
     }
-    flags = merge_dicts(defaults, calc_swaps, remove_empties=True)
+    flags = merge_dicts(defaults, calc_swaps)
 
     atoms.calc = Psi4(**flags)
     final_atoms = run_calc(atoms, copy_files=copy_files)
