@@ -31,7 +31,8 @@ def job(
     Returns
     -------
     callable
-        The decorated function.
+        The decorated function. The decorated function will have an attribute `original_func`
+        which is the undecorated function.
     """
 
     from quacc import SETTINGS
@@ -60,6 +61,8 @@ def job(
     else:
         msg = f"Unknown workflow engine: {wflow_engine}"
         raise ValueError(msg)
+
+    decorated.original_func = _func
 
     return decorated
 

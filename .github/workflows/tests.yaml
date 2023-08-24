@@ -264,9 +264,7 @@ jobs:
           echo "WORKFLOW_ENGINE: covalent" > ~/.quacc.yaml
 
       - name: Set up Covalent server
-        run: |
-          echo "y" | covalent purge
-          covalent start
+        run: covalent start
 
       - name: Run tests with pytest
         run: pytest -k 'covalent' --cov=quacc --cov-report=xml
