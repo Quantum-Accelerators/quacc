@@ -14,7 +14,7 @@ SCRATCH_DIR: /tmp # (2)!
 CREATE_UNIQUE_WORKDIR: true # (3)!
 ```
 
-1. This would set the workflow engine to Covalent.
+1. This would set the workflow engine to Covalent. If you wish to disable the use of a workflow engine, set this to `null`.
 
 2. This would set the quacc scratch directory to `/tmp` on whatever machine the calculations are run on.
 

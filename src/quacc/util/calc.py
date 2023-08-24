@@ -95,6 +95,7 @@ def run_ase_opt(
     max_steps: int = 500,
     optimizer: Optimizer = FIRE,
     optimizer_kwargs: dict | None = None,
+    run_kwargs: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> Optimizer:
     """
@@ -117,6 +118,8 @@ def run_ase_opt(
         Optimizer class to use.
     optimizer_kwargs
         Dictionary of kwargs for the optimizer.
+    run_kwargs
+        Dictionary of kwargs for the run() method of the optimizer.
     copy_files
         Filenames to copy from source to scratch directory.
 
@@ -128,6 +131,7 @@ def run_ase_opt(
 
     # Set defaults
     optimizer_kwargs = optimizer_kwargs or {}
+    run_kwargs = run_kwargs or {}
 
     # Perform staging operations
     atoms, tmpdir, job_results_dir = _calc_setup(atoms, copy_files=copy_files)
@@ -155,7 +159,7 @@ def run_ase_opt(
     dyn = optimizer(atoms, **optimizer_kwargs)
 
     # Run calculation
-    dyn.run(fmax=fmax, steps=max_steps)
+    dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
 
     # Prevent permission errors on Windows
     if hasattr(dyn.trajectory, "close"):
