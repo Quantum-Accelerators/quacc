@@ -22,7 +22,9 @@ The `#!Python @job` decorator indicates that the decorated function is a single 
 
 Based on the value for the `WORKFLOW_ENGINE` global variable in your [quacc settings](basics/settings.md), the appropriate decorator will be automatically selected. If the `WORKFLOW_ENGINE` setting is set to `None` (or for any entries marked N/A in the above table), the decorators will have no effect on the underlying function.
 
-## Simple Workflow
+## Examples
+
+### Simple Workflow
 
 Let's do the following:
 
@@ -172,7 +174,7 @@ graph LR
 
     3. `#!Python run_locally` is a function that tells Jobflow to run the workflow locally.
 
-## Dynamic Workflow
+### Dynamic Workflow
 
 Let's do the following:
 
