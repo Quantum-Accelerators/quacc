@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from ase.atoms import Atoms
     from covalent import electron as ct_electron
     from covalent import lattice as ct_lattice
     from dask_jobqueue.core import DaskJobqueueJob
@@ -35,36 +36,40 @@ def job(
         which is the undecorated function.
     """
 
-    from quacc import SETTINGS
+    def _fetch_atoms(atoms: Atoms | dict) -> Atoms:
+        return atoms if isinstance(atoms, Atoms) else atoms["atoms"]
 
-    wflow_engine = (
-        SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
-    )
-    if wflow_engine == "covalent":
-        import covalent as ct
+    def decorator(fun):
+        from quacc import SETTINGS
 
-        decorated = ct.electron(_func, **kwargs)
-    elif wflow_engine == "jobflow":
-        from jobflow import job as jf_job
+        wflow_engine = (
+            SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
+        )
+        if wflow_engine == "covalent":
+            import covalent as ct
 
-        decorated = jf_job(_func, **kwargs)
-    elif wflow_engine == "parsl":
-        from parsl import python_app
+            decorated = ct.electron(_func, **kwargs)
+        elif wflow_engine == "jobflow":
+            from jobflow import job as jf_job
 
-        decorated = python_app(_func, **kwargs)
-    elif wflow_engine == "prefect":
-        from prefect import task
+            decorated = jf_job(_func, **kwargs)
+        elif wflow_engine == "parsl":
+            from parsl import python_app
 
-        decorated = task(_func, **kwargs)
-    elif not wflow_engine:
-        decorated = _func
-    else:
-        msg = f"Unknown workflow engine: {wflow_engine}"
-        raise ValueError(msg)
+            decorated = python_app(_func, **kwargs)
+        elif wflow_engine == "prefect":
+            from prefect import task
 
-    decorated.original_func = _func
+            decorated = task(_func, **kwargs)
+        elif not wflow_engine:
+            decorated = _func
+        else:
+            msg = f"Unknown workflow engine: {wflow_engine}"
+            raise ValueError(msg)
 
-    return decorated
+        decorated.original_func = _func
+
+    return decorator
 
 
 def flow(

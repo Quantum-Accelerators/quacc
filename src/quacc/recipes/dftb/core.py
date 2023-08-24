@@ -9,7 +9,7 @@ from quacc import job
 from quacc.schemas.ase import summarize_run
 from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_calc
-from quacc.util.dicts import remove_dict_empties
+from quacc.util.dicts import merge_dicts
 from quacc.util.files import check_logfile
 
 if TYPE_CHECKING:
@@ -59,7 +59,7 @@ def static_job(
         "Hamiltonian_Method": method if "xtb" in method.lower() else None,
         "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
     }
-    flags = remove_dict_empties(defaults | calc_swaps)
+    flags = merge_dicts(defaults, calc_swaps, remove_empties=True)
 
     atoms.calc = Dftb(**flags)
     final_atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
@@ -120,7 +120,7 @@ def relax_job(
         "Driver_AppendGeometries": "Yes",
         "Driver_MaxSteps": 2000,
     }
-    flags = remove_dict_empties(defaults | calc_swaps)
+    flags = merge_dicts(defaults, calc_swaps, remove_empties=True)
 
     atoms.calc = Dftb(**flags)
     final_atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)

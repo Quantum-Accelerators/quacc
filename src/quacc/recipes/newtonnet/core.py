@@ -20,6 +20,7 @@ from quacc.schemas.ase import (
 )
 from quacc.schemas.atoms import fetch_atoms
 from quacc.util.calc import run_ase_opt, run_calc
+from quacc.util.dicts import merge_dicts
 from quacc.util.thermo import ideal_gas
 
 try:
@@ -234,12 +235,7 @@ def ts_job(
         "optimizer_kwargs": {"diag_every_n": 0} if use_custom_hessian else {},
     }
 
-    if "optimizer_kwargs" in opt_swaps:
-        opt_swaps["optimizer_kwargs"] = (
-            opt_defaults["optimizer_kwargs"] | opt_swaps["optimizer_kwargs"]
-        )
-
-    opt_flags = opt_defaults | opt_swaps
+    opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
     # Define calculator
     atoms.calc = NewtonNet(
@@ -330,11 +326,8 @@ def irc_job(
             "direction": "forward",
         },
     }
-    if "optimizer_kwargs" in opt_swaps:
-        opt_swaps["optimizer_kwargs"] = (
-            opt_defaults["optimizer_kwargs"] | opt_swaps["optimizer_kwargs"]
-        )
-    opt_flags = opt_defaults | opt_swaps
+
+    opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
     # Define calculator
     atoms.calc = NewtonNet(
@@ -397,11 +390,11 @@ def quasi_irc_job(
     opt_swaps = opt_swaps or {}
 
     irc_defaults = {"run_kwargs": {"direction": direction.lower()}}
-    irc_flags = irc_defaults | irc_swaps
+    irc_flags = merge_dicts(irc_defaults, irc_swaps)
     opt_swaps = opt_swaps or {}
 
     opt_defaults = {}
-    opt_flags = opt_defaults | opt_swaps
+    opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
     # Run IRC
     irc_summary = irc_job.original_func(atoms, max_steps=5, opt_swaps=irc_flags)
