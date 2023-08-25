@@ -162,7 +162,7 @@ def run_ase_opt(
     dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
 
     # Prevent permission errors on Windows
-    if hasattr(dyn.trajectory, "close"):
+    if hasattr(dyn, "trajectory") and hasattr(dyn.trajectory, "close"):
         dyn.trajectory.close()
 
     # Store the trajectory atoms
