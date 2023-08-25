@@ -26,7 +26,7 @@ Quacc currently has pre-made recipes for the following packages: DFTB+, Gaussian
 ## Documentation
 
 <p align="center">
-  📖 <a href="https://quantum-accelerators.github.io/quacc/"><b><i>Learn More Here!</i></b></a> 📖
+  📖 <a href="https://github.com/Quantum-Accelerators/quacc/blob/main/docs/images/start/start2.gif?raw=true"><b><i>Learn More Here!</i></b></a> 📖
 </p>
 
 Includes the following sections:
