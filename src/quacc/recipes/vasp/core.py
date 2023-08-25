@@ -5,10 +5,10 @@ from typing import TYPE_CHECKING, Literal
 
 from quacc import job
 from quacc.calculators.vasp import Vasp
-from quacc.schemas.atoms import fetch_atoms
 from quacc.schemas.vasp import summarize_run
-from quacc.util.calc import run_calc
-from quacc.util.dicts import merge_dicts
+from quacc.utils.calc import run_calc
+from quacc.utils.dicts import merge_dicts
+from quacc.utils.wflows import fetch_atoms
 
 if TYPE_CHECKING:
     from ase import Atoms

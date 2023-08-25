@@ -13,10 +13,10 @@ from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
 
 from quacc import SETTINGS
 from quacc.schemas.atoms import atoms_to_metadata
-from quacc.util.atoms import prep_next_run as prep_next_run_
-from quacc.util.db import results_to_db
-from quacc.util.dicts import clean_dict
-from quacc.util.files import copy_decompress
+from quacc.utils.atoms import prep_next_run as prep_next_run_
+from quacc.utils.db import results_to_db
+from quacc.utils.dicts import clean_dict
+from quacc.utils.files import copy_decompress
 
 if TYPE_CHECKING:
     from ase import Atoms
