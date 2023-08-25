@@ -27,7 +27,7 @@ classifiers = [
 requires-python = ">=3.9, <3.12"
 dependencies = [
     "ase @ https://gitlab.com/ase/ase/-/archive/master/ase-master.zip",  # waiting on >3.22.1
-    "cclib @ git+https://github.com/cclib/cclib.git", # waiting on > 1.7.2;
+    "cclib>=1.8",
     "custodian>=2023.6.5",
     "emmet-core>=0.51.11",
     "maggma>=0.51.18",
@@ -56,7 +56,7 @@ docs = [
 ]
 strict = [
     "ase @ https://gitlab.com/ase/ase/-/archive/master/ase-master.zip",  # waiting on >3.22.1
-    "cclib @ git+https://github.com/cclib/cclib.git", # waiting on > 1.7.2
+    "cclib==1.8",
     "custodian==2023.7.22",
     "emmet-core==0.66.0",
     "maggma==0.53.1",
