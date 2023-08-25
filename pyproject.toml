@@ -26,7 +26,7 @@ classifiers = [
 ]
 requires-python = ">=3.9, <3.12"
 dependencies = [
-    "ase @ https://gitlab.com/ase/ase/-/archive/master/ase-master.zip",  # waiting on >3.22.1
+    "ase",
     "cclib>=1.8",
     "custodian>=2023.6.5",
     "emmet-core>=0.51.11",
