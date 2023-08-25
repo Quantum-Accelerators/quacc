@@ -58,8 +58,6 @@ graph LR
 
     With Covalent as the workflow engine, quacc will automatically construct a directed acyclic graph of the inputs and outputs for each calculation to determine which jobs are dependent on one another and the order the jobs should be run. In this example, Covalent will know not to run `static_job` until `relax_job` has completed successfully.
 
-    ![Covalent UI](../../images/user/tutorial1.jpg)
-
 === "Parsl"
 
     !!! Important
@@ -178,8 +176,6 @@ graph LR
     print(result)
     ```
 
-    ![Covalent UI](../../images/user/tutorial2.jpg)
-
 === "Parsl"
 
     ```python
@@ -260,8 +256,6 @@ graph LR
     result = ct.get_result(dispatch_id, wait=True)
     print(result)
     ```
-
-    ![Covalent UI](../../images/user/tutorial3.gif)
 
 === "Parsl"
 
