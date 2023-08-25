@@ -1,4 +1,6 @@
-![](https://github.com/Quantum-Accelerators/quacc/blob/main/docs/images/quacc_logo_wide.png)
+<div align="center">
+  <img src=https://github.com/Quantum-Accelerators/quacc/blob/main/docs/images/quacc_logo_wide.png width="300"><br>
+</div>
 
 # quacc – The Quantum Accelerator 🦆
 
