@@ -3,10 +3,15 @@ import pytest
 from ase.build import bulk, molecule
 from ase.constraints import FixAtoms
 
+from quacc import SETTINGS
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
 def test_static_job(tmpdir):
     tmpdir.chdir()
 
@@ -24,6 +29,10 @@ def test_static_job(tmpdir):
     assert output["results"]["energy"] == pytest.approx(0.11074520235398744)
 
 
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
 def test_relax_job(tmpdir):
     tmpdir.chdir()
 
@@ -76,6 +85,10 @@ def test_relax_job(tmpdir):
     assert output["results"]["energy"] == pytest.approx(0.04996032884581858)
 
 
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
 def test_slab_dynamic_jobs(tmpdir):
     tmpdir.chdir()
 

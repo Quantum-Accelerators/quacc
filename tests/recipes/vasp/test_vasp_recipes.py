@@ -1,6 +1,7 @@
 import pytest
 from ase.build import bulk, molecule
 
+from quacc import SETTINGS
 from quacc.recipes.vasp.core import double_relax_job, relax_job, static_job
 from quacc.recipes.vasp.mp import mp_prerelax_job, mp_relax_flow, mp_relax_job
 from quacc.recipes.vasp.qmof import qmof_relax_job
@@ -12,6 +13,10 @@ from quacc.recipes.vasp.slabs import (
 )
 
 
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
 def test_static_job(tmpdir):
     tmpdir.chdir()
 
@@ -39,6 +44,10 @@ def test_static_job(tmpdir):
     assert "lwave" not in output["parameters"]
 
 
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
 def test_relax_job(tmpdir):
     tmpdir.chdir()
 
@@ -59,6 +68,10 @@ def test_relax_job(tmpdir):
     assert output["parameters"]["isif"] == 2
 
 
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
 def test_doublerelax_job(tmpdir):
     tmpdir.chdir()
 
@@ -89,6 +102,10 @@ def test_doublerelax_job(tmpdir):
     output = double_relax_job(atoms, calc_swaps1={"kpts": [1, 1, 1]})
 
 
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
 def test_slab_static_job(tmpdir):
     tmpdir.chdir()
 
@@ -108,6 +125,10 @@ def test_slab_static_job(tmpdir):
     assert "encut" not in output["parameters"]
 
 
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
 def test_slab_relax_job(tmpdir):
     tmpdir.chdir()
 
@@ -125,6 +146,10 @@ def test_slab_relax_job(tmpdir):
     assert output["parameters"]["nelmin"] == 6
 
 
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
 def test_slab_dynamic_jobs(tmpdir):
     tmpdir.chdir()
 
@@ -218,6 +243,10 @@ def test_slab_dynamic_jobs(tmpdir):
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
 
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
 def test_qmof(tmpdir):
     tmpdir.chdir()
 
@@ -290,6 +319,10 @@ def test_qmof(tmpdir):
     output = qmof_relax_job(atoms)
 
 
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
 def test_mp(tmpdir):
     tmpdir.chdir()
 

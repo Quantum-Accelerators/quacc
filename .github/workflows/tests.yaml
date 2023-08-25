@@ -8,7 +8,7 @@ on:
       - main
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -47,43 +47,6 @@ jobs:
           export GITHUB_HEAD_REF=$GITHUB_REF
           codecovcli create-commit
           codecovcli create-report
-          codecovcli do-upload --fail-on-error
-
-  tests-base-windows:
-    runs-on: windows-latest
-    strategy:
-      fail-fast: true
-      matrix:
-        python-version: ["3.11"]
-
-    defaults:
-      run:
-        shell: bash -l {0}
-
-    steps:
-      - name: Check out repo
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-          cache: pip
-          cache-dependency-path: pyproject.toml
-
-      - name: Install pip packages
-        run: pip install .[dev]
-
-      - name: Run tests with pytest
-        run: pytest --cov=quacc --cov-report=xml
-
-      - name: Upload coverage to Codecov
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        run: |
-          export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli create-commit --fail-on-error 
-          codecovcli create-report --fail-on-error 
           codecovcli do-upload --fail-on-error
 
   tests-tblite:
@@ -288,7 +251,7 @@ jobs:
 
       - name: Make quacc config
         run: |
-          echo "WORKFLOW_ENGINE: covalent" > ~/.quacc.yaml
+          export QUACC_WORKFLOW_ENGINE="covalent"
 
       - name: Set up Covalent server
         run: covalent start
@@ -335,7 +298,7 @@ jobs:
 
       - name: Make quacc config
         run: |
-          echo "WORKFLOW_ENGINE: parsl" > ~/.quacc.yaml
+          export QUACC_WORKFLOW_ENGINE="parsl"
 
       - name: Run tests with pytest
         run: pytest -k 'parsl' --cov=quacc --cov-report=xml
@@ -376,7 +339,7 @@ jobs:
 
       - name: Make quacc config
         run: |
-          echo "WORKFLOW_ENGINE: jobflow" > ~/.quacc.yaml
+          export QUACC_WORKFLOW_ENGINE="jobflow"
 
       - name: Run tests with pytest
         run: pytest -k 'jobflow or fireworks' --cov=quacc --cov-report=xml

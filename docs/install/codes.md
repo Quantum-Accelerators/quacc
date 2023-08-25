@@ -76,7 +76,7 @@ pip install "quacc[newtonnet] @ git+https://github.com/Quantum-Accelerators/quac
 
     [ORCA](https://orcaforum.kofo.mpg.de/app.php/portal) is a free code that is especially useful for molecular DFT calculations with recently developed methods. ORCA can be downloaded and installed [here](https://orcaforum.kofo.mpg.de/app.php/dlext/).
 
-To use quacc with ORCA, you will need to define the `ORCA_CMD` setting to be the full, absolute path to your ORCA executable. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings.md), such as by defining the following environment variable:
+To use quacc with ORCA, you will need to define the `ORCA_CMD` setting to be the full, absolute path to your ORCA executable. This can be done as described in the section on ["Modifying Quacc Settings"](../user/basics/settings.md), such as by defining the following environment variable:
 
 ```bash
 QUACC_ORCA_CMD=/path/to/my/orca/orca
@@ -121,6 +121,6 @@ To use VASP with quacc, you will need to do the following, as described in great
 - Define the `VASP_PP_PATH` environment variable that points to your pseudopotential library. We recommend including this in your `~/.bashrc` file since this rarely changes.
 - If you wish to use vdW functionals, define the `ASE_VASP_VDW` environment variable to point to the `vdw_kernel.bindat` file distributed with VASP. We recommend including this in your `~/.bashrc` file since this rarely changes.
 
-To run VASP with Custodian, you will also need to modify the relevant [quacc configuration settings](../user/settings.md), most notably:
+To run VASP with Custodian, you will also need to modify the relevant [quacc configuration settings](../user/basics/settings.md), most notably:
 
 - Define the `VASP_PARALLEL_CMD` quacc setting that tells Custodian how to parallelize VASP, such as by defining an environment variable `QUACC_VASP_PARALLEL_CMD="srun -N 2 --ntasks-per-node 24"`. Note, the VASP executables are not included in this environment variable.

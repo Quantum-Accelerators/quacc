@@ -1,5 +1,6 @@
 import os
 
+import pytest
 from ase.build import bulk
 from maggma.stores import MemoryStore
 
@@ -37,6 +38,10 @@ def test_file(monkeypatch, tmpdir):
     os.remove("quacc_test.yaml")
 
 
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
 def test_store(tmpdir):
     tmpdir.chdir()
     store = MemoryStore()
@@ -45,6 +50,10 @@ def test_store(tmpdir):
     static_job(atoms)
 
 
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
 def test_results_dir(tmpdir):
     tmpdir.chdir()
 

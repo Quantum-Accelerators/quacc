@@ -1,6 +1,7 @@
 import pytest
 from ase.build import molecule
 
+from quacc import SETTINGS
 from quacc.recipes.psi4.core import static_job
 
 try:
@@ -12,6 +13,10 @@ except ImportError:
 @pytest.mark.skipif(
     psi4 is None,
     reason="Psi4 must be installed. Try conda install -c psi4 psi4",
+)
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
 )
 def testimages_maker(tmpdir):
     tmpdir.chdir()

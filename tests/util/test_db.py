@@ -4,6 +4,7 @@ import pytest
 from ase.build import bulk
 from maggma.stores import MemoryStore
 
+from quacc import SETTINGS
 from quacc.recipes.emt.core import static_job
 from quacc.util.db import results_to_db
 
@@ -62,6 +63,10 @@ def test_covalent_db_tutorial():
         store.update(docs, key="dispatch_id")
 
 
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "covalent",
+    reason="This test requires covalent to be the workflow engine",
+)
 def test_results_to_db():
     atoms = bulk("Cu")
     output = static_job(atoms)
