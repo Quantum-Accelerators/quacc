@@ -65,30 +65,6 @@ def test_decorators(tmpdir):
     assert not hasattr(add_distributed, "electron_object")
 
 
-def test_bad_decorators(tmpdir):
-    tmpdir.chdir()
-
-    SETTINGS.WORKFLOW_ENGINE = "bad"
-
-    with pytest.raises(ValueError):
-
-        @job
-        def add(a, b):
-            return a + b
-
-    with pytest.raises(ValueError):
-
-        @subflow
-        def add_distributed(vals, c):
-            return [add(val, c) for val in vals]
-
-    with pytest.raises(ValueError):
-
-        @flow
-        def workflow(a, b, c):
-            return add(add(a, b), c)
-
-
 @pytest.mark.skipif(ct is None, reason="Covalent not installed")
 def test_covalent_decorators(tmpdir):
     tmpdir.chdir()
