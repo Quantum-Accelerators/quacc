@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import os
 from shutil import which
-from typing import List, Optional, Union
+from typing import List, Literal, Optional, Union
 
 from pydantic import BaseSettings, Field, root_validator
 
@@ -46,7 +46,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # Workflow Engine
     # ---------------------------
-    WORKFLOW_ENGINE: Optional[str] = Field(
+    WORKFLOW_ENGINE: Union[Literal["covalent", "parsl", "jobflow"], None] = Field(
         "covalent"
         if covalent
         else "parsl"

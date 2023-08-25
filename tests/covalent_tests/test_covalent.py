@@ -1,7 +1,7 @@
 import os
 
 import pytest
-from ase.build import bulk, molecule
+from ase.build import bulk
 
 from quacc import SETTINGS, flow
 from quacc.recipes.emt.core import relax_job, static_job
@@ -12,7 +12,7 @@ try:
 except ImportError:
     ct = None
 
-WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
+WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE
 
 
 @pytest.mark.skipif(

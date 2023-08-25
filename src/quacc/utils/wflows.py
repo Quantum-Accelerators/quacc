@@ -34,26 +34,20 @@ def job(
 
     from quacc import SETTINGS
 
-    wflow_engine = (
-        SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
-    )
-    if wflow_engine == "covalent":
+    if SETTINGS.WORKFLOW_ENGINE == "covalent":
         import covalent as ct
 
         decorated = ct.electron(_func, **kwargs)
-    elif wflow_engine == "jobflow":
+    elif SETTINGS.WORKFLOW_ENGINE == "jobflow":
         from jobflow import job as jf_job
 
         decorated = jf_job(_func, **kwargs)
-    elif wflow_engine == "parsl":
+    elif SETTINGS.WORKFLOW_ENGINE == "parsl":
         from parsl import python_app
 
         decorated = python_app(_func, **kwargs)
-    elif not wflow_engine:
-        decorated = _func
     else:
-        msg = f"Unknown workflow engine: {wflow_engine}"
-        raise ValueError(msg)
+        decorated = _func
 
     decorated.original_func = _func
 
@@ -82,18 +76,12 @@ def flow(_func: callable | None = None, **kwargs) -> callable | ct_lattice:
 
     from quacc import SETTINGS
 
-    wflow_engine = (
-        SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
-    )
-    if wflow_engine == "covalent":
+    if SETTINGS.WORKFLOW_ENGINE == "covalent":
         import covalent as ct
 
         decorated = ct.lattice(_func, **kwargs)
-    elif wflow_engine in {"jobflow", "parsl"} or not wflow_engine:
-        decorated = _func
     else:
-        msg = f"Unknown workflow engine: {wflow_engine}"
-        raise ValueError(msg)
+        decorated = _func
 
     return decorated
 
@@ -120,22 +108,16 @@ def subflow(_func: callable | None = None, **kwargs) -> callable | ct_electron:
 
     from quacc import SETTINGS
 
-    wflow_engine = (
-        SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
-    )
-    if wflow_engine == "covalent":
+    if SETTINGS.WORKFLOW_ENGINE == "covalent":
         import covalent as ct
 
         decorated = ct.electron(ct.lattice(_func), **kwargs)
-    elif wflow_engine == "parsl":
+    elif SETTINGS.WORKFLOW_ENGINE == "parsl":
         from parsl import join_app
 
         decorated = join_app(_func, **kwargs)
-    elif wflow_engine == "jobflow" or not wflow_engine:
-        decorated = _func
     else:
-        msg = f"Unknown workflow engine: {wflow_engine}"
-        raise ValueError(msg)
+        decorated = _func
 
     return decorated
 

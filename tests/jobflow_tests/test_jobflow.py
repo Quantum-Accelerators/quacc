@@ -11,8 +11,7 @@ except ImportError:
 
 if jf:
     STORE = jf.JobStore(MemoryStore())
-WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
-
+WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE
 
 @pytest.mark.skipif(
     jf is None or WFLOW_ENGINE != "jobflow",

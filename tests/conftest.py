@@ -17,11 +17,7 @@ def pytest_sessionstart():
     if not os.path.exists(SETTINGS.SCRATCH_DIR):
         os.mkdir(SETTINGS.SCRATCH_DIR)
 
-    WFLOW_ENGINE = (
-        SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
-    )
-
-    if WFLOW_ENGINE == "parsl":
+    if SETTINGS.WORKFLOW_ENGINE == "parsl":
         import parsl
 
         parsl.load()
