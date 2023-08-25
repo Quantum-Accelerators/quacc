@@ -176,10 +176,6 @@ def test_summarize_opt_run(tmpdir):
     d = jsanitize(results, strict=True, enum_values=True)
     MontyDecoder().process_decoded(d)
 
-    with pytest.raises(FileNotFoundError):
-        dyn.trajectory.filename = "not_a_file.traj"
-        summarize_opt_run(dyn)
-
 
 def test_summarize_vib_run(tmpdir):
     tmpdir.chdir()

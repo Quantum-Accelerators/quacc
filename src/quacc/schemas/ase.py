@@ -314,11 +314,7 @@ def summarize_opt_run(
 
     # Get trajectory
     if not trajectory:
-        trajectory = (
-            dyn.traj_atoms
-            if hasattr(dyn, "traj_atoms")
-            else read(dyn.trajectory.filename, index=":")
-        )
+        trajectory = dyn.traj_atoms
 
     initial_atoms = trajectory[0]
     final_atoms = dyn.atoms.atoms if isinstance(dyn.atoms, Filter) else dyn.atoms
