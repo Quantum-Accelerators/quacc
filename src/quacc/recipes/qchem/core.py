@@ -2,18 +2,22 @@
 from __future__ import annotations
 
 import multiprocessing
-from typing import Literal
+from typing import Literal, TYPE_CHECKING
 
-from ase.atoms import Atoms
 from ase.optimize import FIRE
 from monty.dev import requires
 
 from quacc import job, SETTINGS
 from quacc.calculators.qchem import QChem
-from quacc.schemas.ase import OptSchema, RunSchema, summarize_opt_run, summarize_run
+from quacc.schemas.ase import summarize_opt_run, summarize_run
+from quacc.schemas.atoms import fetch_atoms
 from quacc.util.atoms import check_charge_and_spin
 from quacc.util.calc import run_ase_opt, run_calc
-from quacc.util.dicts import remove_dict_empties
+from quacc.util.dicts import merge_dicts
+
+if TYPE_CHECKING:
+    from ase import Atoms
+    from quacc.schemas.ase import OptSchema, RunSchema
 
 try:
     from sella import IRC, Sella
@@ -77,7 +81,7 @@ def static_job(
     RunSchema
         Dictionary of results from quacc.schemas.ase.summarize_run
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     checked_charge, checked_spin_multiplicity = check_charge_and_spin(
         atoms, charge, spin_multiplicity
     )
@@ -168,7 +172,7 @@ def relax_job(
     """
 
     # TODO: exposing TRICs?
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     checked_charge, checked_spin_multiplicity = check_charge_and_spin(
         atoms, charge, spin_multiplicity
     )
@@ -196,7 +200,7 @@ def relax_job(
         "optimizer": FIRE if not has_sella else Sella,
         "optimizer_kwargs": {},
     }
-    opt_flags = opt_defaults | opt_swaps
+    opt_flags = merge_dicts(opt_defaults, opt_swaps)
     if (
         opt_flags["optimizer"].__name__ == "Sella"
         and "order" not in opt_flags["optimizer_kwargs"]
@@ -216,7 +220,7 @@ def relax_job(
 @job
 @requires(
     has_sella,
-    "Sella must be installed. Try pip install sella.",
+    "Sella must be installed. Try pip install quacc[optimizers].",
 )
 def ts_job(
     atoms: Atoms | dict,
@@ -279,7 +283,7 @@ def ts_job(
     # TODO:
     #   - exposing TRICs?
     #   - passing initial Hessian?
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     checked_charge, checked_spin_multiplicity = check_charge_and_spin(
         atoms, charge, spin_multiplicity
     )
@@ -307,7 +311,7 @@ def ts_job(
         "optimizer": Sella,
         "optimizer_kwargs": {},
     }
-    opt_flags = opt_defaults | opt_swaps
+    opt_flags = merge_dicts(opt_defaults, opt_swaps)
     if opt_flags["optimizer"] != Sella:
         raise ValueError("Only Sella should be used for TS optimization.")
 
@@ -324,7 +328,7 @@ def ts_job(
 @job
 @requires(
     has_sella,
-    "Sella must be installed. Try pip install sella.",
+    "Sella must be installed. Try pip install quacc[optimizers].",
 )
 def irc_job(
     atoms: Atoms | dict,
@@ -388,7 +392,7 @@ def irc_job(
     """
 
     # TODO: 1) expose TRICs?; 2) passing initial Hessian?
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     checked_charge, checked_spin_multiplicity = check_charge_and_spin(
         atoms, charge, spin_multiplicity
     )
@@ -417,7 +421,7 @@ def irc_job(
         "optimizer_kwargs": {"keep_going": True},
         "run_kwargs": {"direction": direction},
     }
-    opt_flags = opt_defaults | opt_swaps
+    opt_flags = merge_dicts(opt_defaults, opt_swaps)
     if opt_flags["optimizer"] != IRC:
         raise ValueError("Only Sella's IRC should be used for IRC optimization.")
 
@@ -434,7 +438,7 @@ def irc_job(
 @job
 @requires(
     has_sella,
-    "Sella must be installed. Try pip install sella.",
+    "Sella must be installed. Try pip install quacc[optimizers].",
 )
 def quasi_irc_job(
     atoms: Atoms | dict,
@@ -474,7 +478,7 @@ def quasi_irc_job(
         "fmax": 100,
         "max_steps": 10,
     }
-    irc_opt_swaps = irc_opt_swaps_defaults | irc_opt_swaps
+    irc_opt_swaps = merge_dicts(irc_opt_swaps_defaults, irc_opt_swaps)
 
     SETTINGS.CHECK_CONVERGENCE = False
     irc_summary = irc_job(
