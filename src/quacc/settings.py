@@ -262,11 +262,13 @@ class QuaccSettings(BaseSettings):
 
         from monty.serialization import loadfn
 
-        config_file_path = values.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH)
+        config_file_path = os.path.expanduser(
+            values.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH)
+        )
 
         new_values = {}
-        if os.path.exists(os.path.expanduser(config_file_path)):
-            new_values |= loadfn(os.path.expanduser(config_file_path))
+        if os.path.exists(config_file_path):
+            new_values |= loadfn(config_file_path)
 
         new_values.update(values)
         return new_values
