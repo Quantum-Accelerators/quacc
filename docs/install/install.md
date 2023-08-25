@@ -18,11 +18,17 @@ In your newly activated conda environment, run the following commands to install
 ```bash
 # Install latest PyPI release
 pip install quacc
+
+# Update ASE dependency
+pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
 ```
 
 ```bash
 # Install development version of quacc
 pip install git+https://github.com/quantum-accelerators/quacc.git
+
+# Update ASE dependency
+pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
 ```
 
 !!! Tip
