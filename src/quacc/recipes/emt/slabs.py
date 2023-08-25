@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from quacc import job, subflow
+from quacc import flow, job, subflow
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.schemas.atoms import fetch_atoms
 from quacc.util.slabs import make_max_slabs_from_bulk
@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from quacc.schemas.ase import OptSchema, RunSchema
 
 
+@flow
 def bulk_to_slabs_flow(
     atoms: Atoms | dict,
     make_slabs_kwargs: dict | None = None,

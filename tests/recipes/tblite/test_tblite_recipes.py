@@ -18,6 +18,10 @@ DEFAULT_SETTINGS = SETTINGS.copy()
     TBLite is None,
     reason="tblite must be installed.",
 )
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
 def test_static_job(tmpdir):
     tmpdir.chdir()
 
@@ -39,6 +43,10 @@ def test_static_job(tmpdir):
     TBLite is None,
     reason="tblite must be installed.",
 )
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
 def test_relax_job(tmpdir):
     tmpdir.chdir()
 
@@ -55,6 +63,10 @@ def test_relax_job(tmpdir):
 @pytest.mark.skipif(
     TBLite is None,
     reason="tblite must be installed.",
+)
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
 )
 def test_freq_job(tmpdir):
     tmpdir.chdir()
@@ -167,6 +179,10 @@ def test_freq_job(tmpdir):
 @pytest.mark.skipif(
     TBLite is None,
     reason="tblite must be installed.",
+)
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
 )
 def test_unique_workdir(tmpdir):
     SETTINGS.CREATE_UNIQUE_WORKDIR = True

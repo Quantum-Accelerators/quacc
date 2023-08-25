@@ -22,7 +22,7 @@ pip install git+https://github.com/quantum-accelerators/quacc.git
 
 !!! Tip
 
-    Everything beyond this point in the installation guide is to add on useful features to quacc. So, if you are just getting started, check out the [Quacc Basics](../user/basics.md) page. Then come back to installing additional features as you need them.
+    Everything beyond this point in the installation guide is to add on useful features to quacc. So, if you are just getting started, check out the [Quacc Basics](../user/basics/basics.md) page. Then come back to installing additional features as you need them.
 
 ## Optional Dependencies
 
@@ -36,6 +36,7 @@ where `<extra>` is one of the following:
 
 ### Calculators
 
+- `quacc[newtonnet]`: Installs dependencies to enable the use [NewtonNet](https://doi.org/10.1039/D2DD00008C) recipes.
 - `quacc[tblite]`: Installs dependencies to enable the use of [tblite](https://github.com/tblite/tblite) (on Linux).
 
 ### Workflow Managers
@@ -43,12 +44,10 @@ where `<extra>` is one of the following:
 - `quacc[covalent]`: Installs dependencies to enable the use of [Covalent](https://www.covalent.xyz).
 - `quacc[jobflow]`: Installs dependencies to enable the use of [Jobflow](https://github.com/materialsproject/jobflow) with [FireWorks](https://github.com/materialsproject/fireworks).
 - `quacc[parsl]`: Installs dependencies to enable the use of [Parsl](https://github.com/Parsl/parsl).
-- `quacc[prefect]`: Installs dependencies to enable the use of [Prefect](https://www.prefect.io/).
 
 ### Miscellaneous
 
 - `quacc[optimizers]`: Installs dependencies to enable the use of the [Sella optimizer](https://github.com/zadorlab/sella).
-- `quacc[newtonnet]`: Installs dependencies to enable the use [NewtonNet](https://doi.org/10.1039/D2DD00008C) recipes.
 
 ### Development
 

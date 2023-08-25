@@ -12,28 +12,18 @@ from quacc.presets import vasp as vasp_defaults
 WFLOW_IMPORT = None
 try:
     import covalent
-
-    WFLOW_IMPORT = "covalent"
 except ImportError:
-    pass
+    covalent = None
 try:
     import parsl
 
-    WFLOW_IMPORT = "parsl"
 except ImportError:
-    pass
+    parsl = None
 try:
     import jobflow
 
-    WFLOW_IMPORT = "jobflow"
 except ImportError:
-    pass
-try:
-    import prefect
-
-    WFLOW_IMPORT = "prefect"
-except ImportError:
-    pass
+    jobflow = None
 
 
 _DEFAULT_CONFIG_FILE_PATH = os.path.join(os.path.expanduser("~"), ".quacc.yaml")
@@ -57,10 +47,16 @@ class QuaccSettings(BaseSettings):
     # Workflow Engine
     # ---------------------------
     WORKFLOW_ENGINE: Optional[str] = Field(
-        WFLOW_IMPORT,
+        "covalent"
+        if covalent
+        else "parsl"
+        if parsl
+        else "jobflow"
+        if jobflow
+        else None,
         description=(
             "The workflow manager to use."
-            "Options include: 'covalent', 'parsl', 'jobflow', 'prefect', or None"
+            "Options include: 'covalent', 'parsl', 'jobflow', or None"
         ),
     )
 

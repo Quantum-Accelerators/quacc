@@ -2,13 +2,13 @@
 
 Oftentimes, it is beneficial to store the results in a database for easy querying (like the example below). This is quite simple to do in quacc regardless of the workflow manager you are using by taking advantage of the numerous data store options in [maggma](https://github.com/materialsproject/maggma).
 
-![Mongo example](../images/user/schema.gif)
+![Mongo example](../../images/user/schema.gif)
 
 === "General Purpose"
 
     **Automated Approach**
 
-    For a given recipe, you can have quacc automatically store the final output summaries in your desired database by defining a [Maggma Data Store](https://materialsproject.github.io/maggma/reference/stores/) in the `PRIMARY_STORE` quacc setting.
+    For a given recipe, you can have quacc automatically store the final output summaries in your desired database by defining a [Maggma data store](https://materialsproject.github.io/maggma/reference/stores/) in the `PRIMARY_STORE` quacc setting.
 
     For instance, let's pretend you have decided to make a [`MongoStore`](https://materialsproject.github.io/maggma/reference/stores/#maggma.stores.mongolike.MongoStore) be your database of choice. After defining or loading your Maggma store, you would call `.to_json()` to get a dictionary representation. You can then store this JSON, formatted as a string, in the `PRIMARY_STORE` global quacc setting.
 
@@ -80,4 +80,4 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
 
 === "Jobflow"
 
-    If you are using Jobflow to construct your workflows, it will automatically store the results in the database you defined during the [setup process](../install/wflow_engines.md). No additional steps are needed.
+    If you are using Jobflow to construct your workflows, it will automatically store the results in the database you defined during the [setup process](../../install/wflow_engines.md). No additional steps are needed.

@@ -1,0 +1,43 @@
+name: long-tests
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  tests-base-windows:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.11"]
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install pip packages
+        run: pip install .[dev]
+
+      - name: Run tests with pytest
+        run: pytest --cov=quacc --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: |
+          export GITHUB_HEAD_REF=$GITHUB_REF
+          codecovcli create-commit --fail-on-error
+          codecovcli create-report --fail-on-error
+          codecovcli do-upload --fail-on-error

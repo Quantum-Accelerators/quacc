@@ -12,7 +12,7 @@
 ![Supported python versions](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11-blue)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7720998.svg)](https://doi.org/10.5281/zenodo.7720998)
 
-Quacc is a flexible and extensible platform for high-throughput computational materials science and quantum chemistry.
+Quacc is a flexible and extensible platform for high-throughput computational materials science and quantum chemistry maintained by the [Rosen Research Group](https://rosen.cbe.princeton.edu/) at Princeton University.
 
 The three main goals of quacc are to:
 
@@ -22,7 +22,7 @@ The three main goals of quacc are to:
 
 3. Enable a seamless interface between the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/) and the software infrastructure powering the [Materials Project](https://materialsproject.org).
 
-Quacc currently has pre-made recipes for the following packages: DFTB+, Gaussian, GULP, ORCA, Psi4, tblite, and VASP. It's simple to add your favorite!
+Quacc currently has pre-made recipes for the following packages: DFTB+, Gaussian, GULP, NewtonNet, ORCA, Psi4, tblite, and VASP. It's simple to add your favorite!
 
 ## Documentation
 
@@ -34,7 +34,7 @@ Includes the following sections:
 
 - 🏎️ [Quick Start](https://quantum-accelerators.github.io/quacc/start/demo.html)
 - 🔧 [Installation Guide](https://quantum-accelerators.github.io/quacc/install/install.html)
-- 🧠 [User Guide](https://quantum-accelerators.github.io/quacc/user/basics.html)
+- 🧠 [User Guide](https://quantum-accelerators.github.io/quacc/user/basics/basics.html)
 - 🤝 [Developer Guide](https://quantum-accelerators.github.io/quacc/dev/contributing.html)
 
 ## Demonstration ✨
