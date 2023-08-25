@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "quacc"
 description="A platform to enable high-throughput, database-driven quantum chemistry and computational materials science"
-version = "0.2.1"
+version = "0.2.2"
 readme = "README.md"
 license = { text = "BSD-3" }
 authors = [{ name = "Andrew S. Rosen", email = "asrosen93@gmail.com" }]
@@ -20,13 +20,13 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering",
-    "Operating System :: Windows",
+    "Operating System :: Microsoft :: Windows",
     "Operating System :: Unix",
     "Operating System :: MacOS",
 ]
 requires-python = ">=3.9, <3.12"
 dependencies = [
-    "ase @ https://gitlab.com/ase/ase/-/archive/master/ase-master.zip",  # waiting on >3.22.1
+    "ase @ https://gitlab.com/ase/ase/-/archive/master/ase-master.zip",
     "cclib>=1.8",
     "custodian>=2023.6.5",
     "emmet-core>=0.51.11",
