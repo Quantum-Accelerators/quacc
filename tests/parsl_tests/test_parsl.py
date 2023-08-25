@@ -22,7 +22,62 @@ def setup_module():
     parsl is None or WFLOW_ENGINE != "parsl",
     reason="Parsl is not installed or specified in config",
 )
-def test_tutorial1(tmpdir):
+def test_tutorial1a(tmpdir):
+    tmpdir.chdir()
+
+    from ase.build import bulk
+
+    from quacc.recipes.emt.core import relax_job
+
+    # Make an Atoms object of a bulk Cu structure
+    atoms = bulk("Cu")
+
+    # Call the PythonApp
+    future = relax_job(atoms)  # (1)!
+
+    # Print result
+    assert "atoms" in future.result()  # (2)!
+
+
+@pytest.mark.skipif(
+    parsl is None or WFLOW_ENGINE != "parsl",
+    reason="Parsl is not installed or specified in config",
+)
+def test_tutorial1b(tmpdir):
+    tmpdir.chdir()
+
+    from ase.build import bulk
+
+    from quacc.recipes.emt.core import relax_job
+
+    # Make an Atoms object of a bulk Cu structure
+    atoms = bulk("Cu")
+
+    # Call the PythonApp
+    future = relax_job(atoms)  # (1)!
+
+    # Print result
+    assert "atoms" in future.result()  # (2)!
+
+    from ase.build import bulk
+
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Define the workflow
+    future = bulk_to_slabs_flow(atoms)  # (1)!
+
+    # Print the results
+    assert "atoms" in future.result()[0]  # (2)!
+
+
+@pytest.mark.skipif(
+    parsl is None or WFLOW_ENGINE != "parsl",
+    reason="Parsl is not installed or specified in config",
+)
+def test_tutorial2a(tmpdir):
     tmpdir.chdir()
 
     from ase.build import bulk
@@ -38,6 +93,7 @@ def test_tutorial1(tmpdir):
     # Call App 2, which takes the output of App 1 as input
     future2 = static_job(future1)
 
+    # Print result
     assert "atoms" in future2.result()
 
 
@@ -45,7 +101,7 @@ def test_tutorial1(tmpdir):
     parsl is None or WFLOW_ENGINE != "parsl",
     reason="Parsl is not installed or specified in config",
 )
-def test_tutorial2(tmpdir):
+def test_tutorial2b(tmpdir):
     tmpdir.chdir()
 
     from ase.build import bulk, molecule
@@ -69,9 +125,8 @@ def test_tutorial2(tmpdir):
     parsl is None or WFLOW_ENGINE != "parsl",
     reason="Parsl is not installed or specified in config",
 )
-def test_tutorial3(tmpdir):
+def test_tutorial2c(tmpdir):
     tmpdir.chdir()
-
     from ase.build import bulk
 
     from quacc.recipes.emt.core import relax_job
@@ -84,6 +139,7 @@ def test_tutorial3(tmpdir):
     future1 = relax_job(atoms)
     future2 = bulk_to_slabs_flow(future1, slab_static=None)  # (1)!
 
+    # Print the results
     assert len(future2.result()) == 4
     assert future2.done()
 
@@ -92,40 +148,16 @@ def test_tutorial3(tmpdir):
     parsl is None or WFLOW_ENGINE != "parsl",
     reason="Parsl is not installed or specified in config",
 )
-def test_tutorial3_v2(tmpdir):
-    tmpdir.chdir()
-
-    from ase.build import bulk
-
-    from quacc import flow
-    from quacc.recipes.emt.core import relax_job
-    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
-
-    # Define the Atoms object
-    atoms = bulk("Cu")
-
-    @flow
-    def workflow(atoms):
-        future1 = relax_job(atoms)
-        future2 = bulk_to_slabs_flow(future1, slab_static=None)
-        return future2.result()
-
-    output = workflow(atoms)
-    assert len(output) == 4
-
-
-@pytest.mark.skipif(
-    parsl is None,
-    reason="Parsl is not installed",
-)
 def test_comparison1(tmpdir):
     tmpdir.chdir()
 
-    @python_app
+    from quacc import job
+
+    @job  # (1)!
     def add(a, b):
         return a + b
 
-    @python_app
+    @job
     def mult(a, b):
         return a * b
 
@@ -136,21 +168,23 @@ def test_comparison1(tmpdir):
 
 
 @pytest.mark.skipif(
-    parsl is None,
-    reason="Parsl is not installed",
+    parsl is None or WFLOW_ENGINE != "parsl",
+    reason="Parsl is not installed or specified in config",
 )
 def test_comparison2(tmpdir):
     tmpdir.chdir()
 
-    @python_app
+    from quacc import job, subflow
+
+    @job
     def add(a, b):
         return a + b
 
-    @python_app
+    @job
     def make_more(val):
         return [val] * 3
 
-    @join_app
+    @subflow  # (1)!
     def add_distributed(vals, c):
         return [add(val, c) for val in vals]
 

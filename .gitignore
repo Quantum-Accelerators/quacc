@@ -4,8 +4,8 @@ quacc-20*
 POTCAR*
 tmp*
 cache*
-.results_dir
-.scratch_dir
+.test_results
+.test_scratch
 
 # Workflow ignores
 *parsl.log
