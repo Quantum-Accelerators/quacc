@@ -7,7 +7,7 @@ import pytest
 from ase.build import bulk, fcc100, molecule
 from ase.io import read
 
-from quacc.util.slabs import (
+from quacc.utils.slabs import (
     flip_atoms,
     get_surface_energy,
     make_adsorbate_structures,

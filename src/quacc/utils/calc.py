@@ -15,8 +15,8 @@ from monty.os.path import zpath
 from monty.shutil import copy_r, gzip_dir
 
 from quacc import SETTINGS
-from quacc.util.atoms import copy_atoms
-from quacc.util.files import copy_decompress, make_unique_dir
+from quacc.utils.atoms import copy_atoms
+from quacc.utils.files import copy_decompress, make_unique_dir
 
 if TYPE_CHECKING:
     from ase import Atoms

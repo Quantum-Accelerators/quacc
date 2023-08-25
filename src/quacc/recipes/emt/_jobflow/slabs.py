@@ -7,8 +7,8 @@ from jobflow import Flow, Response
 
 from quacc import job
 from quacc.recipes.emt.core import relax_job, static_job
-from quacc.schemas.atoms import fetch_atoms
-from quacc.util.slabs import make_max_slabs_from_bulk
+from quacc.utils.slabs import make_max_slabs_from_bulk
+from quacc.utils.wflows import fetch_atoms
 
 if TYPE_CHECKING:
     from ase import Atoms

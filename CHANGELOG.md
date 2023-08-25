@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- Renamed `quacc.util` to `quacc.utils`
+
 ## [0.2.2]
 
 ### Changed
@@ -77,7 +81,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - Added support for Prefect.
-- Added `quacc.util.wflows` module.
+- Added `quacc.utils.wflows` module.
 
 ### Changed
 

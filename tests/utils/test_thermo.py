@@ -3,7 +3,7 @@ from ase.build import molecule
 from ase.calculators.emt import EMT
 from ase.units import invcm
 
-from quacc.util.thermo import ideal_gas
+from quacc.utils.thermo import ideal_gas
 
 
 def test_ideal_gas():
