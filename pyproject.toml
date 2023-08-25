@@ -55,7 +55,7 @@ docs = [
     "cairosvg>=2.7.1"
 ]
 strict = [
-    "ase",
+    "ase==3.22.1",
     "cclib==1.8",
     "custodian==2023.7.22",
     "emmet-core==0.66.0",
