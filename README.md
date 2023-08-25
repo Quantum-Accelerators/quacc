@@ -1,8 +1,6 @@
 <div align="center">
-  <img src=docs/images/quacc_logo_wide.png width="300"><br>
+  <img src=https://github.com/Quantum-Accelerators/quacc/blob/main/docs/images/quacc_logo_wide.png width="300"><br>
 </div>
-
----
 
 # quacc – The Quantum Accelerator 🦆
 
@@ -10,6 +8,7 @@
 [![codecov](https://codecov.io/gh/Quantum-Accelerators/quacc/branch/main/graph/badge.svg?token=OJaOZAH30u)](https://codecov.io/gh/Quantum-Accelerators/quacc)
 [![DeepSource](https://app.deepsource.com/gh/Quantum-Accelerators/quacc.svg/?label=active+issues&token=Y1NxOLIuFFEqWdjawIYnJNde)](https://app.deepsource.com/gh/Quantum-Accelerators/quacc/?ref=repository-badge)
 ![Supported python versions](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11-blue)
+![PyPI - Version](https://img.shields.io/pypi/v/quacc?color=blue)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7720998.svg)](https://doi.org/10.5281/zenodo.7720998)
 
 Quacc is a flexible and extensible platform for high-throughput computational materials science and quantum chemistry maintained by the [Rosen Research Group](https://rosen.cbe.princeton.edu/) at Princeton University.
@@ -27,7 +26,7 @@ Quacc currently has pre-made recipes for the following packages: DFTB+, Gaussian
 ## Documentation
 
 <p align="center">
-  📖 <a href="https://quantum-accelerators.github.io/quacc/"><b><i>Learn More Here!</i></b></a> 📖
+  📖 <a href="https://github.com/Quantum-Accelerators/quacc/blob/main/docs/images/start/start2.gif?raw=true"><b><i>Learn More Here!</i></b></a> 📖
 </p>
 
 Includes the following sections:

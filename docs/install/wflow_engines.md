@@ -13,7 +13,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     To install Covalent, run
 
     ```bash
-    pip install "quacc[covalent] @ git+https://github.com/Quantum-Accelerators/quacc.git"
+    pip install quacc[covalent]
     ```
 
     **Starting the Server**
@@ -39,7 +39,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     In your activated Python environment, install Parsl as follows:
 
     ```bash
-    pip install "quacc[parsl] @ git+https://github.com/Quantum-Accelerators/quacc.git"
+    pip install quacc[parsl]
     ```
 
     Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
@@ -51,7 +51,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     To install Jobflow with support for FireWorks, run the following:
 
     ```bash
-    pip install "quacc[jobflow] @ git+https://github.com/Quantum-Accelerators/quacc.git"
+    pip install quacc[jobflow]
     ```
 
     **MongoDB Setup**

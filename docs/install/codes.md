@@ -67,7 +67,7 @@ No setup needed!
 If you plan to use NewtonNet with Quacc, you will need to install it prior to use. This can be done as follows:
 
 ```bash
-pip install "quacc[newtonnet] @ git+https://github.com/Quantum-Accelerators/quacc.git"
+pip install quacc[newtonnet]
 ```
 
 ## ORCA
@@ -101,7 +101,7 @@ If you plan to use tblite with quacc, you will need to install the tblite interf
 If you are using a Linux mmachine, run the following:
 
 ```bash
-pip install "quacc[tblite] @ git+https://github.com/Quantum-Accelerators/quacc.git"
+pip install quacc[tblite]
 ```
 
 If you are using a Mac, run the following:
