@@ -7,7 +7,7 @@ Want to get up and running with quacc as fast possible? Here we go!
 Run the following commands in the terminal:
 
 ```bash
-pip install "quacc[covalent] @ git+https://github.com/quantum-accelerators/quacc.git"
+pip install quacc[covalent]
 covalent start
 ```
 

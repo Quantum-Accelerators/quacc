@@ -16,6 +16,11 @@
 In your newly activated conda environment, run the following commands to install quacc. Note that you will need to install quacc on all machines where you plan to run calculations.
 
 ```bash
+# Install latest PyPI release
+pip install quacc
+```
+
+```bash
 # Install development version of quacc
 pip install git+https://github.com/quantum-accelerators/quacc.git
 ```
@@ -29,10 +34,10 @@ pip install git+https://github.com/quantum-accelerators/quacc.git
 Quacc can be installed with several "extras," as outlined in the [`pyproject.toml`](https://github.com/Quantum-Accelerators/quacc/blob/main/pyproject.toml) file. To install the extras, you can run
 
 ```bash
-pip install "quacc[<extra>] @ git+https://github.com/Quantum-Accelerators/quacc.git"
+pip install quacc[extra]
 ```
 
-where `<extra>` is one of the following:
+where `extra` is one of the following:
 
 ### Calculators
 
