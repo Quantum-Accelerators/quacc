@@ -54,8 +54,6 @@ graph LR
 
         If you haven't done so yet, make sure you started the Covalent server with `covalent start` in the command-line.
 
-        Also make sure you have specified `"covalent"` as the `WORKFLOW_ENGINE` in your [quacc settings](basics/settings.md).
-
     ```python
     import covalent as ct
     from quacc import flow, job
