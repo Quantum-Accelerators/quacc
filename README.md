@@ -26,7 +26,7 @@ Quacc currently has pre-made recipes for the following packages: DFTB+, Gaussian
 ## Documentation
 
 <p align="center">
-  📖 <a href="https://github.com/Quantum-Accelerators/quacc/blob/main/docs/images/start/start2.gif?raw=true"><b><i>Learn More Here!</i></b></a> 📖
+  📖 <a href="https://quantum-accelerators.github.io/quacc/"><b><i>Learn More Here!</i></b></a> 📖
 </p>
 
 Includes the following sections:
@@ -40,7 +40,7 @@ Includes the following sections:
 
 🚀 Demo from the Quick Start guide, using [Covalent](https://github.com/AgnostiqHQ/covalent) as one of the [several supported workflow managers](https://quantum-accelerators.github.io/quacc/user/wflow_overview.html).
 
-![Demo from Quick Start](docs/images/start/start2.gif)
+![](https://github.com/Quantum-Accelerators/quacc/blob/main/docs/images/start/start2.gif)
 
 ## Citation
 
