@@ -4,10 +4,6 @@ on:
   release:
     types: [published]
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
