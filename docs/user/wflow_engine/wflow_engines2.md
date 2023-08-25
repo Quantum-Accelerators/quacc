@@ -56,7 +56,6 @@ graph LR
 
     4. You don't need to set `wait=True` in practice. Once you call `ct.dispatch`, the workflow will begin running. The `ct.get_result` function is used to fetch the workflow status and results from the server.
 
-    With Covalent as the workflow engine, quacc will automatically construct a directed acyclic graph of the inputs and outputs for each calculation to determine which jobs are dependent on one another and the order the jobs should be run. In this example, Covalent will know not to run `static_job` until `relax_job` has completed successfully.
 
 === "Parsl"
 
