@@ -56,7 +56,6 @@ graph LR
 
     4. You don't need to set `wait=True` in practice. Once you call `ct.dispatch`, the workflow will begin running. The `ct.get_result` function is used to fetch the workflow status and results from the server.
 
-
 === "Parsl"
 
     !!! Important
