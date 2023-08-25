@@ -255,6 +255,8 @@ graph LR
     print(result)
     ```
 
+    1. We didn't need to wrap bulk_to_slabs_flow with a decorator because it is already pre-decorated with a `#!Python @flow` decorator. We also chose to set `#!Python slab_static=None` here to disable the static calculation that is normally carried out in this workflow.
+
 === "Parsl"
 
     ```python
@@ -272,6 +274,8 @@ graph LR
     # Print the results
     print(future2.result())
     ```
+
+    1. We didn't need to wrap bulk_to_slabs_flow with a decorator because it is already pre-decorated with a `#!Python @flow` decorator. We also chose to set `#!Python slab_static=None` here to disable the static calculation that is normally carried out in this workflow.
 
 === "Jobflow"
 
