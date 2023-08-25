@@ -13,6 +13,7 @@ if jf:
     STORE = jf.JobStore(MemoryStore())
 WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE
 
+
 @pytest.mark.skipif(
     jf is None or WFLOW_ENGINE != "jobflow",
     reason="Jobflow is not installed or specified in config",
