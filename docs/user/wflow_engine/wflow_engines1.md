@@ -73,7 +73,7 @@ graph LR
         parsl.load()
         ```
 
-        Also make sure you have specified `"parsl"` as the `WORKFLOW_ENGINE` in your [quacc settings](../basics/settings.md).
+        Also make sure you have specified `"parsl"` as the `WORKFLOW_ENGINE` in your [quacc settings](../settings.md).
 
     ```python
     from ase.build import bulk
@@ -97,7 +97,7 @@ graph LR
 
     !!! Important
 
-        Make sure you have specified `"jobflow"` as the `WORKFLOW_ENGINE` in your [quacc settings](../basics/settings.md).
+        Make sure you have specified `"jobflow"` as the `WORKFLOW_ENGINE` in your [quacc settings](../settings.md).
 
     ```python
     import jobflow as jf

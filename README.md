@@ -33,7 +33,7 @@ Includes the following sections:
 
 - 🏎️ [Quick Start](https://quantum-accelerators.github.io/quacc/start/demo.html)
 - 🔧 [Installation Guide](https://quantum-accelerators.github.io/quacc/install/install.html)
-- 🧠 [User Guide](https://quantum-accelerators.github.io/quacc/user/basics/basics.html)
+- 🧠 [User Guide](https://quantum-accelerators.github.io/quacc/user/basics.html)
 - 🤝 [Developer Guide](https://quantum-accelerators.github.io/quacc/dev/contributing.html)
 
 ## Demonstration ✨

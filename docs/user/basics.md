@@ -19,7 +19,7 @@ graph LR
   A[Input] --> B(EMT Relax) --> C[Output]
 ```
 
-Let's start with a simple example. Here, we will use a cheap calculator based on [effective medium theory (EMT)](<https://doi.org/10.1016/0039-6028(96)00816-3>) to run a structure relaxation on a bulk structure of copper, as shown below.
+Let's start with a simple example. Here, we will use a cheap calculator based on effective medium theory (EMT) to run a structure relaxation on a bulk structure of copper, as shown below.
 
 ```python
 from ase.build import bulk
