@@ -56,10 +56,6 @@ graph LR
 
     4. You don't need to set `wait=True` in practice. Once you call `ct.dispatch`, the workflow will begin running. The `ct.get_result` function is used to fetch the workflow status and results from the server.
 
-    With Covalent as the workflow engine, quacc will automatically construct a directed acyclic graph of the inputs and outputs for each calculation to determine which jobs are dependent on one another and the order the jobs should be run. In this example, Covalent will know not to run `static_job` until `relax_job` has completed successfully.
-
-    ![Covalent UI](../../images/user/tutorial1.jpg)
-
 === "Parsl"
 
     !!! Important
@@ -72,7 +68,7 @@ graph LR
         parsl.load()
         ```
 
-        Also make sure you have specified `"parsl"` as the `WORKFLOW_ENGINE` in your [quacc settings](../basics/settings.md).
+        Also make sure you have specified `"parsl"` as the `WORKFLOW_ENGINE` in your [quacc settings](../settings.md).
 
     ```python
     from ase.build import bulk
@@ -103,7 +99,7 @@ graph LR
 
     !!! Important
 
-        Make sure you have specified `"jobflow"` as the `WORKFLOW_ENGINE` in your [quacc settings](../basics/settings.md).
+        Make sure you have specified `"jobflow"` as the `WORKFLOW_ENGINE` in your [quacc settings](../settings.md).
 
     ```python
     import jobflow as jf
@@ -177,8 +173,6 @@ graph LR
     result = ct.get_result(dispatch_id, wait=True)
     print(result)
     ```
-
-    ![Covalent UI](../../images/user/tutorial2.jpg)
 
 === "Parsl"
 
@@ -260,8 +254,6 @@ graph LR
     result = ct.get_result(dispatch_id, wait=True)
     print(result)
     ```
-
-    ![Covalent UI](../../images/user/tutorial3.gif)
 
 === "Parsl"
 

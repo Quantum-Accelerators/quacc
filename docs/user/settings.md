@@ -1,4 +1,4 @@
-# Global Settings
+# Settings Management
 
 ## Modifying Quacc Settings
 

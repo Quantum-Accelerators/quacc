@@ -7,8 +7,8 @@ Want to get up and running with quacc as fast possible? Here we go!
 Run the following commands in the terminal:
 
 ```bash
+pip install --upgrade https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
 pip install quacc[covalent]
-pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
 covalent start
 ```
 
@@ -85,6 +85,6 @@ print(result)
 
 ## What Next?
 
-Read through the [User Guide](../user/basics/basics.md) to learn more about using quacc! And of course, feel free to explore the calculations you just ran in the Covalent UI.
+Read through the [User Guide](../user/basics.md) to learn more about using quacc! And of course, feel free to explore the calculations you just ran in the Covalent UI.
 
 ![Covalent UI](../images/start/ui.jpg)

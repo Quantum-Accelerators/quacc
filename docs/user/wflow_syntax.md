@@ -20,7 +20,7 @@ Each workflow engine has its own unique syntax. To help streamline the process, 
 
 The `#!Python @job` decorator indicates that the decorated function is a single step in a workflow. The `#!Python @flow` decorator indicates that the decorated function is a full workflow, consisting of many individual `#!Python @job`-decorated functions (and/or `#!Python @subflow`-decorated functions). The `#!Python @subflow` decorator indicates that the decorated function is a sub-workflow within a larger workflow and is often used to define dynamic steps in a workflow.
 
-Based on the value for the `WORKFLOW_ENGINE` global variable in your [quacc settings](basics/settings.md), the appropriate decorator will be automatically selected. If the `WORKFLOW_ENGINE` setting is set to `None` (or for any entries marked N/A in the above table), the decorators will have no effect on the underlying function.
+Based on the value for the `WORKFLOW_ENGINE` global variable in your [quacc settings](settings.md), the appropriate decorator will be automatically selected. If the `WORKFLOW_ENGINE` setting is set to `None` (or for any entries marked N/A in the above table), the decorators will have no effect on the underlying function.
 
 ## Examples
 
@@ -44,9 +44,7 @@ graph LR
 
         For a more detailed tutorial on how to use Covalent, refer to the ["Covalent Quick Start"](https://docs.covalent.xyz/docs/get-started/quick-start).
 
-    Take a moment to learn about the main [Covalent Concepts](https://docs.covalent.xyz/docs/user-documentation/concepts/concepts-index), namely the [`Electron`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#electron) and [`Lattice`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#lattice) objects, which describe individual compute tasks and workflows, respectively.
-
-    In Covalent, the `#!Python @ct.lattice` decorator indicates that the function is a workflow, and the `#!Python @ct.electron` decorator indicates that the function is a job (i.e. an individual compute task). If you plan to use a job scheduling system like Slurm, you can think of each `Electron` as an individual Slurm job.
+    Take a moment to learn about the main [Covalent Concepts](https://docs.covalent.xyz/docs/user-documentation/concepts/concepts-index), namely the [`#!Python @ct.electron`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#electron) and [`#!Python @ct.lattice`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#lattice) decorators, which describe individual compute tasks and workflows, respectively.
 
     All `Electron` and `Lattice` objects behave as normal Python functions when the necessary arguments are supplied. However, if the `#!Python ct.dispatch` command is used, the workflow will be dispatched to the Covalent server for execution and monitoring.
 
@@ -82,7 +80,7 @@ graph LR
     result = ct.get_result(dispatch_id, wait=True)  # 9  (5)!
     ```
 
-    1. The `#!Python @job` decorator will be transformed into #!Python @ct.electron`, which tells Covalent to treat the function as a compute job.
+    1. The `#!Python @job` decorator will be transformed into `#!Python @ct.electron`, which tells Covalent to treat the function as a compute job.
 
     2. The `#!Python @flow` decorator will be transformed into `#!Python @ct.lattice`, which tells Covalent to treat the function as a workflow.
 
@@ -104,7 +102,7 @@ graph LR
     !!! Important
         Make sure you run `#!Python import parsl` followed by `#!Python parsl.load()` in Python to load a default Parsl configuration.
 
-        Also make sure you have specified `"parsl"` as the `WORKFLOW_ENGINE` in your [quacc settings](basics/settings.md).
+        Also make sure you have specified `"parsl"` as the `WORKFLOW_ENGINE` in your [quacc settings](settings.md).
 
     ```python
     from quacc import job
@@ -127,7 +125,7 @@ graph LR
     result = workflow(1, 2, 3).result()  # 9  (2)!
     ```
 
-    1. The `#!Python @job` decorator will be transformed into #!Python @python_app`, which tells Parsl to treat the function as a compute job.
+    1. The `#!Python @job` decorator will be transformed into `#!Python @python_app`, which tells Parsl to treat the function as a compute job.
 
     2. `#!Python .result()` is a method that tells Parsl to wait for the result of the job. If `#!Python .result()` were not called, an `#!Python AppFuture` would be returned instead of the actual result.
 
@@ -141,7 +139,7 @@ graph LR
 
     !!! Important
 
-        Make sure you have specified `"jobflow"` as the `WORKFLOW_ENGINE` in your [quacc settings](basics/settings.md).
+        Make sure you have specified `"jobflow"` as the `WORKFLOW_ENGINE` in your [quacc settings](settings.md).
 
     ```python
     import jobflow as jf
