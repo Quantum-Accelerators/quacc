@@ -4,7 +4,7 @@ In the previous examples, we have been running calculations on our local machine
 
 === "Covalent"
 
-    By default, Covalent will run all `Electron` tasks on your local machine using the Dask backend. This is a parameter that you can control. For instance, Covalent offers many [plugin executors](https://docs.covalent.xyz/docs/features/executor-plugins/exe) that can be used to interface with a wide range of HPC, cloud, and quantum devices.
+    By default, Covalent will run all `Electron` tasks on your local machine using the Dask backend. This is a parameter that you can control. For instance, Covalent offers many [plugin executors](https://docs.covalent.xyz/docs/features/executor-plugins/exe) that can be installed and used to interface with a wide range of HPC, cloud, and quantum devices.
 
     **Setting Executors via the Lattice Object**
 
@@ -73,7 +73,7 @@ In the previous examples, we have been running calculations on our local machine
 
         Refer to the [executor documentation](https://docs.covalent.xyz/docs/features/executor-plugins/exe) for instructions on how to install and use the relevant plugins that allow Covalent to submit jobs on your desired machines.
 
-    Most users of quacc will probably want to use the [`HPCExecutor`](https://github.com/Quantum-Accelerators/covalent-hpc-plugin), which is a plugin for Covalent that supports Slurm, PBS, LSF, Flux, and more. For submitting jobs to [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/) from your local machine, an example `HPCExecutor` configuration with support for an [`sshproxy`](https://docs.nersc.gov/connect/mfa/#sshproxy)-based multi-factor authentication certificate might look like the following:
+    Most users of quacc will probably want to use the [`HPCExecutor`](https://github.com/Quantum-Accelerators/covalent-hpc-plugin), which is a plugin for Covalent that supports Slurm, PBS, LSF, Flux, and more. For submitting jobs to a Slurm-based job scheduler from your local machine, an example `HPCExecutor` configuration might look like the following, which has been tested on Perlmutter at NERSC:
 
     ```python
     executor = ct.executor.HPCExecutor(
@@ -104,13 +104,22 @@ In the previous examples, we have been running calculations on our local machine
     )
     ```
 
-    1. This a certificate file used to validate your SSH credentials. This is often not needed but is required at NERSC facilities.
+    1. This a certificate file used to validate your SSH credentials. This is often not needed but is required at NERSC facilities due to the use of [`sshproxy`](https://docs.nersc.gov/connect/mfa/#sshproxy)-based multi-factor authentication.
 
     2. These are the resource specifications for the compute job, which are keyword arguments passed to PSI/J's [`ResourceSpecV1` class](https://exaworks.org/psij-python/docs/v/0.9.0/.generated/psij.html#psij.resource_spec.ResourceSpecV1).
 
     3. These are the job attributes that the job scheduler needs, which are keyword arguments passed to PSI/J's [`JobAttributes` class](https://exaworks.org/psij-python/docs/v/0.9.0/.generated/psij.html#psij.JobAttributes).
 
     4. You generally want each quacc job to be run in its own unique working directory to ensure files don't overwrite one another, so  `create_unique_workdir` should be set to `True`.
+
+
+    !!! Note
+
+        If you are using Perlmutter at NERSC, you will need to adjust the Covalent configuration directory because the home directory does not support file locking:
+
+        ```bash title="~/.bashrc"
+        export COVALENT_CONFIG_DIR="$SCRATCH/.config/covalent"
+        ```
 
 === "Parsl"
 

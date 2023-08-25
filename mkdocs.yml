@@ -123,9 +123,7 @@ nav:
       - install/wflow_engines.md
       - install/codes.md
   - User Guide 🧠:
-      - Quacc Basics:
-          - user/basics/basics.md
-          - user/basics/settings.md
+      - user/basics.md
       - Workflow Basics:
           - user/wflow_overview.md
           - user/wflow_syntax.md
@@ -133,7 +131,7 @@ nav:
           - user/wflow_engine/wflow_engines1.md
           - user/wflow_engine/wflow_engines2.md
           - user/wflow_engine/executors.md
-      - Recipes:
+      - Recipe Summaries:
           - user/recipes/dftb.md
           - user/recipes/emt.md
           - user/recipes/gaussian.md
@@ -144,6 +142,7 @@ nav:
           - user/recipes/psi4.md
           - user/recipes/tblite.md
           - user/recipes/vasp.md
+      - user/settings.md
       - Advanced:
           - user/advanced/database.md
           - user/advanced/file_transfers.md

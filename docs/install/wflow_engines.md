@@ -26,14 +26,6 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
         Once you start scaling up your calculations, we recommend hosting the Covalent server on a dedicated machine or using [Covalent Cloud](https://www.covalent.xyz/cloud/). Refer to the [Covalent Deployment Guide](https://docs.covalent.xyz/docs/user-documentation/server-deployment) for details.
 
-    **Plugin Installation**
-
-    Depending on where you wish to run your quacc calculations, you may need to install the corresponding Covalent plugin, as described in the [Covalent plugin documentation](https://docs.covalent.xyz/docs/features/executor-plugins/exe). If you are using a typical HPC system with a job scheduler, you will probably want to use the [`HPCExecutor` plugin](https://github.com/arosen93/covalent-hpc-plugin), which supports Slurm, PBS, LSF, Flux, and more.
-
-    !!! Note
-
-        If you are using Perlmutter at NERSC, you will need to set `export COVALENT_CONFIG_DIR="$SCRATCH/.config/covalent"` (e.g. in your `~/.bashrc`) because the home directory does not support file locking, which Covalent relies on.
-
 === "Parsl"
 
     In your activated Python environment, install Parsl as follows:

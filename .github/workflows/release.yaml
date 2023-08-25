@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install build
-          pip install -e .
+          pip install -e .[strict]
 
       - name: Build sdist
         run: python -m build --sdist
