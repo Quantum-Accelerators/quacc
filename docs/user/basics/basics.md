@@ -10,7 +10,9 @@ If you are not yet familiar with the ASE [`Atoms`](https://wiki.fysik.dtu.dk/ase
 
     If you are coming from the Pymatgen ecosystem, you can use the [`pymatgen.io.ase.AseAtomsAdaptor`](https://pymatgen.org/pymatgen.io.html#pymatgen.io.ase.AseAtomsAdaptor) class to convert between Pymatgen `#!Python Structure`/`#!Python Molecule` objects and the ASE `Atoms` object.
 
-## A Simple Calculation with EMT
+## Examples
+
+### A Simple Calculation with EMT
 
 ```mermaid
 graph LR
@@ -73,7 +75,7 @@ The `"atoms"` key contains a copy of the output `Atoms` object, the `"results"` 
 
     You can make an `Atoms` object from common files like a CIF, XYZ, or POSCAR by using the [`ase.io.read`](https://wiki.fysik.dtu.dk/ase/ase/io/io.html) function. For instance, `#!Python from ase.io import read` followed by `#!Python atoms = read("</path/to/file>")`.
 
-## A Simple Mixed-Code Workflow
+### A Simple Mixed-Code Workflow
 
 ```mermaid
 graph LR
