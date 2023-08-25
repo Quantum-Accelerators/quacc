@@ -8,6 +8,7 @@ Run the following commands in the terminal:
 
 ```bash
 pip install quacc[covalent]
+pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
 covalent start
 ```
 
