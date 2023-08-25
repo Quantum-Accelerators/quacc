@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from functools import wraps
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -57,7 +58,7 @@ def job(
 
     decorated.original_func = _func
 
-    return decorated
+    return wraps(decorated)
 
 
 def flow(_func: callable | None = None, **kwargs) -> callable | ct_lattice:
