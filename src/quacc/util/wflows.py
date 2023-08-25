@@ -56,9 +56,10 @@ def job(
         msg = f"Unknown workflow engine: {wflow_engine}"
         raise ValueError(msg)
 
+    decorated = wraps(decorated)
     decorated.original_func = _func
 
-    return wraps(decorated)
+    return decorated
 
 
 def flow(_func: callable | None = None, **kwargs) -> callable | ct_lattice:
