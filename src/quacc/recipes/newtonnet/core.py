@@ -410,7 +410,7 @@ def quasi_irc_job(
     del irc_summary["irc"]
 
     # Run opt
-    opt_summary = relax_job.original_func(irc_summary["irc"], **opt_flags)
+    opt_summary = relax_job.original_func(irc_summary["irc"], **opt_swaps)
 
     # Run frequency
     thermo_summary = freq_job.original_func(
