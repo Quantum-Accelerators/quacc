@@ -13,7 +13,7 @@ from pymatgen.io.qchem.outputs import QCOutput
 from pymatgen.io.qchem.sets import ForceSet
 
 from quacc.custodian import qchem as custodian_qchem
-from quacc.util.atoms import check_charge_and_spin
+from quacc.utils.atoms import check_charge_and_spin
 
 
 class QChem(FileIOCalculator):

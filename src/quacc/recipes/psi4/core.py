@@ -9,9 +9,9 @@ from monty.dev import requires
 from quacc import job
 from quacc.schemas.ase import summarize_run
 from quacc.schemas.atoms import fetch_atoms
-from quacc.util.atoms import get_charge, get_multiplicity
-from quacc.util.calc import run_calc
-from quacc.util.dicts import merge_dicts
+from quacc.utils.atoms import get_charge, get_multiplicity
+from quacc.utils.calc import run_calc
+from quacc.utils.dicts import merge_dicts
 
 if TYPE_CHECKING:
     from ase import Atoms

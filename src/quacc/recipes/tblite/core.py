@@ -14,9 +14,9 @@ from quacc.schemas.ase import (
     summarize_vib_run,
 )
 from quacc.schemas.atoms import fetch_atoms
-from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
-from quacc.util.dicts import merge_dicts
-from quacc.util.thermo import ideal_gas
+from quacc.utils.calc import run_ase_opt, run_ase_vib, run_calc
+from quacc.utils.dicts import merge_dicts
+from quacc.utils.thermo import ideal_gas
 
 if TYPE_CHECKING:
     from ase import Atoms

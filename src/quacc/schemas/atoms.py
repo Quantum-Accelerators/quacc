@@ -9,8 +9,8 @@ from emmet.core.structure import MoleculeMetadata, StructureMetadata
 from monty.json import jsanitize
 from pymatgen.io.ase import AseAtomsAdaptor
 
-from quacc.util.atoms import copy_atoms
-from quacc.util.dicts import clean_dict
+from quacc.utils.atoms import copy_atoms
+from quacc.utils.dicts import clean_dict
 
 AtomsSchema = TypeVar("AtomsSchema")
 
