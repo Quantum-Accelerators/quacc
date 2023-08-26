@@ -115,9 +115,9 @@ def relax_job(
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
     }
-    flags = merge_dicts(defaults, calc_swaps)
-
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella or FIRE}
+
+    flags = merge_dicts(defaults, calc_swaps)
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
     if "sella.optimize" in opt_flags.get("optimizer", FIRE).__module__:
@@ -235,14 +235,14 @@ def ts_job(
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
     }
-    flags = merge_dicts(defaults, calc_swaps)
-
     opt_defaults = {
         "fmax": 0.01,
         "max_steps": 1000,
         "optimizer": Sella,
         "optimizer_kwargs": {"diag_every_n": 0} if use_custom_hessian else {},
     }
+
+    flags = merge_dicts(defaults, calc_swaps)
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
     atoms.calc = NewtonNet(**flags)
@@ -320,8 +320,6 @@ def irc_job(
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
     }
-    flags = merge_dicts(defaults, calc_swaps)
-
     opt_defaults = {
         "fmax": 0.01,
         "max_steps": 1000,
@@ -337,6 +335,7 @@ def irc_job(
         },
     }
 
+    flags = merge_dicts(defaults, calc_swaps)
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
     # Define calculator
