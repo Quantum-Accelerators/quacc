@@ -404,9 +404,6 @@ def quasi_irc_job(
     irc_flags = merge_dicts(irc_defaults, irc_swaps)
     opt_swaps = opt_swaps or {}
 
-    opt_defaults = {}
-    opt_flags = merge_dicts(opt_defaults, opt_swaps)
-
     # Run IRC
     irc_summary = irc_job.original_func(atoms, max_steps=5, opt_swaps=irc_flags)
     irc_summary["quasi_irc"] = irc_summary["irc"]
