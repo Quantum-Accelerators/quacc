@@ -1,10 +1,25 @@
 import multiprocessing
+import os
+from pathlib import Path
 
 import pytest
 from ase.build import molecule
 
 from quacc import SETTINGS
 from quacc.recipes.orca.core import relax_job, static_job
+
+FILE_DIR = Path(__file__).resolve().parent
+
+
+def setup_module():
+    with open(FILE_DIR / "mpirun", "w+") as w:
+        w.write("")
+    os.chmod(FILE_DIR / "mpirun", 0o777)
+
+
+def teardown_module():
+    if os.path.exists(FILE_DIR / "mpirun"):
+        os.remove(FILE_DIR / "mpirun")
 
 
 @pytest.mark.skipif(
@@ -43,17 +58,12 @@ def test_static_job(monkeypatch, tmpdir):
     )
     assert "%scf maxiter 300 end" in output["parameters"]["orcablocks"]
 
-    atoms = molecule("H2")
-    monkeypatch.setenv("mpirun", "test")
-    output = static_job(atoms)
-    nprocs = multiprocessing.cpu_count()
-    assert f"%pal nprocs {nprocs} end" in output["parameters"]["orcablocks"]
-
 
 @pytest.mark.skipif(
     SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
     reason="This test suite is for regular function execution only",
 )
+@pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
 def test_relax_job(monkeypatch, tmpdir):
     tmpdir.chdir()
 
@@ -92,8 +102,21 @@ def test_relax_job(monkeypatch, tmpdir):
     assert "trajectory" in output["attributes"]
     assert len(output["attributes"]["trajectory"]) > 1
 
+
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
+@pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
+def test_mpi_run(tmpdir, monkeypatch):
+    tmpdir.chdir()
+    monkeypatch.setenv("PATH", FILE_DIR)
+
     atoms = molecule("H2")
-    monkeypatch.setenv("mpirun", "test")
+    output = static_job(atoms)
+    nprocs = multiprocessing.cpu_count()
+    assert f"%pal nprocs {nprocs} end" in output["parameters"]["orcablocks"]
+
     output = relax_job(atoms)
     nprocs = multiprocessing.cpu_count()
     assert f"%pal nprocs {nprocs} end" in output["parameters"]["orcablocks"]
