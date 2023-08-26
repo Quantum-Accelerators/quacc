@@ -75,7 +75,7 @@ def static_job(
         settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
         **calc_swaps,
     )
-    final_atoms = run_calc(atoms,copy_files=copy_files)
+    final_atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(
         final_atoms, input_atoms=atoms, additional_fields={"name": "NewtonNet S"}
