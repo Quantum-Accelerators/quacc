@@ -357,7 +357,7 @@ def irc_job(
         summary_irc, temperature=temperature, pressure=pressure
     )
     return {
-        "irc": summary_irc,
+        **summary_irc,
         "atoms": summary_irc["atoms"],
         **thermo_summary,
     }
@@ -409,6 +409,7 @@ def quasi_irc_job(
 
     # Run IRC
     irc_summary = irc_job.original_func(atoms, max_steps=5, opt_swaps=irc_flags)
+    irc_summary["quasi_irc"] = irc_summary["irc"]
 
     # Run opt
     opt_summary = relax_job.original_func(irc_summary["irc"], **opt_flags)
@@ -421,7 +422,7 @@ def quasi_irc_job(
     )
 
     return {
-        "irc": irc_summary,
+        **irc_summary,
         "opt": opt_summary,
         "atoms": opt_summary["atoms"],
         **thermo_summary,

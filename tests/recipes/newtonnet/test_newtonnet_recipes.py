@@ -1,5 +1,4 @@
 import os
-from copy import deepcopy
 from pathlib import Path
 
 import numpy as np
@@ -155,9 +154,7 @@ def test_ts_job_with_custom_optimizer(tmpdir):
     tmpdir.chdir()
     # Define test inputs
     atoms = molecule("H2O")
-    opt_swaps = {
-        "optimizer": FIRE,
-    }
+    opt_swaps = {"optimizer": FIRE}
 
     # Call the function
     output = ts_job(atoms, check_convergence=False, opt_swaps=opt_swaps)
@@ -184,9 +181,7 @@ def test_ts_job_with_custom_optimizer_and_custom_hessian(tmpdir):
     tmpdir.chdir()
     # Define test inputs
     atoms = molecule("H2O")
-    opt_swaps = {
-        "optimizer": FIRE,
-    }
+    opt_swaps = {"optimizer": FIRE}
 
     with pytest.raises(ValueError, match="Custom hessian can only be used with Sella."):
         # Call the function
@@ -225,14 +220,7 @@ def test_irc_job_with_default_args(tmpdir):
     assert "irc" in output
     assert "thermo" in output
     assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
-    # assert output["thermo"]["vib"]["results"]["vib_energies"][0] == pytest.approx(0.22686180652213603)
-    assert output["thermo"]["thermo"]["results"]["energy"] == pytest.approx(
-        -9.517354091813969
-    )
-    # assert output["thermo"]["thermo"]["results"]["enthalpy"] == pytest.approx(-8.802336094223135)
-    # assert output["thermo"]["thermo"]["results"]["entropy"] == pytest.approx(0.0019575114680838216)
-    # assert output["thermo"]["thermo"]["results"]["gibbs_energy"] == pytest.approx(-9.385968138432325)
-    # assert output["thermo"]["thermo"]["results"]["zpe"] == pytest.approx(0.61221451713324)
+    assert output["thermo"]["results"]["energy"] == pytest.approx(-9.517354091813969)
 
 
 @pytest.mark.skipif(
@@ -250,21 +238,14 @@ def test_irc_job_with_custom_fmax(tmpdir):
     fmax = 0.001
 
     # Call the function
-    output = irc_job(atoms, fmax=fmax)
+    output = irc_job(atoms, opt_swaps={"fmax": fmax})
 
     # Perform assertions on the result
     assert isinstance(output, dict)
     assert "irc" in output
     assert "thermo" in output
     assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
-    # assert output["thermo"]["vib"]["results"]["vib_energies"][0] == pytest.approx(0.22679645169367102)
-    assert output["thermo"]["thermo"]["results"]["energy"] == pytest.approx(
-        -9.517354091813969
-    )
-    # assert output["thermo"]["thermo"]["results"]["enthalpy"] == pytest.approx(-8.802454617215966)
-    # assert output["thermo"]["thermo"]["results"]["entropy"] == pytest.approx(0.001957512450005214)
-    # assert output["thermo"]["thermo"]["results"]["gibbs_energy"] == pytest.approx(-9.386086954185021)
-    # assert output["thermo"]["thermo"]["results"]["zpe"] == pytest.approx(0.6120974802007668)
+    assert output["thermo"]["results"]["energy"] == pytest.approx(-9.517354091813969)
 
 
 @pytest.mark.skipif(
@@ -282,21 +263,14 @@ def test_irc_job_with_custom_max_steps(tmpdir):
     max_steps = 500
 
     # Call the function
-    output = irc_job(atoms, max_steps=max_steps)
+    output = irc_job(atoms, opt_swaps={"max_steps": max_steps})
 
     # Perform assertions on the result
     assert isinstance(output, dict)
     assert "irc" in output
     assert "thermo" in output
     assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
-    # assert output["thermo"]["vib"]["results"]["vib_energies"][0] == pytest.approx(0.22686180652213603)
-    assert output["thermo"]["thermo"]["results"]["energy"] == pytest.approx(
-        -9.517354091813969
-    )
-    # assert output["thermo"]["thermo"]["results"]["enthalpy"] == pytest.approx(-8.802336094223135)
-    # assert output["thermo"]["thermo"]["results"]["entropy"] == pytest.approx(0.0019575114680838216)
-    # assert output["thermo"]["thermo"]["results"]["gibbs_energy"] == pytest.approx(-9.385968138432325)
-    # assert output["thermo"]["thermo"]["results"]["zpe"] == pytest.approx(0.61221451713324)
+    assert output["thermo"]["results"]["energy"] == pytest.approx(-9.517354091813969)
 
 
 @pytest.mark.skipif(
@@ -322,14 +296,7 @@ def test_irc_job_with_custom_temperature_and_pressure(tmpdir):
     assert "irc" in output
     assert "thermo" in output
     assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
-    # assert output["thermo"]["vib"]["results"]["vib_energies"][0] == pytest.approx(0.22686180652213603)
-    assert output["thermo"]["thermo"]["results"]["energy"] == pytest.approx(
-        -9.517354091813969
-    )
-    # assert output["thermo"]["thermo"]["results"]["enthalpy"] == pytest.approx(-8.731604478079722)
-    # assert output["thermo"]["thermo"]["results"]["entropy"] == pytest.approx(0.0019400016901593643)
-    # assert output["thermo"]["thermo"]["results"]["gibbs_energy"] == pytest.approx(-9.701605323159404)
-    # assert output["thermo"]["thermo"]["results"]["zpe"] == pytest.approx(0.61221451713324)
+    assert output["thermo"]["results"]["energy"] == pytest.approx(-9.517354091813969)
 
 
 @pytest.mark.skipif(
@@ -354,14 +321,7 @@ def test_irc_job_with_check_convergence(tmpdir):
     assert "irc" in output
     assert "thermo" in output
     assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
-    # assert output["thermo"]["vib"]["results"]["vib_energies"][0] == pytest.approx(0.22686180652213603)
-    assert output["thermo"]["thermo"]["results"]["energy"] == pytest.approx(
-        -9.517354091813969
-    )
-    # assert output["thermo"]["thermo"]["results"]["enthalpy"] == pytest.approx(-8.802336094223135)
-    # assert output["thermo"]["thermo"]["results"]["entropy"] == pytest.approx(0.0019575114680838216)
-    # assert output["thermo"]["thermo"]["results"]["gibbs_energy"] == pytest.approx(-9.385968138432325)
-    # assert output["thermo"]["thermo"]["results"]["zpe"] == pytest.approx(0.61221451713324)
+    assert output["thermo"]["results"]["energy"] == pytest.approx(-9.517354091813969)
 
 
 @pytest.mark.skipif(
@@ -376,13 +336,7 @@ def test_irc_job_with_custom_opt_swaps(tmpdir):
     tmpdir.chdir()
     # Define test inputs
     atoms = molecule("H2O")
-    opt_swaps = {
-        "run_kwargs": {
-            "direction": "reverse",
-            # "direction": "forward",
-            # "keep_going": True
-        },
-    }
+    opt_swaps = {"run_kwargs": {"direction": "reverse"}}
 
     # Call the function
     output = irc_job(atoms, opt_swaps=opt_swaps)
@@ -392,14 +346,7 @@ def test_irc_job_with_custom_opt_swaps(tmpdir):
     assert "irc" in output
     assert "thermo" in output
     assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354965639784)
-    # assert output["thermo"]["vib"]["results"]["vib_energies"][0] == pytest.approx(0.22677540045636221)
-    assert output["thermo"]["thermo"]["results"]["energy"] == pytest.approx(
-        -9.517354965639784
-    )
-    # assert output["thermo"]["thermo"]["results"]["enthalpy"] == pytest.approx(-8.802300778293297)
-    # assert output["thermo"]["thermo"]["results"]["entropy"] == pytest.approx(0.001957480086301709)
-    # assert output["thermo"]["thermo"]["results"]["gibbs_energy"] == pytest.approx(-9.38592346602415)
-    # assert output["thermo"]["thermo"]["results"]["zpe"] == pytest.approx(0.6122506077542746)
+    assert output["thermo"]["results"]["energy"] == pytest.approx(-9.517354965639784)
 
 
 @pytest.mark.skipif(
@@ -423,18 +370,9 @@ def test_quasi_irc_job_with_default_args(tmpdir):
     assert "irc" in output
     assert "opt" in output
     assert "thermo" in output
-    assert output["irc"]["irc"]["results"]["energy"] == pytest.approx(
-        -9.517354091813969
-    )
-    # assert output["irc"]["thermo"]["vib"]["results"]["vib_energies"][0] == pytest.approx(0.22686180652213603)
+    assert output["quasi_irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
     assert output["opt"]["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["thermo"]["thermo"]["results"]["energy"] == pytest.approx(
-        -9.517354091813969
-    )
-    # assert output["thermo"]["thermo"]["results"]["enthalpy"] == pytest.approx(-8.802336094223135)
-    # assert output["thermo"]["thermo"]["results"]["entropy"] == pytest.approx(0.0019575114680838216)
-    # assert output["thermo"]["thermo"]["results"]["gibbs_energy"] == pytest.approx(-9.385968138432325)
-    # assert output["thermo"]["thermo"]["results"]["zpe"] == pytest.approx(0.61221451713324)
+    assert output["thermo"]["results"]["energy"] == pytest.approx(-9.517354091813969)
 
 
 @pytest.mark.skipif(
@@ -450,7 +388,6 @@ def test_quasi_irc_job_with_custom_direction(tmpdir):
     # Define test inputs
     atoms = molecule("H2O")
     direction = "reverse"
-    # direction = "forward"
 
     # Call the function
     output = quasi_irc_job(atoms, direction=direction)
@@ -460,21 +397,10 @@ def test_quasi_irc_job_with_custom_direction(tmpdir):
     assert "irc" in output
     assert "opt" in output
     assert "thermo" in output
-    assert output["irc"]["irc"]["results"]["energy"] == pytest.approx(
-        -9.517354965639784
-    )
-    assert output["irc"]["irc"]["results"]["energy"] == pytest.approx(
-        -9.517354965639784
-    )
-    # assert output["irc"]["thermo"]["vib"]["results"]["vib_energies"][0] == pytest.approx(0.22677540045636221)
+    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354965639784)
+    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354965639784)
     assert output["opt"]["results"]["energy"] == pytest.approx(-9.517354965639784)
-    assert output["thermo"]["thermo"]["results"]["energy"] == pytest.approx(
-        -9.517354965639784
-    )
-    # assert output["thermo"]["thermo"]["results"]["enthalpy"] == pytest.approx(-8.802300778293297)
-    # assert output["thermo"]["thermo"]["results"]["entropy"] == pytest.approx(0.001957480086301709)
-    # assert output["thermo"]["thermo"]["results"]["gibbs_energy"] == pytest.approx(-9.38592346602415)
-    # assert output["thermo"]["thermo"]["results"]["zpe"] == pytest.approx(0.6122506077542746)
+    assert output["thermo"]["results"]["energy"] == pytest.approx(-9.517354965639784)
 
 
 @pytest.mark.skipif(
@@ -500,18 +426,9 @@ def test_quasi_irc_job_with_custom_temperature_and_pressure(tmpdir):
     assert "irc" in output
     assert "opt" in output
     assert "thermo" in output
-    assert output["irc"]["irc"]["results"]["energy"] == pytest.approx(
-        -9.517354091813969
-    )
-    # assert output["irc"]["thermo"]["vib"]["results"]["vib_energies"][0] == pytest.approx(0.22686180652213603)
+    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
     assert output["opt"]["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["thermo"]["thermo"]["results"]["energy"] == pytest.approx(
-        -9.517354091813969
-    )
-    # assert output["thermo"]["thermo"]["results"]["enthalpy"] == pytest.approx(-8.731604478079722)
-    # assert output["thermo"]["thermo"]["results"]["entropy"] == pytest.approx(0.0019400016901593643)
-    # assert output["thermo"]["thermo"]["results"]["gibbs_energy"] == pytest.approx(-9.701605323159404)
-    # assert output["thermo"]["thermo"]["results"]["zpe"] == pytest.approx(0.61221451713324)
+    assert output["thermo"]["results"]["energy"] == pytest.approx(-9.517354091813969)
 
 
 @pytest.mark.skipif(
@@ -527,9 +444,7 @@ def test_quasi_irc_job_with_custom_irc_swaps(tmpdir):
     # Define test inputs
     atoms = molecule("H2O")
     irc_swaps = {
-        "run_kwargs": {
-            "direction": "reverse",
-        },
+        "run_kwargs": {"direction": "reverse"},
     }
 
     # Call the function
@@ -540,18 +455,9 @@ def test_quasi_irc_job_with_custom_irc_swaps(tmpdir):
     assert "irc" in output
     assert "opt" in output
     assert "thermo" in output
-    assert output["irc"]["irc"]["results"]["energy"] == pytest.approx(
-        -9.517354965639784
-    )
-    # assert output["irc"]["thermo"]["vib"]["results"]["vib_energies"][0] == pytest.approx(0.22677540045636221)
+    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354965639784)
     assert output["opt"]["results"]["energy"] == pytest.approx(-9.517354965639784)
-    assert output["thermo"]["thermo"]["results"]["energy"] == pytest.approx(
-        -9.517354965639784
-    )
-    # assert output["thermo"]["thermo"]["results"]["enthalpy"] == pytest.approx(-8.802300778293297)
-    # assert output["thermo"]["thermo"]["results"]["entropy"] == pytest.approx(0.001957480086301709)
-    # assert output["thermo"]["thermo"]["results"]["gibbs_energy"] == pytest.approx(-9.38592346602415)
-    # assert output["thermo"]["thermo"]["results"]["zpe"] == pytest.approx(0.6122506077542746)
+    assert output["thermo"]["results"]["energy"] == pytest.approx(-9.517354965639784)
 
 
 @pytest.mark.skipif(
@@ -591,9 +497,8 @@ def test_freq_job(tmpdir):
     )
 
     atoms = molecule("CH3")
-    initial_atoms = deepcopy(atoms)
     output = freq_job(atoms, temperature=1000, pressure=20)
-    assert output["vib"]["atoms"] == initial_atoms
+    assert output["vib"]["atoms"] == molecule("CH3")
     assert len(output["vib"]["results"]["vib_freqs_raw"]) == 12
     assert len(output["vib"]["results"]["vib_freqs"]) == 6
     assert output["vib"]["results"]["vib_energies_raw"][0] == pytest.approx(
@@ -612,4 +517,4 @@ def test_freq_job(tmpdir):
     assert output["vib"]["results"]["imag_vib_freqs"] == pytest.approx(
         [-761.5004719152678]
     )
-    assert output["thermo"]["atoms"] == initial_atoms
+    assert output["thermo"]["atoms"] == molecule("CH3")
