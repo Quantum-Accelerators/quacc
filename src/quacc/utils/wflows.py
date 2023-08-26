@@ -76,12 +76,14 @@ def flow(_func: callable | None = None, **kwargs) -> callable | ct_lattice:
 
     from quacc import SETTINGS
 
-    if SETTINGS.WORKFLOW_ENGINE != "covalent":
-        return _func
+    if SETTINGS.WORKFLOW_ENGINE == "covalent":
+        import covalent as ct
 
-    import covalent as ct
+        decorated = ct.lattice(_func, **kwargs)
+    else:
+        decorated = _func
 
-    return ct.lattice(_func, **kwargs)
+    return decorated
 
 
 def subflow(_func: callable | None = None, **kwargs) -> callable | ct_electron:
@@ -109,13 +111,15 @@ def subflow(_func: callable | None = None, **kwargs) -> callable | ct_electron:
     if SETTINGS.WORKFLOW_ENGINE == "covalent":
         import covalent as ct
 
-        return ct.electron(ct.lattice(_func), **kwargs)
+        decorated = ct.electron(ct.lattice(_func), **kwargs)
     elif SETTINGS.WORKFLOW_ENGINE == "parsl":
         from parsl import join_app
 
-        return join_app(_func, **kwargs)
+        decorated = join_app(_func, **kwargs)
     else:
-        return _func
+        decorated = _func
+
+    return decorated
 
 
 def fetch_atoms(atoms: Atoms | dict) -> Atoms:
