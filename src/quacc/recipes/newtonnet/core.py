@@ -24,7 +24,6 @@ from quacc.utils.wflows import fetch_atoms
 if TYPE_CHECKING:
     import numpy as np
     from ase import Atoms
-    from ase.optimize.optimize import Optimizer
 
     from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
 
@@ -56,8 +55,6 @@ def static_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     calc_swaps
         Dictionary of custom kwargs for the newtonnet calculator
-    opt_swaps
-        Optional swaps for the optimization parameters
     copy_files
         Files to copy to the runtime directory.
 
@@ -123,7 +120,7 @@ def relax_job(
         settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
         **calc_swaps,
     )
-    dyn = run_ase_opt(atoms, **opt_swaps, copy_files=copy_files)
+    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_swaps)
     return _add_stdev_and_hess(
         summarize_opt_run(dyn, additional_fields={"name": "NewtonNet Relax"})
     )
@@ -275,7 +272,7 @@ def ts_job(
         ts_summary, temperature=temperature, pressure=pressure, calc_swaps=calc_swaps
     )
 
-    return {"ts": ts_summary, "thermo": thermo_summary}
+    return {"ts": ts_summary, "atoms": ts_summary["atoms"], **thermo_summary}
 
 
 @job
@@ -357,7 +354,11 @@ def irc_job(
     thermo_summary = freq_job.original_func(
         summary_irc, temperature=temperature, pressure=pressure
     )
-    return {f"irc-{direction}": summary_irc, "thermo": thermo_summary}
+    return {
+        f"irc-{direction}": summary_irc,
+        "atoms": summary_irc["atoms"],
+        **thermo_summary,
+    }
 
 
 @job
@@ -417,7 +418,12 @@ def quasi_irc_job(
         pressure=pressure,
     )
 
-    return {"irc": irc_summary, "opt": opt_summary, "thermo": thermo_summary}
+    return {
+        "irc": irc_summary,
+        "opt": opt_summary,
+        "atoms": opt_summary["atoms"],
+        **thermo_summary,
+    }
 
 
 def _get_hessian(atoms: Atoms) -> np.ndarray:
