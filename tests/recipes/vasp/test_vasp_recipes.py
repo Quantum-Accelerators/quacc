@@ -342,7 +342,6 @@ def test_mp(tmpdir):
     assert output["parameters"]["encut"] == 680
     assert output["parameters"]["kspacing"] == 0.22
     assert output["parameters"]["ismear"] == 0
-    assert output["prerelax"]["parameters"]["xc"] == "pbesol"
 
     output = mp_relax_flow(atoms)
     assert output["relax"]["nsites"] == len(atoms)
@@ -351,6 +350,7 @@ def test_mp(tmpdir):
     assert output["relax"]["parameters"]["encut"] == 680
     assert output["relax"]["parameters"]["ismear"] == 2
     assert output["relax"]["parameters"]["kspacing"] == 0.22
+    assert output["prerelax"]["parameters"]["xc"] == "pbesol"
 
     atoms = bulk("Fe")
     output = mp_relax_flow(atoms)
