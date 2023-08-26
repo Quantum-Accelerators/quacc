@@ -336,37 +336,42 @@ def test_mp(tmpdir):
     assert output["parameters"]["ismear"] == 0
 
     output = mp_relax_job(atoms)
-    assert output["nsites"] == len(atoms)
-    assert output["parameters"]["xc"] == "r2scan"
-    assert output["parameters"]["ediffg"] == -0.02
-    assert output["parameters"]["encut"] == 680
-    assert output["parameters"]["kspacing"] == 0.22
-    assert output["parameters"]["ismear"] == 0
+    assert output["relax"]["nsites"] == len(atoms)
+    assert output["relax"]["parameters"]["xc"] == "r2scan"
+    assert output["relax"]["parameters"]["ediffg"] == -0.02
+    assert output["relax"]["parameters"]["encut"] == 680
+    assert output["relax"]["parameters"]["kspacing"] == 0.22
+    assert output["relax"]["parameters"]["ismear"] == 0
+    assert output["prerelax"]["parameters"]["xc"] == "pbesol"
 
     output = mp_relax_flow(atoms)
-    assert output["nsites"] == len(atoms)
-    assert output["parameters"]["xc"] == "r2scan"
-    assert output["parameters"]["ediffg"] == -0.02
-    assert output["parameters"]["encut"] == 680
-    assert output["parameters"]["ismear"] == 2
-    assert output["parameters"]["kspacing"] == 0.22
+    assert output["relax"]["nsites"] == len(atoms)
+    assert output["relax"]["parameters"]["xc"] == "r2scan"
+    assert output["relax"]["parameters"]["ediffg"] == -0.02
+    assert output["relax"]["parameters"]["encut"] == 680
+    assert output["relax"]["parameters"]["ismear"] == 2
+    assert output["relax"]["parameters"]["kspacing"] == 0.22
 
     atoms = bulk("Fe")
     output = mp_relax_flow(atoms)
-    assert output["nsites"] == len(atoms)
-    assert output["parameters"]["xc"] == "r2scan"
-    assert output["parameters"]["ediffg"] == -0.02
-    assert output["parameters"]["encut"] == 680
-    assert output["parameters"]["ismear"] == 1
-    assert output["parameters"]["kspacing"] == pytest.approx(0.28329488761304206)
+    assert output["relax"]["nsites"] == len(atoms)
+    assert output["relax"]["parameters"]["xc"] == "r2scan"
+    assert output["relax"]["parameters"]["ediffg"] == -0.02
+    assert output["relax"]["parameters"]["encut"] == 680
+    assert output["relax"]["parameters"]["ismear"] == 1
+    assert output["relax"]["parameters"]["kspacing"] == pytest.approx(
+        0.28329488761304206
+    )
 
     atoms = molecule("O2")
     atoms.center(vacuum=10)
     atoms.pbc = True
     output = mp_relax_flow(atoms)
-    assert output["nsites"] == len(atoms)
-    assert output["parameters"]["xc"] == "r2scan"
-    assert output["parameters"]["ediffg"] == -0.02
-    assert output["parameters"]["encut"] == 680
-    assert output["parameters"]["ismear"] == -5
-    assert output["parameters"]["kspacing"] == pytest.approx(0.28329488761304206)
+    assert output["relax"]["nsites"] == len(atoms)
+    assert output["relax"]["parameters"]["xc"] == "r2scan"
+    assert output["relax"]["parameters"]["ediffg"] == -0.02
+    assert output["relax"]["parameters"]["encut"] == 680
+    assert output["relax"]["parameters"]["ismear"] == -5
+    assert output["relax"]["parameters"]["kspacing"] == pytest.approx(
+        0.28329488761304206
+    )

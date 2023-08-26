@@ -111,6 +111,7 @@ def qmof_relax_job(
         "volume-relax-lowacc": summary3 if relax_cell else None,
         "double-relax": summary4,
         "static": summary5,
+        "atoms": summary5["atoms"],
     }
 
 
@@ -359,4 +360,5 @@ def _static(
     atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, copy_files=["WAVECAR"])
 
+    return summarize_run(atoms, additional_fields={"name": "QMOF Static"})
     return summarize_run(atoms, additional_fields={"name": "QMOF Static"})
