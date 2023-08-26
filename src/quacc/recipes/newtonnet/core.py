@@ -69,7 +69,6 @@ def static_job(
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
-    # Define calculator
     atoms.calc = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
         settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
@@ -86,11 +85,9 @@ def static_job(
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def relax_job(
     atoms: Atoms | dict,
-    fmax: float = 0.01,
-    max_steps: int = 1000,
-    optimizer: Optimizer = Sella or FIRE,
-    newtonnet_kwargs: dict | None = None,
-    optimizer_kwargs: dict | None = None,
+    calc_swaps: dict | None = None,
+    opt_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> OptSchema:
     """
     Relax a structure.
@@ -99,16 +96,12 @@ def relax_job(
     ----------
     atoms
         Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
-    fmax
-        Tolerance for the force convergence (in eV/A).
-    max_steps
-        Maximum number of steps to take.
-    optimizer
-        Optimizer class to use for the relaxation.
-    newtonnet_kwargs
-        Dictionary of custom kwargs for the newtonnet calculator.
-    optimizer_kwargs
-        Dictionary of kwargs for the optimizer.
+    calc_swaps
+        Dictionary of custom kwargs for the newtonnet calculator
+    opt_swaps
+        Optional swaps for the optimization parameters
+    copy_files
+        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -116,22 +109,21 @@ def relax_job(
         A dictionary containing the results of the calculation.
     """
     atoms = fetch_atoms(atoms)
-    newtonnet_kwargs = newtonnet_kwargs or {}
-    optimizer_kwargs = optimizer_kwargs or {}
-    if "sella.optimize" in optimizer.__module__:
-        optimizer_kwargs["order"] = 0
+    calc_swaps = calc_swaps or {}
+    opt_swaps = opt_swaps or {}
+
+    opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella or FIRE}
+    opt_flags = merge_dicts(opt_defaults, opt_swaps)
+
+    if "sella.optimize" in opt_flags.get("optimizer", FIRE).__module__:
+        opt_flags["order"] = 0
 
     atoms.calc = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
         settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
+        **calc_swaps,
     )
-    dyn = run_ase_opt(
-        atoms,
-        fmax=fmax,
-        max_steps=max_steps,
-        optimizer=optimizer,
-        optimizer_kwargs=optimizer_kwargs,
-    )
+    dyn = run_ase_opt(atoms, **opt_swaps, copy_files=copy_files)
     return _add_stdev_and_hess(
         summarize_opt_run(dyn, additional_fields={"name": "NewtonNet Relax"})
     )
@@ -143,6 +135,7 @@ def freq_job(
     atoms: Atoms | dict,
     temperature: float = 298.15,
     pressure: float = 1.0,
+    calc_swaps: dict | None = None,
 ) -> dict[Literal["vib", "thermo"], VibSchema | ThermoSchema]:
     """
     Perform a frequency calculation using the given atoms object.
@@ -155,6 +148,8 @@ def freq_job(
         The temperature for the thermodynamic analysis.
     pressure
         The pressure for the thermodynamic analysis.
+    calc_swaps
+        Optional swaps for the calculator.
 
     Returns
     -------
@@ -162,11 +157,13 @@ def freq_job(
         Summary of the frequency calculation and thermo calculations.
     """
     atoms = fetch_atoms(atoms)
+    calc_swaps = calc_swaps or {}
 
     # Define calculator
     ml_calculator = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
         settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
+        **calc_swaps,
     )
     atoms.calc = ml_calculator
 
@@ -201,8 +198,9 @@ def ts_job(
     use_custom_hessian: bool = False,
     temperature: float = 298.15,
     pressure: float = 1.0,
-    check_convergence: bool = True,
+    calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
+    check_convergence: bool = True,
 ) -> dict[Literal["ts", "thermo"], OptSchema | ThermoSchema]:
     """
     Perform a transition state (TS) job using the given atoms object.
@@ -217,10 +215,12 @@ def ts_job(
         The temperature for the frequency calculation in Kelvins.
     pressure
         The pressure for the frequency calculation in bar.
-    check_convergence
-        Whether to check the convergence of the optimization.
+    calc_swaps
+        Optional swaps for the calculator.
     opt_swaps
         Optional swaps for the optimization parameters.
+    check_convergence
+        Whether to check the convergence of the optimization.
 
     Returns
     -------
@@ -228,6 +228,7 @@ def ts_job(
         A dictionary containing the TS summary and thermodynamic summary.
     """
     atoms = fetch_atoms(atoms)
+    calc_swaps = calc_swaps or {}
     opt_swaps = opt_swaps or {}
 
     opt_defaults = {
@@ -236,17 +237,17 @@ def ts_job(
         "optimizer": Sella,
         "optimizer_kwargs": {"diag_every_n": 0} if use_custom_hessian else {},
     }
-
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
     # Define calculator
     atoms.calc = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
         settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
+        **calc_swaps,
     )
 
     if use_custom_hessian:
-        if opt_flags["optimizer"].__name__ != "Sella":
+        if opt_flags.get("optimizer", FIRE).__name__ != "Sella":
             raise ValueError("Custom hessian can only be used with Sella.")
 
         opt_flags["optimizer_kwargs"]["hessian_function"] = _get_hessian
@@ -254,6 +255,7 @@ def ts_job(
     ml_calculator = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
         settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
+        **calc_swaps,
     )
     atoms.calc = ml_calculator
 
@@ -269,7 +271,9 @@ def ts_job(
     ts_summary = _add_stdev_and_hess(ts_summary)
 
     # Run a frequency calculation
-    thermo_summary = freq_job(ts_summary, temperature=temperature, pressure=pressure)
+    thermo_summary = freq_job.original_func(
+        ts_summary, temperature=temperature, pressure=pressure, calc_swaps=calc_swaps
+    )
 
     return {"ts": ts_summary, "thermo": thermo_summary}
 
@@ -279,12 +283,12 @@ def ts_job(
 @requires(Sella, "Sella must be installed. Try pip install quacc[optimizers]")
 def irc_job(
     atoms: Atoms | dict,
-    fmax: float = 0.01,
-    max_steps: int = 1000,
+    direction: Literal["forward", "reverse"] = "forward",
     temperature: float = 298.15,
     pressure: float = 1.0,
-    check_convergence: bool = False,
+    calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
+    check_convergence: bool = False,
 ) -> dict[Literal["irc", "thermo"], OptSchema | ThermoSchema]:
     """
     Perform an intrinsic reaction coordinate (IRC) job using the given atoms object.
@@ -293,18 +297,18 @@ def irc_job(
     ----------
     atoms
         The atoms object representing the system.
-    fmax
-        Tolerance for the force convergence (in eV/A).
-    max_steps
-        Maximum number of steps to take.
+    direction
+        The direction of the IRC calculation ("forward" or "reverse").
     temperature
         The temperature for the frequency calculation in Kelvins.
     pressure
         The pressure for the frequency calculation in bar.
-    check_convergence
-        Whether to check the convergence of the optimization.
+    calc_swaps
+        Optional swaps for the calculator.
     opt_swaps
         Optional swaps for the optimization parameters.
+    check_convergence
+        Whether to check the convergence of the optimization.
 
     Returns
     -------
@@ -312,9 +316,12 @@ def irc_job(
         A dictionary containing the IRC summary and thermodynamic summary.
     """
     atoms = fetch_atoms(atoms)
+    calc_swaps = calc_swaps or {}
     opt_swaps = opt_swaps or {}
 
     opt_defaults = {
+        "fmax": 0.01,
+        "max_steps": 1000,
         "optimizer": IRC,
         "optimizer_kwargs": {
             "dx": 0.1,
@@ -323,7 +330,7 @@ def irc_job(
             "keep_going": True,
         },
         "run_kwargs": {
-            "direction": "forward",
+            "direction": direction,
         },
     }
 
@@ -333,14 +340,15 @@ def irc_job(
     atoms.calc = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
         settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
+        **calc_swaps,
     )
 
     # Run IRC
-    dyn = run_ase_opt(atoms, fmax=fmax, max_steps=max_steps, **opt_flags)
+    dyn = run_ase_opt(atoms, **opt_flags)
     summary_irc = summarize_opt_run(
         dyn,
         check_convergence=check_convergence,
-        additional_fields={"name": "NewtonNet IRC"},
+        additional_fields={"name": f"NewtonNet IRC: {direction}"},
     )
 
     summary_irc = _add_stdev_and_hess(summary_irc)
@@ -349,7 +357,7 @@ def irc_job(
     thermo_summary = freq_job.original_func(
         summary_irc, temperature=temperature, pressure=pressure
     )
-    return {"irc": summary_irc, "thermo": thermo_summary}
+    return {f"irc-{direction}": summary_irc, "thermo": thermo_summary}
 
 
 @job
