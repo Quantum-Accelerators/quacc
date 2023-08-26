@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import multiprocessing
-import os
+from shutil import which
 from typing import TYPE_CHECKING
 
 from ase.calculators.orca import ORCA, OrcaProfile
@@ -72,9 +72,7 @@ def static_job(
     input_swaps = input_swaps or {}
     block_swaps = block_swaps or {}
 
-    if not any(k for k in block_swaps if "nprocs" in k.lower()) and os.environ.get(
-        "mpirun"
-    ):
+    if not any(k for k in block_swaps if "nprocs" in k.lower()) and which("mpirun"):
         nprocs = multiprocessing.cpu_count()
         block_swaps[f"%pal nprocs {nprocs} end"] = True
 
@@ -160,9 +158,7 @@ def relax_job(
     input_swaps = input_swaps or {}
     block_swaps = block_swaps or {}
 
-    if not any(k for k in block_swaps if "nprocs" in k.lower()) and os.environ.get(
-        "mpirun"
-    ):
+    if not any(k for k in block_swaps if "nprocs" in k.lower()) and which("mpirun"):
         nprocs = multiprocessing.cpu_count()
         block_swaps[f"%pal nprocs {nprocs} end"] = True
 

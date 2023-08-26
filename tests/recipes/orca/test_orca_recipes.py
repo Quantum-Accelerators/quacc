@@ -1,10 +1,15 @@
 import multiprocessing
+import shutil
 
 import pytest
 from ase.build import molecule
 
 from quacc import SETTINGS
 from quacc.recipes.orca.core import relax_job, static_job
+
+
+def which_returns_true(*args, **kwargs):
+    return True
 
 
 @pytest.mark.skipif(
@@ -44,7 +49,7 @@ def test_static_job(monkeypatch, tmpdir):
     assert "%scf maxiter 300 end" in output["parameters"]["orcablocks"]
 
     atoms = molecule("H2")
-    monkeypatch.setenv("mpirun", "test")
+    monkeypatch.setattr(shutil, "which", which_returns_true)
     output = static_job(atoms)
     nprocs = multiprocessing.cpu_count()
     assert f"%pal nprocs {nprocs} end" in output["parameters"]["orcablocks"]
