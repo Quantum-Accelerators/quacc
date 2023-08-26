@@ -174,4 +174,4 @@ def double_relax_job(
         copy_files=["WAVECAR"],
     )
 
-    return {"relax1": summary1, "relax2": summary2}
+    return {"relax1": summary1, "relax2": summary2, "atoms": summary2["atoms"]}
