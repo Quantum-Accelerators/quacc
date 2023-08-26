@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import multiprocessing
-import os
+from shutil import which
 from typing import TYPE_CHECKING
 
 from ase.calculators.orca import ORCA, OrcaProfile
@@ -72,12 +72,6 @@ def static_job(
     input_swaps = input_swaps or {}
     block_swaps = block_swaps or {}
 
-    if not any(k for k in block_swaps if "nprocs" in k.lower()) and os.environ.get(
-        "mpirun"
-    ):
-        nprocs = multiprocessing.cpu_count()
-        block_swaps[f"%pal nprocs {nprocs} end"] = True
-
     default_inputs = {
         xc: True,
         basis: True,
@@ -86,7 +80,11 @@ def static_job(
         "normalprint": True,
         "xyzfile": True,
     }
-    default_blocks = {}
+    default_blocks = (
+        {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
+        if which("mpirun")
+        else {}
+    )
 
     inputs = merge_dicts(default_inputs, input_swaps)
     blocks = merge_dicts(default_blocks, block_swaps)
@@ -160,12 +158,6 @@ def relax_job(
     input_swaps = input_swaps or {}
     block_swaps = block_swaps or {}
 
-    if not any(k for k in block_swaps if "nprocs" in k.lower()) and os.environ.get(
-        "mpirun"
-    ):
-        nprocs = multiprocessing.cpu_count()
-        block_swaps[f"%pal nprocs {nprocs} end"] = True
-
     default_inputs = {
         xc: True,
         basis: True,
@@ -175,7 +167,11 @@ def relax_job(
         "freq": True if run_freq else None,
         "xyzfile": True,
     }
-    default_blocks = {}
+    default_blocks = (
+        {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
+        if which("mpirun")
+        else {}
+    )
 
     inputs = merge_dicts(default_inputs, input_swaps)
     blocks = merge_dicts(default_blocks, block_swaps)
