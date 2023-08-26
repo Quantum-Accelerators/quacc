@@ -410,6 +410,7 @@ def quasi_irc_job(
     # Run IRC
     irc_summary = irc_job.original_func(atoms, max_steps=5, opt_swaps=irc_flags)
     irc_summary["quasi_irc"] = irc_summary["irc"]
+    del irc_summary["irc"]
 
     # Run opt
     opt_summary = relax_job.original_func(irc_summary["irc"], **opt_flags)
