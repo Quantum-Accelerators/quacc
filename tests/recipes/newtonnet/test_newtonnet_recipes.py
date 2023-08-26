@@ -351,7 +351,7 @@ def test_quasi_irc_job_with_default_args(tmpdir):
     assert "irc" in output
     assert "opt" in output
     assert "thermo" in output
-    assert output["quasi_irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
+    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
     assert output["opt"]["results"]["energy"] == pytest.approx(-9.517354091813969)
     assert output["thermo"]["results"]["energy"] == pytest.approx(-9.517354091813969)
 

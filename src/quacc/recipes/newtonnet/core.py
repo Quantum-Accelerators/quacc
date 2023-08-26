@@ -3,7 +3,7 @@ Core recipes for the NewtonNet code
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, TypedDict
 
 from ase.optimize import FIRE
 from ase.vibrations.data import VibrationsData
@@ -37,6 +37,25 @@ try:
     from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
 except ImportError:
     NewtonNet = None
+
+
+class FreqSchema(TypedDict):
+    vib: VibSchema
+    thermo: ThermoSchema
+
+
+class TSSchema(FreqSchema):
+    ts: OptSchema
+    atoms: Atoms
+
+
+class IRCSchema(FreqSchema):
+    irc: OptSchema
+    atoms: Atoms
+
+
+class QuasiIRCSchema(IRCSchema):
+    opt: OptSchema
 
 
 @job
@@ -137,7 +156,7 @@ def freq_job(
     temperature: float = 298.15,
     pressure: float = 1.0,
     calc_swaps: dict | None = None,
-) -> dict[Literal["vib", "thermo"], VibSchema | ThermoSchema]:
+) -> FreqSchema:
     """
     Perform a frequency calculation using the given atoms object.
 
@@ -201,7 +220,7 @@ def ts_job(
     calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
     check_convergence: bool = True,
-) -> dict[Literal["ts", "thermo"], OptSchema | ThermoSchema]:
+) -> TSSchema:
     """
     Perform a transition state (TS) job using the given atoms object.
 
@@ -286,7 +305,7 @@ def irc_job(
     calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
     check_convergence: bool = False,
-) -> dict[Literal["irc", "thermo"], OptSchema | ThermoSchema]:
+) -> IRCSchema:
     """
     Perform an intrinsic reaction coordinate (IRC) job using the given atoms object.
 
@@ -356,7 +375,7 @@ def irc_job(
         summary_irc, temperature=temperature, pressure=pressure
     )
     return {
-        **summary_irc,
+        "irc": summary_irc,
         "atoms": summary_irc["atoms"],
         **thermo_summary,
     }
@@ -372,7 +391,7 @@ def quasi_irc_job(
     pressure: float = 1.0,
     irc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
-) -> dict[Literal["irc", "opt", "thermo"], OptSchema | ThermoSchema]:
+) -> QuasiIRCSchema:
     """
     Perform a quasi-IRC job using the given atoms object.
 
@@ -399,16 +418,14 @@ def quasi_irc_job(
     irc_swaps = irc_swaps or {}
     opt_swaps = opt_swaps or {}
 
-    irc_defaults = {"run_kwargs": {"direction": direction.lower()}}
+    irc_defaults = {"run_kwargs": {"direction": direction.lower()}, "max_steps": 5}
     irc_flags = merge_dicts(irc_defaults, irc_swaps)
 
     # Run IRC
-    irc_summary = irc_job.original_func(atoms, max_steps=5, opt_swaps=irc_flags)
-    irc_summary["quasi_irc"] = irc_summary["irc"]
-    del irc_summary["irc"]
+    irc_summary = irc_job.original_func(atoms, opt_swaps=irc_flags)
 
     # Run opt
-    opt_summary = relax_job.original_func(irc_summary["irc"], **opt_swaps)
+    opt_summary = relax_job.original_func(irc_summary, **opt_swaps)
 
     # Run frequency
     thermo_summary = freq_job.original_func(
@@ -418,7 +435,7 @@ def quasi_irc_job(
     )
 
     return {
-        **irc_summary,
+        "irc": irc_summary,
         "opt": opt_summary,
         "atoms": opt_summary["atoms"],
         **thermo_summary,
@@ -483,4 +500,5 @@ def _add_stdev_and_hess(summary: dict[str, any]) -> dict[str, any]:
         conf["forces_std"] = ml_calculator.results["forces_disagreement"]
         conf["hessian_std"] = ml_calculator.results["hessian_disagreement"]
 
+    return summary
     return summary
