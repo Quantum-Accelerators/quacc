@@ -46,7 +46,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # Workflow Engine
     # ---------------------------
-    WORKFLOW_ENGINE: Union[Literal["covalent", "parsl", "jobflow"], None] = Field(
+    WORKFLOW_ENGINE: Optional[Literal["covalent", "parsl", "jobflow"]] = Field(
         "covalent"
         if covalent
         else "parsl"
