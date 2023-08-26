@@ -355,7 +355,7 @@ def irc_job(
         summary_irc, temperature=temperature, pressure=pressure
     )
     return {
-        f"irc-{direction}": summary_irc,
+        "irc": summary_irc,
         "atoms": summary_irc["atoms"],
         **thermo_summary,
     }
