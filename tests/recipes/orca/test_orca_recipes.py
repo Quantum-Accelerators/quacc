@@ -12,8 +12,9 @@ FILE_DIR = Path(__file__).resolve().parent
 
 
 def setup_module():
-    with open(FILE_DIR / "mpirun", "w") as w:
+    with open(FILE_DIR / "mpirun", "w+") as w:
         w.write("")
+    os.chmod(FILE_DIR / "mpirun", 0o777)
 
 
 def teardown_module():
