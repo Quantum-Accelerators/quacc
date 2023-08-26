@@ -111,6 +111,7 @@ def qmof_relax_job(
         "volume-relax-lowacc": summary3 if relax_cell else None,
         "double-relax": summary4,
         "static": summary5,
+        "atoms": summary5["atoms"],
     }
 
 
