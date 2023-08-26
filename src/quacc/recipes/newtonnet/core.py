@@ -501,4 +501,3 @@ def _add_stdev_and_hess(summary: dict[str, any]) -> dict[str, any]:
         conf["hessian_std"] = ml_calculator.results["hessian_disagreement"]
 
     return summary
-    return summary
