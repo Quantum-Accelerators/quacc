@@ -13,7 +13,7 @@ from quacc.schemas.ase import (
     summarize_thermo_run,
     summarize_vib_run,
 )
-from quacc.schemas.atoms import fetch_atoms
+from quacc.util.wflows import fetch_atoms
 from quacc.utils.calc import run_ase_opt, run_ase_vib, run_calc
 from quacc.utils.dicts import merge_dicts
 from quacc.utils.thermo import ideal_gas

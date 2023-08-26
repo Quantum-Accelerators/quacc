@@ -2,21 +2,22 @@
 from __future__ import annotations
 
 import multiprocessing
-from typing import Literal, TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 from ase.optimize import FIRE
 from monty.dev import requires
 
-from quacc import job, SETTINGS
+from quacc import SETTINGS, job
 from quacc.calculators.qchem import QChem
 from quacc.schemas.ase import summarize_opt_run, summarize_run
-from quacc.schemas.atoms import fetch_atoms
+from quacc.util.wflows import fetch_atoms
 from quacc.utils.atoms import check_charge_and_spin
 from quacc.utils.calc import run_ase_opt, run_calc
 from quacc.utils.dicts import merge_dicts, remove_dict_empties
 
 if TYPE_CHECKING:
     from ase import Atoms
+
     from quacc.schemas.ase import OptSchema, RunSchema
 
 try:

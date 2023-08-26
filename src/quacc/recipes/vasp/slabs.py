@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING
 
 from quacc import flow, job, subflow
 from quacc.calculators.vasp import Vasp
-from quacc.schemas.atoms import fetch_atoms
 from quacc.schemas.vasp import summarize_run
+from quacc.util.wflows import fetch_atoms
 from quacc.utils.calc import run_calc
 from quacc.utils.dicts import merge_dicts
 from quacc.utils.slabs import make_adsorbate_structures, make_max_slabs_from_bulk
