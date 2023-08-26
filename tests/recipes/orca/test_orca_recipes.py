@@ -98,7 +98,7 @@ def test_relax_job(monkeypatch, tmpdir):
     assert len(output["attributes"]["trajectory"]) > 1
 
     atoms = molecule("H2")
-    monkeypatch.setenv("mpirun", "test")
+    monkeypatch.setattr(shutil, "which", which_returns_true)
     output = relax_job(atoms)
     nprocs = multiprocessing.cpu_count()
     assert f"%pal nprocs {nprocs} end" in output["parameters"]["orcablocks"]
