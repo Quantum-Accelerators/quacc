@@ -1,5 +1,6 @@
-"""Utility functions for dealing with Atoms"""
-
+"""
+Utility functions for dealing with Atoms
+"""
 from __future__ import annotations
 
 import hashlib
@@ -319,7 +320,7 @@ def copy_atoms(atoms: Atoms) -> Atoms:
         atoms.calc = calc
 
     return atoms
-
+ 
 
 def check_charge_and_spin(
     atoms: Atoms,
@@ -370,4 +371,3 @@ def check_charge_and_spin(
             " not possible for this molecule."
         )
     return mol.charge, mol.spin_multiplicity
-
