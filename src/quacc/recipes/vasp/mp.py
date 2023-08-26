@@ -148,11 +148,11 @@ def mp_relax_flow(
 
     relax_kwargs["calc_swaps"] = kspacing_swaps | relax_kwargs.get("calc_swaps", {})
 
+    # Run the relax
     relax_results = relax.original_func(
         prerelax_results, copy_files=["WAVECAR"], **relax_kwargs
     )
 
-    # Run the relax
     return {
         "prerelax": prerelax_results,
         "relax": relax_results,
