@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from covalent import electron as ct_electron
     from covalent import lattice as ct_lattice
-    from dask_jobqueue.core import DaskJobqueueJob
     from jobflow import Job as JobflowJob
     from parsl.app.python import PythonApp
 

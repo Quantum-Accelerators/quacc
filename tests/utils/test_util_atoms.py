@@ -14,6 +14,7 @@ from quacc.utils.atoms import (
     get_atoms_id,
     prep_next_run,
 )
+from quacc.utils.atoms import check_is_metal, get_atoms_id, prep_next_run
 
 FILE_DIR = Path(__file__).resolve().parent
 ATOMS_MAG = read(os.path.join(FILE_DIR, "..", "calculators", "vasp", "OUTCAR_mag.gz"))
@@ -184,3 +185,4 @@ def test_check_charge_and_spin():
     assert (
         spin_multiplicity == 1
     )  # Somewhat controvertial if this should end up at 1 or 3
+
