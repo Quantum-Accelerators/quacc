@@ -6,7 +6,7 @@ Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypedDict
 
 import numpy as np
 
@@ -21,6 +21,12 @@ if TYPE_CHECKING:
     from ase import Atoms
 
     from quacc.schemas.vasp import VaspSchema
+
+
+class MPRelaxFlowSchema(TypedDict):
+    prerelax: VaspSchema
+    relax: VaspSchema
+    atoms: Atoms
 
 
 @job
@@ -105,7 +111,7 @@ def mp_relax_flow(
     relax: callable | None = mp_relax_job,
     prerelax_kwargs: dict | None = None,
     relax_kwargs: dict | None = None,
-) -> VaspSchema:
+) -> MPRelaxFlowSchema:
     """
     Workflow consisting of:
 

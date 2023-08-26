@@ -1,7 +1,7 @@
 """Core recipes for the tblite code"""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, TypedDict
 
 from ase.optimize import FIRE
 from monty.dev import requires
@@ -27,6 +27,11 @@ try:
     from tblite.ase import TBLite
 except ImportError:
     TBLite = None
+
+
+class FreqSchema(TypedDict):
+    vib: VibSchema
+    thermo: ThermoSchema
 
 
 @job
@@ -125,7 +130,7 @@ def freq_job(
     calc_swaps: dict | None = None,
     vib_kwargs: dict | None = None,
     copy_files: list[str] | None = None,
-) -> dict[Literal["vib", "thermo"], VibSchema | ThermoSchema]:
+) -> FreqSchema:
     """
     Run a frequency job and calculate thermochemistry.
 
