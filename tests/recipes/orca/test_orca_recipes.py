@@ -1,5 +1,6 @@
 import multiprocessing
-import shutil
+import os
+from pathlib import Path
 
 import pytest
 from ase.build import molecule
@@ -7,9 +8,17 @@ from ase.build import molecule
 from quacc import SETTINGS
 from quacc.recipes.orca.core import relax_job, static_job
 
+FILE_DIR = Path(__file__).resolve().parent
 
-def which_returns_true(*args, **kwargs):
-    return True
+
+def setup_module():
+    with open(FILE_DIR / "mpirun", "w") as w:
+        w.write("")
+
+
+def teardown_module():
+    if os.path.exists(FILE_DIR / "mpirun"):
+        os.remove(FILE_DIR / "mpirun")
 
 
 @pytest.mark.skipif(
@@ -49,7 +58,7 @@ def test_static_job(monkeypatch, tmpdir):
     assert "%scf maxiter 300 end" in output["parameters"]["orcablocks"]
 
     atoms = molecule("H2")
-    monkeypatch.setattr(shutil, "which", which_returns_true)
+    monkeypatch.setenv("PATH", FILE_DIR)
     output = static_job(atoms)
     nprocs = multiprocessing.cpu_count()
     assert f"%pal nprocs {nprocs} end" in output["parameters"]["orcablocks"]
@@ -98,7 +107,7 @@ def test_relax_job(monkeypatch, tmpdir):
     assert len(output["attributes"]["trajectory"]) > 1
 
     atoms = molecule("H2")
-    monkeypatch.setattr(shutil, "which", which_returns_true)
+    monkeypatch.setenv("PATH", FILE_DIR)
     output = relax_job(atoms)
     nprocs = multiprocessing.cpu_count()
     assert f"%pal nprocs {nprocs} end" in output["parameters"]["orcablocks"]

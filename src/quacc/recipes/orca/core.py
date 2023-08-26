@@ -81,7 +81,7 @@ def static_job(
         "xyzfile": True,
     }
     default_blocks = (
-        {f"%pal nprocs { multiprocessing.cpu_count()} end": True}
+        {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
         if which("mpirun")
         else {}
     )
@@ -168,7 +168,7 @@ def relax_job(
         "xyzfile": True,
     }
     default_blocks = (
-        {f"%pal nprocs { multiprocessing.cpu_count()} end": True}
+        {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
         if which("mpirun")
         else {}
     )
