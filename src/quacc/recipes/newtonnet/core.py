@@ -66,11 +66,13 @@ def static_job(
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
-    atoms.calc = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
-        **calc_swaps,
-    )
+    defaults = {
+        "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+        "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+    }
+    flags = merge_dicts(defaults, calc_swaps)
+
+    atoms.calc = NewtonNet(**flags)
     final_atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(
@@ -109,17 +111,19 @@ def relax_job(
     calc_swaps = calc_swaps or {}
     opt_swaps = opt_swaps or {}
 
+    defaults = {
+        "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+        "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+    }
+    flags = merge_dicts(defaults, calc_swaps)
+
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella or FIRE}
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
     if "sella.optimize" in opt_flags.get("optimizer", FIRE).__module__:
         opt_flags["order"] = 0
 
-    atoms.calc = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
-        **calc_swaps,
-    )
+    atoms.calc = NewtonNet(**flags)
     dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_swaps)
     return _add_stdev_and_hess(
         summarize_opt_run(dyn, additional_fields={"name": "NewtonNet Relax"})
@@ -156,20 +160,19 @@ def freq_job(
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
-    # Define calculator
-    ml_calculator = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
-        **calc_swaps,
-    )
+    defaults = {
+        "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+        "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+    }
+    flags = merge_dicts(defaults, calc_swaps)
+
+    ml_calculator = NewtonNet(**flags)
     atoms.calc = ml_calculator
 
-    # Run calculator
     ml_calculator.calculate(atoms)
     hessian = ml_calculator.results["hessian"]
     vib = VibrationsData(atoms, hessian)
 
-    # Make IdealGasThermo object
     igt = ideal_gas(
         atoms, vib.get_frequencies(), energy=ml_calculator.results["energy"]
     )
@@ -228,6 +231,12 @@ def ts_job(
     calc_swaps = calc_swaps or {}
     opt_swaps = opt_swaps or {}
 
+    defaults = {
+        "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+        "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+    }
+    flags = merge_dicts(defaults, calc_swaps)
+
     opt_defaults = {
         "fmax": 0.01,
         "max_steps": 1000,
@@ -236,12 +245,7 @@ def ts_job(
     }
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
-    # Define calculator
-    atoms.calc = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
-        **calc_swaps,
-    )
+    atoms.calc = NewtonNet(**flags)
 
     if use_custom_hessian:
         if opt_flags.get("optimizer", FIRE).__name__ != "Sella":
@@ -249,11 +253,7 @@ def ts_job(
 
         opt_flags["optimizer_kwargs"]["hessian_function"] = _get_hessian
 
-    ml_calculator = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
-        **calc_swaps,
-    )
+    ml_calculator = NewtonNet(**flags)
     atoms.calc = ml_calculator
 
     # Run the TS optimization
@@ -316,6 +316,12 @@ def irc_job(
     calc_swaps = calc_swaps or {}
     opt_swaps = opt_swaps or {}
 
+    defaults = {
+        "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+        "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+    }
+    flags = merge_dicts(defaults, calc_swaps)
+
     opt_defaults = {
         "fmax": 0.01,
         "max_steps": 1000,
@@ -334,11 +340,7 @@ def irc_job(
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
     # Define calculator
-    atoms.calc = NewtonNet(
-        model_path=SETTINGS.NEWTONNET_MODEL_PATH,
-        settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
-        **calc_swaps,
-    )
+    atoms.calc = NewtonNet(**flags)
 
     # Run IRC
     dyn = run_ase_opt(atoms, **opt_flags)
@@ -412,7 +414,7 @@ def quasi_irc_job(
     opt_summary = relax_job.original_func(irc_summary["irc"], **opt_flags)
 
     # Run frequency
-    thermo_summary = freq_job(
+    thermo_summary = freq_job.original_func(
         opt_summary,
         temperature=temperature,
         pressure=pressure,
