@@ -44,8 +44,8 @@ except ImportError:
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 def static_job(
     atoms: Atoms | dict,
-    newtonnet_kwargs: dict | None = None,
-    opt_swaps: dict | None = None,
+    calc_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -54,10 +54,12 @@ def static_job(
     ----------
     atoms
         Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
-    newtonnet_kwargs
-        Additional keyword arguments for the tblite calculator
+    calc_swaps
+        Dictionary of custom kwargs for the newtonnet calculator
     opt_swaps
         Optional swaps for the optimization parameters
+    copy_files
+        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -65,18 +67,18 @@ def static_job(
         A dictionary containing the results of the calculation.
     """
     atoms = fetch_atoms(atoms)
-    newtonnet_kwargs = newtonnet_kwargs or {}
-    opt_swaps = opt_swaps or {}
+    calc_swaps = calc_swaps or {}
 
     # Define calculator
     atoms.calc = NewtonNet(
         model_path=SETTINGS.NEWTONNET_MODEL_PATH,
         settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
+        **calc_swaps,
     )
-    final_atoms = run_calc(atoms)
+    final_atoms = run_calc(atoms,copy_files=copy_files)
 
     return summarize_run(
-        final_atoms, input_atoms=atoms, additional_fields={"name": "NewtonNet Relax"}
+        final_atoms, input_atoms=atoms, additional_fields={"name": "NewtonNet S"}
     )
 
 
