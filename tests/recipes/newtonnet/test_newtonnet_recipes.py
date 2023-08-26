@@ -33,16 +33,6 @@ SETTINGS.NEWTONNET_CONFIG_PATH = os.path.join(CURRENT_FILE_PATH, "config0.yml")
 SETTINGS.NEWTONNET_MODEL_PATH = os.path.join(CURRENT_FILE_PATH, "best_model_state.tar")
 
 
-def setup_module():
-    decompress_file(os.path.join(CURRENT_FILE_PATH, "best_model_state.tar.gz"))
-
-
-def teardown_module():
-    compress_file(
-        os.path.join(CURRENT_FILE_PATH, "best_model_state.tar"), compression="gz"
-    )
-
-
 @pytest.mark.skipif(
     NewtonNet is None or sella is None,
     reason="NewtonNet and Sella must be installed.",
@@ -105,7 +95,7 @@ def test_ts_job_with_default_args(tmpdir):
     assert "ts" in output
     assert "thermo" in output
     assert output["ts"]["results"]["energy"] == pytest.approx(-6.796914263061945)
-    assert output["thermo"]["vib"]["results"]["imag_vib_freqs"][0] == pytest.approx(
+    assert output["vib"]["results"]["imag_vib_freqs"][0] == pytest.approx(
         -2426.7398321816004
     )
 
@@ -136,7 +126,7 @@ def test_ts_job_with_custom_hessian(tmpdir):
     assert isinstance(output, dict)
     assert "ts" in output
     assert output["ts"]["results"]["energy"] == pytest.approx(-8.855604432470276)
-    assert output["thermo"]["vib"]["results"]["vib_energies"][0] == pytest.approx(
+    assert output["vib"]["results"]["vib_energies"][0] == pytest.approx(
         0.2256022513686731
     )
     assert "thermo" in output
@@ -164,7 +154,7 @@ def test_ts_job_with_custom_optimizer(tmpdir):
     assert "ts" in output
     assert "thermo" in output
     assert output["ts"]["results"]["energy"] == pytest.approx(-9.51735515322368)
-    assert output["thermo"]["vib"]["results"]["vib_energies"][0] == pytest.approx(
+    assert output["vib"]["results"]["vib_energies"][0] == pytest.approx(
         0.22679888726664774
     )
 
@@ -187,15 +177,6 @@ def test_ts_job_with_custom_optimizer_and_custom_hessian(tmpdir):
         # Call the function
         output = ts_job(
             atoms, check_convergence=False, use_custom_hessian=True, opt_swaps=opt_swaps
-        )
-
-        # Perform assertions on the result
-        assert isinstance(output, dict)
-        assert "ts" in output
-        assert "thermo" in output
-        assert output["ts"]["results"]["energy"] == pytest.approx(-9.498920641930049)
-        assert output["thermo"]["vib"]["results"]["vib_energies"][0] == pytest.approx(
-            0.016038718562105512
         )
 
 
