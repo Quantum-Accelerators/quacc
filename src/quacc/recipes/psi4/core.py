@@ -13,15 +13,15 @@ from quacc.utils.calc import run_calc
 from quacc.utils.dicts import merge_dicts
 from quacc.utils.wflows import fetch_atoms
 
-if TYPE_CHECKING:
-    from ase import Atoms
-
-    from quacc.schemas.ase import RunSchema
-
 try:
     import psi4
 except ImportError:
     psi4 = None
+
+if TYPE_CHECKING:
+    from ase import Atoms
+
+    from quacc.schemas.ase import RunSchema
 
 
 @job

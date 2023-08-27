@@ -161,10 +161,10 @@ def test_comparison1(tmpdir):
     def mult(a, b):
         return a * b
 
-    def workflow(a, b, c):
-        return mult(add(a, b), c)
-
-    assert workflow(1, 2, 3).result() == 9
+    future1 = add(1, 2)
+    future2 = mult(future1, 3)
+    result = future2.result()  # 9  (2)!
+    assert result == 9
 
 
 @pytest.mark.skipif(
@@ -188,9 +188,8 @@ def test_comparison2(tmpdir):
     def add_distributed(vals, c):
         return [add(val, c) for val in vals]
 
-    def workflow(a, b, c):
-        future1 = add(a, b)
-        future2 = make_more(future1)
-        return add_distributed(future2, c)
+    future1 = add(1, 2)
+    future2 = make_more(future1)
+    future3 = add_distributed(future2, 3)
 
-    assert workflow(1, 2, 3).result() == [6, 6, 6]
+    assert future3.result() == [6, 6, 6]

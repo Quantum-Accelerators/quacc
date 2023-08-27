@@ -25,7 +25,6 @@ try:
 except ImportError:
     jobflow = None
 
-
 _DEFAULT_CONFIG_FILE_PATH = os.path.join(os.path.expanduser("~"), ".quacc.yaml")
 
 

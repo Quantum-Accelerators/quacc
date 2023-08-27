@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import os
 import warnings
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING
 
 import numpy as np
 from ase import units
@@ -25,11 +25,12 @@ if TYPE_CHECKING:
     from ase.thermochemistry import IdealGasThermo
     from ase.vibrations import Vibrations
     from maggma.core import Store
+    from tyipng import TypeVar
 
-RunSchema = TypeVar("RunSchema")
-OptSchema = TypeVar("OptSchema")
-VibSchema = TypeVar("VibSchema")
-ThermoSchema = TypeVar("ThermoSchema")
+    RunSchema = TypeVar("RunSchema")
+    OptSchema = TypeVar("OptSchema")
+    VibSchema = TypeVar("VibSchema")
+    ThermoSchema = TypeVar("ThermoSchema")
 
 
 def summarize_run(
@@ -565,7 +566,7 @@ def summarize_vib_run(
     return task_doc
 
 
-def summarize_thermo_run(
+def summarize_thermo(
     igt: IdealGasThermo,
     temperature: float = 298.15,
     pressure: float = 1.0,

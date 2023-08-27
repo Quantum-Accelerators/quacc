@@ -4,7 +4,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quacc import flow, job, subflow
-from quacc.recipes.emt.core import relax_job, static_job
+from quacc.recipes.emt.core import relax_job as _relax_job
+from quacc.recipes.emt.core import static_job as _static_job
 from quacc.utils.slabs import make_max_slabs_from_bulk
 from quacc.utils.wflows import fetch_atoms
 
@@ -18,8 +19,8 @@ if TYPE_CHECKING:
 def bulk_to_slabs_flow(
     atoms: Atoms | dict,
     make_slabs_kwargs: dict | None = None,
-    slab_relax: callable = relax_job,
-    slab_static: callable | None = static_job,
+    slab_relax: callable = _relax_job,
+    slab_static: callable | None = _static_job,
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
 ) -> list[RunSchema | OptSchema]:

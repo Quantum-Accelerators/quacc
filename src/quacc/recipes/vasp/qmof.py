@@ -6,7 +6,7 @@ Reference: https://doi.org/10.1016/j.matt.2021.02.015
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 from ase.optimize import BFGSLineSearch
 
@@ -19,10 +19,20 @@ from quacc.utils.dicts import merge_dicts
 from quacc.utils.wflows import fetch_atoms
 
 if TYPE_CHECKING:
+    from typing import TypedDict
+
     from ase import Atoms
 
     from quacc.schemas.ase import OptSchema
     from quacc.schemas.vasp import VaspSchema
+
+    class QMOFRelaxSchema(TypedDict):
+        prerelax_lowacc: VaspSchema | None
+        position_relax_lowacc: VaspSchema
+        volume_relax_lowacc: VaspSchema | None
+        double_relax: VaspSchema
+        static: VaspSchema
+        atoms: Atoms
 
 
 @job
@@ -32,16 +42,7 @@ def qmof_relax_job(
     relax_cell: bool = True,
     run_prerelax: bool = True,
     calc_swaps: dict | None = None,
-) -> dict[
-    Literal[
-        "prerelax-lowacc",
-        "position-relax-lowacc",
-        "volume-relax-lowacc",
-        "double-relax",
-        "static",
-    ],
-    VaspSchema,
-]:
+) -> QMOFRelaxSchema:
     """
     Relax a structure in a multi-step process for increased
     computational efficiency. This is all done in a single compute job.
@@ -106,11 +107,12 @@ def qmof_relax_job(
     summary5 = _static(atoms, preset, calc_swaps)
 
     return {
-        "prerelax-lowacc": summary1 if run_prerelax else None,
-        "position-relax-lowacc": summary2,
-        "volume-relax-lowacc": summary3 if relax_cell else None,
-        "double-relax": summary4,
+        "prerelax_lowacc": summary1 if run_prerelax else None,
+        "position_relax_lowacc": summary2,
+        "volume_relax_lowacc": summary3 if relax_cell else None,
+        "double_relax": summary4,
         "static": summary5,
+        "atoms": summary5["atoms"],
     }
 
 
@@ -256,7 +258,7 @@ def _double_relax(
     preset: str | None = "QMOFSet",
     calc_swaps: dict | None = None,
     relax_cell: bool = True,
-) -> VaspSchema:
+) -> list[VaspSchema]:
     """
     Double relaxation using production-quality settings.
 

@@ -1,7 +1,7 @@
 """Core recipes for DFTB+"""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 from ase.calculators.dftb import Dftb
 
@@ -13,6 +13,8 @@ from quacc.utils.files import check_logfile
 from quacc.utils.wflows import fetch_atoms
 
 if TYPE_CHECKING:
+    from typing import Literal
+
     from ase import Atoms
 
     from quacc.schemas.ase import RunSchema

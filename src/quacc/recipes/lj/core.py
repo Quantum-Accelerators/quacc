@@ -5,7 +5,7 @@ NOTE: This set of minimal recipes is mainly for demonstration purposes
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 from ase.calculators.lj import LennardJones
 from ase.optimize import FIRE
@@ -14,7 +14,7 @@ from quacc import job
 from quacc.schemas.ase import (
     summarize_opt_run,
     summarize_run,
-    summarize_thermo_run,
+    summarize_thermo,
     summarize_vib_run,
 )
 from quacc.utils.calc import run_ase_opt, run_ase_vib, run_calc
@@ -23,9 +23,15 @@ from quacc.utils.thermo import ideal_gas
 from quacc.utils.wflows import fetch_atoms
 
 if TYPE_CHECKING:
+    from typing import TypedDict
+
     from ase import Atoms
 
     from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
+
+    class FreqSchema(TypedDict):
+        vib: VibSchema
+        thermo: ThermoSchema
 
 
 @job
@@ -111,7 +117,7 @@ def freq_job(
     calc_swaps: dict | None = None,
     vib_kwargs: dict | None = None,
     copy_files: list[str] | None = None,
-) -> dict[Literal["vib", "thermo"], VibSchema | ThermoSchema]:
+) -> FreqSchema:
     """
     Run a frequency job and calculate thermochemistry.
 
@@ -136,7 +142,7 @@ def freq_job(
     -------
     dict
         Dictionary of results from quacc.schemas.ase.summarize_vib_run and
-        quacc.schemas.ase.summarize_thermo_run
+        quacc.schemas.ase.summarize_thermo
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
@@ -151,7 +157,7 @@ def freq_job(
         "vib": summarize_vib_run(
             vibrations, additional_fields={"name": "LJ Vibrations"}
         ),
-        "thermo": summarize_thermo_run(
+        "thermo": summarize_thermo(
             igt,
             temperature=temperature,
             pressure=pressure,

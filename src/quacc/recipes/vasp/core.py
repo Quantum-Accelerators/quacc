@@ -1,7 +1,7 @@
 """Core recipes for VASP"""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 from quacc import job
 from quacc.calculators.vasp import Vasp
@@ -11,9 +11,16 @@ from quacc.utils.dicts import merge_dicts
 from quacc.utils.wflows import fetch_atoms
 
 if TYPE_CHECKING:
+    from typing import TypedDict
+
     from ase import Atoms
 
     from quacc.schemas.vasp import VaspSchema
+
+    class DoubleRelaxSchema(TypedDict):
+        relax1: VaspSchema
+        relax2: VaspSchema
+        atoms: Atoms
 
 
 @job
@@ -119,9 +126,9 @@ def double_relax_job(
     calc_swaps1: dict | None = None,
     calc_swaps2: dict | None = None,
     copy_files: list[str] | None = None,
-) -> dict[Literal["relax1", "relax2"], VaspSchema]:
+) -> DoubleRelaxSchema:
     """
-    Double-relax a structure. This is particularly useful for a few reasons:
+    double_relax a structure. This is particularly useful for a few reasons:
 
     1. To carry out a cheaper pre-relaxation before the high-quality run.
 
@@ -157,7 +164,7 @@ def double_relax_job(
     calc_swaps2 = calc_swaps2 or {}
 
     # Run first relaxation
-    summary1 = relax_job.original_func(
+    summary1 = relax_job.undecorated(
         atoms,
         preset=preset,
         relax_cell=relax_cell,
@@ -166,7 +173,7 @@ def double_relax_job(
     )
 
     # Run second relaxation
-    summary2 = relax_job.original_func(
+    summary2 = relax_job.undecorated(
         summary1,
         preset=preset,
         relax_cell=relax_cell,
@@ -174,4 +181,4 @@ def double_relax_job(
         copy_files=["WAVECAR"],
     )
 
-    return {"relax1": summary1, "relax2": summary2}
+    return {"relax1": summary1, "relax2": summary2, "atoms": summary2["atoms"]}

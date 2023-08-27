@@ -18,9 +18,16 @@ from quacc.utils.dicts import merge_dicts
 from quacc.utils.wflows import fetch_atoms
 
 if TYPE_CHECKING:
+    from typing import TypedDict
+
     from ase import Atoms
 
     from quacc.schemas.vasp import VaspSchema
+
+    class MPRelaxFlowSchema(TypedDict):
+        prerelax: VaspSchema
+        relax: VaspSchema
+        atoms: Atoms
 
 
 @job
@@ -105,7 +112,7 @@ def mp_relax_flow(
     relax: callable | None = mp_relax_job,
     prerelax_kwargs: dict | None = None,
     relax_kwargs: dict | None = None,
-) -> VaspSchema:
+) -> MPRelaxFlowSchema:
     """
     Workflow consisting of:
 
@@ -135,7 +142,7 @@ def mp_relax_flow(
     relax_kwargs = relax_kwargs or {}
 
     # Run the prerelax
-    prerelax_results = prerelax.original_func(atoms, **prerelax_kwargs)
+    prerelax_results = prerelax.undecorated(atoms, **prerelax_kwargs)
 
     # Update KSPACING arguments
     bandgap = prerelax_results["output"].get("bandgap", 0)
@@ -149,4 +156,12 @@ def mp_relax_flow(
     relax_kwargs["calc_swaps"] = kspacing_swaps | relax_kwargs.get("calc_swaps", {})
 
     # Run the relax
-    return relax.original_func(prerelax_results, copy_files=["WAVECAR"], **relax_kwargs)
+    relax_results = relax.undecorated(
+        prerelax_results, copy_files=["WAVECAR"], **relax_kwargs
+    )
+
+    return {
+        "prerelax": prerelax_results,
+        "relax": relax_results,
+        "atoms": relax_results["atoms"],
+    }

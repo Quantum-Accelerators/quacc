@@ -6,7 +6,7 @@ from __future__ import annotations
 import inspect
 import os
 import warnings
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 import numpy as np
 from ase.calculators.vasp import Vasp as Vasp_
@@ -23,6 +23,7 @@ from quacc.utils.files import load_yaml_calc
 
 if TYPE_CHECKING:
     from pathlib import Path
+    from typing import Literal
 
     from ase import Atoms
 

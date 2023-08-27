@@ -252,39 +252,39 @@ def test_qmof(tmpdir):
 
     atoms = bulk("Cu")
     output = qmof_relax_job(atoms)
-    assert output["prerelax-lowacc"]["nsites"] == len(atoms)
-    assert output["prerelax-lowacc"]["parameters"]["sigma"] == 0.01
-    assert output["prerelax-lowacc"]["parameters"]["isym"] == 0
-    assert output["prerelax-lowacc"]["parameters"]["nsw"] == 0
-    assert "isif" not in output["prerelax-lowacc"]["parameters"]
-    assert "encut" not in output["prerelax-lowacc"]["parameters"]
+    assert output["prerelax_lowacc"]["nsites"] == len(atoms)
+    assert output["prerelax_lowacc"]["parameters"]["sigma"] == 0.01
+    assert output["prerelax_lowacc"]["parameters"]["isym"] == 0
+    assert output["prerelax_lowacc"]["parameters"]["nsw"] == 0
+    assert "isif" not in output["prerelax_lowacc"]["parameters"]
+    assert "encut" not in output["prerelax_lowacc"]["parameters"]
 
-    assert output["position-relax-lowacc"]["nsites"] == len(atoms)
-    assert output["position-relax-lowacc"]["parameters"]["sigma"] == 0.01
-    assert output["position-relax-lowacc"]["parameters"]["isym"] == 0
-    assert output["position-relax-lowacc"]["parameters"]["nsw"] > 0
-    assert output["position-relax-lowacc"]["parameters"]["isif"] == 2
-    assert "encut" not in output["prerelax-lowacc"]["parameters"]
+    assert output["position_relax_lowacc"]["nsites"] == len(atoms)
+    assert output["position_relax_lowacc"]["parameters"]["sigma"] == 0.01
+    assert output["position_relax_lowacc"]["parameters"]["isym"] == 0
+    assert output["position_relax_lowacc"]["parameters"]["nsw"] > 0
+    assert output["position_relax_lowacc"]["parameters"]["isif"] == 2
+    assert "encut" not in output["prerelax_lowacc"]["parameters"]
 
-    assert output["volume-relax-lowacc"]["nsites"] == len(atoms)
-    assert output["volume-relax-lowacc"]["parameters"]["encut"] == 520
-    assert output["volume-relax-lowacc"]["parameters"]["sigma"] == 0.01
-    assert output["volume-relax-lowacc"]["parameters"]["isym"] == 0
-    assert output["volume-relax-lowacc"]["parameters"]["nsw"] > 0
-    assert output["volume-relax-lowacc"]["parameters"]["isif"] == 3
+    assert output["volume_relax_lowacc"]["nsites"] == len(atoms)
+    assert output["volume_relax_lowacc"]["parameters"]["encut"] == 520
+    assert output["volume_relax_lowacc"]["parameters"]["sigma"] == 0.01
+    assert output["volume_relax_lowacc"]["parameters"]["isym"] == 0
+    assert output["volume_relax_lowacc"]["parameters"]["nsw"] > 0
+    assert output["volume_relax_lowacc"]["parameters"]["isif"] == 3
 
-    assert output["double-relax"][0]["nsites"] == len(atoms)
-    assert output["double-relax"][0]["parameters"]["encut"] == 520
-    assert output["double-relax"][0]["parameters"]["sigma"] == 0.01
-    assert output["double-relax"][0]["parameters"]["isym"] == 0
-    assert output["double-relax"][0]["parameters"]["nsw"] > 0
-    assert output["double-relax"][0]["parameters"]["isif"] == 3
+    assert output["double_relax"][0]["nsites"] == len(atoms)
+    assert output["double_relax"][0]["parameters"]["encut"] == 520
+    assert output["double_relax"][0]["parameters"]["sigma"] == 0.01
+    assert output["double_relax"][0]["parameters"]["isym"] == 0
+    assert output["double_relax"][0]["parameters"]["nsw"] > 0
+    assert output["double_relax"][0]["parameters"]["isif"] == 3
 
-    assert output["double-relax"][1]["nsites"] == len(atoms)
-    assert output["double-relax"][1]["parameters"]["encut"] == 520
-    assert output["double-relax"][1]["parameters"]["isym"] == 0
-    assert output["double-relax"][1]["parameters"]["nsw"] > 0
-    assert output["double-relax"][1]["parameters"]["isif"] == 3
+    assert output["double_relax"][1]["nsites"] == len(atoms)
+    assert output["double_relax"][1]["parameters"]["encut"] == 520
+    assert output["double_relax"][1]["parameters"]["isym"] == 0
+    assert output["double_relax"][1]["parameters"]["nsw"] > 0
+    assert output["double_relax"][1]["parameters"]["isif"] == 3
 
     assert output["static"]["nsites"] == len(atoms)
     assert output["static"]["parameters"]["encut"] == 520
@@ -294,16 +294,16 @@ def test_qmof(tmpdir):
     assert output["static"]["parameters"]["laechg"] is True
 
     output = qmof_relax_job(atoms, run_prerelax=False)
-    assert output["prerelax-lowacc"] is None
+    assert output["prerelax_lowacc"] is None
 
     output = qmof_relax_job(atoms, preset="BulkSet", calc_swaps={"nelmin": 6})
-    assert output["double-relax"][0]["parameters"]["encut"] == 520
-    assert output["double-relax"][0]["parameters"]["nelmin"] == 6
-    assert output["double-relax"][0]["parameters"]["sigma"] == 0.05
+    assert output["double_relax"][0]["parameters"]["encut"] == 520
+    assert output["double_relax"][0]["parameters"]["nelmin"] == 6
+    assert output["double_relax"][0]["parameters"]["sigma"] == 0.05
 
-    assert output["double-relax"][1]["parameters"]["encut"] == 520
-    assert output["double-relax"][1]["parameters"]["nelmin"] == 6
-    assert output["double-relax"][1]["parameters"]["sigma"] == 0.05
+    assert output["double_relax"][1]["parameters"]["encut"] == 520
+    assert output["double_relax"][1]["parameters"]["nelmin"] == 6
+    assert output["double_relax"][1]["parameters"]["sigma"] == 0.05
 
     assert output["static"]["parameters"]["encut"] == 520
     assert output["static"]["parameters"]["nelmin"] == 6
@@ -312,8 +312,8 @@ def test_qmof(tmpdir):
     output = qmof_relax_job(atoms, relax_cell=False)
     assert "volume-relax" not in output
 
-    assert output["double-relax"][0]["parameters"]["isif"] == 2
-    assert output["double-relax"][1]["parameters"]["isif"] == 2
+    assert output["double_relax"][0]["parameters"]["isif"] == 2
+    assert output["double_relax"][1]["parameters"]["isif"] == 2
 
     atoms = bulk("Cu") * (8, 8, 8)
     output = qmof_relax_job(atoms)
@@ -344,29 +344,34 @@ def test_mp(tmpdir):
     assert output["parameters"]["ismear"] == 0
 
     output = mp_relax_flow(atoms)
-    assert output["nsites"] == len(atoms)
-    assert output["parameters"]["xc"] == "r2scan"
-    assert output["parameters"]["ediffg"] == -0.02
-    assert output["parameters"]["encut"] == 680
-    assert output["parameters"]["ismear"] == 2
-    assert output["parameters"]["kspacing"] == 0.22
+    assert output["relax"]["nsites"] == len(atoms)
+    assert output["relax"]["parameters"]["xc"] == "r2scan"
+    assert output["relax"]["parameters"]["ediffg"] == -0.02
+    assert output["relax"]["parameters"]["encut"] == 680
+    assert output["relax"]["parameters"]["ismear"] == 2
+    assert output["relax"]["parameters"]["kspacing"] == 0.22
+    assert output["prerelax"]["parameters"]["xc"] == "pbesol"
 
     atoms = bulk("Fe")
     output = mp_relax_flow(atoms)
-    assert output["nsites"] == len(atoms)
-    assert output["parameters"]["xc"] == "r2scan"
-    assert output["parameters"]["ediffg"] == -0.02
-    assert output["parameters"]["encut"] == 680
-    assert output["parameters"]["ismear"] == 1
-    assert output["parameters"]["kspacing"] == pytest.approx(0.28329488761304206)
+    assert output["relax"]["nsites"] == len(atoms)
+    assert output["relax"]["parameters"]["xc"] == "r2scan"
+    assert output["relax"]["parameters"]["ediffg"] == -0.02
+    assert output["relax"]["parameters"]["encut"] == 680
+    assert output["relax"]["parameters"]["ismear"] == 1
+    assert output["relax"]["parameters"]["kspacing"] == pytest.approx(
+        0.28329488761304206
+    )
 
     atoms = molecule("O2")
     atoms.center(vacuum=10)
     atoms.pbc = True
     output = mp_relax_flow(atoms)
-    assert output["nsites"] == len(atoms)
-    assert output["parameters"]["xc"] == "r2scan"
-    assert output["parameters"]["ediffg"] == -0.02
-    assert output["parameters"]["encut"] == 680
-    assert output["parameters"]["ismear"] == -5
-    assert output["parameters"]["kspacing"] == pytest.approx(0.28329488761304206)
+    assert output["relax"]["nsites"] == len(atoms)
+    assert output["relax"]["parameters"]["xc"] == "r2scan"
+    assert output["relax"]["parameters"]["ediffg"] == -0.02
+    assert output["relax"]["parameters"]["encut"] == 680
+    assert output["relax"]["parameters"]["ismear"] == -5
+    assert output["relax"]["parameters"]["kspacing"] == pytest.approx(
+        0.28329488761304206
+    )
