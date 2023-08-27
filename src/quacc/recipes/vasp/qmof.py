@@ -24,14 +24,13 @@ if TYPE_CHECKING:
     from quacc.schemas.ase import OptSchema
     from quacc.schemas.vasp import VaspSchema
 
-
-class QMOFRelaxSchema(TypedDict):
-    prerelax_lowacc: VaspSchema | None
-    position_relax_lowacc: VaspSchema
-    volume_relax_lowacc: VaspSchema | None
-    double_relax: VaspSchema
-    static: VaspSchema
-    atoms: Atoms
+    class QMOFRelaxSchema(TypedDict):
+        prerelax_lowacc: VaspSchema | None
+        position_relax_lowacc: VaspSchema
+        volume_relax_lowacc: VaspSchema | None
+        double_relax: VaspSchema
+        static: VaspSchema
+        atoms: Atoms
 
 
 @job

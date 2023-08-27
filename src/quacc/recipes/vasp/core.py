@@ -15,11 +15,10 @@ if TYPE_CHECKING:
 
     from quacc.schemas.vasp import VaspSchema
 
-
-class DoubleRelaxSchema(TypedDict):
-    relax1: VaspSchema
-    relax2: VaspSchema
-    atoms: Atoms
+    class DoubleRelaxSchema(TypedDict):
+        relax1: VaspSchema
+        relax2: VaspSchema
+        atoms: Atoms
 
 
 @job

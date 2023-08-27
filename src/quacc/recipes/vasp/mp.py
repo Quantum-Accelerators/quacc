@@ -22,11 +22,10 @@ if TYPE_CHECKING:
 
     from quacc.schemas.vasp import VaspSchema
 
-
-class MPRelaxFlowSchema(TypedDict):
-    prerelax: VaspSchema
-    relax: VaspSchema
-    atoms: Atoms
+    class MPRelaxFlowSchema(TypedDict):
+        prerelax: VaspSchema
+        relax: VaspSchema
+        atoms: Atoms
 
 
 @job

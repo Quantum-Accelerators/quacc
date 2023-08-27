@@ -23,15 +23,15 @@ if TYPE_CHECKING:
 
     from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
 
+    class FreqSchema(TypedDict):
+        vib: VibSchema
+        thermo: ThermoSchema
+
+
 try:
     from tblite.ase import TBLite
 except ImportError:
     TBLite = None
-
-
-class FreqSchema(TypedDict):
-    vib: VibSchema
-    thermo: ThermoSchema
 
 
 @job
