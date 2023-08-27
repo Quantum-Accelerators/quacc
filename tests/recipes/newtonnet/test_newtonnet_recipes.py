@@ -351,9 +351,6 @@ def test_quasi_irc_job_with_default_args(tmpdir):
     assert "opt" in output
     assert "thermo" in output
     raise ValueError(output["irc"].keys())
-    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["opt"]["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["thermo"]["results"]["energy"] == pytest.approx(-9.517354091813969)
 
 
 @pytest.mark.skipif(
