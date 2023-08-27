@@ -21,7 +21,7 @@ The three main goals of quacc are to:
 
 3. Enable a seamless interface between the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/) and the software infrastructure powering the [Materials Project](https://materialsproject.org).
 
-Quacc currently has pre-made recipes for the following packages: DFTB+, Gaussian, GULP, NewtonNet, ORCA, Psi4, tblite, and VASP. It's simple to add your favorite!
+Quacc currently has pre-made recipes for the following packages: DFTB+, Gaussian, GULP, NewtonNet, ORCA, Psi4, Q-Chem, tblite, and VASP. It's simple to add your favorite!
 
 ## Documentation
 

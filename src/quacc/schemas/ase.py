@@ -189,7 +189,7 @@ def summarize_run(
 def summarize_opt_run(
     dyn: Optimizer,
     trajectory: Trajectory | list[Atoms] = None,
-    check_convergence: bool = True,
+    check_convergence: bool | None = None,
     charge_and_multiplicity: tuple[int, int] | None = None,
     prep_next_run: bool = True,
     remove_empties: bool = False,
@@ -208,7 +208,7 @@ def summarize_opt_run(
         ASE Trajectory object or list[Atoms] from reading a trajectory file.
         If None, the trajectory must be found in dyn.traj_atoms.
     check_convergence
-        Whether to check the convergence of the calculation.
+        Whether to check the convergence of the calculation. Defaults to True in settings.
     charge_and_multiplicity
         Charge and spin multiplicity of the Atoms object, only used for Molecule metadata.
     prep_next_run
@@ -301,6 +301,9 @@ def summarize_opt_run(
             - symmetry.tolerance: float = Field(None, title="Point Group Analyzer Tolerance", description="Distance tolerance to consider sites as symmetrically equivalent.")
     """
 
+    check_convergence = (
+        SETTINGS.CHECK_CONVERGENCE if check_convergence is None else check_convergence
+    )
     additional_fields = additional_fields or {}
     opt_parameters = dyn.todict()
     if hasattr(dyn, "fmax"):

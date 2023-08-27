@@ -90,6 +90,19 @@ QUACC_ORCA_CMD=/path/to/my/orca/orca
 
 If you plan to use Psi4 with quacc, you will need to install it prior to use. This can be done as described in the [Psi4 installation guide](https://psicode.org/installs/latest/).
 
+## Q-Chem
+
+!!! Note
+
+    [Q-Chem](https://www.q-chem.com/) is a powerful, general-purpose molecular DFT code with a variety of features.
+
+If you plan to use Q-Chem with Quacc, you will need to install `openbabel` and `sella` (recommended) prior to use. This can be done as follows:
+
+```bash
+conda install -c conda-forge openbabel
+pip install quacc[optimizers]
+```
+
 ## tblite
 
 !!! Note

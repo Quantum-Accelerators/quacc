@@ -14,7 +14,6 @@ except ImportError:
 
 DEFAULT_SETTINGS = SETTINGS.copy()
 
-
 @pytest.mark.skipif(
     TBLite is None,
     reason="tblite must be installed.",

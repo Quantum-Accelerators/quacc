@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Added
+
+- Added a custom Q-Chem calculator based on Pymatgen and Custodian.
+- Added Q-chem core recipes.
+- Added the ability to pass option `run_kwargs` to the `.run()` method of the ASE optimizers.
+
 ### Changed
 
 - Renamed `quacc.util` to `quacc.utils`
@@ -96,6 +102,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added a CLI for `quacc` along with a `quacc config` option to configure Covalent appropriately upon install.
 - Added generic type hints for schemas.
 - Added a `CREATE_UNIQUE_WORKDIR` global setting to have quacc automatically make a unique working directory for each calculation.
+- Added `CHECK_CONVERGENCE` to global settings.
 
 ### Changed
 

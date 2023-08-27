@@ -94,6 +94,10 @@ class QuaccSettings(BaseSettings):
     GZIP_FILES: bool = Field(
         True, description="Whether generated files should be gzip'd."
     )
+    CHECK_CONVERGENCE: bool = Field(
+        True,
+        description="Whether to check for convergence in the `summarize_run`-type functions, if supported.",
+    )
 
     # ---------------------------
     # Data Store Settings
@@ -223,6 +227,30 @@ class QuaccSettings(BaseSettings):
             "After this many seconds, Custodian will stop running "
             "and ensure that VASP writes a STOPCAR"
         ),
+    )
+
+    # ---------------------------
+    # Q-Chem Settings
+    # ---------------------------
+
+    # Q-Chem Settings: Main
+    QCHEM_CMD: str = Field(
+        "qchem", description="Command to run the standard version of Q-Chem."
+    )
+
+    QCHEM_LOCAL_SCRATCH: str = Field(
+        "/tmp" if os.path.exists("/tmp") else os.getcwd(),
+        description="Compute-node local scratch directory in which Q-Chem should perform IO.",
+    )
+
+    # Q-Chem Settings: Custodian
+    QCHEM_USE_ERROR_HANDLERS: bool = Field(
+        True,
+        description="Whether Custodian's error handlers should be employed for Q-Chem.",
+    )
+
+    QCHEM_CUSTODIAN_MAX_ERRORS: int = Field(
+        5, description="Maximum errors for Q-Chem Custodian."
     )
 
     # ---------------------------

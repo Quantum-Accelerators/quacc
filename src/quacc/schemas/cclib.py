@@ -49,7 +49,7 @@ def summarize_run(
         ]
     ]
     | None = None,
-    check_convergence: bool = True,
+    check_convergence: bool | None = None,
     prep_next_run: bool = True,
     remove_empties: bool = False,
     additional_fields: dict | None = None,
@@ -81,6 +81,7 @@ def summarize_run(
         "hirshfeld".
     check_convergence
          Whether to throw an error if geometry optimization convergence is not reached.
+         Defaults to True in settings.
     prep_next_run
         Whether the Atoms object stored in {"atoms": atoms} should be prepared for the next run.
         This clears out any attached calculator and moves the final magmoms to the initial magmoms.
@@ -134,6 +135,7 @@ def summarize_run(
         - tags: List[str] = Field(None, description="Optional tags for this task document")
         - task_label: str = Field(None, description="A description of the task")
     """
+
     # Make sure there is a calculator with results
     if not atoms.calc:
         msg = "ASE Atoms object has no attached calculator."
@@ -143,6 +145,10 @@ def summarize_run(
         raise ValueError(msg)
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
+    # Set defaults
+    check_convergence = (
+        SETTINGS.CHECK_CONVERGENCE if check_convergence is None else check_convergence
+    )
     additional_fields = additional_fields or {}
     dir_path = dir_path or os.getcwd()
 
