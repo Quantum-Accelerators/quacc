@@ -5,7 +5,7 @@ NOTE: This set of minimal recipes is mainly for demonstration purposes
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, TypedDict
+from typing import TYPE_CHECKING
 
 from ase.calculators.lj import LennardJones
 from ase.optimize import FIRE
@@ -27,10 +27,8 @@ if TYPE_CHECKING:
 
     from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
 
-
-class FreqSchema(TypedDict):
-    vib: VibSchema
-    thermo: ThermoSchema
+    class FreqSchema(VibSchema):
+        thermo: ThermoSchema
 
 
 @job
@@ -149,17 +147,18 @@ def freq_job(
 
     atoms.calc = LennardJones(**calc_swaps)
     vibrations = run_ase_vib(atoms, vib_kwargs=vib_kwargs, copy_files=copy_files)
+    vib_summary = (
+        summarize_vib_run(vibrations, additional_fields={"name": "LJ Vibrations"}),
+    )
 
     igt = ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)
-
-    return {
-        "vib": summarize_vib_run(
-            vibrations, additional_fields={"name": "LJ Vibrations"}
-        ),
-        "thermo": summarize_thermo_run(
+    vib_summary["thermo"] = (
+        summarize_thermo_run(
             igt,
             temperature=temperature,
             pressure=pressure,
             additional_fields={"name": "LJ Thermo"},
         ),
-    }
+    )
+
+    return vib_summary

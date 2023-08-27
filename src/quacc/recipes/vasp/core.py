@@ -1,7 +1,7 @@
 """Core recipes for VASP"""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING
 
 from quacc import job
 from quacc.calculators.vasp import Vasp
@@ -15,11 +15,8 @@ if TYPE_CHECKING:
 
     from quacc.schemas.vasp import VaspSchema
 
-
-class DoubleRelaxSchema(TypedDict):
-    relax1: VaspSchema
-    relax2: VaspSchema
-    atoms: Atoms
+    class DoubleRelaxSchema(VaspSchema):
+        relax1: VaspSchema
 
 
 @job
@@ -179,5 +176,6 @@ def double_relax_job(
         calc_swaps=calc_swaps2,
         copy_files=["WAVECAR"],
     )
+    summary2["relax1"] = summary1
 
-    return {"relax1": summary1, "relax2": summary2, "atoms": summary2["atoms"]}
+    return summary2

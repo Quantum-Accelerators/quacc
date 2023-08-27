@@ -74,28 +74,22 @@ def test_freq_job(tmpdir):
 
     atoms = molecule("H2O")
     output = freq_job(atoms)
-    assert output["vib"]["atoms"] == molecule("H2O")
-    assert len(output["vib"]["results"]["vib_freqs_raw"]) == 9
-    assert len(output["vib"]["results"]["vib_freqs"]) == 3
-    assert output["vib"]["results"]["vib_freqs_raw"][0] == pytest.approx(
-        -0.10864429415434408
-    )
-    assert output["vib"]["results"]["vib_freqs_raw"][-1] == pytest.approx(
-        3526.9940431752034
-    )
-    assert output["vib"]["results"]["vib_freqs"][0] == pytest.approx(1586.623114694335)
-    assert output["vib"]["results"]["vib_freqs"][-1] == pytest.approx(
-        3526.9940431752034
-    )
-    assert output["vib"]["results"]["n_imag"] == 0
-    assert output["vib"]["results"]["imag_vib_freqs"] == []
+    assert output["atoms"] == molecule("H2O")
+    assert len(output["results"]["vib_freqs_raw"]) == 9
+    assert len(output["results"]["vib_freqs"]) == 3
+    assert output["results"]["vib_freqs_raw"][0] == pytest.approx(-0.10864429415434408)
+    assert output["results"]["vib_freqs_raw"][-1] == pytest.approx(3526.9940431752034)
+    assert output["results"]["vib_freqs"][0] == pytest.approx(1586.623114694335)
+    assert output["results"]["vib_freqs"][-1] == pytest.approx(3526.9940431752034)
+    assert output["results"]["n_imag"] == 0
+    assert output["results"]["imag_vib_freqs"] == []
 
     assert output["thermo"]["atoms"] == atoms
     assert output["thermo"]["symmetry"]["point_group"] == "C2v"
     assert output["thermo"]["symmetry"]["rotation_number"] == 2
     assert output["thermo"]["symmetry"]["linear"] is False
     assert len(output["thermo"]["parameters_thermo"]["vib_freqs"]) == 3
-    assert output["vib"]["results"]["vib_freqs"][0] == pytest.approx(1586.623114694335)
+    assert output["results"]["vib_freqs"][0] == pytest.approx(1586.623114694335)
     assert output["thermo"]["parameters_thermo"]["vib_freqs"][-1] == pytest.approx(
         3526.9940431752034
     )
@@ -112,14 +106,14 @@ def test_freq_job(tmpdir):
     atoms.set_initial_magnetic_moments([0.0])
     initial_atoms = deepcopy(atoms)
     output = freq_job(atoms, energy=-1.0)
-    assert output["vib"]["atoms"] == initial_atoms
-    assert len(output["vib"]["results"]["vib_freqs_raw"]) == 3
-    assert len(output["vib"]["results"]["vib_freqs"]) == 0
-    assert output["vib"]["results"]["vib_freqs_raw"][0] == 0
-    assert output["vib"]["results"]["vib_freqs_raw"][-1] == 0
-    assert output["vib"]["results"]["vib_freqs"] == []
-    assert output["vib"]["results"]["n_imag"] == 0
-    assert output["vib"]["results"]["imag_vib_freqs"] == []
+    assert output["atoms"] == initial_atoms
+    assert len(output["results"]["vib_freqs_raw"]) == 3
+    assert len(output["results"]["vib_freqs"]) == 0
+    assert output["results"]["vib_freqs_raw"][0] == 0
+    assert output["results"]["vib_freqs_raw"][-1] == 0
+    assert output["results"]["vib_freqs"] == []
+    assert output["results"]["n_imag"] == 0
+    assert output["results"]["imag_vib_freqs"] == []
 
     assert output["thermo"]["atoms"] == initial_atoms
     assert output["thermo"]["symmetry"]["linear"] is False
@@ -137,23 +131,19 @@ def test_freq_job(tmpdir):
     atoms = molecule("CH3")
     initial_atoms = deepcopy(atoms)
     output = freq_job(atoms, energy=-10.0, temperature=1000, pressure=20)
-    assert output["vib"]["atoms"] == initial_atoms
-    assert len(output["vib"]["results"]["vib_freqs_raw"]) == 12
-    assert len(output["vib"]["results"]["vib_freqs"]) == 6
-    assert output["vib"]["results"]["vib_energies_raw"][0] == pytest.approx(
+    assert output["atoms"] == initial_atoms
+    assert len(output["results"]["vib_freqs_raw"]) == 12
+    assert len(output["results"]["vib_freqs"]) == 6
+    assert output["results"]["vib_energies_raw"][0] == pytest.approx(
         -9.551076713062095e-06
     )
-    assert output["vib"]["results"]["vib_energies_raw"][-1] == pytest.approx(
+    assert output["results"]["vib_energies_raw"][-1] == pytest.approx(
         0.3880868821616259
     )
-    assert output["vib"]["results"]["vib_energies"][0] == pytest.approx(
-        0.0713506770137291
-    )
-    assert output["vib"]["results"]["vib_energies"][-1] == pytest.approx(
-        0.3880868821616259
-    )
-    assert output["vib"]["results"]["n_imag"] == 0
-    assert output["vib"]["results"]["imag_vib_freqs"] == []
+    assert output["results"]["vib_energies"][0] == pytest.approx(0.0713506770137291)
+    assert output["results"]["vib_energies"][-1] == pytest.approx(0.3880868821616259)
+    assert output["results"]["n_imag"] == 0
+    assert output["results"]["imag_vib_freqs"] == []
 
     assert output["thermo"]["atoms"] == initial_atoms
     assert output["thermo"]["parameters_thermo"]["temperature"] == 1000.0
@@ -173,8 +163,8 @@ def test_freq_job(tmpdir):
     )
     assert "nid" in output["thermo"]
     assert "dir_name" in output["thermo"]
-    assert "nid" in output["vib"]
-    assert "dir_name" in output["vib"]
+    assert "nid" in output
+    assert "dir_name" in output
 
 
 @pytest.mark.skipif(

@@ -24,14 +24,12 @@ if TYPE_CHECKING:
     from quacc.schemas.ase import OptSchema
     from quacc.schemas.vasp import VaspSchema
 
-
-class QMOFRelaxSchema(TypedDict):
-    prerelax_lowacc: VaspSchema | None
-    position_relax_lowacc: VaspSchema
-    volume_relax_lowacc: VaspSchema | None
-    double_relax: VaspSchema
-    static: VaspSchema
-    atoms: Atoms
+    class QMOFRelaxSchema(VaspSchema):
+        prerelax_lowacc: VaspSchema | None
+        position_relax_lowacc: VaspSchema
+        volume_relax_lowacc: VaspSchema | None
+        double_relax: VaspSchema
+        static: VaspSchema
 
 
 @job
@@ -104,15 +102,13 @@ def qmof_relax_job(
 
     # 5. Static Calculation
     summary5 = _static(atoms, preset, calc_swaps)
+    summary5["prerelax_lowacc"] = summary1 if run_prerelax else None
+    summary5["position_relax_lowacc"] = summary2
+    summary5["volume_relax_lowacc"] = summary3 if relax_cell else None
+    summary5["double_relax"] = summary4
+    summary5["static"] = summary5
 
-    return {
-        "prerelax_lowacc": summary1 if run_prerelax else None,
-        "position_relax_lowacc": summary2,
-        "volume_relax_lowacc": summary3 if relax_cell else None,
-        "double_relax": summary4,
-        "static": summary5,
-        "atoms": summary5["atoms"],
-    }
+    return summary5
 
 
 def _prerelax(

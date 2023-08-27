@@ -6,7 +6,7 @@ Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -22,11 +22,8 @@ if TYPE_CHECKING:
 
     from quacc.schemas.vasp import VaspSchema
 
-
-class MPRelaxFlowSchema(TypedDict):
-    prerelax: VaspSchema
-    relax: VaspSchema
-    atoms: Atoms
+    class MPRelaxFlowSchema(VaspSchema):
+        prerelax: VaspSchema
 
 
 @job
@@ -158,9 +155,6 @@ def mp_relax_flow(
     relax_results = relax.original_func(
         prerelax_results, copy_files=["WAVECAR"], **relax_kwargs
     )
+    relax_results["prerelax"] = prerelax_results
 
-    return {
-        "prerelax": prerelax_results,
-        "relax": relax_results,
-        "atoms": relax_results["atoms"],
-    }
+    return relax_results

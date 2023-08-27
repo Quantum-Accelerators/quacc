@@ -1,7 +1,7 @@
 """Core recipes for the tblite code"""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, TypedDict
+from typing import TYPE_CHECKING, Literal
 
 from ase.optimize import FIRE
 from monty.dev import requires
@@ -23,15 +23,14 @@ if TYPE_CHECKING:
 
     from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
 
+    class FreqSchema(VibSchema):
+        thermo: ThermoSchema
+
+
 try:
     from tblite.ase import TBLite
 except ImportError:
     TBLite = None
-
-
-class FreqSchema(TypedDict):
-    vib: VibSchema
-    thermo: ThermoSchema
 
 
 @job
@@ -165,17 +164,16 @@ def freq_job(
 
     atoms.calc = TBLite(method=method, **calc_swaps)
     vibrations = run_ase_vib(atoms, vib_kwargs=vib_kwargs, copy_files=copy_files)
+    vib_summary = summarize_vib_run(
+        vibrations, additional_fields={"name": "TBLite Vibrations"}
+    )
 
     igt = ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)
+    vib_summary["thermo"] = summarize_thermo_run(
+        igt,
+        temperature=temperature,
+        pressure=pressure,
+        additional_fields={"name": "TBLite Thermo"},
+    )
 
-    return {
-        "vib": summarize_vib_run(
-            vibrations, additional_fields={"name": "TBLite Vibrations"}
-        ),
-        "thermo": summarize_thermo_run(
-            igt,
-            temperature=temperature,
-            pressure=pressure,
-            additional_fields={"name": "TBLite Thermo"},
-        ),
-    }
+    return vib_summary
