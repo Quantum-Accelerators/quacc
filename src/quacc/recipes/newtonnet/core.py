@@ -32,13 +32,16 @@ except ImportError:
     NewtonNet = None
 
 if TYPE_CHECKING:
-    from typing import Literal
+    from typing import TypedDict
 
-    import numpy as np
     from ase import Atoms
-    from ase.optimize.optimize import Optimizer
 
     from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
+
+    class FreqSchema(TypedDict):
+        vib: VibSchema
+        thermo: ThermoSchema
+
 
 @job
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
