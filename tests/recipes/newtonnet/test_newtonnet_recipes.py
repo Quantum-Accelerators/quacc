@@ -5,7 +5,6 @@ import numpy as np
 import pytest
 from ase.build import molecule
 from ase.optimize import FIRE
-from monty.shutil import compress_file, decompress_file
 
 from quacc import SETTINGS
 from quacc.recipes.newtonnet.core import (
@@ -351,6 +350,7 @@ def test_quasi_irc_job_with_default_args(tmpdir):
     assert "irc" in output
     assert "opt" in output
     assert "thermo" in output
+    raise ValueError(output["irc"].keys())
     assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
     assert output["opt"]["results"]["energy"] == pytest.approx(-9.517354091813969)
     assert output["thermo"]["results"]["energy"] == pytest.approx(-9.517354091813969)

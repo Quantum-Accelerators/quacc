@@ -215,12 +215,10 @@ def freq_job(
 def ts_job(
     atoms: Atoms | dict,
     use_custom_hessian: bool = False,
-    temperature: float = 298.15,
-    pressure: float = 1.0,
     calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
     check_convergence: bool = True,
-) -> TSSchema:
+) -> OptSchema:
     """
     Perform a transition state (TS) job using the given atoms object.
 
@@ -230,10 +228,6 @@ def ts_job(
         The atoms object representing the system.
     use_custom_hessian
         Whether to use a custom Hessian matrix.
-    temperature
-        The temperature for the frequency calculation in Kelvins.
-    pressure
-        The pressure for the frequency calculation in bar.
     calc_swaps
         Optional swaps for the calculator.
     opt_swaps
@@ -284,14 +278,7 @@ def ts_job(
         additional_fields={"name": "NewtonNet TS"},
     )
 
-    ts_summary = _add_stdev_and_hess(ts_summary)
-
-    # Run a frequency calculation
-    thermo_summary = freq_job.original_func(
-        ts_summary, temperature=temperature, pressure=pressure, calc_swaps=calc_swaps
-    )
-
-    return {"ts": ts_summary, "atoms": ts_summary["atoms"], **thermo_summary}
+    return _add_stdev_and_hess(ts_summary)
 
 
 @job
@@ -300,12 +287,10 @@ def ts_job(
 def irc_job(
     atoms: Atoms | dict,
     direction: Literal["forward", "reverse"] = "forward",
-    temperature: float = 298.15,
-    pressure: float = 1.0,
     calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
     check_convergence: bool = False,
-) -> IRCSchema:
+) -> OptSchema:
     """
     Perform an intrinsic reaction coordinate (IRC) job using the given atoms object.
 
@@ -315,10 +300,6 @@ def irc_job(
         The atoms object representing the system.
     direction
         The direction of the IRC calculation ("forward" or "reverse").
-    temperature
-        The temperature for the frequency calculation in Kelvins.
-    pressure
-        The pressure for the frequency calculation in bar.
     calc_swaps
         Optional swaps for the calculator.
     opt_swaps
@@ -368,17 +349,7 @@ def irc_job(
         additional_fields={"name": f"NewtonNet IRC: {direction}"},
     )
 
-    summary_irc = _add_stdev_and_hess(summary_irc)
-
-    # Run frequency job
-    thermo_summary = freq_job.original_func(
-        summary_irc, temperature=temperature, pressure=pressure
-    )
-    return {
-        "irc": summary_irc,
-        "atoms": summary_irc["atoms"],
-        **thermo_summary,
-    }
+    return _add_stdev_and_hess(summary_irc)
 
 
 @job
@@ -387,8 +358,6 @@ def irc_job(
 def quasi_irc_job(
     atoms: Atoms | dict,
     direction: Literal["forward", "reverse"] = "forward",
-    temperature: float = 298.15,
-    pressure: float = 1.0,
     irc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
 ) -> QuasiIRCSchema:
@@ -401,10 +370,6 @@ def quasi_irc_job(
         The atoms object representing the system.
     direction
         The direction of the IRC calculation ("forward" or "reverse").
-    temperature
-        The temperature for the frequency calculation in Kelvins.
-    pressure
-        The pressure for the frequency calculation in bar.
     irc_swaps
         Optional swaps for the IRC optimization parameters.
     opt_swaps
@@ -427,19 +392,7 @@ def quasi_irc_job(
     # Run opt
     opt_summary = relax_job.original_func(irc_summary, **opt_swaps)
 
-    # Run frequency
-    thermo_summary = freq_job.original_func(
-        opt_summary,
-        temperature=temperature,
-        pressure=pressure,
-    )
-
-    return {
-        "irc": irc_summary,
-        "opt": opt_summary,
-        "atoms": opt_summary["atoms"],
-        **thermo_summary,
-    }
+    return {"quasi_irc": irc_summary, "opt": opt_summary, "atoms": opt_summary["atoms"]}
 
 
 def _get_hessian(atoms: Atoms) -> np.ndarray:
