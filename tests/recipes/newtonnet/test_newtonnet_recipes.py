@@ -140,7 +140,7 @@ def test_ts_job_with_default_args(tmpdir):
     assert "freq" in output
     assert "thermo" in output["freq"]
     assert output["results"]["energy"] == pytest.approx(-6.796914263061945)
-    assert output["freq"]["vib"]["results"]["imag_vib_freqs"][0] == pytest.approx(
+    assert output["freq"]["results"]["imag_vib_freqs"][0] == pytest.approx(
         -2426.7398321816004
     )
 
@@ -171,7 +171,7 @@ def test_ts_job_with_custom_hessian(tmpdir):
     assert isinstance(output, dict)
 
     assert output["results"]["energy"] == pytest.approx(-8.855604432470276)
-    assert output["freq"]["vib"]["results"]["vib_energies"][0] == pytest.approx(
+    assert output["freq"]["results"]["vib_energies"][0] == pytest.approx(
         0.2256022513686731
     )
     assert "thermo" in output["freq"]
@@ -199,7 +199,7 @@ def test_ts_job_with_custom_optimizer(tmpdir):
 
     assert "thermo" in output["freq"]
     assert output["results"]["energy"] == pytest.approx(-9.51735515322368)
-    assert output["freq"]["vib"]["results"]["vib_energies"][0] == pytest.approx(
+    assert output["freq"]["results"]["vib_energies"][0] == pytest.approx(
         0.22679888726664774
     )
 
@@ -243,7 +243,7 @@ def test_irc_job_with_default_args(tmpdir):
 
     # Perform assertions on the result
     assert isinstance(output, dict)
-    assert "vib" in output["freq"]
+
     assert output["results"]["energy"] == pytest.approx(-9.517354091813969)
     assert output["freq"]["thermo"]["results"]["energy"] == pytest.approx(
         -9.517354091813969
@@ -269,7 +269,7 @@ def test_irc_job_with_custom_fmax(tmpdir):
 
     # Perform assertions on the result
     assert isinstance(output, dict)
-    assert "vib" in output["freq"]
+
     assert output["results"]["energy"] == pytest.approx(-9.517354091813969)
     assert output["freq"]["thermo"]["results"]["energy"] == pytest.approx(
         -9.517354091813969
@@ -295,7 +295,7 @@ def test_irc_job_with_custom_max_steps(tmpdir):
 
     # Perform assertions on the result
     assert isinstance(output, dict)
-    assert "vib" in output["freq"]
+
     assert output["results"]["energy"] == pytest.approx(-9.517354091813969)
     assert output["freq"]["thermo"]["results"]["energy"] == pytest.approx(
         -9.517354091813969
@@ -324,7 +324,7 @@ def test_irc_job_with_custom_temperature_and_pressure(tmpdir):
 
     # Perform assertions on the result
     assert isinstance(output, dict)
-    assert "vib" in output["freq"]
+
     assert output["results"]["energy"] == pytest.approx(-9.517354091813969)
     assert output["freq"]["thermo"]["results"]["energy"] == pytest.approx(
         -9.517354091813969
@@ -350,7 +350,7 @@ def test_irc_job_with_check_convergence(tmpdir):
 
     # Perform assertions on the result
     assert isinstance(output, dict)
-    assert "vib" in output["freq"]
+
     assert output["results"]["energy"] == pytest.approx(-9.517354091813969)
     assert output["freq"]["thermo"]["results"]["energy"] == pytest.approx(
         -9.517354091813969
@@ -376,7 +376,7 @@ def test_irc_job_with_custom_opt_swaps(tmpdir):
 
     # Perform assertions on the result
     assert isinstance(output, dict)
-    assert "vib" in output["freq"]
+
     assert output["results"]["energy"] == pytest.approx(-9.517354965639784)
     assert output["freq"]["thermo"]["results"]["energy"] == pytest.approx(
         -9.517354965639784
@@ -401,7 +401,7 @@ def test_quasi_irc_job_with_default_args(tmpdir):
 
     # Perform assertions on the result
     assert isinstance(output, dict)
-    assert "vib" in output["freq"]
+
     assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
     assert output["results"]["energy"] == pytest.approx(-9.517354091813969)
     assert output["freq"]["thermo"]["results"]["energy"] == pytest.approx(
@@ -429,7 +429,7 @@ def test_quasi_irc_job_with_custom_direction(tmpdir):
     # Perform assertions on the result
     assert isinstance(output, dict)
     assert "irc" in output
-    assert "vib" in output["freq"]
+
     assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354965639784)
     assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354965639784)
     assert output["results"]["energy"] == pytest.approx(-9.517354965639784)
@@ -461,7 +461,7 @@ def test_quasi_irc_job_with_custom_temperature_and_pressure(tmpdir):
     # Perform assertions on the result
     assert isinstance(output, dict)
     assert "irc" in output
-    assert "vib" in output["freq"]
+
     assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
     assert output["results"]["energy"] == pytest.approx(-9.517354091813969)
     assert output["freq"]["thermo"]["results"]["energy"] == pytest.approx(
@@ -491,7 +491,7 @@ def test_quasi_irc_job_with_custom_irc_swaps(tmpdir):
     # Perform assertions on the result
     assert isinstance(output, dict)
     assert "irc" in output
-    assert "vib" in output["freq"]
+
     assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354965639784)
     assert output["results"]["energy"] == pytest.approx(-9.517354965639784)
     assert output["freq"]["thermo"]["results"]["energy"] == pytest.approx(
