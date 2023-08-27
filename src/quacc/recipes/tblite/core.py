@@ -18,6 +18,11 @@ from quacc.utils.dicts import merge_dicts
 from quacc.utils.thermo import ideal_gas
 from quacc.utils.wflows import fetch_atoms
 
+try:
+    from tblite.ase import TBLite
+except ImportError:
+    TBLite = None
+
 if TYPE_CHECKING:
     from typing import Literal, TypedDict
 
@@ -28,12 +33,6 @@ if TYPE_CHECKING:
     class FreqSchema(TypedDict):
         vib: VibSchema
         thermo: ThermoSchema
-
-
-try:
-    from tblite.ase import TBLite
-except ImportError:
-    TBLite = None
 
 
 @job

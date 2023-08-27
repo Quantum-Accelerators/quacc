@@ -21,16 +21,6 @@ from quacc.utils.dicts import merge_dicts
 from quacc.utils.thermo import ideal_gas
 from quacc.utils.wflows import fetch_atoms
 
-if TYPE_CHECKING:
-    from typing import Literal
-
-    import numpy as np
-    from ase import Atoms
-    from ase.optimize.optimize import Optimizer
-
-    from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
-
-
 try:
     from sella import IRC, Sella
 except ImportError:
@@ -40,6 +30,15 @@ try:
     from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
 except ImportError:
     NewtonNet = None
+
+if TYPE_CHECKING:
+    from typing import Literal
+
+    import numpy as np
+    from ase import Atoms
+    from ase.optimize.optimize import Optimizer
+
+    from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
 
 
 @job
