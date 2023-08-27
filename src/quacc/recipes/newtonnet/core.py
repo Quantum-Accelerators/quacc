@@ -38,8 +38,7 @@ if TYPE_CHECKING:
 
     from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
 
-    class FreqSchema(TypedDict):
-        vib: VibSchema
+    class FreqSchema(VibSchema):
         thermo: ThermoSchema
 
 
@@ -177,22 +176,18 @@ def freq_job(
     ml_calculator.calculate(atoms)
     hessian = ml_calculator.results["hessian"]
     vib = VibrationsData(atoms, hessian)
+    vib_summary = summarize_vib_run(
+        vib, additional_fields={"name": "NewtonNet Frequency Analysis"}
+    )
 
     igt = ideal_gas(
         atoms, vib.get_frequencies(), energy=ml_calculator.results["energy"]
     )
+    vib_summary["thermo"] = summarize_thermo(
+        igt, temperature=temperature, pressure=pressure
+    )
 
-    return {
-        "vib": summarize_vib_run(
-            vib, additional_fields={"name": "NewtonNet Vibrations"}
-        ),
-        "thermo": summarize_thermo(
-            igt,
-            temperature=temperature,
-            pressure=pressure,
-            additional_fields={"name": "NewtonNet Thermo"},
-        ),
-    }
+    return vib_summary
 
 
 def _add_stdev_and_hess(summary: dict[str, any]) -> dict[str, any]:
