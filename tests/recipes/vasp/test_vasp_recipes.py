@@ -83,21 +83,21 @@ def test_doublerelax_job(tmpdir):
     assert output["relax1"]["parameters"]["nsw"] > 0
     assert output["relax1"]["parameters"]["isif"] == 3
     assert output["relax1"]["parameters"]["lwave"] is False
-    assert output["relax2"]["nsites"] == len(atoms)
-    assert output["relax2"]["parameters"]["isym"] == 0
-    assert output["relax2"]["parameters"]["nsw"] > 0
-    assert output["relax2"]["parameters"]["isif"] == 3
-    assert output["relax2"]["parameters"]["lwave"] is False
+    assert output["nsites"] == len(atoms)
+    assert output["parameters"]["isym"] == 0
+    assert output["parameters"]["nsw"] > 0
+    assert output["parameters"]["isif"] == 3
+    assert output["parameters"]["lwave"] is False
 
     output = double_relax_job(atoms, preset="BulkSet", calc_swaps2={"nelmin": 6})
     assert output["relax1"]["parameters"]["encut"] == 520
     assert "nelmin" not in output["relax1"]["parameters"]
-    assert output["relax2"]["parameters"]["encut"] == 520
-    assert output["relax2"]["parameters"]["nelmin"] == 6
+    assert output["parameters"]["encut"] == 520
+    assert output["parameters"]["nelmin"] == 6
 
     output = double_relax_job(atoms, relax_cell=False)
     assert output["relax1"]["parameters"]["isif"] == 2
-    assert output["relax2"]["parameters"]["isif"] == 2
+    assert output["parameters"]["isif"] == 2
 
     output = double_relax_job(atoms, calc_swaps1={"kpts": [1, 1, 1]})
 
@@ -286,12 +286,12 @@ def test_qmof(tmpdir):
     assert output["double_relax"][1]["parameters"]["nsw"] > 0
     assert output["double_relax"][1]["parameters"]["isif"] == 3
 
-    assert output["static"]["nsites"] == len(atoms)
-    assert output["static"]["parameters"]["encut"] == 520
-    assert output["static"]["parameters"]["sigma"] == 0.01
-    assert output["static"]["parameters"]["isym"] == 0
-    assert output["static"]["parameters"]["nsw"] == 0
-    assert output["static"]["parameters"]["laechg"] is True
+    assert output["nsites"] == len(atoms)
+    assert output["parameters"]["encut"] == 520
+    assert output["parameters"]["sigma"] == 0.01
+    assert output["parameters"]["isym"] == 0
+    assert output["parameters"]["nsw"] == 0
+    assert output["parameters"]["laechg"] is True
 
     output = qmof_relax_job(atoms, run_prerelax=False)
     assert output["prerelax_lowacc"] is None
@@ -305,9 +305,9 @@ def test_qmof(tmpdir):
     assert output["double_relax"][1]["parameters"]["nelmin"] == 6
     assert output["double_relax"][1]["parameters"]["sigma"] == 0.05
 
-    assert output["static"]["parameters"]["encut"] == 520
-    assert output["static"]["parameters"]["nelmin"] == 6
-    assert output["static"]["parameters"]["sigma"] == 0.05
+    assert output["parameters"]["encut"] == 520
+    assert output["parameters"]["nelmin"] == 6
+    assert output["parameters"]["sigma"] == 0.05
 
     output = qmof_relax_job(atoms, relax_cell=False)
     assert "volume-relax" not in output
@@ -344,34 +344,30 @@ def test_mp(tmpdir):
     assert output["parameters"]["ismear"] == 0
 
     output = mp_relax_flow(atoms)
-    assert output["relax"]["nsites"] == len(atoms)
-    assert output["relax"]["parameters"]["xc"] == "r2scan"
-    assert output["relax"]["parameters"]["ediffg"] == -0.02
-    assert output["relax"]["parameters"]["encut"] == 680
-    assert output["relax"]["parameters"]["ismear"] == 2
-    assert output["relax"]["parameters"]["kspacing"] == 0.22
+    assert output["nsites"] == len(atoms)
+    assert output["parameters"]["xc"] == "r2scan"
+    assert output["parameters"]["ediffg"] == -0.02
+    assert output["parameters"]["encut"] == 680
+    assert output["parameters"]["ismear"] == 2
+    assert output["parameters"]["kspacing"] == 0.22
     assert output["prerelax"]["parameters"]["xc"] == "pbesol"
 
     atoms = bulk("Fe")
     output = mp_relax_flow(atoms)
-    assert output["relax"]["nsites"] == len(atoms)
-    assert output["relax"]["parameters"]["xc"] == "r2scan"
-    assert output["relax"]["parameters"]["ediffg"] == -0.02
-    assert output["relax"]["parameters"]["encut"] == 680
-    assert output["relax"]["parameters"]["ismear"] == 1
-    assert output["relax"]["parameters"]["kspacing"] == pytest.approx(
-        0.28329488761304206
-    )
+    assert output["nsites"] == len(atoms)
+    assert output["parameters"]["xc"] == "r2scan"
+    assert output["parameters"]["ediffg"] == -0.02
+    assert output["parameters"]["encut"] == 680
+    assert output["parameters"]["ismear"] == 1
+    assert output["parameters"]["kspacing"] == pytest.approx(0.28329488761304206)
 
     atoms = molecule("O2")
     atoms.center(vacuum=10)
     atoms.pbc = True
     output = mp_relax_flow(atoms)
-    assert output["relax"]["nsites"] == len(atoms)
-    assert output["relax"]["parameters"]["xc"] == "r2scan"
-    assert output["relax"]["parameters"]["ediffg"] == -0.02
-    assert output["relax"]["parameters"]["encut"] == 680
-    assert output["relax"]["parameters"]["ismear"] == -5
-    assert output["relax"]["parameters"]["kspacing"] == pytest.approx(
-        0.28329488761304206
-    )
+    assert output["nsites"] == len(atoms)
+    assert output["parameters"]["xc"] == "r2scan"
+    assert output["parameters"]["ediffg"] == -0.02
+    assert output["parameters"]["encut"] == 680
+    assert output["parameters"]["ismear"] == -5
+    assert output["parameters"]["kspacing"] == pytest.approx(0.28329488761304206)
