@@ -3,19 +3,33 @@ Transition state recipes for the NewtonNet code
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, TypedDict
+from typing import TYPE_CHECKING
 
 from ase.optimize import FIRE
 from monty.dev import requires
 
 from quacc import SETTINGS, job
-from quacc.recipes.newtonnet.core import _add_stdev_and_hess, freq_job, relax_job
+from quacc.recipes.newtonnet.core import _add_stdev_and_hess
+from quacc.recipes.newtonnet.core import freq_job as _freq_job
+from quacc.recipes.newtonnet.core import relax_job
 from quacc.schemas.ase import summarize_opt_run
 from quacc.utils.calc import run_ase_opt
 from quacc.utils.dicts import merge_dicts
 from quacc.utils.wflows import fetch_atoms
 
+try:
+    from sella import IRC, Sella
+except ImportError:
+    Sella = None
+
+try:
+    from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
+except ImportError:
+    NewtonNet = None
+
 if TYPE_CHECKING:
+    from typing import Literal, TypedDict
+
     import numpy as np
     from ase import Atoms
 
@@ -37,25 +51,14 @@ if TYPE_CHECKING:
         opt: OptSchema
 
 
-try:
-    from sella import IRC, Sella
-except ImportError:
-    Sella = None
-
-try:
-    from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
-except ImportError:
-    NewtonNet = None
-
-
 @job
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
 @requires(Sella, "Sella must be installed. Try pip install quacc[optimizers]")
 def ts_job(
     atoms: Atoms | dict,
     use_custom_hessian: bool = False,
-    temperature: float = 298.15,
-    pressure: float = 1.0,
+    freq_job: callable | None = _freq_job,
+    freq_job_kwargs: dict | None = None,
     calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
     check_convergence: bool = True,
@@ -69,10 +72,6 @@ def ts_job(
         The atoms object representing the system.
     use_custom_hessian
         Whether to use a custom Hessian matrix.
-    temperature
-        The temperature for the frequency calculation in Kelvins.
-    pressure
-        The pressure for the frequency calculation in bar.
     calc_swaps
         Optional swaps for the calculator.
     opt_swaps
@@ -88,6 +87,7 @@ def ts_job(
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
     opt_swaps = opt_swaps or {}
+    freq_job_kwargs = freq_job_kwargs or {}
 
     defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
@@ -125,11 +125,8 @@ def ts_job(
     )
 
     # Run a frequency calculation
-    freq_summary = freq_job.original_func(
-        opt_ts_summary,
-        temperature=temperature,
-        pressure=pressure,
-        calc_swaps=calc_swaps,
+    freq_summary = (
+        freq_job.original_func(opt_ts_summary, **freq_job_kwargs) if freq_job else None
     )
 
     return {
@@ -145,8 +142,8 @@ def ts_job(
 def irc_job(
     atoms: Atoms | dict,
     direction: Literal["forward", "reverse"] = "forward",
-    temperature: float = 298.15,
-    pressure: float = 1.0,
+    freq_job: callable | None = _freq_job,
+    freq_job_kwargs: dict | None = None,
     calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
     check_convergence: bool = False,
@@ -179,6 +176,7 @@ def irc_job(
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
     opt_swaps = opt_swaps or {}
+    freq_job_kwargs = freq_job_kwargs or {}
 
     defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
@@ -216,8 +214,8 @@ def irc_job(
     )
 
     # Run frequency job
-    freq_summary = freq_job.original_func(
-        opt_irc_summary, temperature=temperature, pressure=pressure
+    freq_summary = (
+        freq_job.original_func(opt_irc_summary, **freq_job_kwargs) if freq_job else None
     )
     return {
         "atoms": opt_irc_summary["atoms"],
@@ -232,8 +230,8 @@ def irc_job(
 def quasi_irc_job(
     atoms: Atoms | dict,
     direction: Literal["forward", "reverse"] = "forward",
-    temperature: float = 298.15,
-    pressure: float = 1.0,
+    freq_job: callable | None = _freq_job,
+    freq_job_kwargs: dict | None = None,
     irc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
 ) -> QuasiIRCSchema:
@@ -263,20 +261,20 @@ def quasi_irc_job(
     irc_swaps = irc_swaps or {}
     opt_swaps = opt_swaps or {}
 
-    irc_defaults = {"run_kwargs": {"direction": direction.lower()}, "max_steps": 5}
+    irc_defaults = {"max_steps": 5}
     irc_flags = merge_dicts(irc_defaults, irc_swaps)
 
     # Run IRC
-    irc_summary = irc_job.original_func(atoms, opt_swaps=irc_flags)
+    irc_summary = irc_job.original_func(
+        atoms, direction=direction, opt_swaps=irc_flags, freq_job=None
+    )
 
     # Run opt
     relax_summary = relax_job.original_func(irc_summary, **opt_swaps)
 
     # Run frequency
-    freq_summary = freq_job.original_func(
-        relax_summary,
-        temperature=temperature,
-        pressure=pressure,
+    freq_summary = (
+        freq_job.original_func(relax_summary, **freq_job_kwargs) if freq_job else None
     )
 
     return {

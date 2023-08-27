@@ -3,7 +3,7 @@ Core recipes for the NewtonNet code
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING
 
 from ase.optimize import FIRE
 from ase.vibrations.data import VibrationsData
@@ -21,7 +21,19 @@ from quacc.utils.dicts import merge_dicts
 from quacc.utils.thermo import ideal_gas
 from quacc.utils.wflows import fetch_atoms
 
+try:
+    from sella import Sella
+except ImportError:
+    Sella = None
+
+try:
+    from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
+except ImportError:
+    NewtonNet = None
+
 if TYPE_CHECKING:
+    from typing import TypedDict
+
     import numpy as np
     from ase import Atoms
 
@@ -41,17 +53,6 @@ if TYPE_CHECKING:
 
     class QuasiIRCSchema(IRCSchema):
         opt: OptSchema
-
-
-try:
-    from sella import Sella
-except ImportError:
-    Sella = None
-
-try:
-    from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
-except ImportError:
-    NewtonNet = None
 
 
 @job
