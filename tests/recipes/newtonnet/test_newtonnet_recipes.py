@@ -5,23 +5,15 @@ import numpy as np
 import pytest
 from ase.build import molecule
 from ase.optimize import FIRE
-from monty.shutil import compress_file, decompress_file
 
 from quacc import SETTINGS
-from quacc.recipes.newtonnet.core import (
-    freq_job,
-    irc_job,
-    quasi_irc_job,
-    relax_job,
-    static_job,
-    ts_job,
-)
+from quacc.recipes.newtonnet.core import freq_job, relax_job, static_job
+from quacc.recipes.newtonnet.ts import irc_job, quasi_irc_job, ts_job
 
 try:
     from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
 except ImportError:
     NewtonNet = None
-
 
 try:
     import sella
@@ -71,374 +63,6 @@ def test_relax_job(tmpdir):
     assert output["results"]["energy"] == pytest.approx(-9.517354818364769)
     assert not np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
     assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
-
-
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
-@pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
-    reason="This test suite is for regular function execution only",
-)
-def test_ts_job_with_default_args(tmpdir):
-    tmpdir.chdir()
-
-    # Define test inputs
-    atoms = molecule("H2O")
-
-    # Call the function
-    output = ts_job(atoms)
-
-    # Perform assertions on the result
-    assert isinstance(output, dict)
-    assert "ts" in output
-    assert "thermo" in output
-    assert output["ts"]["results"]["energy"] == pytest.approx(-6.796914263061945)
-    assert output["vib"]["results"]["imag_vib_freqs"][0] == pytest.approx(
-        -2426.7398321816004
-    )
-
-
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
-@pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
-    reason="This test suite is for regular function execution only",
-)
-def test_ts_job_with_custom_hessian(tmpdir):
-    tmpdir.chdir()
-    # Define test inputs
-    atoms = molecule("H2O")
-    use_custom_hessian = True
-    opt_swaps = {"max_steps": 4}
-    # Call the function
-    output = ts_job(
-        atoms,
-        use_custom_hessian=use_custom_hessian,
-        check_convergence=False,
-        opt_swaps=opt_swaps,
-    )
-
-    # Perform assertions on the result
-    assert isinstance(output, dict)
-    assert "ts" in output
-    assert output["ts"]["results"]["energy"] == pytest.approx(-8.855604432470276)
-    assert output["vib"]["results"]["vib_energies"][0] == pytest.approx(
-        0.2256022513686731
-    )
-    assert "thermo" in output
-
-
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
-@pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
-    reason="This test suite is for regular function execution only",
-)
-def test_ts_job_with_custom_optimizer(tmpdir):
-    tmpdir.chdir()
-    # Define test inputs
-    atoms = molecule("H2O")
-    opt_swaps = {"optimizer": FIRE}
-
-    # Call the function
-    output = ts_job(atoms, check_convergence=False, opt_swaps=opt_swaps)
-
-    # Perform assertions on the result
-    assert isinstance(output, dict)
-    assert "ts" in output
-    assert "thermo" in output
-    assert output["ts"]["results"]["energy"] == pytest.approx(-9.51735515322368)
-    assert output["vib"]["results"]["vib_energies"][0] == pytest.approx(
-        0.22679888726664774
-    )
-
-
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
-@pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
-    reason="This test suite is for regular function execution only",
-)
-def test_ts_job_with_custom_optimizer_and_custom_hessian(tmpdir):
-    tmpdir.chdir()
-    # Define test inputs
-    atoms = molecule("H2O")
-    opt_swaps = {"optimizer": FIRE}
-
-    with pytest.raises(ValueError, match="Custom hessian can only be used with Sella."):
-        # Call the function
-        output = ts_job(
-            atoms, check_convergence=False, use_custom_hessian=True, opt_swaps=opt_swaps
-        )
-
-
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
-@pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
-    reason="This test suite is for regular function execution only",
-)
-def test_irc_job_with_default_args(tmpdir):
-    tmpdir.chdir()
-    # Define test inputs
-    atoms = molecule("H2O")
-
-    # Call the function
-    output = irc_job(atoms)
-
-    # Perform assertions on the result
-    assert isinstance(output, dict)
-    assert "irc" in output
-    assert "thermo" in output
-    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["thermo"]["results"]["energy"] == pytest.approx(-9.517354091813969)
-
-
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
-@pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
-    reason="This test suite is for regular function execution only",
-)
-def test_irc_job_with_custom_fmax(tmpdir):
-    tmpdir.chdir()
-    # Define test inputs
-    atoms = molecule("H2O")
-    fmax = 0.001
-
-    # Call the function
-    output = irc_job(atoms, opt_swaps={"fmax": fmax})
-
-    # Perform assertions on the result
-    assert isinstance(output, dict)
-    assert "irc" in output
-    assert "thermo" in output
-    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["thermo"]["results"]["energy"] == pytest.approx(-9.517354091813969)
-
-
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
-@pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
-    reason="This test suite is for regular function execution only",
-)
-def test_irc_job_with_custom_max_steps(tmpdir):
-    tmpdir.chdir()
-    # Define test inputs
-    atoms = molecule("H2O")
-    max_steps = 500
-
-    # Call the function
-    output = irc_job(atoms, opt_swaps={"max_steps": max_steps})
-
-    # Perform assertions on the result
-    assert isinstance(output, dict)
-    assert "irc" in output
-    assert "thermo" in output
-    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["thermo"]["results"]["energy"] == pytest.approx(-9.517354091813969)
-
-
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
-@pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
-    reason="This test suite is for regular function execution only",
-)
-def test_irc_job_with_custom_temperature_and_pressure(tmpdir):
-    tmpdir.chdir()
-    # Define test inputs
-    atoms = molecule("H2O")
-    temperature = 500.0
-    pressure = 10.0
-
-    # Call the function
-    output = irc_job(atoms, temperature=temperature, pressure=pressure)
-
-    # Perform assertions on the result
-    assert isinstance(output, dict)
-    assert "irc" in output
-    assert "thermo" in output
-    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["thermo"]["results"]["energy"] == pytest.approx(-9.517354091813969)
-
-
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
-@pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
-    reason="This test suite is for regular function execution only",
-)
-def test_irc_job_with_check_convergence(tmpdir):
-    tmpdir.chdir()
-    # Define test inputs
-    atoms = molecule("H2O")
-    check_convergence = True
-
-    # Call the function
-    output = irc_job(atoms, check_convergence=check_convergence)
-
-    # Perform assertions on the result
-    assert isinstance(output, dict)
-    assert "irc" in output
-    assert "thermo" in output
-    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["thermo"]["results"]["energy"] == pytest.approx(-9.517354091813969)
-
-
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
-@pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
-    reason="This test suite is for regular function execution only",
-)
-def test_irc_job_with_custom_opt_swaps(tmpdir):
-    tmpdir.chdir()
-    # Define test inputs
-    atoms = molecule("H2O")
-    opt_swaps = {"run_kwargs": {"direction": "reverse"}}
-
-    # Call the function
-    output = irc_job(atoms, opt_swaps=opt_swaps)
-
-    # Perform assertions on the result
-    assert isinstance(output, dict)
-    assert "irc" in output
-    assert "thermo" in output
-    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354965639784)
-    assert output["thermo"]["results"]["energy"] == pytest.approx(-9.517354965639784)
-
-
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
-@pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
-    reason="This test suite is for regular function execution only",
-)
-def test_quasi_irc_job_with_default_args(tmpdir):
-    tmpdir.chdir()
-    # Define test inputs
-    atoms = molecule("H2O")
-
-    # Call the function
-    output = quasi_irc_job(atoms)
-
-    # Perform assertions on the result
-    assert isinstance(output, dict)
-    assert "irc" in output
-    assert "opt" in output
-    assert "thermo" in output
-    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["opt"]["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["thermo"]["results"]["energy"] == pytest.approx(-9.517354091813969)
-
-
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
-@pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
-    reason="This test suite is for regular function execution only",
-)
-def test_quasi_irc_job_with_custom_direction(tmpdir):
-    tmpdir.chdir()
-    # Define test inputs
-    atoms = molecule("H2O")
-    direction = "reverse"
-
-    # Call the function
-    output = quasi_irc_job(atoms, direction=direction)
-
-    # Perform assertions on the result
-    assert isinstance(output, dict)
-    assert "irc" in output
-    assert "opt" in output
-    assert "thermo" in output
-    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354965639784)
-    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354965639784)
-    assert output["opt"]["results"]["energy"] == pytest.approx(-9.517354965639784)
-    assert output["thermo"]["results"]["energy"] == pytest.approx(-9.517354965639784)
-
-
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
-@pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
-    reason="This test suite is for regular function execution only",
-)
-def test_quasi_irc_job_with_custom_temperature_and_pressure(tmpdir):
-    tmpdir.chdir()
-    # Define test inputs
-    atoms = molecule("H2O")
-    temperature = 500.0
-    pressure = 10.0
-
-    # Call the function
-    output = quasi_irc_job(atoms, temperature=temperature, pressure=pressure)
-
-    # Perform assertions on the result
-    assert isinstance(output, dict)
-    assert "irc" in output
-    assert "opt" in output
-    assert "thermo" in output
-    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["opt"]["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["thermo"]["results"]["energy"] == pytest.approx(-9.517354091813969)
-
-
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
-@pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
-    reason="This test suite is for regular function execution only",
-)
-def test_quasi_irc_job_with_custom_irc_swaps(tmpdir):
-    tmpdir.chdir()
-    # Define test inputs
-    atoms = molecule("H2O")
-    irc_swaps = {
-        "run_kwargs": {"direction": "reverse"},
-    }
-
-    # Call the function
-    output = quasi_irc_job(atoms, irc_swaps=irc_swaps)
-
-    # Perform assertions on the result
-    assert isinstance(output, dict)
-    assert "irc" in output
-    assert "opt" in output
-    assert "thermo" in output
-    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354965639784)
-    assert output["opt"]["results"]["energy"] == pytest.approx(-9.517354965639784)
-    assert output["thermo"]["results"]["energy"] == pytest.approx(-9.517354965639784)
 
 
 @pytest.mark.skipif(
@@ -499,3 +123,394 @@ def test_freq_job(tmpdir):
         [-761.5004719152678]
     )
     assert output["thermo"]["atoms"] == molecule("CH3")
+
+
+@pytest.mark.skipif(
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
+)
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
+def test_ts_job_with_default_args(tmpdir):
+    tmpdir.chdir()
+
+    # Define test inputs
+    atoms = molecule("H2O")
+
+    # Call the function
+    output = ts_job(atoms)
+
+    # Perform assertions on the result
+    assert isinstance(output, dict)
+    assert "ts" in output
+    assert "freq" in output
+    assert "thermo" in output["freq"]
+    assert output["ts"]["results"]["energy"] == pytest.approx(-6.796914263061945)
+    assert output["freq"]["vib"]["results"]["imag_vib_freqs"][0] == pytest.approx(
+        -2426.7398321816004
+    )
+
+
+@pytest.mark.skipif(
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
+)
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
+def test_ts_job_with_custom_hessian(tmpdir):
+    tmpdir.chdir()
+    # Define test inputs
+    atoms = molecule("H2O")
+    use_custom_hessian = True
+    opt_swaps = {"max_steps": 4}
+    # Call the function
+    output = ts_job(
+        atoms,
+        use_custom_hessian=use_custom_hessian,
+        check_convergence=False,
+        opt_swaps=opt_swaps,
+    )
+
+    # Perform assertions on the result
+    assert isinstance(output, dict)
+    assert "ts" in output
+    assert output["ts"]["results"]["energy"] == pytest.approx(-8.855604432470276)
+    assert output["freq"]["vib"]["results"]["vib_energies"][0] == pytest.approx(
+        0.2256022513686731
+    )
+    assert "thermo" in output["freq"]
+
+
+@pytest.mark.skipif(
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
+)
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
+def test_ts_job_with_custom_optimizer(tmpdir):
+    tmpdir.chdir()
+    # Define test inputs
+    atoms = molecule("H2O")
+    opt_swaps = {"optimizer": FIRE}
+
+    # Call the function
+    output = ts_job(atoms, check_convergence=False, opt_swaps=opt_swaps)
+
+    # Perform assertions on the result
+    assert isinstance(output, dict)
+    assert "ts" in output
+    assert "thermo" in output["freq"]
+    assert output["ts"]["results"]["energy"] == pytest.approx(-9.51735515322368)
+    assert output["freq"]["vib"]["results"]["vib_energies"][0] == pytest.approx(
+        0.22679888726664774
+    )
+
+
+@pytest.mark.skipif(
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
+)
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
+def test_ts_job_with_custom_optimizer_and_custom_hessian(tmpdir):
+    tmpdir.chdir()
+    # Define test inputs
+    atoms = molecule("H2O")
+    opt_swaps = {"optimizer": FIRE}
+
+    with pytest.raises(ValueError, match="Custom hessian can only be used with Sella."):
+        # Call the function
+        ts_job(
+            atoms, check_convergence=False, use_custom_hessian=True, opt_swaps=opt_swaps
+        )
+
+
+@pytest.mark.skipif(
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
+)
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
+def test_irc_job_with_default_args(tmpdir):
+    tmpdir.chdir()
+    # Define test inputs
+    atoms = molecule("H2O")
+
+    # Call the function
+    output = irc_job(atoms)
+
+    # Perform assertions on the result
+    assert isinstance(output, dict)
+    assert "irc" in output
+    assert "vib" in output["freq"]
+    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
+    assert output["freq"]["thermo"]["results"]["energy"] == pytest.approx(
+        -9.517354091813969
+    )
+
+
+@pytest.mark.skipif(
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
+)
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
+def test_irc_job_with_custom_fmax(tmpdir):
+    tmpdir.chdir()
+    # Define test inputs
+    atoms = molecule("H2O")
+    fmax = 0.001
+
+    # Call the function
+    output = irc_job(atoms, opt_swaps={"fmax": fmax})
+
+    # Perform assertions on the result
+    assert isinstance(output, dict)
+    assert "irc" in output
+    assert "vib" in output["freq"]
+    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
+    assert output["freq"]["thermo"]["results"]["energy"] == pytest.approx(
+        -9.517354091813969
+    )
+
+
+@pytest.mark.skipif(
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
+)
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
+def test_irc_job_with_custom_max_steps(tmpdir):
+    tmpdir.chdir()
+    # Define test inputs
+    atoms = molecule("H2O")
+    max_steps = 500
+
+    # Call the function
+    output = irc_job(atoms, opt_swaps={"max_steps": max_steps})
+
+    # Perform assertions on the result
+    assert isinstance(output, dict)
+    assert "irc" in output
+    assert "vib" in output["freq"]
+    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
+    assert output["freq"]["thermo"]["results"]["energy"] == pytest.approx(
+        -9.517354091813969
+    )
+
+
+@pytest.mark.skipif(
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
+)
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
+def test_irc_job_with_custom_temperature_and_pressure(tmpdir):
+    tmpdir.chdir()
+    # Define test inputs
+    atoms = molecule("H2O")
+    temperature = 500.0
+    pressure = 10.0
+
+    # Call the function
+    output = irc_job(
+        atoms, freq_job_kwargs={"temperature": temperature, "pressure": pressure}
+    )
+
+    # Perform assertions on the result
+    assert isinstance(output, dict)
+    assert "irc" in output
+    assert "vib" in output["freq"]
+    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
+    assert output["freq"]["thermo"]["results"]["energy"] == pytest.approx(
+        -9.517354091813969
+    )
+
+
+@pytest.mark.skipif(
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
+)
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
+def test_irc_job_with_check_convergence(tmpdir):
+    tmpdir.chdir()
+    # Define test inputs
+    atoms = molecule("H2O")
+    check_convergence = True
+
+    # Call the function
+    output = irc_job(atoms, check_convergence=check_convergence)
+
+    # Perform assertions on the result
+    assert isinstance(output, dict)
+    assert "irc" in output
+    assert "vib" in output["freq"]
+    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
+    assert output["freq"]["thermo"]["results"]["energy"] == pytest.approx(
+        -9.517354091813969
+    )
+
+
+@pytest.mark.skipif(
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
+)
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
+def test_irc_job_with_custom_opt_swaps(tmpdir):
+    tmpdir.chdir()
+    # Define test inputs
+    atoms = molecule("H2O")
+    opt_swaps = {"run_kwargs": {"direction": "reverse"}}
+
+    # Call the function
+    output = irc_job(atoms, opt_swaps=opt_swaps)
+
+    # Perform assertions on the result
+    assert isinstance(output, dict)
+    assert "irc" in output
+    assert "vib" in output["freq"]
+    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354965639784)
+    assert output["freq"]["thermo"]["results"]["energy"] == pytest.approx(
+        -9.517354965639784
+    )
+
+
+@pytest.mark.skipif(
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
+)
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
+def test_quasi_irc_job_with_default_args(tmpdir):
+    tmpdir.chdir()
+    # Define test inputs
+    atoms = molecule("H2O")
+
+    # Call the function
+    output = quasi_irc_job(atoms)
+
+    # Perform assertions on the result
+    assert isinstance(output, dict)
+    assert "irc" in output
+    assert "opt" in output
+    assert "vib" in output["freq"]
+    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
+    assert output["opt"]["results"]["energy"] == pytest.approx(-9.517354091813969)
+    assert output["freq"]["thermo"]["results"]["energy"] == pytest.approx(
+        -9.517354091813969
+    )
+
+
+@pytest.mark.skipif(
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
+)
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
+def test_quasi_irc_job_with_custom_direction(tmpdir):
+    tmpdir.chdir()
+    # Define test inputs
+    atoms = molecule("H2O")
+    direction = "reverse"
+
+    # Call the function
+    output = quasi_irc_job(atoms, direction=direction)
+
+    # Perform assertions on the result
+    assert isinstance(output, dict)
+    assert "irc" in output
+    assert "opt" in output
+    assert "vib" in output["freq"]
+    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354965639784)
+    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354965639784)
+    assert output["opt"]["results"]["energy"] == pytest.approx(-9.517354965639784)
+    assert output["freq"]["thermo"]["results"]["energy"] == pytest.approx(
+        -9.517354965639784
+    )
+
+
+@pytest.mark.skipif(
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
+)
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
+def test_quasi_irc_job_with_custom_temperature_and_pressure(tmpdir):
+    tmpdir.chdir()
+    # Define test inputs
+    atoms = molecule("H2O")
+    temperature = 500.0
+    pressure = 10.0
+
+    # Call the function
+    output = quasi_irc_job(atoms, temperature=temperature, pressure=pressure)
+
+    # Perform assertions on the result
+    assert isinstance(output, dict)
+    assert "irc" in output
+    assert "opt" in output
+    assert "vib" in output["freq"]
+    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
+    assert output["opt"]["results"]["energy"] == pytest.approx(-9.517354091813969)
+    assert output["freq"]["thermo"]["results"]["energy"] == pytest.approx(
+        -9.517354091813969
+    )
+
+
+@pytest.mark.skipif(
+    NewtonNet is None or sella is None,
+    reason="NewtonNet and Sella must be installed.",
+)
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
+def test_quasi_irc_job_with_custom_irc_swaps(tmpdir):
+    tmpdir.chdir()
+    # Define test inputs
+    atoms = molecule("H2O")
+    irc_swaps = {
+        "run_kwargs": {"direction": "reverse"},
+    }
+
+    # Call the function
+    output = quasi_irc_job(atoms, irc_swaps=irc_swaps)
+
+    # Perform assertions on the result
+    assert isinstance(output, dict)
+    assert "irc" in output
+    assert "opt" in output
+    assert "vib" in output["freq"]
+    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354965639784)
+    assert output["opt"]["results"]["energy"] == pytest.approx(-9.517354965639784)
+    assert output["freq"]["thermo"]["results"]["energy"] == pytest.approx(
+        -9.517354965639784
+    )
