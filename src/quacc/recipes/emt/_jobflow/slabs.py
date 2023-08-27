@@ -6,7 +6,8 @@ from typing import TYPE_CHECKING
 from jobflow import Flow, Response
 
 from quacc import job
-from quacc.recipes.emt.core import relax_job, static_job
+from quacc.recipes.emt.core import relax_job as _relax_job
+from quacc.recipes.emt.core import static_job as _static_job
 from quacc.utils.slabs import make_max_slabs_from_bulk
 from quacc.utils.wflows import fetch_atoms
 
@@ -19,8 +20,8 @@ if TYPE_CHECKING:
 def bulk_to_slabs_flow(
     atoms: Atoms | dict,
     make_slabs_kwargs: dict | None = None,
-    slab_relax: Job = relax_job,
-    slab_static: Job | None = static_job,
+    slab_relax: Job = _relax_job,
+    slab_static: Job | None = _static_job,
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
 ) -> Response:
