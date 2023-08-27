@@ -36,11 +36,6 @@ def job(_func: callable | None = None, **kwargs) -> callable:
         if not decorator_kwargs:
             decorator_kwargs = kwargs or {}
 
-        if f_args:
-            f_args = list(f_args)
-            f_args[0] = fetch_atoms(f_args[0])
-            f_args = tuple(f_args)
-
         wflow_engine = (
             SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
         )
@@ -91,11 +86,6 @@ def flow(_func: callable | None = None, **kwargs) -> callable:
         if not decorator_kwargs:
             decorator_kwargs = kwargs or {}
 
-        if f_args:
-            f_args = list(f_args)
-            f_args[0] = fetch_atoms(f_args[0])
-            f_args = tuple(f_args)
-
         wflow_engine = (
             SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
         )
@@ -134,11 +124,6 @@ def subflow(_func: callable | None = None, **kwargs) -> callable:
     @functools.wraps(_func)
     def _inner(*f_args, decorator_kwargs: dict | None = None, **f_kwargs) -> Any:
         from quacc import SETTINGS
-
-        if f_args:
-            f_args = list(f_args)
-            f_args[0] = fetch_atoms(f_args[0])
-            f_args = tuple(f_args)
 
         wflow_engine = (
             SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
