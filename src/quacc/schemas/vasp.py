@@ -21,8 +21,7 @@ from quacc.utils.files import copy_decompress
 if TYPE_CHECKING:
     from ase import Atoms
 
-
-VaspSchema = TypeVar("VaspSchema")
+    VaspSchema = TypeVar("VaspSchema")
 
 
 def summarize_run(
