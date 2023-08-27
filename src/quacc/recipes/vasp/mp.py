@@ -104,8 +104,8 @@ def mp_relax_job(
 @job
 def mp_relax_flow(
     atoms: Atoms | dict,
-    prerelax: callable | None = mp_prerelax_job,
-    relax: callable | None = mp_relax_job,
+    prerelax: callable = mp_prerelax_job,
+    relax: callable = mp_relax_job,
     prerelax_kwargs: dict | None = None,
     relax_kwargs: dict | None = None,
 ) -> MPRelaxFlowSchema:

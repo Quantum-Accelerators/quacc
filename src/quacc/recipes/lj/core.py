@@ -147,8 +147,8 @@ def freq_job(
 
     atoms.calc = LennardJones(**calc_swaps)
     vibrations = run_ase_vib(atoms, vib_kwargs=vib_kwargs, copy_files=copy_files)
-    vib_summary = (
-        summarize_vib_run(vibrations, additional_fields={"name": "LJ Vibrations"}),
+    vib_summary = summarize_vib_run(
+        vibrations, additional_fields={"name": "LJ Vibrations"}
     )
 
     igt = ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)
