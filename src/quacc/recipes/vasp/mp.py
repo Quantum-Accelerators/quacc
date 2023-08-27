@@ -6,7 +6,7 @@ Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -18,15 +18,16 @@ from quacc.utils.dicts import merge_dicts
 from quacc.utils.wflows import fetch_atoms
 
 if TYPE_CHECKING:
+    from typing import TypedDict
+
     from ase import Atoms
 
     from quacc.schemas.vasp import VaspSchema
 
-
-class MPRelaxFlowSchema(TypedDict):
-    prerelax: VaspSchema
-    relax: VaspSchema
-    atoms: Atoms
+    class MPRelaxFlowSchema(TypedDict):
+        prerelax: VaspSchema
+        relax: VaspSchema
+        atoms: Atoms
 
 
 @job
@@ -141,7 +142,7 @@ def mp_relax_flow(
     relax_kwargs = relax_kwargs or {}
 
     # Run the prerelax
-    prerelax_results = prerelax.original_func(atoms, **prerelax_kwargs)
+    prerelax_results = prerelax.undecorated(atoms, **prerelax_kwargs)
 
     # Update KSPACING arguments
     bandgap = prerelax_results["output"].get("bandgap", 0)
@@ -155,7 +156,7 @@ def mp_relax_flow(
     relax_kwargs["calc_swaps"] = kspacing_swaps | relax_kwargs.get("calc_swaps", {})
 
     # Run the relax
-    relax_results = relax.original_func(
+    relax_results = relax.undecorated(
         prerelax_results, copy_files=["WAVECAR"], **relax_kwargs
     )
 

@@ -28,8 +28,7 @@ from quacc.utils.files import find_recent_logfile, get_uri
 if TYPE_CHECKING:
     from ase import Atoms
 
-
-cclibSchema = TypeVar("cclibSchema")
+    cclibSchema = TypeVar("cclibSchema")
 
 
 def summarize_run(

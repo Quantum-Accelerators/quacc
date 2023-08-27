@@ -41,13 +41,8 @@ jobs:
         run: pytest --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        run: |
-          export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli --verbose create-commit --fail-on-error
-          codecovcli --verbose create-report --fail-on-error
-          codecovcli --verbose do-upload --fail-on-error
+        uses: codecov/codecov-action@v3
+        if: github.repository == 'Quantum-Accelerators/quacc'
 
   tests-tblite:
     strategy:
@@ -78,13 +73,8 @@ jobs:
         run: pytest -k 'tblite' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        run: |
-          export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli --verbose create-commit --fail-on-error
-          codecovcli --verbose create-report --fail-on-error
-          codecovcli --verbose do-upload --fail-on-error
+        uses: codecov/codecov-action@v3
+        if: github.repository == 'Quantum-Accelerators/quacc'
 
   tests-psi4:
     strategy:
@@ -126,13 +116,8 @@ jobs:
         run: pytest -k 'psi4' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        run: |
-          export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli --verbose create-commit --fail-on-error
-          codecovcli --verbose create-report --fail-on-error
-          codecovcli --verbose do-upload --fail-on-error
+        uses: codecov/codecov-action@v3
+        if: github.repository == 'Quantum-Accelerators/quacc'
 
   tests-dftbplus:
     strategy:
@@ -172,13 +157,8 @@ jobs:
         run: pytest -k 'dftb' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        run: |
-          export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli --verbose create-commit --fail-on-error
-          codecovcli --verbose create-report --fail-on-error
-          codecovcli --verbose do-upload --fail-on-error
+        uses: codecov/codecov-action@v3
+        if: github.repository == 'Quantum-Accelerators/quacc'
 
   tests-newtonnet:
     strategy:
@@ -216,13 +196,8 @@ jobs:
         run: pytest -k 'newtonnet' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        run: |
-          export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli --verbose create-commit --fail-on-error
-          codecovcli --verbose create-report --fail-on-error
-          codecovcli --verbose do-upload --fail-on-error
+        uses: codecov/codecov-action@v3
+        if: github.repository == 'Quantum-Accelerators/quacc'
 
   tests-covalent:
     runs-on: ubuntu-latest
@@ -263,13 +238,8 @@ jobs:
         run: covalent stop
 
       - name: Upload coverage to Codecov
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        run: |
-          export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli --verbose create-commit --fail-on-error
-          codecovcli --verbose create-report --fail-on-error
-          codecovcli --verbose do-upload --fail-on-error
+        uses: codecov/codecov-action@v3
+        if: github.repository == 'Quantum-Accelerators/quacc'
 
   tests-parsl:
     runs-on: ubuntu-latest
@@ -304,13 +274,8 @@ jobs:
         run: pytest -k 'parsl' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        run: |
-          export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli --verbose create-commit --fail-on-error
-          codecovcli --verbose create-report --fail-on-error
-          codecovcli --verbose do-upload --fail-on-error
+        uses: codecov/codecov-action@v3
+        if: github.repository == 'Quantum-Accelerators/quacc'
 
   tests-jobflow:
     runs-on: ubuntu-latest
@@ -345,10 +310,5 @@ jobs:
         run: pytest -k 'jobflow or fireworks' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        run: |
-          export GITHUB_HEAD_REF=$GITHUB_REF
-          codecovcli --verbose create-commit --fail-on-error
-          codecovcli --verbose create-report --fail-on-error
-          codecovcli --verbose do-upload --fail-on-error
+        uses: codecov/codecov-action@v3
+        if: github.repository == 'Quantum-Accelerators/quacc'

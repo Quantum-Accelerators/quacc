@@ -3,7 +3,7 @@ Core recipes for the NewtonNet code
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 from ase.optimize import FIRE
 from ase.vibrations.data import VibrationsData
@@ -13,21 +13,13 @@ from quacc import SETTINGS, job
 from quacc.schemas.ase import (
     summarize_opt_run,
     summarize_run,
-    summarize_thermo_run,
+    summarize_thermo,
     summarize_vib_run,
 )
 from quacc.utils.calc import run_ase_opt, run_calc
 from quacc.utils.dicts import merge_dicts
 from quacc.utils.thermo import ideal_gas
 from quacc.utils.wflows import fetch_atoms
-
-if TYPE_CHECKING:
-    import numpy as np
-    from ase import Atoms
-    from ase.optimize.optimize import Optimizer
-
-    from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
-
 
 try:
     from sella import IRC, Sella
@@ -38,6 +30,15 @@ try:
     from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
 except ImportError:
     NewtonNet = None
+
+if TYPE_CHECKING:
+    from typing import Literal
+
+    import numpy as np
+    from ase import Atoms
+    from ase.optimize.optimize import Optimizer
+
+    from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
 
 
 @job
@@ -182,7 +183,7 @@ def freq_job(
         "vib": summarize_vib_run(
             vib, additional_fields={"name": "NewtonNet Vibrations"}
         ),
-        "thermo": summarize_thermo_run(
+        "thermo": summarize_thermo(
             igt,
             temperature=temperature,
             pressure=pressure,
@@ -344,7 +345,7 @@ def irc_job(
     summary_irc = _add_stdev_and_hess(summary_irc)
 
     # Run frequency job
-    thermo_summary = freq_job.original_func(
+    thermo_summary = freq_job.undecorated(
         summary_irc, temperature=temperature, pressure=pressure
     )
     return {"irc": summary_irc, "thermo": thermo_summary}
@@ -395,10 +396,10 @@ def quasi_irc_job(
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
     # Run IRC
-    irc_summary = irc_job.original_func(atoms, max_steps=5, opt_swaps=irc_flags)
+    irc_summary = irc_job.undecorated(atoms, max_steps=5, opt_swaps=irc_flags)
 
     # Run opt
-    opt_summary = relax_job.original_func(irc_summary["irc"], **opt_flags)
+    opt_summary = relax_job.undecorated(irc_summary["irc"], **opt_flags)
 
     # Run frequency
     thermo_summary = freq_job(
