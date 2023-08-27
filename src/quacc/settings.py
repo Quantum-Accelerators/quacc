@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import os
 from shutil import which
-from typing import TYPE_CHECKING, List, Optional, Union
+from typing import List, Optional, Union
 
 from pydantic import BaseSettings, Field, root_validator
 
