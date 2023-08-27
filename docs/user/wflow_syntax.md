@@ -57,17 +57,17 @@ graph LR
     from quacc import flow, job
 
 
-    @job  # (1)!
+    @job # @ct.electron  # (1)!
     def add(a, b):
         return a + b
 
 
-    @job
+    @job # @ct.electron
     def mult(a, b):
         return a * b
 
 
-    @flow  # (2)!
+    @flow # @ct.lattice  # (2)!
     def workflow(a, b, c):
         return mult(add(a, b), c)
 
@@ -108,12 +108,12 @@ graph LR
     from quacc import job
 
 
-    @job  # (1)!
+    @job # @python_app  # (1)!
     def add(a, b):
         return a + b
 
 
-    @job
+    @job # @python_app
     def mult(a, b):
         return a * b
 
@@ -145,12 +145,12 @@ graph LR
     from quacc import job
 
 
-    @job  # (1)!
+    @job # @jf.job  # (1)!
     def add(a, b):
         return a + b
 
 
-    @job
+    @job # @jf.job
     def mult(a, b):
         return a * b
 
@@ -195,22 +195,22 @@ graph LR
     from quacc import flow, job, subflow
 
 
-    @job
+    @job # @ct.electron
     def add(a, b):
         return a + b
 
 
-    @job
+    @job # @ct.electron
     def make_more(val):
         return [val] * random.randint(2, 5)
 
 
-    @subflow  # (1)!
+    @subflow # @ct.electron(@ct.lattice)  # (1)!
     def add_distributed(vals, c):
         return [add(val, c) for val in vals]
 
 
-    @flow
+    @flow # @ct.lattice
     def workflow(a, b, c):
         result1 = add(a, b)
         result2 = make_more(result1)
@@ -233,19 +233,19 @@ graph LR
     from quacc import job, subflow
 
 
-    @job
+    @job # @python_app
     def add(a, b):
         return a + b
 
 
-    @job
+    @job # @python_app
     def make_more(val):
         import random
 
         return [val] * random.randint(2, 5)
 
 
-    @subflow  # (1)!
+    @subflow # @join_app  # (1)!
     def add_distributed(vals, c):
         return [add(val, c) for val in vals]
 
@@ -268,17 +268,17 @@ graph LR
     from quacc import job
 
 
-    @job
+    @job # @jf.job
     def add(a, b):
         return a + b
 
 
-    @job
+    @job # @jf.job
     def make_more(val):
         return [val] * random.randint(2, 5)
 
 
-    @job
+    @job # @jf.job
     def add_distributed(vals, c):
         jobs = []
         for val in vals:
