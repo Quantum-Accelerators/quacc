@@ -320,7 +320,7 @@ def copy_atoms(atoms: Atoms) -> Atoms:
         atoms.calc = calc
 
     return atoms
- 
+
 
 def check_charge_and_spin(
     atoms: Atoms,
