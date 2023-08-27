@@ -24,7 +24,7 @@ except ImportError:
     TBLite = None
 
 if TYPE_CHECKING:
-    from typing import Literal, TypedDict
+    from typing import Literal
 
     from ase import Atoms
 

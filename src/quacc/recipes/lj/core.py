@@ -23,8 +23,6 @@ from quacc.utils.thermo import ideal_gas
 from quacc.utils.wflows import fetch_atoms
 
 if TYPE_CHECKING:
-    from typing import TypedDict
-
     from ase import Atoms
 
     from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
