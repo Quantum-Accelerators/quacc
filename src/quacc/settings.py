@@ -9,10 +9,6 @@ from pydantic import BaseSettings, Field, root_validator
 
 from quacc.presets import vasp as vasp_defaults
 
-if TYPE_CHECKING:
-    from typing import List, Optional, Union
-
-
 WFLOW_IMPORT = None
 try:
     import covalent
@@ -28,6 +24,9 @@ try:
 
 except ImportError:
     jobflow = None
+
+if TYPE_CHECKING:
+    from typing import List, Optional, Union
 
 
 _DEFAULT_CONFIG_FILE_PATH = os.path.join(os.path.expanduser("~"), ".quacc.yaml")
