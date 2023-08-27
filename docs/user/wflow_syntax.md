@@ -118,11 +118,9 @@ graph LR
         return a * b
 
 
-    def workflow(a, b, c):
-        return mult(add(a, b), c)
-
-
-    result = workflow(1, 2, 3).result()  # 9  (2)!
+    output1 = add(1, 2)
+    output2 = mult(output1, 3)
+    result = output2.result()  # 9  (2)!
     ```
 
     1. The `#!Python @job` decorator will be transformed into `#!Python @python_app`, which tells Parsl to treat the function as a compute job.
