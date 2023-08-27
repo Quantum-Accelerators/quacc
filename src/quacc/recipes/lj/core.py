@@ -5,7 +5,7 @@ NOTE: This set of minimal recipes is mainly for demonstration purposes
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, TypedDict
+from typing import TYPE_CHECKING, TypedDict
 
 from ase.calculators.lj import LennardJones
 from ase.optimize import FIRE
