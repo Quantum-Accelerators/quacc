@@ -57,7 +57,7 @@ graph LR
     from quacc import flow, job
 
 
-    @job # @ct.electron  # (1)!
+    @job # @ct.electron  (1)!
     def add(a, b):
         return a + b
 
@@ -67,7 +67,7 @@ graph LR
         return a * b
 
 
-    @flow # @ct.lattice  # (2)!
+    @flow # @ct.lattice  (2)!
     def workflow(a, b, c):
         return mult(add(a, b), c)
 
@@ -108,7 +108,7 @@ graph LR
     from quacc import job
 
 
-    @job # @python_app  # (1)!
+    @job # @python_app  (1)!
     def add(a, b):
         return a + b
 
@@ -145,7 +145,7 @@ graph LR
     from quacc import job
 
 
-    @job # @jf.job  # (1)!
+    @job # @jf.job  (1)!
     def add(a, b):
         return a + b
 
@@ -205,7 +205,7 @@ graph LR
         return [val] * random.randint(2, 5)
 
 
-    @subflow # @ct.electron(@ct.lattice)  # (1)!
+    @subflow # @ct.electron(@ct.lattice)  (1)!
     def add_distributed(vals, c):
         return [add(val, c) for val in vals]
 
@@ -245,7 +245,7 @@ graph LR
         return [val] * random.randint(2, 5)
 
 
-    @subflow # @join_app  # (1)!
+    @subflow # @join_app  (1)!
     def add_distributed(vals, c):
         return [add(val, c) for val in vals]
 
