@@ -471,7 +471,9 @@ def test_quasi_irc_job_with_custom_temperature_and_pressure(tmpdir):
     pressure = 10.0
 
     # Call the function
-    output = quasi_irc_job(atoms, temperature=temperature, pressure=pressure)
+    output = quasi_irc_job(
+        atoms, freq_job_kwargs={"temperature": temperature, "pressure": pressure}
+    )
 
     # Perform assertions on the result
     assert isinstance(output, dict)
