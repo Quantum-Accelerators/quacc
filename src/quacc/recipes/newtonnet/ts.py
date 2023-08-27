@@ -28,7 +28,7 @@ except ImportError:
     NewtonNet = None
 
 if TYPE_CHECKING:
-    from typing import Literal, TypedDict
+    from typing import Literal
 
     import numpy as np
     from ase import Atoms
@@ -36,21 +36,15 @@ if TYPE_CHECKING:
     from quacc.recipes.newtonnet.core import FreqSchema
     from quacc.schemas.ase import OptSchema
 
-    class TSSchema(TypedDict):
-        ts: OptSchema
+    class TSSchema(OptSchema):
         freq: FreqSchema | None
-        atoms: Atoms
 
-    class IRCSchema(TypedDict):
-        irc: OptSchema
+    class IRCSchema(OptSchema):
         freq: FreqSchema | None
-        atoms: Atoms
 
-    class QuasiIRCSchema(TypedDict):
+    class QuasiIRCSchema(OptSchema):
         irc: IRCSchema
-        opt: OptSchema
         freq: FreqSchema | None
-        atoms: Atoms
 
 
 @job
@@ -130,12 +124,9 @@ def ts_job(
     freq_summary = (
         freq_job.undecorated(opt_ts_summary, **freq_job_kwargs) if freq_job else None
     )
+    opt_ts_summary["freq"] = freq_summary
 
-    return {
-        "atoms": opt_ts_summary["atoms"],
-        "ts": opt_ts_summary,
-        "freq": freq_summary,
-    }
+    return opt_ts_summary
 
 
 @job
@@ -219,11 +210,9 @@ def irc_job(
     freq_summary = (
         freq_job.undecorated(opt_irc_summary, **freq_job_kwargs) if freq_job else None
     )
-    return {
-        "atoms": opt_irc_summary["atoms"],
-        "irc": opt_irc_summary,
-        "freq": freq_summary,
-    }
+    opt_irc_summary["freq"] = freq_summary
+
+    return opt_irc_summary
 
 
 @job
@@ -279,13 +268,10 @@ def quasi_irc_job(
     freq_summary = (
         freq_job.undecorated(relax_summary, **freq_job_kwargs) if freq_job else None
     )
+    relax_summary["freq"] = freq_summary
+    relax_summary["irc"] = irc_summary
 
-    return {
-        "atoms": relax_summary["atoms"],
-        "irc": irc_summary["irc"],
-        "opt": relax_summary,
-        "freq": freq_summary,
-    }
+    return relax_summary
 
 
 def _get_hessian(atoms: Atoms) -> np.ndarray:
