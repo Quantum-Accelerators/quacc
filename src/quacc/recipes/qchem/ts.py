@@ -122,7 +122,6 @@ def ts_job(
         "fmax": 0.01,
         "max_steps": 1000,
         "optimizer": Sella,
-        "optimizer_kwargs": {},
     }
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
     if opt_flags["optimizer"] != Sella:
