@@ -26,10 +26,10 @@ if TYPE_CHECKING:
     from ase.vibrations import Vibrations
     from maggma.core import Store
 
-RunSchema = TypeVar("RunSchema")
-OptSchema = TypeVar("OptSchema")
-VibSchema = TypeVar("VibSchema")
-ThermoSchema = TypeVar("ThermoSchema")
+    RunSchema = TypeVar("RunSchema")
+    OptSchema = TypeVar("OptSchema")
+    VibSchema = TypeVar("VibSchema")
+    ThermoSchema = TypeVar("ThermoSchema")
 
 
 def summarize_run(
