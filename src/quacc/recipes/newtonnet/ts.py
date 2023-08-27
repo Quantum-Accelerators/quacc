@@ -33,18 +33,24 @@ if TYPE_CHECKING:
     import numpy as np
     from ase import Atoms
 
-    from quacc.schemas.ase import OptSchema, ThermoSchema, VibSchema
+    from quacc.recipes.newtonnet.core import FreqSchema
+    from quacc.schemas.ase import OptSchema
 
-    class TSSchema(FreqSchema):
+    class TSSchema(TypedDict):
         ts: OptSchema
+        freq: FreqSchema | None
         atoms: Atoms
 
-    class IRCSchema(FreqSchema):
+    class IRCSchema(TypedDict):
         irc: OptSchema
+        freq: FreqSchema | None
         atoms: Atoms
 
-    class QuasiIRCSchema(IRCSchema):
+    class QuasiIRCSchema(TypedDict):
+        irc: IRCSchema
         opt: OptSchema
+        freq: FreqSchema | None
+        atoms: Atoms
 
 
 @job
@@ -256,6 +262,7 @@ def quasi_irc_job(
     """
     irc_swaps = irc_swaps or {}
     opt_swaps = opt_swaps or {}
+    freq_job_kwargs = freq_job_kwargs or {}
 
     irc_defaults = {"max_steps": 5}
     irc_flags = merge_dicts(irc_defaults, irc_swaps)
