@@ -159,7 +159,7 @@ def subflow(_func: callable | None = None, **kwargs) -> callable:
     return _inner
 
 
-def _fetch_atoms(atoms: Atoms | dict) -> Atoms:
+def fetch_atoms(atoms: Atoms | dict) -> Atoms:
     """
     Returns an Atoms object from a typical quacc recipe input, which can
     either be an `Atoms` object or a dictionary with an entry `{"atoms": Atoms}`.
