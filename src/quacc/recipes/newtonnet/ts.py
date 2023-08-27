@@ -35,10 +35,6 @@ if TYPE_CHECKING:
 
     from quacc.schemas.ase import OptSchema, ThermoSchema, VibSchema
 
-    class FreqSchema(TypedDict):
-        vib: VibSchema
-        thermo: ThermoSchema
-
     class TSSchema(FreqSchema):
         ts: OptSchema
         atoms: Atoms
