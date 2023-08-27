@@ -345,7 +345,7 @@ def irc_job(
     summary_irc = _add_stdev_and_hess(summary_irc)
 
     # Run frequency job
-    thermo_summary = freq_job.undecorated(
+    thermo_summary = freq_job.__wrapped__(
         summary_irc, temperature=temperature, pressure=pressure
     )
     return {"irc": summary_irc, "thermo": thermo_summary}
@@ -396,10 +396,10 @@ def quasi_irc_job(
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
     # Run IRC
-    irc_summary = irc_job.undecorated(atoms, max_steps=5, opt_swaps=irc_flags)
+    irc_summary = irc_job.__wrapped__(atoms, max_steps=5, opt_swaps=irc_flags)
 
     # Run opt
-    opt_summary = relax_job.undecorated(irc_summary["irc"], **opt_flags)
+    opt_summary = relax_job.__wrapped__(irc_summary["irc"], **opt_flags)
 
     # Run frequency
     thermo_summary = freq_job(
