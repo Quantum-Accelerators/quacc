@@ -294,7 +294,7 @@ def test_qmof(tmpdir):
     assert output["parameters"]["laechg"] is True
 
     output = qmof_relax_job(atoms, run_prerelax=False)
-    assert output["prerelax_lowacc"] is None
+    assert output.get("prerelax_lowacc", None) is None
 
     output = qmof_relax_job(atoms, preset="BulkSet", calc_swaps={"nelmin": 6})
     assert output["double_relax"][0]["parameters"]["encut"] == 520
