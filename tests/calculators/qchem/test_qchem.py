@@ -14,13 +14,8 @@ TEST_ATOMS = read(os.path.join(FILE_DIR, "test.xyz"))
 OS_ATOMS = read(os.path.join(FILE_DIR, "OS_test.xyz"))
 
 
-def teardown_module():
-    for f in os.listdir("."):
-        if ".gz" in f:
-            os.remove(f)
-
-
-def test_qchem_write_input_basic():
+def test_qchem_write_input_basic(tmpdir):
+    tmpdir.chdir()
     calc = QChem(TEST_ATOMS, cores=40)
     assert calc.parameters["cores"] == 40
     assert calc.parameters["charge"] is None
@@ -34,8 +29,12 @@ def test_qchem_write_input_basic():
     assert not os.path.exists(os.path.join(FILE_DIR, "53.0"))
     os.remove("mol.qin")
 
+    with pytest.raises(NotImplementedError):
+        QChem(TEST_ATOMS, cores=40, directory="notsupported")
 
-def test_qchem_write_input_intermediate():
+
+def test_qchem_write_input_intermediate(tmpdir):
+    tmpdir.chdir()
     params = {"dft_rung": 3, "basis_set": "def2-svpd", "pcm_dielectric": "3.0"}
     calc = QChem(TEST_ATOMS, cores=40, charge=-1, qchem_input_params=params)
     assert calc.parameters["cores"] == 40
@@ -53,7 +52,8 @@ def test_qchem_write_input_intermediate():
     os.remove("mol.qin")
 
 
-def test_qchem_write_input_advanced():
+def test_qchem_write_input_advanced(tmpdir):
+    tmpdir.chdir()
     params = {
         "scf_algorithm": "gdm",
         "basis_set": "def2-svpd",
@@ -80,7 +80,8 @@ def test_qchem_write_input_advanced():
     os.remove("mol.qin")
 
 
-def test_qchem_write_input_open_shell_and_different_charges():
+def test_qchem_write_input_open_shell_and_different_charges(tmpdir):
+    tmpdir.chdir()
     calc = QChem(OS_ATOMS, cores=40)
     assert calc.parameters["cores"] == 40
     assert calc.parameters["charge"] is None
@@ -148,7 +149,8 @@ def test_qchem_write_input_open_shell_and_different_charges():
     os.remove("mol.qin")
 
 
-def test_qchem_read_results_basic_and_write_53():
+def test_qchem_read_results_basic_and_write_53(tmpdir):
+    tmpdir.chdir()
     calc = QChem(TEST_ATOMS, cores=40)
     os.chdir(os.path.join(FILE_DIR, "examples", "basic"))
     calc.read_results()
@@ -171,7 +173,8 @@ def test_qchem_read_results_basic_and_write_53():
     os.remove("mol.qin")
 
 
-def test_qchem_read_results_intermediate():
+def test_qchem_read_results_intermediate(tmpdir):
+    tmpdir.chdir()
     calc = QChem(TEST_ATOMS, cores=40)
     os.chdir(os.path.join(FILE_DIR, "examples", "intermediate"))
     calc.read_results()
@@ -180,7 +183,8 @@ def test_qchem_read_results_intermediate():
     assert calc.prev_orbital_coeffs is not None
 
 
-def test_qchem_read_results_advanced():
+def test_qchem_read_results_advanced(tmpdir):
+    tmpdir.chdir()
     calc = QChem(TEST_ATOMS, cores=40)
     os.chdir(os.path.join(FILE_DIR, "examples", "advanced"))
     calc.read_results()

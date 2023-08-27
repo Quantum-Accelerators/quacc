@@ -63,6 +63,9 @@ class QChem(FileIOCalculator):
         self.fileiocalculator_kwargs = fileiocalculator_kwargs
 
         # Sanity checks
+        if "directory" in self.fileiocalculator_kwargs:
+            raise NotImplementedError("The directory kwarg is not supported.")
+
         if "overwrite_inputs" not in self.qchem_input_params:
             self.qchem_input_params["overwrite_inputs"] = {}
 
