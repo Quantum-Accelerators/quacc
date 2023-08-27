@@ -282,7 +282,7 @@ def quasi_irc_job(
 
     return {
         "atoms": relax_summary["atoms"],
-        "irc": irc_summary,
+        "irc": irc_summary["irc"],
         "opt": relax_summary,
         "freq": freq_summary,
     }
