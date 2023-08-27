@@ -38,7 +38,7 @@ def job(_func: callable | None = None, **kwargs) -> callable:
 
         if f_args:
             f_args = list(f_args)
-            f_args[0] = _fetch_atoms(f_args[0])
+            f_args[0] = fetch_atoms(f_args[0])
             f_args = tuple(f_args)
 
         wflow_engine = (
@@ -93,7 +93,7 @@ def flow(_func: callable | None = None, **kwargs) -> callable:
 
         if f_args:
             f_args = list(f_args)
-            f_args[0] = _fetch_atoms(f_args[0])
+            f_args[0] = fetch_atoms(f_args[0])
             f_args = tuple(f_args)
 
         wflow_engine = (
@@ -137,7 +137,7 @@ def subflow(_func: callable | None = None, **kwargs) -> callable:
 
         if f_args:
             f_args = list(f_args)
-            f_args[0] = _fetch_atoms(f_args[0])
+            f_args[0] = fetch_atoms(f_args[0])
             f_args = tuple(f_args)
 
         wflow_engine = (
