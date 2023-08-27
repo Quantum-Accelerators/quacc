@@ -118,11 +118,10 @@ graph LR
         return a * b
 
 
-    def workflow(a, b, c):
-        return mult(add(a, b), c)
+    future1 = add(1, 2)
+    future2 = mult(future1, 3)
 
-
-    result = workflow(1, 2, 3).result()  # 9  (2)!
+    result = future2.result()  # 9  (2)!
     ```
 
     1. The `#!Python @job` decorator will be transformed into `#!Python @python_app`, which tells Parsl to treat the function as a compute job.
@@ -251,13 +250,11 @@ graph LR
         return [add(val, c) for val in vals]
 
 
-    def workflow(a, b, c):
-        future1 = add(a, b)
-        future2 = make_more(future1)
-        return add_distributed(future2, c)
+    future1 = add(1, 2)
+    future2 = make_more(future1)
+    future3 = add_distributed(future2, 3)
 
-
-    result = workflow(1, 2, 3).result()  # e.g. [6, 6, 6]
+    result = future3.result()  # e.g. [6, 6, 6]
     ```
 
     1. The `#!Python @subflow` decorator will be transformed into `#!Python @join_app`, which tells Parsl to treat the function as a dynamic, sub-workflow. Calling `#!Python .result()` will wait for all of the jobs to finish before returning the result.

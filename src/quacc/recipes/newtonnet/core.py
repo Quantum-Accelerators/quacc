@@ -13,7 +13,7 @@ from quacc import SETTINGS, job
 from quacc.schemas.ase import (
     summarize_opt_run,
     summarize_run,
-    summarize_thermo_run,
+    summarize_thermo,
     summarize_vib_run,
 )
 from quacc.utils.calc import run_ase_opt, run_calc
@@ -32,28 +32,13 @@ except ImportError:
     NewtonNet = None
 
 if TYPE_CHECKING:
-    from typing import TypedDict
+    from typing import Literal
 
     import numpy as np
     from ase import Atoms
+    from ase.optimize.optimize import Optimizer
 
     from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
-
-    class FreqSchema(TypedDict):
-        vib: VibSchema
-        thermo: ThermoSchema
-
-    class TSSchema(FreqSchema):
-        ts: OptSchema
-        atoms: Atoms
-
-    class IRCSchema(FreqSchema):
-        irc: OptSchema
-        atoms: Atoms
-
-    class QuasiIRCSchema(IRCSchema):
-        opt: OptSchema
-
 
 @job
 @requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
@@ -198,7 +183,7 @@ def freq_job(
         "vib": summarize_vib_run(
             vib, additional_fields={"name": "NewtonNet Vibrations"}
         ),
-        "thermo": summarize_thermo_run(
+        "thermo": summarize_thermo(
             igt,
             temperature=temperature,
             pressure=pressure,
