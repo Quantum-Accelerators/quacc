@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import os
 from shutil import which
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Optional, Union
 
 from pydantic import BaseSettings, Field, root_validator
 
@@ -24,10 +24,6 @@ try:
 
 except ImportError:
     jobflow = None
-
-if TYPE_CHECKING:
-    from typing import List, Optional, Union
-
 
 _DEFAULT_CONFIG_FILE_PATH = os.path.join(os.path.expanduser("~"), ".quacc.yaml")
 
