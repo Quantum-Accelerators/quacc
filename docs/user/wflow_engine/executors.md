@@ -232,6 +232,10 @@ In the previous examples, we have been running calculations on our local machine
 
     4. Sets the maximum number of active blocks (e.g. Slurm jobs) during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 1 here for demonstration purposes, but it can be increased to have multiple Slurm jobpacks running simultaneously.
 
+    **Multiple Executors**
+
+    Parsl supports tying specific executors to a given `PythonApp` by specifying it within the `#!Python @python_app` decorator, as discussed in the [Multi-Executor section](https://parsl.readthedocs.io/en/stable/userguide/execution.html#multi-executor) of the Parsl documentation. In quacc, this means that you can specify `#!Python @job(executors=["MyExecutor"])`. Alternatively, after importing a `#!Python @job`-decorated function (e.g. `my_job`), you can do `#!Python my_job.executors=["MyExecutor"]`.
+
 === "Jobflow"
 
     Out-of-the-box, Jobflow can be used to run on your local machine. You will, however, need a "manager" to run your workflows on HPC machines. The currently recommended manager for Jobflow is FireWorks, which is described here.
