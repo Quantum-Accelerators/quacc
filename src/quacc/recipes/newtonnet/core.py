@@ -13,7 +13,7 @@ from quacc import SETTINGS, job
 from quacc.schemas.ase import (
     summarize_opt_run,
     summarize_run,
-    summarize_thermo_run,
+    summarize_thermo,
     summarize_vib_run,
 )
 from quacc.utils.calc import run_ase_opt, run_calc
@@ -182,7 +182,7 @@ def freq_job(
         "vib": summarize_vib_run(
             vib, additional_fields={"name": "NewtonNet Vibrations"}
         ),
-        "thermo": summarize_thermo_run(
+        "thermo": summarize_thermo(
             igt,
             temperature=temperature,
             pressure=pressure,

@@ -10,7 +10,7 @@ from quacc import job
 from quacc.schemas.ase import (
     summarize_opt_run,
     summarize_run,
-    summarize_thermo_run,
+    summarize_thermo,
     summarize_vib_run,
 )
 from quacc.utils.calc import run_ase_opt, run_ase_vib, run_calc
@@ -156,7 +156,7 @@ def freq_job(
     -------
     dict
         Dictionary of results from quacc.schemas.ase.summarize_vib_run and
-        quacc.schemas.ase.summarize_thermo_run
+        quacc.schemas.ase.summarize_thermo
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
@@ -169,7 +169,7 @@ def freq_job(
     )
 
     igt = ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)
-    vib_summary["thermo"] = summarize_thermo_run(
+    vib_summary["thermo"] = summarize_thermo(
         igt,
         temperature=temperature,
         pressure=pressure,
