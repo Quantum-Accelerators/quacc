@@ -140,6 +140,7 @@ nav:
           - user/recipes/newtonnet.md
           - user/recipes/orca.md
           - user/recipes/psi4.md
+          - user/recipes/qchem.md
           - user/recipes/tblite.md
           - user/recipes/vasp.md
       - user/settings.md
