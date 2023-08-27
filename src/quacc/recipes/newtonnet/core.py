@@ -3,7 +3,7 @@ Core recipes for the NewtonNet code
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 from ase.optimize import FIRE
 from ase.vibrations.data import VibrationsData
@@ -22,6 +22,8 @@ from quacc.utils.thermo import ideal_gas
 from quacc.utils.wflows import fetch_atoms
 
 if TYPE_CHECKING:
+    from typing import Literal
+
     import numpy as np
     from ase import Atoms
     from ase.optimize.optimize import Optimizer

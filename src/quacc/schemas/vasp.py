@@ -4,7 +4,7 @@ from __future__ import annotations
 import os
 import warnings
 from tempfile import TemporaryDirectory
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING
 
 from emmet.core.tasks import TaskDoc
 from maggma.core import Store
@@ -19,6 +19,8 @@ from quacc.utils.dicts import clean_dict
 from quacc.utils.files import copy_decompress
 
 if TYPE_CHECKING:
+    from typing import TypeVar
+
     from ase import Atoms
 
     VaspSchema = TypeVar("VaspSchema")

@@ -1,7 +1,7 @@
 """Schemas for storing metadata about Atoms objects"""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING
 
 import numpy as np
 from ase.atoms import Atom, Atoms
@@ -13,6 +13,8 @@ from quacc.utils.atoms import copy_atoms
 from quacc.utils.dicts import clean_dict
 
 if TYPE_CHECKING:
+    from typing import Any, TypeVar
+
     AtomsSchema = TypeVar("AtomsSchema")
 
 

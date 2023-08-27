@@ -6,7 +6,7 @@ Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -18,6 +18,8 @@ from quacc.utils.dicts import merge_dicts
 from quacc.utils.wflows import fetch_atoms
 
 if TYPE_CHECKING:
+    from typing import TypedDict
+
     from ase import Atoms
 
     from quacc.schemas.vasp import VaspSchema

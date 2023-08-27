@@ -1,7 +1,7 @@
 """Core recipes for the tblite code"""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, TypedDict
+from typing import TYPE_CHECKING
 
 from ase.optimize import FIRE
 from monty.dev import requires
@@ -19,6 +19,8 @@ from quacc.utils.thermo import ideal_gas
 from quacc.utils.wflows import fetch_atoms
 
 if TYPE_CHECKING:
+    from typing import Literal, TypedDict
+
     from ase import Atoms
 
     from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema

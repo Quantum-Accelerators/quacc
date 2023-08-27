@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import os
 import warnings
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING
 
 import numpy as np
 from ase import units
@@ -25,6 +25,7 @@ if TYPE_CHECKING:
     from ase.thermochemistry import IdealGasThermo
     from ase.vibrations import Vibrations
     from maggma.core import Store
+    from tyipng import TypeVar
 
     RunSchema = TypeVar("RunSchema")
     OptSchema = TypeVar("OptSchema")

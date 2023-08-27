@@ -6,7 +6,7 @@ Reference: https://doi.org/10.1016/j.matt.2021.02.015
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING
 
 from ase.optimize import BFGSLineSearch
 
@@ -19,6 +19,8 @@ from quacc.utils.dicts import merge_dicts
 from quacc.utils.wflows import fetch_atoms
 
 if TYPE_CHECKING:
+    from typing import TypedDict
+
     from ase import Atoms
 
     from quacc.schemas.ase import OptSchema

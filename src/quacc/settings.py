@@ -3,11 +3,15 @@ from __future__ import annotations
 
 import os
 from shutil import which
-from typing import List, Optional, Union
+from typing import TYPE_CHECKING
 
 from pydantic import BaseSettings, Field, root_validator
 
 from quacc.presets import vasp as vasp_defaults
+
+if TYPE_CHECKING:
+    from typing import List, Optional, Union
+
 
 WFLOW_IMPORT = None
 try:
