@@ -1,7 +1,7 @@
 """Core recipes for VASP"""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, TypedDict
 
 from quacc import job
 from quacc.calculators.vasp import Vasp
@@ -14,6 +14,12 @@ if TYPE_CHECKING:
     from ase import Atoms
 
     from quacc.schemas.vasp import VaspSchema
+
+
+class DoubleRelaxSchema(TypedDict):
+    relax1: VaspSchema
+    relax2: VaspSchema
+    atoms: Atoms
 
 
 @job
@@ -119,9 +125,9 @@ def double_relax_job(
     calc_swaps1: dict | None = None,
     calc_swaps2: dict | None = None,
     copy_files: list[str] | None = None,
-) -> dict[Literal["relax1", "relax2"], VaspSchema]:
+) -> DoubleRelaxSchema:
     """
-    Double-relax a structure. This is particularly useful for a few reasons:
+    double_relax a structure. This is particularly useful for a few reasons:
 
     1. To carry out a cheaper pre-relaxation before the high-quality run.
 
