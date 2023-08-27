@@ -13,13 +13,8 @@ from pymatgen.io.qchem.inputs import QCInput
 
 from quacc import SETTINGS
 from quacc.calculators.qchem import QChem
-from quacc.recipes.qchem.core import (
-    irc_job,
-    quasi_irc_job,
-    relax_job,
-    static_job,
-    ts_job,
-)
+from quacc.recipes.qchem.core import relax_job, static_job
+from quacc.recipes.qchem.ts import irc_job, quasi_irc_job, ts_job
 
 try:
     import sella
@@ -100,6 +95,7 @@ def mock_execute4(self, **kwargs):
 def mock_read(self, **kwargs):
     if self.results is None:
         raise RuntimeError("Results should not be None here.")
+
 
 @pytest.mark.skipif(
     SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
