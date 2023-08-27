@@ -28,7 +28,7 @@ def job(
     Returns
     -------
     callable
-        The decorated function. The decorated function will have an attribute `original_func`
+        The decorated function. The decorated function will have an attribute `undecorated`
         which is the undecorated function.
     """
 
@@ -55,7 +55,7 @@ def job(
         msg = f"Unknown workflow engine: {wflow_engine}"
         raise ValueError(msg)
 
-    decorated.original_func = _func
+    decorated.undecorated = _func
 
     return decorated
 

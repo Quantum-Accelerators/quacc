@@ -163,7 +163,7 @@ def double_relax_job(
     calc_swaps2 = calc_swaps2 or {}
 
     # Run first relaxation
-    summary1 = relax_job.original_func(
+    summary1 = relax_job.undecorated(
         atoms,
         preset=preset,
         relax_cell=relax_cell,
@@ -172,7 +172,7 @@ def double_relax_job(
     )
 
     # Run second relaxation
-    summary2 = relax_job.original_func(
+    summary2 = relax_job.undecorated(
         summary1,
         preset=preset,
         relax_cell=relax_cell,
