@@ -203,6 +203,8 @@ def relax_job(
     if opt_flags["optimizer"].__name__ == "Sella" and "order" not in opt_flags.get(
         "optimizer_kwargs", {}
     ):
+        if "optimizer_kwargs" not in opt_flags:
+            opt_flags["optimizer_kwargs"] = {}
         opt_flags["optimizer_kwargs"]["order"] = 0
 
     atoms.calc = QChem(atoms, **qchem_flags)
