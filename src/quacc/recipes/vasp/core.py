@@ -11,16 +11,12 @@ from quacc.utils.dicts import merge_dicts
 from quacc.utils.wflows import fetch_atoms
 
 if TYPE_CHECKING:
-    from typing import TypedDict
-
     from ase import Atoms
 
     from quacc.schemas.vasp import VaspSchema
 
-    class DoubleRelaxSchema(TypedDict):
+    class DoubleRelaxSchema(VaspSchema):
         relax1: VaspSchema
-        relax2: VaspSchema
-        atoms: Atoms
 
 
 @job
@@ -180,5 +176,6 @@ def double_relax_job(
         calc_swaps=calc_swaps2,
         copy_files=["WAVECAR"],
     )
+    summary2["relax1"] = summary1
 
-    return {"relax1": summary1, "relax2": summary2, "atoms": summary2["atoms"]}
+    return summary2

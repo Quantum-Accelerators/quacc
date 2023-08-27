@@ -18,16 +18,12 @@ from quacc.utils.dicts import merge_dicts
 from quacc.utils.wflows import fetch_atoms
 
 if TYPE_CHECKING:
-    from typing import TypedDict
-
     from ase import Atoms
 
     from quacc.schemas.vasp import VaspSchema
 
-    class MPRelaxFlowSchema(TypedDict):
+    class MPRelaxFlowSchema(VaspSchema):
         prerelax: VaspSchema
-        relax: VaspSchema
-        atoms: Atoms
 
 
 @job
@@ -159,9 +155,6 @@ def mp_relax_flow(
     relax_results = relax.undecorated(
         prerelax_results, copy_files=["WAVECAR"], **relax_kwargs
     )
+    relax_results["prerelax"] = prerelax_results
 
-    return {
-        "prerelax": prerelax_results,
-        "relax": relax_results,
-        "atoms": relax_results["atoms"],
-    }
+    return relax_results
