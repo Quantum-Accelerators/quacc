@@ -3,29 +3,34 @@ from __future__ import annotations
 
 import os
 import warnings
-from typing import TypeVar
+from typing import TYPE_CHECKING
 
 import numpy as np
 from ase import units
-from ase.atoms import Atoms
 from ase.constraints import Filter
-from ase.io import Trajectory, read
-from ase.optimize.optimize import Optimizer
-from ase.thermochemistry import IdealGasThermo
-from ase.vibrations import Vibrations
-from atomate2.utils.path import get_uri
-from maggma.core import Store
+from ase.io import read
+from ase.vibrations.data import VibrationsData
 
 from quacc import SETTINGS
 from quacc.schemas.atoms import atoms_to_metadata
-from quacc.util.atoms import prep_next_run as prep_next_run_
-from quacc.util.db import results_to_db
-from quacc.util.dicts import clean_dict
+from quacc.utils.atoms import prep_next_run as prep_next_run_
+from quacc.utils.db import results_to_db
+from quacc.utils.dicts import clean_dict
+from quacc.utils.files import get_uri
 
-RunSchema = TypeVar("RunSchema")
-OptSchema = TypeVar("OptSchema")
-VibSchema = TypeVar("VibSchema")
-ThermoSchema = TypeVar("ThermoSchema")
+if TYPE_CHECKING:
+    from ase import Atoms
+    from ase.io import Trajectory
+    from ase.optimize.optimize import Optimizer
+    from ase.thermochemistry import IdealGasThermo
+    from ase.vibrations import Vibrations
+    from maggma.core import Store
+    from tyipng import TypeVar
+
+    RunSchema = TypeVar("RunSchema")
+    OptSchema = TypeVar("OptSchema")
+    VibSchema = TypeVar("VibSchema")
+    ThermoSchema = TypeVar("ThermoSchema")
 
 
 def summarize_run(
@@ -73,24 +78,29 @@ def summarize_run(
             - builder_meta.pymatgen_version: str = Field(pmg_version, description="The version of pymatgen this document was built with.")
             - builder_meta.pull_request: int = Field(None, description="The pull request number associated with this data build.")
         - dir_name: str = Field(None, description="Directory where the output is parsed")
-        - input_structure: Molecule | Structure = Field(None, title = "The Pymatgen Structure or Molecule object from the input Atoms object if input_atoms is not None.")
+        - input_structure: Molecule | Structure = Field(None, title = "The Pymatgen Structure or Molecule object from
+         the input Atoms object if input_atoms is not None.")
         - nid: str = Field(None, title = "The node ID representing the machine where the calculation was run.")
         - parameters: dict = Field(None, title = "the parameters used to run the calculation.")
         - results: dict = Field(None, title = "The results from the calculation.")
 
         For periodic structures, the task document also has the following fields:
-
         - chemsys: str = Field(None, title="Chemical System", description="dash-delimited string of elements in the material.")
         - composition: Composition = Field(None, description="Full composition for the material.")
-        - composition_reduced: Composition = Field(None, title="Reduced Composition", description="Simplified representation of the composition.")
+        - composition_reduced: Composition = Field(None, title="Reduced Composition", description="Simplified
+         representation of the composition.")
         - density: float = Field(None, title="Density", description="Density in grams per cm^3.")
-        - density_atomic: float = Field(None, title="Packing Density", description="The atomic packing density in atoms per cm^3.")
+        - density_atomic: float = Field(None, title="Packing Density", description="The atomic packing density in
+         atoms per cm^3.")
         - elements: List[Element] = Field(None, description="List of elements in the material.")
-        - formula_anonymous: str = Field(None, title="Anonymous Formula", description="Anonymized representation of the formula.")
-        - formula_pretty: str = Field(None, title="Pretty Formula", description="Cleaned representation of the formula.")
+        - formula_anonymous: str = Field(None, title="Anonymous Formula", description="Anonymized representation
+         of the formula.")
+        - formula_pretty: str = Field(None, title="Pretty Formula", description="Cleaned representation of the
+         formula.")
         - nelements: int = Field(None, description="Number of elements.")
         - nsites: int = Field(None, description="Total number of sites in the structure.")
-        - structure: Structure = Field(None, title = "The Pymatgen Structure object from the Atoms object, if periodic and store_pmg is True.")
+        - structure: Structure = Field(None, title = "The Pymatgen Structure object from the Atoms object, if
+         periodic and store_pmg is True.")
         - symmetry: SymmetryData = Field(None, description="Symmetry data for this material.")
             - symmetry.crystal_system: CrystalSystem = Field(None, title="Crystal System", description="The crystal system for this lattice.")
             - symmetry.number: int = Field(None, title="Space Group Number", description="The spacegroup number for the lattice.")
@@ -102,16 +112,23 @@ def summarize_run(
         For molecules that lack periodicity, the task document also has the following fields:
 
         - charge: int = Field(None, description="Charge of the molecule")
-        - chemsys: str = Field(None, title="Chemical System", description="dash-delimited string of elements in the molecule")
+        - chemsys: str = Field(None, title="Chemical System", description="dash-delimited string of elements in the
+         molecule")
         - composition: Composition = Field(None, description="Full composition for the molecule")
-        - composition_reduced: Composition = Field(None, title="Reduced Composition", description="Simplified representation of the composition")
+        - composition_reduced: Composition = Field(None, title="Reduced Composition", description="Simplified
+         representation of the composition")
         - elements: List[Element] = Field(None, description="List of elements in the molecule")
-        - formula_alphabetical: str = Field(None, title="Alphabetical Formula", description="Alphabetical molecular formula")
-        - formula_anonymous: str = Field(None, title="Anonymous Formula", description="Anonymized representation of the formula")
-        - formula_pretty: str = Field(None, title="Pretty Formula", description="Cleaned representation of the formula.")
-        - molecule: Molecule = Field(None, title = "The Pymatgen Molecule object from the Atoms object, if not periodic and store_pmg is True.")
+        - formula_alphabetical: str = Field(None, title="Alphabetical Formula", description="Alphabetical molecular
+         formula")
+        - formula_anonymous: str = Field(None, title="Anonymous Formula", description="Anonymized representation of
+         the formula")
+        - formula_pretty: str = Field(None, title="Pretty Formula", description="Cleaned representation of the
+         formula.")
+        - molecule: Molecule = Field(None, title = "The Pymatgen Molecule object from the Atoms object, if not
+         periodic and store_pmg is True.")
         - natoms: int = Field(None, description="Total number of atoms in the molecule")
-        - nelectrons: int = Field(None, title="Number of electrons", description="The total number of electrons for the molecule")
+        - nelectrons: int = Field(None, title="Number of electrons", description="The total number of electrons
+         for the molecule")
         - nelements: int = Field(None, title="Number of Elements")
         - spin_multiplicity: int = Field(None, description="Spin multiplicity of the molecule")
         - symmetry: PointGroupData = Field(None, description="Symmetry data for this molecule")
@@ -124,9 +141,11 @@ def summarize_run(
     """
     # Make sure there is a calculator with results
     if not atoms.calc:
-        raise ValueError("ASE Atoms object has no attached calculator.")
+        msg = "ASE Atoms object has no attached calculator."
+        raise ValueError(msg)
     if not atoms.calc.results:
-        raise ValueError("ASE Atoms object's calculator has no results.")
+        msg = "ASE Atoms object's calculator has no results."
+        raise ValueError(msg)
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
     additional_fields = additional_fields or {}
@@ -170,7 +189,7 @@ def summarize_run(
 def summarize_opt_run(
     dyn: Optimizer,
     trajectory: Trajectory | list[Atoms] = None,
-    check_convergence: bool = True,
+    check_convergence: bool | None = None,
     charge_and_multiplicity: tuple[int, int] | None = None,
     prep_next_run: bool = True,
     remove_empties: bool = False,
@@ -189,7 +208,7 @@ def summarize_opt_run(
         ASE Trajectory object or list[Atoms] from reading a trajectory file.
         If None, the trajectory must be found in dyn.traj_atoms.
     check_convergence
-        Whether to check the convergence of the calculation.
+        Whether to check the convergence of the calculation. Defaults to True in settings.
     charge_and_multiplicity
         Charge and spin multiplicity of the Atoms object, only used for Molecule metadata.
     prep_next_run
@@ -216,7 +235,8 @@ def summarize_opt_run(
             - builder_meta.pymatgen_version: str = Field(pmg_version, description="The version of pymatgen this document was built with.")
             - builder_meta.pull_request: int = Field(None, description="The pull request number associated with this data build.")
         - dir_name: str = Field(None, description="Directory where the output is parsed")
-        - input_structure: Molecule | Structure = Field(None, title = "The Pymatgen Structure or Molecule object from the input Atoms object if input_atoms is not None.")
+        - input_structure: Molecule | Structure = Field(None, title = "The Pymatgen Structure or Molecule object from
+         the input Atoms object if input_atoms is not None.")
         - nid: str = Field(None, title = "The node ID representing the machine where the calculation was run.")
         - parameters: dict = Field(None, title = "the parameters used to run the calculation.")
         - opt_parameters: dict = Field(None, title = "the parameters used to run the optimization.")
@@ -228,15 +248,20 @@ def summarize_opt_run(
 
         - chemsys: str = Field(None, title="Chemical System", description="dash-delimited string of elements in the material.")
         - composition: Composition = Field(None, description="Full composition for the material.")
-        - composition_reduced: Composition = Field(None, title="Reduced Composition", description="Simplified representation of the composition.")
+        - composition_reduced: Composition = Field(None, title="Reduced Composition", description="Simplified
+         representation of the composition.")
         - density: float = Field(None, title="Density", description="Density in grams per cm^3.")
-        - density_atomic: float = Field(None, title="Packing Density", description="The atomic packing density in atoms per cm^3.")
+        - density_atomic: float = Field(None, title="Packing Density", description="The atomic packing density in
+         atoms per cm^3.")
         - elements: List[Element] = Field(None, description="List of elements in the material.")
-        - formula_anonymous: str = Field(None, title="Anonymous Formula", description="Anonymized representation of the formula.")
-        - formula_pretty: str = Field(None, title="Pretty Formula", description="Cleaned representation of the formula.")
+        - formula_anonymous: str = Field(None, title="Anonymous Formula", description="Anonymized representation
+         of the formula.")
+        - formula_pretty: str = Field(None, title="Pretty Formula", description="Cleaned representation of the
+         formula.")
         - nelements: int = Field(None, description="Number of elements.")
         - nsites: int = Field(None, description="Total number of sites in the structure.")
-        - structure: Structure = Field(None, title = "The Pymatgen Structure object from the Atoms object, if periodic and store_pmg is True.")
+        - structure: Structure = Field(None, title = "The Pymatgen Structure object from the Atoms object, if periodic
+         and store_pmg is True.")
         - symmetry: SymmetryData = Field(None, description="Symmetry data for this material.")
             - symmetry.crystal_system: CrystalSystem = Field(None, title="Crystal System", description="The crystal system for this lattice.")
             - symmetry.number: int = Field(None, title="Space Group Number", description="The spacegroup number for the lattice.")
@@ -248,16 +273,23 @@ def summarize_opt_run(
         For molecules that lack periodicity, the task document also has the following fields:
 
         - charge: int = Field(None, description="Charge of the molecule")
-        - chemsys: str = Field(None, title="Chemical System", description="dash-delimited string of elements in the molecule")
+        - chemsys: str = Field(None, title="Chemical System", description="dash-delimited string of elements in
+         the molecule")
         - composition: Composition = Field(None, description="Full composition for the molecule")
-        - composition_reduced: Composition = Field(None, title="Reduced Composition", description="Simplified representation of the composition")
+        - composition_reduced: Composition = Field(None, title="Reduced Composition", description="Simplified
+         representation of the composition")
         - elements: List[Element] = Field(None, description="List of elements in the molecule")
-        - formula_alphabetical: str = Field(None, title="Alphabetical Formula", description="Alphabetical molecular formula")
-        - formula_anonymous: str = Field(None, title="Anonymous Formula", description="Anonymized representation of the formula")
-        - formula_pretty: str = Field(None, title="Pretty Formula", description="Cleaned representation of the formula.")
-        - molecule: Molecule = Field(None, title = "The Pymatgen Molecule object from the Atoms object, if not periodic and store_pmg is True.")
+        - formula_alphabetical: str = Field(None, title="Alphabetical Formula", description="Alphabetical molecular
+         formula")
+        - formula_anonymous: str = Field(None, title="Anonymous Formula", description="Anonymized representation
+         of the formula")
+        - formula_pretty: str = Field(None, title="Pretty Formula", description="Cleaned representation of the
+         formula.")
+        - molecule: Molecule = Field(None, title = "The Pymatgen Molecule object from the Atoms object, if not
+         periodic and store_pmg is True.")
         - natoms: int = Field(None, description="Total number of atoms in the molecule")
-        - nelectrons: int = Field(None, title="Number of electrons", description="The total number of electrons for the molecule")
+        - nelectrons: int = Field(None, title="Number of electrons", description="The total number of electrons for
+         the molecule")
         - nelements: int = Field(None, title="Number of Elements")
         - spin_multiplicity: int = Field(None, description="Spin multiplicity of the molecule")
         - symmetry: PointGroupData = Field(None, description="Symmetry data for this molecule")
@@ -269,14 +301,20 @@ def summarize_opt_run(
             - symmetry.tolerance: float = Field(None, title="Point Group Analyzer Tolerance", description="Distance tolerance to consider sites as symmetrically equivalent.")
     """
 
+    check_convergence = (
+        SETTINGS.CHECK_CONVERGENCE if check_convergence is None else check_convergence
+    )
     additional_fields = additional_fields or {}
-    opt_parameters = dyn.todict() | {"fmax": dyn.fmax}
+    opt_parameters = dyn.todict()
+    if hasattr(dyn, "fmax"):
+        opt_parameters = opt_parameters | {"fmax": dyn.fmax}
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
     # Check convergence
     is_converged = dyn.converged()
     if check_convergence and not is_converged:
-        raise ValueError("Optimization did not converge.")
+        msg = "Optimization did not converge."
+        raise ValueError(msg)
 
     # Get trajectory
     if not trajectory:
@@ -297,6 +335,7 @@ def summarize_opt_run(
             for atoms in trajectory
         ],
     }
+
     results = {
         "results": final_atoms.calc.results
         | {"converged": is_converged, "nsteps": dyn.get_number_of_steps()}
@@ -395,15 +434,20 @@ def summarize_vib_run(
 
         - chemsys: str = Field(None, title="Chemical System", description="dash-delimited string of elements in the material.")
         - composition: Composition = Field(None, description="Full composition for the material.")
-        - composition_reduced: Composition = Field(None, title="Reduced Composition", description="Simplified representation of the composition.")
+        - composition_reduced: Composition = Field(None, title="Reduced Composition", description="Simplified
+         representation of the composition.")
         - density: float = Field(None, title="Density", description="Density in grams per cm^3.")
-        - density_atomic: float = Field(None, title="Packing Density", description="The atomic packing density in atoms per cm^3.")
+        - density_atomic: float = Field(None, title="Packing Density", description="The atomic packing density in atoms
+         per cm^3.")
         - elements: List[Element] = Field(None, description="List of elements in the material.")
-        - formula_anonymous: str = Field(None, title="Anonymous Formula", description="Anonymized representation of the formula.")
-        - formula_pretty: str = Field(None, title="Pretty Formula", description="Cleaned representation of the formula.")
+        - formula_anonymous: str = Field(None, title="Anonymous Formula", description="Anonymized representation of the
+         formula.")
+        - formula_pretty: str = Field(None, title="Pretty Formula", description="Cleaned representation of the
+         formula.")
         - nelements: int = Field(None, description="Number of elements.")
         - nsites: int = Field(None, description="Total number of sites in the structure.")
-        - structure: Structure = Field(None, title = "The Pymatgen Structure object from the Atoms object, if periodic and store_pmg is True.")
+        - structure: Structure = Field(None, title = "The Pymatgen Structure object from the Atoms object, if periodic
+         and store_pmg is True.")
         - symmetry: SymmetryData = Field(None, description="Symmetry data for this material.")
             - symmetry.crystal_system: CrystalSystem = Field(None, title="Crystal System", description="The crystal system for this lattice.")
             - symmetry.number: int = Field(None, title="Space Group Number", description="The spacegroup number for the lattice.")
@@ -415,16 +459,23 @@ def summarize_vib_run(
         For molecules that lack periodicity, the task document also has the following fields:
 
         - charge: int = Field(None, description="Charge of the molecule")
-        - chemsys: str = Field(None, title="Chemical System", description="dash-delimited string of elements in the molecule")
+        - chemsys: str = Field(None, title="Chemical System", description="dash-delimited string of elements in the
+         molecule")
         - composition: Composition = Field(None, description="Full composition for the molecule")
-        - composition_reduced: Composition = Field(None, title="Reduced Composition", description="Simplified representation of the composition")
+        - composition_reduced: Composition = Field(None, title="Reduced Composition", description="Simplified
+         representation of the composition")
         - elements: List[Element] = Field(None, description="List of elements in the molecule")
-        - formula_alphabetical: str = Field(None, title="Alphabetical Formula", description="Alphabetical molecular formula")
-        - formula_anonymous: str = Field(None, title="Anonymous Formula", description="Anonymized representation of the formula")
-        - formula_pretty: str = Field(None, title="Pretty Formula", description="Cleaned representation of the formula.")
+        - formula_alphabetical: str = Field(None, title="Alphabetical Formula", description="Alphabetical molecular
+         formula")
+        - formula_anonymous: str = Field(None, title="Anonymous Formula", description="Anonymized representation of
+         the formula")
+        - formula_pretty: str = Field(None, title="Pretty Formula", description="Cleaned representation of the
+         formula.")
         - natoms: int = Field(None, description="Total number of atoms in the molecule")
-        - molecule: Molecule = Field(None, title = "The Pymatgen Molecule object from the Atoms object, if not periodic and store_pmg is True.")
-        - nelectrons: int = Field(None, title="Number of electrons", description="The total number of electrons for the molecule")
+        - molecule: Molecule = Field(None, title = "The Pymatgen Molecule object from the Atoms object, if not
+         periodic and store_pmg is True.")
+        - nelectrons: int = Field(None, title="Number of electrons", description="The total number of electrons for
+         the molecule")
         - nelements: int = Field(None, title="Number of Elements")
         - spin_multiplicity: int = Field(None, description="Spin multiplicity of the molecule")
         - symmetry: PointGroupData = Field(None, description="Symmetry data for this molecule")
@@ -440,7 +491,8 @@ def summarize_vib_run(
 
     vib_freqs_raw = vib.get_frequencies().tolist()
     vib_energies_raw = vib.get_energies().tolist()
-    atoms = vib.atoms
+
+    atoms = vib._atoms if isinstance(vib, VibrationsData) else vib.atoms
 
     # Convert imaginary modes to negative values for DB storage
     for i, f in enumerate(vib_freqs_raw):
@@ -453,8 +505,12 @@ def summarize_vib_run(
 
     uri = get_uri(os.getcwd())
     inputs = {
-        "parameters": atoms.calc.parameters,
-        "parameters_vib": {
+        "parameters": None
+        if isinstance(vib, VibrationsData)
+        else atoms.calc.parameters,
+        "parameters_vib": None
+        if isinstance(vib, VibrationsData)
+        else {
             "delta": vib.delta,
             "direction": vib.direction,
             "method": vib.method,
@@ -510,7 +566,7 @@ def summarize_vib_run(
     return task_doc
 
 
-def summarize_thermo_run(
+def summarize_thermo(
     igt: IdealGasThermo,
     temperature: float = 298.15,
     pressure: float = 1.0,
@@ -572,16 +628,23 @@ def summarize_thermo_run(
         The task document also has the following fields from the Molecule object:
 
         - charge: int = Field(None, description="Charge of the molecule")
-        - chemsys: str = Field(None, title="Chemical System", description="dash-delimited string of elements in the molecule")
+        - chemsys: str = Field(None, title="Chemical System", description="dash-delimited string of elements in the
+         molecule")
         - composition: Composition = Field(None, description="Full composition for the molecule")
-        - composition_reduced: Composition = Field(None, title="Reduced Composition", description="Simplified representation of the composition")
+        - composition_reduced: Composition = Field(None, title="Reduced Composition", description="Simplified
+         representation of the composition")
         - elements: List[Element] = Field(None, description="List of elements in the molecule")
-        - formula_alphabetical: str = Field(None, title="Alphabetical Formula", description="Alphabetical molecular formula")
-        - formula_anonymous: str = Field(None, title="Anonymous Formula", description="Anonymized representation of the formula")
-        - formula_pretty: str = Field(None, title="Pretty Formula", description="Cleaned representation of the formula.")
+        - formula_alphabetical: str = Field(None, title="Alphabetical Formula", description="Alphabetical molecular
+         formula")
+        - formula_anonymous: str = Field(None, title="Anonymous Formula", description="Anonymized representation of
+         the formula")
+        - formula_pretty: str = Field(None, title="Pretty Formula", description="Cleaned representation of the
+         formula.")
         - natoms: int = Field(None, description="Total number of atoms in the molecule")
-        - molecule: Molecule = Field(None, title = "The Pymatgen Molecule object from the Atoms object, if not periodic and store_pmg is True.")
-        - nelectrons: int = Field(None, title="Number of electrons", description="The total number of electrons for the molecule")
+        - molecule: Molecule = Field(None, title = "The Pymatgen Molecule object from the Atoms object, if not
+         periodic and store_pmg is True.")
+        - nelectrons: int = Field(None, title="Number of electrons", description="The total number of electrons for
+         the molecule")
         - nelements: int = Field(None, title="Number of Elements")
         - spin_multiplicity: int = Field(None, description="Spin multiplicity of the molecule")
         - symmetry: PointGroupData = Field(None, description="Symmetry data for this molecule")

@@ -1,18 +1,17 @@
 <div align="center">
-  <img src=docs/images/quacc_logo_wide.png width="300"><br>
+  <img src=https://github.com/Quantum-Accelerators/quacc/blob/main/docs/images/quacc_logo_wide.png width="300"><br>
 </div>
-
----
 
 # quacc – The Quantum Accelerator 🦆
 
 ![tests](https://github.com/quantum-accelerators/quacc/actions/workflows/tests.yaml/badge.svg)
 [![codecov](https://codecov.io/gh/Quantum-Accelerators/quacc/branch/main/graph/badge.svg?token=OJaOZAH30u)](https://codecov.io/gh/Quantum-Accelerators/quacc)
 [![DeepSource](https://app.deepsource.com/gh/Quantum-Accelerators/quacc.svg/?label=active+issues&token=Y1NxOLIuFFEqWdjawIYnJNde)](https://app.deepsource.com/gh/Quantum-Accelerators/quacc/?ref=repository-badge)
-![Supported python versions](https://img.shields.io/badge/python-3.9%20%7C%203.10-blue)
+![Supported python versions](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11-blue)
+![PyPI - Version](https://img.shields.io/pypi/v/quacc?color=blue)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7720998.svg)](https://doi.org/10.5281/zenodo.7720998)
 
-Quacc is a flexible and extensible platform for high-throughput computational materials science and quantum chemistry.
+Quacc is a flexible and extensible platform for high-throughput computational materials science and quantum chemistry maintained by the [Rosen Research Group](https://rosen.cbe.princeton.edu/) at Princeton University.
 
 The three main goals of quacc are to:
 
@@ -22,7 +21,7 @@ The three main goals of quacc are to:
 
 3. Enable a seamless interface between the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/) and the software infrastructure powering the [Materials Project](https://materialsproject.org).
 
-Quacc currently has pre-made recipes for the following packages: DFTB+, Gaussian, GULP, ORCA, Psi4, tblite, and VASP. It's simple to add your favorite!
+Quacc currently has pre-made recipes for the following packages: DFTB+, Gaussian, GULP, NewtonNet, ORCA, Psi4, Q-Chem, tblite, and VASP. It's simple to add your favorite!
 
 ## Documentation
 
@@ -39,19 +38,15 @@ Includes the following sections:
 
 ## Demonstration ✨
 
-🚀 Demo from the Quick Start guide, using [Covalent](https://github.com/AgnostiqHQ/covalent) as one of the several supported workflow managers.
+🚀 Demo from the Quick Start guide, using [Covalent](https://github.com/AgnostiqHQ/covalent) as one of the [several supported workflow managers](https://quantum-accelerators.github.io/quacc/user/wflow_overview.html).
 
-![Demo from Quick Start](docs/images/start/start2.gif)
+![](https://github.com/Quantum-Accelerators/quacc/blob/main/docs/images/start/start2.gif)
 
 ## Citation
 
 If you use quacc in your work, please cite it as follows:
 
 - A.S. Rosen, quacc – The Quantum Accelerator, https://doi.org/10.5281/zenodo.7720998.
-
-## Inspiration
-
-Quacc was originally inspired by [Atomate2](https://github.com/materialsproject/atomate2). Refer to the [FAQ section](https://quantum-accelerators.github.io/quacc/about/faq.html) of the documentation for how these codes differ.
 
 ## License ⚖️
 

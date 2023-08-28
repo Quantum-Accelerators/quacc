@@ -2,22 +2,29 @@
 from __future__ import annotations
 
 import multiprocessing
-import os
+from shutil import which
+from typing import TYPE_CHECKING
 
-import covalent as ct
-from ase import Atoms
 from ase.calculators.orca import ORCA, OrcaProfile
 
-from quacc import SETTINGS
-from quacc.schemas.cclib import cclibSchema, summarize_run
-from quacc.util.calc import run_calc
-from quacc.util.dicts import remove_dict_empties
+from quacc import SETTINGS, job
+from quacc.schemas.cclib import summarize_run
+from quacc.utils.atoms import get_charge, get_multiplicity
+from quacc.utils.calc import run_calc
+from quacc.utils.dicts import merge_dicts
+from quacc.utils.wflows import fetch_atoms
+
+if TYPE_CHECKING:
+    from ase import Atoms
+
+    from quacc.schemas.cclib import cclibSchema
+
 
 LOG_FILE = f"{ORCA().name}.out"
 GEOM_FILE = f"{ORCA().name}.xyz"
 
 
-@ct.electron
+@job
 def static_job(
     atoms: Atoms | dict,
     charge: int | None = None,
@@ -54,22 +61,16 @@ def static_job(
         To enable new entries, set the value as True.
         To remove entries from the defaults, set the value as None.
     copy_files
-        Absolute paths to files to copy to the runtime directory.
+        Files to copy to the runtime directory.
 
     Returns
     -------
     cclibSchema
         Dictionary of results from quacc.schemas.cclib.summarize_run
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     input_swaps = input_swaps or {}
     block_swaps = block_swaps or {}
-
-    if not any(k for k in block_swaps if "nprocs" in k.lower()) and os.environ.get(
-        "mpirun"
-    ):
-        nprocs = multiprocessing.cpu_count()
-        block_swaps[f"%pal nprocs {nprocs} end"] = True
 
     default_inputs = {
         xc: True,
@@ -79,24 +80,21 @@ def static_job(
         "normalprint": True,
         "xyzfile": True,
     }
-    default_blocks = {}
+    default_blocks = (
+        {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
+        if which("mpirun")
+        else {}
+    )
 
-    inputs = remove_dict_empties(default_inputs | input_swaps)
-    blocks = remove_dict_empties(default_blocks | block_swaps)
+    inputs = merge_dicts(default_inputs, input_swaps)
+    blocks = merge_dicts(default_blocks, block_swaps)
     orcasimpleinput = " ".join(list(inputs.keys()))
     orcablocks = " ".join(list(blocks.keys()))
 
-    charge = int(atoms.get_initial_charges().sum()) if charge is None else charge
-    multiplicity = (
-        int(1 + atoms.get_initial_magnetic_moments().sum())
-        if multiplicity is None
-        else multiplicity
-    )
-
     atoms.calc = ORCA(
         profile=OrcaProfile([SETTINGS.ORCA_CMD]),
-        charge=charge,
-        mult=multiplicity,
+        charge=get_charge(atoms) if charge is None else charge,
+        mult=get_multiplicity(atoms) if multiplicity is None else multiplicity,
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )
@@ -109,7 +107,7 @@ def static_job(
     )
 
 
-@ct.electron
+@job
 def relax_job(
     atoms: Atoms | dict,
     charge: int | None = None,
@@ -149,22 +147,16 @@ def relax_job(
         To enable new entries, set the value as True.
         To remove entries from the defaults, set the value as None.
     copy_files
-        Absolute paths to files to copy to the runtime directory.
+        Files to copy to the runtime directory.
 
     Returns
     -------
     cclibSchema
         Dictionary of results from quacc.schemas.cclib.summarize_run
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     input_swaps = input_swaps or {}
     block_swaps = block_swaps or {}
-
-    if not any(k for k in block_swaps if "nprocs" in k.lower()) and os.environ.get(
-        "mpirun"
-    ):
-        nprocs = multiprocessing.cpu_count()
-        block_swaps[f"%pal nprocs {nprocs} end"] = True
 
     default_inputs = {
         xc: True,
@@ -175,24 +167,21 @@ def relax_job(
         "freq": True if run_freq else None,
         "xyzfile": True,
     }
-    default_blocks = {}
+    default_blocks = (
+        {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
+        if which("mpirun")
+        else {}
+    )
 
-    inputs = remove_dict_empties(default_inputs | input_swaps)
-    blocks = remove_dict_empties(default_blocks | block_swaps)
+    inputs = merge_dicts(default_inputs, input_swaps)
+    blocks = merge_dicts(default_blocks, block_swaps)
     orcasimpleinput = " ".join(list(inputs.keys()))
     orcablocks = " ".join(list(blocks.keys()))
 
-    charge = int(atoms.get_initial_charges().sum()) if charge is None else charge
-    multiplicity = (
-        int(1 + atoms.get_initial_magnetic_moments().sum())
-        if multiplicity is None
-        else multiplicity
-    )
-
     atoms.calc = ORCA(
         profile=OrcaProfile([SETTINGS.ORCA_CMD]),
-        charge=charge,
-        mult=multiplicity,
+        charge=get_charge(atoms) if charge is None else charge,
+        mult=get_multiplicity(atoms) if multiplicity is None else multiplicity,
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )

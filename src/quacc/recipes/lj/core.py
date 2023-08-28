@@ -5,28 +5,33 @@ NOTE: This set of minimal recipes is mainly for demonstration purposes
 """
 from __future__ import annotations
 
-from typing import Literal
+from typing import TYPE_CHECKING
 
-import covalent as ct
-from ase import Atoms
 from ase.calculators.lj import LennardJones
 from ase.optimize import FIRE
 
+from quacc import job
 from quacc.schemas.ase import (
-    OptSchema,
-    RunSchema,
-    ThermoSchema,
-    VibSchema,
     summarize_opt_run,
     summarize_run,
-    summarize_thermo_run,
+    summarize_thermo,
     summarize_vib_run,
 )
-from quacc.util.calc import run_ase_opt, run_ase_vib, run_calc
-from quacc.util.thermo import ideal_gas
+from quacc.utils.calc import run_ase_opt, run_ase_vib, run_calc
+from quacc.utils.dicts import merge_dicts
+from quacc.utils.thermo import ideal_gas
+from quacc.utils.wflows import fetch_atoms
+
+if TYPE_CHECKING:
+    from ase import Atoms
+
+    from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
+
+    class FreqSchema(VibSchema):
+        thermo: ThermoSchema
 
 
-@ct.electron
+@job
 def static_job(
     atoms: Atoms | dict,
     calc_swaps: dict | None = None,
@@ -42,14 +47,14 @@ def static_job(
     calc_swaps
         Dictionary of custom kwargs for the LJ calculator
     copy_files
-        Absolute paths to files to copy to the runtime directory.
+        Files to copy to the runtime directory.
 
     Returns
     -------
     RunSchema
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     atoms.calc = LennardJones(**calc_swaps)
@@ -60,7 +65,7 @@ def static_job(
     )
 
 
-@ct.electron
+@job
 def relax_job(
     atoms: Atoms | dict,
     calc_swaps: dict | None = None,
@@ -79,20 +84,20 @@ def relax_job(
     opt_swaps
         Dictionary of swaps for run_ase_opt
     copy_files
-        Absolute paths to files to copy to the runtime directory.
+        Files to copy to the runtime directory.
 
     Returns
     -------
     OptSchema
         Dictionary of results from `quacc.schemas.ase.summarize_opt_run`
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
     opt_swaps = opt_swaps or {}
 
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
 
-    opt_flags = opt_defaults | opt_swaps
+    opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
     atoms.calc = LennardJones(**calc_swaps)
     dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
@@ -100,7 +105,7 @@ def relax_job(
     return summarize_opt_run(dyn, additional_fields={"name": "LJ Relax"})
 
 
-@ct.electron
+@job
 def freq_job(
     atoms: Atoms | dict,
     energy: float = 0.0,
@@ -109,7 +114,7 @@ def freq_job(
     calc_swaps: dict | None = None,
     vib_kwargs: dict | None = None,
     copy_files: list[str] | None = None,
-) -> dict[Literal["vib", "thermo"], VibSchema | ThermoSchema]:
+) -> FreqSchema:
     """
     Run a frequency job and calculate thermochemistry.
 
@@ -128,31 +133,27 @@ def freq_job(
     vib_kwargs
         dictionary of custom kwargs for the Vibrations object
     copy_files
-        Absolute paths to files to copy to the runtime directory.
+        Files to copy to the runtime directory.
 
     Returns
     -------
     dict
         Dictionary of results from quacc.schemas.ase.summarize_vib_run and
-        quacc.schemas.ase.summarize_thermo_run
+        quacc.schemas.ase.summarize_thermo
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
     vib_kwargs = vib_kwargs or {}
 
     atoms.calc = LennardJones(**calc_swaps)
     vibrations = run_ase_vib(atoms, vib_kwargs=vib_kwargs, copy_files=copy_files)
+    vib_summary = summarize_vib_run(
+        vibrations, additional_fields={"name": "LJ Frequency Analysis"}
+    )
 
     igt = ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)
+    vib_summary["thermo"] = summarize_thermo(
+        igt, temperature=temperature, pressure=pressure
+    )
 
-    return {
-        "vib": summarize_vib_run(
-            vibrations, additional_fields={"name": "LJ Vibrations"}
-        ),
-        "thermo": summarize_thermo_run(
-            igt,
-            temperature=temperature,
-            pressure=pressure,
-            additional_fields={"name": "LJ Thermo"},
-        ),
-    }
+    return vib_summary

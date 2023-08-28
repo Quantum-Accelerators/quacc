@@ -4,13 +4,21 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
 !!! Tip
 
-    If you are just getting started with workflow engines, we recommend trying Covalent. For a comparison of the different compatible workflow engines, refer to the [Workflow Engines Overview](../user/wflow_overview.md) section.
+    If you are just getting started with workflow engines, we recommend trying Covalent. For a comparison of the different compatible workflow engines, refer to the [Workflow Engines Overview](../user/basics/wflow_overview.md) section.
 
 === "Covalent"
 
+    **Installation**
+
+    To install Covalent, run
+
+    ```bash
+    pip install quacc[covalent]
+    ```
+
     **Starting the Server**
 
-    Covalent uses a server to dispatch and store calculation details and results. To start the server, simply run `covalent start` in your terminal. It will return a URL that you can use to access the Covalent dashboard, which is shown below.
+    Covalent uses a server to dispatch and store calculation details and results. To start the server, simply run `covalent start` in your terminal. It will return a URL (usually http://localhost:48008) that you can use to access the Covalent dashboard, which is shown below.
 
     ![Covalent UI](../images/install/ui_blank.jpg)
 
@@ -18,27 +26,29 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
         Once you start scaling up your calculations, we recommend hosting the Covalent server on a dedicated machine or using [Covalent Cloud](https://www.covalent.xyz/cloud/). Refer to the [Covalent Deployment Guide](https://docs.covalent.xyz/docs/user-documentation/server-deployment) for details.
 
-    **Plugin Installation**
-
-    Depending on where you wish to run your quacc calculations, you may need to install the corresponding Covalent plugin, as described in the [Covalent plugin documentation](https://docs.covalent.xyz/docs/features/executor-plugins/exe). If you are using a typical HPC system with a job scheduler, you will probably want to use the [`HPCExecutor` plugin](https://github.com/arosen93/covalent-hpc-plugin), which supports Slurm, PBS, LSF, Flux, and more.
-
-    **Optional Configuration**
-
-    Covalent has several [configuration options](https://docs.covalent.xyz/docs/user-documentation/how-to/customization/) that can be modified. Running `quacc config` automatically takes care of setting the ones that are critical for quacc to run properly. If you ever delete your Covalent configuration (e.g. via `covalent purge`), you will need to re-run `quacc config`.
-
-    !!! Tip
-
-        If you are using Perlmutter at NERSC, you will need to set `export COVALENT_CONFIG_DIR="$SCRATCH/.config/covalent"` (e.g. in your `~/.bashrc`) because the home directory does not support file locking.
-
 === "Parsl"
 
-    In your activated Python environment, install Parsl via `pip install parsl`. Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
+    In your activated Python environment, install Parsl as follows:
+
+    ```bash
+    pip install quacc[parsl]
+    ```
+
+    Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
 
 === "Jobflow"
 
+    **Installation**
+
+    To install Jobflow with support for FireWorks, run the following:
+
+    ```bash
+    pip install quacc[jobflow]
+    ```
+
     **MongoDB Setup**
 
-    Jobflow and FireWorks both require the use of a database to store calculation results. If you haven't done so already, first create a Mongo database as described in the ["MongoDB Setup"](config_db.md) section.
+    Jobflow and FireWorks both require the use of a database (most commonly a MongoDB instance) to store calculation results.
 
     !!! Note
 
@@ -75,11 +85,10 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
         ```
 
     You will then need to define a `JOBFLOW_CONFIG_FILE` environment variable pointing to the file you made. For instance, in your `~/.bashrc` file, add the following line:
-    `export JOBFLOW_CONFIG_FILE="/path/to/my/jobflow.yaml"`.
 
-    **FireWorks Installation**
-
-    To install quacc with support for FireWorks to launch Jobflow-generated workflows, run `pip install fireworks`.
+    ```bash
+    export JOBFLOW_CONFIG_FILE="/path/to/my/jobflow.yaml"
+    ```
 
     **FireWorks DB Setup**
 
@@ -103,7 +112,10 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     ```
 
     You will also need to define a `FW_CONFIG_FILE` environment variable pointing to the `FW_config.yaml` file you made. For instance, in your `~/.bashrc` file, add the following line:
-    `export FW_CONFIG_FILE="/path/to/config/fw_config/FW_config.yaml"`.
+
+    ```bash
+    export FW_CONFIG_FILE="/path/to/config/fw_config/FW_config.yaml"
+    ```
 
     **FWorker**
 

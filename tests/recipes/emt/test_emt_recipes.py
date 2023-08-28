@@ -3,10 +3,15 @@ import pytest
 from ase.build import bulk, molecule
 from ase.constraints import FixAtoms
 
+from quacc import SETTINGS
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
 def test_static_job(tmpdir):
     tmpdir.chdir()
 
@@ -24,16 +29,28 @@ def test_static_job(tmpdir):
     assert output["results"]["energy"] == pytest.approx(0.11074520235398744)
 
 
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
 def test_relax_job(tmpdir):
     tmpdir.chdir()
 
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += [0.1, 0.1, 0.1]
 
-    output = relax_job(atoms, relax_cell=False)
+    output = relax_job(atoms)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] is False
     assert output["results"]["energy"] == pytest.approx(-0.04543069081693929)
+    assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
+
+    atoms = bulk("Cu") * (2, 2, 2)
+    atoms[0].position += [0.1, 0.1, 0.1]
+
+    output = relax_job(atoms, relax_cell=True)
+    assert output["nsites"] == len(atoms)
+    assert output["parameters"]["asap_cutoff"] is False
     assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
 
     atoms = molecule("N2")
@@ -46,7 +63,6 @@ def test_relax_job(tmpdir):
     atoms[0].position += [0.1, 0.1, 0.1]
     output = relax_job(
         atoms,
-        relax_cell=False,
         opt_swaps={"fmax": 0.03},
         calc_swaps={"asap_cutoff": True},
     )
@@ -61,7 +77,6 @@ def test_relax_job(tmpdir):
     atoms.set_constraint(c)
     output = relax_job(
         atoms,
-        relax_cell=False,
         opt_swaps={"fmax": 0.03},
         calc_swaps={"asap_cutoff": True},
     )
@@ -70,6 +85,10 @@ def test_relax_job(tmpdir):
     assert output["results"]["energy"] == pytest.approx(0.04996032884581858)
 
 
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
 def test_slab_dynamic_jobs(tmpdir):
     tmpdir.chdir()
 
@@ -90,7 +109,6 @@ def test_slab_dynamic_jobs(tmpdir):
         slab_relax_kwargs={
             "opt_swaps": {"fmax": 1.0},
             "calc_swaps": {"asap_cutoff": True},
-            "relax_cell": False,
         },
     )
     assert len(outputs) == 4
@@ -106,7 +124,6 @@ def test_slab_dynamic_jobs(tmpdir):
         slab_relax_kwargs={
             "opt_swaps": {"fmax": 1.0},
             "calc_swaps": {"asap_cutoff": True},
-            "relax_cell": False,
         },
     )
     assert len(outputs) == 2

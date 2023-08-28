@@ -5,19 +5,24 @@ NOTE: This set of minimal recipes is mainly for demonstration purposes.
 """
 from __future__ import annotations
 
-import warnings
+from typing import TYPE_CHECKING
 
-import covalent as ct
-from ase import Atoms
 from ase.calculators.emt import EMT
-from ase.constraints import ExpCellFilter
 from ase.optimize import FIRE
 
-from quacc.schemas.ase import OptSchema, RunSchema, summarize_opt_run, summarize_run
-from quacc.util.calc import run_ase_opt, run_calc
+from quacc import job
+from quacc.schemas.ase import summarize_opt_run, summarize_run
+from quacc.utils.calc import run_ase_opt, run_calc
+from quacc.utils.dicts import merge_dicts
+from quacc.utils.wflows import fetch_atoms
+
+if TYPE_CHECKING:
+    from ase import Atoms
+
+    from quacc.schemas.ase import OptSchema, RunSchema
 
 
-@ct.electron
+@job
 def static_job(
     atoms: Atoms | dict,
     calc_swaps: dict | None = None,
@@ -33,14 +38,14 @@ def static_job(
     calc_swaps
         Dictionary of custom kwargs for the EMT calculator
     copy_files
-        Absolute paths to files to copy to the runtime directory.
+        Files to copy to the runtime directory.
 
     Returns
     -------
     RunSchema
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     atoms.calc = EMT(**calc_swaps)
@@ -53,10 +58,10 @@ def static_job(
     )
 
 
-@ct.electron
+@job
 def relax_job(
     atoms: Atoms | dict,
-    relax_cell: bool = True,
+    relax_cell: bool = False,
     calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
     copy_files: list[str] | None = None,
@@ -75,31 +80,22 @@ def relax_job(
     opt_swaps
         Dictionary of swaps for `run_ase_opt`
     copy_files
-        Absolute paths to files to copy to the runtime directory.
+        Files to copy to the runtime directory.
 
     Returns
     -------
     OptSchema
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
     opt_swaps = opt_swaps or {}
 
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
-    opt_flags = opt_defaults | opt_swaps
-
-    if relax_cell and not atoms.pbc.any():
-        warnings.warn(
-            "Volume relaxation requested but no PBCs found. Ignoring.", UserWarning
-        )
-        relax_cell = False
+    opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
     atoms.calc = EMT(**calc_swaps)
 
-    if relax_cell:
-        atoms = ExpCellFilter(atoms)
-
-    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
+    dyn = run_ase_opt(atoms, relax_cell=relax_cell, copy_files=copy_files, **opt_flags)
 
     return summarize_opt_run(dyn, additional_fields={"name": "EMT Relax"})

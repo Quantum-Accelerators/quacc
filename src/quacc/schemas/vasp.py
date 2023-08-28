@@ -4,9 +4,8 @@ from __future__ import annotations
 import os
 import warnings
 from tempfile import TemporaryDirectory
-from typing import TypeVar
+from typing import TYPE_CHECKING
 
-from ase import Atoms
 from emmet.core.tasks import TaskDoc
 from maggma.core import Store
 from pymatgen.command_line.bader_caller import bader_analysis_from_path
@@ -14,12 +13,17 @@ from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
 
 from quacc import SETTINGS
 from quacc.schemas.atoms import atoms_to_metadata
-from quacc.util.atoms import prep_next_run as prep_next_run_
-from quacc.util.db import results_to_db
-from quacc.util.dicts import clean_dict
-from quacc.util.files import copy_decompress
+from quacc.utils.atoms import prep_next_run as prep_next_run_
+from quacc.utils.db import results_to_db
+from quacc.utils.dicts import clean_dict
+from quacc.utils.files import copy_decompress
 
-VaspSchema = TypeVar("VaspSchema")
+if TYPE_CHECKING:
+    from typing import TypeVar
+
+    from ase import Atoms
+
+    VaspSchema = TypeVar("VaspSchema")
 
 
 def summarize_run(
@@ -161,7 +165,8 @@ def summarize_run(
 
     # Check for calculation convergence
     if check_convergence and results["state"] != "successful":
-        raise ValueError("VASP calculation did not converge. Will not store task data.")
+        msg = "VASP calculation did not converge. Will not store task data."
+        raise ValueError(msg)
 
     # Remove unnecessary fields
     for k in [
@@ -264,7 +269,8 @@ def bader_runner(path: str | None = None, scratch_dir: str | None = None) -> dic
         if not os.path.exists(os.path.join(path, f)) and not os.path.exists(
             os.path.join(path, f"{f}.gz")
         ):
-            raise FileNotFoundError(f"Could not find {f} in {path}.")
+            msg = f"Could not find {f} in {path}."
+            raise FileNotFoundError(msg)
 
     # Run Bader analysis
     with TemporaryDirectory(dir=scratch_dir) as tmpdir:
@@ -342,11 +348,13 @@ def chargemol_runner(
         if not os.path.exists(os.path.join(path, f)) and not os.path.exists(
             os.path.join(path, f"{f}.gz")
         ):
-            raise FileNotFoundError(f"Could not find {f} in {path}.")
+            msg = f"Could not find {f} in {path}."
+            raise FileNotFoundError(msg)
 
     # Check environment variable
     if atomic_densities_path is None and "DDEC6_ATOMIC_DENSITIES_DIR" not in os.environ:
-        raise ValueError("DDEC6_ATOMIC_DENSITIES_DIR environment variable not defined.")
+        msg = "DDEC6_ATOMIC_DENSITIES_DIR environment variable not defined."
+        raise ValueError(msg)
 
     # Run Chargemol analysis
     with TemporaryDirectory(dir=scratch_dir) as tmpdir:

@@ -1,22 +1,30 @@
 """Core recipes for Psi4"""
 from __future__ import annotations
 
-import covalent as ct
-from ase import Atoms
+from typing import TYPE_CHECKING
+
 from ase.calculators.psi4 import Psi4
 from monty.dev import requires
 
-from quacc.schemas.ase import RunSchema, summarize_run
-from quacc.util.calc import run_calc
-from quacc.util.dicts import remove_dict_empties
+from quacc import job
+from quacc.schemas.ase import summarize_run
+from quacc.utils.atoms import get_charge, get_multiplicity
+from quacc.utils.calc import run_calc
+from quacc.utils.dicts import merge_dicts
+from quacc.utils.wflows import fetch_atoms
 
 try:
     import psi4
 except ImportError:
     psi4 = None
 
+if TYPE_CHECKING:
+    from ase import Atoms
 
-@ct.electron
+    from quacc.schemas.ase import RunSchema
+
+
+@job
 @requires(psi4, "Psi4 not installed. Try conda install -c psi4 psi4")
 def static_job(
     atoms: Atoms | dict,
@@ -47,22 +55,19 @@ def static_job(
     calc_swaps
         Dictionary of custom kwargs for the calculator.
     copy_files
-        Absolute paths to files to copy to the runtime directory.
+        Files to copy to the runtime directory.
 
     Returns
     -------
     RunSchema
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
-
-    charge = int(atoms.get_initial_charges().sum()) if charge is None else charge
-    multiplicity = (
-        int(1 + atoms.get_initial_magnetic_moments().sum())
-        if multiplicity is None
-        else multiplicity
-    )
+    if charge is None:
+        charge = get_charge(atoms)
+    if multiplicity is None:
+        multiplicity = get_multiplicity(atoms)
 
     defaults = {
         "mem": "16GB",
@@ -73,7 +78,7 @@ def static_job(
         "multiplicity": multiplicity,
         "reference": "uks" if multiplicity > 1 else "rks",
     }
-    flags = remove_dict_empties(defaults | calc_swaps)
+    flags = merge_dicts(defaults, calc_swaps)
 
     atoms.calc = Psi4(**flags)
     final_atoms = run_calc(atoms, copy_files=copy_files)

@@ -76,7 +76,6 @@ plugins:
             - https://docs.python.org/3/objects.inv
             - https://wiki.fysik.dtu.dk/ase/objects.inv
             - https://pymatgen.org/objects.inv
-            - https://materialsproject.github.io/atomate2/objects.inv
             - https://cclib.github.io/objects.inv
             - https://materialsproject.github.io/maggma/objects.inv
             - https://materialsproject.github.io/emmet/objects.inv
@@ -86,8 +85,6 @@ plugins:
             - https://tblite.readthedocs.io/en/latest/objects.inv
             - https://numpy.org/doc/stable/objects.inv
             - https://docs.pydantic.dev/latest/objects.inv
-            - https://materialsvirtuallab.github.io/monty/objects.inv
-            - http://materialsproject.github.io/custodian/objects.inv
             - https://covalent.readthedocs.io/en/latest/objects.inv
             - https://click.palletsprojects.com/en/latest/objects.inv
           options:
@@ -125,24 +122,36 @@ nav:
       - install/install.md
       - install/wflow_engines.md
       - install/codes.md
-      - Advanced:
-          - install/config_db.md
   - User Guide 🧠:
-      - user/basics.md
+      - user/recipes_intro.md
       - Workflow Basics:
-          - user/wflow_overview.md
-          - user/wflow_syntax.md
-      - user/wflow_engines.md
-      - user/executors.md
+          - user/basics/wflow_overview.md
+          - user/basics/wflow_syntax.md
+      - Using a Workflow Engine:
+          - user/wflow_engine/wflow_engines1.md
+          - user/wflow_engine/wflow_engines2.md
+          - user/wflow_engine/executors.md
+      - Recipe Summaries:
+          - user/recipes/dftb.md
+          - user/recipes/emt.md
+          - user/recipes/gaussian.md
+          - user/recipes/gulp.md
+          - user/recipes/lj.md
+          - user/recipes/newtonnet.md
+          - user/recipes/orca.md
+          - user/recipes/psi4.md
+          - user/recipes/qchem.md
+          - user/recipes/tblite.md
+          - user/recipes/vasp.md
       - user/settings.md
       - Advanced:
-          - user/database.md
-          - user/file_transfers.md
-          - user/atomate2.md
+          - user/advanced/database.md
+          - user/advanced/file_transfers.md
+          - user/advanced/atomate2.md
+  - Code Reference 📖: reference/
   - Developer Guide 🤝:
       - dev/contributing.md
       - dev/docs.md
-  - Code Reference: reference/
   - About 📜:
       - about/faq.md
       - about/contributors.md

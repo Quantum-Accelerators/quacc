@@ -2,20 +2,27 @@
 from __future__ import annotations
 
 import multiprocessing
+from typing import TYPE_CHECKING
 
-import covalent as ct
-from ase import Atoms
 from ase.calculators.gaussian import Gaussian
 
-from quacc.schemas.cclib import cclibSchema, summarize_run
-from quacc.util.calc import run_calc
-from quacc.util.dicts import remove_dict_empties
+from quacc import job
+from quacc.schemas.cclib import summarize_run
+from quacc.utils.atoms import get_charge, get_multiplicity
+from quacc.utils.calc import run_calc
+from quacc.utils.dicts import merge_dicts
+from quacc.utils.wflows import fetch_atoms
+
+if TYPE_CHECKING:
+    from ase import Atoms
+
+    from quacc.schemas.cclib import cclibSchema
 
 LOG_FILE = f"{Gaussian().label}.log"
 GEOM_FILE = LOG_FILE
 
 
-@ct.electron
+@job
 def static_job(
     atoms: Atoms | dict,
     charge: int | None = None,
@@ -45,22 +52,15 @@ def static_job(
     calc_swaps
         Dictionary of custom kwargs for the calculator.
     copy_files
-        Absolute paths to files to copy to the runtime directory.
+        Files to copy to the runtime directory.
 
     Returns
     -------
     RunSchema
         Dictionary of results from `quacc.schemas.cclib.summarize_run`
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
-
-    charge = int(atoms.get_initial_charges().sum()) if charge is None else charge
-    multiplicity = (
-        int(1 + atoms.get_initial_magnetic_moments().sum())
-        if multiplicity is None
-        else multiplicity
-    )
 
     defaults = {
         "mem": "16GB",
@@ -68,8 +68,8 @@ def static_job(
         "nprocshared": multiprocessing.cpu_count(),
         "xc": xc,
         "basis": basis,
-        "charge": charge,
-        "mult": multiplicity,
+        "charge": get_charge(atoms) if charge is None else charge,
+        "mult": get_multiplicity(atoms) if multiplicity is None else multiplicity,
         "sp": "",
         "scf": ["maxcycle=250", "xqc"],
         "integral": "ultrafine",
@@ -78,7 +78,7 @@ def static_job(
         "gfinput": "",
         "ioplist": ["6/7=3", "2/9=2000"],  # see ASE issue #660
     }
-    flags = remove_dict_empties(defaults | calc_swaps)
+    flags = merge_dicts(defaults, calc_swaps)
 
     atoms.calc = Gaussian(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
@@ -90,7 +90,7 @@ def static_job(
     )
 
 
-@ct.electron
+@job
 def relax_job(
     atoms: Atoms,
     charge: int | None = None,
@@ -123,22 +123,15 @@ def relax_job(
     calc_swaps
         Dictionary of custom kwargs for the calculator.
     copy_files
-        Absolute paths to files to copy to the runtime directory.
+        Files to copy to the runtime directory.
 
     Returns
     -------
     RunSchema
         Dictionary of results from `quacc.schemas.cclib.summarize_run`
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
-
-    charge = int(atoms.get_initial_charges().sum()) if charge is None else charge
-    multiplicity = (
-        int(1 + atoms.get_initial_magnetic_moments().sum())
-        if multiplicity is None
-        else multiplicity
-    )
 
     defaults = {
         "mem": "16GB",
@@ -146,8 +139,8 @@ def relax_job(
         "nprocshared": multiprocessing.cpu_count(),
         "xc": xc,
         "basis": basis,
-        "charge": charge,
-        "mult": multiplicity,
+        "charge": get_charge(atoms) if charge is None else charge,
+        "mult": get_multiplicity(atoms) if multiplicity is None else multiplicity,
         "opt": "",
         "pop": "CM5",
         "scf": ["maxcycle=250", "xqc"],
@@ -156,7 +149,7 @@ def relax_job(
         "freq": "" if freq else None,
         "ioplist": ["2/9=2000"],  # ASE issue #660
     }
-    flags = remove_dict_empties(defaults | calc_swaps)
+    flags = merge_dicts(defaults, calc_swaps)
 
     atoms.calc = Gaussian(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)

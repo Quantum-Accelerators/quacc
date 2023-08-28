@@ -1,4 +1,5 @@
 """Generate the code reference pages and navigation."""
+from __future__ import annotations
 
 from pathlib import Path
 
@@ -12,7 +13,7 @@ for path in sorted(Path("src").rglob("*.py")):
     full_doc_path = Path("reference", doc_path)
 
     parts = tuple(module_path.parts)
-    if parts[1] in ("presets", "_cli", "_version"):
+    if parts[1] in ("presets", "_cli", "_version", "settings.py"):
         continue
 
     if parts[-1] in ("__init__", "__main__"):

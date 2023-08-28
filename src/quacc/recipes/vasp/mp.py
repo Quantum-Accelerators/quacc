@@ -6,16 +6,27 @@ Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
 """
 from __future__ import annotations
 
-import covalent as ct
+from typing import TYPE_CHECKING
+
 import numpy as np
-from ase import Atoms
 
+from quacc import job
 from quacc.calculators.vasp import Vasp
-from quacc.schemas.vasp import VaspSchema, summarize_run
-from quacc.util.calc import run_calc
+from quacc.schemas.vasp import summarize_run
+from quacc.utils.calc import run_calc
+from quacc.utils.dicts import merge_dicts
+from quacc.utils.wflows import fetch_atoms
+
+if TYPE_CHECKING:
+    from ase import Atoms
+
+    from quacc.schemas.vasp import VaspSchema
+
+    class MPRelaxFlowSchema(VaspSchema):
+        prerelax: VaspSchema
 
 
-@ct.electron
+@job
 def mp_prerelax_job(
     atoms: Atoms | dict,
     preset: str | None = "MPScanSet",
@@ -35,27 +46,26 @@ def mp_prerelax_job(
     calc_swaps
         Dictionary of custom kwargs for the calculator.
     copy_files
-        Absolute paths to files to copy to the runtime directory.
+        Files to copy to the runtime directory.
 
     Returns
     -------
     VaspSchema
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     defaults = {"ediffg": -0.05, "xc": "pbesol"}
-    flags = defaults | calc_swaps
+    flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
 
-    calc = Vasp(atoms, preset=preset, **flags)
-    atoms.calc = calc
+    atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(atoms, additional_fields={"name": "MP-Prerelax"})
 
 
-@ct.electron
+@job
 def mp_relax_job(
     atoms: Atoms | dict,
     preset: str | None = "MPScanSet",
@@ -75,30 +85,30 @@ def mp_relax_job(
     calc_swaps
         Dictionary of custom kwargs for the calculator.
     copy_files
-        Absolute paths to files to copy to the runtime directory.
+        Files to copy to the runtime directory.
 
     Returns
     -------
     VaspSchema
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
-    calc = Vasp(atoms, preset=preset, **calc_swaps)
-    atoms.calc = calc
+    atoms.calc = Vasp(atoms, preset=preset, **calc_swaps)
     atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(atoms, additional_fields={"name": "MP-Relax"})
 
 
+@job
 def mp_relax_flow(
     atoms: Atoms | dict,
-    prerelax: ct.electron | None = mp_prerelax_job,
-    relax: ct.electron | None = mp_relax_job,
+    prerelax: callable | None = mp_prerelax_job,
+    relax: callable | None = mp_relax_job,
     prerelax_kwargs: dict | None = None,
     relax_kwargs: dict | None = None,
-) -> VaspSchema:
+) -> MPRelaxFlowSchema:
     """
     Workflow consisting of:
 
@@ -128,22 +138,23 @@ def mp_relax_flow(
     relax_kwargs = relax_kwargs or {}
 
     # Run the prerelax
-    prerelax_results = prerelax(atoms, **prerelax_kwargs)
+    prerelax_results = prerelax.undecorated(atoms, **prerelax_kwargs)
 
     # Update KSPACING arguments
-    bandgap = prerelax_results["output"]["bandgap"]
+    bandgap = prerelax_results["output"].get("bandgap", 0)
     if bandgap < 1e-4:
-        kspacing_swaps = {"kspacing": 0.22, "sigma": 0.2, "ismear": 2, "kpts": None}
+        kspacing_swaps = {"kspacing": 0.22, "sigma": 0.2, "ismear": 2}
     else:
         rmin = 25.22 - 2.87 * bandgap
         kspacing = 2 * np.pi * 1.0265 / (rmin - 1.0183)
-        kspacing_swaps = {
-            "kspacing": min(kspacing, 0.44),
-            "ismear": -5,
-            "sigma": 0.05,
-            "kpts": None,
-        }
+        kspacing_swaps = {"kspacing": min(kspacing, 0.44), "ismear": -5, "sigma": 0.05}
+
     relax_kwargs["calc_swaps"] = kspacing_swaps | relax_kwargs.get("calc_swaps", {})
 
     # Run the relax
-    return relax(prerelax_results, copy_files=["WAVECAR"], **relax_kwargs)
+    relax_results = relax.undecorated(
+        prerelax_results, copy_files=["WAVECAR"], **relax_kwargs
+    )
+    relax_results["prerelax"] = prerelax_results
+
+    return relax_results

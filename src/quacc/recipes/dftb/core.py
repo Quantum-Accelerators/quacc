@@ -1,22 +1,29 @@
 """Core recipes for DFTB+"""
 from __future__ import annotations
 
-from typing import Literal
+from typing import TYPE_CHECKING
 
-import covalent as ct
-from ase import Atoms
 from ase.calculators.dftb import Dftb
 
-from quacc.schemas.ase import RunSchema, summarize_run
-from quacc.util.calc import run_calc
-from quacc.util.dicts import remove_dict_empties
-from quacc.util.files import check_logfile
+from quacc import job
+from quacc.schemas.ase import summarize_run
+from quacc.utils.calc import run_calc
+from quacc.utils.dicts import merge_dicts
+from quacc.utils.files import check_logfile
+from quacc.utils.wflows import fetch_atoms
+
+if TYPE_CHECKING:
+    from typing import Literal
+
+    from ase import Atoms
+
+    from quacc.schemas.ase import RunSchema
 
 LOG_FILE = "dftb.out"
 GEOM_FILE = "geo_end.gen"
 
 
-@ct.electron
+@job
 def static_job(
     atoms: Atoms | dict,
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
@@ -39,14 +46,14 @@ def static_job(
     calc_swaps
         Dictionary of custom kwargs for the calculator.
     copy_files
-        Absolute paths to files to copy to the runtime directory.
+        Files to copy to the runtime directory.
 
     Returns
     -------
     RunSchema
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     defaults = {
@@ -54,13 +61,14 @@ def static_job(
         "Hamiltonian_Method": method if "xtb" in method.lower() else None,
         "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
     }
-    flags = remove_dict_empties(defaults | calc_swaps)
+    flags = merge_dicts(defaults, calc_swaps)
 
     atoms.calc = Dftb(**flags)
     final_atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
 
     if check_logfile(LOG_FILE, "SCC is NOT converged"):
-        raise ValueError("SCC is not converged")
+        msg = "SCC is not converged"
+        raise ValueError(msg)
 
     return summarize_run(
         final_atoms,
@@ -69,12 +77,12 @@ def static_job(
     )
 
 
-@ct.electron
+@job
 def relax_job(
     atoms: Atoms | dict,
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
     kpts: tuple | list[tuple] | dict | None = None,
-    lattice_opt: bool = False,
+    relax_cell: bool = False,
     calc_swaps: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
@@ -90,20 +98,20 @@ def relax_job(
     kpts
         k-point grid to use. Defaults to None for molecules and
         (1, 1, 1) for solids.
-    lattice_opt
+    relax_cell
         Whether to relax the unit cell shape/volume in addition to
         the positions.
     calc_swaps
         Dictionary of custom kwargs for the calculator.
     copy_files
-        Absolute paths to files to copy to the runtime directory.
+        Files to copy to the runtime directory.
 
     Returns
     -------
     RunSchema
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
-    atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     defaults = {
@@ -111,17 +119,18 @@ def relax_job(
         "Hamiltonian_Method": method if "xtb" in method.lower() else None,
         "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
         "Driver_": "GeometryOptimization",
-        "Driver_LatticeOpt": "Yes" if lattice_opt else "No",
+        "Driver_LatticeOpt": "Yes" if relax_cell else "No",
         "Driver_AppendGeometries": "Yes",
         "Driver_MaxSteps": 2000,
     }
-    flags = remove_dict_empties(defaults | calc_swaps)
+    flags = merge_dicts(defaults, calc_swaps)
 
     atoms.calc = Dftb(**flags)
     final_atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
 
     if not check_logfile(LOG_FILE, "Geometry converged"):
-        raise ValueError("Geometry did not converge")
+        msg = "Geometry did not converge"
+        raise ValueError(msg)
 
     return summarize_run(
         final_atoms,

@@ -15,6 +15,10 @@ DEFAULT_SETTINGS = SETTINGS.copy()
     DFTBPLUS_EXISTS is False,
     reason="DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
 )
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
 def test_static_job(tmpdir):
     tmpdir.chdir()
 
@@ -57,6 +61,10 @@ def test_static_job(tmpdir):
     DFTBPLUS_EXISTS is False,
     reason="DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
 )
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
 def test_relax_job(tmpdir):
     tmpdir.chdir()
 
@@ -95,7 +103,7 @@ def test_relax_job(tmpdir):
 
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
-    output = relax_job(atoms, method="GFN1-xTB", kpts=(3, 3, 3), lattice_opt=True)
+    output = relax_job(atoms, method="GFN1-xTB", kpts=(3, 3, 3), relax_cell=True)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN1-xTB"
@@ -122,6 +130,10 @@ def test_relax_job(tmpdir):
 @pytest.mark.skipif(
     DFTBPLUS_EXISTS is False,
     reason="DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
+)
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
 )
 def test_unique_workdir(tmpdir):
     SETTINGS.CREATE_UNIQUE_WORKDIR = True

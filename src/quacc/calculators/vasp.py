@@ -6,10 +6,9 @@ from __future__ import annotations
 import inspect
 import os
 import warnings
-from typing import Literal
+from typing import TYPE_CHECKING
 
 import numpy as np
-from ase import Atoms
 from ase.calculators.vasp import Vasp as Vasp_
 from ase.calculators.vasp import setups as ase_setups
 from ase.constraints import FixAtoms
@@ -19,8 +18,14 @@ from pymatgen.symmetry.bandstructure import HighSymmKpath
 
 from quacc import SETTINGS
 from quacc.custodian import vasp as custodian_vasp
-from quacc.util.atoms import check_is_metal, set_magmoms
-from quacc.util.files import load_yaml_calc
+from quacc.utils.atoms import check_is_metal, set_magmoms
+from quacc.utils.files import load_yaml_calc
+
+if TYPE_CHECKING:
+    from pathlib import Path
+    from typing import Literal
+
+    from ase import Atoms
 
 
 class Vasp(Vasp_):
@@ -114,9 +119,8 @@ class Vasp(Vasp_):
             and input_atoms.constraints
             and not all(isinstance(c, FixAtoms) for c in input_atoms.constraints)
         ):
-            raise ValueError(
-                "Atoms object has a constraint that is not compatible with Custodian. Set use_custodian = False."
-            )
+            msg = "Atoms object has a constraint that is not compatible with Custodian. Set use_custodian = False."
+            raise ValueError(msg)
 
         # Get VASP executable command, if necessary, and specify child environment
         # variables
@@ -124,7 +128,7 @@ class Vasp(Vasp_):
 
         # Get user-defined preset parameters for the calculator
         if preset:
-            calc_preset = load_yaml_calc(
+            calc_preset = load_vasp_yaml_calc(
                 os.path.join(SETTINGS.VASP_PRESET_DIR, preset)
             )["inputs"]
         else:
@@ -143,7 +147,7 @@ class Vasp(Vasp_):
             isinstance(self.user_calc_params.get("setups"), str)
             and self.user_calc_params["setups"] not in ase_setups.setups_defaults
         ):
-            self.user_calc_params["setups"] = load_yaml_calc(
+            self.user_calc_params["setups"] = load_vasp_yaml_calc(
                 os.path.join(SETTINGS.VASP_PRESET_DIR, self.user_calc_params["setups"])
             )["inputs"]["setups"]
 
@@ -385,7 +389,7 @@ class Vasp(Vasp_):
 
         if (
             calc.int_params["ismear"] == -5
-            and np.product(calc.kpts) < 4
+            and np.prod(calc.kpts) < 4
             and calc.float_params["kspacing"] is None
         ):
             if self.verbose:
@@ -573,7 +577,7 @@ class Vasp(Vasp_):
         | dict[Literal["max_mixed_density"], list[float, float]]
         | dict[Literal["length_density"], list[float, float, float]],
         force_gamma: bool = True,
-    ) -> tuple[list[tuple[int, int, int]], None | bool, None | bool]:
+    ) -> tuple[list[int, int, int], None | bool, None | bool]:
         """
         Shortcuts for pymatgen k-point generation schemes.
 
@@ -609,7 +613,8 @@ class Vasp(Vasp_):
             reciprocal = None
             if auto_kpts.get("max_mixed_density", None):
                 if len(auto_kpts["max_mixed_density"]) != 2:
-                    raise ValueError("Must specify two values for max_mixed_density.")
+                    msg = "Must specify two values for max_mixed_density."
+                    raise ValueError(msg)
 
                 if (
                     auto_kpts["max_mixed_density"][0]
@@ -625,7 +630,7 @@ class Vasp(Vasp_):
                 pmg_kpts2 = Kpoints.automatic_density(
                     struct, auto_kpts["max_mixed_density"][1], force_gamma=force_gamma
                 )
-                if np.product(pmg_kpts1.kpts[0]) >= np.product(pmg_kpts2.kpts[0]):
+                if np.prod(pmg_kpts1.kpts[0]) >= np.prod(pmg_kpts2.kpts[0]):
                     pmg_kpts = pmg_kpts1
                 else:
                     pmg_kpts = pmg_kpts2
@@ -639,14 +644,66 @@ class Vasp(Vasp_):
                 )
             elif auto_kpts.get("length_density", None):
                 if len(auto_kpts["length_density"]) != 3:
-                    raise ValueError("Must specify three values for length_density.")
+                    msg = "Must specify three values for length_density."
+                    raise ValueError(msg)
                 pmg_kpts = Kpoints.automatic_density_by_lengths(
                     struct, auto_kpts["length_density"], force_gamma=force_gamma
                 )
             else:
-                raise ValueError(f"Unsupported k-point generation scheme: {auto_kpts}.")
+                msg = f"Unsupported k-point generation scheme: {auto_kpts}."
+                raise ValueError(msg)
 
             kpts = pmg_kpts.kpts[0]
             gamma = pmg_kpts.style.name.lower() == "gamma"
 
         return kpts, gamma, reciprocal
+
+
+def load_vasp_yaml_calc(yaml_path: str | Path) -> dict:
+    """
+    Loads a YAML file containing calculator settings.
+    Used for VASP calculations and can read quacc-formatted
+    YAMLs that are of the following format:
+    ```
+    inputs:
+      xc: pbe
+      algo: all
+      ...
+      setups:
+        Cu: Cu_pv
+      ...
+      elemental_magmoms:
+        Fe: 5
+        Cu: 1
+        ...
+    ```
+    where `inputs` is a dictionary of ASE-style input parameters,
+    `setups` is a dictionary of ASE-style pseudopotentials, and
+    and `elemental_magmoms` is a dictionary of element-wise initial magmoms.
+
+    Parameters
+    ----------
+    yaml_path
+        Path to the YAML file. This function will look in the
+        `VASP_PRESET_DIR` (default: quacc/presets/vasp) for the file,
+        thereby assuming that `yaml_path` is a relative path within that folder.
+    Returns
+    -------
+
+    dict
+        The calculator configuration (i.e. settings).
+    """
+
+    config = load_yaml_calc(yaml_path)
+
+    # Allow for either "Cu_pv" and "_pv" style setups
+    if "inputs" in config:
+        config["inputs"] = {
+            k.lower(): v.lower() if isinstance(v, str) else v
+            for k, v in config["inputs"].items()
+        }
+        for k, v in config["inputs"].get("setups", {}).items():
+            if k in v:
+                config["inputs"]["setups"][k] = v.split(k)[-1]
+
+    return config

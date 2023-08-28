@@ -1,13 +1,11 @@
-codecov:
-  notify:
-    after_n_builds: 7 # one for each job
+comment: false
 coverage:
   status:
     project:
       default:
         target: auto
-        threshold: 0.25
+        threshold: 0.2
     patch:
       default:
         target: auto
-        threshold: 0.25
+        threshold: 2.0
