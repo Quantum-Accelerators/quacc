@@ -22,7 +22,7 @@ CREATE_UNIQUE_WORKDIR: true # (3)!
 
 !!! Tip
 
-    To set a value to the Python equivalent of `None` in a YAML file, use 'null' as the value.
+    To set a value to the Python equivalent of `None` in a YAML file, use `null` as the value.
 
 By default, quacc looks for this YAML file at `~/.quacc.yaml`. If you wish to store the YAML file somewhere else or with a different name, you can define the environment variable `QUACC_CONFIG_FILE` and point it to the YAML path of your choosing.
 
