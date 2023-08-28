@@ -36,4 +36,4 @@ If using quacc across distributed computing environments, there may not be a gua
 
 For instance, if using a job scheduler like Slurm, you could have a step in your job script that copies files (e.g. via `scp`) from a remote location to a local staging area. Then, you can use the `copy_files` keyword argument to copy the files from the staging area to the calculation's working directory.
 
-Alternatively, several of the supported workflow managers have built-in options to enable file staging. For instance, Covalent has a variety of options for [file transfers](https://docs.covalent.xyz/docs/get-started/quick-start#file-transfers) that can be specified in the `#!Python @ct.electron` decorator or pre-instantiated `Electron` object, which can be used to automate file staging before the calculation begins (or after the calculation ends).
+Alternatively, several of the supported workflow managers have built-in options to enable file staging.
