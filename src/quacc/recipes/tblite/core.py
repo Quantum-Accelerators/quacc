@@ -59,7 +59,7 @@ def static_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from quacc.schemas.ase.summarize_run
+        Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
@@ -104,7 +104,7 @@ def relax_job(
     Returns
     -------
     OptSchema
-        Dictionary of results from quacc.schemas.ase.summarize_opt_run
+        Dictionary of results from `quacc.schemas.ase.summarize_opt_run`
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
@@ -155,9 +155,9 @@ def freq_job(
 
     Returns
     -------
-    dict
-        Dictionary of results from quacc.schemas.ase.summarize_vib_run and
-        quacc.schemas.ase.summarize_thermo
+    FreqSchema
+        Dictionary of results from `quacc.schemas.ase.summarize_vib_run` patched
+        with the results of `quacc.schemas.ase.summarize_thermo` in the "thermo" key.
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}

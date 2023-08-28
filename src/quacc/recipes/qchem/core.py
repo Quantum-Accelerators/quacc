@@ -79,7 +79,7 @@ def static_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from quacc.schemas.ase.summarize_run
+        Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
     atoms = fetch_atoms(atoms)
     checked_charge, checked_spin_multiplicity = check_charge_and_spin(
@@ -168,7 +168,7 @@ def relax_job(
     Returns
     -------
     OptSchema
-        Dictionary of results from quacc.schemas.ase.summarize_opt_run
+        Dictionary of results from `quacc.schemas.ase.summarize_opt_run`
     """
 
     # TODO: exposing TRICs?

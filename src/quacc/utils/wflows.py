@@ -3,16 +3,20 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from typing import TypeVar
+
     from ase import Atoms
     from covalent import electron as ct_electron
     from covalent import lattice as ct_lattice
     from jobflow import Job as JobflowJob
     from parsl.app.python import PythonApp
 
+    Job = TypeVar("Job")
+    Flow = TypeVar("Flow")
+    Subflow = TypeVar("Subflow")
 
-def job(
-    _func: callable | None = None, **kwargs
-) -> callable | ct_electron | JobflowJob | PythonApp:
+
+def job(_func: callable | None = None, **kwargs) -> Job:
     """
     Decorator for individual compute jobs. This is a @job decorator.
 
@@ -28,8 +32,8 @@ def job(
     Returns
     -------
     callable
-        The decorated function. The decorated function will have an attribute `undecorated`
-        which is the undecorated function.
+        The decorated function. The decorated function will have an attribute `__undecorated__`
+        which is the __undecorated__ function.
     """
 
     from quacc import SETTINGS
@@ -55,17 +59,17 @@ def job(
         msg = f"Unknown workflow engine: {wflow_engine}"
         raise ValueError(msg)
 
-    decorated.undecorated = _func
+    decorated.__undecorated__ = _func
 
     return decorated
 
 
-def flow(_func: callable | None = None, **kwargs) -> callable | ct_lattice:
+def flow(_func: callable | None = None, **kwargs) -> Flow:
     """
     Decorator for workflows, which consist of at least one compute job. This is a @flow decorator.
 
     @flow = @ct.lattice [Covalent]. For Parsl and Jobflow, the decorator returns the
-    undecorated function.
+    __undecorated__ function.
 
     Parameters
     ----------
@@ -98,12 +102,12 @@ def flow(_func: callable | None = None, **kwargs) -> callable | ct_lattice:
     return decorated
 
 
-def subflow(_func: callable | None = None, **kwargs) -> callable | ct_electron:
+def subflow(_func: callable | None = None, **kwargs) -> Subflow:
     """
     Decorator for (dynamic) sub-workflows. This is a @subflow decorator.
 
     @subflow = @ct.electron(@ct.lattice) [Covalent] = @join_app [Parsl].
-    For Jobflow, the decorator returns the undecorated function.
+    For Jobflow, the decorator returns the __undecorated__ function.
 
     Parameters
     ----------

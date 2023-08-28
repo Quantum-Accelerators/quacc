@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from jobflow import Flow, Response
+import jobflow as jf
 
 from quacc import job
 from quacc.recipes.emt.core import relax_job as _relax_job
@@ -13,7 +13,8 @@ from quacc.utils.wflows import fetch_atoms
 
 if TYPE_CHECKING:
     from ase import Atoms
-    from jobflow import Job
+
+    from quacc.utils.wflows import Job
 
 
 @job
@@ -24,7 +25,7 @@ def bulk_to_slabs_flow(
     slab_static: Job | None = _static_job,
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
-) -> Response:
+) -> jf.Response:
     """
     Workflow consisting of:
 
@@ -39,11 +40,11 @@ def bulk_to_slabs_flow(
     atoms
         Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     make_slabs_kwargs
-        Additional keyword arguments to pass to `make_max_slabs_from_bulk()`
+        Additional keyword arguments to pass to `quacc.utils.slabs.make_max_slabs_from_bulk()`
     slab_relax
-        Maker to use for the relaxation of the slab.
+        Job to use for the relaxation of the slab.
     slab_static
-        Maker to use for the static calculation of the slab.
+        Job to use for the static calculation of the slab.
     slab_relax_kwargs
         Additional keyword arguments to pass to the relaxation calculation.
     slab_static_kwargs
@@ -51,7 +52,7 @@ def bulk_to_slabs_flow(
 
     Returns
     -------
-    Response
+    jf.Response
         A Response containing Flow of relaxation and static jobs for the generated slabs.
     """
     atoms = fetch_atoms(atoms)
@@ -79,7 +80,7 @@ def bulk_to_slabs_flow(
             jobs += [job1, job2]
             outputs.append(job2.output)
 
-    return Response(
+    return jf.Response(
         output={"input_bulk": atoms, "generated_slabs": slabs},
-        replace=Flow(jobs, output=outputs),
+        replace=jf.Flow(jobs, output=outputs),
     )

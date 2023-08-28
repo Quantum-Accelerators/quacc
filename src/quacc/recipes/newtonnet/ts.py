@@ -35,6 +35,7 @@ if TYPE_CHECKING:
 
     from quacc.recipes.newtonnet.core import FreqSchema
     from quacc.schemas.ase import OptSchema
+    from quacc.utils.wflows import Job
 
     class TSSchema(OptSchema):
         freq: FreqSchema | None
@@ -53,11 +54,10 @@ if TYPE_CHECKING:
 def ts_job(
     atoms: Atoms | dict,
     use_custom_hessian: bool = False,
-    freq_job: callable | None = _freq_job,
+    freq_job: Job | None = _freq_job,
     freq_job_kwargs: dict | None = None,
     calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
-    check_convergence: bool = True,
 ) -> TSSchema:
     """
     Perform a transition state (TS) job using the given atoms object.
@@ -68,17 +68,19 @@ def ts_job(
         The atoms object representing the system.
     use_custom_hessian
         Whether to use a custom Hessian matrix.
+    freq_job
+        Default Job to use for the frequency analysis.
+    freq_job_kwargs
+        Keyword arguments to use for the `freq_job`.
     calc_swaps
-        Optional swaps for the calculator.
+        Optional swaps for the NewtonNet calculator.
     opt_swaps
         Optional swaps for the optimization parameters.
-    check_convergence
-        Whether to check the convergence of the optimization.
 
     Returns
     -------
-    dict
-        A dictionary containing the TS summary and thermodynamic summary.
+    TSSchema
+        Dictionary of results, specified in `quacc.schemas.ase.RunSchema`
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
@@ -113,16 +115,14 @@ def ts_job(
     # Run the TS optimization
     dyn = run_ase_opt(atoms, **opt_flags)
     opt_ts_summary = _add_stdev_and_hess(
-        summarize_opt_run(
-            dyn,
-            check_convergence=check_convergence,
-            additional_fields={"name": "NewtonNet TS"},
-        )
+        summarize_opt_run(dyn, additional_fields={"name": "NewtonNet TS"})
     )
 
     # Run a frequency calculation
     freq_summary = (
-        freq_job.undecorated(opt_ts_summary, **freq_job_kwargs) if freq_job else None
+        freq_job.__undecorated__(opt_ts_summary, **freq_job_kwargs)
+        if freq_job
+        else None
     )
     opt_ts_summary["freq"] = freq_summary
 
@@ -135,11 +135,10 @@ def ts_job(
 def irc_job(
     atoms: Atoms | dict,
     direction: Literal["forward", "reverse"] = "forward",
-    freq_job: callable | None = _freq_job,
+    freq_job: Job | None = _freq_job,
     freq_job_kwargs: dict | None = None,
     calc_swaps: dict | None = None,
-    opt_swaps: dict | None = None,
-    check_convergence: bool = False,
+    opt_swaps: dict | None = None
 ) -> IRCSchema:
     """
     Perform an intrinsic reaction coordinate (IRC) job using the given atoms object.
@@ -150,26 +149,25 @@ def irc_job(
         The atoms object representing the system.
     direction
         The direction of the IRC calculation ("forward" or "reverse").
-    temperature
-        The temperature for the frequency calculation in Kelvins.
-    pressure
-        The pressure for the frequency calculation in bar.
+    freq_job
+        Default Job to use for the frequency analysis.
+    freq_job_kwargs
+        Keyword arguments for the `freq_job`.
     calc_swaps
         Optional swaps for the calculator.
     opt_swaps
         Optional swaps for the optimization parameters.
-    check_convergence
-        Whether to check the convergence of the optimization.
 
     Returns
     -------
-    dict
+    IRCSchema
         A dictionary containing the IRC summary and thermodynamic summary.
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
     opt_swaps = opt_swaps or {}
     freq_job_kwargs = freq_job_kwargs or {}
+    default_settings = SETTINGS.copy()
 
     defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
@@ -197,18 +195,21 @@ def irc_job(
     atoms.calc = NewtonNet(**flags)
 
     # Run IRC
+    SETTINGS.CHECK_CONVERGENCE=False
     dyn = run_ase_opt(atoms, **opt_flags)
     opt_irc_summary = _add_stdev_and_hess(
         summarize_opt_run(
             dyn,
-            check_convergence=check_convergence,
-            additional_fields={"name": f"NewtonNet IRC: {direction}"},
+            additional_fields={"name": f"NewtonNet IRC: {direction}"}
         )
     )
+    SETTINGS.CHECK_CONVERGENCE = default_settings.CHECK_CONVERGENCE
 
     # Run frequency job
     freq_summary = (
-        freq_job.undecorated(opt_irc_summary, **freq_job_kwargs) if freq_job else None
+        freq_job.__undecorated__(opt_irc_summary, **freq_job_kwargs)
+        if freq_job
+        else None
     )
     opt_irc_summary["freq"] = freq_summary
 
@@ -221,7 +222,7 @@ def irc_job(
 def quasi_irc_job(
     atoms: Atoms | dict,
     direction: Literal["forward", "reverse"] = "forward",
-    freq_job: callable | None = _freq_job,
+    freq_job: Job | None = _freq_job,
     freq_job_kwargs: dict | None = None,
     irc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
@@ -235,10 +236,10 @@ def quasi_irc_job(
         The atoms object representing the system.
     direction
         The direction of the IRC calculation ("forward" or "reverse").
-    temperature
-        The temperature for the frequency calculation in Kelvins.
-    pressure
-        The pressure for the frequency calculation in bar.
+    freq_job
+        Default Job to use for the frequency analysis.
+    freq_job_kwargs
+        Keyword arguments for `freq_job`.
     irc_swaps
         Optional swaps for the IRC optimization parameters.
     opt_swaps
@@ -246,7 +247,7 @@ def quasi_irc_job(
 
     Returns
     -------
-    dict
+    QuasiIRCSchema
         A dictionary containing the IRC summary, optimization summary, and thermodynamic summary.
     """
     irc_swaps = irc_swaps or {}
@@ -257,16 +258,16 @@ def quasi_irc_job(
     irc_flags = merge_dicts(irc_defaults, irc_swaps)
 
     # Run IRC
-    irc_summary = irc_job.undecorated(
+    irc_summary = irc_job.__undecorated__(
         atoms, direction=direction, opt_swaps=irc_flags, freq_job=None
     )
 
     # Run opt
-    relax_summary = relax_job.undecorated(irc_summary, **opt_swaps)
+    relax_summary = relax_job.__undecorated__(irc_summary, **opt_swaps)
 
     # Run frequency
     freq_summary = (
-        freq_job.undecorated(relax_summary, **freq_job_kwargs) if freq_job else None
+        freq_job.__undecorated__(relax_summary, **freq_job_kwargs) if freq_job else None
     )
     relax_summary["freq"] = freq_summary
     relax_summary["irc"] = irc_summary
