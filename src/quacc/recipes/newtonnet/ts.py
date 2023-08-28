@@ -138,7 +138,7 @@ def irc_job(
     freq_job: Job | None = _freq_job,
     freq_job_kwargs: dict | None = None,
     calc_swaps: dict | None = None,
-    opt_swaps: dict | None = None
+    opt_swaps: dict | None = None,
 ) -> IRCSchema:
     """
     Perform an intrinsic reaction coordinate (IRC) job using the given atoms object.
@@ -195,12 +195,11 @@ def irc_job(
     atoms.calc = NewtonNet(**flags)
 
     # Run IRC
-    SETTINGS.CHECK_CONVERGENCE=False
+    SETTINGS.CHECK_CONVERGENCE = False
     dyn = run_ase_opt(atoms, **opt_flags)
     opt_irc_summary = _add_stdev_and_hess(
         summarize_opt_run(
-            dyn,
-            additional_fields={"name": f"NewtonNet IRC: {direction}"}
+            dyn, additional_fields={"name": f"NewtonNet IRC: {direction}"}
         )
     )
     SETTINGS.CHECK_CONVERGENCE = default_settings.CHECK_CONVERGENCE
