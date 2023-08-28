@@ -33,7 +33,7 @@ def job(_func: callable | None = None, **kwargs) -> Job:
     -------
     callable
         The decorated function. The decorated function will have an attribute `__undecorated__`
-        which is the __undecorated__ function.
+        which is the original (undecorated) function.
     """
 
     from quacc import SETTINGS
