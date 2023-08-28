@@ -263,7 +263,9 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Install pip packages
-        run: pip install .[dev,defects]
+        run: |
+          pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
+          pip install .[dev,defects]
 
       - name: Run tests with pytest
         run: pytest -k 'defects' --cov=quacc --cov-report=xml
