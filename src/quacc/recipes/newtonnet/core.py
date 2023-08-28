@@ -32,8 +32,6 @@ except ImportError:
     NewtonNet = None
 
 if TYPE_CHECKING:
-    from typing import TypedDict
-
     from ase import Atoms
 
     from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
@@ -64,7 +62,7 @@ def static_job(
     Returns
     -------
     RunSchema
-        A dictionary containing the results of the calculation.
+        Dictionary of results, specified in `quacc.schemas.ase.RunSchema`
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
@@ -79,7 +77,9 @@ def static_job(
     final_atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(
-        final_atoms, input_atoms=atoms, additional_fields={"name": "NewtonNet Static"}
+        final_atoms,
+        input_atoms=atoms,
+        additional_fields={"name": "NewtonNet Static"},
     )
 
 
@@ -108,7 +108,7 @@ def relax_job(
     Returns
     -------
     OptSchema
-        A dictionary containing the results of the calculation.
+        Dictionary of results, specified in `quacc.schemas.ase.OptSchema``
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
@@ -158,8 +158,8 @@ def freq_job(
 
     Returns
     -------
-    dict
-        Summary of the frequency calculation and thermo calculations.
+    FreqSchema
+        Dictionary of results
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}

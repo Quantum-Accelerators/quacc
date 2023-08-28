@@ -13,14 +13,15 @@ if TYPE_CHECKING:
     from ase import Atoms
 
     from quacc.schemas.ase import OptSchema, RunSchema
+    from quacc.utils.wflows import Job
 
 
 @flow
 def bulk_to_slabs_flow(
     atoms: Atoms | dict,
     make_slabs_kwargs: dict | None = None,
-    slab_relax: callable = _relax_job,
-    slab_static: callable | None = _static_job,
+    slab_relax: Job = _relax_job,
+    slab_static: Job | None = _static_job,
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
 ) -> list[RunSchema | OptSchema]:
@@ -38,11 +39,11 @@ def bulk_to_slabs_flow(
     atoms
         Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
     make_slabs_kwargs
-        Additional keyword arguments to pass to make_max_slabs_from_bulk()
+        Additional keyword arguments to pass to `quacc.utils.slabs.make_max_slabs_from_bulk`
     slab_relax
-        Default Electron to use for the relaxation of the slab structures.
+        Default Job to use for the relaxation of the slab structures.
     slab_static
-        Default Electron to use for the static calculation of the slab structures.
+        Default Job to use for the static calculation of the slab structures.
     slab_relax_kwargs
         Additional keyword arguments to pass to the relaxation calculation.
     slab_static_kwargs
@@ -51,7 +52,7 @@ def bulk_to_slabs_flow(
     Returns
     -------
     list[RunSchema | OptSchema]
-        List of dictionary of results from quacc.schemas.ase.summarize_run or quacc.schemas.ase.summarize_opt_run
+        RunSchema or OptSchema for each slab.
     """
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}

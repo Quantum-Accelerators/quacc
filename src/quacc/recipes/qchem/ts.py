@@ -90,7 +90,7 @@ def ts_job(
     Returns
     -------
     OptSchema
-        Dictionary of results from quacc.schemas.ase.summarize_opt_run
+        Dictionary of results from `quacc.schemas.ase.summarize_opt_run`
     """
 
     # TODO:
@@ -200,7 +200,7 @@ def irc_job(
     Returns
     -------
     OptSchema
-        Dictionary of results from quacc.schemas.ase.summarize_opt_run
+        Dictionary of results from `quacc.schemas.ase.summarize_opt_run`
     """
 
     # TODO: 1) expose TRICs?; 2) passing initial Hessian?
@@ -278,7 +278,7 @@ def quasi_irc_job(
     Returns
     -------
     OptSchema
-        Dictionary of results from quacc.schemas.ase.summarize_opt_run
+        Dictionary of results from `quacc.schemas.ase.summarize_opt_run`
     """
 
     shared_kwargs = shared_kwargs or {}

@@ -3,16 +3,16 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from typing import TypeVar
+
     from ase import Atoms
-    from covalent import electron as ct_electron
-    from covalent import lattice as ct_lattice
-    from jobflow import Job as JobflowJob
-    from parsl.app.python import PythonApp
+
+    Job = TypeVar("Job")
+    Flow = TypeVar("Flow")
+    Subflow = TypeVar("Subflow")
 
 
-def job(
-    _func: callable | None = None, **kwargs
-) -> callable | ct_electron | JobflowJob | PythonApp:
+def job(_func: callable | None = None, **kwargs) -> Job:  # sourcery skip
     """
     Decorator for individual compute jobs. This is a @job decorator.
 
@@ -27,9 +27,9 @@ def job(
 
     Returns
     -------
-    callable
-        The decorated function. The decorated function will have an attribute `undecorated`
-        which is the undecorated function.
+    Job
+        The @job-decorated function. The decorated function will have an attribute `__wrapped__`
+        which is the original (unwrapped) function.
     """
 
     from quacc import SETTINGS
@@ -49,23 +49,21 @@ def job(
         from parsl import python_app
 
         decorated = python_app(_func, **kwargs)
-    elif not wflow_engine:
-        decorated = _func
     else:
-        msg = f"Unknown workflow engine: {wflow_engine}"
-        raise ValueError(msg)
+        decorated = _func
 
-    decorated.undecorated = _func
+    decorated.__wrapped__ = _func
 
     return decorated
 
 
-def flow(_func: callable | None = None, **kwargs) -> callable | ct_lattice:
+def flow(_func: callable | None = None, **kwargs) -> Flow:  # sourcery skip
     """
     Decorator for workflows, which consist of at least one compute job. This is a @flow decorator.
 
     @flow = @ct.lattice [Covalent]. For Parsl and Jobflow, the decorator returns the
-    undecorated function.
+    original function, unchanged. The decorated function will have an attribute `__wrapped__`
+    which is the original (unwrapped) function.
 
     Parameters
     ----------
@@ -76,8 +74,8 @@ def flow(_func: callable | None = None, **kwargs) -> callable | ct_lattice:
 
     Returns
     -------
-    callable
-        The decorated function.
+    Flow
+        The @flow-decorated function.
     """
 
     from quacc import SETTINGS
@@ -89,21 +87,20 @@ def flow(_func: callable | None = None, **kwargs) -> callable | ct_lattice:
         import covalent as ct
 
         decorated = ct.lattice(_func, **kwargs)
-    elif wflow_engine in {"jobflow", "parsl"} or not wflow_engine:
-        decorated = _func
     else:
-        msg = f"Unknown workflow engine: {wflow_engine}"
-        raise ValueError(msg)
+        decorated = _func
 
     return decorated
 
 
-def subflow(_func: callable | None = None, **kwargs) -> callable | ct_electron:
+def subflow(_func: callable | None = None, **kwargs) -> Subflow:  # sourcery skip
     """
     Decorator for (dynamic) sub-workflows. This is a @subflow decorator.
 
     @subflow = @ct.electron(@ct.lattice) [Covalent] = @join_app [Parsl].
-    For Jobflow, the decorator returns the undecorated function.
+    For Jobflow, the decorator returns the original (unwrapped) function.
+    The decorated function will have an attribute `__wrapped__`
+    which is the original (unwrapped) function.
 
     Parameters
     ----------
@@ -131,11 +128,8 @@ def subflow(_func: callable | None = None, **kwargs) -> callable | ct_electron:
         from parsl import join_app
 
         decorated = join_app(_func, **kwargs)
-    elif wflow_engine == "jobflow" or not wflow_engine:
-        decorated = _func
     else:
-        msg = f"Unknown workflow engine: {wflow_engine}"
-        raise ValueError(msg)
+        decorated = _func
 
     return decorated
 

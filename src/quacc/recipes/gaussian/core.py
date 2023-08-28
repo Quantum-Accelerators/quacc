@@ -56,8 +56,8 @@ def static_job(
 
     Returns
     -------
-    RunSchema
-        Dictionary of results from `quacc.schemas.cclib.summarize_run`
+    cclibSchema
+        Dictionary of results, as specified in `quacc.schemas.cclib.cclibSchema`
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
@@ -127,8 +127,8 @@ def relax_job(
 
     Returns
     -------
-    RunSchema
-        Dictionary of results from `quacc.schemas.cclib.summarize_run`
+    cclibSchema
+        Dictionary of results, as specified in `quacc.schemas.cclib.cclibSchema`
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}

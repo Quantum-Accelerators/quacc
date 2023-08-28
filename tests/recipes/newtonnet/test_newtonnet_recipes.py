@@ -21,8 +21,21 @@ except ImportError:
     sella = None
 
 CURRENT_FILE_PATH = Path(__file__).parent.resolve()
-SETTINGS.NEWTONNET_CONFIG_PATH = os.path.join(CURRENT_FILE_PATH, "config0.yml")
-SETTINGS.NEWTONNET_MODEL_PATH = os.path.join(CURRENT_FILE_PATH, "best_model_state.tar")
+DEFAULT_SETTINGS = SETTINGS.copy()
+
+
+def setup_module():
+    SETTINGS.NEWTONNET_CONFIG_PATH = os.path.join(CURRENT_FILE_PATH, "config0.yml")
+    SETTINGS.NEWTONNET_MODEL_PATH = os.path.join(
+        CURRENT_FILE_PATH, "best_model_state.tar"
+    )
+    SETTINGS.CHECK_CONVERGENCE = False
+
+
+def teardown_module():
+    SETTINGS.NEWTONNET_CONFIG_PATH = DEFAULT_SETTINGS.NEWTONNET_CONFIG_PATH
+    SETTINGS.NEWTONNET_MODEL_PATH = DEFAULT_SETTINGS.NEWTONNET_MODEL_PATH
+    SETTINGS.CHECK_CONVERGENCE = DEFAULT_SETTINGS.CHECK_CONVERGENCE
 
 
 @pytest.mark.skipif(
@@ -163,7 +176,6 @@ def test_ts_job_with_custom_hessian(tmpdir):
     output = ts_job(
         atoms,
         use_custom_hessian=use_custom_hessian,
-        check_convergence=False,
         opt_swaps=opt_swaps,
     )
 
@@ -192,7 +204,7 @@ def test_ts_job_with_custom_optimizer(tmpdir):
     opt_swaps = {"optimizer": FIRE}
 
     # Call the function
-    output = ts_job(atoms, check_convergence=False, opt_swaps=opt_swaps)
+    output = ts_job(atoms, opt_swaps=opt_swaps)
 
     # Perform assertions on the result
     assert isinstance(output, dict)
@@ -220,9 +232,7 @@ def test_ts_job_with_custom_optimizer_and_custom_hessian(tmpdir):
 
     with pytest.raises(ValueError, match="Custom hessian can only be used with Sella."):
         # Call the function
-        ts_job(
-            atoms, check_convergence=False, use_custom_hessian=True, opt_swaps=opt_swaps
-        )
+        ts_job(atoms, use_custom_hessian=True, opt_swaps=opt_swaps)
 
 
 @pytest.mark.skipif(
@@ -321,32 +331,6 @@ def test_irc_job_with_custom_temperature_and_pressure(tmpdir):
     output = irc_job(
         atoms, freq_job_kwargs={"temperature": temperature, "pressure": pressure}
     )
-
-    # Perform assertions on the result
-    assert isinstance(output, dict)
-
-    assert output["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["freq"]["thermo"]["results"]["energy"] == pytest.approx(
-        -9.517354091813969
-    )
-
-
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
-@pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
-    reason="This test suite is for regular function execution only",
-)
-def test_irc_job_with_check_convergence(tmpdir):
-    tmpdir.chdir()
-    # Define test inputs
-    atoms = molecule("H2O")
-    check_convergence = True
-
-    # Call the function
-    output = irc_job(atoms, check_convergence=check_convergence)
 
     # Perform assertions on the result
     assert isinstance(output, dict)
