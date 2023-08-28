@@ -1,7 +1,8 @@
 """Defect recipes for EMT"""
 from __future__ import annotations
 
-import covalent as ct
+from typing import TYPE_CHECKING
+
 from ase.atoms import Atoms
 from pymatgen.analysis.defects.generators import (
     AntiSiteGenerator,
@@ -12,11 +13,21 @@ from pymatgen.analysis.defects.generators import (
     VoronoiInterstitialGenerator,
 )
 
-from quacc.recipes.emt.core import relax_job, static_job
+from quacc import flow, job, subflow
+from quacc.recipes.emt.core import relax_job as _relax_job
+from quacc.recipes.emt.core import static_job as _static_job
 from quacc.schemas.ase import OptSchema, RunSchema
-from quacc.util.defects import make_defects_from_bulk
+from quacc.utils.defects import make_defects_from_bulk
+from quacc.utils.wflows import fetch_atoms
+
+if TYPE_CHECKING:
+    from ase import Atoms
+
+    from quacc.schemas.ase import OptSchema, RunSchema
+    from quacc.utils.wflows import Job
 
 
+@flow
 def bulk_to_defects_flow(
     atoms: Atoms | dict,
     defectgen: (
@@ -26,11 +37,11 @@ def bulk_to_defects_flow(
         | SubstitutionGenerator
         | VacancyGenerator
         | VoronoiInterstitialGenerator
-    ) = VacancyGenerator,  # NOTE: I added a default. VacancyGenerator seemed like it might be the most popular.
-    charge_state: int = 0,  # NOTE: I changed this from int | None = None because None does not work
+    ) = VacancyGenerator,
+    charge_state: int = 0,
     make_defects_kwargs: dict | None = None,
-    defect_relax: ct.electron | None = relax_job,
-    defect_static: ct.electron | None = static_job,
+    defect_relax: Job | None = _relax_job,
+    defect_static: Job | None = _static_job,
     defect_relax_kwargs: dict | None = None,
     defect_static_kwargs: dict | None = None,
 ) -> list[RunSchema | OptSchema]:
@@ -54,9 +65,9 @@ def bulk_to_defects_flow(
     make_defects_kwargs
         Keyword arguments to pass to the make_defects_from_bulk
     defect_relax
-        Default Electron to use for the relaxation of the defect structures.
+        Default Job to use for the relaxation of the defect structures.
     defect_static
-        Default Electron to use for the static calculation of the defect structures.
+        Default Job to use for the static calculation of the defect structures.
     defect_relax_kwargs
         Additional keyword arguments to pass to the relaxation calculation.
     defect_static_kwargs
@@ -67,24 +78,25 @@ def bulk_to_defects_flow(
     list[dict]
         List of dictionary of results from quacc.schemas.ase.summarize_run or quacc.schemas.ase.summarize_opt_run
     """
-    defect_relax_kwargs = defect_relax_kwargs or {"relax_cell": False}
+    defect_relax_kwargs = defect_relax_kwargs or {}
     defect_static_kwargs = defect_static_kwargs or {}
     make_defects_kwargs = make_defects_kwargs or {}
 
-    @ct.electron
+    if "relax_cell" not in defect_relax_kwargs:
+        defect_relax_kwargs["relax_cell"] = False
+
+    @job
     def _make_defects(atoms):
-        atoms = atoms if isinstance(atoms, Atoms) else atoms["atoms"]
+        atoms = fetch_atoms(atoms)
         return make_defects_from_bulk(
             atoms, defectgen=defectgen, charge_state=charge_state, **make_defects_kwargs
         )
 
-    @ct.electron
-    @ct.lattice
+    @subflow
     def _relax_distributed(defects):
         return [defect_relax(defect, **defect_relax_kwargs) for defect in defects]
 
-    @ct.electron
-    @ct.lattice
+    @subflow
     def _relax_and_static_distributed(defects):
         return [
             defect_static(
