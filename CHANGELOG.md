@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 
 - Renamed `quacc.util` to `quacc.utils`
+- Refactored and standardized the NewtonNet recipes to match the other recipes
 
 ## [0.2.2]
 
