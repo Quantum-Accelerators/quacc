@@ -21,9 +21,6 @@ from quacc.utils.defects import make_defects_from_bulk
 from quacc.utils.wflows import fetch_atoms
 
 if TYPE_CHECKING:
-    from ase import Atoms
-
-    from quacc.schemas.ase import OptSchema, RunSchema
     from quacc.utils.wflows import Job
 
 
