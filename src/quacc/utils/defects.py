@@ -113,7 +113,7 @@ def make_defects_from_bulk(
 
         # Apply rattle and bond distortion to all defects
         defect_dict, distortion_metadata = Dist.apply_distortions()
-        defect_symbol = list(distortion_metadata["defects"].keys())[0]
+        defect_symbol = next(iter(distortion_metadata["defects"].keys()))
         distortion_dict = defect_dict[defect_symbol]["charges"][charge_state][
             "structures"
         ]["distortions"]
@@ -157,11 +157,11 @@ def _get_defect_entry_from_defect(
         defect entry
     """
     # Find defect's fractional coordinates and remove it from supercell
-    dummy_site = [
+    dummy_site = next(
         site
         for site in defect_supercell
         if site.species.elements[0].symbol == DummySpecies().symbol
-    ][0]
+    )
     sc_defect_frac_coords = dummy_site.frac_coords
     defect_supercell.remove(dummy_site)
 
