@@ -263,7 +263,7 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Install pip packages
-        run: pip install .[dev,defects]
+        run: pip install .[strict,dev,defects]
 
       - name: Run tests with pytest
         run: pytest -k 'defects' --cov=quacc --cov-report=xml
