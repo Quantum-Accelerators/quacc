@@ -123,10 +123,10 @@ nav:
       - install/wflow_engines.md
       - install/codes.md
   - User Guide 🧠:
-      - user/basics.md
+      - user/recipes_intro.md
       - Workflow Basics:
-          - user/wflow_overview.md
-          - user/wflow_syntax.md
+          - user/basics/wflow_overview.md
+          - user/basics/wflow_syntax.md
       - Using a Workflow Engine:
           - user/wflow_engine/wflow_engines1.md
           - user/wflow_engine/wflow_engines2.md

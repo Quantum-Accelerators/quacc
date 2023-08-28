@@ -37,7 +37,7 @@ pip install git+https://github.com/quantum-accelerators/quacc.git
 
 !!! Tip
 
-    Everything beyond this point in the installation guide is to add on useful features to quacc. So, if you are just getting started, check out the [Quacc Basics](../user/basics.md) page. Then come back to installing additional features as you need them.
+    Everything beyond this point in the installation guide is to add on useful features to quacc. So, if you are just getting started, check out the [User Guide](../user/recipes_intro.md) page. Then come back to installing additional features as you need them.
 
 ## Optional Dependencies
 

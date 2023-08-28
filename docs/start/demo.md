@@ -16,7 +16,7 @@ Then open the URL printed in the terminal (usually http://localhost:48008) and r
 
 !!! Tip
 
-    Don't want to use Covalent? No problem! Quacc supports a [variety of workflow managers](../user/wflow_overview.md) (or none at all!).
+    Don't want to use Covalent? No problem! Quacc supports a [variety of workflow managers](../user/basics/wflow_overview.md) (or none at all!).
 
 ## Demo Workflow 1: A Simple One
 
@@ -85,6 +85,6 @@ print(result)
 
 ## What Next?
 
-Read through the [User Guide](../user/basics.md) to learn more about using quacc! And of course, feel free to explore the calculations you just ran in the Covalent UI.
+Read through the [User Guide](../user/recipes_intro.md) to learn more about using quacc! And of course, feel free to explore the calculations you just ran in the Covalent UI.
 
 ![Covalent UI](../images/start/ui.jpg)

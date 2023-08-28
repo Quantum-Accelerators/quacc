@@ -8,20 +8,6 @@ Here, we provide code snippets for several decorator-based workflow engines. For
 
     You don't need to learn how to use all the different workflow solutions. You only need to learn the syntax for the one you plan to use! Regardless, the behavior is relatively similar across all of them.
 
-## Unified Workflow Syntax
-
-Each workflow engine has its own unique syntax. To help streamline the process, quacc offers a unified set of decorators.
-
-| Quacc               | Covalent                             | Parsl                  | Jobflow         |
-| ------------------- | ------------------------------------ | ---------------------- | --------------- |
-| `#!Python @job`     | `#!Python @ct.electron`              | `#!Python @python_app` | `#!Python @job` |
-| `#!Python @flow`    | `#!Python @ct.lattice`               | N/A                    | N/A             |
-| `#!Python @subflow` | `#!Python @ct.electron(@ct.lattice)` | `#!Python @join_app`   | N/A             |
-
-The `#!Python @job` decorator indicates that the decorated function is a single step in a workflow. The `#!Python @flow` decorator indicates that the decorated function is a full workflow, consisting of many individual `#!Python @job`-decorated functions (and/or `#!Python @subflow`-decorated functions). The `#!Python @subflow` decorator indicates that the decorated function is a sub-workflow within a larger workflow and is often used to define dynamic steps in a workflow.
-
-Based on the value for the `WORKFLOW_ENGINE` global variable in your [quacc settings](settings.md), the appropriate decorator will be automatically selected. If the `WORKFLOW_ENGINE` setting is set to `None` (or for any entries marked N/A in the above table), the decorators will have no effect on the underlying function.
-
 ## Examples
 
 ### Simple Workflow
@@ -54,20 +40,19 @@ graph LR
 
     ```python
     import covalent as ct
-    from quacc import flow, job
 
 
-    @job # @ct.electron  (1)!
+    @ct.electron #  (1)!
     def add(a, b):
         return a + b
 
 
-    @job # @ct.electron
+    @ct.electron
     def mult(a, b):
         return a * b
 
 
-    @flow # @ct.lattice  (2)!
+    @ct.lattice #  (2)!
     def workflow(a, b, c):
         return mult(add(a, b), c)
 
@@ -77,14 +62,14 @@ graph LR
 
     # Dispatched
     dispatch_id = ct.dispatch(workflow)(1, 2, 3)  # (4)!
-    result = ct.get_result(dispatch_id, wait=True)  # 9  (5)!
+    print(ct.get_result(dispatch_id, wait=True))  # 9  (5)!
     ```
 
-    1. The `#!Python @job` decorator will be transformed into `#!Python @ct.electron`, which tells Covalent to treat the function as a compute job.
+    1. `#!Python @ct.electron` tells Covalent to treat the function as a compute job.
 
-    2. The `#!Python @flow` decorator will be transformed into `#!Python @ct.lattice`, which tells Covalent to treat the function as a workflow.
+    2. `#!Python @ct.lattice` tells Covalent to treat the function as a workflow.
 
-    3. If you call any `#!Python @job`- or `#!Python @flow`-decorated functions normally, Covalent will simply run it like a normal function.
+    3. If you call any `#!Python @ct.electron`- or `#!Python @ct.lattice`-decorated functions normally, Covalent will simply run it like a normal function.
 
     4. The `#!Python ct.dispatch` function tells Covalent to dispatch the workflow to the Covalent server. A unique dispatch ID will be returned instead of the actual result so that the result can be fetched asynchronously.
 
@@ -102,18 +87,18 @@ graph LR
     !!! Important
         Make sure you run `#!Python import parsl` followed by `#!Python parsl.load()` in Python to load a default Parsl configuration.
 
-        Also make sure you have specified `"parsl"` as the `WORKFLOW_ENGINE` in your [quacc settings](settings.md).
+        Also make sure you have specified `"parsl"` as the `WORKFLOW_ENGINE` in your [quacc settings](../settings.md).
 
     ```python
-    from quacc import job
+    from parsl import python_app
 
 
-    @job # @python_app  (1)!
+    @python_app #  (1)!
     def add(a, b):
         return a + b
 
 
-    @job # @python_app
+    @python_app # @python_app
     def mult(a, b):
         return a * b
 
@@ -124,7 +109,7 @@ graph LR
     result = future2.result()  # 9  (2)!
     ```
 
-    1. The `#!Python @job` decorator will be transformed into `#!Python @python_app`, which tells Parsl to treat the function as a compute job.
+    1. The `#!Python @python_app` decorator tells Parsl to treat the function as a compute job.
 
     2. `#!Python .result()` is a method that tells Parsl to wait for the result of the job. If `#!Python .result()` were not called, an `#!Python AppFuture` would be returned instead of the actual result.
 
@@ -138,19 +123,18 @@ graph LR
 
     !!! Important
 
-        Make sure you have specified `"jobflow"` as the `WORKFLOW_ENGINE` in your [quacc settings](settings.md).
+        Make sure you have specified `"jobflow"` as the `WORKFLOW_ENGINE` in your [quacc settings](../settings.md).
 
     ```python
     import jobflow as jf
-    from quacc import job
 
 
-    @job # @jf.job  (1)!
+    @jf.job #  (1)!
     def add(a, b):
         return a + b
 
 
-    @job # @jf.job
+    @jf.job
     def mult(a, b):
         return a * b
 
@@ -163,7 +147,7 @@ graph LR
     result = responses[job2.uuid][1].output  # 9
     ```
 
-    1. The `#!Python @job` decorator will be transformed into the Jobflow-specific `#!Python @job` decorator, which tells Jobflow to treat the function as a compute job.
+    1. The `#!Python @jf.job` decorator tells Jobflow to treat the function as a compute job.
 
     2. The Jobflow `#!Python Flow` object is a class that tells Jobflow to treat the list of jobs as a workflow. We cannot use the quacc `#!Python @flow` decorator with Jobflow.
 
@@ -192,60 +176,57 @@ graph LR
     ```python
     import random
     import covalent as ct
-    from quacc import flow, job, subflow
 
 
-    @job # @ct.electron
+    @ct.electron
     def add(a, b):
         return a + b
 
 
-    @job # @ct.electron
+    @ct.electron
     def make_more(val):
         return [val] * random.randint(2, 5)
 
 
-    @subflow # @ct.electron(@ct.lattice)  (1)!
+    @ct.electron #  (1)!
+    @ct.lattice
     def add_distributed(vals, c):
         return [add(val, c) for val in vals]
 
 
-    @flow # @ct.lattice
+    @ct.lattice
     def workflow(a, b, c):
         result1 = add(a, b)
         result2 = make_more(result1)
         return add_distributed(result2, c)
 
 
-    # Locally
-    result = workflow(1, 2, 3)  # e.g. [6, 6, 6]
-
     # Dispatched
     dispatch_id = ct.dispatch(workflow)(1, 2, 3)
-    result = ct.get_result(dispatch_id, wait=True)  # e.g. [6, 6, 6]
+    print(ct.get_result(dispatch_id, wait=True))  # e.g. [6, 6, 6]
     ```
 
-    1. The `#!Python @subflow` decorator will be transformed into `#!Python @ct.electron(@ct.lattice(<func>))`, which is called a sublattice and tells Covalent to treat the function as a dynamic, sub-workflow.
+    1. The `#!Python @ct.electron(@ct.lattice)` pattern is called a sublattice and tells Covalent to treat the function as a dynamic, sub-workflow.
 
 === "Parsl"
 
     ```python
-    from quacc import job, subflow
+    from parsl import join_app, python_app
 
 
-    @job # @python_app
+    @python_app
     def add(a, b):
         return a + b
 
 
-    @job # @python_app
+    @python_app
     def make_more(val):
         import random
 
         return [val] * random.randint(2, 5)
 
 
-    @subflow # @join_app  (1)!
+    @join_app #  (1)!
     def add_distributed(vals, c):
         return [add(val, c) for val in vals]
 
@@ -257,44 +238,58 @@ graph LR
     result = future3.result()  # e.g. [6, 6, 6]
     ```
 
-    1. The `#!Python @subflow` decorator will be transformed into `#!Python @join_app`, which tells Parsl to treat the function as a dynamic, sub-workflow. Calling `#!Python .result()` will wait for all of the jobs to finish before returning the result.
+    1. The `#!Python @join_app` decorator tells Parsl to treat the function as a dynamic, sub-workflow. Calling `#!Python .result()` will wait for all of the jobs to finish before returning the result.
 
 === "Jobflow"
 
     ```python
     import random
 
-    from jobflow import Flow, Response, run_locally
+    import jobflow as jf
     from quacc import job
 
 
-    @job # @jf.job
+    @jf.job
     def add(a, b):
         return a + b
 
 
-    @job # @jf.job
+    @jf.job
     def make_more(val):
         return [val] * random.randint(2, 5)
 
 
-    @job # @jf.job
+    @jf.job
     def add_distributed(vals, c):
         jobs = []
         for val in vals:
             jobs.append(add(val, c))
-        return Response(replace=Flow(jobs))  # (1)
+        return jf.Response(replace=jf.Flow(jobs))  # (1)
 
 
     job1 = add(1, 2)
     job2 = make_more(job1.output)
     job3 = add_distributed(job2.output, 3)
-    flow = Flow([job1, job2, job3])
+    flow = jf.Flow([job1, job2, job3])
 
-    responses = run_locally(flow)  # e.g. [6, 6, 6] (job3.output)
+    responses = jf.run_locally(flow)  # e.g. [6, 6, 6] (job3.output)
     ```
 
     1. `#!Python Response(replace=Flow(<jobs>))` is a class that tells Jobflow to replace the current job with the specified `#!Python Flow`.
+
+## Unified Workflow Syntax
+
+To help enable interoperability between workflow engines, quacc offers a unified set of decorators.
+
+| Quacc               | Covalent                             | Parsl                  | Jobflow         |
+| ------------------- | ------------------------------------ | ---------------------- | --------------- |
+| `#!Python @job`     | `#!Python @ct.electron`              | `#!Python @python_app` | `#!Python @job` |
+| `#!Python @flow`    | `#!Python @ct.lattice`               | N/A                    | N/A             |
+| `#!Python @subflow` | `#!Python @ct.electron(@ct.lattice)` | `#!Python @join_app`   | N/A             |
+
+The quacc descriptors are drop-in replacements for the specified workflow engine analogue.
+
+Based on the value for the `WORKFLOW_ENGINE` global variable in your [quacc settings](../settings.md), the appropriate decorator will be automatically selected. If the `WORKFLOW_ENGINE` setting is set to `None` (or for any entries marked N/A in the above table), the decorators will have no effect on the underlying function.
 
 ## Learn More
 

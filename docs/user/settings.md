@@ -38,7 +38,7 @@ SETTINGS.CREATE_UNIQUE_WORKDIR = True
 
 !!! Important
 
-    This approach should work as expected for all settings except `WORKFLOW_ENGINE`, which must be defined before any importing any recipes. Therefore, it is recommended to use the YAML file or environment variable approach for specifying the workflow engine.
+    If you use this method to modify the `WORKFLOW_ENGINE` setting, note that you must do so before importing any recipes (e.g. at the top of your script or notebook).
 
 ## List of Quacc Settings
 

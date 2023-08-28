@@ -7,6 +7,16 @@ In quacc, there are two types of recipes:
 1. Individual compute jobs with the suffix `_job` that have been pre-defined with a `#!Python @job` decorator.
 2. Multi-step workflows with the suffix `_flow` that have been pre-defined with a `#!Python @flow` decorator.
 
+!!! Tip
+
+    As a friendly reminder from the [Workflow Syntax](../basics/wflow_syntax.md) section:
+
+    | Quacc               | Covalent                             | Parsl                  | Jobflow         |
+    | ------------------- | ------------------------------------ | ---------------------- | --------------- |
+    | `#!Python @job`     | `#!Python @ct.electron`              | `#!Python @python_app` | `#!Python @job` |
+    | `#!Python @flow`    | `#!Python @ct.lattice`               | N/A                    | N/A             |
+    | `#!Python @subflow` | `#!Python @ct.electron(@ct.lattice)` | `#!Python @join_app`   | N/A             |
+
 ## Running a Pre-Defined Job
 
 We will now try running a pre-defined job where we relax a bulk Cu structure using EMT, which is pre-defined in quacc as [`quacc.recipes.emt.core.relax_job`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.core.relax_job).
@@ -56,10 +66,6 @@ graph LR
     2. Because the workflow is only sent to the server with `ct.dispatch`, calling `workflow(atoms)` would run the workflow as a normal function without Covalent having any role.
 
     3. You don't need to set `wait=True` in practice. Once you call `ct.dispatch`, the workflow will begin running. The `ct.get_result` function is used to fetch the workflow status and results from the server.
-
-    !!! Tip
-
-        Covalent has several [configuration parameters](https://docs.covalent.xyz/docs/user-documentation/how-to/customization/) of its own that can influence runtime behavior. For instance, the `opt.traj` file containing the optimization trajectory that was written out by `relax_job` will be stored in Covalent's `workdir` location: `#!Python ct.get_config()["executors"]["dask"]["workdir"]`.
 
 === "Parsl"
 
@@ -142,8 +148,13 @@ graph LR
     from ase.build import bulk
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
+    # Define the Atoms object
     atoms = bulk("Cu")
+
+    # Dispatch the workflow
     dispatch_id = ct.dispatch(bulk_to_slabs_flow)(atoms)  # (1)!
+
+    # Print the results
     result = ct.get_result(dispatch_id, wait=True)
     print(result)
     ```
