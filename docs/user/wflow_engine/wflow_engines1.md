@@ -1,6 +1,6 @@
 # Pre-Defined Recipes
 
-Here, we will show how to use quacc with one of a variety of workflow engines to construct, dispatch, and monitor your calculations.
+Here, we will show how to use quacc with one of a variety of workflow engines to construct, dispatch, and monitor your calculations. If you haven't installed your workflow engine dependencies yet, refer to the [Worfklow Engine Setup guide](../../install/wflow_engines.md).
 
 In quacc, there are two types of recipes:
 
