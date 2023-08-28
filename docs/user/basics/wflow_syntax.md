@@ -42,7 +42,7 @@ graph LR
     import covalent as ct
 
 
-    @ct.electron #  (1)!
+    @ct.electron  #  (1)!
     def add(a, b):
         return a + b
 
@@ -52,7 +52,7 @@ graph LR
         return a * b
 
 
-    @ct.lattice #  (2)!
+    @ct.lattice  #  (2)!
     def workflow(a, b, c):
         return mult(add(a, b), c)
 
@@ -93,12 +93,12 @@ graph LR
     from parsl import python_app
 
 
-    @python_app #  (1)!
+    @python_app  #  (1)!
     def add(a, b):
         return a + b
 
 
-    @python_app # @python_app
+    @python_app  # @python_app
     def mult(a, b):
         return a * b
 
@@ -129,7 +129,7 @@ graph LR
     import jobflow as jf
 
 
-    @jf.job #  (1)!
+    @jf.job  #  (1)!
     def add(a, b):
         return a + b
 
@@ -188,7 +188,7 @@ graph LR
         return [val] * random.randint(2, 5)
 
 
-    @ct.electron #  (1)!
+    @ct.electron  #  (1)!
     @ct.lattice
     def add_distributed(vals, c):
         return [add(val, c) for val in vals]
@@ -226,7 +226,7 @@ graph LR
         return [val] * random.randint(2, 5)
 
 
-    @join_app #  (1)!
+    @join_app  #  (1)!
     def add_distributed(vals, c):
         return [add(val, c) for val in vals]
 
@@ -244,8 +244,8 @@ graph LR
 
     ```python
     import random
-
     import jobflow as jf
+
     from quacc import job
 
 
