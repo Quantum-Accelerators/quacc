@@ -83,14 +83,12 @@ def flow(_func: callable | None = None, **kwargs) -> Flow:
     wflow_engine = (
         SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
     )
-    if wflow_engine == "covalent":
-        import covalent as ct
+    if wflow_engine != "covalent":
+        return _func
 
-        decorated = ct.lattice(_func, **kwargs)
-    else:
-        decorated = _func
+    import covalent as ct
 
-    return decorated
+    return ct.lattice(_func, **kwargs)
 
 
 def subflow(_func: callable | None = None, **kwargs) -> Subflow:
@@ -123,15 +121,13 @@ def subflow(_func: callable | None = None, **kwargs) -> Subflow:
     if wflow_engine == "covalent":
         import covalent as ct
 
-        decorated = ct.electron(ct.lattice(_func), **kwargs)
+        return ct.electron(ct.lattice(_func), **kwargs)
     elif wflow_engine == "parsl":
         from parsl import join_app
 
-        decorated = join_app(_func, **kwargs)
+        return join_app(_func, **kwargs)
     else:
-        decorated = _func
-
-    return decorated
+        return _func
 
 
 def fetch_atoms(atoms: Atoms | dict) -> Atoms:
