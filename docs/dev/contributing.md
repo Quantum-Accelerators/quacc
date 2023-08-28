@@ -4,7 +4,7 @@ We welcome all contributions, big or small (provided they come with unit tests!)
 
 ## General Tips
 
-When developing new recipes, it is often helpful to start from an existing example. In general, we recommend referring to `quacc.recipes.emt` or `quacc.recipes.tblite`. Some advanced use cases can also be found in the VASP recipes.
+When developing new recipes, it is often helpful to start from an existing example. In general, we recommend referring to `quacc.recipes.emt` or `quacc.recipes.tblite` as a starting point.
 
 ## Steps to Contribute
 
@@ -24,6 +24,8 @@ For reproducibility purposes, we strongly recommend installing quacc in a fresh 
 
 ## Guidelines
 
+### General
+
 Please abide by the following guidelines when contributing code to quacc:
 
 - All changes should have associated unit tests that pass. Code coverage should be maintained.
@@ -40,23 +42,25 @@ Please abide by the following guidelines when contributing code to quacc:
 
 - `gzip` large test files to save space.
 
-- Update the `CHANGELOG.md` file.
+### New Recipes
 
-## Changelog
+If contributing new recipes, please abide by the following guidelines:
 
-We keep a `CHANGELOG.md` file in the base directory of the quacc code. Before submitting your PR, be sure to update the `CHANGELOG.md` file under the "Unreleased" section with a brief description of your changes. The `CHANGELOG.md` file follows the [Keep a Changelog](https://keepachangelog.com) format.
+- Please mimic one of the other recipes as a general template for internal consistency.
 
-## Style Guidelines
+- Ensure that the first positional argument accepts `Atoms | dict` like all the other recipes.
 
-In general, please try to keep the code style consistent when possible. There are two main things to consider:
+- Decorate your individual compute jobs with a `#!Python @job` decorator or your flow with a `#!Python @flow` decorator and name them accordingly.
 
-1. All Python code should be formatted with [isort](https://github.com/PyCQA/isort) and then [black](https://github.com/psf/black), although this will be corrected automatically when merged.
+### Style
 
-2. Use NumPy-style Docstrings.
+In general, please try to keep the code style consistent when possible, particularly:
 
-3. Address any relevant style issues raised by the "Deepsource: Python" and "Sourcery" GitHub actions, if present.
+1. Use NumPy-style Docstrings.
 
-4. Functions should be lowercase and with underscores. Classes should be in PascalCase and constructed using a `#!Python @dataclass` decorator where possible.
+2. Address any relevant style issues raised by the "Deepsource: Python" and "Sourcery" GitHub actions, if present.
+
+3. All Python code should be formatted with [isort](https://github.com/PyCQA/isort) and then [black](https://github.com/psf/black), although this will be corrected automatically when merged.
 
 ## Unit Tests
 
