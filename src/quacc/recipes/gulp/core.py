@@ -159,7 +159,7 @@ def relax_job(
     )
 
     if not final_atoms.calc.get_opt_state():
-        msg = "Optimization did not converge!"
+        msg = "Optimization did not converge."
         raise ValueError(msg)
 
     return summarize_run(

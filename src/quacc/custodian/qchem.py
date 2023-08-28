@@ -68,10 +68,7 @@ def run_custodian(
     )
 
     # Error handlers for Q-Chem
-    if qchem_use_error_handlers:
-        handlers = [QChemErrorHandler()]
-    else:
-        handlers = []
+    handlers = [QChemErrorHandler()] if qchem_use_error_handlers else []
 
     # Run Q-Chem
     jobs = [
