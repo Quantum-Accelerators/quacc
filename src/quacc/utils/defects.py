@@ -3,23 +3,27 @@ Utility functions for dealing with defects
 """
 from __future__ import annotations
 
-import numpy as np
-from ase.atoms import Atoms
-from pymatgen.analysis.defects.core import Defect
-from pymatgen.analysis.defects.generators import (
-    AntiSiteGenerator,
-    ChargeInterstitialGenerator,
-    InterstitialGenerator,
-    SubstitutionGenerator,
-    VacancyGenerator,
-    VoronoiInterstitialGenerator,
-)
+from typing import TYPE_CHECKING
+
 from pymatgen.analysis.defects.thermo import DefectEntry
-from pymatgen.core import Structure
 from pymatgen.core.periodic_table import DummySpecies
 from pymatgen.entries.computed_entries import ComputedStructureEntry
 from pymatgen.io.ase import AseAtomsAdaptor
 from shakenbreak.input import Distortions
+
+if TYPE_CHECKING:
+    import numpy as np
+    from ase.atoms import Atoms
+    from pymatgen.analysis.defects.core import Defect
+    from pymatgen.analysis.defects.generators import (
+        AntiSiteGenerator,
+        ChargeInterstitialGenerator,
+        InterstitialGenerator,
+        SubstitutionGenerator,
+        VacancyGenerator,
+        VoronoiInterstitialGenerator,
+    )
+    from pymatgen.core import Structure
 
 # NOTES:
 # - Anytime an Atoms object is converted to a pmg structure, make sure
