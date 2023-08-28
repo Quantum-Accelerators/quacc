@@ -240,6 +240,38 @@ jobs:
         uses: codecov/codecov-action@v3
         if: github.repository == 'Quantum-Accelerators/quacc'
 
+  tests-defects:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.11"]
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install pip packages
+        run: pip install .[strict,dev,defects]
+
+      - name: Run tests with pytest
+        run: pytest -k 'defects' --cov=quacc --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        if: github.repository == 'Quantum-Accelerators/quacc'
+
   tests-covalent:
     runs-on: ubuntu-latest
     strategy:
