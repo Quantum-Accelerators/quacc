@@ -1,8 +1,9 @@
 """Defect recipes for EMT"""
 from __future__ import annotations
 
-from pymatgen.analysis.defects.generators import VacancyGenerator
 from typing import TYPE_CHECKING
+
+from pymatgen.analysis.defects.generators import VacancyGenerator
 
 from quacc import flow, job, subflow
 from quacc.recipes.emt.core import relax_job as _relax_job
