@@ -76,8 +76,12 @@ def static_job(
     atoms.calc = NewtonNet(**flags)
     final_atoms = run_calc(atoms, copy_files=copy_files)
 
-    return summarize_run(
-        final_atoms, input_atoms=atoms, additional_fields={"name": "NewtonNet Static"}
+    return _add_stdev_and_hess(
+        summarize_run(
+            final_atoms,
+            input_atoms=atoms,
+            additional_fields={"name": "NewtonNet Static"},
+        )
     )
 
 
