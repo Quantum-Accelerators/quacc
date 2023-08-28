@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from pymatgen.analysis.defects.generators import VacancyGenerator
 from pymatgen.analysis.defects.thermo import DefectEntry
 from pymatgen.core.periodic_table import DummySpecies
 from pymatgen.entries.computed_entries import ComputedStructureEntry
@@ -20,7 +21,6 @@ if TYPE_CHECKING:
         ChargeInterstitialGenerator,
         InterstitialGenerator,
         SubstitutionGenerator,
-        VacancyGenerator,
         VoronoiInterstitialGenerator,
     )
     from pymatgen.core import Structure
@@ -109,7 +109,7 @@ def make_defects_from_bulk(
         )
 
         # Instantiate class to apply rattle and bond distortion to all defects
-        Dist = Distortions(defects=[defect_entry])
+        Dist = Distortions([defect_entry])
 
         # Apply rattle and bond distortion to all defects
         defect_dict, distortion_metadata = Dist.apply_distortions()
