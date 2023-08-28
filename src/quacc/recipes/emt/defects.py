@@ -3,7 +3,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ase.atoms import Atoms
 from pymatgen.analysis.defects.generators import (
     AntiSiteGenerator,
     ChargeInterstitialGenerator,
@@ -16,7 +15,6 @@ from pymatgen.analysis.defects.generators import (
 from quacc import flow, job, subflow
 from quacc.recipes.emt.core import relax_job as _relax_job
 from quacc.recipes.emt.core import static_job as _static_job
-from quacc.schemas.ase import OptSchema, RunSchema
 from quacc.utils.defects import make_defects_from_bulk
 from quacc.utils.wflows import fetch_atoms
 
