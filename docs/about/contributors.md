@@ -8,7 +8,15 @@ Quacc was designed and developed by:
 
 ## Contributors
 
-Additional contributions were made by the individuals listed [here](https://github.com/quantum-accelerators/quacc/graphs/contributors).
+Additional contributions were made by the individuals listed [here](https://github.com/quantum-accelerators/quacc/graphs/contributors). Their contributions are summarized below.
+
+!!! Note
+
+    Don't see your name and want to update the list? Submit a PR and update this documentation page!
+
+- @samblau: Custom Q-Chem calculator, Q-Chem core and TS recipes.
+- @kumaranu: NewtonNet core and TS recipes.
+- @rwexler: Defect utilities and EMT defect recipe.
 
 ## Inspiration
 
