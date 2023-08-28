@@ -1,6 +1,7 @@
 """Defect recipes for EMT"""
 from __future__ import annotations
 
+from pymatgen.analysis.defects.generators import VacancyGenerator
 from typing import TYPE_CHECKING
 
 from quacc import flow, job, subflow
@@ -16,7 +17,6 @@ if TYPE_CHECKING:
         ChargeInterstitialGenerator,
         InterstitialGenerator,
         SubstitutionGenerator,
-        VacancyGenerator,
         VoronoiInterstitialGenerator,
     )
 
