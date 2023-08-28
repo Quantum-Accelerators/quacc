@@ -5,3 +5,4 @@
 -->
 
 - [ ] I have read the [Developer Guide](https://quantum-accelerators.github.io/quacc/dev/contributing.html). Don't lie! 😉
+- [ ] My PR is on a custom branch and is _not_ named `main`.

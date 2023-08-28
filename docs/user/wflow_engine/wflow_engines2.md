@@ -279,10 +279,6 @@ graph LR
 
 === "Jobflow"
 
-    Due to the difference in how Jobflow handles dynamic workflows compared to Covalent and Parsl, any quacc recipes with `#!Python @subflow` decorators cannot be used with Jobflow directly.
-
-    That said, quacc fully supports custom Jobflow-based workflows to resolve this limitation. For example, instead of using [`.emt.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/slabs.html#quacc.recipes.emt.slabs.bulk_to_slabs_flow), this workflow can be equivalently run as follows using the Jobflow-specific [`.emt._jobflow.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/_jobflow/slabs.html#quacc.recipes.emt._jobflow.slabs.bulk_to_slabs_flow) function:
-
     ```python
     import jobflow as jf
     from ase.build import bulk
@@ -300,5 +296,3 @@ graph LR
     # Run the workflow locally
     jf.run_locally(workflow, create_folders=True)
     ```
-
-    In the case of the Jobflow-specific `bulk_to_slabs_flow`, it returns a [`Response(replace)`](<https://materialsproject.github.io/jobflow/tutorials/5-dynamic-flows.html#The-Response(replace)-option>) object that dynamically replaces the `Flow` with several downstream jobs.

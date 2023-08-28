@@ -2,13 +2,19 @@
 
 ## Developers
 
-Quacc was designed and developed by:
-
-- [**Andrew S. Rosen**](https://cbe.princeton.edu/people/andrew-rosen), GitHub: [arosen93](https://github.com/arosen93), ORCID: [0000-0002-0141-7006](https://orcid.org/0000-0002-0141-7006).
+Quacc was designed and developed by [**Andrew S. Rosen**](https://cbe.princeton.edu/people/andrew-rosen).
 
 ## Contributors
 
-Additional contributions were made by the individuals listed [here](https://github.com/quantum-accelerators/quacc/graphs/contributors).
+Additional contributions were made by the individuals listed [here](https://github.com/quantum-accelerators/quacc/graphs/contributors). Their contributions are summarized below.
+
+!!! Note
+
+    Don't see your name and want to update the list? Submit a PR and update this documentation page!
+
+- [@samblau](https://github.com/samblau): Custom Q-Chem calculator, Q-Chem core and TS recipes.
+- [@kumaranu](https://github.com/kumaranu): NewtonNet core and TS recipes.
+- [@rwexler](https://github.com/rwexler): Defect utilities and EMT defect recipe.
 
 ## Inspiration
 
