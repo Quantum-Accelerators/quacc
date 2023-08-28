@@ -94,10 +94,10 @@ graph LR
 
     @flow
     def workflow(atoms):
-        atoms = bulk("Ni")
         output = bulk_to_slabs_flow(atoms)
         return output
 
+    atoms = bulk("Ni")
 
     dispatch_id = ct.dispatch(workflow)(atoms)
     ct.get_result(dispatch_id, wait=True)
