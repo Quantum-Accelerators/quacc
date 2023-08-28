@@ -46,7 +46,7 @@ Includes the following sections:
 
 If you use quacc in your work, please cite it as follows:
 
-- A.S. Rosen, quacc – The Quantum Accelerator, https://doi.org/10.5281/zenodo.7720998.
+- quacc – The Quantum Accelerator, https://doi.org/10.5281/zenodo.7720998.
 
 ## License ⚖️
 
