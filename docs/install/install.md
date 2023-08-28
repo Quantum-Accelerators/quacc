@@ -62,7 +62,8 @@ where `extra` is one of the following:
 
 ### Miscellaneous
 
-- `quacc[optimizers]`: Installs dependencies to enable the use of the [Sella optimizer](https://github.com/zadorlab/sella).
+- `quacc[defects]`: Installs dependencies to enable the use of defect workflows.
+- `quacc[optimizers]`: Installs dependencies to enable the use of the Sella optimizer.
 
 ### Development
 
