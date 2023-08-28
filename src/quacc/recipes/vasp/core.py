@@ -152,8 +152,8 @@ def double_relax_job(
 
     Returns
     -------
-    {"relax1": VaspSchema, "relax2": VaspSchema}
-        Dictionaries of the type quacc.schemas.vasp.summarize_run.
+    DoubleRelaxSchema
+        Dictionary of results
     """
     atoms = fetch_atoms(atoms)
     calc_swaps1 = calc_swaps1 or {}

@@ -131,8 +131,8 @@ def mp_relax_flow(
 
     Returns
     -------
-    VaspSchema
-        Dictionary results from quacc.schemas.vasp.summarize_run
+    MPRelaxFlowSchema
+        Dictionary of results
     """
     prerelax_kwargs = prerelax_kwargs or {}
     relax_kwargs = relax_kwargs or {}

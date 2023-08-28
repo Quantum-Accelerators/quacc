@@ -41,7 +41,7 @@ def slab_static_job(
     Returns
     -------
     VaspSchema
-        Dictionary of results from quacc.schemas.vasp.summarize_run
+        Dictionary of results from `quacc.schemas.vasp.summarize_run`
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
@@ -88,7 +88,7 @@ def slab_relax_job(
     Returns
     -------
     VaspSchema
-        Dictionary of results from quacc.schemas.vasp.summarize_run
+        Dictionary of results from `quacc.schemas.vasp.summarize_run`
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
@@ -147,7 +147,7 @@ def bulk_to_slabs_flow(
     Returns
     -------
     list[VaspSchema]
-        List of dictionary results from quacc.schemas.vasp.summarize_run
+        List of dictionary results from `quacc.schemas.vasp.summarize_run`
     """
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}

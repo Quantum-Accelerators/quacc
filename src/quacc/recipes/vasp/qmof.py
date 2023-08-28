@@ -72,7 +72,7 @@ def qmof_relax_job(
 
     Returns
     -------
-    dict
+    QMOFRelaxSchema
         Dictionary of results
     """
     atoms = fetch_atoms(atoms)
@@ -268,8 +268,8 @@ def _double_relax(
 
     Returns
     -------
-    VaspSchema
-        Dictionary of results from quacc.schemas.vasp.summarize_run
+    list[VaspSchema]
+        List of dictionary of results from `quacc.schemas.vasp.summarize_run`
     """
 
     calc_swaps = calc_swaps or {}
