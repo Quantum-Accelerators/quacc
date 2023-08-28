@@ -8,8 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- Added a custom Q-Chem calculator based on Pymatgen and Custodian.
-- Added Q-chem core recipes.
+- Added new defect EMT workflows (@rwexler)
+- Added new defect utilities (@rwexler)
+- Added a custom Q-Chem calculator based on Pymatgen and Custodian. (@samblau)
+- Added Q-chem core recipes. (@samblau)
 - Added the ability to pass option `run_kwargs` to the `.run()` method of the ASE optimizers.
 
 ### Changed
