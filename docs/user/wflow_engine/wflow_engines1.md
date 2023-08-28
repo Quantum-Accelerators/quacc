@@ -61,7 +61,7 @@ graph LR
             return relax_job(atoms)
         ```
 
-        Also note that the `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why did not need to include it here.
+        Also note that the `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
 
     2. Because the workflow is only sent to the server with `ct.dispatch`, calling `workflow(atoms)` would run the workflow as a normal function without Covalent having any role.
 
@@ -95,7 +95,7 @@ graph LR
     print(future.result())  # (2)!
     ```
 
-    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why did not need to include it here. We also did not need to use a `#!Python @flow` decorator because Parsl does not have an analogous decorator.
+    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here. We also did not need to use a `#!Python @flow` decorator because Parsl does not have an analogous decorator.
 
     2. The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object.
 
@@ -124,7 +124,7 @@ graph LR
     print(result)
     ```
 
-    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why did not need to include it here.
+    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
 
     2. We chose to run the job locally, but other workflow managers supported by Jobflow can be imported and used.
 
