@@ -28,7 +28,7 @@ def job(_func: callable | None = None, **kwargs) -> Job:  # sourcery skip
     Returns
     -------
     Job
-        The @job-decorated function. The decorated function will have an attribute `__wrapped__`
+        The @job-decorated function. The decorated function will have an attribute `undecorated`
         which is the original (unwrapped) function.
     """
 
@@ -52,7 +52,7 @@ def job(_func: callable | None = None, **kwargs) -> Job:  # sourcery skip
     else:
         decorated = _func
 
-    decorated.__wrapped__ = _func
+    decorated.undecorated = _func
 
     return decorated
 
@@ -62,7 +62,7 @@ def flow(_func: callable | None = None, **kwargs) -> Flow:  # sourcery skip
     Decorator for workflows, which consist of at least one compute job. This is a @flow decorator.
 
     @flow = @ct.lattice [Covalent]. For Parsl and Jobflow, the decorator returns the
-    original function, unchanged. The decorated function will have an attribute `__wrapped__`
+    original function, unchanged. The decorated function will have an attribute `undecorated`
     which is the original (unwrapped) function.
 
     Parameters
@@ -99,7 +99,7 @@ def subflow(_func: callable | None = None, **kwargs) -> Subflow:  # sourcery ski
 
     @subflow = @ct.electron(@ct.lattice) [Covalent] = @join_app [Parsl].
     For Jobflow, the decorator returns the original (unwrapped) function.
-    The decorated function will have an attribute `__wrapped__`
+    The decorated function will have an attribute `undecorated`
     which is the original (unwrapped) function.
 
     Parameters

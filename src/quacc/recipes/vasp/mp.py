@@ -138,7 +138,7 @@ def mp_relax_flow(
     relax_kwargs = relax_kwargs or {}
 
     # Run the prerelax
-    prerelax_results = prerelax.__wrapped__(atoms, **prerelax_kwargs)
+    prerelax_results = prerelax.undecorated(atoms, **prerelax_kwargs)
 
     # Update KSPACING arguments
     bandgap = prerelax_results["output"].get("bandgap", 0)
@@ -152,7 +152,7 @@ def mp_relax_flow(
     relax_kwargs["calc_swaps"] = kspacing_swaps | relax_kwargs.get("calc_swaps", {})
 
     # Run the relax
-    relax_results = relax.__wrapped__(
+    relax_results = relax.undecorated(
         prerelax_results, copy_files=["WAVECAR"], **relax_kwargs
     )
     relax_results["prerelax"] = prerelax_results
