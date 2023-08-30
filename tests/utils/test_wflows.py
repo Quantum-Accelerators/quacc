@@ -116,8 +116,6 @@ def test_parsl_decorators(tmpdir):
     except RuntimeError:
         pass
 
-    from parsl.app.python import PythonApp
-
     @job
     def add(a, b):
         return a + b
