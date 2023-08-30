@@ -77,7 +77,6 @@ def test_covalent_decorators(tmpdir):
     tmpdir.chdir()
 
     SETTINGS.WORKFLOW_ENGINE = "covalent"
-    from covalent._workflow.lattice import Lattice
 
     @job
     def add(a, b):
