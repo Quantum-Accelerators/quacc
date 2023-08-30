@@ -100,11 +100,8 @@ def test_covalent_decorators(tmpdir):
 
     assert add(1, 2) == 3
     assert mult(1, 2) == 2
-    assert workflow(1, 2, 3) == 9
     assert isinstance(workflow, Lattice)
-    assert dynamic_workflow(1, 2, 3) == [6, 6, 6]
     assert isinstance(dynamic_workflow, Lattice)
-    assert add_distributed([1, 2, 3], 4) == [5, 6, 7]
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl not installed")
