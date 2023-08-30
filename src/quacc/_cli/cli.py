@@ -8,14 +8,14 @@ import ruamel.yaml
 import typer
 
 from quacc import SETTINGS
-
+from quacc.settings import _DEFAULT_CONFIG_FILE_PATH
 if TYPE_CHECKING:
     from typing import Any
 
 app = typer.Typer()
 
 
-CONFIG_FILE = SETTINGS.CONFIG_FILE or os.path.expanduser("~/.quacc.yaml")
+CONFIG_FILE = SETTINGS.CONFIG_FILE or _DEFAULT_CONFIG_FILE_PATH
 
 
 @app.command()
