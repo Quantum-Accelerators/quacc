@@ -34,7 +34,7 @@ def test_quickstart(tmpdir):
     workflow = bulk_to_slabs_flow
 
     # Dispatch the workflow
-    dispatch_id = ct.dispatch(workflow)(atoms)
+    dispatch_id = workflow(atoms)
 
     # Fetch the results
     result = ct.get_result(dispatch_id, wait=True)
@@ -62,7 +62,7 @@ def test_tutorial1a(tmpdir):
 
     # Dispatch the workflow to the Covalent server
     # with the bulk Cu Atoms object as the input
-    dispatch_id = ct.dispatch(workflow)(atoms)  # (3)!
+    dispatch_id = workflow(atoms)  # (3)!
 
     # Fetch the result from the server
     result = ct.get_result(dispatch_id, wait=True)  # (4)!
@@ -82,7 +82,7 @@ def test_tutorial1b(tmpdir):
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
     atoms = bulk("Cu")
-    dispatch_id = ct.dispatch(bulk_to_slabs_flow)(atoms)  # (1)!
+    dispatch_id = bulk_to_slabs_flow(atoms)  # (1)!
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
 
@@ -115,7 +115,7 @@ def test_tutorial2a(tmpdir):
 
     # Dispatch the workflow to the Covalent server
     # with the bulk Cu Atoms object as the input
-    dispatch_id = ct.dispatch(workflow)(atoms)  # (3)!
+    dispatch_id = workflow(atoms)  # (3)!
 
     # Fetch the result from the server
     result = ct.get_result(dispatch_id, wait=True)  # (4)!
@@ -148,7 +148,7 @@ def test_tutorial2b(tmpdir):
     atoms2 = molecule("N2")
 
     # Dispatch the workflow to the Covalent server
-    dispatch_id = ct.dispatch(workflow)(atoms1, atoms2)
+    dispatch_id = workflow(atoms1, atoms2)
 
     # Fetch the results from the server
     result = ct.get_result(dispatch_id, wait=True)
@@ -177,7 +177,7 @@ def test_tutorial2c(tmpdir):
         return relaxed_slabs
 
     atoms = bulk("Cu")
-    dispatch_id = ct.dispatch(workflow)(atoms)
+    dispatch_id = workflow(atoms)
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
 
@@ -196,7 +196,7 @@ def test_tutorial_excecutor1(tmpdir):
         return result2
 
     atoms = bulk("Cu")
-    dispatch_id = ct.dispatch(workflow4)(atoms)
+    dispatch_id = workflow4(atoms)
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
 
@@ -221,7 +221,7 @@ def test_tutorial_excecutor2(tmpdir):
         return output2
 
     atoms = bulk("Cu")
-    dispatch_id = ct.dispatch(workflow5)(atoms)
+    dispatch_id = workflow5(atoms)
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
 
@@ -253,7 +253,7 @@ def test_comparison1(tmpdir):
     result = workflow(1, 2, 3)  # 9  (3)!
 
     # Dispatched
-    dispatch_id = ct.dispatch(workflow)(1, 2, 3)  # (4)!
+    dispatch_id = workflow(1, 2, 3)  # (4)!
     result = ct.get_result(dispatch_id, wait=True)  # 9  (5)!
     assert result.status == "COMPLETED"
 
@@ -291,7 +291,7 @@ def test_comparison2(tmpdir):
     result = workflow(1, 2, 3)  # e.g. [6, 6, 6]
 
     # Dispatched
-    dispatch_id = ct.dispatch(workflow)(1, 2, 3)
+    dispatch_id = workflow(1, 2, 3)
     result = ct.get_result(dispatch_id, wait=True)  # e.g. [6, 6, 6]
 
     assert result.status == "COMPLETED"

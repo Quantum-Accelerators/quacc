@@ -26,7 +26,7 @@ In the previous examples, we have been running calculations on our local machine
 
 
     atoms = bulk("Cu")
-    dispatch_id = ct.dispatch(workflow)(atoms)
+    dispatch_id = workflow(atoms)
     result = ct.get_result(dispatch_id, wait=True)
     print(result)
     ```
@@ -58,7 +58,7 @@ In the previous examples, we have been running calculations on our local machine
 
 
     atoms = bulk("Cu")
-    dispatch_id = ct.dispatch(workflow)(atoms)
+    dispatch_id = workflow(atoms)
     result = ct.get_result(dispatch_id, wait=True)
     print(result)
     ```

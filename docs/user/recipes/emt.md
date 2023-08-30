@@ -50,7 +50,7 @@ graph LR
 
     atoms = bulk("Cu")
 
-    dispatch_id = ct.dispatch(workflow)(atoms)
+    dispatch_id = workflow(atoms)
     ct.get_result(dispatch_id, wait=True)
     ```
 
@@ -99,7 +99,7 @@ graph LR
 
     atoms = bulk("Ni")
 
-    dispatch_id = ct.dispatch(workflow)(atoms)
+    dispatch_id = workflow(atoms)
     ct.get_result(dispatch_id, wait=True)
     ```
 
@@ -152,7 +152,7 @@ graph LR
 
     atoms = bulk("Cu")
 
-    dispatch_id = ct.dispatch(workflow)(atoms)
+    dispatch_id = workflow(atoms)
     ct.get_result(dispatch_id, wait=True)
     ```
 

@@ -40,7 +40,7 @@ graph LR
     workflow = flow(static_job)
     atoms = molecule("O2")
 
-    dispatch_id = ct.dispatch(workflow)(
+    dispatch_id = workflow(
         atoms, charge=0, multiplicity=3, method="wb97m-v", basis="def2-svp"
     )
     ct.get_result(dispatch_id, wait=True)

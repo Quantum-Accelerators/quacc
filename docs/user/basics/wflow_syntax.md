@@ -284,7 +284,7 @@ To help enable interoperability between workflow engines, quacc offers a unified
 | Quacc               | Covalent                             | Parsl                  | Jobflow         |
 | ------------------- | ------------------------------------ | ---------------------- | --------------- |
 | `#!Python @job`     | `#!Python @ct.electron`              | `#!Python @python_app` | `#!Python @job` |
-| `#!Python @flow`    | `#!Python @ct.lattice`               | N/A                    | N/A             |
+| `#!Python @flow`    | `#!Python ct.dispatch(@ct.lattice)`  | N/A                    | N/A             |
 | `#!Python @subflow` | `#!Python @ct.electron(@ct.lattice)` | `#!Python @join_app`   | N/A             |
 
 The quacc descriptors are drop-in replacements for the specified workflow engine analogue.

@@ -34,7 +34,7 @@ atoms = bulk("Cu")
 workflow = bulk_to_slabs_flow
 
 # Dispatch the workflow
-dispatch_id = ct.dispatch(workflow)(atoms)
+dispatch_id = workflow(atoms)
 
 # Fetch the results
 result = ct.get_result(dispatch_id, wait=True)

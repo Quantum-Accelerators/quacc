@@ -48,7 +48,7 @@ graph LR
 
     atoms = bulk("C")
 
-    dispatch_id = ct.dispatch(workflow)(atoms)
+    dispatch_id = workflow(atoms)
     ct.get_result(dispatch_id, wait=True)
     ```
 
@@ -105,7 +105,7 @@ graph LR
 
     atoms = molecule("CH4")
 
-    dispatch_id = ct.dispatch(workflow)(atoms)
+    dispatch_id = workflow(atoms)
     ct.get_result(dispatch_id, wait=True)
     ```
 

@@ -81,19 +81,23 @@ def flow(_func: callable | None = None, **kwargs) -> Flow:  # sourcery skip
         The @flow-decorated function.
     """
 
-    from quacc import SETTINGS
+    @functools.wraps(_func)
+    def _inner(*f_args, **f_kwargs):
+        from quacc import SETTINGS
 
-    wflow_engine = (
-        SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
-    )
-    if wflow_engine == "covalent":
-        import covalent as ct
+        wflow_engine = (
+            SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
+        )
+        if wflow_engine == "covalent":
+            import covalent as ct
 
-        decorated = ct.lattice(_func, **kwargs)
-    else:
-        decorated = _func
+            decorated = ct.dispatch(ct.lattice(_func, **kwargs))
+        else:
+            decorated = _func
 
-    return decorated
+        return decorated(*f_args, **f_kwargs)
+
+    return _inner
 
 
 def subflow(_func: callable | None = None, **kwargs) -> Subflow:  # sourcery skip
