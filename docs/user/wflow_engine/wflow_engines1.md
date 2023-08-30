@@ -53,7 +53,7 @@ graph LR
 
         Also note that the `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
 
-    2. Because the workflow was defined as a `#!Python Flow`, it will be sent to the Covalent server rather and a dispatch ID will be returned.
+    2. Because the workflow was defined as a `#!Python Flow`, it will be sent to the Covalent server and a dispatch ID will be returned.
 
     3. You don't need to set `wait=True` in practice. Once you dispatch the workflow, it will begin running (if the resources are available). The `ct.get_result` function is used to fetch the workflow status and results from the server.
 
