@@ -50,7 +50,7 @@ class QuaccSettings(BaseSettings):
         description=(
             "The workflow manager to use."
             "Options include: 'covalent', 'parsl', 'jobflow', or None"
-        )
+        ),
     )
 
     # ---------------------------
