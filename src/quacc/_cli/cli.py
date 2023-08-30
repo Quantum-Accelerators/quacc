@@ -9,6 +9,7 @@ import typer
 
 from quacc import SETTINGS
 from quacc.settings import _DEFAULT_CONFIG_FILE_PATH
+
 if TYPE_CHECKING:
     from typing import Any
 
