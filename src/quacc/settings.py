@@ -46,17 +46,11 @@ class QuaccSettings(BaseSettings):
     # Workflow Engine
     # ---------------------------
     WORKFLOW_ENGINE: Optional[str] = Field(
-        "covalent"
-        if covalent
-        else "parsl"
-        if parsl
-        else "jobflow"
-        if jobflow
-        else None,
+        None,
         description=(
             "The workflow manager to use."
             "Options include: 'covalent', 'parsl', 'jobflow', or None"
-        ),
+        )
     )
 
     # ---------------------------
@@ -294,6 +288,9 @@ class QuaccSettings(BaseSettings):
         new_values = {}
         if os.path.exists(os.path.expanduser(config_file_path)):
             new_values |= loadfn(os.path.expanduser(config_file_path))
+
+        if not new_values:
+            return {}
 
         new_values.update(values)
         return new_values
