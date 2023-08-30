@@ -22,20 +22,21 @@ WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else
 def test_quickstart(tmpdir):
     tmpdir.chdir()
 
-    workflow_start = flow(relax_job)
-    atoms = bulk("Cu")
-    dispatch_id = ct.dispatch(workflow_start)(atoms)
-    result = ct.get_result(dispatch_id, wait=True)
-    assert result.status == "COMPLETED"
+    import covalent as ct
+    from ase.build import bulk
 
-    @flow(executor="local")
-    def workflow_start2(atoms):
-        relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk)
-        return relaxed_slabs
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
+    # Define the Atoms object
     atoms = bulk("Cu")
-    dispatch_id = ct.dispatch(workflow_start2)(atoms)
+
+    # Define the workflow
+    workflow = bulk_to_slabs_flow
+
+    # Dispatch the workflow
+    dispatch_id = ct.dispatch(workflow)(atoms)
+
+    # Fetch the results
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
 

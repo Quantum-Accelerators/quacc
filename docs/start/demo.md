@@ -18,70 +18,30 @@ Then open the URL printed in the terminal (usually http://localhost:48008) and r
 
     Don't want to use Covalent? No problem! Quacc supports a [variety of workflow managers](../user/basics/wflow_overview.md) (or none at all!).
 
-## Demo Workflow 1: A Simple One
+## Demo Workflow
 
-This demo workflow will relax a bulk Cu structure using the EMT calculator.
-
-```python
-import covalent as ct
-from ase.build import bulk
-from quacc import flow
-from quacc.recipes.emt.core import relax_job
-
-# Define the workflow
-workflow = flow(relax_job)
-
-# Make an Atoms object of a bulk Cu structure
-atoms = bulk("Cu")
-
-# Dispatch the workflow to the Covalent server
-# with the bulk Cu Atoms object as the input
-dispatch_id = ct.dispatch(workflow)(atoms)
-
-# Fetch the result from the server
-result = ct.get_result(dispatch_id, wait=True)
-print(result)
-```
-
-![Covalent UI](../images/start/start1.jpg)
-
-## Demo Workflow 2: A More Complex One
-
-This demo workflow will relax a bulk Cu structure using the EMT calculator, use the relaxed structure to generate a set of surface slabs, and then run a relaxation and static calculation on each generated slab.
+This demo workflow will generate a set of surface slabs from bulk Cu and then run a relaxation and static calculation on each generated slab.
 
 ```python
 import covalent as ct
 from ase.build import bulk
-from quacc import flow
-from quacc.recipes.emt.core import relax_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
-
-# Define the workflow and set how to execute
-@flow(executor="local")
-def workflow(atoms):
-    # Relax a bulk structure
-    relaxed_bulk = relax_job(atoms)
-
-    # With the relaxed bulk as input, generate and relax slabs
-    relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk)
-
-    return relaxed_slabs
-
-
-# Make an Atoms object of a bulk Cu structure
+# Define the Atoms object
 atoms = bulk("Cu")
 
-# Dispatch the workflow to the Covalent server
-# with the bulk Cu Atoms object as the input
+# Define the workflow
+workflow = bulk_to_slabs_flow
+
+# Dispatch the workflow
 dispatch_id = ct.dispatch(workflow)(atoms)
 
-# Fetch the result from the server
+# Fetch the results
 result = ct.get_result(dispatch_id, wait=True)
 print(result)
 ```
 
-![Covalent UI](../images/start/start2.gif)
+![Covalent UI](../images/start/start.gif)
 
 ## What Next?
 
