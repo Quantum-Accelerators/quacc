@@ -180,7 +180,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-          cache-dependency-path: setup.py
+          cache-dependency-path: pyproject.toml
 
       - name: Set up conda
         uses: conda-incubator/setup-miniconda@v2
@@ -219,7 +219,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-          cache-dependency-path: setup.py
+          cache-dependency-path: pyproject.toml
 
       - name: Set up conda
         uses: conda-incubator/setup-miniconda@v2
