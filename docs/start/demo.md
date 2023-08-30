@@ -27,22 +27,21 @@ import covalent as ct
 from ase.build import bulk
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
-# Make an Atoms object of a bulk Cu structure
+# Define the Atoms object
 atoms = bulk("Cu")
 
 # Define the workflow
 workflow = bulk_to_slabs_flow
 
-# Dispatch the workflow to the Covalent server
-# with the bulk Cu Atoms object as the input
+# Dispatch the workflow
 dispatch_id = ct.dispatch(workflow)(atoms)
 
-# Fetch the result from the server
+# Fetch the results
 result = ct.get_result(dispatch_id, wait=True)
 print(result)
 ```
 
-![Covalent UI](../images/start/start2.gif)
+![Covalent UI](../images/start/start.gif)
 
 ## What Next?
 
