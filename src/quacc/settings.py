@@ -289,8 +289,5 @@ class QuaccSettings(BaseSettings):
         if os.path.exists(os.path.expanduser(config_file_path)):
             new_values |= loadfn(os.path.expanduser(config_file_path))
 
-        if not new_values:
-            return {}
-
         new_values.update(values)
         return new_values
