@@ -32,3 +32,10 @@ ipython_config.py
 
 # Editors ignores
 .vscode*
+
+# Environments
+.env
+.venv
+venv/
+env/
+ENV/
