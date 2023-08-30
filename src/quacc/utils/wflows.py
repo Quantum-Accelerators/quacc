@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import functools
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -32,29 +33,31 @@ def job(_func: callable | None = None, **kwargs) -> Job:  # sourcery skip
         which is the original (unwrapped) function.
     """
 
-    from quacc import SETTINGS
+    @functools.wraps(_func)
+    def _inner(*f_args, **f_kwargs):
+        from quacc import SETTINGS
 
-    wflow_engine = (
-        SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
-    )
-    if wflow_engine == "covalent":
-        import covalent as ct
+        wflow_engine = (
+            SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
+        )
+        if wflow_engine == "covalent":
+            import covalent as ct
 
-        decorated = ct.electron(_func, **kwargs)
-    elif wflow_engine == "jobflow":
-        from jobflow import job as jf_job
+            decorated = ct.electron(_func, **kwargs)
+        elif wflow_engine == "jobflow":
+            from jobflow import job as jf_job
 
-        decorated = jf_job(_func, **kwargs)
-    elif wflow_engine == "parsl":
-        from parsl import python_app
+            decorated = jf_job(_func, **kwargs)
+        elif wflow_engine == "parsl":
+            from parsl import python_app
 
-        decorated = python_app(_func, **kwargs)
-    else:
-        decorated = _func
+            decorated = python_app(_func, **kwargs)
+        else:
+            decorated = _func
 
-    decorated.undecorated = _func
+        return decorated(*f_args, **f_kwargs)
 
-    return decorated
+    return _inner
 
 
 def flow(_func: callable | None = None, **kwargs) -> Flow:  # sourcery skip
@@ -115,23 +118,27 @@ def subflow(_func: callable | None = None, **kwargs) -> Subflow:  # sourcery ski
         The decorated function.
     """
 
-    from quacc import SETTINGS
+    @functools.wraps(_func)
+    def _inner(*f_args, **f_kwargs):
+        from quacc import SETTINGS
 
-    wflow_engine = (
-        SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
-    )
-    if wflow_engine == "covalent":
-        import covalent as ct
+        wflow_engine = (
+            SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
+        )
+        if wflow_engine == "covalent":
+            import covalent as ct
 
-        decorated = ct.electron(ct.lattice(_func), **kwargs)
-    elif wflow_engine == "parsl":
-        from parsl import join_app
+            decorated = ct.electron(ct.lattice(_func), **kwargs)
+        elif wflow_engine == "parsl":
+            from parsl import join_app
 
-        decorated = join_app(_func, **kwargs)
-    else:
-        decorated = _func
+            decorated = join_app(_func, **kwargs)
+        else:
+            decorated = _func
 
-    return decorated
+        return decorated(*f_args, **f_kwargs)
+
+    return _inner
 
 
 def fetch_atoms(atoms: Atoms | dict) -> Atoms:

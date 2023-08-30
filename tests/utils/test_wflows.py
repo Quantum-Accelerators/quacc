@@ -99,15 +99,12 @@ def test_covalent_decorators(tmpdir):
         return add_distributed(result2, c)
 
     assert add(1, 2) == 3
-    assert hasattr(add, "electron_object")
     assert mult(1, 2) == 2
-    assert hasattr(mult, "electron_object")
     assert workflow(1, 2, 3) == 9
     assert isinstance(workflow, Lattice)
     assert dynamic_workflow(1, 2, 3) == [6, 6, 6]
     assert isinstance(dynamic_workflow, Lattice)
     assert add_distributed([1, 2, 3], 4) == [5, 6, 7]
-    assert hasattr(add_distributed, "electron_object")
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl not installed")
@@ -148,15 +145,10 @@ def test_parsl_decorators(tmpdir):
         return add_distributed(result2, c)
 
     assert add(1, 2).result() == 3
-    assert isinstance(add, PythonApp)
     assert mult(1, 2).result() == 2
-    assert isinstance(mult, PythonApp)
     assert workflow(1, 2, 3).result() == 9
-    assert not isinstance(workflow, PythonApp)
     assert dynamic_workflow(1, 2, 3).result() == [6, 6, 6]
-    assert not isinstance(dynamic_workflow, PythonApp)
     assert add_distributed([1, 2, 3], 4).result() == [5, 6, 7]
-    assert isinstance(add_distributed, PythonApp)
 
 
 @pytest.mark.skipif(jobflow is None, reason="Jobflow not installed")
@@ -182,8 +174,6 @@ def test_jobflow_decorators(tmpdir):
     def workflow(a, b, c):
         return mult(add(a, b), c)
 
-    assert not isinstance(add, Job)
-    assert not isinstance(mult, Job)
     assert isinstance(add(1, 2), Job)
     assert isinstance(mult(1, 2), Job)
     assert isinstance(workflow(1, 2, 3), Job)

@@ -40,10 +40,6 @@ from quacc import SETTINGS
 SETTINGS.CREATE_UNIQUE_WORKDIR = True
 ```
 
-!!! Important
-
-    If you use this method to modify the `WORKFLOW_ENGINE` setting, note that you must do so before importing any recipes (e.g. at the top of your script or notebook).
-
 ## List of Quacc Settings
 
 ```title="quacc/settings.py"
