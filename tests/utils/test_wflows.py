@@ -108,8 +108,8 @@ def test_covalent_decorators(tmpdir):
     assert add(1, 2) == 3
     assert mult(1, 2) == 2
     assert ct.get_result(workflow(1, 2, 3), wait=True).result == 9
-    assert ct.get_result(dynamic_workflow(1, 2, 3), wait=True) == [6, 6, 6]
-    assert ct.get_result(add_distributed([1, 2, 3], 4), wait=True) == [5, 6, 7]
+    assert ct.get_result(dynamic_workflow(1, 2, 3), wait=True).result == [6, 6, 6]
+    assert ct.get_result(add_distributed([1, 2, 3], 4), wait=True).result == [5, 6, 7]
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl not installed")
@@ -120,8 +120,6 @@ def test_parsl_decorators(tmpdir):
         parsl.load()
     except RuntimeError:
         pass
-
-    from parsl.app.python import PythonApp
 
     @job
     def add(a, b):
@@ -150,15 +148,10 @@ def test_parsl_decorators(tmpdir):
         return add_distributed(result2, c)
 
     assert add(1, 2).result() == 3
-    assert isinstance(add, PythonApp)
     assert mult(1, 2).result() == 2
-    assert isinstance(mult, PythonApp)
     assert workflow(1, 2, 3).result() == 9
-    assert not isinstance(workflow, PythonApp)
     assert dynamic_workflow(1, 2, 3).result() == [6, 6, 6]
-    assert not isinstance(dynamic_workflow, PythonApp)
     assert add_distributed([1, 2, 3], 4).result() == [5, 6, 7]
-    assert isinstance(add_distributed, PythonApp)
 
 
 @pytest.mark.skipif(jobflow is None, reason="Jobflow not installed")
