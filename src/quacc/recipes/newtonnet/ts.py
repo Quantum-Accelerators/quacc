@@ -120,7 +120,7 @@ def ts_job(
 
     # Run a frequency calculation
     freq_summary = (
-        freq_job.undecorated(opt_ts_summary, **freq_job_kwargs) if freq_job else None
+        freq_job.__wrapped__(opt_ts_summary, **freq_job_kwargs) if freq_job else None
     )
     opt_ts_summary["freq"] = freq_summary
 
@@ -204,7 +204,7 @@ def irc_job(
 
     # Run frequency job
     freq_summary = (
-        freq_job.undecorated(opt_irc_summary, **freq_job_kwargs) if freq_job else None
+        freq_job.__wrapped__(opt_irc_summary, **freq_job_kwargs) if freq_job else None
     )
     opt_irc_summary["freq"] = freq_summary
 
@@ -253,16 +253,16 @@ def quasi_irc_job(
     irc_flags = merge_dicts(irc_defaults, irc_swaps)
 
     # Run IRC
-    irc_summary = irc_job.undecorated(
+    irc_summary = irc_job.__wrapped__(
         atoms, direction=direction, opt_swaps=irc_flags, freq_job=None
     )
 
     # Run opt
-    relax_summary = relax_job.undecorated(irc_summary, **opt_swaps)
+    relax_summary = relax_job.__wrapped__(irc_summary, **opt_swaps)
 
     # Run frequency
     freq_summary = (
-        freq_job.undecorated(relax_summary, **freq_job_kwargs) if freq_job else None
+        freq_job.__wrapped__(relax_summary, **freq_job_kwargs) if freq_job else None
     )
     relax_summary["freq"] = freq_summary
     relax_summary["irc"] = irc_summary
