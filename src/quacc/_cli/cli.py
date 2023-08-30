@@ -20,7 +20,7 @@ CONFIG_FILE = SETTINGS.CONFIG_FILE or _DEFAULT_CONFIG_FILE_PATH
 
 
 @app.command()
-def set(parameter: str, new_value: str) -> None:
+def setenv(parameter: str, new_value: str) -> None:
     """
     Set the quacc variable.
 
