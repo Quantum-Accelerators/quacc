@@ -1,8 +1,6 @@
 import numpy as np
 import pytest
 from ase.build import molecule
-
-from quacc import SETTINGS
 from quacc.recipes.lj.core import freq_job, relax_job, static_job
 
 

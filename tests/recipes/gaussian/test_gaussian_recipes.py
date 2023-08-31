@@ -1,7 +1,4 @@
-import pytest
 from ase.build import molecule
-
-from quacc import SETTINGS
 from quacc.recipes.gaussian.core import relax_job, static_job
 
 

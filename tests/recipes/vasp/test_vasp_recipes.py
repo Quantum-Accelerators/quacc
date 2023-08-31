@@ -1,7 +1,5 @@
 import pytest
 from ase.build import bulk, molecule
-
-from quacc import SETTINGS
 from quacc.recipes.vasp.core import double_relax_job, relax_job, static_job
 from quacc.recipes.vasp.mp import mp_prerelax_job, mp_relax_flow, mp_relax_job
 from quacc.recipes.vasp.qmof import qmof_relax_job

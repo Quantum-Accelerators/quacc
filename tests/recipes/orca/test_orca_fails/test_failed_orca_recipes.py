@@ -1,7 +1,5 @@
 import pytest
 from ase.build import molecule
-
-from quacc import SETTINGS
 from quacc.recipes.orca.core import relax_job
 
 
