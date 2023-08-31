@@ -71,7 +71,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install -r tests/requirements.txt
-          pip install tests/requirements-tblite.txt
+          pip install -r tests/requirements-tblite.txt
           pip install .[dev]
 
       - name: Run tests with pytest
