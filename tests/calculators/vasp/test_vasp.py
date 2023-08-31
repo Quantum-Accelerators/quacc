@@ -12,7 +12,7 @@ from ase.io import read
 
 from quacc.calculators.vasp import Vasp
 from quacc.presets import vasp as v
-from quacc.util.atoms import prep_next_run
+from quacc.utils.atoms import prep_next_run
 
 FILE_DIR = Path(__file__).resolve().parent
 DEFAULT_CALCS_DIR = os.path.dirname(v.__file__)
@@ -387,25 +387,6 @@ def test_lasph():
     assert calc.bool_params["lasph"] is True
 
 
-def test_lmaxtau():
-    atoms = bulk("Cu")
-    calc = Vasp(atoms, lasph=True)
-    assert calc.int_params["lmaxtau"] is None
-
-    atoms = bulk("Ce")
-    calc = Vasp(atoms, lasph=True)
-    assert calc.int_params["lmaxtau"] is None
-
-    atoms = bulk("Ce")
-    calc = Vasp(atoms, lasph=True, metagga="r2SCAN")
-    assert calc.int_params["lmaxtau"] == 8
-
-    atoms = bulk("Cu") * (2, 2, 2)
-    atoms[-1].symbol = "Ce"
-    calc = Vasp(atoms, lasph=True, metagga="r2SCAN")
-    assert calc.int_params["lmaxtau"] == 8
-
-
 def test_efermi():
     atoms = bulk("Cu")
     calc = Vasp(atoms)
@@ -417,18 +398,6 @@ def test_efermi():
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, efermi=10.0)
-    assert calc.string_params["efermi"] == 10.0
-
-    atoms = bulk("Cu")
-    calc = Vasp(atoms, vasp_min_version=5.4)
-    assert calc.string_params["efermi"] is None
-
-    atoms = bulk("Cu")
-    calc = Vasp(atoms, vasp_min_version=5.4, efermi="midgap")
-    assert calc.string_params["efermi"] is None
-
-    atoms = bulk("Cu")
-    calc = Vasp(atoms, vasp_min_version=5.4, efermi=10.0)
     assert calc.string_params["efermi"] == 10.0
 
 
@@ -502,6 +471,13 @@ def test_ncore():
     calc = Vasp(atoms, npar=4, lhfcalc=True)
     assert calc.int_params["ncore"] == 1
     assert calc.int_params["npar"] is None
+
+    calc = Vasp(atoms, npar=4, lelf=True)
+    assert calc.int_params["npar"] == 1
+
+    calc = Vasp(atoms, ncore=4, lelf=True)
+    assert calc.int_params["npar"] == 1
+    assert calc.int_params["ncore"] is None
 
 
 def test_ismear():
@@ -617,12 +593,12 @@ def test_lorbit():
 def test_setups():
     atoms = bulk("Cu")
     calc = Vasp(atoms, preset="BulkSet")
-    assert calc.parameters["setups"]["Cu"] == "_pv"
+    assert calc.parameters["setups"]["Cu"] == ""
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, preset="SlabSet")
     assert calc.parameters["setups"]["Ba"] == "_sv"
-    assert calc.parameters["setups"]["Cu"] == "_pv"
+    assert calc.parameters["setups"]["Cu"] == ""
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, preset="MPScanSet")

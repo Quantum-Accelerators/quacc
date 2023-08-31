@@ -4,80 +4,137 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [UNRELEASED]
-
-## [0.1.0]
+## [Unreleased]
 
 ### Added
 
-- Added optional support for Covalent as the workflow manager.
-- Improved documentation.
-- Automatic formatting of files during PRs.
-- This `CHANGELOG.md` file.
-- The `BulkToSlabsFlow` in the EMT calculator for both Covalent and Jobflow.
-- The `BulkToSlabsFlow` in the VASP calculator for Covalent.
-- `LennardJones` demonstration recipes.
-- A module named `quacc.util.db` to handle database interactions.
-- A function `quacc.util.db.results_to_db` to store results in a database.
-- A function `quacc.util.db.covalent_to_db` to store Covalent results in a database.
-- A new `pop_analysis` kwarg to `quacc.schemas.cclib.summarize_run`.
-- New functions `quacc.util.dict.clean_dicts` and `quacc.util.dicts.sort_dict`.
-- Added support for Python 3.10.
-- Added a name VASP setting `VASP_MIN_VERSION`.
-- Added a new VASP swap for `EFERMI = "MIDGAP"` if `VASP_MIN_VERSION >= 6.4`.
+- Added new defect EMT workflows (@rwexler)
+- Added new defect utilities (@rwexler)
+- Added a custom Q-Chem calculator based on Pymatgen and Custodian. (@samblau)
+- Added Q-chem core recipes. (@samblau)
+- Added the ability to pass option `run_kwargs` to the `.run()` method of the ASE optimizers.
 
 ### Changed
 
-- Individual compute jobs are now functions instead of classes.
-- All compute jobs are wrapped by `@ct.electron` instead of `@job`.
-- Use of Jobflow is now optional.
-- Use of a MongoDB is now optional.
-- Changed the `extras` names in `setup.py`.
-- Updated the dependencies.
-- Increased default for `max_steps` in `run_ase_opt` from 100 to 500.
-- Switch license to standard BSD-3.
-- Simplified output schema for VASP slab workflows.
-- Changed `removed_empties` default to `False` for the VASP schema.
-- Use `setups_pbe54_MP` as the default pseudopotentials for the `BulkSet` preset in VASP.
-- Modified thermo and vibrational frequency schemas.
-- The `run_ase_opt` function returns an ASE `Optimizer` object instead of a `Trajectory` object.
-- The `summarize_opt_run` function takes in an ASE `Optimizer` object instead of a `Trajectory` object.
-- The `summarize_opt_run` function no longer needs the `atoms.calc.parameters` kwarg.
-- Renamed `prerelax` kwarg in `qmof_relax_job` was changed to `run_prerelax` to reflect that it is a boolean.
-- Renamed `volume_relax` kwarg in VASP recipes to `relax_cell` to reflect that it is a boolean.
-- Renamed `molden` to `write_molden` in Gaussian recipes to reflect that it is a boolean.
-- Renamed `quacc.recipes.tblite.core.thermo_job` to `quacc.recipes.tblite.core.freq_job`.
-- Renamed `quacc.schemas.calc` to `quacc.schemas.ase`.
-- Split `quacc.util.basics` and its associated functions into `quacc.util.dicts` and `quacc.util.files`.
-- Moved `main` branch to an orphan and started new `main` branch.
-- Moved ideal gas thermo calculation to `quacc.util.thermo`.
-- Moved `check_logfile` to `quacc.util.files`.
-- Moved `convert_auto_kpts` to `quacc.calculators.vasp`.
-- By default, output schemas are sorted by key alphabetically.
-- Used `|` operator for dictionary merging instead of `{**dict1, **dict2}`.
-- Refactors VASP calculator.
-- Added `relax_cell` option to EMT `relax_job`.
+- Renamed `quacc.util` to `quacc.utils`
+- Refactored and standardized the NewtonNet recipes to match the other recipes
+
+## [0.2.2]
+
+### Changed
+
+- Changed package handling in `pyproject.toml` to better handle pip installs.
+
+## [0.2.1]
+
+### Added
+
+- Added NewtonNet recipes and better sella support (@kumaranu)
+
+### Changed
+
+- Standardized `relax_cell` to be `False` by default for all recipes.
+- Update the default `SIGMA` and `ISMEAR` in `MPScanSet` to match the new values to be used in Atomate2.
 
 ### Fixed
 
-- If the user-specified `scratch_dir` does not exist on the filesystem when using `run_calc`, `run_ase_opt`, or `run_ase_vib`, it will be created.
-- Fixed issue in the `TBLite` `ThermoJob` where magnetic moments were not being passed between the `Vibrations` and `IdealGasThermo` jobs.
-- Fixed type hinting.
+- Fixed a bug on Windows where the trajectory file would not be closed after a relaxation, causing permission errors.
 
 ### Removed
 
-- Removed the `xtb` recipes in favor of the `tblite` recipes following deprecation warning.
-- Removed the `requirements.txt` file in favor of the `setup.py` file.
-- Remove `quacc.util.dicts.merge_dicts`.
-- Removed Python 3.8 support.
+- Removed atomate2 as a dependency.
+- Removed experimental Prefect support.
+
+## [0.2.0]
+
+### Added
+
+- Added a quacc global setting, `WORKFLOW_ENGINE`, to set the workflow manager.
+- Added support for the new `covalent-hpc-plugin` in `pyproject.toml`.
+
+### Changed
+
+- Quacc recipes are now decorated with generic `#!Python @job`, `#!Python @subflow`, or `#!Python @flow` decorators to be workflow engine-agnostic.
+- Covalent is now an optional dependency to allow the base `quacc` package to be dependency-light.
+- Default VASP pseudopotentials changed to `setups_pbe54.yaml`.
+- Changed `quacc.recipes.emt.jobflow` and `quacc.recipes.emt.prefect` to `quacc.recipes.emt._jobflow` and `quacc.recipes.emt._prefect`
+
+### Fixed
+
+- Set `LMAXMIX` based on the `Z` value, not the s/p/d/f-block type.
+- Do not set automatically `LMAXTAU` to 8 for f-containing elements in `Vasp` calculator.
+
+### Removed
+
+- Removed `quacc.recipes.emt.parsl` since it is now obsolete.
+- Removed `quacc config` command-line option.
+
+## [0.1.3]
+
+### Added
+
+- Added a `PRIMARY_STORE` quacc setting that, when specified, will automatically store all results in the specified Maggma store.
+
+### Changed
+
+- The trajectory is now stored in `quacc.schemas.cclib.summarize_run`.
+- By default, results are now stored in a fixed `RESULTS_DIR`, which defaults to the current working directory.
+
+### Fixed
+
+- Fix path-related issues when running in local multi-threaded mode.
+- Psi4 recipes now use `uks` for unrestricted calculations instead of `uhf`.
+
+## [0.1.2]
+
+### Added
+
+- Added support for Prefect.
+- Added `quacc.utils.wflows` module.
+
+### Changed
+
+- Made slab-related kwargs more consistent, such as by changing `slab_relax_electron`/`slab_relax_app` to just `slab_relax` regardless of workflow manager.
+
+## [0.1.1]
+
+### Added
+
+- Added this `CHANGELOG.md` file.
+- Added the `quacc.recipes.emt.parsl` module.
+- Added a CLI for `quacc` along with a `quacc config` option to configure Covalent appropriately upon install.
+- Added generic type hints for schemas.
+- Added a `CREATE_UNIQUE_WORKDIR` global setting to have quacc automatically make a unique working directory for each calculation.
+- Added `CHECK_CONVERGENCE` to global settings.
+
+### Changed
+
+- The `quacc` directory is now found in a `src` basefolder.
+- All recipes now support the `Atoms` object being passed in as an `AtomsSchema`.
+- The `slab_relax_job` kwarg in `recipes.emt.slabs` and `recipes.vasp.slabs` workflows can no longer be set to `None`, as there are few situations where this would be desired.
+- Class-based recipes have been converted to functions since they don't save state or have inheritance.
+
+### Docs
+
+- Switched the docs from Furo to Material for MkDocs.
+- Expanded upon Parsl documentation.
+- Modified tutorials and added example configs for Slurm.
+
+### Fixed
+
+- Temporary directories are cleaned up after the run is completed.
+
+### Removed
+
+- Removed `quacc.recipes.vasp.jobflow` module to prioritize Covalent and Parsl.
+
+## [0.1.0]
+
+See https://github.com/quantum-accelerators/quacc/releases/tag/v0.1.0 for more details.
 
 ## [0.0.6]
 
 See https://github.com/quantum-accelerators/quacc/releases/tag/v0.0.6 for more details.
-
-## [0.0.5]
-
-See https://github.com/quantum-accelerators/quacc/releases/tag/v0.0.5 for more details.
 
 ## [0.0.5]
 

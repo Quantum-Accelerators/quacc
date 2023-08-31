@@ -1,41 +1,27 @@
-import os
-from shutil import rmtree, which
+from shutil import which
 
 import numpy as np
 import pytest
 from ase.build import bulk, molecule
 
+from quacc import SETTINGS
 from quacc.recipes.dftb.core import relax_job, static_job
 
 DFTBPLUS_EXISTS = bool(which("dftb+"))
-
-
-def teardown_module():
-    for f in os.listdir(os.getcwd()):
-        if (
-            f.endswith(".log")
-            or f.endswith(".pckl")
-            or f.endswith(".traj")
-            or f.endswith(".out")
-            or f.endswith(".bin")
-            or f.endswith(".hsd")
-            or f.endswith(".gz")
-            or f.endswith(".gen")
-            or f.endswith(".tag")
-        ):
-            os.remove(f)
-        if "quacc-tmp" in f or f == "tmp_dir":
-            if os.path.islink(f):
-                os.unlink(f)
-            else:
-                rmtree(f)
+DEFAULT_SETTINGS = SETTINGS.copy()
 
 
 @pytest.mark.skipif(
     DFTBPLUS_EXISTS is False,
     reason="DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
 )
-def test_static_Job():
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
+def test_static_job(tmpdir):
+    tmpdir.chdir()
+
     atoms = molecule("H2O")
 
     output = static_job(atoms)
@@ -66,12 +52,22 @@ def test_static_Job():
     )
     assert np.array_equal(output["atoms"].cell.array, atoms.cell.array) is True
 
+    with pytest.raises(ValueError):
+        atoms = molecule("H2O")
+        output = static_job(atoms, calc_swaps={"Hamiltonian_MaxSccIterations": 1})
+
 
 @pytest.mark.skipif(
     DFTBPLUS_EXISTS is False,
     reason="DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
 )
-def test_relax_job():
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
+def test_relax_job(tmpdir):
+    tmpdir.chdir()
+
     atoms = molecule("H2O")
 
     output = relax_job(atoms)
@@ -107,7 +103,7 @@ def test_relax_job():
 
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
-    output = relax_job(atoms, method="GFN1-xTB", kpts=(3, 3, 3), lattice_opt=True)
+    output = relax_job(atoms, method="GFN1-xTB", kpts=(3, 3, 3), relax_cell=True)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN1-xTB"
@@ -124,3 +120,23 @@ def test_relax_job():
         np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is False
     )
     assert np.array_equal(output["atoms"].cell.array, atoms.cell.array) is False
+
+    with pytest.raises(ValueError):
+        atoms = bulk("Cu") * (2, 1, 1)
+        atoms[0].position += 0.5
+        relax_job(atoms, kpts=(3, 3, 3), calc_swaps={"MaxSteps": 1})
+
+
+@pytest.mark.skipif(
+    DFTBPLUS_EXISTS is False,
+    reason="DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
+)
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    reason="This test suite is for regular function execution only",
+)
+def test_unique_workdir(tmpdir):
+    SETTINGS.CREATE_UNIQUE_WORKDIR = True
+    test_static_job(tmpdir)
+    test_relax_job(tmpdir)
+    SETTINGS.CREATE_UNIQUE_WORKDIR = DEFAULT_SETTINGS.CREATE_UNIQUE_WORKDIR

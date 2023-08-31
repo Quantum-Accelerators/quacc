@@ -1,8 +1,0 @@
-parent: BulkSet.yaml
-inputs:
-  auto_dipole: true
-  auto_kpts:
-    length_density: [50, 50, 1]
-  encut: 450
-  ivdw: 0
-  xc: rpbe
