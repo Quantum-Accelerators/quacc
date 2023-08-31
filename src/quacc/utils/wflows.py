@@ -4,7 +4,7 @@ import functools
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import TypeVar
+    from typing import Any, TypeVar
 
     from ase import Atoms
 
@@ -38,7 +38,24 @@ def job(_func: callable | None = None, **kwargs) -> Job:  # sourcery skip
     """
 
     @functools.wraps(_func)
-    def _inner(*f_args, decorator_kwargs: dict | None = None, **f_kwargs):
+    def _inner(*f_args, decorator_kwargs: dict | None = None, **f_kwargs) -> Any:
+        """
+        The @job-decorated function.
+
+        Parameters
+        ----------
+        *f_args
+            Positional arguments to the function, if any.
+        decorator_kwargs
+            Keyword arguments to pass to the workflow engine decorator.
+        **f_kwargs
+            Keyword arguments to the function, if any.
+
+        Returns
+        -------
+        Any
+            The output of the @job-decorated function.
+        """
         from quacc import SETTINGS
 
         if not decorator_kwargs:
@@ -93,7 +110,31 @@ def flow(_func: callable | None = None, **kwargs) -> Flow:  # sourcery skip
     """
 
     @functools.wraps(_func)
-    def _inner(*f_args, decorator_kwargs: dict | None = None, **f_kwargs):
+    def _inner(
+        *f_args,
+        decorator_kwargs: dict | None = None,
+        dispatch_kwargs: dict | None = None,
+        **f_kwargs,
+    ) -> Any:
+        """
+        The @flow-decorated function.
+
+        Parameters
+        ----------
+        *f_args
+            Positional arguments to the function, if any.
+        decorator_kwargs
+            Keyword arguments to pass to the workflow engine decorator.
+        dispatch_kwargs
+            Keyword arguments to pass to ct.dispatch() if Covalent is used.
+        **f_kwargs
+            Keyword arguments to the function, if any.
+
+        Returns
+        -------
+        Any
+            The output of the @flow-decorated function.
+        """
         from quacc import SETTINGS
 
         if not decorator_kwargs:
@@ -102,10 +143,22 @@ def flow(_func: callable | None = None, **kwargs) -> Flow:  # sourcery skip
         wflow_engine = (
             SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
         )
+
+        dispatch_kwargs = dispatch_kwargs or {}
+        if dispatch_kwargs and wflow_engine != "covalent":
+            raise ValueError("The `dispatch_kwargs` argument only works with Covalent.")
+
         if wflow_engine == "covalent":
             import covalent as ct
 
-            decorated = ct.dispatch(ct.lattice(_func, **decorator_kwargs))
+            try:
+                return ct.dispatch(ct.lattice(_func, **decorator_kwargs))(
+                    *f_args, **f_kwargs
+                )
+            except AttributeError:
+                return ct.lattice(_func, **dispatch_kwargs, **decorator_kwargs)(
+                    *f_args, **f_kwargs
+                )
         else:
             decorated = _func
 
@@ -140,7 +193,24 @@ def subflow(_func: callable | None = None, **kwargs) -> Subflow:  # sourcery ski
     """
 
     @functools.wraps(_func)
-    def _inner(*f_args, decorator_kwargs: dict | None = None, **f_kwargs):
+    def _inner(*f_args, decorator_kwargs: dict | None = None, **f_kwargs) -> Any:
+        """
+        The @subflow-decorated function.
+
+        Parameters
+        ----------
+        *f_args
+            Positional arguments to the function, if any.
+        decorator_kwargs
+            Keyword arguments to pass to the workflow engine decorator.
+        **f_kwargs
+            Keyword arguments to the function, if any.
+
+        Returns
+        -------
+        Any
+            The output of the @subflow-decorated function.
+        """
         from quacc import SETTINGS
 
         if not decorator_kwargs:
