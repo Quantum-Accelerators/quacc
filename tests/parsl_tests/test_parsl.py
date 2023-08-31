@@ -10,6 +10,10 @@ try:
     import psi4
 except ImportError:
     psi4 = None
+try:
+    from tblite.ase import TBLite
+except ImportError:
+    TBLite = None
 DEFAULT_SETTINGS = SETTINGS.copy()
 
 
@@ -332,6 +336,7 @@ def test_docs_recipes_lj(tmpdir):
     reason="Parsl is not installed or specified in config",
 )
 def test_docs_recipes_psi4(tmpdir):
+    tmpdir.chdir()
     from ase.build import molecule
 
     from quacc.recipes.psi4.core import static_job
@@ -342,3 +347,41 @@ def test_docs_recipes_psi4(tmpdir):
     )
     result = future.result()
     assert result.done()
+
+
+@pytest.mark.skipif(
+    parsl is None or TBLite is None,
+    reason="Parsl is not installed or specified in config",
+)
+def test_docs_recipes_tblite(tmpdir):
+    tmpdir.chdir()
+
+    from ase.build import bulk
+
+    from quacc.recipes.tblite.core import relax_job
+
+    atoms = bulk("C")
+    future = relax_job(atoms, relax_cell=True)
+    result = future.result()
+    assert future.done()
+
+    # ------------------------
+
+    from ase.build import bulk
+
+    from quacc.recipes.tblite.core import static_job
+
+    atoms = bulk("C")
+    future = static_job(atoms, method="GFN1-xTB")
+    result = future.result()
+    assert future.done()
+
+    # ------------------------
+    from ase.build import molecule
+
+    from quacc.recipes.tblite.core import freq_job
+
+    atoms = molecule("N2")
+    future = freq_job(atoms)
+    result = future.result()
+    assert future.done()

@@ -14,6 +14,10 @@ try:
     import psi4
 except ImportError:
     psi4 = None
+try:
+    from tblite.ase import TBLite
+except ImportError:
+    TBLite = None
 DEFAULT_SETTINGS = SETTINGS.copy()
 
 
@@ -480,5 +484,48 @@ def test_docs_recipes_psi4(tmpdir):
     dispatch_id = workflow(
         atoms, charge=0, multiplicity=3, method="wb97m-v", basis="def2-svp"
     )
+    result = ct.get_result(dispatch_id, wait=True)
+    assert result.status == "COMPLETED"
+
+
+@pytest.mark.skipif(
+    os.environ.get("GITHUB_ACTIONS", False) is False or not ct or TBLite is None,
+    reason="This test requires Covalent and to be run on GitHub",
+)
+def test_docs_recipes_tblite(tmpdir):
+    tmpdir.chdir()
+
+    import covalent as ct
+    from ase.build import bulk
+
+    from quacc import flow
+    from quacc.recipes.tblite.core import relax_job
+
+    atoms = bulk("C")
+    dispatch_id = flow(relax_job)(atoms, relax_cell=True)
+    result = ct.get_result(dispatch_id, wait=True)
+    assert result.status == "COMPLETED"
+
+    # -----------------------
+    import covalent as ct
+    from ase.build import bulk
+
+    from quacc import flow
+    from quacc.recipes.tblite.core import static_job
+
+    atoms = bulk("C")
+    dispatch_id = flow(static_job)(atoms, method="GFN1-xTB")
+    result = ct.get_result(dispatch_id, wait=True)
+    assert result.status == "COMPLETED"
+
+    # --------------------
+    import covalent as ct
+    from ase.build import molecule
+
+    from quacc import flow
+    from quacc.recipes.tblite.core import freq_job
+
+    atoms = molecule("N2")
+    dispatch_id = flow(freq_job)(atoms)
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"

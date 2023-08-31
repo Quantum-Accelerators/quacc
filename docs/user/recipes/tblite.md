@@ -1,16 +1,14 @@
 # TBLite
 
-🚧 Under Construction 🚧
-
 Recipes based on the [TBLite](https://github.com/tblite/tblite) code, which has a Python interface to the [xtb](https://github.com/grimme-lab/xtb) library for semi-empirical tight-binding calculations.
 
 ## Available Recipes
 
-| Recipe                                                                                                                                                 | Description                                     |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------- |
-| [`tblie.core.relax_job`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/tblite/core.html#quacc.recipes.tblite.core.relax_job)    | Relax a molecule or crystal.                    |
-| [`tblite.core.static_job`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/tblite/core.html#quacc.recipes.tblite.core.static_job) | Static calculation on a molecule or crystal.    |
-| [`tblite.core.freq_job`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/tblite/core.html#quacc.recipes.tblite.core.freq_job)     | Frequency calculation on a molecule or crystal. |
+| Recipe                                                                                                                                                 | Description                                     | Calculator Parameters | Other Parameters                                                |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------- | --------------------- | --------------------------------------------------------------- |
+| [`tblie.core.relax_job`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/tblite/core.html#quacc.recipes.tblite.core.relax_job)    | Relax a molecule or crystal.                    | `#!Python {}`         | `#!Python {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}` |
+| [`tblite.core.static_job`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/tblite/core.html#quacc.recipes.tblite.core.static_job) | Static calculation on a molecule or crystal.    | `#!Python {}`         | N/A                                                             |
+| [`tblite.core.freq_job`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/tblite/core.html#quacc.recipes.tblite.core.freq_job)     | Frequency calculation on a molecule or crystal. | `#!Python {}`         | N/A                                                             |
 
 ## Examples
 
@@ -28,7 +26,7 @@ graph LR
     from quacc.recipes.tblite.core import relax_job
 
     atoms = bulk("C")
-    output = relax_job(atoms, relax_cell=True)
+    result = relax_job(atoms, relax_cell=True)
     ```
 
 === "Covalent"
@@ -39,17 +37,9 @@ graph LR
     from quacc import flow
     from quacc.recipes.tblite.core import relax_job
 
-
-    @flow
-    def workflow(atoms):
-        output = relax_job(atoms, relax_cell=True)
-        return output
-
-
     atoms = bulk("C")
-
-    dispatch_id = workflow(atoms)
-    ct.get_result(dispatch_id, wait=True)
+    dispatch_id = flow(relax_job)(atoms, relax_cell=True)
+    result = ct.get_result(dispatch_id, wait=True)
     ```
 
 === "Parsl"
@@ -60,27 +50,61 @@ graph LR
 
     atoms = bulk("C")
     future = relax_job(atoms, relax_cell=True)
-    future.result()
+    result = future.result()
     ```
 
 ```mermaid
 graph LR
-  A[Input] --> B(GFN1-xTB Relax) --> C(GFN2-xTB Static) --> D(GFN2-xTB Frequency) --> E[Output];
+  A[Input] --> B(GFN1-xTB Static) --> C[Output];
+```
+
+=== "No Workflow Engine"
+
+    ```python
+    from ase.build import bulk
+    from quacc.recipes.tblite.core import static_job
+
+    atoms = bulk("C")
+    result = static_job(atoms, method="GFN1-xTB")
+    ```
+
+=== "Covalent"
+
+    ```python
+    import covalent as ct
+    from ase.build import bulk
+    from quacc import flow
+    from quacc.recipes.tblite.core import static_job
+
+    atoms = bulk("C")
+    dispatch_id = flow(static_job)(atoms, method="GFN1-xTB")
+    result = ct.get_result(dispatch_id, wait=True)
+    ```
+
+=== "Parsl"
+
+    ```python
+    from ase.build import bulk
+    from quacc.recipes.tblite.core import static_job
+
+    atoms = bulk("C")
+    future = static_job(atoms, method="GFN1-xTB")
+    result = future.result()
+    ```
+
+```mermaid
+graph LR
+  A[Input] --> B(GFN2-xTB Frequency Analysis) --> C[Output];
 ```
 
 === "No Workflow Engine"
 
     ```python
     from ase.build import molecule
-    from ase.optimize import BFGS
-    from quacc.recipes.tblite.core import freq_job, relax_job, static_job
+    from quacc.recipes.tblite.core import freq_job
 
-    atoms = molecule("CH4")
-    output1 = relax_job(atoms, method="GFN1-xTB", opt_swaps={"optimizer": BFGS})
-    output2 = static_job(output1)
-    output3 = freq_job(
-        atoms, energy=output2["results"]["energy"], temperature=300.0, pressure=2.0
-    )
+    atoms = molecule("N2")
+    result = freq_job(atoms)
     ```
 
 === "Covalent"
@@ -88,39 +112,21 @@ graph LR
     ```python
     import covalent as ct
     from ase.build import molecule
-    from ase.optimize import BFGS
     from quacc import flow
-    from quacc.recipes.tblite.core import freq_job, relax_job, static_job
+    from quacc.recipes.tblite.core import freq_job
 
-
-    @flow
-    def workflow(atoms):
-        output1 = relax_job(atoms, method="GFN1-xTB", opt_swaps={"optimizer": BFGS})
-        output2 = static_job(output1)
-        output3 = freq_job(
-            atoms, energy=output2["results"]["energy"], temperature=300.0, pressure=2.0
-        )
-        return outpu3
-
-
-    atoms = molecule("CH4")
-
-    dispatch_id = workflow(atoms)
-    ct.get_result(dispatch_id, wait=True)
+    atoms = molecule("N2")
+    dispatch_id = flow(freq_job)(atoms)
+    result = ct.get_result(dispatch_id, wait=True)
     ```
 
 === "Parsl"
 
     ```python
     from ase.build import molecule
-    from ase.optimize import BFGS
-    from quacc.recipes.tblite.core import freq_job, relax_job, static_job
+    from quacc.recipes.tblite.core import freq_job
 
-    atoms = molecule("CH4")
-    future1 = relax_job(atoms, method="GFN1-xTB", opt_swaps={"optimizer": BFGS})
-    future2 = static_job(future1)
-    future3 = freq_job(
-        atoms, energy=future2.result()["results"]["energy"], temperature=300.0, pressure=2.0
-    )
-    future3.result()
+    atoms = molecule("N2")
+    future = freq_job(atoms)
+    result = future.result()
     ```
