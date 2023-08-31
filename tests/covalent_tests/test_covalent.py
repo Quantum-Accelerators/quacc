@@ -19,7 +19,7 @@ def setup_module():
 
 
 def teardown_module():
-    SETTINGS.WORKFLOW_ENGINE = "local"
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 @pytest.mark.skipif(
