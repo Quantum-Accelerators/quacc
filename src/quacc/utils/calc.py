@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 from shutil import rmtree
 from tempfile import mkdtemp
 from typing import TYPE_CHECKING
@@ -13,7 +14,6 @@ from ase.optimize import FIRE
 from ase.vibrations import Vibrations
 from monty.os.path import zpath
 from monty.shutil import copy_r, gzip_dir
-from pathlib import Path
 
 from quacc import SETTINGS
 from quacc.utils.atoms import copy_atoms

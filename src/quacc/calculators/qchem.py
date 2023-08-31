@@ -3,11 +3,11 @@ from __future__ import annotations
 
 import inspect
 import struct
+from pathlib import Path
 
 from ase import Atoms, units
 from ase.calculators.calculator import FileIOCalculator
 from monty.io import zopen
-from pathlib import Path
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.qchem.outputs import QCOutput
 from pymatgen.io.qchem.sets import ForceSet
