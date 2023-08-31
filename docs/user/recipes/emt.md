@@ -1,7 +1,5 @@
 # EMT
 
-🚧 Under Construction 🚧
-
 Recipes based on the effective medium theory (EMT) calculator in ASE. This is primarily for demonstration purposes.
 
 ## Available Recipes
@@ -157,7 +155,7 @@ graph LR
     ```python
     import covalent as ct
     from ase.build import bulk
-    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+    from quacc.recipes.emt.slabs import bulk_to_defects_flow
 
     atoms = bulk("Cu")
     dispatch_id = bulk_to_defects_flow(atoms)
@@ -168,7 +166,7 @@ graph LR
 
     ```python
     from ase.build import bulk
-    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+    from quacc.recipes.emt.slabs import bulk_to_defects_flow
 
     atoms = bulk("Cu")
     future = bulk_to_defects_flow(atoms)

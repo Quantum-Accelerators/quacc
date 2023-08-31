@@ -248,3 +248,77 @@ def test_comparison4(tmpdir):
     future3 = add_distributed(future2, 3)
 
     assert future3.result() == [6, 6, 6]
+
+
+@pytest.mark.skipif(
+    parsl is None,
+    reason="Parsl is not installed or specified in config",
+)
+def test_docs_recipes_emt(tmpdir):
+    tmpdir.chdir()
+
+    from ase.build import bulk
+
+    from quacc.recipes.emt.core import static_job
+
+    atoms = bulk("Cu")
+    future = static_job(atoms)
+    result = future.result()
+    assert future.done()
+
+    # -----------------
+
+    from ase.build import bulk
+
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+    atoms = bulk("Ni")
+    future = bulk_to_slabs_flow(atoms)
+    result = future.result()
+    assert future.done()
+
+    # -----------------
+    from ase.build import bulk
+
+    from quacc.recipes.emt.slabs import bulk_to_defects_flow
+
+    atoms = bulk("Cu")
+    future = bulk_to_defects_flow(atoms)
+    result = future.result()
+    assert future.done()
+
+
+@pytest.mark.skipif(
+    parsl is None,
+    reason="Parsl is not installed or specified in config",
+)
+def test_docs_recipes_lj(tmpdir):
+    tmpdir.chdir()
+    from ase.build import molecule
+
+    from quacc.recipes.lj.core import relax_job
+
+    atoms = molecule("Cu")
+    future = relax_job(atoms)
+    result = future.result()
+    assert future.done()
+
+    # ---------------------
+    from ase.build import molecule
+
+    from quacc.recipes.lj.core import static_job
+
+    atoms = molecule("Cu")
+    future = static_job(atoms)
+    result = future.result()
+    assert future.done()
+
+    # --------------------
+    from ase.build import molecule
+
+    from quacc.recipes.lj.core import freq_job
+
+    atoms = molecule("Cu")
+    future = freq_job(atoms)
+    result = future.result()
+    assert future.done()

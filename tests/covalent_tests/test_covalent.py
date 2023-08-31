@@ -356,3 +356,104 @@ def test_comparison4(tmpdir):
     result = ct.get_result(dispatch_id, wait=True)  # e.g. [6, 6, 6]
 
     assert result.status == "COMPLETED"
+
+
+@pytest.mark.skipif(
+    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
+    reason="This test requires Covalent and to be run on GitHub",
+)
+def test_docs_recipes_emt(tmpdir):
+    tmpdir.chdir()
+    import covalent as ct
+    from ase.build import bulk
+
+    from quacc import flow
+    from quacc.recipes.emt.core import relax_job
+
+    # -----------------
+
+    atoms = bulk("Cu")
+    dispatch_id = flow(relax_job)(atoms, relax_cell=True)
+    result = ct.get_result(dispatch_id, wait=True)
+    assert result.status == "COMPLETED"
+
+    # -----------------
+
+    import covalent as ct
+    from ase.build import bulk
+
+    from quacc import flow
+    from quacc.recipes.emt.core import static_job
+
+    atoms = bulk("Cu")
+    dispatch_id = flow(static_job)(atoms)
+    result = ct.get_result(dispatch_id, wait=True)
+    assert result.status == "COMPLETED"
+
+    # -----------------
+
+    import covalent as ct
+    from ase.build import bulk
+
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+    atoms = bulk("Ni")
+    dispatch_id = bulk_to_slabs_flow(atoms)
+    result = ct.get_result(dispatch_id, wait=True)
+    assert result.status == "COMPLETED"
+
+    # -----------------
+
+    import covalent as ct
+    from ase.build import bulk
+
+    from quacc.recipes.emt.slabs import bulk_to_defects_flow
+
+    atoms = bulk("Cu")
+    dispatch_id = bulk_to_defects_flow(atoms)
+    result = ct.get_result(dispatch_id, wait=True)
+
+    assert result.stauts == "COMPLETED"
+
+
+@pytest.mark.skipif(
+    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
+    reason="This test requires Covalent and to be run on GitHub",
+)
+def test_docs_recipes_lj(tmpdir):
+    tmpdir.chdir()
+    import covalent as ct
+    from ase.build import molecule
+
+    from quacc import flow
+    from quacc.recipes.lj.core import relax_job
+
+    atoms = molecule("N2")
+    dispatch_id = flow(relax_job)(atoms)
+    result = ct.get_result(dispatch_id, wait=True)
+    assert result.stauts == "COMPLETED"
+
+    # ------------------------
+
+    import covalent as ct
+    from ase.build import molecule
+
+    from quacc import flow
+    from quacc.recipes.lj.core import static_job
+
+    atoms = molecule("N2")
+    dispatch_id = flow(static_job)(atoms)
+    result = ct.get_result(dispatch_id, wait=True)
+    assert result.status == "COMPLETED"
+
+    # ------------------------
+    import covalent as ct
+    from ase.build import molecule
+
+    from quacc import flow
+    from quacc.recipes.lj.core import freq_job
+
+    atoms = molecule("N2")
+    dispatch_id = flow(freq_job)(atoms)
+    result = ct.get_result(dispatch_id, wait=True)
+    assert result.status == "COMPLETED"
