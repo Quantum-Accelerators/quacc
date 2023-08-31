@@ -14,6 +14,10 @@ try:
     from tblite.ase import TBLite
 except ImportError:
     TBLite = None
+try:
+    from quacc.recipes.emt.defects import bulk_to_defects_flow
+except ImportError:
+    bulk_to_defects_flow = None
 DEFAULT_SETTINGS = SETTINGS.copy()
 
 
@@ -284,7 +288,13 @@ def test_docs_recipes_emt(tmpdir):
     result = future.result()
     assert future.done()
 
-    # -----------------
+
+@pytest.mark.skipif(
+    parsl is None or bulk_to_defects_flow is None,
+    reason="Parsl is not installed or specified in config",
+)
+def test_docs_recipes_emt_defects(tmpdir):
+    tmpdir.chdir()
     from ase.build import bulk
 
     from quacc.recipes.emt.defects import bulk_to_defects_flow

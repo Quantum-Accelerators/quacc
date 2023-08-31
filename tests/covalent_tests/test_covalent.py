@@ -18,6 +18,10 @@ try:
     from tblite.ase import TBLite
 except ImportError:
     TBLite = None
+try:
+    from quacc.recipes.emt.defects import bulk_to_defects_flow
+except ImportError:
+    bulk_to_defects_flow = None
 DEFAULT_SETTINGS = SETTINGS.copy()
 
 
@@ -409,7 +413,15 @@ def test_docs_recipes_emt(tmpdir):
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
 
-    # -----------------
+
+@pytest.mark.skipif(
+    os.environ.get("GITHUB_ACTIONS", False) is False
+    or not ct
+    or bulk_to_defects_flow is None,
+    reason="This test requires Covalent and to be run on GitHub",
+)
+def test_recipes_bulk_to_defects_flow(tmpdir):
+    tmpdir.chdir()
 
     import covalent as ct
     from ase.build import bulk
