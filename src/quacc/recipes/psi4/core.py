@@ -6,12 +6,11 @@ from typing import TYPE_CHECKING
 from ase.calculators.psi4 import Psi4
 from monty.dev import requires
 
-from quacc import job
+from quacc import fetch_atoms, job
 from quacc.schemas.ase import summarize_run
 from quacc.utils.atoms import get_charge, get_multiplicity
 from quacc.utils.calc import run_calc
 from quacc.utils.dicts import merge_dicts
-from quacc.utils.wflows import fetch_atoms
 
 try:
     import psi4

@@ -6,12 +6,11 @@ from typing import TYPE_CHECKING
 
 from ase.calculators.gaussian import Gaussian
 
-from quacc import job
+from quacc import fetch_atoms, job
 from quacc.schemas.cclib import summarize_run
 from quacc.utils.atoms import get_charge, get_multiplicity
 from quacc.utils.calc import run_calc
 from quacc.utils.dicts import merge_dicts
-from quacc.utils.wflows import fetch_atoms
 
 if TYPE_CHECKING:
     from ase import Atoms
