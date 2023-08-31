@@ -10,7 +10,10 @@ try:
     import covalent as ct
 except ImportError:
     ct = None
-
+try:
+    import psi4
+except ImportError:
+    psi4 = None
 DEFAULT_SETTINGS = SETTINGS.copy()
 
 
@@ -455,5 +458,27 @@ def test_docs_recipes_lj(tmpdir):
 
     atoms = molecule("N2")
     dispatch_id = flow(freq_job)(atoms)
+    result = ct.get_result(dispatch_id, wait=True)
+    assert result.status == "COMPLETED"
+
+
+@pytest.mark.skipif(
+    os.environ.get("GITHUB_ACTIONS", False) is False or not ct or psi4 is None,
+    reason="This test requires Covalent and to be run on GitHub",
+)
+def test_docs_recipes_psi4(tmpdir):
+    tmpdir.chdir()
+    import covalent as ct
+    from ase.build import molecule
+
+    from quacc import flow
+    from quacc.recipes.psi4.core import static_job
+
+    workflow = flow(static_job)
+    atoms = molecule("O2")
+
+    dispatch_id = workflow(
+        atoms, charge=0, multiplicity=3, method="wb97m-v", basis="def2-svp"
+    )
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"

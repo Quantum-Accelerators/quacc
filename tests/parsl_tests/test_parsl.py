@@ -6,7 +6,10 @@ try:
     import parsl
 except ImportError:
     parsl = None
-
+try:
+    import psi4
+except ImportError:
+    psi4 = None
 DEFAULT_SETTINGS = SETTINGS.copy()
 
 
@@ -322,3 +325,20 @@ def test_docs_recipes_lj(tmpdir):
     future = freq_job(atoms)
     result = future.result()
     assert future.done()
+
+
+@pytest.mark.skipif(
+    parsl is None or psi4 is None,
+    reason="Parsl is not installed or specified in config",
+)
+def test_docs_recipes_psi4(tmpdir):
+    from ase.build import molecule
+
+    from quacc.recipes.psi4.core import static_job
+
+    atoms = molecule("O2")
+    future = static_job(
+        atoms, charge=0, multiplicity=3, method="wb97m-v", basis="def2-svp"
+    )
+    result = future.result()
+    assert result.done()
