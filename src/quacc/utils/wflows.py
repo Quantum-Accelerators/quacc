@@ -4,7 +4,7 @@ import functools
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Any, TypeVar
+    from typing import Any, Literal, TypeVar
 
     from ase import Atoms
 
@@ -155,7 +155,7 @@ def flow(_func: callable | None = None, **kwargs) -> Flow:  # sourcery skip
                 return ct.dispatch(ct.lattice(_func, **decorator_kwargs))(
                     *f_args, **f_kwargs
                 )
-            except AttributeError:
+            except (AttributeError, TypeError):
                 return ct.lattice(_func, **dispatch_kwargs, **decorator_kwargs)(
                     *f_args, **f_kwargs
                 )

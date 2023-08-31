@@ -4,7 +4,6 @@ from quacc import SETTINGS
 
 try:
     import parsl
-    from parsl import join_app, python_app
 except ImportError:
     parsl = None
 

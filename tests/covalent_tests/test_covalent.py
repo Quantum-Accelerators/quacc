@@ -15,10 +15,10 @@ except ImportError:
 WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
 
 
-@pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
-    reason="This test requires Covalent and to be run on GitHub",
-)
+# @pytest.mark.skipif(
+#     os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+#     reason="This test requires Covalent and to be run on GitHub",
+# )
 def test_quickstart(tmpdir):
     tmpdir.chdir()
 
@@ -30,21 +30,18 @@ def test_quickstart(tmpdir):
     # Define the Atoms object
     atoms = bulk("Cu")
 
-    # Define the workflow
-    workflow = bulk_to_slabs_flow
-
     # Dispatch the workflow
-    dispatch_id = workflow(atoms)
+    dispatch_id = bulk_to_slabs_flow(atoms)
 
     # Fetch the results
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"
 
 
-@pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
-    reason="This test requires Covalent and to be run on GitHub",
-)
+# @pytest.mark.skipif(
+#     os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+#     reason="This test requires Covalent and to be run on GitHub",
+# )
 def test_tutorial1a(tmpdir):
     tmpdir.chdir()
 
@@ -69,10 +66,10 @@ def test_tutorial1a(tmpdir):
     assert result.status == "COMPLETED"
 
 
-@pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
-    reason="This test requires Covalent and to be run on GitHub",
-)
+# @pytest.mark.skipif(
+#     os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+#     reason="This test requires Covalent and to be run on GitHub",
+# )
 def test_tutorial1b(tmpdir):
     tmpdir.chdir()
 
@@ -87,10 +84,10 @@ def test_tutorial1b(tmpdir):
     assert result.status == "COMPLETED"
 
 
-@pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
-    reason="This test requires Covalent and to be run on GitHub",
-)
+# @pytest.mark.skipif(
+#     os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+#     reason="This test requires Covalent and to be run on GitHub",
+# )
 def test_tutorial2a(tmpdir):
     tmpdir.chdir()
     import covalent as ct
@@ -122,10 +119,10 @@ def test_tutorial2a(tmpdir):
     assert result.status == "COMPLETED"
 
 
-@pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
-    reason="This test requires Covalent and to be run on GitHub",
-)
+# @pytest.mark.skipif(
+#     os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+#     reason="This test requires Covalent and to be run on GitHub",
+# )
 def test_tutorial2b(tmpdir):
     tmpdir.chdir()
 
@@ -155,10 +152,10 @@ def test_tutorial2b(tmpdir):
     assert result.status == "COMPLETED"
 
 
-@pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
-    reason="This test requires Covalent and to be run on GitHub",
-)
+# @pytest.mark.skipif(
+#     os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+#     reason="This test requires Covalent and to be run on GitHub",
+# )
 def test_tutorial2c(tmpdir):
     tmpdir.chdir()
 
@@ -182,10 +179,10 @@ def test_tutorial2c(tmpdir):
     assert result.status == "COMPLETED"
 
 
-@pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
-    reason="This test requires Covalent and to be run on GitHub",
-)
+# @pytest.mark.skipif(
+#     os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+#     reason="This test requires Covalent and to be run on GitHub",
+# )
 def test_tutorial_excecutor1(tmpdir):
     tmpdir.chdir()
 
@@ -201,10 +198,10 @@ def test_tutorial_excecutor1(tmpdir):
     assert result.status == "COMPLETED"
 
 
-@pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
-    reason="This test requires Covalent and to be run on GitHub",
-)
+# @pytest.mark.skipif(
+#     os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+#     reason="This test requires Covalent and to be run on GitHub",
+# )
 def test_tutorial_excecutor2(tmpdir):
     tmpdir.chdir()
 
@@ -220,10 +217,10 @@ def test_tutorial_excecutor2(tmpdir):
     assert result.status == "COMPLETED"
 
 
-@pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
-    reason="This test requires Covalent and to be run on GitHub",
-)
+# @pytest.mark.skipif(
+#     os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+#     reason="This test requires Covalent and to be run on GitHub",
+# )
 def test_comparison1(tmpdir):
     tmpdir.chdir()
 
@@ -252,10 +249,10 @@ def test_comparison1(tmpdir):
     assert result.status == "COMPLETED"
 
 
-@pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
-    reason="This test requires Covalent and to be run on GitHub",
-)
+# @pytest.mark.skipif(
+#     os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+#     reason="This test requires Covalent and to be run on GitHub",
+# )
 def test_comparison2(tmpdir):
     tmpdir.chdir()
 
