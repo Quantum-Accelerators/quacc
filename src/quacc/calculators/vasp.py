@@ -12,6 +12,7 @@ import numpy as np
 from ase.calculators.vasp import Vasp as Vasp_
 from ase.calculators.vasp import setups as ase_setups
 from ase.constraints import FixAtoms
+from pathlib import Path
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.vasp.inputs import Kpoints
 from pymatgen.symmetry.bandstructure import HighSymmKpath
@@ -22,7 +23,6 @@ from quacc.utils.atoms import check_is_metal, set_magmoms
 from quacc.utils.files import load_yaml_calc
 
 if TYPE_CHECKING:
-    from pathlib import Path
     from typing import Literal
 
     from ase import Atoms
@@ -232,7 +232,7 @@ class Vasp(Vasp_):
         # Check if Custodian should be used and confirm environment variables are set
         if self.use_custodian:
             # Return the command flag
-            run_vasp_custodian_file = os.path.abspath(inspect.getfile(custodian_vasp))
+            run_vasp_custodian_file = Path.resolve(Path(inspect.getfile(custodian_vasp)))
             return f"python {run_vasp_custodian_file}"
 
         if "ASE_VASP_COMMAND" not in os.environ and "VASP_SCRIPT" not in os.environ:
