@@ -9,7 +9,6 @@ from pydantic import BaseSettings, Field, root_validator
 
 from quacc.presets import vasp as vasp_defaults
 
-WFLOW_IMPORT = None
 try:
     import covalent
 except ImportError:
