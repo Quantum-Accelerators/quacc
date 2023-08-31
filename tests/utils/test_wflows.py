@@ -279,7 +279,10 @@ def test_covalent_decorators_args3(tmpdir):
     assert ct.get_result(
         dynamic_workflow(1, 2, 3, decorator_kwargs={"executor": "local"}), wait=True
     ).result == [6, 6, 6]
-    assert ct.get_result(flow(add_distributed([1, 1, 1], 2,decorator_kwargs={"executor":"local"})), wait=True).result == [
+    assert ct.get_result(
+        flow(add_distributed([1, 1, 1], 2, decorator_kwargs={"executor": "local"})),
+        wait=True,
+    ).result == [
         3,
         3,
         3,
