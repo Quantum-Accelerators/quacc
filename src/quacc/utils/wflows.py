@@ -41,8 +41,8 @@ def job(_func: callable | None = None, **kwargs) -> Job:  # sourcery skip
     def _inner(*f_args, decorator_kwargs: dict | None = None, **f_kwargs):
         from quacc import SETTINGS
 
-        if decorator_kwargs:
-            kwargs = decorator_kwargs
+        if not decorator_kwargs:
+            decorator_kwargs = kwargs
 
         wflow_engine = (
             SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
@@ -50,15 +50,15 @@ def job(_func: callable | None = None, **kwargs) -> Job:  # sourcery skip
         if wflow_engine == "covalent":
             import covalent as ct
 
-            decorated = ct.electron(_func, **kwargs)
+            decorated = ct.electron(_func, **decorator_kwargs)
         elif wflow_engine == "jobflow":
             from jobflow import job as jf_job
 
-            decorated = jf_job(_func, **kwargs)
+            decorated = jf_job(_func, **decorator_kwargs)
         elif wflow_engine == "parsl":
             from parsl import python_app
 
-            decorated = python_app(_func, **kwargs)
+            decorated = python_app(_func, **decorator_kwargs)
         else:
             decorated = _func
 
@@ -96,8 +96,8 @@ def flow(_func: callable | None = None, **kwargs) -> Flow:  # sourcery skip
     def _inner(*f_args, decorator_kwargs: dict | None = None, **f_kwargs):
         from quacc import SETTINGS
 
-        if decorator_kwargs:
-            kwargs = decorator_kwargs
+        if not decorator_kwargs:
+            decorator_kwargs = kwargs
 
         wflow_engine = (
             SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
@@ -105,7 +105,7 @@ def flow(_func: callable | None = None, **kwargs) -> Flow:  # sourcery skip
         if wflow_engine == "covalent":
             import covalent as ct
 
-            decorated = ct.dispatch(ct.lattice(_func, **kwargs))
+            decorated = ct.dispatch(ct.lattice(_func, **decorator_kwargs))
         else:
             decorated = _func
 
@@ -143,8 +143,8 @@ def subflow(_func: callable | None = None, **kwargs) -> Subflow:  # sourcery ski
     def _inner(*f_args, decorator_kwargs: dict | None = None, **f_kwargs):
         from quacc import SETTINGS
 
-        if decorator_kwargs:
-            kwargs = decorator_kwargs
+        if not decorator_kwargs:
+            decorator_kwargs = kwargs
 
         wflow_engine = (
             SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
@@ -152,11 +152,11 @@ def subflow(_func: callable | None = None, **kwargs) -> Subflow:  # sourcery ski
         if wflow_engine == "covalent":
             import covalent as ct
 
-            decorated = ct.electron(ct.lattice(_func), **kwargs)
+            decorated = ct.electron(ct.lattice(_func), **decorator_kwargs)
         elif wflow_engine == "parsl":
             from parsl import join_app
 
-            decorated = join_app(_func, **kwargs)
+            decorated = join_app(_func, **decorator_kwargs)
         else:
             decorated = _func
 
