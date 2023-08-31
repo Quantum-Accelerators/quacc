@@ -13,6 +13,7 @@ from ase.optimize import FIRE
 from ase.vibrations import Vibrations
 from monty.os.path import zpath
 from monty.shutil import copy_r, gzip_dir
+from pathlib import Path
 
 from quacc import SETTINGS
 from quacc.utils.atoms import copy_atoms
@@ -260,10 +261,10 @@ def _calc_setup(
     )
 
     # Create a tmpdir for the calculation within the scratch_dir
-    tmpdir = os.path.abspath(mkdtemp(prefix="quacc-tmp-", dir=SETTINGS.SCRATCH_DIR))
+    tmpdir = Path.resolve(Path(mkdtemp(prefix="quacc-tmp-", dir=SETTINGS.SCRATCH_DIR)))
 
     # Create a symlink (if not on Windows) to the tmpdir in the results_dir
-    symlink = os.path.join(job_results_dir, f"{os.path.basename(tmpdir)}-symlink")
+    symlink = os.path.join(job_results_dir, f"{tmpdir.name}-symlink")
     if os.name != "nt":
         if os.path.islink(symlink):
             os.unlink(symlink)

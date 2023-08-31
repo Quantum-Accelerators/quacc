@@ -167,7 +167,7 @@ def find_recent_logfile(dir_name: Path | str, logfile_extensions: str | list[str
         for ext in logfile_extensions:
             if ext in f and os.path.getmtime(f_path) > mod_time:
                 mod_time = os.path.getmtime(f_path)
-                logfile = os.path.abspath(f_path)
+                logfile = Path.resolve(Path(f_path))
     return logfile
 
 
