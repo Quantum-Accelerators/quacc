@@ -1,11 +1,10 @@
 import os
 
 import pytest
-from ase.build import bulk, molecule
+from ase.build import bulk
 
 from quacc import SETTINGS, flow
 from quacc.recipes.emt.core import relax_job, static_job
-from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 try:
     import covalent as ct

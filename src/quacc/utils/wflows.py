@@ -4,7 +4,7 @@ import functools
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Any, Literal, TypeVar
+    from typing import Any, TypeVar
 
     from ase import Atoms
 
