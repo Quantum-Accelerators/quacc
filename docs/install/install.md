@@ -69,4 +69,3 @@ where `extra` is one of the following:
 
 - `quacc[dev]`: Installs dependencies to enable local development of quacc.
 - `quacc[docs]`: Installs dependencies to build the documentation.
-- `quacc[strict]`: Installs dependencies that match the test suite on GitHub.
