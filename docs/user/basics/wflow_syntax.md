@@ -281,13 +281,13 @@ graph LR
 
 To help enable interoperability between workflow engines, quacc offers a unified set of decorators.
 
-| Quacc               | Covalent                             | Parsl                  | Jobflow         |
-| ------------------- | ------------------------------------ | ---------------------- | --------------- |
-| `#!Python @job`     | `#!Python @ct.electron`              | `#!Python @python_app` | `#!Python @job` |
-| `#!Python @flow`    | `#!Python ct.dispatch(@ct.lattice)`  | N/A                    | N/A             |
-| `#!Python @subflow` | `#!Python @ct.electron(@ct.lattice)` | `#!Python @join_app`   | N/A             |
+| Quacc              | Covalent                           | Parsl                 | Jobflow        |
+| ------------------ | ---------------------------------- | --------------------- | -------------- |
+| `#!Python job`     | `#!Python ct.electron`             | `#!Python python_app` | `#!Python job` |
+| `#!Python flow`    | `#!Python ct.dispatch(ct.lattice)` | N/A                   | N/A            |
+| `#!Python subflow` | `#!Python ct.electron(ct.lattice)` | `#!Python join_app`   | N/A            |
 
-The quacc descriptors are drop-in replacements for the specified workflow engine analogue.
+The quacc descriptors are drop-in replacements for the specified workflow engine analogue, which we will use for the remainder of the tutorials.
 
 Based on the value for the `WORKFLOW_ENGINE` global variable in your [quacc settings](../settings.md), the appropriate decorator will be automatically selected. If the `WORKFLOW_ENGINE` setting is set to `None` (or for any entries marked N/A in the above table), the decorators will have no effect on the underlying function.
 
