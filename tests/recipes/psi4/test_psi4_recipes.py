@@ -1,5 +1,6 @@
 import pytest
 from ase.build import molecule
+
 from quacc.recipes.psi4.core import static_job
 
 try:

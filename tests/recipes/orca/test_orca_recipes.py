@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pytest
 from ase.build import molecule
+
 from quacc.recipes.orca.core import relax_job, static_job
 
 FILE_DIR = Path(__file__).resolve().parent
