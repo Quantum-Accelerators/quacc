@@ -5,10 +5,11 @@ from typing import TYPE_CHECKING
 
 import jobflow as jf
 
-from quacc import fetch_atoms, job
+from quacc import job
 from quacc.recipes.emt.core import relax_job as _relax_job
 from quacc.recipes.emt.core import static_job as _static_job
 from quacc.utils.slabs import make_max_slabs_from_bulk
+from quacc.utils.wflows import fetch_atoms
 
 if TYPE_CHECKING:
     from ase import Atoms

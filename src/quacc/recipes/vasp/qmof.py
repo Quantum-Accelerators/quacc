@@ -10,12 +10,13 @@ from typing import TYPE_CHECKING
 
 from ase.optimize import BFGSLineSearch
 
-from quacc import fetch_atoms, job
+from quacc import job
 from quacc.calculators.vasp import Vasp
 from quacc.schemas.ase import summarize_opt_run
 from quacc.schemas.vasp import summarize_run
 from quacc.utils.calc import run_ase_opt, run_calc
 from quacc.utils.dicts import merge_dicts
+from quacc.utils.wflows import fetch_atoms
 
 if TYPE_CHECKING:
     from ase import Atoms
