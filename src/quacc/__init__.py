@@ -1,6 +1,7 @@
 """Init data for quacc"""
 from __future__ import annotations
 
+import warnings
 from importlib.metadata import version
 
 from ase import Atoms
@@ -29,16 +30,16 @@ def atoms_from_dict(d: dict) -> Atoms:
     return decode(d["atoms_json"])
 
 
-# Load the version
+# Load the quacc version
 __version__ = version("quacc")
-
-# Make Atoms MSONable
-Atoms.as_dict = atoms_as_dict
-Atoms.from_dict = atoms_from_dict
 
 if tuple(ase_version) <= tuple("3.22.1"):
     msg = f"Your ASE version ({ase_version}) is <= 3.22.1. Please upgrade your ASE version by running `pip install --upgrade https://gitlab.com/ase/ase/-/archive/master/ase-master.zip`"
     warnings.warn(msg, UserWarning)
+
+# Make Atoms MSONable
+Atoms.as_dict = atoms_as_dict
+Atoms.from_dict = atoms_from_dict
 
 # Load the settings
 SETTINGS = QuaccSettings()
