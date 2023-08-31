@@ -226,7 +226,6 @@ def test_comparison3(tmpdir):
 )
 def test_comparison4(tmpdir):
     tmpdir.chdir()
-    import random
 
     import jobflow as jf
 
@@ -238,7 +237,7 @@ def test_comparison4(tmpdir):
 
     @job
     def make_more(val):
-        return [val] * random.randint(2, 5)
+        return [val] * 3
 
     @job
     def add_distributed(vals, c):

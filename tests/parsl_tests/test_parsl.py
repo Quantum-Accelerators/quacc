@@ -230,9 +230,7 @@ def test_comparison4(tmpdir):
 
     @job
     def make_more(val):
-        import random
-
-        return [val] * random.randint(2, 5)
+        return [val] * 3
 
     @subflow  #  (1)!
     def add_distributed(vals, c):

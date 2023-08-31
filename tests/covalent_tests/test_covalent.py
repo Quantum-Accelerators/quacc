@@ -320,7 +320,6 @@ def test_comparison3(tmpdir):
 )
 def test_comparison4(tmpdir):
     tmpdir.chdir()
-    import random
 
     import covalent as ct
 
@@ -332,7 +331,7 @@ def test_comparison4(tmpdir):
 
     @job
     def make_more(val):
-        return [val] * random.randint(2, 5)
+        return [val] * 3
 
     @subflow  #  (1)!
     def add_distributed(vals, c):
