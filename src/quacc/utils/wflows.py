@@ -104,7 +104,7 @@ def flow(
     """
     Decorator for workflows, which consist of at least one compute job. This is a @flow decorator.
 
-    flow = ct.dispatch(ct.lattice) [Covalent]. For Parsl and Jobflow, the decorator returns the
+    flow = ct.lattice/ct.dispatch(ct.lattice) [Covalent]. For Parsl and Jobflow, the decorator returns the
     original function, unchanged.
 
     The wrapped function gets a new kwarg, `decorator_kwargs`, that can
