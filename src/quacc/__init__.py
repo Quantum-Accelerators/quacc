@@ -9,9 +9,9 @@ from ase import __version__ as ase_version
 from ase.io.jsonio import decode, encode
 
 from quacc.settings import QuaccSettings
-from quacc.utils.wflows import fetch_atoms, flow, job, subflow
+from quacc.utils.wflows import flow, job, subflow
 
-__all__ = ["fetch_atoms", "flow", "job", "subflow"]
+__all__ = ["flow", "job", "subflow"]
 
 
 def atoms_as_dict(s: Atoms) -> dict:
