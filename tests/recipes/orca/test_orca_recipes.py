@@ -23,7 +23,7 @@ def teardown_module():
 
 
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 def test_static_job(monkeypatch, tmpdir):
@@ -60,7 +60,7 @@ def test_static_job(monkeypatch, tmpdir):
 
 
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 @pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
@@ -104,7 +104,7 @@ def test_relax_job(monkeypatch, tmpdir):
 
 
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 @pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")

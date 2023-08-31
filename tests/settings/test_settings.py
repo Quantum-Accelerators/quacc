@@ -39,7 +39,7 @@ def test_file(monkeypatch, tmpdir):
 
 
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 def test_store(tmpdir):
@@ -51,7 +51,7 @@ def test_store(tmpdir):
 
 
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 def test_results_dir(tmpdir):

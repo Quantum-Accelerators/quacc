@@ -43,7 +43,7 @@ def teardown_module():
     reason="NewtonNet and Sella must be installed.",
 )
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 def test_static_job(tmpdir):
@@ -62,7 +62,7 @@ def test_static_job(tmpdir):
     reason="NewtonNet and Sella must be installed.",
 )
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 def test_relax_job(tmpdir):
@@ -83,7 +83,7 @@ def test_relax_job(tmpdir):
     reason="NewtonNet and Sella must be installed.",
 )
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 def test_freq_job(tmpdir):
@@ -135,7 +135,7 @@ def test_freq_job(tmpdir):
     reason="NewtonNet and Sella must be installed.",
 )
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 def test_ts_job_with_default_args(tmpdir):
@@ -163,7 +163,7 @@ def test_ts_job_with_default_args(tmpdir):
     reason="NewtonNet and Sella must be installed.",
 )
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 def test_ts_job_with_custom_hessian(tmpdir):
@@ -194,7 +194,7 @@ def test_ts_job_with_custom_hessian(tmpdir):
     reason="NewtonNet and Sella must be installed.",
 )
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 def test_ts_job_with_custom_optimizer(tmpdir):
@@ -221,7 +221,7 @@ def test_ts_job_with_custom_optimizer(tmpdir):
     reason="NewtonNet and Sella must be installed.",
 )
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 def test_ts_job_with_custom_optimizer_and_custom_hessian(tmpdir):
@@ -240,7 +240,7 @@ def test_ts_job_with_custom_optimizer_and_custom_hessian(tmpdir):
     reason="NewtonNet and Sella must be installed.",
 )
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 def test_irc_job_with_default_args(tmpdir):
@@ -265,7 +265,7 @@ def test_irc_job_with_default_args(tmpdir):
     reason="NewtonNet and Sella must be installed.",
 )
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 def test_irc_job_with_custom_fmax(tmpdir):
@@ -291,7 +291,7 @@ def test_irc_job_with_custom_fmax(tmpdir):
     reason="NewtonNet and Sella must be installed.",
 )
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 def test_irc_job_with_custom_max_steps(tmpdir):
@@ -317,7 +317,7 @@ def test_irc_job_with_custom_max_steps(tmpdir):
     reason="NewtonNet and Sella must be installed.",
 )
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 def test_irc_job_with_custom_temperature_and_pressure(tmpdir):
@@ -346,7 +346,7 @@ def test_irc_job_with_custom_temperature_and_pressure(tmpdir):
     reason="NewtonNet and Sella must be installed.",
 )
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 def test_irc_job_with_custom_opt_swaps(tmpdir):
@@ -372,7 +372,7 @@ def test_irc_job_with_custom_opt_swaps(tmpdir):
     reason="NewtonNet and Sella must be installed.",
 )
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 def test_quasi_irc_job_with_default_args(tmpdir):
@@ -398,7 +398,7 @@ def test_quasi_irc_job_with_default_args(tmpdir):
     reason="NewtonNet and Sella must be installed.",
 )
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 def test_quasi_irc_job_with_custom_direction(tmpdir):
@@ -427,7 +427,7 @@ def test_quasi_irc_job_with_custom_direction(tmpdir):
     reason="NewtonNet and Sella must be installed.",
 )
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 def test_quasi_irc_job_with_custom_temperature_and_pressure(tmpdir):
@@ -458,7 +458,7 @@ def test_quasi_irc_job_with_custom_temperature_and_pressure(tmpdir):
     reason="NewtonNet and Sella must be installed.",
 )
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 def test_quasi_irc_job_with_custom_irc_swaps(tmpdir):

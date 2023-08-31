@@ -9,7 +9,7 @@ from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 def test_static_job(tmpdir):
@@ -30,7 +30,7 @@ def test_static_job(tmpdir):
 
 
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 def test_relax_job(tmpdir):
@@ -86,7 +86,7 @@ def test_relax_job(tmpdir):
 
 
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 def test_slab_dynamic_jobs(tmpdir):

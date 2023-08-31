@@ -11,7 +11,7 @@ try:
 except ImportError:
     ct = None
 
-WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
+WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE
 
 
 @pytest.mark.skipif(

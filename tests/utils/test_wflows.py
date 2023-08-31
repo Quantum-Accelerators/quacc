@@ -19,7 +19,7 @@ except ImportError:
 
 DEFAULT_SETTINGS = SETTINGS.copy()
 
-WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
+WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE
 
 
 def teardown_module():
@@ -29,7 +29,7 @@ def teardown_module():
 def test_decorators(tmpdir):
     tmpdir.chdir()
 
-    SETTINGS.WORKFLOW_ENGINE = None
+    SETTINGS.WORKFLOW_ENGINE = "local"
 
     @job
     def add(a, b):

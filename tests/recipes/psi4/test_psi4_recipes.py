@@ -15,7 +15,7 @@ except ImportError:
     reason="Psi4 must be installed. Try conda install -c psi4 psi4",
 )
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 def testimages_maker(tmpdir):

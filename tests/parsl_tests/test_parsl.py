@@ -7,7 +7,7 @@ try:
 except ImportError:
     parsl = None
 
-WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
+WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE
 
 
 def setup_module():

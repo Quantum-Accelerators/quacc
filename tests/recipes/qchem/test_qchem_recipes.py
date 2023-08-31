@@ -98,7 +98,7 @@ def mock_read(self, **kwargs):
 
 
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 def test_static_job(monkeypatch, tmpdir):
@@ -175,7 +175,7 @@ def test_static_job(monkeypatch, tmpdir):
     reason="Sella must be installed.",
 )
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 def test_relax_job(monkeypatch, tmpdir):
@@ -258,7 +258,7 @@ def test_relax_job(monkeypatch, tmpdir):
     reason="Sella must be installed.",
 )
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 def test_ts_job(monkeypatch, tmpdir):
@@ -349,7 +349,7 @@ def test_ts_job(monkeypatch, tmpdir):
     reason="Sella must be installed.",
 )
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 def test_irc_job(monkeypatch, tmpdir):
@@ -436,7 +436,7 @@ def test_irc_job(monkeypatch, tmpdir):
     reason="Sella must be installed.",
 )
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 def test_quasi_irc_job(monkeypatch, tmpdir):

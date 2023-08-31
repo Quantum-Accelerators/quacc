@@ -4,7 +4,7 @@ import functools
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Any, TypeVar
+    from typing import Any, Literal, TypeVar
 
     from ase import Atoms
 
@@ -13,7 +13,11 @@ if TYPE_CHECKING:
     Subflow = TypeVar("Subflow")
 
 
-def job(_func: callable | None = None, **kwargs) -> Job:  # sourcery skip
+def job(
+    _func: callable | None = None,
+    engine: Literal["covalent", "parsl", "jobflow", "local"] | None = None,
+    **kwargs,
+) -> Job:  # sourcery skip
     """
     Decorator for individual compute jobs. This is a @job decorator.
 
@@ -28,6 +32,8 @@ def job(_func: callable | None = None, **kwargs) -> Job:  # sourcery skip
     ----------
     _func
         The function to decorate. This is not meant to be supplied by the user.
+    engine
+        The workflow engine. This defaults to `SETTINGS.WORKFLOW_ENGINE` if `None`.
     **kwargs
         Keyword arguments to pass to the workflow engine decorator.
 
@@ -62,9 +68,7 @@ def job(_func: callable | None = None, **kwargs) -> Job:  # sourcery skip
         if not decorator_kwargs:
             decorator_kwargs = kwargs
 
-        wflow_engine = (
-            SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
-        )
+        wflow_engine = engine or SETTINGS.WORKFLOW_ENGINE
         if wflow_engine == "covalent":
             import covalent as ct
 
@@ -92,7 +96,11 @@ def job(_func: callable | None = None, **kwargs) -> Job:  # sourcery skip
     return _inner
 
 
-def flow(_func: callable | None = None, **kwargs) -> Flow:  # sourcery skip
+def flow(
+    _func: callable | None = None,
+    engine: Literal["covalent", "parsl", "jobflow", "local"] | None = None,
+    **kwargs,
+) -> Flow:  # sourcery skip
     """
     Decorator for workflows, which consist of at least one compute job. This is a @flow decorator.
 
@@ -108,6 +116,8 @@ def flow(_func: callable | None = None, **kwargs) -> Flow:  # sourcery skip
     ----------
     _func
         The function to decorate. This is not meant to be supplied by the user.
+    engine
+        The workflow engine. This defaults to `SETTINGS.WORKFLOW_ENGINE` if `None`.
     **kwargs
         Keyword arguments to pass to the decorator.
 
@@ -148,9 +158,7 @@ def flow(_func: callable | None = None, **kwargs) -> Flow:  # sourcery skip
         if not decorator_kwargs:
             decorator_kwargs = kwargs
 
-        wflow_engine = (
-            SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
-        )
+        wflow_engine = engine or SETTINGS.WORKFLOW_ENGINE
 
         dispatch_kwargs = dispatch_kwargs or {}
         if dispatch_kwargs and wflow_engine != "covalent":
@@ -182,7 +190,11 @@ def flow(_func: callable | None = None, **kwargs) -> Flow:  # sourcery skip
     return _inner
 
 
-def subflow(_func: callable | None = None, **kwargs) -> Subflow:  # sourcery skip
+def subflow(
+    _func: callable | None = None,
+    engine: Literal["covalent", "parsl", "jobflow", "local"] | None = None,
+    **kwargs,
+) -> Subflow:  # sourcery skip
     """
     Decorator for (dynamic) sub-workflows. This is a @subflow decorator.
 
@@ -198,6 +210,8 @@ def subflow(_func: callable | None = None, **kwargs) -> Subflow:  # sourcery ski
     ----------
     _func
         The function to decorate. This is not meant to be supplied by the user.
+    engine
+        The workflow engine. This defaults to `SETTINGS.WORKFLOW_ENGINE` if `None`.
     **kwargs
         Keyword arguments to pass to the decorator.
 
@@ -231,9 +245,7 @@ def subflow(_func: callable | None = None, **kwargs) -> Subflow:  # sourcery ski
         if not decorator_kwargs:
             decorator_kwargs = kwargs
 
-        wflow_engine = (
-            SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
-        )
+        wflow_engine = engine or SETTINGS.WORKFLOW_ENGINE
         if wflow_engine == "covalent":
             import covalent as ct
 

@@ -7,7 +7,7 @@ from quacc.recipes.lj.core import freq_job, relax_job, static_job
 
 
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 def test_static_job(tmpdir):
@@ -33,7 +33,7 @@ def test_static_job(tmpdir):
 
 
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 def test_relax_job(tmpdir):
@@ -63,7 +63,7 @@ def test_relax_job(tmpdir):
 
 
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
+    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
     reason="This test suite is for regular function execution only",
 )
 def test_freq_job(tmpdir):
