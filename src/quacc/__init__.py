@@ -4,6 +4,7 @@ from __future__ import annotations
 from importlib.metadata import version
 
 from ase import Atoms
+from ase import __version__ as ase_version
 from ase.io.jsonio import decode, encode
 
 from quacc.settings import QuaccSettings
@@ -34,6 +35,10 @@ __version__ = version("quacc")
 # Make Atoms MSONable
 Atoms.as_dict = atoms_as_dict
 Atoms.from_dict = atoms_from_dict
+
+if tuple(ase_version) <= tuple("3.22.1"):
+    msg = f"Your ASE version ({ase_version}) is <= 3.22.1. Please upgrade your ASE version by running `pip install --upgrade https://gitlab.com/ase/ase/-/archive/master/ase-master.zip`"
+    raise ValueError(msg)
 
 # Load the settings
 SETTINGS = QuaccSettings()
