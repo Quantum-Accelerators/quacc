@@ -305,7 +305,7 @@ def test_docs_recipes_lj(tmpdir):
 
     from quacc.recipes.lj.core import relax_job
 
-    atoms = molecule("Cu")
+    atoms = molecule("N2")
     future = relax_job(atoms)
     result = future.result()
     assert future.done()
@@ -315,7 +315,7 @@ def test_docs_recipes_lj(tmpdir):
 
     from quacc.recipes.lj.core import static_job
 
-    atoms = molecule("Cu")
+    atoms = molecule("N2")
     future = static_job(atoms)
     result = future.result()
     assert future.done()
@@ -325,7 +325,7 @@ def test_docs_recipes_lj(tmpdir):
 
     from quacc.recipes.lj.core import freq_job
 
-    atoms = molecule("Cu")
+    atoms = molecule("N2")
     future = freq_job(atoms)
     result = future.result()
     assert future.done()

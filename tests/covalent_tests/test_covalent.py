@@ -420,7 +420,7 @@ def test_docs_recipes_emt(tmpdir):
     dispatch_id = bulk_to_defects_flow(atoms)
     result = ct.get_result(dispatch_id, wait=True)
 
-    assert result.stauts == "COMPLETED"
+    assert result.status == "COMPLETED"
 
 
 @pytest.mark.skipif(
@@ -438,7 +438,7 @@ def test_docs_recipes_lj(tmpdir):
     atoms = molecule("N2")
     dispatch_id = flow(relax_job)(atoms)
     result = ct.get_result(dispatch_id, wait=True)
-    assert result.stauts == "COMPLETED"
+    assert result.status == "COMPLETED"
 
     # ------------------------
 
