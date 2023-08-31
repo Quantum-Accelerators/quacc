@@ -192,3 +192,54 @@ def test_comparison2(tmpdir):
     future3 = add_distributed(future2, 3)
 
     assert future3.result() == [6, 6, 6]
+
+
+@pytest.mark.skipif(
+    parsl is None or WFLOW_ENGINE != "parsl",
+    reason="Parsl is not installed or specified in config",
+)
+def test_comparison3(tmpdir):
+    tmpdir.chdir()
+    from quacc import job
+
+    @job  #  (1)!
+    def add(a, b):
+        return a + b
+
+    @job
+    def mult(a, b):
+        return a * b
+
+    future1 = add(1, 2)
+    future2 = mult(future1, 3)
+
+    assert future2.result() == 9
+
+
+@pytest.mark.skipif(
+    parsl is None or WFLOW_ENGINE != "parsl",
+    reason="Parsl is not installed or specified in config",
+)
+def test_comparison4(tmpdir):
+    tmpdir.chdir()
+    from quacc import job, subflow
+
+    @job
+    def add(a, b):
+        return a + b
+
+    @job
+    def make_more(val):
+        import random
+
+        return [val] * random.randint(2, 5)
+
+    @subflow  #  (1)!
+    def add_distributed(vals, c):
+        return [add(val, c) for val in vals]
+
+    future1 = add(1, 2)
+    future2 = make_more(future1)
+    future3 = add_distributed(future2, 3)
+
+    assert future3.result() == [6, 6, 6]

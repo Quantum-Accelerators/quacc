@@ -57,23 +57,17 @@ graph LR
         return mult(add(a, b), c)
 
 
-    # Locally
-    result = workflow(1, 2, 3)  # 9  (3)!
-
-    # Dispatched
-    dispatch_id = ct.dispatch(workflow)(1, 2, 3)  # (4)!
-    print(ct.get_result(dispatch_id, wait=True))  # 9  (5)!
+    dispatch_id = ct.dispatch(workflow)(1, 2, 3)  # (3)!
+    print(ct.get_result(dispatch_id, wait=True))  # 9  (4)!
     ```
 
     1. `#!Python @ct.electron` tells Covalent to treat the function as a compute job.
 
     2. `#!Python @ct.lattice` tells Covalent to treat the function as a workflow.
 
-    3. If you call any `#!Python @ct.electron`- or `#!Python @ct.lattice`-decorated functions normally, Covalent will simply run it like a normal function.
+    3. The `#!Python ct.dispatch` function tells Covalent to dispatch the workflow to the Covalent server. A unique dispatch ID will be returned instead of the actual result so that the result can be fetched asynchronously.
 
-    4. The `#!Python ct.dispatch` function tells Covalent to dispatch the workflow to the Covalent server. A unique dispatch ID will be returned instead of the actual result so that the result can be fetched asynchronously.
-
-    5. The `#!Python ct.get_result` function tells Covalent to fetch the result from the server. We chose to set `wait=True` so that the function will block until the result is ready simply for demonstration purposes.
+    4. The `#!Python ct.get_result` function tells Covalent to fetch the result from the server. We chose to set `wait=True` so that the function will block until the result is ready simply for demonstration purposes.
 
 === "Parsl"
 
@@ -98,7 +92,7 @@ graph LR
         return a + b
 
 
-    @python_app  # @python_app
+    @python_app
     def mult(a, b):
         return a * b
 
@@ -246,8 +240,6 @@ graph LR
     import random
     import jobflow as jf
 
-    from quacc import job
-
 
     @jf.job
     def add(a, b):
@@ -284,12 +276,192 @@ To help enable interoperability between workflow engines, quacc offers a unified
 | Quacc              | Covalent                           | Parsl                 | Jobflow        |
 | ------------------ | ---------------------------------- | --------------------- | -------------- |
 | `#!Python job`     | `#!Python ct.electron`             | `#!Python python_app` | `#!Python job` |
-| `#!Python flow`    | `#!Python ct.dispatch(ct.lattice)` | N/A                   | N/A            |
+| `#!Python flow`    | `#!Python ct.lattice`              | N/A                   | N/A            |
 | `#!Python subflow` | `#!Python ct.electron(ct.lattice)` | `#!Python join_app`   | N/A            |
 
 The quacc descriptors are drop-in replacements for the specified workflow engine analogue, which we will use for the remainder of the tutorials.
 
-Based on the value for the `WORKFLOW_ENGINE` global variable in your [quacc settings](../settings.md), the appropriate decorator will be automatically selected. If the `WORKFLOW_ENGINE` setting is set to `None` (or for any entries marked N/A in the above table), the decorators will have no effect on the underlying function.
+!!! Tip
+
+    Based on the value for the `WORKFLOW_ENGINE` global variable in your [quacc settings](../settings.md), the appropriate decorator will be automatically selected. If the `WORKFLOW_ENGINE` setting is set to `None` (or for any entries marked N/A in the above table), the decorators will have no effect on the underlying function.
+
+The above examples can be rewritten use the quacc-specific syntax as follows.
+
+```mermaid
+graph LR
+  A[Input] --> B(add) --> C(mult) --> D[Output];
+```
+
+=== "Covalent"
+
+    ```python
+    import covalent as ct
+    from quacc import flow, job
+
+    @job  #  (1)!
+    def add(a, b):
+        return a + b
+
+    @job
+    def mult(a, b):
+        return a * b
+
+    @flow  #  (2)!
+    def workflow(a, b, c):
+        return mult(add(a, b), c)
+
+    dispatch_id = workflow(1, 2, 3)  # (3)!
+    print(ct.get_result(dispatch_id, wait=True))
+    ```
+
+    1. The `#!Python @job` decorator will be transformed into `#!Python @ct.electron`.
+
+    2. The `#!Python @flow` decorator will be transformed into `#!Python @ct.lattice`.
+
+    3. When using the `#!Python @flow` decorator, you do not need to call `ct.dispatch()`. It will be done automatically.
+
+=== "Parsl"
+
+    ```python
+    from quacc import job
+
+    @job  #  (1)!
+    def add(a, b):
+        return a + b
+
+    @job
+    def mult(a, b):
+        return a * b
+
+    future1 = add(1, 2)
+    future2 = mult(future1, 3)
+
+    result = future2.result()  # 9
+    ```
+
+    1. The `#!Python @job` decorator will be transformed into `#!Python @python_app`.
+
+=== "Jobflow"
+
+    ```python
+    import jobflow as jf
+    from quacc import job
+
+    @job  #  (1)!
+    def add(a, b):
+        return a + b
+
+    @job
+    def mult(a, b):
+        return a * b
+
+    job1 = add(1, 2)
+    job2 = mult(job1.output, 3)
+    flow = jf.Flow([job1, job2])
+
+    responses = jf.run_locally(flow)
+    result = responses[job2.uuid][1].output
+    ```
+
+    1. The `#!Python @job` decorator will be transformed into `#!Python @jf.job`.
+
+```mermaid
+graph LR
+  A[Input] --> B(add) --> C(make_more)
+  C --> D(add) --> G[Output];
+  C --> E(add) --> G[Output];
+  C --> F(add) --> G[Output];
+```
+
+=== "Covalent"
+
+    ```python
+    import random
+    import covalent as ct
+    from quacc import flow, job, subflow
+
+    @job
+    def add(a, b):
+        return a + b
+
+    @job
+    def make_more(val):
+        return [val] * random.randint(2, 5)
+
+    @subflow  #  (1)!
+    def add_distributed(vals, c):
+        return [add(val, c) for val in vals]
+
+    @flow
+    def workflow(a, b, c):
+        result1 = add(a, b)
+        result2 = make_more(result1)
+        return add_distributed(result2, c)
+
+    # Dispatched
+    dispatch_id = workflow(1, 2, 3)
+    print(ct.get_result(dispatch_id, wait=True))  # e.g. [6, 6, 6]
+    ```
+
+    1. The `#!Python @subflow` decorator will be transformed into `#!Python ct.electron(ct.lattice)`.
+
+=== "Parsl"
+
+    ```python
+    from quacc import job, subflow
+
+    @job
+    def add(a, b):
+        return a + b
+
+    @job
+    def make_more(val):
+        import random
+
+        return [val] * random.randint(2, 5)
+
+    @subflow  #  (1)!
+    def add_distributed(vals, c):
+        return [add(val, c) for val in vals]
+
+    future1 = add(1, 2)
+    future2 = make_more(future1)
+    future3 = add_distributed(future2, 3)
+
+    result = future3.result()  # e.g. [6, 6, 6]
+    ```
+
+    1. The `#!Python @subflow` decorator will be transformed into `#!Python @join_app`.
+
+=== "Jobflow"
+
+    ```python
+    import random
+    import jobflow as jf
+    from quacc import job
+
+    @job
+    def add(a, b):
+        return a + b
+
+    @job
+    def make_more(val):
+        return [val] * random.randint(2, 5)
+
+    @job
+    def add_distributed(vals, c):
+        jobs = []
+        for val in vals:
+            jobs.append(add(val, c))
+        return jf.Response(replace=jf.Flow(jobs))
+
+    job1 = add(1, 2)
+    job2 = make_more(job1.output)
+    job3 = add_distributed(job2.output, 3)
+    flow = jf.Flow([job1, job2, job3])
+
+    responses = jf.run_locally(flow)  # e.g. [6, 6, 6] (job3.output)
+    ```
 
 ## Learn More
 

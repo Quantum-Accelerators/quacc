@@ -285,3 +285,67 @@ def test_comparison2(tmpdir):
     result = ct.get_result(dispatch_id, wait=True)  # e.g. [6, 6, 6]
 
     assert result.status == "COMPLETED"
+
+
+@pytest.mark.skipif(
+    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+    reason="This test requires Covalent and to be run on GitHub",
+)
+def test_comparison3(tmpdir):
+    tmpdir.chdir()
+    import covalent as ct
+
+    from quacc import flow, job
+
+    @job  #  (1)!
+    def add(a, b):
+        return a + b
+
+    @job
+    def mult(a, b):
+        return a * b
+
+    @flow  #  (2)!
+    def workflow(a, b, c):
+        return mult(add(a, b), c)
+
+    dispatch_id = workflow(1, 2, 3)  # (3)!
+    result = ct.get_result(dispatch_id, wait=True)
+    assert result.status == "COMPLETED"
+
+
+@pytest.mark.skipif(
+    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+    reason="This test requires Covalent and to be run on GitHub",
+)
+def test_comparison4(tmpdir):
+    tmpdir.chdir()
+    import random
+
+    import covalent as ct
+
+    from quacc import flow, job, subflow
+
+    @job
+    def add(a, b):
+        return a + b
+
+    @job
+    def make_more(val):
+        return [val] * random.randint(2, 5)
+
+    @subflow  #  (1)!
+    def add_distributed(vals, c):
+        return [add(val, c) for val in vals]
+
+    @flow
+    def workflow(a, b, c):
+        result1 = add(a, b)
+        result2 = make_more(result1)
+        return add_distributed(result2, c)
+
+    # Dispatched
+    dispatch_id = workflow(1, 2, 3)
+    result = ct.get_result(dispatch_id, wait=True)  # e.g. [6, 6, 6]
+
+    assert result.status == "COMPLETED"
