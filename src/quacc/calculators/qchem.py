@@ -2,8 +2,8 @@
 from __future__ import annotations
 
 import inspect
-import os
 import struct
+from pathlib import Path
 
 from ase import Atoms, units
 from ase.calculators.calculator import FileIOCalculator
@@ -139,7 +139,7 @@ class QChem(FileIOCalculator):
         """
 
         # Return the command flag
-        run_qchem_custodian_file = os.path.abspath(inspect.getfile(custodian_qchem))
+        run_qchem_custodian_file = Path.resolve(Path(inspect.getfile(custodian_qchem)))
         return f"python {run_qchem_custodian_file} {self.cores}"
 
     def write_input(self, atoms, properties=None, system_changes=None):

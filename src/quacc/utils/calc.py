@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 from shutil import rmtree
 from tempfile import mkdtemp
 from typing import TYPE_CHECKING
@@ -260,10 +261,10 @@ def _calc_setup(
     )
 
     # Create a tmpdir for the calculation within the scratch_dir
-    tmpdir = os.path.abspath(mkdtemp(prefix="quacc-tmp-", dir=SETTINGS.SCRATCH_DIR))
+    tmpdir = Path.resolve(Path(mkdtemp(prefix="quacc-tmp-", dir=SETTINGS.SCRATCH_DIR)))
 
     # Create a symlink (if not on Windows) to the tmpdir in the results_dir
-    symlink = os.path.join(job_results_dir, f"{os.path.basename(tmpdir)}-symlink")
+    symlink = os.path.join(job_results_dir, f"{tmpdir.name}-symlink")
     if os.name != "nt":
         if os.path.islink(symlink):
             os.unlink(symlink)
