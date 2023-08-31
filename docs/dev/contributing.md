@@ -8,7 +8,7 @@ We welcome all contributions, big or small (provided they come with unit tests!)
 
 ## General Tips
 
-When developing new recipes, it is often helpful to start from an existing example. In general, we recommend referring to `quacc.recipes.emt` or `quacc.recipes.tblite` as a starting point.
+When developing new recipes, it is often helpful to start from an existing example. In general, we recommend referring to `quacc.recipes.emt` as a starting point.
 
 ## Steps to Contribute
 
@@ -18,7 +18,7 @@ To contribute to quacc, we recommend doing the following:
 
 - [Clone this forked repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) to your local machine, e.g. via `git clone <repo url>.git`.
 
-- In the newly downloaded `quacc` base directory, run `pip install -e .[dev]` to install quacc in editable mode and with the development dependencies.
+- In the newly downloaded `quacc` base directory, run `pip install -e .[dev]` to install quacc in editable mode and with the development dependencies. If you need to strictly match the versions of dependencies used in the GitHub actions test suite, you can find `reuqirements.txt` files in the `tests` directory.
 
 - [Commit your changes](https://github.com/git-guides/git-commit) and [push them](https://github.com/git-guides/git-push) to your personal forked repository _in a new branch_.
 
