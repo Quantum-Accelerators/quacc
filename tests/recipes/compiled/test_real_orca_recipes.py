@@ -11,10 +11,6 @@ has_orca = bool(which(SETTINGS.ORCA_CMD))
 
 
 @pytest.mark.skipif(has_orca is False, reason="ORCA not installed")
-@pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
-    reason="This test suite is for regular function execution only",
-)
 def test_static_job(tmpdir):
     tmpdir.chdir()
 
@@ -49,10 +45,6 @@ def test_static_job(tmpdir):
 
 
 @pytest.mark.skipif(has_orca is False, reason="ORCA not installed")
-@pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
-    reason="This test suite is for regular function execution only",
-)
 def test_relax_job(tmpdir):
     tmpdir.chdir()
 

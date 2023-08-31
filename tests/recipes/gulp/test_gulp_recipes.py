@@ -5,10 +5,6 @@ from quacc import SETTINGS
 from quacc.recipes.gulp.core import relax_job, static_job
 
 
-@pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
-    reason="This test suite is for regular function execution only",
-)
 def test_static_job(tmpdir):
     tmpdir.chdir()
 
@@ -64,10 +60,6 @@ def test_static_job(tmpdir):
     assert "output cif gulp.cif" in output["parameters"]["options"]
 
 
-@pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {"local", "covalent"},
-    reason="This test suite is for regular function execution only",
-)
 def test_relax_job(tmpdir):
     tmpdir.chdir()
 
