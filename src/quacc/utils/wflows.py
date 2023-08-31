@@ -56,6 +56,7 @@ def job(_func: callable | None = None, **kwargs) -> Job:  # sourcery skip
         Any
             The output of the @job-decorated function.
         """
+
         from quacc import SETTINGS
 
         if not decorator_kwargs:
@@ -80,6 +81,13 @@ def job(_func: callable | None = None, **kwargs) -> Job:  # sourcery skip
             decorated = _func
 
         return decorated(*f_args, **f_kwargs)
+
+    if _func is None:
+
+        def decorator(_f):
+            return job(_f, **kwargs)
+
+        return decorator
 
     return _inner
 
@@ -164,6 +172,13 @@ def flow(_func: callable | None = None, **kwargs) -> Flow:  # sourcery skip
 
         return decorated(*f_args, **f_kwargs)
 
+    if _func is None:
+
+        def decorator(_f):
+            return flow(_f, **kwargs)
+
+        return decorator
+
     return _inner
 
 
@@ -231,6 +246,13 @@ def subflow(_func: callable | None = None, **kwargs) -> Subflow:  # sourcery ski
             decorated = _func
 
         return decorated(*f_args, **f_kwargs)
+
+    if _func is None:
+
+        def decorator(_f):
+            return subflow(_f, **kwargs)
+
+        return decorator
 
     return _inner
 
