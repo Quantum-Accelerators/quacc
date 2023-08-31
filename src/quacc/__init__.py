@@ -38,7 +38,7 @@ Atoms.from_dict = atoms_from_dict
 
 if tuple(ase_version) <= tuple("3.22.1"):
     msg = f"Your ASE version ({ase_version}) is <= 3.22.1. Please upgrade your ASE version by running `pip install --upgrade https://gitlab.com/ase/ase/-/archive/master/ase-master.zip`"
-    raise ValueError(msg)
+    warnings.warn(msg, UserWarning)
 
 # Load the settings
 SETTINGS = QuaccSettings()
