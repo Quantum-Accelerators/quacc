@@ -155,7 +155,7 @@ graph LR
     ```python
     import covalent as ct
     from ase.build import bulk
-    from quacc.recipes.emt.slabs import bulk_to_defects_flow
+    from quacc.recipes.emt.defects import bulk_to_defects_flow
 
     atoms = bulk("Cu")
     dispatch_id = bulk_to_defects_flow(atoms)
@@ -166,7 +166,7 @@ graph LR
 
     ```python
     from ase.build import bulk
-    from quacc.recipes.emt.slabs import bulk_to_defects_flow
+    from quacc.recipes.emt.defects import bulk_to_defects_flow
 
     atoms = bulk("Cu")
     future = bulk_to_defects_flow(atoms)

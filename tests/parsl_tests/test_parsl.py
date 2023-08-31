@@ -287,7 +287,7 @@ def test_docs_recipes_emt(tmpdir):
     # -----------------
     from ase.build import bulk
 
-    from quacc.recipes.emt.slabs import bulk_to_defects_flow
+    from quacc.recipes.emt.defects import bulk_to_defects_flow
 
     atoms = bulk("Cu")
     future = bulk_to_defects_flow(atoms)
