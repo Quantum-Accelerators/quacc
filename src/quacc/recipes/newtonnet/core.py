@@ -9,7 +9,7 @@ from ase.optimize import FIRE
 from ase.vibrations.data import VibrationsData
 from monty.dev import requires
 
-from quacc import SETTINGS, fetch_atoms, job
+from quacc import SETTINGS, job
 from quacc.schemas.ase import (
     summarize_opt_run,
     summarize_run,
@@ -19,6 +19,7 @@ from quacc.schemas.ase import (
 from quacc.utils.calc import run_ase_opt, run_calc
 from quacc.utils.dicts import merge_dicts
 from quacc.utils.thermo import ideal_gas
+from quacc.utils.wflows import fetch_atoms
 
 try:
     from sella import Sella
