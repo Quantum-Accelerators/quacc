@@ -46,14 +46,9 @@ In the previous examples, we have been running calculations on our local machine
 
     @flow
     def workflow(atoms):
-        job1 = relax_job
-        job1.electron_object.executor = "dask"  # (1)!
+        output1 = relax_job(atoms, decorator_kwargs = {"executor": "dask"})
+        output2 = static_job(output1, decorator_kwargs = {"executor": "local"})
 
-        job2 = static_job
-        job2.electron_object.executor = "local"  # (2)!
-
-        output1 = job1(atoms)
-        output2 = job2(output1)
         return output2
 
 
@@ -62,10 +57,6 @@ In the previous examples, we have been running calculations on our local machine
     result = ct.get_result(dispatch_id, wait=True)
     print(result)
     ```
-
-    1. If you are defining your own workflow functions to use, you can also set the executor for individual `Electron` objects by passing the `executor` keyword argument to the `#!Python @ct.electron` decorator.
-
-    2. This was merely for demonstration purposes. There is never really a need to use the "local" executor since the "dask" executor runs locally and is faster.
 
     **Configuring Executors**
 
