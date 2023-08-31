@@ -11,11 +11,20 @@ except ImportError:
 
 if jf:
     STORE = jf.JobStore(MemoryStore())
-WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE
+
+DEFAULT_SETTINGS = SETTINGS.copy()
+
+
+def setup_module():
+    SETTINGS.WORKFLOW_ENGINE = "jobflow"
+
+
+def teardown_module():
+    SETTINGS.WORKFLOW_ENGINE = "local"
 
 
 @pytest.mark.skipif(
-    jf is None or WFLOW_ENGINE != "jobflow",
+    jf is None,
     reason="Jobflow is not installed or specified in config",
 )
 def test_tutorial1a(tmpdir):
@@ -36,7 +45,7 @@ def test_tutorial1a(tmpdir):
 
 
 @pytest.mark.skipif(
-    jf is None or WFLOW_ENGINE != "jobflow",
+    jf is None,
     reason="Jobflow is not installed or specified in config",
 )
 def test_tutorial1b(tmpdir):
@@ -57,7 +66,7 @@ def test_tutorial1b(tmpdir):
 
 
 @pytest.mark.skipif(
-    jf is None or WFLOW_ENGINE != "jobflow",
+    jf is None,
     reason="Jobflow is not installed or specified in config",
 )
 def test_tutorial2a(tmpdir):
@@ -85,7 +94,7 @@ def test_tutorial2a(tmpdir):
 
 
 @pytest.mark.skipif(
-    jf is None or WFLOW_ENGINE != "jobflow",
+    jf is None,
     reason="Jobflow is not installed or specified in config",
 )
 def test_tutorial2b(tmpdir):
@@ -112,7 +121,7 @@ def test_tutorial2b(tmpdir):
 
 
 @pytest.mark.skipif(
-    jf is None or WFLOW_ENGINE != "jobflow",
+    jf is None,
     reason="Jobflow is not installed or specified in config",
 )
 def test_tutorial2c(tmpdir):
@@ -137,7 +146,7 @@ def test_tutorial2c(tmpdir):
 
 
 @pytest.mark.skipif(
-    jf is None or WFLOW_ENGINE != "jobflow",
+    jf is None,
     reason="Jobflow is not installed or specified in config",
 )
 def test_comparison1(tmpdir):
@@ -164,7 +173,7 @@ def test_comparison1(tmpdir):
 
 
 @pytest.mark.skipif(
-    jf is None or WFLOW_ENGINE != "jobflow",
+    jf is None,
     reason="Jobflow is not installed or specified in config",
 )
 def test_comparison2(tmpdir):
@@ -196,7 +205,7 @@ def test_comparison2(tmpdir):
 
 
 @pytest.mark.skipif(
-    jf is None or WFLOW_ENGINE != "jobflow",
+    jf is None,
     reason="Jobflow is not installed or specified in config",
 )
 def test_comparison3(tmpdir):
@@ -221,7 +230,7 @@ def test_comparison3(tmpdir):
 
 
 @pytest.mark.skipif(
-    jf is None or WFLOW_ENGINE != "jobflow",
+    jf is None,
     reason="Jobflow is not installed or specified in config",
 )
 def test_comparison4(tmpdir):
@@ -255,7 +264,7 @@ def test_comparison4(tmpdir):
 
 
 @pytest.mark.skipif(
-    jf is None or WFLOW_ENGINE != "jobflow",
+    jf is None,
     reason="Jobflow is not installed or specified in config",
 )
 def test_emt_flow(tmpdir):

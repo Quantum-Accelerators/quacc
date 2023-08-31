@@ -11,11 +11,19 @@ try:
 except ImportError:
     ct = None
 
-WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE
+DEFAULT_SETTINGS = SETTINGS.copy()
+
+
+def setup_module():
+    SETTINGS.WORKFLOW_ENGINE = "covalent"
+
+
+def teardown_module():
+    SETTINGS.WORKFLOW_ENGINE = "local"
 
 
 @pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
     reason="This test requires Covalent and to be run on GitHub",
 )
 def test_quickstart(tmpdir):
@@ -38,7 +46,7 @@ def test_quickstart(tmpdir):
 
 
 @pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
     reason="This test requires Covalent and to be run on GitHub",
 )
 def test_tutorial1a(tmpdir):
@@ -66,7 +74,7 @@ def test_tutorial1a(tmpdir):
 
 
 @pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
     reason="This test requires Covalent and to be run on GitHub",
 )
 def test_tutorial1b(tmpdir):
@@ -84,7 +92,7 @@ def test_tutorial1b(tmpdir):
 
 
 @pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
     reason="This test requires Covalent and to be run on GitHub",
 )
 def test_tutorial2a(tmpdir):
@@ -119,7 +127,7 @@ def test_tutorial2a(tmpdir):
 
 
 @pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
     reason="This test requires Covalent and to be run on GitHub",
 )
 def test_tutorial2b(tmpdir):
@@ -152,7 +160,7 @@ def test_tutorial2b(tmpdir):
 
 
 @pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
     reason="This test requires Covalent and to be run on GitHub",
 )
 def test_tutorial2c(tmpdir):
@@ -179,7 +187,7 @@ def test_tutorial2c(tmpdir):
 
 
 @pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
     reason="This test requires Covalent and to be run on GitHub",
 )
 def test_tutorial_excecutor1(tmpdir):
@@ -198,7 +206,7 @@ def test_tutorial_excecutor1(tmpdir):
 
 
 @pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
     reason="This test requires Covalent and to be run on GitHub",
 )
 def test_tutorial_excecutor2(tmpdir):
@@ -217,7 +225,7 @@ def test_tutorial_excecutor2(tmpdir):
 
 
 @pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
     reason="This test requires Covalent and to be run on GitHub",
 )
 def test_comparison1(tmpdir):
@@ -249,7 +257,7 @@ def test_comparison1(tmpdir):
 
 
 @pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
     reason="This test requires Covalent and to be run on GitHub",
 )
 def test_comparison2(tmpdir):
@@ -288,7 +296,7 @@ def test_comparison2(tmpdir):
 
 
 @pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
     reason="This test requires Covalent and to be run on GitHub",
 )
 def test_comparison3(tmpdir):
@@ -315,7 +323,7 @@ def test_comparison3(tmpdir):
 
 
 @pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
     reason="This test requires Covalent and to be run on GitHub",
 )
 def test_comparison4(tmpdir):

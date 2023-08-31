@@ -7,18 +7,25 @@ try:
 except ImportError:
     parsl = None
 
-WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE
+DEFAULT_SETTINGS = SETTINGS.copy()
 
 
 def setup_module():
-    try:
-        parsl.load()
-    except RuntimeError:
-        pass
+    if parsl:
+        try:
+            parsl.load()
+        except RuntimeError:
+            pass
+
+    SETTINGS.WORKFLOW_ENGINE = "parsl"
+
+
+def teardown_module():
+    SETTINGS.WORKFLOW_ENGINE = "local"
 
 
 @pytest.mark.skipif(
-    parsl is None or WFLOW_ENGINE != "parsl",
+    parsl is None,
     reason="Parsl is not installed or specified in config",
 )
 def test_tutorial1a(tmpdir):
@@ -39,7 +46,7 @@ def test_tutorial1a(tmpdir):
 
 
 @pytest.mark.skipif(
-    parsl is None or WFLOW_ENGINE != "parsl",
+    parsl is None,
     reason="Parsl is not installed or specified in config",
 )
 def test_tutorial1b(tmpdir):
@@ -73,7 +80,7 @@ def test_tutorial1b(tmpdir):
 
 
 @pytest.mark.skipif(
-    parsl is None or WFLOW_ENGINE != "parsl",
+    parsl is None,
     reason="Parsl is not installed or specified in config",
 )
 def test_tutorial2a(tmpdir):
@@ -97,7 +104,7 @@ def test_tutorial2a(tmpdir):
 
 
 @pytest.mark.skipif(
-    parsl is None or WFLOW_ENGINE != "parsl",
+    parsl is None,
     reason="Parsl is not installed or specified in config",
 )
 def test_tutorial2b(tmpdir):
@@ -121,7 +128,7 @@ def test_tutorial2b(tmpdir):
 
 
 @pytest.mark.skipif(
-    parsl is None or WFLOW_ENGINE != "parsl",
+    parsl is None,
     reason="Parsl is not installed or specified in config",
 )
 def test_tutorial2c(tmpdir):
@@ -144,7 +151,7 @@ def test_tutorial2c(tmpdir):
 
 
 @pytest.mark.skipif(
-    parsl is None or WFLOW_ENGINE != "parsl",
+    parsl is None,
     reason="Parsl is not installed or specified in config",
 )
 def test_comparison1(tmpdir):
@@ -167,7 +174,7 @@ def test_comparison1(tmpdir):
 
 
 @pytest.mark.skipif(
-    parsl is None or WFLOW_ENGINE != "parsl",
+    parsl is None,
     reason="Parsl is not installed or specified in config",
 )
 def test_comparison2(tmpdir):
@@ -195,7 +202,7 @@ def test_comparison2(tmpdir):
 
 
 @pytest.mark.skipif(
-    parsl is None or WFLOW_ENGINE != "parsl",
+    parsl is None,
     reason="Parsl is not installed or specified in config",
 )
 def test_comparison3(tmpdir):
@@ -217,7 +224,7 @@ def test_comparison3(tmpdir):
 
 
 @pytest.mark.skipif(
-    parsl is None or WFLOW_ENGINE != "parsl",
+    parsl is None,
     reason="Parsl is not installed or specified in config",
 )
 def test_comparison4(tmpdir):

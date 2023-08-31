@@ -19,8 +19,6 @@ except ImportError:
 
 DEFAULT_SETTINGS = SETTINGS.copy()
 
-WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE
-
 
 def teardown_module():
     SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
@@ -70,7 +68,7 @@ def test_decorators(tmpdir):
 
 
 @pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or WFLOW_ENGINE != "covalent",
+    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
     reason="This test requires Covalent and to be run on GitHub",
 )
 def test_covalent_decorators(tmpdir):
@@ -114,10 +112,6 @@ def test_covalent_decorators(tmpdir):
 def test_parsl_decorators(tmpdir):
     tmpdir.chdir()
     SETTINGS.WORKFLOW_ENGINE = "parsl"
-    try:
-        parsl.load()
-    except RuntimeError:
-        pass
 
     @job
     def add(a, b):

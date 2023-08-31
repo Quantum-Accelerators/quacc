@@ -2,6 +2,10 @@ import os
 from pathlib import Path
 from shutil import rmtree
 
+try:
+    import parsl
+except:
+    parsl = None
 FILE_DIR = Path(__file__).resolve().parent
 TEST_RESULTS_DIR = FILE_DIR / ".test_results"
 TEST_SCRATCH_DIR = FILE_DIR / ".test_scratch"
@@ -17,12 +21,11 @@ def pytest_sessionstart():
     if not os.path.exists(SETTINGS.SCRATCH_DIR):
         os.mkdir(SETTINGS.SCRATCH_DIR)
 
-    WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE
-
-    if WFLOW_ENGINE == "parsl":
-        import parsl
-
-        parsl.load()
+    if parsl:
+        try:
+            parsl.load()
+        except RuntimeError:
+            pass
 
 
 def pytest_sessionfinish():
