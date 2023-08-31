@@ -209,15 +209,12 @@ def test_tutorial_excecutor2(tmpdir):
     tmpdir.chdir()
 
     job1 = relax_job
-    job1.electron_object.executor = "dask"
-
     job2 = static_job
-    job2.electron_object.executor = "local"
 
     @flow
     def workflow5(atoms):
-        output1 = job1(atoms)
-        output2 = job2(output1)
+        output1 = job1(atoms, decorator_kwargs={"executor": "dask"})
+        output2 = job2(output1, decorator_kwargs={"executor": "local"})
         return output2
 
     atoms = bulk("Cu")

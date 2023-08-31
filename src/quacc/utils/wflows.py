@@ -33,8 +33,11 @@ def job(_func: callable | None = None, **kwargs) -> Job:  # sourcery skip
     """
 
     @functools.wraps(_func)
-    def _inner(*f_args, **f_kwargs):
+    def _inner(*f_args, decorator_kwargs: dict | None = None, **f_kwargs):
         from quacc import SETTINGS
+
+        if decorator_kwargs:
+            kwargs = decorator_kwargs
 
         wflow_engine = (
             SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
@@ -80,8 +83,11 @@ def flow(_func: callable | None = None, **kwargs) -> Flow:  # sourcery skip
     """
 
     @functools.wraps(_func)
-    def _inner(*f_args, **f_kwargs):
+    def _inner(*f_args, decorator_kwargs: dict | None = None, **f_kwargs):
         from quacc import SETTINGS
+
+        if decorator_kwargs:
+            kwargs = decorator_kwargs
 
         wflow_engine = (
             SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
@@ -119,8 +125,11 @@ def subflow(_func: callable | None = None, **kwargs) -> Subflow:  # sourcery ski
     """
 
     @functools.wraps(_func)
-    def _inner(*f_args, **f_kwargs):
+    def _inner(*f_args, decorator_kwargs: dict | None = None, **f_kwargs):
         from quacc import SETTINGS
+
+        if decorator_kwargs:
+            kwargs = decorator_kwargs
 
         wflow_engine = (
             SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
