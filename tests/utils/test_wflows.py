@@ -67,6 +67,47 @@ def test_decorators(tmpdir):
     assert not hasattr(add_distributed, "electron_object")
 
 
+def test_decorators2(tmpdir):
+    tmpdir.chdir()
+
+    @job(engine="local")
+    def add(a, b):
+        return a + b
+
+    @job(engine="local")
+    def mult(a, b):
+        return a * b
+
+    @job(engine="local")
+    def make_more(val):
+        return [val] * 3
+
+    @subflow(engine="local")
+    def add_distributed(vals, c):
+        return [add(val, c) for val in vals]
+
+    @flow(engine="local")
+    def workflow(a, b, c):
+        return mult(add(a, b), c)
+
+    @flow(engine="local")
+    def dynamic_workflow(a, b, c):
+        result1 = add(a, b)
+        result2 = make_more(result1)
+        return add_distributed(result2, c)
+
+    assert add(1, 2) == 3
+    assert not hasattr(add, "electron_object")
+    assert mult(1, 2) == 2
+    assert not hasattr(mult, "electron_object")
+    assert workflow(1, 2, 3) == 9
+    assert not hasattr(workflow, "electron_object")
+    assert dynamic_workflow(1, 2, 3) == [6, 6, 6]
+    assert not hasattr(dynamic_workflow, "electron_object")
+    assert add_distributed([1, 2, 3], 4) == [5, 6, 7]
+    assert not hasattr(add_distributed, "electron_object")
+
+
 def test_decorators_args(tmpdir):
     tmpdir.chdir()
 
@@ -190,6 +231,85 @@ def test_covalent_decorators_args(tmpdir):
     assert mult(1, 2) == 2
     assert ct.get_result(workflow(1, 2, 3), wait=True).result == 9
     assert ct.get_result(dynamic_workflow(1, 2, 3), wait=True).result == [6, 6, 6]
+
+
+@pytest.mark.skipif(
+    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
+    reason="This test requires Covalent and to be run on GitHub",
+)
+def test_covalent_decorators_args3(tmpdir):
+    tmpdir.chdir()
+
+    SETTINGS.WORKFLOW_ENGINE = "covalent"
+
+    @job
+    def add(a, b):
+        return a + b
+
+    @job
+    def mult(a, b):
+        return a * b
+
+    @job
+    def make_more(val):
+        return [val] * 3
+
+    @subflow
+    def add_distributed(vals, c):
+        return [add(val, c) for val in vals]
+
+    @flow
+    def workflow(a, b, c):
+        return mult(add(a, b), c)
+
+    @flow
+    def dynamic_workflow(a, b, c):
+        result1 = add(a, b)
+        result2 = make_more(result1)
+        return add_distributed(result2, c)
+
+    assert add(1, 2, decorator_kwargs={"executor": "local"}) == 3
+    assert mult(1, 2, decorator_kwargs={"executor": "local"}) == 2
+    assert (
+        ct.get_result(
+            workflow(1, 2, 3, decorator_kwargs={"executor": "local"}), wait=True
+        ).result
+        == 9
+    )
+    assert ct.get_result(
+        dynamic_workflow(1, 2, 3, decorator_kwargs={"executor": "local"}), wait=True
+    ).result == [6, 6, 6]
+    assert ct.get_result(flow(add_distributed([1, 1, 1], 2,decorator_kwargs={"executor":"local"})), wait=True).result == [
+        3,
+        3,
+        3,
+    ]
+
+
+@pytest.mark.skipif(
+    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
+    reason="This test requires Covalent and to be run on GitHub",
+)
+def test_covalent_decorators_args2(tmpdir):
+    tmpdir.chdir()
+
+    SETTINGS.WORKFLOW_ENGINE = "covalent"
+
+    @job(executor="local")
+    def add(a, b):
+        return a + b
+
+    @job(executor="local")
+    def mult(a, b):
+        return a * b
+
+    @flow(executor="local")
+    def workflow(a, b, c):
+        return mult(add(a, b), c)
+
+    assert add(1, 2) == 3
+    assert mult(1, 2) == 2
+    assert workflow(1, 2, 3, dispatch_kwargs={"disable_run": True})
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl not installed")
