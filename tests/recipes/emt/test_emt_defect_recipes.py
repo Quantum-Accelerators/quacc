@@ -21,6 +21,8 @@ def test_bulk_to_defects_flow(tmpdir):
     os.chdir(tmpdir)
 
     atoms = bulk("Cu")
-    output = bulk_to_defects_flow(atoms, defect_static=None,defect_relax_kwargs={"opt_swaps": {"fmax": 5}})
+    output = bulk_to_defects_flow(
+        atoms, defect_static=None, defect_relax_kwargs={"opt_swaps": {"fmax": 5}}
+    )
     assert len(output) == 1
     assert len(output[0]["atoms"]) == 107
