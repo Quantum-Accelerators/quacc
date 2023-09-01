@@ -51,7 +51,7 @@ def slab_static_job(
         "ismear": -5,
         "laechg": True,
         "lcharg": True,
-        "lreal":False,
+        "lreal": False,
         "lvhar": True,
         "lwave": True,
         "nedos": 5001,
