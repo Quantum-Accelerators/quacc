@@ -11,10 +11,7 @@ if TYPE_CHECKING:
     Subflow = TypeVar("Subflow")
 
 
-def job(
-    _func: callable | None = None,
-    **kwargs
-) -> Job:  # sourcery skip
+def job(_func: callable | None = None, **kwargs) -> Job:  # sourcery skip
     """
     Decorator for individual compute jobs. This is a @job decorator.
 
@@ -91,10 +88,7 @@ def job(
     return _inner
 
 
-def flow(
-    _func: callable | None = None,
-    **kwargs
-) -> Flow:  # sourcery skip
+def flow(_func: callable | None = None, **kwargs) -> Flow:  # sourcery skip
     """
     Decorator for workflows, which consist of at least one compute job. This is a @flow decorator.
 
@@ -182,9 +176,7 @@ def flow(
     return _inner
 
 
-def subflow(
-    _func: callable | None = None, **kwargs
-) -> Subflow:  # sourcery skip
+def subflow(_func: callable | None = None, **kwargs) -> Subflow:  # sourcery skip
     """
     Decorator for (dynamic) sub-workflows. This is a @subflow decorator.
 
@@ -233,7 +225,7 @@ def subflow(
         if not decorator_kwargs:
             decorator_kwargs = kwargs
 
-        wflow_engine =  SETTINGS.WORKFLOW_ENGINE
+        wflow_engine = SETTINGS.WORKFLOW_ENGINE
         if wflow_engine == "covalent":
             import covalent as ct
 
