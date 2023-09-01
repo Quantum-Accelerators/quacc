@@ -77,8 +77,7 @@ def run_calc(
             np.array_equal(atoms_new.get_atomic_numbers(), atoms.get_atomic_numbers())
             is False
         ):
-            msg = "Atomic numbers do not match between atoms and geom_file."
-            raise ValueError(msg)
+            raise ValueError("Atomic numbers do not match between atoms and geom_file.")
 
         atoms.positions = atoms_new.positions
         atoms.cell = atoms_new.cell
