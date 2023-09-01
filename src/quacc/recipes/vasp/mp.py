@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from quacc import job
+from quacc import flow, job
 from quacc.calculators.vasp import Vasp
 from quacc.schemas import fetch_atoms
 from quacc.schemas.vasp import summarize_run
@@ -101,7 +101,7 @@ def mp_relax_job(
     return summarize_run(atoms, additional_fields={"name": "MP-Relax"})
 
 
-@job
+@flow
 def mp_relax_flow(
     atoms: Atoms | dict,
     prerelax: callable | None = mp_prerelax_job,
@@ -138,7 +138,7 @@ def mp_relax_flow(
     relax_kwargs = relax_kwargs or {}
 
     # Run the prerelax
-    prerelax_results = prerelax.__wrapped__(atoms, **prerelax_kwargs)
+    prerelax_results = prerelax(atoms, **prerelax_kwargs)
 
     # Update KSPACING arguments
     bandgap = prerelax_results["output"].get("bandgap", 0)
@@ -152,9 +152,7 @@ def mp_relax_flow(
     relax_kwargs["calc_swaps"] = kspacing_swaps | relax_kwargs.get("calc_swaps", {})
 
     # Run the relax
-    relax_results = relax.__wrapped__(
-        prerelax_results, copy_files=["WAVECAR"], **relax_kwargs
-    )
+    relax_results = relax(prerelax_results, copy_files=["WAVECAR"], **relax_kwargs)
     relax_results["prerelax"] = prerelax_results
 
     return relax_results
