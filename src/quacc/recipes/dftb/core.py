@@ -6,11 +6,11 @@ from typing import TYPE_CHECKING
 from ase.calculators.dftb import Dftb
 
 from quacc import job
+from quacc.schemas import fetch_atoms
 from quacc.schemas.ase import summarize_run
 from quacc.utils.calc import run_calc
 from quacc.utils.dicts import merge_dicts
 from quacc.utils.files import check_logfile
-from quacc.schemas import fetch_atoms
 
 if TYPE_CHECKING:
     from typing import Literal
