@@ -10,6 +10,7 @@ from ase import units
 from ase.constraints import Filter
 from ase.io import read
 from ase.vibrations.data import VibrationsData
+from pathlib import Path
 
 from quacc import SETTINGS
 from quacc.schemas.atoms import atoms_to_metadata
@@ -154,7 +155,7 @@ def summarize_run(
     results = {"results": atoms.calc.results}
 
     # Get the calculator inputs
-    uri = get_uri(os.getcwd())
+    uri = get_uri(Path.cwd())
     inputs = {
         "parameters": atoms.calc.parameters,
         "nid": uri.split(":")[0],
@@ -342,7 +343,7 @@ def summarize_opt_run(
     }
 
     # Get the calculator inputs
-    uri = get_uri(os.getcwd())
+    uri = get_uri(Path.cwd())
     inputs = {
         "parameters": dyn.atoms.calc.parameters,
         "parameters_opt": opt_parameters,
@@ -503,7 +504,7 @@ def summarize_vib_run(
             vib_freqs_raw[i] = np.abs(f)
             vib_energies_raw[i] = np.abs(vib_energies_raw[i])
 
-    uri = get_uri(os.getcwd())
+    uri = get_uri(Path.cwd())
     inputs = {
         "parameters": None
         if isinstance(vib, VibrationsData)
@@ -659,7 +660,7 @@ def summarize_thermo(
     additional_fields = additional_fields or {}
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
-    uri = get_uri(os.getcwd())
+    uri = get_uri(Path.cwd())
     spin_multiplicity = int(2 * igt.spin + 1)
 
     inputs = {
