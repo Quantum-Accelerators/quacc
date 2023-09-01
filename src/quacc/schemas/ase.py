@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import warnings
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -9,7 +10,6 @@ from ase import units
 from ase.constraints import Filter
 from ase.io import read
 from ase.vibrations.data import VibrationsData
-from pathlib import Path
 
 from quacc import SETTINGS
 from quacc.schemas.atoms import atoms_to_metadata
