@@ -37,45 +37,11 @@ jobs:
       - name: Install pip packages
         run: |
           pip install -r tests/requirements.txt
-          pip install .[dev]
-
-      - name: Run tests with pytest
-        run: pytest --cov=quacc --cov-report=xml
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        if: github.repository == 'Quantum-Accelerators/quacc'
-
-  tests-tblite:
-    strategy:
-      fail-fast: true
-      matrix:
-        python-version: ["3.11"]
-    runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        shell: bash -l {0}
-
-    steps:
-      - name: Check out repo
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-          cache: pip
-          cache-dependency-path: pyproject.toml
-
-      - name: Install pip packages
-        run: |
-          pip install -r tests/requirements.txt
           pip install -r tests/requirements-tblite.txt
           pip install .[dev]
 
       - name: Run tests with pytest
-        run: pytest -k 'tblite' --cov=quacc --cov-report=xml
+        run: pytest --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -260,7 +226,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version: ["3.10"]
+        python-version: ["3.11"]
 
     defaults:
       run:
@@ -408,6 +374,40 @@ jobs:
 
       - name: Run tests with pytest
         run: pytest -k 'jobflow or fireworks' --cov=quacc --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        if: github.repository == 'Quantum-Accelerators/quacc'
+
+  tests-base-windows:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.11"]
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install pip packages
+        run: |
+          pip install -r tests/requirements.txt
+          pip install .[dev]
+
+      - name: Run tests with pytest
+        run: pytest --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3

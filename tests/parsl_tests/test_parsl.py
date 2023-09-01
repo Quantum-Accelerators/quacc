@@ -4,22 +4,39 @@ from quacc import SETTINGS
 
 try:
     import parsl
-    from parsl import join_app, python_app
 except ImportError:
     parsl = None
-
-WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
+try:
+    import psi4
+except ImportError:
+    psi4 = None
+try:
+    from tblite.ase import TBLite
+except ImportError:
+    TBLite = None
+try:
+    from quacc.recipes.emt.defects import bulk_to_defects_flow
+except ImportError:
+    bulk_to_defects_flow = None
+DEFAULT_SETTINGS = SETTINGS.copy()
 
 
 def setup_module():
-    try:
-        parsl.load()
-    except RuntimeError:
-        pass
+    if parsl:
+        try:
+            parsl.load()
+        except RuntimeError:
+            pass
+
+    SETTINGS.WORKFLOW_ENGINE = "parsl"
+
+
+def teardown_module():
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 @pytest.mark.skipif(
-    parsl is None or WFLOW_ENGINE != "parsl",
+    parsl is None,
     reason="Parsl is not installed or specified in config",
 )
 def test_tutorial1a(tmpdir):
@@ -40,7 +57,7 @@ def test_tutorial1a(tmpdir):
 
 
 @pytest.mark.skipif(
-    parsl is None or WFLOW_ENGINE != "parsl",
+    parsl is None,
     reason="Parsl is not installed or specified in config",
 )
 def test_tutorial1b(tmpdir):
@@ -74,7 +91,7 @@ def test_tutorial1b(tmpdir):
 
 
 @pytest.mark.skipif(
-    parsl is None or WFLOW_ENGINE != "parsl",
+    parsl is None,
     reason="Parsl is not installed or specified in config",
 )
 def test_tutorial2a(tmpdir):
@@ -98,7 +115,7 @@ def test_tutorial2a(tmpdir):
 
 
 @pytest.mark.skipif(
-    parsl is None or WFLOW_ENGINE != "parsl",
+    parsl is None,
     reason="Parsl is not installed or specified in config",
 )
 def test_tutorial2b(tmpdir):
@@ -122,7 +139,7 @@ def test_tutorial2b(tmpdir):
 
 
 @pytest.mark.skipif(
-    parsl is None or WFLOW_ENGINE != "parsl",
+    parsl is None,
     reason="Parsl is not installed or specified in config",
 )
 def test_tutorial2c(tmpdir):
@@ -145,7 +162,7 @@ def test_tutorial2c(tmpdir):
 
 
 @pytest.mark.skipif(
-    parsl is None or WFLOW_ENGINE != "parsl",
+    parsl is None,
     reason="Parsl is not installed or specified in config",
 )
 def test_comparison1(tmpdir):
@@ -168,7 +185,7 @@ def test_comparison1(tmpdir):
 
 
 @pytest.mark.skipif(
-    parsl is None or WFLOW_ENGINE != "parsl",
+    parsl is None,
     reason="Parsl is not installed or specified in config",
 )
 def test_comparison2(tmpdir):
@@ -193,3 +210,188 @@ def test_comparison2(tmpdir):
     future3 = add_distributed(future2, 3)
 
     assert future3.result() == [6, 6, 6]
+
+
+@pytest.mark.skipif(
+    parsl is None,
+    reason="Parsl is not installed or specified in config",
+)
+def test_comparison3(tmpdir):
+    tmpdir.chdir()
+    from quacc import job
+
+    @job  #  (1)!
+    def add(a, b):
+        return a + b
+
+    @job
+    def mult(a, b):
+        return a * b
+
+    future1 = add(1, 2)
+    future2 = mult(future1, 3)
+
+    assert future2.result() == 9
+
+
+@pytest.mark.skipif(
+    parsl is None,
+    reason="Parsl is not installed or specified in config",
+)
+def test_comparison4(tmpdir):
+    tmpdir.chdir()
+    from quacc import job, subflow
+
+    @job
+    def add(a, b):
+        return a + b
+
+    @job
+    def make_more(val):
+        return [val] * 3
+
+    @subflow  #  (1)!
+    def add_distributed(vals, c):
+        return [add(val, c) for val in vals]
+
+    future1 = add(1, 2)
+    future2 = make_more(future1)
+    future3 = add_distributed(future2, 3)
+
+    assert future3.result() == [6, 6, 6]
+
+
+@pytest.mark.skipif(
+    parsl is None,
+    reason="Parsl is not installed or specified in config",
+)
+def test_docs_recipes_emt(tmpdir):
+    tmpdir.chdir()
+
+    from ase.build import bulk
+
+    from quacc.recipes.emt.core import static_job
+
+    atoms = bulk("Cu")
+    future = static_job(atoms)
+    result = future.result()
+    assert future.done()
+
+    # -----------------
+
+    from ase.build import bulk
+
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+    atoms = bulk("Ni")
+    future = bulk_to_slabs_flow(atoms)
+    result = future.result()
+    assert future.done()
+
+
+@pytest.mark.skipif(
+    parsl is None or bulk_to_defects_flow is None,
+    reason="Parsl is not installed or specified in config",
+)
+def test_docs_recipes_emt_defects(tmpdir):
+    tmpdir.chdir()
+    from ase.build import bulk
+
+    from quacc.recipes.emt.defects import bulk_to_defects_flow
+
+    atoms = bulk("Cu")
+    future = bulk_to_defects_flow(atoms)
+    result = future.result()
+    assert future.done()
+
+
+@pytest.mark.skipif(
+    parsl is None,
+    reason="Parsl is not installed or specified in config",
+)
+def test_docs_recipes_lj(tmpdir):
+    tmpdir.chdir()
+    from ase.build import molecule
+
+    from quacc.recipes.lj.core import relax_job
+
+    atoms = molecule("N2")
+    future = relax_job(atoms)
+    result = future.result()
+    assert future.done()
+
+    # ---------------------
+    from ase.build import molecule
+
+    from quacc.recipes.lj.core import static_job
+
+    atoms = molecule("N2")
+    future = static_job(atoms)
+    result = future.result()
+    assert future.done()
+
+    # --------------------
+    from ase.build import molecule
+
+    from quacc.recipes.lj.core import freq_job
+
+    atoms = molecule("N2")
+    future = freq_job(atoms)
+    result = future.result()
+    assert future.done()
+
+
+@pytest.mark.skipif(
+    parsl is None or psi4 is None,
+    reason="Parsl is not installed or specified in config",
+)
+def test_docs_recipes_psi4(tmpdir):
+    tmpdir.chdir()
+    from ase.build import molecule
+
+    from quacc.recipes.psi4.core import static_job
+
+    atoms = molecule("O2")
+    future = static_job(
+        atoms, charge=0, multiplicity=3, method="wb97m-v", basis="def2-svp"
+    )
+    result = future.result()
+    assert result.done()
+
+
+@pytest.mark.skipif(
+    parsl is None or TBLite is None,
+    reason="Parsl is not installed or specified in config",
+)
+def test_docs_recipes_tblite(tmpdir):
+    tmpdir.chdir()
+
+    from ase.build import bulk
+
+    from quacc.recipes.tblite.core import relax_job
+
+    atoms = bulk("C")
+    future = relax_job(atoms, relax_cell=True)
+    result = future.result()
+    assert future.done()
+
+    # ------------------------
+
+    from ase.build import bulk
+
+    from quacc.recipes.tblite.core import static_job
+
+    atoms = bulk("C")
+    future = static_job(atoms, method="GFN1-xTB")
+    result = future.result()
+    assert future.done()
+
+    # ------------------------
+    from ase.build import molecule
+
+    from quacc.recipes.tblite.core import freq_job
+
+    atoms = molecule("N2")
+    future = freq_job(atoms)
+    result = future.result()
+    assert future.done()

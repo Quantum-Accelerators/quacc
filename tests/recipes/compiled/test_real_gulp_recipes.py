@@ -4,7 +4,6 @@ from shutil import which
 import pytest
 from ase.build import bulk, molecule
 
-from quacc import SETTINGS
 from quacc.recipes.gulp.core import relax_job, static_job
 
 has_gulp = bool(
@@ -14,10 +13,6 @@ has_gulp = bool(
 
 
 @pytest.mark.skipif(has_gulp is False, reason="GULP not installed")
-@pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
-    reason="This test suite is for regular function execution only",
-)
 def test_static_job(tmpdir):
     tmpdir.chdir()
 
@@ -74,10 +69,6 @@ def test_static_job(tmpdir):
 
 
 @pytest.mark.skipif(has_gulp is False, reason="GULP not installed")
-@pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
-    reason="This test suite is for regular function execution only",
-)
 def test_relax_job(tmpdir):
     tmpdir.chdir()
 

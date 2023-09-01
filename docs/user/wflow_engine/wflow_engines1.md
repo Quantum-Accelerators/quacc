@@ -7,16 +7,6 @@ In quacc, there are two types of recipes:
 1. Individual compute jobs with the suffix `_job` that have been pre-defined with a `#!Python @job` decorator.
 2. Multi-step workflows with the suffix `_flow` that have been pre-defined with a `#!Python @flow` decorator.
 
-!!! Tip
-
-    As a friendly reminder from the [Workflow Syntax](../basics/wflow_syntax.md) section:
-
-    | Quacc               | Covalent                             | Parsl                  | Jobflow         |
-    | ------------------- | ------------------------------------ | ---------------------- | --------------- |
-    | `#!Python @job`     | `#!Python @ct.electron`              | `#!Python @python_app` | `#!Python @job` |
-    | `#!Python @flow`    | `#!Python @ct.lattice`               | N/A                    | N/A             |
-    | `#!Python @subflow` | `#!Python @ct.electron(@ct.lattice)` | `#!Python @join_app`   | N/A             |
-
 ## Running a Pre-Defined Job
 
 We will now try running a pre-defined job where we relax a bulk Cu structure using EMT, which is pre-defined in quacc as [`quacc.recipes.emt.core.relax_job`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.core.relax_job).
@@ -46,7 +36,7 @@ graph LR
 
     # Dispatch the workflow to the Covalent server
     # with the bulk Cu Atoms object as the input
-    dispatch_id = ct.dispatch(workflow)(atoms)  # (2)!
+    dispatch_id = workflow(atoms)  # (2)!
 
     # Fetch the result from the server
     result = ct.get_result(dispatch_id, wait=True)  # (3)!
@@ -63,9 +53,9 @@ graph LR
 
         Also note that the `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
 
-    2. Because the workflow is only sent to the server with `ct.dispatch`, calling `workflow(atoms)` would run the workflow as a normal function without Covalent having any role.
+    2. Because the workflow was defined as a `#!Python Flow`, it will be sent to the Covalent server and a dispatch ID will be returned.
 
-    3. You don't need to set `wait=True` in practice. Once you call `ct.dispatch`, the workflow will begin running. The `ct.get_result` function is used to fetch the workflow status and results from the server.
+    3. You don't need to set `wait=True` in practice. Once you dispatch the workflow, it will begin running (if the resources are available). The `ct.get_result` function is used to fetch the workflow status and results from the server.
 
 === "Parsl"
 
@@ -152,7 +142,7 @@ graph LR
     atoms = bulk("Cu")
 
     # Dispatch the workflow
-    dispatch_id = ct.dispatch(bulk_to_slabs_flow)(atoms)  # (1)!
+    dispatch_id = bulk_to_slabs_flow(atoms)  # (1)!
 
     # Print the results
     result = ct.get_result(dispatch_id, wait=True)
