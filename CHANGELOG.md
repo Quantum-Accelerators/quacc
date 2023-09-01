@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [0.2.3]
+
 ### Added
 
 - Added new defect EMT workflows (@rwexler)
@@ -16,8 +18,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- Removed the need to call `ct.dispatch` when launching Covalent workflows.
 - Renamed `quacc.util` to `quacc.utils`
 - Refactored and standardized the NewtonNet recipes to match the other recipes
+
+### Fixed
+
+- The `WORKFLOW_ENGINE` setting can now be set dynamically, as expected.
 
 ## [0.2.2]
 

@@ -9,7 +9,6 @@ from pydantic import BaseSettings, Field, root_validator
 
 from quacc.presets import vasp as vasp_defaults
 
-WFLOW_IMPORT = None
 try:
     import covalent
 except ImportError:
@@ -45,11 +44,12 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # Workflow Engine
     # ---------------------------
-    WORKFLOW_ENGINE: Optional[str] = Field(
-        None,
+
+    WORKFLOW_ENGINE: str = Field(
+        "local",
         description=(
             "The workflow manager to use."
-            "Options include: 'covalent', 'parsl', 'jobflow', or None"
+            "Options include: 'covalent', 'parsl', 'jobflow', or 'local'"
         ),
     )
 

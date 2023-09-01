@@ -165,8 +165,7 @@ def summarize_run(
 
     # Check for calculation convergence
     if check_convergence and results["state"] != "successful":
-        msg = "VASP calculation did not converge. Will not store task data."
-        raise ValueError(msg)
+        raise ValueError("VASP calculation did not converge. Will not store task data.")
 
     # Remove unnecessary fields
     for k in [

@@ -13,6 +13,7 @@ try:
 
 except ImportError:
     ct = None
+DEFAULT_SETTINGS = SETTINGS.copy()
 
 
 @pytest.mark.skipif(
@@ -64,12 +65,14 @@ def test_covalent_db_tutorial():
 
 
 @pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "covalent",
+    ct is None,
     reason="This test requires covalent to be the workflow engine",
 )
 def test_results_to_db():
+    SETTINGS.WORKFLOW_ENGINE = "covalent"
     atoms = bulk("Cu")
     output = static_job(atoms)
     store = MemoryStore(collection_name="db3")
     results_to_db(store, output)
     assert store.count() == 1
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE

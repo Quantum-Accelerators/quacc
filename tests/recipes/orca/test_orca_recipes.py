@@ -5,7 +5,6 @@ from pathlib import Path
 import pytest
 from ase.build import molecule
 
-from quacc import SETTINGS
 from quacc.recipes.orca.core import relax_job, static_job
 
 FILE_DIR = Path(__file__).resolve().parent
@@ -22,10 +21,6 @@ def teardown_module():
         os.remove(FILE_DIR / "mpirun")
 
 
-@pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
-    reason="This test suite is for regular function execution only",
-)
 def test_static_job(monkeypatch, tmpdir):
     tmpdir.chdir()
 
@@ -59,10 +54,6 @@ def test_static_job(monkeypatch, tmpdir):
     assert "%scf maxiter 300 end" in output["parameters"]["orcablocks"]
 
 
-@pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
-    reason="This test suite is for regular function execution only",
-)
 @pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
 def test_relax_job(monkeypatch, tmpdir):
     tmpdir.chdir()
@@ -103,10 +94,6 @@ def test_relax_job(monkeypatch, tmpdir):
     assert len(output["attributes"]["trajectory"]) > 1
 
 
-@pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
-    reason="This test suite is for regular function execution only",
-)
 @pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
 def test_mpi_run(tmpdir, monkeypatch):
     tmpdir.chdir()
