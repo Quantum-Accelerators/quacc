@@ -7,6 +7,7 @@ from ase.optimize import FIRE
 from monty.dev import requires
 
 from quacc import job
+from quacc.schemas import fetch_atoms
 from quacc.schemas.ase import (
     summarize_opt_run,
     summarize_run,
@@ -16,7 +17,6 @@ from quacc.schemas.ase import (
 from quacc.utils.calc import run_ase_opt, run_ase_vib, run_calc
 from quacc.utils.dicts import merge_dicts
 from quacc.utils.thermo import ideal_gas
-from quacc.utils.wflows import fetch_atoms
 
 try:
     from tblite.ase import TBLite

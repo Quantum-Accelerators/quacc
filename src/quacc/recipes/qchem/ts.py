@@ -9,11 +9,11 @@ from monty.dev import requires
 from quacc import SETTINGS, job
 from quacc.calculators.qchem import QChem
 from quacc.recipes.qchem.core import relax_job
+from quacc.schemas import fetch_atoms
 from quacc.schemas.ase import summarize_opt_run
 from quacc.utils.atoms import check_charge_and_spin
 from quacc.utils.calc import run_ase_opt
 from quacc.utils.dicts import merge_dicts, remove_dict_empties
-from quacc.utils.wflows import fetch_atoms
 
 try:
     from sella import IRC, Sella
