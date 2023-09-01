@@ -161,7 +161,7 @@ def fetch_atoms(atoms: Atoms | dict) -> Atoms:
     either be an `Atoms` object or a dictionary with an entry `{"atoms": Atoms}`.
     It may seem a bit silly to do this, but there is a purpose. If you want to
     write a workflow where the output of one recipe is passed to the input of
-    another recipe, you can always do output["atoms"] to fetch the output Atoms
+    another recipe, you can always do `output["atoms"]` to fetch the output Atoms
     object to pass to the input to the second function. However, this process
     will often be its own compute step in workflow management tools because they
     need to resolve the output in order to query it. Depending on the workflow manager,
@@ -172,7 +172,7 @@ def fetch_atoms(atoms: Atoms | dict) -> Atoms:
     Parameters
     ----------
     atoms
-        Atoms object or dictionary with an entry {"atoms": Atoms}
+        Atoms object or dictionary with an entry `{"atoms": Atoms}`
 
     Returns
     -------
