@@ -11,6 +11,7 @@ inputs:
   ivdw: 12
   lasph: true
   lcharg: false
+  lmaxmix: 6
   lorbit: 11
   lwave: false
   nelm: 150

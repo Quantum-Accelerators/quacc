@@ -378,13 +378,12 @@ class Vasp(Vasp_):
             calc.set(ismear=1, sigma=0.1)
 
         if (
-            calc.int_params["nedos"]
-            and calc.int_params["ismear"] != -5
+            calc.int_params["ismear"] != -5
             and calc.int_params["nsw"] in (None, 0)
         ):
             if self.verbose:
                 warnings.warn(
-                    "Copilot: Setting ISMEAR = -5 because you have a static DOS calculation.",
+                    "Copilot: Setting ISMEAR = -5 because you have a static calculation.",
                     UserWarning,
                 )
             calc.set(ismear=-5)
@@ -456,13 +455,18 @@ class Vasp(Vasp_):
                 )
             calc.set(ldauprint=1)
 
-        if calc.special_params["lreal"] and calc.int_params["nsw"] in (None, 0, 1):
-            if self.verbose:
-                warnings.warn(
-                    "Copilot: Setting LREAL = False because you are running a static calculation. LREAL != False can be bad for energies.",
-                    UserWarning,
-                )
-            calc.set(lreal=False)
+        if calc.special_params["lreal"]:
+            if len(self.atoms)<30:
+                if self.verbose:
+                    warnings.warn("Copilot: Setting LREAL = False because you have a small system (< 30 atoms/cell).",UserWarning)
+                calc.set(lreal=False)
+            elif calc.int_params["nsw"] in (None, 0, 1):
+                if self.verbose:
+                    warnings.warn(
+                        "Copilot: Setting LREAL = False because you are running a static calculation. LREAL != False can be bad for energies.",
+                        UserWarning,
+                    )
+                calc.set(lreal=False)
 
         if not calc.int_params["lorbit"] and (
             calc.int_params["ispin"] == 2
@@ -569,6 +573,10 @@ class Vasp(Vasp_):
                 "ASE_VASP_VDW was not set, yet you requested a vdW functional.",
                 UserWarning,
             )
+        
+        if calc.string_params["GGA"] and calc.string_params["METAGGA"]:
+            msg = "You can't have both a GGA and METAGGA flag."
+            raise ValueError(msg)
 
         return calc.parameters
 
