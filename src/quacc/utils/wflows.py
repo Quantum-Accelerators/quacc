@@ -4,9 +4,7 @@ import functools
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Any, Literal, TypeVar
-
-    from ase import Atoms
+    from typing import Any, TypeVar
 
     Job = TypeVar("Job")
     Flow = TypeVar("Flow")
@@ -15,8 +13,7 @@ if TYPE_CHECKING:
 
 def job(
     _func: callable | None = None,
-    engine: Literal["covalent", "parsl", "jobflow", "local"] | None = None,
-    **kwargs,
+    **kwargs
 ) -> Job:  # sourcery skip
     """
     Decorator for individual compute jobs. This is a @job decorator.
@@ -32,8 +29,6 @@ def job(
     ----------
     _func
         The function to decorate. This is not meant to be supplied by the user.
-    engine
-        The workflow engine. This defaults to `SETTINGS.WORKFLOW_ENGINE` if `None`.
     **kwargs
         Keyword arguments to pass to the workflow engine decorator.
 
@@ -68,7 +63,7 @@ def job(
         if not decorator_kwargs:
             decorator_kwargs = kwargs
 
-        wflow_engine = engine or SETTINGS.WORKFLOW_ENGINE
+        wflow_engine = SETTINGS.WORKFLOW_ENGINE
         if wflow_engine == "covalent":
             import covalent as ct
 
@@ -98,8 +93,7 @@ def job(
 
 def flow(
     _func: callable | None = None,
-    engine: Literal["covalent", "parsl", "jobflow", "local"] | None = None,
-    **kwargs,
+    **kwargs
 ) -> Flow:  # sourcery skip
     """
     Decorator for workflows, which consist of at least one compute job. This is a @flow decorator.
@@ -116,8 +110,6 @@ def flow(
     ----------
     _func
         The function to decorate. This is not meant to be supplied by the user.
-    engine
-        The workflow engine. This defaults to `SETTINGS.WORKFLOW_ENGINE` if `None`.
     **kwargs
         Keyword arguments to pass to the decorator.
 
@@ -158,7 +150,7 @@ def flow(
         if not decorator_kwargs:
             decorator_kwargs = kwargs
 
-        wflow_engine = engine or SETTINGS.WORKFLOW_ENGINE
+        wflow_engine = SETTINGS.WORKFLOW_ENGINE
 
         dispatch_kwargs = dispatch_kwargs or {}
         if dispatch_kwargs and wflow_engine != "covalent":
@@ -191,9 +183,7 @@ def flow(
 
 
 def subflow(
-    _func: callable | None = None,
-    engine: Literal["covalent", "parsl", "jobflow", "local"] | None = None,
-    **kwargs,
+    _func: callable | None = None, **kwargs
 ) -> Subflow:  # sourcery skip
     """
     Decorator for (dynamic) sub-workflows. This is a @subflow decorator.
@@ -210,8 +200,6 @@ def subflow(
     ----------
     _func
         The function to decorate. This is not meant to be supplied by the user.
-    engine
-        The workflow engine. This defaults to `SETTINGS.WORKFLOW_ENGINE` if `None`.
     **kwargs
         Keyword arguments to pass to the decorator.
 
@@ -245,7 +233,7 @@ def subflow(
         if not decorator_kwargs:
             decorator_kwargs = kwargs
 
-        wflow_engine = engine or SETTINGS.WORKFLOW_ENGINE
+        wflow_engine =  SETTINGS.WORKFLOW_ENGINE
         if wflow_engine == "covalent":
             import covalent as ct
 
