@@ -28,11 +28,11 @@ graph LR
     from quacc import flow
     from quacc.recipes.emt.core import relax_job
 
-    # Define the workflow
-    workflow = flow(relax_job)  # (1)!
-
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
+
+    # Define the workflow
+    workflow = flow(relax_job)  # (1)!
 
     # Dispatch the workflow to the Covalent server
     # with the bulk Cu Atoms object as the input
