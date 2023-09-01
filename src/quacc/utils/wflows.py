@@ -4,20 +4,14 @@ import functools
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Any, Literal, TypeVar
-
-    from ase import Atoms
+    from typing import Any, TypeVar
 
     Job = TypeVar("Job")
     Flow = TypeVar("Flow")
     Subflow = TypeVar("Subflow")
 
 
-def job(
-    _func: callable | None = None,
-    engine: Literal["covalent", "parsl", "jobflow", "local"] | None = None,
-    **kwargs,
-) -> Job:  # sourcery skip
+def job(_func: callable | None = None, **kwargs) -> Job:  # sourcery skip
     """
     Decorator for individual compute jobs. This is a @job decorator.
 
@@ -32,8 +26,6 @@ def job(
     ----------
     _func
         The function to decorate. This is not meant to be supplied by the user.
-    engine
-        The workflow engine. This defaults to `SETTINGS.WORKFLOW_ENGINE` if `None`.
     **kwargs
         Keyword arguments to pass to the workflow engine decorator.
 
@@ -68,7 +60,7 @@ def job(
         if not decorator_kwargs:
             decorator_kwargs = kwargs
 
-        wflow_engine = engine or SETTINGS.WORKFLOW_ENGINE
+        wflow_engine = SETTINGS.WORKFLOW_ENGINE
         if wflow_engine == "covalent":
             import covalent as ct
 
@@ -96,11 +88,7 @@ def job(
     return _inner
 
 
-def flow(
-    _func: callable | None = None,
-    engine: Literal["covalent", "parsl", "jobflow", "local"] | None = None,
-    **kwargs,
-) -> Flow:  # sourcery skip
+def flow(_func: callable | None = None, **kwargs) -> Flow:  # sourcery skip
     """
     Decorator for workflows, which consist of at least one compute job. This is a @flow decorator.
 
@@ -116,8 +104,6 @@ def flow(
     ----------
     _func
         The function to decorate. This is not meant to be supplied by the user.
-    engine
-        The workflow engine. This defaults to `SETTINGS.WORKFLOW_ENGINE` if `None`.
     **kwargs
         Keyword arguments to pass to the decorator.
 
@@ -158,7 +144,7 @@ def flow(
         if not decorator_kwargs:
             decorator_kwargs = kwargs
 
-        wflow_engine = engine or SETTINGS.WORKFLOW_ENGINE
+        wflow_engine = SETTINGS.WORKFLOW_ENGINE
 
         dispatch_kwargs = dispatch_kwargs or {}
         if dispatch_kwargs and wflow_engine != "covalent":
@@ -190,11 +176,7 @@ def flow(
     return _inner
 
 
-def subflow(
-    _func: callable | None = None,
-    engine: Literal["covalent", "parsl", "jobflow", "local"] | None = None,
-    **kwargs,
-) -> Subflow:  # sourcery skip
+def subflow(_func: callable | None = None, **kwargs) -> Subflow:  # sourcery skip
     """
     Decorator for (dynamic) sub-workflows. This is a @subflow decorator.
 
@@ -210,8 +192,6 @@ def subflow(
     ----------
     _func
         The function to decorate. This is not meant to be supplied by the user.
-    engine
-        The workflow engine. This defaults to `SETTINGS.WORKFLOW_ENGINE` if `None`.
     **kwargs
         Keyword arguments to pass to the decorator.
 
@@ -245,7 +225,7 @@ def subflow(
         if not decorator_kwargs:
             decorator_kwargs = kwargs
 
-        wflow_engine = engine or SETTINGS.WORKFLOW_ENGINE
+        wflow_engine = SETTINGS.WORKFLOW_ENGINE
         if wflow_engine == "covalent":
             import covalent as ct
 
@@ -267,33 +247,3 @@ def subflow(
         return decorator
 
     return _inner
-
-
-def fetch_atoms(atoms: Atoms | dict) -> Atoms:
-    """
-    Returns an Atoms object from a typical quacc recipe input, which can
-    either be an `Atoms` object or a dictionary with an entry `{"atoms": Atoms}`.
-    It may seem a bit silly to do this, but there is a purpose. If you want to
-    write a workflow where the output of one recipe is passed to the input of
-    another recipe, you can always do output["atoms"] to fetch the output Atoms
-    object to pass to the input to the second function. However, this process
-    will often be its own compute step in workflow management tools because they
-    need to resolve the output in order to query it. Depending on the workflow manager,
-    this can be a waste of compute resources, so it's oftentimes better to do this
-    parsing inside the compute task itself, which is why passing in the raw dictionary
-    can be preferred.
-
-    Parameters
-    ----------
-    atoms
-        Atoms object or dictionary with an entry {"atoms": Atoms}
-
-    Returns
-    -------
-    Atoms
-        Atoms object
-    """
-    try:
-        return atoms["atoms"]
-    except Exception:
-        return atoms
