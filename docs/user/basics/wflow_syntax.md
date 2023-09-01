@@ -8,9 +8,7 @@ Here, we provide code snippets for several decorator-based workflow engines. For
 
     You don't need to learn how to use all the different workflow solutions. You only need to learn the syntax for the one you plan to use! Regardless, the behavior is relatively similar across all of them.
 
-## Examples
-
-### Background
+## Background
 
 === "Covalent"
 
@@ -19,8 +17,6 @@ Here, we provide code snippets for several decorator-based workflow engines. For
         For a detailed tutorial on how to use Covalent, refer to the ["Covalent Quick Start"](https://docs.covalent.xyz/docs/get-started/quick-start).
 
     Take a moment to learn about the main [Covalent Concepts](https://docs.covalent.xyz/docs/user-documentation/concepts/concepts-index), namely the [`#!Python ct.electron`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#electron) and [`#!Python ct.lattice`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#lattice) decorators, which describe individual compute tasks and workflows, respectively.
-
-    All `Electron` and `Lattice` objects behave as normal Python functions when the necessary arguments are supplied. However, if the `#!Python ct.dispatch` command is used, the workflow will be dispatched to the Covalent server for execution and monitoring.
 
 === "Parsl"
 
@@ -34,7 +30,7 @@ Here, we provide code snippets for several decorator-based workflow engines. For
 
     !!! Info
 
-        For a detailed tutorial on how to use Jobflow, refer to the [Jobflow Tutorials](https://materialsproject.github.io/jobflow/tutorials) and [this helpful guide](https://github.com/JaGeo/Advanced_Jobflow_Tutorial) written by Dr. Janine George.
+        For a detailed tutorial on how to use Jobflow, refer to the [Jobflow Tutorials](https://materialsproject.github.io/jobflow/tutorials).
 
     Take a moment to read the Jobflow documentation's [Quick Start](https://materialsproject.github.io/jobflow/tutorials/1-quickstart.html) to get a sense of how Jobflow works. Namely, you should understand the `Job` and `Flow` definitions, which describe individual compute tasks and workflows, respectively.
 
@@ -51,6 +47,8 @@ The quacc descriptors are drop-in replacements for the specified workflow engine
 !!! Tip
 
     Based on the value for the `WORKFLOW_ENGINE` global variable in your [quacc settings](../settings.md), the appropriate decorator will be automatically selected. If the `WORKFLOW_ENGINE` setting is set to `"local"` (or for any entries marked N/A in the above table), the decorators will have no effect on the underlying function.
+
+## Examples
 
 ### Simple Workflow
 
