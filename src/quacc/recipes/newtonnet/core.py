@@ -19,7 +19,7 @@ from quacc.schemas.ase import (
 from quacc.utils.calc import run_ase_opt, run_calc
 from quacc.utils.dicts import merge_dicts
 from quacc.utils.thermo import ideal_gas
-from quacc.utils.wflows import fetch_atoms
+from quacc.schemas import fetch_atoms
 
 try:
     from sella import Sella
