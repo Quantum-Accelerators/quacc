@@ -546,10 +546,6 @@ class Vasp(Vasp_):
                 UserWarning,
             )
 
-        if calc.string_params["GGA"] and calc.string_params["METAGGA"]:
-            msg = "You can't have both a GGA and METAGGA flag."
-            raise ValueError(msg)
-
         return calc.parameters
 
     def _convert_auto_kpts(
