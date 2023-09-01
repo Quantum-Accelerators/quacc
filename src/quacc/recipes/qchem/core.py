@@ -197,7 +197,7 @@ def relax_job(
     opt_defaults = {
         "fmax": 0.01,
         "max_steps": 1000,
-        "optimizer": FIRE if not has_sella else Sella,
+        "optimizer": Sella if has_sella else FIRE,
     }
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
     if opt_flags["optimizer"].__name__ == "Sella" and "order" not in opt_flags.get(

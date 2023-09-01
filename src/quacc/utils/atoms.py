@@ -164,7 +164,7 @@ def set_magmoms(
     elemental_mags_default: float = 1.0,
     copy_magmoms: bool = True,
     mag_cutoff: float | None = 0.05,
-) -> Atoms:
+) -> Atoms:  # sourcery skip
     """
     Sets the initial magnetic moments in the Atoms object.
 
