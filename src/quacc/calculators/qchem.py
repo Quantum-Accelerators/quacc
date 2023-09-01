@@ -168,20 +168,18 @@ class QChem(FileIOCalculator):
         # Read the gradient scratch file in 8 byte chunks
         with zopen("131.0", mode="rb") as file:
             binary = file.read()
-            for ii in range(int(len(binary) / 8)):
-                tmp_grad_data.append(
-                    struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
-                )
-        # Reshape the gradient into N x 3
-        grad = []
-        for ii in range(int(len(tmp_grad_data) / 3)):
-            grad.append(
-                [
-                    float(tmp_grad_data[ii * 3]),
-                    float(tmp_grad_data[ii * 3 + 1]),
-                    float(tmp_grad_data[ii * 3 + 2]),
-                ]
+            tmp_grad_data.extend(
+                struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
+                for ii in range(len(binary) // 8)
             )
+        grad = [
+            [
+                float(tmp_grad_data[ii * 3]),
+                float(tmp_grad_data[ii * 3 + 1]),
+                float(tmp_grad_data[ii * 3 + 2]),
+            ]
+            for ii in range(len(tmp_grad_data) // 3)
+        ]
         # Ensure that the scratch values match the correct values from the output file
         # but with higher precision
         if data["pcm_gradients"] is not None:
@@ -201,7 +199,7 @@ class QChem(FileIOCalculator):
         # Read orbital coefficients scratch file in 8 byte chunks
         with zopen("53.0", mode="rb") as file:
             binary = file.read()
-            for ii in range(int(len(binary) / 8)):
-                self.prev_orbital_coeffs.append(
-                    struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
-                )
+            self.prev_orbital_coeffs.extend(
+                struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
+                for ii in range(len(binary) // 8)
+            )
