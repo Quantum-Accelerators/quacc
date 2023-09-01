@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools >= 42", "versioningit ~= 1.0"]
+requires = ["setuptools >= 42"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -71,10 +71,6 @@ quacc = ["py.typed"]
 [tool.pyright]
 include = ["quacc"]
 exclude = ["**/__pycache__"]
-
-[tool.versioningit.vcs]
-method = "git"
-default-tag = "0.0.1"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
