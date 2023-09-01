@@ -293,7 +293,7 @@ def quasi_irc_job(
     irc_opt_swaps = merge_dicts(irc_opt_swaps_defaults, irc_opt_swaps)
 
     SETTINGS.CHECK_CONVERGENCE = False
-    irc_summary = irc_job(
+    irc_summary = irc_job.__wrapped__(
         atoms,
         direction=direction,
         opt_swaps=irc_opt_swaps,
