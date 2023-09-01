@@ -350,20 +350,12 @@ class Vasp(Vasp_):
             not calc.string_params["algo"]
             or calc.string_params["algo"].lower() not in ["all", "damped"]
         ):
-            if is_metal:
-                calc.set(algo="damped", time=0.5)
-                if self.verbose:
-                    warnings.warn(
-                        "Copilot: Setting ALGO = Damped, TIME = 0.5 because you have a hybrid calculation with a metal.",
-                        UserWarning,
-                    )
-            else:
-                calc.set(algo="all")
-                if self.verbose:
-                    warnings.warn(
-                        "Copilot: Setting ALGO = All because you have a hybrid calculation.",
-                        UserWarning,
-                    )
+            if self.verbose:
+                warnings.warn(
+                    "Copilot: Setting ALGO = All because you have a hybrid calculation.",
+                    UserWarning,
+                )
+            calc.set(algo="all")
 
         if (
             is_metal
@@ -460,13 +452,6 @@ class Vasp(Vasp_):
                         UserWarning,
                     )
                 calc.set(lreal=False)
-            elif calc.int_params["nsw"] in (None, 0, 1):
-                if self.verbose:
-                    warnings.warn(
-                        "Copilot: Setting LREAL = False because you are running a static calculation. LREAL != False can be bad for energies.",
-                        UserWarning,
-                    )
-                calc.set(lreal=False)
 
         if not calc.int_params["lorbit"] and (
             calc.int_params["ispin"] == 2
@@ -519,19 +504,6 @@ class Vasp(Vasp_):
                     UserWarning,
                 )
             calc.set(kpar=1)
-
-        if (
-            calc.int_params["nsw"]
-            and calc.int_params["nsw"] > 0
-            and calc.int_params["isym"]
-            and calc.int_params["isym"] > 0
-        ):
-            if self.verbose:
-                warnings.warn(
-                    "Copilot: Setting ISYM = 0 because you are running a relaxation.",
-                    UserWarning,
-                )
-            calc.set(isym=0)
 
         if calc.bool_params["lhfcalc"] is True and calc.int_params["isym"] in (1, 2):
             if self.verbose:

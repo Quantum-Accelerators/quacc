@@ -52,6 +52,7 @@ def static_job(
         "ismear": -5,
         "laechg": True,
         "lcharg": True,
+        "lreal": False,
         "lwave": True,
         "nedos": 5001,
         "nsw": 0,
