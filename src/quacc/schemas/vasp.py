@@ -3,9 +3,9 @@ from __future__ import annotations
 
 import os
 import warnings
+from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import TYPE_CHECKING
-from pathlib import Path
 
 from emmet.core.tasks import TaskDoc
 from maggma.core import Store
