@@ -1,7 +1,6 @@
 """Schemas for storing ASE-based data"""
 from __future__ import annotations
 
-import os
 import warnings
 from typing import TYPE_CHECKING
 
