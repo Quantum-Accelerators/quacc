@@ -1,7 +1,7 @@
 """Recipes for slabs"""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 
 from quacc import flow, job, subflow
 from quacc.calculators.vasp import Vasp
@@ -147,8 +147,8 @@ def slab_relax_job(
 def bulk_to_slabs_flow(
     atoms: Atoms | dict,
     make_slabs_kwargs: dict | None = None,
-    slab_relax: callable = slab_relax_job,
-    slab_static: callable | None = slab_static_job,
+    slab_relax: Callable = slab_relax_job,
+    slab_static: Callable | None = slab_static_job,
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
 ) -> list[VaspSchema]:
@@ -218,8 +218,8 @@ def slab_to_ads_flow(
     slab: Atoms,
     adsorbate: Atoms,
     make_ads_kwargs: dict | None = None,
-    slab_relax: callable = slab_relax_job,
-    slab_static: callable | None = slab_static_job,
+    slab_relax: Callable = slab_relax_job,
+    slab_static: Callable | None = slab_static_job,
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
 ) -> list[VaspSchema]:

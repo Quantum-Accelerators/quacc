@@ -6,7 +6,7 @@ Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 
 import numpy as np
 
@@ -112,8 +112,8 @@ def mp_relax_job(
 @flow
 def mp_relax_flow(
     atoms: Atoms | dict,
-    prerelax: callable | None = mp_prerelax_job,
-    relax: callable | None = mp_relax_job,
+    prerelax: Callable | None = mp_prerelax_job,
+    relax: Callable | None = mp_relax_job,
     prerelax_kwargs: dict | None = None,
     relax_kwargs: dict | None = None,
 ) -> MPRelaxFlowSchema:

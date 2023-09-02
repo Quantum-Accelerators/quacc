@@ -4,14 +4,14 @@ import functools
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Any, TypeVar
+    from typing import Any, Callable, TypeVar
 
     Job = TypeVar("Job")
     Flow = TypeVar("Flow")
     Subflow = TypeVar("Subflow")
 
 
-def job(_func: callable | None = None, **kwargs) -> Job:  # sourcery skip
+def job(_func: Callable | None = None, **kwargs) -> Job:  # sourcery skip
     """
     Decorator for individual compute jobs. This is a @job decorator.
 
@@ -88,7 +88,7 @@ def job(_func: callable | None = None, **kwargs) -> Job:  # sourcery skip
     return _inner
 
 
-def flow(_func: callable | None = None, **kwargs) -> Flow:  # sourcery skip
+def flow(_func: Callable | None = None, **kwargs) -> Flow:  # sourcery skip
     """
     Decorator for workflows, which consist of at least one compute job. This is
     a @flow decorator.
@@ -177,7 +177,7 @@ def flow(_func: callable | None = None, **kwargs) -> Flow:  # sourcery skip
     return _inner
 
 
-def subflow(_func: callable | None = None, **kwargs) -> Subflow:  # sourcery skip
+def subflow(_func: Callable | None = None, **kwargs) -> Subflow:  # sourcery skip
     """
     Decorator for (dynamic) sub-workflows. This is a @subflow decorator.
 

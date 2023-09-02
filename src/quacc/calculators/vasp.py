@@ -282,8 +282,8 @@ class Vasp(Vasp_):
         self,
         auto_kpts: None
         | dict[Literal["line_density", "reciprocal_density", "grid_density"], float]
-        | dict[Literal["max_mixed_density"], list[float, float]]
-        | dict[Literal["length_density"], list[float, float, float]],
+        | dict[Literal["max_mixed_density"], list[float]]
+        | dict[Literal["length_density"], list[float]],
     ) -> None:
         """
         Swaps out bad INCAR flags.
@@ -558,12 +558,13 @@ class Vasp(Vasp_):
 
     def _convert_auto_kpts(
         self,
-        auto_kpts: None
-        | dict[Literal["line_density", "reciprocal_density", "grid_density"], float]
-        | dict[Literal["max_mixed_density"], list[float, float]]
-        | dict[Literal["length_density"], list[float, float, float]],
+        auto_kpts: dict[
+            Literal["line_density", "reciprocal_density", "grid_density"], float
+        ]
+        | dict[Literal["max_mixed_density"], list[float]]
+        | dict[Literal["length_density"], list[float]],
         force_gamma: bool = True,
-    ) -> tuple[list[int, int, int], None | bool, None | bool]:
+    ) -> tuple[list[int], None | bool, None | bool]:
         """
         Shortcuts for pymatgen k-point generation schemes.
 
