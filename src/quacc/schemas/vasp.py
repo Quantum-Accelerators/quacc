@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import os
 import warnings
+from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import TYPE_CHECKING
 
@@ -152,7 +153,7 @@ def summarize_run(
 
     additional_fields = additional_fields or {}
     run_bader = SETTINGS.VASP_BADER if run_bader is None else run_bader
-    dir_path = dir_path or os.getcwd()
+    dir_path = dir_path or Path.cwd()
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
     # Fetch all tabulated results from VASP outputs files
@@ -260,7 +261,7 @@ def bader_runner(path: str | None = None, scratch_dir: str | None = None) -> dic
             }
     """
     scratch_dir = SETTINGS.SCRATCH_DIR if scratch_dir is None else scratch_dir
-    path = path or os.getcwd()
+    path = path or Path.cwd()
 
     # Make sure files are present
     relevant_files = ["AECCAR0", "AECCAR2", "CHGCAR", "POTCAR"]
@@ -339,7 +340,7 @@ def chargemol_runner(
             }
     """
     scratch_dir = SETTINGS.SCRATCH_DIR if scratch_dir is None else scratch_dir
-    path = path or os.getcwd()
+    path = path or Path.cwd()
 
     # Make sure files are present
     relevant_files = ["AECCAR0", "AECCAR2", "CHGCAR", "POTCAR"]
