@@ -388,7 +388,6 @@ def test_lasph():
 
 
 def test_efermi():
-
     atoms = bulk("Cu")
     calc = Vasp(atoms, efermi=10.0)
     assert calc.string_params["efermi"] == 10.0
