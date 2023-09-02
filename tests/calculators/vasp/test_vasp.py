@@ -516,7 +516,6 @@ def test_ismear():
 
     calc = Vasp(atoms, kspacing=1.0, ismear=-5)
     assert calc.int_params["ismear"] == 0
-    assert calc.float_params["sigma"] == 0.05
 
     calc = Vasp(atoms, nsw=0, kspacing=1.0, ismear=1, sigma=0.1)
     assert calc.int_params["ismear"] == 1

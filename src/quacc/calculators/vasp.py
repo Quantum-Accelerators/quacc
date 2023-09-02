@@ -369,7 +369,7 @@ class Vasp(Vasp_):
                 )
             calc.set(ismear=1, sigma=0.1)
 
-        if calc.int_params["ismear"] != -5 and calc.int_params["nsw"] in (None, 0):
+        if calc.int_params["ismear"] != -5 and calc.int_params["nsw"] in (None, 0) and       (not      auto_kpts or not auto_kpts.get("line_density", None)):
             if self.verbose:
                 warnings.warn(
                     "Copilot: Setting ISMEAR = -5 because you have a static calculation.",
@@ -401,12 +401,12 @@ class Vasp(Vasp_):
                 )
             calc.set(ismear=0, sigma=0.01)
 
-        if calc.int_params["ismear"] == -5 and (
+        if calc.int_params["ismear"] == 0 and (
             not calc.float_params["sigma"] or calc.float_params["sigma"] > 0.05
         ):
             if self.verbose:
                 warnings.warn(
-                    "Copilot: Setting SIGMA = 0.05 because ISMEAR = -5 was requested with SIGMA > 0.05.",
+                    "Copilot: Setting SIGMA = 0.05 because ISMEAR = 0 was requested with SIGMA > 0.05.",
                     UserWarning,
                 )
             calc.set(sigma=0.05)
