@@ -46,8 +46,11 @@ def prep_next_run(
     """
     atoms = copy_atoms(atoms)
 
-    if move_magmoms and hasattr(atoms, "calc") and getattr(atoms.calc, "results", None) is not None:
-
+    if (
+        move_magmoms
+        and hasattr(atoms, "calc")
+        and getattr(atoms.calc, "results", None) is not None
+    ):
         # If there are initial magmoms set, then we should see what the
         # final magmoms are. If they are present, move them to initial. If
         # they are not present, it means the calculator doesn't support the
@@ -55,9 +58,7 @@ def prep_next_run(
         # no further info.
         if atoms.has("initial_magmoms"):
             atoms.set_initial_magnetic_moments(
-                atoms.calc.results.get(
-                    "magmoms", atoms.get_initial_magnetic_moments()
-                )
+                atoms.calc.results.get("magmoms", atoms.get_initial_magnetic_moments())
             )
         # If there are no initial magmoms set, just check the results and
         # set everything to 0.0 if there is nothing there.
