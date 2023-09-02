@@ -444,8 +444,7 @@ class Vasp(Vasp_):
                 )
             calc.set(ldauprint=1)
 
-        if calc.special_params["lreal"]:
-            if len(self.input_atoms) < 30:
+        if calc.special_params["lreal"] and len(self.input_atoms) < 30:
                 if self.verbose:
                     warnings.warn(
                         "Copilot: Setting LREAL = False because you have a small system (< 30 atoms/cell).",
