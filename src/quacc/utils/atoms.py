@@ -46,7 +46,7 @@ def prep_next_run(
     """
     atoms = copy_atoms(atoms)
 
-        # Move converged magmoms to initial magmoms
+    # Move converged magmoms to initial magmoms
     if move_magmoms:
         if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None) is not None:
             # If there are initial magmoms set, then we should see what the
