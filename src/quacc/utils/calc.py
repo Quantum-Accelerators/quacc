@@ -262,7 +262,7 @@ def _calc_setup(
     )
 
     # Create a tmpdir for the calculation within the scratch_dir
-    tmpdir = Path.resolve(Path(mkdtemp(prefix="quacc-tmp-", dir=SETTINGS.SCRATCH_DIR)))
+    tmpdir = Path(mkdtemp(prefix="quacc-tmp-", dir=SETTINGS.SCRATCH_DIR)).resolve()
 
     # Create a symlink (if not on Windows) to the tmpdir in the results_dir
     symlink = os.path.join(job_results_dir, f"{tmpdir.name}-symlink")
