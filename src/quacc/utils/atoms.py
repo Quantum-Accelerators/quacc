@@ -14,21 +14,9 @@ from pymatgen.io.ase import AseAtomsAdaptor
 if TYPE_CHECKING:
     from ase import Atoms
 
-# NOTES:
-# - Anytime an Atoms object is converted to a pmg structure, make sure to
-# reattach any .info flags to the Atoms object, e.g. via `new_atoms.info =
-# atoms.info.copy()``. Note that atoms.info is mutable, so copy it!
-# - All major functions should take in Atoms by default and return Atoms by
-# default. Pymatgen structures can be returned with an optional kwarg.
-# - If you modify the properties of an input Atoms object in any way, make sure
-# to do so on a copy because Atoms objects are mutable.
-
 
 def prep_next_run(
-    atoms: Atoms,
-    assign_id: bool = True,
-    move_magmoms: bool = True,
-    store_results: bool = False,
+    atoms: Atoms, assign_id: bool = True, move_magmoms: bool = True
 ) -> Atoms:
     """
     Prepares the Atoms object for a new run.
@@ -36,12 +24,7 @@ def prep_next_run(
     Depending on the arguments, this function will:
         - Move the converged magnetic moments to the initial magnetic moments.
         - Assign a unique ID to the Atoms object in atoms.info["_id"]. Any
-          existing IDs will
-        be moved to atoms.info["_old_ids"]. - Store the calculator results in
-        atoms.info["results"] for later retrieval. This makes it so the
-        calculator results are not lost between serialize/deserialize cycles, if
-        desired. Each one will be stored in atoms.info["results"] = {"calc0":
-        {}, "calc1": {}, ...} with higher numbers being the most recent.
+          existing IDs will be moved to atoms.info["_old_ids"].
 
     In all cases, the calculator will be reset so new jobs can be run.
 
@@ -55,50 +38,34 @@ def prep_next_run(
     move_magmoms
         If True, move atoms.calc.results["magmoms"] to
         atoms.get_initial_magnetic_moments()
-    store_results
-        If True, store calculator results in atoms.info["results"]. This makes
-        it so the calculator results are not lost between serialize/deserialize
-        cycles, if desired. Each one will be stored in atoms.info["results"] =
-        {"calc0": {}, "calc1": {}, ...} with higher numbers being the most
-        recent.
 
     Returns
     -------
     Atoms
-        Atoms object with calculator results attached in atoms.info["results"]
+        Updated Atoms object.
     """
     atoms = copy_atoms(atoms)
 
-    if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None) is not None:
-        if store_results:
-            # Dump calculator results into the .info tag
-            if atoms.info.get("results", None) is None:
-                prior_calcs = 0
-                atoms.info["results"] = {}
-            else:
-                prior_calcs = len(atoms.info["results"])
-
-            atoms.info["results"][f"calc{prior_calcs}"] = atoms.calc.results
-
-        # Move converged magmoms to initial magmoms
-        if move_magmoms:
-            # If there are initial magmoms set, then we should see what the
-            # final magmoms are. If they are present, move them to initial. If
-            # they are not present, it means the calculator doesn't support the
-            # "magmoms" property so we have to retain the initial magmoms given
-            # no further info.
-            if atoms.has("initial_magmoms"):
-                atoms.set_initial_magnetic_moments(
-                    atoms.calc.results.get(
-                        "magmoms", atoms.get_initial_magnetic_moments()
-                    )
-                )
-            # If there are no initial magmoms set, just check the results and
-            # set everything to 0.0 if there is nothing there.
-            else:
-                atoms.set_initial_magnetic_moments(
-                    atoms.calc.results.get("magmoms", [0.0] * len(atoms))
-                )
+    if (
+        move_magmoms
+        and hasattr(atoms, "calc")
+        and getattr(atoms.calc, "results", None) is not None
+    ):
+        # If there are initial magmoms set, then we should see what the
+        # final magmoms are. If they are present, move them to initial. If
+        # they are not present, it means the calculator doesn't support the
+        # "magmoms" property so we have to retain the initial magmoms given
+        # no further info.
+        if atoms.has("initial_magmoms"):
+            atoms.set_initial_magnetic_moments(
+                atoms.calc.results.get("magmoms", atoms.get_initial_magnetic_moments())
+            )
+        # If there are no initial magmoms set, just check the results and
+        # set everything to 0.0 if there is nothing there.
+        else:
+            atoms.set_initial_magnetic_moments(
+                atoms.calc.results.get("magmoms", [0.0] * len(atoms))
+            )
 
     # Clear off the calculator so we can run a new job. If we don't do this,
     # then something like atoms *= (2,2,2) still has a calculator attached,
@@ -174,9 +141,10 @@ def set_magmoms(
 
     This function deserves particular attention. The following logic is applied:
     - If there is a converged set of magnetic moments, those are moved to the
-    initial magmoms if copy_magmoms is True. - If there is no converged set of
-    magnetic moments but the user has set initial magmoms, those are simply used
-    as is. - If there are no converged magnetic moments or initial magnetic
+    initial magmoms if copy_magmoms is True.
+    - If there is no converged set of magnetic moments but the user has set
+    initial magmoms, those are simply used as is.
+    - If there are no converged magnetic moments or initial magnetic
     moments, then the default magnetic moments from the preset
     elemental_mags_dict (if specified) are set as the initial magnetic moments.
     - For any of the above scenarios, if mag_cutoff is not None, the newly set

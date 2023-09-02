@@ -18,15 +18,6 @@ from quacc.utils.atoms import copy_atoms
 if TYPE_CHECKING:
     from pymatgen.core import Structure
 
-# NOTES:
-# - Anytime an Atoms object is converted to a pmg structure, make sure to
-# reattach any .info flags to the Atoms object, e.g. via `new_atoms.info =
-# atoms.info.copy()``. Note that atoms.info is mutable, so copy it!
-# - All major functions should take in Atoms by default and return Atoms by
-# default. Pymatgen structures can be returned with an optional kwarg.
-# - If you modify the properties of an input Atoms object in any way, make sure
-# to do so on a copy because Atoms objects are mutable.
-
 
 def flip_atoms(
     atoms: Atoms | Structure | Slab, return_struct: bool = False
@@ -50,15 +41,12 @@ def flip_atoms(
 
     if isinstance(atoms, Atoms):
         new_atoms = copy_atoms(atoms)
-        atoms_info = atoms.info.copy()
     else:
         new_atoms = AseAtomsAdaptor.get_atoms(atoms)
-        atoms_info = {}
 
     new_atoms.rotate(180, "x")
     new_atoms.wrap()
 
-    new_atoms.info = atoms_info
     if return_struct:
         new_atoms = AseAtomsAdaptor.get_structure(new_atoms)
 
@@ -113,7 +101,6 @@ def make_slabs_from_bulk(
 
     # Use pymatgen to generate slabs
     struct = AseAtomsAdaptor.get_structure(atoms)
-    atoms_info = atoms.info.copy()
 
     # Make all the slabs
     slabs = generate_all_slabs(
@@ -203,7 +190,6 @@ def make_slabs_from_bulk(
             "shift": round(slab_with_props.shift, 3),
             "scale_factor": slab_with_props.scale_factor,
         }
-        final_slab.info = atoms_info.copy()
         final_slab.info["slab_stats"] = slab_stats
         final_slabs.append(final_slab)
 
