@@ -25,15 +25,6 @@ if TYPE_CHECKING:
     )
     from pymatgen.core import Structure
 
-# NOTES:
-# - Anytime an Atoms object is converted to a pmg structure, make sure to
-# reattach any .info flags to the Atoms object, e.g. via `new_atoms.info =
-# atoms.info.copy()``. Note that atoms.info is mutable, so copy it!
-# - All major functions should take in Atoms by default and return Atoms by
-# default. Pymatgen structures can be returned with an optional kwarg.
-# - If you modify the properties of an input Atoms object in any way, make sure
-# to do so on a copy because Atoms objects are mutable.
-
 
 def make_defects_from_bulk(
     atoms: Atoms,
@@ -86,7 +77,6 @@ def make_defects_from_bulk(
 
     # Use pymatgen-analysis-defects and ShakeNBreak to generate defects
     struct = AseAtomsAdaptor.get_structure(atoms)
-    atoms_info = atoms.info.copy()
 
     # Make all the defects
     defects = defect_gen().get_defects(struct, **defect_gen_kwargs)
@@ -124,7 +114,6 @@ def make_defects_from_bulk(
         # Make atoms objects and store defect stats
         for distortions, defect_struct in distortion_dict.items():
             final_defect = AseAtomsAdaptor.get_atoms(defect_struct)
-            final_defect.info = atoms_info.copy()
             defect_stats = {
                 "defect_symbol": defect_symbol,
                 "defect_charge": defect_charge,

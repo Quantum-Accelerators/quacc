@@ -77,52 +77,30 @@ def test_prep_next_run():  # sourcery skip: extract-duplicate-method
 
     atoms = deepcopy(ATOMS_MAG)
     atoms.info["test"] = "hi"
-    atoms = prep_next_run(atoms, store_results=True)
+    atoms = prep_next_run(atoms)
     assert atoms.info.get("test", None) == "hi"
-    assert atoms.info.get("results", None) is not None
-    assert atoms.info["results"].get("calc0", None) is not None
-    assert atoms.info["results"]["calc0"]["magmom"] == mag
     calc = Vasp(atoms)
     atoms.calc = calc
     atoms.calc.results = {"magmom": mag - 2}
-    atoms = prep_next_run(atoms, store_results=True)
-    assert atoms.info.get("results", None) is not None
-    assert atoms.info["results"].get("calc1", None) is not None
-    assert atoms.info["results"]["calc0"]["magmom"] == mag
-    assert atoms.info["results"]["calc1"]["magmom"] == mag - 2
-
+    
     atoms = deepcopy(ATOMS_MAG)
     atoms = prep_next_run(atoms, move_magmoms=False)
     assert atoms.get_initial_magnetic_moments().tolist() == init_mags.tolist()
 
     atoms = deepcopy(ATOMS_NOMAG)
     mag = atoms.get_magnetic_moment()
-    atoms = prep_next_run(atoms, store_results=True)
-    assert atoms.info.get("results", None) is not None
-    assert atoms.info["results"].get("calc0", None) is not None
-    assert atoms.info["results"]["calc0"]["magmom"] == mag
+    atoms = prep_next_run(atoms)
     calc = Vasp(atoms)
     atoms.calc = calc
     atoms.calc.results = {"magmom": mag - 2}
-    atoms = prep_next_run(atoms, store_results=True)
-    assert atoms.info.get("results", None) is not None
-    assert atoms.info["results"].get("calc1", None) is not None
-    assert atoms.info["results"]["calc0"]["magmom"] == mag
-    assert atoms.info["results"]["calc1"]["magmom"] == mag - 2
+    atoms = prep_next_run(atoms)
 
     atoms = deepcopy(ATOMS_NOSPIN)
-    atoms = prep_next_run(atoms, store_results=True)
-    assert atoms.info.get("results", None) is not None
-    assert atoms.info["results"].get("calc0", None) is not None
-    assert atoms.info["results"]["calc0"].get("magmom", None) is None
+    atoms = prep_next_run(atoms)
     calc = Vasp(atoms)
     atoms.calc = calc
     atoms.calc.results = {"magmom": mag - 2}
-    atoms = prep_next_run(atoms, store_results=True)
-    assert atoms.info.get("results", None) is not None
-    assert atoms.info["results"].get("calc1", None) is not None
-    assert atoms.info["results"]["calc0"].get("magmom", None) is None
-    assert atoms.info["results"]["calc1"]["magmom"] == mag - 2
+    atoms = prep_next_run(atoms)
 
 
 def test_check_is_metal():
