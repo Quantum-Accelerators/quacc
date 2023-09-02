@@ -221,7 +221,7 @@ def freq_job(
     return vib_summary
 
 
-def _add_stdev_and_hess(summary: dict[str, any]) -> dict[str, any]:
+def _add_stdev_and_hess(summary: dict) -> dict:
     """
     Calculate and add standard deviation values and Hessians to the summary.
 
@@ -238,7 +238,7 @@ def _add_stdev_and_hess(summary: dict[str, any]) -> dict[str, any]:
 
     Returns
     -------
-    Dict[str, Any]
+    Dict
         The modified summary dictionary with added standard deviation and
         Hessian values.
     """
