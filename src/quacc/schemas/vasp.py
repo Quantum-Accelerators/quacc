@@ -345,8 +345,8 @@ def bader_runner(path: str | None = None, scratch_dir: str | None = None) -> dic
     # Make sure files are present
     relevant_files = ["AECCAR0", "AECCAR2", "CHGCAR", "POTCAR"]
     for f in relevant_files:
-        if not os.path.exists(os.path.join(path, f)) and not os.path.exists(
-            os.path.join(path, f"{f}.gz")
+        if not Path.exists(Path(path, f)) and not Path.exists(
+            Path(path, f"{f}.gz")
         ):
             msg = f"Could not find {f} in {path}."
             raise FileNotFoundError(msg)
@@ -422,8 +422,8 @@ def chargemol_runner(
     # Make sure files are present
     relevant_files = ["AECCAR0", "AECCAR2", "CHGCAR", "POTCAR"]
     for f in relevant_files:
-        if not os.path.exists(os.path.join(path, f)) and not os.path.exists(
-            os.path.join(path, f"{f}.gz")
+        if not Path.exists(Path(path, f)) and not Path.exists(
+            Path(path, f"{f}.gz")
         ):
             msg = f"Could not find {f} in {path}."
             raise FileNotFoundError(msg)

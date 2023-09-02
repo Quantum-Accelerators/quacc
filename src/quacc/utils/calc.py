@@ -68,7 +68,7 @@ def run_calc(
         # Note: We have to be careful to make sure we don't lose the converged
         # magnetic moments, if present. That's why we simply update the
         # positions and cell in-place.
-        atoms_new = read(zpath(os.path.join(tmpdir, geom_file)))
+        atoms_new = read(zpath(Path(tmpdir, geom_file)))
         if isinstance(atoms_new, list):
             atoms_new = atoms_new[-1]
 
@@ -150,7 +150,7 @@ def run_ase_opt(
         msg = "Quacc does not support setting the `trajectory` kwarg."
         raise ValueError(msg)
 
-    traj_filename = os.path.join(tmpdir, "opt.traj")
+    traj_filename = Path(tmpdir, "opt.traj")
     optimizer_kwargs["trajectory"] = Trajectory(traj_filename, "w", atoms=atoms)
 
     # Define optimizer class
@@ -209,9 +209,9 @@ def run_ase_vib(
     atoms, tmpdir, job_results_dir = _calc_setup(atoms, copy_files=copy_files)
 
     # Run calculation
-    vib = Vibrations(atoms, name=os.path.join(tmpdir, "vib"), **vib_kwargs)
+    vib = Vibrations(atoms, name=Path(tmpdir, "vib"), **vib_kwargs)
     vib.run()
-    vib.summary(log=os.path.join(tmpdir, "vib_summary.log"))
+    vib.summary(log=Path(tmpdir, "vib_summary.log").as_posix())
 
     # Perform cleanup operations
     _calc_cleanup(tmpdir, job_results_dir)
@@ -265,7 +265,7 @@ def _calc_setup(
     tmpdir = Path.resolve(Path(mkdtemp(prefix="quacc-tmp-", dir=SETTINGS.SCRATCH_DIR)))
 
     # Create a symlink (if not on Windows) to the tmpdir in the results_dir
-    symlink = os.path.join(job_results_dir, f"{tmpdir.name}-symlink")
+    symlink = Path(job_results_dir, f"{tmpdir.name}-symlink")
     if os.name != "nt":
         if os.path.islink(symlink):
             os.unlink(symlink)
@@ -311,7 +311,7 @@ def _calc_cleanup(tmpdir: str, job_results_dir: str) -> None:
     copy_r(tmpdir, job_results_dir)
 
     # Remove symlink to tmpdir
-    symlink = os.path.join(job_results_dir, f"{os.path.basename(tmpdir)}-symlink")
+    symlink = Path(job_results_dir, f"{os.path.basename(tmpdir)}-symlink")
     if os.path.islink(symlink):
         os.remove(symlink)
 

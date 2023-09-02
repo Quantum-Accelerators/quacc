@@ -133,7 +133,7 @@ class Vasp(Vasp_):
         # Get user-defined preset parameters for the calculator
         if preset:
             calc_preset = load_vasp_yaml_calc(
-                os.path.join(SETTINGS.VASP_PRESET_DIR, preset)
+                Path(SETTINGS.VASP_PRESET_DIR, preset)
             )["inputs"]
         else:
             calc_preset = {}
@@ -152,7 +152,7 @@ class Vasp(Vasp_):
             and self.user_calc_params["setups"] not in ase_setups.setups_defaults
         ):
             self.user_calc_params["setups"] = load_vasp_yaml_calc(
-                os.path.join(SETTINGS.VASP_PRESET_DIR, self.user_calc_params["setups"])
+                Path(SETTINGS.VASP_PRESET_DIR, self.user_calc_params["setups"])
             )["inputs"]["setups"]
 
         # If the preset has auto_kpts but the user explicitly requests kpts,
