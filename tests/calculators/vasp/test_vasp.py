@@ -495,7 +495,7 @@ def test_ismear():
     assert calc.int_params["ismear"] == 0
 
     calc = Vasp(atoms, nsw=0)
-    assert calc.int_params["ismear"] == 0
+    assert calc.int_params["ismear"] is None
 
     calc = Vasp(atoms, ismear=-5, nsw=0)
     assert calc.int_params["ismear"] == 0
