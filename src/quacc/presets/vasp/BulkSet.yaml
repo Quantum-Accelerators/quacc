@@ -7,7 +7,6 @@ inputs:
   efermi: midgap
   encut: 520
   ismear: 0
-  isym: 0
   ivdw: 12
   lasph: true
   lcharg: false
