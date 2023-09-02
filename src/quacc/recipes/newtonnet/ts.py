@@ -139,7 +139,8 @@ def irc_job(
     opt_swaps: dict | None = None,
 ) -> IRCSchema:
     """
-    Perform an intrinsic reaction coordinate (IRC) job using the given atoms object.
+    Perform an intrinsic reaction coordinate (IRC) job using the given atoms
+    object.
 
     Parameters
     ----------
@@ -243,7 +244,8 @@ def quasi_irc_job(
     Returns
     -------
     QuasiIRCSchema
-        A dictionary containing the IRC summary, optimization summary, and thermodynamic summary.
+        A dictionary containing the IRC summary, optimization summary, and
+        thermodynamic summary.
     """
     irc_swaps = irc_swaps or {}
     opt_swaps = opt_swaps or {}
@@ -272,11 +274,13 @@ def quasi_irc_job(
 
 def _get_hessian(atoms: Atoms) -> np.ndarray:
     """
-    Calculate and retrieve the Hessian matrix for the given molecular configuration.
+    Calculate and retrieve the Hessian matrix for the given molecular
+    configuration.
 
-    This function takes an ASE Atoms object representing a molecular configuration and uses the
-    NewtonNet machine learning calculator to calculate the Hessian matrix. The calculated Hessian
-    matrix is then returned.
+    This function takes an ASE Atoms object representing a molecular
+    configuration and uses the NewtonNet machine learning calculator to
+    calculate the Hessian matrix. The calculated Hessian matrix is then
+    returned.
 
     Parameters
     ----------

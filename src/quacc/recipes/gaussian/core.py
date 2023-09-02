@@ -38,7 +38,8 @@ def static_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     charge
         Charge of the system. If None, this is determined from the sum of
         `atoms.get_initial_charges().`
@@ -107,7 +108,8 @@ def relax_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     charge
         Charge of the system. If None, this is determined from the sum of
         `atoms.get_initial_charges()`.

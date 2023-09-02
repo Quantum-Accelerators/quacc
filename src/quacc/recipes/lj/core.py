@@ -43,7 +43,8 @@ def static_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     calc_swaps
         Dictionary of custom kwargs for the LJ calculator
     copy_files
@@ -121,7 +122,8 @@ def freq_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     energy
         Potential energy in eV. If 0, then the output is just the correction.
     temperature

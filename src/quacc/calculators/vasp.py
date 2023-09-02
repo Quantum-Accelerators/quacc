@@ -1,5 +1,6 @@
 """
-A wrapper around ASE's Vasp calculator that makes it better suited for high-throughput DFT.
+A wrapper around ASE's Vasp calculator that makes it better suited for
+high-throughput DFT.
 """
 from __future__ import annotations
 
@@ -30,41 +31,44 @@ if TYPE_CHECKING:
 
 class Vasp(Vasp_):
     """
-    This is a wrapper around the ASE Vasp calculator that adjusts INCAR parameters on-the-fly,
-    allows for ASE to run VASP via Custodian, and supports several automatic k-point generation schemes
-    from Pymatgen.
+    This is a wrapper around the ASE Vasp calculator that adjusts INCAR
+    parameters on-the-fly, allows for ASE to run VASP via Custodian, and
+    supports several automatic k-point generation schemes from Pymatgen.
 
     Parameters
     ----------
     input_atoms
         The input Atoms object to be used for the calculation.
     preset
-        The name of a YAML file containing a list of INCAR parameters to use as a "preset" for the calculator.
-        quacc will automatically look in the `VASP_PRESET_DIR` (default: quacc/presets/vasp) for the file, such
-        that preset="BulkSet" is supported, for instance. The .yaml extension is not necessary. Any user-suppplied
-        calculator **kwargs will override any corresponding preset values.
+        The name of a YAML file containing a list of INCAR parameters to use as
+        a "preset" for the calculator. quacc will automatically look in the
+        `VASP_PRESET_DIR` (default: quacc/presets/vasp) for the file, such that
+        preset="BulkSet" is supported, for instance. The .yaml extension is not
+        necessary. Any user-suppplied calculator **kwargs will override any
+        corresponding preset values.
     use_custodian
-        Whether to use Custodian to run VASP.
-        Default is True in settings.
+        Whether to use Custodian to run VASP. Default is True in settings.
     incar_copilot
-        If True, the INCAR parameters will be adjusted if they go against the VASP manual.
-        Default is True in settings.
+        If True, the INCAR parameters will be adjusted if they go against the
+        VASP manual. Default is True in settings.
     copy_magmoms
-        If True, any pre-existing `atoms.get_magnetic_moments()` will be set in `atoms.set_initial_magnetic_moments()`.
-        Set this to False if you want to use a preset's magnetic moments every time.
+        If True, any pre-existing `atoms.get_magnetic_moments()` will be set in
+        `atoms.set_initial_magnetic_moments()`. Set this to False if you want to
+        use a preset's magnetic moments every time.
     preset_mag_default
-        Default magmom value for sites without one explicitly specified in the preset. Only used if a preset is
-        specified with an elemental_mags_dict key-value pair.
-        Default is 1.0 in settings.
+        Default magmom value for sites without one explicitly specified in the
+        preset. Only used if a preset is specified with an elemental_mags_dict
+        key-value pair. Default is 1.0 in settings.
     mag_cutoff
         Set all initial magmoms to 0 if all have a magnitude below this value.
         Default is 0.05 in settings.
     verbose
-        If True, warnings will be raised when INCAR parameters are automatically changed.
-        Default is True in settings.
+        If True, warnings will be raised when INCAR parameters are automatically
+        changed. Default is True in settings.
     **kwargs
-        Additional arguments to be passed to the VASP calculator, e.g. `xc='PBE'`, `encut=520`. Takes all valid
-        ASE calculator arguments, in addition to those custom to quacc.
+        Additional arguments to be passed to the VASP calculator, e.g.
+        `xc='PBE'`, `encut=520`. Takes all valid ASE calculator arguments, in
+        addition to those custom to quacc.
 
     Returns
     -------
@@ -122,8 +126,8 @@ class Vasp(Vasp_):
             msg = "Atoms object has a constraint that is not compatible with Custodian. Set use_custodian = False."
             raise ValueError(msg)
 
-        # Get VASP executable command, if necessary, and specify child environment
-        # variables
+        # Get VASP executable command, if necessary, and specify child
+        # environment variables
         command = self._manage_environment()
 
         # Get user-defined preset parameters for the calculator
@@ -134,15 +138,15 @@ class Vasp(Vasp_):
         else:
             calc_preset = {}
 
-        # Collect all the calculator parameters and prioritize the kwargs
-        # in the case of duplicates.
+        # Collect all the calculator parameters and prioritize the kwargs in the
+        # case of duplicates.
         self.user_calc_params = calc_preset | kwargs
         none_keys = [k for k, v in self.user_calc_params.items() if v is None]
         for none_key in none_keys:
             del self.user_calc_params[none_key]
 
-        # Allow the user to use setups='mysetups.yaml' to load in a custom setups
-        # from a YAML file
+        # Allow the user to use setups='mysetups.yaml' to load in a custom
+        # setups from a YAML file
         if (
             isinstance(self.user_calc_params.get("setups"), str)
             and self.user_calc_params["setups"] not in ase_setups.setups_defaults
@@ -151,13 +155,13 @@ class Vasp(Vasp_):
                 os.path.join(SETTINGS.VASP_PRESET_DIR, self.user_calc_params["setups"])
             )["inputs"]["setups"]
 
-        # If the preset has auto_kpts but the user explicitly requests kpts, then
-        # we should honor that.
+        # If the preset has auto_kpts but the user explicitly requests kpts,
+        # then we should honor that.
         if kwargs.get("kpts") and calc_preset.get("auto_kpts"):
             del self.user_calc_params["auto_kpts"]
 
-        # Handle special arguments in the user calc parameters that
-        # ASE does not natively support
+        # Handle special arguments in the user calc parameters that ASE does not
+        # natively support
         if self.user_calc_params.get("elemental_magmoms"):
             elemental_mags_dict = self.user_calc_params["elemental_magmoms"]
         else:
@@ -229,7 +233,8 @@ class Vasp(Vasp_):
                 UserWarning,
             )
 
-        # Check if Custodian should be used and confirm environment variables are set
+        # Check if Custodian should be used and confirm environment variables
+        # are set
         if self.use_custodian:
             # Return the command flag
             run_vasp_custodian_file = Path.resolve(
@@ -648,32 +653,23 @@ class Vasp(Vasp_):
 
 def load_vasp_yaml_calc(yaml_path: str | Path) -> dict:
     """
-    Loads a YAML file containing calculator settings.
-    Used for VASP calculations and can read quacc-formatted
-    YAMLs that are of the following format:
-    ```
+    Loads a YAML file containing calculator settings. Used for VASP calculations
+    and can read quacc-formatted YAMLs that are of the following format: ```
     inputs:
-      xc: pbe
-      algo: all
-      ...
-      setups:
+      xc: pbe algo: all ... setups:
         Cu: Cu_pv
-      ...
-      elemental_magmoms:
-        Fe: 5
-        Cu: 1
-        ...
-    ```
-    where `inputs` is a dictionary of ASE-style input parameters,
-    `setups` is a dictionary of ASE-style pseudopotentials, and
-    and `elemental_magmoms` is a dictionary of element-wise initial magmoms.
+      ... elemental_magmoms:
+        Fe: 5 Cu: 1 ...
+    ``` where `inputs` is a dictionary of ASE-style input parameters, `setups`
+    is a dictionary of ASE-style pseudopotentials, and and `elemental_magmoms`
+    is a dictionary of element-wise initial magmoms.
 
     Parameters
     ----------
     yaml_path
-        Path to the YAML file. This function will look in the
-        `VASP_PRESET_DIR` (default: quacc/presets/vasp) for the file,
-        thereby assuming that `yaml_path` is a relative path within that folder.
+        Path to the YAML file. This function will look in the `VASP_PRESET_DIR`
+        (default: quacc/presets/vasp) for the file, thereby assuming that
+        `yaml_path` is a relative path within that folder.
     Returns
     -------
 

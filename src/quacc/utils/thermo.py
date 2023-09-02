@@ -22,21 +22,24 @@ def ideal_gas(
     spin_multiplicity: int | None = None,
 ) -> IdealGasThermo:
     """
-    Calculate thermodynamic properties for a molecule from a given vibrational analysis.
-    This is for free gases only and will not be valid for solids or adsorbates on surfaces.
-    Any imaginary vibrational modes after the 3N-5/3N-6 cut will simply be ignored.
+    Calculate thermodynamic properties for a molecule from a given vibrational
+    analysis. This is for free gases only and will not be valid for solids or
+    adsorbates on surfaces. Any imaginary vibrational modes after the 3N-5/3N-6
+    cut will simply be ignored.
 
     Parameters
     ----------
     atoms
         The Atoms object associated with the vibrational analysis.
     vib_freqs
-        The list of vibrations to use in cm^-1, typically obtained from Vibrations.get_frequencies().
+        The list of vibrations to use in cm^-1, typically obtained from
+        Vibrations.get_frequencies().
     energy
-        Potential energy in eV. If 0 eV, then the thermochemical correction is computed.
+        Potential energy in eV. If 0 eV, then the thermochemical correction is
+        computed.
     spin_multiplicity
-        The spin multiplicity (2S+1). If None, this will be determined automatically from the
-        attached magnetic moments.
+        The spin multiplicity (2S+1). If None, this will be determined
+        automatically from the attached magnetic moments.
 
     Returns
     -------

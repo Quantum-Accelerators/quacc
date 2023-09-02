@@ -48,7 +48,8 @@ def static_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     method
         GFN1-xTB, GFN2-xTB, and IPEA1-xTB.
     calc_swaps
@@ -89,7 +90,8 @@ def relax_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     method
         GFN0-xTB, GFN1-xTB, GFN2-xTB.
     relax_cell
@@ -137,7 +139,8 @@ def freq_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     method
         GFN0-xTB, GFN1-xTB, GFN2-xTB, GFN-FF.
     energy
@@ -157,7 +160,8 @@ def freq_job(
     -------
     FreqSchema
         Dictionary of results from `quacc.schemas.ase.summarize_vib_run` patched
-        with the results of `quacc.schemas.ase.summarize_thermo` in the "thermo" key.
+        with the results of `quacc.schemas.ase.summarize_thermo` in the "thermo"
+        key.
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}

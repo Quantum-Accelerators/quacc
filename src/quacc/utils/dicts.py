@@ -42,8 +42,8 @@ def merge_dicts(dict1: dict, dict2: dict, remove_empties: bool = True) -> dict:
 
 def clean_dict(start_dict: dict, remove_empties: bool = False) -> dict:
     """
-    For a given dictionary, recursively remove all items that are None
-    or are empty lists/dicts, and then sort all entries alphabetically by key.
+    For a given dictionary, recursively remove all items that are None or are
+    empty lists/dicts, and then sort all entries alphabetically by key.
 
     Parameters
     ----------
@@ -65,8 +65,8 @@ def clean_dict(start_dict: dict, remove_empties: bool = False) -> dict:
 
 def remove_dict_empties(start_dict: dict) -> dict:
     """
-    For a given dictionary, recursively remove all items that are None
-    or are empty lists/dicts.
+    For a given dictionary, recursively remove all items that are None or are
+    empty lists/dicts.
 
     Parameters
     ----------

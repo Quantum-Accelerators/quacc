@@ -26,13 +26,13 @@ if TYPE_CHECKING:
     from pymatgen.core import Structure
 
 # NOTES:
-# - Anytime an Atoms object is converted to a pmg structure, make sure
-# to reattach any .info flags to the Atoms object, e.g. via `new_atoms.info = atoms.info.copy()``.
-# Note that atoms.info is mutable, so copy it!
-# - All major functions should take in Atoms by default and return Atoms
-# by default. Pymatgen structures can be returned with an optional kwarg.
-# - If you modify the properties of an input Atoms object in any way, make sure to do so
-# on a copy because Atoms objects are mutable.
+# - Anytime an Atoms object is converted to a pmg structure, make sure to
+# reattach any .info flags to the Atoms object, e.g. via `new_atoms.info =
+# atoms.info.copy()``. Note that atoms.info is mutable, so copy it!
+# - All major functions should take in Atoms by default and return Atoms by
+# default. Pymatgen structures can be returned with an optional kwarg.
+# - If you modify the properties of an input Atoms object in any way, make sure
+# to do so on a copy because Atoms objects are mutable.
 
 
 def make_defects_from_bulk(
@@ -75,7 +75,8 @@ def make_defects_from_bulk(
     charge_state
         charge state of defect
     **defectgen_kwargs
-        keyword arguments to pass to the pymatgen.analysis.defects.generators get_defects() method
+        keyword arguments to pass to the pymatgen.analysis.defects.generators
+        get_defects() method
 
     Returns
     -------
