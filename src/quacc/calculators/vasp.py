@@ -281,7 +281,7 @@ class Vasp(Vasp_):
         | dict[Literal["line_density", "reciprocal_density", "grid_density"], float]
         | dict[Literal["max_mixed_density"], list[float, float]]
         | dict[Literal["length_density"], list[float, float, float]],
-    ) -> dict:
+    ) -> None:
         """
         Swaps out bad INCAR flags.
 
@@ -292,8 +292,7 @@ class Vasp(Vasp_):
 
         Returns
         -------
-        dict
-            Dictionary of new user-specified calculation parameters
+        None
         """
         is_metal = check_is_metal(self.input_atoms)
         calc = Vasp_(**self.user_calc_params)
