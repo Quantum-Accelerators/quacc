@@ -190,6 +190,7 @@ def make_slabs_from_bulk(
             "shift": round(slab_with_props.shift, 3),
             "scale_factor": slab_with_props.scale_factor,
         }
+        final_slab.info = atoms.info.copy()
         final_slab.info["slab_stats"] = slab_stats
         final_slabs.append(final_slab)
 
@@ -435,6 +436,7 @@ def make_adsorbate_structures(
                 continue
 
             # Store adsorbate info
+            atoms_with_adsorbate.info = atoms.info.copy()
             ads_stats = {
                 "adsorbate": adsorbate,
                 "initial_mode": mode,
