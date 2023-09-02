@@ -145,3 +145,10 @@ flake8-unused-arguments.ignore-variadic-names = true
 extend-exclude = ["tests", "src/quacc/settings.py", "src/quacc/schemas/cclib.py"]
 pydocstyle.convention = "numpy"
 isort.known-first-party = ["quacc"]
+
+[tool.mypy]
+ignore_missing_imports = true
+namespace_packages = true
+explicit_package_bases = true
+no_implicit_optional = false
+disable_error_code = "annotation-unchecked"
