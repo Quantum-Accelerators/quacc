@@ -4,7 +4,7 @@ import functools
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Any, TypeVar,Callable
+    from typing import Any, Callable, TypeVar
 
     Job = TypeVar("Job")
     Flow = TypeVar("Flow")

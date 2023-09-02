@@ -1,7 +1,7 @@
 """Recipes for slabs"""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING,Callable
+from typing import TYPE_CHECKING, Callable
 
 from quacc import flow, job, subflow
 from quacc.calculators.vasp import Vasp
