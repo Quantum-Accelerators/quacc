@@ -46,9 +46,9 @@ def prep_next_run(
     """
     atoms = copy_atoms(atoms)
 
-    if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None) is not None:
         # Move converged magmoms to initial magmoms
-        if move_magmoms:
+    if move_magmoms:
+        if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None) is not None:
             # If there are initial magmoms set, then we should see what the
             # final magmoms are. If they are present, move them to initial. If
             # they are not present, it means the calculator doesn't support the
