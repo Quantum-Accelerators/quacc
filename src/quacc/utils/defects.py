@@ -106,7 +106,9 @@ def make_defects_from_bulk(
 
         # Generate DefectEntry object from Defect object
         defect_entry = _get_defect_entry_from_defect(
-            defect=defect, defect_supercell=defect_supercell, defect_charge=defect_charge
+            defect=defect,
+            defect_supercell=defect_supercell,
+            defect_charge=defect_charge,
         )
 
         # Instantiate class to apply rattle and bond distortion to all defects

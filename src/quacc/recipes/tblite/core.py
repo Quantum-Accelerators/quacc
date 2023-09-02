@@ -103,7 +103,7 @@ def relax_job(
     opt_swaps
         Dictionary of custom kwargs for `run_ase_opt`. Overrides the following
         defaults:
-        
+
         ```python
         {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
         ```

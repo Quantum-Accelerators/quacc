@@ -80,7 +80,7 @@ def static_job(
             else {}
         )
         ```
-        
+
     copy_files
         Files to copy to the runtime directory.
 

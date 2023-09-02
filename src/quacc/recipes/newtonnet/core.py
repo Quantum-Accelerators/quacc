@@ -111,7 +111,7 @@ def relax_job(
     calc_swaps
         Dictionary of custom kwargs for the newtonnet calculator. Overrides the
         following defaults:
-        
+
         ```python
         {
             "model_path": SETTINGS.NEWTONNET_MODEL_PATH,

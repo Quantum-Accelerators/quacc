@@ -145,7 +145,7 @@ def relax_job(
     option_swaps
         Dictionary of custom option swap kwargs for the calculator. Overrides
         the following defaults:
-        
+
         ```python
         {
             "dump every gulp.res": True,

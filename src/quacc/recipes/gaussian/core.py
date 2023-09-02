@@ -145,7 +145,7 @@ def relax_job(
     calc_swaps
         Dictionary of custom kwargs for the calculator. Overrides the following
         defaults:
-        
+
         ```python
         {
             "mem": "16GB",

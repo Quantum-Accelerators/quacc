@@ -47,7 +47,7 @@ def static_job(
     calc_swaps
         Dictionary of custom kwargs for the calculator. Overrides the following
         defaults:
-        
+
         ```python
         {
             "Hamiltonian_": "xTB" if "xtb" in method.lower()

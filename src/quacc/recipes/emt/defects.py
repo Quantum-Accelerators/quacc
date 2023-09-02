@@ -88,7 +88,10 @@ def bulk_to_defects_flow(
     def _make_defects(atoms):
         atoms = fetch_atoms(atoms)
         return make_defects_from_bulk(
-            atoms, defect_gen=defect_gen, defect_charge=defect_charge, **make_defects_kwargs
+            atoms,
+            defect_gen=defect_gen,
+            defect_charge=defect_charge,
+            **make_defects_kwargs,
         )
 
     @subflow
