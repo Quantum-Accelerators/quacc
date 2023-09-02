@@ -46,7 +46,8 @@ def static_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     calc_swaps
-        Dictionary of custom kwargs for the LJ calculator
+        Dictionary of custom kwargs for the LJ calculator. Overrides the following
+        the defaults: `{}`
     copy_files
         Files to copy to the runtime directory.
 
@@ -81,9 +82,15 @@ def relax_job(
     atoms
         Atoms object
     calc_swaps
-        Dictionary of custom kwargs for the LJ calculator.
+        Dictionary of custom kwargs for the LJ calculator. Overrides
+        the following defaults: `{}`
     opt_swaps
-        Dictionary of swaps for run_ase_opt
+        Dictionary of swaps for `run_ase_opt`. Overrides the following
+        defaults:
+
+        ```python
+        {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
+        ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -131,9 +138,11 @@ def freq_job(
     pressure
         Pressure in bar.
     calc_swaps
-        dictionary of custom kwargs for the LJ calculator.
+        dictionary of custom kwargs for the LJ calculator. Overrides the
+        following defaults: `{}`
     vib_kwargs
-        dictionary of custom kwargs for the Vibrations object
+        dictionary of custom kwargs for the Vibrations object. Overrides
+        the following defaults: `{}`
     copy_files
         Files to copy to the runtime directory.
 

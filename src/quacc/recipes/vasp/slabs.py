@@ -35,7 +35,22 @@ def slab_static_job(
     preset
         Preset to use.
     calc_swaps
-        dictionary of custom kwargs for the calculator.
+        dictionary of custom kwargs for the calculator. Overrides the following
+        defaults:
+
+        ```python
+        {
+            "auto_dipole": True,
+            "ismear": -5,
+            "laechg": True,
+            "lcharg": True,
+            "lreal": False,
+            "lvhar": True,
+            "lwave": True,
+            "nedos": 5001,
+            "nsw": 0,
+        }
+        ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -84,7 +99,21 @@ def slab_relax_job(
     preset
         Preset to use.
     calc_swaps
-        Dictionary of custom kwargs for the calculator.
+        Dictionary of custom kwargs for the calculator. Overrides the following
+        defaults:
+
+        ```python
+        {
+            "auto_dipole": True,
+            "ediffg": -0.02,
+            "isif": 2,
+            "ibrion": 2,
+            "isym": 0,
+            "lcharg": False,
+            "lwave": False,
+            "nsw": 200,
+        }
+        ```
     copy_files
         Files to copy to the runtime directory.
 

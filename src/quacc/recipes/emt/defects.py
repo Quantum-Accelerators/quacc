@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 @flow
 def bulk_to_defects_flow(
     atoms: Atoms | dict,
-    defectgen: (
+    defect_gen: (
         AntiSiteGenerator
         | ChargeInterstitialGenerator
         | InterstitialGenerator
@@ -36,7 +36,7 @@ def bulk_to_defects_flow(
         | VacancyGenerator
         | VoronoiInterstitialGenerator
     ) = VacancyGenerator,
-    charge_state: int = 0,
+    defect_charge: int = 0,
     make_defects_kwargs: dict | None = None,
     defect_relax: Job | None = _relax_job,
     defect_static: Job | None = _static_job,
@@ -56,9 +56,9 @@ def bulk_to_defects_flow(
     ----------
     atoms
         Atoms object for the structure.
-    defectgen
+    defect_gen
         Defect generator
-    charge_state
+    defect_charge
         Charge state of the defect
     make_defects_kwargs
         Keyword arguments to pass to the make_defects_from_bulk
@@ -74,8 +74,8 @@ def bulk_to_defects_flow(
     Returns
     -------
     list[dict]
-        List of dictionary of results from quacc.schemas.ase.summarize_run or
-        quacc.schemas.ase.summarize_opt_run
+        List of dictionary of results from `quacc.schemas.ase.summarize_run` or
+        `quacc.schemas.ase.summarize_opt_run`
     """
     defect_relax_kwargs = defect_relax_kwargs or {}
     defect_static_kwargs = defect_static_kwargs or {}
@@ -88,7 +88,7 @@ def bulk_to_defects_flow(
     def _make_defects(atoms):
         atoms = fetch_atoms(atoms)
         return make_defects_from_bulk(
-            atoms, defectgen=defectgen, charge_state=charge_state, **make_defects_kwargs
+            atoms, defect_gen=defect_gen, defect_charge=defect_charge, **make_defects_kwargs
         )
 
     @subflow

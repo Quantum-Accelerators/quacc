@@ -73,9 +73,27 @@ def ts_job(
     freq_job_kwargs
         Keyword arguments to use for the `freq_job`.
     calc_swaps
-        Optional swaps for the NewtonNet calculator.
+        Optional swaps for the NewtonNet calculator. Overrides the
+        following defaults:
+
+        ```python
+        {
+            "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+            "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        }
+        ```
     opt_swaps
-        Optional swaps for the optimization parameters.
+        Optional swaps for the optimization parameters. Overrides the
+        following defaults:
+
+        ```python
+        {
+            "fmax": 0.01,
+            "max_steps": 1000,
+            "optimizer": Sella,
+            "optimizer_kwargs": {"diag_every_n": 0} if use_custom_hessian else {},
+        }
+        ```
 
     Returns
     -------
@@ -153,9 +171,35 @@ def irc_job(
     freq_job_kwargs
         Keyword arguments for the `freq_job`.
     calc_swaps
-        Optional swaps for the calculator.
+        Optional swaps for the calculator. Overrides the following
+        defaults:
+
+        ```python
+        {
+            "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+            "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        }
+        ```
     opt_swaps
-        Optional swaps for the optimization parameters.
+        Optional swaps for the optimization parameters. Overrides the
+        following defaults:
+
+        ```python
+        {
+            "fmax": 0.01,
+            "max_steps": 1000,
+            "optimizer": IRC,
+            "optimizer_kwargs": {
+                "dx": 0.1,
+                "eta": 1e-4,
+                "gamma": 0.4,
+                "keep_going": True,
+            },
+            "run_kwargs": {
+                "direction": direction,
+            },
+        }
+        ```
 
     Returns
     -------
@@ -237,9 +281,11 @@ def quasi_irc_job(
     freq_job_kwargs
         Keyword arguments for `freq_job`.
     irc_swaps
-        Optional swaps for the IRC optimization parameters.
+        Optional swaps for the IRC optimization parameters. Overrides
+        the following defaults: `{"max_steps": 5}`.
     opt_swaps
-        Optional swaps for the optimization parameters.
+        Optional swaps for the optimization parameters. Overrides
+        the following defaults: `{}`.
 
     Returns
     -------
