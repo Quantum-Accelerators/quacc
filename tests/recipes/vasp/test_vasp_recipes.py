@@ -78,7 +78,7 @@ def test_doublerelax_job(tmpdir):
 
     output = double_relax_job(atoms, preset="BulkSet", calc_swaps2={"nelmin": 6})
     assert output["relax1"]["parameters"]["encut"] == 520
-    assert output["relax1"]["parmeters"]["nelmin"] == 3
+    assert output["relax1"]["parameters"]["nelmin"] == 3
     assert output["parameters"]["encut"] == 520
     assert output["parameters"]["nelmin"] == 6
 
