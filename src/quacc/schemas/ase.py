@@ -1,8 +1,8 @@
 """Schemas for storing ASE-based data"""
 from __future__ import annotations
 
-import os
 import warnings
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -154,7 +154,7 @@ def summarize_run(
     results = {"results": atoms.calc.results}
 
     # Get the calculator inputs
-    uri = get_uri(os.getcwd())
+    uri = get_uri(Path.cwd())
     inputs = {
         "parameters": atoms.calc.parameters,
         "nid": uri.split(":")[0],
@@ -342,7 +342,7 @@ def summarize_opt_run(
     }
 
     # Get the calculator inputs
-    uri = get_uri(os.getcwd())
+    uri = get_uri(Path.cwd())
     inputs = {
         "parameters": dyn.atoms.calc.parameters,
         "parameters_opt": opt_parameters,
@@ -503,7 +503,7 @@ def summarize_vib_run(
             vib_freqs_raw[i] = np.abs(f)
             vib_energies_raw[i] = np.abs(vib_energies_raw[i])
 
-    uri = get_uri(os.getcwd())
+    uri = get_uri(Path.cwd())
     inputs = {
         "parameters": None
         if isinstance(vib, VibrationsData)
@@ -659,7 +659,7 @@ def summarize_thermo(
     additional_fields = additional_fields or {}
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
-    uri = get_uri(os.getcwd())
+    uri = get_uri(Path.cwd())
     spin_multiplicity = int(2 * igt.spin + 1)
 
     inputs = {
