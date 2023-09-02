@@ -82,8 +82,10 @@ def relax_job(
         following defaults: `{}`
     opt_swaps
         Dictionary of swaps for `run_ase_opt`. Overrides the following defaults:
-        ```python {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE} ``` where
-        `FIRE` = `from ase.optimize import FIRE`
+
+        ```python
+        {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
+        ```
     copy_files
         Files to copy to the runtime directory.
 
