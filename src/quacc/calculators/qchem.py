@@ -141,7 +141,7 @@ class QChem(FileIOCalculator):
         """
 
         # Return the command flag
-        run_qchem_custodian_file = Path.resolve(Path(inspect.getfile(custodian_qchem)))
+        run_qchem_custodian_file = Path(inspect.getfile(custodian_qchem)).resolve()
         return f"python {run_qchem_custodian_file} {self.cores}"
 
     def write_input(self, atoms, properties=None, system_changes=None):

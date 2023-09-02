@@ -237,9 +237,7 @@ class Vasp(Vasp_):
         # are set
         if self.use_custodian:
             # Return the command flag
-            run_vasp_custodian_file = Path.resolve(
-                Path(inspect.getfile(custodian_vasp))
-            )
+            run_vasp_custodian_file = Path(inspect.getfile(custodian_vasp)).resolve()
             return f"python {run_vasp_custodian_file}"
 
         if "ASE_VASP_COMMAND" not in os.environ and "VASP_SCRIPT" not in os.environ:
