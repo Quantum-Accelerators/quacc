@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 
 - VASP: Fixed a scenario where SIGMA was set to 0.05 if the user provided SIGMA > 0.05. This was supposed to happen when ISMEAR = 0 but was previously done when ISMEAR = -5, which is not influenced by SIGMA.
+- Fixed `mp_relax_flow` to use a `@flow` decorator instead of `@job`
 
 ## [0.2.3]
 
