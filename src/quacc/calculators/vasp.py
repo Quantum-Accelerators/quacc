@@ -204,10 +204,10 @@ class Vasp(Vasp_):
 
         # Handle INCAR swaps as needed
         if incar_copilot:
-            self.user_calc_params = self._calc_swaps(auto_kpts=auto_kpts)
+            self._calc_swaps(auto_kpts=auto_kpts)
 
         # Remove unused INCAR flags
-        self.user_calc_params = self._remove_unused_flags()
+        self._remove_unused_flags()
 
         # Instantiate the calculator!
         super().__init__(atoms=input_atoms, command=command, **self.user_calc_params)
@@ -244,14 +244,13 @@ class Vasp(Vasp_):
             )
         return None
 
-    def _remove_unused_flags(self) -> dict:
+    def _remove_unused_flags(self) -> None:
         """
         Removes unused flags in the INCAR, like EDIFFG if you are doing NSW = 0.
 
         Returns
         -------
-        Dict
-            Adjusted user-specified calculation parameters
+        None
         """
 
         if self.user_calc_params.get("nsw", 0) == 0:
@@ -275,8 +274,6 @@ class Vasp(Vasp_):
             )
             for ldau_flag in ldau_flags:
                 self.user_calc_params.pop(ldau_flag, None)
-
-        return self.user_calc_params
 
     def _calc_swaps(
         self,
@@ -554,8 +551,8 @@ class Vasp(Vasp_):
                 "ASE_VASP_VDW was not set, yet you requested a vdW functional.",
                 UserWarning,
             )
-
-        return calc.parameters
+        
+        self.user_calc_params = calc.parameters
 
     def _convert_auto_kpts(
         self,
