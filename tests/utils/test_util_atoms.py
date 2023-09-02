@@ -82,7 +82,7 @@ def test_prep_next_run():  # sourcery skip: extract-duplicate-method
     calc = Vasp(atoms)
     atoms.calc = calc
     atoms.calc.results = {"magmom": mag - 2}
-    
+
     atoms = deepcopy(ATOMS_MAG)
     atoms = prep_next_run(atoms, move_magmoms=False)
     assert atoms.get_initial_magnetic_moments().tolist() == init_mags.tolist()

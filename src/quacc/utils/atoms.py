@@ -14,11 +14,10 @@ from pymatgen.io.ase import AseAtomsAdaptor
 if TYPE_CHECKING:
     from ase import Atoms
 
+
 def prep_next_run(
-    atoms: Atoms,
-    assign_id: bool = True,
-    move_magmoms: bool = True
-) -> Atoms: # sourcery skip
+    atoms: Atoms, assign_id: bool = True, move_magmoms: bool = True
+) -> Atoms:
     """
     Prepares the Atoms object for a new run.
 
@@ -48,7 +47,6 @@ def prep_next_run(
     atoms = copy_atoms(atoms)
 
     if hasattr(atoms, "calc") and getattr(atoms.calc, "results", None) is not None:
-
         # Move converged magmoms to initial magmoms
         if move_magmoms:
             # If there are initial magmoms set, then we should see what the

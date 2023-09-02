@@ -19,7 +19,6 @@ if TYPE_CHECKING:
     from pymatgen.core import Structure
 
 
-
 def flip_atoms(
     atoms: Atoms | Structure | Slab, return_struct: bool = False
 ) -> Atoms | Structure | Slab:
