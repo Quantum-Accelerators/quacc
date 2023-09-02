@@ -445,7 +445,7 @@ class Vasp(Vasp_):
             calc.set(ldauprint=1)
 
         if calc.special_params["lreal"]:
-            if len(self.atoms) < 30:
+            if len(self.input_atoms) < 30:
                 if self.verbose:
                     warnings.warn(
                         "Copilot: Setting LREAL = False because you have a small system (< 30 atoms/cell).",
@@ -579,7 +579,7 @@ class Vasp(Vasp_):
 
         if auto_kpts.get("line_density", None):
             # TODO: Support methods other than latimer-munro
-            kpath = HighSymmKpath(struct, path_type="latimer_munro")
+            kpath = HighSymmKpath(struct, path_type="latimer_munro",has_magmoms=np.any(struct.site_properties.get("magmom",None)))
             kpts, _ = kpath.get_kpoints(
                 line_density=auto_kpts["line_density"], coords_are_cartesian=True
             )
