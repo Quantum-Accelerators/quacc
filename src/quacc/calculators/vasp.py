@@ -578,7 +578,11 @@ class Vasp(Vasp_):
 
         if auto_kpts.get("line_density", None):
             # TODO: Support methods other than latimer-munro
-            kpath = HighSymmKpath(struct, path_type="latimer_munro",has_magmoms=np.any(struct.site_properties.get("magmom",None)))
+            kpath = HighSymmKpath(
+                struct,
+                path_type="latimer_munro",
+                has_magmoms=np.any(struct.site_properties.get("magmom", None)),
+            )
             kpts, _ = kpath.get_kpoints(
                 line_density=auto_kpts["line_density"], coords_are_cartesian=True
             )
