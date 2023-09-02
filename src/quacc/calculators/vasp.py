@@ -558,7 +558,9 @@ class Vasp(Vasp_):
 
     def _convert_auto_kpts(
         self,
-        auto_kpts: dict[Literal["line_density", "reciprocal_density", "grid_density"], float]
+        auto_kpts: dict[
+            Literal["line_density", "reciprocal_density", "grid_density"], float
+        ]
         | dict[Literal["max_mixed_density"], list[float]]
         | dict[Literal["length_density"], list[float]],
         force_gamma: bool = True,
