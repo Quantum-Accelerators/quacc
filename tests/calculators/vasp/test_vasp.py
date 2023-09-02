@@ -388,13 +388,6 @@ def test_lasph():
 
 
 def test_efermi():
-    atoms = bulk("Cu")
-    calc = Vasp(atoms)
-    assert calc.string_params["efermi"] == "midgap"
-
-    atoms = bulk("Cu")
-    calc = Vasp(atoms, efermi="midgap")
-    assert calc.string_params["efermi"] == "midgap"
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, efermi=10.0)

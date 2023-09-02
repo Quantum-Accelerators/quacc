@@ -372,8 +372,7 @@ class Vasp(Vasp_):
         if (
             calc.int_params["ismear"] != -5
             and calc.int_params["nsw"] in (None, 0)
-            and (np.prod(calc.kpts)>=4 or calc.float_params["kspacing"])
-            and (not auto_kpts or not auto_kpts.get("line_density", None))
+            and (np.prod(calc.kpts)>=4 or (calc.float_params["kspacing"] and calc.float_params["kspacing"] <= 0.5) or auto_kpts and not auto_kpts.get("line_density", None))
         ):
             if self.verbose:
                 warnings.warn(
@@ -390,6 +389,18 @@ class Vasp(Vasp_):
             if self.verbose:
                 warnings.warn(
                     "Copilot: Setting ISMEAR = 0 because you don't have enough k-points for ISMEAR = -5.",
+                    UserWarning,
+                )
+            calc.set(ismear=0)
+
+        if (
+            calc.float_params["kspacing"]
+            and calc.float_params["kspacing"] > 0.5
+            and calc.int_params["ismear"] == -5
+        ):
+            if self.verbose:
+                warnings.warn(
+                    "Copilot: KSPACING is likely too large for ISMEAR = -5. Setting ISMEAR = 0.",
                     UserWarning,
                 )
             calc.set(ismear=0)
@@ -415,18 +426,6 @@ class Vasp(Vasp_):
                     UserWarning,
                 )
             calc.set(sigma=0.05)
-
-        if (
-            calc.float_params["kspacing"]
-            and calc.float_params["kspacing"] > 0.5
-            and calc.int_params["ismear"] == -5
-        ):
-            if self.verbose:
-                warnings.warn(
-                    "Copilot: KSPACING is likely too large for ISMEAR = -5. Setting ISMEAR = 0.",
-                    UserWarning,
-                )
-            calc.set(ismear=0)
 
         if (
             calc.int_params["nsw"]
