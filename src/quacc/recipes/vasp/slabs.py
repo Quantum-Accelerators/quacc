@@ -30,7 +30,8 @@ def slab_static_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     preset
         Preset to use.
     calc_swaps
@@ -78,7 +79,8 @@ def slab_relax_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     preset
         Preset to use.
     calc_swaps
@@ -133,7 +135,8 @@ def bulk_to_slabs_flow(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     make_slabs_kwargs
         Additional keyword arguments to pass to make_max_slabs_from_bulk()
     slab_relax
@@ -192,10 +195,8 @@ def slab_to_ads_flow(
     slab_static_kwargs: dict | None = None,
 ) -> list[VaspSchema]:
     """
-    Workflow consisting of:
-    1. Slab-adsorbate generation
-    2. Slab-adsorbate relaxations
-    3. Slab-adsorbate statics (optional)
+    Workflow consisting of: 1. Slab-adsorbate generation 2. Slab-adsorbate
+    relaxations 3. Slab-adsorbate statics (optional)
 
     Parameters
     ----------

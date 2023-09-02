@@ -34,11 +34,13 @@ def run_custodian(
     qchem_cmd
         Q-Chem command. Defaults to "qchem" in settings.
     qchem_local_scratch
-        Compute-node local scratch directory in which Q-Chem should perform IO. Defaults to /tmp in settings.
+        Compute-node local scratch directory in which Q-Chem should perform IO.
+        Defaults to /tmp in settings.
     qchem_use_error_handlers
         Whether or not to employ error handlers. Defaults to True in settings.
     qchem_custodian_max_errors
-        Maximum number of errors to allow before stopping the run. Defaults to 5 in settings.
+        Maximum number of errors to allow before stopping the run. Defaults to 5
+        in settings.
 
     Returns
     -------

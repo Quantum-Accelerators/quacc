@@ -94,10 +94,10 @@ def make_unique_dir(base_path: str | None = None) -> str:
 
 def load_yaml_calc(yaml_path: str | Path) -> dict:
     """
-    Loads a YAML file containing calculator settings.
-    This YAML loader looks for a special flag "parent" in the YAML file.
-    If this flag is present, the YAML file specified in the "parent" flag
-    is loaded and its contents are inherited by the child YAML file.
+    Loads a YAML file containing calculator settings. This YAML loader looks for
+    a special flag "parent" in the YAML file. If this flag is present, the YAML
+    file specified in the "parent" flag is loaded and its contents are inherited
+    by the child YAML file.
 
     Parameters
     ----------
@@ -120,8 +120,8 @@ def load_yaml_calc(yaml_path: str | Path) -> dict:
     with open(yaml_path) as stream:
         config = yaml.safe_load(stream)
 
-    # Inherit arguments from any parent YAML files
-    # but do not overwrite those in the child file.
+    # Inherit arguments from any parent YAML files but do not overwrite those in
+    # the child file.
     for config_arg in config.copy():
         if "parent" in config_arg.lower():
             yaml_parent_path = Path(yaml_path).parent / Path(config[config_arg])
@@ -150,8 +150,8 @@ def find_recent_logfile(dir_name: Path | str, logfile_extensions: str | list[str
     dir_name
         The path to the directory to search
     logfile_extensions
-        The extension (or list of possible extensions) of the logfile to search for.
-        For an exact match only, put in the full file name.
+        The extension (or list of possible extensions) of the logfile to search
+        for. For an exact match only, put in the full file name.
 
     Returns
     -------
@@ -175,7 +175,8 @@ def get_uri(dir_name: str | Path) -> str:
     """
     Return the URI path for a directory.
 
-    This allows files hosted on different file servers to have distinct locations.
+    This allows files hosted on different file servers to have distinct
+    locations.
 
     Adapted from Atomate2.
 

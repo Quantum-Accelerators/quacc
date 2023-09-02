@@ -31,13 +31,14 @@ def static_job(
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
-    Carry out a single-point calculation.
-    Note: 'Conditions' are not yet natively supported.
+    Carry out a single-point calculation. Note: 'Conditions' are not yet
+    natively supported.
 
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     use_gfnff
         True if (p)GFN-FF should be used; False if not.
     library
@@ -97,13 +98,14 @@ def relax_job(
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
-    Carry out a single-point calculation.
-    Note: 'Conditions' are not yet natively supported.
+    Carry out a single-point calculation. Note: 'Conditions' are not yet
+    natively supported.
 
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     use_gfnff
         True if (p)GFN-FF should be used; False if not.
     library

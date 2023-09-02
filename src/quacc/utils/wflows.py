@@ -17,10 +17,10 @@ def job(_func: callable | None = None, **kwargs) -> Job:  # sourcery skip
 
     job = ct.electron [Covalent] = python_app [Parsl] = job [Jobflow].
 
-    The wrapped function gets a new kwarg, `decorator_kwargs`, that can
-    be used to modify the workflow engine decorator keyword arguments.
-    The wrapped function can also be accessed without the decorator
-    by calling the `.__wrapped__` attribute.
+    The wrapped function gets a new kwarg, `decorator_kwargs`, that can be used
+    to modify the workflow engine decorator keyword arguments. The wrapped
+    function can also be accessed without the decorator by calling the
+    `.__wrapped__` attribute.
 
     Parameters
     ----------
@@ -90,15 +90,16 @@ def job(_func: callable | None = None, **kwargs) -> Job:  # sourcery skip
 
 def flow(_func: callable | None = None, **kwargs) -> Flow:  # sourcery skip
     """
-    Decorator for workflows, which consist of at least one compute job. This is a @flow decorator.
+    Decorator for workflows, which consist of at least one compute job. This is
+    a @flow decorator.
 
-    flow = ct.lattice/ct.dispatch(ct.lattice) [Covalent]. For Parsl and Jobflow, the decorator returns the
-    original function, unchanged.
+    flow = ct.lattice/ct.dispatch(ct.lattice) [Covalent]. For Parsl and Jobflow,
+    the decorator returns the original function, unchanged.
 
-    The wrapped function gets a new kwarg, `decorator_kwargs`, that can
-    be used to modify the workflow engine decorator keyword arguments.
-    The wrapped function can also be accessed without the decorator
-    by calling the `.__wrapped__` attribute.
+    The wrapped function gets a new kwarg, `decorator_kwargs`, that can be used
+    to modify the workflow engine decorator keyword arguments. The wrapped
+    function can also be accessed without the decorator by calling the
+    `.__wrapped__` attribute.
 
     Parameters
     ----------
@@ -180,13 +181,13 @@ def subflow(_func: callable | None = None, **kwargs) -> Subflow:  # sourcery ski
     """
     Decorator for (dynamic) sub-workflows. This is a @subflow decorator.
 
-    subflow = ct.electron(ct.lattice) [Covalent] = join_app [Parsl].
-    For Jobflow, the decorator returns the original (unwrapped) function.
+    subflow = ct.electron(ct.lattice) [Covalent] = join_app [Parsl]. For
+    Jobflow, the decorator returns the original (unwrapped) function.
 
-    The wrapped function gets a new kwarg, `decorator_kwargs`, that can
-    be used to modify the workflow engine decorator keyword arguments.
-    The wrapped function can also be accessed without the decorator
-    by calling the `.__wrapped__` attribute.
+    The wrapped function gets a new kwarg, `decorator_kwargs`, that can be used
+    to modify the workflow engine decorator keyword arguments. The wrapped
+    function can also be accessed without the decorator by calling the
+    `.__wrapped__` attribute.
 
     Parameters
     ----------

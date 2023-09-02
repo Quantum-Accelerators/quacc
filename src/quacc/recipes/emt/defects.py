@@ -74,7 +74,8 @@ def bulk_to_defects_flow(
     Returns
     -------
     list[dict]
-        List of dictionary of results from quacc.schemas.ase.summarize_run or quacc.schemas.ase.summarize_opt_run
+        List of dictionary of results from quacc.schemas.ase.summarize_run or
+        quacc.schemas.ase.summarize_opt_run
     """
     defect_relax_kwargs = defect_relax_kwargs or {}
     defect_static_kwargs = defect_static_kwargs or {}

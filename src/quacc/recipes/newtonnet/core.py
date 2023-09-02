@@ -53,7 +53,8 @@ def static_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     calc_swaps
         Dictionary of custom kwargs for the newtonnet calculator
     copy_files
@@ -97,7 +98,8 @@ def relax_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     calc_swaps
         Dictionary of custom kwargs for the newtonnet calculator
     opt_swaps
@@ -194,10 +196,11 @@ def _add_stdev_and_hess(summary: dict[str, any]) -> dict[str, any]:
     """
     Calculate and add standard deviation values and Hessians to the summary.
 
-    This function takes a summary dictionary containing information about a molecular trajectory
-    and calculates the standard deviation of various properties using the NewtonNet machine learning
-    calculator. It adds the calculated standard deviation values and Hessians to each configuration
-    in the trajectory.
+    This function takes a summary dictionary containing information about a
+    molecular trajectory and calculates the standard deviation of various
+    properties using the NewtonNet machine learning calculator. It adds the
+    calculated standard deviation values and Hessians to each configuration in
+    the trajectory.
 
     Parameters
     ----------
@@ -207,7 +210,8 @@ def _add_stdev_and_hess(summary: dict[str, any]) -> dict[str, any]:
     Returns
     -------
     Dict[str, Any]
-        The modified summary dictionary with added standard deviation and Hessian values.
+        The modified summary dictionary with added standard deviation and
+        Hessian values.
     """
 
     for conf in summary["trajectory"]:

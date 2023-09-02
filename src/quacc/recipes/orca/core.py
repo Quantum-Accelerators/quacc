@@ -41,7 +41,8 @@ def static_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     charge
         Charge of the system. If None, this is determined from the sum of
         `atoms.get_initial_charges()`.
@@ -53,13 +54,13 @@ def static_job(
     basis
         Basis set
     input_swaps
-        Dictionary of orcasimpleinput swaps for the calculator.
-        To enable new entries, set the value as True.
-        To remove entries from the defaults, set the value as None.
+        Dictionary of orcasimpleinput swaps for the calculator. To enable new
+        entries, set the value as True. To remove entries from the defaults, set
+        the value as None.
     block_swaps
-        Dictionary of orcablock swaps for the calculator.
-        To enable new entries, set the value as True.
-        To remove entries from the defaults, set the value as None.
+        Dictionary of orcablock swaps for the calculator. To enable new entries,
+        set the value as True. To remove entries from the defaults, set the
+        value as None.
     copy_files
         Files to copy to the runtime directory.
 
@@ -139,13 +140,13 @@ def relax_job(
     run_freq
         If a requency calculation should be carried out.
     input_swaps
-        Dictionary of orcasimpleinput swaps for the calculator.
-        To enable new entries, set the value as True.
-        To remove entries from the defaults, set the value as None.
+        Dictionary of orcasimpleinput swaps for the calculator. To enable new
+        entries, set the value as True. To remove entries from the defaults, set
+        the value as None.
     block_swaps
-        Dictionary of orcablock swaps for the calculator.
-        To enable new entries, set the value as True.
-        To remove entries from the defaults, set the value as None.
+        Dictionary of orcablock swaps for the calculator. To enable new entries,
+        set the value as True. To remove entries from the defaults, set the
+        value as None.
     copy_files
         Files to copy to the runtime directory.
 

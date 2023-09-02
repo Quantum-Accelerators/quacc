@@ -46,35 +46,37 @@ def static_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     charge
-        The total charge of the molecular system.
-        Effectively defaults to zero.
+        The total charge of the molecular system. Effectively defaults to zero.
     spin_multiplicity
-        The spin multiplicity of the molecular system.
-        Effectively defaults to the lowest spin state given the molecular structure and charge.
+        The spin multiplicity of the molecular system. Effectively defaults to
+        the lowest spin state given the molecular structure and charge.
     method
-        DFT exchange-correlation functional or other electronic structure method.
-        Defaults to wB97M-V.
+        DFT exchange-correlation functional or other electronic structure
+        method. Defaults to wB97M-V.
     basis
-        Basis set.
-        Defaults to def2-TZVPD.
+        Basis set. Defaults to def2-TZVPD.
     scf_algorithm
-        Algorithm used to converge the SCF.
-        Defaults to "diis", but for particularly difficult cases, "gdm" should be employed instead.
+        Algorithm used to converge the SCF. Defaults to "diis", but for
+        particularly difficult cases, "gdm" should be employed instead.
     pcm_dielectric
-        Dielectric constant of the optional polarizable continuum impicit solvation model.
-        Defaults to None, in which case PCM will not be employed.
+        Dielectric constant of the optional polarizable continuum impicit
+        solvation model. Defaults to None, in which case PCM will not be
+        employed.
     smd_solvent
-        Solvent to use for SMD implicit solvation model. Examples include "water", "ethanol", "methanol",
-        and "acetonitrile". Refer to the Q-Chem manual for a complete list of solvents available.
-        Defaults to None, in which case SMD will not be employed.
+        Solvent to use for SMD implicit solvation model. Examples include
+        "water", "ethanol", "methanol", and "acetonitrile". Refer to the Q-Chem
+        manual for a complete list of solvents available. Defaults to None, in
+        which case SMD will not be employed.
     n_cores
-        Number of cores to use for the Q-Chem calculation.
-        Defaults to use all cores available on a given node.
+        Number of cores to use for the Q-Chem calculation. Defaults to use all
+        cores available on a given node.
     overwrite_inputs
-        Dictionary passed to pymatgen.io.qchem.QChemDictSet which can modify default values set therein
-        as well as set additional Q-Chem parameters. See QChemDictSet documentation for more details.
+        Dictionary passed to pymatgen.io.qchem.QChemDictSet which can modify
+        default values set therein as well as set additional Q-Chem parameters.
+        See QChemDictSet documentation for more details.
 
     Returns
     -------
@@ -133,38 +135,41 @@ def relax_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     charge
-        The total charge of the molecular system.
-        Effectively defaults to zero.
+        The total charge of the molecular system. Effectively defaults to zero.
     spin_multiplicity
-        The spin multiplicity of the molecular system.
-        Effectively defaults to the lowest spin state given the molecular structure and charge.
+        The spin multiplicity of the molecular system. Effectively defaults to
+        the lowest spin state given the molecular structure and charge.
     method
-        DFT exchange-correlation functional or other electronic structure method.
-        Defaults to wB97M-V.
+        DFT exchange-correlation functional or other electronic structure
+        method. Defaults to wB97M-V.
     basis
-        Basis set.
-        Defaults to def2-SVPD.
+        Basis set. Defaults to def2-SVPD.
     scf_algorithm
-        Algorithm used to converge the SCF.
-        Defaults to "diis", but for particularly difficult cases, "gdm" should be employed instead.
+        Algorithm used to converge the SCF. Defaults to "diis", but for
+        particularly difficult cases, "gdm" should be employed instead.
     pcm_dielectric
-        Dielectric constant of the optional polarizable continuum impicit solvation model.
-        Defaults to None, in which case PCM will not be employed.
+        Dielectric constant of the optional polarizable continuum impicit
+        solvation model. Defaults to None, in which case PCM will not be
+        employed.
     smd_solvent
-        Solvent to use for SMD implicit solvation model. Examples include "water", "ethanol", "methanol",
-        and "acetonitrile". Refer to the Q-Chem manual for a complete list of solvents available.
-        Defaults to None, in which case SMD will not be employed.
+        Solvent to use for SMD implicit solvation model. Examples include
+        "water", "ethanol", "methanol", and "acetonitrile". Refer to the Q-Chem
+        manual for a complete list of solvents available. Defaults to None, in
+        which case SMD will not be employed.
     n_cores
-        Number of cores to use for the Q-Chem calculation.
-        Defaults to use all cores available on a given node.
+        Number of cores to use for the Q-Chem calculation. Defaults to use all
+        cores available on a given node.
     overwrite_inputs
-        Dictionary passed to pymatgen.io.qchem.QChemDictSet which can modify default values set therein
-        as well as set additional Q-Chem parameters. See QChemDictSet documentation for more details.
+        Dictionary passed to pymatgen.io.qchem.QChemDictSet which can modify
+        default values set therein as well as set additional Q-Chem parameters.
+        See QChemDictSet documentation for more details.
     opt_swaps
         Dictionary of custom kwargs for run_ase_opt
-            opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
+            opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer":
+            "Sella"}
     Returns
     -------
     OptSchema

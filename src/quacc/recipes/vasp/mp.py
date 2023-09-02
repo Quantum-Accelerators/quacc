@@ -34,13 +34,14 @@ def mp_prerelax_job(
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
     """
-    Function to pre-relax a structure with Materials Project settings.
-    By default, this uses a PBEsol pre-relax step.
+    Function to pre-relax a structure with Materials Project settings. By
+    default, this uses a PBEsol pre-relax step.
 
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     preset
         Preset to use.
     calc_swaps
@@ -73,13 +74,14 @@ def mp_relax_job(
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
     """
-    Function to relax a structure with Materials Project settings.
-    By default, this uses an r2SCAN relax step.
+    Function to relax a structure with Materials Project settings. By default,
+    this uses an r2SCAN relax step.
 
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     preset
         Preset to use.
     calc_swaps

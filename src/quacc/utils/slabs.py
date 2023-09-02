@@ -19,13 +19,13 @@ if TYPE_CHECKING:
     from pymatgen.core import Structure
 
 # NOTES:
-# - Anytime an Atoms object is converted to a pmg structure, make sure
-# to reattach any .info flags to the Atoms object, e.g. via `new_atoms.info = atoms.info.copy()``.
-# Note that atoms.info is mutable, so copy it!
-# - All major functions should take in Atoms by default and return Atoms
-# by default. Pymatgen structures can be returned with an optional kwarg.
-# - If you modify the properties of an input Atoms object in any way, make sure to do so
-# on a copy because Atoms objects are mutable.
+# - Anytime an Atoms object is converted to a pmg structure, make sure to
+# reattach any .info flags to the Atoms object, e.g. via `new_atoms.info =
+# atoms.info.copy()``. Note that atoms.info is mutable, so copy it!
+# - All major functions should take in Atoms by default and return Atoms by
+# default. Pymatgen structures can be returned with an optional kwarg.
+# - If you modify the properties of an input Atoms object in any way, make sure
+# to do so on a copy because Atoms objects are mutable.
 
 
 def flip_atoms(
@@ -39,8 +39,8 @@ def flip_atoms(
     atoms
         Atoms/.Structure to flip
     return_struct
-        True if a Pymatgen structure object should be returned.
-        False if an ASE atoms object should be returned
+        True if a Pymatgen structure object should be returned. False if an ASE
+        atoms object should be returned
 
     Returns
     -------
@@ -96,8 +96,10 @@ def make_slabs_from_bulk(
     flip_asymmetric
         If an asymmetric surface should be flipped and added to the list
     allowed_surface_symbols
-        List of chemical symbols that must be present on the surface of the slab otherwise the slab will be discarded, e.g. ["Cu", "Ni"]
-    **slabgen_kwargs: keyword arguments to pass to the pymatgen generate_all_slabs() function
+        List of chemical symbols that must be present on the surface of the slab
+        otherwise the slab will be discarded, e.g. ["Cu", "Ni"]
+    **slabgen_kwargs: keyword arguments to pass to the pymatgen
+    generate_all_slabs() function
 
     Returns
     -------
@@ -105,8 +107,9 @@ def make_slabs_from_bulk(
         All generated slabs
     """
 
-    # Note: This will not work properly for 2D structures. See Oxana/Martin's code
-    # for adjustments for 2D: https://github.com/oxana-a/atomate/blob/ads_wf/atomate/vasp/firetasks/adsorption_tasks.py
+    # Note: This will not work properly for 2D structures. See Oxana/Martin's
+    # code for adjustments for 2D:
+    # https://github.com/oxana-a/atomate/blob/ads_wf/atomate/vasp/firetasks/adsorption_tasks.py
 
     # Use pymatgen to generate slabs
     struct = AseAtomsAdaptor.get_structure(atoms)
@@ -122,8 +125,8 @@ def make_slabs_from_bulk(
         **slabgen_kwargs,
     )
 
-    # If the two terminations are not equivalent, make new slab
-    # by inverting the original slab and add it to the list
+    # If the two terminations are not equivalent, make new slab by inverting the
+    # original slab and add it to the list
     if flip_asymmetric:
         new_slabs = []
         for slab in slabs:
@@ -134,8 +137,8 @@ def make_slabs_from_bulk(
                     slab.oriented_unit_cell, return_struct=True
                 )
 
-                # Reconstruct the full slab object, noting the new
-                # shift and oriented unit cell
+                # Reconstruct the full slab object, noting the new shift and
+                # oriented unit cell
                 new_slab = Slab(
                     new_slab.lattice,
                     new_slab.species,
@@ -147,8 +150,8 @@ def make_slabs_from_bulk(
                     site_properties=new_slab.site_properties,
                 )
 
-                # It looks better to center the inverted slab so we do
-                # that here.
+                # It looks better to center the inverted slab so we do that
+                # here.
                 new_slab = center_slab(new_slab)
 
                 # Add the new slab to the list
@@ -156,8 +159,8 @@ def make_slabs_from_bulk(
 
         slabs.extend(new_slabs)
 
-    # For each slab, make sure the lengths and widths are large enough
-    # and fix atoms z_fix away from the top of the slab.
+    # For each slab, make sure the lengths and widths are large enough and fix
+    # atoms z_fix away from the top of the slab.
     slabs_with_props = []
     for slab in slabs:
         # Make sure desired atoms are on surface
@@ -221,14 +224,13 @@ def make_max_slabs_from_bulk(
     **slabgen_kwargs,
 ) -> list[Atoms]:
     """
-    Generate no more than max_slabs number of slabs from a bulk structure.
-    The procedure is as follows:
-    1. Generate all slabs
-    2. If number of slabs is greater than max_slabs, tune ftol from 0.1 to 0.8
-    in increments of 0.1. This reduces the number of vertical shifts to consider.
-    3. If number of slabs is still greater than max_slabs, only return the slabs
-    with the fewest number of atoms per cell such that the returned amount is
-    less than or equal to max_slabs.
+    Generate no more than max_slabs number of slabs from a bulk structure. The
+    procedure is as follows: 1. Generate all slabs 2. If number of slabs is
+    greater than max_slabs, tune ftol from 0.1 to 0.8 in increments of 0.1. This
+    reduces the number of vertical shifts to consider. 3. If number of slabs is
+    still greater than max_slabs, only return the slabs with the fewest number
+    of atoms per cell such that the returned amount is less than or equal to
+    max_slabs.
 
     Parameters
     ----------
@@ -237,8 +239,8 @@ def make_max_slabs_from_bulk(
     max_slabs
         Maximum number of slabs to generate
     randomize
-        If True, return a random selection of max_slabs number of slabs. Otherwise,
-        follow the procedure outlined above.
+        If True, return a random selection of max_slabs number of slabs.
+        Otherwise, follow the procedure outlined above.
     max_index
         Maximum Miller index for slab generation
     min_slab_size
@@ -252,9 +254,10 @@ def make_max_slabs_from_bulk(
     flip_asymmetric
         If an asymmetric surface should be flipped and added to the list
     allowed_surface_symbols
-        List of chemical symbols that must be present on the surface of the slab otherwise
-        the slab will be discarded, e.g. ["Cu", "Ni"]
-    **slabgen_kwargs: keyword arguments to pass to the pymatgen generate_all_slabs() function
+        List of chemical symbols that must be present on the surface of the slab
+        otherwise the slab will be discarded, e.g. ["Cu", "Ni"]
+    **slabgen_kwargs: keyword arguments to pass to the pymatgen
+    generate_all_slabs() function
 
     Returns
     --------
@@ -333,23 +336,28 @@ def make_adsorbate_structures(
     atoms
         The atoms to add adsorbates to.
     adsorbate
-        The adsorbate to add.
-        Note: It will be placed on the surface in the exact input orientation provided by the user (the adsorption mode is
-        along the c axis and the coordinating atom is the one in the -z direction).
+        The adsorbate to add. Note: It will be placed on the surface in the
+        exact input orientation provided by the user (the adsorption mode is
+        along the c axis and the coordinating atom is the one in the -z
+        direction).
     min_distance
-        The (minimum) distance to set between the adsorbate and the surface site.
+        The (minimum) distance to set between the adsorbate and the surface
+        site.
     modes
-        The adsorption mode(s) to consider. Options include: "ontop", "bridge", "hollow", "subsurface".
+        The adsorption mode(s) to consider. Options include: "ontop", "bridge",
+        "hollow", "subsurface".
     allowed_surface_symbols
-        The symbols of surface atoms to consider. If None, will use all surface atoms.
-        Note: This method could be improved for bridge/hollow sites.
+        The symbols of surface atoms to consider. If None, will use all surface
+        atoms. Note: This method could be improved for bridge/hollow sites.
     allowed_surface_indices
-        The indices of surface atoms to consider. If None, will use all surface atoms. Generally used if a specific site is to be excluded from the set.
+        The indices of surface atoms to consider. If None, will use all surface
+        atoms. Generally used if a specific site is to be excluded from the set.
         Note: This method could be improved for bridge/hollow sites.
     ads_site_finder_kwargs
         The keyword arguments to pass to the AdsorbateSiteFinder().
     find_ads_sites_kwargs
-        The keyword arguments to pass to AdsorbateSiteFinder.find_adsorption_sites().
+        The keyword arguments to pass to
+        AdsorbateSiteFinder.find_adsorption_sites().
 
     Returns
     --------
@@ -426,8 +434,8 @@ def make_adsorbate_structures(
                 surface_atom_indices
             ].get_chemical_symbols()
 
-            # Check if surface binding site is not in the specified
-            # user list. If so, skip this one
+            # Check if surface binding site is not in the specified user list.
+            # If so, skip this one
             if allowed_surface_symbols and all(
                 surface_atom_symbol not in allowed_surface_symbols
                 for surface_atom_symbol in surface_atom_symbols
@@ -463,8 +471,9 @@ def get_surface_energy(
     bulk: Atoms, slab: Atoms, bulk_energy: float, slab_energy: float
 ) -> float:
     """
-    Calculate the surface energy to form a given surface slab from a bulk structure.
-    For asymmetric slabs, this is better thought of as the cleavage energy.
+    Calculate the surface energy to form a given surface slab from a bulk
+    structure. For asymmetric slabs, this is better thought of as the cleavage
+    energy.
 
     Parameters
     -----------

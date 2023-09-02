@@ -1,3 +1,0 @@
-# Q-Chem
-
-🚧 Under Construction 🚧
