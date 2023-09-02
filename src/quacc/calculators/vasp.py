@@ -204,10 +204,10 @@ class Vasp(Vasp_):
 
         # Handle INCAR swaps as needed
         if incar_copilot:
-            self.user_calc_params = self._calc_swaps(auto_kpts=auto_kpts)
+            self._calc_swaps(auto_kpts=auto_kpts)
 
         # Remove unused INCAR flags
-        self.user_calc_params = self._remove_unused_flags()
+        self._remove_unused_flags()
 
         # Instantiate the calculator!
         super().__init__(atoms=input_atoms, command=command, **self.user_calc_params)
@@ -244,14 +244,13 @@ class Vasp(Vasp_):
             )
         return None
 
-    def _remove_unused_flags(self) -> dict:
+    def _remove_unused_flags(self) -> None:
         """
         Removes unused flags in the INCAR, like EDIFFG if you are doing NSW = 0.
 
         Returns
         -------
-        Dict
-            Adjusted user-specified calculation parameters
+        None
         """
 
         if self.user_calc_params.get("nsw", 0) == 0:
@@ -276,15 +275,13 @@ class Vasp(Vasp_):
             for ldau_flag in ldau_flags:
                 self.user_calc_params.pop(ldau_flag, None)
 
-        return self.user_calc_params
-
     def _calc_swaps(
         self,
         auto_kpts: None
         | dict[Literal["line_density", "reciprocal_density", "grid_density"], float]
         | dict[Literal["max_mixed_density"], list[float, float]]
         | dict[Literal["length_density"], list[float, float, float]],
-    ) -> dict:
+    ) -> None:
         """
         Swaps out bad INCAR flags.
 
@@ -295,8 +292,7 @@ class Vasp(Vasp_):
 
         Returns
         -------
-        dict
-            Dictionary of new user-specified calculation parameters
+        None
         """
         is_metal = check_is_metal(self.input_atoms)
         calc = Vasp_(**self.user_calc_params)
@@ -350,20 +346,12 @@ class Vasp(Vasp_):
             not calc.string_params["algo"]
             or calc.string_params["algo"].lower() not in ["all", "damped"]
         ):
-            if is_metal:
-                calc.set(algo="damped", time=0.5)
-                if self.verbose:
-                    warnings.warn(
-                        "Copilot: Setting ALGO = Damped, TIME = 0.5 because you have a hybrid calculation with a metal.",
-                        UserWarning,
-                    )
-            else:
-                calc.set(algo="all")
-                if self.verbose:
-                    warnings.warn(
-                        "Copilot: Setting ALGO = All because you have a hybrid calculation.",
-                        UserWarning,
-                    )
+            if self.verbose:
+                warnings.warn(
+                    "Copilot: Setting ALGO = All because you have a hybrid calculation.",
+                    UserWarning,
+                )
+            calc.set(algo="all")
 
         if (
             is_metal
@@ -378,13 +366,19 @@ class Vasp(Vasp_):
             calc.set(ismear=1, sigma=0.1)
 
         if (
-            calc.int_params["nedos"]
-            and calc.int_params["ismear"] != -5
+            calc.int_params["ismear"] != -5
             and calc.int_params["nsw"] in (None, 0)
+            and (
+                np.prod(calc.kpts) >= 4
+                or (
+                    calc.float_params["kspacing"]
+                    and calc.float_params["kspacing"] <= 0.5
+                )
+            )
         ):
             if self.verbose:
                 warnings.warn(
-                    "Copilot: Setting ISMEAR = -5 because you have a static DOS calculation.",
+                    "Copilot: Setting ISMEAR = -5 because you have a static calculation.",
                     UserWarning,
                 )
             calc.set(ismear=-5)
@@ -402,6 +396,18 @@ class Vasp(Vasp_):
             calc.set(ismear=0)
 
         if (
+            calc.float_params["kspacing"]
+            and calc.float_params["kspacing"] > 0.5
+            and calc.int_params["ismear"] == -5
+        ):
+            if self.verbose:
+                warnings.warn(
+                    "Copilot: KSPACING is likely too large for ISMEAR = -5. Setting ISMEAR = 0.",
+                    UserWarning,
+                )
+            calc.set(ismear=0)
+
+        if (
             auto_kpts
             and auto_kpts.get("line_density", None)
             and calc.int_params["ismear"] != 0
@@ -413,27 +419,15 @@ class Vasp(Vasp_):
                 )
             calc.set(ismear=0, sigma=0.01)
 
-        if calc.int_params["ismear"] == -5 and (
+        if calc.int_params["ismear"] == 0 and (
             not calc.float_params["sigma"] or calc.float_params["sigma"] > 0.05
         ):
             if self.verbose:
                 warnings.warn(
-                    "Copilot: Setting SIGMA = 0.05 because ISMEAR = -5 was requested with SIGMA > 0.05.",
+                    "Copilot: Setting SIGMA = 0.05 because ISMEAR = 0 was requested with SIGMA > 0.05.",
                     UserWarning,
                 )
             calc.set(sigma=0.05)
-
-        if (
-            calc.float_params["kspacing"]
-            and calc.float_params["kspacing"] > 0.5
-            and calc.int_params["ismear"] == -5
-        ):
-            if self.verbose:
-                warnings.warn(
-                    "Copilot: KSPACING is likely too large for ISMEAR = -5. Setting ISMEAR = 0.",
-                    UserWarning,
-                )
-            calc.set(ismear=0)
 
         if (
             calc.int_params["nsw"]
@@ -456,10 +450,10 @@ class Vasp(Vasp_):
                 )
             calc.set(ldauprint=1)
 
-        if calc.special_params["lreal"] and calc.int_params["nsw"] in (None, 0, 1):
+        if calc.special_params["lreal"] and len(self.input_atoms) < 30:
             if self.verbose:
                 warnings.warn(
-                    "Copilot: Setting LREAL = False because you are running a static calculation. LREAL != False can be bad for energies.",
+                    "Copilot: Setting LREAL = False because you have a small system (< 30 atoms/cell).",
                     UserWarning,
                 )
             calc.set(lreal=False)
@@ -516,19 +510,6 @@ class Vasp(Vasp_):
                 )
             calc.set(kpar=1)
 
-        if (
-            calc.int_params["nsw"]
-            and calc.int_params["nsw"] > 0
-            and calc.int_params["isym"]
-            and calc.int_params["isym"] > 0
-        ):
-            if self.verbose:
-                warnings.warn(
-                    "Copilot: Setting ISYM = 0 because you are running a relaxation.",
-                    UserWarning,
-                )
-            calc.set(isym=0)
-
         if calc.bool_params["lhfcalc"] is True and calc.int_params["isym"] in (1, 2):
             if self.verbose:
                 warnings.warn(
@@ -570,7 +551,7 @@ class Vasp(Vasp_):
                 UserWarning,
             )
 
-        return calc.parameters
+        self.user_calc_params = calc.parameters
 
     def _convert_auto_kpts(
         self,
@@ -603,7 +584,11 @@ class Vasp(Vasp_):
 
         if auto_kpts.get("line_density", None):
             # TODO: Support methods other than latimer-munro
-            kpath = HighSymmKpath(struct, path_type="latimer_munro")
+            kpath = HighSymmKpath(
+                struct,
+                path_type="latimer_munro",
+                has_magmoms=np.any(struct.site_properties.get("magmom", None)),
+            )
             kpts, _ = kpath.get_kpoints(
                 line_density=auto_kpts["line_density"], coords_are_cartesian=True
             )

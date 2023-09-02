@@ -1,4 +1,4 @@
-# Last modified: 08-01-2023
+# Last modified: 09-01-2023
 inputs:
   algo: fast
   auto_kpts:
@@ -7,13 +7,14 @@ inputs:
   efermi: midgap
   encut: 520
   ismear: 0
-  isym: 0
   ivdw: 12
   lasph: true
   lcharg: false
+  lmaxmix: 6
   lorbit: 11
   lwave: false
   nelm: 150
+  nelmin: 3
   prec: accurate
   sigma: 0.05
   xc: pbe

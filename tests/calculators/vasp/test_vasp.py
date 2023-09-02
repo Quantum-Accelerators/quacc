@@ -389,14 +389,6 @@ def test_lasph():
 
 def test_efermi():
     atoms = bulk("Cu")
-    calc = Vasp(atoms)
-    assert calc.string_params["efermi"] == "midgap"
-
-    atoms = bulk("Cu")
-    calc = Vasp(atoms, efermi="midgap")
-    assert calc.string_params["efermi"] == "midgap"
-
-    atoms = bulk("Cu")
     calc = Vasp(atoms, efermi=10.0)
     assert calc.string_params["efermi"] == 10.0
 
@@ -413,11 +405,6 @@ def test_algo():
     calc = Vasp(atoms, xc="m06l", algo="fast")
     assert calc.string_params["algo"] == "all"
 
-    calc = Vasp(atoms, xc="hse06")
-    assert calc.string_params["algo"] == "damped"
-    assert calc.float_params["time"] == 0.5
-
-    atoms[0].symbol = "H"
     calc = Vasp(atoms, xc="hse06")
     assert calc.string_params["algo"] == "all"
 
@@ -445,10 +432,10 @@ def test_isym():
     assert calc.int_params["isym"] == 3
 
     calc = Vasp(atoms, isym=2, nsw=100)
-    assert calc.int_params["isym"] == 0
+    assert calc.int_params["isym"] == 2
 
     calc = Vasp(atoms, xc="hse06", isym=2, nsw=100)
-    assert calc.int_params["isym"] == 0
+    assert calc.int_params["isym"] == 3
 
 
 def test_ncore():
@@ -499,13 +486,13 @@ def test_ismear():
     calc = Vasp(atoms, ismear=0, nsw=10)
     assert calc.int_params["ismear"] == 0
 
-    calc = Vasp(atoms, nedos=3001, nsw=0)
+    calc = Vasp(atoms, nsw=0)
+    assert calc.int_params["ismear"] is None
+
+    calc = Vasp(atoms, ismear=-5, nsw=0)
     assert calc.int_params["ismear"] == 0
 
-    calc = Vasp(atoms, ismear=-5, nedos=3001, nsw=0)
-    assert calc.int_params["ismear"] == 0
-
-    calc = Vasp(atoms, kpts=(10, 10, 10), nedos=3001, nsw=0)
+    calc = Vasp(atoms, kpts=(10, 10, 10), nsw=0)
     assert calc.int_params["ismear"] == -5
 
     calc = Vasp(atoms, auto_kpts={"line_density": 100}, ismear=1)
@@ -521,7 +508,6 @@ def test_ismear():
 
     calc = Vasp(atoms, kspacing=1.0, ismear=-5)
     assert calc.int_params["ismear"] == 0
-    assert calc.float_params["sigma"] == 0.05
 
     calc = Vasp(atoms, nsw=0, kspacing=1.0, ismear=1, sigma=0.1)
     assert calc.int_params["ismear"] == 1
@@ -569,10 +555,19 @@ def test_lreal():
     assert calc.special_params["lreal"] is False
 
     calc = Vasp(atoms, lreal=True, nsw=10)
-    assert calc.special_params["lreal"] is True
+    assert calc.special_params["lreal"] is False
 
     calc = Vasp(atoms, nsw=10)
     assert calc.special_params["lreal"] is None
+
+    calc = Vasp(atoms, lreal="auto", nsw=10)
+    assert calc.special_params["lreal"] is False
+
+    calc = Vasp(atoms * (4, 4, 4), lreal="auto", nsw=10)
+    assert calc.special_params["lreal"] == "auto"
+
+    calc = Vasp(atoms * (4, 4, 4), lreal=False, nsw=10)
+    assert calc.special_params["lreal"] is False
 
 
 def test_lorbit():
