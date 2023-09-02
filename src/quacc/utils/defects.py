@@ -173,7 +173,7 @@ def _get_defect_entry_from_defect(
 
     return DefectEntry(
         defect=defect,
-        defect_charge=defect_charge,
+        charge_state=defect_charge,
         sc_entry=computed_structure_entry,
         sc_defect_frac_coords=sc_defect_frac_coords,
     )
