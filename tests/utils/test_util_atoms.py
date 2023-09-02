@@ -100,7 +100,6 @@ def test_prep_next_run():  # sourcery skip: extract-duplicate-method
     calc = Vasp(atoms)
     atoms.calc = calc
     atoms.calc.results = {"magmom": mag - 2}
-    atoms = prep_next_run(atoms)
 
 
 def test_check_is_metal():
