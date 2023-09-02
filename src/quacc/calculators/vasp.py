@@ -44,7 +44,7 @@ class Vasp(Vasp_):
         a "preset" for the calculator. quacc will automatically look in the
         `VASP_PRESET_DIR` (default: quacc/presets/vasp) for the file, such that
         preset="BulkSet" is supported, for instance. The .yaml extension is not
-        necessary. Any user-suppplied calculator **kwargs will override any
+        necessary. Any user-supplied calculator **kwargs will override any
         corresponding preset values.
     use_custodian
         Whether to use Custodian to run VASP. Default is True in settings.
@@ -653,13 +653,20 @@ class Vasp(Vasp_):
 def load_vasp_yaml_calc(yaml_path: str | Path) -> dict:
     """
     Loads a YAML file containing calculator settings. Used for VASP calculations
-    and can read quacc-formatted YAMLs that are of the following format: ```
+    and can read quacc-formatted YAMLs that are of the following format:
+    
+    ```yaml
     inputs:
-      xc: pbe algo: all ... setups:
+      xc: pbe
+      algo: all
+      setups:
         Cu: Cu_pv
-      ... elemental_magmoms:
-        Fe: 5 Cu: 1 ...
-    ``` where `inputs` is a dictionary of ASE-style input parameters, `setups`
+      elemental_magmoms:
+        Fe: 5
+        Cu: 1
+    ```
+    
+    where `inputs` is a dictionary of ASE-style input parameters, `setups`
     is a dictionary of ASE-style pseudopotentials, and and `elemental_magmoms`
     is a dictionary of element-wise initial magmoms.
 

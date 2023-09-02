@@ -74,6 +74,10 @@ def test_lmaxmix():
     calc = Vasp(atoms)
     assert calc.int_params["lmaxmix"] == 6
 
+def test_efermi():
+    atoms = bulk("Cu")
+    calc = Vasp(atoms)
+    assert calc.string_params["efermi"] is "MIDGAP"
 
 def test_autodipole():
     atoms = bulk("Cu")
