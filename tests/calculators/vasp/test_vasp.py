@@ -497,7 +497,7 @@ def test_ismear():
     calc = Vasp(atoms, nsw=0)
     assert calc.int_params["ismear"] == 0
 
-    calc = Vasp(atoms, ismear=-5,  nsw=0)
+    calc = Vasp(atoms, ismear=-5, nsw=0)
     assert calc.int_params["ismear"] == 0
 
     calc = Vasp(atoms, kpts=(10, 10, 10), nsw=0)
@@ -569,14 +569,15 @@ def test_lreal():
     calc = Vasp(atoms, nsw=10)
     assert calc.special_params["lreal"] is None
 
-    calc = Vasp(atoms,lreal="auto", nsw=10)
+    calc = Vasp(atoms, lreal="auto", nsw=10)
     assert calc.special_params["lreal"] is False
 
-    calc = Vasp(atoms*(4,4,4),lreal="auto", nsw=10)
+    calc = Vasp(atoms * (4, 4, 4), lreal="auto", nsw=10)
     assert calc.special_params["lreal"] == "auto"
 
-    calc = Vasp(atoms*(4,4,4),lreal=False, nsw=10)
+    calc = Vasp(atoms * (4, 4, 4), lreal=False, nsw=10)
     assert calc.special_params["lreal"] is False
+
 
 def test_lorbit():
     atoms = bulk("Cu")
