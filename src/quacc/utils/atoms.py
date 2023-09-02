@@ -18,7 +18,7 @@ def prep_next_run(
     atoms: Atoms,
     assign_id: bool = True,
     move_magmoms: bool = True
-) -> Atoms:
+) -> Atoms: # sourcery skip
     """
     Prepares the Atoms object for a new run.
 
