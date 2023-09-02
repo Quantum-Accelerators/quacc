@@ -372,7 +372,7 @@ class Vasp(Vasp_):
         if (
             calc.int_params["ismear"] != -5
             and calc.int_params["nsw"] in (None, 0)
-            and (np.prod(calc.kpts)>=4 or (calc.float_params["kspacing"] and calc.float_params["kspacing"] <= 0.5) or (auto_kpts and not auto_kpts.get("line_density", None))
+            and (np.prod(calc.kpts)>=4 or (calc.float_params["kspacing"] and calc.float_params["kspacing"] <= 0.5) or (auto_kpts and not auto_kpts.get("line_density", None)))
         ):
             if self.verbose:
                 warnings.warn(
