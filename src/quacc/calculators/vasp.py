@@ -550,7 +550,7 @@ class Vasp(Vasp_):
                 "ASE_VASP_VDW was not set, yet you requested a vdW functional.",
                 UserWarning,
             )
-        
+
         self.user_calc_params = calc.parameters
 
     def _convert_auto_kpts(
