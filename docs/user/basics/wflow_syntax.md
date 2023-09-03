@@ -82,17 +82,21 @@ graph LR
     import covalent as ct
     from quacc import flow, job
 
+
     @job  #  (1)!
     def add(a, b):
         return a + b
+
 
     @job
     def mult(a, b):
         return a * b
 
+
     @flow  #  (2)!
     def workflow(a, b, c):
         return mult(add(a, b), c)
+
 
     dispatch_id = workflow(1, 2, 3)  # (3)!
     print(ct.get_result(dispatch_id, wait=True))
@@ -115,13 +119,16 @@ graph LR
     ```python
     from quacc import job
 
+
     @job  #  (1)!
     def add(a, b):
         return a + b
 
+
     @job
     def mult(a, b):
         return a * b
+
 
     future1 = add(1, 2)
     future2 = mult(future1, 3)
@@ -143,17 +150,21 @@ graph LR
 
     scheduler = Scheduler()  #  (1)!
 
+
     @job  #  (2)!
     def add(a, b):
         return a + b
+
 
     @job
     def mult(a, b):
         return a * b
 
+
     @flow  #  (3)!
     def workflow(a, b, c):
         return mult(add(a, b), c)
+
 
     result = scheduler.run(workflow(1, 2, 3))
     print(result)
@@ -175,13 +186,16 @@ graph LR
     import jobflow as jf
     from quacc import job
 
+
     @job  #  (1)!
     def add(a, b):
         return a + b
 
+
     @job
     def mult(a, b):
         return a * b
+
 
     job1 = add(1, 2)
     job2 = mult(job1.output, 3)

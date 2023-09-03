@@ -110,10 +110,10 @@ graph LR
     # Instantiate the scheduler
     scheduler = Scheduler()
 
+
     # Define the workflow
     @flow  # (1)!
     def workflow(atoms):
-
         # Define Job 1
         result1 = relax_job(atoms)  # (2)!
 
@@ -243,6 +243,7 @@ graph LR
     # Instantiate the scheduler
     scheduler = Scheduler()
 
+
     # Define workflow
     @flow
     def workflow(atoms1, atoms2):
@@ -310,6 +311,7 @@ graph LR
     from quacc.recipes.emt.core import relax_job
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
+
     # Define the workflow
     @flow
     def workflow(atoms):
@@ -317,6 +319,7 @@ graph LR
         relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, slab_static=None)  # (1)!
 
         return relaxed_slabs
+
 
     # Define the Atoms object
     atoms = bulk("Cu")
@@ -359,6 +362,7 @@ graph LR
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
     scheduler = Scheduler()
+
 
     # Define the workflow
     @flow
