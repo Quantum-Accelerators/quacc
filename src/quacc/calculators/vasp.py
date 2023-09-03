@@ -62,32 +62,37 @@ class Vasp(Vasp_):
     mag_cutoff
         Set all initial magmoms to 0 if all have a magnitude below this value.
         Default is 0.05 in settings.
-    verbose
-        If True, warnings will be raised when INCAR parameters are automatically
-        changed. Default is True in settings.
+    elemental_magmoms
+        A dictionary of elemental initial magnetic moments to pass to
+        `quacc.utils.atoms.set_magmoms`, e.g. `{"Fe": 5, "Ni": 4}`.
     auto_kpts
         An automatic k-point generation scheme from Pymatgen. Options include:
+
         - {"line_density": float}. This will call
           `pymatgen.symmetry.bandstructure.HighSymmKpath`
             with `path_type="latimer_munro"`. The `line_density` value will be
             set in the `.get_kpoints` attribute.
+        
         - {"kppvol": float}. This will call
           `pymatgen.io.vasp.inputs.Kpoints.automatic_density_by_vol`
             with the given value for `kppvol`.
+        
         - {"kppa": float}. This will call
           `pymatgen.io.vasp.inputs.Kpoints.automatic_density`
             with the given value for `kppa`.
+        
         - {"length_densities": [float, float, float]}. This will call
           `pymatgen.io.vasp.inputs.Kpoints.automatic_density_by_lengths`
             with the given value for `length_densities`.
+        
         If multiple options are specified, the most dense k-point scheme will be
         chosen.
     auto_dipole
         If True, will automatically set dipole moment correction parameters
         based on the center of mass (in the c dimension by default).
-    elemental_magmoms
-        A dictionary of elemental initial magnetic moments to pass to
-        `quacc.utils.atoms.set_magmoms`, e.g. `{"Fe": 5, "Ni": 4}`.
+    verbose
+        If True, warnings will be raised when INCAR parameters are automatically
+        changed. Default is True in settings.
     **kwargs
         Additional arguments to be passed to the VASP calculator, e.g.
         `xc='PBE'`, `encut=520`. Takes all valid ASE calculator arguments.
@@ -107,11 +112,11 @@ class Vasp(Vasp_):
         copy_magmoms: bool | None = None,
         preset_mag_default: float | None = None,
         mag_cutoff: None | float = None,
-        verbose: bool | None = None,
+        elemental_magmoms: dict | None = None,
         auto_kpts: dict[Literal["line_density", "kppvol", "kppa"], float]
         | dict[Literal["length_densities"], list[float]] = None,
         auto_dipole: bool | None = None,
-        elemental_magmoms: dict | None = None,
+        verbose: bool | None = None,
         **kwargs,
     ):
         # Set defaults
@@ -140,10 +145,10 @@ class Vasp(Vasp_):
         self.copy_magmoms = copy_magmoms
         self.preset_mag_default = preset_mag_default
         self.mag_cutoff = mag_cutoff
-        self.verbose = verbose
+        self.elemental_magmoms = elemental_magmoms
         self.auto_kpts = auto_kpts
         self.auto_dipole = auto_dipole
-        self.elemental_magmoms = elemental_magmoms
+        self.verbose = verbose
         self.kwargs = kwargs
 
         # Check constraints
