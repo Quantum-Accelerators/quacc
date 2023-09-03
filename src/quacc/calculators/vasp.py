@@ -654,7 +654,7 @@ def load_vasp_yaml_calc(yaml_path: str | Path) -> dict:
     """
     Loads a YAML file containing calculator settings. Used for VASP calculations
     and can read quacc-formatted YAMLs that are of the following format:
-    
+
     ```yaml
     inputs:
       xc: pbe
@@ -665,7 +665,7 @@ def load_vasp_yaml_calc(yaml_path: str | Path) -> dict:
         Fe: 5
         Cu: 1
     ```
-    
+
     where `inputs` is a dictionary of ASE-style input parameters, `setups`
     is a dictionary of ASE-style pseudopotentials, and and `elemental_magmoms`
     is a dictionary of element-wise initial magmoms.
