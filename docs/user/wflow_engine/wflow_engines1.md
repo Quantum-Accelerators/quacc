@@ -136,7 +136,7 @@ graph LR
     atoms = bulk("Cu")
 
     # Dispatch the workflow
-    result = scheduler.run(relax_job(atoms))  # (2)!
+    result = scheduler.run(relax_job(atoms))  # (1)!
     print(result)
     ```
 
