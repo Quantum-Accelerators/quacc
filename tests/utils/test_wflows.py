@@ -490,4 +490,3 @@ def test_redun_decorators(tmpdir):
     assert scheduler.run(mult(1, 2)) == 2
     assert scheduler.run(workflow(1, 2, 3)) == 9
     assert scheduler.run(dynamic_workflow(1, 2, 3)) == [6, 6, 6]
-
