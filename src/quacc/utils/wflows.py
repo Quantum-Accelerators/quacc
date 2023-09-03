@@ -15,7 +15,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:  # sourcery skip
     """
     Decorator for individual compute jobs. This is a @job decorator.
 
-    job = ct.electron [Covalent] = python_app [Parsl] = job [Jobflow] 
+    job = ct.electron [Covalent] = python_app [Parsl] = job [Jobflow]
     = task [prefect] = task [redun].
 
     The wrapped function gets a new kwarg, `decorator_kwargs`, that can be used
@@ -78,7 +78,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:  # sourcery skip
             from redun import task
 
             decorated = task(_func, **decorator_kwargs)
-        elif wflow_engine=="prefect":
+        elif wflow_engine == "prefect":
             from prefect import task
 
             decorated = task(_func, **decorator_kwargs)
@@ -172,13 +172,14 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:  # sourcery skip
                 return ct.lattice(_func, **dispatch_kwargs, **decorator_kwargs)(
                     *f_args, **f_kwargs
                 )
-        elif wflow_engine=="redun":
+        elif wflow_engine == "redun":
             from redun import task
 
             decorated = task(_func, **decorator_kwargs)
         elif wflow_engine == "prefect":
             from prefect import flow as prefect_flow
-            decorated = prefect_flow(_func,**decorator_kwargs)
+
+            decorated = prefect_flow(_func, **decorator_kwargs)
         else:
             decorated = _func
 
@@ -252,14 +253,14 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:  # sourcery ski
             from parsl import join_app
 
             decorated = join_app(_func, **decorator_kwargs)
-        elif wflow_engine=="redun":
+        elif wflow_engine == "redun":
             from redun import task
 
             decorated = task(_func, **decorator_kwargs)
-        elif wflow_engine=="prefect":
+        elif wflow_engine == "prefect":
             from prefect import flow as prefect_flow
 
-            decorated = prefect_flow(_func,**decorator_kwargs)
+            decorated = prefect_flow(_func, **decorator_kwargs)
         else:
             decorated = _func
 

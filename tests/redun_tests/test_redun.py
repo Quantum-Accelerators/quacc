@@ -1,6 +1,5 @@
 import pytest
 from ase.build import bulk
-from maggma.stores import MemoryStore
 
 from quacc import SETTINGS
 
@@ -26,8 +25,8 @@ def teardown_module():
 )
 def test_tutorial1a(tmpdir):
     tmpdir.chdir()
-    from redun import Scheduler
     from ase.build import bulk
+    from redun import Scheduler
 
     from quacc.recipes.emt.core import relax_job
 
@@ -46,8 +45,8 @@ def test_tutorial1a(tmpdir):
 )
 def test_tutorial1b(tmpdir):
     tmpdir.chdir()
-    from redun import Scheduler
     from ase.build import bulk
+    from redun import Scheduler
 
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
@@ -59,6 +58,7 @@ def test_tutorial1b(tmpdir):
     # Run the job locally
     assert "atoms" in scheduler.run(bulk_to_slabs_flow(atoms))[0]
 
+
 @pytest.mark.skipif(
     redun is None,
     reason="Redun is not installed or specified in config",
@@ -66,10 +66,10 @@ def test_tutorial1b(tmpdir):
 def test_tutorial2a(tmpdir):
     tmpdir.chdir()
 
-    from redun import Scheduler
     from ase.build import bulk
-    from quacc import flow
+    from redun import Scheduler
 
+    from quacc import flow
     from quacc.recipes.emt.core import relax_job, static_job
 
     scheduler = Scheduler()
