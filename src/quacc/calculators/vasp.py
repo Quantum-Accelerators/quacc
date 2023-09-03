@@ -28,6 +28,7 @@ if TYPE_CHECKING:
 
     from ase import Atoms
 
+
 class Vasp(Vasp_):
     """
     This is a wrapper around the ASE Vasp calculator that adjusts INCAR
@@ -87,9 +88,12 @@ class Vasp(Vasp_):
         preset_mag_default: float | None = None,
         mag_cutoff: None | float = None,
         verbose: bool | None = None,
-        auto_kpts: dict[ Literal["line_density", "reciprocal_density", "grid_density"], float] | dict[Literal["max_mixed_density","length_density"], list[float]]=None,
-        auto_dipole:bool=False,
-        elemental_magmoms:dict|None=None,
+        auto_kpts: dict[
+            Literal["line_density", "reciprocal_density", "grid_density"], float
+        ]
+        | dict[Literal["max_mixed_density", "length_density"], list[float]] = None,
+        auto_dipole: bool = False,
+        elemental_magmoms: dict | None = None,
         **kwargs,
     ):
         # Set defaults
@@ -121,7 +125,7 @@ class Vasp(Vasp_):
         self.verbose = verbose
         self.auto_kpts = auto_kpts
         self.auto_dipole = auto_dipole
-        self.elemental_magmoms=elemental_magmoms
+        self.elemental_magmoms = elemental_magmoms
         self.kwargs = kwargs
 
         # Check constraints
@@ -175,7 +179,7 @@ class Vasp(Vasp_):
             self.auto_kpts = self.user_calc_params["auto_kpts"]
         if self.user_calc_params.get("auto_dipole"):
             self.auto_dipole = self.user_calc_params["auto_dipole"]
-        for k in {"elemental_magmoms","auto_kpts","auto_dipole"}:
+        for k in {"elemental_magmoms", "auto_kpts", "auto_dipole"}:
             self.user_calc_params.pop(k, None)
 
         # Make automatic k-point mesh
@@ -272,7 +276,7 @@ class Vasp(Vasp_):
             for ldau_flag in ldau_flags:
                 self.user_calc_params.pop(ldau_flag, None)
 
-    def _set_auto_dipole(self)->None:
+    def _set_auto_dipole(self) -> None:
         """
         Sets flags related to the auto_dipole kwarg.
 
@@ -615,10 +619,14 @@ class Vasp(Vasp_):
                         UserWarning,
                     )
                 pmg_kpts1 = Kpoints.automatic_density_by_vol(
-                    struct, self.auto_kpts["max_mixed_density"][0], force_gamma=self.kwargs.get("gamma",False)
+                    struct,
+                    self.auto_kpts["max_mixed_density"][0],
+                    force_gamma=self.kwargs.get("gamma", False),
                 )
                 pmg_kpts2 = Kpoints.automatic_density(
-                    struct, self.auto_kpts["max_mixed_density"][1], force_gamma=self.kwargs.get("gamma",False)
+                    struct,
+                    self.auto_kpts["max_mixed_density"][1],
+                    force_gamma=self.kwargs.get("gamma", False),
                 )
                 if np.prod(pmg_kpts1.kpts[0]) >= np.prod(pmg_kpts2.kpts[0]):
                     pmg_kpts = pmg_kpts1
@@ -626,18 +634,24 @@ class Vasp(Vasp_):
                     pmg_kpts = pmg_kpts2
             elif self.auto_kpts.get("reciprocal_density", None):
                 pmg_kpts = Kpoints.automatic_density_by_vol(
-                    struct, self.auto_kpts["reciprocal_density"], force_gamma=self.kwargs.get("gamma",False)
+                    struct,
+                    self.auto_kpts["reciprocal_density"],
+                    force_gamma=self.kwargs.get("gamma", False),
                 )
             elif self.auto_kpts.get("grid_density", None):
                 pmg_kpts = Kpoints.automatic_density(
-                    struct, self.auto_kpts["grid_density"], force_gamma=self.kwargs.get("gamma",False)
+                    struct,
+                    self.auto_kpts["grid_density"],
+                    force_gamma=self.kwargs.get("gamma", False),
                 )
             elif self.auto_kpts.get("length_density", None):
                 if len(self.auto_kpts["length_density"]) != 3:
                     msg = "Must specify three values for length_density."
                     raise ValueError(msg)
                 pmg_kpts = Kpoints.automatic_density_by_lengths(
-                    struct, self.auto_kpts["length_density"], force_gamma=self.kwargs.get("gamma",False)
+                    struct,
+                    self.auto_kpts["length_density"],
+                    force_gamma=self.kwargs.get("gamma", False),
                 )
             else:
                 msg = f"Unsupported k-point generation scheme: {self.auto_kpts}."
