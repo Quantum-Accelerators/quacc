@@ -389,6 +389,10 @@ def test_lasph():
 
 def test_efermi():
     atoms = bulk("Cu")
+    calc = Vasp(atoms)
+    assert calc.string_params["efermi"] == "midgap"
+
+    atoms = bulk("Cu")
     calc = Vasp(atoms, efermi=10.0)
     assert calc.string_params["efermi"] == 10.0
 
@@ -635,12 +639,12 @@ def test_kpoint_schemes():
     assert calc.kpts == [1, 1, 1]
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, auto_kpts={"grid_density": 1000}, gamma=False)
+    calc = Vasp(atoms, auto_kpts={"kppa": 1000}, gamma=False)
     assert calc.kpts == [10, 10, 10]
     assert calc.input_params["gamma"] is False
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, auto_kpts={"grid_density": 1000})
+    calc = Vasp(atoms, auto_kpts={"kppa": 1000})
     assert calc.kpts == [10, 10, 10]
     assert calc.input_params["gamma"] is True
 
@@ -648,32 +652,31 @@ def test_kpoint_schemes():
     calc = Vasp(
         atoms,
         preset="BulkSet",
-        auto_kpts={"grid_density": 1000},
+        auto_kpts={"kppa": 1000},
         gamma=False,
     )
-    atoms.calc = calc
     assert calc.kpts == [10, 10, 10]
     assert calc.input_params["gamma"] is False
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, auto_kpts={"grid_density": 1000}, gamma=True)
+    calc = Vasp(atoms, auto_kpts={"kppa": 1000}, gamma=True)
     assert calc.kpts == [10, 10, 10]
     assert calc.input_params["gamma"] is True
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, auto_kpts={"reciprocal_density": 100})
+    calc = Vasp(atoms, auto_kpts={"kppvol": 100})
     assert calc.kpts == [12, 12, 12]
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, auto_kpts={"max_mixed_density": [100, 1000]})
+    calc = Vasp(atoms, auto_kpts={"kppvol": 100, "kppa": 1000})
     assert calc.kpts == [12, 12, 12]
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, auto_kpts={"max_mixed_density": [10, 1000]})
+    calc = Vasp(atoms, auto_kpts={"kppvol": 10, "kppa": 1000})
     assert calc.kpts == [10, 10, 10]
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, auto_kpts={"length_density": [50, 50, 1]})
+    calc = Vasp(atoms, auto_kpts={"length_densities": [50, 50, 1]})
     assert calc.kpts == [20, 20, 1]
 
     atoms = bulk("Cu")
@@ -698,17 +701,9 @@ def test_constraints():
 
 def test_bad():
     atoms = bulk("Cu")
-    with pytest.raises(ValueError):
-        Vasp(atoms, auto_kpts={"max_mixed_density": [100]})
-
-    with pytest.raises(ValueError):
-        Vasp(atoms, auto_kpts={"length_density": [100]})
 
     with pytest.raises(ValueError):
         Vasp(atoms, auto_kpts={"test": [100]})
-
-    with pytest.warns(Warning):
-        Vasp(atoms, auto_kpts={"max_mixed_density": [1000, 100]})
 
     with pytest.raises(ValueError):
         Vasp(atoms, preset="BadRelaxSet")

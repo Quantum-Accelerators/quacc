@@ -138,7 +138,7 @@ def _prerelax(
     calc_swaps = calc_swaps or {}
 
     defaults = {
-        "auto_kpts": {"grid_density": 100},
+        "auto_kpts": {"kppa": 100},
         "ediff": 1e-4,
         "encut": None,
         "lcharg": False,
@@ -180,7 +180,7 @@ def _loose_relax_positions(
     calc_swaps = calc_swaps or {}
 
     defaults = {
-        "auto_kpts": {"grid_density": 100},
+        "auto_kpts": {"kppa": 100},
         "ediff": 1e-4,
         "ediffg": -0.05,
         "encut": None,
@@ -226,7 +226,7 @@ def _loose_relax_cell(
     calc_swaps = calc_swaps or {}
 
     defaults = {
-        "auto_kpts": {"grid_density": 100},
+        "auto_kpts": {"kppa": 100},
         "ediffg": -0.03,
         "ibrion": 2,
         "isif": 3,
