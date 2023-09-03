@@ -668,7 +668,7 @@ def test_kpoint_schemes():
     assert calc.kpts == [12, 12, 12]
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, auto_kpts={"kppvol": 100,"kppa": 1000})
+    calc = Vasp(atoms, auto_kpts={"kppvol": 100, "kppa": 1000})
     assert calc.kpts == [12, 12, 12]
 
     atoms = bulk("Cu")

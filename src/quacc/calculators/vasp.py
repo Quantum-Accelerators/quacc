@@ -67,7 +67,7 @@ class Vasp(Vasp_):
         changed. Default is True in settings.
     auto_kpts
         An automatic k-point generation scheme from Pymatgen. Options include:
-        
+
         - {"line_density": float}. This will call `pymatgen.symmetry.bandstructure.HighSymmKpath`
             with `path_type="latimer_munro"`. The `line_density` value will be set in
             the `.get_kpoints` attribute.
@@ -77,7 +77,7 @@ class Vasp(Vasp_):
             with the given value for `kppa`.
         - {"length_densities": [float, float, float]}. This will call `pymatgen.io.vasp.inputs.Kpoints.automatic_density_by_lengths`
             with the given value for `length_densities`.
-        
+
         If multiple options are specified, the most dense k-point scheme will be chosen.
     auto_dipole
         If True, will automatically set dipole moment correction parameters
@@ -105,11 +105,9 @@ class Vasp(Vasp_):
         preset_mag_default: float | None = None,
         mag_cutoff: None | float = None,
         verbose: bool | None = None,
-        auto_kpts: dict[
-            Literal["line_density", "kppvol", "kppa"], float
-        ]
+        auto_kpts: dict[Literal["line_density", "kppvol", "kppa"], float]
         | dict[Literal["length_densities"], list[float]] = None,
-        auto_dipole: bool |None= None,
+        auto_dipole: bool | None = None,
         elemental_magmoms: dict | None = None,
         **kwargs,
     ):
@@ -607,23 +605,22 @@ class Vasp(Vasp_):
 
         else:
             reciprocal = None
-            force_gamma = self.user_calc_params.get("gamma",False)
+            force_gamma = self.user_calc_params.get("gamma", False)
             max_pmg_kpts = None
-            for k,v in self.auto_kpts.items():
-
-                if k=="kppvol":
+            for k, v in self.auto_kpts.items():
+                if k == "kppvol":
                     pmg_kpts = Kpoints.automatic_density_by_vol(
                         struct,
                         v,
                         force_gamma=force_gamma,
                     )
-                elif k=="kppa":
+                elif k == "kppa":
                     pmg_kpts = Kpoints.automatic_density(
                         struct,
                         v,
                         force_gamma=force_gamma,
                     )
-                elif k=="length_densities":
+                elif k == "length_densities":
                     pmg_kpts = Kpoints.automatic_density_by_lengths(
                         struct,
                         v,
@@ -633,7 +630,14 @@ class Vasp(Vasp_):
                     msg = f"Unsupported k-point generation scheme: {self.auto_kpts}."
                     raise ValueError(msg)
 
-                max_pmg_kpts = pmg_kpts if (not max_pmg_kpts or np.prod(pmg_kpts.kpts[0])>=np.prod(max_pmg_kpts.kpts[0])) else max_pmg_kpts
+                max_pmg_kpts = (
+                    pmg_kpts
+                    if (
+                        not max_pmg_kpts
+                        or np.prod(pmg_kpts.kpts[0]) >= np.prod(max_pmg_kpts.kpts[0])
+                    )
+                    else max_pmg_kpts
+                )
 
             kpts = max_pmg_kpts.kpts[0]
             gamma = max_pmg_kpts.style.name.lower() == "gamma"
