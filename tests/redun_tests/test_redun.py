@@ -113,7 +113,7 @@ def test_tutorial2b(tmpdir):
     atoms2 = molecule("N2")
 
     # Dispatch the workflow
-    assert "atoms" in scheduler.run(workflow(atoms1, atoms2))["results1"]
+    assert "atoms" in scheduler.run(workflow(atoms1, atoms2))["result1"]
 
 
 @pytest.mark.skipif(
