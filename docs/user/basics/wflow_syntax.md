@@ -36,11 +36,11 @@ Here, we provide code snippets for several decorator-based workflow engines. For
 
 To help enable interoperability between workflow engines, quacc offers a unified set of decorators.
 
-| Quacc              | Covalent                           | Parsl                 | Jobflow        |
-| ------------------ | ---------------------------------- | --------------------- | -------------- |
-| `#!Python job`     | `#!Python ct.electron`             | `#!Python python_app` | `#!Python job` |
-| `#!Python flow`    | `#!Python ct.lattice`              | N/A                   | N/A            |
-| `#!Python subflow` | `#!Python ct.electron(ct.lattice)` | `#!Python join_app`   | N/A            |
+| Quacc              | Covalent                           | Jobflow        | Parsl                 | Prefect         | Redun           |
+| ------------------ | ---------------------------------- | -------------- | --------------------- | --------------- | --------------- |
+| `#!Python job`     | `#!Python ct.electron`             | `#!Python job` | `#!Python python_app` | `#!Python task` | `#!Python task` |
+| `#!Python flow`    | `#!Python ct.lattice`              | N/A            | N/A                   | `#!Python flow` | `#!Python task` |
+| `#!Python subflow` | `#!Python ct.electron(ct.lattice)` | N/A            | `#!Python join_app`   | `#!Python flow` | `#!Python task` |
 
 The quacc descriptors are drop-in replacements for the specified workflow engine analogue, which we will use for the remainder of the tutorials.
 
