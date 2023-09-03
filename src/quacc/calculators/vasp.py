@@ -67,18 +67,21 @@ class Vasp(Vasp_):
         changed. Default is True in settings.
     auto_kpts
         An automatic k-point generation scheme from Pymatgen. Options include:
-
-        - {"line_density": float}. This will call `pymatgen.symmetry.bandstructure.HighSymmKpath`
-            with `path_type="latimer_munro"`. The `line_density` value will be set in
-            the `.get_kpoints` attribute.
-        - {"kppvol": float}. This will call `pymatgen.io.vasp.inputs.Kpoints.automatic_density_by_vol`
+        - {"line_density": float}. This will call
+          `pymatgen.symmetry.bandstructure.HighSymmKpath`
+            with `path_type="latimer_munro"`. The `line_density` value will be
+            set in the `.get_kpoints` attribute.
+        - {"kppvol": float}. This will call
+          `pymatgen.io.vasp.inputs.Kpoints.automatic_density_by_vol`
             with the given value for `kppvol`.
-        - {"kppa": float}. This will call `pymatgen.io.vasp.inputs.Kpoints.automatic_density`
+        - {"kppa": float}. This will call
+          `pymatgen.io.vasp.inputs.Kpoints.automatic_density`
             with the given value for `kppa`.
-        - {"length_densities": [float, float, float]}. This will call `pymatgen.io.vasp.inputs.Kpoints.automatic_density_by_lengths`
+        - {"length_densities": [float, float, float]}. This will call
+          `pymatgen.io.vasp.inputs.Kpoints.automatic_density_by_lengths`
             with the given value for `length_densities`.
-
-        If multiple options are specified, the most dense k-point scheme will be chosen.
+        If multiple options are specified, the most dense k-point scheme will be
+        chosen.
     auto_dipole
         If True, will automatically set dipole moment correction parameters
         based on the center of mass (in the c dimension by default).
@@ -653,7 +656,6 @@ def load_vasp_yaml_calc(yaml_path: str | Path) -> dict:
     """
     Loads a YAML file containing calculator settings. Used for VASP calculations
     and can read quacc-formatted YAMLs that are of the following format:
-
     ```yaml
     inputs:
       xc: pbe
@@ -664,10 +666,9 @@ def load_vasp_yaml_calc(yaml_path: str | Path) -> dict:
         Fe: 5
         Cu: 1
     ```
-
-    where `inputs` is a dictionary of ASE-style input parameters, `setups`
-    is a dictionary of ASE-style pseudopotentials, and and `elemental_magmoms`
-    is a dictionary of element-wise initial magmoms.
+    where `inputs` is a dictionary of ASE-style input parameters, `setups` is a
+    dictionary of ASE-style pseudopotentials, and and `elemental_magmoms` is a
+    dictionary of element-wise initial magmoms.
 
     Parameters
     ----------
