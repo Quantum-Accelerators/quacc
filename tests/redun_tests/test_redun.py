@@ -37,7 +37,7 @@ def test_tutorial1a(tmpdir):
     atoms = bulk("Cu")
 
     # Run the job locally
-    scheduler.run(relax_job(atoms))
+    assert "atoms" in scheduler.run(relax_job(atoms))
 
 
 @pytest.mark.skipif(
@@ -49,7 +49,7 @@ def test_tutorial1b(tmpdir):
     from redun import Scheduler
     from ase.build import bulk
 
-    from quacc.recipes.emt._jobflow.slabs import bulk_to_slabs_flow
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
     scheduler = Scheduler()
 
@@ -57,7 +57,7 @@ def test_tutorial1b(tmpdir):
     atoms = bulk("Cu")
 
     # Run the job locally
-    scheduler.run(bulk_to_slabs_flow(atoms))
+    assert "atoms" in scheduler.run(bulk_to_slabs_flow(atoms))[0]
 
 @pytest.mark.skipif(
     redun is None,
@@ -82,4 +82,4 @@ def test_tutorial2a(tmpdir):
     atoms = bulk("Cu")
 
     # Define the workflow
-    scheduler.run(workflow(atoms))
+    assert "atoms" in scheduler.run(workflow(atoms))

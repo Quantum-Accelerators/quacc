@@ -458,8 +458,10 @@ def test_jobflow_decorators_args(tmpdir):
 @pytest.mark.skipif(redun is None, reason="Redun not installed")
 def test_redun_decorators(tmpdir):
     tmpdir.chdir()
+    from redun import Scheduler
 
     SETTINGS.WORKFLOW_ENGINE = "redun"
+    scheduler = Scheduler()
 
     @job
     def add(a, b):
@@ -487,10 +489,10 @@ def test_redun_decorators(tmpdir):
         result2 = make_more(result1)
         return add_distributed(result2, c)
     
-    assert add(1, 2) == 3
-    assert mult(1, 2) == 2
-    assert workflow(1, 2, 3) == 9
-    assert dynamic_workflow(1, 2, 3) == [6, 6, 6]
+    assert scheduler.run(add(1, 2)) == 3
+    assert scheduler.run(mult(1, 2)) == 2
+    assert scheduler.run(workflow(1, 2, 3)) == 9
+    assert scheduler.run(dynamic_workflow(1, 2, 3)) == [6, 6, 6]
 
 @pytest.mark.skipif(prefect is None, reason="Prefect not installed")
 def test_prefect_decorators(tmpdir):
