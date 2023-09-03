@@ -83,3 +83,64 @@ def test_tutorial2a(tmpdir):
 
     # Define the workflow
     assert "atoms" in scheduler.run(workflow(atoms))
+
+@pytest.mark.skipif(
+    redun is None,
+    reason="Redun is not installed or specified in config",
+)
+def test_tutorial2b(tmpdir):
+    tmpdir.chdir()
+    from ase.build import bulk, molecule
+    from redun import Scheduler
+    from quacc import flow
+    from quacc.recipes.emt.core import relax_job
+
+    # Instantiate the scheduler
+    scheduler = Scheduler()
+
+    # Define workflow
+    @flow
+    def workflow(atoms1, atoms2):
+        # Define two independent relaxation jobs
+        result1 = relax_job(atoms1)
+        result2 = relax_job(atoms2)
+
+        return {"result1": result1, "result2": result2}
+
+
+    # Define two Atoms objects
+    atoms1 = bulk("Cu")
+    atoms2 = molecule("N2")
+
+    # Dispatch the workflow
+    assert "atoms" in scheduler.run(workflow(atoms1, atoms2))
+
+@pytest.mark.skipif(
+    redun is None,
+    reason="Redun is not installed or specified in config",
+)
+def test_tutorial2c(tmpdir):
+    tmpdir.chdir()
+    
+    from ase.build import bulk
+    from redun import Scheduler
+    from quacc import flow
+    from quacc.recipes.emt.core import relax_job
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+    scheduler = Scheduler()
+
+    # Define the workflow
+    @flow
+    def workflow(atoms):
+        relaxed_bulk = relax_job(atoms)
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, slab_static=None)  # (1)!
+
+        return relaxed_slabs
+
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Run the workflow
+    assert "atoms" in scheduler.run(workflow(atoms))

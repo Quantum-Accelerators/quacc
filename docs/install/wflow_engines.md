@@ -28,13 +28,23 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
 === "Parsl"
 
-    In your activated Python environment, install Parsl as follows:
+    To install Parsl, run the following:
 
     ```bash
     pip install quacc[parsl]
     ```
 
     Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
+
+=== "Redun"
+
+    **Installation**
+
+    To install Redun, run the following:
+
+    ```bash
+    pip install quacc[redun]
+    ```
 
 === "Jobflow"
 
@@ -185,13 +195,3 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
         Running `lpad reset` will clear your FireWorks launchpad, so only use this command if you are a new user.
 
     To check that FireWorks can connect to your database, run `lpad reset` if this is your first time using FireWorks.
-
-=== "Redun"
-
-    **Installation**
-
-    To install Redun, run the following:
-
-    ```bash
-    pip install quacc[redun]
-    ```

@@ -40,7 +40,7 @@ Here, we provide code snippets for several decorator-based workflow engines. For
 
         Refer to the official set of [Redun tutorials](https://github.com/insitro/redun/tree/main/examples) for several worked examples.
 
-    Take a moment to read the Redun documentation's [Design Overview page](https://insitro.github.io/redun/design.html) to get a sense of how Redun works. Namely, you should under the `Task` definition and how the `Scheduler` operates.
+    Take a moment to read the Redun documentation's [Design Overview page](https://insitro.github.io/redun/design.html) to get a sense of how Redun works. Namely, you should understand the `Task` decorator and how to interface with the `Scheduler`.
 
 To help enable interoperability between workflow engines, quacc offers a unified set of decorators.
 
@@ -131,6 +131,40 @@ graph LR
 
     1. The `#!Python @job` decorator will be transformed into `#!Python @python_app`.
 
+=== "Redun"
+
+    !!! Important
+
+        Make sure you have specified `"redun"` as the `WORKFLOW_ENGINE` in your [quacc settings](../settings.md).
+
+    ```python
+    from redun import Scheduler
+    from quacc import flow, job
+
+    scheduler = Scheduler()  #  (1)!
+
+    @job  #  (2)!
+    def add(a, b):
+        return a + b
+
+    @job
+    def mult(a, b):
+        return a * b
+
+    @flow  #  (3)!
+    def workflow(a, b, c):
+        return mult(add(a, b), c)
+
+    result = scheduler.run(workflow(1, 2, 3))
+    print(result)
+    ```
+
+    1. It is necessary to instantiate the scheduler before submitting calculations.
+
+    2. The `#!Python @job` decorator will be transformed into Redun `#!Python @task`.
+
+    3. The `#!Python @flow` decorator will also be transformed into Redun `#!Python @task`. Everything in Redun is a `#!Python @task`, so it doesn't matter what quacc decorator you apply. We chose `#!Python @flow` simpler for clarity.
+
 === "Jobflow"
 
     !!! Important
@@ -159,38 +193,6 @@ graph LR
 
     1. The `#!Python @job` decorator will be transformed into `#!Python @jf.job`.
 
-=== "Redun"
-
-    !!! Important
-
-        Make sure you have specified `"redun"` as the `WORKFLOW_ENGINE` in your [quacc settings](../settings.md).
-
-    ```python
-    from redun import Scheduler
-    from quacc import flow, job
-
-    scheduler = Scheduler()
-
-    @job  #  (1)!
-    def add(a, b):
-        return a + b
-
-    @job
-    def mult(a, b):
-        return a * b
-
-    @flow  #  (2)!
-    def workflow(a, b, c):
-        return mult(add(a, b), c)
-
-    result = scheduler.run(workflow(1, 2, 3))
-    print(result)
-    ```
-
-    1. The `#!Python @job` decorator will be transformed into Redun `#!Python @task`.
-
-    1. The `#!Python @flow` decorator will also be transformed into Redun `#!Python @task`. Everything in Redun is a `#!Python @task`, so it doesn't matter what quacc decorator you apply. We chose `#!Python @flow` simpler for clarity.
-
 ## Learn More
 
 === "Covalent"
@@ -201,10 +203,10 @@ graph LR
 
     If you want to learn more about Parsl, you can read the [Parsl Documentation](https://parsl.readthedocs.io/en/stable/#). Please refer to the [Parsl Slack Channel](http://parsl-project.org/support.html) for any Parsl-specific questions.
 
-=== "Jobflow"
-
-    If you want to learn more about Jobflow, you can read the [Jobflow Documentation](https://materialsproject.github.io/jobflow/). Please refer to the [Jobflow Discussions Board](https://github.com/materialsproject/jobflow/discussions) for Jobflow-specific questions.
-
 === "Redun"
 
     If you want to learn more about Redun, you can read the [Redun documentation](https://insitro.github.io/redun/index.html).
+
+=== "Jobflow"
+
+    If you want to learn more about Jobflow, you can read the [Jobflow Documentation](https://materialsproject.github.io/jobflow/). Please refer to the [Jobflow Discussions Board](https://github.com/materialsproject/jobflow/discussions) for Jobflow-specific questions.

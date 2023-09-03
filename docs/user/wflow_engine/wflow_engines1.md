@@ -118,6 +118,30 @@ graph LR
 
     2. We chose to run the job locally, but other workflow managers supported by Jobflow can be imported and used.
 
+=== "Redun"
+
+    !!! Important
+
+        Make sure you have specified `"redun"` as the `WORKFLOW_ENGINE` in your [quacc settings](../settings.md).
+
+    ```python
+    from ase.build import bulk
+    from redun import Scheduler
+    from quacc.recipes.emt.core import relax_job
+
+    # Instantiate the scheduler
+    scheduler = Scheduler()
+
+    # Make an Atoms object of a bulk Cu structure
+    atoms = bulk("Cu")
+
+    # Dispatch the workflow
+    result = scheduler.run(relax_job(atoms))  # (2)!
+    print(result)
+    ```
+
+    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
+
 ## Running a Pre-Defined Workflow
 
 We will now try running a pre-defined workflow where we carve all possible slabs from a given structure, run a new relaxation calculation on each slab, and then a static calculation for each relaxed slab. This is implemented in [`quacc.recipes.emt.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/slabs.html#quacc.recipes.emt.slabs.bulk_to_slabs_flow).
@@ -165,6 +189,27 @@ graph LR
 
     # Print the results
     print(future.result())
+    ```
+
+    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `@flow` decorator.
+
+=== "Redun"
+
+    ```python
+    from ase.build import bulk
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+    # Instantiate the scheduler
+    scheduler = Scheduler()
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Define the workflow
+    result = scheduler.run(bulk_to_slabs_flow(atoms))  # (1)!
+
+    # Print the results
+    print(result)
     ```
 
     1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `@flow` decorator.
