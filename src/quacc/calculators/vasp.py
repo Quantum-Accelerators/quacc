@@ -66,8 +66,25 @@ class Vasp(Vasp_):
         If True, warnings will be raised when INCAR parameters are automatically
         changed. Default is True in settings.
     auto_kpts
+        An automatic k-point generation scheme from Pymatgen. Options include:
+        
+        - {"line_density": float}. This will call `pymatgen.symmetry.bandstructure.HighSymmKpath`
+            with `path_type="latimer_munro"`. The `line_density` value will be set in
+            the `.get_kpoints` attribute.
+        - {"kppvol": float}. This will call `pymatgen.io.vasp.inputs.Kpoints.automatic_density_by_vol`
+            with the given value for `kppvol`.
+        - {"kppa": float}. This will call `pymatgen.io.vasp.inputs.Kpoints.automatic_density`
+            with the given value for `kppa`.
+        - {"length_densities": [float, float, float]}. This will call `pymatgen.io.vasp.inputs.Kpoints.automatic_density_by_lengths`
+            with the given value for `length_densities`.
+        
+        If multiple options are specified, the most dense k-point scheme will be chosen.
     auto_dipole
+        If True, will automatically set dipole moment correction parameters
+        based on the center of mass (in the c dimension by default).
     elemental_magmoms
+        A dictionary of elemental initial magnetic moments to pass to
+        `quacc.utils.atoms.set_magmoms`, e.g. `{"Fe": 5, "Ni": 4}`.
     **kwargs
         Additional arguments to be passed to the VASP calculator, e.g.
         `xc='PBE'`, `encut=520`. Takes all valid ASE calculator arguments.
@@ -89,9 +106,9 @@ class Vasp(Vasp_):
         mag_cutoff: None | float = None,
         verbose: bool | None = None,
         auto_kpts: dict[
-            Literal["line_density", "reciprocal_density", "grid_density"], float
+            Literal["line_density", "kppvol", "kppa"], float
         ]
-        | dict[Literal["max_mixed_density", "length_density"], list[float]] = None,
+        | dict[Literal["length_densities"], list[float]] = None,
         auto_dipole: bool |None= None,
         elemental_magmoms: dict | None = None,
         **kwargs,
@@ -178,7 +195,7 @@ class Vasp(Vasp_):
             self.user_calc_params.pop(k, None)
 
         # Make automatic k-point mesh
-        if self.auto_kpts and not kwargs.get("kpts"):
+        if self.auto_kpts and not self.user_calc_params.get("kpts"):
             self._convert_auto_kpts()
 
         # Add dipole corrections if requested
@@ -587,60 +604,36 @@ class Vasp(Vasp_):
 
         else:
             reciprocal = None
-            if self.auto_kpts.get("max_mixed_density", None):
-                if len(self.auto_kpts["max_mixed_density"]) != 2:
-                    msg = "Must specify two values for max_mixed_density."
-                    raise ValueError(msg)
+            force_gamma = self.user_calc_params.get("gamma",False)
+            max_pmg_kpts = None
+            for k,v in self.auto_kpts.items():
 
-                if (
-                    self.auto_kpts["max_mixed_density"][0]
-                    > self.auto_kpts["max_mixed_density"][1]
-                ):
-                    warnings.warn(
-                        "Warning: It is not usual that kppvol > kppa. Please make sure you have chosen the right k-point densities.",
-                        UserWarning,
+                if k=="kppvol":
+                    pmg_kpts = Kpoints.automatic_density_by_vol(
+                        struct,
+                        v,
+                        force_gamma=force_gamma,
                     )
-                pmg_kpts1 = Kpoints.automatic_density_by_vol(
-                    struct,
-                    self.auto_kpts["max_mixed_density"][0],
-                    force_gamma=self.kwargs.get("gamma", False),
-                )
-                pmg_kpts2 = Kpoints.automatic_density(
-                    struct,
-                    self.auto_kpts["max_mixed_density"][1],
-                    force_gamma=self.kwargs.get("gamma", False),
-                )
-                if np.prod(pmg_kpts1.kpts[0]) >= np.prod(pmg_kpts2.kpts[0]):
-                    pmg_kpts = pmg_kpts1
+                elif k=="kppa":
+                    pmg_kpts = Kpoints.automatic_density(
+                        struct,
+                        v,
+                        force_gamma=force_gamma,
+                    )
+                elif k=="length_densities":
+                    pmg_kpts = Kpoints.automatic_density_by_lengths(
+                        struct,
+                        v,
+                        force_gamma=force_gamma,
+                    )
                 else:
-                    pmg_kpts = pmg_kpts2
-            elif self.auto_kpts.get("reciprocal_density", None):
-                pmg_kpts = Kpoints.automatic_density_by_vol(
-                    struct,
-                    self.auto_kpts["reciprocal_density"],
-                    force_gamma=self.kwargs.get("gamma", False),
-                )
-            elif self.auto_kpts.get("grid_density", None):
-                pmg_kpts = Kpoints.automatic_density(
-                    struct,
-                    self.auto_kpts["grid_density"],
-                    force_gamma=self.kwargs.get("gamma", False),
-                )
-            elif self.auto_kpts.get("length_density", None):
-                if len(self.auto_kpts["length_density"]) != 3:
-                    msg = "Must specify three values for length_density."
+                    msg = f"Unsupported k-point generation scheme: {self.auto_kpts}."
                     raise ValueError(msg)
-                pmg_kpts = Kpoints.automatic_density_by_lengths(
-                    struct,
-                    self.auto_kpts["length_density"],
-                    force_gamma=self.kwargs.get("gamma", False),
-                )
-            else:
-                msg = f"Unsupported k-point generation scheme: {self.auto_kpts}."
-                raise ValueError(msg)
 
-            kpts = pmg_kpts.kpts[0]
-            gamma = pmg_kpts.style.name.lower() == "gamma"
+                max_pmg_kpts = pmg_kpts if (not max_pmg_kpts or np.prod(pmg_kpts.kpts[0])>=np.prod(max_pmg_kpts.kpts[0])) else max_pmg_kpts
+
+            kpts = max_pmg_kpts.kpts[0]
+            gamma = max_pmg_kpts.style.name.lower() == "gamma"
 
         self.user_calc_params["kpts"] = kpts
         if reciprocal and self.user_calc_params.get("reciprocal") is None:
