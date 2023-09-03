@@ -390,7 +390,7 @@ def test_lasph():
 def test_efermi():
     atoms = bulk("Cu")
     calc = Vasp(atoms)
-    assert calc.string_params["efermi"] == "MIDGAP"
+    assert calc.string_params["efermi"] == "midgap"
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, efermi=10.0)
@@ -655,7 +655,6 @@ def test_kpoint_schemes():
         auto_kpts={"grid_density": 1000},
         gamma=False,
     )
-    atoms.calc = calc
     assert calc.kpts == [10, 10, 10]
     assert calc.input_params["gamma"] is False
 
