@@ -340,7 +340,7 @@ jobs:
         uses: codecov/codecov-action@v3
         if: github.repository == 'Quantum-Accelerators/quacc'
 
-  tests-other-wflows:
+  tests-redun-jobflow:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
