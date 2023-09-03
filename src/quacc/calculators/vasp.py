@@ -166,11 +166,6 @@ class Vasp(Vasp_):
                 os.path.join(SETTINGS.VASP_PRESET_DIR, self.user_calc_params["setups"])
             )["inputs"]["setups"]
 
-        # If the preset has auto_kpts but the user explicitly requests kpts,
-        # then we should honor that.
-        if kwargs.get("kpts") and calc_preset.get("auto_kpts"):
-            del self.user_calc_params["auto_kpts"]
-
         # Handle special arguments in the user calc parameters that ASE does not
         # natively support
         if self.user_calc_params.get("elemental_magmoms"):
@@ -183,7 +178,7 @@ class Vasp(Vasp_):
             self.user_calc_params.pop(k, None)
 
         # Make automatic k-point mesh
-        if self.auto_kpts:
+        if self.auto_kpts and not kwargs.get("kpts"):
             self._convert_auto_kpts()
 
         # Add dipole corrections if requested
