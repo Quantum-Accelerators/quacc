@@ -184,12 +184,7 @@ class Vasp(Vasp_):
 
         # Make automatic k-point mesh
         if self.auto_kpts:
-            kpts, gamma, reciprocal = self._convert_auto_kpts()
-            self.user_calc_params["kpts"] = kpts
-            if reciprocal and self.user_calc_params.get("reciprocal") is None:
-                self.user_calc_params["reciprocal"] = reciprocal
-            if self.user_calc_params.get("gamma") is None:
-                self.user_calc_params["gamma"] = gamma
+            self._convert_auto_kpts()
 
         # Add dipole corrections if requested
         if self.auto_dipole:
@@ -498,8 +493,7 @@ class Vasp(Vasp_):
                     "Copilot: Setting NCORE = 1 because NCORE/NPAR is not compatible with this job type.",
                     UserWarning,
                 )
-            calc.set(ncore=1)
-            calc.set(npar=None)
+            calc.set(ncore=1, npar=None)
 
         if (
             (calc.int_params["ncore"] and calc.int_params["ncore"] > 1)
@@ -510,8 +504,7 @@ class Vasp(Vasp_):
                     "Copilot: Setting NCORE = 1 because you have a very small structure.",
                     UserWarning,
                 )
-            calc.set(ncore=1)
-            calc.set(npar=None)
+            calc.set(ncore=1, npar=None)
 
         if (
             calc.int_params["kpar"]
@@ -550,8 +543,7 @@ class Vasp(Vasp_):
                     "Copilot: Setting NPAR = 1 because NCORE/NPAR is not compatible with this job type.",
                     UserWarning,
                 )
-            calc.set(npar=1)
-            calc.set(ncore=None)
+            calc.set(npar=1, ncore=None)
 
         if not calc.string_params["efermi"]:
             if self.verbose:
@@ -570,7 +562,7 @@ class Vasp(Vasp_):
 
     def _convert_auto_kpts(
         self,
-    ) -> tuple[list[int], None | bool, None | bool]:
+    ) -> None:
         """
         Shortcuts for pymatgen k-point generation schemes.
 
@@ -580,12 +572,7 @@ class Vasp(Vasp_):
 
         Returns
         -------
-        List[int, int, int]
-            List of k-points for use with the ASE Vasp calculator
-        Optional[bool]
-            The gamma command for use with the ASE Vasp calculator
-        Optional[bool]
-            The reciprocal command for use with the ASE Vasp calculator
+        None
         """
         struct = AseAtomsAdaptor.get_structure(self.input_atoms)
 
@@ -660,7 +647,11 @@ class Vasp(Vasp_):
             kpts = pmg_kpts.kpts[0]
             gamma = pmg_kpts.style.name.lower() == "gamma"
 
-        return kpts, gamma, reciprocal
+        self.user_calc_params["kpts"] = kpts
+        if reciprocal and self.user_calc_params.get("reciprocal") is None:
+            self.user_calc_params["reciprocal"] = reciprocal
+        if self.user_calc_params.get("gamma") is None:
+            self.user_calc_params["gamma"] = gamma
 
 
 def load_vasp_yaml_calc(yaml_path: str | Path) -> dict:
