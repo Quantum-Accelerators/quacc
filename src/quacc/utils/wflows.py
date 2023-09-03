@@ -57,7 +57,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:  # sourcery skip
 
         from quacc import SETTINGS
 
-        if not decorator_kwargs:
+        if decorator_kwargs is None:
             decorator_kwargs = kwargs
 
         wflow_engine = SETTINGS.WORKFLOW_ENGINE
@@ -142,7 +142,7 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:  # sourcery skip
         """
         from quacc import SETTINGS
 
-        if not decorator_kwargs:
+        if decorator_kwargs is None:
             decorator_kwargs = kwargs
 
         wflow_engine = SETTINGS.WORKFLOW_ENGINE
@@ -223,7 +223,7 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:  # sourcery ski
         """
         from quacc import SETTINGS
 
-        if not decorator_kwargs:
+        if decorator_kwargs is None:
             decorator_kwargs = kwargs
 
         wflow_engine = SETTINGS.WORKFLOW_ENGINE
