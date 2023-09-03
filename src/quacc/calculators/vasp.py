@@ -92,7 +92,7 @@ class Vasp(Vasp_):
             Literal["line_density", "reciprocal_density", "grid_density"], float
         ]
         | dict[Literal["max_mixed_density", "length_density"], list[float]] = None,
-        auto_dipole: bool |None= None,
+        auto_dipole: bool | None = None,
         elemental_magmoms: dict | None = None,
         **kwargs,
     ):
@@ -168,7 +168,10 @@ class Vasp(Vasp_):
 
         # Handle special arguments in the user calc parameters that ASE does not
         # natively support
-        if self.user_calc_params.get("elemental_magmoms") and self.elemental_magmoms is None:
+        if (
+            self.user_calc_params.get("elemental_magmoms")
+            and self.elemental_magmoms is None
+        ):
             self.elemental_magmoms = self.user_calc_params["elemental_magmoms"]
         if self.user_calc_params.get("auto_kpts") and self.auto_kpts is None:
             self.auto_kpts = self.user_calc_params["auto_kpts"]
