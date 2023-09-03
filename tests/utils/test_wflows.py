@@ -489,7 +489,7 @@ def test_redun_decorators(tmpdir):
         result1 = add(a, b)
         result2 = make_more(result1)
         return add_distributed(result2, c)
-    
+
     assert scheduler.run(add(1, 2)) == 3
     assert scheduler.run(mult(1, 2)) == 2
     assert scheduler.run(workflow(1, 2, 3)) == 9
