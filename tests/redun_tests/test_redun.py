@@ -55,7 +55,7 @@ def test_tutorial1b(tmpdir):
     atoms = bulk("Cu")
 
     # Run the job locally
-    assert len(scheduler.run(bulk_to_slabs_flow(atoms)))==4
+    assert len(scheduler.run(bulk_to_slabs_flow(atoms))) == 4
 
 
 @pytest.mark.skipif(
@@ -144,4 +144,4 @@ def test_tutorial2c(tmpdir):
     atoms = bulk("Cu")
 
     # Run the workflow
-    assert len(scheduler.run(workflow(atoms)))==4
+    assert len(scheduler.run(workflow(atoms))) == 4
