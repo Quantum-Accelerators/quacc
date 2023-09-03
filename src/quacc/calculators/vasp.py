@@ -72,19 +72,19 @@ class Vasp(Vasp_):
           `pymatgen.symmetry.bandstructure.HighSymmKpath`
             with `path_type="latimer_munro"`. The `line_density` value will be
             set in the `.get_kpoints` attribute.
-        
+
         - {"kppvol": float}. This will call
           `pymatgen.io.vasp.inputs.Kpoints.automatic_density_by_vol`
             with the given value for `kppvol`.
-        
+
         - {"kppa": float}. This will call
           `pymatgen.io.vasp.inputs.Kpoints.automatic_density`
             with the given value for `kppa`.
-        
+
         - {"length_densities": [float, float, float]}. This will call
           `pymatgen.io.vasp.inputs.Kpoints.automatic_density_by_lengths`
             with the given value for `length_densities`.
-        
+
         If multiple options are specified, the most dense k-point scheme will be
         chosen.
     auto_dipole
