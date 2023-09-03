@@ -1,6 +1,5 @@
 import pytest
 from ase.build import bulk
-from maggma.stores import MemoryStore
 
 from quacc import SETTINGS
 
