@@ -455,6 +455,7 @@ def test_jobflow_decorators_args(tmpdir):
     assert isinstance(workflow(1, 2, 3), Job)
     assert isinstance(add_distributed([1, 2, 3], 4)[0], Job)
 
+
 @pytest.mark.skipif(redun is None, reason="Redun not installed")
 def test_redun_decorators(tmpdir):
     tmpdir.chdir()
@@ -472,7 +473,7 @@ def test_redun_decorators(tmpdir):
     @job
     def make_more(val):
         return [val] * 3
-    
+
     @subflow
     def add_distributed(vals, c):
         return [add(val, c) for val in vals]
@@ -486,11 +487,12 @@ def test_redun_decorators(tmpdir):
         result1 = add(a, b)
         result2 = make_more(result1)
         return add_distributed(result2, c)
-    
+
     assert add(1, 2) == 3
     assert mult(1, 2) == 2
     assert workflow(1, 2, 3) == 9
     assert dynamic_workflow(1, 2, 3) == [6, 6, 6]
+
 
 @pytest.mark.skipif(prefect is None, reason="Prefect not installed")
 def test_prefect_decorators(tmpdir):
@@ -509,7 +511,7 @@ def test_prefect_decorators(tmpdir):
     @job
     def make_more(val):
         return [val] * 3
-    
+
     @subflow
     def add_distributed(vals, c):
         return [add(val, c) for val in vals]
@@ -523,7 +525,7 @@ def test_prefect_decorators(tmpdir):
         result1 = add(a, b)
         result2 = make_more(result1)
         return add_distributed(result2, c)
-    
+
     assert add(1, 2) == 3
     assert mult(1, 2) == 2
     assert workflow(1, 2, 3) == 9
