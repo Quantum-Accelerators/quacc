@@ -4,7 +4,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
 !!! Tip
 
-    If you are just getting started with workflow engines, we recommend trying Covalent. For a comparison of the different compatible workflow engines, refer to the [Workflow Engines Overview](../user/basics/wflow_overview.md) section.
+    If you are just getting started with workflow engines, we recommend first trying Covalent. For a comparison of the different compatible workflow engines, refer to the [Workflow Engines Overview](../user/basics/wflow_overview.md) section.
 
 === "Covalent"
 
