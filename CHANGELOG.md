@@ -9,6 +9,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - Added support for the Redun workflow engine.
+- Added a simple CLI for (un)setting YAML config parameters.
+
+### Removed
+
+- Removed the demonstration Jobflow EMT slab recipe.
 
 ## [0.2.4]
 
