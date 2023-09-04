@@ -1,13 +1,9 @@
 """Quacc CLI module."""
 from __future__ import annotations
-
-import os
 from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from typing import Any
-
-import warnings
 from pathlib import Path
 
 import ruamel.yaml
