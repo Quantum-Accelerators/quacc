@@ -67,11 +67,11 @@ graph LR
 
         If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings.md) and load the default Parsl configuration:
 
-        ```bash
+        ```bash title="terminal"
         quacc set WORKFLOW_ENGINE parsl
         ```
 
-        ```python
+        ```python title="python"
         import parsl
         parsl.load()
         ```

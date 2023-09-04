@@ -66,13 +66,13 @@ graph LR
 
     !!! Important
 
-        If you haven't done so yet, make sure you run the following to tell quacc you wish to use Parsl and load the default Parsl configuration:
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings.md) and load the default Parsl configuration:
 
-        ```bash
+        ```bash title="terminal"
         quacc set WORKFLOW_ENGINE parsl
         ```
 
-        ```python
+        ```python title="python"
         import parsl
         parsl.load()
         ```
@@ -99,7 +99,7 @@ graph LR
 
     !!! Important
 
-        If you haven't done so yet, make sure you run the following to tell quacc you wish to use Redun:
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings.md):
 
         ```bash
         quacc set WORKFLOW_ENGINE redun
@@ -127,7 +127,7 @@ graph LR
 
     !!! Important
 
-        If you haven't done so yet, make sure you run the following to tell quacc you wish to use Jobflow:
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings.md):
 
         ```bash
         quacc set WORKFLOW_ENGINE jobflow
