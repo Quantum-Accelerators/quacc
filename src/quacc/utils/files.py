@@ -61,15 +61,15 @@ def copy_decompress(source_files: list[str], destination: str) -> None:
     """
     for f in source_files:
         z_path = zpath(f)
-        if os.path.exists(z_path):
+        if Path(z_path).exists():
             z_file = os.path.basename(z_path)
-            copy(z_path, os.path.join(destination, z_file))
-            decompress_file(os.path.join(destination, z_file))
+            copy(z_path, Path(destination, z_file))
+            decompress_file(str(Path(destination, z_file)))
         else:
             warnings.warn(f"Cannot find file: {z_path}", UserWarning)
 
 
-def make_unique_dir(base_path: str | None = None) -> str:
+def make_unique_dir(base_path: str | None = None) -> str | Path:
     """
     Make a directory with a unique name. Uses the same format as Jobflow.
 
@@ -86,7 +86,7 @@ def make_unique_dir(base_path: str | None = None) -> str:
     time_now = datetime.utcnow().strftime("%Y-%m-%d-%H-%M-%S-%f")
     job_dir = f"quacc-{time_now}-{randint(10000, 99999)}"
     if base_path:
-        job_dir = os.path.join(base_path, job_dir)
+        job_dir = Path(base_path, job_dir)
     os.makedirs(job_dir)
 
     return job_dir
