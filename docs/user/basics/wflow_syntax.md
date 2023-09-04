@@ -26,14 +26,6 @@ Here, we provide code snippets for several decorator-based workflow engines. For
 
     Take a moment to read the Parsl documentation's ["Quick Start"](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a [`#!Python python_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html#Python-Apps) and [`#!Python join_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html?highlight=join_app#Dynamic-workflows-with-apps-that-generate-other-apps), which describe individual compute tasks and dynamic job tasks, respectively.
 
-=== "Jobflow"
-
-    !!! Info
-
-        For a detailed tutorial on how to use Jobflow, refer to the [Jobflow Tutorials](https://materialsproject.github.io/jobflow/tutorials).
-
-    Take a moment to read the Jobflow documentation's [Quick Start](https://materialsproject.github.io/jobflow/tutorials/1-quickstart.html) to get a sense of how Jobflow works. Namely, you should understand the `Job` and `Flow` definitions, which describe individual compute tasks and workflows, respectively.
-
 === "Redun"
 
     !!! Info
@@ -41,6 +33,14 @@ Here, we provide code snippets for several decorator-based workflow engines. For
         Refer to the official set of [Redun tutorials](https://github.com/insitro/redun/tree/main/examples) for several worked examples.
 
     Take a moment to read the Redun documentation's [Design Overview page](https://insitro.github.io/redun/design.html) to get a sense of how Redun works. Namely, you should understand the `Task` decorator and how to interface with the `Scheduler`.
+
+=== "Jobflow"
+
+    !!! Info
+
+        For a detailed tutorial on how to use Jobflow, refer to the [Jobflow Tutorials](https://materialsproject.github.io/jobflow/tutorials).
+
+    Take a moment to read the Jobflow documentation's [Quick Start](https://materialsproject.github.io/jobflow/tutorials/1-quickstart.html) to get a sense of how Jobflow works. Namely, you should understand the `Job` and `Flow` definitions, which describe individual compute tasks and workflows, respectively.
 
 To help enable interoperability between workflow engines, quacc offers a unified set of decorators.
 
@@ -174,7 +174,7 @@ graph LR
 
     2. The `#!Python @job` decorator will be transformed into Redun `#!Python @task`.
 
-    3. The `#!Python @flow` decorator will also be transformed into Redun `#!Python @task`. Everything in Redun is a `#!Python @task`, so it doesn't matter what quacc decorator you apply. We chose `#!Python @flow` simpler for clarity.
+    3. The `#!Python @flow` decorator will also be transformed into Redun `#!Python @task`. Everything in Redun is a `#!Python @task`, so it doesn't matter what quacc decorator you apply. We chose `#!Python @flow` simply for clarity.
 
 === "Jobflow"
 

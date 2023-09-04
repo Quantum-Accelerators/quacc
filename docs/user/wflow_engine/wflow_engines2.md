@@ -385,20 +385,6 @@ graph LR
 
 === "Jobflow"
 
-    ```python
-    import jobflow as jf
-    from ase.build import bulk
-    from quacc.recipes.emt.core import relax_job
-    from quacc.recipes.emt._jobflow.slabs import bulk_to_slabs_flow
+    !!! Warning
 
-    # Define the Atoms object
-    atoms = bulk("Cu")
-
-    # Construct the Flow
-    job1 = relax_job(atoms)
-    job2 = bulk_to_slabs_flow(job1.output, slab_static=None)
-    workflow = jf.Flow([job1, job2])
-
-    # Run the workflow locally
-    jf.run_locally(workflow, create_folders=True)
-    ```
+        Due to the difference in how Jobflow handles workflows (particularly dynamic ones) compared to other supported workflow engines, any quacc recipes that have been pre-defined with a `#!Python @flow` decorator (i.e. have `_flow` in the name) cannot be run directly with Jobflow. Rather, a Jobflow-specific `Flow` needs to be constructed by the user.
