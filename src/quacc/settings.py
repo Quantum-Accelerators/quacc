@@ -49,10 +49,10 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
 
     WORKFLOW_ENGINE: str = Field(
-        "covalent"
-        if covalent
-        else "parsl"
+        "parsl"
         if parsl
+        else "covalent"
+        if covalent
         else "redun"
         if redun
         else "jobflow"
