@@ -20,7 +20,6 @@ from quacc.settings import _DEFAULT_CONFIG_FILE_PATH
 app = typer.Typer()
 
 
-
 def callback(value: bool) -> None:
     """
     Set up the callback for the quacc version reporting.
@@ -29,7 +28,7 @@ def callback(value: bool) -> None:
     ----------
     value
         If the version should be reported
-    
+
     Returns
     -------
     None
@@ -57,11 +56,12 @@ def main(
     ----------
     version
         If the version should be reported
-    
+
     Returns
     -------
     None
     """
+
 
 @app.command("set")
 def set_(parameter: str, new_value) -> None:
