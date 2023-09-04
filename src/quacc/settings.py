@@ -296,8 +296,11 @@ class QuaccSettings(BaseSettings):
         config_file_path = Path(values.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH)).expanduser()
 
         new_values = {}
-        if config_file_path.exists():
-            new_values |= loadfn(config_file_path)
-
+        if config_file_path.exists() and config_file_path.stat().st_size > 0:
+            try:
+                new_values |= loadfn(config_file_path)
+            except ValueError:
+                raise ValueError(f"Problem parsing {config_file_path}")
+        
         new_values.update(values)
         return new_values
