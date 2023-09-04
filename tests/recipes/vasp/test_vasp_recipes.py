@@ -32,7 +32,7 @@ def test_static_job(tmpdir):
         atoms, preset="QMOFSet", calc_swaps={"ismear": 0, "sigma": 0.01, "nedos": None}
     )
     assert output["parameters"]["encut"] == 520
-    assert output["parameters"]["ismear"] == 0
+    assert output["parameters"]["ismear"] == -5
     assert output["parameters"]["sigma"] == 0.01
 
     output = static_job(atoms, calc_swaps={"lwave": None})
@@ -78,7 +78,7 @@ def test_doublerelax_job(tmpdir):
 
     output = double_relax_job(atoms, preset="BulkSet", calc_swaps2={"nelmin": 6})
     assert output["relax1"]["parameters"]["encut"] == 520
-    assert "nelmin" not in output["relax1"]["parameters"]
+    assert output["relax1"]["parameters"]["nelmin"] == 3
     assert output["parameters"]["encut"] == 520
     assert output["parameters"]["nelmin"] == 6
 

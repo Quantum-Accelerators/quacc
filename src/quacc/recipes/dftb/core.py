@@ -37,14 +37,24 @@ def static_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     method
         Method to use.
     kpts
-        k-point grid to use. Defaults to None for molecules and
-        (1, 1, 1) for solids.
+        k-point grid to use. Defaults to None for molecules and (1, 1, 1) for
+        solids.
     calc_swaps
-        Dictionary of custom kwargs for the calculator.
+        Dictionary of custom kwargs for the calculator. Overrides the following
+        defaults:
+
+        ```python
+        {
+            "Hamiltonian_": "xTB" if "xtb" in method.lower()
+            else "DFTB", "Hamiltonian_Method": method if "xtb" in method.lower()
+            else None, "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None)
+        }
+        ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -92,17 +102,31 @@ def relax_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     method
         Method to use.
     kpts
-        k-point grid to use. Defaults to None for molecules and
-        (1, 1, 1) for solids.
+        k-point grid to use. Defaults to None for molecules and (1, 1, 1) for
+        solids.
     relax_cell
-        Whether to relax the unit cell shape/volume in addition to
-        the positions.
+        Whether to relax the unit cell shape/volume in addition to the
+        positions.
     calc_swaps
-        Dictionary of custom kwargs for the calculator.
+        Dictionary of custom kwargs for the calculator. Overrides the following
+        defaults:
+
+        ```python
+        {
+            "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
+            "Hamiltonian_Method": method if "xtb" in method.lower() else None,
+            "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
+            "Driver_": "GeometryOptimization",
+            "Driver_LatticeOpt": "Yes" if relax_cell else "No",
+            "Driver_AppendGeometries": "Yes",
+            "Driver_MaxSteps": 2000,
+        }
+        ```
     copy_files
         Files to copy to the runtime directory.
 

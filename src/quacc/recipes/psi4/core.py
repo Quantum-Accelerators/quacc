@@ -41,7 +41,8 @@ def static_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     charge
         Charge of the system. If None, this is determined from the sum of
         `atoms.get_initial_charges()`.
@@ -53,7 +54,20 @@ def static_job(
     basis
         Basis set
     calc_swaps
-        Dictionary of custom kwargs for the calculator.
+        Dictionary of custom kwargs for the calculator. Overrides the following
+        defaults:
+
+        ```python
+        {
+            "mem": "16GB",
+            "num_threads": "max",
+            "method": method,
+            "basis": basis,
+            "charge": charge,
+            "multiplicity": multiplicity,
+            "reference": "uks" if multiplicity > 1 else "rks",
+        }
+        ```
     copy_files
         Files to copy to the runtime directory.
 

@@ -40,9 +40,9 @@ def qmof_relax_job(
     calc_swaps: dict | None = None,
 ) -> QMOFRelaxSchema:
     """
-    Relax a structure in a multi-step process for increased
-    computational efficiency. This is all done in a single compute job.
-    Settings are such that they are compatible with the QMOF Database.
+    Relax a structure in a multi-step process for increased computational
+    efficiency. This is all done in a single compute job. Settings are such that
+    they are compatible with the QMOF Database.
 
     1. A "pre-relaxation" with BFGSLineSearch to resolve very high forces.
 
@@ -57,16 +57,17 @@ def qmof_relax_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     preset
         Preset to use. Applies for all jobs.
     relax_cell
-        True if a volume relaxation should be performed.
-        False if only the positions should be updated.
+        True if a volume relaxation should be performed. False if only the
+        positions should be updated.
     run_prerelax
         If True, a pre-relax will be carried out with BFGSLineSearch.
-        Recommended if starting from hypothetical structures or materials
-        with very high starting forces.
+        Recommended if starting from hypothetical structures or materials with
+        very high starting forces.
     calc_swaps
         Dictionary of custom kwargs for the calculator. Applies for all jobs.
 
@@ -92,10 +93,9 @@ def qmof_relax_job(
         summary3 = _loose_relax_cell(atoms, preset, calc_swaps)
         atoms = summary3["atoms"]
 
-    # 4. Double Relaxation
-    # This is done for two reasons: a) because it can resolve repadding
-    # issues when dV is large; b) because we can use LREAL = Auto for the
-    # first relaxation and the default LREAL for the second.
+    # 4. Double Relaxation This is done for two reasons: a) because it can
+    # resolve repadding issues when dV is large; b) because we can use LREAL =
+    # Auto for the first relaxation and the default LREAL for the second.
     summary4 = _double_relax(atoms, preset, calc_swaps, relax_cell=relax_cell)
     atoms = summary4[1]["atoms"]
 
@@ -138,7 +138,7 @@ def _prerelax(
     calc_swaps = calc_swaps or {}
 
     defaults = {
-        "auto_kpts": {"grid_density": 100},
+        "auto_kpts": {"kppa": 100},
         "ediff": 1e-4,
         "encut": None,
         "lcharg": False,
@@ -180,7 +180,7 @@ def _loose_relax_positions(
     calc_swaps = calc_swaps or {}
 
     defaults = {
-        "auto_kpts": {"grid_density": 100},
+        "auto_kpts": {"kppa": 100},
         "ediff": 1e-4,
         "ediffg": -0.05,
         "encut": None,
@@ -226,7 +226,7 @@ def _loose_relax_cell(
     calc_swaps = calc_swaps or {}
 
     defaults = {
-        "auto_kpts": {"grid_density": 100},
+        "auto_kpts": {"kppa": 100},
         "ediffg": -0.03,
         "ibrion": 2,
         "isif": 3,

@@ -4,23 +4,24 @@ import functools
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Any, TypeVar
+    from typing import Any, Callable, TypeVar
 
     Job = TypeVar("Job")
     Flow = TypeVar("Flow")
     Subflow = TypeVar("Subflow")
 
 
-def job(_func: callable | None = None, **kwargs) -> Job:  # sourcery skip
+def job(_func: Callable | None = None, **kwargs) -> Job:  # sourcery skip
     """
     Decorator for individual compute jobs. This is a @job decorator.
 
-    job = ct.electron [Covalent] = python_app [Parsl] = job [Jobflow].
+    job = ct.electron [Covalent] = python_app [Parsl] = job [Jobflow]
+    = task [redun].
 
-    The wrapped function gets a new kwarg, `decorator_kwargs`, that can
-    be used to modify the workflow engine decorator keyword arguments.
-    The wrapped function can also be accessed without the decorator
-    by calling the `.__wrapped__` attribute.
+    The wrapped function gets a new kwarg, `decorator_kwargs`, that can be used
+    to modify the workflow engine decorator keyword arguments. The wrapped
+    function can also be accessed without the decorator by calling the
+    `.__wrapped__` attribute.
 
     Parameters
     ----------
@@ -57,7 +58,7 @@ def job(_func: callable | None = None, **kwargs) -> Job:  # sourcery skip
 
         from quacc import SETTINGS
 
-        if not decorator_kwargs:
+        if decorator_kwargs is None:
             decorator_kwargs = kwargs
 
         wflow_engine = SETTINGS.WORKFLOW_ENGINE
@@ -73,6 +74,10 @@ def job(_func: callable | None = None, **kwargs) -> Job:  # sourcery skip
             from parsl import python_app
 
             decorated = python_app(_func, **decorator_kwargs)
+        elif wflow_engine == "redun":
+            from redun import task
+
+            decorated = task(_func, **decorator_kwargs)
         else:
             decorated = _func
 
@@ -88,17 +93,18 @@ def job(_func: callable | None = None, **kwargs) -> Job:  # sourcery skip
     return _inner
 
 
-def flow(_func: callable | None = None, **kwargs) -> Flow:  # sourcery skip
+def flow(_func: Callable | None = None, **kwargs) -> Flow:  # sourcery skip
     """
-    Decorator for workflows, which consist of at least one compute job. This is a @flow decorator.
+    Decorator for workflows, which consist of at least one compute job. This is
+    a @flow decorator.
 
-    flow = ct.lattice/ct.dispatch(ct.lattice) [Covalent]. For Parsl and Jobflow, the decorator returns the
-    original function, unchanged.
+    flow = ct.lattice/ct.dispatch(ct.lattice) [Covalent] = task [redun].
+    For Parsl and Jobflow, the decorator returns the original function, unchanged.
 
-    The wrapped function gets a new kwarg, `decorator_kwargs`, that can
-    be used to modify the workflow engine decorator keyword arguments.
-    The wrapped function can also be accessed without the decorator
-    by calling the `.__wrapped__` attribute.
+    The wrapped function gets a new kwarg, `decorator_kwargs`, that can be used
+    to modify the workflow engine decorator keyword arguments. The wrapped
+    function can also be accessed without the decorator by calling the
+    `.__wrapped__` attribute.
 
     Parameters
     ----------
@@ -141,7 +147,7 @@ def flow(_func: callable | None = None, **kwargs) -> Flow:  # sourcery skip
         """
         from quacc import SETTINGS
 
-        if not decorator_kwargs:
+        if decorator_kwargs is None:
             decorator_kwargs = kwargs
 
         wflow_engine = SETTINGS.WORKFLOW_ENGINE
@@ -161,6 +167,10 @@ def flow(_func: callable | None = None, **kwargs) -> Flow:  # sourcery skip
                 return ct.lattice(_func, **dispatch_kwargs, **decorator_kwargs)(
                     *f_args, **f_kwargs
                 )
+        elif wflow_engine == "redun":
+            from redun import task
+
+            decorated = task(_func, **decorator_kwargs)
         else:
             decorated = _func
 
@@ -176,17 +186,17 @@ def flow(_func: callable | None = None, **kwargs) -> Flow:  # sourcery skip
     return _inner
 
 
-def subflow(_func: callable | None = None, **kwargs) -> Subflow:  # sourcery skip
+def subflow(_func: Callable | None = None, **kwargs) -> Subflow:  # sourcery skip
     """
     Decorator for (dynamic) sub-workflows. This is a @subflow decorator.
 
-    subflow = ct.electron(ct.lattice) [Covalent] = join_app [Parsl].
-    For Jobflow, the decorator returns the original (unwrapped) function.
+    subflow = ct.electron(ct.lattice) [Covalent] = join_app [Parsl] = task [Redun].
+    For Jobflow, the decorator returns the original function.
 
-    The wrapped function gets a new kwarg, `decorator_kwargs`, that can
-    be used to modify the workflow engine decorator keyword arguments.
-    The wrapped function can also be accessed without the decorator
-    by calling the `.__wrapped__` attribute.
+    The wrapped function gets a new kwarg, `decorator_kwargs`, that can be used
+    to modify the workflow engine decorator keyword arguments. The wrapped
+    function can also be accessed without the decorator by calling the
+    `.__wrapped__` attribute.
 
     Parameters
     ----------
@@ -222,7 +232,7 @@ def subflow(_func: callable | None = None, **kwargs) -> Subflow:  # sourcery ski
         """
         from quacc import SETTINGS
 
-        if not decorator_kwargs:
+        if decorator_kwargs is None:
             decorator_kwargs = kwargs
 
         wflow_engine = SETTINGS.WORKFLOW_ENGINE
@@ -234,6 +244,10 @@ def subflow(_func: callable | None = None, **kwargs) -> Subflow:  # sourcery ski
             from parsl import join_app
 
             decorated = join_app(_func, **decorator_kwargs)
+        elif wflow_engine == "redun":
+            from redun import task
+
+            decorated = task(_func, **decorator_kwargs)
         else:
             decorated = _func
 

@@ -16,6 +16,8 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
     [Covalent](https://github.com/AgnostiqHQ/covalent/) is a workflow management solution from the company [Agnostiq](https://agnostiq.ai/).
 
+    Summary: Use Covalent if you are looking for a nice UI and don't mind relying on a long-running server for production calculations.
+
     Pros:
 
     - Extremely simple to setup and use, even for complex workflows
@@ -36,6 +38,8 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
     [Parsl](https://github.com/Parsl/parsl) is a workflow management solution out of Argonne National Laboratory, the University of Chicago, and the University of Illinois. It is well-adapted for running on virtually any HPC environment with a job scheduler.
 
+    Summary: Use Parsl if you are looking for the most robust solution for HPC machines and don't mind the lack of a UI.
+
     Pros:
 
     - Extremely configurable for virtually any HPC environment
@@ -49,12 +53,32 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
     - Defining the right configuration options for your desired HPC setup can be an initial hurdle
     - Monitoring job progress is more challenging and less detailed than other solutions
-    - Challenging to orchestrate workflows with steps running across heterogeneous resources
     - The concept of always returning a "future" object can be confusing for new users
+
+=== "Redun"
+
+    [Redun](https://insitro.github.io/redun/) is a flexible workflow management program developed by [Insitro](https://insitro.com/).
+
+    Summary: Use Redun if you are specifically interested in running on AWS or K8s and like a terminal-based monitoring approach.
+
+    Pros:
+
+    - Extremely simple syntax for defining workflows.
+    - Has strong support for task/result caching.
+    - Supports a variety of compute backends.
+    - Useful console-based monitoring system.
+
+    Cons:
+
+    - Currently lacks support for typical HPC job schedulers.
+    - No user-friendly UI for job monitoring.
+    - Less active user community than some other options.
 
 === "Jobflow"
 
     [Jobflow](https://github.com/materialsproject/jobflow) is developed and maintained by the Materials Project team at Lawrence Berkeley National Laboratory and serves as a seamless interface to [FireWorks](https://github.com/materialsproject/fireworks) for dispatching and monitoring compute jobs.
+
+    Summary: Use Jobflow if you want to use compatible software with that used by the Materials Project stack.
 
     **Jobflow**
 
@@ -68,7 +92,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     Cons:
 
     - Parsing the output of a workflow is not as intuitive as other solutions
-    - Defining dynamic workflows with Jobflow's `Response` object can be slightly more complex than other solutions
+    - Defining dynamic workflows with Jobflow's `Response` object can be more complex than other solutions
     - Only supports FireWorks for job dispatching at the moment
 
     **FireWorks**:

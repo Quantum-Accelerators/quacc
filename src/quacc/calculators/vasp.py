@@ -1,5 +1,6 @@
 """
-A wrapper around ASE's Vasp calculator that makes it better suited for high-throughput DFT.
+A wrapper around ASE's Vasp calculator that makes it better suited for
+high-throughput DFT.
 """
 from __future__ import annotations
 
@@ -30,41 +31,71 @@ if TYPE_CHECKING:
 
 class Vasp(Vasp_):
     """
-    This is a wrapper around the ASE Vasp calculator that adjusts INCAR parameters on-the-fly,
-    allows for ASE to run VASP via Custodian, and supports several automatic k-point generation schemes
-    from Pymatgen.
+    This is a wrapper around the ASE Vasp calculator that adjusts INCAR
+    parameters on-the-fly, allows for ASE to run VASP via Custodian, and
+    supports several automatic k-point generation schemes from Pymatgen.
 
     Parameters
     ----------
     input_atoms
         The input Atoms object to be used for the calculation.
     preset
-        The name of a YAML file containing a list of INCAR parameters to use as a "preset" for the calculator.
-        quacc will automatically look in the `VASP_PRESET_DIR` (default: quacc/presets/vasp) for the file, such
-        that preset="BulkSet" is supported, for instance. The .yaml extension is not necessary. Any user-suppplied
-        calculator **kwargs will override any corresponding preset values.
+        The name of a YAML file containing a list of INCAR parameters to use as
+        a "preset" for the calculator. quacc will automatically look in the
+        `VASP_PRESET_DIR` (default: quacc/presets/vasp) for the file, such that
+        preset="BulkSet" is supported, for instance. The .yaml extension is not
+        necessary. Any user-supplied calculator **kwargs will override any
+        corresponding preset values.
     use_custodian
-        Whether to use Custodian to run VASP.
-        Default is True in settings.
+        Whether to use Custodian to run VASP. Default is True in settings.
     incar_copilot
-        If True, the INCAR parameters will be adjusted if they go against the VASP manual.
-        Default is True in settings.
+        If True, the INCAR parameters will be adjusted if they go against the
+        VASP manual. Default is True in settings.
     copy_magmoms
-        If True, any pre-existing `atoms.get_magnetic_moments()` will be set in `atoms.set_initial_magnetic_moments()`.
-        Set this to False if you want to use a preset's magnetic moments every time.
+        If True, any pre-existing `atoms.get_magnetic_moments()` will be set in
+        `atoms.set_initial_magnetic_moments()`. Set this to False if you want to
+        use a preset's magnetic moments every time.
     preset_mag_default
-        Default magmom value for sites without one explicitly specified in the preset. Only used if a preset is
-        specified with an elemental_mags_dict key-value pair.
-        Default is 1.0 in settings.
+        Default magmom value for sites without one explicitly specified in the
+        preset. Only used if a preset is specified with an elemental_mags_dict
+        key-value pair. Default is 1.0 in settings.
     mag_cutoff
         Set all initial magmoms to 0 if all have a magnitude below this value.
         Default is 0.05 in settings.
+    elemental_magmoms
+        A dictionary of elemental initial magnetic moments to pass to
+        `quacc.utils.atoms.set_magmoms`, e.g. `{"Fe": 5, "Ni": 4}`.
+    auto_kpts
+        An automatic k-point generation scheme from Pymatgen. Options include:
+
+        - {"line_density": float}. This will call
+          `pymatgen.symmetry.bandstructure.HighSymmKpath`
+            with `path_type="latimer_munro"`. The `line_density` value will be
+            set in the `.get_kpoints` attribute.
+
+        - {"kppvol": float}. This will call
+          `pymatgen.io.vasp.inputs.Kpoints.automatic_density_by_vol`
+            with the given value for `kppvol`.
+
+        - {"kppa": float}. This will call
+          `pymatgen.io.vasp.inputs.Kpoints.automatic_density`
+            with the given value for `kppa`.
+
+        - {"length_densities": [float, float, float]}. This will call
+          `pymatgen.io.vasp.inputs.Kpoints.automatic_density_by_lengths`
+            with the given value for `length_densities`.
+
+        If multiple options are specified, the most dense k-point scheme will be
+        chosen.
+    auto_dipole
+        If True, will automatically set dipole moment correction parameters
+        based on the center of mass (in the c dimension by default).
     verbose
-        If True, warnings will be raised when INCAR parameters are automatically changed.
-        Default is True in settings.
+        If True, warnings will be raised when INCAR parameters are automatically
+        changed. Default is True in settings.
     **kwargs
-        Additional arguments to be passed to the VASP calculator, e.g. `xc='PBE'`, `encut=520`. Takes all valid
-        ASE calculator arguments, in addition to those custom to quacc.
+        Additional arguments to be passed to the VASP calculator, e.g.
+        `xc='PBE'`, `encut=520`. Takes all valid ASE calculator arguments.
 
     Returns
     -------
@@ -81,6 +112,10 @@ class Vasp(Vasp_):
         copy_magmoms: bool | None = None,
         preset_mag_default: float | None = None,
         mag_cutoff: None | float = None,
+        elemental_magmoms: dict | None = None,
+        auto_kpts: dict[Literal["line_density", "kppvol", "kppa"], float]
+        | dict[Literal["length_densities"], list[float]] = None,
+        auto_dipole: bool | None = None,
         verbose: bool | None = None,
         **kwargs,
     ):
@@ -110,6 +145,9 @@ class Vasp(Vasp_):
         self.copy_magmoms = copy_magmoms
         self.preset_mag_default = preset_mag_default
         self.mag_cutoff = mag_cutoff
+        self.elemental_magmoms = elemental_magmoms
+        self.auto_kpts = auto_kpts
+        self.auto_dipole = auto_dipole
         self.verbose = verbose
         self.kwargs = kwargs
 
@@ -122,8 +160,8 @@ class Vasp(Vasp_):
             msg = "Atoms object has a constraint that is not compatible with Custodian. Set use_custodian = False."
             raise ValueError(msg)
 
-        # Get VASP executable command, if necessary, and specify child environment
-        # variables
+        # Get VASP executable command, if necessary, and specify child
+        # environment variables
         command = self._manage_environment()
 
         # Get user-defined preset parameters for the calculator
@@ -134,15 +172,15 @@ class Vasp(Vasp_):
         else:
             calc_preset = {}
 
-        # Collect all the calculator parameters and prioritize the kwargs
-        # in the case of duplicates.
+        # Collect all the calculator parameters and prioritize the kwargs in the
+        # case of duplicates.
         self.user_calc_params = calc_preset | kwargs
         none_keys = [k for k, v in self.user_calc_params.items() if v is None]
         for none_key in none_keys:
             del self.user_calc_params[none_key]
 
-        # Allow the user to use setups='mysetups.yaml' to load in a custom setups
-        # from a YAML file
+        # Allow the user to use setups='mysetups.yaml' to load in a custom
+        # setups from a YAML file
         if (
             isinstance(self.user_calc_params.get("setups"), str)
             and self.user_calc_params["setups"] not in ase_setups.setups_defaults
@@ -151,52 +189,32 @@ class Vasp(Vasp_):
                 os.path.join(SETTINGS.VASP_PRESET_DIR, self.user_calc_params["setups"])
             )["inputs"]["setups"]
 
-        # If the preset has auto_kpts but the user explicitly requests kpts, then
-        # we should honor that.
-        if kwargs.get("kpts") and calc_preset.get("auto_kpts"):
-            del self.user_calc_params["auto_kpts"]
-
-        # Handle special arguments in the user calc parameters that
-        # ASE does not natively support
-        if self.user_calc_params.get("elemental_magmoms"):
-            elemental_mags_dict = self.user_calc_params["elemental_magmoms"]
-        else:
-            elemental_mags_dict = None
-        if self.user_calc_params.get("auto_kpts"):
-            auto_kpts = self.user_calc_params["auto_kpts"]
-        else:
-            auto_kpts = None
-        if self.user_calc_params.get("auto_dipole"):
-            auto_dipole = self.user_calc_params["auto_dipole"]
-        else:
-            auto_dipole = None
-        self.user_calc_params.pop("elemental_magmoms", None)
-        self.user_calc_params.pop("auto_kpts", None)
-        self.user_calc_params.pop("auto_dipole", None)
+        # Handle special arguments in the user calc parameters that ASE does not
+        # natively support
+        if (
+            self.user_calc_params.get("elemental_magmoms")
+            and self.elemental_magmoms is None
+        ):
+            self.elemental_magmoms = self.user_calc_params["elemental_magmoms"]
+        if self.user_calc_params.get("auto_kpts") and self.auto_kpts is None:
+            self.auto_kpts = self.user_calc_params["auto_kpts"]
+        if self.user_calc_params.get("auto_dipole") and self.auto_dipole is None:
+            self.auto_dipole = self.user_calc_params["auto_dipole"]
+        for k in {"elemental_magmoms", "auto_kpts", "auto_dipole"}:
+            self.user_calc_params.pop(k, None)
 
         # Make automatic k-point mesh
-        if auto_kpts:
-            kpts, gamma, reciprocal = self._convert_auto_kpts(auto_kpts)
-            self.user_calc_params["kpts"] = kpts
-            if reciprocal and self.user_calc_params.get("reciprocal") is None:
-                self.user_calc_params["reciprocal"] = reciprocal
-            if self.user_calc_params.get("gamma") is None:
-                self.user_calc_params["gamma"] = gamma
+        if self.auto_kpts and not self.user_calc_params.get("kpts"):
+            self._convert_auto_kpts()
 
         # Add dipole corrections if requested
-        if auto_dipole:
-            com = input_atoms.get_center_of_mass(scaled=True)
-            if "dipol" not in self.user_calc_params:
-                self.user_calc_params["dipol"] = com
-            if "idipol" not in self.user_calc_params:
-                self.user_calc_params["idipol"] = 3
-            if "ldipol" not in self.user_calc_params:
-                self.user_calc_params["ldipol"] = True
+        if self.auto_dipole:
+            self._set_auto_dipole()
 
         # Set magnetic moments
         set_magmoms(
             input_atoms,
-            elemental_mags_dict=elemental_mags_dict,
+            elemental_mags_dict=self.elemental_magmoms,
             copy_magmoms=copy_magmoms,
             elemental_mags_default=preset_mag_default,
             mag_cutoff=mag_cutoff,
@@ -204,10 +222,10 @@ class Vasp(Vasp_):
 
         # Handle INCAR swaps as needed
         if incar_copilot:
-            self.user_calc_params = self._calc_swaps(auto_kpts=auto_kpts)
+            self._calc_swaps()
 
         # Remove unused INCAR flags
-        self.user_calc_params = self._remove_unused_flags()
+        self._remove_unused_flags()
 
         # Instantiate the calculator!
         super().__init__(atoms=input_atoms, command=command, **self.user_calc_params)
@@ -229,12 +247,11 @@ class Vasp(Vasp_):
                 UserWarning,
             )
 
-        # Check if Custodian should be used and confirm environment variables are set
+        # Check if Custodian should be used and confirm environment variables
+        # are set
         if self.use_custodian:
             # Return the command flag
-            run_vasp_custodian_file = Path.resolve(
-                Path(inspect.getfile(custodian_vasp))
-            )
+            run_vasp_custodian_file = Path(inspect.getfile(custodian_vasp)).resolve()
             return f"python {run_vasp_custodian_file}"
 
         if "ASE_VASP_COMMAND" not in os.environ and "VASP_SCRIPT" not in os.environ:
@@ -244,14 +261,13 @@ class Vasp(Vasp_):
             )
         return None
 
-    def _remove_unused_flags(self) -> dict:
+    def _remove_unused_flags(self) -> None:
         """
         Removes unused flags in the INCAR, like EDIFFG if you are doing NSW = 0.
 
         Returns
         -------
-        Dict
-            Adjusted user-specified calculation parameters
+        None
         """
 
         if self.user_calc_params.get("nsw", 0) == 0:
@@ -276,27 +292,38 @@ class Vasp(Vasp_):
             for ldau_flag in ldau_flags:
                 self.user_calc_params.pop(ldau_flag, None)
 
-        return self.user_calc_params
+    def _set_auto_dipole(self) -> None:
+        """
+        Sets flags related to the auto_dipole kwarg.
 
-    def _calc_swaps(
-        self,
-        auto_kpts: None
-        | dict[Literal["line_density", "reciprocal_density", "grid_density"], float]
-        | dict[Literal["max_mixed_density"], list[float, float]]
-        | dict[Literal["length_density"], list[float, float, float]],
-    ) -> dict:
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
+        com = self.input_atoms.get_center_of_mass(scaled=True)
+        if "dipol" not in self.user_calc_params:
+            self.user_calc_params["dipol"] = com
+        if "idipol" not in self.user_calc_params:
+            self.user_calc_params["idipol"] = 3
+        if "ldipol" not in self.user_calc_params:
+            self.user_calc_params["ldipol"] = True
+
+    def _calc_swaps(self) -> None:
         """
         Swaps out bad INCAR flags.
 
         Parameters
         ----------
-        auto_kpts
-            The automatic k-point scheme dictionary
+        None
 
         Returns
         -------
-        dict
-            Dictionary of new user-specified calculation parameters
+        None
         """
         is_metal = check_is_metal(self.input_atoms)
         calc = Vasp_(**self.user_calc_params)
@@ -350,20 +377,12 @@ class Vasp(Vasp_):
             not calc.string_params["algo"]
             or calc.string_params["algo"].lower() not in ["all", "damped"]
         ):
-            if is_metal:
-                calc.set(algo="damped", time=0.5)
-                if self.verbose:
-                    warnings.warn(
-                        "Copilot: Setting ALGO = Damped, TIME = 0.5 because you have a hybrid calculation with a metal.",
-                        UserWarning,
-                    )
-            else:
-                calc.set(algo="all")
-                if self.verbose:
-                    warnings.warn(
-                        "Copilot: Setting ALGO = All because you have a hybrid calculation.",
-                        UserWarning,
-                    )
+            if self.verbose:
+                warnings.warn(
+                    "Copilot: Setting ALGO = All because you have a hybrid calculation.",
+                    UserWarning,
+                )
+            calc.set(algo="all")
 
         if (
             is_metal
@@ -378,13 +397,19 @@ class Vasp(Vasp_):
             calc.set(ismear=1, sigma=0.1)
 
         if (
-            calc.int_params["nedos"]
-            and calc.int_params["ismear"] != -5
+            calc.int_params["ismear"] != -5
             and calc.int_params["nsw"] in (None, 0)
+            and (
+                np.prod(calc.kpts) >= 4
+                or (
+                    calc.float_params["kspacing"]
+                    and calc.float_params["kspacing"] <= 0.5
+                )
+            )
         ):
             if self.verbose:
                 warnings.warn(
-                    "Copilot: Setting ISMEAR = -5 because you have a static DOS calculation.",
+                    "Copilot: Setting ISMEAR = -5 because you have a static calculation.",
                     UserWarning,
                 )
             calc.set(ismear=-5)
@@ -402,28 +427,6 @@ class Vasp(Vasp_):
             calc.set(ismear=0)
 
         if (
-            auto_kpts
-            and auto_kpts.get("line_density", None)
-            and calc.int_params["ismear"] != 0
-        ):
-            if self.verbose:
-                warnings.warn(
-                    "Copilot: Setting ISMEAR = 0 and SIGMA = 0.01 because you are doing a line mode calculation.",
-                    UserWarning,
-                )
-            calc.set(ismear=0, sigma=0.01)
-
-        if calc.int_params["ismear"] == -5 and (
-            not calc.float_params["sigma"] or calc.float_params["sigma"] > 0.05
-        ):
-            if self.verbose:
-                warnings.warn(
-                    "Copilot: Setting SIGMA = 0.05 because ISMEAR = -5 was requested with SIGMA > 0.05.",
-                    UserWarning,
-                )
-            calc.set(sigma=0.05)
-
-        if (
             calc.float_params["kspacing"]
             and calc.float_params["kspacing"] > 0.5
             and calc.int_params["ismear"] == -5
@@ -434,6 +437,28 @@ class Vasp(Vasp_):
                     UserWarning,
                 )
             calc.set(ismear=0)
+
+        if (
+            self.auto_kpts
+            and self.auto_kpts.get("line_density", None)
+            and calc.int_params["ismear"] != 0
+        ):
+            if self.verbose:
+                warnings.warn(
+                    "Copilot: Setting ISMEAR = 0 and SIGMA = 0.01 because you are doing a line mode calculation.",
+                    UserWarning,
+                )
+            calc.set(ismear=0, sigma=0.01)
+
+        if calc.int_params["ismear"] == 0 and (
+            not calc.float_params["sigma"] or calc.float_params["sigma"] > 0.05
+        ):
+            if self.verbose:
+                warnings.warn(
+                    "Copilot: Setting SIGMA = 0.05 because ISMEAR = 0 was requested with SIGMA > 0.05.",
+                    UserWarning,
+                )
+            calc.set(sigma=0.05)
 
         if (
             calc.int_params["nsw"]
@@ -456,10 +481,10 @@ class Vasp(Vasp_):
                 )
             calc.set(ldauprint=1)
 
-        if calc.special_params["lreal"] and calc.int_params["nsw"] in (None, 0, 1):
+        if calc.special_params["lreal"] and len(self.input_atoms) < 30:
             if self.verbose:
                 warnings.warn(
-                    "Copilot: Setting LREAL = False because you are running a static calculation. LREAL != False can be bad for energies.",
+                    "Copilot: Setting LREAL = False because you have a small system (< 30 atoms/cell).",
                     UserWarning,
                 )
             calc.set(lreal=False)
@@ -489,8 +514,7 @@ class Vasp(Vasp_):
                     "Copilot: Setting NCORE = 1 because NCORE/NPAR is not compatible with this job type.",
                     UserWarning,
                 )
-            calc.set(ncore=1)
-            calc.set(npar=None)
+            calc.set(ncore=1, npar=None)
 
         if (
             (calc.int_params["ncore"] and calc.int_params["ncore"] > 1)
@@ -501,8 +525,7 @@ class Vasp(Vasp_):
                     "Copilot: Setting NCORE = 1 because you have a very small structure.",
                     UserWarning,
                 )
-            calc.set(ncore=1)
-            calc.set(npar=None)
+            calc.set(ncore=1, npar=None)
 
         if (
             calc.int_params["kpar"]
@@ -515,19 +538,6 @@ class Vasp(Vasp_):
                     UserWarning,
                 )
             calc.set(kpar=1)
-
-        if (
-            calc.int_params["nsw"]
-            and calc.int_params["nsw"] > 0
-            and calc.int_params["isym"]
-            and calc.int_params["isym"] > 0
-        ):
-            if self.verbose:
-                warnings.warn(
-                    "Copilot: Setting ISYM = 0 because you are running a relaxation.",
-                    UserWarning,
-                )
-            calc.set(isym=0)
 
         if calc.bool_params["lhfcalc"] is True and calc.int_params["isym"] in (1, 2):
             if self.verbose:
@@ -554,8 +564,7 @@ class Vasp(Vasp_):
                     "Copilot: Setting NPAR = 1 because NCORE/NPAR is not compatible with this job type.",
                     UserWarning,
                 )
-            calc.set(npar=1)
-            calc.set(ncore=None)
+            calc.set(npar=1, ncore=None)
 
         if not calc.string_params["efermi"]:
             if self.verbose:
@@ -570,42 +579,33 @@ class Vasp(Vasp_):
                 UserWarning,
             )
 
-        return calc.parameters
+        self.user_calc_params = calc.parameters
 
     def _convert_auto_kpts(
         self,
-        auto_kpts: None
-        | dict[Literal["line_density", "reciprocal_density", "grid_density"], float]
-        | dict[Literal["max_mixed_density"], list[float, float]]
-        | dict[Literal["length_density"], list[float, float, float]],
-        force_gamma: bool = True,
-    ) -> tuple[list[int, int, int], None | bool, None | bool]:
+    ) -> None:
         """
         Shortcuts for pymatgen k-point generation schemes.
 
         Parameters
         ----------
-        auto_kpts
-            Dictionary describing the automatic k-point scheme
-        force_gamma
-            Whether a gamma-centered mesh should be returned
+        None
 
         Returns
         -------
-        List[int, int, int]
-            List of k-points for use with the ASE Vasp calculator
-        Optional[bool]
-            The gamma command for use with the ASE Vasp calculator
-        Optional[bool]
-            The reciprocal command for use with the ASE Vasp calculator
+        None
         """
         struct = AseAtomsAdaptor.get_structure(self.input_atoms)
 
-        if auto_kpts.get("line_density", None):
+        if self.auto_kpts.get("line_density", None):
             # TODO: Support methods other than latimer-munro
-            kpath = HighSymmKpath(struct, path_type="latimer_munro")
+            kpath = HighSymmKpath(
+                struct,
+                path_type="latimer_munro",
+                has_magmoms=np.any(struct.site_properties.get("magmom", None)),
+            )
             kpts, _ = kpath.get_kpoints(
-                line_density=auto_kpts["line_density"], coords_are_cartesian=True
+                line_density=self.auto_kpts["line_density"], coords_are_cartesian=True
             )
             kpts = np.stack(kpts)
             reciprocal = True
@@ -613,82 +613,74 @@ class Vasp(Vasp_):
 
         else:
             reciprocal = None
-            if auto_kpts.get("max_mixed_density", None):
-                if len(auto_kpts["max_mixed_density"]) != 2:
-                    msg = "Must specify two values for max_mixed_density."
-                    raise ValueError(msg)
-
-                if (
-                    auto_kpts["max_mixed_density"][0]
-                    > auto_kpts["max_mixed_density"][1]
-                ):
-                    warnings.warn(
-                        "Warning: It is not usual that kppvol > kppa. Please make sure you have chosen the right k-point densities.",
-                        UserWarning,
+            force_gamma = self.user_calc_params.get("gamma", False)
+            max_pmg_kpts = None
+            for k, v in self.auto_kpts.items():
+                if k == "kppvol":
+                    pmg_kpts = Kpoints.automatic_density_by_vol(
+                        struct,
+                        v,
+                        force_gamma=force_gamma,
                     )
-                pmg_kpts1 = Kpoints.automatic_density_by_vol(
-                    struct, auto_kpts["max_mixed_density"][0], force_gamma=force_gamma
-                )
-                pmg_kpts2 = Kpoints.automatic_density(
-                    struct, auto_kpts["max_mixed_density"][1], force_gamma=force_gamma
-                )
-                if np.prod(pmg_kpts1.kpts[0]) >= np.prod(pmg_kpts2.kpts[0]):
-                    pmg_kpts = pmg_kpts1
+                elif k == "kppa":
+                    pmg_kpts = Kpoints.automatic_density(
+                        struct,
+                        v,
+                        force_gamma=force_gamma,
+                    )
+                elif k == "length_densities":
+                    pmg_kpts = Kpoints.automatic_density_by_lengths(
+                        struct,
+                        v,
+                        force_gamma=force_gamma,
+                    )
                 else:
-                    pmg_kpts = pmg_kpts2
-            elif auto_kpts.get("reciprocal_density", None):
-                pmg_kpts = Kpoints.automatic_density_by_vol(
-                    struct, auto_kpts["reciprocal_density"], force_gamma=force_gamma
-                )
-            elif auto_kpts.get("grid_density", None):
-                pmg_kpts = Kpoints.automatic_density(
-                    struct, auto_kpts["grid_density"], force_gamma=force_gamma
-                )
-            elif auto_kpts.get("length_density", None):
-                if len(auto_kpts["length_density"]) != 3:
-                    msg = "Must specify three values for length_density."
+                    msg = f"Unsupported k-point generation scheme: {self.auto_kpts}."
                     raise ValueError(msg)
-                pmg_kpts = Kpoints.automatic_density_by_lengths(
-                    struct, auto_kpts["length_density"], force_gamma=force_gamma
+
+                max_pmg_kpts = (
+                    pmg_kpts
+                    if (
+                        not max_pmg_kpts
+                        or np.prod(pmg_kpts.kpts[0]) >= np.prod(max_pmg_kpts.kpts[0])
+                    )
+                    else max_pmg_kpts
                 )
-            else:
-                msg = f"Unsupported k-point generation scheme: {auto_kpts}."
-                raise ValueError(msg)
 
-            kpts = pmg_kpts.kpts[0]
-            gamma = pmg_kpts.style.name.lower() == "gamma"
+            kpts = max_pmg_kpts.kpts[0]
+            gamma = max_pmg_kpts.style.name.lower() == "gamma"
 
-        return kpts, gamma, reciprocal
+        self.user_calc_params["kpts"] = kpts
+        if reciprocal and self.user_calc_params.get("reciprocal") is None:
+            self.user_calc_params["reciprocal"] = reciprocal
+        if self.user_calc_params.get("gamma") is None:
+            self.user_calc_params["gamma"] = gamma
 
 
 def load_vasp_yaml_calc(yaml_path: str | Path) -> dict:
     """
-    Loads a YAML file containing calculator settings.
-    Used for VASP calculations and can read quacc-formatted
-    YAMLs that are of the following format:
-    ```
+    Loads a YAML file containing calculator settings. Used for VASP calculations
+    and can read quacc-formatted YAMLs that are of the following format:
+    ```yaml
     inputs:
       xc: pbe
       algo: all
-      ...
       setups:
         Cu: Cu_pv
-      ...
       elemental_magmoms:
         Fe: 5
         Cu: 1
-        ...
     ```
-    where `inputs` is a dictionary of ASE-style input parameters,
-    `setups` is a dictionary of ASE-style pseudopotentials, and
-    and `elemental_magmoms` is a dictionary of element-wise initial magmoms.
+    where `inputs` is a dictionary of ASE-style input parameters, `setups` is a
+    dictionary of ASE-style pseudopotentials, and and `elemental_magmoms` is a
+    dictionary of element-wise initial magmoms.
 
     Parameters
     ----------
     yaml_path
-        Path to the YAML file. This function will look in the
-        `VASP_PRESET_DIR` (default: quacc/presets/vasp) for the file,
-        thereby assuming that `yaml_path` is a relative path within that folder.
+        Path to the YAML file. This function will look in the `VASP_PRESET_DIR`
+        (default: quacc/presets/vasp) for the file, thereby assuming that
+        `yaml_path` is a relative path within that folder.
     Returns
     -------
 

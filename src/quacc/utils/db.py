@@ -23,9 +23,11 @@ def covalent_to_db(
     store
         The Maggma Store object to store the results in
     dispatch_ids
-        Dispatch ID to store. If None, all dispatch IDs in the results_dir will be stored
+        Dispatch ID to store. If None, all dispatch IDs in the results_dir will
+        be stored
     results_dir
-        The Covalent results_dir to pull if dispatch_ID is None. If None, the results_dir from ct.get_config() will be used
+        The Covalent results_dir to pull if dispatch_ID is None. If None, the
+        results_dir from ct.get_config() will be used
 
     Returns
     -------
@@ -66,8 +68,8 @@ def covalent_to_db(
 
 def results_to_db(store: Store | str, results: dict | list[dict]) -> None:
     """
-    Store the results of a quacc recipe in a user-specified Maggma Store.
-    A UUID will be generated for each entry.
+    Store the results of a quacc recipe in a user-specified Maggma Store. A UUID
+    will be generated for each entry.
 
     Parameters
     ----------
@@ -75,7 +77,8 @@ def results_to_db(store: Store | str, results: dict | list[dict]) -> None:
         The Maggma Store object to store the results in or a str representation
         of a Maggma Store (taken from `.to_json()`)
     results
-        The output summary dictionary or list of dictionaries from a quacc recipe
+        The output summary dictionary or list of dictionaries from a quacc
+        recipe
 
     Returns
     -------

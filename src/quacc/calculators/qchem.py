@@ -26,15 +26,16 @@ class QChem(FileIOCalculator):
     cores
         Number of cores to use for the Q-Chem calculation.
     charge
-        The total charge of the molecular system.
-        Effectively defaults to zero.
+        The total charge of the molecular system. Effectively defaults to zero.
     spin_multiplicity
-        The spin multiplicity of the molecular system.
-        Effectively defaults to the lowest spin state given the molecular structure and charge.
+        The spin multiplicity of the molecular system. Effectively defaults to
+        the lowest spin state given the molecular structure and charge.
     qchem_input_params
-        Dictionary of Q-Chem input parameters to be passed to pymatgen.io.qchem.sets.ForceSet.
+        Dictionary of Q-Chem input parameters to be passed to
+        pymatgen.io.qchem.sets.ForceSet.
     **fileiocalculator_kwargs
-        Additional arguments to be passed to ase.calculators.calculator.FileIOCalculator.
+        Additional arguments to be passed to
+        ase.calculators.calculator.FileIOCalculator.
 
     Returns
     -------
@@ -85,17 +86,18 @@ class QChem(FileIOCalculator):
         ):
             self.qchem_input_params["overwrite_inputs"]["rem"]["method"] = method
 
-        # We will save the parameters that have been passed to the Q-Chem calculator via FileIOCalculator's
-        # self.default_parameters
+        # We will save the parameters that have been passed to the Q-Chem
+        # calculator via FileIOCalculator's self.default_parameters
         self.default_parameters = {
             "cores": self.cores,
             "charge": self.charge,
             "spin_multiplicity": self.spin_multiplicity,
         }
 
-        # We also want to save the contents of self.qchem_input_params. However, the overwrite_inputs
-        # key will have a corresponding value which is either an empty dictionary or a nested dict of
-        # dicts, requiring a bit of careful unwrapping.
+        # We also want to save the contents of self.qchem_input_params. However,
+        # the overwrite_inputs key will have a corresponding value which is
+        # either an empty dictionary or a nested dict of dicts, requiring a bit
+        # of careful unwrapping.
         for key in self.qchem_input_params:
             if key == "overwrite_inputs":
                 for subkey in self.qchem_input_params[key]:
@@ -139,7 +141,7 @@ class QChem(FileIOCalculator):
         """
 
         # Return the command flag
-        run_qchem_custodian_file = Path.resolve(Path(inspect.getfile(custodian_qchem)))
+        run_qchem_custodian_file = Path(inspect.getfile(custodian_qchem)).resolve()
         return f"python {run_qchem_custodian_file} {self.cores}"
 
     def write_input(self, atoms, properties=None, system_changes=None):
@@ -180,8 +182,8 @@ class QChem(FileIOCalculator):
             ]
             for ii in range(len(tmp_grad_data) // 3)
         ]
-        # Ensure that the scratch values match the correct values from the output file
-        # but with higher precision
+        # Ensure that the scratch values match the correct values from the
+        # output file but with higher precision
         if data["pcm_gradients"] is not None:
             gradient = data["pcm_gradients"][0]
         else:

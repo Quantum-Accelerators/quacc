@@ -46,16 +46,18 @@ def run_custodian(
     Parameters
     ----------
     vasp_parallel_cmd
-        VASP parallel command, e.g. "srun -N 2 --ntasks-per-node=24". Defaults to the $VASP_PARALLEL_CMD
-        environment variable in settings.
+        VASP parallel command, e.g. "srun -N 2 --ntasks-per-node=24". Defaults
+        to the $VASP_PARALLEL_CMD environment variable in settings.
     vasp_cmd
         VASP command. Defaults to "vasp_std" in settings.
     vasp_gamma_cmd
         VASP gamma command. Defaults to vasp_gam in settings.
     vasp_custodian_max_errors
-        Maximum number of errors to allow before stopping the run. Defaults to 5 in settings.
+        Maximum number of errors to allow before stopping the run. Defaults to 5
+        in settings.
     vasp_custodian_wall_time
-        Maximum wall time to allow before creating a STOPCAR. Defaults to infinity in settings.
+        Maximum wall time to allow before creating a STOPCAR. Defaults to
+        infinity in settings.
     vtst_fixes
         Whether to apply VTST input swaps. Defaults to False in settings.
     vasp_custodian_handlers

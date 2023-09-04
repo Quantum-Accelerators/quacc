@@ -25,19 +25,10 @@ if TYPE_CHECKING:
     )
     from pymatgen.core import Structure
 
-# NOTES:
-# - Anytime an Atoms object is converted to a pmg structure, make sure
-# to reattach any .info flags to the Atoms object, e.g. via `new_atoms.info = atoms.info.copy()``.
-# Note that atoms.info is mutable, so copy it!
-# - All major functions should take in Atoms by default and return Atoms
-# by default. Pymatgen structures can be returned with an optional kwarg.
-# - If you modify the properties of an input Atoms object in any way, make sure to do so
-# on a copy because Atoms objects are mutable.
-
 
 def make_defects_from_bulk(
     atoms: Atoms,
-    defectgen: (
+    defect_gen: (
         AntiSiteGenerator
         | ChargeInterstitialGenerator
         | InterstitialGenerator
@@ -45,13 +36,13 @@ def make_defects_from_bulk(
         | VacancyGenerator
         | VoronoiInterstitialGenerator
     ) = VacancyGenerator,
-    charge_state: int = 0,
+    defect_charge: int = 0,
     sc_mat: np.ndarray | None = None,
     min_atoms: int = 80,
     max_atoms: int = 240,
     min_length: float = 10.0,
     force_diagonal: bool = False,
-    **defectgen_kwargs,
+    **defect_gen_kwargs,
 ) -> list[Atoms]:
     """
     Function to make defects from a bulk atoms object.
@@ -60,7 +51,7 @@ def make_defects_from_bulk(
     ----------
     atoms
         bulk atoms
-    defectgen
+    defect_gen
         defect generator
     sc_mat
         supercell matrix
@@ -72,10 +63,11 @@ def make_defects_from_bulk(
         minimum length of supercell
     force_diagonal
         force supercell to be diagonal
-    charge_state
+    defect_charge
         charge state of defect
-    **defectgen_kwargs
-        keyword arguments to pass to the pymatgen.analysis.defects.generators get_defects() method
+    **defect_gen_kwargs
+        keyword arguments to pass to the pymatgen.analysis.defects.generators
+        get_defects() method
 
     Returns
     -------
@@ -85,13 +77,12 @@ def make_defects_from_bulk(
 
     # Use pymatgen-analysis-defects and ShakeNBreak to generate defects
     struct = AseAtomsAdaptor.get_structure(atoms)
-    atoms_info = atoms.info.copy()
 
     # Make all the defects
-    defects = defectgen().get_defects(struct, **defectgen_kwargs)
+    defects = defect_gen().get_defects(struct, **defect_gen_kwargs)
     final_defects = []
     for defect in defects:
-        defect.user_charges = [charge_state]
+        defect.user_charges = [defect_charge]
 
         # Generate the supercell for a defect
         defect_supercell = defect.get_supercell_structure(
@@ -105,7 +96,9 @@ def make_defects_from_bulk(
 
         # Generate DefectEntry object from Defect object
         defect_entry = _get_defect_entry_from_defect(
-            defect=defect, defect_supercell=defect_supercell, charge_state=charge_state
+            defect=defect,
+            defect_supercell=defect_supercell,
+            defect_charge=defect_charge,
         )
 
         # Instantiate class to apply rattle and bond distortion to all defects
@@ -114,17 +107,16 @@ def make_defects_from_bulk(
         # Apply rattle and bond distortion to all defects
         defect_dict, distortion_metadata = Dist.apply_distortions()
         defect_symbol = next(iter(distortion_metadata["defects"].keys()))
-        distortion_dict = defect_dict[defect_symbol]["charges"][charge_state][
+        distortion_dict = defect_dict[defect_symbol]["charges"][defect_charge][
             "structures"
         ]["distortions"]
 
         # Make atoms objects and store defect stats
         for distortions, defect_struct in distortion_dict.items():
             final_defect = AseAtomsAdaptor.get_atoms(defect_struct)
-            final_defect.info = atoms_info.copy()
             defect_stats = {
                 "defect_symbol": defect_symbol,
-                "charge_state": charge_state,
+                "defect_charge": defect_charge,
                 "distortions": distortions,
                 "bulk": atoms,
                 "defect": defect,
@@ -137,7 +129,7 @@ def make_defects_from_bulk(
 def _get_defect_entry_from_defect(
     defect: Defect,
     defect_supercell: Structure,
-    charge_state: int,
+    defect_charge: int,
 ) -> DefectEntry:
     """
     Function to generate DefectEntry object from Defect object
@@ -148,7 +140,7 @@ def _get_defect_entry_from_defect(
         defect object
     defect_supercell
         defect supercell
-    charge_state
+    defect_charge
         charge state of defect
 
     Returns
@@ -172,7 +164,7 @@ def _get_defect_entry_from_defect(
 
     return DefectEntry(
         defect=defect,
-        charge_state=charge_state,
+        charge_state=defect_charge,
         sc_entry=computed_structure_entry,
         sc_defect_frac_coords=sc_defect_frac_coords,
     )

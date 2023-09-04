@@ -1,19 +1,21 @@
-# Last modified: 08-01-2023
+# Last modified: 09-01-2023
 inputs:
   algo: fast
   auto_kpts:
-    max_mixed_density: [100, 1000]
+    kppa: 1000
+    kppvol: 100
   ediff: 1.0e-5
   efermi: midgap
   encut: 520
   ismear: 0
-  isym: 0
   ivdw: 12
   lasph: true
   lcharg: false
+  lmaxmix: 6
   lorbit: 11
   lwave: false
   nelm: 150
+  nelmin: 3
   prec: accurate
   sigma: 0.05
   xc: pbe

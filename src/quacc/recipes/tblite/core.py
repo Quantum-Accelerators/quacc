@@ -48,11 +48,13 @@ def static_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     method
         GFN1-xTB, GFN2-xTB, and IPEA1-xTB.
     calc_swaps
-        Dictionary of custom kwargs for the tblite calculator.
+        Dictionary of custom kwargs for the tblite calculator. Overrides the
+        following defaults: `{}`.
     copy_files
         Files to copy to the runtime directory.
 
@@ -89,15 +91,22 @@ def relax_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     method
         GFN0-xTB, GFN1-xTB, GFN2-xTB.
     relax_cell
         Whether to relax the cell.
     calc_swaps
-        Dictionary of custom kwargs for the tblite calculator.
+        Dictionary of custom kwargs for the tblite calculator. Overrides the
+        following defaults: `{}`
     opt_swaps
-        Dictionary of custom kwargs for run_ase_opt
+        Dictionary of custom kwargs for `run_ase_opt`. Overrides the following
+        defaults:
+
+        ```python
+        {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
+        ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -137,7 +146,8 @@ def freq_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     method
         GFN0-xTB, GFN1-xTB, GFN2-xTB, GFN-FF.
     energy
@@ -147,7 +157,8 @@ def freq_job(
     pressure
         Pressure in bar.
     calc_swaps
-        dictionary of custom kwargs for the xTB calculator.
+        dictionary of custom kwargs for the xTB calculator. Overrides the
+        following defaults: `{}`
     vib_kwargs
         dictionary of custom kwargs for the Vibrations object.
     copy_files
@@ -157,7 +168,8 @@ def freq_job(
     -------
     FreqSchema
         Dictionary of results from `quacc.schemas.ase.summarize_vib_run` patched
-        with the results of `quacc.schemas.ase.summarize_thermo` in the "thermo" key.
+        with the results of `quacc.schemas.ase.summarize_thermo` in the "thermo"
+        key.
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}

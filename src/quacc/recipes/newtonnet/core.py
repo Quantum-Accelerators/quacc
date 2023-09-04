@@ -53,9 +53,18 @@ def static_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     calc_swaps
-        Dictionary of custom kwargs for the newtonnet calculator
+        Dictionary of custom kwargs for the newtonnet calculator. Overrides the
+        following defaults:
+
+        ```python
+        {
+            "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+            "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        }
+        ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -97,11 +106,25 @@ def relax_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     calc_swaps
-        Dictionary of custom kwargs for the newtonnet calculator
+        Dictionary of custom kwargs for the newtonnet calculator. Overrides the
+        following defaults:
+
+        ```python
+        {
+            "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+            "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        }
+        ```
     opt_swaps
-        Optional swaps for the optimization parameters
+        Optional swaps for the optimization parameters. Overrides the following
+        defaults:
+
+        ```python
+        {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella or FIRE}
+        ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -154,7 +177,15 @@ def freq_job(
     pressure
         The pressure for the thermodynamic analysis.
     calc_swaps
-        Optional swaps for the calculator.
+        Optional swaps for the calculator. Overrides the following
+        defaults:
+
+        ```python
+        {
+            "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+            "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        }
+        ```
 
     Returns
     -------
@@ -190,14 +221,15 @@ def freq_job(
     return vib_summary
 
 
-def _add_stdev_and_hess(summary: dict[str, any]) -> dict[str, any]:
+def _add_stdev_and_hess(summary: dict) -> dict:
     """
     Calculate and add standard deviation values and Hessians to the summary.
 
-    This function takes a summary dictionary containing information about a molecular trajectory
-    and calculates the standard deviation of various properties using the NewtonNet machine learning
-    calculator. It adds the calculated standard deviation values and Hessians to each configuration
-    in the trajectory.
+    This function takes a summary dictionary containing information about a
+    molecular trajectory and calculates the standard deviation of various
+    properties using the NewtonNet machine learning calculator. It adds the
+    calculated standard deviation values and Hessians to each configuration in
+    the trajectory.
 
     Parameters
     ----------
@@ -206,8 +238,9 @@ def _add_stdev_and_hess(summary: dict[str, any]) -> dict[str, any]:
 
     Returns
     -------
-    Dict[str, Any]
-        The modified summary dictionary with added standard deviation and Hessian values.
+    Dict
+        The modified summary dictionary with added standard deviation and
+        Hessian values.
     """
 
     for conf in summary["trajectory"]:

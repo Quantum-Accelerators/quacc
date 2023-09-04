@@ -15,14 +15,16 @@ except ImportError:
     covalent = None
 try:
     import parsl
-
 except ImportError:
     parsl = None
 try:
     import jobflow
-
 except ImportError:
     jobflow = None
+try:
+    import redun
+except ImportError:
+    redun = None
 
 _DEFAULT_CONFIG_FILE_PATH = os.path.join(os.path.expanduser("~"), ".quacc.yaml")
 
@@ -31,12 +33,12 @@ class QuaccSettings(BaseSettings):
     """
     Settings for quacc.
 
-    The default way to modify these is to make a ~/.quacc.yaml file. Alternatively,
-    the environment variable QUACC_CONFIG_FILE can be set to point to a yaml file with
-    quacc settings.
+    The default way to modify these is to make a ~/.quacc.yaml file.
+    Alternatively, the environment variable QUACC_CONFIG_FILE can be set to
+    point to a yaml file with quacc settings.
 
-    The variables can also be modified individually though environment variables by
-    using the "QUACC" prefix. e.g. QUACC_SCRATCH_DIR=/path/to/scratch.
+    The variables can also be modified individually though environment variables
+    by using the "QUACC" prefix. e.g. QUACC_SCRATCH_DIR=/path/to/scratch.
     """
 
     # --8<-- [start:settings]
@@ -49,7 +51,7 @@ class QuaccSettings(BaseSettings):
         "local",
         description=(
             "The workflow manager to use."
-            "Options include: 'covalent', 'parsl', 'jobflow', or 'local'"
+            "Options include: 'covalent', 'parsl', 'jobflow', 'redun', or 'local'"
         ),
     )
 
@@ -267,8 +269,8 @@ class QuaccSettings(BaseSettings):
     @root_validator(pre=True)
     def load_default_settings(cls, values: dict) -> dict:
         """
-        Loads settings from a root file if available and uses that as defaults in
-        place of built in defaults.
+        Loads settings from a root file if available and uses that as defaults
+        in place of built in defaults.
 
         Parameters
         ----------

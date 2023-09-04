@@ -73,9 +73,27 @@ def ts_job(
     freq_job_kwargs
         Keyword arguments to use for the `freq_job`.
     calc_swaps
-        Optional swaps for the NewtonNet calculator.
+        Optional swaps for the NewtonNet calculator. Overrides the
+        following defaults:
+
+        ```python
+        {
+            "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+            "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        }
+        ```
     opt_swaps
-        Optional swaps for the optimization parameters.
+        Optional swaps for the optimization parameters. Overrides the
+        following defaults:
+
+        ```python
+        {
+            "fmax": 0.01,
+            "max_steps": 1000,
+            "optimizer": Sella,
+            "optimizer_kwargs": {"diag_every_n": 0} if use_custom_hessian else {},
+        }
+        ```
 
     Returns
     -------
@@ -139,7 +157,8 @@ def irc_job(
     opt_swaps: dict | None = None,
 ) -> IRCSchema:
     """
-    Perform an intrinsic reaction coordinate (IRC) job using the given atoms object.
+    Perform an intrinsic reaction coordinate (IRC) job using the given atoms
+    object.
 
     Parameters
     ----------
@@ -152,9 +171,35 @@ def irc_job(
     freq_job_kwargs
         Keyword arguments for the `freq_job`.
     calc_swaps
-        Optional swaps for the calculator.
+        Optional swaps for the calculator. Overrides the following
+        defaults:
+
+        ```python
+        {
+            "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+            "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        }
+        ```
     opt_swaps
-        Optional swaps for the optimization parameters.
+        Optional swaps for the optimization parameters. Overrides the
+        following defaults:
+
+        ```python
+        {
+            "fmax": 0.01,
+            "max_steps": 1000,
+            "optimizer": IRC,
+            "optimizer_kwargs": {
+                "dx": 0.1,
+                "eta": 1e-4,
+                "gamma": 0.4,
+                "keep_going": True,
+            },
+            "run_kwargs": {
+                "direction": direction,
+            },
+        }
+        ```
 
     Returns
     -------
@@ -236,14 +281,17 @@ def quasi_irc_job(
     freq_job_kwargs
         Keyword arguments for `freq_job`.
     irc_swaps
-        Optional swaps for the IRC optimization parameters.
+        Optional swaps for the IRC optimization parameters. Overrides
+        the following defaults: `{"max_steps": 5}`.
     opt_swaps
-        Optional swaps for the optimization parameters.
+        Optional swaps for the optimization parameters. Overrides
+        the following defaults: `{}`.
 
     Returns
     -------
     QuasiIRCSchema
-        A dictionary containing the IRC summary, optimization summary, and thermodynamic summary.
+        A dictionary containing the IRC summary, optimization summary, and
+        thermodynamic summary.
     """
     irc_swaps = irc_swaps or {}
     opt_swaps = opt_swaps or {}
@@ -272,11 +320,13 @@ def quasi_irc_job(
 
 def _get_hessian(atoms: Atoms) -> np.ndarray:
     """
-    Calculate and retrieve the Hessian matrix for the given molecular configuration.
+    Calculate and retrieve the Hessian matrix for the given molecular
+    configuration.
 
-    This function takes an ASE Atoms object representing a molecular configuration and uses the
-    NewtonNet machine learning calculator to calculate the Hessian matrix. The calculated Hessian
-    matrix is then returned.
+    This function takes an ASE Atoms object representing a molecular
+    configuration and uses the NewtonNet machine learning calculator to
+    calculate the Hessian matrix. The calculated Hessian matrix is then
+    returned.
 
     Parameters
     ----------

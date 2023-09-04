@@ -32,18 +32,19 @@ def run_calc(
     original directory. This can be useful if file I/O is slow in the working
     directory, so long as file transfer speeds are reasonable.
 
-    This is a wrapper around atoms.get_potential_energy(). Note: This
-    function does not modify the atoms object in-place.
+    This is a wrapper around atoms.get_potential_energy(). Note: This function
+    does not modify the atoms object in-place.
 
     Parameters
     ----------
     atoms
         The Atoms object to run the calculation on.
     geom_file
-        The filename of the log file that contains the output geometry, used
-        to update the atoms object's positions and cell after a job. It is better
-        to specify this rather than relying on ASE's atoms.get_potential_energy()
-        function to update the positions, as this varies between codes.
+        The filename of the log file that contains the output geometry, used to
+        update the atoms object's positions and cell after a job. It is better
+        to specify this rather than relying on ASE's
+        atoms.get_potential_energy() function to update the positions, as this
+        varies between codes.
     copy_files
         Filenames to copy from source to scratch directory.
 
@@ -59,20 +60,20 @@ def run_calc(
     # Run calculation via get_potential_energy()
     atoms.get_potential_energy()
 
-    # Most ASE calculators do not update the atoms object in-place with
-    # a call to .get_potential_energy(), which is important if an internal
-    # optimizer is used. This section is done to ensure that the atoms object
-    # is updated with the correct positions and cell if a `geom_file` is provided.
+    # Most ASE calculators do not update the atoms object in-place with a call
+    # to .get_potential_energy(), which is important if an internal optimizer is
+    # used. This section is done to ensure that the atoms object is updated with
+    # the correct positions and cell if a `geom_file` is provided.
     if geom_file:
-        # Note: We have to be careful to make sure we don't lose the
-        # converged magnetic moments, if present. That's why we simply
-        # update the positions and cell in-place.
+        # Note: We have to be careful to make sure we don't lose the converged
+        # magnetic moments, if present. That's why we simply update the
+        # positions and cell in-place.
         atoms_new = read(zpath(os.path.join(tmpdir, geom_file)))
         if isinstance(atoms_new, list):
             atoms_new = atoms_new[-1]
 
-        # Make sure the atom indices didn't get updated somehow (sanity check). If this
-        # happens, there is a serious problem.
+        # Make sure the atom indices didn't get updated somehow (sanity check).
+        # If this happens, there is a serious problem.
         if (
             np.array_equal(atoms_new.get_atomic_numbers(), atoms.get_atomic_numbers())
             is False
@@ -103,8 +104,8 @@ def run_ase_opt(
     back to the original directory. This can be useful if file I/O is slow in
     the working directory, so long as file transfer speeds are reasonable.
 
-    This is a wrapper around the optimizers in ASE. Note: This function does
-    not modify the atoms object in-place.
+    This is a wrapper around the optimizers in ASE. Note: This function does not
+    modify the atoms object in-place.
 
     Parameters
     ----------
@@ -178,12 +179,13 @@ def run_ase_vib(
     atoms: Atoms, vib_kwargs: dict | None = None, copy_files: list[str] | None = None
 ) -> Vibrations:
     """
-    Run an ASE-based vibration analysis in a scratch directory and copy the results
-    back to the original directory. This can be useful if file I/O is slow in
-    the working directory, so long as file transfer speeds are reasonable.
+    Run an ASE-based vibration analysis in a scratch directory and copy the
+    results back to the original directory. This can be useful if file I/O is
+    slow in the working directory, so long as file transfer speeds are
+    reasonable.
 
-    This is a wrapper around the vibrations module in ASE. Note: This function does
-    not modify the atoms object in-place.
+    This is a wrapper around the vibrations module in ASE. Note: This function
+    does not modify the atoms object in-place.
 
     Parameters
     ----------
@@ -221,9 +223,9 @@ def _calc_setup(
     atoms: Atoms, copy_files: list[str] | None = None
 ) -> tuple[Atoms, str, str]:
     """
-    Perform staging operations for a calculation, including copying files
-    to the scratch directory, setting the calculator's directory,
-    decompressing files, and creating a symlink to the scratch directory.
+    Perform staging operations for a calculation, including copying files to the
+    scratch directory, setting the calculator's directory, decompressing files,
+    and creating a symlink to the scratch directory.
 
     Parameters
     ----------
@@ -260,7 +262,7 @@ def _calc_setup(
     )
 
     # Create a tmpdir for the calculation within the scratch_dir
-    tmpdir = Path.resolve(Path(mkdtemp(prefix="quacc-tmp-", dir=SETTINGS.SCRATCH_DIR)))
+    tmpdir = Path(mkdtemp(prefix="quacc-tmp-", dir=SETTINGS.SCRATCH_DIR)).resolve()
 
     # Create a symlink (if not on Windows) to the tmpdir in the results_dir
     symlink = os.path.join(job_results_dir, f"{tmpdir.name}-symlink")
@@ -289,9 +291,9 @@ def _calc_cleanup(tmpdir: str, job_results_dir: str) -> None:
         The path to the tmpdir, where the calculation will be run. It will be
         deleted after the calculation is complete.
     job_results_dir
-        The path to the job_results_dir, where the files will ultimately be stored.
-        A symlink to the tmpdir will be made here during the calculation for
-        convenience.
+        The path to the job_results_dir, where the files will ultimately be
+        stored. A symlink to the tmpdir will be made here during the calculation
+        for convenience.
 
     Returns
     -------

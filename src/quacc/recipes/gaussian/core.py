@@ -38,7 +38,8 @@ def static_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     charge
         Charge of the system. If None, this is determined from the sum of
         `atoms.get_initial_charges().`
@@ -50,7 +51,27 @@ def static_job(
     basis
         Basis set
     calc_swaps
-        Dictionary of custom kwargs for the calculator.
+        Dictionary of custom kwargs for the calculator. Overrides the following
+        defaults:
+
+        ```python
+        {
+            "mem": "16GB",
+            "chk": "Gaussian.chk",
+            "nprocshared": multiprocessing.cpu_count(),
+            "xc": xc,
+            "basis": basis,
+            "charge": get_charge(atoms) if charge is None else charge,
+            "mult": get_multiplicity(atoms) if multiplicity is None else multiplicity,
+            "sp": "",
+            "scf": ["maxcycle=250", "xqc"],
+            "integral": "ultrafine",
+            "nosymmetry": "",
+            "pop": "CM5",
+            "gfinput": "",
+            "ioplist": ["6/7=3", "2/9=2000"],
+        }
+        ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -107,7 +128,8 @@ def relax_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     charge
         Charge of the system. If None, this is determined from the sum of
         `atoms.get_initial_charges()`.
@@ -121,7 +143,27 @@ def relax_job(
     freq
         If a frequency calculation should be carried out.
     calc_swaps
-        Dictionary of custom kwargs for the calculator.
+        Dictionary of custom kwargs for the calculator. Overrides the following
+        defaults:
+
+        ```python
+        {
+            "mem": "16GB",
+            "chk": "Gaussian.chk",
+            "nprocshared": multiprocessing.cpu_count(),
+            "xc": xc,
+            "basis": basis,
+            "charge": get_charge(atoms) if charge is None else charge,
+            "mult": get_multiplicity(atoms) if multiplicity is None else multiplicity,
+            "opt": "",
+            "pop": "CM5",
+            "scf": ["maxcycle=250", "xqc"],
+            "integral": "ultrafine",
+            "nosymmetry": "",
+            "freq": "" if freq else None,
+            "ioplist": ["2/9=2000"],
+        }
+        ```
     copy_files
         Files to copy to the runtime directory.
 

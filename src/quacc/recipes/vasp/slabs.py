@@ -1,7 +1,7 @@
 """Recipes for slabs"""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 
 from quacc import flow, job, subflow
 from quacc.calculators.vasp import Vasp
@@ -30,11 +30,27 @@ def slab_static_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     preset
         Preset to use.
     calc_swaps
-        dictionary of custom kwargs for the calculator.
+        dictionary of custom kwargs for the calculator. Overrides the following
+        defaults:
+
+        ```python
+        {
+            "auto_dipole": True,
+            "ismear": -5,
+            "laechg": True,
+            "lcharg": True,
+            "lreal": False,
+            "lvhar": True,
+            "lwave": True,
+            "nedos": 5001,
+            "nsw": 0,
+        }
+        ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -51,6 +67,7 @@ def slab_static_job(
         "ismear": -5,
         "laechg": True,
         "lcharg": True,
+        "lreal": False,
         "lvhar": True,
         "lwave": True,
         "nedos": 5001,
@@ -77,11 +94,26 @@ def slab_relax_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     preset
         Preset to use.
     calc_swaps
-        Dictionary of custom kwargs for the calculator.
+        Dictionary of custom kwargs for the calculator. Overrides the following
+        defaults:
+
+        ```python
+        {
+            "auto_dipole": True,
+            "ediffg": -0.02,
+            "isif": 2,
+            "ibrion": 2,
+            "isym": 0,
+            "lcharg": False,
+            "lwave": False,
+            "nsw": 200,
+        }
+        ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -115,8 +147,8 @@ def slab_relax_job(
 def bulk_to_slabs_flow(
     atoms: Atoms | dict,
     make_slabs_kwargs: dict | None = None,
-    slab_relax: callable = slab_relax_job,
-    slab_static: callable | None = slab_static_job,
+    slab_relax: Callable = slab_relax_job,
+    slab_static: Callable | None = slab_static_job,
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
 ) -> list[VaspSchema]:
@@ -132,7 +164,8 @@ def bulk_to_slabs_flow(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     make_slabs_kwargs
         Additional keyword arguments to pass to make_max_slabs_from_bulk()
     slab_relax
@@ -185,16 +218,14 @@ def slab_to_ads_flow(
     slab: Atoms,
     adsorbate: Atoms,
     make_ads_kwargs: dict | None = None,
-    slab_relax: callable = slab_relax_job,
-    slab_static: callable | None = slab_static_job,
+    slab_relax: Callable = slab_relax_job,
+    slab_static: Callable | None = slab_static_job,
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
 ) -> list[VaspSchema]:
     """
-    Workflow consisting of:
-    1. Slab-adsorbate generation
-    2. Slab-adsorbate relaxations
-    3. Slab-adsorbate statics (optional)
+    Workflow consisting of: 1. Slab-adsorbate generation 2. Slab-adsorbate
+    relaxations 3. Slab-adsorbate statics (optional)
 
     Parameters
     ----------

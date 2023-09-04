@@ -50,7 +50,7 @@ graph LR
     print(result)
     ```
 
-    1. The `#!Python @flow` decorator defines the workflow that will be executed.
+    1. The `#!Python @flow` decorator defines the workflow that will be executed. It is the same as calling `#!Python ct.dispatch(ct.lattice)` in Covalent.
 
     2. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
 
@@ -96,6 +96,46 @@ graph LR
     !!! Note
 
         Parsl `PythonApp`/`JoinApp` objects will implicitly know to call `.result()` on any `AppFuture` it receives. As such, you should avoid calling `.result()` within a `PythonApp`/`JoinApp` definition or between `PythonApp`/`JoinApp` objects if possible.
+
+=== "Redun"
+
+    !!! Important
+
+        Make sure you have specified `"redun"` as the `WORKFLOW_ENGINE` in your [quacc settings](../settings.md).
+
+    ```python
+    from ase.build import bulk
+    from redun import Scheduler
+    from quacc import flow
+    from quacc.recipes.emt.core import relax_job, static_job
+
+    # Instantiate the scheduler
+    scheduler = Scheduler()
+
+
+    # Define the workflow
+    @flow  # (1)!
+    def workflow(atoms):
+        # Define Job 1
+        result1 = relax_job(atoms)  # (2)!
+
+        # Define Job 2, which takes the output of Job 1 as input
+        result2 = static_job(result1)
+
+        return result2
+
+
+    # Make an Atoms object of a bulk Cu structure
+    atoms = bulk("Cu")
+
+    # Dispatch the workflow
+    result = scheduler.run(workflow(atoms))
+    print(result)
+    ```
+
+    1. The `#!Python @flow` decorator defines the workflow that will be executed. It is the same as the `#!Python @task` decorator in Redun.
+
+    2. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
 
 === "Jobflow"
 
@@ -194,6 +234,37 @@ graph LR
     print(future1.result(), future2.result())
     ```
 
+=== "Redun"
+
+    ```python
+    from ase.build import bulk, molecule
+    from redun import Scheduler
+    from quacc import flow
+    from quacc.recipes.emt.core import relax_job
+
+    # Instantiate the scheduler
+    scheduler = Scheduler()
+
+
+    # Define workflow
+    @flow
+    def workflow(atoms1, atoms2):
+        # Define two independent relaxation jobs
+        result1 = relax_job(atoms1)
+        result2 = relax_job(atoms2)
+
+        return {"result1": result1, "result2": result2}
+
+
+    # Define two Atoms objects
+    atoms1 = bulk("Cu")
+    atoms2 = molecule("N2")
+
+    # Dispatch the workflow
+    result = scheduler.run(workflow(atoms1, atoms2))
+    print(result)
+    ```
+
 === "Jobflow"
 
     ```python
@@ -243,6 +314,7 @@ graph LR
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 
+    # Define the workflow
     @flow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
@@ -251,7 +323,10 @@ graph LR
         return relaxed_slabs
 
 
+    # Define the Atoms object
     atoms = bulk("Cu")
+
+    # Dispatch the workflow and retrieve result
     dispatch_id = workflow(atoms)
     result = ct.get_result(dispatch_id, wait=True)
     print(result)
@@ -279,22 +354,39 @@ graph LR
 
     1. We didn't need to wrap bulk_to_slabs_flow with a decorator because it is already pre-decorated with a `#!Python @flow` decorator. We also chose to set `#!Python slab_static=None` here to disable the static calculation that is normally carried out in this workflow.
 
-=== "Jobflow"
+=== "Redun"
 
     ```python
-    import jobflow as jf
     from ase.build import bulk
+    from redun import Scheduler
+    from quacc import flow
     from quacc.recipes.emt.core import relax_job
-    from quacc.recipes.emt._jobflow.slabs import bulk_to_slabs_flow
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+    scheduler = Scheduler()
+
+
+    # Define the workflow
+    @flow
+    def workflow(atoms):
+        relaxed_bulk = relax_job(atoms)
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, slab_static=None)  # (1)!
+
+        return relaxed_slabs
+
 
     # Define the Atoms object
     atoms = bulk("Cu")
 
-    # Construct the Flow
-    job1 = relax_job(atoms)
-    job2 = bulk_to_slabs_flow(job1.output, slab_static=None)
-    workflow = jf.Flow([job1, job2])
-
-    # Run the workflow locally
-    jf.run_locally(workflow, create_folders=True)
+    # Run the workflow
+    result = scheduler.run(workflow(atoms))
+    print(result)
     ```
+
+    1. We didn't need to wrap bulk_to_slabs_flow with a decorator because it is already pre-decorated with a `#!Python @flow` decorator. We also chose to set `#!Python slab_static=None` here to disable the static calculation that is normally carried out in this workflow.
+
+=== "Jobflow"
+
+    !!! Warning
+
+        Due to the difference in how Jobflow handles workflows (particularly dynamic ones) compared to other supported workflow engines, any quacc recipes that have been pre-defined with a `#!Python @flow` decorator (i.e. have `_flow` in the name) cannot be run directly with Jobflow. Rather, a Jobflow-specific `Flow` needs to be constructed by the user.

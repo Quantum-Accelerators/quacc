@@ -6,11 +6,11 @@ Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 
 import numpy as np
 
-from quacc import job
+from quacc import flow, job
 from quacc.calculators.vasp import Vasp
 from quacc.schemas import fetch_atoms
 from quacc.schemas.vasp import summarize_run
@@ -34,17 +34,23 @@ def mp_prerelax_job(
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
     """
-    Function to pre-relax a structure with Materials Project settings.
-    By default, this uses a PBEsol pre-relax step.
+    Function to pre-relax a structure with Materials Project settings. By
+    default, this uses a PBEsol pre-relax step.
 
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     preset
         Preset to use.
     calc_swaps
-        Dictionary of custom kwargs for the calculator.
+        Dictionary of custom kwargs for the calculator. Overrides the following
+        defaults:
+
+        ```python
+        {"ediffg": -0.05, "xc": "pbesol"}
+        ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -73,17 +79,19 @@ def mp_relax_job(
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
     """
-    Function to relax a structure with Materials Project settings.
-    By default, this uses an r2SCAN relax step.
+    Function to relax a structure with Materials Project settings. By default,
+    this uses an r2SCAN relax step.
 
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     preset
         Preset to use.
     calc_swaps
-        Dictionary of custom kwargs for the calculator.
+        Dictionary of custom kwargs for the calculator. Overrides the following
+        defaults: `{}`.
     copy_files
         Files to copy to the runtime directory.
 
@@ -101,11 +109,11 @@ def mp_relax_job(
     return summarize_run(atoms, additional_fields={"name": "MP-Relax"})
 
 
-@job
+@flow
 def mp_relax_flow(
     atoms: Atoms | dict,
-    prerelax: callable | None = mp_prerelax_job,
-    relax: callable | None = mp_relax_job,
+    prerelax: Callable | None = mp_prerelax_job,
+    relax: Callable | None = mp_relax_job,
     prerelax_kwargs: dict | None = None,
     relax_kwargs: dict | None = None,
 ) -> MPRelaxFlowSchema:
@@ -138,7 +146,7 @@ def mp_relax_flow(
     relax_kwargs = relax_kwargs or {}
 
     # Run the prerelax
-    prerelax_results = prerelax.__wrapped__(atoms, **prerelax_kwargs)
+    prerelax_results = prerelax(atoms, **prerelax_kwargs)
 
     # Update KSPACING arguments
     bandgap = prerelax_results["output"].get("bandgap", 0)
@@ -152,9 +160,7 @@ def mp_relax_flow(
     relax_kwargs["calc_swaps"] = kspacing_swaps | relax_kwargs.get("calc_swaps", {})
 
     # Run the relax
-    relax_results = relax.__wrapped__(
-        prerelax_results, copy_files=["WAVECAR"], **relax_kwargs
-    )
+    relax_results = relax(prerelax_results, copy_files=["WAVECAR"], **relax_kwargs)
     relax_results["prerelax"] = prerelax_results
 
     return relax_results

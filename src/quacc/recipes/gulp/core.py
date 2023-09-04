@@ -31,21 +31,39 @@ def static_job(
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
-    Carry out a single-point calculation.
-    Note: 'Conditions' are not yet natively supported.
+    Carry out a single-point calculation. Note: 'Conditions' are not yet
+    natively supported.
 
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     use_gfnff
         True if (p)GFN-FF should be used; False if not.
     library
         Filename of the potential library file, if required.
     keyword_swaps
-        Dictionary of custom keyword swap kwargs for the calculator.
+        Dictionary of custom keyword swap kwargs for the calculator. Overrides
+        the following defaults:
+
+        ```python
+        {
+            "gfnff": True if use_gfnff else None,
+            "gwolf": True if use_gfnff and atoms.pbc.any() else None,
+        }
+        ```
     option_swaps
-        Dictionary of custom option swap kwargs for the calculator.
+        Dictionary of custom option swap kwargs for the calculator. Overrides
+        the following defaults:
+
+        ```python
+        {
+            "dump every gulp.res": True,
+            f"output cif {GEOM_FILE_PBC}": True if atoms.pbc.any() else None,
+            f"output xyz {GEOM_FILE_NOPBC}": None if atoms.pbc.any() else True,
+        }
+        ```
 
     Returns
     -------
@@ -97,13 +115,14 @@ def relax_job(
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
-    Carry out a single-point calculation.
-    Note: 'Conditions' are not yet natively supported.
+    Carry out a single-point calculation. Note: 'Conditions' are not yet
+    natively supported.
 
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     use_gfnff
         True if (p)GFN-FF should be used; False if not.
     library
@@ -111,9 +130,29 @@ def relax_job(
     relax_cell
         True if the volume should be relaxed; False if not.
     keyword_swaps
-        Dictionary of custom keyword swap kwargs for the calculator.
+        Dictionary of custom keyword swap kwargs for the calculator. Overrides
+        the following defaults:
+
+        ```python
+        {
+            "opti": True,
+            "gfnff": True if use_gfnff else None,
+            "gwolf": True if use_gfnff and atoms.pbc.any() else None,
+            "conp": True if relax_cell and atoms.pbc.any() else None,
+            "conv": None if relax_cell and atoms.pbc.any() else True,
+        }
+        ```
     option_swaps
-        Dictionary of custom option swap kwargs for the calculator.
+        Dictionary of custom option swap kwargs for the calculator. Overrides
+        the following defaults:
+
+        ```python
+        {
+            "dump every gulp.res": True,
+            f"output cif {GEOM_FILE_PBC}": True if atoms.pbc.any() else None,
+            f"output xyz {GEOM_FILE_NOPBC}": None if atoms.pbc.any() else True,
+        }
+        ```
     copy_files
         Files to copy to the runtime directory.
 

@@ -37,9 +37,11 @@ def bulk_to_slabs_flow(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     make_slabs_kwargs
-        Additional keyword arguments to pass to `quacc.utils.slabs.make_max_slabs_from_bulk`
+        Additional keyword arguments to pass to
+        `quacc.utils.slabs.make_max_slabs_from_bulk`
     slab_relax
         Default Job to use for the relaxation of the slab structures.
     slab_static

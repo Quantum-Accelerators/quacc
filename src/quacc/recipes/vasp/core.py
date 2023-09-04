@@ -32,11 +32,25 @@ def static_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     preset
         Preset to use.
     calc_swaps
-        Dictionary of custom kwargs for the calculator.
+        Dictionary of custom kwargs for the calculator. Overrides the following
+        defaults:
+
+        ```python
+        {
+            "ismear": -5,
+            "laechg": True,
+            "lcharg": True,
+            "lreal": False,
+            "lwave": True,
+            "nedos": 5001,
+            "nsw": 0,
+        }
+        ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -52,6 +66,7 @@ def static_job(
         "ismear": -5,
         "laechg": True,
         "lcharg": True,
+        "lreal": False,
         "lwave": True,
         "nedos": 5001,
         "nsw": 0,
@@ -78,14 +93,28 @@ def relax_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     preset
         Preset to use.
     relax_cell
-        True if a volume relaxation (ISIF = 3) should be performed.
-        False if only the positions (ISIF = 2) should be updated.
+        True if a volume relaxation (ISIF = 3) should be performed. False if
+        only the positions (ISIF = 2) should be updated.
     calc_swaps
-        Dictionary of custom kwargs for the calculator.
+        Dictionary of custom kwargs for the calculator. Overrides the following
+        defaults:
+
+        ```python
+        {
+            "ediffg": -0.02,
+            "isif": 3 if relax_cell else 2,
+            "ibrion": 2,
+            "isym": 0,
+            "lcharg": False,
+            "lwave": False,
+            "nsw": 200,
+        }
+        ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -137,12 +166,13 @@ def double_relax_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     preset
         Preset to use.
     relax_cell
-        True if a volume relaxation (ISIF = 3) should be performed.
-        False if only the positions (ISIF = 2) should be updated.
+        True if a volume relaxation (ISIF = 3) should be performed. False if
+        only the positions (ISIF = 2) should be updated.
     calc_swaps1
         Dictionary of custom kwargs for the first relaxation.
     calc_swaps2

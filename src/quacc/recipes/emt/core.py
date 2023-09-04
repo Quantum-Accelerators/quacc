@@ -34,9 +34,10 @@ def static_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     calc_swaps
-        Dictionary of custom kwargs for the EMT calculator
+        Dictionary of custom kwargs for the EMT calculator. Overrides `{}`.
     copy_files
         Files to copy to the runtime directory.
 
@@ -72,13 +73,19 @@ def relax_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     relax_cell
         Whether to relax the cell
     calc_swaps
-        Dictionary of custom kwargs for the EMT calculator
+        Dictionary of custom kwargs for the EMT calculator. Overrides the
+        following defaults: `{}`
     opt_swaps
-        Dictionary of swaps for `run_ase_opt`
+        Dictionary of swaps for `run_ase_opt`. Overrides the following defaults:
+
+        ```python
+        {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
+        ```
     copy_files
         Files to copy to the runtime directory.
 

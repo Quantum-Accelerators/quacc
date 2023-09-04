@@ -4,7 +4,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.2.5]
+
+### Added
+
+- Added support for the Redun workflow engine.
+
+## [0.2.4]
+
+### Changed
+
+- Updated VASP co-pilot rules and `BulkSet.yaml` in accordance with recent MP benchmarking (#849).
+- Moved `fetch_atoms` to `quacc.schemas`.
+
+### Fixed
+
+- VASP: Fixed a scenario where SIGMA was set to 0.05 if the user provided SIGMA > 0.05. This was supposed to happen when ISMEAR = 0 but was previously done when ISMEAR = -5, which is not influenced by SIGMA.
+- Fixed `mp_relax_flow` to use a `@flow` decorator instead of `@job`
+- Fixed the Q-Chem Quasi-IRC job to run as one `@job` instead of two.
 
 ## [0.2.3]
 
