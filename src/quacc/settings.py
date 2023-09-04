@@ -301,6 +301,6 @@ class QuaccSettings(BaseSettings):
         new_values = {}
         if config_file_path.exists() and config_file_path.stat().st_size > 0:
             new_values |= loadfn(config_file_path)
-        
+
         new_values.update(values)
         return new_values
