@@ -87,7 +87,7 @@ def make_slabs_from_bulk(
         List of chemical symbols that must be present on the surface of the slab
         otherwise the slab will be discarded, e.g. ["Cu", "Ni"]
     **slabgen_kwargs: keyword arguments to pass to the pymatgen
-    generate_all_slabs() function
+        `generate_all_slabs` function
 
     Returns
     -------
@@ -243,7 +243,7 @@ def make_max_slabs_from_bulk(
         List of chemical symbols that must be present on the surface of the slab
         otherwise the slab will be discarded, e.g. ["Cu", "Ni"]
     **slabgen_kwargs: keyword arguments to pass to the pymatgen
-    generate_all_slabs() function
+        `generate_all_slabs` function
 
     Returns
     --------
