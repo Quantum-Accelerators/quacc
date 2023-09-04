@@ -119,6 +119,7 @@ def test_tutorial2b(tmpdir):
     # Run the workflow locally
     jf.run_locally(workflow, create_folders=True, ensure_success=True)
 
+
 @pytest.mark.skipif(
     jf is None,
     reason="Jobflow is not installed or specified in config",
