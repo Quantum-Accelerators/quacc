@@ -74,8 +74,6 @@ def test_unset():
     with open(test_yaml, "r") as f:
         for line in f:
             lines += ""
-            if "WORKFLOW_ENGINE" in line:
-                val = line.split(":")[-1].strip()
     assert "WORKFLOW_ENGINE" not in lines
 
 
