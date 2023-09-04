@@ -43,6 +43,7 @@ def test_tutorial1a(tmpdir):
     # Run the job locally
     jf.run_locally(job, create_folders=True, ensure_success=True)
 
+
 @pytest.mark.skipif(
     jf is None,
     reason="Jobflow is not installed or specified in config",
