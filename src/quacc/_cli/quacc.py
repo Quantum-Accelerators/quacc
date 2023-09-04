@@ -123,6 +123,7 @@ def unset(parameter: str) -> None:
     typer.echo(f"Unsetting `{parameter}` in {CONFIG_FILE}")
     _delete_setting(parameter, CONFIG_FILE)
 
+
 def _delete_setting(key: str, config_file: str | Path) -> None:
     """
     Remove the quacc setting from the configuration file.
