@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+
 from typer.testing import CliRunner
 
 from quacc import SETTINGS, __version__
