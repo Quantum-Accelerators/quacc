@@ -1,8 +1,9 @@
 import os
 from pathlib import Path
 
-from typer.testing import CliRunner
 import pytest
+from typer.testing import CliRunner
+
 from quacc import SETTINGS, __version__
 from quacc._cli.quacc import app
 
@@ -65,6 +66,7 @@ def test_set():
                 val = line.split(":")[-1].strip()
     assert val == "dummy"
 
+
 def test_unset():
     response = runner.invoke(app, ["unset", "WORKFLOW_ENGINE"])
     assert response.exit_code == 0
@@ -77,10 +79,11 @@ def test_unset():
                 val = line.split(":")[-1].strip()
     assert "WORKFLOW_ENGINE" not in lines
 
+
 def test_bad():
     response = runner.invoke(app, ["set", "CONFIG_FILE", "here"])
-    assert response.exit_code!=0
-    response = runner.invoke(app,["set","bad", "dummy"])
-    assert response.exit_code!=0
-    response = runner.invoke(app,["unset","bad"])
-    assert response.exit_code!=0
+    assert response.exit_code != 0
+    response = runner.invoke(app, ["set", "bad", "dummy"])
+    assert response.exit_code != 0
+    response = runner.invoke(app, ["unset", "bad"])
+    assert response.exit_code != 0
