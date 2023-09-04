@@ -20,7 +20,20 @@ from quacc.settings import _DEFAULT_CONFIG_FILE_PATH
 app = typer.Typer()
 
 
+
 def callback(value: bool) -> None:
+    """
+    Set up the callback for the quacc version reporting.
+
+    Parameters
+    ----------
+    value
+        If the version should be reported
+    
+    Returns
+    -------
+    None
+    """
     if value:
         typer.echo(f"quacc v{__version__}")
         raise typer.Exit()
@@ -37,14 +50,24 @@ def main(
         is_eager=True,
     )
 ) -> None:
-    return
+    """
+    The main CLI interface, with an option to return the version.
 
+    Parameters
+    ----------
+    version
+        If the version should be reported
+    
+    Returns
+    -------
+    None
+    """
 
 @app.command("set")
 def set_(parameter: str, new_value) -> None:
     """
-    Set the specified quacc parameter in the
-    quacc configuration file.
+    Set the specified quacc parameter in the quacc configuration file. This
+    command will not override any environment variables.
 
     Parameters
     ----------
@@ -61,7 +84,9 @@ def set_(parameter: str, new_value) -> None:
 
     CONFIG_FILE = Path(SETTINGS.CONFIG_FILE or _DEFAULT_CONFIG_FILE_PATH)
     parameter = parameter.upper()
-
+    if parameter not in SETTINGS.dict():
+        msg = f"{parameter} is not a supported quacc configuration variable."
+        raise ValueError(msg)
     if parameter == "CONFIG_FILE":
         msg = "Cannot set the CONFIG_FILE parameter via the CLI."
         raise ValueError(msg)
@@ -73,8 +98,8 @@ def set_(parameter: str, new_value) -> None:
 @app.command()
 def unset(parameter: str) -> None:
     """
-    Unset the specified quacc parameter in the
-    quacc configuration file.
+    Unset the specified quacc parameter in the quacc configuration file. This
+    command will not override any environment variables.
 
     Parameters
     ---------
@@ -89,6 +114,9 @@ def unset(parameter: str) -> None:
 
     CONFIG_FILE = Path(SETTINGS.CONFIG_FILE or _DEFAULT_CONFIG_FILE_PATH)
     parameter = parameter.upper()
+    if parameter not in SETTINGS.dict():
+        msg = f"{parameter} is not a supported quacc configuration variable."
+        raise ValueError(msg)
     if parameter == "CONFIG_FILE":
         msg = "Cannot unset the CONFIG_FILE parameter via the CLI."
         raise ValueError(msg)
