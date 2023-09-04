@@ -1,8 +1,9 @@
 """Settings for quacc"""
 from __future__ import annotations
+
 import os
-from shutil import which
 from pathlib import Path
+from shutil import which
 from typing import List, Optional, Union
 
 from pydantic import BaseSettings, Field, root_validator
@@ -293,7 +294,9 @@ class QuaccSettings(BaseSettings):
 
         from monty.serialization import loadfn
 
-        config_file_path = Path(values.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH)).expanduser()
+        config_file_path = Path(
+            values.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH)
+        ).expanduser()
 
         new_values = {}
         if config_file_path.exists() and config_file_path.stat().st_size > 0:
