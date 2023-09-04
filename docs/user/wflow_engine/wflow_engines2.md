@@ -389,16 +389,19 @@ graph LR
     import jobflow as jf
     from ase.build import bulk
     from quacc.recipes.emt.core import relax_job
-    from quacc.recipes.emt._jobflow.slabs import bulk_to_slabs_flow
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
     # Define the Atoms object
     atoms = bulk("Cu")
 
-    # Construct the Flow
+    # Define the workflow
     job1 = relax_job(atoms)
-    job2 = bulk_to_slabs_flow(job1.output, slab_static=None)
-    workflow = jf.Flow([job1, job2])
+    job2 = bulk_to_slabs_flow(job1.output)
+    flow = jf.Flow([job1, job2])
 
-    # Run the workflow locally
-    jf.run_locally(workflow, create_folders=True)
+    # Run the job locally
+    result = jf.run_locally(flow, create_folders=True)
+
+    # Print the results
+    print(result)
     ```

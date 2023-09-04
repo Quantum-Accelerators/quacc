@@ -197,6 +197,7 @@ graph LR
 
     ```python
     from ase.build import bulk
+    from redun import Scheduler
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
     # Instantiate the scheduler
@@ -216,23 +217,22 @@ graph LR
 
 === "Jobflow"
 
-    Due to the difference in how Jobflow handles dynamic workflows compared to Covalent and Parsl, any quacc recipes that have been pre-defined with a `#!Python @flow` decorator (i.e. those with `_flow` in the name) cannot be used with Jobflow directly.
-
-    That said, quacc fully supports custom Jobflow-based workflows to resolve this limitation. For example, instead of using [`.emt.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/slabs.html#quacc.recipes.emt.slabs.bulk_to_slabs_flow), this workflow can be equivalently run as follows using the Jobflow-specific [`.emt._jobflow.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/_jobflow/slabs.html#quacc.recipes.emt._jobflow.slabs.bulk_to_slabs_flow) function.
-
     ```python
     import jobflow as jf
     from ase.build import bulk
-    from quacc.recipes.emt._jobflow.slabs import bulk_to_slabs_flow
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
     # Define the Atoms object
     atoms = bulk("Cu")
 
-    # Construct the Flow
-    flow = bulk_to_slabs_flow(atoms)
+    # Define the workflow
+    job = bulk_to_slabs_flow(atoms)  # (1)!
 
-    # Run the workflow locally
-    jf.run_locally(flow, create_folders=True)
+    # Run the job locally
+    result = jf.run_locally(job, create_folders=True)
+
+    # Print the results
+    print(result)
     ```
 
-    In the case of the Jobflow-specific `bulk_to_slabs_flow`, it returns a [`Response(replace)`](<https://materialsproject.github.io/jobflow/tutorials/5-dynamic-flows.html#The-Response(replace)-option>) object that dynamically replaces the `Flow` with several downstream jobs.
+    1. Due to the difference in how Jobflow handles dynamic workflows compared to Covalent and Parsl, any quacc recipes that have been pre-defined with a `#!Python @flow` (or `#!Python @subflow`) decorator will be run as a single (serial, rather than parallelized) job in Jobflow.

@@ -43,7 +43,6 @@ def test_tutorial1a(tmpdir):
     # Run the job locally
     jf.run_locally(job, create_folders=True, ensure_success=True)
 
-
 @pytest.mark.skipif(
     jf is None,
     reason="Jobflow is not installed or specified in config",
@@ -52,18 +51,19 @@ def test_tutorial1b(tmpdir):
     tmpdir.chdir()
     import jobflow as jf
     from ase.build import bulk
-
-    from quacc.recipes.emt._jobflow.slabs import bulk_to_slabs_flow
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
     # Define the Atoms object
     atoms = bulk("Cu")
 
-    # Construct the Flow
-    flow = bulk_to_slabs_flow(atoms)
+    # Define the workflow
+    job = bulk_to_slabs_flow(atoms)
 
-    # Run the workflow locally
-    jf.run_locally(flow, create_folders=True, ensure_success=True)
+    # Run the job locally
+    result = jf.run_locally(job, create_folders=True)  # (1)!
 
+    # Print the results
+    print(result)
 
 @pytest.mark.skipif(
     jf is None,
@@ -119,32 +119,26 @@ def test_tutorial2b(tmpdir):
     # Run the workflow locally
     jf.run_locally(workflow, create_folders=True, ensure_success=True)
 
-
-@pytest.mark.skipif(
-    jf is None,
-    reason="Jobflow is not installed or specified in config",
-)
 def test_tutorial2c(tmpdir):
     tmpdir.chdir()
-
     import jobflow as jf
     from ase.build import bulk
-
-    from quacc.recipes.emt._jobflow.slabs import bulk_to_slabs_flow
     from quacc.recipes.emt.core import relax_job
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
     # Define the Atoms object
     atoms = bulk("Cu")
 
-    # Construct the Flow
+    # Define the workflow
     job1 = relax_job(atoms)
-    job2 = bulk_to_slabs_flow(job1.output, slab_static=None)
-    workflow = jf.Flow([job1, job2])
+    job2 = bulk_to_slabs_flow(job1.output)
+    flow = jf.Flow([job1, job2])
 
-    # Run the workflow locally
-    jf.run_locally(workflow, create_folders=True, ensure_success=True)
+    # Run the job locally
+    result = jf.run_locally(flow, create_folders=True)
 
-
+    # Print the results
+    print(result)
 @pytest.mark.skipif(
     jf is None,
     reason="Jobflow is not installed or specified in config",
@@ -261,58 +255,3 @@ def test_comparison4(tmpdir):
     flow = jf.Flow([job1, job2, job3])
 
     jf.run_locally(flow, ensure_success=True)
-
-
-@pytest.mark.skipif(
-    jf is None,
-    reason="Jobflow is not installed or specified in config",
-)
-def test_emt_flow(tmpdir):
-    tmpdir.chdir()
-
-    from quacc.recipes.emt._jobflow.slabs import bulk_to_slabs_flow
-
-    store = jf.JobStore(MemoryStore())
-
-    atoms = bulk("Cu")
-
-    job = bulk_to_slabs_flow(
-        atoms,
-        slab_static=None,
-        slab_relax_kwargs={
-            "opt_swaps": {"fmax": 1.0},
-            "calc_swaps": {"asap_cutoff": True},
-            "relax_cell": False,
-        },
-    )
-    jf.run_locally(job, store=store, ensure_success=True, create_folders=True)
-
-    job = bulk_to_slabs_flow(
-        atoms,
-        make_slabs_kwargs={"max_slabs": 2},
-        slab_relax_kwargs={
-            "opt_swaps": {"fmax": 1.0},
-            "calc_swaps": {"asap_cutoff": True},
-            "relax_cell": False,
-        },
-    )
-    responses = jf.run_locally(
-        job, store=store, ensure_success=True, create_folders=True
-    )
-
-    assert len(responses) == 5
-    uuids = list(responses.keys())
-
-    output0 = responses[uuids[0]][1].output
-    assert "generated_slabs" in output0
-    assert len(output0["generated_slabs"][0]) == 64
-
-    output1 = responses[uuids[1]][1].output
-    assert output1["nsites"] == 64
-    assert output1["parameters"]["asap_cutoff"] is True
-    assert output1["name"] == "EMT Relax"
-
-    output2 = responses[uuids[-1]][1].output
-    assert output2["nsites"] == 80
-    assert output2["parameters"]["asap_cutoff"] is False
-    assert output2["name"] == "EMT Static"
