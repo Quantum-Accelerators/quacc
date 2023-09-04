@@ -84,3 +84,5 @@ def test_bad():
     assert response.exit_code != 0
     response = runner.invoke(app, ["unset", "bad"])
     assert response.exit_code != 0
+    response = runner.invoke(app, ["unset", "CONFIG_FILE"])
+    assert response.exit_code != 0

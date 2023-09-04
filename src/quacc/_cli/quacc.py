@@ -123,12 +123,6 @@ def unset(parameter: str) -> None:
     typer.echo(f"Unsetting `{parameter}` in {CONFIG_FILE}")
     _delete_setting(parameter, CONFIG_FILE)
 
-    if parameter in os.environ:
-        env_param = os.environ.get[parameter]
-        msg = f"{parameter} is still present in your environment and has the value {env_param}."
-        warnings.warn(msg, UserWarning)
-
-
 def _delete_setting(key: str, config_file: str | Path) -> None:
     """
     Remove the quacc setting from the configuration file.
