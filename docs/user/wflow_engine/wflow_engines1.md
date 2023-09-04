@@ -22,7 +22,7 @@ graph LR
 
         If you haven't done so yet, make sure you started the Covalent server with `covalent start` in the command-line.
 
-        Also tell quacc that you wish to use Covalent by running `quacc use covalent` in the command-line.
+        Also tell quacc that you wish to use Covalent by running `quacc set WORKFLOW_ENGINE covalent` in the command-line.
 
     ```python
     import covalent as ct
@@ -71,7 +71,7 @@ graph LR
         parsl.load()
         ```
 
-        Also tell quacc that you wish to use Parsl by running `quacc use parsl` in the command-line.
+        Also tell quacc that you wish to use Parsl by running `quacc set WORKFLOW_ENGINE parsl` in the command-line.
 
     ```python
     from ase.build import bulk
@@ -95,7 +95,7 @@ graph LR
 
     !!! Important
 
-        Make sure you have specified `"redun"` as the `WORKFLOW_ENGINE` in your [quacc settings](../settings.md).
+        Tell quacc that you wish to use Redun by running `quacc set WORKFLOW_ENGINE redun` in the command-line.
 
     ```python
     from ase.build import bulk
@@ -119,7 +119,7 @@ graph LR
 
     !!! Important
 
-        Tell quacc that you wish to use Parsl by running `quacc use jobflow` in the command-line.
+        Tell quacc that you wish to use Jobflow by running `quacc set WORKFLOW_ENGINE jobflow` in the command-line.
 
     ```python
     import jobflow as jf
