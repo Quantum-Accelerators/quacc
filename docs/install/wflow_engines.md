@@ -4,7 +4,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
 !!! Tip
 
-    If you are just getting started with workflow engines, we recommend trying Covalent. For a comparison of the different compatible workflow engines, refer to the [Workflow Engines Overview](../user/basics/wflow_overview.md) section.
+    If you are just getting started with workflow engines, we recommend first trying Covalent. For a comparison of the different compatible workflow engines, refer to the [Workflow Engines Overview](../user/basics/wflow_overview.md) section.
 
 === "Covalent"
 
@@ -28,13 +28,23 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
 === "Parsl"
 
-    In your activated Python environment, install Parsl as follows:
+    To install Parsl, run the following:
 
     ```bash
     pip install quacc[parsl]
     ```
 
     Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
+
+=== "Redun"
+
+    **Installation**
+
+    To install Redun, run the following:
+
+    ```bash
+    pip install quacc[redun]
+    ```
 
 === "Jobflow"
 

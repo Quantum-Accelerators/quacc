@@ -34,13 +34,21 @@ Here, we provide code snippets for several decorator-based workflow engines. For
 
     Take a moment to read the Jobflow documentation's [Quick Start](https://materialsproject.github.io/jobflow/tutorials/1-quickstart.html) to get a sense of how Jobflow works. Namely, you should understand the `Job` and `Flow` definitions, which describe individual compute tasks and workflows, respectively.
 
+=== "Redun"
+
+    !!! Info
+
+        Refer to the official set of [Redun tutorials](https://github.com/insitro/redun/tree/main/examples) for several worked examples.
+
+    Take a moment to read the Redun documentation's [Design Overview page](https://insitro.github.io/redun/design.html) to get a sense of how Redun works. Namely, you should understand the `Task` decorator and how to interface with the `Scheduler`.
+
 To help enable interoperability between workflow engines, quacc offers a unified set of decorators.
 
-| Quacc              | Covalent                           | Parsl                 | Jobflow        |
-| ------------------ | ---------------------------------- | --------------------- | -------------- |
-| `#!Python job`     | `#!Python ct.electron`             | `#!Python python_app` | `#!Python job` |
-| `#!Python flow`    | `#!Python ct.lattice`              | N/A                   | N/A            |
-| `#!Python subflow` | `#!Python ct.electron(ct.lattice)` | `#!Python join_app`   | N/A            |
+| Quacc              | Covalent                           | Parsl                 | Redun           | Jobflow        |
+| ------------------ | ---------------------------------- | --------------------- | --------------- | -------------- |
+| `#!Python job`     | `#!Python ct.electron`             | `#!Python python_app` | `#!Python task` | `#!Python job` |
+| `#!Python flow`    | `#!Python ct.lattice`              | N/A                   | `#!Python task` | N/A            |
+| `#!Python subflow` | `#!Python ct.electron(ct.lattice)` | `#!Python join_app`   | `#!Python task` | N/A            |
 
 The quacc descriptors are drop-in replacements for the specified workflow engine analogue, which we will use for the remainder of the tutorials.
 
@@ -74,17 +82,21 @@ graph LR
     import covalent as ct
     from quacc import flow, job
 
+
     @job  #  (1)!
     def add(a, b):
         return a + b
+
 
     @job
     def mult(a, b):
         return a * b
 
+
     @flow  #  (2)!
     def workflow(a, b, c):
         return mult(add(a, b), c)
+
 
     dispatch_id = workflow(1, 2, 3)  # (3)!
     print(ct.get_result(dispatch_id, wait=True))
@@ -107,13 +119,16 @@ graph LR
     ```python
     from quacc import job
 
+
     @job  #  (1)!
     def add(a, b):
         return a + b
 
+
     @job
     def mult(a, b):
         return a * b
+
 
     future1 = add(1, 2)
     future2 = mult(future1, 3)
@@ -122,6 +137,44 @@ graph LR
     ```
 
     1. The `#!Python @job` decorator will be transformed into `#!Python @python_app`.
+
+=== "Redun"
+
+    !!! Important
+
+        Make sure you have specified `"redun"` as the `WORKFLOW_ENGINE` in your [quacc settings](../settings.md).
+
+    ```python
+    from redun import Scheduler
+    from quacc import flow, job
+
+    scheduler = Scheduler()  #  (1)!
+
+
+    @job  #  (2)!
+    def add(a, b):
+        return a + b
+
+
+    @job
+    def mult(a, b):
+        return a * b
+
+
+    @flow  #  (3)!
+    def workflow(a, b, c):
+        return mult(add(a, b), c)
+
+
+    result = scheduler.run(workflow(1, 2, 3))
+    print(result)
+    ```
+
+    1. It is necessary to instantiate the scheduler before submitting calculations.
+
+    2. The `#!Python @job` decorator will be transformed into Redun `#!Python @task`.
+
+    3. The `#!Python @flow` decorator will also be transformed into Redun `#!Python @task`. Everything in Redun is a `#!Python @task`, so it doesn't matter what quacc decorator you apply. We chose `#!Python @flow` simpler for clarity.
 
 === "Jobflow"
 
@@ -133,13 +186,16 @@ graph LR
     import jobflow as jf
     from quacc import job
 
+
     @job  #  (1)!
     def add(a, b):
         return a + b
 
+
     @job
     def mult(a, b):
         return a * b
+
 
     job1 = add(1, 2)
     job2 = mult(job1.output, 3)
@@ -151,114 +207,6 @@ graph LR
 
     1. The `#!Python @job` decorator will be transformed into `#!Python @jf.job`.
 
-### Dynamic Workflow
-
-Let's do the following:
-
-1. Add two numbers (e.g. `#!Python 1 + 2`)
-2. Make a list of copies of the output from Step 1 (e.g. `#!Python [3, 3, 3]`) where the size of the list is not known until runtime
-3. Add a third number to each element of the list from Step 2 (e.g. `#!Python [3 + 3, 3 + 3, 3 + 3]`)
-
-We will treat this as a dynamic workflow where the number of elements in the list from Step 2 may not necessarily be known until runtime. In practice, we would want each of the individual addition tasks to be their own compute job.
-
-```mermaid
-graph LR
-  A[Input] --> B(add) --> C(make_more)
-  C --> D(add) --> G[Output];
-  C --> E(add) --> G[Output];
-  C --> F(add) --> G[Output];
-```
-
-=== "Covalent"
-
-    ```python
-    import random
-    import covalent as ct
-    from quacc import flow, job, subflow
-
-    @job
-    def add(a, b):
-        return a + b
-
-    @job
-    def make_more(val):
-        return [val] * random.randint(2, 5)
-
-    @subflow  #  (1)!
-    def add_distributed(vals, c):
-        return [add(val, c) for val in vals]
-
-    @flow
-    def workflow(a, b, c):
-        result1 = add(a, b)
-        result2 = make_more(result1)
-        return add_distributed(result2, c)
-
-    # Dispatched
-    dispatch_id = workflow(1, 2, 3)
-    print(ct.get_result(dispatch_id, wait=True))  # e.g. [6, 6, 6]
-    ```
-
-    1. The `#!Python @subflow` decorator will be transformed into `#!Python ct.electron(ct.lattice)`.
-
-=== "Parsl"
-
-    ```python
-    from quacc import job, subflow
-
-    @job
-    def add(a, b):
-        return a + b
-
-    @job
-    def make_more(val):
-        import random
-
-        return [val] * random.randint(2, 5)
-
-    @subflow  #  (1)!
-    def add_distributed(vals, c):
-        return [add(val, c) for val in vals]
-
-    future1 = add(1, 2)
-    future2 = make_more(future1)
-    future3 = add_distributed(future2, 3)
-
-    result = future3.result()  # e.g. [6, 6, 6]
-    ```
-
-    1. The `#!Python @subflow` decorator will be transformed into `#!Python @join_app`.
-
-=== "Jobflow"
-
-    ```python
-    import random
-    import jobflow as jf
-    from quacc import job
-
-    @job
-    def add(a, b):
-        return a + b
-
-    @job
-    def make_more(val):
-        return [val] * random.randint(2, 5)
-
-    @job
-    def add_distributed(vals, c):
-        jobs = []
-        for val in vals:
-            jobs.append(add(val, c))
-        return jf.Response(replace=jf.Flow(jobs))
-
-    job1 = add(1, 2)
-    job2 = make_more(job1.output)
-    job3 = add_distributed(job2.output, 3)
-    flow = jf.Flow([job1, job2, job3])
-
-    responses = jf.run_locally(flow)  # e.g. [6, 6, 6] (job3.output)
-    ```
-
 ## Learn More
 
 === "Covalent"
@@ -268,6 +216,10 @@ graph LR
 === "Parsl"
 
     If you want to learn more about Parsl, you can read the [Parsl Documentation](https://parsl.readthedocs.io/en/stable/#). Please refer to the [Parsl Slack Channel](http://parsl-project.org/support.html) for any Parsl-specific questions.
+
+=== "Redun"
+
+    If you want to learn more about Redun, you can read the [Redun documentation](https://insitro.github.io/redun/index.html).
 
 === "Jobflow"
 
