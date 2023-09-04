@@ -2,14 +2,13 @@
 from __future__ import annotations
 
 import os
-from typing import TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from typing import Any
 
 import warnings
 from pathlib import Path
-from typing import Optional
 
 import ruamel.yaml
 import typer
