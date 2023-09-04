@@ -20,10 +20,9 @@ graph LR
 
     !!! Important
 
-        If you haven't done so yet, make sure you run the following to tell quacc you wish to use Covalent and start the Covalent server:
+        If you haven't done so yet, make sure you run the following tostart the Covalent server:
 
         ```bash
-        quacc set WORKFLOW_ENGINE covalent
         covalent start
         ```
 
