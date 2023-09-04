@@ -209,9 +209,9 @@ def run_ase_vib(
     atoms, tmpdir, job_results_dir = _calc_setup(atoms, copy_files=copy_files)
 
     # Run calculation
-    vib = Vibrations(atoms, name=Path(tmpdir, "vib"), **vib_kwargs)
+    vib = Vibrations(atoms, name=str(Path(tmpdir, "vib")), **vib_kwargs)
     vib.run()
-    vib.summary(log=Path(tmpdir, "vib_summary.log").as_posix())
+    vib.summary(log=str(Path(tmpdir, "vib_summary.log")))
 
     # Perform cleanup operations
     _calc_cleanup(tmpdir, job_results_dir)

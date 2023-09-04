@@ -61,10 +61,10 @@ def copy_decompress(source_files: list[str], destination: str) -> None:
     """
     for f in source_files:
         z_path = zpath(f)
-        if Path.exists(Path(z_path)):
+        if Path(z_path).exists():
             z_file = os.path.basename(z_path)
             copy(z_path, Path(destination, z_file))
-            decompress_file(Path(destination, z_file).as_posix())
+            decompress_file(str(Path(destination, z_file)))
         else:
             warnings.warn(f"Cannot find file: {z_path}", UserWarning)
 
