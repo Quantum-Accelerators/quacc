@@ -43,6 +43,7 @@ def test_tutorial1a(tmpdir):
     # Run the job locally
     jf.run_locally(job, create_folders=True, ensure_success=True)
 
+
 @pytest.mark.skipif(
     jf is None,
     reason="Jobflow is not installed or specified in config",
@@ -51,6 +52,7 @@ def test_tutorial1b(tmpdir):
     tmpdir.chdir()
     import jobflow as jf
     from ase.build import bulk
+
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
     # Define the Atoms object
@@ -64,6 +66,7 @@ def test_tutorial1b(tmpdir):
 
     # Print the results
     print(result)
+
 
 @pytest.mark.skipif(
     jf is None,
@@ -119,10 +122,12 @@ def test_tutorial2b(tmpdir):
     # Run the workflow locally
     jf.run_locally(workflow, create_folders=True, ensure_success=True)
 
+
 def test_tutorial2c(tmpdir):
     tmpdir.chdir()
     import jobflow as jf
     from ase.build import bulk
+
     from quacc.recipes.emt.core import relax_job
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
@@ -139,6 +144,8 @@ def test_tutorial2c(tmpdir):
 
     # Print the results
     print(result)
+
+
 @pytest.mark.skipif(
     jf is None,
     reason="Jobflow is not installed or specified in config",
