@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 from shutil import which
 from typing import List, Optional, Union
 
@@ -26,7 +27,7 @@ try:
 except ImportError:
     redun = None
 
-_DEFAULT_CONFIG_FILE_PATH = os.path.join(os.path.expanduser("~"), ".quacc.yaml")
+_DEFAULT_CONFIG_FILE_PATH = Path("~", ".quacc.yaml").expanduser()
 
 
 class QuaccSettings(BaseSettings):
@@ -46,19 +47,20 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # Workflow Engine
     # ---------------------------
+
     WORKFLOW_ENGINE: str = Field(
         "covalent"
         if covalent
         else "parsl"
         if parsl
-        else "jobflow"
-        if jobflow
         else "redun"
         if redun
+        else "jobflow"
+        if jobflow
         else "local",
         description=(
             "The workflow manager to use."
-            "Options include: 'covalent', 'parsl', 'jobflow', 'redun', or 'local'"
+            "Options include: 'covalent', 'parsl', 'redun', 'jobflow', or 'local'"
         ),
     )
 
@@ -66,15 +68,15 @@ class QuaccSettings(BaseSettings):
     # General Settings
     # ---------------------------
 
-    CONFIG_FILE: str = Field(
+    CONFIG_FILE: Union[str, Path] = Field(
         _DEFAULT_CONFIG_FILE_PATH,
         description=(
             "Path to the YAML file to load alternative quacc configuration "
             "defaults from."
         ),
     )
-    RESULTS_DIR: str = Field(
-        os.getcwd(),
+    RESULTS_DIR: Union[str, Path] = Field(
+        Path.cwd(),
         description=(
             "Directory to store I/O-based calculation results in."
             "Note that this behavior may be modified by the chosen workflow engine."
@@ -83,8 +85,8 @@ class QuaccSettings(BaseSettings):
             "In this case, the `RESULTS_DIR` will be a subdirectory of that directory."
         ),
     )
-    SCRATCH_DIR: str = Field(
-        "/tmp" if os.path.exists("/tmp") else os.getcwd(),
+    SCRATCH_DIR: Union[str, Path] = Field(
+        Path("/tmp") if Path("/tmp").exists() else Path.cwd(),
         description="Scratch directory for calculations.",
     )
     CREATE_UNIQUE_WORKDIR: bool = Field(
@@ -117,7 +119,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # ORCA Settings
     # ---------------------------
-    ORCA_CMD: str = Field(
+    ORCA_CMD: Union[str, Path] = Field(
         "orca",
         description=(
             "Path to the ORCA executable. This must be the full, absolute path "
@@ -241,8 +243,8 @@ class QuaccSettings(BaseSettings):
         "qchem", description="Command to run the standard version of Q-Chem."
     )
 
-    QCHEM_LOCAL_SCRATCH: str = Field(
-        "/tmp" if os.path.exists("/tmp") else os.getcwd(),
+    QCHEM_LOCAL_SCRATCH: Union[str, Path] = Field(
+        Path("/tmp") if Path("/tmp").exists() else Path.cwd(),
         description="Compute-node local scratch directory in which Q-Chem should perform IO.",
     )
 
@@ -259,10 +261,10 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # NewtonNet Settings
     # ---------------------------
-    NEWTONNET_MODEL_PATH: Union[str, List[str]] = Field(
+    NEWTONNET_MODEL_PATH: Union[Union[str, Path], List[Union[str, Path]]] = Field(
         "best_model_state.tar", description="Path to NewtonNet .tar model"
     )
-    NEWTONNET_CONFIG_PATH: Union[str, List[str]] = Field(
+    NEWTONNET_CONFIG_PATH: Union[Union[str, Path], List[Union[str, Path]]] = Field(
         "config.yml", description="Path to NewtonNet YAML settings file"
     )
 
@@ -292,11 +294,13 @@ class QuaccSettings(BaseSettings):
 
         from monty.serialization import loadfn
 
-        config_file_path = values.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH)
+        config_file_path = Path(
+            values.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH)
+        ).expanduser()
 
         new_values = {}
-        if os.path.exists(os.path.expanduser(config_file_path)):
-            new_values |= loadfn(os.path.expanduser(config_file_path))
+        if config_file_path.exists() and config_file_path.stat().st_size > 0:
+            new_values |= loadfn(config_file_path)
 
         new_values.update(values)
         return new_values

@@ -1,5 +1,9 @@
 # Settings Management
 
+!!! Important
+
+    The quacc configuration parameters (e.g. YAML file, environment variables) are only active on the machine where they are specified. In other words, each remote machine has its own custom set of configuration parameters.
+
 ## Modifying Quacc Settings
 
 The default global quacc settings can be found in the [`settings.py`](https://github.com/quantum-accelerators/quacc/blob/main/src/quacc/settings.py) file. If you wish to modify any of the global quacc settings, there are several ways to do so.
@@ -26,6 +30,10 @@ CREATE_UNIQUE_WORKDIR: true # (3)!
 
 By default, quacc looks for this YAML file at `~/.quacc.yaml`. If you wish to store the YAML file somewhere else or with a different name, you can define the environment variable `QUACC_CONFIG_FILE` and point it to the YAML path of your choosing.
 
+!!! Tip
+
+    The quacc command-line interface (CLI) lets you update the YAML file from the terminal. You can run `quacc set PARAMETER value` to set a given parameter in the YAML file to the specified value. Similarly, you can run `quacc unset PARAMETER` to remove a parameter from the YAML file.
+
 ### Using Environment Variables
 
 If you want to define quacc settings on-the-fly without writing them to a YAML file, you can instead modify the desired settings by defining individual environment variables with `QUACC` as the prefix. For instance, to modify the `SCRATCH_DIR` setting to be `/tmp`, simply define `QUACC_SCRATCH_DIR=/tmp` as a new environment variable.
@@ -39,6 +47,10 @@ from quacc import SETTINGS
 
 SETTINGS.CREATE_UNIQUE_WORKDIR = True
 ```
+
+!!! Important
+
+    This approach will only modify the settings for the current Python process.
 
 ## List of Quacc Settings
 

@@ -35,6 +35,7 @@ dependencies = [
     "numpy>=1.24.0",
     "pydantic<2",
     "pymatgen>=2023.9.2",
+    "typer[rich]>=0.9.0",
 ]
 
 [project.optional-dependencies]
@@ -58,7 +59,7 @@ docs = [
 ]
 
 [project.scripts]
-quacc = "quacc._cli.cli:cli"
+quacc = "quacc._cli.quacc:app"
 
 [project.urls]
 repository = "https://github.com/Quantum-Accelerators/quacc"

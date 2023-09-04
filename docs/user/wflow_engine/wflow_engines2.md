@@ -15,7 +15,12 @@ graph LR
 
     !!! Important
 
-        If you haven't done so yet, make sure you started the Covalent server with `covalent start` in the command-line.
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings.md) and start the Covalent server:
+
+        ```bash
+        quacc set WORKFLOW_ENGINE covalent
+        covalent start
+        ```
 
     ```python
     import covalent as ct
@@ -60,15 +65,16 @@ graph LR
 
     !!! Important
 
-        If you haven't done so yet, make sure you have loaded a Parsl configuration in your Python script. An example for running on your local machine is included below.
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings.md) and load the default Parsl configuration:
+
+        ```bash
+        quacc set WORKFLOW_ENGINE parsl
+        ```
 
         ```python
         import parsl
-
         parsl.load()
         ```
-
-        Also make sure you have specified `"parsl"` as the `WORKFLOW_ENGINE` in your [quacc settings](../settings.md).
 
     ```python
     from ase.build import bulk
@@ -99,7 +105,11 @@ graph LR
 
     !!! Important
 
-        Make sure you have specified `"redun"` as the `WORKFLOW_ENGINE` in your [quacc settings](../settings.md).
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings.md):
+
+        ```bash
+        quacc set WORKFLOW_ENGINE redun
+        ```
 
     ```python
     from ase.build import bulk
@@ -139,7 +149,11 @@ graph LR
 
     !!! Important
 
-        Make sure you have specified `"jobflow"` as the `WORKFLOW_ENGINE` in your [quacc settings](../settings.md).
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings.md):
+
+        ```bash
+        quacc set WORKFLOW_ENGINE jobflow
+        ```
 
     ```python
     import jobflow as jf
