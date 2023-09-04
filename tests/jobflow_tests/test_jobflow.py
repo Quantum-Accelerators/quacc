@@ -62,7 +62,7 @@ def test_tutorial1b(tmpdir):
     job = bulk_to_slabs_flow(atoms)
 
     # Run the job locally
-    result = jf.run_locally(job, create_folders=True, ensure_success=True)  # (1)!
+    jf.run_locally(job, create_folders=True, ensure_success=True)  # (1)!
 
 
 @pytest.mark.skipif(
@@ -119,7 +119,10 @@ def test_tutorial2b(tmpdir):
     # Run the workflow locally
     jf.run_locally(workflow, create_folders=True, ensure_success=True)
 
-
+@pytest.mark.skipif(
+    jf is None,
+    reason="Jobflow is not installed or specified in config",
+)
 def test_tutorial2c(tmpdir):
     tmpdir.chdir()
     import jobflow as jf
@@ -137,7 +140,7 @@ def test_tutorial2c(tmpdir):
     flow = jf.Flow([job1, job2])
 
     # Run the job locally
-    result = jf.run_locally(flow, create_folders=True, ensure_success=True)
+    jf.run_locally(flow, create_folders=True, ensure_success=True)
 
 
 @pytest.mark.skipif(
