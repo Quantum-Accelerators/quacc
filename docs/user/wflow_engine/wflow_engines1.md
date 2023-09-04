@@ -23,6 +23,7 @@ graph LR
         If you haven't done so yet, make sure you run the following tostart the Covalent server:
 
         ```bash
+        quacc set WORKFLOW_ENGINE covalent
         covalent start
         ```
 

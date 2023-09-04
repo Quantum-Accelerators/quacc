@@ -47,15 +47,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
 
     WORKFLOW_ENGINE: str = Field(
-        "covalent"
-        if covalent
-        else "parsl"
-        if parsl
-        else "redun"
-        if redun
-        else "jobflow"
-        if jobflow
-        else "local",
+        "local"
         description=(
             "The workflow manager to use."
             "Options include: 'covalent', 'parsl', 'jobflow', 'redun', or 'local'"

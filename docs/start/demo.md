@@ -10,6 +10,7 @@ Run the following commands in the terminal:
 pip install --upgrade https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
 pip install quacc[covalent]
 
+quacc set WORKFLOW_ENGINE covalent
 covalent start
 ```
 
