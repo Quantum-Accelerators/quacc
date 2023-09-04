@@ -8,22 +8,23 @@ from typing import List, Optional, Union
 from pydantic import BaseSettings, Field, root_validator
 
 from quacc.presets import vasp as vasp_defaults
-try:	
-    import covalent	
-except ImportError:	
-    covalent = None	
-try:	
-    import parsl	
-except ImportError:	
-    parsl = None	
-try:	
-    import jobflow	
-except ImportError:	
-    jobflow = None	
-try:	
-    import redun	
-except ImportError:	
-    redun = None	
+
+try:
+    import covalent
+except ImportError:
+    covalent = None
+try:
+    import parsl
+except ImportError:
+    parsl = None
+try:
+    import jobflow
+except ImportError:
+    jobflow = None
+try:
+    import redun
+except ImportError:
+    redun = None
 
 _DEFAULT_CONFIG_FILE_PATH = os.path.join(os.path.expanduser("~"), ".quacc.yaml")
 
