@@ -62,10 +62,7 @@ def test_tutorial1b(tmpdir):
     job = bulk_to_slabs_flow(atoms)
 
     # Run the job locally
-    result = jf.run_locally(job, create_folders=True)  # (1)!
-
-    # Print the results
-    print(result)
+    result = jf.run_locally(job, create_folders=True, ensure_success=True)  # (1)!
 
 
 @pytest.mark.skipif(
@@ -140,10 +137,7 @@ def test_tutorial2c(tmpdir):
     flow = jf.Flow([job1, job2])
 
     # Run the job locally
-    result = jf.run_locally(flow, create_folders=True)
-
-    # Print the results
-    print(result)
+    result = jf.run_locally(flow, create_folders=True, ensure_success=True)
 
 
 @pytest.mark.skipif(
