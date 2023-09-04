@@ -89,6 +89,30 @@ graph LR
 
     2. The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object.
 
+=== "Redun"
+
+    !!! Important
+
+        Make sure you have specified `"redun"` as the `WORKFLOW_ENGINE` in your [quacc settings](../settings.md).
+
+    ```python
+    from ase.build import bulk
+    from redun import Scheduler
+    from quacc.recipes.emt.core import relax_job
+
+    # Instantiate the scheduler
+    scheduler = Scheduler()
+
+    # Make an Atoms object of a bulk Cu structure
+    atoms = bulk("Cu")
+
+    # Dispatch the workflow
+    result = scheduler.run(relax_job(atoms))  # (1)!
+    print(result)
+    ```
+
+    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
+
 === "Jobflow"
 
     !!! Important
@@ -117,30 +141,6 @@ graph LR
     1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
 
     2. We chose to run the job locally, but other workflow managers supported by Jobflow can be imported and used.
-
-=== "Redun"
-
-    !!! Important
-
-        Make sure you have specified `"redun"` as the `WORKFLOW_ENGINE` in your [quacc settings](../settings.md).
-
-    ```python
-    from ase.build import bulk
-    from redun import Scheduler
-    from quacc.recipes.emt.core import relax_job
-
-    # Instantiate the scheduler
-    scheduler = Scheduler()
-
-    # Make an Atoms object of a bulk Cu structure
-    atoms = bulk("Cu")
-
-    # Dispatch the workflow
-    result = scheduler.run(relax_job(atoms))  # (1)!
-    print(result)
-    ```
-
-    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
 
 ## Running a Pre-Defined Workflow
 
