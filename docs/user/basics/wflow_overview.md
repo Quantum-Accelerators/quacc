@@ -52,6 +52,23 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     - Challenging to orchestrate workflows with steps running across heterogeneous resources
     - The concept of always returning a "future" object can be confusing for new users
 
+=== "Redun"
+
+    [Redun](https://insitro.github.io/redun/) is a flexible workflow management program developed by [Insitro](https://insitro.com/).
+
+    Pros:
+
+    - Extremely simple syntax for defining workflows.
+    - Has strong support for task/result caching.
+    - Supports a variety of compute backends.
+    - Useful console-based monitoring system.
+
+    Cons:
+
+    - Currently lacks support for typical HPC job schedulers.
+    - No user-friendly UI for job monitoring.
+    - Less active user community than some other options.
+
 === "Jobflow"
 
     [Jobflow](https://github.com/materialsproject/jobflow) is developed and maintained by the Materials Project team at Lawrence Berkeley National Laboratory and serves as a seamless interface to [FireWorks](https://github.com/materialsproject/fireworks) for dispatching and monitoring compute jobs.

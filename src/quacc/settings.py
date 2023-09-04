@@ -15,14 +15,16 @@ except ImportError:
     covalent = None
 try:
     import parsl
-
 except ImportError:
     parsl = None
 try:
     import jobflow
-
 except ImportError:
     jobflow = None
+try:
+    import redun
+except ImportError:
+    redun = None
 
 _DEFAULT_CONFIG_FILE_PATH = os.path.join(os.path.expanduser("~"), ".quacc.yaml")
 
@@ -51,10 +53,12 @@ class QuaccSettings(BaseSettings):
         if parsl
         else "jobflow"
         if jobflow
+        else "redun"
+        if redun
         else "local",
         description=(
             "The workflow manager to use."
-            "Options include: 'covalent', 'parsl', 'jobflow', or 'local'"
+            "Options include: 'covalent', 'parsl', 'jobflow', 'redun', or 'local'"
         ),
     )
 
