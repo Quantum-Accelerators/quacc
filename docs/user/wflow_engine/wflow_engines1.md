@@ -20,9 +20,12 @@ graph LR
 
     !!! Important
 
-        If you haven't done so yet, make sure you started the Covalent server with `covalent start` in the command-line.
+        If you haven't done so yet, make sure you run the following to tell quacc you wish to use Covalent and start the Covalent server:
 
-        Also tell quacc that you wish to use Covalent by running `quacc set WORKFLOW_ENGINE covalent` in the command-line.
+        ```bash
+        quacc set WORKFLOW_ENGINE covalent
+        covalent start
+        ```
 
     ```python
     import covalent as ct
@@ -63,15 +66,16 @@ graph LR
 
     !!! Important
 
-        If you haven't done so yet, make sure you have loaded a Parsl configuration in your Python script. An example for running on your local machine is included below.
+        If you haven't done so yet, make sure you run the following to tell quacc you wish to use Parsl and load the default Parsl configuration:
+
+        ```bash
+        quacc set WORKFLOW_ENGINE parsl
+        ```
 
         ```python
         import parsl
-
         parsl.load()
         ```
-
-        Also tell quacc that you wish to use Parsl by running `quacc set WORKFLOW_ENGINE parsl` in the command-line.
 
     ```python
     from ase.build import bulk
@@ -95,7 +99,11 @@ graph LR
 
     !!! Important
 
-        Tell quacc that you wish to use Redun by running `quacc set WORKFLOW_ENGINE redun` in the command-line.
+        If you haven't done so yet, make sure you run the following to tell quacc you wish to use Redun:
+
+        ```bash
+        quacc set WORKFLOW_ENGINE redun
+        ```
 
     ```python
     from ase.build import bulk
@@ -119,7 +127,11 @@ graph LR
 
     !!! Important
 
-        Tell quacc that you wish to use Jobflow by running `quacc set WORKFLOW_ENGINE jobflow` in the command-line.
+        If you haven't done so yet, make sure you run the following to tell quacc you wish to use Jobflow:
+
+        ```bash
+        quacc set WORKFLOW_ENGINE jobflow
+        ```
 
     ```python
     import jobflow as jf
