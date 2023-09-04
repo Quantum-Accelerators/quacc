@@ -51,6 +51,7 @@ where `extra` is one of the following:
 
 ### Calculators
 
+- `quacc[qchem]`: Installs dependencies to enable the use Q-Chem recipes.
 - `quacc[newtonnet]`: Installs dependencies to enable the use [NewtonNet](https://doi.org/10.1039/D2DD00008C) recipes.
 - `quacc[tblite]`: Installs dependencies to enable the use of [tblite](https://github.com/tblite/tblite) (on Linux).
 
