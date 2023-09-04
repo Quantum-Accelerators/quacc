@@ -67,7 +67,7 @@ def set_(parameter: str, new_value) -> None:
         raise ValueError(msg)
 
     typer.echo(f"Setting `{parameter}` to `{new_value}` in {CONFIG_FILE}")
-    _update_setting(parameter, new_value,CONFIG_FILE)
+    _update_setting(parameter, new_value, CONFIG_FILE)
 
 
 @app.command()
@@ -94,7 +94,7 @@ def unset(parameter: str) -> None:
         raise ValueError(msg)
 
     typer.echo(f"Unsetting `{parameter}` in {CONFIG_FILE}")
-    _delete_setting(parameter,CONFIG_FILE)
+    _delete_setting(parameter, CONFIG_FILE)
 
     if parameter in os.environ:
         env_param = os.environ.get[parameter]
@@ -102,7 +102,7 @@ def unset(parameter: str) -> None:
         warnings.warn(msg, UserWarning)
 
 
-def _delete_setting(key: str,config_file:str|Path) -> None:
+def _delete_setting(key: str, config_file: str | Path) -> None:
     """
     Remove the quacc setting from the configuration file.
 
@@ -127,7 +127,7 @@ def _delete_setting(key: str,config_file:str|Path) -> None:
                 yaml.dump(yaml_content, yaml_file)
 
 
-def _update_setting(key: str, value: Any,config_file:str|Path) -> None:
+def _update_setting(key: str, value: Any, config_file: str | Path) -> None:
     """
     Update the quacc setting from the configuration file.
 
