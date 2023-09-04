@@ -72,7 +72,7 @@ def test_unset():
     assert "WORKFLOW_ENGINE" in response.stdout
     lines = ""
     with open(test_yaml, "r") as f:
-        for line in f:
+        for _ in f:
             lines += ""
     assert "WORKFLOW_ENGINE" not in lines
 
