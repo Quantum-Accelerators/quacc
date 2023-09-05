@@ -310,6 +310,6 @@ def _calc_cleanup(tmpdir: str | Path, job_results_dir: str | Path) -> None:
 
     # Remove symlink to tmpdir
     Path(job_results_dir, f"{Path(tmpdir).name}-symlink").unlink()
-         
+
     # Remove the tmpdir
     rmtree(tmpdir)
