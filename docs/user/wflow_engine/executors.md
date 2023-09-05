@@ -335,7 +335,7 @@ In the previous examples, we have been running calculations on our local machine
 
     ```python
     from dask_jobqueue import SLURMCluster
-    from quacc.util.dask import _make_cluster
+    from quacc.util.dask import _make_dask_cluster
 
     cluster = make_cluster(SLURMCluster, cluster_kwargs, verbose=True)
     ```
