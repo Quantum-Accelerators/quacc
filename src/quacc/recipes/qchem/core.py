@@ -170,9 +170,9 @@ def relax_job(
         Dictionary of custom kwargs for `run_ase_opt`.
 
         ???+ Note
-        
+
              Overrides the following defaults:
-             
+
             ```python
             {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
             ```
