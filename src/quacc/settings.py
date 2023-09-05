@@ -1,7 +1,6 @@
 """Settings for quacc"""
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from shutil import which
 from typing import List, Optional, Union
@@ -172,7 +171,7 @@ class QuaccSettings(BaseSettings):
         description="If True, warnings will be raised when INCAR parameters are changed.",
     )
     VASP_PRESET_DIR: str | Path = Field(
-        resources.files(vasp_defaults),
+        importlib.resources.files(vasp_defaults),
         description="Path to the VASP preset directory",
     )
 
