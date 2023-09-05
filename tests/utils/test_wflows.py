@@ -500,7 +500,7 @@ def test_redun_decorators(tmpdir):
     prefect is None,
     reason="This test requires Prefect",
 )
-def test_covalent_decorators(tmpdir):
+def test_prefect_decorators(tmpdir):
     tmpdir.chdir()
 
     SETTINGS.WORKFLOW_ENGINE = "prefect"
