@@ -266,10 +266,8 @@ def _calc_setup(
 
     # Create a symlink (if not on Windows) to the tmpdir in the results_dir
     symlink = Path(job_results_dir, f"{tmpdir.name}-symlink")
-    if os.name != "nt":
-        if os.path.islink(symlink):
-            os.unlink(symlink)
-        os.symlink(tmpdir, symlink)
+    symlink.unlink(missing_ok=True)
+    symlink.symlink_to(tmpdir)
 
     # Copy files to tmpdir and decompress them if needed
     if copy_files:
@@ -280,7 +278,7 @@ def _calc_setup(
     return atoms, tmpdir, job_results_dir
 
 
-def _calc_cleanup(tmpdir: str, job_results_dir: str) -> None:
+def _calc_cleanup(tmpdir: str | Path, job_results_dir: str | Path) -> None:
     """
     Perform cleanup operations for a calculation, including gzipping files,
     copying files back to the original directory, and removing the tmpdir.
@@ -311,9 +309,7 @@ def _calc_cleanup(tmpdir: str, job_results_dir: str) -> None:
     copy_r(tmpdir, job_results_dir)
 
     # Remove symlink to tmpdir
-    symlink = Path(job_results_dir, f"{os.path.basename(tmpdir)}-symlink")
-    if os.path.islink(symlink):
-        os.remove(symlink)
+    Path(job_results_dir, f"{Path(tmpdir).name}-symlink").unlink()
 
     # Remove the tmpdir
     rmtree(tmpdir)
