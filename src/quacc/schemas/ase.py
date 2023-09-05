@@ -326,7 +326,9 @@ def summarize_opt_run(
           the optimization.")
         - results: dict = Field(None, title = "The results from the
           calculation.")
-        - trajectory: List[Atoms] = Trajectory of Atoms objects
+        - trajectory: List[AtomsSchema] = List containing the AtomsSchema from a
+          reading the trajectory file. Each entry contains the output Atoms
+          object in the key "atoms".
         - trajectory_results: List[dict] = List of ase.calc.results from the
           trajectory
 
