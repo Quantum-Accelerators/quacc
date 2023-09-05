@@ -9,8 +9,9 @@ from ase.optimize import FIRE
 from monty.dev import requires
 
 from quacc import SETTINGS, job
-from quacc.recipes.newtonnet.core import _add_stdev_and_hess, relax_job
+from quacc.recipes.newtonnet.core import _add_stdev_and_hess
 from quacc.recipes.newtonnet.core import freq_job as _freq_job
+from quacc.recipes.newtonnet.core import relax_job
 from quacc.schemas import fetch_atoms
 from quacc.schemas.ase import summarize_opt_run
 from quacc.utils.calc import run_ase_opt
