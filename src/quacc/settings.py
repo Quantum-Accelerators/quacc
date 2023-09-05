@@ -171,7 +171,7 @@ class QuaccSettings(BaseSettings):
         True,
         description="If True, warnings will be raised when INCAR parameters are changed.",
     )
-    VASP_PRESET_DIR: str | Path = Field(
+    VASP_PRESET_DIR: Union[str, Path] = Field(
         importlib.resources.files(vasp_defaults),
         description="Path to the VASP preset directory",
     )
