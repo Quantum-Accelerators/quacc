@@ -7,7 +7,7 @@ from monty.dev import requires
 
 try:
     from prefect_dask.task_runners import DaskTaskRunner
-    
+
     prefect_deps = True
 except ImportError:
     prefect_deps = False
@@ -16,12 +16,12 @@ try:
 
     dask_deps = True
 except ImportError:
-    dask_deps= False
+    dask_deps = False
 
 if TYPE_CHECKING:
     from typing import Any, Callable, TypeVar
-    from dask_jobqueue.core import Job as DaskJob
 
+    from dask_jobqueue.core import Job as DaskJob
 
     Job = TypeVar("Job")
     Flow = TypeVar("Flow")
@@ -101,7 +101,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:  # sourcery skip
             decorated = task(_func, **decorator_kwargs)
         else:
             decorated = _func
-        
+
         if wflow_engine == "prefect":
             return decorated.submit(*f_args, **f_kwargs)
 
@@ -353,7 +353,9 @@ def make_prefect_runner(
 
 
 @requires(dask_deps, "Need quacc[prefect] dependencies")
-def _make_dask_cluster(cluster_class: callable, cluster_kwargs: dict, verbose=False) -> DaskJob:
+def _make_dask_cluster(
+    cluster_class: callable, cluster_kwargs: dict, verbose=False
+) -> DaskJob:
     """
     Make a Dask cluster for use with Prefect workflows.
 

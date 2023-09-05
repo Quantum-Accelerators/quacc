@@ -495,6 +495,7 @@ def test_redun_decorators(tmpdir):
     assert scheduler.run(workflow(1, 2, 3)) == 9
     assert scheduler.run(dynamic_workflow(1, 2, 3)) == [6, 6, 6]
 
+
 @pytest.mark.skipif(
     prefect is None,
     reason="This test requires Prefect",
@@ -532,8 +533,8 @@ def test_covalent_decorators(tmpdir):
 
     @flow
     def add_flow(a, b):
-        return add(a,b)
-    
+        return add(a, b)
+
     assert add_flow(1, 2).result() == 3
     assert workflow(1, 2, 3).result() == 9
     results = dynamic_workflow(1, 2, 3)

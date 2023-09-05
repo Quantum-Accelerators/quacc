@@ -1,5 +1,7 @@
 import pytest
+
 from quacc import SETTINGS
+
 try:
     import prefect
     from prefect.testing.utilities import prefect_test_harness
@@ -9,14 +11,17 @@ except ImportError:
 
 DEFAULT_SETTINGS = SETTINGS.copy()
 
+
 @pytest.fixture(autouse=True, scope="session")
 def prefect_test_fixture():
     if prefect:
         with prefect_test_harness():
             yield
 
+
 def setup_module():
-    SETTINGS.WORKFLOW_ENGINE="prefect"
+    SETTINGS.WORKFLOW_ENGINE = "prefect"
+
 
 def teardown_module():
     SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
@@ -27,6 +32,7 @@ def test_tutorial1a(tmpdir):
     tmpdir.chdir()
 
     from ase.build import bulk
+
     from quacc import flow
     from quacc.recipes.emt.core import relax_job
 
@@ -43,10 +49,12 @@ def test_tutorial1a(tmpdir):
     result = future.result()  # (3)!
     assert "atoms" in result
 
+
 @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
 def test_tutorial1b(tmpdir):
     tmpdir.chdir()
     from ase.build import bulk
+
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
     # Define the Atoms object
@@ -60,11 +68,13 @@ def test_tutorial1b(tmpdir):
     for result in results:
         assert "atom" in result
 
+
 @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
 def test_tutorial2a(tmpdir):
     tmpdir.chdir()
 
     from ase.build import bulk
+
     from quacc import flow
     from quacc.recipes.emt.core import relax_job, static_job
 
@@ -86,13 +96,14 @@ def test_tutorial2a(tmpdir):
     result = workflow(atoms).result()
     assert "atoms" in result
 
+
 @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
 def test_tutorial2b(tmpdir):
     tmpdir.chdir()
     from ase.build import bulk, molecule
+
     from quacc import flow
     from quacc.recipes.emt.core import relax_job
-
 
     # Define workflow
     @flow
@@ -102,7 +113,6 @@ def test_tutorial2b(tmpdir):
         result2 = relax_job(atoms2)
 
         return {"result1": result1, "result2": result2}
-
 
     # Define two Atoms objects
     atoms1 = bulk("Cu")
@@ -117,15 +127,16 @@ def test_tutorial2b(tmpdir):
     assert "atoms" in result1
     assert "atoms" in result2
 
+
 @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
 def test_tutorial2c(tmpdir):
     tmpdir.chdir()
 
     from ase.build import bulk
+
     from quacc import flow
     from quacc.recipes.emt.core import relax_job
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
-
 
     # Define the workflow
     @flow
@@ -135,7 +146,6 @@ def test_tutorial2c(tmpdir):
 
         return relaxed_slabs
 
-
     # Define the Atoms object
     atoms = bulk("Cu")
 
@@ -144,5 +154,3 @@ def test_tutorial2c(tmpdir):
     results = [future.result() for future in futures]
     for result in results:
         assert "atoms" in result
-    
-    
