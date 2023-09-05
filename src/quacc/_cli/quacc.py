@@ -4,7 +4,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Any
+    from typing import Any, Optional
 
 from pathlib import Path
 
@@ -37,7 +37,7 @@ def callback(value: bool) -> None:
 
 @app.callback()
 def main(
-    version: bool
+    version: Optional[bool]
     | None = typer.Option(
         None,
         "--version",
