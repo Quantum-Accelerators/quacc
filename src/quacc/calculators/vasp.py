@@ -113,8 +113,7 @@ class Vasp(Vasp_):
         preset_mag_default: float | None = None,
         mag_cutoff: None | float = None,
         elemental_magmoms: dict | None = None,
-        auto_kpts: dict[Literal["line_density", "kppvol", "kppa"], float]
-        | dict[Literal["length_densities"], list[float]] = None,
+        auto_kpts: dict[Literal["line_density", "kppvol", "kppa"], float] | dict[Literal["length_densities"], list[float]] | None = None,
         auto_dipole: bool | None = None,
         verbose: bool | None = None,
         **kwargs,

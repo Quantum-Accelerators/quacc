@@ -116,7 +116,7 @@ def load_yaml_calc(yaml_path: str | Path) -> dict:
         raise ValueError(msg)
 
     # Load YAML file
-    with open(yaml_path) as stream:
+    with yaml_path.open() as stream:
         config = yaml.safe_load(stream)
 
     # Inherit arguments from any parent YAML files but do not overwrite those in
@@ -164,8 +164,8 @@ def find_recent_logfile(dir_name: Path | str, logfile_extensions: str | list[str
     for f in os.listdir(dir_name):
         f_path = Path(dir_name, f)
         for ext in logfile_extensions:
-            if ext in f and os.path.getmtime(f_path) > mod_time:
-                mod_time = os.path.getmtime(f_path)
+            if ext in f and f_path.stat().st_mtime() > mod_time:
+                mod_time = f_path.stat().st_mtime()
                 logfile = f_path.resolve()
     return logfile
 

@@ -1,7 +1,7 @@
 """Quacc CLI module."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from typing import Any
@@ -37,7 +37,7 @@ def callback(value: bool) -> None:
 
 @app.callback()
 def main(
-    version: Optional[bool] = typer.Option(
+    version: bool | None = typer.Option(
         None,
         "--version",
         "-v",
@@ -137,7 +137,7 @@ def _delete_setting(key: str, config_file: str | Path) -> None:
     """
     yaml = ruamel.yaml.YAML()
     if config_file.exists():
-        with open(config_file, "r") as yaml_file:
+        with open(config_file) as yaml_file:
             yaml_content = yaml.load(yaml_file)
 
     if yaml_content:
@@ -166,7 +166,7 @@ def _update_setting(key: str, value: Any, config_file: str | Path) -> None:
     yaml = ruamel.yaml.YAML()
 
     if config_file.exists() and config_file.stat().st_size > 0:
-        with open(config_file, "r") as yaml_file:
+        with open(config_file) as yaml_file:
             yaml_content = yaml.load(yaml_file)
     else:
         yaml_content = {}
