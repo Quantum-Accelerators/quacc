@@ -1,7 +1,7 @@
 """Settings for quacc"""
 from __future__ import annotations
 
-import importlib
+from importlib import import_module, resources
 from pathlib import Path
 from shutil import which
 from typing import List, Optional, Union
@@ -13,7 +13,7 @@ from quacc.presets import vasp as vasp_defaults
 installed_engine = "local"
 for wflow_engine in {"covalent", "parsl", "redun", "jobflow"}:
     try:
-        importlib.import_module(wflow_engine)
+        import_module(wflow_engine)
         installed_engine = wflow_engine
     except ImportError:
         continue
@@ -172,7 +172,7 @@ class QuaccSettings(BaseSettings):
         description="If True, warnings will be raised when INCAR parameters are changed.",
     )
     VASP_PRESET_DIR: Union[str, Path] = Field(
-        importlib.resources.files(vasp_defaults),
+        resources.files(vasp_defaults),
         description="Path to the VASP preset directory",
     )
 
