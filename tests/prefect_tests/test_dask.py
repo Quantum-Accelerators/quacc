@@ -32,7 +32,9 @@ def test_make_prefect_runner():
         "processes": 1,
     }
     adapt_kwargs = {"minimum": 1, "maximum": 2}
-    runner = make_prefect_runner(cluster_kwargs, adapt_kwargs=adapt_kwargs, temporary=True)
+    runner = make_prefect_runner(
+        cluster_kwargs, adapt_kwargs=adapt_kwargs, temporary=True
+    )
     assert isinstance(runner, DaskTaskRunner)
     assert runner.cluster_class == SLURMCluster
     assert runner.cluster_kwargs == cluster_kwargs
@@ -44,7 +46,9 @@ def test_make_prefect_runner():
         "processes": 1,
     }
     adapt_kwargs = {"minimum": 1, "maximum": 2}
-    runner = make_prefect_runner(cluster_kwargs, adapt_kwargs=adapt_kwargs, temporary=True)
+    runner = make_prefect_runner(
+        cluster_kwargs, adapt_kwargs=adapt_kwargs, temporary=True
+    )
     assert isinstance(runner, DaskTaskRunner)
     assert runner.cluster_class == SLURMCluster
     assert runner.cluster_kwargs == cluster_kwargs
@@ -55,7 +59,9 @@ def test_make_prefect_runner():
         "memory": "1GB",
         "processes": 1,
     }
-    runner = make_prefect_runner(cluster_kwargs, cluster_class=PBSCluster, temporary=True)
+    runner = make_prefect_runner(
+        cluster_kwargs, cluster_class=PBSCluster, temporary=True
+    )
     assert isinstance(runner, DaskTaskRunner)
     assert runner.cluster_class == PBSCluster
     assert runner.cluster_kwargs == cluster_kwargs
