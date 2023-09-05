@@ -6,7 +6,8 @@ from pathlib import Path
 from shutil import which
 from typing import Literal
 
-from pydantic import BaseSettings, Field, root_validator
+from pydantic import Field, root_validator
+from pydantic_settings import BaseSettings
 
 from quacc.presets import vasp as vasp_defaults
 
