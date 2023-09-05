@@ -1,17 +1,18 @@
 """Settings for quacc"""
 from __future__ import annotations
 
+import importlib
 import os
 from pathlib import Path
 from shutil import which
 from typing import List, Optional, Union
-import importlib
+
 from pydantic import BaseSettings, Field, root_validator
 
 from quacc.presets import vasp as vasp_defaults
 
 installed_engine = "local"
-for wflow_engine in {"covalent","parsl","redun","jobflow"}:
+for wflow_engine in {"covalent", "parsl", "redun", "jobflow"}:
     try:
         importlib.import_module(wflow_engine)
         installed_engine = wflow_engine
