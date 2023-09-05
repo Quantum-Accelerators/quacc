@@ -5,28 +5,18 @@ import os
 from pathlib import Path
 from shutil import which
 from typing import List, Optional, Union
-
+import importlib
 from pydantic import BaseSettings, Field, root_validator
 
 from quacc.presets import vasp as vasp_defaults
 
-try:
-    import covalent
-    installed_engine = "covalent"
-except ImportError:
+installed_engine = "local"
+for wflow_engine in {"covalent","parsl","redun","jobflow"}:
     try:
-        import parsl
-        installed_engine = "parsl"
+        importlib.import_module(wflow_engine)
+        installed_engine = wflow_engine
     except ImportError:
-        try:
-            import redun
-            installed_engine = "redun"
-        except ImportError:
-            try:
-                import jobflow
-                installed_engine = "jobflow"
-            except ImportError:
-                installed_engine = "local"
+        continue
 
 _DEFAULT_CONFIG_FILE_PATH = Path("~", ".quacc.yaml").expanduser()
 
@@ -181,8 +171,8 @@ class QuaccSettings(BaseSettings):
         True,
         description="If True, warnings will be raised when INCAR parameters are changed.",
     )
-    VASP_PRESET_DIR: str = Field(
-        os.path.dirname(vasp_defaults.__file__),
+    VASP_PRESET_DIR: str | Path = Field(
+        resources.files(vasp_defaults),
         description="Path to the VASP preset directory",
     )
 
