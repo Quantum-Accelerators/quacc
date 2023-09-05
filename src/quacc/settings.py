@@ -4,7 +4,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 from shutil import which
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Literal
 
 from pydantic import BaseSettings, Field, root_validator
 
@@ -48,16 +48,8 @@ class QuaccSettings(BaseSettings):
     # Workflow Engine
     # ---------------------------
 
-    WORKFLOW_ENGINE: str = Field(
-        "covalent"
-        if covalent
-        else "parsl"
-        if parsl
-        else "redun"
-        if redun
-        else "jobflow"
-        if jobflow
-        else "local",
+    WORKFLOW_ENGINE: Literal["covalent","parsl","redun","jobflow","local"] = Field(
+        "local",
         description=(
             "The workflow manager to use."
             "Options include: 'covalent', 'parsl', 'redun', 'jobflow', or 'local'"
