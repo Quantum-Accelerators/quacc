@@ -122,7 +122,7 @@ def unset(parameter: str) -> None:
     _delete_setting(parameter, CONFIG_FILE)
 
 
-def _delete_setting(key: str, config_file: str | Path) -> None:
+def _delete_setting(key: Path, config_file: str | Path) -> None:
     """
     Remove the quacc setting from the configuration file.
 
@@ -137,17 +137,17 @@ def _delete_setting(key: str, config_file: str | Path) -> None:
     """
     yaml = ruamel.yaml.YAML()
     if config_file.exists():
-        with open(config_file) as yaml_file:
+        with config_file.open() as yaml_file:
             yaml_content = yaml.load(yaml_file)
 
     if yaml_content:
         yaml_content.pop(key, None)
-        with open(config_file, "w") as yaml_file:
+        with config_file.open(mode="w") as yaml_file:
             if yaml_content:
                 yaml.dump(yaml_content, yaml_file)
 
 
-def _update_setting(key: str, value: Any, config_file: str | Path) -> None:
+def _update_setting(key: str, value: Any, config_file: Path) -> None:
     """
     Update the quacc setting from the configuration file.
 
@@ -166,13 +166,13 @@ def _update_setting(key: str, value: Any, config_file: str | Path) -> None:
     yaml = ruamel.yaml.YAML()
 
     if config_file.exists() and config_file.stat().st_size > 0:
-        with open(config_file) as yaml_file:
+        with config_file.open() as yaml_file:
             yaml_content = yaml.load(yaml_file)
     else:
         yaml_content = {}
 
     yaml_content[key] = value
-    with open(config_file, "w") as yaml_file:
+    with config_file.open(mode="w") as yaml_file:
         yaml.dump(yaml_content, yaml_file)
 
 

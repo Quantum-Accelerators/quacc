@@ -150,7 +150,7 @@ class QChem(FileIOCalculator):
         atoms.spin_multiplicity = self.spin_multiplicity
         mol = AseAtomsAdaptor.get_molecule(atoms)
         if self.prev_orbital_coeffs is not None:
-            with open("53.0", mode="wb") as file:
+            with Path("53.0").open(mode="wb") as file:
                 for val in self.prev_orbital_coeffs:
                     data = struct.pack("d", val)
                     file.write(data)
