@@ -83,10 +83,10 @@ def make_unique_dir(base_path: str | None = None) -> str | Path:
         Path to the job directory.
     """
     time_now = datetime.utcnow().strftime("%Y-%m-%d-%H-%M-%S-%f")
-    job_dir = f"quacc-{time_now}-{randint(10000, 99999)}"
+    job_dir = Path(f"quacc-{time_now}-{randint(10000, 99999)}")
     if base_path:
         job_dir = Path(base_path, job_dir)
-    os.makedirs(job_dir)
+    job_dir.mkdir(parents=True)
 
     return job_dir
 
