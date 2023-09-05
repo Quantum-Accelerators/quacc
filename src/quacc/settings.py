@@ -4,7 +4,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 from shutil import which
-from typing import List, Literal, Optional, Union
+from typing import Literal
 
 from pydantic import BaseSettings, Field, root_validator
 
@@ -60,14 +60,14 @@ class QuaccSettings(BaseSettings):
     # General Settings
     # ---------------------------
 
-    CONFIG_FILE: Union[str, Path] = Field(
+    CONFIG_FILE: str | Path = Field(
         _DEFAULT_CONFIG_FILE_PATH,
         description=(
             "Path to the YAML file to load alternative quacc configuration "
             "defaults from."
         ),
     )
-    RESULTS_DIR: Union[str, Path] = Field(
+    RESULTS_DIR: str | Path = Field(
         Path.cwd(),
         description=(
             "Directory to store I/O-based calculation results in."
@@ -77,7 +77,7 @@ class QuaccSettings(BaseSettings):
             "In this case, the `RESULTS_DIR` will be a subdirectory of that directory."
         ),
     )
-    SCRATCH_DIR: Union[str, Path] = Field(
+    SCRATCH_DIR: str | Path = Field(
         Path("/tmp") if Path("/tmp").exists() else Path.cwd(),
         description="Scratch directory for calculations.",
     )
@@ -111,7 +111,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # ORCA Settings
     # ---------------------------
-    ORCA_CMD: Union[str, Path] = Field(
+    ORCA_CMD: str | Path = Field(
         "orca",
         description=(
             "Path to the ORCA executable. This must be the full, absolute path "
@@ -199,7 +199,7 @@ class QuaccSettings(BaseSettings):
     VASP_CUSTODIAN_MAX_ERRORS: int = Field(
         5, description="Maximum errors for Custodian"
     )
-    VASP_CUSTODIAN_HANDLERS: List[str] = Field(
+    VASP_CUSTODIAN_HANDLERS: list[str] = Field(
         [
             "VaspErrorHandler",
             "MeshSymmetryErrorHandler",
@@ -214,11 +214,11 @@ class QuaccSettings(BaseSettings):
         ],
         description="Handlers for Custodian",
     )
-    VASP_CUSTODIAN_VALIDATORS: List[str] = Field(
+    VASP_CUSTODIAN_VALIDATORS: list[str] = Field(
         ["VasprunXMLValidator", "VaspFilesValidator"],
         description="Validators for Custodian",
     )
-    VASP_CUSTODIAN_WALL_TIME: Optional[int] = Field(
+    VASP_CUSTODIAN_WALL_TIME: int = Field(
         None,
         description=(
             "After this many seconds, Custodian will stop running "
@@ -235,7 +235,7 @@ class QuaccSettings(BaseSettings):
         "qchem", description="Command to run the standard version of Q-Chem."
     )
 
-    QCHEM_LOCAL_SCRATCH: Union[str, Path] = Field(
+    QCHEM_LOCAL_SCRATCH: str | Path = Field(
         Path("/tmp") if Path("/tmp").exists() else Path.cwd(),
         description="Compute-node local scratch directory in which Q-Chem should perform IO.",
     )
@@ -253,10 +253,10 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # NewtonNet Settings
     # ---------------------------
-    NEWTONNET_MODEL_PATH: Union[Union[str, Path], List[Union[str, Path]]] = Field(
+    NEWTONNET_MODEL_PATH: str | Path | list[str | Path] = Field(
         "best_model_state.tar", description="Path to NewtonNet .tar model"
     )
-    NEWTONNET_CONFIG_PATH: Union[Union[str, Path], List[Union[str, Path]]] = Field(
+    NEWTONNET_CONFIG_PATH: str | Path | list[str | Path] = Field(
         "config.yml", description="Path to NewtonNet YAML settings file"
     )
 
