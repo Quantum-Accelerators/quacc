@@ -56,15 +56,18 @@ def static_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     calc_swaps
-        Dictionary of custom kwargs for the newtonnet calculator. Overrides the
-        following defaults:
+        Dictionary of custom kwargs for the newtonnet calculator.
 
-        ```python
-        {
-            "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-            "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-        }
-        ```
+        ???+ Note
+        
+             Overrides the following defaults:
+
+            ```python
+            {
+                "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+                "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+            }
+            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -109,22 +112,28 @@ def relax_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     calc_swaps
-        Dictionary of custom kwargs for the newtonnet calculator. Overrides the
-        following defaults:
+        Dictionary of custom kwargs for the newtonnet calculator.
 
-        ```python
-        {
-            "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-            "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-        }
-        ```
+        ???+ Note
+        
+             Overrides the following defaults:
+
+            ```python
+            {
+                "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+                "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+            }
+            ```
     opt_swaps
-        Optional swaps for the optimization parameters. Overrides the following
-        defaults:
+        Optional swaps for the optimization parameters.
 
-        ```python
-        {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella or FIRE}
-        ```
+        ???+ Note
+        
+             Overrides the following defaults:
+
+            ```python
+            {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella or FIRE}
+            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -177,15 +186,18 @@ def freq_job(
     pressure
         The pressure for the thermodynamic analysis.
     calc_swaps
-        Optional swaps for the calculator. Overrides the following
-        defaults:
+        Optional swaps for the calculator.
 
-        ```python
-        {
-            "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-            "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-        }
-        ```
+        ???+ Note
+        
+             Overrides the following defaults:
+
+            ```python
+            {
+                "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+                "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+            }
+            ```
 
     Returns
     -------

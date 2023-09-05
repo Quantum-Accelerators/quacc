@@ -37,20 +37,23 @@ def static_job(
     preset
         Preset to use.
     calc_swaps
-        Dictionary of custom kwargs for the calculator. Overrides the following
-        defaults:
+        Dictionary of custom kwargs for the calculator.
 
-        ```python
-        {
-            "ismear": -5,
-            "laechg": True,
-            "lcharg": True,
-            "lreal": False,
-            "lwave": True,
-            "nedos": 5001,
-            "nsw": 0,
-        }
-        ```
+        ???+ Note
+        
+             Overrides the following defaults:
+
+            ```python
+            {
+                "ismear": -5,
+                "laechg": True,
+                "lcharg": True,
+                "lreal": False,
+                "lwave": True,
+                "nedos": 5001,
+                "nsw": 0,
+            }
+            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -101,20 +104,23 @@ def relax_job(
         True if a volume relaxation (ISIF = 3) should be performed. False if
         only the positions (ISIF = 2) should be updated.
     calc_swaps
-        Dictionary of custom kwargs for the calculator. Overrides the following
-        defaults:
+        Dictionary of custom kwargs for the calculator.
 
-        ```python
-        {
-            "ediffg": -0.02,
-            "isif": 3 if relax_cell else 2,
-            "ibrion": 2,
-            "isym": 0,
-            "lcharg": False,
-            "lwave": False,
-            "nsw": 200,
-        }
-        ```
+        ???+ Note
+        
+             Overrides the following defaults:
+
+            ```python
+            {
+                "ediffg": -0.02,
+                "isif": 3 if relax_cell else 2,
+                "ibrion": 2,
+                "isym": 0,
+                "lcharg": False,
+                "lwave": False,
+                "nsw": 200,
+            }
+            ```
     copy_files
         Files to copy to the runtime directory.
 

@@ -54,8 +54,11 @@ def static_job(
     basis
         Basis set
     calc_swaps
-        Dictionary of custom kwargs for the calculator. Overrides the following
-        defaults:
+        Dictionary of custom kwargs for the calculator.
+
+        ???+ Note
+        
+             Overrides the following defaults:
 
         ```python
         {

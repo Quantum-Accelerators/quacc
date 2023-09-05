@@ -167,12 +167,15 @@ def relax_job(
         default values set therein as well as set additional Q-Chem parameters.
         See QChemDictSet documentation for more details.
     opt_swaps
-        Dictionary of custom kwargs for `run_ase_opt`. Overrides the following
-        defaults:
+        Dictionary of custom kwargs for `run_ase_opt`.
 
-        ```python
-        {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
-        ```
+        ???+ Note
+        
+             Overrides the following defaults:
+             
+            ```python
+            {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
+            ```
     Returns
     -------
     OptSchema
