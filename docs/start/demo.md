@@ -13,7 +13,7 @@ pip install quacc[covalent]
 quacc set WORKFLOW_ENGINE covalent && covalent start
 ```
 
-Then open the URL printed in the terminal (usually http://localhost:48008) and run a sample workflow below!
+Then open the URL printed in the terminal and run a sample workflow below!
 
 !!! Tip
 
