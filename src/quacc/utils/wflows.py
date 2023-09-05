@@ -197,9 +197,10 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:  # sourcery skip
             decorated = task(_func, **decorator_kwargs)
         elif wflow_engine == "prefect":
             from prefect import flow as prefect_flow
+
             if "validate_parameters" not in decorator_kwargs:
                 decorator_kwargs["validate_parameters"] = False
-                
+
             decorated = prefect_flow(_func, **decorator_kwargs)
         else:
             decorated = _func
@@ -281,6 +282,7 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:  # sourcery ski
             decorated = task(_func, **decorator_kwargs)
         elif wflow_engine == "prefect":
             from prefect import flow as prefect_flow
+
             if "validate_parameters" not in decorator_kwargs:
                 decorator_kwargs["validate_parameters"] = False
 
