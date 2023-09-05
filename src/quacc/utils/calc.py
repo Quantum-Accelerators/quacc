@@ -266,10 +266,9 @@ def _calc_setup(
 
     # Create a symlink (if not on Windows) to the tmpdir in the results_dir
     symlink = Path(job_results_dir, f"{tmpdir.name}-symlink")
-    if os.name != "nt":
-        if Path.is_symlink(symlink):
-            Path.unlink(symlink)
-        Path.symlink_to(tmpdir, symlink)
+    if Path.is_symlink(symlink):
+        Path.unlink(symlink)
+    tmpdir.symlink_to(symlink)
 
     # Copy files to tmpdir and decompress them if needed
     if copy_files:
