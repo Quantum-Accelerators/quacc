@@ -8,7 +8,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
 !!! Tip
 
-    Generally, we strongly recommend either **Covalent** or **Parsl** for most users. Those new to workflow managers may find Covalent easiest to start with.
+    If you are new to workflow engines or would like a helpful UI to monitor workflows, try **Covalent**. If you have a need for speed and are savvy with supercomputers, try **Parsl**.
 
 ### Pros and Cons
 
