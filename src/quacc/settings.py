@@ -10,7 +10,6 @@ from pydantic import BaseSettings, Field, root_validator
 
 from quacc.presets import vasp as vasp_defaults
 
-
 installed_engine = "local"
 for wflow_engine in {"covalent", "parsl", "redun", "jobflow"}:
     try:
