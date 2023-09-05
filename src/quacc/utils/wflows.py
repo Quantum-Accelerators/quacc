@@ -122,7 +122,7 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:  # sourcery skip
     Decorator for workflows, which consist of at least one compute job. This is
     a @flow decorator.
 
-    flow = ct.lattice/ct.dispatch(ct.lattice) [Covalent] = task [redun] = flow [Prefect].
+    flow = ct.lattice or ct.dispatch(ct.lattice) [Covalent] = task [redun] = flow [Prefect].
     For Parsl and Jobflow, the decorator returns the original function, unchanged.
 
     The wrapped function gets a new kwarg, `decorator_kwargs`, that can be used
@@ -197,7 +197,9 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:  # sourcery skip
             decorated = task(_func, **decorator_kwargs)
         elif wflow_engine == "prefect":
             from prefect import flow as prefect_flow
-
+            if "validate_parameters" not in decorator_kwargs:
+                decorator_kwargs["validate_parameters"] = False
+                
             decorated = prefect_flow(_func, **decorator_kwargs)
         else:
             decorated = _func
@@ -279,6 +281,8 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:  # sourcery ski
             decorated = task(_func, **decorator_kwargs)
         elif wflow_engine == "prefect":
             from prefect import flow as prefect_flow
+            if "validate_parameters" not in decorator_kwargs:
+                decorator_kwargs["validate_parameters"] = False
 
             decorated = prefect_flow(_func, **decorator_kwargs)
         else:
