@@ -268,7 +268,7 @@ def _calc_setup(
     symlink = Path(job_results_dir, f"{tmpdir.name}-symlink")
     if Path.is_symlink(symlink):
         Path.unlink(symlink)
-    tmpdir.symlink_to(symlink)
+    symlink.symlink_to(tmpdir)
 
     # Copy files to tmpdir and decompress them if needed
     if copy_files:
