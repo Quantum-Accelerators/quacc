@@ -44,11 +44,11 @@ Here, we provide code snippets for several decorator-based workflow engines. For
 
 To help enable interoperability between workflow engines, quacc offers a unified set of decorators.
 
-| Quacc              | Covalent                           | Parsl                 | Redun           | Jobflow        |
-| ------------------ | ---------------------------------- | --------------------- | --------------- | -------------- |
-| `#!Python job`     | `#!Python ct.electron`             | `#!Python python_app` | `#!Python task` | `#!Python job` |
-| `#!Python flow`    | `#!Python ct.lattice`              | N/A                   | `#!Python task` | N/A            |
-| `#!Python subflow` | `#!Python ct.electron(ct.lattice)` | `#!Python join_app`   | `#!Python task` | N/A            |
+| Quacc              | Covalent                           | Parsl                 | Prefect         | Redun           | Jobflow        |
+| ------------------ | ---------------------------------- | --------------------- | --------------- | --------------- | -------------- |
+| `#!Python job`     | `#!Python ct.electron`             | `#!Python python_app` | `#!Python task` | `#!Python task` | `#!Python job` |
+| `#!Python flow`    | `#!Python ct.lattice`              | N/A                   | `#!Python flow` | `#!Python task` | N/A            |
+| `#!Python subflow` | `#!Python ct.electron(ct.lattice)` | `#!Python join_app`   | `#!Python flow` | `#!Python task` | N/A            |
 
 The quacc descriptors are drop-in replacements for the specified workflow engine analogue, which we will use for the remainder of the tutorials.
 
@@ -104,7 +104,8 @@ graph LR
 
 
     dispatch_id = workflow(1, 2, 3)  # (3)!
-    print(ct.get_result(dispatch_id, wait=True))
+    result = ct.get_result(dispatch_id, wait=True) # (4)!
+    print(result)
     ```
 
     1. The `#!Python @job` decorator will be transformed into `#!Python @ct.electron`.
@@ -146,9 +147,48 @@ graph LR
     future2 = mult(future1, 3)
 
     result = future2.result()  # 9
+    print(result)
     ```
 
     1. The `#!Python @job` decorator will be transformed into `#!Python @python_app`.
+
+=== "Prefect"
+
+    !!! Important
+
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings.md):
+
+        ```bash
+        quacc set WORKFLOW_ENGINE prefect
+        ```
+
+    ```python
+    from quacc import flow, job
+
+
+    @job  #  (1)!
+    def add(a, b):
+        return a + b
+
+
+    @job
+    def mult(a, b):
+        return a * b
+
+
+    @flow  #  (2)!
+    def workflow(a, b, c):
+        return mult(add(a, b), c)
+
+
+    future = workflow(1, 2, 3)  # (3)!
+    result = future.result()
+    print(result)
+    ```
+
+    1. The `#!Python @job` decorator will be transformed into a Prefect `#!Python @task`.
+
+    2. The `#!Python @flow` decorator will be transformed into a Prefect `#!Python @ct.flow`.
 
 === "Redun"
 
@@ -223,6 +263,7 @@ graph LR
 
     responses = jf.run_locally(flow)
     result = responses[job2.uuid][1].output
+    print(result)
     ```
 
     1. The `#!Python @job` decorator will be transformed into `#!Python @jf.job`.
@@ -236,6 +277,10 @@ graph LR
 === "Parsl"
 
     If you want to learn more about Parsl, you can read the [Parsl Documentation](https://parsl.readthedocs.io/en/stable/#). Please refer to the [Parsl Slack Channel](http://parsl-project.org/support.html) for any Parsl-specific questions.
+
+=== "Prefect"
+
+    If you want to learn more about Perfect, you can read the [Prefect Documentation](https://docs.prefect.io/). Please refer to the [Prefect Slack Channel](https://www.prefect.io/slack/) and/or [Prefect Community Discourse](https://discourse.prefect.io/) page for any Prefect-specific questions.
 
 === "Redun"
 

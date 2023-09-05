@@ -8,7 +8,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
 !!! Tip
 
-    Generally, we highly recommend either **Covalent** or **Parsl** for most users. If you are new to workflow engines or would like a helpful UI to monitor workflows, try Covalent. If you have a need for speed and are savvy with supercomputers, try Parsl.
+    Generally, we strongly recommend either **Covalent** or **Parsl** for most users. Those new to workflow managers may find Covalent easiest to start with.
 
 ### Pros and Cons
 
@@ -55,11 +55,31 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     - Monitoring job progress is more challenging and less detailed than other solutions
     - The concept of always returning a "future" object can be confusing for new users
 
+=== "Prefect"
+
+    [Prefect](https://www.prefect.io/) is a workflow management system that is widely adopted in the data science industry.
+
+    Summary: Use Prefect if you are specifically interested in cloud compute and are looking for a nice UI.
+
+    Pros:
+
+    - Very popular in the data science industry with an active community
+    - Useful dashboard to monitor job progress
+    - Supports a variety of job schedulers via `dask-jobqueue`
+    - Uses a directed acyclic graph-free model for increased flexibility in workflow definitions
+
+    Cons:
+
+    - Lacks documentation for HPC environments, although it supports them
+    - Challenging to use if the compute nodes do not support network connections
+    - The dashboard stores results for only a 7 day history by default and does not store the full output of each task
+    - The concept of always returning a "future" object can be confusing for new users
+
 === "Redun"
 
     [Redun](https://insitro.github.io/redun/) is a flexible workflow management program developed by [Insitro](https://insitro.com/).
 
-    Summary: Use Redun if you are specifically interested in running on AWS or K8s and like a terminal-based monitoring approach.
+    Summary: Use Redun if you are specifically interested in running on AWS and like a terminal-based monitoring approach.
 
     Pros:
 

@@ -36,6 +36,22 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
 
+=== "Prefect"
+
+    To install Prefect, run the following:
+
+    ```bash
+    pip install quacc[prefect]
+    ```
+
+    To use quacc with Prefect Cloud (recommended):
+
+    1. Make an account on [Prefect Cloud](https://app.prefect.cloud/)
+    2. Make an [API Key](https://docs.prefect.io/cloud/users/api-keys/) and (optionally) store it in a `PREFECT_API_KEY` environment variable (e.g. in your `~/.bashrc`)
+    3. Run `prefect cloud login` from the command-line and enter your API key (or use the browser, if possible)
+
+    Additional configuration parameters can be modified, as described in the [Prefect documentation](https://docs.prefect.io/concepts/settings/).
+
 === "Redun"
 
     **Installation**
