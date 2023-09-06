@@ -35,7 +35,7 @@ In the previous examples, we have been running calculations on our local machine
 
     **Setting Executors via the Electron Objects**
 
-    The individual `Electron` executor options can be modified after they are imported as follows:
+    The individual `Electron` executor options can be modified after they are imported:
 
     ```python
     import covalent as ct
@@ -292,7 +292,7 @@ In the previous examples, we have been running calculations on our local machine
 
     8. The Python executable name. This often does not need to be changed.
 
-    With this instantiated cluster object, you can set the task runner of the `Flow` as follows.
+    With this instantiated cluster object, you can set the task runner of the `Flow`:
 
     ```python
     @flow(task_runner=runner)
@@ -315,7 +315,7 @@ In the previous examples, we have been running calculations on our local machine
 
     This is often more efficient for running large numbers of workflows because you can request a single, large Slurm job that continually pulls in work rather than submitting a large number of small jobs to the scheduler.
 
-    Additionally, you can have the generated Dask cluster adaptively scale based on the amount of work available by setting `adapt_kwargs` as follows:
+    Additionally, you can have the generated Dask cluster adaptively scale based on the amount of work available by setting `adapt_kwargs`:
 
     ```python
     runner = make_prefect_runner(cluster_kwargs, adapt_kwargs={"minimum": 1, "maximum": 5})
