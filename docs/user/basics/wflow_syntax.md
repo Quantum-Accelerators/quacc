@@ -16,11 +16,15 @@ Here, we provide code snippets for several decorator-based workflow engines. For
 
     To help enable interoperability between workflow engines, quacc offers a unified set of decorators.
 
+    <center>
+
     | Quacc              | Covalent                           |
     | ------------------ | ---------------------------------- |
     | `#!Python job`     | `#!Python ct.electron`             |
     | `#!Python flow`    | `#!Python ct.lattice`              |
     | `#!Python subflow` | `#!Python ct.electron(ct.lattice)` |
+
+    </center>
 
 === "Parsl ⭐"
 
@@ -28,11 +32,15 @@ Here, we provide code snippets for several decorator-based workflow engines. For
 
     To help enable interoperability between workflow engines, quacc offers a unified set of decorators.
 
+    <center>
+
     | Quacc              | Parsl                 |
     | ------------------ | --------------------- |
     | `#!Python job`     | `#!Python python_app` |
     | `#!Python flow`    | No effect             |
     | `#!Python subflow` | `#!Python join_app`   |
+
+    </center>
 
 === "Prefect"
 
@@ -40,11 +48,15 @@ Here, we provide code snippets for several decorator-based workflow engines. For
 
     To help enable interoperability between workflow engines, quacc offers a unified set of decorators.
 
+    <center>
+
     | Quacc              | Prefect         |
     | ------------------ | --------------- |
     | `#!Python job`     | `#!Python task` |
     | `#!Python flow`    | `#!Python flow` |
     | `#!Python subflow` | `#!Python flow` |
+
+    </center>
 
 === "Redun"
 
@@ -52,11 +64,15 @@ Here, we provide code snippets for several decorator-based workflow engines. For
 
     To help enable interoperability between workflow engines, quacc offers a unified set of decorators.
 
+    <center>
+
     | Quacc              | Redun           |
     | ------------------ | --------------- |
     | `#!Python job`     | `#!Python task` |
     | `#!Python flow`    | `#!Python task` |
     | `#!Python subflow` | `#!Python task` |
+
+    </center>
 
 === "Jobflow"
 
@@ -64,17 +80,17 @@ Here, we provide code snippets for several decorator-based workflow engines. For
 
     To help enable interoperability between workflow engines, quacc offers a unified set of decorators.
 
+    <center>
+
     | Quacc              | Jobflow        |
     | ------------------ | -------------- |
     | `#!Python job`     | `#!Python job` |
     | `#!Python flow`    | No effect      |
     | `#!Python subflow` | No effect      |
 
-The quacc descriptors are drop-in replacements for the specified workflow engine analogue, which we will use for the remainder of the tutorials.
+    </center>
 
-!!! Tip
-
-    Based on the value for the `WORKFLOW_ENGINE` global variable in your [quacc settings](../settings.md), the appropriate decorator will be automatically selected. If the `WORKFLOW_ENGINE` setting is set to `"local"` (or for any entries marked "no effect" in the above table), the decorators will have no effect on the underlying function.
+The quacc descriptors are drop-in replacements for the specified workflow engine analogue, which we will use for the remainder of the tutorials. Based on the value for the `WORKFLOW_ENGINE` global variable in your [quacc settings](../settings.md), the appropriate decorator will be automatically selected. If the `WORKFLOW_ENGINE` setting is set to `"local"`, the decorators will have no effect on the underlying function.
 
 ## Simple Workflow
 
@@ -201,7 +217,7 @@ graph LR
         return mult(add(a, b), c)
 
 
-    future = workflow(1, 2, 3)  # (3)!
+    future = workflow(1, 2, 3)
     result = future.result()
     print(result)
     ```

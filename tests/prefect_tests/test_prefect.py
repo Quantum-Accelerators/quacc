@@ -40,7 +40,9 @@ def test_tutorial1a(tmpdir):
     atoms = bulk("Cu")
 
     # Define the workflow
-    workflow = flow(relax_job)  # (1)!
+    @flow
+    def workflow(atoms):
+        return relax_job(atoms)  # (1)!
 
     # Dispatch the workflow
     future = workflow(atoms)  # (2)!

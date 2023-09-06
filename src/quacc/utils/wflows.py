@@ -30,15 +30,44 @@ if TYPE_CHECKING:
 
 def job(_func: Callable | None = None, **kwargs) -> Job:  # sourcery skip
     """
-    Decorator for individual compute jobs. This is a @job decorator.
+    Decorator for individual compute jobs. This is a `@job` decorator. Think
+    of each `@job`-decorated function as an individual SLURM job, if that helps.
 
-    job = ct.electron [Covalent] = python_app [Parsl] = job [Jobflow]
-    = task [redun] = task [Prefect].
+    | Quacc | Covalent      | Parsl        | Jobflow | Redun  | Prefect |
+    | ----- | ------------- | ------------ | ------- | ------ | ------- |
+    | `job` | `ct.electron` | `python_app` | `job`   | `task` | `task`  |
+
+    All `@job`-decorated functions are transformed into their corresponding
+    decorator.
+
+    ```python
+    from quacc import job
+
+    @job
+    def add(a, b):
+        return a + b
+    ```
+
+    is the same as doing
+
+    ```python
+    import covalent as ct
+
+    @ct.electron
+    def add(a, b):
+        return a + b
+    ```
+
+    !!! Note
+
+        For Prefect, this will actually call `Task.submit(*f_args, **f_kwargs)`, so you
+        never need to call `.submit()` on your own.
 
     The wrapped function gets a new kwarg, `decorator_kwargs`, that can be used
-    to modify the workflow engine decorator keyword arguments. The wrapped
-    function can also be accessed without the decorator by calling the
-    `.__wrapped__` attribute.
+    to modify the workflow engine decorator keyword arguments even after the
+    quacc-decorated function has been imported. The wrapped (i.e. undecorated)
+    function can also be stripped of its decorator by calling the `.__wrapped__`
+    attribute.
 
     Parameters
     ----------
@@ -120,15 +149,55 @@ def job(_func: Callable | None = None, **kwargs) -> Job:  # sourcery skip
 def flow(_func: Callable | None = None, **kwargs) -> Flow:  # sourcery skip
     """
     Decorator for workflows, which consist of at least one compute job. This is
-    a @flow decorator.
+    a `@flow` decorator.
 
-    flow = ct.lattice or ct.dispatch(ct.lattice) [Covalent] = task [redun] = flow [Prefect].
-    For Parsl and Jobflow, the decorator returns the original function, unchanged.
+    | Quacc  | Covalent     | Parsl     | Jobflow   | Redun  | Prefect |
+    | ------ | ------------ | --------- | --------- | ------ | ------- |
+    | `flow` | `ct.lattice` | No effect | No effect | `task` | `flow`  |
+
+    All `@flow`-decorated functions are transformed into their corresponding
+    decorator.
+
+    ```python
+    from quacc import flow, job
+
+    @job
+    def add(a, b):
+        return a + b
+
+    @flow
+    def workflow(a, b, c):
+        return add(add(a, b), c)
+    ```
+
+    is the same as doing
+
+    ```python
+    import covalent as ct
+
+    @ct.electron
+    def add(a, b):
+        return a + b
+
+    @ct.lattice
+    def workflow(a, b, c):
+        return add(add(a, b), c)
+    ```
+
+    For the entries marked "No effect," the decorator has no effect on the
+    underlying function.
+
+    !!! Note
+
+        For Covalent, this will actually call `ct.dispatch(ct.lattice(_func))(*f_args, **f_kwargs)`
+        for the outermost `@flow` and just `ct.lattice(_func)(*f_args, **f_kwargs)`
+        otherwise. As a result, you never need to call `ct.dispatch`.
 
     The wrapped function gets a new kwarg, `decorator_kwargs`, that can be used
-    to modify the workflow engine decorator keyword arguments. The wrapped
-    function can also be accessed without the decorator by calling the
-    `.__wrapped__` attribute.
+    to modify the workflow engine decorator keyword arguments even after the
+    quacc-decorated function has been imported. The wrapped (i.e. undecorated)
+    function can also be stripped of its decorator by calling the `.__wrapped__`
+    attribute.
 
     Parameters
     ----------
@@ -140,7 +209,7 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:  # sourcery skip
     Returns
     -------
     Flow
-        The @flow-decorated function.
+        The `@flow`-decorated function.
     """
 
     @functools.wraps(_func)
@@ -160,7 +229,7 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:  # sourcery skip
         decorator_kwargs
             Keyword arguments to pass to the workflow engine decorator.
         dispatch_kwargs
-            Keyword arguments to pass to ct.dispatch() if Covalent is used.
+            Keyword arguments to pass to `ct.dispatch()`, if Covalent is used.
         **f_kwargs
             Keyword arguments to the function, if any.
 
@@ -219,16 +288,72 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:  # sourcery skip
 
 def subflow(_func: Callable | None = None, **kwargs) -> Subflow:  # sourcery skip
     """
-    Decorator for (dynamic) sub-workflows. This is a @subflow decorator.
+    Decorator for (dynamic) sub-workflows. This is a `@subflow` decorator.
 
-    subflow = ct.electron(ct.lattice) [Covalent] = join_app [Parsl] = task [Redun]
-    = flow [Prefect].
-    For Jobflow, the decorator returns the original function.
+    | Quacc     | Covalent                  | Parsl      | Jobflow   | Redun  | Prefect |
+    | --------- | ------------------------- | ---------- | --------- | ------ | ------- |
+    | `subflow` | `ct.electron(ct.lattice)` | `join_app` | No effect | `task` | `flow`  |
+
+    All `@subflow`-decorated functions are transformed into their corresponding
+    decorator.
+
+    ```python
+    import random
+    from quacc import flow, job, subflow
+
+    @job
+    def add(a, b):
+        return a + b
+
+    @job
+    def make_more(val):
+        return [val] * random.randint(2, 5)
+
+    @subflow
+    def add_distributed(vals, c):
+        return [add(val, c) for val in vals]
+
+    @flow
+    def workflow(a, b, c):
+        result1 = add(a, b)
+        result2 = make_more(result1)
+        return add_distributed(result2, c)
+    ```
+
+    is the same as doing
+
+    ```python
+    import covalent as ct
+    import random
+
+    @ct.electron
+    def add(a, b):
+        return a + b
+
+    @ct.electron
+    def make_more(val):
+        return [val] * random.randint(2, 5)
+
+    @ct.electron
+    @ct.lattice
+    def add_distributed(vals, c):
+        return [add(val, c) for val in vals]
+
+    @ct.lattice
+    def workflow(a, b, c):
+        result1 = add(a, b)
+        result2 = make_more(result1)
+        return add_distributed(result2, c)
+    ```
+
+    For the entries marked "No effect," the decorator has no effect on the
+    underlying function.
 
     The wrapped function gets a new kwarg, `decorator_kwargs`, that can be used
-    to modify the workflow engine decorator keyword arguments. The wrapped
-    function can also be accessed without the decorator by calling the
-    `.__wrapped__` attribute.
+    to modify the workflow engine decorator keyword arguments even after the
+    quacc-decorated function has been imported. The wrapped (i.e. undecorated)
+    function can also be stripped of its decorator by calling the `.__wrapped__`
+    attribute.
 
     Parameters
     ----------
@@ -311,7 +436,7 @@ def make_prefect_runner(
     temporary: bool = False,
 ) -> DaskTaskRunner:
     """
-    Make a DaskTaskRunner for use with Prefect workflows.
+    Make a `DaskTaskRunner` for use with Prefect workflows.
 
     Parameters
     ----------
