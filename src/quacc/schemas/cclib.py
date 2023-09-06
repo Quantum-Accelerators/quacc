@@ -198,7 +198,7 @@ def summarize_run(
         SETTINGS.CHECK_CONVERGENCE if check_convergence is None else check_convergence
     )
     additional_fields = additional_fields or {}
-    dir_path = dir_path or os.getcwd()
+    dir_path = dir_path or Path.cwd()
 
     # Fortunately, there is already a cclib parser in Atomate2
     results = _cclibTaskDocument.from_logfile(
@@ -491,7 +491,7 @@ def _cclib_calculate(
         if not cube_file:
             msg = f"A cube file must be provided for {method}."
             raise ValueError(msg)
-        if not os.path.exists(cube_file):
+        if not Path(cube_file).exists():
             msg = f"Cube file {cube_file} does not exist."
             raise FileNotFoundError(msg)
     if method in proatom_methods:
@@ -500,7 +500,7 @@ def _cclib_calculate(
                 msg = "PROATOM_DIR environment variable or proatom_dir kwarg needs to be set."
                 raise ValueError(msg)
             proatom_dir = os.path.expandvars(os.environ["PROATOM_DIR"])
-        if not os.path.exists(proatom_dir):
+        if not Path(proatom_dir).exists():
             msg = f"Protatom directory {proatom_dir} does not exist. Returning None."
             raise FileNotFoundError(msg)
     cclib_methods = getmembers(cclib.method, isclass)

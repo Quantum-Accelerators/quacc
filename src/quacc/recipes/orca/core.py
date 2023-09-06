@@ -56,30 +56,38 @@ def static_job(
     input_swaps
         Dictionary of orcasimpleinput swaps for the calculator. To enable new
         entries, set the value as True. To remove entries from the defaults, set
-        the value as None. Overrides the following defaults:
+        the value as None.
 
-        ```python
-        {
-            xc: True,
-            basis: True,
-            "sp": True,
-            "slowconv": True,
-            "normalprint": True,
-            "xyzfile": True,
-        }
-        ```
+        ???+ Note
+
+             Overrides the following defaults:
+
+            ```python
+            {
+                xc: True,
+                basis: True,
+                "sp": True,
+                "slowconv": True,
+                "normalprint": True,
+                "xyzfile": True,
+            }
+            ```
     block_swaps
         Dictionary of orcablock swaps for the calculator. To enable new entries,
         set the value as True. To remove entries from the defaults, set the
-        value as None. Overrides the following defaults:
+        value as None.
 
-        ```python
-        (
-            {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
-            if which("mpirun")
-            else {}
-        )
-        ```
+        ???+ Note
+
+             Overrides the following defaults:
+
+            ```python
+            (
+                {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
+                if which("mpirun")
+                else {}
+            )
+            ```
 
     copy_files
         Files to copy to the runtime directory.
@@ -162,31 +170,39 @@ def relax_job(
     input_swaps
         Dictionary of orcasimpleinput swaps for the calculator. To enable new
         entries, set the value as True. To remove entries from the defaults, set
-        the value as None. Overrides the following defaults:
+        the value as None.
 
-        ```python
-        {
-            xc: True,
-            basis: True,
-            "opt": True,
-            "slowconv": True,
-            "normalprint": True,
-            "freq": True if run_freq else None,
-            "xyzfile": True,
-        }
-        ```
+        ???+ Note
+
+             Overrides the following defaults:
+
+            ```python
+            {
+                xc: True,
+                basis: True,
+                "opt": True,
+                "slowconv": True,
+                "normalprint": True,
+                "freq": True if run_freq else None,
+                "xyzfile": True,
+            }
+            ```
     block_swaps
         Dictionary of orcablock swaps for the calculator. To enable new entries,
         set the value as True. To remove entries from the defaults, set the
-        value as None. Overrides the following defaults:
+        value as None.
 
-        ```python
-        (
-            {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
-            if which("mpirun")
-            else {}
-        )
-        ```
+        ???+ Note
+
+             Overrides the following defaults:
+
+            ```python
+            (
+                {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
+                if which("mpirun")
+                else {}
+            )
+            ```
     copy_files
         Files to copy to the runtime directory.
 

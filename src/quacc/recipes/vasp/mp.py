@@ -45,12 +45,15 @@ def mp_prerelax_job(
     preset
         Preset to use.
     calc_swaps
-        Dictionary of custom kwargs for the calculator. Overrides the following
-        defaults:
+        Dictionary of custom kwargs for the calculator.
 
-        ```python
-        {"ediffg": -0.05, "xc": "pbesol"}
-        ```
+        ???+ Note
+
+             Overrides the following defaults:
+
+            ```python
+            {"ediffg": -0.05, "xc": "pbesol"}
+            ```
     copy_files
         Files to copy to the runtime directory.
 

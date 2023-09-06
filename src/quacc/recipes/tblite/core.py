@@ -101,12 +101,15 @@ def relax_job(
         Dictionary of custom kwargs for the tblite calculator. Overrides the
         following defaults: `{}`
     opt_swaps
-        Dictionary of custom kwargs for `run_ase_opt`. Overrides the following
-        defaults:
+        Dictionary of custom kwargs for `run_ase_opt`.
 
-        ```python
-        {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
-        ```
+        ???+ Note
+
+             Overrides the following defaults:
+
+            ```python
+            {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
+            ```
     copy_files
         Files to copy to the runtime directory.
 

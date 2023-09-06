@@ -86,12 +86,15 @@ def ts_job(
         default values set therein as well as set additional Q-Chem parameters.
         See QChemDictSet documentation for more details.
     opt_swaps
-        Dictionary of custom kwargs for `run_ase_opt`. Overrides the following
-        defaults:
+        Dictionary of custom kwargs for `run_ase_opt`.
 
-        ```python
-        {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
-        ```
+        ???+ Note
+
+             Overrides the following defaults:
+
+            ```python
+            {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
+            ```
 
     Returns
     -------
@@ -202,12 +205,15 @@ def irc_job(
         default values set therein as well as set additional Q-Chem parameters.
         See QChemDictSet documentation for more details.
     opt_swaps
-        Dictionary of custom kwargs for `run_ase_opt`. Overrides the following
-        defaults:
+        Dictionary of custom kwargs for `run_ase_opt`.
 
-        ```python
-        {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
-        ```
+        ???+ Note
+
+             Overrides the following defaults:
+
+            ```python
+            {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
+            ```
 
     Returns
     -------
@@ -284,12 +290,15 @@ def quasi_irc_job(
         Dictionary of kwargs that are passed as input to both irc_job and
         relax_job.
     irc_opt_swaps
-        Dictionary of opt_swap kwargs for the irc_job. Overrides the following
-        defaults:
+        Dictionary of opt_swap kwargs for the irc_job.
 
-        ```python
-        {"fmax": 100, "max_steps": 10}
-        ```
+        ???+ Note
+
+             Overrides the following defaults:
+
+            ```python
+            {"fmax": 100, "max_steps": 10}
+            ```
     relax_opt_swaps
         Dictionary of opt_swap kwargs for the relax_job.
 
