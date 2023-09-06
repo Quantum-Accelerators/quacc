@@ -43,7 +43,7 @@ class QChem(FileIOCalculator):
         The ASE Atoms object with attached Q-Chem calculator.
     """
 
-    implemented_properties = ["energy", "forces"] # noqa: RUF012
+    implemented_properties = ["energy", "forces"]  # noqa: RUF012
 
     def __init__(
         self,
