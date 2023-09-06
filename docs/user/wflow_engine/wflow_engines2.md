@@ -11,7 +11,7 @@ graph LR
   A[Input] --> B(Relax) --> C(Static) --> D[Output];
 ```
 
-=== "Covalent"
+=== "Covalent ⭐"
 
     !!! Important
 
@@ -61,7 +61,7 @@ graph LR
 
     4. You don't need to set `wait=True` in practice. Once you dispatch the workflow, it will begin running (if the resources are available). The `ct.get_result` function is used to fetch the workflow status and results from the server.
 
-=== "Parsl"
+=== "Parsl ⭐"
 
     !!! Important
 
@@ -253,7 +253,7 @@ graph LR
   A[Input] --> C(Relax) --> D[Output];
 ```
 
-=== "Covalent"
+=== "Covalent ⭐"
 
     ```python
     from ase.build import bulk, molecule
@@ -283,7 +283,7 @@ graph LR
     print(result)
     ```
 
-=== "Parsl"
+=== "Parsl ⭐"
 
     ```python
     from ase.build import bulk, molecule
@@ -412,7 +412,7 @@ graph LR
   C(Make Slabs) --> G(Slab Relax) --> H[Output];
 ```
 
-=== "Covalent"
+=== "Covalent ⭐"
 
     ```python
     import covalent as ct
@@ -442,7 +442,7 @@ graph LR
 
     1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator. We also chose to set `#!Python slab_static=None` here to disable the static calculation that is normally carried out in this workflow.
 
-=== "Parsl"
+=== "Parsl ⭐"
 
     ```python
     from ase.build import bulk

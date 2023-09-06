@@ -2,7 +2,7 @@
 
 In the previous examples, we have been running calculations on our local machine. However, in practice, you will probably want to run your calculations on one or more HPC machines. This section will describe how to set up your workflows to run on HPC machines using your desired workflow engine to scale up your calculations.
 
-=== "Covalent"
+=== "Covalent ⭐"
 
     By default, Covalent will run all `Electron` tasks on your local machine using the Dask backend. This is a parameter that you can control. For instance, Covalent offers many [plugin executors](https://docs.covalent.xyz/docs/features/executor-plugins/exe) that can be installed and used to interface with a wide range of HPC, cloud, and quantum devices.
 
@@ -112,7 +112,7 @@ In the previous examples, we have been running calculations on our local machine
         export COVALENT_CONFIG_DIR="$SCRATCH/.config/covalent"
         ```
 
-=== "Parsl"
+=== "Parsl ⭐"
 
     Out-of-the-box, Parsl will run on your local machine. However, in practice you will probably want to run your Parsl workflows on HPC machines.
 

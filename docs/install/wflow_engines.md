@@ -6,7 +6,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     If you are just getting started with workflow engines, we recommend first trying Covalent. For a comparison of the different compatible workflow engines, refer to the [Workflow Engines Overview](../user/basics/wflow_overview.md) section.
 
-=== "Covalent"
+=== "Covalent ⭐"
 
     **Installation**
 
@@ -26,7 +26,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
         Once you start scaling up your calculations, we recommend hosting the Covalent server on a dedicated machine or using [Covalent Cloud](https://www.covalent.xyz/cloud/). Refer to the [Covalent Deployment Guide](https://docs.covalent.xyz/docs/user-documentation/server-deployment) for details.
 
-=== "Parsl"
+=== "Parsl ⭐"
 
     **Installation**
 

@@ -10,7 +10,7 @@ Here, we provide code snippets for several decorator-based workflow engines. For
 
 ## Background
 
-=== "Covalent"
+=== "Covalent ⭐"
 
     !!! Info
 
@@ -18,7 +18,7 @@ Here, we provide code snippets for several decorator-based workflow engines. For
 
     Take a moment to learn about the main [Covalent Concepts](https://docs.covalent.xyz/docs/user-documentation/concepts/concepts-index), namely the [`#!Python @ct.electron`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#electron) and [`#!Python @ct.lattice`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#lattice) decorators, which describe individual compute tasks and workflows, respectively.
 
-=== "Parsl"
+=== "Parsl ⭐"
 
     !!! Info
 
@@ -70,7 +70,7 @@ graph LR
   A[Input] --> B(add) --> C(mult) --> D[Output];
 ```
 
-=== "Covalent"
+=== "Covalent ⭐"
 
     !!! Important
 
@@ -112,7 +112,7 @@ graph LR
 
     3. When using the `#!Python @flow` decorator, you do not need to call `ct.dispatch()`. It will be done automatically.
 
-=== "Parsl"
+=== "Parsl ⭐"
 
     !!! Important
 
@@ -270,11 +270,11 @@ graph LR
 
 ## Learn More
 
-=== "Covalent"
+=== "Covalent ⭐"
 
     If you want to learn more about Covalent, you can read the [Covalent Documentation](https://docs.covalent.xyz/docs/). Please refer to the Covalent [Discussion Board](https://github.com/AgnostiqHQ/covalent/discussions) for any Covalent-specific questions.
 
-=== "Parsl"
+=== "Parsl ⭐"
 
     If you want to learn more about Parsl, you can read the [Parsl Documentation](https://parsl.readthedocs.io/en/stable/#). Please refer to the [Parsl Slack Channel](http://parsl-project.org/support.html) for any Parsl-specific questions.
 

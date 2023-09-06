@@ -8,7 +8,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
     If you are new to workflow engines or would like a helpful UI to monitor workflows, try **Covalent**. If you have a need for speed and are savvy with supercomputers, try **Parsl**.
 
-=== "Covalent"
+=== "Covalent ⭐"
 
     [Covalent](https://github.com/AgnostiqHQ/covalent/) is a workflow management solution from the company [Agnostiq](https://agnostiq.ai/).
 
@@ -27,7 +27,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     - It requires a centralized server to be running continuously in order to manage the workflows
     - High-security HPC environments may be difficult to access via SSH with the centralized server approach
 
-=== "Parsl"
+=== "Parsl ⭐"
 
     [Parsl](https://github.com/Parsl/parsl) is a workflow management solution out of Argonne National Laboratory, the University of Chicago, and the University of Illinois. It is well-adapted for running on virtually any HPC environment with a job scheduler.
 
