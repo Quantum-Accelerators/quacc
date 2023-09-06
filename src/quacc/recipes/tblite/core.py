@@ -104,7 +104,7 @@ def relax_job(
         Dictionary of custom kwargs for `run_ase_opt`.
 
         ???+ Note
-        
+
              Overrides the following defaults:
 
             ```python

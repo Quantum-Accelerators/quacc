@@ -59,7 +59,7 @@ def static_job(
         the value as None.
 
         ???+ Note
-        
+
              Overrides the following defaults:
 
             ```python
@@ -78,7 +78,7 @@ def static_job(
         value as None.
 
         ???+ Note
-        
+
              Overrides the following defaults:
 
             ```python
@@ -173,7 +173,7 @@ def relax_job(
         the value as None.
 
         ???+ Note
-        
+
              Overrides the following defaults:
 
             ```python
@@ -193,9 +193,9 @@ def relax_job(
         value as None.
 
         ???+ Note
-        
+
              Overrides the following defaults:
-             
+
             ```python
             (
                 {f"%pal nprocs {multiprocessing.cpu_count()} end": True}

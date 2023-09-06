@@ -76,7 +76,7 @@ def ts_job(
         Optional swaps for the NewtonNet calculator.
 
         ???+ Note
-        
+
              Overrides the following defaults:
 
             ```python
@@ -89,7 +89,7 @@ def ts_job(
         Optional swaps for the optimization parameters.
 
         ???+ Note
-        
+
              Overrides the following defaults:
 
             ```python
@@ -178,9 +178,9 @@ def irc_job(
         Keyword arguments for the `freq_job`.
     calc_swaps
         Optional swaps for the calculator.
-        
+
         ???+ Note
-        
+
              Overrides the following defaults:
 
             ```python
@@ -193,7 +193,7 @@ def irc_job(
         Optional swaps for the optimization parameters.
 
         ???+ Note
-        
+
              Overrides the following defaults:
 
             ```python
@@ -296,13 +296,13 @@ def quasi_irc_job(
         Optional swaps for the IRC optimization parameters.
 
         ???+ Note
-        
+
              Overrides the following defaults:
-             
+
             ```python
             {"max_steps": 5}
             ```
-            
+
     opt_swaps
         Optional swaps for the optimization parameters. Overrides
         the following defaults: `{}`.

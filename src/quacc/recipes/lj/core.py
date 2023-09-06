@@ -88,7 +88,7 @@ def relax_job(
         Dictionary of swaps for `run_ase_opt`.
 
         ???+ Note
-        
+
              Overrides the following defaults:
 
             ```python
