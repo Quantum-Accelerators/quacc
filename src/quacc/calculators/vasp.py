@@ -201,7 +201,7 @@ class Vasp(Vasp_):
             self.auto_kpts = self.user_calc_params["auto_kpts"]
         if self.user_calc_params.get("auto_dipole") and self.auto_dipole is None:
             self.auto_dipole = self.user_calc_params["auto_dipole"]
-        for k in {"elemental_magmoms", "auto_kpts", "auto_dipole"}:
+        for k in ["elemental_magmoms", "auto_kpts", "auto_dipole"]:
             self.user_calc_params.pop(k, None)
 
         # Make automatic k-point mesh
