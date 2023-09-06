@@ -27,27 +27,29 @@ def teardown_module():
     SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
-# @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
-# def test_tutorial1a(tmpdir):
-#     tmpdir.chdir()
+@pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
+def test_tutorial1a(tmpdir):
+    tmpdir.chdir()
 
-#     from ase.build import bulk
+    from ase.build import bulk
 
-#     from quacc import flow
-#     from quacc.recipes.emt.core import relax_job
+    from quacc import flow
+    from quacc.recipes.emt.core import relax_job
 
-#     # Make an Atoms object of a bulk Cu structure
-#     atoms = bulk("Cu")
+    # Make an Atoms object of a bulk Cu structure
+    atoms = bulk("Cu")
 
-#     # Define the workflow
-#     workflow = flow(relax_job)  # (1)!
+    # Define the workflow
+    @flow
+    def workflow(atoms):
+        return relax_job(atoms)  # (1)!
 
-#     # Dispatch the workflow
-#     future = workflow(atoms)  # (2)!
+    # Dispatch the workflow
+    future = workflow(atoms)  # (2)!
 
-#     # Fetch the result
-#     result = future.result()  # (3)!
-#     assert "atoms" in result
+    # Fetch the result
+    result = future.result()  # (3)!
+    assert "atoms" in result
 
 
 # @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")

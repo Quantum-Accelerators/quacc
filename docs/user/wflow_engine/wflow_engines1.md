@@ -112,29 +112,21 @@ graph LR
     atoms = bulk("Cu")
 
     # Define the workflow
-    workflow = flow(relax_job)  # (1)!
+    @flow
+    def workflow(atoms):
+        return relax_job(atoms)  # (1)!
 
     # Dispatch the workflow
-    future = workflow(atoms)  # (2)!
+    future = workflow(atoms)
 
     # Fetch the result
-    result = future.result()  # (3)!
+    result = future.result()  # (2)!
     print(result)
     ```
 
-    1. This is shorthand for the following:
+    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
 
-        ```python
-        @flow
-        def workflow(atoms):
-            return relax_job(atoms)
-        ```
-
-        Also note that the `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
-
-    2. Because the workflow was pre-defined with a `#!Python @flow` decorator, it will be sent to the Prefect server and a future will be returned.
-
-    3. Calling `.result()` will resolve the future and return the calculation result.
+    2. Calling `.result()` will resolve the future and return the calculation result.
 
 === "Redun"
 
