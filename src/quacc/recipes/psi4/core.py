@@ -57,7 +57,7 @@ def static_job(
         Dictionary of custom kwargs for the calculator.
 
         ???+ Note
-        
+
              Overrides the following defaults:
 
             ```python
