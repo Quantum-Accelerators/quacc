@@ -19,7 +19,7 @@ graph LR
   A[Input] --> B(EMT Relax) --> C[Output]
 ```
 
-Let's start with a simple example. Here, we will use a cheap calculator based on effective medium theory (EMT) to run a structure relaxation on a bulk structure of copper, as shown below.
+Let's start with a simple example. Here, we will use a cheap calculator based on effective medium theory (EMT) to run a structure relaxation on a bulk structure of copper. We are interested in doing a structure relaxation, so we will use the [`quacc.recipes.emt.core.relax_job`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.core.relax_job) recipe, as demonstrated below.
 
 ```python
 from ase.build import bulk
@@ -187,10 +187,6 @@ print(result)
         'volume': 11.761470249999999,
     }
     ```
-
-Walking through step-by-step, we first defined an `Atoms` object representation of the material we wish to run the calculation on. In this example, we have imported the bulk Cu structure from ASE's predefined library of bulk structures.
-
-With the `Atoms` object defined, we then imported a desired recipe and instantiated it. In this case, since we want to use EMT, we can look in [`quacc.recipes.emt`](https://github.com/Quantum-Accelerators/quacc/tree/main/src/quacc/recipes/emt) to see all the available recipes. We are interested in doing a structure relaxation, so we imported the [`quacc.recipes.emt.core.relax_job`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.core.relax_job) recipe. We then instantiated and ran the recipe by passing in the `Atoms` object we defined earlier.
 
 ### A Simple Mixed-Code Workflow
 

@@ -89,7 +89,7 @@ def ts_job(
         Dictionary of custom kwargs for `run_ase_opt`.
 
         ???+ Note
-        
+
              Overrides the following defaults:
 
             ```python
@@ -208,7 +208,7 @@ def irc_job(
         Dictionary of custom kwargs for `run_ase_opt`.
 
         ???+ Note
-        
+
              Overrides the following defaults:
 
             ```python
@@ -293,7 +293,7 @@ def quasi_irc_job(
         Dictionary of opt_swap kwargs for the irc_job.
 
         ???+ Note
-        
+
              Overrides the following defaults:
 
             ```python

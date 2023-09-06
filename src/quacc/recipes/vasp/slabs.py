@@ -38,7 +38,7 @@ def slab_static_job(
         dictionary of custom kwargs for the calculator.
 
         ???+ Note
-        
+
              Overrides the following defaults:
 
             ```python
@@ -105,7 +105,7 @@ def slab_relax_job(
         Dictionary of custom kwargs for the calculator.
 
         ???+ Note
-        
+
              Overrides the following defaults:
 
             ```python
