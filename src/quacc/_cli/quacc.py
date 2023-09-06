@@ -1,7 +1,7 @@
 """Quacc CLI module."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from typing import Any
@@ -37,7 +37,7 @@ def callback(value: bool) -> None:
 
 @app.callback()
 def main(
-    version: Optional[bool] = typer.Option(  # noqa: ARG001, UP007
+    version: bool | None = typer.Option(  # noqa: ARG001
         None,
         "--version",
         "-v",
