@@ -164,7 +164,7 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:  # sourcery skip
     @job
     def add(a, b):
         return a + b
-    
+
     @flow
     def workflow(a, b, c):
         return add(add(a, b), c)
@@ -178,7 +178,7 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:  # sourcery skip
     @ct.electron
     def add(a, b):
         return a + b
-    
+
     @ct.lattice
     def workflow(a, b, c):
         return add(add(a, b), c)
@@ -304,7 +304,7 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:  # sourcery ski
     @job
     def add(a, b):
         return a + b
-    
+
     @job
     def make_more(val):
         return [val] * random.randint(2, 5)
