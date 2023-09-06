@@ -40,7 +40,7 @@ def test_tutorial1a(tmpdir):
     atoms = bulk("Cu")
 
     # Define the workflow
-    workflow = flow(relax_job, decorator_kwargs={"validate_parameters": False})  # (1)!
+    workflow = flow(relax_job)  # (1)!
 
     # Dispatch the workflow
     future = workflow(atoms)  # (2)!
