@@ -14,35 +14,67 @@ Here, we provide code snippets for several decorator-based workflow engines. For
 
     Take a moment to learn about the main [Covalent Concepts](https://docs.covalent.xyz/docs/user-documentation/concepts/concepts-index), namely the [`#!Python @ct.electron`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#electron) and [`#!Python @ct.lattice`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#lattice) decorators, which describe individual compute tasks and workflows, respectively.
 
+    To help enable interoperability between workflow engines, quacc offers a unified set of decorators.
+
+    | Quacc              | Covalent                           |
+    | ------------------ | ---------------------------------- |
+    | `#!Python job`     | `#!Python ct.electron`             |
+    | `#!Python flow`    | `#!Python ct.lattice`              |
+    | `#!Python subflow` | `#!Python ct.electron(ct.lattice)` |
+
 === "Parsl ⭐"
 
     Take a moment to read the Parsl documentation's ["Quick Start"](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a [`#!Python python_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html#Python-Apps) and [`#!Python join_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html?highlight=join_app#Dynamic-workflows-with-apps-that-generate-other-apps), which describe individual compute tasks and dynamic job tasks, respectively.
+
+    To help enable interoperability between workflow engines, quacc offers a unified set of decorators.
+
+    | Quacc              | Parsl                 |
+    | ------------------ | --------------------- |
+    | `#!Python job`     | `#!Python python_app` |
+    | `#!Python flow`    | No effect             |
+    | `#!Python subflow` | `#!Python join_app`   |
 
 === "Prefect"
 
     Take a moment to read the [Prefect documentation's](https://docs.prefect.io/latest/tutorial/) to get a sense of how it works. Namely, you should understand the `Task` and `Flow` decorators as well as how to interface with the server.
 
+    To help enable interoperability between workflow engines, quacc offers a unified set of decorators.
+
+    | Quacc              | Prefect         |
+    | ------------------ | --------------- |
+    | `#!Python job`     | `#!Python task` |
+    | `#!Python flow`    | `#!Python flow` |
+    | `#!Python subflow` | `#!Python flow` |
+
 === "Redun"
 
     Take a moment to read the Redun documentation's [Design Overview page](https://insitro.github.io/redun/design.html) to get a sense of how Redun works. Namely, you should understand the `Task` decorator and how to interface with the `Scheduler`.
+
+    To help enable interoperability between workflow engines, quacc offers a unified set of decorators.
+
+    | Quacc              | Redun           |
+    | ------------------ | --------------- |
+    | `#!Python job`     | `#!Python task` |
+    | `#!Python flow`    | `#!Python task` |
+    | `#!Python subflow` | `#!Python task` |
 
 === "Jobflow"
 
     Take a moment to read the Jobflow documentation's [Quick Start](https://materialsproject.github.io/jobflow/tutorials/1-quickstart.html) to get a sense of how Jobflow works. Namely, you should understand the `Job` and `Flow` definitions, which describe individual compute tasks and workflows, respectively.
 
-To help enable interoperability between workflow engines, quacc offers a unified set of decorators.
+    To help enable interoperability between workflow engines, quacc offers a unified set of decorators.
 
-| Quacc              | Covalent                           | Parsl                 | Prefect         | Redun           | Jobflow        |
-| ------------------ | ---------------------------------- | --------------------- | --------------- | --------------- | -------------- |
-| `#!Python job`     | `#!Python ct.electron`             | `#!Python python_app` | `#!Python task` | `#!Python task` | `#!Python job` |
-| `#!Python flow`    | `#!Python ct.lattice`              | —                     | `#!Python flow` | `#!Python task` | —              |
-| `#!Python subflow` | `#!Python ct.electron(ct.lattice)` | `#!Python join_app`   | `#!Python flow` | `#!Python task` | —              |
+    | Quacc              | Jobflow        |
+    | ------------------ | -------------- |
+    | `#!Python job`     | `#!Python job` |
+    | `#!Python flow`    | No effect      |
+    | `#!Python subflow` | No effect      |
 
 The quacc descriptors are drop-in replacements for the specified workflow engine analogue, which we will use for the remainder of the tutorials.
 
 !!! Tip
 
-    Based on the value for the `WORKFLOW_ENGINE` global variable in your [quacc settings](../settings.md), the appropriate decorator will be automatically selected. If the `WORKFLOW_ENGINE` setting is set to `"local"` (or for any entries marked `—` in the above table), the decorators will have no effect on the underlying function.
+    Based on the value for the `WORKFLOW_ENGINE` global variable in your [quacc settings](../settings.md), the appropriate decorator will be automatically selected. If the `WORKFLOW_ENGINE` setting is set to `"local"` (or for any entries marked "no effect" in the above table), the decorators will have no effect on the underlying function.
 
 ## Simple Workflow
 
