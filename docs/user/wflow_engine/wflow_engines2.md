@@ -113,11 +113,13 @@ graph LR
 
 === "Prefect"
 
-    If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings.md):
+    !!! Important
 
-    ```bash
-    quacc set WORKFLOW_ENGINE prefect
-    ```
+      If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings.md):
+  
+      ```bash
+      quacc set WORKFLOW_ENGINE prefect
+      ```
 
     ```python
     from ase.build import bulk
