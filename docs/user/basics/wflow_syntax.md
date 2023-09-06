@@ -217,7 +217,7 @@ graph LR
         return mult(add(a, b), c)
 
 
-    future = workflow(1, 2, 3)  # (3)!
+    future = workflow(1, 2, 3)
     result = future.result()
     print(result)
     ```
