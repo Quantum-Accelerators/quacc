@@ -47,14 +47,14 @@ To help enable interoperability between workflow engines, quacc offers a unified
 | Quacc              | Covalent                           | Parsl                 | Prefect         | Redun           | Jobflow        |
 | ------------------ | ---------------------------------- | --------------------- | --------------- | --------------- | -------------- |
 | `#!Python job`     | `#!Python ct.electron`             | `#!Python python_app` | `#!Python task` | `#!Python task` | `#!Python job` |
-| `#!Python flow`    | `#!Python ct.lattice`              | N/A                   | `#!Python flow` | `#!Python task` | N/A            |
-| `#!Python subflow` | `#!Python ct.electron(ct.lattice)` | `#!Python join_app`   | `#!Python flow` | `#!Python task` | N/A            |
+| `#!Python flow`    | `#!Python ct.lattice`              | —                     | `#!Python flow` | `#!Python task` | —              |
+| `#!Python subflow` | `#!Python ct.electron(ct.lattice)` | `#!Python join_app`   | `#!Python flow` | `#!Python task` | —              |
 
 The quacc descriptors are drop-in replacements for the specified workflow engine analogue, which we will use for the remainder of the tutorials.
 
 !!! Tip
 
-    Based on the value for the `WORKFLOW_ENGINE` global variable in your [quacc settings](../settings.md), the appropriate decorator will be automatically selected. If the `WORKFLOW_ENGINE` setting is set to `"local"` (or for any entries marked N/A in the above table), the decorators will have no effect on the underlying function.
+    Based on the value for the `WORKFLOW_ENGINE` global variable in your [quacc settings](../settings.md), the appropriate decorator will be automatically selected. If the `WORKFLOW_ENGINE` setting is set to `"local"` (or for any entries marked `—` in the above table), the decorators will have no effect on the underlying function.
 
 ## Simple Workflow
 
