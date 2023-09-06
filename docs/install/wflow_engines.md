@@ -28,6 +28,8 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
 === "Parsl"
 
+    **Installation**
+
     To install Parsl, run the following:
 
     ```bash
