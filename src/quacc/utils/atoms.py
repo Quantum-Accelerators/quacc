@@ -204,6 +204,8 @@ def set_magmoms(
                     ]
                 )
                 atoms.set_initial_magnetic_moments(initial_mags)
+        else:
+            pass
     elif copy_magmoms:
         atoms.set_initial_magnetic_moments(mags)
 
