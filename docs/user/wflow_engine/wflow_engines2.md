@@ -116,7 +116,7 @@ graph LR
     !!! Important
 
       If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings.md):
-  
+
       ```bash
       quacc set WORKFLOW_ENGINE prefect
       ```
