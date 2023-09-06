@@ -32,7 +32,8 @@ jobs:
       - name: Install pip packages
         run: |
           pip install -r tests/requirements.txt
-          pip install .[docs]
+          pip install -r tests/requirements-docs.txt
+          pip install .
 
       - name: Build docs
         run: mkdocs build
