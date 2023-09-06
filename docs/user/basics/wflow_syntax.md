@@ -141,14 +141,16 @@ graph LR
         return a * b
 
 
-    future1 = add(1, 2)
-    future2 = mult(future1, 3)
+    def workflow(a, b, c):  #  (2)!
+        return mult(add(a, b), c)
 
-    result = future2.result()  # 9
+    result = workflow(1, 2, 3).result()  # 9
     print(result)
     ```
 
     1. The `#!Python @job` decorator will be transformed into `#!Python @python_app`.
+
+    2. The `#!Python @flow` decorator doesn't actually do anything when using Parsl, so we chose to not include it here for brevity.
 
 === "Prefect"
 
@@ -228,7 +230,7 @@ graph LR
 
     2. The `#!Python @job` decorator will be transformed into a Redun `#!Python @task`.
 
-    3. The `#!Python @flow` decorator will also be transformed into Redun `#!Python @task`. Everything in Redun is a `#!Python @task`, so it doesn't matter what quacc decorator you apply. We chose `#!Python @flow` simply for clarity.
+    3. The `#!Python @flow` decorator will also be transformed into a Redun `#!Python @task`. Everything in Redun is a `#!Python @task`, so it doesn't matter what quacc decorator you apply. We chose `#!Python @flow` simply for clarity.
 
 === "Jobflow"
 

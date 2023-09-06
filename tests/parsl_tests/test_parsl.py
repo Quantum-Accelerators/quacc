@@ -98,21 +98,29 @@ def test_tutorial2a(tmpdir):
     tmpdir.chdir()
 
     from ase.build import bulk
-
     from quacc.recipes.emt.core import relax_job, static_job
+
+    # Define the workflow
+    def workflow(atoms):
+
+        # Define Job 1
+        future1 = relax_job(atoms)  # (1)!
+
+        # Define Job 2, which takes the output of Job 1 as input
+        future2 = static_job(future1)
+
+        return future2
+
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
 
-    # Call App 1
-    future1 = relax_job(atoms)  # (1)!
+    # Dispatch the workflow
+    future = workflow(atoms)
 
-    # Call App 2, which takes the output of App 1 as input
-    future2 = static_job(future1)
-
-    # Print result
-    assert "atoms" in future2.result()
-
+    # Fetch the result
+    result = future.result()  # (2)!
+    assert "atoms" in result
 
 @pytest.mark.skipif(
     parsl is None,
@@ -122,20 +130,31 @@ def test_tutorial2b(tmpdir):
     tmpdir.chdir()
 
     from ase.build import bulk, molecule
-
     from quacc.recipes.emt.core import relax_job
+
+    # Define workflow
+    def workflow(atoms1, atoms2):
+        # Define two independent relaxation jobs
+        result1 = relax_job(atoms1)
+        result2 = relax_job(atoms2)
+
+        return {"result1": result1, "result2": result2}
+
 
     # Define two Atoms objects
     atoms1 = bulk("Cu")
     atoms2 = molecule("N2")
 
     # Define two independent relaxation jobs
-    future1 = relax_job(atoms1)
-    future2 = relax_job(atoms2)
+    futures = workflow(atoms1, atoms2)
+
+    # Fetch the results
+    result1 = futures["result1"].result()
+    result2 = futures["result2"].result()
 
     # Print the results
-    assert "atoms" in future1.result()
-    assert "atoms" in future2.result()
+    assert "atoms" in result1
+    assert "atoms" in result2
 
 
 @pytest.mark.skipif(
@@ -144,21 +163,30 @@ def test_tutorial2b(tmpdir):
 )
 def test_tutorial2c(tmpdir):
     tmpdir.chdir()
-    from ase.build import bulk
 
+    from ase.build import bulk
     from quacc.recipes.emt.core import relax_job
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+
+    # Define the workflow
+    def workflow(atoms):
+        relaxed_bulk = relax_job(atoms)
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, slab_static=None)  # (1)!
+
+        return relaxed_slabs
 
     # Define the Atoms object
     atoms = bulk("Cu")
 
-    # Define the workflow
-    future1 = relax_job(atoms)
-    future2 = bulk_to_slabs_flow(future1, slab_static=None)  # (1)!
+    # Dispatch the workflow
+    future = workflow(atoms)
 
+    # Fetch the results
+    result = future.result()
+    
     # Print the results
-    assert len(future2.result()) == 4
-    assert future2.done()
+    assert len(result) == 4
 
 
 @pytest.mark.skipif(
@@ -170,17 +198,21 @@ def test_comparison1(tmpdir):
 
     from quacc import job
 
-    @job  # (1)!
+
+    @job  #  (1)!
     def add(a, b):
         return a + b
+
 
     @job
     def mult(a, b):
         return a * b
 
-    future1 = add(1, 2)
-    future2 = mult(future1, 3)
-    result = future2.result()  # 9  (2)!
+
+    def workflow(a, b, c):  #  (2)!
+        return mult(add(a, b), c)
+
+    result = workflow(1, 2, 3).result()  # 9
     assert result == 9
 
 
