@@ -538,6 +538,6 @@ def test_prefect_decorators(tmpdir):
     assert add_flow(1, 2).result() == 3
     assert workflow(1, 2, 3).result() == 9
     results = dynamic_workflow(1, 2, 3)
-    assert [result.result() for result in results] == 6
+    assert [result.result() for result in results] == [6, 6, 6]
     results = flow(add_distributed)([1, 1, 1], 2)
-    assert [result.result() for result in results] == 3
+    assert [result.result() for result in results] == [3, 3, 3]
