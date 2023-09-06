@@ -59,7 +59,7 @@ def static_job(
         Dictionary of custom kwargs for the newtonnet calculator.
 
         ???+ Note
-        
+
              Overrides the following defaults:
 
             ```python
@@ -115,7 +115,7 @@ def relax_job(
         Dictionary of custom kwargs for the newtonnet calculator.
 
         ???+ Note
-        
+
              Overrides the following defaults:
 
             ```python
@@ -128,7 +128,7 @@ def relax_job(
         Optional swaps for the optimization parameters.
 
         ???+ Note
-        
+
              Overrides the following defaults:
 
             ```python
@@ -189,7 +189,7 @@ def freq_job(
         Optional swaps for the calculator.
 
         ???+ Note
-        
+
              Overrides the following defaults:
 
             ```python

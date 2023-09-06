@@ -47,7 +47,7 @@ def static_job(
         Dictionary of custom keyword swap kwargs for the calculator.
 
         ???+ Note
-        
+
              Overrides the following defaults:
 
             ```python
@@ -60,7 +60,7 @@ def static_job(
         Dictionary of custom option swap kwargs for the calculator.
 
         ???+ Note
-        
+
              Overrides the following defaults:
 
             ```python
@@ -139,9 +139,9 @@ def relax_job(
         Dictionary of custom keyword swap kwargs for the calculator.
 
         ???+ Note
-        
+
              Overrides the following defaults:
-             
+
             ```python
             {
                 "opti": True,
@@ -155,7 +155,7 @@ def relax_job(
         Dictionary of custom option swap kwargs for the calculator.
 
         ???+ Note
-        
+
              Overrides the following defaults:
 
             ```python
