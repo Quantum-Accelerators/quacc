@@ -51,27 +51,30 @@ def static_job(
     basis
         Basis set
     calc_swaps
-        Dictionary of custom kwargs for the calculator. Overrides the following
-        defaults:
+        Dictionary of custom kwargs for the calculator.
 
-        ```python
-        {
-            "mem": "16GB",
-            "chk": "Gaussian.chk",
-            "nprocshared": multiprocessing.cpu_count(),
-            "xc": xc,
-            "basis": basis,
-            "charge": get_charge(atoms) if charge is None else charge,
-            "mult": get_multiplicity(atoms) if multiplicity is None else multiplicity,
-            "sp": "",
-            "scf": ["maxcycle=250", "xqc"],
-            "integral": "ultrafine",
-            "nosymmetry": "",
-            "pop": "CM5",
-            "gfinput": "",
-            "ioplist": ["6/7=3", "2/9=2000"],
-        }
-        ```
+        ???+ Note
+
+             Overrides the following defaults:
+
+            ```python
+            {
+                "mem": "16GB",
+                "chk": "Gaussian.chk",
+                "nprocshared": multiprocessing.cpu_count(),
+                "xc": xc,
+                "basis": basis,
+                "charge": get_charge(atoms) if charge is None else charge,
+                "mult": get_multiplicity(atoms) if multiplicity is None else multiplicity,
+                "sp": "",
+                "scf": ["maxcycle=250", "xqc"],
+                "integral": "ultrafine",
+                "nosymmetry": "",
+                "pop": "CM5",
+                "gfinput": "",
+                "ioplist": ["6/7=3", "2/9=2000"],
+            }
+            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -143,27 +146,30 @@ def relax_job(
     freq
         If a frequency calculation should be carried out.
     calc_swaps
-        Dictionary of custom kwargs for the calculator. Overrides the following
-        defaults:
+        Dictionary of custom kwargs for the calculator.
 
-        ```python
-        {
-            "mem": "16GB",
-            "chk": "Gaussian.chk",
-            "nprocshared": multiprocessing.cpu_count(),
-            "xc": xc,
-            "basis": basis,
-            "charge": get_charge(atoms) if charge is None else charge,
-            "mult": get_multiplicity(atoms) if multiplicity is None else multiplicity,
-            "opt": "",
-            "pop": "CM5",
-            "scf": ["maxcycle=250", "xqc"],
-            "integral": "ultrafine",
-            "nosymmetry": "",
-            "freq": "" if freq else None,
-            "ioplist": ["2/9=2000"],
-        }
-        ```
+        ???+ Note
+
+             Overrides the following defaults:
+
+            ```python
+            {
+                "mem": "16GB",
+                "chk": "Gaussian.chk",
+                "nprocshared": multiprocessing.cpu_count(),
+                "xc": xc,
+                "basis": basis,
+                "charge": get_charge(atoms) if charge is None else charge,
+                "mult": get_multiplicity(atoms) if multiplicity is None else multiplicity,
+                "opt": "",
+                "pop": "CM5",
+                "scf": ["maxcycle=250", "xqc"],
+                "integral": "ultrafine",
+                "nosymmetry": "",
+                "freq": "" if freq else None,
+                "ioplist": ["2/9=2000"],
+            }
+            ```
     copy_files
         Files to copy to the runtime directory.
 

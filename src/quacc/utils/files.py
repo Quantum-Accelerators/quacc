@@ -37,14 +37,13 @@ def check_logfile(logfile: str, check_str: str) -> bool:
     zlog = zpath(logfile)
     with zopen(zlog, "r") as f:
         for line in f:
-            if not isinstance(line, str):
-                line = line.decode("utf-8")
-            if check_str.lower() in line.lower():
+            clean_line = line.decode("utf-8") if not isinstance(line, str) else line
+            if check_str.lower() in clean_line.lower():
                 return True
     return False
 
 
-def copy_decompress(source_files: list[str], destination: str) -> None:
+def copy_decompress(source_files: list[str | Path], destination: str | Path) -> None:
     """
     Copy and decompress files from source to destination.
 
@@ -60,11 +59,10 @@ def copy_decompress(source_files: list[str], destination: str) -> None:
     None
     """
     for f in source_files:
-        z_path = zpath(f)
-        if Path(z_path).exists():
-            z_file = os.path.basename(z_path)
-            copy(z_path, Path(destination, z_file))
-            decompress_file(Path(destination, z_file))
+        z_path = Path(zpath(f))
+        if z_path.exists():
+            copy(z_path, Path(destination, z_path.name))
+            decompress_file(Path(destination, z_path.name))
         else:
             warnings.warn(f"Cannot find file: {z_path}", UserWarning)
 
@@ -84,10 +82,10 @@ def make_unique_dir(base_path: str | None = None) -> str | Path:
         Path to the job directory.
     """
     time_now = datetime.utcnow().strftime("%Y-%m-%d-%H-%M-%S-%f")
-    job_dir = f"quacc-{time_now}-{randint(10000, 99999)}"
+    job_dir = Path(f"quacc-{time_now}-{randint(10000, 99999)}")
     if base_path:
         job_dir = Path(base_path, job_dir)
-    os.makedirs(job_dir)
+    job_dir.mkdir(parents=True)
 
     return job_dir
 
@@ -117,7 +115,7 @@ def load_yaml_calc(yaml_path: str | Path) -> dict:
         raise ValueError(msg)
 
     # Load YAML file
-    with open(yaml_path) as stream:
+    with yaml_path.open() as stream:
         config = yaml.safe_load(stream)
 
     # Inherit arguments from any parent YAML files but do not overwrite those in
@@ -165,8 +163,8 @@ def find_recent_logfile(dir_name: Path | str, logfile_extensions: str | list[str
     for f in os.listdir(dir_name):
         f_path = Path(dir_name, f)
         for ext in logfile_extensions:
-            if ext in f and os.path.getmtime(f_path) > mod_time:
-                mod_time = os.path.getmtime(f_path)
+            if ext in f and f_path.stat().st_mtime > mod_time:
+                mod_time = f_path.stat().st_mtime
                 logfile = f_path.resolve()
     return logfile
 
