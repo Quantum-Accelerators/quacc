@@ -60,17 +60,17 @@ def static_job(
         
              Overrides the following defaults:
 
-        ```python
-        {
-            "mem": "16GB",
-            "num_threads": "max",
-            "method": method,
-            "basis": basis,
-            "charge": charge,
-            "multiplicity": multiplicity,
-            "reference": "uks" if multiplicity > 1 else "rks",
-        }
-        ```
+            ```python
+            {
+                "mem": "16GB",
+                "num_threads": "max",
+                "method": method,
+                "basis": basis,
+                "charge": charge,
+                "multiplicity": multiplicity,
+                "reference": "uks" if multiplicity > 1 else "rks",
+            }
+            ```
     copy_files
         Files to copy to the runtime directory.
 
