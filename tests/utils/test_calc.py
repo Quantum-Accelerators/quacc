@@ -25,7 +25,7 @@ def prep_files():
 def teardown_function():
     if os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, "test_calc")):
         rmtree(os.path.join(SETTINGS.RESULTS_DIR, "test_calc"))
-    for f in {"test_file.txt", "test_file.txt.gz"}:
+    for f in ["test_file.txt", "test_file.txt.gz"]:
         if os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, f)):
             os.remove(os.path.join(SETTINGS.RESULTS_DIR, f))
 
