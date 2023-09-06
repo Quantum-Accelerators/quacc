@@ -48,6 +48,10 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
 === "Prefect"
 
+    !!! Warning
+
+        Prefect support is currently unstable until [PR 876](https://github.com/Quantum-Accelerators/quacc/pull/876) is merged.
+
     [Prefect](https://www.prefect.io/) is a workflow management system that is widely adopted in the data science industry.
 
     Pros:
