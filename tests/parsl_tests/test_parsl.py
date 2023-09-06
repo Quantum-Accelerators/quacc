@@ -98,11 +98,11 @@ def test_tutorial2a(tmpdir):
     tmpdir.chdir()
 
     from ase.build import bulk
+
     from quacc.recipes.emt.core import relax_job, static_job
 
     # Define the workflow
     def workflow(atoms):
-
         # Define Job 1
         future1 = relax_job(atoms)  # (1)!
 
@@ -110,7 +110,6 @@ def test_tutorial2a(tmpdir):
         future2 = static_job(future1)
 
         return future2
-
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -122,6 +121,7 @@ def test_tutorial2a(tmpdir):
     result = future.result()  # (2)!
     assert "atoms" in result
 
+
 @pytest.mark.skipif(
     parsl is None,
     reason="Parsl is not installed or specified in config",
@@ -130,6 +130,7 @@ def test_tutorial2b(tmpdir):
     tmpdir.chdir()
 
     from ase.build import bulk, molecule
+
     from quacc.recipes.emt.core import relax_job
 
     # Define workflow
@@ -139,7 +140,6 @@ def test_tutorial2b(tmpdir):
         result2 = relax_job(atoms2)
 
         return {"result1": result1, "result2": result2}
-
 
     # Define two Atoms objects
     atoms1 = bulk("Cu")
@@ -165,9 +165,9 @@ def test_tutorial2c(tmpdir):
     tmpdir.chdir()
 
     from ase.build import bulk
+
     from quacc.recipes.emt.core import relax_job
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
-
 
     # Define the workflow
     def workflow(atoms):
@@ -184,7 +184,7 @@ def test_tutorial2c(tmpdir):
 
     # Fetch the results
     result = future.result()
-    
+
     # Print the results
     assert len(result) == 4
 
@@ -198,16 +198,13 @@ def test_comparison1(tmpdir):
 
     from quacc import job
 
-
     @job  #  (1)!
     def add(a, b):
         return a + b
 
-
     @job
     def mult(a, b):
         return a * b
-
 
     def workflow(a, b, c):  #  (2)!
         return mult(add(a, b), c)
