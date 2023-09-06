@@ -235,7 +235,7 @@ graph LR
 
 ## Running a User-Constructed Parallel Workflow
 
-Now let's consider a similar but nonetheless distinct example. Here, we will define a workflow where we will carry out two EMT structure relaxations, but the two jobs are not dependent on one another. In this example, Covalent will know that it can run the two jobs separately, and even if Job 1 were to fail, Job 2 would still progress.
+Now we will define a workflow where we will carry out two EMT structure relaxations, but the two jobs are not dependent on one another. In this example, the workflow manager will know that it can run the two jobs separately, and even if Job 1 were to fail, Job 2 would still progress.
 
 ```mermaid
 graph LR
@@ -420,7 +420,7 @@ graph LR
     print(result)
     ```
 
-    1. We didn't need to wrap bulk_to_slabs_flow with a decorator because it is already pre-decorated with a `#!Python @flow` decorator. We also chose to set `#!Python slab_static=None` here to disable the static calculation that is normally carried out in this workflow.
+    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator. We also chose to set `#!Python slab_static=None` here to disable the static calculation that is normally carried out in this workflow.
 
 === "Parsl"
 
@@ -440,7 +440,7 @@ graph LR
     print(future2.result())
     ```
 
-    1. We didn't need to wrap bulk_to_slabs_flow with a decorator because it is already pre-decorated with a `#!Python @flow` decorator. We also chose to set `#!Python slab_static=None` here to disable the static calculation that is normally carried out in this workflow.
+    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator. We also chose to set `#!Python slab_static=None` here to disable the static calculation that is normally carried out in this workflow.
 
 === "Prefect"
 
@@ -469,7 +469,7 @@ graph LR
     print(results)
     ```
 
-    1. We didn't need to wrap bulk_to_slabs_flow with a decorator because it is already pre-decorated with a `#!Python @flow` decorator. We also chose to set `#!Python slab_static=None` here to disable the static calculation that is normally carried out in this workflow.
+    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator. We also chose to set `#!Python slab_static=None` here to disable the static calculation that is normally carried out in this workflow.
 
 === "Redun"
 
@@ -500,7 +500,7 @@ graph LR
     print(result)
     ```
 
-    1. We didn't need to wrap bulk_to_slabs_flow with a decorator because it is already pre-decorated with a `#!Python @flow` decorator. We also chose to set `#!Python slab_static=None` here to disable the static calculation that is normally carried out in this workflow.
+    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator. We also chose to set `#!Python slab_static=None` here to disable the static calculation that is normally carried out in this workflow.
 
 === "Jobflow"
 

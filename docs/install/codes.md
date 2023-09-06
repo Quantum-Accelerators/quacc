@@ -47,7 +47,8 @@ ASE_GAUSSIAN_COMMAND="/path/to/my/gaussian_executable Gaussian.com > Gaussian.lo
 As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/gulp.html), you must set the environment variables `GULP_LIB` and `ASE_GULP_COMMAND` as follows:
 
 ```bash
-GULP_LIB="/path/to/my/gulp-#.#.#/Libraries" ASE_GULP_COMMAND="/path/to/my/gulp-#.#.#/Src/gulp < gulp.gin > gulp.got"
+GULP_LIB="/path/to/my/gulp-#.#.#/Libraries"
+ASE_GULP_COMMAND="/path/to/my/gulp-#.#.#/Src/gulp < gulp.gin > gulp.got"
 ```
 
 ## Lennard Jones

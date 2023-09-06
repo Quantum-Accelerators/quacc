@@ -225,7 +225,7 @@ In the previous examples, we have been running calculations on our local machine
 
     **Multiple Executors**
 
-    Parsl supports tying specific executors to a given `PythonApp` by specifying it within the `#!Python @python_app` decorator, as discussed in the [Multi-Executor section](https://parsl.readthedocs.io/en/stable/userguide/execution.html#multi-executor) of the Parsl documentation. In quacc, this means that you can specify `#!Python @job(executors=["MyExecutor"])`. Alternatively, after importing a `#!Python @job`-decorated function (e.g. `my_job`), you can do `#!Python my_job.executors=["MyExecutor"]`.
+    Parsl supports tying specific executors to a given `PythonApp` by specifying it within the `#!Python @python_app` decorator, as discussed in the [Multi-Executor section](https://parsl.readthedocs.io/en/stable/userguide/execution.html#multi-executor) of the Parsl documentation.
 
 === "Prefect"
 
@@ -238,7 +238,7 @@ In the previous examples, we have been running calculations on our local machine
 
         Check out the [Task Runner](https://docs.prefect.io/latest/concepts/task-runners/) documentation for more information on how Prefect handles task execution.
 
-    To modify where tasks are run, set the `task_runner` keyword argument of the corresponding `@flow` decorator. The jobs in this scenario would be submitted from a login node.
+    To modify where tasks are run, set the `task_runner` keyword argument of the corresponding `#!Python @flow` decorator. The jobs in this scenario would be submitted from a login node.
 
     An example is shown below for setting up a task runner compatible with the NERSC Perlmutter machine:
 
@@ -259,18 +259,18 @@ In the previous examples, we have been running calculations on our local machine
         "cores": n_cores_per_node, # (2)!
         "memory": mem_per_node, # (3)!
         # SLURM options
-        "shebang": "#!/bin/bash", # (4)!
-        "account": "AccountName", # (5)!
-        "walltime": "00:10:00", # (6)!
-        "job_mem": "0", # (7)!
+        "shebang": "#!/bin/bash",
+        "account": "AccountName",
+        "walltime": "00:10:00",
+        "job_mem": "0", # (4)!
         "job_script_prologue": [
             "source ~/.bashrc",
             "conda activate quacc",
             f"export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}",
-        ], # (8)!
-        "job_directives_skip": ["-n", "--cpus-per-task"], # (9)!
-        "job_extra_directives": [f"-N {n_nodes_per_calc}", "-q debug", "-C cpu"], # (10)!
-        "python": "python", # (11)!
+        ], # (5)!
+        "job_directives_skip": ["-n", "--cpus-per-task"], # (6)!
+        "job_extra_directives": [f"-N {n_nodes_per_calc}", "-q debug", "-C cpu"], # (7)!
+        "python": "python", # (8)!
     }
 
     runner = make_prefect_runner(cluster_kwargs, temporary=True)
@@ -282,21 +282,15 @@ In the previous examples, we have been running calculations on our local machine
 
     3. Total memory (per Slurm job) for Dask worker.
 
-    4. The shebang line at the top of the submit script, in this case specifying that Bash is used.
+    4. Request all memory on the node.
 
-    5. The account to charge for the Slurm job.
+    5. Commands to run before calculation. This is a good place to include environment variable definitions and modules to load.
 
-    6. The walltime in DD:HH:SS.
+    6. Slurm directives that are automatically added but that we chose to skip.
 
-    7. Request all memory on the node.
+    7. The number of nodes for each calculation (-N), queue name (-q), and constraint (-c). Oftentimes, the constraint flag is not needed.
 
-    8. Commands to run before calculation. This is a good place to include environment variable definitions and modules to load.
-
-    9. Slurm directives that are automatically added but that we chose to skip.
-
-    10. The number of nodes for each calculation (-N), queue name (-q), and constraint (-c). Oftentimes, the constraint flag is not needed.
-
-    11. The Python executable name. This often does not need to be changed.
+    8. The Python executable name. This often does not need to be changed.
 
     With this instantiated cluster object, you can set the task runner of the `Flow` as follows.
 
@@ -328,19 +322,6 @@ In the previous examples, we have been running calculations on our local machine
     ```
 
     This will ensure that at least one Slurm job is always running, but the number of jobs will scale up to 5 if there is enough work available.
-
-    **Troubleshooting**
-
-    If you are having trouble figuring out the right `cluster_kwargs` to use, the best option is to have the generated job script printed to the screen. This can be done as follows.
-
-    ```python
-    from dask_jobqueue import SLURMCluster
-    from quacc.util.dask import _make_dask_cluster
-
-    cluster = make_cluster(SLURMCluster, cluster_kwargs, verbose=True)
-    ```
-
-    Note, however, that a Slurm job will be immediately submitted, so you will probably want to `scancel` it as you debug your job script.
 
     **Executor Configuration File**
 

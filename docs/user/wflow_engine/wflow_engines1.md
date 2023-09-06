@@ -1,8 +1,6 @@
 # Pre-Defined Recipes
 
-Here, we will show how to use quacc with one of a variety of workflow engines to construct, dispatch, and monitor your calculations. If you haven't installed your workflow engine dependencies yet, refer to the [Worfklow Engine Setup guide](../../install/wflow_engines.md).
-
-In quacc, there are two types of recipes:
+Here, we will show how to use quacc with one of a variety of workflow engines to construct, dispatch, and monitor your calculations. In quacc, there are two types of recipes:
 
 1. Individual compute jobs with the suffix `_job` that have been pre-defined with a `#!Python @job` decorator.
 2. Multi-step workflows with the suffix `_flow` that have been pre-defined with a `#!Python @flow` decorator.
@@ -58,9 +56,9 @@ graph LR
 
         Also note that the `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
 
-    2. Because the workflow was defined as a `#!Python Flow`, it will be sent to the Covalent server and a dispatch ID will be returned.
+    2. Because the workflow was pre-defined with a `#!Python @flow` decorator, it will be sent to the Covalent server and a dispatch ID will be returned.
 
-    3. You don't need to set `wait=True` in practice. Once you dispatch the workflow, it will begin running (if the resources are available). The `ct.get_result` function is used to fetch the workflow status and results from the server.
+    3. The `ct.get_result` function is used to fetch the workflow status and results from the server. You don't need to set `wait=True` in practice. Once you dispatch the workflow, it will begin running (if the resources are available).
 
 === "Parsl"
 
@@ -134,7 +132,7 @@ graph LR
 
         Also note that the `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
 
-    2. Because the workflow was defined as a `#!Python Flow`, it will be sent to the Prefect server and a future will be returned.
+    2. Because the workflow was pre-defined with a `#!Python @flow` decorator, it will be sent to the Prefect server and a future will be returned.
 
     3. Calling `.result()` will resolve the future and return the calculation result.
 
