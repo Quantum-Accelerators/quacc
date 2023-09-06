@@ -27,46 +27,46 @@ def teardown_module():
     SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
-# @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
-# def test_tutorial1a(tmpdir):
-#     tmpdir.chdir()
+@pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
+def test_tutorial1a(tmpdir):
+    tmpdir.chdir()
 
-#     from ase.build import bulk
+    from ase.build import bulk
 
-#     from quacc import flow
-#     from quacc.recipes.emt.core import relax_job
+    from quacc import flow
+    from quacc.recipes.emt.core import relax_job
 
-#     # Make an Atoms object of a bulk Cu structure
-#     atoms = bulk("Cu")
+    # Make an Atoms object of a bulk Cu structure
+    atoms = bulk("Cu")
 
-#     # Define the workflow
-#     workflow = flow(relax_job)  # (1)!
+    # Define the workflow
+    workflow = flow(relax_job)  # (1)!
 
-#     # Dispatch the workflow
-#     future = workflow(atoms)  # (2)!
+    # Dispatch the workflow
+    future = workflow(atoms)  # (2)!
 
-#     # Fetch the result
-#     result = future.result()  # (3)!
-#     assert "atoms" in result
+    # Fetch the result
+    result = future.result()  # (3)!
+    assert "atoms" in result
 
 
-# @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
-# def test_tutorial1b(tmpdir):
-#     tmpdir.chdir()
-#     from ase.build import bulk
+@pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
+def test_tutorial1b(tmpdir):
+    tmpdir.chdir()
+    from ase.build import bulk
 
-#     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
-#     # Define the Atoms object
-#     atoms = bulk("Cu")
+    # Define the Atoms object
+    atoms = bulk("Cu")
 
-#     # Dispatch the workflow
-#     futures = bulk_to_slabs_flow(atoms)  # (1)!
+    # Dispatch the workflow
+    futures = bulk_to_slabs_flow(atoms)  # (1)!
 
-#     # Print the results
-#     results = [future.result() for future in futures]
-#     for result in results:
-#         assert "atom" in result
+    # Print the results
+    results = [future.result() for future in futures]
+    for result in results:
+        assert "atom" in result
 
 
 @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
@@ -128,32 +128,32 @@ def test_tutorial2b(tmpdir):
     assert "atoms" in result2
 
 
-# @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
-# def test_tutorial2c(tmpdir):
-#     tmpdir.chdir()
+@pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
+def test_tutorial2c(tmpdir):
+    tmpdir.chdir()
 
-#     from ase.build import bulk
+    from ase.build import bulk
 
-#     from quacc import flow
-#     from quacc.recipes.emt.core import relax_job
-#     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+    from quacc import flow
+    from quacc.recipes.emt.core import relax_job
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
-#     # Define the workflow
-#     @flow
-#     def workflow(atoms):
-#         relaxed_bulk = relax_job(atoms)
-#         relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, slab_static=None)  # (1)!
+    # Define the workflow
+    @flow
+    def workflow(atoms):
+        relaxed_bulk = relax_job(atoms)
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, slab_static=None)  # (1)!
 
-#         return relaxed_slabs
+        return relaxed_slabs
 
-#     # Define the Atoms object
-#     atoms = bulk("Cu")
+    # Define the Atoms object
+    atoms = bulk("Cu")
 
-#     # Dispatch the workflow and retrieve result
-#     futures = workflow(atoms)
-#     results = [future.result() for future in futures]
-#     for result in results:
-#         assert "atoms" in result
+    # Dispatch the workflow and retrieve result
+    futures = workflow(atoms)
+    results = [future.result() for future in futures]
+    for result in results:
+        assert "atoms" in result
 
 
 @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
