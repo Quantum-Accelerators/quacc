@@ -1,8 +1,6 @@
 # Pre-Defined Recipes
 
-Here, we will show how to use quacc with one of a variety of workflow engines to construct, dispatch, and monitor your calculations. If you haven't installed your workflow engine dependencies yet, refer to the [Worfklow Engine Setup guide](../../install/wflow_engines.md).
-
-In quacc, there are two types of recipes:
+Here, we will show how to use quacc with one of a variety of workflow engines to construct, dispatch, and monitor your calculations. In quacc, there are two types of recipes:
 
 1. Individual compute jobs with the suffix `_job` that have been pre-defined with a `#!Python @job` decorator.
 2. Multi-step workflows with the suffix `_flow` that have been pre-defined with a `#!Python @flow` decorator.
@@ -16,7 +14,7 @@ graph LR
   A[Input] --> B(Relax) --> C[Output];
 ```
 
-=== "Covalent"
+=== "Covalent ⭐"
 
     !!! Important
 
@@ -58,11 +56,11 @@ graph LR
 
         Also note that the `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
 
-    2. Because the workflow was defined as a `#!Python Flow`, it will be sent to the Covalent server and a dispatch ID will be returned.
+    2. Because the workflow was pre-defined with a `#!Python @flow` decorator, it will be sent to the Covalent server and a dispatch ID will be returned.
 
-    3. You don't need to set `wait=True` in practice. Once you dispatch the workflow, it will begin running (if the resources are available). The `ct.get_result` function is used to fetch the workflow status and results from the server.
+    3. The `ct.get_result` function is used to fetch the workflow status and results from the server. You don't need to set `wait=True` in practice. Once you dispatch the workflow, it will begin running (if the resources are available).
 
-=== "Parsl"
+=== "Parsl ⭐"
 
     !!! Important
 
@@ -94,6 +92,49 @@ graph LR
     1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here. We also did not need to use a `#!Python @flow` decorator because Parsl does not have an analogous decorator.
 
     2. The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object.
+
+=== "Prefect"
+
+    !!! Important
+
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings.md):
+
+        ```bash
+        quacc set WORKFLOW_ENGINE prefect
+        ```
+
+    ```python
+    from ase.build import bulk
+    from quacc import flow
+    from quacc.recipes.emt.core import relax_job
+
+    # Make an Atoms object of a bulk Cu structure
+    atoms = bulk("Cu")
+
+    # Define the workflow
+    workflow = flow(relax_job)  # (1)!
+
+    # Dispatch the workflow
+    future = workflow(atoms)  # (2)!
+
+    # Fetch the result
+    result = future.result()  # (3)!
+    print(result)
+    ```
+
+    1. This is shorthand for the following:
+
+        ```python
+        @flow
+        def workflow(atoms):
+            return relax_job(atoms)
+        ```
+
+        Also note that the `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
+
+    2. Because the workflow was pre-defined with a `#!Python @flow` decorator, it will be sent to the Prefect server and a future will be returned.
+
+    3. Calling `.result()` will resolve the future and return the calculation result.
 
 === "Redun"
 
@@ -169,7 +210,7 @@ graph LR
   B --> F(Slab Relax) --> J(Slab Static) --> K[Output];
 ```
 
-=== "Covalent"
+=== "Covalent ⭐"
 
     ```python
     import covalent as ct
@@ -189,7 +230,7 @@ graph LR
 
     1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `@flow` decorator.
 
-=== "Parsl"
+=== "Parsl ⭐"
 
     ```python
     from ase.build import bulk
@@ -203,6 +244,25 @@ graph LR
 
     # Print the results
     print(future.result())
+    ```
+
+    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `@flow` decorator.
+
+=== "Prefect"
+
+    ```python
+    from ase.build import bulk
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Dispatch the workflow
+    futures = bulk_to_slabs_flow(atoms)  # (1)!
+
+    # Print the results
+    results = [future.result() for future in futures]
+    print(results)
     ```
 
     1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `@flow` decorator.

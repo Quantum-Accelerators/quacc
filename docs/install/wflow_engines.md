@@ -6,7 +6,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     If you are just getting started with workflow engines, we recommend first trying Covalent. For a comparison of the different compatible workflow engines, refer to the [Workflow Engines Overview](../user/basics/wflow_overview.md) section.
 
-=== "Covalent"
+=== "Covalent ⭐"
 
     **Installation**
 
@@ -26,7 +26,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
         Once you start scaling up your calculations, we recommend hosting the Covalent server on a dedicated machine or using [Covalent Cloud](https://www.covalent.xyz/cloud/). Refer to the [Covalent Deployment Guide](https://docs.covalent.xyz/docs/user-documentation/server-deployment) for details.
 
-=== "Parsl"
+=== "Parsl ⭐"
 
     **Installation**
 
@@ -37,6 +37,22 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     ```
 
     Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
+
+=== "Prefect"
+
+    To install Prefect, run the following:
+
+    ```bash
+    pip install quacc[prefect]
+    ```
+
+    To use quacc with Prefect Cloud (recommended):
+
+    1. Make an account on [Prefect Cloud](https://app.prefect.cloud/)
+    2. Make an [API Key](https://docs.prefect.io/cloud/users/api-keys/) and (optionally) store it in a `PREFECT_API_KEY` environment variable (e.g. in your `~/.bashrc`)
+    3. Run `prefect cloud login` from the command-line and enter your API key (or use the browser, if possible)
+
+    Additional configuration parameters can be modified, as described in the [Prefect documentation](https://docs.prefect.io/concepts/settings/).
 
 === "Redun"
 

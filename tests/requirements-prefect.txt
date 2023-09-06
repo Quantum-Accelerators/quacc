@@ -1,0 +1,3 @@
+prefect==2.12.1
+prefect-dask==0.2.5
+dask-jobqueue==0.8.2

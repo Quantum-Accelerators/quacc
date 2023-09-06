@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Here, we provide code snippets for several decorator-based workflow engines. For a comparison of the pros and cons of each approach, refer to the [Workflow Engines Overview](wflow_overview.md) page. We describe the specifics of how to use each workflow engine in more detail later in the documentation. Nonetheless, this page serves as a quick point of reference that is independent of quacc-specific recipes.
+Here, we provide code snippets for several decorator-based workflow engines. For a comparison of the pros and cons of each approach, refer to the [Workflow Engines Overview](wflow_overview.md) page. We describe the specifics of how to use each workflow engine in more detail later in the documentation.
 
 !!! Tip
 
@@ -10,15 +10,15 @@ Here, we provide code snippets for several decorator-based workflow engines. For
 
 ## Background
 
-=== "Covalent"
+=== "Covalent ⭐"
 
     !!! Info
 
-        For a detailed tutorial on how to use Covalent, refer to the ["Covalent Quick Start"](https://docs.covalent.xyz/docs/get-started/quick-start).
+        For a detailed tutorial on how to use Covalent, refer to the ["Covalent Quick Start" guide](https://docs.covalent.xyz/docs/get-started/quick-start).
 
-    Take a moment to learn about the main [Covalent Concepts](https://docs.covalent.xyz/docs/user-documentation/concepts/concepts-index), namely the [`#!Python ct.electron`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#electron) and [`#!Python ct.lattice`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#lattice) decorators, which describe individual compute tasks and workflows, respectively.
+    Take a moment to learn about the main [Covalent Concepts](https://docs.covalent.xyz/docs/user-documentation/concepts/concepts-index), namely the [`#!Python @ct.electron`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#electron) and [`#!Python @ct.lattice`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#lattice) decorators, which describe individual compute tasks and workflows, respectively.
 
-=== "Parsl"
+=== "Parsl ⭐"
 
     !!! Info
 
@@ -44,21 +44,19 @@ Here, we provide code snippets for several decorator-based workflow engines. For
 
 To help enable interoperability between workflow engines, quacc offers a unified set of decorators.
 
-| Quacc              | Covalent                           | Parsl                 | Redun           | Jobflow        |
-| ------------------ | ---------------------------------- | --------------------- | --------------- | -------------- |
-| `#!Python job`     | `#!Python ct.electron`             | `#!Python python_app` | `#!Python task` | `#!Python job` |
-| `#!Python flow`    | `#!Python ct.lattice`              | N/A                   | `#!Python task` | N/A            |
-| `#!Python subflow` | `#!Python ct.electron(ct.lattice)` | `#!Python join_app`   | `#!Python task` | N/A            |
+| Quacc              | Covalent                           | Parsl                 | Prefect         | Redun           | Jobflow        |
+| ------------------ | ---------------------------------- | --------------------- | --------------- | --------------- | -------------- |
+| `#!Python job`     | `#!Python ct.electron`             | `#!Python python_app` | `#!Python task` | `#!Python task` | `#!Python job` |
+| `#!Python flow`    | `#!Python ct.lattice`              | —                     | `#!Python flow` | `#!Python task` | —              |
+| `#!Python subflow` | `#!Python ct.electron(ct.lattice)` | `#!Python join_app`   | `#!Python flow` | `#!Python task` | —              |
 
 The quacc descriptors are drop-in replacements for the specified workflow engine analogue, which we will use for the remainder of the tutorials.
 
 !!! Tip
 
-    Based on the value for the `WORKFLOW_ENGINE` global variable in your [quacc settings](../settings.md), the appropriate decorator will be automatically selected. If the `WORKFLOW_ENGINE` setting is set to `"local"` (or for any entries marked N/A in the above table), the decorators will have no effect on the underlying function.
+    Based on the value for the `WORKFLOW_ENGINE` global variable in your [quacc settings](../settings.md), the appropriate decorator will be automatically selected. If the `WORKFLOW_ENGINE` setting is set to `"local"` (or for any entries marked `—` in the above table), the decorators will have no effect on the underlying function.
 
-## Examples
-
-### Simple Workflow
+## Simple Workflow
 
 Let's do the following:
 
@@ -72,7 +70,7 @@ graph LR
   A[Input] --> B(add) --> C(mult) --> D[Output];
 ```
 
-=== "Covalent"
+=== "Covalent ⭐"
 
     !!! Important
 
@@ -104,7 +102,8 @@ graph LR
 
 
     dispatch_id = workflow(1, 2, 3)  # (3)!
-    print(ct.get_result(dispatch_id, wait=True))
+    result = ct.get_result(dispatch_id, wait=True) # (4)!
+    print(result)
     ```
 
     1. The `#!Python @job` decorator will be transformed into `#!Python @ct.electron`.
@@ -113,7 +112,7 @@ graph LR
 
     3. When using the `#!Python @flow` decorator, you do not need to call `ct.dispatch()`. It will be done automatically.
 
-=== "Parsl"
+=== "Parsl ⭐"
 
     !!! Important
 
@@ -142,13 +141,54 @@ graph LR
         return a * b
 
 
-    future1 = add(1, 2)
-    future2 = mult(future1, 3)
+    def workflow(a, b, c):  #  (2)!
+        return mult(add(a, b), c)
 
-    result = future2.result()  # 9
+    result = workflow(1, 2, 3).result()  # 9
+    print(result)
     ```
 
     1. The `#!Python @job` decorator will be transformed into `#!Python @python_app`.
+
+    2. The `#!Python @flow` decorator doesn't actually do anything when using Parsl, so we chose to not include it here for brevity.
+
+=== "Prefect"
+
+    !!! Important
+
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings.md):
+
+        ```bash
+        quacc set WORKFLOW_ENGINE prefect
+        ```
+
+    ```python
+    from quacc import flow, job
+
+
+    @job  #  (1)!
+    def add(a, b):
+        return a + b
+
+
+    @job
+    def mult(a, b):
+        return a * b
+
+
+    @flow  #  (2)!
+    def workflow(a, b, c):
+        return mult(add(a, b), c)
+
+
+    future = workflow(1, 2, 3)  # (3)!
+    result = future.result()
+    print(result)
+    ```
+
+    1. The `#!Python @job` decorator will be transformed into a Prefect `#!Python @task`.
+
+    2. The `#!Python @flow` decorator will be transformed into a Prefect `#!Python @ct.lattice`.
 
 === "Redun"
 
@@ -190,7 +230,7 @@ graph LR
 
     2. The `#!Python @job` decorator will be transformed into a Redun `#!Python @task`.
 
-    3. The `#!Python @flow` decorator will also be transformed into Redun `#!Python @task`. Everything in Redun is a `#!Python @task`, so it doesn't matter what quacc decorator you apply. We chose `#!Python @flow` simply for clarity.
+    3. The `#!Python @flow` decorator will also be transformed into a Redun `#!Python @task`. Everything in Redun is a `#!Python @task`, so it doesn't matter what quacc decorator you apply. We chose `#!Python @flow` simply for clarity.
 
 === "Jobflow"
 
@@ -223,19 +263,24 @@ graph LR
 
     responses = jf.run_locally(flow)
     result = responses[job2.uuid][1].output
+    print(result)
     ```
 
     1. The `#!Python @job` decorator will be transformed into `#!Python @jf.job`.
 
 ## Learn More
 
-=== "Covalent"
+=== "Covalent ⭐"
 
     If you want to learn more about Covalent, you can read the [Covalent Documentation](https://docs.covalent.xyz/docs/). Please refer to the Covalent [Discussion Board](https://github.com/AgnostiqHQ/covalent/discussions) for any Covalent-specific questions.
 
-=== "Parsl"
+=== "Parsl ⭐"
 
     If you want to learn more about Parsl, you can read the [Parsl Documentation](https://parsl.readthedocs.io/en/stable/#). Please refer to the [Parsl Slack Channel](http://parsl-project.org/support.html) for any Parsl-specific questions.
+
+=== "Prefect"
+
+    If you want to learn more about Perfect, you can read the [Prefect Documentation](https://docs.prefect.io/). Please refer to the [Prefect Slack Channel](https://www.prefect.io/slack/) and/or [Prefect Community Discourse](https://discourse.prefect.io/) page for any Prefect-specific questions.
 
 === "Redun"
 

@@ -11,7 +11,7 @@ from pydantic import BaseSettings, Field, root_validator
 from quacc.presets import vasp as vasp_defaults
 
 installed_engine = "local"
-for wflow_engine in ["covalent", "parsl", "redun", "jobflow"]:
+for wflow_engine in ["covalent", "parsl", "prefect", "redun", "jobflow"]:
     try:
         import_module(wflow_engine)
         installed_engine = wflow_engine
@@ -43,7 +43,7 @@ class QuaccSettings(BaseSettings):
         installed_engine,
         description=(
             "The workflow manager to use."
-            "Options include: 'covalent', 'parsl', 'redun', 'jobflow', or 'local'"
+            "Options include: 'covalent', 'parsl', 'redun', 'jobflow', 'prefect', or 'local'"
         ),
     )
 
