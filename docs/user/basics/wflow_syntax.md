@@ -90,11 +90,7 @@ Here, we provide code snippets for several decorator-based workflow engines. For
 
     </center>
 
-The quacc descriptors are drop-in replacements for the specified workflow engine analogue, which we will use for the remainder of the tutorials.
-
-!!! Tip
-
-    Based on the value for the `WORKFLOW_ENGINE` global variable in your [quacc settings](../settings.md), the appropriate decorator will be automatically selected. If the `WORKFLOW_ENGINE` setting is set to `"local"` (or for any entries marked "no effect" in the above table), the decorators will have no effect on the underlying function.
+The quacc descriptors are drop-in replacements for the specified workflow engine analogue, which we will use for the remainder of the tutorials. Based on the value for the `WORKFLOW_ENGINE` global variable in your [quacc settings](../settings.md), the appropriate decorator will be automatically selected. If the `WORKFLOW_ENGINE` setting is set to `"local"`, the decorators will have no effect on the underlying function.
 
 ## Simple Workflow
 
@@ -221,7 +217,7 @@ graph LR
         return mult(add(a, b), c)
 
 
-    future = workflow(1, 2, 3)  # (3)!
+    future = workflow(1, 2, 3)
     result = future.result()
     print(result)
     ```
