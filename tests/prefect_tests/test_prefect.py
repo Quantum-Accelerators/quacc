@@ -155,26 +155,23 @@ def test_tutorial2b(tmpdir):
 #     for result in results:
 #         assert "atoms" in result
 
+
 @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
 def test_comparison(tmpdir):
     tmpdir.chdir()
     from quacc import flow, job
 
-
     @job  #  (1)!
     def add(a, b):
         return a + b
-
 
     @job
     def mult(a, b):
         return a * b
 
-
     @flow  #  (2)!
     def workflow(a, b, c):
         return mult(add(a, b), c)
-
 
     future = workflow(1, 2, 3)  # (3)!
     result = future.result()
