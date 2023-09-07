@@ -8,10 +8,6 @@ Here, we provide code snippets for several decorator-based workflow engines. For
 
 To help enable interoperability between workflow engines, quacc offers a unified set of decorators: [`#!Python @job`](https://quantum-accelerators.github.io/quacc/reference/quacc/utils/wflows.html#quacc.utils.wflows.job), [`#!Python @flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/utils/wflows.html#quacc.utils.wflows.flow), and [`#!Python @subflow`](https://quantum-accelerators.github.io/quacc/reference/quacc/utils/wflows.html#quacc.utils.wflows.subflow).
 
-!!! Tip
-
-    The wrapped function gets a new keyword argument, `decorator_kwargs``, that can be used to modify the workflow engine decorator keyword arguments even after the quacc-decorated function has been imported. The wrapped (i.e. undecorated) function can also be stripped of its decorator by calling the `.__wrapped__` attribute if desired.
-
 === "Covalent ⭐"
 
     Take a moment to learn about the main [Covalent Concepts](https://docs.covalent.xyz/docs/user-documentation/concepts/concepts-index), namely the [`#!Python @ct.electron`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#electron) and [`#!Python @ct.lattice`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#lattice) decorators, which describe individual compute tasks and workflows, respectively.
@@ -295,6 +291,56 @@ graph LR
     ```
 
     1. The `#!Python @job` decorator will be transformed into `#!Python @jf.job`.
+
+## Modifying Decorator Arguments
+
+Several workflow engines make it possible to pass keyword arguments to the function decorator. We describe how to do that in quacc below.
+
+### Option 1: In the Decorator
+
+    The easiest way is to simply pass the desired keyword argument(s) to the decorator when it is defined.
+
+    ```python
+    from quacc import job
+
+
+    @job(executor="local")
+    def add(a, b):
+        return a + b
+
+    add(1, 2)
+    ```
+
+### Option 2: In the Function Call
+
+    If you have a pre-decorated function (e.g. perhaps one that you are importing), it may not be possible to pass the desired keyword argument(s) to the decorator itself. In this case, you can take advantage of the fact that the wrapped function gets a new keyword argument, `decorator_kwargs``, that can be used to modify the workflow engine decorator keyword arguments on-the-fly.
+
+
+    ```python
+    from quacc import job
+
+
+    @job
+    def add(a, b):
+        return a + b
+
+    add(1, 2, executor_kwargs={"executor": "local"})
+    ```
+
+### Stripping the Decorator Altogether
+
+    If you ever want to strip the decorator from a pre-decorated function for any reason, you can call the `.__wrapped__` attribute. This returns the original function.
+
+    ```python
+    from quacc import job
+
+
+    @job
+    def add(a, b):
+        return a + b
+
+    add.__wrapped__(1, 2)
+    ```
 
 ## Learn More
 
