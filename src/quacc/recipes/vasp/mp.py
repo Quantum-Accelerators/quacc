@@ -115,8 +115,6 @@ def mp_relax_job(
 @flow
 def mp_relax_flow(
     atoms: Atoms | dict,
-    prerelax: Callable | None = mp_prerelax_job,
-    relax: Callable | None = mp_relax_job,
     prerelax_kwargs: dict | None = None,
     relax_kwargs: dict | None = None,
 ) -> MPRelaxFlowSchema:
@@ -131,10 +129,6 @@ def mp_relax_flow(
     ----------
     atoms
         Atoms object for the structure.
-    prerelax
-        Default to use for the pre-relaxation.
-    relax
-        Default to use for the relaxation.
     prerelax_kwargs
         Additional keyword arguments to pass to the pre-relaxation calculation.
     relax_kwargs
@@ -149,7 +143,7 @@ def mp_relax_flow(
     relax_kwargs = relax_kwargs or {}
 
     # Run the prerelax
-    prerelax_results = prerelax(atoms, **prerelax_kwargs)
+    prerelax_results = mp_prerelax_job(atoms, **prerelax_kwargs)
 
     # Update KSPACING arguments
     bandgap = prerelax_results["output"].get("bandgap", 0)
@@ -163,7 +157,9 @@ def mp_relax_flow(
     relax_kwargs["calc_swaps"] = kspacing_swaps | relax_kwargs.get("calc_swaps", {})
 
     # Run the relax
-    relax_results = relax(prerelax_results, copy_files=["WAVECAR"], **relax_kwargs)
+    relax_results = mp_relax_job(
+        prerelax_results, copy_files=["WAVECAR"], **relax_kwargs
+    )
     relax_results["prerelax"] = prerelax_results
 
     return relax_results

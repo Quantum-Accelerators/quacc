@@ -9,9 +9,7 @@ from ase.optimize import FIRE
 from monty.dev import requires
 
 from quacc import SETTINGS, job
-from quacc.recipes.newtonnet.core import _add_stdev_and_hess
-from quacc.recipes.newtonnet.core import freq_job as _freq_job
-from quacc.recipes.newtonnet.core import relax_job
+from quacc.recipes.newtonnet.core import _add_stdev_and_hess, freq_job, relax_job
 from quacc.schemas import fetch_atoms
 from quacc.schemas.ase import summarize_opt_run
 from quacc.utils.calc import run_ase_opt
@@ -35,7 +33,6 @@ if TYPE_CHECKING:
 
     from quacc.recipes.newtonnet.core import FreqSchema
     from quacc.schemas.ase import OptSchema
-    from quacc.utils.wflows import Job
 
     class TSSchema(OptSchema):
         freq: FreqSchema | None
@@ -54,7 +51,7 @@ if TYPE_CHECKING:
 def ts_job(
     atoms: Atoms | dict,
     use_custom_hessian: bool = False,
-    freq_job: Job | None = _freq_job,
+    run_freq: bool = True,
     freq_job_kwargs: dict | None = None,
     calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
@@ -68,8 +65,8 @@ def ts_job(
         The atoms object representing the system.
     use_custom_hessian
         Whether to use a custom Hessian matrix.
-    freq_job
-        Default Job to use for the frequency analysis.
+    run_freq
+        Whether to run the frequency job.
     freq_job_kwargs
         Keyword arguments to use for the `freq_job`.
     calc_swaps
@@ -144,7 +141,7 @@ def ts_job(
 
     # Run a frequency calculation
     freq_summary = (
-        freq_job.__wrapped__(opt_ts_summary, **freq_job_kwargs) if freq_job else None
+        freq_job.__wrapped__(opt_ts_summary, **freq_job_kwargs) if run_freq else None
     )
     opt_ts_summary["freq"] = freq_summary
 
@@ -157,7 +154,7 @@ def ts_job(
 def irc_job(
     atoms: Atoms | dict,
     direction: Literal["forward", "reverse"] = "forward",
-    freq_job: Job | None = _freq_job,
+    run_freq: bool = True,
     freq_job_kwargs: dict | None = None,
     calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
@@ -172,8 +169,8 @@ def irc_job(
         The atoms object representing the system.
     direction
         The direction of the IRC calculation ("forward" or "reverse").
-    freq_job
-        Default Job to use for the frequency analysis.
+    run_freq
+        Whether to run the frequency analysis.
     freq_job_kwargs
         Keyword arguments for the `freq_job`.
     calc_swaps
@@ -261,7 +258,7 @@ def irc_job(
 
     # Run frequency job
     freq_summary = (
-        freq_job.__wrapped__(opt_irc_summary, **freq_job_kwargs) if freq_job else None
+        freq_job.__wrapped__(opt_irc_summary, **freq_job_kwargs) if run_freq else None
     )
     opt_irc_summary["freq"] = freq_summary
 
@@ -274,7 +271,7 @@ def irc_job(
 def quasi_irc_job(
     atoms: Atoms | dict,
     direction: Literal["forward", "reverse"] = "forward",
-    freq_job: Job | None = _freq_job,
+    run_freq: bool = True,
     freq_job_kwargs: dict | None = None,
     irc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
@@ -288,8 +285,8 @@ def quasi_irc_job(
         The atoms object representing the system.
     direction
         The direction of the IRC calculation ("forward" or "reverse").
-    freq_job
-        Default Job to use for the frequency analysis.
+    run_freq
+        Whether to run the frequency analysis.
     freq_job_kwargs
         Keyword arguments for `freq_job`.
     irc_swaps
@@ -322,7 +319,7 @@ def quasi_irc_job(
 
     # Run IRC
     irc_summary = irc_job.__wrapped__(
-        atoms, direction=direction, opt_swaps=irc_flags, freq_job=None
+        atoms, direction=direction, opt_swaps=irc_flags, run_freq=None
     )
 
     # Run opt
@@ -330,7 +327,7 @@ def quasi_irc_job(
 
     # Run frequency
     freq_summary = (
-        freq_job.__wrapped__(relax_summary, **freq_job_kwargs) if freq_job else None
+        freq_job.__wrapped__(relax_summary, **freq_job_kwargs) if run_freq else None
     )
     relax_summary["freq"] = freq_summary
     relax_summary["irc"] = irc_summary

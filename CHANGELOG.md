@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Re-added support for the Prefect workflow engine.
 
+### Changed
+
+- Removed unnecessary functions as kwargs in recipes.
+
 ## [0.2.5]
 
 ### Added

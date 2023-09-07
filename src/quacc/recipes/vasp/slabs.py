@@ -153,8 +153,7 @@ def slab_relax_job(
 def bulk_to_slabs_flow(
     atoms: Atoms | dict,
     make_slabs_kwargs: dict | None = None,
-    slab_relax: Callable = slab_relax_job,
-    slab_static: Callable | None = slab_static_job,
+    run_static: bool = True,
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
 ) -> list[VaspSchema]:
@@ -174,10 +173,8 @@ def bulk_to_slabs_flow(
         the value
     make_slabs_kwargs
         Additional keyword arguments to pass to make_max_slabs_from_bulk()
-    slab_relax
-        Default to use for the relaxation of the slab structures.
-    slab_static
-        Default to use for the static calculation of the slab structures.
+    run_static
+        Whether to run the static calculation.
     slab_relax_kwargs
         Additional keyword arguments to pass to the relaxation calculation.
     slab_static_kwargs
@@ -199,13 +196,13 @@ def bulk_to_slabs_flow(
 
     @subflow
     def _relax_distributed(slabs):
-        return [slab_relax(slab, **slab_relax_kwargs) for slab in slabs]
+        return [slab_relax_job(slab, **slab_relax_kwargs) for slab in slabs]
 
     @subflow
     def _relax_and_static_distributed(slabs):
         return [
-            slab_static(
-                slab_relax(slab, **slab_relax_kwargs),
+            slab_static_job(
+                slab_relax_job(slab, **slab_relax_kwargs),
                 **slab_static_kwargs,
             )
             for slab in slabs
@@ -213,10 +210,11 @@ def bulk_to_slabs_flow(
 
     slabs = _make_slabs(atoms)
 
-    if slab_static is None:
-        return _relax_distributed(slabs)
-
-    return _relax_and_static_distributed(slabs)
+    return (
+        _relax_and_static_distributed(slabs)
+        if run_static
+        else _relax_distributed(slabs)
+    )
 
 
 @flow
@@ -224,8 +222,7 @@ def slab_to_ads_flow(
     slab: Atoms,
     adsorbate: Atoms,
     make_ads_kwargs: dict | None = None,
-    slab_relax: Callable = slab_relax_job,
-    slab_static: Callable | None = slab_static_job,
+    run_static: bool = True,
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
 ) -> list[VaspSchema]:
@@ -241,10 +238,8 @@ def slab_to_ads_flow(
         Atoms object for the adsorbate.
     make_ads_kwargs
         Additional keyword arguments to pass to make_adsorbate_structures()
-    slab_relax
-        Default to use for the relaxation of the slab structure.
-    slab_static
-        Default to use for the static calculation of the slab structures.
+    run_static
+        Whether to run the static calculation.
     slab_relax_kwargs
         Additional keyword arguments to pass to the relaxation calculation.
     slab_static_kwargs
@@ -267,13 +262,13 @@ def slab_to_ads_flow(
 
     @subflow
     def _relax_distributed(slabs):
-        return [slab_relax(slab, **slab_relax_kwargs) for slab in slabs]
+        return [slab_relax_job(slab, **slab_relax_kwargs) for slab in slabs]
 
     @subflow
     def _relax_and_static_distributed(slabs):
         return [
-            slab_static(
-                slab_relax(slab, **slab_relax_kwargs),
+            slab_static_job(
+                slab_relax_job(slab, **slab_relax_kwargs),
                 **slab_static_kwargs,
             )
             for slab in slabs
@@ -281,7 +276,8 @@ def slab_to_ads_flow(
 
     ads_slabs = _make_ads_slabs(slab, adsorbate)
 
-    if slab_static is None:
-        return _relax_distributed(ads_slabs)
-
-    return _relax_and_static_distributed(ads_slabs)
+    return (
+        _relax_and_static_distributed(ads_slabs)
+        if run_static
+        else _relax_distributed(ads_slabs)
+    )
