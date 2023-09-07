@@ -4,11 +4,11 @@ In the previous examples, we have been running calculations on our local machine
 
 === "Covalent ⭐"
 
-    By default, Covalent will run all `Electron` tasks on your local machine using the Dask backend. This is a parameter that you can control. For instance, Covalent offers many [plugin executors](https://docs.covalent.xyz/docs/features/executor-plugins/exe) that can be installed and used to interface with a wide range of HPC, cloud, and quantum devices.
+    By default, Covalent will run all jobs on your local machine using the Dask backend. This is a parameter that you can control. For instance, Covalent offers many [plugin executors](https://docs.covalent.xyz/docs/features/executor-plugins/exe) that can be installed and used to interface with a wide range of HPC, cloud, and quantum devices.
 
-    **Setting Executors via the Lattice Object**
+    **Setting the Executor for the Flow**
 
-    If you want to use the same executor for all the `Electron` objects in a `Lattice`, you can pass the `executor` keyword argument to the `#!Python @ct.lattice` decorator (which is what `#!Python @flow` is equivalent to when setting your `WORKFLOW_ENGINE` quacc config variable to `"covalent"`).
+    If you want to use the same executor for all the jobs in a workflow, you can pass the `executor` keyword argument to the `#!Python @flow` decorator.
 
     ```python
     import covalent as ct
@@ -33,9 +33,9 @@ In the previous examples, we have been running calculations on our local machine
 
     1. This was merely for demonstration purposes. There is never really a need to use the "local" executor since the "dask" executor runs locally and is faster.
 
-    **Setting Executors via the Electron Objects**
+    **Setting Executors for Individual Jobs**
 
-    The individual `Electron` executor options can be modified after they are imported:
+    The individual executor options for each job can be modified after they are imported by taking advantage of the `decorator_kwargs` option:
 
     ```python
     import covalent as ct
@@ -122,7 +122,7 @@ In the previous examples, we have been running calculations on our local machine
 
         To configure Parsl for the high-performance computing environment of your choice, refer to the executor [Configuration](https://parsl.readthedocs.io/en/stable/userguide/configuring.html) page in the Parsl documentation.
 
-    For [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/), example [`HighThroughputExecutor`](https://parsl.readthedocs.io/en/stable/stubs/parsl.executors.HighThroughputExecutor.html#parsl.executors.HighThroughputExecutor) configurations can be found in the [NERSC Documentation](https://docs.nersc.gov/jobs/workflow/parsl/). A simple one is reproduced below that allows for job submission from the login node. This example will create a single Slurm job that will run one `PythonApp` at a time on a single node and is good for testing out some of the examples above.
+    For [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/), example [`HighThroughputExecutor`](https://parsl.readthedocs.io/en/stable/stubs/parsl.executors.HighThroughputExecutor.html#parsl.executors.HighThroughputExecutor) configurations can be found in the [NERSC Documentation](https://docs.nersc.gov/jobs/workflow/parsl/). A simple one is reproduced below that allows for job submission from the login node. This example will create a single Slurm job that will run one job at a time on a single node and is good for testing out some of the examples above.
 
     ```python
     import parsl
@@ -173,7 +173,7 @@ In the previous examples, we have been running calculations on our local machine
 
     **Scaling Up**
 
-    Now let's consider a more realistic scenario. Suppose we want to have a single Slurm job that reserves 8 nodes, and each `PythonApp` (e.g. VASP calculation) will run on 2 nodes (let's assume each node has 48 cores total, so that's a total of 96 cores for each calculation). Parsl will act as an orchestrator in the background of one of the nodes. Our config will now look like the following.
+    Now let's consider a more realistic scenario. Suppose we want to have a single Slurm job that reserves 8 nodes, and each job (e.g. VASP calculation) will run on 2 nodes (let's assume each node has 48 cores total, so that's a total of 96 cores for each calculation). Parsl will act as an orchestrator in the background of one of the nodes. Our config will now look like the following.
 
     ```python
     import parsl
