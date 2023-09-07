@@ -172,7 +172,7 @@ def test_tutorial2c(tmpdir):
     # Define the workflow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, run_static=None)  # (1)!
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, run_static=False)  # (1)!
 
         return relaxed_slabs
 
