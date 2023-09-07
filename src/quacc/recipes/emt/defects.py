@@ -107,4 +107,8 @@ def bulk_to_defects_flow(
 
     defects = _make_defects(atoms)
 
-    return _relax_and_static_distributed(defects) if run_static else _relax_distributed(defects)
+    return (
+        _relax_and_static_distributed(defects)
+        if run_static
+        else _relax_distributed(defects)
+    )

@@ -210,7 +210,11 @@ def bulk_to_slabs_flow(
 
     slabs = _make_slabs(atoms)
 
-    return _relax_and_static_distributed(slabs) if run_static else _relax_distributed(slabs)
+    return (
+        _relax_and_static_distributed(slabs)
+        if run_static
+        else _relax_distributed(slabs)
+    )
 
 
 @flow
@@ -272,4 +276,8 @@ def slab_to_ads_flow(
 
     ads_slabs = _make_ads_slabs(slab, adsorbate)
 
-    return _relax_and_static_distributed(ads_slabs) if run_static else _relax_distributed(ads_slabs)
+    return (
+        _relax_and_static_distributed(ads_slabs)
+        if run_static
+        else _relax_distributed(ads_slabs)
+    )

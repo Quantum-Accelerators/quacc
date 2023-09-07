@@ -4,8 +4,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quacc import flow, job, subflow
-from quacc.recipes.emt.core import relax_job 
-from quacc.recipes.emt.core import static_job
+from quacc.recipes.emt.core import relax_job, static_job
 from quacc.schemas import fetch_atoms
 from quacc.utils.slabs import make_max_slabs_from_bulk
 
@@ -80,4 +79,8 @@ def bulk_to_slabs_flow(
 
     slabs = _make_slabs(atoms)
 
-    return _relax_and_static_distributed(slabs) if run_static else _relax_distributed(slabs)
+    return (
+        _relax_and_static_distributed(slabs)
+        if run_static
+        else _relax_distributed(slabs)
+    )
