@@ -10,7 +10,7 @@ To help enable interoperability between workflow engines, quacc offers a unified
 
 !!! Tip
 
-    The wrapped function gets a new keyword argument, `decorator_kwargs``, that can be used to modify the workflow engine decorator keyword arguments even after the quacc-decorated function has been imported. The wrapped (i.e. undecorated) function can also be stripped of its decorator by calling the `.__wrapped__` attribute if desired.
+    The wrapped function gets a new keyword argument, `decorator_kwargs`, that can be used to modify the workflow engine decorator keyword arguments even after the quacc-decorated function has been imported. The wrapped (i.e. undecorated) function can also be stripped of its decorator by calling the `.__wrapped__` attribute if desired.
 
 === "Covalent ⭐"
 
