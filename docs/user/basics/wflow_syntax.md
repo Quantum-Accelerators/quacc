@@ -323,7 +323,7 @@ from quacc import job
 def add(a, b):
     return a + b
 
-add(1, 2, executor_kwargs={"executor": "local"})
+add(1, 2, decorator_kwargs={"executor": "local"})
 ```
 
 ### Stripping the Decorator Altogether
