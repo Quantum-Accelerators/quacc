@@ -10,11 +10,11 @@ Here, we provide code snippets for several decorator-based workflow engines. For
 
 ## Background
 
+    To help enable interoperability between workflow engines, quacc offers a unified set of decorators: [`#!Python @job`](https://quantum-accelerators.github.io/quacc/reference/quacc/utils/wflows.html#quacc.utils.wflows.job), [`#!Python @flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/utils/wflows.html#quacc.utils.wflows.flow), and [`#!Python @subflow`](https://quantum-accelerators.github.io/quacc/reference/quacc/utils/wflows.html#quacc.utils.wflows.subflow).
+
 === "Covalent ⭐"
 
     Take a moment to learn about the main [Covalent Concepts](https://docs.covalent.xyz/docs/user-documentation/concepts/concepts-index), namely the [`#!Python @ct.electron`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#electron) and [`#!Python @ct.lattice`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#lattice) decorators, which describe individual compute tasks and workflows, respectively.
-
-    To help enable interoperability between workflow engines, quacc offers a unified set of decorators.
 
     <center>
 
@@ -30,8 +30,6 @@ Here, we provide code snippets for several decorator-based workflow engines. For
 
     Take a moment to read the Parsl documentation's ["Quick Start"](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a [`#!Python python_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html#Python-Apps) and [`#!Python join_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html?highlight=join_app#Dynamic-workflows-with-apps-that-generate-other-apps), which describe individual compute tasks and dynamic job tasks, respectively.
 
-    To help enable interoperability between workflow engines, quacc offers a unified set of decorators.
-
     <center>
 
     | Quacc              | Parsl                 |
@@ -45,8 +43,6 @@ Here, we provide code snippets for several decorator-based workflow engines. For
 === "Prefect"
 
     Take a moment to read the [Prefect documentation's](https://docs.prefect.io/latest/tutorial/) to get a sense of how it works. Namely, you should understand the `Task` and `Flow` decorators as well as how to interface with the server.
-
-    To help enable interoperability between workflow engines, quacc offers a unified set of decorators.
 
     <center>
 
@@ -62,8 +58,6 @@ Here, we provide code snippets for several decorator-based workflow engines. For
 
     Take a moment to read the Redun documentation's [Design Overview page](https://insitro.github.io/redun/design.html) to get a sense of how Redun works. Namely, you should understand the `Task` decorator and how to interface with the `Scheduler`.
 
-    To help enable interoperability between workflow engines, quacc offers a unified set of decorators.
-
     <center>
 
     | Quacc              | Redun           |
@@ -77,8 +71,6 @@ Here, we provide code snippets for several decorator-based workflow engines. For
 === "Jobflow"
 
     Take a moment to read the Jobflow documentation's [Quick Start](https://materialsproject.github.io/jobflow/tutorials/1-quickstart.html) to get a sense of how Jobflow works. Namely, you should understand the `Job` and `Flow` definitions, which describe individual compute tasks and workflows, respectively.
-
-    To help enable interoperability between workflow engines, quacc offers a unified set of decorators.
 
     <center>
 
