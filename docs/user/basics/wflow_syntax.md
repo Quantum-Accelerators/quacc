@@ -298,49 +298,49 @@ Several workflow engines make it possible to pass keyword arguments to the funct
 
 ### Option 1: In the Decorator
 
-    The easiest way is to simply pass the desired keyword argument(s) to the decorator when it is defined.
+The easiest way is to simply pass the desired keyword argument(s) to the decorator when it is defined.
 
-    ```python
-    from quacc import job
+```python
+from quacc import job
 
 
-    @job(executor="local")
-    def add(a, b):
-        return a + b
+@job(executor="local")
+def add(a, b):
+    return a + b
 
-    add(1, 2)
-    ```
+add(1, 2)
+```
 
 ### Option 2: In the Function Call
 
-    If you have a pre-decorated function (e.g. perhaps one that you are importing), it may not be possible to pass the desired keyword argument(s) to the decorator itself. In this case, you can take advantage of the fact that the wrapped function gets a new keyword argument, `decorator_kwargs``, that can be used to modify the workflow engine decorator keyword arguments on-the-fly.
+If you have a pre-decorated function (e.g. perhaps one that you are importing), it may not be possible to pass the desired keyword argument(s) to the decorator itself. In this case, you can take advantage of the fact that the wrapped function gets a new keyword argument, `decorator_kwargs`, that can be used to modify the workflow engine decorator keyword arguments on-the-fly.
 
 
-    ```python
-    from quacc import job
+```python
+from quacc import job
 
 
-    @job
-    def add(a, b):
-        return a + b
+@job
+def add(a, b):
+    return a + b
 
-    add(1, 2, executor_kwargs={"executor": "local"})
-    ```
+add(1, 2, executor_kwargs={"executor": "local"})
+```
 
 ### Stripping the Decorator Altogether
 
-    If you ever want to strip the decorator from a pre-decorated function for any reason, you can call the `.__wrapped__` attribute. This returns the original function.
+If you ever want to strip the decorator from a pre-decorated function for any reason, you can call the `.__wrapped__` attribute. This returns the original function.
 
-    ```python
-    from quacc import job
+```python
+from quacc import job
 
 
-    @job
-    def add(a, b):
-        return a + b
+@job
+def add(a, b):
+    return a + b
 
-    add.__wrapped__(1, 2)
-    ```
+add.__wrapped__(1, 2)
+```
 
 ## Learn More
 
