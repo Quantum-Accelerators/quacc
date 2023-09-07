@@ -315,7 +315,6 @@ add(1, 2)
 
 If you have a pre-decorated function (e.g. perhaps one that you are importing), it may not be possible to pass the desired keyword argument(s) to the decorator itself. In this case, you can take advantage of the fact that the wrapped function gets a new keyword argument, `decorator_kwargs`, that can be used to modify the workflow engine decorator keyword arguments on-the-fly.
 
-
 ```python
 from quacc import job
 
