@@ -220,7 +220,7 @@ graph LR
     print(result)
     ```
 
-    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `@flow` decorator.
+    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator.
 
 === "Parsl ⭐"
 
@@ -238,7 +238,7 @@ graph LR
     print(future.result())
     ```
 
-    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `@flow` decorator.
+    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator.
 
 === "Prefect"
 
@@ -257,7 +257,7 @@ graph LR
     print(results)
     ```
 
-    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `@flow` decorator.
+    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator.
 
 === "Redun"
 
@@ -279,7 +279,7 @@ graph LR
     print(result)
     ```
 
-    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `@flow` decorator.
+    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator.
 
 === "Jobflow"
 
