@@ -4,8 +4,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quacc import flow, job, subflow
-from quacc.recipes.emt.core import relax_job as _relax_job
-from quacc.recipes.emt.core import static_job as _static_job
+from quacc.recipes.emt.core import relax_job 
+from quacc.recipes.emt.core import static_job
 from quacc.schemas import fetch_atoms
 from quacc.utils.slabs import make_max_slabs_from_bulk
 
@@ -13,15 +13,13 @@ if TYPE_CHECKING:
     from ase import Atoms
 
     from quacc.schemas.ase import OptSchema, RunSchema
-    from quacc.utils.wflows import Job
 
 
 @flow
 def bulk_to_slabs_flow(
     atoms: Atoms | dict,
     make_slabs_kwargs: dict | None = None,
-    slab_relax: Job = _relax_job,
-    slab_static: Job | None = _static_job,
+    run_static: bool = True,
     slab_relax_kwargs: dict | None = None,
     slab_static_kwargs: dict | None = None,
 ) -> list[RunSchema | OptSchema]:
@@ -42,10 +40,8 @@ def bulk_to_slabs_flow(
     make_slabs_kwargs
         Additional keyword arguments to pass to
         `quacc.utils.slabs.make_max_slabs_from_bulk`
-    slab_relax
-        Default Job to use for the relaxation of the slab structures.
-    slab_static
-        Default Job to use for the static calculation of the slab structures.
+    run_static
+        Whether to run the static calculation.
     slab_relax_kwargs
         Additional keyword arguments to pass to the relaxation calculation.
     slab_static_kwargs
@@ -70,13 +66,13 @@ def bulk_to_slabs_flow(
 
     @subflow
     def _relax_distributed(slabs):
-        return [slab_relax(slab, **slab_relax_kwargs) for slab in slabs]
+        return [relax_job(slab, **slab_relax_kwargs) for slab in slabs]
 
     @subflow
     def _relax_and_static_distributed(slabs):
         return [
-            slab_static(
-                slab_relax(slab, **slab_relax_kwargs),
+            static_job(
+                relax_job(slab, **slab_relax_kwargs),
                 **slab_static_kwargs,
             )
             for slab in slabs
@@ -84,7 +80,4 @@ def bulk_to_slabs_flow(
 
     slabs = _make_slabs(atoms)
 
-    if slab_static is None:
-        return _relax_distributed(slabs)
-
-    return _relax_and_static_distributed(slabs)
+    return _relax_and_static_distributed(slabs) if run_static else _relax_distributed(slabs)
