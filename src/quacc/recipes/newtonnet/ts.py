@@ -319,7 +319,7 @@ def quasi_irc_job(
 
     # Run IRC
     irc_summary = irc_job.__wrapped__(
-        atoms, direction=direction, opt_swaps=irc_flags, freq_job=None
+        atoms, direction=direction, opt_swaps=irc_flags, run_freq=None
     )
 
     # Run opt
