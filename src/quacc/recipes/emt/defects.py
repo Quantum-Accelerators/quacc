@@ -6,8 +6,7 @@ from typing import TYPE_CHECKING
 from pymatgen.analysis.defects.generators import VacancyGenerator
 
 from quacc import flow, job, subflow
-from quacc.recipes.emt.core import relax_job as _relax_job
-from quacc.recipes.emt.core import static_job as _static_job
+from quacc.recipes.emt.core import relax_job, static_job
 from quacc.schemas import fetch_atoms
 from quacc.utils.defects import make_defects_from_bulk
 
@@ -38,8 +37,7 @@ def bulk_to_defects_flow(
     ) = VacancyGenerator,
     defect_charge: int = 0,
     make_defects_kwargs: dict | None = None,
-    defect_relax: Job | None = _relax_job,
-    defect_static: Job | None = _static_job,
+    run_static: bool = True,
     defect_relax_kwargs: dict | None = None,
     defect_static_kwargs: dict | None = None,
 ) -> list[RunSchema | OptSchema]:
@@ -62,10 +60,8 @@ def bulk_to_defects_flow(
         Charge state of the defect
     make_defects_kwargs
         Keyword arguments to pass to the make_defects_from_bulk
-    defect_relax
-        Default Job to use for the relaxation of the defect structures.
-    defect_static
-        Default Job to use for the static calculation of the defect structures.
+    run_static
+        Whether to run the static calculation.
     defect_relax_kwargs
         Additional keyword arguments to pass to the relaxation calculation.
     defect_static_kwargs
@@ -96,13 +92,13 @@ def bulk_to_defects_flow(
 
     @subflow
     def _relax_distributed(defects):
-        return [defect_relax(defect, **defect_relax_kwargs) for defect in defects]
+        return [relax_job(defect, **defect_relax_kwargs) for defect in defects]
 
     @subflow
     def _relax_and_static_distributed(defects):
         return [
-            defect_static(
-                defect_relax(defect, **defect_relax_kwargs),
+            static_job(
+                relax_job(defect, **defect_relax_kwargs),
                 **defect_static_kwargs,
             )
             for defect in defects
@@ -110,7 +106,8 @@ def bulk_to_defects_flow(
 
     defects = _make_defects(atoms)
 
-    if defect_static is None:
-        return _relax_distributed(defects)
-
-    return _relax_and_static_distributed(defects)
+    return (
+        _relax_and_static_distributed(defects)
+        if run_static
+        else _relax_distributed(defects)
+    )

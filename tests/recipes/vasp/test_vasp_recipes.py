@@ -132,7 +132,7 @@ def test_slab_dynamic_jobs(tmpdir):
 
     ### --------- Test bulk_to_slabs_flow --------- ###
 
-    outputs = bulk_to_slabs_flow(atoms, slab_static=None)
+    outputs = bulk_to_slabs_flow(atoms, run_static=None)
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
     assert outputs[1]["nsites"] == 96
@@ -151,7 +151,7 @@ def test_slab_dynamic_jobs(tmpdir):
     outputs = bulk_to_slabs_flow(
         atoms,
         slab_relax_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
-        slab_static=None,
+        run_static=None,
     )
     assert len(outputs) == 4
     assert outputs[0]["nsites"] == 80
@@ -179,7 +179,7 @@ def test_slab_dynamic_jobs(tmpdir):
     atoms = outputs[0]["atoms"]
     adsorbate = molecule("H2")
 
-    outputs = slab_to_ads_flow(atoms, adsorbate, slab_static=None)
+    outputs = slab_to_ads_flow(atoms, adsorbate, run_static=None)
 
     assert [output["nsites"] == 82 for output in outputs]
     assert [output["parameters"]["isif"] == 2 for output in outputs]
@@ -192,7 +192,7 @@ def test_slab_dynamic_jobs(tmpdir):
         atoms,
         adsorbate,
         slab_relax_kwargs={"preset": "SlabSet", "calc_swaps": {"nelmin": 6}},
-        slab_static=None,
+        run_static=None,
     )
 
     assert [output["nsites"] == 82 for output in outputs]
