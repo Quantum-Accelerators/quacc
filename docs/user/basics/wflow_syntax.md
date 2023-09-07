@@ -4,13 +4,13 @@
 
 Here, we provide code snippets for several decorator-based workflow engines. For a comparison of the pros and cons of each approach, refer to the [Workflow Engines Overview](wflow_overview.md) page. We describe the specifics of how to use each workflow engine in more detail later in the documentation.
 
-!!! Tip
-
-    You don't need to learn how to use all the different workflow solutions. You only need to learn the syntax for the one you plan to use! Regardless, the behavior is relatively similar across all of them.
-
 ## Background
 
     To help enable interoperability between workflow engines, quacc offers a unified set of decorators: [`#!Python @job`](https://quantum-accelerators.github.io/quacc/reference/quacc/utils/wflows.html#quacc.utils.wflows.job), [`#!Python @flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/utils/wflows.html#quacc.utils.wflows.flow), and [`#!Python @subflow`](https://quantum-accelerators.github.io/quacc/reference/quacc/utils/wflows.html#quacc.utils.wflows.subflow).
+
+!!! Tip
+
+    The wrapped function gets a new keyword argument, `decorator_kwargs``, that can be used to modify the workflow engine decorator keyword arguments even after the quacc-decorated function has been imported. The wrapped (i.e. undecorated) function can also be stripped of its decorator by calling the `.__wrapped__` attribute if desired.
 
 === "Covalent ⭐"
 
