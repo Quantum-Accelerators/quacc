@@ -39,7 +39,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:  # sourcery skip
 
     All `#!Python @job`-decorated functions are transformed into their corresponding
     decorator.
-    
+
     The wrapped function gets a new kwarg, `decorator_kwargs`, that can be used
     to modify the workflow engine decorator keyword arguments even after the
     quacc-decorated function has been imported. The wrapped (i.e. undecorated)
@@ -52,7 +52,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:  # sourcery skip
     @job
     def add(a, b):
         return a + b
-    
+
     add(1, 2)
     ```
 
@@ -78,10 +78,10 @@ def job(_func: Callable | None = None, **kwargs) -> Job:  # sourcery skip
         @python_app
         def add(a, b):
             return a + b
-        
+
         add(1, 2)
         ```
-    
+
     === "Prefect"
 
         ```python
@@ -90,12 +90,12 @@ def job(_func: Callable | None = None, **kwargs) -> Job:  # sourcery skip
         @task
         def add(a, b):
             return a + b
-        
+
         add.submit(1, 2)  # (1)!
         ```
 
         1. Note that Quacc will automatically call `.submit()` on all `Task` objects.
-    
+
     === "Redun"
 
         ```python
@@ -104,7 +104,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:  # sourcery skip
         @task
         def add(a, b):
             return a + b
-        
+
         add(1, 2)
         ```
 
@@ -116,7 +116,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:  # sourcery skip
         @jf.job
         def add(a, b):
             return a + b
-        
+
         add(1, 2)
         ```
 
@@ -225,7 +225,7 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:  # sourcery skip
     @flow
     def workflow(a, b, c):
         return add(add(a, b), c)
-    
+
     workflow(1, 2, 3)
     ```
 
@@ -243,12 +243,12 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:  # sourcery skip
         @ct.lattice
         def workflow(a, b, c):
             return add(add(a, b), c)
-        
+
         ct.dispatch(workflow)(1, 2, 3)  # (1)!
         ```
 
         1. Note that Quacc will automatically call `ct.dispatch()` on the outermost `Lattice` object.
-    
+
     === "Parsl⭐"
 
         ```python
@@ -260,23 +260,23 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:  # sourcery skip
 
         def workflow(a, b, c):
             return add(add(a, b), c)
-        
+
         workflow(1, 2, 3)
         ```
-    
+
     === "Prefect"
 
         ```python
         from prefect import flow, task
-    
+
         @task
         def add(a, b):
             return a + b
-        
+
         @flow
         def workflow(a, b, c):
             return add.submit(add.submit(a, b), c)
-        
+
         workflow(1, 2, 3)
         ```
 
@@ -288,14 +288,14 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:  # sourcery skip
         @task
         def add(a, b):
             return a + b
-        
+
         @task
         def workflow(a, b, c):
             return add(add(a, b), c)
-        
+
         workflow(1, 2, 3)
         ```
-    
+
     === "Jobflow"
 
         !!! Warning
@@ -405,7 +405,7 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:  # sourcery ski
     quacc-decorated function has been imported. The wrapped (i.e. undecorated)
     function can also be stripped of its decorator by calling the `#!Python .__wrapped__`
     attribute.
-    
+
     ```python
     import random
     from quacc import flow, job, subflow
@@ -427,14 +427,14 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:  # sourcery ski
         result1 = add(a, b)
         result2 = make_more(result1)
         return add_distributed(result2, c)
-    
+
     workflow(1, 2, 3)
     ```
 
     ... is the same as doing
 
     === "Covalent⭐"
-    
+
         ```python
         import random
         import covalent as ct
@@ -457,10 +457,10 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:  # sourcery ski
             result1 = add(a, b)
             result2 = make_more(result1)
             return add_distributed(result2, c)
-        
+
         ct.dispatch(workflow)(1, 2, 3)
         ```
-    
+
     === "Parsl⭐"
 
         ```python
@@ -483,7 +483,7 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:  # sourcery ski
             result1 = add(a, b)
             result2 = make_more(result1)
             return add_distributed(result2, c)
-        
+
         workflow(1, 2, 3)
         ```
 
@@ -510,7 +510,7 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:  # sourcery ski
             result1 = add.submit(a, b)
             result2 = make_more.submit(result1)
             return add_distributed(result2, c)
-        
+
         workflow(1, 2, 3)
         ```
 
@@ -537,10 +537,10 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:  # sourcery ski
             result1 = add(a, b)
             result2 = make_more(result1)
             return add_distributed(result2, c)
-        
+
         workflow(1, 2, 3)
         ```
-    
+
     === "Jobflow"
 
         !!! Warning
