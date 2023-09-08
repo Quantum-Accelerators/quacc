@@ -12,8 +12,8 @@ from quacc.calculators.vasp import Vasp
 from quacc.utils.atoms import (
     check_is_metal,
     get_atoms_id,
+    get_charge_and_spin,
     prep_next_run,
-    set_charge_and_spin,
 )
 
 FILE_DIR = Path(__file__).resolve().parent
@@ -113,7 +113,7 @@ def test_check_is_metal():
     assert check_is_metal(atoms) is False
 
 
-def test_set_charge_and_spin():
+def test_get_charge_and_spin():
     atoms = Atoms.fromdict(
         {
             "numbers": np.array([6, 1, 1, 1]),
@@ -129,42 +129,42 @@ def test_set_charge_and_spin():
             "pbc": np.array([False, False, False]),
         }
     )
-    charge, spin_multiplicity = set_charge_and_spin(atoms)
+    charge, spin_multiplicity = get_charge_and_spin(atoms)
     assert charge == 0
     assert spin_multiplicity == 2
     with pytest.raises(ValueError):
-        charge, spin_multiplicity = set_charge_and_spin(atoms, multiplicity=1)
+        charge, spin_multiplicity = get_charge_and_spin(atoms, multiplicity=1)
     with pytest.raises(ValueError):
-        charge, spin_multiplicity = set_charge_and_spin(atoms, charge=0, multiplicity=1)
+        charge, spin_multiplicity = get_charge_and_spin(atoms, charge=0, multiplicity=1)
     with pytest.raises(ValueError):
-        charge, spin_multiplicity = set_charge_and_spin(atoms, multiplicity=3)
+        charge, spin_multiplicity = get_charge_and_spin(atoms, multiplicity=3)
     with pytest.raises(ValueError):
-        charge, spin_multiplicity = set_charge_and_spin(atoms, charge=0, multiplicity=3)
-    charge, spin_multiplicity = set_charge_and_spin(atoms, charge=-1)
+        charge, spin_multiplicity = get_charge_and_spin(atoms, charge=0, multiplicity=3)
+    charge, spin_multiplicity = get_charge_and_spin(atoms, charge=-1)
     assert charge == -1
     assert spin_multiplicity == 1
-    charge, spin_multiplicity = set_charge_and_spin(atoms, charge=-1, multiplicity=3)
+    charge, spin_multiplicity = get_charge_and_spin(atoms, charge=-1, multiplicity=3)
     assert charge == -1
     assert spin_multiplicity == 3
-    charge, spin_multiplicity = set_charge_and_spin(OS_ATOMS)
+    charge, spin_multiplicity = get_charge_and_spin(OS_ATOMS)
     assert charge == 0
     assert spin_multiplicity == 2
-    charge, spin_multiplicity = set_charge_and_spin(OS_ATOMS, charge=1)
+    charge, spin_multiplicity = get_charge_and_spin(OS_ATOMS, charge=1)
     assert charge == 1
     assert spin_multiplicity == 1
-    charge, spin_multiplicity = set_charge_and_spin(OS_ATOMS, charge=0, multiplicity=4)
+    charge, spin_multiplicity = get_charge_and_spin(OS_ATOMS, charge=0, multiplicity=4)
     assert charge == 0
     assert spin_multiplicity == 4
     with pytest.raises(ValueError):
-        charge, spin_multiplicity = set_charge_and_spin(
+        charge, spin_multiplicity = get_charge_and_spin(
             OS_ATOMS, charge=0, multiplicity=3
         )
 
     atoms = molecule("O2")
-    charge, spin_multiplicity = set_charge_and_spin(atoms)
+    charge, spin_multiplicity = get_charge_and_spin(atoms)
     assert charge == 0
     assert spin_multiplicity == 3
-    charge, spin_multiplicity = set_charge_and_spin(atoms, charge=0)
+    charge, spin_multiplicity = get_charge_and_spin(atoms, charge=0)
     assert charge == 0
     assert spin_multiplicity == 3
 
@@ -176,9 +176,9 @@ def test_set_charge_and_spin():
             "pbc": np.array([False, False, False]),
         }
     )
-    charge, spin_multiplicity = set_charge_and_spin(atoms)
+    charge, spin_multiplicity = get_charge_and_spin(atoms)
     assert charge == 0
     assert spin_multiplicity == 1
-    charge, spin_multiplicity = set_charge_and_spin(atoms, charge=0)
+    charge, spin_multiplicity = get_charge_and_spin(atoms, charge=0)
     assert charge == 0
     assert spin_multiplicity == 1

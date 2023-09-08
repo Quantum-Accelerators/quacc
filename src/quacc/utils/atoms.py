@@ -255,15 +255,14 @@ def copy_atoms(atoms: Atoms) -> Atoms:
     return atoms
 
 
-def set_charge_and_spin(
+def get_charge_and_spin(
     atoms: Atoms,
     charge: int | None = None,
     multiplicity: int | None = None,
 ) -> (int, int):
     """
     Simple function to use the pymatgen molecule class to obtain and/or validate
-    the multiplicity given the prescribed charge. Updates the `.charge` and
-    `.spin_multiplicity` attributes of the `Atoms` object.
+    the multiplicity given the prescribed charge.
 
     Parameters
     ----------
@@ -307,14 +306,14 @@ def set_charge_and_spin(
         mol = AseAtomsAdaptor.get_molecule(atoms)
         if charge is not None:
             if multiplicity is not None:
-                mol.set_charge_and_spin(charge, multiplicity)
+                mol.get_charge_and_spin(charge, multiplicity)
             else:
-                mol.set_charge_and_spin(charge)
+                mol.get_charge_and_spin(charge)
     except ValueError:
         mol = AseAtomsAdaptor.get_molecule(atoms, charge_spin_check=False)
         nelectrons = mol.nelectrons - charge if charge else mol.nelectrons
         default_spin_multiplicity = 1 if nelectrons % 2 == 0 else 2
-        mol.set_charge_and_spin(
+        mol.get_charge_and_spin(
             charge if charge is not None else mol.charge,
             multiplicity if multiplicity is not None else default_spin_multiplicity,
         )
@@ -323,7 +322,5 @@ def set_charge_and_spin(
             f"Charge of {mol.charge} and spin multiplicity of {mol.spin_multiplicity} is"
             " not possible for this molecule."
         )
-    atoms.charge = mol.charge
-    atoms.spin_multiplicity = mol.spin_multiplicity
 
-    return atoms.charge, atoms.spin_multiplicity
+    return mol.charge, mol.spin_multiplicity

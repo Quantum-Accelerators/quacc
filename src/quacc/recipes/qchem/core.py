@@ -10,7 +10,7 @@ from quacc import job
 from quacc.calculators.qchem import QChem
 from quacc.schemas import fetch_atoms
 from quacc.schemas.ase import summarize_opt_run, summarize_run
-from quacc.utils.atoms import set_charge_and_spin
+from quacc.utils.atoms import get_charge_and_spin
 from quacc.utils.calc import run_ase_opt, run_calc
 from quacc.utils.dicts import merge_dicts, remove_dict_empties
 
@@ -84,7 +84,7 @@ def static_job(
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
     atoms = fetch_atoms(atoms)
-    atoms.charge, atoms.spin_multiplicity = set_charge_and_spin(
+    atoms.charge, atoms.spin_multiplicity = get_charge_and_spin(
         atoms, charge=charge, multiplicity=spin_multiplicity
     )
 
@@ -183,7 +183,7 @@ def relax_job(
 
     # TODO: exposing TRICs?
     atoms = fetch_atoms(atoms)
-    atoms.charge, atoms.spin_multiplicity = set_charge_and_spin(
+    atoms.charge, atoms.spin_multiplicity = get_charge_and_spin(
         atoms, charge=charge, multiplicity=spin_multiplicity
     )
 
