@@ -182,7 +182,7 @@ def relax_job(
 
     # TODO: exposing TRICs?
     atoms = fetch_atoms(atoms)
-    charge, charge = valid_charge_and_spin(atoms, charge, charge)
+    charge, spin_multiplicity = valid_charge_and_spin(atoms, charge, spin_multiplicity)
 
     qchem_defaults = {
         "method": method,
