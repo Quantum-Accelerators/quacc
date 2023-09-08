@@ -81,7 +81,7 @@ def static_job(
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
-    atoms.charge, atoms.spin_multiplicity = get_charge_and_spin(
+    charge, spin_multiplicity = get_charge_and_spin(
         atoms, charge=charge, spin_multiplicity=spin_multiplicity
     )
 
@@ -90,9 +90,9 @@ def static_job(
         "num_threads": "max",
         "method": method,
         "basis": basis,
-        "charge": atoms.charge,
-        "multiplicity": atoms.spin_multiplicity,
-        "reference": "uks" if atoms.spin_multiplicity > 1 else "rks",
+        "charge": charge,
+        "multiplicity": spin_multiplicity,
+        "reference": "uks" if spin_multiplicity > 1 else "rks",
     }
     flags = merge_dicts(defaults, calc_swaps)
 

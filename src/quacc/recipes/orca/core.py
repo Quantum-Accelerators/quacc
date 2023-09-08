@@ -100,7 +100,7 @@ def static_job(
     atoms = fetch_atoms(atoms)
     input_swaps = input_swaps or {}
     block_swaps = block_swaps or {}
-    atoms.charge, atoms.spin_multiplicity = get_charge_and_spin(
+    charge, spin_multiplicity = get_charge_and_spin(
         atoms, charge=charge, spin_multiplicity=spin_multiplicity
     )
 
@@ -125,8 +125,8 @@ def static_job(
 
     atoms.calc = ORCA(
         profile=OrcaProfile([SETTINGS.ORCA_CMD]),
-        charge=atoms.charge,
-        mult=atoms.spin_multiplicity,
+        charge=charge,
+        mult=spin_multiplicity,
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )
@@ -217,7 +217,7 @@ def relax_job(
     atoms = fetch_atoms(atoms)
     input_swaps = input_swaps or {}
     block_swaps = block_swaps or {}
-    atoms.charge, atoms.spin_multiplicity = get_charge_and_spin(
+    charge, spin_multiplicity = get_charge_and_spin(
         atoms, charge=charge, spin_multiplicity=spin_multiplicity
     )
 
@@ -243,8 +243,8 @@ def relax_job(
 
     atoms.calc = ORCA(
         profile=OrcaProfile([SETTINGS.ORCA_CMD]),
-        charge=atoms.charge,
-        mult=atoms.spin_multiplicity,
+        charge=charge,
+        mult=spin_multiplicity,
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )

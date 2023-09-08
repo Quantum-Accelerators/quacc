@@ -85,14 +85,14 @@ def static_job(
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
     atoms = fetch_atoms(atoms)
-    atoms.charge, atoms.spin_multiplicity = get_charge_and_spin(
+    charge, spin_multiplicity = get_charge_and_spin(
         atoms, charge=charge, spin_multiplicity=spin_multiplicity
     )
 
     qchem_defaults = {
         "method": method,
-        "charge": atoms.charge,
-        "spin_multiplicity": atoms.spin_multiplicity,
+        "charge": charge,
+        "spin_multiplicity": spin_multiplicity,
         "cores": n_cores or multiprocessing.cpu_count(),
         "qchem_input_params": {
             "basis_set": basis,
@@ -185,14 +185,14 @@ def relax_job(
 
     # TODO: exposing TRICs?
     atoms = fetch_atoms(atoms)
-    atoms.charge, atoms.spin_multiplicity = get_charge_and_spin(
+    charge, spin_multiplicity = get_charge_and_spin(
         atoms, charge=charge, spin_multiplicity=spin_multiplicity
     )
 
     qchem_defaults = {
         "method": method,
-        "charge": atoms.charge,
-        "spin_multiplicity": atoms.spin_multiplicity,
+        "charge": charge,
+        "spin_multiplicity": spin_multiplicity,
         "cores": n_cores or multiprocessing.cpu_count(),
         "qchem_input_params": {
             "basis_set": basis,

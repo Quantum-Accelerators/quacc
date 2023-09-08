@@ -85,7 +85,7 @@ def static_job(
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
-    atoms.charge, atoms.spin_multiplicity = get_charge_and_spin(
+    charge, spin_multiplicity = get_charge_and_spin(
         atoms, charge=charge, spin_multiplicity=spin_multiplicity
     )
 
@@ -95,8 +95,8 @@ def static_job(
         "nprocshared": multiprocessing.cpu_count(),
         "xc": xc,
         "basis": basis,
-        "charge": atoms.charge,
-        "mult": atoms.spin_multiplicity,
+        "charge": charge,
+        "mult": spin_multiplicity,
         "sp": "",
         "scf": ["maxcycle=250", "xqc"],
         "integral": "ultrafine",
@@ -183,7 +183,7 @@ def relax_job(
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
-    atoms.charge, atoms.spin_multiplicity = get_charge_and_spin(
+    charge, spin_multiplicity = get_charge_and_spin(
         atoms, charge=charge, spin_multiplicity=spin_multiplicity
     )
 
@@ -193,8 +193,8 @@ def relax_job(
         "nprocshared": multiprocessing.cpu_count(),
         "xc": xc,
         "basis": basis,
-        "charge": atoms.charge,
-        "mult": atoms.spin_multiplicity,
+        "charge": charge,
+        "mult": spin_multiplicity,
         "opt": "",
         "pop": "CM5",
         "scf": ["maxcycle=250", "xqc"],

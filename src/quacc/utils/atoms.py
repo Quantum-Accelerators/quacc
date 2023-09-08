@@ -260,8 +260,9 @@ def get_charge_and_spin(
     spin_multiplicity: int | None = None,
 ) -> (int, int):
     """
-    Get the charge and spin multiplicity of a molecule. This function takes the
-    following order of precedence:
+    Get the charge and spin multiplicity of a molecule and also set the
+    `atoms.charge` and `atoms.spin_multiplicity` attributes. This function takes
+    the following order of precedence:
 
     Charges:
 
@@ -350,5 +351,7 @@ def get_charge_and_spin(
             f"Charge of {mol.charge} and spin multiplicity of {mol.spin_multiplicity} is"
             " not possible for this molecule."
         )
+
+    atoms.charge, atoms.spin_multiplicity = mol.charge, mol.spin_multiplicity
 
     return mol.charge, mol.spin_multiplicity
