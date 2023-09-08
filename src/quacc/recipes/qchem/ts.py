@@ -11,7 +11,7 @@ from quacc.calculators.qchem import QChem
 from quacc.recipes.qchem.core import relax_job
 from quacc.schemas import fetch_atoms
 from quacc.schemas.ase import summarize_opt_run
-from quacc.utils.atoms import valid_charge_and_spin
+from quacc.utils.atoms import set_charge_and_spin
 from quacc.utils.calc import run_ase_opt
 from quacc.utils.dicts import merge_dicts, remove_dict_empties
 
@@ -106,12 +106,14 @@ def ts_job(
     #   - exposing TRICs?
     #   - passing initial Hessian?
     atoms = fetch_atoms(atoms)
-    charge, spin_multiplicity = valid_charge_and_spin(atoms, charge, spin_multiplicity)
+    atoms.charge, atoms.spin_multiplicity = set_charge_and_spin(
+        atoms, charge=charge, multiplicity=spin_multiplicity
+    )
 
     qchem_defaults = {
         "method": method,
-        "charge": charge,
-        "spin_multiplicity": spin_multiplicity,
+        "charge": atoms.charge,
+        "spin_multiplicity": atoms.spin_multiplicity,
         "cores": n_cores or multiprocessing.cpu_count(),
         "qchem_input_params": {
             "basis_set": basis,
@@ -139,7 +141,6 @@ def ts_job(
 
     return summarize_opt_run(
         dyn,
-        charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields={"name": "Q-Chem TS Optimization"},
     )
 
@@ -221,7 +222,9 @@ def irc_job(
 
     # TODO: 1) expose TRICs?; 2) passing initial Hessian?
     atoms = fetch_atoms(atoms)
-    charge, spin_multiplicity = valid_charge_and_spin(atoms, charge, spin_multiplicity)
+    atoms.charge, atoms.spin_multiplicity = set_charge_and_spin(
+        atoms, charge=charge, multiplicity=spin_multiplicity
+    )
 
     qchem_defaults = {
         "method": method,
@@ -256,7 +259,6 @@ def irc_job(
 
     return summarize_opt_run(
         dyn,
-        charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields={"name": "Q-Chem IRC Optimization"},
     )
 

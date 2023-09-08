@@ -2,6 +2,7 @@ import os
 from copy import deepcopy
 from pathlib import Path
 
+import numpy as np
 import pytest
 from ase import Atoms
 from ase.build import bulk, molecule
@@ -12,7 +13,7 @@ from quacc.utils.atoms import (
     check_is_metal,
     get_atoms_id,
     prep_next_run,
-    valid_charge_and_spin,
+    set_charge_and_spin,
 )
 
 FILE_DIR = Path(__file__).resolve().parent
@@ -112,52 +113,72 @@ def test_check_is_metal():
     assert check_is_metal(atoms) is False
 
 
-def test_valid_charge_and_spin():
-    atoms = molecule("CH3")
-    charge, spin_multiplicity = valid_charge_and_spin(atoms)
+def test_set_charge_and_spin():
+    atoms = Atoms.fromdict(
+        {
+            "numbers": np.array([6, 1, 1, 1]),
+            "positions": np.array(
+                [
+                    [0.0, 0.0, 0.0],
+                    [0.0, 1.07841, 0.0],
+                    [0.93393, -0.539205, 0.0],
+                    [-0.93393, -0.539205, 0.0],
+                ]
+            ),
+            "cell": np.array([[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]),
+            "pbc": np.array([False, False, False]),
+        }
+    )
+    charge, spin_multiplicity = set_charge_and_spin(atoms)
     assert charge == 0
     assert spin_multiplicity == 2
     with pytest.raises(ValueError):
-        charge, spin_multiplicity = valid_charge_and_spin(atoms, spin_multiplicity=1)
+        charge, spin_multiplicity = set_charge_and_spin(atoms, multiplicity=1)
     with pytest.raises(ValueError):
-        charge, spin_multiplicity = valid_charge_and_spin(
-            atoms, charge=0, spin_multiplicity=1
-        )
+        charge, spin_multiplicity = set_charge_and_spin(atoms, charge=0, multiplicity=1)
     with pytest.raises(ValueError):
-        charge, spin_multiplicity = valid_charge_and_spin(atoms, spin_multiplicity=3)
+        charge, spin_multiplicity = set_charge_and_spin(atoms, multiplicity=3)
     with pytest.raises(ValueError):
-        charge, spin_multiplicity = valid_charge_and_spin(
-            atoms, charge=0, spin_multiplicity=3
-        )
-    charge, spin_multiplicity = valid_charge_and_spin(atoms, charge=-1)
+        charge, spin_multiplicity = set_charge_and_spin(atoms, charge=0, multiplicity=3)
+    charge, spin_multiplicity = set_charge_and_spin(atoms, charge=-1)
     assert charge == -1
     assert spin_multiplicity == 1
-    charge, spin_multiplicity = valid_charge_and_spin(
-        atoms, charge=-1, spin_multiplicity=3
-    )
+    charge, spin_multiplicity = set_charge_and_spin(atoms, charge=-1, multiplicity=3)
     assert charge == -1
     assert spin_multiplicity == 3
-    charge, spin_multiplicity = valid_charge_and_spin(OS_ATOMS)
+    charge, spin_multiplicity = set_charge_and_spin(OS_ATOMS)
     assert charge == 0
     assert spin_multiplicity == 2
-    charge, spin_multiplicity = valid_charge_and_spin(OS_ATOMS, charge=1)
+    charge, spin_multiplicity = set_charge_and_spin(OS_ATOMS, charge=1)
     assert charge == 1
     assert spin_multiplicity == 1
-    charge, spin_multiplicity = valid_charge_and_spin(
-        OS_ATOMS, charge=0, spin_multiplicity=4
-    )
+    charge, spin_multiplicity = set_charge_and_spin(OS_ATOMS, charge=0, multiplicity=4)
     assert charge == 0
     assert spin_multiplicity == 4
     with pytest.raises(ValueError):
-        charge, spin_multiplicity = valid_charge_and_spin(
-            OS_ATOMS, charge=0, spin_multiplicity=3
+        charge, spin_multiplicity = set_charge_and_spin(
+            OS_ATOMS, charge=0, multiplicity=3
         )
+
     atoms = molecule("O2")
-    charge, spin_multiplicity = valid_charge_and_spin(atoms)
+    charge, spin_multiplicity = set_charge_and_spin(atoms)
     assert charge == 0
     assert spin_multiplicity == 3
-    charge, spin_multiplicity = valid_charge_and_spin(atoms, charge=0)
+    charge, spin_multiplicity = set_charge_and_spin(atoms, charge=0)
     assert charge == 0
-    assert (
-        spin_multiplicity == 1
-    )  # Somewhat controversial if this should end up at 1 or 3
+    assert spin_multiplicity == 3
+
+    atoms = Atoms.fromdict(
+        {
+            "numbers": np.array([8, 8]),
+            "positions": np.array([[0.0, 0.0, 0.622978], [0.0, 0.0, -0.622978]]),
+            "cell": np.array([[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]),
+            "pbc": np.array([False, False, False]),
+        }
+    )
+    charge, spin_multiplicity = set_charge_and_spin(atoms)
+    assert charge == 0
+    assert spin_multiplicity == 1
+    charge, spin_multiplicity = set_charge_and_spin(atoms, charge=0)
+    assert charge == 0
+    assert spin_multiplicity == 1

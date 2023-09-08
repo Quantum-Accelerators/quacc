@@ -9,7 +9,7 @@ from monty.dev import requires
 from quacc import job
 from quacc.schemas import fetch_atoms
 from quacc.schemas.ase import summarize_run
-from quacc.utils.atoms import get_charge, get_multiplicity
+from quacc.utils.atoms import set_charge_and_spin
 from quacc.utils.calc import run_calc
 from quacc.utils.dicts import merge_dicts
 
@@ -81,19 +81,18 @@ def static_job(
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
-    if charge is None:
-        charge = get_charge(atoms)
-    if multiplicity is None:
-        multiplicity = get_multiplicity(atoms)
+    atoms.charge, atoms.spin_multiplicity = set_charge_and_spin(
+        atoms, charge=charge, multiplicity=multiplicity
+    )
 
     defaults = {
         "mem": "16GB",
         "num_threads": "max",
         "method": method,
         "basis": basis,
-        "charge": charge,
-        "multiplicity": multiplicity,
-        "reference": "uks" if multiplicity > 1 else "rks",
+        "charge": atoms.charge,
+        "multiplicity": atoms.spin_multiplicity,
+        "reference": "uks" if atoms.spin_multiplicity > 1 else "rks",
     }
     flags = merge_dicts(defaults, calc_swaps)
 
@@ -103,6 +102,5 @@ def static_job(
     return summarize_run(
         final_atoms,
         input_atoms=atoms,
-        charge_and_multiplicity=(charge, multiplicity),
         additional_fields={"name": "Psi4 Static"},
     )

@@ -10,7 +10,7 @@ from ase.calculators.orca import ORCA, OrcaProfile
 from quacc import SETTINGS, job
 from quacc.schemas import fetch_atoms
 from quacc.schemas.cclib import summarize_run
-from quacc.utils.atoms import get_charge, get_multiplicity
+from quacc.utils.atoms import set_charge_and_spin
 from quacc.utils.calc import run_calc
 from quacc.utils.dicts import merge_dicts
 
@@ -100,6 +100,9 @@ def static_job(
     atoms = fetch_atoms(atoms)
     input_swaps = input_swaps or {}
     block_swaps = block_swaps or {}
+    atoms.charge, atoms.spin_multiplicity = set_charge_and_spin(
+        atoms, charge=charge, multiplicity=multiplicity
+    )
 
     default_inputs = {
         xc: True,
@@ -122,8 +125,8 @@ def static_job(
 
     atoms.calc = ORCA(
         profile=OrcaProfile([SETTINGS.ORCA_CMD]),
-        charge=get_charge(atoms) if charge is None else charge,
-        mult=get_multiplicity(atoms) if multiplicity is None else multiplicity,
+        charge=atoms.charge,
+        mult=atoms.spin_multiplicity,
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )
@@ -214,6 +217,9 @@ def relax_job(
     atoms = fetch_atoms(atoms)
     input_swaps = input_swaps or {}
     block_swaps = block_swaps or {}
+    atoms.charge, atoms.spin_multiplicity = set_charge_and_spin(
+        atoms, charge=charge, multiplicity=multiplicity
+    )
 
     default_inputs = {
         xc: True,
@@ -237,8 +243,8 @@ def relax_job(
 
     atoms.calc = ORCA(
         profile=OrcaProfile([SETTINGS.ORCA_CMD]),
-        charge=get_charge(atoms) if charge is None else charge,
-        mult=get_multiplicity(atoms) if multiplicity is None else multiplicity,
+        charge=atoms.charge,
+        mult=atoms.spin_multiplicity,
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )

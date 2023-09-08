@@ -86,49 +86,6 @@ def prep_next_run(
     return atoms
 
 
-def get_charge(atoms: Atoms) -> int:
-    """
-    Get the (net) charge of an Atoms object. This is meant for molecules where
-    the charge is a fixed property.
-
-    Parameters
-    ----------
-    atoms
-        Atoms object
-
-    Returns
-    -------
-    int
-        Charge of the Atoms object
-    """
-
-    return (
-        atoms.charge if atoms.has("charge") else int(atoms.get_initial_charges().sum())
-    )
-
-
-def get_multiplicity(atoms: Atoms) -> int:
-    """
-    Get the spin multiplicity of an Atoms object. This is meant for molecules
-    where the spin multiplicity is a fixed property.
-
-    Parameters
-    ----------
-    atoms
-        Atoms object
-
-    Returns
-    -------
-    int
-        Charge of the Atoms object
-    """
-    return (
-        atoms.spin_multiplicity
-        if atoms.has("spin_multiplicity")
-        else int(1 + np.abs(atoms.get_initial_magnetic_moments()).sum())
-    )
-
-
 def set_magmoms(
     atoms: Atoms,
     elemental_mags_dict: dict | None = None,
@@ -298,14 +255,15 @@ def copy_atoms(atoms: Atoms) -> Atoms:
     return atoms
 
 
-def valid_charge_and_spin(
+def set_charge_and_spin(
     atoms: Atoms,
     charge: int | None = None,
-    spin_multiplicity: int | None = None,
-):
+    multiplicity: int | None = None,
+) -> (int, int):
     """
     Simple function to use the pymatgen molecule class to obtain and/or validate
-    the multiplicity given the prescribed charge.
+    the multiplicity given the prescribed charge. Updates the `.charge` and
+    `.spin_multiplicity` attributes of the `Atoms` object.
 
     Parameters
     ----------
@@ -321,14 +279,35 @@ def valid_charge_and_spin(
     charge, multiplicity
 
     """
-    if charge is None and spin_multiplicity is not None:
-        raise ValueError("If setting spin_multiplicity, must also specify charge.")
+
+    charge = (
+        charge
+        if charge is not None
+        else atoms.charge
+        if atoms.has("charge")
+        else int(atoms.get_initial_charges().sum())
+        if atoms.has("initial_charges")
+        else None
+    )
+
+    multiplicity = (
+        multiplicity
+        if multiplicity is not None
+        else atoms.spin_multiplicity
+        if atoms.has("spin_multiplicity")
+        else int(atoms.get_initial_magnetic_moments().sum()) + 1
+        if atoms.has("initial_magmoms")
+        else None
+    )
+
+    if charge is None and multiplicity is not None:
+        charge = 0
 
     try:
         mol = AseAtomsAdaptor.get_molecule(atoms)
         if charge is not None:
-            if spin_multiplicity is not None:
-                mol.set_charge_and_spin(charge, spin_multiplicity)
+            if multiplicity is not None:
+                mol.set_charge_and_spin(charge, multiplicity)
             else:
                 mol.set_charge_and_spin(charge)
     except ValueError:
@@ -337,13 +316,14 @@ def valid_charge_and_spin(
         default_spin_multiplicity = 1 if nelectrons % 2 == 0 else 2
         mol.set_charge_and_spin(
             charge if charge is not None else mol.charge,
-            spin_multiplicity
-            if spin_multiplicity is not None
-            else default_spin_multiplicity,
+            multiplicity if multiplicity is not None else default_spin_multiplicity,
         )
     if (mol.nelectrons + mol.spin_multiplicity) % 2 != 1:
         raise ValueError(
             f"Charge of {mol.charge} and spin multiplicity of {mol.spin_multiplicity} is"
             " not possible for this molecule."
         )
-    return mol.charge, mol.spin_multiplicity
+    atoms.charge = mol.charge
+    atoms.spin_multiplicity = mol.spin_multiplicity
+
+    return atoms.charge, atoms.spin_multiplicity

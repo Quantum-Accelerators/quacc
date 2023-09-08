@@ -10,7 +10,7 @@ from quacc import job
 from quacc.calculators.qchem import QChem
 from quacc.schemas import fetch_atoms
 from quacc.schemas.ase import summarize_opt_run, summarize_run
-from quacc.utils.atoms import valid_charge_and_spin
+from quacc.utils.atoms import set_charge_and_spin
 from quacc.utils.calc import run_ase_opt, run_calc
 from quacc.utils.dicts import merge_dicts, remove_dict_empties
 
@@ -84,12 +84,14 @@ def static_job(
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
     atoms = fetch_atoms(atoms)
-    charge, spin_multiplicity = valid_charge_and_spin(atoms, charge, spin_multiplicity)
+    atoms.charge, atoms.spin_multiplicity = set_charge_and_spin(
+        atoms, charge=charge, multiplicity=spin_multiplicity
+    )
 
     qchem_defaults = {
         "method": method,
-        "charge": charge,
-        "spin_multiplicity": spin_multiplicity,
+        "charge": atoms.charge,
+        "spin_multiplicity": atoms.spin_multiplicity,
         "cores": n_cores or multiprocessing.cpu_count(),
         "qchem_input_params": {
             "basis_set": basis,
@@ -108,7 +110,6 @@ def static_job(
     return summarize_run(
         final_atoms,
         input_atoms=atoms,
-        charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields={"name": "Q-Chem Static"},
     )
 
@@ -182,12 +183,14 @@ def relax_job(
 
     # TODO: exposing TRICs?
     atoms = fetch_atoms(atoms)
-    charge, spin_multiplicity = valid_charge_and_spin(atoms, charge, spin_multiplicity)
+    atoms.charge, atoms.spin_multiplicity = set_charge_and_spin(
+        atoms, charge=charge, multiplicity=spin_multiplicity
+    )
 
     qchem_defaults = {
         "method": method,
-        "charge": charge,
-        "spin_multiplicity": spin_multiplicity,
+        "charge": atoms.charge,
+        "spin_multiplicity": atoms.spin_multiplicity,
         "cores": n_cores or multiprocessing.cpu_count(),
         "qchem_input_params": {
             "basis_set": basis,
@@ -219,6 +222,5 @@ def relax_job(
 
     return summarize_opt_run(
         dyn,
-        charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields={"name": "Q-Chem Optimization"},
     )

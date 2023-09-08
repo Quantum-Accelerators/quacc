@@ -9,7 +9,7 @@ from ase.calculators.gaussian import Gaussian
 from quacc import job
 from quacc.schemas import fetch_atoms
 from quacc.schemas.cclib import summarize_run
-from quacc.utils.atoms import get_charge, get_multiplicity
+from quacc.utils.atoms import set_charge_and_spin
 from quacc.utils.calc import run_calc
 from quacc.utils.dicts import merge_dicts
 
@@ -85,6 +85,9 @@ def static_job(
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
+    atoms.charge, atoms.spin_multiplicity = set_charge_and_spin(
+        atoms, charge=charge, multiplicity=multiplicity
+    )
 
     defaults = {
         "mem": "16GB",
@@ -92,8 +95,8 @@ def static_job(
         "nprocshared": multiprocessing.cpu_count(),
         "xc": xc,
         "basis": basis,
-        "charge": get_charge(atoms) if charge is None else charge,
-        "mult": get_multiplicity(atoms) if multiplicity is None else multiplicity,
+        "charge": atoms.charge,
+        "mult": atoms.spin_multiplicity,
         "sp": "",
         "scf": ["maxcycle=250", "xqc"],
         "integral": "ultrafine",
@@ -180,6 +183,9 @@ def relax_job(
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
+    atoms.charge, atoms.spin_multiplicity = set_charge_and_spin(
+        atoms, charge=charge, multiplicity=multiplicity
+    )
 
     defaults = {
         "mem": "16GB",
@@ -187,8 +193,8 @@ def relax_job(
         "nprocshared": multiprocessing.cpu_count(),
         "xc": xc,
         "basis": basis,
-        "charge": get_charge(atoms) if charge is None else charge,
-        "mult": get_multiplicity(atoms) if multiplicity is None else multiplicity,
+        "charge": atoms.charge,
+        "mult": atoms.spin_multiplicity,
         "opt": "",
         "pop": "CM5",
         "scf": ["maxcycle=250", "xqc"],
