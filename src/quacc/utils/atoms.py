@@ -326,9 +326,6 @@ def get_charge_and_spin(
         else None
     )
 
-    if charge is None and spin_multiplicity is not None:
-        charge = 0
-
     try:
         mol = AseAtomsAdaptor.get_molecule(atoms)
         if charge is not None:
