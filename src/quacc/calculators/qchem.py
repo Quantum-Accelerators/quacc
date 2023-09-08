@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import inspect
 import struct
+import warnings
 from pathlib import Path
 
 from ase import Atoms, units
@@ -111,6 +112,10 @@ class QChem(FileIOCalculator):
         charge, spin_multiplicity = get_charge_and_spin(
             atoms, self.charge, self.spin_multiplicity
         )
+        if charge != self.charge or spin_multiplicity != self.spin_multiplicity:
+            warnings.warn(
+                f"{self.charge, self.spin_multiplicity} for charge, spin multiplicity changed to {charge, spin_multiplicity}"
+            )
         self.charge = charge
         self.spin_multiplicity = spin_multiplicity
 
