@@ -85,7 +85,7 @@ def static_job(
     """
     atoms = fetch_atoms(atoms)
     atoms.charge, atoms.spin_multiplicity = get_charge_and_spin(
-        atoms, charge=charge, multiplicity=spin_multiplicity
+        atoms, charge=charge, spin_multiplicity=spin_multiplicity
     )
 
     qchem_defaults = {
@@ -184,7 +184,7 @@ def relax_job(
     # TODO: exposing TRICs?
     atoms = fetch_atoms(atoms)
     atoms.charge, atoms.spin_multiplicity = get_charge_and_spin(
-        atoms, charge=charge, multiplicity=spin_multiplicity
+        atoms, charge=charge, spin_multiplicity=spin_multiplicity
     )
 
     qchem_defaults = {

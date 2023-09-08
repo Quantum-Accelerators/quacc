@@ -494,7 +494,7 @@ def test_docs_recipes_psi4(tmpdir):
     atoms = molecule("O2")
 
     dispatch_id = workflow(
-        atoms, charge=0, multiplicity=3, method="wb97m-v", basis="def2-svp"
+        atoms, charge=0, spin_multiplicity=3, method="wb97m-v", basis="def2-svp"
     )
     result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"

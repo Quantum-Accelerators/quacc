@@ -258,7 +258,7 @@ def copy_atoms(atoms: Atoms) -> Atoms:
 def get_charge_and_spin(
     atoms: Atoms,
     charge: int | None = None,
-    multiplicity: int | None = None,
+    spin_multiplicity: int | None = None,
 ) -> (int, int):
     """
     Simple function to use the pymatgen molecule class to obtain and/or validate
@@ -289,9 +289,9 @@ def get_charge_and_spin(
         else None
     )
 
-    multiplicity = (
-        multiplicity
-        if multiplicity is not None
+    spin_multiplicity = (
+        spin_multiplicity
+        if spin_multiplicity is not None
         else atoms.spin_multiplicity
         if atoms.has("spin_multiplicity")
         else int(atoms.get_initial_magnetic_moments().sum()) + 1
@@ -299,14 +299,14 @@ def get_charge_and_spin(
         else None
     )
 
-    if charge is None and multiplicity is not None:
+    if charge is None and spin_multiplicity is not None:
         charge = 0
 
     try:
         mol = AseAtomsAdaptor.get_molecule(atoms)
         if charge is not None:
-            if multiplicity is not None:
-                mol.get_charge_and_spin(charge, multiplicity)
+            if spin_multiplicity is not None:
+                mol.get_charge_and_spin(charge, spin_multiplicity)
             else:
                 mol.get_charge_and_spin(charge)
     except ValueError:
@@ -315,7 +315,9 @@ def get_charge_and_spin(
         default_spin_multiplicity = 1 if nelectrons % 2 == 0 else 2
         mol.get_charge_and_spin(
             charge if charge is not None else mol.charge,
-            multiplicity if multiplicity is not None else default_spin_multiplicity,
+            spin_multiplicity
+            if spin_multiplicity is not None
+            else default_spin_multiplicity,
         )
     if (mol.nelectrons + mol.spin_multiplicity) % 2 != 1:
         raise ValueError(

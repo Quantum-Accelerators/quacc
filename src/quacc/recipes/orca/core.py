@@ -28,7 +28,7 @@ GEOM_FILE = f"{ORCA().name}.xyz"
 def static_job(
     atoms: Atoms | dict,
     charge: int | None = None,
-    multiplicity: int | None = None,
+    spin_multiplicity: int | None = None,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
     input_swaps: dict | None = None,
@@ -46,7 +46,7 @@ def static_job(
     charge
         Charge of the system. If None, this is determined from the sum of
         `atoms.get_initial_charges()`.
-    multiplicity
+    spin_multiplicity
         Multiplicity of the system. If None, this is determined from 1+ the sum
         of `atoms.get_initial_magnetic_moments()`.
     xc
@@ -101,7 +101,7 @@ def static_job(
     input_swaps = input_swaps or {}
     block_swaps = block_swaps or {}
     atoms.charge, atoms.spin_multiplicity = get_charge_and_spin(
-        atoms, charge=charge, multiplicity=multiplicity
+        atoms, charge=charge, spin_multiplicity=spin_multiplicity
     )
 
     default_inputs = {
@@ -143,7 +143,7 @@ def static_job(
 def relax_job(
     atoms: Atoms | dict,
     charge: int | None = None,
-    multiplicity: int | None = None,
+    spin_multiplicity: int | None = None,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
     run_freq: bool = False,
@@ -161,7 +161,7 @@ def relax_job(
     charge
         Charge of the system. If None, this is determined from the sum of
         atoms.get_initial_charges().
-    multiplicity
+    spin_multiplicity
         Multiplicity of the system. If None, this is determined from 1+ the sum
         of atoms.get_initial_magnetic_moments().
     xc
@@ -218,7 +218,7 @@ def relax_job(
     input_swaps = input_swaps or {}
     block_swaps = block_swaps or {}
     atoms.charge, atoms.spin_multiplicity = get_charge_and_spin(
-        atoms, charge=charge, multiplicity=multiplicity
+        atoms, charge=charge, spin_multiplicity=spin_multiplicity
     )
 
     default_inputs = {

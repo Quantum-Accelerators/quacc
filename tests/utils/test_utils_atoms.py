@@ -133,17 +133,23 @@ def test_get_charge_and_spin():
     assert charge == 0
     assert spin_multiplicity == 2
     with pytest.raises(ValueError):
-        charge, spin_multiplicity = get_charge_and_spin(atoms, multiplicity=1)
+        charge, spin_multiplicity = get_charge_and_spin(atoms, spin_multiplicity=1)
     with pytest.raises(ValueError):
-        charge, spin_multiplicity = get_charge_and_spin(atoms, charge=0, multiplicity=1)
+        charge, spin_multiplicity = get_charge_and_spin(
+            atoms, charge=0, spin_multiplicity=1
+        )
     with pytest.raises(ValueError):
-        charge, spin_multiplicity = get_charge_and_spin(atoms, multiplicity=3)
+        charge, spin_multiplicity = get_charge_and_spin(atoms, spin_multiplicity=3)
     with pytest.raises(ValueError):
-        charge, spin_multiplicity = get_charge_and_spin(atoms, charge=0, multiplicity=3)
+        charge, spin_multiplicity = get_charge_and_spin(
+            atoms, charge=0, spin_multiplicity=3
+        )
     charge, spin_multiplicity = get_charge_and_spin(atoms, charge=-1)
     assert charge == -1
     assert spin_multiplicity == 1
-    charge, spin_multiplicity = get_charge_and_spin(atoms, charge=-1, multiplicity=3)
+    charge, spin_multiplicity = get_charge_and_spin(
+        atoms, charge=-1, spin_multiplicity=3
+    )
     assert charge == -1
     assert spin_multiplicity == 3
     charge, spin_multiplicity = get_charge_and_spin(OS_ATOMS)
@@ -152,12 +158,14 @@ def test_get_charge_and_spin():
     charge, spin_multiplicity = get_charge_and_spin(OS_ATOMS, charge=1)
     assert charge == 1
     assert spin_multiplicity == 1
-    charge, spin_multiplicity = get_charge_and_spin(OS_ATOMS, charge=0, multiplicity=4)
+    charge, spin_multiplicity = get_charge_and_spin(
+        OS_ATOMS, charge=0, spin_multiplicity=4
+    )
     assert charge == 0
     assert spin_multiplicity == 4
     with pytest.raises(ValueError):
         charge, spin_multiplicity = get_charge_and_spin(
-            OS_ATOMS, charge=0, multiplicity=3
+            OS_ATOMS, charge=0, spin_multiplicity=3
         )
 
     atoms = molecule("O2")

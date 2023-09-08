@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms | dict,
     charge: int | None = None,
-    multiplicity: int | None = None,
+    spin_multiplicity: int | None = None,
     method: str = "wb97x-v",
     basis: str = "def2-tzvp",
     calc_swaps: dict | None = None,
@@ -82,7 +82,7 @@ def static_job(
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
     atoms.charge, atoms.spin_multiplicity = get_charge_and_spin(
-        atoms, charge=charge, multiplicity=multiplicity
+        atoms, charge=charge, spin_multiplicity=spin_multiplicity
     )
 
     defaults = {

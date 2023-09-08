@@ -30,7 +30,7 @@ def test_static_job(tmpdir):
     output = static_job(
         atoms,
         charge=-2,
-        multiplicity=3,
+        spin_multiplicity=3,
         input_swaps={"def2-svp": True, "def2-tzvp": None},
         block_swaps={"%scf maxiter 300 end": True},
     )
@@ -62,7 +62,7 @@ def test_relax_job(tmpdir):
     output = relax_job(
         atoms,
         charge=-2,
-        multiplicity=3,
+        spin_multiplicity=3,
         input_swaps={
             "hf": True,
             "wb97x-d3bj": None,
