@@ -145,12 +145,12 @@ def test_static_job(monkeypatch, tmpdir):
         TEST_ATOMS, scf_algorithm="gdm", overwrite_inputs=overwrite_inputs
     )
     assert output["atoms"] == TEST_ATOMS
-    assert output["charge"] == 0
-    assert output["spin_multiplicity"] == 1
+    assert output["charge"] == -1
+    assert output["spin_multiplicity"] == 2
     assert output["formula_alphabetical"] == "C4 H4 O6"
     assert output["nelectrons"] == 76
-    assert output["parameters"]["charge"] == 0
-    assert output["parameters"]["spin_multiplicity"] == 1
+    assert output["parameters"]["charge"] == -1
+    assert output["parameters"]["spin_multiplicity"] == 2
     assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826311086011256)
 

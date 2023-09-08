@@ -306,14 +306,14 @@ def get_charge_and_spin(
         mol = AseAtomsAdaptor.get_molecule(atoms)
         if charge is not None:
             if spin_multiplicity is not None:
-                mol.get_charge_and_spin(charge, spin_multiplicity)
+                mol.set_charge_and_spin(charge, spin_multiplicity)
             else:
-                mol.get_charge_and_spin(charge)
+                mol.set_charge_and_spin(charge)
     except ValueError:
         mol = AseAtomsAdaptor.get_molecule(atoms, charge_spin_check=False)
         nelectrons = mol.nelectrons - charge if charge else mol.nelectrons
         default_spin_multiplicity = 1 if nelectrons % 2 == 0 else 2
-        mol.get_charge_and_spin(
+        mol.set_charge_and_spin(
             charge if charge is not None else mol.charge,
             spin_multiplicity
             if spin_multiplicity is not None
