@@ -84,9 +84,7 @@ def static_job(
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
     atoms = fetch_atoms(atoms)
-    charge, spin_multiplicity = valid_charge_and_spin(
-        atoms, charge, spin_multiplicity
-    )
+    charge, spin_multiplicity = valid_charge_and_spin(atoms, charge, spin_multiplicity)
 
     qchem_defaults = {
         "method": method,
@@ -184,9 +182,7 @@ def relax_job(
 
     # TODO: exposing TRICs?
     atoms = fetch_atoms(atoms)
-    charge, charge = valid_charge_and_spin(
-        atoms, charge, charge
-    )
+    charge, charge = valid_charge_and_spin(atoms, charge, charge)
 
     qchem_defaults = {
         "method": method,

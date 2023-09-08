@@ -9,10 +9,10 @@ from ase.io import read
 
 from quacc.calculators.vasp import Vasp
 from quacc.utils.atoms import (
-    valid_charge_and_spin,
     check_is_metal,
     get_atoms_id,
     prep_next_run,
+    valid_charge_and_spin,
 )
 
 FILE_DIR = Path(__file__).resolve().parent
