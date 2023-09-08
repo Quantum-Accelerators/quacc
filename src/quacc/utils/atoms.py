@@ -51,17 +51,17 @@ def prep_next_run(
         and hasattr(atoms, "calc")
         and getattr(atoms.calc, "results", None) is not None
     ):
-        # If there are initial magmoms set, then we should see what the
-        # final magmoms are. If they are present, move them to initial. If
-        # they are not present, it means the calculator doesn't support the
-        # "magmoms" property so we have to retain the initial magmoms given
-        # no further info.
+        # If there are initial magmoms set, then we should see what the final
+        # magmoms are. If they are present, move them to initial. If they are
+        # not present, it means the calculator doesn't support the "magmoms"
+        # property so we have to retain the initial magmoms given no further
+        # info.
         if atoms.has("initial_magmoms"):
             atoms.set_initial_magnetic_moments(
                 atoms.calc.results.get("magmoms", atoms.get_initial_magnetic_moments())
             )
-        # If there are no initial magmoms set, just check the results and
-        # set everything to 0.0 if there is nothing there.
+        # If there are no initial magmoms set, just check the results and set
+        # everything to 0.0 if there is nothing there.
         else:
             atoms.set_initial_magnetic_moments(
                 atoms.calc.results.get("magmoms", [0.0] * len(atoms))
@@ -98,10 +98,9 @@ def set_magmoms(
 
     This function deserves particular attention. The following logic is applied:
     - If there is a converged set of magnetic moments, those are moved to the
-    initial magmoms if copy_magmoms is True.
-    - If there is no converged set of magnetic moments but the user has set
-    initial magmoms, those are simply used as is.
-    - If there are no converged magnetic moments or initial magnetic
+    initial magmoms if copy_magmoms is True. - If there is no converged set of
+    magnetic moments but the user has set initial magmoms, those are simply used
+    as is. - If there are no converged magnetic moments or initial magnetic
     moments, then the default magnetic moments from the preset
     elemental_mags_dict (if specified) are set as the initial magnetic moments.
     - For any of the above scenarios, if mag_cutoff is not None, the newly set
@@ -261,8 +260,35 @@ def get_charge_and_spin(
     spin_multiplicity: int | None = None,
 ) -> (int, int):
     """
-    Simple function to use the pymatgen molecule class to obtain and/or validate
-    the multiplicity given the prescribed charge.
+    Get the charge and spin multiplicity of a molecule. This function takes the
+    following order of precedence:
+
+    Charges:
+
+    1. If `charge` is specified, that is the charge.
+
+    2. If `atoms.charge` is present, that is the charge.
+
+    3. If `atoms.has("initial_charges")`, then
+    `atoms.get_initial_charges.sum()` is the charge.
+
+    4. If none of the above, use Pymatgen to identify the lowest
+    physically possible charge given the number of electrons and the spin
+    multiplicity, if set.
+
+    Spin multiplicity:
+
+    1. If `spin_multiplicity` is specified, that is the spin multiplicity.
+
+    2. If `atoms.spin_multiplicity` is present, that is the spin multiplicity.
+
+    3. If `atoms.has("initial_magmoms")`, then
+       `np.abs(atoms.get_initial_magnetic_moments().sum())` is the spin
+       multiplicity.
+
+    4. If none of the above, use Pymatgen to identify the lowest physically
+    possible spin multiplicity given the number of electrons and the charge, if
+    set.
 
     Parameters
     ----------
@@ -294,7 +320,7 @@ def get_charge_and_spin(
         if spin_multiplicity is not None
         else atoms.spin_multiplicity
         if atoms.has("spin_multiplicity")
-        else int(atoms.get_initial_magnetic_moments().sum()) + 1
+        else int(np.abs(atoms.get_initial_magnetic_moments().sum())) + 1
         if atoms.has("initial_magmoms")
         else None
     )

@@ -49,10 +49,11 @@ def static_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     charge
-        The total charge of the molecular system. Effectively defaults to zero.
+        Charge of the system. If None, this is determined from
+        `quacc.utils.atoms.get_charge_and_spin`
     spin_multiplicity
-        The spin multiplicity of the molecular system. Effectively defaults to
-        the lowest spin state given the molecular structure and charge.
+        Multiplicity of the system. If None, this is determined from
+        `quacc.utils.atoms.get_charge_and_spin`
     method
         DFT exchange-correlation functional or other electronic structure
         method. Defaults to wB97M-V.
@@ -137,10 +138,11 @@ def relax_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     charge
-        The total charge of the molecular system. Effectively defaults to zero.
+        Charge of the system. If None, this is determined from
+        `quacc.utils.atoms.get_charge_and_spin`
     spin_multiplicity
-        The spin multiplicity of the molecular system. Effectively defaults to
-        the lowest spin state given the molecular structure and charge.
+        Multiplicity of the system. If None, this is determined from
+        `quacc.utils.atoms.get_charge_and_spin`
     method
         DFT exchange-correlation functional or other electronic structure
         method. Defaults to wB97M-V.

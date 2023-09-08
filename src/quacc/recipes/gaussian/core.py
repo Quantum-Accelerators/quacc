@@ -41,11 +41,11 @@ def static_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     charge
-        Charge of the system. If None, this is determined from the sum of
-        `atoms.get_initial_charges().`
+        Charge of the system. If None, this is determined from
+        `quacc.utils.atoms.get_charge_and_spin`
     spin_multiplicity
-        Multiplicity of the system. If None, this is determined from 1+ the sum
-        of `atoms.get_initial_magnetic_moments()`.
+        Multiplicity of the system. If None, this is determined from
+        `quacc.utils.atoms.get_charge_and_spin`
     xc
         Exchange-correlation functional
     basis
@@ -137,11 +137,11 @@ def relax_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     charge
-        Charge of the system. If None, this is determined from the sum of
-        `atoms.get_initial_charges()`.
+        Charge of the system. If None, this is determined from
+        `quacc.utils.atoms.get_charge_and_spin`
     spin_multiplicity
-        Multiplicity of the system. If None, this is determined from 1+ the sum
-        of `atoms.get_initial_magnetic_moments()`.
+        Multiplicity of the system. If None, this is determined from
+        `quacc.utils.atoms.get_charge_and_spin`
     xc
         Exchange-correlation functional
     basis
