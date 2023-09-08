@@ -298,7 +298,7 @@ def copy_atoms(atoms: Atoms) -> Atoms:
     return atoms
 
 
-def check_charge_and_spin(
+def valid_charge_and_spin(
     atoms: Atoms,
     charge: int | None = None,
     spin_multiplicity: int | None = None,
