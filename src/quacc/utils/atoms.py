@@ -254,7 +254,7 @@ def copy_atoms(atoms: Atoms) -> Atoms:
     return atoms
 
 
-def get_charge_and_spin(
+def check_charge_and_spin(
     atoms: Atoms,
     charge: int | None = None,
     spin_multiplicity: int | None = None,
@@ -275,7 +275,7 @@ def get_charge_and_spin(
 
     4. If none of the above, use Pymatgen to identify the lowest
     physically possible charge given the number of electrons and the spin
-    multiplicity, if set.
+    multiplicity, if set. Otherwise, charge is zero.
 
     Spin multiplicity:
 

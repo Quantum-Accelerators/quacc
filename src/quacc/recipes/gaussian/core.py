@@ -9,7 +9,7 @@ from ase.calculators.gaussian import Gaussian
 from quacc import job
 from quacc.schemas import fetch_atoms
 from quacc.schemas.cclib import summarize_run
-from quacc.utils.atoms import get_charge_and_spin
+from quacc.utils.atoms import check_charge_and_spin
 from quacc.utils.calc import run_calc
 from quacc.utils.dicts import merge_dicts
 
@@ -42,10 +42,10 @@ def static_job(
         the value
     charge
         Charge of the system. If None, this is determined from
-        `quacc.utils.atoms.get_charge_and_spin`
+        `quacc.utils.atoms.check_charge_and_spin`
     spin_multiplicity
         Multiplicity of the system. If None, this is determined from
-        `quacc.utils.atoms.get_charge_and_spin`
+        `quacc.utils.atoms.check_charge_and_spin`
     xc
         Exchange-correlation functional
     basis
@@ -85,7 +85,7 @@ def static_job(
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
-    charge, spin_multiplicity = get_charge_and_spin(
+    charge, spin_multiplicity = check_charge_and_spin(
         atoms, charge=charge, spin_multiplicity=spin_multiplicity
     )
 
@@ -138,10 +138,10 @@ def relax_job(
         the value
     charge
         Charge of the system. If None, this is determined from
-        `quacc.utils.atoms.get_charge_and_spin`
+        `quacc.utils.atoms.check_charge_and_spin`
     spin_multiplicity
         Multiplicity of the system. If None, this is determined from
-        `quacc.utils.atoms.get_charge_and_spin`
+        `quacc.utils.atoms.check_charge_and_spin`
     xc
         Exchange-correlation functional
     basis
@@ -183,7 +183,7 @@ def relax_job(
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
-    charge, spin_multiplicity = get_charge_and_spin(
+    charge, spin_multiplicity = check_charge_and_spin(
         atoms, charge=charge, spin_multiplicity=spin_multiplicity
     )
 
