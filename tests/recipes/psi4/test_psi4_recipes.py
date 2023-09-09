@@ -13,7 +13,7 @@ except ImportError:
     psi4 is None,
     reason="Psi4 must be installed. Try conda install -c psi4 psi4",
 )
-def testimages_maker(tmpdir):
+def test_static(tmpdir):
     tmpdir.chdir()
 
     atoms = molecule("H2")
