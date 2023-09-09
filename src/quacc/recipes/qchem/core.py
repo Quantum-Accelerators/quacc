@@ -111,6 +111,7 @@ def static_job(
     return summarize_run(
         final_atoms,
         input_atoms=atoms,
+        charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields={"name": "Q-Chem Static"},
     )
 
@@ -224,5 +225,6 @@ def relax_job(
 
     return summarize_opt_run(
         dyn,
+        charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields={"name": "Q-Chem Optimization"},
     )

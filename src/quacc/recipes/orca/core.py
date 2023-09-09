@@ -28,7 +28,7 @@ GEOM_FILE = f"{ORCA().name}.xyz"
 def static_job(
     atoms: Atoms | dict,
     charge: int | None = None,
-    spin_multiplicity: int | None = None,
+    multiplicity: int | None = None,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
     input_swaps: dict | None = None,
@@ -46,7 +46,7 @@ def static_job(
     charge
         Charge of the system. If None, this is determined from
         `quacc.utils.atoms.check_charge_and_spin`
-    spin_multiplicity
+    multiplicity
         Multiplicity of the system. If None, this is determined from
         `quacc.utils.atoms.check_charge_and_spin`
     xc
@@ -100,8 +100,8 @@ def static_job(
     atoms = fetch_atoms(atoms)
     input_swaps = input_swaps or {}
     block_swaps = block_swaps or {}
-    charge, spin_multiplicity = check_charge_and_spin(
-        atoms, charge=charge, spin_multiplicity=spin_multiplicity
+    charge, multiplicity = check_charge_and_spin(
+        atoms, charge=charge, multiplicity=multiplicity
     )
 
     default_inputs = {
@@ -126,7 +126,7 @@ def static_job(
     atoms.calc = ORCA(
         profile=OrcaProfile([SETTINGS.ORCA_CMD]),
         charge=charge,
-        mult=spin_multiplicity,
+        mult=multiplicity,
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )
@@ -143,7 +143,7 @@ def static_job(
 def relax_job(
     atoms: Atoms | dict,
     charge: int | None = None,
-    spin_multiplicity: int | None = None,
+    multiplicity: int | None = None,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
     run_freq: bool = False,
@@ -161,7 +161,7 @@ def relax_job(
     charge
         Charge of the system. If None, this is determined from the sum of
         atoms.get_initial_charges().
-    spin_multiplicity
+    multiplicity
         Multiplicity of the system. If None, this is determined from 1+ the sum
         of atoms.get_initial_magnetic_moments().
     xc
@@ -217,8 +217,8 @@ def relax_job(
     atoms = fetch_atoms(atoms)
     input_swaps = input_swaps or {}
     block_swaps = block_swaps or {}
-    charge, spin_multiplicity = check_charge_and_spin(
-        atoms, charge=charge, spin_multiplicity=spin_multiplicity
+    charge, multiplicity = check_charge_and_spin(
+        atoms, charge=charge, multiplicity=multiplicity
     )
 
     default_inputs = {
@@ -244,7 +244,7 @@ def relax_job(
     atoms.calc = ORCA(
         profile=OrcaProfile([SETTINGS.ORCA_CMD]),
         charge=charge,
-        mult=spin_multiplicity,
+        mult=multiplicity,
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )

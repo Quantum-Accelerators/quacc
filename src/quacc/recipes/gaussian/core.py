@@ -26,7 +26,7 @@ GEOM_FILE = LOG_FILE
 def static_job(
     atoms: Atoms | dict,
     charge: int | None = None,
-    spin_multiplicity: int | None = None,
+    multiplicity: int | None = None,
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
     calc_swaps: dict | None = None,
@@ -43,7 +43,7 @@ def static_job(
     charge
         Charge of the system. If None, this is determined from
         `quacc.utils.atoms.check_charge_and_spin`
-    spin_multiplicity
+    multiplicity
         Multiplicity of the system. If None, this is determined from
         `quacc.utils.atoms.check_charge_and_spin`
     xc
@@ -85,8 +85,8 @@ def static_job(
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
-    charge, spin_multiplicity = check_charge_and_spin(
-        atoms, charge=charge, spin_multiplicity=spin_multiplicity
+    charge, multiplicity = check_charge_and_spin(
+        atoms, charge=charge, multiplicity=multiplicity
     )
 
     defaults = {
@@ -96,7 +96,7 @@ def static_job(
         "xc": xc,
         "basis": basis,
         "charge": charge,
-        "mult": spin_multiplicity,
+        "mult": multiplicity,
         "sp": "",
         "scf": ["maxcycle=250", "xqc"],
         "integral": "ultrafine",
@@ -121,7 +121,7 @@ def static_job(
 def relax_job(
     atoms: Atoms,
     charge: int | None = None,
-    spin_multiplicity: int | None = None,
+    multiplicity: int | None = None,
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
     freq: bool = False,
@@ -139,7 +139,7 @@ def relax_job(
     charge
         Charge of the system. If None, this is determined from
         `quacc.utils.atoms.check_charge_and_spin`
-    spin_multiplicity
+    multiplicity
         Multiplicity of the system. If None, this is determined from
         `quacc.utils.atoms.check_charge_and_spin`
     xc
@@ -183,8 +183,8 @@ def relax_job(
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
-    charge, spin_multiplicity = check_charge_and_spin(
-        atoms, charge=charge, spin_multiplicity=spin_multiplicity
+    charge, multiplicity = check_charge_and_spin(
+        atoms, charge=charge, multiplicity=multiplicity
     )
 
     defaults = {
@@ -194,7 +194,7 @@ def relax_job(
         "xc": xc,
         "basis": basis,
         "charge": charge,
-        "mult": spin_multiplicity,
+        "mult": multiplicity,
         "opt": "",
         "pop": "CM5",
         "scf": ["maxcycle=250", "xqc"],

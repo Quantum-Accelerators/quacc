@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms | dict,
     charge: int | None = None,
-    spin_multiplicity: int | None = None,
+    multiplicity: int | None = None,
     method: str = "wb97x-v",
     basis: str = "def2-tzvp",
     calc_swaps: dict | None = None,
@@ -46,7 +46,7 @@ def static_job(
     charge
         Charge of the system. If None, this is determined from
         `quacc.utils.atoms.check_charge_and_spin`
-    spin_multiplicity
+    multiplicity
         Multiplicity of the system. If None, this is determined from
         `quacc.utils.atoms.check_charge_and_spin`
     method
@@ -81,8 +81,8 @@ def static_job(
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
-    charge, spin_multiplicity = check_charge_and_spin(
-        atoms, charge=charge, spin_multiplicity=spin_multiplicity
+    charge, multiplicity = check_charge_and_spin(
+        atoms, charge=charge, multiplicity=multiplicity
     )
 
     defaults = {
@@ -91,8 +91,8 @@ def static_job(
         "method": method,
         "basis": basis,
         "charge": charge,
-        "multiplicity": spin_multiplicity,
-        "reference": "uks" if spin_multiplicity > 1 else "rks",
+        "multiplicity": multiplicity,
+        "reference": "uks" if multiplicity > 1 else "rks",
     }
     flags = merge_dicts(defaults, calc_swaps)
 
@@ -102,6 +102,6 @@ def static_job(
     return summarize_run(
         final_atoms,
         input_atoms=atoms,
-        charge_and_multiplicity=(charge, spin_multiplicity),
+        charge_and_multiplicity=(charge, multiplicity),
         additional_fields={"name": "Psi4 Static"},
     )

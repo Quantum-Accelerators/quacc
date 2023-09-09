@@ -257,7 +257,7 @@ def copy_atoms(atoms: Atoms) -> Atoms:
 def check_charge_and_spin(
     atoms: Atoms,
     charge: int | None = None,
-    spin_multiplicity: int | None = None,
+    multiplicity: int | None = None,
 ) -> (int, int):
     """
     Get the charge and spin multiplicity of a molecule and also set the
@@ -297,7 +297,7 @@ def check_charge_and_spin(
         Atoms object
     charge
         Molecular charge
-    spin_multiplicity
+    multiplicity
         Molecular multiplicity
 
     Returns
@@ -316,9 +316,9 @@ def check_charge_and_spin(
         else None
     )
 
-    spin_multiplicity = (
-        spin_multiplicity
-        if spin_multiplicity is not None
+    multiplicity = (
+        multiplicity
+        if multiplicity is not None
         else atoms.spin_multiplicity
         if getattr(atoms, "spin_multiplicity", None)
         else round(np.abs(atoms.get_initial_magnetic_moments().sum()) + 1)
@@ -326,14 +326,14 @@ def check_charge_and_spin(
         else None
     )
 
-    if charge is None and spin_multiplicity is not None:
+    if charge is None and multiplicity is not None:
         charge = 0
 
     try:
         mol = AseAtomsAdaptor.get_molecule(atoms)
         if charge is not None:
-            if spin_multiplicity is not None:
-                mol.set_charge_and_spin(charge, spin_multiplicity)
+            if multiplicity is not None:
+                mol.set_charge_and_spin(charge, multiplicity)
             else:
                 mol.set_charge_and_spin(charge)
     except ValueError:
@@ -342,9 +342,7 @@ def check_charge_and_spin(
         default_spin_multiplicity = 1 if nelectrons % 2 == 0 else 2
         mol.set_charge_and_spin(
             charge if charge is not None else mol.charge,
-            spin_multiplicity
-            if spin_multiplicity is not None
-            else default_spin_multiplicity,
+            multiplicity if multiplicity is not None else default_spin_multiplicity,
         )
     if (mol.nelectrons + mol.spin_multiplicity) % 2 != 1:
         raise ValueError(

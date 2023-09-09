@@ -142,6 +142,7 @@ def ts_job(
 
     return summarize_opt_run(
         dyn,
+        charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields={"name": "Q-Chem TS Optimization"},
     )
 
@@ -261,6 +262,7 @@ def irc_job(
 
     return summarize_opt_run(
         dyn,
+        charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields={"name": "Q-Chem IRC Optimization"},
     )
 

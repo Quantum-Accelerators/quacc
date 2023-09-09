@@ -382,7 +382,7 @@ def test_docs_recipes_psi4(tmpdir):
 
     atoms = molecule("O2")
     future = static_job(
-        atoms, charge=0, spin_multiplicity=3, method="wb97m-v", basis="def2-svp"
+        atoms, charge=0, multiplicity=3, method="wb97m-v", basis="def2-svp"
     )
     result = future.result()
     assert result.done()
