@@ -30,10 +30,8 @@ class QChem(FileIOCalculator):
     cores
         Number of cores to use for the Q-Chem calculation.
     charge
-        The total charge of the molecular system. Effectively defaults to zero.
-    spin_multiplicity
-        The spin multiplicity of the molecular system. Effectively defaults to
-        the lowest spin state given the molecular structure and charge.
+        The total charge of the molecular system.
+        The spin multiplicity of the molecular system.
     qchem_input_params
         Dictionary of Q-Chem input parameters to be passed to
         pymatgen.io.qchem.sets.ForceSet.
@@ -52,8 +50,8 @@ class QChem(FileIOCalculator):
     def __init__(
         self,
         atoms: Atoms,
-        charge: None | int = None,
-        spin_multiplicity: None | int = None,
+        charge: int = 0,
+        spin_multiplicity: int = 1,
         method: str | None = None,
         cores: int = 1,
         qchem_input_params: dict | None = None,
