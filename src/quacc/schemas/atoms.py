@@ -243,7 +243,7 @@ def fetch_atoms(atoms: Atoms | dict) -> Atoms:
     except Exception:
         pass
 
-    return copy_atoms(atoms)
+    return atoms
 
 
 def _quacc_sanitize(obj: Any) -> Any:
