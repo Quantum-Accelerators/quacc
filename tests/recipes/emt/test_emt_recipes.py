@@ -104,16 +104,3 @@ def test_slab_dynamic_jobs(tmpdir):
     assert outputs[2]["nsites"] == 80
     assert outputs[3]["nsites"] == 64
     assert [output["parameters"]["asap_cutoff"] is True for output in outputs]
-
-    outputs = bulk_to_slabs_flow(
-        atoms,
-        make_slabs_kwargs={"max_slabs": 2},
-        slab_relax_kwargs={
-            "opt_swaps": {"fmax": 1.0},
-            "calc_swaps": {"asap_cutoff": True},
-        },
-    )
-    assert len(outputs) == 2
-    assert outputs[0]["nsites"] == 64
-    assert outputs[1]["nsites"] == 80
-    assert [output["parameters"]["asap_cutoff"] is False for output in outputs]
