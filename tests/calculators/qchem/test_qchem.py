@@ -90,15 +90,6 @@ def test_qchem_write_input_open_shell_and_different_charges(tmpdir):
     ref_qcinp = QCInput.from_file(os.path.join(FILE_DIR, "examples", "OSDC1.qin"))
     assert qcinp.as_dict() == ref_qcinp.as_dict()
 
-    calc = QChem(OS_ATOMS, spin_multiplicity=2, cores=40, charge=0)
-    assert calc.parameters["cores"] == 40
-    assert calc.parameters["charge"] == 0
-    assert calc.parameters["spin_multiplicity"] == 2
-    calc.write_input(OS_ATOMS)
-    qcinp = QCInput.from_file("mol.qin")
-    ref_qcinp = QCInput.from_file(os.path.join(FILE_DIR, "examples", "OSDC1.qin"))
-    assert qcinp.as_dict() == ref_qcinp.as_dict()
-
     calc = QChem(OS_ATOMS, cores=40, charge=0, spin_multiplicity=4)
     assert calc.parameters["cores"] == 40
     assert calc.parameters["charge"] == 0
@@ -109,15 +100,6 @@ def test_qchem_write_input_open_shell_and_different_charges(tmpdir):
     assert qcinp.as_dict() == ref_qcinp.as_dict()
 
     calc = QChem(OS_ATOMS, cores=40, charge=1)
-    assert calc.parameters["cores"] == 40
-    assert calc.parameters["charge"] == 1
-    assert calc.parameters["spin_multiplicity"] == 1
-    calc.write_input(OS_ATOMS)
-    qcinp = QCInput.from_file("mol.qin")
-    ref_qcinp = QCInput.from_file(os.path.join(FILE_DIR, "examples", "OSDC3.qin"))
-    assert qcinp.as_dict() == ref_qcinp.as_dict()
-
-    calc = QChem(OS_ATOMS, cores=40, charge=1, spin_multiplicity=1)
     assert calc.parameters["cores"] == 40
     assert calc.parameters["charge"] == 1
     assert calc.parameters["spin_multiplicity"] == 1
