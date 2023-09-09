@@ -30,6 +30,7 @@ class QChem(FileIOCalculator):
         Number of cores to use for the Q-Chem calculation.
     charge
         The total charge of the molecular system.
+    spin_multiplicity
         The spin multiplicity of the molecular system.
     qchem_input_params
         Dictionary of Q-Chem input parameters to be passed to
