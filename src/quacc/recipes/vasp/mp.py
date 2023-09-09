@@ -60,7 +60,7 @@ def mp_prerelax_job(
     Returns
     -------
     VaspSchema
-        Dictionary of results from quacc.schemas.vasp.summarize_run
+        Dictionary of results from [quacc.schemas.vasp.summarize_run][]
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
@@ -101,7 +101,7 @@ def mp_relax_job(
     Returns
     -------
     VaspSchema
-        Dictionary of results from quacc.schemas.vasp.summarize_run
+        Dictionary of results from [quacc.schemas.vasp.summarize_run][]
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}

@@ -60,7 +60,7 @@ def slab_static_job(
     Returns
     -------
     VaspSchema
-        Dictionary of results from `quacc.schemas.vasp.summarize_run`
+        Dictionary of results from [quacc.schemas.vasp.summarize_run][]
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
@@ -126,7 +126,7 @@ def slab_relax_job(
     Returns
     -------
     VaspSchema
-        Dictionary of results from `quacc.schemas.vasp.summarize_run`
+        Dictionary of results from [quacc.schemas.vasp.summarize_run][]
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
@@ -172,7 +172,7 @@ def bulk_to_slabs_flow(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     make_slabs_kwargs
-        Additional keyword arguments to pass to make_slabs_from_bulk()
+        Additional keyword arguments to pass to [quacc.utils.slabs.make_slabs_from_bulk][]
     run_static
         Whether to run the static calculation.
     slab_relax_kwargs
@@ -183,7 +183,7 @@ def bulk_to_slabs_flow(
     Returns
     -------
     list[VaspSchema]
-        List of dictionary results from `quacc.schemas.vasp.summarize_run`
+        List of dictionary results from [quacc.schemas.vasp.summarize_run][]
     """
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}
@@ -237,7 +237,7 @@ def slab_to_ads_flow(
     adsorbate
         Atoms object for the adsorbate.
     make_ads_kwargs
-        Additional keyword arguments to pass to make_adsorbate_structures()
+        Additional keyword arguments to pass to [quacc.utils.slabs.make_adsorbate_structures][]
     run_static
         Whether to run the static calculation.
     slab_relax_kwargs
@@ -248,7 +248,7 @@ def slab_to_ads_flow(
     Returns
     -------
     list[VaspSchema]
-        List of dictionaries of results from quacc.schemas.vasp.summarize_run
+        List of dictionaries of results from [quacc.schemas.vasp.summarize_run][]
     """
 
     slab_relax_kwargs = slab_relax_kwargs or {}

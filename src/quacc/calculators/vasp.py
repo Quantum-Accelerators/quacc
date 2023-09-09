@@ -67,7 +67,7 @@ class Vasp(Vasp_):
         Default is 0.05 in settings.
     elemental_magmoms
         A dictionary of elemental initial magnetic moments to pass to
-        `quacc.utils.atoms.set_magmoms`, e.g. `{"Fe": 5, "Ni": 4}`.
+        [quacc.utils.atoms.set_magmoms][], e.g. `{"Fe": 5, "Ni": 4}`.
     auto_kpts
         An automatic k-point generation scheme from Pymatgen. Options include:
 
