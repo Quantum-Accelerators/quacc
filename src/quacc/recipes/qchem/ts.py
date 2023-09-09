@@ -11,7 +11,7 @@ from quacc.calculators.qchem import QChem
 from quacc.recipes.qchem.core import relax_job
 from quacc.schemas import fetch_atoms
 from quacc.schemas.ase import summarize_opt_run
-from quacc.utils.atoms import automatic_charge_and_spin
+from quacc.utils.atoms import automated_charge_and_spin
 from quacc.utils.calc import run_ase_opt
 from quacc.utils.dicts import merge_dicts, remove_dict_empties
 
@@ -58,10 +58,10 @@ def ts_job(
         the value
     charge
         Charge of the system. If None, this is determined from
-        `quacc.utils.atoms.automatic_charge_and_spin`
+        `quacc.utils.atoms.automated_charge_and_spin`
     spin_multiplicity
         Multiplicity of the system. If None, this is determined from
-        `quacc.utils.atoms.automatic_charge_and_spin`
+        `quacc.utils.atoms.automated_charge_and_spin`
     method
         DFT exchange-correlation functional or other electronic structure
         method. Defaults to wB97M-V.
@@ -107,7 +107,7 @@ def ts_job(
     #   - exposing TRICs?
     #   - passing initial Hessian?
     atoms = fetch_atoms(atoms)
-    charge, spin_multiplicity = automatic_charge_and_spin(
+    charge, spin_multiplicity = automated_charge_and_spin(
         atoms, charge=charge, multiplicity=spin_multiplicity
     )
 
@@ -178,10 +178,10 @@ def irc_job(
         Direction of the IRC. Should be "forward" or "reverse".
     charge
         Charge of the system. If None, this is determined from
-        `quacc.utils.atoms.automatic_charge_and_spin`
+        `quacc.utils.atoms.automated_charge_and_spin`
     spin_multiplicity
         Multiplicity of the system. If None, this is determined from
-        `quacc.utils.atoms.automatic_charge_and_spin`
+        `quacc.utils.atoms.automated_charge_and_spin`
     method
         DFT exchange-correlation functional or other electronic structure
         method. Defaults to wB97M-V.
@@ -225,7 +225,7 @@ def irc_job(
 
     # TODO: 1) expose TRICs?; 2) passing initial Hessian?
     atoms = fetch_atoms(atoms)
-    charge, spin_multiplicity = automatic_charge_and_spin(
+    charge, spin_multiplicity = automated_charge_and_spin(
         atoms, charge=charge, multiplicity=spin_multiplicity
     )
 

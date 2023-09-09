@@ -10,7 +10,7 @@ from ase.calculators.orca import ORCA, OrcaProfile
 from quacc import SETTINGS, job
 from quacc.schemas import fetch_atoms
 from quacc.schemas.cclib import summarize_run
-from quacc.utils.atoms import automatic_charge_and_spin
+from quacc.utils.atoms import automated_charge_and_spin
 from quacc.utils.calc import run_calc
 from quacc.utils.dicts import merge_dicts
 
@@ -45,10 +45,10 @@ def static_job(
         the value
     charge
         Charge of the system. If None, this is determined from
-        `quacc.utils.atoms.automatic_charge_and_spin`
+        `quacc.utils.atoms.automated_charge_and_spin`
     multiplicity
         Multiplicity of the system. If None, this is determined from
-        `quacc.utils.atoms.automatic_charge_and_spin`
+        `quacc.utils.atoms.automated_charge_and_spin`
     xc
         Exchange-correlation functional
     basis
@@ -100,7 +100,7 @@ def static_job(
     atoms = fetch_atoms(atoms)
     input_swaps = input_swaps or {}
     block_swaps = block_swaps or {}
-    charge, multiplicity = automatic_charge_and_spin(
+    charge, multiplicity = automated_charge_and_spin(
         atoms, charge=charge, multiplicity=multiplicity
     )
 
@@ -217,7 +217,7 @@ def relax_job(
     atoms = fetch_atoms(atoms)
     input_swaps = input_swaps or {}
     block_swaps = block_swaps or {}
-    charge, multiplicity = automatic_charge_and_spin(
+    charge, multiplicity = automated_charge_and_spin(
         atoms, charge=charge, multiplicity=multiplicity
     )
 

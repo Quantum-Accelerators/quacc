@@ -15,7 +15,7 @@ from pymatgen.io.qchem.outputs import QCOutput
 from pymatgen.io.qchem.sets import ForceSet
 
 from quacc.custodian import qchem as custodian_qchem
-from quacc.utils.atoms import automatic_charge_and_spin
+from quacc.utils.atoms import automated_charge_and_spin
 
 logger = logging.getLogger(__name__)
 
@@ -90,7 +90,7 @@ class QChem(FileIOCalculator):
         ):
             self.qchem_input_params["overwrite_inputs"]["rem"]["method"] = method
 
-        charge, spin_multiplicity = automatic_charge_and_spin(
+        charge, spin_multiplicity = automated_charge_and_spin(
             atoms, self.charge, self.spin_multiplicity
         )
         if charge != self.charge or spin_multiplicity != self.spin_multiplicity:
