@@ -58,9 +58,9 @@ class QChem(FileIOCalculator):
     ):
         # Assign variables to self
         self.atoms = atoms
+        self.cores = cores
         self.charge = charge
         self.spin_multiplicity = spin_multiplicity
-        self.cores = cores
         self.qchem_input_params = qchem_input_params or {}
         self.fileiocalculator_kwargs = fileiocalculator_kwargs
 
