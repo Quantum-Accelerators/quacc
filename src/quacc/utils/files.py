@@ -4,9 +4,9 @@ Utility functions for file and path handling
 from __future__ import annotations
 
 import contextlib
+import logging
 import os
 import socket
-import warnings
 from datetime import datetime
 from pathlib import Path
 from random import randint
@@ -16,6 +16,8 @@ import yaml
 from monty.io import zopen
 from monty.os.path import zpath
 from monty.shutil import decompress_file
+
+logger = logging.getLogger(__name__)
 
 
 def check_logfile(logfile: str, check_str: str) -> bool:
@@ -64,7 +66,7 @@ def copy_decompress(source_files: list[str | Path], destination: str | Path) -> 
             copy(z_path, Path(destination, z_path.name))
             decompress_file(Path(destination, z_path.name))
         else:
-            warnings.warn(f"Cannot find file: {z_path}", UserWarning)
+            logger.warning(f"Cannot find file: {z_path}")
 
 
 def make_unique_dir(base_path: str | None = None) -> str | Path:

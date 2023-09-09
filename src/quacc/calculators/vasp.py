@@ -5,8 +5,8 @@ high-throughput DFT.
 from __future__ import annotations
 
 import inspect
+import logging
 import os
-import warnings
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -27,6 +27,8 @@ if TYPE_CHECKING:
     from typing import Literal
 
     from ase import Atoms
+
+logger = logging.getLogger(__name__)
 
 
 class Vasp(Vasp_):
@@ -243,9 +245,8 @@ class Vasp(Vasp_):
 
         # Check ASE environment variables
         if "VASP_PP_PATH" not in os.environ:
-            warnings.warn(
+            logger.info(
                 "The VASP_PP_PATH environment variable must point to the library of VASP pseudopotentials. See the ASE Vasp calculator documentation for details.",
-                UserWarning,
             )
 
         # Check if Custodian should be used and confirm environment variables
@@ -256,9 +257,8 @@ class Vasp(Vasp_):
             return f"python {run_vasp_custodian_file}"
 
         if "ASE_VASP_COMMAND" not in os.environ and "VASP_SCRIPT" not in os.environ:
-            warnings.warn(
+            logger.info(
                 "ASE_VASP_COMMAND or VASP_SCRIPT must be set in the environment to run VASP. See the ASE Vasp calculator documentation for details.",
-                UserWarning,
             )
         return None
 
@@ -334,18 +334,16 @@ class Vasp(Vasp_):
             not calc.int_params["lmaxmix"] or calc.int_params["lmaxmix"] < 6
         ) and max_Z > 56:
             if self.verbose:
-                warnings.warn(
+                logger.info(
                     "Copilot: Setting LMAXMIX = 6 because you have f electrons.",
-                    UserWarning,
                 )
             calc.set(lmaxmix=6)
         elif (
             not calc.int_params["lmaxmix"] or calc.int_params["lmaxmix"] < 4
         ) and max_Z > 20:
             if self.verbose:
-                warnings.warn(
+                logger.info(
                     "Copilot: Setting LMAXMIX = 4 because you have d electrons.",
-                    UserWarning,
                 )
             calc.set(lmaxmix=4)
 
@@ -357,9 +355,8 @@ class Vasp(Vasp_):
             or calc.string_params["metagga"]
         ) and not calc.bool_params["lasph"]:
             if self.verbose:
-                warnings.warn(
+                logger.info(
                     "Copilot: Setting LASPH = True because you have a +U, vdW, meta-GGA, or hybrid calculation.",
-                    UserWarning,
                 )
             calc.set(lasph=True)
 
@@ -368,9 +365,8 @@ class Vasp(Vasp_):
             or calc.string_params["algo"].lower() != "all"
         ):
             if self.verbose:
-                warnings.warn(
+                logger.info(
                     "Copilot: Setting ALGO = All because you have a meta-GGA calculation.",
-                    UserWarning,
                 )
             calc.set(algo="all")
 
@@ -379,9 +375,8 @@ class Vasp(Vasp_):
             or calc.string_params["algo"].lower() not in ["all", "damped"]
         ):
             if self.verbose:
-                warnings.warn(
+                logger.info(
                     "Copilot: Setting ALGO = All because you have a hybrid calculation.",
-                    UserWarning,
                 )
             calc.set(algo="all")
 
@@ -391,9 +386,8 @@ class Vasp(Vasp_):
             and (calc.int_params["nsw"] and calc.int_params["nsw"] > 0)
         ):
             if self.verbose:
-                warnings.warn(
+                logger.info(
                     "Copilot: You are relaxing a likely metal. Setting ISMEAR = 1 and SIGMA = 0.1.",
-                    UserWarning,
                 )
             calc.set(ismear=1, sigma=0.1)
 
@@ -409,9 +403,8 @@ class Vasp(Vasp_):
             )
         ):
             if self.verbose:
-                warnings.warn(
+                logger.info(
                     "Copilot: Setting ISMEAR = -5 because you have a static calculation.",
-                    UserWarning,
                 )
             calc.set(ismear=-5)
 
@@ -421,9 +414,8 @@ class Vasp(Vasp_):
             and calc.float_params["kspacing"] is None
         ):
             if self.verbose:
-                warnings.warn(
+                logger.info(
                     "Copilot: Setting ISMEAR = 0 because you don't have enough k-points for ISMEAR = -5.",
-                    UserWarning,
                 )
             calc.set(ismear=0)
 
@@ -433,9 +425,8 @@ class Vasp(Vasp_):
             and calc.int_params["ismear"] == -5
         ):
             if self.verbose:
-                warnings.warn(
+                logger.info(
                     "Copilot: KSPACING is likely too large for ISMEAR = -5. Setting ISMEAR = 0.",
-                    UserWarning,
                 )
             calc.set(ismear=0)
 
@@ -445,9 +436,8 @@ class Vasp(Vasp_):
             and calc.int_params["ismear"] != 0
         ):
             if self.verbose:
-                warnings.warn(
+                logger.info(
                     "Copilot: Setting ISMEAR = 0 and SIGMA = 0.01 because you are doing a line mode calculation.",
-                    UserWarning,
                 )
             calc.set(ismear=0, sigma=0.01)
 
@@ -455,9 +445,8 @@ class Vasp(Vasp_):
             not calc.float_params["sigma"] or calc.float_params["sigma"] > 0.05
         ):
             if self.verbose:
-                warnings.warn(
+                logger.info(
                     "Copilot: Setting SIGMA = 0.05 because ISMEAR = 0 was requested with SIGMA > 0.05.",
-                    UserWarning,
                 )
             calc.set(sigma=0.05)
 
@@ -467,9 +456,8 @@ class Vasp(Vasp_):
             and calc.bool_params["laechg"]
         ):
             if self.verbose:
-                warnings.warn(
+                logger.info(
                     "Copilot: Setting LAECHG = False because you have NSW > 0. LAECHG is not compatible with NSW > 0.",
-                    UserWarning,
                 )
             calc.set(laechg=False)
 
@@ -477,16 +465,13 @@ class Vasp(Vasp_):
             calc.bool_params["ldau"] or calc.dict_params["ldau_luj"]
         ):
             if self.verbose:
-                warnings.warn(
-                    "Copilot: Setting LDAUPRINT = 1 because LDAU = True.", UserWarning
-                )
+                logger.info("Copilot: Setting LDAUPRINT = 1 because LDAU = True.")
             calc.set(ldauprint=1)
 
         if calc.special_params["lreal"] and len(self.input_atoms) < 30:
             if self.verbose:
-                warnings.warn(
+                logger.info(
                     "Copilot: Setting LREAL = False because you have a small system (< 30 atoms/cell).",
-                    UserWarning,
                 )
             calc.set(lreal=False)
 
@@ -495,9 +480,8 @@ class Vasp(Vasp_):
             or np.any(self.input_atoms.get_initial_magnetic_moments() != 0)
         ):
             if self.verbose:
-                warnings.warn(
+                logger.info(
                     "Copilot: Setting LORBIT = 11 because you have a spin-polarized calculation.",
-                    UserWarning,
                 )
             calc.set(lorbit=11)
 
@@ -511,9 +495,8 @@ class Vasp(Vasp_):
             or calc.int_params["ibrion"] in [5, 6, 7, 8]
         ):
             if self.verbose:
-                warnings.warn(
+                logger.info(
                     "Copilot: Setting NCORE = 1 because NCORE/NPAR is not compatible with this job type.",
-                    UserWarning,
                 )
             calc.set(ncore=1, npar=None)
 
@@ -522,9 +505,8 @@ class Vasp(Vasp_):
             or (calc.int_params["npar"] and calc.int_params["npar"] > 1)
         ) and len(self.input_atoms) <= 4:
             if self.verbose:
-                warnings.warn(
+                logger.info(
                     "Copilot: Setting NCORE = 1 because you have a very small structure.",
-                    UserWarning,
                 )
             calc.set(ncore=1, npar=None)
 
@@ -534,25 +516,22 @@ class Vasp(Vasp_):
             and calc.float_params["kspacing"] is None
         ):
             if self.verbose:
-                warnings.warn(
+                logger.info(
                     "Copilot: Setting KPAR = 1 because you have too few k-points to parallelize.",
-                    UserWarning,
                 )
             calc.set(kpar=1)
 
         if calc.bool_params["lhfcalc"] is True and calc.int_params["isym"] in (1, 2):
             if self.verbose:
-                warnings.warn(
+                logger.info(
                     "Copilot: Setting ISYM = 3 because you are running a hybrid calculation.",
-                    UserWarning,
                 )
             calc.set(isym=3)
 
         if calc.bool_params["lsorbit"]:
             if self.verbose:
-                warnings.warn(
+                logger.info(
                     "Copilot: Setting ISYM = -1 because you are running an SOC calculation.",
-                    UserWarning,
                 )
             calc.set(isym=-1)
 
@@ -561,23 +540,19 @@ class Vasp(Vasp_):
             or (calc.int_params["npar"] and calc.int_params["npar"] > 1)
         ) and (calc.bool_params["lelf"] is True):
             if self.verbose:
-                warnings.warn(
+                logger.info(
                     "Copilot: Setting NPAR = 1 because NCORE/NPAR is not compatible with this job type.",
-                    UserWarning,
                 )
             calc.set(npar=1, ncore=None)
 
         if not calc.string_params["efermi"]:
             if self.verbose:
-                warnings.warn(
-                    "Copilot: Setting EFERMI = MIDGAP per the VASP manual.", UserWarning
-                )
+                logger.info("Copilot: Setting EFERMI = MIDGAP per the VASP manual.")
             calc.set(efermi="midgap")
 
         if calc.bool_params["luse_vdw"] and "ASE_VASP_VDW" not in os.environ:
-            warnings.warn(
+            logger.info(
                 "ASE_VASP_VDW was not set, yet you requested a vdW functional.",
-                UserWarning,
             )
 
         self.user_calc_params = calc.parameters

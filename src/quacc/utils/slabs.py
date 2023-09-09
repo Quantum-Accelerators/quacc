@@ -3,6 +3,7 @@ Utility functions for dealing with slabs
 """
 from __future__ import annotations
 
+import logging
 import random
 import warnings
 from typing import TYPE_CHECKING
@@ -17,6 +18,8 @@ from quacc.utils.atoms import copy_atoms
 
 if TYPE_CHECKING:
     from pymatgen.core import Structure
+
+logger = logging.getLogger(__name__)
 
 
 def flip_atoms(
@@ -271,9 +274,8 @@ def make_max_slabs_from_bulk(
     # Try to reduce the number of slabs if the user really wants it...
     # (desperate times call for desperate measures)
     if max_slabs and slabs is not None and len(slabs) > max_slabs:
-        warnings.warn(
-            f"You requested {max_slabs} slabs, but {len(slabs)} were generated. Tuning ftol in generate_all_slabs() to try to reduce the number of slabs, at the expense of sampling fewer surface configurations.",
-            UserWarning,
+        logger.info(
+            f"You requested {max_slabs} slabs, but {len(slabs)} were generated. Tuning ftol in generate_all_slabs() to try to reduce the number of slabs, at the expense of sampling fewer surface configurations."
         )
         for ftol in np.arange(0.1, 0.9, 0.1):
             slabgen_kwargs["ftol"] = ftol
@@ -294,9 +296,8 @@ def make_max_slabs_from_bulk(
                 break
 
         if len(slabs) > max_slabs:
-            warnings.warn(
+            logger.info(
                 f"You requested {max_slabs} slabs, but {len(slabs)} were generated. Could not reduce further. Picking the smallest slabs by number of atoms.",
-                UserWarning,
             )
             slabs.sort(key=len)
             slabs = slabs[:max_slabs]
