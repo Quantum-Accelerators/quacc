@@ -37,7 +37,7 @@ def check_logfile(logfile: str, check_str: str) -> bool:
     zlog = zpath(logfile)
     with zopen(zlog, "r") as f:
         for line in f:
-            clean_line = line.decode("utf-8") if not isinstance(line, str) else line
+            clean_line = line if isinstance(line, str) else line.decode("utf-8")
             if check_str.lower() in clean_line.lower():
                 return True
     return False

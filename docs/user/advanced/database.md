@@ -32,7 +32,7 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
 
     **Manual Approach**
 
-    If you would prefer to store results in your database manually (perhaps because you are limited in terms of how much data you can store), you can use the [`quacc.utils.db.results_to_db`](https://quantum-accelerators.github.io/quacc/reference/quacc/util/db.html#quacc.utils.db.results_to_db) function, as shown in the example below.
+    If you would prefer to store results in your database manually (perhaps because you are limited in terms of how much data you can store), you can use the [quacc.utils.db.results_to_db][] function, as shown in the example below.
 
     ```python
     from maggma.stores import MongoStore
@@ -58,7 +58,7 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
 
     Covalent automatically stores all the inputs and outputs in an SQLite database, which you can find at the `"db_path"` when you run `covalent config`, and the results can be queried using the `#!Python ct.get_result(<dispatch ID>)` syntax. However, if you want to store the results in a different database of your choosing, you can do so quite easily.
 
-    An example is shown below for storing the results in your custom database via the [`quacc.utils.db.covalent_to_db`](https://quantum-accelerators.github.io/quacc/reference/quacc/util/db.html#quacc.utils.db.covalent_to_db) function.
+    An example is shown below for storing the results in your custom database via the [quacc.utils.db.covalent_to_db][] function.
 
     ```python
     from maggma.stores import MongoStore

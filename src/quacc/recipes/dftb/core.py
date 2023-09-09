@@ -64,7 +64,7 @@ def static_job(
     Returns
     -------
     RunSchema
-        Dictionary of results, specified in `quacc.schemas.ase.RunSchema`
+        Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
@@ -139,7 +139,7 @@ def relax_job(
     Returns
     -------
     RunSchema
-        Dictionary of results, specified in `quacc.schemas.ase.RunSchema`
+        Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}

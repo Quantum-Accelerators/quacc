@@ -54,7 +54,7 @@ def static_job(
     Returns
     -------
     RunSchema
-        Dictionary of results, specified in `quacc.schemas.ase.RunSchema`
+        Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
@@ -85,7 +85,7 @@ def relax_job(
         Dictionary of custom kwargs for the LJ calculator. Overrides
         the following defaults: `{}`
     opt_swaps
-        Dictionary of swaps for `run_ase_opt`.
+        Dictionary of swaps for [quacc.utils.calc.run_ase_opt][].
 
         ???+ Note
 
@@ -100,7 +100,7 @@ def relax_job(
     Returns
     -------
     OptSchema
-        Dictionary of results, specified in `quacc.schemas.ase.OptSchema`
+        Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
@@ -161,7 +161,7 @@ def freq_job(
     atoms.calc = LennardJones(**calc_swaps)
     vibrations = run_ase_vib(atoms, vib_kwargs=vib_kwargs, copy_files=copy_files)
     vib_summary = summarize_vib_run(
-        vibrations, additional_fields={"name": "LJ Frequency Analysis"}
+        vibrations, additional_fields={"name": "LJ Frequency"}
     )
 
     igt = ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)

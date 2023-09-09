@@ -74,7 +74,7 @@ def static_job(
     Returns
     -------
     RunSchema
-        Dictionary of results, specified in `quacc.schemas.ase.RunSchema`
+        Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
@@ -140,7 +140,7 @@ def relax_job(
     Returns
     -------
     OptSchema
-        Dictionary of results, specified in `quacc.schemas.ase.OptSchema``
+        Dictionary of results, specified in [quacc.schemas.ase.summarize_opt_run][]
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
@@ -202,7 +202,8 @@ def freq_job(
     Returns
     -------
     FreqSchema
-        Dictionary of results
+        Dictionary of results specified in [quacc.schemas.ase.summarize_vib_run][]
+        and [quacc.schemas.ase.summarize_thermo][]
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
@@ -220,7 +221,7 @@ def freq_job(
     hessian = ml_calculator.results["hessian"]
     vib = VibrationsData(atoms, hessian)
     vib_summary = summarize_vib_run(
-        vib, additional_fields={"name": "NewtonNet Frequency Analysis"}
+        vib, additional_fields={"name": "NewtonNet Frequency"}
     )
 
     igt = ideal_gas(

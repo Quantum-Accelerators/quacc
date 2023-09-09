@@ -32,4 +32,4 @@ Despite these differences, quacc and Atomate2 are largely interoperable! Feel fr
 
 **Q: I want to contribute a new recipe to quacc, but it will require additional dependencies. Is that a problem?**
 
-A: Absolutely not a problem! Simply make your dependencies optional in the `pyproject.toml` file and use a `monty.dev.requires` decorator to ensure your recipes and tests only run if your necessary dependencies are installed. Refer to `quacc.recipes.tblite.core` and the `[tblite]` extras in the `pyproject.toml` file for an example.
+A: Absolutely not a problem! Simply make your dependencies optional in the `pyproject.toml` file and use a `monty.dev.requires` decorator to ensure your recipes and tests only run if your necessary dependencies are installed. Refer to [quacc.recipes.tblite.core][] and the `[tblite]` extras in the `pyproject.toml` file for an example.

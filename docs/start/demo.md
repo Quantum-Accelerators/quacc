@@ -43,6 +43,6 @@ print(result)
 
 ## What Next?
 
-Read through the [User Guide](../user/recipes_intro.md) to learn more about using quacc! And of course, feel free to explore the calculations you just ran in the Covalent UI.
+Read through the [User Guide](../user/recipes/recipes_intro.md) to learn more about using quacc! And of course, feel free to explore the calculations you just ran in the Covalent UI.
 
 ![Covalent UI](../images/start/ui.jpg)

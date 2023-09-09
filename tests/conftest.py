@@ -4,7 +4,7 @@ from shutil import rmtree
 
 try:
     import parsl
-except:
+except ImportError:
     parsl = None
 FILE_DIR = Path(__file__).resolve().parent
 TEST_RESULTS_DIR = FILE_DIR / ".test_results"
