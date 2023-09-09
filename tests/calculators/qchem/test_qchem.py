@@ -27,7 +27,6 @@ def test_qchem_write_input_basic(tmpdir):
     )
     assert qcinp.as_dict() == ref_qcinp.as_dict()
     assert not os.path.exists(os.path.join(FILE_DIR, "53.0"))
-    os.remove("mol.qin")
 
     with pytest.raises(NotImplementedError):
         QChem(TEST_ATOMS, cores=40, directory="notsupported")
@@ -49,7 +48,6 @@ def test_qchem_write_input_intermediate(tmpdir):
         os.path.join(FILE_DIR, "examples", "intermediate", "mol.qin")
     )
     assert qcinp.as_dict() == ref_qcinp.as_dict()
-    os.remove("mol.qin")
 
 
 def test_qchem_write_input_advanced(tmpdir):
@@ -77,7 +75,6 @@ def test_qchem_write_input_advanced(tmpdir):
         os.path.join(FILE_DIR, "examples", "advanced", "mol.qin")
     )
     assert qcinp.as_dict() == ref_qcinp.as_dict()
-    os.remove("mol.qin")
 
 
 def test_qchem_write_input_open_shell_and_different_charges(tmpdir):
@@ -90,7 +87,6 @@ def test_qchem_write_input_open_shell_and_different_charges(tmpdir):
     qcinp = QCInput.from_file("mol.qin")
     ref_qcinp = QCInput.from_file(os.path.join(FILE_DIR, "examples", "OSDC1.qin"))
     assert qcinp.as_dict() == ref_qcinp.as_dict()
-    os.remove("mol.qin")
 
     calc = QChem(OS_ATOMS, cores=40, charge=0)
     assert calc.parameters["cores"] == 40
@@ -100,7 +96,6 @@ def test_qchem_write_input_open_shell_and_different_charges(tmpdir):
     qcinp = QCInput.from_file("mol.qin")
     ref_qcinp = QCInput.from_file(os.path.join(FILE_DIR, "examples", "OSDC1.qin"))
     assert qcinp.as_dict() == ref_qcinp.as_dict()
-    os.remove("mol.qin")
 
     calc = QChem(OS_ATOMS, cores=40, charge=0, spin_multiplicity=4)
     assert calc.parameters["cores"] == 40
@@ -110,13 +105,12 @@ def test_qchem_write_input_open_shell_and_different_charges(tmpdir):
     qcinp = QCInput.from_file("mol.qin")
     ref_qcinp = QCInput.from_file(os.path.join(FILE_DIR, "examples", "OSDC2.qin"))
     assert qcinp.as_dict() == ref_qcinp.as_dict()
-    os.remove("mol.qin")
 
     with pytest.raises(ValueError):
-        calc = QChem(OS_ATOMS, spin_multiplicity=1)
+        QChem(OS_ATOMS, spin_multiplicity=1)
 
     with pytest.raises(ValueError):
-        calc = QChem(OS_ATOMS, charge=0, spin_multiplicity=1)
+        QChem(OS_ATOMS, charge=0, spin_multiplicity=1)
 
     calc = QChem(OS_ATOMS, cores=40, charge=1)
     assert calc.parameters["cores"] == 40
@@ -126,7 +120,6 @@ def test_qchem_write_input_open_shell_and_different_charges(tmpdir):
     qcinp = QCInput.from_file("mol.qin")
     ref_qcinp = QCInput.from_file(os.path.join(FILE_DIR, "examples", "OSDC3.qin"))
     assert qcinp.as_dict() == ref_qcinp.as_dict()
-    os.remove("mol.qin")
 
     calc = QChem(OS_ATOMS, cores=40, charge=1, spin_multiplicity=1)
     assert calc.parameters["cores"] == 40
@@ -136,7 +129,6 @@ def test_qchem_write_input_open_shell_and_different_charges(tmpdir):
     qcinp = QCInput.from_file("mol.qin")
     ref_qcinp = QCInput.from_file(os.path.join(FILE_DIR, "examples", "OSDC3.qin"))
     assert qcinp.as_dict() == ref_qcinp.as_dict()
-    os.remove("mol.qin")
 
     calc = QChem(OS_ATOMS, cores=40, charge=1, spin_multiplicity=3)
     assert calc.parameters["cores"] == 40
@@ -146,7 +138,6 @@ def test_qchem_write_input_open_shell_and_different_charges(tmpdir):
     qcinp = QCInput.from_file("mol.qin")
     ref_qcinp = QCInput.from_file(os.path.join(FILE_DIR, "examples", "OSDC4.qin"))
     assert qcinp.as_dict() == ref_qcinp.as_dict()
-    os.remove("mol.qin")
 
 
 def test_qchem_read_results_basic_and_write_53(tmpdir):
@@ -169,8 +160,6 @@ def test_qchem_read_results_basic_and_write_53(tmpdir):
             assert new_binary == old_binary
     qcinp = QCInput.from_file("mol.qin")
     assert qcinp.rem.get("scf_guess") == "read"
-    os.remove("53.0")
-    os.remove("mol.qin")
 
 
 def test_qchem_read_results_intermediate(tmpdir):

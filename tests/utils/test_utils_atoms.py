@@ -222,6 +222,11 @@ def test_check_charge_and_spin():
     charge, multiplicity = check_charge_and_spin(atoms, charge=0)
     assert charge == 0
     assert multiplicity == 1
+    charge, multiplicity = check_charge_and_spin(atoms, charge=0, multiplicity=3)
+    assert charge == 0
+    assert multiplicity == 3
+    with pytest.raises(ValueError):
+        check_charge_and_spin(atoms, charge=0, multiplicity=2)
 
     atoms = molecule("O2")
     charge, multiplicity = check_charge_and_spin(atoms)
