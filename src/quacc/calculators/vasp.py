@@ -240,8 +240,9 @@ class Vasp(Vasp_):
 
         # Check ASE environment variables
         if "VASP_PP_PATH" not in os.environ:
-            logger.info(
+            warnings.warn(
                 "The VASP_PP_PATH environment variable must point to the library of VASP pseudopotentials. See the ASE Vasp calculator documentation for details.",
+                UserWarning,
             )
 
         # Check if Custodian should be used and confirm environment variables
@@ -252,8 +253,9 @@ class Vasp(Vasp_):
             return f"python {run_vasp_custodian_file}"
 
         if "ASE_VASP_COMMAND" not in os.environ and "VASP_SCRIPT" not in os.environ:
-            logger.info(
+            warnings.warn(
                 "ASE_VASP_COMMAND or VASP_SCRIPT must be set in the environment to run VASP. See the ASE Vasp calculator documentation for details.",
+                UserWarning,
             )
         return None
 
@@ -520,7 +522,7 @@ class Vasp(Vasp_):
             calc.set(npar=1, ncore=None)
 
         if not calc.string_params["efermi"]:
-            logger.info("Copilot: Setting EFERMI = MIDGAP per the VASP manual.")
+            logger.info("Copilot: Setzting EFERMI = MIDGAP per the VASP manual.")
             calc.set(efermi="midgap")
 
         if calc.bool_params["luse_vdw"] and "ASE_VASP_VDW" not in os.environ:
