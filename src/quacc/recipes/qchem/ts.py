@@ -11,7 +11,6 @@ from quacc.calculators.qchem import QChem
 from quacc.recipes.qchem.core import relax_job
 from quacc.schemas import fetch_atoms
 from quacc.schemas.ase import summarize_opt_run
-from quacc.utils import get_charge_and_spin
 from quacc.utils.calc import run_ase_opt
 from quacc.utils.dicts import merge_dicts, remove_dict_empties
 
@@ -37,8 +36,8 @@ if TYPE_CHECKING:
 )
 def ts_job(
     atoms: Atoms | dict,
-    charge: int | None = None,
-    spin_multiplicity: int | None = None,
+    charge: int = 0,
+    spin_multiplicity: int = 1,
     method: str = "wb97mv",
     basis: str = "def2-svpd",
     scf_algorithm: str = "diis",
@@ -57,11 +56,9 @@ def ts_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     charge
-        Charge of the system. If None, this is determined from
-        `quacc.utils.atoms.get_charge_and_spin`
+        Charge of the system.
     spin_multiplicity
-        Multiplicity of the system. If None, this is determined from
-        `quacc.utils.atoms.get_charge_and_spin`
+        Multiplicity of the system.
     method
         DFT exchange-correlation functional or other electronic structure
         method. Defaults to wB97M-V.
@@ -107,9 +104,6 @@ def ts_job(
     #   - exposing TRICs?
     #   - passing initial Hessian?
     atoms = fetch_atoms(atoms)
-    charge, spin_multiplicity = get_charge_and_spin(
-        atoms, charge=charge, multiplicity=spin_multiplicity
-    )
 
     qchem_defaults = {
         "method": method,
@@ -155,8 +149,8 @@ def ts_job(
 def irc_job(
     atoms: Atoms | dict,
     direction: Literal["forward", "reverse"],
-    charge: int | None = None,
-    spin_multiplicity: int | None = None,
+    charge: int = 0,
+    spin_multiplicity: int = 1,
     method: str = "wb97mv",
     basis: str = "def2-svpd",
     scf_algorithm: str = "diis",
@@ -177,11 +171,9 @@ def irc_job(
     direction
         Direction of the IRC. Should be "forward" or "reverse".
     charge
-        Charge of the system. If None, this is determined from
-        `quacc.utils.atoms.get_charge_and_spin`
+        Charge of the system.
     spin_multiplicity
-        Multiplicity of the system. If None, this is determined from
-        `quacc.utils.atoms.get_charge_and_spin`
+        Multiplicity of the system.
     method
         DFT exchange-correlation functional or other electronic structure
         method. Defaults to wB97M-V.
@@ -225,9 +217,6 @@ def irc_job(
 
     # TODO: 1) expose TRICs?; 2) passing initial Hessian?
     atoms = fetch_atoms(atoms)
-    charge, spin_multiplicity = get_charge_and_spin(
-        atoms, charge=charge, multiplicity=spin_multiplicity
-    )
 
     qchem_defaults = {
         "method": method,
@@ -274,6 +263,8 @@ def irc_job(
 )
 def quasi_irc_job(
     atoms: Atoms | dict,
+    charge: int = 0,
+    spin_multiplicity: int = 1,
     direction: Literal["forward", "reverse"],
     shared_kwargs: dict | None = None,
     irc_opt_swaps: dict | None = None,
@@ -286,11 +277,23 @@ def quasi_irc_job(
     ----------
     atoms
         Atoms object.
+    charge
+        Charge of the system.
+    spin_multiplicity
+        Multiplicity of the system.
     direction
         Direction of the IRC. Should be "forward" or "reverse".
     shared_kwargs
         Dictionary of kwargs that are passed as input to both irc_job and
         relax_job.
+        
+        ???+ Note
+
+            Overrides the following defaults:
+        
+            ```python
+            {"charge": charge, "spin_multiplicity": spin_multiplicity}
+            ```
     irc_opt_swaps
         Dictionary of opt_swap kwargs for the irc_job.
 
@@ -315,6 +318,9 @@ def quasi_irc_job(
     relax_opt_swaps = relax_opt_swaps or {}
     default_settings = SETTINGS.copy()
 
+    shared_defaults = {"charge":charge,"spin_multiplicity":spin_multiplicity}
+    shared_flags = merge_dicts(shared_defaults,shared_kwargs) 
+
     irc_opt_swaps_defaults = {
         "fmax": 100,
         "max_steps": 10,
@@ -326,14 +332,14 @@ def quasi_irc_job(
         atoms,
         direction=direction,
         opt_swaps=irc_opt_swaps,
-        **shared_kwargs,
+        **shared_flags,
     )
 
     SETTINGS.CHECK_CONVERGENCE = default_settings.CHECK_CONVERGENCE
     relax_summary = relax_job(
         irc_summary,
         opt_swaps=relax_opt_swaps,
-        **shared_kwargs,
+        **shared_flags,
     )
 
     relax_summary["initial_irc"] = irc_summary
