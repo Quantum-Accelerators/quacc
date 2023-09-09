@@ -4,6 +4,7 @@ from __future__ import annotations
 import inspect
 import struct
 import warnings
+from copy import deepcopy
 from pathlib import Path
 
 from ase import Atoms, units
@@ -151,6 +152,7 @@ class QChem(FileIOCalculator):
 
     def write_input(self, atoms, properties=None, system_changes=None):
         FileIOCalculator.write_input(self, atoms, properties, system_changes)
+        atoms = deepcopy(atoms)
         atoms.charge = self.charge
         atoms.spin_multiplicity = self.spin_multiplicity
         mol = AseAtomsAdaptor.get_molecule(atoms)

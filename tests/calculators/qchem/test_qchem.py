@@ -18,8 +18,8 @@ def test_qchem_write_input_basic(tmpdir):
     tmpdir.chdir()
     calc = QChem(TEST_ATOMS, cores=40)
     assert calc.parameters["cores"] == 40
-    assert calc.parameters["charge"] is None
-    assert calc.parameters["spin_multiplicity"] is None
+    assert calc.parameters["charge"] == 0
+    assert calc.parameters["spin_multiplicity"] == 1
     calc.write_input(TEST_ATOMS)
     qcinp = QCInput.from_file("mol.qin")
     ref_qcinp = QCInput.from_file(
@@ -39,7 +39,7 @@ def test_qchem_write_input_intermediate(tmpdir):
     calc = QChem(TEST_ATOMS, cores=40, charge=-1, qchem_input_params=params)
     assert calc.parameters["cores"] == 40
     assert calc.parameters["charge"] == -1
-    assert calc.parameters["spin_multiplicity"] is None
+    assert calc.parameters["spin_multiplicity"] == 2
     assert calc.parameters["dft_rung"] == 3
     assert calc.parameters["basis_set"] == "def2-svpd"
     assert calc.parameters["pcm_dielectric"] == "3.0"
@@ -84,8 +84,8 @@ def test_qchem_write_input_open_shell_and_different_charges(tmpdir):
     tmpdir.chdir()
     calc = QChem(OS_ATOMS, cores=40)
     assert calc.parameters["cores"] == 40
-    assert calc.parameters["charge"] is None
-    assert calc.parameters["spin_multiplicity"] is None
+    assert calc.parameters["charge"] == 0
+    assert calc.parameters["spin_multiplicity"] == 2
     calc.write_input(OS_ATOMS)
     qcinp = QCInput.from_file("mol.qin")
     ref_qcinp = QCInput.from_file(os.path.join(FILE_DIR, "examples", "OSDC1.qin"))
@@ -95,7 +95,7 @@ def test_qchem_write_input_open_shell_and_different_charges(tmpdir):
     calc = QChem(OS_ATOMS, cores=40, charge=0)
     assert calc.parameters["cores"] == 40
     assert calc.parameters["charge"] == 0
-    assert calc.parameters["spin_multiplicity"] is None
+    assert calc.parameters["spin_multiplicity"] == 2
     calc.write_input(OS_ATOMS)
     qcinp = QCInput.from_file("mol.qin")
     ref_qcinp = QCInput.from_file(os.path.join(FILE_DIR, "examples", "OSDC1.qin"))
@@ -121,7 +121,7 @@ def test_qchem_write_input_open_shell_and_different_charges(tmpdir):
     calc = QChem(OS_ATOMS, cores=40, charge=1)
     assert calc.parameters["cores"] == 40
     assert calc.parameters["charge"] == 1
-    assert calc.parameters["spin_multiplicity"] is None
+    assert calc.parameters["spin_multiplicity"] == 1
     calc.write_input(OS_ATOMS)
     qcinp = QCInput.from_file("mol.qin")
     ref_qcinp = QCInput.from_file(os.path.join(FILE_DIR, "examples", "OSDC3.qin"))

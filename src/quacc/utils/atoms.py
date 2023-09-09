@@ -352,6 +352,4 @@ def check_charge_and_spin(
             " not possible for this molecule."
         )
 
-    atoms.set_initial_charges(mol.charge / len(atoms))
-
     return mol.charge, mol.spin_multiplicity
