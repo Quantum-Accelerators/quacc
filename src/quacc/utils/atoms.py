@@ -104,7 +104,7 @@ def get_charge(atoms: Atoms) -> int:
 
     return (
         atoms.charge
-        if atoms.has("charge")
+        if getattr(atoms, "charge", None)
         else round(atoms.get_initial_charges().sum())
     )
 
@@ -126,7 +126,7 @@ def get_multiplicity(atoms: Atoms) -> int:
     """
     return (
         atoms.spin_multiplicity
-        if atoms.has("spin_multiplicity")
+        if getattr(atoms, "spin_multiplicity", None)
         else round(1 + np.abs(atoms.get_initial_magnetic_moments().sum()))
     )
 
