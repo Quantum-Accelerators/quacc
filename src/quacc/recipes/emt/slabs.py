@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from quacc import flow, job, subflow
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.schemas import fetch_atoms
-from quacc.utils.slabs import make_max_slabs_from_bulk
+from quacc.utils.slabs import make_slabs_from_bulk
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -38,7 +38,7 @@ def bulk_to_slabs_flow(
         the value
     make_slabs_kwargs
         Additional keyword arguments to pass to
-        `quacc.utils.slabs.make_max_slabs_from_bulk`
+        `quacc.utils.slabs.make_slabs_from_bulk`
     run_static
         Whether to run the static calculation.
     slab_relax_kwargs
@@ -61,7 +61,7 @@ def bulk_to_slabs_flow(
     @job
     def _make_slabs(atoms):
         atoms = fetch_atoms(atoms)
-        return make_max_slabs_from_bulk(atoms, **make_slabs_kwargs)
+        return make_slabs_from_bulk(atoms, **make_slabs_kwargs)
 
     @subflow
     def _relax_distributed(slabs):
