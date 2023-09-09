@@ -108,7 +108,7 @@ def ts_job(
     #   - passing initial Hessian?
     atoms = fetch_atoms(atoms)
     charge, spin_multiplicity = check_charge_and_spin(
-        atoms, charge=charge, spin_multiplicity=spin_multiplicity
+        atoms, charge=charge, multiplicity=spin_multiplicity
     )
 
     qchem_defaults = {
@@ -226,7 +226,7 @@ def irc_job(
     # TODO: 1) expose TRICs?; 2) passing initial Hessian?
     atoms = fetch_atoms(atoms)
     charge, spin_multiplicity = check_charge_and_spin(
-        atoms, charge=charge, spin_multiplicity=spin_multiplicity
+        atoms, charge=charge, multiplicity=spin_multiplicity
     )
 
     qchem_defaults = {

@@ -86,7 +86,7 @@ def static_job(
     """
     atoms = fetch_atoms(atoms)
     charge, spin_multiplicity = check_charge_and_spin(
-        atoms, charge=charge, spin_multiplicity=spin_multiplicity
+        atoms, charge=charge, multiplicity=spin_multiplicity
     )
 
     qchem_defaults = {
