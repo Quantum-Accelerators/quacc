@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import inspect
+import logging
 import struct
 import warnings
 from copy import deepcopy
@@ -16,6 +17,8 @@ from pymatgen.io.qchem.sets import ForceSet
 
 from quacc.custodian import qchem as custodian_qchem
 from quacc.utils.atoms import automatic_charge_and_spin
+
+logger = logging.getLogger(__name__)
 
 
 class QChem(FileIOCalculator):
@@ -92,9 +95,8 @@ class QChem(FileIOCalculator):
             atoms, self.charge, self.spin_multiplicity
         )
         if charge != self.charge or spin_multiplicity != self.spin_multiplicity:
-            warnings.warn(
+            logger.warning(
                 f"{self.charge, self.spin_multiplicity} for charge, spin multiplicity changed to {charge, spin_multiplicity}",
-                UserWarning,
             )
         self.charge = charge
         self.spin_multiplicity = spin_multiplicity
