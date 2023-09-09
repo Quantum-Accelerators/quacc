@@ -239,8 +239,11 @@ def fetch_atoms(atoms: Atoms | dict) -> Atoms:
     Atoms
         Atoms object
     """
-    with contextlib.suppress(Exception):
+
+    try:
         return atoms["atoms"]
+    except Exception:
+        return atoms
 
 
 def _quacc_sanitize(obj: Any) -> Any:
