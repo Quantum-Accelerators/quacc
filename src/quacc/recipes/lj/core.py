@@ -18,7 +18,6 @@ from quacc.schemas.ase import (
     summarize_thermo,
     summarize_vib_run,
 )
-from quacc.utils.atoms import check_charge_and_spin
 from quacc.utils.calc import run_ase_opt, run_ase_vib, run_calc
 from quacc.utils.dicts import merge_dicts
 from quacc.utils.thermo import ideal_gas
