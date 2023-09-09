@@ -163,8 +163,8 @@ def make_slabs_from_bulk(
             continue
 
         # Supercell creation (if necessary)
-        a_factor = int(np.ceil(min_length_width / slab.lattice.abc[0]))
-        b_factor = int(np.ceil(min_length_width / slab.lattice.abc[1]))
+        a_factor = round(np.ceil(min_length_width / slab.lattice.abc[0]))
+        b_factor = round(np.ceil(min_length_width / slab.lattice.abc[1]))
         slab.make_supercell([a_factor, b_factor, 1])
 
         # Add constraints. Note: This does not actually add an adsorbate

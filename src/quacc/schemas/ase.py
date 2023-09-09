@@ -908,7 +908,7 @@ def summarize_thermo(
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
     uri = get_uri(Path.cwd())
-    spin_multiplicity = int(2 * igt.spin + 1)
+    spin_multiplicity = round(2 * igt.spin + 1)
 
     inputs = {
         "parameters_thermo": {
