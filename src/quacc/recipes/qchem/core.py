@@ -72,14 +72,14 @@ def static_job(
         Number of cores to use for the Q-Chem calculation. Defaults to use all
         cores available on a given node.
     overwrite_inputs
-        Dictionary passed to pymatgen.io.qchem.QChemDictSet which can modify
+        Dictionary passed to `pymatgen.io.qchem.QChemDictSet` which can modify
         default values set therein as well as set additional Q-Chem parameters.
         See QChemDictSet documentation for more details.
 
     Returns
     -------
     RunSchema
-        Dictionary of results from `quacc.schemas.ase.summarize_run`
+        Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
     atoms = fetch_atoms(atoms)
 
@@ -157,7 +157,7 @@ def relax_job(
         Number of cores to use for the Q-Chem calculation. Defaults to use all
         cores available on a given node.
     overwrite_inputs
-        Dictionary passed to pymatgen.io.qchem.QChemDictSet which can modify
+        Dictionary passed to `pymatgen.io.qchem.QChemDictSet` which can modify
         default values set therein as well as set additional Q-Chem parameters.
         See QChemDictSet documentation for more details.
     opt_swaps
@@ -173,7 +173,7 @@ def relax_job(
     Returns
     -------
     OptSchema
-        Dictionary of results from `quacc.schemas.ase.summarize_opt_run`
+        Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
 
     # TODO: exposing TRICs?

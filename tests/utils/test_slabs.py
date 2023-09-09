@@ -11,7 +11,6 @@ from quacc.utils.slabs import (
     flip_atoms,
     get_surface_energy,
     make_adsorbate_structures,
-    make_max_slabs_from_bulk,
     make_slabs_from_bulk,
 )
 
@@ -113,32 +112,6 @@ def test_make_slabs_from_bulk():
     for slab in slabs:
         d = slab.get_all_distances(mic=True)
         assert np.round(np.min(d[d != 0]), 4) == np.round(min_d, 4)
-
-
-def test_make_max_slabs_from_bulk():
-    atoms = bulk("Cu")
-    slabs = make_slabs_from_bulk(atoms)
-    slabs2 = make_max_slabs_from_bulk(atoms, None)
-    assert slabs == slabs2
-
-    atoms = bulk("Cu")
-    slabs = make_slabs_from_bulk(atoms)
-    slabs2 = make_max_slabs_from_bulk(atoms, None, allowed_surface_symbols=["Cu"])
-    assert slabs == slabs2
-
-    atoms = bulk("Cu")
-    slabs = make_max_slabs_from_bulk(atoms, max_slabs=2)
-    assert len(slabs) == 2
-    assert slabs[-1].info.get("slab_stats", None) is not None
-
-    atoms = bulk("Cu")
-    slabs = make_max_slabs_from_bulk(atoms, max_slabs=2, randomize=True)
-    assert len(slabs) == 2
-    assert slabs[-1].info.get("slab_stats", None) is not None
-
-    atoms = read(os.path.join(FILE_DIR, "ZnTe.cif.gz"))
-    slabs = make_max_slabs_from_bulk(atoms, max_slabs=4)
-    assert len(slabs) == 4
 
 
 def test_make_adsorbate_structures():

@@ -101,7 +101,7 @@ def ts_job(
     Returns
     -------
     TSSchema
-        Dictionary of results, specified in `quacc.schemas.ase.RunSchema`
+        Dictionary of results
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}

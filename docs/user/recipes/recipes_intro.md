@@ -19,7 +19,7 @@ graph LR
   A[Input] --> B(EMT Relax) --> C[Output]
 ```
 
-Let's start with a simple example. Here, we will use a cheap calculator based on effective medium theory (EMT) to run a structure relaxation on a bulk structure of copper. We are interested in doing a structure relaxation, so we will use the [`quacc.recipes.emt.core.relax_job`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.core.relax_job) recipe, as demonstrated below.
+Let's start with a simple example. Here, we will use a cheap calculator based on effective medium theory (EMT) to run a structure relaxation on a bulk structure of copper. We are interested in doing a structure relaxation, so we will use the [quacc.recipes.emt.core.relax_job][] recipe, as demonstrated below.
 
 ```python
 from ase.build import bulk
@@ -195,11 +195,11 @@ graph LR
   A[Input] --> B(EMT Relax) --> C(GFN2-xTB Static) --> D[Output]
 ```
 
-Now let's return to our bulk Cu example from above and start adding on some complexity. Here, we will use EMT to run a relaxation on the bulk Cu structure and then use the output of this calculation as the input to a static calculation with the semi-empirical quantum mechanics method GFN2-xTB as implemented in [`quacc.recipes.tblite.core.static_job`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/tblite/core.html#quacc.recipes.tblite.core.static_job). This example highlights how there are no restrictions in terms of how many codes you can use in a single workflow.
+Now let's return to our bulk Cu example from above and start adding on some complexity. Here, we will use EMT to run a relaxation on the bulk Cu structure and then use the output of this calculation as the input to a static calculation with the semi-empirical quantum mechanics method GFN2-xTB as implemented in [quacc.recipes.tblite.core.static_job][]. This example highlights how there are no restrictions in terms of how many codes you can use in a single workflow.
 
 !!! Note
 
-    Some codes require additional setup, including `tblite`. Refer to the [Calculator Setup](https://quantum-accelerators.github.io/quacc/install/codes.html#tblite) section for details.
+    Some codes require additional setup, including `tblite`. Refer to the [Calculator Setup](../../install/codes.md) section for details.
 
 ```python
 from ase.build import bulk
