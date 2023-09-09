@@ -15,7 +15,6 @@ def setup_module():
 
 
 def teardown_module():
-    SETTINGS = DEFAULT_SETTINGS
     if test_yaml.exists():
         os.remove(test_yaml)
 

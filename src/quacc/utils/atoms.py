@@ -4,6 +4,7 @@ Utility functions for dealing with Atoms
 from __future__ import annotations
 
 import hashlib
+import logging
 from copy import deepcopy
 from typing import TYPE_CHECKING
 
@@ -13,6 +14,8 @@ from pymatgen.io.ase import AseAtomsAdaptor
 
 if TYPE_CHECKING:
     from ase import Atoms
+
+logger = logging.getLogger(__name__)
 
 
 def prep_next_run(
@@ -51,17 +54,17 @@ def prep_next_run(
         and hasattr(atoms, "calc")
         and getattr(atoms.calc, "results", None) is not None
     ):
-        # If there are initial magmoms set, then we should see what the
-        # final magmoms are. If they are present, move them to initial. If
-        # they are not present, it means the calculator doesn't support the
-        # "magmoms" property so we have to retain the initial magmoms given
-        # no further info.
+        # If there are initial magmoms set, then we should see what the final
+        # magmoms are. If they are present, move them to initial. If they are
+        # not present, it means the calculator doesn't support the "magmoms"
+        # property so we have to retain the initial magmoms given no further
+        # info.
         if atoms.has("initial_magmoms"):
             atoms.set_initial_magnetic_moments(
                 atoms.calc.results.get("magmoms", atoms.get_initial_magnetic_moments())
             )
-        # If there are no initial magmoms set, just check the results and
-        # set everything to 0.0 if there is nothing there.
+        # If there are no initial magmoms set, just check the results and set
+        # everything to 0.0 if there is nothing there.
         else:
             atoms.set_initial_magnetic_moments(
                 atoms.calc.results.get("magmoms", [0.0] * len(atoms))
@@ -86,51 +89,6 @@ def prep_next_run(
     return atoms
 
 
-def get_charge(atoms: Atoms) -> int:
-    """
-    Get the (net) charge of an Atoms object. This is meant for molecules where
-    the charge is a fixed property.
-
-    Parameters
-    ----------
-    atoms
-        Atoms object
-
-    Returns
-    -------
-    int
-        Charge of the Atoms object
-    """
-
-    return (
-        atoms.charge
-        if getattr(atoms, "charge", None)
-        else round(atoms.get_initial_charges().sum())
-    )
-
-
-def get_multiplicity(atoms: Atoms) -> int:
-    """
-    Get the spin multiplicity of an Atoms object. This is meant for molecules
-    where the spin multiplicity is a fixed property.
-
-    Parameters
-    ----------
-    atoms
-        Atoms object
-
-    Returns
-    -------
-    int
-        Charge of the Atoms object
-    """
-    return (
-        atoms.spin_multiplicity
-        if getattr(atoms, "spin_multiplicity", None)
-        else round(1 + np.abs(atoms.get_initial_magnetic_moments().sum()))
-    )
-
-
 def set_magmoms(
     atoms: Atoms,
     elemental_mags_dict: dict | None = None,
@@ -143,10 +101,9 @@ def set_magmoms(
 
     This function deserves particular attention. The following logic is applied:
     - If there is a converged set of magnetic moments, those are moved to the
-    initial magmoms if copy_magmoms is True.
-    - If there is no converged set of magnetic moments but the user has set
-    initial magmoms, those are simply used as is.
-    - If there are no converged magnetic moments or initial magnetic
+    initial magmoms if copy_magmoms is True. - If there is no converged set of
+    magnetic moments but the user has set initial magmoms, those are simply used
+    as is. - If there are no converged magnetic moments or initial magnetic
     moments, then the default magnetic moments from the preset
     elemental_mags_dict (if specified) are set as the initial magnetic moments.
     - For any of the above scenarios, if mag_cutoff is not None, the newly set
@@ -300,14 +257,43 @@ def copy_atoms(atoms: Atoms) -> Atoms:
     return atoms
 
 
-def check_charge_and_spin(
+def get_charge_and_spin(
     atoms: Atoms,
     charge: int | None = None,
-    spin_multiplicity: int | None = None,
-):
+    multiplicity: int | None = None,
+) -> (int, int):
     """
-    Simple function to use the pymatgen molecule class to obtain and/or validate
-    the multiplicity given the prescribed charge.
+    Check the validity of a given `charge` and `multiplicity`. If they are `None`, then
+    set the charge and/or spin multiplicity of a molecule using the following routine,
+    raising a `ValueError` if there is an incompatibility.
+
+    Charges:
+
+    1. If `charge` is specified, that is the charge.
+
+    2. If `atoms.charge` is present, that is the charge.
+
+    3. If `atoms.has("initial_charges")`, then
+    `atoms.get_initial_charges.sum()` is the charge.
+
+    4. If `spin_multiplicity` is set, set the charge to the smallest physically
+    possible value.
+
+    5. Otherwise, set to 0.
+
+    Spin multiplicity:
+
+    1. If `spin_multiplicity` is specified, that is the spin multiplicity.
+
+    2. If `atoms.spin_multiplicity` is present, that is the spin multiplicity.
+
+    3. If `atoms.has("initial_magmoms")`, then
+    `np.abs(atoms.get_initial_magnetic_moments().sum())+1` is the spin
+    multiplicity.
+
+    4. If none of the above, use Pymatgen to identify the lowest physically
+    possible spin multiplicity given the number of electrons and the charge, if
+    set.
 
     Parameters
     ----------
@@ -315,7 +301,7 @@ def check_charge_and_spin(
         Atoms object
     charge
         Molecular charge
-    spin_multiplicity
+    multiplicity
         Molecular multiplicity
 
     Returns
@@ -323,14 +309,35 @@ def check_charge_and_spin(
     charge, multiplicity
 
     """
-    if charge is None and spin_multiplicity is not None:
-        raise ValueError("If setting spin_multiplicity, must also specify charge.")
+
+    charge = (
+        charge
+        if charge is not None
+        else atoms.charge
+        if getattr(atoms, "charge", None)
+        else round(atoms.get_initial_charges().sum())
+        if atoms.has("initial_charges")
+        else None
+    )
+
+    multiplicity = (
+        multiplicity
+        if multiplicity is not None
+        else atoms.spin_multiplicity
+        if getattr(atoms, "spin_multiplicity", None)
+        else round(np.abs(atoms.get_initial_magnetic_moments().sum()) + 1)
+        if atoms.has("initial_magmoms")
+        else None
+    )
+
+    if charge is None and multiplicity is not None:
+        charge = 0
 
     try:
         mol = AseAtomsAdaptor.get_molecule(atoms)
         if charge is not None:
-            if spin_multiplicity is not None:
-                mol.set_charge_and_spin(charge, spin_multiplicity)
+            if multiplicity is not None:
+                mol.set_charge_and_spin(charge, multiplicity)
             else:
                 mol.set_charge_and_spin(charge)
     except ValueError:
@@ -339,13 +346,15 @@ def check_charge_and_spin(
         default_spin_multiplicity = 1 if nelectrons % 2 == 0 else 2
         mol.set_charge_and_spin(
             charge if charge is not None else mol.charge,
-            spin_multiplicity
-            if spin_multiplicity is not None
-            else default_spin_multiplicity,
+            multiplicity if multiplicity is not None else default_spin_multiplicity,
         )
     if (mol.nelectrons + mol.spin_multiplicity) % 2 != 1:
         raise ValueError(
             f"Charge of {mol.charge} and spin multiplicity of {mol.spin_multiplicity} is"
             " not possible for this molecule."
         )
+    logger.info(
+        f"Setting charge to {mol.charge} and spin multiplicity to {mol.spin_multiplicity}"
+    )
+
     return mol.charge, mol.spin_multiplicity

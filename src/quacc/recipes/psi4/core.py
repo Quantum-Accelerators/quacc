@@ -9,7 +9,6 @@ from monty.dev import requires
 from quacc import job
 from quacc.schemas import fetch_atoms
 from quacc.schemas.ase import summarize_run
-from quacc.utils.atoms import get_charge, get_multiplicity
 from quacc.utils.calc import run_calc
 from quacc.utils.dicts import merge_dicts
 
@@ -28,8 +27,8 @@ if TYPE_CHECKING:
 @requires(psi4, "Psi4 not installed. Try conda install -c psi4 psi4")
 def static_job(
     atoms: Atoms | dict,
-    charge: int | None = None,
-    multiplicity: int | None = None,
+    charge: int = 0,
+    multiplicity: int = 1,
     method: str = "wb97x-v",
     basis: str = "def2-tzvp",
     calc_swaps: dict | None = None,
@@ -44,11 +43,9 @@ def static_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     charge
-        Charge of the system. If None, this is determined from the sum of
-        `atoms.get_initial_charges()`.
+        Charge of the system.
     multiplicity
-        Multiplicity of the system. If None, this is determined from 1+ the sum
-        of `atoms.get_initial_magnetic_moments()`.
+        Multiplicity of the system.
     method
         The level of theory to use.
     basis
@@ -81,10 +78,6 @@ def static_job(
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
-    if charge is None:
-        charge = get_charge(atoms)
-    if multiplicity is None:
-        multiplicity = get_multiplicity(atoms)
 
     defaults = {
         "mem": "16GB",

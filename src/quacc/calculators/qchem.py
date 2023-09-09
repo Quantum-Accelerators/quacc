@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 import inspect
+import logging
 import struct
+from copy import deepcopy
 from pathlib import Path
 
 from ase import Atoms, units
@@ -13,7 +15,9 @@ from pymatgen.io.qchem.outputs import QCOutput
 from pymatgen.io.qchem.sets import ForceSet
 
 from quacc.custodian import qchem as custodian_qchem
-from quacc.utils.atoms import check_charge_and_spin
+from quacc.utils.atoms import get_charge_and_spin
+
+logger = logging.getLogger(__name__)
 
 
 class QChem(FileIOCalculator):
@@ -86,6 +90,16 @@ class QChem(FileIOCalculator):
         ):
             self.qchem_input_params["overwrite_inputs"]["rem"]["method"] = method
 
+        charge, spin_multiplicity = get_charge_and_spin(
+            atoms, self.charge, self.spin_multiplicity
+        )
+        if charge != self.charge or spin_multiplicity != self.spin_multiplicity:
+            logger.info(
+                f"{self.charge, self.spin_multiplicity} for charge, spin multiplicity changed to {charge, spin_multiplicity}",
+            )
+        self.charge = charge
+        self.spin_multiplicity = spin_multiplicity
+
         # We will save the parameters that have been passed to the Q-Chem
         # calculator via FileIOCalculator's self.default_parameters
         self.default_parameters = {
@@ -107,12 +121,6 @@ class QChem(FileIOCalculator):
                         ] = self.qchem_input_params[key][subkey][subsubkey]
             else:
                 self.default_parameters[key] = self.qchem_input_params[key]
-
-        charge, spin_multiplicity = check_charge_and_spin(
-            atoms, self.charge, self.spin_multiplicity
-        )
-        self.charge = charge
-        self.spin_multiplicity = spin_multiplicity
 
         # Get Q-Chem executable command
         self.command = self._manage_environment()
@@ -146,6 +154,7 @@ class QChem(FileIOCalculator):
 
     def write_input(self, atoms, properties=None, system_changes=None):
         FileIOCalculator.write_input(self, atoms, properties, system_changes)
+        atoms = deepcopy(atoms)
         atoms.charge = self.charge
         atoms.spin_multiplicity = self.spin_multiplicity
         mol = AseAtomsAdaptor.get_molecule(atoms)

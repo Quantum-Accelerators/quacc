@@ -10,7 +10,7 @@ from quacc import job
 from quacc.calculators.qchem import QChem
 from quacc.schemas import fetch_atoms
 from quacc.schemas.ase import summarize_opt_run, summarize_run
-from quacc.utils.atoms import check_charge_and_spin
+from quacc.utils.atoms import get_charge_and_spin
 from quacc.utils.calc import run_ase_opt, run_calc
 from quacc.utils.dicts import merge_dicts, remove_dict_empties
 
@@ -49,10 +49,11 @@ def static_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     charge
-        The total charge of the molecular system. Effectively defaults to zero.
+        Charge of the system. If None, this is determined from
+        `quacc.utils.atoms.get_charge_and_spin`
     spin_multiplicity
-        The spin multiplicity of the molecular system. Effectively defaults to
-        the lowest spin state given the molecular structure and charge.
+        Multiplicity of the system. If None, this is determined from
+        `quacc.utils.atoms.get_charge_and_spin`
     method
         DFT exchange-correlation functional or other electronic structure
         method. Defaults to wB97M-V.
@@ -84,8 +85,8 @@ def static_job(
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
     atoms = fetch_atoms(atoms)
-    checked_charge, checked_spin_multiplicity = check_charge_and_spin(
-        atoms, charge, spin_multiplicity
+    charge, spin_multiplicity = get_charge_and_spin(
+        atoms, charge=charge, multiplicity=spin_multiplicity
     )
 
     qchem_defaults = {
@@ -110,7 +111,7 @@ def static_job(
     return summarize_run(
         final_atoms,
         input_atoms=atoms,
-        charge_and_multiplicity=(checked_charge, checked_spin_multiplicity),
+        charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields={"name": "Q-Chem Static"},
     )
 
@@ -138,10 +139,11 @@ def relax_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     charge
-        The total charge of the molecular system. Effectively defaults to zero.
+        Charge of the system. If None, this is determined from
+        `quacc.utils.atoms.get_charge_and_spin`
     spin_multiplicity
-        The spin multiplicity of the molecular system. Effectively defaults to
-        the lowest spin state given the molecular structure and charge.
+        Multiplicity of the system. If None, this is determined from
+        `quacc.utils.atoms.get_charge_and_spin`
     method
         DFT exchange-correlation functional or other electronic structure
         method. Defaults to wB97M-V.
@@ -184,8 +186,8 @@ def relax_job(
 
     # TODO: exposing TRICs?
     atoms = fetch_atoms(atoms)
-    checked_charge, checked_spin_multiplicity = check_charge_and_spin(
-        atoms, charge, spin_multiplicity
+    charge, spin_multiplicity = get_charge_and_spin(
+        atoms, charge=charge, multiplicity=spin_multiplicity
     )
 
     qchem_defaults = {
@@ -223,6 +225,6 @@ def relax_job(
 
     return summarize_opt_run(
         dyn,
-        charge_and_multiplicity=(checked_charge, checked_spin_multiplicity),
+        charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields={"name": "Q-Chem Optimization"},
     )

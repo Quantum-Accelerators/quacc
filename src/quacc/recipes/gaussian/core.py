@@ -9,7 +9,6 @@ from ase.calculators.gaussian import Gaussian
 from quacc import job
 from quacc.schemas import fetch_atoms
 from quacc.schemas.cclib import summarize_run
-from quacc.utils.atoms import get_charge, get_multiplicity
 from quacc.utils.calc import run_calc
 from quacc.utils.dicts import merge_dicts
 
@@ -25,8 +24,8 @@ GEOM_FILE = LOG_FILE
 @job
 def static_job(
     atoms: Atoms | dict,
-    charge: int | None = None,
-    multiplicity: int | None = None,
+    charge: int = 0,
+    multiplicity: int = 1,
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
     calc_swaps: dict | None = None,
@@ -41,11 +40,9 @@ def static_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     charge
-        Charge of the system. If None, this is determined from the sum of
-        `atoms.get_initial_charges().`
+        Charge of the system.
     multiplicity
-        Multiplicity of the system. If None, this is determined from 1+ the sum
-        of `atoms.get_initial_magnetic_moments()`.
+        Multiplicity of the system.
     xc
         Exchange-correlation functional
     basis
@@ -64,8 +61,8 @@ def static_job(
                 "nprocshared": multiprocessing.cpu_count(),
                 "xc": xc,
                 "basis": basis,
-                "charge": get_charge(atoms) if charge is None else charge,
-                "mult": get_multiplicity(atoms) if multiplicity is None else multiplicity,
+                "charge": charge,
+                "mult": multiplicity,
                 "sp": "",
                 "scf": ["maxcycle=250", "xqc"],
                 "integral": "ultrafine",
@@ -92,8 +89,8 @@ def static_job(
         "nprocshared": multiprocessing.cpu_count(),
         "xc": xc,
         "basis": basis,
-        "charge": get_charge(atoms) if charge is None else charge,
-        "mult": get_multiplicity(atoms) if multiplicity is None else multiplicity,
+        "charge": charge,
+        "mult": multiplicity,
         "sp": "",
         "scf": ["maxcycle=250", "xqc"],
         "integral": "ultrafine",
@@ -117,8 +114,8 @@ def static_job(
 @job
 def relax_job(
     atoms: Atoms,
-    charge: int | None = None,
-    multiplicity: int | None = None,
+    charge: int = 0,
+    multiplicity: int = 1,
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
     freq: bool = False,
@@ -134,11 +131,9 @@ def relax_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     charge
-        Charge of the system. If None, this is determined from the sum of
-        `atoms.get_initial_charges()`.
+        Charge of the system.
     multiplicity
-        Multiplicity of the system. If None, this is determined from 1+ the sum
-        of `atoms.get_initial_magnetic_moments()`.
+        Multiplicity of the system.
     xc
         Exchange-correlation functional
     basis
@@ -159,8 +154,8 @@ def relax_job(
                 "nprocshared": multiprocessing.cpu_count(),
                 "xc": xc,
                 "basis": basis,
-                "charge": get_charge(atoms) if charge is None else charge,
-                "mult": get_multiplicity(atoms) if multiplicity is None else multiplicity,
+                "charge": charge,
+                "mult": multiplicity,
                 "opt": "",
                 "pop": "CM5",
                 "scf": ["maxcycle=250", "xqc"],
@@ -187,8 +182,8 @@ def relax_job(
         "nprocshared": multiprocessing.cpu_count(),
         "xc": xc,
         "basis": basis,
-        "charge": get_charge(atoms) if charge is None else charge,
-        "mult": get_multiplicity(atoms) if multiplicity is None else multiplicity,
+        "charge": charge,
+        "mult": multiplicity,
         "opt": "",
         "pop": "CM5",
         "scf": ["maxcycle=250", "xqc"],
