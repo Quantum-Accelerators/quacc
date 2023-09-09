@@ -927,11 +927,9 @@ def summarize_thermo(
     results = {
         "results": {
             "energy": igt.potentialenergy,
-            "enthalpy": igt.get_enthalpy(temperature, verbose=True),
-            "entropy": igt.get_entropy(temperature, pressure * 10**5, verbose=True),
-            "gibbs_energy": igt.get_gibbs_energy(
-                temperature, pressure * 10**5, verbose=True
-            ),
+            "enthalpy": igt.get_enthalpy(temperature),
+            "entropy": igt.get_entropy(temperature, pressure * 10**5),
+            "gibbs_energy": igt.get_gibbs_energy(temperature, pressure * 10**5),
             "zpe": igt.get_ZPE_correction(),
         }
     }
