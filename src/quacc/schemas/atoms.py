@@ -239,11 +239,9 @@ def fetch_atoms(atoms: Atoms | dict) -> Atoms:
         Atoms object
     """
     try:
-        atoms = atoms["atoms"]
+        return atoms["atoms"]
     except Exception:
-        pass
-
-    return atoms
+        return atoms
 
 
 def _quacc_sanitize(obj: Any) -> Any:
