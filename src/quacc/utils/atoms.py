@@ -125,7 +125,7 @@ def get_multiplicity(atoms: Atoms) -> int:
     return (
         atoms.spin_multiplicity
         if atoms.has("spin_multiplicity")
-        else int(1 + np.abs(atoms.get_initial_magnetic_moments()).sum())
+        else int(1 + np.abs(atoms.get_initial_magnetic_moments().sum()))
     )
 
 
