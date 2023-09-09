@@ -167,10 +167,6 @@ class QuaccSettings(BaseSettings):
             "in atoms.set_initial_magnetic_moments()."
         ),
     )
-    VASP_VERBOSE: bool = Field(
-        True,
-        description="If True, warnings will be raised when INCAR parameters are changed.",
-    )
     VASP_PRESET_DIR: Union[str, Path] = Field(
         resources.files(vasp_defaults),
         description="Path to the VASP preset directory",
