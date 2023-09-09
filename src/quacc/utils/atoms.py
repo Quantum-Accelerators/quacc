@@ -4,6 +4,7 @@ Utility functions for dealing with Atoms
 from __future__ import annotations
 
 import hashlib
+import logging
 from copy import deepcopy
 from typing import TYPE_CHECKING
 
@@ -13,6 +14,8 @@ from pymatgen.io.ase import AseAtomsAdaptor
 
 if TYPE_CHECKING:
     from ase import Atoms
+
+logger = logging.getLogger(__name__)
 
 
 def prep_next_run(
@@ -350,5 +353,8 @@ def automatic_charge_and_spin(
             f"Charge of {mol.charge} and spin multiplicity of {mol.spin_multiplicity} is"
             " not possible for this molecule."
         )
+    logger.info(
+        f"Setting charge to {mol.charge} and spin multiplicity to {mol.spin_multiplicity}"
+    )
 
     return mol.charge, mol.spin_multiplicity

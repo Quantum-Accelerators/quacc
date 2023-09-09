@@ -95,7 +95,7 @@ class QChem(FileIOCalculator):
             atoms, self.charge, self.spin_multiplicity
         )
         if charge != self.charge or spin_multiplicity != self.spin_multiplicity:
-            logger.warning(
+            logger.info(
                 f"{self.charge, self.spin_multiplicity} for charge, spin multiplicity changed to {charge, spin_multiplicity}",
             )
         self.charge = charge
