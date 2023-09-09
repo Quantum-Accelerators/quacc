@@ -114,8 +114,8 @@ def static_job(
 @job
 def relax_job(
     atoms: Atoms,
-    charge: int | None = None,
-    multiplicity: int | None = None,
+    charge: int = 0,
+    multiplicity: int = 1,
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
     freq: bool = False,
