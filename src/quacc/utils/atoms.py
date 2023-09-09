@@ -103,7 +103,9 @@ def get_charge(atoms: Atoms) -> int:
     """
 
     return (
-        atoms.charge if atoms.has("charge") else round(atoms.get_initial_charges().sum())
+        atoms.charge
+        if atoms.has("charge")
+        else round(atoms.get_initial_charges().sum())
     )
 
 
