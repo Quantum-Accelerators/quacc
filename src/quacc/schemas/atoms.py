@@ -1,6 +1,7 @@
 """Schemas for storing metadata about Atoms objects"""
 from __future__ import annotations
 
+import contextlib
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -238,6 +239,7 @@ def fetch_atoms(atoms: Atoms | dict) -> Atoms:
     Atoms
         Atoms object
     """
+
     try:
         return atoms["atoms"]
     except Exception:
