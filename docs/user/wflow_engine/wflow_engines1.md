@@ -18,7 +18,7 @@ graph LR
 
     !!! Important
 
-        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings.md) and start the Covalent server:
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md) and start the Covalent server:
 
         ```bash
         quacc set WORKFLOW_ENGINE covalent
@@ -64,7 +64,7 @@ graph LR
 
     !!! Important
 
-        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings.md) and load the default Parsl configuration:
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md) and load the default Parsl configuration:
 
         ```bash title="terminal"
         quacc set WORKFLOW_ENGINE parsl
@@ -97,7 +97,7 @@ graph LR
 
     !!! Important
 
-        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings.md):
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md):
 
         ```bash
         quacc set WORKFLOW_ENGINE prefect
@@ -132,7 +132,7 @@ graph LR
 
     !!! Important
 
-        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings.md):
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md):
 
         ```bash
         quacc set WORKFLOW_ENGINE redun
@@ -160,7 +160,7 @@ graph LR
 
     !!! Important
 
-        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings.md):
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md):
 
         ```bash
         quacc set WORKFLOW_ENGINE jobflow
