@@ -54,7 +54,7 @@ def static_job(
         GFN1-xTB, GFN2-xTB, and IPEA1-xTB.
     calc_swaps
         Dictionary of custom kwargs for the tblite calculator. Overrides the
-        following defaults: `{}`.
+        following defaults: `{"method": method}`.
     copy_files
         Files to copy to the runtime directory.
 
@@ -66,7 +66,10 @@ def static_job(
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
-    atoms.calc = TBLite(method=method, **calc_swaps)
+    defaults = {"method": method}
+    flags = merge_dicts(defaults, calc_swaps)
+    atoms.calc = TBLite(**flags)
+
     final_atoms = run_calc(atoms, copy_files=copy_files)
     return summarize_run(
         final_atoms,
@@ -99,7 +102,7 @@ def relax_job(
         Whether to relax the cell.
     calc_swaps
         Dictionary of custom kwargs for the tblite calculator. Overrides the
-        following defaults: `{}`
+        following defaults: `{"method": method}`
     opt_swaps
         Dictionary of custom kwargs for `run_ase_opt`.
 
@@ -122,10 +125,13 @@ def relax_job(
     calc_swaps = calc_swaps or {}
     opt_swaps = opt_swaps or {}
 
+    defaults = {"method": method}
+    flags = merge_dicts(defaults, calc_swaps)
+    atoms.calc = TBLite(**flags)
+
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
-    atoms.calc = TBLite(method=method, **calc_swaps)
     dyn = run_ase_opt(atoms, relax_cell=relax_cell, copy_files=copy_files, **opt_flags)
 
     return summarize_opt_run(dyn, additional_fields={"name": "TBLite Relax"})
@@ -136,6 +142,8 @@ def relax_job(
 def freq_job(
     atoms: Atoms | dict,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
+    charge: int | None = None,
+    multiplicity: int | None = None,
     energy: float = 0.0,
     temperature: float = 298.15,
     pressure: float = 1.0,
@@ -161,7 +169,7 @@ def freq_job(
         Pressure in bar.
     calc_swaps
         dictionary of custom kwargs for the xTB calculator. Overrides the
-        following defaults: `{}`
+        following defaults: `{"method": method}`
     vib_kwargs
         dictionary of custom kwargs for the Vibrations object.
     copy_files
@@ -178,7 +186,10 @@ def freq_job(
     calc_swaps = calc_swaps or {}
     vib_kwargs = vib_kwargs or {}
 
-    atoms.calc = TBLite(method=method, **calc_swaps)
+    defaults = {"method": method}
+    flags = merge_dicts(defaults, calc_swaps)
+    atoms.calc = TBLite(**flags)
+
     vibrations = run_ase_vib(atoms, vib_kwargs=vib_kwargs, copy_files=copy_files)
     vib_summary = summarize_vib_run(
         vibrations, additional_fields={"name": "TBLite Frequency Analysis"}
