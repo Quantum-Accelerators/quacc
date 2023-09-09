@@ -260,9 +260,9 @@ def check_charge_and_spin(
     multiplicity: int | None = None,
 ) -> (int, int):
     """
-    Get the charge and spin multiplicity of a molecule and also set the
-    `atoms.charge` and `atoms.spin_multiplicity` attributes. This function takes
-    the following order of precedence:
+    Check the validity of a given `charge` and `multiplicity`. If they are `None`, then
+    set the charge and/or spin multiplicity of a molecule using the following routine,
+    raising a `ValueError` if there is an incompatibility.
 
     Charges:
 
@@ -273,9 +273,10 @@ def check_charge_and_spin(
     3. If `atoms.has("initial_charges")`, then
     `atoms.get_initial_charges.sum()` is the charge.
 
-    4. If none of the above, use Pymatgen to identify the lowest
-    physically possible charge given the number of electrons and the spin
-    multiplicity, if set. Otherwise, charge is zero.
+    4. If `spin_multiplicity` is set, set the charge to the smallest physically
+    possible value.
+
+    5. Otherwise, set to 0.
 
     Spin multiplicity:
 
@@ -284,8 +285,8 @@ def check_charge_and_spin(
     2. If `atoms.spin_multiplicity` is present, that is the spin multiplicity.
 
     3. If `atoms.has("initial_magmoms")`, then
-       `np.abs(atoms.get_initial_magnetic_moments().sum())` is the spin
-       multiplicity.
+    `np.abs(atoms.get_initial_magnetic_moments().sum())+1` is the spin
+    multiplicity.
 
     4. If none of the above, use Pymatgen to identify the lowest physically
     possible spin multiplicity given the number of electrons and the charge, if
