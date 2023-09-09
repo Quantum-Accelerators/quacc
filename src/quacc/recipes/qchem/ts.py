@@ -263,9 +263,9 @@ def irc_job(
 )
 def quasi_irc_job(
     atoms: Atoms | dict,
+    direction: Literal["forward", "reverse"],
     charge: int = 0,
     spin_multiplicity: int = 1,
-    direction: Literal["forward", "reverse"],
     shared_kwargs: dict | None = None,
     irc_opt_swaps: dict | None = None,
     relax_opt_swaps: dict | None = None,
@@ -277,20 +277,20 @@ def quasi_irc_job(
     ----------
     atoms
         Atoms object.
+    direction
+        Direction of the IRC. Should be "forward" or "reverse".
     charge
         Charge of the system.
     spin_multiplicity
         Multiplicity of the system.
-    direction
-        Direction of the IRC. Should be "forward" or "reverse".
     shared_kwargs
         Dictionary of kwargs that are passed as input to both irc_job and
         relax_job.
-        
+
         ???+ Note
 
             Overrides the following defaults:
-        
+
             ```python
             {"charge": charge, "spin_multiplicity": spin_multiplicity}
             ```
@@ -318,8 +318,8 @@ def quasi_irc_job(
     relax_opt_swaps = relax_opt_swaps or {}
     default_settings = SETTINGS.copy()
 
-    shared_defaults = {"charge":charge,"spin_multiplicity":spin_multiplicity}
-    shared_flags = merge_dicts(shared_defaults,shared_kwargs) 
+    shared_defaults = {"charge": charge, "spin_multiplicity": spin_multiplicity}
+    shared_flags = merge_dicts(shared_defaults, shared_kwargs)
 
     irc_opt_swaps_defaults = {
         "fmax": 100,
