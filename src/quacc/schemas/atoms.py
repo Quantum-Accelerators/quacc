@@ -238,6 +238,7 @@ def fetch_atoms(atoms: Atoms | dict) -> Atoms:
     Atoms
         Atoms object
     """
+
     try:
         return atoms["atoms"]
     except Exception:

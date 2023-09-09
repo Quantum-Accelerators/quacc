@@ -176,7 +176,7 @@ def relax_job(
              Overrides the following defaults:
 
             ```python
-            {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
+            {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella}
             ```
     Returns
     -------

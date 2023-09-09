@@ -21,7 +21,6 @@ if TYPE_CHECKING:
     )
 
     from quacc.schemas.ase import OptSchema, RunSchema
-    from quacc.utils.wflows import Job
 
 
 @flow
