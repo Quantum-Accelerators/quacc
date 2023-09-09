@@ -10,7 +10,7 @@ from quacc import job
 from quacc.calculators.qchem import QChem
 from quacc.schemas import fetch_atoms
 from quacc.schemas.ase import summarize_opt_run, summarize_run
-from quacc.utils.atoms import check_charge_and_spin
+from quacc.utils.atoms import automatic_charge_and_spin
 from quacc.utils.calc import run_ase_opt, run_calc
 from quacc.utils.dicts import merge_dicts, remove_dict_empties
 
@@ -50,10 +50,10 @@ def static_job(
         the value
     charge
         Charge of the system. If None, this is determined from
-        `quacc.utils.atoms.check_charge_and_spin`
+        `quacc.utils.atoms.automatic_charge_and_spin`
     spin_multiplicity
         Multiplicity of the system. If None, this is determined from
-        `quacc.utils.atoms.check_charge_and_spin`
+        `quacc.utils.atoms.automatic_charge_and_spin`
     method
         DFT exchange-correlation functional or other electronic structure
         method. Defaults to wB97M-V.
@@ -85,7 +85,7 @@ def static_job(
         Dictionary of results from `quacc.schemas.ase.summarize_run`
     """
     atoms = fetch_atoms(atoms)
-    charge, spin_multiplicity = check_charge_and_spin(
+    charge, spin_multiplicity = automatic_charge_and_spin(
         atoms, charge=charge, multiplicity=spin_multiplicity
     )
 
@@ -140,10 +140,10 @@ def relax_job(
         the value
     charge
         Charge of the system. If None, this is determined from
-        `quacc.utils.atoms.check_charge_and_spin`
+        `quacc.utils.atoms.automatic_charge_and_spin`
     spin_multiplicity
         Multiplicity of the system. If None, this is determined from
-        `quacc.utils.atoms.check_charge_and_spin`
+        `quacc.utils.atoms.automatic_charge_and_spin`
     method
         DFT exchange-correlation functional or other electronic structure
         method. Defaults to wB97M-V.
@@ -186,7 +186,7 @@ def relax_job(
 
     # TODO: exposing TRICs?
     atoms = fetch_atoms(atoms)
-    charge, spin_multiplicity = check_charge_and_spin(
+    charge, spin_multiplicity = automatic_charge_and_spin(
         atoms, charge=charge, multiplicity=spin_multiplicity
     )
 
