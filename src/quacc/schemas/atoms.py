@@ -1,6 +1,7 @@
 """Schemas for storing metadata about Atoms objects"""
 from __future__ import annotations
 
+import contextlib
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -238,12 +239,10 @@ def fetch_atoms(atoms: Atoms | dict) -> Atoms:
     Atoms
         Atoms object
     """
-    try:
-        atoms = atoms["atoms"]
-    except Exception:
-        pass
+    with contextlib.suppress(Exception):
+        return atoms["atoms"]
 
-    return atoms
+
 
 
 def _quacc_sanitize(obj: Any) -> Any:
