@@ -1,7 +1,7 @@
 """Core recipes for GULP"""
 from __future__ import annotations
 
-import warnings
+import logging
 from typing import TYPE_CHECKING
 
 from ase.calculators.gulp import GULP
@@ -16,6 +16,8 @@ if TYPE_CHECKING:
     from ase import Atoms
 
     from quacc.schemas.ase import RunSchema
+
+logger = logging.getLogger(__name__)
 
 GEOM_FILE_PBC = "gulp.cif"
 GEOM_FILE_NOPBC = "gulp.xyz"
@@ -178,9 +180,7 @@ def relax_job(
     option_swaps = option_swaps or {}
 
     if relax_cell and not atoms.pbc.any():
-        warnings.warn(
-            "Volume relaxation requested but no PBCs found. Ignoring.", UserWarning
-        )
+        logger.warning("Volume relaxation requested but no PBCs found. Ignoring.")
         relax_cell = False
 
     default_keywords = {
