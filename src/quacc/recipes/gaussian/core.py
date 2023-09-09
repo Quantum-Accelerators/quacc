@@ -9,7 +9,6 @@ from ase.calculators.gaussian import Gaussian
 from quacc import job
 from quacc.schemas import fetch_atoms
 from quacc.schemas.cclib import summarize_run
-from quacc.utils.atoms import get_charge_and_spin
 from quacc.utils.calc import run_calc
 from quacc.utils.dicts import merge_dicts
 
@@ -25,8 +24,8 @@ GEOM_FILE = LOG_FILE
 @job
 def static_job(
     atoms: Atoms | dict,
-    charge: int | None = None,
-    multiplicity: int | None = None,
+    charge: int = 0,
+    multiplicity: int = 1,
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
     calc_swaps: dict | None = None,
@@ -41,11 +40,9 @@ def static_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     charge
-        Charge of the system. If None, this is determined from
-        `quacc.utils.atoms.get_charge_and_spin`
+        Charge of the system.
     multiplicity
-        Multiplicity of the system. If None, this is determined from
-        `quacc.utils.atoms.get_charge_and_spin`
+        Multiplicity of the system.
     xc
         Exchange-correlation functional
     basis
@@ -85,9 +82,6 @@ def static_job(
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
-    charge, multiplicity = get_charge_and_spin(
-        atoms, charge=charge, multiplicity=multiplicity
-    )
 
     defaults = {
         "mem": "16GB",
@@ -137,11 +131,9 @@ def relax_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     charge
-        Charge of the system. If None, this is determined from
-        `quacc.utils.atoms.get_charge_and_spin`
+        Charge of the system.
     multiplicity
-        Multiplicity of the system. If None, this is determined from
-        `quacc.utils.atoms.get_charge_and_spin`
+        Multiplicity of the system.
     xc
         Exchange-correlation functional
     basis
@@ -183,9 +175,6 @@ def relax_job(
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
-    charge, multiplicity = get_charge_and_spin(
-        atoms, charge=charge, multiplicity=multiplicity
-    )
 
     defaults = {
         "mem": "16GB",
