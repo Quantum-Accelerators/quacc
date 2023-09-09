@@ -15,7 +15,7 @@ from quacc import SETTINGS
 from quacc.calculators.qchem import QChem
 from quacc.recipes.qchem.core import relax_job, static_job
 from quacc.recipes.qchem.ts import irc_job, quasi_irc_job, ts_job
-from quacc.utils.atoms import get_charge_and_spin
+from quacc.utils import get_charge_and_spin
 
 try:
     import sella
