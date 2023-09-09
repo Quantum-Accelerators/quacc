@@ -310,8 +310,8 @@ def check_charge_and_spin(
         charge
         if charge is not None
         else atoms.charge
-        if atoms.has("charge")
-        else int(atoms.get_initial_charges().sum())
+        if getattr(atoms, "charge", None)
+        else round(atoms.get_initial_charges().sum())
         if atoms.has("initial_charges")
         else None
     )
@@ -320,8 +320,8 @@ def check_charge_and_spin(
         spin_multiplicity
         if spin_multiplicity is not None
         else atoms.spin_multiplicity
-        if atoms.has("spin_multiplicity")
-        else int(np.abs(atoms.get_initial_magnetic_moments().sum())) + 1
+        if getattr(atoms, "spin_multiplicity", None)
+        else round(np.abs(atoms.get_initial_magnetic_moments().sum()) + 1)
         if atoms.has("initial_magmoms")
         else None
     )
@@ -352,6 +352,6 @@ def check_charge_and_spin(
             " not possible for this molecule."
         )
 
-    atoms.charge, atoms.spin_multiplicity = mol.charge, mol.spin_multiplicity
+    atoms.set_initial_charges(mol.charge / len(atoms))
 
     return mol.charge, mol.spin_multiplicity
