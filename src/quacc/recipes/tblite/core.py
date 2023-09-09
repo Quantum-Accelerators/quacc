@@ -142,8 +142,6 @@ def relax_job(
 def freq_job(
     atoms: Atoms | dict,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
-    charge: int | None = None,
-    multiplicity: int | None = None,
     energy: float = 0.0,
     temperature: float = 298.15,
     pressure: float = 1.0,
