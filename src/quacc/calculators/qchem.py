@@ -15,7 +15,6 @@ from pymatgen.io.qchem.outputs import QCOutput
 from pymatgen.io.qchem.sets import ForceSet
 
 from quacc.custodian import qchem as custodian_qchem
-from quacc.utils import get_charge_and_spin
 
 logger = logging.getLogger(__name__)
 
