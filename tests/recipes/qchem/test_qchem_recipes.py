@@ -550,7 +550,7 @@ def test_quasi_irc_job(monkeypatch, tmpdir):
     )
     qcinput_nearly_equal(qcin, ref_qcin)
 
-    shared_kwargs = {"charge": -1, "basis": "def2-svpd", "scf_algorithm": "gdm"}
+    shared_kwargs = {"charge": charge, "spin_multiplicity":spin_multiplicity, "basis": "def2-svpd", "scf_algorithm": "gdm"}
     irc_opt_swaps = {"max_steps": 6}
     relax_opt_swaps = {"max_steps": 6}
 
