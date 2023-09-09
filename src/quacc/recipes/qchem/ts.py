@@ -83,11 +83,11 @@ def ts_job(
         Number of cores to use for the Q-Chem calculation. Defaults to use all
         cores available on a given node.
     overwrite_inputs
-        Dictionary passed to pymatgen.io.qchem.QChemDictSet which can modify
+        Dictionary passed to `pymatgen.io.qchem.QChemDictSet` which can modify
         default values set therein as well as set additional Q-Chem parameters.
         See QChemDictSet documentation for more details.
     opt_swaps
-        Dictionary of custom kwargs for `run_ase_opt`.
+        Dictionary of custom kwargs for [quacc.utils.calc.run_ase_opt][]
 
         ???+ Note
 
@@ -100,7 +100,7 @@ def ts_job(
     Returns
     -------
     OptSchema
-        Dictionary of results from `quacc.schemas.ase.summarize_opt_run`
+        Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
 
     # TODO:
@@ -143,7 +143,7 @@ def ts_job(
     return summarize_opt_run(
         dyn,
         charge_and_multiplicity=(charge, spin_multiplicity),
-        additional_fields={"name": "Q-Chem TS Optimization"},
+        additional_fields={"name": "Q-Chem TS"},
     )
 
 
@@ -203,7 +203,7 @@ def irc_job(
         Number of cores to use for the Q-Chem calculation. Defaults to use all
         cores available on a given node.
     overwrite_inputs
-        Dictionary passed to pymatgen.io.qchem.QChemDictSet which can modify
+        Dictionary passed to `pymatgen.io.qchem.QChemDictSet` which can modify
         default values set therein as well as set additional Q-Chem parameters.
         See QChemDictSet documentation for more details.
     opt_swaps
@@ -263,7 +263,7 @@ def irc_job(
     return summarize_opt_run(
         dyn,
         charge_and_multiplicity=(charge, spin_multiplicity),
-        additional_fields={"name": "Q-Chem IRC Optimization"},
+        additional_fields={"name": "Q-Chem IRC"},
     )
 
 

@@ -61,7 +61,7 @@ def static_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from `quacc.schemas.ase.summarize_run`
+        Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
@@ -104,7 +104,7 @@ def relax_job(
         Dictionary of custom kwargs for the tblite calculator. Overrides the
         following defaults: `{"method": method}`
     opt_swaps
-        Dictionary of custom kwargs for `run_ase_opt`.
+        Dictionary of custom kwargs for [quacc.utils.calc.run_ase_opt][].
 
         ???+ Note
 
@@ -119,7 +119,7 @@ def relax_job(
     Returns
     -------
     OptSchema
-        Dictionary of results from `quacc.schemas.ase.summarize_opt_run`
+        Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
@@ -176,9 +176,8 @@ def freq_job(
     Returns
     -------
     FreqSchema
-        Dictionary of results from `quacc.schemas.ase.summarize_vib_run` patched
-        with the results of `quacc.schemas.ase.summarize_thermo` in the "thermo"
-        key.
+        Dictionary of results from [quacc.schemas.ase.summarize_vib_run] and
+        [quacc.schemas.ase.summarize_thermo][]
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
@@ -190,7 +189,7 @@ def freq_job(
 
     vibrations = run_ase_vib(atoms, vib_kwargs=vib_kwargs, copy_files=copy_files)
     vib_summary = summarize_vib_run(
-        vibrations, additional_fields={"name": "TBLite Frequency Analysis"}
+        vibrations, additional_fields={"name": "TBLite Frequency"}
     )
 
     igt = ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)

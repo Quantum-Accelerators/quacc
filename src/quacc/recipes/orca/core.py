@@ -92,7 +92,7 @@ def static_job(
     Returns
     -------
     cclibSchema
-        Dictionary of results from `quacc.schemas.cclib.summarize_run`
+        Dictionary of results from [quacc.schemas.cclib.summarize_run][]
     """
     atoms = fetch_atoms(atoms)
     input_swaps = input_swaps or {}
@@ -161,7 +161,7 @@ def relax_job(
     basis
         Basis set
     run_freq
-        If a requency calculation should be carried out.
+        If a frequency calculation should be carried out.
     input_swaps
         Dictionary of orcasimpleinput swaps for the calculator. To enable new
         entries, set the value as True. To remove entries from the defaults, set
@@ -204,7 +204,7 @@ def relax_job(
     Returns
     -------
     cclibSchema
-        Dictionary of results from `quacc.schemas.cclib.summarize_run`
+        Dictionary of results from [quacc.schemas.cclib.summarize_run][]
     """
     atoms = fetch_atoms(atoms)
     input_swaps = input_swaps or {}

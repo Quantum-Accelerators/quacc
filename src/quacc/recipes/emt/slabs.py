@@ -38,7 +38,7 @@ def bulk_to_slabs_flow(
         the value
     make_slabs_kwargs
         Additional keyword arguments to pass to
-        `quacc.utils.slabs.make_slabs_from_bulk`
+        [quacc.utils.slabs.make_slabs_from_bulk][]
     run_static
         Whether to run the static calculation.
     slab_relax_kwargs
@@ -49,7 +49,8 @@ def bulk_to_slabs_flow(
     Returns
     -------
     list[RunSchema | OptSchema]
-        RunSchema or OptSchema for each slab.
+        [RunSchema][quacc.schemas.ase.summarize_run] or
+        [OptSchema][quacc.schemas.ase.summarize_opt_run] for each slab.
     """
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}

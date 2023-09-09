@@ -44,7 +44,7 @@ def static_job(
     Returns
     -------
     RunSchema
-        Dictionary of results, specified in `quacc.schemas.ase.RunSchema`
+        Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
@@ -81,7 +81,7 @@ def relax_job(
         Dictionary of custom kwargs for the EMT calculator. Overrides the
         following defaults: `{}`
     opt_swaps
-        Dictionary of swaps for `run_ase_opt`.
+        Dictionary of swaps for [quacc.utils.calc.run_ase_opt][].
 
         ???+ Note
 
@@ -96,7 +96,7 @@ def relax_job(
     Returns
     -------
     OptSchema
-        Dictionary of results, specified in `quacc.schemas.ase.OptSchema`
+        Dictionary of results, specified in [quacc.schemas.ase.summarize_opt_run][]
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}

@@ -33,8 +33,7 @@ def static_job(
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
-    Carry out a single-point calculation. Note: 'Conditions' are not yet
-    natively supported.
+    Carry out a single-point calculation.
 
     Parameters
     ----------
@@ -76,7 +75,7 @@ def static_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from `quacc.schemas.ase.summarize_run`
+        Dictionary of results from [quacc.schemas.ase.summarize_run[]
     """
     atoms = fetch_atoms(atoms)
     keyword_swaps = keyword_swaps or {}
@@ -123,8 +122,7 @@ def relax_job(
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
-    Carry out a single-point calculation. Note: 'Conditions' are not yet
-    natively supported.
+    Carry out a single-point calculation.
 
     Parameters
     ----------
@@ -173,7 +171,7 @@ def relax_job(
     Returns
     -------
     dict
-        Dictionary of results from `quacc.schemas.ase.summarize_run`
+        Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
     atoms = fetch_atoms(atoms)
     keyword_swaps = keyword_swaps or {}
