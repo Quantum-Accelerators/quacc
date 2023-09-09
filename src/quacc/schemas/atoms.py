@@ -243,8 +243,6 @@ def fetch_atoms(atoms: Atoms | dict) -> Atoms:
         return atoms["atoms"]
 
 
-
-
 def _quacc_sanitize(obj: Any) -> Any:
     """
     Sanitizes an object for storage in MongoDB.
