@@ -302,7 +302,7 @@ def check_charge_and_spin(
     atoms: Atoms,
     charge: int | None = None,
     spin_multiplicity: int | None = None,
-):
+) -> (int, int):
     """
     Simple function to use the pymatgen molecule class to obtain and/or validate
     the multiplicity given the prescribed charge.
@@ -321,8 +321,28 @@ def check_charge_and_spin(
     charge, multiplicity
 
     """
+    charge = (
+        charge
+        if charge is not None
+        else atoms.charge
+        if getattr(atoms, "charge", None)
+        else int(atoms.get_initial_charges().sum())
+        if atoms.has("initial_charges")
+        else None
+    )
+
+    spin_multiplicity = (
+        spin_multiplicity
+        if spin_multiplicity is not None
+        else atoms.spin_multiplicity
+        if getattr(atoms, "spin_multiplicity", None)
+        else int(np.abs(atoms.get_initial_magnetic_moments().sum()) + 1)
+        if atoms.has("initial_magmoms")
+        else None
+    )
+
     if charge is None and spin_multiplicity is not None:
-        raise ValueError("If setting spin_multiplicity, must also specify charge.")
+        charge = 0
 
     try:
         mol = AseAtomsAdaptor.get_molecule(atoms)
