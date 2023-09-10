@@ -54,7 +54,7 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
     results_to_db(store, results)
     ```
 
-=== "Covalent ⭐"
+=== "Covalent"
 
     Covalent automatically stores all the inputs and outputs in an SQLite database, which you can find at the `"db_path"` when you run `covalent config`, and the results can be queried using the `#!Python ct.get_result(<dispatch ID>)` syntax. However, if you want to store the results in a different database of your choosing, you can do so quite easily.
 
