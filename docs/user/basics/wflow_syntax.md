@@ -78,7 +78,7 @@ To help enable interoperability between workflow engines, quacc offers a unified
 
     </center>
 
-The quacc descriptors are drop-in replacements for the specified workflow engine analogue, which we will use for the remainder of the tutorials. Based on the value for the `WORKFLOW_ENGINE` global variable in your [quacc settings](../settings.md), the appropriate decorator will be automatically selected. If the `WORKFLOW_ENGINE` setting is set to `"local"`, the decorators will have no effect on the underlying function.
+The quacc descriptors are drop-in replacements for the specified workflow engine analogue, which we will use for the remainder of the tutorials. Based on the value for the `WORKFLOW_ENGINE` global variable in your [quacc settings](../settings/settings.md), the appropriate decorator will be automatically selected. If the `WORKFLOW_ENGINE` setting is set to `"local"`, the decorators will have no effect on the underlying function.
 
 ## Simple Workflow
 
@@ -98,7 +98,7 @@ graph LR
 
     !!! Important
 
-        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings.md) and start the Covalent server:
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md) and start the Covalent server:
 
         ```bash
         quacc set WORKFLOW_ENGINE covalent
@@ -140,7 +140,7 @@ graph LR
 
     !!! Important
 
-        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings.md) and load the default Parsl configuration:
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md) and load the default Parsl configuration:
 
         ```bash title="terminal"
         quacc set WORKFLOW_ENGINE parsl
@@ -180,7 +180,7 @@ graph LR
 
     !!! Important
 
-        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings.md):
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md):
 
         ```bash
         quacc set WORKFLOW_ENGINE prefect
@@ -218,7 +218,7 @@ graph LR
 
     !!! Important
 
-        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings.md):
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md):
 
         ```bash
         quacc set WORKFLOW_ENGINE redun
@@ -260,7 +260,7 @@ graph LR
 
     !!! Important
 
-        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings.md):
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md):
 
         ```bash
         quacc set WORKFLOW_ENGINE jobflow

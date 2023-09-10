@@ -8,7 +8,7 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
 
     **Automated Approach**
 
-    For a given recipe, you can have quacc automatically store the final output summaries in your desired database by defining a [Maggma data store](https://materialsproject.github.io/maggma/reference/stores/) in the `PRIMARY_STORE` [quacc setting](../settings.md).
+    For a given recipe, you can have quacc automatically store the final output summaries in your desired database by defining a [Maggma data store](https://materialsproject.github.io/maggma/reference/stores/) in the `PRIMARY_STORE` [quacc setting](../settings/settings.md).
 
     For instance, let's pretend you have decided to make a [`MongoStore`](https://materialsproject.github.io/maggma/reference/stores/#maggma.stores.mongolike.MongoStore) be your database of choice. After defining or loading your Maggma store, you would call `.to_json()` to get a dictionary representation. You can then store this JSON, formatted as a string, in the `PRIMARY_STORE` global quacc setting.
 
@@ -54,7 +54,7 @@ Oftentimes, it is beneficial to store the results in a database for easy queryin
     results_to_db(store, results)
     ```
 
-=== "Covalent ⭐"
+=== "Covalent"
 
     Covalent automatically stores all the inputs and outputs in an SQLite database, which you can find at the `"db_path"` when you run `covalent config`, and the results can be queried using the `#!Python ct.get_result(<dispatch ID>)` syntax. However, if you want to store the results in a different database of your choosing, you can do so quite easily.
 

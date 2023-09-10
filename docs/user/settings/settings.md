@@ -42,9 +42,3 @@ from quacc import SETTINGS
 
 SETTINGS.CREATE_UNIQUE_WORKDIR = True
 ```
-
-## List of Quacc Settings
-
-```title="quacc/settings.py"
---8<-- "../quacc/src/quacc/settings.py:settings"
-```

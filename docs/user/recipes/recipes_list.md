@@ -82,7 +82,7 @@
 
 !!! Note
 
-    [NewtonNet](https://github.com/ericyuan00000/NewtonNet) is a message passing networking for deep learning of interatomic potentials and forces, as described [here](https://pubs.rsc.org/en/content/articlehtml/2022/dd/d2dd00008c).
+    [NewtonNet](https://github.com/ericyuan00000/NewtonNet) is a message passing network for deep learning of interatomic potentials and forces, as described [here](https://pubs.rsc.org/en/content/articlehtml/2022/dd/d2dd00008c).
 
 <center>
 
