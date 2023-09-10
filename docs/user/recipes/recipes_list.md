@@ -156,7 +156,7 @@
 | Name             | Decorator       | Documentation                            |
 | ---------------- | --------------- | ---------------------------------------- |
 | TBLite Static    | `#!Python @job` | [quacc.recipes.tblite.core.static_job][] |
-| TBLite Relax     | `#!Python @job` | [quacc.recipes.tblite.core.relax_job][]    |
+| TBLite Relax     | `#!Python @job` | [quacc.recipes.tblite.core.relax_job][]  |
 | TBLite Frequency | `#!Python @job` | [quacc.recipes.tblite.core.freq_job][]   |
 
 </center>
