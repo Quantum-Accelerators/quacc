@@ -15,7 +15,7 @@ from quacc import SETTINGS
 from quacc.calculators.qchem import QChem
 from quacc.recipes.qchem.core import relax_job, static_job
 from quacc.recipes.qchem.ts import irc_job, quasi_irc_job, ts_job
-from quacc.utils import get_charge_and_spin
+from quacc.utils import check_charge_and_spin
 
 try:
     import sella
@@ -102,7 +102,7 @@ def test_static_job_v1(monkeypatch, tmpdir):
     tmpdir.chdir()
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
-    charge, spin_multiplicity = get_charge_and_spin(TEST_ATOMS)
+    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
     output = static_job(TEST_ATOMS, charge=charge, spin_multiplicity=spin_multiplicity)
     assert output["atoms"] == TEST_ATOMS
     assert output["charge"] == 0
@@ -123,7 +123,7 @@ def test_static_job_v2(monkeypatch, tmpdir):
     tmpdir.chdir()
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute2)
-    charge, spin_multiplicity = get_charge_and_spin(TEST_ATOMS, charge=-1)
+    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS, charge=-1)
     output = static_job(
         TEST_ATOMS,
         charge=charge,
@@ -153,7 +153,7 @@ def test_static_job_v3(monkeypatch, tmpdir):
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
     overwrite_inputs = {"rem": {"mem_total": "170000"}}
-    charge, spin_multiplicity = get_charge_and_spin(TEST_ATOMS)
+    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
     output = static_job(
         TEST_ATOMS,
         charge=charge,
@@ -180,7 +180,7 @@ def test_static_job_v(monkeypatch, tmpdir):
     tmpdir.chdir()
     monkeypatch.setattr(QChem, "read_results", mock_read)
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute4)
-    charge, spin_multiplicity = get_charge_and_spin(OS_ATOMS)
+    charge, spin_multiplicity = check_charge_and_spin(OS_ATOMS)
     assert static_job(OS_ATOMS, charge=charge, spin_multiplicity=spin_multiplicity)
 
 
@@ -199,7 +199,7 @@ def test_relax_job_v1(monkeypatch, tmpdir):
     tmpdir.chdir()
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
-    charge, spin_multiplicity = get_charge_and_spin(TEST_ATOMS)
+    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
     output = relax_job(
         TEST_ATOMS,
         charge=charge,
@@ -232,7 +232,7 @@ def test_relax_job_v1(monkeypatch, tmpdir):
 def test_relax_job_v2(monkeypatch, tmpdir):
     tmpdir.chdir()
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute2)
-    charge, spin_multiplicity = get_charge_and_spin(TEST_ATOMS, charge=-1)
+    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS, charge=-1)
     output = relax_job(
         TEST_ATOMS,
         charge=charge,
@@ -267,7 +267,7 @@ def test_relax_job_v3(monkeypatch, tmpdir):
     tmpdir.chdir()
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
     overwrite_inputs = {"rem": {"mem_total": "170000"}}
-    charge, spin_multiplicity = get_charge_and_spin(TEST_ATOMS)
+    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
     output = relax_job(
         TEST_ATOMS,
         charge=charge,
@@ -307,7 +307,7 @@ def test_ts_job_v1(monkeypatch, tmpdir):
     tmpdir.chdir()
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
-    charge, spin_multiplicity = get_charge_and_spin(TEST_ATOMS)
+    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
     output = ts_job(
         TEST_ATOMS,
         charge=charge,
@@ -340,7 +340,7 @@ def test_ts_job_v1(monkeypatch, tmpdir):
 def test_ts_job_v2(monkeypatch, tmpdir):
     tmpdir.chdir()
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute2)
-    charge, spin_multiplicity = get_charge_and_spin(TEST_ATOMS, charge=-1)
+    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS, charge=-1)
     output = ts_job(
         TEST_ATOMS,
         charge=charge,
@@ -375,7 +375,7 @@ def test_ts_job_v3(monkeypatch, tmpdir):
     tmpdir.chdir()
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
     overwrite_inputs = {"rem": {"mem_total": "170000"}}
-    charge, spin_multiplicity = get_charge_and_spin(TEST_ATOMS)
+    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
     output = ts_job(
         TEST_ATOMS,
         charge=charge,
@@ -425,7 +425,7 @@ def test_irc_job_v1(monkeypatch, tmpdir):
     monkeypatch.setattr(QChem, "read_results", mock_read)
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute4)
 
-    charge, spin_multiplicity = get_charge_and_spin(TEST_ATOMS)
+    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
     output = irc_job(
         TEST_ATOMS,
         charge=charge,
@@ -449,7 +449,7 @@ def test_irc_job_v1(monkeypatch, tmpdir):
     )
     qcinput_nearly_equal(qcin, ref_qcin)
 
-    charge, spin_multiplicity = get_charge_and_spin(TEST_ATOMS)
+    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
     output = irc_job(
         TEST_ATOMS,
         charge=charge,
@@ -526,7 +526,7 @@ def test_quasi_irc_job(monkeypatch, tmpdir):
     shared_kwargs = {"basis": "def2-tzvpd"}
     relax_opt_swaps = {"max_steps": 5}
 
-    charge, spin_multiplicity = get_charge_and_spin(TEST_ATOMS)
+    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
     output = quasi_irc_job(
         TEST_ATOMS,
         charge=charge,
