@@ -565,8 +565,8 @@ def test_quasi_irc_job(monkeypatch, tmpdir):
 
     output = quasi_irc_job(
         TEST_ATOMS,
-        charge,
-        spin_multiplicity,
+        -1,
+        2,
         "reverse",
         shared_kwargs=shared_kwargs,
         irc_opt_swaps=irc_opt_swaps,
