@@ -557,8 +557,6 @@ def test_quasi_irc_job(monkeypatch, tmpdir):
     qcinput_nearly_equal(qcin, ref_qcin)
 
     shared_kwargs = {
-        "charge": -1,
-        "spin_multiplicity": 2,
         "basis": "def2-svpd",
         "scf_algorithm": "gdm",
     }
