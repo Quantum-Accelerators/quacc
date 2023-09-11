@@ -19,7 +19,7 @@ def ideal_gas(
     atoms: Atoms,
     vib_freqs: list[float | complex],
     energy: float = 0.0,
-    multiplicity: int | None = None,
+    spin_multiplicity: int | None = None,
 ) -> IdealGasThermo:
     """
     Calculate thermodynamic properties for a molecule from a given vibrational
@@ -37,7 +37,7 @@ def ideal_gas(
     energy
         Potential energy in eV. If 0 eV, then the thermochemical correction is
         computed.
-    multiplicity
+    spin_multiplicity
         The spin multiplicity (2S+1). If None, this will be determined
         automatically from the attached magnetic moments.
 
