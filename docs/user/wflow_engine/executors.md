@@ -67,6 +67,12 @@ In the previous examples, we have been running calculations on our local machine
     Most users of quacc will probably want to use the [`HPCExecutor`](https://github.com/Quantum-Accelerators/covalent-hpc-plugin), which is a plugin for Covalent that supports Slurm, PBS, LSF, Flux, and more. For submitting jobs to a Slurm-based job scheduler from your local machine, an example `HPCExecutor` configuration might look like the following, which has been tested on Perlmutter at NERSC:
 
     ```python
+    n_nodes = 2  # Number of nodes to reserve for each calculation
+    n_cores_per_node = 48  # Number of CPU cores per node
+    vasp_parallel_cmd = (
+        f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'"
+    )
+
     executor = ct.executor.HPCExecutor(
         # SSH credentials
         username="YourUserName",
