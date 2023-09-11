@@ -9,4 +9,4 @@ def test_static_job(tmpdir):
 
     atoms = molecule("H2")
     with pytest.raises(ValueError):
-        relax_job(atoms)
+        relax_job(atoms, 0, 1)

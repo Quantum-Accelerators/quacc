@@ -8,11 +8,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- Re-added support for the Prefect workflow engine.
+- Add support for `Path` objects everywhere possible.
 
 ### Changed
 
-- Removed unnecessary functions as kwargs in recipes.
+- Charge and spin multiplicity are now required arguments in molecular DFT calculators.
+- Slab recipes now use `make_slabs_from_bulk` instead of `make_max_slabs_from_bulk`
+- Use the `logging` module when warnings do not need to be immediately addressed.
+- Functions are no longer used as kwargs in recipes to help with (de)serialization in certain workflow engines.
+
+### Removed
+
+- Removed `make_max_slabs_from_bulk` function.
 
 ## [0.2.5]
 

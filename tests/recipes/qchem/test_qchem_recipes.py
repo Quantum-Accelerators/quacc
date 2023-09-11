@@ -15,6 +15,7 @@ from quacc import SETTINGS
 from quacc.calculators.qchem import QChem
 from quacc.recipes.qchem.core import relax_job, static_job
 from quacc.recipes.qchem.ts import irc_job, quasi_irc_job, ts_job
+from quacc.utils import check_charge_and_spin
 
 try:
     import sella
@@ -97,11 +98,12 @@ def mock_read(self, **kwargs):
         raise RuntimeError("Results should not be None here.")
 
 
-def test_static_job(monkeypatch, tmpdir):
+def test_static_job_v1(monkeypatch, tmpdir):
     tmpdir.chdir()
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
-    output = static_job(TEST_ATOMS)
+    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
+    output = static_job(TEST_ATOMS, charge, spin_multiplicity)
     assert output["atoms"] == TEST_ATOMS
     assert output["charge"] == 0
     assert output["spin_multiplicity"] == 1
@@ -116,10 +118,16 @@ def test_static_job(monkeypatch, tmpdir):
     ref_qcin = QCInput.from_file(os.path.join(QCHEM_DIR, "mol.qin.basic"))
     qcinput_nearly_equal(qcin, ref_qcin)
 
+
+def test_static_job_v2(monkeypatch, tmpdir):
+    tmpdir.chdir()
+
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute2)
+    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS, charge=-1)
     output = static_job(
         TEST_ATOMS,
-        charge=-1,
+        charge,
+        spin_multiplicity,
         method="b97mv",
         basis="def2-svpd",
         pcm_dielectric="3.0",
@@ -139,10 +147,19 @@ def test_static_job(monkeypatch, tmpdir):
     ref_qcin = QCInput.from_file(os.path.join(QCHEM_DIR, "mol.qin.intermediate"))
     qcinput_nearly_equal(qcin, ref_qcin)
 
+
+def test_static_job_v3(monkeypatch, tmpdir):
+    tmpdir.chdir()
+
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
     overwrite_inputs = {"rem": {"mem_total": "170000"}}
+    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
     output = static_job(
-        TEST_ATOMS, scf_algorithm="gdm", overwrite_inputs=overwrite_inputs
+        TEST_ATOMS,
+        charge,
+        spin_multiplicity,
+        scf_algorithm="gdm",
+        overwrite_inputs=overwrite_inputs,
     )
     assert output["atoms"] == TEST_ATOMS
     assert output["charge"] == 0
@@ -158,24 +175,35 @@ def test_static_job(monkeypatch, tmpdir):
     ref_qcin = QCInput.from_file(os.path.join(QCHEM_DIR, "mol.qin.alternate"))
     qcinput_nearly_equal(qcin, ref_qcin)
 
-    with pytest.raises(ValueError):
-        output = static_job(TEST_ATOMS, pcm_dielectric="3.0", smd_solvent="water")
 
+def test_static_job_v(monkeypatch, tmpdir):
+    tmpdir.chdir()
     monkeypatch.setattr(QChem, "read_results", mock_read)
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute4)
-    output = static_job(OS_ATOMS)
+    charge, spin_multiplicity = check_charge_and_spin(OS_ATOMS)
+    assert static_job(OS_ATOMS, charge, spin_multiplicity)
+
+
+def test_static_job_v5(tmpdir):
+    tmpdir.chdir()
+
+    with pytest.raises(ValueError):
+        static_job(TEST_ATOMS, 0, 1, pcm_dielectric="3.0", smd_solvent="water")
 
 
 @pytest.mark.skipif(
     sella is None,
     reason="Sella must be installed.",
 )
-def test_relax_job(monkeypatch, tmpdir):
+def test_relax_job_v1(monkeypatch, tmpdir):
     tmpdir.chdir()
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
+    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
     output = relax_job(
         TEST_ATOMS,
+        charge,
+        spin_multiplicity,
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
     )
@@ -196,10 +224,19 @@ def test_relax_job(monkeypatch, tmpdir):
     )
     qcinput_nearly_equal(qcin, ref_qcin)
 
+
+@pytest.mark.skipif(
+    sella is None,
+    reason="Sella must be installed.",
+)
+def test_relax_job_v2(monkeypatch, tmpdir):
+    tmpdir.chdir()
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute2)
+    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS, charge=-1)
     output = relax_job(
         TEST_ATOMS,
-        charge=-1,
+        charge,
+        spin_multiplicity,
         method="b97mv",
         pcm_dielectric="3.0",
         opt_swaps={"max_steps": 1},
@@ -221,10 +258,20 @@ def test_relax_job(monkeypatch, tmpdir):
     )
     qcinput_nearly_equal(qcin, ref_qcin)
 
+
+@pytest.mark.skipif(
+    sella is None,
+    reason="Sella must be installed.",
+)
+def test_relax_job_v3(monkeypatch, tmpdir):
+    tmpdir.chdir()
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
     overwrite_inputs = {"rem": {"mem_total": "170000"}}
+    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
     output = relax_job(
         TEST_ATOMS,
+        charge,
+        spin_multiplicity,
         scf_algorithm="gdm",
         overwrite_inputs=overwrite_inputs,
         basis="def2-tzvpd",
@@ -241,20 +288,30 @@ def test_relax_job(monkeypatch, tmpdir):
     assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826311086011256)
 
+
+@pytest.mark.skipif(
+    sella is None,
+    reason="Sella must be installed.",
+)
+def test_relax_job_v4(tmpdir):
+    tmpdir.chdir()
     with pytest.raises(ValueError):
-        output = relax_job(TEST_ATOMS, pcm_dielectric="3.0", smd_solvent="water")
+        relax_job(TEST_ATOMS, 0, 1, pcm_dielectric="3.0", smd_solvent="water")
 
 
 @pytest.mark.skipif(
     sella is None,
     reason="Sella must be installed.",
 )
-def test_ts_job(monkeypatch, tmpdir):
+def test_ts_job_v1(monkeypatch, tmpdir):
     tmpdir.chdir()
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
+    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
     output = ts_job(
         TEST_ATOMS,
+        charge,
+        spin_multiplicity,
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
     )
@@ -275,10 +332,19 @@ def test_ts_job(monkeypatch, tmpdir):
     )
     qcinput_nearly_equal(qcin, ref_qcin)
 
+
+@pytest.mark.skipif(
+    sella is None,
+    reason="Sella must be installed.",
+)
+def test_ts_job_v2(monkeypatch, tmpdir):
+    tmpdir.chdir()
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute2)
+    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS, charge=-1)
     output = ts_job(
         TEST_ATOMS,
-        charge=-1,
+        charge,
+        spin_multiplicity,
         method="b97mv",
         pcm_dielectric="3.0",
         opt_swaps={"max_steps": 1},
@@ -300,10 +366,20 @@ def test_ts_job(monkeypatch, tmpdir):
     )
     qcinput_nearly_equal(qcin, ref_qcin)
 
+
+@pytest.mark.skipif(
+    sella is None,
+    reason="Sella must be installed.",
+)
+def test_ts_job_v3(monkeypatch, tmpdir):
+    tmpdir.chdir()
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
     overwrite_inputs = {"rem": {"mem_total": "170000"}}
+    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
     output = ts_job(
         TEST_ATOMS,
+        charge,
+        spin_multiplicity,
         scf_algorithm="gdm",
         overwrite_inputs=overwrite_inputs,
         basis="def2-tzvpd",
@@ -320,12 +396,21 @@ def test_ts_job(monkeypatch, tmpdir):
     assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826311086011256)
 
+
+@pytest.mark.skipif(
+    sella is None,
+    reason="Sella must be installed.",
+)
+def test_ts_job_v4(tmpdir):
+    tmpdir.chdir()
     with pytest.raises(ValueError):
-        output = ts_job(TEST_ATOMS, pcm_dielectric="3.0", smd_solvent="water")
+        ts_job(TEST_ATOMS, 0, 1, pcm_dielectric="3.0", smd_solvent="water")
 
     with pytest.raises(ValueError):
-        output = ts_job(
+        ts_job(
             TEST_ATOMS,
+            0,
+            1,
             pcm_dielectric="3.0",
             smd_solvent="water",
             opt_swaps={"optimizer": FIRE},
@@ -336,15 +421,18 @@ def test_ts_job(monkeypatch, tmpdir):
     sella is None,
     reason="Sella must be installed.",
 )
-def test_irc_job(monkeypatch, tmpdir):
+def test_irc_job_v1(monkeypatch, tmpdir):
     tmpdir.chdir()
 
     monkeypatch.setattr(QChem, "read_results", mock_read)
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute4)
 
+    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
     output = irc_job(
         TEST_ATOMS,
-        direction="forward",
+        charge,
+        spin_multiplicity,
+        "forward",
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
     )
@@ -363,9 +451,12 @@ def test_irc_job(monkeypatch, tmpdir):
     )
     qcinput_nearly_equal(qcin, ref_qcin)
 
+    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
     output = irc_job(
         TEST_ATOMS,
-        direction="reverse",
+        charge,
+        spin_multiplicity,
+        "reverse",
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
     )
@@ -379,7 +470,9 @@ def test_irc_job(monkeypatch, tmpdir):
     overwrite_inputs = {"rem": {"mem_total": "170000"}}
     output = irc_job(
         TEST_ATOMS,
-        direction="reverse",
+        charge,
+        spin_multiplicity,
+        "reverse",
         scf_algorithm="gdm",
         overwrite_inputs=overwrite_inputs,
         basis="def2-tzvpd",
@@ -394,21 +487,32 @@ def test_irc_job(monkeypatch, tmpdir):
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["spin_multiplicity"] == 1
 
+
+@pytest.mark.skipif(
+    sella is None,
+    reason="Sella must be installed.",
+)
+def test_irc_job_v2(tmpdir):
+    tmpdir.chdir()
     with pytest.raises(ValueError):
-        output = irc_job(TEST_ATOMS, direction="straight")
+        irc_job(TEST_ATOMS, 0, 1, "straight")
 
     with pytest.raises(ValueError):
-        output = irc_job(
+        irc_job(
             TEST_ATOMS,
-            direction="forward",
+            0,
+            1,
+            "forward",
             pcm_dielectric="3.0",
             smd_solvent="water",
         )
 
     with pytest.raises(ValueError):
-        output = irc_job(
+        irc_job(
             TEST_ATOMS,
-            direction="forward",
+            0,
+            1,
+            "forward",
             pcm_dielectric="3.0",
             smd_solvent="water",
             opt_swaps={"optimizer": FIRE},
@@ -428,9 +532,12 @@ def test_quasi_irc_job(monkeypatch, tmpdir):
     shared_kwargs = {"basis": "def2-tzvpd"}
     relax_opt_swaps = {"max_steps": 5}
 
+    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
     output = quasi_irc_job(
         TEST_ATOMS,
-        direction="forward",
+        charge,
+        spin_multiplicity,
+        "forward",
         shared_kwargs=shared_kwargs,
         relax_opt_swaps=relax_opt_swaps,
     )
@@ -449,13 +556,18 @@ def test_quasi_irc_job(monkeypatch, tmpdir):
     )
     qcinput_nearly_equal(qcin, ref_qcin)
 
-    shared_kwargs = {"charge": -1, "basis": "def2-svpd", "scf_algorithm": "gdm"}
+    shared_kwargs = {
+        "basis": "def2-svpd",
+        "scf_algorithm": "gdm",
+    }
     irc_opt_swaps = {"max_steps": 6}
     relax_opt_swaps = {"max_steps": 6}
 
     output = quasi_irc_job(
         TEST_ATOMS,
-        direction="reverse",
+        -1,
+        2,
+        "reverse",
         shared_kwargs=shared_kwargs,
         irc_opt_swaps=irc_opt_swaps,
         relax_opt_swaps=relax_opt_swaps,
