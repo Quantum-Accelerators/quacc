@@ -10,9 +10,9 @@ from ase.io import read
 
 from quacc.calculators.vasp import Vasp
 from quacc.utils.atoms import (
+    check_charge_and_spin,
     check_is_metal,
     get_atoms_id,
-    check_charge_and_spin,
     prep_next_run,
 )
 
