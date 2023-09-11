@@ -16,9 +16,9 @@ To help enable interoperability between workflow engines, quacc offers a unified
 
     | Quacc              | Covalent                           |
     | ------------------ | ---------------------------------- |
-    | `#!Python job`     | `#!Python ct.electron`             |
-    | `#!Python flow`    | `#!Python ct.lattice`              |
-    | `#!Python subflow` | `#!Python ct.electron(ct.lattice)` |
+    | `#!Python @job`     | `#!Python @ct.electron`             |
+    | `#!Python @flow`    | `#!Python @ct.lattice`              |
+    | `#!Python @subflow` | `#!Python @ct.electron`<br>`#!Python @ct.lattice`</br> |
 
     </center>
 
@@ -30,9 +30,9 @@ To help enable interoperability between workflow engines, quacc offers a unified
 
     | Quacc              | Parsl                 |
     | ------------------ | --------------------- |
-    | `#!Python job`     | `#!Python python_app` |
-    | `#!Python flow`    | No effect             |
-    | `#!Python subflow` | `#!Python join_app`   |
+    | `#!Python @job`     | `#!Python @python_app` |
+    | `#!Python @flow`    | No effect             |
+    | `#!Python @subflow` | `#!Python @join_app`   |
 
     </center>
 
@@ -44,9 +44,9 @@ To help enable interoperability between workflow engines, quacc offers a unified
 
     | Quacc              | Prefect         |
     | ------------------ | --------------- |
-    | `#!Python job`     | `#!Python task` |
-    | `#!Python flow`    | `#!Python flow` |
-    | `#!Python subflow` | `#!Python flow` |
+    | `#!Python @job`     | `#!Python @task` |
+    | `#!Python @flow`    | `#!Python @flow` |
+    | `#!Python @subflow` | `#!Python @flow` |
 
     </center>
 
@@ -58,9 +58,9 @@ To help enable interoperability between workflow engines, quacc offers a unified
 
     | Quacc              | Redun           |
     | ------------------ | --------------- |
-    | `#!Python job`     | `#!Python task` |
-    | `#!Python flow`    | `#!Python task` |
-    | `#!Python subflow` | `#!Python task` |
+    | `#!Python @job`     | `#!Python @task` |
+    | `#!Python @flow`    | `#!Python @task` |
+    | `#!Python @subflow` | `#!Python @task` |
 
     </center>
 
@@ -72,9 +72,9 @@ To help enable interoperability between workflow engines, quacc offers a unified
 
     | Quacc              | Jobflow        |
     | ------------------ | -------------- |
-    | `#!Python job`     | `#!Python job` |
-    | `#!Python flow`    | No effect      |
-    | `#!Python subflow` | No effect      |
+    | `#!Python @job`     | `#!Python @job` |
+    | `#!Python @flow`    | No effect      |
+    | `#!Python @subflow` | No effect      |
 
     </center>
 
