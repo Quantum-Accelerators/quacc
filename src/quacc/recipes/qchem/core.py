@@ -10,7 +10,6 @@ from quacc import job
 from quacc.calculators.qchem import QChem
 from quacc.schemas import fetch_atoms
 from quacc.schemas.ase import summarize_opt_run, summarize_run
-from quacc.utils.atoms import get_charge_and_spin
 from quacc.utils.calc import run_ase_opt, run_calc
 from quacc.utils.dicts import merge_dicts, remove_dict_empties
 
@@ -30,8 +29,8 @@ if TYPE_CHECKING:
 @job
 def static_job(
     atoms: Atoms | dict,
-    charge: int | None = None,
-    spin_multiplicity: int | None = None,
+    charge: int,
+    spin_multiplicity: int,
     method: str = "wb97mv",
     basis: str = "def2-tzvpd",
     scf_algorithm: str = "diis",
@@ -49,11 +48,9 @@ def static_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     charge
-        Charge of the system. If None, this is determined from
-        `quacc.utils.atoms.get_charge_and_spin`
+        Charge of the system.
     spin_multiplicity
-        Multiplicity of the system. If None, this is determined from
-        `quacc.utils.atoms.get_charge_and_spin`
+        Multiplicity of the system.
     method
         DFT exchange-correlation functional or other electronic structure
         method. Defaults to wB97M-V.
@@ -85,9 +82,6 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
     atoms = fetch_atoms(atoms)
-    charge, spin_multiplicity = get_charge_and_spin(
-        atoms, charge=charge, multiplicity=spin_multiplicity
-    )
 
     qchem_defaults = {
         "method": method,
@@ -119,8 +113,8 @@ def static_job(
 @job
 def relax_job(
     atoms: Atoms | dict,
-    charge: int | None = None,
-    spin_multiplicity: int | None = None,
+    charge: int,
+    spin_multiplicity: int,
     method: str = "wb97mv",
     basis: str = "def2-svpd",
     scf_algorithm: str = "diis",
@@ -139,11 +133,9 @@ def relax_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     charge
-        Charge of the system. If None, this is determined from
-        `quacc.utils.atoms.get_charge_and_spin`
+        Charge of the system.
     spin_multiplicity
-        Multiplicity of the system. If None, this is determined from
-        `quacc.utils.atoms.get_charge_and_spin`
+        Multiplicity of the system.
     method
         DFT exchange-correlation functional or other electronic structure
         method. Defaults to wB97M-V.
@@ -169,7 +161,7 @@ def relax_job(
         default values set therein as well as set additional Q-Chem parameters.
         See QChemDictSet documentation for more details.
     opt_swaps
-        Dictionary of custom kwargs for `run_ase_opt`.
+        Dictionary of custom kwargs for [quacc.utils.calc.run_ase_opt[]
 
         ???+ Note
 
@@ -186,9 +178,6 @@ def relax_job(
 
     # TODO: exposing TRICs?
     atoms = fetch_atoms(atoms)
-    charge, spin_multiplicity = get_charge_and_spin(
-        atoms, charge=charge, multiplicity=spin_multiplicity
-    )
 
     qchem_defaults = {
         "method": method,

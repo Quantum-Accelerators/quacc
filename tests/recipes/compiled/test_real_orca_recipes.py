@@ -16,7 +16,7 @@ def test_static_job(tmpdir):
 
     atoms = molecule("H2")
 
-    output = static_job(atoms)
+    output = static_job(atoms, 0, 1)
     assert output["natoms"] == len(atoms)
     assert (
         output["parameters"]["orcasimpleinput"]
@@ -29,8 +29,8 @@ def test_static_job(tmpdir):
 
     output = static_job(
         atoms,
-        charge=-2,
-        multiplicity=3,
+        -2,
+        3,
         input_swaps={"def2-svp": True, "def2-tzvp": None},
         block_swaps={"%scf maxiter 300 end": True},
     )
@@ -50,7 +50,7 @@ def test_relax_job(tmpdir):
 
     atoms = molecule("H2")
 
-    output = relax_job(atoms)
+    output = relax_job(atoms, 0, 1)
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
@@ -61,8 +61,8 @@ def test_relax_job(tmpdir):
 
     output = relax_job(
         atoms,
-        charge=-2,
-        multiplicity=3,
+        -2,
+        3,
         input_swaps={
             "hf": True,
             "wb97x-d3bj": None,

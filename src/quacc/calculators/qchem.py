@@ -15,7 +15,6 @@ from pymatgen.io.qchem.outputs import QCOutput
 from pymatgen.io.qchem.sets import ForceSet
 
 from quacc.custodian import qchem as custodian_qchem
-from quacc.utils.atoms import get_charge_and_spin
 
 logger = logging.getLogger(__name__)
 
@@ -30,10 +29,9 @@ class QChem(FileIOCalculator):
     cores
         Number of cores to use for the Q-Chem calculation.
     charge
-        The total charge of the molecular system. Effectively defaults to zero.
+        The total charge of the molecular system.
     spin_multiplicity
-        The spin multiplicity of the molecular system. Effectively defaults to
-        the lowest spin state given the molecular structure and charge.
+        The spin multiplicity of the molecular system.
     qchem_input_params
         Dictionary of Q-Chem input parameters to be passed to
         pymatgen.io.qchem.sets.ForceSet.
@@ -52,8 +50,8 @@ class QChem(FileIOCalculator):
     def __init__(
         self,
         atoms: Atoms,
-        charge: None | int = None,
-        spin_multiplicity: None | int = None,
+        charge: int = 0,
+        spin_multiplicity: int = 1,
         method: str | None = None,
         cores: int = 1,
         qchem_input_params: dict | None = None,
@@ -74,9 +72,6 @@ class QChem(FileIOCalculator):
         if "overwrite_inputs" not in self.qchem_input_params:
             self.qchem_input_params["overwrite_inputs"] = {}
 
-        if self.charge is None and self.spin_multiplicity is not None:
-            raise ValueError("If setting spin_multiplicity, must also specify charge.")
-
         if self.qchem_input_params.get("smd_solvent") and self.qchem_input_params.get(
             "pcm_dielectric"
         ):
@@ -89,16 +84,6 @@ class QChem(FileIOCalculator):
             and "method" not in self.qchem_input_params["overwrite_inputs"]["rem"]
         ):
             self.qchem_input_params["overwrite_inputs"]["rem"]["method"] = method
-
-        charge, spin_multiplicity = get_charge_and_spin(
-            atoms, self.charge, self.spin_multiplicity
-        )
-        if charge != self.charge or spin_multiplicity != self.spin_multiplicity:
-            logger.info(
-                f"{self.charge, self.spin_multiplicity} for charge, spin multiplicity changed to {charge, spin_multiplicity}",
-            )
-        self.charge = charge
-        self.spin_multiplicity = spin_multiplicity
 
         # We will save the parameters that have been passed to the Q-Chem
         # calculator via FileIOCalculator's self.default_parameters

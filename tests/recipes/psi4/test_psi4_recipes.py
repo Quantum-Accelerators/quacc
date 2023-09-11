@@ -17,7 +17,7 @@ def test_static(tmpdir):
     tmpdir.chdir()
 
     atoms = molecule("H2")
-    output = static_job(atoms)
+    output = static_job(atoms, 0, 1)
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["multiplicity"] == 1
@@ -29,8 +29,8 @@ def test_static(tmpdir):
 
     output = static_job(
         atoms,
-        charge=-2,
-        multiplicity=3,
+        -2,
+        3,
         method="pbe",
         basis="def2-svp",
         calc_swaps={"num_threads": 1, "mem": None, "pop": "regular"},
