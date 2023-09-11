@@ -24,8 +24,8 @@ def test_static_job(tmpdir):
 
     output = static_job(
         atoms,
-        charge=-2,
-        multiplicity=3,
+        -2,
+        3,
         xc="m06l",
         basis="def2-svp",
         calc_swaps={"integral": "superfinegrid"},
@@ -63,8 +63,8 @@ def test_relax_job(tmpdir):
 
     output = relax_job(
         atoms,
-        charge=-2,
-        multiplicity=3,
+        -2,
+        3,
         xc="m06l",
         basis="def2-svp",
         freq=True,

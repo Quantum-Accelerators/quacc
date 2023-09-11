@@ -103,7 +103,7 @@ def test_static_job_v1(monkeypatch, tmpdir):
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
     charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
-    output = static_job(TEST_ATOMS, charge=charge, spin_multiplicity=spin_multiplicity)
+    output = static_job(TEST_ATOMS, charge, spin_multiplicity)
     assert output["atoms"] == TEST_ATOMS
     assert output["charge"] == 0
     assert output["spin_multiplicity"] == 1
@@ -126,8 +126,8 @@ def test_static_job_v2(monkeypatch, tmpdir):
     charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS, charge=-1)
     output = static_job(
         TEST_ATOMS,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge,
+        spin_multiplicity,
         method="b97mv",
         basis="def2-svpd",
         pcm_dielectric="3.0",
@@ -156,8 +156,8 @@ def test_static_job_v3(monkeypatch, tmpdir):
     charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
     output = static_job(
         TEST_ATOMS,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge,
+        spin_multiplicity,
         scf_algorithm="gdm",
         overwrite_inputs=overwrite_inputs,
     )
@@ -181,7 +181,7 @@ def test_static_job_v(monkeypatch, tmpdir):
     monkeypatch.setattr(QChem, "read_results", mock_read)
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute4)
     charge, spin_multiplicity = check_charge_and_spin(OS_ATOMS)
-    assert static_job(OS_ATOMS, charge=charge, spin_multiplicity=spin_multiplicity)
+    assert static_job(OS_ATOMS, charge, spin_multiplicity)
 
 
 def test_static_job_v5(tmpdir):
@@ -202,8 +202,8 @@ def test_relax_job_v1(monkeypatch, tmpdir):
     charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
     output = relax_job(
         TEST_ATOMS,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge,
+        spin_multiplicity,
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
     )
@@ -235,8 +235,8 @@ def test_relax_job_v2(monkeypatch, tmpdir):
     charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS, charge=-1)
     output = relax_job(
         TEST_ATOMS,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge,
+        spin_multiplicity,
         method="b97mv",
         pcm_dielectric="3.0",
         opt_swaps={"max_steps": 1},
@@ -270,8 +270,8 @@ def test_relax_job_v3(monkeypatch, tmpdir):
     charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
     output = relax_job(
         TEST_ATOMS,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge,
+        spin_multiplicity,
         scf_algorithm="gdm",
         overwrite_inputs=overwrite_inputs,
         basis="def2-tzvpd",
@@ -310,8 +310,8 @@ def test_ts_job_v1(monkeypatch, tmpdir):
     charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
     output = ts_job(
         TEST_ATOMS,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge,
+        spin_multiplicity,
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
     )
@@ -343,8 +343,8 @@ def test_ts_job_v2(monkeypatch, tmpdir):
     charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS, charge=-1)
     output = ts_job(
         TEST_ATOMS,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge,
+        spin_multiplicity,
         method="b97mv",
         pcm_dielectric="3.0",
         opt_swaps={"max_steps": 1},
@@ -378,8 +378,8 @@ def test_ts_job_v3(monkeypatch, tmpdir):
     charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
     output = ts_job(
         TEST_ATOMS,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge,
+        spin_multiplicity,
         scf_algorithm="gdm",
         overwrite_inputs=overwrite_inputs,
         basis="def2-tzvpd",
@@ -428,8 +428,8 @@ def test_irc_job_v1(monkeypatch, tmpdir):
     charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
     output = irc_job(
         TEST_ATOMS,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge,
+        spin_multiplicity,
         direction="forward",
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
@@ -452,8 +452,8 @@ def test_irc_job_v1(monkeypatch, tmpdir):
     charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
     output = irc_job(
         TEST_ATOMS,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge,
+        spin_multiplicity,
         direction="reverse",
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
@@ -468,8 +468,8 @@ def test_irc_job_v1(monkeypatch, tmpdir):
     overwrite_inputs = {"rem": {"mem_total": "170000"}}
     output = irc_job(
         TEST_ATOMS,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge,
+        spin_multiplicity,
         direction="reverse",
         scf_algorithm="gdm",
         overwrite_inputs=overwrite_inputs,
@@ -529,8 +529,8 @@ def test_quasi_irc_job(monkeypatch, tmpdir):
     charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
     output = quasi_irc_job(
         TEST_ATOMS,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge,
+        spin_multiplicity,
         direction="forward",
         shared_kwargs=shared_kwargs,
         relax_opt_swaps=relax_opt_swaps,
@@ -561,8 +561,8 @@ def test_quasi_irc_job(monkeypatch, tmpdir):
 
     output = quasi_irc_job(
         TEST_ATOMS,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge,
+        spin_multiplicity,
         direction="reverse",
         shared_kwargs=shared_kwargs,
         irc_opt_swaps=irc_opt_swaps,

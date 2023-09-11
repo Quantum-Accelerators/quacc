@@ -381,9 +381,7 @@ def test_docs_recipes_psi4(tmpdir):
     from quacc.recipes.psi4.core import static_job
 
     atoms = molecule("O2")
-    future = static_job(
-        atoms, charge=0, multiplicity=3, method="wb97m-v", basis="def2-svp"
-    )
+    future = static_job(atoms, 0, 3, method="wb97m-v", basis="def2-svp")
     result = future.result()
     assert result.done()
 

@@ -26,8 +26,8 @@ GEOM_FILE = f"{ORCA().name}.xyz"
 @job
 def static_job(
     atoms: Atoms | dict,
-    charge: int = 0,
-    multiplicity: int = 1,
+    charge: int,
+    multiplicity: int,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
     input_swaps: dict | None = None,
@@ -136,8 +136,8 @@ def static_job(
 @job
 def relax_job(
     atoms: Atoms | dict,
-    charge: int = 0,
-    multiplicity: int = 1,
+    charge: int,
+    multiplicity: int,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
     run_freq: bool = False,

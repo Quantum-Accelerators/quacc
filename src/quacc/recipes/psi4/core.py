@@ -27,8 +27,8 @@ if TYPE_CHECKING:
 @requires(psi4, "Psi4 not installed. Try conda install -c psi4 psi4")
 def static_job(
     atoms: Atoms | dict,
-    charge: int = 0,
-    multiplicity: int = 1,
+    charge: int,
+    multiplicity: int,
     method: str = "wb97x-v",
     basis: str = "def2-tzvp",
     calc_swaps: dict | None = None,

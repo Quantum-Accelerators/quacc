@@ -24,8 +24,8 @@ GEOM_FILE = LOG_FILE
 @job
 def static_job(
     atoms: Atoms | dict,
-    charge: int = 0,
-    multiplicity: int = 1,
+    charge: int,
+    multiplicity: int,
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
     calc_swaps: dict | None = None,
@@ -114,8 +114,8 @@ def static_job(
 @job
 def relax_job(
     atoms: Atoms,
-    charge: int = 0,
-    multiplicity: int = 1,
+    charge: int,
+    multiplicity: int,
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
     freq: bool = False,
