@@ -210,7 +210,7 @@ def test_check_charge_and_spin():
 
     atoms = molecule("CH3")
     atoms.charge = -2
-    atoms.spin_spin_multiplicity = 4
+    atoms.spin_multiplicity = 4
     charge, spin_multiplicity = check_charge_and_spin(atoms)
     assert charge == -2
     assert spin_multiplicity == 4
