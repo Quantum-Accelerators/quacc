@@ -495,12 +495,14 @@ def test_irc_job_v1(monkeypatch, tmpdir):
 def test_irc_job_v2(tmpdir):
     tmpdir.chdir()
     with pytest.raises(ValueError):
-        irc_job(TEST_ATOMS, direction="straight")
+        irc_job(TEST_ATOMS, 0, 1, "straight")
 
     with pytest.raises(ValueError):
         irc_job(
             TEST_ATOMS,
-            direction="forward",
+            0,
+            1,
+            "forward",
             pcm_dielectric="3.0",
             smd_solvent="water",
         )
