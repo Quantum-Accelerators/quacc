@@ -37,7 +37,7 @@ if TYPE_CHECKING:
 def ts_job(
     atoms: Atoms | dict,
     charge: int,
-    multiplicity: int,
+    spin_multiplicity: int,
     method: str = "wb97mv",
     basis: str = "def2-svpd",
     scf_algorithm: str = "diis",
@@ -57,7 +57,7 @@ def ts_job(
         the value
     charge
         Charge of the system.
-    multiplicity
+    spin_multiplicity
         Multiplicity of the system.
     method
         DFT exchange-correlation functional or other electronic structure
@@ -108,7 +108,7 @@ def ts_job(
     qchem_defaults = {
         "method": method,
         "charge": charge,
-        "spin_multiplicity": multiplicity,
+        "spin_multiplicity": spin_multiplicity,
         "cores": n_cores or multiprocessing.cpu_count(),
         "qchem_input_params": {
             "basis_set": basis,
@@ -136,7 +136,7 @@ def ts_job(
 
     return summarize_opt_run(
         dyn,
-        charge_and_multiplicity=(charge, multiplicity),
+        charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields={"name": "Q-Chem TS"},
     )
 
@@ -149,7 +149,7 @@ def ts_job(
 def irc_job(
     atoms: Atoms | dict,
     charge: int,
-    multiplicity: int,
+    spin_multiplicity: int,
     direction: Literal["forward", "reverse"],
     method: str = "wb97mv",
     basis: str = "def2-svpd",
@@ -170,7 +170,7 @@ def irc_job(
         the value
     charge
         Charge of the system.
-    multiplicity
+    spin_multiplicity
         Multiplicity of the system.
     direction
         Direction of the IRC. Should be "forward" or "reverse".
@@ -221,7 +221,7 @@ def irc_job(
     qchem_defaults = {
         "method": method,
         "charge": charge,
-        "spin_multiplicity": multiplicity,
+        "spin_multiplicity": spin_multiplicity,
         "cores": n_cores or multiprocessing.cpu_count(),
         "qchem_input_params": {
             "basis_set": basis,
@@ -251,7 +251,7 @@ def irc_job(
 
     return summarize_opt_run(
         dyn,
-        charge_and_multiplicity=(charge, multiplicity),
+        charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields={"name": "Q-Chem IRC"},
     )
 
@@ -264,7 +264,7 @@ def irc_job(
 def quasi_irc_job(
     atoms: Atoms | dict,
     charge: int,
-    multiplicity: int,
+    spin_multiplicity: int,
     direction: Literal["forward", "reverse"],
     shared_kwargs: dict | None = None,
     irc_opt_swaps: dict | None = None,
@@ -279,7 +279,7 @@ def quasi_irc_job(
         Atoms object.
     charge
         Charge of the system.
-    multiplicity
+    spin_multiplicity
         Multiplicity of the system.
     direction
         Direction of the IRC. Should be "forward" or "reverse".
@@ -318,7 +318,7 @@ def quasi_irc_job(
     relax_opt_swaps = relax_opt_swaps or {}
     default_settings = SETTINGS.copy()
 
-    shared_defaults = {"charge": charge, "spin_multiplicity": multiplicity}
+    shared_defaults = {"charge": charge, "spin_multiplicity": spin_multiplicity}
     shared_flags = merge_dicts(shared_defaults, shared_kwargs)
 
     irc_opt_swaps_defaults = {

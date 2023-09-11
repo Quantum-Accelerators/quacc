@@ -27,7 +27,7 @@ GEOM_FILE = f"{ORCA().name}.xyz"
 def static_job(
     atoms: Atoms | dict,
     charge: int,
-    multiplicity: int,
+    spin_multiplicity: int,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
     input_swaps: dict | None = None,
@@ -44,7 +44,7 @@ def static_job(
         the value
     charge
         Charge of the system.
-    multiplicity
+    spin_multiplicity
         Multiplicity of the system.
     xc
         Exchange-correlation functional
@@ -120,7 +120,7 @@ def static_job(
     atoms.calc = ORCA(
         profile=OrcaProfile([SETTINGS.ORCA_CMD]),
         charge=charge,
-        mult=multiplicity,
+        mult=spin_multiplicity,
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )
@@ -137,7 +137,7 @@ def static_job(
 def relax_job(
     atoms: Atoms | dict,
     charge: int,
-    multiplicity: int,
+    spin_multiplicity: int,
     xc: str = "wb97x-d3bj",
     basis: str = "def2-tzvp",
     run_freq: bool = False,
@@ -154,7 +154,7 @@ def relax_job(
         Atoms object
     charge
         Charge of the system.
-    multiplicity
+    spin_multiplicity
         Multiplicity of the system.
     xc
         Exchange-correlation functional
@@ -233,7 +233,7 @@ def relax_job(
     atoms.calc = ORCA(
         profile=OrcaProfile([SETTINGS.ORCA_CMD]),
         charge=charge,
-        mult=multiplicity,
+        mult=spin_multiplicity,
         orcasimpleinput=orcasimpleinput,
         orcablocks=orcablocks,
     )

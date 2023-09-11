@@ -8,7 +8,7 @@ from quacc.utils.thermo import ideal_gas
 
 def test_ideal_gas():
     co2 = molecule("CO2")
-    igt = ideal_gas(co2, [526, 526, 1480, 2565], multiplicity=2)
+    igt = ideal_gas(co2, [526, 526, 1480, 2565], spin_multiplicity=2)
     assert igt.geometry == "linear"
     assert igt.spin == 0.5
 

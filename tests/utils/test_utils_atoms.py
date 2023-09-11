@@ -129,78 +129,98 @@ def test_check_charge_and_spin():
             "pbc": np.array([False, False, False]),
         }
     )
-    charge, multiplicity = check_charge_and_spin(atoms)
+    charge, spin_multiplicity = check_charge_and_spin(atoms)
     assert charge == 0
-    assert multiplicity == 2
+    assert spin_multiplicity == 2
     with pytest.raises(ValueError):
-        charge, multiplicity = check_charge_and_spin(atoms, multiplicity=1)
+        charge, spin_multiplicity = check_charge_and_spin(atoms, spin_multiplicity=1)
     with pytest.raises(ValueError):
-        charge, multiplicity = check_charge_and_spin(atoms, charge=0, multiplicity=1)
+        charge, spin_multiplicity = check_charge_and_spin(
+            atoms, charge=0, spin_multiplicity=1
+        )
     with pytest.raises(ValueError):
-        charge, multiplicity = check_charge_and_spin(atoms, multiplicity=3)
+        charge, spin_multiplicity = check_charge_and_spin(atoms, spin_multiplicity=3)
     with pytest.raises(ValueError):
-        charge, multiplicity = check_charge_and_spin(atoms, charge=0, multiplicity=3)
-    charge, multiplicity = check_charge_and_spin(atoms, charge=-1)
+        charge, spin_multiplicity = check_charge_and_spin(
+            atoms, charge=0, spin_multiplicity=3
+        )
+    charge, spin_multiplicity = check_charge_and_spin(atoms, charge=-1)
     assert charge == -1
-    assert multiplicity == 1
-    charge, multiplicity = check_charge_and_spin(atoms, charge=-1, multiplicity=3)
+    assert spin_multiplicity == 1
+    charge, spin_multiplicity = check_charge_and_spin(
+        atoms, charge=-1, spin_multiplicity=3
+    )
     assert charge == -1
-    assert multiplicity == 3
-    charge, multiplicity = check_charge_and_spin(OS_ATOMS)
+    assert spin_multiplicity == 3
+    charge, spin_multiplicity = check_charge_and_spin(OS_ATOMS)
     assert charge == 0
-    assert multiplicity == 2
-    charge, multiplicity = check_charge_and_spin(OS_ATOMS, charge=1)
+    assert spin_multiplicity == 2
+    charge, spin_multiplicity = check_charge_and_spin(OS_ATOMS, charge=1)
     assert charge == 1
-    assert multiplicity == 1
-    charge, multiplicity = check_charge_and_spin(OS_ATOMS, charge=0, multiplicity=4)
+    assert spin_multiplicity == 1
+    charge, spin_multiplicity = check_charge_and_spin(
+        OS_ATOMS, charge=0, spin_multiplicity=4
+    )
     assert charge == 0
-    assert multiplicity == 4
+    assert spin_multiplicity == 4
     with pytest.raises(ValueError):
-        charge, multiplicity = check_charge_and_spin(OS_ATOMS, charge=0, multiplicity=3)
+        charge, spin_multiplicity = check_charge_and_spin(
+            OS_ATOMS, charge=0, spin_multiplicity=3
+        )
 
     atoms = molecule("CH3")
-    charge, multiplicity = check_charge_and_spin(atoms)
+    charge, spin_multiplicity = check_charge_and_spin(atoms)
     assert charge == 0
-    assert multiplicity == 2
+    assert spin_multiplicity == 2
     with pytest.raises(ValueError):
-        charge, multiplicity = check_charge_and_spin(atoms, multiplicity=1)
+        charge, spin_multiplicity = check_charge_and_spin(atoms, spin_multiplicity=1)
     with pytest.raises(ValueError):
-        charge, multiplicity = check_charge_and_spin(atoms, charge=0, multiplicity=1)
+        charge, spin_multiplicity = check_charge_and_spin(
+            atoms, charge=0, spin_multiplicity=1
+        )
     with pytest.raises(ValueError):
-        charge, multiplicity = check_charge_and_spin(atoms, multiplicity=3)
+        charge, spin_multiplicity = check_charge_and_spin(atoms, spin_multiplicity=3)
     with pytest.raises(ValueError):
-        charge, multiplicity = check_charge_and_spin(atoms, charge=0, multiplicity=3)
+        charge, spin_multiplicity = check_charge_and_spin(
+            atoms, charge=0, spin_multiplicity=3
+        )
     with pytest.raises(ValueError):
-        charge, multiplicity = check_charge_and_spin(atoms, charge=-1)
+        charge, spin_multiplicity = check_charge_and_spin(atoms, charge=-1)
 
-    charge, multiplicity = check_charge_and_spin(atoms, charge=-1, multiplicity=3)
+    charge, spin_multiplicity = check_charge_and_spin(
+        atoms, charge=-1, spin_multiplicity=3
+    )
     assert charge == -1
-    assert multiplicity == 3
-    charge, multiplicity = check_charge_and_spin(OS_ATOMS)
+    assert spin_multiplicity == 3
+    charge, spin_multiplicity = check_charge_and_spin(OS_ATOMS)
     assert charge == 0
-    assert multiplicity == 2
-    charge, multiplicity = check_charge_and_spin(OS_ATOMS, charge=1)
+    assert spin_multiplicity == 2
+    charge, spin_multiplicity = check_charge_and_spin(OS_ATOMS, charge=1)
     assert charge == 1
-    assert multiplicity == 1
-    charge, multiplicity = check_charge_and_spin(OS_ATOMS, charge=0, multiplicity=4)
+    assert spin_multiplicity == 1
+    charge, spin_multiplicity = check_charge_and_spin(
+        OS_ATOMS, charge=0, spin_multiplicity=4
+    )
     assert charge == 0
-    assert multiplicity == 4
+    assert spin_multiplicity == 4
     with pytest.raises(ValueError):
-        charge, multiplicity = check_charge_and_spin(OS_ATOMS, charge=0, multiplicity=3)
+        charge, spin_multiplicity = check_charge_and_spin(
+            OS_ATOMS, charge=0, spin_multiplicity=3
+        )
 
     atoms = molecule("CH3")
     atoms.charge = -2
-    atoms.spin_multiplicity = 4
-    charge, multiplicity = check_charge_and_spin(atoms)
+    atoms.spin_spin_multiplicity = 4
+    charge, spin_multiplicity = check_charge_and_spin(atoms)
     assert charge == -2
-    assert multiplicity == 4
+    assert spin_multiplicity == 4
 
     atoms = molecule("CH3")
     atoms.set_initial_charges([-2, 0, 0, 0])
     atoms.set_initial_magnetic_moments([3, 0, 0, 0])
-    charge, multiplicity = check_charge_and_spin(atoms)
+    charge, spin_multiplicity = check_charge_and_spin(atoms)
     assert charge == -2
-    assert multiplicity == 4
+    assert spin_multiplicity == 4
 
     atoms = molecule("CH3")
     atoms.set_initial_charges([-2, 0, 0, 0])
@@ -216,22 +236,24 @@ def test_check_charge_and_spin():
             "pbc": np.array([False, False, False]),
         }
     )
-    charge, multiplicity = check_charge_and_spin(atoms)
+    charge, spin_multiplicity = check_charge_and_spin(atoms)
     assert charge == 0
-    assert multiplicity == 1
-    charge, multiplicity = check_charge_and_spin(atoms, charge=0)
+    assert spin_multiplicity == 1
+    charge, spin_multiplicity = check_charge_and_spin(atoms, charge=0)
     assert charge == 0
-    assert multiplicity == 1
-    charge, multiplicity = check_charge_and_spin(atoms, charge=0, multiplicity=3)
+    assert spin_multiplicity == 1
+    charge, spin_multiplicity = check_charge_and_spin(
+        atoms, charge=0, spin_multiplicity=3
+    )
     assert charge == 0
-    assert multiplicity == 3
+    assert spin_multiplicity == 3
     with pytest.raises(ValueError):
-        check_charge_and_spin(atoms, charge=0, multiplicity=2)
+        check_charge_and_spin(atoms, charge=0, spin_multiplicity=2)
 
     atoms = molecule("O2")
-    charge, multiplicity = check_charge_and_spin(atoms)
+    charge, spin_multiplicity = check_charge_and_spin(atoms)
     assert charge == 0
-    assert multiplicity == 3
-    charge, multiplicity = check_charge_and_spin(atoms, charge=0)
+    assert spin_multiplicity == 3
+    charge, spin_multiplicity = check_charge_and_spin(atoms, charge=0)
     assert charge == 0
-    assert multiplicity == 3
+    assert spin_multiplicity == 3

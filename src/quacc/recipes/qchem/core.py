@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms | dict,
     charge: int,
-    multiplicity: int,
+    spin_multiplicity: int,
     method: str = "wb97mv",
     basis: str = "def2-tzvpd",
     scf_algorithm: str = "diis",
@@ -49,7 +49,7 @@ def static_job(
         the value
     charge
         Charge of the system.
-    multiplicity
+    spin_multiplicity
         Multiplicity of the system.
     method
         DFT exchange-correlation functional or other electronic structure
@@ -105,7 +105,7 @@ def static_job(
     return summarize_run(
         final_atoms,
         input_atoms=atoms,
-        charge_and_multiplicity=(charge, multiplicity),
+        charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields={"name": "Q-Chem Static"},
     )
 
@@ -114,7 +114,7 @@ def static_job(
 def relax_job(
     atoms: Atoms | dict,
     charge: int,
-    multiplicity: int,
+    spin_multiplicity: int,
     method: str = "wb97mv",
     basis: str = "def2-svpd",
     scf_algorithm: str = "diis",
@@ -134,7 +134,7 @@ def relax_job(
         the value
     charge
         Charge of the system.
-    multiplicity
+    spin_multiplicity
         Multiplicity of the system.
     method
         DFT exchange-correlation functional or other electronic structure
@@ -214,6 +214,6 @@ def relax_job(
 
     return summarize_opt_run(
         dyn,
-        charge_and_multiplicity=(charge, multiplicity),
+        charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields={"name": "Q-Chem Optimization"},
     )

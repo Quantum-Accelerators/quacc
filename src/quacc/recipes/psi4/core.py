@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms | dict,
     charge: int,
-    multiplicity: int,
+    spin_multiplicity: int,
     method: str = "wb97x-v",
     basis: str = "def2-tzvp",
     calc_swaps: dict | None = None,
@@ -44,7 +44,7 @@ def static_job(
         the value
     charge
         Charge of the system.
-    multiplicity
+    spin_multiplicity
         Multiplicity of the system.
     method
         The level of theory to use.
@@ -64,8 +64,8 @@ def static_job(
                 "method": method,
                 "basis": basis,
                 "charge": charge,
-                "multiplicity": multiplicity,
-                "reference": "uks" if multiplicity > 1 else "rks",
+                "multiplicity": spin_multiplicity,
+                "reference": "uks" if spin_multiplicity > 1 else "rks",
             }
             ```
     copy_files
@@ -85,8 +85,8 @@ def static_job(
         "method": method,
         "basis": basis,
         "charge": charge,
-        "multiplicity": multiplicity,
-        "reference": "uks" if multiplicity > 1 else "rks",
+        "multiplicity": spin_multiplicity,
+        "reference": "uks" if spin_multiplicity > 1 else "rks",
     }
     flags = merge_dicts(defaults, calc_swaps)
 
@@ -96,6 +96,6 @@ def static_job(
     return summarize_run(
         final_atoms,
         input_atoms=atoms,
-        charge_and_multiplicity=(charge, multiplicity),
+        charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields={"name": "Psi4 Static"},
     )
