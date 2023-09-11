@@ -199,7 +199,7 @@ def irc_job(
         default values set therein as well as set additional Q-Chem parameters.
         See QChemDictSet documentation for more details.
     opt_swaps
-        Dictionary of custom kwargs for `run_ase_opt`.
+        Dictionary of custom kwargs for [quacc.utils.calc.run_ase_opt][]
 
         ???+ Note
 
@@ -212,7 +212,7 @@ def irc_job(
     Returns
     -------
     OptSchema
-        Dictionary of results from `quacc.schemas.ase.summarize_opt_run`
+        Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
 
     # TODO: 1) expose TRICs?; 2) passing initial Hessian?
@@ -310,7 +310,7 @@ def quasi_irc_job(
     Returns
     -------
     OptSchema
-        Dictionary of results from `quacc.schemas.ase.summarize_opt_run`
+        Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
 
     shared_kwargs = shared_kwargs or {}

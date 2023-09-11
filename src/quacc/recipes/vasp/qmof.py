@@ -269,7 +269,7 @@ def _double_relax(
     Returns
     -------
     list[VaspSchema]
-        List of dictionary of results from `quacc.schemas.vasp.summarize_run`
+        List of dictionary of results from [quacc.schemas.vasp.summarize_run][]
     """
 
     calc_swaps = calc_swaps or {}

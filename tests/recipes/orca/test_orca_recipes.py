@@ -100,10 +100,10 @@ def test_mpi_run(tmpdir, monkeypatch):
     monkeypatch.setenv("PATH", FILE_DIR)
 
     atoms = molecule("H2")
-    output = static_job(atoms)
+    output = static_job(atoms, 0, 1)
     nprocs = multiprocessing.cpu_count()
     assert f"%pal nprocs {nprocs} end" in output["parameters"]["orcablocks"]
 
-    output = relax_job(atoms)
+    output = relax_job(atoms, 0, 1)
     nprocs = multiprocessing.cpu_count()
     assert f"%pal nprocs {nprocs} end" in output["parameters"]["orcablocks"]
