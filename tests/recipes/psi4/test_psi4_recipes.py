@@ -17,7 +17,7 @@ def test_static(tmpdir):
     tmpdir.chdir()
 
     atoms = molecule("H2")
-    output = static_job(atoms)
+    output = static_job(atoms, 0, 1)
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["multiplicity"] == 1

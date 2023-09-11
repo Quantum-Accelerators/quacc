@@ -8,7 +8,7 @@ def test_static_job(tmpdir):
 
     atoms = molecule("H2")
 
-    output = static_job(atoms)
+    output = static_job(atoms, 0, 1)
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
@@ -50,7 +50,7 @@ def test_relax_job(tmpdir):
 
     atoms = molecule("H2")
 
-    output = relax_job(atoms)
+    output = relax_job(atoms, 0, 1)
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1

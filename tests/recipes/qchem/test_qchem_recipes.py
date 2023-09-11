@@ -188,7 +188,7 @@ def test_static_job_v5(tmpdir):
     tmpdir.chdir()
 
     with pytest.raises(ValueError):
-        static_job(TEST_ATOMS, pcm_dielectric="3.0", smd_solvent="water")
+        static_job(TEST_ATOMS, 0, 1, pcm_dielectric="3.0", smd_solvent="water")
 
 
 @pytest.mark.skipif(
@@ -404,11 +404,13 @@ def test_ts_job_v3(monkeypatch, tmpdir):
 def test_ts_job_v4(tmpdir):
     tmpdir.chdir()
     with pytest.raises(ValueError):
-        ts_job(TEST_ATOMS, pcm_dielectric="3.0", smd_solvent="water")
+        ts_job(TEST_ATOMS, 0, 1, pcm_dielectric="3.0", smd_solvent="water")
 
     with pytest.raises(ValueError):
         ts_job(
             TEST_ATOMS,
+            0,
+            1,
             pcm_dielectric="3.0",
             smd_solvent="water",
             opt_swaps={"optimizer": FIRE},
@@ -430,7 +432,7 @@ def test_irc_job_v1(monkeypatch, tmpdir):
         TEST_ATOMS,
         charge,
         spin_multiplicity,
-        direction="forward",
+        "forward",
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
     )
@@ -454,7 +456,7 @@ def test_irc_job_v1(monkeypatch, tmpdir):
         TEST_ATOMS,
         charge,
         spin_multiplicity,
-        direction="reverse",
+        "reverse",
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
     )
@@ -470,7 +472,7 @@ def test_irc_job_v1(monkeypatch, tmpdir):
         TEST_ATOMS,
         charge,
         spin_multiplicity,
-        direction="reverse",
+        "reverse",
         scf_algorithm="gdm",
         overwrite_inputs=overwrite_inputs,
         basis="def2-tzvpd",
@@ -506,7 +508,9 @@ def test_irc_job_v2(tmpdir):
     with pytest.raises(ValueError):
         irc_job(
             TEST_ATOMS,
-            direction="forward",
+            0,
+            1,
+            "forward",
             pcm_dielectric="3.0",
             smd_solvent="water",
             opt_swaps={"optimizer": FIRE},
@@ -531,7 +535,7 @@ def test_quasi_irc_job(monkeypatch, tmpdir):
         TEST_ATOMS,
         charge,
         spin_multiplicity,
-        direction="forward",
+        "forward",
         shared_kwargs=shared_kwargs,
         relax_opt_swaps=relax_opt_swaps,
     )
@@ -563,7 +567,7 @@ def test_quasi_irc_job(monkeypatch, tmpdir):
         TEST_ATOMS,
         charge,
         spin_multiplicity,
-        direction="reverse",
+        "reverse",
         shared_kwargs=shared_kwargs,
         irc_opt_swaps=irc_opt_swaps,
         relax_opt_swaps=relax_opt_swaps,
