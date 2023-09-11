@@ -296,7 +296,7 @@ def test_relax_job_v3(monkeypatch, tmpdir):
 def test_relax_job_v4(tmpdir):
     tmpdir.chdir()
     with pytest.raises(ValueError):
-        relax_job(TEST_ATOMS, pcm_dielectric="3.0", smd_solvent="water")
+        relax_job(TEST_ATOMS, 0, 1, pcm_dielectric="3.0", smd_solvent="water")
 
 
 @pytest.mark.skipif(
