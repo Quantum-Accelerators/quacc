@@ -126,7 +126,7 @@ graph LR
 
 
     dispatch_id = workflow(1, 2, 3)  # (3)!
-    result = ct.get_result(dispatch_id, wait=True) # (4)!
+    result = ct.get_result(dispatch_id, wait=True)
     print(result)
     ```
 
