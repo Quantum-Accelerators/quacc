@@ -91,7 +91,6 @@
 | NewtonNet Static    | `#!Python @job` | [quacc.recipes.newtonnet.core.static_job][]  |
 | NewtonNet Relax     | `#!Python @job` | [quacc.recipes.newtonnet.core.relax_job][]   |
 | NewtonNet Frequency | `#!Python @job` | [quacc.recipes.newtonnet.core.freq_job][]    |
-| NewtonNet Frequency | `#!Python @job` | [quacc.recipes.newtonnet.core.freq_job][]    |
 | NewtonNet TS        | `#!Python @job` | [quacc.recipes.newtonnet.ts.ts_job][]        |
 | NewtonNet IRC       | `#!Python @job` | [quacc.recipes.newtonnet.ts.irc_job][]       |
 | NewtonNet Quasi IRC | `#!Python @job` | [quacc.recipes.newtonnet.ts.quasi_irc_job][] |
