@@ -72,9 +72,6 @@ class QChem(FileIOCalculator):
         if "overwrite_inputs" not in self.qchem_input_params:
             self.qchem_input_params["overwrite_inputs"] = {}
 
-        if self.charge is None and self.spin_multiplicity is not None:
-            raise ValueError("If setting spin_multiplicity, must also specify charge.")
-
         if self.qchem_input_params.get("smd_solvent") and self.qchem_input_params.get(
             "pcm_dielectric"
         ):
