@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 @job
 @requires(
     has_sella,
-    "Sella must be installed. Try pip install quacc[optimizers].",
+    "Sella must be installed. Refer to the quacc documentation.",
 )
 def ts_job(
     atoms: Atoms | dict,
@@ -144,7 +144,7 @@ def ts_job(
 @job
 @requires(
     has_sella,
-    "Sella must be installed. Try pip install quacc[optimizers].",
+    "Sella must be installed. Refer to the quacc documentation.",
 )
 def irc_job(
     atoms: Atoms | dict,
@@ -259,7 +259,7 @@ def irc_job(
 @job
 @requires(
     has_sella,
-    "Sella must be installed. Try pip install quacc[optimizers].",
+    "Sella must be installed. Refer to the quacc documentation.",
 )
 def quasi_irc_job(
     atoms: Atoms | dict,

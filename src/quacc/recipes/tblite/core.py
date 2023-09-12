@@ -35,7 +35,7 @@ if TYPE_CHECKING:
 
 
 @job
-@requires(TBLite, "tblite must be installed. Try pip install tblite[ase]")
+@requires(TBLite, "tblite must be installed. Refer to the quacc documentation.")
 def static_job(
     atoms: Atoms | dict,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
@@ -79,7 +79,7 @@ def static_job(
 
 
 @job
-@requires(TBLite, "tblite must be installed. Try pip install tblite[ase]")
+@requires(TBLite, "tblite must be installed. Refer to the quacc documentation.")
 def relax_job(
     atoms: Atoms | dict,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
@@ -138,7 +138,7 @@ def relax_job(
 
 
 @job
-@requires(TBLite, "tblite must be installed. Try pip install tblite[ase]")
+@requires(TBLite, "tblite must be installed. Refer to the quacc documentation.")
 def freq_job(
     atoms: Atoms | dict,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",

@@ -44,7 +44,8 @@ No setup needed!
 If you plan to use NewtonNet with Quacc, you will need to install it prior to use. This can be done as follows:
 
 ```bash
-pip install quacc[newtonnet]
+pip install git+https://github.com/ericyuan00000/NewtonNet.git
+pip install quacc[newtonnet, optimizers]
 ```
 
 ## ORCA

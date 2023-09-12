@@ -41,7 +41,7 @@ if TYPE_CHECKING:
 
 
 @job
-@requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
+@requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
 def static_job(
     atoms: Atoms | dict,
     calc_swaps: dict | None = None,
@@ -96,7 +96,7 @@ def static_job(
 
 
 @job
-@requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
+@requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
 def relax_job(
     atoms: Atoms | dict,
     calc_swaps: dict | None = None,
@@ -167,7 +167,7 @@ def relax_job(
 
 
 @job
-@requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
+@requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
 def freq_job(
     atoms: Atoms | dict,
     temperature: float = 298.15,

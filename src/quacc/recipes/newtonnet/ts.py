@@ -46,8 +46,8 @@ if TYPE_CHECKING:
 
 
 @job
-@requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
-@requires(Sella, "Sella must be installed. Try pip install quacc[optimizers]")
+@requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
+@requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
 def ts_job(
     atoms: Atoms | dict,
     use_custom_hessian: bool = False,
@@ -149,8 +149,8 @@ def ts_job(
 
 
 @job
-@requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
-@requires(Sella, "Sella must be installed. Try pip install quacc[optimizers]")
+@requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
+@requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
 def irc_job(
     atoms: Atoms | dict,
     direction: Literal["forward", "reverse"] = "forward",
@@ -266,8 +266,8 @@ def irc_job(
 
 
 @job
-@requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
-@requires(Sella, "Sella must be installed. Try pip install quacc[optimizers]")
+@requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
+@requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
 def quasi_irc_job(
     atoms: Atoms | dict,
     direction: Literal["forward", "reverse"] = "forward",
