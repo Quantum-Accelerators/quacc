@@ -120,8 +120,8 @@ nav:
       - start/demo.md
   - Installation Guide 🔧:
       - install/install.md
-      - install/wflow_engines.md
       - install/codes.md
+      - install/wflow_engines.md
   - User Guide 🧠:
       - Recipes:
           - user/recipes/recipes_intro.md
