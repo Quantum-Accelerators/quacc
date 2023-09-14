@@ -12,6 +12,7 @@ inputs:
   lasph: true
   lcharg: false
   lorbit: 11
+  lreal: false
   lwave: false
   nelm: 150
   nelmin: 3
