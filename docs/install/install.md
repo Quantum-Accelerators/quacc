@@ -38,36 +38,3 @@ pip install git+https://github.com/quantum-accelerators/quacc.git
 !!! Tip
 
     Everything beyond this point in the installation guide is to add on useful features to quacc. So, if you are just getting started, check out the [User Guide](../user/recipes/recipes_intro.md) page. Then come back to installing additional features as you need them.
-
-## Optional Dependencies
-
-Quacc can be installed with several "extras," as outlined in the [`pyproject.toml`](https://github.com/Quantum-Accelerators/quacc/blob/main/pyproject.toml) file. To install the extras, you can run
-
-```bash
-pip install quacc[extra]
-```
-
-where `extra` is one of the following:
-
-### Calculators
-
-- `quacc[newtonnet]`: Installs dependencies to enable the use [NewtonNet](https://doi.org/10.1039/D2DD00008C) recipes.
-- `quacc[tblite]`: Installs dependencies to enable the use of [tblite](https://github.com/tblite/tblite) (on Linux).
-
-### Workflow Managers
-
-- `quacc[covalent]`: Installs dependencies to enable the use of [Covalent](https://www.covalent.xyz).
-- `quacc[jobflow]`: Installs dependencies to enable the use of [Jobflow](https://github.com/materialsproject/jobflow) with [FireWorks](https://github.com/materialsproject/fireworks).
-- `quacc[parsl]`: Installs dependencies to enable the use of [Parsl](https://github.com/Parsl/parsl).
-- `quacc[prefect]`: Installs dependencies to enable the use of [Prefect](https://www.prefect.io/).
-- `quacc[redun]`: Installs dependencies to enable the use of [Redun](https://insitro.github.io/redun/)
-
-### Miscellaneous
-
-- `quacc[defects]`: Installs dependencies to enable the use of defect workflows.
-- `quacc[optimizers]`: Installs dependencies to enable the use of the Sella optimizer.
-
-### Development
-
-- `quacc[dev]`: Installs dependencies to enable local development of quacc.
-- `quacc[docs]`: Installs dependencies to build the documentation.
