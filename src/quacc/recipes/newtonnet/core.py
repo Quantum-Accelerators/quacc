@@ -37,7 +37,7 @@ if TYPE_CHECKING:
     from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
 
     class FreqSchema(RunSchema):
-        freq: VibSchema
+        vib: VibSchema
         thermo: ThermoSchema
 
 
@@ -227,7 +227,7 @@ def freq_job(
     hessian = summary["results"]["hessian"]
 
     vib = VibrationsData(final_atoms, hessian)
-    summary["freq"] = summarize_vib_run(
+    summary["vib"] = summarize_vib_run(
         vib, additional_fields={"name": "ASE Vibrations Analysis"}
     )
 
