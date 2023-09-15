@@ -153,6 +153,10 @@ def run_ase_opt(
     traj_filename = Path(tmpdir, "opt.traj")
     optimizer_kwargs["trajectory"] = Trajectory(traj_filename, "w", atoms=atoms)
 
+    # Set up restart
+    if "restart" not in optimizer_kwargs:
+        optimizer_kwargs["restart"] = "opt.pckl"
+
     # Define optimizer class
     if relax_cell and atoms.pbc.any():
         atoms = ExpCellFilter(atoms)
