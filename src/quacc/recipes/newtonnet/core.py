@@ -236,7 +236,7 @@ def freq_job(
         igt,
         temperature=temperature,
         pressure=pressure,
-        additional_fields={"ASE Thermo Analysis"},
+        additional_fields={"name": "ASE Thermo Analysis"},
     )
 
     return summary
