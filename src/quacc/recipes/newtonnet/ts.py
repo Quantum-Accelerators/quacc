@@ -31,8 +31,7 @@ if TYPE_CHECKING:
     import numpy as np
     from ase import Atoms
 
-    from quacc.recipes.newtonnet.core import FreqSchema
-    from quacc.schemas.ase import OptSchema
+    from quacc.schemas.ase import FreqSchema, OptSchema
 
     class TSSchema(OptSchema):
         freq: FreqSchema | None

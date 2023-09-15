@@ -386,7 +386,7 @@ def test_summarize_thermo(tmpdir):
     d = jsanitize(results, strict=True, enum_values=True)
     MontyDecoder().process_decoded(d)
 
-    with pytest.warns(UserWarning):
+    with pytest.raises(ValueError):
         summarize_thermo(igt, charge_and_multiplicity=[0, 1])
 
 
