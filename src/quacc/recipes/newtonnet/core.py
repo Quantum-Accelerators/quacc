@@ -34,10 +34,7 @@ except ImportError:
 if TYPE_CHECKING:
     from ase import Atoms
 
-    from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
-
-    class FreqSchema(VibSchema):
-        thermo: ThermoSchema
+    from quacc.schemas.ase import FreqSchema, OptSchema, RunSchema
 
 
 @job
