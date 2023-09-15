@@ -34,14 +34,14 @@ if TYPE_CHECKING:
     from quacc.schemas.ase import FreqSchema, OptSchema
 
     class TSSchema(OptSchema):
-        freq: FreqSchema | None
+        freq_job: FreqSchema | None
 
     class IRCSchema(OptSchema):
-        freq: FreqSchema | None
+        freq_job: FreqSchema | None
 
     class QuasiIRCSchema(OptSchema):
-        irc: IRCSchema
-        freq: FreqSchema | None
+        irc_job: IRCSchema
+        freq_job: FreqSchema | None
 
 
 @job
@@ -142,7 +142,7 @@ def ts_job(
     freq_summary = (
         freq_job.__wrapped__(opt_ts_summary, **freq_job_kwargs) if run_freq else None
     )
-    opt_ts_summary["freq"] = freq_summary
+    opt_ts_summary["freq_job"] = freq_summary
 
     return opt_ts_summary
 
@@ -259,7 +259,7 @@ def irc_job(
     freq_summary = (
         freq_job.__wrapped__(opt_irc_summary, **freq_job_kwargs) if run_freq else None
     )
-    opt_irc_summary["freq"] = freq_summary
+    opt_irc_summary["freq_job"] = freq_summary
 
     return opt_irc_summary
 
@@ -328,8 +328,8 @@ def quasi_irc_job(
     freq_summary = (
         freq_job.__wrapped__(relax_summary, **freq_job_kwargs) if run_freq else None
     )
-    relax_summary["freq"] = freq_summary
-    relax_summary["irc"] = irc_summary
+    relax_summary["freq_job"] = freq_summary
+    relax_summary["irc_job"] = irc_summary
 
     return relax_summary
 

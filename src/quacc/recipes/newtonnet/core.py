@@ -34,7 +34,11 @@ except ImportError:
 if TYPE_CHECKING:
     from ase import Atoms
 
-    from quacc.schemas.ase import FreqSchema, OptSchema, RunSchema
+    from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
+
+    class FreqSchema(RunSchema):
+        vib: VibSchema
+        thermo: ThermoSchema
 
 
 @job
@@ -199,8 +203,7 @@ def freq_job(
     Returns
     -------
     FreqSchema
-        Dictionary of results specified in [quacc.schemas.ase.summarize_vib_run][]
-        and [quacc.schemas.ase.summarize_thermo][]
+        Dictionary of results
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
@@ -214,20 +217,29 @@ def freq_job(
     ml_calculator = NewtonNet(**flags)
     atoms.calc = ml_calculator
     final_atoms = run_calc(atoms)
-    energy = final_atoms.get_potential_energy()
-    hessian = final_atoms.calc.results["hessian"]
+
+    summary = summarize_run(
+        final_atoms,
+        input_atoms=atoms,
+        additional_fields={"name": "NewtonNet Hessian"},
+    )
+    energy = summary["results"]["energy"]
+    hessian = summary["results"]["hessian"]
 
     vib = VibrationsData(final_atoms, hessian)
-    vib_summary = summarize_vib_run(
-        vib, additional_fields={"name": "NewtonNet Frequency"}
+    summary["vib"] = summarize_vib_run(
+        vib, additional_fields={"name": "ASE Vibrations Analysis"}
     )
 
     igt = ideal_gas(final_atoms, vib.get_frequencies(), energy=energy)
-    vib_summary["thermo"] = summarize_thermo(
-        igt, temperature=temperature, pressure=pressure
+    summary["thermo"] = summarize_thermo(
+        igt,
+        temperature=temperature,
+        pressure=pressure,
+        additional_fields={"name": "ASE Thermo Analysis"},
     )
 
-    return vib_summary
+    return summary
 
 
 def _add_stdev_and_hess(summary: dict) -> dict:
