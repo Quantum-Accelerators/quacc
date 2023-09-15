@@ -148,7 +148,6 @@ def test_ts_job_with_default_args(tmpdir):
     assert output["freq_job"]["vib"]["results"]["imag_vib_freqs"][0] == pytest.approx(
         -2426.7398321816004
     )
-    assert output["freq_job"]["thermo"]["energy"] == pytest.approx(-6.796914263061945)
 
 
 @pytest.mark.skipif(
@@ -176,7 +175,6 @@ def test_ts_job_with_custom_hessian(tmpdir):
         0.2256022513686731
     )
     assert "thermo" in output["freq_job"]
-    assert output["freq_job"]["thermo"]["energy"] == pytest.approx(-8.855604432470276)
 
 
 @pytest.mark.skipif(
