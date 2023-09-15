@@ -308,14 +308,21 @@ def freq_job(
 
     atoms.calc = QChem(atoms, **qchem_flags)
     final_atoms = run_calc(atoms)
-    energy = final_atoms.get_potential_energy()
-    hessian = final_atoms.calc.results["hessian"]
+
+    summary = summarize_run(
+        final_atoms,
+        input_atoms=atoms,
+        charge_and_multiplicity=(charge, spin_multiplicity),
+        additional_fields={"name": "Q-Chem Frequency"},
+    )
+    energy = summary["results"]["energy"]
+    hessian = summary["results"]["hessian"]
 
     vib = VibrationsData.from_2d(final_atoms, hessian)
     vib_summary = summarize_vib_run(
         vib,
         charge_and_multiplicity=(charge, spin_multiplicity),
-        additional_fields={"name": "Q-Chem Frequency"},
+        additional_fields={"name": "ASE Vibration Analysis"},
     )
 
     igt = ideal_gas(
@@ -324,11 +331,15 @@ def freq_job(
         energy=energy,
         spin_multiplicity=spin_multiplicity,
     )
-    vib_summary["thermo"] = summarize_thermo(
+
+    summary["freq"] = vib_summary
+
+    summary["thermo"] = summarize_thermo(
         igt,
         temperature=temperature,
         pressure=pressure,
         charge_and_multiplicity=(charge, spin_multiplicity),
+        additional_fields={"name": "ASE Thermochemistry Analysis"},
     )
 
-    return vib_summary
+    return summary
