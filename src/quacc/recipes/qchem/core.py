@@ -84,13 +84,13 @@ def static_job(
     atoms = fetch_atoms(atoms)
 
     qchem_defaults = {
+        "basis_set": basis,
+        "scf_algorithm": scf_algorithm,
         "method": method,
         "charge": charge,
         "spin_multiplicity": spin_multiplicity,
         "cores": n_cores or multiprocessing.cpu_count(),
         "qchem_input_params": {
-            "basis_set": basis,
-            "scf_algorithm": scf_algorithm,
             "pcm_dielectric": pcm_dielectric,
             "smd_solvent": smd_solvent,
             "overwrite_inputs": overwrite_inputs,
@@ -180,13 +180,13 @@ def relax_job(
     atoms = fetch_atoms(atoms)
 
     qchem_defaults = {
+        "basis_set": basis,
+        "scf_algorithm": scf_algorithm,
         "method": method,
         "charge": charge,
         "spin_multiplicity": spin_multiplicity,
         "cores": n_cores or multiprocessing.cpu_count(),
         "qchem_input_params": {
-            "basis_set": basis,
-            "scf_algorithm": scf_algorithm,
             "pcm_dielectric": pcm_dielectric,
             "smd_solvent": smd_solvent,
             "overwrite_inputs": overwrite_inputs,
