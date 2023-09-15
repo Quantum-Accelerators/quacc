@@ -13,7 +13,7 @@ from pymatgen.io.qchem.inputs import QCInput
 
 from quacc import SETTINGS
 from quacc.calculators.qchem import QChem
-from quacc.recipes.qchem.core import relax_job, static_job, freq_job
+from quacc.recipes.qchem.core import freq_job, relax_job, static_job
 from quacc.recipes.qchem.ts import irc_job, quasi_irc_job, ts_job
 from quacc.utils import check_charge_and_spin
 
@@ -323,8 +323,8 @@ def test_freq_job_v1(monkeypatch, tmpdir):
     assert output["spin_multiplicity"] == 2
     assert output["formula_alphabetical"] == "C4 H4 O6"
     assert output["nelectrons"] == 77
-    # assert output["parameters"]["charge"] == -1
-    # assert output["parameters"]["spin_multiplicity"] == 2
+    assert output["parameters"]["charge"] == -1
+    assert output["parameters"]["spin_multiplicity"] == 2
     assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
 
 
