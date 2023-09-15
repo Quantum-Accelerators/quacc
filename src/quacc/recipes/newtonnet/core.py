@@ -34,7 +34,11 @@ except ImportError:
 if TYPE_CHECKING:
     from ase import Atoms
 
-    from quacc.schemas.ase import FreqSchema, OptSchema, RunSchema
+    from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
+
+    class FreqSchema(RunSchema):
+        freq: VibSchema
+        thermo: ThermoSchema
 
 
 @job
@@ -199,8 +203,7 @@ def freq_job(
     Returns
     -------
     FreqSchema
-        Dictionary of results specified in [quacc.schemas.ase.summarize_vib_run][]
-        and [quacc.schemas.ase.summarize_thermo][]
+        Dictionary of results
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
