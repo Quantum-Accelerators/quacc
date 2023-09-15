@@ -23,10 +23,7 @@ except ImportError:
 if TYPE_CHECKING:
     from ase import Atoms
 
-    from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
-
-    class FreqSchema(VibSchema):
-        thermo: ThermoSchema
+    from quacc.schemas.ase import OptSchema, RunSchema
 
 
 @job
@@ -234,7 +231,7 @@ def freq_job(
     smd_solvent: str | None = None,
     n_cores: int | None = None,
     overwrite_inputs: dict | None = None,
-) -> FreqSchema:
+) -> RunSchema:
     """
     Perform a frequency calculation on a molecular structure.
 
@@ -274,8 +271,8 @@ def freq_job(
 
     Returns
     -------
-    OptSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
+    RunSchema
+        Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
 
     atoms = fetch_atoms(atoms)
