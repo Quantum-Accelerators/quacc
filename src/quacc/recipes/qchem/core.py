@@ -306,20 +306,23 @@ def freq_job(
     }
     qchem_flags = remove_dict_empties(qchem_defaults)
 
-    calc = QChem(atoms, **qchem_flags)
+    atoms.calc = QChem(atoms, **qchem_flags)
     final_atoms = run_calc(atoms)
+    energy = final_atoms.get_potential_energy()
     hessian = final_atoms.calc.results["hessian"]
 
     vib = VibrationsData.from_2d(final_atoms, hessian)
-    vib.calc = final_atoms.calc
     vib_summary = summarize_vib_run(
         vib,
         charge_and_multiplicity=(charge, spin_multiplicity),
-        additional_fields={"name": "Q-Chem Frequency"}
+        additional_fields={"name": "Q-Chem Frequency"},
     )
 
     igt = ideal_gas(
-        final_atoms, vib.get_frequencies(), energy=final_atoms.calc.results["energy"], spin_multiplicity=spin_multiplicity
+        final_atoms,
+        vib.get_frequencies(),
+        energy=energy,
+        spin_multiplicity=spin_multiplicity,
     )
     vib_summary["thermo"] = summarize_thermo(
         igt,
