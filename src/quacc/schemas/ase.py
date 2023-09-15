@@ -935,10 +935,10 @@ def summarize_thermo(
     }
 
     if charge_and_multiplicity and spin_multiplicity != charge_and_multiplicity[1]:
-        warnings.warn(
+        msg = (
             "The IdealGasThermo spin multiplicity does not match the user-specified multiplicity.",
-            UserWarning,
         )
+        raise ValueError(msg)
 
     atoms_db = atoms_to_metadata(
         igt.atoms, charge_and_multiplicity=charge_and_multiplicity
