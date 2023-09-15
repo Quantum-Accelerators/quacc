@@ -5,20 +5,13 @@ import multiprocessing
 from typing import TYPE_CHECKING
 
 from ase.optimize import FIRE
-from ase.vibrations.data import VibrationsData
 
 from quacc import job
 from quacc.calculators.qchem import QChem
 from quacc.schemas import fetch_atoms
-from quacc.schemas.ase import (
-    summarize_opt_run,
-    summarize_run,
-    summarize_thermo,
-    summarize_vib_run,
-)
+from quacc.schemas.ase import summarize_opt_run, summarize_run
 from quacc.utils.calc import run_ase_opt, run_calc
 from quacc.utils.dicts import merge_dicts, remove_dict_empties
-from quacc.utils.thermo import ideal_gas
 
 try:
     from sella import Sella
@@ -234,8 +227,6 @@ def freq_job(
     atoms: Atoms | dict,
     charge: int,
     spin_multiplicity: int,
-    temperature: float = 298.15,
-    pressure: float = 1.0,
     method: str = "wb97mv",
     basis: str = "def2-svpd",
     scf_algorithm: str = "diis",
