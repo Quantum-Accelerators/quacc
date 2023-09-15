@@ -229,7 +229,12 @@ class QChem(FileIOCalculator):
                 self.results["hessian"][ii%hess_dim][int(ii/hess_dim)] = val
             self.results["frequencies"] = data["frequencies"]
             self.results["frequency_mode_vectors"] = data["frequency_mode_vectors"]
+            self.results["enthalpy"] = data["total_enthalpy"] * (units.kcal / units.mol)
+            self.results["entropy"] = data["total_entropy"] * (0.001*units.kcal / units.mol)
         else:
             self.results["hessian"] = None
             self.results["frequencies"] = None
             self.results["frequency_mode_vectors"] = None
+            self.results["enthalpy"] = None
+            self.results["entropy"] = None
+        self.results["all_data"] = data

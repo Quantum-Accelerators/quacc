@@ -196,3 +196,7 @@ def test_qchem_read_results_freq(tmpdir):
     assert len(calc.results["frequency_mode_vectors"]) == 36
     assert len(calc.results["frequency_mode_vectors"][0]) == 14
     assert len(calc.results["frequency_mode_vectors"][0][0]) == 3
+    assert calc.results["enthalpy"] == 2.647248450819514
+    assert calc.results["entropy"] == 0.003996739364205975
+    assert calc.results["all_data"] is not None
+
