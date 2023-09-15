@@ -297,11 +297,10 @@ def freq_job(
     atoms.calc = QChem(atoms, **qchem_flags)
     final_atoms = run_calc(atoms)
 
-    summary = summarize_run(
+    return summarize_run(
         final_atoms,
         input_atoms=atoms,
         charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields={"name": "Q-Chem Frequency"},
     )
 
-    return summary
