@@ -319,7 +319,7 @@ def freq_job(
     hessian = summary["results"]["hessian"]
 
     vib = VibrationsData.from_2d(final_atoms, hessian)
-    vib_summary = summarize_vib_run(
+    summary["freq"] = summarize_vib_run(
         vib,
         charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields={"name": "ASE Vibration Analysis"},
@@ -331,8 +331,6 @@ def freq_job(
         energy=energy,
         spin_multiplicity=spin_multiplicity,
     )
-
-    summary["freq"] = vib_summary
 
     summary["thermo"] = summarize_thermo(
         igt,
