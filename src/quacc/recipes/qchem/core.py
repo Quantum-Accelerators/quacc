@@ -168,7 +168,7 @@ def relax_job(
         default values set therein as well as set additional Q-Chem parameters.
         See QChemDictSet documentation for more details.
     opt_swaps
-        Dictionary of custom kwargs for [quacc.utils.calc.run_ase_opt[]
+        Dictionary of custom kwargs for [quacc.utils.calc.run_ase_opt][]
 
         ???+ Note
 
