@@ -32,6 +32,9 @@ if TYPE_CHECKING:
     VibSchema = TypeVar("VibSchema")
     ThermoSchema = TypeVar("ThermoSchema")
 
+    class FreqSchema(VibSchema):
+        thermo: ThermoSchema
+
 
 def summarize_run(
     atoms: Atoms,
