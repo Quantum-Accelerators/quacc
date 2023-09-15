@@ -36,7 +36,12 @@ def test_qchem_write_input_intermediate(tmpdir):
     tmpdir.chdir()
     params = {"dft_rung": 3, "pcm_dielectric": "3.0"}
     calc = QChem(
-        TEST_ATOMS, basis_set="def2-svpd", cores=40, charge=-1, spin_multiplicity=2, qchem_input_params=params
+        TEST_ATOMS,
+        basis_set="def2-svpd",
+        cores=40,
+        charge=-1,
+        spin_multiplicity=2,
+        qchem_input_params=params,
     )
     assert calc.parameters["cores"] == 40
     assert calc.parameters["charge"] == -1
@@ -60,7 +65,13 @@ def test_qchem_write_input_advanced(tmpdir):
         "overwrite_inputs": {"rem": {"method": "b97mv", "mem_total": "170000"}},
     }
     calc = QChem(
-        TEST_ATOMS, basis_set="def2-svpd", scf_algorithm="gdm", cores=40, charge=-1, spin_multiplicity=2, qchem_input_params=params
+        TEST_ATOMS,
+        basis_set="def2-svpd",
+        scf_algorithm="gdm",
+        cores=40,
+        charge=-1,
+        spin_multiplicity=2,
+        qchem_input_params=params,
     )
     assert calc.parameters["cores"] == 40
     assert calc.parameters["charge"] == -1
@@ -122,7 +133,13 @@ def test_qchem_write_input_freq(tmpdir):
     tmpdir.chdir()
     params = {"dft_rung": 3, "pcm_dielectric": "3.0"}
     calc = QChem(
-        TEST_ATOMS, job_type="freq", basis_set="def2-svpd", cores=40, charge=-1, spin_multiplicity=2, qchem_input_params=params
+        TEST_ATOMS,
+        job_type="freq",
+        basis_set="def2-svpd",
+        cores=40,
+        charge=-1,
+        spin_multiplicity=2,
+        qchem_input_params=params,
     )
     assert calc.parameters["cores"] == 40
     assert calc.parameters["charge"] == -1
@@ -133,9 +150,7 @@ def test_qchem_write_input_freq(tmpdir):
     assert calc.parameters["scf_algorithm"] == "diis"
     calc.write_input(TEST_ATOMS)
     qcinp = QCInput.from_file("mol.qin")
-    ref_qcinp = QCInput.from_file(
-        os.path.join(FILE_DIR, "examples", "freq", "mol.qin")
-    )
+    ref_qcinp = QCInput.from_file(os.path.join(FILE_DIR, "examples", "freq", "mol.qin"))
     assert qcinp.as_dict() == ref_qcinp.as_dict()
 
 

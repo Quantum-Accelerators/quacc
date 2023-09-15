@@ -13,7 +13,7 @@ from pymatgen.io.qchem.inputs import QCInput
 
 from quacc import SETTINGS
 from quacc.calculators.qchem import QChem
-from quacc.recipes.qchem.core import relax_job, static_job, freq_job
+from quacc.recipes.qchem.core import freq_job, relax_job, static_job
 from quacc.recipes.qchem.ts import irc_job, quasi_irc_job, ts_job
 from quacc.utils import check_charge_and_spin
 

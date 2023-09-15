@@ -315,11 +315,14 @@ def freq_job(
     vib_summary = summarize_vib_run(
         vib,
         charge_and_multiplicity=(charge, spin_multiplicity),
-        additional_fields={"name": "Q-Chem Frequency"}
+        additional_fields={"name": "Q-Chem Frequency"},
     )
 
     igt = ideal_gas(
-        final_atoms, vib.get_frequencies(), energy=final_atoms.calc.results["energy"], spin_multiplicity=spin_multiplicity
+        final_atoms,
+        vib.get_frequencies(),
+        energy=final_atoms.calc.results["energy"],
+        spin_multiplicity=spin_multiplicity,
     )
     vib_summary["thermo"] = summarize_thermo(
         igt,
