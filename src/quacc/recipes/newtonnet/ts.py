@@ -54,6 +54,7 @@ def ts_job(
     freq_job_kwargs: dict | None = None,
     calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> TSSchema:
     """
     Perform a transition state (TS) job using the given atoms object.
@@ -96,6 +97,8 @@ def ts_job(
                 "optimizer_kwargs": {"diag_every_n": 0} if use_custom_hessian else {},
             }
             ```
+    copy_files
+        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -133,7 +136,7 @@ def ts_job(
     atoms.calc = ml_calculator
 
     # Run the TS optimization
-    dyn = run_ase_opt(atoms, **opt_flags)
+    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
     opt_ts_summary = _add_stdev_and_hess(
         summarize_opt_run(dyn, additional_fields={"name": "NewtonNet TS"})
     )
@@ -157,6 +160,7 @@ def irc_job(
     freq_job_kwargs: dict | None = None,
     calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> IRCSchema:
     """
     Perform an intrinsic reaction coordinate (IRC) job using the given atoms
@@ -208,6 +212,8 @@ def irc_job(
                 },
             }
             ```
+    copy_files
+        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -247,7 +253,7 @@ def irc_job(
 
     # Run IRC
     SETTINGS.CHECK_CONVERGENCE = False
-    dyn = run_ase_opt(atoms, **opt_flags)
+    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
     opt_irc_summary = _add_stdev_and_hess(
         summarize_opt_run(
             dyn, additional_fields={"name": f"NewtonNet IRC: {direction}"}
@@ -274,6 +280,7 @@ def quasi_irc_job(
     freq_job_kwargs: dict | None = None,
     irc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> QuasiIRCSchema:
     """
     Perform a quasi-IRC job using the given atoms object.
@@ -302,6 +309,8 @@ def quasi_irc_job(
     opt_swaps
         Optional swaps for the optimization parameters. Overrides
         the following defaults: `{}`.
+    copy_files
+        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -318,7 +327,11 @@ def quasi_irc_job(
 
     # Run IRC
     irc_summary = irc_job.__wrapped__(
-        atoms, direction=direction, opt_swaps=irc_flags, run_freq=False
+        atoms,
+        direction=direction,
+        opt_swaps=irc_flags,
+        run_freq=False,
+        copy_files=copy_files,
     )
 
     # Run opt

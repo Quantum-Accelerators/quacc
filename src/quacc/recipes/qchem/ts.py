@@ -46,6 +46,7 @@ def ts_job(
     n_cores: int | None = None,
     overwrite_inputs: dict | None = None,
     opt_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> OptSchema:
     """
     TS optimize a molecular structure.
@@ -93,6 +94,8 @@ def ts_job(
             ```python
             {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella}
             ```
+    copy_files
+        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -132,7 +135,7 @@ def ts_job(
         raise ValueError("Only Sella should be used for TS optimization.")
 
     atoms.calc = QChem(atoms, **qchem_flags)
-    dyn = run_ase_opt(atoms, **opt_flags)
+    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
 
     return summarize_opt_run(
         dyn,
@@ -159,6 +162,7 @@ def irc_job(
     n_cores: int | None = None,
     overwrite_inputs: dict | None = None,
     opt_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> OptSchema:
     """
     IRC optimize a molecular structure.
@@ -208,6 +212,8 @@ def irc_job(
             ```python
             {"fmax": 0.01, "max_steps": 1000, "optimizer": "Sella"}
             ```
+    copy_files
+        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -247,7 +253,7 @@ def irc_job(
         raise ValueError("Only Sella's IRC should be used for IRC optimization.")
 
     atoms.calc = QChem(atoms, **qchem_flags)
-    dyn = run_ase_opt(atoms, **opt_flags)
+    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
 
     return summarize_opt_run(
         dyn,
@@ -269,6 +275,7 @@ def quasi_irc_job(
     shared_kwargs: dict | None = None,
     irc_opt_swaps: dict | None = None,
     relax_opt_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> OptSchema:
     """
     Quasi-IRC optimize a molecular structure.
@@ -306,6 +313,8 @@ def quasi_irc_job(
             ```
     relax_opt_swaps
         Dictionary of opt_swap kwargs for the relax_job.
+    copy_files
+        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -332,6 +341,7 @@ def quasi_irc_job(
         atoms,
         direction=direction,
         opt_swaps=irc_opt_swaps,
+        copy_files=copy_files,
         **shared_flags,
     )
 

@@ -71,6 +71,8 @@ def static_job(
                 f"output xyz {GEOM_FILE_NOPBC}": None if atoms.pbc.any() else True,
             }
             ```
+    copy_files
+        Files to copy to the runtime directory.
 
     Returns
     -------
