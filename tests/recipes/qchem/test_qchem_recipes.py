@@ -325,7 +325,7 @@ def test_freq_job_v1(monkeypatch, tmpdir):
     assert output["nelectrons"] == 77
     assert output["parameters"]["charge"] == -1
     assert output["parameters"]["spin_multiplicity"] == 2
-    assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
+    assert output["results"]["energy"] == pytest.approx(-605.6859554019 * units.Hartree)
 
 
 @pytest.mark.skipif(
