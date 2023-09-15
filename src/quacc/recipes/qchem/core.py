@@ -30,7 +30,10 @@ except ImportError:
 if TYPE_CHECKING:
     from ase import Atoms
 
-    from quacc.schemas.ase import OptSchema, RunSchema
+    from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
+
+    class FreqSchema(VibSchema):
+        thermo: ThermoSchema
 
 
 @job
@@ -240,7 +243,7 @@ def freq_job(
     smd_solvent: str | None = None,
     n_cores: int | None = None,
     overwrite_inputs: dict | None = None,
-) -> OptSchema:
+) -> FreqSchema:
     """
     Perform a frequency calculation on a molecular structure.
 
@@ -304,19 +307,25 @@ def freq_job(
     qchem_flags = remove_dict_empties(qchem_defaults)
 
     calc = QChem(atoms, **qchem_flags)
-    calc.calculate(atoms)
-    hessian = calc.results["hessian"]
+    final_atoms = run_calc(atoms)
+    hessian = final_atoms.calc.results["hessian"]
 
-    vib = VibrationsData.from_2d(atoms, hessian)
+    vib = VibrationsData.from_2d(final_atoms, hessian)
+    vib.calc = final_atoms.calc
     vib_summary = summarize_vib_run(
-        vib, additional_fields={"name": "Q-Chem Frequency"}
+        vib,
+        charge_and_multiplicity=(charge, spin_multiplicity),
+        additional_fields={"name": "Q-Chem Frequency"}
     )
 
     igt = ideal_gas(
-        atoms, vib.get_frequencies(), energy=calc.results["energy"]
+        final_atoms, vib.get_frequencies(), energy=final_atoms.calc.results["energy"], spin_multiplicity=spin_multiplicity
     )
     vib_summary["thermo"] = summarize_thermo(
-        igt, temperature=temperature, pressure=pressure
+        igt,
+        temperature=temperature,
+        pressure=pressure,
+        charge_and_multiplicity=(charge, spin_multiplicity),
     )
 
     return vib_summary
