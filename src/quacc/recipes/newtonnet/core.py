@@ -213,17 +213,16 @@ def freq_job(
 
     ml_calculator = NewtonNet(**flags)
     atoms.calc = ml_calculator
+    final_atoms = run_calc(atoms)
+    energy = final_atoms.get_potential_energy()
+    hessian = final_atoms.calc.results["hessian"]
 
-    ml_calculator.calculate(atoms)
-    hessian = ml_calculator.results["hessian"]
-    vib = VibrationsData(atoms, hessian)
+    vib = VibrationsData(final_atoms, hessian)
     vib_summary = summarize_vib_run(
         vib, additional_fields={"name": "NewtonNet Frequency"}
     )
 
-    igt = ideal_gas(
-        atoms, vib.get_frequencies(), energy=ml_calculator.results["energy"]
-    )
+    igt = ideal_gas(final_atoms, vib.get_frequencies(), energy=energy)
     vib_summary["thermo"] = summarize_thermo(
         igt, temperature=temperature, pressure=pressure
     )
@@ -258,10 +257,12 @@ def _add_stdev_and_hess(summary: dict) -> dict:
             model_path=SETTINGS.NEWTONNET_MODEL_PATH,
             settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
         )
-        ml_calculator.calculate(conf["atoms"])
-        conf["hessian"] = ml_calculator.results["hessian"]
-        conf["energy_std"] = ml_calculator.results["energy_disagreement"]
-        conf["forces_std"] = ml_calculator.results["forces_disagreement"]
-        conf["hessian_std"] = ml_calculator.results["hessian_disagreement"]
+        atoms = conf["atoms"]
+        atoms.calc = ml_calculator
+        results = run_calc(atoms).calc.results
+        conf["hessian"] = results["hessian"]
+        conf["energy_std"] = results["energy_disagreement"]
+        conf["forces_std"] = results["forces_disagreement"]
+        conf["hessian_std"] = results["hessian_disagreement"]
 
     return summary
