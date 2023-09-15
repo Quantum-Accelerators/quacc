@@ -38,6 +38,7 @@ def static_job(
     smd_solvent: str | None = None,
     n_cores: int | None = None,
     overwrite_inputs: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -75,6 +76,8 @@ def static_job(
         Dictionary passed to `pymatgen.io.qchem.QChemDictSet` which can modify
         default values set therein as well as set additional Q-Chem parameters.
         See QChemDictSet documentation for more details.
+    copy_files
+        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -100,7 +103,7 @@ def static_job(
     qchem_flags = remove_dict_empties(qchem_defaults)
 
     atoms.calc = QChem(atoms, **qchem_flags)
-    final_atoms = run_calc(atoms)
+    final_atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(
         final_atoms,
@@ -123,6 +126,7 @@ def relax_job(
     n_cores: int | None = None,
     overwrite_inputs: dict | None = None,
     opt_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> OptSchema:
     """
     Optimize aka "relax" a molecular structure.
@@ -170,6 +174,9 @@ def relax_job(
             ```python
             {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella}
             ```
+    copy_files
+        Files to copy to the runtime directory.
+
     Returns
     -------
     OptSchema
@@ -210,7 +217,7 @@ def relax_job(
         opt_flags["optimizer_kwargs"]["order"] = 0
 
     atoms.calc = QChem(atoms, **qchem_flags)
-    dyn = run_ase_opt(atoms, **opt_flags)
+    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
 
     return summarize_opt_run(
         dyn,
@@ -231,6 +238,7 @@ def freq_job(
     smd_solvent: str | None = None,
     n_cores: int | None = None,
     overwrite_inputs: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
     Perform a frequency calculation on a molecular structure.
@@ -268,6 +276,8 @@ def freq_job(
         Dictionary passed to `pymatgen.io.qchem.QChemDictSet` which can modify
         default values set therein as well as set additional Q-Chem parameters.
         See QChemDictSet documentation for more details.
+    copy_files
+        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -295,7 +305,7 @@ def freq_job(
     qchem_flags = remove_dict_empties(qchem_defaults)
 
     atoms.calc = QChem(atoms, **qchem_flags)
-    final_atoms = run_calc(atoms)
+    final_atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(
         final_atoms,
@@ -303,4 +313,3 @@ def freq_job(
         charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields={"name": "Q-Chem Frequency"},
     )
-

@@ -174,6 +174,7 @@ def freq_job(
     temperature: float = 298.15,
     pressure: float = 1.0,
     calc_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> FreqSchema:
     """
     Perform a frequency calculation using the given atoms object.
@@ -199,6 +200,8 @@ def freq_job(
                 "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
             }
             ```
+    copy_files
+        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -216,7 +219,7 @@ def freq_job(
 
     ml_calculator = NewtonNet(**flags)
     atoms.calc = ml_calculator
-    final_atoms = run_calc(atoms)
+    final_atoms = run_calc(atoms, copy_files=copy_files)
 
     summary = summarize_run(
         final_atoms,
