@@ -79,15 +79,15 @@ def test_freq_job(tmpdir):
     atoms = molecule("H2O")
     output = freq_job(atoms)
     assert output["atoms"] == molecule("H2O")
-    assert len(output["results"]["vib"]["vib_freqs_raw"]) == 9
-    assert len(output["results"]["vib"]["vib_freqs"]) == 3
-    assert output["results"]["vib"]["vib_freqs_raw"][-1] == pytest.approx(
+    assert len(output["vib"]["results"]["vib_freqs_raw"]) == 9
+    assert len(output["vib"]["results"]["vib_freqs"]) == 3
+    assert output["vib"]["results"]["vib_freqs_raw"][-1] == pytest.approx(
         4090.37777396351
     )
-    assert output["results"]["vib"]["vib_freqs"][0] == pytest.approx(1814.0941260498644)
-    assert output["results"]["vib"]["vib_freqs"][-1] == pytest.approx(4090.37777396351)
-    assert output["results"]["vib"]["n_imag"] == 0
-    assert output["results"]["vib"]["imag_vib_freqs"] == []
+    assert output["vib"]["results"]["vib_freqs"][0] == pytest.approx(1814.0941260498644)
+    assert output["vib"]["results"]["vib_freqs"][-1] == pytest.approx(4090.37777396351)
+    assert output["vib"]["results"]["n_imag"] == 0
+    assert output["vib"]["results"]["imag_vib_freqs"] == []
 
     assert output["thermo"]["atoms"] == atoms
     assert output["thermo"]["symmetry"]["point_group"] == "C2v"
@@ -105,22 +105,22 @@ def test_freq_job(tmpdir):
     atoms = molecule("CH3")
     output = freq_job(atoms, temperature=1000, pressure=20)
     assert output["atoms"] == molecule("CH3")
-    assert len(output["results"]["vib"]["vib_freqs_raw"]) == 12
-    assert len(output["results"]["vib"]["vib_freqs"]) == 6
-    assert output["results"]["vib"]["vib_energies_raw"][0] == pytest.approx(
+    assert len(output["vib"]["results"]["vib_freqs_raw"]) == 12
+    assert len(output["vib"]["results"]["vib_freqs"]) == 6
+    assert output["vib"]["results"]["vib_energies_raw"][0] == pytest.approx(
         -0.09441402482739979
     )
-    assert output["results"]["vib"]["vib_energies_raw"][-1] == pytest.approx(
+    assert output["vib"]["results"]["vib_energies_raw"][-1] == pytest.approx(
         0.3925829460532815
     )
-    assert output["results"]["vib"]["vib_energies"][0] == pytest.approx(
+    assert output["vib"]["results"]["vib_energies"][0] == pytest.approx(
         -0.09441402482739979
     )
-    assert output["results"]["vib"]["vib_energies"][-1] == pytest.approx(
+    assert output["vib"]["results"]["vib_energies"][-1] == pytest.approx(
         0.3925829460532815
     )
-    assert output["results"]["vib"]["n_imag"] == 1
-    assert output["results"]["vib"]["imag_vib_freqs"] == pytest.approx(
+    assert output["vib"]["results"]["n_imag"] == 1
+    assert output["vib"]["results"]["imag_vib_freqs"] == pytest.approx(
         [-761.5004719152678]
     )
     assert output["thermo"]["atoms"] == molecule("CH3")
