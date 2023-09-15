@@ -1,7 +1,6 @@
 """Schemas for storing ASE-based data"""
 from __future__ import annotations
 
-import warnings
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -31,6 +30,9 @@ if TYPE_CHECKING:
     OptSchema = TypeVar("OptSchema")
     VibSchema = TypeVar("VibSchema")
     ThermoSchema = TypeVar("ThermoSchema")
+
+    class FreqSchema(VibSchema):
+        thermo: ThermoSchema
 
 
 def summarize_run(
@@ -935,10 +937,10 @@ def summarize_thermo(
     }
 
     if charge_and_multiplicity and spin_multiplicity != charge_and_multiplicity[1]:
-        warnings.warn(
+        msg = (
             "The IdealGasThermo spin multiplicity does not match the user-specified multiplicity.",
-            UserWarning,
         )
+        raise ValueError(msg)
 
     atoms_db = atoms_to_metadata(
         igt.atoms, charge_and_multiplicity=charge_and_multiplicity
