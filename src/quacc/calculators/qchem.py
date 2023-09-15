@@ -230,10 +230,7 @@ class QChem(FileIOCalculator):
                     tmp_hess_data.append(
                         struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
                     )
-            hess_dim = len(data["species"]) * 3
-            self.results["hessian"] = np.zeros(shape=(hess_dim, hess_dim))
-            for ii, val in enumerate(tmp_hess_data):
-                self.results["hessian"][ii % hess_dim][int(ii / hess_dim)] = val
+            self.results["hessian"] = np.reshape(np.array(tmp_hess_data), (len(data["species"]) * 3, len(data["species"]) * 3))
             self.results["frequencies"] = data["frequencies"]
             self.results["frequency_mode_vectors"] = data["frequency_mode_vectors"]
             self.results["enthalpy"] = data["total_enthalpy"] * (units.kcal / units.mol)
