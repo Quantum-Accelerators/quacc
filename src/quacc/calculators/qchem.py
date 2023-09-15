@@ -6,6 +6,7 @@ import logging
 import struct
 from copy import deepcopy
 from pathlib import Path
+import numpy as np
 
 from ase import Atoms, units
 from ase.calculators.calculator import FileIOCalculator
@@ -45,7 +46,7 @@ class QChem(FileIOCalculator):
         The ASE Atoms object with attached Q-Chem calculator.
     """
 
-    implemented_properties = ["energy", "forces"]  # noqa: RUF012
+    implemented_properties = ["energy", "forces", "frequencies"]  # noqa: RUF012
 
     def __init__(
         self,
@@ -171,37 +172,40 @@ class QChem(FileIOCalculator):
     def read_results(self):
         data = QCOutput("mol.qout").data
         self.results["energy"] = data["final_energy"] * units.Hartree
-        tmp_grad_data = []
-        # Read the gradient scratch file in 8 byte chunks
-        with zopen("131.0", mode="rb") as file:
-            binary = file.read()
-            tmp_grad_data.extend(
-                struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
-                for ii in range(len(binary) // 8)
-            )
-        grad = [
-            [
-                float(tmp_grad_data[ii * 3]),
-                float(tmp_grad_data[ii * 3 + 1]),
-                float(tmp_grad_data[ii * 3 + 2]),
+        if self.job_type == "force":
+            tmp_grad_data = []
+            # Read the gradient scratch file in 8 byte chunks
+            with zopen("131.0", mode="rb") as file:
+                binary = file.read()
+                tmp_grad_data.extend(
+                    struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
+                    for ii in range(len(binary) // 8)
+                )
+            grad = [
+                [
+                    float(tmp_grad_data[ii * 3]),
+                    float(tmp_grad_data[ii * 3 + 1]),
+                    float(tmp_grad_data[ii * 3 + 2]),
+                ]
+                for ii in range(len(tmp_grad_data) // 3)
             ]
-            for ii in range(len(tmp_grad_data) // 3)
-        ]
-        # Ensure that the scratch values match the correct values from the
-        # output file but with higher precision
-        if data["pcm_gradients"] is not None:
-            gradient = data["pcm_gradients"][0]
+            # Ensure that the scratch values match the correct values from the
+            # output file but with higher precision
+            if data["pcm_gradients"] is not None:
+                gradient = data["pcm_gradients"][0]
+            else:
+                gradient = data["gradients"][0]
+            for ii, subgrad in enumerate(grad):
+                for jj, val in enumerate(subgrad):
+                    if abs(gradient[ii, jj] - val) > 1e-6:
+                        raise ValueError(
+                            "Difference between gradient value in scratch file vs. output file should not be this large."
+                        )
+                    gradient[ii, jj] = val
+            # Convert gradient to force + deal with units
+            self.results["forces"] = gradient * (-units.Hartree / units.Bohr)
         else:
-            gradient = data["gradients"][0]
-        for ii, subgrad in enumerate(grad):
-            for jj, val in enumerate(subgrad):
-                if abs(gradient[ii, jj] - val) > 1e-6:
-                    raise ValueError(
-                        "Difference between gradient value in scratch file vs. output file should not be this large."
-                    )
-                gradient[ii, jj] = val
-        # Convert gradient to force + deal with units
-        self.results["forces"] = gradient * (-units.Hartree / units.Bohr)
+            self.results["forces"] = None
         self.prev_orbital_coeffs = []
         # Read orbital coefficients scratch file in 8 byte chunks
         with zopen("53.0", mode="rb") as file:
@@ -210,3 +214,22 @@ class QChem(FileIOCalculator):
                 struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
                 for ii in range(len(binary) // 8)
             )
+        if self.job_type == "freq":
+            tmp_hess_data = []
+            # Read Hessian scratch file in 8 byte chunks
+            with zopen("132.0", mode="rb") as file:
+                binary = file.read()
+                for ii in range(int(len(binary) / 8)):
+                    tmp_hess_data.append(
+                        struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
+                    )
+            hess_dim = len(data["species"])*3
+            self.results["hessian"] = np.zeros(shape=(hess_dim, hess_dim))
+            for ii, val in enumerate(tmp_hess_data):
+                self.results["hessian"][ii%hess_dim][int(ii/hess_dim)] = val
+            self.results["frequencies"] = data["frequencies"]
+            self.results["frequency_mode_vectors"] = data["frequency_mode_vectors"]
+        else:
+            self.results["hessian"] = None
+            self.results["frequencies"] = None
+            self.results["frequency_mode_vectors"] = None

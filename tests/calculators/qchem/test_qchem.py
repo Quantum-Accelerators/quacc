@@ -118,6 +118,27 @@ def test_qchem_write_input_open_shell_and_different_charges(tmpdir):
     assert qcinp.as_dict() == ref_qcinp.as_dict()
 
 
+def test_qchem_write_input_freq(tmpdir):
+    tmpdir.chdir()
+    params = {"dft_rung": 3, "pcm_dielectric": "3.0"}
+    calc = QChem(
+        TEST_ATOMS, job_type="freq", basis_set="def2-svpd", cores=40, charge=-1, spin_multiplicity=2, qchem_input_params=params
+    )
+    assert calc.parameters["cores"] == 40
+    assert calc.parameters["charge"] == -1
+    assert calc.parameters["spin_multiplicity"] == 2
+    assert calc.parameters["dft_rung"] == 3
+    assert calc.parameters["basis_set"] == "def2-svpd"
+    assert calc.parameters["pcm_dielectric"] == "3.0"
+    assert calc.parameters["scf_algorithm"] == "diis"
+    calc.write_input(TEST_ATOMS)
+    qcinp = QCInput.from_file("mol.qin")
+    ref_qcinp = QCInput.from_file(
+        os.path.join(FILE_DIR, "examples", "freq", "mol.qin")
+    )
+    assert qcinp.as_dict() == ref_qcinp.as_dict()
+
+
 def test_qchem_read_results_basic_and_write_53(tmpdir):
     calc = QChem(TEST_ATOMS, cores=40)
     os.chdir(os.path.join(FILE_DIR, "examples", "basic"))
@@ -157,3 +178,21 @@ def test_qchem_read_results_advanced(tmpdir):
     assert calc.results["energy"] == pytest.approx(-605.7310332390 * units.Hartree)
     assert calc.results["forces"][0][0] == pytest.approx(-0.4270884974249971)
     assert calc.prev_orbital_coeffs is not None
+    assert calc.results["hessian"] is None
+
+
+def test_qchem_read_results_freq(tmpdir):
+    tmpdir.chdir()
+    calc = QChem(TEST_ATOMS, job_type="freq", cores=40)
+    os.chdir(os.path.join(FILE_DIR, "examples", "freq"))
+    calc.read_results()
+    assert calc.results["energy"] == pytest.approx(-605.6859554025 * units.Hartree)
+    assert calc.results["forces"] is None
+    assert calc.prev_orbital_coeffs is not None
+    assert len(calc.results["hessian"]) == 42
+    assert len(calc.results["hessian"][0]) == 42
+    assert calc.results["frequencies"][0] == -340.2
+    assert len(calc.results["frequencies"]) == 36
+    assert len(calc.results["frequency_mode_vectors"]) == 36
+    assert len(calc.results["frequency_mode_vectors"][0]) == 14
+    assert len(calc.results["frequency_mode_vectors"][0][0]) == 3

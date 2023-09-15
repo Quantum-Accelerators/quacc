@@ -13,7 +13,7 @@ from pymatgen.io.qchem.inputs import QCInput
 
 from quacc import SETTINGS
 from quacc.calculators.qchem import QChem
-from quacc.recipes.qchem.core import relax_job, static_job
+from quacc.recipes.qchem.core import relax_job, static_job, freq_job
 from quacc.recipes.qchem.ts import irc_job, quasi_irc_job, ts_job
 from quacc.utils import check_charge_and_spin
 
@@ -91,6 +91,12 @@ def mock_execute4(self, **kwargs):
     atoms.calc = LennardJones()
     atoms.get_potential_energy()
     self.results = atoms.calc.results
+
+
+def mock_execute5(_self, **kwargs):
+    copy(os.path.join(QCHEM_DIR, "mol.qout.freq"), "mol.qout")
+    copy(os.path.join(QCHEM_DIR, "132.0.freq"), "132.0")
+    copy(os.path.join(QCHEM_DIR, "53.0.freq"), "53.0")
 
 
 def mock_read(self, **kwargs):
@@ -176,7 +182,7 @@ def test_static_job_v3(monkeypatch, tmpdir):
     qcinput_nearly_equal(qcin, ref_qcin)
 
 
-def test_static_job_v(monkeypatch, tmpdir):
+def test_static_job_v4(monkeypatch, tmpdir):
     tmpdir.chdir()
     monkeypatch.setattr(QChem, "read_results", mock_read)
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute4)
@@ -297,6 +303,29 @@ def test_relax_job_v4(tmpdir):
     tmpdir.chdir()
     with pytest.raises(ValueError):
         relax_job(TEST_ATOMS, 0, 1, pcm_dielectric="3.0", smd_solvent="water")
+
+
+def test_freq_job_v1(monkeypatch, tmpdir):
+    tmpdir.chdir()
+    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute5)
+    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS, charge=-1)
+    output = freq_job(
+        TEST_ATOMS,
+        charge=charge,
+        spin_multiplicity=spin_multiplicity,
+        scf_algorithm="diis",
+        method="b97mv",
+        basis="def2-svpd",
+    )
+
+    assert output["atoms"] == TEST_ATOMS
+    assert output["charge"] == -1
+    assert output["spin_multiplicity"] == 2
+    assert output["formula_alphabetical"] == "C4 H4 O6"
+    assert output["nelectrons"] == 77
+    assert output["parameters"]["charge"] == -1
+    assert output["parameters"]["spin_multiplicity"] == 2
+    assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
 
 
 @pytest.mark.skipif(
