@@ -6,8 +6,8 @@ import logging
 import struct
 from copy import deepcopy
 from pathlib import Path
-import numpy as np
 
+import numpy as np
 from ase import Atoms, units
 from ase.calculators.calculator import FileIOCalculator
 from monty.io import zopen
@@ -166,7 +166,14 @@ class QChem(FileIOCalculator):
                 self.qchem_input_params["overwrite_inputs"]["rem"] = {}
             if "scf_guess" not in self.qchem_input_params["overwrite_inputs"]["rem"]:
                 self.qchem_input_params["overwrite_inputs"]["rem"]["scf_guess"] = "read"
-        qcin = QChemDictSet(mol, self.job_type, self.basis_set, self.scf_algorithm, qchem_version=6, **self.qchem_input_params)
+        qcin = QChemDictSet(
+            mol,
+            self.job_type,
+            self.basis_set,
+            self.scf_algorithm,
+            qchem_version=6,
+            **self.qchem_input_params,
+        )
         qcin.write("mol.qin")
 
     def read_results(self):
@@ -223,14 +230,16 @@ class QChem(FileIOCalculator):
                     tmp_hess_data.append(
                         struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
                     )
-            hess_dim = len(data["species"])*3
+            hess_dim = len(data["species"]) * 3
             self.results["hessian"] = np.zeros(shape=(hess_dim, hess_dim))
             for ii, val in enumerate(tmp_hess_data):
-                self.results["hessian"][ii%hess_dim][int(ii/hess_dim)] = val
+                self.results["hessian"][ii % hess_dim][int(ii / hess_dim)] = val
             self.results["frequencies"] = data["frequencies"]
             self.results["frequency_mode_vectors"] = data["frequency_mode_vectors"]
             self.results["enthalpy"] = data["total_enthalpy"] * (units.kcal / units.mol)
-            self.results["entropy"] = data["total_entropy"] * (0.001*units.kcal / units.mol)
+            self.results["entropy"] = data["total_entropy"] * (
+                0.001 * units.kcal / units.mol
+            )
         else:
             self.results["hessian"] = None
             self.results["frequencies"] = None
