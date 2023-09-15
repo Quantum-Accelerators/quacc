@@ -219,10 +219,10 @@ class QChem(FileIOCalculator):
             # Read Hessian scratch file in 8 byte chunks
             with zopen("132.0", mode="rb") as file:
                 binary = file.read()
-                for ii in range(int(len(binary) / 8)):
-                    tmp_hess_data.append(
-                        struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
-                    )
+                tmp_hess_data.extend(
+                    struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
+                    for ii in range(len(binary) // 8)
+                )
             hess_dim = len(data["species"])*3
             self.results["hessian"] = np.zeros(shape=(hess_dim, hess_dim))
             for ii, val in enumerate(tmp_hess_data):
