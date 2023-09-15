@@ -127,7 +127,7 @@ def test_qchem_read_results_basic_and_write_53(tmpdir):
     assert calc.prev_orbital_coeffs is not None
     tmpdir.chdir()
     calc.write_input(TEST_ATOMS)
-    assert os.path.exists(os.path.join(tmpdir, "53.0"))
+    assert Path(tmpdir, "53.0").exists()
     with zopen("53.0", mode="rb") as new_file:
         new_binary = new_file.read()
         with zopen(
