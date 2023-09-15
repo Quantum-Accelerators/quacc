@@ -12,7 +12,7 @@ from ase.calculators.calculator import FileIOCalculator
 from monty.io import zopen
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.qchem.outputs import QCOutput
-from pymatgen.io.qchem.sets import ForceSet
+from pymatgen.io.qchem.sets import QChemDictSet
 
 from quacc.custodian import qchem as custodian_qchem
 
@@ -53,6 +53,9 @@ class QChem(FileIOCalculator):
         charge: int = 0,
         spin_multiplicity: int = 1,
         method: str | None = None,
+        basis_set: str = "def2-tzvpd",
+        job_type: str = "force",
+        scf_algorithm: str = "diis",
         cores: int = 1,
         qchem_input_params: dict | None = None,
         **fileiocalculator_kwargs,
@@ -62,6 +65,9 @@ class QChem(FileIOCalculator):
         self.cores = cores
         self.charge = charge
         self.spin_multiplicity = spin_multiplicity
+        self.job_type = job_type
+        self.basis_set = basis_set
+        self.scf_algorithm = scf_algorithm
         self.qchem_input_params = qchem_input_params or {}
         self.fileiocalculator_kwargs = fileiocalculator_kwargs
 
@@ -91,7 +97,12 @@ class QChem(FileIOCalculator):
             "cores": self.cores,
             "charge": self.charge,
             "spin_multiplicity": self.spin_multiplicity,
+            "scf_algorithm": self.scf_algorithm,
+            "basis_set": self.basis_set,
         }
+
+        if method:
+            self.default_parameters["method"] = method
 
         # We also want to save the contents of self.qchem_input_params. However,
         # the overwrite_inputs key will have a corresponding value which is
@@ -154,7 +165,7 @@ class QChem(FileIOCalculator):
                 self.qchem_input_params["overwrite_inputs"]["rem"] = {}
             if "scf_guess" not in self.qchem_input_params["overwrite_inputs"]["rem"]:
                 self.qchem_input_params["overwrite_inputs"]["rem"]["scf_guess"] = "read"
-        qcin = ForceSet(mol, qchem_version=6, **self.qchem_input_params)
+        qcin = QChemDictSet(mol, self.job_type, self.basis_set, self.scf_algorithm, qchem_version=6, **self.qchem_input_params)
         qcin.write("mol.qin")
 
     def read_results(self):
