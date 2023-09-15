@@ -179,6 +179,11 @@ def test_qchem_read_results_advanced(tmpdir):
     assert calc.results["forces"][0][0] == pytest.approx(-0.4270884974249971)
     assert calc.prev_orbital_coeffs is not None
     assert calc.results["hessian"] is None
+    assert calc.results["frequencies"] is None
+    assert calc.results["frequency_mode_vectors"] is None
+    assert calc.results["entropy"] is None
+    assert calc.results["enthalpy"] is None
+    assert calc.results["all_data"] is not None
 
 
 def test_qchem_read_results_freq(tmpdir):
