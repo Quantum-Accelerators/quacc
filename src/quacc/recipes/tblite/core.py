@@ -191,7 +191,10 @@ def freq_job(
 
     igt = ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)
     vib_summary["thermo"] = summarize_thermo(
-        igt, temperature=temperature, pressure=pressure
+        igt,
+        temperature=temperature,
+        pressure=pressure,
+        additional_fields={"name": "ASE Thermo Analysis"},
     )
 
     return vib_summary
