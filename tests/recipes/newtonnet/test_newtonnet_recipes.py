@@ -143,11 +143,12 @@ def test_ts_job_with_default_args(tmpdir):
     assert isinstance(output, dict)
 
     assert "freq" in output
-    assert "thermo" in output["freq"]
+    assert "thermo" in output["freq_job"]
     assert output["results"]["energy"] == pytest.approx(-6.796914263061945)
-    assert output["freq"]["vib"]["results"]["imag_vib_freqs"][0] == pytest.approx(
+    assert output["freq_job"]["vib"]["results"]["imag_vib_freqs"][0] == pytest.approx(
         -2426.7398321816004
     )
+    assert output["freq_job"]["thermo"]["energy"] == pytest.approx(-6.796914263061945)
 
 
 @pytest.mark.skipif(
@@ -171,10 +172,11 @@ def test_ts_job_with_custom_hessian(tmpdir):
     assert isinstance(output, dict)
 
     assert output["results"]["energy"] == pytest.approx(-8.855604432470276)
-    assert output["freq"]["vib"]["results"]["vib_energies"][0] == pytest.approx(
+    assert output["freq_job"]["vib"]["results"]["vib_energies"][0] == pytest.approx(
         0.2256022513686731
     )
-    assert "thermo" in output["freq"]
+    assert "thermo" in output["freq_job"]
+    assert output["freq_job"]["thermo"]["energy"] == pytest.approx(-8.855604432470276)
 
 
 @pytest.mark.skipif(
@@ -193,10 +195,13 @@ def test_ts_job_with_custom_optimizer(tmpdir):
     # Perform assertions on the result
     assert isinstance(output, dict)
 
-    assert "thermo" in output["freq"]
+    assert "thermo" in output["freq_job"]
     assert output["results"]["energy"] == pytest.approx(-9.51735515322368)
-    assert output["freq"]["vib"]["results"]["vib_energies"][0] == pytest.approx(
+    assert output["freq_job"]["vib"]["results"]["vib_energies"][0] == pytest.approx(
         0.22679888726664774
+    )
+    assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
+        -9.51735515322368
     )
 
 
@@ -231,7 +236,7 @@ def test_irc_job_with_default_args(tmpdir):
     assert isinstance(output, dict)
 
     assert output["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["freq"]["thermo"]["results"]["energy"] == pytest.approx(
+    assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
         -9.517354091813969
     )
 
@@ -253,7 +258,7 @@ def test_irc_job_with_custom_fmax(tmpdir):
     assert isinstance(output, dict)
 
     assert output["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["freq"]["thermo"]["results"]["energy"] == pytest.approx(
+    assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
         -9.517354091813969
     )
 
@@ -275,7 +280,7 @@ def test_irc_job_with_custom_max_steps(tmpdir):
     assert isinstance(output, dict)
 
     assert output["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["freq"]["thermo"]["results"]["energy"] == pytest.approx(
+    assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
         -9.517354091813969
     )
 
@@ -300,7 +305,7 @@ def test_irc_job_with_custom_temperature_and_pressure(tmpdir):
     assert isinstance(output, dict)
 
     assert output["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["freq"]["thermo"]["results"]["energy"] == pytest.approx(
+    assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
         -9.517354091813969
     )
 
@@ -322,7 +327,7 @@ def test_irc_job_with_custom_opt_swaps(tmpdir):
     assert isinstance(output, dict)
 
     assert output["results"]["energy"] == pytest.approx(-9.517354965639784)
-    assert output["freq"]["thermo"]["results"]["energy"] == pytest.approx(
+    assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
         -9.517354965639784
     )
 
@@ -342,9 +347,9 @@ def test_quasi_irc_job_with_default_args(tmpdir):
     # Perform assertions on the result
     assert isinstance(output, dict)
 
-    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
+    assert output["irc_job"]["results"]["energy"] == pytest.approx(-9.517354091813969)
     assert output["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["freq"]["thermo"]["results"]["energy"] == pytest.approx(
+    assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
         -9.517354091813969
     )
 
@@ -366,10 +371,10 @@ def test_quasi_irc_job_with_custom_direction(tmpdir):
     assert isinstance(output, dict)
     assert "irc" in output
 
-    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354965639784)
-    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354965639784)
+    assert output["irc_job"]["results"]["energy"] == pytest.approx(-9.517354965639784)
+    assert output["irc_job"]["results"]["energy"] == pytest.approx(-9.517354965639784)
     assert output["results"]["energy"] == pytest.approx(-9.517354965639784)
-    assert output["freq"]["thermo"]["results"]["energy"] == pytest.approx(
+    assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
         -9.517354965639784
     )
 
@@ -394,9 +399,9 @@ def test_quasi_irc_job_with_custom_temperature_and_pressure(tmpdir):
     assert isinstance(output, dict)
     assert "irc" in output
 
-    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354091813969)
+    assert output["irc_job"]["results"]["energy"] == pytest.approx(-9.517354091813969)
     assert output["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["freq"]["thermo"]["results"]["energy"] == pytest.approx(
+    assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
         -9.517354091813969
     )
 
@@ -420,8 +425,8 @@ def test_quasi_irc_job_with_custom_irc_swaps(tmpdir):
     assert isinstance(output, dict)
     assert "irc" in output
 
-    assert output["irc"]["results"]["energy"] == pytest.approx(-9.517354965639784)
+    assert output["irc_job"]["results"]["energy"] == pytest.approx(-9.517354965639784)
     assert output["results"]["energy"] == pytest.approx(-9.517354965639784)
-    assert output["freq"]["thermo"]["results"]["energy"] == pytest.approx(
+    assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
         -9.517354965639784
     )
