@@ -384,7 +384,8 @@ def _base_job(
     additional_fields: dict | None = None,
 ) -> RunSchema:
     """
-    Carry out a single-point calculation.
+    A commonly used base job for various Q-Chem calculations not relying on
+    ASE optimizers.
 
     Parameters
     ----------
