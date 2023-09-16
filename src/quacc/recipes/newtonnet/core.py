@@ -51,6 +51,17 @@ def static_job(
     """
     Carry out a single-point calculation.
 
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {
+            "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+            "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        }
+        ```
+
     Parameters
     ----------
     atoms
@@ -58,17 +69,6 @@ def static_job(
         the value
     calc_swaps
         Dictionary of custom kwargs for the newtonnet calculator.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {
-                "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-                "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-            }
-            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -78,7 +78,6 @@ def static_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
     atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
 
     defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
@@ -107,6 +106,23 @@ def relax_job(
     """
     Relax a structure.
 
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {
+            "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+            "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        }
+        ```
+
+        Optimizer Defaults:
+
+        ```python
+        {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella or FIRE}
+        ```
+
     Parameters
     ----------
     atoms
@@ -114,27 +130,8 @@ def relax_job(
         the value
     calc_swaps
         Dictionary of custom kwargs for the newtonnet calculator.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {
-                "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-                "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-            }
-            ```
     opt_swaps
         Optional swaps for the optimization parameters.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella or FIRE}
-            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -144,8 +141,6 @@ def relax_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_opt_run][]
     """
     atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
-    opt_swaps = opt_swaps or {}
 
     defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
@@ -156,11 +151,8 @@ def relax_job(
     flags = merge_dicts(defaults, calc_swaps)
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
-    if "sella.optimize" in opt_flags.get("optimizer", FIRE).__module__:
-        opt_flags["order"] = 0
-
     atoms.calc = NewtonNet(**flags)
-    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_swaps)
+    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
 
     return _add_stdev_and_hess(
         summarize_opt_run(dyn, additional_fields={"name": "NewtonNet Relax"})
@@ -174,9 +166,21 @@ def freq_job(
     temperature: float = 298.15,
     pressure: float = 1.0,
     calc_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> FreqSchema:
     """
     Perform a frequency calculation using the given atoms object.
+
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {
+            "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+            "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        }
+        ```
 
     Parameters
     ----------
@@ -188,17 +192,8 @@ def freq_job(
         The pressure for the thermodynamic analysis.
     calc_swaps
         Optional swaps for the calculator.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {
-                "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-                "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-            }
-            ```
+    copy_files
+        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -206,7 +201,6 @@ def freq_job(
         Dictionary of results
     """
     atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
 
     defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
@@ -216,7 +210,7 @@ def freq_job(
 
     ml_calculator = NewtonNet(**flags)
     atoms.calc = ml_calculator
-    final_atoms = run_calc(atoms)
+    final_atoms = run_calc(atoms, copy_files=copy_files)
 
     summary = summarize_run(
         final_atoms,

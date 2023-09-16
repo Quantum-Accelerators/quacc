@@ -34,6 +34,29 @@ def static_job(
     """
     Carry out a single-point calculation.
 
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {
+            "mem": "16GB",
+            "chk": "Gaussian.chk",
+            "nprocshared": multiprocessing.cpu_count(),
+            "xc": xc,
+            "basis": basis,
+            "charge": charge,
+            "mult": spin_multiplicity,
+            "sp": "",
+            "scf": ["maxcycle=250", "xqc"],
+            "integral": "ultrafine",
+            "nosymmetry": "",
+            "pop": "CM5",
+            "gfinput": "",
+            "ioplist": ["6/7=3", "2/9=2000"],
+        }
+        ```
+
     Parameters
     ----------
     atoms
@@ -49,29 +72,6 @@ def static_job(
         Basis set
     calc_swaps
         Dictionary of custom kwargs for the calculator.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {
-                "mem": "16GB",
-                "chk": "Gaussian.chk",
-                "nprocshared": multiprocessing.cpu_count(),
-                "xc": xc,
-                "basis": basis,
-                "charge": charge,
-                "mult": spin_multiplicity,
-                "sp": "",
-                "scf": ["maxcycle=250", "xqc"],
-                "integral": "ultrafine",
-                "nosymmetry": "",
-                "pop": "CM5",
-                "gfinput": "",
-                "ioplist": ["6/7=3", "2/9=2000"],
-            }
-            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -80,8 +80,6 @@ def static_job(
     cclibSchema
         Dictionary of results, as specified in [quacc.schemas.cclib.summarize_run][]
     """
-    atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
 
     defaults = {
         "mem": "16GB",
@@ -99,15 +97,12 @@ def static_job(
         "gfinput": "",
         "ioplist": ["6/7=3", "2/9=2000"],  # see ASE issue #660
     }
-    flags = merge_dicts(defaults, calc_swaps)
-
-    atoms.calc = Gaussian(**flags)
-    atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
-
-    return summarize_run(
+    return _base_job(
         atoms,
-        LOG_FILE,
+        defaults=defaults,
+        calc_swaps=calc_swaps,
         additional_fields={"name": "Gaussian Static"},
+        copy_files=copy_files,
     )
 
 
@@ -124,6 +119,29 @@ def relax_job(
 ) -> cclibSchema:
     """
     Carry out a geometry optimization.
+
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {
+            "mem": "16GB",
+            "chk": "Gaussian.chk",
+            "nprocshared": multiprocessing.cpu_count(),
+            "xc": xc,
+            "basis": basis,
+            "charge": charge,
+            "mult": spin_multiplicity,
+            "opt": "",
+            "pop": "CM5",
+            "scf": ["maxcycle=250", "xqc"],
+            "integral": "ultrafine",
+            "nosymmetry": "",
+            "freq": "" if freq else None,
+            "ioplist": ["2/9=2000"],
+        }
+        ```
 
     Parameters
     ----------
@@ -142,29 +160,6 @@ def relax_job(
         If a frequency calculation should be carried out.
     calc_swaps
         Dictionary of custom kwargs for the calculator.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {
-                "mem": "16GB",
-                "chk": "Gaussian.chk",
-                "nprocshared": multiprocessing.cpu_count(),
-                "xc": xc,
-                "basis": basis,
-                "charge": charge,
-                "mult": spin_multiplicity,
-                "opt": "",
-                "pop": "CM5",
-                "scf": ["maxcycle=250", "xqc"],
-                "integral": "ultrafine",
-                "nosymmetry": "",
-                "freq": "" if freq else None,
-                "ioplist": ["2/9=2000"],
-            }
-            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -173,8 +168,6 @@ def relax_job(
     cclibSchema
         Dictionary of results, as specified in [quacc.schemas.cclib.summarize_run][]
     """
-    atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
 
     defaults = {
         "mem": "16GB",
@@ -192,6 +185,45 @@ def relax_job(
         "freq": "" if freq else None,
         "ioplist": ["2/9=2000"],  # ASE issue #660
     }
+    return _base_job(
+        atoms,
+        defaults=defaults,
+        calc_swaps=calc_swaps,
+        additional_fields={"name": "Gaussian Relax"},
+        copy_files=copy_files,
+    )
+
+
+def _base_job(
+    atoms: Atoms | dict,
+    defaults: dict | None = None,
+    calc_swaps: dict | None = None,
+    additional_fields: dict | None = None,
+    copy_files: list[str] | None = None,
+) -> cclibSchema:
+    """
+    Base job function for carrying out Gaussian recipes.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
+    defaults
+        Default parameters for the calculator.
+    calc_swaps
+        Dictionary of custom kwargs for the calculator.
+    additional_fields
+        Additional fields to supply to the summarizer.
+    copy_files
+        Files to copy to the runtime directory.
+
+    Returns
+    -------
+    cclibSchema
+        Dictionary of results, as specified in [quacc.schemas.cclib.summarize_run][]
+    """
+    atoms = fetch_atoms(atoms)
     flags = merge_dicts(defaults, calc_swaps)
 
     atoms.calc = Gaussian(**flags)
@@ -200,5 +232,5 @@ def relax_job(
     return summarize_run(
         atoms,
         LOG_FILE,
-        additional_fields={"name": "Gaussian Relax"},
+        additional_fields=additional_fields,
     )

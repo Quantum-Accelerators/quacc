@@ -370,9 +370,6 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:  # sourcery skip
         elif wflow_engine == "prefect":
             from prefect import flow as prefect_flow
 
-            if "validate_parameters" not in decorator_kwargs:
-                decorator_kwargs["validate_parameters"] = False
-
             decorated = prefect_flow(_func, **decorator_kwargs)
         else:
             decorated = _func
@@ -600,9 +597,6 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:  # sourcery ski
         elif wflow_engine == "prefect":
             from prefect import flow as prefect_flow
 
-            if "validate_parameters" not in decorator_kwargs:
-                decorator_kwargs["validate_parameters"] = False
-
             decorated = prefect_flow(_func, **decorator_kwargs)
         else:
             decorated = _func
@@ -693,5 +687,5 @@ def _make_dask_cluster(
     """
     cluster = cluster_class(**cluster_kwargs)
     if verbose:
-        print(cluster.job_script())
+        print(cluster.job_script())  # noqa: T201
     return cluster

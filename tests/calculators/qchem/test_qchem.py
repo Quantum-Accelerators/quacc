@@ -194,11 +194,6 @@ def test_qchem_read_results_advanced(tmpdir):
     assert calc.results["forces"][0][0] == pytest.approx(-0.4270884974249971)
     assert calc.prev_orbital_coeffs is not None
     assert calc.results["hessian"] is None
-    assert calc.results["frequencies"] is None
-    assert calc.results["frequency_mode_vectors"] is None
-    assert calc.results["entropy"] is None
-    assert calc.results["enthalpy"] is None
-    assert calc.results["all_data"] is not None
 
 
 def test_qchem_read_results_freq(tmpdir):
@@ -211,11 +206,10 @@ def test_qchem_read_results_freq(tmpdir):
     assert calc.prev_orbital_coeffs is not None
     assert len(calc.results["hessian"]) == 42
     assert len(calc.results["hessian"][0]) == 42
-    assert calc.results["frequencies"][0] == -340.2
-    assert len(calc.results["frequencies"]) == 36
-    assert len(calc.results["frequency_mode_vectors"]) == 36
-    assert len(calc.results["frequency_mode_vectors"][0]) == 14
-    assert len(calc.results["frequency_mode_vectors"][0][0]) == 3
-    assert calc.results["enthalpy"] == 2.647248450819514
-    assert calc.results["entropy"] == 0.003996739364205975
-    assert calc.results["all_data"] is not None
+    assert calc.results["qc_output"]["frequencies"][0] == -340.2
+    assert len(calc.results["qc_output"]["frequencies"]) == 36
+    assert len(calc.results["qc_output"]["frequency_mode_vectors"]) == 36
+    assert len(calc.results["qc_output"]["frequency_mode_vectors"][0]) == 14
+    assert len(calc.results["qc_output"]["frequency_mode_vectors"][0][0]) == 3
+    assert calc.results["qc_output"]["enthalpy"] == 2.647248450819514
+    assert calc.results["qc_output"]["entropy"] == 0.003996739364205975

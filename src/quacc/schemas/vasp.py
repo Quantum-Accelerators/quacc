@@ -69,7 +69,7 @@ def summarize_run(
 
     Returns
     -------
-    dict
+    VaspSchema
         Dictionary representation of the task document with the following
         fields:
 
