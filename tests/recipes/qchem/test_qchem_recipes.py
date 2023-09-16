@@ -213,7 +213,7 @@ def test_internal_relax_job(monkeypatch, tmpdir):
     assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826330655069403)
 
-    qcin = QCInput.from_file("mol.qin.gz")
+    qcin = QCInput.from_file("mol.qin.gz").as_dict()
     assert qcin["basis"] == "def2-svpd"
     assert qcin["geom_opt_max_cycles"] == "200"
     assert qcin["job_type"] == "opt"
