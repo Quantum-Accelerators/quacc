@@ -421,6 +421,10 @@ def _base_job(
         See QChemDictSet documentation for more details.
     copy_files
         Files to copy to the runtime directory.
+    job_type
+        The job type accepeted by pymatgen.
+    additional_fields
+        The additional_fields parameters to inject into the summary.
 
     Returns
     -------
