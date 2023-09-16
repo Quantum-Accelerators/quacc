@@ -350,8 +350,6 @@ def quasi_irc_job(
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
 
-    irc_opt_swaps = irc_opt_swaps or {}
-    relax_opt_swaps = relax_opt_swaps or {}
     default_settings = SETTINGS.copy()
 
     irc_opt_swaps_defaults = {"fmax": 100, "max_steps": 10}

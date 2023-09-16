@@ -113,10 +113,8 @@ def relax_job(
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
-    opt_swaps = opt_swaps or {}
 
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
-
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
     atoms.calc = LennardJones(**calc_swaps)

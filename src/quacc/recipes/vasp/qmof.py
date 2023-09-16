@@ -135,8 +135,6 @@ def _prerelax(
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
 
-    calc_swaps = calc_swaps or {}
-
     defaults = {
         "auto_kpts": {"kppa": 100},
         "ediff": 1e-4,
