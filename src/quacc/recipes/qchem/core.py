@@ -221,7 +221,7 @@ def internal_relax_job(
     charge: int,
     spin_multiplicity: int,
     method: str = "wb97mv",
-    basis: str = "def2-tzvpd",
+    basis: str = "def2-svpd",
     scf_algorithm: str = "diis",
     pcm_dielectric: str | None = None,
     smd_solvent: str | None = None,
@@ -230,8 +230,7 @@ def internal_relax_job(
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
-    Perform a frequency calculation on a molecular structure using Q-Chem
-    optimizers.
+    Optimize aka "relax" a molecular structure with Q-Chem optimizers.
 
     Parameters
     ----------
