@@ -28,10 +28,7 @@ if TYPE_CHECKING:
 
     from ase import Atoms
 
-    from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
-
-    class FreqSchema(VibSchema):
-        thermo: ThermoSchema
+    from quacc.schemas.ase import FreqSchema, OptSchema, RunSchema
 
 
 @job
@@ -45,6 +42,14 @@ def static_job(
     """
     Carry out a single-point calculation.
 
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {"method": method}
+        ```
+
     Parameters
     ----------
     atoms
@@ -53,8 +58,7 @@ def static_job(
     method
         GFN1-xTB, GFN2-xTB, and IPEA1-xTB.
     calc_swaps
-        Dictionary of custom kwargs for the tblite calculator. Overrides the
-        following defaults: `{"method": method}`.
+        Dictionary of custom kwargs for the tblite calculator.
     copy_files
         Files to copy to the runtime directory.
 
@@ -91,6 +95,20 @@ def relax_job(
     """
     Relax a structure.
 
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {"method": method}
+        ```
+
+        Optimizer Defaults:
+
+        ```python
+        {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
+        ```
+
     Parameters
     ----------
     atoms
@@ -101,18 +119,9 @@ def relax_job(
     relax_cell
         Whether to relax the cell.
     calc_swaps
-        Dictionary of custom kwargs for the tblite calculator. Overrides the
-        following defaults: `{"method": method}`
+        Dictionary of custom kwargs for the tblite calculator.
     opt_swaps
         Dictionary of custom kwargs for [quacc.utils.calc.run_ase_opt][].
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
-            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -152,6 +161,20 @@ def freq_job(
     """
     Run a frequency job and calculate thermochemistry.
 
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {"method": method}
+        ```
+
+        Frequency Defaults:
+
+        ```python
+        {}
+        ```
+
     Parameters
     ----------
     atoms
@@ -166,8 +189,7 @@ def freq_job(
     pressure
         Pressure in bar.
     calc_swaps
-        dictionary of custom kwargs for the xTB calculator. Overrides the
-        following defaults: `{"method": method}`
+        dictionary of custom kwargs for the xTB calculator.
     vib_kwargs
         dictionary of custom kwargs for the Vibrations object.
     copy_files
@@ -194,7 +216,10 @@ def freq_job(
 
     igt = ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)
     vib_summary["thermo"] = summarize_thermo(
-        igt, temperature=temperature, pressure=pressure
+        igt,
+        temperature=temperature,
+        pressure=pressure,
+        additional_fields={"name": "ASE Thermo Analysis"},
     )
 
     return vib_summary

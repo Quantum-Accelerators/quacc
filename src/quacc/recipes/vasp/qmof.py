@@ -12,10 +12,10 @@ from ase.optimize import BFGSLineSearch
 
 from quacc import job
 from quacc.calculators.vasp import Vasp
+from quacc.recipes.vasp.core import _base_job
 from quacc.schemas import fetch_atoms
 from quacc.schemas.ase import summarize_opt_run
-from quacc.schemas.vasp import summarize_run
-from quacc.utils.calc import run_ase_opt, run_calc
+from quacc.utils.calc import run_ase_opt
 from quacc.utils.dicts import merge_dicts
 
 if TYPE_CHECKING:
@@ -177,8 +177,6 @@ def _loose_relax_positions(
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
 
-    calc_swaps = calc_swaps or {}
-
     defaults = {
         "auto_kpts": {"kppa": 100},
         "ediff": 1e-4,
@@ -191,12 +189,12 @@ def _loose_relax_positions(
         "lwave": True,
         "nsw": 250,
     }
-    flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
-    atoms.calc = Vasp(atoms, preset=preset, **flags)
-    atoms = run_calc(atoms)
-
-    return summarize_run(
-        atoms, run_bader=False, additional_fields={"name": "QMOF Loose Relax"}
+    return _base_job(
+        atoms,
+        preset=preset,
+        defaults=defaults,
+        calc_swaps=calc_swaps,
+        additional_fields={"name": "QMOF Loose Relax"},
     )
 
 
@@ -223,8 +221,6 @@ def _loose_relax_cell(
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
 
-    calc_swaps = calc_swaps or {}
-
     defaults = {
         "auto_kpts": {"kppa": 100},
         "ediffg": -0.03,
@@ -235,14 +231,13 @@ def _loose_relax_cell(
         "lwave": True,
         "nsw": 500,
     }
-    flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
-    atoms.calc = Vasp(atoms, preset=preset, **flags)
-    atoms = run_calc(atoms, copy_files=["WAVECAR"])
-
-    return summarize_run(
+    return _base_job(
         atoms,
-        run_bader=False,
+        preset=preset,
+        defaults=defaults,
+        calc_swaps=calc_swaps,
         additional_fields={"name": "QMOF Loose Relax Volume"},
+        copy_files=["WAVECAR"],
     )
 
 
@@ -272,8 +267,7 @@ def _double_relax(
         List of dictionary of results from [quacc.schemas.vasp.summarize_run][]
     """
 
-    calc_swaps = calc_swaps or {}
-
+    # Run first relaxation
     defaults = {
         "ediffg": -0.03,
         "ibrion": 2,
@@ -283,36 +277,30 @@ def _double_relax(
         "lwave": True,
         "nsw": 500 if relax_cell else 250,
     }
-
-    # Run first relaxation
-    flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
-    calc1 = Vasp(atoms, preset=preset, **flags)
-    atoms.calc = calc1
-    atoms = run_calc(atoms, copy_files=["WAVECAR"])
-
-    # Update atoms for
-    summary1 = summarize_run(
-        atoms, run_bader=False, additional_fields={"name": "QMOF DoubleRelax 1"}
+    summary1 = _base_job(
+        atoms,
+        preset=preset,
+        defaults=defaults,
+        calc_swaps=calc_swaps,
+        additional_fields={"name": "QMOF DoubleRelax 1"},
+        copy_files=["WAVECAR"],
     )
+
+    # Update atoms for Relaxation 2
     atoms = summary1["atoms"]
 
     # Reset LREAL
     del defaults["lreal"]
 
     # Run second relaxation
-    flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
-    calc2 = Vasp(atoms, preset=preset, **flags)
-    atoms.calc = calc2
-
-    # Use ISTART = 0 if this goes from vasp_gam --> vasp_std
-    if calc1.kpts == [1, 1, 1] and calc2.kpts != [1, 1, 1]:
-        atoms.calc.set(istart=0)
-
-    atoms = run_calc(atoms, copy_files=["WAVECAR"])
-    summary2 = summarize_run(
-        atoms, run_bader=False, additional_fields={"name": "QMOF DoubleRelax 2"}
+    summary2 = _base_job(
+        summary1["atoms"],
+        preset=preset,
+        defaults=defaults,
+        calc_swaps=calc_swaps,
+        additional_fields={"name": "QMOF DoubleRelax 2"},
+        copy_files=["WAVECAR"],
     )
-
     return [summary1, summary2]
 
 
@@ -339,8 +327,6 @@ def _static(
         Dictionary of results from quacc.schemas.vasp.summarize_run
     """
 
-    calc_swaps = calc_swaps or {}
-
     defaults = {
         "laechg": True,
         "lcharg": True,
@@ -348,10 +334,11 @@ def _static(
         "lwave": True,
         "nsw": 0,
     }
-
-    # Run static calculation
-    flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
-    atoms.calc = Vasp(atoms, preset=preset, **flags)
-    atoms = run_calc(atoms, copy_files=["WAVECAR"])
-
-    return summarize_run(atoms, additional_fields={"name": "QMOF Static"})
+    return _base_job(
+        atoms,
+        preset=preset,
+        defaults=defaults,
+        calc_swaps=calc_swaps,
+        additional_fields={"name": "QMOF Static"},
+        copy_files=["WAVECAR"],
+    )

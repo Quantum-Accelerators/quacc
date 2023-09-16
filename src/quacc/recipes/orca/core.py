@@ -37,6 +37,31 @@ def static_job(
     """
     Carry out a single-point calculation.
 
+    ??? Note
+
+        Input Defaults:
+
+        ```python
+        {
+            xc: True,
+            basis: True,
+            "sp": True,
+            "slowconv": True,
+            "normalprint": True,
+            "xyzfile": True,
+        }
+        ```
+
+        Block Defaults:
+
+        ```python
+        (
+            {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
+            if which("mpirun")
+            else {}
+        )
+        ```
+
     Parameters
     ----------
     atoms
@@ -54,38 +79,10 @@ def static_job(
         Dictionary of orcasimpleinput swaps for the calculator. To enable new
         entries, set the value as True. To remove entries from the defaults, set
         the value as None.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {
-                xc: True,
-                basis: True,
-                "sp": True,
-                "slowconv": True,
-                "normalprint": True,
-                "xyzfile": True,
-            }
-            ```
     block_swaps
         Dictionary of orcablock swaps for the calculator. To enable new entries,
         set the value as True. To remove entries from the defaults, set the
         value as None.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            (
-                {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
-                if which("mpirun")
-                else {}
-            )
-            ```
-
     copy_files
         Files to copy to the runtime directory.
 
@@ -94,9 +91,6 @@ def static_job(
     cclibSchema
         Dictionary of results from [quacc.schemas.cclib.summarize_run][]
     """
-    atoms = fetch_atoms(atoms)
-    input_swaps = input_swaps or {}
-    block_swaps = block_swaps or {}
 
     default_inputs = {
         xc: True,
@@ -112,24 +106,16 @@ def static_job(
         else {}
     )
 
-    inputs = merge_dicts(default_inputs, input_swaps)
-    blocks = merge_dicts(default_blocks, block_swaps)
-    orcasimpleinput = " ".join(list(inputs.keys()))
-    orcablocks = " ".join(list(blocks.keys()))
-
-    atoms.calc = ORCA(
-        profile=OrcaProfile([SETTINGS.ORCA_CMD]),
-        charge=charge,
-        mult=spin_multiplicity,
-        orcasimpleinput=orcasimpleinput,
-        orcablocks=orcablocks,
-    )
-    atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
-
-    return summarize_run(
+    return _base_job(
         atoms,
-        LOG_FILE,
+        charge,
+        spin_multiplicity,
+        default_inputs=default_inputs,
+        default_blocks=default_blocks,
+        input_swaps=input_swaps,
+        block_swaps=block_swaps,
         additional_fields={"name": "ORCA Static"},
+        copy_files=copy_files,
     )
 
 
@@ -147,6 +133,32 @@ def relax_job(
 ) -> cclibSchema:
     """
     Carry out a geometry optimization.
+
+    ??? Note
+
+        Input Defaults:
+
+        ```python
+        {
+            xc: True,
+            basis: True,
+            "opt": True,
+            "slowconv": True,
+            "normalprint": True,
+            "freq": True if run_freq else None,
+            "xyzfile": True,
+        }
+        ```
+
+        Block Defaults:
+
+        ```python
+        (
+            {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
+            if which("mpirun")
+            else {}
+        )
+        ```
 
     Parameters
     ----------
@@ -166,38 +178,10 @@ def relax_job(
         Dictionary of orcasimpleinput swaps for the calculator. To enable new
         entries, set the value as True. To remove entries from the defaults, set
         the value as None.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {
-                xc: True,
-                basis: True,
-                "opt": True,
-                "slowconv": True,
-                "normalprint": True,
-                "freq": True if run_freq else None,
-                "xyzfile": True,
-            }
-            ```
     block_swaps
         Dictionary of orcablock swaps for the calculator. To enable new entries,
         set the value as True. To remove entries from the defaults, set the
         value as None.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            (
-                {f"%pal nprocs {multiprocessing.cpu_count()} end": True}
-                if which("mpirun")
-                else {}
-            )
-            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -206,9 +190,6 @@ def relax_job(
     cclibSchema
         Dictionary of results from [quacc.schemas.cclib.summarize_run][]
     """
-    atoms = fetch_atoms(atoms)
-    input_swaps = input_swaps or {}
-    block_swaps = block_swaps or {}
 
     default_inputs = {
         xc: True,
@@ -225,6 +206,65 @@ def relax_job(
         else {}
     )
 
+    return _base_job(
+        atoms,
+        charge,
+        spin_multiplicity,
+        default_inputs=default_inputs,
+        default_blocks=default_blocks,
+        input_swaps=input_swaps,
+        block_swaps=block_swaps,
+        additional_fields={"name": "ORCA Relax"},
+        copy_files=copy_files,
+    )
+
+
+def _base_job(
+    atoms: Atoms | dict,
+    charge: int,
+    spin_multiplicity: int,
+    default_inputs: dict | None = None,
+    default_blocks: dict | None = None,
+    input_swaps: dict | None = None,
+    block_swaps: dict | None = None,
+    additional_fields: dict | None = None,
+    copy_files: list[str] | None = None,
+) -> cclibSchema:
+    """
+    Base job function for ORCA recipes.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
+    charge
+        Charge of the system.
+    spin_multiplicity
+        Multiplicity of the system.
+    default_inputs
+        Default input parameters.
+    default_blocks
+        Default block input parameters.
+    input_swaps
+        Dictionary of orcasimpleinput swaps for the calculator. To enable new
+        entries, set the value as True. To remove entries from the defaults, set
+        the value as None.
+    block_swaps
+        Dictionary of orcablock swaps for the calculator. To enable new entries,
+        set the value as True. To remove entries from the defaults, set the
+        value as None.
+    additional_fields
+        Any additional fields to supply to the summarizer.
+    copy_files
+        Files to copy to the runtime directory.
+
+    Returns
+    -------
+    cclibSchema
+        Dictionary of results from [quacc.schemas.cclib.summarize_run][]
+    """
+    atoms = fetch_atoms(atoms)
     inputs = merge_dicts(default_inputs, input_swaps)
     blocks = merge_dicts(default_blocks, block_swaps)
     orcasimpleinput = " ".join(list(inputs.keys()))
@@ -242,5 +282,5 @@ def relax_job(
     return summarize_run(
         atoms,
         LOG_FILE,
-        additional_fields={"name": "ORCA Relax"},
+        additional_fields=additional_fields,
     )

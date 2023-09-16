@@ -36,7 +36,8 @@ if TYPE_CHECKING:
 
     from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
 
-    class FreqSchema(VibSchema):
+    class FreqSchema(RunSchema):
+        vib: VibSchema
         thermo: ThermoSchema
 
 
@@ -50,6 +51,17 @@ def static_job(
     """
     Carry out a single-point calculation.
 
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {
+            "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+            "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        }
+        ```
+
     Parameters
     ----------
     atoms
@@ -57,17 +69,6 @@ def static_job(
         the value
     calc_swaps
         Dictionary of custom kwargs for the newtonnet calculator.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {
-                "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-                "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-            }
-            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -106,6 +107,23 @@ def relax_job(
     """
     Relax a structure.
 
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {
+            "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+            "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        }
+        ```
+
+        Optimizer Defaults:
+
+        ```python
+        {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella or FIRE}
+        ```
+
     Parameters
     ----------
     atoms
@@ -113,27 +131,8 @@ def relax_job(
         the value
     calc_swaps
         Dictionary of custom kwargs for the newtonnet calculator.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {
-                "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-                "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-            }
-            ```
     opt_swaps
         Optional swaps for the optimization parameters.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella or FIRE}
-            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -173,9 +172,21 @@ def freq_job(
     temperature: float = 298.15,
     pressure: float = 1.0,
     calc_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> FreqSchema:
     """
     Perform a frequency calculation using the given atoms object.
+
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {
+            "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+            "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        }
+        ```
 
     Parameters
     ----------
@@ -187,23 +198,13 @@ def freq_job(
         The pressure for the thermodynamic analysis.
     calc_swaps
         Optional swaps for the calculator.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {
-                "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-                "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-            }
-            ```
+    copy_files
+        Files to copy to the runtime directory.
 
     Returns
     -------
     FreqSchema
-        Dictionary of results specified in [quacc.schemas.ase.summarize_vib_run][]
-        and [quacc.schemas.ase.summarize_thermo][]
+        Dictionary of results
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
@@ -216,22 +217,30 @@ def freq_job(
 
     ml_calculator = NewtonNet(**flags)
     atoms.calc = ml_calculator
+    final_atoms = run_calc(atoms, copy_files=copy_files)
 
-    ml_calculator.calculate(atoms)
-    hessian = ml_calculator.results["hessian"]
-    vib = VibrationsData(atoms, hessian)
-    vib_summary = summarize_vib_run(
-        vib, additional_fields={"name": "NewtonNet Frequency"}
+    summary = summarize_run(
+        final_atoms,
+        input_atoms=atoms,
+        additional_fields={"name": "NewtonNet Hessian"},
+    )
+    energy = summary["results"]["energy"]
+    hessian = summary["results"]["hessian"]
+
+    vib = VibrationsData(final_atoms, hessian)
+    summary["vib"] = summarize_vib_run(
+        vib, additional_fields={"name": "ASE Vibrations Analysis"}
     )
 
-    igt = ideal_gas(
-        atoms, vib.get_frequencies(), energy=ml_calculator.results["energy"]
-    )
-    vib_summary["thermo"] = summarize_thermo(
-        igt, temperature=temperature, pressure=pressure
+    igt = ideal_gas(final_atoms, vib.get_frequencies(), energy=energy)
+    summary["thermo"] = summarize_thermo(
+        igt,
+        temperature=temperature,
+        pressure=pressure,
+        additional_fields={"name": "ASE Thermo Analysis"},
     )
 
-    return vib_summary
+    return summary
 
 
 def _add_stdev_and_hess(summary: dict) -> dict:
@@ -261,10 +270,12 @@ def _add_stdev_and_hess(summary: dict) -> dict:
             model_path=SETTINGS.NEWTONNET_MODEL_PATH,
             settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
         )
-        ml_calculator.calculate(conf["atoms"])
-        conf["hessian"] = ml_calculator.results["hessian"]
-        conf["energy_std"] = ml_calculator.results["energy_disagreement"]
-        conf["forces_std"] = ml_calculator.results["forces_disagreement"]
-        conf["hessian_std"] = ml_calculator.results["hessian_disagreement"]
+        atoms = conf["atoms"]
+        atoms.calc = ml_calculator
+        results = run_calc(atoms).calc.results
+        conf["hessian"] = results["hessian"]
+        conf["energy_std"] = results["energy_disagreement"]
+        conf["forces_std"] = results["forces_disagreement"]
+        conf["hessian_std"] = results["hessian_disagreement"]
 
     return summary

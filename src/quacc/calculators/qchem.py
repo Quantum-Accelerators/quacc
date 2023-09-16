@@ -7,12 +7,13 @@ import struct
 from copy import deepcopy
 from pathlib import Path
 
+import numpy as np
 from ase import Atoms, units
 from ase.calculators.calculator import FileIOCalculator
 from monty.io import zopen
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.qchem.outputs import QCOutput
-from pymatgen.io.qchem.sets import ForceSet
+from pymatgen.io.qchem.sets import QChemDictSet
 
 from quacc.custodian import qchem as custodian_qchem
 
@@ -34,7 +35,7 @@ class QChem(FileIOCalculator):
         The spin multiplicity of the molecular system.
     qchem_input_params
         Dictionary of Q-Chem input parameters to be passed to
-        pymatgen.io.qchem.sets.ForceSet.
+        pymatgen.io.qchem.sets.DictSet.
     **fileiocalculator_kwargs
         Additional arguments to be passed to
         ase.calculators.calculator.FileIOCalculator.
@@ -45,7 +46,7 @@ class QChem(FileIOCalculator):
         The ASE Atoms object with attached Q-Chem calculator.
     """
 
-    implemented_properties = ["energy", "forces"]  # noqa: RUF012
+    implemented_properties = ["energy", "forces", "hessian"]  # noqa: RUF012
 
     def __init__(
         self,
@@ -53,6 +54,9 @@ class QChem(FileIOCalculator):
         charge: int = 0,
         spin_multiplicity: int = 1,
         method: str | None = None,
+        basis_set: str = "def2-tzvpd",
+        job_type: str = "force",
+        scf_algorithm: str = "diis",
         cores: int = 1,
         qchem_input_params: dict | None = None,
         **fileiocalculator_kwargs,
@@ -62,6 +66,9 @@ class QChem(FileIOCalculator):
         self.cores = cores
         self.charge = charge
         self.spin_multiplicity = spin_multiplicity
+        self.job_type = job_type
+        self.basis_set = basis_set
+        self.scf_algorithm = scf_algorithm
         self.qchem_input_params = qchem_input_params or {}
         self.fileiocalculator_kwargs = fileiocalculator_kwargs
 
@@ -91,7 +98,12 @@ class QChem(FileIOCalculator):
             "cores": self.cores,
             "charge": self.charge,
             "spin_multiplicity": self.spin_multiplicity,
+            "scf_algorithm": self.scf_algorithm,
+            "basis_set": self.basis_set,
         }
+
+        if method:
+            self.default_parameters["method"] = method
 
         # We also want to save the contents of self.qchem_input_params. However,
         # the overwrite_inputs key will have a corresponding value which is
@@ -154,48 +166,78 @@ class QChem(FileIOCalculator):
                 self.qchem_input_params["overwrite_inputs"]["rem"] = {}
             if "scf_guess" not in self.qchem_input_params["overwrite_inputs"]["rem"]:
                 self.qchem_input_params["overwrite_inputs"]["rem"]["scf_guess"] = "read"
-        qcin = ForceSet(mol, qchem_version=6, **self.qchem_input_params)
+        qcin = QChemDictSet(
+            mol,
+            self.job_type,
+            self.basis_set,
+            self.scf_algorithm,
+            qchem_version=6,
+            **self.qchem_input_params,
+        )
         qcin.write("mol.qin")
 
     def read_results(self):
         data = QCOutput("mol.qout").data
         self.results["energy"] = data["final_energy"] * units.Hartree
-        tmp_grad_data = []
-        # Read the gradient scratch file in 8 byte chunks
-        with zopen("131.0", mode="rb") as file:
-            binary = file.read()
+        if self.job_type in ["force", "opt"]:
+            tmp_grad_data = []
+            # Read the gradient scratch file in 8 byte chunks
+            with zopen("131.0", mode="rb") as file:
+                binary = file.read()
             tmp_grad_data.extend(
                 struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
-                for ii in range(len(binary) // 8)
+                for ii in range(int(len(binary) / 8))
             )
-        grad = [
-            [
-                float(tmp_grad_data[ii * 3]),
-                float(tmp_grad_data[ii * 3 + 1]),
-                float(tmp_grad_data[ii * 3 + 2]),
+            grad = [
+                [
+                    float(tmp_grad_data[ii * 3]),
+                    float(tmp_grad_data[ii * 3 + 1]),
+                    float(tmp_grad_data[ii * 3 + 2]),
+                ]
+                for ii in range(int(len(tmp_grad_data) / 3))
             ]
-            for ii in range(len(tmp_grad_data) // 3)
-        ]
-        # Ensure that the scratch values match the correct values from the
-        # output file but with higher precision
-        if data["pcm_gradients"] is not None:
-            gradient = data["pcm_gradients"][0]
+            # Ensure that the scratch values match the correct values from the
+            # output file but with higher precision
+            if data["pcm_gradients"] is not None:
+                gradient = data["pcm_gradients"][0]
+            else:
+                gradient = data["gradients"][0]
+            for ii, subgrad in enumerate(grad):
+                for jj, val in enumerate(subgrad):
+                    if abs(gradient[ii, jj] - val) > 1e-6:
+                        raise ValueError(
+                            "Difference between gradient value in scratch file vs. output file should not be this large."
+                        )
+                    gradient[ii, jj] = val
+            # Convert gradient to force + deal with units
+            self.results["forces"] = gradient * (-units.Hartree / units.Bohr)
         else:
-            gradient = data["gradients"][0]
-        for ii, subgrad in enumerate(grad):
-            for jj, val in enumerate(subgrad):
-                if abs(gradient[ii, jj] - val) > 1e-6:
-                    raise ValueError(
-                        "Difference between gradient value in scratch file vs. output file should not be this large."
-                    )
-                gradient[ii, jj] = val
-        # Convert gradient to force + deal with units
-        self.results["forces"] = gradient * (-units.Hartree / units.Bohr)
+            self.results["forces"] = None
         self.prev_orbital_coeffs = []
         # Read orbital coefficients scratch file in 8 byte chunks
         with zopen("53.0", mode="rb") as file:
             binary = file.read()
-            self.prev_orbital_coeffs.extend(
+        self.prev_orbital_coeffs.extend(
+            struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
+            for ii in range(int(len(binary) / 8))
+        )
+        if self.job_type == "freq":
+            tmp_hess_data = []
+            # Read Hessian scratch file in 8 byte chunks
+            with zopen("132.0", mode="rb") as file:
+                binary = file.read()
+            tmp_hess_data.extend(
                 struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
-                for ii in range(len(binary) // 8)
+                for ii in range(int(len(binary) / 8))
             )
+            self.results["hessian"] = np.reshape(
+                np.array(tmp_hess_data),
+                (len(data["species"]) * 3, len(data["species"]) * 3),
+            )
+            data["enthalpy"] = data["total_enthalpy"] * (units.kcal / units.mol)
+            data["entropy"] = data["total_entropy"] * (0.001 * units.kcal / units.mol)
+            for k in ["total_enthalpy", "total_entropy"]:
+                data.pop(k)
+        else:
+            self.results["hessian"] = None
+        self.results["qc_output"] = data

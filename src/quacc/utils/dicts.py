@@ -4,13 +4,14 @@ Utility functions for dealing with dictionaries
 from __future__ import annotations
 
 
-def merge_dicts(dict1: dict, dict2: dict, remove_empties: bool = True) -> dict:
+def merge_dicts(
+    dict1: dict | None, dict2: dict | None, remove_empties: bool = True
+) -> dict:
     """
     Recursively merges two dictionaries.
 
     Parameters
     ----------
-
     dict1
         First dictionary
     dict2
@@ -23,6 +24,8 @@ def merge_dicts(dict1: dict, dict2: dict, remove_empties: bool = True) -> dict:
     dict
         Merged dictionary
     """
+    dict1 = dict1 or {}
+    dict2 = dict2 or {}
     merged = dict1.copy()
 
     for key, value in dict2.items():

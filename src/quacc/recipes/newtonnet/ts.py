@@ -31,18 +31,17 @@ if TYPE_CHECKING:
     import numpy as np
     from ase import Atoms
 
-    from quacc.recipes.newtonnet.core import FreqSchema
-    from quacc.schemas.ase import OptSchema
+    from quacc.schemas.ase import FreqSchema, OptSchema
 
     class TSSchema(OptSchema):
-        freq: FreqSchema | None
+        freq_job: FreqSchema | None
 
     class IRCSchema(OptSchema):
-        freq: FreqSchema | None
+        freq_job: FreqSchema | None
 
     class QuasiIRCSchema(OptSchema):
-        irc: IRCSchema
-        freq: FreqSchema | None
+        irc_job: IRCSchema
+        freq_job: FreqSchema | None
 
 
 @job
@@ -55,9 +54,32 @@ def ts_job(
     freq_job_kwargs: dict | None = None,
     calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> TSSchema:
     """
     Perform a transition state (TS) job using the given atoms object.
+
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {
+            "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+            "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        }
+        ```
+
+        Optimizer Defaults:
+
+        ```python
+        {
+            "fmax": 0.01,
+            "max_steps": 1000,
+            "optimizer": Sella,
+            "optimizer_kwargs": {"diag_every_n": 0} if use_custom_hessian else {},
+        }
+        ```
 
     Parameters
     ----------
@@ -71,32 +93,10 @@ def ts_job(
         Keyword arguments to use for the `freq_job`.
     calc_swaps
         Optional swaps for the NewtonNet calculator.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {
-                "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-                "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-            }
-            ```
     opt_swaps
         Optional swaps for the optimization parameters.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {
-                "fmax": 0.01,
-                "max_steps": 1000,
-                "optimizer": Sella,
-                "optimizer_kwargs": {"diag_every_n": 0} if use_custom_hessian else {},
-            }
-            ```
+    copy_files
+        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -134,7 +134,7 @@ def ts_job(
     atoms.calc = ml_calculator
 
     # Run the TS optimization
-    dyn = run_ase_opt(atoms, **opt_flags)
+    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
     opt_ts_summary = _add_stdev_and_hess(
         summarize_opt_run(dyn, additional_fields={"name": "NewtonNet TS"})
     )
@@ -143,7 +143,7 @@ def ts_job(
     freq_summary = (
         freq_job.__wrapped__(opt_ts_summary, **freq_job_kwargs) if run_freq else None
     )
-    opt_ts_summary["freq"] = freq_summary
+    opt_ts_summary["freq_job"] = freq_summary
 
     return opt_ts_summary
 
@@ -158,10 +158,47 @@ def irc_job(
     freq_job_kwargs: dict | None = None,
     calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> IRCSchema:
     """
     Perform an intrinsic reaction coordinate (IRC) job using the given atoms
     object.
+
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {
+            "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+            "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        }
+        ```
+
+        IRC Defaults:
+
+        ```python
+        {
+            "fmax": 0.01,
+            "max_steps": 1000,
+            "optimizer": IRC,
+            "optimizer_kwargs": {
+                "dx": 0.1,
+                "eta": 1e-4,
+                "gamma": 0.4,
+                "keep_going": True,
+            },
+            "run_kwargs": {
+                "direction": direction,
+            },
+        }
+        ```
+
+        Optimizer Defaults:
+
+        ```python
+        {}
+        ```
 
     Parameters
     ----------
@@ -175,40 +212,10 @@ def irc_job(
         Keyword arguments for the `freq_job`.
     calc_swaps
         Optional swaps for the calculator.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {
-                "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-                "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-            }
-            ```
     opt_swaps
         Optional swaps for the optimization parameters.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {
-                "fmax": 0.01,
-                "max_steps": 1000,
-                "optimizer": IRC,
-                "optimizer_kwargs": {
-                    "dx": 0.1,
-                    "eta": 1e-4,
-                    "gamma": 0.4,
-                    "keep_going": True,
-                },
-                "run_kwargs": {
-                    "direction": direction,
-                },
-            }
-            ```
+    copy_files
+        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -248,7 +255,7 @@ def irc_job(
 
     # Run IRC
     SETTINGS.CHECK_CONVERGENCE = False
-    dyn = run_ase_opt(atoms, **opt_flags)
+    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
     opt_irc_summary = _add_stdev_and_hess(
         summarize_opt_run(
             dyn, additional_fields={"name": f"NewtonNet IRC: {direction}"}
@@ -260,7 +267,7 @@ def irc_job(
     freq_summary = (
         freq_job.__wrapped__(opt_irc_summary, **freq_job_kwargs) if run_freq else None
     )
-    opt_irc_summary["freq"] = freq_summary
+    opt_irc_summary["freq_job"] = freq_summary
 
     return opt_irc_summary
 
@@ -272,12 +279,27 @@ def quasi_irc_job(
     atoms: Atoms | dict,
     direction: Literal["forward", "reverse"] = "forward",
     run_freq: bool = True,
+    irc_job_kwargs: dict | None = None,
+    relax_job_kwargs: dict | None = None,
     freq_job_kwargs: dict | None = None,
-    irc_swaps: dict | None = None,
-    opt_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> QuasiIRCSchema:
     """
     Perform a quasi-IRC job using the given atoms object.
+
+    ??? Note
+
+        IRC Defaults:
+
+        ```python
+        {"max_steps": 5}
+        ```
+
+        Optimizer Defaults:
+
+        ```python
+        {}
+        ```
 
     Parameters
     ----------
@@ -287,22 +309,14 @@ def quasi_irc_job(
         The direction of the IRC calculation ("forward" or "reverse").
     run_freq
         Whether to run the frequency analysis.
+    irc_job_kwargs
+        Keyword arguments for `irc_job`
+    relax_job_kwargs
+        Keyword arguments for `relax_job`
     freq_job_kwargs
         Keyword arguments for `freq_job`.
-    irc_swaps
-        Optional swaps for the IRC optimization parameters.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {"max_steps": 5}
-            ```
-
-    opt_swaps
-        Optional swaps for the optimization parameters. Overrides
-        the following defaults: `{}`.
+    copy_files
+        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -310,27 +324,30 @@ def quasi_irc_job(
         A dictionary containing the IRC summary, optimization summary, and
         thermodynamic summary.
     """
-    irc_swaps = irc_swaps or {}
-    opt_swaps = opt_swaps or {}
+    relax_job_kwargs = relax_job_kwargs or {}
     freq_job_kwargs = freq_job_kwargs or {}
 
-    irc_defaults = {"max_steps": 5}
-    irc_flags = merge_dicts(irc_defaults, irc_swaps)
+    irc_job_defaults = {"calc_swaps": {"max_steps": 5}}
+    irc_job_kwargs = merge_dicts(irc_job_defaults, irc_job_kwargs)
 
     # Run IRC
     irc_summary = irc_job.__wrapped__(
-        atoms, direction=direction, opt_swaps=irc_flags, run_freq=False
+        atoms,
+        direction=direction,
+        run_freq=False,
+        copy_files=copy_files,
+        **irc_job_kwargs,
     )
 
     # Run opt
-    relax_summary = relax_job.__wrapped__(irc_summary, **opt_swaps)
+    relax_summary = relax_job.__wrapped__(irc_summary, **relax_job_kwargs)
 
     # Run frequency
     freq_summary = (
         freq_job.__wrapped__(relax_summary, **freq_job_kwargs) if run_freq else None
     )
-    relax_summary["freq"] = freq_summary
-    relax_summary["irc"] = irc_summary
+    relax_summary["freq_job"] = freq_summary
+    relax_summary["irc_job"] = irc_summary
 
     return relax_summary
 
