@@ -98,7 +98,7 @@ def static_job(
         overwrite_inputs=overwrite_inputs,
         copy_files=copy_files,
         job_type="force",
-        additional_fields={"name": "Q-Chem Statix"},
+        additional_fields={"name": "Q-Chem Static"},
     )
 
 
