@@ -219,7 +219,7 @@ class QChem(FileIOCalculator):
             binary = file.read()
         self.prev_orbital_coeffs.extend(
             struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
-            for ii in range(len(binary) // 8)
+            for ii in range(int(len(binary) / 8))
         )
         if self.job_type == "freq":
             tmp_hess_data = []
@@ -228,7 +228,7 @@ class QChem(FileIOCalculator):
                 binary = file.read()
             tmp_hess_data.extend(
                 struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
-                for ii in range(len(binary) // 8)
+                for ii in range(int(len(binary) / 8))
             )
             self.results["hessian"] = np.reshape(
                 np.array(tmp_hess_data),
