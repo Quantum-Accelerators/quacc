@@ -138,7 +138,7 @@ def ts_job(
         "optimizer": Sella,
     }
 
-    if opt_swaps.get("optimizer", Sella) is not Sella:
+    if opt_swaps and opt_swaps.get("optimizer", Sella) is not Sella:
         raise ValueError("Only Sella should be used for TS optimization.")
 
     return _base_opt_job(
@@ -270,7 +270,7 @@ def irc_job(
         "optimizer_kwargs": {"keep_going": True},
         "run_kwargs": {"direction": direction},
     }
-    if opt_swaps.get("optimizer", IRC) is not IRC:
+    if opt_swaps and opt_swaps.get("optimizer", IRC) is not IRC:
         raise ValueError("Only Sella's IRC should be used for IRC optimization.")
 
     return _base_opt_job(
