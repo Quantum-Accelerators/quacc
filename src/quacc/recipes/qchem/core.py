@@ -14,6 +14,8 @@ from quacc.utils.calc import run_ase_opt, run_calc
 from quacc.utils.dicts import merge_dicts, remove_dict_empties
 
 try:
+    from typing import Literal
+
     from sella import Sella
 
     has_sella = True
@@ -379,7 +381,7 @@ def _base_job(
     n_cores: int | None = None,
     overwrite_inputs: dict | None = None,
     copy_files: list[str] | None = None,
-    job_type: str = "force",
+    job_type: Literal["opt", "sp", "freq", "force"] = "force",
     additional_fields: dict | None = None,
 ) -> RunSchema:
     """
