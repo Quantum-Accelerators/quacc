@@ -46,7 +46,7 @@ class QChem(FileIOCalculator):
         The ASE Atoms object with attached Q-Chem calculator.
     """
 
-    implemented_properties = ["energy", "forces", "frequencies"]  # noqa: RUF012
+    implemented_properties = ["energy", "forces", "hessian"]  # noqa: RUF012
 
     def __init__(
         self,
@@ -234,16 +234,10 @@ class QChem(FileIOCalculator):
                 np.array(tmp_hess_data),
                 (len(data["species"]) * 3, len(data["species"]) * 3),
             )
-            self.results["frequencies"] = data["frequencies"]
-            self.results["frequency_mode_vectors"] = data["frequency_mode_vectors"]
-            self.results["enthalpy"] = data["total_enthalpy"] * (units.kcal / units.mol)
-            self.results["entropy"] = data["total_entropy"] * (
-                0.001 * units.kcal / units.mol
-            )
+            data["enthalpy"] = data["total_enthalpy"] * (units.kcal / units.mol)
+            data["entropy"] = data["total_entropy"] * (0.001 * units.kcal / units.mol)
+            for k in ["total_enthalpy", "total_entropy"]:
+                data.pop(k)
         else:
             self.results["hessian"] = None
-            self.results["frequencies"] = None
-            self.results["frequency_mode_vectors"] = None
-            self.results["enthalpy"] = None
-            self.results["entropy"] = None
-        self.results["all_data"] = data
+        self.results["qc_output"] = data
