@@ -41,7 +41,7 @@ def static_job(
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
-    Perform a frequency calculation on a molecular structure.
+    Carry out a single-point calculation.
 
     Parameters
     ----------
@@ -56,7 +56,7 @@ def static_job(
         DFT exchange-correlation functional or other electronic structure
         method. Defaults to wB97M-V.
     basis
-        Basis set. Defaults to def2-SVPD.
+        Basis set. Defaults to def2-TZVPD.
     scf_algorithm
         Algorithm used to converge the SCF. Defaults to "diis", but for
         particularly difficult cases, "gdm" should be employed instead.
