@@ -381,10 +381,10 @@ def relax_job(
         }
         ```
 
-        Optimizar defaults:
+        Optimizer defaults:
 
         ```python
-        {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella}
+        {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella if has_sella else FIRE}
         ```
 
     Parameters
