@@ -68,7 +68,7 @@ def bulk_to_defects_flow(
 
     Returns
     -------
-    list[dict]
+    list[RunSchema | OptSchema]
         List of dictionary of results from [quacc.schemas.ase.summarize_run][] or
         [quacc.schemas.ase.summarize_opt_run][]
     """

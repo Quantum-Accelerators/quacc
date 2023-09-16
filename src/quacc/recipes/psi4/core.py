@@ -37,6 +37,22 @@ def static_job(
     """
     Function to carry out a single-point calculation.
 
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {
+            "mem": "16GB",
+            "num_threads": "max",
+            "method": method,
+            "basis": basis,
+            "charge": charge,
+            "multiplicity": spin_multiplicity,
+            "reference": "uks" if spin_multiplicity > 1 else "rks",
+        }
+        ```
+
     Parameters
     ----------
     atoms
@@ -52,22 +68,6 @@ def static_job(
         Basis set
     calc_swaps
         Dictionary of custom kwargs for the calculator.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {
-                "mem": "16GB",
-                "num_threads": "max",
-                "method": method,
-                "basis": basis,
-                "charge": charge,
-                "multiplicity": spin_multiplicity,
-                "reference": "uks" if spin_multiplicity > 1 else "rks",
-            }
-            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -76,8 +76,6 @@ def static_job(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-    atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
 
     defaults = {
         "mem": "16GB",
@@ -88,6 +86,53 @@ def static_job(
         "multiplicity": spin_multiplicity,
         "reference": "uks" if spin_multiplicity > 1 else "rks",
     }
+    return _base_job(
+        atoms,
+        charge,
+        spin_multiplicity,
+        defaults=defaults,
+        calc_swaps=calc_swaps,
+        additional_fields={"name": "Psi4 Static"},
+        copy_files=copy_files,
+    )
+
+
+def _base_job(
+    atoms: Atoms | dict,
+    charge: int,
+    spin_multiplicity: int,
+    defaults: dict | None = None,
+    calc_swaps: dict | None = None,
+    additional_fields: dict | None = None,
+    copy_files: list[str] | None = None,
+) -> RunSchema:
+    """
+    Base function to carry out Psi4 recipes.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
+    charge
+        Charge of the system.
+    spin_multiplicity
+        Multiplicity of the system.
+    defaults
+        The default calculator parameters.
+    calc_swaps
+        Dictionary of custom kwargs for the calculator.
+    additional_fields
+        Any additional fields to supply to the summarizer.
+    copy_files
+        Files to copy to the runtime directory.
+
+    Returns
+    -------
+    RunSchema
+        Dictionary of results from [quacc.schemas.ase.summarize_run][]
+    """
+    atoms = fetch_atoms(atoms)
     flags = merge_dicts(defaults, calc_swaps)
 
     atoms.calc = Psi4(**flags)
@@ -97,5 +142,5 @@ def static_job(
         final_atoms,
         input_atoms=atoms,
         charge_and_multiplicity=(charge, spin_multiplicity),
-        additional_fields={"name": "Psi4 Static"},
+        additional_fields=additional_fields,
     )

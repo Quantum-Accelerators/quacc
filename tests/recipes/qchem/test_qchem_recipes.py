@@ -562,7 +562,6 @@ def test_quasi_irc_job(monkeypatch, tmpdir):
     monkeypatch.setattr(QChem, "read_results", mock_read)
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute4)
 
-    shared_kwargs = {"basis": "def2-tzvpd"}
     relax_opt_swaps = {"max_steps": 5}
 
     charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
@@ -571,7 +570,7 @@ def test_quasi_irc_job(monkeypatch, tmpdir):
         charge,
         spin_multiplicity,
         "forward",
-        shared_kwargs=shared_kwargs,
+        basis="def2-tzvpd",
         relax_opt_swaps=relax_opt_swaps,
     )
 
@@ -589,10 +588,6 @@ def test_quasi_irc_job(monkeypatch, tmpdir):
     )
     qcinput_nearly_equal(qcin, ref_qcin)
 
-    shared_kwargs = {
-        "basis": "def2-svpd",
-        "scf_algorithm": "gdm",
-    }
     irc_opt_swaps = {"max_steps": 6}
     relax_opt_swaps = {"max_steps": 6}
 
@@ -601,7 +596,8 @@ def test_quasi_irc_job(monkeypatch, tmpdir):
         -1,
         2,
         "reverse",
-        shared_kwargs=shared_kwargs,
+        basis="def2-svpd",
+        scf_algorithm="gdm",
         irc_opt_swaps=irc_opt_swaps,
         relax_opt_swaps=relax_opt_swaps,
     )

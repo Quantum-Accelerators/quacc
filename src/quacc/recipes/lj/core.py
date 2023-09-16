@@ -37,14 +37,21 @@ def static_job(
     """
     Function to carry out a static calculation.
 
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {}
+        ```
+
     Parameters
     ----------
     atoms
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     calc_swaps
-        Dictionary of custom kwargs for the LJ calculator. Overrides the following
-        the defaults: `{}`
+        Dictionary of custom kwargs for the LJ calculator.
     copy_files
         Files to copy to the runtime directory.
 
@@ -72,25 +79,30 @@ def relax_job(
     copy_files: list[str] | None = None,
 ) -> OptSchema:
     """
-    Function to carry out a geometry optimization
+    Function to carry out a geometry optimization.
+
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {}
+        ```
+
+        Optimizer Defaults:
+
+        ```python
+        {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
+        ```
 
     Parameters
     ----------
     atoms
         Atoms object
     calc_swaps
-        Dictionary of custom kwargs for the LJ calculator. Overrides
-        the following defaults: `{}`
+        Dictionary of custom kwargs for the LJ calculator.
     opt_swaps
         Dictionary of swaps for [quacc.utils.calc.run_ase_opt][].
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
-            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -126,6 +138,20 @@ def freq_job(
     """
     Run a frequency job and calculate thermochemistry.
 
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {}
+        ```
+
+        Vibrations Defaults:
+
+        ```python
+        {}
+        ```
+
     Parameters
     ----------
     atoms
@@ -138,18 +164,16 @@ def freq_job(
     pressure
         Pressure in bar.
     calc_swaps
-        dictionary of custom kwargs for the LJ calculator. Overrides the
-        following defaults: `{}`
+        dictionary of custom kwargs for the LJ calculator.
     vib_kwargs
-        dictionary of custom kwargs for the Vibrations object. Overrides
-        the following defaults: `{}`
+        dictionary of custom kwargs for the Vibrations object.
     copy_files
         Files to copy to the runtime directory.
 
     Returns
     -------
     FreqSchema
-        Dictionary of results, specified in [quacc.schemas.ase.run_ase_vib][]
+        Dictionary of results, specified in [quacc.schemas.ase.summarize_vib_run][]
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
