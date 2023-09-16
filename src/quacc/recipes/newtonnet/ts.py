@@ -4,8 +4,6 @@ Transition state recipes for the NewtonNet code
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
-
-from ase.optimize import FIRE
 from monty.dev import requires
 
 from quacc import SETTINGS, job

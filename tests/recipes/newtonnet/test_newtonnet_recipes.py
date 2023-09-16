@@ -4,7 +4,6 @@ from pathlib import Path
 import numpy as np
 import pytest
 from ase.build import molecule
-from ase.optimize import FIRE
 
 from quacc import SETTINGS
 from quacc.recipes.newtonnet.core import freq_job, relax_job, static_job
