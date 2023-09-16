@@ -173,7 +173,7 @@ def freq_job(
     Returns
     -------
     FreqSchema
-        Dictionary of results, specified in [quacc.schemas.ase.run_ase_vib][]
+        Dictionary of results, specified in [quacc.schemas.ase.summarize_vib_run][]
     """
     atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}

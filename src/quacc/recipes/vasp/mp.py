@@ -134,9 +134,9 @@ def mp_relax_flow(
     ----------
     atoms
         Atoms object for the structure.
-    prerelax_kwargs
+    prerelax_job_kwargs
         Additional keyword arguments to pass to the pre-relaxation calculation.
-    relax_kwargs
+    relax_job_kwargs
         Additional keyword arguments to pass to the relaxation calculation.
 
     Returns
