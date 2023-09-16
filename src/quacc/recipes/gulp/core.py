@@ -80,7 +80,7 @@ def static_job(
 
     keyword_defaults = {
         "gfnff": True if use_gfnff else None,
-        "gwolf": True if use_gfnff and atoms.pbc.any() else None,
+        "gwolf": True if use_gfnff else None,
     }
     option_defaults = {"dump every gulp.res": True}
 
@@ -160,8 +160,8 @@ def relax_job(
     keyword_defaults = {
         "opti": True,
         "gfnff": True if use_gfnff else None,
-        "gwolf": True if use_gfnff and atoms.pbc.any() else None,
-        "conp": True if relax_cell and atoms.pbc.any() else None,
+        "gwolf": True if use_gfnff else None,
+        "conp": True if relax_cell else None,
         "conv": None if relax_cell and atoms.pbc.any() else True,
     }
     option_defaults = {"dump every gulp.res": True}
@@ -224,6 +224,10 @@ def _base_job(
     }
     keywords = merge_dicts(keyword_defaults, keyword_swaps)
     options = merge_dicts(option_defaults, option_swaps)
+
+    if not atoms.pbc.any():
+        for k in ["gwolf", "conp"]:
+            keywords.pop(k, None)
 
     gulp_keywords = " ".join(list(keywords.keys()))
     gulp_options = list(options.keys())
