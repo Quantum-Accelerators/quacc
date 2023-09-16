@@ -219,7 +219,7 @@ def _base_job(
     atoms = fetch_atoms(atoms)
 
     if not atoms.pbc.any():
-        if "opti" in keyword_defaults and "conv" not in keyword_defaults:
+        if keyword_defaults.get("opti") and not keyword_defaults.get("conv"):
             keyword_defaults["conv"] = True
         for k in ["gwolf", "conp"]:
             keyword_defaults.pop(k, None)
