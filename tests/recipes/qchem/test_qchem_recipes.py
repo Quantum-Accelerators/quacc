@@ -13,7 +13,7 @@ from pymatgen.io.qchem.inputs import QCInput
 
 from quacc import SETTINGS
 from quacc.calculators.qchem import QChem
-from quacc.recipes.qchem.core import freq_job, relax_job, static_job
+from quacc.recipes.qchem.core import freq_job, internal_relax_job, relax_job, static_job
 from quacc.recipes.qchem.ts import irc_job, quasi_irc_job, ts_job
 from quacc.utils import check_charge_and_spin
 
@@ -617,3 +617,25 @@ def test_quasi_irc_job(monkeypatch, tmpdir):
     qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(os.path.join(QCHEM_DIR, "mol.qin.quasi_irc_reverse"))
     qcinput_nearly_equal(qcin, ref_qcin)
+
+
+def test_internal_relax_job(monkeypatch, tmpdir):
+    tmpdir.chdir()
+
+    monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
+    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
+    output = internal_relax_job(TEST_ATOMS, charge, spin_multiplicity)
+    assert output["atoms"] == TEST_ATOMS
+    assert output["charge"] == 0
+    assert output["spin_multiplicity"] == 1
+    assert output["formula_alphabetical"] == "C4 H4 O6"
+    assert output["nelectrons"] == 76
+    assert output["parameters"]["charge"] == 0
+    assert output["parameters"]["spin_multiplicity"] == 1
+    assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
+    assert output["results"]["forces"][0][0] == pytest.approx(-1.3826330655069403)
+
+    qcin = QCInput.from_file("mol.qin.gz").as_dict()
+    assert qcin["rem"]["basis"] == "def2-svpd"
+    assert qcin["rem"]["geom_opt_max_cycles"] == "200"
+    assert qcin["rem"]["job_type"] == "opt"

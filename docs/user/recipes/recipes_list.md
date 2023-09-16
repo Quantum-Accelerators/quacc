@@ -134,14 +134,15 @@
 
 <center>
 
-| Name             | Decorator       | Documentation                            |
-| ---------------- | --------------- | ---------------------------------------- |
-| Q-Chem Static    | `#!Python @job` | [quacc.recipes.qchem.core.static_job][]  |
-| Q-Chem Relax     | `#!Python @job` | [quacc.recipes.qchem.core.relax_job][]   |
-| Q-Chem Frequency | `#!Python @job` | [quacc.recipes.qchem.core.freq_job][]    |
-| Q-Chem TS        | `#!Python @job` | [quacc.recipes.qchem.ts.ts_job][]        |
-| Q-Chem IRC       | `#!Python @job` | [quacc.recipes.qchem.ts.irc_job][]       |
-| Q-Chem Quasi IRC | `#!Python @job` | [quacc.recipes.qchem.ts.quasi_irc_job][] |
+| Name                  | Decorator       | Documentation                                   |
+| --------------------- | --------------- | ----------------------------------------------- |
+| Q-Chem Static         | `#!Python @job` | [quacc.recipes.qchem.core.static_job][]         |
+| Q-Chem Relax          | `#!Python @job` | [quacc.recipes.qchem.core.relax_job][]          |
+| Q-Chem Internal Relax | `#!Python @job` | [quacc.recipes.qchem.core.internal_relax_job][] |
+| Q-Chem Frequency      | `#!Python @job` | [quacc.recipes.qchem.core.freq_job][]           |
+| Q-Chem TS             | `#!Python @job` | [quacc.recipes.qchem.ts.ts_job][]               |
+| Q-Chem IRC            | `#!Python @job` | [quacc.recipes.qchem.ts.irc_job][]              |
+| Q-Chem Quasi IRC      | `#!Python @job` | [quacc.recipes.qchem.ts.quasi_irc_job][]        |
 
 </center>
 
