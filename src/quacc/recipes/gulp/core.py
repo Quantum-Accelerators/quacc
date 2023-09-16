@@ -198,6 +198,34 @@ def _base_job(
     additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
+    """
+    Base job function for GULP recipes.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
+    library
+        Filename of the potential library file, if required.
+    keyword_defaults
+        Default keywords for calculator.
+    option_defaults
+        Default options for calculator.
+    keyword_swaps
+        Dictionary of custom keyword swap kwargs for the calculator.
+    option_swaps
+        Dictionary of custom option swap kwargs for the calculator.
+    additional_fields
+        Additional field to supply to the summarizer.
+    copy_files
+        Files to copy to the runtime directory.
+
+    Returns
+    -------
+    RunSchema
+        Dictionary of results from [quacc.schemas.ase.summarize_run[]
+    """
     atoms = fetch_atoms(atoms)
 
     keywords = merge_dicts(keyword_defaults, keyword_swaps)
