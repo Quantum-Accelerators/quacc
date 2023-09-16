@@ -162,7 +162,7 @@ def relax_job(
         "gfnff": True if use_gfnff else None,
         "gwolf": True if use_gfnff else None,
         "conp": True if relax_cell else None,
-        "conv": None if relax_cell and atoms.pbc.any() else True,
+        "conv": None if relax_cell else True,
     }
     option_defaults = {"dump every gulp.res": True}
 
@@ -226,6 +226,8 @@ def _base_job(
     options = merge_dicts(option_defaults, option_swaps)
 
     if not atoms.pbc.any():
+        if "opti" in keywords and "conv" not in keywords:
+            keywords["conv"] = True
         for k in ["gwolf", "conp"]:
             keywords.pop(k, None)
 
