@@ -393,7 +393,6 @@ def quasi_irc_job(
         irc_summary,
         charge,
         spin_multiplicity,
-        direction=direction,
         method=method,
         basis=basis,
         scf_algorithm=scf_algorithm,
