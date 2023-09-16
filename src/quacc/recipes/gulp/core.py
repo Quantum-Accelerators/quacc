@@ -75,18 +75,14 @@ def static_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run[]
+        Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
 
     keyword_defaults = {
         "gfnff": True if use_gfnff else None,
         "gwolf": True if use_gfnff and atoms.pbc.any() else None,
     }
-    option_defaults = {
-        "dump every gulp.res": True,
-        f"output cif {GEOM_FILE_PBC}": True if atoms.pbc.any() else None,
-        f"output xyz {GEOM_FILE_NOPBC}": None if atoms.pbc.any() else True,
-    }
+    option_defaults = {"dump every gulp.res": True}
 
     return _base_job(
         atoms,
@@ -168,11 +164,7 @@ def relax_job(
         "conp": True if relax_cell and atoms.pbc.any() else None,
         "conv": None if relax_cell and atoms.pbc.any() else True,
     }
-    option_defaults = {
-        "dump every gulp.res": True,
-        f"output cif {GEOM_FILE_PBC}": True if atoms.pbc.any() else None,
-        f"output xyz {GEOM_FILE_NOPBC}": None if atoms.pbc.any() else True,
-    }
+    option_defaults = {"dump every gulp.res": True}
 
     return _base_job(
         atoms,
@@ -222,10 +214,14 @@ def _base_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run[]
+        Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
     atoms = fetch_atoms(atoms)
 
+    option_defaults = option_defaults | {
+        f"output cif {GEOM_FILE_PBC}": True if atoms.pbc.any() else None,
+        f"output xyz {GEOM_FILE_NOPBC}": None if atoms.pbc.any() else True,
+    }
     keywords = merge_dicts(keyword_defaults, keyword_swaps)
     options = merge_dicts(option_defaults, option_swaps)
 
