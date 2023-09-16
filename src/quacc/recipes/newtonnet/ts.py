@@ -5,7 +5,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ase.optimize import FIRE
 from monty.dev import requires
 
 from quacc import SETTINGS, job
@@ -77,7 +76,9 @@ def ts_job(
             "fmax": 0.01,
             "max_steps": 1000,
             "optimizer": Sella,
-            "optimizer_kwargs": {"diag_every_n": 0} if use_custom_hessian else {},
+            "optimizer_kwargs": {"diag_every_n": 0, "order": 1}
+            if use_custom_hessian
+            else {"order": 1},
         }
         ```
 
@@ -116,7 +117,9 @@ def ts_job(
         "fmax": 0.01,
         "max_steps": 1000,
         "optimizer": Sella,
-        "optimizer_kwargs": {"diag_every_n": 0} if use_custom_hessian else {},
+        "optimizer_kwargs": {"diag_every_n": 0, "order": 1}
+        if use_custom_hessian
+        else {"order": 1},
     }
 
     flags = merge_dicts(defaults, calc_swaps)
@@ -125,9 +128,6 @@ def ts_job(
     atoms.calc = NewtonNet(**flags)
 
     if use_custom_hessian:
-        if opt_flags.get("optimizer", FIRE).__name__ != "Sella":
-            raise ValueError("Custom hessian can only be used with Sella.")
-
         opt_flags["optimizer_kwargs"]["hessian_function"] = _get_hessian
 
     ml_calculator = NewtonNet(**flags)

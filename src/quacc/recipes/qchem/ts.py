@@ -7,12 +7,8 @@ from typing import TYPE_CHECKING
 from monty.dev import requires
 
 from quacc import SETTINGS, job
-from quacc.calculators.qchem import QChem
-from quacc.recipes.qchem.core import relax_job
-from quacc.schemas import fetch_atoms
-from quacc.schemas.ase import summarize_opt_run
-from quacc.utils.calc import run_ase_opt
-from quacc.utils.dicts import merge_dicts, remove_dict_empties
+from quacc.recipes.qchem.core import _base_opt_job, relax_job
+from quacc.utils.dicts import merge_dicts
 
 try:
     from sella import IRC, Sella
@@ -122,11 +118,6 @@ def ts_job(
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
 
-    # TODO:
-    #   - exposing TRICs?
-    #   - passing initial Hessian?
-    atoms = fetch_atoms(atoms)
-
     qchem_defaults = {
         "basis_set": basis,
         "scf_algorithm": scf_algorithm,
@@ -141,25 +132,25 @@ def ts_job(
             "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
         },
     }
-    qchem_flags = remove_dict_empties(qchem_defaults)
-
-    opt_swaps = opt_swaps or {}
     opt_defaults = {
         "fmax": 0.01,
         "max_steps": 1000,
         "optimizer": Sella,
+        "optimizer_kwargs": {"order": 1},
     }
-    opt_flags = merge_dicts(opt_defaults, opt_swaps)
-    if opt_flags["optimizer"] != Sella:
+
+    if opt_swaps and opt_swaps.get("optimizer", Sella) is not Sella:
         raise ValueError("Only Sella should be used for TS optimization.")
 
-    atoms.calc = QChem(atoms, **qchem_flags)
-    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
-
-    return summarize_opt_run(
-        dyn,
-        charge_and_multiplicity=(charge, spin_multiplicity),
+    return _base_opt_job(
+        atoms,
+        charge,
+        spin_multiplicity,
+        qchem_defaults=qchem_defaults,
+        opt_defaults=opt_defaults,
+        opt_swaps=opt_swaps,
         additional_fields={"name": "Q-Chem TS"},
+        copy_files=copy_files,
     )
 
 
@@ -259,9 +250,6 @@ def irc_job(
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
 
-    # TODO: 1) expose TRICs?; 2) passing initial Hessian?
-    atoms = fetch_atoms(atoms)
-
     qchem_defaults = {
         "basis_set": basis,
         "scf_algorithm": scf_algorithm,
@@ -276,9 +264,6 @@ def irc_job(
             "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
         },
     }
-    qchem_flags = remove_dict_empties(qchem_defaults)
-
-    opt_swaps = opt_swaps or {}
     opt_defaults = {
         "fmax": 0.01,
         "max_steps": 1000,
@@ -286,17 +271,18 @@ def irc_job(
         "optimizer_kwargs": {"keep_going": True},
         "run_kwargs": {"direction": direction},
     }
-    opt_flags = merge_dicts(opt_defaults, opt_swaps)
-    if opt_flags["optimizer"] != IRC:
+    if opt_swaps and opt_swaps.get("optimizer", IRC) is not IRC:
         raise ValueError("Only Sella's IRC should be used for IRC optimization.")
 
-    atoms.calc = QChem(atoms, **qchem_flags)
-    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
-
-    return summarize_opt_run(
-        dyn,
-        charge_and_multiplicity=(charge, spin_multiplicity),
+    return _base_opt_job(
+        atoms,
+        charge,
+        spin_multiplicity,
+        qchem_defaults=qchem_defaults,
+        opt_defaults=opt_defaults,
+        opt_swaps=opt_swaps,
         additional_fields={"name": "Q-Chem IRC"},
+        copy_files=copy_files,
     )
 
 

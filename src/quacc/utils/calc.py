@@ -145,6 +145,10 @@ def run_ase_opt(
     ):
         optimizer_kwargs["internal"] = True
 
+    # Set default job type to minimum for Sella
+    if optimizer.__name__ == "Sella" and "order" not in optimizer_kwargs:
+        optimizer_kwargs["order"] = 0
+
     # Set up trajectory
     if "trajectory" in optimizer_kwargs:
         msg = "Quacc does not support setting the `trajectory` kwarg."
