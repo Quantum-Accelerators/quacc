@@ -218,18 +218,19 @@ def _base_job(
     """
     atoms = fetch_atoms(atoms)
 
+    if not atoms.pbc.any():
+        if "opti" in keyword_defaults and "conv" not in keyword_defaults:
+            keyword_defaults["conv"] = True
+        for k in ["gwolf", "conp"]:
+            keyword_defaults.pop(k, None)
+
     option_defaults = option_defaults | {
         f"output cif {GEOM_FILE_PBC}": True if atoms.pbc.any() else None,
         f"output xyz {GEOM_FILE_NOPBC}": None if atoms.pbc.any() else True,
     }
+
     keywords = merge_dicts(keyword_defaults, keyword_swaps)
     options = merge_dicts(option_defaults, option_swaps)
-
-    if not atoms.pbc.any():
-        if "opti" in keywords and "conv" not in keywords:
-            keywords["conv"] = True
-        for k in ["gwolf", "conp"]:
-            keywords.pop(k, None)
 
     gulp_keywords = " ".join(list(keywords.keys()))
     gulp_options = list(options.keys())
