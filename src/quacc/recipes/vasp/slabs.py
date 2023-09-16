@@ -4,12 +4,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quacc import flow, job, subflow
-from quacc.calculators.vasp import Vasp
 from quacc.recipes.vasp.core import _base_job
 from quacc.schemas import fetch_atoms
-from quacc.schemas.vasp import summarize_run
-from quacc.utils.calc import run_calc
-from quacc.utils.dicts import merge_dicts
 from quacc.utils.slabs import make_adsorbate_structures, make_slabs_from_bulk
 
 if TYPE_CHECKING:

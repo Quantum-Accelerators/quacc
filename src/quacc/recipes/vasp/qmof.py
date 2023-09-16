@@ -15,8 +15,7 @@ from quacc.calculators.vasp import Vasp
 from quacc.recipes.vasp.core import _base_job
 from quacc.schemas import fetch_atoms
 from quacc.schemas.ase import summarize_opt_run
-from quacc.schemas.vasp import summarize_run
-from quacc.utils.calc import run_ase_opt, run_calc
+from quacc.utils.calc import run_ase_opt
 from quacc.utils.dicts import merge_dicts
 
 if TYPE_CHECKING:
