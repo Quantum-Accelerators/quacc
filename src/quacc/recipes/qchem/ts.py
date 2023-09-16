@@ -7,12 +7,8 @@ from typing import TYPE_CHECKING
 from monty.dev import requires
 
 from quacc import SETTINGS, job
-from quacc.calculators.qchem import QChem
 from quacc.recipes.qchem.core import _base_opt_job, relax_job
-from quacc.schemas import fetch_atoms
-from quacc.schemas.ase import summarize_opt_run
-from quacc.utils.calc import run_ase_opt
-from quacc.utils.dicts import merge_dicts, remove_dict_empties
+from quacc.utils.dicts import merge_dicts
 
 try:
     from sella import IRC, Sella
