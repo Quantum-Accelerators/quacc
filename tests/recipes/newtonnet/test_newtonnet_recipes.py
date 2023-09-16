@@ -415,7 +415,7 @@ def test_quasi_irc_job_with_custom_irc_swaps(tmpdir):
     irc_job_kwargs = {"calc_swaps": {"run_kwargs": {"direction": "reverse"}}}
 
     # Call the function
-    output = quasi_irc_job(atoms, irc_job_kwargs=irc_job_kwargs=irc_job_kwargs)
+    output = quasi_irc_job(atoms, irc_job_kwargs=irc_job_kwargs)
 
     # Perform assertions on the result
     assert isinstance(output, dict)
