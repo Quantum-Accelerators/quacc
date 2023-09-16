@@ -213,7 +213,7 @@ def relax_job(
     return summarize_opt_run(
         dyn,
         charge_and_multiplicity=(charge, spin_multiplicity),
-        additional_fields={"name": "Q-Chem ASE Optimization"},
+        additional_fields={"name": "Q-Chem Optimization"},
     )
 
 
@@ -289,7 +289,7 @@ def internal_relax_job(
         overwrite_inputs=overwrite_inputs,
         copy_files=copy_files,
         job_type="opt",
-        additional_fields={"name": "Q-Chem Optimization"},
+        additional_fields={"name": "Q-Chem Optimization (Internal)"},
     )
 
 
