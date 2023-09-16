@@ -80,8 +80,6 @@ def static_job(
     cclibSchema
         Dictionary of results, as specified in [quacc.schemas.cclib.summarize_run][]
     """
-    atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
 
     defaults = {
         "mem": "16GB",
@@ -99,14 +97,11 @@ def static_job(
         "gfinput": "",
         "ioplist": ["6/7=3", "2/9=2000"],  # see ASE issue #660
     }
-    flags = merge_dicts(defaults, calc_swaps)
 
-    atoms.calc = Gaussian(**flags)
-    atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
-
-    return summarize_run(
+    return _base_job(
         atoms,
-        LOG_FILE,
+        flags=merge_dicts(defaults, calc_swaps),
+        copy_files=copy_files,
         additional_fields={"name": "Gaussian Static"},
     )
 
@@ -173,8 +168,6 @@ def relax_job(
     cclibSchema
         Dictionary of results, as specified in [quacc.schemas.cclib.summarize_run][]
     """
-    atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
 
     defaults = {
         "mem": "16GB",
@@ -192,7 +185,47 @@ def relax_job(
         "freq": "" if freq else None,
         "ioplist": ["2/9=2000"],  # ASE issue #660
     }
-    flags = merge_dicts(defaults, calc_swaps)
+
+    return _base_job(
+        atoms,
+        flags=merge_dicts(defaults, calc_swaps),
+        copy_files=copy_files,
+        additional_fields={"name": "Gaussian Relax"},
+    )
+
+
+def _base_job(
+    atoms: Atoms | dict,
+    flags: dict | None = None,
+    copy_files: list[str] | None = None,
+    additional_fields: dict | None = None,
+) -> cclibSchema:
+    """
+    Carry out a single-point calculation.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
+    flags
+        Flags to use in the calculator.
+    copy_files
+        Files to copy to the runtime directory.
+    additional_fields
+        Additional fields to specify in the summarizer.
+
+    Returns
+    -------
+    cclibSchema
+        Dictionary of results, as specified in [quacc.schemas.cclib.summarize_run][]
+    """
+
+    atoms = fetch_atoms(atoms)
+    calc_swaps = calc_swaps or {}
+    flags = flags or {}
+
+    flags = merge_dicts(flags, calc_swaps)
 
     atoms.calc = Gaussian(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
@@ -200,5 +233,5 @@ def relax_job(
     return summarize_run(
         atoms,
         LOG_FILE,
-        additional_fields={"name": "Gaussian Relax"},
+        additional_fields=additional_fields,
     )

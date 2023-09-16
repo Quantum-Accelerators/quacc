@@ -66,28 +66,25 @@ def static_job(
     RunSchema
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
-    atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
 
     defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
         "Hamiltonian_Method": method if "xtb" in method.lower() else None,
         "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
     }
-    flags = merge_dicts(defaults, calc_swaps)
 
-    atoms.calc = Dftb(**flags)
-    final_atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
-
-    if check_logfile(LOG_FILE, "SCC is NOT converged"):
-        msg = "SCC is not converged"
-        raise ValueError(msg)
-
-    return summarize_run(
-        final_atoms,
-        input_atoms=atoms,
+    summary = _base_job(
+        atoms,
+        flags=merge_dicts(defaults, calc_swaps),
+        copy_files=copy_files,
         additional_fields={"name": "DFTB+ Static"},
     )
+
+    msg = "SCC is not converged"
+    if check_logfile(LOG_FILE, msg):
+        raise ValueError(msg)
+
+    return summary
 
 
 @job
@@ -141,8 +138,6 @@ def relax_job(
     RunSchema
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
-    atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
 
     defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
@@ -153,17 +148,55 @@ def relax_job(
         "Driver_AppendGeometries": "Yes",
         "Driver_MaxSteps": 2000,
     }
-    flags = merge_dicts(defaults, calc_swaps)
+
+    summary = _base_job(
+        atoms,
+        flags=merge_dicts(defaults, calc_swaps),
+        additional_fields={"name": "DFTB+ Relax"},
+        copy_files=copy_files,
+    )
+
+    msg = "Geometry converged"
+    if check_logfile(LOG_FILE, msg):
+        raise ValueError(msg)
+
+    return summary
+
+
+def _base_job(
+    atoms: Atoms | dict,
+    flags: dict | None = None,
+    additional_fields: dict | None = None,
+    copy_files: list[str] | None = None,
+) -> RunSchema:
+    """
+    Base job function used for various DFTB+ recipes.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
+    flags
+        The calculator flags to use.
+    additional_fields
+        Any `additional_fields` to set in the summary.
+    copy_files
+        Files to copy to the runtime directory.
+
+    Returns
+    -------
+    RunSchema
+        Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
+    """
+    atoms = fetch_atoms(atoms)
+    flags = flags or {}
 
     atoms.calc = Dftb(**flags)
     final_atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
 
-    if not check_logfile(LOG_FILE, "Geometry converged"):
-        msg = "Geometry did not converge"
-        raise ValueError(msg)
-
     return summarize_run(
         final_atoms,
         input_atoms=atoms,
-        additional_fields={"name": "DFTB+ Relax"},
+        additional_fields=additional_fields,
     )
