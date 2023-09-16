@@ -216,6 +216,7 @@ def test_internal_relax_job(monkeypatch, tmpdir):
     qcin = QCInput.from_file("mol.qin.gz")
     assert qcin["basis"] == "def2-svpd"
     assert qcin["geom_opt_max_cycles"] == "200"
+    assert qcin["job_type"] == "opt"
 
 
 @pytest.mark.skipif(
