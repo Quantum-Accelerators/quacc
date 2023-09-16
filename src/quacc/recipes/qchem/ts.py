@@ -368,7 +368,7 @@ def quasi_irc_job(
     relax_opt_swaps = relax_opt_swaps or {}
     default_settings = SETTINGS.copy()
 
-    irc_opt_swaps_defaults = {"opt_swaps": {"fmax": 100, "max_steps": 10}}
+    irc_opt_swaps_defaults = {"fmax": 100, "max_steps": 10}
     irc_opt_swaps = merge_dicts(irc_opt_swaps_defaults, irc_opt_swaps)
 
     SETTINGS.CHECK_CONVERGENCE = False
