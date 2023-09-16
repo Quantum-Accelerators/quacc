@@ -186,7 +186,7 @@ class QChem(FileIOCalculator):
                 binary = file.read()
             tmp_grad_data.extend(
                 struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
-                for ii in range(len(binary) // 8)
+                for ii in range(int(len(binary) / 8))
             )
             grad = [
                 [
@@ -194,7 +194,7 @@ class QChem(FileIOCalculator):
                     float(tmp_grad_data[ii * 3 + 1]),
                     float(tmp_grad_data[ii * 3 + 2]),
                 ]
-                for ii in range(len(tmp_grad_data) // 3)
+                for ii in range(int(len(tmp_grad_data) / 3))
             ]
             # Ensure that the scratch values match the correct values from the
             # output file but with higher precision
