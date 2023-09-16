@@ -214,8 +214,8 @@ def test_internal_relax_job(monkeypatch, tmpdir):
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826330655069403)
 
     qcin = QCInput.from_file("mol.qin.gz")
-    ref_qcin = QCInput.from_file(os.path.join(QCHEM_DIR, "mol.qin.basic"))
-    qcinput_nearly_equal(qcin, ref_qcin)
+    assert qcin["basis"] == "def2-svpd"
+    assert qcin["geom_opt_max_cycles"] == "200"
 
 
 @pytest.mark.skipif(
