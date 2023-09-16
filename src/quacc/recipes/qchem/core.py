@@ -556,13 +556,6 @@ def _base_opt_job(
     qchem_flags = remove_dict_empties(qchem_defaults)
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
-    if opt_flags["optimizer"].__name__ == "Sella" and "order" not in opt_flags.get(
-        "optimizer_kwargs", {}
-    ):
-        if "optimizer_kwargs" not in opt_flags:
-            opt_flags["optimizer_kwargs"] = {}
-        opt_flags["optimizer_kwargs"]["order"] = 0
-
     atoms.calc = QChem(atoms, **qchem_flags)
     dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
 

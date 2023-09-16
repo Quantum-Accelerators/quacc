@@ -136,6 +136,7 @@ def ts_job(
         "fmax": 0.01,
         "max_steps": 1000,
         "optimizer": Sella,
+        "optimizer_kwargs": {"order": 1},
     }
 
     if opt_swaps and opt_swaps.get("optimizer", Sella) is not Sella:

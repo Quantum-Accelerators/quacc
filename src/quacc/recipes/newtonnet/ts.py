@@ -77,7 +77,9 @@ def ts_job(
             "fmax": 0.01,
             "max_steps": 1000,
             "optimizer": Sella,
-            "optimizer_kwargs": {"diag_every_n": 0} if use_custom_hessian else {},
+            "optimizer_kwargs": {"diag_every_n": 0, "order": 1}
+            if use_custom_hessian
+            else {"order": 1},
         }
         ```
 
@@ -116,7 +118,9 @@ def ts_job(
         "fmax": 0.01,
         "max_steps": 1000,
         "optimizer": Sella,
-        "optimizer_kwargs": {"diag_every_n": 0} if use_custom_hessian else {},
+        "optimizer_kwargs": {"diag_every_n": 0, "order": 1}
+        if use_custom_hessian
+        else {"order": 1},
     }
 
     flags = merge_dicts(defaults, calc_swaps)
