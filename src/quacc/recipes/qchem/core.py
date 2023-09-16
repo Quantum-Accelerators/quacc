@@ -47,22 +47,22 @@ def static_job(
 
         Calculator Defaults:
 
-            ```python
-            {
-            "basis_set": basis,
-            "scf_algorithm": scf_algorithm,
-            "method": method,
-            "charge": charge,
-            "spin_multiplicity": spin_multiplicity,
-            "cores": n_cores or multiprocessing.cpu_count(),
-            "qchem_input_params": {
-                "pcm_dielectric": pcm_dielectric,
-                "smd_solvent": smd_solvent,
-                "overwrite_inputs": overwrite_inputs,
-                "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
-                },
-            }
-            ```
+        ```python
+        {
+        "basis_set": basis,
+        "scf_algorithm": scf_algorithm,
+        "method": method,
+        "charge": charge,
+        "spin_multiplicity": spin_multiplicity,
+        "cores": n_cores or multiprocessing.cpu_count(),
+        "qchem_input_params": {
+            "pcm_dielectric": pcm_dielectric,
+            "smd_solvent": smd_solvent,
+            "overwrite_inputs": overwrite_inputs,
+            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
+            },
+        }
+        ```
 
     Parameters
     ----------
