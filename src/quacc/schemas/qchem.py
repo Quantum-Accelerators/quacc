@@ -4,8 +4,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from emmet.core.qchem.task import TaskDocument
 from maggma.core import Store
+from pymatgen.io.qchem.outputs import QCOutput
 
 from quacc import SETTINGS
 from quacc.schemas.atoms import atoms_to_metadata
@@ -21,6 +21,7 @@ if TYPE_CHECKING:
     QchemSchema = TypeVar("QchemSchema")
 
 
+# TODO: Replace QCOutput call with TaskDocument from emmet
 def summarize_run(
     atoms: Atoms,
     dir_path: str | None = None,
@@ -68,20 +69,7 @@ def summarize_run(
 
     # Fetch all tabulated results from VASP outputs files Fortunately, emmet
     # already has a handy function for this
-    results = TaskDocument.from_directory(dir_path).dict()
-    uri = results["dir_name"]
-    results["nid"] = uri.split(":")[0]
-    results["dir_name"] = ":".join(uri.split(":")[1:])
-    results["builder_meta"]["build_date"] = str(results["builder_meta"]["build_date"])
-
-    # Remove unnecessary fields
-    for k in [
-        "calcs_reversed",
-        "last_updated",
-        "molecule",  # already in output
-        "tags",
-    ]:
-        results.pop(k, None)
+    results = QCOutput(Path(dir_path, "mol.qout")).as_dict()["data"]
 
     # Prepares the Atoms object for the next run by moving the final magmoms to
     # initial, clearing the calculator state, and assigning the resulting Atoms
