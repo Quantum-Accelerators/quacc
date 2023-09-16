@@ -104,14 +104,9 @@ def static_job(
     qchem_flags = remove_dict_empties(qchem_defaults)
 
     atoms.calc = QChem(atoms, **qchem_flags)
-    final_atoms = run_calc(atoms, copy_files=copy_files)
+    atoms = run_calc(atoms, copy_files=copy_files)
 
-    return summarize_run(
-        final_atoms,
-        input_atoms=atoms,
-        charge_and_multiplicity=(charge, spin_multiplicity),
-        additional_fields={"name": "Q-Chem Static"},
-    )
+    return summarize_run(atoms, additional_fields={"name": "Q-Chem Static"})
 
 
 @job
@@ -306,11 +301,6 @@ def freq_job(
     qchem_flags = remove_dict_empties(qchem_defaults)
 
     atoms.calc = QChem(atoms, **qchem_flags)
-    final_atoms = run_calc(atoms, copy_files=copy_files)
+    atoms = run_calc(atoms, copy_files=copy_files)
 
-    return summarize_run(
-        final_atoms,
-        input_atoms=atoms,
-        charge_and_multiplicity=(charge, spin_multiplicity),
-        additional_fields={"name": "Q-Chem Frequency"},
-    )
+    return summarize_run(atoms, additional_fields={"name": "Q-Chem Frequency"})
