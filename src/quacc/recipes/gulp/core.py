@@ -174,7 +174,7 @@ def relax_job(
         f"output xyz {GEOM_FILE_NOPBC}": None if atoms.pbc.any() else True,
     }
 
-    summary = _base_job(
+    return _base_job(
         atoms,
         library=library,
         keyword_defaults=keyword_defaults,
@@ -184,8 +184,6 @@ def relax_job(
         additional_fields={"name": "GULP Relax"},
         copy_files=copy_files,
     )
-
-    return summary
 
 
 def _base_job(
