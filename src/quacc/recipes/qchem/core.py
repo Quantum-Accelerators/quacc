@@ -9,7 +9,8 @@ from ase.optimize import FIRE
 from quacc import job
 from quacc.calculators.qchem import QChem
 from quacc.schemas import fetch_atoms
-from quacc.schemas.ase import summarize_opt_run, summarize_run
+from quacc.schemas.ase import summarize_opt_run
+from quacc.schemas.qchem import QchemSchema, summarize_run
 from quacc.utils.calc import run_ase_opt, run_calc
 from quacc.utils.dicts import merge_dicts, remove_dict_empties
 
@@ -39,7 +40,7 @@ def static_job(
     n_cores: int | None = None,
     overwrite_inputs: dict | None = None,
     copy_files: list[str] | None = None,
-) -> RunSchema:
+) -> QchemSchema:
     """
     Carry out a single-point calculation.
 
@@ -81,8 +82,8 @@ def static_job(
 
     Returns
     -------
-    RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][]
+    QchemSchema
+        Dictionary of results from [quacc.schemas.qchem.summarize_run][]
     """
     atoms = fetch_atoms(atoms)
 
@@ -239,7 +240,7 @@ def freq_job(
     n_cores: int | None = None,
     overwrite_inputs: dict | None = None,
     copy_files: list[str] | None = None,
-) -> RunSchema:
+) -> QchemSchema:
     """
     Perform a frequency calculation on a molecular structure.
 
