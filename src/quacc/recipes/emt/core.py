@@ -113,6 +113,7 @@ def relax_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_opt_run][]
     """
     atoms = fetch_atoms(atoms)
+    calc_swaps = calc_swaps or {}
 
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
