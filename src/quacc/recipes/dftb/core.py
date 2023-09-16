@@ -66,7 +66,8 @@ def static_job(
     RunSchema
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
-
+    atoms = fetch_atoms(atoms)
+    calc_swaps = calc_swaps or {}
     defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
         "Hamiltonian_Method": method if "xtb" in method.lower() else None,
@@ -138,7 +139,8 @@ def relax_job(
     RunSchema
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
-
+    atoms = fetch_atoms(atoms)
+    calc_swaps = calc_swaps or {}
     defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
         "Hamiltonian_Method": method if "xtb" in method.lower() else None,
@@ -164,7 +166,7 @@ def relax_job(
 
 
 def _base_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     flags: dict | None = None,
     additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
@@ -175,8 +177,7 @@ def _base_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     flags
         The calculator flags to use.
     additional_fields
@@ -189,7 +190,6 @@ def _base_job(
     RunSchema
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
-    atoms = fetch_atoms(atoms)
     flags = flags or {}
 
     atoms.calc = Dftb(**flags)

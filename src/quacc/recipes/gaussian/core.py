@@ -80,7 +80,8 @@ def static_job(
     cclibSchema
         Dictionary of results, as specified in [quacc.schemas.cclib.summarize_run][]
     """
-
+    atoms = fetch_atoms(atoms)
+    calc_swaps = calc_swaps or {}
     defaults = {
         "mem": "16GB",
         "chk": "Gaussian.chk",
@@ -168,7 +169,7 @@ def relax_job(
     cclibSchema
         Dictionary of results, as specified in [quacc.schemas.cclib.summarize_run][]
     """
-
+    calc_swaps = calc_swaps or {}
     defaults = {
         "mem": "16GB",
         "chk": "Gaussian.chk",
@@ -195,7 +196,7 @@ def relax_job(
 
 
 def _base_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     flags: dict | None = None,
     copy_files: list[str] | None = None,
     additional_fields: dict | None = None,
@@ -206,8 +207,7 @@ def _base_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     flags
         Flags to use in the calculator.
     copy_files
@@ -220,12 +220,7 @@ def _base_job(
     cclibSchema
         Dictionary of results, as specified in [quacc.schemas.cclib.summarize_run][]
     """
-
-    atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
     flags = flags or {}
-
-    flags = merge_dicts(flags, calc_swaps)
 
     atoms.calc = Gaussian(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
