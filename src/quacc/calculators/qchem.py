@@ -179,7 +179,7 @@ class QChem(FileIOCalculator):
     def read_results(self):
         data = QCOutput("mol.qout").data
         self.results["energy"] = data["final_energy"] * units.Hartree
-        if self.job_type == "force":
+        if self.job_type in ["opt", "force"]:
             tmp_grad_data = []
             # Read the gradient scratch file in 8 byte chunks
             with zopen("131.0", mode="rb") as file:
