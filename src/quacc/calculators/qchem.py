@@ -35,7 +35,7 @@ class QChem(FileIOCalculator):
         The spin multiplicity of the molecular system.
     qchem_input_params
         Dictionary of Q-Chem input parameters to be passed to
-        pymatgen.io.qchem.sets.ForceSet.
+        pymatgen.io.qchem.sets.DictSet.
     **fileiocalculator_kwargs
         Additional arguments to be passed to
         ase.calculators.calculator.FileIOCalculator.
@@ -46,7 +46,7 @@ class QChem(FileIOCalculator):
         The ASE Atoms object with attached Q-Chem calculator.
     """
 
-    implemented_properties = ["energy", "forces", "frequencies"]  # noqa: RUF012
+    implemented_properties = ["energy", "forces", "hessian"]  # noqa: RUF012
 
     def __init__(
         self,
@@ -184,10 +184,10 @@ class QChem(FileIOCalculator):
             # Read the gradient scratch file in 8 byte chunks
             with zopen("131.0", mode="rb") as file:
                 binary = file.read()
-                tmp_grad_data.extend(
-                    struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
-                    for ii in range(len(binary) // 8)
-                )
+            tmp_grad_data.extend(
+                struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
+                for ii in range(len(binary) // 8)
+            )
             grad = [
                 [
                     float(tmp_grad_data[ii * 3]),
@@ -217,33 +217,22 @@ class QChem(FileIOCalculator):
         # Read orbital coefficients scratch file in 8 byte chunks
         with zopen("53.0", mode="rb") as file:
             binary = file.read()
-            self.prev_orbital_coeffs.extend(
-                struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
-                for ii in range(len(binary) // 8)
-            )
+        self.prev_orbital_coeffs.extend(
+            struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
+            for ii in range(len(binary) // 8)
+        )
         if self.job_type == "freq":
             tmp_hess_data = []
             # Read Hessian scratch file in 8 byte chunks
             with zopen("132.0", mode="rb") as file:
                 binary = file.read()
-                tmp_hess_data.extend(
-                    struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
-                    for ii in range(len(binary) // 8)
-                )
+            tmp_hess_data.extend(
+                struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
+                for ii in range(len(binary) // 8)
+            )
             self.results["hessian"] = np.reshape(
                 np.array(tmp_hess_data),
                 (len(data["species"]) * 3, len(data["species"]) * 3),
             )
-            self.results["frequencies"] = data["frequencies"]
-            self.results["frequency_mode_vectors"] = data["frequency_mode_vectors"]
-            self.results["enthalpy"] = data["total_enthalpy"] * (units.kcal / units.mol)
-            self.results["entropy"] = data["total_entropy"] * (
-                0.001 * units.kcal / units.mol
-            )
         else:
             self.results["hessian"] = None
-            self.results["frequencies"] = None
-            self.results["frequency_mode_vectors"] = None
-            self.results["enthalpy"] = None
-            self.results["entropy"] = None
-        self.results["all_data"] = data
