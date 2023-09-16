@@ -68,7 +68,6 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
     atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
 
     defaults = {"method": method}
     flags = merge_dicts(defaults, calc_swaps)
@@ -131,8 +130,6 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
     atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
-    opt_swaps = opt_swaps or {}
 
     defaults = {"method": method}
     flags = merge_dicts(defaults, calc_swaps)
@@ -202,7 +199,6 @@ def freq_job(
         [quacc.schemas.ase.summarize_thermo][]
     """
     atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
     vib_kwargs = vib_kwargs or {}
 
     defaults = {"method": method}

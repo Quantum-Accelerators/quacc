@@ -431,9 +431,6 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
 
-    # TODO: exposing TRICs?
-    atoms = fetch_atoms(atoms)
-
     qchem_defaults = {
         "basis_set": basis,
         "scf_algorithm": scf_algorithm,
@@ -448,29 +445,21 @@ def relax_job(
             "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
         },
     }
-    qchem_flags = remove_dict_empties(qchem_defaults)
-
-    opt_swaps = opt_swaps or {}
     opt_defaults = {
         "fmax": 0.01,
         "max_steps": 1000,
         "optimizer": Sella if has_sella else FIRE,
     }
-    opt_flags = merge_dicts(opt_defaults, opt_swaps)
-    if opt_flags["optimizer"].__name__ == "Sella" and "order" not in opt_flags.get(
-        "optimizer_kwargs", {}
-    ):
-        if "optimizer_kwargs" not in opt_flags:
-            opt_flags["optimizer_kwargs"] = {}
-        opt_flags["optimizer_kwargs"]["order"] = 0
 
-    atoms.calc = QChem(atoms, **qchem_flags)
-    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
-
-    return summarize_opt_run(
-        dyn,
-        charge_and_multiplicity=(charge, spin_multiplicity),
+    return _base_opt_job(
+        atoms,
+        charge,
+        spin_multiplicity,
+        qchem_defaults=qchem_defaults,
+        opt_defaults=opt_defaults,
+        opt_swaps=opt_swaps,
         additional_fields={"name": "Q-Chem Optimization"},
+        copy_files=copy_files,
     )
 
 
@@ -517,6 +506,61 @@ def _base_job(
     return summarize_run(
         final_atoms,
         input_atoms=atoms,
+        charge_and_multiplicity=(charge, spin_multiplicity),
+        additional_fields=additional_fields,
+    )
+
+
+def _base_opt_job(
+    atoms: Atoms | dict,
+    charge: int,
+    spin_multiplicity: int,
+    qchem_defaults: dict | None = None,
+    opt_defaults: dict | None = None,
+    opt_swaps: dict | None = None,
+    additional_fields: dict | None = None,
+    copy_files: list[str] | None = None,
+) -> OptSchema:
+    """
+    Base function for Q-Chem recipes that involve ASE optimizers.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
+    charge
+        Charge of the system.
+    spin_multiplicity
+        Multiplicity of the system.
+    qchem_defaults
+        Default arguments for the Q-Chem calculator.
+    opt_defaults
+        Default arguments for the ASE optimizer.
+    opt_swaps
+        Dictionary of custom kwargs for [quacc.utils.calc.run_ase_opt][]
+    copy_files
+        Files to copy to the runtime directory.
+
+    Returns
+    -------
+    OptSchema
+        Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
+    """
+    # TODO:
+    #   - exposing TRICs?
+    #   - passing initial Hessian?
+
+    atoms = fetch_atoms(atoms)
+
+    qchem_flags = remove_dict_empties(qchem_defaults)
+    opt_flags = merge_dicts(opt_defaults, opt_swaps)
+
+    atoms.calc = QChem(atoms, **qchem_flags)
+    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
+
+    return summarize_opt_run(
+        dyn,
         charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields=additional_fields,
     )

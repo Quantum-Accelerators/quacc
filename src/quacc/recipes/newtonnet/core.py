@@ -78,7 +78,6 @@ def static_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
     atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
 
     defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
@@ -142,8 +141,6 @@ def relax_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_opt_run][]
     """
     atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
-    opt_swaps = opt_swaps or {}
 
     defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
@@ -154,11 +151,8 @@ def relax_job(
     flags = merge_dicts(defaults, calc_swaps)
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
-    if "sella.optimize" in opt_flags.get("optimizer", FIRE).__module__:
-        opt_flags["order"] = 0
-
     atoms.calc = NewtonNet(**flags)
-    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_swaps)
+    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
 
     return _add_stdev_and_hess(
         summarize_opt_run(dyn, additional_fields={"name": "NewtonNet Relax"})
@@ -207,7 +201,6 @@ def freq_job(
         Dictionary of results
     """
     atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
 
     defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
