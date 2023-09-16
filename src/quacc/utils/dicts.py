@@ -8,7 +8,8 @@ def merge_dicts(
     dict1: dict | None, dict2: dict | None, remove_empties: bool = True
 ) -> dict:
     """
-    Recursively merges two dictionaries.
+    Recursively merges two dictionaries. If one the inputs are `None`, then
+    it is treated as `{}`.
 
     Parameters
     ----------

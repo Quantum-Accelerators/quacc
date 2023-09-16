@@ -105,8 +105,6 @@ def ts_job(
         Dictionary of results
     """
     atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
-    opt_swaps = opt_swaps or {}
     freq_job_kwargs = freq_job_kwargs or {}
 
     defaults = {
@@ -223,8 +221,6 @@ def irc_job(
         A dictionary containing the IRC summary and thermodynamic summary.
     """
     atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
-    opt_swaps = opt_swaps or {}
     freq_job_kwargs = freq_job_kwargs or {}
     default_settings = SETTINGS.copy()
 

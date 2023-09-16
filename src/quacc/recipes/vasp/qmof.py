@@ -77,7 +77,6 @@ def qmof_relax_job(
         Dictionary of results
     """
     atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
 
     # 1. Pre-relaxation
     if run_prerelax:
@@ -134,8 +133,6 @@ def _prerelax(
     OptSchema
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
-
-    calc_swaps = calc_swaps or {}
 
     defaults = {
         "auto_kpts": {"kppa": 100},
