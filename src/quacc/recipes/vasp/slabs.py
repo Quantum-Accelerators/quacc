@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 from quacc import flow, job, subflow
 from quacc.calculators.vasp import Vasp
+from quacc.recipes.vasp.core import _base_job
 from quacc.schemas import fetch_atoms
 from quacc.schemas.vasp import summarize_run
 from quacc.utils.calc import run_calc
@@ -27,6 +28,24 @@ def slab_static_job(
     """
     Function to carry out a single-point calculation on a slab.
 
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {
+            "auto_dipole": True,
+            "ismear": -5,
+            "laechg": True,
+            "lcharg": True,
+            "lreal": False,
+            "lvhar": True,
+            "lwave": True,
+            "nedos": 5001,
+            "nsw": 0,
+        }
+        ```
+
     Parameters
     ----------
     atoms
@@ -36,24 +55,6 @@ def slab_static_job(
         Preset to use.
     calc_swaps
         dictionary of custom kwargs for the calculator.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {
-                "auto_dipole": True,
-                "ismear": -5,
-                "laechg": True,
-                "lcharg": True,
-                "lreal": False,
-                "lvhar": True,
-                "lwave": True,
-                "nedos": 5001,
-                "nsw": 0,
-            }
-            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -62,8 +63,6 @@ def slab_static_job(
     VaspSchema
         Dictionary of results from [quacc.schemas.vasp.summarize_run][]
     """
-    atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
 
     defaults = {
         "auto_dipole": True,
@@ -76,12 +75,14 @@ def slab_static_job(
         "nedos": 5001,
         "nsw": 0,
     }
-    flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
-
-    atoms.calc = Vasp(atoms, preset=preset, **flags)
-    atoms = run_calc(atoms, copy_files=copy_files)
-
-    return summarize_run(atoms, additional_fields={"name": "VASP Slab Static"})
+    return _base_job(
+        atoms,
+        preset=preset,
+        defaults=defaults,
+        calc_swaps=calc_swaps,
+        additional_fields={"name": "VASP Slab Static"},
+        copy_files=copy_files,
+    )
 
 
 @job
@@ -94,6 +95,23 @@ def slab_relax_job(
     """
     Function to relax a slab.
 
+    ??? Note
+
+        Calculator Parameters:
+
+        ```python
+        {
+            "auto_dipole": True,
+            "ediffg": -0.02,
+            "isif": 2,
+            "ibrion": 2,
+            "isym": 0,
+            "lcharg": False,
+            "lwave": False,
+            "nsw": 200,
+        }
+        ```
+
     Parameters
     ----------
     atoms
@@ -103,23 +121,6 @@ def slab_relax_job(
         Preset to use.
     calc_swaps
         Dictionary of custom kwargs for the calculator.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {
-                "auto_dipole": True,
-                "ediffg": -0.02,
-                "isif": 2,
-                "ibrion": 2,
-                "isym": 0,
-                "lcharg": False,
-                "lwave": False,
-                "nsw": 200,
-            }
-            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -128,8 +129,6 @@ def slab_relax_job(
     VaspSchema
         Dictionary of results from [quacc.schemas.vasp.summarize_run][]
     """
-    atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
 
     defaults = {
         "auto_dipole": True,
@@ -141,12 +140,14 @@ def slab_relax_job(
         "lwave": False,
         "nsw": 200,
     }
-    flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
-
-    atoms.calc = Vasp(atoms, preset=preset, **flags)
-    atoms = run_calc(atoms, copy_files=copy_files)
-
-    return summarize_run(atoms, additional_fields={"name": "VASP Slab Relax"})
+    return _base_job(
+        atoms,
+        preset=preset,
+        defaults=defaults,
+        calc_swaps=calc_swaps,
+        additional_fields={"name": "VASP Slab Relax"},
+        copy_files=copy_files,
+    )
 
 
 @flow

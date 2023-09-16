@@ -194,9 +194,6 @@ def _base_job(
     """
 
     atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
-    defaults = defaults or {}
-
     flags = merge_dicts(defaults, calc_swaps)
 
     atoms.calc = Dftb(**flags)

@@ -51,6 +51,17 @@ def static_job(
     """
     Carry out a single-point calculation.
 
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {
+            "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+            "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        }
+        ```
+
     Parameters
     ----------
     atoms
@@ -58,17 +69,6 @@ def static_job(
         the value
     calc_swaps
         Dictionary of custom kwargs for the newtonnet calculator.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {
-                "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-                "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-            }
-            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -107,6 +107,23 @@ def relax_job(
     """
     Relax a structure.
 
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {
+            "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+            "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        }
+        ```
+
+        Optimizer Defaults:
+
+        ```python
+        {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella or FIRE}
+        ```
+
     Parameters
     ----------
     atoms
@@ -114,27 +131,8 @@ def relax_job(
         the value
     calc_swaps
         Dictionary of custom kwargs for the newtonnet calculator.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {
-                "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-                "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-            }
-            ```
     opt_swaps
         Optional swaps for the optimization parameters.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella or FIRE}
-            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -179,6 +177,17 @@ def freq_job(
     """
     Perform a frequency calculation using the given atoms object.
 
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {
+            "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+            "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        }
+        ```
+
     Parameters
     ----------
     atoms
@@ -189,17 +198,6 @@ def freq_job(
         The pressure for the thermodynamic analysis.
     calc_swaps
         Optional swaps for the calculator.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {
-                "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
-                "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
-            }
-            ```
     copy_files
         Files to copy to the runtime directory.
 

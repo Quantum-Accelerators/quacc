@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from ase.calculators.gulp import GULP
 
-from quacc import job
+from quacc import SETTINGS, job
 from quacc.schemas import fetch_atoms
 from quacc.schemas.ase import summarize_run
 from quacc.utils.calc import run_calc
@@ -35,6 +35,27 @@ def static_job(
     """
     Carry out a single-point calculation.
 
+    ??? Note
+
+        Keyword Defaults:
+
+        ```python
+        {
+            "gfnff": True if use_gfnff else None,
+            "gwolf": True if use_gfnff and atoms.pbc.any() else None,
+        }
+        ```
+
+        Option Defaultss:
+
+        ```python
+        {
+            "dump every gulp.res": True,
+            f"output cif {GEOM_FILE_PBC}": True if atoms.pbc.any() else None,
+            f"output xyz {GEOM_FILE_NOPBC}": None if atoms.pbc.any() else True,
+        }
+        ```
+
     Parameters
     ----------
     atoms
@@ -46,31 +67,8 @@ def static_job(
         Filename of the potential library file, if required.
     keyword_swaps
         Dictionary of custom keyword swap kwargs for the calculator.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {
-                "gfnff": True if use_gfnff else None,
-                "gwolf": True if use_gfnff and atoms.pbc.any() else None,
-            }
-            ```
     option_swaps
         Dictionary of custom option swap kwargs for the calculator.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {
-                "dump every gulp.res": True,
-                f"output cif {GEOM_FILE_PBC}": True if atoms.pbc.any() else None,
-                f"output xyz {GEOM_FILE_NOPBC}": None if atoms.pbc.any() else True,
-            }
-            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -79,37 +77,26 @@ def static_job(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run[]
     """
-    atoms = fetch_atoms(atoms)
-    keyword_swaps = keyword_swaps or {}
-    option_swaps = option_swaps or {}
 
-    default_keywords = {
+    keyword_defaults = {
         "gfnff": True if use_gfnff else None,
         "gwolf": True if use_gfnff and atoms.pbc.any() else None,
     }
-    default_options = {
+    option_defaults = {
         "dump every gulp.res": True,
         f"output cif {GEOM_FILE_PBC}": True if atoms.pbc.any() else None,
         f"output xyz {GEOM_FILE_NOPBC}": None if atoms.pbc.any() else True,
     }
 
-    keywords = merge_dicts(default_keywords, keyword_swaps)
-    options = merge_dicts(default_options, option_swaps)
-
-    gulp_keywords = " ".join(list(keywords.keys()))
-    gulp_options = list(options.keys())
-
-    atoms.calc = GULP(keywords=gulp_keywords, options=gulp_options, library=library)
-    final_atoms = run_calc(
+    return _base_job(
         atoms,
-        geom_file=GEOM_FILE_PBC if atoms.pbc.any() else GEOM_FILE_NOPBC,
-        copy_files=copy_files,
-    )
-
-    return summarize_run(
-        final_atoms,
-        input_atoms=atoms,
+        library=library,
+        keyword_defaults=keyword_defaults,
+        option_defaults=option_defaults,
+        keyword_swaps=keyword_swaps,
+        option_swaps=option_swaps,
         additional_fields={"name": "GULP Static"},
+        copy_files=copy_files,
     )
 
 
@@ -124,7 +111,31 @@ def relax_job(
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
-    Carry out a single-point calculation.
+    Carry out a structure relaxation.
+
+    ??? Note
+
+        Keyword Defaults:
+
+        ```python
+        {
+            "opti": True,
+            "gfnff": True if use_gfnff else None,
+            "gwolf": True if use_gfnff and atoms.pbc.any() else None,
+            "conp": True if relax_cell and atoms.pbc.any() else None,
+            "conv": None if relax_cell and atoms.pbc.any() else True,
+        }
+        ```
+
+        Option Defaults:
+
+        ```python
+        {
+            "dump every gulp.res": True,
+            f"output cif {GEOM_FILE_PBC}": True if atoms.pbc.any() else None,
+            f"output xyz {GEOM_FILE_NOPBC}": None if atoms.pbc.any() else True,
+        }
+        ```
 
     Parameters
     ----------
@@ -139,34 +150,8 @@ def relax_job(
         True if the volume should be relaxed; False if not.
     keyword_swaps
         Dictionary of custom keyword swap kwargs for the calculator.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {
-                "opti": True,
-                "gfnff": True if use_gfnff else None,
-                "gwolf": True if use_gfnff and atoms.pbc.any() else None,
-                "conp": True if relax_cell and atoms.pbc.any() else None,
-                "conv": None if relax_cell and atoms.pbc.any() else True,
-            }
-            ```
     option_swaps
         Dictionary of custom option swap kwargs for the calculator.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {
-                "dump every gulp.res": True,
-                f"output cif {GEOM_FILE_PBC}": True if atoms.pbc.any() else None,
-                f"output xyz {GEOM_FILE_NOPBC}": None if atoms.pbc.any() else True,
-            }
-            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -175,29 +160,48 @@ def relax_job(
     dict
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-    atoms = fetch_atoms(atoms)
-    keyword_swaps = keyword_swaps or {}
-    option_swaps = option_swaps or {}
 
-    if relax_cell and not atoms.pbc.any():
-        logger.warning("Volume relaxation requested but no PBCs found. Ignoring.")
-        relax_cell = False
-
-    default_keywords = {
+    keyword_defaults = {
         "opti": True,
         "gfnff": True if use_gfnff else None,
         "gwolf": True if use_gfnff and atoms.pbc.any() else None,
         "conp": True if relax_cell and atoms.pbc.any() else None,
         "conv": None if relax_cell and atoms.pbc.any() else True,
     }
-    default_options = {
+    option_defaults = {
         "dump every gulp.res": True,
         f"output cif {GEOM_FILE_PBC}": True if atoms.pbc.any() else None,
         f"output xyz {GEOM_FILE_NOPBC}": None if atoms.pbc.any() else True,
     }
 
-    keywords = merge_dicts(default_keywords, keyword_swaps)
-    options = merge_dicts(default_options, option_swaps)
+    summary = _base_job(
+        atoms,
+        library=library,
+        keyword_defaults=keyword_defaults,
+        option_defaults=option_defaults,
+        keyword_swaps=keyword_swaps,
+        option_swaps=option_swaps,
+        additional_fields={"name": "GULP Relax"},
+        copy_files=copy_files,
+    )
+
+    return summary
+
+
+def _base_job(
+    atoms: Atoms | dict,
+    library: str | None = None,
+    keyword_defaults: dict | None = None,
+    option_defaults: dict | None = None,
+    keyword_swaps: dict | None = None,
+    option_swaps: dict | None = None,
+    additional_fields: dict | None = None,
+    copy_files: list[str] | None = None,
+) -> RunSchema:
+    atoms = fetch_atoms(atoms)
+
+    keywords = merge_dicts(keyword_defaults, keyword_swaps)
+    options = merge_dicts(option_defaults, option_swaps)
 
     gulp_keywords = " ".join(list(keywords.keys()))
     gulp_options = list(options.keys())
@@ -209,12 +213,16 @@ def relax_job(
         copy_files=copy_files,
     )
 
-    if not final_atoms.calc.get_opt_state():
+    if (
+        SETTINGS.CHECK_CONVERGENCE
+        and "opti" in gulp_keywords
+        and not final_atoms.calc.get_opt_state()
+    ):
         msg = "Optimization did not converge."
         raise ValueError(msg)
 
     return summarize_run(
         final_atoms,
         input_atoms=atoms,
-        additional_fields={"name": "GULP Relax"},
+        additional_fields=additional_fields,
     )

@@ -12,6 +12,7 @@ import numpy as np
 
 from quacc import flow, job
 from quacc.calculators.vasp import Vasp
+from quacc.recipes.vasp.core import _base_job
 from quacc.schemas import fetch_atoms
 from quacc.schemas.vasp import summarize_run
 from quacc.utils.calc import run_calc
@@ -37,6 +38,14 @@ def mp_prerelax_job(
     Function to pre-relax a structure with Materials Project settings. By
     default, this uses a PBEsol pre-relax step.
 
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {"ediffg": -0.05, "xc": "pbesol"}
+        ```
+
     Parameters
     ----------
     atoms
@@ -46,14 +55,6 @@ def mp_prerelax_job(
         Preset to use.
     calc_swaps
         Dictionary of custom kwargs for the calculator.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {"ediffg": -0.05, "xc": "pbesol"}
-            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -62,16 +63,16 @@ def mp_prerelax_job(
     VaspSchema
         Dictionary of results from [quacc.schemas.vasp.summarize_run][]
     """
-    atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
 
     defaults = {"ediffg": -0.05, "xc": "pbesol"}
-    flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
-
-    atoms.calc = Vasp(atoms, preset=preset, **flags)
-    atoms = run_calc(atoms, copy_files=copy_files)
-
-    return summarize_run(atoms, additional_fields={"name": "MP-Prerelax"})
+    return _base_job(
+        atoms,
+        preset=preset,
+        defaults=defaults,
+        calc_swaps=calc_swaps,
+        additional_fields={"name": "MP Pre-Relax"},
+        copy_files=copy_files,
+    )
 
 
 @job
@@ -85,6 +86,14 @@ def mp_relax_job(
     Function to relax a structure with Materials Project settings. By default,
     this uses an r2SCAN relax step.
 
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {}
+        ```
+
     Parameters
     ----------
     atoms
@@ -93,8 +102,7 @@ def mp_relax_job(
     preset
         Preset to use.
     calc_swaps
-        Dictionary of custom kwargs for the calculator. Overrides the following
-        defaults: `{}`.
+        Dictionary of custom kwargs for the calculator.
     copy_files
         Files to copy to the runtime directory.
 
@@ -103,20 +111,22 @@ def mp_relax_job(
     VaspSchema
         Dictionary of results from [quacc.schemas.vasp.summarize_run][]
     """
-    atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
 
-    atoms.calc = Vasp(atoms, preset=preset, **calc_swaps)
-    atoms = run_calc(atoms, copy_files=copy_files)
-
-    return summarize_run(atoms, additional_fields={"name": "MP-Relax"})
+    return _base_job(
+        atoms,
+        preset=preset,
+        defaults={},
+        calc_swaps=calc_swaps,
+        additional_fields={"name": "MP Relax"},
+        copy_files=copy_files,
+    )
 
 
 @flow
 def mp_relax_flow(
     atoms: Atoms | dict,
-    prerelax_kwargs: dict | None = None,
-    relax_kwargs: dict | None = None,
+    prerelax_job_kwargs: dict | None = None,
+    relax_job_kwargs: dict | None = None,
 ) -> MPRelaxFlowSchema:
     """
     Workflow consisting of:
@@ -139,11 +149,11 @@ def mp_relax_flow(
     MPRelaxFlowSchema
         Dictionary of results
     """
-    prerelax_kwargs = prerelax_kwargs or {}
-    relax_kwargs = relax_kwargs or {}
+    prerelax_job_kwargs = prerelax_job_kwargs or {}
+    relax_job_kwargs = relax_job_kwargs or {}
 
     # Run the prerelax
-    prerelax_results = mp_prerelax_job(atoms, **prerelax_kwargs)
+    prerelax_results = mp_prerelax_job(atoms, **prerelax_job_kwargs)
 
     # Update KSPACING arguments
     bandgap = prerelax_results["output"].get("bandgap", 0)
@@ -154,11 +164,13 @@ def mp_relax_flow(
         kspacing = 2 * np.pi * 1.0265 / (rmin - 1.0183)
         kspacing_swaps = {"kspacing": min(kspacing, 0.44), "ismear": -5, "sigma": 0.05}
 
-    relax_kwargs["calc_swaps"] = kspacing_swaps | relax_kwargs.get("calc_swaps", {})
+    relax_job_kwargs["calc_swaps"] = kspacing_swaps | relax_job_kwargs.get(
+        "calc_swaps", {}
+    )
 
     # Run the relax
     relax_results = mp_relax_job(
-        prerelax_results, copy_files=["WAVECAR"], **relax_kwargs
+        prerelax_results, copy_files=["WAVECAR"], **relax_job_kwargs
     )
     relax_results["prerelax"] = prerelax_results
 

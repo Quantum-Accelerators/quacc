@@ -509,8 +509,6 @@ def _base_job(
     """
 
     atoms = fetch_atoms(atoms)
-    defaults = defaults or {}
-
     qchem_flags = remove_dict_empties(defaults)
 
     atoms.calc = QChem(atoms, **qchem_flags)

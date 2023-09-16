@@ -29,6 +29,22 @@ def static_job(
     """
     Carry out a single-point calculation.
 
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {
+            "ismear": -5,
+            "laechg": True,
+            "lcharg": True,
+            "lreal": False,
+            "lwave": True,
+            "nedos": 5001,
+            "nsw": 0,
+        }
+        ```
+
     Parameters
     ----------
     atoms
@@ -38,22 +54,6 @@ def static_job(
         Preset to use.
     calc_swaps
         Dictionary of custom kwargs for the calculator.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {
-                "ismear": -5,
-                "laechg": True,
-                "lcharg": True,
-                "lreal": False,
-                "lwave": True,
-                "nedos": 5001,
-                "nsw": 0,
-            }
-            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -62,8 +62,6 @@ def static_job(
     VaspSchema
         Dictionary of results from [quacc.schemas.vasp.summarize_run][]
     """
-    atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
 
     defaults = {
         "ismear": -5,
@@ -74,12 +72,14 @@ def static_job(
         "nedos": 5001,
         "nsw": 0,
     }
-    flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
-
-    atoms.calc = Vasp(atoms, preset=preset, **flags)
-    atoms = run_calc(atoms, copy_files=copy_files)
-
-    return summarize_run(atoms, additional_fields={"name": "VASP Static"})
+    return _base_job(
+        atoms,
+        preset=preset,
+        defaults=defaults,
+        calc_swaps=calc_swaps,
+        additional_fields={"name": "VASP Static"},
+        copy_files=copy_files,
+    )
 
 
 @job
@@ -93,6 +93,22 @@ def relax_job(
     """
     Relax a structure.
 
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {
+            "ediffg": -0.02,
+            "isif": 3 if relax_cell else 2,
+            "ibrion": 2,
+            "isym": 0,
+            "lcharg": False,
+            "lwave": False,
+            "nsw": 200,
+        }
+        ```
+
     Parameters
     ----------
     atoms
@@ -105,22 +121,6 @@ def relax_job(
         only the positions (ISIF = 2) should be updated.
     calc_swaps
         Dictionary of custom kwargs for the calculator.
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {
-                "ediffg": -0.02,
-                "isif": 3 if relax_cell else 2,
-                "ibrion": 2,
-                "isym": 0,
-                "lcharg": False,
-                "lwave": False,
-                "nsw": 200,
-            }
-            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -129,8 +129,6 @@ def relax_job(
     VaspSchema
         Dictionary of results from [quacc.schemas.vasp.summarize_run][]
     """
-    atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
 
     defaults = {
         "ediffg": -0.02,
@@ -141,12 +139,14 @@ def relax_job(
         "lwave": False,
         "nsw": 200,
     }
-    flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
-
-    atoms.calc = Vasp(atoms, preset=preset, **flags)
-    atoms = run_calc(atoms, copy_files=copy_files)
-
-    return summarize_run(atoms, additional_fields={"name": "VASP Relax"})
+    return _base_job(
+        atoms,
+        preset=preset,
+        defaults=defaults,
+        calc_swaps=calc_swaps,
+        additional_fields={"name": "VASP Relax"},
+        copy_files=copy_files,
+    )
 
 
 @job
@@ -191,9 +191,6 @@ def double_relax_job(
     DoubleRelaxSchema
         Dictionary of results
     """
-    atoms = fetch_atoms(atoms)
-    calc_swaps1 = calc_swaps1 or {}
-    calc_swaps2 = calc_swaps2 or {}
 
     # Run first relaxation
     summary1 = relax_job.__wrapped__(
@@ -215,3 +212,45 @@ def double_relax_job(
     summary2["relax1"] = summary1
 
     return summary2
+
+
+def _base_job(
+    atoms: Atoms | dict,
+    preset: str | None = None,
+    defaults: str | None = None,
+    calc_swaps: dict | None = None,
+    additional_fields: dict | None = None,
+    copy_files: list[str] | None = None,
+) -> VaspSchema:
+    """
+    Base job function for VASP recipes.
+
+
+    Parameters
+    ----------
+    atoms
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
+    preset
+        Preset to use.
+    defaults
+        Default parameters for the recipe.
+    calc_swaps
+        Dictionary of custom kwargs for the calculator.
+    additional_fields
+        Additional fields to supply to the summarizer.
+    copy_files
+        Files to copy to the runtime directory.
+
+    Returns
+    -------
+    VaspSchema
+        Dictionary of results from [quacc.schemas.vasp.summarize_run][]
+    """
+    atoms = fetch_atoms(atoms)
+    flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
+
+    atoms.calc = Vasp(atoms, preset=preset, **flags)
+    atoms = run_calc(atoms, copy_files=copy_files)
+
+    return summarize_run(atoms, additional_fields=additional_fields)

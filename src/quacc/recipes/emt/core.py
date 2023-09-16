@@ -31,13 +31,21 @@ def static_job(
     """
     Carry out a static calculation.
 
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {}
+        ```
+
     Parameters
     ----------
     atoms
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     calc_swaps
-        Dictionary of custom kwargs for the EMT calculator. Overrides `{}`.
+        Dictionary of custom kwargs for the EMT calculator.
     copy_files
         Files to copy to the runtime directory.
 
@@ -70,6 +78,20 @@ def relax_job(
     """
     Carry out a geometry optimization.
 
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {}
+        ```
+
+        Optimizer Defaults:
+
+        ```python
+        {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
+        ```
+
     Parameters
     ----------
     atoms
@@ -82,14 +104,6 @@ def relax_job(
         following defaults: `{}`
     opt_swaps
         Dictionary of swaps for [quacc.utils.calc.run_ase_opt][].
-
-        ???+ Note
-
-             Overrides the following defaults:
-
-            ```python
-            {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
-            ```
     copy_files
         Files to copy to the runtime directory.
 
@@ -99,8 +113,6 @@ def relax_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_opt_run][]
     """
     atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
-    opt_swaps = opt_swaps or {}
 
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
