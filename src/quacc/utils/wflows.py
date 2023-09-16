@@ -687,5 +687,5 @@ def _make_dask_cluster(
     """
     cluster = cluster_class(**cluster_kwargs)
     if verbose:
-        print(cluster.job_script())
+        print(cluster.job_script())  # noqa: T201
     return cluster

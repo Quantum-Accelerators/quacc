@@ -136,6 +136,7 @@ extend-ignore = [
   "B028",   # No explicit stacklevel
   "EM101",  # Exception must not use a string literal
   "EM102",  # Exception must not use an f-string literal
+  "G004",   # f-string in Logging statement
 ]
 typing-modules = ["mypackage._compat.typing"]
 src = ["src"]
