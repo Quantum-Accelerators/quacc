@@ -71,7 +71,7 @@ def ts_job(
         Optimizer Defaults:
 
         ```python
-        {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella}
+        {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella, "use_TRICs": False}
         ```
 
     Parameters
