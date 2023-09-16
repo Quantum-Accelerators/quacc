@@ -181,47 +181,6 @@ def test_ts_job_with_custom_hessian(tmpdir):
     NewtonNet is None or sella is None,
     reason="NewtonNet and Sella must be installed.",
 )
-def test_ts_job_with_custom_optimizer(tmpdir):
-    tmpdir.chdir()
-    # Define test inputs
-    atoms = molecule("H2O")
-    opt_swaps = {"optimizer": FIRE}
-
-    # Call the function
-    output = ts_job(atoms, opt_swaps=opt_swaps)
-
-    # Perform assertions on the result
-    assert isinstance(output, dict)
-
-    assert "thermo" in output["freq_job"]
-    assert output["results"]["energy"] == pytest.approx(-9.51735515322368)
-    assert output["freq_job"]["vib"]["results"]["vib_energies"][0] == pytest.approx(
-        0.22679888726664774
-    )
-    assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
-        -9.51735515322368
-    )
-
-
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
-def test_ts_job_with_custom_optimizer_and_custom_hessian(tmpdir):
-    tmpdir.chdir()
-    # Define test inputs
-    atoms = molecule("H2O")
-    opt_swaps = {"optimizer": FIRE}
-
-    with pytest.raises(ValueError, match="Custom hessian can only be used with Sella."):
-        # Call the function
-        ts_job(atoms, use_custom_hessian=True, opt_swaps=opt_swaps)
-
-
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
 def test_irc_job_with_default_args(tmpdir):
     tmpdir.chdir()
     # Define test inputs

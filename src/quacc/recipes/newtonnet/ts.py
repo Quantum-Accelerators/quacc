@@ -129,9 +129,6 @@ def ts_job(
     atoms.calc = NewtonNet(**flags)
 
     if use_custom_hessian:
-        if opt_flags.get("optimizer", FIRE).__name__ != "Sella":
-            raise ValueError("Custom hessian can only be used with Sella.")
-
         opt_flags["optimizer_kwargs"]["hessian_function"] = _get_hessian
 
     ml_calculator = NewtonNet(**flags)
