@@ -31,7 +31,6 @@ if TYPE_CHECKING:
     from ase import Atoms
 
     cclibSchema = TypeVar("cclibSchema")
-    cclibTaskDoc = TypeVar("cclibTaskDoc")
 
 
 def summarize_cclib_run(
@@ -289,7 +288,7 @@ class _cclibTaskDocument(MoleculeMetadata):
         additional_fields: dict | None = None,
         analysis: str | list[str] | None = None,
         proatom_dir: Path | str | None = None,
-    ) -> cclibTaskDoc:
+    ) -> dict:
         """
         Create a TaskDocument from a log file.
 
@@ -326,8 +325,8 @@ class _cclibTaskDocument(MoleculeMetadata):
 
         Returns
         -------
-        cclibTaskDoc
-            A TaskDocument dictinoary summarizing the inputs/outputs of the log
+        dict
+            A TaskDocument dictionary summarizing the inputs/outputs of the log
             file.
         """
 

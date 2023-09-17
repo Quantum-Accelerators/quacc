@@ -25,8 +25,6 @@ if TYPE_CHECKING:
     from ase import Atoms
 
     VaspSchema = TypeVar("VaspSchema")
-    BaderSchema = TypeVar("BaderSchema")
-    ChargemolSchema = TypeVar("ChargemolSchema")
 
 
 def summarize_vasp_run(
@@ -314,9 +312,7 @@ def summarize_vasp_run(
     return summary
 
 
-def bader_runner(
-    path: str | None = None, scratch_dir: str | None = None
-) -> BaderSchema:
+def bader_runner(path: str | None = None, scratch_dir: str | None = None) -> dict:
     """
     Runs a Bader partial charge and spin moment analysis using the VASP output
     files in the given path. This function requires that `bader` is located in
@@ -335,7 +331,7 @@ def bader_runner(
 
     Returns
     -------
-    BaderSchema
+    dict
         Dictionary containing the Bader analysis summary:
             {
                 "min_dist": List[float], "atomic_volume": List[float],
@@ -380,7 +376,7 @@ def chargemol_runner(
     path: str | None = None,
     atomic_densities_path: str | None = None,
     scratch_dir: str | None = None,
-) -> ChargemolSchema:
+) -> dict:
     """
     Runs a Chargemol (i.e. DDEC6 + CM5) analysis using the VASP output files in
     the given path. This function requires that the chargemol executable, given
