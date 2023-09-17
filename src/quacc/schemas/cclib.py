@@ -6,7 +6,7 @@ import os
 import warnings
 from inspect import getmembers, isclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Dict, List, Literal, TypeVar
+from typing import TYPE_CHECKING
 
 import cclib
 from cclib.io import ccread
@@ -19,19 +19,24 @@ from pymatgen.core.periodic_table import Element
 from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc import SETTINGS
-from quacc.schemas.ase import summarize_run as base_summarize_run
+from quacc.schemas.ase import RunSchema, summarize_run
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.utils.db import results_to_db
 from quacc.utils.dicts import clean_dict
 from quacc.utils.files import find_recent_logfile, get_uri
 
 if TYPE_CHECKING:
+    from typing import Dict, List, Literal, TypeVar
+
     from ase import Atoms
 
-    cclibSchema = TypeVar("cclibSchema")
+    cclibTaskDoc = TypeVar("cclibTaskDoc")
+
+    class cclibSchema(RunSchema):
+        taskdoc: cclibTaskDoc
 
 
-def summarize_run(
+def summarize_cclib_run(
     atoms: Atoms,
     logfile_extensions: str | list[str],
     dir_path: str | None = None,
@@ -196,7 +201,7 @@ def summarize_run(
     )
 
     # Get the base ASE summary
-    base_summary = base_summarize_run(
+    base_summary = summarize_run(
         atoms,
         charge_and_multiplicity=charge_and_multiplicity,
         prep_next_run=prep_next_run,
@@ -270,7 +275,7 @@ class _cclibTaskDocument(MoleculeMetadata):
         additional_fields: dict | None = None,
         analysis: str | list[str] | None = None,
         proatom_dir: Path | str | None = None,
-    ) -> dict:
+    ) -> cclibTaskDoc:
         """
         Create a TaskDocument from a log file.
 
@@ -307,7 +312,7 @@ class _cclibTaskDocument(MoleculeMetadata):
 
         Returns
         -------
-        dict
+        cclibTaskDoc
             A TaskDocument dictinoary summarizing the inputs/outputs of the log
             file.
         """

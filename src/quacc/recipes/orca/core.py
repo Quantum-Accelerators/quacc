@@ -9,7 +9,7 @@ from ase.calculators.orca import ORCA, OrcaProfile
 
 from quacc import SETTINGS, job
 from quacc.schemas import fetch_atoms
-from quacc.schemas.cclib import summarize_run
+from quacc.schemas.cclib import summarize_cclib_run
 from quacc.utils.calc import run_calc
 from quacc.utils.dicts import merge_dicts
 
@@ -89,7 +89,7 @@ def static_job(
     Returns
     -------
     cclibSchema
-        Dictionary of results from [quacc.schemas.cclib.summarize_run][]
+        Dictionary of results from [quacc.schemas.cclib.summarize_cclib_run][]
     """
 
     default_inputs = {
@@ -188,7 +188,7 @@ def relax_job(
     Returns
     -------
     cclibSchema
-        Dictionary of results from [quacc.schemas.cclib.summarize_run][]
+        Dictionary of results from [quacc.schemas.cclib.summarize_cclib_run][]
     """
 
     default_inputs = {
@@ -262,7 +262,7 @@ def _base_job(
     Returns
     -------
     cclibSchema
-        Dictionary of results from [quacc.schemas.cclib.summarize_run][]
+        Dictionary of results from [quacc.schemas.cclib.summarize_cclib_run][]
     """
     atoms = fetch_atoms(atoms)
     inputs = merge_dicts(default_inputs, input_swaps)
@@ -279,7 +279,7 @@ def _base_job(
     )
     atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
 
-    return summarize_run(
+    return summarize_cclib_run(
         atoms,
         LOG_FILE,
         charge_and_multiplicity=(charge, spin_multiplicity),

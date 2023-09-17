@@ -13,7 +13,7 @@ from pymatgen.command_line.bader_caller import bader_analysis_from_path
 from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
 
 from quacc import SETTINGS
-from quacc.schemas.ase import summarize_run as base_summarize_run
+from quacc.schemas.ase import RunSchema, summarize_run
 from quacc.utils.db import results_to_db
 from quacc.utils.dicts import clean_dict
 from quacc.utils.files import copy_decompress
@@ -23,10 +23,14 @@ if TYPE_CHECKING:
 
     from ase import Atoms
 
-    VaspSchema = TypeVar("VaspSchema")
+    BaderSchema = TypeVar("BaderSchema")
+    ChargemolSchema = TypeVar("ChargemolSchema")
+
+    class VaspSchema(RunSchema):
+        taskdoc: dict  # TaskDoc | {"bader": BaderSchema}
 
 
-def summarize_run(
+def summarize_vasp_run(
     atoms: Atoms,
     dir_path: str | None = None,
     prep_next_run: bool = True,
@@ -239,7 +243,7 @@ def summarize_run(
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
     # Get base VASP summary
-    base_summary = base_summarize_run(atoms, prep_next_run=prep_next_run, store=None)
+    base_summary = summarize_run(atoms, prep_next_run=prep_next_run, store=None)
 
     # Fetch all tabulated results from VASP outputs files Fortunately, emmet
     # already has a handy function for this
@@ -303,7 +307,9 @@ def summarize_run(
     return summary
 
 
-def bader_runner(path: str | None = None, scratch_dir: str | None = None) -> dict:
+def bader_runner(
+    path: str | None = None, scratch_dir: str | None = None
+) -> BaderSchema:
     """
     Runs a Bader partial charge and spin moment analysis using the VASP output
     files in the given path. This function requires that `bader` is located in
@@ -322,7 +328,7 @@ def bader_runner(path: str | None = None, scratch_dir: str | None = None) -> dic
 
     Returns
     -------
-    dict
+    BaderSchema
         Dictionary containing the Bader analysis summary:
             {
                 "min_dist": List[float], "atomic_volume": List[float],
@@ -367,7 +373,7 @@ def chargemol_runner(
     path: str | None = None,
     atomic_densities_path: str | None = None,
     scratch_dir: str | None = None,
-) -> dict:
+) -> ChargemolSchema:
     """
     Runs a Chargemol (i.e. DDEC6 + CM5) analysis using the VASP output files in
     the given path. This function requires that the chargemol executable, given
