@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from maggma.core import Store
+from pymatgen.io.qchem.inputs import QCInput
 from pymatgen.io.qchem.outputs import QCOutput
 
 from quacc import SETTINGS
@@ -64,7 +65,8 @@ def summarize_run(
 
     # Fetch all tabulated results from VASP outputs files Fortunately, emmet
     # already has a handy function for this
-    results = QCOutput(dir_path / "mol.qout").data
+    results = {"qc_output": QCOutput(dir_path / "mol.qout").data}
+    inputs = {"qc_input": QCInput.from_file(dir_path / "mol.qin").as_dict()}
 
     # Prepares the Atoms object for the next run by moving the final magmoms to
     # initial, clearing the calculator state, and assigning the resulting Atoms
@@ -78,7 +80,7 @@ def summarize_run(
 
     # Make task document
     task_doc = clean_dict(
-        results | atoms_db | additional_fields, remove_empties=remove_empties
+        inputs | results | atoms_db | additional_fields, remove_empties=remove_empties
     )
 
     # Store the results
