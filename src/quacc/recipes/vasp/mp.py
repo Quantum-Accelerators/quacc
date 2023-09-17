@@ -56,7 +56,7 @@ def mp_prerelax_job(
     Returns
     -------
     VaspSchema
-        Dictionary of results from [quacc.schemas.vasp.summarize_run][]
+        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
 
     defaults = {"ediffg": -0.05, "xc": "pbesol"}
@@ -104,7 +104,7 @@ def mp_relax_job(
     Returns
     -------
     VaspSchema
-        Dictionary of results from [quacc.schemas.vasp.summarize_run][]
+        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
 
     return _base_job(

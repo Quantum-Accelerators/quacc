@@ -171,7 +171,7 @@ def _loose_relax_positions(
     Returns
     -------
     VaspSchema
-        Dictionary of results from quacc.schemas.vasp.summarize_run
+        Dictionary of results from quacc.schemas.vasp.vasp_summarize_run
     """
 
     defaults = {
@@ -215,7 +215,7 @@ def _loose_relax_cell(
     Returns
     -------
     VaspSchema
-        Dictionary of results from quacc.schemas.vasp.summarize_run
+        Dictionary of results from quacc.schemas.vasp.vasp_summarize_run
     """
 
     defaults = {
@@ -261,7 +261,7 @@ def _double_relax(
     Returns
     -------
     list[VaspSchema]
-        List of dictionary of results from [quacc.schemas.vasp.summarize_run][]
+        List of dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
 
     # Run first relaxation
@@ -321,7 +321,7 @@ def _static(
     Returns
     -------
     VaspSchema
-        Dictionary of results from quacc.schemas.vasp.summarize_run
+        Dictionary of results from quacc.schemas.vasp.vasp_summarize_run
     """
 
     defaults = {

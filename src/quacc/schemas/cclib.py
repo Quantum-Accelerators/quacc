@@ -6,7 +6,7 @@ import os
 import warnings
 from inspect import getmembers, isclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Dict, List, Literal, TypeVar
+from typing import TYPE_CHECKING, Dict, List
 
 import cclib
 from cclib.io import ccread
@@ -26,15 +26,18 @@ from quacc.utils.dicts import clean_dict
 from quacc.utils.files import find_recent_logfile, get_uri
 
 if TYPE_CHECKING:
+    from typing import Literal, TypeVar
+
     from ase import Atoms
 
     cclibSchema = TypeVar("cclibSchema")
 
 
-def summarize_run(
+def cclib_summarize_run(
     atoms: Atoms,
     logfile_extensions: str | list[str],
     dir_path: str | None = None,
+    charge_and_multiplicity: tuple[int, int] | None = None,
     pop_analyses: list[
         Literal[
             "cpsa",
@@ -77,6 +80,9 @@ def summarize_run(
     dir_path
         The path to the folder containing the calculation outputs. A value of
         None specifies the current working directory.
+    charge_and_multiplicity
+        Charge and spin multiplicity of the Atoms object, only used for Molecule
+        metadata.
     pop_analyses
         The name(s) of any cclib post-processing analysis to run. Note that for
         bader, ddec6, and hirshfeld, a cube file (.cube, .cub) must reside in
@@ -184,6 +190,13 @@ def summarize_run(
         - task_label: str = Field(None, description="A description of the task")
     """
 
+    additional_fields = additional_fields or {}
+    dir_path = dir_path or Path.cwd()
+    store = SETTINGS.PRIMARY_STORE if store is None else store
+    check_convergence = (
+        SETTINGS.CHECK_CONVERGENCE if check_convergence is None else check_convergence
+    )
+
     # Make sure there is a calculator with results
     if not atoms.calc:
         msg = "ASE Atoms object has no attached calculator."
@@ -191,32 +204,27 @@ def summarize_run(
     if not atoms.calc.results:
         msg = "ASE Atoms object's calculator has no results."
         raise ValueError(msg)
-    store = SETTINGS.PRIMARY_STORE if store is None else store
-
-    # Set defaults
-    check_convergence = (
-        SETTINGS.CHECK_CONVERGENCE if check_convergence is None else check_convergence
-    )
-    additional_fields = additional_fields or {}
-    dir_path = dir_path or Path.cwd()
 
     # Fortunately, there is already a cclib parser in Atomate2
-    results = _cclibTaskDocument.from_logfile(
+    taskdoc = _cclibTaskDocument.from_logfile(
         dir_path, logfile_extensions, store_trajectory=True, analysis=pop_analyses
     )
-    uri = results["dir_name"]
-    results["nid"] = uri.split(":")[0]
-    results["dir_name"] = ":".join(uri.split(":")[1:])
-    results["builder_meta"]["build_date"] = str(results["builder_meta"]["build_date"])
-    results["logfile"] = results["logfile"].split(":")[-1]
-    if results["attributes"].get("trajectory"):
-        results["attributes"]["trajectory"] = [
-            atoms_to_metadata(AseAtomsAdaptor().get_atoms(molecule))
-            for molecule in results["attributes"]["trajectory"]
+    uri = taskdoc["dir_name"]
+    taskdoc["nid"] = uri.split(":")[0]
+    taskdoc["dir_name"] = ":".join(uri.split(":")[1:])
+    taskdoc["builder_meta"]["build_date"] = str(taskdoc["builder_meta"]["build_date"])
+    taskdoc["logfile"] = taskdoc["logfile"].split(":")[-1]
+    if taskdoc["attributes"].get("trajectory"):
+        taskdoc["attributes"]["trajectory"] = [
+            atoms_to_metadata(
+                AseAtomsAdaptor().get_atoms(molecule),
+                charge_and_multiplicity=charge_and_multiplicity,
+            )
+            for molecule in taskdoc["attributes"]["trajectory"]
         ]
 
     # Check convergence if requested
-    if check_convergence and results["attributes"].get("optdone") is False:
+    if check_convergence and taskdoc["attributes"].get("optdone") is False:
         msg = "Optimization not complete."
         raise ValueError(msg)
 
@@ -234,16 +242,16 @@ def summarize_run(
     atoms_db = atoms_to_metadata(atoms, get_metadata=False, store_pmg=False)
 
     # Create a dictionary of the inputs/outputs
-    task_doc = clean_dict(
-        atoms_db | inputs | results | additional_fields,
+    summary = clean_dict(
+        atoms_db | inputs | taskdoc | additional_fields,
         remove_empties=remove_empties,
     )
 
     # Store the results
     if store:
-        results_to_db(store, task_doc)
+        results_to_db(store, summary)
 
-    return task_doc
+    return summary
 
 
 class _cclibTaskDocument(MoleculeMetadata):
@@ -318,7 +326,7 @@ class _cclibTaskDocument(MoleculeMetadata):
         Returns
         -------
         dict
-            A TaskDocument dictinoary summarizing the inputs/outputs of the log
+            A TaskDocument dictionary summarizing the inputs/outputs of the log
             file.
         """
 

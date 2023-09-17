@@ -8,7 +8,7 @@ from ase.calculators.gaussian import Gaussian
 
 from quacc import job
 from quacc.schemas import fetch_atoms
-from quacc.schemas.cclib import summarize_run
+from quacc.schemas.cclib import cclib_summarize_run
 from quacc.utils.calc import run_calc
 from quacc.utils.dicts import merge_dicts
 
@@ -78,7 +78,7 @@ def static_job(
     Returns
     -------
     cclibSchema
-        Dictionary of results, as specified in [quacc.schemas.cclib.summarize_run][]
+        Dictionary of results, as specified in [quacc.schemas.cclib.cclib_summarize_run][]
     """
 
     defaults = {
@@ -99,6 +99,8 @@ def static_job(
     }
     return _base_job(
         atoms,
+        charge=charge,
+        spin_multiplicity=spin_multiplicity,
         defaults=defaults,
         calc_swaps=calc_swaps,
         additional_fields={"name": "Gaussian Static"},
@@ -166,7 +168,7 @@ def relax_job(
     Returns
     -------
     cclibSchema
-        Dictionary of results, as specified in [quacc.schemas.cclib.summarize_run][]
+        Dictionary of results, as specified in [quacc.schemas.cclib.cclib_summarize_run][]
     """
 
     defaults = {
@@ -187,6 +189,8 @@ def relax_job(
     }
     return _base_job(
         atoms,
+        charge=charge,
+        spin_multiplicity=spin_multiplicity,
         defaults=defaults,
         calc_swaps=calc_swaps,
         additional_fields={"name": "Gaussian Relax"},
@@ -196,6 +200,8 @@ def relax_job(
 
 def _base_job(
     atoms: Atoms | dict,
+    charge: int,
+    spin_multiplicity: int,
     defaults: dict | None = None,
     calc_swaps: dict | None = None,
     additional_fields: dict | None = None,
@@ -209,6 +215,10 @@ def _base_job(
     atoms
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
+    charge
+        Charge of the system.
+    spin_multiplicity
+        Multiplicity of the system.
     defaults
         Default parameters for the calculator.
     calc_swaps
@@ -221,7 +231,7 @@ def _base_job(
     Returns
     -------
     cclibSchema
-        Dictionary of results, as specified in [quacc.schemas.cclib.summarize_run][]
+        Dictionary of results, as specified in [quacc.schemas.cclib.cclib_summarize_run][]
     """
     atoms = fetch_atoms(atoms)
     flags = merge_dicts(defaults, calc_swaps)
@@ -229,8 +239,9 @@ def _base_job(
     atoms.calc = Gaussian(**flags)
     atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
 
-    return summarize_run(
+    return cclib_summarize_run(
         atoms,
         LOG_FILE,
+        charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields=additional_fields,
     )
