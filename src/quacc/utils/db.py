@@ -84,7 +84,7 @@ def results_to_db(store: Store | str | dict, results: dict | list[dict]) -> None
     -------
     None
     """
-    if isinstance(store, str) or isinstance(store, dict):
+    if isinstance(store, (str, dict)):
         store = MontyDecoder().decode(store)
 
     if isinstance(results, dict):
