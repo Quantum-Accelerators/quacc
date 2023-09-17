@@ -144,7 +144,7 @@ def test_static_job_v2(monkeypatch, tmpdir):
     assert output["spin_multiplicity"] == 2
     assert output["nelectrons"] == 77
     assert output["formula_alphabetical"] == "C4 H4 O6"
-    assert output["parameters"]["charge"] == 1
+    assert output["parameters"]["charge"] == -1
     assert output["parameters"]["spin_multiplicity"] == 2
     assert output["results"]["energy"] == pytest.approx(-605.6859554025 * units.Hartree)
     assert output["results"]["forces"][0][0] == pytest.approx(-0.6955571014353796)
