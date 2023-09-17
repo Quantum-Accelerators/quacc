@@ -26,16 +26,14 @@ from quacc.utils.dicts import clean_dict
 from quacc.utils.files import find_recent_logfile, get_uri
 
 if TYPE_CHECKING:
-    from typing import Dict, List, Literal, TypeVar
+    from typing import Dict, List, Literal
 
     from ase import Atoms
 
     from quacc.schemas.ase import RunSchema
 
-    cclibTaskDoc = TypeVar("cclibTaskDoc")
-
     class cclibSchema(RunSchema):
-        taskdoc: cclibTaskDoc
+        taskdoc: dict  # _cclibTaskDocument.from_logfile
 
 
 def summarize_cclib_run(
@@ -277,7 +275,7 @@ class _cclibTaskDocument(MoleculeMetadata):
         additional_fields: dict | None = None,
         analysis: str | list[str] | None = None,
         proatom_dir: Path | str | None = None,
-    ) -> cclibTaskDoc:
+    ):
         """
         Create a TaskDocument from a log file.
 
