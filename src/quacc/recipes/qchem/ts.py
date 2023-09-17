@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
     from ase import Atoms
 
-    from quacc.schemas.ase import OptSchema
+    from quacc.recipes.qchem.core import QchemOptSchema
 
 
 @job
@@ -43,7 +43,7 @@ def ts_job(
     overwrite_inputs: dict | None = None,
     opt_swaps: dict | None = None,
     copy_files: list[str] | None = None,
-) -> OptSchema:
+) -> QchemOptSchema:
     """
     TS optimize a molecular structure.
 
@@ -114,8 +114,8 @@ def ts_job(
 
     Returns
     -------
-    OptSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
+    QchemOptSchema
+        Dictionary of results
     """
 
     qchem_defaults = {
@@ -173,7 +173,7 @@ def irc_job(
     overwrite_inputs: dict | None = None,
     opt_swaps: dict | None = None,
     copy_files: list[str] | None = None,
-) -> OptSchema:
+) -> QchemOptSchema:
     """
     IRC optimize a molecular structure.
 
@@ -246,8 +246,8 @@ def irc_job(
 
     Returns
     -------
-    OptSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
+    QchemOptSchema
+        Dictionary of results
     """
 
     qchem_defaults = {
@@ -306,7 +306,7 @@ def quasi_irc_job(
     irc_opt_swaps: dict | None = None,
     relax_opt_swaps: dict | None = None,
     copy_files: list[str] | None = None,
-) -> OptSchema:
+) -> QchemOptSchema:
     """
     Quasi-IRC optimize a molecular structure. Runs `irc_job` for
     10 steps (default) followed by `relax_job`.
@@ -347,7 +347,7 @@ def quasi_irc_job(
     Returns
     -------
     OptSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
+        Dictionary of results
     """
 
     default_settings = SETTINGS.copy()

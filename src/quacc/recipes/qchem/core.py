@@ -108,7 +108,7 @@ def static_job(
     Returns
     -------
     QchemSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][]
+        Dictionary of results
     """
     defaults = {
         "basis_set": basis,
@@ -213,7 +213,7 @@ def internal_relax_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][]
+        Dictionary of results
     """
 
     defaults = {
@@ -319,7 +319,7 @@ def freq_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][]
+        Dictionary of results
     """
 
     defaults = {
@@ -433,7 +433,7 @@ def relax_job(
     Returns
     -------
     OptSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
+        Dictionary of results
     """
 
     qchem_defaults = {
@@ -550,7 +550,7 @@ def _base_opt_job(
     Returns
     -------
     QchemSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
+        Dictionary of results
     """
     # TODO:
     #   - exposing TRICs?
@@ -566,7 +566,6 @@ def _base_opt_job(
 
     summary = summarize_run(
         dyn.atoms,
-        input_atoms=atoms,
         charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields=additional_fields,
     )
