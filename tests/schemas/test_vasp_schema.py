@@ -7,7 +7,7 @@ from maggma.stores import MemoryStore
 from monty.json import MontyDecoder, jsanitize
 
 from quacc.calculators.vasp import Vasp
-from quacc.schemas.vasp import summarize_run
+from quacc.schemas.vasp import summarize_vasp_run
 
 FILE_DIR = Path(__file__).resolve().parent
 
@@ -27,9 +27,9 @@ def mock_bader_analysis(*args, **kwargs):
     }
 
 
-def test_summarize_run():
+def test_summarize_vasp_run():
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
-    results = summarize_run(
+    results = summarize_vasp_run(
         atoms,
         dir_path=run1,
     )
@@ -41,25 +41,25 @@ def test_summarize_run():
     # Make sure default dir works
     cwd = os.getcwd()
     os.chdir(run1)
-    summarize_run(atoms)
+    summarize_vasp_run(atoms)
     os.chdir(cwd)
 
     # Test DB
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
     store = MemoryStore()
-    summarize_run(atoms, dir_path=run1, store=store)
+    summarize_vasp_run(atoms, dir_path=run1, store=store)
     assert store.count() == 1
 
     # Make sure metadata is made
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
-    results = summarize_run(atoms, dir_path=run1, remove_empties=True)
+    results = summarize_vasp_run(atoms, dir_path=run1, remove_empties=True)
     assert "author" not in results["taskdoc"]
     assert "additional_json" not in results["taskdoc"]
     assert "corrections" not in results["taskdoc"]["custodian"][0]
 
     # Make sure null are not removed
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
-    results = summarize_run(atoms, dir_path=run1, remove_empties=False)
+    results = summarize_vasp_run(atoms, dir_path=run1, remove_empties=False)
     assert "author" not in results["taskdoc"]
     assert "additional_json" not in results["taskdoc"]
     assert "corrections" in results["taskdoc"]["custodian"][0]
@@ -71,7 +71,7 @@ def test_summarize_run():
     atoms.calc = calc
     atoms.calc.results = {"energy": -1.0}
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
-    results = summarize_run(atoms, dir_path=run1)
+    results = summarize_vasp_run(atoms, dir_path=run1)
     results_atoms = results["atoms"]
     assert atoms.info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results.get("atoms_info", {}) != {}
@@ -84,7 +84,7 @@ def test_summarize_run():
     calc = Vasp(atoms)
     atoms.calc = calc
     atoms.calc.results = {"energy": -1.0, "magmoms": [2.0] * len(atoms)}
-    results = summarize_run(atoms, dir_path=run1)
+    results = summarize_vasp_run(atoms, dir_path=run1)
     results_atoms = results["atoms"]
 
     assert atoms.calc is not None
@@ -99,7 +99,7 @@ def test_summarize_run():
     calc = Vasp(atoms)
     atoms.calc = calc
     atoms.calc.results = {"energy": -1.0}
-    results = summarize_run(atoms, dir_path=run1, prep_next_run=False)
+    results = summarize_vasp_run(atoms, dir_path=run1, prep_next_run=False)
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
     results_atoms = results["atoms"]
     assert results_atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
@@ -113,7 +113,7 @@ def test_summarize_bader_run(monkeypatch):
     # Make sure Bader works
     monkeypatch.setattr("quacc.schemas.vasp.bader_runner", mock_bader_analysis)
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
-    results = summarize_run(atoms, dir_path=run1, run_bader=True)
+    results = summarize_vasp_run(atoms, dir_path=run1, run_bader=True)
     struct = results["taskdoc"]["output"]["structure"]
     assert struct.site_properties["bader_charge"] == [-1.0] * len(atoms)
     assert struct.site_properties["bader_spin"] == [0.0] * len(atoms)
@@ -122,4 +122,4 @@ def test_summarize_bader_run(monkeypatch):
 def test_no_bader():
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
     with pytest.warns(UserWarning):
-        summarize_run(atoms, dir_path=run1, run_bader=True)
+        summarize_vasp_run(atoms, dir_path=run1, run_bader=True)
