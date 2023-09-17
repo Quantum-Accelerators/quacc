@@ -35,8 +35,8 @@ def test_summarize_run():
     )
     assert results["nsites"] == len(atoms)
     assert results["atoms"] == atoms
-    assert results["output"]["energy"] == -33.15807349
-    assert "calcs_reversed" not in results
+    assert results["taskdoc"]["output"]["energy"] == -33.15807349
+    assert "calcs_reversed" not in results["taskdoc"]
 
     # Make sure default dir works
     cwd = os.getcwd()
@@ -53,20 +53,23 @@ def test_summarize_run():
     # Make sure metadata is made
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
     results = summarize_run(atoms, dir_path=run1, remove_empties=True)
-    assert "author" not in results
-    assert "additional_json" not in results
-    assert "corrections" not in results["custodian"][0]
+    assert "author" not in results["taskdoc"]
+    assert "additional_json" not in results["taskdoc"]
+    assert "corrections" not in results["taskdoc"]["custodian"][0]
 
     # Make sure null are not removed
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
     results = summarize_run(atoms, dir_path=run1, remove_empties=False)
-    assert "author" not in results
-    assert "additional_json" not in results
-    assert "corrections" in results["custodian"][0]
-    assert results["custodian"][0]["corrections"] == []
+    assert "author" not in results["taskdoc"]
+    assert "additional_json" not in results["taskdoc"]
+    assert "corrections" in results["taskdoc"]["custodian"][0]
+    assert results["taskdoc"]["custodian"][0]["corrections"] == []
 
     # Make sure info tags are handled appropriately
     atoms = read(os.path.join(run1, "CONTCAR.gz"))
+    calc = Vasp(atoms)
+    atoms.calc = calc
+    atoms.calc.results = {"energy": -1.0}
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
     results = summarize_run(atoms, dir_path=run1)
     results_atoms = results["atoms"]
@@ -93,6 +96,9 @@ def test_summarize_run():
     # Make sure Atoms magmoms were not moved if specified
     atoms = read(os.path.join(run1, "CONTCAR.gz"))
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
+    calc = Vasp(atoms)
+    atoms.calc = calc
+    atoms.calc.results = {"energy": -1.0}
     results = summarize_run(atoms, dir_path=run1, prep_next_run=False)
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
     results_atoms = results["atoms"]
@@ -108,7 +114,7 @@ def test_summarize_bader_run(monkeypatch):
     monkeypatch.setattr("quacc.schemas.vasp.bader_runner", mock_bader_analysis)
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
     results = summarize_run(atoms, dir_path=run1, run_bader=True)
-    struct = results["output"]["structure"]
+    struct = results["taskdoc"]["output"]["structure"]
     assert struct.site_properties["bader_charge"] == [-1.0] * len(atoms)
     assert struct.site_properties["bader_spin"] == [0.0] * len(atoms)
 
