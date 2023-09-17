@@ -6,7 +6,7 @@ import os
 import warnings
 from inspect import getmembers, isclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Dict, List, Literal, TypeVar
+from typing import TYPE_CHECKING
 
 import cclib
 from cclib.io import ccread
@@ -26,6 +26,8 @@ from quacc.utils.dicts import clean_dict
 from quacc.utils.files import find_recent_logfile, get_uri
 
 if TYPE_CHECKING:
+    from typing import Literal, TypeVar
+
     from ase import Atoms
 
     cclibSchema = TypeVar("cclibSchema")
@@ -260,16 +262,16 @@ class _cclibTaskDocument(MoleculeMetadata):
     logfile: str = Field(
         None, description="Path to the log file used in the post-processing analysis"
     )
-    attributes: Dict = Field(
+    attributes: dict = Field(
         None, description="Computed properties and calculation outputs"
     )
-    metadata: Dict = Field(
+    metadata: dict = Field(
         None,
         description="Calculation metadata, including input parameters and runtime "
         "statistics",
     )
     task_label: str = Field(None, description="A description of the task")
-    tags: List[str] = Field(None, description="Optional tags for this task document")
+    tags: list[str] = Field(None, description="Optional tags for this task document")
 
     @classmethod
     def from_logfile(
