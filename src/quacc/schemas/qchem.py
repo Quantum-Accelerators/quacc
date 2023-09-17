@@ -67,13 +67,21 @@ def summarize_run(
     dir_path = dir_path or Path.cwd()
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
-    base_summary = base_summarize_run(atoms, prep_next_run=prep_next_run, store=None)
+    qc_output = {"output": QCOutput(zpath(dir_path / "mol.qout")).data}
+    qc_input = {"input": QCInput.from_file(zpath(dir_path / "mol.qin")).as_dict()}
 
-    qc_output = {"qc_output": QCOutput(zpath(dir_path / "mol.qout")).data}
-    qc_input = {"qc_input": QCInput.from_file(zpath(dir_path / "mol.qin")).as_dict()}
+    # Prepares the Atoms object for the next run by moving the final magmoms to
+    # initial, clearing the calculator state, and assigning the resulting Atoms
+    # object a unique ID.
+    if prep_next_run:
+        atoms = prep_next_run_(atoms)
+
+    # We use get_metadata=False and store_pmg=False because the TaskDocument
+    # already makes the structure metadata for us
+    atoms_db = atoms_to_metadata(atoms, get_metadata=False, store_pmg=False)
 
     task_doc = clean_dict(
-        base_summary | qc_input | qc_output | additional_fields,
+        atoms_db | qc_input | qc_output | additional_fields,
         remove_empties=remove_empties,
     )
 
