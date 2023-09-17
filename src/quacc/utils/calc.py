@@ -168,13 +168,13 @@ def run_ase_opt(
         if optimizer_kwargs.get("internal") is not True:
             msg = "use_TRICs should not be True if your atoms have PBCs or if you are already defining custom internal coordinates!"
             raise ValueError(msg)
-        optimizer_kwargs.pop("use_TRICs")
         from sella import Internals
         ints = Internals(atoms, allow_fragments=True)
         ints.find_all_bonds()
         ints.find_all_angles()
         ints.find_all_dihedrals()
         optimizer_kwargs["internal"] = ints
+    optimizer_kwargs.pop("use_TRICs", None)
 
     dyn = optimizer(atoms, **optimizer_kwargs)
 

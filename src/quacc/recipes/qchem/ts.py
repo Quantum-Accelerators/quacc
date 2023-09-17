@@ -71,7 +71,7 @@ def ts_job(
         Optimizer Defaults:
 
         ```python
-        {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella, "use_TRICs": False}
+        {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella, "optimizer_kwargs": {"use_TRICs": False}}
         ```
 
     Parameters
@@ -136,7 +136,7 @@ def ts_job(
         "fmax": 0.01,
         "max_steps": 1000,
         "optimizer": Sella,
-        "optimizer_kwargs": {"order": 1},
+        "optimizer_kwargs": {"order": 1, "use_TRICs": False},
     }
 
     if opt_swaps and opt_swaps.get("optimizer", Sella) is not Sella:
