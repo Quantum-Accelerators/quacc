@@ -147,7 +147,7 @@ def internal_relax_job(
     n_cores: int | None = None,
     overwrite_inputs: dict | None = None,
     copy_files: list[str] | None = None,
-) -> QchemSchema:
+) -> QchemOptSchema:
     """
     Optimize aka "relax" a molecular structure with Q-Chem optimizers.
 
@@ -360,7 +360,7 @@ def relax_job(
     overwrite_inputs: dict | None = None,
     opt_swaps: dict | None = None,
     copy_files: list[str] | None = None,
-) -> QchemSchema:
+) -> QchemOptSchema:
     """
     Optimize aka "relax" a molecular structure with an ASE optimizer.
 
@@ -524,7 +524,7 @@ def _base_opt_job(
     opt_swaps: dict | None = None,
     additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
-) -> QchemSchema:
+) -> QchemOptSchema:
     """
     Base function for Q-Chem recipes that involve ASE optimizers.
 
