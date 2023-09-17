@@ -63,4 +63,6 @@ def mock_summarize_run(atoms, **kwargs):
 def patch_summarize_run(monkeypatch):
     # Monkeypatch the summarize_run() function so that we aren't relying on real
     # VASP files to be in the working directory during the test.
-    monkeypatch.setattr("quacc.recipes.vasp.core.summarize_run", mock_summarize_run)
+    monkeypatch.setattr(
+        "quacc.recipes.vasp.core.summarize_vasp_run", mock_summarize_run
+    )
