@@ -10,7 +10,6 @@ from quacc import job
 from quacc.calculators.qchem import QChem
 from quacc.schemas import fetch_atoms
 from quacc.schemas.ase import summarize_opt_run, summarize_run
-from quacc.schemas.qchem import summarize_run
 from quacc.utils.calc import run_ase_opt, run_calc
 from quacc.utils.dicts import merge_dicts, remove_dict_empties
 
