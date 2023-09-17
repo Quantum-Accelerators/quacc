@@ -78,8 +78,10 @@ def summarize_run(
     )
 
     taskdoc = {
-        "input": QCInput.from_file(zpath(dir_path / "mol.qin")).as_dict(),
-        "output": QCOutput(zpath(dir_path / "mol.qout")).data,
+        "taskdoc": {
+            "input": QCInput.from_file(zpath(dir_path / "mol.qin")).as_dict(),
+            "output": QCOutput(zpath(dir_path / "mol.qout")).data,
+        }
     }
 
     summary = clean_dict(
