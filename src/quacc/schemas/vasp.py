@@ -13,7 +13,6 @@ from pymatgen.command_line.bader_caller import bader_analysis_from_path
 from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
 
 from quacc import SETTINGS
-from quacc.schemas.ase import summarize_run
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.utils.atoms import prep_next_run as prep_next_run_
 from quacc.utils.db import results_to_db
@@ -242,9 +241,6 @@ def summarize_vasp_run(
     dir_path = dir_path or Path.cwd()
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
-    # Get base VASP summary
-    base_summary = summarize_run(atoms, prep_next_run=prep_next_run, store=None)
-
     # Fetch all tabulated results from VASP outputs files Fortunately, emmet
     # already has a handy function for this
     taskdoc = TaskDoc.from_directory(dir_path).dict()
@@ -308,7 +304,7 @@ def summarize_vasp_run(
 
     # Make task document
     summary = clean_dict(
-        results | atoms_db | additional_fields, remove_empties=remove_empties
+        taskdoc | atoms_db | additional_fields, remove_empties=remove_empties
     )
 
     # Store the results

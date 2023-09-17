@@ -31,8 +31,6 @@ if TYPE_CHECKING:
 
     from ase import Atoms
 
-    from quacc.schemas.ase import RunSchema
-
     cclibSchema = TypeVar("cclibSchema")
 
 
@@ -212,9 +210,6 @@ def summarize_cclib_run(
     taskdoc = _cclibTaskDocument.from_logfile(
         dir_path, logfile_extensions, store_trajectory=True, analysis=pop_analyses
     )
-    for k in ["nid", "dir_name"]:
-        taskdoc.pop(k, None)
-
     uri = taskdoc["dir_name"]
     taskdoc["nid"] = uri.split(":")[0]
     taskdoc["dir_name"] = ":".join(uri.split(":")[1:])
