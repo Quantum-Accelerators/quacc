@@ -19,7 +19,7 @@ from pymatgen.core.periodic_table import Element
 from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc import SETTINGS
-from quacc.schemas.ase import RunSchema, summarize_run
+from quacc.schemas.ase import summarize_run
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.utils.db import results_to_db
 from quacc.utils.dicts import clean_dict
@@ -29,6 +29,8 @@ if TYPE_CHECKING:
     from typing import Dict, List, Literal, TypeVar
 
     from ase import Atoms
+
+    from quacc.schemas.ase import RunSchema
 
     cclibTaskDoc = TypeVar("cclibTaskDoc")
 

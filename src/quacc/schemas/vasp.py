@@ -13,7 +13,7 @@ from pymatgen.command_line.bader_caller import bader_analysis_from_path
 from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
 
 from quacc import SETTINGS
-from quacc.schemas.ase import RunSchema, summarize_run
+from quacc.schemas.ase import summarize_run
 from quacc.utils.db import results_to_db
 from quacc.utils.dicts import clean_dict
 from quacc.utils.files import copy_decompress
@@ -22,6 +22,8 @@ if TYPE_CHECKING:
     from typing import TypeVar
 
     from ase import Atoms
+
+    from quacc.schemas.ase import RunSchema
 
     BaderSchema = TypeVar("BaderSchema")
     ChargemolSchema = TypeVar("ChargemolSchema")
