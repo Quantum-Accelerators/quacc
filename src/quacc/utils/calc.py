@@ -161,10 +161,13 @@ def run_ase_opt(
     if relax_cell and atoms.pbc.any():
         atoms = ExpCellFilter(atoms)
 
-    if optimizer_kwargs["use_TRICs"] and optimizer.__name__ != "Sella":
-        msg = "Can only use translation rotation internal coordinates aka TRICs with Sella!"
-        raise ValueError(msg)
-    elif optimizer_kwargs["use_TRICs"] and optimizer.__name__ == "Sella":
+    if optimizer_kwargs.get("use_TRICs"):
+        if optimizer.__name__ != "Sella":
+            msg = "Can only use translation rotation internal coordinates aka TRICs with Sella!"
+            raise ValueError(msg)
+        elif optimizer_kwargs.get("internal") != True:
+            msg = "use_TRICs should not be True if your atoms have PBCs or if you are already defining custom internal coordinates!"
+            raise ValueError(msg)
         optimizer_kwargs.pop("use_TRICs")
         from sella import Internals
         ints = Internals(atoms,allow_fragments=True)
