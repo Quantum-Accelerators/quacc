@@ -31,6 +31,7 @@ if TYPE_CHECKING:
     from ase import Atoms
 
     cclibSchema = TypeVar("cclibSchema")
+    cclibTaskDoc = TypeVar("cclibTaskDoc")
 
 
 def summarize_cclib_run(
