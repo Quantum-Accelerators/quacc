@@ -10,16 +10,22 @@ from pymatgen.io.qchem.inputs import QCInput
 from pymatgen.io.qchem.outputs import QCOutput
 
 from quacc import SETTINGS
+from quacc.schemas.ase import RunSchema
 from quacc.schemas.ase import summarize_run as base_summarize_run
 from quacc.utils.db import results_to_db
 from quacc.utils.dicts import clean_dict
 
 if TYPE_CHECKING:
-    from typing import TypeVar
+    from typing import TypedDict
 
     from ase import Atoms
 
-    QchemSchema = TypeVar("QchemSchema")
+    class TaskDoc(TypedDict):
+        input: dict  # from QCInput
+        output: dict  # from QCOutput
+
+    class QchemSchema(RunSchema):
+        taskdoc: TaskDoc
 
 
 def summarize_run(
@@ -61,8 +67,6 @@ def summarize_run(
     Returns
     -------
     QchemSchema
-
-        TODO: Description of fields.
     """
 
     additional_fields = additional_fields or {}
