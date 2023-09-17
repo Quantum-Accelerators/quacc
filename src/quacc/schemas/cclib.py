@@ -8,7 +8,6 @@ from inspect import getmembers, isclass
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-
 import cclib
 from cclib.io import ccread
 from emmet.core.structure import MoleculeMetadata
