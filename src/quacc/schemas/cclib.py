@@ -6,7 +6,7 @@ import os
 import warnings
 from inspect import getmembers, isclass
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, List, Literal
 
 import cclib
 from cclib.io import ccread
@@ -26,14 +26,16 @@ from quacc.utils.dicts import clean_dict
 from quacc.utils.files import find_recent_logfile, get_uri
 
 if TYPE_CHECKING:
-    from typing import Dict, List, Literal
+    from typing import TypeVar
 
     from ase import Atoms
 
     from quacc.schemas.ase import RunSchema
 
+    cclibTaskDoc = TypeVar("cclibTaskDoc")
+
     class cclibSchema(RunSchema):
-        taskdoc: dict  # _cclibTaskDocument.from_logfile
+        taskdoc: cclibTaskDoc
 
 
 def summarize_cclib_run(
