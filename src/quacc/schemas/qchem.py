@@ -22,8 +22,8 @@ if TYPE_CHECKING:
     from quacc.schemas.ase import RunSchema
 
     class TaskDoc(TypedDict):
-        input: dict  # from QCInput
-        output: dict  # from QCOutput
+        input: dict  # QCInput.as_dict()
+        output: dict  # QCOutput.data
 
     class QchemSchema(RunSchema):
         taskdoc: TaskDoc
