@@ -2,6 +2,8 @@ import os
 from pathlib import Path
 from shutil import rmtree
 
+import maggma
+
 try:
     import parsl
 except ImportError:
@@ -20,7 +22,7 @@ def pytest_sessionstart():
     SETTINGS.PRIMARY_STORE = {
         "@module": "maggma.stores.mongolike",
         "@class": "MemoryStore",
-        "@version": "0.56.0",
+        "@version": maggma.__version__,
         "collection_name": "memory_db",
     }
     if not os.path.exists(SETTINGS.RESULTS_DIR):
