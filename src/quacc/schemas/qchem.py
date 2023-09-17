@@ -10,6 +10,7 @@ from pymatgen.io.qchem.inputs import QCInput
 from pymatgen.io.qchem.outputs import QCOutput
 
 from quacc import SETTINGS
+from quacc.schemas.ase import summarize_run as base_summarize_run
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.utils.atoms import prep_next_run as prep_next_run_
 from quacc.utils.db import results_to_db
@@ -66,27 +67,16 @@ def summarize_run(
     dir_path = dir_path or Path.cwd()
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
-    # Fetch all tabulated results from VASP outputs files Fortunately, emmet
-    # already has a handy function for this
-    results = {"qc_output": QCOutput(zpath(dir_path / "mol.qout")).data}
-    inputs = {"qc_input": QCInput.from_file(zpath(dir_path / "mol.qin")).as_dict()}
+    base_summary = base_summarize_run(atoms, prep_next_run=prep_next_run, store=None)
 
-    # Prepares the Atoms object for the next run by moving the final magmoms to
-    # initial, clearing the calculator state, and assigning the resulting Atoms
-    # object a unique ID.
-    if prep_next_run:
-        atoms = prep_next_run_(atoms)
+    qc_output = {"qc_output": QCOutput(zpath(dir_path / "mol.qout")).data}
+    qc_input = {"qc_input": QCInput.from_file(zpath(dir_path / "mol.qin")).as_dict()}
 
-    # We use get_metadata=False and store_pmg=False because the TaskDocument
-    # already makes the structure metadata for us
-    atoms_db = atoms_to_metadata(atoms, get_metadata=False, store_pmg=False)
-
-    # Make task document
     task_doc = clean_dict(
-        inputs | results | atoms_db | additional_fields, remove_empties=remove_empties
+        base_summary | qc_input | qc_output | additional_fields,
+        remove_empties=remove_empties,
     )
 
-    # Store the results
     if store:
         results_to_db(store, task_doc)
 
