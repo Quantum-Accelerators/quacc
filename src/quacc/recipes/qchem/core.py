@@ -9,7 +9,8 @@ from ase.optimize import FIRE
 from quacc import job
 from quacc.calculators.qchem import QChem
 from quacc.schemas import fetch_atoms
-from quacc.schemas.ase import summarize_opt_run, summarize_run
+from quacc.schemas.ase import OptSchema, summarize_opt_run, summarize_run
+from quacc.schemas.qchem import summarize_run
 from quacc.utils.calc import run_ase_opt, run_calc
 from quacc.utils.dicts import merge_dicts, remove_dict_empties
 
@@ -23,7 +24,10 @@ except ImportError:
 if TYPE_CHECKING:
     from ase import Atoms
 
-    from quacc.schemas.ase import OptSchema, RunSchema
+    from quacc.schemas.qchem import QchemSchema
+
+    class QchemOptSchema(QchemSchema):
+        opt: OptSchema
 
 
 @job
@@ -39,7 +43,7 @@ def static_job(
     n_cores: int | None = None,
     overwrite_inputs: dict | None = None,
     copy_files: list[str] | None = None,
-) -> RunSchema:
+) -> QchemSchema:
     """
     Carry out a single-point calculation.
 
@@ -102,7 +106,7 @@ def static_job(
 
     Returns
     -------
-    RunSchema
+    QchemSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
     defaults = {
@@ -143,7 +147,7 @@ def internal_relax_job(
     n_cores: int | None = None,
     overwrite_inputs: dict | None = None,
     copy_files: list[str] | None = None,
-) -> RunSchema:
+) -> QchemSchema:
     """
     Optimize aka "relax" a molecular structure with Q-Chem optimizers.
 
@@ -249,7 +253,7 @@ def freq_job(
     n_cores: int | None = None,
     overwrite_inputs: dict | None = None,
     copy_files: list[str] | None = None,
-) -> RunSchema:
+) -> QchemSchema:
     """
     Perform a frequency calculation on a molecular structure.
 
@@ -356,7 +360,7 @@ def relax_job(
     overwrite_inputs: dict | None = None,
     opt_swaps: dict | None = None,
     copy_files: list[str] | None = None,
-) -> OptSchema:
+) -> QchemSchema:
     """
     Optimize aka "relax" a molecular structure with an ASE optimizer.
 
@@ -470,7 +474,7 @@ def _base_job(
     defaults: dict | None = None,
     additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
-) -> RunSchema:
+) -> QchemSchema:
     """
     Base job function used for Q-Chem recipes that don't rely on ASE optimizers
     or other ASE dynamics classes.
@@ -493,7 +497,7 @@ def _base_job(
 
     Returns
     -------
-    RunSchema
+    QchemSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
 
@@ -520,7 +524,7 @@ def _base_opt_job(
     opt_swaps: dict | None = None,
     additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
-) -> OptSchema:
+) -> QchemSchema:
     """
     Base function for Q-Chem recipes that involve ASE optimizers.
 
@@ -544,7 +548,7 @@ def _base_opt_job(
 
     Returns
     -------
-    OptSchema
+    QchemSchema
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
     # TODO:
@@ -559,8 +563,16 @@ def _base_opt_job(
     atoms.calc = QChem(atoms, **qchem_flags)
     dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
 
-    return summarize_opt_run(
+    summary = summarize_run(
+        dyn.atoms,
+        input_atoms=atoms,
+        charge_and_multiplicity=(charge, spin_multiplicity),
+        additional_fields=additional_fields,
+    )
+    summary["opt"] = summarize_opt_run(
         dyn,
         charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields=additional_fields,
     )
+
+    return summary
