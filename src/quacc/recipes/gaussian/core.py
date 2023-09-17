@@ -99,6 +99,8 @@ def static_job(
     }
     return _base_job(
         atoms,
+        charge=charge,
+        spin_multiplicity=spin_multiplicity,
         defaults=defaults,
         calc_swaps=calc_swaps,
         additional_fields={"name": "Gaussian Static"},
@@ -187,6 +189,8 @@ def relax_job(
     }
     return _base_job(
         atoms,
+        charge=charge,
+        spin_multiplicity=spin_multiplicity,
         defaults=defaults,
         calc_swaps=calc_swaps,
         additional_fields={"name": "Gaussian Relax"},
@@ -196,6 +200,8 @@ def relax_job(
 
 def _base_job(
     atoms: Atoms | dict,
+    charge: int,
+    spin_multiplicity: int,
     defaults: dict | None = None,
     calc_swaps: dict | None = None,
     additional_fields: dict | None = None,
@@ -209,6 +215,10 @@ def _base_job(
     atoms
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
+    charge
+        Charge of the system.
+    spin_multiplicity
+        Multiplicity of the system.
     defaults
         Default parameters for the calculator.
     calc_swaps
@@ -232,5 +242,6 @@ def _base_job(
     return summarize_run(
         atoms,
         LOG_FILE,
+        charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields=additional_fields,
     )
