@@ -10,7 +10,7 @@ from pymatgen.io.qchem.inputs import QCInput
 from pymatgen.io.qchem.outputs import QCOutput
 
 from quacc import SETTINGS
-from quacc.schemas.ase import RunSchema, summarize_run
+from quacc.schemas.ase import summarize_run
 from quacc.utils.db import results_to_db
 from quacc.utils.dicts import clean_dict
 
@@ -18,6 +18,8 @@ if TYPE_CHECKING:
     from typing import TypedDict
 
     from ase import Atoms
+
+    from quacc.schemas.ase import RunSchema
 
     class TaskDoc(TypedDict):
         input: dict  # from QCInput
