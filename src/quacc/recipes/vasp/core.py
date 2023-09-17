@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from quacc import job
 from quacc.calculators.vasp import Vasp
 from quacc.schemas import fetch_atoms
-from quacc.schemas.vasp import summarize_vasp_run
+from quacc.schemas.vasp import vasp_summarize_run
 from quacc.utils.calc import run_calc
 from quacc.utils.dicts import merge_dicts
 
@@ -60,7 +60,7 @@ def static_job(
     Returns
     -------
     VaspSchema
-        Dictionary of results from [quacc.schemas.vasp.summarize_vasp_run][]
+        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
 
     defaults = {
@@ -127,7 +127,7 @@ def relax_job(
     Returns
     -------
     VaspSchema
-        Dictionary of results from [quacc.schemas.vasp.summarize_vasp_run][]
+        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
 
     defaults = {
@@ -245,7 +245,7 @@ def _base_job(
     Returns
     -------
     VaspSchema
-        Dictionary of results from [quacc.schemas.vasp.summarize_vasp_run][]
+        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
     atoms = fetch_atoms(atoms)
     flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
@@ -253,4 +253,4 @@ def _base_job(
     atoms.calc = Vasp(atoms, preset=preset, **flags)
     atoms = run_calc(atoms, copy_files=copy_files)
 
-    return summarize_vasp_run(atoms, additional_fields=additional_fields)
+    return vasp_summarize_run(atoms, additional_fields=additional_fields)

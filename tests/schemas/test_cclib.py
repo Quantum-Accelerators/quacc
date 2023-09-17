@@ -14,7 +14,7 @@ from quacc.calculators.vasp import Vasp
 from quacc.schemas.cclib import (
     _cclib_calculate,
     _cclibTaskDocument,
-    summarize_cclib_run,
+    cclib_summarize_run,
 )
 
 FILE_DIR = Path(__file__).resolve().parent
@@ -45,10 +45,10 @@ def bad_mock_cclib_calculate(*args, **kwargs):
     raise ValueError(msg)
 
 
-def test_summarize_cclib_run():
+def test_cclib_summarize_run():
     # Make sure metadata is made
     atoms = read(log1)
-    results = summarize_cclib_run(atoms, ".log", dir_path=run1)
+    results = cclib_summarize_run(atoms, ".log", dir_path=run1)
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["spin_multiplicity"] == 1
@@ -63,19 +63,19 @@ def test_summarize_cclib_run():
     # Make sure default dir works
     cwd = os.getcwd()
     os.chdir(run1)
-    summarize_cclib_run(atoms, ".log")
+    cclib_summarize_run(atoms, ".log")
     os.chdir(cwd)
 
     # Test DB
     atoms = read(log1)
     store = MemoryStore()
-    summarize_cclib_run(atoms, ".log", dir_path=run1, store=store)
+    cclib_summarize_run(atoms, ".log", dir_path=run1, store=store)
     assert store.count() == 1
 
     # Make sure info tags are handled appropriately
     atoms = read(log1)
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
-    results = summarize_cclib_run(atoms, ".log", dir_path=run1)
+    results = cclib_summarize_run(atoms, ".log", dir_path=run1)
     assert atoms.info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results.get("atoms_info", {}) != {}
     assert results["atoms_info"].get("test_dict", None) == {"hi": "there", "foo": "bar"}
@@ -85,7 +85,7 @@ def test_summarize_cclib_run():
     atoms = read(os.path.join(run1, log1))
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
     atoms.calc.results["magmoms"] = [2.0] * len(atoms)
-    results = summarize_cclib_run(atoms, ".log", dir_path=run1)
+    results = cclib_summarize_run(atoms, ".log", dir_path=run1)
 
     assert atoms.calc is not None
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
@@ -98,7 +98,7 @@ def test_summarize_cclib_run():
     # Make sure Atoms magmoms were not moved if specified
     atoms = read(os.path.join(run1, log1))
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
-    results = summarize_cclib_run(atoms, ".log", dir_path=run1, prep_next_run=False)
+    results = cclib_summarize_run(atoms, ".log", dir_path=run1, prep_next_run=False)
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
     assert results["atoms"].get_initial_magnetic_moments().tolist() == [3.14] * len(
         atoms
@@ -107,7 +107,7 @@ def test_summarize_cclib_run():
     # Test remove_empties
     # Make sure metadata is made
     atoms = read(log1)
-    results = summarize_cclib_run(atoms, ".log", dir_path=run1, remove_empties=True)
+    results = cclib_summarize_run(atoms, ".log", dir_path=run1, remove_empties=True)
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["spin_multiplicity"] == 1
@@ -119,12 +119,12 @@ def test_summarize_cclib_run():
 def test_errors():
     atoms = bulk("Cu")
     with pytest.raises(ValueError):
-        summarize_cclib_run(atoms, ".log", dir_path=run1)
+        cclib_summarize_run(atoms, ".log", dir_path=run1)
 
     calc = Vasp(atoms)
     atoms.calc = calc
     with pytest.raises(ValueError):
-        summarize_cclib_run(atoms, ".log", dir_path=run1)
+        cclib_summarize_run(atoms, ".log", dir_path=run1)
 
 
 def test_cclib_taskdoc(tmpdir):
