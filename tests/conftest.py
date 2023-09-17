@@ -1,8 +1,6 @@
 import os
 from pathlib import Path
 from shutil import rmtree
-
-import maggma
 from maggma.stores import MemoryStore
 
 try:
