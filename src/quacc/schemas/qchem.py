@@ -25,6 +25,7 @@ if TYPE_CHECKING:
 def summarize_run(
     atoms: Atoms,
     dir_path: str | None = None,
+    charge_and_multiplicity: tuple[int, int] | None = None,
     prep_next_run: bool = True,
     remove_empties: bool = False,
     additional_fields: dict | None = None,
@@ -41,6 +42,9 @@ def summarize_run(
     dir_path
         Path to VASP outputs. A value of None specifies the current working
         directory
+    charge_and_multiplicity
+        Charge and spin multiplicity of the Atoms object, only used for Molecule
+        metadata.
     prep_next_run
         Whether the Atoms object stored in {"atoms": atoms} should be prepared
         for the next run. This clears out any attached calculator and moves the
@@ -67,6 +71,7 @@ def summarize_run(
 
     base_summary = base_summarize_run(
         atoms,
+        charge_and_multiplicity=charge_and_multiplicity,
         prep_next_run=prep_next_run,
         additional_fields=additional_fields,
         store=None,

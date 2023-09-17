@@ -510,6 +510,7 @@ def _base_job(
 
     return summarize_run(
         atoms,
+        charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields=additional_fields,
     )
 
@@ -564,6 +565,7 @@ def _base_opt_job(
 
     summary = summarize_run(
         dyn.atoms,
+        charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields=additional_fields,
     )
     summary["opt"] = summarize_opt_run(
