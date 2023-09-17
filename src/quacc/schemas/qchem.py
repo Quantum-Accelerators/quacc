@@ -32,7 +32,7 @@ def summarize_run(
     store: Store | None = None,
 ) -> QchemSchema:
     """
-    Get tabulated results from a VASP run and store them in a database-friendly
+    Get tabulated results from a Q-Chem run and store them in a database-friendly
     format.
 
     Parameters
@@ -58,6 +58,8 @@ def summarize_run(
     Returns
     -------
     QchemSchema
+
+        TODO: Description of fields.
     """
 
     additional_fields = additional_fields or {}
