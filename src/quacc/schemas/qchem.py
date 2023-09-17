@@ -10,8 +10,7 @@ from pymatgen.io.qchem.inputs import QCInput
 from pymatgen.io.qchem.outputs import QCOutput
 
 from quacc import SETTINGS
-from quacc.schemas.ase import RunSchema
-from quacc.schemas.ase import summarize_run as base_summarize_run
+from quacc.schemas.ase import RunSchema, summarize_run
 from quacc.utils.db import results_to_db
 from quacc.utils.dicts import clean_dict
 
@@ -28,7 +27,7 @@ if TYPE_CHECKING:
         taskdoc: TaskDoc
 
 
-def summarize_run(
+def summarize_qchem_run(
     atoms: Atoms,
     dir_path: str | None = None,
     charge_and_multiplicity: tuple[int, int] | None = None,
@@ -73,7 +72,7 @@ def summarize_run(
     dir_path = dir_path or Path.cwd()
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
-    base_summary = base_summarize_run(
+    base_summary = summarize_run(
         atoms,
         charge_and_multiplicity=charge_and_multiplicity,
         prep_next_run=prep_next_run,

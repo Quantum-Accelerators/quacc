@@ -10,7 +10,7 @@ from quacc import job
 from quacc.calculators.qchem import QChem
 from quacc.schemas import fetch_atoms
 from quacc.schemas.ase import summarize_opt_run
-from quacc.schemas.qchem import summarize_run
+from quacc.schemas.qchem import summarize_qchem_run
 from quacc.utils.calc import run_ase_opt, run_calc
 from quacc.utils.dicts import merge_dicts, remove_dict_empties
 
@@ -499,7 +499,7 @@ def _base_job(
     Returns
     -------
     QchemSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_run][]
+        Dictionary of results from [quacc.schemas.ase.summarize_qchem_run][]
     """
 
     atoms = fetch_atoms(atoms)
@@ -508,7 +508,7 @@ def _base_job(
     atoms.calc = QChem(atoms, **qchem_flags)
     atoms = run_calc(atoms, copy_files=copy_files)
 
-    return summarize_run(
+    return summarize_qchem_run(
         atoms,
         charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields=additional_fields,
@@ -563,7 +563,7 @@ def _base_opt_job(
     atoms.calc = QChem(atoms, **qchem_flags)
     dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
 
-    summary = summarize_run(
+    summary = summarize_qchem_run(
         dyn.atoms,
         charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields=additional_fields,
