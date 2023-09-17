@@ -19,7 +19,6 @@ from pymatgen.core.periodic_table import Element
 from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc import SETTINGS
-from quacc.schemas.ase import summarize_run
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.utils.atoms import prep_next_run as prep_next_run_
 from quacc.utils.db import results_to_db
