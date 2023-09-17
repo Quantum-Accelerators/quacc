@@ -79,12 +79,12 @@ def summarize_run(
         "output": QCOutput(zpath(dir_path / "mol.qout")).data,
     }
 
-    task_doc = clean_dict(
+    summary = clean_dict(
         base_summary | taskdoc | additional_fields,
         remove_empties=remove_empties,
     )
 
     if store:
-        results_to_db(store, task_doc)
+        results_to_db(store, summary)
 
-    return task_doc
+    return summary
