@@ -57,7 +57,7 @@ def slab_static_job(
     Returns
     -------
     VaspSchema
-        Dictionary of results from [quacc.schemas.vasp.summarize_vasp_run][]
+        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
 
     defaults = {
@@ -123,7 +123,7 @@ def slab_relax_job(
     Returns
     -------
     VaspSchema
-        Dictionary of results from [quacc.schemas.vasp.summarize_vasp_run][]
+        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
 
     defaults = {
@@ -180,7 +180,7 @@ def bulk_to_slabs_flow(
     Returns
     -------
     list[VaspSchema]
-        List of dictionary results from [quacc.schemas.vasp.summarize_vasp_run][]
+        List of dictionary results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
     slab_relax_kwargs = slab_relax_kwargs or {}
     slab_static_kwargs = slab_static_kwargs or {}
@@ -245,7 +245,7 @@ def slab_to_ads_flow(
     Returns
     -------
     list[VaspSchema]
-        List of dictionaries of results from [quacc.schemas.vasp.summarize_vasp_run][]
+        List of dictionaries of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
 
     slab_relax_kwargs = slab_relax_kwargs or {}

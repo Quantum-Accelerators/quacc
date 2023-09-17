@@ -64,5 +64,5 @@ def patch_summarize_run(monkeypatch):
     # Monkeypatch the summarize_run() function so that we aren't relying on real
     # VASP files to be in the working directory during the test.
     monkeypatch.setattr(
-        "quacc.recipes.vasp.core.summarize_vasp_run", mock_summarize_run
+        "quacc.recipes.vasp.core.vasp_summarize_run", mock_summarize_run
     )
