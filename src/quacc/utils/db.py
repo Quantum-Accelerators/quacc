@@ -66,7 +66,7 @@ def covalent_to_db(
             store.update(docs, key="dispatch_id")
 
 
-def results_to_db(store: Store | str | dict, results: dict | list[dict]) -> None:
+def results_to_db(store: Store | str, results: dict | list[dict]) -> None:
     """
     Store the results of a quacc recipe in a user-specified Maggma Store. A UUID
     will be generated for each entry.
@@ -84,7 +84,7 @@ def results_to_db(store: Store | str | dict, results: dict | list[dict]) -> None
     -------
     None
     """
-    if isinstance(store, (str, dict)):
+    if isinstance(store, str):
         store = MontyDecoder().decode(store)
 
     if isinstance(results, dict):

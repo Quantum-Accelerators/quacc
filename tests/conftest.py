@@ -3,6 +3,7 @@ from pathlib import Path
 from shutil import rmtree
 
 import maggma
+from maggma.stores import MemoryStore
 
 try:
     import parsl
@@ -19,12 +20,7 @@ def pytest_sessionstart():
     SETTINGS.WORKFLOW_ENGINE = "local"
     SETTINGS.RESULTS_DIR = str(TEST_RESULTS_DIR)
     SETTINGS.SCRATCH_DIR = str(TEST_SCRATCH_DIR)
-    SETTINGS.PRIMARY_STORE = {
-        "@module": "maggma.stores.mongolike",
-        "@class": "MemoryStore",
-        "@version": maggma.__version__,
-        "collection_name": "memory_db",
-    }
+    SETTINGS.PRIMARY_STORE = MemoryStore().to_json()
     if not os.path.exists(SETTINGS.RESULTS_DIR):
         os.mkdir(SETTINGS.RESULTS_DIR)
     if not os.path.exists(SETTINGS.SCRATCH_DIR):
