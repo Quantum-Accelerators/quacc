@@ -506,11 +506,10 @@ def _base_job(
     qchem_flags = remove_dict_empties(defaults)
 
     atoms.calc = QChem(atoms, **qchem_flags)
-    final_atoms = run_calc(atoms, copy_files=copy_files)
+    atoms = run_calc(atoms, copy_files=copy_files)
 
     return summarize_run(
-        final_atoms,
-        input_atoms=atoms,
+        atoms,
         charge_and_multiplicity=(charge, spin_multiplicity),
         additional_fields=additional_fields,
     )
