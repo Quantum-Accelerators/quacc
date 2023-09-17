@@ -69,8 +69,7 @@ def test_relax_job(tmpdir):
         == "wb97x-d3bj def2-tzvp opt slowconv normalprint xyzfile"
     )
     assert (
-        output["taskdoc"]["attributes"]["trajectory"][0]
-        != output["taskdoc"]["attributes"]["trajectory"][-1]
+        output["attributes"]["trajectory"][0] != output["attributes"]["trajectory"][-1]
     )
 
     output = relax_job(
@@ -91,8 +90,8 @@ def test_relax_job(tmpdir):
         == "opt slowconv normalprint xyzfile hf def2-svp"
     )
     assert "%scf maxiter 300 end" in output["parameters"]["orcablocks"]
-    assert "trajectory" in output["taskdoc"]["attributes"]
-    assert len(output["taskdoc"]["attributes"]["trajectory"]) > 1
+    assert "trajectory" in output["attributes"]
+    assert len(output["attributes"]["trajectory"]) > 1
 
 
 @pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")

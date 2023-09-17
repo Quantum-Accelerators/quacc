@@ -21,6 +21,7 @@ from pymatgen.io.ase import AseAtomsAdaptor
 from quacc import SETTINGS
 from quacc.schemas.ase import summarize_run
 from quacc.schemas.atoms import atoms_to_metadata
+from quacc.utils.atoms import prep_next_run as prep_next_run_
 from quacc.utils.db import results_to_db
 from quacc.utils.dicts import clean_dict
 from quacc.utils.files import find_recent_logfile, get_uri
@@ -32,10 +33,7 @@ if TYPE_CHECKING:
 
     from quacc.schemas.ase import RunSchema
 
-    cclibTaskDoc = TypeVar("cclibTaskDoc")
-
-    class cclibSchema(RunSchema):
-        taskdoc: cclibTaskDoc
+    cclibSchema = TypeVar("cclibSchema")
 
 
 def summarize_cclib_run(
@@ -202,13 +200,13 @@ def summarize_cclib_run(
         SETTINGS.CHECK_CONVERGENCE if check_convergence is None else check_convergence
     )
 
-    # Get the base ASE summary
-    base_summary = summarize_run(
-        atoms,
-        charge_and_multiplicity=charge_and_multiplicity,
-        prep_next_run=prep_next_run,
-        store=None,
-    )
+    # Make sure there is a calculator with results
+    if not atoms.calc:
+        msg = "ASE Atoms object has no attached calculator."
+        raise ValueError(msg)
+    if not atoms.calc.results:
+        msg = "ASE Atoms object's calculator has no results."
+        raise ValueError(msg)
 
     # Fortunately, there is already a cclib parser in Atomate2
     taskdoc = _cclibTaskDocument.from_logfile(
@@ -217,11 +215,17 @@ def summarize_cclib_run(
     for k in ["nid", "dir_name"]:
         taskdoc.pop(k, None)
 
+    uri = taskdoc["dir_name"]
+    taskdoc["nid"] = uri.split(":")[0]
+    taskdoc["dir_name"] = ":".join(uri.split(":")[1:])
     taskdoc["builder_meta"]["build_date"] = str(taskdoc["builder_meta"]["build_date"])
     taskdoc["logfile"] = taskdoc["logfile"].split(":")[-1]
     if taskdoc["attributes"].get("trajectory"):
         taskdoc["attributes"]["trajectory"] = [
-            atoms_to_metadata(AseAtomsAdaptor().get_atoms(molecule))
+            atoms_to_metadata(
+                AseAtomsAdaptor().get_atoms(molecule),
+                charge_and_multiplicity=charge_and_multiplicity,
+            )
             for molecule in taskdoc["attributes"]["trajectory"]
         ]
 
@@ -230,9 +234,22 @@ def summarize_cclib_run(
         msg = "Optimization not complete."
         raise ValueError(msg)
 
+    # Get the calculator inputs
+    inputs = {"parameters": atoms.calc.parameters}
+
+    # Prepares the Atoms object for the next run by moving the final magmoms to
+    # initial, clearing the calculator state, and assigning the resulting Atoms
+    # object a unique ID.
+    if prep_next_run:
+        atoms = prep_next_run_(atoms)
+
+    # We use get_metadata=False and store_pmg=False because the TaskDocument
+    # already makes the structure metadata for us
+    atoms_db = atoms_to_metadata(atoms, get_metadata=False, store_pmg=False)
+
     # Create a dictionary of the inputs/outputs
     summary = clean_dict(
-        base_summary | {"taskdoc": taskdoc} | additional_fields,
+        atoms_db | inputs | taskdoc | additional_fields,
         remove_empties=remove_empties,
     )
 
@@ -277,7 +294,7 @@ class _cclibTaskDocument(MoleculeMetadata):
         additional_fields: dict | None = None,
         analysis: str | list[str] | None = None,
         proatom_dir: Path | str | None = None,
-    ):
+    ) -> cclibTaskDoc:
         """
         Create a TaskDocument from a log file.
 
