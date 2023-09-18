@@ -24,7 +24,7 @@ def run_custodian(
     qchem_local_scratch: str | None = None,
     qchem_use_error_handlers: bool | None = None,
     qchem_custodian_max_errors: int | None = None,
-    qchem_nbo_exe: str | Path = None,
+    qchem_nbo_exe: str | Path | None = None,
 ) -> None:
     """
     Function to run QChem Custodian
