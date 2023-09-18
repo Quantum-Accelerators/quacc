@@ -12,12 +12,19 @@ from ase.constraints import ExpCellFilter
 from ase.io import Trajectory, read
 from ase.optimize import FIRE
 from ase.vibrations import Vibrations
+from monty.dev import requires
 from monty.os.path import zpath
 from monty.shutil import copy_r, gzip_dir
 
 from quacc import SETTINGS
 from quacc.utils.atoms import copy_atoms
 from quacc.utils.files import copy_decompress, make_unique_dir
+
+try:
+    from sella import Internals, Sella
+
+except ImportError:
+    Sella = None
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -119,17 +126,19 @@ def run_ase_opt(
         Optimizer class to use.
     optimizer_kwargs
         Dictionary of kwargs for the optimizer. Takes all valid kwargs for ASE
-        Optimizer classes as well as the following custom kwargs asssociated
-        with the Sella optimizer:
+        Optimizer classes (including those of Sella). Additionally, it can take
+        the following special kwarg in the case of Sella:
 
         - order: Literal[0, 1]. Can be 0 for minimization or 1 for TS optimization
             when using Sella as the optimizer. Defaults to None unless
             using Sella, in which case it defaults to 0.
+        - use_TRICs: bool. Specifies whether translation-rotation-invarianet
+            coordinates are used with Sella. Defaults to False. Setting this to
+            True will automatically set the Internals object unless the user
+            has specified one.
         - internal: bool | Internals. Specifies whether internal constraints are
             used with Sella. Defaults to True if the `Atoms` object
             does not have PBCs.
-        - use_TRICs: bool. Specifies whether translation-rotation-invarianet
-            coordinates are used with Sella. Defaults to False.
     run_kwargs
         Dictionary of kwargs for the run() method of the optimizer.
     copy_files
@@ -154,32 +163,8 @@ def run_ase_opt(
     atoms, tmpdir, job_results_dir = _calc_setup(atoms, copy_files=copy_files)
 
     # Set Sella kwargs
-    if optimizer.__name__ == "Sella" and "order" not in optimizer_kwargs:
-        optimizer_kwargs["order"] = 0
-
-    if (
-        optimizer.__name__ == "Sella"
-        and not atoms.pbc.any()
-        and "internal" not in optimizer_kwargs
-    ):
-        optimizer_kwargs["internal"] = True
-
-    if optimizer_kwargs.get("use_TRICs"):
-        from sella import Internals
-
-        if optimizer.__name__ != "Sella":
-            msg = "Can only use translation rotation internal coordinates aka TRICs with Sella."
-            raise ValueError(msg)
-        if atoms.pbc.any() or isinstance(optimizer_kwargs.get("internal"), Internals):
-            msg = "use_TRICs should not be True if your atoms have PBCs or if you are already defining custom internal coordinates."
-            raise ValueError(msg)
-
-        internals = Internals(atoms, allow_fragments=True)
-        internals.find_all_bonds()
-        internals.find_all_angles()
-        internals.find_all_dihedrals()
-        optimizer_kwargs["internal"] = internals
-    optimizer_kwargs.pop("use_TRICs", None)
+    if "sella.optimize" in Optimizer.__module__:
+        _set_sella_kwargs(atoms, optimizer_kwargs)
 
     # Define the Trajectory object
     traj_filename = Path(tmpdir, "opt.traj")
@@ -347,3 +332,44 @@ def _calc_cleanup(tmpdir: str | Path, job_results_dir: str | Path) -> None:
 
     # Remove the tmpdir
     rmtree(tmpdir)
+
+
+@requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
+def _set_sella_kwargs(atoms: Atoms, optimizer_kwargs: dict) -> None:
+    """
+    Modifies the `optimizer_kwargs` in-place to address various Sella-related
+    parameters. This function does the following:
+
+    1. Sets `order = 0` if not specified (i.e. minimization rather than TS
+    by default).
+
+    2. If `internal` is not defined, set it to `True`.
+
+    3. If `use_TRICs = True`, then `internal` is built for the user
+    using `find_all_bonds()`, `find_all_angles()`, and `find_all_dihedral()`,
+    unless the user has directly specified `internal`.
+
+    Parameters
+    ----------
+    atoms
+        The Atoms object.
+    optimizer_kwargs
+        The kwargs for the Sella optimizer.
+    """
+
+    if "order" not in optimizer_kwargs:
+        optimizer_kwargs["order"] = 0
+
+    if not atoms.pbc.any():
+        if "internal" not in optimizer_kwargs:
+            optimizer_kwargs["internal"] = True
+
+        if optimizer_kwargs.get("use_TRICs") and not isinstance(
+            optimizer_kwargs.get("internal"), Internals
+        ):
+            internals = Internals(atoms, allow_fragments=True)
+            internals.find_all_bonds()
+            internals.find_all_angles()
+            internals.find_all_dihedrals()
+            optimizer_kwargs["internal"] = internals
+            optimizer_kwargs.pop("use_TRICs")
