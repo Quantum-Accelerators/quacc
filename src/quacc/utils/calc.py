@@ -118,7 +118,10 @@ def run_ase_opt(
     optimizer
         Optimizer class to use.
     optimizer_kwargs
-        Dictionary of kwargs for the optimizer.
+        Dictionary of kwargs for the optimizer. Takes all valid kwargs for ASE
+        Optimizer classes as well as the following custom kwargs asssociated
+        with the Sella optimizer:
+        
         - order: Literal[0, 1]. Can be 0 for minimization or 1 for TS optimization
             when using Sella as the optimizer. Defaults to None unless
             using Sella, in which case it defaults to 0.
