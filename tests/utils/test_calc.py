@@ -119,7 +119,7 @@ def test_run_ase_opt2(tmpdir):
     has_sella is False,
     reason="Sella must be installed.",
 )
-def test_run_ase_opt_TRICs1(tmpdir):
+def test_run_ase_opt_sella_TRICs1(tmpdir):
     tmpdir.chdir()
     atoms = molecule("O2")
     atoms.calc = LennardJones()
@@ -136,7 +136,7 @@ def test_run_ase_opt_TRICs1(tmpdir):
     has_sella is False,
     reason="Sella must be installed.",
 )
-def test_run_ase_opt_TRICs2(tmpdir):
+def test_run_ase_opt_sella_TRICs2(tmpdir):
     tmpdir.chdir()
     atoms = molecule("O2")
     atoms.calc = LennardJones()
