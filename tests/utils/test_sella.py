@@ -40,12 +40,24 @@ def test_sella(tmpdir):
 )
 def test_TRICs(tmpdir):
     tmpdir.chdir()
-    atoms = molecule("O2")
+    atoms = molecule("C2H6")
     atoms.calc = LennardJones()
     dyn = run_ase_opt(
-        atoms,
-        optimizer=Sella,
-        optimizer_kwargs={"use_TRICs": True},
+        atoms, optimizer=Sella, optimizer_kwargs={"use_TRICs": True}, fmax=1.0
     )
     traj = dyn.traj_atoms
     assert traj[-1].calc.results is not None
+    assert dyn.internal.ndof == 24
+    assert dyn.internal.nbonds == 7
+    assert dyn.internal.nangles == 12
+    assert dyn.internal.ndihedrals == 9
+
+    atoms = molecule("C2H6")
+    atoms.calc = LennardJones()
+    dyn = run_ase_opt(atoms, optimizer=Sella, fmax=1.0)
+    traj = dyn.traj_atoms
+    assert traj[-1].calc.results is not None
+    assert dyn.internal.ndof == 24
+    assert dyn.internal.nbonds == 0
+    assert dyn.internal.nangles == 0
+    assert dyn.internal.ndihedrals == 0
