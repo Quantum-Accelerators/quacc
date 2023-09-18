@@ -140,11 +140,14 @@ def test_run_ase_opt_sella_TRICs2(tmpdir):
     tmpdir.chdir()
     atoms = molecule("O2")
     atoms.calc = LennardJones()
+    from sella import Internals
+    ints = Internals(atoms)
+    ints.find_all_bonds()
     with pytest.raises(ValueError):
         dyn = run_ase_opt(
             atoms,
             optimizer=Sella,
-            optimizer_kwargs={"internal": False},
+            optimizer_kwargs={"order":0, "internal": ints, "use_TRICs": True},
         )
 
 
