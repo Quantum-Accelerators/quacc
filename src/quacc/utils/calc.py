@@ -121,7 +121,7 @@ def run_ase_opt(
         Dictionary of kwargs for the optimizer. Takes all valid kwargs for ASE
         Optimizer classes as well as the following custom kwargs asssociated
         with the Sella optimizer:
-        
+
         - order: Literal[0, 1]. Can be 0 for minimization or 1 for TS optimization
             when using Sella as the optimizer. Defaults to None unless
             using Sella, in which case it defaults to 0.
@@ -170,7 +170,7 @@ def run_ase_opt(
         if optimizer.__name__ != "Sella":
             msg = "Can only use translation rotation internal coordinates aka TRICs with Sella."
             raise ValueError(msg)
-        if atoms.pbc.any() or isinstnace(optimizer_kwargs.get("internal"), Internals):
+        if atoms.pbc.any() or isinstance(optimizer_kwargs.get("internal"), Internals):
             msg = "use_TRICs should not be True if your atoms have PBCs or if you are already defining custom internal coordinates."
             raise ValueError(msg)
 
