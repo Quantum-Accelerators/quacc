@@ -345,6 +345,10 @@ def _set_sella_kwargs(atoms: Atoms, optimizer_kwargs: dict) -> None:
         The Atoms object.
     optimizer_kwargs
         The kwargs for the Sella optimizer.
+
+    Returns
+    -------
+    None
     """
 
     if "order" not in optimizer_kwargs:
