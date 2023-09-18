@@ -145,6 +145,11 @@ def run_ase_opt(
     optimizer_kwargs = optimizer_kwargs or {}
     run_kwargs = run_kwargs or {}
 
+    # Check if trajectory kwarg is specified
+    if "trajectory" in optimizer_kwargs:
+        msg = "Quacc does not support setting the `trajectory` kwarg."
+        raise ValueError(msg)
+
     # Perform staging operations
     atoms, tmpdir, job_results_dir = _calc_setup(atoms, copy_files=copy_files)
 
@@ -160,33 +165,31 @@ def run_ase_opt(
     if optimizer.__name__ == "Sella" and "order" not in optimizer_kwargs:
         optimizer_kwargs["order"] = 0
 
-    # Set up trajectory
-    if "trajectory" in optimizer_kwargs:
-        msg = "Quacc does not support setting the `trajectory` kwarg."
-        raise ValueError(msg)
-
     traj_filename = Path(tmpdir, "opt.traj")
     optimizer_kwargs["trajectory"] = Trajectory(traj_filename, "w", atoms=atoms)
 
-    # Define optimizer class
+    if optimizer_kwargs.get("use_TRICs"):
+        from sella import Internals
+
+        if optimizer.__name__ != "Sella":
+            msg = "Can only use translation rotation internal coordinates aka TRICs with Sella."
+            raise ValueError(msg)
+        if atoms.pbc.any() or isinstnace(optimizer_kwargs.get("internal"), Internals):
+            msg = "use_TRICs should not be True if your atoms have PBCs or if you are already defining custom internal coordinates."
+            raise ValueError(msg)
+
+        internals = Internals(atoms, allow_fragments=True)
+        internals.find_all_bonds()
+        internals.find_all_angles()
+        internals.find_all_dihedrals()
+        optimizer_kwargs["internal"] = internals
+    optimizer_kwargs.pop("use_TRICs", None)
+    
+    # Set volume relaxation constraints
     if relax_cell and atoms.pbc.any():
         atoms = ExpCellFilter(atoms)
 
-    if optimizer_kwargs.get("use_TRICs"):
-        if optimizer.__name__ != "Sella":
-            msg = "Can only use translation rotation internal coordinates aka TRICs with Sella!"
-            raise ValueError(msg)
-        if optimizer_kwargs.get("internal") is not True:
-            msg = "use_TRICs should not be True if your atoms have PBCs or if you are already defining custom internal coordinates!"
-            raise ValueError(msg)
-        from sella import Internals
-        ints = Internals(atoms, allow_fragments=True)
-        ints.find_all_bonds()
-        ints.find_all_angles()
-        ints.find_all_dihedrals()
-        optimizer_kwargs["internal"] = ints
-    optimizer_kwargs.pop("use_TRICs", None)
-
+    # Instantiate the optimizer
     dyn = optimizer(atoms, **optimizer_kwargs)
 
     # Run calculation
