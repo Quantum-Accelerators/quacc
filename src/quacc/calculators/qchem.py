@@ -237,5 +237,7 @@ class QChem(FileIOCalculator):
         else:
             self.results["hessian"] = None
         data["total_enthalpy_eV"] = data["total_enthalpy"] * (units.kcal / units.mol)
-        data["total_entropy_eV_per_K"] = data["total_entropy"] * (0.001 * units.kcal / units.mol)
+        data["total_entropy_eV_per_K"] = data["total_entropy"] * (
+            0.001 * units.kcal / units.mol
+        )
         self.results["qc_output"] = data
