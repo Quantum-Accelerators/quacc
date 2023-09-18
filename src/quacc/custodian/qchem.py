@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import sys
+from pathlib import Path
 
 from monty.dev import requires
 
@@ -23,6 +24,7 @@ def run_custodian(
     qchem_local_scratch: str | None = None,
     qchem_use_error_handlers: bool | None = None,
     qchem_custodian_max_errors: int | None = None,
+    qchem_nbo_exe: str | Path = None,
 ) -> None:
     """
     Function to run QChem Custodian
@@ -68,6 +70,7 @@ def run_custodian(
         if qchem_custodian_max_errors is None
         else qchem_custodian_max_errors
     )
+    qchem_nbo_exe = SETTINGS.QCHEM_NBO_EXE if qchem_nbo_exe is None else qchem_nbo_exe
 
     # Error handlers for Q-Chem
     handlers = [QChemErrorHandler()] if qchem_use_error_handlers else []
@@ -78,6 +81,7 @@ def run_custodian(
             qchem_command=qchem_cmd,
             max_cores=qchem_cores,
             calc_loc=qchem_local_scratch,
+            nbo_exe=qchem_nbo_exe,
         )
     ]
 
