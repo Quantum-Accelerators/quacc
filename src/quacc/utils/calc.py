@@ -126,19 +126,8 @@ def run_ase_opt(
         Optimizer class to use.
     optimizer_kwargs
         Dictionary of kwargs for the optimizer. Takes all valid kwargs for ASE
-        Optimizer classes (including those of Sella). Additionally, it can take
-        the following special kwarg in the case of Sella:
-
-        - order: Literal[0, 1]. Can be 0 for minimization or 1 for TS optimization
-            when using Sella as the optimizer. Defaults to None unless
-            using Sella, in which case it defaults to 0.
-        - use_TRICs: bool. Specifies whether translation-rotation-invarianet
-            coordinates are used with Sella. Defaults to False. Setting this to
-            True will automatically set the Internals object unless the user
-            has specified one.
-        - internal: bool | Internals. Specifies whether internal constraints are
-            used with Sella. Defaults to True if the `Atoms` object
-            does not have PBCs.
+        Optimizer classes. Refer to `_set_sella_kwargs` for Sella-related
+        kwargs and how they are set.
     run_kwargs
         Dictionary of kwargs for the run() method of the optimizer.
     copy_files
@@ -338,7 +327,8 @@ def _calc_cleanup(tmpdir: str | Path, job_results_dir: str | Path) -> None:
 def _set_sella_kwargs(atoms: Atoms, optimizer_kwargs: dict) -> None:
     """
     Modifies the `optimizer_kwargs` in-place to address various Sella-related
-    parameters. This function does the following:
+    parameters. This function does the following for the specified key/value
+    pairs in `optimizer_kwargs`:
 
     1. Sets `order = 0` if not specified (i.e. minimization rather than TS
     by default).
