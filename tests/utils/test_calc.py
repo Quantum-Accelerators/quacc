@@ -11,6 +11,13 @@ from ase.optimize import BFGS, BFGSLineSearch
 from quacc import SETTINGS
 from quacc.utils.calc import run_ase_opt, run_ase_vib, run_calc
 
+try:
+    from sella import Sella
+
+    has_sella = True
+except ImportError:
+    has_sella = False
+
 DEFAULT_SETTINGS = SETTINGS.copy()
 
 
@@ -108,6 +115,39 @@ def test_run_ase_opt2(tmpdir):
     assert traj[-1].calc.results is not None
 
 
+@pytest.mark.skipif(
+    has_sella is False,
+    reason="Sella must be installed.",
+)
+def test_run_ase_opt_TRICs1(tmpdir):
+    tmpdir.chdir()
+    atoms = molecule("O2")
+    atoms.calc = LennardJones()
+    dyn = run_ase_opt(
+        atoms,
+        optimizer=Sella,
+        optimizer_kwargs={"use_TRICs": True},
+    )
+    traj = dyn.traj_atoms
+    assert traj[-1].calc.results is not None
+
+
+@pytest.mark.skipif(
+    has_sella is False,
+    reason="Sella must be installed.",
+)
+def test_run_ase_opt_TRICs2(tmpdir):
+    tmpdir.chdir()
+    atoms = molecule("O2")
+    atoms.calc = LennardJones()
+    with pytest.raises(ValueError):
+        dyn = run_ase_opt(
+            atoms,
+            optimizer=Sella,
+            optimizer_kwargs={"internal": False},
+        )
+
+
 def test_run_ase_vib(tmpdir):
     tmpdir.chdir()
     prep_files()
@@ -150,6 +190,17 @@ def test_bad_runs(tmpdir):
                 "trajectory": "test.traj",
             },
         )
+
+    # use_TRICs = True without using Sella
+    atoms = molecule("O2")
+    atoms.calc = LennardJones()
+    with pytest.raises(ValueError):
+        dyn = run_ase_opt(
+            atoms,
+            optimizer=BFGS,
+            optimizer_kwargs={"use_TRICs": True},
+        )
+
 
 
 def test_unique_workdir(tmpdir):
