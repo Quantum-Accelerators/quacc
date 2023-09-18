@@ -54,8 +54,8 @@ class QChem(FileIOCalculator):
         - hessian: Hessian in native Q-Chem units
         - entropy: total enthalpy in eV
         - enthalpy: total entropy in eV/K
-        - qc_output: Output from `pymatgen.io.qchem.outputs.QCOutput`
-        - qc_input: Input from `pymatgen.io.qchem.inputs.QCInput`
+        - qc_output: Output from `pymatgen.io.qchem.outputs.QCOutput.data`
+        - qc_input: Input from `pymatgen.io.qchem.inputs.QCInput.as_dict()`
         - custodian: custodian.json file metadata
     """
 
