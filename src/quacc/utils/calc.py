@@ -119,6 +119,14 @@ def run_ase_opt(
         Optimizer class to use.
     optimizer_kwargs
         Dictionary of kwargs for the optimizer.
+        - order: int. Can be 0 for minimization or 1 for TS optimization
+            when using Sella as the optimizer. Defaults to None unless
+            using Sella, in which case it defaults to 0.
+        - internal: bool | Internals. Specifies whether internal constraints are
+            used with Sella. Defaults to True if the `Atoms` object
+            does not have PBCs.
+        - use_TRICs: bool. Specifies whether translation-rotation-invarianet
+            coordinates are used with Sella. Defaults to False.
     run_kwargs
         Dictionary of kwargs for the run() method of the optimizer.
     copy_files
