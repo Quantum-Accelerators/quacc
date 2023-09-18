@@ -12,12 +12,19 @@ from ase.constraints import ExpCellFilter
 from ase.io import Trajectory, read
 from ase.optimize import FIRE
 from ase.vibrations import Vibrations
+from monty.dev import requires
 from monty.os.path import zpath
 from monty.shutil import copy_r, gzip_dir
 
 from quacc import SETTINGS
 from quacc.utils.atoms import copy_atoms
 from quacc.utils.files import copy_decompress, make_unique_dir
+
+try:
+    from sella import Internals, Sella
+
+except ImportError:
+    Sella = None
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -118,7 +125,9 @@ def run_ase_opt(
     optimizer
         Optimizer class to use.
     optimizer_kwargs
-        Dictionary of kwargs for the optimizer.
+        Dictionary of kwargs for the optimizer. Takes all valid kwargs for ASE
+        Optimizer classes. Refer to `_set_sella_kwargs` for Sella-related
+        kwargs and how they are set.
     run_kwargs
         Dictionary of kwargs for the run() method of the optimizer.
     copy_files
@@ -134,33 +143,28 @@ def run_ase_opt(
     optimizer_kwargs = optimizer_kwargs or {}
     run_kwargs = run_kwargs or {}
 
-    # Perform staging operations
-    atoms, tmpdir, job_results_dir = _calc_setup(atoms, copy_files=copy_files)
-
-    # Set Sella kwargs
-    if (
-        optimizer.__name__ == "Sella"
-        and not atoms.pbc.any()
-        and "internal" not in optimizer_kwargs
-    ):
-        optimizer_kwargs["internal"] = True
-
-    # Set default job type to minimum for Sella
-    if optimizer.__name__ == "Sella" and "order" not in optimizer_kwargs:
-        optimizer_kwargs["order"] = 0
-
-    # Set up trajectory
+    # Check if trajectory kwarg is specified
     if "trajectory" in optimizer_kwargs:
         msg = "Quacc does not support setting the `trajectory` kwarg."
         raise ValueError(msg)
 
+    # Perform staging operations
+    atoms, tmpdir, job_results_dir = _calc_setup(atoms, copy_files=copy_files)
+
+    # Set Sella kwargs
+    if optimizer.__name__ == "Sella":
+        _set_sella_kwargs(atoms, optimizer_kwargs)
+    optimizer_kwargs.pop("use_TRICs", None)
+
+    # Define the Trajectory object
     traj_filename = Path(tmpdir, "opt.traj")
     optimizer_kwargs["trajectory"] = Trajectory(traj_filename, "w", atoms=atoms)
 
-    # Define optimizer class
+    # Set volume relaxation constraints, if relevant
     if relax_cell and atoms.pbc.any():
         atoms = ExpCellFilter(atoms)
 
+    # Instantiate the optimizer
     dyn = optimizer(atoms, **optimizer_kwargs)
 
     # Run calculation
@@ -318,3 +322,48 @@ def _calc_cleanup(tmpdir: str | Path, job_results_dir: str | Path) -> None:
 
     # Remove the tmpdir
     rmtree(tmpdir)
+
+
+@requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
+def _set_sella_kwargs(atoms: Atoms, optimizer_kwargs: dict) -> None:
+    """
+    Modifies the `optimizer_kwargs` in-place to address various Sella-related
+    parameters. This function does the following for the specified key/value
+    pairs in `optimizer_kwargs`:
+
+    1. Sets `order = 0` if not specified (i.e. minimization rather than TS
+    by default).
+
+    2. If `internal` is not defined, set it to `True`.
+
+    3. If `use_TRICs = True`, then `internal` is built for the user
+    using `find_all_bonds()`, `find_all_angles()`, and `find_all_dihedral()`,
+    unless the user has directly specified `internal`.
+
+    Parameters
+    ----------
+    atoms
+        The Atoms object.
+    optimizer_kwargs
+        The kwargs for the Sella optimizer.
+
+    Returns
+    -------
+    None
+    """
+
+    if "order" not in optimizer_kwargs:
+        optimizer_kwargs["order"] = 0
+
+    if not atoms.pbc.any():
+        if "internal" not in optimizer_kwargs:
+            optimizer_kwargs["internal"] = True
+
+        if optimizer_kwargs.get("use_TRICs") and not isinstance(
+            optimizer_kwargs.get("internal"), Internals
+        ):
+            internals = Internals(atoms, allow_fragments=True)
+            internals.find_all_bonds()
+            internals.find_all_angles()
+            internals.find_all_dihedrals()
+            optimizer_kwargs["internal"] = internals

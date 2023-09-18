@@ -384,7 +384,7 @@ def relax_job(
         Optimizer defaults:
 
         ```python
-        {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella if has_sella else FIRE}
+        {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella if has_sella else FIRE, "optimizer_kwargs": {"use_TRICs": False}}
         ```
 
     Parameters
@@ -449,6 +449,7 @@ def relax_job(
         "fmax": 0.01,
         "max_steps": 1000,
         "optimizer": Sella if has_sella else FIRE,
+        "optimizer_kwargs": {"use_TRICs": False}
     }
 
     return _base_opt_job(
@@ -548,7 +549,6 @@ def _base_opt_job(
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
     # TODO:
-    #   - exposing TRICs?
     #   - passing initial Hessian?
 
     atoms = fetch_atoms(atoms)
