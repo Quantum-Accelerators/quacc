@@ -220,10 +220,10 @@ class QChem(FileIOCalculator):
             ]
             # Ensure that the scratch values match the correct values from the
             # output file but with higher precision
-            if data["pcm_gradients"] is not None:
-                gradient = data["pcm_gradients"][0]
+            if qc_output["pcm_gradients"] is not None:
+                gradient = qc_output["pcm_gradients"][0]
             else:
-                gradient = data["gradients"][0]
+                gradient = qc_output["gradients"][0]
             for ii, subgrad in enumerate(grad):
                 for jj, val in enumerate(subgrad):
                     if abs(gradient[ii, jj] - val) > 1e-6:
@@ -263,5 +263,5 @@ class QChem(FileIOCalculator):
             0.001 * units.kcal / units.mol
         )
         self.results["qc_output"] = qc_output
-        self.results["qc_input"] = QCInput("mol.qin").as_dict()
+        self.results["qc_input"] = QCInput.from_file("mol.qin").as_dict()
         # self.results["custodian"] =
