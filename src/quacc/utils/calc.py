@@ -154,6 +154,7 @@ def run_ase_opt(
     # Set Sella kwargs
     if optimizer.__name__ == "Sella":
         _set_sella_kwargs(atoms, optimizer_kwargs)
+    optimizer_kwargs.pop("use_TRICs", None)
 
     # Define the Trajectory object
     traj_filename = Path(tmpdir, "opt.traj")
@@ -366,4 +367,3 @@ def _set_sella_kwargs(atoms: Atoms, optimizer_kwargs: dict) -> None:
             internals.find_all_angles()
             internals.find_all_dihedrals()
             optimizer_kwargs["internal"] = internals
-            optimizer_kwargs.pop("use_TRICs")
