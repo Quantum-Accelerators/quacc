@@ -82,7 +82,7 @@ In the previous examples, we have been running calculations on our local machine
         # PSI/J parameters
         instance="slurm",
         resource_spec_kwargs={
-            "nodes": n_nodes,
+            "node_count": n_nodes,
             "processes_per_node": n_cores_per_node,
         },  # (2)!
         job_attributes_kwargs={
