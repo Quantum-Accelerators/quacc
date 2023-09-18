@@ -61,3 +61,19 @@ def test_TRICs(tmpdir):
     assert dyn.internal.nbonds == 0
     assert dyn.internal.nangles == 0
     assert dyn.internal.ndihedrals == 0
+
+    atoms = bulk("Cu")
+    atoms.calc = EMT()
+    dyn = run_ase_opt(atoms, optimizer=Sella, fmax=1.0)
+    traj = dyn.traj_atoms
+    assert traj[-1].calc.results is not None
+    assert dyn.internal is None
+
+    atoms = bulk("Cu")
+    atoms.calc = EMT()
+    dyn = run_ase_opt(
+        atoms, optimizer=Sella, fmax=1.0, optimizer_kwargs={"use_TRICs": True}
+    )
+    traj = dyn.traj_atoms
+    assert traj[-1].calc.results is not None
+    assert dyn.internal is None
