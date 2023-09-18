@@ -194,6 +194,14 @@ def test_bad_runs(tmpdir):
             },
         )
 
+    # use_TRICs = True with atoms with PBCs
+    with pytest.raises(ValueError):
+        dyn = run_ase_opt(
+            atoms,
+            optimizer=Sella,
+            optimizer_kwargs={"use_TRICs": True},
+        )
+
     # use_TRICs = True without using Sella
     atoms = molecule("O2")
     atoms.calc = LennardJones()
