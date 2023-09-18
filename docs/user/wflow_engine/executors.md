@@ -70,7 +70,7 @@ In the previous examples, we have been running calculations on our local machine
     n_nodes = 2  # Number of nodes to reserve for each calculation
     n_cores_per_node = 48  # Number of CPU cores per node
     vasp_parallel_cmd = (
-        f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'"
+        f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
     )
 
     executor = ct.executor.HPCExecutor(
@@ -133,7 +133,7 @@ In the previous examples, we have been running calculations on our local machine
                 "time": "00:10:00",
             },
             prerun_commands=[
-                f"export QUACC_VASP_PARALLEL_CMD='srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'",
+                f"export QUACC_VASP_PARALLEL_CMD='srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores",
             ],
             use_srun=False, # (1)
         )
@@ -223,7 +223,7 @@ In the previous examples, we have been running calculations on our local machine
     n_nodes_per_calc = 2  # Number of nodes to reserve for each calculation
     n_cores_per_node = 48  # Number of CPU cores per node
     vasp_parallel_cmd = (
-        f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'"
+        f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
     )
 
     config = Config(
@@ -287,7 +287,7 @@ In the previous examples, we have been running calculations on our local machine
     n_cores_per_node = 48 # Number of CPU cores per node.
     mem_per_node = "64 GB" # Total memory per node.
     vasp_parallel_cmd = (
-        f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'"
+        f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
     )
 
     cluster_kwargs = {
