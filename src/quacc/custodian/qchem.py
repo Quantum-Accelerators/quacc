@@ -43,6 +43,8 @@ def run_custodian(
     qchem_custodian_max_errors
         Maximum number of errors to allow before stopping the run. Defaults to 5
         in settings.
+    qchem_nbo_exe
+        The full path to the NBO executable.
 
     Returns
     -------
