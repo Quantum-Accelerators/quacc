@@ -12,6 +12,7 @@ from ase import Atoms, units
 from ase.calculators.calculator import FileIOCalculator
 from monty.io import zopen
 from pymatgen.io.ase import AseAtomsAdaptor
+from pymatgen.io.qchem.inputs import QCInput
 from pymatgen.io.qchem.outputs import QCOutput
 from pymatgen.io.qchem.sets import QChemDictSet
 
@@ -43,10 +44,29 @@ class QChem(FileIOCalculator):
     Returns
     -------
     Atoms
-        The ASE Atoms object with attached Q-Chem calculator.
+        The ASE Atoms object with attached Q-Chem calculator. In calc.results,
+        the following properties are set:
+
+        - energy: electronic energy in eV
+        - forces: forces in eV/A
+        - hessian: Hessian in native Q-Chem units
+        - total_enthalpy_eV: total enthalpy in eV
+        - total_entropy_eV_per_K: total entropy in eV/K
+        - qc_output: Output from pymatgen.io.qchem.outputs.QCOutput
+        - qc_input: Input from pymatgen.io.qchem.inputs.QCInput
+        - custodian: custodian.json file metadata
     """
 
-    implemented_properties = ["energy", "forces", "hessian"]  # noqa: RUF012
+    implemented_properties = [
+        "energy",
+        "forces",
+        "hessian",
+        "total_enthalpy_eV",
+        "total_entropy_eV_per_K",
+        "qc_output",
+        "qc_input",
+        "custodian",
+    ]  # noqa: RUF012
 
     def __init__(
         self,
@@ -177,8 +197,8 @@ class QChem(FileIOCalculator):
         qcin.write("mol.qin")
 
     def read_results(self):
-        data = QCOutput("mol.qout").data
-        self.results["energy"] = data["final_energy"] * units.Hartree
+        qc_output = QCOutput("mol.qout").data
+        self.results["energy"] = qc_output["final_energy"] * units.Hartree
         if self.job_type in ["force", "opt"]:
             tmp_grad_data = []
             # Read the gradient scratch file in 8 byte chunks
@@ -232,12 +252,16 @@ class QChem(FileIOCalculator):
             )
             self.results["hessian"] = np.reshape(
                 np.array(tmp_hess_data),
-                (len(data["species"]) * 3, len(data["species"]) * 3),
+                (len(qc_output["species"]) * 3, len(qc_output["species"]) * 3),
             )
         else:
             self.results["hessian"] = None
-        data["total_enthalpy_eV"] = data["total_enthalpy"] * (units.kcal / units.mol)
-        data["total_entropy_eV_per_K"] = data["total_entropy"] * (
+        qc_output["total_enthalpy_eV"] = qc_output["total_enthalpy"] * (
+            units.kcal / units.mol
+        )
+        qc_output["total_entropy_eV_per_K"] = qc_output["total_entropy"] * (
             0.001 * units.kcal / units.mol
         )
-        self.results["qc_output"] = data
+        self.results["qc_output"] = qc_output
+        self.results["qc_input"] = QCInput("mol.qin").as_dict()
+        # self.results["custodian"] =
