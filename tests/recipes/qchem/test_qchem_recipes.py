@@ -123,6 +123,7 @@ def test_static_job_v1(monkeypatch, tmpdir):
     qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(os.path.join(QCHEM_DIR, "mol.qin.basic"))
     qcinput_nearly_equal(qcin, ref_qcin)
+    qcinput_nearly_equal(ref_qcin, QCInput.from_dict(output["results"]["qc_input"]))
 
 
 def test_static_job_v2(monkeypatch, tmpdir):
@@ -152,6 +153,7 @@ def test_static_job_v2(monkeypatch, tmpdir):
     qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(os.path.join(QCHEM_DIR, "mol.qin.intermediate"))
     qcinput_nearly_equal(qcin, ref_qcin)
+    qcinput_nearly_equal(ref_qcin, QCInput.from_dict(output["results"]["qc_input"]))
 
 
 def test_static_job_v3(monkeypatch, tmpdir):
@@ -180,6 +182,7 @@ def test_static_job_v3(monkeypatch, tmpdir):
     qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(os.path.join(QCHEM_DIR, "mol.qin.alternate"))
     qcinput_nearly_equal(qcin, ref_qcin)
+    qcinput_nearly_equal(ref_qcin, QCInput.from_dict(output["results"]["qc_input"]))
 
 
 def test_static_job_v4(monkeypatch, tmpdir):
@@ -229,6 +232,7 @@ def test_relax_job_v1(monkeypatch, tmpdir):
         os.path.join(QCHEM_DIR, "mol.qin.basic.sella_opt_iter1")
     )
     qcinput_nearly_equal(qcin, ref_qcin)
+    assert len(output["results"]["qc_input"]) > 1
 
 
 @pytest.mark.skipif(

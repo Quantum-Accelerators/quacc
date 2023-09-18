@@ -257,12 +257,15 @@ class QChem(FileIOCalculator):
                 np.array(tmp_hess_data),
                 (len(qc_output["species"]) * 3, len(qc_output["species"]) * 3),
             )
+            qc_output["enthalpy"] = qc_output["total_enthalpy"] * (
+                units.kcal / units.mol
+            )
+            qc_output["entropy"] = qc_output["total_entropy"] * (
+                0.001 * units.kcal / units.mol
+            )
         else:
             self.results["hessian"] = None
-        qc_output["enthalpy"] = qc_output["total_enthalpy"] * (units.kcal / units.mol)
-        qc_output["entropy"] = qc_output["total_entropy"] * (
-            0.001 * units.kcal / units.mol
-        )
+
         self.results["qc_output"] = qc_output
         self.results["qc_input"] = QCInput.from_file("mol.qin").as_dict()
         # self.results["custodian"] =
