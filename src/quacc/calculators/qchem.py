@@ -21,6 +21,8 @@ from quacc.custodian import qchem as custodian_qchem
 logger = logging.getLogger(__name__)
 
 
+# TODO: Would be more consistent to convert the Hessian to ASE units if it's being
+# stored in the first-class results.
 class QChem(FileIOCalculator):
     """
 
@@ -50,10 +52,10 @@ class QChem(FileIOCalculator):
         - energy: electronic energy in eV
         - forces: forces in eV/A
         - hessian: Hessian in native Q-Chem units
-        - total_enthalpy_eV: total enthalpy in eV
-        - total_entropy_eV_per_K: total entropy in eV/K
-        - qc_output: Output from pymatgen.io.qchem.outputs.QCOutput
-        - qc_input: Input from pymatgen.io.qchem.inputs.QCInput
+        - entropy: total enthalpy in eV
+        - enthalpy: total entropy in eV/K
+        - qc_output: Output from `pymatgen.io.qchem.outputs.QCOutput`
+        - qc_input: Input from `pymatgen.io.qchem.inputs.QCInput`
         - custodian: custodian.json file metadata
     """
 
@@ -61,8 +63,8 @@ class QChem(FileIOCalculator):
         "energy",
         "forces",
         "hessian",
-        "total_enthalpy_eV",
-        "total_entropy_eV_per_K",
+        "enthalpy",
+        "entropy",
         "qc_output",
         "qc_input",
         "custodian",
@@ -256,10 +258,8 @@ class QChem(FileIOCalculator):
             )
         else:
             self.results["hessian"] = None
-        qc_output["total_enthalpy_eV"] = qc_output["total_enthalpy"] * (
-            units.kcal / units.mol
-        )
-        qc_output["total_entropy_eV_per_K"] = qc_output["total_entropy"] * (
+        qc_output["enthalpy"] = qc_output["total_enthalpy"] * (units.kcal / units.mol)
+        qc_output["entropy"] = qc_output["total_entropy"] * (
             0.001 * units.kcal / units.mol
         )
         self.results["qc_output"] = qc_output
