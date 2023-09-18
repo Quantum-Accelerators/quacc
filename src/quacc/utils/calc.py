@@ -334,11 +334,11 @@ def _set_sella_kwargs(atoms: Atoms, optimizer_kwargs: dict) -> None:
     1. Sets `order = 0` if not specified (i.e. minimization rather than TS
     by default).
 
-    2. If `internal` is not defined, set it to `True`.
+    2. If `internal` is not defined and not `atoms.pbc.any()`, set it to `True`.
 
-    3. If `use_TRICs = True`, then `internal` is built for the user
-    using `find_all_bonds()`, `find_all_angles()`, and `find_all_dihedral()`,
-    unless the user has directly specified `internal`.
+    3. If `use_TRICs = True` and not `atoms.pbc.any()`, then `internal` is
+    built for the user via `find_all_bonds()`, `find_all_angles()`, and
+    `find_all_dihedral()`, unless the user has directly specified `internal`.
 
     Parameters
     ----------
