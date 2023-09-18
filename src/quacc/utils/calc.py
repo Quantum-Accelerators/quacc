@@ -152,7 +152,7 @@ def run_ase_opt(
     atoms, tmpdir, job_results_dir = _calc_setup(atoms, copy_files=copy_files)
 
     # Set Sella kwargs
-    if Optimizer.__name__ == "Sella":
+    if optimizer.__name__ == "Sella":
         _set_sella_kwargs(atoms, optimizer_kwargs)
 
     # Define the Trajectory object
