@@ -449,7 +449,7 @@ def relax_job(
         "fmax": 0.01,
         "max_steps": 1000,
         "optimizer": Sella if has_sella else FIRE,
-        "optimizer_kwargs": {"use_TRICs": False}
+        "optimizer_kwargs": {"use_TRICs": False},
     }
 
     return _base_opt_job(
