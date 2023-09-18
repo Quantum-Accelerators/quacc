@@ -154,19 +154,15 @@ def run_ase_opt(
     atoms, tmpdir, job_results_dir = _calc_setup(atoms, copy_files=copy_files)
 
     # Set Sella kwargs
+    if optimizer.__name__ == "Sella" and "order" not in optimizer_kwargs:
+        optimizer_kwargs["order"] = 0
+
     if (
         optimizer.__name__ == "Sella"
         and not atoms.pbc.any()
         and "internal" not in optimizer_kwargs
     ):
         optimizer_kwargs["internal"] = True
-
-    # Set default job type to minimum for Sella
-    if optimizer.__name__ == "Sella" and "order" not in optimizer_kwargs:
-        optimizer_kwargs["order"] = 0
-
-    traj_filename = Path(tmpdir, "opt.traj")
-    optimizer_kwargs["trajectory"] = Trajectory(traj_filename, "w", atoms=atoms)
 
     if optimizer_kwargs.get("use_TRICs"):
         from sella import Internals
@@ -184,8 +180,12 @@ def run_ase_opt(
         internals.find_all_dihedrals()
         optimizer_kwargs["internal"] = internals
     optimizer_kwargs.pop("use_TRICs", None)
-    
-    # Set volume relaxation constraints
+
+    # Define the Trajectory object
+    traj_filename = Path(tmpdir, "opt.traj")
+    optimizer_kwargs["trajectory"] = Trajectory(traj_filename, "w", atoms=atoms)
+
+    # Set volume relaxation constraints, if relevant
     if relax_cell and atoms.pbc.any():
         atoms = ExpCellFilter(atoms)
 
