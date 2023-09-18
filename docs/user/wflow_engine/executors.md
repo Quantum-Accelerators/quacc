@@ -109,7 +109,7 @@ In the previous examples, we have been running calculations on our local machine
 
     4. You generally want each quacc job to be run in its own unique working directory to ensure files don't overwrite one another, so  `create_unique_workdir` should be set to `True`.
 
-    ???+ Note
+    ??? Note
 
         If you plan to use the dedicated [SlurmExecutor](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/slurm) developed by Covalent, an analagous example is included below:
 
