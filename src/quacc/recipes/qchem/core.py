@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from ase.optimize import FIRE
 
-from quacc import job
+from quacc import SETTINGS, job
 from quacc.calculators.qchem import QChem
 from quacc.schemas import fetch_atoms
 from quacc.schemas.ase import summarize_opt_run, summarize_run
@@ -60,6 +60,7 @@ def static_job(
             "smd_solvent": smd_solvent,
             "overwrite_inputs": overwrite_inputs,
             "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
+            "nbo_params": {"version": 7} if SETTINGS.QCHEM_NBO_EXE else None,
             },
         }
         ```
@@ -117,6 +118,7 @@ def static_job(
             "smd_solvent": smd_solvent,
             "overwrite_inputs": overwrite_inputs,
             "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
+            "nbo_params": {"version": 7} if SETTINGS.QCHEM_NBO_EXE else None,
         },
     }
 
