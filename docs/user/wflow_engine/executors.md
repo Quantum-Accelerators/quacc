@@ -114,8 +114,7 @@ In the previous examples, we have been running calculations on our local machine
         You will need to install both Covalent and PSI/J on the remote machine:
 
         ```python
-        pip install covalent
-        pip install psij-python
+        pip install covalent psij-python
         ```
 
     ??? Note
