@@ -114,8 +114,7 @@ In the previous examples, we have been running calculations on our local machine
         You will need to install both Covalent and PSI/J on the remote machine:
 
         ```python
-        pip install covalent
-        pip install psij-python
+        pip install covalent psij-python
         ```
 
     ??? Note
@@ -144,7 +143,7 @@ In the previous examples, we have been running calculations on our local machine
             prerun_commands=[
                 f"export QUACC_VASP_PARALLEL_CMD='srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores",
             ],
-            use_srun=False, # (1)
+            use_srun=False, # (1)!
         )
         ```
 
