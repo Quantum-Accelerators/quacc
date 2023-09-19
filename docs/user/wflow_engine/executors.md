@@ -150,14 +150,6 @@ In the previous examples, we have been running calculations on our local machine
 
         1.  The `SlurmExecutor` must have `use_srun=False` in order for ASE-based calculators to be launched appropriately.
 
-    !!! Note
-
-        If you are using Perlmutter at NERSC, you will need to adjust the Covalent configuration directory because the home directory does not support file locking:
-
-        ```bash title="~/.bashrc"
-        export COVALENT_CONFIG_DIR="$SCRATCH/.config/covalent"
-        ```
-
 === "Parsl ⭐"
 
     Out-of-the-box, Parsl will run on your local machine. However, in practice you will probably want to run your Parsl workflows on HPC machines.
