@@ -10,6 +10,7 @@ from pathlib import Path
 import numpy as np
 from ase import Atoms, units
 from ase.calculators.calculator import FileIOCalculator
+from emmet.core.tasks import _parse_custodian
 from monty.io import zopen
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.qchem.inputs import QCInput
@@ -268,4 +269,4 @@ class QChem(FileIOCalculator):
 
         self.results["qc_output"] = qc_output
         self.results["qc_input"] = QCInput.from_file("mol.qin").as_dict()
-        # self.results["custodian"] =
+        self.results["custodian"] = _parse_custodian(Path().cwd())
