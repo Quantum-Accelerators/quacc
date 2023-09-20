@@ -10,8 +10,10 @@ from pathlib import Path
 import numpy as np
 from ase import Atoms, units
 from ase.calculators.calculator import FileIOCalculator
+from emmet.core.tasks import _parse_custodian
 from monty.io import zopen
 from pymatgen.io.ase import AseAtomsAdaptor
+from pymatgen.io.qchem.inputs import QCInput
 from pymatgen.io.qchem.outputs import QCOutput
 from pymatgen.io.qchem.sets import QChemDictSet
 
@@ -20,6 +22,8 @@ from quacc.custodian import qchem as custodian_qchem
 logger = logging.getLogger(__name__)
 
 
+# TODO: Would be more consistent to convert the Hessian to ASE units if it's being
+# stored in the first-class results.
 class QChem(FileIOCalculator):
     """
 
@@ -43,10 +47,29 @@ class QChem(FileIOCalculator):
     Returns
     -------
     Atoms
-        The ASE Atoms object with attached Q-Chem calculator.
+        The ASE Atoms object with attached Q-Chem calculator. In calc.results,
+        the following properties are set:
+
+        - energy: electronic energy in eV
+        - forces: forces in eV/A
+        - hessian: Hessian in native Q-Chem units
+        - entropy: total enthalpy in eV
+        - enthalpy: total entropy in eV/K
+        - qc_output: Output from `pymatgen.io.qchem.outputs.QCOutput.data`
+        - qc_input: Input from `pymatgen.io.qchem.inputs.QCInput.as_dict()`
+        - custodian: custodian.json file metadata
     """
 
-    implemented_properties = ["energy", "forces", "hessian"]  # noqa: RUF012
+    implemented_properties = [
+        "energy",
+        "forces",
+        "hessian",
+        "enthalpy",
+        "entropy",
+        "qc_output",
+        "qc_input",
+        "custodian",
+    ]  # noqa: RUF012
 
     def __init__(
         self,
@@ -177,8 +200,14 @@ class QChem(FileIOCalculator):
         qcin.write("mol.qin")
 
     def read_results(self):
-        data = QCOutput("mol.qout").data
-        self.results["energy"] = data["final_energy"] * units.Hartree
+        qc_input = QCInput.from_file("mol.qin").as_dict()
+        qc_output = QCOutput("mol.qout").data
+        self.results["qc_output"] = qc_output
+        self.results["qc_input"] = qc_input
+        self.results["custodian"] = _parse_custodian(Path.cwd())
+
+        self.results["energy"] = qc_output["final_energy"] * units.Hartree
+
         if self.job_type in ["force", "opt"]:
             tmp_grad_data = []
             # Read the gradient scratch file in 8 byte chunks
@@ -198,10 +227,10 @@ class QChem(FileIOCalculator):
             ]
             # Ensure that the scratch values match the correct values from the
             # output file but with higher precision
-            if data["pcm_gradients"] is not None:
-                gradient = data["pcm_gradients"][0]
+            if qc_output["pcm_gradients"] is not None:
+                gradient = qc_output["pcm_gradients"][0]
             else:
-                gradient = data["gradients"][0]
+                gradient = qc_output["gradients"][0]
             for ii, subgrad in enumerate(grad):
                 for jj, val in enumerate(subgrad):
                     if abs(gradient[ii, jj] - val) > 1e-6:
@@ -213,14 +242,16 @@ class QChem(FileIOCalculator):
             self.results["forces"] = gradient * (-units.Hartree / units.Bohr)
         else:
             self.results["forces"] = None
-        self.prev_orbital_coeffs = []
+
         # Read orbital coefficients scratch file in 8 byte chunks
+        self.prev_orbital_coeffs = []
         with zopen("53.0", mode="rb") as file:
             binary = file.read()
         self.prev_orbital_coeffs.extend(
             struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
             for ii in range(int(len(binary) / 8))
         )
+
         if self.job_type == "freq":
             tmp_hess_data = []
             # Read Hessian scratch file in 8 byte chunks
@@ -232,12 +263,13 @@ class QChem(FileIOCalculator):
             )
             self.results["hessian"] = np.reshape(
                 np.array(tmp_hess_data),
-                (len(data["species"]) * 3, len(data["species"]) * 3),
+                (len(qc_output["species"]) * 3, len(qc_output["species"]) * 3),
             )
-            data["enthalpy"] = data["total_enthalpy"] * (units.kcal / units.mol)
-            data["entropy"] = data["total_entropy"] * (0.001 * units.kcal / units.mol)
-            for k in ["total_enthalpy", "total_entropy"]:
-                data.pop(k)
+            self.results["enthalpy"] = qc_output["total_enthalpy"] * (
+                units.kcal / units.mol
+            )
+            self.results["entropy"] = qc_output["total_entropy"] * (
+                0.001 * units.kcal / units.mol
+            )
         else:
             self.results["hessian"] = None
-        self.results["qc_output"] = data
