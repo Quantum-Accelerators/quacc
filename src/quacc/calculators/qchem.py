@@ -24,7 +24,6 @@ logger = logging.getLogger(__name__)
 
 # TODO: Would be more consistent to convert the Hessian to ASE units if it's being
 # stored in the first-class results.
-# TODO: Parse the Custodian JSON file.
 class QChem(FileIOCalculator):
     """
 
@@ -269,4 +268,4 @@ class QChem(FileIOCalculator):
 
         self.results["qc_output"] = qc_output
         self.results["qc_input"] = QCInput.from_file("mol.qin").as_dict()
-        self.results["custodian"] = _parse_custodian(Path().cwd())
+        self.results["custodian"] = _parse_custodian(Path.cwd())
