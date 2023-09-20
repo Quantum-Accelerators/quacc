@@ -200,7 +200,12 @@ class QChem(FileIOCalculator):
         qcin.write("mol.qin")
 
     def read_results(self):
+        qc_input = QCInput.from_file("mol.qin").as_dict()
         qc_output = QCOutput("mol.qout").data
+        self.results["qc_output"] = qc_output
+        self.results["qc_input"] = qc_input
+        self.results["custodian"] = _parse_custodian(Path.cwd())
+
         self.results["energy"] = qc_output["final_energy"] * units.Hartree
         if self.job_type in ["force", "opt"]:
             tmp_grad_data = []
@@ -265,7 +270,3 @@ class QChem(FileIOCalculator):
             )
         else:
             self.results["hessian"] = None
-
-        self.results["qc_output"] = qc_output
-        self.results["qc_input"] = QCInput.from_file("mol.qin").as_dict()
-        self.results["custodian"] = _parse_custodian(Path.cwd())
