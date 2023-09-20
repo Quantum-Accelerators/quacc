@@ -207,6 +207,7 @@ class QChem(FileIOCalculator):
         self.results["custodian"] = _parse_custodian(Path.cwd())
 
         self.results["energy"] = qc_output["final_energy"] * units.Hartree
+
         if self.job_type in ["force", "opt"]:
             tmp_grad_data = []
             # Read the gradient scratch file in 8 byte chunks
@@ -241,14 +242,16 @@ class QChem(FileIOCalculator):
             self.results["forces"] = gradient * (-units.Hartree / units.Bohr)
         else:
             self.results["forces"] = None
-        self.prev_orbital_coeffs = []
+
         # Read orbital coefficients scratch file in 8 byte chunks
+        self.prev_orbital_coeffs = []
         with zopen("53.0", mode="rb") as file:
             binary = file.read()
         self.prev_orbital_coeffs.extend(
             struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
             for ii in range(int(len(binary) / 8))
         )
+
         if self.job_type == "freq":
             tmp_hess_data = []
             # Read Hessian scratch file in 8 byte chunks
