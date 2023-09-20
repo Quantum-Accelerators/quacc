@@ -106,9 +106,8 @@ def mock_read(self, **kwargs):
 
 def test_static_job_v1(monkeypatch, tmpdir):
     tmpdir.chdir()
-
+    copy(Path(QCHEM_DIR, "custodian.json"), Path(tmpdir, "custodian.json"))
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
-    copy(os.path.join(QCHEM_DIR, "custodian.json"), "custodian.json")
     charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
     output = static_job(TEST_ATOMS, charge, spin_multiplicity)
     assert output["atoms"] == TEST_ATOMS
@@ -120,6 +119,7 @@ def test_static_job_v1(monkeypatch, tmpdir):
     assert output["parameters"]["spin_multiplicity"] == 1
     assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826330655069403)
+    assert output["results"]["custodian"]
     assert output["results"]["custodian"][0]["max_cores"] == 40
 
     qcin = QCInput.from_file("mol.qin.gz")
