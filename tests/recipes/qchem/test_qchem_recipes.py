@@ -70,18 +70,21 @@ def mock_execute1(_self, **kwargs):
     copy(os.path.join(QCHEM_DIR, "mol.qout.basic"), "mol.qout")
     copy(os.path.join(QCHEM_DIR, "131.0.basic"), "131.0")
     copy(os.path.join(QCHEM_DIR, "53.0.basic"), "53.0")
+    copy(os.path.join(QCHEM_DIR, "custodian.json"), "custodian.json")
 
 
 def mock_execute2(_self, **kwargs):
     copy(os.path.join(QCHEM_DIR, "mol.qout.intermediate"), "mol.qout")
     copy(os.path.join(QCHEM_DIR, "131.0.intermediate"), "131.0")
     copy(os.path.join(QCHEM_DIR, "53.0.intermediate"), "53.0")
+    copy(os.path.join(QCHEM_DIR, "custodian.json"), "custodian.json")
 
 
 def mock_execute3(_self, **kwargs):
     copy(os.path.join(QCHEM_DIR, "mol.qout.alternate"), "mol.qout")
     copy(os.path.join(QCHEM_DIR, "131.0.alternate"), "131.0")
     copy(os.path.join(QCHEM_DIR, "53.0.alternate"), "53.0")
+    copy(os.path.join(QCHEM_DIR, "custodian.json"), "custodian.json")
 
 
 def mock_execute4(self, **kwargs):
@@ -97,6 +100,7 @@ def mock_execute5(_self, **kwargs):
     copy(os.path.join(QCHEM_DIR, "mol.qout.freq"), "mol.qout")
     copy(os.path.join(QCHEM_DIR, "132.0.freq"), "132.0")
     copy(os.path.join(QCHEM_DIR, "53.0.freq"), "53.0")
+    copy(os.path.join(QCHEM_DIR, "custodian.json"), "custodian.json")
 
 
 def mock_read(self, **kwargs):
@@ -106,7 +110,6 @@ def mock_read(self, **kwargs):
 
 def test_static_job_v1(monkeypatch, tmpdir):
     tmpdir.chdir()
-    copy(Path(QCHEM_DIR, "custodian.json"), Path(tmpdir, "custodian.json"))
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
     charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
     output = static_job(TEST_ATOMS, charge, spin_multiplicity)
@@ -119,8 +122,7 @@ def test_static_job_v1(monkeypatch, tmpdir):
     assert output["parameters"]["spin_multiplicity"] == 1
     assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826330655069403)
-    assert output["results"]["custodian"]
-    assert output["results"]["custodian"][0]["max_cores"] == 40
+    assert output["results"]["custodian"][0]["job"]["max_cores"] == 40
 
     qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(os.path.join(QCHEM_DIR, "mol.qin.basic"))
