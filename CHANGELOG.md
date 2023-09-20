@@ -9,10 +9,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - Added a `freq_job` recipe in Q-Chem (@samblau)
+- Added support for TRICs in Sella calculations (@samblau)
 
 ### Changed
 
-- Refactored NewtonNet recipes
+- Refactored all recipes to prevent code duplication
 - Set `LREAL = False` in VASP `BulkSet.yaml`
 
 ## [0.2.6]

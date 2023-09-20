@@ -70,7 +70,7 @@ In the previous examples, we have been running calculations on our local machine
     n_nodes = 2  # Number of nodes to reserve for each calculation
     n_cores_per_node = 48  # Number of CPU cores per node
     vasp_parallel_cmd = (
-        f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'"
+        f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
     )
 
     executor = ct.executor.HPCExecutor(
@@ -82,7 +82,7 @@ In the previous examples, we have been running calculations on our local machine
         # PSI/J parameters
         instance="slurm",
         resource_spec_kwargs={
-            "nodes": n_nodes,
+            "node_count": n_nodes,
             "processes_per_node": n_cores_per_node,
         },  # (2)!
         job_attributes_kwargs={
@@ -109,14 +109,45 @@ In the previous examples, we have been running calculations on our local machine
 
     4. You generally want each quacc job to be run in its own unique working directory to ensure files don't overwrite one another, so  `create_unique_workdir` should be set to `True`.
 
+    !!! Tip
 
-    !!! Note
+        You will need to install both Covalent and PSI/J on the remote machine:
 
-        If you are using Perlmutter at NERSC, you will need to adjust the Covalent configuration directory because the home directory does not support file locking:
-
-        ```bash title="~/.bashrc"
-        export COVALENT_CONFIG_DIR="$SCRATCH/.config/covalent"
+        ```python
+        pip install covalent psij-python
         ```
+
+    ??? Note
+
+        If you plan to use the dedicated [SlurmExecutor](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/slurm) developed by Covalent, an analagous example is included below:
+
+        ```python
+        n_nodes = 2
+        n_cores_per_node = 48
+
+        executor = ct.executor.SlurmExecutor(
+            username="YourUserName",
+            address="perlmutter-p1.nersc.gov",
+            ssh_key_file="~/.ssh/nersc",
+            cert_file="~/.ssh/nersc-cert.pub",
+            remote_workdir="$SCRATCH/quacc",
+            conda_env="quacc",
+            options={
+                "nodes": f"{n_nodes}",
+                "qos": "debug",
+                "constraint": "cpu",
+                "account": "YourAccountName",
+                "job-name": "quacc",
+                "time": "00:10:00",
+            },
+            prerun_commands=[
+                f"export QUACC_VASP_PARALLEL_CMD='srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores",
+            ],
+            use_srun=False, # (1)!
+        )
+        ```
+
+        1.  The `SlurmExecutor` must have `use_srun=False` in order for ASE-based calculators to be launched appropriately.
 
 === "Parsl ⭐"
 
@@ -192,7 +223,7 @@ In the previous examples, we have been running calculations on our local machine
     n_nodes_per_calc = 2  # Number of nodes to reserve for each calculation
     n_cores_per_node = 48  # Number of CPU cores per node
     vasp_parallel_cmd = (
-        f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'"
+        f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
     )
 
     config = Config(
@@ -256,7 +287,7 @@ In the previous examples, we have been running calculations on our local machine
     n_cores_per_node = 48 # Number of CPU cores per node.
     mem_per_node = "64 GB" # Total memory per node.
     vasp_parallel_cmd = (
-        f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'"
+        f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
     )
 
     cluster_kwargs = {

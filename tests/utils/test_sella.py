@@ -6,18 +6,17 @@ from ase.calculators.lj import LennardJones
 from quacc.utils.calc import run_ase_opt
 
 try:
-    import sella
+    from sella import Sella
 except ImportError:
-    sella = None
+    Sella = None
 
 
 @pytest.mark.skipif(
-    sella is None,
+    not Sella,
     reason="Sella must be installed.",
 )
 def test_sella(tmpdir):
     tmpdir.chdir()
-    from sella.optimize import Sella
 
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
@@ -33,3 +32,48 @@ def test_sella(tmpdir):
     traj = dyn.traj_atoms
     assert traj[-1].calc.results is not None
     assert dyn.user_internal is True
+
+
+@pytest.mark.skipif(
+    not Sella,
+    reason="Sella must be installed.",
+)
+def test_TRICs(tmpdir):
+    tmpdir.chdir()
+    atoms = molecule("C2H6")
+    atoms.calc = LennardJones()
+    dyn = run_ase_opt(
+        atoms, optimizer=Sella, optimizer_kwargs={"use_TRICs": True}, fmax=1.0
+    )
+    traj = dyn.traj_atoms
+    assert traj[-1].calc.results is not None
+    assert dyn.internal.ndof == 24
+    assert dyn.internal.nbonds == 7
+    assert dyn.internal.nangles == 12
+    assert dyn.internal.ndihedrals == 9
+
+    atoms = molecule("C2H6")
+    atoms.calc = LennardJones()
+    dyn = run_ase_opt(atoms, optimizer=Sella, fmax=1.0)
+    traj = dyn.traj_atoms
+    assert traj[-1].calc.results is not None
+    assert dyn.internal.ndof == 24
+    assert dyn.internal.nbonds == 0
+    assert dyn.internal.nangles == 0
+    assert dyn.internal.ndihedrals == 0
+
+    atoms = bulk("Cu")
+    atoms.calc = EMT()
+    dyn = run_ase_opt(atoms, optimizer=Sella, fmax=1.0)
+    traj = dyn.traj_atoms
+    assert traj[-1].calc.results is not None
+    assert dyn.internal is None
+
+    atoms = bulk("Cu")
+    atoms.calc = EMT()
+    dyn = run_ase_opt(
+        atoms, optimizer=Sella, fmax=1.0, optimizer_kwargs={"use_TRICs": True}
+    )
+    traj = dyn.traj_atoms
+    assert traj[-1].calc.results is not None
+    assert dyn.internal is None

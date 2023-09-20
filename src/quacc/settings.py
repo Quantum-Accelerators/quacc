@@ -240,6 +240,11 @@ class QuaccSettings(BaseSettings):
         5, description="Maximum errors for Q-Chem Custodian."
     )
 
+    # NBO Settings
+    QCHEM_NBO_EXE: Union[str, Path] = Field(
+        None, description="Full path to the NBO executable."
+    )
+
     # ---------------------------
     # NewtonNet Settings
     # ---------------------------

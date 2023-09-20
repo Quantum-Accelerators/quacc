@@ -33,7 +33,7 @@ if TYPE_CHECKING:
     cclibSchema = TypeVar("cclibSchema")
 
 
-def summarize_cclib_run(
+def cclib_summarize_run(
     atoms: Atoms,
     logfile_extensions: str | list[str],
     dir_path: str | None = None,

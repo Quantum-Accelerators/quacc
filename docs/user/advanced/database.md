@@ -1,6 +1,6 @@
 # Using a Database
 
-Oftentimes, it is beneficial to store the results in a database for easy querying (like the example below). This is quite simple to do in quacc regardless of the workflow manager you are using by taking advantage of the numerous data store options in [maggma](https://github.com/materialsproject/maggma).
+Oftentimes, it is beneficial to store the results in a database for easy querying (like the example below). This is quite simple to do in quacc regardless of the workflow manager you are using by taking advantage of the numerous data store options in [maggma](https://github.com/materialsproject/maggma). For details on how to set up a Mongo database, refer to the corresponding [Maggma tutorial](https://materialsproject.github.io/maggma/getting_started/mongodb/)
 
 ![Mongo example](../../images/user/schema.gif)
 

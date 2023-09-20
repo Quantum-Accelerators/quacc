@@ -177,7 +177,7 @@ jobs:
         uses: codecov/codecov-action@v3
         if: github.repository == 'Quantum-Accelerators/quacc'
 
-  tests-qchem:
+  tests-qchem-sella:
     strategy:
       fail-fast: true
       matrix:
@@ -215,7 +215,7 @@ jobs:
         run: conda install -c conda-forge openbabel
 
       - name: Run tests with pytest
-        run: pytest -k 'qchem' --cov=quacc --cov-report=xml
+        run: pytest -k 'qchem or sella' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3

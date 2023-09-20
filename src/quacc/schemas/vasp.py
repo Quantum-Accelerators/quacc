@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     VaspSchema = TypeVar("VaspSchema")
 
 
-def summarize_vasp_run(
+def vasp_summarize_run(
     atoms: Atoms,
     dir_path: str | None = None,
     prep_next_run: bool = True,
