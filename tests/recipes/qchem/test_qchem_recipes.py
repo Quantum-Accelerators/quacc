@@ -334,6 +334,8 @@ def test_freq_job_v1(monkeypatch, tmpdir):
     assert output["results"]["qc_output"]["enthalpy"] == pytest.approx(
         61.047 * (units.kcal / units.mol)
     )
+    assert output["entropy"]
+    assert output["enthalpy"]
 
 
 @pytest.mark.skipif(
