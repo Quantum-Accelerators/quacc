@@ -331,11 +331,16 @@ def test_freq_job_v1(monkeypatch, tmpdir):
     assert output["parameters"]["spin_multiplicity"] == 2
     assert output["results"]["energy"] == pytest.approx(-605.6859554019 * units.Hartree)
     assert output["results"]["hessian"] is not None
-    assert output["results"]["qc_output"]["enthalpy"] == pytest.approx(
-        61.047 * (units.kcal / units.mol)
+    assert output["results"]["enthalpy"] == pytest.approx(
+        output["results"]["qc_output"]["total_enthalpy"] * (units.kcal / units.mol)
     )
-    assert output["entropy"]
-    assert output["enthalpy"]
+    assert (
+        output["results"]["entropy"]
+        == output["results"]["qc_output"]["total_entropy"]
+        * 0.001
+        * units.kcal
+        / units.mol
+    )
 
 
 @pytest.mark.skipif(
