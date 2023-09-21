@@ -8,7 +8,7 @@ from tempfile import mkdtemp
 from typing import TYPE_CHECKING
 
 import numpy as np
-from ase.constraints import ExpCellFilter
+from ase.filters import ExpCellFilter
 from ase.io import Trajectory, read
 from ase.optimize import FIRE
 from ase.vibrations import Vibrations
