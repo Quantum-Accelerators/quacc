@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from ase import units
-from ase.constraints import Filter
+from ase.filters import Filter
 from ase.io import read
 from ase.vibrations.data import VibrationsData
 
