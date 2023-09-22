@@ -1,3 +1,4 @@
+import contextlib
 import os
 from pathlib import Path
 from shutil import rmtree
@@ -24,10 +25,8 @@ def pytest_sessionstart():
     os.makedirs(SETTINGS.SCRATCH_DIR, exist_ok=True)
 
     if parsl:
-        try:
+        with contextlib.suppress(RuntimeError):
             parsl.load()
-        except RuntimeError:
-            pass
 
 
 def pytest_sessionfinish():
