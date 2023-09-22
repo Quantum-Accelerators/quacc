@@ -158,7 +158,7 @@ def run_ase_opt(
 
     # Define the Trajectory object
     traj_filename = Path(tmpdir, "opt.traj")
-    traj = Trajectory(traj_filename, "w")
+    traj = Trajectory(traj_filename, "w", atoms=atoms)
     optimizer_kwargs["trajectory"] = traj
 
     # Set volume relaxation constraints, if relevant
