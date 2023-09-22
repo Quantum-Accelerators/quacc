@@ -34,9 +34,8 @@ def atoms_from_dict(d: dict) -> Atoms:
 __version__ = version("quacc")
 
 if tuple(ase_version) <= tuple("3.22.1"):
-    warnings.warn(
+    raise ImportError(
         "Your ASE version ({ase_version}) is <= 3.22.1. Please upgrade your ASE version: pip install --upgrade https://gitlab.com/ase/ase/-/archive/master/ase-master.zip",
-        UserWarning,
     )
 
 # Make Atoms MSONable
