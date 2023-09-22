@@ -166,9 +166,8 @@ def run_ase_opt(
         atoms = ExpCellFilter(atoms)
 
     # Run calculation
-    with traj:
-        with optimizer(atoms, **optimizer_kwargs) as dyn:
-            dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
+    with traj, optimizer(atoms, **optimizer_kwargs) as dyn:
+        dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
 
     # Store the trajectory atoms
     dyn.traj_atoms = read(traj_filename, index=":")
