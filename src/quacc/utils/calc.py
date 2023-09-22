@@ -158,21 +158,17 @@ def run_ase_opt(
 
     # Define the Trajectory object
     traj_filename = Path(tmpdir, "opt.traj")
-    optimizer_kwargs["trajectory"] = Trajectory(traj_filename, "w", atoms=atoms)
+    traj = Trajectory(traj_filename, "w")
+    optimizer_kwargs["trajectory"] = traj
 
     # Set volume relaxation constraints, if relevant
     if relax_cell and atoms.pbc.any():
         atoms = ExpCellFilter(atoms)
 
-    # Instantiate the optimizer
-    dyn = optimizer(atoms, **optimizer_kwargs)
-
     # Run calculation
-    dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
-
-    # Prevent permission errors on Windows
-    if hasattr(dyn, "trajectory") and hasattr(dyn.trajectory, "close"):
-        dyn.trajectory.close()
+    with traj:
+        with optimizer(atoms, **optimizer_kwargs) as dyn:
+            dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
 
     # Store the trajectory atoms
     dyn.traj_atoms = read(traj_filename, index=":")
@@ -321,7 +317,7 @@ def _calc_cleanup(tmpdir: str | Path, job_results_dir: str | Path) -> None:
     Path(job_results_dir, f"{Path(tmpdir).name}-symlink").unlink(missing_ok=True)
 
     # Remove the tmpdir
-    rmtree(tmpdir)
+    rmtree(tmpdir, ignore_errors=True)
 
 
 @requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
