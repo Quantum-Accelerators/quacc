@@ -26,7 +26,7 @@ In the previous examples, we have been running calculations on our local machine
 
 
     atoms = bulk("Cu")
-    dispatch_id = workflow(atoms)
+    dispatch_id = ct.dispatch(workflow)(atoms)
     result = ct.get_result(dispatch_id, wait=True)
     print(result)
     ```
@@ -35,7 +35,7 @@ In the previous examples, we have been running calculations on our local machine
 
     **Setting Executors for Individual Jobs**
 
-    The individual executor options for each job can be modified after they are imported by taking advantage of the `decorator_kwargs` option:
+    The individual executor options for each job can be modified after they are imported as well.
 
     ```python
     import covalent as ct
@@ -43,17 +43,19 @@ In the previous examples, we have been running calculations on our local machine
     from quacc import flow
     from quacc.recipes.emt.core import relax_job, static_job
 
+    relax_job.electron_object.executor = "dask"
+    static_job.electron_object.executor = "local"
 
     @flow
     def workflow(atoms):
-        output1 = relax_job(atoms, decorator_kwargs = {"executor": "dask"})
-        output2 = static_job(output1, decorator_kwargs = {"executor": "local"})
+        output1 = relax_job(atoms)
+        output2 = static_job(output1)
 
         return output2
 
 
     atoms = bulk("Cu")
-    dispatch_id = workflow(atoms)
+    dispatch_id = ct.dispatch(workflow)(atoms)
     result = ct.get_result(dispatch_id, wait=True)
     print(result)
     ```

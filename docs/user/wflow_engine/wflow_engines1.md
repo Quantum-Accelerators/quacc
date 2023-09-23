@@ -39,7 +39,7 @@ graph LR
 
     # Dispatch the workflow to the Covalent server
     # with the bulk Cu Atoms object as the input
-    dispatch_id = workflow(atoms)  # (2)!
+    dispatch_id = ct.dispatch(workflow)(atoms)  # (2)!
 
     # Fetch the result from the server
     result = ct.get_result(dispatch_id, wait=True)  # (3)!
@@ -56,7 +56,7 @@ graph LR
 
         Also note that the `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
 
-    2. Because the workflow was pre-defined with a `#!Python @flow` decorator, it will be sent to the Covalent server and a dispatch ID will be returned.
+    2. This will dispatch the workflow to the Covalent server.
 
     3. The `ct.get_result` function is used to fetch the workflow status and results from the server. You don't need to set `wait=True` in practice. Once you dispatch the workflow, it will begin running (if the resources are available).
 
@@ -213,7 +213,7 @@ graph LR
     atoms = bulk("Cu")
 
     # Dispatch the workflow
-    dispatch_id = bulk_to_slabs_flow(atoms)  # (1)!
+    dispatch_id = ct.dispatch(bulk_to_slabs_flow)(atoms)
 
     # Print the results
     result = ct.get_result(dispatch_id, wait=True)

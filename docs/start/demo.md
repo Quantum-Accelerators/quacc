@@ -32,7 +32,7 @@ from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 atoms = bulk("Cu")
 
 # Dispatch the workflow
-dispatch_id = bulk_to_slabs_flow(atoms)
+dispatch_id = ct.dispatch(bulk_to_slabs_flow)(atoms)
 
 # Fetch the results
 result = ct.get_result(dispatch_id, wait=True)

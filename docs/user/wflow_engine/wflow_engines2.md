@@ -46,14 +46,14 @@ graph LR
 
     # Dispatch the workflow to the Covalent server
     # with the bulk Cu Atoms object as the input
-    dispatch_id = workflow(atoms)  # (3)!
+    dispatch_id = ct.dispatch(workflow)(atoms)  # (3)!
 
     # Fetch the result from the server
     result = ct.get_result(dispatch_id, wait=True)  # (4)!
     print(result)
     ```
 
-    1. The `#!Python @flow` decorator defines the workflow that will be executed. It is the same as calling `#!Python ct.dispatch(ct.lattice)` in Covalent.
+    1. The `#!Python @flow` decorator defines the workflow that will be executed. It is the same as calling `#!Python ct.lattice` in Covalent.
 
     2. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
 
@@ -278,7 +278,7 @@ graph LR
     atoms2 = molecule("N2")
 
     # Dispatch the workflow to the Covalent server
-    dispatch_id = workflow(atoms1, atoms2)
+    dispatch_id = ct.dispatch(workflow)(atoms1, atoms2)
 
     # Fetch the results from the server
     result = ct.get_result(dispatch_id, wait=True)
@@ -437,7 +437,7 @@ graph LR
     atoms = bulk("Cu")
 
     # Dispatch the workflow and retrieve result
-    dispatch_id = workflow(atoms)
+    dispatch_id = ct.dispatch(workflow)(atoms)
     result = ct.get_result(dispatch_id, wait=True)
     print(result)
     ```
