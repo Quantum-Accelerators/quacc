@@ -285,8 +285,7 @@ jobs:
           pip install .[dev]
 
       - name: Make quacc config
-        run: |
-          export QUACC_WORKFLOW_ENGINE="covalent"
+        run: quacc set WORKFLOW_ENGINE covalent
 
       - name: Set up Covalent server
         run: covalent start
@@ -330,8 +329,7 @@ jobs:
           pip install .[dev]
 
       - name: Make quacc config
-        run: |
-          export QUACC_WORKFLOW_ENGINE="parsl"
+        run: quacc set WORKFLOW_ENGINE parsl
 
       - name: Run tests with pytest
         run: pytest -k 'parsl' --cov=quacc --cov-report=xml
