@@ -18,8 +18,6 @@ To contribute to quacc, we recommend doing the following:
 
 - [Clone this forked repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) to your local machine, e.g. via `git clone <repo url>.git`.
 
-- Make sure your ASE dependency is up-to-date by running `pip install --upgrade https://gitlab.com/ase/ase/-/archive/master/ase-master.zip`.
-
 - In the newly downloaded `quacc` base directory, run `pip install -e .[dev]` to install quacc in editable mode and with the development dependencies. If you need to strictly match the versions of dependencies used in the GitHub actions test suite, you can find `requirements.txt` files in the `tests` directory.
 
 - [Commit your changes](https://github.com/git-guides/git-commit) and [push them](https://github.com/git-guides/git-push) to your personal forked repository _in a new branch_.
