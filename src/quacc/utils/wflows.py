@@ -158,6 +158,13 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
             decorated = prefect_task(_func, **decorator_kwargs)
             return decorated.submit(*f_args, **f_kwargs)
 
+    if _func is None:
+
+        def decorator(_f):
+            return job(_f, **kwargs)
+
+        return decorator
+
     from quacc import SETTINGS
 
     wflow_engine = SETTINGS.WORKFLOW_ENGINE
@@ -308,6 +315,12 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
     Flow
         The `#!Python @flow`-decorated function.
     """
+    if _func is None:
+
+        def decorator(_f):
+            return flow(_f, **kwargs)
+
+        return decorator
 
     from quacc import SETTINGS
 
@@ -501,6 +514,12 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
     callable
         The decorated function.
     """
+    if _func is None:
+
+        def decorator(_f):
+            return subflow(_f, **kwargs)
+
+        return decorator
 
     from quacc import SETTINGS
 
