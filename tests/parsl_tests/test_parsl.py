@@ -35,7 +35,6 @@ def setup_module():
 @pytest.mark.skipif(parsl is None, reason="Parsl not installed")
 def test_parsl_decorators(tmpdir):
     tmpdir.chdir()
-    SETTINGS.WORKFLOW_ENGINE = "parsl"
 
     @job
     def add(a, b):
@@ -72,7 +71,6 @@ def test_parsl_decorators(tmpdir):
 @pytest.mark.skipif(parsl is None, reason="Parsl not installed")
 def test_parsl_decorators_args(tmpdir):
     tmpdir.chdir()
-    SETTINGS.WORKFLOW_ENGINE = "parsl"
 
     @job()
     def add(a, b):

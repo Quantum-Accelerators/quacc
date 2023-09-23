@@ -129,9 +129,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     """
 
     @functools.wraps(_func)
-    def _inner(
-        decorated, *f_args, decorator_kwargs: dict | None = None, **f_kwargs
-    ) -> Any:
+    def _inner(decorated: Callable, *f_args, **f_kwargs) -> Any:
         """
         This function is used for handling workflow engines that require some action
         beyond just decoration.
@@ -142,8 +140,6 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
             The decorated function.
         *f_args
             Positional arguments to the function, if any.
-        decorator_kwargs
-            Keyword arguments to pass to the workflow engine decorator.
         **f_kwargs
             Keyword arguments to the function, if any.
 

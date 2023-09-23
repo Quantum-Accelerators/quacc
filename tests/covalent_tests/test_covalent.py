@@ -34,8 +34,6 @@ DEFAULT_SETTINGS = SETTINGS.copy()
 def test_covalent_decorators(tmpdir):
     tmpdir.chdir()
 
-    SETTINGS.WORKFLOW_ENGINE = "covalent"
-
     @job
     def add(a, b):
         return a + b
@@ -85,8 +83,6 @@ def test_covalent_decorators(tmpdir):
 )
 def test_covalent_decorators_args(tmpdir):
     tmpdir.chdir()
-
-    SETTINGS.WORKFLOW_ENGINE = "covalent"
 
     @job(executor="local")
     def add(a, b):

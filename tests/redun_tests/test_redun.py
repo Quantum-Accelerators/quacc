@@ -17,7 +17,6 @@ def test_redun_decorators(tmpdir):
     tmpdir.chdir()
     from redun import Scheduler
 
-    SETTINGS.WORKFLOW_ENGINE = "redun"
     scheduler = Scheduler()
 
     @job

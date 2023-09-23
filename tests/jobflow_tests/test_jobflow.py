@@ -20,8 +20,6 @@ DEFAULT_SETTINGS = SETTINGS.copy()
 def test_jobflow_decorators(tmpdir):
     tmpdir.chdir()
 
-    SETTINGS.WORKFLOW_ENGINE = "jobflow"
-
     @job
     def add(a, b):
         return a + b
@@ -49,8 +47,6 @@ def test_jobflow_decorators(tmpdir):
 @pytest.mark.skipif(jf is None, reason="Jobflow not installed")
 def test_jobflow_decorators_args(tmpdir):
     tmpdir.chdir()
-
-    SETTINGS.WORKFLOW_ENGINE = "jobflow"
 
     @job()
     def add(a, b):

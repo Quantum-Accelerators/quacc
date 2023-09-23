@@ -28,8 +28,6 @@ def prefect_test_fixture():
 def test_prefect_decorators(tmpdir):
     tmpdir.chdir()
 
-    SETTINGS.WORKFLOW_ENGINE = "prefect"
-
     @job
     def add(a, b):
         return a + b
