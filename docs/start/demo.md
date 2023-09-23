@@ -7,7 +7,7 @@ Want to get up and running with quacc as fast possible? Here we go!
 Run the following commands in the terminal:
 
 ```bash
-pip install --upgrade https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
+pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
 pip install quacc[covalent]
 
 quacc set WORKFLOW_ENGINE covalent && covalent start
