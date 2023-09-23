@@ -131,7 +131,8 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     @functools.wraps(_func)
     def _inner(*f_args, decorator_kwargs: dict | None = None, **f_kwargs) -> Any:
         """
-        The @job-decorated function.
+        This function is used for handling workflow engines that require some action
+        beyond just decoration.
 
         Parameters
         ----------
@@ -185,15 +186,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
 
         decorated = task(_func, **kwargs)
     elif wflow_engine == "prefect":
-        if _func is None:
-
-            def decorator(_f):
-                return job(_f, **kwargs)
-
-            return decorator
-
         return _inner
-
     else:
         decorated = _func
 
@@ -315,6 +308,7 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
     Flow
         The `#!Python @flow`-decorated function.
     """
+
     if _func is None:
 
         def decorator(_f):
