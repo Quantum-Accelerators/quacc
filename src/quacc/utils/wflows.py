@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import functools
 from typing import TYPE_CHECKING
 
 from monty.dev import requires
@@ -18,7 +19,7 @@ except ImportError:
     dask_deps = False
 
 if TYPE_CHECKING:
-    from typing import Callable, TypeVar
+    from typing import Any, Callable, TypeVar
 
     from dask_jobqueue.core import Job as DaskJob
 
@@ -87,7 +88,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:  # sourcery skip
         def add(a, b):
             return a + b
 
-        add(1, 2)
+        add.submit(1, 2)
         ```
 
     === "Redun"
@@ -127,6 +128,36 @@ def job(_func: Callable | None = None, **kwargs) -> Job:  # sourcery skip
         The @job-decorated function.
     """
 
+    @functools.wraps(_func)
+    def _inner(*f_args, decorator_kwargs: dict | None = None, **f_kwargs) -> Any:
+        """
+        The @job-decorated function.
+
+        Parameters
+        ----------
+        *f_args
+            Positional arguments to the function, if any.
+        decorator_kwargs
+            Keyword arguments to pass to the workflow engine decorator.
+        **f_kwargs
+            Keyword arguments to the function, if any.
+
+        Returns
+        -------
+        Any
+            The output of the @job-decorated function.
+        """
+        from quacc import SETTINGS
+
+        decorator_kwargs = decorator_kwargs if decorator_kwargs is not None else kwargs
+        wflow_engine = SETTINGS.WORKFLOW_ENGINE
+
+        if wflow_engine == "prefect":
+            from prefect import prefect_task
+
+            decorated = prefect_task(_func, **decorator_kwargs)
+            return decorated.submit(*f_args, **f_kwargs)
+
     from quacc import SETTINGS
 
     wflow_engine = SETTINGS.WORKFLOW_ENGINE
@@ -147,9 +178,15 @@ def job(_func: Callable | None = None, **kwargs) -> Job:  # sourcery skip
 
         decorated = task(_func, **kwargs)
     elif wflow_engine == "prefect":
-        from prefect import task
+        if _func is None:
 
-        decorated = task(_func, **kwargs)
+            def decorator(_f):
+                return job(_f, **kwargs)
+
+            return decorator
+
+        return _inner
+
     else:
         decorated = _func
 
@@ -232,7 +269,7 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:  # sourcery skip
 
         @flow
         def workflow(a, b, c):
-            return add(add(a, b), c)
+            return add.submit(add.submit(a, b), c)
 
         workflow(1, 2, 3)
         ```
@@ -412,8 +449,8 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:  # sourcery ski
 
         @flow
         def workflow(a, b, c):
-            result1 = add(a, b)
-            result2 = make_more(result1)
+            result1 = add.submit(a, b)
+            result2 = make_more.submit(result1)
             return add_distributed(result2, c)
 
         workflow(1, 2, 3)
