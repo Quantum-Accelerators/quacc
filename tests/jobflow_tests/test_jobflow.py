@@ -46,12 +46,11 @@ def test_jobflow_decorators(tmpdir):
     assert isinstance(add_distributed([1, 2, 3], 4)[0], jf.Job)
 
 
-@pytest.mark.skipif(jobflow is None, reason="Jobflow not installed")
+@pytest.mark.skipif(jf is None, reason="Jobflow not installed")
 def test_jobflow_decorators_args(tmpdir):
     tmpdir.chdir()
 
     SETTINGS.WORKFLOW_ENGINE = "jobflow"
-    from jobflow import Job
 
     @job()
     def add(a, b):
@@ -69,12 +68,12 @@ def test_jobflow_decorators_args(tmpdir):
     def workflow(a, b, c):
         return mult(add(a, b), c)
 
-    assert not isinstance(add, Job)
-    assert not isinstance(mult, Job)
-    assert isinstance(add(1, 2), Job)
-    assert isinstance(mult(1, 2), Job)
-    assert isinstance(workflow(1, 2, 3), Job)
-    assert isinstance(add_distributed([1, 2, 3], 4)[0], Job)
+    assert not isinstance(add, jf.Job)
+    assert not isinstance(mult, jf.Job)
+    assert isinstance(add(1, 2), jf.Job)
+    assert isinstance(mult(1, 2), jf.Job)
+    assert isinstance(workflow(1, 2, 3), jf.Job)
+    assert isinstance(add_distributed([1, 2, 3], 4)[0], jf.Job)
 
 
 @pytest.mark.skipif(

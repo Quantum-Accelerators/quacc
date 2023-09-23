@@ -129,13 +129,17 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     """
 
     @functools.wraps(_func)
-    def _inner(*f_args, decorator_kwargs: dict | None = None, **f_kwargs) -> Any:
+    def _inner(
+        decorated, *f_args, decorator_kwargs: dict | None = None, **f_kwargs
+    ) -> Any:
         """
         This function is used for handling workflow engines that require some action
         beyond just decoration.
 
         Parameters
         ----------
+        decorated
+            The decorated function.
         *f_args
             Positional arguments to the function, if any.
         decorator_kwargs
@@ -150,14 +154,12 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
         """
         from quacc import SETTINGS
 
-        decorator_kwargs = decorator_kwargs if decorator_kwargs is not None else kwargs
         wflow_engine = SETTINGS.WORKFLOW_ENGINE
 
         if wflow_engine == "prefect":
-            from prefect import prefect_task
-
-            decorated = prefect_task(_func, **decorator_kwargs)
             return decorated.submit(*f_args, **f_kwargs)
+
+        return decorated(*f_args, **f_kwargs)
 
     if _func is None:
 
@@ -186,7 +188,10 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
 
         decorated = task(_func, **kwargs)
     elif wflow_engine == "prefect":
-        return _inner
+        from prefect import task as prefect_task
+
+        decorated = prefect_task(_func)
+        return _inner(decorated)
     else:
         decorated = _func
 
