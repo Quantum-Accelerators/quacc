@@ -120,10 +120,10 @@ def make_slabs_from_bulk(
         for slab in slabs:
             if not slab.is_symmetric():
                 # Flip the slab and its oriented unit cell
-                new_slab = flip_atoms(slab, return_struct=True)
+                new_slab = flip_atoms(slab, return_struct=True)  # type: Slab
                 new_oriented_unit_cell = flip_atoms(
                     slab.oriented_unit_cell, return_struct=True
-                )
+                )  # type: Slab
 
                 # Reconstruct the full slab object, noting the new shift and
                 # oriented unit cell
@@ -348,7 +348,7 @@ def make_adsorbate_structures(
 
 def get_surface_energy(
     bulk: Atoms, slab: Atoms, bulk_energy: float, slab_energy: float
-) -> float:
+) -> np.floating:
     """
     Calculate the surface energy to form a given surface slab from a bulk
     structure. For asymmetric slabs, this is better thought of as the cleavage
@@ -367,7 +367,7 @@ def get_surface_energy(
 
     Returns
     -------
-    float
+    np.floating
         The surface energy in eV/A^2.
     """
 

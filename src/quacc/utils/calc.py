@@ -223,8 +223,8 @@ def run_ase_vib(
 
 
 def _calc_setup(
-    atoms: Atoms, copy_files: list[str] | None = None
-) -> tuple[Atoms, str, str]:
+    atoms: Atoms, copy_files: list[str | Path] | None = None
+) -> tuple[Atoms, Path, Path]:
     """
     Perform staging operations for a calculation, including copying files to the
     scratch directory, setting the calculator's directory, decompressing files,
@@ -241,10 +241,10 @@ def _calc_setup(
     -------
     Atoms
         Copy of the Atoms object with the calculator's directory set.
-    str
+    Path
         The path to the tmpdir, where the calculation will be run. It will be
         deleted after the calculation is complete.
-    str
+    Path
         The path to the results_dir, where the files will ultimately be stored.
         A symlink to the tmpdir will be made here during the calculation for
         convenience.

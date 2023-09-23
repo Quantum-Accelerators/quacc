@@ -217,7 +217,7 @@ def double_relax_job(
 def _base_job(
     atoms: Atoms | dict,
     preset: str | None = None,
-    defaults: str | None = None,
+    defaults: dict | None = None,
     calc_swaps: dict | None = None,
     additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
