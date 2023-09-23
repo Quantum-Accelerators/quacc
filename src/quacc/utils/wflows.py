@@ -40,11 +40,8 @@ def job(_func: Callable | None = None, **kwargs) -> Job:  # sourcery skip
     All `#!Python @job`-decorated functions are transformed into their corresponding
     decorator.
 
-    The wrapped function gets a new kwarg, `decorator_kwargs`, that can be used
-    to modify the workflow engine decorator keyword arguments even after the
-    quacc-decorated function has been imported. The wrapped (i.e. undecorated)
-    function can also be stripped of its decorator by calling the `#!Python .__wrapped__`
-    attribute.
+    The wrapped (i.e. undecorated) function can also be stripped of its decorator
+    by calling the `#!Python .__wrapped__` attribute.
 
     ```python
     from quacc import job
@@ -91,10 +88,8 @@ def job(_func: Callable | None = None, **kwargs) -> Job:  # sourcery skip
         def add(a, b):
             return a + b
 
-        add.submit(1, 2)  # (1)!
+        add(1, 2)
         ```
-
-        1. Note that Quacc will automatically call `.submit()` on all `Task` objects.
 
     === "Redun"
 
@@ -133,68 +128,35 @@ def job(_func: Callable | None = None, **kwargs) -> Job:  # sourcery skip
         The @job-decorated function.
     """
 
-    @functools.wraps(_func)
-    def _inner(*f_args, decorator_kwargs: dict | None = None, **f_kwargs) -> Any:
-        """
-        The @job-decorated function.
+    from quacc import SETTINGS
 
-        Parameters
-        ----------
-        *f_args
-            Positional arguments to the function, if any.
-        decorator_kwargs
-            Keyword arguments to pass to the workflow engine decorator.
-        **f_kwargs
-            Keyword arguments to the function, if any.
+    wflow_engine = SETTINGS.WORKFLOW_ENGINE
+    if wflow_engine == "covalent":
+        import covalent as ct
 
-        Returns
-        -------
-        Any
-            The output of the @job-decorated function.
-        """
+        decorated = ct.electron(_func, **kwargs)
+    elif wflow_engine == "jobflow":
+        from jobflow import job as jf_job
 
-        from quacc import SETTINGS
+        decorated = jf_job(_func, **kwargs)
+    elif wflow_engine == "parsl":
+        from parsl import python_app
 
-        if decorator_kwargs is None:
-            decorator_kwargs = kwargs
+        decorated = python_app(_func, **kwargs)
+    elif wflow_engine == "redun":
+        from redun import task
 
-        wflow_engine = SETTINGS.WORKFLOW_ENGINE
-        if wflow_engine == "covalent":
-            import covalent as ct
+        decorated = task(_func, **kwargs)
+    elif wflow_engine == "prefect":
+        from prefect import task
 
-            decorated = ct.electron(_func, **decorator_kwargs)
-        elif wflow_engine == "jobflow":
-            from jobflow import job as jf_job
+        decorated = task(_func, **kwargs)
+    else:
+        decorated = _func
 
-            decorated = jf_job(_func, **decorator_kwargs)
-        elif wflow_engine == "parsl":
-            from parsl import python_app
+    decorated.__wrapped__ = _func
 
-            decorated = python_app(_func, **decorator_kwargs)
-        elif wflow_engine == "redun":
-            from redun import task
-
-            decorated = task(_func, **decorator_kwargs)
-        elif wflow_engine == "prefect":
-            from prefect import task
-
-            decorated = task(_func, **decorator_kwargs)
-        else:
-            decorated = _func
-
-        if wflow_engine == "prefect":
-            return decorated.submit(*f_args, **f_kwargs)
-
-        return decorated(*f_args, **f_kwargs)
-
-    if _func is None:
-
-        def decorator(_f):
-            return job(_f, **kwargs)
-
-        return decorator
-
-    return _inner
+    return decorated
 
 
 def flow(_func: Callable | None = None, **kwargs) -> Flow:  # sourcery skip
@@ -209,11 +171,8 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:  # sourcery skip
     All `#!Python @flow`-decorated functions are transformed into their corresponding
     decorator.
 
-    The wrapped function gets a new kwarg, `decorator_kwargs`, that can be used
-    to modify the workflow engine decorator keyword arguments even after the
-    quacc-decorated function has been imported. The wrapped (i.e. undecorated)
-    function can also be stripped of its decorator by calling the `#!Python .__wrapped__`
-    attribute.
+    The wrapped (i.e. undecorated) function can also be stripped of its decorator by
+    calling the `#!Python .__wrapped__` attribute.
 
     ```python
     from quacc import flow, job
@@ -244,10 +203,8 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:  # sourcery skip
         def workflow(a, b, c):
             return add(add(a, b), c)
 
-        ct.dispatch(workflow)(1, 2, 3)  # (1)!
+        workflow(1, 2, 3)
         ```
-
-        1. Note that Quacc will automatically call `ct.dispatch()` on the outermost `Lattice` object.
 
     === "Parsl⭐"
 
@@ -275,7 +232,7 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:  # sourcery skip
 
         @flow
         def workflow(a, b, c):
-            return add.submit(add.submit(a, b), c)
+            return add(add(a, b), c)
 
         workflow(1, 2, 3)
         ```
@@ -315,75 +272,28 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:  # sourcery skip
         The `#!Python @flow`-decorated function.
     """
 
-    @functools.wraps(_func)
-    def _inner(
-        *f_args,
-        decorator_kwargs: dict | None = None,
-        dispatch_kwargs: dict | None = None,
-        **f_kwargs,
-    ) -> Any:
-        """
-        The @flow-decorated function.
+    from quacc import SETTINGS
 
-        Parameters
-        ----------
-        *f_args
-            Positional arguments to the function, if any.
-        decorator_kwargs
-            Keyword arguments to pass to the workflow engine decorator.
-        dispatch_kwargs
-            Keyword arguments to pass to `ct.dispatch()`, if Covalent is used.
-        **f_kwargs
-            Keyword arguments to the function, if any.
+    wflow_engine = SETTINGS.WORKFLOW_ENGINE
 
-        Returns
-        -------
-        Any
-            The output of the @flow-decorated function.
-        """
-        from quacc import SETTINGS
+    if wflow_engine == "covalent":
+        import covalent as ct
 
-        if decorator_kwargs is None:
-            decorator_kwargs = kwargs
+        decorated = ct.lattice(_func, **kwargs)
+    elif wflow_engine == "redun":
+        from redun import task
 
-        wflow_engine = SETTINGS.WORKFLOW_ENGINE
+        decorated = task(_func, **kwargs)
+    elif wflow_engine == "prefect":
+        from prefect import flow as prefect_flow
 
-        dispatch_kwargs = dispatch_kwargs or {}
-        if dispatch_kwargs and wflow_engine != "covalent":
-            raise ValueError("The `dispatch_kwargs` argument only works with Covalent.")
+        decorated = prefect_flow(_func, **kwargs)
+    else:
+        decorated = _func
 
-        if wflow_engine == "covalent":
-            import covalent as ct
+    decorated.__wrapped__ = _func
 
-            try:
-                return ct.dispatch(ct.lattice(_func, **decorator_kwargs))(
-                    *f_args, **f_kwargs
-                )
-            except (AttributeError, TypeError):
-                return ct.lattice(_func, **dispatch_kwargs, **decorator_kwargs)(
-                    *f_args, **f_kwargs
-                )
-        elif wflow_engine == "redun":
-            from redun import task
-
-            decorated = task(_func, **decorator_kwargs)
-        elif wflow_engine == "prefect":
-            from prefect import flow as prefect_flow
-
-            decorated = prefect_flow(_func, **decorator_kwargs)
-        else:
-            decorated = _func
-
-        return decorated(*f_args, **f_kwargs)
-
-    if _func is None:
-
-        def decorator(_f):
-            return flow(_f, **kwargs)
-
-        return decorator
-
-    return _inner
+    return decorated
 
 
 def subflow(_func: Callable | None = None, **kwargs) -> Subflow:  # sourcery skip
@@ -397,11 +307,8 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:  # sourcery ski
     All `#!Python @subflow`-decorated functions are transformed into their corresponding
     decorator.
 
-    The wrapped function gets a new kwarg, `decorator_kwargs`, that can be used
-    to modify the workflow engine decorator keyword arguments even after the
-    quacc-decorated function has been imported. The wrapped (i.e. undecorated)
-    function can also be stripped of its decorator by calling the `#!Python .__wrapped__`
-    attribute.
+    The wrapped (i.e. undecorated) function can also be stripped of its decorator by calling
+    the `#!Python .__wrapped__` attribute.
 
     ```python
     import random
@@ -455,7 +362,7 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:  # sourcery ski
             result2 = make_more(result1)
             return add_distributed(result2, c)
 
-        ct.dispatch(workflow)(1, 2, 3)
+        workflow(1, 2, 3)
         ```
 
     === "Parsl⭐"
@@ -504,8 +411,8 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:  # sourcery ski
 
         @flow
         def workflow(a, b, c):
-            result1 = add.submit(a, b)
-            result2 = make_more.submit(result1)
+            result1 = add(a, b)
+            result2 = make_more(result1)
             return add_distributed(result2, c)
 
         workflow(1, 2, 3)
@@ -557,60 +464,31 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:  # sourcery ski
         The decorated function.
     """
 
-    @functools.wraps(_func)
-    def _inner(*f_args, decorator_kwargs: dict | None = None, **f_kwargs) -> Any:
-        """
-        The @subflow-decorated function.
+    from quacc import SETTINGS
 
-        Parameters
-        ----------
-        *f_args
-            Positional arguments to the function, if any.
-        decorator_kwargs
-            Keyword arguments to pass to the workflow engine decorator.
-        **f_kwargs
-            Keyword arguments to the function, if any.
+    wflow_engine = SETTINGS.WORKFLOW_ENGINE
+    if wflow_engine == "covalent":
+        import covalent as ct
 
-        Returns
-        -------
-        Any
-            The output of the @subflow-decorated function.
-        """
-        from quacc import SETTINGS
+        decorated = ct.electron(ct.lattice(_func), **kwargs)
+    elif wflow_engine == "parsl":
+        from parsl import join_app
 
-        if decorator_kwargs is None:
-            decorator_kwargs = kwargs
+        decorated = join_app(_func, **kwargs)
+    elif wflow_engine == "redun":
+        from redun import task
 
-        wflow_engine = SETTINGS.WORKFLOW_ENGINE
-        if wflow_engine == "covalent":
-            import covalent as ct
+        decorated = task(_func, **kwargs)
+    elif wflow_engine == "prefect":
+        from prefect import flow as prefect_flow
 
-            decorated = ct.electron(ct.lattice(_func), **decorator_kwargs)
-        elif wflow_engine == "parsl":
-            from parsl import join_app
+        decorated = prefect_flow(_func, **kwargs)
+    else:
+        decorated = _func
 
-            decorated = join_app(_func, **decorator_kwargs)
-        elif wflow_engine == "redun":
-            from redun import task
+    decorated.__wrapped__ = _func
 
-            decorated = task(_func, **decorator_kwargs)
-        elif wflow_engine == "prefect":
-            from prefect import flow as prefect_flow
-
-            decorated = prefect_flow(_func, **decorator_kwargs)
-        else:
-            decorated = _func
-
-        return decorated(*f_args, **f_kwargs)
-
-    if _func is None:
-
-        def decorator(_f):
-            return subflow(_f, **kwargs)
-
-        return decorator
-
-    return _inner
+    return decorated
 
 
 @requires(prefect_deps and dask_deps, "Need quacc[prefect] dependencies")
