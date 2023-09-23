@@ -28,7 +28,7 @@ if TYPE_CHECKING:
     Subflow = TypeVar("Subflow")
 
 
-def job(_func: Callable | None = None, **kwargs) -> Job:  # sourcery skip
+def job(_func: Callable | None = None, **kwargs) -> Job:
     """
     Decorator for individual compute jobs. This is a `#!Python @job` decorator. Think
     of each `#!Python @job`-decorated function as an individual SLURM job, if that helps.
@@ -196,7 +196,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:  # sourcery skip
     return decorated
 
 
-def flow(_func: Callable | None = None, **kwargs) -> Flow:  # sourcery skip
+def flow(_func: Callable | None = None, **kwargs) -> Flow:
     """
     Decorator for workflows, which consist of at least one compute job. This is
     a `#!Python @flow` decorator.
@@ -334,7 +334,7 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:  # sourcery skip
     return decorated
 
 
-def subflow(_func: Callable | None = None, **kwargs) -> Subflow:  # sourcery skip
+def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
     """
     Decorator for (dynamic) sub-workflows. This is a `#!Python @subflow` decorator.
 
