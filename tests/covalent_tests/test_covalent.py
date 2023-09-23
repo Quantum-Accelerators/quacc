@@ -8,6 +8,7 @@ from quacc.recipes.emt.core import relax_job, static_job
 
 try:
     import covalent as ct
+    ct = ct if SETTINGS.WORKFLOW_ENGINE == "covalent" else None
 except ImportError:
     ct = None
 try:
@@ -23,14 +24,6 @@ try:
 except ImportError:
     bulk_to_defects_flow = None
 DEFAULT_SETTINGS = SETTINGS.copy()
-
-
-def setup_module():
-    SETTINGS.WORKFLOW_ENGINE = "covalent"
-
-
-def teardown_module():
-    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 @pytest.mark.skipif(

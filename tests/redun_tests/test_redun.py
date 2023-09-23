@@ -4,18 +4,12 @@ from quacc import SETTINGS
 
 try:
     import redun
+
+    redun = redun if SETTINGS.WORKFLOW_ENGINE == "redun" else None
 except ImportError:
     redun = None
 
 DEFAULT_SETTINGS = SETTINGS.copy()
-
-
-def setup_module():
-    SETTINGS.WORKFLOW_ENGINE = "redun"
-
-
-def teardown_module():
-    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 @pytest.mark.skipif(

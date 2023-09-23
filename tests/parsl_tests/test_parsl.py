@@ -6,6 +6,9 @@ from quacc import SETTINGS
 
 try:
     import parsl
+
+    parsl = parsl if SETTINGS.WORKFLOW_ENGINE == "parsl" else None
+
 except ImportError:
     parsl = None
 try:
@@ -27,12 +30,6 @@ def setup_module():
     if parsl:
         with contextlib.suppress(Exception):
             parsl.load()
-
-    SETTINGS.WORKFLOW_ENGINE = "parsl"
-
-
-def teardown_module():
-    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 @pytest.mark.skipif(

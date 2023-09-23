@@ -5,6 +5,8 @@ from quacc import SETTINGS
 
 try:
     import jobflow as jf
+
+    jf = jf if SETTINGS.WORKFLOW_ENGINE == "jobflow" else None
 except ImportError:
     jf = None
 
@@ -12,14 +14,6 @@ if jf:
     STORE = jf.JobStore(MemoryStore())
 
 DEFAULT_SETTINGS = SETTINGS.copy()
-
-
-def setup_module():
-    SETTINGS.WORKFLOW_ENGINE = "jobflow"
-
-
-def teardown_module():
-    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 @pytest.mark.skipif(

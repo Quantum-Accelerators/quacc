@@ -17,7 +17,6 @@ TEST_SCRATCH_DIR = FILE_DIR / ".test_scratch"
 def pytest_sessionstart():
     from quacc import SETTINGS
 
-    SETTINGS.WORKFLOW_ENGINE = "local"
     SETTINGS.RESULTS_DIR = str(TEST_RESULTS_DIR)
     SETTINGS.SCRATCH_DIR = str(TEST_SCRATCH_DIR)
     SETTINGS.PRIMARY_STORE = MemoryStore().to_json()

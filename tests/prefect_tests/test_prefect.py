@@ -6,6 +6,8 @@ try:
     import prefect
     from prefect.testing.utilities import prefect_test_harness
 
+    prefect = prefect if SETTINGS.WORKFLOW_ENGINE == "prefect" else None
+
 except ImportError:
     prefect = None
 
@@ -17,14 +19,6 @@ def prefect_test_fixture():
     if prefect:
         with prefect_test_harness():
             yield
-
-
-def setup_module():
-    SETTINGS.WORKFLOW_ENGINE = "prefect"
-
-
-def teardown_module():
-    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
