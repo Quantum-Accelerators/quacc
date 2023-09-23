@@ -1,7 +1,7 @@
 import pytest
 from maggma.stores import MemoryStore
 
-from quacc import SETTINGS
+from quacc import SETTINGS, flow, job, subflow
 
 try:
     import jobflow as jf

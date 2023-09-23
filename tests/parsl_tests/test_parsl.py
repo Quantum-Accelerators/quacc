@@ -2,7 +2,7 @@ import contextlib
 
 import pytest
 
-from quacc import SETTINGS
+from quacc import SETTINGS, flow, job, subflow
 
 try:
     import parsl
