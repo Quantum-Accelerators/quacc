@@ -29,7 +29,7 @@ For the development version:
 
 ```bash
 # Install development version of ASE
-pip install --upgrade https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
+pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
 
 # Install development version of quacc
 pip install git+https://github.com/quantum-accelerators/quacc.git
