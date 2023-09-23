@@ -25,7 +25,7 @@ DEFAULT_SETTINGS = SETTINGS.copy()
 
 def setup_module():
     if parsl:
-        with contextlib.suppress(RuntimeError):
+        with contextlib.suppress(Exception):
             parsl.load()
 
     SETTINGS.WORKFLOW_ENGINE = "parsl"

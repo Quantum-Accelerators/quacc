@@ -25,7 +25,7 @@ def pytest_sessionstart():
     os.makedirs(SETTINGS.SCRATCH_DIR, exist_ok=True)
 
     if parsl:
-        with contextlib.suppress(RuntimeError):
+        with contextlib.suppress(Exception):
             parsl.load()
 
 
