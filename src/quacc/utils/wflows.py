@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import functools
 from typing import TYPE_CHECKING
 
 from monty.dev import requires
@@ -19,7 +18,7 @@ except ImportError:
     dask_deps = False
 
 if TYPE_CHECKING:
-    from typing import Any, Callable, TypeVar
+    from typing import Callable, TypeVar
 
     from dask_jobqueue.core import Job as DaskJob
 
@@ -154,7 +153,8 @@ def job(_func: Callable | None = None, **kwargs) -> Job:  # sourcery skip
     else:
         decorated = _func
 
-    decorated.__wrapped__ = _func
+    if not hasattr(decorated, "__wrapped__"):
+        decorated.__wrapped__ = _func
 
     return decorated
 
@@ -291,7 +291,8 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:  # sourcery skip
     else:
         decorated = _func
 
-    decorated.__wrapped__ = _func
+    if not hasattr(decorated, "__wrapped__"):
+        decorated.__wrapped__ = _func
 
     return decorated
 
@@ -486,7 +487,8 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:  # sourcery ski
     else:
         decorated = _func
 
-    decorated.__wrapped__ = _func
+    if not hasattr(decorated, "__wrapped__"):
+        decorated.__wrapped__ = _func
 
     return decorated
 
