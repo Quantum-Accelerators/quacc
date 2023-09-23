@@ -196,9 +196,15 @@ def test_covalent_decorators(tmpdir):
 
     assert add(1, 2) == 3
     assert mult(1, 2) == 2
-    assert ct.get_result(workflow(1, 2, 3), wait=True).result == 9
-    assert ct.get_result(dynamic_workflow(1, 2, 3), wait=True).result == [6, 6, 6]
-    assert ct.get_result(flow(add_distributed)([1, 1, 1], 2), wait=True).result == [
+    assert ct.get_result(ct.dispatch(workflow)(1, 2, 3), wait=True).result == 9
+    assert ct.get_result(ct.dispatch(dynamic_workflow)(1, 2, 3), wait=True).result == [
+        6,
+        6,
+        6,
+    ]
+    assert ct.get_result(
+        ct.dispatch(flow(add_distributed))([1, 1, 1], 2), wait=True
+    ).result == [
         3,
         3,
         3,
@@ -242,8 +248,12 @@ def test_covalent_decorators_args(tmpdir):
 
     assert add(1, 2) == 3
     assert mult(1, 2) == 2
-    assert ct.get_result(workflow(1, 2, 3), wait=True).result == 9
-    assert ct.get_result(dynamic_workflow(1, 2, 3), wait=True).result == [6, 6, 6]
+    assert ct.get_result(ct.dispatch(workflow)(1, 2, 3), wait=True).result == 9
+    assert ct.get_result(ct.dispatch(dynamic_workflow)(1, 2, 3), wait=True).result == [
+        6,
+        6,
+        6,
+    ]
 
 
 @pytest.mark.skipif(parsl is None, reason="Parsl not installed")
