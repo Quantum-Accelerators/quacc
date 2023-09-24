@@ -1,7 +1,7 @@
 import pytest
 from ase.build import bulk
 
-from quacc import SETTINGS, flow
+from quacc import flow
 from quacc.recipes.emt.core import relax_job, static_job
 
 try:

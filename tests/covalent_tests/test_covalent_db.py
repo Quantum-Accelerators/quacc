@@ -3,8 +3,6 @@ import os
 import pytest
 from maggma.stores import MemoryStore
 
-from quacc import SETTINGS
-
 try:
     import covalent as ct
 
