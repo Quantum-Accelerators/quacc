@@ -21,7 +21,7 @@ def pytest_sessionstart():
     os.makedirs(SETTINGS.SCRATCH_DIR, exist_ok=True)
 
     if SETTINGS.WORKFLOW_ENGINE == "covalent":
-        subprocess.run(["covalent", "start"])
+        subprocess.run(["covalent", "start"], check=True)
     elif SETTINGS.WORKFLOW_ENGINE == "parsl":
         import parsl
 

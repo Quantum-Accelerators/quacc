@@ -287,9 +287,6 @@ jobs:
       - name: Make quacc config
         run: quacc set WORKFLOW_ENGINE covalent
 
-      - name: Set up Covalent server
-        run: covalent start
-
       - name: Run tests with pytest
         run: pytest -k 'covalent' --cov=quacc --cov-report=xml
 
@@ -300,12 +297,13 @@ jobs:
         uses: codecov/codecov-action@v3
         if: github.repository == 'Quantum-Accelerators/quacc'
 
-  tests-parsl:
+  tests-engines:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
       matrix:
         python-version: ["3.11"]
+        wflow_engine: [covalent, parsl, redun, jobflow, prefect]
 
     defaults:
       run:
@@ -325,51 +323,14 @@ jobs:
       - name: Install pip packages
         run: |
           pip install -r tests/requirements.txt
-          pip install -r tests/requirements-parsl.txt
+          pip install -r tests/requirements-${{ matrix.wflow_engine }}.txt
           pip install .[dev]
 
       - name: Make quacc config
-        run: quacc set WORKFLOW_ENGINE parsl
+        run: quacc set WORKFLOW_ENGINE ${{ matrix.wflow_engine }}
 
       - name: Run tests with pytest
-        run: pytest -k 'parsl' --cov=quacc --cov-report=xml
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        if: github.repository == 'Quantum-Accelerators/quacc'
-
-  tests-redun-jobflow-prefect:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-      matrix:
-        python-version: ["3.11"]
-
-    defaults:
-      run:
-        shell: bash -l {0}
-
-    steps:
-      - name: Check out repo
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-          cache: pip
-          cache-dependency-path: pyproject.toml
-
-      - name: Install pip packages
-        run: |
-          pip install -r tests/requirements.txt
-          pip install -r tests/requirements-jobflow.txt
-          pip install -r tests/requirements-redun.txt
-          pip install -r tests/requirements-prefect.txt
-          pip install .[dev]
-
-      - name: Run tests with pytest
-        run: pytest -k 'jobflow or fireworks or redun or prefect' --cov=quacc --cov-report=xml
+        run: pytest -k '${{ matrix.wflow_engine }}}' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
