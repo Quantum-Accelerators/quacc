@@ -4,7 +4,6 @@ from ase.build import bulk
 from maggma.stores import MemoryStore
 
 from quacc import SETTINGS
-from quacc.recipes.emt.core import relax_job, static_job
 from quacc.settings import QuaccSettings
 
 DEFAULT_SETTINGS = SETTINGS.copy()
@@ -38,6 +37,8 @@ def test_file(monkeypatch, tmpdir):
 
 
 def test_store(tmpdir):
+    from quacc.recipes.emt.core import static_job
+
     tmpdir.chdir()
     store = MemoryStore()
     SETTINGS.PRIMARY_STORE = store.to_json()
@@ -46,6 +47,8 @@ def test_store(tmpdir):
 
 
 def test_results_dir(tmpdir):
+    from quacc.recipes.emt.core import relax_job
+
     tmpdir.chdir()
 
     atoms = bulk("Cu")

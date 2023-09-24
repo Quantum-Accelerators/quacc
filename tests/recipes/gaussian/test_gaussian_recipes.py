@@ -1,9 +1,9 @@
 from ase.build import molecule
 
-from quacc.recipes.gaussian.core import relax_job, static_job
-
 
 def test_static_job(tmpdir):
+    from quacc.recipes.gaussian.core import static_job
+
     tmpdir.chdir()
 
     atoms = molecule("H2")
@@ -46,6 +46,8 @@ def test_static_job(tmpdir):
 
 
 def test_relax_job(tmpdir):
+    from quacc.recipes.gaussian.core import relax_job
+
     tmpdir.chdir()
 
     atoms = molecule("H2")

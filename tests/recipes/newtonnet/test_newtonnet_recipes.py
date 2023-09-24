@@ -6,8 +6,6 @@ import pytest
 from ase.build import molecule
 
 from quacc import SETTINGS
-from quacc.recipes.newtonnet.core import freq_job, relax_job, static_job
-from quacc.recipes.newtonnet.ts import irc_job, quasi_irc_job, ts_job
 
 try:
     from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
@@ -42,6 +40,8 @@ def teardown_module():
     reason="NewtonNet and Sella must be installed.",
 )
 def test_static_job(tmpdir):
+    from quacc.recipes.newtonnet.core import static_job
+
     tmpdir.chdir()
 
     atoms = molecule("H2O")
@@ -57,6 +57,8 @@ def test_static_job(tmpdir):
     reason="NewtonNet and Sella must be installed.",
 )
 def test_relax_job(tmpdir):
+    from quacc.recipes.newtonnet.core import relax_job
+
     tmpdir.chdir()
 
     atoms = molecule("H2O")
@@ -74,6 +76,8 @@ def test_relax_job(tmpdir):
     reason="NewtonNet and Sella must be installed.",
 )
 def test_freq_job(tmpdir):
+    from quacc.recipes.newtonnet.core import freq_job
+
     tmpdir.chdir()
     atoms = molecule("H2O")
     output = freq_job(atoms)
@@ -130,6 +134,8 @@ def test_freq_job(tmpdir):
     reason="NewtonNet and Sella must be installed.",
 )
 def test_ts_job_with_default_args(tmpdir):
+    from quacc.recipes.newtonnet.ts import ts_job
+
     tmpdir.chdir()
 
     # Define test inputs
@@ -154,6 +160,8 @@ def test_ts_job_with_default_args(tmpdir):
     reason="NewtonNet and Sella must be installed.",
 )
 def test_ts_job_with_custom_hessian(tmpdir):
+    from quacc.recipes.newtonnet.ts import ts_job
+
     tmpdir.chdir()
     # Define test inputs
     atoms = molecule("H2O")
@@ -181,6 +189,8 @@ def test_ts_job_with_custom_hessian(tmpdir):
     reason="NewtonNet and Sella must be installed.",
 )
 def test_irc_job_with_default_args(tmpdir):
+    from quacc.recipes.newtonnet.ts import irc_job
+
     tmpdir.chdir()
     # Define test inputs
     atoms = molecule("H2O")
@@ -202,6 +212,8 @@ def test_irc_job_with_default_args(tmpdir):
     reason="NewtonNet and Sella must be installed.",
 )
 def test_irc_job_with_custom_fmax(tmpdir):
+    from quacc.recipes.newtonnet.ts import irc_job
+
     tmpdir.chdir()
     # Define test inputs
     atoms = molecule("H2O")
@@ -224,6 +236,8 @@ def test_irc_job_with_custom_fmax(tmpdir):
     reason="NewtonNet and Sella must be installed.",
 )
 def test_irc_job_with_custom_max_steps(tmpdir):
+    from quacc.recipes.newtonnet.ts import irc_job
+
     tmpdir.chdir()
     # Define test inputs
     atoms = molecule("H2O")
@@ -246,6 +260,8 @@ def test_irc_job_with_custom_max_steps(tmpdir):
     reason="NewtonNet and Sella must be installed.",
 )
 def test_irc_job_with_custom_temperature_and_pressure(tmpdir):
+    from quacc.recipes.newtonnet.ts import irc_job
+
     tmpdir.chdir()
     # Define test inputs
     atoms = molecule("H2O")
@@ -271,6 +287,8 @@ def test_irc_job_with_custom_temperature_and_pressure(tmpdir):
     reason="NewtonNet and Sella must be installed.",
 )
 def test_irc_job_with_custom_opt_swaps(tmpdir):
+    from quacc.recipes.newtonnet.ts import irc_job
+
     tmpdir.chdir()
     # Define test inputs
     atoms = molecule("H2O")
@@ -293,6 +311,8 @@ def test_irc_job_with_custom_opt_swaps(tmpdir):
     reason="NewtonNet and Sella must be installed.",
 )
 def test_quasi_irc_job_with_default_args(tmpdir):
+    from quacc.recipes.newtonnet.ts import quasi_irc_job
+
     tmpdir.chdir()
     # Define test inputs
     atoms = molecule("H2O")
@@ -315,6 +335,8 @@ def test_quasi_irc_job_with_default_args(tmpdir):
     reason="NewtonNet and Sella must be installed.",
 )
 def test_quasi_irc_job_with_custom_direction(tmpdir):
+    from quacc.recipes.newtonnet.ts import quasi_irc_job
+
     tmpdir.chdir()
     # Define test inputs
     atoms = molecule("H2O")
@@ -340,6 +362,8 @@ def test_quasi_irc_job_with_custom_direction(tmpdir):
     reason="NewtonNet and Sella must be installed.",
 )
 def test_quasi_irc_job_with_custom_temperature_and_pressure(tmpdir):
+    from quacc.recipes.newtonnet.ts import quasi_irc_job
+
     tmpdir.chdir()
     # Define test inputs
     atoms = molecule("H2O")
@@ -367,6 +391,8 @@ def test_quasi_irc_job_with_custom_temperature_and_pressure(tmpdir):
     reason="NewtonNet and Sella must be installed.",
 )
 def test_quasi_irc_job_with_custom_irc_swaps(tmpdir):
+    from quacc.recipes.newtonnet.ts import quasi_irc_job
+
     tmpdir.chdir()
     # Define test inputs
     atoms = molecule("H2O")

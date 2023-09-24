@@ -1,10 +1,10 @@
 import pytest
 from ase.build import molecule
 
-from quacc.recipes.orca.core import relax_job
-
 
 def test_static_job(tmpdir):
+    from quacc.recipes.orca.core import relax_job
+
     tmpdir.chdir()
 
     atoms = molecule("H2")

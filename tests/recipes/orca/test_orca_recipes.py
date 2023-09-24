@@ -5,8 +5,6 @@ from pathlib import Path
 import pytest
 from ase.build import molecule
 
-from quacc.recipes.orca.core import relax_job, static_job
-
 FILE_DIR = Path(__file__).resolve().parent
 
 
@@ -22,6 +20,8 @@ def teardown_module():
 
 
 def test_static_job(tmpdir):
+    from quacc.recipes.orca.core import static_job
+
     tmpdir.chdir()
 
     atoms = molecule("H2")
@@ -56,6 +56,8 @@ def test_static_job(tmpdir):
 
 @pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
 def test_relax_job(tmpdir):
+    from quacc.recipes.orca.core import relax_job
+
     tmpdir.chdir()
 
     atoms = molecule("H2")
@@ -96,6 +98,8 @@ def test_relax_job(tmpdir):
 
 @pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
 def test_mpi_run(tmpdir, monkeypatch):
+    from quacc.recipes.orca.core import relax_job, static_job
+
     tmpdir.chdir()
     monkeypatch.setenv("PATH", FILE_DIR)
 
