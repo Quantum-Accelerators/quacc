@@ -1,5 +1,4 @@
 import importlib
-import subprocess
 
 import pytest
 
@@ -14,8 +13,7 @@ def setup_fixture():
     importlib.reload(quacc)
     from quacc import SETTINGS
 
-    subprocess.run(["covalent", "start"], check=True)
-    SETTINGS.WORKFLOW_ENGINE = "covalent"
+    SETTINGS.WORKFLOW_ENGINE = "local"
     SETTINGS.RESULTS_DIR = DEFAULT_SETTINGS.RESULTS_DIR
     SETTINGS.SCRATCH_DIR = DEFAULT_SETTINGS.SCRATCH_DIR
 
