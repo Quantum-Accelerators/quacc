@@ -158,6 +158,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
                 )
                 if wflow_engine == "prefect":
                     return decorated_object.submit(*f_args, **f_kwargs)
+                return decorated_object
 
             from quacc import SETTINGS
 
@@ -322,7 +323,6 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
                 from prefect import flow as prefect_flow
 
                 decorated_object = prefect_flow(f, **kwargs)
-                return _inner
             else:
                 decorated_object = f
             return decorated_object
@@ -521,7 +521,6 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
                 from prefect import flow as prefect_flow
 
                 decorated_object = prefect_flow(f, **kwargs)
-                return _inner
             else:
                 decorated_object = f
             return decorated_object
