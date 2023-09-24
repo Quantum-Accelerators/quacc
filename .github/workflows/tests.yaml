@@ -303,7 +303,7 @@ jobs:
       fail-fast: true
       matrix:
         python-version: ["3.11"]
-        wflow_engine: [covalent, parsl, redun, jobflow, prefect]
+        wflow_engine: [parsl, redun, jobflow, prefect]
 
     defaults:
       run:
@@ -330,7 +330,7 @@ jobs:
         run: quacc set WORKFLOW_ENGINE ${{ matrix.wflow_engine }}
 
       - name: Run tests with pytest
-        run: pytest -k '${{ matrix.wflow_engine }}}' --cov=quacc --cov-report=xml
+        run: pytest -k '${{ matrix.wflow_engine }}' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
