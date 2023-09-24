@@ -292,9 +292,9 @@ graph LR
 
     1. The `#!Python @job` decorator will be transformed into `#!Python @jf.job`.
 
-## Stripping the Decorator Altogether
+## Stripping the Decorator from a Job
 
-If you ever want to strip the decorator from a pre-decorated function for any reason, you can call the `.__wrapped__` attribute. This returns the original function.
+If you ever want to strip the decorator from a pre-decorated `#!Python @job` for any reason, you can call the `.__wrapped__` attribute. This returns the original function.
 
 ```python
 from quacc import job

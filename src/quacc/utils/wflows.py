@@ -345,9 +345,6 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
     All `#!Python @subflow`-decorated functions are transformed into their corresponding
     decorator.
 
-    The wrapped (i.e. undecorated) function can also be stripped of its decorator by calling
-    the `#!Python .__wrapped__` attribute.
-
     ```python
     import random
     from quacc import flow, job, subflow
