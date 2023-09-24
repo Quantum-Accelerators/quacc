@@ -107,9 +107,7 @@ def mock_read(self, **kwargs):
 
 
 def test_static_job_v1(monkeypatch, tmpdir):
-    from quacc.recipes.qchem.core import (
-        static_job,
-    )
+    from quacc.recipes.qchem.core import static_job
 
     tmpdir.chdir()
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
@@ -133,9 +131,7 @@ def test_static_job_v1(monkeypatch, tmpdir):
 
 
 def test_static_job_v2(monkeypatch, tmpdir):
-    from quacc.recipes.qchem.core import (
-        static_job,
-    )
+    from quacc.recipes.qchem.core import static_job
 
     tmpdir.chdir()
 
@@ -167,9 +163,7 @@ def test_static_job_v2(monkeypatch, tmpdir):
 
 
 def test_static_job_v3(monkeypatch, tmpdir):
-    from quacc.recipes.qchem.core import (
-        static_job,
-    )
+    from quacc.recipes.qchem.core import static_job
 
     tmpdir.chdir()
 
@@ -200,9 +194,7 @@ def test_static_job_v3(monkeypatch, tmpdir):
 
 
 def test_static_job_v4(monkeypatch, tmpdir):
-    from quacc.recipes.qchem.core import (
-        static_job,
-    )
+    from quacc.recipes.qchem.core import static_job
 
     tmpdir.chdir()
     monkeypatch.setattr(QChem, "read_results", mock_read)
@@ -212,9 +204,7 @@ def test_static_job_v4(monkeypatch, tmpdir):
 
 
 def test_static_job_v5(tmpdir):
-    from quacc.recipes.qchem.core import (
-        static_job,
-    )
+    from quacc.recipes.qchem.core import static_job
 
     tmpdir.chdir()
 
@@ -227,9 +217,7 @@ def test_static_job_v5(tmpdir):
     reason="Sella must be installed.",
 )
 def test_relax_job_v1(monkeypatch, tmpdir):
-    from quacc.recipes.qchem.core import (
-        relax_job,
-    )
+    from quacc.recipes.qchem.core import relax_job
 
     tmpdir.chdir()
 
@@ -266,9 +254,7 @@ def test_relax_job_v1(monkeypatch, tmpdir):
     reason="Sella must be installed.",
 )
 def test_relax_job_v2(monkeypatch, tmpdir):
-    from quacc.recipes.qchem.core import (
-        relax_job,
-    )
+    from quacc.recipes.qchem.core import relax_job
 
     tmpdir.chdir()
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute2)
@@ -304,9 +290,7 @@ def test_relax_job_v2(monkeypatch, tmpdir):
     reason="Sella must be installed.",
 )
 def test_relax_job_v3(monkeypatch, tmpdir):
-    from quacc.recipes.qchem.core import (
-        relax_job,
-    )
+    from quacc.recipes.qchem.core import relax_job
 
     tmpdir.chdir()
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
@@ -338,9 +322,7 @@ def test_relax_job_v3(monkeypatch, tmpdir):
     reason="Sella must be installed.",
 )
 def test_relax_job_v4(tmpdir):
-    from quacc.recipes.qchem.core import (
-        relax_job,
-    )
+    from quacc.recipes.qchem.core import relax_job
 
     tmpdir.chdir()
     with pytest.raises(ValueError):
@@ -348,9 +330,7 @@ def test_relax_job_v4(tmpdir):
 
 
 def test_freq_job_v1(monkeypatch, tmpdir):
-    from quacc.recipes.qchem.core import (
-        freq_job,
-    )
+    from quacc.recipes.qchem.core import freq_job
 
     tmpdir.chdir()
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute5)
@@ -683,9 +663,7 @@ def test_quasi_irc_job(monkeypatch, tmpdir):
 
 
 def test_internal_relax_job(monkeypatch, tmpdir):
-    from quacc.recipes.qchem.core import (
-        internal_relax_job,
-    )
+    from quacc.recipes.qchem.core import internal_relax_job
 
     tmpdir.chdir()
 

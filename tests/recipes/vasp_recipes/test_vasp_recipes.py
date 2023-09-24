@@ -86,9 +86,7 @@ def test_doublerelax_job(tmpdir):
 
 
 def test_slab_static_job(tmpdir):
-    from quacc.recipes.vasp.slabs import (
-        slab_static_job,
-    )
+    from quacc.recipes.vasp.slabs import slab_static_job
 
     tmpdir.chdir()
 
@@ -109,9 +107,7 @@ def test_slab_static_job(tmpdir):
 
 
 def test_slab_relax_job(tmpdir):
-    from quacc.recipes.vasp.slabs import (
-        slab_relax_job,
-    )
+    from quacc.recipes.vasp.slabs import slab_relax_job
 
     tmpdir.chdir()
 
@@ -130,10 +126,7 @@ def test_slab_relax_job(tmpdir):
 
 
 def test_slab_dynamic_jobs(tmpdir):
-    from quacc.recipes.vasp.slabs import (
-        bulk_to_slabs_flow,
-        slab_to_ads_flow,
-    )
+    from quacc.recipes.vasp.slabs import bulk_to_slabs_flow, slab_to_ads_flow
 
     tmpdir.chdir()
 
