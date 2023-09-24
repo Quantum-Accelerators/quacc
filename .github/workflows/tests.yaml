@@ -50,6 +50,81 @@ jobs:
         uses: codecov/codecov-action@v3
         if: github.repository == 'Quantum-Accelerators/quacc'
 
+  tests-covalent:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.10"]
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install pip packages
+        run: |
+          pip install -r tests/requirements.txt -r tests/requirements-covalent.txt
+          pip install .[dev]
+
+      - name: Make quacc config
+        run: quacc set WORKFLOW_ENGINE covalent
+
+      - name: Run tests with pytest
+        run: pytest -k 'covalent' --cov=quacc --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        if: github.repository == 'Quantum-Accelerators/quacc'
+
+  tests-engines:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.11"]
+        wflow_engine: [parsl, redun, jobflow, prefect]
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install pip packages
+        run: |
+          pip install -r tests/requirements.txt -r tests/requirements-${{ matrix.wflow_engine }}.txt
+          pip install .[dev]
+
+      - name: Make quacc config
+        run: quacc set WORKFLOW_ENGINE ${{ matrix.wflow_engine }}
+
+      - name: Run tests with pytest
+        run: pytest -k '${{ matrix.wflow_engine }}' --cov=quacc --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        if: github.repository == 'Quantum-Accelerators/quacc'
+
   tests-psi4:
     strategy:
       fail-fast: true
@@ -130,7 +205,9 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install -r tests/requirements.txt -r tests/requirements-tblite.txt -r tests/requirements-defects.txt
+          pip install -r tests/requirements.txt
+          pip install -r tests/requirements-tblite.txt
+          pip install -r tests/requirements-defects.txt
           pip install .[dev]
 
       - name: Run tests with pytest
@@ -180,81 +257,6 @@ jobs:
 
       - name: Run tests with pytest
         run: pytest -k 'qchem or sella or newtonnet' --cov=quacc --cov-report=xml
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        if: github.repository == 'Quantum-Accelerators/quacc'
-
-  tests-covalent:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-      matrix:
-        python-version: ["3.10"]
-
-    defaults:
-      run:
-        shell: bash -l {0}
-
-    steps:
-      - name: Check out repo
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-          cache: pip
-          cache-dependency-path: pyproject.toml
-
-      - name: Install pip packages
-        run: |
-          pip install -r tests/requirements.txt -r tests/requirements-covalent.txt
-          pip install .[dev]
-
-      - name: Make quacc config
-        run: quacc set WORKFLOW_ENGINE covalent
-
-      - name: Run tests with pytest
-        run: pytest -k 'covalent' --cov=quacc --cov-report=xml
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        if: github.repository == 'Quantum-Accelerators/quacc'
-
-  tests-engines:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-      matrix:
-        python-version: ["3.11"]
-        wflow_engine: [parsl, redun, jobflow, prefect]
-
-    defaults:
-      run:
-        shell: bash -l {0}
-
-    steps:
-      - name: Check out repo
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-          cache: pip
-          cache-dependency-path: pyproject.toml
-
-      - name: Install pip packages
-        run: |
-          pip install -r tests/requirements.txt -r tests/requirements-${{ matrix.wflow_engine }}.txt
-          pip install .[dev]
-
-      - name: Make quacc config
-        run: quacc set WORKFLOW_ENGINE ${{ matrix.wflow_engine }}
-
-      - name: Run tests with pytest
-        run: pytest -k '${{ matrix.wflow_engine }}' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
