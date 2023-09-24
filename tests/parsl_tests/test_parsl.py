@@ -11,22 +11,10 @@ try:
 
 except ImportError:
     parsl = None
-try:
-    import psi4
-except ImportError:
-    psi4 = None
-try:
-    from tblite.ase import TBLite
-except ImportError:
-    TBLite = None
-try:
-    from quacc.recipes.emt.defects import bulk_to_defects_flow
-except ImportError:
-    bulk_to_defects_flow = None
 
 
 def setup_module():
-    if parsl:
+    if SETTINGS.WORKFLOW_ENGINE == "parsl":
         with contextlib.suppress(Exception):
             parsl.load()
 
