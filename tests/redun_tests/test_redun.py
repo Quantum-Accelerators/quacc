@@ -6,6 +6,7 @@ try:
     import redun
 
     redun = redun if SETTINGS.WORKFLOW_ENGINE == "redun" else None
+    scheduler = redun.Scheduler()
 except ImportError:
     redun = None
 
@@ -13,9 +14,6 @@ except ImportError:
 @pytest.mark.skipif(redun is None, reason="Redun not installed")
 def test_redun_decorators(tmpdir):
     tmpdir.chdir()
-    from redun import Scheduler
-
-    scheduler = Scheduler()
 
     @job
     def add(a, b):
@@ -55,12 +53,10 @@ def test_redun_decorators(tmpdir):
 )
 def test_tutorial1a(tmpdir):
     tmpdir.chdir()
+
     from ase.build import bulk
-    from redun import Scheduler
 
     from quacc.recipes.emt.core import relax_job
-
-    scheduler = Scheduler()
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -75,12 +71,10 @@ def test_tutorial1a(tmpdir):
 )
 def test_tutorial1b(tmpdir):
     tmpdir.chdir()
+
     from ase.build import bulk
-    from redun import Scheduler
 
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
-
-    scheduler = Scheduler()
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -97,12 +91,9 @@ def test_tutorial2a(tmpdir):
     tmpdir.chdir()
 
     from ase.build import bulk
-    from redun import Scheduler
 
     from quacc import flow
     from quacc.recipes.emt.core import relax_job, static_job
-
-    scheduler = Scheduler()
 
     @flow
     def workflow(atoms):
@@ -122,13 +113,9 @@ def test_tutorial2a(tmpdir):
 def test_tutorial2b(tmpdir):
     tmpdir.chdir()
     from ase.build import bulk, molecule
-    from redun import Scheduler
 
     from quacc import flow
     from quacc.recipes.emt.core import relax_job
-
-    # Instantiate the scheduler
-    scheduler = Scheduler()
 
     # Define workflow
     @flow
@@ -155,13 +142,10 @@ def test_tutorial2c(tmpdir):
     tmpdir.chdir()
 
     from ase.build import bulk
-    from redun import Scheduler
 
     from quacc import flow
     from quacc.recipes.emt.core import relax_job
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
-
-    scheduler = Scheduler()
 
     # Define the workflow
     @flow

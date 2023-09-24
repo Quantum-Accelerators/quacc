@@ -12,11 +12,14 @@ except ImportError:
     prefect = None
 
 
+@pytest.mark.skipif(
+    prefect is None,
+    reason="This test requires Prefect",
+)
 @pytest.fixture(autouse=True, scope="session")
 def prefect_test_fixture():
-    if prefect:
-        with prefect_test_harness():
-            yield
+    with prefect_test_harness():
+        yield
 
 
 @pytest.mark.skipif(
