@@ -179,6 +179,10 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
                 return _inner
             else:
                 decorated_object = f
+
+            if not hasattr(decorated_object, "__wrapped__"):
+                decorated_object.__wrapped__ = _func
+
             return decorated_object
 
         return wrapper(func)
