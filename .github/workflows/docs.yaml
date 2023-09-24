@@ -30,7 +30,9 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Install pip packages
-        run: pip install .[docs] -r tests/requirements.txt
+        run: |
+          pip install -r tests/requirements.txt
+          pip install .[docs]
 
       - name: Build docs
         run: mkdocs build
