@@ -1,4 +1,3 @@
-import contextlib
 import importlib
 
 import pytest
@@ -12,12 +11,8 @@ DEFAULT_SETTINGS = SETTINGS.copy()
 @pytest.fixture(autouse=True)
 def setup_fixture():
     importlib.reload(quacc)
-    import parsl
 
     from quacc import SETTINGS
-
-    with contextlib.suppress(Exception):
-        parsl.load()
 
     SETTINGS.WORKFLOW_ENGINE = "parsl"
     SETTINGS.RESULTS_DIR = DEFAULT_SETTINGS.RESULTS_DIR
