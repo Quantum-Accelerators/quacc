@@ -1,8 +1,7 @@
-import contextlib
 import importlib
-import subprocess
 
 import pytest
+from parsl.errors import ConfigurationError
 
 
 @pytest.fixture(autouse=True)
@@ -17,9 +16,11 @@ def reload_quacc(default_settings):
 
 @pytest.fixture(autouse=True)
 def start_server():
-    subprocess.run(["covalent", "start"], check=True)
+    from parsl.dataflow.dflow import DataFlowKernelLoader
 
-    import parsl
+    try:
+        DataFlowKernelLoader.dfk()
+    except ConfigurationError:
+        import parsl
 
-    with contextlib.suppress(Exception):
         parsl.load()
