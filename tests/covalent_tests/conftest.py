@@ -6,7 +6,7 @@ import requests
 
 
 @pytest.fixture(autouse=True)
-def reload_quacc(default_settings):
+def reload_covalent_quacc(default_settings):
     importlib.reload(importlib.import_module("quacc"))
     from quacc import SETTINGS
 
@@ -16,7 +16,7 @@ def reload_quacc(default_settings):
 
 
 @pytest.fixture(autouse=True)
-def start_server():
+def start_covalent_server():
     import covalent as ct
 
     address = f"http://{ct.get_config('dispatcher.address')}:{str(ct.get_config('dispatcher.port'))}"

@@ -4,7 +4,7 @@ import pytest
 
 
 @pytest.fixture(autouse=True)
-def reload_quacc(default_settings):
+def reload_jobflow_quacc(default_settings):
     importlib.reload(importlib.import_module("quacc"))
     from quacc import SETTINGS
 
