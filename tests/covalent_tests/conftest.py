@@ -20,9 +20,6 @@ def setup_fixture():
 
 @pytest.fixture(autouse=True)
 def teardown_fixture():
-    importlib.reload(quacc)
-    from quacc import SETTINGS
-
     SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
     SETTINGS.RESULTS_DIR = DEFAULT_SETTINGS.RESULTS_DIR
     SETTINGS.SCRATCH_DIR = DEFAULT_SETTINGS.SCRATCH_DIR
