@@ -2,6 +2,7 @@ import importlib
 import subprocess
 
 import pytest
+import requests
 
 
 @pytest.fixture(autouse=True)
@@ -16,4 +17,10 @@ def reload_quacc(default_settings):
 
 @pytest.fixture(autouse=True)
 def start_server():
-    subprocess.run(["covalent", "start"], check=True)
+    import covalent as ct
+
+    address = f"http://{ct.get_config('dispatcher.address')}:{str(ct.get_config('dispatcher.port'))}"
+    try:
+        requests.session().get(address)
+    except requests.exceptions.ConnectionError:
+        subprocess.run(["covalent", "start"], check=True)
