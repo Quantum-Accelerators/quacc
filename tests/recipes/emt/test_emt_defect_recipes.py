@@ -4,21 +4,20 @@ import pytest
 from ase.build import bulk
 
 try:
-    from quacc.recipes.emt.defects import bulk_to_defects_flow
+    from pymatgen.analysis import defects
 except ImportError:
-    bulk_to_defects_flow = None
+    defects = None
 
 
-@pytest.mark.skipif(bulk_to_defects_flow is None, reason="requires quacc[defects]")
+@pytest.mark.skipif(defects is None, reason="pymatgen-analysis-defects needed")
 def test_bulk_to_defects_flow(tmpdir):
-    os.chdir(tmpdir)
+    from quacc.recipes.emt.defects import bulk_to_defects_flow
 
+    tmpdir.chdir()
     atoms = bulk("Cu")
     output = bulk_to_defects_flow(atoms, defect_relax_kwargs={"opt_swaps": {"fmax": 5}})
     assert len(output) == 1
     assert len(output[0]["atoms"]) == 107
-
-    os.chdir(tmpdir)
 
     atoms = bulk("Cu")
     output = bulk_to_defects_flow(
