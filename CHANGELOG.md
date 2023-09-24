@@ -6,8 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.2.8]
 
+###
+
+- Decorators are now applied at import time rather than at function-call time.
+
 ### Fixed
 
+- Fixed compatability with FireWorks.
 - Fixed I/O issue on Windows and NFS filesystems where Sella optimizations would crash.
 
 ## [0.2.7]

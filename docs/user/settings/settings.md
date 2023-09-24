@@ -42,3 +42,7 @@ from quacc import SETTINGS
 
 SETTINGS.CREATE_UNIQUE_WORKDIR = True
 ```
+
+!!! Warning
+
+    This approach should not be used with the `WORKFLOW_ENGINE` variable.

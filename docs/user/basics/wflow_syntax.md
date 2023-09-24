@@ -125,7 +125,7 @@ graph LR
         return mult(add(a, b), c)
 
 
-    dispatch_id = workflow(1, 2, 3)  # (3)!
+    dispatch_id = ct.dispatch(workflow)(1, 2, 3)
     result = ct.get_result(dispatch_id, wait=True)
     print(result)
     ```
@@ -134,7 +134,7 @@ graph LR
 
     2. The `#!Python @flow` decorator will be transformed into `#!Python @ct.lattice`.
 
-    3. When using the `#!Python @flow` decorator, you do not need to call `ct.dispatch()`. It will be done automatically.
+    3. This commmand will dispatch the workflow to the Covalent server.
 
 === "Parsl ⭐"
 
@@ -292,43 +292,9 @@ graph LR
 
     1. The `#!Python @job` decorator will be transformed into `#!Python @jf.job`.
 
-## Modifying Decorator Arguments
+## Stripping the Decorator from a Job
 
-Several workflow engines make it possible to pass keyword arguments to the function decorator. We describe how to do that in quacc below.
-
-### Option 1: In the Decorator
-
-The easiest way is to simply pass the desired keyword argument(s) to the decorator when it is defined.
-
-```python
-from quacc import job
-
-
-@job(executor="local")
-def add(a, b):
-    return a + b
-
-add(1, 2)
-```
-
-### Option 2: In the Function Call
-
-If you have a pre-decorated function (e.g. perhaps one that you are importing), it may not be possible to pass the desired keyword argument(s) to the decorator itself. In this case, you can take advantage of the fact that the wrapped function gets a new keyword argument, `decorator_kwargs`, that can be used to modify the workflow engine decorator keyword arguments on-the-fly.
-
-```python
-from quacc import job
-
-
-@job
-def add(a, b):
-    return a + b
-
-add(1, 2, decorator_kwargs={"executor": "local"})
-```
-
-### Stripping the Decorator Altogether
-
-If you ever want to strip the decorator from a pre-decorated function for any reason, you can call the `.__wrapped__` attribute. This returns the original function.
+If you ever want to strip the decorator from a pre-decorated `#!Python @job` for any reason, you can call the `.__wrapped__` attribute. This returns the original function.
 
 ```python
 from quacc import job
