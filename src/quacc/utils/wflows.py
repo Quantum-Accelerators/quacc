@@ -187,9 +187,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
 
         return wrapper(func)
 
-    if _func is None:
-        return decorator
-    return decorator(_func)
+    return decorator if _func is None else decorator(_func)
 
 
 def flow(_func: Callable | None = None, **kwargs) -> Flow:
@@ -326,9 +324,7 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
 
         return wrapper(func)
 
-    if _func is None:
-        return decorator
-    return decorator(_func)
+    return decorator if _func is None else decorator(_func)
 
 
 def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
@@ -524,9 +520,7 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
 
         return wrapper(func)
 
-    if _func is None:
-        return decorator
-    return decorator(_func)
+    return decorator if _func is None else decorator(_func)
 
 
 @requires(prefect_deps and dask_deps, "Need quacc[prefect] dependencies")
