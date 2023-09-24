@@ -4,7 +4,6 @@ from ase.build import molecule
 try:
     import psi4
 
-    raise ValueError(psi4)
 except ImportError:
     psi4 = None
 
