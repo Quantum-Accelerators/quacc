@@ -208,8 +208,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install -r tests/requirements.txt
-          pip install -r tests/requirements-tblite.txt
-          pip install -r tests/requirements-defects.txt
+          pip install -r tests/requirements-tblite-dftbplus-defects.txt
           pip install .[dev]
 
       - name: Run tests with pytest
@@ -255,8 +254,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install -r tests/requirements.txt
-          pip install -r tests/requirements-optimizers.txt
-          pip install -r tests/requirements-newtonnet.txt
+          pip install -r tests/requirements-qchem-sella-newtonnet.txt
           pip install .[dev]
 
       - name: Run tests with pytest
