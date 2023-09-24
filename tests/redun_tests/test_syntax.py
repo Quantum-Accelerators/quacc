@@ -1,6 +1,6 @@
 import pytest
 
-from quacc import SETTINGS, flow, job, subflow
+from quacc import flow, job, subflow
 
 try:
     import redun

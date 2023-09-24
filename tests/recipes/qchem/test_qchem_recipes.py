@@ -602,7 +602,7 @@ def test_irc_job_v2(tmpdir):
     reason="Sella must be installed.",
 )
 def test_quasi_irc_job(monkeypatch, tmpdir):
-    from quacc.recipes.qchem.ts import irc_job
+    from quacc.recipes.qchem.ts import quasi_irc_job
 
     tmpdir.chdir()
 

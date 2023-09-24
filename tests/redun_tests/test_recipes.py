@@ -1,7 +1,5 @@
 import pytest
 
-from quacc import SETTINGS
-
 try:
     import redun
 
