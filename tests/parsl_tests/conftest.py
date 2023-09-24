@@ -1,7 +1,6 @@
 import importlib
 
 import pytest
-from parsl.errors import ConfigurationError
 
 
 @pytest.fixture(autouse=True)
@@ -17,6 +16,7 @@ def reload_quacc(default_settings):
 @pytest.fixture(autouse=True)
 def start_server():
     from parsl.dataflow.dflow import DataFlowKernelLoader
+    from parsl.errors import ConfigurationError
 
     try:
         DataFlowKernelLoader.dfk()
