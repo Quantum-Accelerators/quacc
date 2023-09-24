@@ -10,4 +10,5 @@ def test_results_to_db():
     output = static_job(atoms)
     store = MemoryStore(collection_name="db3")
     results_to_db(store, output)
-    assert store.count() == 1
+    with store:
+        assert store.count() == 1

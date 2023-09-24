@@ -22,7 +22,8 @@ def test_covalent_to_db():
 
     store = MemoryStore(collection_name="db1")
     covalent_to_db(store)
-    count1 = store.count()
+    with store:
+        count1 = store.count()
     assert count1 > 0
 
     with pytest.warns(UserWarning):
@@ -31,7 +32,8 @@ def test_covalent_to_db():
 
     store = MemoryStore(collection_name="db2")
     covalent_to_db(store, results_dir=ct.get_config()["dispatcher"]["results_dir"])
-    count2 = store.count()
+    with store:
+        count2 = store.count()
     assert count2 == count1
 
     with pytest.raises(ValueError):
