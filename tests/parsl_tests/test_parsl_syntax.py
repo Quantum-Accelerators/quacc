@@ -7,7 +7,6 @@ from quacc import SETTINGS, flow, job, subflow
 try:
     import parsl
 
-    parsl = parsl if SETTINGS.WORKFLOW_ENGINE == "parsl" else None
 
 except ImportError:
     parsl = None

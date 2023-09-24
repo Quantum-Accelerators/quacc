@@ -1,13 +1,12 @@
 import pytest
 from ase.build import bulk
 
-from quacc import SETTINGS, flow
+from quacc import flow
 from quacc.recipes.emt.core import relax_job, static_job
 
 try:
     import covalent as ct
 
-    ct = ct if SETTINGS.WORKFLOW_ENGINE == "covalent" else None
 except ImportError:
     ct = None
 

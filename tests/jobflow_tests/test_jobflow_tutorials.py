@@ -1,12 +1,9 @@
 import pytest
 from maggma.stores import MemoryStore
 
-from quacc import SETTINGS
-
 try:
     import jobflow as jf
 
-    jf = jf if SETTINGS.WORKFLOW_ENGINE == "jobflow" else None
 except ImportError:
     jf = None
 

@@ -1,12 +1,11 @@
 import pytest
 
-from quacc import SETTINGS, flow, job, subflow
+from quacc import flow, job, subflow
 
 try:
     import prefect
     from prefect.testing.utilities import prefect_test_harness
 
-    prefect = prefect if SETTINGS.WORKFLOW_ENGINE == "prefect" else None
 
 except ImportError:
     prefect = None
