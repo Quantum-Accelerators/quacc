@@ -1,7 +1,6 @@
 """Init data for quacc"""
 from __future__ import annotations
 
-import warnings
 from importlib.metadata import version
 
 from ase import Atoms
