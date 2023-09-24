@@ -5,7 +5,6 @@ import pytest
 from ase.build import molecule
 
 from quacc import SETTINGS
-from quacc.recipes.tblite.core import freq_job, relax_job, static_job
 
 try:
     from tblite.ase import TBLite
@@ -20,6 +19,8 @@ DEFAULT_SETTINGS = SETTINGS.copy()
     reason="tblite must be installed.",
 )
 def test_static_job(tmpdir):
+    from quacc.recipes.tblite.core import freq_job, relax_job, static_job
+
     tmpdir.chdir()
 
     atoms = molecule("H2O")
@@ -41,6 +42,8 @@ def test_static_job(tmpdir):
     reason="tblite must be installed.",
 )
 def test_relax_job(tmpdir):
+    from quacc.recipes.tblite.core import freq_job, relax_job, static_job
+
     tmpdir.chdir()
 
     atoms = molecule("H2O")
@@ -58,6 +61,8 @@ def test_relax_job(tmpdir):
     reason="tblite must be installed.",
 )
 def test_freq_job(tmpdir):
+    from quacc.recipes.tblite.core import freq_job, relax_job, static_job
+
     tmpdir.chdir()
 
     atoms = molecule("H2O")
@@ -160,6 +165,8 @@ def test_freq_job(tmpdir):
     reason="tblite must be installed.",
 )
 def test_unique_workdir(tmpdir):
+    from quacc.recipes.tblite.core import freq_job, relax_job, static_job
+
     SETTINGS.CREATE_UNIQUE_WORKDIR = True
     test_static_job(tmpdir)
     test_relax_job(tmpdir)

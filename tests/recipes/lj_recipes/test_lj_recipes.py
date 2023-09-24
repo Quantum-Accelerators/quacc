@@ -2,10 +2,10 @@ import numpy as np
 import pytest
 from ase.build import molecule
 
-from quacc.recipes.lj.core import freq_job, relax_job, static_job
-
 
 def test_static_job(tmpdir):
+    from quacc.recipes.lj.core import freq_job, relax_job, static_job
+
     tmpdir.chdir()
 
     atoms = molecule("H2O")
@@ -28,6 +28,8 @@ def test_static_job(tmpdir):
 
 
 def test_relax_job(tmpdir):
+    from quacc.recipes.lj.core import freq_job, relax_job, static_job
+
     tmpdir.chdir()
 
     atoms = molecule("H2O")
@@ -54,6 +56,8 @@ def test_relax_job(tmpdir):
 
 
 def test_freq_job(tmpdir):
+    from quacc.recipes.lj.core import freq_job, relax_job, static_job
+
     tmpdir.chdir()
 
     atoms = molecule("H2O")
