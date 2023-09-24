@@ -13,12 +13,16 @@ concurrency:
 
 jobs:
   tests-base:
-    runs-on: ubuntu-latest
     strategy:
       fail-fast: true
       matrix:
         python-version: ["3.9", "3.11"]
+        os: [ubuntu-latest, windows-latest]
+        exclude:
+          - os: windows-latest
+            python-version: "3.9"
 
+    runs-on: ${{ matrix.os }}
     defaults:
       run:
         shell: bash -l {0}
@@ -37,7 +41,6 @@ jobs:
       - name: Install pip packages
         run: |
           pip install -r tests/requirements.txt
-          pip install -r tests/requirements-tblite.txt
           pip install .[dev]
 
       - name: Run tests with pytest
@@ -92,7 +95,7 @@ jobs:
         uses: codecov/codecov-action@v3
         if: github.repository == 'Quantum-Accelerators/quacc'
 
-  tests-dftbplus:
+  tests-tblite-dftbplus:
     strategy:
       fail-fast: true
       matrix:
@@ -125,6 +128,7 @@ jobs:
 
       - name: Install pip packages
         run: |
+          pip install -r tests/requirements-tblite.txt
           pip install -r tests/requirements.txt
           pip install .[dev]
 
@@ -331,40 +335,6 @@ jobs:
 
       - name: Run tests with pytest
         run: pytest -k '${{ matrix.wflow_engine }}' --cov=quacc --cov-report=xml
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        if: github.repository == 'Quantum-Accelerators/quacc'
-
-  tests-base-windows:
-    runs-on: windows-latest
-    strategy:
-      fail-fast: true
-      matrix:
-        python-version: ["3.11"]
-
-    defaults:
-      run:
-        shell: bash -l {0}
-
-    steps:
-      - name: Check out repo
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-          cache: pip
-          cache-dependency-path: pyproject.toml
-
-      - name: Install pip packages
-        run: |
-          pip install -r tests/requirements.txt
-          pip install .[dev]
-
-      - name: Run tests with pytest
-        run: pytest --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
