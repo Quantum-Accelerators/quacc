@@ -128,72 +128,68 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
         The @job-decorated function.
     """
 
-    @functools.wraps(_func)
-    def _inner(*f_args, decorator_kwargs: dict | None = None, **f_kwargs) -> Any:
-        """
-        This function is used for handling workflow engines that require some action
-        beyond just decoration.
+    def decorator(func) -> Callable:
+        @functools.wraps(func)
+        def wrapper(f) -> Callable:
+            @functools.wraps(f)
+            def _inner(
+                *f_args, decorator_kwargs: dict | None = None, **f_kwargs
+            ) -> Any:
+                """
+                This inner function is used for handling workflow engines that require some
+                action beyond just decoration.
 
-        Parameters
-        ----------
-        *f_args
-            Positional arguments to the function, if any.
-        decorator_kwargs
-            Keyword arguments to pass to the workflow engine decorator.
-        **f_kwargs
-            Keyword arguments to the function, if any.
+                Parameters
+                ----------
+                *f_args
+                    Positional arguments to the function, if any.
+                decorator_kwargs
+                    Keyword arguments to pass to the workflow engine decorator.
+                **f_kwargs
+                    Keyword arguments to the function, if any.
 
-        Returns
-        -------
-        Any
-            The output of the @job-decorated function.
-        """
-        decorator_kwargs = decorator_kwargs if decorator_kwargs is not None else kwargs
+                Returns
+                -------
+                Any
+                    The output of the @job-decorated function.
+                """
+                decorator_kwargs = (
+                    decorator_kwargs if decorator_kwargs is not None else kwargs
+                )
+                if wflow_engine == "prefect":
+                    return decorated_object.submit(*f_args, **f_kwargs)
 
-        if WFLOW_ENGINE == "prefect":
-            from prefect import task as prefect_task
+            from quacc import SETTINGS
 
-            decorated = prefect_task(_func, **decorator_kwargs)
-            return decorated.submit(*f_args, **f_kwargs)
+            wflow_engine = SETTINGS.WORKFLOW_ENGINE
+            if wflow_engine == "covalent":
+                import covalent as ct
 
-        return decorated(*f_args, **f_kwargs)
+                decorated_object = ct.electron(f, **kwargs)
+            elif wflow_engine == "parsl":
+                from parsl import python_app
 
-    from quacc import SETTINGS
+                decorated_object = python_app(f, **kwargs)
+            elif wflow_engine == "jobflow":
+                import jobflow as jf
 
-    WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE
+                decorated_object = jf.job(f, **kwargs)
+            elif wflow_engine == "redun":
+                from redun import task as redun_task
+
+                decorated_object = redun_task(f, **kwargs)
+            elif wflow_engine == "prefect":
+                from prefect import task as prefect_task
+
+                decorated_object = prefect_task(f, **kwargs)
+                return _inner
+            return decorated_object
+
+        return wrapper(func)
 
     if _func is None:
-
-        def decorator(_f):
-            return job(_f, **kwargs)
-
         return decorator
-
-    if WFLOW_ENGINE == "covalent":
-        import covalent as ct
-
-        decorated = ct.electron(_func, **kwargs)
-    elif WFLOW_ENGINE == "jobflow":
-        from jobflow import job as jf_job
-
-        decorated = jf_job(_func, **kwargs)
-    elif WFLOW_ENGINE == "parsl":
-        from parsl import python_app
-
-        decorated = python_app(_func, **kwargs)
-    elif WFLOW_ENGINE == "redun":
-        from redun import task
-
-        decorated = task(_func, **kwargs)
-    elif WFLOW_ENGINE == "prefect":
-        return _inner
-    else:
-        decorated = _func
-
-    if not hasattr(decorated, "__wrapped__"):
-        decorated.__wrapped__ = _func
-
-    return decorated
+    return decorator(_func)
 
 
 def flow(_func: Callable | None = None, **kwargs) -> Flow:
