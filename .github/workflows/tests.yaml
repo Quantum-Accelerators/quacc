@@ -39,7 +39,7 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Install pip packages
-        run: pip install .[dev] -r tests/requirements.txt
+        run: pip install -r tests/requirements.txt .[dev]
 
       - name: Run tests with pytest
         run: pytest --cov=quacc --cov-report=xml
@@ -82,7 +82,7 @@ jobs:
           conda install psi4 python=3.11 -c conda-forge/label/libint_dev -c conda-forge --solver libmamba
 
       - name: Install pip packages
-        run: pip install .[dev] -r tests/requirements.txt
+        run: pip install -r tests/requirements.txt .[dev]
 
       - name: Run tests with pytest
         run: pytest -k 'psi4' --cov=quacc --cov-report=xml
@@ -125,7 +125,7 @@ jobs:
           conda install -c conda-forge dftbplus
 
       - name: Install pip packages
-        run: pip install .[dev] -r tests/requirements.txt -r tests/requirements-tblite.txt
+        run: pip install -r tests/requirements.txt -r tests/requirements-tblite.txt .[dev]
 
       - name: Run tests with pytest
         run: pytest -k 'dftb' --cov=quacc --cov-report=xml
@@ -163,7 +163,7 @@ jobs:
           activate-environment: quacc-env
 
       - name: Install pip packages
-        run: pip install .[dev] -r tests/requirements.txt -r tests/requirements-newtonnet.txt -r tests/requirements-optimizers.txt
+        run: pip install -r tests/requirements.txt -r tests/requirements-newtonnet.txt -r tests/requirements-optimizers.txt .[dev]
 
       - name: Run tests with pytest
         run: pytest -k 'newtonnet' --cov=quacc --cov-report=xml
@@ -201,7 +201,7 @@ jobs:
           activate-environment: quacc-env
 
       - name: Install pip packages
-        run: pip install .[dev] -r tests/requirements.txt -r tests/requirements-optimizers.txt
+        run: pip install -r tests/requirements.txt -r tests/requirements-optimizers.txt .[dev]
 
       - name: Install conda packages
         run: |
@@ -238,7 +238,7 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Install pip packages
-        run: pip install .[dev] -r tests/requirements.txt -r tests/requirements-defects.txt
+        run: pip install -r tests/requirements.txt -r tests/requirements-defects.txt  .[dev]
 
       - name: Run tests with pytest
         run: pytest -k 'defects' --cov=quacc --cov-report=xml
@@ -271,7 +271,7 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install .[dev] -r tests/requirements.txt -r tests/requirements-covalent.txt
+          pip install -r tests/requirements.txt -r tests/requirements-covalent.txt .[dev]
 
       - name: Make quacc config
         run: quacc set WORKFLOW_ENGINE covalent
@@ -307,7 +307,7 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Install pip packages
-        run: pip install .[dev] -r tests/requirements.txt -r tests/requirements-${{ matrix.wflow_engine }}.txt
+        run: pip install -r tests/requirements.txt -r tests/requirements-${{ matrix.wflow_engine }}.txt .[dev]
 
       - name: Make quacc config
         run: quacc set WORKFLOW_ENGINE ${{ matrix.wflow_engine }}
