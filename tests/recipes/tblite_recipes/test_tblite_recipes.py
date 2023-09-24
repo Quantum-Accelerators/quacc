@@ -19,7 +19,7 @@ DEFAULT_SETTINGS = SETTINGS.copy()
     reason="tblite must be installed.",
 )
 def test_static_job(tmpdir):
-    from quacc.recipes.tblite.core import freq_job, relax_job, static_job
+    from quacc.recipes.tblite.core import static_job
 
     tmpdir.chdir()
 
@@ -42,7 +42,7 @@ def test_static_job(tmpdir):
     reason="tblite must be installed.",
 )
 def test_relax_job(tmpdir):
-    from quacc.recipes.tblite.core import freq_job, relax_job, static_job
+    from quacc.recipes.tblite.core import relax_job
 
     tmpdir.chdir()
 
@@ -61,7 +61,7 @@ def test_relax_job(tmpdir):
     reason="tblite must be installed.",
 )
 def test_freq_job(tmpdir):
-    from quacc.recipes.tblite.core import freq_job, relax_job, static_job
+    from quacc.recipes.tblite.core import freq_job
 
     tmpdir.chdir()
 
@@ -165,7 +165,7 @@ def test_freq_job(tmpdir):
     reason="tblite must be installed.",
 )
 def test_unique_workdir(tmpdir):
-    from quacc.recipes.tblite.core import freq_job, relax_job, static_job
+    pass
 
     SETTINGS.CREATE_UNIQUE_WORKDIR = True
     test_static_job(tmpdir)

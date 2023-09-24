@@ -15,7 +15,7 @@ DEFAULT_SETTINGS = SETTINGS.copy()
     reason="DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
 )
 def test_static_job(tmpdir):
-    from quacc.recipes.dftb.core import relax_job, static_job
+    from quacc.recipes.dftb.core import static_job
 
     tmpdir.chdir()
 
@@ -59,7 +59,7 @@ def test_static_job(tmpdir):
     reason="DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
 )
 def test_relax_job(tmpdir):
-    from quacc.recipes.dftb.core import relax_job, static_job
+    from quacc.recipes.dftb.core import relax_job
 
     tmpdir.chdir()
 
@@ -127,7 +127,7 @@ def test_relax_job(tmpdir):
     reason="DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
 )
 def test_unique_workdir(tmpdir):
-    from quacc.recipes.dftb.core import relax_job, static_job
+    pass
 
     SETTINGS.CREATE_UNIQUE_WORKDIR = True
     test_static_job(tmpdir)

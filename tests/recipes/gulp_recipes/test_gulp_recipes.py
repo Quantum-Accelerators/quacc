@@ -2,7 +2,7 @@ from ase.build import bulk, molecule
 
 
 def test_static_job(tmpdir):
-    from quacc.recipes.gulp.core import relax_job, static_job
+    from quacc.recipes.gulp.core import static_job
 
     tmpdir.chdir()
 
@@ -59,7 +59,7 @@ def test_static_job(tmpdir):
 
 
 def test_relax_job(tmpdir):
-    from quacc.recipes.gulp.core import relax_job, static_job
+    from quacc.recipes.gulp.core import relax_job
 
     tmpdir.chdir()
 

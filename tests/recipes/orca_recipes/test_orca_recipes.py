@@ -20,7 +20,7 @@ def teardown_module():
 
 
 def test_static_job(tmpdir):
-    from quacc.recipes.orca.core import relax_job, static_job
+    from quacc.recipes.orca.core import static_job
 
     tmpdir.chdir()
 
@@ -56,7 +56,7 @@ def test_static_job(tmpdir):
 
 @pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
 def test_relax_job(tmpdir):
-    from quacc.recipes.orca.core import relax_job, static_job
+    from quacc.recipes.orca.core import relax_job
 
     tmpdir.chdir()
 

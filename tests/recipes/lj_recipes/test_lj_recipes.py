@@ -4,7 +4,7 @@ from ase.build import molecule
 
 
 def test_static_job(tmpdir):
-    from quacc.recipes.lj.core import freq_job, relax_job, static_job
+    from quacc.recipes.lj.core import static_job
 
     tmpdir.chdir()
 
@@ -28,7 +28,7 @@ def test_static_job(tmpdir):
 
 
 def test_relax_job(tmpdir):
-    from quacc.recipes.lj.core import freq_job, relax_job, static_job
+    from quacc.recipes.lj.core import relax_job
 
     tmpdir.chdir()
 
@@ -56,7 +56,7 @@ def test_relax_job(tmpdir):
 
 
 def test_freq_job(tmpdir):
-    from quacc.recipes.lj.core import freq_job, relax_job, static_job
+    from quacc.recipes.lj.core import freq_job, relax_job
 
     tmpdir.chdir()
 

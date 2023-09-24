@@ -3,15 +3,7 @@ from ase.build import bulk, molecule
 
 
 def test_static_job(tmpdir):
-    from quacc.recipes.vasp.core import double_relax_job, relax_job, static_job
-    from quacc.recipes.vasp.mp import mp_prerelax_job, mp_relax_flow, mp_relax_job
-    from quacc.recipes.vasp.qmof import qmof_relax_job
-    from quacc.recipes.vasp.slabs import (
-        bulk_to_slabs_flow,
-        slab_relax_job,
-        slab_static_job,
-        slab_to_ads_flow,
-    )
+    from quacc.recipes.vasp.core import static_job
 
     tmpdir.chdir()
 
@@ -40,15 +32,7 @@ def test_static_job(tmpdir):
 
 
 def test_relax_job(tmpdir):
-    from quacc.recipes.vasp.core import double_relax_job, relax_job, static_job
-    from quacc.recipes.vasp.mp import mp_prerelax_job, mp_relax_flow, mp_relax_job
-    from quacc.recipes.vasp.qmof import qmof_relax_job
-    from quacc.recipes.vasp.slabs import (
-        bulk_to_slabs_flow,
-        slab_relax_job,
-        slab_static_job,
-        slab_to_ads_flow,
-    )
+    from quacc.recipes.vasp.core import relax_job
 
     tmpdir.chdir()
 
@@ -70,15 +54,7 @@ def test_relax_job(tmpdir):
 
 
 def test_doublerelax_job(tmpdir):
-    from quacc.recipes.vasp.core import double_relax_job, relax_job, static_job
-    from quacc.recipes.vasp.mp import mp_prerelax_job, mp_relax_flow, mp_relax_job
-    from quacc.recipes.vasp.qmof import qmof_relax_job
-    from quacc.recipes.vasp.slabs import (
-        bulk_to_slabs_flow,
-        slab_relax_job,
-        slab_static_job,
-        slab_to_ads_flow,
-    )
+    from quacc.recipes.vasp.core import double_relax_job
 
     tmpdir.chdir()
 
@@ -110,14 +86,8 @@ def test_doublerelax_job(tmpdir):
 
 
 def test_slab_static_job(tmpdir):
-    from quacc.recipes.vasp.core import double_relax_job, relax_job, static_job
-    from quacc.recipes.vasp.mp import mp_prerelax_job, mp_relax_flow, mp_relax_job
-    from quacc.recipes.vasp.qmof import qmof_relax_job
     from quacc.recipes.vasp.slabs import (
-        bulk_to_slabs_flow,
-        slab_relax_job,
         slab_static_job,
-        slab_to_ads_flow,
     )
 
     tmpdir.chdir()
@@ -139,14 +109,8 @@ def test_slab_static_job(tmpdir):
 
 
 def test_slab_relax_job(tmpdir):
-    from quacc.recipes.vasp.core import double_relax_job, relax_job, static_job
-    from quacc.recipes.vasp.mp import mp_prerelax_job, mp_relax_flow, mp_relax_job
-    from quacc.recipes.vasp.qmof import qmof_relax_job
     from quacc.recipes.vasp.slabs import (
-        bulk_to_slabs_flow,
         slab_relax_job,
-        slab_static_job,
-        slab_to_ads_flow,
     )
 
     tmpdir.chdir()
@@ -166,13 +130,8 @@ def test_slab_relax_job(tmpdir):
 
 
 def test_slab_dynamic_jobs(tmpdir):
-    from quacc.recipes.vasp.core import double_relax_job, relax_job, static_job
-    from quacc.recipes.vasp.mp import mp_prerelax_job, mp_relax_flow, mp_relax_job
-    from quacc.recipes.vasp.qmof import qmof_relax_job
     from quacc.recipes.vasp.slabs import (
         bulk_to_slabs_flow,
-        slab_relax_job,
-        slab_static_job,
         slab_to_ads_flow,
     )
 
@@ -269,15 +228,7 @@ def test_slab_dynamic_jobs(tmpdir):
 
 
 def test_qmof(tmpdir):
-    from quacc.recipes.vasp.core import double_relax_job, relax_job, static_job
-    from quacc.recipes.vasp.mp import mp_prerelax_job, mp_relax_flow, mp_relax_job
     from quacc.recipes.vasp.qmof import qmof_relax_job
-    from quacc.recipes.vasp.slabs import (
-        bulk_to_slabs_flow,
-        slab_relax_job,
-        slab_static_job,
-        slab_to_ads_flow,
-    )
 
     tmpdir.chdir()
 
@@ -351,15 +302,7 @@ def test_qmof(tmpdir):
 
 
 def test_mp(tmpdir):
-    from quacc.recipes.vasp.core import double_relax_job, relax_job, static_job
     from quacc.recipes.vasp.mp import mp_prerelax_job, mp_relax_flow, mp_relax_job
-    from quacc.recipes.vasp.qmof import qmof_relax_job
-    from quacc.recipes.vasp.slabs import (
-        bulk_to_slabs_flow,
-        slab_relax_job,
-        slab_static_job,
-        slab_to_ads_flow,
-    )
 
     tmpdir.chdir()
 

@@ -12,7 +12,7 @@ has_gulp = bool(
 
 @pytest.mark.skipif(has_gulp is False, reason="GULP not installed")
 def test_static_job(tmpdir):
-    from quacc.recipes.gulp.core import relax_job, static_job
+    from quacc.recipes.gulp.core import static_job
 
     tmpdir.chdir()
 
@@ -70,7 +70,7 @@ def test_static_job(tmpdir):
 
 @pytest.mark.skipif(has_gulp is False, reason="GULP not installed")
 def test_relax_job(tmpdir):
-    from quacc.recipes.gulp.core import relax_job, static_job
+    from quacc.recipes.gulp.core import relax_job
 
     tmpdir.chdir()
 

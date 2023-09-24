@@ -11,7 +11,7 @@ has_orca = bool(which(SETTINGS.ORCA_CMD))
 
 @pytest.mark.skipif(has_orca is False, reason="ORCA not installed")
 def test_static_job(tmpdir):
-    from quacc.recipes.orca.core import relax_job, static_job
+    from quacc.recipes.orca.core import static_job
 
     tmpdir.chdir()
 
@@ -47,7 +47,7 @@ def test_static_job(tmpdir):
 
 @pytest.mark.skipif(has_orca is False, reason="ORCA not installed")
 def test_relax_job(tmpdir):
-    from quacc.recipes.orca.core import relax_job, static_job
+    from quacc.recipes.orca.core import relax_job
 
     tmpdir.chdir()
 

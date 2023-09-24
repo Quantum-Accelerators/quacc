@@ -2,7 +2,7 @@ from ase.build import molecule
 
 
 def test_static_job(tmpdir):
-    from quacc.recipes.gaussian.core import relax_job, static_job
+    from quacc.recipes.gaussian.core import static_job
 
     tmpdir.chdir()
 
@@ -46,7 +46,7 @@ def test_static_job(tmpdir):
 
 
 def test_relax_job(tmpdir):
-    from quacc.recipes.gaussian.core import relax_job, static_job
+    from quacc.recipes.gaussian.core import relax_job
 
     tmpdir.chdir()
 
