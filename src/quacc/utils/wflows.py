@@ -128,72 +128,66 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
         The @job-decorated function.
     """
 
-    @functools.wraps(_func)
-    def _inner(*f_args, decorator_kwargs: dict | None = None, **f_kwargs) -> Any:
-        """
-        This function is used for handling workflow engines that require some action
-        beyond just decoration.
+    def decorator(func) -> Callable:
+        @functools.wraps(func)
+        def wrapper(f) -> Callable:
+            @functools.wraps(f)
+            def _inner(*f_args, **f_kwargs) -> Any:
+                """
+                This inner function is used for handling workflow engines that require some
+                action beyond just decoration.
 
-        Parameters
-        ----------
-        *f_args
-            Positional arguments to the function, if any.
-        decorator_kwargs
-            Keyword arguments to pass to the workflow engine decorator.
-        **f_kwargs
-            Keyword arguments to the function, if any.
+                Parameters
+                ----------
+                *f_args
+                    Positional arguments to the function, if any.
+                **f_kwargs
+                    Keyword arguments to the function, if any.
 
-        Returns
-        -------
-        Any
-            The output of the @job-decorated function.
-        """
-        decorator_kwargs = decorator_kwargs if decorator_kwargs is not None else kwargs
+                Returns
+                -------
+                Any
+                    The output of the @job-decorated function.
+                """
+                if wflow_engine == "prefect":
+                    return decorated_object.submit(*f_args, **f_kwargs)
+                return decorated_object(*f_args, **f_kwargs)
 
-        if WFLOW_ENGINE == "prefect":
-            from prefect import task as prefect_task
+            from quacc import SETTINGS
 
-            decorated = prefect_task(_func, **decorator_kwargs)
-            return decorated.submit(*f_args, **f_kwargs)
+            wflow_engine = SETTINGS.WORKFLOW_ENGINE
+            if wflow_engine == "covalent":
+                import covalent as ct
 
-        return decorated(*f_args, **f_kwargs)
+                decorated_object = ct.electron(f, **kwargs)
+            elif wflow_engine == "parsl":
+                from parsl import python_app
 
-    from quacc import SETTINGS
+                decorated_object = python_app(f, **kwargs)
+            elif wflow_engine == "jobflow":
+                import jobflow as jf
 
-    WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE
+                decorated_object = jf.job(f, **kwargs)
+            elif wflow_engine == "redun":
+                from redun import task as redun_task
 
-    if _func is None:
+                decorated_object = redun_task(f, **kwargs)
+            elif wflow_engine == "prefect":
+                from prefect import task as prefect_task
 
-        def decorator(_f):
-            return job(_f, **kwargs)
+                decorated_object = prefect_task(f, **kwargs)
+                return _inner
+            else:
+                decorated_object = f
 
-        return decorator
+            if not hasattr(decorated_object, "__wrapped__"):
+                decorated_object.__wrapped__ = _func
 
-    if WFLOW_ENGINE == "covalent":
-        import covalent as ct
+            return decorated_object
 
-        decorated = ct.electron(_func, **kwargs)
-    elif WFLOW_ENGINE == "jobflow":
-        from jobflow import job as jf_job
+        return wrapper(func)
 
-        decorated = jf_job(_func, **kwargs)
-    elif WFLOW_ENGINE == "parsl":
-        from parsl import python_app
-
-        decorated = python_app(_func, **kwargs)
-    elif WFLOW_ENGINE == "redun":
-        from redun import task
-
-        decorated = task(_func, **kwargs)
-    elif WFLOW_ENGINE == "prefect":
-        return _inner
-    else:
-        decorated = _func
-
-    if not hasattr(decorated, "__wrapped__"):
-        decorated.__wrapped__ = _func
-
-    return decorated
+    return decorator if _func is None else decorator(_func)
 
 
 def flow(_func: Callable | None = None, **kwargs) -> Flow:
@@ -305,33 +299,32 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
     Flow
         The `#!Python @flow`-decorated function.
     """
-    from quacc import SETTINGS
 
-    WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE
+    def decorator(func) -> Callable:
+        @functools.wraps(func)
+        def wrapper(f) -> Callable:
+            from quacc import SETTINGS
 
-    if _func is None:
+            wflow_engine = SETTINGS.WORKFLOW_ENGINE
+            if wflow_engine == "covalent":
+                import covalent as ct
 
-        def decorator(_f):
-            return flow(_f, **kwargs)
+                decorated_object = ct.lattice(f, **kwargs)
+            elif wflow_engine == "redun":
+                from redun import task as redun_task
 
-        return decorator
+                decorated_object = redun_task(f, **kwargs)
+            elif wflow_engine == "prefect":
+                from prefect import flow as prefect_flow
 
-    if WFLOW_ENGINE == "covalent":
-        import covalent as ct
+                decorated_object = prefect_flow(f, **kwargs)
+            else:
+                decorated_object = f
+            return decorated_object
 
-        decorated = ct.lattice(_func, **kwargs)
-    elif WFLOW_ENGINE == "redun":
-        from redun import task
+        return wrapper(func)
 
-        decorated = task(_func, **kwargs)
-    elif WFLOW_ENGINE == "prefect":
-        from prefect import flow as prefect_flow
-
-        decorated = prefect_flow(_func, **kwargs)
-    else:
-        decorated = _func
-
-    return decorated
+    return decorator if _func is None else decorator(_func)
 
 
 def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
@@ -498,37 +491,36 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
     callable
         The decorated function.
     """
-    from quacc import SETTINGS
 
-    WFLOW_ENGINE = SETTINGS.WORKFLOW_ENGINE
+    def decorator(func) -> Callable:
+        @functools.wraps(func)
+        def wrapper(f) -> Callable:
+            from quacc import SETTINGS
 
-    if _func is None:
+            wflow_engine = SETTINGS.WORKFLOW_ENGINE
+            if wflow_engine == "covalent":
+                import covalent as ct
 
-        def decorator(_f):
-            return subflow(_f, **kwargs)
+                decorated_object = ct.electron(ct.lattice(f, **kwargs))
+            elif wflow_engine == "parsl":
+                from parsl import join_app
 
-        return decorator
+                decorated_object = join_app(f, **kwargs)
+            elif wflow_engine == "redun":
+                from redun import task as redun_task
 
-    if WFLOW_ENGINE == "covalent":
-        import covalent as ct
+                decorated_object = redun_task(f, **kwargs)
+            elif wflow_engine == "prefect":
+                from prefect import flow as prefect_flow
 
-        decorated = ct.electron(ct.lattice(_func), **kwargs)
-    elif WFLOW_ENGINE == "parsl":
-        from parsl import join_app
+                decorated_object = prefect_flow(f, **kwargs)
+            else:
+                decorated_object = f
+            return decorated_object
 
-        decorated = join_app(_func, **kwargs)
-    elif WFLOW_ENGINE == "redun":
-        from redun import task
+        return wrapper(func)
 
-        decorated = task(_func, **kwargs)
-    elif WFLOW_ENGINE == "prefect":
-        from prefect import flow as prefect_flow
-
-        decorated = prefect_flow(_func, **kwargs)
-    else:
-        decorated = _func
-
-    return decorated
+    return decorator if _func is None else decorator(_func)
 
 
 @requires(prefect_deps and dask_deps, "Need quacc[prefect] dependencies")
