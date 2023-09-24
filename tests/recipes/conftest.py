@@ -3,7 +3,7 @@ import importlib
 import pytest
 
 
-@pytest.fixture(autouse=True, scope="module")
+@pytest.fixture(autouse=True)
 def reload_local_quacc(default_settings):
     importlib.reload(importlib.import_module("quacc"))
     from quacc import SETTINGS

@@ -9,7 +9,7 @@ TEST_RESULTS_DIR = FILE_DIR / ".test_results"
 TEST_SCRATCH_DIR = FILE_DIR / ".test_scratch"
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def default_settings():
     from quacc import SETTINGS
 
