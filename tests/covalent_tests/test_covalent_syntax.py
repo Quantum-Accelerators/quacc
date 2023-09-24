@@ -1,11 +1,10 @@
 import pytest
 
-from quacc import SETTINGS, flow, job, subflow
+from quacc import flow, job, subflow
 
 try:
     import covalent as ct
 
-    ct = ct if SETTINGS.WORKFLOW_ENGINE == "covalent" else None
 except ImportError:
     ct = None
 
