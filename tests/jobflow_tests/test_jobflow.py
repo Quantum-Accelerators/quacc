@@ -13,8 +13,6 @@ except ImportError:
 if jf:
     STORE = jf.JobStore(MemoryStore())
 
-DEFAULT_SETTINGS = SETTINGS.copy()
-
 
 @pytest.mark.skipif(jf is None, reason="Jobflow not installed")
 def test_jobflow_decorators(tmpdir):

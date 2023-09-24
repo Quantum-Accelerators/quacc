@@ -9,8 +9,6 @@ try:
 except ImportError:
     redun = None
 
-DEFAULT_SETTINGS = SETTINGS.copy()
-
 
 @pytest.mark.skipif(redun is None, reason="Redun not installed")
 def test_redun_decorators(tmpdir):

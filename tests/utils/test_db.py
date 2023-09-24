@@ -14,7 +14,6 @@ try:
     ct = ct if SETTINGS.WORKFLOW_ENGINE == "covalent" else None
 except ImportError:
     ct = None
-DEFAULT_SETTINGS = SETTINGS.copy()
 
 
 @pytest.mark.skipif(

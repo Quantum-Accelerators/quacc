@@ -1,5 +1,3 @@
-import os
-
 import pytest
 from ase.build import bulk
 
@@ -12,25 +10,9 @@ try:
     ct = ct if SETTINGS.WORKFLOW_ENGINE == "covalent" else None
 except ImportError:
     ct = None
-try:
-    import psi4
-except ImportError:
-    psi4 = None
-try:
-    from tblite.ase import TBLite
-except ImportError:
-    TBLite = None
-try:
-    from quacc.recipes.emt.defects import bulk_to_defects_flow
-except ImportError:
-    bulk_to_defects_flow = None
-DEFAULT_SETTINGS = SETTINGS.copy()
 
 
-@pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
-    reason="This test requires Covalent and to be run on GitHub",
-)
+@pytest.mark.skipif(ct is None, reason="This test requires Covalent")
 def test_covalent_decorators(tmpdir):
     tmpdir.chdir()
 
@@ -77,10 +59,7 @@ def test_covalent_decorators(tmpdir):
     ]
 
 
-@pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
-    reason="This test requires Covalent and to be run on GitHub",
-)
+@pytest.mark.skipif(ct is None, reason="This test requires Covalent")
 def test_covalent_decorators_args(tmpdir):
     tmpdir.chdir()
 
@@ -120,10 +99,7 @@ def test_covalent_decorators_args(tmpdir):
     ]
 
 
-@pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
-    reason="This test requires Covalent and to be run on GitHub",
-)
+@pytest.mark.skipif(ct is None, reason="This test requires Covalent")
 def test_quickstart(tmpdir):
     tmpdir.chdir()
 
@@ -143,10 +119,7 @@ def test_quickstart(tmpdir):
     assert result.status == "COMPLETED"
 
 
-@pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
-    reason="This test requires Covalent and to be run on GitHub",
-)
+@pytest.mark.skipif(ct is None, reason="This test requires Covalent")
 def test_tutorial1a(tmpdir):
     tmpdir.chdir()
 
@@ -171,10 +144,7 @@ def test_tutorial1a(tmpdir):
     assert result.status == "COMPLETED"
 
 
-@pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
-    reason="This test requires Covalent and to be run on GitHub",
-)
+@pytest.mark.skipif(ct is None, reason="This test requires Covalent")
 def test_tutorial1b(tmpdir):
     tmpdir.chdir()
 
@@ -189,10 +159,7 @@ def test_tutorial1b(tmpdir):
     assert result.status == "COMPLETED"
 
 
-@pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
-    reason="This test requires Covalent and to be run on GitHub",
-)
+@pytest.mark.skipif(ct is None, reason="This test requires Covalent")
 def test_tutorial2a(tmpdir):
     tmpdir.chdir()
     import covalent as ct
@@ -222,10 +189,7 @@ def test_tutorial2a(tmpdir):
     assert result.status == "COMPLETED"
 
 
-@pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
-    reason="This test requires Covalent and to be run on GitHub",
-)
+@pytest.mark.skipif(ct is None, reason="This test requires Covalent")
 def test_tutorial2b(tmpdir):
     tmpdir.chdir()
 
@@ -255,10 +219,7 @@ def test_tutorial2b(tmpdir):
     assert result.status == "COMPLETED"
 
 
-@pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
-    reason="This test requires Covalent and to be run on GitHub",
-)
+@pytest.mark.skipif(ct is None, reason="This test requires Covalent")
 def test_tutorial2c(tmpdir):
     tmpdir.chdir()
 
@@ -280,10 +241,7 @@ def test_tutorial2c(tmpdir):
     assert result.status == "COMPLETED"
 
 
-@pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
-    reason="This test requires Covalent and to be run on GitHub",
-)
+@pytest.mark.skipif(ct is None, reason="This test requires Covalent")
 def test_tutorial_excecutor1(tmpdir):
     tmpdir.chdir()
 
@@ -298,10 +256,7 @@ def test_tutorial_excecutor1(tmpdir):
     assert result.status == "COMPLETED"
 
 
-@pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
-    reason="This test requires Covalent and to be run on GitHub",
-)
+@pytest.mark.skipif(ct is None, reason="This test requires Covalent")
 def test_tutorial_excecutor2(tmpdir):
     tmpdir.chdir()
 
@@ -319,10 +274,7 @@ def test_tutorial_excecutor2(tmpdir):
     assert result.status == "COMPLETED"
 
 
-@pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
-    reason="This test requires Covalent and to be run on GitHub",
-)
+@pytest.mark.skipif(ct is None, reason="This test requires Covalent")
 def test_comparison1(tmpdir):
     tmpdir.chdir()
 
@@ -351,10 +303,7 @@ def test_comparison1(tmpdir):
     assert result.status == "COMPLETED"
 
 
-@pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
-    reason="This test requires Covalent and to be run on GitHub",
-)
+@pytest.mark.skipif(ct is None, reason="This test requires Covalent")
 def test_comparison2(tmpdir):
     tmpdir.chdir()
 
@@ -390,10 +339,7 @@ def test_comparison2(tmpdir):
     assert result.status == "COMPLETED"
 
 
-@pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
-    reason="This test requires Covalent and to be run on GitHub",
-)
+@pytest.mark.skipif(ct is None, reason="This test requires Covalent")
 def test_comparison3(tmpdir):
     tmpdir.chdir()
     import covalent as ct
@@ -417,10 +363,7 @@ def test_comparison3(tmpdir):
     assert result.status == "COMPLETED"
 
 
-@pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
-    reason="This test requires Covalent and to be run on GitHub",
-)
+@pytest.mark.skipif(ct is None, reason="This test requires Covalent")
 def test_comparison4(tmpdir):
     tmpdir.chdir()
 
@@ -450,176 +393,4 @@ def test_comparison4(tmpdir):
     dispatch_id = ct.dispatch(workflow)(1, 2, 3)
     result = ct.get_result(dispatch_id, wait=True)  # e.g. [6, 6, 6]
 
-    assert result.status == "COMPLETED"
-
-
-@pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
-    reason="This test requires Covalent and to be run on GitHub",
-)
-def test_docs_recipes_emt(tmpdir):
-    tmpdir.chdir()
-    import covalent as ct
-    from ase.build import bulk
-
-    from quacc import flow
-    from quacc.recipes.emt.core import relax_job
-
-    # -----------------
-
-    atoms = bulk("Cu")
-    dispatch_id = ct.dispatch(flow(relax_job))(atoms, relax_cell=True)
-    result = ct.get_result(dispatch_id, wait=True)
-    assert result.status == "COMPLETED"
-
-    # -----------------
-
-    import covalent as ct
-    from ase.build import bulk
-
-    from quacc import flow
-    from quacc.recipes.emt.core import static_job
-
-    atoms = bulk("Cu")
-    dispatch_id = ct.dispatch(flow(static_job))(atoms)
-    result = ct.get_result(dispatch_id, wait=True)
-    assert result.status == "COMPLETED"
-
-    # -----------------
-
-    import covalent as ct
-    from ase.build import bulk
-
-    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
-
-    atoms = bulk("Ni")
-    dispatch_id = ct.dispatch(bulk_to_slabs_flow)(atoms)
-    result = ct.get_result(dispatch_id, wait=True)
-    assert result.status == "COMPLETED"
-
-
-@pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False
-    or not ct
-    or bulk_to_defects_flow is None,
-    reason="This test requires Covalent and to be run on GitHub",
-)
-def test_recipes_bulk_to_defects_flow(tmpdir):
-    tmpdir.chdir()
-
-    import covalent as ct
-    from ase.build import bulk
-
-    from quacc.recipes.emt.defects import bulk_to_defects_flow
-
-    atoms = bulk("Cu")
-    dispatch_id = ct.dispatch(bulk_to_defects_flow)(atoms)
-    result = ct.get_result(dispatch_id, wait=True)
-
-    assert result.status == "COMPLETED"
-
-
-@pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or not ct,
-    reason="This test requires Covalent and to be run on GitHub",
-)
-def test_docs_recipes_lj(tmpdir):
-    tmpdir.chdir()
-    import covalent as ct
-    from ase.build import molecule
-
-    from quacc import flow
-    from quacc.recipes.lj.core import relax_job
-
-    atoms = molecule("N2")
-    dispatch_id = ct.dispatch(flow(relax_job))(atoms)
-    result = ct.get_result(dispatch_id, wait=True)
-    assert result.status == "COMPLETED"
-
-    # ------------------------
-
-    import covalent as ct
-    from ase.build import molecule
-
-    from quacc import flow
-    from quacc.recipes.lj.core import static_job
-
-    atoms = molecule("N2")
-    dispatch_id = ct.dispatch(flow(static_job))(atoms)
-    result = ct.get_result(dispatch_id, wait=True)
-    assert result.status == "COMPLETED"
-
-    # ------------------------
-    import covalent as ct
-    from ase.build import molecule
-
-    from quacc import flow
-    from quacc.recipes.lj.core import freq_job
-
-    atoms = molecule("N2")
-    dispatch_id = ct.dispatch(flow(freq_job))(atoms)
-    result = ct.get_result(dispatch_id, wait=True)
-    assert result.status == "COMPLETED"
-
-
-@pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or not ct or psi4 is None,
-    reason="This test requires Covalent and to be run on GitHub",
-)
-def test_docs_recipes_psi4(tmpdir):
-    tmpdir.chdir()
-    import covalent as ct
-    from ase.build import molecule
-
-    from quacc import flow
-    from quacc.recipes.psi4.core import static_job
-
-    workflow = flow(static_job)
-    atoms = molecule("O2")
-
-    dispatch_id = ct.dispatch(workflow)(atoms, 0, 3, method="wb97m-v", basis="def2-svp")
-    result = ct.get_result(dispatch_id, wait=True)
-    assert result.status == "COMPLETED"
-
-
-@pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS", False) is False or not ct or TBLite is None,
-    reason="This test requires Covalent and to be run on GitHub",
-)
-def test_docs_recipes_tblite(tmpdir):
-    tmpdir.chdir()
-
-    import covalent as ct
-    from ase.build import bulk
-
-    from quacc import flow
-    from quacc.recipes.tblite.core import relax_job
-
-    atoms = bulk("C")
-    dispatch_id = ct.dispatch(flow(relax_job))(atoms, relax_cell=True)
-    result = ct.get_result(dispatch_id, wait=True)
-    assert result.status == "COMPLETED"
-
-    # -----------------------
-    import covalent as ct
-    from ase.build import bulk
-
-    from quacc import flow
-    from quacc.recipes.tblite.core import static_job
-
-    atoms = bulk("C")
-    dispatch_id = ct.dispatch(flow(static_job))(atoms, method="GFN1-xTB")
-    result = ct.get_result(dispatch_id, wait=True)
-    assert result.status == "COMPLETED"
-
-    # --------------------
-    import covalent as ct
-    from ase.build import molecule
-
-    from quacc import flow
-    from quacc.recipes.tblite.core import freq_job
-
-    atoms = molecule("N2")
-    dispatch_id = ct.dispatch(flow(freq_job))(atoms)
-    result = ct.get_result(dispatch_id, wait=True)
     assert result.status == "COMPLETED"

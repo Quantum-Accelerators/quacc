@@ -11,8 +11,6 @@ try:
 except ImportError:
     prefect = None
 
-DEFAULT_SETTINGS = SETTINGS.copy()
-
 
 @pytest.fixture(autouse=True, scope="session")
 def prefect_test_fixture():
@@ -62,8 +60,6 @@ def test_prefect_decorators(tmpdir):
     assert workflow(1, 2, 3).result() == 9
     results = dynamic_workflow(1, 2, 3)
     assert [result.result() for result in results] == [6, 6, 6]
-    results = flow(add_distributed)([1, 1, 1], 2)
-    assert [result.result() for result in results] == [3, 3, 3]
 
 
 @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")

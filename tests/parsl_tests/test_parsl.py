@@ -23,7 +23,6 @@ try:
     from quacc.recipes.emt.defects import bulk_to_defects_flow
 except ImportError:
     bulk_to_defects_flow = None
-DEFAULT_SETTINGS = SETTINGS.copy()
 
 
 def setup_module():
