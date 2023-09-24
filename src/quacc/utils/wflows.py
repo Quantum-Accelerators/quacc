@@ -132,9 +132,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
         @functools.wraps(func)
         def wrapper(f) -> Callable:
             @functools.wraps(f)
-            def _inner(
-                *f_args, decorator_kwargs: dict | None = None, **f_kwargs
-            ) -> Any:
+            def _inner(*f_args, **f_kwargs) -> Any:
                 """
                 This inner function is used for handling workflow engines that require some
                 action beyond just decoration.
@@ -143,8 +141,6 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
                 ----------
                 *f_args
                     Positional arguments to the function, if any.
-                decorator_kwargs
-                    Keyword arguments to pass to the workflow engine decorator.
                 **f_kwargs
                     Keyword arguments to the function, if any.
 
@@ -153,12 +149,9 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
                 Any
                     The output of the @job-decorated function.
                 """
-                decorator_kwargs = (
-                    decorator_kwargs if decorator_kwargs is not None else kwargs
-                )
                 if wflow_engine == "prefect":
                     return decorated_object.submit(*f_args, **f_kwargs)
-                return decorated_object
+                return decorated_object(*f_args, **f_kwargs)
 
             from quacc import SETTINGS
 
