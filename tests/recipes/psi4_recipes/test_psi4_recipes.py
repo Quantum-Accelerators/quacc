@@ -1,10 +1,10 @@
 import pytest
 from ase.build import molecule
 
-from quacc.recipes.psi4.core import static_job
-
 try:
     import psi4
+
+    raise ValueError(psi4)
 except ImportError:
     psi4 = None
 
@@ -14,6 +14,8 @@ except ImportError:
     reason="Psi4 must be installed. Try conda install -c psi4 psi4",
 )
 def test_static(tmpdir):
+    from quacc.recipes.psi4.core import static_job
+
     tmpdir.chdir()
 
     atoms = molecule("H2")
