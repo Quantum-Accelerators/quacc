@@ -39,7 +39,9 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Install pip packages
-        run: pip install -r tests/requirements.txt .[dev]
+        run: |
+          pip install -r tests/requirements.txt
+          pip install .[dev]
 
       - name: Run tests with pytest
         run: pytest --cov=quacc --cov-report=xml
@@ -82,7 +84,9 @@ jobs:
           conda install psi4 python=3.11 -c conda-forge/label/libint_dev -c conda-forge --solver libmamba
 
       - name: Install pip packages
-        run: pip install -r tests/requirements.txt .[dev]
+        run: |
+          pip install -r tests/requirements.txt
+          pip install .[dev]
 
       - name: Run tests with pytest
         run: pytest -k 'psi4' --cov=quacc --cov-report=xml
@@ -91,7 +95,7 @@ jobs:
         uses: codecov/codecov-action@v3
         if: github.repository == 'Quantum-Accelerators/quacc'
 
-  tests-tblite-dftbplus:
+  tests-tblite-dftbplus-defects:
     strategy:
       fail-fast: true
       matrix:
@@ -125,10 +129,12 @@ jobs:
           conda install -c conda-forge dftbplus
 
       - name: Install pip packages
-        run: pip install -r tests/requirements.txt -r tests/requirements-tblite.txt .[dev]
+        run: |
+          pip install -r tests/requirements.txt -r tests/requirements-tblite.txt -r tests/requirements-defects.txt
+          pip install .[dev]
 
       - name: Run tests with pytest
-        run: pytest -k 'dftb' --cov=quacc --cov-report=xml
+        run: pytest -k 'dftb or tblite or defects' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -163,7 +169,9 @@ jobs:
           activate-environment: quacc-env
 
       - name: Install pip packages
-        run: pip install -r tests/requirements.txt -r tests/requirements-newtonnet.txt -r tests/requirements-optimizers.txt .[dev]
+        run: |
+          pip install -r tests/requirements.txt -r tests/requirements-newtonnet.txt -r tests/requirements-optimizers.txt
+          pip install .[dev]
 
       - name: Run tests with pytest
         run: pytest -k 'newtonnet' --cov=quacc --cov-report=xml
@@ -172,7 +180,7 @@ jobs:
         uses: codecov/codecov-action@v3
         if: github.repository == 'Quantum-Accelerators/quacc'
 
-  tests-qchem-sella:
+  tests-qchem-sella-newtonnet:
     strategy:
       fail-fast: true
       matrix:
@@ -201,7 +209,9 @@ jobs:
           activate-environment: quacc-env
 
       - name: Install pip packages
-        run: pip install -r tests/requirements.txt -r tests/requirements-optimizers.txt .[dev]
+        run: |
+          pip install -r tests/requirements.txt -r tests/requirements-optimizers.txt -r tests/requirements-newtonnet.txt
+          pip install .[dev]
 
       - name: Install conda packages
         run: |
@@ -209,41 +219,7 @@ jobs:
           conda install -c conda-forge openbabel
 
       - name: Run tests with pytest
-        run: pytest -k 'qchem or sella' --cov=quacc --cov-report=xml
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        if: github.repository == 'Quantum-Accelerators/quacc'
-
-  tests-defects:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-      matrix:
-        python-version: ["3.11"]
-
-    defaults:
-      run:
-        shell: bash -l {0}
-
-    steps:
-      - name: Check out repo
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-          cache: pip
-          cache-dependency-path: pyproject.toml
-
-      - name: Install pip packages
-        run: |
-          pip install -r tests/requirements.txt  -r tests/requirements-defects.txt
-          pip install .[dev]
-
-      - name: Run tests with pytest
-        run: pytest -k 'defects' --cov=quacc --cov-report=xml
+        run: pytest -k 'qchem or sella or newtonnet' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -273,7 +249,8 @@ jobs:
 
       - name: Install pip packages
         run: |
-          pip install -r tests/requirements.txt -r tests/requirements-covalent.txt .[dev]
+          pip install -r tests/requirements.txt -r tests/requirements-covalent.txt
+          pip install .[dev]
 
       - name: Make quacc config
         run: quacc set WORKFLOW_ENGINE covalent
@@ -309,7 +286,9 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Install pip packages
-        run: pip install -r tests/requirements.txt -r tests/requirements-${{ matrix.wflow_engine }}.txt .[dev]
+        run: |
+          pip install -r tests/requirements.txt -r tests/requirements-${{ matrix.wflow_engine }}.txt
+          pip install .[dev]
 
       - name: Make quacc config
         run: quacc set WORKFLOW_ENGINE ${{ matrix.wflow_engine }}
