@@ -3,12 +3,9 @@ import os
 import pytest
 from maggma.stores import MemoryStore
 
-from quacc import SETTINGS
-
 try:
     import covalent as ct
 
-    ct = ct if SETTINGS.WORKFLOW_ENGINE == "covalent" else None
 except ImportError:
     ct = None
 
