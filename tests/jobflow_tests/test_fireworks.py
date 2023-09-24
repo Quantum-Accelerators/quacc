@@ -25,5 +25,5 @@ def test_fireworks():
     job2 = static_job(job1.output)
 
     workflow = jf.Flow([job1, job2])
-    job_to_firework(job1)
-    flow_to_workflow(workflow)
+    assert job_to_firework(job1)
+    assert flow_to_workflow(workflow)
