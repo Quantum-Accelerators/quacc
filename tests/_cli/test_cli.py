@@ -38,7 +38,7 @@ def test_set():
     assert response.exit_code == 0
     assert "local" in response.stdout
     val = None
-    with open(test_yaml, "r") as f:
+    with open(test_yaml) as f:
         for line in f:
             if "WORKFLOW_ENGINE" in line:
                 val = line.split(":")[-1].strip()
@@ -48,7 +48,7 @@ def test_set():
     assert response.exit_code == 0
     assert "covalent" in response.stdout
     val = None
-    with open(test_yaml, "r") as f:
+    with open(test_yaml) as f:
         for line in f:
             if "WORKFLOW_ENGINE" in line:
                 val = line.split(":")[-1].strip()
@@ -58,7 +58,7 @@ def test_set():
     assert response.exit_code == 0
     assert "dummy" in response.stdout
     val = None
-    with open(test_yaml, "r") as f:
+    with open(test_yaml) as f:
         for line in f:
             if "VASP_PARALLEL_CMD" in line:
                 val = line.split(":")[-1].strip()
@@ -70,7 +70,7 @@ def test_unset():
     assert response.exit_code == 0
     assert "WORKFLOW_ENGINE" in response.stdout
     lines = ""
-    with open(test_yaml, "r") as f:
+    with open(test_yaml) as f:
         for _ in f:
             lines += ""
     assert "WORKFLOW_ENGINE" not in lines

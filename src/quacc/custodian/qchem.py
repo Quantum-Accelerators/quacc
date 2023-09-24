@@ -82,8 +82,8 @@ def run_custodian(
         QCJob(
             qchem_command=qchem_cmd,
             max_cores=qchem_cores,
-            calc_loc=qchem_local_scratch,
-            nboexe=qchem_nbo_exe,
+            calc_loc=str(qchem_local_scratch),
+            nboexe=str(qchem_nbo_exe),
         )
     ]
 

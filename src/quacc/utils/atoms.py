@@ -261,7 +261,7 @@ def check_charge_and_spin(
     atoms: Atoms,
     charge: int | None = None,
     spin_multiplicity: int | None = None,
-) -> (int, int):
+) -> tuple[int, int]:
     """
     Check the validity of a given `charge` and `multiplicity`. If they are `None`, then
     set the charge and/or spin multiplicity of a molecule using the following routine,

@@ -186,7 +186,7 @@ def freq_job(
     pressure
         Pressure in bar.
     calc_swaps
-        dictionary of custom kwargs for the xTB calculator.
+        dictionary of custom kwargs for the tblite calculator.
     vib_kwargs
         dictionary of custom kwargs for the Vibrations object.
     copy_files

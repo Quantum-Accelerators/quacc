@@ -58,7 +58,7 @@ def prep_files():
             w.write("test")
     for f in ["AECCAR0.gz", "AECCAR2.gz"]:
         with gzip.open(f, "wb") as gf:
-            gf.write("test".encode())
+            gf.write(b"test")
 
 
 def test_run_bader(tmpdir):

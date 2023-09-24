@@ -285,7 +285,7 @@ class QuaccSettings(BaseSettings):
             values.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH)
         ).expanduser()
 
-        new_values = {}
+        new_values = {}  # type: dict
         if config_file_path.exists() and config_file_path.stat().st_size > 0:
             new_values |= loadfn(config_file_path)
 

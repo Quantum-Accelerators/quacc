@@ -217,6 +217,7 @@ def _base_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
     atoms = fetch_atoms(atoms)
+    keyword_defaults = keyword_defaults or {}
 
     if not atoms.pbc.any():
         if keyword_defaults.get("opti") and not keyword_defaults.get("conv"):
@@ -224,10 +225,13 @@ def _base_job(
         for k in ["gwolf", "conp"]:
             keyword_defaults.pop(k, None)
 
-    option_defaults = option_defaults | {
-        f"output cif {GEOM_FILE_PBC}": True if atoms.pbc.any() else None,
-        f"output xyz {GEOM_FILE_NOPBC}": None if atoms.pbc.any() else True,
-    }
+    option_defaults = merge_dicts(
+        option_defaults,
+        {
+            f"output cif {GEOM_FILE_PBC}": True if atoms.pbc.any() else None,
+            f"output xyz {GEOM_FILE_NOPBC}": None if atoms.pbc.any() else True,
+        },
+    )
 
     keywords = merge_dicts(keyword_defaults, keyword_swaps)
     options = merge_dicts(option_defaults, option_swaps)

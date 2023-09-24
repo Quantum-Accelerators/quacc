@@ -8,7 +8,7 @@ from tempfile import mkdtemp
 from typing import TYPE_CHECKING
 
 import numpy as np
-from ase.constraints import ExpCellFilter
+from ase.filters import ExpCellFilter
 from ase.io import Trajectory, read
 from ase.optimize import FIRE
 from ase.vibrations import Vibrations
@@ -158,21 +158,16 @@ def run_ase_opt(
 
     # Define the Trajectory object
     traj_filename = Path(tmpdir, "opt.traj")
-    optimizer_kwargs["trajectory"] = Trajectory(traj_filename, "w", atoms=atoms)
+    traj = Trajectory(traj_filename, "w", atoms=atoms)
+    optimizer_kwargs["trajectory"] = traj
 
     # Set volume relaxation constraints, if relevant
     if relax_cell and atoms.pbc.any():
         atoms = ExpCellFilter(atoms)
 
-    # Instantiate the optimizer
-    dyn = optimizer(atoms, **optimizer_kwargs)
-
     # Run calculation
-    dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
-
-    # Prevent permission errors on Windows
-    if hasattr(dyn, "trajectory") and hasattr(dyn.trajectory, "close"):
-        dyn.trajectory.close()
+    with traj, optimizer(atoms, **optimizer_kwargs) as dyn:
+        dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
 
     # Store the trajectory atoms
     dyn.traj_atoms = read(traj_filename, index=":")
@@ -228,8 +223,8 @@ def run_ase_vib(
 
 
 def _calc_setup(
-    atoms: Atoms, copy_files: list[str] | None = None
-) -> tuple[Atoms, str, str]:
+    atoms: Atoms, copy_files: list[str | Path] | None = None
+) -> tuple[Atoms, Path, Path]:
     """
     Perform staging operations for a calculation, including copying files to the
     scratch directory, setting the calculator's directory, decompressing files,
@@ -246,10 +241,10 @@ def _calc_setup(
     -------
     Atoms
         Copy of the Atoms object with the calculator's directory set.
-    str
+    Path
         The path to the tmpdir, where the calculation will be run. It will be
         deleted after the calculation is complete.
-    str
+    Path
         The path to the results_dir, where the files will ultimately be stored.
         A symlink to the tmpdir will be made here during the calculation for
         convenience.
@@ -321,7 +316,7 @@ def _calc_cleanup(tmpdir: str | Path, job_results_dir: str | Path) -> None:
     Path(job_results_dir, f"{Path(tmpdir).name}-symlink").unlink(missing_ok=True)
 
     # Remove the tmpdir
-    rmtree(tmpdir)
+    rmtree(tmpdir, ignore_errors=True)
 
 
 @requires(Sella, "Sella must be installed. Refer to the quacc documentation.")

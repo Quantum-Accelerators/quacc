@@ -7,7 +7,7 @@ Want to get up and running with quacc as fast possible? Here we go!
 Run the following commands in the terminal:
 
 ```bash
-pip install --upgrade https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
+pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
 pip install quacc[covalent]
 
 quacc set WORKFLOW_ENGINE covalent && covalent start
@@ -32,7 +32,7 @@ from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 atoms = bulk("Cu")
 
 # Dispatch the workflow
-dispatch_id = bulk_to_slabs_flow(atoms)
+dispatch_id = ct.dispatch(bulk_to_slabs_flow)(atoms)
 
 # Fetch the results
 result = ct.get_result(dispatch_id, wait=True)
