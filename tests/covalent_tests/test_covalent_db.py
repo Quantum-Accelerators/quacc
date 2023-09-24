@@ -18,13 +18,28 @@ except ImportError:
     reason="This test is only meant to be run on GitHub Actions with Covalent",
 )
 def test_covalent_to_db():
+    import covalent as ct
+
     from quacc.utils.db import covalent_to_db
+
+    @ct.electron
+    def add(a, b):
+        return a + b
+
+    @ct.lattice
+    def workflow(a, b):
+        return add(a, b)
+
+    dispatch_id = ct.dispatch(workflow)(1, 2)
+    ct.get_result(dispatch_id, wait=True)
+    dispatch_id = ct.dispatch(workflow)(1, 2)
+    ct.get_result(dispatch_id, wait=True)
 
     store = MemoryStore(collection_name="db1")
     covalent_to_db(store)
     with store:
         count1 = store.count()
-    assert count1 > 0
+    assert count1 >= 2
 
     with pytest.warns(UserWarning):
         covalent_to_db(store, dispatch_ids=["bad-value"])
