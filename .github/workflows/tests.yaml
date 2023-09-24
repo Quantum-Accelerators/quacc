@@ -81,8 +81,14 @@ jobs:
       - name: Make quacc config
         run: quacc set WORKFLOW_ENGINE covalent
 
+      - name: Start Covalent server
+        run: covalent start
+
       - name: Run tests with pytest
         run: pytest -k 'covalent' --cov=quacc --cov-report=xml
+
+      - name: Stop Covalent server
+        run: covalent stop
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
