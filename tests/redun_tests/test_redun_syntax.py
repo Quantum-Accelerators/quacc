@@ -5,7 +5,6 @@ from quacc import SETTINGS, flow, job, subflow
 try:
     import redun
 
-    redun = redun if SETTINGS.WORKFLOW_ENGINE == "redun" else None
     scheduler = redun.Scheduler()
 except ImportError:
     redun = None
