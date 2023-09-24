@@ -40,7 +40,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     All `#!Python @job`-decorated functions are transformed into their corresponding
     decorator.
 
-    The wrapped (i.e. undecorated) function can also be stripped of its decorator
+    The wrapped function can also be stripped of its decorator
     by calling the `#!Python .__wrapped__` attribute.
 
     ```python
