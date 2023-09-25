@@ -5,16 +5,10 @@ from ase.calculators.lj import LennardJones
 
 from quacc.utils.calc import run_ase_opt
 
-try:
-    from sella import Sella
-except ImportError:
-    Sella = None
+sella = pytest.importorskip("sella")
+from sella import Sella
 
 
-@pytest.mark.skipif(
-    not Sella,
-    reason="Sella must be installed.",
-)
 def test_sella(tmpdir):
     tmpdir.chdir()
 
@@ -34,10 +28,6 @@ def test_sella(tmpdir):
     assert dyn.user_internal is True
 
 
-@pytest.mark.skipif(
-    not Sella,
-    reason="Sella must be installed.",
-)
 def test_TRICs(tmpdir):
     tmpdir.chdir()
     atoms = molecule("C2H6")

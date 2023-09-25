@@ -1,19 +1,18 @@
 import pytest
 from maggma.stores import MemoryStore
 
-from quacc import flow, job, subflow
+from quacc import SETTINGS, flow, job, subflow
 
-try:
-    import jobflow as jf
+jf = pytest.importorskip("jobflow")
 
-except ImportError:
-    jf = None
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "jobflow",
+    reason="Jobflow needs to be the workflow engine",
+)
 
-if jf:
-    STORE = jf.JobStore(MemoryStore())
+STORE = jf.JobStore(MemoryStore())
 
 
-@pytest.mark.skipif(jf is None, reason="Jobflow not installed")
 def test_jobflow_decorators(tmpdir):
     tmpdir.chdir()
 
@@ -41,7 +40,6 @@ def test_jobflow_decorators(tmpdir):
     assert isinstance(add_distributed([1, 2, 3], 4)[0], jf.Job)
 
 
-@pytest.mark.skipif(jf is None, reason="Jobflow not installed")
 def test_jobflow_decorators_args(tmpdir):
     tmpdir.chdir()
 

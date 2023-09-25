@@ -4,21 +4,17 @@ import pytest
 
 from quacc import SETTINGS, flow, job, subflow
 
-try:
-    import parsl
-
-
-except ImportError:
-    parsl = None
+parsl = pytest.importorskip("parsl")
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "parsl", reason="Parsl needs to be the workflow engine"
+)
 
 
 def setup_module():
-    if SETTINGS.WORKFLOW_ENGINE == "parsl":
-        with contextlib.suppress(Exception):
-            parsl.load()
+    with contextlib.suppress(Exception):
+        parsl.load()
 
 
-@pytest.mark.skipif(parsl is None, reason="Parsl not installed")
 def test_parsl_decorators(tmpdir):
     tmpdir.chdir()
 
@@ -54,7 +50,6 @@ def test_parsl_decorators(tmpdir):
     assert dynamic_workflow(1, 2, 3).result() == [6, 6, 6]
 
 
-@pytest.mark.skipif(parsl is None, reason="Parsl not installed")
 def test_parsl_decorators_args(tmpdir):
     tmpdir.chdir()
 

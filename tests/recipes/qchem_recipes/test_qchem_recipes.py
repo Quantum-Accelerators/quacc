@@ -13,15 +13,13 @@ from pymatgen.io.qchem.inputs import QCInput
 
 from quacc import SETTINGS
 from quacc.calculators.qchem import QChem
-from quacc.recipes.qchem.core import freq_job, internal_relax_job, relax_job, static_job
-from quacc.recipes.qchem.ts import irc_job, quasi_irc_job, ts_job
 from quacc.utils import check_charge_and_spin
 
-try:
-    import sella
-except ImportError:
-    sella = None
-
+pytest.importorskip("sella")
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "local",
+    reason="Need to use local as workflow manager to run this test.",
+)
 
 FILE_DIR = Path(__file__).resolve().parent
 QCHEM_DIR = os.path.join(FILE_DIR, "qchem_examples")
@@ -109,6 +107,8 @@ def mock_read(self, **kwargs):
 
 
 def test_static_job_v1(monkeypatch, tmpdir):
+    from quacc.recipes.qchem.core import static_job
+
     tmpdir.chdir()
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
     charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
@@ -131,6 +131,8 @@ def test_static_job_v1(monkeypatch, tmpdir):
 
 
 def test_static_job_v2(monkeypatch, tmpdir):
+    from quacc.recipes.qchem.core import static_job
+
     tmpdir.chdir()
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute2)
@@ -161,6 +163,8 @@ def test_static_job_v2(monkeypatch, tmpdir):
 
 
 def test_static_job_v3(monkeypatch, tmpdir):
+    from quacc.recipes.qchem.core import static_job
+
     tmpdir.chdir()
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
@@ -190,6 +194,8 @@ def test_static_job_v3(monkeypatch, tmpdir):
 
 
 def test_static_job_v4(monkeypatch, tmpdir):
+    from quacc.recipes.qchem.core import static_job
+
     tmpdir.chdir()
     monkeypatch.setattr(QChem, "read_results", mock_read)
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute4)
@@ -198,17 +204,17 @@ def test_static_job_v4(monkeypatch, tmpdir):
 
 
 def test_static_job_v5(tmpdir):
+    from quacc.recipes.qchem.core import static_job
+
     tmpdir.chdir()
 
     with pytest.raises(ValueError):
         static_job(TEST_ATOMS, 0, 1, pcm_dielectric="3.0", smd_solvent="water")
 
 
-@pytest.mark.skipif(
-    sella is None,
-    reason="Sella must be installed.",
-)
 def test_relax_job_v1(monkeypatch, tmpdir):
+    from quacc.recipes.qchem.core import relax_job
+
     tmpdir.chdir()
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
@@ -239,11 +245,9 @@ def test_relax_job_v1(monkeypatch, tmpdir):
     assert len(output["results"]["qc_input"]) > 1
 
 
-@pytest.mark.skipif(
-    sella is None,
-    reason="Sella must be installed.",
-)
 def test_relax_job_v2(monkeypatch, tmpdir):
+    from quacc.recipes.qchem.core import relax_job
+
     tmpdir.chdir()
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute2)
     charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS, charge=-1)
@@ -273,11 +277,9 @@ def test_relax_job_v2(monkeypatch, tmpdir):
     qcinput_nearly_equal(qcin, ref_qcin)
 
 
-@pytest.mark.skipif(
-    sella is None,
-    reason="Sella must be installed.",
-)
 def test_relax_job_v3(monkeypatch, tmpdir):
+    from quacc.recipes.qchem.core import relax_job
+
     tmpdir.chdir()
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
     overwrite_inputs = {"rem": {"mem_total": "170000"}}
@@ -303,17 +305,17 @@ def test_relax_job_v3(monkeypatch, tmpdir):
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826311086011256)
 
 
-@pytest.mark.skipif(
-    sella is None,
-    reason="Sella must be installed.",
-)
 def test_relax_job_v4(tmpdir):
+    from quacc.recipes.qchem.core import relax_job
+
     tmpdir.chdir()
     with pytest.raises(ValueError):
         relax_job(TEST_ATOMS, 0, 1, pcm_dielectric="3.0", smd_solvent="water")
 
 
 def test_freq_job_v1(monkeypatch, tmpdir):
+    from quacc.recipes.qchem.core import freq_job
+
     tmpdir.chdir()
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute5)
     charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS, charge=-1)
@@ -347,11 +349,9 @@ def test_freq_job_v1(monkeypatch, tmpdir):
     )
 
 
-@pytest.mark.skipif(
-    sella is None,
-    reason="Sella must be installed.",
-)
 def test_ts_job_v1(monkeypatch, tmpdir):
+    from quacc.recipes.qchem.ts import ts_job
+
     tmpdir.chdir()
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
@@ -381,11 +381,9 @@ def test_ts_job_v1(monkeypatch, tmpdir):
     qcinput_nearly_equal(qcin, ref_qcin)
 
 
-@pytest.mark.skipif(
-    sella is None,
-    reason="Sella must be installed.",
-)
 def test_ts_job_v2(monkeypatch, tmpdir):
+    from quacc.recipes.qchem.ts import ts_job
+
     tmpdir.chdir()
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute2)
     charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS, charge=-1)
@@ -415,11 +413,9 @@ def test_ts_job_v2(monkeypatch, tmpdir):
     qcinput_nearly_equal(qcin, ref_qcin)
 
 
-@pytest.mark.skipif(
-    sella is None,
-    reason="Sella must be installed.",
-)
 def test_ts_job_v3(monkeypatch, tmpdir):
+    from quacc.recipes.qchem.ts import ts_job
+
     tmpdir.chdir()
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
     overwrite_inputs = {"rem": {"mem_total": "170000"}}
@@ -445,11 +441,9 @@ def test_ts_job_v3(monkeypatch, tmpdir):
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826311086011256)
 
 
-@pytest.mark.skipif(
-    sella is None,
-    reason="Sella must be installed.",
-)
 def test_ts_job_v4(tmpdir):
+    from quacc.recipes.qchem.ts import ts_job
+
     tmpdir.chdir()
     with pytest.raises(ValueError):
         ts_job(TEST_ATOMS, 0, 1, pcm_dielectric="3.0", smd_solvent="water")
@@ -465,11 +459,9 @@ def test_ts_job_v4(tmpdir):
         )
 
 
-@pytest.mark.skipif(
-    sella is None,
-    reason="Sella must be installed.",
-)
 def test_irc_job_v1(monkeypatch, tmpdir):
+    from quacc.recipes.qchem.ts import irc_job
+
     tmpdir.chdir()
 
     monkeypatch.setattr(QChem, "read_results", mock_read)
@@ -536,11 +528,9 @@ def test_irc_job_v1(monkeypatch, tmpdir):
     assert output["parameters"]["spin_multiplicity"] == 1
 
 
-@pytest.mark.skipif(
-    sella is None,
-    reason="Sella must be installed.",
-)
 def test_irc_job_v2(tmpdir):
+    from quacc.recipes.qchem.ts import irc_job
+
     tmpdir.chdir()
     with pytest.raises(ValueError):
         irc_job(TEST_ATOMS, 0, 1, "straight")
@@ -567,11 +557,9 @@ def test_irc_job_v2(tmpdir):
         )
 
 
-@pytest.mark.skipif(
-    sella is None,
-    reason="Sella must be installed.",
-)
 def test_quasi_irc_job(monkeypatch, tmpdir):
+    from quacc.recipes.qchem.ts import quasi_irc_job
+
     tmpdir.chdir()
 
     monkeypatch.setattr(QChem, "read_results", mock_read)
@@ -631,6 +619,8 @@ def test_quasi_irc_job(monkeypatch, tmpdir):
 
 
 def test_internal_relax_job(monkeypatch, tmpdir):
+    from quacc.recipes.qchem.core import internal_relax_job
+
     tmpdir.chdir()
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)

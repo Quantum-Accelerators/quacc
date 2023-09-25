@@ -3,20 +3,15 @@ import os
 import pytest
 from maggma.stores import MemoryStore
 
-try:
-    import covalent as ct
+ct = pytest.importorskip("covalent")
 
-except ImportError:
-    ct = None
-
-
-@pytest.mark.skipif(
-    ct is None or os.environ.get("GITHUB_ACTIONS", False) is False,
+pytestmark = pytest.mark.skipif(
+    os.environ.get("GITHUB_ACTIONS", False) is False,
     reason="This test is only meant to be run on GitHub Actions with Covalent",
 )
-def test_covalent_to_db():
-    import covalent as ct
 
+
+def test_covalent_to_db():
     from quacc.utils.db import covalent_to_db
 
     @ct.electron
@@ -52,10 +47,6 @@ def test_covalent_to_db():
         covalent_to_db(store, dispatch_ids=["bad-value"], results_dir="bad-value")
 
 
-@pytest.mark.skipif(
-    ct is None or os.environ.get("GITHUB_ACTIONS", False) is False,
-    reason="This test is only meant to be run on GitHub Actions with Covalent",
-)
 def test_covalent_db_tutorial():
     # Connect to the database
 

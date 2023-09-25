@@ -5,9 +5,14 @@ from pathlib import Path
 import pytest
 from ase.build import molecule
 
-from quacc.recipes.orca.core import relax_job, static_job
+from quacc import SETTINGS
 
 FILE_DIR = Path(__file__).resolve().parent
+
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "local",
+    reason="Need to use local as workflow manager to run this test.",
+)
 
 
 def setup_module():
@@ -22,6 +27,8 @@ def teardown_module():
 
 
 def test_static_job(tmpdir):
+    from quacc.recipes.orca.core import static_job
+
     tmpdir.chdir()
 
     atoms = molecule("H2")
@@ -56,6 +63,8 @@ def test_static_job(tmpdir):
 
 @pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
 def test_relax_job(tmpdir):
+    from quacc.recipes.orca.core import relax_job
+
     tmpdir.chdir()
 
     atoms = molecule("H2")
@@ -96,6 +105,8 @@ def test_relax_job(tmpdir):
 
 @pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
 def test_mpi_run(tmpdir, monkeypatch):
+    from quacc.recipes.orca.core import relax_job, static_job
+
     tmpdir.chdir()
     monkeypatch.setenv("PATH", FILE_DIR)
 

@@ -1,9 +1,17 @@
+import pytest
 from ase.build import bulk, molecule
 
-from quacc.recipes.gulp.core import relax_job, static_job
+from quacc import SETTINGS
+
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "local",
+    reason="Need to use local as workflow manager to run this test.",
+)
 
 
 def test_static_job(tmpdir):
+    from quacc.recipes.gulp.core import static_job
+
     tmpdir.chdir()
 
     atoms = molecule("H2O")
@@ -59,6 +67,8 @@ def test_static_job(tmpdir):
 
 
 def test_relax_job(tmpdir):
+    from quacc.recipes.gulp.core import relax_job
+
     tmpdir.chdir()
 
     atoms = molecule("H2O")

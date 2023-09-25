@@ -3,11 +3,17 @@ import pytest
 from ase.build import bulk, molecule
 from ase.constraints import FixAtoms
 
-from quacc.recipes.emt.core import relax_job, static_job
-from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+from quacc import SETTINGS
+
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "local",
+    reason="Need to use local as workflow manager to run this test.",
+)
 
 
 def test_static_job(tmpdir):
+    from quacc.recipes.emt.core import static_job
+
     tmpdir.chdir()
 
     atoms = bulk("Cu") * (2, 2, 2)
@@ -25,6 +31,8 @@ def test_static_job(tmpdir):
 
 
 def test_relax_job(tmpdir):
+    from quacc.recipes.emt.core import relax_job
+
     tmpdir.chdir()
 
     atoms = bulk("Cu") * (2, 2, 2)
@@ -77,6 +85,8 @@ def test_relax_job(tmpdir):
 
 
 def test_slab_dynamic_jobs(tmpdir):
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
     tmpdir.chdir()
 
     atoms = bulk("Cu")

@@ -1,16 +1,15 @@
 import pytest
 
-from quacc import flow, job, subflow
+from quacc import SETTINGS, flow, job, subflow
 
-try:
-    import redun
+redun = pytest.importorskip("redun")
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "redun", reason="Redun must be the workflow engine"
+)
 
-    scheduler = redun.Scheduler()
-except ImportError:
-    redun = None
+scheduler = redun.Scheduler()
 
 
-@pytest.mark.skipif(redun is None, reason="Redun not installed")
 def test_redun_decorators(tmpdir):
     tmpdir.chdir()
 

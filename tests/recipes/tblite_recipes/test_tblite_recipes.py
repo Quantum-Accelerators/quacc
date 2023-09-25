@@ -5,21 +5,19 @@ import pytest
 from ase.build import molecule
 
 from quacc import SETTINGS
-from quacc.recipes.tblite.core import freq_job, relax_job, static_job
 
-try:
-    from tblite.ase import TBLite
-except ImportError:
-    TBLite = None
+pytest.importorskip("tblite.ase")
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "local",
+    reason="Need to use local as workflow manager to run this test.",
+)
 
 DEFAULT_SETTINGS = SETTINGS.copy()
 
 
-@pytest.mark.skipif(
-    TBLite is None,
-    reason="tblite must be installed.",
-)
 def test_static_job(tmpdir):
+    from quacc.recipes.tblite.core import static_job
+
     tmpdir.chdir()
 
     atoms = molecule("H2O")
@@ -36,11 +34,9 @@ def test_static_job(tmpdir):
     assert np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
 
 
-@pytest.mark.skipif(
-    TBLite is None,
-    reason="tblite must be installed.",
-)
 def test_relax_job(tmpdir):
+    from quacc.recipes.tblite.core import relax_job
+
     tmpdir.chdir()
 
     atoms = molecule("H2O")
@@ -53,11 +49,9 @@ def test_relax_job(tmpdir):
     assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
 
 
-@pytest.mark.skipif(
-    TBLite is None,
-    reason="tblite must be installed.",
-)
 def test_freq_job(tmpdir):
+    from quacc.recipes.tblite.core import freq_job
+
     tmpdir.chdir()
 
     atoms = molecule("H2O")
@@ -155,11 +149,9 @@ def test_freq_job(tmpdir):
     assert "dir_name" in output
 
 
-@pytest.mark.skipif(
-    TBLite is None,
-    reason="tblite must be installed.",
-)
 def test_unique_workdir(tmpdir):
+    pass
+
     SETTINGS.CREATE_UNIQUE_WORKDIR = True
     test_static_job(tmpdir)
     test_relax_job(tmpdir)

@@ -5,13 +5,18 @@ from ase.build import molecule
 from numpy.testing import assert_allclose
 
 from quacc import SETTINGS
-from quacc.recipes.orca.core import relax_job, static_job
 
 has_orca = bool(which(SETTINGS.ORCA_CMD))
 
+pytestmark = pytest.mark.skipif(
+    has_orca is False or SETTINGS.WORKFLOW_ENGINE != "local",
+    reason="Need ORCA and Need to use local as workflow manager to run this test.",
+)
 
-@pytest.mark.skipif(has_orca is False, reason="ORCA not installed")
+
 def test_static_job(tmpdir):
+    from quacc.recipes.orca.core import static_job
+
     tmpdir.chdir()
 
     atoms = molecule("H2")
@@ -44,8 +49,9 @@ def test_static_job(tmpdir):
     assert "%scf maxiter 300 end" in output["parameters"]["orcablocks"]
 
 
-@pytest.mark.skipif(has_orca is False, reason="ORCA not installed")
 def test_relax_job(tmpdir):
+    from quacc.recipes.orca.core import relax_job
+
     tmpdir.chdir()
 
     atoms = molecule("H2")

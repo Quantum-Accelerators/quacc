@@ -4,16 +4,22 @@ from shutil import which
 import pytest
 from ase.build import bulk, molecule
 
-from quacc.recipes.gulp.core import relax_job, static_job
+from quacc import SETTINGS
 
 has_gulp = bool(
     (bool(which("gulp")) or os.environ.get("ASE_GULP_COMMAND"))
     and os.environ.get("GULP_LIB")
 )
 
+pytestmark = pytest.mark.skipif(
+    has_gulp is False or SETTINGS.WORKFLOW_ENGINE != "local",
+    reason="Need GULP and Need to use local as workflow manager to run this test.",
+)
 
-@pytest.mark.skipif(has_gulp is False, reason="GULP not installed")
+
 def test_static_job(tmpdir):
+    from quacc.recipes.gulp.core import static_job
+
     tmpdir.chdir()
 
     atoms = molecule("H2O")
@@ -68,8 +74,9 @@ def test_static_job(tmpdir):
     assert "output cif gulp.cif" in output["parameters"]["options"]
 
 
-@pytest.mark.skipif(has_gulp is False, reason="GULP not installed")
 def test_relax_job(tmpdir):
+    from quacc.recipes.gulp.core import relax_job
+
     tmpdir.chdir()
 
     atoms = molecule("H2O")

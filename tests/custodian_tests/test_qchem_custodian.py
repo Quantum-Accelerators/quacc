@@ -1,10 +1,7 @@
 import pytest
 from custodian import Custodian
 
-try:
-    import openbabel as ob
-except ImportError:
-    ob = None
+ob = pytest.importorskip("openbabel")
 
 
 class MockRun:
@@ -33,10 +30,6 @@ def patch_custodian_run(monkeypatch):
     monkeypatch.setattr(Custodian, "run", mock_custodian_run)
 
 
-@pytest.mark.skipif(
-    ob is None,
-    reason="Openbabel needed for test.",
-)
 def test_run_qchem_custodian(monkeypatch):
     from quacc.custodian.qchem import run_custodian
 

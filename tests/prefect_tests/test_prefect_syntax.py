@@ -1,30 +1,22 @@
 import pytest
 
-from quacc import flow, job, subflow
+from quacc import SETTINGS, flow, job, subflow
 
-try:
-    import prefect
-    from prefect.testing.utilities import prefect_test_harness
-
-
-except ImportError:
-    prefect = None
-
-
-@pytest.mark.skipif(
-    prefect is None,
-    reason="This test requires Prefect",
+prefect = pytest.importorskip("prefect")
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "prefect",
+    reason="This test requires Prefect as the workflow engine",
 )
+
+
 @pytest.fixture(autouse=True, scope="session")
 def prefect_test_fixture():
+    from prefect.testing.utilities import prefect_test_harness
+
     with prefect_test_harness():
         yield
 
 
-@pytest.mark.skipif(
-    prefect is None,
-    reason="This test requires Prefect",
-)
 def test_prefect_decorators(tmpdir):
     tmpdir.chdir()
 

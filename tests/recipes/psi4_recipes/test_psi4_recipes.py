@@ -1,19 +1,19 @@
 import pytest
 from ase.build import molecule
 
-from quacc.recipes.psi4.core import static_job
+from quacc import SETTINGS
 
-try:
-    import psi4
-except ImportError:
-    psi4 = None
+psi4 = pytest.importorskip("psi4")
 
-
-@pytest.mark.skipif(
-    psi4 is None,
-    reason="Psi4 must be installed. Try conda install -c psi4 psi4",
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "local",
+    reason="Need to use local as workflow manager to run this test.",
 )
+
+
 def test_static(tmpdir):
+    from quacc.recipes.psi4.core import static_job
+
     tmpdir.chdir()
 
     atoms = molecule("H2")

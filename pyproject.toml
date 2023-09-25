@@ -77,7 +77,7 @@ exclude = ["**/__pycache__"]
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = ["-p no:warnings"]
+addopts = ["-p no:warnings", "--import-mode=importlib"]
 xfail_strict = true
 log_cli_level = "warn"
 testpaths = ["tests"]
@@ -101,6 +101,7 @@ source = ["src"]
 exclude_lines = [
     "if TYPE_CHECKING:",
     "if __name__ == .__main__.:",
+    "except ImportError:",
 ]
 
 [tool.ruff]

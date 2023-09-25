@@ -1,6 +1,4 @@
-import contextlib
 import os
-import subprocess
 from pathlib import Path
 from shutil import rmtree
 
@@ -16,14 +14,6 @@ def pytest_sessionstart():
     SETTINGS.SCRATCH_DIR = TEST_SCRATCH_DIR
     os.makedirs(SETTINGS.RESULTS_DIR, exist_ok=True)
     os.makedirs(SETTINGS.SCRATCH_DIR, exist_ok=True)
-
-    if SETTINGS.WORKFLOW_ENGINE == "covalent":
-        subprocess.run(["covalent", "start"], check=True)
-    elif SETTINGS.WORKFLOW_ENGINE == "parsl":
-        import parsl
-
-        with contextlib.suppress(Exception):
-            parsl.load()
 
 
 def pytest_sessionfinish():
