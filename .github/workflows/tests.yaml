@@ -127,7 +127,7 @@ jobs:
         run: quacc set WORKFLOW_ENGINE ${{ matrix.wflow_engine }}
 
       - name: Run tests with pytest
-        run: pytest tests/${{ matrix.wflow_engine }}_tests --cov=quacc --cov-report=xml
+        run: pytest -k ${{ matrix.wflow_engine }} --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
