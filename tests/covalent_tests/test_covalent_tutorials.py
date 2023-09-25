@@ -7,7 +7,7 @@ from quacc.recipes.emt.core import relax_job, static_job
 ct = pytest.importorskip("covalent")
 
 
-pyttestmark = pytest.mark.skipif(
+pytestmark = pytest.mark.skipif(
     SETTINGS.WORKFLOW_ENGINE != "covalent",
     reason="This test requires Covalent as the workflow engine",
 )
