@@ -14,7 +14,7 @@ def setup_module():
 
     try:
         DataFlowKernelLoader.dfk()
-    except ConfigurationError:
+    except (RuntimeError, ConfigurationError):
         parsl.load()
 
 
