@@ -16,7 +16,10 @@ from quacc.calculators.qchem import QChem
 from quacc.utils import check_charge_and_spin
 
 pytest.importorskip("sella")
-
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "local",
+    reason="Need to use local as workflow manager to run this test.",
+)
 
 FILE_DIR = Path(__file__).resolve().parent
 QCHEM_DIR = os.path.join(FILE_DIR, "qchem_examples")

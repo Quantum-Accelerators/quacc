@@ -1,7 +1,14 @@
 import pytest
 from ase.build import molecule
 
+from quacc import SETTINGS
+
 psi4 = pytest.importorskip("psi4")
+
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "local",
+    reason="Need to use local as workflow manager to run this test.",
+)
 
 
 def test_static(tmpdir):
