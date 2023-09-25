@@ -21,7 +21,7 @@ from pymatgen.io.ase import AseAtomsAdaptor
 from quacc import SETTINGS
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.utils.atoms import prep_next_run as prep_next_run_
-from quacc.utils.db import results_to_db
+from quacc.wflow.db import results_to_db
 from quacc.utils.dicts import clean_dict
 from quacc.utils.files import find_recent_logfile, get_uri
 

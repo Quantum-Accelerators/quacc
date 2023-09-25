@@ -1,7 +1,7 @@
 import pytest
 
 try:
-    from quacc.utils.wflows import _make_dask_cluster, make_prefect_runner
+    from quacc.wflow.prefect import _make_dask_cluster, make_prefect_runner
 
     from dask_jobqueue import PBSCluster, SLURMCluster  # isort: skip
     from prefect_dask.task_runners import DaskTaskRunner  # isort: skip

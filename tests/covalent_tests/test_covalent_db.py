@@ -12,7 +12,7 @@ pytestmark = pytest.mark.skipif(
 
 
 def test_covalent_to_db():
-    from quacc.utils.db import covalent_to_db
+    from quacc.wflow.db import covalent_to_db
 
     @ct.electron
     def add(a, b):
