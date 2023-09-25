@@ -9,7 +9,7 @@ from ase.calculators.lj import LennardJones
 from ase.optimize import BFGS, BFGSLineSearch
 
 from quacc import SETTINGS
-from quacc.runners import run_ase_opt, run_ase_vib, run_calc
+from quacc.runners.calc import run_ase_opt, run_ase_vib, run_calc
 
 DEFAULT_SETTINGS = SETTINGS.copy()
 
