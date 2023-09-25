@@ -1,6 +1,13 @@
 import pytest
 from ase.build import bulk, molecule
 
+from quacc import SETTINGS
+
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "local",
+    reason="Need to use local as workflow manager to run this test.",
+)
+
 
 def test_static_job(tmpdir):
     from quacc.recipes.vasp.core import static_job
