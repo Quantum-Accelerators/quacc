@@ -69,7 +69,7 @@ class QuaccSettings(BaseSettings):
         ),
     )
     SCRATCH_DIR: Union[str, Path] = Field(
-        Path("/tmp") if Path("/tmp").exists() else Path.cwd(),
+        Path.cwd(),
         description="Scratch directory for calculations.",
     )
     CREATE_UNIQUE_WORKDIR: bool = Field(
