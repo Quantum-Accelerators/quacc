@@ -207,9 +207,7 @@ jobs:
           activate-environment: quacc-env
 
       - name: Install conda packages
-        run: |
-          conda install -n base conda-libmamba-solver
-          conda install -c conda-forge dftbplus
+        run: conda install -c conda-forge dftbplus
 
       - name: Install pip packages
         run: |
@@ -253,9 +251,7 @@ jobs:
           activate-environment: quacc-env
 
       - name: Install conda packages
-        run: |
-          conda install -n base conda-libmamba-solver
-          conda install -c conda-forge openbabel
+        run: conda install -c conda-forge openbabel
 
       - name: Install pip packages
         run: |
