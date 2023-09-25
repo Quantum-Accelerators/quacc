@@ -15,10 +15,7 @@ from quacc import SETTINGS
 from quacc.calculators.qchem import QChem
 from quacc.utils import check_charge_and_spin
 
-try:
-    import sella
-except ImportError:
-    sella = None
+pytest.importorskip("sella")
 
 
 FILE_DIR = Path(__file__).resolve().parent
@@ -212,10 +209,6 @@ def test_static_job_v5(tmpdir):
         static_job(TEST_ATOMS, 0, 1, pcm_dielectric="3.0", smd_solvent="water")
 
 
-@pytest.mark.skipif(
-    sella is None,
-    reason="Sella must be installed.",
-)
 def test_relax_job_v1(monkeypatch, tmpdir):
     from quacc.recipes.qchem.core import relax_job
 
@@ -249,10 +242,6 @@ def test_relax_job_v1(monkeypatch, tmpdir):
     assert len(output["results"]["qc_input"]) > 1
 
 
-@pytest.mark.skipif(
-    sella is None,
-    reason="Sella must be installed.",
-)
 def test_relax_job_v2(monkeypatch, tmpdir):
     from quacc.recipes.qchem.core import relax_job
 
@@ -285,10 +274,6 @@ def test_relax_job_v2(monkeypatch, tmpdir):
     qcinput_nearly_equal(qcin, ref_qcin)
 
 
-@pytest.mark.skipif(
-    sella is None,
-    reason="Sella must be installed.",
-)
 def test_relax_job_v3(monkeypatch, tmpdir):
     from quacc.recipes.qchem.core import relax_job
 
@@ -317,10 +302,6 @@ def test_relax_job_v3(monkeypatch, tmpdir):
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826311086011256)
 
 
-@pytest.mark.skipif(
-    sella is None,
-    reason="Sella must be installed.",
-)
 def test_relax_job_v4(tmpdir):
     from quacc.recipes.qchem.core import relax_job
 
@@ -365,10 +346,6 @@ def test_freq_job_v1(monkeypatch, tmpdir):
     )
 
 
-@pytest.mark.skipif(
-    sella is None,
-    reason="Sella must be installed.",
-)
 def test_ts_job_v1(monkeypatch, tmpdir):
     from quacc.recipes.qchem.ts import ts_job
 
@@ -401,10 +378,6 @@ def test_ts_job_v1(monkeypatch, tmpdir):
     qcinput_nearly_equal(qcin, ref_qcin)
 
 
-@pytest.mark.skipif(
-    sella is None,
-    reason="Sella must be installed.",
-)
 def test_ts_job_v2(monkeypatch, tmpdir):
     from quacc.recipes.qchem.ts import ts_job
 
@@ -437,10 +410,6 @@ def test_ts_job_v2(monkeypatch, tmpdir):
     qcinput_nearly_equal(qcin, ref_qcin)
 
 
-@pytest.mark.skipif(
-    sella is None,
-    reason="Sella must be installed.",
-)
 def test_ts_job_v3(monkeypatch, tmpdir):
     from quacc.recipes.qchem.ts import ts_job
 
@@ -469,10 +438,6 @@ def test_ts_job_v3(monkeypatch, tmpdir):
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826311086011256)
 
 
-@pytest.mark.skipif(
-    sella is None,
-    reason="Sella must be installed.",
-)
 def test_ts_job_v4(tmpdir):
     from quacc.recipes.qchem.ts import ts_job
 
@@ -491,10 +456,6 @@ def test_ts_job_v4(tmpdir):
         )
 
 
-@pytest.mark.skipif(
-    sella is None,
-    reason="Sella must be installed.",
-)
 def test_irc_job_v1(monkeypatch, tmpdir):
     from quacc.recipes.qchem.ts import irc_job
 
@@ -564,10 +525,6 @@ def test_irc_job_v1(monkeypatch, tmpdir):
     assert output["parameters"]["spin_multiplicity"] == 1
 
 
-@pytest.mark.skipif(
-    sella is None,
-    reason="Sella must be installed.",
-)
 def test_irc_job_v2(tmpdir):
     from quacc.recipes.qchem.ts import irc_job
 
@@ -597,10 +554,6 @@ def test_irc_job_v2(tmpdir):
         )
 
 
-@pytest.mark.skipif(
-    sella is None,
-    reason="Sella must be installed.",
-)
 def test_quasi_irc_job(monkeypatch, tmpdir):
     from quacc.recipes.qchem.ts import quasi_irc_job
 

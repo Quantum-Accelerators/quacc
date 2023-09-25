@@ -9,11 +9,12 @@ from quacc import SETTINGS
 DFTBPLUS_EXISTS = bool(which("dftb+"))
 DEFAULT_SETTINGS = SETTINGS.copy()
 
-
-@pytest.mark.skipif(
-    DFTBPLUS_EXISTS is False,
-    reason="DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
+pytestmark = pytest.mark.skipif(
+    DFTBPLUS_EXISTS is False or SETTINGS.WORKFLOW_ENGINE != "local",
+    reason="Need DFTB+ and Need to use local as workflow manager to run this test.",
 )
+
+
 def test_static_job(tmpdir):
     from quacc.recipes.dftb.core import static_job
 
@@ -54,10 +55,6 @@ def test_static_job(tmpdir):
         output = static_job(atoms, calc_swaps={"Hamiltonian_MaxSccIterations": 1})
 
 
-@pytest.mark.skipif(
-    DFTBPLUS_EXISTS is False,
-    reason="DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
-)
 def test_relax_job(tmpdir):
     from quacc.recipes.dftb.core import relax_job
 
@@ -122,10 +119,6 @@ def test_relax_job(tmpdir):
         relax_job(atoms, kpts=(3, 3, 3), calc_swaps={"MaxSteps": 1})
 
 
-@pytest.mark.skipif(
-    DFTBPLUS_EXISTS is False,
-    reason="DFTB+ must be installed. Try conda install -c conda-forge dftbplus",
-)
 def test_unique_workdir(tmpdir):
     pass
 

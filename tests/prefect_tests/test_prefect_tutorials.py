@@ -1,25 +1,22 @@
 import pytest
 
-try:
-    import prefect
-    from prefect.testing.utilities import prefect_test_harness
+from quacc import SETTINGS
 
-
-except ImportError:
-    prefect = None
-
-
-@pytest.mark.skipif(
-    prefect is None,
-    reason="This test requires Prefect",
+prefect = pytest.importorskip("prefect")
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "prefect",
+    reason="This test requires Prefect as the workflow engine",
 )
+
+
 @pytest.fixture(autouse=True, scope="session")
 def prefect_test_fixture():
+    from prefect.testing.utilities import prefect_test_harness
+
     with prefect_test_harness():
         yield
 
 
-@pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
 def test_tutorial1a(tmpdir):
     tmpdir.chdir()
 
@@ -44,7 +41,6 @@ def test_tutorial1a(tmpdir):
     assert "atoms" in result
 
 
-# @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
 # def test_tutorial1b(tmpdir):
 #     tmpdir.chdir()
 #     from ase.build import bulk
@@ -63,7 +59,6 @@ def test_tutorial1a(tmpdir):
 #         assert "atom" in result
 
 
-@pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
 def test_tutorial2a(tmpdir):
     tmpdir.chdir()
 
@@ -89,7 +84,6 @@ def test_tutorial2a(tmpdir):
     assert "atoms" in result
 
 
-@pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
 def test_tutorial2b(tmpdir):
     tmpdir.chdir()
     from ase.build import bulk, molecule
@@ -120,7 +114,6 @@ def test_tutorial2b(tmpdir):
     assert "atoms" in result2
 
 
-# @pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
 # def test_tutorial2c(tmpdir):
 #     tmpdir.chdir()
 
@@ -148,7 +141,6 @@ def test_tutorial2b(tmpdir):
 #         assert "atoms" in result
 
 
-@pytest.mark.skipif(prefect is None, reason="Prefect is not installed")
 def test_comparison(tmpdir):
     tmpdir.chdir()
     from quacc import flow, job

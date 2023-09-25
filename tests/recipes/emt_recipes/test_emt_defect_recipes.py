@@ -1,13 +1,15 @@
 import pytest
 from ase.build import bulk
 
-try:
-    from pymatgen.analysis import defects
-except ImportError:
-    defects = None
+from quacc import SETTINGS
+
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "local",
+    reason="Need to use local as workflow manager to run this test.",
+)
+defects = pytest.importorskip("pymatgen.analysis.defects")
 
 
-@pytest.mark.skipif(defects is None, reason="pymatgen-analysis-defects needed")
 def test_bulk_to_defects_flow(tmpdir):
     from quacc.recipes.emt.defects import bulk_to_defects_flow
 

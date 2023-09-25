@@ -10,11 +10,12 @@ try:
 except ImportError:
     dask_prefect = None
 
-
-@pytest.mark.skipif(
+pytestmark = pytest.mark.skipif(
     dask_prefect is None,
     reason="Dask and Prefect dependencies must be installed.",
 )
+
+
 def test_make_prefect_runner():
     cluster_kwargs = {
         "cores": 1,
@@ -75,10 +76,6 @@ def test_make_prefect_runner():
     runner = make_prefect_runner(cluster_kwargs, adapt_kwargs=adapt_kwargs)
 
 
-@pytest.mark.skipif(
-    dask_prefect is None,
-    reason="Dask and Prefect dependencies must be installed.",
-)
 def test_make_dask_cluster():
     from dask_jobqueue import SLURMCluster
 

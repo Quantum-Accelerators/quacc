@@ -7,18 +7,14 @@ from ase.build import molecule
 
 from quacc import SETTINGS
 
-try:
-    from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
-except ImportError:
-    NewtonNet = None
-
-try:
-    import sella
-except ImportError:
-    sella = None
-
 CURRENT_FILE_PATH = Path(__file__).parent.resolve()
 DEFAULT_SETTINGS = SETTINGS.copy()
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "local",
+    reason="Need to use local as workflow manager to run this test.",
+)
+pytest.importorskip("sella")
+pytest.importorskip("newtonnet.utils.ase_interface.MLAseCalculator")
 
 
 def setup_module():
@@ -35,10 +31,6 @@ def teardown_module():
     SETTINGS.CHECK_CONVERGENCE = DEFAULT_SETTINGS.CHECK_CONVERGENCE
 
 
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
 def test_static_job(tmpdir):
     from quacc.recipes.newtonnet.core import static_job
 
@@ -52,10 +44,6 @@ def test_static_job(tmpdir):
     assert np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
 
 
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
 def test_relax_job(tmpdir):
     from quacc.recipes.newtonnet.core import relax_job
 
@@ -71,10 +59,6 @@ def test_relax_job(tmpdir):
     assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
 
 
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
 def test_freq_job(tmpdir):
     from quacc.recipes.newtonnet.core import freq_job
 
@@ -129,10 +113,6 @@ def test_freq_job(tmpdir):
     assert output["thermo"]["atoms"] == molecule("CH3")
 
 
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
 def test_ts_job_with_default_args(tmpdir):
     from quacc.recipes.newtonnet.ts import ts_job
 
@@ -155,10 +135,6 @@ def test_ts_job_with_default_args(tmpdir):
     )
 
 
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
 def test_ts_job_with_custom_hessian(tmpdir):
     from quacc.recipes.newtonnet.ts import ts_job
 
@@ -184,10 +160,6 @@ def test_ts_job_with_custom_hessian(tmpdir):
     assert "thermo" in output["freq_job"]
 
 
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
 def test_irc_job_with_default_args(tmpdir):
     from quacc.recipes.newtonnet.ts import irc_job
 
@@ -207,10 +179,6 @@ def test_irc_job_with_default_args(tmpdir):
     )
 
 
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
 def test_irc_job_with_custom_fmax(tmpdir):
     from quacc.recipes.newtonnet.ts import irc_job
 
@@ -231,10 +199,6 @@ def test_irc_job_with_custom_fmax(tmpdir):
     )
 
 
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
 def test_irc_job_with_custom_max_steps(tmpdir):
     from quacc.recipes.newtonnet.ts import irc_job
 
@@ -255,10 +219,6 @@ def test_irc_job_with_custom_max_steps(tmpdir):
     )
 
 
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
 def test_irc_job_with_custom_temperature_and_pressure(tmpdir):
     from quacc.recipes.newtonnet.ts import irc_job
 
@@ -282,10 +242,6 @@ def test_irc_job_with_custom_temperature_and_pressure(tmpdir):
     )
 
 
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
 def test_irc_job_with_custom_opt_swaps(tmpdir):
     from quacc.recipes.newtonnet.ts import irc_job
 
@@ -306,10 +262,6 @@ def test_irc_job_with_custom_opt_swaps(tmpdir):
     )
 
 
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
 def test_quasi_irc_job_with_default_args(tmpdir):
     from quacc.recipes.newtonnet.ts import quasi_irc_job
 
@@ -330,10 +282,6 @@ def test_quasi_irc_job_with_default_args(tmpdir):
     )
 
 
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
 def test_quasi_irc_job_with_custom_direction(tmpdir):
     from quacc.recipes.newtonnet.ts import quasi_irc_job
 
@@ -357,10 +305,6 @@ def test_quasi_irc_job_with_custom_direction(tmpdir):
     )
 
 
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
 def test_quasi_irc_job_with_custom_temperature_and_pressure(tmpdir):
     from quacc.recipes.newtonnet.ts import quasi_irc_job
 
@@ -386,10 +330,6 @@ def test_quasi_irc_job_with_custom_temperature_and_pressure(tmpdir):
     )
 
 
-@pytest.mark.skipif(
-    NewtonNet is None or sella is None,
-    reason="NewtonNet and Sella must be installed.",
-)
 def test_quasi_irc_job_with_custom_irc_swaps(tmpdir):
     from quacc.recipes.newtonnet.ts import quasi_irc_job
 

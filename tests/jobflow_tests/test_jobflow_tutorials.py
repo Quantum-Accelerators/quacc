@@ -1,20 +1,18 @@
 import pytest
 from maggma.stores import MemoryStore
 
-try:
-    import jobflow as jf
+from quacc import SETTINGS
 
-except ImportError:
-    jf = None
+jf = pytest.importorskip("jobflow")
 
-if jf:
-    STORE = jf.JobStore(MemoryStore())
-
-
-@pytest.mark.skipif(
-    jf is None,
-    reason="Jobflow is not installed or specified in config",
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "jobflow",
+    reason="Jobflow needs to be the workflow engine",
 )
+
+STORE = jf.JobStore(MemoryStore())
+
+
 def test_tutorial1a(tmpdir):
     tmpdir.chdir()
     import jobflow as jf
@@ -32,10 +30,6 @@ def test_tutorial1a(tmpdir):
     jf.run_locally(job, create_folders=True, ensure_success=True)
 
 
-@pytest.mark.skipif(
-    jf is None,
-    reason="Jobflow is not installed or specified in config",
-)
 def test_tutorial2a(tmpdir):
     tmpdir.chdir()
 
@@ -60,10 +54,6 @@ def test_tutorial2a(tmpdir):
     jf.run_locally(workflow, create_folders=True, ensure_success=True)
 
 
-@pytest.mark.skipif(
-    jf is None,
-    reason="Jobflow is not installed or specified in config",
-)
 def test_tutorial2b(tmpdir):
     tmpdir.chdir()
 
@@ -87,10 +77,6 @@ def test_tutorial2b(tmpdir):
     jf.run_locally(workflow, create_folders=True, ensure_success=True)
 
 
-@pytest.mark.skipif(
-    jf is None,
-    reason="Jobflow is not installed or specified in config",
-)
 def test_comparison1(tmpdir):
     tmpdir.chdir()
 
@@ -114,10 +100,6 @@ def test_comparison1(tmpdir):
     assert responses[job2.uuid][1].output == 9
 
 
-@pytest.mark.skipif(
-    jf is None,
-    reason="Jobflow is not installed or specified in config",
-)
 def test_comparison2(tmpdir):
     tmpdir.chdir()
 
@@ -146,10 +128,6 @@ def test_comparison2(tmpdir):
     jf.run_locally(flow, ensure_success=True)  # [6, 6, 6] in final 3 jobs
 
 
-@pytest.mark.skipif(
-    jf is None,
-    reason="Jobflow is not installed or specified in config",
-)
 def test_comparison3(tmpdir):
     tmpdir.chdir()
     import jobflow as jf
@@ -171,10 +149,6 @@ def test_comparison3(tmpdir):
     jf.run_locally(flow, ensure_success=True)
 
 
-@pytest.mark.skipif(
-    jf is None,
-    reason="Jobflow is not installed or specified in config",
-)
 def test_comparison4(tmpdir):
     tmpdir.chdir()
 

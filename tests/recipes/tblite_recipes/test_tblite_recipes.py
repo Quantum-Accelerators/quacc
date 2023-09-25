@@ -6,18 +6,10 @@ from ase.build import molecule
 
 from quacc import SETTINGS
 
-try:
-    from tblite.ase import TBLite
-except ImportError:
-    TBLite = None
-
+TBLite = pytest.importorskip("tblite.ase.TBLite")
 DEFAULT_SETTINGS = SETTINGS.copy()
 
 
-@pytest.mark.skipif(
-    TBLite is None,
-    reason="tblite must be installed.",
-)
 def test_static_job(tmpdir):
     from quacc.recipes.tblite.core import static_job
 
@@ -37,10 +29,6 @@ def test_static_job(tmpdir):
     assert np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
 
 
-@pytest.mark.skipif(
-    TBLite is None,
-    reason="tblite must be installed.",
-)
 def test_relax_job(tmpdir):
     from quacc.recipes.tblite.core import relax_job
 
@@ -56,10 +44,6 @@ def test_relax_job(tmpdir):
     assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
 
 
-@pytest.mark.skipif(
-    TBLite is None,
-    reason="tblite must be installed.",
-)
 def test_freq_job(tmpdir):
     from quacc.recipes.tblite.core import freq_job
 
@@ -160,10 +144,6 @@ def test_freq_job(tmpdir):
     assert "dir_name" in output
 
 
-@pytest.mark.skipif(
-    TBLite is None,
-    reason="tblite must be installed.",
-)
 def test_unique_workdir(tmpdir):
     pass
 

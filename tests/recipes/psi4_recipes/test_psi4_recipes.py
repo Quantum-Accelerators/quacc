@@ -1,17 +1,9 @@
 import pytest
 from ase.build import molecule
 
-try:
-    import psi4
-
-except ImportError:
-    psi4 = None
+psi4 = pytest.importorskip("psi4")
 
 
-@pytest.mark.skipif(
-    psi4 is None,
-    reason="Psi4 must be installed. Try conda install -c psi4 psi4",
-)
 def test_static(tmpdir):
     from quacc.recipes.psi4.core import static_job
 

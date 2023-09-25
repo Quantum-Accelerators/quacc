@@ -1,27 +1,24 @@
-import contextlib
 
 import pytest
 
 from quacc import SETTINGS
 
-try:
-    import parsl
-
-
-except ImportError:
-    parsl = None
+parsl = pytest.importorskip("parsl")
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "parsl", reason="Parsl needs to be the workflow engine"
+)
 
 
 def setup_module():
-    if SETTINGS.WORKFLOW_ENGINE == "parsl":
-        with contextlib.suppress(Exception):
-            parsl.load()
+    from parsl.dataflow.dflow import DataFlowKernelLoader
+    from parsl.errors import ConfigurationError
+
+    try:
+        DataFlowKernelLoader.dfk()
+    except ConfigurationError:
+        parsl.load()
 
 
-@pytest.mark.skipif(
-    parsl is None,
-    reason="Parsl is not installed or specified in config",
-)
 def test_tutorial1a(tmpdir):
     tmpdir.chdir()
 
@@ -39,10 +36,6 @@ def test_tutorial1a(tmpdir):
     assert "atoms" in future.result()  # (2)!
 
 
-@pytest.mark.skipif(
-    parsl is None,
-    reason="Parsl is not installed or specified in config",
-)
 def test_tutorial1b(tmpdir):
     tmpdir.chdir()
 
@@ -73,10 +66,6 @@ def test_tutorial1b(tmpdir):
     assert "atoms" in future.result()[0]  # (2)!
 
 
-@pytest.mark.skipif(
-    parsl is None,
-    reason="Parsl is not installed or specified in config",
-)
 def test_tutorial2a(tmpdir):
     tmpdir.chdir()
 
@@ -103,10 +92,6 @@ def test_tutorial2a(tmpdir):
     assert "atoms" in result
 
 
-@pytest.mark.skipif(
-    parsl is None,
-    reason="Parsl is not installed or specified in config",
-)
 def test_tutorial2b(tmpdir):
     tmpdir.chdir()
 
@@ -138,10 +123,6 @@ def test_tutorial2b(tmpdir):
     assert "atoms" in result2
 
 
-@pytest.mark.skipif(
-    parsl is None,
-    reason="Parsl is not installed or specified in config",
-)
 def test_tutorial2c(tmpdir):
     tmpdir.chdir()
 
@@ -168,10 +149,6 @@ def test_tutorial2c(tmpdir):
     assert len(result) == 4
 
 
-@pytest.mark.skipif(
-    parsl is None,
-    reason="Parsl is not installed or specified in config",
-)
 def test_comparison1(tmpdir):
     tmpdir.chdir()
 
@@ -192,10 +169,6 @@ def test_comparison1(tmpdir):
     assert result == 9
 
 
-@pytest.mark.skipif(
-    parsl is None,
-    reason="Parsl is not installed or specified in config",
-)
 def test_comparison2(tmpdir):
     tmpdir.chdir()
 
@@ -220,10 +193,6 @@ def test_comparison2(tmpdir):
     assert future3.result() == [6, 6, 6]
 
 
-@pytest.mark.skipif(
-    parsl is None,
-    reason="Parsl is not installed or specified in config",
-)
 def test_comparison3(tmpdir):
     tmpdir.chdir()
     from quacc import job
@@ -242,10 +211,6 @@ def test_comparison3(tmpdir):
     assert future2.result() == 9
 
 
-@pytest.mark.skipif(
-    parsl is None,
-    reason="Parsl is not installed or specified in config",
-)
 def test_comparison4(tmpdir):
     tmpdir.chdir()
     from quacc import job, subflow

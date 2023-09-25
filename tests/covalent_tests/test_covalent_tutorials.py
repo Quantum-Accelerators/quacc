@@ -1,17 +1,18 @@
 import pytest
 from ase.build import bulk
 
-from quacc import flow
+from quacc import SETTINGS, flow
 from quacc.recipes.emt.core import relax_job, static_job
 
-try:
-    import covalent as ct
-
-except ImportError:
-    ct = None
+ct = pytest.importorskip("covalent")
 
 
-@pytest.mark.skipif(ct is None, reason="This test requires Covalent")
+pyttestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "covalent",
+    reason="This test requires Covalent as the workflow engine",
+)
+
+
 def test_quickstart(tmpdir):
     tmpdir.chdir()
 
@@ -31,7 +32,6 @@ def test_quickstart(tmpdir):
     assert result.status == "COMPLETED"
 
 
-@pytest.mark.skipif(ct is None, reason="This test requires Covalent")
 def test_tutorial1a(tmpdir):
     tmpdir.chdir()
 
@@ -56,7 +56,6 @@ def test_tutorial1a(tmpdir):
     assert result.status == "COMPLETED"
 
 
-@pytest.mark.skipif(ct is None, reason="This test requires Covalent")
 def test_tutorial1b(tmpdir):
     tmpdir.chdir()
 
@@ -71,7 +70,6 @@ def test_tutorial1b(tmpdir):
     assert result.status == "COMPLETED"
 
 
-@pytest.mark.skipif(ct is None, reason="This test requires Covalent")
 def test_tutorial2a(tmpdir):
     tmpdir.chdir()
     import covalent as ct
@@ -101,7 +99,6 @@ def test_tutorial2a(tmpdir):
     assert result.status == "COMPLETED"
 
 
-@pytest.mark.skipif(ct is None, reason="This test requires Covalent")
 def test_tutorial2b(tmpdir):
     tmpdir.chdir()
 
@@ -131,7 +128,6 @@ def test_tutorial2b(tmpdir):
     assert result.status == "COMPLETED"
 
 
-@pytest.mark.skipif(ct is None, reason="This test requires Covalent")
 def test_tutorial2c(tmpdir):
     tmpdir.chdir()
 
@@ -153,7 +149,6 @@ def test_tutorial2c(tmpdir):
     assert result.status == "COMPLETED"
 
 
-@pytest.mark.skipif(ct is None, reason="This test requires Covalent")
 def test_tutorial_excecutor1(tmpdir):
     tmpdir.chdir()
 
@@ -168,7 +163,6 @@ def test_tutorial_excecutor1(tmpdir):
     assert result.status == "COMPLETED"
 
 
-@pytest.mark.skipif(ct is None, reason="This test requires Covalent")
 def test_tutorial_excecutor2(tmpdir):
     tmpdir.chdir()
 
@@ -186,7 +180,6 @@ def test_tutorial_excecutor2(tmpdir):
     assert result.status == "COMPLETED"
 
 
-@pytest.mark.skipif(ct is None, reason="This test requires Covalent")
 def test_comparison1(tmpdir):
     tmpdir.chdir()
 
@@ -215,7 +208,6 @@ def test_comparison1(tmpdir):
     assert result.status == "COMPLETED"
 
 
-@pytest.mark.skipif(ct is None, reason="This test requires Covalent")
 def test_comparison2(tmpdir):
     tmpdir.chdir()
 
@@ -251,7 +243,6 @@ def test_comparison2(tmpdir):
     assert result.status == "COMPLETED"
 
 
-@pytest.mark.skipif(ct is None, reason="This test requires Covalent")
 def test_comparison3(tmpdir):
     tmpdir.chdir()
     import covalent as ct
@@ -275,7 +266,6 @@ def test_comparison3(tmpdir):
     assert result.status == "COMPLETED"
 
 
-@pytest.mark.skipif(ct is None, reason="This test requires Covalent")
 def test_comparison4(tmpdir):
     tmpdir.chdir()
 
