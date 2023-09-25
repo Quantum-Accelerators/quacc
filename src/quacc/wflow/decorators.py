@@ -164,7 +164,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     elif wflow_engine == "redun":
         from redun import task as redun_task
 
-        decorated = redun_tasktask(_func, **kwargs)
+        decorated = redun_task(_func, **kwargs)
     elif wflow_engine == "prefect":
         return _inner
     else:
