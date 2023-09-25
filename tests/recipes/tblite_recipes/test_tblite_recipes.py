@@ -150,7 +150,6 @@ def test_freq_job(tmpdir):
 
 
 def test_unique_workdir(tmpdir):
-
     SETTINGS.CREATE_UNIQUE_WORKDIR = True
     test_static_job(tmpdir)
     test_relax_job(tmpdir)
