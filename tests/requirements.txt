@@ -3,7 +3,7 @@ cclib==1.8
 custodian==2023.7.22
 emmet-core==0.68.0
 maggma==0.56.0
-monty==2023.9.5
+monty==2023.9.25
 numpy==1.26.0
 pydantic==1.10.2
 pymatgen==2023.9.10
