@@ -1,5 +1,6 @@
 import os
 
+import pytest
 from ase.build import bulk
 from maggma.stores import MemoryStore
 
@@ -45,6 +46,10 @@ def test_store(tmpdir):
     static_job(atoms)
 
 
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "local",
+    reason="Need to be using local workflow engine.",
+)
 def test_results_dir(tmpdir):
     tmpdir.chdir()
 
