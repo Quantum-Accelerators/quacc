@@ -102,7 +102,7 @@ def relax_job(
     calc_swaps
         Dictionary of custom kwargs for the LJ calculator.
     opt_swaps
-        Dictionary of swaps for [quacc.utils.calc.run_ase_opt][].
+        Dictionary of swaps for [quacc.runners.calc.run_ase_opt][].
     copy_files
         Files to copy to the runtime directory.
 

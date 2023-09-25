@@ -120,7 +120,7 @@ def relax_job(
     calc_swaps
         Dictionary of custom kwargs for the tblite calculator.
     opt_swaps
-        Dictionary of custom kwargs for [quacc.utils.calc.run_ase_opt][].
+        Dictionary of custom kwargs for [quacc.runners.calc.run_ase_opt][].
     copy_files
         Files to copy to the runtime directory.
 
