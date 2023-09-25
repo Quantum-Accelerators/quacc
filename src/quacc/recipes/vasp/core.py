@@ -5,9 +5,9 @@ from typing import TYPE_CHECKING
 
 from quacc import job
 from quacc.calculators.vasp import Vasp
+from quacc.runners.calc import run_calc
 from quacc.schemas import fetch_atoms
 from quacc.schemas.vasp import vasp_summarize_run
-from quacc.utils.calc import run_calc
 from quacc.utils.dicts import merge_dicts
 
 if TYPE_CHECKING:

@@ -21,7 +21,8 @@ from pymatgen.symmetry.bandstructure import HighSymmKpath
 
 from quacc import SETTINGS
 from quacc.custodian import vasp as custodian_vasp
-from quacc.utils.atoms import check_is_metal, set_magmoms
+from quacc.runners.prep import set_magmoms
+from quacc.utils.atoms import check_is_metal
 from quacc.utils.files import load_yaml_calc
 
 if TYPE_CHECKING:
@@ -67,7 +68,7 @@ class Vasp(Vasp_):
         Default is 0.05 in settings.
     elemental_magmoms
         A dictionary of elemental initial magnetic moments to pass to
-        [quacc.utils.atoms.set_magmoms][], e.g. `{"Fe": 5, "Ni": 4}`.
+        [quacc.runners.prep.set_magmoms][], e.g. `{"Fe": 5, "Ni": 4}`.
     auto_kpts
         An automatic k-point generation scheme from Pymatgen. Options include:
 

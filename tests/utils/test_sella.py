@@ -3,7 +3,7 @@ from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.calculators.lj import LennardJones
 
-from quacc.utils.calc import run_ase_opt
+from quacc.runners.calc import run_ase_opt
 
 sella = pytest.importorskip("sella")
 from sella import Sella

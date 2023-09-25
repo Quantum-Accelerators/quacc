@@ -11,9 +11,9 @@ from ase.calculators.emt import EMT
 from ase.optimize import FIRE
 
 from quacc import job
+from quacc.runners.calc import run_ase_opt, run_calc
 from quacc.schemas import fetch_atoms
 from quacc.schemas.ase import summarize_opt_run, summarize_run
-from quacc.utils.calc import run_ase_opt, run_calc
 from quacc.utils.dicts import merge_dicts
 
 if TYPE_CHECKING:

@@ -9,9 +9,9 @@ from monty.dev import requires
 
 from quacc import SETTINGS, job
 from quacc.recipes.newtonnet.core import _add_stdev_and_hess, freq_job, relax_job
+from quacc.runners.calc import run_ase_opt
 from quacc.schemas import fetch_atoms
 from quacc.schemas.ase import summarize_opt_run
-from quacc.utils.calc import run_ase_opt
 from quacc.utils.dicts import merge_dicts
 
 try:

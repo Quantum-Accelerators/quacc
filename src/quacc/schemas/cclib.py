@@ -19,11 +19,11 @@ from pymatgen.core.periodic_table import Element
 from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc import SETTINGS
+from quacc.runners.prep import prep_next_run as prep_next_run_
 from quacc.schemas.atoms import atoms_to_metadata
-from quacc.utils.atoms import prep_next_run as prep_next_run_
-from quacc.wflow.db import results_to_db
 from quacc.utils.dicts import clean_dict
 from quacc.utils.files import find_recent_logfile, get_uri
+from quacc.wflow.db import results_to_db
 
 if TYPE_CHECKING:
     from typing import Literal, TypeVar
