@@ -14,7 +14,7 @@ pytestmark = pytest.mark.skipif(
     reason="Need to use local as workflow manager to run this test.",
 )
 pytest.importorskip("sella")
-pytest.importorskip("newtonnet.utils.ase_interface.MLAseCalculator")
+pytest.importorskip("newtonnet")
 
 
 def setup_module():
