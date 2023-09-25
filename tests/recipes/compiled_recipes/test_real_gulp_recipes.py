@@ -12,7 +12,7 @@ has_gulp = bool(
 )
 
 pytestmark = pytest.mark.skipif(
-    has_gulp is False or SETTINGS.WORKFLOW_ENGINE != "local",
+    not has_gulp or SETTINGS.WORKFLOW_ENGINE != "local",
     reason="Need GULP and Need to use local as workflow manager to run this test.",
 )
 

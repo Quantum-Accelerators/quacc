@@ -9,7 +9,7 @@ from quacc import SETTINGS
 has_orca = bool(which(SETTINGS.ORCA_CMD))
 
 pytestmark = pytest.mark.skipif(
-    has_orca is False or SETTINGS.WORKFLOW_ENGINE != "local",
+    not has_orca or SETTINGS.WORKFLOW_ENGINE != "local",
     reason="Need ORCA and Need to use local as workflow manager to run this test.",
 )
 

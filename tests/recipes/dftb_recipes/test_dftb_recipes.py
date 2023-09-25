@@ -10,7 +10,7 @@ DFTBPLUS_EXISTS = bool(which("dftb+"))
 DEFAULT_SETTINGS = SETTINGS.copy()
 
 pytestmark = pytest.mark.skipif(
-    DFTBPLUS_EXISTS is False or SETTINGS.WORKFLOW_ENGINE != "local",
+    not DFTBPLUS_EXISTS or SETTINGS.WORKFLOW_ENGINE != "local",
     reason="Need DFTB+ and Need to use local as workflow manager to run this test.",
 )
 
