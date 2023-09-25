@@ -5,7 +5,7 @@ from ase.calculators.lj import LennardJones
 
 from quacc.utils.calc import run_ase_opt
 
-pytest.importorskip("sella")
+sella = pytest.importorskip("sella")
 from sella import Sella
 
 
