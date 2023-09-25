@@ -116,7 +116,9 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
     def _inner(*f_args, decorator_kwargs: dict | None = None, **f_kwargs) -> Any:
         """
         This function is used for handling workflow engines that require some action
-        beyond just decoration.
+        beyond just decoration. It also patches the parent function `_func` to takke
+        an additional keyword argument, `deocrator_kwargs`, that is a dictionary of
+        keyword arguments to pass during the decorator construction.
 
         Parameters
         ----------
@@ -294,19 +296,19 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
     if wflow_engine == "covalent":
         import covalent as ct
 
-        decorated_object = ct.lattice(_func, **kwargs)
+        decorated = ct.lattice(_func, **kwargs)
     elif wflow_engine == "redun":
         from redun import task as redun_task
 
-        decorated_object = redun_task(_func, **kwargs)
+        decorated = redun_task(_func, **kwargs)
     elif wflow_engine == "prefect":
         from prefect import flow as prefect_flow
 
-        decorated_object = prefect_flow(_func, **kwargs)
+        decorated = prefect_flow(_func, **kwargs)
     else:
-        decorated_object = _func
+        decorated = _func
 
-    return decorated_object
+    return decorated
 
 
 def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
@@ -483,20 +485,20 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
     if wflow_engine == "covalent":
         import covalent as ct
 
-        decorated_object = ct.electron(ct.lattice(_func, **kwargs))
+        decorated = ct.electron(ct.lattice(_func, **kwargs))
     elif wflow_engine == "parsl":
         from parsl import join_app
 
-        decorated_object = join_app(_func, **kwargs)
+        decorated = join_app(_func, **kwargs)
     elif wflow_engine == "redun":
         from redun import task as redun_task
 
-        decorated_object = redun_task(_func, **kwargs)
+        decorated = redun_task(_func, **kwargs)
     elif wflow_engine == "prefect":
         from prefect import flow as prefect_flow
 
-        decorated_object = prefect_flow(_func, **kwargs)
+        decorated = prefect_flow(_func, **kwargs)
     else:
-        decorated_object = _func
+        decorated = _func
 
-    return decorated_object
+    return decorated
