@@ -9,12 +9,7 @@ pytestmark = pytest.mark.skipif(
 
 
 def setup_module():
-    from parsl.dataflow.dflow import DataFlowKernelLoader
-    from parsl.errors import ConfigurationError
-
-    try:
-        DataFlowKernelLoader.dfk()
-    except (RuntimeError, ConfigurationError):
+    with contextlib.suppress(Exception):
         parsl.load()
 
 
