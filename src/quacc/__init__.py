@@ -8,7 +8,7 @@ from ase import __version__ as ase_version
 from ase.io.jsonio import decode, encode
 
 from quacc.settings import QuaccSettings
-from quacc.wflow import flow, job, subflow
+from quacc.wflow.decorators import flow, job, subflow
 
 __all__ = ["flow", "job", "subflow"]
 
