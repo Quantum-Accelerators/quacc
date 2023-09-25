@@ -5,5 +5,5 @@ emmet-core==0.68.0
 maggma==0.56.0
 monty==2023.9.5
 numpy==1.26.0
-pydantic==1.10.2
+pydantic==2.4.0
 pymatgen==2023.9.10

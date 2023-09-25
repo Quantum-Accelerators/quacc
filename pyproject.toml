@@ -33,7 +33,7 @@ dependencies = [
     "maggma>=0.51.18",
     "monty>=2023.9.5",
     "numpy>=1.24.0",
-    "pydantic<2",
+    "pydantic<3",
     "pymatgen>=2023.9.2",
     "typer>=0.9.0",
 ]
