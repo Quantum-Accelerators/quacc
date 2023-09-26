@@ -4,7 +4,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [0.2.9]
+
+### Changed
+
+- Changed default `SCRATCH_DIR` from `/tmp` to `Path.cwd() / .scratch`
+- Moved `quacc.utils.wflows` into `quacc.wflow.decorators` and `quacc.wflow.prefect`
+- Moved `quacc.utils.db` into `quacc.wflow.db`
+- Moved `quacc.utils.calc` to `quacc.runners.calc`
+- Moved `quacc.presets` to `quacc.calculators.presets`
+- Refactored decorator handling to be more concise
+
+### Fixed
+
+- Fixed parsing of `RESULTS_DIR` and `SCRATCH_DIR` paths when they contain `~`
+- Symlinks are no longer created if `RESULTS_DIR == SCRATCH_DIR` since this is redundant
+- If `RESULTS_DIR` or `SCRATCH_DIR` are not present, they will be automatically made
 
 ## [0.2.8]
 
