@@ -29,7 +29,8 @@ class QuaccSettings(BaseSettings):
 
     The default way to modify these is to make a ~/.quacc.yaml file.
     Alternatively, the environment variable QUACC_CONFIG_FILE can be set to
-    point to a yaml file with quacc settings.
+    point to a custom yaml file with quacc settings. The quacc CLI offers a
+    `quacc set <setting> <value>` option to do this as well.
 
     The variables can also be modified individually though environment variables
     by using the "QUACC" prefix. e.g. QUACC_SCRATCH_DIR=/path/to/scratch.
