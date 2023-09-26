@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from ase.filters import ExpCellFilter
-from ase.io import Trajectory, read
+from ase.io import read
 from ase.optimize import FIRE
 from ase.vibrations import Vibrations
 from monty.dev import requires
