@@ -1,6 +1,7 @@
 """Init data for quacc"""
 from __future__ import annotations
 
+import os
 from importlib.metadata import version
 
 from ase import Atoms
@@ -43,3 +44,5 @@ Atoms.from_dict = atoms_from_dict
 
 # Load the settings
 SETTINGS = QuaccSettings()
+for f in [SETTINGS.RESULTS_DIR, SETTINGS.SCRATCH_DIR]:
+    os.makedirs(f, exist_ok=True)

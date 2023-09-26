@@ -12,8 +12,6 @@ def pytest_sessionstart():
 
     SETTINGS.RESULTS_DIR = TEST_RESULTS_DIR
     SETTINGS.SCRATCH_DIR = TEST_SCRATCH_DIR
-    os.makedirs(SETTINGS.RESULTS_DIR, exist_ok=True)
-    os.makedirs(SETTINGS.SCRATCH_DIR, exist_ok=True)
 
 
 def pytest_sessionfinish():
