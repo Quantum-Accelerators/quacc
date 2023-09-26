@@ -1,1 +1,1 @@
-"""Presets for the SmartVasp calculator"""
+"""Presets for the VASP calculator"""
