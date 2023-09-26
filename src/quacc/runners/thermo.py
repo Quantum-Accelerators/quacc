@@ -22,7 +22,7 @@ def ideal_gas(
     spin_multiplicity: int | None = None,
 ) -> IdealGasThermo:
     """
-    Calculate thermodynamic properties for a molecule from a given vibrational
+    Create an IdealGasThermo object for a molecule from a given vibrational
     analysis. This is for free gases only and will not be valid for solids or
     adsorbates on surfaces. Any imaginary vibrational modes after the 3N-5/3N-6
     cut will simply be ignored.
