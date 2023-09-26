@@ -67,9 +67,8 @@ def test_results_dir(tmpdir):
 
 def test_env_var(monkeypatch):
     p = FILE_DIR / "my/scratch/dir"
-    p = p.expanduser().resolve()
     monkeypatch.setenv("QUACC_SCRATCH_DIR", p)
-    assert QuaccSettings().SCRATCH_DIR == p
+    assert QuaccSettings().SCRATCH_DIR == p.expanduser().resolve()
 
 
 def test_yaml(tmpdir, monkeypatch):
@@ -79,4 +78,4 @@ def test_yaml(tmpdir, monkeypatch):
     with open("quacc_test.yaml", "w") as f:
         f.write(f"SCRATCH_DIR: {p}")
     monkeypatch.setenv("QUACC_CONFIG_FILE", "quacc_test.yaml")
-    assert QuaccSettings().SCRATCH_DIR == p
+    assert QuaccSettings().SCRATCH_DIR == p.expanduser().resolve()
