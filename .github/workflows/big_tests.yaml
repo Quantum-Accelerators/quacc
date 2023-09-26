@@ -35,7 +35,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
-          pip install .[dev,covalent,defects,jobflow,newtonnet,sella,parsl,prefect,redun,tblite]
+          pip install .[dev,covalent,defects,newtonnet,sella,tblite]
 
       - name: Run tests with pytest
         run: pytest --cov=quacc --cov-report=xml
@@ -67,7 +67,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
-          pip install .[dev,defects,jobflow,newtonnet,sella,prefect]
+          pip install .[dev,defects,newtonnet,sella]
 
       - name: Run tests with pytest
         run: pytest --cov=quacc --cov-report=xml
