@@ -1,6 +1,7 @@
 """Settings for quacc"""
 from __future__ import annotations
 
+import os
 from importlib import import_module, resources
 from pathlib import Path
 from shutil import which
@@ -15,6 +16,7 @@ for wflow_engine in ["covalent", "parsl", "prefect", "redun", "jobflow"]:
     try:
         import_module(wflow_engine)
         installed_engine = wflow_engine
+        break
     except ImportError:
         continue
 
@@ -27,7 +29,8 @@ class QuaccSettings(BaseSettings):
 
     The default way to modify these is to make a ~/.quacc.yaml file.
     Alternatively, the environment variable QUACC_CONFIG_FILE can be set to
-    point to a yaml file with quacc settings.
+    point to a custom yaml file with quacc settings. The quacc CLI offers a
+    `quacc set <setting> <value>` option to do this as well.
 
     The variables can also be modified individually though environment variables
     by using the "QUACC" prefix. e.g. QUACC_SCRATCH_DIR=/path/to/scratch.
@@ -69,7 +72,7 @@ class QuaccSettings(BaseSettings):
         ),
     )
     SCRATCH_DIR: Union[str, Path] = Field(
-        Path.cwd(),
+        Path.cwd() / ".scratch",
         description="Scratch directory for calculations.",
     )
     CREATE_UNIQUE_WORKDIR: bool = Field(
@@ -255,8 +258,13 @@ class QuaccSettings(BaseSettings):
     # --8<-- [end:settings]
 
     @validator("CONFIG_FILE", "RESULTS_DIR", "SCRATCH_DIR")
-    def validate_paths(cls, v):
+    def resolve_paths(cls, v):
         return Path(v).expanduser().resolve()
+
+    @validator("RESULTS_DIR", "SCRATCH_DIR")
+    def make_paths(cls, v):
+        os.makedirs(v, exist_ok=True)
+        return v
 
     class Config:
         """Pydantic config settings."""

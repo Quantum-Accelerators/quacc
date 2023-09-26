@@ -10,6 +10,7 @@ from quacc.recipes.emt.core import relax_job, static_job
 from quacc.settings import QuaccSettings
 
 DEFAULT_SETTINGS = SETTINGS.copy()
+FILE_DIR = Path(__file__).resolve().parent
 
 
 def setup_function():
@@ -65,14 +66,16 @@ def test_results_dir(tmpdir):
 
 
 def test_env_var(monkeypatch):
-    monkeypatch.setenv("QUACC_SCRATCH_DIR", "/my/scratch/dir")
-    assert QuaccSettings().SCRATCH_DIR == Path("/my/scratch/dir").resolve()
+    p = FILE_DIR / "my/scratch/dir"
+    monkeypatch.setenv("QUACC_SCRATCH_DIR", p)
+    assert QuaccSettings().SCRATCH_DIR == p.expanduser().resolve()
 
 
 def test_yaml(tmpdir, monkeypatch):
     tmpdir.chdir()
 
+    p = FILE_DIR / "my/new/scratch/dir"
     with open("quacc_test.yaml", "w") as f:
-        f.write('SCRATCH_DIR: "/my/new/scratch/dir"')
+        f.write(f"SCRATCH_DIR: {p}")
     monkeypatch.setenv("QUACC_CONFIG_FILE", "quacc_test.yaml")
-    assert QuaccSettings().SCRATCH_DIR == Path("/my/new/scratch/dir").resolve()
+    assert QuaccSettings().SCRATCH_DIR == p.expanduser().resolve()
