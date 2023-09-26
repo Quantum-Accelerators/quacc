@@ -1,6 +1,7 @@
 """Settings for quacc"""
 from __future__ import annotations
 
+import os
 from importlib import import_module, resources
 from pathlib import Path
 from shutil import which
@@ -255,8 +256,13 @@ class QuaccSettings(BaseSettings):
     # --8<-- [end:settings]
 
     @validator("CONFIG_FILE", "RESULTS_DIR", "SCRATCH_DIR")
-    def validate_paths(cls, v):
+    def resolve_paths(cls, v):
         return Path(v).expanduser().resolve()
+
+    @validator("RESULTS_DIR", "SCRATCH_DIR")
+    def make_paths(cls, v):
+        os.makedirs(v, exist_ok=True)
+        return v
 
     class Config:
         """Pydantic config settings."""
