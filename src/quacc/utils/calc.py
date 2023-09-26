@@ -268,7 +268,7 @@ def _calc_setup(
     tmpdir = Path(mkdtemp(prefix="quacc-tmp-", dir=SETTINGS.SCRATCH_DIR)).resolve()
 
     # Create a symlink to the tmpdir in the results_dir
-    if SETTINGS.SCRATCH_DIR != SETTINGS.RESULTS_DIR:
+    if os.name != "nt" and SETTINGS.SCRATCH_DIR != SETTINGS.RESULTS_DIR:
         symlink = Path(job_results_dir, f"{tmpdir.name}-symlink")
         symlink.unlink(missing_ok=True)
         symlink.symlink_to(tmpdir, target_is_directory=True)
