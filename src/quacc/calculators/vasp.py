@@ -45,10 +45,10 @@ class Vasp(Vasp_):
     preset
         The name of a YAML file containing a list of INCAR parameters to use as
         a "preset" for the calculator. quacc will automatically look in the
-        `VASP_PRESET_DIR` (default: quacc/presets/vasp) for the file, such that
-        preset="BulkSet" is supported, for instance. The .yaml extension is not
-        necessary. Any user-supplied calculator **kwargs will override any
-        corresponding preset values.
+        `VASP_PRESET_DIR` (default: quacc/calculators/presets/vasp) for the
+        file, such that preset="BulkSet" is supported, for instance. The .yaml
+        extension is not necessary. Any user-supplied calculator **kwargs will
+        override any corresponding preset values.
     use_custodian
         Whether to use Custodian to run VASP. Default is True in settings.
     incar_copilot
@@ -631,8 +631,8 @@ def load_vasp_yaml_calc(yaml_path: str | Path) -> dict:
     ----------
     yaml_path
         Path to the YAML file. This function will look in the `VASP_PRESET_DIR`
-        (default: quacc/presets/vasp) for the file, thereby assuming that
-        `yaml_path` is a relative path within that folder.
+        (default: quacc/calculators/presets/vasp) for the file, thereby assuming
+        that `yaml_path` is a relative path within that folder.
     Returns
     -------
 
