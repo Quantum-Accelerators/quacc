@@ -9,7 +9,7 @@ from typing import List, Optional, Union
 
 from pydantic import BaseSettings, Field, root_validator, validator
 
-from quacc.presets import vasp as vasp_defaults
+from quacc.calculators.presets import vasp as vasp_defaults
 
 installed_engine = "local"
 for wflow_engine in ["covalent", "parsl", "prefect", "redun", "jobflow"]:

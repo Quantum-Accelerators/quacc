@@ -6,9 +6,9 @@ from typing import TYPE_CHECKING
 from ase.calculators.dftb import Dftb
 
 from quacc import SETTINGS, job
+from quacc.runners.calc import run_calc
 from quacc.schemas import fetch_atoms
 from quacc.schemas.ase import summarize_run
-from quacc.utils.calc import run_calc
 from quacc.utils.dicts import merge_dicts
 from quacc.utils.files import check_logfile
 

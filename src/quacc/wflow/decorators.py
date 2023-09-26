@@ -1,27 +1,11 @@
+"""Workflow decorators"""
 from __future__ import annotations
 
 import functools
 from typing import TYPE_CHECKING
 
-from monty.dev import requires
-
-try:
-    from prefect_dask.task_runners import DaskTaskRunner
-
-    prefect_deps = True
-except ImportError:
-    prefect_deps = False
-try:
-    from dask_jobqueue import SLURMCluster
-
-    dask_deps = True
-except ImportError:
-    dask_deps = False
-
 if TYPE_CHECKING:
     from typing import Any, Callable, TypeVar
-
-    from dask_jobqueue.core import Job as DaskJob
 
     Job = TypeVar("Job")
     Flow = TypeVar("Flow")
@@ -128,66 +112,70 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
         The @job-decorated function.
     """
 
-    def decorator(func) -> Callable:
-        @functools.wraps(func)
-        def wrapper(f) -> Callable:
-            @functools.wraps(f)
-            def _inner(*f_args, **f_kwargs) -> Any:
-                """
-                This inner function is used for handling workflow engines that require some
-                action beyond just decoration.
+    @functools.wraps(_func)
+    def _inner(*f_args, decorator_kwargs: dict | None = None, **f_kwargs) -> Any:
+        """
+        This function is used for handling workflow engines that require some action
+        beyond just decoration. It also patches the parent function `_func` to takke
+        an additional keyword argument, `deocrator_kwargs`, that is a dictionary of
+        keyword arguments to pass during the decorator construction.
 
-                Parameters
-                ----------
-                *f_args
-                    Positional arguments to the function, if any.
-                **f_kwargs
-                    Keyword arguments to the function, if any.
+        Parameters
+        ----------
+        *f_args
+            Positional arguments to the function, if any.
+        decorator_kwargs
+            Keyword arguments to pass to the workflow engine decorator.
+        **f_kwargs
+            Keyword arguments to the function, if any.
 
-                Returns
-                -------
-                Any
-                    The output of the @job-decorated function.
-                """
-                if wflow_engine == "prefect":
-                    return decorated_object.submit(*f_args, **f_kwargs)
-                return decorated_object(*f_args, **f_kwargs)
+        Returns
+        -------
+        Any
+            The output of the @job-decorated function.
+        """
+        decorator_kwargs = decorator_kwargs if decorator_kwargs is not None else kwargs
 
-            from quacc import SETTINGS
+        if wflow_engine == "prefect":
+            from prefect import task as prefect_task
 
-            wflow_engine = SETTINGS.WORKFLOW_ENGINE
-            if wflow_engine == "covalent":
-                import covalent as ct
+            decorated = prefect_task(_func, **decorator_kwargs)
+            return decorated.submit(*f_args, **f_kwargs)
 
-                decorated_object = ct.electron(f, **kwargs)
-            elif wflow_engine == "parsl":
-                from parsl import python_app
+        return decorated(*f_args, **f_kwargs)
 
-                decorated_object = python_app(f, **kwargs)
-            elif wflow_engine == "jobflow":
-                import jobflow as jf
+    from quacc import SETTINGS
 
-                decorated_object = jf.job(f, **kwargs)
-            elif wflow_engine == "redun":
-                from redun import task as redun_task
+    wflow_engine = SETTINGS.WORKFLOW_ENGINE
 
-                decorated_object = redun_task(f, **kwargs)
-            elif wflow_engine == "prefect":
-                from prefect import task as prefect_task
+    if _func is None:
+        return functools.partial(job, **kwargs)
 
-                decorated_object = prefect_task(f, **kwargs)
-                return _inner
-            else:
-                decorated_object = f
+    if wflow_engine == "covalent":
+        import covalent as ct
 
-            if not hasattr(decorated_object, "__wrapped__"):
-                decorated_object.__wrapped__ = _func
+        decorated = ct.electron(_func, **kwargs)
+    elif wflow_engine == "jobflow":
+        from jobflow import job as jf_job
 
-            return decorated_object
+        decorated = jf_job(_func, **kwargs)
+    elif wflow_engine == "parsl":
+        from parsl import python_app
 
-        return wrapper(func)
+        decorated = python_app(_func, **kwargs)
+    elif wflow_engine == "redun":
+        from redun import task as redun_task
 
-    return decorator if _func is None else decorator(_func)
+        decorated = redun_task(_func, **kwargs)
+    elif wflow_engine == "prefect":
+        return _inner
+    else:
+        decorated = _func
+
+    if not hasattr(decorated, "__wrapped__"):
+        decorated.__wrapped__ = _func
+
+    return decorated
 
 
 def flow(_func: Callable | None = None, **kwargs) -> Flow:
@@ -299,32 +287,28 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
     Flow
         The `#!Python @flow`-decorated function.
     """
+    from quacc import SETTINGS
 
-    def decorator(func) -> Callable:
-        @functools.wraps(func)
-        def wrapper(f) -> Callable:
-            from quacc import SETTINGS
+    if _func is None:
+        return functools.partial(flow, **kwargs)
 
-            wflow_engine = SETTINGS.WORKFLOW_ENGINE
-            if wflow_engine == "covalent":
-                import covalent as ct
+    wflow_engine = SETTINGS.WORKFLOW_ENGINE
+    if wflow_engine == "covalent":
+        import covalent as ct
 
-                decorated_object = ct.lattice(f, **kwargs)
-            elif wflow_engine == "redun":
-                from redun import task as redun_task
+        decorated = ct.lattice(_func, **kwargs)
+    elif wflow_engine == "redun":
+        from redun import task as redun_task
 
-                decorated_object = redun_task(f, **kwargs)
-            elif wflow_engine == "prefect":
-                from prefect import flow as prefect_flow
+        decorated = redun_task(_func, **kwargs)
+    elif wflow_engine == "prefect":
+        from prefect import flow as prefect_flow
 
-                decorated_object = prefect_flow(f, **kwargs)
-            else:
-                decorated_object = f
-            return decorated_object
+        decorated = prefect_flow(_func, **kwargs)
+    else:
+        decorated = _func
 
-        return wrapper(func)
-
-    return decorator if _func is None else decorator(_func)
+    return decorated
 
 
 def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
@@ -492,110 +476,29 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
         The decorated function.
     """
 
-    def decorator(func) -> Callable:
-        @functools.wraps(func)
-        def wrapper(f) -> Callable:
-            from quacc import SETTINGS
+    from quacc import SETTINGS
 
-            wflow_engine = SETTINGS.WORKFLOW_ENGINE
-            if wflow_engine == "covalent":
-                import covalent as ct
+    if _func is None:
+        return functools.partial(subflow, **kwargs)
 
-                decorated_object = ct.electron(ct.lattice(f, **kwargs))
-            elif wflow_engine == "parsl":
-                from parsl import join_app
+    wflow_engine = SETTINGS.WORKFLOW_ENGINE
+    if wflow_engine == "covalent":
+        import covalent as ct
 
-                decorated_object = join_app(f, **kwargs)
-            elif wflow_engine == "redun":
-                from redun import task as redun_task
+        decorated = ct.electron(ct.lattice(_func, **kwargs))
+    elif wflow_engine == "parsl":
+        from parsl import join_app
 
-                decorated_object = redun_task(f, **kwargs)
-            elif wflow_engine == "prefect":
-                from prefect import flow as prefect_flow
+        decorated = join_app(_func, **kwargs)
+    elif wflow_engine == "redun":
+        from redun import task as redun_task
 
-                decorated_object = prefect_flow(f, **kwargs)
-            else:
-                decorated_object = f
-            return decorated_object
+        decorated = redun_task(_func, **kwargs)
+    elif wflow_engine == "prefect":
+        from prefect import flow as prefect_flow
 
-        return wrapper(func)
+        decorated = prefect_flow(_func, **kwargs)
+    else:
+        decorated = _func
 
-    return decorator if _func is None else decorator(_func)
-
-
-@requires(prefect_deps and dask_deps, "Need quacc[prefect] dependencies")
-def make_prefect_runner(
-    cluster_kwargs: dict,
-    cluster_class: Callable | None = None,
-    adapt_kwargs: dict[str, int | None] | None = None,
-    client_kwargs: dict | None = None,
-    temporary: bool = False,
-) -> DaskTaskRunner:
-    """
-    Make a `DaskTaskRunner` for use with Prefect workflows.
-
-    Parameters
-    ----------
-    cluster_kwargs
-        Keyword arguments to pass to `cluster_class`.
-    cluster_class
-        The Dask cluster class to use. Defaults to `dask_jobqueue.SLURMCluster`.
-    adapt_kwargs
-        Keyword arguments to pass to `cluster.adapt` of the form `{"minimum": int, "maximum": int}`.
-        If `None`, no adaptive scaling will be done.
-    client_kwargs
-        Keyword arguments to pass to `dask.distributed.Client`.
-    temporary
-        Whether to use a temporary cluster. If `True`, the cluster will be
-        terminated once the `Flow` is finished. If `False`, the cluster will
-        run until the walltime is reached and can run multiple `Flow`s.
-
-    Returns
-    -------
-    DaskTaskRunner
-        A DaskTaskRunner object for use with Prefect workflows.
-    """
-
-    if cluster_class is None:
-        cluster_class = SLURMCluster
-
-    # Make the one-time-use DaskTaskRunner
-    if temporary:
-        return DaskTaskRunner(
-            cluster_class=cluster_class,
-            cluster_kwargs=cluster_kwargs,
-            adapt_kwargs=adapt_kwargs,
-            client_kwargs=client_kwargs,
-        )
-
-    # Make the Dask cluster
-    cluster = _make_dask_cluster(cluster_class, cluster_kwargs)
-
-    # Set up adaptive scaling
-    if adapt_kwargs and (adapt_kwargs["minimum"] or adapt_kwargs["maximum"]):
-        cluster.adapt(minimum=adapt_kwargs["minimum"], maximum=adapt_kwargs["maximum"])
-
-    # Return the DaskTaskRunner with the cluster address
-    return DaskTaskRunner(address=cluster.scheduler_address)
-
-
-@requires(dask_deps, "Need quacc[prefect] dependencies")
-def _make_dask_cluster(
-    cluster_class: Callable, cluster_kwargs: dict, verbose=False
-) -> DaskJob:
-    """
-    Make a Dask cluster for use with Prefect workflows.
-
-    Parameters
-    ----------
-    cluster_class
-        The Dask cluster class to use. Defaults to `dask_jobqueue.SLURMCluster`.
-    cluster_kwargs
-        Keyword arguments to pass to `cluster_class`.
-    verbose
-        Whether to print the job script to stdout.
-    """
-    cluster = cluster_class(**cluster_kwargs)
-    if verbose:
-        print(cluster.job_script())  # noqa: T201
-    return cluster
+    return decorated

@@ -21,7 +21,8 @@ from pymatgen.symmetry.bandstructure import HighSymmKpath
 
 from quacc import SETTINGS
 from quacc.custodian import vasp as custodian_vasp
-from quacc.utils.atoms import check_is_metal, set_magmoms
+from quacc.runners.prep import set_magmoms
+from quacc.utils.atoms import check_is_metal
 from quacc.utils.files import load_yaml_calc
 
 if TYPE_CHECKING:
@@ -45,10 +46,10 @@ class Vasp(Vasp_):
     preset
         The name of a YAML file containing a list of INCAR parameters to use as
         a "preset" for the calculator. quacc will automatically look in the
-        `VASP_PRESET_DIR` (default: quacc/presets/vasp) for the file, such that
-        preset="BulkSet" is supported, for instance. The .yaml extension is not
-        necessary. Any user-supplied calculator **kwargs will override any
-        corresponding preset values.
+        `VASP_PRESET_DIR` (default: quacc/calculators/presets/vasp) for the
+        file, such that preset="BulkSet" is supported, for instance. The .yaml
+        extension is not necessary. Any user-supplied calculator **kwargs will
+        override any corresponding preset values.
     use_custodian
         Whether to use Custodian to run VASP. Default is True in settings.
     incar_copilot
@@ -67,7 +68,7 @@ class Vasp(Vasp_):
         Default is 0.05 in settings.
     elemental_magmoms
         A dictionary of elemental initial magnetic moments to pass to
-        [quacc.utils.atoms.set_magmoms][], e.g. `{"Fe": 5, "Ni": 4}`.
+        [quacc.runners.prep.set_magmoms][], e.g. `{"Fe": 5, "Ni": 4}`.
     auto_kpts
         An automatic k-point generation scheme from Pymatgen. Options include:
 
@@ -631,8 +632,8 @@ def load_vasp_yaml_calc(yaml_path: str | Path) -> dict:
     ----------
     yaml_path
         Path to the YAML file. This function will look in the `VASP_PRESET_DIR`
-        (default: quacc/presets/vasp) for the file, thereby assuming that
-        `yaml_path` is a relative path within that folder.
+        (default: quacc/calculators/presets/vasp) for the file, thereby assuming
+        that `yaml_path` is a relative path within that folder.
     Returns
     -------
 
