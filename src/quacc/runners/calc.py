@@ -267,11 +267,11 @@ def _calc_setup(
     # Create a tmpdir for the calculation within the scratch_dir
     tmpdir = Path(mkdtemp(prefix="quacc-tmp-", dir=SETTINGS.SCRATCH_DIR)).resolve()
 
-    # Create a symlink (if not on Windows) to the tmpdir in the results_dir
-    symlink = Path(job_results_dir, f"{tmpdir.name}-symlink")
-    if os.name != "nt":
+    # Create a symlink to the tmpdir in the results_dir
+    if os.name != "nt" and SETTINGS.SCRATCH_DIR != SETTINGS.RESULTS_DIR:
+        symlink = Path(job_results_dir, f"{tmpdir.name}-symlink")
         symlink.unlink(missing_ok=True)
-        symlink.symlink_to(tmpdir)
+        symlink.symlink_to(tmpdir, target_is_directory=True)
 
     # Copy files to tmpdir and decompress them if needed
     if copy_files:
