@@ -33,7 +33,7 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Install pip packages
-        run: pip install .[dev, covalent, defects, jobflow, newtonnet, sella, parsl, prefect, redun, tblite]
+        run: pip install .[dev,covalent,defects,jobflow,newtonnet,sella,parsl,prefect,redun,tblite]
 
       - name: Run tests with pytest
         run: pytest --cov=quacc --cov-report=xml
@@ -63,7 +63,7 @@ jobs:
           cache-dependency-path: pyproject.toml
 
       - name: Install pip packages
-        run: pip install .[dev, defects, jobflow, newtonnet, sella, prefect]
+        run: pip install .[dev,defects,jobflow,newtonnet,sella,prefect]
 
       - name: Run tests with pytest
         run: pytest --cov=quacc --cov-report=xml
