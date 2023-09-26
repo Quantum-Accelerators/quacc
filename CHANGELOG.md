@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Moved `quacc.utils.calc` to `quacc.runners.calc`
 - Moved `quacc.presets` to `quacc.calculators.presets`
 - Refactored decorator handling to be more concise
+- Renamed `[optimizers]` extras to `[sella]`
 
 ### Fixed
 
