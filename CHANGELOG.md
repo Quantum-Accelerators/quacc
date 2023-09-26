@@ -4,17 +4,25 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1]
+
+### Changed
+
+- Moved `quacc.custodian` to `quacc.calculators.custodian`
+- Renamed `quacc.thermo.ideal_gas` to `quacc.thermo.run_ideal_gas`
+- Renamed `quacc.schemas.ase.summarize_thermo` to `quacc.schemas.ase.summarize_igt_thermo`
+
 ## [0.3.0]
 
 ### Changed
 
 - Changed default `SCRATCH_DIR` from `/tmp` to `Path.cwd() / .scratch`
+- Refactored decorator handling to be more concise
+- Renamed `[optimizers]` extras to `[sella]`
 - Moved `quacc.utils.wflows` into `quacc.wflow.decorators` and `quacc.wflow.prefect`
 - Moved `quacc.utils.db` into `quacc.wflow.db`
 - Moved `quacc.utils.calc` to `quacc.runners.calc`
 - Moved `quacc.presets` to `quacc.calculators.presets`
-- Refactored decorator handling to be more concise
-- Renamed `[optimizers]` extras to `[sella]`
 
 ### Fixed
 
