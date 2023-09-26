@@ -34,6 +34,8 @@ def test_jobflow_decorators(tmpdir):
 
     assert not isinstance(add, jf.Job)
     assert not isinstance(mult, jf.Job)
+    assert hasattr(add, "original")
+    assert hasattr(mult, "original")
     assert isinstance(add(1, 2), jf.Job)
     assert isinstance(mult(1, 2), jf.Job)
     assert isinstance(workflow(1, 2, 3), jf.Job)
@@ -61,6 +63,8 @@ def test_jobflow_decorators_args(tmpdir):
 
     assert not isinstance(add, jf.Job)
     assert not isinstance(mult, jf.Job)
+    assert hasattr(add, "original")
+    assert hasattr(mult, "original")
     assert isinstance(add(1, 2), jf.Job)
     assert isinstance(mult(1, 2), jf.Job)
     assert isinstance(workflow(1, 2, 3), jf.Job)
