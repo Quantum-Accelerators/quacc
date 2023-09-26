@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from ase.filters import ExpCellFilter
-from ase.io import read
+from ase.io import Trajectory, read
 from ase.optimize import FIRE
 from ase.vibrations import Vibrations
 from monty.dev import requires
@@ -157,14 +157,16 @@ def run_ase_opt(
     optimizer_kwargs.pop("use_TRICs", None)
 
     # Define the Trajectory object
-    traj_filename = str(Path(tmpdir, "opt.traj"))
+    traj_filename = Path(tmpdir, "opt.traj")
+    traj = Trajectory(traj_filename, "w", atoms=atoms)
+    optimizer_kwargs["trajectory"] = traj
 
     # Set volume relaxation constraints, if relevant
     if relax_cell and atoms.pbc.any():
         atoms = ExpCellFilter(atoms)
 
     # Run calculation
-    with optimizer(atoms, trajectory=traj_filename, **optimizer_kwargs) as dyn:
+    with traj, optimizer(atoms, **optimizer_kwargs) as dyn:
         dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
 
     # Store the trajectory atoms
