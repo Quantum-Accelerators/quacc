@@ -73,7 +73,7 @@ pip install quacc[optimizers]
 
 If you plan to use tblite with quacc, you will need to install the tblite interface with ASE support.
 
-If you are using a Linux mmachine, run the following:
+If you are using a Linux machine, run the following:
 
 ```bash
 pip install quacc[tblite]

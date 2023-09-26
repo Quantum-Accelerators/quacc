@@ -4,7 +4,7 @@ Want to get up and running with quacc as fast possible? Here we go!
 
 ## Installation
 
-Run the following commands in the terminal:
+Run the following commands in the terminal, ideally in a fresh Python environment:
 
 ```bash
 pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
