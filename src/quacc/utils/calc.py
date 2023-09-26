@@ -157,16 +157,14 @@ def run_ase_opt(
     optimizer_kwargs.pop("use_TRICs", None)
 
     # Define the Trajectory object
-    traj_filename = Path(tmpdir, "opt.traj")
-    traj = Trajectory(traj_filename, "w", atoms=atoms)
-    optimizer_kwargs["trajectory"] = traj
+    traj_filename = str(Path(tmpdir, "opt.traj"))
 
     # Set volume relaxation constraints, if relevant
     if relax_cell and atoms.pbc.any():
         atoms = ExpCellFilter(atoms)
 
     # Run calculation
-    with traj, optimizer(atoms, **optimizer_kwargs) as dyn:
+    with optimizer(atoms, trajectory=traj_filename, **optimizer_kwargs) as dyn:
         dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
 
     # Store the trajectory atoms
@@ -267,11 +265,11 @@ def _calc_setup(
     # Create a tmpdir for the calculation within the scratch_dir
     tmpdir = Path(mkdtemp(prefix="quacc-tmp-", dir=SETTINGS.SCRATCH_DIR)).resolve()
 
-    # Create a symlink (if not on Windows) to the tmpdir in the results_dir
-    symlink = Path(job_results_dir, f"{tmpdir.name}-symlink")
-    if os.name != "nt":
+    # Create a symlink to the tmpdir in the results_dir
+    if SETTINGS.SCRATCH_DIR != SETTINGS.RESULTS_DIR:
+        symlink = Path(job_results_dir, f"{tmpdir.name}-symlink")
         symlink.unlink(missing_ok=True)
-        symlink.symlink_to(tmpdir)
+        symlink.symlink_to(tmpdir, target_is_directory=True)
 
     # Copy files to tmpdir and decompress them if needed
     if copy_files:

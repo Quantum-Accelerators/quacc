@@ -6,7 +6,7 @@ from pathlib import Path
 from shutil import which
 from typing import List, Optional, Union
 
-from pydantic import BaseSettings, Field, root_validator
+from pydantic import BaseSettings, Field, root_validator, validator
 
 from quacc.presets import vasp as vasp_defaults
 
@@ -253,6 +253,10 @@ class QuaccSettings(BaseSettings):
     )
 
     # --8<-- [end:settings]
+
+    @validator("CONFIG_FILE", "RESULTS_DIR", "SCRATCH_DIR")
+    def validate_paths(cls, v):
+        return Path(v).expanduser()
 
     class Config:
         """Pydantic config settings."""
