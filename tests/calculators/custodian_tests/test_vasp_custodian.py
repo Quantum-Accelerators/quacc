@@ -1,7 +1,7 @@
 import pytest
 from custodian import Custodian
 
-from quacc.custodian.vasp import run_custodian
+from quacc.calculators.custodian.vasp import run_custodian
 
 
 class MockRun:
