@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from ase import Atoms
 
 
-def ideal_gas(
+def run_ideal_gas(
     atoms: Atoms,
     vib_freqs: list[float | complex],
     energy: float = 0.0,
