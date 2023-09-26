@@ -34,7 +34,7 @@ __version__ = version("quacc")
 
 if tuple(ase_version) <= tuple("3.22.1"):
     raise ImportError(
-        "Your ASE version ({ase_version}) is <= 3.22.1. Please upgrade your ASE version: pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip",
+        f"Your ASE version ({ase_version}) is <= 3.22.1. Please upgrade your ASE version: pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip",
     )
 
 # Make Atoms MSONable
