@@ -16,6 +16,7 @@ for wflow_engine in ["covalent", "parsl", "prefect", "redun", "jobflow"]:
     try:
         import_module(wflow_engine)
         installed_engine = wflow_engine
+        break
     except ImportError:
         continue
 
