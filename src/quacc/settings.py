@@ -18,7 +18,7 @@ for wflow_engine in ["covalent", "parsl", "prefect", "redun", "jobflow"]:
     except ImportError:
         continue
 
-_DEFAULT_CONFIG_FILE_PATH = Path("~", ".quacc.yaml").expanduser()
+_DEFAULT_CONFIG_FILE_PATH = Path("~", ".quacc.yaml").expanduser().resolve()
 
 
 class QuaccSettings(BaseSettings):
@@ -256,7 +256,7 @@ class QuaccSettings(BaseSettings):
 
     @validator("CONFIG_FILE", "RESULTS_DIR", "SCRATCH_DIR")
     def validate_paths(cls, v):
-        return Path(v).expanduser()
+        return Path(v).expanduser().resolve()
 
     class Config:
         """Pydantic config settings."""
@@ -282,9 +282,11 @@ class QuaccSettings(BaseSettings):
 
         from monty.serialization import loadfn
 
-        config_file_path = Path(
-            values.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH)
-        ).expanduser()
+        config_file_path = (
+            Path(values.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH))
+            .expanduser()
+            .resolve()
+        )
 
         new_values = {}  # type: dict
         if config_file_path.exists() and config_file_path.stat().st_size > 0:

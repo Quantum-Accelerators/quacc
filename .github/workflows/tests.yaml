@@ -42,7 +42,6 @@ jobs:
         run: |
           pip install -r tests/requirements.txt
           pip install .[dev]
-          pip install sella
 
       - name: Run tests with pytest
         run: pytest --cov=quacc --cov-report=xml
@@ -228,7 +227,7 @@ jobs:
       fail-fast: true
       matrix:
         python-version: ["3.11"]
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     defaults:
       run:
