@@ -31,7 +31,7 @@ def patch_custodian_run(monkeypatch):
 
 
 def test_run_qchem_custodian(monkeypatch):
-    from quacc.custodian.qchem import run_custodian
+    from quacc.calculators.custodian.qchem import run_custodian
 
     run_custodian()
 
