@@ -259,9 +259,10 @@ class QuaccSettings(BaseSettings):
     # --8<-- [end:settings]
 
     @validator("RESULTS_DIR", "SCRATCH_DIR")
-    def resolve_paths(cls, v):
+    def resolve_and_make_paths(cls, v):
+        v = v.expanduser().resolve()
         os.makedirs(v, exist_ok=True)
-        return v.expanduser().resolve()
+        return v
 
     @validator("ORCA_CMD")
     def expand_paths(cls, v):
