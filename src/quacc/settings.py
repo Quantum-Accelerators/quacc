@@ -245,7 +245,7 @@ class QuaccSettings(BaseSettings):
     )
 
     # NBO Settings
-    QCHEM_NBO_EXE: Optional[Path] = Field(
+    QCHEM_NBO_EXE: Path | None = Field(
         None, description="Full path to the NBO executable."
     )
 
