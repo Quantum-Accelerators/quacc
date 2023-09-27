@@ -6,7 +6,7 @@ from ase import Atoms
 from ase.build import bulk, molecule
 from ase.io import read
 
-from quacc.atoms.basics import get_atoms_id
+from quacc.atoms.core import get_atoms_id
 from quacc.calculators.vasp import Vasp
 from quacc.runners.prep import prep_next_run
 

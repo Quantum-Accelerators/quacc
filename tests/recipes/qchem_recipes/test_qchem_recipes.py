@@ -12,7 +12,7 @@ from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.qchem.inputs import QCInput
 
 from quacc import SETTINGS
-from quacc.atoms.basics import check_charge_and_spin
+from quacc.atoms.core import check_charge_and_spin
 from quacc.calculators.qchem import QChem
 
 pytest.importorskip("sella")

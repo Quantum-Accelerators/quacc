@@ -9,7 +9,7 @@ from emmet.core.structure import MoleculeMetadata, StructureMetadata
 from monty.json import jsanitize
 from pymatgen.io.ase import AseAtomsAdaptor
 
-from quacc.atoms.basics import copy_atoms
+from quacc.atoms.core import copy_atoms
 from quacc.utils.dicts import clean_dict
 
 if TYPE_CHECKING:
