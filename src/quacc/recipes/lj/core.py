@@ -11,8 +11,8 @@ from ase.calculators.lj import LennardJones
 from ase.optimize import FIRE
 
 from quacc import job
+from quacc.builders.thermo import build_ideal_gas
 from quacc.runners.calc import run_ase_opt, run_ase_vib, run_calc
-from quacc.runners.thermo import run_ideal_gas
 from quacc.schemas import fetch_atoms
 from quacc.schemas.ase import (
     summarize_igt_thermo,
@@ -183,7 +183,7 @@ def freq_job(
         vibrations, additional_fields={"name": "LJ Frequency"}
     )
 
-    igt = run_ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)
+    igt = build_ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)
     vib_summary["thermo"] = summarize_igt_thermo(
         igt,
         temperature=temperature,

@@ -1,4 +1,4 @@
-"""Schemas for storing data from recipes"""
+"""Schemas for curating the output data from recipes"""
 
 from quacc.schemas.atoms import fetch_atoms
 
