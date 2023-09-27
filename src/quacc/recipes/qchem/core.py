@@ -8,9 +8,9 @@ from ase.optimize import FIRE
 
 from quacc import SETTINGS, job
 from quacc.calculators.qchem import QChem
+from quacc.runners.calc import run_ase_opt, run_calc
 from quacc.schemas import fetch_atoms
 from quacc.schemas.ase import summarize_opt_run, summarize_run
-from quacc.utils.calc import run_ase_opt, run_calc
 from quacc.utils.dicts import merge_dicts, remove_dict_empties
 
 try:
@@ -423,7 +423,7 @@ def relax_job(
         default values set therein as well as set additional Q-Chem parameters.
         See QChemDictSet documentation for more details.
     opt_swaps
-        Dictionary of custom kwargs for [quacc.utils.calc.run_ase_opt][]
+        Dictionary of custom kwargs for [quacc.runners.calc.run_ase_opt][]
     copy_files
         Files to copy to the runtime directory.
 
@@ -541,7 +541,7 @@ def _base_opt_job(
     opt_defaults
         Default arguments for the ASE optimizer.
     opt_swaps
-        Dictionary of custom kwargs for [quacc.utils.calc.run_ase_opt][]
+        Dictionary of custom kwargs for [quacc.runners.calc.run_ase_opt][]
     copy_files
         Files to copy to the runtime directory.
 

@@ -1,0 +1,1 @@
+"""Presets for various calculators"""

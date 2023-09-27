@@ -14,9 +14,9 @@ from maggma.stores import MemoryStore
 from monty.json import MontyDecoder, jsanitize
 
 from quacc.schemas.ase import (
+    summarize_igt_thermo,
     summarize_opt_run,
     summarize_run,
-    summarize_thermo,
     summarize_vib_run,
 )
 
@@ -284,13 +284,13 @@ def test_summarize_vib_run(tmpdir):
     assert len(results["results"]["vib_energies"]) == 6
 
 
-def test_summarize_thermo(tmpdir):
+def test_summarize_igt_thermo(tmpdir):
     tmpdir.chdir()
 
     # Make sure metadata is made
     atoms = molecule("N2")
     igt = IdealGasThermo([0.34], "linear", atoms=atoms, spin=0, symmetrynumber=2)
-    results = summarize_thermo(igt)
+    results = summarize_igt_thermo(igt)
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["parameters_thermo"]["vib_energies"] == [0.34]
@@ -301,15 +301,15 @@ def test_summarize_thermo(tmpdir):
     # Test DB
     atoms = molecule("N2")
     igt = IdealGasThermo([0.34], "linear", atoms=atoms, spin=0, symmetrynumber=2)
-    summarize_thermo(igt)
+    summarize_igt_thermo(igt)
     store = MemoryStore()
-    summarize_thermo(igt, store=store)
+    summarize_igt_thermo(igt, store=store)
     assert store.count() == 1
 
     # Test remove_empties
     atoms = molecule("N2")
     igt = IdealGasThermo([0.34], "linear", atoms=atoms, spin=0, symmetrynumber=2)
-    results = summarize_thermo(igt, remove_empties=True)
+    results = summarize_igt_thermo(igt, remove_empties=True)
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["parameters_thermo"]["vib_energies"] == [0.34]
@@ -322,7 +322,7 @@ def test_summarize_thermo(tmpdir):
     igt = IdealGasThermo(
         [0.0, 0.34], "linear", atoms=atoms, potentialenergy=-1, spin=0, symmetrynumber=2
     )
-    results = summarize_thermo(igt)
+    results = summarize_igt_thermo(igt)
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["parameters_thermo"]["vib_energies"] == [0.34]
@@ -336,7 +336,7 @@ def test_summarize_thermo(tmpdir):
     igt = IdealGasThermo(
         [0.0, 0.34], "linear", atoms=atoms, potentialenergy=-1, spin=0, symmetrynumber=2
     )
-    results = summarize_thermo(igt)
+    results = summarize_igt_thermo(igt)
     assert results.get("atoms_info", {}) != {}
     assert results["atoms_info"].get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
@@ -365,7 +365,7 @@ def test_summarize_thermo(tmpdir):
         spin=0.5,
         symmetrynumber=6,
     )
-    results = summarize_thermo(igt, temperature=1000.0, pressure=20.0)
+    results = summarize_igt_thermo(igt, temperature=1000.0, pressure=20.0)
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
     assert len(results["parameters_thermo"]["vib_energies"]) == 6
@@ -387,7 +387,7 @@ def test_summarize_thermo(tmpdir):
     MontyDecoder().process_decoded(d)
 
     with pytest.raises(ValueError):
-        summarize_thermo(igt, charge_and_multiplicity=[0, 1])
+        summarize_igt_thermo(igt, charge_and_multiplicity=[0, 1])
 
 
 def test_errors(tmpdir):

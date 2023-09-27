@@ -45,7 +45,7 @@ If you plan to use NewtonNet with Quacc, you will need to install it prior to us
 
 ```bash
 pip install git+https://github.com/ericyuan00000/NewtonNet.git
-pip install quacc[newtonnet, optimizers]
+pip install quacc[newtonnet, sella]
 ```
 
 ## ORCA
@@ -66,14 +66,14 @@ If you plan to use Q-Chem with Quacc, you will need to install `openbabel` and `
 
 ```bash
 conda install -c conda-forge openbabel
-pip install quacc[optimizers]
+pip install quacc[sella]
 ```
 
 ## tblite
 
 If you plan to use tblite with quacc, you will need to install the tblite interface with ASE support.
 
-If you are using a Linux mmachine, run the following:
+If you are using a Linux machine, run the following:
 
 ```bash
 pip install quacc[tblite]

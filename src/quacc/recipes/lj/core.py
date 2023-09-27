@@ -11,16 +11,16 @@ from ase.calculators.lj import LennardJones
 from ase.optimize import FIRE
 
 from quacc import job
+from quacc.runners.calc import run_ase_opt, run_ase_vib, run_calc
+from quacc.runners.thermo import run_ideal_gas
 from quacc.schemas import fetch_atoms
 from quacc.schemas.ase import (
+    summarize_igt_thermo,
     summarize_opt_run,
     summarize_run,
-    summarize_thermo,
     summarize_vib_run,
 )
-from quacc.utils.calc import run_ase_opt, run_ase_vib, run_calc
 from quacc.utils.dicts import merge_dicts
-from quacc.utils.thermo import ideal_gas
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -102,7 +102,7 @@ def relax_job(
     calc_swaps
         Dictionary of custom kwargs for the LJ calculator.
     opt_swaps
-        Dictionary of swaps for [quacc.utils.calc.run_ase_opt][].
+        Dictionary of swaps for [quacc.runners.calc.run_ase_opt][].
     copy_files
         Files to copy to the runtime directory.
 
@@ -183,8 +183,8 @@ def freq_job(
         vibrations, additional_fields={"name": "LJ Frequency"}
     )
 
-    igt = ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)
-    vib_summary["thermo"] = summarize_thermo(
+    igt = run_ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)
+    vib_summary["thermo"] = summarize_igt_thermo(
         igt,
         temperature=temperature,
         pressure=pressure,

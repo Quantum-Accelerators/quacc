@@ -17,7 +17,7 @@ from pymatgen.io.qchem.inputs import QCInput
 from pymatgen.io.qchem.outputs import QCOutput
 from pymatgen.io.qchem.sets import QChemDictSet
 
-from quacc.custodian import qchem as custodian_qchem
+from quacc.calculators.custodian import qchem as custodian_qchem
 
 logger = logging.getLogger(__name__)
 

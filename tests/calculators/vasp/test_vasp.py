@@ -10,9 +10,9 @@ from ase.calculators.vasp import Vasp as Vasp_
 from ase.constraints import FixAtoms, FixBondLength
 from ase.io import read
 
+from quacc.calculators.presets import vasp as v
 from quacc.calculators.vasp import Vasp
-from quacc.presets import vasp as v
-from quacc.utils.atoms import prep_next_run
+from quacc.runners.prep import prep_next_run
 
 FILE_DIR = Path(__file__).resolve().parent
 DEFAULT_CALCS_DIR = os.path.dirname(v.__file__)

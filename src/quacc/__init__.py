@@ -1,7 +1,6 @@
 """Init data for quacc"""
 from __future__ import annotations
 
-import warnings
 from importlib.metadata import version
 
 from ase import Atoms
@@ -9,7 +8,7 @@ from ase import __version__ as ase_version
 from ase.io.jsonio import decode, encode
 
 from quacc.settings import QuaccSettings
-from quacc.utils.wflows import flow, job, subflow
+from quacc.wflow.decorators import flow, job, subflow
 
 __all__ = ["flow", "job", "subflow"]
 
@@ -35,7 +34,7 @@ __version__ = version("quacc")
 
 if tuple(ase_version) <= tuple("3.22.1"):
     raise ImportError(
-        "Your ASE version ({ase_version}) is <= 3.22.1. Please upgrade your ASE version: pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip",
+        f"Your ASE version ({ase_version}) is <= 3.22.1. Please upgrade your ASE version: pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip",
     )
 
 # Make Atoms MSONable

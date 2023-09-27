@@ -1,5 +1,7 @@
 import os
+from pathlib import Path
 
+import pytest
 from ase.build import bulk
 from maggma.stores import MemoryStore
 
@@ -8,6 +10,7 @@ from quacc.recipes.emt.core import relax_job, static_job
 from quacc.settings import QuaccSettings
 
 DEFAULT_SETTINGS = SETTINGS.copy()
+FILE_DIR = Path(__file__).resolve().parent
 
 
 def setup_function():
@@ -45,6 +48,10 @@ def test_store(tmpdir):
     static_job(atoms)
 
 
+@pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "local",
+    reason="Need to be using local workflow engine.",
+)
 def test_results_dir(tmpdir):
     tmpdir.chdir()
 
@@ -59,14 +66,16 @@ def test_results_dir(tmpdir):
 
 
 def test_env_var(monkeypatch):
-    monkeypatch.setenv("QUACC_SCRATCH_DIR", "/my/scratch/dir")
-    assert QuaccSettings().SCRATCH_DIR == "/my/scratch/dir"
+    p = FILE_DIR / "my/scratch/dir"
+    monkeypatch.setenv("QUACC_SCRATCH_DIR", p)
+    assert QuaccSettings().SCRATCH_DIR == p.expanduser().resolve()
 
 
 def test_yaml(tmpdir, monkeypatch):
     tmpdir.chdir()
 
+    p = FILE_DIR / "my/new/scratch/dir"
     with open("quacc_test.yaml", "w") as f:
-        f.write('SCRATCH_DIR: "/my/new/scratch/dir"')
+        f.write(f"SCRATCH_DIR: {p}")
     monkeypatch.setenv("QUACC_CONFIG_FILE", "quacc_test.yaml")
-    assert QuaccSettings().SCRATCH_DIR == "/my/new/scratch/dir"
+    assert QuaccSettings().SCRATCH_DIR == p.expanduser().resolve()

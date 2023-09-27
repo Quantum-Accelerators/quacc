@@ -1,25 +1,27 @@
 """Settings for quacc"""
 from __future__ import annotations
 
+import os
 from importlib import import_module, resources
 from pathlib import Path
 from shutil import which
 from typing import Literal
 
-from pydantic import Field, root_validator
+from pydantic import Field, root_validator, validator
 from pydantic_settings import BaseSettings
 
-from quacc.presets import vasp as vasp_defaults
+from quacc.calculators.presets import vasp as vasp_defaults
 
 installed_engine = "local"
 for wflow_engine in ["covalent", "parsl", "prefect", "redun", "jobflow"]:
     try:
         import_module(wflow_engine)
         installed_engine = wflow_engine
+        break
     except ImportError:
         continue
 
-_DEFAULT_CONFIG_FILE_PATH = Path("~", ".quacc.yaml").expanduser()
+_DEFAULT_CONFIG_FILE_PATH = Path("~", ".quacc.yaml").expanduser().resolve()
 
 
 class QuaccSettings(BaseSettings):
@@ -28,7 +30,8 @@ class QuaccSettings(BaseSettings):
 
     The default way to modify these is to make a ~/.quacc.yaml file.
     Alternatively, the environment variable QUACC_CONFIG_FILE can be set to
-    point to a yaml file with quacc settings.
+    point to a custom yaml file with quacc settings. The quacc CLI offers a
+    `quacc set <setting> <value>` option to do this as well.
 
     The variables can also be modified individually though environment variables
     by using the "QUACC" prefix. e.g. QUACC_SCRATCH_DIR=/path/to/scratch.
@@ -72,7 +75,7 @@ class QuaccSettings(BaseSettings):
         ),
     )
     SCRATCH_DIR: str | Path = Field(
-        Path("/tmp") if Path("/tmp").exists() else Path.cwd(),
+        Path.cwd() / ".scratch",
         description="Scratch directory for calculations.",
     )
     CREATE_UNIQUE_WORKDIR: bool = Field(
@@ -257,6 +260,15 @@ class QuaccSettings(BaseSettings):
 
     # --8<-- [end:settings]
 
+    @validator("CONFIG_FILE", "RESULTS_DIR", "SCRATCH_DIR")
+    def resolve_paths(cls, v):
+        return Path(v).expanduser().resolve()
+
+    @validator("RESULTS_DIR", "SCRATCH_DIR")
+    def make_paths(cls, v):
+        os.makedirs(v, exist_ok=True)
+        return v
+
     class Config:
         """Pydantic config settings."""
 
@@ -281,9 +293,11 @@ class QuaccSettings(BaseSettings):
 
         from monty.serialization import loadfn
 
-        config_file_path = Path(
-            values.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH)
-        ).expanduser()
+        config_file_path = (
+            Path(values.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH))
+            .expanduser()
+            .resolve()
+        )
 
         new_values = {}  # type: dict
         if config_file_path.exists() and config_file_path.stat().st_size > 0:

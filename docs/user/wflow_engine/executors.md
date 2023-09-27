@@ -282,7 +282,7 @@ In the previous examples, we have been running calculations on our local machine
     An example is shown below for setting up a task runner compatible with the NERSC Perlmutter machine:
 
     ```python
-    from quacc.utils.wflows import make_prefect_runner
+    from quacc.wflow.prefect import make_prefect_runner
 
     n_slurm_jobs = 1 # Number of Slurm jobs to launch in parallel.
     n_nodes_per_calc = 1 # Number of nodes to reserve for each Slurm job.

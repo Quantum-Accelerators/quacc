@@ -10,10 +10,6 @@ The default global quacc settings can be found in the [`settings.py`](https://gi
 
 ### Using a YAML File
 
-!!! Tip
-
-    The quacc command-line interface (CLI) lets you update the YAML file from the terminal. You can run `quacc set PARAMETER value` to set a given parameter in the YAML file to the specified value. Similarly, you can run `quacc unset PARAMETER` to remove a parameter from the YAML file.
-
 If you are planning to modify a given set of parameters for all of your calculations, the easiest way is to create a YAML file with custom settings. By default, quacc looks for this YAML file at `~/.quacc.yaml`. If you wish to store the YAML file somewhere else or with a different name, you can define the environment variable `QUACC_CONFIG_FILE` and point it to the YAML path of your choosing.
 
 ```yaml title="~/.quacc.yaml"
@@ -27,7 +23,7 @@ CREATE_UNIQUE_WORKDIR: true # (2)!
 
 !!! Tip
 
-    To set a value to the Python equivalent of `None` in a YAML file, use `null` as the value.
+    The quacc command-line interface (CLI) lets you update the YAML file from the terminal. You can run `quacc set PARAMETER value` to set a given parameter in the YAML file to the specified value. Similarly, you can run `quacc unset PARAMETER` to remove a parameter from the YAML file.
 
 ### Using Environment Variables
 
