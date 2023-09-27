@@ -10,7 +10,7 @@ Run the following commands in the terminal, ideally in a fresh Python environmen
 pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
 pip install quacc[covalent]
 
-covalent start
+quacc set WORKFLOW_ENGINE covalent && covalent start
 ```
 
 Then open the URL printed in the terminal and run a sample workflow below!
