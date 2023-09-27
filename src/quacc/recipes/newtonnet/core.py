@@ -13,7 +13,7 @@ from quacc import SETTINGS, fetch_atoms, job
 from quacc.builders.thermo import build_ideal_gas
 from quacc.runners.calc import run_ase_opt, run_calc
 from quacc.schemas.ase import (
-    summarize_igt_thermo,
+    summarize_ideal_gas_thermo,
     summarize_opt_run,
     summarize_run,
     summarize_vib_run,
@@ -225,7 +225,7 @@ def freq_job(
     )
 
     igt = build_ideal_gas(final_atoms, vib.get_frequencies(), energy=energy)
-    summary["thermo"] = summarize_igt_thermo(
+    summary["thermo"] = summarize_ideal_gas_thermo(
         igt,
         temperature=temperature,
         pressure=pressure,
