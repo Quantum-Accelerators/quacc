@@ -64,7 +64,7 @@ In general, please try to keep the code style consistent when possible, particul
 
 2. Address any relevant style issues raised by the "Deepsource: Python," if present.
 
-3. All Python code should be formatted with [isort](https://github.com/PyCQA/isort) and then [black](https://github.com/psf/black), although this will be corrected automatically when merged.
+3. All Python code should be formatted with [isort](https://github.com/PyCQA/isort), [black](https://github.com/psf/black), and [ruff](https://github.com/astral-sh/ruff), although this will be corrected automatically when merged.
 
 ## Unit Tests
 
