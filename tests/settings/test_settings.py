@@ -42,8 +42,7 @@ def test_file(monkeypatch, tmpdir):
 
 def test_store(tmpdir):
     tmpdir.chdir()
-    store = MemoryStore()
-    SETTINGS.PRIMARY_STORE = store.to_json()
+    SETTINGS.PRIMARY_STORE = MemoryStore()
     atoms = bulk("Cu")
     static_job(atoms)
 

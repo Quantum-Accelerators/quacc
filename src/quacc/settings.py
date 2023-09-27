@@ -7,6 +7,8 @@ from pathlib import Path
 from shutil import which
 from typing import List, Optional, Union
 
+from maggma.core import Store
+from monty.json import MontyDecoder
 from pydantic import BaseSettings, Field, root_validator, validator
 
 from quacc.calculators.presets import vasp as vasp_defaults
@@ -94,7 +96,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # Data Store Settings
     # ---------------------------
-    PRIMARY_STORE: str = Field(
+    PRIMARY_STORE: Union[str, Store] = Field(
         None,
         description=(
             "String-based JSON representation of the primary Maggma data store "
@@ -267,6 +269,10 @@ class QuaccSettings(BaseSettings):
     @validator("ORCA_CMD")
     def expand_paths(cls, v):
         return v.expanduser()
+
+    @validator("PRIMARY_STORE")
+    def generate_store(cls, v):
+        return MontyDecoder().decode(v) if v else None
 
     class Config:
         """Pydantic config settings."""
