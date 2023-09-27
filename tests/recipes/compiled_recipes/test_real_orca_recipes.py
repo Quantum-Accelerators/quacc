@@ -6,7 +6,7 @@ from numpy.testing import assert_allclose
 
 from quacc import SETTINGS
 
-has_orca = bool(which(SETTINGS.ORCA_CMD))
+has_orca = bool(which("orca"))
 
 pytestmark = pytest.mark.skipif(
     not has_orca or SETTINGS.WORKFLOW_ENGINE != "local",
