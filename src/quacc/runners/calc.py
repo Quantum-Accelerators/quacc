@@ -17,7 +17,7 @@ from monty.os.path import zpath
 from monty.shutil import copy_r, gzip_dir
 
 from quacc import SETTINGS
-from quacc.atoms.basics copy_atoms
+from quacc.atoms.basics import copy_atoms
 from quacc.utils.files import copy_decompress, make_unique_dir
 
 try:
