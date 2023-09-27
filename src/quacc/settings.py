@@ -7,6 +7,7 @@ from pathlib import Path
 from shutil import which
 from typing import List, Optional, Union
 
+from monty.json import MontyDecoder
 from pydantic import BaseSettings, Field, root_validator, validator
 
 from quacc.calculators.presets import vasp as vasp_defaults
@@ -267,6 +268,10 @@ class QuaccSettings(BaseSettings):
     @validator("ORCA_CMD")
     def expand_paths(cls, v):
         return v.expanduser()
+
+    @validator("PRIMARY_STORE")
+    def generate_store(cls, v):
+        return MontyDecoder().decode(v)
 
     class Config:
         """Pydantic config settings."""
