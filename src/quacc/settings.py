@@ -7,8 +7,8 @@ from pathlib import Path
 from shutil import which
 from typing import Literal
 
-from pydantic import field_validator, model_validator, Field
-from pydantic_settings import SettingsConfigDict, BaseSettings
+from pydantic import Field, field_validator, model_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from quacc.calculators.presets import vasp as vasp_defaults
 
@@ -270,6 +270,7 @@ class QuaccSettings(BaseSettings):
     def make_paths(cls, v):
         os.makedirs(v, exist_ok=True)
         return v
+
     model_config = SettingsConfigDict(env_prefix="quacc_")
 
     @model_validator(mode="before")
