@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- Pydantic will now force path-based inputs to `Path` objects.
+- Pydantic field type validation has been improved.
 - Moved `quacc.custodian` to `quacc.calculators.custodian`
 - Moved `quacc.utils.thermo.ideal_gas` to `quacc.builders.thermo.build_ideal_gas`
 - Renamed `quacc.schemas.ase.summarize_thermo` to `quacc.schemas.ase.summarize_igt_thermo`
