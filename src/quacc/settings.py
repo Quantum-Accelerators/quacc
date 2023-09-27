@@ -37,6 +37,14 @@ class QuaccSettings(BaseSettings):
     by using the "QUACC" prefix. e.g. QUACC_SCRATCH_DIR=/path/to/scratch.
     """
 
+    CONFIG_FILE: Path = Field(
+        _DEFAULT_CONFIG_FILE_PATH,
+        description=(
+            "Path to the YAML file to load alternative quacc configuration "
+            "defaults from."
+        ),
+    )
+
     # --8<-- [start:settings]
 
     # ---------------------------
@@ -57,14 +65,7 @@ class QuaccSettings(BaseSettings):
     # General Settings
     # ---------------------------
 
-    CONFIG_FILE: str | Path = Field(
-        _DEFAULT_CONFIG_FILE_PATH,
-        description=(
-            "Path to the YAML file to load alternative quacc configuration "
-            "defaults from."
-        ),
-    )
-    RESULTS_DIR: str | Path = Field(
+    RESULTS_DIR: Path = Field(
         Path.cwd(),
         description=(
             "Directory to store I/O-based calculation results in."
@@ -74,7 +75,7 @@ class QuaccSettings(BaseSettings):
             "In this case, the `RESULTS_DIR` will be a subdirectory of that directory."
         ),
     )
-    SCRATCH_DIR: str | Path = Field(
+    SCRATCH_DIR: Path = Field(
         Path.cwd() / ".scratch",
         description="Scratch directory for calculations.",
     )
@@ -108,8 +109,8 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # ORCA Settings
     # ---------------------------
-    ORCA_CMD: str | Path = Field(
-        "orca",
+    ORCA_CMD: Path = Field(
+        Path("orca"),
         description=(
             "Path to the ORCA executable. This must be the full, absolute path "
             "for parallel calculations to work."
@@ -173,7 +174,7 @@ class QuaccSettings(BaseSettings):
             "in atoms.set_initial_magnetic_moments()."
         ),
     )
-    VASP_PRESET_DIR: Union[str, Path] = Field(
+    VASP_PRESET_DIR: Path = Field(
         resources.files(vasp_defaults),
         description="Path to the VASP preset directory",
     )
@@ -228,8 +229,8 @@ class QuaccSettings(BaseSettings):
         "qchem", description="Command to run the standard version of Q-Chem."
     )
 
-    QCHEM_LOCAL_SCRATCH: str | Path = Field(
-        Path("/tmp") if Path("/tmp").exists() else Path.cwd(),
+    QCHEM_LOCAL_SCRATCH: Path = Field(
+        Path("/tmp") if Path("/tmp").exists() else Path.cwd() / ".qchem_scratch",
         description="Compute-node local scratch directory in which Q-Chem should perform IO.",
     )
 
@@ -244,32 +245,33 @@ class QuaccSettings(BaseSettings):
     )
 
     # NBO Settings
-    QCHEM_NBO_EXE: Union[str, Path] = Field(
+    QCHEM_NBO_EXE: Optional[Path] = Field(
         None, description="Full path to the NBO executable."
     )
 
     # ---------------------------
     # NewtonNet Settings
     # ---------------------------
-    NEWTONNET_MODEL_PATH: str | Path | list[str | Path] = Field(
+    NEWTONNET_MODEL_PATH: Path | list[Path] = Field(
         "best_model_state.tar", description="Path to NewtonNet .tar model"
     )
-    NEWTONNET_CONFIG_PATH: str | Path | list[str | Path] = Field(
+    NEWTONNET_CONFIG_PATH: Path | list[Path] = Field(
         "config.yml", description="Path to NewtonNet YAML settings file"
     )
 
     # --8<-- [end:settings]
 
-    @field_validator("CONFIG_FILE", "RESULTS_DIR", "SCRATCH_DIR")
-    @classmethod
-    def resolve_paths(cls, v):
-        return Path(v).expanduser().resolve()
-
     @field_validator("RESULTS_DIR", "SCRATCH_DIR")
     @classmethod
-    def make_paths(cls, v):
+    def resolve_and_make_paths(cls, v):
+        v = v.expanduser().resolve()
         os.makedirs(v, exist_ok=True)
         return v
+
+    @field_validator("ORCA_CMD")
+    @classmethod
+    def expand_paths(cls, v):
+        return v.expanduser()
 
     model_config = SettingsConfigDict(env_prefix="quacc_")
 

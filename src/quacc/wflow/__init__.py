@@ -1,3 +1,1 @@
-"""
-Various utility functions for workflow management
-"""
+"""Modules related to workflow management"""

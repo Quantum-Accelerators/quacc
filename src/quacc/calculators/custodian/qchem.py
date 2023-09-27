@@ -21,7 +21,7 @@ except ImportError:
 def run_custodian(
     qchem_cores: int = 1,
     qchem_cmd: str | None = None,
-    qchem_local_scratch: str | None = None,
+    qchem_local_scratch: str | Path | None = None,
     qchem_use_error_handlers: bool | None = None,
     qchem_custodian_max_errors: int | None = None,
     qchem_nbo_exe: str | Path | None = None,

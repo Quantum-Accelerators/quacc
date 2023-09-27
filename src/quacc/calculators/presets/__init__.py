@@ -1,1 +1,1 @@
-"""Presets for various calculators"""
+"""Preset parameters for select calculators"""

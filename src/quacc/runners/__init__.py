@@ -1,3 +1,1 @@
-"""
-Various utility functions for running ASE calculations.
-"""
+"""Utility functions for preparing and running recipes."""
