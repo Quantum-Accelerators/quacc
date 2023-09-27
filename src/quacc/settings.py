@@ -7,8 +7,8 @@ from pathlib import Path
 from shutil import which
 from typing import Literal
 
-from pydantic import Field, root_validator, validator
-from pydantic_settings import BaseSettings
+from pydantic import field_validator, model_validator, Field
+from pydantic_settings import SettingsConfigDict, BaseSettings
 
 from quacc.calculators.presets import vasp as vasp_defaults
 
@@ -260,21 +260,20 @@ class QuaccSettings(BaseSettings):
 
     # --8<-- [end:settings]
 
-    @validator("CONFIG_FILE", "RESULTS_DIR", "SCRATCH_DIR")
+    @field_validator("CONFIG_FILE", "RESULTS_DIR", "SCRATCH_DIR")
+    @classmethod
     def resolve_paths(cls, v):
         return Path(v).expanduser().resolve()
 
-    @validator("RESULTS_DIR", "SCRATCH_DIR")
+    @field_validator("RESULTS_DIR", "SCRATCH_DIR")
+    @classmethod
     def make_paths(cls, v):
         os.makedirs(v, exist_ok=True)
         return v
+    model_config = SettingsConfigDict(env_prefix="quacc_")
 
-    class Config:
-        """Pydantic config settings."""
-
-        env_prefix = "quacc_"
-
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod
     def load_default_settings(cls, values: dict) -> dict:
         """
         Loads settings from a root file if available and uses that as defaults
