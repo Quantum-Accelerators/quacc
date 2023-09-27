@@ -269,6 +269,7 @@ class QuaccSettings(BaseSettings):
     @validator("RESULTS_DIR", "SCRATCH_DIR")
     def make_dirs(cls, v):
         os.makedirs(v, exist_ok=True)
+        return v
 
     class Config:
         """Pydantic config settings."""
