@@ -3,10 +3,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from quacc import flow, job, subflow
+from quacc import fetch_atoms, flow, job, subflow
+from quacc.atoms.slabs import make_adsorbate_structures, make_slabs_from_bulk
 from quacc.recipes.vasp.core import _base_job
-from quacc.schemas import fetch_atoms
-from quacc.utils.slabs import make_adsorbate_structures, make_slabs_from_bulk
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -169,7 +168,7 @@ def bulk_to_slabs_flow(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     make_slabs_kwargs
-        Additional keyword arguments to pass to [quacc.utils.slabs.make_slabs_from_bulk][]
+        Additional keyword arguments to pass to [quacc.atoms.slabs.make_slabs_from_bulk][]
     run_static
         Whether to run the static calculation.
     slab_relax_kwargs
@@ -234,7 +233,7 @@ def slab_to_ads_flow(
     adsorbate
         Atoms object for the adsorbate.
     make_ads_kwargs
-        Additional keyword arguments to pass to [quacc.utils.slabs.make_adsorbate_structures][]
+        Additional keyword arguments to pass to [quacc.atoms.slabs.make_adsorbate_structures][]
     run_static
         Whether to run the static calculation.
     slab_relax_kwargs

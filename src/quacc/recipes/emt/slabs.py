@@ -3,10 +3,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from quacc import flow, job, subflow
+from quacc import fetch_atoms, flow, job, subflow
+from quacc.atoms.slabs import make_slabs_from_bulk
 from quacc.recipes.emt.core import relax_job, static_job
-from quacc.schemas import fetch_atoms
-from quacc.utils.slabs import make_slabs_from_bulk
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -38,7 +37,7 @@ def bulk_to_slabs_flow(
         the value
     make_slabs_kwargs
         Additional keyword arguments to pass to
-        [quacc.utils.slabs.make_slabs_from_bulk][]
+        [quacc.atoms.slabs.make_slabs_from_bulk][]
     run_static
         Whether to run the static calculation.
     slab_relax_kwargs

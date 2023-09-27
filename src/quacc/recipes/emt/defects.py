@@ -5,10 +5,9 @@ from typing import TYPE_CHECKING
 
 from pymatgen.analysis.defects.generators import VacancyGenerator
 
-from quacc import flow, job, subflow
+from quacc import fetch_atoms, flow, job, subflow
+from quacc.atoms.defects import make_defects_from_bulk
 from quacc.recipes.emt.core import relax_job, static_job
-from quacc.schemas import fetch_atoms
-from quacc.utils.defects import make_defects_from_bulk
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -58,7 +57,7 @@ def bulk_to_defects_flow(
     defect_charge
         Charge state of the defect
     make_defects_kwargs
-        Keyword arguments to pass to [quacc.utils.defects.make_defects_from_bulk][]
+        Keyword arguments to pass to [quacc.atoms.defects.make_defects_from_bulk][]
     run_static
         Whether to run the static calculation.
     defect_relax_kwargs

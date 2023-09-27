@@ -6,9 +6,8 @@ from typing import TYPE_CHECKING
 from ase.calculators.psi4 import Psi4
 from monty.dev import requires
 
-from quacc import job
+from quacc import fetch_atoms, job
 from quacc.runners.calc import run_calc
-from quacc.schemas import fetch_atoms
 from quacc.schemas.ase import summarize_run
 from quacc.utils.dicts import merge_dicts
 
