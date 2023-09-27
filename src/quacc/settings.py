@@ -258,14 +258,14 @@ class QuaccSettings(BaseSettings):
 
     # --8<-- [end:settings]
 
-    @validator("ORCA_CMD")
-    def expand_paths(cls, v):
-        return v.expanduser()
-
     @validator("RESULTS_DIR", "SCRATCH_DIR")
     def resolve_paths(cls, v):
         os.makedirs(v, exist_ok=True)
         return v.expanduser().resolve()
+
+    @validator("ORCA_CMD")
+    def expand_paths(cls, v):
+        return v.expanduser()
 
     class Config:
         """Pydantic config settings."""
