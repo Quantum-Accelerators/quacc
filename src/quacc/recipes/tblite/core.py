@@ -9,7 +9,7 @@ from monty.dev import requires
 from quacc import job
 from quacc.builders.thermo import build_ideal_gas
 from quacc.runners.calc import run_ase_opt, run_ase_vib, run_calc
-from quacc.schemas import fetch_atoms
+from quacc import fetch_atoms
 from quacc.schemas.ase import (
     summarize_igt_thermo,
     summarize_opt_run,

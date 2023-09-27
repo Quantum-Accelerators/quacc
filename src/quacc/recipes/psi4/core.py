@@ -8,7 +8,7 @@ from monty.dev import requires
 
 from quacc import job
 from quacc.runners.calc import run_calc
-from quacc.schemas import fetch_atoms
+from quacc import fetch_atoms
 from quacc.schemas.ase import summarize_run
 from quacc.utils.dicts import merge_dicts
 

@@ -7,7 +7,7 @@ from pymatgen.analysis.defects.generators import VacancyGenerator
 
 from quacc import flow, job, subflow
 from quacc.recipes.emt.core import relax_job, static_job
-from quacc.schemas import fetch_atoms
+from quacc import fetch_atoms
 from quacc.utils.defects import make_defects_from_bulk
 
 if TYPE_CHECKING:
