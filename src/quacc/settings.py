@@ -272,7 +272,7 @@ class QuaccSettings(BaseSettings):
 
     @validator("PRIMARY_STORE")
     def generate_store(cls, v):
-        return MontyDecoder().decode(v)
+        return MontyDecoder().decode(v) if v else None
 
     class Config:
         """Pydantic config settings."""
