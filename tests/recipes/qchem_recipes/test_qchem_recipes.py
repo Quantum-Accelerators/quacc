@@ -12,8 +12,8 @@ from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.qchem.inputs import QCInput
 
 from quacc import SETTINGS
+from quacc.atoms.basics import check_charge_and_spin
 from quacc.calculators.qchem import QChem
-from quacc.utils import check_charge_and_spin
 
 pytest.importorskip("sella")
 pytestmark = pytest.mark.skipif(
