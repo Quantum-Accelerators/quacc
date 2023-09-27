@@ -58,7 +58,7 @@ def bulk_to_defects_flow(
     defect_charge
         Charge state of the defect
     make_defects_kwargs
-        Keyword arguments to pass to [quacc.utils.defects.make_defects_from_bulk][]
+        Keyword arguments to pass to [quacc.atoms.defects.make_defects_from_bulk][]
     run_static
         Whether to run the static calculation.
     defect_relax_kwargs
