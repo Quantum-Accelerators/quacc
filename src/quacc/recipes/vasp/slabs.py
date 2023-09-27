@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from quacc import flow, job, subflow
+from quacc import fetch_atoms, flow, job, subflow
 from quacc.atoms.slabs import make_adsorbate_structures, make_slabs_from_bulk
 from quacc.recipes.vasp.core import _base_job
 from quacc.schemas import fetch_atoms
