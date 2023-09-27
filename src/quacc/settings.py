@@ -7,6 +7,7 @@ from pathlib import Path
 from shutil import which
 from typing import List, Optional, Union
 
+from maggma.core import Store
 from monty.json import MontyDecoder
 from pydantic import BaseSettings, Field, root_validator, validator
 
@@ -95,7 +96,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # Data Store Settings
     # ---------------------------
-    PRIMARY_STORE: str = Field(
+    PRIMARY_STORE: Union[str, Store] = Field(
         None,
         description=(
             "String-based JSON representation of the primary Maggma data store "
