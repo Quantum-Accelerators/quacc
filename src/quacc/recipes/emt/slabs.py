@@ -38,7 +38,7 @@ def bulk_to_slabs_flow(
         the value
     make_slabs_kwargs
         Additional keyword arguments to pass to
-        [quacc.utils.slabs.make_slabs_from_bulk][]
+        [quacc.atoms.slabs.make_slabs_from_bulk][]
     run_static
         Whether to run the static calculation.
     slab_relax_kwargs
