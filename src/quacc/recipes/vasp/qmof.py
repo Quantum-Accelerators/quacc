@@ -10,11 +10,10 @@ from typing import TYPE_CHECKING
 
 from ase.optimize import BFGSLineSearch
 
-from quacc import job
+from quacc import fetch_atoms, job
 from quacc.calculators.vasp import Vasp
 from quacc.recipes.vasp.core import _base_job
 from quacc.runners.calc import run_ase_opt
-from quacc import fetch_atoms
 from quacc.schemas.ase import summarize_opt_run
 from quacc.utils.dicts import merge_dicts
 

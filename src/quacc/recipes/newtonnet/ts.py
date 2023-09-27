@@ -7,10 +7,9 @@ from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
-from quacc import SETTINGS, job
+from quacc import SETTINGS, fetch_atoms, job
 from quacc.recipes.newtonnet.core import _add_stdev_and_hess, freq_job, relax_job
 from quacc.runners.calc import run_ase_opt
-from quacc import fetch_atoms
 from quacc.schemas.ase import summarize_opt_run
 from quacc.utils.dicts import merge_dicts
 

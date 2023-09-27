@@ -7,9 +7,8 @@ from typing import TYPE_CHECKING
 
 from ase.calculators.orca import ORCA, OrcaProfile
 
-from quacc import SETTINGS, job
+from quacc import SETTINGS, fetch_atoms, job
 from quacc.runners.calc import run_calc
-from quacc import fetch_atoms
 from quacc.schemas.cclib import cclib_summarize_run
 from quacc.utils.dicts import merge_dicts
 
