@@ -6,9 +6,9 @@ from ase import Atoms
 from ase.build import bulk, molecule
 from ase.io import read
 
+from quacc.atoms.basics get_atoms_id
 from quacc.calculators.vasp import Vasp
 from quacc.runners.prep import prep_next_run
-from quacc.utils.atoms import get_atoms_id
 
 FILE_DIR = Path(__file__).resolve().parent
 ATOMS_MAG = read(os.path.join(FILE_DIR, "..", "calculators", "vasp", "OUTCAR_mag.gz"))

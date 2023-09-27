@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from quacc.utils.atoms import copy_atoms, get_atoms_id
+from quacc.atoms.basics copy_atoms, get_atoms_id
 
 if TYPE_CHECKING:
     from ase import Atoms

@@ -20,9 +20,9 @@ from pymatgen.io.vasp.inputs import Kpoints
 from pymatgen.symmetry.bandstructure import HighSymmKpath
 
 from quacc import SETTINGS
+from quacc.atoms.basics check_is_metal
 from quacc.calculators.custodian import vasp as custodian_vasp
 from quacc.runners.prep import set_magmoms
-from quacc.utils.atoms import check_is_metal
 from quacc.utils.files import load_yaml_calc
 
 if TYPE_CHECKING:
