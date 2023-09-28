@@ -2,7 +2,6 @@ name: Other
 description: A report that doesn't fit in the other categories.
 
 body:
-
   - type: textarea
     attributes:
       label: What would you like to report?
