@@ -14,7 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Moved `quacc.utils.atoms`/`.slabs`/`.defects` into `quacc.atoms.core`/`.slabs`/`.defects`
 - Moved `quacc.custodian` to `quacc.calculators.custodian`
 - Moved `quacc.utils.thermo.ideal_gas` to `quacc.builders.thermo.build_ideal_gas`
-- Renamed `quacc.schemas.ase.summarize_thermo` to `quacc.schemas.ase.summarize_igt_thermo`
+- Renamed `quacc.schemas.ase.summarize_thermo` to `quacc.schemas.ase.summarize_ideal_gas_thermo`
 
 ## [0.3.0]
 

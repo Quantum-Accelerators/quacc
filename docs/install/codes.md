@@ -23,7 +23,7 @@ No setup needed!
 As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/gaussian.html), you will need to define an environment variable named `ASE_GAUSSIAN_COMMAND`. It should be formatted as follows:
 
 ```bash
-ASE_GAUSSIAN_COMMAND="/path/to/my/gaussian_executable Gaussian.com > Gaussian.log"
+export ASE_GAUSSIAN_COMMAND="/path/to/my/gaussian_executable Gaussian.com > Gaussian.log"
 ```
 
 ## GULP
@@ -31,8 +31,8 @@ ASE_GAUSSIAN_COMMAND="/path/to/my/gaussian_executable Gaussian.com > Gaussian.lo
 As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/gulp.html), you must set the environment variables `GULP_LIB` and `ASE_GULP_COMMAND` as follows:
 
 ```bash
-GULP_LIB="/path/to/my/gulp-#.#.#/Libraries"
-ASE_GULP_COMMAND="/path/to/my/gulp-#.#.#/Src/gulp < gulp.gin > gulp.got"
+export GULP_LIB="/path/to/my/gulp-#.#.#/Libraries"
+export ASE_GULP_COMMAND="/path/to/my/gulp-#.#.#/Src/gulp < gulp.gin > gulp.got"
 ```
 
 ## Lennard Jones
@@ -45,7 +45,7 @@ If you plan to use NewtonNet with Quacc, you will need to install it prior to us
 
 ```bash
 pip install git+https://github.com/ericyuan00000/NewtonNet.git
-pip install quacc[newtonnet, sella]
+pip install quacc[newtonnet,sella]
 ```
 
 ## ORCA
@@ -53,7 +53,7 @@ pip install quacc[newtonnet, sella]
 To use quacc with ORCA, you will need to define the `ORCA_CMD` setting to be the full, absolute path to your ORCA executable. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md), such as by defining the following environment variable:
 
 ```bash
-QUACC_ORCA_CMD=/path/to/my/orca/orca
+export QUACC_ORCA_CMD="/path/to/my/orca/orca"
 ```
 
 ## Psi4

@@ -1,0 +1,11 @@
+name: Documentation
+description: Help improve the documentation.
+labels: ["documentation"]
+
+body:
+  - type: textarea
+    attributes:
+      label: How can we improve the documentation?
+      description: A description of something that should be added or made easier to understand in the documentation, including links to existing documentation if applicable.
+    validations:
+      required: true

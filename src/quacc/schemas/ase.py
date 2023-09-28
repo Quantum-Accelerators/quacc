@@ -767,7 +767,7 @@ def summarize_vib_run(
     return task_doc
 
 
-def summarize_igt_thermo(
+def summarize_ideal_gas_thermo(
     igt: IdealGasThermo,
     temperature: float = 298.15,
     pressure: float = 1.0,

@@ -10,7 +10,7 @@ from quacc import fetch_atoms, job
 from quacc.builders.thermo import build_ideal_gas
 from quacc.runners.calc import run_ase_opt, run_ase_vib, run_calc
 from quacc.schemas.ase import (
-    summarize_igt_thermo,
+    summarize_ideal_gas_thermo,
     summarize_opt_run,
     summarize_run,
     summarize_vib_run,
@@ -195,7 +195,7 @@ def freq_job(
     -------
     FreqSchema
         Dictionary of results from [quacc.schemas.ase.summarize_vib_run] and
-        [quacc.schemas.ase.summarize_igt_thermo][]
+        [quacc.schemas.ase.summarize_ideal_gas_thermo][]
     """
     atoms = fetch_atoms(atoms)
     vib_kwargs = vib_kwargs or {}
@@ -210,7 +210,7 @@ def freq_job(
     )
 
     igt = build_ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)
-    vib_summary["thermo"] = summarize_igt_thermo(
+    vib_summary["thermo"] = summarize_ideal_gas_thermo(
         igt,
         temperature=temperature,
         pressure=pressure,
