@@ -3,7 +3,6 @@ description: Propose a new feature to improve quacc.
 labels: ["enhancement"]
 
 body:
-
   - type: textarea
     attributes:
       label: What new feature would you like to see?
