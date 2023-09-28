@@ -3,7 +3,6 @@ description: Help improve the documentation.
 labels: ["documentation"]
 
 body:
-
   - type: textarea
     attributes:
       label: How can we improve the documentation?
