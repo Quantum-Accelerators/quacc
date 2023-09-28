@@ -3,7 +3,6 @@ description: Report a bug with quacc.
 labels: ["bug"]
 
 body:
-
   - type: textarea
     attributes:
       label: Environment
