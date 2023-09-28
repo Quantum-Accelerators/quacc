@@ -1,2 +1,2 @@
-covalent==0.228.0rc0
+covalent==0.227.0rc0
 covalent-hpc-plugin==0.0.5
