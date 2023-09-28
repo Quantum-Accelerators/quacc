@@ -6,4 +6,4 @@ maggma==0.57.0
 monty==2023.9.25
 numpy==1.26.0
 pydantic==1.10.2
-pymatgen==2023.9.25
+pymatgen==2023.9.2
