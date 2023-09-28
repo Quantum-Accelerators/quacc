@@ -1,6 +1,6 @@
-# Quick Start
+# Demo
 
-Want to get up and running with quacc as fast possible? Here we go!
+Want to get a feel for what's possible with quacc as fast possible? Here we go!
 
 ## Installation
 
