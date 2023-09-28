@@ -1,4 +1,3 @@
----
 name: Documentation
 about: Help improve the documentation
 title: ""
@@ -11,4 +10,3 @@ body:
       description: What improvement should be made to the documentation?
       placeholder: Descrption of the documentation update.
       value: ""
----

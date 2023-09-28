@@ -1,4 +1,3 @@
----
 name: Issue Report
 about: Raise an issue to help improve quacc
 title: ""
@@ -25,4 +24,3 @@ body:
       description: Please include details about your Python environment.
       placeholder: quacc version and Python version
       value: ""
----
