@@ -214,7 +214,7 @@ class QuaccSettings(BaseSettings):
         ["VasprunXMLValidator", "VaspFilesValidator"],
         description="Validators for Custodian",
     )
-    VASP_CUSTODIAN_WALL_TIME: int | None = Field(
+    VASP_CUSTODIAN_WALL_TIME: Optional[int] = Field(
         None,
         description=(
             "After this many seconds, Custodian will stop running "
