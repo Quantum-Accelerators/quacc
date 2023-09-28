@@ -1,26 +1,31 @@
-name: Issue Report
-about: Raise an issue to help improve quacc
-title: ""
+name: Bug report
+description: Report a bug with quacc.
 labels: ["bug"]
+
 body:
+
   - type: textarea
-    id: issue
-    attributes:
-      label: Issue
-      description: What's the issue?
-      placeholder: Descrption of the issue.
-      value: ""
-  - type: textarea
-    id: reproduce
-    attributes:
-      label: Reproduce
-      description: Please include a minimal working example to reproduce the issue.
-      placeholder: Steps to reproduce the issue.
-      value: ""
-  - type: textarea
-    id: environment
     attributes:
       label: Environment
-      description: Please include details about your Python environment.
-      placeholder: quacc version and Python version
-      value: ""
+      description: For the version of quacc, you can find it by doing `print(quacc.__version__)`.
+      value: |
+        - **quacc version**:
+        - **Python version**:
+        - **Operating system**:
+        - **Workflow engine** (if applicable):
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: What is the issue?
+      description: A short description of what is going wrong.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: How can we reproduce the issue?
+      description: Provide a [minimal working example](https://stackoverflow.com/help/minimal-reproducible-example) of code to reproduce the issue.  If you are copying in code, please remember to enclose it in triple backticks (` ``` [multiline code goes here] ``` `) so that it [displays correctly](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
+    validations:
+      required: true
