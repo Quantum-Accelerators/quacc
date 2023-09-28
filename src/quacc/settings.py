@@ -99,7 +99,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # Data Store Settings
     # ---------------------------
-    PRIMARY_STORE: str | Store = Field(
+    PRIMARY_STORE: str | Store | None = Field(
         None,
         description=(
             "String-based JSON representation of the primary Maggma data store "
