@@ -1,3 +1,3 @@
 - [ ] I have read the [Developer Guide](https://quantum-accelerators.github.io/quacc/dev/contributing.html). Don't lie! 😉
 - [ ] My PR is on a custom branch and is _not_ named `main`.
-- [ ] I have added relevant unit tests, if applicable.
+- [ ] I have added relevant unit tests. Note: Your PR will likely not be merged without proper tests.
