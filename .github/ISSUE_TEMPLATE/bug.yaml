@@ -25,6 +25,6 @@ body:
   - type: textarea
     attributes:
       label: How can we reproduce the issue?
-      description: Provide a [minimal working example](https://stackoverflow.com/help/minimal-reproducible-example) of code to reproduce the issue.  If you are copying in code, please remember to enclose it in triple backticks (` ```  `) so that it [displays correctly](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
+      description: Provide a [minimal working example](https://stackoverflow.com/help/minimal-reproducible-example) of code to reproduce the issue. This is critical. Please do not try to "save time" by omitting it.
     validations:
       required: true
