@@ -5,7 +5,7 @@ import os
 from importlib import import_module, resources
 from pathlib import Path
 from shutil import which
-from typing import Literal
+from typing import Literal, Optional, Union
 
 from maggma.core import Store
 from monty.json import MontyDecoder
@@ -99,7 +99,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # Data Store Settings
     # ---------------------------
-    PRIMARY_STORE: str | Store | None = Field(
+    PRIMARY_STORE: Optional[Union[str, Store]] = Field(
         None,
         description=(
             "String-based JSON representation of the primary Maggma data store "
@@ -247,17 +247,17 @@ class QuaccSettings(BaseSettings):
     )
 
     # NBO Settings
-    QCHEM_NBO_EXE: Path | None = Field(
+    QCHEM_NBO_EXE: Optional[Path] = Field(
         None, description="Full path to the NBO executable."
     )
 
     # ---------------------------
     # NewtonNet Settings
     # ---------------------------
-    NEWTONNET_MODEL_PATH: Path | list[Path] = Field(
+    NEWTONNET_MODEL_PATH: Union[Path, list[Path]] = Field(
         "best_model_state.tar", description="Path to NewtonNet .tar model"
     )
-    NEWTONNET_CONFIG_PATH: Path | list[Path] = Field(
+    NEWTONNET_CONFIG_PATH: Union[Path, list[Path]] = Field(
         "config.yml", description="Path to NewtonNet YAML settings file"
     )
 
