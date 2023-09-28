@@ -1,0 +1,11 @@
+name: Other
+description: A report that doesn't fit in the other categories.
+
+body:
+
+  - type: textarea
+    attributes:
+      label: What would you like to report?
+      description: A clear and concise description of what you would like to report.
+    validations:
+      required: true
