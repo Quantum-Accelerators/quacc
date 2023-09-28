@@ -1,7 +1,7 @@
 https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
 cclib==1.8
 custodian==2023.7.22
-emmet-core==0.69.3
+emmet-core==0.69.5
 maggma==0.57.0
 monty==2023.9.25
 numpy==1.26.0
