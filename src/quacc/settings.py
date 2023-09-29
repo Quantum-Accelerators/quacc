@@ -5,11 +5,12 @@ import os
 from importlib import import_module, resources
 from pathlib import Path
 from shutil import which
-from typing import List, Optional, Union
+from typing import Literal, Optional, Union
 
 from maggma.core import Store
 from monty.json import MontyDecoder
-from pydantic import BaseSettings, Field, root_validator, validator
+from pydantic import Field, field_validator, model_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from quacc.calculators.presets import vasp as vasp_defaults
 
@@ -52,7 +53,9 @@ class QuaccSettings(BaseSettings):
     # Workflow Engine
     # ---------------------------
 
-    WORKFLOW_ENGINE: str = Field(
+    WORKFLOW_ENGINE: Literal[
+        "covalent", "jobflow", "parsl", "prefect", "redun", "local"
+    ] = Field(
         installed_engine,
         description=(
             "The workflow manager to use."
@@ -96,7 +99,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # Data Store Settings
     # ---------------------------
-    PRIMARY_STORE: Union[str, Store] = Field(
+    PRIMARY_STORE: Optional[Union[str, Store]] = Field(
         None,
         description=(
             "String-based JSON representation of the primary Maggma data store "
@@ -192,7 +195,7 @@ class QuaccSettings(BaseSettings):
     VASP_CUSTODIAN_MAX_ERRORS: int = Field(
         5, description="Maximum errors for Custodian"
     )
-    VASP_CUSTODIAN_HANDLERS: List[str] = Field(
+    VASP_CUSTODIAN_HANDLERS: list[str] = Field(
         [
             "VaspErrorHandler",
             "MeshSymmetryErrorHandler",
@@ -207,7 +210,7 @@ class QuaccSettings(BaseSettings):
         ],
         description="Handlers for Custodian",
     )
-    VASP_CUSTODIAN_VALIDATORS: List[str] = Field(
+    VASP_CUSTODIAN_VALIDATORS: list[str] = Field(
         ["VasprunXMLValidator", "VaspFilesValidator"],
         description="Validators for Custodian",
     )
@@ -251,35 +254,35 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # NewtonNet Settings
     # ---------------------------
-    NEWTONNET_MODEL_PATH: Union[Path, List[Path]] = Field(
+    NEWTONNET_MODEL_PATH: Union[Path, list[Path]] = Field(
         "best_model_state.tar", description="Path to NewtonNet .tar model"
     )
-    NEWTONNET_CONFIG_PATH: Union[Path, List[Path]] = Field(
+    NEWTONNET_CONFIG_PATH: Union[Path, list[Path]] = Field(
         "config.yml", description="Path to NewtonNet YAML settings file"
     )
 
     # --8<-- [end:settings]
 
-    @validator("RESULTS_DIR", "SCRATCH_DIR")
+    @field_validator("RESULTS_DIR", "SCRATCH_DIR")
+    @classmethod
     def resolve_and_make_paths(cls, v):
         v = v.expanduser().resolve()
         os.makedirs(v, exist_ok=True)
         return v
 
-    @validator("ORCA_CMD")
+    @field_validator("ORCA_CMD")
+    @classmethod
     def expand_paths(cls, v):
         return v.expanduser()
 
-    @validator("PRIMARY_STORE")
+    @field_validator("PRIMARY_STORE")
     def generate_store(cls, v):
         return MontyDecoder().decode(v) if isinstance(v, str) else v
 
-    class Config:
-        """Pydantic config settings."""
+    model_config = SettingsConfigDict(env_prefix="quacc_")
 
-        env_prefix = "quacc_"
-
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod
     def load_default_settings(cls, values: dict) -> dict:
         """
         Loads settings from a root file if available and uses that as defaults
