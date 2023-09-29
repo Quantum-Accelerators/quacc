@@ -6,7 +6,7 @@ import os
 import warnings
 from inspect import getmembers, isclass
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 import cclib
 from cclib.io import ccread
@@ -254,7 +254,7 @@ def cclib_summarize_run(
     return summary
 
 
-class _cclibTaskDocument(MoleculeMetadata):
+class _cclibTaskDocument(MoleculeMetadata, extra="allow"):
     """
     Definition of a cclib-generated task document.
 
@@ -262,22 +262,28 @@ class _cclibTaskDocument(MoleculeMetadata):
     list of supported packages, see https://cclib.github.io
     """
 
-    molecule: Molecule = Field(None, description="Final output molecule from the task")
-    energy: float = Field(None, description="Final total energy")
-    dir_name: str = Field(None, description="Directory where the output is parsed")
-    logfile: str = Field(
+    molecule: Optional[Molecule] = Field(
+        None, description="Final output molecule from the task"
+    )
+    energy: Optional[float] = Field(None, description="Final total energy")
+    dir_name: Optional[str] = Field(
+        None, description="Directory where the output is parsed"
+    )
+    logfile: Optional[str] = Field(
         None, description="Path to the log file used in the post-processing analysis"
     )
-    attributes: dict = Field(
+    attributes: Optional[dict] = Field(
         None, description="Computed properties and calculation outputs"
     )
-    metadata: dict = Field(
+    metadata: Optional[dict] = Field(
         None,
         description="Calculation metadata, including input parameters and runtime "
         "statistics",
     )
-    task_label: str = Field(None, description="A description of the task")
-    tags: list[str] = Field(None, description="Optional tags for this task document")
+    task_label: Optional[str] = Field(None, description="A description of the task")
+    tags: Optional[list[str]] = Field(
+        None, description="Optional tags for this task document"
+    )
 
     @classmethod
     def from_logfile(
@@ -465,7 +471,8 @@ class _cclibTaskDocument(MoleculeMetadata):
             metadata=metadata,
         )
         doc.molecule = final_molecule
-        return doc.copy(update=additional_fields).dict()
+
+        return doc.model_copy(update=additional_fields).dict()
 
 
 def _cclib_calculate(

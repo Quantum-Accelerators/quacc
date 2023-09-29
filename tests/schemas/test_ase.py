@@ -82,11 +82,14 @@ def test_summarize_run(tmpdir):
     # Make sure Atoms magmoms were not moved if specified
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
-    results = summarize_run(atoms, prep_next_run=False)
+    results = summarize_run(
+        atoms, prep_next_run=False, additional_fields={"test": "hi"}
+    )
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
     assert results["atoms"].get_initial_magnetic_moments().tolist() == [3.14] * len(
         atoms
     )
+    assert results.get("test") == "hi"
 
     # test document can be jsanitized and decoded
     d = jsanitize(results, strict=True, enum_values=True)
