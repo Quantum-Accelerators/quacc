@@ -13,8 +13,8 @@ from pymatgen.io.ase import AseAtomsAdaptor
 from shakenbreak.input import Distortions
 
 if TYPE_CHECKING:
-    import numpy as np
     from ase.atoms import Atoms
+    from numpy.typing import NDArray
     from pymatgen.analysis.defects.core import Defect
     from pymatgen.analysis.defects.generators import (
         AntiSiteGenerator,
@@ -37,7 +37,7 @@ def make_defects_from_bulk(
         | VoronoiInterstitialGenerator
     ) = VacancyGenerator,
     defect_charge: int = 0,
-    sc_mat: np.ndarray | None = None,
+    sc_mat: NDArray | None = None,
     min_atoms: int = 80,
     max_atoms: int = 240,
     min_length: float = 10.0,

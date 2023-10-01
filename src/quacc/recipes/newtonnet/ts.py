@@ -26,8 +26,8 @@ except ImportError:
 if TYPE_CHECKING:
     from typing import Literal
 
-    import numpy as np
     from ase import Atoms
+    from numpy.typing import NDArray
 
     from quacc.schemas.ase import FreqSchema, OptSchema
 
@@ -347,7 +347,7 @@ def quasi_irc_job(
     return relax_summary
 
 
-def _get_hessian(atoms: Atoms) -> np.ndarray:
+def _get_hessian(atoms: Atoms) -> NDArray:
     """
     Calculate and retrieve the Hessian matrix for the given molecular
     configuration.
@@ -364,7 +364,7 @@ def _get_hessian(atoms: Atoms) -> np.ndarray:
 
     Returns
     -------
-    np.ndarray
+    NDArray
         The calculated Hessian matrix, reshaped into a 2D array.
     """
     ml_calculator = NewtonNet(
