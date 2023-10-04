@@ -4,7 +4,7 @@ In the previous examples, we have been running calculations on our local machine
 
 === "Covalent ⭐"
 
-    By default, Covalent will run all jobs on your local machine using the Dask backend. This is a parameter that you can control. For instance, Covalent offers many [plugin executors](https://docs.covalent.xyz/docs/features/executor-plugins/exe) that can be installed and used to interface with a wide range of HPC, cloud, and quantum devices.
+    By default, Covalent will run all jobs on your local machine using the Dask backend. This is a parameter that you can control. For instance, Covalent offers many [executor plugins](https://docs.covalent.xyz/docs/plugin) that can be installed and used to interface with a wide range of HPC, cloud, and quantum devices.
 
     **Setting the Executor for the Flow**
 
@@ -64,7 +64,7 @@ In the previous examples, we have been running calculations on our local machine
 
     !!! Tip
 
-        Refer to the [executor documentation](https://docs.covalent.xyz/docs/features/executor-plugins/exe) for instructions on how to install and use the relevant plugins that allow Covalent to submit jobs on your desired machines.
+        Refer to the [executor plugin documentation](https://docs.covalent.xyz/docs/plugin) for instructions on how to install and use the relevant plugins that allow Covalent to submit jobs on your desired machines.
 
     Most users of quacc will probably want to use the [`HPCExecutor`](https://github.com/Quantum-Accelerators/covalent-hpc-plugin), which is a plugin for Covalent that supports Slurm, PBS, LSF, Flux, and more. For submitting jobs to a Slurm-based job scheduler from your local machine, an example `HPCExecutor` configuration might look like the following, which has been tested on Perlmutter at NERSC:
 
