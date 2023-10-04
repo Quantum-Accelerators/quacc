@@ -328,3 +328,7 @@ print(result2)
         'volume': 11.761470249999999,
     }
     ```
+
+### Concluding Comments
+
+At this point, you now have the basic idea of how quacc recipes work. If you don't care about using a workflow engine, feel free to write simple quacc-based Python scripts and submit them as-is using your favorite computing machine. However, if you are looking to efficiently scale up and monitor large numbers of workflows, continue reading!
