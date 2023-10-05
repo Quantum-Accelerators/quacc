@@ -161,7 +161,7 @@ In the previous examples, we have been running calculations on our local machine
 
         To configure Parsl for the high-performance computing environment of your choice, refer to the executor [Configuration](https://parsl.readthedocs.io/en/stable/userguide/configuring.html) page in the Parsl documentation.
 
-    For [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/), example [`HighThroughputExecutor`](https://parsl.readthedocs.io/en/stable/stubs/parsl.executors.HighThroughputExecutor.html#parsl.executors.HighThroughputExecutor) configurations can be found in the [NERSC Documentation](https://docs.nersc.gov/jobs/workflow/parsl/). A simple one is reproduced below that allows for job submission from the login node. This example will create a single Slurm job that will run one job at a time on a single node and is good for testing out some of the examples above.
+    An example [`HighThroughputExecutor`](https://parsl.readthedocs.io/en/stable/stubs/parsl.executors.HighThroughputExecutor.html#parsl.executors.HighThroughputExecutor) that will orchestra jobs from the login node of NERSC's Perlmutter machine is shown here for reference. This example will create a single Slurm job that will run one job at a time on a single node and is good for testing out some of the examples above.
 
     ```python
     import parsl
@@ -212,7 +212,7 @@ In the previous examples, we have been running calculations on our local machine
 
     **Scaling Up**
 
-    Now let's consider a more realistic scenario. Suppose we want to have a single Slurm job that reserves 8 nodes, and each job in the workflow (e.g. VASP calculation) will run on 2 nodes (let's assume each node has 48 cores total, so that's a total of 96 cores for each calculation). Parsl will act as an orchestrator in the background of one of the nodes. Our config will now look like the following.
+    Now let's consider a more realistic scenario. Suppose we want to have a single Slurm job that reserves 8 nodes, and each job in the workflow (e.g. VASP calculation) will run on 2 nodes (let's assume each node has 48 cores total, so that's a total of 96 cores for each calculation). Parsl will act as an orchestrator in the background of one of the compute nodes (rather than on the login node). Our config will now look like the following.
 
     ```python
     import parsl

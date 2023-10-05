@@ -140,11 +140,18 @@ graph LR
 
     !!! Important
 
-        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md):
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md) and load the default Parsl configuration:
 
         ```bash
         quacc set WORKFLOW_ENGINE parsl
         ```
+
+        ```python title="python"
+        import parsl
+        parsl.load()  #  (1)!
+        ```
+
+        1. It is necessary to instantiate a Parsl configuration before running Parsl workflows. This command loads the default (local) configuration.
 
     ```python
     import parsl
@@ -163,18 +170,16 @@ graph LR
         return a * b
 
 
-    def workflow(a, b, c):  #  (3)!
+    def workflow(a, b, c):  #  (2)!
         return mult(add(a, b), c)
 
     result = workflow(1, 2, 3).result()  # 9
     print(result)
     ```
 
-    1. It is necessary to instantiate a Parsl configuration before running Parsl workflows. This command loads the default (local) configuration.
+    1. The `#!Python @job` decorator will be transformed into `#!Python @python_app`.
 
-    2. The `#!Python @job` decorator will be transformed into `#!Python @python_app`.
-
-    3. The `#!Python @flow` decorator doesn't actually do anything when using Parsl, so we chose to not include it here for brevity.
+    2. The `#!Python @flow` decorator doesn't actually do anything when using Parsl, so we chose to not include it here for brevity.
 
 === "Prefect"
 
