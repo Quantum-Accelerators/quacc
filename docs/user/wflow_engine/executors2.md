@@ -4,7 +4,7 @@ In this section, we provide a few step-by-step examples of remotely deployed rec
 
 !!! Hint
 
-    Before deploying remote calculations for the first time, make sure you can run locally without a workflow manager. Once you are confident that works, try submitting running that same Python script on your desired computing resource (e.g. by submitting it as a job to the scheduler). These preliminary tests will help you identify potential issues early on.
+    Before deploying remote calculations for the first time, make sure you can run locally without a workflow manager. Once you are confident that works, try running that same Python script on your desired computing resource (e.g. by submitting it as a job to the scheduler). These preliminary tests will help you identify potential issues early on.
 
 ## Pre-Requisites
 
