@@ -13,7 +13,7 @@ from ase.vibrations.data import VibrationsData
 from quacc import SETTINGS
 from quacc.runners.prep import prep_next_run as prep_next_run_
 from quacc.schemas.atoms import atoms_to_metadata
-from quacc.utils.dicts import clean_dict
+from quacc.utils.dicts import clean_dict, merge_dicts
 from quacc.utils.files import get_uri
 from quacc.wflow.db import results_to_db
 
@@ -30,6 +30,7 @@ if TYPE_CHECKING:
     OptSchema = TypeVar("OptSchema")
     VibSchema = TypeVar("VibSchema")
     ThermoSchema = TypeVar("ThermoSchema")
+    VibThermoSchema = TypeVar("VibThermoSchema")
 
     class FreqSchema(VibSchema):
         thermo: ThermoSchema
@@ -73,7 +74,7 @@ def summarize_run(
 
     Returns
     -------
-    dict
+    RunSchema
         Dictionary representation of the task document with the following
         fields:
 
@@ -293,7 +294,7 @@ def summarize_opt_run(
 
     Returns
     -------
-    dict
+    OptSchema
         Dictionary representation of the task document with the following
         fields:
 
@@ -539,7 +540,7 @@ def summarize_vib_run(
 
     Returns
     -------
-    dict
+    VibSchema
         Dictionary representation of the task document with the following
         fields:
 
@@ -802,7 +803,7 @@ def summarize_ideal_gas_thermo(
 
     Returns
     -------
-    dict
+    ThermoSchema
         Dictionary representation of the task document with the following
         fields:
 
@@ -954,3 +955,64 @@ def summarize_ideal_gas_thermo(
         results_to_db(store, task_doc)
 
     return task_doc
+
+
+def summarize_vib_and_thermo(
+    vib: Vibrations,
+    igt: IdealGasThermo,
+    temperature: float = 298.15,
+    pressure: float = 1.0,
+    charge_and_multiplicity: tuple[int, int] | None = None,
+    remove_empties: bool = False,
+    additional_fields: dict | None = None,
+    store: Store | None = None,
+) -> VibThermoSchema:
+    """
+    Get tabulated results from an ASE Vibrations run and ASE IdealGasThermo object
+    and store them in a database-friendly format.
+
+    Parameters
+    ----------
+    vib
+        ASE Vibrations object.
+    igt
+        ASE IdealGasThermo object.
+    temperature
+        Temperature in Kelvins.
+    pressure
+        Pressure in bar.
+    charge_and_multiplicity
+        Charge and spin multiplicity of the Atoms object, only used for Molecule
+        metadata.
+    remove_empties
+        Whether to remove None values and empty lists/dicts from the task
+        document.
+    additional_fields
+        Additional fields to add to the task document.
+    store
+        Maggma Store object to store the results in. If None,
+        `SETTINGS.PRIMARY_STORE` will be used.
+
+    Returns
+    -------
+    VibThermoSchema
+        A dictionary that merges the `VibSchema` and `ThermoSchema`.
+
+    """
+    vib_task_doc = summarize_vib_run(
+        vib,
+        charge_and_multiplicity=charge_and_multiplicity,
+        remove_empties=remove_empties,
+        additional_fields=additional_fields,
+        store=store,
+    )
+    thermo_task_doc = summarize_ideal_gas_thermo(
+        igt,
+        temperature=temperature,
+        pressure=pressure,
+        charge_and_multiplicity=charge_and_multiplicity,
+        remove_empties=remove_empties,
+        additional_fields=additional_fields,
+        store=store,
+    )
+    return merge_dicts(vib_task_doc, thermo_task_doc)
