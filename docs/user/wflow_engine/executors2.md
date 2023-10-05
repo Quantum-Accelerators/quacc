@@ -291,7 +291,7 @@ When deploying calculations for the first time, it's important to start simple, 
 
 In this example, we will run a sample ORCA recipe.
 
-First, make sure that ORCA has been downloaded and unpacked on the remote machine.
+First, make sure that ORCA has been [downloaded](https://orcaforum.kofo.mpg.de/) and unpacked on the remote machine.
 
 Then, on the remote machine, run the following:
 
