@@ -73,16 +73,8 @@ pip install quacc[sella]
 
 If you plan to use tblite with quacc, you will need to install the tblite interface with ASE support.
 
-If you are using a Linux machine, run the following:
-
 ```bash
 pip install quacc[tblite]
-```
-
-If you are using a Mac, run the following:
-
-```bash
-conda install -c conda-forge tblite-python
 ```
 
 ## VASP
