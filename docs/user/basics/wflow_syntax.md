@@ -151,7 +151,7 @@ graph LR
         parsl.load()  #  (1)!
         ```
 
-        1. It is necessary to instantiate a Parsl configuration before running Parsl workflows. This command loads the default (local) configuration.
+        1. It is necessary to instantiate a Parsl configuration before running Parsl workflows. This command loads the default (local) configuration and only needs to be done once.
 
     ```python
     import parsl
