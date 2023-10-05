@@ -154,10 +154,7 @@ graph LR
         1. It is necessary to instantiate a Parsl configuration before running Parsl workflows. This command loads the default (local) configuration and only needs to be done once.
 
     ```python
-    import parsl
     from quacc import job
-
-    parsl.load()  #  (1)!
 
 
     @job  #  (2)!
