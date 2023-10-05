@@ -98,6 +98,7 @@ In the previous examples, we have been running calculations on our local machine
         # Covalent parameters
         remote_workdir="$SCRATCH/quacc",
         create_unique_workdir=True,  # (4)!
+        cleanup=False,  # (5)!
     )
     ```
 
@@ -108,6 +109,8 @@ In the previous examples, we have been running calculations on our local machine
     3. These are the job attributes that the job scheduler needs, which are keyword arguments passed to PSI/J's [`JobAttributes` class](https://exaworks.org/psij-python/docs/v/0.9.0/.generated/psij.html#psij.JobAttributes).
 
     4. You generally want each quacc job to be run in its own unique working directory to ensure files don't overwrite one another, so  `create_unique_workdir` should be set to `True`.
+
+    5. For debugging purposes, it can be useful to keep all the temporary files. Once you're confident things work, you can omit the `cleanup` keyword argument.
 
     ??? Note
 
