@@ -122,7 +122,7 @@ When deploying calculations for the first time, it's important to start simple, 
 
     !!! Hint
 
-        The most common cause of issues is related to the job scheduler details (i.e. the `resource_spec_kwargs` and the `job_attributes_kwargs`). If your job fails on the remote machine, check the `~/.psij` directory for a history and various log files associated with your attempted job submissions.
+        The most common cause of issues is related to the job scheduler details (i.e. the `resource_spec_kwargs` and the `job_attributes_kwargs`). If your job fails on the remote machine, check the `~/.psij` directory for various log files associated with your attempted job submissions. Additionally, set `cleanup=False` in the `HPCExecutor` to retain all PSI/J-related files for debugging purposes.
 
 === "Parsl ⭐"
 
