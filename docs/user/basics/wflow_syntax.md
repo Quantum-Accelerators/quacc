@@ -140,15 +140,10 @@ graph LR
 
     !!! Important
 
-        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md) and load the default Parsl configuration:
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md):
 
-        ```bash title="terminal"
+        ```bash
         quacc set WORKFLOW_ENGINE parsl
-        ```
-
-        ```python title="python"
-        import parsl
-        parsl.load()
         ```
 
     ```python
