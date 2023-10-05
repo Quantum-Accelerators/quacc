@@ -6,9 +6,9 @@ In this section, we provide a few examples going through the entire process to d
 
     Before deploying remote calculations for the first time, ensure that the following can be done successfully:
 
-    1. Run the sample recipe on your local machine, where possible.
+    1. Run the sample recipe on your local machine, when possible.
 
-    2. Run that same Python script on your desired computing resource (e.g. by submitting it as a job to the scheduler). Make sure that the `WORKFLOW_ENGINE` setting is set to "local" on the remote machine for this exercise.
+    2. Run the same Python script on your desired computing resource (e.g. by submitting it as a job to the scheduler). Make sure that the `WORKFLOW_ENGINE` setting is set to "local" on the remote machine for this exercise.
 
     These preliminary tests will help you identify potential issues early on.
 
@@ -84,12 +84,11 @@ When deploying calculations for the first time, it's important to start simple, 
         from quacc.recipes.emt.core import relax_job, static_job
 
         username = "MyUserName"
-        address = "perlmutter-p1.nersc.gov"
         account = "MyAccountName"
 
         executor = ct.executor.HPCExecutor(
             username=username,
-            address=address,
+            address="perlmutter-p1.nersc.gov",
             ssh_key_file="~/.ssh/nersc",
             cert_file="~/.ssh/nersc-cert.pub",
             instance="slurm",
@@ -221,6 +220,16 @@ When deploying calculations for the first time, it's important to start simple, 
 
 ## Example 2: ORCA
 
+In this example, we will run a sample ORCA recipe.
+
+First, make sure that ORCA has been downloaded and unpacked on the remote machine.
+
+Then, on the remote machine, run the following:
+
+```bash
+quacc set ORCA_CMD /path/to/my-orca-directory/orca
+```
+
 === "Covalent ⭐"
 
 === "Parsl ⭐"
@@ -232,6 +241,8 @@ When deploying calculations for the first time, it's important to start simple, 
     Coming soon.
 
 ## Example 3: VASP
+
+In this example, we will run a sample VASP recipe.
 
 === "Covalent ⭐"
 
