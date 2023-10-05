@@ -118,7 +118,7 @@ When deploying calculations for the first time, it's important to start simple, 
         print(result)
         ```
 
-        1. The `workflow_executor` keyword argument can be removed once [Issue 1024](https://github.com/Quantum-Accelerators/quacc/issues/1024) is resolved.
+        The most common cause of issues is related to the job scheduler details (i.e. the `resource_spec_kwargs` and the `job_attributes_kwargs`). If your job fails on the remote machine, check the `~/.psij` directory for a history and various log files associated with your attempted job submissions.
 
         !!! Hint
 
