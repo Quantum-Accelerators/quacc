@@ -212,7 +212,7 @@ graph LR
 
     1. The `#!Python @job` decorator will be transformed into a Prefect `#!Python @task`.
 
-    2. The `#!Python @flow` decorator will be transformed into a Prefect `#!Python @ct.lattice`.
+    2. The `#!Python @flow` decorator will be transformed into a Prefect-compatible `#!Python @flow`.
 
 === "Redun"
 
