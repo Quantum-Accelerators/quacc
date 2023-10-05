@@ -118,15 +118,51 @@ When deploying calculations for the first time, it's important to start simple, 
         print(result)
         ```
 
+        1. Until [Issue 1024](https://github.com/Quantum-Accelerators/quacc/issues/1024) is resolved, you need to directly set the `workflow_executor` keyword argument in the `#!Python @flow` decorator to the same value as that used for `executor` otherwise a post-processing error will occur.
+
+    === "Adroit"
+
+        ```python
+        import covalent as ct
+        from ase.build import bulk
+        from quacc import flow
+        from quacc.recipes.emt.core import relax_job, static_job
+
+        username = "MyUserName"
+        account = "MyAccountName"
+
+        executor = ct.executor.HPCExecutor(
+            username=username,
+            address="adroit.princeton.edu",
+            resource_spec_kwargs={
+                "nodes": 1,
+                "processes_per_node": 1
+            },
+            job_attributes_kwargs={
+                "duration": 10, # minutes
+                "project_name": account,
+                "custom_attributes": {"slurm.qos": "test"},
+            },
+            remote_conda_env="quacc",
+            remote_workdir="~/quacc",
+            create_unique_workdi=True,
+        )
+
+
+        @flow(executor=executor, workflow_executor=executor) # (1)!
+        def workflow(atoms):
+            relax_output = relax_job(atoms)
+            return static_job(relax_output)
+
+        atoms = bulk("Cu")
+        dispatch_id = ct.dispatch(workflow)(atoms)
+        result = ct.get_result(dispatch_id, wait=True)
+        print(result)
+        ```
+
+    !!! Hint
+
         The most common cause of issues is related to the job scheduler details (i.e. the `resource_spec_kwargs` and the `job_attributes_kwargs`). If your job fails on the remote machine, check the `~/.psij` directory for a history and various log files associated with your attempted job submissions.
-
-        !!! Hint
-
-            The most common cause of issues is related to the job scheduler details (i.e. the `resource_spec_kwargs` and the `job_attributes_kwargs`). If your job fails on the remote machine, check the `~/.psij` directory for a history and various log files associated with your attempted job submissions.
-
-    === "Tiger"
-
-        Coming soon.
 
 === "Parsl ⭐"
 
@@ -169,9 +205,42 @@ When deploying calculations for the first time, it's important to start simple, 
         parsl.load(config)
         ```
 
-    === "Tiger"
+    === "Adroit"
 
-        Coming soon.
+        ```python
+        import parsl
+        from parsl.config import Config
+        from parsl.executors import HighThroughputExecutor
+        from parsl.launchers import SimpleLauncher
+        from parsl.providers import SlurmProvider
+
+        account = "MyAccountName"
+
+        config = Config(
+            max_idletime=300,
+            executors=[
+                HighThroughputExecutor(
+                    label="quacc_HTEX",
+                    max_workers=n_parallel_calcs,
+                    cores_per_worker=1e-6,
+                    provider=SlurmProvider(
+                        account=account,
+                        nodes_per_block=1,
+                        scheduler_options="#SBATCH -q test",
+                        worker_init=f"source ~/.bashrc && conda activate quacc",
+                        walltime="00:10:00",
+                        launcher = SimpleLauncher(),
+                        cmd_timeout=120,
+                        init_blocks=0,
+                        min_blocks=1,
+                        max_blocks=1,
+                    ),
+                )
+            ],
+        )
+
+        parsl.load(config)
+        ```
 
     Then run the following on the login node of the remote machine:
 
