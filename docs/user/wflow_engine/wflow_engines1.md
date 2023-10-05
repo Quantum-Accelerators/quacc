@@ -7,7 +7,7 @@ Here, we will show how to use quacc with one of a variety of workflow engines to
 
 ## Running a Pre-Defined Job
 
-We will now try running a pre-defined job where we relax a bulk Cu structure using EMT, which is pre-defined in quacc as [quacc.recipes.emt.core.relax_job][].
+We will now try running a job where we relax a bulk Cu structure using EMT, which is pre-defined in quacc as [quacc.recipes.emt.core.relax_job][].
 
 ```mermaid
 graph LR
