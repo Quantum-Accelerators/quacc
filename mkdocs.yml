@@ -1,48 +1,3 @@
-repo_url: https://github.com/Quantum-Accelerators/quacc/
-site_author: Andrew S. Rosen
-site_description: >-
-  Quacc is a flexible and extensible platform for
-  high-throughput computational materials science and quantum chemistry.
-site_name: quacc
-site_url: https://quantum-accelerators.github.io/quacc/
-nav:
-  - Home: index.md
-  - Test Drive 🏎️:
-      - start/demo.md
-  - Installation Guide 🔧:
-      - install/install.md
-      - install/codes.md
-      - install/wflow_engines.md
-  - User Guide 🧠:
-      - Recipes:
-          - user/recipes/recipes_intro.md
-          - user/recipes/recipes_list.md
-      - Workflow Basics:
-          - user/basics/wflow_overview.md
-          - user/basics/wflow_syntax.md
-      - Using a Workflow Engine:
-          - user/wflow_engine/wflow_engines1.md
-          - user/wflow_engine/wflow_engines2.md
-          - user/wflow_engine/executors1.md
-          - user/wflow_engine/executors2.md
-      - Global Settings:
-          - user/settings/settings.md
-          - user/settings/settings_list.md
-      - Advanced:
-          - user/advanced/database.md
-          - user/advanced/file_transfers.md
-          - user/advanced/atomate2.md
-  - Code Documentation 📖: reference/
-  - Developer Guide 🤝:
-      - dev/contributing.md
-      - dev/docs.md
-  - About 📜:
-      - about/faq.md
-      - about/contributors.md
-      - about/changelog.md
-      - about/conduct.md
-      - about/license.md
-
 theme:
   favicon: images/quacc_favicon.png
   features:
@@ -152,3 +107,46 @@ extra:
       link: https://twitter.com/RosenGroupPU
     - icon: fontawesome/brands/github
       link: https://github.com/Quantum-Accelerators/
+repo_url: https://github.com/Quantum-Accelerators/quacc/
+site_author: Andrew S. Rosen
+site_description: >-
+  Quacc is a flexible and extensible platform for
+  high-throughput computational materials science and quantum chemistry.
+site_name: quacc
+site_url: https://quantum-accelerators.github.io/quacc/
+nav:
+  - Home: index.md
+  - Test Drive 🏎️:
+      - start/demo.md
+  - Installation Guide 🔧:
+      - install/install.md
+      - install/codes.md
+      - install/wflow_engines.md
+  - User Guide 🧠:
+      - Recipes:
+          - user/recipes/recipes_intro.md
+          - user/recipes/recipes_list.md
+      - Workflow Basics:
+          - user/basics/wflow_overview.md
+          - user/basics/wflow_syntax.md
+      - Using a Workflow Engine:
+          - user/wflow_engine/wflow_engines1.md
+          - user/wflow_engine/wflow_engines2.md
+          - user/wflow_engine/executors.md
+      - Global Settings:
+          - user/settings/settings.md
+          - user/settings/settings_list.md
+      - Advanced:
+          - user/advanced/database.md
+          - user/advanced/file_transfers.md
+          - user/advanced/atomate2.md
+  - Code Documentation 📖: reference/
+  - Developer Guide 🤝:
+      - dev/contributing.md
+      - dev/docs.md
+  - About 📜:
+      - about/faq.md
+      - about/contributors.md
+      - about/changelog.md
+      - about/conduct.md
+      - about/license.md
