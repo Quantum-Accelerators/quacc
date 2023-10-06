@@ -50,6 +50,7 @@ In the previous examples, we have been running calculations on our local machine
     relax_job.electron_object.executor = "dask"
     static_job.electron_object.executor = "local"
 
+
     @flow
     def workflow(atoms):
         output1 = relax_job(atoms)
@@ -135,7 +136,7 @@ In the previous examples, we have been running calculations on our local machine
                 "job-name": "quacc",
                 "time": "00:10:00",
             },
-            use_srun=False, # (1)!
+            use_srun=False,  # (1)!
         )
         ```
 
@@ -271,28 +272,28 @@ In the previous examples, we have been running calculations on our local machine
     ```python
     from quacc.wflow.prefect import make_prefect_runner
 
-    n_slurm_jobs = 1 # Number of Slurm jobs to launch in parallel.
-    n_nodes_per_calc = 1 # Number of nodes to reserve for each Slurm job.
-    n_cores_per_node = 48 # Number of CPU cores per node.
-    mem_per_node = "64 GB" # Total memory per node.
+    n_slurm_jobs = 1  # Number of Slurm jobs to launch in parallel.
+    n_nodes_per_calc = 1  # Number of nodes to reserve for each Slurm job.
+    n_cores_per_node = 48  # Number of CPU cores per node.
+    mem_per_node = "64 GB"  # Total memory per node.
 
     cluster_kwargs = {
         # Dask worker options
-        "n_workers": n_slurm_jobs, # (1)!
-        "cores": n_cores_per_node, # (2)!
-        "memory": mem_per_node, # (3)!
+        "n_workers": n_slurm_jobs,  # (1)!
+        "cores": n_cores_per_node,  # (2)!
+        "memory": mem_per_node,  # (3)!
         # SLURM options
         "shebang": "#!/bin/bash",
         "account": "AccountName",
         "walltime": "00:10:00",
-        "job_mem": "0", # (4)!
+        "job_mem": "0",  # (4)!
         "job_script_prologue": [
             "source ~/.bashrc",
             "conda activate quacc",
-        ], # (5)!
-        "job_directives_skip": ["-n", "--cpus-per-task"], # (6)!
-        "job_extra_directives": [f"-N {n_nodes_per_calc}", "-q debug", "-C cpu"], # (7)!
-        "python": "python", # (8)!
+        ],  # (5)!
+        "job_directives_skip": ["-n", "--cpus-per-task"],  # (6)!
+        "job_extra_directives": [f"-N {n_nodes_per_calc}", "-q debug", "-C cpu"],  # (7)!
+        "python": "python",  # (8)!
     }
 
     runner = make_prefect_runner(cluster_kwargs, temporary=True)

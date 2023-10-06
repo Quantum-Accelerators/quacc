@@ -106,10 +106,12 @@ When deploying calculations for the first time, it's important to start simple, 
         cleanup=False,
     )
 
-    @flow(executor=executor, workflow_executor=executor) # (1)!
+
+    @flow(executor=executor, workflow_executor=executor)  # (1)!
     def workflow(atoms):
         relax_output = relax_job(atoms)
         return static_job(relax_output)
+
 
     atoms = bulk("Cu")
     dispatch_id = ct.dispatch(workflow)(atoms)
@@ -167,10 +169,12 @@ When deploying calculations for the first time, it's important to start simple, 
     from quacc import flow
     from quacc.recipes.emt.core import relax_job, static_job
 
+
     @flow
     def workflow(atoms):
         relax_output = relax_job(atoms)
         return static_job(relax_output)
+
 
     atoms = bulk("Cu")
     future = workflow(atoms)
@@ -225,9 +229,6 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
     account = "MyAccountName"
     n_nodes = 1
     n_cores_per_node = 48
-    vasp_parallel_cmd = (
-        f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
-    )
 
     executor = ct.executor.HPCExecutor(
         username=username,
@@ -244,8 +245,10 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
             "project_name": account,
             "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
         },
-        environment={"QUACC_VASP_PARALLEL_CMD": vasp_parallel_cmd},
-        pre_launch_cmds=["module load vasp/6.4.1-cpu"],
+        pre_launch_cmds=[
+            "export QUACC_VASP_PARALLEL_CMD='srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'",
+            "module load vasp/6.4.1-cpu",
+        ],  # (1)!
         remote_conda_env="quacc",
         remote_workdir="$SCRATCH/quacc",
         create_unique_workdir=True,
@@ -253,18 +256,21 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
     )
 
 
-    @flow(executor=executor, workflow_executor=executor) # (1)!
+    @flow(executor=executor, workflow_executor=executor)  # (2)!
     def workflow(atoms):
         relax_output = relax_job(atoms)
         return static_job(relax_output)
 
-    atoms = bulk("Cu")
+
+    atoms = bulk("C") * (2, 2, 2)
     dispatch_id = ct.dispatch(workflow)(atoms)
     result = ct.get_result(dispatch_id, wait=True)
     print(result)
     ```
 
-    1. Until [Issue 1024](https://github.com/Quantum-Accelerators/quacc/issues/1024) is resolved, you need to directly set the `workflow_executor` keyword argument in the `#!Python @flow` decorator to the same value as that used for `executor` otherwise a post-processing error will occur.
+    1. Until [this issue](https://github.com/ExaWorks/psij-python/issues/423) is resolved, environment variables should be specified in `pre_launch_cmds`. Once it's resolved, it can be specified as `#!Python environment={"QUACC_VASP_PARALLEL_CMD": "srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"}` instead.
+
+    2. Until [Issue 1024](https://github.com/Quantum-Accelerators/quacc/issues/1024) is resolved, you need to directly set the `workflow_executor` keyword argument in the `#!Python @flow` decorator to the same value as that used for `executor` otherwise a post-processing error will occur.
 
 === "Parsl ⭐"
 
@@ -281,9 +287,6 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
     n_parallel_calcs = 1
     n_nodes_per_calc = 1
     n_cores_per_node = 48
-    vasp_parallel_cmd = (
-        f"srun -N {n_nodes_per_calc} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
-    )
 
     config = Config(
         max_idletime=300,
@@ -296,7 +299,7 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
                     account=account,
                     nodes_per_block=n_nodes_per_calc * n_parallel_calcs,
                     scheduler_options="#SBATCH -q debug -C cpu",
-                    worker_init=f"source ~/.bashrc && conda activate quacc && module load vasp && export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}",
+                    worker_init=f"source ~/.bashrc && conda activate quacc && module load vasp/6.4.1-cpu && export QUACC_VASP_PARALLEL_CMD='srun -N {n_nodes_per_calc} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'",
                     walltime="00:10:00",
                     launcher=SimpleLauncher(),
                     cmd_timeout=120,
@@ -316,12 +319,14 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
     from quacc import flow
     from quacc.recipes.vasp.core import relax_job, static_job
 
+
     @flow
     def workflow(atoms):
         relax_output = relax_job(atoms)
         return static_job(relax_output)
 
-    atoms = bulk("Cu")
+
+    atoms = bulk("C") * (2, 2, 2)
     future = workflow(atoms)
     result = future.result()
     print(result)
@@ -338,7 +343,7 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
     from jobflow.managers.fireworks import flow_to_workflow
     from quacc.recipes.vasp.core import relax_job, static_job
 
-    atoms = bulk("Cu")
+    atoms = bulk("C") * (2, 2, 2)
     job1 = relax_job(atoms)
     job2 = static_job(job1.output)
     flow = jf.Flow([job1, job2])
