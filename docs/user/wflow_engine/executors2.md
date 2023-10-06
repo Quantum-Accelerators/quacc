@@ -41,7 +41,7 @@ Then install the necessary dependencies:
 
     !!! Note
 
-        If using Perlmutter at NERSC, modify your `~/.bashrc` on the remote machine as follows:
+        If using Perlmutter at NERSC, modify your `~/.bashrc` on the remote machine as follows since only the `$SCRATCH` directory supports file locking mechanisms:
 
         ```bash title="~/.bashrc"
         export COVALENT_CONFIG_DIR="$SCRATCH/.config/covalent"
