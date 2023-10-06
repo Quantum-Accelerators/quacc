@@ -338,7 +338,7 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
     from jobflow.managers.fireworks import flow_to_workflow
     from quacc.recipes.vasp.core import relax_job, static_job
 
-    atoms = bulk("Fe")
+    atoms = bulk("Cu")
     job1 = relax_job(atoms)
     job2 = static_job(job1.output)
     flow = jf.Flow([job1, job2])
