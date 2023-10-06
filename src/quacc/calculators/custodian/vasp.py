@@ -143,14 +143,14 @@ def run_custodian(
         validators.append(validators_dict[validator_flag])
 
     # Populate settings
-    vasp_cmd = f"{vasp_parallel_cmd} {vasp_cmd} > vasp.out"
-    vasp_gamma_cmd = f"{vasp_parallel_cmd} {vasp_gamma_cmd} > vasp.out"
+    full_vasp_cmd = f"{vasp_parallel_cmd} {vasp_cmd} > vasp.out"
+    full_vasp_gamma_cmd = f"{vasp_parallel_cmd} {vasp_gamma_cmd} > vasp.out"
 
     # Run VASP
     vasp_job_kwargs = {} if vasp_job_kwargs is None else vasp_job_kwargs
     custodian_kwargs = {} if custodian_kwargs is None else custodian_kwargs
-    split_vasp_cmd = shlex.split(vasp_cmd)
-    split_vasp_gamma_cmd = shlex.split(vasp_gamma_cmd)
+    split_vasp_cmd = shlex.split(full_vasp_cmd)
+    split_vasp_gamma_cmd = shlex.split(full_vasp_gamma_cmd)
     vasp_job_kwargs["gamma_vasp_cmd"] = split_vasp_gamma_cmd
 
     # Run with Custodian
@@ -161,7 +161,6 @@ def run_custodian(
             *list(handlers),
             WalltimeHandler(wall_time=vasp_custodian_wall_time),
         ]
-    raise ValueError(vasp_cmd, vasp_parallel_cmd, vasp_cmd, split_vasp_cmd, jobs)
 
     c = Custodian(
         handlers,
