@@ -51,7 +51,7 @@ def run_custodian(
     vasp_cmd
         VASP command. Defaults to "vasp_std" in settings.
     vasp_gamma_cmd
-        VASP gamma command. Defaults to vasp_gam in settings.
+        VASP gamma command. Defaults to "vasp_gam" in settings.
     vasp_custodian_max_errors
         Maximum number of errors to allow before stopping the run. Defaults to 5
         in settings.
@@ -143,14 +143,14 @@ def run_custodian(
         validators.append(validators_dict[validator_flag])
 
     # Populate settings
-    vasp_cmd = f"{vasp_parallel_cmd} {vasp_cmd}"
-    vasp_gamma_cmd = f"{vasp_parallel_cmd} {vasp_gamma_cmd}"
+    full_vasp_cmd = f"{vasp_parallel_cmd} {vasp_cmd}"
+    full_vasp_gamma_cmd = f"{vasp_parallel_cmd} {vasp_gamma_cmd}"
 
     # Run VASP
     vasp_job_kwargs = {} if vasp_job_kwargs is None else vasp_job_kwargs
     custodian_kwargs = {} if custodian_kwargs is None else custodian_kwargs
-    split_vasp_cmd = shlex.split(vasp_cmd)
-    split_vasp_gamma_cmd = shlex.split(vasp_gamma_cmd)
+    split_vasp_cmd = shlex.split(full_vasp_cmd)
+    split_vasp_gamma_cmd = shlex.split(full_vasp_gamma_cmd)
     vasp_job_kwargs["gamma_vasp_cmd"] = split_vasp_gamma_cmd
 
     # Run with Custodian

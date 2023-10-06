@@ -84,6 +84,6 @@ To use VASP with quacc, you will need to do the following, as described in great
 - Define the `VASP_PP_PATH` environment variable that points to your pseudopotential library. We recommend including this in your `~/.bashrc` file since this rarely changes.
 - If you wish to use vdW functionals, define the `ASE_VASP_VDW` environment variable to point to the `vdw_kernel.bindat` file distributed with VASP. We recommend including this in your `~/.bashrc` file since this rarely changes.
 
-To run VASP with Custodian, you will also need to modify the relevant [quacc configuration settings](../user/settings/settings.md), most notably:
+To run VASP with Custodian (which is the default behavior), you will also need to modify the relevant [quacc configuration settings](../user/settings/settings.md), most notably:
 
 - Define the `VASP_PARALLEL_CMD` quacc setting that tells Custodian how to parallelize VASP, such as by defining an environment variable `QUACC_VASP_PARALLEL_CMD="srun -N 2 --ntasks-per-node 24"`. Note, the VASP executables are not included in this environment variable.

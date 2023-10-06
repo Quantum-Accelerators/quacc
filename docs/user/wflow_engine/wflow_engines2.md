@@ -73,6 +73,7 @@ graph LR
 
         ```python title="python"
         import parsl
+
         parsl.load()
         ```
 
@@ -80,9 +81,9 @@ graph LR
     from ase.build import bulk
     from quacc.recipes.emt.core import relax_job, static_job
 
+
     # Define the workflow
     def workflow(atoms):
-
         # Define Job 1
         future1 = relax_job(atoms)  # (1)!
 
@@ -291,6 +292,7 @@ graph LR
     from ase.build import bulk, molecule
     from quacc.recipes.emt.core import relax_job
 
+
     # Define workflow
     def workflow(atoms1, atoms2):
         # Define two independent relaxation jobs
@@ -458,6 +460,7 @@ graph LR
         relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, run_static=False)  # (1)!
 
         return relaxed_slabs
+
 
     # Define the Atoms object
     atoms = bulk("Cu")

@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 @job
 def slab_static_job(
     atoms: Atoms | dict,
-    preset: str | None = None,
+    preset: str | None = "SlabSet",
     calc_swaps: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
@@ -83,7 +83,7 @@ def slab_static_job(
 @job
 def slab_relax_job(
     atoms: Atoms | dict,
-    preset: str | None = None,
+    preset: str | None = "SlabSet",
     calc_swaps: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
@@ -104,6 +104,7 @@ def slab_relax_job(
             "lcharg": False,
             "lwave": False,
             "nsw": 200,
+            "symprec": 1e-8,
         }
         ```
 
@@ -134,6 +135,7 @@ def slab_relax_job(
         "lcharg": False,
         "lwave": False,
         "nsw": 200,
+        "symprec": 1e-8,
     }
     return _base_job(
         atoms,

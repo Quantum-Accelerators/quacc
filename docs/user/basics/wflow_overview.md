@@ -6,7 +6,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
 !!! Tip
 
-    If you are new to workflow engines or would like a helpful UI to monitor workflows, try **Covalent**. If you have a need for speed and are savvy with supercomputers, try **Parsl**.
+    If you are new to workflow engines, we recommend trying either **Covalent** or **Parsl**. If you are looking for a visual dashboard with an emphasis on distributed compute resources, first try Covalent. If you are looking to run high-throughput calculations on an HPC system with a job scheduler, we recommend first trying Parsl.
 
 === "Covalent ⭐"
 
@@ -14,7 +14,6 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
     Pros:
 
-    - Extremely simple to setup and use, even for complex workflows
     - Best-in-class visual dashboard for job monitoring
     - Easy to use in distributed, heterogeneous compute environments
     - Excellent documentation
@@ -42,7 +41,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
     Cons:
 
-    - Defining the right configuration options for your desired HPC setups can be an initial hurdle
+    - Understanding the various configuration options for your HPC setup can be an initial hurdle
     - Monitoring job progress is more challenging and less detailed than other solutions
     - The concept of always returning a "future" object can be confusing for new users
 
