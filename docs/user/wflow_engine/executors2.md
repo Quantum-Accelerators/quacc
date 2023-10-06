@@ -267,8 +267,88 @@ TODO: Add details on pseudopotential initialization.
 
 === "Parsl ⭐"
 
-    Coming soon.
+    From an interactive resource like a Jupyter Notebook or IPython kernel on the remote machine:
+
+    ```python
+    import parsl
+    from parsl.config import Config
+    from parsl.executors import HighThroughputExecutor
+    from parsl.launchers import SimpleLauncher
+    from parsl.providers import SlurmProvider
+
+    account = "MyAccountName"
+    n_parallel_calcs = 1
+    n_nodes_per_calc = 1
+    n_cores_per_node = 48
+    vasp_parallel_cmd = (
+        f"srun -N {n_nodes_per_calc} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
+    )
+
+    config = Config(
+        max_idletime=300,
+        executors=[
+            HighThroughputExecutor(
+                label="quacc_HTEX",
+                max_workers=n_parallel_calcs,
+                cores_per_worker=1e-6,
+                provider=SlurmProvider(
+                    account=account,
+                    nodes_per_block=n_nodes_per_calc * n_parallel_calcs,
+                    scheduler_options="#SBATCH -q debug -C cpu",
+                    worker_init=f"source ~/.bashrc && conda activate quacc && module load vasp && export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}",
+                    walltime="00:10:00",
+                    launcher=SimpleLauncher(),
+                    cmd_timeout=120,
+                    init_blocks=0,
+                    min_blocks=1,
+                    max_blocks=1,
+                ),
+            )
+        ],
+    )
+
+    parsl.load(config)
+    ```
+
+    ```python
+    from ase.build import bulk
+    from quacc import flow
+    from quacc.recipes.vasp.core import relax_job, static_job
+
+    @flow
+    def workflow(atoms):
+        relax_output = relax_job(atoms)
+        return static_job(relax_output)
+
+    atoms = bulk("Fe")
+    future = workflow(atoms)
+    result = future.result()
+    print(result)
+    ```
 
 === "Jobflow"
 
-    Coming soon.
+    From the login node of the remote machine, run the following:
+
+    ```python
+    import jobflow as jf
+    from ase.build import bulk
+    from fireworks import LaunchPad
+    from jobflow.managers.fireworks import flow_to_workflow
+    from quacc.recipes.vasp.core import relax_job, static_job
+
+    atoms = bulk("Fe")
+    job1 = relax_job(atoms)
+    job2 = static_job(job1.output)
+    flow = jf.Flow([job1, job2])
+
+    wf = flow_to_workflow(flow)
+    lpad = LaunchPad.auto_load()
+    lpad.add_wf(wf)
+    ```
+
+    Then run the following on the remote machine:
+
+    ```bash
+    qlaunch rapidfire -m 1
+    ```
