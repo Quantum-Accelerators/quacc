@@ -10,10 +10,6 @@ In the previous examples, we have been running calculations on our local machine
 
     If you want to use the same executor for all the jobs in a workflow, you can pass the `executor` keyword argument to the `#!Python @flow` decorator.
 
-    !!! Warning
-
-        Until [Issue 1024](https://github.com/Quantum-Accelerators/quacc/issues/1024) is resolved, you will also need to directly set the `workflow_executor` keyword argument in the `#!Python @flow` decorator to the same value as that used for `executor` otherwise a post-processing error will occur.
-
     ```python
     import covalent as ct
     from ase.build import bulk
@@ -21,7 +17,7 @@ In the previous examples, we have been running calculations on our local machine
     from quacc.recipes.emt.core import relax_job, static_job
 
 
-    @flow(executor="local")  # (1)!
+    @flow(executor="local", workflow_executor="local")  # (1)!
     def workflow(atoms):
         result1 = relax_job(atoms)
         result2 = static_job(result1)
@@ -35,7 +31,7 @@ In the previous examples, we have been running calculations on our local machine
     print(result)
     ```
 
-    1. This was merely for demonstration purposes. There is never really a need to use the "local" executor since the "dask" executor runs locally and is faster.
+    1. This was merely for demonstration purposes. There is never really a need to use the "local" executor since the "dask" executor runs locally and is faster. Also, until [Issue 1024](https://github.com/Quantum-Accelerators/quacc/issues/1024) is resolved, you will also need to directly set the `workflow_executor` keyword argument in the `#!Python @flow` decorator to the same value as that used for `executor` otherwise a post-processing error will occur.
 
     **Setting Executors for Individual Jobs**
 
@@ -49,6 +45,7 @@ In the previous examples, we have been running calculations on our local machine
 
     relax_job.electron_object.executor = "dask"
     static_job.electron_object.executor = "local"
+
 
     @flow
     def workflow(atoms):
@@ -135,7 +132,7 @@ In the previous examples, we have been running calculations on our local machine
                 "job-name": "quacc",
                 "time": "00:10:00",
             },
-            use_srun=False, # (1)!
+            use_srun=False,  # (1)!
         )
         ```
 
@@ -249,6 +246,10 @@ In the previous examples, we have been running calculations on our local machine
 
     4. Sets the maximum number of active blocks (e.g. Slurm jobs) during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 1 here for demonstration purposes, but it can be increased to have multiple Slurm jobpacks running simultaneously.
 
+    **Practical Deployment**
+
+    For debugging purposes or when running only a small numbers of jobs, it is simple enough to run the Parsl process from an interactive Jupyter Notebook or IPython kernel on the remote machine. However, for practical deployment and to ensure jobs are continually submitted to the queue even when the SSH session is terminated, you can run the Parsl orchestration process on a login node and maintain its state via a program like `tmux`. For example, running `tmux new -s launcher` will create a new `tmux` session named `launcher`. To exit the `tmux` session while still preserving any running tasks on the login node, press `ctrl+b` followed by `d`. To re-enter the tmux session, run `tmux attach -t launcher`. Additional `tmux` commands can be found on the [tmux cheatsheet](https://tmuxcheatsheet.com/).
+
     **Multiple Executors**
 
     Parsl supports tying specific executors to a given `PythonApp`, as discussed in the [Multi-Executor section](https://parsl.readthedocs.io/en/stable/userguide/execution.html#multi-executor) of the Parsl documentation.
@@ -271,28 +272,28 @@ In the previous examples, we have been running calculations on our local machine
     ```python
     from quacc.wflow.prefect import make_prefect_runner
 
-    n_slurm_jobs = 1 # Number of Slurm jobs to launch in parallel.
-    n_nodes_per_calc = 1 # Number of nodes to reserve for each Slurm job.
-    n_cores_per_node = 48 # Number of CPU cores per node.
-    mem_per_node = "64 GB" # Total memory per node.
+    n_slurm_jobs = 1  # Number of Slurm jobs to launch in parallel.
+    n_nodes_per_calc = 1  # Number of nodes to reserve for each Slurm job.
+    n_cores_per_node = 48  # Number of CPU cores per node.
+    mem_per_node = "64 GB"  # Total memory per node.
 
     cluster_kwargs = {
         # Dask worker options
-        "n_workers": n_slurm_jobs, # (1)!
-        "cores": n_cores_per_node, # (2)!
-        "memory": mem_per_node, # (3)!
+        "n_workers": n_slurm_jobs,  # (1)!
+        "cores": n_cores_per_node,  # (2)!
+        "memory": mem_per_node,  # (3)!
         # SLURM options
         "shebang": "#!/bin/bash",
         "account": "AccountName",
         "walltime": "00:10:00",
-        "job_mem": "0", # (4)!
+        "job_mem": "0",  # (4)!
         "job_script_prologue": [
             "source ~/.bashrc",
             "conda activate quacc",
-        ], # (5)!
-        "job_directives_skip": ["-n", "--cpus-per-task"], # (6)!
-        "job_extra_directives": [f"-N {n_nodes_per_calc}", "-q debug", "-C cpu"], # (7)!
-        "python": "python", # (8)!
+        ],  # (5)!
+        "job_directives_skip": ["-n", "--cpus-per-task"],  # (6)!
+        "job_extra_directives": [f"-N {n_nodes_per_calc}", "-q debug", "-C cpu"],  # (7)!
+        "python": "python",  # (8)!
     }
 
     runner = make_prefect_runner(cluster_kwargs, temporary=True)
@@ -415,4 +416,4 @@ In the previous examples, we have been running calculations on our local machine
 
     **Continuous Job Submission**
 
-    To ensure that jobs are continually submitted to the queue you can use `tmux` to preserve the job submission process even when the SSH session is terminated. For example, running `tmux new -s launcher` will create a new `tmux` session named `launcher`. To exit the `tmux` session while still preserving any running tasks on the login node, press `ctrl+b` followed by `d`. To re-enter the tmux session, run `tmux attach -t launcher`. Additional `tmux` commands can be found on the [tmux cheatsheet](https://tmuxcheatsheet.com/).
+    To ensure that jobs are continually submitted to the queue, you can use `tmux` to preserve the job submission process even when the SSH session is terminated. For example, running `tmux new -s launcher` will create a new `tmux` session named `launcher`. To exit the `tmux` session while still preserving any running tasks on the login node, press `ctrl+b` followed by `d`. To re-enter the tmux session, run `tmux attach -t launcher`. Additional `tmux` commands can be found on the [tmux cheatsheet](https://tmuxcheatsheet.com/).

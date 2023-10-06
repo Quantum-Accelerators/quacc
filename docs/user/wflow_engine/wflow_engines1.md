@@ -72,6 +72,7 @@ graph LR
 
         ```python title="python"
         import parsl
+
         parsl.load()
         ```
 
@@ -111,10 +112,12 @@ graph LR
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
 
+
     # Define the workflow
     @flow
     def workflow(atoms):
         return relax_job(atoms)  # (1)!
+
 
     # Dispatch the workflow
     future = workflow(atoms)

@@ -148,6 +148,7 @@ graph LR
 
         ```python title="python"
         import parsl
+
         parsl.load()  #  (1)!
         ```
 
@@ -169,6 +170,7 @@ graph LR
 
     def workflow(a, b, c):  #  (2)!
         return mult(add(a, b), c)
+
 
     result = workflow(1, 2, 3).result()  # 9
     print(result)
@@ -305,6 +307,7 @@ from quacc import job
 @job
 def add(a, b):
     return a + b
+
 
 add.__wrapped__(1, 2)
 ```

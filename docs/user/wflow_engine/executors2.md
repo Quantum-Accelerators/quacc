@@ -1,6 +1,6 @@
-# Worked Examples
+# Worked Examples on HPC
 
-In this section, we provide a few examples going through the entire process to deploy recipes remotely for some commonly used workflow engines. The precise configuration details will depend on your given compute setup. Nonetheless, we have provided examples here for [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/) that you can build from.
+In this section, we provide a few examples going through the entire process to deploy recipes remotely on HPC machines that use a job scheduler. The precise configuration details will depend on your given compute setup. Nonetheless, we have provided examples here for [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/) that you can build from.
 
 !!! Hint
 
@@ -106,10 +106,12 @@ When deploying calculations for the first time, it's important to start simple, 
         cleanup=False,
     )
 
-    @flow(executor=executor, workflow_executor=executor) # (1)!
+
+    @flow(executor=executor, workflow_executor=executor)  # (1)!
     def workflow(atoms):
         relax_output = relax_job(atoms)
         return static_job(relax_output)
+
 
     atoms = bulk("Cu")
     dispatch_id = ct.dispatch(workflow)(atoms)
@@ -121,7 +123,7 @@ When deploying calculations for the first time, it's important to start simple, 
 
     !!! Hint
 
-        The most common cause of issues is related to the job scheduler details (i.e. the `resource_spec_kwargs` and the `job_attributes_kwargs`). If your job fails on the remote machine, check the `~/.psij` directory for a history and various log files associated with your attempted job submissions.
+        The most common cause of issues is related to the job scheduler details (i.e. the `resource_spec_kwargs` and the `job_attributes_kwargs`). If your job fails on the remote machine, check the files left behind in the working directory as well as the `~/.psij` directory for a history and various log files associated with your attempted job submissions.
 
 === "Parsl ⭐"
 
@@ -167,10 +169,12 @@ When deploying calculations for the first time, it's important to start simple, 
     from quacc import flow
     from quacc.recipes.emt.core import relax_job, static_job
 
+
     @flow
     def workflow(atoms):
         relax_output = relax_job(atoms)
         return static_job(relax_output)
+
 
     atoms = bulk("Cu")
     future = workflow(atoms)
@@ -225,9 +229,6 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
     account = "MyAccountName"
     n_nodes = 1
     n_cores_per_node = 48
-    vasp_parallel_cmd = (
-        f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
-    )
 
     executor = ct.executor.HPCExecutor(
         username=username,
@@ -240,12 +241,14 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
             "processes_per_node": n_cores_per_node,
         },
         job_attributes_kwargs={
-            "duration": 10,
+            "duration": 30,
             "project_name": account,
             "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
         },
-        environment={"QUACC_VASP_PARALLEL_CMD": vasp_parallel_cmd},
-        pre_launch_cmds=["module load vasp"],
+        pre_launch_cmds=[
+            "export QUACC_VASP_PARALLEL_CMD='srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'",
+            "module load vasp/6.4.1-cpu",
+        ],  # (1)!
         remote_conda_env="quacc",
         remote_workdir="$SCRATCH/quacc",
         create_unique_workdir=True,
@@ -253,18 +256,21 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
     )
 
 
-    @flow(executor=executor, workflow_executor=executor) # (1)!
+    @flow(executor=executor, workflow_executor=executor)  # (2)!
     def workflow(atoms):
         relax_output = relax_job(atoms)
         return static_job(relax_output)
 
-    atoms = bulk("Cu")
+
+    atoms = bulk("C")
     dispatch_id = ct.dispatch(workflow)(atoms)
     result = ct.get_result(dispatch_id, wait=True)
     print(result)
     ```
 
-    1. Until [Issue 1024](https://github.com/Quantum-Accelerators/quacc/issues/1024) is resolved, you need to directly set the `workflow_executor` keyword argument in the `#!Python @flow` decorator to the same value as that used for `executor` otherwise a post-processing error will occur.
+    1. Until [this issue](https://github.com/ExaWorks/psij-python/issues/423) is resolved, environment variables should be specified in `pre_launch_cmds`. Once it's resolved, it can be specified as `#!Python environment={"QUACC_VASP_PARALLEL_CMD": "srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"}` instead.
+
+    2. Until [Issue 1024](https://github.com/Quantum-Accelerators/quacc/issues/1024) is resolved, you need to directly set the `workflow_executor` keyword argument in the `#!Python @flow` decorator to the same value as that used for `executor` otherwise a post-processing error will occur.
 
 === "Parsl ⭐"
 
@@ -281,9 +287,6 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
     n_parallel_calcs = 1
     n_nodes_per_calc = 1
     n_cores_per_node = 48
-    vasp_parallel_cmd = (
-        f"srun -N {n_nodes_per_calc} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
-    )
 
     config = Config(
         max_idletime=300,
@@ -296,7 +299,7 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
                     account=account,
                     nodes_per_block=n_nodes_per_calc * n_parallel_calcs,
                     scheduler_options="#SBATCH -q debug -C cpu",
-                    worker_init=f"source ~/.bashrc && conda activate quacc && module load vasp && export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}",
+                    worker_init=f"source ~/.bashrc && conda activate quacc && module load vasp/6.4.1-cpu && export QUACC_VASP_PARALLEL_CMD='srun -N {n_nodes_per_calc} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'",
                     walltime="00:10:00",
                     launcher=SimpleLauncher(),
                     cmd_timeout=120,
@@ -316,12 +319,14 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
     from quacc import flow
     from quacc.recipes.vasp.core import relax_job, static_job
 
+
     @flow
     def workflow(atoms):
-        relax_output = relax_job(atoms)
-        return static_job(relax_output)
+        relax_output = relax_job(atoms, calc_swaps={"kpts": [3, 3, 3]})
+        return static_job(relax_output, calc_swaps={"kpts": [3, 3, 3]})
 
-    atoms = bulk("Cu")
+
+    atoms = bulk("C")
     future = workflow(atoms)
     result = future.result()
     print(result)
@@ -329,7 +334,23 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
 
 === "Jobflow"
 
-    From the login node of the remote machine, run the following:
+    You will need to update your `my_qadapter.yaml` file that you made when setting up FireWorks. Specifically, ensure that the following parameters are set:
+
+    ```yaml title="my_qadapter.yaml"
+    _fw_name: CommonAdapter
+    _fw_q_type: SLURM
+    rocket_launch: rlaunch -w /path/to/fw_config/my_fworker.yaml singleshot
+    nodes: 1
+    walltime: 00:30:00
+    account: MyAccountName
+    job_name: quacc_firework
+    qos: debug
+    pre_rocket: |
+    module load vasp/6.4.1-cpu
+    export QUACC_VASP_PARALLEL_CMD="srun -N 1 --ntasks-per-node=48 --cpu_bind=cores"
+    ```
+
+    From the login node of the remote machine, then run the following:
 
     ```python
     import jobflow as jf
@@ -338,9 +359,9 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
     from jobflow.managers.fireworks import flow_to_workflow
     from quacc.recipes.vasp.core import relax_job, static_job
 
-    atoms = bulk("Cu")
-    job1 = relax_job(atoms)
-    job2 = static_job(job1.output)
+    atoms = bulk("C")
+    job1 = relax_job(atoms, calc_swaps={"kpts": [3, 3, 3]})
+    job2 = static_job(job1.output, calc_swaps={"kpts": [3, 3, 3]})
     flow = jf.Flow([job1, job2])
 
     wf = flow_to_workflow(flow)

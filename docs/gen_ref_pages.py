@@ -13,7 +13,8 @@ for path in sorted(Path("src").rglob("*.py")):
     full_doc_path = Path("reference", doc_path)
 
     parts = tuple(module_path.parts)
-    if parts[1] in ("_cli", "_version", "settings.py"):
+    print(parts)
+    if parts[1] in ("_cli", "_version", "settings"):
         continue
 
     if len(parts) > 2 and "presets" in parts[2]:

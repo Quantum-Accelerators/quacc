@@ -17,7 +17,9 @@ from quacc.recipes.tblite.core import relax_job
 atoms = bulk("Cu")
 
 job1 = relax_job(atoms)
-bandstructure_flow = RelaxBandStructureMaker().make_flow(job1.output["structure"])  # (1)!
+bandstructure_flow = RelaxBandStructureMaker().make_flow(
+    job1.output["structure"]
+)  # (1)!
 
 flow = Flow([job1]) + bandstructure_flow  # (2)!
 ```
