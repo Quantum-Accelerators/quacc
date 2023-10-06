@@ -29,13 +29,13 @@ dependencies = [
     "ase", # waiting on >3.22.1
     "cclib>=1.8",
     "custodian>=2023.6.5",
-    "emmet-core>=0.69.5",
+    "emmet-core>=0.69.6",
     "maggma>=0.57.0",
     "monty>=2023.9.25",
     "numpy>=1.25.0",
     "pydantic>=2.0.1",
     "pydantic-settings>=2.0.3",
-    "pymatgen>=2023.9.10",
+    "pymatgen>=2023.10.4",
     "typer>=0.9.0",
 ]
 
