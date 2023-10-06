@@ -1,6 +1,6 @@
-# Worked Examples
+# Worked Examples on HPC
 
-In this section, we provide a few examples going through the entire process to deploy recipes remotely for some commonly used workflow engines. The precise configuration details will depend on your given compute setup. Nonetheless, we have provided examples here for [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/) that you can build from.
+In this section, we provide a few examples going through the entire process to deploy recipes remotely on HPC machines that use a job scheduler. The precise configuration details will depend on your given compute setup. Nonetheless, we have provided examples here for [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/) that you can build from.
 
 !!! Hint
 
