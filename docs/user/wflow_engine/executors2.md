@@ -241,7 +241,7 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
             "processes_per_node": n_cores_per_node,
         },
         job_attributes_kwargs={
-            "duration": 10,
+            "duration": 30,
             "project_name": account,
             "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
         },
@@ -262,7 +262,7 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
         return static_job(relax_output)
 
 
-    atoms = bulk("C") * (2, 2, 2)
+    atoms = bulk("C")
     dispatch_id = ct.dispatch(workflow)(atoms)
     result = ct.get_result(dispatch_id, wait=True)
     print(result)
@@ -322,11 +322,11 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
 
     @flow
     def workflow(atoms):
-        relax_output = relax_job(atoms)
-        return static_job(relax_output)
+        relax_output = relax_job(atoms, calc_swaps={"kpts": [3, 3, 3]})
+        return static_job(relax_output, calc_swaps={"kpts": [3, 3, 3]})
 
 
-    atoms = bulk("C") * (2, 2, 2)
+    atoms = bulk("C")
     future = workflow(atoms)
     result = future.result()
     print(result)
@@ -343,9 +343,9 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
     from jobflow.managers.fireworks import flow_to_workflow
     from quacc.recipes.vasp.core import relax_job, static_job
 
-    atoms = bulk("C") * (2, 2, 2)
-    job1 = relax_job(atoms)
-    job2 = static_job(job1.output)
+    atoms = bulk("C")
+    job1 = relax_job(atoms, calc_swaps={"kpts": [3, 3, 3]})
+    job2 = static_job(job1.output, calc_swaps={"kpts": [3, 3, 3]})
     flow = jf.Flow([job1, job2])
 
     wf = flow_to_workflow(flow)
