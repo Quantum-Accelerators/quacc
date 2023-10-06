@@ -10,10 +10,6 @@ In the previous examples, we have been running calculations on our local machine
 
     If you want to use the same executor for all the jobs in a workflow, you can pass the `executor` keyword argument to the `#!Python @flow` decorator.
 
-    !!! Warning
-
-        Until [Issue 1024](https://github.com/Quantum-Accelerators/quacc/issues/1024) is resolved, you will also need to directly set the `workflow_executor` keyword argument in the `#!Python @flow` decorator to the same value as that used for `executor` otherwise a post-processing error will occur.
-
     ```python
     import covalent as ct
     from ase.build import bulk
@@ -21,7 +17,7 @@ In the previous examples, we have been running calculations on our local machine
     from quacc.recipes.emt.core import relax_job, static_job
 
 
-    @flow(executor="local")  # (1)!
+    @flow(executor="local", workflow_executor="local")  # (1)!
     def workflow(atoms):
         result1 = relax_job(atoms)
         result2 = static_job(result1)
@@ -35,7 +31,7 @@ In the previous examples, we have been running calculations on our local machine
     print(result)
     ```
 
-    1. This was merely for demonstration purposes. There is never really a need to use the "local" executor since the "dask" executor runs locally and is faster.
+    1. This was merely for demonstration purposes. There is never really a need to use the "local" executor since the "dask" executor runs locally and is faster. Also, until [Issue 1024](https://github.com/Quantum-Accelerators/quacc/issues/1024) is resolved, you will also need to directly set the `workflow_executor` keyword argument in the `#!Python @flow` decorator to the same value as that used for `executor` otherwise a post-processing error will occur.
 
     **Setting Executors for Individual Jobs**
 
