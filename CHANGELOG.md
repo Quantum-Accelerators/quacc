@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- Changed default `SCRATCH_DIR` from `Path.cwd() / ".scratch"` to `Path("~/.quacc_scratch")
+- Changed default `SCRATCH_DIR` from `Path.cwd() / ".scratch"` to `Path("~/.scratch")
 
 ## [0.3.4]
 
