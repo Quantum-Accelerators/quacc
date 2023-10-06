@@ -105,6 +105,7 @@ def relax_job(
             "lcharg": False,
             "lwave": False,
             "nsw": 200,
+            "symprec": 1e-8,
         }
         ```
 
@@ -137,6 +138,7 @@ def relax_job(
         "lcharg": False,
         "lwave": False,
         "nsw": 200,
+        "symprec": 1e-8,
     }
     return _base_job(
         atoms,
