@@ -258,7 +258,7 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
         relax_output = relax_job(atoms)
         return static_job(relax_output)
 
-    atoms = bulk("Fe")
+    atoms = bulk("Cu")
     dispatch_id = ct.dispatch(workflow)(atoms)
     result = ct.get_result(dispatch_id, wait=True)
     print(result)
@@ -321,7 +321,7 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
         relax_output = relax_job(atoms)
         return static_job(relax_output)
 
-    atoms = bulk("Fe")
+    atoms = bulk("Cu")
     future = workflow(atoms)
     result = future.result()
     print(result)
