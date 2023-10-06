@@ -997,7 +997,6 @@ def summarize_vib_and_thermo(
     -------
     VibThermoSchema
         A dictionary that merges the `VibSchema` and `ThermoSchema`.
-
     """
     vib_task_doc = summarize_vib_run(
         vib,

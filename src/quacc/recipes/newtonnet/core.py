@@ -12,7 +12,12 @@ from monty.dev import requires
 from quacc import SETTINGS, fetch_atoms, job
 from quacc.builders.thermo import build_ideal_gas
 from quacc.runners.calc import run_ase_opt, run_calc
-from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
+from quacc.schemas.ase import (
+    summarize_ideal_gas_thermo,
+    summarize_opt_run,
+    summarize_run,
+    summarize_vib_run,
+)
 from quacc.utils.dicts import merge_dicts
 
 try:
@@ -28,10 +33,11 @@ except ImportError:
 if TYPE_CHECKING:
     from ase import Atoms
 
-    from quacc.schemas.ase import OptSchema, RunSchema, VibThermoSchema
+    from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
 
     class FreqSchema(RunSchema):
-        freq: VibThermoSchema
+        vib: VibSchema
+        thermo: ThermoSchema
 
 
 @job
@@ -214,14 +220,16 @@ def freq_job(
     hessian = summary["results"]["hessian"]
 
     vib = VibrationsData(final_atoms, hessian)
-    igt = build_ideal_gas(final_atoms, vib.get_frequencies(), energy=energy)
+    summary["vib"] = summarize_vib_run(
+        vib, additional_fields={"name": "ASE Vibrations Analysis"}
+    )
 
-    summary["freq"] = summarize_vib_and_thermo(
-        vib,
+    igt = build_ideal_gas(final_atoms, vib.get_frequencies(), energy=energy)
+    summary["thermo"] = summarize_ideal_gas_thermo(
         igt,
         temperature=temperature,
         pressure=pressure,
-        additional_fields={"name": "NewtonNet Frequency and Thermo"},
+        additional_fields={"name": "ASE Thermo Analysis"},
     )
 
     return summary

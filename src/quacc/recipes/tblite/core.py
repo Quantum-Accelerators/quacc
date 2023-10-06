@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
     from ase import Atoms
 
-    from quacc.schemas.ase import FreqSchema, OptSchema, RunSchema
+    from quacc.schemas.ase import OptSchema, RunSchema, VibThermoSchema
 
 
 @job
@@ -148,7 +148,7 @@ def freq_job(
     calc_swaps: dict | None = None,
     vib_kwargs: dict | None = None,
     copy_files: list[str] | None = None,
-) -> FreqSchema:
+) -> VibThermoSchema:
     """
     Run a frequency job and calculate thermochemistry.
 
@@ -160,7 +160,7 @@ def freq_job(
         {"method": method}
         ```
 
-        Frequency Defaults:
+        Vibrations Defaults:
 
         ```python
         {}
@@ -188,7 +188,7 @@ def freq_job(
 
     Returns
     -------
-    FreqSchema
+    VibThermoSchema
         Dictionary of results from [quacc.schemas.ase.summarize_vib_and_thermo][]
     """
     atoms = fetch_atoms(atoms)
