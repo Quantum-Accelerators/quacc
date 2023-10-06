@@ -6,7 +6,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
 !!! Tip
 
-    If you are new to workflow engines, we recommend trying either **Covalent** or **Parsl**. If you are looking to run high-throughput calculations on an HPC system with a job scheduler, we recommend first trying Parsl. If you are looking for a visual dashboard with an emphasis on distributed compute resources, first try Covalent.
+    If you are new to workflow engines, we recommend trying either **Covalent** or **Parsl**. If you are looking for a visual dashboard with an emphasis on distributed compute resources, first try Covalent. If you are looking to run high-throughput calculations on an HPC system with a job scheduler, we recommend first trying Parsl.
 
 === "Covalent ⭐"
 
