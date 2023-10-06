@@ -2,15 +2,9 @@
 
 In this section, we provide a few examples going through the entire process to deploy recipes remotely on HPC machines that use a job scheduler. The precise configuration details will depend on your given compute setup. Nonetheless, we have provided examples here for [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/) that you can build from.
 
-!!! Hint
+!!! Tip
 
-    Before deploying remote calculations for the first time, ensure that the following can be done successfully:
-
-    1. Run the sample recipe on your local machine, when possible.
-
-    2. Run the same Python script on your desired computing resource (e.g. by submitting it as a job to the scheduler). Make sure that the `WORKFLOW_ENGINE` setting is set to "local" on the remote machine for this exercise.
-
-    These preliminary tests will help you identify potential issues early on.
+    Before deploying remote calculations for the first time, do `quacc set WORKFLOW_ENGINE local` on the remote machine and run your recipe as a standard Python script (e.g. by submitting it as a job to the scheduler). This preliminary test will help you identify potential issues early on. When you're done, you can re-set the `WORKFLOW_ENGINE` variable and continue with deployment via a workflow manager.
 
 ## Pre-Requisites
 
