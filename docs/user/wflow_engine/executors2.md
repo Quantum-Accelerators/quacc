@@ -121,7 +121,7 @@ When deploying calculations for the first time, it's important to start simple, 
 
     !!! Hint
 
-        The most common cause of issues is related to the job scheduler details (i.e. the `resource_spec_kwargs` and the `job_attributes_kwargs`). If your job fails on the remote machine, check the `~/.psij` directory for a history and various log files associated with your attempted job submissions.
+        The most common cause of issues is related to the job scheduler details (i.e. the `resource_spec_kwargs` and the `job_attributes_kwargs`). If your job fails on the remote machine, check the files left behind in the working directory as well as the `~/.psij` directory for a history and various log files associated with your attempted job submissions.
 
 === "Parsl ⭐"
 
@@ -245,7 +245,7 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
             "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
         },
         environment={"QUACC_VASP_PARALLEL_CMD": vasp_parallel_cmd},
-        pre_launch_cmds=["module load vasp"],
+        pre_launch_cmds=["module load vasp/6.4.1-cpu"],
         remote_conda_env="quacc",
         remote_workdir="$SCRATCH/quacc",
         create_unique_workdir=True,
