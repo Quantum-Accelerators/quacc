@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 @job
 def static_job(
     atoms: Atoms | dict,
-    preset: str | None = None,
+    preset: str | None = "BulkSet",
     calc_swaps: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
@@ -84,7 +84,7 @@ def static_job(
 @job
 def relax_job(
     atoms: Atoms | dict,
-    preset: str | None = None,
+    preset: str | None = "BulkSet",
     relax_cell: bool = True,
     calc_swaps: dict | None = None,
     copy_files: list[str] | None = None,
@@ -153,7 +153,7 @@ def relax_job(
 @job
 def double_relax_job(
     atoms: Atoms | dict,
-    preset: str | None = None,
+    preset: str | None = "BulkSet",
     relax_cell: bool = True,
     calc_swaps1: dict | None = None,
     calc_swaps2: dict | None = None,
