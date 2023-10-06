@@ -51,7 +51,7 @@ def run_custodian(
     vasp_cmd
         VASP command. Defaults to "vasp_std" in settings.
     vasp_gamma_cmd
-        VASP gamma command. Defaults to vasp_gam in settings.
+        VASP gamma command. Defaults to "vasp_gam" in settings.
     vasp_custodian_max_errors
         Maximum number of errors to allow before stopping the run. Defaults to 5
         in settings.
@@ -161,6 +161,7 @@ def run_custodian(
             *list(handlers),
             WalltimeHandler(wall_time=vasp_custodian_wall_time),
         ]
+    raise ValueError(vasp_cmd, vasp_parallel_cmd, vasp_cmd, split_vasp_cmd, jobs)
 
     c = Custodian(
         handlers,
