@@ -336,7 +336,7 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
 
     You will need to update your `my_qadapter.yaml` file that you made when setting up FireWorks. Specifically, ensure that the following parameters are set:
 
-    ```yaml title="my_qadapter.yaml
+    ```yaml title="my_qadapter.yaml"
     _fw_name: CommonAdapter
     _fw_q_type: SLURM
     rocket_launch: rlaunch -w /path/to/fw_config/my_fworker.yaml singleshot
