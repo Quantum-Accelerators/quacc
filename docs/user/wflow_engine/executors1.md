@@ -10,6 +10,10 @@ In the previous examples, we have been running calculations on our local machine
 
     If you want to use the same executor for all the jobs in a workflow, you can pass the `executor` keyword argument to the `#!Python @flow` decorator.
 
+    !!! Warning
+
+        Until [Issue 1024](https://github.com/Quantum-Accelerators/quacc/issues/1024) is resolved, you will also need to directly set the `workflow_executor` keyword argument in the `#!Python @flow` decorator to the same value as that used for `executor` otherwise a post-processing error will occur.
+
     ```python
     import covalent as ct
     from ase.build import bulk
@@ -71,9 +75,6 @@ In the previous examples, we have been running calculations on our local machine
     ```python
     n_nodes = 2  # Number of nodes to reserve for each calculation
     n_cores_per_node = 48  # Number of CPU cores per node
-    vasp_parallel_cmd = (
-        f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
-    )
 
     executor = ct.executor.HPCExecutor(
         # SSH credentials
@@ -92,14 +93,12 @@ In the previous examples, we have been running calculations on our local machine
             "project_name": "YourAccountName",
             "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
         },  # (3)!
-        environment={"QUACC_VASP_PARALLEL_CMD": vasp_parallel_cmd},
-        # Pre-/post-launch commands
-        pre_launch_cmds=["module load vasp"],
         # Remote Python env parameters
         remote_conda_env="quacc",
         # Covalent parameters
         remote_workdir="$SCRATCH/quacc",
         create_unique_workdir=True,  # (4)!
+        cleanup=False,  # (5)!
     )
     ```
 
@@ -111,13 +110,7 @@ In the previous examples, we have been running calculations on our local machine
 
     4. You generally want each quacc job to be run in its own unique working directory to ensure files don't overwrite one another, so  `create_unique_workdir` should be set to `True`.
 
-    !!! Tip
-
-        You will need to install both Covalent and PSI/J on the remote machine:
-
-        ```python
-        pip install covalent psij-python
-        ```
+    5. For debugging purposes, it can be useful to keep all the temporary files. Once you're confident things work, you can omit the `cleanup` keyword argument.
 
     ??? Note
 
@@ -142,9 +135,6 @@ In the previous examples, we have been running calculations on our local machine
                 "job-name": "quacc",
                 "time": "00:10:00",
             },
-            prerun_commands=[
-                f"export QUACC_VASP_PARALLEL_CMD='srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores",
-            ],
             use_srun=False, # (1)!
         )
         ```
@@ -212,7 +202,7 @@ In the previous examples, we have been running calculations on our local machine
 
     **Scaling Up**
 
-    Now let's consider a more realistic scenario. Suppose we want to have a single Slurm job that reserves 8 nodes, and each job in the workflow (e.g. VASP calculation) will run on 2 nodes (let's assume each node has 48 cores total, so that's a total of 96 cores for each calculation). Parsl will act as an orchestrator in the background of one of the compute nodes (rather than on the login node). Our config will now look like the following.
+    Now let's consider a more realistic scenario. Suppose we want to have a single Slurm job that reserves 8 nodes, and each job in the workflow will run on 2 nodes (let's assume each node has 48 cores total, so that's a total of 96 cores for each calculation). Parsl will act as an orchestrator in the background of one of the compute nodes (rather than on the login node). Our config will now look like the following.
 
     ```python
     import parsl
@@ -224,9 +214,6 @@ In the previous examples, we have been running calculations on our local machine
     n_parallel_calcs = 4  # Number of quacc calculations to run in parallel
     n_nodes_per_calc = 2  # Number of nodes to reserve for each calculation
     n_cores_per_node = 48  # Number of CPU cores per node
-    vasp_parallel_cmd = (
-        f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
-    )
 
     config = Config(
         max_idletime=300,
@@ -239,7 +226,7 @@ In the previous examples, we have been running calculations on our local machine
                     account="MyAccountName",
                     nodes_per_block=n_nodes_per_calc * n_parallel_calcs,
                     scheduler_options="#SBATCH -q debug -C cpu",
-                    worker_init=f"source ~/.bashrc && conda activate quacc && module load vasp && export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}",
+                    worker_init=f"source ~/.bashrc && conda activate quacc",
                     walltime="00:10:00",
                     launcher=SimpleLauncher(),
                     cmd_timeout=120,
@@ -264,7 +251,7 @@ In the previous examples, we have been running calculations on our local machine
 
     **Multiple Executors**
 
-    Parsl supports tying specific executors to a given `PythonApp` by specifying it within the `#!Python @python_app` decorator, as discussed in the [Multi-Executor section](https://parsl.readthedocs.io/en/stable/userguide/execution.html#multi-executor) of the Parsl documentation.
+    Parsl supports tying specific executors to a given `PythonApp`, as discussed in the [Multi-Executor section](https://parsl.readthedocs.io/en/stable/userguide/execution.html#multi-executor) of the Parsl documentation.
 
 === "Prefect"
 
@@ -288,9 +275,6 @@ In the previous examples, we have been running calculations on our local machine
     n_nodes_per_calc = 1 # Number of nodes to reserve for each Slurm job.
     n_cores_per_node = 48 # Number of CPU cores per node.
     mem_per_node = "64 GB" # Total memory per node.
-    vasp_parallel_cmd = (
-        f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
-    )
 
     cluster_kwargs = {
         # Dask worker options
@@ -305,7 +289,6 @@ In the previous examples, we have been running calculations on our local machine
         "job_script_prologue": [
             "source ~/.bashrc",
             "conda activate quacc",
-            f"export QUACC_VASP_PARALLEL_CMD={vasp_parallel_cmd}",
         ], # (5)!
         "job_directives_skip": ["-n", "--cpus-per-task"], # (6)!
         "job_extra_directives": [f"-N {n_nodes_per_calc}", "-q debug", "-C cpu"], # (7)!
