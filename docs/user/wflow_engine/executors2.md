@@ -334,7 +334,23 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
 
 === "Jobflow"
 
-    From the login node of the remote machine, run the following:
+    You will need to update your `my_qadapter.yaml` file that you made when setting up FireWorks. Specifically, ensure that the following parameters are set:
+
+    ```yaml title="my_qadapter.yaml
+    _fw_name: CommonAdapter
+    _fw_q_type: SLURM
+    rocket_launch: rlaunch -w /path/to/fw_config/my_fworker.yaml singleshot
+    nodes: 1
+    walltime: 00:30:00
+    account: MyAccountName
+    job_name: quacc_firework
+    qos: debug
+    pre_rocket: |
+    module load vasp/6.4.1-cpu
+    export QUACC_VASP_PARALLEL_CMD="srun -N 1 --ntasks-per-node=48 --cpu_bind=cores"
+    ```
+
+    From the login node of the remote machine, then run the following:
 
     ```python
     import jobflow as jf
