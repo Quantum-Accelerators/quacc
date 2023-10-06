@@ -55,6 +55,7 @@ Then install the necessary dependencies:
     pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
     pip install quacc[parsl]
     quacc set WORKFLOW_ENGINE parsl
+    quacc set CREATE_UNIQUE_WORKDIR True
     ```
 
 === "Jobflow"
@@ -208,7 +209,7 @@ When deploying calculations for the first time, it's important to start simple, 
 
 In this example, we will run a sample VASP recipe that will highlight the use of a more complicated configuration.
 
-TODO: Add details on pseudopotential initialization.
+First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of your remote machine as described in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials). When you're done, follow the steps below.
 
 === "Covalent ⭐"
 
