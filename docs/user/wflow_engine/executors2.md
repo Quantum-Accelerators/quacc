@@ -1,6 +1,6 @@
 # Worked Examples
 
-In this section, we provide a few examples going through the entire process to deploy recipes remotely for some commonly used workflow engines. The precise configuration details will depend on your given compute setup. Nonetheless, we have provided two examples here (one for [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/) and the other for [Adroit at Princeton](https://researchcomputing.princeton.edu/systems/adroit)) for you to build from.
+In this section, we provide a few examples going through the entire process to deploy recipes remotely for some commonly used workflow engines. The precise configuration details will depend on your given compute setup. Nonetheless, we have provided examples here for [Perlmutter at NERSC](https://docs.nersc.gov/systems/perlmutter/) that you can build from.
 
 !!! Hint
 
@@ -75,93 +75,48 @@ When deploying calculations for the first time, it's important to start simple, 
 
     Run the following code on the local machine:
 
-    === "Perlmutter"
+    ```python
+    import covalent as ct
+    from ase.build import bulk
+    from quacc import flow
+    from quacc.recipes.emt.core import relax_job, static_job
 
-        ```python
-        import covalent as ct
-        from ase.build import bulk
-        from quacc import flow
-        from quacc.recipes.emt.core import relax_job, static_job
+    username = "MyUserName"
+    account = "MyAccountName"
 
-        username = "MyUserName"
-        account = "MyAccountName"
+    executor = ct.executor.HPCExecutor(
+        username=username,
+        address="perlmutter-p1.nersc.gov",
+        ssh_key_file="~/.ssh/nersc",
+        cert_file="~/.ssh/nersc-cert.pub",
+        instance="slurm",
+        resource_spec_kwargs={
+            "node_count": 1,
+            "processes_per_node": 1,
+        },
+        job_attributes_kwargs={
+            "duration": 10,
+            "project_name": account,
+            "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
+        },
+        remote_conda_env="quacc",
+        remote_workdir="$SCRATCH/quacc",
+        create_unique_workdir=True,
+        cleanup=False,
+    )
 
-        executor = ct.executor.HPCExecutor(
-            username=username,
-            address="perlmutter-p1.nersc.gov",
-            ssh_key_file="~/.ssh/nersc",
-            cert_file="~/.ssh/nersc-cert.pub",
-            instance="slurm",
-            resource_spec_kwargs={
-                "node_count": 1,
-                "processes_per_node": 1,
-            },
-            job_attributes_kwargs={
-                "duration": 10,
-                "project_name": account,
-                "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
-            },
-            remote_conda_env="quacc",
-            remote_workdir="$SCRATCH/quacc",
-            create_unique_workdir=True,
-            cleanup=False,
-        )
+    @flow(executor=executor, workflow_executor=executor) # (1)!
+    def workflow(atoms):
+        relax_output = relax_job(atoms)
+        return static_job(relax_output)
 
-        @flow(executor=executor, workflow_executor=executor) # (1)!
-        def workflow(atoms):
-            relax_output = relax_job(atoms)
-            return static_job(relax_output)
+    atoms = bulk("Cu")
+    dispatch_id = ct.dispatch(workflow)(atoms)
+    result = ct.get_result(dispatch_id, wait=True)
+    print(result)
+    ```
 
-        atoms = bulk("Cu")
-        dispatch_id = ct.dispatch(workflow)(atoms)
-        result = ct.get_result(dispatch_id, wait=True)
-        print(result)
-        ```
-
-        1. Until [Issue 1024](https://github.com/Quantum-Accelerators/quacc/issues/1024) is resolved, you need to directly set the `workflow_executor` keyword argument in the `#!Python @flow` decorator to the same value as that used for `executor` otherwise a post-processing error will occur.
-
-    === "Adroit"
-
-        ```python
-        import covalent as ct
-        from ase.build import bulk
-        from quacc import flow
-        from quacc.recipes.emt.core import relax_job, static_job
-
-        username = "MyUserName"
-        password = "MyPassword"
-
-        executor = ct.executor.HPCExecutor(
-            username=username,
-            password=password,
-            address="adroit.princeton.edu",
-            resource_spec_kwargs={
-                "node_count": 1,
-                "processes_per_node": 1
-            },
-            job_attributes_kwargs={
-                "duration": 10,
-                "custom_attributes": {"slurm.qos": "test"},
-            },
-            remote_conda_env="quacc",
-            remote_workdir="~/quacc",
-            create_unique_workdir=True,
-            cleanup=False,
-        )
-
-
-        @flow(executor=executor, workflow_executor=executor) # (1)!
-        def workflow(atoms):
-            relax_output = relax_job(atoms)
-            return static_job(relax_output)
-
-        atoms = bulk("Cu")
-        dispatch_id = ct.dispatch(workflow)(atoms)
-        result = ct.get_result(dispatch_id, wait=True)
-        print(result)
-        ```
-
-        1. Until [Issue 1024](https://github.com/Quantum-Accelerators/quacc/issues/1024) is resolved, you need to directly set the `workflow_executor` keyword argument in the `#!Python @flow` decorator to the same value as that used for `executor` otherwise a post-processing error will occur.
+    1. Until [Issue 1024](https://github.com/Quantum-Accelerators/quacc/issues/1024) is resolved, you need to directly set the `workflow_executor` keyword argument in the `#!Python @flow` decorator to the same value as that used for `executor` otherwise a post-processing error will occur.
 
     !!! Hint
 
@@ -171,76 +126,40 @@ When deploying calculations for the first time, it's important to start simple, 
 
     From an interactive resource like a Jupyter Notebook or IPython kernel on the remote machine:
 
-    === "Perlmutter"
+    ```python
+    import parsl
+    from parsl.config import Config
+    from parsl.executors import HighThroughputExecutor
+    from parsl.launchers import SimpleLauncher
+    from parsl.providers import SlurmProvider
 
-        ```python
-        import parsl
-        from parsl.config import Config
-        from parsl.executors import HighThroughputExecutor
-        from parsl.launchers import SimpleLauncher
-        from parsl.providers import SlurmProvider
+    account = "MyAccountName"
 
-        account = "MyAccountName"
+    config = Config(
+        max_idletime=300,
+        executors=[
+            HighThroughputExecutor(
+                label="quacc_HTEX",
+                max_workers=1,
+                cores_per_worker=1e-6,
+                provider=SlurmProvider(
+                    account=account,
+                    nodes_per_block=1,
+                    scheduler_options="#SBATCH -q debug -C cpu",
+                    worker_init=f"source ~/.bashrc && conda activate quacc",
+                    walltime="00:10:00",
+                    launcher=SimpleLauncher(),
+                    cmd_timeout=120,
+                    init_blocks=0,
+                    min_blocks=1,
+                    max_blocks=1,
+                ),
+            )
+        ],
+    )
 
-        config = Config(
-            max_idletime=300,
-            executors=[
-                HighThroughputExecutor(
-                    label="quacc_HTEX",
-                    max_workers=1,
-                    cores_per_worker=1e-6,
-                    provider=SlurmProvider(
-                        account=account,
-                        nodes_per_block=1,
-                        scheduler_options="#SBATCH -q debug -C cpu",
-                        worker_init=f"source ~/.bashrc && conda activate quacc",
-                        walltime="00:10:00",
-                        launcher=SimpleLauncher(),
-                        cmd_timeout=120,
-                        init_blocks=0,
-                        min_blocks=1,
-                        max_blocks=1,
-                    ),
-                )
-            ],
-        )
-
-        parsl.load(config)
-        ```
-
-    === "Adroit"
-
-        ```python
-        import parsl
-        from parsl.config import Config
-        from parsl.executors import HighThroughputExecutor
-        from parsl.launchers import SimpleLauncher
-        from parsl.providers import SlurmProvider
-
-        config = Config(
-            max_idletime=300,
-            executors=[
-                HighThroughputExecutor(
-                    label="quacc_HTEX",
-                    max_workers=1,
-                    cores_per_worker=1e-6,
-                    provider=SlurmProvider(
-                        nodes_per_block=1,
-                        scheduler_options="#SBATCH -q test",
-                        worker_init=f"source ~/.bashrc && conda activate quacc",
-                        walltime="00:10:00",
-                        launcher = SimpleLauncher(),
-                        cmd_timeout=120,
-                        init_blocks=0,
-                        min_blocks=1,
-                        max_blocks=1,
-                    ),
-                )
-            ],
-        )
-
-        parsl.load(config)
-        ```
+    parsl.load(config)
+    ```
 
     ```python
     from ase.build import bulk
@@ -285,33 +204,66 @@ When deploying calculations for the first time, it's important to start simple, 
     qlaunch rapidfire -m 1
     ```
 
-## Example 2: ORCA
+## Example 2: VASP
 
-In this example, we will run a sample ORCA recipe.
+In this example, we will run a sample VASP recipe that will highlight the use of a more complicated configuration.
 
-First, make sure that ORCA has been [downloaded](https://orcaforum.kofo.mpg.de/) and unpacked on the remote machine.
-
-Then, on the remote machine, run the following:
-
-```bash
-quacc set ORCA_CMD /path/to/my-orca-directory/orca
-```
+TODO: Add details on pseudopotential initialization.
 
 === "Covalent ⭐"
 
-=== "Parsl ⭐"
+    Run the following code on the local machine:
 
-    Coming soon.
+    ```python
+    import covalent as ct
+    from ase.build import bulk
+    from quacc import flow
+    from quacc.recipes.vasp.core import relax_job, static_job
 
-=== "Jobflow"
+    username = "MyUserName"
+    account = "MyAccountName"
+    n_nodes = 1
+    n_cores_per_node = 48
+    vasp_parallel_cmd = (
+        f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"
+    )
 
-    Coming soon.
+    executor = ct.executor.HPCExecutor(
+        username=username,
+        address="perlmutter-p1.nersc.gov",
+        ssh_key_file="~/.ssh/nersc",
+        cert_file="~/.ssh/nersc-cert.pub",
+        instance="slurm",
+        resource_spec_kwargs={
+            "node_count": n_nodes,
+            "processes_per_node": n_cores_per_node,
+        },
+        job_attributes_kwargs={
+            "duration": 10,
+            "project_name": account,
+            "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
+        },
+        environment={"QUACC_VASP_PARALLEL_CMD": vasp_parallel_cmd},
+        pre_launch_cmds=["module load vasp"],
+        remote_conda_env="quacc",
+        remote_workdir="$SCRATCH/quacc",
+        create_unique_workdir=True,
+        cleanup=False,
+    )
 
-## Example 3: VASP
 
-In this example, we will run a sample VASP recipe.
+    @flow(executor=executor, workflow_executor=executor) # (1)!
+    def workflow(atoms):
+        relax_output = relax_job(atoms)
+        return static_job(relax_output)
 
-=== "Covalent ⭐"
+    atoms = bulk("Fe")
+    dispatch_id = ct.dispatch(workflow)(atoms)
+    result = ct.get_result(dispatch_id, wait=True)
+    print(result)
+    ```
+
+    1. Until [Issue 1024](https://github.com/Quantum-Accelerators/quacc/issues/1024) is resolved, you need to directly set the `workflow_executor` keyword argument in the `#!Python @flow` decorator to the same value as that used for `executor` otherwise a post-processing error will occur.
 
 === "Parsl ⭐"
 

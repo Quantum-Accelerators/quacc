@@ -143,8 +143,8 @@ def run_custodian(
         validators.append(validators_dict[validator_flag])
 
     # Populate settings
-    vasp_cmd = f"{vasp_parallel_cmd} {vasp_cmd}"
-    vasp_gamma_cmd = f"{vasp_parallel_cmd} {vasp_gamma_cmd}"
+    vasp_cmd = f"{vasp_parallel_cmd} {vasp_cmd} > vasp.out"
+    vasp_gamma_cmd = f"{vasp_parallel_cmd} {vasp_gamma_cmd} > vasp.out"
 
     # Run VASP
     vasp_job_kwargs = {} if vasp_job_kwargs is None else vasp_job_kwargs
