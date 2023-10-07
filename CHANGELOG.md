@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- The output of recies no longer automatically removes blank lists/dicts/sets to maintain a consistent schema.
 - The tblite `freq_job` and lj `freq_job` now use `VibThermoSchema` as the output
 - Changed default `SCRATCH_DIR` from `Path.cwd() / ".scratch"` to `Path("~/.scratch")
 
