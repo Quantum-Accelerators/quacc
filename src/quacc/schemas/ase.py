@@ -13,7 +13,7 @@ from ase.vibrations.data import VibrationsData
 from quacc import SETTINGS
 from quacc.runners.prep import prep_next_run as prep_next_run_
 from quacc.schemas.atoms import atoms_to_metadata
-from quacc.utils.dicts import clean_dict
+from quacc.utils.dicts import merge_dicts, sort_dict
 from quacc.utils.files import get_uri
 from quacc.wflow.db import results_to_db
 
@@ -30,6 +30,7 @@ if TYPE_CHECKING:
     OptSchema = TypeVar("OptSchema")
     VibSchema = TypeVar("VibSchema")
     ThermoSchema = TypeVar("ThermoSchema")
+    VibThermoSchema = TypeVar("VibThermoSchema")
 
     class FreqSchema(VibSchema):
         thermo: ThermoSchema
@@ -40,7 +41,6 @@ def summarize_run(
     input_atoms: Atoms | None = None,
     charge_and_multiplicity: tuple[int, int] | None = None,
     prep_next_run: bool = True,
-    remove_empties: bool = False,
     additional_fields: dict | None = None,
     store: Store | None = None,
 ) -> RunSchema:
@@ -62,9 +62,6 @@ def summarize_run(
         Whether the Atoms object stored in {"atoms": atoms} should be prepared
         for the next run This clears out any attached calculator and moves the
         final magmoms to the initial magmoms.
-    remove_empties
-        Whether to remove None values and empty lists/dicts from the task
-        document.
     additional_fields
         Additional fields to add to the task document.
     store
@@ -73,7 +70,7 @@ def summarize_run(
 
     Returns
     -------
-    dict
+    RunSchema
         Dictionary representation of the task document with the following
         fields:
 
@@ -240,9 +237,7 @@ def summarize_run(
     atoms_db = atoms_to_metadata(atoms, charge_and_multiplicity=charge_and_multiplicity)
 
     # Create a dictionary of the inputs/outputs
-    task_doc = clean_dict(
-        atoms_db | inputs | results | additional_fields, remove_empties=remove_empties
-    )
+    task_doc = sort_dict(atoms_db | inputs | results | additional_fields)
 
     if store:
         results_to_db(store, task_doc)
@@ -256,7 +251,6 @@ def summarize_opt_run(
     check_convergence: bool | None = None,
     charge_and_multiplicity: tuple[int, int] | None = None,
     prep_next_run: bool = True,
-    remove_empties: bool = False,
     additional_fields: dict | None = None,
     store: Store | None = None,
 ) -> OptSchema:
@@ -282,9 +276,6 @@ def summarize_opt_run(
         Whether the Atoms object stored in {"atoms": atoms} should be prepared
         for the next run This clears out any attached calculator and moves the
         final magmoms to the initial magmoms.
-    remove_empties
-        Whether to remove None values and empty lists/dicts from the task
-        document.
     additional_fields
         Additional fields to add to the task document.
     store
@@ -293,7 +284,7 @@ def summarize_opt_run(
 
     Returns
     -------
-    dict
+    OptSchema
         Dictionary representation of the task document with the following
         fields:
 
@@ -499,10 +490,7 @@ def summarize_opt_run(
     )
 
     # Create a dictionary of the inputs/outputs
-    task_doc = clean_dict(
-        atoms_db | inputs | results | traj_results | additional_fields,
-        remove_empties=remove_empties,
-    )
+    task_doc = sort_dict(atoms_db | inputs | results | traj_results | additional_fields)
 
     if store:
         results_to_db(store, task_doc)
@@ -513,7 +501,6 @@ def summarize_opt_run(
 def summarize_vib_run(
     vib: Vibrations,
     charge_and_multiplicity: tuple[int, int] | None = None,
-    remove_empties: bool = False,
     additional_fields: dict | None = None,
     store: Store | None = None,
 ) -> VibSchema:
@@ -528,9 +515,6 @@ def summarize_vib_run(
     charge_and_multiplicity
         Charge and spin multiplicity of the Atoms object, only used for Molecule
         metadata.
-    remove_empties
-        Whether to remove None values and empty lists/dicts from the task
-        document.
     additional_fields
         Additional fields to add to the task document.
     store
@@ -539,7 +523,7 @@ def summarize_vib_run(
 
     Returns
     -------
-    dict
+    VibSchema
         Dictionary representation of the task document with the following
         fields:
 
@@ -757,9 +741,7 @@ def summarize_vib_run(
         }
     }
 
-    task_doc = clean_dict(
-        atoms_db | inputs | results | additional_fields, remove_empties=remove_empties
-    )
+    task_doc = sort_dict(atoms_db | inputs | results | additional_fields)
 
     if store:
         results_to_db(store, task_doc)
@@ -772,7 +754,6 @@ def summarize_ideal_gas_thermo(
     temperature: float = 298.15,
     pressure: float = 1.0,
     charge_and_multiplicity: tuple[int, int] | None = None,
-    remove_empties: bool = False,
     additional_fields: dict | None = None,
     store: Store | None = None,
 ) -> ThermoSchema:
@@ -791,9 +772,6 @@ def summarize_ideal_gas_thermo(
     charge_and_multiplicity
         Charge and spin multiplicity of the Atoms object, only used for Molecule
         metadata.
-    remove_empties
-        Whether to remove None values and empty lists/dicts from the task
-        document.
     additional_fields
         Additional fields to add to the task document.
     store
@@ -802,7 +780,7 @@ def summarize_ideal_gas_thermo(
 
     Returns
     -------
-    dict
+    ThermoSchema
         Dictionary representation of the task document with the following
         fields:
 
@@ -946,11 +924,63 @@ def summarize_ideal_gas_thermo(
         igt.atoms, charge_and_multiplicity=charge_and_multiplicity
     )
 
-    task_doc = clean_dict(
-        atoms_db | inputs | results | additional_fields, remove_empties=remove_empties
-    )
+    task_doc = sort_dict(atoms_db | inputs | results | additional_fields)
 
     if store:
         results_to_db(store, task_doc)
 
     return task_doc
+
+
+def summarize_vib_and_thermo(
+    vib: Vibrations,
+    igt: IdealGasThermo,
+    temperature: float = 298.15,
+    pressure: float = 1.0,
+    charge_and_multiplicity: tuple[int, int] | None = None,
+    additional_fields: dict | None = None,
+    store: Store | None = None,
+) -> VibThermoSchema:
+    """
+    Get tabulated results from an ASE Vibrations run and ASE IdealGasThermo object
+    and store them in a database-friendly format.
+
+    Parameters
+    ----------
+    vib
+        ASE Vibrations object.
+    igt
+        ASE IdealGasThermo object.
+    temperature
+        Temperature in Kelvins.
+    pressure
+        Pressure in bar.
+    charge_and_multiplicity
+        Charge and spin multiplicity of the Atoms object, only used for Molecule
+        metadata.
+    additional_fields
+        Additional fields to add to the task document.
+    store
+        Maggma Store object to store the results in. If None,
+        `SETTINGS.PRIMARY_STORE` will be used.
+
+    Returns
+    -------
+    VibThermoSchema
+        A dictionary that merges the `VibSchema` and `ThermoSchema`.
+    """
+    vib_task_doc = summarize_vib_run(
+        vib,
+        charge_and_multiplicity=charge_and_multiplicity,
+        additional_fields=additional_fields,
+        store=store,
+    )
+    thermo_task_doc = summarize_ideal_gas_thermo(
+        igt,
+        temperature=temperature,
+        pressure=pressure,
+        charge_and_multiplicity=charge_and_multiplicity,
+        additional_fields=additional_fields,
+        store=store,
+    )
+    return merge_dicts(vib_task_doc, thermo_task_doc)

@@ -10,7 +10,7 @@ from monty.json import jsanitize
 from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc.atoms.core import copy_atoms
-from quacc.utils.dicts import clean_dict
+from quacc.utils.dicts import sort_dict
 
 if TYPE_CHECKING:
     from typing import Any, TypeVar
@@ -24,7 +24,6 @@ def atoms_to_metadata(
     get_metadata: bool = True,
     strip_info: bool = False,
     store_pmg: bool = True,
-    remove_empties: bool = False,
     additional_fields: dict | None = None,
 ) -> AtomsSchema:
     """
@@ -46,9 +45,6 @@ def atoms_to_metadata(
     store_pmg
         Whether to store the Pymatgen Structure/Molecule object in {"structure":
         Structure} or {"molecule": Molecule}, respectively.
-    remove_empties
-        Whether to remove None values and empty lists/dicts from the
-        TaskDocument.
     additional_fields
         Additional fields to add to the document.
 
@@ -211,7 +207,7 @@ def atoms_to_metadata(
     # Combine the metadata and results dictionaries
     atoms_doc = metadata | results | additional_fields
 
-    return clean_dict(atoms_doc, remove_empties=remove_empties)
+    return sort_dict(atoms_doc)
 
 
 def fetch_atoms(atoms: Atoms | dict) -> Atoms:

@@ -5,7 +5,7 @@ from __future__ import annotations
 
 
 def merge_dicts(
-    dict1: dict | None, dict2: dict | None, remove_empties: bool = True
+    dict1: dict | None, dict2: dict | None, remove_nones: bool = True
 ) -> dict:
     """
     Recursively merges two dictionaries. If one the inputs are `None`, then
@@ -17,7 +17,7 @@ def merge_dicts(
         First dictionary
     dict2
         Second dictionary
-    remove_empties
+    remove_nones
         If True, remove empty lists and dictionaries
 
     Returns
@@ -38,33 +38,10 @@ def merge_dicts(
         else:
             merged[key] = value
 
-    if remove_empties:
+    if remove_nones:
         merged = remove_dict_empties(merged)
 
     return merged
-
-
-def clean_dict(start_dict: dict, remove_empties: bool = False) -> dict:
-    """
-    For a given dictionary, recursively remove all items that are None or are
-    empty lists/dicts, and then sort all entries alphabetically by key.
-
-    Parameters
-    ----------
-    start_dict
-        Dictionary to clean
-    remove_empties
-        If True, remove empty lists and dictionaries
-
-    Returns
-    -------
-    dict
-        Cleaned and sorted dictionary
-    """
-
-    if remove_empties:
-        start_dict = remove_dict_empties(start_dict)
-    return sort_dict(start_dict)
 
 
 def remove_dict_empties(start_dict: dict) -> dict:
@@ -85,9 +62,7 @@ def remove_dict_empties(start_dict: dict) -> dict:
 
     if isinstance(start_dict, dict):
         return {
-            k: remove_dict_empties(v)
-            for k, v in start_dict.items()
-            if v is not None and (not isinstance(v, (dict, list)) or len(v) != 0)
+            k: remove_dict_empties(v) for k, v in start_dict.items() if v is not None
         }
     return (
         [remove_dict_empties(v) for v in start_dict]

@@ -9,12 +9,7 @@ from monty.dev import requires
 from quacc import fetch_atoms, job
 from quacc.builders.thermo import build_ideal_gas
 from quacc.runners.calc import run_ase_opt, run_ase_vib, run_calc
-from quacc.schemas.ase import (
-    summarize_ideal_gas_thermo,
-    summarize_opt_run,
-    summarize_run,
-    summarize_vib_run,
-)
+from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
 from quacc.utils.dicts import merge_dicts
 
 try:
@@ -27,7 +22,7 @@ if TYPE_CHECKING:
 
     from ase import Atoms
 
-    from quacc.schemas.ase import FreqSchema, OptSchema, RunSchema
+    from quacc.schemas.ase import OptSchema, RunSchema, VibThermoSchema
 
 
 @job
@@ -153,7 +148,7 @@ def freq_job(
     calc_swaps: dict | None = None,
     vib_kwargs: dict | None = None,
     copy_files: list[str] | None = None,
-) -> FreqSchema:
+) -> VibThermoSchema:
     """
     Run a frequency job and calculate thermochemistry.
 
@@ -165,7 +160,7 @@ def freq_job(
         {"method": method}
         ```
 
-        Frequency Defaults:
+        Vibrations Defaults:
 
         ```python
         {}
@@ -193,9 +188,8 @@ def freq_job(
 
     Returns
     -------
-    FreqSchema
-        Dictionary of results from [quacc.schemas.ase.summarize_vib_run] and
-        [quacc.schemas.ase.summarize_ideal_gas_thermo][]
+    VibThermoSchema
+        Dictionary of results from [quacc.schemas.ase.summarize_vib_and_thermo][]
     """
     atoms = fetch_atoms(atoms)
     vib_kwargs = vib_kwargs or {}
@@ -205,16 +199,12 @@ def freq_job(
     atoms.calc = TBLite(**flags)
 
     vibrations = run_ase_vib(atoms, vib_kwargs=vib_kwargs, copy_files=copy_files)
-    vib_summary = summarize_vib_run(
-        vibrations, additional_fields={"name": "TBLite Frequency"}
-    )
-
     igt = build_ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)
-    vib_summary["thermo"] = summarize_ideal_gas_thermo(
+
+    return summarize_vib_and_thermo(
+        vibrations,
         igt,
         temperature=temperature,
         pressure=pressure,
-        additional_fields={"name": "ASE Thermo Analysis"},
+        additional_fields={"name": "TBLite Frequency and Thermo"},
     )
-
-    return vib_summary

@@ -71,12 +71,11 @@ def test_freq_job(tmpdir):
 
     output = freq_job(relax_job(atoms))
     assert output["natoms"] == len(atoms)
-    assert output["thermo"]["natoms"] == len(atoms)
     assert output["parameters"]["epsilon"] == 1.0
     assert output["parameters"]["sigma"] == 1.0
     assert output["parameters"]["rc"] == 3
     assert output["parameters"]["ro"] == 0.66 * 3
     assert len(output["results"]["vib_freqs_raw"]) == 3 * len(atoms)
     assert len(output["results"]["vib_freqs"]) == 3 * len(atoms) - 6
-    assert len(output["thermo"]["parameters_thermo"]["vib_freqs"]) == 3 * len(atoms) - 6
-    assert output["thermo"]["parameters_thermo"]["n_imag"] == 0
+    assert len(output["parameters_thermo"]["vib_freqs"]) == 3 * len(atoms) - 6
+    assert output["parameters_thermo"]["n_imag"] == 0

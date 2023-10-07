@@ -104,17 +104,6 @@ def test_cclib_summarize_run():
         atoms
     )
 
-    # Test remove_empties
-    # Make sure metadata is made
-    atoms = read(log1)
-    results = cclib_summarize_run(atoms, ".log", dir_path=run1, remove_empties=True)
-    assert results["natoms"] == len(atoms)
-    assert results["atoms"] == atoms
-    assert results["spin_multiplicity"] == 1
-    assert results["natoms"] == 6
-    assert results["metadata"].get("success", None) is True
-    assert "pull_request" not in results["builder_meta"]
-
 
 def test_errors():
     atoms = bulk("Cu")

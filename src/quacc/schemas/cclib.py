@@ -21,7 +21,7 @@ from pymatgen.io.ase import AseAtomsAdaptor
 from quacc import SETTINGS
 from quacc.runners.prep import prep_next_run as prep_next_run_
 from quacc.schemas.atoms import atoms_to_metadata
-from quacc.utils.dicts import clean_dict
+from quacc.utils.dicts import sort_dict
 from quacc.utils.files import find_recent_logfile, get_uri
 from quacc.wflow.db import results_to_db
 
@@ -54,7 +54,6 @@ def cclib_summarize_run(
     | None = None,
     check_convergence: bool | None = None,
     prep_next_run: bool = True,
-    remove_empties: bool = False,
     additional_fields: dict | None = None,
     store: Store | None = None,
 ) -> cclibSchema:
@@ -95,9 +94,6 @@ def cclib_summarize_run(
         Whether the Atoms object stored in {"atoms": atoms} should be prepared
         for the next run. This clears out any attached calculator and moves the
         final magmoms to the initial magmoms.
-    remove_empties
-        Whether to remove None values and empty lists/dicts from the
-        TaskDocument.
     additional_fields
         Additional fields to add to the task document.
     store
@@ -242,10 +238,7 @@ def cclib_summarize_run(
     atoms_db = atoms_to_metadata(atoms, get_metadata=False, store_pmg=False)
 
     # Create a dictionary of the inputs/outputs
-    summary = clean_dict(
-        atoms_db | inputs | taskdoc | additional_fields,
-        remove_empties=remove_empties,
-    )
+    summary = sort_dict(atoms_db | inputs | taskdoc | additional_fields)
 
     # Store the results
     if store:

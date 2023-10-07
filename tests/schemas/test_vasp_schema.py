@@ -52,21 +52,8 @@ def test_vasp_summarize_run():
 
     # Make sure metadata is made
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
-    results = vasp_summarize_run(
-        atoms, dir_path=run1, remove_empties=True, additional_fields={"test": "hi"}
-    )
-    assert "author" not in results
-    assert "additional_json" not in results
-    assert "corrections" not in results["custodian"][0]
+    results = vasp_summarize_run(atoms, dir_path=run1, additional_fields={"test": "hi"})
     assert results.get("test") == "hi"
-
-    # Make sure null are not removed
-    atoms = read(os.path.join(run1, "OUTCAR.gz"))
-    results = vasp_summarize_run(atoms, dir_path=run1, remove_empties=False)
-    assert "author" not in results
-    assert "additional_json" not in results
-    assert "corrections" in results["custodian"][0]
-    assert results["custodian"][0]["corrections"] == []
 
     # Make sure info tags are handled appropriately
     atoms = read(os.path.join(run1, "CONTCAR.gz"))

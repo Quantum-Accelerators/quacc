@@ -41,14 +41,6 @@ def test_summarize_run(tmpdir):
     summarize_run(atoms, store=store)
     assert store.count() == 1
 
-    # Test remove_empties
-    atoms = read(os.path.join(run1, "OUTCAR.gz"))
-    results = summarize_run(atoms, remove_empties=True)
-    assert results["nsites"] == len(atoms)
-    assert results["atoms"] == atoms
-    assert results["results"]["energy"] == atoms.get_potential_energy()
-    assert "pull_request" not in results["builder_meta"]
-
     # Make sure initial atoms object is stored if specified
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
     results = summarize_run(atoms, atoms)
@@ -143,25 +135,6 @@ def test_summarize_opt_run(tmpdir):
     with pytest.raises(ValueError):
         summarize_opt_run(dyn)
 
-    # Test remove_empties
-    atoms = bulk("Cu") * (2, 2, 1)
-    atoms[0].position += [0.1, 0.1, 0.1]
-    atoms.calc = EMT()
-    dyn = BFGS(atoms, trajectory="test.traj")
-    dyn.run()
-    traj = read(dyn.trajectory.filename, index=":")
-
-    results = summarize_opt_run(dyn, remove_empties=True)
-    assert results["nsites"] == len(atoms)
-    assert results["atoms"] == traj[-1]
-    assert results["results"]["energy"] == atoms.get_potential_energy()
-    assert len(results["trajectory"]) == len(traj)
-    assert len(results["trajectory_results"]) == len(traj)
-    assert results["trajectory_results"][-1]["energy"] == results["results"]["energy"]
-    assert "nid" in results
-    assert "dir_name" in results
-    assert "pull_request" not in results["builder_meta"]
-
     # Make sure info tags are handled appropriately
     atoms = bulk("Cu") * (2, 2, 1)
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
@@ -235,25 +208,6 @@ def test_summarize_vib_run(tmpdir):
     summarize_vib_run(vib, store=store)
     assert store.count() == 1
 
-    # Test remove_empties
-    atoms = molecule("N2")
-    atoms.calc = EMT()
-    input_atoms = deepcopy(atoms)
-    vib = Vibrations(atoms)
-    vib.run()
-
-    results = summarize_vib_run(vib, remove_empties=True)
-    assert results["atoms"] == input_atoms
-    assert results["natoms"] == len(atoms)
-    assert results["parameters_vib"]["delta"] == vib.delta
-    assert results["parameters_vib"]["direction"] == "central"
-    assert results["parameters_vib"]["method"] == "standard"
-    assert results["parameters_vib"]["ndof"] == 6
-    assert results["parameters_vib"]["nfree"] == 2
-    assert "nid" in results
-    assert "dir_name" in results
-    assert "pull_request" not in results["builder_meta"]
-
     # Make sure info tags are handled appropriately
     atoms = molecule("N2")
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
@@ -308,17 +262,6 @@ def test_summarize_ideal_gas_thermo(tmpdir):
     store = MemoryStore()
     summarize_ideal_gas_thermo(igt, store=store)
     assert store.count() == 1
-
-    # Test remove_empties
-    atoms = molecule("N2")
-    igt = IdealGasThermo([0.34], "linear", atoms=atoms, spin=0, symmetrynumber=2)
-    results = summarize_ideal_gas_thermo(igt, remove_empties=True)
-    assert results["natoms"] == len(atoms)
-    assert results["atoms"] == atoms
-    assert results["parameters_thermo"]["vib_energies"] == [0.34]
-    assert results["parameters_thermo"]["vib_freqs"] == [0.34 / invcm]
-    assert results["results"]["energy"] == 0
-    assert "pull_request" not in results["builder_meta"]
 
     # Make sure right number of vib energies are reported
     atoms = molecule("N2")

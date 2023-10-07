@@ -66,23 +66,18 @@ def test_freq_job(tmpdir):
     assert output["results"]["n_imag"] == 0
     assert output["results"]["imag_vib_freqs"] == []
 
-    assert output["thermo"]["atoms"] == atoms
-    assert output["thermo"]["symmetry"]["point_group"] == "C2v"
-    assert output["thermo"]["symmetry"]["rotation_number"] == 2
-    assert output["thermo"]["symmetry"]["linear"] is False
-    assert len(output["thermo"]["parameters_thermo"]["vib_freqs"]) == 3
+    assert output["symmetry"]["point_group"] == "C2v"
+    assert output["symmetry"]["rotation_number"] == 2
+    assert output["symmetry"]["linear"] is False
+    assert len(output["parameters_thermo"]["vib_freqs"]) == 3
     assert output["results"]["vib_freqs"][0] == pytest.approx(1586.623114694335)
-    assert output["thermo"]["parameters_thermo"]["vib_freqs"][-1] == pytest.approx(
+    assert output["parameters_thermo"]["vib_freqs"][-1] == pytest.approx(
         3526.9940431752034
     )
-    assert output["thermo"]["results"]["energy"] == 0.0
-    assert output["thermo"]["results"]["enthalpy"] == pytest.approx(0.6375973622705722)
-    assert output["thermo"]["results"]["entropy"] == pytest.approx(
-        0.0019584992229988523
-    )
-    assert output["thermo"]["results"]["gibbs_energy"] == pytest.approx(
-        0.05367081893346437
-    )
+    assert output["results"]["energy"] == 0.0
+    assert output["results"]["enthalpy"] == pytest.approx(0.6375973622705722)
+    assert output["results"]["entropy"] == pytest.approx(0.0019584992229988523)
+    assert output["results"]["gibbs_energy"] == pytest.approx(0.05367081893346437)
 
     atoms = molecule("H")
     atoms.set_initial_magnetic_moments([0.0])
@@ -97,18 +92,13 @@ def test_freq_job(tmpdir):
     assert output["results"]["n_imag"] == 0
     assert output["results"]["imag_vib_freqs"] == []
 
-    assert output["thermo"]["atoms"] == initial_atoms
-    assert output["thermo"]["symmetry"]["linear"] is False
-    assert output["thermo"]["symmetry"]["rotation_number"] == np.inf
-    assert len(output["thermo"]["parameters_thermo"]["vib_freqs"]) == 0
-    assert output["thermo"]["results"]["energy"] == -1.0
-    assert output["thermo"]["results"]["enthalpy"] == pytest.approx(-0.9357685739989672)
-    assert output["thermo"]["results"]["entropy"] == pytest.approx(
-        0.0011292352752446438
-    )
-    assert output["thermo"]["results"]["gibbs_energy"] == pytest.approx(
-        -1.2724500713131577
-    )
+    assert output["symmetry"]["linear"] is False
+    assert output["symmetry"]["rotation_number"] == np.inf
+    assert len(output["parameters_thermo"]["vib_freqs"]) == 0
+    assert output["results"]["energy"] == -1.0
+    assert output["results"]["enthalpy"] == pytest.approx(-0.9357685739989672)
+    assert output["results"]["entropy"] == pytest.approx(0.0011292352752446438)
+    assert output["results"]["gibbs_energy"] == pytest.approx(-1.2724500713131577)
 
     atoms = molecule("CH3")
     initial_atoms = deepcopy(atoms)
@@ -127,24 +117,19 @@ def test_freq_job(tmpdir):
     assert output["results"]["n_imag"] == 0
     assert output["results"]["imag_vib_freqs"] == []
 
-    assert output["thermo"]["atoms"] == initial_atoms
-    assert output["thermo"]["parameters_thermo"]["temperature"] == 1000.0
-    assert output["thermo"]["parameters_thermo"]["pressure"] == 20.0
-    assert output["thermo"]["parameters_thermo"]["sigma"] == 6
-    assert output["thermo"]["parameters_thermo"]["spin_multiplicity"] == 2
-    assert output["thermo"]["symmetry"]["linear"] is False
-    assert output["thermo"]["symmetry"]["rotation_number"] == 6
-    assert len(output["thermo"]["parameters_thermo"]["vib_freqs"]) == 6
-    assert output["thermo"]["results"]["energy"] == -10.0
-    assert output["thermo"]["results"]["enthalpy"] == pytest.approx(-8.749341973959462)
-    assert output["thermo"]["results"]["entropy"] == pytest.approx(
-        0.0023506788982171896
-    )
-    assert output["thermo"]["results"]["gibbs_energy"] == pytest.approx(
-        -11.100020872176652
-    )
-    assert "nid" in output["thermo"]
-    assert "dir_name" in output["thermo"]
+    assert output["parameters_thermo"]["temperature"] == 1000.0
+    assert output["parameters_thermo"]["pressure"] == 20.0
+    assert output["parameters_thermo"]["sigma"] == 6
+    assert output["parameters_thermo"]["spin_multiplicity"] == 2
+    assert output["symmetry"]["linear"] is False
+    assert output["symmetry"]["rotation_number"] == 6
+    assert len(output["parameters_thermo"]["vib_freqs"]) == 6
+    assert output["results"]["energy"] == -10.0
+    assert output["results"]["enthalpy"] == pytest.approx(-8.749341973959462)
+    assert output["results"]["entropy"] == pytest.approx(0.0023506788982171896)
+    assert output["results"]["gibbs_energy"] == pytest.approx(-11.100020872176652)
+    assert "nid" in output
+    assert "dir_name" in output
     assert "nid" in output
     assert "dir_name" in output
 
