@@ -44,27 +44,6 @@ def merge_dicts(
     return merged
 
 
-def clean_dict(start_dict: dict) -> dict:
-    """
-    For a given dictionary, sort all entries alphabetically by key and
-    recursively remove all key with values that are None that.
-
-    Parameters
-    ----------
-    start_dict
-        Dictionary to clean
-    remove_nones
-        If True, remove empty lists and dictionaries
-
-    Returns
-    -------
-    dict
-        Cleaned and sorted dictionary
-    """
-
-    return sort_dict(remove_dict_empties(start_dict))
-
-
 def remove_dict_empties(start_dict: dict) -> dict:
     """
     For a given dictionary, recursively remove all items that are None or are
