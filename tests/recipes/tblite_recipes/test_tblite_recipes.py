@@ -128,8 +128,8 @@ def test_freq_job(tmpdir):
     assert output["results"]["enthalpy"] == pytest.approx(-8.749341973959462)
     assert output["results"]["entropy"] == pytest.approx(0.0023506788982171896)
     assert output["results"]["gibbs_energy"] == pytest.approx(-11.100020872176652)
-    assert "nid" in output["thermo"]
-    assert "dir_name" in output["thermo"]
+    assert "nid" in output
+    assert "dir_name" in output
     assert "nid" in output
     assert "dir_name" in output
 
