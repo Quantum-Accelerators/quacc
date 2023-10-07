@@ -104,6 +104,7 @@ def test_cclib_summarize_run():
         atoms
     )
 
+
 def test_errors():
     atoms = bulk("Cu")
     with pytest.raises(ValueError):
