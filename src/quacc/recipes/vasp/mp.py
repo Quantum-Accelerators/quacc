@@ -26,6 +26,7 @@ if TYPE_CHECKING:
 def mp_prerelax_job(
     atoms: Atoms | dict,
     preset: str | None = "MPR2SCANSet",
+    bandgap: float = 0.0,
     calc_swaps: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
@@ -38,7 +39,7 @@ def mp_prerelax_job(
         Calculator Defaults:
 
         ```python
-        {"ediffg": -0.05, "xc": "pbesol", "lwave": True, "lcharg": True}
+        {"ediffg": -0.05, "xc": "pbesol", "lwave": True, "lcharg": True} | _get_bandgap_swaps(bandgap)
         ```
 
     Parameters
@@ -48,6 +49,8 @@ def mp_prerelax_job(
         the value
     preset
         Preset to use.
+    bandgap
+        Estimate for the bandgap in eV.
     calc_swaps
         Dictionary of custom kwargs for the calculator.
     copy_files
@@ -59,7 +62,13 @@ def mp_prerelax_job(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
 
-    defaults = {"ediffg": -0.05, "xc": "pbesol", "lwave": True, "lcharg": True}
+    defaults = {
+        "ediffg": -0.05,
+        "xc": "pbesol",
+        "lwave": True,
+        "lcharg": True,
+    } | _get_bandgap_swaps(bandgap)
+
     return _base_job(
         atoms,
         preset=preset,
@@ -74,6 +83,7 @@ def mp_prerelax_job(
 def mp_relax_job(
     atoms: Atoms | dict,
     preset: str | None = "MPR2SCANSet",
+    bandgap: float = 0.0,
     calc_swaps: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
@@ -86,7 +96,7 @@ def mp_relax_job(
         Calculator Defaults:
 
         ```python
-        {"lcharg": True, "lwave": True}
+        {"lcharg": True, "lwave": True} | _get_bandgap_swaps(bandgap)
         ```
 
     Parameters
@@ -96,6 +106,8 @@ def mp_relax_job(
         the value
     preset
         Preset to use.
+    bandgap
+        Estimate for the bandgap in eV.
     calc_swaps
         Dictionary of custom kwargs for the calculator.
     copy_files
@@ -107,7 +119,7 @@ def mp_relax_job(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
 
-    defaults = {"lcharg": True, "lwave": True}
+    defaults = {"lcharg": True, "lwave": True} | _get_bandgap_swaps(bandgap)
     return _base_job(
         atoms,
         preset=preset,
@@ -122,6 +134,7 @@ def mp_relax_job(
 def mp_static_job(
     atoms: Atoms | dict,
     preset: str | None = "MPR2SCANSet",
+    bandgap: float = 0.0,
     calc_swaps: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
@@ -141,7 +154,7 @@ def mp_static_job(
         "lwave": False,
         "lreal": False,
         "ismear": -5,
-        }
+        } | | _get_bandgap_swaps(bandgap)
         ```
 
     Parameters
@@ -151,6 +164,8 @@ def mp_static_job(
         the value
     preset
         Preset to use.
+    bandgap
+        Estimate for the bandgap in eV.
     calc_swaps
         Dictionary of custom kwargs for the calculator.
     copy_files
@@ -169,7 +184,7 @@ def mp_static_job(
         "lwave": False,
         "lreal": False,
         "ismear": -5,
-    }
+    } | _get_bandgap_swaps(bandgap)
     return _base_job(
         atoms,
         preset=preset,
@@ -214,15 +229,14 @@ def mp_relax_flow(
     prerelax_results = mp_prerelax_job(atoms, **prerelax_job_kwargs)
 
     # Update parameters based on bandgap
-    bandgap = prerelax_results["output"].get("bandgap", 0)
-    bandgap_swaps = _get_bandgap_swaps(bandgap)
-    relax_job_kwargs["calc_swaps"] = bandgap_swaps | relax_job_kwargs.get(
-        "calc_swaps", {}
-    )
+    bandgap = prerelax_results["output"]["bandgap"]
 
     # Run the relax
     relax_results = mp_relax_job(
-        prerelax_results, copy_files=["CHGCAR", "WAVECAR"], **relax_job_kwargs
+        prerelax_results,
+        bandgap=bandgap,
+        copy_files=["CHGCAR", "WAVECAR"],
+        **relax_job_kwargs,
     )
     relax_results["prerelax"] = prerelax_results
 
