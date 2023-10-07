@@ -47,7 +47,7 @@ def slab_static_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     preset
-        Preset to use.
+        Preset to use from [quacc.calculators.presets.vasp][]
     calc_swaps
         dictionary of custom kwargs for the calculator.
     copy_files
@@ -114,7 +114,7 @@ def slab_relax_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     preset
-        Preset to use.
+        Preset to use from [quacc.calculators.presets.vasp][]
     calc_swaps
         Dictionary of custom kwargs for the calculator.
     copy_files

@@ -47,7 +47,7 @@ def mp_prerelax_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     preset
-        Preset to use.
+        Preset to use from [quacc.calculators.presets.vasp][]
     calc_swaps
         Dictionary of custom kwargs for the calculator.
     copy_files
@@ -96,6 +96,8 @@ def mp_relax_job(
         the value
     preset
         Preset to use.
+    bandgap
+        Estimate for the bandgap in eV.
     calc_swaps
         Dictionary of custom kwargs for the calculator.
     copy_files
@@ -113,6 +115,71 @@ def mp_relax_job(
         defaults={},
         calc_swaps=calc_swaps,
         additional_fields={"name": "MP Relax"},
+        copy_files=copy_files,
+    )
+
+
+@job
+def mp_static_job(
+    atoms: Atoms | dict,
+    preset: str | None = "MPR2SCANSet",
+    bandgap: float = 0.0,
+    calc_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
+) -> VaspSchema:
+    """
+    Function to run a static calculation with Materials Project settings. By default,
+    this uses an r2SCAN static step.
+
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {
+        "algo": "fast",
+        "nsw": 0,
+        "lcharg": True,
+        "lwave": False,
+        "lreal": False,
+        "ismear": -5,
+        } | | _get_bandgap_swaps(bandgap)
+        ```
+
+    Parameters
+    ----------
+    atoms
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
+    preset
+        Preset to use.
+    bandgap
+        Estimate for the bandgap in eV.
+    calc_swaps
+        Dictionary of custom kwargs for the calculator.
+    copy_files
+        Files to copy to the runtime directory.
+
+    Returns
+    -------
+    VaspSchema
+        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
+    """
+
+    defaults = {
+        "algo": "fast",
+        "nsw": 0,
+        "lcharg": True,
+        "lwave": False,
+        "lreal": False,
+        "ismear": -5,
+    } | _get_bandgap_swaps(bandgap)
+    return _base_job(
+        atoms,
+        preset=preset,
+        defaults=defaults,
+        calc_swaps=calc_swaps,
+        additional_fields={"name": "MP Static"},
         copy_files=copy_files,
     )
 
