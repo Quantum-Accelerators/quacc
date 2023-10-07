@@ -15,7 +15,7 @@ from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
 from quacc import SETTINGS
 from quacc.runners.prep import prep_next_run as prep_next_run_
 from quacc.schemas.atoms import atoms_to_metadata
-from quacc.utils.dicts import clean_dict
+from quacc.utils.dicts import sort_dict
 from quacc.utils.files import copy_decompress
 from quacc.wflow.db import results_to_db
 
@@ -33,7 +33,6 @@ def vasp_summarize_run(
     prep_next_run: bool = True,
     run_bader: bool | None = None,
     check_convergence: bool = True,
-    remove_empties: bool = False,
     additional_fields: dict | None = None,
     store: Store | None = None,
 ) -> VaspSchema:
@@ -58,9 +57,6 @@ def vasp_summarize_run(
         VASP_BADER in settings.
     check_convergence
         Whether to throw an error if convergence is not reached.
-    remove_empties
-        Whether to remove None values and empty lists/dicts from the
-        TaskDocument.
     additional_fields
         Additional fields to add to the task document.
     store
@@ -301,9 +297,7 @@ def vasp_summarize_run(
     atoms_db = atoms_to_metadata(atoms, get_metadata=False, store_pmg=False)
 
     # Make task document
-    summary = clean_dict(
-        taskdoc | atoms_db | additional_fields, remove_empties=remove_empties
-    )
+    summary = sort_dict(taskdoc | atoms_db | additional_fields)
 
     # Store the results
     if store:

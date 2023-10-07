@@ -143,7 +143,7 @@ def _prerelax(
         "nelm": 225,
         "nsw": 0,
     }
-    flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
+    flags = merge_dicts(defaults, calc_swaps, remove_nones=False)
     atoms.calc = Vasp(atoms, preset=preset, **flags)
     dyn = run_ase_opt(atoms, fmax=fmax, optimizer=BFGSLineSearch)
 
