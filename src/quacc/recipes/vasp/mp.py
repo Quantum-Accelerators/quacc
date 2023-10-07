@@ -48,7 +48,7 @@ def mp_prerelax_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     preset
-        Preset to use.
+        Preset to use from [quacc.calculators.presets.vasp][].
     bandgap
         Estimate for the bandgap in eV.
     calc_swaps
@@ -105,7 +105,7 @@ def mp_relax_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     preset
-        Preset to use.
+        Preset to use from [quacc.calculators.presets.vasp][].
     bandgap
         Estimate for the bandgap in eV.
     calc_swaps
@@ -163,7 +163,7 @@ def mp_static_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     preset
-        Preset to use.
+        Preset to use from [quacc.calculators.presets.vasp][].
     bandgap
         Estimate for the bandgap in eV.
     calc_swaps
