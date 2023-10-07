@@ -1,5 +1,9 @@
 # FAQ
 
+**Q: How do I pronounce `quacc`?**
+
+A: Like the sound a duck makes: "quack!"
+
 **Q: Which workflow management system should I use?**
 
 A: Good question! Check out the [Workflow Engines Overview Guide](../user/basics/wflow_overview.md) for a comparison of several common options to see which might be best for you.
