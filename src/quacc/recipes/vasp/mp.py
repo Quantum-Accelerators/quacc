@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 @job
 def mp_prerelax_job(
     atoms: Atoms | dict,
-    preset: str | None = "MPScanSet",
+    preset: str | None = "MPR2SCANSet",
     calc_swaps: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
@@ -38,7 +38,7 @@ def mp_prerelax_job(
         Calculator Defaults:
 
         ```python
-        {"ediffg": -0.05, "xc": "pbesol"}
+        {"ediffg": -0.05, "xc": "pbesol", "lwave": True, "lcharg": True}
         ```
 
     Parameters
@@ -59,7 +59,7 @@ def mp_prerelax_job(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
 
-    defaults = {"ediffg": -0.05, "xc": "pbesol"}
+    defaults = {"ediffg": -0.05, "xc": "pbesol", "lwave": True, "lcharg": True}
     return _base_job(
         atoms,
         preset=preset,
@@ -73,7 +73,7 @@ def mp_prerelax_job(
 @job
 def mp_relax_job(
     atoms: Atoms | dict,
-    preset: str | None = "MPScanSet",
+    preset: str | None = "MPR2SCANSet",
     calc_swaps: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
@@ -86,7 +86,7 @@ def mp_relax_job(
         Calculator Defaults:
 
         ```python
-        {}
+        {"lcharg": True, "lwave": True}
         ```
 
     Parameters
@@ -107,12 +107,75 @@ def mp_relax_job(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
 
+    defaults = {"lcharg": True, "lwave": True}
     return _base_job(
         atoms,
         preset=preset,
-        defaults={},
+        defaults=defaults,
         calc_swaps=calc_swaps,
         additional_fields={"name": "MP Relax"},
+        copy_files=copy_files,
+    )
+
+
+@job
+def mp_static_job(
+    atoms: Atoms | dict,
+    preset: str | None = "MPR2SCANSet",
+    calc_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
+) -> VaspSchema:
+    """
+    Function to run a static calculation with Materials Project settings. By default,
+    this uses an r2SCAN static step.
+
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {
+        "algo": "fast",
+        "nsw": 0,
+        "lcharg": True,
+        "lwave": False,
+        "lreal": False,
+        "ismear": -5,
+        }
+        ```
+
+    Parameters
+    ----------
+    atoms
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
+    preset
+        Preset to use.
+    calc_swaps
+        Dictionary of custom kwargs for the calculator.
+    copy_files
+        Files to copy to the runtime directory.
+
+    Returns
+    -------
+    VaspSchema
+        Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
+    """
+
+    defaults = {
+        "algo": "fast",
+        "nsw": 0,
+        "lcharg": True,
+        "lwave": False,
+        "lreal": False,
+        "ismear": -5,
+    }
+    return _base_job(
+        atoms,
+        preset=preset,
+        defaults=defaults,
+        calc_swaps=calc_swaps,
+        additional_fields={"name": "MP Static"},
         copy_files=copy_files,
     )
 
@@ -150,23 +213,46 @@ def mp_relax_flow(
     # Run the prerelax
     prerelax_results = mp_prerelax_job(atoms, **prerelax_job_kwargs)
 
-    # Update KSPACING arguments
+    # Update parameters based on bandgap
     bandgap = prerelax_results["output"].get("bandgap", 0)
-    if bandgap < 1e-4:
-        kspacing_swaps = {"kspacing": 0.22, "sigma": 0.2, "ismear": 2}
-    else:
-        rmin = 25.22 - 2.87 * bandgap
-        kspacing = 2 * np.pi * 1.0265 / (rmin - 1.0183)
-        kspacing_swaps = {"kspacing": min(kspacing, 0.44), "ismear": -5, "sigma": 0.05}
-
-    relax_job_kwargs["calc_swaps"] = kspacing_swaps | relax_job_kwargs.get(
+    bandgap_swaps = _get_bandgap_swaps(bandgap)
+    relax_job_kwargs["calc_swaps"] = bandgap_swaps | relax_job_kwargs.get(
         "calc_swaps", {}
     )
 
     # Run the relax
     relax_results = mp_relax_job(
-        prerelax_results, copy_files=["WAVECAR"], **relax_job_kwargs
+        prerelax_results, copy_files=["CHGCAR", "WAVECAR"], **relax_job_kwargs
     )
     relax_results["prerelax"] = prerelax_results
 
     return relax_results
+
+
+def _get_bandgap_swaps(bandgap: float) -> dict:
+    """
+    Get bandgap-related swaps.
+
+    Paramters
+    ---------
+    bandgap
+        The bandgap, in units of eV.
+
+    Returns
+    -------
+    dict
+        Dictionary of swaps.
+    """
+    if bandgap <= 1e-4:
+        kspacing_swaps = {"kspacing": 0.22}
+    else:
+        rmin = max(1.5, 25.22 - 2.87 * bandgap)
+        kspacing = 2 * np.pi * 1.0265 / (rmin - 1.0183)
+        kspacing_swaps = {"kspacing": kspacing if 0.22 < kspacing < 0.44 else 0.44}
+
+    if bandgap == 0:
+        smearing_swaps = {"ismear": 2, "sigma": 0.2}
+    else:
+        smearing_swaps = {"ismear": -5, "sigma": 0.05}
+
+    return kspacing_swaps | smearing_swaps

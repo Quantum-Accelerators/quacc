@@ -172,7 +172,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 
 - Standardized `relax_cell` to be `False` by default for all recipes.
-- Update the default `SIGMA` and `ISMEAR` in `MPScanSet` to match the new values to be used in Atomate2.
+- Update the default `SIGMA` and `ISMEAR` in `MPR2SCANSet` to match the new values to be used in Atomate2.
 
 ### Fixed
 
