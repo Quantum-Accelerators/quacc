@@ -8,7 +8,7 @@ In this section, we provide a few examples going through the entire process to d
 
 ## Pre-Requisites
 
-On the local and remote machines, make a clean Conda environment if you haven't already:
+Start with a clean Conda environment if you don't have one already:
 
 ```bash
 conda create --name quacc python=3.10
@@ -43,7 +43,7 @@ Then install the necessary dependencies:
 
 === "Parsl ⭐"
 
-    On both the local and remote machines:
+    On both the remote machine:
 
     ```bash
     pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
@@ -121,6 +121,8 @@ When deploying calculations for the first time, it's important to start simple, 
 
 === "Parsl ⭐"
 
+    **Starting Small**
+
     From an interactive resource like a Jupyter Notebook or IPython kernel on the remote machine:
 
     ```python
@@ -133,23 +135,22 @@ When deploying calculations for the first time, it's important to start simple, 
     account = "MyAccountName"
 
     config = Config(
-        max_idletime=300,
+        max_idletime=60,
+        strategy="htex_auto_scale",
         executors=[
             HighThroughputExecutor(
-                label="quacc_HTEX",
-                max_workers=1,
-                cores_per_worker=1e-6,
+                label="quacc_parsl",
                 provider=SlurmProvider(
                     account=account,
-                    nodes_per_block=1,
                     scheduler_options="#SBATCH -q debug -C cpu",
                     worker_init="source ~/.bashrc && conda activate quacc",
                     walltime="00:10:00",
+                    nodes_per_block=1,
+                    init_blocks=0,
+                    min_blocks=0,
+                    max_blocks=1,
                     launcher=SimpleLauncher(),
                     cmd_timeout=120,
-                    init_blocks=0,
-                    min_blocks=1,
-                    max_blocks=1,
                 ),
             )
         ],
@@ -160,11 +161,9 @@ When deploying calculations for the first time, it's important to start simple, 
 
     ```python
     from ase.build import bulk
-    from quacc import flow
     from quacc.recipes.emt.core import relax_job, static_job
 
 
-    @flow
     def workflow(atoms):
         relax_output = relax_job(atoms)
         return static_job(relax_output)
@@ -174,6 +173,90 @@ When deploying calculations for the first time, it's important to start simple, 
     future = workflow(atoms)
     result = future.result()
     print(result)
+    ```
+
+    **Scaling Up**
+
+    Now it's time to scale things up and show off Parsl's true power. Let's run a TBLite relaxation and frequency calculation for 162 molecules in the so-called "g2" collection of small, neutral molecules.
+
+    On the remote machine, make sure to run `pip install quacc[tblite]`. Then run the following example, adjusting the configuration as necessary for your machine.
+
+    First we initialize a Parsl configuration. For this example, we will request 2 Slurm jobs (blocks), each of which will run tasks over 2 nodes that will be dynamically scaled
+
+    ```python
+    import parsl
+    from parsl.config import Config
+    from parsl.executors import HighThroughputExecutor
+    from parsl.launchers import SimpleLauncher
+    from parsl.providers import SlurmProvider
+
+    account = "MyAccountName"
+
+    config = Config(
+        max_idletime=60,
+        strategy="htex_auto_scale",
+        executors=[
+            HighThroughputExecutor(
+                label="quacc_parsl",
+                provider=SlurmProvider(
+                    account=account,
+                    scheduler_options="#SBATCH -q debug -C cpu",
+                    worker_init="source ~/.bashrc && conda activate quacc",
+                    walltime="00:10:00",
+                    nodes_per_block=2,
+                    init_blocks=0,
+                    min_blocks=0,
+                    max_blocks=2,
+                    launcher=SimpleLauncher(),
+                    cmd_timeout=120,
+                ),
+            )
+        ],
+    )
+    parsl.load(config)
+    ```
+
+    Now we define the workflow:
+
+    ```python
+    from ase.build import bulk
+    from quacc.recipes.tblite.core import relax_job, freq_job
+
+
+    def workflow(atoms):
+        relax_output = relax_job(atoms)
+        return freq_job(relax_output)
+    ```
+
+    We now loop over all molecules in the "g2" collection and apply our workflow.
+
+    ```python
+    from ase.build import molecule
+    from ase.collections import g2
+
+    futures = []
+    for name in g2.names:
+        atoms = molecule(name)
+        future = workflow(atoms)  #  (1)!
+        futures.append(future)
+    ```
+
+    1. This is where the calculations are asynchronously launched.
+
+    We monitor the progress of our calculations and print a few summary values.
+
+    ```python
+    import time
+    from tqdm import tqdm
+    from concurrent.futures import as_completed
+
+    for future in tqdm(as_completed(futures), total=len(futures)):
+        task_doc = future.result()
+        print(
+            task_doc["formula_pretty"],
+            task_doc["results"]["gibbs_energy"],
+            task_doc["dir_name"],
+        )
     ```
 
 === "Jobflow"
@@ -222,7 +305,7 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
     username = "MyUserName"
     account = "MyAccountName"
     n_nodes = 1
-    n_cores_per_node = 48
+    n_cores_per_node = 128
 
     executor = ct.executor.HPCExecutor(
         username=username,
@@ -278,28 +361,29 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
     from parsl.providers import SlurmProvider
 
     account = "MyAccountName"
-    n_parallel_calcs = 1
+    max_slurm_jobs = 1
+    n_calcs_per_job = 2
     n_nodes_per_calc = 1
-    n_cores_per_node = 48
+    n_cores_per_node = 128
 
     config = Config(
-        max_idletime=300,
+        strategy="htex_auto_scale",
         executors=[
             HighThroughputExecutor(
-                label="quacc_HTEX",
-                max_workers=n_parallel_calcs,
+                label="quacc_parsl",
+                max_workers=n_calcs_per_job,
                 cores_per_worker=1e-6,
                 provider=SlurmProvider(
                     account=account,
-                    nodes_per_block=n_nodes_per_calc * n_parallel_calcs,
                     scheduler_options="#SBATCH -q debug -C cpu",
                     worker_init=f"source ~/.bashrc && conda activate quacc && module load vasp/6.4.1-cpu && export QUACC_VASP_PARALLEL_CMD='srun -N {n_nodes_per_calc} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'",
                     walltime="00:10:00",
+                    nodes_per_block=n_nodes_per_calc * n_calcs_per_job,
+                    init_blocks=0,
+                    min_blocks=0,
+                    max_blocks=max_slurm_jobs,
                     launcher=SimpleLauncher(),
                     cmd_timeout=120,
-                    init_blocks=0,
-                    min_blocks=1,
-                    max_blocks=1,
                 ),
             )
         ],
@@ -310,20 +394,17 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
 
     ```python
     from ase.build import bulk
-    from quacc import flow
     from quacc.recipes.vasp.core import relax_job, static_job
 
 
-    @flow
     def workflow(atoms):
         relax_output = relax_job(atoms, calc_swaps={"kpts": [3, 3, 3]})
         return static_job(relax_output, calc_swaps={"kpts": [3, 3, 3]})
 
 
-    atoms = bulk("C")
-    future = workflow(atoms)
-    result = future.result()
-    print(result)
+    future1 = workflow(bulk("C"))
+    future2 = workflow(bulk("Cu"))
+    print(future1.result(), future2.result())
     ```
 
 === "Jobflow"
@@ -341,7 +422,7 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
     qos: debug
     pre_rocket: |
     module load vasp/6.4.1-cpu
-    export QUACC_VASP_PARALLEL_CMD="srun -N 1 --ntasks-per-node=48 --cpu_bind=cores"
+    export QUACC_VASP_PARALLEL_CMD="srun -N 1 --ntasks-per-node=128 --cpu_bind=cores"
     ```
 
     From the login node of the remote machine, then run the following:
