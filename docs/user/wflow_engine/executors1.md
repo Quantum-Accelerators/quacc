@@ -163,7 +163,7 @@ In the previous examples, we have been running calculations on our local machine
     from parsl.launchers import SimpleLauncher
     from parsl.providers import SlurmProvider
 
-    max_slurm_jobs = 1 # Maximum number of Slurm jobs to allocate
+    max_slurm_jobs = 1 # Maximum number of Slurm jobs (blocks) to allocate
     n_calcs_per_job = 4  # Number of calculations to run in parallel (per block)
     n_nodes_per_calc = 2  # Number of nodes to reserve for each calculation
 
@@ -173,7 +173,7 @@ In the previous examples, we have been running calculations on our local machine
         executors=[
             HighThroughputExecutor(
                 label="quacc_parsl",  # (3)!
-                max_workers=n_parallel_calcs,  # (4)!
+                max_workers=n_calcs_per_job,  # (4)!
                 cores_per_worker=1e-6,  # (5)!
                 provider=SlurmProvider(
                     account="MyAccountName",
@@ -200,7 +200,7 @@ In the previous examples, we have been running calculations on our local machine
 
     3. This is just an arbitrary label for file I/O.
 
-    4. ???
+    4. Sets the maximum number of workers per block, which should generally be the number of tasks per block.
 
     5. This prevents the `HighThroughputExecutor` from reducing the number of workers if you request more workers than cores. It is [recommended](https://parsl.readthedocs.io/en/stable/userguide/mpi_apps.html#configuring-the-executor) for codes that run via MPI.
 
