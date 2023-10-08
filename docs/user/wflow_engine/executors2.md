@@ -223,6 +223,7 @@ When deploying calculations for the first time, it's important to start simple, 
     from quacc.recipes.tblite.core import relax_job, freq_job
     from quacc import job
 
+
     def workflow(atoms):
         relax_output = relax_job(atoms)
         return freq_job(relax_output)
@@ -250,7 +251,11 @@ When deploying calculations for the first time, it's important to start simple, 
 
     for future in tqdm(as_completed(futures), total=len(futures)):
         task_doc = future.result()
-        print(task_doc["formula_pretty"], task_doc["results"]["gibbs_energy"], task_doc["dir_name"])
+        print(
+            task_doc["formula_pretty"],
+            task_doc["results"]["gibbs_energy"],
+            task_doc["dir_name"],
+        )
     ```
 
 === "Jobflow"

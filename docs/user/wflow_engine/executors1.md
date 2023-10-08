@@ -163,7 +163,7 @@ In the previous examples, we have been running calculations on our local machine
     from parsl.launchers import SimpleLauncher
     from parsl.providers import SlurmProvider
 
-    max_slurm_jobs = 1 # Maximum number of Slurm jobs (blocks) to allocate
+    max_slurm_jobs = 1  # Maximum number of Slurm jobs (blocks) to allocate
     n_calcs_per_job = 4  # Number of calculations to run in parallel (per block)
     n_nodes_per_calc = 2  # Number of nodes to reserve for each calculation
 
