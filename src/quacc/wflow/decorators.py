@@ -183,12 +183,13 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
     Decorator for workflows, which consist of at least one compute job. This is
     a `#!Python @flow` decorator.
 
-    | Quacc  | Covalent     | Parsl     | Prefect | Redun  | Jobflow   |
-    | ------ | ------------ | --------- | ------- | ------ | --------- |
-    | `flow` | `ct.lattice` | No effect | `flow`  | `task` | No effect |
+    | Quacc  | Covalent     | Parsl      | Prefect | Redun  | Jobflow   |
+    | ------ | ------------ | ---------  | ------- | ------ | --------- |
+    | `flow` | `ct.lattice` | `join_app` | `flow`  | `task` | No effect |
 
     All `#!Python @flow`-decorated functions are transformed into their corresponding
-    decorator.
+    decorator. For Parsl, we chose to use a `join_app` to allow for the optional use of
+    `.result()` inside a `@flow` without blocking othher `@flow` instances.
 
     ```python
     from quacc import flow, job
@@ -231,6 +232,7 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
         def add(a, b):
             return a + b
 
+        @join_app
         def workflow(a, b, c):
             return add(add(a, b), c)
 
