@@ -223,7 +223,7 @@ When deploying calculations for the first time, it's important to start simple, 
 
     def workflow(atoms):
         relax_output = relax_job(atoms)
-        return freq_job(relax_output, energy=relax_output.result()["results"]["energy"])
+        return freq_job(relax_output)
     ```
 
     We now loop over all molecules in the "g2" collection and apply our workflow.
