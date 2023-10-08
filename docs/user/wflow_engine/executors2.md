@@ -135,6 +135,7 @@ When deploying calculations for the first time, it's important to start simple, 
     account = "MyAccountName"
 
     config = Config(
+        max_idletime=60,
         strategy="htex_auto_scale",
         executors=[
             HighThroughputExecutor(
@@ -149,6 +150,7 @@ When deploying calculations for the first time, it's important to start simple, 
                     min_blocks=0,
                     max_blocks=1,
                     launcher=SimpleLauncher(),
+                    cmd_timeout=120,
                 ),
             )
         ],
@@ -303,7 +305,7 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
     username = "MyUserName"
     account = "MyAccountName"
     n_nodes = 1
-    n_cores_per_node = 48
+    n_cores_per_node = 128
 
     executor = ct.executor.HPCExecutor(
         username=username,
@@ -360,9 +362,9 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
 
     account = "MyAccountName"
     max_slurm_jobs = 1
-    n_calcs_per_job = 1
+    n_calcs_per_job = 2
     n_nodes_per_calc = 1
-    n_cores_per_node = 48
+    n_cores_per_node = 128
 
     config = Config(
         strategy="htex_auto_scale",
@@ -400,10 +402,9 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
         return static_job(relax_output, calc_swaps={"kpts": [3, 3, 3]})
 
 
-    atoms = bulk("C")
-    future = workflow(atoms)
-    result = future.result()
-    print(result)
+    future1 = workflow(bulk("C"))
+    future2 = workflow(bulk("Cu"))
+    print(future1.result(), future2.result())
     ```
 
 === "Jobflow"
@@ -421,7 +422,7 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
     qos: debug
     pre_rocket: |
     module load vasp/6.4.1-cpu
-    export QUACC_VASP_PARALLEL_CMD="srun -N 1 --ntasks-per-node=48 --cpu_bind=cores"
+    export QUACC_VASP_PARALLEL_CMD="srun -N 1 --ntasks-per-node=128 --cpu_bind=cores"
     ```
 
     From the login node of the remote machine, then run the following:
