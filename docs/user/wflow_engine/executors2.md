@@ -159,11 +159,9 @@ When deploying calculations for the first time, it's important to start simple, 
 
     ```python
     from ase.build import bulk
-    from quacc import flow
     from quacc.recipes.emt.core import relax_job, static_job
 
 
-    @flow
     def workflow(atoms):
         relax_output = relax_job(atoms)
         return static_job(relax_output)
@@ -179,7 +177,7 @@ When deploying calculations for the first time, it's important to start simple, 
 
     Now it's time to scale things up and show off Parsl's true power. Let's run a TBLite relaxation and frequency calculation for 162 molecules in the so-called "g2" collection of small, neutral molecules.
 
-    On the remote machine, make sure to run `pip install quacc[tblite]`. Then run the following example.
+    On the remote machine, make sure to run `pip install quacc[tblite]`. Then run the following example, adjusting the configuration as necessary for your machine.
 
     First we initialize a Parsl configuration. For this example, we will request 2 Slurm jobs (blocks), each of which will run tasks over 2 nodes that will be dynamically scaled
 
@@ -221,13 +219,11 @@ When deploying calculations for the first time, it's important to start simple, 
     ```python
     from ase.build import bulk
     from quacc.recipes.tblite.core import relax_job, freq_job
-    from quacc import flow
 
 
-    @flow
     def workflow(atoms):
         relax_output = relax_job(atoms)
-        return freq_job(relax_output)
+        return freq_job(relax_output, energy=relax_output.result()["results"]["energy"])
     ```
 
     We now loop over all molecules in the "g2" collection and apply our workflow.
@@ -239,9 +235,11 @@ When deploying calculations for the first time, it's important to start simple, 
     futures = []
     for name in g2.names:
         atoms = molecule(name)
-        future = workflow(atoms)
+        future = workflow(atoms)  #  (1)!
         futures.append(future)
     ```
+
+    1. This is where the calculations are asynchronously launched.
 
     We monitor the progress of our calculations and print a few summary values.
 
@@ -394,11 +392,9 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
 
     ```python
     from ase.build import bulk
-    from quacc import flow
     from quacc.recipes.vasp.core import relax_job, static_job
 
 
-    @flow
     def workflow(atoms):
         relax_output = relax_job(atoms, calc_swaps={"kpts": [3, 3, 3]})
         return static_job(relax_output, calc_swaps={"kpts": [3, 3, 3]})
