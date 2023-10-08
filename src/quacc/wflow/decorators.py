@@ -189,7 +189,7 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
 
     All `#!Python @flow`-decorated functions are transformed into their corresponding
     decorator. For Parsl, we chose to use a `join_app` to allow for the optional use of
-    `.result()` inside a `@flow` without blocking othher `@flow` instances.
+    `.result()` inside a `@flow` without blocking other `@flow` instances.
 
     ```python
     from quacc import flow, job

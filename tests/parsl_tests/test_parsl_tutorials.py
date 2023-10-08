@@ -67,9 +67,11 @@ def test_tutorial2a(tmpdir):
 
     from ase.build import bulk
 
+    from quacc import flow
     from quacc.recipes.emt.core import relax_job, static_job
 
     # Define the workflow
+    @flow
     def workflow(atoms):
         # Define Job 1
         future1 = relax_job(atoms)  # (1)!
@@ -93,9 +95,11 @@ def test_tutorial2b(tmpdir):
 
     from ase.build import bulk, molecule
 
+    from quacc import flow
     from quacc.recipes.emt.core import relax_job
 
     # Define workflow
+    @flow
     def workflow(atoms1, atoms2):
         # Define two independent relaxation jobs
         result1 = relax_job(atoms1)
@@ -124,10 +128,12 @@ def test_tutorial2c(tmpdir):
 
     from ase.build import bulk
 
+    from quacc import flow
     from quacc.recipes.emt.core import relax_job
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
     # Define the workflow
+    @flow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
         return bulk_to_slabs_flow(relaxed_bulk, run_static=False)  # (1)!
@@ -148,7 +154,7 @@ def test_tutorial2c(tmpdir):
 def test_comparison1(tmpdir):
     tmpdir.chdir()
 
-    from quacc import job
+    from quacc import flow, job
 
     @job  #  (1)!
     def add(a, b):
@@ -158,6 +164,7 @@ def test_comparison1(tmpdir):
     def mult(a, b):
         return a * b
 
+    @flow
     def workflow(a, b, c):  #  (2)!
         return mult(add(a, b), c)
 

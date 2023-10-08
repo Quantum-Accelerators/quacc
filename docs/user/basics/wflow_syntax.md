@@ -28,10 +28,10 @@ To help enable interoperability between workflow engines, quacc offers a unified
 
     <center>
 
-    | Quacc              | Parsl                 |
-    | ------------------ | --------------------- |
+    | Quacc              | Parsl                   |
+    | ------------------ | ----------------------- |
     | `#!Python @job`     | `#!Python @python_app` |
-    | `#!Python @flow`    | No effect             |
+    | `#!Python @flow`    | `#!Python @join_app`   |
     | `#!Python @subflow` | `#!Python @join_app`   |
 
     </center>
@@ -155,10 +155,10 @@ graph LR
         1. It is necessary to instantiate a Parsl configuration before running Parsl workflows. This command loads the default (local) configuration and only needs to be done once.
 
     ```python
-    from quacc import job
+    from quacc import flow, job
 
 
-    @job  #  (2)!
+    @job  #  (1)!
     def add(a, b):
         return a + b
 
@@ -167,8 +167,8 @@ graph LR
     def mult(a, b):
         return a * b
 
-
-    def workflow(a, b, c):  #  (2)!
+    @flow  #  (2)!
+    def workflow(a, b, c):
         return mult(add(a, b), c)
 
 
@@ -178,7 +178,7 @@ graph LR
 
     1. The `#!Python @job` decorator will be transformed into `#!Python @python_app`.
 
-    2. The `#!Python @flow` decorator doesn't actually do anything when using Parsl, so we chose to not include it here for brevity.
+    2. The `#!Python @flow` decorator allows for the use of `.result()` inside a `@flow` without blocking other `@flow` instances.
 
 === "Prefect"
 

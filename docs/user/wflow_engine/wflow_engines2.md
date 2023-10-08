@@ -79,10 +79,13 @@ graph LR
 
     ```python
     from ase.build import bulk
+
+    from quacc import flow
     from quacc.recipes.emt.core import relax_job, static_job
 
 
     # Define the workflow
+    @flow
     def workflow(atoms):
         # Define Job 1
         future1 = relax_job(atoms)  # (1)!
@@ -294,6 +297,7 @@ graph LR
 
 
     # Define workflow
+    @flow
     def workflow(atoms1, atoms2):
         # Define two independent relaxation jobs
         result1 = relax_job(atoms1)
@@ -455,6 +459,7 @@ graph LR
 
 
     # Define the workflow
+    @flow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
         relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, run_static=False)  # (1)!
