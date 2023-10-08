@@ -221,9 +221,10 @@ When deploying calculations for the first time, it's important to start simple, 
     ```python
     from ase.build import bulk
     from quacc.recipes.tblite.core import relax_job, freq_job
-    from quacc import job
+    from quacc import flow
 
 
+    @flow
     def workflow(atoms):
         relax_output = relax_job(atoms)
         return freq_job(relax_output)
