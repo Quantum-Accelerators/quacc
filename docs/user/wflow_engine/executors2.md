@@ -197,7 +197,7 @@ When deploying calculations for the first time, it's important to start simple, 
         strategy="htex_auto_scale",
         executors=[
             HighThroughputExecutor(
-                label="quacc_HTEX",
+                label="quacc_parsl",
                 provider=SlurmProvider(
                     account=account,
                     scheduler_options="#SBATCH -q debug -C cpu",
@@ -364,7 +364,7 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
         strategy="htex_auto_scale",
         executors=[
             HighThroughputExecutor(
-                label="quacc_HTEX",
+                label="quacc_parsl",
                 max_workers=n_parallel_calcs,
                 cores_per_worker=1e-6,
                 provider=SlurmProvider(
