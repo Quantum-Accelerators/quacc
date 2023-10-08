@@ -262,6 +262,10 @@ def _get_bandgap_swaps(bandgap: float) -> dict:
     else:
         rmin = max(1.5, 25.22 - 2.87 * bandgap)
         kspacing = 2 * np.pi * 1.0265 / (rmin - 1.0183)
-        smearing_swaps = {"kspacing": kspacing if 0.22 < kspacing < 0.44 else 0.44, "ismear": -5, "sigma": 0.05}
+        smearing_swaps = {
+            "kspacing": kspacing if 0.22 < kspacing < 0.44 else 0.44,
+            "ismear": -5,
+            "sigma": 0.05,
+        }
 
     return smearing_swaps
