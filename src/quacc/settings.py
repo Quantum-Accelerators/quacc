@@ -15,7 +15,13 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from quacc.calculators.presets import vasp as vasp_defaults
 
 installed_engine = "local"
-for wflow_engine in ["parsl", "prefect", "redun", "jobflow", "covalent"]:
+for wflow_engine in [
+    "parsl",
+    "covalent",
+    "prefect",
+    "redun",
+    "jobflow",
+]:
     try:
         import_module(wflow_engine)
         installed_engine = wflow_engine
