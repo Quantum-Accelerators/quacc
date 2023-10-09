@@ -96,7 +96,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     ```yaml title="jobflow.yaml"
     JOB_STORE:
-    docs_store:
+      docs_store:
         type: MongoStore
         host: <host name>
         port: 27017
@@ -112,7 +112,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
         ```yaml title="jobflow.yaml"
         JOB_STORE:
-        docs_store:
+          docs_store:
             type: MongoStore
             host: <URI>
             port: 27017
