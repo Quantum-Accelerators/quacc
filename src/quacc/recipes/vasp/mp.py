@@ -3,6 +3,15 @@ Materials Project-compatible recipes
 
 This set of recipes is meant to be compatible with the Materials Project
 Reference: https://doi.org/10.1103/PhysRevMaterials.6.013801
+
+!!! Note
+
+    The one true source of Materials Project workflows is
+    [atomate2](https://github.com/materialsproject/atomate2).
+    If you need an MP-compatible workflow, we strongly encourage you to
+    use atomate2 to ensure that all of your settings are fully compatible
+    and up-to-date. This module is a best effort to be used at your own
+    discretion.
 """
 from __future__ import annotations
 
