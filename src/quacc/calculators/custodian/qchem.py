@@ -97,4 +97,4 @@ def run_custodian(
 
 
 if __name__ == "__main__":
-    run_custodian(qchem_cores=sys.argv[1]) if len(sys.argv) > 1 else run_custodian()
+    run_custodian(qchem_cores=int(sys.argv[1])) if len(sys.argv) > 1 else run_custodian()
