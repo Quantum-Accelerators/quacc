@@ -305,6 +305,9 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
         from prefect import flow as prefect_flow
 
         decorated = prefect_flow(_func, **kwargs)
+    elif wflow_engine == "jobflow":
+        msg = "The @flow decorator cannot be used with Jobflow."
+        raise ValueError(msg)
     else:
         decorated = _func
 
@@ -498,6 +501,9 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
         from prefect import flow as prefect_flow
 
         decorated = prefect_flow(_func, **kwargs)
+    elif wflow_engine == "jobflow":
+        msg = "The @subflow decorator cannot be used with Jobflow."
+        raise ValueError(msg)
     else:
         decorated = _func
 
