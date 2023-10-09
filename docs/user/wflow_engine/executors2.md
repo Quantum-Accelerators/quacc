@@ -246,7 +246,6 @@ When deploying calculations for the first time, it's important to start simple, 
     We monitor the progress of our calculations and print a few summary values.
 
     ```python
-    import time
     from tqdm import tqdm
     from concurrent.futures import as_completed
 
