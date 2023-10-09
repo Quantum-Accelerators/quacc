@@ -1,7 +1,7 @@
 import pytest
 from maggma.stores import MemoryStore
 
-from quacc import SETTINGS, flow, job, subflow
+from quacc import SETTINGS, job
 
 jf = pytest.importorskip("jobflow")
 
