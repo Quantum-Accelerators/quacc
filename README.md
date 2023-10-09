@@ -27,16 +27,15 @@
   📖 <a href="https://quantum-accelerators.github.io/quacc/"><b><i>Learn More Here!</i></b></a> 📖
 </p>
 
-Includes the following sections:
+Or skip straight to one of the following sections:
 
-- 🏎️ [Test Drive](https://quantum-accelerators.github.io/quacc/start/demo.html)
 - 🔧 [Installation Guide](https://quantum-accelerators.github.io/quacc/install/install.html)
 - 🧠 [User Guide](https://quantum-accelerators.github.io/quacc/user/recipes/recipes_intro.html)
 - 🤝 [Developer Guide](https://quantum-accelerators.github.io/quacc/dev/contributing.html)
 
 ## Demonstration ✨
 
-🚀 Demo from the Quick Start guide, using [Covalent](https://github.com/AgnostiqHQ/covalent) as one of the [several supported workflow managers](https://quantum-accelerators.github.io/quacc/user/basics/wflow_overview.html).
+🚀 Demo `quacc` workflow using [Covalent](https://github.com/AgnostiqHQ/covalent) as one of the [several supported workflow managers](https://quantum-accelerators.github.io/quacc/user/basics/wflow_overview.html).
 
 ![](https://github.com/Quantum-Accelerators/quacc/blob/main/docs/images/start/start.gif)
 
