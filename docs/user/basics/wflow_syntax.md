@@ -73,10 +73,14 @@ To help enable interoperability between workflow engines, quacc offers a unified
     | Quacc              | Jobflow        |
     | ------------------ | -------------- |
     | `#!Python @job`     | `#!Python @job` |
-    | `#!Python @flow`    | No effect      |
-    | `#!Python @subflow` | No effect      |
+    | `#!Python @flow`    | N/A      |
+    | `#!Python @subflow` | N/A      |
 
     </center>
+
+!!! Warning
+
+    Due to the difference in how Jobflow handles workflows compared to other supported workflow engines, any quacc recipes that have been pre-defined with a `#!Python @flow` or `@subflow` decorator (i.e. have `_flow` in the name) cannot be run directly with Jobflow.
 
 The quacc descriptors are drop-in replacements for the specified workflow engine analogue, which we will use for the remainder of the tutorials. Based on the value for the `WORKFLOW_ENGINE` global variable in your [quacc settings](../settings/settings.md), the appropriate decorator will be automatically selected. If the `WORKFLOW_ENGINE` setting is set to `"local"`, the decorators will have no effect on the underlying function.
 
