@@ -158,7 +158,7 @@ graph LR
     from quacc import job
 
 
-    @job  #  (2)!
+    @job  #  (1)!
     def add(a, b):
         return a + b
 

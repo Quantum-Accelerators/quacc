@@ -142,13 +142,19 @@ In the previous examples, we have been running calculations on our local machine
 
     Out-of-the-box, Parsl will run on your local machine. However, in practice you will probably want to run your Parsl workflows on HPC machines.
 
+    !!! Note
+
+        Unlike most other workflow engines, Parsl is built for the [pilot job model](https://en.wikipedia.org/wiki/Pilot_job) where the allocated nodes continually pull in new tasks to run. This makes it possible to avoid submitting a large number of small jobs to the scheduler, which can be inefficient from a queuing perspective.
+
     **Configuring Executors**
 
     !!! Tip
 
-        To configure Parsl for the high-performance computing environment of your choice, refer to the executor [Configuration](https://parsl.readthedocs.io/en/stable/userguide/configuring.html) page in the Parsl documentation.
+        To configure Parsl for the high-performance computing environment of your choice, refer to the executor [Configuration page in the Parsl documentation](https://parsl.readthedocs.io/en/stable/userguide/configuring.html) for many examples.
 
-    An example [`HighThroughputExecutor`](https://parsl.readthedocs.io/en/stable/stubs/parsl.executors.HighThroughputExecutor.html#parsl.executors.HighThroughputExecutor) that will orchestra jobs from the login node of NERSC's Perlmutter machine is shown here for reference. This example will create a single Slurm job that will run one job at a time on a single node and is good for testing out some of the examples above.
+    Let's imagine a scenario where we want to run a series of compute-intensive DFT calculations. Each DFT calculation requires 2 CPU nodes (each node having 48 cores). We want to run DFT calculations on 4 unique structures, all in parallel. We also want this to be done in a single Slurm allocation, meaning that this allocation must request 8 total nodes.
+
+    An example [`HighThroughputExecutor`](https://parsl.readthedocs.io/en/stable/stubs/parsl.executors.HighThroughputExecutor.html#parsl.executors.HighThroughputExecutor) that will orchestrate jobs from the login node of NERSC's Perlmutter machine to carry out the above example is as follows:
 
     ```python
     import parsl
@@ -157,20 +163,29 @@ In the previous examples, we have been running calculations on our local machine
     from parsl.launchers import SimpleLauncher
     from parsl.providers import SlurmProvider
 
+    max_slurm_jobs = 1  # Maximum number of Slurm jobs (blocks) to allocate
+    n_calcs_per_job = 4  # Number of calculations to run in parallel (per block)
+    n_nodes_per_calc = 2  # Number of nodes to reserve for each calculation
+
     config = Config(
-        max_idletime=120,  # (1)!
+        max_idletime=60,  # (1)!
+        strategy="htex_auto_scale",  # (2)!
         executors=[
             HighThroughputExecutor(
-                label="quacc_HTEX",  # (2)!
-                max_workers=1,  # (3)!
-                provider=SlurmProvider(  # (4)!
+                label="quacc_parsl",  # (3)!
+                max_workers=n_calcs_per_job,  # (4)!
+                cores_per_worker=1e-6,  # (5)!
+                provider=SlurmProvider(
                     account="MyAccountName",
-                    nodes_per_block=1,  # (5)!
                     scheduler_options="#SBATCH -q debug -C cpu",  # (6)!
-                    worker_init="source ~/.bashrc && conda activate quacc",
-                    walltime="00:10:00",
-                    cmd_timeout=120,  # (7)!
-                    launcher=SimpleLauncher(),  # (8)!
+                    worker_init=f"source ~/.bashrc && conda activate quacc",  # (7)!
+                    walltime="00:10:00",  # (8)!
+                    nodes_per_block=n_nodes_per_calc * n_calcs_per_job,  # (9)!
+                    init_blocks=0,  # (10)!
+                    min_blocks=0,  # (11)!
+                    max_blocks=max_slurm_jobs,  # (12)!
+                    launcher=SimpleLauncher(),  # (13)!
+                    cmd_timeout=120,  # (14)!
                 ),
             )
         ],
@@ -179,72 +194,33 @@ In the previous examples, we have been running calculations on our local machine
     parsl.load(config)
     ```
 
-    1. The maximum amount of time (in seconds) to allow the executor to be idle before the Slurm job is cancelled.
+    1. The maximum amount of time (in seconds) to allow the executor to be idle before blocks (i.e. Slurm jobs) can potentially be shut down. Default is 120.
 
-    2. A label for the executor instance, used during file I/O.
+    2. Unique to the `HighThroughputExecutor`, this `strategy` will automatically scale the number of active blocks (i.e. Slurm jobs) up or down based on the number of tasks remaining. We set `max_blocks=1` here, so it can't scale up beyond 1 Slurm job, but it can scale down from 1 to 0 since `min_blocks=0`.
 
-    3. Maximum number of workers to allow on a node.
+    3. This is just an arbitrary label for file I/O.
 
-    4. The provider to use for job submission. This can be changed to `LocalProvider()` if you wish to have the Parsl process run on a login node rather than a compute node.
+    4. Sets the maximum number of workers per block, which should generally be the number of tasks per block.
 
-    5. The number of nodes to request per job. By default, all cores on the node will be requested (setting `cores_per_node` will override this).
+    5. This prevents the `HighThroughputExecutor` from reducing the number of workers if you request more workers than cores. It is [recommended](https://parsl.readthedocs.io/en/stable/userguide/mpi_apps.html#configuring-the-executor) for codes that run via MPI.
 
     6. Any additional `#SBATCH` options not captured elsewhere can be included here.
 
-    7. The maximum time to wait (in seconds) for the job scheduler info to be retrieved/sent.
+    7. Any commands to run before carrying out any of the Parsl tasks. This is useful for setting environment variables, activating a given Conda environment, and loading modules.
 
-    8. The type of Launcher to use. Note that `SimpleLauncher()` must be used instead of the commonly used `SrunLauncher()` to allow quacc subprocesses to launch their own `srun` commands.
+    8. The walltime for each block (i.e. Slurm job).
 
-    Unlike some other workflow engines, Parsl is built for the pilot job model where the allocated nodes continually pull in new workers (until the walltime is reached or the parent Python process is killed). This makes it possible to avoid submitting a large number of small jobs to the scheduler, which can be inefficient. As a result, don't be surprised if the Slurm job continues to run even when your submitted task has completed, particularly if you are using a Jupyter Notebook or IPython kernel.
+    9. The number of nodes that each block (i.e. Slurm job) should allocate.
 
-    **Scaling Up**
+    10. Sets the number of blocks (e.g. Slurm jobs) to provision during initialization of the workflow. We set this to a value of 0 so that there isn't a running Slurm job before any tasks have been submitted to Parsl.
 
-    Now let's consider a more realistic scenario. Suppose we want to have a single Slurm job that reserves 8 nodes, and each job in the workflow will run on 2 nodes (let's assume each node has 48 cores total, so that's a total of 96 cores for each calculation). Parsl will act as an orchestrator in the background of one of the compute nodes (rather than on the login node). Our config will now look like the following.
+    11. Sets the minimum number of blocks (e.g. Slurm jobs) to maintain during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 0 so that Slurm jobs aren't running when there are no remaining tasks.
 
-    ```python
-    import parsl
-    from parsl.config import Config
-    from parsl.executors import HighThroughputExecutor
-    from parsl.launchers import SimpleLauncher
-    from parsl.providers import SlurmProvider
+    12. Sets the maximum number of active blocks (e.g. Slurm jobs) during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 1 here, but it can be increased to have multiple Slurm jobs running simultaneously. Raising `max_blocks` to a larger value will allow the "htex_auto_scale" strategy to upscale resources as needed.
 
-    n_parallel_calcs = 4  # Number of quacc calculations to run in parallel
-    n_nodes_per_calc = 2  # Number of nodes to reserve for each calculation
-    n_cores_per_node = 48  # Number of CPU cores per node
+    13. The type of Launcher to use. `SimpleLauncher()` must be used instead of the commonly used `SrunLauncher()` to allow quacc subprocesses to launch their own `srun` commands.
 
-    config = Config(
-        max_idletime=300,
-        executors=[
-            HighThroughputExecutor(
-                label="quacc_HTEX",
-                max_workers=n_parallel_calcs,
-                cores_per_worker=1e-6,  # (1)!
-                provider=SlurmProvider(
-                    account="MyAccountName",
-                    nodes_per_block=n_nodes_per_calc * n_parallel_calcs,
-                    scheduler_options="#SBATCH -q debug -C cpu",
-                    worker_init=f"source ~/.bashrc && conda activate quacc",
-                    walltime="00:10:00",
-                    launcher=SimpleLauncher(),
-                    cmd_timeout=120,
-                    init_blocks=0,  # (2)!
-                    min_blocks=1,  # (3)!
-                    max_blocks=1,  # (4)!
-                ),
-            )
-        ],
-    )
-
-    parsl.load(config)
-    ```
-
-    1. We set this to a small value so that the pilot job (e.g. the Parsl orchestrator) is allowed to be oversubscribed with scheduling processes.
-
-    2. Sets the number of blocks (e.g. Slurm jobs) to provision during initialization of the workflow. We set this to 0 so that we only begin queuing once a workflow is submitted.
-
-    3. Sets the minimum number of blocks (e.g. Slurm jobs) to maintain during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 1 so that the pilot job is always running.
-
-    4. Sets the maximum number of active blocks (e.g. Slurm jobs) during [elastic resource management](https://parsl.readthedocs.io/en/stable/userguide/execution.html#elasticity). We set this to 1 here for demonstration purposes, but it can be increased to have multiple Slurm jobpacks running simultaneously.
+    14. The maximum time to wait (in seconds) for the job scheduler info to be retrieved/sent.
 
     **Practical Deployment**
 
