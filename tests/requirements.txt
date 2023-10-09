@@ -1,6 +1,6 @@
 https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
 cclib==1.8
-custodian==2023.7.22
+custodian==2023.10.9
 emmet-core==0.69.11
 maggma==0.57.0
 monty==2023.9.25
