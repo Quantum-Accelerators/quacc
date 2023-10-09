@@ -252,7 +252,7 @@ def mp_relax_flow(
     return relax_results
 
 
-def _get_bandgap_swaps(bandgap: float) -> dict:
+def _get_bandgap_swaps(bandgap: float | None = None) -> dict:
     """
     Get bandgap-related swaps.
 
@@ -266,14 +266,17 @@ def _get_bandgap_swaps(bandgap: float) -> dict:
     dict
         Dictionary of swaps.
     """
+
     if bandgap <= 1e-4:
         smearing_swaps = {"kspacing": 0.22, "ismear": 2, "sigma": 0.2}
+    elif not bandgap:
+        smearing_swaps = {"kspacing": 0.22, "ismear": 0, "sigma": 0.05}
     else:
         rmin = max(1.5, 25.22 - 2.87 * bandgap)
         kspacing = 2 * np.pi * 1.0265 / (rmin - 1.0183)
         smearing_swaps = {
-            "kspacing": kspacing if 0.22 < kspacing < 0.44 else 0.44,
-            "ismear": -5,
+            "kspacing": min(kspacing, 0.44),
+            "ismear": 0,
             "sigma": 0.05,
         }
 
