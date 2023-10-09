@@ -177,3 +177,8 @@ def test_comparison4(tmpdir):
     flow = jf.Flow([job1, job2, job3])
 
     jf.run_locally(flow, ensure_success=True)
+
+
+def test_bad(tmpdir):
+    with pytest.raises(ValueError):
+        from quacc.recipes.emt.slabs import bulk_to_slabs_flow

@@ -49,18 +49,3 @@ def test_jobflow_decorators_args(tmpdir):
     assert hasattr(mult, "original")
     assert isinstance(add(1, 2), jf.Job)
     assert isinstance(mult(1, 2), jf.Job)
-
-
-def test_bad_decorators(tmpdir):
-    tmpdir.chdir()
-
-    with pytest.raises(ValueError):
-
-        @flow
-        def test():
-            return "done"
-
-    with pytest.raises(ValueError):
-
-        def test2():
-            return "done"
