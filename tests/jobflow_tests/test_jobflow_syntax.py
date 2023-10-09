@@ -55,14 +55,12 @@ def test_bad_decorators(tmpdir):
     tmpdir.chdir()
 
     with pytest.raises(ValueError):
-        from quacc import flow
 
         @flow
         def test():
-            return
+            return "done"
 
     with pytest.raises(ValueError):
-        from quacc import subflow
 
-        def test():
-            return
+        def test2():
+            return "done"
