@@ -8,20 +8,6 @@ Here, we provide code snippets for several decorator-based workflow engines. For
 
 To help enable interoperability between workflow engines, quacc offers a unified set of decorators: [`#!Python @job`](https://quantum-accelerators.github.io/quacc/reference/quacc/utils/wflows.html#quacc.wflow.job), [`#!Python @flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/utils/wflows.html#quacc.wflow.flow), and [`#!Python @subflow`](https://quantum-accelerators.github.io/quacc/reference/quacc/utils/wflows.html#quacc.wflow.subflow).
 
-=== "Covalent ⭐"
-
-    Take a moment to learn about the main [Covalent Concepts](https://docs.covalent.xyz/docs/user-documentation/concepts/concepts-index), namely the [`#!Python @ct.electron`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#electron) and [`#!Python @ct.lattice`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#lattice) decorators, which describe individual compute tasks and workflows, respectively.
-
-    <center>
-
-    | Quacc              | Covalent                           |
-    | ------------------ | ---------------------------------- |
-    | `#!Python @job`     | `#!Python @ct.electron`             |
-    | `#!Python @flow`    | `#!Python @ct.lattice`              |
-    | `#!Python @subflow` | `#!Python @ct.electron`<br>`#!Python @ct.lattice`</br> |
-
-    </center>
-
 === "Parsl ⭐"
 
     Take a moment to read the Parsl documentation's ["Quick Start"](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a [`#!Python python_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html#Python-Apps) and [`#!Python join_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html?highlight=join_app#Dynamic-workflows-with-apps-that-generate-other-apps), which describe individual compute tasks and dynamic job tasks, respectively.
@@ -33,6 +19,20 @@ To help enable interoperability between workflow engines, quacc offers a unified
     | `#!Python @job`     | `#!Python @python_app` |
     | `#!Python @flow`    | No effect             |
     | `#!Python @subflow` | `#!Python @join_app`   |
+
+    </center>
+
+=== "Covalent ⭐"
+
+    Take a moment to learn about the main [Covalent Concepts](https://docs.covalent.xyz/docs/user-documentation/concepts/concepts-index), namely the [`#!Python @ct.electron`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#electron) and [`#!Python @ct.lattice`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#lattice) decorators, which describe individual compute tasks and workflows, respectively.
+
+    <center>
+
+    | Quacc              | Covalent                           |
+    | ------------------ | ---------------------------------- |
+    | `#!Python @job`     | `#!Python @ct.electron`             |
+    | `#!Python @flow`    | `#!Python @ct.lattice`              |
+    | `#!Python @subflow` | `#!Python @ct.electron`<br>`#!Python @ct.lattice`</br> |
 
     </center>
 
@@ -73,8 +73,8 @@ To help enable interoperability between workflow engines, quacc offers a unified
     | Quacc              | Jobflow        |
     | ------------------ | -------------- |
     | `#!Python @job`     | `#!Python @job` |
-    | `#!Python @flow`    | No effect      |
-    | `#!Python @subflow` | No effect      |
+    | `#!Python @flow`    | N/A      |
+    | `#!Python @subflow` | N/A      |
 
     </center>
 
@@ -93,48 +93,6 @@ In practice, we would want each of the two tasks to be their own compute job.
 graph LR
   A[Input] --> B(add) --> C(mult) --> D[Output];
 ```
-
-=== "Covalent ⭐"
-
-    !!! Important
-
-        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md) and start the Covalent server:
-
-        ```bash
-        quacc set WORKFLOW_ENGINE covalent
-        covalent start
-        ```
-
-    ```python
-    import covalent as ct
-    from quacc import flow, job
-
-
-    @job  #  (1)!
-    def add(a, b):
-        return a + b
-
-
-    @job
-    def mult(a, b):
-        return a * b
-
-
-    @flow  #  (2)!
-    def workflow(a, b, c):
-        return mult(add(a, b), c)
-
-
-    dispatch_id = ct.dispatch(workflow)(1, 2, 3)
-    result = ct.get_result(dispatch_id, wait=True)
-    print(result)
-    ```
-
-    1. The `#!Python @job` decorator will be transformed into `#!Python @ct.electron`.
-
-    2. The `#!Python @flow` decorator will be transformed into `#!Python @ct.lattice`.
-
-    3. This commmand will dispatch the workflow to the Covalent server.
 
 === "Parsl ⭐"
 
@@ -179,6 +137,48 @@ graph LR
     1. The `#!Python @job` decorator will be transformed into `#!Python @python_app`.
 
     2. The `#!Python @flow` decorator doesn't actually do anything when using Parsl, so we chose to not include it here for brevity.
+
+=== "Covalent ⭐"
+
+    !!! Important
+
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md) and start the Covalent server:
+
+        ```bash
+        quacc set WORKFLOW_ENGINE covalent
+        covalent start
+        ```
+
+    ```python
+    import covalent as ct
+    from quacc import flow, job
+
+
+    @job  #  (1)!
+    def add(a, b):
+        return a + b
+
+
+    @job
+    def mult(a, b):
+        return a * b
+
+
+    @flow  #  (2)!
+    def workflow(a, b, c):
+        return mult(add(a, b), c)
+
+
+    dispatch_id = ct.dispatch(workflow)(1, 2, 3)
+    result = ct.get_result(dispatch_id, wait=True)
+    print(result)
+    ```
+
+    1. The `#!Python @job` decorator will be transformed into `#!Python @ct.electron`.
+
+    2. The `#!Python @flow` decorator will be transformed into `#!Python @ct.lattice`.
+
+    3. This commmand will dispatch the workflow to the Covalent server.
 
 === "Prefect"
 
@@ -314,13 +314,13 @@ add.__wrapped__(1, 2)
 
 ## Learn More
 
-=== "Covalent ⭐"
-
-    If you want to learn more about Covalent, you can read the [Covalent Documentation](https://docs.covalent.xyz/docs/). Please refer to the Covalent [Discussion Board](https://github.com/AgnostiqHQ/covalent/discussions) for any Covalent-specific questions.
-
 === "Parsl ⭐"
 
     If you want to learn more about Parsl, you can read the [Parsl Documentation](https://parsl.readthedocs.io/en/stable/#). Please refer to the [Parsl Slack Channel](http://parsl-project.org/support.html) for any Parsl-specific questions.
+
+=== "Covalent ⭐"
+
+    If you want to learn more about Covalent, you can read the [Covalent Documentation](https://docs.covalent.xyz/docs/). Please refer to the Covalent [Discussion Board](https://github.com/AgnostiqHQ/covalent/discussions) for any Covalent-specific questions.
 
 === "Prefect"
 

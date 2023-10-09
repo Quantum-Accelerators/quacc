@@ -6,7 +6,27 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
 !!! Tip
 
-    If you are new to workflow engines, we recommend trying either **Covalent** or **Parsl**. If you are looking for a visual dashboard with an emphasis on distributed compute resources, first try Covalent. If you are looking to run high-throughput calculations on an HPC system with a job scheduler, we recommend first trying Parsl.
+    If you are new to workflow engines, we recommend trying either **Parsl** or **Covalent**. If you have a need for speed and appreciate flexibility, Parsl is the choice for you. If you are looking for a visual dashboard with an emphasis on distributed compute resources, Covalent may be worth considering.
+
+=== "Parsl ⭐"
+
+    [Parsl](https://github.com/Parsl/parsl) is a workflow management solution out of Argonne National Laboratory, the University of Chicago, and the University of Illinois. It is well-adapted for running on virtually any HPC environment with a job scheduler.
+
+    Pros:
+
+    - Extremely configurable and deployable for virtually any HPC environment
+    - Quite simple to define the workflows
+    - Active community, particularly across academia
+    - Well-suited for [pilot jobs](https://en.wikipedia.org/wiki/Pilot_job) and advanced queuing schemes
+    - Thorough documentation
+    - Does not rely on maintaining a centralized server
+
+    Cons:
+
+    - The number of different terms can be slightly overwhelming to those less familiar with HPC
+    - Understanding the various configuration options for your HPC setup can be an initial hurdle
+    - Monitoring job progress is more challenging and less detailed than other solutions
+    - The concept of always returning a "future" can be confusing for new users
 
 === "Covalent ⭐"
 
@@ -18,32 +38,14 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     - Easy to use in distributed, heterogeneous compute environments
     - Excellent documentation
     - Automatic and simple database integration
-    - The compute nodes do not need to be able to connect to the internet
+    - The compute nodes do not need to be able to connect to the internet, unlike some of its competitors
 
     Cons:
 
     - Not as widely used as other workflow management solutions
+    - Only supports standard queuing schemes, limiting throughput
     - It requires a centralized server to be running continuously in order to manage the workflows
     - High-security HPC environments may be difficult to access via SSH with the centralized server approach
-
-=== "Parsl ⭐"
-
-    [Parsl](https://github.com/Parsl/parsl) is a workflow management solution out of Argonne National Laboratory, the University of Chicago, and the University of Illinois. It is well-adapted for running on virtually any HPC environment with a job scheduler.
-
-    Pros:
-
-    - Extremely configurable for virtually any HPC environment
-    - Quite simple to define the workflows
-    - Active community, particularly across academia
-    - Well-suited for [pilot jobs](https://en.wikipedia.org/wiki/Pilot_job) and has near-ideal scaling performance
-    - Thorough documentation
-    - Does not rely on maintaining a centralized server
-
-    Cons:
-
-    - Understanding the various configuration options for your HPC setup can be an initial hurdle
-    - Monitoring job progress is more challenging and less detailed than other solutions
-    - The concept of always returning a "future" object can be confusing for new users
 
 === "Prefect"
 
@@ -62,7 +64,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
     Cons:
 
-    - Lacks documentation for HPC environments, although it supports them
+    - Has limited documentation and features for HPC environments
     - Not practical to use if the compute nodes do not support network connections
     - The dashboard stores data for only a 7 day history by default and does not display the full output of each task
     - Sorting out the details of agents, workers, and queues can be challenging
@@ -99,6 +101,7 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
     Cons:
 
+    - Is not compatible with the `#!Python @flow` decorator used in some quacc recipes
     - Parsing the output of a workflow is not as intuitive as other solutions
     - Defining dynamic workflows with Jobflow's `Response` object can be more complex than other solutions
     - Only supports FireWorks for job dispatching at the moment
