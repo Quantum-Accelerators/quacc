@@ -26,7 +26,7 @@ def os_atoms(file_dir):
     return read(file_dir / "OS_test.xyz")
 
 
-def test_qchem_write_input_basic(tmpdir, test_atoms):
+def test_qchem_write_input_basic(tmpdir, file_dir, test_atoms):
     from pathlib import Path
 
     from pymatgen.io.qchem.inputs import QCInput
@@ -48,7 +48,7 @@ def test_qchem_write_input_basic(tmpdir, test_atoms):
         QChem(test_atoms, cores=40, directory="notsupported")
 
 
-def test_qchem_write_input_intermediate(tmpdir, test_atoms):
+def test_qchem_write_input_intermediate(tmpdir, file_dir, test_atoms):
     from pymatgen.io.qchem.inputs import QCInput
 
     from quacc.calculators.qchem import QChem
@@ -78,7 +78,7 @@ def test_qchem_write_input_intermediate(tmpdir, test_atoms):
     assert qcinp.as_dict() == ref_qcinp.as_dict()
 
 
-def test_qchem_write_input_advanced(tmpdir, test_atoms):
+def test_qchem_write_input_advanced(tmpdir, file_dir, test_atoms):
     from pymatgen.io.qchem.inputs import QCInput
 
     from quacc.calculators.qchem import QChem
@@ -112,7 +112,7 @@ def test_qchem_write_input_advanced(tmpdir, test_atoms):
     assert qcinp.as_dict() == ref_qcinp.as_dict()
 
 
-def test_qchem_write_input_open_shell_and_different_charges(tmpdir, os_atoms):
+def test_qchem_write_input_open_shell_and_different_charges(tmpdir, file_dir, os_atoms):
     from pymatgen.io.qchem.inputs import QCInput
 
     from quacc.calculators.qchem import QChem
@@ -155,7 +155,7 @@ def test_qchem_write_input_open_shell_and_different_charges(tmpdir, os_atoms):
     assert qcinp.as_dict() == ref_qcinp.as_dict()
 
 
-def test_qchem_write_input_freq(tmpdir):
+def test_qchem_write_input_freq(tmpdir, file_dir):
     from pymatgen.io.qchem.inputs import QCInput
 
     from quacc.calculators.qchem import QChem
@@ -184,7 +184,7 @@ def test_qchem_write_input_freq(tmpdir):
     assert qcinp.as_dict() == ref_qcinp.as_dict()
 
 
-def test_qchem_read_results_basic_and_write_53(tmpdir, test_atoms):
+def test_qchem_read_results_basic_and_write_53(tmpdir, file_dir, test_atoms):
     import os
     from pathlib import Path
 
@@ -216,7 +216,7 @@ def test_qchem_read_results_basic_and_write_53(tmpdir, test_atoms):
     assert qcinp.rem.get("scf_guess") == "read"
 
 
-def test_qchem_read_results_intermediate(tmpdir, test_atoms):
+def test_qchem_read_results_intermediate(tmpdir, file_dir, test_atoms):
     import os
 
     from ase import units
@@ -234,7 +234,7 @@ def test_qchem_read_results_intermediate(tmpdir, test_atoms):
     assert calc.prev_orbital_coeffs is not None
 
 
-def test_qchem_read_results_advanced(tmpdir, test_atoms):
+def test_qchem_read_results_advanced(tmpdir, file_dir, test_atoms):
     import os
 
     from ase import units
@@ -253,7 +253,7 @@ def test_qchem_read_results_advanced(tmpdir, test_atoms):
     assert calc.results["hessian"] is None
 
 
-def test_qchem_read_results_freq(tmpdir, test_atoms):
+def test_qchem_read_results_freq(tmpdir, file_dir, test_atoms):
     import os
 
     from ase import units
