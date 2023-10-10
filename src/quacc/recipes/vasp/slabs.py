@@ -47,7 +47,7 @@ def slab_static_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     preset
-        Preset to use from [quacc.calculators.presets.vasp][].
+        Preset to use from `quacc.calculators.presets.vasp`.
     calc_swaps
         Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
@@ -115,7 +115,7 @@ def slab_relax_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     preset
-        Preset to use from [quacc.calculators.presets.vasp][].
+        Preset to use from `quacc.calculators.presets.vasp`.
     calc_swaps
         Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
