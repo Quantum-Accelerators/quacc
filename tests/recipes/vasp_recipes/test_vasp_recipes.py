@@ -33,11 +33,24 @@ def test_static_job(tmpdir):
         atoms, preset="QMOFSet", calc_swaps={"ismear": 0, "sigma": 0.01, "nedos": None}
     )
     assert output["parameters"]["encut"] == 520
-    assert output["parameters"]["ismear"] == -5
+    assert output["parameters"]["ismear"] == 0
     assert output["parameters"]["sigma"] == 0.01
 
-    output = static_job(atoms, calc_swaps={"lwave": None})
+    output = static_job(
+        atoms,
+        calc_swaps={
+            "ivdw": 13,
+            "lasph": False,
+            "prec": None,
+            "lwave": None,
+            "efermi": None,
+        },
+    )
+    assert output["parameters"]["ivdw"] == 13
+    assert output["parameters"]["lasph"] == False
+    assert "prec" not in output["parameters"]
     assert "lwave" not in output["parameters"]
+    assert "efermi" not in output["parameters"]
 
 
 def test_relax_job(tmpdir):
@@ -398,7 +411,7 @@ def test_mp(tmpdir):
     assert output["parameters"]["xc"] == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02
     assert output["parameters"]["encut"] == 680
-    assert output["parameters"]["ismear"] == -5
+    assert output["parameters"]["ismear"] == 0
     assert output["parameters"]["kspacing"] == pytest.approx(0.28329488761304206)
 
 
@@ -413,6 +426,6 @@ def test_vasp_version(tmpdir):
 
     atoms = bulk("Cu") * (2, 2, 2)
 
-    output = static_job(atoms)
+    output = static_job(atoms, calc_swaps={"efermi": None})
     assert "efermi" not in output["parameters"]
     SETTINGS.VASP_MIN_VERSION = DEFAULT_SETTINGS.VASP_MIN_VERSION

@@ -174,9 +174,6 @@ class Vasp(Vasp_):
         # Collect all the calculator parameters and prioritize the kwargs in the
         # case of duplicates.
         self.user_calc_params = calc_preset | kwargs
-        none_keys = [k for k, v in self.user_calc_params.items() if v is None]
-        for none_key in none_keys:
-            del self.user_calc_params[none_key]
 
         # Allow the user to use setups='mysetups.yaml' to load in a custom
         # setups from a YAML file
@@ -290,6 +287,11 @@ class Vasp(Vasp_):
             )
             for ldau_flag in ldau_flags:
                 self.user_calc_params.pop(ldau_flag, None)
+
+        # Remove None keys
+        none_keys = [k for k, v in self.user_calc_params.items() if v is None]
+        for none_key in none_keys:
+            del self.user_calc_params[none_key]
 
     def _set_auto_dipole(self) -> None:
         """
@@ -545,7 +547,7 @@ class Vasp(Vasp_):
                 UserWarning,
             )
 
-        self.user_calc_params = calc.parameters
+        self.user_calc_params = calc.parameters | self.user_calc_params
 
     def _convert_auto_kpts(
         self,
