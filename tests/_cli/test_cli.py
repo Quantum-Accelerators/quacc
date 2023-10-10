@@ -1,39 +1,56 @@
-import os
-from pathlib import Path
+import pytest
 
-from typer.testing import CliRunner
 
-from quacc import SETTINGS, __version__
-from quacc._cli.quacc import app
+@pytest.fixture
+def test_yaml():
+    from pathlib import Path
 
-DEFAULT_SETTINGS = SETTINGS.copy()
-test_yaml = Path.cwd() / "test_quacc.yaml"
+    return Path.cwd() / "test_quacc.yaml"
+
+
+@pytest.fixture()
+def runner():
+    from typer.testing import CliRunner
+
+    return CliRunner()
 
 
 def setup_module():
+    from quacc import SETTINGS
+
     SETTINGS.CONFIG_FILE = test_yaml
 
 
-def teardown_module():
+def teardown_module(default_settings):
+    import os
+
+    from quacc import SETTINGS
+
     if test_yaml.exists():
         os.remove(test_yaml)
 
+    SETTINGS.CONFIG_FILE = default_settings.CONFIG_FILE
 
-runner = CliRunner()
 
+def test_version(runner):
+    from quacc import __version__
+    from quacc._cli.quacc import app
 
-def test_version():
     response = runner.invoke(app, ["--version"])
     assert response.exit_code == 0
     assert __version__ in response.stdout
 
 
-def test_help():
+def test_help(runner):
+    from quacc._cli.quacc import app
+
     response = runner.invoke(app, ["--help"])
     assert response.exit_code == 0
 
 
-def test_set():
+def test_set(runner):
+    from quacc._cli.quacc import app
+
     response = runner.invoke(app, ["set", "WORKFLOW_ENGINE", "local"])
     assert response.exit_code == 0
     assert "local" in response.stdout
@@ -65,7 +82,9 @@ def test_set():
     assert val == "dummy"
 
 
-def test_unset():
+def test_unset(runner):
+    from quacc._cli.quacc import app
+
     response = runner.invoke(app, ["unset", "WORKFLOW_ENGINE"])
     assert response.exit_code == 0
     assert "WORKFLOW_ENGINE" in response.stdout
@@ -77,6 +96,8 @@ def test_unset():
 
 
 def test_bad():
+    from quacc._cli.quacc import app
+
     response = runner.invoke(app, ["set", "CONFIG_FILE", "here"])
     assert response.exit_code != 0
     response = runner.invoke(app, ["set", "bad", "dummy"])

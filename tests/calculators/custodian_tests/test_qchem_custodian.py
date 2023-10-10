@@ -1,23 +1,21 @@
 import pytest
-from custodian import Custodian
 
-ob = pytest.importorskip("openbabel")
-
-
-class MockRun:
-    "Mock Custodian run() function"
-
-    @staticmethod
-    def run():
-        return True
+pytest.importorskip("openbabel")
 
 
 def mock_custodian_run(*args, **kwargs):
     """
     Instead of running Custodian, we will mock it to return True
     when .run() is called
-
     """
+
+    class MockRun:
+        "Mock Custodian run() function"
+
+        @staticmethod
+        def run():
+            return True
+
     return MockRun()
 
 
@@ -27,6 +25,8 @@ def patch_custodian_run(monkeypatch):
     Monkeypatch the Custodian.run() function so that it doesn't actually
     launch Custodian during a test
     """
+    from custodian import Custodian
+
     monkeypatch.setattr(Custodian, "run", mock_custodian_run)
 
 
