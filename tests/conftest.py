@@ -25,7 +25,7 @@ def default_settings():
     return SETTINGS.copy()
 
 
-def pytest_sessionstart():
+def pytest_sessionstart(test_results_dir, test_scratch_dir):
     import os
 
     from quacc import SETTINGS
@@ -36,7 +36,7 @@ def pytest_sessionstart():
     os.makedirs(SETTINGS.SCRATCH_DIR, exist_ok=True)
 
 
-def pytest_sessionfinish():
+def pytest_sessionfinish(test_results_dir, test_scratch_dir):
     from shutil import rmtree
 
     rmtree(test_results_dir, ignore_errors=True)
