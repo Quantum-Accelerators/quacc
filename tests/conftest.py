@@ -18,6 +18,13 @@ def test_scratch_dir():
     return FILE_DIR / ".test_scratch"
 
 
+@pytest.fixture
+def default_settings():
+    from quacc import SETTINGS
+
+    return SETTINGS.copy()
+
+
 def pytest_sessionstart():
     import os
 
@@ -34,10 +41,3 @@ def pytest_sessionfinish():
 
     rmtree(test_results_dir, ignore_errors=True)
     rmtree(test_scratch_dir, ignore_errors=True)
-
-
-@pytest.fixture
-def default_settings():
-    from quacc import SETTINGS
-
-    return SETTINGS.copy()
