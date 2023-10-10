@@ -22,6 +22,7 @@ def test_static_job(tmpdir):
     assert output["parameters"]["nsw"] == 0
     assert output["parameters"]["lwave"] is True
     assert output["parameters"]["encut"] == 520
+    assert output["parameters"]["efermi"] == "midgap"
 
     output = static_job(atoms, calc_swaps={"ncore": 2, "kpar": 4})
     assert output["parameters"]["encut"] == 520
@@ -399,3 +400,19 @@ def test_mp(tmpdir):
     assert output["parameters"]["encut"] == 680
     assert output["parameters"]["ismear"] == -5
     assert output["parameters"]["kspacing"] == pytest.approx(0.28329488761304206)
+
+
+def test_vasp_version(tmpdir):
+    from quacc import SETTINGS
+    from quacc.recipes.vasp.core import static_job
+
+    DEFAULT_SETTINGS = SETTINGS.copy()
+    SETTINGS.VASP_MIN_VERSION = 5.4
+
+    tmpdir.chdir()
+
+    atoms = bulk("Cu") * (2, 2, 2)
+
+    output = static_job(atoms)
+    assert "efermi" not in output["parameters"]
+    SETTINGS.VASP_MIN_VERSION = DEFAULT_SETTINGS.VASP_MIN_VERSION
