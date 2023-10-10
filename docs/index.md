@@ -1,14 +1,12 @@
-# quacc — the Quantum Accelerator
+`quacc` (pronounced "quack" 🦆) is a flexible platform for high-throughput computational materials science and quantum chemistry built for the exascale era, maintained by the [Rosen Research Group](https://rosen.cbe.princeton.edu/) at Princeton University.
 
-Quacc (pronounced "quack") is a flexible and extensible platform for high-throughput computational materials science and quantum chemistry.
+- `quacc` makes it possible to easily write complex workflows that can be run anywhere, anyhow. By anywhere, we mean locally, HPC, the cloud, or any combination thereof. By anyhow, we mean via one of several modern workflow management solutions
 
-The three main goals of quacc are to:
+- `quacc` leverages community resources. It is built around the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/) and much of the software infrastructure powering the [Materials Project](https://materialsproject.org).
 
-1. Reduce the barrier for running complex, mixed-code workflows for molecules and materials across distributed compute environments.
+- `quacc` gives you the freedom of choice. Through a single, unified interface to several [supported workflow management solutions](https://quantum-accelerators.github.io/quacc/user/basics/wflow_overview.html), `quacc` lets you use what best suits your unique computing needs.
 
-2. Promote rapid workflow development and testing via modern [workflow management solutions](https://workflows.community/).
-
-3. Enable a seamless interface between the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/) and the software infrastructure powering the [Materials Project](https://materialsproject.org).
+- `quacc` has [pre-made recipes](https://quantum-accelerators.github.io/quacc/user/recipes/recipes_list.html) for the following packages: DFTB+, Gaussian, GULP, NewtonNet, ORCA, Psi4, Q-Chem, tblite, and VASP. It's simple to add your favorite!
 
 ---
 

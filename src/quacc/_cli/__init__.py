@@ -1,1 +1,1 @@
-"""Command line interface"""
+"""Command line interface for quacc."""

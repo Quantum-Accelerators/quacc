@@ -4,11 +4,11 @@ We welcome all contributions, big or small (provided they come with unit tests!)
 
 !!! Note
 
-    Thank you for reading this page! If you need additional incentive to contribute to quacc, we plan to eventually submit a manuscript based on this code. If you contribute to quacc in any significant way (e.g. adding a new recipe or module), you will be contacted to opt-in for authorship once a draft is written. Regardless, all contributors are acknowledged in the [About](../about/contributors.md) section of the documentation.
+    Thank you for reading this page! If you need additional incentive to contribute to quacc, we plan to eventually submit a manuscript based on this code. If you contribute to quacc in a significant way (e.g. adding a new recipe or module), you will be contacted to opt-in for authorship once a draft is written. Regardless, all contributors are acknowledged in the [About](../about/contributors.md) section of the documentation.
 
 ## General Tips
 
-When developing new recipes, it is often helpful to start from an existing example. In general, we recommend referring to `quacc.recipes.emt` or `quacc.recipes.tblite` as a starting point.
+When developing new recipes, it is often helpful to start from an existing example. In general, we recommend referring to `quacc.recipes.emt` as a starting point.
 
 ## Steps to Contribute
 
@@ -18,7 +18,7 @@ To contribute to quacc, we recommend doing the following:
 
 - [Clone this forked repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) to your local machine, e.g. via `git clone <repo url>.git`.
 
-- In the newly downloaded `quacc` base directory, run `pip install -e .[dev]` to install quacc in editable mode and with the development dependencies.
+- In the newly downloaded `quacc` base directory, run `pip install -e .[dev]` to install quacc in editable mode and with the development dependencies. If you need to strictly match the versions of dependencies used in the GitHub actions test suite, you can find `requirements.txt` files in the `tests` directory.
 
 - [Commit your changes](https://github.com/git-guides/git-commit) and [push them](https://github.com/git-guides/git-push) to your personal forked repository _in a new branch_.
 
@@ -62,12 +62,12 @@ In general, please try to keep the code style consistent when possible, particul
 
 1. Use NumPy-style Docstrings.
 
-2. Address any relevant style issues raised by the "Deepsource: Python" and "Sourcery" GitHub actions, if present.
+2. Address any relevant style issues raised by the "Deepsource: Python," if present.
 
-3. All Python code should be formatted with [isort](https://github.com/PyCQA/isort) and then [black](https://github.com/psf/black), although this will be corrected automatically when merged.
+3. All Python code should be formatted with [isort](https://github.com/PyCQA/isort), [black](https://github.com/psf/black), and [ruff](https://github.com/astral-sh/ruff), although this will be corrected automatically when merged.
 
 ## Unit Tests
 
-All changes you make to quacc should be accompanied by unit tests and should not break existing tests. To run the full test suite, run `pytest .` from the the `quacc/tests` directory. Each PR will report the coverage once your tests pass, but if you'd like to generate a coverage report locally, you can use [pytest-cov](https://pytest-cov.readthedocs.io/en/latest/), such as by doing `pytest --cov=quacc .` in the `tests` directory.
+All changes you make to quacc should be accompanied by unit tests and should not break existing tests. To run the full test suite, run `pytest .` from the `quacc/tests` directory. Each PR will report the coverage once your tests pass, but if you'd like to generate a coverage report locally, you can use [pytest-cov](https://pytest-cov.readthedocs.io/en/latest/), such as by doing `pytest --cov=quacc .` in the `tests` directory.
 
-If you are adding recipes based on a code that can be readily installed via `pip` or `conda` (e.g. tblite, DFTB+, Psi4), then you can run these codes directly in the test suite. Preferably, you should use a small molecule or solid and cheap method so the unit tests run quickly. If the recipes you're adding are proprietary or not available via `pip` or `conda` (e.g. Gaussian, GULP), then you will need to [monkeypatch](https://docs.pytest.org/en/7.1.x/how-to/monkeypatch.html) certain functions to change their behavior during testing. For instance, we do not want to run VASP directly during unit tests and have mocked the `atoms.get_potential_energy()` function to always return a dummy value of -1.0 during unit tests. Any mocked functions can be found in the `conftest.py` files of the testing directory.
+If you are adding recipes based on a code that can be readily installed via `pip` or `conda` (e.g. tblite, DFTB+, Psi4), then you can run these codes directly in the test suite. Preferably, you should use a small molecule or solid and cheap method so the unit tests run quickly. If the recipes you're adding are proprietary or not available via `pip` or `conda` (e.g. Gaussian, GULP), then you will need to [monkeypatch](https://docs.pytest.org/en/7.1.x/how-to/monkeypatch.html) certain functions to change their behavior during testing.

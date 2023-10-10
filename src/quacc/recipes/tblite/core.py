@@ -6,17 +6,11 @@ from typing import TYPE_CHECKING
 from ase.optimize import FIRE
 from monty.dev import requires
 
-from quacc import job
-from quacc.schemas.ase import (
-    summarize_opt_run,
-    summarize_run,
-    summarize_thermo,
-    summarize_vib_run,
-)
-from quacc.utils.calc import run_ase_opt, run_ase_vib, run_calc
+from quacc import fetch_atoms, job
+from quacc.builders.thermo import build_ideal_gas
+from quacc.runners.calc import run_ase_opt, run_ase_vib, run_calc
+from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
 from quacc.utils.dicts import merge_dicts
-from quacc.utils.thermo import ideal_gas
-from quacc.utils.wflows import fetch_atoms
 
 try:
     from tblite.ase import TBLite
@@ -28,14 +22,11 @@ if TYPE_CHECKING:
 
     from ase import Atoms
 
-    from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
-
-    class FreqSchema(VibSchema):
-        thermo: ThermoSchema
+    from quacc.schemas.ase import OptSchema, RunSchema, VibThermoSchema
 
 
 @job
-@requires(TBLite, "tblite must be installed. Try pip install tblite[ase]")
+@requires(TBLite, "tblite must be installed. Refer to the quacc documentation.")
 def static_job(
     atoms: Atoms | dict,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
@@ -45,10 +36,19 @@ def static_job(
     """
     Carry out a single-point calculation.
 
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {"method": method}
+        ```
+
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     method
         GFN1-xTB, GFN2-xTB, and IPEA1-xTB.
     calc_swaps
@@ -59,12 +59,14 @@ def static_job(
     Returns
     -------
     RunSchema
-        Dictionary of results from `quacc.schemas.ase.summarize_run`
+        Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
     atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
 
-    atoms.calc = TBLite(method=method, **calc_swaps)
+    defaults = {"method": method}
+    flags = merge_dicts(defaults, calc_swaps)
+    atoms.calc = TBLite(**flags)
+
     final_atoms = run_calc(atoms, copy_files=copy_files)
     return summarize_run(
         final_atoms,
@@ -74,7 +76,7 @@ def static_job(
 
 
 @job
-@requires(TBLite, "tblite must be installed. Try pip install tblite[ase]")
+@requires(TBLite, "tblite must be installed. Refer to the quacc documentation.")
 def relax_job(
     atoms: Atoms | dict,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
@@ -86,10 +88,25 @@ def relax_job(
     """
     Relax a structure.
 
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {"method": method}
+        ```
+
+        Optimizer Defaults:
+
+        ```python
+        {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
+        ```
+
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     method
         GFN0-xTB, GFN1-xTB, GFN2-xTB.
     relax_cell
@@ -97,30 +114,31 @@ def relax_job(
     calc_swaps
         Dictionary of custom kwargs for the tblite calculator.
     opt_swaps
-        Dictionary of custom kwargs for run_ase_opt
+        Dictionary of custom kwargs for [quacc.runners.calc.run_ase_opt][].
     copy_files
         Files to copy to the runtime directory.
 
     Returns
     -------
     OptSchema
-        Dictionary of results from `quacc.schemas.ase.summarize_opt_run`
+        Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
     atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
-    opt_swaps = opt_swaps or {}
+
+    defaults = {"method": method}
+    flags = merge_dicts(defaults, calc_swaps)
+    atoms.calc = TBLite(**flags)
 
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
-    atoms.calc = TBLite(method=method, **calc_swaps)
     dyn = run_ase_opt(atoms, relax_cell=relax_cell, copy_files=copy_files, **opt_flags)
 
     return summarize_opt_run(dyn, additional_fields={"name": "TBLite Relax"})
 
 
 @job
-@requires(TBLite, "tblite must be installed. Try pip install tblite[ase]")
+@requires(TBLite, "tblite must be installed. Refer to the quacc documentation.")
 def freq_job(
     atoms: Atoms | dict,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
@@ -130,14 +148,29 @@ def freq_job(
     calc_swaps: dict | None = None,
     vib_kwargs: dict | None = None,
     copy_files: list[str] | None = None,
-) -> FreqSchema:
+) -> VibThermoSchema:
     """
     Run a frequency job and calculate thermochemistry.
+
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {"method": method}
+        ```
+
+        Vibrations Defaults:
+
+        ```python
+        {}
+        ```
 
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     method
         GFN0-xTB, GFN1-xTB, GFN2-xTB, GFN-FF.
     energy
@@ -147,7 +180,7 @@ def freq_job(
     pressure
         Pressure in bar.
     calc_swaps
-        dictionary of custom kwargs for the xTB calculator.
+        dictionary of custom kwargs for the tblite calculator.
     vib_kwargs
         dictionary of custom kwargs for the Vibrations object.
     copy_files
@@ -155,23 +188,23 @@ def freq_job(
 
     Returns
     -------
-    FreqSchema
-        Dictionary of results from `quacc.schemas.ase.summarize_vib_run` patched
-        with the results of `quacc.schemas.ase.summarize_thermo` in the "thermo" key.
+    VibThermoSchema
+        Dictionary of results from [quacc.schemas.ase.summarize_vib_and_thermo][]
     """
     atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
     vib_kwargs = vib_kwargs or {}
 
-    atoms.calc = TBLite(method=method, **calc_swaps)
+    defaults = {"method": method}
+    flags = merge_dicts(defaults, calc_swaps)
+    atoms.calc = TBLite(**flags)
+
     vibrations = run_ase_vib(atoms, vib_kwargs=vib_kwargs, copy_files=copy_files)
-    vib_summary = summarize_vib_run(
-        vibrations, additional_fields={"name": "TBLite Frequency Analysis"}
-    )
+    igt = build_ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)
 
-    igt = ideal_gas(atoms, vibrations.get_frequencies(), energy=energy)
-    vib_summary["thermo"] = summarize_thermo(
-        igt, temperature=temperature, pressure=pressure
+    return summarize_vib_and_thermo(
+        vibrations,
+        igt,
+        temperature=temperature,
+        pressure=pressure,
+        additional_fields={"name": "TBLite Frequency and Thermo"},
     )
-
-    return vib_summary

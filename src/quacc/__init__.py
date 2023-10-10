@@ -4,12 +4,14 @@ from __future__ import annotations
 from importlib.metadata import version
 
 from ase import Atoms
+from ase import __version__ as ase_version
 from ase.io.jsonio import decode, encode
 
+from quacc.schemas.atoms import fetch_atoms
 from quacc.settings import QuaccSettings
-from quacc.utils.wflows import flow, job, subflow
+from quacc.wflow.decorators import flow, job, subflow
 
-__all__ = ["flow", "job", "subflow"]
+__all__ = ["flow", "job", "subflow", "fetch_atoms"]
 
 
 def atoms_as_dict(s: Atoms) -> dict:
@@ -28,8 +30,13 @@ def atoms_from_dict(d: dict) -> Atoms:
     return decode(d["atoms_json"])
 
 
-# Load the version
+# Load the quacc version
 __version__ = version("quacc")
+
+if tuple(ase_version) <= tuple("3.22.1"):
+    raise ImportError(
+        f"Your ASE version ({ase_version}) is <= 3.22.1. Please upgrade your ASE version: pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip",
+    )
 
 # Make Atoms MSONable
 Atoms.as_dict = atoms_as_dict

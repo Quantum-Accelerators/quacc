@@ -1,26 +1,63 @@
 # Pre-Defined Recipes
 
-Here, we will show how to use quacc with one of a variety of workflow engines to construct, dispatch, and monitor your calculations. If you haven't installed your workflow engine dependencies yet, refer to the [Worfklow Engine Setup guide](../../install/wflow_engines.md).
-
-In quacc, there are two types of recipes:
+Here, we will show how to use quacc with one of a variety of workflow engines to construct, dispatch, and monitor your calculations. In quacc, there are two types of recipes:
 
 1. Individual compute jobs with the suffix `_job` that have been pre-defined with a `#!Python @job` decorator.
 2. Multi-step workflows with the suffix `_flow` that have been pre-defined with a `#!Python @flow` decorator.
 
 ## Running a Pre-Defined Job
 
-We will now try running a pre-defined job where we relax a bulk Cu structure using EMT, which is pre-defined in quacc as [`quacc.recipes.emt.core.relax_job`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/core.html#quacc.recipes.emt.core.relax_job).
+We will now try running a job where we relax a bulk Cu structure using EMT, which is pre-defined in quacc as [quacc.recipes.emt.core.relax_job][].
 
 ```mermaid
 graph LR
   A[Input] --> B(Relax) --> C[Output];
 ```
 
-=== "Covalent"
+=== "Parsl ⭐"
 
     !!! Important
 
-        If you haven't done so yet, make sure you started the Covalent server with `covalent start` in the command-line.
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md) and load the default Parsl configuration:
+
+        ```bash title="terminal"
+        quacc set WORKFLOW_ENGINE parsl
+        ```
+
+        ```python title="python"
+        import parsl
+
+        parsl.load()
+        ```
+
+    ```python
+    from ase.build import bulk
+    from quacc.recipes.emt.core import relax_job
+
+    # Make an Atoms object of a bulk Cu structure
+    atoms = bulk("Cu")
+
+    # Call the PythonApp
+    future = relax_job(atoms)  # (1)!
+
+    # Print result
+    print(future.result())  # (2)!
+    ```
+
+    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here. We also did not need to use a `#!Python @flow` decorator because Parsl does not have an analogous decorator.
+
+    2. The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object.
+
+=== "Covalent ⭐"
+
+    !!! Important
+
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md) and start the Covalent server:
+
+        ```bash
+        quacc set WORKFLOW_ENGINE covalent
+        covalent start
+        ```
 
     ```python
     import covalent as ct
@@ -28,11 +65,11 @@ graph LR
     from quacc import flow
     from quacc.recipes.emt.core import relax_job
 
-    # Define the workflow
-    workflow = flow(relax_job)  # (1)!
-
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
+
+    # Define the workflow
+    workflow = flow(relax_job)  # (1)!
 
     # Dispatch the workflow to the Covalent server
     # with the bulk Cu Atoms object as the input
@@ -53,47 +90,84 @@ graph LR
 
         Also note that the `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
 
-    2. Because the workflow was defined as a `#!Python Flow`, it will be sent to the Covalent server and a dispatch ID will be returned.
+    2. This will dispatch the workflow to the Covalent server.
 
-    3. You don't need to set `wait=True` in practice. Once you dispatch the workflow, it will begin running (if the resources are available). The `ct.get_result` function is used to fetch the workflow status and results from the server.
+    3. The `ct.get_result` function is used to fetch the workflow status and results from the server. You don't need to set `wait=True` in practice. Once you dispatch the workflow, it will begin running (if the resources are available).
 
-=== "Parsl"
+=== "Prefect"
 
     !!! Important
 
-        If you haven't done so yet, make sure you have loaded a Parsl configuration in your Python script. An example for running on your local machine is included below.
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md):
 
-        ```python
-        import parsl
-
-        parsl.load()
+        ```bash
+        quacc set WORKFLOW_ENGINE prefect
         ```
-
-        Also make sure you have specified `"parsl"` as the `WORKFLOW_ENGINE` in your [quacc settings](../settings.md).
 
     ```python
     from ase.build import bulk
+    from quacc import flow
     from quacc.recipes.emt.core import relax_job
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
 
-    # Call the PythonApp
-    future = relax_job(atoms)  # (1)!
 
-    # Print result
-    print(future.result())  # (2)!
+    # Define the workflow
+    @flow
+    def workflow(atoms):
+        return relax_job(atoms)  # (1)!
+
+
+    # Dispatch the workflow
+    future = workflow(atoms)
+
+    # Fetch the result
+    result = future.result()  # (2)!
+    print(result)
     ```
 
-    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here. We also did not need to use a `#!Python @flow` decorator because Parsl does not have an analogous decorator.
+    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
 
-    2. The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object.
+    2. Calling `.result()` will resolve the future and return the calculation result.
+
+=== "Redun"
+
+    !!! Important
+
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md):
+
+        ```bash
+        quacc set WORKFLOW_ENGINE redun
+        ```
+
+    ```python
+    from ase.build import bulk
+    from redun import Scheduler
+    from quacc.recipes.emt.core import relax_job
+
+    # Instantiate the scheduler
+    scheduler = Scheduler()
+
+    # Make an Atoms object of a bulk Cu structure
+    atoms = bulk("Cu")
+
+    # Dispatch the workflow
+    result = scheduler.run(relax_job(atoms))  # (1)!
+    print(result)
+    ```
+
+    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
 
 === "Jobflow"
 
     !!! Important
 
-        Make sure you have specified `"jobflow"` as the `WORKFLOW_ENGINE` in your [quacc settings](../settings.md).
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md):
+
+        ```bash
+        quacc set WORKFLOW_ENGINE jobflow
+        ```
 
     ```python
     import jobflow as jf
@@ -120,7 +194,7 @@ graph LR
 
 ## Running a Pre-Defined Workflow
 
-We will now try running a pre-defined workflow where we carve all possible slabs from a given structure, run a new relaxation calculation on each slab, and then a static calculation for each relaxed slab. This is implemented in [`quacc.recipes.emt.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/slabs.html#quacc.recipes.emt.slabs.bulk_to_slabs_flow).
+We will now try running a pre-defined workflow where we carve all possible slabs from a given structure, run a new relaxation calculation on each slab, and then a static calculation for each relaxed slab. This is implemented in [quacc.recipes.emt.slabs.bulk_to_slabs_flow][].
 
 ```mermaid
 graph LR
@@ -131,7 +205,25 @@ graph LR
   B --> F(Slab Relax) --> J(Slab Static) --> K[Output];
 ```
 
-=== "Covalent"
+=== "Parsl ⭐"
+
+    ```python
+    from ase.build import bulk
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Define the workflow
+    future = bulk_to_slabs_flow(atoms)  # (1)!
+
+    # Print the results
+    print(future.result())
+    ```
+
+    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator.
+
+=== "Covalent ⭐"
 
     ```python
     import covalent as ct
@@ -149,9 +241,9 @@ graph LR
     print(result)
     ```
 
-    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `@flow` decorator.
+    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator.
 
-=== "Parsl"
+=== "Prefect"
 
     ```python
     from ase.build import bulk
@@ -160,34 +252,40 @@ graph LR
     # Define the Atoms object
     atoms = bulk("Cu")
 
-    # Define the workflow
-    future = bulk_to_slabs_flow(atoms)  # (1)!
+    # Dispatch the workflow
+    futures = bulk_to_slabs_flow(atoms)  # (1)!
 
     # Print the results
-    print(future.result())
+    results = [future.result() for future in futures]
+    print(results)
     ```
 
-    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `@flow` decorator.
+    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator.
 
-=== "Jobflow"
-
-    Due to the difference in how Jobflow handles dynamic workflows compared to Covalent and Parsl, any quacc recipes that have been pre-defined with a `#!Python @flow` decorator (i.e. those with `_flow` in the name) cannot be used with Jobflow directly.
-
-    That said, quacc fully supports custom Jobflow-based workflows to resolve this limitation. For example, instead of using [`.emt.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/slabs.html#quacc.recipes.emt.slabs.bulk_to_slabs_flow), this workflow can be equivalently run as follows using the Jobflow-specific [`.emt._jobflow.slabs.bulk_to_slabs_flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/emt/_jobflow/slabs.html#quacc.recipes.emt._jobflow.slabs.bulk_to_slabs_flow) function.
+=== "Redun"
 
     ```python
-    import jobflow as jf
     from ase.build import bulk
-    from quacc.recipes.emt._jobflow.slabs import bulk_to_slabs_flow
+    from redun import Scheduler
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+    # Instantiate the scheduler
+    scheduler = Scheduler()
 
     # Define the Atoms object
     atoms = bulk("Cu")
 
-    # Construct the Flow
-    flow = bulk_to_slabs_flow(atoms)
+    # Define the workflow
+    result = scheduler.run(bulk_to_slabs_flow(atoms))  # (1)!
 
-    # Run the workflow locally
-    jf.run_locally(flow, create_folders=True)
+    # Print the results
+    print(result)
     ```
 
-    In the case of the Jobflow-specific `bulk_to_slabs_flow`, it returns a [`Response(replace)`](<https://materialsproject.github.io/jobflow/tutorials/5-dynamic-flows.html#The-Response(replace)-option>) object that dynamically replaces the `Flow` with several downstream jobs.
+    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator.
+
+=== "Jobflow"
+
+    !!! Warning
+
+        Due to the difference in how Jobflow handles workflows (particularly dynamic ones) compared to other supported workflow engines, any quacc recipes that have been pre-defined with a `#!Python @flow` decorator (i.e. have `_flow` in the name) cannot be run directly with Jobflow. Rather, a Jobflow-specific `Flow` needs to be constructed by the user.

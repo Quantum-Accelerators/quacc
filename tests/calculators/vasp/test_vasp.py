@@ -10,9 +10,9 @@ from ase.calculators.vasp import Vasp as Vasp_
 from ase.constraints import FixAtoms, FixBondLength
 from ase.io import read
 
+from quacc.calculators.presets import vasp as v
 from quacc.calculators.vasp import Vasp
-from quacc.presets import vasp as v
-from quacc.utils.atoms import prep_next_run
+from quacc.runners.prep import prep_next_run
 
 FILE_DIR = Path(__file__).resolve().parent
 DEFAULT_CALCS_DIR = os.path.dirname(v.__file__)
@@ -393,10 +393,6 @@ def test_efermi():
     assert calc.string_params["efermi"] == "midgap"
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, efermi="midgap")
-    assert calc.string_params["efermi"] == "midgap"
-
-    atoms = bulk("Cu")
     calc = Vasp(atoms, efermi=10.0)
     assert calc.string_params["efermi"] == 10.0
 
@@ -413,11 +409,6 @@ def test_algo():
     calc = Vasp(atoms, xc="m06l", algo="fast")
     assert calc.string_params["algo"] == "all"
 
-    calc = Vasp(atoms, xc="hse06")
-    assert calc.string_params["algo"] == "damped"
-    assert calc.float_params["time"] == 0.5
-
-    atoms[0].symbol = "H"
     calc = Vasp(atoms, xc="hse06")
     assert calc.string_params["algo"] == "all"
 
@@ -445,10 +436,10 @@ def test_isym():
     assert calc.int_params["isym"] == 3
 
     calc = Vasp(atoms, isym=2, nsw=100)
-    assert calc.int_params["isym"] == 0
+    assert calc.int_params["isym"] == 2
 
     calc = Vasp(atoms, xc="hse06", isym=2, nsw=100)
-    assert calc.int_params["isym"] == 0
+    assert calc.int_params["isym"] == 3
 
 
 def test_ncore():
@@ -499,13 +490,13 @@ def test_ismear():
     calc = Vasp(atoms, ismear=0, nsw=10)
     assert calc.int_params["ismear"] == 0
 
-    calc = Vasp(atoms, nedos=3001, nsw=0)
+    calc = Vasp(atoms, nsw=0)
+    assert calc.int_params["ismear"] is None
+
+    calc = Vasp(atoms, ismear=-5, nsw=0)
     assert calc.int_params["ismear"] == 0
 
-    calc = Vasp(atoms, ismear=-5, nedos=3001, nsw=0)
-    assert calc.int_params["ismear"] == 0
-
-    calc = Vasp(atoms, kpts=(10, 10, 10), nedos=3001, nsw=0)
+    calc = Vasp(atoms, kpts=(10, 10, 10), nsw=0)
     assert calc.int_params["ismear"] == -5
 
     calc = Vasp(atoms, auto_kpts={"line_density": 100}, ismear=1)
@@ -521,7 +512,6 @@ def test_ismear():
 
     calc = Vasp(atoms, kspacing=1.0, ismear=-5)
     assert calc.int_params["ismear"] == 0
-    assert calc.float_params["sigma"] == 0.05
 
     calc = Vasp(atoms, nsw=0, kspacing=1.0, ismear=1, sigma=0.1)
     assert calc.int_params["ismear"] == 1
@@ -569,10 +559,19 @@ def test_lreal():
     assert calc.special_params["lreal"] is False
 
     calc = Vasp(atoms, lreal=True, nsw=10)
-    assert calc.special_params["lreal"] is True
+    assert calc.special_params["lreal"] is False
 
     calc = Vasp(atoms, nsw=10)
     assert calc.special_params["lreal"] is None
+
+    calc = Vasp(atoms, lreal="auto", nsw=10)
+    assert calc.special_params["lreal"] is False
+
+    calc = Vasp(atoms * (4, 4, 4), lreal="auto", nsw=10)
+    assert calc.special_params["lreal"] == "auto"
+
+    calc = Vasp(atoms * (4, 4, 4), lreal=False, nsw=10)
+    assert calc.special_params["lreal"] is False
 
 
 def test_lorbit():
@@ -622,10 +621,8 @@ def test_setups():
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, setups="minimal", preset="MPScanSet")
-    assert (
-        isinstance(calc.parameters["setups"], str)
-        and calc.parameters["setups"] == "minimal"
-    )
+    assert isinstance(calc.parameters["setups"], str)
+    assert calc.parameters["setups"] == "minimal"
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, preset="QMOFSet")
@@ -640,12 +637,12 @@ def test_kpoint_schemes():
     assert calc.kpts == [1, 1, 1]
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, auto_kpts={"grid_density": 1000}, gamma=False)
+    calc = Vasp(atoms, auto_kpts={"kppa": 1000}, gamma=False)
     assert calc.kpts == [10, 10, 10]
     assert calc.input_params["gamma"] is False
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, auto_kpts={"grid_density": 1000})
+    calc = Vasp(atoms, auto_kpts={"kppa": 1000})
     assert calc.kpts == [10, 10, 10]
     assert calc.input_params["gamma"] is True
 
@@ -653,32 +650,31 @@ def test_kpoint_schemes():
     calc = Vasp(
         atoms,
         preset="BulkSet",
-        auto_kpts={"grid_density": 1000},
+        auto_kpts={"kppa": 1000},
         gamma=False,
     )
-    atoms.calc = calc
     assert calc.kpts == [10, 10, 10]
     assert calc.input_params["gamma"] is False
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, auto_kpts={"grid_density": 1000}, gamma=True)
+    calc = Vasp(atoms, auto_kpts={"kppa": 1000}, gamma=True)
     assert calc.kpts == [10, 10, 10]
     assert calc.input_params["gamma"] is True
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, auto_kpts={"reciprocal_density": 100})
+    calc = Vasp(atoms, auto_kpts={"kppvol": 100})
     assert calc.kpts == [12, 12, 12]
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, auto_kpts={"max_mixed_density": [100, 1000]})
+    calc = Vasp(atoms, auto_kpts={"kppvol": 100, "kppa": 1000})
     assert calc.kpts == [12, 12, 12]
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, auto_kpts={"max_mixed_density": [10, 1000]})
+    calc = Vasp(atoms, auto_kpts={"kppvol": 10, "kppa": 1000})
     assert calc.kpts == [10, 10, 10]
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, auto_kpts={"length_density": [50, 50, 1]})
+    calc = Vasp(atoms, auto_kpts={"length_densities": [50, 50, 1]})
     assert calc.kpts == [20, 20, 1]
 
     atoms = bulk("Cu")
@@ -703,17 +699,9 @@ def test_constraints():
 
 def test_bad():
     atoms = bulk("Cu")
-    with pytest.raises(ValueError):
-        Vasp(atoms, auto_kpts={"max_mixed_density": [100]})
-
-    with pytest.raises(ValueError):
-        Vasp(atoms, auto_kpts={"length_density": [100]})
 
     with pytest.raises(ValueError):
         Vasp(atoms, auto_kpts={"test": [100]})
-
-    with pytest.warns(Warning):
-        Vasp(atoms, auto_kpts={"max_mixed_density": [1000, 100]})
 
     with pytest.raises(ValueError):
         Vasp(atoms, preset="BadRelaxSet")

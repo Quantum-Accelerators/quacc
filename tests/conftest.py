@@ -10,25 +10,12 @@ TEST_SCRATCH_DIR = FILE_DIR / ".test_scratch"
 def pytest_sessionstart():
     from quacc import SETTINGS
 
-    SETTINGS.RESULTS_DIR = str(TEST_RESULTS_DIR)
-    SETTINGS.SCRATCH_DIR = str(TEST_SCRATCH_DIR)
-    if not os.path.exists(SETTINGS.RESULTS_DIR):
-        os.mkdir(SETTINGS.RESULTS_DIR)
-    if not os.path.exists(SETTINGS.SCRATCH_DIR):
-        os.mkdir(SETTINGS.SCRATCH_DIR)
-
-    WFLOW_ENGINE = (
-        SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
-    )
-
-    if WFLOW_ENGINE == "parsl":
-        import parsl
-
-        parsl.load()
+    SETTINGS.RESULTS_DIR = TEST_RESULTS_DIR
+    SETTINGS.SCRATCH_DIR = TEST_SCRATCH_DIR
+    os.makedirs(SETTINGS.RESULTS_DIR, exist_ok=True)
+    os.makedirs(SETTINGS.SCRATCH_DIR, exist_ok=True)
 
 
 def pytest_sessionfinish():
-    if os.path.exists(TEST_RESULTS_DIR):
-        rmtree(TEST_RESULTS_DIR)
-    if os.path.exists(TEST_SCRATCH_DIR):
-        rmtree(TEST_SCRATCH_DIR)
+    rmtree(TEST_RESULTS_DIR, ignore_errors=True)
+    rmtree(TEST_SCRATCH_DIR, ignore_errors=True)

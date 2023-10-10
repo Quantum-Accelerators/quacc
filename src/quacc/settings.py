@@ -2,60 +2,70 @@
 from __future__ import annotations
 
 import os
+from importlib import import_module, resources
+from pathlib import Path
 from shutil import which
-from typing import List, Optional, Union
+from typing import Literal, Optional, Union
 
-from pydantic import BaseSettings, Field, root_validator
+from maggma.core import Store
+from monty.json import MontyDecoder
+from pydantic import Field, field_validator, model_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from quacc.presets import vasp as vasp_defaults
+from quacc.calculators.presets import vasp as vasp_defaults
 
-WFLOW_IMPORT = None
-try:
-    import covalent
-except ImportError:
-    covalent = None
-try:
-    import parsl
+installed_engine = "local"
+for wflow_engine in [
+    "parsl",
+    "covalent",
+    "prefect",
+    "redun",
+    "jobflow",
+]:
+    try:
+        import_module(wflow_engine)
+        installed_engine = wflow_engine
+        break
+    except ImportError:
+        continue
 
-except ImportError:
-    parsl = None
-try:
-    import jobflow
-
-except ImportError:
-    jobflow = None
-
-_DEFAULT_CONFIG_FILE_PATH = os.path.join(os.path.expanduser("~"), ".quacc.yaml")
+_DEFAULT_CONFIG_FILE_PATH = Path("~", ".quacc.yaml").expanduser().resolve()
 
 
 class QuaccSettings(BaseSettings):
     """
     Settings for quacc.
 
-    The default way to modify these is to make a ~/.quacc.yaml file. Alternatively,
-    the environment variable QUACC_CONFIG_FILE can be set to point to a yaml file with
-    quacc settings.
+    The default way to modify these is to make a ~/.quacc.yaml file.
+    Alternatively, the environment variable QUACC_CONFIG_FILE can be set to
+    point to a custom yaml file with quacc settings. The quacc CLI offers a
+    `quacc set <setting> <value>` option to do this as well.
 
-    The variables can also be modified individually though environment variables by
-    using the "QUACC" prefix. e.g. QUACC_SCRATCH_DIR=/path/to/scratch.
+    The variables can also be modified individually though environment variables
+    by using the "QUACC" prefix. e.g. QUACC_SCRATCH_DIR=/path/to/scratch.
     """
+
+    CONFIG_FILE: Path = Field(
+        _DEFAULT_CONFIG_FILE_PATH,
+        description=(
+            "Path to the YAML file to load alternative quacc configuration "
+            "defaults from."
+        ),
+    )
 
     # --8<-- [start:settings]
 
     # ---------------------------
     # Workflow Engine
     # ---------------------------
-    WORKFLOW_ENGINE: Optional[str] = Field(
-        "covalent"
-        if covalent
-        else "parsl"
-        if parsl
-        else "jobflow"
-        if jobflow
-        else None,
+
+    WORKFLOW_ENGINE: Literal[
+        "covalent", "jobflow", "parsl", "prefect", "redun", "local"
+    ] = Field(
+        installed_engine,
         description=(
             "The workflow manager to use."
-            "Options include: 'covalent', 'parsl', 'jobflow', or None"
+            "Options include: 'covalent', 'parsl', 'redun', 'jobflow', 'prefect', or 'local'"
         ),
     )
 
@@ -63,15 +73,8 @@ class QuaccSettings(BaseSettings):
     # General Settings
     # ---------------------------
 
-    CONFIG_FILE: str = Field(
-        _DEFAULT_CONFIG_FILE_PATH,
-        description=(
-            "Path to the YAML file to load alternative quacc configuration "
-            "defaults from."
-        ),
-    )
-    RESULTS_DIR: str = Field(
-        os.getcwd(),
+    RESULTS_DIR: Path = Field(
+        Path.cwd(),
         description=(
             "Directory to store I/O-based calculation results in."
             "Note that this behavior may be modified by the chosen workflow engine."
@@ -80,8 +83,8 @@ class QuaccSettings(BaseSettings):
             "In this case, the `RESULTS_DIR` will be a subdirectory of that directory."
         ),
     )
-    SCRATCH_DIR: str = Field(
-        "/tmp" if os.path.exists("/tmp") else os.getcwd(),
+    SCRATCH_DIR: Path = Field(
+        Path("~/.scratch"),
         description="Scratch directory for calculations.",
     )
     CREATE_UNIQUE_WORKDIR: bool = Field(
@@ -102,7 +105,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # Data Store Settings
     # ---------------------------
-    PRIMARY_STORE: str = Field(
+    PRIMARY_STORE: Optional[Union[str, Store]] = Field(
         None,
         description=(
             "String-based JSON representation of the primary Maggma data store "
@@ -114,8 +117,8 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # ORCA Settings
     # ---------------------------
-    ORCA_CMD: str = Field(
-        "orca",
+    ORCA_CMD: Path = Field(
+        Path("orca"),
         description=(
             "Path to the ORCA executable. This must be the full, absolute path "
             "for parallel calculations to work."
@@ -179,12 +182,8 @@ class QuaccSettings(BaseSettings):
             "in atoms.set_initial_magnetic_moments()."
         ),
     )
-    VASP_VERBOSE: bool = Field(
-        True,
-        description="If True, warnings will be raised when INCAR parameters are changed.",
-    )
-    VASP_PRESET_DIR: str = Field(
-        os.path.dirname(vasp_defaults.__file__),
+    VASP_PRESET_DIR: Path = Field(
+        resources.files(vasp_defaults),
         description="Path to the VASP preset directory",
     )
 
@@ -202,7 +201,7 @@ class QuaccSettings(BaseSettings):
     VASP_CUSTODIAN_MAX_ERRORS: int = Field(
         5, description="Maximum errors for Custodian"
     )
-    VASP_CUSTODIAN_HANDLERS: List[str] = Field(
+    VASP_CUSTODIAN_HANDLERS: list[str] = Field(
         [
             "VaspErrorHandler",
             "MeshSymmetryErrorHandler",
@@ -217,7 +216,7 @@ class QuaccSettings(BaseSettings):
         ],
         description="Handlers for Custodian",
     )
-    VASP_CUSTODIAN_VALIDATORS: List[str] = Field(
+    VASP_CUSTODIAN_VALIDATORS: list[str] = Field(
         ["VasprunXMLValidator", "VaspFilesValidator"],
         description="Validators for Custodian",
     )
@@ -238,8 +237,8 @@ class QuaccSettings(BaseSettings):
         "qchem", description="Command to run the standard version of Q-Chem."
     )
 
-    QCHEM_LOCAL_SCRATCH: str = Field(
-        "/tmp" if os.path.exists("/tmp") else os.getcwd(),
+    QCHEM_LOCAL_SCRATCH: Path = Field(
+        Path("/tmp") if Path("/tmp").exists() else Path.cwd() / ".qchem_scratch",
         description="Compute-node local scratch directory in which Q-Chem should perform IO.",
     )
 
@@ -253,28 +252,47 @@ class QuaccSettings(BaseSettings):
         5, description="Maximum errors for Q-Chem Custodian."
     )
 
+    # NBO Settings
+    QCHEM_NBO_EXE: Optional[Path] = Field(
+        None, description="Full path to the NBO executable."
+    )
+
     # ---------------------------
     # NewtonNet Settings
     # ---------------------------
-    NEWTONNET_MODEL_PATH: Union[str, List[str]] = Field(
+    NEWTONNET_MODEL_PATH: Union[Path, list[Path]] = Field(
         "best_model_state.tar", description="Path to NewtonNet .tar model"
     )
-    NEWTONNET_CONFIG_PATH: Union[str, List[str]] = Field(
+    NEWTONNET_CONFIG_PATH: Union[Path, list[Path]] = Field(
         "config.yml", description="Path to NewtonNet YAML settings file"
     )
 
     # --8<-- [end:settings]
 
-    class Config:
-        """Pydantic config settings."""
+    @field_validator("RESULTS_DIR", "SCRATCH_DIR")
+    @classmethod
+    def resolve_and_make_paths(cls, v):
+        v = Path(os.path.expandvars(v)).expanduser().resolve()
+        os.makedirs(v, exist_ok=True)
+        return v
 
-        env_prefix = "quacc_"
+    @field_validator("ORCA_CMD")
+    @classmethod
+    def expand_paths(cls, v):
+        return v.expanduser()
 
-    @root_validator(pre=True)
+    @field_validator("PRIMARY_STORE")
+    def generate_store(cls, v):
+        return MontyDecoder().decode(v) if isinstance(v, str) else v
+
+    model_config = SettingsConfigDict(env_prefix="quacc_")
+
+    @model_validator(mode="before")
+    @classmethod
     def load_default_settings(cls, values: dict) -> dict:
         """
-        Loads settings from a root file if available and uses that as defaults in
-        place of built in defaults.
+        Loads settings from a root file if available and uses that as defaults
+        in place of built in defaults.
 
         Parameters
         ----------
@@ -289,11 +307,15 @@ class QuaccSettings(BaseSettings):
 
         from monty.serialization import loadfn
 
-        config_file_path = values.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH)
+        config_file_path = (
+            Path(values.get("CONFIG_FILE", _DEFAULT_CONFIG_FILE_PATH))
+            .expanduser()
+            .resolve()
+        )
 
-        new_values = {}
-        if os.path.exists(os.path.expanduser(config_file_path)):
-            new_values |= loadfn(os.path.expanduser(config_file_path))
+        new_values = {}  # type: dict
+        if config_file_path.exists() and config_file_path.stat().st_size > 0:
+            new_values |= loadfn(config_file_path)
 
         new_values.update(values)
         return new_values

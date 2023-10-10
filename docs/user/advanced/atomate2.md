@@ -1,6 +1,6 @@
 # Quacc + Atomate2
 
-[Atomate2](https://github.com/materialsproject/atomate2) is a fantastic computational materials science workflow program that shares many similarities with quacc. If you wish to combine workflows from quacc with those from Atomate2, that is possible through the use of Jobflow.
+[Atomate2](https://github.com/materialsproject/atomate2) is a computational materials science workflow program that shares many similarities with quacc. If you wish to combine workflows from quacc with those from Atomate2, that is possible through the use of Jobflow.
 
 !!! Tip
 
@@ -24,6 +24,6 @@ bandstructure_flow = RelaxBandStructureMaker().make_flow(
 flow = Flow([job1]) + bandstructure_flow  # (2)!
 ```
 
-1. All Atomate2 workflows take a Pymatgen `Structure` or `Molecule` object as input. This is one of the properties in the returned output of a quacc recipe, which is why we can do `job1.output["structure"]`.
+1. All Atomate2 workflows take a Pymatgen `Structure` or `Molecule` object as input. This is one of the properties in the returned output of a quacc recipe, which is why we can do `#!Python job1.output["structure"]`.
 
 2. The `+` operator can be used to combine two flows into one. We converted the first job into its own `Flow` definition to enable this.

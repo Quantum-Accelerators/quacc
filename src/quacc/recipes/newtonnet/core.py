@@ -9,17 +9,16 @@ from ase.optimize import FIRE
 from ase.vibrations.data import VibrationsData
 from monty.dev import requires
 
-from quacc import SETTINGS, job
+from quacc import SETTINGS, fetch_atoms, job
+from quacc.builders.thermo import build_ideal_gas
+from quacc.runners.calc import run_ase_opt, run_calc
 from quacc.schemas.ase import (
+    summarize_ideal_gas_thermo,
     summarize_opt_run,
     summarize_run,
-    summarize_thermo,
     summarize_vib_run,
 )
-from quacc.utils.calc import run_ase_opt, run_calc
 from quacc.utils.dicts import merge_dicts
-from quacc.utils.thermo import ideal_gas
-from quacc.utils.wflows import fetch_atoms
 
 try:
     from sella import Sella
@@ -36,12 +35,13 @@ if TYPE_CHECKING:
 
     from quacc.schemas.ase import OptSchema, RunSchema, ThermoSchema, VibSchema
 
-    class FreqSchema(VibSchema):
+    class FreqSchema(RunSchema):
+        vib: VibSchema
         thermo: ThermoSchema
 
 
 @job
-@requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
+@requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
 def static_job(
     atoms: Atoms | dict,
     calc_swaps: dict | None = None,
@@ -50,22 +50,33 @@ def static_job(
     """
     Carry out a single-point calculation.
 
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {
+            "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+            "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        }
+        ```
+
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     calc_swaps
-        Dictionary of custom kwargs for the newtonnet calculator
+        Dictionary of custom kwargs for the newtonnet calculator.
     copy_files
         Files to copy to the runtime directory.
 
     Returns
     -------
     RunSchema
-        Dictionary of results, specified in `quacc.schemas.ase.RunSchema`
+        Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
     atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
 
     defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
@@ -84,7 +95,7 @@ def static_job(
 
 
 @job
-@requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
+@requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
 def relax_job(
     atoms: Atoms | dict,
     calc_swaps: dict | None = None,
@@ -94,25 +105,41 @@ def relax_job(
     """
     Relax a structure.
 
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {
+            "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+            "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        }
+        ```
+
+        Optimizer Defaults:
+
+        ```python
+        {"fmax": 0.01, "max_steps": 1000, "optimizer": Sella or FIRE}
+        ```
+
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     calc_swaps
-        Dictionary of custom kwargs for the newtonnet calculator
+        Dictionary of custom kwargs for the newtonnet calculator.
     opt_swaps
-        Optional swaps for the optimization parameters
+        Optional swaps for the optimization parameters.
     copy_files
         Files to copy to the runtime directory.
 
     Returns
     -------
     OptSchema
-        Dictionary of results, specified in `quacc.schemas.ase.OptSchema``
+        Dictionary of results, specified in [quacc.schemas.ase.summarize_opt_run][]
     """
     atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
-    opt_swaps = opt_swaps or {}
 
     defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
@@ -123,11 +150,8 @@ def relax_job(
     flags = merge_dicts(defaults, calc_swaps)
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
-    if "sella.optimize" in opt_flags.get("optimizer", FIRE).__module__:
-        opt_flags["order"] = 0
-
     atoms.calc = NewtonNet(**flags)
-    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_swaps)
+    dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
 
     return _add_stdev_and_hess(
         summarize_opt_run(dyn, additional_fields={"name": "NewtonNet Relax"})
@@ -135,15 +159,27 @@ def relax_job(
 
 
 @job
-@requires(NewtonNet, "NewtonNet must be installed. Try pip install quacc[newtonnet]")
+@requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
 def freq_job(
     atoms: Atoms | dict,
     temperature: float = 298.15,
     pressure: float = 1.0,
     calc_swaps: dict | None = None,
+    copy_files: list[str] | None = None,
 ) -> FreqSchema:
     """
     Perform a frequency calculation using the given atoms object.
+
+    ??? Note
+
+        Calculator Defaults:
+
+        ```python
+        {
+            "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
+            "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
+        }
+        ```
 
     Parameters
     ----------
@@ -155,6 +191,8 @@ def freq_job(
         The pressure for the thermodynamic analysis.
     calc_swaps
         Optional swaps for the calculator.
+    copy_files
+        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -162,7 +200,6 @@ def freq_job(
         Dictionary of results
     """
     atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
 
     defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
@@ -172,32 +209,41 @@ def freq_job(
 
     ml_calculator = NewtonNet(**flags)
     atoms.calc = ml_calculator
+    final_atoms = run_calc(atoms, copy_files=copy_files)
 
-    ml_calculator.calculate(atoms)
-    hessian = ml_calculator.results["hessian"]
-    vib = VibrationsData(atoms, hessian)
-    vib_summary = summarize_vib_run(
-        vib, additional_fields={"name": "NewtonNet Frequency Analysis"}
+    summary = summarize_run(
+        final_atoms,
+        input_atoms=atoms,
+        additional_fields={"name": "NewtonNet Hessian"},
+    )
+    energy = summary["results"]["energy"]
+    hessian = summary["results"]["hessian"]
+
+    vib = VibrationsData(final_atoms, hessian)
+    summary["vib"] = summarize_vib_run(
+        vib, additional_fields={"name": "ASE Vibrations Analysis"}
     )
 
-    igt = ideal_gas(
-        atoms, vib.get_frequencies(), energy=ml_calculator.results["energy"]
+    igt = build_ideal_gas(final_atoms, vib.get_frequencies(), energy=energy)
+    summary["thermo"] = summarize_ideal_gas_thermo(
+        igt,
+        temperature=temperature,
+        pressure=pressure,
+        additional_fields={"name": "ASE Thermo Analysis"},
     )
-    vib_summary["thermo"] = summarize_thermo(
-        igt, temperature=temperature, pressure=pressure
-    )
 
-    return vib_summary
+    return summary
 
 
-def _add_stdev_and_hess(summary: dict[str, any]) -> dict[str, any]:
+def _add_stdev_and_hess(summary: dict) -> dict:
     """
     Calculate and add standard deviation values and Hessians to the summary.
 
-    This function takes a summary dictionary containing information about a molecular trajectory
-    and calculates the standard deviation of various properties using the NewtonNet machine learning
-    calculator. It adds the calculated standard deviation values and Hessians to each configuration
-    in the trajectory.
+    This function takes a summary dictionary containing information about a
+    molecular trajectory and calculates the standard deviation of various
+    properties using the NewtonNet machine learning calculator. It adds the
+    calculated standard deviation values and Hessians to each configuration in
+    the trajectory.
 
     Parameters
     ----------
@@ -206,8 +252,9 @@ def _add_stdev_and_hess(summary: dict[str, any]) -> dict[str, any]:
 
     Returns
     -------
-    Dict[str, Any]
-        The modified summary dictionary with added standard deviation and Hessian values.
+    Dict
+        The modified summary dictionary with added standard deviation and
+        Hessian values.
     """
 
     for conf in summary["trajectory"]:
@@ -215,10 +262,12 @@ def _add_stdev_and_hess(summary: dict[str, any]) -> dict[str, any]:
             model_path=SETTINGS.NEWTONNET_MODEL_PATH,
             settings_path=SETTINGS.NEWTONNET_CONFIG_PATH,
         )
-        ml_calculator.calculate(conf["atoms"])
-        conf["hessian"] = ml_calculator.results["hessian"]
-        conf["energy_std"] = ml_calculator.results["energy_disagreement"]
-        conf["forces_std"] = ml_calculator.results["forces_disagreement"]
-        conf["hessian_std"] = ml_calculator.results["hessian_disagreement"]
+        atoms = conf["atoms"]
+        atoms.calc = ml_calculator
+        results = run_calc(atoms).calc.results
+        conf["hessian"] = results["hessian"]
+        conf["energy_std"] = results["energy_disagreement"]
+        conf["forces_std"] = results["forces_disagreement"]
+        conf["hessian_std"] = results["hessian_disagreement"]
 
     return summary
