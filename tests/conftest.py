@@ -8,7 +8,7 @@ def default_settings():
     return SETTINGS.copy()
 
 
-def pytest_sessionstart(test_results_dir, test_scratch_dir):
+def pytest_sessionstart():
     import os
     from pathlib import Path
 
@@ -24,7 +24,7 @@ def pytest_sessionstart(test_results_dir, test_scratch_dir):
     os.makedirs(test_scratch_dir, exist_ok=True)
 
 
-def pytest_sessionfinish(test_results_dir, test_scratch_dir):
+def pytest_sessionfinish():
     from pathlib import Path
     from shutil import rmtree
 
