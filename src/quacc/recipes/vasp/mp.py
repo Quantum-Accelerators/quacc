@@ -56,9 +56,10 @@ def mp_prerelax_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     preset
-        Preset to use.
+        Preset to use from [quacc.calculators.presets.vasp][].
     calc_swaps
-        Dictionary of custom kwargs for the calculator.
+        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
+        a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
     copy_files
         Files to copy to the runtime directory.
 
@@ -104,9 +105,10 @@ def mp_relax_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     preset
-        Preset to use.
+        Preset to use from [quacc.calculators.presets.vasp][].
     calc_swaps
-        Dictionary of custom kwargs for the calculator.
+        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
+        a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
     copy_files
         Files to copy to the runtime directory.
 

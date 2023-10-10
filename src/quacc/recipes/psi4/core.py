@@ -66,7 +66,8 @@ def static_job(
     basis
         Basis set
     calc_swaps
-        Dictionary of custom kwargs for the calculator.
+        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
+        a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
     copy_files
         Files to copy to the runtime directory.
 
@@ -120,7 +121,8 @@ def _base_job(
     defaults
         The default calculator parameters.
     calc_swaps
-        Dictionary of custom kwargs for the calculator.
+        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
+        a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
     additional_fields
         Any additional fields to supply to the summarizer.
     copy_files

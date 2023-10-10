@@ -55,7 +55,8 @@ def static_job(
     kpts
         k-point grid to use.
     calc_swaps
-        Dictionary of custom kwargs for the calculator.
+        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
+        a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
     copy_files
         Files to copy to the runtime directory.
 
@@ -127,7 +128,8 @@ def relax_job(
         Whether to relax the unit cell shape/volume in addition to the
         positions.
     calc_swaps
-        Dictionary of custom kwargs for the calculator.
+        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
+        a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
     copy_files
         Files to copy to the runtime directory.
 
@@ -180,7 +182,8 @@ def _base_job(
     defaults
         The default calculator parameters to use.
     calc_swaps
-        Dictionary of custom kwargs for the calculator to override defaults.
+        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
+        a pre-existing key entirely.to override defaults.
     additional_fields
         Any additional fields to supply to the summarizer.
     copy_files
