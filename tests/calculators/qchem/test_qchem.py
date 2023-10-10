@@ -48,7 +48,7 @@ def test_qchem_write_input_basic(tmpdir, test_atoms):
         QChem(test_atoms, cores=40, directory="notsupported")
 
 
-def test_qchem_write_input_intermediate(tmpdir):
+def test_qchem_write_input_intermediate(tmpdir, test_atoms):
     from pymatgen.io.qchem.inputs import QCInput
 
     from quacc.calculators.qchem import QChem
@@ -78,7 +78,7 @@ def test_qchem_write_input_intermediate(tmpdir):
     assert qcinp.as_dict() == ref_qcinp.as_dict()
 
 
-def test_qchem_write_input_advanced(tmpdir):
+def test_qchem_write_input_advanced(tmpdir, test_atoms):
     from pymatgen.io.qchem.inputs import QCInput
 
     from quacc.calculators.qchem import QChem
@@ -112,7 +112,7 @@ def test_qchem_write_input_advanced(tmpdir):
     assert qcinp.as_dict() == ref_qcinp.as_dict()
 
 
-def test_qchem_write_input_open_shell_and_different_charges(tmpdir):
+def test_qchem_write_input_open_shell_and_different_charges(tmpdir, os_atoms):
     from pymatgen.io.qchem.inputs import QCInput
 
     from quacc.calculators.qchem import QChem
@@ -184,7 +184,7 @@ def test_qchem_write_input_freq(tmpdir):
     assert qcinp.as_dict() == ref_qcinp.as_dict()
 
 
-def test_qchem_read_results_basic_and_write_53(tmpdir):
+def test_qchem_read_results_basic_and_write_53(tmpdir, test_atoms):
     import os
     from pathlib import Path
 
@@ -216,7 +216,7 @@ def test_qchem_read_results_basic_and_write_53(tmpdir):
     assert qcinp.rem.get("scf_guess") == "read"
 
 
-def test_qchem_read_results_intermediate(tmpdir):
+def test_qchem_read_results_intermediate(tmpdir, test_atoms):
     import os
 
     from ase import units
@@ -234,23 +234,7 @@ def test_qchem_read_results_intermediate(tmpdir):
     assert calc.prev_orbital_coeffs is not None
 
 
-def test_qchem_read_results_advanced(tmpdir):
-    from ase import units
-
-    from quacc.calculators.qchem import QChem
-
-    tmpdir.chdir()
-    calc = QChem(test_atoms, cores=40)
-    os.chdir(os.path.join(file_dir, "examples", "advanced"))
-    calc.read_results()
-    assert calc.results["energy"] == pytest.approx(-605.7310332390 * units.Hartree)
-    assert calc.results["forces"][0][0] == pytest.approx(-0.4270884974249971)
-    assert calc.prev_orbital_coeffs is not None
-    assert calc.results["hessian"] is None
-    tmpdir.chdir()
-
-
-def test_qchem_read_results_freq(tmpdir):
+def test_qchem_read_results_advanced(tmpdir, test_atoms):
     import os
 
     from ase import units
@@ -258,6 +242,24 @@ def test_qchem_read_results_freq(tmpdir):
     from quacc.calculators.qchem import QChem
 
     tmpdir.chdir()
+    calc = QChem(test_atoms, cores=40)
+    os.chdir(file_dir / "examples" / "advanced")
+    calc.read_results()
+    tmpdir.chdir()
+
+    assert calc.results["energy"] == pytest.approx(-605.7310332390 * units.Hartree)
+    assert calc.results["forces"][0][0] == pytest.approx(-0.4270884974249971)
+    assert calc.prev_orbital_coeffs is not None
+    assert calc.results["hessian"] is None
+
+
+def test_qchem_read_results_freq(tmpdir, test_atoms):
+    import os
+
+    from ase import units
+
+    from quacc.calculators.qchem import QChem
+
     calc = QChem(test_atoms, job_type="freq", cores=40)
     os.chdir(file_dir / "examples" / "freq")
     calc.read_results()
