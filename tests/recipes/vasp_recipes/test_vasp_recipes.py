@@ -47,7 +47,7 @@ def test_static_job(tmpdir):
         },
     )
     assert output["parameters"]["ivdw"] == 13
-    assert output["parameters"]["lasph"] == False
+    assert output["parameters"]["lasph"] is False
     assert "prec" not in output["parameters"]
     assert "lwave" not in output["parameters"]
     assert "efermi" not in output["parameters"]
