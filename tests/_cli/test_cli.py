@@ -95,7 +95,7 @@ def test_unset(runner):
     assert "WORKFLOW_ENGINE" not in lines
 
 
-def test_bad():
+def test_bad(runner):
     from quacc._cli.quacc import app
 
     response = runner.invoke(app, ["set", "CONFIG_FILE", "here"])
