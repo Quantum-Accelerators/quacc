@@ -263,7 +263,7 @@ def slab_to_ads_flow(
     def _relax_and_static_distributed(slabs):
         return [
             slab_static_job(
-                slab_relax_job(slab**slab_relax_kwargs)["atoms"],
+                slab_relax_job(slab, **slab_relax_kwargs)["atoms"],
                 **slab_static_kwargs,
             )
             for slab in slabs
