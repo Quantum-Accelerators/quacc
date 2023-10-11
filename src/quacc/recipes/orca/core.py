@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 from ase.calculators.orca import ORCA, OrcaProfile
 
-from quacc import SETTINGS, fetch_atoms, job
+from quacc import SETTINGS, job
 from quacc.runners.calc import run_calc
 from quacc.schemas.cclib import cclib_summarize_run
 from quacc.utils.dicts import merge_dicts
@@ -24,7 +24,7 @@ GEOM_FILE = f"{ORCA().name}.xyz"
 
 @job
 def static_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     charge: int,
     spin_multiplicity: int,
     xc: str = "wb97x-d3bj",
@@ -64,8 +64,7 @@ def static_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     charge
         Charge of the system.
     spin_multiplicity
@@ -120,7 +119,7 @@ def static_job(
 
 @job
 def relax_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     charge: int,
     spin_multiplicity: int,
     xc: str = "wb97x-d3bj",
@@ -219,7 +218,7 @@ def relax_job(
 
 
 def _base_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     charge: int,
     spin_multiplicity: int,
     default_inputs: dict | None = None,
@@ -235,8 +234,7 @@ def _base_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     charge
         Charge of the system.
     spin_multiplicity
@@ -263,7 +261,6 @@ def _base_job(
     cclibSchema
         Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][]
     """
-    atoms = fetch_atoms(atoms)
     inputs = merge_dicts(default_inputs, input_swaps)
     blocks = merge_dicts(default_blocks, block_swaps)
     orcasimpleinput = " ".join(list(inputs.keys()))

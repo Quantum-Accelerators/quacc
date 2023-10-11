@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from quacc import fetch_atoms, flow, job, subflow
+from quacc import flow, job, subflow
 from quacc.atoms.slabs import make_slabs_from_bulk
 from quacc.recipes.emt.core import relax_job, static_job
 
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 @flow
 def bulk_to_slabs_flow(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     make_slabs_kwargs: dict | None = None,
     run_static: bool = True,
     slab_relax_kwargs: dict | None = None,
@@ -33,8 +33,7 @@ def bulk_to_slabs_flow(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     make_slabs_kwargs
         Additional keyword arguments to pass to
         [quacc.atoms.slabs.make_slabs_from_bulk][]
@@ -60,7 +59,6 @@ def bulk_to_slabs_flow(
 
     @job
     def _make_slabs(atoms):
-        atoms = fetch_atoms(atoms)
         return make_slabs_from_bulk(atoms, **make_slabs_kwargs)
 
     @subflow

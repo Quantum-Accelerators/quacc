@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from quacc import fetch_atoms, job
+from quacc import job
 from quacc.calculators.vasp import Vasp
 from quacc.runners.calc import run_calc
 from quacc.schemas.vasp import vasp_summarize_run
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 @job
 def static_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     preset: str | None = "BulkSet",
     calc_swaps: dict | None = None,
     copy_files: list[str] | None = None,
@@ -47,8 +47,7 @@ def static_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     preset
         Preset to use from `quacc.calculators.presets.vasp`.
     calc_swaps
@@ -84,7 +83,7 @@ def static_job(
 
 @job
 def relax_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     preset: str | None = "BulkSet",
     relax_cell: bool = True,
     calc_swaps: dict | None = None,
@@ -113,8 +112,7 @@ def relax_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     preset
         Preset to use from `quacc.calculators.presets.vasp`.
     relax_cell
@@ -154,7 +152,7 @@ def relax_job(
 
 @job
 def double_relax_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     preset: str | None = "BulkSet",
     relax_cell: bool = True,
     calc_swaps1: dict | None = None,
@@ -175,8 +173,7 @@ def double_relax_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     preset
         Preset to use from `quacc.calculators.presets.vasp`.
     relax_cell
@@ -218,7 +215,7 @@ def double_relax_job(
 
 
 def _base_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     preset: str | None = None,
     defaults: dict | None = None,
     calc_swaps: dict | None = None,
@@ -232,8 +229,7 @@ def _base_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     preset
         Preset to use from `quacc.calculators.presets.vasp`.
     defaults
@@ -251,7 +247,6 @@ def _base_job(
     VaspSchema
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
-    atoms = fetch_atoms(atoms)
     flags = merge_dicts(defaults, calc_swaps, remove_nones=False)
 
     atoms.calc = Vasp(atoms, preset=preset, **flags)

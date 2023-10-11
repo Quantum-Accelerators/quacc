@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 
 from ase.optimize import BFGSLineSearch
 
-from quacc import fetch_atoms, job
+from quacc import job
 from quacc.calculators.vasp import Vasp
 from quacc.recipes.vasp.core import _base_job
 from quacc.runners.calc import run_ase_opt
@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 
 @job
 def qmof_relax_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     preset: str | None = "QMOFSet",
     relax_cell: bool = True,
     run_prerelax: bool = True,
@@ -56,8 +56,7 @@ def qmof_relax_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     preset
         Preset to use from `quacc.calculators.presets.vasp`. Applies for all jobs.
     relax_cell
@@ -76,7 +75,6 @@ def qmof_relax_job(
     QMOFRelaxSchema
         Dictionary of results
     """
-    atoms = fetch_atoms(atoms)
 
     # 1. Pre-relaxation
     if run_prerelax:

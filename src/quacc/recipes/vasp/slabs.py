@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from quacc import fetch_atoms, flow, job, subflow
+from quacc import flow, job, subflow
 from quacc.atoms.slabs import make_adsorbate_structures, make_slabs_from_bulk
 from quacc.recipes.vasp.core import _base_job
 
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 @job
 def slab_static_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     preset: str | None = "SlabSet",
     calc_swaps: dict | None = None,
     copy_files: list[str] | None = None,
@@ -44,8 +44,7 @@ def slab_static_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     preset
         Preset to use from `quacc.calculators.presets.vasp`.
     calc_swaps
@@ -83,7 +82,7 @@ def slab_static_job(
 
 @job
 def slab_relax_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     preset: str | None = "SlabSet",
     calc_swaps: dict | None = None,
     copy_files: list[str] | None = None,
@@ -112,8 +111,7 @@ def slab_relax_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     preset
         Preset to use from `quacc.calculators.presets.vasp`.
     calc_swaps
@@ -151,7 +149,7 @@ def slab_relax_job(
 
 @flow
 def bulk_to_slabs_flow(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     make_slabs_kwargs: dict | None = None,
     run_static: bool = True,
     slab_relax_kwargs: dict | None = None,
@@ -169,8 +167,7 @@ def bulk_to_slabs_flow(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     make_slabs_kwargs
         Additional keyword arguments to pass to [quacc.atoms.slabs.make_slabs_from_bulk][]
     run_static
@@ -191,7 +188,6 @@ def bulk_to_slabs_flow(
 
     @job
     def _make_slabs(atoms):
-        atoms = fetch_atoms(atoms)
         return make_slabs_from_bulk(atoms, **make_slabs_kwargs)
 
     @subflow
@@ -257,7 +253,6 @@ def slab_to_ads_flow(
 
     @job
     def _make_ads_slabs(atoms, adsorbate):
-        atoms = fetch_atoms(atoms)
         return make_adsorbate_structures(atoms, adsorbate, **make_ads_kwargs)
 
     @subflow

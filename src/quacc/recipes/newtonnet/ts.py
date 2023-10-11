@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
-from quacc import SETTINGS, fetch_atoms, job
+from quacc import SETTINGS, job
 from quacc.recipes.newtonnet.core import _add_stdev_and_hess, freq_job, relax_job
 from quacc.runners.calc import run_ase_opt
 from quacc.schemas.ase import summarize_opt_run
@@ -46,7 +46,7 @@ if TYPE_CHECKING:
 @requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
 @requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
 def ts_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     use_custom_hessian: bool = False,
     run_freq: bool = True,
     freq_job_kwargs: dict | None = None,
@@ -103,7 +103,6 @@ def ts_job(
     TSSchema
         Dictionary of results
     """
-    atoms = fetch_atoms(atoms)
     freq_job_kwargs = freq_job_kwargs or {}
 
     defaults = {
@@ -149,7 +148,7 @@ def ts_job(
 @requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
 @requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
 def irc_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     direction: Literal["forward", "reverse"] = "forward",
     run_freq: bool = True,
     freq_job_kwargs: dict | None = None,
@@ -219,7 +218,6 @@ def irc_job(
     IRCSchema
         A dictionary containing the IRC summary and thermodynamic summary.
     """
-    atoms = fetch_atoms(atoms)
     freq_job_kwargs = freq_job_kwargs or {}
     default_settings = SETTINGS.copy()
 
@@ -271,7 +269,7 @@ def irc_job(
 @requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
 @requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
 def quasi_irc_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     direction: Literal["forward", "reverse"] = "forward",
     run_freq: bool = True,
     irc_job_kwargs: dict | None = None,

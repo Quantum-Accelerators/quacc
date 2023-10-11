@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from pymatgen.analysis.defects.generators import VacancyGenerator
 
-from quacc import fetch_atoms, flow, job, subflow
+from quacc import flow, job, subflow
 from quacc.atoms.defects import make_defects_from_bulk
 from quacc.recipes.emt.core import relax_job, static_job
 
@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 
 @flow
 def bulk_to_defects_flow(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     defect_gen: (
         AntiSiteGenerator
         | ChargeInterstitialGenerator
@@ -80,7 +80,6 @@ def bulk_to_defects_flow(
 
     @job
     def _make_defects(atoms):
-        atoms = fetch_atoms(atoms)
         return make_defects_from_bulk(
             atoms,
             defect_gen=defect_gen,

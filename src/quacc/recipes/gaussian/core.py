@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from ase.calculators.gaussian import Gaussian
 
-from quacc import fetch_atoms, job
+from quacc import job
 from quacc.runners.calc import run_calc
 from quacc.schemas.cclib import cclib_summarize_run
 from quacc.utils.dicts import merge_dicts
@@ -22,7 +22,7 @@ GEOM_FILE = LOG_FILE
 
 @job
 def static_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     charge: int,
     spin_multiplicity: int,
     xc: str = "wb97x-d",
@@ -59,8 +59,7 @@ def static_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     charge
         Charge of the system.
     spin_multiplicity
@@ -148,8 +147,7 @@ def relax_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     charge
         Charge of the system.
     spin_multiplicity
@@ -200,7 +198,7 @@ def relax_job(
 
 
 def _base_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     charge: int,
     spin_multiplicity: int,
     defaults: dict | None = None,
@@ -214,8 +212,7 @@ def _base_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     charge
         Charge of the system.
     spin_multiplicity
@@ -235,7 +232,6 @@ def _base_job(
     cclibSchema
         Dictionary of results, as specified in [quacc.schemas.cclib.cclib_summarize_run][]
     """
-    atoms = fetch_atoms(atoms)
     flags = merge_dicts(defaults, calc_swaps)
 
     atoms.calc = Gaussian(**flags)
