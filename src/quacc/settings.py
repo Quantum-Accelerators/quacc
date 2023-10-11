@@ -147,6 +147,12 @@ class QuaccSettings(BaseSettings):
             "This will modify INCAR flags on-the-fly if they disobey the VASP manual."
         ),
     )
+    VASP_FORCE_COPILOT: bool = Field(
+        False,
+        description=(
+            "Whether to force co-pilot swaps to override user-specified flags."
+        ),
+    )
     VASP_BADER: bool = Field(
         bool(which("bader")),
         description=(

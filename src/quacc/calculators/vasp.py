@@ -55,6 +55,9 @@ class Vasp(Vasp_):
     incar_copilot
         If True, the INCAR parameters will be adjusted if they go against the
         VASP manual. Default is True in settings.
+    force_copilot
+        If False, INCAR swaps enabled by the INCAR co-pilot will not override
+        the user's chosen value. It will only override values that aren't set.
     copy_magmoms
         If True, any pre-existing `atoms.get_magnetic_moments()` will be set in
         `atoms.set_initial_magnetic_moments()`. Set this to False if you want to
@@ -110,6 +113,7 @@ class Vasp(Vasp_):
         preset: None | str = None,
         use_custodian: bool | None = None,
         incar_copilot: bool | None = None,
+        force_copilot: bool | None = None,
         copy_magmoms: bool | None = None,
         preset_mag_default: float | None = None,
         mag_cutoff: None | float = None,
@@ -127,6 +131,9 @@ class Vasp(Vasp_):
         incar_copilot = (
             SETTINGS.VASP_INCAR_COPILOT if incar_copilot is None else incar_copilot
         )
+        force_copilot = (
+            SETTINGS.VASP_FORCE_COPILOT if force_copilot is None else force_copilot
+        )
         copy_magmoms = (
             SETTINGS.VASP_COPY_MAGMOMS if copy_magmoms is None else copy_magmoms
         )
@@ -142,6 +149,7 @@ class Vasp(Vasp_):
         self.preset = preset
         self.use_custodian = use_custodian
         self.incar_copilot = incar_copilot
+        self.force_copilot = force_copilot
         self.copy_magmoms = copy_magmoms
         self.preset_mag_default = preset_mag_default
         self.mag_cutoff = mag_cutoff
@@ -538,13 +546,11 @@ class Vasp(Vasp_):
             )
             calc.set(efermi=None)
 
-        if calc.bool_params["luse_vdw"] and "ASE_VASP_VDW" not in os.environ:
-            warnings.warn(
-                "ASE_VASP_VDW was not set, yet you requested a vdW functional.",
-                UserWarning,
-            )
-
-        self.user_calc_params = calc.parameters | self.user_calc_params
+        self.user_calc_params = (
+            calc.parameters
+            if self.force_copilot
+            else calc.parameters | self.user_calc_params
+        )
 
     def _convert_auto_kpts(
         self,
