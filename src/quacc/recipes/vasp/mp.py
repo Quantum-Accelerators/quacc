@@ -266,7 +266,7 @@ def _get_bandgap_swaps(bandgap: float | None = None) -> dict:
         Dictionary of swaps.
     """
 
-    if not bandgap:
+    if bandgap is None:
         smearing_swaps = {"kspacing": 0.22, "ismear": 0, "sigma": 0.05}
     elif bandgap <= 1e-4:
         smearing_swaps = {"kspacing": 0.22, "ismear": 2, "sigma": 0.2}
