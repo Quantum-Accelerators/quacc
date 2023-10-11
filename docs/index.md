@@ -6,8 +6,6 @@
 
 - `quacc` gives you the freedom of choice. Through a single, unified interface to several [supported workflow management solutions](https://quantum-accelerators.github.io/quacc/user/basics/wflow_overview.html), `quacc` lets you use what best suits your unique computing needs.
 
-- `quacc` has [pre-made recipes](https://quantum-accelerators.github.io/quacc/user/recipes/recipes_list.html) for the following packages: DFTB+, Gaussian, GULP, NewtonNet, ORCA, Psi4, Q-Chem, tblite, and VASP. It's simple to add your favorite!
-
 ---
 
 ![Quacc logo](images/quacc_logo_wide.png)
