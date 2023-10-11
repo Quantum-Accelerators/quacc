@@ -246,15 +246,13 @@ class Vasp(Vasp_):
 
         # Check ASE environment variables
         if "VASP_PP_PATH" not in os.environ:
-            raise ValueError(
-                "The VASP_PP_PATH environment variable must point to the library of VASP pseudopotentials. See the ASE Vasp calculator documentation for details."
-            )
+            msg = "The VASP_PP_PATH environment variable must point to the library of VASP pseudopotentials. See the ASE Vasp calculator documentation for details."
+            raise ValueError(msg)
 
         # Check if ASE_VASP_VDW is set
         if self.user_calc_params.get("luse_vdw") and "ASE_VASP_VDW" not in os.environ:
-            raise ValueError(
-                "ASE_VASP_VDW was not set, yet you requested a vdW functional."
-            )
+            msg = "ASE_VASP_VDW was not set, yet you requested a vdW functional."
+            raise ValueError(msg)
 
         # Check if Custodian should be used and confirm environment variables
         if self.use_custodian:
@@ -263,9 +261,8 @@ class Vasp(Vasp_):
             return f"python {run_vasp_custodian_file}"
 
         if "ASE_VASP_COMMAND" not in os.environ and "VASP_SCRIPT" not in os.environ:
-            raise ValueError(
-                "ASE_VASP_COMMAND or VASP_SCRIPT must be set in the environment to run VASP without Custodian. See the ASE Vasp calculator documentation for details."
-            )
+            msg = "ASE_VASP_COMMAND or VASP_SCRIPT must be set in the environment to run VASP without Custodian. See the ASE Vasp calculator documentation for details."
+            raise ValueError(msg)
 
         return None
 
