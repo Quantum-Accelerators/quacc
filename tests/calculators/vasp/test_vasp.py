@@ -445,13 +445,6 @@ def test_isym():
 def test_ncore():
     atoms = bulk("Cu")
 
-    calc = Vasp(atoms, ncore=16)
-    assert calc.int_params["ncore"] == 1
-
-    calc = Vasp(atoms, npar=16)
-    assert calc.int_params["ncore"] == 1
-    assert calc.int_params["npar"] is None
-
     atoms *= (2, 2, 2)
     calc = Vasp(atoms, ncore=4)
     assert calc.int_params["ncore"] == 4

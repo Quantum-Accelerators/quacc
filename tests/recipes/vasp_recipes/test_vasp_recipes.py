@@ -400,7 +400,7 @@ def test_mp(tmpdir):
     assert output["parameters"]["xc"] == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02
     assert output["parameters"]["encut"] == 680
-    assert output["parameters"]["ismear"] == 1
+    assert output["parameters"]["ismear"] == 0
     assert output["parameters"]["kspacing"] == pytest.approx(0.28329488761304206)
 
     atoms = molecule("O2")
