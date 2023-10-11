@@ -244,7 +244,7 @@ class Vasp(Vasp_):
             )
 
         # Check if ASE_VASP_VDW is set
-        if self.user_calc_params["luse_vdw"] and "ASE_VASP_VDW" not in os.environ:
+        if self.user_calc_params.get("luse_vdw") and "ASE_VASP_VDW" not in os.environ:
             warnings.warn(
                 "ASE_VASP_VDW was not set, yet you requested a vdW functional.",
                 UserWarning,
@@ -538,7 +538,13 @@ class Vasp(Vasp_):
             )
             calc.set(efermi=None)
 
-        self.user_calc_params = calc.parameters
+        if calc.bool_params["luse_vdw"] and "ASE_VASP_VDW" not in os.environ:
+            warnings.warn(
+                "ASE_VASP_VDW was not set, yet you requested a vdW functional.",
+                UserWarning,
+            )
+
+        self.user_calc_params = calc.parameters | self.user_calc_params
 
     def _convert_auto_kpts(
         self,
