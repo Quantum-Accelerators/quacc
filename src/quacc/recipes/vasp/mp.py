@@ -208,7 +208,7 @@ def _get_bandgap_swaps(bandgap: float | None = None) -> dict:
         kspacing = 2 * np.pi * 1.0265 / (rmin - 1.0183)
         smearing_swaps = {
             "kspacing": min(kspacing, 0.44),
-            "ismear": 0,
+            "ismear": -5,
             "sigma": 0.05,
         }
 
