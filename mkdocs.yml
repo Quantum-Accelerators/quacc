@@ -7,8 +7,6 @@ site_name: quacc
 site_url: https://quantum-accelerators.github.io/quacc/
 nav:
   - Home: index.md
-  - Test Drive 🏎️:
-      - start/demo.md
   - Installation Guide 🔧:
       - install/install.md
       - install/codes.md

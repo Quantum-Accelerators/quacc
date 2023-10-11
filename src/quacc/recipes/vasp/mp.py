@@ -57,11 +57,12 @@ def mp_prerelax_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     preset
-        Preset to use from [quacc.calculators.presets.vasp][].
+        Preset to use from `quacc.calculators.presets.vasp`.
     bandgap
         Estimate for the bandgap in eV.
     calc_swaps
-        Dictionary of custom kwargs for the calculator.
+        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
+        a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
     copy_files
         Files to copy to the runtime directory.
 
@@ -114,11 +115,12 @@ def mp_relax_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     preset
-        Preset to use from [quacc.calculators.presets.vasp][].
+        Preset to use from `quacc.calculators.presets.vasp`.
     bandgap
         Estimate for the bandgap in eV.
     calc_swaps
-        Dictionary of custom kwargs for the calculator.
+        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
+        a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
     copy_files
         Files to copy to the runtime directory.
 
@@ -237,8 +239,17 @@ def mp_relax_flow(
     # Run the prerelax
     prerelax_results = mp_prerelax_job(atoms, **prerelax_job_kwargs)
 
-    # Update parameters based on bandgap
-    bandgap = prerelax_results["output"]["bandgap"]
+    bandgap = prerelax_results["output"].get("bandgap", 0)
+    if bandgap < 1e-4:
+        kspacing_swaps = {"kspacing": 0.22, "sigma": 0.2, "ismear": 2}
+    else:
+        rmin = 25.22 - 2.87 * bandgap
+        kspacing = 2 * np.pi * 1.0265 / (rmin - 1.0183)
+        kspacing_swaps = {"kspacing": min(kspacing, 0.44), "ismear": 0, "sigma": 0.05}
+
+    relax_job_kwargs["calc_swaps"] = kspacing_swaps | relax_job_kwargs.get(
+        "calc_swaps", {}
+    )
 
     # Run the relax
     relax_results = mp_relax_job(

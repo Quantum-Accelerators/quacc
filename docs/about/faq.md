@@ -4,6 +4,20 @@
 
 A: Like the sound a duck makes: "quack!"
 
+**Q: What's the philosophy behind quacc?**
+
+A: This is a big question. I'll explain with some points that were on my mind when I made it:
+
+1. Everyone's computing needs are different, which means not everyone is going to want to use the same workflow engine. This has historically hindered the widespread adoption of prior computational materials science libraries and makes it difficult to share workflows with others. quacc supports several workflow engines out-of-the-box using largely the same syntax, and you can pick your favorite (or use none at all).
+
+2. We should leverage tools that are widely used in the community. Python packages like ASE and Pymatgen are staples in the computational materials science community. Rather than reinvent the wheel, quacc takes advantage of what is already out there and — crucially — makes them play nicely together.
+
+3. Developers should be able to focus on the science, not the workflow architecturee. Many similar packages have the science closely intertwined with the workflow logic. This makes it difficult to write new workflows without learning the intricacies of the workflow stack. quacc solely relies on the use of function decorators that make it easy to transform typical functions into ones that are workflow-ready.
+
+4. An overeliance on classes and inheritance can be confusing at the expense of conciseneess. I love classes, but in a computational materials science library, too much class inheritance can make it difficult to track down what parameters are getting set where. Students are also less familiar with classes and may have a difficult time in understanding how they work. The recipes in quacc take a more direct and familiar functional programming approach.
+
+5. And last but not least, I'm opinionated. quacc represents choices that I think make the most sense for my group and me. Hopefully they make sense for you too.
+
 **Q: Which workflow management system should I use?**
 
 A: Good question! Check out the [Workflow Engines Overview Guide](../user/basics/wflow_overview.md) for a comparison of several common options to see which might be best for you.

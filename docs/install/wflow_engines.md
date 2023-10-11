@@ -6,6 +6,18 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     For a comparison of the different compatible workflow engines, refer to the [Workflow Engines Overview](../user/basics/wflow_overview.md) section.
 
+=== "Parsl ⭐"
+
+    **Installation**
+
+    To install Parsl, run the following:
+
+    ```bash
+    pip install quacc[parsl]
+    ```
+
+    Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
+
 === "Covalent ⭐"
 
     **Installation**
@@ -33,18 +45,6 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
         ```bash title="~/.bashrc"
         export COVALENT_CONFIG_DIR="$SCRATCH/.config/covalent"
         ```
-
-=== "Parsl ⭐"
-
-    **Installation**
-
-    To install Parsl, run the following:
-
-    ```bash
-    pip install quacc[parsl]
-    ```
-
-    Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
 
 === "Prefect"
 
@@ -96,7 +96,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     ```yaml title="jobflow.yaml"
     JOB_STORE:
-    docs_store:
+      docs_store:
         type: MongoStore
         host: <host name>
         port: 27017
@@ -112,7 +112,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
         ```yaml title="jobflow.yaml"
         JOB_STORE:
-        docs_store:
+          docs_store:
             type: MongoStore
             host: <URI>
             port: 27017

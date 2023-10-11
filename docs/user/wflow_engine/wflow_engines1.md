@@ -14,6 +14,40 @@ graph LR
   A[Input] --> B(Relax) --> C[Output];
 ```
 
+=== "Parsl ⭐"
+
+    !!! Important
+
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md) and load the default Parsl configuration:
+
+        ```bash title="terminal"
+        quacc set WORKFLOW_ENGINE parsl
+        ```
+
+        ```python title="python"
+        import parsl
+
+        parsl.load()
+        ```
+
+    ```python
+    from ase.build import bulk
+    from quacc.recipes.emt.core import relax_job
+
+    # Make an Atoms object of a bulk Cu structure
+    atoms = bulk("Cu")
+
+    # Call the PythonApp
+    future = relax_job(atoms)  # (1)!
+
+    # Print result
+    print(future.result())  # (2)!
+    ```
+
+    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here. We also did not need to use a `#!Python @flow` decorator because Parsl does not have an analogous decorator.
+
+    2. The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object.
+
 === "Covalent ⭐"
 
     !!! Important
@@ -59,40 +93,6 @@ graph LR
     2. This will dispatch the workflow to the Covalent server.
 
     3. The `ct.get_result` function is used to fetch the workflow status and results from the server. You don't need to set `wait=True` in practice. Once you dispatch the workflow, it will begin running (if the resources are available).
-
-=== "Parsl ⭐"
-
-    !!! Important
-
-        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md) and load the default Parsl configuration:
-
-        ```bash title="terminal"
-        quacc set WORKFLOW_ENGINE parsl
-        ```
-
-        ```python title="python"
-        import parsl
-
-        parsl.load()
-        ```
-
-    ```python
-    from ase.build import bulk
-    from quacc.recipes.emt.core import relax_job
-
-    # Make an Atoms object of a bulk Cu structure
-    atoms = bulk("Cu")
-
-    # Call the PythonApp
-    future = relax_job(atoms)  # (1)!
-
-    # Print result
-    print(future.result())  # (2)!
-    ```
-
-    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here. We also did not need to use a `#!Python @flow` decorator because Parsl does not have an analogous decorator.
-
-    2. The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object.
 
 === "Prefect"
 
@@ -205,6 +205,24 @@ graph LR
   B --> F(Slab Relax) --> J(Slab Static) --> K[Output];
 ```
 
+=== "Parsl ⭐"
+
+    ```python
+    from ase.build import bulk
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Define the workflow
+    future = bulk_to_slabs_flow(atoms)  # (1)!
+
+    # Print the results
+    print(future.result())
+    ```
+
+    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator.
+
 === "Covalent ⭐"
 
     ```python
@@ -221,24 +239,6 @@ graph LR
     # Print the results
     result = ct.get_result(dispatch_id, wait=True)
     print(result)
-    ```
-
-    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator.
-
-=== "Parsl ⭐"
-
-    ```python
-    from ase.build import bulk
-    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
-
-    # Define the Atoms object
-    atoms = bulk("Cu")
-
-    # Define the workflow
-    future = bulk_to_slabs_flow(atoms)  # (1)!
-
-    # Print the results
-    print(future.result())
     ```
 
     1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator.

@@ -11,56 +11,6 @@ graph LR
   A[Input] --> B(Relax) --> C(Static) --> D[Output];
 ```
 
-=== "Covalent ⭐"
-
-    !!! Important
-
-        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md) and start the Covalent server:
-
-        ```bash
-        quacc set WORKFLOW_ENGINE covalent
-        covalent start
-        ```
-
-    ```python
-    import covalent as ct
-    from ase.build import bulk
-    from quacc import flow
-    from quacc.recipes.emt.core import relax_job, static_job
-
-
-    # Define the workflow
-    @flow  # (1)!
-    def workflow(atoms):
-        # Define Job 1
-        result1 = relax_job(atoms)  # (2)!
-
-        # Define Job 2, which takes the output of Job 1 as input
-        result2 = static_job(result1)
-
-        return result2
-
-
-    # Make an Atoms object of a bulk Cu structure
-    atoms = bulk("Cu")
-
-    # Dispatch the workflow to the Covalent server
-    # with the bulk Cu Atoms object as the input
-    dispatch_id = ct.dispatch(workflow)(atoms)  # (3)!
-
-    # Fetch the result from the server
-    result = ct.get_result(dispatch_id, wait=True)  # (4)!
-    print(result)
-    ```
-
-    1. The `#!Python @flow` decorator defines the workflow that will be executed. It is the same as calling `#!Python ct.lattice` in Covalent.
-
-    2. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
-
-    3. Because the workflow was defined with a `#!Python @flow` decorator, it will be sent to the Covalent server and a dispatch ID will be returned.
-
-    4. You don't need to set `wait=True` in practice. Once you dispatch the workflow, it will begin running (if the resources are available). The `ct.get_result` function is used to fetch the workflow status and results from the server.
-
 === "Parsl ⭐"
 
     !!! Important
@@ -111,6 +61,56 @@ graph LR
     !!! Note
 
         Parsl `PythonApp` objects will implicitly know to call `.result()` on any `AppFuture` it receives, and it is good to rely on this fact to avoid unecessary blocking.
+
+=== "Covalent ⭐"
+
+    !!! Important
+
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md) and start the Covalent server:
+
+        ```bash
+        quacc set WORKFLOW_ENGINE covalent
+        covalent start
+        ```
+
+    ```python
+    import covalent as ct
+    from ase.build import bulk
+    from quacc import flow
+    from quacc.recipes.emt.core import relax_job, static_job
+
+
+    # Define the workflow
+    @flow  # (1)!
+    def workflow(atoms):
+        # Define Job 1
+        result1 = relax_job(atoms)  # (2)!
+
+        # Define Job 2, which takes the output of Job 1 as input
+        result2 = static_job(result1)
+
+        return result2
+
+
+    # Make an Atoms object of a bulk Cu structure
+    atoms = bulk("Cu")
+
+    # Dispatch the workflow to the Covalent server
+    # with the bulk Cu Atoms object as the input
+    dispatch_id = ct.dispatch(workflow)(atoms)  # (3)!
+
+    # Fetch the result from the server
+    result = ct.get_result(dispatch_id, wait=True)  # (4)!
+    print(result)
+    ```
+
+    1. The `#!Python @flow` decorator defines the workflow that will be executed. It is the same as calling `#!Python ct.lattice` in Covalent.
+
+    2. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
+
+    3. Because the workflow was defined with a `#!Python @flow` decorator, it will be sent to the Covalent server and a dispatch ID will be returned.
+
+    4. You don't need to set `wait=True` in practice. Once you dispatch the workflow, it will begin running (if the resources are available). The `ct.get_result` function is used to fetch the workflow status and results from the server.
 
 === "Prefect"
 
@@ -256,6 +256,35 @@ graph LR
   A[Input] --> C(Relax) --> D[Output];
 ```
 
+=== "Parsl ⭐"
+
+    ```python
+    from ase.build import bulk, molecule
+    from quacc.recipes.emt.core import relax_job
+
+
+    # Define workflow
+    def workflow(atoms1, atoms2):
+        # Define two independent relaxation jobs
+        result1 = relax_job(atoms1)
+        result2 = relax_job(atoms2)
+
+        return {"result1": result1, "result2": result2}
+
+
+    # Define two Atoms objects
+    atoms1 = bulk("Cu")
+    atoms2 = molecule("N2")
+
+    # Define two independent relaxation jobs
+    futures = workflow(atoms1, atoms2)
+
+    # Fetch the results
+    result1 = futures["result1"].result()
+    result2 = futures["result2"].result()
+    print(result1, result2)
+    ```
+
 === "Covalent ⭐"
 
     ```python
@@ -284,35 +313,6 @@ graph LR
     # Fetch the results from the server
     result = ct.get_result(dispatch_id, wait=True)
     print(result)
-    ```
-
-=== "Parsl ⭐"
-
-    ```python
-    from ase.build import bulk, molecule
-    from quacc.recipes.emt.core import relax_job
-
-
-    # Define workflow
-    def workflow(atoms1, atoms2):
-        # Define two independent relaxation jobs
-        result1 = relax_job(atoms1)
-        result2 = relax_job(atoms2)
-
-        return {"result1": result1, "result2": result2}
-
-
-    # Define two Atoms objects
-    atoms1 = bulk("Cu")
-    atoms2 = molecule("N2")
-
-    # Define two independent relaxation jobs
-    futures = workflow(atoms1, atoms2)
-
-    # Fetch the results
-    result1 = futures["result1"].result()
-    result2 = futures["result2"].result()
-    print(result1, result2)
     ```
 
 === "Prefect"
@@ -416,6 +416,35 @@ graph LR
   C(Make Slabs) --> G(Slab Relax) --> H[Output];
 ```
 
+=== "Parsl ⭐"
+
+    ```python
+    from ase.build import bulk
+    from quacc.recipes.emt.core import relax_job
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+
+    # Define the workflow
+    def workflow(atoms):
+        relaxed_bulk = relax_job(atoms)
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, run_static=False)  # (1)!
+
+        return relaxed_slabs
+
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Dispatch the workflow
+    future = workflow(atoms)
+
+    # Fetch the results
+    result = future.result()
+    print(result)
+    ```
+
+    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator. We also chose to set `#!Python run_static=False` here to disable the static calculation that is normally carried out in this workflow.
+
 === "Covalent ⭐"
 
     ```python
@@ -441,35 +470,6 @@ graph LR
     # Dispatch the workflow and retrieve result
     dispatch_id = ct.dispatch(workflow)(atoms)
     result = ct.get_result(dispatch_id, wait=True)
-    print(result)
-    ```
-
-    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator. We also chose to set `#!Python run_static=False` here to disable the static calculation that is normally carried out in this workflow.
-
-=== "Parsl ⭐"
-
-    ```python
-    from ase.build import bulk
-    from quacc.recipes.emt.core import relax_job
-    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
-
-
-    # Define the workflow
-    def workflow(atoms):
-        relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, run_static=False)  # (1)!
-
-        return relaxed_slabs
-
-
-    # Define the Atoms object
-    atoms = bulk("Cu")
-
-    # Dispatch the workflow
-    future = workflow(atoms)
-
-    # Fetch the results
-    result = future.result()
     print(result)
     ```
 

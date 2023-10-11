@@ -17,6 +17,17 @@ conda activate quacc
 
 Then install the necessary dependencies:
 
+=== "Parsl ⭐"
+
+    On both the remote machine:
+
+    ```bash
+    pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
+    pip install quacc[parsl]
+    quacc set WORKFLOW_ENGINE parsl
+    quacc set CREATE_UNIQUE_WORKDIR True
+    ```
+
 === "Covalent ⭐"
 
     On both the local and remote machines:
@@ -41,17 +52,6 @@ Then install the necessary dependencies:
         export COVALENT_CONFIG_DIR="$SCRATCH/.config/covalent"
         ```
 
-=== "Parsl ⭐"
-
-    On both the remote machine:
-
-    ```bash
-    pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
-    pip install quacc[parsl]
-    quacc set WORKFLOW_ENGINE parsl
-    quacc set CREATE_UNIQUE_WORKDIR True
-    ```
-
 === "Jobflow"
 
     On both the local and remote machines:
@@ -65,59 +65,6 @@ Then install the necessary dependencies:
 ## Example 1: EMT
 
 When deploying calculations for the first time, it's important to start simple, which is why you should try to run a sample EMT workflow first.
-
-=== "Covalent ⭐"
-
-    Run the following code on the local machine:
-
-    ```python
-    import covalent as ct
-    from ase.build import bulk
-    from quacc import flow
-    from quacc.recipes.emt.core import relax_job, static_job
-
-    username = "MyUserName"
-    account = "MyAccountName"
-
-    executor = ct.executor.HPCExecutor(
-        username=username,
-        address="perlmutter-p1.nersc.gov",
-        ssh_key_file="~/.ssh/nersc",
-        cert_file="~/.ssh/nersc-cert.pub",
-        instance="slurm",
-        resource_spec_kwargs={
-            "node_count": 1,
-            "processes_per_node": 1,
-        },
-        job_attributes_kwargs={
-            "duration": 10,
-            "project_name": account,
-            "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
-        },
-        remote_conda_env="quacc",
-        remote_workdir="$SCRATCH/quacc",
-        create_unique_workdir=True,
-        cleanup=False,
-    )
-
-
-    @flow(executor=executor, workflow_executor=executor)  # (1)!
-    def workflow(atoms):
-        relax_output = relax_job(atoms)
-        return static_job(relax_output)
-
-
-    atoms = bulk("Cu")
-    dispatch_id = ct.dispatch(workflow)(atoms)
-    result = ct.get_result(dispatch_id, wait=True)
-    print(result)
-    ```
-
-    1. Until [Issue 1024](https://github.com/Quantum-Accelerators/quacc/issues/1024) is resolved, you need to directly set the `workflow_executor` keyword argument in the `#!Python @flow` decorator to the same value as that used for `executor` otherwise a post-processing error will occur.
-
-    !!! Hint
-
-        The most common cause of issues is related to the job scheduler details (i.e. the `resource_spec_kwargs` and the `job_attributes_kwargs`). If your job fails on the remote machine, check the files left behind in the working directory as well as the `~/.psij` directory for a history and various log files associated with your attempted job submissions.
 
 === "Parsl ⭐"
 
@@ -246,7 +193,6 @@ When deploying calculations for the first time, it's important to start simple, 
     We monitor the progress of our calculations and print a few summary values.
 
     ```python
-    import time
     from tqdm import tqdm
     from concurrent.futures import as_completed
 
@@ -258,6 +204,59 @@ When deploying calculations for the first time, it's important to start simple, 
             task_doc["dir_name"],
         )
     ```
+
+=== "Covalent ⭐"
+
+    Run the following code on the local machine:
+
+    ```python
+    import covalent as ct
+    from ase.build import bulk
+    from quacc import flow
+    from quacc.recipes.emt.core import relax_job, static_job
+
+    username = "MyUserName"
+    account = "MyAccountName"
+
+    executor = ct.executor.HPCExecutor(
+        username=username,
+        address="perlmutter-p1.nersc.gov",
+        ssh_key_file="~/.ssh/nersc",
+        cert_file="~/.ssh/nersc-cert.pub",
+        instance="slurm",
+        resource_spec_kwargs={
+            "node_count": 1,
+            "processes_per_node": 1,
+        },
+        job_attributes_kwargs={
+            "duration": 10,
+            "project_name": account,
+            "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
+        },
+        remote_conda_env="quacc",
+        remote_workdir="$SCRATCH/quacc",
+        create_unique_workdir=True,
+        cleanup=False,
+    )
+
+
+    @flow(executor=executor, workflow_executor=executor)  # (1)!
+    def workflow(atoms):
+        relax_output = relax_job(atoms)
+        return static_job(relax_output)
+
+
+    atoms = bulk("Cu")
+    dispatch_id = ct.dispatch(workflow)(atoms)
+    result = ct.get_result(dispatch_id, wait=True)
+    print(result)
+    ```
+
+    1. Until [Issue 1024](https://github.com/Quantum-Accelerators/quacc/issues/1024) is resolved, you need to directly set the `workflow_executor` keyword argument in the `#!Python @flow` decorator to the same value as that used for `executor` otherwise a post-processing error will occur.
+
+    !!! Hint
+
+        The most common cause of issues is related to the job scheduler details (i.e. the `resource_spec_kwargs` and the `job_attributes_kwargs`). If your job fails on the remote machine, check the files left behind in the working directory as well as the `~/.psij` directory for a history and various log files associated with your attempted job submissions.
 
 === "Jobflow"
 
@@ -291,63 +290,6 @@ When deploying calculations for the first time, it's important to start simple, 
 In this example, we will run a sample VASP recipe that will highlight the use of a more complicated configuration.
 
 First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of your remote machine as described in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials). When you're done, follow the steps below.
-
-=== "Covalent ⭐"
-
-    Run the following code on the local machine:
-
-    ```python
-    import covalent as ct
-    from ase.build import bulk
-    from quacc import flow
-    from quacc.recipes.vasp.core import relax_job, static_job
-
-    username = "MyUserName"
-    account = "MyAccountName"
-    n_nodes = 1
-    n_cores_per_node = 128
-
-    executor = ct.executor.HPCExecutor(
-        username=username,
-        address="perlmutter-p1.nersc.gov",
-        ssh_key_file="~/.ssh/nersc",
-        cert_file="~/.ssh/nersc-cert.pub",
-        instance="slurm",
-        resource_spec_kwargs={
-            "node_count": n_nodes,
-            "processes_per_node": n_cores_per_node,
-        },
-        job_attributes_kwargs={
-            "duration": 30,
-            "project_name": account,
-            "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
-        },
-        pre_launch_cmds=[
-            f"export QUACC_VASP_PARALLEL_CMD='srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'",
-            "module load vasp/6.4.1-cpu",
-        ],  # (1)!
-        remote_conda_env="quacc",
-        remote_workdir="$SCRATCH/quacc",
-        create_unique_workdir=True,
-        cleanup=False,
-    )
-
-
-    @flow(executor=executor, workflow_executor=executor)  # (2)!
-    def workflow(atoms):
-        relax_output = relax_job(atoms)
-        return static_job(relax_output)
-
-
-    atoms = bulk("C")
-    dispatch_id = ct.dispatch(workflow)(atoms)
-    result = ct.get_result(dispatch_id, wait=True)
-    print(result)
-    ```
-
-    1. Until [this issue](https://github.com/ExaWorks/psij-python/issues/423) is resolved, environment variables should be specified in `pre_launch_cmds`. Once it's resolved, it can be specified as `#!Python environment={"QUACC_VASP_PARALLEL_CMD": f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"}` instead.
-
-    2. Until [Issue 1024](https://github.com/Quantum-Accelerators/quacc/issues/1024) is resolved, you need to directly set the `workflow_executor` keyword argument in the `#!Python @flow` decorator to the same value as that used for `executor` otherwise a post-processing error will occur.
 
 === "Parsl ⭐"
 
@@ -406,6 +348,63 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
     future2 = workflow(bulk("Cu"))
     print(future1.result(), future2.result())
     ```
+
+=== "Covalent ⭐"
+
+    Run the following code on the local machine:
+
+    ```python
+    import covalent as ct
+    from ase.build import bulk
+    from quacc import flow
+    from quacc.recipes.vasp.core import relax_job, static_job
+
+    username = "MyUserName"
+    account = "MyAccountName"
+    n_nodes = 1
+    n_cores_per_node = 128
+
+    executor = ct.executor.HPCExecutor(
+        username=username,
+        address="perlmutter-p1.nersc.gov",
+        ssh_key_file="~/.ssh/nersc",
+        cert_file="~/.ssh/nersc-cert.pub",
+        instance="slurm",
+        resource_spec_kwargs={
+            "node_count": n_nodes,
+            "processes_per_node": n_cores_per_node,
+        },
+        job_attributes_kwargs={
+            "duration": 30,
+            "project_name": account,
+            "custom_attributes": {"slurm.constraint": "cpu", "slurm.qos": "debug"},
+        },
+        pre_launch_cmds=[
+            f"export QUACC_VASP_PARALLEL_CMD='srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores'",
+            "module load vasp/6.4.1-cpu",
+        ],  # (1)!
+        remote_conda_env="quacc",
+        remote_workdir="$SCRATCH/quacc",
+        create_unique_workdir=True,
+        cleanup=False,
+    )
+
+
+    @flow(executor=executor, workflow_executor=executor)  # (2)!
+    def workflow(atoms):
+        relax_output = relax_job(atoms)
+        return static_job(relax_output)
+
+
+    atoms = bulk("C")
+    dispatch_id = ct.dispatch(workflow)(atoms)
+    result = ct.get_result(dispatch_id, wait=True)
+    print(result)
+    ```
+
+    1. Until [this issue](https://github.com/ExaWorks/psij-python/issues/423) is resolved, environment variables should be specified in `pre_launch_cmds`. Once it's resolved, it can be specified as `#!Python environment={"QUACC_VASP_PARALLEL_CMD": f"srun -N {n_nodes} --ntasks-per-node={n_cores_per_node} --cpu_bind=cores"}` instead.
+
+    2. Until [Issue 1024](https://github.com/Quantum-Accelerators/quacc/issues/1024) is resolved, you need to directly set the `workflow_executor` keyword argument in the `#!Python @flow` decorator to the same value as that used for `executor` otherwise a post-processing error will occur.
 
 === "Jobflow"
 

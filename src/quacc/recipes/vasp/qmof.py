@@ -59,7 +59,7 @@ def qmof_relax_job(
         Atoms object or a dictionary with the key "atoms" and an Atoms object as
         the value
     preset
-        Preset to use from [quacc.calculators.presets.vasp][]. Applies for all jobs.
+        Preset to use from `quacc.calculators.presets.vasp`. Applies for all jobs.
     relax_cell
         True if a volume relaxation should be performed. False if only the
         positions should be updated.
@@ -68,7 +68,8 @@ def qmof_relax_job(
         Recommended if starting from hypothetical structures or materials with
         very high starting forces.
     calc_swaps
-        Dictionary of custom kwargs for the calculator. Applies for all jobs.
+        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
+        a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely. Applies for all jobs.
 
     Returns
     -------
@@ -121,9 +122,10 @@ def _prerelax(
     atoms
         Atoms object
     preset
-        Preset to use from [quacc.calculators.presets.vasp][].
+        Preset to use from `quacc.calculators.presets.vasp`.
     calc_swaps
-        Dictionary of custom kwargs for the calculator.
+        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
+        a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
     fmax
         Maximum force in eV/A.
 
@@ -163,9 +165,10 @@ def _loose_relax_positions(
     atoms
         Atoms object
     preset
-        Preset to use from [quacc.calculators.presets.vasp][].
+        Preset to use from `quacc.calculators.presets.vasp`.
     calc_swaps
-        dictionary of custom kwargs for the calculator.
+        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
+        a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
 
     Returns
     -------
@@ -207,9 +210,10 @@ def _loose_relax_cell(
     atoms
         Atoms object
     preset
-        Preset to use from [quacc.calculators.presets.vasp][].
+        Preset to use from `quacc.calculators.presets.vasp`.
     calc_swaps
-        Dictionary of custom kwargs for the calculator.
+        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
+        a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
 
     Returns
     -------
@@ -251,9 +255,10 @@ def _double_relax(
     atoms
         Atoms object
     preset
-        Preset to use from [quacc.calculators.presets.vasp][].
+        Preset to use from `quacc.calculators.presets.vasp`.
     calc_swaps
-        Dictionary of custom kwargs for the calculator.
+        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
+        a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
     relax_cell
         True if a volume relaxation should be performed.
 
@@ -313,9 +318,10 @@ def _static(
     atoms
         Atoms object
     preset
-        Preset to use from [quacc.calculators.presets.vasp][].
+        Preset to use from `quacc.calculators.presets.vasp`.
     calc_swaps
-        Dictionary of custom kwargs for the calculator.
+        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
+        a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
 
     Returns
     -------
