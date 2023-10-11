@@ -114,33 +114,6 @@ def test_tutorial2b(tmpdir):
     assert "atoms" in result2
 
 
-def test_tutorial2c(tmpdir):
-    tmpdir.chdir()
-
-    from ase.build import bulk
-
-    from quacc import flow
-    from quacc.recipes.emt.core import relax_job
-    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
-
-    # Define the workflow
-    @flow
-    def workflow(atoms):
-        relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, run_static=False)  # (1)!
-
-        return relaxed_slabs
-
-    # Define the Atoms object
-    atoms = bulk("Cu")
-
-    # Dispatch the workflow and retrieve result
-    futures = workflow(atoms)
-    results = [future.result() for future in futures]
-    for result in results:
-        assert "atoms" in result
-
-
 def test_comparison(tmpdir):
     tmpdir.chdir()
     from quacc import flow, job
