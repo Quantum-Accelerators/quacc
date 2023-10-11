@@ -67,7 +67,7 @@ def test_presets():
     assert calc.exp_params["ediff"] == 1e-5
     assert calc.float_params["encut"] == 450
 
-    calc = Vasp(atoms, xc="scan", preset="MPR2SCANSet")
+    calc = Vasp(atoms, xc="scan", preset="MPScanSet")
     assert calc.xc.lower() == "scan"
     assert calc.string_params["algo"] == "all"
     assert calc.exp_params["ediff"] == 1e-5
@@ -173,7 +173,7 @@ def test_magmoms():
 
     atoms = bulk("Cu") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
-    calc = Vasp(atoms, preset="MPR2SCANSet")
+    calc = Vasp(atoms, preset="MPScanSet")
     atoms.calc = calc
     assert atoms.get_initial_magnetic_moments().tolist() == [1.0] * (len(atoms) - 1) + [
         5.0
@@ -606,7 +606,7 @@ def test_setups():
     assert calc.parameters["setups"]["Cu"] == ""
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, preset="MPR2SCANSet")
+    calc = Vasp(atoms, preset="MPScanSet")
     assert calc.parameters["setups"]["Cu"] == "_pv"
 
     atoms = bulk("Cu")
@@ -626,7 +626,7 @@ def test_setups():
     assert calc.parameters["setups"]["Cu"] == ""
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, setups="minimal", preset="MPR2SCANSet")
+    calc = Vasp(atoms, setups="minimal", preset="MPScanSet")
     assert isinstance(calc.parameters["setups"], str)
     assert calc.parameters["setups"] == "minimal"
 

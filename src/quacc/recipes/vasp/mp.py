@@ -34,8 +34,8 @@ if TYPE_CHECKING:
 @job
 def mp_prerelax_job(
     atoms: Atoms | dict,
-    preset: str | None = "MPR2SCANSet",
-    bandgap: float = 0.0,
+    preset: str | None = "MPScanSet",
+    bandgap: float = None,
     calc_swaps: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
@@ -92,8 +92,8 @@ def mp_prerelax_job(
 @job
 def mp_relax_job(
     atoms: Atoms | dict,
-    preset: str | None = "MPR2SCANSet",
-    bandgap: float = 0.0,
+    preset: str | None = "MPScanSet",
+    bandgap: float = None,
     calc_swaps: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
@@ -144,7 +144,7 @@ def mp_relax_job(
 @job
 def mp_static_job(
     atoms: Atoms | dict,
-    preset: str | None = "MPR2SCANSet",
+    preset: str | None = "MPScanSet",
     bandgap: float = 0.0,
     calc_swaps: dict | None = None,
     copy_files: list[str] | None = None,
@@ -239,22 +239,10 @@ def mp_relax_flow(
     # Run the prerelax
     prerelax_results = mp_prerelax_job(atoms, **prerelax_job_kwargs)
 
-    bandgap = prerelax_results["output"].get("bandgap", 0)
-    if bandgap < 1e-4:
-        kspacing_swaps = {"kspacing": 0.22, "sigma": 0.2, "ismear": 2}
-    else:
-        rmin = 25.22 - 2.87 * bandgap
-        kspacing = 2 * np.pi * 1.0265 / (rmin - 1.0183)
-        kspacing_swaps = {"kspacing": min(kspacing, 0.44), "ismear": 0, "sigma": 0.05}
-
-    relax_job_kwargs["calc_swaps"] = kspacing_swaps | relax_job_kwargs.get(
-        "calc_swaps", {}
-    )
-
     # Run the relax
     relax_results = mp_relax_job(
         prerelax_results,
-        bandgap=bandgap,
+        bandgap=prerelax_results["output"]["bandgap"],
         copy_files=["CHGCAR", "WAVECAR"],
         **relax_job_kwargs,
     )
@@ -278,10 +266,10 @@ def _get_bandgap_swaps(bandgap: float | None = None) -> dict:
         Dictionary of swaps.
     """
 
-    if bandgap <= 1e-4:
-        smearing_swaps = {"kspacing": 0.22, "ismear": 2, "sigma": 0.2}
-    elif not bandgap:
+    if not bandgap:
         smearing_swaps = {"kspacing": 0.22, "ismear": 0, "sigma": 0.05}
+    elif bandgap <= 1e-4:
+        smearing_swaps = {"kspacing": 0.22, "ismear": 2, "sigma": 0.2}
     else:
         rmin = max(1.5, 25.22 - 2.87 * bandgap)
         kspacing = 2 * np.pi * 1.0265 / (rmin - 1.0183)
