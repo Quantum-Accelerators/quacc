@@ -174,7 +174,7 @@ def mp_relax_flow(
 
     # Run the relax
     relax_results = mp_relax_job(
-        prerelax_results,
+        prerelax_results["atoms"],
         bandgap=prerelax_results["output"]["bandgap"],
         copy_files=["CHGCAR", "WAVECAR"],
         **relax_job_kwargs,

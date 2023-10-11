@@ -372,7 +372,7 @@ def quasi_irc_job(
 
     SETTINGS.CHECK_CONVERGENCE = default_settings.CHECK_CONVERGENCE
     relax_summary = relax_job.__wrapped__(
-        irc_summary,
+        irc_summary["atoms"],
         charge,
         spin_multiplicity,
         method=method,

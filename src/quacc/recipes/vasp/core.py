@@ -203,7 +203,7 @@ def double_relax_job(
 
     # Run second relaxation
     summary2 = relax_job.__wrapped__(
-        summary1,
+        summary1["atoms"],
         preset=preset,
         relax_cell=relax_cell,
         calc_swaps=calc_swaps2,

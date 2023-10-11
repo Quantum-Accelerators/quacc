@@ -192,13 +192,13 @@ def bulk_to_slabs_flow(
 
     @subflow
     def _relax_distributed(slabs):
-        return [slab_relax_job(slab, **slab_relax_kwargs) for slab in slabs]
+        return [slab_relax_job(slab["atoms"], **slab_relax_kwargs) for slab in slabs]
 
     @subflow
     def _relax_and_static_distributed(slabs):
         return [
             slab_static_job(
-                slab_relax_job(slab, **slab_relax_kwargs),
+                slab_relax_job(slab["atoms"], **slab_relax_kwargs),
                 **slab_static_kwargs,
             )
             for slab in slabs
@@ -257,13 +257,13 @@ def slab_to_ads_flow(
 
     @subflow
     def _relax_distributed(slabs):
-        return [slab_relax_job(slab, **slab_relax_kwargs) for slab in slabs]
+        return [slab_relax_job(slab["atoms"], **slab_relax_kwargs) for slab in slabs]
 
     @subflow
     def _relax_and_static_distributed(slabs):
         return [
             slab_static_job(
-                slab_relax_job(slab, **slab_relax_kwargs),
+                slab_relax_job(slab["atoms"], **slab_relax_kwargs),
                 **slab_static_kwargs,
             )
             for slab in slabs
