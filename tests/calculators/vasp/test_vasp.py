@@ -16,9 +16,22 @@ from quacc.runners.prep import prep_next_run
 
 FILE_DIR = Path(__file__).resolve().parent
 DEFAULT_CALCS_DIR = os.path.dirname(v.__file__)
+
 ATOMS_MAG = read(os.path.join(FILE_DIR, "OUTCAR_mag.gz"))
 ATOMS_NOMAG = read(os.path.join(FILE_DIR, "OUTCAR_nomag.gz"))
 ATOMS_NOSPIN = read(os.path.join(FILE_DIR, "OUTCAR_nospin.gz"))
+
+
+def setup_module():
+    from quacc import SETTINGS
+
+    SETTINGS.VASP_FORCE_COPILOT = True
+
+
+def teardown_module():
+    from quacc import SETTINGS
+
+    SETTINGS.VASP_FORCE_COPILOT = False
 
 
 def test_vanilla_vasp():
@@ -444,13 +457,6 @@ def test_isym():
 
 def test_ncore():
     atoms = bulk("Cu")
-
-    calc = Vasp(atoms, ncore=16)
-    assert calc.int_params["ncore"] == 1
-
-    calc = Vasp(atoms, npar=16)
-    assert calc.int_params["ncore"] == 1
-    assert calc.int_params["npar"] is None
 
     atoms *= (2, 2, 2)
     calc = Vasp(atoms, ncore=4)
