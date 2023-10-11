@@ -166,7 +166,6 @@ When deploying calculations for the first time, it's important to start simple, 
     Now we define the workflow:
 
     ```python
-    from ase.build import bulk
     from quacc.recipes.tblite.core import relax_job, freq_job
 
 
