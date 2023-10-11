@@ -21,7 +21,7 @@ def setup_module():
     SETTINGS.CONFIG_FILE = test_yaml
 
 
-def teardown_module(default_settings):
+def teardown_module(default_settings, test_yaml):
     import os
 
     from quacc import SETTINGS
@@ -48,7 +48,7 @@ def test_help(runner):
     assert response.exit_code == 0
 
 
-def test_set(runner):
+def test_set(runner, test_yaml):
     from quacc._cli.quacc import app
 
     response = runner.invoke(app, ["set", "WORKFLOW_ENGINE", "local"])
@@ -82,7 +82,7 @@ def test_set(runner):
     assert val == "dummy"
 
 
-def test_unset(runner):
+def test_unset(runner, test_yaml):
     from quacc._cli.quacc import app
 
     response = runner.invoke(app, ["unset", "WORKFLOW_ENGINE"])
