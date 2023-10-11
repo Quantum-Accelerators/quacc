@@ -114,7 +114,7 @@ In the previous examples, we have been running calculations on our local machine
     @flow(executor="local", workflow_executor="local")  # (1)!
     def workflow(atoms):
         result1 = relax_job(atoms)
-        result2 = static_job(result1)
+        result2 = static_job(result1["atoms"])
 
         return result2
 
@@ -144,7 +144,7 @@ In the previous examples, we have been running calculations on our local machine
     @flow
     def workflow(atoms):
         output1 = relax_job(atoms)
-        output2 = static_job(output1)
+        output2 = static_job(output1["atoms"])
 
         return output2
 

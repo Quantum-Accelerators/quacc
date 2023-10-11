@@ -38,7 +38,7 @@ graph LR
         future1 = relax_job(atoms)  # (1)!
 
         # Define Job 2, which takes the output of Job 1 as input
-        future2 = static_job(future1)
+        future2 = static_job(future1["atoms"])
 
         return future2
 
@@ -87,7 +87,7 @@ graph LR
         result1 = relax_job(atoms)  # (2)!
 
         # Define Job 2, which takes the output of Job 1 as input
-        result2 = static_job(result1)
+        result2 = static_job(result1["atoms"])
 
         return result2
 
@@ -187,7 +187,7 @@ graph LR
         result1 = relax_job(atoms)  # (2)!
 
         # Define Job 2, which takes the output of Job 1 as input
-        result2 = static_job(result1)
+        result2 = static_job(result1["atoms"])
 
         return result2
 
@@ -226,7 +226,7 @@ graph LR
     job1 = relax_job(atoms)  # (1)!
 
     # Define Job 2, which takes the output of Job 1 as input
-    job2 = static_job(job1.output)  # (2)!
+    job2 = static_job(job1.output["atoms"])  # (2)!
 
     # Define the workflow
     workflow = jf.Flow([job1, job2])  # (3)!
@@ -314,9 +314,9 @@ graph LR
     # Fetch the results from the server
     result = ct.get_result(dispatch_id, wait=True)
     print(result)
-    <!-- ```
+    ```
 
-=== "Prefect"
+<!-- === "Prefect"
 
     ```python
     from ase.build import bulk, molecule
@@ -428,7 +428,7 @@ graph LR
     # Define the workflow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, run_static=False)  # (1)!
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)  # (1)!
 
         return relaxed_slabs
 
@@ -460,7 +460,7 @@ graph LR
     @flow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, run_static=False)  # (1)!
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)  # (1)!
 
         return relaxed_slabs
 
@@ -490,7 +490,7 @@ graph LR
     @flow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, run_static=False)  # (1)!
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk.result()["atoms"], run_static=False)  # (1)!
 
         return relaxed_slabs
 
@@ -522,7 +522,7 @@ graph LR
     @flow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, run_static=False)  # (1)!
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)  # (1)!
 
         return relaxed_slabs
 

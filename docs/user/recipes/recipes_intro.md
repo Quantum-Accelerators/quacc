@@ -217,7 +217,7 @@ atoms = bulk("Cu")
 result1 = relax_job(atoms)
 
 # Run a static calculation with GFN2-xTB
-result2 = static_job(result1, method="GFN2-xTB")
+result2 = static_job(result1["atoms"], method="GFN2-xTB")
 print(result2)
 ```
 
