@@ -433,7 +433,7 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
 
     atoms = bulk("C")
     job1 = relax_job(atoms, calc_swaps={"kpts": [3, 3, 3]})
-    job2 = static_job(job1.output, calc_swaps={"kpts": [3, 3, 3]})
+    job2 = static_job(job1.output["atoms"], calc_swaps={"kpts": [3, 3, 3]})
     flow = jf.Flow([job1, job2])
 
     wf = flow_to_workflow(flow)
