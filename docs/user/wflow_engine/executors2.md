@@ -19,7 +19,7 @@ Then install the necessary dependencies:
 
 === "Parsl ⭐"
 
-    On both the remote machine:
+    On both remote machine:
 
     ```bash
     pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
@@ -62,7 +62,7 @@ Then install the necessary dependencies:
     quacc set WORKFLOW_ENGINE jobflow
     ```
 
-## Example 1: EMT
+## Example 1
 
 When deploying calculations for the first time, it's important to start simple, which is why you should try to run a sample EMT workflow first.
 
@@ -166,7 +166,6 @@ When deploying calculations for the first time, it's important to start simple, 
     Now we define the workflow:
 
     ```python
-    from ase.build import bulk
     from quacc.recipes.tblite.core import relax_job, freq_job
 
 
@@ -178,12 +177,11 @@ When deploying calculations for the first time, it's important to start simple, 
     We now loop over all molecules in the "g2" collection and apply our workflow.
 
     ```python
-    from ase.build import molecule
     from ase.collections import g2
 
     futures = []
     for name in g2.names:
-        atoms = molecule(name)
+        atoms = g2[name]
         future = workflow(atoms)  #  (1)!
         futures.append(future)
     ```
@@ -285,7 +283,7 @@ When deploying calculations for the first time, it's important to start simple, 
     qlaunch rapidfire -m 1
     ```
 
-## Example 2: VASP
+## Example 2
 
 In this example, we will run a sample VASP recipe that will highlight the use of a more complicated configuration.
 

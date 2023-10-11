@@ -443,7 +443,7 @@ graph LR
     print(result)
     ```
 
-    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator. We also chose to set `#!Python run_static=False` here to disable the static calculation that is normally carried out in this workflow.
+    1. We chose to set `#!Python run_static=False` here to disable the static calculation that is normally carried out in this workflow.
 
 === "Covalent ⭐"
 

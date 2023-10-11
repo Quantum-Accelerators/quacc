@@ -502,11 +502,13 @@ def test_vasp_version(tmpdir):
 
     DEFAULT_SETTINGS = SETTINGS.copy()
     SETTINGS.VASP_MIN_VERSION = 5.4
+    SETTINGS.VASP_FORCE_COPILOT = True
 
     tmpdir.chdir()
 
     atoms = bulk("Cu") * (2, 2, 2)
 
-    output = static_job(atoms, preset=None)
-    assert output["parameters"].get("efermi") is None
+    output = static_job(atoms)
+    assert "efermi" not in output["parameters"]
     SETTINGS.VASP_MIN_VERSION = DEFAULT_SETTINGS.VASP_MIN_VERSION
+    SETTINGS.VASP_FORCE_COPILOT = False
