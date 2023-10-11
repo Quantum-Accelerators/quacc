@@ -89,13 +89,13 @@ def bulk_to_defects_flow(
 
     @subflow
     def _relax_distributed(defects):
-        return [relax_job(defect["atoms"], **defect_relax_kwargs) for defect in defects]
+        return [relax_job(defect, **defect_relax_kwargs) for defect in defects]
 
     @subflow
     def _relax_and_static_distributed(defects):
         return [
             static_job(
-                relax_job(defect["atoms"], **defect_relax_kwargs),
+                relax_job(defect, **defect_relax_kwargs)["atoms"],
                 **defect_static_kwargs,
             )
             for defect in defects

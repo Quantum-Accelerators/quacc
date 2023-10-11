@@ -172,7 +172,7 @@ def test_tutorial_excecutor2(tmpdir):
     @flow
     def workflow5(atoms):
         output1 = relax_job(atoms)
-        return static_job(output1)
+        return static_job(output1["atoms"])
 
     atoms = bulk("Cu")
     dispatch_id = ct.dispatch(workflow5)(atoms)
