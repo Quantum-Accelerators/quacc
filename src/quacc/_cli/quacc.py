@@ -140,11 +140,11 @@ def _delete_setting(key: str, config_file: Path) -> None:
         with config_file.open() as yaml_file:
             yaml_content = yaml.load(yaml_file)
 
-    if yaml_content:
-        yaml_content.pop(key, None)
-        with config_file.open(mode="w") as yaml_file:
-            if yaml_content:
-                yaml.dump(yaml_content, yaml_file)
+        if yaml_content:
+            yaml_content.pop(key, None)
+            with config_file.open(mode="w") as yaml_file:
+                if yaml_content:
+                    yaml.dump(yaml_content, yaml_file)
 
 
 def _update_setting(key: str, value: Any, config_file: Path) -> None:
