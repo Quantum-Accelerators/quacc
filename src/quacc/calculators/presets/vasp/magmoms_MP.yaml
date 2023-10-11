@@ -1,5 +1,5 @@
 # Magmoms used in the Materials Project
-# Source: https://github.com/materialsproject/pymatgen/blob/master/pymatgen/io/vasp/VASPIncarBase.yaml
+# Source: https://github.com/materialsproject/atomate2/blob/main/src/atomate2/vasp/sets/BaseMPR2SCANRelaxSet.yaml
 # Last modified: 08-01-2023
 inputs:
   elemental_magmoms:
