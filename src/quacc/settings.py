@@ -145,7 +145,6 @@ class QuaccSettings(BaseSettings):
         description=(
             "Whether co-pilot mode should be used for VASP INCAR handling."
             "This will modify INCAR flags on-the-fly if they disobey the VASP manual."
-            "A warning will be logged in each case."
         ),
     )
     VASP_BADER: bool = Field(

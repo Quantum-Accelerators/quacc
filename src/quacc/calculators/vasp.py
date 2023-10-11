@@ -159,10 +159,6 @@ class Vasp(Vasp_):
             msg = "Atoms object has a constraint that is not compatible with Custodian. Set use_custodian = False."
             raise ValueError(msg)
 
-        # Get VASP executable command, if necessary, and specify child
-        # environment variables
-        command = self._manage_environment()
-
         # Get user-defined preset parameters for the calculator
         if preset:
             calc_preset = load_vasp_yaml_calc(Path(SETTINGS.VASP_PRESET_DIR, preset))[
@@ -223,6 +219,10 @@ class Vasp(Vasp_):
         # Remove unused INCAR flags
         self._remove_unused_flags()
 
+        # Get VASP executable command, if necessary, and specify child
+        # environment variables
+        command = self._manage_environment()
+
         # Instantiate the calculator!
         super().__init__(atoms=input_atoms, command=command, **self.user_calc_params)
 
@@ -243,8 +243,14 @@ class Vasp(Vasp_):
                 UserWarning,
             )
 
+        # Check if ASE_VASP_VDW is set
+        if self.user_calc_params["luse_vdw"] and "ASE_VASP_VDW" not in os.environ:
+            warnings.warn(
+                "ASE_VASP_VDW was not set, yet you requested a vdW functional.",
+                UserWarning,
+            )
+
         # Check if Custodian should be used and confirm environment variables
-        # are set
         if self.use_custodian:
             # Return the command flag
             run_vasp_custodian_file = Path(inspect.getfile(custodian_vasp)).resolve()
@@ -255,6 +261,7 @@ class Vasp(Vasp_):
                 "ASE_VASP_COMMAND or VASP_SCRIPT must be set in the environment to run VASP. See the ASE Vasp calculator documentation for details.",
                 UserWarning,
             )
+
         return None
 
     def _remove_unused_flags(self) -> None:
@@ -485,15 +492,6 @@ class Vasp(Vasp_):
             calc.set(ncore=1, npar=None)
 
         if (
-            (calc.int_params["ncore"] and calc.int_params["ncore"] > 1)
-            or (calc.int_params["npar"] and calc.int_params["npar"] > 1)
-        ) and len(self.input_atoms) <= 4:
-            logger.info(
-                "Copilot: Setting NCORE = 1 because you have a very small structure.",
-            )
-            calc.set(ncore=1, npar=None)
-
-        if (
             calc.int_params["kpar"]
             and calc.int_params["kpar"] > np.prod(calc.kpts)
             and calc.float_params["kspacing"] is None
@@ -531,8 +529,7 @@ class Vasp(Vasp_):
             calc.set(efermi="midgap")
 
         if (
-            calc.string_params["efermi"]
-            and calc.string_params["efermi"] == "midgap"
+            calc.string_params["efermi"] == "midgap"
             and SETTINGS.VASP_MIN_VERSION
             and SETTINGS.VASP_MIN_VERSION < 6.4
         ):
@@ -541,13 +538,7 @@ class Vasp(Vasp_):
             )
             calc.set(efermi=None)
 
-        if calc.bool_params["luse_vdw"] and "ASE_VASP_VDW" not in os.environ:
-            warnings.warn(
-                "ASE_VASP_VDW was not set, yet you requested a vdW functional.",
-                UserWarning,
-            )
-
-        self.user_calc_params = calc.parameters | self.user_calc_params
+        self.user_calc_params = calc.parameters
 
     def _convert_auto_kpts(
         self,
