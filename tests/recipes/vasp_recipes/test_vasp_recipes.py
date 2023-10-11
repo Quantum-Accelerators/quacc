@@ -22,6 +22,7 @@ def test_static_job(tmpdir):
     assert output["parameters"]["nsw"] == 0
     assert output["parameters"]["lwave"] is True
     assert output["parameters"]["encut"] == 520
+    assert output["parameters"]["efermi"] == "midgap"
 
     output = static_job(atoms, calc_swaps={"ncore": 2, "kpar": 4})
     assert output["parameters"]["encut"] == 520
@@ -32,11 +33,51 @@ def test_static_job(tmpdir):
         atoms, preset="QMOFSet", calc_swaps={"ismear": 0, "sigma": 0.01, "nedos": None}
     )
     assert output["parameters"]["encut"] == 520
-    assert output["parameters"]["ismear"] == -5
+    assert output["parameters"]["ismear"] == 0
     assert output["parameters"]["sigma"] == 0.01
 
-    output = static_job(atoms, calc_swaps={"lwave": None})
+    output = static_job(
+        atoms,
+        calc_swaps={
+            "ivdw": 13,
+            "lasph": False,
+            "prec": None,
+            "lwave": None,
+            "efermi": None,
+        },
+    )
+    assert output["parameters"]["ivdw"] == 13
+    assert output["parameters"]["lasph"] is False
+    assert "prec" not in output["parameters"]
     assert "lwave" not in output["parameters"]
+    assert "efermi" not in output["parameters"]
+
+
+def test_static_job_force_copilot(tmpdir):
+    from quacc import SETTINGS
+    from quacc.recipes.vasp.core import static_job
+
+    tmpdir.chdir()
+
+    atoms = bulk("Cu") * (2, 2, 2)
+
+    SETTINGS.VASP_FORCE_COPILOT = True
+    output = static_job(
+        atoms,
+        calc_swaps={
+            "ivdw": 13,
+            "lasph": False,
+            "prec": None,
+            "lwave": None,
+            "efermi": None,
+        },
+    )
+    assert output["parameters"]["ivdw"] == 13
+    assert output["parameters"]["lasph"] is False
+    assert "prec" not in output["parameters"]
+    assert "lwave" not in output["parameters"]
+    assert output["parameters"]["efermi"] == "midgap"
+    SETTINGS.VASP_FORCE_COPILOT = False
 
 
 def test_relax_job(tmpdir):
@@ -349,8 +390,8 @@ def test_qmof(tmpdir):
     output = qmof_relax_job(atoms)
 
 
-def test_mp(tmpdir):
-    from quacc.recipes.vasp.mp import mp_prerelax_job, mp_relax_flow, mp_relax_job
+def test_mp_prerelax_job(tmpdir):
+    from quacc.recipes.vasp.mp import mp_prerelax_job
 
     tmpdir.chdir()
 
@@ -362,6 +403,32 @@ def test_mp(tmpdir):
     assert output["parameters"]["encut"] == 680
     assert output["parameters"]["kspacing"] == 0.22
     assert output["parameters"]["ismear"] == 0
+    assert output["parameters"]["sigma"] == 0.05
+
+    output = mp_prerelax_job(atoms, bandgap=0)
+    assert output["nsites"] == len(atoms)
+    assert output["parameters"]["xc"] == "pbesol"
+    assert output["parameters"]["ediffg"] == -0.05
+    assert output["parameters"]["encut"] == 680
+    assert output["parameters"]["kspacing"] == 0.22
+    assert output["parameters"]["ismear"] == 2
+    assert output["parameters"]["sigma"] == 0.2
+
+    output = mp_prerelax_job(atoms, bandgap=100)
+    assert output["nsites"] == len(atoms)
+    assert output["parameters"]["xc"] == "pbesol"
+    assert output["parameters"]["ediffg"] == -0.05
+    assert output["parameters"]["encut"] == 680
+    assert output["parameters"]["kspacing"] == 0.44
+    assert output["parameters"]["ismear"] == 0
+    assert output["parameters"]["sigma"] == 0.05
+
+
+def test_mp_relax_job(tmpdir):
+    tmpdir.chdir()
+    from quacc.recipes.vasp.mp import mp_relax_job
+
+    atoms = bulk("Cu")
 
     output = mp_relax_job(atoms)
     assert output["nsites"] == len(atoms)
@@ -370,6 +437,33 @@ def test_mp(tmpdir):
     assert output["parameters"]["encut"] == 680
     assert output["parameters"]["kspacing"] == 0.22
     assert output["parameters"]["ismear"] == 0
+    assert output["parameters"]["sigma"] == 0.05
+
+    output = mp_relax_job(atoms, bandgap=0)
+    assert output["nsites"] == len(atoms)
+    assert output["parameters"]["xc"] == "r2scan"
+    assert output["parameters"]["ediffg"] == -0.02
+    assert output["parameters"]["encut"] == 680
+    assert output["parameters"]["kspacing"] == 0.22
+    assert output["parameters"]["ismear"] == 2
+    assert output["parameters"]["sigma"] == 0.2
+
+    output = mp_relax_job(atoms, bandgap=100)
+    assert output["nsites"] == len(atoms)
+    assert output["parameters"]["xc"] == "r2scan"
+    assert output["parameters"]["ediffg"] == -0.02
+    assert output["parameters"]["encut"] == 680
+    assert output["parameters"]["kspacing"] == 0.44
+    assert output["parameters"]["ismear"] == 0
+    assert output["parameters"]["sigma"] == 0.05
+
+
+def test_mp_relax_flow(tmpdir):
+    from quacc.recipes.vasp.mp import mp_relax_flow
+
+    tmpdir.chdir()
+
+    atoms = bulk("Cu")
 
     output = mp_relax_flow(atoms)
     assert output["nsites"] == len(atoms)
@@ -377,16 +471,17 @@ def test_mp(tmpdir):
     assert output["parameters"]["ediffg"] == -0.02
     assert output["parameters"]["encut"] == 680
     assert output["parameters"]["ismear"] == 2
+    assert output["parameters"]["sigma"] == 0.2
     assert output["parameters"]["kspacing"] == 0.22
     assert output["prerelax"]["parameters"]["xc"] == "pbesol"
 
-    atoms = bulk("Fe")
+    atoms = bulk("C")
     output = mp_relax_flow(atoms)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["xc"] == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02
     assert output["parameters"]["encut"] == 680
-    assert output["parameters"]["ismear"] == 1
+    assert output["parameters"]["ismear"] == 0
     assert output["parameters"]["kspacing"] == pytest.approx(0.28329488761304206)
 
     atoms = molecule("O2")
@@ -397,5 +492,21 @@ def test_mp(tmpdir):
     assert output["parameters"]["xc"] == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02
     assert output["parameters"]["encut"] == 680
-    assert output["parameters"]["ismear"] == -5
+    assert output["parameters"]["ismear"] == 0
     assert output["parameters"]["kspacing"] == pytest.approx(0.28329488761304206)
+
+
+def test_vasp_version(tmpdir):
+    from quacc import SETTINGS
+    from quacc.recipes.vasp.core import static_job
+
+    DEFAULT_SETTINGS = SETTINGS.copy()
+    SETTINGS.VASP_MIN_VERSION = 5.4
+
+    tmpdir.chdir()
+
+    atoms = bulk("Cu") * (2, 2, 2)
+
+    output = static_job(atoms, preset=None)
+    assert output["parameters"].get("efermi") is None
+    SETTINGS.VASP_MIN_VERSION = DEFAULT_SETTINGS.VASP_MIN_VERSION

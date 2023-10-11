@@ -15,7 +15,13 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from quacc.calculators.presets import vasp as vasp_defaults
 
 installed_engine = "local"
-for wflow_engine in ["parsl", "prefect", "redun", "jobflow", "covalent"]:
+for wflow_engine in [
+    "parsl",
+    "covalent",
+    "prefect",
+    "redun",
+    "jobflow",
+]:
     try:
         import_module(wflow_engine)
         installed_engine = wflow_engine
@@ -145,7 +151,12 @@ class QuaccSettings(BaseSettings):
         description=(
             "Whether co-pilot mode should be used for VASP INCAR handling."
             "This will modify INCAR flags on-the-fly if they disobey the VASP manual."
-            "A warning will be raised in each case."
+        ),
+    )
+    VASP_FORCE_COPILOT: bool = Field(
+        False,
+        description=(
+            "Whether to force co-pilot swaps to override user-specified flags."
         ),
     )
     VASP_BADER: bool = Field(
@@ -179,6 +190,11 @@ class QuaccSettings(BaseSettings):
     VASP_PRESET_DIR: Path = Field(
         resources.files(vasp_defaults),
         description="Path to the VASP preset directory",
+    )
+    VASP_MIN_VERSION: Optional[float] = Field(
+        None,
+        description="The minimum version of VASP you plan to use. This simply ensures"
+        "that relatively new input flags aren't set in an old version of VASP, where applicable.",
     )
 
     # VASP Settings: Custodian

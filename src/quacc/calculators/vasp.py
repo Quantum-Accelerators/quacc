@@ -55,6 +55,9 @@ class Vasp(Vasp_):
     incar_copilot
         If True, the INCAR parameters will be adjusted if they go against the
         VASP manual. Default is True in settings.
+    force_copilot
+        If False, INCAR swaps enabled by the INCAR co-pilot will not override
+        the user's chosen value. It will only override values that aren't set.
     copy_magmoms
         If True, any pre-existing `atoms.get_magnetic_moments()` will be set in
         `atoms.set_initial_magnetic_moments()`. Set this to False if you want to
@@ -110,6 +113,7 @@ class Vasp(Vasp_):
         preset: None | str = None,
         use_custodian: bool | None = None,
         incar_copilot: bool | None = None,
+        force_copilot: bool | None = None,
         copy_magmoms: bool | None = None,
         preset_mag_default: float | None = None,
         mag_cutoff: None | float = None,
@@ -127,6 +131,9 @@ class Vasp(Vasp_):
         incar_copilot = (
             SETTINGS.VASP_INCAR_COPILOT if incar_copilot is None else incar_copilot
         )
+        force_copilot = (
+            SETTINGS.VASP_FORCE_COPILOT if force_copilot is None else force_copilot
+        )
         copy_magmoms = (
             SETTINGS.VASP_COPY_MAGMOMS if copy_magmoms is None else copy_magmoms
         )
@@ -142,6 +149,7 @@ class Vasp(Vasp_):
         self.preset = preset
         self.use_custodian = use_custodian
         self.incar_copilot = incar_copilot
+        self.force_copilot = force_copilot
         self.copy_magmoms = copy_magmoms
         self.preset_mag_default = preset_mag_default
         self.mag_cutoff = mag_cutoff
@@ -159,10 +167,6 @@ class Vasp(Vasp_):
             msg = "Atoms object has a constraint that is not compatible with Custodian. Set use_custodian = False."
             raise ValueError(msg)
 
-        # Get VASP executable command, if necessary, and specify child
-        # environment variables
-        command = self._manage_environment()
-
         # Get user-defined preset parameters for the calculator
         if preset:
             calc_preset = load_vasp_yaml_calc(Path(SETTINGS.VASP_PRESET_DIR, preset))[
@@ -174,9 +178,6 @@ class Vasp(Vasp_):
         # Collect all the calculator parameters and prioritize the kwargs in the
         # case of duplicates.
         self.user_calc_params = calc_preset | kwargs
-        none_keys = [k for k, v in self.user_calc_params.items() if v is None]
-        for none_key in none_keys:
-            del self.user_calc_params[none_key]
 
         # Allow the user to use setups='mysetups.yaml' to load in a custom
         # setups from a YAML file
@@ -226,6 +227,10 @@ class Vasp(Vasp_):
         # Remove unused INCAR flags
         self._remove_unused_flags()
 
+        # Get VASP executable command, if necessary, and specify child
+        # environment variables
+        command = self._manage_environment()
+
         # Instantiate the calculator!
         super().__init__(atoms=input_atoms, command=command, **self.user_calc_params)
 
@@ -246,8 +251,14 @@ class Vasp(Vasp_):
                 UserWarning,
             )
 
+        # Check if ASE_VASP_VDW is set
+        if self.user_calc_params.get("luse_vdw") and "ASE_VASP_VDW" not in os.environ:
+            warnings.warn(
+                "ASE_VASP_VDW was not set, yet you requested a vdW functional.",
+                UserWarning,
+            )
+
         # Check if Custodian should be used and confirm environment variables
-        # are set
         if self.use_custodian:
             # Return the command flag
             run_vasp_custodian_file = Path(inspect.getfile(custodian_vasp)).resolve()
@@ -258,6 +269,7 @@ class Vasp(Vasp_):
                 "ASE_VASP_COMMAND or VASP_SCRIPT must be set in the environment to run VASP. See the ASE Vasp calculator documentation for details.",
                 UserWarning,
             )
+
         return None
 
     def _remove_unused_flags(self) -> None:
@@ -290,6 +302,11 @@ class Vasp(Vasp_):
             )
             for ldau_flag in ldau_flags:
                 self.user_calc_params.pop(ldau_flag, None)
+
+        # Remove None keys
+        none_keys = [k for k, v in self.user_calc_params.items() if v is None]
+        for none_key in none_keys:
+            del self.user_calc_params[none_key]
 
     def _set_auto_dipole(self) -> None:
         """
@@ -483,15 +500,6 @@ class Vasp(Vasp_):
             calc.set(ncore=1, npar=None)
 
         if (
-            (calc.int_params["ncore"] and calc.int_params["ncore"] > 1)
-            or (calc.int_params["npar"] and calc.int_params["npar"] > 1)
-        ) and len(self.input_atoms) <= 4:
-            logger.info(
-                "Copilot: Setting NCORE = 1 because you have a very small structure.",
-            )
-            calc.set(ncore=1, npar=None)
-
-        if (
             calc.int_params["kpar"]
             and calc.int_params["kpar"] > np.prod(calc.kpts)
             and calc.float_params["kspacing"] is None
@@ -522,17 +530,27 @@ class Vasp(Vasp_):
             )
             calc.set(npar=1, ncore=None)
 
-        if not calc.string_params["efermi"]:
-            logger.info("Copilot: Setzting EFERMI = MIDGAP per the VASP manual.")
+        if not calc.string_params["efermi"] and (
+            not SETTINGS.VASP_MIN_VERSION or SETTINGS.VASP_MIN_VERSION >= 6.4
+        ):
+            logger.info("Copilot: Setting EFERMI = MIDGAP per the VASP manual.")
             calc.set(efermi="midgap")
 
-        if calc.bool_params["luse_vdw"] and "ASE_VASP_VDW" not in os.environ:
-            warnings.warn(
-                "ASE_VASP_VDW was not set, yet you requested a vdW functional.",
-                UserWarning,
+        if (
+            calc.string_params["efermi"] == "midgap"
+            and SETTINGS.VASP_MIN_VERSION
+            and SETTINGS.VASP_MIN_VERSION < 6.4
+        ):
+            logger.info(
+                "Copilot: Unsetting EFERMI = MIDGAP since you are running VASP < 6.4."
             )
+            calc.set(efermi=None)
 
-        self.user_calc_params = calc.parameters
+        self.user_calc_params = (
+            calc.parameters
+            if self.force_copilot
+            else calc.parameters | self.user_calc_params
+        )
 
     def _convert_auto_kpts(
         self,
