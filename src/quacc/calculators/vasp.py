@@ -266,7 +266,7 @@ class Vasp(Vasp_):
 
         if "ASE_VASP_COMMAND" not in os.environ and "VASP_SCRIPT" not in os.environ:
             warnings.warn(
-                "ASE_VASP_COMMAND or VASP_SCRIPT must be set in the environment to run VASP. See the ASE Vasp calculator documentation for details.",
+                "ASE_VASP_COMMAND or VASP_SCRIPT must be set in the environment to run VASP without Custodian. See the ASE Vasp calculator documentation for details.",
                 UserWarning,
             )
 
