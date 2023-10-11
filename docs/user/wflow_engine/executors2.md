@@ -19,7 +19,7 @@ Then install the necessary dependencies:
 
 === "Parsl ⭐"
 
-    On both the remote machine:
+    On both remote machine:
 
     ```bash
     pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
