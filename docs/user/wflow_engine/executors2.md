@@ -62,7 +62,7 @@ Then install the necessary dependencies:
     quacc set WORKFLOW_ENGINE jobflow
     ```
 
-## Example 1: EMT
+## Example 1
 
 When deploying calculations for the first time, it's important to start simple, which is why you should try to run a sample EMT workflow first.
 
@@ -284,7 +284,7 @@ When deploying calculations for the first time, it's important to start simple, 
     qlaunch rapidfire -m 1
     ```
 
-## Example 2: VASP
+## Example 2
 
 In this example, we will run a sample VASP recipe that will highlight the use of a more complicated configuration.
 
