@@ -112,6 +112,7 @@ graph LR
 
     4. You don't need to set `wait=True` in practice. Once you dispatch the workflow, it will begin running (if the resources are available). The `ct.get_result` function is used to fetch the workflow status and results from the server.
 
+<!--
 === "Prefect"
 
     !!! Important
@@ -157,7 +158,7 @@ graph LR
 
     3. Because the workflow was defined with a `#!Python @flow` decorator, it will be sent to the Prefect server and a future will be returned.
 
-    4. Calling `.result()` resolves the future.
+    4. Calling `.result()` resolves the future. -->
 
 === "Redun"
 
@@ -313,7 +314,7 @@ graph LR
     # Fetch the results from the server
     result = ct.get_result(dispatch_id, wait=True)
     print(result)
-    ```
+    <!-- ```
 
 === "Prefect"
 
@@ -344,7 +345,7 @@ graph LR
     result1 = futures["result1"].result()
     result2 = futures["result2"].result()
     print(result1, result2)
-    ```
+    ``` -->
 
 === "Redun"
 
@@ -475,6 +476,7 @@ graph LR
 
     1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator. We also chose to set `#!Python run_static=False` here to disable the static calculation that is normally carried out in this workflow.
 
+<!--
 === "Prefect"
 
     ```python
@@ -502,7 +504,7 @@ graph LR
     print(results)
     ```
 
-    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator. We also chose to set `#!Python run_static=False` here to disable the static calculation that is normally carried out in this workflow.
+    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator. We also chose to set `#!Python run_static=False` here to disable the static calculation that is normally carried out in this workflow. -->
 
 === "Redun"
 
