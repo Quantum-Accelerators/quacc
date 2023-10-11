@@ -177,12 +177,11 @@ When deploying calculations for the first time, it's important to start simple, 
     We now loop over all molecules in the "g2" collection and apply our workflow.
 
     ```python
-    from ase.build import molecule
     from ase.collections import g2
 
     futures = []
     for name in g2.names:
-        atoms = molecule(name)
+        atoms = g2[name]
         future = workflow(atoms)  #  (1)!
         futures.append(future)
     ```
