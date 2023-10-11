@@ -45,7 +45,7 @@ def test_tutorial2a(tmpdir):
     job1 = relax_job(atoms)  # (1)!
 
     # Define Job 2, which takes the output of Job 1 as input
-    job2 = static_job(job1.output)  # (2)!
+    job2 = static_job(job1.output["atoms"])  # (2)!
 
     # Define the workflow
     workflow = jf.Flow([job1, job2])

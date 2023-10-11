@@ -85,7 +85,7 @@ def test_tutorial2a(tmpdir):
         result1 = relax_job(atoms)  # (2)!
 
         # Define Job 2, which takes the output of Job 1 as input
-        return static_job(result1)
+        return static_job(result1["atoms"])
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")

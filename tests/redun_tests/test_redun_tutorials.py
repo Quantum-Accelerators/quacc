@@ -49,7 +49,7 @@ def test_tutorial2a(tmpdir):
     @flow
     def workflow(atoms):
         result1 = relax_job(atoms)  # (1)!
-        return static_job(result1)  # (2)!
+        return static_job(result1["atoms"])  # (2)!
 
     atoms = bulk("Cu")
 

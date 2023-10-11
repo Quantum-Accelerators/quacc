@@ -75,7 +75,7 @@ def test_tutorial2a(tmpdir):
         future1 = relax_job(atoms)  # (1)!
 
         # Define Job 2, which takes the output of Job 1 as input
-        return static_job(future1)
+        return static_job(future1["atoms"])
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
