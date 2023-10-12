@@ -420,7 +420,7 @@ def test_mp_prerelax_job(tmpdir):
     assert output["parameters"]["ediffg"] == -0.05
     assert output["parameters"]["encut"] == 680
     assert output["parameters"]["kspacing"] == 0.44
-    assert output["parameters"]["ismear"] == 0
+    assert output["parameters"]["ismear"] == -5
     assert output["parameters"]["sigma"] == 0.05
 
 
@@ -454,7 +454,7 @@ def test_mp_relax_job(tmpdir):
     assert output["parameters"]["ediffg"] == -0.02
     assert output["parameters"]["encut"] == 680
     assert output["parameters"]["kspacing"] == 0.44
-    assert output["parameters"]["ismear"] == 0
+    assert output["parameters"]["ismear"] == -5
     assert output["parameters"]["sigma"] == 0.05
 
 
@@ -474,6 +474,7 @@ def test_mp_relax_flow(tmpdir):
     assert output["parameters"]["sigma"] == 0.2
     assert output["parameters"]["kspacing"] == 0.22
     assert output["prerelax"]["parameters"]["xc"] == "pbesol"
+    assert output["prerelax"]["parameters"]["ismear"] == 0
 
     atoms = bulk("C")
     output = mp_relax_flow(atoms)
@@ -481,8 +482,9 @@ def test_mp_relax_flow(tmpdir):
     assert output["parameters"]["xc"] == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02
     assert output["parameters"]["encut"] == 680
-    assert output["parameters"]["ismear"] == 0
+    assert output["parameters"]["ismear"] == -5
     assert output["parameters"]["kspacing"] == pytest.approx(0.28329488761304206)
+    assert output["prerelax"]["parameters"]["ismear"] == 0
 
     atoms = molecule("O2")
     atoms.center(vacuum=10)
@@ -492,8 +494,9 @@ def test_mp_relax_flow(tmpdir):
     assert output["parameters"]["xc"] == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02
     assert output["parameters"]["encut"] == 680
-    assert output["parameters"]["ismear"] == 0
+    assert output["parameters"]["ismear"] == -5
     assert output["parameters"]["kspacing"] == pytest.approx(0.28329488761304206)
+    assert output["prerelax"]["parameters"]["ismear"] == 0
 
 
 def test_vasp_version(tmpdir):
