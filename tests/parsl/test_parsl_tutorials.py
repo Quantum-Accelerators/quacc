@@ -10,16 +10,14 @@ DEFAULT_SETTINGS = SETTINGS.copy()
 def setup_module():
     SETTINGS.WORKFLOW_ENGINE = "parsl"
 
-
-def teardown_module():
-    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
-
-
-def setup_module():
     import contextlib
 
     with contextlib.suppress(Exception):
         parsl.load()
+
+
+def teardown_module():
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 def test_tutorial1a(tmpdir):
