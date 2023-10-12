@@ -98,6 +98,8 @@ def test_run_chargemol(tmpdir):
 
 
 def test_chargemol_erorr(tmpdir):
+    import os
+
     from quacc.schemas.vasp import chargemol_runner
 
     tmpdir.chdir()

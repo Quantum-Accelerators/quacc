@@ -39,10 +39,10 @@ class QChem(FileIOCalculator):
         The spin multiplicity of the molecular system.
     qchem_input_params
         Dictionary of Q-Chem input parameters to be passed to
-        pymatgen.io.qchem.sets.DictSet.
+        `pymatgen.io.qchem.sets.DictSet`.
     **fileiocalculator_kwargs
         Additional arguments to be passed to
-        ase.calculators.calculator.FileIOCalculator.
+        `ase.calculators.calculator.FileIOCalculator`.
 
     Returns
     -------
