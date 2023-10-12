@@ -1,13 +1,3 @@
-import pytest
-
-
-@pytest.fixture()
-def default_settings():
-    from quacc import SETTINGS
-
-    return SETTINGS.copy()
-
-
 def pytest_sessionstart():
     import os
     from pathlib import Path
