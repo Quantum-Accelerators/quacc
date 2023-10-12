@@ -269,7 +269,7 @@ When deploying calculations for the first time, it's important to start simple, 
 
     atoms = bulk("Cu")
     job1 = relax_job(atoms)
-    job2 = static_job(job1.output)
+    job2 = static_job(job1.output["atoms"])
     flow = jf.Flow([job1, job2])
 
     wf = flow_to_workflow(flow)

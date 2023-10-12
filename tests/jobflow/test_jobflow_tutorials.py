@@ -1,16 +1,19 @@
 import pytest
-from maggma.stores import MemoryStore
 
 from quacc import SETTINGS
 
 jf = pytest.importorskip("jobflow")
 
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "jobflow",
-    reason="Jobflow needs to be the workflow engine",
-)
 
-STORE = jf.JobStore(MemoryStore())
+DEFAULT_SETTINGS = SETTINGS.copy()
+
+
+def setup_module():
+    SETTINGS.WORKFLOW_ENGINE = "jobflow"
+
+
+def teardown_module():
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 def test_tutorial1a(tmpdir):
@@ -45,7 +48,7 @@ def test_tutorial2a(tmpdir):
     job1 = relax_job(atoms)  # (1)!
 
     # Define Job 2, which takes the output of Job 1 as input
-    job2 = static_job(job1.output)  # (2)!
+    job2 = static_job(job1.output["atoms"])  # (2)!
 
     # Define the workflow
     workflow = jf.Flow([job1, job2])

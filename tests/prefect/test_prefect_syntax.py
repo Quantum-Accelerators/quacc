@@ -1,12 +1,18 @@
 import pytest
 
-from quacc import SETTINGS, flow, job, subflow
+from quacc import SETTINGS
 
 prefect = pytest.importorskip("prefect")
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "prefect",
-    reason="This test requires Prefect as the workflow engine",
-)
+
+DEFAULT_SETTINGS = SETTINGS.copy()
+
+
+def setup_module():
+    SETTINGS.WORKFLOW_ENGINE = "prefect"
+
+
+def teardown_module():
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 @pytest.fixture(autouse=True, scope="session")
@@ -19,6 +25,7 @@ def prefect_test_fixture():
 
 def test_prefect_decorators(tmpdir):
     tmpdir.chdir()
+    from quacc import flow, job, subflow
 
     @job
     def add(a, b):

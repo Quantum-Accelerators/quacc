@@ -1,7 +1,6 @@
-from quacc.utils.dicts import merge_dicts, remove_dict_empties
-
-
 def test_remove_dict_empties():
+    from quacc.utils.dicts import remove_dict_empties
+
     d = {
         "output": {
             "output": {
@@ -21,6 +20,8 @@ def test_remove_dict_empties():
 
 
 def test_merge_dicts():
+    from quacc.utils.dicts import merge_dicts
+
     defaults = {"a": 1, "b": {"a": 1, "b": 2}}
     calc_swaps = {"c": 3, "b": {"b": 3, "d": 1}}
     assert merge_dicts(defaults, calc_swaps) == {

@@ -1,35 +1,25 @@
-import os
-from copy import deepcopy
 from pathlib import Path
 
 import pytest
-from ase.build import bulk, molecule
-from ase.calculators.emt import EMT
-from ase.io import read
-from ase.optimize import BFGS
-from ase.thermochemistry import IdealGasThermo
-from ase.units import invcm
-from ase.vibrations import Vibrations
-from maggma.stores import MemoryStore
-from monty.json import MontyDecoder, jsanitize
-
-from quacc.schemas.ase import (
-    summarize_ideal_gas_thermo,
-    summarize_opt_run,
-    summarize_run,
-    summarize_vib_run,
-)
 
 FILE_DIR = Path(__file__).resolve().parent
 
-run1 = os.path.join(FILE_DIR, "vasp_run1")
+RUN1 = FILE_DIR / "vasp_run1"
 
 
 def test_summarize_run(tmpdir):
+    import os
+
+    from ase.io import read
+    from maggma.stores import MemoryStore
+    from monty.json import MontyDecoder, jsanitize
+
+    from quacc.schemas.ase import summarize_run
+
     tmpdir.chdir()
 
     # Make sure metadata is made
-    atoms = read(os.path.join(run1, "OUTCAR.gz"))
+    atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     results = summarize_run(atoms)
     assert results["nsites"] == len(atoms)
     assert results["atoms"] == atoms
@@ -42,14 +32,14 @@ def test_summarize_run(tmpdir):
     assert store.count() == 1
 
     # Make sure initial atoms object is stored if specified
-    atoms = read(os.path.join(run1, "OUTCAR.gz"))
+    atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     results = summarize_run(atoms, atoms)
     assert results["nsites"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["input_atoms"]["atoms"] == atoms
 
     # Make sure info tags are handled appropriately
-    atoms = read(os.path.join(run1, "OUTCAR.gz"))
+    atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
     results = summarize_run(atoms)
     assert atoms.info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
@@ -58,7 +48,7 @@ def test_summarize_run(tmpdir):
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
     # Make sure magnetic moments are handled appropriately
-    atoms = read(os.path.join(run1, "OUTCAR.gz"))
+    atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
     atoms.calc.results["magmoms"] = [2.0] * len(atoms)
     results = summarize_run(atoms)
@@ -72,7 +62,7 @@ def test_summarize_run(tmpdir):
     assert results["atoms"].calc is None
 
     # Make sure Atoms magmoms were not moved if specified
-    atoms = read(os.path.join(run1, "OUTCAR.gz"))
+    atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
     results = summarize_run(
         atoms, prep_next_run=False, additional_fields={"test": "hi"}
@@ -89,6 +79,15 @@ def test_summarize_run(tmpdir):
 
 
 def test_summarize_opt_run(tmpdir):
+    from ase.build import bulk
+    from ase.calculators.emt import EMT
+    from ase.io import read
+    from ase.optimize import BFGS
+    from maggma.stores import MemoryStore
+    from monty.json import MontyDecoder, jsanitize
+
+    from quacc.schemas.ase import summarize_opt_run
+
     tmpdir.chdir()
 
     # Make sure metadata is made
@@ -158,6 +157,16 @@ def test_summarize_opt_run(tmpdir):
 
 
 def test_summarize_vib_run(tmpdir):
+    from copy import deepcopy
+
+    from ase.build import bulk, molecule
+    from ase.calculators.emt import EMT
+    from ase.vibrations import Vibrations
+    from maggma.stores import MemoryStore
+    from monty.json import MontyDecoder, jsanitize
+
+    from quacc.schemas.ase import summarize_vib_run
+
     tmpdir.chdir()
 
     # Make sure metadata is made
@@ -242,6 +251,15 @@ def test_summarize_vib_run(tmpdir):
 
 
 def test_summarize_ideal_gas_thermo(tmpdir):
+    from ase.build import molecule
+    from ase.calculators.emt import EMT
+    from ase.thermochemistry import IdealGasThermo
+    from ase.units import invcm
+    from maggma.stores import MemoryStore
+    from monty.json import MontyDecoder, jsanitize
+
+    from quacc.schemas.ase import summarize_ideal_gas_thermo
+
     tmpdir.chdir()
 
     # Make sure metadata is made
@@ -337,13 +355,20 @@ def test_summarize_ideal_gas_thermo(tmpdir):
 
 
 def test_errors(tmpdir):
+    import os
+
+    from ase.build import bulk
+    from ase.io import read
+
+    from quacc.schemas.ase import summarize_run
+
     tmpdir.chdir()
 
     atoms = bulk("Cu")
     with pytest.raises(ValueError):
         summarize_run(atoms)
 
-    atoms = read(os.path.join(run1, "OUTCAR.gz"))
+    atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     atoms.calc.results = {}
     with pytest.raises(ValueError):
         summarize_run(atoms)

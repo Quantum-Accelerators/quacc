@@ -1,31 +1,28 @@
-import os
-from copy import deepcopy
 from pathlib import Path
 
-import numpy as np
 import pytest
-from ase.build import bulk, fcc100, molecule
-from ase.io import read
-
-from quacc.atoms.slabs import (
-    flip_atoms,
-    get_surface_energy,
-    make_adsorbate_structures,
-    make_slabs_from_bulk,
-)
 
 FILE_DIR = Path(__file__).resolve().parent
-ATOMS_MAG = read(os.path.join(FILE_DIR, "..", "calculators", "vasp", "OUTCAR_mag.gz"))
-ATOMS_NOMAG = read(
-    os.path.join(FILE_DIR, "..", "calculators", "vasp", "OUTCAR_nomag.gz")
-)
-ATOMS_NOSPIN = read(
-    os.path.join(FILE_DIR, "..", "calculators", "vasp", "OUTCAR_nospin.gz")
-)
+
+
+@pytest.fixture()
+def atoms_mag():
+    from pathlib import Path
+
+    from ase.io import read
+
+    FILE_DIR = Path(__file__).resolve().parent
+
+    return read(FILE_DIR / ".." / "calculators" / "vasp" / "OUTCAR_mag.gz")
 
 
 def test_flip_atoms():
-    atoms = read(os.path.join(FILE_DIR, "ZnTe.cif.gz"))
+    import numpy as np
+    from ase.io import read
+
+    from quacc.atoms.slabs import flip_atoms
+
+    atoms = read(FILE_DIR / "ZnTe.cif.gz")
     atoms.info["test"] = "hi"
     atoms.set_initial_magnetic_moments(
         [2.0 if atom.symbol == "Zn" else 1.0 for atom in atoms]
@@ -42,8 +39,16 @@ def test_flip_atoms():
     assert new_atoms.info.get("test", None) == "hi"
 
 
-def test_make_slabs_from_bulk():
-    atoms = read(os.path.join(FILE_DIR, "ZnTe.cif.gz"))
+def test_make_slabs_from_bulk(atoms_mag):
+    from copy import deepcopy
+
+    import numpy as np
+    from ase.build import bulk
+    from ase.io import read
+
+    from quacc.atoms.slabs import make_slabs_from_bulk
+
+    atoms = read(FILE_DIR / "ZnTe.cif.gz")
     atoms.info["test"] = "hi"
     slabs = make_slabs_from_bulk(atoms)
     assert len(slabs) == 7
@@ -64,7 +69,7 @@ def test_make_slabs_from_bulk():
     assert highest_atom != highest_atom2
     assert atoms.info.get("test", None) == "hi"
 
-    atoms = read(os.path.join(FILE_DIR, "ZnTe.cif.gz"))
+    atoms = read(FILE_DIR / "ZnTe.cif.gz")
     slabs = make_slabs_from_bulk(atoms, flip_asymmetric=False)
     assert len(slabs) == 4
 
@@ -84,12 +89,12 @@ def test_make_slabs_from_bulk():
         assert slab.cell.lengths()[0] >= 20
         assert slab.cell.lengths()[1] >= 20
 
-    atoms = deepcopy(ATOMS_MAG)
+    atoms = deepcopy(atoms_mag)
     slabs = make_slabs_from_bulk(atoms)
     assert slabs[0].get_magnetic_moments()[0] == atoms.get_magnetic_moments()[0]
     assert slabs[-1].info.get("slab_stats", None) is not None
 
-    atoms = read(os.path.join(FILE_DIR, "Zn2CuAu.cif.gz"))
+    atoms = read(FILE_DIR / "Zn2CuAu.cif.gz")
     min_d = atoms.get_all_distances(mic=True)
     min_d = np.min(min_d[min_d != 0.0])
     slabs = make_slabs_from_bulk(atoms)
@@ -115,6 +120,10 @@ def test_make_slabs_from_bulk():
 
 
 def test_make_adsorbate_structures():
+    from ase.build import fcc100, molecule
+
+    from quacc.atoms.slabs import make_adsorbate_structures
+
     h2o = molecule("H2O")
     atoms = fcc100("Cu", size=(2, 2, 2))
     atoms.set_tags(None)
@@ -177,6 +186,10 @@ def test_make_adsorbate_structures():
 
 
 def test_get_surface_energy():
+    from ase.build import bulk, fcc100
+
+    from quacc.atoms.slabs import get_surface_energy
+
     atoms = bulk("Cu")
     slab = fcc100("Cu", size=(2, 2, 2))
     bulk_energy = -1.0
@@ -186,6 +199,10 @@ def test_get_surface_energy():
 
 
 def test_errors():
+    from ase.build import fcc100, molecule
+
+    from quacc.atoms.slabs import make_adsorbate_structures
+
     h2o = molecule("H2O")
     atoms = fcc100("Cu", size=(2, 2, 2))
     atoms.set_tags(None)
