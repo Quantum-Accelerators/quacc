@@ -1,6 +1,6 @@
 import pytest
 
-from quacc import SETTINGS, flow, job, subflow
+from quacc import SETTINGS
 
 pytestmark = pytest.mark.skipif(
     SETTINGS.WORKFLOW_ENGINE != "local", reason="Must be run locally"
@@ -8,6 +8,8 @@ pytestmark = pytest.mark.skipif(
 
 
 def test_decorators(tmpdir):
+    from quacc import flow, job, subflow
+
     tmpdir.chdir()
 
     @job
@@ -43,6 +45,8 @@ def test_decorators(tmpdir):
 
 
 def test_decorators_v2(tmpdir):
+    from quacc import flow, job, subflow
+
     tmpdir.chdir()
 
     @job()
@@ -78,6 +82,8 @@ def test_decorators_v2(tmpdir):
 
 
 def test_decorators_v3(tmpdir):
+    from quacc import flow, job, subflow
+
     tmpdir.chdir()
 
     def add(a, b):

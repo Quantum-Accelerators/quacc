@@ -1,9 +1,8 @@
-import os
-
-from quacc.utils.files import make_unique_dir
-
-
 def test_make_unique_dir(tmpdir):
+    import os
+
+    from quacc.utils.files import make_unique_dir
+
     tmpdir.chdir()
 
     jobdir = make_unique_dir()
