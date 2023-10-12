@@ -1,6 +1,12 @@
 import pytest
 
+from quacc import SETTINGS
+
 parsl = pytest.importorskip("parsl")
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "parsl",
+    reason="This test is only meant to be run with Parsl",
+)
 
 
 def setup_module():

@@ -1,6 +1,12 @@
 import pytest
 
+from quacc import SETTINGS
+
 prefect = pytest.importorskip("prefect")
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "prefect",
+    reason="This test is only meant to be run with Prefect",
+)
 
 
 @pytest.fixture(autouse=True, scope="session")

@@ -1,6 +1,13 @@
 import pytest
 
+from quacc import SETTINGS
+
 ct = pytest.importorskip("covalent")
+
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "covalent",
+    reason="This test is only meant to be run with Covalent",
+)
 
 
 def test_quickstart(tmpdir):

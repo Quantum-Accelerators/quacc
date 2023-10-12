@@ -1,6 +1,12 @@
 import pytest
 
+from quacc import SETTINGS
+
 jf = pytest.importorskip("jobflow")
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "jobflow",
+    reason="This test is only meant to be run with Jobflow",
+)
 
 
 def test_tutorial1a(tmpdir):
