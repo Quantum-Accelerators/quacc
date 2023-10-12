@@ -148,7 +148,7 @@ def test_qchem_write_input_open_shell_and_different_charges(tmpdir, os_atoms):
     assert qcinp.as_dict() == ref_qcinp.as_dict()
 
 
-def test_qchem_write_input_freq(tmpdir, FILE_DIR, test_atoms):
+def test_qchem_write_input_freq(tmpdir, test_atoms):
     from pymatgen.io.qchem.inputs import QCInput
 
     from quacc.calculators.qchem import QChem
