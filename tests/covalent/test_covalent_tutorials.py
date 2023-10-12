@@ -20,7 +20,6 @@ def teardown_module():
 def test_quickstart(tmpdir):
     tmpdir.chdir()
 
-    import covalent as ct
     from ase.build import bulk
 
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
@@ -39,7 +38,6 @@ def test_quickstart(tmpdir):
 def test_tutorial1a(tmpdir):
     tmpdir.chdir()
 
-    import covalent as ct
     from ase.build import bulk
 
     from quacc import flow
@@ -63,7 +61,6 @@ def test_tutorial1a(tmpdir):
 def test_tutorial1b(tmpdir):
     tmpdir.chdir()
 
-    import covalent as ct
     from ase.build import bulk
 
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
@@ -76,7 +73,7 @@ def test_tutorial1b(tmpdir):
 
 def test_tutorial2a(tmpdir):
     tmpdir.chdir()
-    import covalent as ct
+
     from ase.build import bulk
 
     from quacc import flow
@@ -135,7 +132,6 @@ def test_tutorial2b(tmpdir):
 def test_tutorial2c(tmpdir):
     tmpdir.chdir()
 
-    import covalent as ct
     from ase.build import bulk
 
     from quacc import flow
@@ -154,6 +150,8 @@ def test_tutorial2c(tmpdir):
 
 
 def test_tutorial_excecutor1(tmpdir):
+    from ase.build import bulk
+
     from quacc import flow
     from quacc.recipes.emt.core import relax_job, static_job
 
@@ -171,6 +169,8 @@ def test_tutorial_excecutor1(tmpdir):
 
 
 def test_tutorial_excecutor2(tmpdir):
+    from ase.build import bulk
+
     from quacc import flow
     from quacc.recipes.emt.core import relax_job, static_job
 
@@ -192,8 +192,6 @@ def test_tutorial_excecutor2(tmpdir):
 
 def test_comparison1(tmpdir):
     tmpdir.chdir()
-
-    import covalent as ct
 
     from quacc import flow, job
 
@@ -220,8 +218,6 @@ def test_comparison1(tmpdir):
 
 def test_comparison2(tmpdir):
     tmpdir.chdir()
-
-    import covalent as ct
 
     from quacc import flow, job, subflow
 
@@ -255,7 +251,6 @@ def test_comparison2(tmpdir):
 
 def test_comparison3(tmpdir):
     tmpdir.chdir()
-    import covalent as ct
 
     from quacc import flow, job
 
@@ -278,8 +273,6 @@ def test_comparison3(tmpdir):
 
 def test_comparison4(tmpdir):
     tmpdir.chdir()
-
-    import covalent as ct
 
     from quacc import flow, job, subflow
 
