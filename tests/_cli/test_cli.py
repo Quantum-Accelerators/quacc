@@ -2,7 +2,10 @@ from pathlib import Path
 
 import pytest
 
+from quacc import SETTINGS
+
 TEST_YAML = Path.cwd() / "test_quacc.yaml"
+DEFAULT_SETTINGS = SETTINGS.copy()
 
 
 def setup_module():
@@ -15,12 +18,11 @@ def teardown_module():
     import os
 
     from quacc import SETTINGS
-    from quacc.settings import QuaccSettings
 
     if TEST_YAML.exists():
         os.remove(TEST_YAML)
 
-    SETTINGS.CONFIG_FILE = QuaccSettings().CONFIG_FILE
+    SETTINGS.CONFIG_FILE = SETTINGS.CONFIG_FILE
 
 
 @pytest.fixture

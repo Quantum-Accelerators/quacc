@@ -1,5 +1,9 @@
 import pytest
 
+from quacc import SETTINGS
+
+DEFAULT_SETTINGS = SETTINGS.copy()
+
 pytest.importorskip("sella")
 pytest.importorskip("newtonnet")
 
@@ -17,10 +21,10 @@ def setup_module():
 
 
 def teardown_module():
-    from quacc import SETTINGS, QuaccSettings
+    from quacc import SETTINGS
 
-    SETTINGS.NEWTONNET_CONFIG_PATH = QuaccSettings().NEWTONNET_CONFIG_PATH
-    SETTINGS.NEWTONNET_MODEL_PATH = QuaccSettings().NEWTONNET_MODEL_PATH
+    SETTINGS.NEWTONNET_CONFIG_PATH = DEFAULT_SETTINGS.NEWTONNET_CONFIG_PATH
+    SETTINGS.NEWTONNET_MODEL_PATH = DEFAULT_SETTINGS.NEWTONNET_MODEL_PATH
     SETTINGS.CHECK_CONVERGENCE = True
 
 

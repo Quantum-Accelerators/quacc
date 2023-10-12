@@ -1,31 +1,24 @@
-import os
-from copy import deepcopy
-from pathlib import Path
-
 import pytest
-from ase.build import bulk, molecule
-from ase.calculators.emt import EMT
-from ase.io import read
-from ase.optimize import BFGS
-from ase.thermochemistry import IdealGasThermo
-from ase.units import invcm
-from ase.vibrations import Vibrations
-from maggma.stores import MemoryStore
-from monty.json import MontyDecoder, jsanitize
-
-from quacc.schemas.ase import (
-    summarize_ideal_gas_thermo,
-    summarize_opt_run,
-    summarize_run,
-    summarize_vib_run,
-)
-
-FILE_DIR = Path(__file__).resolve().parent
-
-run1 = os.path.join(FILE_DIR, "vasp_run1")
 
 
-def test_summarize_run(tmpdir):
+@pytest.fixture
+def run1():
+    from pathlib import Path
+
+    file_dir = Path(__file__).resolve().parent
+
+    return file_dir / "vasp_run1"
+
+
+def test_summarize_run(tmpdir, run1):
+    import os
+
+    from ase.io import read
+    from maggma.stores import MemoryStore
+    from monty.json import MontyDecoder, jsanitize
+
+    from quacc.schemas.ase import summarize_run
+
     tmpdir.chdir()
 
     # Make sure metadata is made
@@ -89,6 +82,15 @@ def test_summarize_run(tmpdir):
 
 
 def test_summarize_opt_run(tmpdir):
+    from ase.build import bulk
+    from ase.calculators.emt import EMT
+    from ase.io import read
+    from ase.optimize import BFGS
+    from maggma.stores import MemoryStore
+    from monty.json import MontyDecoder, jsanitize
+
+    from quacc.schemas.ase import summarize_opt_run
+
     tmpdir.chdir()
 
     # Make sure metadata is made
@@ -158,6 +160,16 @@ def test_summarize_opt_run(tmpdir):
 
 
 def test_summarize_vib_run(tmpdir):
+    from copy import deepcopy
+
+    from ase.build import bulk, molecule
+    from ase.calculators.emt import EMT
+    from ase.vibrations import Vibrations
+    from maggma.stores import MemoryStore
+    from monty.json import MontyDecoder, jsanitize
+
+    from quacc.schemas.ase import summarize_vib_run
+
     tmpdir.chdir()
 
     # Make sure metadata is made
@@ -242,6 +254,15 @@ def test_summarize_vib_run(tmpdir):
 
 
 def test_summarize_ideal_gas_thermo(tmpdir):
+    from ase.build import molecule
+    from ase.calculators.emt import EMT
+    from ase.thermochemistry import IdealGasThermo
+    from ase.units import invcm
+    from maggma.stores import MemoryStore
+    from monty.json import MontyDecoder, jsanitize
+
+    from quacc.schemas.ase import summarize_ideal_gas_thermo
+
     tmpdir.chdir()
 
     # Make sure metadata is made
@@ -336,7 +357,14 @@ def test_summarize_ideal_gas_thermo(tmpdir):
         summarize_ideal_gas_thermo(igt, charge_and_multiplicity=[0, 1])
 
 
-def test_errors(tmpdir):
+def test_errors(tmpdir, run1):
+    import os
+
+    from ase.build import bulk
+    from ase.io import read
+
+    from quacc.schemas.ase import summarize_run
+
     tmpdir.chdir()
 
     atoms = bulk("Cu")

@@ -1,31 +1,50 @@
-import gzip
-import os
-import shutil
-from pathlib import Path
-
 import pytest
-from ase.build import bulk
-from ase.io import read
-from cclib.io import ccread
-from maggma.stores import MemoryStore
-from monty.json import MontyDecoder, jsanitize
 
-from quacc.calculators.vasp import Vasp
-from quacc.schemas.cclib import (
-    _cclib_calculate,
-    _cclibTaskDocument,
-    cclib_summarize_run,
-)
 
-FILE_DIR = Path(__file__).resolve().parent
+@pytest.fixture
+def file_dir():
+    from pathlib import Path
 
-run1 = os.path.join(FILE_DIR, "gaussian_run1")
-log1 = os.path.join(run1, "Gaussian.log")
-cclib_obj = ccread(log1)
+    return Path(__file__).resolve().parent
+
+
+@pytest.fixture
+def run1():
+    from pathlib import Path
+
+    file_dir = Path(__file__).resolve().parent
+
+    return file_dir / "gaussian_run1"
+
+
+@pytest.fixture
+def log1():
+    from pathlib import Path
+
+    file_dir = Path(__file__).resolve().parent
+
+    return file_dir / "gaussian_run1" / "gaussian.log"
+
+
+@pytest.fixture
+def cclib_obj():
+    from pathlib import Path
+
+    from cclib.io import ccread
+
+    file_dir = Path(__file__).resolve().parent
+
+    return ccread(str(file_dir / "gaussian_run1" / "gaussian.log"))
 
 
 def setup_module():
-    p = FILE_DIR / "cclib_data"
+    import gzip
+    import shutil
+    from pathlib import Path
+
+    file_dir = Path(__file__).resolve().parent
+
+    p = file_dir / "cclib_data"
 
     with gzip.open(p / "psi_test.cube.gz", "r") as f_in, open(
         p / "psi_test.cube", "wb"
@@ -34,7 +53,12 @@ def setup_module():
 
 
 def teardown_module():
-    p = FILE_DIR / "cclib_data"
+    import os
+    from pathlib import Path
+
+    file_dir = Path(__file__).resolve().parent
+
+    p = file_dir / "cclib_data"
 
     if os.path.exists(p / "psi_test.cube"):
         os.remove(p / "psi_test.cube")
@@ -45,7 +69,16 @@ def bad_mock_cclib_calculate(*args, **kwargs):
     raise ValueError(msg)
 
 
-def test_cclib_summarize_run():
+def test_cclib_summarize_run(run1, log1):
+    import os
+
+    from ase.io import read
+    from maggma.stores import MemoryStore
+    from monty.json import MontyDecoder, jsanitize
+
+    from quacc.calculators.vasp import Vasp
+    from quacc.schemas.cclib import cclib_summarize_run
+
     # Make sure metadata is made
     atoms = read(log1)
     results = cclib_summarize_run(atoms, ".log", dir_path=run1)
@@ -105,7 +138,12 @@ def test_cclib_summarize_run():
     )
 
 
-def test_errors():
+def test_errors(run1):
+    from ase.build import bulk
+
+    from quacc.calculators.vasp import Vasp
+    from quacc.schemas.cclib import cclib_summarize_run
+
     atoms = bulk("Cu")
     with pytest.raises(ValueError):
         cclib_summarize_run(atoms, ".log", dir_path=run1)
@@ -116,10 +154,17 @@ def test_errors():
         cclib_summarize_run(atoms, ".log", dir_path=run1)
 
 
-def test_cclib_taskdoc(tmpdir):
+def test_cclib_taskdoc(tmpdir, file_dir):
+    import os
+
+    from ase.io import read
+    from monty.json import MontyDecoder, jsanitize
+
+    from quacc.schemas.cclib import _cclibTaskDocument
+
     tmpdir.chdir()
 
-    p = FILE_DIR / "cclib_data"
+    p = file_dir / "cclib_data"
 
     # Plain parsing of task doc. We do not check all cclib entries
     # because they will evolve over time. We only check the ones we have
@@ -195,7 +240,9 @@ def test_cclib_taskdoc(tmpdir):
     MontyDecoder().process_decoded(d)
 
 
-def test_cclib_calculate(tmpdir):
+def test_cclib_calculate(tmpdir, file_dir, cclib_obj):
+    from quacc.schemas.cclib import _cclib_calculate
+
     tmpdir.chdir()
 
     with pytest.raises(ValueError):
@@ -211,7 +258,7 @@ def test_cclib_calculate(tmpdir):
         _cclib_calculate(
             cclib_obj,
             method="ddec6",
-            cube_file=FILE_DIR / "cclib_data" / "psi_test.cube",
+            cube_file=file_dir / "cclib_data" / "psi_test.cube",
             proatom_dir="does_not_exists",
         )
 
@@ -219,26 +266,28 @@ def test_cclib_calculate(tmpdir):
         _cclib_calculate(
             cclib_obj,
             method="ddec6",
-            cube_file=FILE_DIR / "cclib_data" / "psi_test.cube",
+            cube_file=file_dir / "cclib_data" / "psi_test.cube",
         )
 
     with pytest.raises(Exception):
         _cclib_calculate(
             cclib_obj,
             method="ddec6",
-            cube_file=FILE_DIR / "cclib_data" / "psi_test.cube",
-            proatom_dir=FILE_DIR / "cclib_data" / "psi_test.cube",
+            cube_file=file_dir / "cclib_data" / "psi_test.cube",
+            proatom_dir=file_dir / "cclib_data" / "psi_test.cube",
         )
 
 
-def test_monkeypatches(tmpdir, monkeypatch):
+def test_monkeypatches(tmpdir, monkeypatch, file_dir):
+    from quacc.schemas.cclib import _cclib_calculate
+
     tmpdir.chdir()
-    monkeypatch.setenv("PROATOM_DIR", str(FILE_DIR / "cclib_data" / "proatomdata"))
+    monkeypatch.setenv("PROATOM_DIR", str(file_dir / "cclib_data" / "proatomdata"))
     with pytest.raises(FileNotFoundError):
         _cclib_calculate(
             cclib_obj,
             method="ddec6",
-            cube_file=FILE_DIR / "cclib_data" / "psi_test.cube",
+            cube_file=file_dir / "cclib_data" / "psi_test.cube",
         )
 
     monkeypatch.setattr("cclib.method.Bader.calculate", bad_mock_cclib_calculate)
@@ -247,7 +296,7 @@ def test_monkeypatches(tmpdir, monkeypatch):
             _cclib_calculate(
                 cclib_obj,
                 method="bader",
-                cube_file=FILE_DIR / "cclib_data" / "psi_test.cube",
+                cube_file=file_dir / "cclib_data" / "psi_test.cube",
             )
             is None
         )
