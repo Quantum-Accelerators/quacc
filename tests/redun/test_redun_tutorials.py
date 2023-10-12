@@ -1,7 +1,8 @@
 import pytest
 
-redun = pytest.importorskip("redun")
 from quacc import SETTINGS
+
+redun = pytest.importorskip("redun")
 
 DEFAULT_SETTINGS = SETTINGS.copy()
 
@@ -11,8 +12,6 @@ def setup_module():
 
 
 def teardown_module():
-    from quacc import SETTINGS
-
     SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 

@@ -1,8 +1,9 @@
 import pytest
 
+from quacc import SETTINGS
+
 jf = pytest.importorskip("jobflow")
 
-from quacc import SETTINGS
 
 DEFAULT_SETTINGS = SETTINGS.copy()
 
@@ -12,8 +13,6 @@ def setup_module():
 
 
 def teardown_module():
-    from quacc import SETTINGS
-
     SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
