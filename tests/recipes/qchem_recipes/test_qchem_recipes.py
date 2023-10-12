@@ -12,14 +12,6 @@ QCHEM_DIR = FILE_DIR / "qchem_examples"
 DEFAULT_SETTINGS = SETTINGS.copy()
 
 
-def setup_module():
-    SETTINGS.WORKFLOW_ENGINE = "local"
-
-
-def teardown_module():
-    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
-
-
 @pytest.fixture()
 def test_atoms():
     from ase.io import read
@@ -37,13 +29,16 @@ def os_atoms():
 def setup_module():
     from quacc import SETTINGS
 
+    SETTINGS.WORKFLOW_ENGINE = "local"
+
     SETTINGS.CHECK_CONVERGENCE = False
 
 
 def teardown_module():
     from quacc import SETTINGS
 
-    SETTINGS.CHECK_CONVERGENCE = True
+    SETTINGS.CHECK_CONVERGENCE = DEFAULT_SETTINGS.CHECK_CONVERGENCE
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 def qcinput_nearly_equal(qcinput1, qcinput2):
