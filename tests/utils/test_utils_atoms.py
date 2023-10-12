@@ -154,7 +154,7 @@ def test_check_is_metal():
     assert check_is_metal(atoms) is False
 
 
-def test_check_charge_and_spin():
+def test_check_charge_and_spin(os_atoms):
     import numpy as np
     from ase.atoms import Atoms
     from ase.build import molecule
