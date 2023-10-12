@@ -17,8 +17,7 @@ def teardown_module():
 def file_dir():
     from pathlib import Path
 
-    file_dir = Path(__file__).resolve().parent
-    return file_dir
+    return Path(__file__).resolve().parent
 
 
 @pytest.fixture
@@ -687,7 +686,7 @@ def test_lorbit():
     assert calc.int_params["lorbit"] == 11
 
 
-def test_setups():
+def test_setups(file_dir):
     from ase.build import bulk
 
     from quacc.calculators.vasp import Vasp
