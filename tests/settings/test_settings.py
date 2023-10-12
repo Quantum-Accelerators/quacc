@@ -6,7 +6,6 @@ from ase.build import bulk
 from maggma.stores import MemoryStore
 
 from quacc import SETTINGS
-from quacc.recipes.emt.core import relax_job, static_job
 from quacc.settings import QuaccSettings
 
 DEFAULT_SETTINGS = SETTINGS.copy()
@@ -41,6 +40,8 @@ def test_file(monkeypatch, tmpdir):
 
 
 def test_store(tmpdir):
+    from quacc.recipes.emt.core import static_job
+
     tmpdir.chdir()
     SETTINGS.PRIMARY_STORE = MemoryStore()
     atoms = bulk("Cu")
@@ -52,6 +53,8 @@ def test_store(tmpdir):
     reason="Need to be using local workflow engine.",
 )
 def test_results_dir(tmpdir):
+    from quacc.recipes.emt.core import relax_job
+
     tmpdir.chdir()
 
     atoms = bulk("Cu")
