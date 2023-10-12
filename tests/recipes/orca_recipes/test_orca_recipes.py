@@ -108,11 +108,13 @@ def test_relax_job(tmpdir):
 @pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
 def test_mpi_run(tmpdir, monkeypatch):
     import multiprocessing
+    from pathlib import Path
 
     from ase.build import molecule
 
     from quacc.recipes.orca.core import relax_job, static_job
 
+    file_dir = Path(__file__).resolve().parent
     tmpdir.chdir()
     monkeypatch.setenv("PATH", file_dir)
 

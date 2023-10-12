@@ -20,6 +20,7 @@ def pytest_sessionstart():
 
     SETTINGS.RESULTS_DIR = test_results_dir
     SETTINGS.SCRATCH_DIR = test_scratch_dir
+    SETTINGS.WORKFLOW_ENGINE = "local"
     os.makedirs(test_results_dir, exist_ok=True)
     os.makedirs(test_scratch_dir, exist_ok=True)
 

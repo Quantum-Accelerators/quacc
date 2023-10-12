@@ -1,3 +1,6 @@
+import pytest
+
+
 def test_static_job(tmpdir):
     from ase.build import bulk
 
@@ -468,7 +471,7 @@ def test_mp_relax_job(tmpdir):
 
 
 def test_mp_relax_flow(tmpdir):
-    from ase.build import bulk
+    from ase.build import bulk, molecule
 
     from quacc.recipes.vasp.mp import mp_relax_flow
 

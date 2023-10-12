@@ -1,3 +1,6 @@
+import pytest
+
+
 def test_static_job(tmpdir):
     from ase.build import molecule
 
