@@ -1,15 +1,19 @@
-import pytest
+from pathlib import Path
 
 from quacc import SETTINGS
 
 DEFAULT_SETTINGS = SETTINGS.copy()
 
 
-@pytest.fixture()
-def file_dir():
-    from pathlib import Path
+FILE_DIR = Path(__file__).resolve().parent
 
-    return Path(__file__).resolve().parent
+
+def setup_module():
+    SETTINGS.WORKFLOW_ENGINE = "local"
+
+
+def teardown_module():
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 def setup_function():
@@ -55,10 +59,6 @@ def test_store(tmpdir):
     static_job(atoms)
 
 
-@pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "local",
-    reason="Need to be using local workflow engine.",
-)
 def test_results_dir(tmpdir):
     import os
 
@@ -78,20 +78,20 @@ def test_results_dir(tmpdir):
     os.remove("opt.traj")
 
 
-def test_env_var(monkeypatch, file_dir):
+def test_env_var(monkeypatch):
     from quacc.settings import QuaccSettings
 
-    p = file_dir / "my/scratch/dir"
+    p = FILE_DIR / "my/scratch/dir"
     monkeypatch.setenv("QUACC_SCRATCH_DIR", p)
     assert p.expanduser().resolve() == QuaccSettings().SCRATCH_DIR
 
 
-def test_yaml(tmpdir, monkeypatch, file_dir):
+def test_yaml(tmpdir, monkeypatch):
     from quacc.settings import QuaccSettings
 
     tmpdir.chdir()
 
-    p = file_dir / "my/new/scratch/dir"
+    p = FILE_DIR / "my/new/scratch/dir"
     with open("quacc_test.yaml", "w") as f:
         f.write(f"SCRATCH_DIR: {p}")
     monkeypatch.setenv("QUACC_CONFIG_FILE", "quacc_test.yaml")

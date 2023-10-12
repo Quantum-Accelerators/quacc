@@ -2,10 +2,16 @@ import os
 
 import pytest
 
+from quacc import SETTINGS
+
+DEFAULT_SETTINGS = SETTINGS.copy()
+
 
 def setup_module():
     import os
     from pathlib import Path
+
+    SETTINGS.WORKFLOW_ENGINE = "local"
 
     file_dir = Path(__file__).resolve().parent
 
@@ -18,6 +24,7 @@ def teardown_module():
     import os
     from pathlib import Path
 
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
     file_dir = Path(__file__).resolve().parent
 
     if os.path.exists(file_dir / "mpirun"):

@@ -3,6 +3,8 @@ from shutil import which
 
 import pytest
 
+from quacc import SETTINGS
+
 has_gulp = bool(
     (bool(which("gulp")) or os.environ.get("ASE_GULP_COMMAND"))
     and os.environ.get("GULP_LIB")
@@ -12,6 +14,16 @@ pytestmark = pytest.mark.skipif(
     not has_gulp,
     reason="Needs GULP",
 )
+
+DEFAULT_SETTINGS = SETTINGS.copy()
+
+
+def setup_module():
+    SETTINGS.WORKFLOW_ENGINE = "local"
+
+
+def teardown_module():
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 def test_static_job(tmpdir):

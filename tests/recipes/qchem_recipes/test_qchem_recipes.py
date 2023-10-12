@@ -1,34 +1,35 @@
+from pathlib import Path
+
 import pytest
+
+from quacc import SETTINGS
 
 pytest.importorskip("sella")
 
+FILE_DIR = Path(__file__).resolve().parent
+QCHEM_DIR = FILE_DIR / "qchem_examples"
 
-@pytest.fixture()
-def qchem_dir():
-    from pathlib import Path
+DEFAULT_SETTINGS = SETTINGS.copy()
 
-    FILE_DIR = Path(__file__).resolve().parent
-    return FILE_DIR / "qchem_examples"
+
+def setup_module():
+    SETTINGS.WORKFLOW_ENGINE = "local"
+
+
+def teardown_module():
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 @pytest.fixture()
 def test_atoms():
-    from pathlib import Path
-
     from ase.io import read
-
-    FILE_DIR = Path(__file__).resolve().parent
 
     return read(FILE_DIR / "test.xyz")
 
 
 @pytest.fixture()
 def os_atoms():
-    from pathlib import Path
-
     from ase.io import read
-
-    FILE_DIR = Path(__file__).resolve().parent
 
     return read(FILE_DIR / "OS_test.xyz")
 
@@ -73,39 +74,30 @@ def qcinput_nearly_equal(qcinput1, qcinput2):
 
 
 def mock_execute1(_self, **kwargs):
-    from pathlib import Path
     from shutil import copy
 
-    FILE_DIR = Path(__file__).resolve().parent
-    qchem_dir = FILE_DIR / "qchem_examples"
-    copy(qchem_dir / "mol.qout.basic", "mol.qout")
-    copy(qchem_dir / "131.0.basic", "131.0")
-    copy(qchem_dir / "53.0.basic", "53.0")
-    copy(qchem_dir / "custodian.json", "custodian.json")
+    copy(QCHEM_DIR / "mol.qout.basic", "mol.qout")
+    copy(QCHEM_DIR / "131.0.basic", "131.0")
+    copy(QCHEM_DIR / "53.0.basic", "53.0")
+    copy(QCHEM_DIR / "custodian.json", "custodian.json")
 
 
 def mock_execute2(_self, **kwargs):
-    from pathlib import Path
     from shutil import copy
 
-    FILE_DIR = Path(__file__).resolve().parent
-    qchem_dir = FILE_DIR / "qchem_examples"
-    copy(qchem_dir / "mol.qout.intermediate", "mol.qout")
-    copy(qchem_dir / "131.0.intermediate", "131.0")
-    copy(qchem_dir / "53.0.intermediate", "53.0")
-    copy(qchem_dir / "custodian.json", "custodian.json")
+    copy(QCHEM_DIR / "mol.qout.intermediate", "mol.qout")
+    copy(QCHEM_DIR / "131.0.intermediate", "131.0")
+    copy(QCHEM_DIR / "53.0.intermediate", "53.0")
+    copy(QCHEM_DIR / "custodian.json", "custodian.json")
 
 
 def mock_execute3(_self, **kwargs):
-    from pathlib import Path
     from shutil import copy
 
-    FILE_DIR = Path(__file__).resolve().parent
-    qchem_dir = FILE_DIR / "qchem_examples"
-    copy(qchem_dir / "mol.qout.alternate", "mol.qout")
-    copy(qchem_dir / "131.0.alternate", "131.0")
-    copy(qchem_dir / "53.0.alternate", "53.0")
-    copy(qchem_dir / "custodian.json", "custodian.json")
+    copy(QCHEM_DIR / "mol.qout.alternate", "mol.qout")
+    copy(QCHEM_DIR / "131.0.alternate", "131.0")
+    copy(QCHEM_DIR / "53.0.alternate", "53.0")
+    copy(QCHEM_DIR / "custodian.json", "custodian.json")
 
 
 def mock_execute4(self, **kwargs):
@@ -122,16 +114,12 @@ def mock_execute4(self, **kwargs):
 
 
 def mock_execute5(_self, **kwargs):
-    from pathlib import Path
     from shutil import copy
 
-    FILE_DIR = Path(__file__).resolve().parent
-    qchem_dir = FILE_DIR / "qchem_examples"
-
-    copy(qchem_dir / "mol.qout.freq", "mol.qout")
-    copy(qchem_dir / "132.0.freq", "132.0")
-    copy(qchem_dir / "53.0.freq", "53.0")
-    copy(qchem_dir / "custodian.json", "custodian.json")
+    copy(QCHEM_DIR / "mol.qout.freq", "mol.qout")
+    copy(QCHEM_DIR / "132.0.freq", "132.0")
+    copy(QCHEM_DIR / "53.0.freq", "53.0")
+    copy(QCHEM_DIR / "custodian.json", "custodian.json")
 
 
 def mock_read(self, **kwargs):
@@ -139,7 +127,7 @@ def mock_read(self, **kwargs):
         raise RuntimeError("Results should not be None here.")
 
 
-def test_static_job_v1(monkeypatch, tmpdir, qchem_dir, test_atoms):
+def test_static_job_v1(monkeypatch, tmpdir, test_atoms):
     from ase import units
     from ase.calculators.calculator import FileIOCalculator
     from pymatgen.io.qchem.inputs import QCInput
@@ -163,12 +151,12 @@ def test_static_job_v1(monkeypatch, tmpdir, qchem_dir, test_atoms):
     assert output["results"]["custodian"][0]["job"]["max_cores"] == 40
 
     qcin = QCInput.from_file("mol.qin.gz")
-    ref_qcin = QCInput.from_file(str(qchem_dir / "mol.qin.basic"))
+    ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.basic"))
     qcinput_nearly_equal(qcin, ref_qcin)
     qcinput_nearly_equal(ref_qcin, QCInput.from_dict(output["results"]["qc_input"]))
 
 
-def test_static_job_v2(monkeypatch, tmpdir, qchem_dir, test_atoms):
+def test_static_job_v2(monkeypatch, tmpdir, test_atoms):
     from ase import units
     from ase.calculators.calculator import FileIOCalculator
     from pymatgen.io.qchem.inputs import QCInput
@@ -200,12 +188,12 @@ def test_static_job_v2(monkeypatch, tmpdir, qchem_dir, test_atoms):
     assert output["results"]["forces"][0][0] == pytest.approx(-0.6955571014353796)
 
     qcin = QCInput.from_file("mol.qin.gz")
-    ref_qcin = QCInput.from_file(str(qchem_dir / "mol.qin.intermediate"))
+    ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.intermediate"))
     qcinput_nearly_equal(qcin, ref_qcin)
     qcinput_nearly_equal(ref_qcin, QCInput.from_dict(output["results"]["qc_input"]))
 
 
-def test_static_job_v3(monkeypatch, tmpdir, qchem_dir, test_atoms):
+def test_static_job_v3(monkeypatch, tmpdir, test_atoms):
     from ase import units
     from ase.calculators.calculator import FileIOCalculator
     from pymatgen.io.qchem.inputs import QCInput
@@ -236,7 +224,7 @@ def test_static_job_v3(monkeypatch, tmpdir, qchem_dir, test_atoms):
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826311086011256)
 
     qcin = QCInput.from_file("mol.qin.gz")
-    ref_qcin = QCInput.from_file(str(qchem_dir / "mol.qin.alternate"))
+    ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.alternate"))
     qcinput_nearly_equal(qcin, ref_qcin)
     qcinput_nearly_equal(ref_qcin, QCInput.from_dict(output["results"]["qc_input"]))
 
@@ -264,7 +252,7 @@ def test_static_job_v5(tmpdir, test_atoms):
         static_job(test_atoms, 0, 1, pcm_dielectric="3.0", smd_solvent="water")
 
 
-def test_relax_job_v1(monkeypatch, tmpdir, qchem_dir, test_atoms):
+def test_relax_job_v1(monkeypatch, tmpdir, test_atoms):
     from ase import units
     from ase.calculators.calculator import FileIOCalculator
     from pymatgen.io.qchem.inputs import QCInput
@@ -295,12 +283,12 @@ def test_relax_job_v1(monkeypatch, tmpdir, qchem_dir, test_atoms):
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826330655069403)
 
     qcin = QCInput.from_file("mol.qin.gz")
-    ref_qcin = QCInput.from_file(str(qchem_dir / "mol.qin.basic.sella_opt_iter1"))
+    ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.basic.sella_opt_iter1"))
     qcinput_nearly_equal(qcin, ref_qcin)
     assert len(output["results"]["qc_input"]) > 1
 
 
-def test_relax_job_v2(monkeypatch, tmpdir, qchem_dir, test_atoms):
+def test_relax_job_v2(monkeypatch, tmpdir, test_atoms):
     from ase import units
     from ase.calculators.calculator import FileIOCalculator
     from pymatgen.io.qchem.inputs import QCInput
@@ -332,7 +320,7 @@ def test_relax_job_v2(monkeypatch, tmpdir, qchem_dir, test_atoms):
 
     qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(
-        str(qchem_dir / "mol.qin.intermediate.sella_opt_iter1")
+        str(QCHEM_DIR / "mol.qin.intermediate.sella_opt_iter1")
     )
     qcinput_nearly_equal(qcin, ref_qcin)
 
@@ -417,7 +405,7 @@ def test_freq_job_v1(monkeypatch, tmpdir, test_atoms):
     )
 
 
-def test_ts_job_v1(monkeypatch, tmpdir, qchem_dir, test_atoms):
+def test_ts_job_v1(monkeypatch, tmpdir, test_atoms):
     from ase import units
     from ase.calculators.calculator import FileIOCalculator
     from pymatgen.io.qchem.inputs import QCInput
@@ -448,11 +436,11 @@ def test_ts_job_v1(monkeypatch, tmpdir, qchem_dir, test_atoms):
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826330655069403)
 
     qcin = QCInput.from_file("mol.qin.gz")
-    ref_qcin = QCInput.from_file(str(qchem_dir / "mol.qin.basic.sella_TSopt_iter1"))
+    ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.basic.sella_TSopt_iter1"))
     qcinput_nearly_equal(qcin, ref_qcin)
 
 
-def test_ts_job_v2(monkeypatch, tmpdir, qchem_dir, test_atoms):
+def test_ts_job_v2(monkeypatch, tmpdir, test_atoms):
     from ase import units
     from ase.calculators.calculator import FileIOCalculator
     from pymatgen.io.qchem.inputs import QCInput
@@ -484,7 +472,7 @@ def test_ts_job_v2(monkeypatch, tmpdir, qchem_dir, test_atoms):
 
     qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(
-        str(qchem_dir / "mol.qin.intermediate.sella_TSopt_iter1")
+        str(QCHEM_DIR / "mol.qin.intermediate.sella_TSopt_iter1")
     )
     qcinput_nearly_equal(qcin, ref_qcin)
 
@@ -541,7 +529,7 @@ def test_ts_job_v4(tmpdir, test_atoms):
         )
 
 
-def test_irc_job_v1(monkeypatch, tmpdir, qchem_dir, test_atoms):
+def test_irc_job_v1(monkeypatch, tmpdir, test_atoms):
     from ase.calculators.calculator import FileIOCalculator
     from pymatgen.io.qchem.inputs import QCInput
 
@@ -574,7 +562,7 @@ def test_irc_job_v1(monkeypatch, tmpdir, qchem_dir, test_atoms):
 
     qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(
-        str(qchem_dir / "mol.qin.basic.sella_IRC_forward_iter1")
+        str(QCHEM_DIR / "mol.qin.basic.sella_IRC_forward_iter1")
     )
     qcinput_nearly_equal(qcin, ref_qcin)
 
@@ -590,7 +578,7 @@ def test_irc_job_v1(monkeypatch, tmpdir, qchem_dir, test_atoms):
 
     qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(
-        str(qchem_dir / "mol.qin.basic.sella_IRC_reverse_iter1")
+        str(QCHEM_DIR / "mol.qin.basic.sella_IRC_reverse_iter1")
     )
     qcinput_nearly_equal(qcin, ref_qcin)
 
@@ -646,7 +634,7 @@ def test_irc_job_v2(tmpdir, test_atoms):
         )
 
 
-def test_quasi_irc_job(monkeypatch, tmpdir, qchem_dir, test_atoms):
+def test_quasi_irc_job(monkeypatch, tmpdir, test_atoms):
     from ase.calculators.calculator import FileIOCalculator
     from pymatgen.io.qchem.inputs import QCInput
 
@@ -680,7 +668,7 @@ def test_quasi_irc_job(monkeypatch, tmpdir, qchem_dir, test_atoms):
     assert output["parameters"]["spin_multiplicity"] == 1
 
     qcin = QCInput.from_file("mol.qin.gz")
-    ref_qcin = QCInput.from_file(str(qchem_dir / "mol.qin.basic.quasi_irc_forward"))
+    ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.basic.quasi_irc_forward"))
     qcinput_nearly_equal(qcin, ref_qcin)
 
     irc_opt_swaps = {"max_steps": 6}
@@ -706,7 +694,7 @@ def test_quasi_irc_job(monkeypatch, tmpdir, qchem_dir, test_atoms):
     assert output["parameters"]["spin_multiplicity"] == 2
 
     qcin = QCInput.from_file("mol.qin.gz")
-    ref_qcin = QCInput.from_file(str(qchem_dir / "mol.qin.quasi_irc_reverse"))
+    ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.quasi_irc_reverse"))
     qcinput_nearly_equal(qcin, ref_qcin)
 
 

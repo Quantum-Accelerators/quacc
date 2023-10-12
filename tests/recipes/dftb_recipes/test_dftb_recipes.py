@@ -2,12 +2,24 @@ from shutil import which
 
 import pytest
 
+from quacc import SETTINGS
+
 DFTBPLUS_EXISTS = bool(which("dftb+"))
 
 pytestmark = pytest.mark.skipif(
     not DFTBPLUS_EXISTS,
     reason="Needs DFTB+",
 )
+
+DEFAULT_SETTINGS = SETTINGS.copy()
+
+
+def setup_module():
+    SETTINGS.WORKFLOW_ENGINE = "local"
+
+
+def teardown_module():
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 def test_static_job(tmpdir):

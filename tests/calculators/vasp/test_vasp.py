@@ -1,4 +1,8 @@
+from pathlib import Path
+
 import pytest
+
+FILE_DIR = Path(__file__).resolve().parent
 
 
 def setup_module():
@@ -14,31 +18,24 @@ def teardown_module():
 
 
 @pytest.fixture()
-def file_dir():
-    from pathlib import Path
+def atoms_mag():
+    from ase.io import read
 
-    return Path(__file__).resolve().parent
+    return read(FILE_DIR / "OUTCAR_mag.gz")
 
 
 @pytest.fixture()
-def atoms_mag(file_dir):
+def atoms_nomag():
     from ase.io import read
 
-    return read(file_dir / "OUTCAR_mag.gz")
+    return read(FILE_DIR / "OUTCAR_nomag.gz")
 
 
 @pytest.fixture()
-def atoms_nomag(file_dir):
+def atoms_nospin():
     from ase.io import read
 
-    return read(file_dir / "OUTCAR_nomag.gz")
-
-
-@pytest.fixture()
-def atoms_nospin(file_dir):
-    from ase.io import read
-
-    return read(file_dir / "OUTCAR_nospin.gz")
+    return read(FILE_DIR / "OUTCAR_nospin.gz")
 
 
 def test_vanilla_vasp():
@@ -686,7 +683,7 @@ def test_lorbit():
     assert calc.int_params["lorbit"] == 11
 
 
-def test_setups(file_dir):
+def test_setups():
     from ase.build import bulk
 
     from quacc.calculators.vasp import Vasp
@@ -707,7 +704,7 @@ def test_setups(file_dir):
     atoms = bulk("Cu")
     calc = Vasp(
         atoms,
-        setups=file_dir / "test_setups.yaml",
+        setups=FILE_DIR / "test_setups.yaml",
         preset="BulkSet",
     )
     assert calc.parameters["setups"]["Cu"] == "_sv"

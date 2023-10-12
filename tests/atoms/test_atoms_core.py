@@ -1,53 +1,36 @@
+from pathlib import Path
+
 import pytest
 
-
-@pytest.fixture()
-def file_dir():
-    from pathlib import Path
-
-    return Path(__file__).resolve().parent
+FILE_DIR = Path(__file__).resolve().parent
 
 
 @pytest.fixture()
 def atoms_mag():
-    from pathlib import Path
-
     from ase.io import read
 
-    file_dir = Path(__file__).resolve().parent
-
-    return read(file_dir / ".." / "calculators" / "vasp" / "OUTCAR_mag.gz")
+    return read(FILE_DIR / ".." / "calculators" / "vasp" / "OUTCAR_mag.gz")
 
 
 @pytest.fixture()
 def atoms_nomag():
-    from pathlib import Path
-
     from ase.io import read
 
-    file_dir = Path(__file__).resolve().parent
-    return read(file_dir / ".." / "calculators" / "vasp" / "OUTCAR_nomag.gz")
+    return read(FILE_DIR / ".." / "calculators" / "vasp" / "OUTCAR_nomag.gz")
 
 
 @pytest.fixture()
 def atoms_nospin():
-    from pathlib import Path
-
     from ase.io import read
 
-    file_dir = Path(__file__).resolve().parent
-    return read(file_dir / ".." / "calculators" / "vasp" / "OUTCAR_nospin.gz")
+    return read(FILE_DIR / ".." / "calculators" / "vasp" / "OUTCAR_nospin.gz")
 
 
 @pytest.fixture()
 def os_atoms():
-    from pathlib import Path
-
     from ase.io import read
 
-    file_dir = Path(__file__).resolve().parent
-
-    return read(file_dir / "OS_test.xyz")
+    return read(FILE_DIR / "OS_test.xyz")
 
 
 def test_init():

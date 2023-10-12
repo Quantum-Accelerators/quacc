@@ -1,11 +1,8 @@
+from pathlib import Path
+
 import pytest
 
-
-@pytest.fixture()
-def file_dir():
-    from pathlib import Path
-
-    return Path(__file__).resolve().parent
+FILE_DIR = Path(__file__).resolve().parent
 
 
 @pytest.fixture()
@@ -14,18 +11,18 @@ def atoms_mag():
 
     from ase.io import read
 
-    file_dir = Path(__file__).resolve().parent
+    FILE_DIR = Path(__file__).resolve().parent
 
-    return read(file_dir / ".." / "calculators" / "vasp" / "OUTCAR_mag.gz")
+    return read(FILE_DIR / ".." / "calculators" / "vasp" / "OUTCAR_mag.gz")
 
 
-def test_flip_atoms(file_dir):
+def test_flip_atoms():
     import numpy as np
     from ase.io import read
 
     from quacc.atoms.slabs import flip_atoms
 
-    atoms = read(file_dir / "ZnTe.cif.gz")
+    atoms = read(FILE_DIR / "ZnTe.cif.gz")
     atoms.info["test"] = "hi"
     atoms.set_initial_magnetic_moments(
         [2.0 if atom.symbol == "Zn" else 1.0 for atom in atoms]
@@ -42,7 +39,7 @@ def test_flip_atoms(file_dir):
     assert new_atoms.info.get("test", None) == "hi"
 
 
-def test_make_slabs_from_bulk(file_dir, atoms_mag):
+def test_make_slabs_from_bulk(atoms_mag):
     from copy import deepcopy
 
     import numpy as np
@@ -51,7 +48,7 @@ def test_make_slabs_from_bulk(file_dir, atoms_mag):
 
     from quacc.atoms.slabs import make_slabs_from_bulk
 
-    atoms = read(file_dir / "ZnTe.cif.gz")
+    atoms = read(FILE_DIR / "ZnTe.cif.gz")
     atoms.info["test"] = "hi"
     slabs = make_slabs_from_bulk(atoms)
     assert len(slabs) == 7
@@ -72,7 +69,7 @@ def test_make_slabs_from_bulk(file_dir, atoms_mag):
     assert highest_atom != highest_atom2
     assert atoms.info.get("test", None) == "hi"
 
-    atoms = read(file_dir / "ZnTe.cif.gz")
+    atoms = read(FILE_DIR / "ZnTe.cif.gz")
     slabs = make_slabs_from_bulk(atoms, flip_asymmetric=False)
     assert len(slabs) == 4
 
@@ -97,7 +94,7 @@ def test_make_slabs_from_bulk(file_dir, atoms_mag):
     assert slabs[0].get_magnetic_moments()[0] == atoms.get_magnetic_moments()[0]
     assert slabs[-1].info.get("slab_stats", None) is not None
 
-    atoms = read(file_dir / "Zn2CuAu.cif.gz")
+    atoms = read(FILE_DIR / "Zn2CuAu.cif.gz")
     min_d = atoms.get_all_distances(mic=True)
     min_d = np.min(min_d[min_d != 0.0])
     slabs = make_slabs_from_bulk(atoms)

@@ -15,6 +15,7 @@ def setup_module():
 
     current_file_path = Path(__file__).parent.resolve()
 
+    SETTINGS.WORKFLOW_ENGINE = "local"
     SETTINGS.NEWTONNET_CONFIG_PATH = current_file_path / "config0.yml"
     SETTINGS.NEWTONNET_MODEL_PATH = current_file_path / "best_model_state.tar"
     SETTINGS.CHECK_CONVERGENCE = False
@@ -23,9 +24,10 @@ def setup_module():
 def teardown_module():
     from quacc import SETTINGS
 
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
     SETTINGS.NEWTONNET_CONFIG_PATH = DEFAULT_SETTINGS.NEWTONNET_CONFIG_PATH
     SETTINGS.NEWTONNET_MODEL_PATH = DEFAULT_SETTINGS.NEWTONNET_MODEL_PATH
-    SETTINGS.CHECK_CONVERGENCE = True
+    SETTINGS.CHECK_CONVERGENCE = DEFAULT_SETTINGS.CHECK_CONVERGENCE
 
 
 def test_static_job(tmpdir):

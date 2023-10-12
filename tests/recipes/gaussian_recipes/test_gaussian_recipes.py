@@ -1,3 +1,16 @@
+from quacc import SETTINGS
+
+DEFAULT_SETTINGS = SETTINGS.copy()
+
+
+def setup_module():
+    SETTINGS.WORKFLOW_ENGINE = "local"
+
+
+def teardown_module():
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
+
+
 def test_static_job(tmpdir):
     from ase.build import molecule
 
