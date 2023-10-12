@@ -1,15 +1,21 @@
 import pytest
-from ase.build import bulk, molecule
 
 from quacc import SETTINGS
 
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "local",
-    reason="Need to use local as workflow manager to run this test.",
-)
+DEFAULT_SETTINGS = SETTINGS.copy()
+
+
+def setup_module():
+    SETTINGS.WORKFLOW_ENGINE = "local"
+
+
+def teardown_module():
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 def test_static_job(tmpdir):
+    from ase.build import bulk
+
     from quacc.recipes.vasp.core import static_job
 
     tmpdir.chdir()
@@ -54,6 +60,8 @@ def test_static_job(tmpdir):
 
 
 def test_static_job_force_copilot(tmpdir):
+    from ase.build import bulk
+
     from quacc import SETTINGS
     from quacc.recipes.vasp.core import static_job
 
@@ -81,6 +89,8 @@ def test_static_job_force_copilot(tmpdir):
 
 
 def test_relax_job(tmpdir):
+    from ase.build import bulk
+
     from quacc.recipes.vasp.core import relax_job
 
     tmpdir.chdir()
@@ -114,6 +124,8 @@ def test_relax_job(tmpdir):
 
 
 def test_doublerelax_job(tmpdir):
+    from ase.build import bulk
+
     from quacc.recipes.vasp.core import double_relax_job
 
     tmpdir.chdir()
@@ -167,6 +179,8 @@ def test_doublerelax_job(tmpdir):
 
 
 def test_slab_static_job(tmpdir):
+    from ase.build import bulk
+
     from quacc.recipes.vasp.slabs import slab_static_job
 
     tmpdir.chdir()
@@ -197,6 +211,8 @@ def test_slab_static_job(tmpdir):
 
 
 def test_slab_relax_job(tmpdir):
+    from ase.build import bulk
+
     from quacc.recipes.vasp.slabs import slab_relax_job
 
     tmpdir.chdir()
@@ -222,6 +238,8 @@ def test_slab_relax_job(tmpdir):
 
 
 def test_slab_dynamic_jobs(tmpdir):
+    from ase.build import bulk, molecule
+
     from quacc.recipes.vasp.slabs import bulk_to_slabs_flow, slab_to_ads_flow
 
     tmpdir.chdir()
@@ -317,6 +335,8 @@ def test_slab_dynamic_jobs(tmpdir):
 
 
 def test_qmof(tmpdir):
+    from ase.build import bulk
+
     from quacc.recipes.vasp.qmof import qmof_relax_job
 
     tmpdir.chdir()
@@ -391,6 +411,8 @@ def test_qmof(tmpdir):
 
 
 def test_mp_prerelax_job(tmpdir):
+    from ase.build import bulk
+
     from quacc.recipes.vasp.mp import mp_prerelax_job
 
     tmpdir.chdir()
@@ -420,12 +442,14 @@ def test_mp_prerelax_job(tmpdir):
     assert output["parameters"]["ediffg"] == -0.05
     assert output["parameters"]["encut"] == 680
     assert output["parameters"]["kspacing"] == 0.44
-    assert output["parameters"]["ismear"] == 0
+    assert output["parameters"]["ismear"] == -5
     assert output["parameters"]["sigma"] == 0.05
 
 
 def test_mp_relax_job(tmpdir):
     tmpdir.chdir()
+    from ase.build import bulk
+
     from quacc.recipes.vasp.mp import mp_relax_job
 
     atoms = bulk("Cu")
@@ -454,11 +478,13 @@ def test_mp_relax_job(tmpdir):
     assert output["parameters"]["ediffg"] == -0.02
     assert output["parameters"]["encut"] == 680
     assert output["parameters"]["kspacing"] == 0.44
-    assert output["parameters"]["ismear"] == 0
+    assert output["parameters"]["ismear"] == -5
     assert output["parameters"]["sigma"] == 0.05
 
 
 def test_mp_relax_flow(tmpdir):
+    from ase.build import bulk, molecule
+
     from quacc.recipes.vasp.mp import mp_relax_flow
 
     tmpdir.chdir()
@@ -474,6 +500,7 @@ def test_mp_relax_flow(tmpdir):
     assert output["parameters"]["sigma"] == 0.2
     assert output["parameters"]["kspacing"] == 0.22
     assert output["prerelax"]["parameters"]["xc"] == "pbesol"
+    assert output["prerelax"]["parameters"]["ismear"] == 0
 
     atoms = bulk("C")
     output = mp_relax_flow(atoms)
@@ -481,8 +508,9 @@ def test_mp_relax_flow(tmpdir):
     assert output["parameters"]["xc"] == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02
     assert output["parameters"]["encut"] == 680
-    assert output["parameters"]["ismear"] == 0
+    assert output["parameters"]["ismear"] == -5
     assert output["parameters"]["kspacing"] == pytest.approx(0.28329488761304206)
+    assert output["prerelax"]["parameters"]["ismear"] == 0
 
     atoms = molecule("O2")
     atoms.center(vacuum=10)
@@ -492,11 +520,14 @@ def test_mp_relax_flow(tmpdir):
     assert output["parameters"]["xc"] == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02
     assert output["parameters"]["encut"] == 680
-    assert output["parameters"]["ismear"] == 0
+    assert output["parameters"]["ismear"] == -5
     assert output["parameters"]["kspacing"] == pytest.approx(0.28329488761304206)
+    assert output["prerelax"]["parameters"]["ismear"] == 0
 
 
 def test_vasp_version(tmpdir):
+    from ase.build import bulk
+
     from quacc import SETTINGS
     from quacc.recipes.vasp.core import static_job
 

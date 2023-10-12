@@ -3,10 +3,16 @@ import pytest
 from quacc import SETTINGS
 
 prefect = pytest.importorskip("prefect")
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "prefect",
-    reason="This test requires Prefect as the workflow engine",
-)
+
+DEFAULT_SETTINGS = SETTINGS.copy()
+
+
+def setup_module():
+    SETTINGS.WORKFLOW_ENGINE = "prefect"
+
+
+def teardown_module():
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 @pytest.fixture(autouse=True, scope="session")
@@ -127,9 +133,7 @@ def test_tutorial2c(tmpdir):
     @flow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, run_static=False)  # (1)!
-
-        return relaxed_slabs
+        return bulk_to_slabs_flow(relaxed_bulk, run_static=False)  # (1)!
 
     # Define the Atoms object
     atoms = bulk("Cu")

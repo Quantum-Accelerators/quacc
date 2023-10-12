@@ -215,13 +215,11 @@ graph LR
     atoms = bulk("Cu")
 
     # Define the workflow
-    future = bulk_to_slabs_flow(atoms)  # (1)!
+    future = bulk_to_slabs_flow(atoms)
 
     # Print the results
     print(future.result())
     ```
-
-    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator.
 
 === "Covalent ⭐"
 
