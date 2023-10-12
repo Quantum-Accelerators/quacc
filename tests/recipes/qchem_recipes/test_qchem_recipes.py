@@ -712,7 +712,7 @@ def test_quasi_irc_job(monkeypatch, tmpdir, test_atoms):
     qcinput_nearly_equal(qcin, ref_qcin)
 
 
-def test_internal_relax_job(monkeypatch, tmpdir):
+def test_internal_relax_job(monkeypatch, tmpdir, test_atoms):
     from ase import units
     from ase.calculators.calculator import FileIOCalculator
     from pymatgen.io.qchem.inputs import QCInput
