@@ -19,26 +19,6 @@ def atoms_mag():
     return read(file_dir / ".." / "calculators" / "vasp" / "OUTCAR_mag.gz")
 
 
-@pytest.fixture()
-def atoms_nomag():
-    from pathlib import Path
-
-    from ase.io import read
-
-    file_dir = Path(__file__).resolve().parent
-    return read(file_dir / ".." / "calculators" / "vasp" / "OUTCAR_nomag.gz")
-
-
-@pytest.fixture()
-def atoms_nospin():
-    from pathlib import Path
-
-    from ase.io import read
-
-    file_dir = Path(__file__).resolve().parent
-    return read(file_dir / ".." / "calculators" / "vasp" / "OUTCAR_nospin.gz")
-
-
 def test_flip_atoms(file_dir):
     import numpy as np
     from ase.io import read
@@ -62,7 +42,7 @@ def test_flip_atoms(file_dir):
     assert new_atoms.info.get("test", None) == "hi"
 
 
-def test_make_slabs_from_bulk(file_dir):
+def test_make_slabs_from_bulk(file_dir, atoms_mag):
     from copy import deepcopy
 
     import numpy as np

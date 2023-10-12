@@ -78,7 +78,9 @@ def test_get_atoms_id():
     assert get_atoms_id(atoms) == md5maghash
 
 
-def test_prep_next_run():  # sourcery skip: extract-duplicate-method
+def test_prep_next_run(
+    atoms_mag, atoms_nomag, atoms_nospin
+):  # sourcery skip: extract-duplicate-method
     from copy import deepcopy
 
     from ase.build import bulk

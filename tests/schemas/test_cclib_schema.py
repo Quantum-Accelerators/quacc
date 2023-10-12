@@ -23,7 +23,7 @@ def log1():
 
     file_dir = Path(__file__).resolve().parent
 
-    return file_dir / "gaussian_run1" / "gaussian.log"
+    return file_dir / "gaussian_run1" / "Gaussian.log"
 
 
 @pytest.fixture()
@@ -34,7 +34,7 @@ def cclib_obj():
 
     file_dir = Path(__file__).resolve().parent
 
-    return ccread(str(file_dir / "gaussian_run1" / "gaussian.log"))
+    return ccread(str(file_dir / "gaussian_run1" / "Gaussian.log"))
 
 
 def setup_module():
