@@ -62,6 +62,8 @@ def test_init():
 
 
 def test_get_atoms_id():
+    from ase.build import bulk
+
     from quacc.atoms.core import get_atoms_id
 
     atoms = bulk("Cu")
@@ -139,7 +141,7 @@ def test_prep_next_run():  # sourcery skip: extract-duplicate-method
 
 
 def test_check_is_metal():
-    from ase.build import molecule
+    from ase.build import bulk, molecule
 
     from quacc.atoms.core import check_is_metal
 
