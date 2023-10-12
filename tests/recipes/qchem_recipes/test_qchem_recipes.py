@@ -1,36 +1,48 @@
-import os
-from pathlib import Path
-from shutil import copy
-
 import pytest
-from ase import units
-from ase.calculators.calculator import FileIOCalculator
-from ase.calculators.lj import LennardJones
-from ase.io import read
-from ase.optimize import FIRE
-from pymatgen.io.ase import AseAtomsAdaptor
-from pymatgen.io.qchem.inputs import QCInput
-
-from quacc import SETTINGS
-from quacc.atoms.core import check_charge_and_spin
-from quacc.calculators.qchem import QChem
 
 pytest.importorskip("sella")
 
-FILE_DIR = Path(__file__).resolve().parent
-QCHEM_DIR = os.path.join(FILE_DIR, "qchem_examples")
-TEST_ATOMS = read(os.path.join(FILE_DIR, "test.xyz"))
-OS_ATOMS = read(os.path.join(FILE_DIR, "OS_test.xyz"))
 
-DEFAULT_SETTINGS = SETTINGS.copy()
+@pytest.fixture
+def qchem_dir():
+    from pathlib import Path
+
+    FILE_DIR = Path(__file__).resolve().parent
+    return FILE_DIR / "qchem_examples"
+
+
+@pytest.fixture
+def test_atoms():
+    from pathlib import Path
+
+    from ase.io import read
+
+    FILE_DIR = Path(__file__).resolve().parent
+
+    return read(FILE_DIR / "test.xyz")
+
+
+@pytest.fixture
+def os_atoms():
+    from pathlib import Path
+
+    from ase.io import read
+
+    FILE_DIR = Path(__file__).resolve().parent
+
+    return read(FILE_DIR / "OS_test.xyz")
 
 
 def setup_module():
+    from quacc import SETTINGS
+
     SETTINGS.CHECK_CONVERGENCE = False
 
 
 def teardown_module():
-    SETTINGS.CHECK_CONVERGENCE = DEFAULT_SETTINGS.CHECK_CONVERGENCE
+    from quacc import SETTINGS
+
+    SETTINGS.CHECK_CONVERGENCE = True
 
 
 def qcinput_nearly_equal(qcinput1, qcinput2):
@@ -61,27 +73,46 @@ def qcinput_nearly_equal(qcinput1, qcinput2):
 
 
 def mock_execute1(_self, **kwargs):
-    copy(os.path.join(QCHEM_DIR, "mol.qout.basic"), "mol.qout")
-    copy(os.path.join(QCHEM_DIR, "131.0.basic"), "131.0")
-    copy(os.path.join(QCHEM_DIR, "53.0.basic"), "53.0")
-    copy(os.path.join(QCHEM_DIR, "custodian.json"), "custodian.json")
+    from pathlib import Path
+    from shutil import copy
+
+    FILE_DIR = Path(__file__).resolve().parent
+    qchem_dir = FILE_DIR / "qchem_examples"
+    copy(qchem_dir / "mol.qout.basic", "mol.qout")
+    copy(qchem_dir / "131.0.basic", "131.0")
+    copy(qchem_dir / "53.0.basic", "53.0")
+    copy(qchem_dir / "custodian.json", "custodian.json")
 
 
 def mock_execute2(_self, **kwargs):
-    copy(os.path.join(QCHEM_DIR, "mol.qout.intermediate"), "mol.qout")
-    copy(os.path.join(QCHEM_DIR, "131.0.intermediate"), "131.0")
-    copy(os.path.join(QCHEM_DIR, "53.0.intermediate"), "53.0")
-    copy(os.path.join(QCHEM_DIR, "custodian.json"), "custodian.json")
+    from pathlib import Path
+    from shutil import copy
+
+    FILE_DIR = Path(__file__).resolve().parent
+    qchem_dir = FILE_DIR / "qchem_examples"
+    copy(qchem_dir / "mol.qout.intermediate", "mol.qout")
+    copy(qchem_dir / "131.0.intermediate", "131.0")
+    copy(qchem_dir / "53.0.intermediate", "53.0")
+    copy(qchem_dir / "custodian.json", "custodian.json")
 
 
 def mock_execute3(_self, **kwargs):
-    copy(os.path.join(QCHEM_DIR, "mol.qout.alternate"), "mol.qout")
-    copy(os.path.join(QCHEM_DIR, "131.0.alternate"), "131.0")
-    copy(os.path.join(QCHEM_DIR, "53.0.alternate"), "53.0")
-    copy(os.path.join(QCHEM_DIR, "custodian.json"), "custodian.json")
+    from pathlib import Path
+    from shutil import copy
+
+    FILE_DIR = Path(__file__).resolve().parent
+    qchem_dir = FILE_DIR / "qchem_examples"
+    copy(qchem_dir / "mol.qout.alternate", "mol.qout")
+    copy(qchem_dir / "131.0.alternate", "131.0")
+    copy(qchem_dir / "53.0.alternate", "53.0")
+    copy(qchem_dir / "custodian.json", "custodian.json")
 
 
 def mock_execute4(self, **kwargs):
+    from ase.calculators.lj import LennardJones
+    from pymatgen.io.ase import AseAtomsAdaptor
+    from pymatgen.io.qchem.inputs import QCInput
+
     qcin = QCInput.from_file("mol.qin")
     mol = qcin.molecule
     atoms = AseAtomsAdaptor.get_atoms(mol)
@@ -91,10 +122,16 @@ def mock_execute4(self, **kwargs):
 
 
 def mock_execute5(_self, **kwargs):
-    copy(os.path.join(QCHEM_DIR, "mol.qout.freq"), "mol.qout")
-    copy(os.path.join(QCHEM_DIR, "132.0.freq"), "132.0")
-    copy(os.path.join(QCHEM_DIR, "53.0.freq"), "53.0")
-    copy(os.path.join(QCHEM_DIR, "custodian.json"), "custodian.json")
+    from pathlib import Path
+    from shutil import copy
+
+    FILE_DIR = Path(__file__).resolve().parent
+    qchem_dir = FILE_DIR / "qchem_examples"
+
+    copy(qchem_dir / "mol.qout.freq", "mol.qout")
+    copy(qchem_dir / "132.0.freq", "132.0")
+    copy(qchem_dir / "53.0.freq", "53.0")
+    copy(qchem_dir / "custodian.json", "custodian.json")
 
 
 def mock_read(self, **kwargs):
@@ -102,14 +139,19 @@ def mock_read(self, **kwargs):
         raise RuntimeError("Results should not be None here.")
 
 
-def test_static_job_v1(monkeypatch, tmpdir):
+def test_static_job_v1(monkeypatch, tmpdir, test_atoms):
+    from ase import units
+    from ase.calculators.calculator import FileIOCalculator
+    from pymatgen.io.qchem.inputs import QCInput
+
+    from quacc.atoms.core import check_charge_and_spin
     from quacc.recipes.qchem.core import static_job
 
     tmpdir.chdir()
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
-    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
-    output = static_job(TEST_ATOMS, charge, spin_multiplicity)
-    assert output["atoms"] == TEST_ATOMS
+    charge, spin_multiplicity = check_charge_and_spin(test_atoms)
+    output = static_job(test_atoms, charge, spin_multiplicity)
+    assert output["atoms"] == test_atoms
     assert output["charge"] == 0
     assert output["spin_multiplicity"] == 1
     assert output["formula_alphabetical"] == "C4 H4 O6"
@@ -121,20 +163,25 @@ def test_static_job_v1(monkeypatch, tmpdir):
     assert output["results"]["custodian"][0]["job"]["max_cores"] == 40
 
     qcin = QCInput.from_file("mol.qin.gz")
-    ref_qcin = QCInput.from_file(os.path.join(QCHEM_DIR, "mol.qin.basic"))
+    ref_qcin = QCInput.from_file(os.path.join(qchem_dir, "mol.qin.basic"))
     qcinput_nearly_equal(qcin, ref_qcin)
     qcinput_nearly_equal(ref_qcin, QCInput.from_dict(output["results"]["qc_input"]))
 
 
-def test_static_job_v2(monkeypatch, tmpdir):
+def test_static_job_v2(monkeypatch, tmpdir, test_atoms):
+    from ase import units
+    from ase.calculators.calculator import FileIOCalculator
+    from pymatgen.io.qchem.inputs import QCInput
+
+    from quacc.atoms.core import check_charge_and_spin
     from quacc.recipes.qchem.core import static_job
 
     tmpdir.chdir()
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute2)
-    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS, charge=-1)
+    charge, spin_multiplicity = check_charge_and_spin(test_atoms, charge=-1)
     output = static_job(
-        TEST_ATOMS,
+        test_atoms,
         charge,
         spin_multiplicity,
         method="b97mv",
@@ -142,7 +189,7 @@ def test_static_job_v2(monkeypatch, tmpdir):
         pcm_dielectric="3.0",
     )
 
-    assert output["atoms"] == TEST_ATOMS
+    assert output["atoms"] == test_atoms
     assert output["charge"] == -1
     assert output["spin_multiplicity"] == 2
     assert output["nelectrons"] == 77
@@ -153,27 +200,32 @@ def test_static_job_v2(monkeypatch, tmpdir):
     assert output["results"]["forces"][0][0] == pytest.approx(-0.6955571014353796)
 
     qcin = QCInput.from_file("mol.qin.gz")
-    ref_qcin = QCInput.from_file(os.path.join(QCHEM_DIR, "mol.qin.intermediate"))
+    ref_qcin = QCInput.from_file(os.path.join(qchem_dir, "mol.qin.intermediate"))
     qcinput_nearly_equal(qcin, ref_qcin)
     qcinput_nearly_equal(ref_qcin, QCInput.from_dict(output["results"]["qc_input"]))
 
 
-def test_static_job_v3(monkeypatch, tmpdir):
+def test_static_job_v3(monkeypatch, tmpdir, test_atoms):
+    from ase import units
+    from ase.calculators.calculator import FileIOCalculator
+    from pymatgen.io.qchem.inputs import QCInput
+
+    from quacc.atoms.core import check_charge_and_spin
     from quacc.recipes.qchem.core import static_job
 
     tmpdir.chdir()
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
     overwrite_inputs = {"rem": {"mem_total": "170000"}}
-    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
+    charge, spin_multiplicity = check_charge_and_spin(test_atoms)
     output = static_job(
-        TEST_ATOMS,
+        test_atoms,
         charge,
         spin_multiplicity,
         scf_algorithm="gdm",
         overwrite_inputs=overwrite_inputs,
     )
-    assert output["atoms"] == TEST_ATOMS
+    assert output["atoms"] == test_atoms
     assert output["charge"] == 0
     assert output["spin_multiplicity"] == 1
     assert output["formula_alphabetical"] == "C4 H4 O6"
@@ -184,46 +236,55 @@ def test_static_job_v3(monkeypatch, tmpdir):
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826311086011256)
 
     qcin = QCInput.from_file("mol.qin.gz")
-    ref_qcin = QCInput.from_file(os.path.join(QCHEM_DIR, "mol.qin.alternate"))
+    ref_qcin = QCInput.from_file(os.path.join(qchem_dir, "mol.qin.alternate"))
     qcinput_nearly_equal(qcin, ref_qcin)
     qcinput_nearly_equal(ref_qcin, QCInput.from_dict(output["results"]["qc_input"]))
 
 
-def test_static_job_v4(monkeypatch, tmpdir):
+def test_static_job_v4(monkeypatch, tmpdir, os_atoms):
+    from ase.calculators.calculator import FileIOCalculator
+
+    from quacc.atoms.core import check_charge_and_spin
+    from quacc.calculators.qchem import QChem
     from quacc.recipes.qchem.core import static_job
 
     tmpdir.chdir()
     monkeypatch.setattr(QChem, "read_results", mock_read)
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute4)
-    charge, spin_multiplicity = check_charge_and_spin(OS_ATOMS)
-    assert static_job(OS_ATOMS, charge, spin_multiplicity)
+    charge, spin_multiplicity = check_charge_and_spin(os_atoms)
+    assert static_job(os_atoms, charge, spin_multiplicity)
 
 
-def test_static_job_v5(tmpdir):
+def test_static_job_v5(tmpdir, test_atoms):
     from quacc.recipes.qchem.core import static_job
 
     tmpdir.chdir()
 
     with pytest.raises(ValueError):
-        static_job(TEST_ATOMS, 0, 1, pcm_dielectric="3.0", smd_solvent="water")
+        static_job(test_atoms, 0, 1, pcm_dielectric="3.0", smd_solvent="water")
 
 
-def test_relax_job_v1(monkeypatch, tmpdir):
+def test_relax_job_v1(monkeypatch, tmpdir, test_atoms):
+    from ase import units
+    from ase.calculators.calculator import FileIOCalculator
+    from pymatgen.io.qchem.inputs import QCInput
+
+    from quacc.atoms.core import check_charge_and_spin
     from quacc.recipes.qchem.core import relax_job
 
     tmpdir.chdir()
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
-    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
+    charge, spin_multiplicity = check_charge_and_spin(test_atoms)
     output = relax_job(
-        TEST_ATOMS,
+        test_atoms,
         charge,
         spin_multiplicity,
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
     )
 
-    assert output["atoms"] != TEST_ATOMS
+    assert output["atoms"] != test_atoms
     assert output["charge"] == 0
     assert output["spin_multiplicity"] == 1
     assert output["formula_alphabetical"] == "C4 H4 O6"
@@ -235,20 +296,25 @@ def test_relax_job_v1(monkeypatch, tmpdir):
 
     qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(
-        os.path.join(QCHEM_DIR, "mol.qin.basic.sella_opt_iter1")
+        os.path.join(qchem_dir, "mol.qin.basic.sella_opt_iter1")
     )
     qcinput_nearly_equal(qcin, ref_qcin)
     assert len(output["results"]["qc_input"]) > 1
 
 
-def test_relax_job_v2(monkeypatch, tmpdir):
+def test_relax_job_v2(monkeypatch, tmpdir, test_atoms):
+    from ase import units
+    from ase.calculators.calculator import FileIOCalculator
+    from pymatgen.io.qchem.inputs import QCInput
+
+    from quacc.atoms.core import check_charge_and_spin
     from quacc.recipes.qchem.core import relax_job
 
     tmpdir.chdir()
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute2)
-    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS, charge=-1)
+    charge, spin_multiplicity = check_charge_and_spin(test_atoms, charge=-1)
     output = relax_job(
-        TEST_ATOMS,
+        test_atoms,
         charge,
         spin_multiplicity,
         method="b97mv",
@@ -256,7 +322,7 @@ def test_relax_job_v2(monkeypatch, tmpdir):
         opt_swaps={"max_steps": 1},
     )
 
-    assert output["atoms"] != TEST_ATOMS
+    assert output["atoms"] != test_atoms
     assert output["charge"] == -1
     assert output["spin_multiplicity"] == 2
     assert output["nelectrons"] == 77
@@ -268,20 +334,24 @@ def test_relax_job_v2(monkeypatch, tmpdir):
 
     qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(
-        os.path.join(QCHEM_DIR, "mol.qin.intermediate.sella_opt_iter1")
+        str(qchem_dir / "mol.qin.intermediate.sella_opt_iter1")
     )
     qcinput_nearly_equal(qcin, ref_qcin)
 
 
-def test_relax_job_v3(monkeypatch, tmpdir):
+def test_relax_job_v3(monkeypatch, tmpdir, test_atoms):
+    from ase import units
+    from ase.calculators.calculator import FileIOCalculator
+
+    from quacc.atoms.core import check_charge_and_spin
     from quacc.recipes.qchem.core import relax_job
 
     tmpdir.chdir()
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
     overwrite_inputs = {"rem": {"mem_total": "170000"}}
-    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
+    charge, spin_multiplicity = check_charge_and_spin(test_atoms)
     output = relax_job(
-        TEST_ATOMS,
+        test_atoms,
         charge,
         spin_multiplicity,
         scf_algorithm="gdm",
@@ -290,7 +360,7 @@ def test_relax_job_v3(monkeypatch, tmpdir):
         opt_swaps={"max_steps": 1},
     )
 
-    assert output["atoms"] != TEST_ATOMS
+    assert output["atoms"] != test_atoms
     assert output["charge"] == 0
     assert output["spin_multiplicity"] == 1
     assert output["formula_alphabetical"] == "C4 H4 O6"
@@ -301,22 +371,26 @@ def test_relax_job_v3(monkeypatch, tmpdir):
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826311086011256)
 
 
-def test_relax_job_v4(tmpdir):
+def test_relax_job_v4(tmpdir, test_atoms):
     from quacc.recipes.qchem.core import relax_job
 
     tmpdir.chdir()
     with pytest.raises(ValueError):
-        relax_job(TEST_ATOMS, 0, 1, pcm_dielectric="3.0", smd_solvent="water")
+        relax_job(test_atoms, 0, 1, pcm_dielectric="3.0", smd_solvent="water")
 
 
-def test_freq_job_v1(monkeypatch, tmpdir):
+def test_freq_job_v1(monkeypatch, tmpdir, test_atoms):
+    from ase import units
+    from ase.calculators.calculator import FileIOCalculator
+
+    from quacc.atoms.core import check_charge_and_spin
     from quacc.recipes.qchem.core import freq_job
 
     tmpdir.chdir()
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute5)
-    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS, charge=-1)
+    charge, spin_multiplicity = check_charge_and_spin(test_atoms, charge=-1)
     output = freq_job(
-        TEST_ATOMS,
+        test_atoms,
         charge,
         spin_multiplicity,
         scf_algorithm="diis",
@@ -324,7 +398,7 @@ def test_freq_job_v1(monkeypatch, tmpdir):
         basis="def2-svpd",
     )
 
-    assert output["atoms"] == TEST_ATOMS
+    assert output["atoms"] == test_atoms
     assert output["charge"] == -1
     assert output["spin_multiplicity"] == 2
     assert output["formula_alphabetical"] == "C4 H4 O6"
@@ -345,22 +419,27 @@ def test_freq_job_v1(monkeypatch, tmpdir):
     )
 
 
-def test_ts_job_v1(monkeypatch, tmpdir):
+def test_ts_job_v1(monkeypatch, tmpdir, test_atoms):
+    from ase import units
+    from ase.calculators.calculator import FileIOCalculator
+    from pymatgen.io.qchem.inputs import QCInput
+
+    from quacc.atoms.core import check_charge_and_spin
     from quacc.recipes.qchem.ts import ts_job
 
     tmpdir.chdir()
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
-    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
+    charge, spin_multiplicity = check_charge_and_spin(test_atoms)
     output = ts_job(
-        TEST_ATOMS,
+        test_atoms,
         charge,
         spin_multiplicity,
         basis="def2-tzvpd",
         opt_swaps={"max_steps": 1},
     )
 
-    assert output["atoms"] != TEST_ATOMS
+    assert output["atoms"] != test_atoms
     assert output["charge"] == 0
     assert output["spin_multiplicity"] == 1
     assert output["formula_alphabetical"] == "C4 H4 O6"
@@ -371,20 +450,23 @@ def test_ts_job_v1(monkeypatch, tmpdir):
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826330655069403)
 
     qcin = QCInput.from_file("mol.qin.gz")
-    ref_qcin = QCInput.from_file(
-        os.path.join(QCHEM_DIR, "mol.qin.basic.sella_TSopt_iter1")
-    )
+    ref_qcin = QCInput.from_file(str(qchem_dir / "mol.qin.basic.sella_TSopt_iter1"))
     qcinput_nearly_equal(qcin, ref_qcin)
 
 
-def test_ts_job_v2(monkeypatch, tmpdir):
+def test_ts_job_v2(monkeypatch, tmpdir, test_atoms):
+    from ase import units
+    from ase.calculators.calculator import FileIOCalculator
+    from pymatgen.io.qchem.inputs import QCInput
+
+    from quacc.atoms.core import check_charge_and_spin
     from quacc.recipes.qchem.ts import ts_job
 
     tmpdir.chdir()
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute2)
-    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS, charge=-1)
+    charge, spin_multiplicity = check_charge_and_spin(test_atoms, charge=-1)
     output = ts_job(
-        TEST_ATOMS,
+        test_atoms,
         charge,
         spin_multiplicity,
         method="b97mv",
@@ -392,7 +474,7 @@ def test_ts_job_v2(monkeypatch, tmpdir):
         opt_swaps={"max_steps": 1},
     )
 
-    assert output["atoms"] != TEST_ATOMS
+    assert output["atoms"] != test_atoms
     assert output["charge"] == -1
     assert output["spin_multiplicity"] == 2
     assert output["nelectrons"] == 77
@@ -404,20 +486,24 @@ def test_ts_job_v2(monkeypatch, tmpdir):
 
     qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(
-        os.path.join(QCHEM_DIR, "mol.qin.intermediate.sella_TSopt_iter1")
+        str(qchem_dir / "mol.qin.intermediate.sella_TSopt_iter1")
     )
     qcinput_nearly_equal(qcin, ref_qcin)
 
 
-def test_ts_job_v3(monkeypatch, tmpdir):
+def test_ts_job_v3(monkeypatch, tmpdir, test_atoms):
+    from ase import units
+    from ase.calculators.calculator import FileIOCalculator
+
+    from quacc.atoms.core import check_charge_and_spin
     from quacc.recipes.qchem.ts import ts_job
 
     tmpdir.chdir()
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute3)
     overwrite_inputs = {"rem": {"mem_total": "170000"}}
-    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
+    charge, spin_multiplicity = check_charge_and_spin(test_atoms)
     output = ts_job(
-        TEST_ATOMS,
+        test_atoms,
         charge,
         spin_multiplicity,
         scf_algorithm="gdm",
@@ -426,7 +512,7 @@ def test_ts_job_v3(monkeypatch, tmpdir):
         opt_swaps={"max_steps": 1},
     )
 
-    assert output["atoms"] != TEST_ATOMS
+    assert output["atoms"] != test_atoms
     assert output["charge"] == 0
     assert output["spin_multiplicity"] == 1
     assert output["formula_alphabetical"] == "C4 H4 O6"
@@ -437,16 +523,18 @@ def test_ts_job_v3(monkeypatch, tmpdir):
     assert output["results"]["forces"][0][0] == pytest.approx(-1.3826311086011256)
 
 
-def test_ts_job_v4(tmpdir):
+def test_ts_job_v4(tmpdir, test_atoms):
+    from ase.optimize import FIRE
+
     from quacc.recipes.qchem.ts import ts_job
 
     tmpdir.chdir()
     with pytest.raises(ValueError):
-        ts_job(TEST_ATOMS, 0, 1, pcm_dielectric="3.0", smd_solvent="water")
+        ts_job(test_atoms, 0, 1, pcm_dielectric="3.0", smd_solvent="water")
 
     with pytest.raises(ValueError):
         ts_job(
-            TEST_ATOMS,
+            test_atoms,
             0,
             1,
             pcm_dielectric="3.0",
@@ -455,7 +543,12 @@ def test_ts_job_v4(tmpdir):
         )
 
 
-def test_irc_job_v1(monkeypatch, tmpdir):
+def test_irc_job_v1(monkeypatch, tmpdir, test_atoms):
+    from ase.calculators.calculator import FileIOCalculator
+    from pymatgen.io.qchem.inputs import QCInput
+
+    from quacc.atoms.core import check_charge_and_spin
+    from quacc.calculators.qchem import QChem
     from quacc.recipes.qchem.ts import irc_job
 
     tmpdir.chdir()
@@ -463,9 +556,9 @@ def test_irc_job_v1(monkeypatch, tmpdir):
     monkeypatch.setattr(QChem, "read_results", mock_read)
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute4)
 
-    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
+    charge, spin_multiplicity = check_charge_and_spin(test_atoms)
     output = irc_job(
-        TEST_ATOMS,
+        test_atoms,
         charge,
         spin_multiplicity,
         "forward",
@@ -473,7 +566,7 @@ def test_irc_job_v1(monkeypatch, tmpdir):
         opt_swaps={"max_steps": 1},
     )
 
-    assert output["atoms"] != TEST_ATOMS
+    assert output["atoms"] != test_atoms
     assert output["charge"] == 0
     assert output["spin_multiplicity"] == 1
     assert output["formula_alphabetical"] == "C4 H4 O6"
@@ -483,13 +576,13 @@ def test_irc_job_v1(monkeypatch, tmpdir):
 
     qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(
-        os.path.join(QCHEM_DIR, "mol.qin.basic.sella_IRC_forward_iter1")
+        str(qchem_dir / "mol.qin.basic.sella_IRC_forward_iter1")
     )
     qcinput_nearly_equal(qcin, ref_qcin)
 
-    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
+    charge, spin_multiplicity = check_charge_and_spin(test_atoms)
     output = irc_job(
-        TEST_ATOMS,
+        test_atoms,
         charge,
         spin_multiplicity,
         "reverse",
@@ -499,13 +592,13 @@ def test_irc_job_v1(monkeypatch, tmpdir):
 
     qcin = QCInput.from_file("mol.qin.gz")
     ref_qcin = QCInput.from_file(
-        os.path.join(QCHEM_DIR, "mol.qin.basic.sella_IRC_reverse_iter1")
+        str(qchem_dir / "mol.qin.basic.sella_IRC_reverse_iter1")
     )
     qcinput_nearly_equal(qcin, ref_qcin)
 
     overwrite_inputs = {"rem": {"mem_total": "170000"}}
     output = irc_job(
-        TEST_ATOMS,
+        test_atoms,
         charge,
         spin_multiplicity,
         "reverse",
@@ -515,7 +608,7 @@ def test_irc_job_v1(monkeypatch, tmpdir):
         opt_swaps={"max_steps": 1},
     )
 
-    assert output["atoms"] != TEST_ATOMS
+    assert output["atoms"] != test_atoms
     assert output["charge"] == 0
     assert output["spin_multiplicity"] == 1
     assert output["formula_alphabetical"] == "C4 H4 O6"
@@ -524,16 +617,18 @@ def test_irc_job_v1(monkeypatch, tmpdir):
     assert output["parameters"]["spin_multiplicity"] == 1
 
 
-def test_irc_job_v2(tmpdir):
+def test_irc_job_v2(tmpdir, test_atoms):
+    from ase.optimize import FIRE
+
     from quacc.recipes.qchem.ts import irc_job
 
     tmpdir.chdir()
     with pytest.raises(ValueError):
-        irc_job(TEST_ATOMS, 0, 1, "straight")
+        irc_job(test_atoms, 0, 1, "straight")
 
     with pytest.raises(ValueError):
         irc_job(
-            TEST_ATOMS,
+            test_atoms,
             0,
             1,
             "forward",
@@ -543,7 +638,7 @@ def test_irc_job_v2(tmpdir):
 
     with pytest.raises(ValueError):
         irc_job(
-            TEST_ATOMS,
+            test_atoms,
             0,
             1,
             "forward",
@@ -553,7 +648,12 @@ def test_irc_job_v2(tmpdir):
         )
 
 
-def test_quasi_irc_job(monkeypatch, tmpdir):
+def test_quasi_irc_job(monkeypatch, tmpdir, test_atoms):
+    from ase.calculators.calculator import FileIOCalculator
+    from pymatgen.io.qchem.inputs import QCInput
+
+    from quacc.atoms.core import check_charge_and_spin
+    from quacc.calculators.qchem import QChem
     from quacc.recipes.qchem.ts import quasi_irc_job
 
     tmpdir.chdir()
@@ -563,9 +663,9 @@ def test_quasi_irc_job(monkeypatch, tmpdir):
 
     relax_opt_swaps = {"max_steps": 5}
 
-    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
+    charge, spin_multiplicity = check_charge_and_spin(test_atoms)
     output = quasi_irc_job(
-        TEST_ATOMS,
+        test_atoms,
         charge,
         spin_multiplicity,
         "forward",
@@ -573,7 +673,7 @@ def test_quasi_irc_job(monkeypatch, tmpdir):
         relax_opt_swaps=relax_opt_swaps,
     )
 
-    assert output["atoms"] != TEST_ATOMS
+    assert output["atoms"] != test_atoms
     assert output["charge"] == 0
     assert output["spin_multiplicity"] == 1
     assert output["formula_alphabetical"] == "C4 H4 O6"
@@ -582,16 +682,14 @@ def test_quasi_irc_job(monkeypatch, tmpdir):
     assert output["parameters"]["spin_multiplicity"] == 1
 
     qcin = QCInput.from_file("mol.qin.gz")
-    ref_qcin = QCInput.from_file(
-        os.path.join(QCHEM_DIR, "mol.qin.basic.quasi_irc_forward")
-    )
+    ref_qcin = QCInput.from_file(str(qchem_dir / "mol.qin.basic.quasi_irc_forward"))
     qcinput_nearly_equal(qcin, ref_qcin)
 
     irc_opt_swaps = {"max_steps": 6}
     relax_opt_swaps = {"max_steps": 6}
 
     output = quasi_irc_job(
-        TEST_ATOMS,
+        test_atoms,
         -1,
         2,
         "reverse",
@@ -601,7 +699,7 @@ def test_quasi_irc_job(monkeypatch, tmpdir):
         relax_opt_swaps=relax_opt_swaps,
     )
 
-    assert output["atoms"] != TEST_ATOMS
+    assert output["atoms"] != test_atoms
     assert output["charge"] == -1
     assert output["spin_multiplicity"] == 2
     assert output["formula_alphabetical"] == "C4 H4 O6"
@@ -610,19 +708,24 @@ def test_quasi_irc_job(monkeypatch, tmpdir):
     assert output["parameters"]["spin_multiplicity"] == 2
 
     qcin = QCInput.from_file("mol.qin.gz")
-    ref_qcin = QCInput.from_file(os.path.join(QCHEM_DIR, "mol.qin.quasi_irc_reverse"))
+    ref_qcin = QCInput.from_file(str(qchem_dir / "mol.qin.quasi_irc_reverse"))
     qcinput_nearly_equal(qcin, ref_qcin)
 
 
 def test_internal_relax_job(monkeypatch, tmpdir):
+    from ase import units
+    from ase.calculators.calculator import FileIOCalculator
+    from pymatgen.io.qchem.inputs import QCInput
+
+    from quacc.atoms.core import check_charge_and_spin
     from quacc.recipes.qchem.core import internal_relax_job
 
     tmpdir.chdir()
 
     monkeypatch.setattr(FileIOCalculator, "execute", mock_execute1)
-    charge, spin_multiplicity = check_charge_and_spin(TEST_ATOMS)
-    output = internal_relax_job(TEST_ATOMS, charge, spin_multiplicity)
-    assert output["atoms"] == TEST_ATOMS
+    charge, spin_multiplicity = check_charge_and_spin(test_atoms)
+    output = internal_relax_job(test_atoms, charge, spin_multiplicity)
+    assert output["atoms"] == test_atoms
     assert output["charge"] == 0
     assert output["spin_multiplicity"] == 1
     assert output["formula_alphabetical"] == "C4 H4 O6"
