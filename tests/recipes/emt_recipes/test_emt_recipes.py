@@ -1,17 +1,21 @@
-import numpy as np
 import pytest
-from ase.build import bulk, molecule
-from ase.constraints import FixAtoms
 
 from quacc import SETTINGS
 
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "local",
-    reason="Need to use local as workflow manager to run this test.",
-)
+DEFAULT_SETTINGS = SETTINGS.copy()
+
+
+def setup_module():
+    SETTINGS.WORKFLOW_ENGINE = "local"
+
+
+def teardown_module():
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 def test_static_job(tmpdir):
+    from ase.build import bulk
+
     from quacc.recipes.emt.core import static_job
 
     tmpdir.chdir()
@@ -31,6 +35,10 @@ def test_static_job(tmpdir):
 
 
 def test_relax_job(tmpdir):
+    import numpy as np
+    from ase.build import bulk, molecule
+    from ase.constraints import FixAtoms
+
     from quacc.recipes.emt.core import relax_job
 
     tmpdir.chdir()
@@ -85,6 +93,8 @@ def test_relax_job(tmpdir):
 
 
 def test_slab_dynamic_jobs(tmpdir):
+    from ase.build import bulk
+
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
     tmpdir.chdir()

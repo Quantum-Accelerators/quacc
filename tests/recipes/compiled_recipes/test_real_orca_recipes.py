@@ -1,20 +1,30 @@
 from shutil import which
 
 import pytest
-from ase.build import molecule
-from numpy.testing import assert_allclose
 
 from quacc import SETTINGS
 
 has_orca = bool(which("orca"))
 
 pytestmark = pytest.mark.skipif(
-    not has_orca or SETTINGS.WORKFLOW_ENGINE != "local",
-    reason="Need ORCA and Need to use local as workflow manager to run this test.",
+    not has_orca,
+    reason="Needs ORCA",
 )
+
+DEFAULT_SETTINGS = SETTINGS.copy()
+
+
+def setup_module():
+    SETTINGS.WORKFLOW_ENGINE = "local"
+
+
+def teardown_module():
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 def test_static_job(tmpdir):
+    from ase.build import molecule
+
     from quacc.recipes.orca.core import static_job
 
     tmpdir.chdir()
@@ -50,6 +60,9 @@ def test_static_job(tmpdir):
 
 
 def test_relax_job(tmpdir):
+    from ase.build import molecule
+    from numpy.testing import assert_allclose
+
     from quacc.recipes.orca.core import relax_job
 
     tmpdir.chdir()

@@ -3,10 +3,16 @@ import pytest
 from quacc import SETTINGS
 
 prefect = pytest.importorskip("prefect")
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "prefect",
-    reason="This test requires Prefect as the workflow engine",
-)
+
+DEFAULT_SETTINGS = SETTINGS.copy()
+
+
+def setup_module():
+    SETTINGS.WORKFLOW_ENGINE = "prefect"
+
+
+def teardown_module():
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 @pytest.fixture(autouse=True, scope="session")
@@ -74,7 +80,7 @@ def test_tutorial2a(tmpdir):
         future1 = relax_job(atoms)
 
         # Call Task 2, which takes the output of Task 1 as input
-        return static_job(future1.result()["atoms"])
+        return static_job(future1)
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -112,6 +118,31 @@ def test_tutorial2b(tmpdir):
     result2 = futures["result2"].result()
     assert "atoms" in result1
     assert "atoms" in result2
+
+
+def test_tutorial2c(tmpdir):
+    tmpdir.chdir()
+
+    from ase.build import bulk
+
+    from quacc import flow
+    from quacc.recipes.emt.core import relax_job
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+    # Define the workflow
+    @flow
+    def workflow(atoms):
+        relaxed_bulk = relax_job(atoms)
+        return bulk_to_slabs_flow(relaxed_bulk, run_static=False)  # (1)!
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Dispatch the workflow and retrieve result
+    futures = workflow(atoms)
+    results = [future.result() for future in futures]
+    for result in results:
+        assert "atoms" in result
 
 
 def test_comparison(tmpdir):

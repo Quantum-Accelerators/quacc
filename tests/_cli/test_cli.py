@@ -1,44 +1,61 @@
-import os
 from pathlib import Path
 
-from typer.testing import CliRunner
+import pytest
 
-from quacc import SETTINGS, __version__
-from quacc._cli.quacc import app
+from quacc import SETTINGS
 
+TEST_YAML = Path.cwd() / "test_quacc.yaml"
 DEFAULT_SETTINGS = SETTINGS.copy()
-test_yaml = Path.cwd() / "test_quacc.yaml"
 
 
 def setup_module():
-    SETTINGS.CONFIG_FILE = test_yaml
+    from quacc import SETTINGS
+
+    SETTINGS.CONFIG_FILE = TEST_YAML
 
 
 def teardown_module():
-    if test_yaml.exists():
-        os.remove(test_yaml)
+    import os
+
+    from quacc import SETTINGS
+
+    if TEST_YAML.exists():
+        os.remove(TEST_YAML)
+
+    SETTINGS.CONFIG_FILE = SETTINGS.CONFIG_FILE
 
 
-runner = CliRunner()
+@pytest.fixture()
+def runner():
+    from typer.testing import CliRunner
+
+    return CliRunner()
 
 
-def test_version():
+def test_version(runner):
+    from quacc import __version__
+    from quacc._cli.quacc import app
+
     response = runner.invoke(app, ["--version"])
     assert response.exit_code == 0
     assert __version__ in response.stdout
 
 
-def test_help():
+def test_help(runner):
+    from quacc._cli.quacc import app
+
     response = runner.invoke(app, ["--help"])
     assert response.exit_code == 0
 
 
-def test_set():
+def test_set(runner):
+    from quacc._cli.quacc import app
+
     response = runner.invoke(app, ["set", "WORKFLOW_ENGINE", "local"])
     assert response.exit_code == 0
     assert "local" in response.stdout
     val = None
-    with open(test_yaml) as f:
+    with open(TEST_YAML) as f:
         for line in f:
             if "WORKFLOW_ENGINE" in line:
                 val = line.split(":")[-1].strip()
@@ -48,7 +65,7 @@ def test_set():
     assert response.exit_code == 0
     assert "covalent" in response.stdout
     val = None
-    with open(test_yaml) as f:
+    with open(TEST_YAML) as f:
         for line in f:
             if "WORKFLOW_ENGINE" in line:
                 val = line.split(":")[-1].strip()
@@ -58,25 +75,29 @@ def test_set():
     assert response.exit_code == 0
     assert "dummy" in response.stdout
     val = None
-    with open(test_yaml) as f:
+    with open(TEST_YAML) as f:
         for line in f:
             if "VASP_PARALLEL_CMD" in line:
                 val = line.split(":")[-1].strip()
     assert val == "dummy"
 
 
-def test_unset():
+def test_unset(runner):
+    from quacc._cli.quacc import app
+
     response = runner.invoke(app, ["unset", "WORKFLOW_ENGINE"])
     assert response.exit_code == 0
     assert "WORKFLOW_ENGINE" in response.stdout
     lines = ""
-    with open(test_yaml) as f:
+    with open(TEST_YAML) as f:
         for _ in f:
             lines += ""
     assert "WORKFLOW_ENGINE" not in lines
 
 
-def test_bad():
+def test_bad(runner):
+    from quacc._cli.quacc import app
+
     response = runner.invoke(app, ["set", "CONFIG_FILE", "here"])
     assert response.exit_code != 0
     response = runner.invoke(app, ["set", "bad", "dummy"])

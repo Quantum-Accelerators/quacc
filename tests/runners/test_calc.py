@@ -1,20 +1,13 @@
-import os
-from shutil import rmtree
-
-import numpy as np
 import pytest
-from ase.build import bulk, molecule
-from ase.calculators.emt import EMT
-from ase.calculators.lj import LennardJones
-from ase.optimize import BFGS, BFGSLineSearch
 
 from quacc import SETTINGS
-from quacc.runners.calc import run_ase_opt, run_ase_vib, run_calc
 
 DEFAULT_SETTINGS = SETTINGS.copy()
 
 
 def prep_files():
+    import os
+
     # Make some test files to play with
     if not os.path.exists("test_calc"):
         os.mkdir("test_calc")
@@ -23,6 +16,11 @@ def prep_files():
 
 
 def teardown_function():
+    import os
+    from shutil import rmtree
+
+    from quacc import SETTINGS
+
     if os.path.exists(os.path.join(SETTINGS.RESULTS_DIR, "test_calc")):
         rmtree(os.path.join(SETTINGS.RESULTS_DIR, "test_calc"), ignore_errors=True)
     for f in ["test_file.txt", "test_file.txt.gz"]:
@@ -31,6 +29,15 @@ def teardown_function():
 
 
 def test_run_calc(tmpdir):
+    import os
+
+    import numpy as np
+    from ase.build import bulk
+    from ase.calculators.emt import EMT
+
+    from quacc import SETTINGS
+    from quacc.runners.calc import run_calc
+
     tmpdir.chdir()
     prep_files()
 
@@ -48,8 +55,18 @@ def test_run_calc(tmpdir):
 
 
 def test_run_calc_no_gzip(tmpdir):
+    import os
+
+    import numpy as np
+    from ase.build import bulk
+    from ase.calculators.emt import EMT
+
+    from quacc import SETTINGS
+    from quacc.runners.calc import run_calc
+
     tmpdir.chdir()
     prep_files()
+
     SETTINGS.GZIP_FILES = False
 
     atoms = bulk("Cu") * (2, 1, 1)
@@ -67,6 +84,15 @@ def test_run_calc_no_gzip(tmpdir):
 
 
 def test_run_ase_opt1(tmpdir):
+    import os
+
+    import numpy as np
+    from ase.build import bulk
+    from ase.calculators.emt import EMT
+
+    from quacc import SETTINGS
+    from quacc.runners.calc import run_ase_opt
+
     tmpdir.chdir()
     prep_files()
 
@@ -84,6 +110,12 @@ def test_run_ase_opt1(tmpdir):
 
 
 def test_run_ase_opt2(tmpdir):
+    from ase.build import bulk
+    from ase.calculators.emt import EMT
+    from ase.optimize import BFGS, BFGSLineSearch
+
+    from quacc.runners.calc import run_ase_opt
+
     tmpdir.chdir()
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
@@ -109,6 +141,15 @@ def test_run_ase_opt2(tmpdir):
 
 
 def test_run_ase_vib(tmpdir):
+    import os
+
+    import numpy as np
+    from ase.build import molecule
+    from ase.calculators.lj import LennardJones
+
+    from quacc import SETTINGS
+    from quacc.runners.calc import run_ase_vib
+
     tmpdir.chdir()
     prep_files()
 
@@ -122,6 +163,12 @@ def test_run_ase_vib(tmpdir):
 
 
 def test_bad_runs(tmpdir):
+    from ase.build import bulk
+    from ase.calculators.emt import EMT
+    from ase.optimize import BFGSLineSearch
+
+    from quacc.runners.calc import run_ase_opt, run_calc
+
     tmpdir.chdir()
 
     atoms = bulk("Cu")
@@ -153,6 +200,14 @@ def test_bad_runs(tmpdir):
 
 
 def test_unique_workdir(tmpdir):
+    import numpy as np
+    from ase.build import bulk, molecule
+    from ase.calculators.emt import EMT
+    from ase.calculators.lj import LennardJones
+
+    from quacc import SETTINGS
+    from quacc.runners.calc import run_ase_opt, run_ase_vib, run_calc
+
     SETTINGS.CREATE_UNIQUE_WORKDIR = True
     tmpdir.chdir()
     prep_files()

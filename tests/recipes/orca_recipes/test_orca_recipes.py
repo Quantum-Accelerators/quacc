@@ -1,32 +1,39 @@
-import multiprocessing
 import os
-from pathlib import Path
 
 import pytest
-from ase.build import molecule
 
 from quacc import SETTINGS
 
-FILE_DIR = Path(__file__).resolve().parent
-
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "local",
-    reason="Need to use local as workflow manager to run this test.",
-)
+DEFAULT_SETTINGS = SETTINGS.copy()
 
 
 def setup_module():
-    with open(FILE_DIR / "mpirun", "w+") as w:
+    import os
+    from pathlib import Path
+
+    SETTINGS.WORKFLOW_ENGINE = "local"
+
+    file_dir = Path(__file__).resolve().parent
+
+    with open(file_dir / "mpirun", "w+") as w:
         w.write("")
-    os.chmod(FILE_DIR / "mpirun", 0o777)
+    os.chmod(file_dir / "mpirun", 0o777)
 
 
 def teardown_module():
-    if os.path.exists(FILE_DIR / "mpirun"):
-        os.remove(FILE_DIR / "mpirun")
+    import os
+    from pathlib import Path
+
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
+    file_dir = Path(__file__).resolve().parent
+
+    if os.path.exists(file_dir / "mpirun"):
+        os.remove(file_dir / "mpirun")
 
 
 def test_static_job(tmpdir):
+    from ase.build import molecule
+
     from quacc.recipes.orca.core import static_job
 
     tmpdir.chdir()
@@ -63,6 +70,8 @@ def test_static_job(tmpdir):
 
 @pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
 def test_relax_job(tmpdir):
+    from ase.build import molecule
+
     from quacc.recipes.orca.core import relax_job
 
     tmpdir.chdir()
@@ -105,10 +114,16 @@ def test_relax_job(tmpdir):
 
 @pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
 def test_mpi_run(tmpdir, monkeypatch):
+    import multiprocessing
+    from pathlib import Path
+
+    from ase.build import molecule
+
     from quacc.recipes.orca.core import relax_job, static_job
 
+    file_dir = Path(__file__).resolve().parent
     tmpdir.chdir()
-    monkeypatch.setenv("PATH", FILE_DIR)
+    monkeypatch.setenv("PATH", file_dir)
 
     atoms = molecule("H2")
     output = static_job(atoms, 0, 1)

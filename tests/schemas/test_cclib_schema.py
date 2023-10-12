@@ -1,30 +1,24 @@
-import gzip
-import os
-import shutil
 from pathlib import Path
 
 import pytest
-from ase.build import bulk
-from ase.io import read
-from cclib.io import ccread
-from maggma.stores import MemoryStore
-from monty.json import MontyDecoder, jsanitize
-
-from quacc.calculators.vasp import Vasp
-from quacc.schemas.cclib import (
-    _cclib_calculate,
-    _cclibTaskDocument,
-    cclib_summarize_run,
-)
 
 FILE_DIR = Path(__file__).resolve().parent
 
-run1 = os.path.join(FILE_DIR, "gaussian_run1")
-log1 = os.path.join(run1, "Gaussian.log")
-cclib_obj = ccread(log1)
+run1 = FILE_DIR / "gaussian_run1"
+log1 = run1 / "Gaussian.log"
+
+
+@pytest.fixture()
+def cclib_obj():
+    from cclib.io import ccread
+
+    return ccread(log1)
 
 
 def setup_module():
+    import gzip
+    import shutil
+
     p = FILE_DIR / "cclib_data"
 
     with gzip.open(p / "psi_test.cube.gz", "r") as f_in, open(
@@ -34,6 +28,8 @@ def setup_module():
 
 
 def teardown_module():
+    import os
+
     p = FILE_DIR / "cclib_data"
 
     if os.path.exists(p / "psi_test.cube"):
@@ -46,6 +42,14 @@ def bad_mock_cclib_calculate(*args, **kwargs):
 
 
 def test_cclib_summarize_run():
+    import os
+
+    from ase.io import read
+    from maggma.stores import MemoryStore
+    from monty.json import MontyDecoder, jsanitize
+
+    from quacc.schemas.cclib import cclib_summarize_run
+
     # Make sure metadata is made
     atoms = read(log1)
     results = cclib_summarize_run(atoms, ".log", dir_path=run1)
@@ -106,6 +110,11 @@ def test_cclib_summarize_run():
 
 
 def test_errors():
+    from ase.build import bulk
+
+    from quacc.calculators.vasp import Vasp
+    from quacc.schemas.cclib import cclib_summarize_run
+
     atoms = bulk("Cu")
     with pytest.raises(ValueError):
         cclib_summarize_run(atoms, ".log", dir_path=run1)
@@ -117,6 +126,12 @@ def test_errors():
 
 
 def test_cclib_taskdoc(tmpdir):
+    import os
+
+    from monty.json import MontyDecoder, jsanitize
+
+    from quacc.schemas.cclib import _cclibTaskDocument
+
     tmpdir.chdir()
 
     p = FILE_DIR / "cclib_data"
@@ -195,7 +210,9 @@ def test_cclib_taskdoc(tmpdir):
     MontyDecoder().process_decoded(d)
 
 
-def test_cclib_calculate(tmpdir):
+def test_cclib_calculate(tmpdir, cclib_obj):
+    from quacc.schemas.cclib import _cclib_calculate
+
     tmpdir.chdir()
 
     with pytest.raises(ValueError):
@@ -231,7 +248,9 @@ def test_cclib_calculate(tmpdir):
         )
 
 
-def test_monkeypatches(tmpdir, monkeypatch):
+def test_monkeypatches(tmpdir, monkeypatch, cclib_obj):
+    from quacc.schemas.cclib import _cclib_calculate
+
     tmpdir.chdir()
     monkeypatch.setenv("PROATOM_DIR", str(FILE_DIR / "cclib_data" / "proatomdata"))
     with pytest.raises(FileNotFoundError):

@@ -1,21 +1,26 @@
-import os
-from pathlib import Path
-from shutil import rmtree
-
-FILE_DIR = Path(__file__).resolve().parent
-TEST_RESULTS_DIR = FILE_DIR / ".test_results"
-TEST_SCRATCH_DIR = FILE_DIR / ".test_scratch"
-
-
 def pytest_sessionstart():
+    import os
+    from pathlib import Path
+
     from quacc import SETTINGS
 
-    SETTINGS.RESULTS_DIR = TEST_RESULTS_DIR
-    SETTINGS.SCRATCH_DIR = TEST_SCRATCH_DIR
-    os.makedirs(SETTINGS.RESULTS_DIR, exist_ok=True)
-    os.makedirs(SETTINGS.SCRATCH_DIR, exist_ok=True)
+    file_dir = Path(__file__).resolve().parent
+    test_results_dir = file_dir / ".test_results"
+    test_scratch_dir = file_dir / ".test_scratch"
+
+    SETTINGS.RESULTS_DIR = test_results_dir
+    SETTINGS.SCRATCH_DIR = test_scratch_dir
+    os.makedirs(test_results_dir, exist_ok=True)
+    os.makedirs(test_scratch_dir, exist_ok=True)
 
 
 def pytest_sessionfinish():
-    rmtree(TEST_RESULTS_DIR, ignore_errors=True)
-    rmtree(TEST_SCRATCH_DIR, ignore_errors=True)
+    from pathlib import Path
+    from shutil import rmtree
+
+    file_dir = Path(__file__).resolve().parent
+    test_results_dir = file_dir / ".test_results"
+    test_scratch_dir = file_dir / ".test_scratch"
+
+    rmtree(test_results_dir, ignore_errors=True)
+    rmtree(test_scratch_dir, ignore_errors=True)

@@ -1,18 +1,23 @@
-import contextlib
-
 import pytest
 
 from quacc import SETTINGS
 
 parsl = pytest.importorskip("parsl")
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "parsl", reason="Parsl needs to be the workflow engine"
-)
+
+DEFAULT_SETTINGS = SETTINGS.copy()
 
 
 def setup_module():
+    SETTINGS.WORKFLOW_ENGINE = "parsl"
+
+    import contextlib
+
     with contextlib.suppress(Exception):
         parsl.load()
+
+
+def teardown_module():
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 def test_tutorial1a(tmpdir):

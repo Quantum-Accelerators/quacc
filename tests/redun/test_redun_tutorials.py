@@ -3,14 +3,24 @@ import pytest
 from quacc import SETTINGS
 
 redun = pytest.importorskip("redun")
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "redun", reason="Redun must be the workflow engine"
-)
 
-scheduler = redun.Scheduler()
+DEFAULT_SETTINGS = SETTINGS.copy()
 
 
-def test_tutorial1a(tmpdir):
+def setup_module():
+    SETTINGS.WORKFLOW_ENGINE = "redun"
+
+
+def teardown_module():
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
+
+
+@pytest.fixture()
+def scheduler():
+    return redun.Scheduler()
+
+
+def test_tutorial1a(tmpdir, scheduler):
     tmpdir.chdir()
 
     from ase.build import bulk
@@ -24,7 +34,7 @@ def test_tutorial1a(tmpdir):
     assert "atoms" in scheduler.run(relax_job(atoms))
 
 
-def test_tutorial1b(tmpdir):
+def test_tutorial1b(tmpdir, scheduler):
     tmpdir.chdir()
 
     from ase.build import bulk
@@ -38,7 +48,7 @@ def test_tutorial1b(tmpdir):
     assert len(scheduler.run(bulk_to_slabs_flow(atoms))) == 4
 
 
-def test_tutorial2a(tmpdir):
+def test_tutorial2a(tmpdir, scheduler):
     tmpdir.chdir()
 
     from ase.build import bulk
@@ -57,7 +67,7 @@ def test_tutorial2a(tmpdir):
     assert "atoms" in scheduler.run(workflow(atoms))
 
 
-def test_tutorial2b(tmpdir):
+def test_tutorial2b(tmpdir, scheduler):
     tmpdir.chdir()
     from ase.build import bulk, molecule
 
@@ -81,7 +91,7 @@ def test_tutorial2b(tmpdir):
     assert "atoms" in scheduler.run(workflow(atoms1, atoms2))["result1"]
 
 
-def test_tutorial2c(tmpdir):
+def test_tutorial2c(tmpdir, scheduler):
     tmpdir.chdir()
 
     from ase.build import bulk

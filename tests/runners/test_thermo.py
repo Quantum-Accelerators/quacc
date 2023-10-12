@@ -1,12 +1,13 @@
 import pytest
-from ase.build import molecule
-from ase.calculators.emt import EMT
-from ase.units import invcm
-
-from quacc.builders.thermo import build_ideal_gas
 
 
 def test_build_ideal_gas():
+    from ase.build import molecule
+    from ase.calculators.emt import EMT
+    from ase.units import invcm
+
+    from quacc.builders.thermo import build_ideal_gas
+
     co2 = molecule("CO2")
     igt = build_ideal_gas(co2, [526, 526, 1480, 2565], spin_multiplicity=2)
     assert igt.geometry == "linear"

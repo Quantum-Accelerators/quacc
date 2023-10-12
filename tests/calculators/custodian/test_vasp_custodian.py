@@ -1,20 +1,17 @@
 import pytest
-from custodian import Custodian
-
-from quacc.calculators.custodian.vasp import run_custodian
-
-
-class MockRun:
-    # Add a mock Custodian.run() function
-
-    @staticmethod
-    def run():
-        return True
 
 
 def mock_custodian_run(*args, **kwargs):
     # Instead of running Custodian, we will mock it to return True
     # when .run() is called
+
+    class MockRun:
+        # Add a mock Custodian.run() function
+
+        @staticmethod
+        def run():
+            return True
+
     return MockRun()
 
 
@@ -22,10 +19,14 @@ def mock_custodian_run(*args, **kwargs):
 def patch_custodian_run(monkeypatch):
     # Monkeypatch the Custodian.run() function so that it doesn't actually
     # launch Custodian during a test
+    from custodian import Custodian
+
     monkeypatch.setattr(Custodian, "run", mock_custodian_run)
 
 
 def test_run_vasp_custodian(monkeypatch):
+    from quacc.calculators.custodian.vasp import run_custodian
+
     monkeypatch.setenv("VASP_PARALLEL_CMD", "fake-mpirun")
     run_custodian()
 

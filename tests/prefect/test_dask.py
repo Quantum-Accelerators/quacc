@@ -1,22 +1,15 @@
 import pytest
 
-try:
-    from quacc.wflow.prefect import _make_dask_cluster, make_prefect_runner
-
-    from dask_jobqueue import PBSCluster, SLURMCluster  # isort: skip
-    from prefect_dask.task_runners import DaskTaskRunner  # isort: skip
-
-    dask_prefect = True
-except ImportError:
-    dask_prefect = None
-
-pytestmark = pytest.mark.skipif(
-    dask_prefect is None,
-    reason="Dask and Prefect dependencies must be installed.",
-)
+pytest.importorskip("dask_jobqueue")
+pytest.importorskip("prefect_dask")
 
 
 def test_make_prefect_runner():
+    from dask_jobqueue import PBSCluster, SLURMCluster
+    from prefect_dask.task_runners import DaskTaskRunner
+
+    from quacc.wflow.prefect import make_prefect_runner
+
     cluster_kwargs = {
         "cores": 1,
         "memory": "1GB",
@@ -78,6 +71,8 @@ def test_make_prefect_runner():
 
 def test_make_dask_cluster():
     from dask_jobqueue import SLURMCluster
+
+    from quacc.wflow.prefect import _make_dask_cluster
 
     cluster_kwargs = {
         "cores": 1,

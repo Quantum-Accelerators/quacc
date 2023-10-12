@@ -2,7 +2,6 @@ import os
 from shutil import which
 
 import pytest
-from ase.build import bulk, molecule
 
 from quacc import SETTINGS
 
@@ -12,12 +11,24 @@ has_gulp = bool(
 )
 
 pytestmark = pytest.mark.skipif(
-    not has_gulp or SETTINGS.WORKFLOW_ENGINE != "local",
-    reason="Need GULP and Need to use local as workflow manager to run this test.",
+    not has_gulp,
+    reason="Needs GULP",
 )
+
+DEFAULT_SETTINGS = SETTINGS.copy()
+
+
+def setup_module():
+    SETTINGS.WORKFLOW_ENGINE = "local"
+
+
+def teardown_module():
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 def test_static_job(tmpdir):
+    from ase.build import bulk, molecule
+
     from quacc.recipes.gulp.core import static_job
 
     tmpdir.chdir()
@@ -75,6 +86,8 @@ def test_static_job(tmpdir):
 
 
 def test_relax_job(tmpdir):
+    from ase.build import bulk, molecule
+
     from quacc.recipes.gulp.core import relax_job
 
     tmpdir.chdir()
