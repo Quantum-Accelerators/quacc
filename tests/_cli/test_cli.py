@@ -20,7 +20,7 @@ def teardown_module():
     if TEST_YAML.exists():
         os.remove(TEST_YAML)
 
-    SETTINGS = QuaccSettings()
+    SETTINGS.CONFIG_FILE = QuaccSettings().CONFIG_FILE
 
 
 @pytest.fixture

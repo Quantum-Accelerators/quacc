@@ -1,25 +1,36 @@
-import os
-from copy import deepcopy
 from pathlib import Path
 
-import numpy as np
 import pytest
-from ase.build import bulk
 from ase.calculators.singlepoint import SinglePointDFTCalculator
 from ase.calculators.vasp import Vasp as Vasp_
 from ase.constraints import FixAtoms, FixBondLength
-from ase.io import read
 
 from quacc.calculators.presets import vasp as v
 from quacc.calculators.vasp import Vasp
-from quacc.runners.prep import prep_next_run
 
 FILE_DIR = Path(__file__).resolve().parent
-DEFAULT_CALCS_DIR = os.path.dirname(v.__file__)
+DEFAULT_CALCS_DIR = Path(v.__file__).resolve().parent
 
-ATOMS_MAG = read(os.path.join(FILE_DIR, "OUTCAR_mag.gz"))
-ATOMS_NOMAG = read(os.path.join(FILE_DIR, "OUTCAR_nomag.gz"))
-ATOMS_NOSPIN = read(os.path.join(FILE_DIR, "OUTCAR_nospin.gz"))
+
+@pytest.fixture
+def atoms_mag():
+    from ase.io import read
+
+    return read(FILE_DIR / "OUTCAR_mag.gz")
+
+
+@pytest.fixture
+def atoms_nomag():
+    from ase.io import read
+
+    return read(FILE_DIR / "OUTCAR_nomag.gz")
+
+
+@pytest.fixture
+def atoms_nospin():
+    from ase.io import read
+
+    return read(FILE_DIR / "OUTCAR_nospin.gz")
 
 
 def setup_module():
@@ -35,6 +46,8 @@ def teardown_module():
 
 
 def test_vanilla_vasp():
+    from ase.build import bulk
+
     atoms = bulk("Cu")
     calc = Vasp(atoms, incar_copilot=False)
     assert calc.asdict() == Vasp_().asdict()
@@ -49,10 +62,12 @@ def test_vanilla_vasp():
 
 
 def test_presets():
+    from ase.build import bulk
+
     atoms = bulk("Co") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
 
-    calc = Vasp(atoms, preset=os.path.join(DEFAULT_CALCS_DIR, "BulkSet"))
+    calc = Vasp(atoms, preset=DEFAULT_CALCS_DIR / "BulkSet")
     atoms.calc = calc
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
@@ -74,6 +89,8 @@ def test_presets():
 
 
 def test_lmaxmix():
+    from ase.build import bulk
+
     atoms = bulk("Cu")
     calc = Vasp(atoms)
     assert calc.int_params["lmaxmix"] == 4
@@ -89,6 +106,9 @@ def test_lmaxmix():
 
 
 def test_autodipole():
+    import numpy as np
+    from ase.build import bulk
+
     atoms = bulk("Cu")
     com = atoms.get_center_of_mass(scaled=True)
     calc = Vasp(atoms, auto_dipole=True)
@@ -127,6 +147,8 @@ def test_autodipole():
 
 
 def test_kspacing():
+    from ase.build import bulk
+
     atoms = bulk("Cu")
     calc = Vasp(atoms, kspacing=0.1, ismear=-5)
     assert calc.int_params["ismear"] == -5
@@ -135,7 +157,14 @@ def test_kspacing():
     assert calc.int_params["ismear"] == 0
 
 
-def test_magmoms():
+def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
+    from copy import deepcopy
+
+    import numpy as np
+    from ase.build import bulk
+
+    from quacc.runners.prep import prep_next_run
+
     atoms = bulk("Mg")
     calc = Vasp(atoms)
     atoms.calc = calc
@@ -195,24 +224,24 @@ def test_magmoms():
     atoms.calc = calc
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
-    atoms = deepcopy(ATOMS_MAG)
+    atoms = deepcopy(atoms_mag)
     mags = atoms.get_magnetic_moments()
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
     assert np.array_equal(atoms.get_initial_magnetic_moments(), mags) is True
 
-    atoms = deepcopy(ATOMS_MAG)
+    atoms = deepcopy(atoms_mag)
     calc = Vasp(atoms, preset="BulkSet", mag_cutoff=2.0)
     atoms.calc = calc
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
-    atoms = deepcopy(ATOMS_MAG)
+    atoms = deepcopy(atoms_mag)
     assert atoms.get_magnetic_moments()[0] == 0.468
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
     assert atoms.get_initial_magnetic_moments()[0] == 0.468
 
-    atoms = deepcopy(ATOMS_NOMAG)
+    atoms = deepcopy(atoms_nomag)
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
@@ -222,14 +251,14 @@ def test_magmoms():
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
-    atoms = deepcopy(ATOMS_NOMAG)
+    atoms = deepcopy(atoms_nomag)
     calc = SinglePointDFTCalculator(atoms, **{"magmoms": [0.0] * len(atoms)})
     atoms.calc = calc
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
-    atoms = deepcopy(ATOMS_NOMAG)
+    atoms = deepcopy(atoms_nomag)
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
     assert atoms.has("initial_magmoms") is True
@@ -239,7 +268,7 @@ def test_magmoms():
     atoms.calc = calc
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
-    atoms = deepcopy(ATOMS_NOMAG)
+    atoms = deepcopy(atoms_nomag)
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
     assert atoms.has("initial_magmoms") is True
@@ -249,7 +278,7 @@ def test_magmoms():
     atoms.calc = calc
     assert np.all(atoms.get_initial_magnetic_moments() == 1)
 
-    atoms = deepcopy(ATOMS_NOSPIN)
+    atoms = deepcopy(atoms_nospin)
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
     assert atoms.has("initial_magmoms") is True
@@ -295,7 +324,7 @@ def test_magmoms():
     atoms.calc = calc
     assert np.all(atoms.get_initial_magnetic_moments() == -5)
 
-    atoms = deepcopy(ATOMS_MAG)
+    atoms = deepcopy(atoms_mag)
     mags = atoms.get_magnetic_moments()
     atoms = prep_next_run(atoms)
     calc = Vasp(atoms, preset="BulkSet")
@@ -303,21 +332,21 @@ def test_magmoms():
     assert atoms.has("initial_magmoms") is True
     assert atoms.get_initial_magnetic_moments().tolist() == mags.tolist()
 
-    atoms = deepcopy(ATOMS_NOMAG)
+    atoms = deepcopy(atoms_nomag)
     atoms = prep_next_run(atoms)
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
-    atoms = deepcopy(ATOMS_NOSPIN)
+    atoms = deepcopy(atoms_nospin)
     atoms = prep_next_run(atoms)
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
-    atoms = deepcopy(ATOMS_MAG)
+    atoms = deepcopy(atoms_mag)
     atoms = prep_next_run(atoms)
     calc = Vasp(atoms, preset="BulkSet", mag_cutoff=10.0)
     atoms.calc = calc
@@ -366,6 +395,8 @@ def test_magmoms():
 
 
 def test_unused_flags():
+    from ase.build import bulk
+
     atoms = bulk("Cu")
     calc = Vasp(atoms, preset="BulkSet", potim=1.5, nsw=0)
     assert calc.int_params["nsw"] == 0
@@ -379,6 +410,8 @@ def test_unused_flags():
 
 
 def test_lasph():
+    from ase.build import bulk
+
     atoms = bulk("Cu")
 
     calc = Vasp(atoms, xc="rpbe")
@@ -401,6 +434,8 @@ def test_lasph():
 
 
 def test_efermi():
+    from ase.build import bulk
+
     atoms = bulk("Cu")
     calc = Vasp(atoms)
     assert calc.string_params["efermi"] == "midgap"
@@ -411,6 +446,8 @@ def test_efermi():
 
 
 def test_algo():
+    from ase.build import bulk
+
     atoms = bulk("Cu")
 
     calc = Vasp(atoms, xc="rpbe")
@@ -427,6 +464,8 @@ def test_algo():
 
 
 def test_kpar():
+    from ase.build import bulk
+
     atoms = bulk("Cu")
 
     calc = Vasp(atoms, kpts=[2, 2, 1], kpar=4)
@@ -437,6 +476,8 @@ def test_kpar():
 
 
 def test_isym():
+    from ase.build import bulk
+
     atoms = bulk("Cu")
 
     calc = Vasp(atoms, isym=2)
@@ -456,6 +497,8 @@ def test_isym():
 
 
 def test_ncore():
+    from ase.build import bulk
+
     atoms = bulk("Cu")
 
     atoms *= (2, 2, 2)
@@ -478,6 +521,8 @@ def test_ncore():
 
 
 def test_ismear():
+    from ase.build import bulk
+
     atoms = bulk("Cu")
 
     calc = Vasp(atoms, nsw=10)
@@ -529,6 +574,8 @@ def test_ismear():
 
 
 def test_laechg():
+    from ase.build import bulk
+
     atoms = bulk("Cu")
     calc = Vasp(atoms, nsw=10, laechg=True)
     assert not calc.bool_params["laechg"]
@@ -544,6 +591,8 @@ def test_laechg():
 
 
 def test_ldauprint():
+    from ase.build import bulk
+
     atoms = bulk("Cu")
 
     calc = Vasp(atoms, ldau=True)
@@ -560,6 +609,8 @@ def test_ldauprint():
 
 
 def test_lreal():
+    from ase.build import bulk
+
     atoms = bulk("Cu")
     calc = Vasp(atoms, lreal=True, nsw=0)
     assert calc.special_params["lreal"] is False
@@ -581,6 +632,8 @@ def test_lreal():
 
 
 def test_lorbit():
+    from ase.build import bulk
+
     atoms = bulk("Cu")
     calc = Vasp(atoms, ispin=2)
     assert calc.int_params["lorbit"] == 11
@@ -596,6 +649,8 @@ def test_lorbit():
 
 
 def test_setups():
+    from ase.build import bulk
+
     atoms = bulk("Cu")
     calc = Vasp(atoms, preset="BulkSet")
     assert calc.parameters["setups"]["Cu"] == ""
@@ -612,7 +667,7 @@ def test_setups():
     atoms = bulk("Cu")
     calc = Vasp(
         atoms,
-        setups=os.path.join(FILE_DIR, "test_setups.yaml"),
+        setups=FILE_DIR / "test_setups.yaml",
         preset="BulkSet",
     )
     assert calc.parameters["setups"]["Cu"] == "_sv"
@@ -638,6 +693,9 @@ def test_setups():
 
 
 def test_kpoint_schemes():
+    import numpy as np
+    from ase.build import bulk
+
     atoms = bulk("Cu")
     calc = Vasp(atoms, kpts=[1, 1, 1], preset="BulkSet")
     assert calc.kpts == [1, 1, 1]
@@ -691,6 +749,8 @@ def test_kpoint_schemes():
 
 
 def test_constraints():
+    from ase.build import bulk
+
     atoms = bulk("Cu")
     atoms.set_constraint(FixAtoms(indices=[0]))
     calc = Vasp(atoms)
@@ -704,6 +764,8 @@ def test_constraints():
 
 
 def test_bad():
+    from ase.build import bulk
+
     atoms = bulk("Cu")
 
     with pytest.raises(ValueError):
