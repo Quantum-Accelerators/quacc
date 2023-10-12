@@ -17,7 +17,6 @@ def test_atoms(file_dir):
 
 @pytest.fixture()
 def os_atoms(file_dir):
-
     from ase.io import read
 
     return read(file_dir / "OS_test.xyz")
