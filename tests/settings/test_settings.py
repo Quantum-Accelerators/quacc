@@ -5,7 +5,7 @@ from quacc import SETTINGS
 DEFAULT_SETTINGS = SETTINGS.copy()
 
 
-@pytest.fixture
+@pytest.fixture()
 def file_dir():
     from pathlib import Path
 
@@ -83,7 +83,7 @@ def test_env_var(monkeypatch, file_dir):
 
     p = file_dir / "my/scratch/dir"
     monkeypatch.setenv("QUACC_SCRATCH_DIR", p)
-    assert QuaccSettings().SCRATCH_DIR == p.expanduser().resolve()
+    assert p.expanduser().resolve() == QuaccSettings().SCRATCH_DIR
 
 
 def test_yaml(tmpdir, monkeypatch, file_dir):
@@ -95,4 +95,4 @@ def test_yaml(tmpdir, monkeypatch, file_dir):
     with open("quacc_test.yaml", "w") as f:
         f.write(f"SCRATCH_DIR: {p}")
     monkeypatch.setenv("QUACC_CONFIG_FILE", "quacc_test.yaml")
-    assert QuaccSettings().SCRATCH_DIR == p.expanduser().resolve()
+    assert p.expanduser().resolve() == QuaccSettings().SCRATCH_DIR

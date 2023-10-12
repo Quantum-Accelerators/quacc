@@ -1,14 +1,14 @@
 import pytest
 
 
-@pytest.fixture
+@pytest.fixture()
 def file_dir():
     from pathlib import Path
 
     return Path(__file__).resolve().parent
 
 
-@pytest.fixture
+@pytest.fixture()
 def run1():
     from pathlib import Path
 
@@ -17,7 +17,7 @@ def run1():
     return file_dir / "gaussian_run1"
 
 
-@pytest.fixture
+@pytest.fixture()
 def log1():
     from pathlib import Path
 
@@ -26,7 +26,7 @@ def log1():
     return file_dir / "gaussian_run1" / "gaussian.log"
 
 
-@pytest.fixture
+@pytest.fixture()
 def cclib_obj():
     from pathlib import Path
 
@@ -76,7 +76,6 @@ def test_cclib_summarize_run(run1, log1):
     from maggma.stores import MemoryStore
     from monty.json import MontyDecoder, jsanitize
 
-    from quacc.calculators.vasp import Vasp
     from quacc.schemas.cclib import cclib_summarize_run
 
     # Make sure metadata is made
@@ -157,7 +156,6 @@ def test_errors(run1):
 def test_cclib_taskdoc(tmpdir, file_dir):
     import os
 
-    from ase.io import read
     from monty.json import MontyDecoder, jsanitize
 
     from quacc.schemas.cclib import _cclibTaskDocument

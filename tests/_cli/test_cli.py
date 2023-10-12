@@ -25,7 +25,7 @@ def teardown_module():
     SETTINGS.CONFIG_FILE = SETTINGS.CONFIG_FILE
 
 
-@pytest.fixture
+@pytest.fixture()
 def runner():
     from typer.testing import CliRunner
 

@@ -3,7 +3,7 @@ import pytest
 pytest.importorskip("sella")
 
 
-@pytest.fixture
+@pytest.fixture()
 def qchem_dir():
     from pathlib import Path
 
@@ -11,7 +11,7 @@ def qchem_dir():
     return FILE_DIR / "qchem_examples"
 
 
-@pytest.fixture
+@pytest.fixture()
 def test_atoms():
     from pathlib import Path
 
@@ -22,7 +22,7 @@ def test_atoms():
     return read(FILE_DIR / "test.xyz")
 
 
-@pytest.fixture
+@pytest.fixture()
 def os_atoms():
     from pathlib import Path
 

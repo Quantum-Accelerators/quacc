@@ -1,14 +1,14 @@
 import pytest
 
 
-@pytest.fixture
+@pytest.fixture()
 def file_dir():
     from pathlib import Path
 
     return Path(__file__).resolve().parent
 
 
-@pytest.fixture
+@pytest.fixture()
 def atoms_mag():
     from pathlib import Path
 
@@ -19,7 +19,7 @@ def atoms_mag():
     return read(file_dir / ".." / "calculators" / "vasp" / "OUTCAR_mag.gz")
 
 
-@pytest.fixture
+@pytest.fixture()
 def atoms_nomag():
     from pathlib import Path
 
@@ -29,7 +29,7 @@ def atoms_nomag():
     return read(file_dir / ".." / "calculators" / "vasp" / "OUTCAR_nomag.gz")
 
 
-@pytest.fixture
+@pytest.fixture()
 def atoms_nospin():
     from pathlib import Path
 
@@ -39,7 +39,7 @@ def atoms_nospin():
     return read(file_dir / ".." / "calculators" / "vasp" / "OUTCAR_nospin.gz")
 
 
-@pytest.fixture
+@pytest.fixture()
 def os_atoms():
     from pathlib import Path
 
@@ -81,7 +81,7 @@ def test_get_atoms_id():
 def test_prep_next_run():  # sourcery skip: extract-duplicate-method
     from copy import deepcopy
 
-    from ase.build import bulk, molecule
+    from ase.build import bulk
 
     from quacc.calculators.vasp import Vasp
     from quacc.runners.prep import prep_next_run

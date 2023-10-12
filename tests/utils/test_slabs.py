@@ -1,14 +1,14 @@
 import pytest
 
 
-@pytest.fixture
+@pytest.fixture()
 def file_dir():
     from pathlib import Path
 
     return Path(__file__).resolve().parent
 
 
-@pytest.fixture
+@pytest.fixture()
 def atoms_mag():
     from pathlib import Path
 
@@ -19,7 +19,7 @@ def atoms_mag():
     return read(file_dir / ".." / "calculators" / "vasp" / "OUTCAR_mag.gz")
 
 
-@pytest.fixture
+@pytest.fixture()
 def atoms_nomag():
     from pathlib import Path
 
@@ -29,7 +29,7 @@ def atoms_nomag():
     return read(file_dir / ".." / "calculators" / "vasp" / "OUTCAR_nomag.gz")
 
 
-@pytest.fixture
+@pytest.fixture()
 def atoms_nospin():
     from pathlib import Path
 

@@ -15,7 +15,7 @@ def teardown_module():
     SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
-@pytest.fixture
+@pytest.fixture()
 def scheduler():
     return redun.Scheduler()
 

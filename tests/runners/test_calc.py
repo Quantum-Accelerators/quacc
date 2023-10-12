@@ -110,12 +110,10 @@ def test_run_ase_opt1(tmpdir):
 
 
 def test_run_ase_opt2(tmpdir):
-    import numpy as np
     from ase.build import bulk
     from ase.calculators.emt import EMT
     from ase.optimize import BFGS, BFGSLineSearch
 
-    from quacc import SETTINGS
     from quacc.runners.calc import run_ase_opt
 
     tmpdir.chdir()
@@ -165,11 +163,10 @@ def test_run_ase_vib(tmpdir):
 
 
 def test_bad_runs(tmpdir):
-    from ase.build import bulk, molecule
+    from ase.build import bulk
     from ase.calculators.emt import EMT
     from ase.optimize import BFGSLineSearch
 
-    from quacc import SETTINGS
     from quacc.runners.calc import run_ase_opt, run_calc
 
     tmpdir.chdir()

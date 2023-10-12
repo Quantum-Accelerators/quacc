@@ -1,23 +1,22 @@
 import pytest
 
 
-@pytest.fixture
+@pytest.fixture()
 def file_dir():
     from pathlib import Path
 
     return Path(__file__).resolve().parent
 
 
-@pytest.fixture
+@pytest.fixture()
 def test_atoms(file_dir):
     from ase.io import read
 
     return read(file_dir / "test.xyz")
 
 
-@pytest.fixture
+@pytest.fixture()
 def os_atoms(file_dir):
-    from pathlib import Path
 
     from ase.io import read
 

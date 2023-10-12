@@ -13,28 +13,28 @@ def teardown_module():
     SETTINGS.VASP_FORCE_COPILOT = False
 
 
-@pytest.fixture
+@pytest.fixture()
 def file_dir():
     from pathlib import Path
 
     return Path(__file__).resolve().parent
 
 
-@pytest.fixture
+@pytest.fixture()
 def atoms_mag(file_dir):
     from ase.io import read
 
     return read(file_dir / "OUTCAR_mag.gz")
 
 
-@pytest.fixture
+@pytest.fixture()
 def atoms_nomag(file_dir):
     from ase.io import read
 
     return read(file_dir / "OUTCAR_nomag.gz")
 
 
-@pytest.fixture
+@pytest.fixture()
 def atoms_nospin(file_dir):
     from ase.io import read
 
