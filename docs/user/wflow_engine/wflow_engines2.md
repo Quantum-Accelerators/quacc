@@ -345,7 +345,8 @@ graph LR
     result1 = futures["result1"].result()
     result2 = futures["result2"].result()
     print(result1, result2)
-    ``` -->
+    ```
+    -->
 
 === "Redun"
 
@@ -490,7 +491,9 @@ graph LR
     @flow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk.result()["atoms"], run_static=False)  # (1)!
+        relaxed_slabs = bulk_to_slabs_flow(
+            relaxed_bulk.result()["atoms"], run_static=False
+        )  # (1)!
 
         return relaxed_slabs
 
