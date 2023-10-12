@@ -1,19 +1,11 @@
 import pytest
-from maggma.stores import MemoryStore
-
-from quacc import SETTINGS, flow, job, subflow
 
 jf = pytest.importorskip("jobflow")
 
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "jobflow",
-    reason="Jobflow needs to be the workflow engine",
-)
-
-STORE = jf.JobStore(MemoryStore())
-
 
 def test_jobflow_decorators(tmpdir):
+    from quacc import flow, job, subflow
+
     tmpdir.chdir()
 
     @job
@@ -43,6 +35,8 @@ def test_jobflow_decorators(tmpdir):
 
 
 def test_jobflow_decorators_args(tmpdir):
+    from quacc import flow, job, subflow
+
     tmpdir.chdir()
 
     @job()

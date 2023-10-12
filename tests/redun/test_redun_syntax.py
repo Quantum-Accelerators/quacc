@@ -1,17 +1,21 @@
 import pytest
 
-from quacc import SETTINGS, flow, job, subflow
+from quacc import SETTINGS
 
 redun = pytest.importorskip("redun")
 pytestmark = pytest.mark.skipif(
     SETTINGS.WORKFLOW_ENGINE != "redun", reason="Redun must be the workflow engine"
 )
 
-scheduler = redun.Scheduler()
+
+@pytest.fixture
+def scheduler():
+    return redun.Scheduler()
 
 
-def test_redun_decorators(tmpdir):
+def test_redun_decorators(tmpdir, scheduler):
     tmpdir.chdir()
+    from quacc import flow, job, subflow
 
     @job
     def add(a, b):

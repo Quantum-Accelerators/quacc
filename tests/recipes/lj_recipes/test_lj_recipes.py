@@ -1,16 +1,9 @@
-import numpy as np
 import pytest
-from ase.build import molecule
-
-from quacc import SETTINGS
-
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "local",
-    reason="Need to use local as workflow manager to run this test.",
-)
 
 
 def test_static_job(tmpdir):
+    from ase.build import molecule
+
     from quacc.recipes.lj.core import static_job
 
     tmpdir.chdir()
@@ -35,6 +28,9 @@ def test_static_job(tmpdir):
 
 
 def test_relax_job(tmpdir):
+    import numpy as np
+    from ase.build import molecule
+
     from quacc.recipes.lj.core import relax_job
 
     tmpdir.chdir()
@@ -63,6 +59,8 @@ def test_relax_job(tmpdir):
 
 
 def test_freq_job(tmpdir):
+    from ase.build import molecule
+
     from quacc.recipes.lj.core import freq_job, relax_job
 
     tmpdir.chdir()

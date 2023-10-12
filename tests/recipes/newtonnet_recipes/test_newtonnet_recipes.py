@@ -9,10 +9,7 @@ from quacc import SETTINGS
 
 CURRENT_FILE_PATH = Path(__file__).parent.resolve()
 DEFAULT_SETTINGS = SETTINGS.copy()
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "local",
-    reason="Need to use local as workflow manager to run this test.",
-)
+
 pytest.importorskip("sella")
 pytest.importorskip("newtonnet")
 

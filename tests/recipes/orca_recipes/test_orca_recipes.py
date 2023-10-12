@@ -5,14 +5,7 @@ from pathlib import Path
 import pytest
 from ase.build import molecule
 
-from quacc import SETTINGS
-
 FILE_DIR = Path(__file__).resolve().parent
-
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "local",
-    reason="Need to use local as workflow manager to run this test.",
-)
 
 
 def setup_module():

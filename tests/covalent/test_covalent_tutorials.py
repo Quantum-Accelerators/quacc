@@ -1,16 +1,6 @@
 import pytest
-from ase.build import bulk
-
-from quacc import SETTINGS, flow
-from quacc.recipes.emt.core import relax_job, static_job
 
 ct = pytest.importorskip("covalent")
-
-
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "covalent",
-    reason="This test requires Covalent as the workflow engine",
-)
 
 
 def test_quickstart(tmpdir):
@@ -150,6 +140,9 @@ def test_tutorial2c(tmpdir):
 
 
 def test_tutorial_excecutor1(tmpdir):
+    from quacc import flow
+    from quacc.recipes.emt.core import relax_job, static_job
+
     tmpdir.chdir()
 
     @flow(executor="local")
@@ -164,6 +157,9 @@ def test_tutorial_excecutor1(tmpdir):
 
 
 def test_tutorial_excecutor2(tmpdir):
+    from quacc import flow
+    from quacc.recipes.emt.core import relax_job, static_job
+
     tmpdir.chdir()
 
     relax_job.electron_object.executor = "dask"

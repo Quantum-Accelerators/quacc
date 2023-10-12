@@ -1,15 +1,11 @@
 import pytest
 
-from quacc import SETTINGS, flow, job, subflow
-
 ct = pytest.importorskip("covalent")
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "covalent",
-    reason="Requires Covalent as the workflow manager",
-)
 
 
 def test_covalent_decorators(tmpdir):
+    from quacc import flow, job, subflow
+
     tmpdir.chdir()
 
     @job
@@ -56,6 +52,8 @@ def test_covalent_decorators(tmpdir):
 
 
 def test_covalent_decorators_args(tmpdir):
+    from quacc import flow, job, subflow
+
     tmpdir.chdir()
 
     @job(executor="local")
