@@ -1,29 +1,59 @@
-import os
-from copy import deepcopy
-from pathlib import Path
-
-import numpy as np
 import pytest
-from ase import Atoms
-from ase.build import bulk, molecule
-from ase.io import read
 
-from quacc.atoms.core import check_charge_and_spin, check_is_metal, get_atoms_id
-from quacc.calculators.vasp import Vasp
-from quacc.runners.prep import prep_next_run
 
-FILE_DIR = Path(__file__).resolve().parent
-ATOMS_MAG = read(os.path.join(FILE_DIR, "..", "calculators", "vasp", "OUTCAR_mag.gz"))
-ATOMS_NOMAG = read(
-    os.path.join(FILE_DIR, "..", "calculators", "vasp", "OUTCAR_nomag.gz")
-)
-ATOMS_NOSPIN = read(
-    os.path.join(FILE_DIR, "..", "calculators", "vasp", "OUTCAR_nospin.gz")
-)
-OS_ATOMS = read(os.path.join(FILE_DIR, "OS_test.xyz"))
+@pytest.fixture
+def file_dir():
+    from pathlib import Path
+
+    return Path(__file__).resolve().parent
+
+
+@pytest.fixture
+def atoms_mag():
+    from pathlib import Path
+
+    from ase.io import read
+
+    file_dir = Path(__file__).resolve().parent
+
+    return read(file_dir / ".." / "calculators" / "vasp" / "OUTCAR_mag.gz")
+
+
+@pytest.fixture
+def atoms_nomag():
+    from pathlib import Path
+
+    from ase.io import read
+
+    file_dir = Path(__file__).resolve().parent
+    return read(file_dir / ".." / "calculators" / "vasp" / "OUTCAR_nomag.gz")
+
+
+@pytest.fixture
+def atoms_nospin():
+    from pathlib import Path
+
+    from ase.io import read
+
+    file_dir = Path(__file__).resolve().parent
+    return read(file_dir / ".." / "calculators" / "vasp" / "OUTCAR_nospin.gz")
+
+
+@pytest.fixture
+def os_atoms():
+    from pathlib import Path
+
+    from ase.io import read
+
+    file_dir = Path(__file__).resolve().parent
+
+    return read(file_dir / "OS_test.xyz")
 
 
 def test_init():
+    from ase import Atoms
+    from ase.build import bulk, molecule
+
     atoms = bulk("Cu")
     assert Atoms.from_dict(atoms.as_dict()) == atoms
 
@@ -32,6 +62,8 @@ def test_init():
 
 
 def test_get_atoms_id():
+    from quacc.atoms.core import get_atoms_id
+
     atoms = bulk("Cu")
     md5hash = "d4859270a1a67083343bec0ab783f774"
     assert get_atoms_id(atoms) == md5hash
@@ -45,6 +77,13 @@ def test_get_atoms_id():
 
 
 def test_prep_next_run():  # sourcery skip: extract-duplicate-method
+    from copy import deepcopy
+
+    from ase.build import bulk, molecule
+
+    from quacc.calculators.vasp import Vasp
+    from quacc.runners.prep import prep_next_run
+
     atoms = bulk("Cu")
     md5hash = "d4859270a1a67083343bec0ab783f774"
     atoms = prep_next_run(atoms)
@@ -62,7 +101,7 @@ def test_prep_next_run():  # sourcery skip: extract-duplicate-method
     ]
     assert atoms.info.get("_id", None) == new_md5hash
 
-    atoms = deepcopy(ATOMS_MAG)
+    atoms = deepcopy(atoms_mag)
     atoms.info["test"] = "hi"
     mag = atoms.get_magnetic_moment()
     init_mags = atoms.get_initial_magnetic_moments()
@@ -72,7 +111,7 @@ def test_prep_next_run():  # sourcery skip: extract-duplicate-method
     assert atoms.calc is None
     assert atoms.get_initial_magnetic_moments().tolist() == mags.tolist()
 
-    atoms = deepcopy(ATOMS_MAG)
+    atoms = deepcopy(atoms_mag)
     atoms.info["test"] = "hi"
     atoms = prep_next_run(atoms)
     assert atoms.info.get("test", None) == "hi"
@@ -80,11 +119,11 @@ def test_prep_next_run():  # sourcery skip: extract-duplicate-method
     atoms.calc = calc
     atoms.calc.results = {"magmom": mag - 2}
 
-    atoms = deepcopy(ATOMS_MAG)
+    atoms = deepcopy(atoms_mag)
     atoms = prep_next_run(atoms, move_magmoms=False)
     assert atoms.get_initial_magnetic_moments().tolist() == init_mags.tolist()
 
-    atoms = deepcopy(ATOMS_NOMAG)
+    atoms = deepcopy(atoms_nomag)
     mag = atoms.get_magnetic_moment()
     atoms = prep_next_run(atoms)
     calc = Vasp(atoms)
@@ -92,7 +131,7 @@ def test_prep_next_run():  # sourcery skip: extract-duplicate-method
     atoms.calc.results = {"magmom": mag - 2}
     atoms = prep_next_run(atoms)
 
-    atoms = deepcopy(ATOMS_NOSPIN)
+    atoms = deepcopy(atoms_nospin)
     atoms = prep_next_run(atoms)
     calc = Vasp(atoms)
     atoms.calc = calc
@@ -100,6 +139,10 @@ def test_prep_next_run():  # sourcery skip: extract-duplicate-method
 
 
 def test_check_is_metal():
+    from ase.build import molecule
+
+    from quacc.atoms.core import check_is_metal
+
     atoms = bulk("Cu")
     assert check_is_metal(atoms) is True
     atoms = bulk("Cu") * (2, 2, 2)
@@ -110,6 +153,12 @@ def test_check_is_metal():
 
 
 def test_check_charge_and_spin():
+    import numpy as np
+    from ase.atoms import Atoms
+    from ase.build import molecule
+
+    from quacc.atoms.core import check_charge_and_spin
+
     atoms = Atoms.fromdict(
         {
             "numbers": np.array([6, 1, 1, 1]),
@@ -148,20 +197,20 @@ def test_check_charge_and_spin():
     )
     assert charge == -1
     assert spin_multiplicity == 3
-    charge, spin_multiplicity = check_charge_and_spin(OS_ATOMS)
+    charge, spin_multiplicity = check_charge_and_spin(os_atoms)
     assert charge == 0
     assert spin_multiplicity == 2
-    charge, spin_multiplicity = check_charge_and_spin(OS_ATOMS, charge=1)
+    charge, spin_multiplicity = check_charge_and_spin(os_atoms, charge=1)
     assert charge == 1
     assert spin_multiplicity == 1
     charge, spin_multiplicity = check_charge_and_spin(
-        OS_ATOMS, charge=0, spin_multiplicity=4
+        os_atoms, charge=0, spin_multiplicity=4
     )
     assert charge == 0
     assert spin_multiplicity == 4
     with pytest.raises(ValueError):
         charge, spin_multiplicity = check_charge_and_spin(
-            OS_ATOMS, charge=0, spin_multiplicity=3
+            os_atoms, charge=0, spin_multiplicity=3
         )
 
     atoms = molecule("CH3")
@@ -188,20 +237,20 @@ def test_check_charge_and_spin():
     )
     assert charge == -1
     assert spin_multiplicity == 3
-    charge, spin_multiplicity = check_charge_and_spin(OS_ATOMS)
+    charge, spin_multiplicity = check_charge_and_spin(os_atoms)
     assert charge == 0
     assert spin_multiplicity == 2
-    charge, spin_multiplicity = check_charge_and_spin(OS_ATOMS, charge=1)
+    charge, spin_multiplicity = check_charge_and_spin(os_atoms, charge=1)
     assert charge == 1
     assert spin_multiplicity == 1
     charge, spin_multiplicity = check_charge_and_spin(
-        OS_ATOMS, charge=0, spin_multiplicity=4
+        os_atoms, charge=0, spin_multiplicity=4
     )
     assert charge == 0
     assert spin_multiplicity == 4
     with pytest.raises(ValueError):
         charge, spin_multiplicity = check_charge_and_spin(
-            OS_ATOMS, charge=0, spin_multiplicity=3
+            os_atoms, charge=0, spin_multiplicity=3
         )
 
     atoms = molecule("CH3")

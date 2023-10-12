@@ -1,15 +1,15 @@
-import os
-from pathlib import Path
-
 import pytest
-from ase.build import bulk
-from maggma.stores import MemoryStore
 
 from quacc import SETTINGS
-from quacc.settings import QuaccSettings
 
 DEFAULT_SETTINGS = SETTINGS.copy()
-FILE_DIR = Path(__file__).resolve().parent
+
+
+@pytest.fixture
+def file_dir():
+    from pathlib import Path
+
+    return Path(__file__).resolve().parent
 
 
 def setup_function():
@@ -25,6 +25,10 @@ def teardown_function():
 
 
 def test_file(monkeypatch, tmpdir):
+    import os
+
+    from quacc.settings import QuaccSettings
+
     tmpdir.chdir()
 
     assert QuaccSettings().GZIP_FILES is True
@@ -40,6 +44,9 @@ def test_file(monkeypatch, tmpdir):
 
 
 def test_store(tmpdir):
+    from ase.build import bulk
+    from maggma.stores import MemoryStore
+
     from quacc.recipes.emt.core import static_job
 
     tmpdir.chdir()
@@ -53,6 +60,10 @@ def test_store(tmpdir):
     reason="Need to be using local workflow engine.",
 )
 def test_results_dir(tmpdir):
+    import os
+
+    from ase.build import bulk
+
     from quacc.recipes.emt.core import relax_job
 
     tmpdir.chdir()
@@ -67,16 +78,20 @@ def test_results_dir(tmpdir):
     os.remove("opt.traj")
 
 
-def test_env_var(monkeypatch):
-    p = FILE_DIR / "my/scratch/dir"
+def test_env_var(monkeypatch, file_dir):
+    from quacc.settings import QuaccSettings
+
+    p = file_dir / "my/scratch/dir"
     monkeypatch.setenv("QUACC_SCRATCH_DIR", p)
     assert QuaccSettings().SCRATCH_DIR == p.expanduser().resolve()
 
 
-def test_yaml(tmpdir, monkeypatch):
+def test_yaml(tmpdir, monkeypatch, file_dir):
+    from quacc.settings import QuaccSettings
+
     tmpdir.chdir()
 
-    p = FILE_DIR / "my/new/scratch/dir"
+    p = file_dir / "my/new/scratch/dir"
     with open("quacc_test.yaml", "w") as f:
         f.write(f"SCRATCH_DIR: {p}")
     monkeypatch.setenv("QUACC_CONFIG_FILE", "quacc_test.yaml")
