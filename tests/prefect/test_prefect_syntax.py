@@ -1,12 +1,19 @@
 import pytest
 
+prefect = pytest.importorskip("prefect")
 from quacc import SETTINGS
 
-prefect = pytest.importorskip("prefect")
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "prefect",
-    reason="This test is only meant to be run with Prefect",
-)
+DEFAULT_SETTINGS = SETTINGS.copy()
+
+
+def setup_module():
+    SETTINGS.WORKFLOW_ENGINE = "prefect"
+
+
+def teardown_module():
+    from quacc import SETTINGS
+
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 @pytest.fixture(autouse=True, scope="session")

@@ -1,12 +1,19 @@
 import pytest
 
+parsl = pytest.importorskip("parsl")
 from quacc import SETTINGS
 
-parsl = pytest.importorskip("parsl")
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "parsl",
-    reason="This test is only meant to be run with Parsl",
-)
+DEFAULT_SETTINGS = SETTINGS.copy()
+
+
+def setup_module():
+    SETTINGS.WORKFLOW_ENGINE = "parsl"
+
+
+def teardown_module():
+    from quacc import SETTINGS
+
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 def setup_module():

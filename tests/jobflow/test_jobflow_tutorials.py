@@ -1,12 +1,20 @@
 import pytest
 
+jf = pytest.importorskip("jobflow")
+
 from quacc import SETTINGS
 
-jf = pytest.importorskip("jobflow")
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "jobflow",
-    reason="This test is only meant to be run with Jobflow",
-)
+DEFAULT_SETTINGS = SETTINGS.copy()
+
+
+def setup_module():
+    SETTINGS.WORKFLOW_ENGINE = "jobflow"
+
+
+def teardown_module():
+    from quacc import SETTINGS
+
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 def test_tutorial1a(tmpdir):

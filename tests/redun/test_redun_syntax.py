@@ -1,11 +1,19 @@
 import pytest
 
+redun = pytest.importorskip("redun")
 from quacc import SETTINGS
 
-redun = pytest.importorskip("redun")
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "redun", reason="Redun must be the workflow engine"
-)
+DEFAULT_SETTINGS = SETTINGS.copy()
+
+
+def setup_module():
+    SETTINGS.WORKFLOW_ENGINE = "redun"
+
+
+def teardown_module():
+    from quacc import SETTINGS
+
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 @pytest.fixture
