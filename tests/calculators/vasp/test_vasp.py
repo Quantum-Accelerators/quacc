@@ -1,36 +1,4 @@
-from pathlib import Path
-
 import pytest
-from ase.calculators.singlepoint import SinglePointDFTCalculator
-from ase.calculators.vasp import Vasp as Vasp_
-from ase.constraints import FixAtoms, FixBondLength
-
-from quacc.calculators.presets import vasp as v
-from quacc.calculators.vasp import Vasp
-
-FILE_DIR = Path(__file__).resolve().parent
-DEFAULT_CALCS_DIR = Path(v.__file__).resolve().parent
-
-
-@pytest.fixture
-def atoms_mag():
-    from ase.io import read
-
-    return read(FILE_DIR / "OUTCAR_mag.gz")
-
-
-@pytest.fixture
-def atoms_nomag():
-    from ase.io import read
-
-    return read(FILE_DIR / "OUTCAR_nomag.gz")
-
-
-@pytest.fixture
-def atoms_nospin():
-    from ase.io import read
-
-    return read(FILE_DIR / "OUTCAR_nospin.gz")
 
 
 def setup_module():
@@ -45,8 +13,40 @@ def teardown_module():
     SETTINGS.VASP_FORCE_COPILOT = False
 
 
+@pytest.fixture
+def file_dir():
+    from pathlib import Path
+
+    file_dir = Path(__file__).resolve().parent
+    return file_dir
+
+
+@pytest.fixture
+def atoms_mag(file_dir):
+    from ase.io import read
+
+    return read(file_dir / "OUTCAR_mag.gz")
+
+
+@pytest.fixture
+def atoms_nomag(file_dir):
+    from ase.io import read
+
+    return read(file_dir / "OUTCAR_nomag.gz")
+
+
+@pytest.fixture
+def atoms_nospin(file_dir):
+    from ase.io import read
+
+    return read(file_dir / "OUTCAR_nospin.gz")
+
+
 def test_vanilla_vasp():
     from ase.build import bulk
+    from ase.calculators.vasp import Vasp as Vasp_
+
+    from quacc.calculators.vasp import Vasp
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, incar_copilot=False)
@@ -62,12 +62,19 @@ def test_vanilla_vasp():
 
 
 def test_presets():
+    from pathlib import Path
+
     from ase.build import bulk
+
+    from quacc.calculators.presets import vasp as v
+    from quacc.calculators.vasp import Vasp
+
+    default_calcs_dir = Path(v.__file__).resolve().parent
 
     atoms = bulk("Co") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
 
-    calc = Vasp(atoms, preset=DEFAULT_CALCS_DIR / "BulkSet")
+    calc = Vasp(atoms, preset=default_calcs_dir / "BulkSet")
     atoms.calc = calc
     calc = Vasp(atoms, preset="BulkSet")
     atoms.calc = calc
@@ -91,6 +98,8 @@ def test_presets():
 def test_lmaxmix():
     from ase.build import bulk
 
+    from quacc.calculators.vasp import Vasp
+
     atoms = bulk("Cu")
     calc = Vasp(atoms)
     assert calc.int_params["lmaxmix"] == 4
@@ -108,6 +117,8 @@ def test_lmaxmix():
 def test_autodipole():
     import numpy as np
     from ase.build import bulk
+
+    from quacc.calculators.vasp import Vasp
 
     atoms = bulk("Cu")
     com = atoms.get_center_of_mass(scaled=True)
@@ -149,6 +160,8 @@ def test_autodipole():
 def test_kspacing():
     from ase.build import bulk
 
+    from quacc.calculators.vasp import Vasp
+
     atoms = bulk("Cu")
     calc = Vasp(atoms, kspacing=0.1, ismear=-5)
     assert calc.int_params["ismear"] == -5
@@ -162,7 +175,9 @@ def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
 
     import numpy as np
     from ase.build import bulk
+    from ase.calculators.singlepoint import SinglePointDFTCalculator
 
+    from quacc.calculators.vasp import Vasp
     from quacc.runners.prep import prep_next_run
 
     atoms = bulk("Mg")
@@ -397,6 +412,8 @@ def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
 def test_unused_flags():
     from ase.build import bulk
 
+    from quacc.calculators.vasp import Vasp
+
     atoms = bulk("Cu")
     calc = Vasp(atoms, preset="BulkSet", potim=1.5, nsw=0)
     assert calc.int_params["nsw"] == 0
@@ -411,6 +428,8 @@ def test_unused_flags():
 
 def test_lasph():
     from ase.build import bulk
+
+    from quacc.calculators.vasp import Vasp
 
     atoms = bulk("Cu")
 
@@ -436,6 +455,8 @@ def test_lasph():
 def test_efermi():
     from ase.build import bulk
 
+    from quacc.calculators.vasp import Vasp
+
     atoms = bulk("Cu")
     calc = Vasp(atoms)
     assert calc.string_params["efermi"] == "midgap"
@@ -447,6 +468,8 @@ def test_efermi():
 
 def test_algo():
     from ase.build import bulk
+
+    from quacc.calculators.vasp import Vasp
 
     atoms = bulk("Cu")
 
@@ -466,6 +489,8 @@ def test_algo():
 def test_kpar():
     from ase.build import bulk
 
+    from quacc.calculators.vasp import Vasp
+
     atoms = bulk("Cu")
 
     calc = Vasp(atoms, kpts=[2, 2, 1], kpar=4)
@@ -477,6 +502,8 @@ def test_kpar():
 
 def test_isym():
     from ase.build import bulk
+
+    from quacc.calculators.vasp import Vasp
 
     atoms = bulk("Cu")
 
@@ -498,6 +525,8 @@ def test_isym():
 
 def test_ncore():
     from ase.build import bulk
+
+    from quacc.calculators.vasp import Vasp
 
     atoms = bulk("Cu")
 
@@ -522,6 +551,8 @@ def test_ncore():
 
 def test_ismear():
     from ase.build import bulk
+
+    from quacc.calculators.vasp import Vasp
 
     atoms = bulk("Cu")
 
@@ -576,6 +607,8 @@ def test_ismear():
 def test_laechg():
     from ase.build import bulk
 
+    from quacc.calculators.vasp import Vasp
+
     atoms = bulk("Cu")
     calc = Vasp(atoms, nsw=10, laechg=True)
     assert not calc.bool_params["laechg"]
@@ -592,6 +625,8 @@ def test_laechg():
 
 def test_ldauprint():
     from ase.build import bulk
+
+    from quacc.calculators.vasp import Vasp
 
     atoms = bulk("Cu")
 
@@ -610,6 +645,8 @@ def test_ldauprint():
 
 def test_lreal():
     from ase.build import bulk
+
+    from quacc.calculators.vasp import Vasp
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, lreal=True, nsw=0)
@@ -634,6 +671,8 @@ def test_lreal():
 def test_lorbit():
     from ase.build import bulk
 
+    from quacc.calculators.vasp import Vasp
+
     atoms = bulk("Cu")
     calc = Vasp(atoms, ispin=2)
     assert calc.int_params["lorbit"] == 11
@@ -651,6 +690,8 @@ def test_lorbit():
 def test_setups():
     from ase.build import bulk
 
+    from quacc.calculators.vasp import Vasp
+
     atoms = bulk("Cu")
     calc = Vasp(atoms, preset="BulkSet")
     assert calc.parameters["setups"]["Cu"] == ""
@@ -667,7 +708,7 @@ def test_setups():
     atoms = bulk("Cu")
     calc = Vasp(
         atoms,
-        setups=FILE_DIR / "test_setups.yaml",
+        setups=file_dir / "test_setups.yaml",
         preset="BulkSet",
     )
     assert calc.parameters["setups"]["Cu"] == "_sv"
@@ -695,6 +736,8 @@ def test_setups():
 def test_kpoint_schemes():
     import numpy as np
     from ase.build import bulk
+
+    from quacc.calculators.vasp import Vasp
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, kpts=[1, 1, 1], preset="BulkSet")
@@ -750,6 +793,9 @@ def test_kpoint_schemes():
 
 def test_constraints():
     from ase.build import bulk
+    from ase.constraints import FixAtoms, FixBondLength
+
+    from quacc.calculators.vasp import Vasp
 
     atoms = bulk("Cu")
     atoms.set_constraint(FixAtoms(indices=[0]))
@@ -765,6 +811,8 @@ def test_constraints():
 
 def test_bad():
     from ase.build import bulk
+
+    from quacc.calculators.vasp import Vasp
 
     atoms = bulk("Cu")
 
