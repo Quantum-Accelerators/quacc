@@ -17,7 +17,7 @@ conda activate quacc
 
 Then install the necessary dependencies:
 
-=== "Parsl ⭐"
+=== "Parsl"
 
     On both remote machine:
 
@@ -28,7 +28,7 @@ Then install the necessary dependencies:
     quacc set CREATE_UNIQUE_WORKDIR True
     ```
 
-=== "Covalent ⭐"
+=== "Covalent"
 
     On both the local and remote machines:
 
@@ -66,7 +66,7 @@ Then install the necessary dependencies:
 
 When deploying calculations for the first time, it's important to start simple, which is why you should try to run a sample EMT workflow first.
 
-=== "Parsl ⭐"
+=== "Parsl"
 
     **Starting Small**
 
@@ -203,7 +203,7 @@ When deploying calculations for the first time, it's important to start simple, 
         )
     ```
 
-=== "Covalent ⭐"
+=== "Covalent"
 
     Run the following code on the local machine:
 
@@ -289,7 +289,7 @@ In this example, we will run a sample VASP recipe that will highlight the use of
 
 First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of your remote machine as described in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials). When you're done, follow the steps below.
 
-=== "Parsl ⭐"
+=== "Parsl"
 
     From an interactive resource like a Jupyter Notebook or IPython kernel on the remote machine:
 
@@ -347,7 +347,7 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
     print(future1.result(), future2.result())
     ```
 
-=== "Covalent ⭐"
+=== "Covalent"
 
     Run the following code on the local machine:
 

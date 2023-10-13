@@ -11,7 +11,7 @@ graph LR
   A[Input] --> B(Relax) --> C(Static) --> D[Output];
 ```
 
-=== "Parsl ⭐"
+=== "Parsl"
 
     !!! Important
 
@@ -62,7 +62,7 @@ graph LR
 
         Parsl `PythonApp` objects will implicitly know to call `.result()` on any `AppFuture` it receives, and it is good to rely on this fact to avoid unecessary blocking.
 
-=== "Covalent ⭐"
+=== "Covalent"
 
     !!! Important
 
@@ -111,54 +111,6 @@ graph LR
     3. Because the workflow was defined with a `#!Python @flow` decorator, it will be sent to the Covalent server and a dispatch ID will be returned.
 
     4. You don't need to set `wait=True` in practice. Once you dispatch the workflow, it will begin running (if the resources are available). The `ct.get_result` function is used to fetch the workflow status and results from the server.
-
-<!--
-=== "Prefect"
-
-    !!! Important
-
-        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md):
-
-        ```bash
-        quacc set WORKFLOW_ENGINE prefect
-        ```
-
-    ```python
-    from ase.build import bulk
-    from quacc import flow
-    from quacc.recipes.emt.core import relax_job, static_job
-
-
-    # Define the workflow
-    @flow  # (1)!
-    def workflow(atoms):
-        # Define Job 1
-        result1 = relax_job(atoms)  # (2)!
-
-        # Define Job 2, which takes the output of Job 1 as input
-        result2 = static_job(result1)
-
-        return result2
-
-
-    # Make an Atoms object of a bulk Cu structure
-    atoms = bulk("Cu")
-
-    # Dispatch the workflow
-    future = workflow(atoms)  # (3)!
-
-    # Fetch the result
-    result = future.result()  # (4)!
-    print(result)
-    ```
-
-    1. The `#!Python @flow` decorator defines the workflow that will be executed.
-
-    2. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
-
-    3. Because the workflow was defined with a `#!Python @flow` decorator, it will be sent to the Prefect server and a future will be returned.
-
-    4. Calling `.result()` resolves the future. -->
 
 === "Redun"
 
@@ -257,7 +209,7 @@ graph LR
   A[Input] --> C(Relax) --> D[Output];
 ```
 
-=== "Parsl ⭐"
+=== "Parsl"
 
     ```python
     from ase.build import bulk, molecule
@@ -286,7 +238,7 @@ graph LR
     print(result1, result2)
     ```
 
-=== "Covalent ⭐"
+=== "Covalent"
 
     ```python
     from ase.build import bulk, molecule
@@ -315,38 +267,6 @@ graph LR
     result = ct.get_result(dispatch_id, wait=True)
     print(result)
     ```
-
-<!-- === "Prefect"
-
-    ```python
-    from ase.build import bulk, molecule
-    from quacc import flow
-    from quacc.recipes.emt.core import relax_job
-
-
-    # Define workflow
-    @flow
-    def workflow(atoms1, atoms2):
-        # Define two independent relaxation jobs
-        result1 = relax_job(atoms1)
-        result2 = relax_job(atoms2)
-
-        return {"result1": result1, "result2": result2}
-
-
-    # Define two Atoms objects
-    atoms1 = bulk("Cu")
-    atoms2 = molecule("N2")
-
-    # Dispatch the workflow
-    futures = workflow(atoms1, atoms2)
-
-    # Fetch the results
-    result1 = futures["result1"].result()
-    result2 = futures["result2"].result()
-    print(result1, result2)
-    ```
-    -->
 
 === "Redun"
 
@@ -418,7 +338,7 @@ graph LR
   C(Make Slabs) --> G(Slab Relax) --> H[Output];
 ```
 
-=== "Parsl ⭐"
+=== "Parsl"
 
     ```python
     from ase.build import bulk
@@ -447,7 +367,7 @@ graph LR
 
     1. We chose to set `#!Python run_static=False` here to disable the static calculation that is normally carried out in this workflow.
 
-=== "Covalent ⭐"
+=== "Covalent"
 
     ```python
     import covalent as ct
@@ -476,38 +396,6 @@ graph LR
     ```
 
     1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator. We also chose to set `#!Python run_static=False` here to disable the static calculation that is normally carried out in this workflow.
-
-<!--
-=== "Prefect"
-
-    ```python
-    from ase.build import bulk
-    from quacc import flow
-    from quacc.recipes.emt.core import relax_job
-    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
-
-
-    # Define the workflow
-    @flow
-    def workflow(atoms):
-        relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(
-            relaxed_bulk.result()["atoms"], run_static=False
-        )  # (1)!
-
-        return relaxed_slabs
-
-
-    # Define the Atoms object
-    atoms = bulk("Cu")
-
-    # Dispatch the workflow and retrieve result
-    futures = workflow(atoms)
-    results = [future.result() for future in futures]
-    print(results)
-    ```
-
-    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator. We also chose to set `#!Python run_static=False` here to disable the static calculation that is normally carried out in this workflow. -->
 
 === "Redun"
 

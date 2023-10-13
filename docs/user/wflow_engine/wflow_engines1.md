@@ -14,7 +14,7 @@ graph LR
   A[Input] --> B(Relax) --> C[Output];
 ```
 
-=== "Parsl ⭐"
+=== "Parsl"
 
     !!! Important
 
@@ -48,7 +48,7 @@ graph LR
 
     2. The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object.
 
-=== "Covalent ⭐"
+=== "Covalent"
 
     !!! Important
 
@@ -93,44 +93,6 @@ graph LR
     2. This will dispatch the workflow to the Covalent server.
 
     3. The `ct.get_result` function is used to fetch the workflow status and results from the server. You don't need to set `wait=True` in practice. Once you dispatch the workflow, it will begin running (if the resources are available).
-
-<!--
-=== "Prefect"
-
-    !!! Important
-
-        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md):
-
-        ```bash
-        quacc set WORKFLOW_ENGINE prefect
-        ```
-
-    ```python
-    from ase.build import bulk
-    from quacc import flow
-    from quacc.recipes.emt.core import relax_job
-
-    # Make an Atoms object of a bulk Cu structure
-    atoms = bulk("Cu")
-
-
-    # Define the workflow
-    @flow
-    def workflow(atoms):
-        return relax_job(atoms)  # (1)!
-
-
-    # Dispatch the workflow
-    future = workflow(atoms)
-
-    # Fetch the result
-    result = future.result()  # (2)!
-    print(result)
-    ```
-
-    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
-
-    2. Calling `.result()` will resolve the future and return the calculation result. -->
 
 === "Redun"
 
@@ -206,7 +168,7 @@ graph LR
   B --> F(Slab Relax) --> J(Slab Static) --> K[Output];
 ```
 
-=== "Parsl ⭐"
+=== "Parsl"
 
     ```python
     from ase.build import bulk
@@ -222,7 +184,7 @@ graph LR
     print(future.result())
     ```
 
-=== "Covalent ⭐"
+=== "Covalent"
 
     ```python
     import covalent as ct
@@ -241,25 +203,6 @@ graph LR
     ```
 
     1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator.
-
-<!-- === "Prefect"
-
-    ```python
-    from ase.build import bulk
-    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
-
-    # Define the Atoms object
-    atoms = bulk("Cu")
-
-    # Dispatch the workflow
-    futures = bulk_to_slabs_flow(atoms)  # (1)!
-
-    # Print the results
-    results = [future.result() for future in futures]
-    print(results)
-    ```
-
-    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator. -->
 
 === "Redun"
 
