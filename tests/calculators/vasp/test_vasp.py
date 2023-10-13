@@ -479,7 +479,7 @@ def test_algo():
     assert calc.string_params["algo"] == "all"
 
     calc = Vasp(atoms, xc="hse06")
-    assert calc.string_params["algo"] == "all"
+    assert calc.string_params["algo"] == "normal"
 
 
 def test_kpar():
