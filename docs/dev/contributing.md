@@ -50,8 +50,6 @@ If contributing new recipes, please abide by the following guidelines:
 
 - Please mimic one of the other recipes as a general template for internal consistency.
 
-- Ensure that the first positional argument accepts `Atoms | dict` like all the other recipes.
-
 - Decorate your individual compute jobs with a `#!Python @job` decorator or your flow with a `#!Python @flow` decorator and name them accordingly.
 
 ### Style

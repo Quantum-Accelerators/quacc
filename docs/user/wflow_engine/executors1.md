@@ -114,7 +114,7 @@ In the previous examples, we have been running calculations on our local machine
     @flow(executor="local", workflow_executor="local")  # (1)!
     def workflow(atoms):
         result1 = relax_job(atoms)
-        result2 = static_job(result1)
+        result2 = static_job(result1["atoms"])
 
         return result2
 
@@ -144,7 +144,7 @@ In the previous examples, we have been running calculations on our local machine
     @flow
     def workflow(atoms):
         output1 = relax_job(atoms)
-        output2 = static_job(output1)
+        output2 = static_job(output1["atoms"])
 
         return output2
 
@@ -232,7 +232,7 @@ In the previous examples, we have been running calculations on our local machine
 
         1.  The `SlurmExecutor` must have `use_srun=False` in order for ASE-based calculators to be launched appropriately.
 
-=== "Prefect"
+<!-- === "Prefect"
 
     Out-of-the-box, Prefect will run on your local machine. However, in practice you will probably want to run your Prefect workflows on HPC machines.
 
@@ -330,7 +330,7 @@ In the previous examples, we have been running calculations on our local machine
 
     **Using a Prefect Work Pool and Agent**
 
-    So far, we have dispatched calculations immediately upon calling them. However, in practice, it is often more useful to have a Prefect agent running in the background that will continually poll for work to submit to the task runner. This allows you to submit only a subset of workflows at a time, and the agent will automatically submit more jobs as the resources become available. You will want to run Prefect workflows with an agent on the computing environment where you wish to submit jobs, specifically on a perpetual resource like a login node or dedicated workflow node. Refer to the ["Work Pools, Workers, and Agents"](https://docs.prefect.io/latest/concepts/work-pools/) section of the Prefect documentation for more details.
+    So far, we have dispatched calculations immediately upon calling them. However, in practice, it is often more useful to have a Prefect agent running in the background that will continually poll for work to submit to the task runner. This allows you to submit only a subset of workflows at a time, and the agent will automatically submit more jobs as the resources become available. You will want to run Prefect workflows with an agent on the computing environment where you wish to submit jobs, specifically on a perpetual resource like a login node or dedicated workflow node. Refer to the ["Work Pools, Workers, and Agents"](https://docs.prefect.io/latest/concepts/work-pools/) section of the Prefect documentation for more details. -->
 
 === "Redun"
 

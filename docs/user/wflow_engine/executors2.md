@@ -113,7 +113,7 @@ When deploying calculations for the first time, it's important to start simple, 
 
     def workflow(atoms):
         relax_output = relax_job(atoms)
-        return static_job(relax_output)
+        return static_job(relax_output["atoms"])
 
 
     atoms = bulk("Cu")
@@ -171,7 +171,7 @@ When deploying calculations for the first time, it's important to start simple, 
 
     def workflow(atoms):
         relax_output = relax_job(atoms)
-        return freq_job(relax_output)
+        return freq_job(relax_output["atoms"], energy=relax_output["energy"])
     ```
 
     We now loop over all molecules in the "g2" collection and apply our workflow.
@@ -241,7 +241,7 @@ When deploying calculations for the first time, it's important to start simple, 
     @flow(executor=executor, workflow_executor=executor)  # (1)!
     def workflow(atoms):
         relax_output = relax_job(atoms)
-        return static_job(relax_output)
+        return static_job(relax_output["atoms"])
 
 
     atoms = bulk("Cu")
@@ -339,7 +339,7 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
 
     def workflow(atoms):
         relax_output = relax_job(atoms, calc_swaps={"kpts": [3, 3, 3]})
-        return static_job(relax_output, calc_swaps={"kpts": [3, 3, 3]})
+        return static_job(relax_output["atoms"], calc_swaps={"kpts": [3, 3, 3]})
 
 
     future1 = workflow(bulk("C"))
@@ -391,7 +391,7 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
     @flow(executor=executor, workflow_executor=executor)  # (2)!
     def workflow(atoms):
         relax_output = relax_job(atoms)
-        return static_job(relax_output)
+        return static_job(relax_output["atoms"])
 
 
     atoms = bulk("C")
@@ -433,7 +433,7 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
 
     atoms = bulk("C")
     job1 = relax_job(atoms, calc_swaps={"kpts": [3, 3, 3]})
-    job2 = static_job(job1.output, calc_swaps={"kpts": [3, 3, 3]})
+    job2 = static_job(job1.output["atoms"], calc_swaps={"kpts": [3, 3, 3]})
     flow = jf.Flow([job1, job2])
 
     wf = flow_to_workflow(flow)

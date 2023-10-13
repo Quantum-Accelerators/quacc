@@ -38,7 +38,7 @@ graph LR
         future1 = relax_job(atoms)  # (1)!
 
         # Define Job 2, which takes the output of Job 1 as input
-        future2 = static_job(future1)
+        future2 = static_job(future1["atoms"])
 
         return future2
 
@@ -87,7 +87,7 @@ graph LR
         result1 = relax_job(atoms)  # (2)!
 
         # Define Job 2, which takes the output of Job 1 as input
-        result2 = static_job(result1)
+        result2 = static_job(result1["atoms"])
 
         return result2
 
@@ -112,6 +112,7 @@ graph LR
 
     4. You don't need to set `wait=True` in practice. Once you dispatch the workflow, it will begin running (if the resources are available). The `ct.get_result` function is used to fetch the workflow status and results from the server.
 
+<!--
 === "Prefect"
 
     !!! Important
@@ -157,7 +158,7 @@ graph LR
 
     3. Because the workflow was defined with a `#!Python @flow` decorator, it will be sent to the Prefect server and a future will be returned.
 
-    4. Calling `.result()` resolves the future.
+    4. Calling `.result()` resolves the future. -->
 
 === "Redun"
 
@@ -186,7 +187,7 @@ graph LR
         result1 = relax_job(atoms)  # (2)!
 
         # Define Job 2, which takes the output of Job 1 as input
-        result2 = static_job(result1)
+        result2 = static_job(result1["atoms"])
 
         return result2
 
@@ -225,7 +226,7 @@ graph LR
     job1 = relax_job(atoms)  # (1)!
 
     # Define Job 2, which takes the output of Job 1 as input
-    job2 = static_job(job1.output)  # (2)!
+    job2 = static_job(job1.output["atoms"])  # (2)!
 
     # Define the workflow
     workflow = jf.Flow([job1, job2])  # (3)!
@@ -315,7 +316,7 @@ graph LR
     print(result)
     ```
 
-=== "Prefect"
+<!-- === "Prefect"
 
     ```python
     from ase.build import bulk, molecule
@@ -345,6 +346,7 @@ graph LR
     result2 = futures["result2"].result()
     print(result1, result2)
     ```
+    -->
 
 === "Redun"
 
@@ -427,7 +429,7 @@ graph LR
     # Define the workflow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, run_static=False)  # (1)!
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)  # (1)!
 
         return relaxed_slabs
 
@@ -459,7 +461,7 @@ graph LR
     @flow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, run_static=False)  # (1)!
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)  # (1)!
 
         return relaxed_slabs
 
@@ -475,6 +477,7 @@ graph LR
 
     1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator. We also chose to set `#!Python run_static=False` here to disable the static calculation that is normally carried out in this workflow.
 
+<!--
 === "Prefect"
 
     ```python
@@ -488,7 +491,9 @@ graph LR
     @flow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, run_static=False)  # (1)!
+        relaxed_slabs = bulk_to_slabs_flow(
+            relaxed_bulk.result()["atoms"], run_static=False
+        )  # (1)!
 
         return relaxed_slabs
 
@@ -502,7 +507,7 @@ graph LR
     print(results)
     ```
 
-    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator. We also chose to set `#!Python run_static=False` here to disable the static calculation that is normally carried out in this workflow.
+    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator. We also chose to set `#!Python run_static=False` here to disable the static calculation that is normally carried out in this workflow. -->
 
 === "Redun"
 
@@ -520,7 +525,7 @@ graph LR
     @flow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk, run_static=False)  # (1)!
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)  # (1)!
 
         return relaxed_slabs
 

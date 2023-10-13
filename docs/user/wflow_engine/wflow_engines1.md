@@ -94,6 +94,7 @@ graph LR
 
     3. The `ct.get_result` function is used to fetch the workflow status and results from the server. You don't need to set `wait=True` in practice. Once you dispatch the workflow, it will begin running (if the resources are available).
 
+<!--
 === "Prefect"
 
     !!! Important
@@ -129,7 +130,7 @@ graph LR
 
     1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
 
-    2. Calling `.result()` will resolve the future and return the calculation result.
+    2. Calling `.result()` will resolve the future and return the calculation result. -->
 
 === "Redun"
 
@@ -241,7 +242,7 @@ graph LR
 
     1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator.
 
-=== "Prefect"
+<!-- === "Prefect"
 
     ```python
     from ase.build import bulk
@@ -258,7 +259,7 @@ graph LR
     print(results)
     ```
 
-    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator.
+    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator. -->
 
 === "Redun"
 

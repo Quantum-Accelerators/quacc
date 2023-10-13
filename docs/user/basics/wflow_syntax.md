@@ -36,7 +36,7 @@ To help enable interoperability between workflow engines, quacc offers a unified
 
     </center>
 
-=== "Prefect"
+<!-- === "Prefect"
 
     Take a moment to read the [Prefect documentation's](https://docs.prefect.io/latest/tutorial/) to get a sense of how it works. Namely, you should understand the `Task` and `Flow` decorators as well as how to interface with the server.
 
@@ -48,7 +48,7 @@ To help enable interoperability between workflow engines, quacc offers a unified
     | `#!Python @flow`    | `#!Python @flow` |
     | `#!Python @subflow` | `#!Python @flow` |
 
-    </center>
+    </center> -->
 
 === "Redun"
 
@@ -184,7 +184,7 @@ graph LR
 
     3. This commmand will dispatch the workflow to the Covalent server.
 
-=== "Prefect"
+<!-- === "Prefect"
 
     !!! Important
 
@@ -220,7 +220,7 @@ graph LR
 
     1. The `#!Python @job` decorator will be transformed into a Prefect `#!Python @task`.
 
-    2. The `#!Python @flow` decorator will be transformed into a Prefect-compatible `#!Python @flow`.
+    2. The `#!Python @flow` decorator will be transformed into a Prefect-compatible `#!Python @flow`. -->
 
 === "Redun"
 
@@ -326,9 +326,9 @@ add.__wrapped__(1, 2)
 
     If you want to learn more about Covalent, you can read the [Covalent Documentation](https://docs.covalent.xyz/docs/). Please refer to the Covalent [Discussion Board](https://github.com/AgnostiqHQ/covalent/discussions) for any Covalent-specific questions.
 
-=== "Prefect"
+<!-- === "Prefect"
 
-    If you want to learn more about Perfect, you can read the [Prefect Documentation](https://docs.prefect.io/). Please refer to the [Prefect Slack Channel](https://www.prefect.io/slack/) and/or [Prefect Community Discourse](https://discourse.prefect.io/) page for any Prefect-specific questions.
+    If you want to learn more about Perfect, you can read the [Prefect Documentation](https://docs.prefect.io/). Please refer to the [Prefect Slack Channel](https://www.prefect.io/slack/) and/or [Prefect Community Discourse](https://discourse.prefect.io/) page for any Prefect-specific questions. -->
 
 === "Redun"
 

@@ -28,7 +28,7 @@ from quacc.recipes.vasp.core import relax_job, static_job
 
 atoms = bulk("Cu")
 results1 = relax_job(atoms)
-static_job(results1, copy_files=[Path(results1["dir_name"], "WAVECAR")])
+static_job(results1["atoms"], copy_files=[Path(results1["dir_name"], "WAVECAR")])
 ```
 
 ## Non-Local File Transfers
