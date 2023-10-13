@@ -8,7 +8,7 @@ Here, we provide code snippets for several decorator-based workflow engines. For
 
 To help enable interoperability between workflow engines, quacc offers a unified set of decorators: [`#!Python @job`](https://quantum-accelerators.github.io/quacc/reference/quacc/utils/wflows.html#quacc.wflow.job), [`#!Python @flow`](https://quantum-accelerators.github.io/quacc/reference/quacc/utils/wflows.html#quacc.wflow.flow), and [`#!Python @subflow`](https://quantum-accelerators.github.io/quacc/reference/quacc/utils/wflows.html#quacc.wflow.subflow).
 
-=== "Parsl ⭐"
+=== "Parsl"
 
     Take a moment to read the Parsl documentation's ["Quick Start"](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a [`#!Python python_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html#Python-Apps) and [`#!Python join_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html?highlight=join_app#Dynamic-workflows-with-apps-that-generate-other-apps), which describe individual compute tasks and dynamic job tasks, respectively.
 
@@ -22,7 +22,7 @@ To help enable interoperability between workflow engines, quacc offers a unified
 
     </center>
 
-=== "Covalent ⭐"
+=== "Covalent"
 
     Take a moment to learn about the main [Covalent Concepts](https://docs.covalent.xyz/docs/user-documentation/concepts/concepts-index), namely the [`#!Python @ct.electron`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#electron) and [`#!Python @ct.lattice`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#lattice) decorators, which describe individual compute tasks and workflows, respectively.
 
@@ -84,7 +84,7 @@ graph LR
   A[Input] --> B(add) --> C(mult) --> D[Output];
 ```
 
-=== "Parsl ⭐"
+=== "Parsl"
 
     !!! Important
 
@@ -128,7 +128,7 @@ graph LR
 
     2. The `#!Python @flow` decorator doesn't actually do anything when using Parsl, so we chose to not include it here for brevity.
 
-=== "Covalent ⭐"
+=== "Covalent"
 
     !!! Important
 
@@ -266,11 +266,11 @@ add.__wrapped__(1, 2)
 
 ## Learn More
 
-=== "Parsl ⭐"
+=== "Parsl"
 
     If you want to learn more about Parsl, you can read the [Parsl Documentation](https://parsl.readthedocs.io/en/stable/#). Please refer to the [Parsl Slack Channel](http://parsl-project.org/support.html) for any Parsl-specific questions.
 
-=== "Covalent ⭐"
+=== "Covalent"
 
     If you want to learn more about Covalent, you can read the [Covalent Documentation](https://docs.covalent.xyz/docs/). Please refer to the Covalent [Discussion Board](https://github.com/AgnostiqHQ/covalent/discussions) for any Covalent-specific questions.
 

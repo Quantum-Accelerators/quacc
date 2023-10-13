@@ -6,7 +6,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     For a comparison of the different compatible workflow engines, refer to the [Workflow Engines Overview](../user/basics/wflow_overview.md) section.
 
-=== "Parsl ⭐"
+=== "Parsl"
 
     **Installation**
 
@@ -18,7 +18,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
 
-=== "Covalent ⭐"
+=== "Covalent"
 
     **Installation**
 

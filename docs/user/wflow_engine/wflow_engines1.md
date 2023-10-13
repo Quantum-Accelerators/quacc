@@ -14,7 +14,7 @@ graph LR
   A[Input] --> B(Relax) --> C[Output];
 ```
 
-=== "Parsl ⭐"
+=== "Parsl"
 
     !!! Important
 
@@ -48,7 +48,7 @@ graph LR
 
     2. The use of `.result()` serves to block any further calculations from running until it is resolved. Calling `.result()` also returns the function output as opposed to the `AppFuture` object.
 
-=== "Covalent ⭐"
+=== "Covalent"
 
     !!! Important
 
@@ -168,7 +168,7 @@ graph LR
   B --> F(Slab Relax) --> J(Slab Static) --> K[Output];
 ```
 
-=== "Parsl ⭐"
+=== "Parsl"
 
     ```python
     from ase.build import bulk
@@ -184,7 +184,7 @@ graph LR
     print(future.result())
     ```
 
-=== "Covalent ⭐"
+=== "Covalent"
 
     ```python
     import covalent as ct

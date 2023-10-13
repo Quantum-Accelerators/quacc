@@ -11,7 +11,7 @@ graph LR
   A[Input] --> B(Relax) --> C(Static) --> D[Output];
 ```
 
-=== "Parsl ⭐"
+=== "Parsl"
 
     !!! Important
 
@@ -62,7 +62,7 @@ graph LR
 
         Parsl `PythonApp` objects will implicitly know to call `.result()` on any `AppFuture` it receives, and it is good to rely on this fact to avoid unecessary blocking.
 
-=== "Covalent ⭐"
+=== "Covalent"
 
     !!! Important
 
@@ -209,7 +209,7 @@ graph LR
   A[Input] --> C(Relax) --> D[Output];
 ```
 
-=== "Parsl ⭐"
+=== "Parsl"
 
     ```python
     from ase.build import bulk, molecule
@@ -238,7 +238,7 @@ graph LR
     print(result1, result2)
     ```
 
-=== "Covalent ⭐"
+=== "Covalent"
 
     ```python
     from ase.build import bulk, molecule
@@ -338,7 +338,7 @@ graph LR
   C(Make Slabs) --> G(Slab Relax) --> H[Output];
 ```
 
-=== "Parsl ⭐"
+=== "Parsl"
 
     ```python
     from ase.build import bulk
@@ -367,7 +367,7 @@ graph LR
 
     1. We chose to set `#!Python run_static=False` here to disable the static calculation that is normally carried out in this workflow.
 
-=== "Covalent ⭐"
+=== "Covalent"
 
     ```python
     import covalent as ct

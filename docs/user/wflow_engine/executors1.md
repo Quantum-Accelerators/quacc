@@ -2,7 +2,7 @@
 
 In the previous examples, we have been running calculations on our local machine. However, in practice, you will probably want to run your calculations on one or more HPC machines. This section will describe how to set up your workflows to run on HPC machines using your desired workflow engine to scale up your calculations.
 
-=== "Parsl ⭐"
+=== "Parsl"
 
     Out-of-the-box, Parsl will run on your local machine. However, in practice you will probably want to run your Parsl workflows on HPC machines.
 
@@ -96,7 +96,7 @@ In the previous examples, we have been running calculations on our local machine
 
     Parsl supports tying specific executors to a given `PythonApp`, as discussed in the [Multi-Executor section](https://parsl.readthedocs.io/en/stable/userguide/execution.html#multi-executor) of the Parsl documentation.
 
-=== "Covalent ⭐"
+=== "Covalent"
 
     By default, Covalent will run all jobs on your local machine using the Dask backend. This is a parameter that you can control. For instance, Covalent offers many [executor plugins](https://docs.covalent.xyz/docs/plugin) that can be installed and used to interface with a wide range of HPC, cloud, and quantum devices.
 
