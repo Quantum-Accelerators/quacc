@@ -383,12 +383,12 @@ class Vasp(Vasp_):
 
         if calc.bool_params["lhfcalc"] and (
             not calc.string_params["algo"]
-            or calc.string_params["algo"].lower() not in ["all", "damped"]
+            or calc.string_params["algo"].lower() not in ["all", "damped", "normal"]
         ):
             logger.info(
-                "Copilot: Setting ALGO = All because you have a hybrid calculation.",
+                "Copilot: Setting ALGO = Normal because you have a hybrid calculation.",
             )
-            calc.set(algo="all")
+            calc.set(algo="normal")
 
         if (
             is_metal
