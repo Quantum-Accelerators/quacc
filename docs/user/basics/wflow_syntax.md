@@ -36,20 +36,6 @@ To help enable interoperability between workflow engines, quacc offers a unified
 
     </center>
 
-<!-- === "Prefect"
-
-    Take a moment to read the [Prefect documentation's](https://docs.prefect.io/latest/tutorial/) to get a sense of how it works. Namely, you should understand the `Task` and `Flow` decorators as well as how to interface with the server.
-
-    <center>
-
-    | Quacc              | Prefect         |
-    | ------------------ | --------------- |
-    | `#!Python @job`     | `#!Python @task` |
-    | `#!Python @flow`    | `#!Python @flow` |
-    | `#!Python @subflow` | `#!Python @flow` |
-
-    </center> -->
-
 === "Redun"
 
     Take a moment to read the Redun documentation's [Design Overview page](https://insitro.github.io/redun/design.html) to get a sense of how Redun works. Namely, you should understand the `Task` decorator and how to interface with the `Scheduler`.
@@ -184,44 +170,6 @@ graph LR
 
     3. This commmand will dispatch the workflow to the Covalent server.
 
-<!-- === "Prefect"
-
-    !!! Important
-
-        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md):
-
-        ```bash
-        quacc set WORKFLOW_ENGINE prefect
-        ```
-
-    ```python
-    from quacc import flow, job
-
-
-    @job  #  (1)!
-    def add(a, b):
-        return a + b
-
-
-    @job
-    def mult(a, b):
-        return a * b
-
-
-    @flow  #  (2)!
-    def workflow(a, b, c):
-        return mult(add(a, b), c)
-
-
-    future = workflow(1, 2, 3)
-    result = future.result()
-    print(result)
-    ```
-
-    1. The `#!Python @job` decorator will be transformed into a Prefect `#!Python @task`.
-
-    2. The `#!Python @flow` decorator will be transformed into a Prefect-compatible `#!Python @flow`. -->
-
 === "Redun"
 
     !!! Important
@@ -325,10 +273,6 @@ add.__wrapped__(1, 2)
 === "Covalent ⭐"
 
     If you want to learn more about Covalent, you can read the [Covalent Documentation](https://docs.covalent.xyz/docs/). Please refer to the Covalent [Discussion Board](https://github.com/AgnostiqHQ/covalent/discussions) for any Covalent-specific questions.
-
-<!-- === "Prefect"
-
-    If you want to learn more about Perfect, you can read the [Prefect Documentation](https://docs.prefect.io/). Please refer to the [Prefect Slack Channel](https://www.prefect.io/slack/) and/or [Prefect Community Discourse](https://discourse.prefect.io/) page for any Prefect-specific questions. -->
 
 === "Redun"
 

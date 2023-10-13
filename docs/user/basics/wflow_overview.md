@@ -47,29 +47,6 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     - It requires a centralized server to be running continuously in order to manage the workflows
     - High-security HPC environments may be difficult to access via SSH with the centralized server approach
 
-<!-- === "Prefect"
-
-    !!! Warning
-
-        Prefect support is currently unavailable until [Issue 1013](https://github.com/Quantum-Accelerators/quacc/issues/1013) is closed.
-
-    [Prefect](https://www.prefect.io/) is a workflow management system that is widely adopted in the data science industry.
-
-    Pros:
-
-    - Very popular in the data science industry with an active community
-    - Has a nice dashboard to monitor job progress
-    - Supports a variety of job schedulers via `dask-jobqueue`
-    - Uses a directed acyclic graph-free model for increased flexibility in workflow definitions
-
-    Cons:
-
-    - Has limited documentation and features for HPC environments
-    - Not practical to use if the compute nodes do not support network connections
-    - The dashboard stores data for only a 7 day history by default and does not display the full output of each task
-    - Sorting out the details of agents, workers, and queues can be challenging
-    - The concept of always returning a "future" object can be confusing for new users -->
-
 === "Redun"
 
     [Redun](https://insitro.github.io/redun/) is a flexible workflow management program developed by [Insitro](https://insitro.com/).
