@@ -265,10 +265,11 @@ class Vasp(Vasp_):
             return f"python {run_vasp_custodian_file}"
 
         # Run with vanilla ASE
-        if np.all(self.user_calc_params.get("kpts", [1, 1, 1]) == 1):
-            vasp_cmd = SETTINGS.VASP_GAMMA_CMD
-        else:
-            vasp_cmd = SETTINGS.VASP_CMD
+        vasp_cmd = (
+            SETTINGS.VASP_GAMMA_CMD
+            if np.all(self.user_calc_params.get("kpts", [1, 1, 1]) == 1)
+            else SETTINGS.VASP_CMD
+        )
 
         return f"{SETTINGS.VASP_PARALLEL_CMD} {vasp_cmd}"
 
