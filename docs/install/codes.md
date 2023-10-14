@@ -20,10 +20,10 @@ No setup needed!
 
 ## Gaussian
 
-As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/gaussian.html), you will need to define an environment variable named `ASE_GAUSSIAN_COMMAND`. It should be formatted as follows:
+To use quacc with Gaussian, you will need to define the `GAUSSIAN_CMD` setting to be path of the Gaussian executable (or the name of the executable if it is already in your `PATH`). This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md), such as by defining the following environment variable:
 
 ```bash
-export ASE_GAUSSIAN_COMMAND="/path/to/my/gaussian_executable Gaussian.com > Gaussian.log"
+export QUACC_GAUSSIAN_CMD="g16"
 ```
 
 ## GULP

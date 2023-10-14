@@ -126,6 +126,14 @@ class QuaccSettings(BaseSettings):
     )
 
     # ---------------------------
+    # Gaussian Settings
+    # ---------------------------
+    GAUSSIAN_CMD: Path = Field(
+        Path("g16"),
+        description=("Path to the Gaussian executable."),
+    )
+
+    # ---------------------------
     # VASP Settings
     # ---------------------------
 
