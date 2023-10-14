@@ -297,16 +297,15 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
         import covalent as ct
 
         return ct.lattice(_func, **kwargs)
-    elif wflow_engine == "prefect":
+    if wflow_engine == "prefect":
         from prefect import flow as prefect_flow
 
         return prefect_flow(_func, **kwargs)
-    elif wflow_engine == "redun":
+    if wflow_engine == "redun":
         from redun import task as redun_task
 
         return redun_task(_func, **kwargs)
-    else:
-        return _func
+    return _func
 
 
 def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
@@ -484,17 +483,16 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
         import covalent as ct
 
         return ct.electron(ct.lattice(_func, **kwargs))
-    elif wflow_engine == "parsl":
+    if wflow_engine == "parsl":
         from parsl import join_app
 
         return join_app(_func, **kwargs)
-    elif wflow_engine == "prefect":
+    if wflow_engine == "prefect":
         from prefect import flow as prefect_flow
 
         return prefect_flow(_func, **kwargs)
-    elif wflow_engine == "redun":
+    if wflow_engine == "redun":
         from redun import task as redun_task
 
         return redun_task(_func, **kwargs)
-    else:
-        return _func
+    return _func
