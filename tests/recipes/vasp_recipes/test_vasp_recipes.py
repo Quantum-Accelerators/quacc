@@ -523,23 +523,3 @@ def test_mp_relax_flow(tmpdir):
     assert output["parameters"]["ismear"] == -5
     assert output["parameters"]["kspacing"] == pytest.approx(0.28329488761304206)
     assert output["prerelax"]["parameters"]["ismear"] == 0
-
-
-def test_vasp_version(tmpdir):
-    from ase.build import bulk
-
-    from quacc import SETTINGS
-    from quacc.recipes.vasp.core import static_job
-
-    DEFAULT_SETTINGS = SETTINGS.copy()
-    SETTINGS.VASP_MIN_VERSION = 5.4
-    SETTINGS.VASP_FORCE_COPILOT = True
-
-    tmpdir.chdir()
-
-    atoms = bulk("Cu") * (2, 2, 2)
-
-    output = static_job(atoms)
-    assert "efermi" not in output["parameters"]
-    SETTINGS.VASP_MIN_VERSION = DEFAULT_SETTINGS.VASP_MIN_VERSION
-    SETTINGS.VASP_FORCE_COPILOT = False

@@ -191,11 +191,6 @@ class QuaccSettings(BaseSettings):
         resources.files(vasp_defaults),
         description="Path to the VASP preset directory",
     )
-    VASP_MIN_VERSION: Optional[float] = Field(
-        None,
-        description="The minimum version of VASP you plan to use. This simply ensures"
-        "that relatively new input flags aren't set in an old version of VASP, where applicable.",
-    )
 
     # VASP Settings: Custodian
     VASP_USE_CUSTODIAN: bool = Field(

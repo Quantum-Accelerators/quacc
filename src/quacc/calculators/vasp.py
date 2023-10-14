@@ -164,7 +164,7 @@ class Vasp(Vasp_):
             and input_atoms.constraints
             and not all(isinstance(c, FixAtoms) for c in input_atoms.constraints)
         ):
-            msg = "Atoms object has a constraint that is not compatible with Custodian. Set use_custodian = False."
+            msg = "Atoms object has a constraint that is not compatible with Custodian."
             raise ValueError(msg)
 
         # Get user-defined preset parameters for the calculator
@@ -530,21 +530,9 @@ class Vasp(Vasp_):
             )
             calc.set(npar=1, ncore=None)
 
-        if not calc.string_params["efermi"] and (
-            not SETTINGS.VASP_MIN_VERSION or SETTINGS.VASP_MIN_VERSION >= 6.4
-        ):
+        if not calc.string_params["efermi"]:
             logger.info("Copilot: Setting EFERMI = MIDGAP per the VASP manual.")
             calc.set(efermi="midgap")
-
-        if (
-            calc.string_params["efermi"] == "midgap"
-            and SETTINGS.VASP_MIN_VERSION
-            and SETTINGS.VASP_MIN_VERSION < 6.4
-        ):
-            logger.info(
-                "Copilot: Unsetting EFERMI = MIDGAP since you are running VASP < 6.4."
-            )
-            calc.set(efermi=None)
 
         self.user_calc_params = (
             calc.parameters
