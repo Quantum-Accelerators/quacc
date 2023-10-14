@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from ase.optimize import FIRE
 from monty.dev import requires
 
-from quacc import fetch_atoms, job
+from quacc import job
 from quacc.builders.thermo import build_ideal_gas
 from quacc.runners.calc import run_ase_opt, run_ase_vib, run_calc
 from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 @job
 @requires(TBLite, "tblite must be installed. Refer to the quacc documentation.")
 def static_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
     calc_swaps: dict | None = None,
     copy_files: list[str] | None = None,
@@ -47,8 +47,7 @@ def static_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     method
         GFN1-xTB, GFN2-xTB, and IPEA1-xTB.
     calc_swaps
@@ -61,7 +60,6 @@ def static_job(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-    atoms = fetch_atoms(atoms)
 
     defaults = {"method": method}
     flags = merge_dicts(defaults, calc_swaps)
@@ -78,7 +76,7 @@ def static_job(
 @job
 @requires(TBLite, "tblite must be installed. Refer to the quacc documentation.")
 def relax_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
     relax_cell: bool = False,
     calc_swaps: dict | None = None,
@@ -105,8 +103,7 @@ def relax_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     method
         GFN0-xTB, GFN1-xTB, GFN2-xTB.
     relax_cell
@@ -123,7 +120,6 @@ def relax_job(
     OptSchema
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
-    atoms = fetch_atoms(atoms)
 
     defaults = {"method": method}
     flags = merge_dicts(defaults, calc_swaps)
@@ -140,7 +136,7 @@ def relax_job(
 @job
 @requires(TBLite, "tblite must be installed. Refer to the quacc documentation.")
 def freq_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
     energy: float = 0.0,
     temperature: float = 298.15,
@@ -169,8 +165,7 @@ def freq_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     method
         GFN0-xTB, GFN1-xTB, GFN2-xTB, GFN-FF.
     energy
@@ -191,7 +186,6 @@ def freq_job(
     VibThermoSchema
         Dictionary of results from [quacc.schemas.ase.summarize_vib_and_thermo][]
     """
-    atoms = fetch_atoms(atoms)
     vib_kwargs = vib_kwargs or {}
 
     defaults = {"method": method}

@@ -85,7 +85,7 @@ def test_tutorial2a(tmpdir):
         result1 = relax_job(atoms)  # (2)!
 
         # Define Job 2, which takes the output of Job 1 as input
-        return static_job(result1)
+        return static_job(result1["atoms"])
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -140,7 +140,7 @@ def test_tutorial2c(tmpdir):
     @flow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        return bulk_to_slabs_flow(relaxed_bulk, run_static=False)  # (1)!
+        return bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)  # (1)!
 
     atoms = bulk("Cu")
     dispatch_id = ct.dispatch(workflow)(atoms)
@@ -159,7 +159,7 @@ def test_tutorial_excecutor1(tmpdir):
     @flow(executor="local")
     def workflow4(atoms):
         result1 = relax_job(atoms)
-        return static_job(result1)
+        return static_job(result1["atoms"])
 
     atoms = bulk("Cu")
     dispatch_id = ct.dispatch(workflow4)(atoms)
@@ -181,7 +181,7 @@ def test_tutorial_excecutor2(tmpdir):
     @flow
     def workflow5(atoms):
         output1 = relax_job(atoms)
-        return static_job(output1)
+        return static_job(output1["atoms"])
 
     atoms = bulk("Cu")
     dispatch_id = ct.dispatch(workflow5)(atoms)
