@@ -35,7 +35,7 @@ if TYPE_CHECKING:
 def mp_prerelax_job(
     atoms: Atoms,
     preset: str | None = "MPScanSet",
-    bandgap: float = None,
+    bandgap: float | None = None,
     calc_swaps: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
@@ -92,7 +92,7 @@ def mp_prerelax_job(
 def mp_relax_job(
     atoms: Atoms,
     preset: str | None = "MPScanSet",
-    bandgap: float = None,
+    bandgap: float | None = None,
     calc_swaps: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:

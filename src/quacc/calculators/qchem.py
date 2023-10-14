@@ -6,6 +6,7 @@ import logging
 import struct
 from copy import deepcopy
 from pathlib import Path
+from typing import ClassVar
 
 import numpy as np
 from ase import Atoms, units
@@ -60,7 +61,7 @@ class QChem(FileIOCalculator):
         - custodian: custodian.json file metadata
     """
 
-    implemented_properties = [
+    implemented_properties: ClassVar[list[str]] = [
         "energy",
         "forces",
         "hessian",
@@ -69,7 +70,7 @@ class QChem(FileIOCalculator):
         "qc_output",
         "qc_input",
         "custodian",
-    ]  # noqa: RUF012
+    ]
 
     def __init__(
         self,
