@@ -1,3 +1,0 @@
-"""
-Various utility functions
-"""

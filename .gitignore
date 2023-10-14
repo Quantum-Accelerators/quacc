@@ -1,26 +1,87 @@
-# Quacc specific ignores
-quacc-*
+# quacc specific ignores
+quacc-tmp*
+quacc-20*
 POTCAR*
-scratch_path.txt
-tmp_path.txt
 tmp*
 cache*
+.test_results
+.test_scratch
+package-lock*
+package.json
 
-# Docs ignores
-docs/src/reference/*
-docs_build
+# Workflow ignores
+*parsl.log
+runinfo
+
+# Docs 
+.cache/
+docs/reference/*
 *doctrees*
+/site
+
+# Prettier
+node_modules*
 
 # Python ignores
-*.pyc
-*.egg*
-__pycache__
-build
-dist
-timer.dat
-.mypy_cache*
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+pip-log.txt
+pip-delete-this-directory.txt
 .ipynb_checkpoints
+profile_default/
 ipython_config.py
+.spyderproject
+.spyproject
+
+# Unit test ignores
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
 
 # OS ignores
 .DS_Store
+
+# Editors ignores
+.vscode*
+
+# Environments
+.env
+.venv
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/

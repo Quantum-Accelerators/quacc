@@ -1,26 +1,61 @@
 name: tests
 on:
   push:
-    branches: [main]
-    paths-ignore:
-      - CHANGELOG.md
-      - .gitignore
-      - CODE_OF_CONDUCT.md
-      - LICENSE.md
-      - README.md
-      - .deepsource.toml
-      - docs/**
+    branches:
+      - main
   pull_request:
-  release:
-    types: [published]
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   tests-base:
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.9", "3.11"]
+        os: [ubuntu-latest, windows-latest]
+        exclude:
+          - os: windows-latest
+            python-version: "3.9"
+
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install pip packages
+        run: |
+          pip install -r tests/requirements.txt
+          pip install .[dev]
+
+      - name: Run tests with pytest
+        run: pytest --cov=quacc --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        if: github.repository == 'Quantum-Accelerators/quacc'
+
+  tests-covalent:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
       matrix:
-        python-version: ["3.9", "3.10"]
+        python-version: ["3.10"]
 
     defaults:
       run:
@@ -28,44 +63,44 @@ jobs:
 
     steps:
       - name: Check out repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-          cache-dependency-path: setup.py
+          cache-dependency-path: pyproject.toml
 
       - name: Install pip packages
         run: |
-          pip install --no-cache-dir .[strict,dev,fireworks,optimizers] # remove --no-cache-dir after repos are removed from setup.py
-          pip install covalent-slurm-plugin
+          pip install -r tests/requirements.txt
+          pip install -r tests/requirements-covalent.txt
+          pip install .[dev]
 
-      - name: Set up Covalent server
-        run: |
-          echo "y" | covalent purge
-          covalent start
+      - name: Make quacc config
+        run: quacc set WORKFLOW_ENGINE covalent
+
+      - name: Start Covalent server
+        run: covalent start
 
       - name: Run tests with pytest
-        run: pytest --cov=quacc --cov-report=xml
+        run: pytest -k 'covalent' --cov=quacc --cov-report=xml
 
       - name: Stop Covalent server
         run: covalent stop
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
-        if: github.repository == 'quantum-accelerators/quacc'
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
+        if: github.repository == 'Quantum-Accelerators/quacc'
 
-  tests-tblite:
+  tests-engines:
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: true
       matrix:
-        python-version: ["3.10"]
-    runs-on: ubuntu-latest
+        python-version: ["3.11"]
+        wflow_engine: [parsl, redun, jobflow]
 
     defaults:
       run:
@@ -73,34 +108,36 @@ jobs:
 
     steps:
       - name: Check out repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-          cache-dependency-path: setup.py
+          cache-dependency-path: pyproject.toml
 
       - name: Install pip packages
         run: |
-          pip install --no-cache-dir .[strict,dev,tblite] # remove --no-cache-dir after repos are removed from setup.py
+          pip install -r tests/requirements.txt
+          pip install -r tests/requirements-${{ matrix.wflow_engine }}.txt
+          pip install .[dev]
+
+      - name: Make quacc config
+        run: quacc set WORKFLOW_ENGINE ${{ matrix.wflow_engine }}
 
       - name: Run tests with pytest
-        run: pytest tests/recipes/tblite --cov=quacc --cov-report=xml
+        run: pytest -k '${{ matrix.wflow_engine }}' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
-        if: github.repository == 'quantum-accelerators/quacc'
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
+        if: github.repository == 'Quantum-Accelerators/quacc'
 
   tests-psi4:
     strategy:
       fail-fast: true
       matrix:
-        python-version: ["3.10"]
+        python-version: ["3.11"]
     runs-on: ubuntu-latest
 
     defaults:
@@ -109,14 +146,14 @@ jobs:
 
     steps:
       - name: Check out repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-          cache-dependency-path: setup.py
+          cache-dependency-path: pyproject.toml
 
       - name: Set up conda
         uses: conda-incubator/setup-miniconda@v2
@@ -124,29 +161,28 @@ jobs:
           python-version: ${{ matrix.python-version }}
           activate-environment: quacc-env
 
-      - name: Install pip packages
-        run: |
-          pip install --no-cache-dir .[strict,dev] # remove --no-cache-dir after repos are removed from setup.py
-
       - name: Install conda packages
         run: |
-          conda install -c psi4 psi4
+          conda install -n base conda-libmamba-solver
+          conda install psi4 python=3.11 -c conda-forge/label/libint_dev -c conda-forge --solver libmamba
+
+      - name: Install pip packages
+        run: |
+          pip install -r tests/requirements.txt
+          pip install .[dev]
 
       - name: Run tests with pytest
-        run: pytest tests/recipes/psi4 --cov=quacc --cov-report=xml
+        run: pytest -k 'psi4' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
-        if: github.repository == 'quantum-accelerators/quacc'
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
+        if: github.repository == 'Quantum-Accelerators/quacc'
 
-  tests-dftbplus:
+  tests-tblite-dftbplus-defects:
     strategy:
       fail-fast: true
       matrix:
-        python-version: ["3.10"]
+        python-version: ["3.11"]
     runs-on: ubuntu-latest
 
     defaults:
@@ -155,14 +191,14 @@ jobs:
 
     steps:
       - name: Check out repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-          cache-dependency-path: setup.py
+          cache-dependency-path: pyproject.toml
 
       - name: Set up conda
         uses: conda-incubator/setup-miniconda@v2
@@ -170,37 +206,62 @@ jobs:
           python-version: ${{ matrix.python-version }}
           activate-environment: quacc-env
 
+      - name: Install conda packages
+        run: conda install -c conda-forge dftbplus
+
       - name: Install pip packages
         run: |
-          pip install --no-cache-dir .[strict,dev] # remove --no-cache-dir after repos are removed from setup.py
-
-      - name: Install conda packages
-        run: |
-          conda install -c conda-forge dftbplus
+          pip install -r tests/requirements.txt
+          pip install -r tests/requirements-tblite-dftbplus-defects.txt
+          pip install .[dev]
 
       - name: Run tests with pytest
-        run: pytest tests/recipes/dftb --cov=quacc --cov-report=xml
+        run: pytest -k 'dftb or tblite or defects' --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
-        if: github.repository == 'quantum-accelerators/quacc'
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
+        if: github.repository == 'Quantum-Accelerators/quacc'
 
-  release:
+  tests-qchem-sella-newtonnet:
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.11"]
     runs-on: ubuntu-latest
-    needs: [tests-base, tests-tblite, tests-psi4, tests-dftbplus]
-    if: github.event_name == 'release' && needs.tests-base.result == 'success' && needs.tests-tblite.result == 'success' && needs.tests-psi4.result == 'success' && needs.tests-dftbplus.result == 'success'
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
     steps:
       - name: Check out repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Build and upload dist
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Set up conda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          activate-environment: quacc-env
+
+      - name: Install conda packages
+        run: conda install -c conda-forge openbabel
+
+      - name: Install pip packages
         run: |
-          pip install setuptools setuptools_scm wheel
-          python setup.py sdist bdist_wheel
-          twine upload --skip-existing dist/*.tar.gz
-        env:
-          TWINE_USERNAME: __token __
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+          pip install -r tests/requirements.txt
+          pip install -r tests/requirements-qchem-sella-newtonnet.txt
+          pip install .[dev]
+
+      - name: Run tests with pytest
+        run: pytest -k 'qchem or sella or newtonnet' --cov=quacc --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        if: github.repository == 'Quantum-Accelerators/quacc'

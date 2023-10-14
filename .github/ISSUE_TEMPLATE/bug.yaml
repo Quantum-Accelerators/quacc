@@ -1,0 +1,30 @@
+name: Bug report
+description: Report a bug with quacc.
+labels: ["bug"]
+
+body:
+  - type: textarea
+    attributes:
+      label: Environment
+      description: For the version of quacc, you can find it by doing `print(quacc.__version__)`.
+      value: |
+        - **quacc version**:
+        - **Python version**:
+        - **Operating system**:
+        - **Workflow engine** (if applicable):
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: What is the issue?
+      description: A short description of what is going wrong.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: How can we reproduce the issue?
+      description: Provide a [minimal working example](https://stackoverflow.com/help/minimal-reproducible-example) of code to reproduce the issue. This is critical. Please do not try to "save time" by omitting it.
+    validations:
+      required: true

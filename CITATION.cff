@@ -1,0 +1,14 @@
+authors:
+  - affiliation: >-
+      Department of Chemical and Biological Engineering, Princeton University
+    email: asrosen@princeton.edu
+    family-names: Rosen
+    given-names: Andrew
+    orcid: "https://orcid.org/0000-0002-0141-7006"
+cff-version: 1.2.0
+doi: 10.5281/zenodo.7720998
+message: >-
+  Please cite this work as follows if you use quacc.
+title: >-
+  quacc – The Quantum Accelerator
+url: https://github.com/Quantum-Accelerators/quacc

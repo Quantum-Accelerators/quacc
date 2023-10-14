@@ -1,0 +1,38 @@
+# Chosen based on the highest number of unparied electrons
+# for 3d, 4f, and 5f elements if in the oxidation state of
+# 2+ or 3+.
+# Last modified: 08-01-2023
+inputs:
+  elemental_magmoms:
+    Am: 7
+    Bk: 6
+    Ce: 2
+    Cf: 5
+    Cm: 7
+    Co: 4
+    Cr: 4
+    Cu: 2
+    Dy: 5
+    Er: 3
+    Es: 4
+    Eu: 7
+    Fe: 5
+    Fm: 3
+    Gd: 7
+    Ho: 4
+    Md: 2
+    Mn: 5
+    Nd: 4
+    Ni: 3
+    Np: 5
+    Pa: 3
+    Pm: 5
+    Pr: 3
+    Pu: 6
+    Sm: 6
+    Tb: 6
+    Th: 2
+    Ti: 2
+    Tm: 2
+    U: 4
+    V: 3
