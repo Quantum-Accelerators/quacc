@@ -264,13 +264,13 @@ class Vasp(Vasp_):
             run_vasp_custodian_file = Path(inspect.getfile(custodian_vasp)).resolve()
             return f"python {run_vasp_custodian_file}"
 
-        if "ASE_VASP_COMMAND" not in os.environ and "VASP_SCRIPT" not in os.environ:
-            warnings.warn(
-                "ASE_VASP_COMMAND or VASP_SCRIPT must be set in the environment to run VASP without Custodian. See the ASE Vasp calculator documentation for details.",
-                UserWarning,
-            )
+        # Run with vanilla ASE
+        if np.all(self.user_calc_params.get("kpts", [1, 1, 1]) == 1):
+            vasp_cmd = SETTINGS.VASP_GAMMA_CMD
+        else:
+            vasp_cmd = SETTINGS.VASP_CMD
 
-        return None
+        return f"{SETTINGS.VASP_PARALLEL_CMD} {vasp_cmd}"
 
     def _remove_unused_flags(self) -> None:
         """
