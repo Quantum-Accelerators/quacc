@@ -169,7 +169,7 @@ class Vasp(Vasp_):
 
         # Get user-defined preset parameters for the calculator
         if preset:
-            calc_preset = load_vasp_yaml_calc(Path(SETTINGS.VASP_PRESET_DIR, preset))[
+            calc_preset = load_vasp_yaml_calc(SETTINGS.VASP_PRESET_DIR / preset)[
                 "inputs"
             ]
         else:
@@ -186,7 +186,7 @@ class Vasp(Vasp_):
             and self.user_calc_params["setups"] not in ase_setups.setups_defaults
         ):
             self.user_calc_params["setups"] = load_vasp_yaml_calc(
-                Path(SETTINGS.VASP_PRESET_DIR, self.user_calc_params["setups"])
+                SETTINGS.VASP_PRESET_DIR / self.user_calc_params["setups"]
             )["inputs"]["setups"]
 
         # Handle special arguments in the user calc parameters that ASE does not
