@@ -296,19 +296,17 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
     if wflow_engine == "covalent":
         import covalent as ct
 
-        decorated = ct.lattice(_func, **kwargs)
-    elif wflow_engine == "redun":
-        from redun import task as redun_task
-
-        decorated = redun_task(_func, **kwargs)
+        return ct.lattice(_func, **kwargs)
     elif wflow_engine == "prefect":
         from prefect import flow as prefect_flow
 
-        decorated = prefect_flow(_func, **kwargs)
-    else:
-        decorated = _func
+        return prefect_flow(_func, **kwargs)
+    elif wflow_engine == "redun":
+        from redun import task as redun_task
 
-    return decorated
+        return redun_task(_func, **kwargs)
+    else:
+        return _func
 
 
 def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
@@ -485,20 +483,18 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
     if wflow_engine == "covalent":
         import covalent as ct
 
-        decorated = ct.electron(ct.lattice(_func, **kwargs))
+        return ct.electron(ct.lattice(_func, **kwargs))
     elif wflow_engine == "parsl":
         from parsl import join_app
 
-        decorated = join_app(_func, **kwargs)
-    elif wflow_engine == "redun":
-        from redun import task as redun_task
-
-        decorated = redun_task(_func, **kwargs)
+        return join_app(_func, **kwargs)
     elif wflow_engine == "prefect":
         from prefect import flow as prefect_flow
 
-        decorated = prefect_flow(_func, **kwargs)
-    else:
-        decorated = _func
+        return prefect_flow(_func, **kwargs)
+    elif wflow_engine == "redun":
+        from redun import task as redun_task
 
-    return decorated
+        return redun_task(_func, **kwargs)
+    else:
+        return _func
