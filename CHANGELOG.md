@@ -13,7 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
-- Removed the `fetch_atoms` utility function
+- Removed the `fetch_atoms` function
 
 ## [0.3.6]
 
