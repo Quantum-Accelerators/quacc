@@ -8,7 +8,7 @@ from tempfile import mkdtemp
 from typing import TYPE_CHECKING
 
 import numpy as np
-from ase.filters import ExpCellFilter
+from ase.filters import FrechetCellFilter
 from ase.io import Trajectory, read
 from ase.optimize import FIRE
 from ase.vibrations import Vibrations
@@ -163,7 +163,7 @@ def run_ase_opt(
 
     # Set volume relaxation constraints, if relevant
     if relax_cell and atoms.pbc.any():
-        atoms = ExpCellFilter(atoms)
+        atoms = FrechetCellFilter(atoms)
 
     # Run calculation
     with traj, optimizer(atoms, **optimizer_kwargs) as dyn:
