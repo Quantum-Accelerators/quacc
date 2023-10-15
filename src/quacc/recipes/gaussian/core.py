@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 LABEL = Gaussian().label
 LOG_FILE = f"{LABEL}.log"
-COMMAND = f"{SETTINGS.GAUSSIAN_CMD} < {LABEL}.com > {LOG_FILE}"
+GAUSSIAN_CMD = f"{SETTINGS.GAUSSIAN_CMD} < {LABEL}.com > {LOG_FILE}"
 
 
 @job
@@ -235,7 +235,7 @@ def _base_job(
     """
     flags = merge_dicts(defaults, calc_swaps)
 
-    atoms.calc = Gaussian(command=COMMAND, **flags)
+    atoms.calc = Gaussian(command=GAUSSIAN_CMD, **flags)
     atoms = run_calc(atoms, geom_file=LOG_FILE, copy_files=copy_files)
 
     return cclib_summarize_run(
