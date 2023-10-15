@@ -441,11 +441,19 @@ def test_lasph():
     calc = Vasp(atoms, xc="hse06")
     assert calc.bool_params["lasph"] is True
 
-    calc = Vasp(atoms, xc="beef-vdw")
-    assert calc.bool_params["lasph"] is True
-
     calc = Vasp(atoms, ldau_luj={"Cu": {"L": 2, "U": 5, "J": 0.0}})
     assert calc.bool_params["lasph"] is True
+
+
+def test_vdw():
+    from ase.build import bulk
+
+    from quacc.calculators.vasp import Vasp
+
+    atoms = bulk("Cu")
+
+    with pytest.raises(EnvironmentError):
+        calc = Vasp(atoms, xc="beef-vdw")
 
 
 def test_efermi():
