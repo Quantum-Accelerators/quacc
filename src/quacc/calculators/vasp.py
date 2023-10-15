@@ -256,13 +256,12 @@ class Vasp(Vasp_):
                 "VASP_VDW setting was not provided, yet you requested a vdW functional."
             )
 
-        # Check if Custodian should be used and confirm environment variables
+        # Return Custodian executable command
         if self.use_custodian:
-            # Return the command flag
             run_vasp_custodian_file = Path(inspect.getfile(custodian_vasp)).resolve()
             return f"python {run_vasp_custodian_file}"
 
-        # Run with vanilla ASE
+        # Return vanilla ASE command
         vasp_cmd = (
             SETTINGS.VASP_GAMMA_CMD
             if np.prod(self.user_calc_params.get("kpts", [1, 1, 1])) == 1
