@@ -253,7 +253,7 @@ class Vasp(Vasp_):
             os.environ["ASE_VASP_VDW"] = str(SETTINGS.VASP_VDW)
         if self.user_calc_params.get("luse_vdw") and "ASE_VASP_VDW" not in os.environ:
             raise EnvironmentError(
-                "ASE_VASP_VDW was not set, yet you requested a vdW functional."
+                "VASP_VDW setting was not provided, yet you requested a vdW functional."
             )
 
         # Check if Custodian should be used and confirm environment variables
