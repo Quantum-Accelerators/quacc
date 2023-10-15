@@ -244,18 +244,16 @@ class Vasp(Vasp_):
             The command flag to pass to the Vasp calculator.
         """
 
-        # Check ASE environment variables
-        if "VASP_PP_PATH" not in os.environ:
-            warnings.warn(
-                "The VASP_PP_PATH environment variable must point to the library of VASP pseudopotentials. See the ASE Vasp calculator documentation for details.",
-                UserWarning,
-            )
+        # Set the VASP pseudopotential directory
+        if SETTINGS.VASP_PP_PATH:
+            os.environ["VASP_PP_PATH"] = str(SETTINGS.VASP_PP_PATH)
 
-        # Check if ASE_VASP_VDW is set
+        # Set the ASE_VASP_VDW environmentvariable
+        if SETTINGS.VASP_VDW:
+            os.environ["ASE_VASP_VDW"] = str(SETTINGS.VASP_VDW)
         if self.user_calc_params.get("luse_vdw") and "ASE_VASP_VDW" not in os.environ:
-            warnings.warn(
-                "ASE_VASP_VDW was not set, yet you requested a vdW functional.",
-                UserWarning,
+            raise EnvironmentError(
+                "ASE_VASP_VDW was not set, yet you requested a vdW functional."
             )
 
         # Check if Custodian should be used and confirm environment variables

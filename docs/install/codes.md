@@ -79,8 +79,18 @@ pip install quacc[tblite] # only on Linux
 
 ## VASP
 
-To use VASP with quacc, you will need to do the following, as described in greater detail in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials):
+To use quacc with VASP, you will need to define several environment variables, as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md). The most important are listed below:
 
-- Define the `VASP_PARALLEL_CMD` quacc setting that tells Custodian how to parallelize VASP, such as by defining an environment variable `QUACC_VASP_PARALLEL_CMD="srun -N 2 --ntasks-per-node 24"`. Note, the VASP executables are not included in this environment variable.
-- Define the `VASP_PP_PATH` environment variable that points to your pseudopotential library. We recommend including this in your `~/.bashrc` file since this rarely changes.
-- If you wish to use vdW functionals, define the `ASE_VASP_VDW` environment variable to point to the `vdw_kernel.bindat` file distributed with VASP. We recommend including this in your `~/.bashrc` file since this rarely changes.
+```bash
+QUACC_VASP_PARALLEL_CMD="srun -N 2 --ntasks-per-node 24"
+QUACC_VASP_PP_PATH="/path/to/POTCARs"
+QUACC_VASP_VDW="/path/to/vdw_kernel.bindat"
+```
+
+The `VASP_PARALLEL_CMD` setting tells Custodian and/or ASE how to parallelize VASP. Note that it does not include the executable.
+
+The `VASP_PP_PATH` setting should point to the directory containing your VASP pseudopotentials. There should be two subdirectories name `potpaw_PBE` and `potpaw` for the PBE and LDA pseudopotentials, respectively. If your pseudopotential directories have a different name, create a symbolic link with the required naming scheme. We recommend setting `QUACC_VASP_PP_PATH` in your `~/.bashrc` file since this rarely changes.
+
+The `QUACC_VASP_VDW` environment variable is necessary if you are using a vdW functional and should point to the `vdw_kernel.bindat` file distributed with VASP. We also recommend including this in your `~/.bashrc` file since this rarely changes.
+
+Additional settings can be specified as well, such as the name of the VASP executables if they differ from the default values (i.e. `vasp_std`, `vasp_gam`).
