@@ -134,6 +134,17 @@ class QuaccSettings(BaseSettings):
     )
 
     # ---------------------------
+    # GULP Settings
+    # ---------------------------
+    GULP_CMD: Path = Field(
+        Path("gulp"),
+        description=("Path to the GULP executable."),
+    )
+    GULP_LIB: Optional[Path] = Field(
+        None, description=("Path to the GULP force field library.")
+    )
+
+    # ---------------------------
     # VASP Settings
     # ---------------------------
 

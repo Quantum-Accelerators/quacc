@@ -266,9 +266,9 @@ class Vasp(Vasp_):
 
         # Run with vanilla ASE
         vasp_cmd = (
-            SETTINGS.VASP_CMD
-            if np.prod(self.user_calc_params.get("kpts", [1, 1, 1])) > 1
-            else SETTINGS.VASP_GAMMA_CMD
+            SETTINGS.VASP_GAMMA_CMD
+            if np.prod(self.user_calc_params.get("kpts", [1, 1, 1])) == 1
+            else SETTINGS.VASP_CMD
         )
 
         return f"{SETTINGS.VASP_PARALLEL_CMD} {vasp_cmd}"

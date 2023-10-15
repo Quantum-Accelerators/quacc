@@ -20,19 +20,19 @@ No setup needed!
 
 ## Gaussian
 
-To use quacc with Gaussian, you will need to define the `GAUSSIAN_CMD` setting to be path of the Gaussian executable (or the name of the executable if it is already in your `PATH`). This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md), such as by defining the following environment variable:
+To use quacc with Gaussian, you will need to define the `GAUSSIAN_CMD` setting to be the path of the Gaussian executable (or the name of the executable if it is already in your `PATH`). This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md), such as by defining the following environment variable:
 
 ```bash
-export QUACC_GAUSSIAN_CMD="g16"
+export QUACC_GAUSSIAN_CMD="/path/to/g16"
 ```
 
 ## GULP
 
-As noted in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/gulp.html), you must set the environment variables `GULP_LIB` and `ASE_GULP_COMMAND` as follows:
+To use quacc with GULP, you will need to define the `GULP_CMD` setting to be the path of the GULP executable (or the name of the executable if it is already in your `PATH`) and the `GULP_LIB` setting to be the path to the GULP force field library. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md), such as by defining the following environment variables:
 
 ```bash
-export GULP_LIB="/path/to/my/gulp-#.#.#/Libraries"
-export ASE_GULP_COMMAND="/path/to/my/gulp-#.#.#/Src/gulp < gulp.gin > gulp.got"
+export QUACC_GULP_CMD="/path/to/gulp"
+export QUACC_GULP_LIB="/path/to/gulp-#.#.#/Libraries"
 ```
 
 ## Lennard Jones
@@ -53,7 +53,7 @@ pip install quacc[newtonnet,sella]
 To use quacc with ORCA, you will need to define the `ORCA_CMD` setting to be the full, absolute path to your ORCA executable. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md), such as by defining the following environment variable:
 
 ```bash
-export QUACC_ORCA_CMD="/path/to/my/orca/orca"
+export QUACC_ORCA_CMD="/path/to/orca/orca"
 ```
 
 ## Psi4
