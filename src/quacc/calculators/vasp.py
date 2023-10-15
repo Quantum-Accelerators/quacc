@@ -7,7 +7,6 @@ from __future__ import annotations
 import inspect
 import logging
 import os
-import warnings
 from pathlib import Path
 from typing import TYPE_CHECKING
 
