@@ -2,9 +2,9 @@ https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
 cclib==1.8
 custodian==2023.10.9
 emmet-core==0.70.4
-maggma==0.57.2
+maggma==0.57.4
 monty==2023.9.25
-numpy==1.26.0
+numpy==1.26.1
 pydantic==2.4.2
 pydantic-settings==2.0.3
-pymatgen==2023.10.4
+pymatgen==2023.10.11
