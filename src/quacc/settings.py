@@ -163,11 +163,11 @@ class QuaccSettings(BaseSettings):
     VASP_GAMMA_CMD: str = Field(
         "vasp_gam", description="Command to run the gamma-point only version of VASP."
     )
-    VASP_PP_PATH: Path = Field(
+    VASP_PP_PATH: Optional[Path] = Field(
         None,
         description="Path to the VASP pseudopotential library. Must contain the directories `potpaw_PBE` and `potpaw` for PBE and LDA pseudopotentials, respectively.",
     )
-    VASP_VDW: Path = Field(
+    VASP_VDW: Optional[Path] = Field(
         None, description="Path to the vdw_kernel.bindat file for VASP vdW functionals."
     )
 
