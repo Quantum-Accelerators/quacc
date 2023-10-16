@@ -453,7 +453,7 @@ def test_vdw():
     atoms = bulk("Cu")
 
     with pytest.raises(EnvironmentError):
-        calc = Vasp(atoms, xc="beef-vdw")
+        Vasp(atoms, xc="beef-vdw")
 
 
 def test_efermi():
