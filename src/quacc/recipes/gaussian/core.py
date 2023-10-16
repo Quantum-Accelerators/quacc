@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from ase.calculators.gaussian import Gaussian
 
-from quacc import job
+from quacc import SETTINGS, job
 from quacc.runners.calc import run_calc
 from quacc.schemas.cclib import cclib_summarize_run
 from quacc.utils.dicts import merge_dicts
@@ -16,8 +16,9 @@ if TYPE_CHECKING:
 
     from quacc.schemas.cclib import cclibSchema
 
-LOG_FILE = f"{Gaussian().label}.log"
-GEOM_FILE = LOG_FILE
+LABEL = Gaussian().label
+LOG_FILE = f"{LABEL}.log"
+GAUSSIAN_CMD = f"{SETTINGS.GAUSSIAN_CMD} < {LABEL}.com > {LOG_FILE}"
 
 
 @job
@@ -234,8 +235,8 @@ def _base_job(
     """
     flags = merge_dicts(defaults, calc_swaps)
 
-    atoms.calc = Gaussian(**flags)
-    atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
+    atoms.calc = Gaussian(command=GAUSSIAN_CMD, **flags)
+    atoms = run_calc(atoms, geom_file=LOG_FILE, copy_files=copy_files)
 
     return cclib_summarize_run(
         atoms,

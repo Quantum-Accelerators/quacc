@@ -441,11 +441,19 @@ def test_lasph():
     calc = Vasp(atoms, xc="hse06")
     assert calc.bool_params["lasph"] is True
 
-    calc = Vasp(atoms, xc="beef-vdw")
-    assert calc.bool_params["lasph"] is True
-
     calc = Vasp(atoms, ldau_luj={"Cu": {"L": 2, "U": 5, "J": 0.0}})
     assert calc.bool_params["lasph"] is True
+
+
+def test_vdw():
+    from ase.build import bulk
+
+    from quacc.calculators.vasp import Vasp
+
+    atoms = bulk("Cu")
+
+    with pytest.raises(EnvironmentError):
+        Vasp(atoms, xc="beef-vdw")
 
 
 def test_efermi():
@@ -803,6 +811,27 @@ def test_constraints():
     atoms.set_constraint(FixBondLength(0, 1))
     with pytest.raises(ValueError):
         calc = Vasp(atoms)
+
+
+def test_envvars():
+    import os
+
+    from ase.build import bulk
+
+    from quacc import SETTINGS
+    from quacc.calculators.vasp import Vasp
+
+    DEFAULT_SETTINGS = SETTINGS.copy()
+    SETTINGS.VASP_PP_PATH = "/path/to/pseudos"
+    SETTINGS.VASP_VDW = "/path/to/kernel"
+
+    atoms = bulk("Cu")
+    atoms.calc = Vasp(atoms, xc="beef-vdw")
+    assert os.environ.get("VASP_PP_PATH") == "/path/to/pseudos"
+    assert os.environ.get("ASE_VASP_VDW") == "/path/to/kernel"
+
+    SETTINGS.VASP_PP_PATH = DEFAULT_SETTINGS.VASP_PP_PATH
+    SETTINGS.VASP_VDW = DEFAULT_SETTINGS.VASP_VDW
 
 
 def test_bad():

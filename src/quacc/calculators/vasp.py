@@ -7,7 +7,6 @@ from __future__ import annotations
 import inspect
 import logging
 import os
-import warnings
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -244,33 +243,31 @@ class Vasp(Vasp_):
             The command flag to pass to the Vasp calculator.
         """
 
-        # Check ASE environment variables
-        if "VASP_PP_PATH" not in os.environ:
-            warnings.warn(
-                "The VASP_PP_PATH environment variable must point to the library of VASP pseudopotentials. See the ASE Vasp calculator documentation for details.",
-                UserWarning,
-            )
+        # Set the VASP pseudopotential directory
+        if SETTINGS.VASP_PP_PATH:
+            os.environ["VASP_PP_PATH"] = str(SETTINGS.VASP_PP_PATH)
 
-        # Check if ASE_VASP_VDW is set
+        # Set the ASE_VASP_VDW environmentvariable
+        if SETTINGS.VASP_VDW:
+            os.environ["ASE_VASP_VDW"] = str(SETTINGS.VASP_VDW)
         if self.user_calc_params.get("luse_vdw") and "ASE_VASP_VDW" not in os.environ:
-            warnings.warn(
-                "ASE_VASP_VDW was not set, yet you requested a vdW functional.",
-                UserWarning,
+            raise EnvironmentError(
+                "VASP_VDW setting was not provided, yet you requested a vdW functional."
             )
 
-        # Check if Custodian should be used and confirm environment variables
+        # Return Custodian executable command
         if self.use_custodian:
-            # Return the command flag
             run_vasp_custodian_file = Path(inspect.getfile(custodian_vasp)).resolve()
             return f"python {run_vasp_custodian_file}"
 
-        if "ASE_VASP_COMMAND" not in os.environ and "VASP_SCRIPT" not in os.environ:
-            warnings.warn(
-                "ASE_VASP_COMMAND or VASP_SCRIPT must be set in the environment to run VASP without Custodian. See the ASE Vasp calculator documentation for details.",
-                UserWarning,
-            )
+        # Return vanilla ASE command
+        vasp_cmd = (
+            SETTINGS.VASP_GAMMA_CMD
+            if np.prod(self.user_calc_params.get("kpts", [1, 1, 1])) == 1
+            else SETTINGS.VASP_CMD
+        )
 
-        return None
+        return f"{SETTINGS.VASP_PARALLEL_CMD} {vasp_cmd}"
 
     def _remove_unused_flags(self) -> None:
         """

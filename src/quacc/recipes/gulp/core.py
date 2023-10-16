@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+import os
 from typing import TYPE_CHECKING
 
 from ase.calculators.gulp import GULP
@@ -20,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 GEOM_FILE_PBC = "gulp.cif"
 GEOM_FILE_NOPBC = "gulp.xyz"
+GULP_CMD = f"{SETTINGS.GULP_CMD} < gulp.gin > gulp.got"
 
 
 @job
@@ -234,7 +236,14 @@ def _base_job(
     gulp_keywords = " ".join(list(keywords.keys()))
     gulp_options = list(options.keys())
 
-    atoms.calc = GULP(keywords=gulp_keywords, options=gulp_options, library=library)
+    if SETTINGS.GULP_LIB:
+        os.environ["GULP_LIB"] = str(SETTINGS.GULP_LIB)
+    atoms.calc = GULP(
+        command=GULP_CMD,
+        keywords=gulp_keywords,
+        options=gulp_options,
+        library=library,
+    )
     final_atoms = run_calc(
         atoms,
         geom_file=GEOM_FILE_PBC if atoms.pbc.any() else GEOM_FILE_NOPBC,
