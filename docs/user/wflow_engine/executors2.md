@@ -279,7 +279,7 @@ When deploying calculations for the first time, it's important to start simple, 
 
 In this example, we will run a sample VASP recipe that will highlight the use of a more complicated configuration.
 
-First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of your remote machine as described in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials). When you're done, follow the steps below.
+First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc` of your remote machine as described in the [Calculator Setup guide](../../install/codes.md). When you're done, follow the steps below.
 
 === "Parsl"
 
