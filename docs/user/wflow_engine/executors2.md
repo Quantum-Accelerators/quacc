@@ -8,21 +8,14 @@ In this section, we provide a few examples going through the entire process to d
 
 ## Pre-Requisites
 
-Start with a clean Conda environment if you don't have one already:
-
-```bash
-conda create --name quacc python=3.10
-conda activate quacc
-```
-
-Then install the necessary dependencies:
+If you haven't done so already:
 
 === "Parsl"
 
-    On both remote machine:
+    On the remote machine:
 
     ```bash
-    pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
+    pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
     pip install quacc[parsl]
     quacc set WORKFLOW_ENGINE parsl
     quacc set CREATE_UNIQUE_WORKDIR True
@@ -33,7 +26,7 @@ Then install the necessary dependencies:
     On both the local and remote machines:
 
     ```bash
-    pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
+    pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
     pip install quacc[covalent]
     quacc set WORKFLOW_ENGINE covalent
     ```
@@ -57,7 +50,7 @@ Then install the necessary dependencies:
     On both the local and remote machines:
 
     ```bash
-    pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
+    pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
     pip install quacc[jobflow]
     quacc set WORKFLOW_ENGINE jobflow
     ```
