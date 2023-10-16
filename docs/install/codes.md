@@ -28,7 +28,7 @@ export QUACC_GAUSSIAN_CMD="/path/to/g16"
 
 ## GULP
 
-To use quacc with GULP, you will need to define the `GULP_CMD` setting to be the path of the GULP executable (or the name of the executable if it is already in your `PATH`) and the `GULP_LIB` setting to be the path to the GULP force field library. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md), such as by defining the following environment variables:
+To use quacc with GULP, you will need to define the `GULP_CMD` setting to be the path of the GULP executable (or the name of the executable if it is already in your `PATH`) and the `GULP_LIB` setting to be the path to the GULP force field library. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md), such as by defining the following environment variables in your `~/.bashrc`:
 
 ```bash
 export QUACC_GULP_CMD="/path/to/gulp"
@@ -50,7 +50,7 @@ pip install quacc[newtonnet,sella]
 
 ## ORCA
 
-To use quacc with ORCA, you will need to define the `ORCA_CMD` setting to be the full, absolute path to your ORCA executable. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md), such as by defining the following environment variable:
+To use quacc with ORCA, you will need to define the `ORCA_CMD` setting to be the full, absolute path to your ORCA executable. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md), such as by defining the following environment variable in your `~/.bashrc`:
 
 ```bash
 export QUACC_ORCA_CMD="/path/to/orca/orca"
@@ -82,9 +82,9 @@ pip install quacc[tblite] # only on Linux
 To use quacc with VASP, you will need to define several environment variables, as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md). The most important are listed below:
 
 ```bash
-QUACC_VASP_PARALLEL_CMD="srun -N 2 --ntasks-per-node 24"
-QUACC_VASP_PP_PATH="/path/to/POTCARs"
-QUACC_VASP_VDW="/path/to/directory/containing/kernel"
+export QUACC_VASP_PARALLEL_CMD="srun -N 2 --ntasks-per-node 24"
+export QUACC_VASP_PP_PATH="/path/to/POTCARs"
+export QUACC_VASP_VDW="/path/to/directory/containing/kernel"
 ```
 
 The `VASP_PARALLEL_CMD` setting tells Custodian and/or ASE how to parallelize VASP. Note that it does not include the executable.
