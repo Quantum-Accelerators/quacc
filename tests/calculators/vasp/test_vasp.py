@@ -828,7 +828,7 @@ def test_envvars():
     atoms = bulk("Cu")
     atoms.calc = Vasp(atoms, xc="beef-vdw")
     assert os.environ.get("VASP_PP_PATH") == "/path/to/pseudos"
-    assert os.environ.get("VASP_VDW") == "/path/to/kernel"
+    assert os.environ.get("ASE_VASP_VDW") == "/path/to/kernel"
 
     SETTINGS.VASP_PP_PATH = DEFAULT_SETTINGS.VASP_PP_PATH
     SETTINGS.VASP_VDW = DEFAULT_SETTINGS.VASP_VDW
