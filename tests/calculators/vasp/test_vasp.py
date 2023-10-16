@@ -813,6 +813,27 @@ def test_constraints():
         calc = Vasp(atoms)
 
 
+def test_envvars():
+    import os
+
+    from ase.build import bulk
+
+    from quacc import SETTINGS
+    from quacc.calculators.vasp import Vasp
+
+    DEFAULT_SETTINGS = SETTINGS.copy()
+    SETTINGS.VASP_PP_PATH = "/path/to/pseudos"
+    SETTINGS.VASP_VDW = "/path/to/kernel"
+
+    atoms = bulk("Cu")
+    atoms.calc = Vasp(atoms)
+    assert os.environ.get("VASP_PP_PATH") == "/path/to/pseudos"
+    assert os.environ.get("VASP_VDW") == "/path/to/kernel"
+
+    SETTINGS.VASP_PP_PATH = DEFAULT_SETTINGS.VASP_PP_PATH
+    SETTINGS.VASP_VDW = DEFAULT_SETTINGS.VASP_VDW
+
+
 def test_bad():
     from ase.build import bulk
 
