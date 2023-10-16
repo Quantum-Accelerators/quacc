@@ -20,11 +20,27 @@ from quacc.utils.files import copy_decompress
 from quacc.wflow.db import results_to_db
 
 if TYPE_CHECKING:
-    from typing import TypeVar
+    from typing import TypedDict, TypeVar
 
     from ase import Atoms
 
     VaspSchema = TypeVar("VaspSchema")
+
+    class BaderSchema(TypedDict):
+        atomic_volume: float
+        bader_charge: float
+        bader_spin: float
+        bader_version: float
+        min_dist: list[float]
+        partial_charges: list[float]
+        spin_moments: list[float]
+
+    class DDECSchema(TypedDict):
+        partial_charges: list[float]
+        spin_moments: list[float]
+        dipoles: list[float]
+        bond_order_sums: list[float]
+        bond_order_dict: dict
 
 
 def vasp_summarize_run(
@@ -325,14 +341,8 @@ def bader_runner(path: str | None = None, scratch_dir: str | None = None) -> dic
 
     Returns
     -------
-    dict
-        Dictionary containing the Bader analysis summary:
-            {
-                "min_dist": List[float], "atomic_volume": List[float],
-                "vacuum_charge": float, "vacuum_volume": float, "bader_version":
-                float, "partial_charges": List[float], "spin_moments":
-                List[float],
-            }
+    BaderSchema
+        Dictionary containing the Bader analysis summary
     """
     scratch_dir = SETTINGS.SCRATCH_DIR if scratch_dir is None else scratch_dir
     path = path or Path.cwd()
@@ -370,7 +380,7 @@ def chargemol_runner(
     path: str | None = None,
     atomic_densities_path: str | None = None,
     scratch_dir: str | None = None,
-) -> dict:
+) -> DDECSchema:
     """
     Runs a Chargemol (i.e. DDEC6 + CM5) analysis using the VASP output files in
     the given path. This function requires that the chargemol executable, given
@@ -395,19 +405,8 @@ def chargemol_runner(
 
     Returns
     -------
-    dict
-        Dictionary containing the Chargemol analysis summary:
-            {
-                "ddec": {
-                            "partial_charges": List[float], "spin_moments":
-                            List[float], "dipoles": List[float],
-                            "bond_order_sums": List[float], "bond_order_dict":
-                            Dict
-                        },
-                "cm5": {
-                            "partial_charges": List[float],
-                        }
-            }
+    DDECSchema
+        Dictionary containing the Chargemol analysis summary
     """
     scratch_dir = SETTINGS.SCRATCH_DIR if scratch_dir is None else scratch_dir
     path = path or Path.cwd()
@@ -422,7 +421,7 @@ def chargemol_runner(
     # Check environment variable
     if atomic_densities_path is None and "DDEC6_ATOMIC_DENSITIES_DIR" not in os.environ:
         msg = "DDEC6_ATOMIC_DENSITIES_DIR environment variable not defined."
-        raise ValueError(msg)
+        raise EnvironmentError(msg)
 
     # Run Chargemol analysis
     with TemporaryDirectory(dir=scratch_dir) as tmpdir:

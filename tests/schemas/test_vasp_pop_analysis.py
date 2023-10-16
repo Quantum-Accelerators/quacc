@@ -105,7 +105,7 @@ def test_chargemol_erorr(tmpdir):
     tmpdir.chdir()
     prep_files()
 
-    with pytest.raises(ValueError):
+    with pytest.raises(EnvironmentError):
         chargemol_runner()
 
     os.remove("CHGCAR")
