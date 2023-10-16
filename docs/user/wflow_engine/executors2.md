@@ -17,8 +17,7 @@ If you haven't done so already:
     ```bash
     pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
     pip install quacc[parsl]
-    quacc set WORKFLOW_ENGINE parsl
-    quacc set CREATE_UNIQUE_WORKDIR True
+    quacc set WORKFLOW_ENGINE parsl && quacc set CREATE_UNIQUE_WORKDIR True
     ```
 
 === "Covalent"
