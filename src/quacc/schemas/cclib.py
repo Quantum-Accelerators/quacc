@@ -59,10 +59,6 @@ def cclib_summarize_run(
     database-friendly format. This is meant to be a general parser built on top
     of cclib.
 
-    This document inherits from the following schemas: cclibTaskDocument (see
-    below), emmet.core.structure.MoleculeMetadata,
-    emmet.core.base.EmmetBaseModel.
-
     Parameters
     ----------
     atoms
