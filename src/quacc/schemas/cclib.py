@@ -35,7 +35,6 @@ def cclib_summarize_run(
     atoms: Atoms,
     logfile_extensions: str | list[str],
     dir_path: str | None = None,
-    charge_and_multiplicity: tuple[int, int] | None = None,
     pop_analyses: list[
         Literal[
             "cpsa",
@@ -77,9 +76,6 @@ def cclib_summarize_run(
     dir_path
         The path to the folder containing the calculation outputs. A value of
         None specifies the current working directory.
-    charge_and_multiplicity
-        Charge and spin multiplicity of the Atoms object, only used for Molecule
-        metadata.
     pop_analyses
         The name(s) of any cclib post-processing analysis to run. Note that for
         bader, ddec6, and hirshfeld, a cube file (.cube, .cub) must reside in
