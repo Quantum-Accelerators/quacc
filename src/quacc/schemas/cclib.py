@@ -26,11 +26,12 @@ from quacc.utils.files import find_recent_logfile, get_uri
 from quacc.wflow.db import results_to_db
 
 if TYPE_CHECKING:
-    from typing import Literal, TypeVar
+    from typing import Literal, Type, TypeVar
 
     from ase import Atoms
 
     cclibSchema = TypeVar("cclibSchema")
+    _T = TypeVar("_T", bound="_cclibTaskDocument")
 
 
 def cclib_summarize_run(
@@ -201,10 +202,9 @@ def cclib_summarize_run(
         msg = "ASE Atoms object's calculator has no results."
         raise ValueError(msg)
 
-    # Fortunately, there is already a cclib parser in Atomate2
     taskdoc = _cclibTaskDocument.from_logfile(
         dir_path, logfile_extensions, store_trajectory=True, analysis=pop_analyses
-    )
+    ).dict()
     uri = taskdoc["dir_name"]
     taskdoc["nid"] = uri.split(":")[0]
     taskdoc["dir_name"] = ":".join(uri.split(":")[1:])
@@ -280,14 +280,14 @@ class _cclibTaskDocument(MoleculeMetadata, extra="allow"):
 
     @classmethod
     def from_logfile(
-        cls,
+        cls: Type[_T],
         dir_name: str | Path,
         logfile_extensions: str | list[str],
         store_trajectory: bool = False,
         additional_fields: dict | None = None,
         analysis: str | list[str] | None = None,
         proatom_dir: Path | str | None = None,
-    ) -> dict:
+    ) -> _T:
         """
         Create a TaskDocument from a log file.
 
@@ -324,7 +324,7 @@ class _cclibTaskDocument(MoleculeMetadata, extra="allow"):
 
         Returns
         -------
-        dict
+        _T
             A TaskDocument dictionary summarizing the inputs/outputs of the log
             file.
         """
@@ -465,7 +465,7 @@ class _cclibTaskDocument(MoleculeMetadata, extra="allow"):
         )
         doc.molecule = final_molecule
 
-        return doc.model_copy(update=additional_fields).dict()
+        return doc.model_copy(update=additional_fields)
 
 
 def _cclib_calculate(
@@ -489,6 +489,11 @@ def _cclib_calculate(
     proatom_dir
         The path to the proatom directory to use for the population analysis.
         Needed only for DDEC6 and Hirshfeld.
+
+    Returns
+    -------
+    dict
+        The results of the population analysis.
     """
 
     method = method.lower()
