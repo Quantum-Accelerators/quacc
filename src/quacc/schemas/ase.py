@@ -24,7 +24,6 @@ if TYPE_CHECKING:
     from ase.thermochemistry import IdealGasThermo
     from ase.vibrations import Vibrations
     from maggma.core import Store
-    from tyipng import TypeVar
 
     from quacc.schemas._aliases.ase import (
         OptSchema,
