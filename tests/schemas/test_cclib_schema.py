@@ -43,7 +43,9 @@ def bad_mock_cclib_calculate(*args, **kwargs):
     raise ValueError(msg)
 
 
-def test_cclib_summarize_run():
+def test_cclib_summarize_run(tmpdir):
+    tmpdir.chdir()
+
     import os
 
     from ase.io import read
@@ -75,7 +77,7 @@ def test_cclib_summarize_run():
     assert results["charge"] == 0
     assert results["spin_multiplicity"] == 3
     assert results["nelectrons"] == 16
-    assert "schemas" in results["dir_name"]
+    assert "schemas" in results["logfile"]
     assert "gau_testopt.log.gz" in results["logfile"]
     assert results.get("attributes") is not None
     assert results["attributes"]["metadata"]["success"] is True
