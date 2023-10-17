@@ -453,7 +453,7 @@ def summarize_vib_and_thermo(
         store=False,
     )
 
-    unsorted_task_doc = vib_task_doc | thermo_task_doc | additional_fields
+    unsorted_task_doc = merge_dicts(vib_task_doc, thermo_task_doc) | additional_fields
     task_doc = sort_dict(unsorted_task_doc)
 
     if store:
