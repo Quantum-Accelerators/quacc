@@ -5,6 +5,7 @@ if TYPE_CHECKING:
     from typing import Any, Literal, TypedDict
 
     from ase import Atoms
+    from emmet.core.symmetry import CrystalSystem
     from pymatgen.core import Molecule, Structure
     from pymatgen.core.composition import Composition
     from pymatgen.core.periodic_table import Element
@@ -14,7 +15,7 @@ if TYPE_CHECKING:
         Type hint associated with `emmet.core.symmetry.SymmetryData`
         """
 
-        crystal_system: str
+        crystal_system: CrystalSystem
         symbol: str
         number: int
         point_group: str
