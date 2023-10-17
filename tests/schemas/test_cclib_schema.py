@@ -168,36 +168,38 @@ def test_cclib_taskdoc(tmpdir):
     with open(p / "test.txt", "w") as f:
         f.write("I am a dummy log file")
     with pytest.raises(Exception) as e:
-        doc = _cclibTaskDocument.from_logfile(p, [".log", ".txt"])
+        doc = _cclibTaskDocument.from_logfile(p, [".log", ".txt"]).dict()
     os.remove(p / "test.txt")
     assert "Could not parse" in str(e.value)
 
     # Test a population analysis
-    doc = _cclibTaskDocument.from_logfile(p, "psi_test.out", analysis="MBO")
+    doc = _cclibTaskDocument.from_logfile(p, "psi_test.out", analysis="MBO").dict()
     assert doc["attributes"]["mbo"] is not None
 
     # Let's try with two analysis (also check case-insensitivity)
     doc = _cclibTaskDocument.from_logfile(
         p, "psi_test.out", analysis=["mbo", "density"]
-    )
+    ).dict()
     assert doc["attributes"]["mbo"] is not None
     assert doc["attributes"]["density"] is not None
 
     # Test a population analysis that will fail
-    doc = _cclibTaskDocument.from_logfile(p, ".log", analysis="MBO")
+    doc = _cclibTaskDocument.from_logfile(p, ".log", analysis="MBO").dict()
     assert doc["attributes"]["mbo"] is None
 
-    doc = _cclibTaskDocument.from_logfile(p, "psi_test.out", analysis=["Bader"])
+    doc = _cclibTaskDocument.from_logfile(p, "psi_test.out", analysis=["Bader"]).dict()
     assert doc["attributes"]["bader"] is not None
 
     # Make sure storing the trajectory works
-    doc = _cclibTaskDocument.from_logfile(p, ".log", store_trajectory=True)
+    doc = _cclibTaskDocument.from_logfile(p, ".log", store_trajectory=True).dict()
     assert len(doc["attributes"]["trajectory"]) == 7
     assert doc["attributes"]["trajectory"][0] == doc["attributes"]["molecule_initial"]
     assert doc["attributes"]["trajectory"][-1] == doc["molecule"]
 
     # Make sure additional fields can be stored
-    doc = _cclibTaskDocument.from_logfile(p, ".log", additional_fields={"test": "hi"})
+    doc = _cclibTaskDocument.from_logfile(
+        p, ".log", additional_fields={"test": "hi"}
+    ).dict()
     assert doc["test"] == "hi"
 
     with pytest.raises(FileNotFoundError):
