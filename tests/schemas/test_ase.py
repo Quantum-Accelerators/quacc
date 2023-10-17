@@ -108,7 +108,7 @@ def test_summarize_opt_run(tmpdir):
     assert "nid" in results
     assert "dir_name" in results
     assert "pull_request" in results["builder_meta"]
-    assert results["parameters_opt"]["fmax"] == dyn.fmax
+    assert results["fmax"] == dyn.fmax
     assert results["parameters_opt"]["max_steps"] == 100
 
     # Test DB
