@@ -72,6 +72,26 @@ if TYPE_CHECKING:
 
         parameters_vib: dict[str, Any]
 
+    class ParamatersThermo(TypedDict):
+        temperature: float
+        pressure: float
+        sigma: float
+        spin_multiplicity: int
+        vib_freqs: list[float]
+        vib_energies: list[float]
+        n_imag: int
+
+    class ThermoResults(TypedDict):
+        energy: float
+        enthalpy: float
+        entropy: float
+        gibbs_energy: float
+        zpe: float
+
+    class ThermoSchema(BaseRunnerSchema):
+        parameters_thermo: ParamatersThermo
+        results: ThermoResults
+
     class FreqSchema(VibSchema):
         thermo: ThermoSchema
 
