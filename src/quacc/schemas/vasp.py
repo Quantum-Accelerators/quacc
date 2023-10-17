@@ -308,12 +308,10 @@ def vasp_summarize_run(
     if prep_next_run:
         atoms = prep_next_run_(atoms)
 
-    # We use get_metadata=False and store_pmg=False because the TaskDocument
-    # already makes the structure metadata for us
-    atoms_db = atoms_to_metadata(atoms, get_metadata=False, store_pmg=False)
+    atoms_db = atoms_to_metadata(atoms)
 
     # Make task document
-    summary = sort_dict(taskdoc | atoms_db | additional_fields)
+    summary = sort_dict(atoms_db | taskdoc | additional_fields)
 
     # Store the results
     if store:
