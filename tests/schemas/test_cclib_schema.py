@@ -57,7 +57,7 @@ def test_cclib_summarize_run():
     assert results["atoms"] == atoms
     assert results["spin_multiplicity"] == 1
     assert results["natoms"] == 6
-    assert results["metadata"].get("success", None) is True
+    assert results["attributes"]["metadata"].get("success", None) is True
     assert "pull_request" in results["builder_meta"]
 
     # test document can be jsanitized and decoded
@@ -148,8 +148,7 @@ def test_cclib_taskdoc(tmpdir):
     assert "schemas" in doc["dir_name"]
     assert "gau_testopt.log.gz" in doc["logfile"]
     assert doc.get("attributes") is not None
-    assert doc.get("metadata") is not None
-    assert doc["metadata"]["success"] is True
+    assert doc["attributes"]["metadata"]["success"] is True
     assert doc["attributes"]["molecule_initial"][0].coords == pytest.approx([0, 0, 0])
     assert doc["molecule"][0].coords == pytest.approx([0.397382, 0.0, 0.0])
     assert doc["attributes"]["homo_energies"] == pytest.approx(
@@ -193,8 +192,11 @@ def test_cclib_taskdoc(tmpdir):
     # Make sure storing the trajectory works
     doc = _cclibTaskDocument.from_logfile(p, ".log", store_trajectory=True).dict()
     assert len(doc["attributes"]["trajectory"]) == 7
-    assert doc["attributes"]["trajectory"][0] == doc["attributes"]["molecule_initial"]
-    assert doc["attributes"]["trajectory"][-1] == doc["molecule"]
+    assert (
+        doc["attributes"]["trajectory"][0]["molecule"]
+        == doc["attributes"]["molecule_initial"]
+    )
+    assert doc["attributes"]["trajectory"][-1]["molecule"] == doc["molecule"]
 
     # Make sure additional fields can be stored
     doc = _cclibTaskDocument.from_logfile(

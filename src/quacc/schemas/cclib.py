@@ -128,14 +128,6 @@ def cclib_summarize_run(
     base_task_doc["nid"] = uri.split(":")[0]
     base_task_doc["dir_name"] = ":".join(uri.split(":")[1:])
     base_task_doc["logfile"] = base_task_doc["logfile"].split(":")[-1]
-    if base_task_doc["attributes"].get("trajectory"):
-        base_task_doc["attributes"]["trajectory"] = [
-            atoms_to_metadata(
-                AseAtomsAdaptor().get_atoms(molecule),
-                charge_and_multiplicity=charge_and_multiplicity,
-            )
-            for molecule in base_task_doc["attributes"]["trajectory"]
-        ]
 
     if check_convergence and base_task_doc["attributes"].get("optdone") is False:
         msg = "Optimization not complete."
@@ -187,11 +179,6 @@ class _cclibTaskDocument(MoleculeMetadata, extra="allow"):
     )
     attributes: Optional[dict] = Field(
         None, description="Computed properties and calculation outputs"
-    )
-    metadata: Optional[dict] = Field(
-        None,
-        description="Calculation metadata, including input parameters and runtime "
-        "statistics",
     )
     task_label: Optional[str] = Field(None, description="A description of the task")
     tags: Optional[list[str]] = Field(
@@ -269,21 +256,16 @@ class _cclibTaskDocument(MoleculeMetadata, extra="allow"):
         # Fetch all the attributes (i.e. all input/outputs from cclib)
         attributes = jsanitize(cclib_obj.getattributes())
 
+        # monty datetime bug workaround:
+        # github.com/materialsvirtuallab/monty/issues/275
+        if wall_time := attributes["metadata"].get("wall_time"):
+            attributes["metadata"]["wall_time"] = [*map(str, wall_time)]
+        if cpu_time := attributes["metadata"].get("cpu_time"):
+            attributes["metadata"]["cpu_time"] = [*map(str, cpu_time)]
+
         # Store charge and multiplicity since we use it frequently
         charge = cclib_obj.charge
         mult = cclib_obj.mult
-
-        # Let's move the metadata out of attributes for convenience and store it
-        # separately
-        attributes.pop("metadata")
-        metadata = jsanitize(cclib_obj.metadata)
-
-        # monty datetime bug workaround:
-        # github.com/materialsvirtuallab/monty/issues/275
-        if wall_time := metadata.get("wall_time"):
-            metadata["wall_time"] = [*map(str, wall_time)]
-        if cpu_time := metadata.get("cpu_time"):
-            metadata["cpu_time"] = [*map(str, cpu_time)]
 
         # Get the final energy to store as its own key/value pair
         energy = (
@@ -302,24 +284,12 @@ class _cclibTaskDocument(MoleculeMetadata, extra="allow"):
             coords_obj = cclib_obj.metadata["coords"]
             input_species = [Element(row[0]) for row in coords_obj]
             input_coords = [row[1:] for row in coords_obj]
-            input_molecule = Molecule(
+            attributes["molecule_unoriented"] = Molecule(
                 input_species,
                 input_coords,
                 charge=charge,
                 spin_multiplicity=mult,
             )
-            attributes["molecule_unoriented"] = input_molecule
-
-        # These are duplicates of things made with MoleculeMetadata, so we can
-        # just remove them here
-        duplicates = ["atomnos", "atomcoords", "charge", "mult", "natom"]
-        for duplicate in duplicates:
-            attributes.pop(duplicate, None)
-
-        # We will remove duplicates in the metadata too
-        metadata_duplicates = ["coords", "coord_type"]
-        for metadata_duplicate in metadata_duplicates:
-            metadata.pop(metadata_duplicate, None)
 
         # Construct the Molecule object(s) from the trajectory
         species = [Element.from_Z(z) for z in cclib_obj.atomnos]
@@ -337,7 +307,14 @@ class _cclibTaskDocument(MoleculeMetadata, extra="allow"):
         final_molecule = molecules[-1]
         attributes["molecule_initial"] = initial_molecule
         if store_trajectory:
-            attributes["trajectory"] = molecules
+            traj_metadata = [
+                atoms_to_metadata(
+                    AseAtomsAdaptor().get_atoms(molecule),
+                    charge_and_multiplicity=(charge, mult),
+                )
+                for molecule in molecules
+            ]
+            attributes["trajectory"] = traj_metadata
 
         # Store the HOMO/LUMO energies for convenience
         if cclib_obj.moenergies is not None and cclib_obj.homos is not None:
@@ -381,7 +358,6 @@ class _cclibTaskDocument(MoleculeMetadata, extra="allow"):
             dir_name=get_uri(dir_name),
             logfile=get_uri(logfile),
             attributes=attributes,
-            metadata=metadata,
         )
         doc.molecule = final_molecule
 
