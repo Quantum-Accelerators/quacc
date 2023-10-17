@@ -476,7 +476,7 @@ def summarize_opt_run(
     input_atoms_db = atoms_to_metadata(
         initial_atoms, charge_and_multiplicity=charge_and_multiplicity
     )
-    inputs["input_structure"] = input_atoms_db
+    inputs["input_atoms"] = input_atoms_db
 
     # Prepares the Atoms object for the next run by moving the final magmoms to
     # initial, clearing the calculator state, and assigning the resulting Atoms
