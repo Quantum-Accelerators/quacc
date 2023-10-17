@@ -26,9 +26,8 @@ if TYPE_CHECKING:
     from maggma.core import Store
     from tyipng import TypeVar
 
-    from quacc.schemas._aliases.ase import OptSchema, RunSchema
+    from quacc.schemas._aliases.ase import OptSchema, RunSchema, VibSchema
 
-    VibSchema = TypeVar("VibSchema", dict)
     ThermoSchema = TypeVar("ThermoSchema", dict)
     VibThermoSchema = TypeVar("VibThermoSchema", dict)
 

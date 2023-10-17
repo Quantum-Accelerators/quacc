@@ -44,7 +44,7 @@ if TYPE_CHECKING:
         vib_freqs_raw: list[float]
 
     class VibSchema(TypedDict):
-        """Scheema for `summarize_vib_run`"""
+        """Schema for `summarize_vib_run`"""
 
         nid: str
         dir_name: str
