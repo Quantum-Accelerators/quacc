@@ -7,6 +7,7 @@ if TYPE_CHECKING:
     from quacc.schemas._aliases.atoms import AtomsSchema
 
     results = dict[str, Any]  # from atoms.calc.results
+    parameters = dict[str, Any]  # from atoms.calc.parameters
 
     class RunSchema(TypedDict):
         """Schema for `summarize_run`"""
@@ -14,7 +15,7 @@ if TYPE_CHECKING:
         input_atoms: AtomsSchema | None
         nid: str
         dir_name: str
-        parameters: dict[str, Any]  # from atoms.calc.parameters
+        parameters: parameters
         results: results
 
     class OptSchema(RunSchema):
@@ -26,3 +27,27 @@ if TYPE_CHECKING:
         nsteps: int
         trajectory: list[AtomsSchema]
         trajectory_results: list[results]
+
+    class ParametersVib(TypedDict):
+        delta: float
+        direction: str
+        method: str
+        ndof: int
+        nfree: int
+
+    class VibResults(TypedDict):
+        imag_vib_freqs: int
+        n_imag: int
+        vib_energies: list[float]
+        vib_freqs: list[float]
+        vib_energies_raw: list[float]
+        vib_freqs_raw: list[float]
+
+    class VibSchema(TypedDict):
+        """Scheema for `summarize_vib_run`"""
+
+        nid: str
+        dir_name: str
+        parameters: parameters | None
+        parameters_vib: ParametersVib | None
+        results: VibResults

@@ -244,8 +244,6 @@ def summarize_vib_run(
     vib_freqs_raw = vib.get_frequencies().tolist()
     vib_energies_raw = vib.get_energies().tolist()
 
-    atoms = vib._atoms if isinstance(vib, VibrationsData) else vib.atoms
-
     # Convert imaginary modes to negative values for DB storage
     for i, f in enumerate(vib_freqs_raw):
         if np.imag(f) > 0:
@@ -254,6 +252,8 @@ def summarize_vib_run(
         else:
             vib_freqs_raw[i] = np.abs(f)
             vib_energies_raw[i] = np.abs(vib_energies_raw[i])
+
+    atoms = vib._atoms if isinstance(vib, VibrationsData) else vib.atoms
 
     uri = get_uri(Path.cwd())
     inputs = {
@@ -273,7 +273,9 @@ def summarize_vib_run(
         "dir_name": ":".join(uri.split(":")[1:]),
     }
 
-    atoms_db = atoms_to_metadata(atoms, charge_and_multiplicity=charge_and_multiplicity)
+    atoms_metadata = atoms_to_metadata(
+        atoms, charge_and_multiplicity=charge_and_multiplicity
+    )
 
     # Get the true vibrational modes
     natoms = len(atoms)
@@ -291,7 +293,9 @@ def summarize_vib_run(
         vib_energies_raw_sorted.sort(key=np.abs)
 
         # Cut the 3N-5 or 3N-6 modes based on their absolute value
-        n_modes = 3 * natoms - 5 if atoms_db["symmetry"]["linear"] else 3 * natoms - 6
+        n_modes = (
+            3 * natoms - 5 if atoms_metadata["symmetry"]["linear"] else 3 * natoms - 6
+        )
         vib_freqs = vib_freqs_raw_sorted[-n_modes:]
         vib_energies = vib_energies_raw_sorted[-n_modes:]
 
@@ -308,7 +312,7 @@ def summarize_vib_run(
         }
     }
 
-    unsorted_task_doc = atoms_db | inputs | results | additional_fields
+    unsorted_task_doc = atoms_metadata | inputs | results | additional_fields
     task_doc = sort_dict(unsorted_task_doc)
 
     if store:
