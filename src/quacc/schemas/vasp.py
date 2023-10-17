@@ -41,6 +41,9 @@ if TYPE_CHECKING:
         dipoles: list[float]
         bond_order_sums: list[float]
         bond_order_dict: dict
+        rsquared_moments: list[float]
+        rcubed_moments: list[float]
+        rfourth_moments: list[float]
 
 
 def vasp_summarize_run(
@@ -269,10 +272,5 @@ def chargemol_runner(
             path=path,
             atomic_densities_path=atomic_densities_path,
         )
-
-    # Some cleanup of the returned dictionary
-    chargemol_stats.pop("rsquared_moments", None)
-    chargemol_stats.pop("rcubed_moments", None)
-    chargemol_stats.pop("rfourth_moments", None)
 
     return chargemol_stats

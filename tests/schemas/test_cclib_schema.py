@@ -6,6 +6,8 @@ FILE_DIR = Path(__file__).resolve().parent
 
 run1 = FILE_DIR / "gaussian_run1"
 log1 = run1 / "Gaussian.log"
+run2 = FILE_DIR / "cclib_data"
+log2 = run2 / "gau_testopt.log.gz"
 
 
 @pytest.fixture()
@@ -52,14 +54,49 @@ def test_cclib_summarize_run():
 
     # Make sure metadata is made
     atoms = read(log1)
-    results = cclib_summarize_run(atoms, ".log", dir_path=run1)
+    results = cclib_summarize_run(
+        atoms, ".log", dir_path=run1, additional_fields={"test": "hi"}
+    )
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["spin_multiplicity"] == 1
     assert results["natoms"] == 6
-    assert results["results"]["metadata"].get("success", None) is True
+    assert results["attributes"]["metadata"].get("success", None) is True
     assert results["results"].get("energy", None) == pytest.approx(-5516.118738093933)
     assert "pull_request" in results["builder_meta"]
+
+    # Make sure metadata is made
+    atoms = read(log2)
+    results = cclib_summarize_run(
+        atoms, ".log", dir_path=run2, additional_fields={"test": "hi"}
+    )
+    assert results["attributes"]["final_scf_energy"] == pytest.approx(-4091.763)
+    assert results["natoms"] == 2
+    assert results["charge"] == 0
+    assert results["spin_multiplicity"] == 3
+    assert results["nelectrons"] == 16
+    assert "schemas" in results["dir_name"]
+    assert "gau_testopt.log.gz" in results["logfile"]
+    assert results.get("attributes") is not None
+    assert results["attributes"]["metadata"]["success"] is True
+    assert results["input_atoms"]["atoms"][0].position == pytest.approx([0, 0, 0])
+    assert results["atoms"][0].position == pytest.approx([0.397382, 0.0, 0.0])
+    assert results["attributes"]["homo_energies"] == pytest.approx(
+        [-7.054007346511501, -11.618445074798501]
+    )
+    assert results["attributes"]["lumo_energies"] == pytest.approx(
+        [4.2384453353880005, -3.9423854660440005]
+    )
+    assert results["attributes"]["homo_lumo_gaps"] == pytest.approx(
+        [11.292452681899501, 7.6760596087545006]
+    )
+    assert results["attributes"]["min_homo_lumo_gap"] == pytest.approx(
+        7.6760596087545006
+    )
+    assert len(results["trajectory"]) == 7
+    assert results["trajectory"][0]["atoms"] == results["input_atoms"]["atoms"]
+    assert results["trajectory"][-1]["atoms"] == results["atoms"]
+    assert results["test"] == "hi"
 
     # test document can be jsanitized and decoded
     d = jsanitize(results, strict=True, enum_values=True)
@@ -131,81 +168,39 @@ def test_cclib_taskdoc(tmpdir):
 
     from monty.json import MontyDecoder, jsanitize
 
-    from quacc.schemas.cclib import _cclibTaskDocument
+    from quacc.schemas.cclib import _make_cclib_schema
 
     tmpdir.chdir()
 
     p = FILE_DIR / "cclib_data"
-
-    # Plain parsing of task doc. We do not check all cclib entries
-    # because they will evolve over time. We only check the ones we have
-    # added and some important ones.
-    doc = _cclibTaskDocument.from_logfile(p, ".log.gz").dict()
-    assert doc["additional_attributes"]["energy"] == pytest.approx(-4091.763)
-    assert doc["natoms"] == 2
-    assert doc["charge"] == 0
-    assert doc["spin_multiplicity"] == 3
-    assert doc["nelectrons"] == 16
-    assert "schemas" in doc["dir_name"]
-    assert "gau_testopt.log.gz" in doc["logfile"]
-    assert doc.get("attributes") is not None
-    assert doc["attributes"]["metadata"]["success"] is True
-    assert doc["molecule_initial"][0].coords == pytest.approx([0, 0, 0])
-    assert doc["molecule"][0].coords == pytest.approx([0.397382, 0.0, 0.0])
-    assert doc["additional_attributes"]["homo_energies"] == pytest.approx(
-        [-7.054007346511501, -11.618445074798501]
-    )
-    assert doc["additional_attributes"]["lumo_energies"] == pytest.approx(
-        [4.2384453353880005, -3.9423854660440005]
-    )
-    assert doc["additional_attributes"]["homo_lumo_gaps"] == pytest.approx(
-        [11.292452681899501, 7.6760596087545006]
-    )
-    assert doc["additional_attributes"]["min_homo_lumo_gap"] == pytest.approx(
-        7.6760596087545006
-    )
 
     # Now we will try two possible extensions, but we will make sure that
     # it fails because the newest log file (.txt) is not valid
     with open(p / "test.txt", "w") as f:
         f.write("I am a dummy log file")
     with pytest.raises(Exception) as e:
-        doc = _cclibTaskDocument.from_logfile(p, [".log", ".txt"]).dict()
+        doc = _make_cclib_schema(p, [".log", ".txt"])
     os.remove(p / "test.txt")
     assert "Could not parse" in str(e.value)
 
     # Test a population analysis
-    doc = _cclibTaskDocument.from_logfile(p, "psi_test.out", analysis="MBO").dict()
-    assert doc["attributes"]["mbo"] is not None
+    doc = _make_cclib_schema(p, "psi_test.out", analysis="MBO")
+    assert doc["pop_analysis"]["mbo"] is not None
 
     # Let's try with two analysis (also check case-insensitivity)
-    doc = _cclibTaskDocument.from_logfile(
-        p, "psi_test.out", analysis=["mbo", "density"]
-    ).dict()
-    assert doc["attributes"]["mbo"] is not None
-    assert doc["attributes"]["density"] is not None
+    doc = _make_cclib_schema(p, "psi_test.out", analysis=["mbo", "density"])
+    assert doc["pop_analysis"]["mbo"] is not None
+    assert doc["pop_analysis"]["density"] is not None
 
     # Test a population analysis that will fail
-    doc = _cclibTaskDocument.from_logfile(p, ".log", analysis="MBO").dict()
-    assert doc["attributes"]["mbo"] is None
+    doc = _make_cclib_schema(p, ".log", analysis="MBO")
+    assert doc["pop_analysis"]["mbo"] is None
 
-    doc = _cclibTaskDocument.from_logfile(p, "psi_test.out", analysis=["Bader"]).dict()
-    assert doc["attributes"]["bader"] is not None
-
-    # Make sure storing the trajectory works
-    doc = _cclibTaskDocument.from_logfile(p, ".log", store_trajectory=True).dict()
-    assert len(doc["trajectory"]) == 7
-    assert doc["trajectory"][0] == doc["molecule_initial"]
-    assert doc["trajectory"][-1] == doc["molecule"]
-
-    # Make sure additional fields can be stored
-    doc = _cclibTaskDocument.from_logfile(
-        p, ".log", additional_fields={"test": "hi"}
-    ).dict()
-    assert doc["test"] == "hi"
+    doc = _make_cclib_schema(p, "psi_test.out", analysis=["Bader"])
+    assert doc["pop_analysis"]["bader"] is not None
 
     with pytest.raises(FileNotFoundError):
-        _cclibTaskDocument.from_logfile(p, "does_not_exists.txt")
+        _make_cclib_schema(p, "does_not_exists.txt")
 
     # test document can be jsanitized
     d = jsanitize(doc, enum_values=True)

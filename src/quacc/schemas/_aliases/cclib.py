@@ -5,19 +5,18 @@ if TYPE_CHECKING:
     from typing import TypedDict
 
     from numpy.typing import Any, NDArray
-    from pymatgen.core import Molecule
 
-    from quacc.schemas._aliases.ase import parameters
+    from quacc.schemas._aliases.ase import RunSchema
     from quacc.schemas._aliases.atoms import AtomsSchema
 
     class AdditionalAttributes(TypedDict, total=False):
-        energy: float
-        homo_energies: list[float]
-        lumo_energies: list[float]
-        homo_lumo_gaps: list[float]
-        min_homo_lumo_gap: float
+        final_scf_energy: float
+        homo_energies: list[float] | None
+        lumo_energies: list[float] | None
+        homo_lumo_gaps: list[float] | None
+        min_homo_lumo_gap: float | None
 
-    class CalcAttributes(TypedDict, total=False):
+    class PopAnalysisAttributes(TypedDict, total=False):
         aoresults: Any
         fragresults: Any
         fragcharges: Any
@@ -103,18 +102,14 @@ if TYPE_CHECKING:
         vibsyms: list[str]
         zpve: float
 
-    class AllAttributes(Attributes, AdditionalAttributes, CalcAttributes):
+    class AllAttributes(Attributes, AdditionalAttributes):
         pass
 
-    class cclibSchema(TypedDict, total=False):
-        dir_name: str
-        nid: str
+    class cclibBaseSchema(TypedDict):
         logfile: str
-        molecule: Molecule
-        molecule_initial: Molecule
-        molecule_unoriented: Molecule
-        parameters: parameters
-        results: AllAttributes
+        attributes: AllAttributes
+        pop_analysis: PopAnalysisAttributes | None
         trajectory: list[AtomsSchema]
-        task_label: str
-        tags: list[str]
+
+    class cclibSchema(cclibBaseSchema, RunSchema):
+        pass
