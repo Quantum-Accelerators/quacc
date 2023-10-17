@@ -51,3 +51,30 @@ if TYPE_CHECKING:
         parameters: parameters | None
         parameters_vib: ParametersVib | None
         results: VibResults
+
+    class ParametersThermo(TypedDict):
+        temperature: float
+        pressure: float
+        sigma: int
+        spin_multiplicity: int
+        vib_freqs: list[float]
+        vib_energies: list[float]
+        n_imag: int
+
+    class ThermoResults(TypedDict):
+        energy: float
+        enthalpy: float
+        entropy: float
+        gibbs_energy: float
+        zpe: float
+
+    class ThermoSchema(TypedDict):
+        nid: str
+        dir_name: str
+        parameters_thermo: ParametersThermo
+        results: ThermoResults
+
+    class VibThermoSchema(VibSchema, ThermoSchema):
+        """Schema for `summarize_vib_and_thermo`"""
+
+        pass

@@ -26,13 +26,13 @@ if TYPE_CHECKING:
     from maggma.core import Store
     from tyipng import TypeVar
 
-    from quacc.schemas._aliases.ase import OptSchema, RunSchema, VibSchema
-
-    ThermoSchema = TypeVar("ThermoSchema", dict)
-    VibThermoSchema = TypeVar("VibThermoSchema", dict)
-
-    class FreqSchema(VibSchema):
-        thermo: ThermoSchema
+    from quacc.schemas._aliases.ase import (
+        OptSchema,
+        RunSchema,
+        ThermoSchema,
+        VibSchema,
+        VibThermoSchema,
+    )
 
 
 def summarize_run(
@@ -391,11 +391,11 @@ def summarize_ideal_gas_thermo(
         )
         raise ValueError(msg)
 
-    atoms_db = atoms_to_metadata(
+    atoms_metadata = atoms_to_metadata(
         igt.atoms, charge_and_multiplicity=charge_and_multiplicity
     )
 
-    unsorted_task_doc = atoms_db | inputs | results | additional_fields
+    unsorted_task_doc = atoms_metadata | inputs | results | additional_fields
     task_doc = sort_dict(unsorted_task_doc)
 
     if store:
@@ -454,7 +454,7 @@ def summarize_vib_and_thermo(
         store=False,
     )
 
-    unsorted_task_doc = merge_dicts(vib_task_doc, thermo_task_doc) | additional_fields
+    unsorted_task_doc = vib_task_doc | thermo_task_doc | additional_fields
     task_doc = sort_dict(unsorted_task_doc)
 
     if store:

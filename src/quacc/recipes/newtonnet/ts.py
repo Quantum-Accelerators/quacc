@@ -29,7 +29,8 @@ if TYPE_CHECKING:
     from ase import Atoms
     from numpy.typing import NDArray
 
-    from quacc.schemas.ase import FreqSchema, OptSchema
+    from quacc.recipes.newtonnet.core import FreqSchema
+    from quacc.schemas.ase import OptSchema
 
     class TSSchema(OptSchema):
         freq_job: FreqSchema | None
