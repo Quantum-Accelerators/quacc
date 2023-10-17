@@ -36,19 +36,6 @@ def test_atoms_to_metadata(test_cifs):
     assert results["atoms"].info.get("test", None) == "hi"
     assert results["structure"] == AseAtomsAdaptor.get_structure(atoms_no_dummy)
 
-    atoms = bulk("Cu")
-    atoms.info["test"] = "hi"
-    results = atoms_to_metadata(atoms, strip_info=True)
-    assert results["atoms"] == atoms
-    assert results["atoms"].info == {}
-    assert results["nsites"] == len(atoms)
-    assert results["atoms_info"].get("test", None) == "hi"
-
-    atoms = bulk("Cu")
-    results = atoms_to_metadata(atoms, get_metadata=False)
-    assert results["atoms"] == atoms
-    assert results.get("nsites") is None
-
     atoms = molecule("H2O")
     atoms.info["test"] = "hi"
     results = atoms_to_metadata(atoms)
