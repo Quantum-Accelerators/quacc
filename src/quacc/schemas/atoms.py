@@ -77,11 +77,11 @@ def atoms_to_metadata(
     else:
         metadata = {}
 
-    # Store Atoms object
-    results["atoms"] = atoms
-
     # Copy the info flags as a separate entry in the DB for easy querying
     results["atoms_info"] = _quacc_sanitize(atoms.info)
+
+    # Store Atoms object
+    results["atoms"] = atoms
 
     # Combine the metadata and results dictionaries
     atoms_doc = metadata | results | additional_fields
