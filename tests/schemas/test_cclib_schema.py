@@ -139,7 +139,7 @@ def test_cclib_taskdoc(tmpdir):
     # Plain parsing of task doc. We do not check all cclib entries
     # because they will evolve over time. We only check the ones we have
     # added and some important ones.
-    doc = _cclibTaskDocument.from_logfile(p, ".log.gz")
+    doc = _cclibTaskDocument.from_logfile(p, ".log.gz").dict()
     assert doc["energy"] == pytest.approx(-4091.763)
     assert doc["natoms"] == 2
     assert doc["charge"] == 0
