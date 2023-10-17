@@ -449,15 +449,20 @@ def summarize_vib_and_thermo(
     vib_task_doc = summarize_vib_run(
         vib,
         charge_and_multiplicity=charge_and_multiplicity,
-        additional_fields=additional_fields,
-        store=store,
+        store=False,
     )
     thermo_task_doc = summarize_ideal_gas_thermo(
         igt,
         temperature=temperature,
         pressure=pressure,
         charge_and_multiplicity=charge_and_multiplicity,
-        additional_fields=additional_fields,
-        store=store,
+        store=False,
     )
-    return merge_dicts(vib_task_doc, thermo_task_doc)
+
+    unsorted_task_doc = merge_dicts(vib_task_doc, thermo_task_doc) | additional_fields
+    task_doc = sort_dict(unsorted_task_doc)
+
+    if store:
+        results_to_db(store, task_doc)
+
+    return task_doc
