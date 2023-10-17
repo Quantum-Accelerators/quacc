@@ -5,12 +5,28 @@ if TYPE_CHECKING:
     from typing import TypedDict
 
     from numpy.typing import Any, NDArray
+    from pymatgen.core import Molecule
+
+    from quacc.schemas._aliases.ase import parameters
+    from quacc.schemas._aliases.atoms import AtomsSchema
 
     class AdditionalAttributes(TypedDict, total=False):
+        energy: float
         homo_energies: list[float]
         lumo_energies: list[float]
         homo_lumo_gaps: list[float]
         min_homo_lumo_gap: float
+
+    class CalcAttributes(TypedDict, total=False):
+        aoresults: Any
+        fragresults: Any
+        fragcharges: Any
+        density: Any
+        donations: Any
+        bdonations: Any
+        repulsions: Any
+        matches: Any
+        refcharges: Any
 
     class Attributes(TypedDict, total=False):
         aonames: list[str]
@@ -87,5 +103,18 @@ if TYPE_CHECKING:
         vibsyms: list[str]
         zpve: float
 
-    class cclibSchema(Attributes, AdditionalAttributes):
+    class AllAttributes(Attributes, AdditionalAttributes, CalcAttributes):
         pass
+
+    class cclibSchema(TypedDict, total=False):
+        dir_name: str
+        nid: str
+        logfile: str
+        molecule: Molecule
+        molecule_initial: Molecule
+        molecule_unoriented: Molecule
+        parameters: parameters
+        results: AllAttributes
+        trajectory: list[AtomsSchema]
+        task_label: str
+        tags: list[str]

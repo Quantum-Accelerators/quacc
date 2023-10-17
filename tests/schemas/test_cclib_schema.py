@@ -57,7 +57,8 @@ def test_cclib_summarize_run():
     assert results["atoms"] == atoms
     assert results["spin_multiplicity"] == 1
     assert results["natoms"] == 6
-    assert results["attributes"]["metadata"].get("success", None) is True
+    assert results["results"]["metadata"].get("success", None) is True
+    assert results["results"].get("energy", None) == pytest.approx(-5516.118738093933)
     assert "pull_request" in results["builder_meta"]
 
     # test document can be jsanitized and decoded
@@ -140,7 +141,7 @@ def test_cclib_taskdoc(tmpdir):
     # because they will evolve over time. We only check the ones we have
     # added and some important ones.
     doc = _cclibTaskDocument.from_logfile(p, ".log.gz").dict()
-    assert doc["energy"] == pytest.approx(-4091.763)
+    assert doc["additional_attributes"]["energy"] == pytest.approx(-4091.763)
     assert doc["natoms"] == 2
     assert doc["charge"] == 0
     assert doc["spin_multiplicity"] == 3
@@ -149,18 +150,20 @@ def test_cclib_taskdoc(tmpdir):
     assert "gau_testopt.log.gz" in doc["logfile"]
     assert doc.get("attributes") is not None
     assert doc["attributes"]["metadata"]["success"] is True
-    assert doc["attributes"]["molecule_initial"][0].coords == pytest.approx([0, 0, 0])
+    assert doc["molecule_initial"][0].coords == pytest.approx([0, 0, 0])
     assert doc["molecule"][0].coords == pytest.approx([0.397382, 0.0, 0.0])
-    assert doc["attributes"]["homo_energies"] == pytest.approx(
+    assert doc["additional_attributes"]["homo_energies"] == pytest.approx(
         [-7.054007346511501, -11.618445074798501]
     )
-    assert doc["attributes"]["lumo_energies"] == pytest.approx(
+    assert doc["additional_attributes"]["lumo_energies"] == pytest.approx(
         [4.2384453353880005, -3.9423854660440005]
     )
-    assert doc["attributes"]["homo_lumo_gaps"] == pytest.approx(
+    assert doc["additional_attributes"]["homo_lumo_gaps"] == pytest.approx(
         [11.292452681899501, 7.6760596087545006]
     )
-    assert doc["attributes"]["min_homo_lumo_gap"] == pytest.approx(7.6760596087545006)
+    assert doc["additional_attributes"]["min_homo_lumo_gap"] == pytest.approx(
+        7.6760596087545006
+    )
 
     # Now we will try two possible extensions, but we will make sure that
     # it fails because the newest log file (.txt) is not valid
@@ -191,12 +194,9 @@ def test_cclib_taskdoc(tmpdir):
 
     # Make sure storing the trajectory works
     doc = _cclibTaskDocument.from_logfile(p, ".log", store_trajectory=True).dict()
-    assert len(doc["attributes"]["trajectory"]) == 7
-    assert (
-        doc["attributes"]["trajectory"][0]["molecule"]
-        == doc["attributes"]["molecule_initial"]
-    )
-    assert doc["attributes"]["trajectory"][-1]["molecule"] == doc["molecule"]
+    assert len(doc["trajectory"]) == 7
+    assert doc["trajectory"][0] == doc["molecule_initial"]
+    assert doc["trajectory"][-1] == doc["molecule"]
 
     # Make sure additional fields can be stored
     doc = _cclibTaskDocument.from_logfile(

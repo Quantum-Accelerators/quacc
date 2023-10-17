@@ -30,7 +30,8 @@ if TYPE_CHECKING:
 
     from ase import Atoms
 
-    cclibSchema = TypeVar("cclibSchema")
+    from quacc.schemas._aliases.cclib import cclibSchema
+
     _T = TypeVar("_T", bound="_cclibTaskDocument")
 
 
@@ -121,20 +122,38 @@ def cclib_summarize_run(
         msg = "ASE Atoms object's calculator has no results."
         raise ValueError(msg)
 
+    # Get the calculator inputs
+    inputs = {"parameters": atoms.calc.parameters}
+
+    # Get the base task document
     base_task_doc = _cclibTaskDocument.from_logfile(
         dir_path, logfile_extensions, store_trajectory=True, analysis=pop_analyses
     ).dict()
-    uri = base_task_doc["dir_name"]
-    base_task_doc["nid"] = uri.split(":")[0]
-    base_task_doc["dir_name"] = ":".join(uri.split(":")[1:])
-    base_task_doc["logfile"] = base_task_doc["logfile"].split(":")[-1]
 
     if check_convergence and base_task_doc["attributes"].get("optdone") is False:
         msg = "Optimization not complete."
         raise ValueError(msg)
 
-    # Get the calculator inputs
-    inputs = {"parameters": atoms.calc.parameters}
+    # Make the results, consisting of cclib attributes and other attribute-like results
+    results = {
+        "results": base_task_doc["attributes"] | base_task_doc["additional_attributes"]
+    }
+
+    # Clean up the task doc
+    base_task_doc.pop("attributes")
+    base_task_doc.pop("additional_attributes")
+    uri = base_task_doc["dir_name"]
+    base_task_doc["nid"] = uri.split(":")[0]
+    base_task_doc["dir_name"] = ":".join(uri.split(":")[1:])
+    base_task_doc["logfile"] = base_task_doc["logfile"].split(":")[-1]
+    if base_task_doc.get("trajectory"):
+        base_task_doc["trajectory"] = [
+            atoms_to_metadata(
+                AseAtomsAdaptor().get_atoms(molecule),
+                charge_and_multiplicity=charge_and_multiplicity,
+            )
+            for molecule in base_task_doc["trajectory"]
+        ]
 
     # Prepares the Atoms object for the next run by moving the final magmoms to
     # initial, clearing the calculator state, and assigning the resulting Atoms
@@ -147,7 +166,9 @@ def cclib_summarize_run(
     atoms_metadata = atoms_to_metadata(atoms, get_metadata=False, store_pmg=False)
 
     # Create a dictionary of the inputs/outputs
-    unsorted_task_doc = atoms_metadata | inputs | base_task_doc | additional_fields
+    unsorted_task_doc = (
+        atoms_metadata | base_task_doc | inputs | results | additional_fields
+    )
     task_doc = sort_dict(unsorted_task_doc)
 
     # Store the results
@@ -170,7 +191,15 @@ class _cclibTaskDocument(MoleculeMetadata, extra="allow"):
     molecule: Optional[Molecule] = Field(
         None, description="Final output molecule from the task"
     )
-    energy: Optional[float] = Field(None, description="Final total energy")
+    molecule_initial: Optional[Molecule] = Field(
+        None, description="Initial molecule from the task"
+    )
+    molecule_unoriented: Optional[Molecule] = Field(
+        None, description="Initial, unoriented molecule from the task"
+    )
+    trajectory: Optional[list[Molecule]] = Field(
+        None, description="Trajectory of the task"
+    )
     dir_name: Optional[str] = Field(
         None, description="Directory where the output is parsed"
     )
@@ -178,7 +207,12 @@ class _cclibTaskDocument(MoleculeMetadata, extra="allow"):
         None, description="Path to the log file used in the post-processing analysis"
     )
     attributes: Optional[dict] = Field(
-        None, description="Computed properties and calculation outputs"
+        None,
+        description="Attributes from cclib. See https://cclib.github.io/data.html",
+    )
+    additional_attributes: Optional[dict] = Field(
+        None,
+        description="Computed properties and calculation outputs beyond those from cclib",
     )
     task_label: Optional[str] = Field(None, description="A description of the task")
     tags: Optional[list[str]] = Field(
@@ -255,6 +289,7 @@ class _cclibTaskDocument(MoleculeMetadata, extra="allow"):
 
         # Fetch all the attributes (i.e. all input/outputs from cclib)
         attributes = jsanitize(cclib_obj.getattributes())
+        additional_attributes = {}
 
         # monty datetime bug workaround:
         # github.com/materialsvirtuallab/monty/issues/275
@@ -267,8 +302,8 @@ class _cclibTaskDocument(MoleculeMetadata, extra="allow"):
         charge = cclib_obj.charge
         mult = cclib_obj.mult
 
-        # Get the final energy to store as its own key/value pair
-        energy = (
+        # Get the final energy to store as its own key/value pair later
+        additional_attributes["energy"] = (
             cclib_obj.scfenergies[-1] if cclib_obj.scfenergies is not None else None
         )
 
@@ -284,12 +319,14 @@ class _cclibTaskDocument(MoleculeMetadata, extra="allow"):
             coords_obj = cclib_obj.metadata["coords"]
             input_species = [Element(row[0]) for row in coords_obj]
             input_coords = [row[1:] for row in coords_obj]
-            attributes["molecule_unoriented"] = Molecule(
+            molecule_unoriented = Molecule(
                 input_species,
                 input_coords,
                 charge=charge,
                 spin_multiplicity=mult,
             )
+        else:
+            molecule_unoriented = None
 
         # Construct the Molecule object(s) from the trajectory
         species = [Element.from_Z(z) for z in cclib_obj.atomnos]
@@ -305,27 +342,17 @@ class _cclibTaskDocument(MoleculeMetadata, extra="allow"):
         ]
         initial_molecule = molecules[0]
         final_molecule = molecules[-1]
-        attributes["molecule_initial"] = initial_molecule
-        if store_trajectory:
-            traj_metadata = [
-                atoms_to_metadata(
-                    AseAtomsAdaptor().get_atoms(molecule),
-                    charge_and_multiplicity=(charge, mult),
-                )
-                for molecule in molecules
-            ]
-            attributes["trajectory"] = traj_metadata
 
         # Store the HOMO/LUMO energies for convenience
         if cclib_obj.moenergies is not None and cclib_obj.homos is not None:
             homo_energies, lumo_energies, homo_lumo_gaps = _get_homos_lumos(
                 cclib_obj.moenergies, cclib_obj.homos
             )
-            attributes["homo_energies"] = homo_energies
+            additional_attributes["homo_energies"] = homo_energies
             if lumo_energies:
-                attributes["lumo_energies"] = lumo_energies
+                additional_attributes["lumo_energies"] = lumo_energies
             if homo_lumo_gaps:
-                attributes["homo_lumo_gaps"] = homo_lumo_gaps
+                additional_attributes["homo_lumo_gaps"] = homo_lumo_gaps
 
                 # The HOMO-LUMO gap for a spin-polarized system is ill-defined.
                 # This is why we report both the alpha and beta channel gaps
@@ -333,7 +360,7 @@ class _cclibTaskDocument(MoleculeMetadata, extra="allow"):
                 # min(LUMO_alpha-HOMO_alpha,LUMO_beta-HOMO_beta) in case the
                 # user wants to easily query by this too. For restricted
                 # systems, this will always be the same as above.
-                attributes["min_homo_lumo_gap"] = min(homo_lumo_gaps)
+                additional_attributes["min_homo_lumo_gap"] = min(homo_lumo_gaps)
 
         # Calculate any properties
         if analysis:
@@ -354,10 +381,13 @@ class _cclibTaskDocument(MoleculeMetadata, extra="allow"):
 
         doc = cls.from_molecule(
             final_molecule,
-            energy=energy,
             dir_name=get_uri(dir_name),
             logfile=get_uri(logfile),
             attributes=attributes,
+            additional_attributes=additional_attributes,
+            molecule_initial=initial_molecule,
+            molecule_unoriented=molecule_unoriented,
+            trajectory=molecules if store_trajectory else None,
         )
         doc.molecule = final_molecule
 
