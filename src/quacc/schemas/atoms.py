@@ -15,7 +15,7 @@ from quacc.utils.dicts import sort_dict
 if TYPE_CHECKING:
     from typing import Any
 
-    from quacc.schemas._aliases import AtomsMoleculeSchema, AtomsStructureSchema
+    from quacc.schemas._aliases.atoms import AtomsSchema
 
 
 def atoms_to_metadata(
@@ -24,7 +24,7 @@ def atoms_to_metadata(
     get_metadata: bool = True,
     store_pmg: bool = True,
     additional_fields: dict | None = None,
-) -> AtomsStructureSchema | AtomsMoleculeSchema:
+) -> AtomsSchema:
     """
     Convert an ASE Atoms object to a dict suitable for storage in MongoDB.
 
@@ -45,7 +45,7 @@ def atoms_to_metadata(
 
     Returns
     -------
-    AtomsStructureSchema | AtomsMoleculeSchema
+    AtomsSchema
         Dict of metadata about the Atoms object.
     """
 

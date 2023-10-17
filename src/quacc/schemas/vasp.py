@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 
     from ase import Atoms
 
-    VaspSchema = TypeVar("VaspSchema")
+    VaspSchema = TypeVar("VaspSchema", dict)
 
     class BaderSchema(TypedDict):
         atomic_volume: float

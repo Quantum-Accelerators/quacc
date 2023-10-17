@@ -1,14 +1,14 @@
+"""Aliases for type hinting for emmet"""
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from datetime import datetime
-    from typing import Any, Literal, TypedDict
+    from typing import Literal, TypedDict
 
-    from ase import Atoms
     from emmet.core.symmetry import CrystalSystem
-    from pymatgen.core import Molecule, Structure
     from pymatgen.core.composition import Composition
     from pymatgen.core.periodic_table import Element
+    from tyipng import TypedDict
 
     class SymmetryData(TypedDict):
         """
@@ -81,23 +81,3 @@ if TYPE_CHECKING:
         formula_anonymous: str
         chemsys: str
         symmetry: PointGroupData
-
-    class AtomsStructureSchema(StructureMetadata):
-        """
-        Type hint associated with `quacc.schemas.atoms.atoms_to_metadata`
-        for periodic structures.
-        """
-
-        atoms: Atoms
-        atoms_info: dict[str, Any]  # from atoms.info
-        structure: Structure
-
-    class AtomsMoleculeSchema(MoleculeMetadata):
-        """
-        Type hint associated with `quacc.schemas.atoms.atoms_to_metadata`
-        for molecules.
-        """
-
-        atoms: Atoms
-        atoms_info: dict[str, Any]  # from atoms.info
-        molecule: Molecule
