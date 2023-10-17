@@ -73,46 +73,38 @@ def summarize_run(
     RunSchema
         Dictionary representation of the task document
     """
-    # Make sure there is a calculator with results
+
+    additional_fields = additional_fields or {}
+    store = SETTINGS.PRIMARY_STORE if store is None else store
+
     if not atoms.calc:
         msg = "ASE Atoms object has no attached calculator."
         raise ValueError(msg)
     if not atoms.calc.results:
         msg = "ASE Atoms object's calculator has no results."
         raise ValueError(msg)
-    store = SETTINGS.PRIMARY_STORE if store is None else store
 
-    additional_fields = additional_fields or {}
-
-    # Fetch all tabulated results from the attached calculator
-    results = {"results": atoms.calc.results}
-
-    # Get the calculator inputs
     uri = get_uri(Path.cwd())
+    input_atoms_metadata = (
+        atoms_to_metadata(input_atoms, charge_and_multiplicity=charge_and_multiplicity)
+        if input_atoms
+        else None
+    )
     inputs = {
         "parameters": atoms.calc.parameters,
         "nid": uri.split(":")[0],
         "dir_name": ":".join(uri.split(":")[1:]),
+        "input_atoms": input_atoms_metadata,
     }
-    if input_atoms:
-        input_atoms_db = atoms_to_metadata(
-            input_atoms, charge_and_multiplicity=charge_and_multiplicity
-        )
-        inputs["input_atoms"] = input_atoms_db
-    else:
-        inputs["input_atoms"] = None
 
-    # Prepares the Atoms object for the next run by moving the final magmoms to
-    # initial, clearing the calculator state, and assigning the resulting Atoms
-    # object a unique ID.
-    if prep_next_run:
-        atoms = prep_next_run_(atoms)
+    results = {"results": atoms.calc.results}
 
-    # Get tabulated properties of the structure itself
-    atoms_db = atoms_to_metadata(atoms, charge_and_multiplicity=charge_and_multiplicity)
+    atoms_to_store = prep_next_run_(atoms) if prep_next_run else atoms
+    final_atoms_metadata = atoms_to_metadata(
+        atoms_to_store, charge_and_multiplicity=charge_and_multiplicity
+    )
 
-    # Create a dictionary of the inputs/outputs
-    unsorted_task_doc = atoms_db | inputs | results | additional_fields
+    unsorted_task_doc = final_atoms_metadata | inputs | results | additional_fields
     task_doc = sort_dict(unsorted_task_doc)
 
     if store:
