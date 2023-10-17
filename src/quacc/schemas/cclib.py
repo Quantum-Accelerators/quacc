@@ -215,9 +215,10 @@ def _make_cclib_schema(
     mult = cclib_obj.mult
 
     # Construct the trajectory
-    zvals = [z for z in cclib_obj.atomnos]
     coords = cclib_obj.atomcoords
-    trajectory = [Atoms(numbers=zvals, positions=coord) for coord in coords]
+    trajectory = [
+        Atoms(numbers=list(cclib_obj.atomnos), positions=coord) for coord in coords
+    ]
     traj_metadata = [
         atoms_to_metadata(traj, charge_and_multiplicity=(charge, mult))
         for traj in trajectory
