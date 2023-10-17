@@ -107,14 +107,13 @@ def cclib_summarize_run(
         Dictionary representation of the task document
     """
 
-    additional_fields = additional_fields or {}
     dir_path = dir_path or Path.cwd()
-    store = SETTINGS.PRIMARY_STORE if store is None else store
     check_convergence = (
         SETTINGS.CHECK_CONVERGENCE if check_convergence is None else check_convergence
     )
+    additional_fields = additional_fields or {}
+    store = SETTINGS.PRIMARY_STORE if store is None else store
 
-    # Make sure there is a calculator with results
     if not atoms.calc:
         msg = "ASE Atoms object has no attached calculator."
         raise ValueError(msg)
@@ -122,25 +121,23 @@ def cclib_summarize_run(
         msg = "ASE Atoms object's calculator has no results."
         raise ValueError(msg)
 
-    taskdoc = _cclibTaskDocument.from_logfile(
+    base_task_doc = _cclibTaskDocument.from_logfile(
         dir_path, logfile_extensions, store_trajectory=True, analysis=pop_analyses
     ).dict()
-    uri = taskdoc["dir_name"]
-    taskdoc["nid"] = uri.split(":")[0]
-    taskdoc["dir_name"] = ":".join(uri.split(":")[1:])
-    taskdoc["builder_meta"]["build_date"] = str(taskdoc["builder_meta"]["build_date"])
-    taskdoc["logfile"] = taskdoc["logfile"].split(":")[-1]
-    if taskdoc["attributes"].get("trajectory"):
-        taskdoc["attributes"]["trajectory"] = [
+    uri = base_task_doc["dir_name"]
+    base_task_doc["nid"] = uri.split(":")[0]
+    base_task_doc["dir_name"] = ":".join(uri.split(":")[1:])
+    base_task_doc["logfile"] = base_task_doc["logfile"].split(":")[-1]
+    if base_task_doc["attributes"].get("trajectory"):
+        base_task_doc["attributes"]["trajectory"] = [
             atoms_to_metadata(
                 AseAtomsAdaptor().get_atoms(molecule),
                 charge_and_multiplicity=charge_and_multiplicity,
             )
-            for molecule in taskdoc["attributes"]["trajectory"]
+            for molecule in base_task_doc["attributes"]["trajectory"]
         ]
 
-    # Check convergence if requested
-    if check_convergence and taskdoc["attributes"].get("optdone") is False:
+    if check_convergence and base_task_doc["attributes"].get("optdone") is False:
         msg = "Optimization not complete."
         raise ValueError(msg)
 
@@ -155,16 +152,17 @@ def cclib_summarize_run(
 
     # We use get_metadata=False and store_pmg=False because the TaskDocument
     # already makes the structure metadata for us
-    atoms_db = atoms_to_metadata(atoms, get_metadata=False, store_pmg=False)
+    atoms_metadata = atoms_to_metadata(atoms, get_metadata=False, store_pmg=False)
 
     # Create a dictionary of the inputs/outputs
-    summary = sort_dict(atoms_db | inputs | taskdoc | additional_fields)
+    unsorted_task_doc = atoms_metadata | inputs | base_task_doc | additional_fields
+    task_doc = sort_dict(unsorted_task_doc)
 
     # Store the results
     if store:
-        results_to_db(store, summary)
+        results_to_db(store, task_doc)
 
-    return summary
+    return task_doc
 
 
 class _cclibTaskDocument(MoleculeMetadata, extra="allow"):
@@ -173,6 +171,8 @@ class _cclibTaskDocument(MoleculeMetadata, extra="allow"):
 
     This can be used as a general task document for molecular DFT codes. For the
     list of supported packages, see https://cclib.github.io
+
+    This is based on https://github.com/materialsproject/atomate2/blob/main/src/atomate2/common/schemas/cclib.py
     """
 
     molecule: Optional[Molecule] = Field(
