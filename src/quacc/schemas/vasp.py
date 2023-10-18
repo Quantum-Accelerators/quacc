@@ -20,30 +20,9 @@ from quacc.utils.files import copy_decompress
 from quacc.wflow.db import results_to_db
 
 if TYPE_CHECKING:
-    from typing import TypedDict, TypeVar
-
     from ase import Atoms
 
-    VaspSchema = TypeVar("VaspSchema", dict)
-
-    class BaderSchema(TypedDict):
-        atomic_volume: float
-        bader_charge: float
-        bader_spin: float
-        bader_version: float
-        min_dist: list[float]
-        partial_charges: list[float]
-        spin_moments: list[float]
-
-    class DDECSchema(TypedDict):
-        partial_charges: list[float]
-        spin_moments: list[float]
-        dipoles: list[float]
-        bond_order_sums: list[float]
-        bond_order_dict: dict
-        rsquared_moments: list[float]
-        rcubed_moments: list[float]
-        rfourth_moments: list[float]
+    from quacc.schemas._aliases.vasp import BaderSchema, DDECSchema, VaspSchema
 
 
 def vasp_summarize_run(
