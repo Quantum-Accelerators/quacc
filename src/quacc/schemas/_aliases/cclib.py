@@ -10,6 +10,12 @@ if TYPE_CHECKING:
     from quacc.schemas._aliases.atoms import AtomsSchema
 
     class AdditionalAttributes(TypedDict, total=False):
+        """
+        Additional type hints we custom-made based on cclib attributes.
+
+        Uses cclib units.
+        """
+
         final_scf_energy: float
         homo_energies: list[float] | None
         lumo_energies: list[float] | None
@@ -17,6 +23,10 @@ if TYPE_CHECKING:
         min_homo_lumo_gap: float | None
 
     class PopAnalysisAttributes(TypedDict, total=False):
+        """
+        Type hints associated with cclib population analysis attribubtes.
+        """
+
         aoresults: Any
         fragresults: Any
         fragcharges: Any
@@ -28,6 +38,12 @@ if TYPE_CHECKING:
         refcharges: Any
 
     class Attributes(TypedDict, total=False):
+        """
+        Type hints associated with cclib attribubtes.
+
+        Refer to https://cclib.github.io/data.html
+        """
+
         aonames: list[str]
         aooverlaps: NDArray
         atombasis: list[list[int]]
@@ -106,10 +122,18 @@ if TYPE_CHECKING:
         pass
 
     class cclibBaseSchema(TypedDict):
+        """
+        Type hint associated with quacc.schemas.cclib._make_cclib_schema
+        """
+
         logfile: str
         attributes: AllAttributes
         pop_analysis: PopAnalysisAttributes | None
         trajectory: list[AtomsSchema]
 
     class cclibSchema(cclibBaseSchema, RunSchema):
+        """
+        Type hint associated with quacc.schemas.cclib.cclib_summarize_run
+        """
+
         pass

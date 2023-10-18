@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     parameters = dict[str, Any]  # from atoms.calc.parameters
 
     class RunSchema(TypedDict):
-        """Schema for `summarize_run`"""
+        """Schema for `quacc.schemas.ase.summarize_run`"""
 
         input_atoms: AtomsSchema | None
         nid: str
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
         results: results
 
     class OptSchema(RunSchema):
-        """Schema for `summarize_opt_run`"""
+        """Schema for `quacc.schemas.ase.summarize_opt_run`"""
 
         fmax: float | None
         parameters_opt: dict[str, Any]  # from Optimizer.todict()
@@ -44,7 +44,7 @@ if TYPE_CHECKING:
         vib_freqs_raw: list[float]
 
     class VibSchema(TypedDict):
-        """Schema for `summarize_vib_run`"""
+        """Schema for `quacc.schemas.ase.summarize_vib_run`"""
 
         nid: str
         dir_name: str
@@ -75,4 +75,4 @@ if TYPE_CHECKING:
         results: ThermoResults
 
     class VibThermoSchema(VibSchema, ThermoSchema):
-        """Schema for `summarize_vib_and_thermo`"""
+        """Schema for `quacc.schemas.ase.summarize_vib_and_thermo`"""

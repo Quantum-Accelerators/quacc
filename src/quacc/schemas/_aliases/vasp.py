@@ -8,6 +8,10 @@ if TYPE_CHECKING:
     from quacc.schemas._aliases.emmet import TaskDoc
 
     class BaderSchema(TypedDict, total=False):
+        """
+        Type hint associated with quacc.schemas.vasp._bader_runner
+        """
+
         atomic_volume: float
         bader_charge: float
         bader_spin: float
@@ -30,8 +34,14 @@ if TYPE_CHECKING:
         partial_charges: list[float]
 
     class ChargemolSchema(DDECSchema, CM5Schema):
-        pass
+        """
+        Type hint associated with quacc.schemas.chargemol._chargemol_runner
+        """
 
     class VaspSchema(RunSchema, TaskDoc):
+        """
+        Type hint associated with quacc.schemas.vasp.vasp_summarize_run
+        """
+
         bader: BaderSchema
         chargemol: ChargemolSchema
