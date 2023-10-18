@@ -119,6 +119,9 @@ if TYPE_CHECKING:
         zpve: float
 
     class AllAttributes(Attributes, AdditionalAttributes):
+        """
+        Type hint of all cclib attributes
+        """
 
     class cclibBaseSchema(TypedDict):
         """
@@ -134,4 +137,3 @@ if TYPE_CHECKING:
         """
         Type hint associated with quacc.schemas.cclib.cclib_summarize_run
         """
-
