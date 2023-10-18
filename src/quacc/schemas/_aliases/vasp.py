@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     from quacc.schemas._aliases.ase import RunSchema
     from quacc.schemas._aliases.emmet import TaskDoc
 
-    class BaderSchema(TypedDict):
+    class BaderSchema(TypedDict, total=False):
         atomic_volume: float
         bader_charge: float
         bader_spin: float
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
         partial_charges: list[float]
         spin_moments: list[float]
 
-    class DDECSchema(TypedDict):
+    class DDECSchema(TypedDict, total=False):
         partial_charges: list[float]
         spin_moments: list[float]
         dipoles: list[float]

@@ -20,6 +20,7 @@ from quacc.wflow.db import results_to_db
 
 if TYPE_CHECKING:
     from ase import Atoms
+    from pymatgen.core import Structure
 
     from quacc.schemas._aliases.vasp import BaderSchema, DDECSchema, VaspSchema
 
@@ -82,21 +83,16 @@ def vasp_summarize_run(
     base_task_doc = summarize_run(atoms, prep_next_run=prep_next_run, store=False)
 
     # Get Bader analysis
+    struct = vasp_task_doc["output"]["structure"]
     if run_bader:
         try:
-            bader_stats = bader_runner(dir_path)
+            bader_stats, struct = _bader_runner(dir_path, structure=struct)
         except Exception:
             bader_stats = None
             warnings.warn("Bader analysis could not be performed.", UserWarning)
 
         if bader_stats:
             vasp_task_doc["bader"] = bader_stats
-
-            # Attach bader charges/spins to structure object
-            struct = vasp_task_doc["output"]["structure"]
-            struct.add_site_property("bader_charge", bader_stats["partial_charges"])
-            if "spin_moments" in bader_stats:
-                struct.add_site_property("bader_spin", bader_stats["spin_moments"])
             vasp_task_doc["output"]["structure"] = struct
 
     # Make task document
@@ -110,9 +106,11 @@ def vasp_summarize_run(
     return task_doc
 
 
-def bader_runner(
-    path: str | None = None, scratch_dir: str | None = None
-) -> BaderSchema:
+def _bader_runner(
+    path: str | None = None,
+    scratch_dir: str | None = None,
+    structure: Structure = None,
+) -> tuple[BaderSchema, Structure | None]:
     """
     Runs a Bader partial charge and spin moment analysis using the VASP output
     files in the given path. This function requires that `bader` is located in
@@ -128,6 +126,8 @@ def bader_runner(
     scratch_dir
         The path where the Bader analysis will be run. Defaults to
         SETTINGS.SCRATCH_DIR.
+    structure
+        The structure object to attach the Bader charges and spins to.
 
     Returns
     -------
@@ -163,10 +163,15 @@ def bader_runner(
     bader_stats.pop("reference_used", None)
     bader_stats.pop("magmom", None)
 
-    return bader_stats
+    if structure:
+        structure.add_site_property("bader_charge", bader_stats["partial_charges"])
+        if "spin_moments" in bader_stats:
+            structure.add_site_property("bader_spin", bader_stats["spin_moments"])
+
+    return bader_stats, structure
 
 
-def chargemol_runner(
+def _chargemol_runner(
     path: str | None = None,
     atomic_densities_path: str | None = None,
     scratch_dir: str | None = None,
