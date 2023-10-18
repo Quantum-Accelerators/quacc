@@ -17,7 +17,6 @@ if TYPE_CHECKING:
     from pymatgen.core.structure import Structure
     from pymatgen.entries.computed_entries import ComputedEntry
     from pymatgen.io.vasp.inputs import Incar, Kpoints, Poscar, Potcar
-    from tyipng import TypedDict
 
     class SymmetryData(TypedDict):
         """
