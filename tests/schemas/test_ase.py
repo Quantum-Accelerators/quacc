@@ -24,7 +24,7 @@ def test_summarize_run(tmpdir):
     assert results["nsites"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["results"]["energy"] == atoms.get_potential_energy()
-    assert "pull_request" in results["builder_meta"]
+    assert "pymatgen_version" in results["builder_meta"]
 
     # Test DB
     store = MemoryStore()
@@ -107,7 +107,7 @@ def test_summarize_opt_run(tmpdir):
     assert results["trajectory_results"][-1]["energy"] == results["results"]["energy"]
     assert "nid" in results
     assert "dir_name" in results
-    assert "pull_request" in results["builder_meta"]
+    assert "pymatgen_version" in results["builder_meta"]
     assert results["fmax"] == dyn.fmax
     assert results["parameters_opt"]["max_steps"] == 100
 
@@ -186,7 +186,7 @@ def test_summarize_vib_run(tmpdir):
     assert results["parameters_vib"]["nfree"] == 2
     assert "nid" in results
     assert "dir_name" in results
-    assert "pull_request" in results["builder_meta"]
+    assert "pymatgen_version" in results["builder_meta"]
     assert len(results["results"]["vib_freqs_raw"]) == 6
     assert results["results"]["vib_freqs_raw"][0] == pytest.approx(
         -3.054403266390365e-06
@@ -271,7 +271,7 @@ def test_summarize_ideal_gas_thermo(tmpdir):
     assert results["parameters_thermo"]["vib_energies"] == [0.34]
     assert results["parameters_thermo"]["vib_freqs"] == [0.34 / invcm]
     assert results["results"]["energy"] == 0
-    assert "pull_request" in results["builder_meta"]
+    assert "pymatgen_version" in results["builder_meta"]
 
     # Test DB
     atoms = molecule("N2")

@@ -25,7 +25,7 @@ def test_atoms_to_metadata(test_cifs):
     assert results["atoms"].info.get("test", None) == "hi"
     assert results["structure"] == AseAtomsAdaptor.get_structure(atoms)
     assert "molecule" not in results
-    assert "pull_request" in results["builder_meta"]
+    assert "pymatgen_version" in results["builder_meta"]
 
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].symbol = "X"

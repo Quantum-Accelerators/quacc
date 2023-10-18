@@ -11,16 +11,19 @@ def run1():
 
 
 def mock_bader_analysis(*args, **kwargs):
-    return {
-        "min_dist": [1.0] * 16,
-        "atomic_volume": [1.0] * 16,
-        "vacuum_charge": 1.0,
-        "vacuum_volume": 1.0,
-        "bader_version": 1.0,
-        "reference_used": [0.0] * 16,
-        "partial_charges": [-1.0] * 16,
-        "spin_moments": [0.0] * 16,
-    }
+    return [
+        {
+            "min_dist": [1.0] * 16,
+            "atomic_volume": [1.0] * 16,
+            "vacuum_charge": 1.0,
+            "vacuum_volume": 1.0,
+            "bader_version": 1.0,
+            "reference_used": [0.0] * 16,
+            "partial_charges": [-1.0] * 16,
+            "spin_moments": [0.0] * 16,
+        },
+        None,
+    ]
 
 
 def test_vasp_summarize_run(run1):

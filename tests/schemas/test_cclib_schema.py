@@ -65,7 +65,7 @@ def test_cclib_summarize_run(tmpdir):
     assert results["natoms"] == 6
     assert results["attributes"]["metadata"].get("success", None) is True
     assert results["results"].get("energy", None) == pytest.approx(-5516.118738093933)
-    assert "pull_request" in results["builder_meta"]
+    assert "pymatgen_version" in results["builder_meta"]
 
     # Make sure metadata is made
     atoms = read(log2)
