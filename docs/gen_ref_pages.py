@@ -13,14 +13,14 @@ for path in sorted(Path("src").rglob("*.py")):
     full_doc_path = Path("reference", doc_path)
 
     parts = tuple(module_path.parts)
-    print(parts)
-    if parts[1] in ("_cli", "_version", "settings"):
-        continue
 
-    if len(parts) > 2 and "presets" in parts[2] or "_aliases" in parts[2]:
-        continue
-
-    if parts[-1] in ("__init__", "__main__"):
+    ignore = ["_cli", "_version", "settings", "__init__", "__main__", "_aliases", "presets"]
+    skip = False
+    for p in parts:
+        if p in ignore:
+            skip = True
+            break
+    if skip:
         continue
 
     nav[parts] = doc_path.as_posix()
