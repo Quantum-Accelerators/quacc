@@ -15,14 +15,13 @@ from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
 from quacc import SETTINGS
 from quacc.schemas.ase import summarize_run
 from quacc.utils.dicts import remove_dict_nones, sort_dict
-from quacc.utils.files import copy_decompress
 from quacc.wflow.db import results_to_db
 
 if TYPE_CHECKING:
     from ase import Atoms
     from pymatgen.core import Structure
 
-    from quacc.schemas._aliases.vasp import BaderSchema, DDECSchema, VaspSchema
+    from quacc.schemas._aliases.vasp import BaderSchema, ChargemolSchema, VaspSchema
 
 
 def vasp_summarize_run(
@@ -184,7 +183,7 @@ def _bader_runner(
 def _chargemol_runner(
     path: str | None = None,
     atomic_densities_path: str | None = None,
-) -> DDECSchema:
+) -> ChargemolSchema:
     """
     Runs a Chargemol (i.e. DDEC6 + CM5) analysis using the VASP output files in
     the given path. This function requires that the chargemol executable, given
@@ -207,7 +206,7 @@ def _chargemol_runner(
 
     Returns
     -------
-    DDECSchema
+    ChargemolSchema
         Dictionary containing the Chargemol analysis summary
     """
     path = path or Path.cwd()

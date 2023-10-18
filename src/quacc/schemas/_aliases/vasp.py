@@ -26,5 +26,12 @@ if TYPE_CHECKING:
         rcubed_moments: list[float]
         rfourth_moments: list[float]
 
+    class CM5Schema(TypedDict):
+        partial_charges: list[float]
+
+    class ChargemolSchema(DDECSchema, CM5Schema):
+        pass
+
     class VaspSchema(RunSchema, TaskDoc):
         bader: BaderSchema
+        chargemol: ChargemolSchema
