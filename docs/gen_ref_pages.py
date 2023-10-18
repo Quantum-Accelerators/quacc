@@ -17,7 +17,7 @@ for path in sorted(Path("src").rglob("*.py")):
     if parts[1] in ("_cli", "_version", "settings"):
         continue
 
-    if len(parts) > 2 and "presets" in parts[2]:
+    if len(parts) > 2 and "presets" in parts[2] or "_aliases" in parts[2]:
         continue
 
     if parts[-1] in ("__init__", "__main__"):
