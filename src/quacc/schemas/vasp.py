@@ -147,7 +147,7 @@ def _bader_runner(
     # Run Bader analysis
     with TemporaryDirectory(dir=scratch_dir) as tmpdir:
         copy_decompress(relevant_files, tmpdir)
-        bader_stats = bader_analysis_from_path(path)
+        bader_stats = bader_analysis_from_path(tmpdir)
 
     # Store the partial charge, which is much more useful than the raw charge
     # and is more intuitive than the charge transferred. An atom with a positive
@@ -222,7 +222,7 @@ def _chargemol_runner(
     with TemporaryDirectory(dir=scratch_dir) as tmpdir:
         copy_decompress(relevant_files, tmpdir)
         chargemol_stats = ChargemolAnalysis(
-            path=path,
+            path=tmpdir,
             atomic_densities_path=atomic_densities_path,
         )
 
