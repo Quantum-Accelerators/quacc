@@ -14,7 +14,15 @@ for path in sorted(Path("src").rglob("*.py")):
 
     parts = tuple(module_path.parts)
 
-    ignore = ["_cli", "_version", "settings", "__init__", "__main__", "_aliases", "presets"]
+    ignore = [
+        "_cli",
+        "_version",
+        "settings",
+        "__init__",
+        "__main__",
+        "_aliases",
+        "presets",
+    ]
     skip = False
     for p in parts:
         if p in ignore:
