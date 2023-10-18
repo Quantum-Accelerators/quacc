@@ -2,9 +2,9 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import TypedDict
+    from typing import Any, TypedDict
 
-    from numpy.typing import Any, NDArray
+    from numpy.typing import NDArray
 
     from quacc.schemas._aliases.ase import RunSchema
     from quacc.schemas._aliases.atoms import AtomsSchema
@@ -119,7 +119,6 @@ if TYPE_CHECKING:
         zpve: float
 
     class AllAttributes(Attributes, AdditionalAttributes):
-        pass
 
     class cclibBaseSchema(TypedDict):
         """
@@ -136,4 +135,3 @@ if TYPE_CHECKING:
         Type hint associated with quacc.schemas.cclib.cclib_summarize_run
         """
 
-        pass
