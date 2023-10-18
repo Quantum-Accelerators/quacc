@@ -6,11 +6,15 @@ DEFAULT_SETTINGS = SETTINGS.copy()
 
 
 def setup_module():
+    from maggma.stores import MemoryStore
+
     SETTINGS.WORKFLOW_ENGINE = "local"
+    SETTINGS.PRIMARY_STORE = MemoryStore()
 
 
 def teardown_module():
     SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
+    SETTINGS.PRIMARY_STORE = DEFAULT_SETTINGS.PRIMARY_STORE
 
 
 def test_static_job(tmpdir):

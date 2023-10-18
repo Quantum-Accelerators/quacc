@@ -231,23 +231,20 @@ def _make_cclib_schema(
 
     # Store the HOMO/LUMO energies for convenience
     if cclib_obj.moenergies is not None and cclib_obj.homos is not None:
-        homo_energies, lumo_energies, homo_lumo_gaps = _get_homos_lumos(
+        homo_energies, lumo_energies, gaps = _get_homos_lumos(
             cclib_obj.moenergies, cclib_obj.homos
         )
+        min_gap = min(gaps) if gaps else None
     else:
-        homo_energies = None
-        lumo_energies = None
-        homo_lumo_gaps = None
-
-    min_homo_lumo_gap = min(homo_lumo_gaps) if homo_lumo_gaps else None
+        homo_energies, lumo_energies, gaps, min_gap = (None, None, None, None)
 
     # Construct additional attributes
     additional_attributes = {
         "final_scf_energy": final_scf_energy,
         "homo_energies": homo_energies,
         "lumo_energies": lumo_energies,
-        "homo_lumo_gaps": homo_lumo_gaps,
-        "min_homo_lumo_gap": min_homo_lumo_gap,
+        "homo_lumo_gaps": gaps,
+        "min_homo_lumo_gap": min_gap,
     }
 
     # Calculate any population analysis properties

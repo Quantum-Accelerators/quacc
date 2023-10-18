@@ -24,6 +24,22 @@ def mock_bader_analysis(*args, **kwargs):
     }
 
 
+def mock_chargemol_analysis(*args, **kwargs):
+    return {
+        "ddec": {
+            "partial_charges": [1.0] * 16,
+            "spin_moments": [0.0] * 16,
+            "dipoles": [1.0] * 16,
+            "rsquared_moments": [1.0] * 16,
+            "rcubed_moments": [1.0] * 16,
+            "rfourth_moments": [1.0] * 16,
+        },
+        "cm5": {
+            "partial_charges": [1.0] * 16,
+        },
+    }
+
+
 def test_vasp_summarize_run(run1):
     import os
 
@@ -135,6 +151,76 @@ def test_summarize_bader_run(monkeypatch, run1, tmpdir):
     assert struct.site_properties["bader_spin"] == [0.0] * len(atoms)
 
 
+def test_summarize_chargemol_run(monkeypatch, run1, tmpdir):
+    from shutil import copytree, move
+
+    from ase.io import read
+
+    from quacc.schemas.vasp import vasp_summarize_run
+
+    monkeypatch.setattr(
+        "quacc.schemas.vasp.bader_analysis_from_path",
+        mock_bader_analysis,
+    )
+    monkeypatch.setattr(
+        "quacc.schemas.vasp.ChargemolAnalysis",
+        mock_chargemol_analysis,
+    )
+    monkeypatch.setenv("DDEC6_ATOMIC_DENSITIES_DIR", "test")
+    tmpdir.chdir()
+
+    p = tmpdir / "vasp_run"
+    copytree(run1, p)
+
+    move(p / "garbled_pot", p / "POTCAR")
+
+    for f in ["CHGCAR.gz", "AECCAR0.gz", "AECCAR2.gz"]:
+        with open(p / f, "w") as w:
+            w.write("test")
+
+    # Make sure Bader works
+    atoms = read(str(p / "OUTCAR.gz"))
+    results = vasp_summarize_run(atoms, dir_path=p, run_bader=False, run_chargemol=True)
+    struct = results["output"]["structure"]
+    assert struct.site_properties["ddec6_charge"] == [1.0] * len(atoms)
+    assert struct.site_properties["cm5_charge"] == [1.0] * len(atoms)
+    assert struct.site_properties["ddec6_spin"] == [0.0] * len(atoms)
+
+
+def test_summarize_bader_and_chargemol_run(monkeypatch, run1, tmpdir):
+    from shutil import copytree, move
+
+    from ase.io import read
+
+    from quacc.schemas.vasp import vasp_summarize_run
+
+    monkeypatch.setattr(
+        "quacc.schemas.vasp.ChargemolAnalysis",
+        mock_chargemol_analysis,
+    )
+    monkeypatch.setenv("DDEC6_ATOMIC_DENSITIES_DIR", "test")
+    tmpdir.chdir()
+
+    p = tmpdir / "vasp_run"
+    copytree(run1, p)
+
+    move(p / "garbled_pot", p / "POTCAR")
+
+    for f in ["CHGCAR.gz", "AECCAR0.gz", "AECCAR2.gz"]:
+        with open(p / f, "w") as w:
+            w.write("test")
+
+    # Make sure Bader works
+    atoms = read(str(p / "OUTCAR.gz"))
+    results = vasp_summarize_run(atoms, dir_path=p, run_bader=True, run_chargemol=True)
+    struct = results["output"]["structure"]
+    assert struct.site_properties["ddec6_charge"] == [1.0] * len(atoms)
+    assert struct.site_properties["cm5_charge"] == [1.0] * len(atoms)
+    assert struct.site_properties["ddec6_spin"] == [0.0] * len(atoms)
+    assert struct.site_properties["bader_charge"] == [1.0] * len(atoms)
+    assert struct.site_properties["bader_spin"] == [0.0] * len(atoms)
+
+
 def test_no_bader(run1, tmpdir):
     from ase.io import read
 
@@ -144,4 +230,16 @@ def test_no_bader(run1, tmpdir):
 
     atoms = read(run1 / "OUTCAR.gz")
     with pytest.warns(UserWarning):
-        vasp_summarize_run(atoms, dir_path=run1, run_bader=True)
+        vasp_summarize_run(atoms, dir_path=run1, run_bader=True, run_chargemol=False)
+
+
+def test_no_chargemol(run1, tmpdir):
+    from ase.io import read
+
+    from quacc.schemas.vasp import vasp_summarize_run
+
+    tmpdir.chdir()
+
+    atoms = read(run1 / "OUTCAR.gz")
+    with pytest.warns(UserWarning):
+        vasp_summarize_run(atoms, dir_path=run1, run_bader=False, run_chargemol=True)

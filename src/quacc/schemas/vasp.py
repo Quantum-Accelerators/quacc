@@ -237,7 +237,7 @@ def _chargemol_runner(
         atomic_densities_path=atomic_densities_path,
     )
 
-    # Attach the Bader charges and spins to the structure
+    # Attach the Chargemol charges and spins to the structure
     if structure:
         structure.add_site_property(
             "ddec6_charge", chargemol_stats["ddec"]["partial_charges"]
