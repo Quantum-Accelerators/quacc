@@ -30,6 +30,7 @@ def vasp_summarize_run(
     dir_path: str | None = None,
     prep_next_run: bool = True,
     run_bader: bool | None = None,
+    run_chargemol: bool | None = None,
     check_convergence: bool = True,
     additional_fields: dict | None = None,
     store: Store | None = None,
@@ -53,6 +54,10 @@ def vasp_summarize_run(
         Whether a Bader analysis should be performed. Will not run if bader
         executable is not in PATH even if bader is set to True. Defaults to
         VASP_BADER in settings.
+    run_chargemol
+        Whether a Chargemol analysis should be performed. Will not run if chargemol
+        executable is not in PATH even if chargmeol is set to True. Defaults to
+        VASP_CHARGEMOL in settings.
     check_convergence
         Whether to throw an error if convergence is not reached.
     additional_fields
@@ -69,12 +74,14 @@ def vasp_summarize_run(
 
     additional_fields = additional_fields or {}
     run_bader = SETTINGS.VASP_BADER if run_bader is None else run_bader
+    run_chargemol = SETTINGS.VASP_CHARGEMOL if run_chargemol is None else run_chargemol
     dir_path = dir_path or Path.cwd()
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
     # Fetch all tabulated results from VASP outputs files Fortunately, emmet
     # already has a handy function for this
     vasp_task_doc = TaskDoc.from_directory(dir_path).dict()
+    struct = vasp_task_doc["output"]["structure"]
 
     # Check for calculation convergence
     if check_convergence and vasp_task_doc["state"] != "successful":
@@ -83,7 +90,6 @@ def vasp_summarize_run(
     base_task_doc = summarize_run(atoms, prep_next_run=prep_next_run, store=False)
 
     # Get Bader analysis
-    struct = vasp_task_doc["output"]["structure"]
     if run_bader:
         try:
             bader_stats, struct = _bader_runner(dir_path, structure=struct)
@@ -93,7 +99,20 @@ def vasp_summarize_run(
 
         if bader_stats:
             vasp_task_doc["bader"] = bader_stats
-            vasp_task_doc["output"]["structure"] = struct
+
+    # Get the Chargemol analysis
+    if run_chargemol:
+        try:
+            chargemol_stats, struct = _chargemol_runner(dir_path, structure=struct)
+        except Exception:
+            chargemol_stats = None
+            warnings.warn("Chargemol analysis could not be performed.", UserWarning)
+
+        if chargemol_stats:
+            vasp_task_doc["chargemol"] = chargemol_stats
+
+    # Override the Structure to have the attached properties
+    vasp_task_doc["output"]["structure"] = struct
 
     # Make task document
     unsorted_task_doc = base_task_doc | vasp_task_doc | additional_fields
