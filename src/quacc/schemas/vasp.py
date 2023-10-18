@@ -93,24 +93,26 @@ def vasp_summarize_run(
     # Get Bader analysis
     if run_bader:
         try:
-            bader_stats, struct = _bader_runner(dir_path, structure=struct)
+            bader_results = _bader_runner(dir_path, structure=struct)
         except Exception as err:
-            bader_stats = None
+            bader_results = None
             logging.warning(f"Bader analysis could not be performed: {err}")
 
-        if bader_stats:
-            vasp_task_doc["bader"] = bader_stats
+        if bader_results:
+            vasp_task_doc["bader"] = bader_results[0]
+            struct = bader_results[1]
 
     # Get the Chargemol analysis
     if run_chargemol:
         try:
-            chargemol_stats, struct = _chargemol_runner(dir_path, structure=struct)
+            chargemol_results = _chargemol_runner(dir_path, structure=struct)
         except Exception as err:
-            chargemol_stats = None
+            chargemol_results = None
             logging.warning(f"Chargemol analysis could not be performed: {err}")
 
-        if chargemol_stats:
-            vasp_task_doc["chargemol"] = chargemol_stats
+        if chargemol_results:
+            vasp_task_doc["chargemol"] = chargemol_results[0]
+            struct = chargemol_results[1]
 
     # Override the Structure to have the attached properties
     vasp_task_doc["output"]["structure"] = struct
