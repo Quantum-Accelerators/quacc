@@ -159,10 +159,6 @@ def test_summarize_chargemol_run(monkeypatch, run1, tmpdir):
     from quacc.schemas.vasp import vasp_summarize_run
 
     monkeypatch.setattr(
-        "quacc.schemas.vasp.bader_analysis_from_path",
-        mock_bader_analysis,
-    )
-    monkeypatch.setattr(
         "quacc.schemas.vasp.ChargemolAnalysis",
         mock_chargemol_analysis,
     )
@@ -194,6 +190,10 @@ def test_summarize_bader_and_chargemol_run(monkeypatch, run1, tmpdir):
 
     from quacc.schemas.vasp import vasp_summarize_run
 
+    monkeypatch.setattr(
+        "quacc.schemas.vasp.bader_analysis_from_path",
+        mock_bader_analysis,
+    )
     monkeypatch.setattr(
         "quacc.schemas.vasp.ChargemolAnalysis",
         mock_chargemol_analysis,
