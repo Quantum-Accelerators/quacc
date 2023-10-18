@@ -65,7 +65,7 @@ def test_run_bader(tmpdir):
     tmpdir.chdir()
     prep_files()
 
-    bader_stats = _bader_runner()
+    bader_stats = _bader_runner()[0]
     assert bader_stats["min_dist"] == [1.0]
     assert bader_stats["partial_charges"] == [1.0]
     assert bader_stats["spin_moments"] == [0.0]
@@ -92,7 +92,7 @@ def test_run_chargemol(tmpdir):
     tmpdir.chdir()
     prep_files()
 
-    chargemol_stats = _chargemol_runner(path=".", atomic_densities_path=".")
+    chargemol_stats = _chargemol_runner(path=".", atomic_densities_path=".")[0]
     assert chargemol_stats["ddec"]["partial_charges"] == [1.0]
     assert chargemol_stats["ddec"]["spin_moments"] == [0.0]
 
