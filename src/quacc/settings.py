@@ -192,6 +192,13 @@ class QuaccSettings(BaseSettings):
             "Requires bader to be in PATH."
         ),
     )
+    VASP_CHARGEMOL: bool = Field(
+        bool(os.environ.get("DDEC6_ATOMIC_DENSITIES_DIR")),
+        description=(
+            "Whether to run a Chargemol (i.e. DDEC6, CM5) analysis when summarizing VASP results."
+            "Requires the Chargemol executable to be in PATH and the DDEC6_ATOMIC_DENSITIES_DIR environment variable."
+        ),
+    )
     VASP_PRESET_MAG_DEFAULT: float = Field(
         1.0,
         description=(

@@ -97,12 +97,15 @@ skip_gitignore = true
 
 [tool.coverage.run]
 source = ["src"]
+omit = [
+  "*/_aliases/*"
+]
 
 [tool.coverage.report]
-exclude_lines = [
-    "if TYPE_CHECKING:",
-    "if __name__ == .__main__.:",
-    "except ImportError:",
+exclude_also = [
+  "if TYPE_CHECKING:",
+  "if __name__ == .__main__.:",
+  "except ImportError:",
 ]
 
 [tool.ruff]

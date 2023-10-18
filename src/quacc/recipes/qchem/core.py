@@ -10,7 +10,7 @@ from quacc import SETTINGS, job
 from quacc.calculators.qchem import QChem
 from quacc.runners.calc import run_ase_opt, run_calc
 from quacc.schemas.ase import summarize_opt_run, summarize_run
-from quacc.utils.dicts import merge_dicts, remove_dict_empties
+from quacc.utils.dicts import merge_dicts, remove_dict_nones
 
 try:
     from sella import Sella
@@ -494,7 +494,7 @@ def _base_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
 
-    qchem_flags = remove_dict_empties(defaults)
+    qchem_flags = remove_dict_nones(defaults)
 
     atoms.calc = QChem(atoms, **qchem_flags)
     final_atoms = run_calc(atoms, copy_files=copy_files)
@@ -545,7 +545,7 @@ def _base_opt_job(
     # TODO:
     #   - passing initial Hessian?
 
-    qchem_flags = remove_dict_empties(qchem_defaults)
+    qchem_flags = remove_dict_nones(qchem_defaults)
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
     atoms.calc = QChem(atoms, **qchem_flags)

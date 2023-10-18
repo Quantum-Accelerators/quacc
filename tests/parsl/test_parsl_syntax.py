@@ -17,6 +17,7 @@ def setup_module():
 
 def teardown_module():
     SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
+    parsl.clear()
 
 
 def test_parsl_decorators(tmpdir):

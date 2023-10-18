@@ -1,10 +1,9 @@
 """Schemas for VASP"""
 from __future__ import annotations
 
+import logging
 import os
-import warnings
 from pathlib import Path
-from tempfile import TemporaryDirectory
 from typing import TYPE_CHECKING
 
 from emmet.core.tasks import TaskDoc
@@ -13,34 +12,17 @@ from pymatgen.command_line.bader_caller import bader_analysis_from_path
 from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
 
 from quacc import SETTINGS
-from quacc.runners.prep import prep_next_run as prep_next_run_
-from quacc.schemas.atoms import atoms_to_metadata
-from quacc.utils.dicts import sort_dict
-from quacc.utils.files import copy_decompress
+from quacc.schemas.ase import summarize_run
+from quacc.utils.dicts import remove_dict_nones, sort_dict
 from quacc.wflow.db import results_to_db
 
 if TYPE_CHECKING:
-    from typing import TypedDict, TypeVar
-
     from ase import Atoms
+    from pymatgen.core import Structure
 
-    VaspSchema = TypeVar("VaspSchema")
+    from quacc.schemas._aliases.vasp import BaderSchema, ChargemolSchema, VaspSchema
 
-    class BaderSchema(TypedDict):
-        atomic_volume: float
-        bader_charge: float
-        bader_spin: float
-        bader_version: float
-        min_dist: list[float]
-        partial_charges: list[float]
-        spin_moments: list[float]
-
-    class DDECSchema(TypedDict):
-        partial_charges: list[float]
-        spin_moments: list[float]
-        dipoles: list[float]
-        bond_order_sums: list[float]
-        bond_order_dict: dict
+logger = logging.getLogger(__name__)
 
 
 def vasp_summarize_run(
@@ -48,6 +30,7 @@ def vasp_summarize_run(
     dir_path: str | None = None,
     prep_next_run: bool = True,
     run_bader: bool | None = None,
+    run_chargemol: bool | None = None,
     check_convergence: bool = True,
     additional_fields: dict | None = None,
     store: Store | None = None,
@@ -71,6 +54,10 @@ def vasp_summarize_run(
         Whether a Bader analysis should be performed. Will not run if bader
         executable is not in PATH even if bader is set to True. Defaults to
         VASP_BADER in settings.
+    run_chargemol
+        Whether a Chargemol analysis should be performed. Will not run if chargemol
+        executable is not in PATH even if chargmeol is set to True. Defaults to
+        VASP_CHARGEMOL in settings.
     check_convergence
         Whether to throw an error if convergence is not reached.
     additional_fields
@@ -82,247 +69,68 @@ def vasp_summarize_run(
     Returns
     -------
     VaspSchema
-        Dictionary representation of the task document with the following
-        fields:
-
-        - analysis: AnalysisDoc = Field(None, title="Calculation Analysis",
-          description="Some analysis of calculation data after collection.")
-            - analysis.delta_volume: float = Field(None, title="Volume Change",
-              description="Volume change for the calculation.")
-            - analysis.delta_volume_percent: float = Field(None, title="Volume
-              Change Percent", description="Percent volume change for the
-              calculation.")
-            - analysis.max_force: float = Field(None, title="Max Force",
-              description="Maximum force on any atom at the end of the
-              calculation.")
-            - analysis.warnings: List[str] = Field(None, title="Calculation
-              Warnings",description="Warnings issued after analysis.")
-            - analysis.errors: List[str] = Field(None, title="Calculation
-              Errors", description="Errors issued after analysis.")
-        - atoms: Atoms = Field(None, title = "The Atoms object from the
-          calculation result.")
-        - atoms_info: dict = Field(None, title = "The Atoms object info obtained
-          from atoms.info.")
-        - builder_meta: EmmetMeta = Field(default_factory=EmmetMeta,
-          description="Builder metadata."):
-            - builder_meta.build_date: str =
-              Field(default_factory=datetime.utcnow, description="The build date
-              for this document.")
-            - builder_meta.emmet_version: str = Field(__version__,
-              description="The version of emmet this document was built with.")
-            - builder_meta.pymatgen_version: str = Field(pmg_version,
-              description="The version of pymatgen this document was built
-              with.")
-        - chemsys: str = Field(None, title="Chemical System",
-          description="dash-delimited string of elements in the material.")
-        - composition: Composition = Field(None, description="Full composition
-          for the material.")
-        - composition_reduced: Composition = Field(None, title="Reduced
-          Composition", description="Simplified representation of the
-          composition.")
-        - custodian: List[CustodianDoc] = Field(None, title="Calcs reversed
-          data", description="Detailed custodian data for each VASP calculation
-          contributing to the task document.")
-            - custodian.corrections: List[Any] = Field(None, title="Custodian
-              Corrections", description="List of custodian correction data for
-              calculation.")
-            - custodian.job: dict = Field(None, title="Cusotodian Job Data",
-              description="Job data logged by custodian.",)
-        - density: float = Field(None, title="Density", description="Density in
-          grams per cm^3.")
-        - density_atomic: float = Field(None, title="Packing Density",
-          description="The atomic packing density in atoms per cm^3.")
-        - dir_name: str = Field(None, description="The directory for this VASP
-          task")
-        - elements: List[Element] = Field(None, description="List of elements in
-          the material.")
-        - entry: ComputedEntry = Field(None, description="The ComputedEntry from
-          the task doc")
-        - formula_anonymous: str = Field(None, title="Anonymous Formula",
-          description="Anonymized representation of the formula.")
-        - formula_pretty: str = Field(None, title="Pretty Formula",
-          description="Cleaned representation of the formula.")
-        - input: InputDoc = Field(None, description="The input structure used to
-          generate the current task document.")
-            - input.incar: Dict[str, Any] = Field(None, description="INCAR
-              parameters for the calculation")
-            - input.is_hubbard: bool = Field(False, description="Is this a
-              Hubbard +U calculation")
-            - input.kpoints: Union[Dict[str, Any], Kpoints] = Field(None,
-              description="KPOINTS for the calculation")
-            - input.hubbards: Dict = Field(None, description="The hubbard
-              parameters used")
-            - input.lattice_rec: Lattice = Field(None, description="Reciprocal
-              lattice of the structure")
-            - input.nkpoints: int = Field(None, description="Total number of
-              k-points")
-            - input.potcar: List[str] = Field(None, description="POTCAR symbols
-              in the calculation")
-            - input.potcar_spec: List[PotcarSpec] = Field(None,
-              description="Title and hash of POTCAR files used in the
-              calculation")
-            - input.potcar_type: List[str] = Field(None, description="List of
-              POTCAR functional types.")
-            - input.parameters: Dict = Field(None, description="Parameters from
-              vasprun")
-            - input.structure: Structure = Field(None, description="Input
-              structure for the calculation")
-        - nelements: int = Field(None, description="Number of elements.")
-        - nid: str = Field(None, title = "The node ID representing the machine
-          where the calculation was run.")
-        - nsites: int = Field(None, description="Total number of sites in the
-          structure.")
-        - orig_inputs: OrigInputs = Field(None, description="The exact set of
-          input parameters used to generate the current task document.")
-            - orig_inputs.incar: Union[Incar, Dict] = Field(None,
-              description="Pymatgen object representing the INCAR file.")
-            - orig_inputs.poscar: Poscar = Field(None, description="Pymatgen
-              object representing the POSCAR file.")
-            - orig_inputs.kpoints: Kpoints = Field(None, description="Pymatgen
-              object representing the KPOINTS file.")
-            - orig_inputs.potcar: Union[Potcar, VaspPotcar, List[Any]] =
-              Field(None, description="Pymatgen object representing the POTCAR
-              file.",)
-        - output: OutputDoc = Field(None, description="The exact set of output
-          parameters used to generate the current task document.")
-            - output.bandgap: float = Field(None, description="The DFT bandgap
-              for the last calculation")
-            - output.density: float = Field(..., description="Density of in
-              units of g/cc.")
-            - output.direct_gap: float = the direct bandgap (eV)
-            - output.dos_properties: DosProperties = Field(None,
-              description="DOS properties for the material")
-            - output.efermi: float = the fermi energy
-            - output.energy: float = Field(..., description="Total Energy in
-              units of eV.")
-            - output.energy_per_atom: float = Field(None, description="The final
-              DFT energy per atom for the last calculation")
-            - output.forces: List[List[float]] = Field(None, description="The
-              force on each atom in units of eV/A^2.")
-            - output.ionic_steps: float = the number of ionic steps
-            - output.is_gap_direct: bool = if the band gap is direct
-            - output.mag_density: float = magnetization density
-            - output.outcar: Outcar = Field(None, description="Pymatgen object
-              representing the OUTCAR file.")
-            - output.run_stats: Dict = Field(None, description="Runtime
-              statistics from the calculation.")
-            - output.stress: List[List[float]] = Field(None, description="The
-              stress on the cell in units of kB.")
-            - output.structure: Structure = Field(None, title="Output
-              Structure", description="Output Structure from the VASP
-              calculation.")
-        - state: TaskState = Field(None, description="State of this
-          calculation")
-        - symmetry: SymmetryData = Field(None, description="Symmetry data for
-          this material.")
-            - symmetry.crystal_system: CrystalSystem = Field(None,
-              title="Crystal System", description="The crystal system for this
-              lattice.")
-            - symmetry.number: int = Field(None, title="Space Group Number",
-              description="The spacegroup number for the lattice.")
-            - symmetry.point_group: str = Field(None, title="Point Group
-              Symbol", description="The point group for the lattice.")
-            - symmetry.symbol: str = Field(None, title="Space Group Symbol",
-              description="The spacegroup symbol for the lattice.")
-            - symmetry.symprec: float = Field(None, title="Symmetry Finding
-              Precision", description="The precision given to spglib to
-              determine the symmetry of this lattice.")
-            - symmetry.version
-        - vasp_version: str: the version of VASP
-        - volume: float = Field(None, title="Volume", description="Total volume
-          for this structure in Angstroms^3.")
-
-        If run_bader is True, the following fields are added:
-
-        - bader
-            - bader.atomic_volume: float = The atomic volume
-            - bader.bader_charge: float = The net bader charge
-            - bader.bader_spin: float = The net bader spin density
-            - bader.bader_version: float = The bader version
-            - bader.min_dist: List[float] = The bader min_dist parameter
-            - bader.partial_charges: List[float] = The atom-projected bader
-              partial charges
-            - bader.spin_moments: List[float] = The atom-projected bader spin
-              moments
+        Dictionary representation of the task document
     """
 
     additional_fields = additional_fields or {}
     run_bader = SETTINGS.VASP_BADER if run_bader is None else run_bader
+    run_chargemol = SETTINGS.VASP_CHARGEMOL if run_chargemol is None else run_chargemol
     dir_path = dir_path or Path.cwd()
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
-    # Fetch all tabulated results from VASP outputs files Fortunately, emmet
+    # Fetch all tabulated results from VASP outputs files. Fortunately, emmet
     # already has a handy function for this
-    taskdoc = TaskDoc.from_directory(dir_path).dict()
-
-    uri = taskdoc["dir_name"]
-    taskdoc["nid"] = uri.split(":")[0]
-    taskdoc["dir_name"] = ":".join(uri.split(":")[1:])
-    taskdoc["builder_meta"]["build_date"] = str(taskdoc["builder_meta"]["build_date"])
+    vasp_task_doc = TaskDoc.from_directory(dir_path).dict()
+    struct = vasp_task_doc["output"]["structure"]
 
     # Check for calculation convergence
-    if check_convergence and taskdoc["state"] != "successful":
+    if check_convergence and vasp_task_doc["state"] != "successful":
         raise ValueError("VASP calculation did not converge. Will not store task data.")
 
-    # Remove unnecessary fields
-    for k in [
-        "additional_json",
-        "author",
-        "calcs_reversed",
-        "icsd_id",
-        "last_updated",
-        "structure",  # already in output
-        "tags",
-        "task_id",
-        "task_label",
-        "transformations",
-        "vasp_objects",
-    ]:
-        taskdoc.pop(k, None)
-
-    if "output" in taskdoc:
-        taskdoc["output"].pop("elph_displaced_structures", None)
-        taskdoc["output"].pop("frequency_dependent_dielectric", None)
+    base_task_doc = summarize_run(atoms, prep_next_run=prep_next_run, store=False)
 
     # Get Bader analysis
     if run_bader:
         try:
-            bader_stats = bader_runner(dir_path)
-        except Exception:
-            bader_stats = None
-            warnings.warn("Bader analysis could not be performed.", UserWarning)
+            bader_results = _bader_runner(dir_path, structure=struct)
+        except Exception as err:
+            bader_results = None
+            logging.warning(f"Bader analysis could not be performed: {err}")
 
-        if bader_stats:
-            taskdoc["bader"] = bader_stats
+        if bader_results:
+            vasp_task_doc["bader"] = bader_results[0]
+            struct = bader_results[1]
 
-            # Attach bader charges/spins to structure object
-            struct = taskdoc["output"]["structure"]
-            struct.add_site_property("bader_charge", bader_stats["partial_charges"])
-            if "spin_moments" in bader_stats:
-                struct.add_site_property("bader_spin", bader_stats["spin_moments"])
-            taskdoc["output"]["structure"] = struct
+    # Get the Chargemol analysis
+    if run_chargemol:
+        try:
+            chargemol_results = _chargemol_runner(dir_path, structure=struct)
+        except Exception as err:
+            chargemol_results = None
+            logging.warning(f"Chargemol analysis could not be performed: {err}")
 
-    # Prepares the Atoms object for the next run by moving the final magmoms to
-    # initial, clearing the calculator state, and assigning the resulting Atoms
-    # object a unique ID.
-    if prep_next_run:
-        atoms = prep_next_run_(atoms)
+        if chargemol_results:
+            vasp_task_doc["chargemol"] = chargemol_results[0]
+            struct = chargemol_results[1]
 
-    # We use get_metadata=False and store_pmg=False because the TaskDocument
-    # already makes the structure metadata for us
-    atoms_db = atoms_to_metadata(atoms, get_metadata=False, store_pmg=False)
+    # Override the Structure to have the attached properties
+    vasp_task_doc["output"]["structure"] = struct
 
     # Make task document
-    summary = sort_dict(taskdoc | atoms_db | additional_fields)
+    unsorted_task_doc = base_task_doc | vasp_task_doc | additional_fields
+    task_doc = sort_dict(remove_dict_nones(unsorted_task_doc))
 
     # Store the results
     if store:
-        results_to_db(store, taskdoc)
+        results_to_db(store, task_doc)
 
-    return summary
+    return task_doc
 
 
-def bader_runner(path: str | None = None, scratch_dir: str | None = None) -> dict:
+def _bader_runner(
+    path: str | None = None,
+    structure: Structure = None,
+) -> tuple[BaderSchema, Structure | None]:
     """
     Runs a Bader partial charge and spin moment analysis using the VASP output
     files in the given path. This function requires that `bader` is located in
@@ -335,16 +143,16 @@ def bader_runner(path: str | None = None, scratch_dir: str | None = None) -> dic
         The path where the VASP output files are located. Must include CHGCAR,
         AECCAR0, AECCAR2, and POTCAR files. These files can be gzip'd or not --
         it doesn't matter. If None, the current working directory is used.
-    scratch_dir
-        The path where the Bader analysis will be run. Defaults to
-        SETTINGS.SCRATCH_DIR.
+    structure
+        The structure object to attach the Bader charges and spins to.
 
     Returns
     -------
     BaderSchema
         Dictionary containing the Bader analysis summary
+    Structure
+        Structure object with the Bader charges and spins attached
     """
-    scratch_dir = SETTINGS.SCRATCH_DIR if scratch_dir is None else scratch_dir
     path = path or Path.cwd()
 
     # Make sure files are present
@@ -354,10 +162,7 @@ def bader_runner(path: str | None = None, scratch_dir: str | None = None) -> dic
             msg = f"Could not find {f} in {path}."
             raise FileNotFoundError(msg)
 
-    # Run Bader analysis
-    with TemporaryDirectory(dir=scratch_dir) as tmpdir:
-        copy_decompress(relevant_files, tmpdir)
-        bader_stats = bader_analysis_from_path(path)
+    bader_stats = bader_analysis_from_path(path)
 
     # Store the partial charge, which is much more useful than the raw charge
     # and is more intuitive than the charge transferred. An atom with a positive
@@ -368,19 +173,23 @@ def bader_runner(path: str | None = None, scratch_dir: str | None = None) -> dic
     # Some cleanup of the returned dictionary
     if "magmom" in bader_stats:
         bader_stats["spin_moments"] = bader_stats["magmom"]
-    bader_stats.pop("charge", None)
-    bader_stats.pop("charge_transfer", None)
-    bader_stats.pop("reference_used", None)
-    bader_stats.pop("magmom", None)
+    for k in ["charge", "charge_transfer", "reference_used", "magmom"]:
+        bader_stats.pop(k, None)
 
-    return bader_stats
+    # Attach the Bader charges and spins to the structure
+    if structure:
+        structure.add_site_property("bader_charge", bader_stats["partial_charges"])
+        if "spin_moments" in bader_stats:
+            structure.add_site_property("bader_spin", bader_stats["spin_moments"])
+
+    return bader_stats, structure
 
 
-def chargemol_runner(
+def _chargemol_runner(
     path: str | None = None,
     atomic_densities_path: str | None = None,
-    scratch_dir: str | None = None,
-) -> DDECSchema:
+    structure: Structure | None = None,
+) -> tuple[ChargemolSchema, Structure | None]:
     """
     Runs a Chargemol (i.e. DDEC6 + CM5) analysis using the VASP output files in
     the given path. This function requires that the chargemol executable, given
@@ -400,15 +209,14 @@ def chargemol_runner(
         If None, we assume that this directory is defined in an environment
         variable named DDEC6_ATOMIC_DENSITIES_DIR. See the Chargemol
         documentation for more information.
-    scratch_dir
-        The path where the Chargemol analysis will be run.
 
     Returns
     -------
-    DDECSchema
+    ChargemolSchema
         Dictionary containing the Chargemol analysis summary
+    Structure
+        Structure object with the Chargemol charges and spins attached
     """
-    scratch_dir = SETTINGS.SCRATCH_DIR if scratch_dir is None else scratch_dir
     path = path or Path.cwd()
 
     # Make sure files are present
@@ -424,16 +232,23 @@ def chargemol_runner(
         raise EnvironmentError(msg)
 
     # Run Chargemol analysis
-    with TemporaryDirectory(dir=scratch_dir) as tmpdir:
-        copy_decompress(relevant_files, tmpdir)
-        chargemol_stats = ChargemolAnalysis(
-            path=path,
-            atomic_densities_path=atomic_densities_path,
+    chargemol_stats = ChargemolAnalysis(
+        path=path,
+        atomic_densities_path=atomic_densities_path,
+    )
+
+    # Attach the Chargemol charges and spins to the structure
+    if structure:
+        structure.add_site_property(
+            "ddec6_charge", chargemol_stats["ddec"]["partial_charges"]
         )
+        if "spin_moments" in chargemol_stats["ddec"]:
+            structure.add_site_property(
+                "ddec6_spin", chargemol_stats["ddec"]["spin_moments"]
+            )
+        if "cm5" in chargemol_stats:
+            structure.add_site_property(
+                "cm5_charge", chargemol_stats["cm5"]["partial_charges"]
+            )
 
-    # Some cleanup of the returned dictionary
-    chargemol_stats.pop("rsquared_moments", None)
-    chargemol_stats.pop("rcubed_moments", None)
-    chargemol_stats.pop("rfourth_moments", None)
-
-    return chargemol_stats
+    return chargemol_stats, structure
