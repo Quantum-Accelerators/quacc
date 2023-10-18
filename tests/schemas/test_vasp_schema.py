@@ -110,7 +110,7 @@ def test_summarize_bader_run(monkeypatch, run1):
     from quacc.schemas.vasp import vasp_summarize_run
 
     # Make sure Bader works
-    monkeypatch.setattr("quacc.schemas.vasp.bader_runner", mock_bader_analysis)
+    monkeypatch.setattr("quacc.schemas.vasp._bader_runner", mock_bader_analysis)
     atoms = read(run1 / "OUTCAR.gz")
     results = vasp_summarize_run(atoms, dir_path=run1, run_bader=True)
     struct = results["output"]["structure"]
