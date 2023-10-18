@@ -1,10 +1,10 @@
 """Schemas for VASP"""
 from __future__ import annotations
 
+import logging
 import os
 import warnings
 from pathlib import Path
-from tempfile import TemporaryDirectory
 from typing import TYPE_CHECKING
 
 from emmet.core.tasks import TaskDoc
@@ -22,6 +22,8 @@ if TYPE_CHECKING:
     from pymatgen.core import Structure
 
     from quacc.schemas._aliases.vasp import BaderSchema, ChargemolSchema, VaspSchema
+
+logger = logging.getLogger(__name__)
 
 
 def vasp_summarize_run(
@@ -94,7 +96,7 @@ def vasp_summarize_run(
             bader_stats, struct = _bader_runner(dir_path, structure=struct)
         except Exception:
             bader_stats = None
-            warnings.warn("Bader analysis could not be performed.", UserWarning)
+            logging.warning("Bader analysis could not be performed.")
 
         if bader_stats:
             vasp_task_doc["bader"] = bader_stats
@@ -105,7 +107,7 @@ def vasp_summarize_run(
             chargemol_stats, struct = _chargemol_runner(dir_path, structure=struct)
         except Exception:
             chargemol_stats = None
-            warnings.warn("Chargemol analysis could not be performed.", UserWarning)
+            logging.warning("Chargemol analysis could not be performed.")
 
         if chargemol_stats:
             vasp_task_doc["chargemol"] = chargemol_stats
