@@ -11,19 +11,17 @@ def run1():
 
 
 def mock_bader_analysis(*args, **kwargs):
-    return [
-        {
-            "min_dist": [1.0] * 16,
-            "atomic_volume": [1.0] * 16,
-            "vacuum_charge": 1.0,
-            "vacuum_volume": 1.0,
-            "bader_version": 1.0,
-            "reference_used": [0.0] * 16,
-            "partial_charges": [-1.0] * 16,
-            "spin_moments": [0.0] * 16,
-        },
-        None,
-    ]
+    return {
+        "min_dist": [1.0] * 16,
+        "charge": [1.0] * 16,
+        "atomic_volume": [1.0] * 16,
+        "vacuum_charge": 1.0,
+        "vacuum_volume": 1.0,
+        "bader_version": 1.0,
+        "reference_used": [0.0] * 16,
+        "charge_transfer": [-1.0] * 16,
+        "magmom": [0.0] * 16,
+    }
 
 
 def test_vasp_summarize_run(run1):
@@ -107,24 +105,42 @@ def test_vasp_summarize_run(run1):
     MontyDecoder().process_decoded(d)
 
 
-def test_summarize_bader_run(monkeypatch, run1):
+def test_summarize_bader_run(monkeypatch, run1, tmpdir):
+    from shutil import copytree, move
+
     from ase.io import read
 
     from quacc.schemas.vasp import vasp_summarize_run
 
+    monkeypatch.setattr(
+        "quacc.schemas.vasp.bader_analysis_from_path",
+        mock_bader_analysis,
+    )
+    tmpdir.chdir()
+
+    p = tmpdir / "vasp_run"
+    copytree(run1, p)
+
+    move(p / "garbled_pot", p / "POTCAR")
+
+    for f in ["CHGCAR.gz", "AECCAR0.gz", "AECCAR2.gz"]:
+        with open(p / f, "w") as w:
+            w.write("test")
+
     # Make sure Bader works
-    monkeypatch.setattr("quacc.schemas.vasp._bader_runner", mock_bader_analysis)
-    atoms = read(run1 / "OUTCAR.gz")
-    results = vasp_summarize_run(atoms, dir_path=run1, run_bader=True)
+    atoms = read(str(p / "OUTCAR.gz"))
+    results = vasp_summarize_run(atoms, dir_path=p, run_bader=True)
     struct = results["output"]["structure"]
-    assert struct.site_properties["bader_charge"] == [-1.0] * len(atoms)
+    assert struct.site_properties["bader_charge"] == [1.0] * len(atoms)
     assert struct.site_properties["bader_spin"] == [0.0] * len(atoms)
 
 
-def test_no_bader(run1):
+def test_no_bader(run1, tmpdir):
     from ase.io import read
 
     from quacc.schemas.vasp import vasp_summarize_run
+
+    tmpdir.chdir()
 
     atoms = read(run1 / "OUTCAR.gz")
     with pytest.warns(UserWarning):
