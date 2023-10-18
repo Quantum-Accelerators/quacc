@@ -76,5 +76,3 @@ if TYPE_CHECKING:
 
     class VibThermoSchema(VibSchema, ThermoSchema):
         """Schema for `summarize_vib_and_thermo`"""
-
-        pass

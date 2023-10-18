@@ -78,7 +78,7 @@ def vasp_summarize_run(
     dir_path = dir_path or Path.cwd()
     store = SETTINGS.PRIMARY_STORE if store is None else store
 
-    # Fetch all tabulated results from VASP outputs files Fortunately, emmet
+    # Fetch all tabulated results from VASP outputs files. Fortunately, emmet
     # already has a handy function for this
     vasp_task_doc = TaskDoc.from_directory(dir_path).dict()
     struct = vasp_task_doc["output"]["structure"]
