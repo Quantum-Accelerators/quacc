@@ -143,7 +143,9 @@ def vasp_summarize_run(
     return summary
 
 
-def bader_runner(path: str | None = None, scratch_dir: str | None = None) -> dict:
+def bader_runner(
+    path: str | None = None, scratch_dir: str | None = None
+) -> BaderSchema:
     """
     Runs a Bader partial charge and spin moment analysis using the VASP output
     files in the given path. This function requires that `bader` is located in
