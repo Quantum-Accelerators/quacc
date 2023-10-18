@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import TypedDict
 
+    from quacc.schemas._aliases.ase import RunSchema
     from quacc.schemas._aliases.emmet import TaskDoc
 
     class BaderSchema(TypedDict):
@@ -25,5 +26,5 @@ if TYPE_CHECKING:
         rcubed_moments: list[float]
         rfourth_moments: list[float]
 
-    class VaspSchema(TaskDoc, BaderSchema, DDECSchema):
+    class VaspSchema(RunSchema, TaskDoc, BaderSchema, DDECSchema):
         pass
