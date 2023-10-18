@@ -32,6 +32,6 @@ if TYPE_CHECKING:
     class ChargemolSchema(DDECSchema, CM5Schema):
         pass
 
-    class VaspSchema(RunSchema, TaskDoc):
+    class VaspSchema(RunSchema):
         bader: BaderSchema
         chargemol: ChargemolSchema

@@ -147,6 +147,8 @@ def _bader_runner(
     -------
     BaderSchema
         Dictionary containing the Bader analysis summary
+    Structure
+        Structure object with the Bader charges and spins attached
     """
     path = path or Path.cwd()
 
@@ -183,7 +185,8 @@ def _bader_runner(
 def _chargemol_runner(
     path: str | None = None,
     atomic_densities_path: str | None = None,
-) -> ChargemolSchema:
+    structure: Structure | None = None,
+) -> tuple[ChargemolSchema, Structure | None]:
     """
     Runs a Chargemol (i.e. DDEC6 + CM5) analysis using the VASP output files in
     the given path. This function requires that the chargemol executable, given
@@ -208,6 +211,8 @@ def _chargemol_runner(
     -------
     ChargemolSchema
         Dictionary containing the Chargemol analysis summary
+    Structure
+        Structure object with the Chargemol charges and spins attached
     """
     path = path or Path.cwd()
 
@@ -229,4 +234,18 @@ def _chargemol_runner(
         atomic_densities_path=atomic_densities_path,
     )
 
-    return chargemol_stats
+    # Attach the Bader charges and spins to the structure
+    if structure:
+        structure.add_site_property(
+            "ddec6_charge", chargemol_stats["ddec"]["partial_charges"]
+        )
+        if "spin_moments" in chargemol_stats["ddec"]:
+            structure.add_site_property(
+                "ddec6_spin", chargemol_stats["ddec"]["spin_moments"]
+            )
+        if "cm5" in chargemol_stats:
+            structure.add_site_property(
+                "cm5_charge", chargemol_stats["cm5"]["partial_charges"]
+            )
+
+    return chargemol_stats, structure
