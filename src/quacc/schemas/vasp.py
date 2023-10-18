@@ -13,8 +13,7 @@ from pymatgen.command_line.bader_caller import bader_analysis_from_path
 from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
 
 from quacc import SETTINGS
-from quacc.runners.prep import prep_next_run as prep_next_run_
-from quacc.schemas.atoms import atoms_to_metadata
+from quacc.schemas.ase import summarize_run
 from quacc.utils.dicts import sort_dict
 from quacc.utils.files import copy_decompress
 from quacc.wflow.db import results_to_db
@@ -74,36 +73,13 @@ def vasp_summarize_run(
 
     # Fetch all tabulated results from VASP outputs files Fortunately, emmet
     # already has a handy function for this
-    taskdoc = TaskDoc.from_directory(dir_path).dict()
-
-    uri = taskdoc["dir_name"]
-    taskdoc["nid"] = uri.split(":")[0]
-    taskdoc["dir_name"] = ":".join(uri.split(":")[1:])
-    taskdoc["builder_meta"]["build_date"] = str(taskdoc["builder_meta"]["build_date"])
+    vasp_task_doc = TaskDoc.from_directory(dir_path).dict()
 
     # Check for calculation convergence
-    if check_convergence and taskdoc["state"] != "successful":
+    if check_convergence and vasp_task_doc["state"] != "successful":
         raise ValueError("VASP calculation did not converge. Will not store task data.")
 
-    # Remove unnecessary fields
-    for k in [
-        "additional_json",
-        "author",
-        "calcs_reversed",
-        "icsd_id",
-        "last_updated",
-        "structure",  # already in output
-        "tags",
-        "task_id",
-        "task_label",
-        "transformations",
-        "vasp_objects",
-    ]:
-        taskdoc.pop(k, None)
-
-    if "output" in taskdoc:
-        taskdoc["output"].pop("elph_displaced_structures", None)
-        taskdoc["output"].pop("frequency_dependent_dielectric", None)
+    base_task_doc = summarize_run(atoms, prep_next_run=prep_next_run, store=False)
 
     # Get Bader analysis
     if run_bader:
@@ -114,33 +90,24 @@ def vasp_summarize_run(
             warnings.warn("Bader analysis could not be performed.", UserWarning)
 
         if bader_stats:
-            taskdoc["bader"] = bader_stats
+            vasp_task_doc["bader"] = bader_stats
 
             # Attach bader charges/spins to structure object
-            struct = taskdoc["output"]["structure"]
+            struct = vasp_task_doc["output"]["structure"]
             struct.add_site_property("bader_charge", bader_stats["partial_charges"])
             if "spin_moments" in bader_stats:
                 struct.add_site_property("bader_spin", bader_stats["spin_moments"])
-            taskdoc["output"]["structure"] = struct
-
-    # Prepares the Atoms object for the next run by moving the final magmoms to
-    # initial, clearing the calculator state, and assigning the resulting Atoms
-    # object a unique ID.
-    if prep_next_run:
-        atoms = prep_next_run_(atoms)
-
-    # We use get_metadata=False and store_pmg=False because the TaskDocument
-    # already makes the structure metadata for us
-    atoms_db = atoms_to_metadata(atoms, get_metadata=False, store_pmg=False)
+            vasp_task_doc["output"]["structure"] = struct
 
     # Make task document
-    summary = sort_dict(taskdoc | atoms_db | additional_fields)
+    unsorted_task_doc = base_task_doc | vasp_task_doc | additional_fields
+    task_doc = sort_dict(unsorted_task_doc)
 
     # Store the results
     if store:
-        results_to_db(store, taskdoc)
+        results_to_db(store, task_doc)
 
-    return summary
+    return task_doc
 
 
 def bader_runner(

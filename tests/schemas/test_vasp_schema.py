@@ -34,6 +34,7 @@ def test_vasp_summarize_run(run1):
     from quacc.schemas.vasp import vasp_summarize_run
 
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
+    calc = atoms.calc
     results = vasp_summarize_run(
         atoms,
         dir_path=run1,
@@ -41,7 +42,6 @@ def test_vasp_summarize_run(run1):
     assert results["nsites"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["output"]["energy"] == -33.15807349
-    assert "calcs_reversed" not in results
 
     # Make sure default dir works
     cwd = os.getcwd()
@@ -62,6 +62,9 @@ def test_vasp_summarize_run(run1):
 
     # Make sure info tags are handled appropriately
     atoms = read(os.path.join(run1, "CONTCAR.gz"))
+    calc = Vasp(atoms)
+    atoms.calc = calc
+    atoms.calc.results = {"energy": -1.0}
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
     results = vasp_summarize_run(atoms, dir_path=run1)
     results_atoms = results["atoms"]
@@ -87,6 +90,9 @@ def test_vasp_summarize_run(run1):
 
     # Make sure Atoms magmoms were not moved if specified
     atoms = read(os.path.join(run1, "CONTCAR.gz"))
+    calc = Vasp(atoms)
+    atoms.calc = calc
+    atoms.calc.results = {"energy": -1.0}
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
     results = vasp_summarize_run(atoms, dir_path=run1, prep_next_run=False)
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
