@@ -39,15 +39,14 @@ def merge_dicts(
             merged[key] = value
 
     if remove_nones:
-        merged = remove_dict_empties(merged)
+        merged = remove_dict_nones(merged)
 
     return merged
 
 
-def remove_dict_empties(start_dict: dict) -> dict:
+def remove_dict_nones(start_dict: dict) -> dict:
     """
-    For a given dictionary, recursively remove all items that are None or are
-    empty lists/dicts.
+    For a given dictionary, recursively remove all items that are None
 
     Parameters
     ----------
@@ -61,11 +60,9 @@ def remove_dict_empties(start_dict: dict) -> dict:
     """
 
     if isinstance(start_dict, dict):
-        return {
-            k: remove_dict_empties(v) for k, v in start_dict.items() if v is not None
-        }
+        return {k: remove_dict_nones(v) for k, v in start_dict.items() if v is not None}
     return (
-        [remove_dict_empties(v) for v in start_dict]
+        [remove_dict_nones(v) for v in start_dict]
         if isinstance(start_dict, list)
         else start_dict
     )

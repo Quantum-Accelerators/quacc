@@ -26,5 +26,5 @@ if TYPE_CHECKING:
         rcubed_moments: list[float]
         rfourth_moments: list[float]
 
-    class VaspSchema(RunSchema, TaskDoc, BaderSchema, DDECSchema):
-        pass
+    class VaspSchema(RunSchema, TaskDoc):
+        bader: BaderSchema

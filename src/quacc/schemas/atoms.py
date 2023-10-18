@@ -10,7 +10,7 @@ from monty.json import jsanitize
 from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc.atoms.core import copy_atoms
-from quacc.utils.dicts import sort_dict
+from quacc.utils.dicts import remove_dict_nones, sort_dict
 
 if TYPE_CHECKING:
     from typing import Any
@@ -84,9 +84,9 @@ def atoms_to_metadata(
     results["atoms"] = atoms
 
     # Combine the metadata and results dictionaries
-    atoms_doc = metadata | results | additional_fields
+    atoms_doc_unsorted = metadata | results | additional_fields
 
-    return sort_dict(atoms_doc)
+    return sort_dict(remove_dict_nones(atoms_doc_unsorted))
 
 
 def _quacc_sanitize(obj: Any) -> Any:

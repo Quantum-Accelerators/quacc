@@ -13,7 +13,7 @@ from ase.vibrations.data import VibrationsData
 from quacc import SETTINGS
 from quacc.runners.prep import prep_next_run as prep_next_run_
 from quacc.schemas.atoms import atoms_to_metadata
-from quacc.utils.dicts import merge_dicts, sort_dict
+from quacc.utils.dicts import merge_dicts, remove_dict_nones, sort_dict
 from quacc.utils.files import get_uri
 from quacc.wflow.db import results_to_db
 
@@ -103,7 +103,7 @@ def summarize_run(
     )
 
     unsorted_task_doc = final_atoms_metadata | inputs | results | additional_fields
-    task_doc = sort_dict(unsorted_task_doc)
+    task_doc = sort_dict(remove_dict_nones(unsorted_task_doc))
 
     if store:
         results_to_db(store, task_doc)
@@ -200,7 +200,7 @@ def summarize_opt_run(
 
     # Create a dictionary of the inputs/outputs
     unsorted_task_doc = base_task_doc | opt_fields | additional_fields
-    task_doc = sort_dict(unsorted_task_doc)
+    task_doc = sort_dict(remove_dict_nones(unsorted_task_doc))
 
     if store:
         results_to_db(store, task_doc)
@@ -311,7 +311,7 @@ def summarize_vib_run(
     }
 
     unsorted_task_doc = atoms_metadata | inputs | results | additional_fields
-    task_doc = sort_dict(unsorted_task_doc)
+    task_doc = sort_dict(remove_dict_nones(unsorted_task_doc))
 
     if store:
         results_to_db(store, task_doc)
@@ -395,7 +395,7 @@ def summarize_ideal_gas_thermo(
     )
 
     unsorted_task_doc = atoms_metadata | inputs | results | additional_fields
-    task_doc = sort_dict(unsorted_task_doc)
+    task_doc = sort_dict(remove_dict_nones(unsorted_task_doc))
 
     if store:
         results_to_db(store, task_doc)
@@ -454,7 +454,7 @@ def summarize_vib_and_thermo(
     )
 
     unsorted_task_doc = merge_dicts(vib_task_doc, thermo_task_doc) | additional_fields
-    task_doc = sort_dict(unsorted_task_doc)
+    task_doc = sort_dict(remove_dict_nones(unsorted_task_doc))
 
     if store:
         results_to_db(store, task_doc)
