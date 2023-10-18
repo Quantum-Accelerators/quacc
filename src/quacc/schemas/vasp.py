@@ -108,7 +108,6 @@ def vasp_summarize_run(
 
 def _bader_runner(
     path: str | None = None,
-    scratch_dir: str | None = None,
     structure: Structure = None,
 ) -> tuple[BaderSchema, Structure | None]:
     """
@@ -123,9 +122,6 @@ def _bader_runner(
         The path where the VASP output files are located. Must include CHGCAR,
         AECCAR0, AECCAR2, and POTCAR files. These files can be gzip'd or not --
         it doesn't matter. If None, the current working directory is used.
-    scratch_dir
-        The path where the Bader analysis will be run. Defaults to
-        SETTINGS.SCRATCH_DIR.
     structure
         The structure object to attach the Bader charges and spins to.
 
@@ -134,7 +130,6 @@ def _bader_runner(
     BaderSchema
         Dictionary containing the Bader analysis summary
     """
-    scratch_dir = SETTINGS.SCRATCH_DIR if scratch_dir is None else scratch_dir
     path = path or Path.cwd()
 
     # Make sure files are present
@@ -144,10 +139,7 @@ def _bader_runner(
             msg = f"Could not find {f} in {path}."
             raise FileNotFoundError(msg)
 
-    # Run Bader analysis
-    with TemporaryDirectory(dir=scratch_dir) as tmpdir:
-        copy_decompress(relevant_files, tmpdir)
-        bader_stats = bader_analysis_from_path(tmpdir)
+    bader_stats = bader_analysis_from_path(path)
 
     # Store the partial charge, which is much more useful than the raw charge
     # and is more intuitive than the charge transferred. An atom with a positive
@@ -158,11 +150,10 @@ def _bader_runner(
     # Some cleanup of the returned dictionary
     if "magmom" in bader_stats:
         bader_stats["spin_moments"] = bader_stats["magmom"]
-    bader_stats.pop("charge", None)
-    bader_stats.pop("charge_transfer", None)
-    bader_stats.pop("reference_used", None)
-    bader_stats.pop("magmom", None)
+    for k in ["charge", "charge_transfer", "reference_used", "magmom"]:
+        bader_stats.pop(k, None)
 
+    # Attach the Bader charges and spins to the structure
     if structure:
         structure.add_site_property("bader_charge", bader_stats["partial_charges"])
         if "spin_moments" in bader_stats:
@@ -174,7 +165,6 @@ def _bader_runner(
 def _chargemol_runner(
     path: str | None = None,
     atomic_densities_path: str | None = None,
-    scratch_dir: str | None = None,
 ) -> DDECSchema:
     """
     Runs a Chargemol (i.e. DDEC6 + CM5) analysis using the VASP output files in
@@ -195,15 +185,12 @@ def _chargemol_runner(
         If None, we assume that this directory is defined in an environment
         variable named DDEC6_ATOMIC_DENSITIES_DIR. See the Chargemol
         documentation for more information.
-    scratch_dir
-        The path where the Chargemol analysis will be run.
 
     Returns
     -------
     DDECSchema
         Dictionary containing the Chargemol analysis summary
     """
-    scratch_dir = SETTINGS.SCRATCH_DIR if scratch_dir is None else scratch_dir
     path = path or Path.cwd()
 
     # Make sure files are present
@@ -219,11 +206,9 @@ def _chargemol_runner(
         raise EnvironmentError(msg)
 
     # Run Chargemol analysis
-    with TemporaryDirectory(dir=scratch_dir) as tmpdir:
-        copy_decompress(relevant_files, tmpdir)
-        chargemol_stats = ChargemolAnalysis(
-            path=tmpdir,
-            atomic_densities_path=atomic_densities_path,
-        )
+    chargemol_stats = ChargemolAnalysis(
+        path=path,
+        atomic_densities_path=atomic_densities_path,
+    )
 
     return chargemol_stats
