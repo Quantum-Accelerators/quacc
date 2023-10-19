@@ -1,1 +1,1 @@
-"""Schemas for storing data from recipes"""
+"""Schemas for curating the output data from recipes"""

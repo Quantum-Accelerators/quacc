@@ -6,28 +6,29 @@
 
 Sometimes, you may want to transfer files between jobs. Every recipe within quacc takes an optional keyword argument `copy_files` that is a list of absolute filepaths to files you wish to have copied to the directory where the calculation is ultimately run.
 
-For instance, if you have a file `WAVECAR` stored in `/path/to/my/file/stage`, then you could ensure that is present in the calculation's working directory as follows:
+For instance, if you have a file `WAVECAR` stored in `/path/to/my/file/stage`, then you could ensure that is present in the calculation's working directory:
 
 ```python
+from pathlib import Path
 from ase.build import bulk
 from quacc.recipes.vasp.core import relax_job
 
 atoms = bulk("Cu")
-relax_job(atoms, copy_files=["/path/to/my/file/stage/WAVECAR"])
+relax_job(atoms, copy_files=[Path("path/to/my/file/stage/WAVECAR")])
 ```
 
 ### Transfers Between Jobs
 
-Sometimes, however, you may not necessarily know _a priori_ where the source file is. For instance, perhaps you want to copy the file `WAVECAR` from a previous job in your workflow that is stored in a unique directory only determined at runtime. In this scenario, you can still use the `copy_files` keyword argument, but you will need to fetch the prior job's directory. This can be done as follows:
+Sometimes, however, you may not necessarily know _a priori_ where the source file is. For instance, perhaps you want to copy the file `WAVECAR` from a previous job in your workflow that is stored in a unique directory only determined at runtime. In this scenario, you can still use the `copy_files` keyword argument, but you will need to fetch the prior job's directory.
 
 ```python
-import os
+from pathlib import Path
 from ase.build import bulk
 from quacc.recipes.vasp.core import relax_job, static_job
 
 atoms = bulk("Cu")
 results1 = relax_job(atoms)
-static_job(results1, copy_files=[os.path.join(results1["dir_name"], "WAVECAR")])
+static_job(results1["atoms"], copy_files=[Path(results1["dir_name"], "WAVECAR")])
 ```
 
 ## Non-Local File Transfers

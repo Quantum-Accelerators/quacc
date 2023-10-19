@@ -1,34 +1,26 @@
-import os
-from pathlib import Path
-from shutil import rmtree
-
-FILE_DIR = Path(__file__).resolve().parent
-TEST_RESULTS_DIR = FILE_DIR / ".test_results"
-TEST_SCRATCH_DIR = FILE_DIR / ".test_scratch"
-
-
 def pytest_sessionstart():
+    import os
+    from pathlib import Path
+
     from quacc import SETTINGS
 
-    SETTINGS.RESULTS_DIR = str(TEST_RESULTS_DIR)
-    SETTINGS.SCRATCH_DIR = str(TEST_SCRATCH_DIR)
-    if not os.path.exists(SETTINGS.RESULTS_DIR):
-        os.mkdir(SETTINGS.RESULTS_DIR)
-    if not os.path.exists(SETTINGS.SCRATCH_DIR):
-        os.mkdir(SETTINGS.SCRATCH_DIR)
+    file_dir = Path(__file__).resolve().parent
+    test_results_dir = file_dir / ".test_results"
+    test_scratch_dir = file_dir / ".test_scratch"
 
-    WFLOW_ENGINE = (
-        SETTINGS.WORKFLOW_ENGINE.lower() if SETTINGS.WORKFLOW_ENGINE else None
-    )
-
-    if WFLOW_ENGINE == "parsl":
-        import parsl
-
-        parsl.load()
+    SETTINGS.RESULTS_DIR = test_results_dir
+    SETTINGS.SCRATCH_DIR = test_scratch_dir
+    os.makedirs(test_results_dir, exist_ok=True)
+    os.makedirs(test_scratch_dir, exist_ok=True)
 
 
 def pytest_sessionfinish():
-    if os.path.exists(TEST_RESULTS_DIR):
-        rmtree(TEST_RESULTS_DIR)
-    if os.path.exists(TEST_SCRATCH_DIR):
-        rmtree(TEST_SCRATCH_DIR)
+    from pathlib import Path
+    from shutil import rmtree
+
+    file_dir = Path(__file__).resolve().parent
+    test_results_dir = file_dir / ".test_results"
+    test_scratch_dir = file_dir / ".test_scratch"
+
+    rmtree(test_results_dir, ignore_errors=True)
+    rmtree(test_scratch_dir, ignore_errors=True)

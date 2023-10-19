@@ -10,13 +10,12 @@ from typing import TYPE_CHECKING
 
 from ase.optimize import BFGSLineSearch
 
-from quacc import job
+from quacc import fetch_atoms, job
 from quacc.calculators.vasp import Vasp
+from quacc.recipes.vasp.core import _base_job
+from quacc.runners.calc import run_ase_opt
 from quacc.schemas.ase import summarize_opt_run
-from quacc.schemas.vasp import summarize_run
-from quacc.utils.calc import run_ase_opt, run_calc
 from quacc.utils.dicts import merge_dicts
-from quacc.utils.wflows import fetch_atoms
 
 if TYPE_CHECKING:
     from ase import Atoms
@@ -40,9 +39,9 @@ def qmof_relax_job(
     calc_swaps: dict | None = None,
 ) -> QMOFRelaxSchema:
     """
-    Relax a structure in a multi-step process for increased
-    computational efficiency. This is all done in a single compute job.
-    Settings are such that they are compatible with the QMOF Database.
+    Relax a structure in a multi-step process for increased computational
+    efficiency. This is all done in a single compute job. Settings are such that
+    they are compatible with the QMOF Database.
 
     1. A "pre-relaxation" with BFGSLineSearch to resolve very high forces.
 
@@ -57,18 +56,20 @@ def qmof_relax_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as the value
+        Atoms object or a dictionary with the key "atoms" and an Atoms object as
+        the value
     preset
-        Preset to use. Applies for all jobs.
+        Preset to use from `quacc.calculators.presets.vasp`. Applies for all jobs.
     relax_cell
-        True if a volume relaxation should be performed.
-        False if only the positions should be updated.
+        True if a volume relaxation should be performed. False if only the
+        positions should be updated.
     run_prerelax
         If True, a pre-relax will be carried out with BFGSLineSearch.
-        Recommended if starting from hypothetical structures or materials
-        with very high starting forces.
+        Recommended if starting from hypothetical structures or materials with
+        very high starting forces.
     calc_swaps
-        Dictionary of custom kwargs for the calculator. Applies for all jobs.
+        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
+        a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely. Applies for all jobs.
 
     Returns
     -------
@@ -76,7 +77,6 @@ def qmof_relax_job(
         Dictionary of results
     """
     atoms = fetch_atoms(atoms)
-    calc_swaps = calc_swaps or {}
 
     # 1. Pre-relaxation
     if run_prerelax:
@@ -92,10 +92,9 @@ def qmof_relax_job(
         summary3 = _loose_relax_cell(atoms, preset, calc_swaps)
         atoms = summary3["atoms"]
 
-    # 4. Double Relaxation
-    # This is done for two reasons: a) because it can resolve repadding
-    # issues when dV is large; b) because we can use LREAL = Auto for the
-    # first relaxation and the default LREAL for the second.
+    # 4. Double Relaxation This is done for two reasons: a) because it can
+    # resolve repadding issues when dV is large; b) because we can use LREAL =
+    # Auto for the first relaxation and the default LREAL for the second.
     summary4 = _double_relax(atoms, preset, calc_swaps, relax_cell=relax_cell)
     atoms = summary4[1]["atoms"]
 
@@ -123,9 +122,10 @@ def _prerelax(
     atoms
         Atoms object
     preset
-        Preset to use.
+        Preset to use from `quacc.calculators.presets.vasp`.
     calc_swaps
-        Dictionary of custom kwargs for the calculator.
+        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
+        a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
     fmax
         Maximum force in eV/A.
 
@@ -135,10 +135,8 @@ def _prerelax(
         Dictionary of results from quacc.schemas.ase.summarize_opt_run
     """
 
-    calc_swaps = calc_swaps or {}
-
     defaults = {
-        "auto_kpts": {"grid_density": 100},
+        "auto_kpts": {"kppa": 100},
         "ediff": 1e-4,
         "encut": None,
         "lcharg": False,
@@ -147,7 +145,7 @@ def _prerelax(
         "nelm": 225,
         "nsw": 0,
     }
-    flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
+    flags = merge_dicts(defaults, calc_swaps, remove_nones=False)
     atoms.calc = Vasp(atoms, preset=preset, **flags)
     dyn = run_ase_opt(atoms, fmax=fmax, optimizer=BFGSLineSearch)
 
@@ -167,20 +165,19 @@ def _loose_relax_positions(
     atoms
         Atoms object
     preset
-        Preset to use.
+        Preset to use from `quacc.calculators.presets.vasp`.
     calc_swaps
-        dictionary of custom kwargs for the calculator.
+        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
+        a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
 
     Returns
     -------
     VaspSchema
-        Dictionary of results from quacc.schemas.vasp.summarize_run
+        Dictionary of results from quacc.schemas.vasp.vasp_summarize_run
     """
 
-    calc_swaps = calc_swaps or {}
-
     defaults = {
-        "auto_kpts": {"grid_density": 100},
+        "auto_kpts": {"kppa": 100},
         "ediff": 1e-4,
         "ediffg": -0.05,
         "encut": None,
@@ -191,12 +188,12 @@ def _loose_relax_positions(
         "lwave": True,
         "nsw": 250,
     }
-    flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
-    atoms.calc = Vasp(atoms, preset=preset, **flags)
-    atoms = run_calc(atoms)
-
-    return summarize_run(
-        atoms, run_bader=False, additional_fields={"name": "QMOF Loose Relax"}
+    return _base_job(
+        atoms,
+        preset=preset,
+        defaults=defaults,
+        calc_swaps=calc_swaps,
+        additional_fields={"name": "QMOF Loose Relax"},
     )
 
 
@@ -213,20 +210,19 @@ def _loose_relax_cell(
     atoms
         Atoms object
     preset
-        Preset to use.
+        Preset to use from `quacc.calculators.presets.vasp`.
     calc_swaps
-        Dictionary of custom kwargs for the calculator.
+        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
+        a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
 
     Returns
     -------
     VaspSchema
-        Dictionary of results from quacc.schemas.vasp.summarize_run
+        Dictionary of results from quacc.schemas.vasp.vasp_summarize_run
     """
 
-    calc_swaps = calc_swaps or {}
-
     defaults = {
-        "auto_kpts": {"grid_density": 100},
+        "auto_kpts": {"kppa": 100},
         "ediffg": -0.03,
         "ibrion": 2,
         "isif": 3,
@@ -235,14 +231,13 @@ def _loose_relax_cell(
         "lwave": True,
         "nsw": 500,
     }
-    flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
-    atoms.calc = Vasp(atoms, preset=preset, **flags)
-    atoms = run_calc(atoms, copy_files=["WAVECAR"])
-
-    return summarize_run(
+    return _base_job(
         atoms,
-        run_bader=False,
+        preset=preset,
+        defaults=defaults,
+        calc_swaps=calc_swaps,
         additional_fields={"name": "QMOF Loose Relax Volume"},
+        copy_files=["WAVECAR"],
     )
 
 
@@ -260,20 +255,20 @@ def _double_relax(
     atoms
         Atoms object
     preset
-        Preset to use.
+        Preset to use from `quacc.calculators.presets.vasp`.
     calc_swaps
-        Dictionary of custom kwargs for the calculator.
+        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
+        a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
     relax_cell
         True if a volume relaxation should be performed.
 
     Returns
     -------
     list[VaspSchema]
-        List of dictionary of results from `quacc.schemas.vasp.summarize_run`
+        List of dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
 
-    calc_swaps = calc_swaps or {}
-
+    # Run first relaxation
     defaults = {
         "ediffg": -0.03,
         "ibrion": 2,
@@ -283,36 +278,30 @@ def _double_relax(
         "lwave": True,
         "nsw": 500 if relax_cell else 250,
     }
-
-    # Run first relaxation
-    flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
-    calc1 = Vasp(atoms, preset=preset, **flags)
-    atoms.calc = calc1
-    atoms = run_calc(atoms, copy_files=["WAVECAR"])
-
-    # Update atoms for
-    summary1 = summarize_run(
-        atoms, run_bader=False, additional_fields={"name": "QMOF DoubleRelax 1"}
+    summary1 = _base_job(
+        atoms,
+        preset=preset,
+        defaults=defaults,
+        calc_swaps=calc_swaps,
+        additional_fields={"name": "QMOF DoubleRelax 1"},
+        copy_files=["WAVECAR"],
     )
+
+    # Update atoms for Relaxation 2
     atoms = summary1["atoms"]
 
     # Reset LREAL
     del defaults["lreal"]
 
     # Run second relaxation
-    flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
-    calc2 = Vasp(atoms, preset=preset, **flags)
-    atoms.calc = calc2
-
-    # Use ISTART = 0 if this goes from vasp_gam --> vasp_std
-    if calc1.kpts == [1, 1, 1] and calc2.kpts != [1, 1, 1]:
-        atoms.calc.set(istart=0)
-
-    atoms = run_calc(atoms, copy_files=["WAVECAR"])
-    summary2 = summarize_run(
-        atoms, run_bader=False, additional_fields={"name": "QMOF DoubleRelax 2"}
+    summary2 = _base_job(
+        summary1["atoms"],
+        preset=preset,
+        defaults=defaults,
+        calc_swaps=calc_swaps,
+        additional_fields={"name": "QMOF DoubleRelax 2"},
+        copy_files=["WAVECAR"],
     )
-
     return [summary1, summary2]
 
 
@@ -329,17 +318,16 @@ def _static(
     atoms
         Atoms object
     preset
-        Preset to use.
+        Preset to use from `quacc.calculators.presets.vasp`.
     calc_swaps
-        Dictionary of custom kwargs for the calculator.
+        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
+        a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
 
     Returns
     -------
     VaspSchema
-        Dictionary of results from quacc.schemas.vasp.summarize_run
+        Dictionary of results from quacc.schemas.vasp.vasp_summarize_run
     """
-
-    calc_swaps = calc_swaps or {}
 
     defaults = {
         "laechg": True,
@@ -348,10 +336,11 @@ def _static(
         "lwave": True,
         "nsw": 0,
     }
-
-    # Run static calculation
-    flags = merge_dicts(defaults, calc_swaps, remove_empties=False)
-    atoms.calc = Vasp(atoms, preset=preset, **flags)
-    atoms = run_calc(atoms, copy_files=["WAVECAR"])
-
-    return summarize_run(atoms, additional_fields={"name": "QMOF Static"})
+    return _base_job(
+        atoms,
+        preset=preset,
+        defaults=defaults,
+        calc_swaps=calc_swaps,
+        additional_fields={"name": "QMOF Static"},
+        copy_files=["WAVECAR"],
+    )

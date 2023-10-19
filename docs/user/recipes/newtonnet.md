@@ -1,3 +1,0 @@
-# NewtonNet
-
-🚧 Under Construction 🚧

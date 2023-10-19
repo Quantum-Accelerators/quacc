@@ -1,14 +1,19 @@
-import os
-
-import pytest
-from ase.build import bulk
-from maggma.stores import MemoryStore
+from pathlib import Path
 
 from quacc import SETTINGS
-from quacc.recipes.emt.core import relax_job, static_job
-from quacc.settings import QuaccSettings
 
 DEFAULT_SETTINGS = SETTINGS.copy()
+
+
+FILE_DIR = Path(__file__).resolve().parent
+
+
+def setup_module():
+    SETTINGS.WORKFLOW_ENGINE = "local"
+
+
+def teardown_module():
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 def setup_function():
@@ -24,6 +29,10 @@ def teardown_function():
 
 
 def test_file(monkeypatch, tmpdir):
+    import os
+
+    from quacc.settings import QuaccSettings
+
     tmpdir.chdir()
 
     assert QuaccSettings().GZIP_FILES is True
@@ -38,23 +47,25 @@ def test_file(monkeypatch, tmpdir):
     os.remove("quacc_test.yaml")
 
 
-@pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
-    reason="This test suite is for regular function execution only",
-)
 def test_store(tmpdir):
+    from ase.build import bulk
+    from maggma.stores import MemoryStore
+
+    from quacc.recipes.emt.core import static_job
+
     tmpdir.chdir()
-    store = MemoryStore()
-    SETTINGS.PRIMARY_STORE = store.to_json()
+    SETTINGS.PRIMARY_STORE = MemoryStore()
     atoms = bulk("Cu")
     static_job(atoms)
 
 
-@pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE not in {None, "covalent"},
-    reason="This test suite is for regular function execution only",
-)
 def test_results_dir(tmpdir):
+    import os
+
+    from ase.build import bulk
+
+    from quacc.recipes.emt.core import relax_job
+
     tmpdir.chdir()
 
     atoms = bulk("Cu")
@@ -68,14 +79,20 @@ def test_results_dir(tmpdir):
 
 
 def test_env_var(monkeypatch):
-    monkeypatch.setenv("QUACC_SCRATCH_DIR", "/my/scratch/dir")
-    assert QuaccSettings().SCRATCH_DIR == "/my/scratch/dir"
+    from quacc.settings import QuaccSettings
+
+    p = FILE_DIR / "my/scratch/dir"
+    monkeypatch.setenv("QUACC_SCRATCH_DIR", p)
+    assert p.expanduser().resolve() == QuaccSettings().SCRATCH_DIR
 
 
 def test_yaml(tmpdir, monkeypatch):
+    from quacc.settings import QuaccSettings
+
     tmpdir.chdir()
 
+    p = FILE_DIR / "my/new/scratch/dir"
     with open("quacc_test.yaml", "w") as f:
-        f.write('SCRATCH_DIR: "/my/new/scratch/dir"')
+        f.write(f"SCRATCH_DIR: {p}")
     monkeypatch.setenv("QUACC_CONFIG_FILE", "quacc_test.yaml")
-    assert QuaccSettings().SCRATCH_DIR == "/my/new/scratch/dir"
+    assert p.expanduser().resolve() == QuaccSettings().SCRATCH_DIR

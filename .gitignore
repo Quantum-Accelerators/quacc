@@ -6,6 +6,8 @@ tmp*
 cache*
 .test_results
 .test_scratch
+package-lock*
+package.json
 
 # Workflow ignores
 *parsl.log
@@ -16,6 +18,9 @@ runinfo
 docs/reference/*
 *doctrees*
 /site
+
+# Prettier
+node_modules*
 
 # Python ignores
 __pycache__/

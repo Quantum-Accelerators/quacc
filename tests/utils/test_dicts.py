@@ -1,17 +1,27 @@
-from quacc.utils.dicts import merge_dicts, remove_dict_empties
-
-
 def test_remove_dict_empties():
-    d = {"output": {"output": {"test": [], "test2": 1}}}
-    d = remove_dict_empties(d)
-    assert d == {"output": {"output": {"test2": 1}}}
+    from quacc.utils.dicts import remove_dict_empties
 
-    d = {"output": {"output": {"test": {}, "test2": 1}}}
+    d = {
+        "output": {
+            "output": {
+                "test": [1, None],
+                "test2": 1,
+                "test3": None,
+                "test4": {},
+                "test5": [],
+            }
+        },
+        "test": None,
+    }
     d = remove_dict_empties(d)
-    assert d == {"output": {"output": {"test2": 1}}}
+    assert d == {
+        "output": {"output": {"test": [1, None], "test2": 1, "test4": {}, "test5": []}}
+    }
 
 
 def test_merge_dicts():
+    from quacc.utils.dicts import merge_dicts
+
     defaults = {"a": 1, "b": {"a": 1, "b": 2}}
     calc_swaps = {"c": 3, "b": {"b": 3, "d": 1}}
     assert merge_dicts(defaults, calc_swaps) == {

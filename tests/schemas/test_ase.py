@@ -1,35 +1,25 @@
-import os
-from copy import deepcopy
 from pathlib import Path
 
 import pytest
-from ase.build import bulk, molecule
-from ase.calculators.emt import EMT
-from ase.io import read
-from ase.optimize import BFGS
-from ase.thermochemistry import IdealGasThermo
-from ase.units import invcm
-from ase.vibrations import Vibrations
-from maggma.stores import MemoryStore
-from monty.json import MontyDecoder, jsanitize
-
-from quacc.schemas.ase import (
-    summarize_opt_run,
-    summarize_run,
-    summarize_thermo,
-    summarize_vib_run,
-)
 
 FILE_DIR = Path(__file__).resolve().parent
 
-run1 = os.path.join(FILE_DIR, "vasp_run1")
+RUN1 = FILE_DIR / "vasp_run1"
 
 
 def test_summarize_run(tmpdir):
+    import os
+
+    from ase.io import read
+    from maggma.stores import MemoryStore
+    from monty.json import MontyDecoder, jsanitize
+
+    from quacc.schemas.ase import summarize_run
+
     tmpdir.chdir()
 
     # Make sure metadata is made
-    atoms = read(os.path.join(run1, "OUTCAR.gz"))
+    atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     results = summarize_run(atoms)
     assert results["nsites"] == len(atoms)
     assert results["atoms"] == atoms
@@ -41,23 +31,15 @@ def test_summarize_run(tmpdir):
     summarize_run(atoms, store=store)
     assert store.count() == 1
 
-    # Test remove_empties
-    atoms = read(os.path.join(run1, "OUTCAR.gz"))
-    results = summarize_run(atoms, remove_empties=True)
-    assert results["nsites"] == len(atoms)
-    assert results["atoms"] == atoms
-    assert results["results"]["energy"] == atoms.get_potential_energy()
-    assert "pull_request" not in results["builder_meta"]
-
     # Make sure initial atoms object is stored if specified
-    atoms = read(os.path.join(run1, "OUTCAR.gz"))
+    atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     results = summarize_run(atoms, atoms)
     assert results["nsites"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["input_atoms"]["atoms"] == atoms
 
     # Make sure info tags are handled appropriately
-    atoms = read(os.path.join(run1, "OUTCAR.gz"))
+    atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
     results = summarize_run(atoms)
     assert atoms.info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
@@ -66,7 +48,7 @@ def test_summarize_run(tmpdir):
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
     # Make sure magnetic moments are handled appropriately
-    atoms = read(os.path.join(run1, "OUTCAR.gz"))
+    atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
     atoms.calc.results["magmoms"] = [2.0] * len(atoms)
     results = summarize_run(atoms)
@@ -80,13 +62,16 @@ def test_summarize_run(tmpdir):
     assert results["atoms"].calc is None
 
     # Make sure Atoms magmoms were not moved if specified
-    atoms = read(os.path.join(run1, "OUTCAR.gz"))
+    atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
-    results = summarize_run(atoms, prep_next_run=False)
+    results = summarize_run(
+        atoms, prep_next_run=False, additional_fields={"test": "hi"}
+    )
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
     assert results["atoms"].get_initial_magnetic_moments().tolist() == [3.14] * len(
         atoms
     )
+    assert results.get("test") == "hi"
 
     # test document can be jsanitized and decoded
     d = jsanitize(results, strict=True, enum_values=True)
@@ -94,6 +79,15 @@ def test_summarize_run(tmpdir):
 
 
 def test_summarize_opt_run(tmpdir):
+    from ase.build import bulk
+    from ase.calculators.emt import EMT
+    from ase.io import read
+    from ase.optimize import BFGS
+    from maggma.stores import MemoryStore
+    from monty.json import MontyDecoder, jsanitize
+
+    from quacc.schemas.ase import summarize_opt_run
+
     tmpdir.chdir()
 
     # Make sure metadata is made
@@ -140,25 +134,6 @@ def test_summarize_opt_run(tmpdir):
     with pytest.raises(ValueError):
         summarize_opt_run(dyn)
 
-    # Test remove_empties
-    atoms = bulk("Cu") * (2, 2, 1)
-    atoms[0].position += [0.1, 0.1, 0.1]
-    atoms.calc = EMT()
-    dyn = BFGS(atoms, trajectory="test.traj")
-    dyn.run()
-    traj = read(dyn.trajectory.filename, index=":")
-
-    results = summarize_opt_run(dyn, remove_empties=True)
-    assert results["nsites"] == len(atoms)
-    assert results["atoms"] == traj[-1]
-    assert results["results"]["energy"] == atoms.get_potential_energy()
-    assert len(results["trajectory"]) == len(traj)
-    assert len(results["trajectory_results"]) == len(traj)
-    assert results["trajectory_results"][-1]["energy"] == results["results"]["energy"]
-    assert "nid" in results
-    assert "dir_name" in results
-    assert "pull_request" not in results["builder_meta"]
-
     # Make sure info tags are handled appropriately
     atoms = bulk("Cu") * (2, 2, 1)
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
@@ -182,6 +157,16 @@ def test_summarize_opt_run(tmpdir):
 
 
 def test_summarize_vib_run(tmpdir):
+    from copy import deepcopy
+
+    from ase.build import bulk, molecule
+    from ase.calculators.emt import EMT
+    from ase.vibrations import Vibrations
+    from maggma.stores import MemoryStore
+    from monty.json import MontyDecoder, jsanitize
+
+    from quacc.schemas.ase import summarize_vib_run
+
     tmpdir.chdir()
 
     # Make sure metadata is made
@@ -232,25 +217,6 @@ def test_summarize_vib_run(tmpdir):
     summarize_vib_run(vib, store=store)
     assert store.count() == 1
 
-    # Test remove_empties
-    atoms = molecule("N2")
-    atoms.calc = EMT()
-    input_atoms = deepcopy(atoms)
-    vib = Vibrations(atoms)
-    vib.run()
-
-    results = summarize_vib_run(vib, remove_empties=True)
-    assert results["atoms"] == input_atoms
-    assert results["natoms"] == len(atoms)
-    assert results["parameters_vib"]["delta"] == vib.delta
-    assert results["parameters_vib"]["direction"] == "central"
-    assert results["parameters_vib"]["method"] == "standard"
-    assert results["parameters_vib"]["ndof"] == 6
-    assert results["parameters_vib"]["nfree"] == 2
-    assert "nid" in results
-    assert "dir_name" in results
-    assert "pull_request" not in results["builder_meta"]
-
     # Make sure info tags are handled appropriately
     atoms = molecule("N2")
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
@@ -284,13 +250,22 @@ def test_summarize_vib_run(tmpdir):
     assert len(results["results"]["vib_energies"]) == 6
 
 
-def test_summarize_thermo(tmpdir):
+def test_summarize_ideal_gas_thermo(tmpdir):
+    from ase.build import molecule
+    from ase.calculators.emt import EMT
+    from ase.thermochemistry import IdealGasThermo
+    from ase.units import invcm
+    from maggma.stores import MemoryStore
+    from monty.json import MontyDecoder, jsanitize
+
+    from quacc.schemas.ase import summarize_ideal_gas_thermo
+
     tmpdir.chdir()
 
     # Make sure metadata is made
     atoms = molecule("N2")
     igt = IdealGasThermo([0.34], "linear", atoms=atoms, spin=0, symmetrynumber=2)
-    results = summarize_thermo(igt)
+    results = summarize_ideal_gas_thermo(igt)
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["parameters_thermo"]["vib_energies"] == [0.34]
@@ -301,28 +276,17 @@ def test_summarize_thermo(tmpdir):
     # Test DB
     atoms = molecule("N2")
     igt = IdealGasThermo([0.34], "linear", atoms=atoms, spin=0, symmetrynumber=2)
-    summarize_thermo(igt)
+    summarize_ideal_gas_thermo(igt)
     store = MemoryStore()
-    summarize_thermo(igt, store=store)
+    summarize_ideal_gas_thermo(igt, store=store)
     assert store.count() == 1
-
-    # Test remove_empties
-    atoms = molecule("N2")
-    igt = IdealGasThermo([0.34], "linear", atoms=atoms, spin=0, symmetrynumber=2)
-    results = summarize_thermo(igt, remove_empties=True)
-    assert results["natoms"] == len(atoms)
-    assert results["atoms"] == atoms
-    assert results["parameters_thermo"]["vib_energies"] == [0.34]
-    assert results["parameters_thermo"]["vib_freqs"] == [0.34 / invcm]
-    assert results["results"]["energy"] == 0
-    assert "pull_request" not in results["builder_meta"]
 
     # Make sure right number of vib energies are reported
     atoms = molecule("N2")
     igt = IdealGasThermo(
         [0.0, 0.34], "linear", atoms=atoms, potentialenergy=-1, spin=0, symmetrynumber=2
     )
-    results = summarize_thermo(igt)
+    results = summarize_ideal_gas_thermo(igt)
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["parameters_thermo"]["vib_energies"] == [0.34]
@@ -336,7 +300,7 @@ def test_summarize_thermo(tmpdir):
     igt = IdealGasThermo(
         [0.0, 0.34], "linear", atoms=atoms, potentialenergy=-1, spin=0, symmetrynumber=2
     )
-    results = summarize_thermo(igt)
+    results = summarize_ideal_gas_thermo(igt)
     assert results.get("atoms_info", {}) != {}
     assert results["atoms_info"].get("test_dict", None) == {"hi": "there", "foo": "bar"}
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
@@ -365,7 +329,7 @@ def test_summarize_thermo(tmpdir):
         spin=0.5,
         symmetrynumber=6,
     )
-    results = summarize_thermo(igt, temperature=1000.0, pressure=20.0)
+    results = summarize_ideal_gas_thermo(igt, temperature=1000.0, pressure=20.0)
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
     assert len(results["parameters_thermo"]["vib_energies"]) == 6
@@ -386,18 +350,25 @@ def test_summarize_thermo(tmpdir):
     d = jsanitize(results, strict=True, enum_values=True)
     MontyDecoder().process_decoded(d)
 
-    with pytest.warns(UserWarning):
-        summarize_thermo(igt, charge_and_multiplicity=[0, 1])
+    with pytest.raises(ValueError):
+        summarize_ideal_gas_thermo(igt, charge_and_multiplicity=[0, 1])
 
 
 def test_errors(tmpdir):
+    import os
+
+    from ase.build import bulk
+    from ase.io import read
+
+    from quacc.schemas.ase import summarize_run
+
     tmpdir.chdir()
 
     atoms = bulk("Cu")
     with pytest.raises(ValueError):
         summarize_run(atoms)
 
-    atoms = read(os.path.join(run1, "OUTCAR.gz"))
+    atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     atoms.calc.results = {}
     with pytest.raises(ValueError):
         summarize_run(atoms)

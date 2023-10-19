@@ -1,9 +1,4 @@
-import gzip
-import os
-
 import pytest
-
-from quacc.schemas.vasp import bader_runner, chargemol_runner
 
 
 def mock_bader_analysis(*args, **kwargs):
@@ -50,6 +45,9 @@ def patch_pop_analyses(monkeypatch):
 
 
 def prep_files():
+    import gzip
+    import os
+
     if not os.path.exists("rundir"):
         os.mkdir("rundir")
     os.chdir("rundir")
@@ -58,10 +56,12 @@ def prep_files():
             w.write("test")
     for f in ["AECCAR0.gz", "AECCAR2.gz"]:
         with gzip.open(f, "wb") as gf:
-            gf.write("test".encode())
+            gf.write(b"test")
 
 
 def test_run_bader(tmpdir):
+    from quacc.schemas.vasp import bader_runner
+
     tmpdir.chdir()
     prep_files()
 
@@ -76,6 +76,8 @@ def test_run_bader(tmpdir):
 
 
 def test_bader_erorr(tmpdir):
+    from quacc.schemas.vasp import bader_runner
+
     tmpdir.chdir()
 
     with pytest.raises(FileNotFoundError):
@@ -85,6 +87,8 @@ def test_bader_erorr(tmpdir):
 
 
 def test_run_chargemol(tmpdir):
+    from quacc.schemas.vasp import chargemol_runner
+
     tmpdir.chdir()
     prep_files()
 
@@ -94,6 +98,10 @@ def test_run_chargemol(tmpdir):
 
 
 def test_chargemol_erorr(tmpdir):
+    import os
+
+    from quacc.schemas.vasp import chargemol_runner
+
     tmpdir.chdir()
     prep_files()
 
