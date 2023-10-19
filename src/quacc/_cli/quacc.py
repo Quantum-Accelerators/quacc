@@ -37,7 +37,7 @@ def callback(value: bool) -> None:
 
 @app.callback()
 def main(
-    version: Optional[bool] = typer.Option(  # noqa: ARG001
+    version: Optional[bool] = typer.Option(  # noqa: ARG001, UP007
         None,
         "--version",
         "-v",
@@ -79,7 +79,7 @@ def set_(parameter: str, new_value) -> None:
     """
     from quacc import SETTINGS
 
-    CONFIG_FILE = Path(SETTINGS.CONFIG_FILE or _DEFAULT_CONFIG_FILE_PATH)
+    CONFIG_FILE = SETTINGS.CONFIG_FILE or _DEFAULT_CONFIG_FILE_PATH
     parameter = parameter.upper()
     if parameter not in SETTINGS.dict():
         msg = f"{parameter} is not a supported quacc configuration variable."
@@ -109,7 +109,7 @@ def unset(parameter: str) -> None:
     """
     from quacc import SETTINGS
 
-    CONFIG_FILE = Path(SETTINGS.CONFIG_FILE or _DEFAULT_CONFIG_FILE_PATH)
+    CONFIG_FILE = SETTINGS.CONFIG_FILE or _DEFAULT_CONFIG_FILE_PATH
     parameter = parameter.upper()
     if parameter not in SETTINGS.dict():
         msg = f"{parameter} is not a supported quacc configuration variable."

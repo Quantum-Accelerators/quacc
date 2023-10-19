@@ -96,13 +96,11 @@ def test_relax_job(tmpdir):
         == "opt slowconv normalprint xyzfile hf def2-svp"
     )
     assert "%scf maxiter 300 end" in output["parameters"]["orcablocks"]
-    assert "trajectory" in output["attributes"]
-    assert len(output["attributes"]["trajectory"]) > 1
-    assert (
-        output["attributes"]["trajectory"][0] != output["attributes"]["trajectory"][-1]
-    )
+    assert "trajectory" in output
+    assert len(output["trajectory"]) > 1
+    assert output["trajectory"][0] != output["trajectory"][-1]
     assert_allclose(
-        output["attributes"]["trajectory"][-1]["atoms"].get_positions(),
+        output["trajectory"][-1]["atoms"].get_positions(),
         output["atoms"].get_positions(),
         rtol=1e-5,
     )

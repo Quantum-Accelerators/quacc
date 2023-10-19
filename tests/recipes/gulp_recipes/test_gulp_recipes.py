@@ -145,3 +145,21 @@ def test_relax_job(tmpdir):
     assert "dump every gulp.res" in output["parameters"]["options"]
     assert "output xyz gulp.xyz" not in output["parameters"]["options"]
     assert "output cif gulp.cif" in output["parameters"]["options"]
+
+
+def test_envvars(tmpdir):
+    import os
+
+    from ase.build import molecule
+
+    from quacc import SETTINGS
+    from quacc.recipes.gulp.core import static_job
+
+    tmpdir.chdir()
+
+    atoms = molecule("H2O")
+
+    SETTINGS.GULP_LIB = "/path/to/lib"
+    assert static_job(atoms)
+    assert os.environ.get("GULP_LIB") == "/path/to/lib"
+    SETTINGS.GULP_LIB = DEFAULT_SETTINGS.GULP_LIB

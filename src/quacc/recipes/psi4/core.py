@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from ase.calculators.psi4 import Psi4
 from monty.dev import requires
 
-from quacc import fetch_atoms, job
+from quacc import job
 from quacc.runners.calc import run_calc
 from quacc.schemas.ase import summarize_run
 from quacc.utils.dicts import merge_dicts
@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 @job
 @requires(psi4, "Psi4 not installed. Try conda install -c psi4 psi4")
 def static_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     charge: int,
     spin_multiplicity: int,
     method: str = "wb97x-v",
@@ -55,8 +55,7 @@ def static_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     charge
         Charge of the system.
     spin_multiplicity
@@ -98,7 +97,7 @@ def static_job(
 
 
 def _base_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     charge: int,
     spin_multiplicity: int,
     defaults: dict | None = None,
@@ -112,8 +111,7 @@ def _base_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     charge
         Charge of the system.
     spin_multiplicity
@@ -133,7 +131,6 @@ def _base_job(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-    atoms = fetch_atoms(atoms)
     flags = merge_dicts(defaults, calc_swaps)
 
     atoms.calc = Psi4(**flags)

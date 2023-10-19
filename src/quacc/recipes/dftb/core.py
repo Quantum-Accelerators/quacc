@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from ase.calculators.dftb import Dftb
 
-from quacc import SETTINGS, fetch_atoms, job
+from quacc import SETTINGS, job
 from quacc.runners.calc import run_calc
 from quacc.schemas.ase import summarize_run
 from quacc.utils.dicts import merge_dicts
@@ -24,7 +24,7 @@ GEOM_FILE = "geo_end.gen"
 
 @job
 def static_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
     kpts: tuple | list[tuple] | dict | None = None,
     calc_swaps: dict | None = None,
@@ -48,8 +48,7 @@ def static_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     method
         Method to use.
     kpts
@@ -89,7 +88,7 @@ def static_job(
 
 @job
 def relax_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
     kpts: tuple | list[tuple] | dict | None = None,
     relax_cell: bool = False,
@@ -118,8 +117,7 @@ def relax_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     method
         Method to use.
     kpts
@@ -165,7 +163,7 @@ def relax_job(
 
 
 def _base_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     defaults: dict | None = None,
     calc_swaps: dict | None = None,
     additional_fields: dict | None = None,
@@ -177,8 +175,7 @@ def _base_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     defaults
         The default calculator parameters to use.
     calc_swaps
@@ -195,7 +192,6 @@ def _base_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
 
-    atoms = fetch_atoms(atoms)
     flags = merge_dicts(defaults, calc_swaps)
 
     atoms.calc = Dftb(**flags)

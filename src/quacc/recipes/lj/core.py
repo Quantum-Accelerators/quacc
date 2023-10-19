@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 from ase.calculators.lj import LennardJones
 from ase.optimize import FIRE
 
-from quacc import fetch_atoms, job
+from quacc import job
 from quacc.builders.thermo import build_ideal_gas
 from quacc.runners.calc import run_ase_opt, run_ase_vib, run_calc
 from quacc.schemas.ase import summarize_opt_run, summarize_run, summarize_vib_and_thermo
@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 
 @job
 def static_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     calc_swaps: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
@@ -42,8 +42,7 @@ def static_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     calc_swaps
         Dictionary of custom kwargs for the LJ calculator.
     copy_files
@@ -54,7 +53,6 @@ def static_job(
     RunSchema
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
-    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     atoms.calc = LennardJones(**calc_swaps)
@@ -67,7 +65,7 @@ def static_job(
 
 @job
 def relax_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
     copy_files: list[str] | None = None,
@@ -105,7 +103,6 @@ def relax_job(
     OptSchema
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
-    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
 
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
@@ -119,7 +116,7 @@ def relax_job(
 
 @job
 def freq_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     energy: float = 0.0,
     temperature: float = 298.15,
     pressure: float = 1.0,
@@ -147,8 +144,7 @@ def freq_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     energy
         Potential energy in eV. If 0, then the output is just the correction.
     temperature
@@ -167,7 +163,6 @@ def freq_job(
     VibThermoSchema
         Dictionary of results, specified in [quacc.schemas.ase.summarize_vib_and_thermo][]
     """
-    atoms = fetch_atoms(atoms)
     calc_swaps = calc_swaps or {}
     vib_kwargs = vib_kwargs or {}
 

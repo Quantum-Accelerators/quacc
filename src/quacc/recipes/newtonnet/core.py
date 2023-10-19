@@ -9,7 +9,7 @@ from ase.optimize import FIRE
 from ase.vibrations.data import VibrationsData
 from monty.dev import requires
 
-from quacc import SETTINGS, fetch_atoms, job
+from quacc import SETTINGS, job
 from quacc.builders.thermo import build_ideal_gas
 from quacc.runners.calc import run_ase_opt, run_calc
 from quacc.schemas.ase import (
@@ -43,7 +43,7 @@ if TYPE_CHECKING:
 @job
 @requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
 def static_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     calc_swaps: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
@@ -64,8 +64,7 @@ def static_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     calc_swaps
         Dictionary of custom kwargs for the newtonnet calculator.
     copy_files
@@ -76,7 +75,6 @@ def static_job(
     RunSchema
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
-    atoms = fetch_atoms(atoms)
 
     defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
@@ -97,7 +95,7 @@ def static_job(
 @job
 @requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
 def relax_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
     copy_files: list[str] | None = None,
@@ -125,8 +123,7 @@ def relax_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     calc_swaps
         Dictionary of custom kwargs for the newtonnet calculator.
     opt_swaps
@@ -139,7 +136,6 @@ def relax_job(
     OptSchema
         Dictionary of results, specified in [quacc.schemas.ase.summarize_opt_run][]
     """
-    atoms = fetch_atoms(atoms)
 
     defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
@@ -161,7 +157,7 @@ def relax_job(
 @job
 @requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
 def freq_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     temperature: float = 298.15,
     pressure: float = 1.0,
     calc_swaps: dict | None = None,
@@ -199,7 +195,6 @@ def freq_job(
     FreqSchema
         Dictionary of results
     """
-    atoms = fetch_atoms(atoms)
 
     defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,

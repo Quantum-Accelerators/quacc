@@ -60,12 +60,12 @@ def prep_files():
 
 
 def test_run_bader(tmpdir):
-    from quacc.schemas.vasp import bader_runner
+    from quacc.schemas.vasp import _bader_runner
 
     tmpdir.chdir()
     prep_files()
 
-    bader_stats = bader_runner()
+    bader_stats = _bader_runner()[0]
     assert bader_stats["min_dist"] == [1.0]
     assert bader_stats["partial_charges"] == [1.0]
     assert bader_stats["spin_moments"] == [0.0]
@@ -76,23 +76,23 @@ def test_run_bader(tmpdir):
 
 
 def test_bader_erorr(tmpdir):
-    from quacc.schemas.vasp import bader_runner
+    from quacc.schemas.vasp import _bader_runner
 
     tmpdir.chdir()
 
     with pytest.raises(FileNotFoundError):
-        bader_runner()
+        _bader_runner()
     with open("CHGCAR", "w") as w:
         w.write("test")
 
 
 def test_run_chargemol(tmpdir):
-    from quacc.schemas.vasp import chargemol_runner
+    from quacc.schemas.vasp import _chargemol_runner
 
     tmpdir.chdir()
     prep_files()
 
-    chargemol_stats = chargemol_runner(path=".", atomic_densities_path=".")
+    chargemol_stats = _chargemol_runner(path=".", atomic_densities_path=".")[0]
     assert chargemol_stats["ddec"]["partial_charges"] == [1.0]
     assert chargemol_stats["ddec"]["spin_moments"] == [0.0]
 
@@ -100,16 +100,16 @@ def test_run_chargemol(tmpdir):
 def test_chargemol_erorr(tmpdir):
     import os
 
-    from quacc.schemas.vasp import chargemol_runner
+    from quacc.schemas.vasp import _chargemol_runner
 
     tmpdir.chdir()
     prep_files()
 
-    with pytest.raises(ValueError):
-        chargemol_runner()
+    with pytest.raises(EnvironmentError):
+        _chargemol_runner()
 
     os.remove("CHGCAR")
     with pytest.raises(FileNotFoundError):
-        chargemol_runner(atomic_densities_path=".")
+        _chargemol_runner(atomic_densities_path=".")
     with open("CHGCAR", "w") as w:
         w.write("test")

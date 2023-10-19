@@ -8,7 +8,7 @@ from tempfile import mkdtemp
 from typing import TYPE_CHECKING
 
 import numpy as np
-from ase.filters import ExpCellFilter
+from ase.filters import FrechetCellFilter
 from ase.io import Trajectory, read
 from ase.optimize import FIRE
 from ase.vibrations import Vibrations
@@ -75,7 +75,7 @@ def run_calc(
         # Note: We have to be careful to make sure we don't lose the converged
         # magnetic moments, if present. That's why we simply update the
         # positions and cell in-place.
-        atoms_new = read(zpath(Path(tmpdir, geom_file)))
+        atoms_new = read(zpath(tmpdir / geom_file))
         if isinstance(atoms_new, list):
             atoms_new = atoms_new[-1]
 
@@ -157,13 +157,13 @@ def run_ase_opt(
     optimizer_kwargs.pop("use_TRICs", None)
 
     # Define the Trajectory object
-    traj_filename = Path(tmpdir, "opt.traj")
+    traj_filename = tmpdir / "opt.traj"
     traj = Trajectory(traj_filename, "w", atoms=atoms)
     optimizer_kwargs["trajectory"] = traj
 
     # Set volume relaxation constraints, if relevant
     if relax_cell and atoms.pbc.any():
-        atoms = ExpCellFilter(atoms)
+        atoms = FrechetCellFilter(atoms)
 
     # Run calculation
     with traj, optimizer(atoms, **optimizer_kwargs) as dyn:
@@ -212,9 +212,9 @@ def run_ase_vib(
     atoms, tmpdir, job_results_dir = _calc_setup(atoms, copy_files=copy_files)
 
     # Run calculation
-    vib = Vibrations(atoms, name=str(Path(tmpdir, "vib")), **vib_kwargs)
+    vib = Vibrations(atoms, name=str(tmpdir / "vib"), **vib_kwargs)
     vib.run()
-    vib.summary(log=str(Path(tmpdir, "vib_summary.log")))
+    vib.summary(log=str(tmpdir / "vib_summary.log"))
 
     # Perform cleanup operations
     _calc_cleanup(tmpdir, job_results_dir)
@@ -269,7 +269,7 @@ def _calc_setup(
 
     # Create a symlink to the tmpdir in the results_dir
     if os.name != "nt" and SETTINGS.SCRATCH_DIR != SETTINGS.RESULTS_DIR:
-        symlink = Path(job_results_dir, f"{tmpdir.name}-symlink")
+        symlink = job_results_dir / f"{tmpdir.name}-symlink"
         symlink.unlink(missing_ok=True)
         symlink.symlink_to(tmpdir, target_is_directory=True)
 
@@ -313,7 +313,8 @@ def _calc_cleanup(tmpdir: str | Path, job_results_dir: str | Path) -> None:
     copy_r(tmpdir, job_results_dir)
 
     # Remove symlink to tmpdir
-    Path(job_results_dir, f"{Path(tmpdir).name}-symlink").unlink(missing_ok=True)
+    symlink_path = job_results_dir / f"{tmpdir.name}-symlink"
+    symlink_path.unlink(missing_ok=True)
 
     # Remove the tmpdir
     rmtree(tmpdir, ignore_errors=True)

@@ -6,11 +6,15 @@ DEFAULT_SETTINGS = SETTINGS.copy()
 
 
 def setup_module():
+    from maggma.stores import MemoryStore
+
     SETTINGS.WORKFLOW_ENGINE = "local"
+    SETTINGS.PRIMARY_STORE = MemoryStore()
 
 
 def teardown_module():
     SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
+    SETTINGS.PRIMARY_STORE = DEFAULT_SETTINGS.PRIMARY_STORE
 
 
 def test_static_job(tmpdir):
@@ -79,7 +83,7 @@ def test_freq_job(tmpdir):
 
     atoms = molecule("H2O")
 
-    output = freq_job(relax_job(atoms))
+    output = freq_job(relax_job(atoms)["atoms"])
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["epsilon"] == 1.0
     assert output["parameters"]["sigma"] == 1.0

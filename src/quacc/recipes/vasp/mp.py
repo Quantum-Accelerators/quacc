@@ -33,9 +33,9 @@ if TYPE_CHECKING:
 
 @job
 def mp_prerelax_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     preset: str | None = "MPScanSet",
-    bandgap: float = None,
+    bandgap: float | None = None,
     calc_swaps: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
@@ -54,8 +54,7 @@ def mp_prerelax_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     preset
         Preset to use from `quacc.calculators.presets.vasp`.
     bandgap
@@ -91,9 +90,9 @@ def mp_prerelax_job(
 
 @job
 def mp_relax_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     preset: str | None = "MPScanSet",
-    bandgap: float = None,
+    bandgap: float | None = None,
     calc_swaps: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
@@ -112,8 +111,7 @@ def mp_relax_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     preset
         Preset to use from `quacc.calculators.presets.vasp`.
     bandgap
@@ -143,7 +141,7 @@ def mp_relax_job(
 
 @flow
 def mp_relax_flow(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     prerelax_job_kwargs: dict | None = None,
     relax_job_kwargs: dict | None = None,
 ) -> MPRelaxFlowSchema:
@@ -176,7 +174,7 @@ def mp_relax_flow(
 
     # Run the relax
     relax_results = mp_relax_job(
-        prerelax_results,
+        prerelax_results["atoms"],
         bandgap=prerelax_results["output"]["bandgap"],
         copy_files=["CHGCAR", "WAVECAR"],
         **relax_job_kwargs,
@@ -202,16 +200,13 @@ def _get_bandgap_swaps(bandgap: float | None = None) -> dict:
     """
 
     if bandgap is None:
-        smearing_swaps = {"kspacing": 0.22, "ismear": 0, "sigma": 0.05}
-    elif bandgap <= 1e-4:
-        smearing_swaps = {"kspacing": 0.22, "ismear": 2, "sigma": 0.2}
-    else:
-        rmin = max(1.5, 25.22 - 2.87 * bandgap)
-        kspacing = 2 * np.pi * 1.0265 / (rmin - 1.0183)
-        smearing_swaps = {
-            "kspacing": min(kspacing, 0.44),
-            "ismear": -5,
-            "sigma": 0.05,
-        }
-
-    return smearing_swaps
+        return {"kspacing": 0.22, "ismear": 0, "sigma": 0.05}
+    if bandgap <= 1e-4:
+        return {"kspacing": 0.22, "ismear": 2, "sigma": 0.2}
+    rmin = max(1.5, 25.22 - 2.87 * bandgap)
+    kspacing = 2 * np.pi * 1.0265 / (rmin - 1.0183)
+    return {
+        "kspacing": min(kspacing, 0.44),
+        "ismear": -5,
+        "sigma": 0.05,
+    }

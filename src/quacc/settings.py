@@ -126,6 +126,25 @@ class QuaccSettings(BaseSettings):
     )
 
     # ---------------------------
+    # Gaussian Settings
+    # ---------------------------
+    GAUSSIAN_CMD: Path = Field(
+        Path("g16"),
+        description=("Path to the Gaussian executable."),
+    )
+
+    # ---------------------------
+    # GULP Settings
+    # ---------------------------
+    GULP_CMD: Path = Field(
+        Path("gulp"),
+        description=("Path to the GULP executable."),
+    )
+    GULP_LIB: Optional[Path] = Field(
+        None, description=("Path to the GULP force field library.")
+    )
+
+    # ---------------------------
     # VASP Settings
     # ---------------------------
 
@@ -143,6 +162,13 @@ class QuaccSettings(BaseSettings):
     )
     VASP_GAMMA_CMD: str = Field(
         "vasp_gam", description="Command to run the gamma-point only version of VASP."
+    )
+    VASP_PP_PATH: Optional[Path] = Field(
+        None,
+        description="Path to the VASP pseudopotential library. Must contain the directories `potpaw_PBE` and `potpaw` for PBE and LDA pseudopotentials, respectively.",
+    )
+    VASP_VDW: Optional[Path] = Field(
+        None, description="Path to the vdw_kernel.bindat file for VASP vdW functionals."
     )
 
     # VASP Settings: General
@@ -164,6 +190,13 @@ class QuaccSettings(BaseSettings):
         description=(
             "Whether to run a Bader analysis when summarizing VASP results."
             "Requires bader to be in PATH."
+        ),
+    )
+    VASP_CHARGEMOL: bool = Field(
+        bool(os.environ.get("DDEC6_ATOMIC_DENSITIES_DIR")),
+        description=(
+            "Whether to run a Chargemol (i.e. DDEC6, CM5) analysis when summarizing VASP results."
+            "Requires the Chargemol executable to be in PATH and the DDEC6_ATOMIC_DENSITIES_DIR environment variable."
         ),
     )
     VASP_PRESET_MAG_DEFAULT: float = Field(
@@ -190,11 +223,6 @@ class QuaccSettings(BaseSettings):
     VASP_PRESET_DIR: Path = Field(
         resources.files(vasp_defaults),
         description="Path to the VASP preset directory",
-    )
-    VASP_MIN_VERSION: Optional[float] = Field(
-        None,
-        description="The minimum version of VASP you plan to use. This simply ensures"
-        "that relatively new input flags aren't set in an old version of VASP, where applicable.",
     )
 
     # VASP Settings: Custodian

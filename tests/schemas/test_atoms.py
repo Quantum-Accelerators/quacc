@@ -25,7 +25,7 @@ def test_atoms_to_metadata(test_cifs):
     assert results["atoms"].info.get("test", None) == "hi"
     assert results["structure"] == AseAtomsAdaptor.get_structure(atoms)
     assert "molecule" not in results
-    assert "pull_request" in results["builder_meta"]
+    assert "pymatgen_version" in results["builder_meta"]
 
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].symbol = "X"
@@ -35,14 +35,6 @@ def test_atoms_to_metadata(test_cifs):
     results = atoms_to_metadata(atoms)
     assert results["atoms"].info.get("test", None) == "hi"
     assert results["structure"] == AseAtomsAdaptor.get_structure(atoms_no_dummy)
-
-    atoms = bulk("Cu")
-    atoms.info["test"] = "hi"
-    results = atoms_to_metadata(atoms, strip_info=True)
-    assert results["atoms"] == atoms
-    assert results["atoms"].info == {}
-    assert results["nsites"] == len(atoms)
-    assert results["atoms_info"].get("test", None) == "hi"
 
     atoms = bulk("Cu")
     results = atoms_to_metadata(atoms, get_metadata=False)

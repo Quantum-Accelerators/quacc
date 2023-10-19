@@ -6,38 +6,35 @@ import os
 import warnings
 from inspect import getmembers, isclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 import cclib
+from ase import Atoms
 from cclib.io import ccread
-from emmet.core.structure import MoleculeMetadata
 from maggma.core import Store
 from monty.json import jsanitize
-from pydantic import Field
-from pymatgen.core import Molecule
-from pymatgen.core.periodic_table import Element
-from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc import SETTINGS
-from quacc.runners.prep import prep_next_run as prep_next_run_
+from quacc.schemas.ase import summarize_run
 from quacc.schemas.atoms import atoms_to_metadata
-from quacc.utils.dicts import sort_dict
-from quacc.utils.files import find_recent_logfile, get_uri
+from quacc.utils.dicts import remove_dict_nones, sort_dict
+from quacc.utils.files import find_recent_logfile
 from quacc.wflow.db import results_to_db
 
 if TYPE_CHECKING:
-    from typing import Literal, TypeVar
+    from typing import Literal
 
-    from ase import Atoms
-
-    cclibSchema = TypeVar("cclibSchema")
+    from quacc.schemas._aliases.cclib import (
+        PopAnalysisAttributes,
+        cclibBaseSchema,
+        cclibSchema,
+    )
 
 
 def cclib_summarize_run(
     atoms: Atoms,
     logfile_extensions: str | list[str],
     dir_path: str | None = None,
-    charge_and_multiplicity: tuple[int, int] | None = None,
     pop_analyses: list[
         Literal[
             "cpsa",
@@ -62,10 +59,6 @@ def cclib_summarize_run(
     database-friendly format. This is meant to be a general parser built on top
     of cclib.
 
-    This document inherits from the following schemas: cclibTaskDocument (see
-    below), emmet.core.structure.MoleculeMetadata,
-    emmet.core.base.EmmetBaseModel.
-
     Parameters
     ----------
     atoms
@@ -79,9 +72,6 @@ def cclib_summarize_run(
     dir_path
         The path to the folder containing the calculation outputs. A value of
         None specifies the current working directory.
-    charge_and_multiplicity
-        Charge and spin multiplicity of the Atoms object, only used for Molecule
-        metadata.
     pop_analyses
         The name(s) of any cclib post-processing analysis to run. Note that for
         bader, ddec6, and hirshfeld, a cube file (.cube, .cub) must reside in
@@ -102,370 +92,185 @@ def cclib_summarize_run(
 
     Returns
     -------
-    dict
-        Dictionary representation of the task document with the following
-        fields:
-
-        - atoms: Atoms = Field(None, title = "The Atoms object obtained from
-          atoms.")
-        - atoms_info: dict = Field(None, title = "The Atoms object info obtained
-          from atoms.info.")
-        - attributes: Dict = Field(None, description="Computed properties and
-          calculation outputs. See https://cclib.github.io/data_notes.html")
-        - builder_meta: EmmetMeta = Field(default_factory=EmmetMeta,
-          description="Builder metadata."):
-            - builder_meta.build_date: str =
-              Field(default_factory=datetime.utcnow, description="The build date
-              for this document.")
-            - builder_meta.database_version: str = Field(None, description="The
-              database version for the built data.")
-            - builder_meta.emmet_version: str = Field(__version__,
-              description="The version of emmet this document was built with.")
-            - builder_meta.pymatgen_version: str = Field(pmg_version,
-              description="The version of pymatgen this document was built
-              with.")
-            - builder_meta.pull_request: int = Field(None, description="The pull
-              request number associated with this data build.")
-        - charge: int = Field(None, description="Charge of the molecule")
-        - chemsys: str = Field(None, title="Chemical System",
-          description="dash-delimited string of elements in the molecule")
-        - composition: Composition = Field(None, description="Full composition
-          for the molecule")
-        - composition_reduced: Composition = Field(None, title="Reduced
-          Composition", description="Simplified representation of the
-          composition")
-        - dir_name: str = Field(None, description="Directory where the output is
-          parsed")
-        - elements: List[Element] = Field(None, description="List of elements in
-          the molecule")
-        - energy: float = Field(None, description="Final total energy")
-        - formula_alphabetical: str = Field(None, title="Alphabetical Formula",
-          description="Alphabetical molecular formula")
-        - formula_anonymous: str = Field(None, title="Anonymous Formula",
-          description="Anonymized representation of the formula")
-        - formula_pretty: str = Field(None, title="Pretty Formula",
-          description="Cleaned representation of the formula.")
-        - logfile: str = Field(None, description="Path to the log file used in
-          the post-processing analysis")
-        - metadata: Dict = Field(None, description="Calculation metadata,
-          including input parameters and runtime statistics. See
-          https://cclib.github.io/data_notes.html#metadata")
-        - molecule: Molecule = Field(None, description="Final output molecule
-          from the task")
-        - natoms: int = Field(None, description="Total number of atoms in the
-          molecule")
-        - nid: str = Field(None, title = "The node ID representing the machine
-          where the calculation was run.")
-        - nelectrons: int = Field(None, title="Number of electrons",
-          description="The total number of electrons for the molecule")
-        - nelements: int = Field(None, title="Number of Elements")
-        - parameters: dict = Field(None, title = "The input parameters obtained
-          from atoms.calc.parameters.")
-        - spin_multiplicity: int = Field(None, description="Spin multiplicity of
-          the molecule")
-        - symmetry: PointGroupData = Field(None, description="Symmetry data for
-          this molecule")
-            - symmetry.eigen_tolerance: float = Field(None, title="Interia
-              Tensor Eigenvalue Tolerance", description="Tolerance to compare
-              eigen values of the inertia tensor.")
-            - symmetry.linear: bool = Field(None, title="Molecule Linearity",
-              description="Is the molecule linear?")
-            - symmetry.matrix_tolerance: float = Field(None, title="Symmetry
-              Operation Matrix Element Tolerance" description="Tolerance used to
-              generate the full set of symmetry operations of the point group.")
-            - symmetry.point_group: str = Field(None, title="Point Group
-              Symbol", description="The point group for the lattice")
-            - symmetry.rotation_number: float = Field(None, title="Rotational
-              Symmetry Number", description="Rotational symmetry number for the
-              molecule")
-            - symmetry.tolerance: float = Field(None, title="Point Group
-              Analyzer Tolerance", description="Distance tolerance to consider
-              sites as symmetrically equivalent.")
-        - tags: List[str] = Field(None, description="Optional tags for this task
-          document")
-        - task_label: str = Field(None, description="A description of the task")
+    cclibSchema
+        Dictionary representation of the task document
     """
 
-    additional_fields = additional_fields or {}
     dir_path = dir_path or Path.cwd()
-    store = SETTINGS.PRIMARY_STORE if store is None else store
     check_convergence = (
         SETTINGS.CHECK_CONVERGENCE if check_convergence is None else check_convergence
     )
+    additional_fields = additional_fields or {}
+    store = SETTINGS.PRIMARY_STORE if store is None else store
 
-    # Make sure there is a calculator with results
-    if not atoms.calc:
-        msg = "ASE Atoms object has no attached calculator."
-        raise ValueError(msg)
-    if not atoms.calc.results:
-        msg = "ASE Atoms object's calculator has no results."
-        raise ValueError(msg)
-
-    # Fortunately, there is already a cclib parser in Atomate2
-    taskdoc = _cclibTaskDocument.from_logfile(
-        dir_path, logfile_extensions, store_trajectory=True, analysis=pop_analyses
+    # Get the cclib base task document
+    cclib_task_doc = _make_cclib_schema(
+        dir_path, logfile_extensions, analysis=pop_analyses
     )
-    uri = taskdoc["dir_name"]
-    taskdoc["nid"] = uri.split(":")[0]
-    taskdoc["dir_name"] = ":".join(uri.split(":")[1:])
-    taskdoc["builder_meta"]["build_date"] = str(taskdoc["builder_meta"]["build_date"])
-    taskdoc["logfile"] = taskdoc["logfile"].split(":")[-1]
-    if taskdoc["attributes"].get("trajectory"):
-        taskdoc["attributes"]["trajectory"] = [
-            atoms_to_metadata(
-                AseAtomsAdaptor().get_atoms(molecule),
-                charge_and_multiplicity=charge_and_multiplicity,
-            )
-            for molecule in taskdoc["attributes"]["trajectory"]
-        ]
+    attributes = cclib_task_doc["attributes"]
+    metadata = attributes["metadata"]
 
-    # Check convergence if requested
-    if check_convergence and taskdoc["attributes"].get("optdone") is False:
+    if check_convergence and attributes.get("optdone") is False:
         msg = "Optimization not complete."
         raise ValueError(msg)
 
-    # Get the calculator inputs
-    inputs = {"parameters": atoms.calc.parameters}
+    # Now we construct the input Atoms object. Note that this is not necessarily
+    # the same as the initial Atoms from the relaxation because the DFT
+    # package may have re-oriented the system. We only try to store the
+    # input if it is XYZ-formatted though since the Atoms object does not
+    # support internal coordinates or Gaussian Z-matrix.
+    if metadata.get("coord_type") == "xyz" and metadata.get("coords") is not None:
+        coords_obj = metadata["coords"]
+        symbols = [row[0] for row in coords_obj]
+        positions = [row[1:] for row in coords_obj]
+        input_atoms = Atoms(symbols=symbols, positions=positions)
+    else:
+        input_atoms = cclib_task_doc["trajectory"][0]["atoms"]
 
-    # Prepares the Atoms object for the next run by moving the final magmoms to
-    # initial, clearing the calculator state, and assigning the resulting Atoms
-    # object a unique ID.
-    if prep_next_run:
-        atoms = prep_next_run_(atoms)
-
-    # We use get_metadata=False and store_pmg=False because the TaskDocument
-    # already makes the structure metadata for us
-    atoms_db = atoms_to_metadata(atoms, get_metadata=False, store_pmg=False)
+    # Get the base task document for the ASE run
+    run_task_doc = summarize_run(
+        atoms,
+        input_atoms=input_atoms,
+        charge_and_multiplicity=(attributes["charge"], attributes["mult"]),
+        prep_next_run=prep_next_run,
+        store=False,
+    )
 
     # Create a dictionary of the inputs/outputs
-    summary = sort_dict(atoms_db | inputs | taskdoc | additional_fields)
+    unsorted_task_doc = run_task_doc | cclib_task_doc | additional_fields
+    task_doc = sort_dict(remove_dict_nones(unsorted_task_doc))
 
     # Store the results
     if store:
-        results_to_db(store, summary)
+        results_to_db(store, task_doc)
 
-    return summary
+    return task_doc
 
 
-class _cclibTaskDocument(MoleculeMetadata, extra="allow"):
+def _make_cclib_schema(
+    dir_name: str | Path,
+    logfile_extensions: str | list[str],
+    analysis: str | list[str] | None = None,
+    proatom_dir: Path | str | None = None,
+) -> cclibBaseSchema:
     """
-    Definition of a cclib-generated task document.
+    Create a TaskDocument from a log file.
 
-    This can be used as a general task document for molecular DFT codes. For the
-    list of supported packages, see https://cclib.github.io
+    For a full description of each field, see
+    https://cclib.github.io/data.html.
+
+    Parameters
+    ----------
+    dir_name
+        The path to the folder containing the calculation outputs.
+    logfile_extensions
+        Possible extensions of the log file (e.g. ".log", ".out", ".txt",
+        ".chk"). Note that only a partial match is needed. For instance,
+        `.log` will match `.log.gz` and `.log.1.gz`. If multiple files with
+        this extension are found, the one with the most recent change time
+        will be used. For an exact match only, put in the full file name.
+    analysis
+        The name(s) of any cclib post-processing analysis to run. Note that
+        for bader, ddec6, and hirshfeld, a cube file (.cube, .cub) must be
+        in dir_name. Supports: cpsa, mpa, lpa, bickelhaupt, density, mbo,
+        bader, ddec6, hirshfeld.
+    proatom_dir
+        The path to the proatom directory if ddec6 or hirshfeld analysis are
+        requested. See https://cclib.github.io/methods.html for details. If
+        None, the PROATOM_DIR environment variable must point to the proatom
+        directory.
+
+    Returns
+    -------
+    _T
+        A TaskDocument dictionary summarizing the inputs/outputs of the log
+        file.
     """
 
-    molecule: Optional[Molecule] = Field(
-        None, description="Final output molecule from the task"
+    # Find the most recent log file with the given extension in the
+    # specified directory.
+    logfile = find_recent_logfile(dir_name, logfile_extensions)
+    if not logfile:
+        msg = f"Could not find file with extension {logfile_extensions} in {dir_name}"
+        raise FileNotFoundError(msg)
+
+    # Let's parse the log file with cclib
+    cclib_obj = ccread(logfile, logging.ERROR)
+    if not cclib_obj:
+        msg = f"Could not parse {logfile}"
+        raise ValueError(msg)
+
+    # Fetch all the attributes (i.e. all input/outputs from cclib)
+    attributes = jsanitize(cclib_obj.getattributes())
+
+    # monty datetime bug workaround:
+    # github.com/materialsvirtuallab/monty/issues/275
+    if wall_time := attributes["metadata"].get("wall_time"):
+        attributes["metadata"]["wall_time"] = [*map(str, wall_time)]
+    if cpu_time := attributes["metadata"].get("cpu_time"):
+        attributes["metadata"]["cpu_time"] = [*map(str, cpu_time)]
+
+    # Store charge and multiplicity since we use it frequently
+    charge = cclib_obj.charge
+    mult = cclib_obj.mult
+
+    # Construct the trajectory
+    coords = cclib_obj.atomcoords
+    trajectory = [
+        Atoms(numbers=list(cclib_obj.atomnos), positions=coord) for coord in coords
+    ]
+    traj_metadata = [
+        atoms_to_metadata(traj, charge_and_multiplicity=(charge, mult))
+        for traj in trajectory
+    ]
+
+    # Get the final energy to store as its own key/value pair
+    final_scf_energy = (
+        cclib_obj.scfenergies[-1] if cclib_obj.scfenergies is not None else None
     )
-    energy: Optional[float] = Field(None, description="Final total energy")
-    dir_name: Optional[str] = Field(
-        None, description="Directory where the output is parsed"
-    )
-    logfile: Optional[str] = Field(
-        None, description="Path to the log file used in the post-processing analysis"
-    )
-    attributes: Optional[dict] = Field(
-        None, description="Computed properties and calculation outputs"
-    )
-    metadata: Optional[dict] = Field(
-        None,
-        description="Calculation metadata, including input parameters and runtime "
-        "statistics",
-    )
-    task_label: Optional[str] = Field(None, description="A description of the task")
-    tags: Optional[list[str]] = Field(
-        None, description="Optional tags for this task document"
-    )
 
-    @classmethod
-    def from_logfile(
-        cls,
-        dir_name: str | Path,
-        logfile_extensions: str | list[str],
-        store_trajectory: bool = False,
-        additional_fields: dict | None = None,
-        analysis: str | list[str] | None = None,
-        proatom_dir: Path | str | None = None,
-    ) -> dict:
-        """
-        Create a TaskDocument from a log file.
-
-        For a full description of each field, see
-        https://cclib.github.io/data.html.
-
-        This is a mirror of atomate2.common.schemas.cclib.TaskDocument
-
-        Parameters
-        ----------
-        dir_name
-            The path to the folder containing the calculation outputs.
-        logfile_extensions
-            Possible extensions of the log file (e.g. ".log", ".out", ".txt",
-            ".chk"). Note that only a partial match is needed. For instance,
-            `.log` will match `.log.gz` and `.log.1.gz`. If multiple files with
-            this extension are found, the one with the most recent change time
-            will be used. For an exact match only, put in the full file name.
-        store_trajectory
-            Whether to store the molecule objects along the course of the
-            relaxation trajectory.
-        additional_fields
-            Dictionary of additional fields to add to TaskDocument.
-        analysis
-            The name(s) of any cclib post-processing analysis to run. Note that
-            for bader, ddec6, and hirshfeld, a cube file (.cube, .cub) must be
-            in dir_name. Supports: cpsa, mpa, lpa, bickelhaupt, density, mbo,
-            bader, ddec6, hirshfeld.
-        proatom_dir
-            The path to the proatom directory if ddec6 or hirshfeld analysis are
-            requested. See https://cclib.github.io/methods.html for details. If
-            None, the PROATOM_DIR environment variable must point to the proatom
-            directory.
-
-        Returns
-        -------
-        dict
-            A TaskDocument dictionary summarizing the inputs/outputs of the log
-            file.
-        """
-
-        # Find the most recent log file with the given extension in the
-        # specified directory.
-        logfile = find_recent_logfile(dir_name, logfile_extensions)
-        if not logfile:
-            msg = (
-                f"Could not find file with extension {logfile_extensions} in {dir_name}"
-            )
-            raise FileNotFoundError(msg)
-
-        additional_fields = {} if additional_fields is None else additional_fields
-
-        # Let's parse the log file with cclib
-        cclib_obj = ccread(logfile, logging.ERROR)
-        if not cclib_obj:
-            msg = f"Could not parse {logfile}"
-            raise ValueError(msg)
-
-        # Fetch all the attributes (i.e. all input/outputs from cclib)
-        attributes = jsanitize(cclib_obj.getattributes())
-
-        # Store charge and multiplicity since we use it frequently
-        charge = cclib_obj.charge
-        mult = cclib_obj.mult
-
-        # Let's move the metadata out of attributes for convenience and store it
-        # separately
-        attributes.pop("metadata")
-        metadata = jsanitize(cclib_obj.metadata)
-
-        # monty datetime bug workaround:
-        # github.com/materialsvirtuallab/monty/issues/275
-        if wall_time := metadata.get("wall_time"):
-            metadata["wall_time"] = [*map(str, wall_time)]
-        if cpu_time := metadata.get("cpu_time"):
-            metadata["cpu_time"] = [*map(str, cpu_time)]
-
-        # Get the final energy to store as its own key/value pair
-        energy = (
-            cclib_obj.scfenergies[-1] if cclib_obj.scfenergies is not None else None
+    # Store the HOMO/LUMO energies for convenience
+    if cclib_obj.moenergies is not None and cclib_obj.homos is not None:
+        homo_energies, lumo_energies, gaps = _get_homos_lumos(
+            cclib_obj.moenergies, cclib_obj.homos
         )
+        min_gap = min(gaps) if gaps else None
+    else:
+        homo_energies, lumo_energies, gaps, min_gap = (None, None, None, None)
 
-        # Now we construct the input molecule. Note that this is not necessarily
-        # the same as the initial molecule from the relaxation because the DFT
-        # package may have re-oriented the system. We only try to store the
-        # input if it is XYZ-formatted though since the Molecule object does not
-        # support internal coordinates or Gaussian Z-matrix.
-        if (
-            cclib_obj.metadata.get("coord_type") == "xyz"
-            and cclib_obj.metadata.get("coords") is not None
-        ):
-            coords_obj = cclib_obj.metadata["coords"]
-            input_species = [Element(row[0]) for row in coords_obj]
-            input_coords = [row[1:] for row in coords_obj]
-            input_molecule = Molecule(
-                input_species,
-                input_coords,
-                charge=charge,
-                spin_multiplicity=mult,
-            )
-            attributes["molecule_unoriented"] = input_molecule
+    # Construct additional attributes
+    additional_attributes = {
+        "final_scf_energy": final_scf_energy,
+        "homo_energies": homo_energies,
+        "lumo_energies": lumo_energies,
+        "homo_lumo_gaps": gaps,
+        "min_homo_lumo_gap": min_gap,
+    }
 
-        # These are duplicates of things made with MoleculeMetadata, so we can
-        # just remove them here
-        duplicates = ["atomnos", "atomcoords", "charge", "mult", "natom"]
-        for duplicate in duplicates:
-            attributes.pop(duplicate, None)
+    # Calculate any population analysis properties
+    popanalysis_attributes = {}
+    if analysis:
+        if isinstance(analysis, str):
+            analysis = [analysis]
+        analysis = [a.lower() for a in analysis]
 
-        # We will remove duplicates in the metadata too
-        metadata_duplicates = ["coords", "coord_type"]
-        for metadata_duplicate in metadata_duplicates:
-            metadata.pop(metadata_duplicate, None)
+        # Look for .cube or .cub files
+        cubefile_path = find_recent_logfile(dir_name, [".cube", ".cub"])
 
-        # Construct the Molecule object(s) from the trajectory
-        species = [Element.from_Z(z) for z in cclib_obj.atomnos]
-        coords = cclib_obj.atomcoords
-        molecules = [
-            Molecule(
-                species,
-                coord,
-                charge=charge,
-                spin_multiplicity=mult,
-            )
-            for coord in coords
-        ]
-        initial_molecule = molecules[0]
-        final_molecule = molecules[-1]
-        attributes["molecule_initial"] = initial_molecule
-        if store_trajectory:
-            attributes["trajectory"] = molecules
+        for analysis_name in analysis:
+            if calc_attributes := _cclib_calculate(
+                cclib_obj, analysis_name, cubefile_path, proatom_dir
+            ):
+                popanalysis_attributes[analysis_name] = calc_attributes
+            else:
+                popanalysis_attributes[analysis_name] = None
 
-        # Store the HOMO/LUMO energies for convenience
-        if cclib_obj.moenergies is not None and cclib_obj.homos is not None:
-            homo_energies, lumo_energies, homo_lumo_gaps = _get_homos_lumos(
-                cclib_obj.moenergies, cclib_obj.homos
-            )
-            attributes["homo_energies"] = homo_energies
-            if lumo_energies:
-                attributes["lumo_energies"] = lumo_energies
-            if homo_lumo_gaps:
-                attributes["homo_lumo_gaps"] = homo_lumo_gaps
-
-                # The HOMO-LUMO gap for a spin-polarized system is ill-defined.
-                # This is why we report both the alpha and beta channel gaps
-                # above. Here, we report
-                # min(LUMO_alpha-HOMO_alpha,LUMO_beta-HOMO_beta) in case the
-                # user wants to easily query by this too. For restricted
-                # systems, this will always be the same as above.
-                attributes["min_homo_lumo_gap"] = min(homo_lumo_gaps)
-
-        # Calculate any properties
-        if analysis:
-            if isinstance(analysis, str):
-                analysis = [analysis]
-            analysis = [a.lower() for a in analysis]
-
-            # Look for .cube or .cub files
-            cubefile_path = find_recent_logfile(dir_name, [".cube", ".cub"])
-
-            for analysis_name in analysis:
-                if calc_attributes := _cclib_calculate(
-                    cclib_obj, analysis_name, cubefile_path, proatom_dir
-                ):
-                    attributes[analysis_name] = calc_attributes
-                else:
-                    attributes[analysis_name] = None
-
-        doc = cls.from_molecule(
-            final_molecule,
-            energy=energy,
-            dir_name=get_uri(dir_name),
-            logfile=get_uri(logfile),
-            attributes=attributes,
-            metadata=metadata,
-        )
-        doc.molecule = final_molecule
-
-        return doc.model_copy(update=additional_fields).dict()
+    return {
+        "logfile": str(logfile).split(":")[-1],
+        "attributes": attributes | additional_attributes,
+        "pop_analysis": popanalysis_attributes or None,
+        "trajectory": traj_metadata,
+    }
 
 
 def _cclib_calculate(
@@ -473,7 +278,7 @@ def _cclib_calculate(
     method: str,
     cube_file: Path | str | None = None,
     proatom_dir: Path | str | None = None,
-) -> dict | None:
+) -> PopAnalysisAttributes | None:
     """
     Run a cclib population analysis.
 
@@ -489,6 +294,11 @@ def _cclib_calculate(
     proatom_dir
         The path to the proatom directory to use for the population analysis.
         Needed only for DDEC6 and Hirshfeld.
+
+    Returns
+    -------
+    PopAnalysisAttributes | None
+        The results of the population analysis.
     """
 
     method = method.lower()

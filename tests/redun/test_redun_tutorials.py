@@ -59,7 +59,7 @@ def test_tutorial2a(tmpdir, scheduler):
     @flow
     def workflow(atoms):
         result1 = relax_job(atoms)  # (1)!
-        return static_job(result1)  # (2)!
+        return static_job(result1["atoms"])  # (2)!
 
     atoms = bulk("Cu")
 
@@ -104,7 +104,7 @@ def test_tutorial2c(tmpdir, scheduler):
     @flow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        return bulk_to_slabs_flow(relaxed_bulk, run_static=False)  # (1)!
+        return bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)  # (1)!
 
     # Define the Atoms object
     atoms = bulk("Cu")

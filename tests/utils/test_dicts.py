@@ -1,5 +1,5 @@
-def test_remove_dict_empties():
-    from quacc.utils.dicts import remove_dict_empties
+def test_remove_dict_nones():
+    from quacc.utils.dicts import remove_dict_nones
 
     d = {
         "output": {
@@ -13,7 +13,7 @@ def test_remove_dict_empties():
         },
         "test": None,
     }
-    d = remove_dict_empties(d)
+    d = remove_dict_nones(d)
     assert d == {
         "output": {"output": {"test": [1, None], "test2": 1, "test4": {}, "test5": []}}
     }
