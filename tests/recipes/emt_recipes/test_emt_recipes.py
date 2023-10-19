@@ -55,6 +55,11 @@ def test_relax_job(tmpdir):
     assert output["atoms"] != output["input_atoms"]["atoms"]
     assert output["trajectory"][0]["atoms"] == output["input_atoms"]["atoms"]
     assert output["trajectory"][-1]["atoms"] == output["atoms"]
+    assert (
+        output["trajectory_results"][0]["energy"]
+        > output["trajectory_results"][-1]["energy"]
+    )
+    assert output["trajectory_results"][-1]["energy"] == output["results"]["energy"]
 
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += [0.1, 0.1, 0.1]
