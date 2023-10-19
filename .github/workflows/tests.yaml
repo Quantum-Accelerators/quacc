@@ -12,7 +12,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  tests-base:
+  tests-core:
     strategy:
       fail-fast: true
       matrix:
@@ -85,7 +85,7 @@ jobs:
         run: covalent start
 
       - name: Run tests with pytest
-        run: pytest -k 'covalent' --cov=quacc --cov-report=xml
+        run: pytest tests/covalent --cov=quacc --cov-report=xml
 
       - name: Stop Covalent server
         run: covalent stop
@@ -127,7 +127,7 @@ jobs:
         run: quacc set WORKFLOW_ENGINE ${{ matrix.wflow_engine }}
 
       - name: Run tests with pytest
-        run: pytest -k '${{ matrix.wflow_engine }}' --cov=quacc --cov-report=xml
+        run: pytest tests/${{ matrix.wflow_engine }} --cov=quacc --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3

@@ -6,6 +6,8 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     For a comparison of the different compatible workflow engines, refer to the [Workflow Engines Overview](../user/basics/wflow_overview.md) section.
 
+    If you don't want to use a workflow engine, you can simply skip this section.
+
 === "Parsl"
 
     **Installation**

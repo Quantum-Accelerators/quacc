@@ -1,31 +1,19 @@
 import pytest
 
-from quacc import SETTINGS
+from quacc import flow, job, subflow
 
 prefect = pytest.importorskip("prefect")
-
-DEFAULT_SETTINGS = SETTINGS.copy()
-
-
-def setup_module():
-    SETTINGS.WORKFLOW_ENGINE = "prefect"
-
-
-def teardown_module():
-    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
+from prefect.testing.utilities import prefect_test_harness
 
 
 @pytest.fixture(autouse=True, scope="session")
 def prefect_test_fixture():
-    from prefect.testing.utilities import prefect_test_harness
-
     with prefect_test_harness():
         yield
 
 
 def test_prefect_decorators(tmpdir):
     tmpdir.chdir()
-    from quacc import flow, job, subflow
 
     @job
     def add(a, b):
