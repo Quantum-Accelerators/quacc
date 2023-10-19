@@ -1,14 +1,11 @@
 import pytest
 
-from quacc import SETTINGS
+from quacc import flow, job, subflow
 
 parsl = pytest.importorskip("parsl")
 
-DEFAULT_SETTINGS = SETTINGS.copy()
-
 
 def setup_module():
-    SETTINGS.WORKFLOW_ENGINE = "parsl"
     import contextlib
 
     with contextlib.suppress(Exception):
@@ -16,13 +13,11 @@ def setup_module():
 
 
 def teardown_module():
-    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
     parsl.clear()
 
 
 def test_parsl_decorators(tmpdir):
     tmpdir.chdir()
-    from quacc import flow, job, subflow
 
     @job
     def add(a, b):
@@ -58,7 +53,6 @@ def test_parsl_decorators(tmpdir):
 
 def test_parsl_decorators_args(tmpdir):
     tmpdir.chdir()
-    from quacc import flow, job, subflow
 
     @job()
     def add(a, b):

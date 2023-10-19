@@ -1,18 +1,8 @@
 import pytest
 
-from quacc import SETTINGS
+from quacc import flow, job, subflow
 
 redun = pytest.importorskip("redun")
-
-DEFAULT_SETTINGS = SETTINGS.copy()
-
-
-def setup_module():
-    SETTINGS.WORKFLOW_ENGINE = "redun"
-
-
-def teardown_module():
-    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 @pytest.fixture()
@@ -22,7 +12,6 @@ def scheduler():
 
 def test_redun_decorators(tmpdir, scheduler):
     tmpdir.chdir()
-    from quacc import flow, job, subflow
 
     @job
     def add(a, b):

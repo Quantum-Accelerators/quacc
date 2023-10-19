@@ -1,24 +1,11 @@
 import pytest
 
-from quacc import SETTINGS
+from quacc import flow, job, subflow
 
 ct = pytest.importorskip("covalent")
 
 
-DEFAULT_SETTINGS = SETTINGS.copy()
-
-
-def setup_module():
-    SETTINGS.WORKFLOW_ENGINE = "covalent"
-
-
-def teardown_module():
-    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
-
-
 def test_covalent_decorators(tmpdir):
-    from quacc import flow, job, subflow
-
     tmpdir.chdir()
 
     @job
@@ -65,8 +52,6 @@ def test_covalent_decorators(tmpdir):
 
 
 def test_covalent_decorators_args(tmpdir):
-    from quacc import flow, job, subflow
-
     tmpdir.chdir()
 
     @job(executor="local")

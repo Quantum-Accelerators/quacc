@@ -1,27 +1,15 @@
+import jobflow as jf
 import pytest
+from ase.build import bulk, molecule
 
-from quacc import SETTINGS
+from quacc import job
+from quacc.recipes.emt.core import relax_job, static_job
 
 jf = pytest.importorskip("jobflow")
 
 
-DEFAULT_SETTINGS = SETTINGS.copy()
-
-
-def setup_module():
-    SETTINGS.WORKFLOW_ENGINE = "jobflow"
-
-
-def teardown_module():
-    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
-
-
 def test_tutorial1a(tmpdir):
     tmpdir.chdir()
-    import jobflow as jf
-    from ase.build import bulk
-
-    from quacc.recipes.emt.core import relax_job
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -35,11 +23,6 @@ def test_tutorial1a(tmpdir):
 
 def test_tutorial2a(tmpdir):
     tmpdir.chdir()
-
-    import jobflow as jf
-    from ase.build import bulk
-
-    from quacc.recipes.emt.core import relax_job, static_job
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -60,11 +43,6 @@ def test_tutorial2a(tmpdir):
 def test_tutorial2b(tmpdir):
     tmpdir.chdir()
 
-    import jobflow as jf
-    from ase.build import bulk, molecule
-
-    from quacc.recipes.emt.core import relax_job
-
     # Define two Atoms objects
     atoms1 = bulk("Cu")
     atoms2 = molecule("N2")
@@ -82,10 +60,6 @@ def test_tutorial2b(tmpdir):
 
 def test_comparison1(tmpdir):
     tmpdir.chdir()
-
-    import jobflow as jf
-
-    from quacc import job
 
     @job  # (1)!
     def add(a, b):
@@ -133,9 +107,6 @@ def test_comparison2(tmpdir):
 
 def test_comparison3(tmpdir):
     tmpdir.chdir()
-    import jobflow as jf
-
-    from quacc import job
 
     @job  #  (1)!
     def add(a, b):
@@ -154,10 +125,6 @@ def test_comparison3(tmpdir):
 
 def test_comparison4(tmpdir):
     tmpdir.chdir()
-
-    import jobflow as jf
-
-    from quacc import job
 
     @job
     def add(a, b):
