@@ -4,6 +4,11 @@ import numpy as np
 import pytest
 from ase.build import molecule
 
+from ase import Atoms
+from ase.optimize import FIRE, BFGS, BFGSLineSearch, LBFGS
+from ase.optimize import LBFGSLineSearch, GPMin
+from sella import Sella, IRC
+
 from quacc import SETTINGS
 from quacc.recipes.newtonnet.core import freq_job, relax_job, static_job
 from quacc.recipes.newtonnet.ts import irc_job, quasi_irc_job, ts_job
