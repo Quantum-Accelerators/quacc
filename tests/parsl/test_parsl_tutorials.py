@@ -44,10 +44,6 @@ def test_tutorial1b(tmpdir):
     # Print result
     assert "atoms" in future.result()  # (2)!
 
-    from ase.build import bulk
-
-    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
-
     # Define the Atoms object
     atoms = bulk("Cu")
 
