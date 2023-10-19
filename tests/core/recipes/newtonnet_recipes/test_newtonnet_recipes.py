@@ -3,42 +3,26 @@ from pathlib import Path
 import numpy as np
 import pytest
 from ase.build import molecule
-from ase import Atoms
-from ase.optimize import FIRE, BFGS, BFGSLineSearch, LBFGS
-from ase.optimize import LBFGSLineSearch, GPMin
-from sella import Sella, IRC
-from quacc import SETTINGS
 
-CURRENT_FILE_PATH = Path(__file__).parent.resolve()
+from quacc import SETTINGS
+from quacc.recipes.newtonnet.core import freq_job, relax_job, static_job
+from quacc.recipes.newtonnet.ts import irc_job, quasi_irc_job, ts_job
+
 DEFAULT_SETTINGS = SETTINGS.copy()
 
-SETTINGS.WORKFLOW_ENGINE = "local"
-
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "local",
-    reason="Need to use local as workflow manager to run this test.",
-)
 pytest.importorskip("sella")
 pytest.importorskip("newtonnet")
 
 
 def setup_module():
-    from pathlib import Path
-
-    from quacc import SETTINGS
-
     current_file_path = Path(__file__).parent.resolve()
 
-    SETTINGS.WORKFLOW_ENGINE = "local"
     SETTINGS.NEWTONNET_CONFIG_PATH = current_file_path / "config0.yml"
     SETTINGS.NEWTONNET_MODEL_PATH = current_file_path / "best_model_state.tar"
     SETTINGS.CHECK_CONVERGENCE = False
 
 
 def teardown_module():
-    from quacc import SETTINGS
-
-    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
     SETTINGS.NEWTONNET_CONFIG_PATH = DEFAULT_SETTINGS.NEWTONNET_CONFIG_PATH
     SETTINGS.NEWTONNET_MODEL_PATH = DEFAULT_SETTINGS.NEWTONNET_MODEL_PATH
     SETTINGS.CHECK_CONVERGENCE = DEFAULT_SETTINGS.CHECK_CONVERGENCE
@@ -75,7 +59,6 @@ def opt_swaps(request):
 
 
 def test_static_job(tmpdir, calc_swaps):
-    from quacc.recipes.newtonnet.core import static_job
     tmpdir.chdir()
     atoms = molecule("H2O")
     output = static_job(atoms, calc_swaps=calc_swaps)
@@ -85,8 +68,6 @@ def test_static_job(tmpdir, calc_swaps):
 
 
 def test_relax_job(tmpdir, calc_swaps, opt_swaps):
-    from quacc.recipes.newtonnet.core import relax_job
-
     tmpdir.chdir()
 
     atoms = molecule("H2O")
@@ -143,7 +124,6 @@ def test_freq_job(tmpdir,
                   expected_energy,
                   expected_vib_freqs,
                   expected_imag_freqs):
-    from quacc.recipes.newtonnet.core import freq_job
     tmpdir.chdir()
     output = freq_job(atoms,
                       temperature=temperature,
@@ -179,8 +159,6 @@ def atoms():
     (False, {"max_steps": 4})
 ])
 def test_ts_job(tmpdir, atoms, use_custom_hessian, opt_swaps):
-    from quacc.recipes.newtonnet.ts import ts_job
-
     tmpdir.chdir()
 
     output = ts_job(atoms, use_custom_hessian=use_custom_hessian, opt_swaps=opt_swaps)
@@ -213,7 +191,6 @@ def test_ts_job(tmpdir, atoms, use_custom_hessian, opt_swaps):
     ({"run_kwargs": {"direction": "reverse"}}, None),
 ])
 def test_irc_job(tmpdir, atoms, opt_swaps, freq_job_kwargs):
-    from quacc.recipes.newtonnet.ts import irc_job
     tmpdir.chdir()
     output = irc_job(atoms, opt_swaps=opt_swaps, freq_job_kwargs=freq_job_kwargs)
 
@@ -261,7 +238,6 @@ def test_quasi_irc_job(tmpdir,
                        freq_job_kwargs,
                        irc_job_kwargs,
                        expected_energy):
-    from quacc.recipes.newtonnet.ts import quasi_irc_job
     tmpdir.chdir()
     output = quasi_irc_job(atoms,
                            direction=direction,
