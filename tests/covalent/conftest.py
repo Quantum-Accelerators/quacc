@@ -1,13 +1,10 @@
 import os
 from pathlib import Path
 
-import pytest
-
 from quacc import SETTINGS
 
 
-@pytest.fixture(scope="session", autouse=True)
-def set_settings():
+def pytest_sessionstart():
     file_dir = Path(__file__).resolve().parent
     test_results_dir = file_dir / ".test_results"
     test_scratch_dir = file_dir / ".test_scratch"
