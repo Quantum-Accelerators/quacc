@@ -7,7 +7,7 @@ results = dict[str, Any]  # from atoms.calc.results
 parameters = dict[str, Any]  # from atoms.calc.parameters
 
 
-class RunSchema(TypedDict):
+class RunSchema(AtomsSchema):
     """Schema for `quacc.schemas.ase.summarize_run`"""
 
     input_atoms: AtomsSchema | None
@@ -45,7 +45,7 @@ class VibResults(TypedDict):
     vib_freqs_raw: list[float]
 
 
-class VibSchema(TypedDict):
+class VibSchema(AtomsSchema):
     """Schema for `quacc.schemas.ase.summarize_vib_run`"""
 
     nid: str
@@ -73,7 +73,7 @@ class ThermoResults(TypedDict):
     zpe: float
 
 
-class ThermoSchema(TypedDict):
+class ThermoSchema(AtomsSchema):
     nid: str
     dir_name: str
     parameters_thermo: ParametersThermo
