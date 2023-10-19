@@ -5,6 +5,8 @@ from ase.build import bulk, molecule
 from quacc import SETTINGS
 from quacc.recipes.gulp.core import relax_job, static_job
 
+DEFAULT_SETTINGS = SETTINGS.copy()
+
 
 def test_static_job(tmpdir):
     tmpdir.chdir()
