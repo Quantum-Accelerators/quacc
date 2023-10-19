@@ -1,15 +1,14 @@
 import pytest
+from ase.build import bulk, molecule
 
-from quacc import SETTINGS
+from quacc import job, subflow
+from quacc.recipes.emt.core import relax_job, static_job
+from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 parsl = pytest.importorskip("parsl")
 
-DEFAULT_SETTINGS = SETTINGS.copy()
-
 
 def setup_module():
-    SETTINGS.WORKFLOW_ENGINE = "parsl"
-
     import contextlib
 
     with contextlib.suppress(Exception):
@@ -17,16 +16,11 @@ def setup_module():
 
 
 def teardown_module():
-    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
     parsl.clear()
 
 
 def test_tutorial1a(tmpdir):
     tmpdir.chdir()
-
-    from ase.build import bulk
-
-    from quacc.recipes.emt.core import relax_job
 
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
@@ -41,10 +35,6 @@ def test_tutorial1a(tmpdir):
 def test_tutorial1b(tmpdir):
     tmpdir.chdir()
 
-    from ase.build import bulk
-
-    from quacc.recipes.emt.core import relax_job
-
     # Make an Atoms object of a bulk Cu structure
     atoms = bulk("Cu")
 
@@ -53,10 +43,6 @@ def test_tutorial1b(tmpdir):
 
     # Print result
     assert "atoms" in future.result()  # (2)!
-
-    from ase.build import bulk
-
-    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
     # Define the Atoms object
     atoms = bulk("Cu")
@@ -70,10 +56,6 @@ def test_tutorial1b(tmpdir):
 
 def test_tutorial2a(tmpdir):
     tmpdir.chdir()
-
-    from ase.build import bulk
-
-    from quacc.recipes.emt.core import relax_job, static_job
 
     # Define the workflow
     def workflow(atoms):
@@ -96,10 +78,6 @@ def test_tutorial2a(tmpdir):
 
 def test_tutorial2b(tmpdir):
     tmpdir.chdir()
-
-    from ase.build import bulk, molecule
-
-    from quacc.recipes.emt.core import relax_job
 
     # Define workflow
     def workflow(atoms1, atoms2):
@@ -128,11 +106,6 @@ def test_tutorial2b(tmpdir):
 def test_tutorial2c(tmpdir):
     tmpdir.chdir()
 
-    from ase.build import bulk
-
-    from quacc.recipes.emt.core import relax_job
-    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
-
     # Define the workflow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
@@ -154,8 +127,6 @@ def test_tutorial2c(tmpdir):
 def test_comparison1(tmpdir):
     tmpdir.chdir()
 
-    from quacc import job
-
     @job  #  (1)!
     def add(a, b):
         return a + b
@@ -173,8 +144,6 @@ def test_comparison1(tmpdir):
 
 def test_comparison2(tmpdir):
     tmpdir.chdir()
-
-    from quacc import job, subflow
 
     @job
     def add(a, b):
@@ -197,7 +166,6 @@ def test_comparison2(tmpdir):
 
 def test_comparison3(tmpdir):
     tmpdir.chdir()
-    from quacc import job
 
     @job  #  (1)!
     def add(a, b):
@@ -215,7 +183,6 @@ def test_comparison3(tmpdir):
 
 def test_comparison4(tmpdir):
     tmpdir.chdir()
-    from quacc import job, subflow
 
     @job
     def add(a, b):

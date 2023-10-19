@@ -1,24 +1,11 @@
 import pytest
 
-from quacc import SETTINGS
+from quacc import flow, job, subflow
 
 jf = pytest.importorskip("jobflow")
 
 
-DEFAULT_SETTINGS = SETTINGS.copy()
-
-
-def setup_module():
-    SETTINGS.WORKFLOW_ENGINE = "jobflow"
-
-
-def teardown_module():
-    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
-
-
 def test_jobflow_decorators(tmpdir):
-    from quacc import flow, job, subflow
-
     tmpdir.chdir()
 
     @job
@@ -48,8 +35,6 @@ def test_jobflow_decorators(tmpdir):
 
 
 def test_jobflow_decorators_args(tmpdir):
-    from quacc import flow, job, subflow
-
     tmpdir.chdir()
 
     @job()
