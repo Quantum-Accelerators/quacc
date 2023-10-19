@@ -8,32 +8,24 @@ In this section, we provide a few examples going through the entire process to d
 
 ## Pre-Requisites
 
-Start with a clean Conda environment if you don't have one already:
+If you haven't done so already:
 
-```bash
-conda create --name quacc python=3.10
-conda activate quacc
-```
+=== "Parsl"
 
-Then install the necessary dependencies:
-
-=== "Parsl ⭐"
-
-    On both the remote machine:
+    On the remote machine:
 
     ```bash
-    pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
+    pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
     pip install quacc[parsl]
-    quacc set WORKFLOW_ENGINE parsl
-    quacc set CREATE_UNIQUE_WORKDIR True
+    quacc set WORKFLOW_ENGINE parsl && quacc set CREATE_UNIQUE_WORKDIR True
     ```
 
-=== "Covalent ⭐"
+=== "Covalent"
 
     On both the local and remote machines:
 
     ```bash
-    pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
+    pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
     pip install quacc[covalent]
     quacc set WORKFLOW_ENGINE covalent
     ```
@@ -57,16 +49,16 @@ Then install the necessary dependencies:
     On both the local and remote machines:
 
     ```bash
-    pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
+    pip install --force-reinstall --no-deps https://gitlab.com/ase/ase/-/archive/master/ase-master.zip
     pip install quacc[jobflow]
     quacc set WORKFLOW_ENGINE jobflow
     ```
 
-## Example 1: EMT
+## Example 1
 
 When deploying calculations for the first time, it's important to start simple, which is why you should try to run a sample EMT workflow first.
 
-=== "Parsl ⭐"
+=== "Parsl"
 
     **Starting Small**
 
@@ -113,7 +105,7 @@ When deploying calculations for the first time, it's important to start simple, 
 
     def workflow(atoms):
         relax_output = relax_job(atoms)
-        return static_job(relax_output)
+        return static_job(relax_output["atoms"])
 
 
     atoms = bulk("Cu")
@@ -166,24 +158,22 @@ When deploying calculations for the first time, it's important to start simple, 
     Now we define the workflow:
 
     ```python
-    from ase.build import bulk
     from quacc.recipes.tblite.core import relax_job, freq_job
 
 
     def workflow(atoms):
         relax_output = relax_job(atoms)
-        return freq_job(relax_output)
+        return freq_job(relax_output["atoms"], energy=relax_output["energy"])
     ```
 
     We now loop over all molecules in the "g2" collection and apply our workflow.
 
     ```python
-    from ase.build import molecule
     from ase.collections import g2
 
     futures = []
     for name in g2.names:
-        atoms = molecule(name)
+        atoms = g2[name]
         future = workflow(atoms)  #  (1)!
         futures.append(future)
     ```
@@ -205,7 +195,7 @@ When deploying calculations for the first time, it's important to start simple, 
         )
     ```
 
-=== "Covalent ⭐"
+=== "Covalent"
 
     Run the following code on the local machine:
 
@@ -243,7 +233,7 @@ When deploying calculations for the first time, it's important to start simple, 
     @flow(executor=executor, workflow_executor=executor)  # (1)!
     def workflow(atoms):
         relax_output = relax_job(atoms)
-        return static_job(relax_output)
+        return static_job(relax_output["atoms"])
 
 
     atoms = bulk("Cu")
@@ -271,7 +261,7 @@ When deploying calculations for the first time, it's important to start simple, 
 
     atoms = bulk("Cu")
     job1 = relax_job(atoms)
-    job2 = static_job(job1.output)
+    job2 = static_job(job1.output["atoms"])
     flow = jf.Flow([job1, job2])
 
     wf = flow_to_workflow(flow)
@@ -285,13 +275,13 @@ When deploying calculations for the first time, it's important to start simple, 
     qlaunch rapidfire -m 1
     ```
 
-## Example 2: VASP
+## Example 2
 
 In this example, we will run a sample VASP recipe that will highlight the use of a more complicated configuration.
 
-First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of your remote machine as described in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials). When you're done, follow the steps below.
+First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc` of your remote machine as described in the [Calculator Setup guide](../../install/codes.md). When you're done, follow the steps below.
 
-=== "Parsl ⭐"
+=== "Parsl"
 
     From an interactive resource like a Jupyter Notebook or IPython kernel on the remote machine:
 
@@ -341,7 +331,7 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
 
     def workflow(atoms):
         relax_output = relax_job(atoms, calc_swaps={"kpts": [3, 3, 3]})
-        return static_job(relax_output, calc_swaps={"kpts": [3, 3, 3]})
+        return static_job(relax_output["atoms"], calc_swaps={"kpts": [3, 3, 3]})
 
 
     future1 = workflow(bulk("C"))
@@ -349,7 +339,7 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
     print(future1.result(), future2.result())
     ```
 
-=== "Covalent ⭐"
+=== "Covalent"
 
     Run the following code on the local machine:
 
@@ -393,7 +383,7 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
     @flow(executor=executor, workflow_executor=executor)  # (2)!
     def workflow(atoms):
         relax_output = relax_job(atoms)
-        return static_job(relax_output)
+        return static_job(relax_output["atoms"])
 
 
     atoms = bulk("C")
@@ -435,7 +425,7 @@ First, prepare your `VASP_PP_PATH` environment variable in the `~/.bashrc` of yo
 
     atoms = bulk("C")
     job1 = relax_job(atoms, calc_swaps={"kpts": [3, 3, 3]})
-    job2 = static_job(job1.output, calc_swaps={"kpts": [3, 3, 3]})
+    job2 = static_job(job1.output["atoms"], calc_swaps={"kpts": [3, 3, 3]})
     flow = jf.Flow([job1, job2])
 
     wf = flow_to_workflow(flow)

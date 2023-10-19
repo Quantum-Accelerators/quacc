@@ -1,16 +1,25 @@
-import numpy as np
 import pytest
-from ase.build import molecule
 
 from quacc import SETTINGS
 
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "local",
-    reason="Need to use local as workflow manager to run this test.",
-)
+DEFAULT_SETTINGS = SETTINGS.copy()
+
+
+def setup_module():
+    from maggma.stores import MemoryStore
+
+    SETTINGS.WORKFLOW_ENGINE = "local"
+    SETTINGS.PRIMARY_STORE = MemoryStore()
+
+
+def teardown_module():
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
+    SETTINGS.PRIMARY_STORE = DEFAULT_SETTINGS.PRIMARY_STORE
 
 
 def test_static_job(tmpdir):
+    from ase.build import molecule
+
     from quacc.recipes.lj.core import static_job
 
     tmpdir.chdir()
@@ -35,6 +44,9 @@ def test_static_job(tmpdir):
 
 
 def test_relax_job(tmpdir):
+    import numpy as np
+    from ase.build import molecule
+
     from quacc.recipes.lj.core import relax_job
 
     tmpdir.chdir()
@@ -63,13 +75,15 @@ def test_relax_job(tmpdir):
 
 
 def test_freq_job(tmpdir):
+    from ase.build import molecule
+
     from quacc.recipes.lj.core import freq_job, relax_job
 
     tmpdir.chdir()
 
     atoms = molecule("H2O")
 
-    output = freq_job(relax_job(atoms))
+    output = freq_job(relax_job(atoms)["atoms"])
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["epsilon"] == 1.0
     assert output["parameters"]["sigma"] == 1.0

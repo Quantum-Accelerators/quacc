@@ -1,7 +1,6 @@
 import os
 
 import pytest
-from maggma.stores import MemoryStore
 
 ct = pytest.importorskip("covalent")
 
@@ -12,6 +11,8 @@ pytestmark = pytest.mark.skipif(
 
 
 def test_covalent_to_db():
+    from maggma.stores import MemoryStore
+
     from quacc.wflow.db import covalent_to_db
 
     @ct.electron
@@ -48,6 +49,8 @@ def test_covalent_to_db():
 
 
 def test_covalent_db_tutorial():
+    from maggma.stores import MemoryStore
+
     # Connect to the database
 
     store = MemoryStore()

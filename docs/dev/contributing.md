@@ -38,11 +38,9 @@ Please abide by the following guidelines when contributing code to quacc:
 
 - Only define multi-step workflows if they go beyond simply stitching together existing functions or if they are widely used in other recipes. Otherwise, just define the individual functions.
 
-- Ensure that the code remains flexible for the user whenever possible.
-
-- Where appropriate, you should use the "internal" geometry optimizers for a given code rather than the ASE optimizers.
-
 - Use absolute paths where possible and avoid using `os.chdir`. This helps ensure that quacc can be run in a multi-threading mode.
+
+- Put your imports inside each function in your test suite
 
 - `gzip` large test files to save space.
 
@@ -51,8 +49,6 @@ Please abide by the following guidelines when contributing code to quacc:
 If contributing new recipes, please abide by the following guidelines:
 
 - Please mimic one of the other recipes as a general template for internal consistency.
-
-- Ensure that the first positional argument accepts `Atoms | dict` like all the other recipes.
 
 - Decorate your individual compute jobs with a `#!Python @job` decorator or your flow with a `#!Python @flow` decorator and name them accordingly.
 

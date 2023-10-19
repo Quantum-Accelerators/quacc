@@ -1,16 +1,19 @@
-import os
 from pathlib import Path
 
-import pytest
-from ase.build import bulk
-from maggma.stores import MemoryStore
-
 from quacc import SETTINGS
-from quacc.recipes.emt.core import relax_job, static_job
-from quacc.settings import QuaccSettings
 
 DEFAULT_SETTINGS = SETTINGS.copy()
+
+
 FILE_DIR = Path(__file__).resolve().parent
+
+
+def setup_module():
+    SETTINGS.WORKFLOW_ENGINE = "local"
+
+
+def teardown_module():
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 def setup_function():
@@ -26,6 +29,10 @@ def teardown_function():
 
 
 def test_file(monkeypatch, tmpdir):
+    import os
+
+    from quacc.settings import QuaccSettings
+
     tmpdir.chdir()
 
     assert QuaccSettings().GZIP_FILES is True
@@ -41,17 +48,24 @@ def test_file(monkeypatch, tmpdir):
 
 
 def test_store(tmpdir):
+    from ase.build import bulk
+    from maggma.stores import MemoryStore
+
+    from quacc.recipes.emt.core import static_job
+
     tmpdir.chdir()
     SETTINGS.PRIMARY_STORE = MemoryStore()
     atoms = bulk("Cu")
     static_job(atoms)
 
 
-@pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "local",
-    reason="Need to be using local workflow engine.",
-)
 def test_results_dir(tmpdir):
+    import os
+
+    from ase.build import bulk
+
+    from quacc.recipes.emt.core import relax_job
+
     tmpdir.chdir()
 
     atoms = bulk("Cu")
@@ -65,16 +79,20 @@ def test_results_dir(tmpdir):
 
 
 def test_env_var(monkeypatch):
+    from quacc.settings import QuaccSettings
+
     p = FILE_DIR / "my/scratch/dir"
     monkeypatch.setenv("QUACC_SCRATCH_DIR", p)
-    assert QuaccSettings().SCRATCH_DIR == p.expanduser().resolve()
+    assert p.expanduser().resolve() == QuaccSettings().SCRATCH_DIR
 
 
 def test_yaml(tmpdir, monkeypatch):
+    from quacc.settings import QuaccSettings
+
     tmpdir.chdir()
 
     p = FILE_DIR / "my/new/scratch/dir"
     with open("quacc_test.yaml", "w") as f:
         f.write(f"SCRATCH_DIR: {p}")
     monkeypatch.setenv("QUACC_CONFIG_FILE", "quacc_test.yaml")
-    assert QuaccSettings().SCRATCH_DIR == p.expanduser().resolve()
+    assert p.expanduser().resolve() == QuaccSettings().SCRATCH_DIR

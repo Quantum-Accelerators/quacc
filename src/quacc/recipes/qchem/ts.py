@@ -31,7 +31,7 @@ if TYPE_CHECKING:
     "Sella must be installed. Refer to the quacc documentation.",
 )
 def ts_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     charge: int,
     spin_multiplicity: int,
     method: str = "wb97mv",
@@ -77,8 +77,7 @@ def ts_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     charge
         Charge of the system.
     spin_multiplicity
@@ -160,7 +159,7 @@ def ts_job(
     "Sella must be installed. Refer to the quacc documentation.",
 )
 def irc_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     charge: int,
     spin_multiplicity: int,
     direction: Literal["forward", "reverse"] = "forward",
@@ -207,8 +206,7 @@ def irc_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     charge
         Charge of the system.
     spin_multiplicity
@@ -292,7 +290,7 @@ def irc_job(
     "Sella must be installed. Refer to the quacc documentation.",
 )
 def quasi_irc_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     charge: int,
     spin_multiplicity: int,
     direction: Literal["forward", "reverse"] = "forward",
@@ -374,7 +372,7 @@ def quasi_irc_job(
 
     SETTINGS.CHECK_CONVERGENCE = default_settings.CHECK_CONVERGENCE
     relax_summary = relax_job.__wrapped__(
-        irc_summary,
+        irc_summary["atoms"],
         charge,
         spin_multiplicity,
         method=method,

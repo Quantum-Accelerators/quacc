@@ -2,7 +2,7 @@
 
 In the previous examples, we have been running calculations on our local machine. However, in practice, you will probably want to run your calculations on one or more HPC machines. This section will describe how to set up your workflows to run on HPC machines using your desired workflow engine to scale up your calculations.
 
-=== "Parsl ⭐"
+=== "Parsl"
 
     Out-of-the-box, Parsl will run on your local machine. However, in practice you will probably want to run your Parsl workflows on HPC machines.
 
@@ -96,7 +96,7 @@ In the previous examples, we have been running calculations on our local machine
 
     Parsl supports tying specific executors to a given `PythonApp`, as discussed in the [Multi-Executor section](https://parsl.readthedocs.io/en/stable/userguide/execution.html#multi-executor) of the Parsl documentation.
 
-=== "Covalent ⭐"
+=== "Covalent"
 
     By default, Covalent will run all jobs on your local machine using the Dask backend. This is a parameter that you can control. For instance, Covalent offers many [executor plugins](https://docs.covalent.xyz/docs/plugin) that can be installed and used to interface with a wide range of HPC, cloud, and quantum devices.
 
@@ -114,7 +114,7 @@ In the previous examples, we have been running calculations on our local machine
     @flow(executor="local", workflow_executor="local")  # (1)!
     def workflow(atoms):
         result1 = relax_job(atoms)
-        result2 = static_job(result1)
+        result2 = static_job(result1["atoms"])
 
         return result2
 
@@ -144,7 +144,7 @@ In the previous examples, we have been running calculations on our local machine
     @flow
     def workflow(atoms):
         output1 = relax_job(atoms)
-        output2 = static_job(output1)
+        output2 = static_job(output1["atoms"])
 
         return output2
 
@@ -231,106 +231,6 @@ In the previous examples, we have been running calculations on our local machine
         ```
 
         1.  The `SlurmExecutor` must have `use_srun=False` in order for ASE-based calculators to be launched appropriately.
-
-=== "Prefect"
-
-    Out-of-the-box, Prefect will run on your local machine. However, in practice you will probably want to run your Prefect workflows on HPC machines.
-
-
-    **Defining Task Runners**
-
-    !!! Tip
-
-        Check out the [Task Runner](https://docs.prefect.io/latest/concepts/task-runners/) documentation for more information on how Prefect handles task execution.
-
-    To modify where tasks are run, set the `task_runner` keyword argument of the corresponding `#!Python @flow` decorator. The jobs in this scenario would be submitted from a login node.
-
-    An example is shown below for setting up a task runner compatible with the NERSC Perlmutter machine:
-
-    ```python
-    from quacc.wflow.prefect import make_prefect_runner
-
-    n_slurm_jobs = 1  # Number of Slurm jobs to launch in parallel.
-    n_nodes_per_calc = 1  # Number of nodes to reserve for each Slurm job.
-    n_cores_per_node = 48  # Number of CPU cores per node.
-    mem_per_node = "64 GB"  # Total memory per node.
-
-    cluster_kwargs = {
-        # Dask worker options
-        "n_workers": n_slurm_jobs,  # (1)!
-        "cores": n_cores_per_node,  # (2)!
-        "memory": mem_per_node,  # (3)!
-        # SLURM options
-        "shebang": "#!/bin/bash",
-        "account": "AccountName",
-        "walltime": "00:10:00",
-        "job_mem": "0",  # (4)!
-        "job_script_prologue": [
-            "source ~/.bashrc",
-            "conda activate quacc",
-        ],  # (5)!
-        "job_directives_skip": ["-n", "--cpus-per-task"],  # (6)!
-        "job_extra_directives": [f"-N {n_nodes_per_calc}", "-q debug", "-C cpu"],  # (7)!
-        "python": "python",  # (8)!
-    }
-
-    runner = make_prefect_runner(cluster_kwargs, temporary=True)
-    ```
-
-    1. Number of Slurm jobs to launch.
-
-    2. Total number of cores (per Slurm job) for Dask worker.
-
-    3. Total memory (per Slurm job) for Dask worker.
-
-    4. Request all memory on the node.
-
-    5. Commands to run before calculation. This is a good place to include environment variable definitions and modules to load.
-
-    6. Slurm directives that are automatically added but that we chose to skip.
-
-    7. The number of nodes for each calculation (-N), queue name (-q), and constraint (-c). Oftentimes, the constraint flag is not needed.
-
-    8. The Python executable name. This often does not need to be changed.
-
-    With this instantiated cluster object, you can set the task runner of the `Flow`:
-
-    ```python
-    @flow(task_runner=runner)
-    def workflow(atoms):
-        ...
-    ```
-
-    When the worklow is run from the login node, it will be submitted to the job scheduling system (Slurm by default), and the results will be sent back to Prefect Cloud once completed.
-
-    !!! Tip
-
-        Refer to the [Dask-Jobqueue Documentation](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html) for the available `cluster_kwargs` that can be defined and how they relate to a typical job script.
-
-
-    To asynchronously spawn a Slurm job that continually pulls in work for the duration of its walltime (rather than starting and terminating over the lifetime of the associated `Flow`), you can instead use the `make_prefect_runner` command without a `temporary` keyword argument:
-
-    ```python
-    runner = make_prefect_runner(cluster_kwargs)
-    ```
-
-    This is often more efficient for running large numbers of workflows because you can request a single, large Slurm job that continually pulls in work rather than submitting a large number of small jobs to the scheduler.
-
-    Additionally, you can have the generated Dask cluster adaptively scale based on the amount of work available by setting `adapt_kwargs`:
-
-    ```python
-    runner = make_prefect_runner(cluster_kwargs, adapt_kwargs={"minimum": 1, "maximum": 5})
-    ```
-
-    This will ensure that at least one Slurm job is always running, but the number of jobs will scale up to 5 if there is enough work available.
-
-    **Executor Configuration File**
-
-    Speaking of configurations, if you use mostly the same HPC settings for your calculations, it can be annoying to define a large dictionary in every workflow you run. Instead, you can define a configuration file at `~/.config/dask/jobqueue.yaml` as described in the [dask-jobqueue documentation](https://jobqueue.dask.org/en/latest/configuration-setup.html#managing-configuration-files) that can be used to define default values common to your HPC setup.
-
-    **Using a Prefect Work Pool and Agent**
-
-    So far, we have dispatched calculations immediately upon calling them. However, in practice, it is often more useful to have a Prefect agent running in the background that will continually poll for work to submit to the task runner. This allows you to submit only a subset of workflows at a time, and the agent will automatically submit more jobs as the resources become available. You will want to run Prefect workflows with an agent on the computing environment where you wish to submit jobs, specifically on a perpetual resource like a login node or dedicated workflow node. Refer to the ["Work Pools, Workers, and Agents"](https://docs.prefect.io/latest/concepts/work-pools/) section of the Prefect documentation for more details.
 
 === "Redun"
 

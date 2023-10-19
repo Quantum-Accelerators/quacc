@@ -1,21 +1,25 @@
-from copy import deepcopy
-
-import numpy as np
 import pytest
-from ase.build import molecule
 
 from quacc import SETTINGS
 
 pytest.importorskip("tblite.ase")
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "local",
-    reason="Need to use local as workflow manager to run this test.",
-)
+
 
 DEFAULT_SETTINGS = SETTINGS.copy()
 
 
+def setup_module():
+    SETTINGS.WORKFLOW_ENGINE = "local"
+
+
+def teardown_module():
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
+
+
 def test_static_job(tmpdir):
+    import numpy as np
+    from ase.build import molecule
+
     from quacc.recipes.tblite.core import static_job
 
     tmpdir.chdir()
@@ -35,6 +39,9 @@ def test_static_job(tmpdir):
 
 
 def test_relax_job(tmpdir):
+    import numpy as np
+    from ase.build import molecule
+
     from quacc.recipes.tblite.core import relax_job
 
     tmpdir.chdir()
@@ -50,6 +57,11 @@ def test_relax_job(tmpdir):
 
 
 def test_freq_job(tmpdir):
+    from copy import deepcopy
+
+    import numpy as np
+    from ase.build import molecule
+
     from quacc.recipes.tblite.core import freq_job
 
     tmpdir.chdir()
@@ -135,6 +147,10 @@ def test_freq_job(tmpdir):
 
 
 def test_unique_workdir(tmpdir):
+    from quacc import SETTINGS
+
+    DEFAULT_SETTINGS = SETTINGS.copy()
+
     SETTINGS.CREATE_UNIQUE_WORKDIR = True
     test_static_job(tmpdir)
     test_relax_job(tmpdir)

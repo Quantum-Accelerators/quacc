@@ -1,30 +1,26 @@
-import gzip
-import os
-import shutil
 from pathlib import Path
 
 import pytest
-from ase.build import bulk
-from ase.io import read
-from cclib.io import ccread
-from maggma.stores import MemoryStore
-from monty.json import MontyDecoder, jsanitize
-
-from quacc.calculators.vasp import Vasp
-from quacc.schemas.cclib import (
-    _cclib_calculate,
-    _cclibTaskDocument,
-    cclib_summarize_run,
-)
 
 FILE_DIR = Path(__file__).resolve().parent
 
-run1 = os.path.join(FILE_DIR, "gaussian_run1")
-log1 = os.path.join(run1, "Gaussian.log")
-cclib_obj = ccread(log1)
+run1 = FILE_DIR / "gaussian_run1"
+log1 = run1 / "Gaussian.log"
+run2 = FILE_DIR / "cclib_data"
+log2 = run2 / "gau_testopt.log.gz"
+
+
+@pytest.fixture()
+def cclib_obj():
+    from cclib.io import ccread
+
+    return ccread(log1)
 
 
 def setup_module():
+    import gzip
+    import shutil
+
     p = FILE_DIR / "cclib_data"
 
     with gzip.open(p / "psi_test.cube.gz", "r") as f_in, open(
@@ -34,6 +30,8 @@ def setup_module():
 
 
 def teardown_module():
+    import os
+
     p = FILE_DIR / "cclib_data"
 
     if os.path.exists(p / "psi_test.cube"):
@@ -45,16 +43,62 @@ def bad_mock_cclib_calculate(*args, **kwargs):
     raise ValueError(msg)
 
 
-def test_cclib_summarize_run():
+def test_cclib_summarize_run(tmpdir):
+    tmpdir.chdir()
+
+    import os
+
+    from ase.io import read
+    from maggma.stores import MemoryStore
+    from monty.json import MontyDecoder, jsanitize
+
+    from quacc.schemas.cclib import cclib_summarize_run
+
     # Make sure metadata is made
     atoms = read(log1)
-    results = cclib_summarize_run(atoms, ".log", dir_path=run1)
+    results = cclib_summarize_run(
+        atoms, ".log", dir_path=run1, additional_fields={"test": "hi"}
+    )
     assert results["natoms"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["spin_multiplicity"] == 1
     assert results["natoms"] == 6
-    assert results["metadata"].get("success", None) is True
-    assert "pull_request" in results["builder_meta"]
+    assert results["attributes"]["metadata"].get("success", None) is True
+    assert results["results"].get("energy", None) == pytest.approx(-5516.118738093933)
+    assert "pymatgen_version" in results["builder_meta"]
+
+    # Make sure metadata is made
+    atoms = read(log2)
+    results = cclib_summarize_run(
+        atoms, ".log", dir_path=run2, additional_fields={"test": "hi"}
+    )
+    assert results["attributes"]["final_scf_energy"] == pytest.approx(-4091.763)
+    assert results["natoms"] == 2
+    assert results["charge"] == 0
+    assert results["spin_multiplicity"] == 3
+    assert results["nelectrons"] == 16
+    assert "schemas" in results["logfile"]
+    assert "gau_testopt.log.gz" in results["logfile"]
+    assert results.get("attributes") is not None
+    assert results["attributes"]["metadata"]["success"] is True
+    assert results["input_atoms"]["atoms"][0].position == pytest.approx([0, 0, 0])
+    assert results["atoms"][0].position == pytest.approx([0.397382, 0.0, 0.0])
+    assert results["attributes"]["homo_energies"] == pytest.approx(
+        [-7.054007346511501, -11.618445074798501]
+    )
+    assert results["attributes"]["lumo_energies"] == pytest.approx(
+        [4.2384453353880005, -3.9423854660440005]
+    )
+    assert results["attributes"]["homo_lumo_gaps"] == pytest.approx(
+        [11.292452681899501, 7.6760596087545006]
+    )
+    assert results["attributes"]["min_homo_lumo_gap"] == pytest.approx(
+        7.6760596087545006
+    )
+    assert len(results["trajectory"]) == 7
+    assert results["trajectory"][0]["atoms"] == results["input_atoms"]["atoms"]
+    assert results["trajectory"][-1]["atoms"] == results["atoms"]
+    assert results["test"] == "hi"
 
     # test document can be jsanitized and decoded
     d = jsanitize(results, strict=True, enum_values=True)
@@ -106,6 +150,11 @@ def test_cclib_summarize_run():
 
 
 def test_errors():
+    from ase.build import bulk
+
+    from quacc.calculators.vasp import Vasp
+    from quacc.schemas.cclib import cclib_summarize_run
+
     atoms = bulk("Cu")
     with pytest.raises(ValueError):
         cclib_summarize_run(atoms, ".log", dir_path=run1)
@@ -117,76 +166,43 @@ def test_errors():
 
 
 def test_cclib_taskdoc(tmpdir):
+    import os
+
+    from monty.json import MontyDecoder, jsanitize
+
+    from quacc.schemas.cclib import _make_cclib_schema
+
     tmpdir.chdir()
 
     p = FILE_DIR / "cclib_data"
-
-    # Plain parsing of task doc. We do not check all cclib entries
-    # because they will evolve over time. We only check the ones we have
-    # added and some important ones.
-    doc = _cclibTaskDocument.from_logfile(p, ".log.gz")
-    assert doc["energy"] == pytest.approx(-4091.763)
-    assert doc["natoms"] == 2
-    assert doc["charge"] == 0
-    assert doc["spin_multiplicity"] == 3
-    assert doc["nelectrons"] == 16
-    assert "schemas" in doc["dir_name"]
-    assert "gau_testopt.log.gz" in doc["logfile"]
-    assert doc.get("attributes") is not None
-    assert doc.get("metadata") is not None
-    assert doc["metadata"]["success"] is True
-    assert doc["attributes"]["molecule_initial"][0].coords == pytest.approx([0, 0, 0])
-    assert doc["molecule"][0].coords == pytest.approx([0.397382, 0.0, 0.0])
-    assert doc["attributes"]["homo_energies"] == pytest.approx(
-        [-7.054007346511501, -11.618445074798501]
-    )
-    assert doc["attributes"]["lumo_energies"] == pytest.approx(
-        [4.2384453353880005, -3.9423854660440005]
-    )
-    assert doc["attributes"]["homo_lumo_gaps"] == pytest.approx(
-        [11.292452681899501, 7.6760596087545006]
-    )
-    assert doc["attributes"]["min_homo_lumo_gap"] == pytest.approx(7.6760596087545006)
 
     # Now we will try two possible extensions, but we will make sure that
     # it fails because the newest log file (.txt) is not valid
     with open(p / "test.txt", "w") as f:
         f.write("I am a dummy log file")
     with pytest.raises(Exception) as e:
-        doc = _cclibTaskDocument.from_logfile(p, [".log", ".txt"])
+        doc = _make_cclib_schema(p, [".log", ".txt"])
     os.remove(p / "test.txt")
     assert "Could not parse" in str(e.value)
 
     # Test a population analysis
-    doc = _cclibTaskDocument.from_logfile(p, "psi_test.out", analysis="MBO")
-    assert doc["attributes"]["mbo"] is not None
+    doc = _make_cclib_schema(p, "psi_test.out", analysis="MBO")
+    assert doc["pop_analysis"]["mbo"] is not None
 
     # Let's try with two analysis (also check case-insensitivity)
-    doc = _cclibTaskDocument.from_logfile(
-        p, "psi_test.out", analysis=["mbo", "density"]
-    )
-    assert doc["attributes"]["mbo"] is not None
-    assert doc["attributes"]["density"] is not None
+    doc = _make_cclib_schema(p, "psi_test.out", analysis=["mbo", "density"])
+    assert doc["pop_analysis"]["mbo"] is not None
+    assert doc["pop_analysis"]["density"] is not None
 
     # Test a population analysis that will fail
-    doc = _cclibTaskDocument.from_logfile(p, ".log", analysis="MBO")
-    assert doc["attributes"]["mbo"] is None
+    doc = _make_cclib_schema(p, ".log", analysis="MBO")
+    assert doc["pop_analysis"]["mbo"] is None
 
-    doc = _cclibTaskDocument.from_logfile(p, "psi_test.out", analysis=["Bader"])
-    assert doc["attributes"]["bader"] is not None
-
-    # Make sure storing the trajectory works
-    doc = _cclibTaskDocument.from_logfile(p, ".log", store_trajectory=True)
-    assert len(doc["attributes"]["trajectory"]) == 7
-    assert doc["attributes"]["trajectory"][0] == doc["attributes"]["molecule_initial"]
-    assert doc["attributes"]["trajectory"][-1] == doc["molecule"]
-
-    # Make sure additional fields can be stored
-    doc = _cclibTaskDocument.from_logfile(p, ".log", additional_fields={"test": "hi"})
-    assert doc["test"] == "hi"
+    doc = _make_cclib_schema(p, "psi_test.out", analysis=["Bader"])
+    assert doc["pop_analysis"]["bader"] is not None
 
     with pytest.raises(FileNotFoundError):
-        _cclibTaskDocument.from_logfile(p, "does_not_exists.txt")
+        _make_cclib_schema(p, "does_not_exists.txt")
 
     # test document can be jsanitized
     d = jsanitize(doc, enum_values=True)
@@ -195,7 +211,9 @@ def test_cclib_taskdoc(tmpdir):
     MontyDecoder().process_decoded(d)
 
 
-def test_cclib_calculate(tmpdir):
+def test_cclib_calculate(tmpdir, cclib_obj):
+    from quacc.schemas.cclib import _cclib_calculate
+
     tmpdir.chdir()
 
     with pytest.raises(ValueError):
@@ -231,7 +249,9 @@ def test_cclib_calculate(tmpdir):
         )
 
 
-def test_monkeypatches(tmpdir, monkeypatch):
+def test_monkeypatches(tmpdir, monkeypatch, cclib_obj):
+    from quacc.schemas.cclib import _cclib_calculate
+
     tmpdir.chdir()
     monkeypatch.setenv("PROATOM_DIR", str(FILE_DIR / "cclib_data" / "proatomdata"))
     with pytest.raises(FileNotFoundError):

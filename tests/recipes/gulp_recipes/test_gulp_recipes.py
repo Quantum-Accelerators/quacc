@@ -1,15 +1,19 @@
-import pytest
-from ase.build import bulk, molecule
-
 from quacc import SETTINGS
 
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "local",
-    reason="Need to use local as workflow manager to run this test.",
-)
+DEFAULT_SETTINGS = SETTINGS.copy()
+
+
+def setup_module():
+    SETTINGS.WORKFLOW_ENGINE = "local"
+
+
+def teardown_module():
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 def test_static_job(tmpdir):
+    from ase.build import bulk, molecule
+
     from quacc.recipes.gulp.core import static_job
 
     tmpdir.chdir()
@@ -67,6 +71,8 @@ def test_static_job(tmpdir):
 
 
 def test_relax_job(tmpdir):
+    from ase.build import bulk, molecule
+
     from quacc.recipes.gulp.core import relax_job
 
     tmpdir.chdir()
@@ -139,3 +145,21 @@ def test_relax_job(tmpdir):
     assert "dump every gulp.res" in output["parameters"]["options"]
     assert "output xyz gulp.xyz" not in output["parameters"]["options"]
     assert "output cif gulp.cif" in output["parameters"]["options"]
+
+
+def test_envvars(tmpdir):
+    import os
+
+    from ase.build import molecule
+
+    from quacc import SETTINGS
+    from quacc.recipes.gulp.core import static_job
+
+    tmpdir.chdir()
+
+    atoms = molecule("H2O")
+
+    SETTINGS.GULP_LIB = "/path/to/lib"
+    assert static_job(atoms)
+    assert os.environ.get("GULP_LIB") == "/path/to/lib"
+    SETTINGS.GULP_LIB = DEFAULT_SETTINGS.GULP_LIB

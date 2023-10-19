@@ -146,7 +146,5 @@ plugins:
 edit_uri: blob/main/docs/
 extra:
   social:
-    - icon: fontawesome/brands/twitter
-      link: https://twitter.com/RosenGroupPU
     - icon: fontawesome/brands/github
       link: https://github.com/Quantum-Accelerators/

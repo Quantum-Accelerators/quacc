@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
-from quacc import SETTINGS, fetch_atoms, job
+from quacc import SETTINGS, job
 from quacc.recipes.newtonnet.core import _add_stdev_and_hess, freq_job, relax_job
 from quacc.runners.calc import run_ase_opt
 from quacc.schemas.ase import summarize_opt_run
@@ -29,7 +29,8 @@ if TYPE_CHECKING:
     from ase import Atoms
     from numpy.typing import NDArray
 
-    from quacc.schemas.ase import FreqSchema, OptSchema
+    from quacc.recipes.newtonnet.core import FreqSchema
+    from quacc.schemas.ase import OptSchema
 
     class TSSchema(OptSchema):
         freq_job: FreqSchema | None
@@ -46,7 +47,7 @@ if TYPE_CHECKING:
 @requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
 @requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
 def ts_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     use_custom_hessian: bool = False,
     run_freq: bool = True,
     freq_job_kwargs: dict | None = None,
@@ -103,7 +104,6 @@ def ts_job(
     TSSchema
         Dictionary of results
     """
-    atoms = fetch_atoms(atoms)
     freq_job_kwargs = freq_job_kwargs or {}
 
     defaults = {
@@ -138,7 +138,9 @@ def ts_job(
 
     # Run a frequency calculation
     freq_summary = (
-        freq_job.__wrapped__(opt_ts_summary, **freq_job_kwargs) if run_freq else None
+        freq_job.__wrapped__(opt_ts_summary["atoms"], **freq_job_kwargs)
+        if run_freq
+        else None
     )
     opt_ts_summary["freq_job"] = freq_summary
 
@@ -149,7 +151,7 @@ def ts_job(
 @requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
 @requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
 def irc_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     direction: Literal["forward", "reverse"] = "forward",
     run_freq: bool = True,
     freq_job_kwargs: dict | None = None,
@@ -219,7 +221,6 @@ def irc_job(
     IRCSchema
         A dictionary containing the IRC summary and thermodynamic summary.
     """
-    atoms = fetch_atoms(atoms)
     freq_job_kwargs = freq_job_kwargs or {}
     default_settings = SETTINGS.copy()
 
@@ -260,7 +261,9 @@ def irc_job(
 
     # Run frequency job
     freq_summary = (
-        freq_job.__wrapped__(opt_irc_summary, **freq_job_kwargs) if run_freq else None
+        freq_job.__wrapped__(opt_irc_summary["atoms"], **freq_job_kwargs)
+        if run_freq
+        else None
     )
     opt_irc_summary["freq_job"] = freq_summary
 
@@ -271,7 +274,7 @@ def irc_job(
 @requires(NewtonNet, "NewtonNet must be installed. Refer to the quacc documentation.")
 @requires(Sella, "Sella must be installed. Refer to the quacc documentation.")
 def quasi_irc_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     direction: Literal["forward", "reverse"] = "forward",
     run_freq: bool = True,
     irc_job_kwargs: dict | None = None,
@@ -335,11 +338,13 @@ def quasi_irc_job(
     )
 
     # Run opt
-    relax_summary = relax_job.__wrapped__(irc_summary, **relax_job_kwargs)
+    relax_summary = relax_job.__wrapped__(irc_summary["atoms"], **relax_job_kwargs)
 
     # Run frequency
     freq_summary = (
-        freq_job.__wrapped__(relax_summary, **freq_job_kwargs) if run_freq else None
+        freq_job.__wrapped__(relax_summary["atoms"], **freq_job_kwargs)
+        if run_freq
+        else None
     )
     relax_summary["freq_job"] = freq_summary
     relax_summary["irc_job"] = irc_summary

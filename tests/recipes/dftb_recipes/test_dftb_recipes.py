@@ -1,21 +1,31 @@
 from shutil import which
 
-import numpy as np
 import pytest
-from ase.build import bulk, molecule
 
 from quacc import SETTINGS
 
 DFTBPLUS_EXISTS = bool(which("dftb+"))
-DEFAULT_SETTINGS = SETTINGS.copy()
 
 pytestmark = pytest.mark.skipif(
-    not DFTBPLUS_EXISTS or SETTINGS.WORKFLOW_ENGINE != "local",
-    reason="Need DFTB+ and Need to use local as workflow manager to run this test.",
+    not DFTBPLUS_EXISTS,
+    reason="Needs DFTB+",
 )
+
+DEFAULT_SETTINGS = SETTINGS.copy()
+
+
+def setup_module():
+    SETTINGS.WORKFLOW_ENGINE = "local"
+
+
+def teardown_module():
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
 
 
 def test_static_job(tmpdir):
+    import numpy as np
+    from ase.build import bulk, molecule
+
     from quacc.recipes.dftb.core import static_job
 
     tmpdir.chdir()
@@ -56,6 +66,9 @@ def test_static_job(tmpdir):
 
 
 def test_relax_job(tmpdir):
+    import numpy as np
+    from ase.build import bulk, molecule
+
     from quacc.recipes.dftb.core import relax_job
 
     tmpdir.chdir()
@@ -120,6 +133,10 @@ def test_relax_job(tmpdir):
 
 
 def test_unique_workdir(tmpdir):
+    from quacc import SETTINGS
+
+    DEFAULT_SETTINGS = SETTINGS.copy()
+
     SETTINGS.CREATE_UNIQUE_WORKDIR = True
     test_static_job(tmpdir)
     test_relax_job(tmpdir)

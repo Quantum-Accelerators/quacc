@@ -1,34 +1,57 @@
-import os
-from pathlib import Path
-
 import pytest
-from ase.io import read
-from maggma.stores import MemoryStore
-from monty.json import MontyDecoder, jsanitize
 
-from quacc.calculators.vasp import Vasp
-from quacc.schemas.vasp import vasp_summarize_run
 
-FILE_DIR = Path(__file__).resolve().parent
+@pytest.fixture()
+def run1():
+    from pathlib import Path
 
-run1 = os.path.join(FILE_DIR, "vasp_run1")
+    FILE_DIR = Path(__file__).resolve().parent
+
+    return FILE_DIR / "vasp_run1"
 
 
 def mock_bader_analysis(*args, **kwargs):
     return {
         "min_dist": [1.0] * 16,
+        "charge": [1.0] * 16,
         "atomic_volume": [1.0] * 16,
         "vacuum_charge": 1.0,
         "vacuum_volume": 1.0,
         "bader_version": 1.0,
         "reference_used": [0.0] * 16,
-        "partial_charges": [-1.0] * 16,
-        "spin_moments": [0.0] * 16,
+        "charge_transfer": [-1.0] * 16,
+        "magmom": [0.0] * 16,
     }
 
 
-def test_vasp_summarize_run():
+def mock_chargemol_analysis(*args, **kwargs):
+    return {
+        "ddec": {
+            "partial_charges": [1.0] * 16,
+            "spin_moments": [0.0] * 16,
+            "dipoles": [1.0] * 16,
+            "rsquared_moments": [1.0] * 16,
+            "rcubed_moments": [1.0] * 16,
+            "rfourth_moments": [1.0] * 16,
+        },
+        "cm5": {
+            "partial_charges": [1.0] * 16,
+        },
+    }
+
+
+def test_vasp_summarize_run(run1):
+    import os
+
+    from ase.io import read
+    from maggma.stores import MemoryStore
+    from monty.json import MontyDecoder, jsanitize
+
+    from quacc.calculators.vasp import Vasp
+    from quacc.schemas.vasp import vasp_summarize_run
+
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
+    calc = atoms.calc
     results = vasp_summarize_run(
         atoms,
         dir_path=run1,
@@ -36,7 +59,6 @@ def test_vasp_summarize_run():
     assert results["nsites"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["output"]["energy"] == -33.15807349
-    assert "calcs_reversed" not in results
 
     # Make sure default dir works
     cwd = os.getcwd()
@@ -57,6 +79,9 @@ def test_vasp_summarize_run():
 
     # Make sure info tags are handled appropriately
     atoms = read(os.path.join(run1, "CONTCAR.gz"))
+    calc = Vasp(atoms)
+    atoms.calc = calc
+    atoms.calc.results = {"energy": -1.0}
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
     results = vasp_summarize_run(atoms, dir_path=run1)
     results_atoms = results["atoms"]
@@ -82,6 +107,9 @@ def test_vasp_summarize_run():
 
     # Make sure Atoms magmoms were not moved if specified
     atoms = read(os.path.join(run1, "CONTCAR.gz"))
+    calc = Vasp(atoms)
+    atoms.calc = calc
+    atoms.calc.results = {"energy": -1.0}
     atoms.set_initial_magnetic_moments([3.14] * len(atoms))
     results = vasp_summarize_run(atoms, dir_path=run1, prep_next_run=False)
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * len(atoms)
@@ -93,17 +121,125 @@ def test_vasp_summarize_run():
     MontyDecoder().process_decoded(d)
 
 
-def test_summarize_bader_run(monkeypatch):
+def test_summarize_bader_run(monkeypatch, run1, tmpdir):
+    from shutil import copytree, move
+
+    from ase.io import read
+
+    from quacc.schemas.vasp import vasp_summarize_run
+
+    monkeypatch.setattr(
+        "quacc.schemas.vasp.bader_analysis_from_path",
+        mock_bader_analysis,
+    )
+    tmpdir.chdir()
+
+    p = tmpdir / "vasp_run"
+    copytree(run1, p)
+
+    move(p / "garbled_pot", p / "POTCAR")
+
+    for f in ["CHGCAR.gz", "AECCAR0.gz", "AECCAR2.gz"]:
+        with open(p / f, "w") as w:
+            w.write("test")
+
     # Make sure Bader works
-    monkeypatch.setattr("quacc.schemas.vasp.bader_runner", mock_bader_analysis)
-    atoms = read(os.path.join(run1, "OUTCAR.gz"))
-    results = vasp_summarize_run(atoms, dir_path=run1, run_bader=True)
+    atoms = read(str(p / "OUTCAR.gz"))
+    results = vasp_summarize_run(atoms, dir_path=p, run_bader=True)
     struct = results["output"]["structure"]
-    assert struct.site_properties["bader_charge"] == [-1.0] * len(atoms)
+    assert struct.site_properties["bader_charge"] == [1.0] * len(atoms)
     assert struct.site_properties["bader_spin"] == [0.0] * len(atoms)
 
 
-def test_no_bader():
-    atoms = read(os.path.join(run1, "OUTCAR.gz"))
+def test_summarize_chargemol_run(monkeypatch, run1, tmpdir):
+    from shutil import copytree, move
+
+    from ase.io import read
+
+    from quacc.schemas.vasp import vasp_summarize_run
+
+    monkeypatch.setattr(
+        "quacc.schemas.vasp.ChargemolAnalysis",
+        mock_chargemol_analysis,
+    )
+    monkeypatch.setenv("DDEC6_ATOMIC_DENSITIES_DIR", "test")
+    tmpdir.chdir()
+
+    p = tmpdir / "vasp_run"
+    copytree(run1, p)
+
+    move(p / "garbled_pot", p / "POTCAR")
+
+    for f in ["CHGCAR.gz", "AECCAR0.gz", "AECCAR2.gz"]:
+        with open(p / f, "w") as w:
+            w.write("test")
+
+    # Make sure Bader works
+    atoms = read(str(p / "OUTCAR.gz"))
+    results = vasp_summarize_run(atoms, dir_path=p, run_bader=False, run_chargemol=True)
+    struct = results["output"]["structure"]
+    assert struct.site_properties["ddec6_charge"] == [1.0] * len(atoms)
+    assert struct.site_properties["cm5_charge"] == [1.0] * len(atoms)
+    assert struct.site_properties["ddec6_spin"] == [0.0] * len(atoms)
+
+
+def test_summarize_bader_and_chargemol_run(monkeypatch, run1, tmpdir):
+    from shutil import copytree, move
+
+    from ase.io import read
+
+    from quacc.schemas.vasp import vasp_summarize_run
+
+    monkeypatch.setattr(
+        "quacc.schemas.vasp.bader_analysis_from_path",
+        mock_bader_analysis,
+    )
+    monkeypatch.setattr(
+        "quacc.schemas.vasp.ChargemolAnalysis",
+        mock_chargemol_analysis,
+    )
+    monkeypatch.setenv("DDEC6_ATOMIC_DENSITIES_DIR", "test")
+    tmpdir.chdir()
+
+    p = tmpdir / "vasp_run"
+    copytree(run1, p)
+
+    move(p / "garbled_pot", p / "POTCAR")
+
+    for f in ["CHGCAR.gz", "AECCAR0.gz", "AECCAR2.gz"]:
+        with open(p / f, "w") as w:
+            w.write("test")
+
+    # Make sure Bader works
+    atoms = read(str(p / "OUTCAR.gz"))
+    results = vasp_summarize_run(atoms, dir_path=p, run_bader=True, run_chargemol=True)
+    struct = results["output"]["structure"]
+    assert struct.site_properties["ddec6_charge"] == [1.0] * len(atoms)
+    assert struct.site_properties["cm5_charge"] == [1.0] * len(atoms)
+    assert struct.site_properties["ddec6_spin"] == [0.0] * len(atoms)
+    assert struct.site_properties["bader_charge"] == [1.0] * len(atoms)
+    assert struct.site_properties["bader_spin"] == [0.0] * len(atoms)
+
+
+def test_no_bader(run1, tmpdir):
+    from ase.io import read
+
+    from quacc.schemas.vasp import vasp_summarize_run
+
+    tmpdir.chdir()
+
+    atoms = read(run1 / "OUTCAR.gz")
     with pytest.warns(UserWarning):
-        vasp_summarize_run(atoms, dir_path=run1, run_bader=True)
+        vasp_summarize_run(atoms, dir_path=run1, run_bader=True, run_chargemol=False)
+
+
+def test_no_chargemol(run1, tmpdir):
+    from ase.io import read
+
+    from quacc.schemas.vasp import vasp_summarize_run
+
+    tmpdir.chdir()
+
+    atoms = read(run1 / "OUTCAR.gz")
+    with pytest.warns(UserWarning):
+        vasp_summarize_run(atoms, dir_path=run1, run_bader=False, run_chargemol=True)

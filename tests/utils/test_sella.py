@@ -1,15 +1,16 @@
 import pytest
-from ase.build import bulk, molecule
-from ase.calculators.emt import EMT
-from ase.calculators.lj import LennardJones
-
-from quacc.runners.calc import run_ase_opt
 
 sella = pytest.importorskip("sella")
-from sella import Sella
 
 
 def test_sella(tmpdir):
+    from ase.build import bulk, molecule
+    from ase.calculators.emt import EMT
+    from ase.calculators.lj import LennardJones
+    from sella import Sella
+
+    from quacc.runners.calc import run_ase_opt
+
     tmpdir.chdir()
 
     atoms = bulk("Cu") * (2, 1, 1)
@@ -29,6 +30,13 @@ def test_sella(tmpdir):
 
 
 def test_TRICs(tmpdir):
+    from ase.build import bulk, molecule
+    from ase.calculators.emt import EMT
+    from ase.calculators.lj import LennardJones
+    from sella import Sella
+
+    from quacc.runners.calc import run_ase_opt
+
     tmpdir.chdir()
     atoms = molecule("C2H6")
     atoms.calc = LennardJones()

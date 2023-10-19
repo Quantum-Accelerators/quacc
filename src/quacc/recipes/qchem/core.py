@@ -6,11 +6,11 @@ from typing import TYPE_CHECKING
 
 from ase.optimize import FIRE
 
-from quacc import SETTINGS, fetch_atoms, job
+from quacc import SETTINGS, job
 from quacc.calculators.qchem import QChem
 from quacc.runners.calc import run_ase_opt, run_calc
 from quacc.schemas.ase import summarize_opt_run, summarize_run
-from quacc.utils.dicts import merge_dicts, remove_dict_empties
+from quacc.utils.dicts import merge_dicts, remove_dict_nones
 
 try:
     from sella import Sella
@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 
 @job
 def static_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     charge: int,
     spin_multiplicity: int,
     method: str = "wb97mv",
@@ -67,8 +67,7 @@ def static_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     charge
         Charge of the system.
     spin_multiplicity
@@ -133,7 +132,7 @@ def static_job(
 
 @job
 def internal_relax_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     charge: int,
     spin_multiplicity: int,
     method: str = "wb97mv",
@@ -173,8 +172,7 @@ def internal_relax_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     charge
         Charge of the system.
     spin_multiplicity
@@ -239,7 +237,7 @@ def internal_relax_job(
 
 @job
 def freq_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     charge: int,
     spin_multiplicity: int,
     method: str = "wb97mv",
@@ -279,8 +277,7 @@ def freq_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     charge
         Charge of the system.
     spin_multiplicity
@@ -345,7 +342,7 @@ def freq_job(
 
 @job
 def relax_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     charge: int,
     spin_multiplicity: int,
     method: str = "wb97mv",
@@ -391,8 +388,7 @@ def relax_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     charge
         Charge of the system.
     spin_multiplicity
@@ -466,7 +462,7 @@ def relax_job(
 
 
 def _base_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     charge: int,
     spin_multiplicity: int,
     defaults: dict | None = None,
@@ -480,8 +476,7 @@ def _base_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     charge
         Charge of the system.
     spin_multiplicity
@@ -499,8 +494,7 @@ def _base_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
 
-    atoms = fetch_atoms(atoms)
-    qchem_flags = remove_dict_empties(defaults)
+    qchem_flags = remove_dict_nones(defaults)
 
     atoms.calc = QChem(atoms, **qchem_flags)
     final_atoms = run_calc(atoms, copy_files=copy_files)
@@ -514,7 +508,7 @@ def _base_job(
 
 
 def _base_opt_job(
-    atoms: Atoms | dict,
+    atoms: Atoms,
     charge: int,
     spin_multiplicity: int,
     qchem_defaults: dict | None = None,
@@ -529,8 +523,7 @@ def _base_opt_job(
     Parameters
     ----------
     atoms
-        Atoms object or a dictionary with the key "atoms" and an Atoms object as
-        the value
+        Atoms object
     charge
         Charge of the system.
     spin_multiplicity
@@ -552,9 +545,7 @@ def _base_opt_job(
     # TODO:
     #   - passing initial Hessian?
 
-    atoms = fetch_atoms(atoms)
-
-    qchem_flags = remove_dict_empties(qchem_defaults)
+    qchem_flags = remove_dict_nones(qchem_defaults)
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
     atoms.calc = QChem(atoms, **qchem_flags)

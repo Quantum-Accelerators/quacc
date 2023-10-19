@@ -1,40 +1,39 @@
-import os
-from pathlib import Path
-
-import numpy as np
 import pytest
-from ase.build import molecule
 
 from quacc import SETTINGS
 
-CURRENT_FILE_PATH = Path(__file__).parent.resolve()
 DEFAULT_SETTINGS = SETTINGS.copy()
 
-SETTINGS.WORKFLOW_ENGINE = "local"
-
-pytestmark = pytest.mark.skipif(
-    SETTINGS.WORKFLOW_ENGINE != "local",
-    reason="Need to use local as workflow manager to run this test.",
-)
 pytest.importorskip("sella")
 pytest.importorskip("newtonnet")
 
 
 def setup_module():
-    SETTINGS.NEWTONNET_CONFIG_PATH = os.path.join(CURRENT_FILE_PATH, "config0.yml")
-    SETTINGS.NEWTONNET_MODEL_PATH = os.path.join(
-        CURRENT_FILE_PATH, "best_model_state.tar"
-    )
+    from pathlib import Path
+
+    from quacc import SETTINGS
+
+    current_file_path = Path(__file__).parent.resolve()
+
+    SETTINGS.WORKFLOW_ENGINE = "local"
+    SETTINGS.NEWTONNET_CONFIG_PATH = current_file_path / "config0.yml"
+    SETTINGS.NEWTONNET_MODEL_PATH = current_file_path / "best_model_state.tar"
     SETTINGS.CHECK_CONVERGENCE = False
 
 
 def teardown_module():
+    from quacc import SETTINGS
+
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
     SETTINGS.NEWTONNET_CONFIG_PATH = DEFAULT_SETTINGS.NEWTONNET_CONFIG_PATH
     SETTINGS.NEWTONNET_MODEL_PATH = DEFAULT_SETTINGS.NEWTONNET_MODEL_PATH
     SETTINGS.CHECK_CONVERGENCE = DEFAULT_SETTINGS.CHECK_CONVERGENCE
 
 
 def test_static_job(tmpdir):
+    import numpy as np
+    from ase.build import molecule
+
     from quacc.recipes.newtonnet.core import static_job
 
     tmpdir.chdir()
@@ -48,6 +47,9 @@ def test_static_job(tmpdir):
 
 
 def test_relax_job(tmpdir):
+    import numpy as np
+    from ase.build import molecule
+
     from quacc.recipes.newtonnet.core import relax_job
 
     tmpdir.chdir()
@@ -63,6 +65,8 @@ def test_relax_job(tmpdir):
 
 
 def test_freq_job(tmpdir):
+    from ase.build import molecule
+
     from quacc.recipes.newtonnet.core import freq_job
 
     tmpdir.chdir()
@@ -117,6 +121,8 @@ def test_freq_job(tmpdir):
 
 
 def test_ts_job_with_default_args(tmpdir):
+    from ase.build import molecule
+
     from quacc.recipes.newtonnet.ts import ts_job
 
     tmpdir.chdir()
@@ -139,6 +145,8 @@ def test_ts_job_with_default_args(tmpdir):
 
 
 def test_ts_job_with_custom_hessian(tmpdir):
+    from ase.build import molecule
+
     from quacc.recipes.newtonnet.ts import ts_job
 
     tmpdir.chdir()
@@ -164,6 +172,8 @@ def test_ts_job_with_custom_hessian(tmpdir):
 
 
 def test_irc_job_with_default_args(tmpdir):
+    from ase.build import molecule
+
     from quacc.recipes.newtonnet.ts import irc_job
 
     tmpdir.chdir()
@@ -183,6 +193,8 @@ def test_irc_job_with_default_args(tmpdir):
 
 
 def test_irc_job_with_custom_fmax(tmpdir):
+    from ase.build import molecule
+
     from quacc.recipes.newtonnet.ts import irc_job
 
     tmpdir.chdir()
@@ -203,6 +215,8 @@ def test_irc_job_with_custom_fmax(tmpdir):
 
 
 def test_irc_job_with_custom_max_steps(tmpdir):
+    from ase.build import molecule
+
     from quacc.recipes.newtonnet.ts import irc_job
 
     tmpdir.chdir()
@@ -223,6 +237,8 @@ def test_irc_job_with_custom_max_steps(tmpdir):
 
 
 def test_irc_job_with_custom_temperature_and_pressure(tmpdir):
+    from ase.build import molecule
+
     from quacc.recipes.newtonnet.ts import irc_job
 
     tmpdir.chdir()
@@ -246,6 +262,8 @@ def test_irc_job_with_custom_temperature_and_pressure(tmpdir):
 
 
 def test_irc_job_with_custom_opt_swaps(tmpdir):
+    from ase.build import molecule
+
     from quacc.recipes.newtonnet.ts import irc_job
 
     tmpdir.chdir()
@@ -266,6 +284,8 @@ def test_irc_job_with_custom_opt_swaps(tmpdir):
 
 
 def test_quasi_irc_job_with_default_args(tmpdir):
+    from ase.build import molecule
+
     from quacc.recipes.newtonnet.ts import quasi_irc_job
 
     tmpdir.chdir()
@@ -286,6 +306,8 @@ def test_quasi_irc_job_with_default_args(tmpdir):
 
 
 def test_quasi_irc_job_with_custom_direction(tmpdir):
+    from ase.build import molecule
+
     from quacc.recipes.newtonnet.ts import quasi_irc_job
 
     tmpdir.chdir()
@@ -309,6 +331,8 @@ def test_quasi_irc_job_with_custom_direction(tmpdir):
 
 
 def test_quasi_irc_job_with_custom_temperature_and_pressure(tmpdir):
+    from ase.build import molecule
+
     from quacc.recipes.newtonnet.ts import quasi_irc_job
 
     tmpdir.chdir()
@@ -334,6 +358,8 @@ def test_quasi_irc_job_with_custom_temperature_and_pressure(tmpdir):
 
 
 def test_quasi_irc_job_with_custom_irc_swaps(tmpdir):
+    from ase.build import molecule
+
     from quacc.recipes.newtonnet.ts import quasi_irc_job
 
     tmpdir.chdir()
