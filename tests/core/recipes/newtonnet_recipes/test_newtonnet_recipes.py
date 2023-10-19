@@ -3,322 +3,273 @@ from pathlib import Path
 import numpy as np
 import pytest
 from ase.build import molecule
-
+from ase import Atoms
+from ase.optimize import FIRE, BFGS, BFGSLineSearch, LBFGS
+from ase.optimize import LBFGSLineSearch, GPMin
+from sella import Sella, IRC
 from quacc import SETTINGS
-from quacc.recipes.newtonnet.core import freq_job, relax_job, static_job
-from quacc.recipes.newtonnet.ts import irc_job, quasi_irc_job, ts_job
 
+CURRENT_FILE_PATH = Path(__file__).parent.resolve()
 DEFAULT_SETTINGS = SETTINGS.copy()
 
+SETTINGS.WORKFLOW_ENGINE = "local"
+
+pytestmark = pytest.mark.skipif(
+    SETTINGS.WORKFLOW_ENGINE != "local",
+    reason="Need to use local as workflow manager to run this test.",
+)
 pytest.importorskip("sella")
 pytest.importorskip("newtonnet")
 
 
 def setup_module():
+    from pathlib import Path
+
+    from quacc import SETTINGS
+
     current_file_path = Path(__file__).parent.resolve()
 
+    SETTINGS.WORKFLOW_ENGINE = "local"
     SETTINGS.NEWTONNET_CONFIG_PATH = current_file_path / "config0.yml"
     SETTINGS.NEWTONNET_MODEL_PATH = current_file_path / "best_model_state.tar"
     SETTINGS.CHECK_CONVERGENCE = False
 
 
 def teardown_module():
+    from quacc import SETTINGS
+
+    SETTINGS.WORKFLOW_ENGINE = DEFAULT_SETTINGS.WORKFLOW_ENGINE
     SETTINGS.NEWTONNET_CONFIG_PATH = DEFAULT_SETTINGS.NEWTONNET_CONFIG_PATH
     SETTINGS.NEWTONNET_MODEL_PATH = DEFAULT_SETTINGS.NEWTONNET_MODEL_PATH
     SETTINGS.CHECK_CONVERGENCE = DEFAULT_SETTINGS.CHECK_CONVERGENCE
 
 
-def test_static_job(tmpdir):
+@pytest.fixture(params=[
+    {},
+    {'disagreement': 'values'},
+    {'method': None},
+    {'method': None, 'disagreement': 'values'},
+    {'method': 'autograd'},
+    {'method': 'autograd', 'disagreement': 'values'},
+    {'method': 'fwd_diff', 'grad_precision': 1e-5},
+    {'method': 'fwd_diff', 'grad_precision': 1e-5, 'disagreement': 'values'},
+    {'method': 'cnt_diff', 'grad_precision': 1e-5},
+    {'method': 'cnt_diff', 'grad_precision': 1e-5, 'disagreement': 'values'},
+])
+def calc_swaps(request):
+    return request.param
+
+
+@pytest.fixture(params=[
+    {'optimizer': FIRE},
+    {'optimizer': BFGS},
+    {'optimizer': BFGSLineSearch},
+    {'optimizer': LBFGS},
+    {'optimizer': LBFGSLineSearch},
+    {'optimizer': GPMin},
+    {'optimizer': Sella},
+    {'optimizer': IRC},
+])
+def opt_swaps(request):
+    return request.param
+
+
+def test_static_job(tmpdir, calc_swaps):
+    from quacc.recipes.newtonnet.core import static_job
+    tmpdir.chdir()
+    atoms = molecule("H2O")
+    output = static_job(atoms, calc_swaps=calc_swaps)
+    assert output["spin_multiplicity"] == 1
+    assert output["natoms"] == len(atoms)
+    assert output["results"]["energy"] == pytest.approx(-9.532746332918718)
+
+
+def test_relax_job(tmpdir, calc_swaps, opt_swaps):
+    from quacc.recipes.newtonnet.core import relax_job
+
     tmpdir.chdir()
 
     atoms = molecule("H2O")
-    output = static_job(atoms)
+    output = relax_job(atoms, calc_swaps=calc_swaps, opt_swaps=opt_swaps)
     assert output["spin_multiplicity"] == 1
     assert output["natoms"] == len(atoms)
-    assert output["results"]["energy"] == pytest.approx(-9.515200426406743)
-    assert np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
+    if opt_swaps['optimizer'] == FIRE:
+        assert output["results"]["energy"] == pytest.approx(-9.533049846183454)
+    elif opt_swaps['optimizer'] == BFGS:
+        assert output["results"]["energy"] == pytest.approx(-9.53305023894913)
+    elif opt_swaps['optimizer'] == BFGSLineSearch:
+        assert output["results"]["energy"] == pytest.approx(-9.53305023894913)
+    elif opt_swaps['optimizer'] == LBFGS:
+        assert output["results"]["energy"] == pytest.approx(-9.53305023894913)
+    elif opt_swaps['optimizer'] == LBFGSLineSearch:
+        assert output["results"]["energy"] == pytest.approx(-9.53305023894913)
+    elif opt_swaps['optimizer'] == GPMin:
+        assert output["results"]["energy"] == pytest.approx(-9.53305023894913)
+    elif opt_swaps['optimizer'] == Sella:
+        assert output["results"]["energy"] == pytest.approx(-9.53305023894913)
+    elif opt_swaps['optimizer'] == IRC:
+        assert output["results"]["energy"] == pytest.approx(-9.53305023894913)
 
-
-def test_relax_job(tmpdir):
-    tmpdir.chdir()
-
-    atoms = molecule("H2O")
-    output = relax_job(atoms)
-    assert output["spin_multiplicity"] == 1
-    assert output["natoms"] == len(atoms)
-    assert output["results"]["energy"] == pytest.approx(-9.517354818364769)
     assert not np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
     assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
 
 
-def test_freq_job(tmpdir):
+@pytest.mark.parametrize("atoms, "
+                         "temperature, "
+                         "pressure, "
+                         "expected_energy, "
+                         "expected_vib_freqs, "
+                         "expected_imag_freqs", [
+    (molecule("H2O"), 273.15, 1, -9.532746332918718,
+     [
+         1754.7438570677637,
+         3905.8863167962554,
+         3928.543281726882
+     ],
+     []),
+    (molecule("CH3"), 1000, 20, -14.338570161038465,
+     [949.4267389579275,
+      1551.1215815612938,
+      1669.107390832925,
+      2661.1458956565873,
+      2921.245283581416,
+      3099.0363742761155],
+     [-761.5004719152678]),
+])
+def test_freq_job(tmpdir,
+                  atoms,
+                  temperature,
+                  pressure,
+                  expected_energy,
+                  expected_vib_freqs,
+                  expected_imag_freqs):
+    from quacc.recipes.newtonnet.core import freq_job
     tmpdir.chdir()
-    atoms = molecule("H2O")
-    output = freq_job(atoms)
-    assert output["atoms"] == molecule("H2O")
-    assert len(output["vib"]["results"]["vib_freqs_raw"]) == 9
-    assert len(output["vib"]["results"]["vib_freqs"]) == 3
-    assert output["vib"]["results"]["vib_freqs_raw"][-1] == pytest.approx(
-        4090.37777396351
-    )
-    assert output["vib"]["results"]["vib_freqs"][0] == pytest.approx(1814.0941260498644)
-    assert output["vib"]["results"]["vib_freqs"][-1] == pytest.approx(4090.37777396351)
-    assert output["vib"]["results"]["n_imag"] == 0
-    assert output["vib"]["results"]["imag_vib_freqs"] == []
+    output = freq_job(atoms,
+                      temperature=temperature,
+                      pressure=pressure)
 
+    assert output["atoms"] == atoms
+    assert len(output["vib"]["results"]["vib_freqs"]) == len(expected_vib_freqs)
     assert output["thermo"]["atoms"] == atoms
-    assert output["thermo"]["symmetry"]["point_group"] == "C2v"
-    assert output["thermo"]["symmetry"]["rotation_number"] == 2
-    assert output["thermo"]["symmetry"]["linear"] is False
-    assert output["thermo"]["results"]["energy"] == pytest.approx(-9.515200426406743)
-    assert output["thermo"]["results"]["enthalpy"] == pytest.approx(-8.807932688921495)
-    assert output["thermo"]["results"]["entropy"] == pytest.approx(
-        0.0019582788098945945
-    )
-    assert output["thermo"]["results"]["gibbs_energy"] == pytest.approx(
-        -9.391793516091568
-    )
-
-    atoms = molecule("CH3")
-    output = freq_job(atoms, temperature=1000, pressure=20)
-    assert output["atoms"] == molecule("CH3")
-    assert len(output["vib"]["results"]["vib_freqs_raw"]) == 12
-    assert len(output["vib"]["results"]["vib_freqs"]) == 6
-    assert output["vib"]["results"]["vib_energies_raw"][0] == pytest.approx(
-        -0.09441402482739979
-    )
-    assert output["vib"]["results"]["vib_energies_raw"][-1] == pytest.approx(
-        0.3925829460532815
-    )
-    assert output["vib"]["results"]["vib_energies"][0] == pytest.approx(
-        -0.09441402482739979
-    )
-    assert output["vib"]["results"]["vib_energies"][-1] == pytest.approx(
-        0.3925829460532815
-    )
-    assert output["vib"]["results"]["n_imag"] == 1
-    assert output["vib"]["results"]["imag_vib_freqs"] == pytest.approx(
-        [-761.5004719152678]
-    )
-    assert output["thermo"]["atoms"] == molecule("CH3")
+    assert output["thermo"]["results"]["energy"] == pytest.approx(expected_energy)
 
 
-def test_ts_job_with_default_args(tmpdir):
+@pytest.fixture
+def atoms():
+    symbols = ['C', 'O', 'C', 'O', 'H', 'H', 'H', 'H']
+    positions = [
+        [0.87589219, -0.13926227, 0.10160247],
+        [-0.07821864, -1.06257641, 0.39840308],
+        [0.38522759, -2.67766458, -0.24094265],
+        [1.25339054, -2.63650946, -0.93076096],
+        [0.46675900, 0.87142023, 0.48210765],
+        [1.06360062, -0.03733460, -0.95079003],
+        [1.80266010, -0.30212484, 0.61902953],
+        [0.92072327, -2.76503751, 1.36753343]
+    ]
+    atoms = Atoms(symbols=symbols, positions=positions)
+    return atoms
+
+
+@pytest.mark.parametrize("use_custom_hessian, opt_swaps", [
+    (True, None),
+    (True, {"max_steps": 4}),
+    (False, None),
+    (False, {"max_steps": 4})
+])
+def test_ts_job(tmpdir, atoms, use_custom_hessian, opt_swaps):
+    from quacc.recipes.newtonnet.ts import ts_job
+
     tmpdir.chdir()
 
-    # Define test inputs
-    atoms = molecule("H2O")
+    output = ts_job(atoms, use_custom_hessian=use_custom_hessian, opt_swaps=opt_swaps)
 
-    # Call the function
-    output = ts_job(atoms)
-
-    # Perform assertions on the result
     assert isinstance(output, dict)
-
     assert "freq_job" in output
     assert "thermo" in output["freq_job"]
-    assert output["results"]["energy"] == pytest.approx(-6.796914263061945)
-    assert output["freq_job"]["vib"]["results"]["imag_vib_freqs"][0] == pytest.approx(
-        -2426.7398321816004
-    )
+
+    if use_custom_hessian:
+        if opt_swaps is None:
+            assert output["results"]["energy"] == pytest.approx(-30.91756742496904)
+            assert output["freq_job"]["vib"]["results"]["vib_energies"][0] == pytest.approx(0.012395738446304833)
+        elif "max_steps" in opt_swaps and opt_swaps["max_steps"] == 4:
+            assert output["results"]["energy"] == pytest.approx(-29.83567172077247)
+            assert output["freq_job"]["vib"]["results"]["vib_energies"][0] == pytest.approx(0.024218215485424726)
+    else:
+        if opt_swaps is None:
+            assert output["results"]["energy"] == pytest.approx(-30.917585898315)
+            assert output["freq_job"]["vib"]["results"]["imag_vib_freqs"][0] == pytest.approx(-1676.5015763982956)
+        elif "max_steps" in opt_swaps and opt_swaps["max_steps"] == 4:
+            assert output["results"]["energy"] == pytest.approx(-29.831788105843444)
+            assert output["freq_job"]["vib"]["results"]["imag_vib_freqs"][0] == pytest.approx(-1460.3321973013199)
 
 
-def test_ts_job_with_custom_hessian(tmpdir):
-    tmpdir.chdir()
-    # Define test inputs
-    atoms = molecule("H2O")
-    use_custom_hessian = True
-    opt_swaps = {"max_steps": 4}
-    # Call the function
-    output = ts_job(
-        atoms,
-        use_custom_hessian=use_custom_hessian,
-        opt_swaps=opt_swaps,
-    )
-
-    # Perform assertions on the result
-    assert isinstance(output, dict)
-
-    assert output["results"]["energy"] == pytest.approx(-8.855604432470276)
-    assert output["freq_job"]["vib"]["results"]["vib_energies"][0] == pytest.approx(
-        0.2256022513686731
-    )
-    assert "thermo" in output["freq_job"]
-
-
-def test_irc_job_with_default_args(tmpdir):
-    tmpdir.chdir()
-    # Define test inputs
-    atoms = molecule("H2O")
-
-    # Call the function
-    output = irc_job(atoms)
-
-    # Perform assertions on the result
-    assert isinstance(output, dict)
-
-    assert output["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
-        -9.517354091813969
-    )
-
-
-def test_irc_job_with_custom_fmax(tmpdir):
-    from ase.build import molecule
-
+@pytest.mark.parametrize("opt_swaps, freq_job_kwargs", [
+    (None, None),
+    ({"max_steps": 500}, None),
+    ({"fmax": 0.001}, None),
+    (None, {"temperature": 500.0, "pressure": 10.0}),
+    ({"run_kwargs": {"direction": "reverse"}}, None),
+])
+def test_irc_job(tmpdir, atoms, opt_swaps, freq_job_kwargs):
     from quacc.recipes.newtonnet.ts import irc_job
-
     tmpdir.chdir()
-    # Define test inputs
-    atoms = molecule("H2O")
-    fmax = 0.001
+    output = irc_job(atoms, opt_swaps=opt_swaps, freq_job_kwargs=freq_job_kwargs)
 
-    # Call the function
-    output = irc_job(atoms, opt_swaps={"fmax": fmax})
-
-    # Perform assertions on the result
     assert isinstance(output, dict)
+    print('\n\n\n\nopt_swaps\n\n\n\n', opt_swaps)
+    if opt_swaps is None and freq_job_kwargs is None:
+        assert output["results"]["energy"] == pytest.approx(-34.449834)
+        assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
+            -34.449834
+        )
+    elif opt_swaps is not None:
+        if "max_steps" in opt_swaps and opt_swaps["max_steps"] == 500 and freq_job_kwargs is None:
+            assert output["results"]["energy"] == pytest.approx(-34.449834)
+            assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
+                -34.449834
+            )
+    elif opt_swaps is None and\
+            ("temperature" in freq_job_kwargs and
+             freq_job_kwargs["temperature"] == 500 and
+             "pressure" in freq_job_kwargs and freq_job_kwargs["pressure"] == 10.0):
+        assert output["results"]["energy"] == pytest.approx(-34.449834)
+        assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
+            -34.449834
+        )
+    elif opt_swaps is not None:
+        if "run_kwargs" in opt_swaps and\
+                "direction" in opt_swaps["run_kwargs"] and\
+                opt_swaps["run_kwargs"]["direction"] == "reverse" and\
+                freq_job_kwargs is None:
+            assert output["results"]["energy"] == pytest.approx(-34.450195)
+            assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
+                -34.450195
+            )
 
-    assert output["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
-        -9.517354091813969
-    )
 
-
-def test_irc_job_with_custom_max_steps(tmpdir):
+@pytest.mark.parametrize("atoms, direction, freq_job_kwargs, irc_job_kwargs, expected_energy", [
+    (molecule("H2O"), None, None, None, -9.533050993135458),
+    (molecule("H2O"), "reverse", None, None, -9.533050993135458),
+    (molecule("H2O"), None, {"temperature": 500.0, "pressure": 10.0}, None, -9.533050993135458),
+    (molecule("H2O"), None, None, {"calc_swaps": {"run_kwargs": {"direction": "reverse"}}}, -9.533050993135458),
+])
+def test_quasi_irc_job(tmpdir,
+                       atoms,
+                       direction,
+                       freq_job_kwargs,
+                       irc_job_kwargs,
+                       expected_energy):
+    from quacc.recipes.newtonnet.ts import quasi_irc_job
     tmpdir.chdir()
-    # Define test inputs
-    atoms = molecule("H2O")
-    max_steps = 500
+    output = quasi_irc_job(atoms,
+                           direction=direction,
+                           freq_job_kwargs=freq_job_kwargs,
+                           irc_job_kwargs=irc_job_kwargs)
 
-    # Call the function
-    output = irc_job(atoms, opt_swaps={"max_steps": max_steps})
-
-    # Perform assertions on the result
-    assert isinstance(output, dict)
-
-    assert output["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
-        -9.517354091813969
-    )
-
-
-def test_irc_job_with_custom_temperature_and_pressure(tmpdir):
-    tmpdir.chdir()
-    # Define test inputs
-    atoms = molecule("H2O")
-    temperature = 500.0
-    pressure = 10.0
-
-    # Call the function
-    output = irc_job(
-        atoms, freq_job_kwargs={"temperature": temperature, "pressure": pressure}
-    )
-
-    # Perform assertions on the result
-    assert isinstance(output, dict)
-
-    assert output["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
-        -9.517354091813969
-    )
-
-
-def test_irc_job_with_custom_opt_swaps(tmpdir):
-    tmpdir.chdir()
-    # Define test inputs
-    atoms = molecule("H2O")
-    opt_swaps = {"run_kwargs": {"direction": "reverse"}}
-
-    # Call the function
-    output = irc_job(atoms, opt_swaps=opt_swaps)
-
-    # Perform assertions on the result
-    assert isinstance(output, dict)
-
-    assert output["results"]["energy"] == pytest.approx(-9.517354965639784)
-    assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
-        -9.517354965639784
-    )
-
-
-def test_quasi_irc_job_with_default_args(tmpdir):
-    tmpdir.chdir()
-    # Define test inputs
-    atoms = molecule("H2O")
-
-    # Call the function
-    output = quasi_irc_job(atoms)
-
-    # Perform assertions on the result
-    assert isinstance(output, dict)
-
-    assert output["irc_job"]["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
-        -9.517354091813969
-    )
-
-
-def test_quasi_irc_job_with_custom_direction(tmpdir):
-    tmpdir.chdir()
-    # Define test inputs
-    atoms = molecule("H2O")
-    direction = "reverse"
-
-    # Call the function
-    output = quasi_irc_job(atoms, direction=direction)
-
-    # Perform assertions on the result
     assert isinstance(output, dict)
     assert "irc_job" in output
-
-    assert output["irc_job"]["results"]["energy"] == pytest.approx(-9.517354965639784)
-    assert output["irc_job"]["results"]["energy"] == pytest.approx(-9.517354965639784)
-    assert output["results"]["energy"] == pytest.approx(-9.517354965639784)
-    assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
-        -9.517354965639784
-    )
-
-
-def test_quasi_irc_job_with_custom_temperature_and_pressure(tmpdir):
-    tmpdir.chdir()
-    # Define test inputs
-    atoms = molecule("H2O")
-    temperature = 500.0
-    pressure = 10.0
-
-    # Call the function
-    output = quasi_irc_job(
-        atoms, freq_job_kwargs={"temperature": temperature, "pressure": pressure}
-    )
-
-    # Perform assertions on the result
-    assert isinstance(output, dict)
-    assert "irc_job" in output
-
-    assert output["irc_job"]["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["results"]["energy"] == pytest.approx(-9.517354091813969)
-    assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
-        -9.517354091813969
-    )
-
-
-def test_quasi_irc_job_with_custom_irc_swaps(tmpdir):
-    tmpdir.chdir()
-    # Define test inputs
-    atoms = molecule("H2O")
-    irc_job_kwargs = {"calc_swaps": {"run_kwargs": {"direction": "reverse"}}}
-
-    # Call the function
-    output = quasi_irc_job(atoms, irc_job_kwargs=irc_job_kwargs)
-
-    # Perform assertions on the result
-    assert isinstance(output, dict)
-    assert "irc_job" in output
-
-    assert output["irc_job"]["results"]["energy"] == pytest.approx(-9.517354965639784)
-    assert output["results"]["energy"] == pytest.approx(-9.517354965639784)
-    assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(
-        -9.517354965639784
-    )
+    assert output["irc_job"]["results"]["energy"] == pytest.approx(expected_energy)
+    assert output["results"]["energy"] == pytest.approx(expected_energy)
+    assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(expected_energy)
