@@ -46,7 +46,7 @@ print(result)
     'builder_meta': {'build_date': datetime.datetime(2023, 10, 18, 21, 22, 33, 352823),
                     'emmet_version': '0.69.6',
                     'pymatgen_version': '2023.10.4'},
-    'chemsys': 'Cu',vi
+    'chemsys': 'Cu',
     'composition': Composition('Cu1'),
     'composition_reduced': Composition('Cu1'),
     'density': 8.971719800606017,
