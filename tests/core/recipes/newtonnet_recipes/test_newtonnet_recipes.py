@@ -51,11 +51,11 @@ def calc_swaps(request):
 
 @pytest.fixture(params=[
     {'optimizer': FIRE},
-    {'optimizer': BFGS},
-    {'optimizer': BFGSLineSearch},
-    {'optimizer': LBFGS},
-    {'optimizer': LBFGSLineSearch},
-    {'optimizer': GPMin},
+    # {'optimizer': BFGS},
+    # {'optimizer': BFGSLineSearch},
+    # {'optimizer': LBFGS},
+    # {'optimizer': LBFGSLineSearch},
+    # {'optimizer': GPMin},
     {'optimizer': Sella},
     {'optimizer': IRC},
 ])

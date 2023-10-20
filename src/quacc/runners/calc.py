@@ -1,7 +1,7 @@
 """Utility functions for running ASE calculators"""
 from __future__ import annotations
 
-import os
+import os, time
 from pathlib import Path
 from shutil import rmtree
 from tempfile import mkdtemp
@@ -64,8 +64,14 @@ def run_calc(
     # Perform staging operations
     atoms, tmpdir, job_results_dir = _calc_setup(atoms, copy_files=copy_files)
 
+    t1 = time.time()
+
     # Run calculation via get_potential_energy()
     atoms.get_potential_energy()
+
+    elapsed_time = time.time()-t1
+
+    atoms.calc.results['elapsed_time'] = elapsed_time
 
     # Most ASE calculators do not update the atoms object in-place with a call
     # to .get_potential_energy(), which is important if an internal optimizer is
