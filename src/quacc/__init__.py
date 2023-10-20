@@ -1,6 +1,7 @@
 """Init data for quacc"""
 from __future__ import annotations
 
+import json
 from importlib.metadata import version
 
 from ase import Atoms
@@ -18,7 +19,11 @@ def atoms_as_dict(s: Atoms) -> dict:
     # Normally, we would want to this to be a wrapper around atoms.todict() with @module and
     # @class key-value pairs inserted. However, atoms.todict()/atoms.fromdict() does not currently
     # work properly with constraints.
-    return {"@module": "ase.atoms", "@class": "Atoms", "atoms_json": encode(s)}
+    return {
+        "@module": "ase.atoms",
+        "@class": "Atoms",
+        "atoms_json": json.loads(encode(s)),
+    }
 
 
 def atoms_from_dict(d: dict) -> Atoms:
