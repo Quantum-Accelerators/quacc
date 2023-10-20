@@ -31,6 +31,7 @@ def static_job(
     library: str | None = None,
     keyword_swaps: dict | None = None,
     option_swaps: dict | None = None,
+    additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
@@ -77,7 +78,7 @@ def static_job(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-
+    additional_fields = additional_fields or {}
     keyword_defaults = {
         "gfnff": True if use_gfnff else None,
         "gwolf": True if use_gfnff else None,
@@ -91,7 +92,7 @@ def static_job(
         option_defaults=option_defaults,
         keyword_swaps=keyword_swaps,
         option_swaps=option_swaps,
-        additional_fields={"name": "GULP Static"},
+        additional_fields={"name": "GULP Static"} | additional_fields,
         copy_files=copy_files,
     )
 
@@ -104,6 +105,7 @@ def relax_job(
     relax_cell: bool = False,
     keyword_swaps: dict | None = None,
     option_swaps: dict | None = None,
+    additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
@@ -147,6 +149,8 @@ def relax_job(
         Dictionary of custom keyword swap kwargs for the calculator.
     option_swaps
         Dictionary of custom option swap kwargs for the calculator.
+    additional_fields
+        Additional field to supply to the summarizer.
     copy_files
         Files to copy to the runtime directory.
 
@@ -155,7 +159,7 @@ def relax_job(
     dict
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-
+    additional_fields = additional_fields or {}
     keyword_defaults = {
         "opti": True,
         "gfnff": True if use_gfnff else None,
@@ -172,7 +176,7 @@ def relax_job(
         option_defaults=option_defaults,
         keyword_swaps=keyword_swaps,
         option_swaps=option_swaps,
-        additional_fields={"name": "GULP Relax"},
+        additional_fields={"name": "GULP Relax"} | additional_fields,
         copy_files=copy_files,
     )
 

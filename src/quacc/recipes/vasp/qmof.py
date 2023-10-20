@@ -36,6 +36,7 @@ def qmof_relax_job(
     preset: str | None = "QMOFSet",
     relax_cell: bool = True,
     run_prerelax: bool = True,
+    additional_fields: dict | None = None,
     calc_swaps: dict | None = None,
 ) -> QMOFRelaxSchema:
     """
@@ -66,6 +67,8 @@ def qmof_relax_job(
         If True, a pre-relax will be carried out with BFGSLineSearch.
         Recommended if starting from hypothetical structures or materials with
         very high starting forces.
+    additional_fields
+        Additional fields to add to the result dictionary.
     calc_swaps
         Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely. Applies for all jobs.
@@ -75,6 +78,7 @@ def qmof_relax_job(
     QMOFRelaxSchema
         Dictionary of results
     """
+    additional_fields = additional_fields or {}
 
     # 1. Pre-relaxation
     if run_prerelax:
@@ -103,7 +107,7 @@ def qmof_relax_job(
     summary5["volume_relax_lowacc"] = summary3 if relax_cell else None
     summary5["double_relax"] = summary4
 
-    return summary5
+    return summary5 | additional_fields
 
 
 def _prerelax(

@@ -31,6 +31,7 @@ def static_job(
     basis: str = "def2-tzvp",
     input_swaps: dict | None = None,
     block_swaps: dict | None = None,
+    additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> cclibSchema:
     """
@@ -81,6 +82,8 @@ def static_job(
         Dictionary of orcablock swaps for the calculator. To enable new entries,
         set the value as True. To remove entries from the defaults, set the
         value as None.
+    additional_fields
+        Any additional fields to supply to the summarizer.
     copy_files
         Files to copy to the runtime directory.
 
@@ -89,7 +92,7 @@ def static_job(
     cclibSchema
         Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][]
     """
-
+    additional_fields = additional_fields or {}
     default_inputs = {
         xc: True,
         basis: True,
@@ -112,7 +115,7 @@ def static_job(
         default_blocks=default_blocks,
         input_swaps=input_swaps,
         block_swaps=block_swaps,
-        additional_fields={"name": "ORCA Static"},
+        additional_fields={"name": "ORCA Static"} | additional_fields,
         copy_files=copy_files,
     )
 
@@ -127,6 +130,7 @@ def relax_job(
     run_freq: bool = False,
     input_swaps: dict | None = None,
     block_swaps: dict | None = None,
+    additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> cclibSchema:
     """
@@ -180,6 +184,8 @@ def relax_job(
         Dictionary of orcablock swaps for the calculator. To enable new entries,
         set the value as True. To remove entries from the defaults, set the
         value as None.
+    additional_fields
+        Any additional fields to supply to the summarizer.
     copy_files
         Files to copy to the runtime directory.
 
@@ -212,7 +218,7 @@ def relax_job(
         default_blocks=default_blocks,
         input_swaps=input_swaps,
         block_swaps=block_swaps,
-        additional_fields={"name": "ORCA Relax"},
+        additional_fields={"name": "ORCA Relax"} | additional_fields,
         copy_files=copy_files,
     )
 

@@ -42,6 +42,7 @@ def ts_job(
     n_cores: int | None = None,
     overwrite_inputs: dict | None = None,
     opt_swaps: dict | None = None,
+    additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
     """
@@ -108,6 +109,8 @@ def ts_job(
         See QChemDictSet documentation for more details.
     opt_swaps
         Dictionary of custom kwargs for [quacc.runners.calc.run_ase_opt][]
+    additional_fields
+        Additional fields to supply to the summarizer.
     copy_files
         Files to copy to the runtime directory.
 
@@ -116,7 +119,7 @@ def ts_job(
     OptSchema
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
-
+    additional_fields = additional_fields or {}
     qchem_defaults = {
         "basis_set": basis,
         "scf_algorithm": scf_algorithm,
@@ -148,7 +151,7 @@ def ts_job(
         qchem_defaults=qchem_defaults,
         opt_defaults=opt_defaults,
         opt_swaps=opt_swaps,
-        additional_fields={"name": "Q-Chem TS"},
+        additional_fields={"name": "Q-Chem TS"} | additional_fields,
         copy_files=copy_files,
     )
 
@@ -171,6 +174,7 @@ def irc_job(
     n_cores: int | None = None,
     overwrite_inputs: dict | None = None,
     opt_swaps: dict | None = None,
+    additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
     """
@@ -239,6 +243,8 @@ def irc_job(
         See QChemDictSet documentation for more details.
     opt_swaps
         Dictionary of custom kwargs for [quacc.runners.calc.run_ase_opt][]
+    additional_fields
+        Additional fields to supply to the summarizer.
     copy_files
         Files to copy to the runtime directory.
 
@@ -247,7 +253,7 @@ def irc_job(
     OptSchema
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
-
+    additional_fields = additional_fields or {}
     qchem_defaults = {
         "basis_set": basis,
         "scf_algorithm": scf_algorithm,
@@ -279,7 +285,7 @@ def irc_job(
         qchem_defaults=qchem_defaults,
         opt_defaults=opt_defaults,
         opt_swaps=opt_swaps,
-        additional_fields={"name": "Q-Chem IRC"},
+        additional_fields={"name": "Q-Chem IRC"} | additional_fields,
         copy_files=copy_files,
     )
 
@@ -303,6 +309,7 @@ def quasi_irc_job(
     overwrite_inputs: dict | None = None,
     irc_opt_swaps: dict | None = None,
     relax_opt_swaps: dict | None = None,
+    additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
     """
@@ -347,7 +354,7 @@ def quasi_irc_job(
     OptSchema
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
-
+    additional_fields = additional_fields or {}
     default_settings = SETTINGS.copy()
 
     irc_opt_swaps_defaults = {"fmax": 100, "max_steps": 10}
@@ -387,4 +394,4 @@ def quasi_irc_job(
 
     relax_summary["initial_irc"] = irc_summary
 
-    return relax_summary
+    return relax_summary | additional_fields

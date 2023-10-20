@@ -25,6 +25,7 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms,
     calc_swaps: dict | None = None,
+    additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
@@ -44,6 +45,8 @@ def static_job(
         Atoms object
     calc_swaps
         Dictionary of custom kwargs for the EMT calculator.
+    additional_fields
+        Additional fields to add to the result dictionary.
     copy_files
         Files to copy to the runtime directory.
 
@@ -53,6 +56,7 @@ def static_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
     calc_swaps = calc_swaps or {}
+    additional_fields = additional_fields or {}
 
     atoms.calc = EMT(**calc_swaps)
     final_atoms = run_calc(atoms, copy_files=copy_files)
@@ -60,7 +64,7 @@ def static_job(
     return summarize_run(
         final_atoms,
         input_atoms=atoms,
-        additional_fields={"name": "EMT Static"},
+        additional_fields={"name": "EMT Static"} | additional_fields,
     )
 
 
@@ -70,6 +74,7 @@ def relax_job(
     relax_cell: bool = False,
     calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
+    additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
     """
@@ -100,6 +105,8 @@ def relax_job(
         following defaults: `{}`
     opt_swaps
         Dictionary of swaps for [quacc.runners.calc.run_ase_opt][].
+    additional_fields
+        Additional fields to add to the result dictionary.
     copy_files
         Files to copy to the runtime directory.
 
@@ -109,6 +116,7 @@ def relax_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_opt_run][]
     """
     calc_swaps = calc_swaps or {}
+    additional_fields = additional_fields or {}
 
     opt_defaults = {"fmax": 0.01, "max_steps": 1000, "optimizer": FIRE}
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
@@ -117,4 +125,6 @@ def relax_job(
 
     dyn = run_ase_opt(atoms, relax_cell=relax_cell, copy_files=copy_files, **opt_flags)
 
-    return summarize_opt_run(dyn, additional_fields={"name": "EMT Relax"})
+    return summarize_opt_run(
+        dyn, additional_fields={"name": "EMT Relax"} | additional_fields
+    )

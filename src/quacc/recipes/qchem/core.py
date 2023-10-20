@@ -37,6 +37,7 @@ def static_job(
     smd_solvent: str | None = None,
     n_cores: int | None = None,
     overwrite_inputs: dict | None = None,
+    additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
@@ -96,6 +97,8 @@ def static_job(
         Dictionary passed to `pymatgen.io.qchem.QChemDictSet` which can modify
         default values set therein as well as set additional Q-Chem parameters.
         See QChemDictSet documentation for more details.
+    additional_fields
+        Any additional fields to set in the summary.
     copy_files
         Files to copy to the runtime directory.
 
@@ -104,6 +107,7 @@ def static_job(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
+    additional_fields = additional_fields or {}
     defaults = {
         "basis_set": basis,
         "scf_algorithm": scf_algorithm,
@@ -125,7 +129,7 @@ def static_job(
         charge,
         spin_multiplicity,
         defaults=defaults,
-        additional_fields={"name": "Q-Chem Static"},
+        additional_fields={"name": "Q-Chem Static"} | additional_fields,
         copy_files=copy_files,
     )
 
@@ -142,6 +146,7 @@ def internal_relax_job(
     smd_solvent: str | None = None,
     n_cores: int | None = None,
     overwrite_inputs: dict | None = None,
+    additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
@@ -201,6 +206,8 @@ def internal_relax_job(
         Dictionary passed to `pymatgen.io.qchem.QChemDictSet` which can modify
         default values set therein as well as set additional Q-Chem parameters.
         See QChemDictSet documentation for more details.
+    additional_fields
+        Any additional fields to set in the summary.
     copy_files
         Files to copy to the runtime directory.
 
@@ -230,7 +237,8 @@ def internal_relax_job(
         charge,
         spin_multiplicity,
         defaults=defaults,
-        additional_fields={"name": "Q-Chem Optimization (Internal)"},
+        additional_fields={"name": "Q-Chem Optimization (Internal)"}
+        | additional_fields,
         copy_files=copy_files,
     )
 
@@ -247,6 +255,7 @@ def freq_job(
     smd_solvent: str | None = None,
     n_cores: int | None = None,
     overwrite_inputs: dict | None = None,
+    additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
@@ -314,7 +323,7 @@ def freq_job(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-
+    additional_fields = additional_fields or {}
     defaults = {
         "job_type": "freq",
         "basis_set": basis,
@@ -336,7 +345,7 @@ def freq_job(
         spin_multiplicity,
         defaults=defaults,
         copy_files=copy_files,
-        additional_fields={"name": "Q-Chem Frequency"},
+        additional_fields={"name": "Q-Chem Frequency"} | additional_fields,
     )
 
 
@@ -353,6 +362,7 @@ def relax_job(
     n_cores: int | None = None,
     overwrite_inputs: dict | None = None,
     opt_swaps: dict | None = None,
+    additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
     """
@@ -419,6 +429,8 @@ def relax_job(
         See QChemDictSet documentation for more details.
     opt_swaps
         Dictionary of custom kwargs for [quacc.runners.calc.run_ase_opt][]
+    additional_fields
+        Any additional fields to set in the summary.
     copy_files
         Files to copy to the runtime directory.
 
@@ -427,7 +439,7 @@ def relax_job(
     OptSchema
         Dictionary of results from [quacc.schemas.ase.summarize_opt_run][]
     """
-
+    additional_fields = additional_fields or {}
     qchem_defaults = {
         "basis_set": basis,
         "scf_algorithm": scf_algorithm,
@@ -456,7 +468,7 @@ def relax_job(
         qchem_defaults=qchem_defaults,
         opt_defaults=opt_defaults,
         opt_swaps=opt_swaps,
-        additional_fields={"name": "Q-Chem Optimization"},
+        additional_fields={"name": "Q-Chem Optimization"} | additional_fields,
         copy_files=copy_files,
     )
 

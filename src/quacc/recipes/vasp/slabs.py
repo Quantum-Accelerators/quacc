@@ -18,6 +18,7 @@ def slab_static_job(
     atoms: Atoms,
     preset: str | None = "SlabSet",
     calc_swaps: dict | None = None,
+    additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
     """
@@ -50,6 +51,8 @@ def slab_static_job(
     calc_swaps
         Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
+    additional_fields
+        Additional fields to add to the results dictionary.
     copy_files
         Files to copy to the runtime directory.
 
@@ -58,6 +61,7 @@ def slab_static_job(
     VaspSchema
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
+    additional_fields = additional_fields or {}
 
     defaults = {
         "auto_dipole": True,
@@ -85,6 +89,7 @@ def slab_relax_job(
     atoms: Atoms,
     preset: str | None = "SlabSet",
     calc_swaps: dict | None = None,
+    additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
     """
@@ -117,6 +122,8 @@ def slab_relax_job(
     calc_swaps
         Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
+    additional_fields
+        Additional fields to add to the results dictionary.
     copy_files
         Files to copy to the runtime directory.
 
@@ -125,6 +132,7 @@ def slab_relax_job(
     VaspSchema
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
+    additional_fields = additional_fields or {}
 
     defaults = {
         "auto_dipole": True,
@@ -142,7 +150,7 @@ def slab_relax_job(
         preset=preset,
         defaults=defaults,
         calc_swaps=calc_swaps,
-        additional_fields={"name": "VASP Slab Relax"},
+        additional_fields={"name": "VASP Slab Relax"} | additional_fields,
         copy_files=copy_files,
     )
 

@@ -45,6 +45,7 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms,
     calc_swaps: dict | None = None,
+    additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
@@ -67,6 +68,8 @@ def static_job(
         Atoms object
     calc_swaps
         Dictionary of custom kwargs for the newtonnet calculator.
+    additional_fields
+        Additional fields to add to the result dictionary.
     copy_files
         Files to copy to the runtime directory.
 
@@ -76,6 +79,7 @@ def static_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
 
+    additional_fields = additional_fields or {}
     defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
@@ -88,7 +92,7 @@ def static_job(
     return summarize_run(
         final_atoms,
         input_atoms=atoms,
-        additional_fields={"name": "NewtonNet Static"},
+        additional_fields={"name": "NewtonNet Static"} | additional_fields,
     )
 
 
@@ -98,6 +102,7 @@ def relax_job(
     atoms: Atoms,
     calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
+    additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> OptSchema:
     """
@@ -128,6 +133,8 @@ def relax_job(
         Dictionary of custom kwargs for the newtonnet calculator.
     opt_swaps
         Optional swaps for the optimization parameters.
+    additional_fields
+        Additional fields to add to the result dictionary.
     copy_files
         Files to copy to the runtime directory.
 
@@ -136,7 +143,7 @@ def relax_job(
     OptSchema
         Dictionary of results, specified in [quacc.schemas.ase.summarize_opt_run][]
     """
-
+    additional_fields = additional_fields or {}
     defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
@@ -150,7 +157,9 @@ def relax_job(
     dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
 
     return _add_stdev_and_hess(
-        summarize_opt_run(dyn, additional_fields={"name": "NewtonNet Relax"})
+        summarize_opt_run(
+            dyn, additional_fields={"name": "NewtonNet Relax"} | additional_fields
+        )
     )
 
 
@@ -161,6 +170,7 @@ def freq_job(
     temperature: float = 298.15,
     pressure: float = 1.0,
     calc_swaps: dict | None = None,
+    additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> FreqSchema:
     """
@@ -187,6 +197,8 @@ def freq_job(
         The pressure for the thermodynamic analysis.
     calc_swaps
         Optional swaps for the calculator.
+    additional_fields
+        Additional fields to add to the result dictionary.
     copy_files
         Files to copy to the runtime directory.
 
@@ -195,7 +207,7 @@ def freq_job(
     FreqSchema
         Dictionary of results
     """
-
+    additional_fields = additional_fields or {}
     defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
         "settings_path": SETTINGS.NEWTONNET_CONFIG_PATH,
@@ -227,7 +239,7 @@ def freq_job(
         additional_fields={"name": "ASE Thermo Analysis"},
     )
 
-    return summary
+    return summary | additional_fields
 
 
 def _add_stdev_and_hess(summary: dict) -> dict:

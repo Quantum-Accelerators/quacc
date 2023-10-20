@@ -31,6 +31,7 @@ def static_job(
     method: str = "wb97x-v",
     basis: str = "def2-tzvp",
     calc_swaps: dict | None = None,
+    additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
@@ -67,6 +68,8 @@ def static_job(
     calc_swaps
         Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
+    additional_fields
+        Any additional fields to store in the resulting task document.
     copy_files
         Files to copy to the runtime directory.
 
@@ -75,7 +78,7 @@ def static_job(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-
+    additional_fields = additional_fields or {}
     defaults = {
         "mem": "16GB",
         "num_threads": "max",
@@ -91,7 +94,7 @@ def static_job(
         spin_multiplicity,
         defaults=defaults,
         calc_swaps=calc_swaps,
-        additional_fields={"name": "Psi4 Static"},
+        additional_fields={"name": "Psi4 Static"} | additional_fields,
         copy_files=copy_files,
     )
 

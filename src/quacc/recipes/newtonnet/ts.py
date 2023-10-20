@@ -53,6 +53,7 @@ def ts_job(
     freq_job_kwargs: dict | None = None,
     calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
+    additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> TSSchema:
     """
@@ -96,6 +97,8 @@ def ts_job(
         Optional swaps for the NewtonNet calculator.
     opt_swaps
         Optional swaps for the optimization parameters.
+    additional_fields
+        Additional fields to add to the result dictionary.
     copy_files
         Files to copy to the runtime directory.
 
@@ -105,6 +108,7 @@ def ts_job(
         Dictionary of results
     """
     freq_job_kwargs = freq_job_kwargs or {}
+    additional_fields = additional_fields or {}
 
     defaults = {
         "model_path": SETTINGS.NEWTONNET_MODEL_PATH,
@@ -144,7 +148,7 @@ def ts_job(
     )
     opt_ts_summary["freq_job"] = freq_summary
 
-    return opt_ts_summary
+    return opt_ts_summary | additional_fields
 
 
 @job
@@ -157,6 +161,7 @@ def irc_job(
     freq_job_kwargs: dict | None = None,
     calc_swaps: dict | None = None,
     opt_swaps: dict | None = None,
+    additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> IRCSchema:
     """
@@ -213,6 +218,8 @@ def irc_job(
         Optional swaps for the calculator.
     opt_swaps
         Optional swaps for the optimization parameters.
+    additional_fields
+        Additional fields to add to the result dictionary.
     copy_files
         Files to copy to the runtime directory.
 
@@ -222,6 +229,7 @@ def irc_job(
         A dictionary containing the IRC summary and thermodynamic summary.
     """
     freq_job_kwargs = freq_job_kwargs or {}
+    additional_fields = additional_fields or {}
     default_settings = SETTINGS.copy()
 
     defaults = {
@@ -254,7 +262,8 @@ def irc_job(
     dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
     opt_irc_summary = _add_stdev_and_hess(
         summarize_opt_run(
-            dyn, additional_fields={"name": f"NewtonNet IRC: {direction}"}
+            dyn,
+            additional_fields={"name": f"NewtonNet IRC: {direction}"},
         )
     )
     SETTINGS.CHECK_CONVERGENCE = default_settings.CHECK_CONVERGENCE
@@ -267,7 +276,7 @@ def irc_job(
     )
     opt_irc_summary["freq_job"] = freq_summary
 
-    return opt_irc_summary
+    return opt_irc_summary | additional_fields
 
 
 @job
@@ -280,6 +289,7 @@ def quasi_irc_job(
     irc_job_kwargs: dict | None = None,
     relax_job_kwargs: dict | None = None,
     freq_job_kwargs: dict | None = None,
+    additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> QuasiIRCSchema:
     """
@@ -313,6 +323,8 @@ def quasi_irc_job(
         Keyword arguments for `relax_job`
     freq_job_kwargs
         Keyword arguments for `freq_job`.
+    additional_fields
+        Additional fields to add to the result dictionary.
     copy_files
         Files to copy to the runtime directory.
 
@@ -324,6 +336,7 @@ def quasi_irc_job(
     """
     relax_job_kwargs = relax_job_kwargs or {}
     freq_job_kwargs = freq_job_kwargs or {}
+    additional_fields = additional_fields or {}
 
     irc_job_defaults = {"calc_swaps": {"max_steps": 5}}
     irc_job_kwargs = merge_dicts(irc_job_defaults, irc_job_kwargs)
@@ -349,7 +362,7 @@ def quasi_irc_job(
     relax_summary["freq_job"] = freq_summary
     relax_summary["irc_job"] = irc_summary
 
-    return relax_summary
+    return relax_summary | additional_fields
 
 
 def _get_hessian(atoms: Atoms) -> NDArray:

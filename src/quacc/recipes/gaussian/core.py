@@ -29,6 +29,7 @@ def static_job(
     xc: str = "wb97x-d",
     basis: str = "def2-tzvp",
     calc_swaps: dict | None = None,
+    additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> cclibSchema:
     """
@@ -72,6 +73,8 @@ def static_job(
     calc_swaps
         Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
+    additional_fields
+        Additional fields to supply to the summarizer.
     copy_files
         Files to copy to the runtime directory.
 
@@ -80,7 +83,7 @@ def static_job(
     cclibSchema
         Dictionary of results, as specified in [quacc.schemas.cclib.cclib_summarize_run][]
     """
-
+    additional_fields = additional_fields or {}
     defaults = {
         "mem": "16GB",
         "chk": "Gaussian.chk",
@@ -101,7 +104,7 @@ def static_job(
         atoms,
         defaults=defaults,
         calc_swaps=calc_swaps,
-        additional_fields={"name": "Gaussian Static"},
+        additional_fields={"name": "Gaussian Static"} | additional_fields,
         copy_files=copy_files,
     )
 
@@ -115,6 +118,7 @@ def relax_job(
     basis: str = "def2-tzvp",
     freq: bool = False,
     calc_swaps: dict | None = None,
+    additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> cclibSchema:
     """
@@ -160,6 +164,8 @@ def relax_job(
     calc_swaps
         Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
+    additional_fields
+        Additional fields to supply to the summarizer.
     copy_files
         Files to copy to the runtime directory.
 
@@ -168,7 +174,7 @@ def relax_job(
     cclibSchema
         Dictionary of results, as specified in [quacc.schemas.cclib.cclib_summarize_run][]
     """
-
+    additional_fields = additional_fields or {}
     defaults = {
         "mem": "16GB",
         "chk": "Gaussian.chk",
@@ -189,7 +195,7 @@ def relax_job(
         atoms,
         defaults=defaults,
         calc_swaps=calc_swaps,
-        additional_fields={"name": "Gaussian Relax"},
+        additional_fields={"name": "Gaussian Relax"} | additional_fields,
         copy_files=copy_files,
     )
 

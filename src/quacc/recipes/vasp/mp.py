@@ -37,6 +37,7 @@ def mp_prerelax_job(
     preset: str | None = "MPScanSet",
     bandgap: float | None = None,
     calc_swaps: dict | None = None,
+    additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
     """
@@ -62,6 +63,8 @@ def mp_prerelax_job(
     calc_swaps
         Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
+    additional_fields
+        Additional fields to add to the result dictionary.
     copy_files
         Files to copy to the runtime directory.
 
@@ -70,7 +73,7 @@ def mp_prerelax_job(
     VaspSchema
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
-
+    additional_fields = additional_fields or {}
     defaults = {
         "ediffg": -0.05,
         "xc": "pbesol",
@@ -83,7 +86,7 @@ def mp_prerelax_job(
         preset=preset,
         defaults=defaults,
         calc_swaps=calc_swaps,
-        additional_fields={"name": "MP Pre-Relax"},
+        additional_fields={"name": "MP Pre-Relax"} | additional_fields,
         copy_files=copy_files,
     )
 
@@ -119,6 +122,8 @@ def mp_relax_job(
     calc_swaps
         Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
+    additional_fields
+        Additional fields to add to the result dictionary.
     copy_files
         Files to copy to the runtime directory.
 
@@ -127,6 +132,7 @@ def mp_relax_job(
     VaspSchema
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
+    additional_fields = additional_fields or {}
 
     defaults = {"lcharg": True, "lwave": True} | _get_bandgap_swaps(bandgap)
     return _base_job(
@@ -134,7 +140,7 @@ def mp_relax_job(
         preset=preset,
         defaults=defaults,
         calc_swaps=calc_swaps,
-        additional_fields={"name": "MP Relax"},
+        additional_fields={"name": "MP Relax"} | additional_fields,
         copy_files=copy_files,
     )
 

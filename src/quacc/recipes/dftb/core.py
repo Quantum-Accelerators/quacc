@@ -28,6 +28,7 @@ def static_job(
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
     kpts: tuple | list[tuple] | dict | None = None,
     calc_swaps: dict | None = None,
+    additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
@@ -56,6 +57,8 @@ def static_job(
     calc_swaps
         Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
+    additional_fields
+        Any additional fields to store in the resulting task document.
     copy_files
         Files to copy to the runtime directory.
 
@@ -64,7 +67,7 @@ def static_job(
     RunSchema
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
-
+    additional_fields = additional_fields or {}
     defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
         "Hamiltonian_Method": method if "xtb" in method.lower() else None,
@@ -75,7 +78,7 @@ def static_job(
         atoms,
         defaults=defaults,
         calc_swaps=calc_swaps,
-        additional_fields={"name": "DFTB+ Static"},
+        additional_fields={"name": "DFTB+ Static"} | additional_fields,
         copy_files=copy_files,
     )
 
@@ -93,6 +96,7 @@ def relax_job(
     kpts: tuple | list[tuple] | dict | None = None,
     relax_cell: bool = False,
     calc_swaps: dict | None = None,
+    additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
     """
@@ -128,6 +132,8 @@ def relax_job(
     calc_swaps
         Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
+    additional_fields
+        Any additional fields to store in the resulting task document.
     copy_files
         Files to copy to the runtime directory.
 
@@ -137,6 +143,7 @@ def relax_job(
         Dictionary of results, specified in [quacc.schemas.ase.summarize_run][]
     """
 
+    additional_fields = additional_fields or {}
     defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
         "Hamiltonian_Method": method if "xtb" in method.lower() else None,
@@ -151,7 +158,7 @@ def relax_job(
         atoms,
         defaults=defaults,
         calc_swaps=calc_swaps,
-        additional_fields={"name": "DFTB+ Relax"},
+        additional_fields={"name": "DFTB+ Relax"} | additional_fields,
         copy_files=copy_files,
     )
 

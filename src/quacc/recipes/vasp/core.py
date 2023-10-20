@@ -23,6 +23,7 @@ def static_job(
     atoms: Atoms,
     preset: str | None = "BulkSet",
     calc_swaps: dict | None = None,
+    additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
     """
@@ -53,6 +54,8 @@ def static_job(
     calc_swaps
         Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely.
+    additional_fields
+        Additional fields to supply to the summarizer.
     copy_files
         Files to copy to the runtime directory.
 
@@ -61,7 +64,7 @@ def static_job(
     VaspSchema
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
-
+    additional_fields = additional_fields or {}
     defaults = {
         "ismear": -5,
         "laechg": True,
@@ -76,7 +79,7 @@ def static_job(
         preset=preset,
         defaults=defaults,
         calc_swaps=calc_swaps,
-        additional_fields={"name": "VASP Static"},
+        additional_fields={"name": "VASP Static"} | additional_fields,
         copy_files=copy_files,
     )
 
@@ -87,6 +90,7 @@ def relax_job(
     preset: str | None = "BulkSet",
     relax_cell: bool = True,
     calc_swaps: dict | None = None,
+    additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
     """
@@ -121,6 +125,8 @@ def relax_job(
     calc_swaps
         Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
         a pre-existing key entirely.
+    additional_fields
+        Additional fields to supply to the summarizer.
     copy_files
         Files to copy to the runtime directory.
 
@@ -129,7 +135,7 @@ def relax_job(
     VaspSchema
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
-
+    additional_fields = additional_fields or {}
     defaults = {
         "ediffg": -0.02,
         "isif": 3 if relax_cell else 2,
@@ -157,6 +163,7 @@ def double_relax_job(
     relax_cell: bool = True,
     calc_swaps1: dict | None = None,
     calc_swaps2: dict | None = None,
+    additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> DoubleRelaxSchema:
     """
@@ -183,6 +190,8 @@ def double_relax_job(
         Dictionary of custom kwargs for the first relaxation.
     calc_swaps2
         Dictionary of custom kwargs for the second relaxation.
+    additional_fields
+        Additional fields to supply to the summarizer.
     copy_files
         Files to copy to the (first) runtime directory.
 
@@ -191,6 +200,7 @@ def double_relax_job(
     DoubleRelaxSchema
         Dictionary of results
     """
+    additional_fields = additional_fields or {}
 
     # Run first relaxation
     summary1 = relax_job.__wrapped__(
@@ -211,7 +221,7 @@ def double_relax_job(
     )
     summary2["relax1"] = summary1
 
-    return summary2
+    return summary2 | additional_fields
 
 
 def _base_job(
