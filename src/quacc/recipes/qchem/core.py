@@ -216,7 +216,7 @@ def internal_relax_job(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
-
+    additional_fields = additional_fields or {}
     defaults = {
         "job_type": "opt",
         "basis_set": basis,
