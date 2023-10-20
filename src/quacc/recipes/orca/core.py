@@ -194,7 +194,7 @@ def relax_job(
     cclibSchema
         Dictionary of results from [quacc.schemas.cclib.cclib_summarize_run][]
     """
-
+    additional_fields = additional_fields or {}
     default_inputs = {
         xc: True,
         basis: True,

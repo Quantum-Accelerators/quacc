@@ -74,6 +74,7 @@ def mp_prerelax_job(
         Dictionary of results from [quacc.schemas.vasp.vasp_summarize_run][]
     """
     additional_fields = additional_fields or {}
+
     defaults = {
         "ediffg": -0.05,
         "xc": "pbesol",
@@ -97,6 +98,7 @@ def mp_relax_job(
     preset: str | None = "MPScanSet",
     bandgap: float | None = None,
     calc_swaps: dict | None = None,
+    additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> VaspSchema:
     """

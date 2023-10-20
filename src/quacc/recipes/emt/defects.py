@@ -38,6 +38,7 @@ def bulk_to_defects_flow(
     run_static: bool = True,
     defect_relax_kwargs: dict | None = None,
     defect_static_kwargs: dict | None = None,
+    additional_fields: dict | None = None,
 ) -> list[RunSchema | OptSchema]:
     """
     Workflow consisting of:
@@ -64,6 +65,9 @@ def bulk_to_defects_flow(
         Additional keyword arguments to pass to the relaxation calculation.
     defect_static_kwargs
         Additional keyword arguments to pass to the static calculation.
+    additional_fields
+        Additional fields to add to the result dictionary. Adds to all jobs in the
+        flow.
 
     Returns
     -------
