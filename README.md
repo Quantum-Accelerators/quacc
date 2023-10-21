@@ -11,9 +11,9 @@
 ![Python - Version](https://img.shields.io/pypi/pyversions/quacc)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7720998.svg)](https://doi.org/10.5281/zenodo.7720998)
 
-`quacc` is a flexible platform for computational materials science 💎 and quantum chemistry 🧪 that is built for the exascale era 🔥. It is maintained by the [Rosen Research Group](https://rosen.cbe.princeton.edu/) at Princeton University 🐯.
+`quacc` is a flexible platform for computational materials science 💎 and quantum chemistry 🧪 that is built for the exascale era 🔥. It is maintained by the [Rosen Research Group](https://rosen.cbe.princeton.edu/) at Princeton University.
 
-- `quacc` makes it possible to easily write complex workflows that can be efficiently run anywhere: locally, HPC, the cloud, or any combination thereof.
+- `quacc` makes it possible to easily run complex workflows that can be efficiently dispatched anywhere: locally, HPC, the cloud, or any combination thereof.
 
 - `quacc` leverages community resources. It is built around the [Atomic Simulation Environment](https://wiki.fysik.dtu.dk/ase/) and much of the software infrastructure powering the [Materials Project](https://materialsproject.org).
 
