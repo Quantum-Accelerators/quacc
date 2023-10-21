@@ -1,1 +1,1 @@
-git+https://github.com/Parsl/parsl.git@benc-lifted-dict
+git+https://github.com/Parsl/parsl.git
