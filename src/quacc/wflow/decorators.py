@@ -39,7 +39,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
 
     ... is the same as doing
 
-    === "Covalent⭐"
+    === "Covalent"
 
         ```python
         import covalent as ct
@@ -51,7 +51,7 @@ def job(_func: Callable | None = None, **kwargs) -> Job:
         add(1, 2)
         ```
 
-    === "Parsl⭐"
+    === "Parsl"
 
         ```python
         from parsl import python_app
@@ -206,7 +206,7 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
 
     ... is the same as doing
 
-    === "Covalent⭐"
+    === "Covalent"
 
         ```python
         import covalent as ct
@@ -222,7 +222,7 @@ def flow(_func: Callable | None = None, **kwargs) -> Flow:
         workflow(1, 2, 3)
         ```
 
-    === "Parsl⭐"
+    === "Parsl"
 
         ```python
         from parsl import python_app
@@ -346,7 +346,7 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
 
     ... is the same as doing
 
-    === "Covalent⭐"
+    === "Covalent"
 
         ```python
         import random
@@ -374,7 +374,7 @@ def subflow(_func: Callable | None = None, **kwargs) -> Subflow:
         workflow(1, 2, 3)
         ```
 
-    === "Parsl⭐"
+    === "Parsl"
 
         ```python
         import random
