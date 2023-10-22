@@ -26,17 +26,17 @@ classifiers = [
 ]
 requires-python = ">=3.9, <3.12"
 dependencies = [
-    "ase", # waiting on >3.22.1
-    "cclib>=1.8",
-    "custodian>=2023.6.5",
-    "emmet-core>=0.69.6",
-    "maggma>=0.57.0",
-    "monty>=2023.9.25",
-    "numpy>=1.25.0",
-    "pydantic>=2.0.1",
-    "pydantic-settings>=2.0.3",
-    "pymatgen>=2023.10.4",
-    "typer>=0.9.0",
+    "ase", # for Atoms object and calculators; waiting on >3.22.1
+    "cclib>=1.8", # for I/O parsing
+    "custodian>=2023.6.5", # for automated error-corrections
+    "emmet-core>=0.69.6", # for schemas and I/O
+    "maggma>=0.57.0", # for database handling
+    "monty>=2023.9.25", # miscellaneous Python utilities
+    "numpy>=1.25.0", # for math
+    "pydantic>=2.0.1", # for settings management and schemas
+    "pydantic-settings>=2.0.3", # for settings management
+    "pymatgen>=2023.10.4", # for structure manipulation
+    "typer>=0.9.0", # for the CLI
 ]
 
 [project.optional-dependencies]
