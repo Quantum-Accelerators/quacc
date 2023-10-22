@@ -27,13 +27,13 @@ classifiers = [
 requires-python = ">=3.9, <3.12"
 dependencies = [
     "ase", # for Atoms object and calculators; waiting on >3.22.1
-    "cclib>=1.8", # for I/O parsing
-    "custodian>=2023.6.5", # for automated error-corrections
-    "emmet-core>=0.69.6", # for schemas and I/O
+    "cclib>=1.8", # for I/O parsing of molecular DFT codes
+    "custodian>=2023.6.5", # for automated error corrections
+    "emmet-core>=0.69.6", # for pre-made schemas
     "maggma>=0.57.0", # for database handling
     "monty>=2023.9.25", # miscellaneous Python utilities
     "numpy>=1.25.0", # for math
-    "pydantic>=2.0.1", # for settings management and schemas
+    "pydantic>=2.0.1", # for settings management and custom schemas
     "pydantic-settings>=2.0.3", # for settings management
     "pymatgen>=2023.10.4", # for structure manipulation
     "typer>=0.9.0", # for the CLI
