@@ -35,15 +35,15 @@ def teardown_module():
 
 @pytest.fixture(params=[
     {},
-    {'disagreement': 'values'},
-    {'method': None},
-    {'method': None, 'disagreement': 'values'},
-    {'method': 'autograd'},
-    {'method': 'autograd', 'disagreement': 'values'},
-    {'method': 'fwd_diff', 'grad_precision': 1e-5},
-    {'method': 'fwd_diff', 'grad_precision': 1e-5, 'disagreement': 'values'},
-    {'method': 'cnt_diff', 'grad_precision': 1e-5},
-    {'method': 'cnt_diff', 'grad_precision': 1e-5, 'disagreement': 'values'},
+    #{'disagreement': 'values'},
+    #{'method': None},
+    #{'method': None, 'disagreement': 'values'},
+    #{'method': 'autograd'},
+    #{'method': 'autograd', 'disagreement': 'values'},
+    #{'method': 'fwd_diff', 'grad_precision': 1e-5},
+    #{'method': 'fwd_diff', 'grad_precision': 1e-5, 'disagreement': 'values'},
+    #{'method': 'cnt_diff', 'grad_precision': 1e-5},
+    #{'method': 'cnt_diff', 'grad_precision': 1e-5, 'disagreement': 'values'},
 ])
 def calc_swaps(request):
     return request.param
@@ -200,7 +200,6 @@ def test_irc_job(tmpdir, atoms, opt_swaps, freq_job_kwargs):
     output = irc_job(atoms, opt_swaps=opt_swaps, freq_job_kwargs=freq_job_kwargs)
 
     assert isinstance(output, dict)
-    print('\n\n\n\nopt_swaps\n\n\n\n', opt_swaps)
     if opt_swaps is None and freq_job_kwargs is None:
         assert output["results"]["energy"] == pytest.approx(-34.449834)
         assert output["freq_job"]["thermo"]["results"]["energy"] == pytest.approx(

@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 from ase.optimize import FIRE
 from ase.vibrations.data import VibrationsData
 from monty.dev import requires
-
+import time
 from quacc import SETTINGS, job
 from quacc.builders.thermo import build_ideal_gas
 from quacc.runners.calc import run_ase_opt, run_calc
@@ -147,10 +147,16 @@ def relax_job(
     opt_flags = merge_dicts(opt_defaults, opt_swaps)
 
     atoms.calc = NewtonNet(**flags)
+    t1 = time.time()
     dyn = run_ase_opt(atoms, copy_files=copy_files, **opt_flags)
+    elapsed_time = time.time() - t1
 
     return _add_stdev_and_hess(
-        summarize_opt_run(dyn, additional_fields={"name": "NewtonNet Relax"})
+        summarize_opt_run(dyn,
+                          additional_fields={
+                              "name": "NewtonNet Relax",
+                              "elapsed_time": elapsed_time
+                          })
     )
 
 

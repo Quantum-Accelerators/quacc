@@ -173,6 +173,7 @@ def run_ase_opt(
 
     # Run calculation
     with traj, optimizer(atoms, **optimizer_kwargs) as dyn:
+        #dyn.info['your_property_name'] = 10
         dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
 
     # Store the trajectory atoms

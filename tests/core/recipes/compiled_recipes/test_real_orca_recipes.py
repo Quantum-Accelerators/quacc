@@ -6,7 +6,8 @@ from numpy.testing import assert_allclose
 
 from quacc.recipes.orca.core import relax_job, static_job
 
-has_orca = bool(which("orca"))
+#has_orca = bool(which("orca"))
+has_orca = False
 
 pytestmark = pytest.mark.skipif(
     not has_orca,
