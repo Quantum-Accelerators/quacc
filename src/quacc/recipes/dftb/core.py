@@ -55,7 +55,7 @@ def static_job(
         k-point grid to use.
     calc_swaps
         Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
-        a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
+        a pre-existing key entirely.
     copy_files
         Files to copy to the runtime directory.
 
@@ -127,7 +127,7 @@ def relax_job(
         positions.
     calc_swaps
         Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
-        a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
+        a pre-existing key entirely.
     copy_files
         Files to copy to the runtime directory.
 

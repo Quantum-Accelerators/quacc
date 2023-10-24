@@ -68,7 +68,7 @@ def qmof_relax_job(
         very high starting forces.
     calc_swaps
         Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
-        a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely. Applies for all jobs.
+        a pre-existing key entirely. Applies for all jobs.
 
     Returns
     -------
@@ -123,7 +123,7 @@ def _prerelax(
         Preset to use from `quacc.calculators.presets.vasp`.
     calc_swaps
         Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
-        a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
+        a pre-existing key entirely.
     fmax
         Maximum force in eV/A.
 
@@ -166,7 +166,7 @@ def _loose_relax_positions(
         Preset to use from `quacc.calculators.presets.vasp`.
     calc_swaps
         Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
-        a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
+        a pre-existing key entirely.
 
     Returns
     -------
@@ -211,7 +211,7 @@ def _loose_relax_cell(
         Preset to use from `quacc.calculators.presets.vasp`.
     calc_swaps
         Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
-        a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
+        a pre-existing key entirely.
 
     Returns
     -------
@@ -256,7 +256,7 @@ def _double_relax(
         Preset to use from `quacc.calculators.presets.vasp`.
     calc_swaps
         Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
-        a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
+        a pre-existing key entirely.
     relax_cell
         True if a volume relaxation should be performed.
 
@@ -319,7 +319,7 @@ def _static(
         Preset to use from `quacc.calculators.presets.vasp`.
     calc_swaps
         Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
-        a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
+        a pre-existing key entirely.
 
     Returns
     -------

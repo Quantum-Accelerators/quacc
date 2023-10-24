@@ -49,7 +49,7 @@ def slab_static_job(
         Preset to use from `quacc.calculators.presets.vasp`.
     calc_swaps
         Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
-        a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
+        a pre-existing key entirely.
     copy_files
         Files to copy to the runtime directory.
 
@@ -116,7 +116,7 @@ def slab_relax_job(
         Preset to use from `quacc.calculators.presets.vasp`.
     calc_swaps
         Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
-        a pre-existing key entirely. Set a value to `None` to remove a pre-existing key entirely.
+        a pre-existing key entirely.
     copy_files
         Files to copy to the runtime directory.
 
