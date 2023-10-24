@@ -120,7 +120,7 @@ When deploying calculations for the first time, it's important to start simple, 
 
     On the remote machine, make sure to run `pip install quacc[tblite]`. Then run the following example, adjusting the configuration as necessary for your machine.
 
-    First we initialize a Parsl configuration. For this example, we will request 2 Slurm jobs (blocks), each of which will run tasks over 2 nodes that will be dynamically scaled
+    First we initialize a Parsl configuration. For this example, we will request 2 Slurm jobs (blocks), each of which will run tasks over 2 nodes that will be dynamically scaled.
 
     ```python
     import parsl
