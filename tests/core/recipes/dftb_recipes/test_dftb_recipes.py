@@ -150,9 +150,14 @@ def test_relax_job_cu_supercell_cell_relax(tmpdir):
     )
     assert np.array_equal(output["atoms"].cell.array, atoms.cell.array) is False
 
+
 def test_relax_job_cu_supercell_errors(tmpdir):
     tmpdir.chdir()
     with pytest.raises(ValueError):
         atoms = bulk("Cu") * (2, 1, 1)
         atoms[0].position += 0.5
-        relax_job(atoms, kpts=(3, 3, 3), calc_swaps={"MaxSteps": 1, "Hamiltonian_MaxSccIterations": 100})
+        relax_job(
+            atoms,
+            kpts=(3, 3, 3),
+            calc_swaps={"MaxSteps": 1, "Hamiltonian_MaxSccIterations": 100},
+        )
