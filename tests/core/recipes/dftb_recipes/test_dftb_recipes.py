@@ -170,4 +170,4 @@ def test_child_errors(tmpdir):
 
     with pytest.raises(ChildProcessError):
         atoms = bulk("Cu")
-        relax_job("Cu")
+        relax_job(atoms)
