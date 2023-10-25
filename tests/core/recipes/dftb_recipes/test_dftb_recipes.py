@@ -45,7 +45,7 @@ def test_static_job(tmpdir):
         np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is True
     )
     assert np.array_equal(output["atoms"].cell.array, atoms.cell.array) is True
-    
+
     atoms = bulk("Cu")
     output = static_job(atoms, kpts=(3, 3, 3))
     assert output["nsites"] == len(atoms)
