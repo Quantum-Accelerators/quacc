@@ -79,10 +79,6 @@ def static_job(
         copy_files=copy_files,
     )
 
-    if SETTINGS.CHECK_CONVERGENCE and check_logfile(LOG_FILE, "SCC is NOT converged"):
-        msg = "SCC is not converged"
-        raise ValueError(msg)
-
     return summary
 
 
@@ -155,10 +151,6 @@ def relax_job(
         copy_files=copy_files,
     )
 
-    if SETTINGS.CHECK_CONVERGENCE and not check_logfile(LOG_FILE, "Geometry converged"):
-        msg = "Geometry did not converge"
-        raise ValueError(msg)
-
     return summary
 
 
@@ -196,6 +188,14 @@ def _base_job(
 
     atoms.calc = Dftb(**flags)
     final_atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
+
+    if SETTINGS.CHECK_CONVERGENCE:
+        if check_logfile(LOG_FILE, "SCC is NOT converged"):
+            msg = "SCC is not converged"
+            raise ValueError(msg)
+        if not check_logfile(LOG_FILE, "Geometry converged"):
+            msg = "Geometry did not converge"
+            raise ValueError(msg)
 
     return summarize_run(
         final_atoms,
