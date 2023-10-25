@@ -227,7 +227,7 @@ def run_ase_vib(
     except Exception as e:
         msg = f"Calculation failed: {e}. Files located at {Path.cwd()}"
         raise ChildProcessError(msg)
-    
+
     # Summarize run
     vib.summary(log=str(tmpdir / "vib_summary.log"))
 
