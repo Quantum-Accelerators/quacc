@@ -8,7 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- SCC errors in DFT+ relaxations will be reported with higher priority than a relaxation error
+- DFTB+ `MaxSccIterations` set to 200 by default
+- SCC errors in DFTB+ relaxations will be reported with higher priority than a relaxation error
 
 ## [0.3.9]
 
