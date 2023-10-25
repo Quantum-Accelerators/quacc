@@ -197,7 +197,9 @@ def _base_job(
         if check_logfile(LOG_FILE, "SCC is NOT converged"):
             msg = "SCC is not converged"
             raise ValueError(msg)
-        if flags.get("Driver_") == "GeometryOptimization" and not check_logfile(LOG_FILE, "Geometry converged"):
+        if flags.get("Driver_") == "GeometryOptimization" and not check_logfile(
+            LOG_FILE, "Geometry converged"
+        ):
             msg = "Geometry did not converge"
             raise ValueError(msg)
 
