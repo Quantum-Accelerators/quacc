@@ -164,7 +164,7 @@ def summarize_opt_run(
     is_converged = dyn.converged()
     if check_convergence and not is_converged:
         msg = f"Optimization did not converge. Refer to {Path.cwd()}"
-        raise ValueError(msg)
+        raise RuntimeError(msg)
 
     # Get trajectory
     if not trajectory:
