@@ -132,7 +132,7 @@ def test_summarize_opt_run(tmpdir):
     dyn.run(steps=5)
     traj = read("test.traj", index=":")
 
-    with pytest.raises(ValueError):
+    with pytest.raises(RuntimeError):
         summarize_opt_run(dyn)
 
     # Make sure info tags are handled appropriately
