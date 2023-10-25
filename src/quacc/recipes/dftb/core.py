@@ -195,12 +195,12 @@ def _base_job(
 
     if SETTINGS.CHECK_CONVERGENCE:
         if check_logfile(LOG_FILE, "SCC is NOT converged"):
-            msg = "SCC is not converged"
+            msg = f"SCC is not converged in {LOG_FILE}"
             raise RuntimeError(msg)
         if flags.get("Driver_") == "GeometryOptimization" and not check_logfile(
             LOG_FILE, "Geometry converged"
         ):
-            msg = "Geometry optimization did not complete"
+            msg = f"Geometry optimization did not complete in {LOG_FILE}"
             raise RuntimeError(msg)
 
     return summarize_run(
