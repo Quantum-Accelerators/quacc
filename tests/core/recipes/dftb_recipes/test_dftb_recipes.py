@@ -23,6 +23,7 @@ def test_static_job(tmpdir):
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
+    assert output["parameters"]["Hamiltonian_MaxSccIterations"] == 200
     assert output["results"]["energy"] == pytest.approx(-137.9677759924738)
     assert (
         np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is True
@@ -33,6 +34,7 @@ def test_static_job(tmpdir):
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
+    assert output["parameters"]["Hamiltonian_MaxSccIterations"] == 200
     assert (
         output["parameters"]["Hamiltonian_KPointsAndWeights_"].strip()
         == "SupercellFolding"
@@ -51,6 +53,7 @@ def test_static_job(tmpdir):
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
+    assert output["parameters"]["Hamiltonian_MaxSccIterations"] == 200
     assert (
         output["parameters"]["Hamiltonian_KPointsAndWeights_"].strip()
         == "SupercellFolding"
@@ -78,6 +81,7 @@ def test_relax_job(tmpdir):
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
+    assert output["parameters"]["Hamiltonian_MaxSccIterations"] == 200
     assert output["results"]["energy"] == pytest.approx(-137.97654214864497)
     assert (
         np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is False
@@ -87,10 +91,11 @@ def test_relax_job(tmpdir):
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
 
-    output = relax_job(atoms, kpts=(3, 3, 3))
+    output = relax_job(atoms, kpts=(3, 3, 3), calc_swaps={"Hamiltonian_MaxSccIterations": 100})
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
+    assert output["parameters"]["Hamiltonian_MaxSccIterations"] == 100
     assert (
         output["parameters"]["Hamiltonian_KPointsAndWeights_"].strip()
         == "SupercellFolding"
@@ -111,6 +116,7 @@ def test_relax_job(tmpdir):
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN1-xTB"
+    assert output["parameters"]["Hamiltonian_MaxSccIterations"] == 200
     assert (
         output["parameters"]["Hamiltonian_KPointsAndWeights_"].strip()
         == "SupercellFolding"
