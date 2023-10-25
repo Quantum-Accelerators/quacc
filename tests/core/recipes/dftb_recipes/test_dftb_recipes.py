@@ -77,7 +77,7 @@ def test_static_errors(tmpdir):
 
     with pytest.raises(ValueError):
         atoms = molecule("H2O")
-        output = static_job(atoms, calc_swaps={"Hamiltonian_MaxSccIterations": 1})
+        static_job(atoms, calc_swaps={"Hamiltonian_MaxSccIterations": 1})
 
 
 def test_relax_job_water(tmpdir):
@@ -144,9 +144,6 @@ def test_relax_job_cu_supercell_cell_relax(tmpdir):
         np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is False
     )
     assert np.array_equal(output["atoms"].cell.array, atoms.cell.array) is False
-
-def test_relax_errors(tmpdir):
-    tmpdir.chdir()
 
     with pytest.raises(ValueError):
         atoms = bulk("Cu") * (2, 1, 1)
