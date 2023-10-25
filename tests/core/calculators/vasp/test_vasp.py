@@ -409,7 +409,7 @@ def test_lasph():
 def test_vdw():
     atoms = bulk("Cu")
 
-    with pytest.raises(EnvironmentError):
+    with pytest.raises(OSError):
         Vasp(atoms, xc="beef-vdw")
 
 

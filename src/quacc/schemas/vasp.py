@@ -231,7 +231,7 @@ def _chargemol_runner(
     # Check environment variable
     if atomic_densities_path is None and "DDEC6_ATOMIC_DENSITIES_DIR" not in os.environ:
         msg = "DDEC6_ATOMIC_DENSITIES_DIR environment variable not defined."
-        raise EnvironmentError(msg)
+        raise OSError(msg)
 
     # Run Chargemol analysis
     chargemol_stats = ChargemolAnalysis(
