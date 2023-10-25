@@ -50,11 +50,7 @@ def static_job(
         Option Defaultss:
 
         ```python
-        {
-            "dump every gulp.res": True,
-            f"output cif {GEOM_FILE_PBC}": True if atoms.pbc.any() else None,
-            f"output xyz {GEOM_FILE_NOPBC}": None if atoms.pbc.any() else True,
-        }
+        {"dump every gulp.res": True}
         ```
 
     Parameters
@@ -126,11 +122,7 @@ def relax_job(
         Option Defaults:
 
         ```python
-        {
-            "dump every gulp.res": True,
-            f"output cif {GEOM_FILE_PBC}": True if atoms.pbc.any() else None,
-            f"output xyz {GEOM_FILE_NOPBC}": None if atoms.pbc.any() else True,
-        }
+        {"dump every gulp.res": True}
         ```
 
     Parameters
