@@ -28,6 +28,7 @@ def test_static_job_water(tmpdir):
         np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is True
     )
 
+
 def test_static_job_cu_supercell(tmpdir):
     tmpdir.chdir()
 
@@ -50,6 +51,7 @@ def test_static_job_cu_supercell(tmpdir):
     )
     assert np.array_equal(output["atoms"].cell.array, atoms.cell.array) is True
 
+
 def test_static_job_cu_kpts(tmpdir):
     tmpdir.chdir()
 
@@ -71,6 +73,7 @@ def test_static_job_cu_kpts(tmpdir):
         np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is True
     )
     assert np.array_equal(output["atoms"].cell.array, atoms.cell.array) is True
+
 
 def test_static_errors(tmpdir):
     tmpdir.chdir()
@@ -95,6 +98,7 @@ def test_relax_job_water(tmpdir):
         np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is False
     )
     assert np.array_equal(output["atoms"].cell.array, atoms.cell.array) is True
+
 
 def test_relax_job_cu_supercell(tmpdir):
     tmpdir.chdir()
@@ -122,6 +126,7 @@ def test_relax_job_cu_supercell(tmpdir):
     )
     assert np.array_equal(output["atoms"].cell.array, atoms.cell.array) is True
 
+
 def test_relax_job_cu_supercell_cell_relax(tmpdir):
     tmpdir.chdir()
     atoms = bulk("Cu") * (2, 1, 1)
@@ -144,6 +149,7 @@ def test_relax_job_cu_supercell_cell_relax(tmpdir):
         np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is False
     )
     assert np.array_equal(output["atoms"].cell.array, atoms.cell.array) is False
+
 
 def test_relax_errors(tmpdir):
     tmpdir.chdir()
