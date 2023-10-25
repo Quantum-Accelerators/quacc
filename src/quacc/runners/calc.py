@@ -267,7 +267,9 @@ def _calc_setup(
 
     # Create a tmpdir for the calculation within the scratch_dir
     time_now = datetime.utcnow().strftime("%Y-%m-%d-%H-%M-%S-%f")
-    tmpdir = Path(mkdtemp(prefix=f"quacc-{time_now}-tmp-", dir=SETTINGS.SCRATCH_DIR)).resolve()
+    tmpdir = Path(
+        mkdtemp(prefix=f"quacc-{time_now}-tmp-", dir=SETTINGS.SCRATCH_DIR)
+    ).resolve()
 
     # Create a symlink to the tmpdir in the results_dir
     if os.name != "nt" and SETTINGS.SCRATCH_DIR != SETTINGS.RESULTS_DIR:

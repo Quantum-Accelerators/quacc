@@ -28,7 +28,7 @@ def test_static_job(tmpdir):
         np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is True
     )
 
-    atoms = bulk("Cu") * (3,3,3)
+    atoms = bulk("Cu") * (3, 3, 3)
     output = static_job(atoms)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["Hamiltonian_"] == "xTB"
@@ -129,4 +129,3 @@ def test_relax_job(tmpdir):
         atoms = bulk("Cu") * (2, 1, 1)
         atoms[0].position += 0.5
         relax_job(atoms, kpts=(3, 3, 3), calc_swaps={"MaxSteps": 1})
-
