@@ -112,7 +112,7 @@ def cclib_summarize_run(
 
     if check_convergence and attributes.get("optdone") is False:
         msg = "Optimization not complete."
-        raise ValueError(msg)
+        raise RuntimeError(msg)
 
     # Now we construct the input Atoms object. Note that this is not necessarily
     # the same as the initial Atoms from the relaxation because the DFT
@@ -316,7 +316,7 @@ def _cclib_calculate(
         if not proatom_dir:
             if os.getenv("PROATOM_DIR") is None:
                 msg = "PROATOM_DIR environment variable or proatom_dir kwarg needs to be set."
-                raise ValueError(msg)
+                raise EnvironmentError(msg)
             proatom_dir = os.path.expandvars(os.environ["PROATOM_DIR"])
         if not Path(proatom_dir).exists():
             msg = f"Protatom directory {proatom_dir} does not exist. Returning None."
