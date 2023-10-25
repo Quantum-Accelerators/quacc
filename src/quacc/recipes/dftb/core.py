@@ -40,6 +40,7 @@ def static_job(
         ```python
         {
             "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
+            "Hamiltonian_MaxSccIterations": 200,
             "Hamiltonian_Method": method if "xtb" in method.lower() else None,
             "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
         }
@@ -67,6 +68,7 @@ def static_job(
 
     defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
+        "Hamiltonian_MaxSccIterations": 200,
         "Hamiltonian_Method": method if "xtb" in method.lower() else None,
         "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
     }
@@ -78,10 +80,6 @@ def static_job(
         additional_fields={"name": "DFTB+ Static"},
         copy_files=copy_files,
     )
-
-    if SETTINGS.CHECK_CONVERGENCE and check_logfile(LOG_FILE, "SCC is NOT converged"):
-        msg = "SCC is not converged"
-        raise ValueError(msg)
 
     return summary
 
@@ -105,6 +103,7 @@ def relax_job(
         ```python
         {
             "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
+            "Hamiltonian_MaxSccIterations": 200,
             "Hamiltonian_Method": method if "xtb" in method.lower() else None,
             "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
             "Driver_": "GeometryOptimization",
@@ -139,6 +138,7 @@ def relax_job(
 
     defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
+        "Hamiltonian_MaxSccIterations": 200,
         "Hamiltonian_Method": method if "xtb" in method.lower() else None,
         "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
         "Driver_": "GeometryOptimization",
@@ -149,21 +149,19 @@ def relax_job(
 
     summary = _base_job(
         atoms,
+        check_relax=True,
         defaults=defaults,
         calc_swaps=calc_swaps,
         additional_fields={"name": "DFTB+ Relax"},
         copy_files=copy_files,
     )
 
-    if SETTINGS.CHECK_CONVERGENCE and not check_logfile(LOG_FILE, "Geometry converged"):
-        msg = "Geometry did not converge"
-        raise ValueError(msg)
-
     return summary
 
 
 def _base_job(
     atoms: Atoms,
+    check_relax: bool = False,
     defaults: dict | None = None,
     calc_swaps: dict | None = None,
     additional_fields: dict | None = None,
@@ -176,6 +174,8 @@ def _base_job(
     ----------
     atoms
         Atoms object
+    check_relax
+        Check whether a relaxation's geometry optimization has converged.
     defaults
         The default calculator parameters to use.
     calc_swaps
@@ -196,6 +196,14 @@ def _base_job(
 
     atoms.calc = Dftb(**flags)
     final_atoms = run_calc(atoms, geom_file=GEOM_FILE, copy_files=copy_files)
+
+    if SETTINGS.CHECK_CONVERGENCE:
+        if check_logfile(LOG_FILE, "SCC is NOT converged"):
+            msg = "SCC is not converged"
+            raise ValueError(msg)
+        if check_relax and not check_logfile(LOG_FILE, "Geometry converged"):
+            msg = "Geometry did not converge"
+            raise ValueError(msg)
 
     return summarize_run(
         final_atoms,
