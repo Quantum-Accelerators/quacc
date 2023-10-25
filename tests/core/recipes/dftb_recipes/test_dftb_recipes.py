@@ -165,10 +165,10 @@ def test_relax_job_cu_supercell_errors(tmpdir):
 
 def test_child_errors(tmpdir):
     tmpdir.chdir()
-    with pytest.raises(ChildProcessError):
+    with pytest.raises(RuntimeError):
         atoms = bulk("Cu")
         static_job(atoms)
 
-    with pytest.raises(ChildProcessError):
+    with pytest.raises(RuntimeError):
         atoms = bulk("Cu")
         relax_job(atoms)
