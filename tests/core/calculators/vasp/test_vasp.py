@@ -736,5 +736,5 @@ def test_bad():
     with pytest.raises(ValueError):
         Vasp(atoms, auto_kpts={"test": [100]})
 
-    with pytest.raises(ValueError):
+    with pytest.raises(FileNotFoundError):
         Vasp(atoms, preset="BadRelaxSet")

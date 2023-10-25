@@ -161,3 +161,13 @@ def test_relax_job_cu_supercell_errors(tmpdir):
             kpts=(3, 3, 3),
             calc_swaps={"MaxSteps": 1, "Hamiltonian_MaxSccIterations": 100},
         )
+
+def test_child_errors(tmpdir):
+    tmpdir.chdir()
+    with pytest.raises(ChildProcessError):
+        atoms = bulk("Cu")
+        static_job(atoms)
+
+    with pytest.raises(ChildProcessError):
+        atoms = bulk("Cu")
+        relax_job("Cu")
