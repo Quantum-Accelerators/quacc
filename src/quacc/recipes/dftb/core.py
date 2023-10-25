@@ -41,6 +41,7 @@ def static_job(
         {
             "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
             "Hamiltonian_Method": method if "xtb" in method.lower() else None,
+            "Hamiltonian_MaxSccIterations": 200,
             "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
         }
         ```
@@ -67,6 +68,7 @@ def static_job(
 
     defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
+        "Hamiltonian_MaxSccIterations": 200,
         "Hamiltonian_Method": method if "xtb" in method.lower() else None,
         "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
     }
@@ -101,6 +103,7 @@ def relax_job(
         ```python
         {
             "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
+            "Hamiltonian_MaxSccIterations": 200,
             "Hamiltonian_Method": method if "xtb" in method.lower() else None,
             "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
             "Driver_": "GeometryOptimization",
