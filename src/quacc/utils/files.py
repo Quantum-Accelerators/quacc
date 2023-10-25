@@ -112,7 +112,7 @@ def load_yaml_calc(yaml_path: str | Path) -> dict:
 
     if not yaml_path.exists():
         msg = f"Cannot find {yaml_path}"
-        raise ValueError(msg)
+        raise FileNotFoundError(msg)
 
     # Load YAML file
     with yaml_path.open() as stream:

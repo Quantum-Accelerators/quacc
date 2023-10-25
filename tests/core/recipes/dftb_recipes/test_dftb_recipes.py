@@ -78,7 +78,7 @@ def test_static_job_cu_kpts(tmpdir):
 def test_static_errors(tmpdir):
     tmpdir.chdir()
 
-    with pytest.raises(ValueError):
+    with pytest.raises(RuntimeError):
         atoms = molecule("H2O")
         static_job(atoms, calc_swaps={"Hamiltonian_MaxSccIterations": 1})
 
@@ -153,7 +153,7 @@ def test_relax_job_cu_supercell_cell_relax(tmpdir):
 
 def test_relax_job_cu_supercell_errors(tmpdir):
     tmpdir.chdir()
-    with pytest.raises(ValueError):
+    with pytest.raises(RuntimeError):
         atoms = bulk("Cu") * (2, 1, 1)
         atoms[0].position += 0.5
         relax_job(
@@ -161,3 +161,14 @@ def test_relax_job_cu_supercell_errors(tmpdir):
             kpts=(3, 3, 3),
             calc_swaps={"MaxSteps": 1, "Hamiltonian_MaxSccIterations": 100},
         )
+
+
+def test_child_errors(tmpdir):
+    tmpdir.chdir()
+    with pytest.raises(RuntimeError):
+        atoms = bulk("Cu")
+        static_job(atoms)
+
+    with pytest.raises(RuntimeError):
+        atoms = bulk("Cu")
+        relax_job(atoms)

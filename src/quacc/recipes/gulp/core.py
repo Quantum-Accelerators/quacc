@@ -248,7 +248,7 @@ def _base_job(
         and not final_atoms.calc.get_opt_state()
     ):
         msg = "Optimization did not converge."
-        raise ValueError(msg)
+        raise RuntimeError(msg)
 
     return summarize_run(
         final_atoms,
