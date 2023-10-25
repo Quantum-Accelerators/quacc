@@ -174,7 +174,7 @@ def run_ase_opt(
     with traj, optimizer(atoms, **optimizer_kwargs) as dyn:
         try:
             dyn.run(fmax=fmax, steps=max_steps, **run_kwargs)
-        except Exception as e:
+        except Exception:
             msg = f"Calculation failed. Check the logfiles at {Path.cwd()}"
             raise ChildProcessError(msg)
 
@@ -224,7 +224,7 @@ def run_ase_vib(
     vib = Vibrations(atoms, name=str(tmpdir / "vib"), **vib_kwargs)
     try:
         vib.run()
-    except Exception as e:
+    except Exception:
         msg = f"Calculation failed. Check the logfiles at {Path.cwd()}"
         raise ChildProcessError(msg)
 
