@@ -24,7 +24,7 @@ classifiers = [
     "Operating System :: Unix",
     "Operating System :: MacOS",
 ]
-requires-python = ">=3.9, <3.12"
+requires-python = ">=3.9, <3.13"
 dependencies = [
     "ase", # for Atoms object and calculators; waiting on >3.22.1
     "cclib>=1.8", # for I/O parsing of molecular DFT codes
