@@ -162,6 +162,7 @@ def test_relax_job_cu_supercell_errors(tmpdir):
             calc_swaps={"MaxSteps": 1, "Hamiltonian_MaxSccIterations": 100},
         )
 
+
 def test_child_errors(tmpdir):
     tmpdir.chdir()
     with pytest.raises(ChildProcessError):
