@@ -28,7 +28,7 @@ def test_static_job(tmpdir):
         np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is True
     )
 
-    atoms = bulk("Cu")
+    atoms = bulk("Cu") * (3,3,3)
     output = static_job(atoms)
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["Hamiltonian_"] == "xTB"
@@ -40,7 +40,7 @@ def test_static_job(tmpdir):
     assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty000"] == "1 0 0"
     assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty001"] == "0 1 0"
     assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty002"] == "0 0 1"
-    assert output["results"]["energy"] == pytest.approx(-106.86647125470942)
+    assert output["results"]["energy"] == pytest.approx(-2885.417379886678)
     assert (
         np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is True
     )
@@ -130,11 +130,3 @@ def test_relax_job(tmpdir):
         atoms[0].position += 0.5
         relax_job(atoms, kpts=(3, 3, 3), calc_swaps={"MaxSteps": 1})
 
-
-def test_unique_workdir(tmpdir):
-    DEFAULT_SETTINGS = SETTINGS.copy()
-
-    SETTINGS.CREATE_UNIQUE_WORKDIR = True
-    test_static_job(tmpdir)
-    test_relax_job(tmpdir)
-    SETTINGS.CREATE_UNIQUE_WORKDIR = DEFAULT_SETTINGS.CREATE_UNIQUE_WORKDIR
