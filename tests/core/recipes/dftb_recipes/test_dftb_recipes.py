@@ -19,7 +19,6 @@ def test_static_job(tmpdir):
     tmpdir.chdir()
 
     atoms = molecule("H2O")
-
     output = static_job(atoms)
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["Hamiltonian_"] == "xTB"
@@ -30,7 +29,24 @@ def test_static_job(tmpdir):
     )
 
     atoms = bulk("Cu")
-
+    output = static_job(atoms)
+    assert output["nsites"] == len(atoms)
+    assert output["parameters"]["Hamiltonian_"] == "xTB"
+    assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
+    assert (
+        output["parameters"]["Hamiltonian_KPointsAndWeights_"].strip()
+        == "SupercellFolding"
+    )
+    assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty000"] == "1 0 0"
+    assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty001"] == "0 1 0"
+    assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty002"] == "0 0 1"
+    assert output["results"]["energy"] == pytest.approx(-106.86647125470942)
+    assert (
+        np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is True
+    )
+    assert np.array_equal(output["atoms"].cell.array, atoms.cell.array) is True
+    
+    atoms = bulk("Cu")
     output = static_job(atoms, kpts=(3, 3, 3))
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["Hamiltonian_"] == "xTB"
