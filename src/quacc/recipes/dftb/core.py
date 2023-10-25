@@ -39,9 +39,9 @@ def static_job(
 
         ```python
         {
-            "Hamiltonian_": "xTB" if "xtb" in method.lower()
-            else "DFTB", "Hamiltonian_Method": method if "xtb" in method.lower()
-            else None, "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None)
+            "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
+            "Hamiltonian_Method": method if "xtb" in method.lower() else None,
+            "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
         }
         ```
 
@@ -68,7 +68,7 @@ def static_job(
     defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
         "Hamiltonian_Method": method if "xtb" in method.lower() else None,
-        "kpts": kpts,
+        "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
     }
 
     summary = _base_job(
@@ -106,7 +106,7 @@ def relax_job(
         {
             "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
             "Hamiltonian_Method": method if "xtb" in method.lower() else None,
-            "kpts": kpts,
+            "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
             "Driver_": "GeometryOptimization",
             "Driver_LatticeOpt": "Yes" if relax_cell else "No",
             "Driver_AppendGeometries": "Yes",
@@ -140,7 +140,7 @@ def relax_job(
     defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
         "Hamiltonian_Method": method if "xtb" in method.lower() else None,
-        "kpts": kpts,
+        "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
         "Driver_": "GeometryOptimization",
         "Driver_LatticeOpt": "Yes" if relax_cell else "No",
         "Driver_AppendGeometries": "Yes",
