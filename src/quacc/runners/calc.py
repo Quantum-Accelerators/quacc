@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+from datetime import datetime
 from pathlib import Path
 from shutil import rmtree
 from tempfile import mkdtemp
@@ -265,7 +266,10 @@ def _calc_setup(
     )
 
     # Create a tmpdir for the calculation within the scratch_dir
-    tmpdir = Path(mkdtemp(prefix="quacc-tmp-", dir=SETTINGS.SCRATCH_DIR)).resolve()
+    time_now = datetime.utcnow().strftime("%Y-%m-%d-%H-%M-%S-%f")
+    tmpdir = Path(
+        mkdtemp(prefix=f"quacc-tmp-{time_now}-", dir=SETTINGS.SCRATCH_DIR)
+    ).resolve()
 
     # Create a symlink to the tmpdir in the results_dir
     if os.name != "nt" and SETTINGS.SCRATCH_DIR != SETTINGS.RESULTS_DIR:

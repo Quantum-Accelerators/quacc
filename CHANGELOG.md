@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.3.9]
 
+### Changed
+
+- Changed prefix of scratch directories to have the datetime in it for easier debugging
+
 ### Fixed
 
 - DFTB+ recipes now won't crash when `kpts=None` for structures with PBCs
