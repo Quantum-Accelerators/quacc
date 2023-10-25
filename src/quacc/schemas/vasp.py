@@ -86,7 +86,7 @@ def vasp_summarize_run(
     # Check for calculation convergence
     if check_convergence and vasp_task_doc["state"] != "successful":
         raise RuntimeError(
-            "VASP calculation did not converge. Will not store task data."
+            f"VASP calculation did not converge. Will not store task data. Refer to {dir_path}"
         )
 
     base_task_doc = summarize_run(atoms, prep_next_run=prep_next_run, store=False)

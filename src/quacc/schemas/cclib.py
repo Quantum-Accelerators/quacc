@@ -111,7 +111,7 @@ def cclib_summarize_run(
     metadata = attributes["metadata"]
 
     if check_convergence and attributes.get("optdone") is False:
-        msg = "Optimization not complete."
+        msg = f"Optimization not complete. Refer to {dir_path}"
         raise RuntimeError(msg)
 
     # Now we construct the input Atoms object. Note that this is not necessarily
