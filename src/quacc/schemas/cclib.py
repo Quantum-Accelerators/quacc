@@ -198,7 +198,7 @@ def _make_cclib_schema(
     cclib_obj = ccread(logfile, logging.ERROR)
     if not cclib_obj:
         msg = f"Could not parse {logfile}"
-        raise ValueError(msg)
+        raise RuntimeError(msg)
 
     # Fetch all the attributes (i.e. all input/outputs from cclib)
     attributes = jsanitize(cclib_obj.getattributes())
