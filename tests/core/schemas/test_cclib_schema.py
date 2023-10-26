@@ -220,7 +220,7 @@ def test_cclib_calculate(tmpdir, cclib_obj):
             proatom_dir="does_not_exists",
         )
 
-    with pytest.raises(ValueError):
+    with pytest.raises(OSError):
         _cclib_calculate(
             cclib_obj,
             method="ddec6",

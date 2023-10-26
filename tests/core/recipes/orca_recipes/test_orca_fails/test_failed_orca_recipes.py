@@ -8,5 +8,5 @@ def test_static_job(tmpdir):
     tmpdir.chdir()
 
     atoms = molecule("H2")
-    with pytest.raises(ValueError):
+    with pytest.raises(RuntimeError):
         relax_job(atoms, 0, 1)

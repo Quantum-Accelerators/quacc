@@ -149,7 +149,6 @@ def relax_job(
 
     summary = _base_job(
         atoms,
-        check_relax=True,
         defaults=defaults,
         calc_swaps=calc_swaps,
         additional_fields={"name": "DFTB+ Relax"},
@@ -161,7 +160,6 @@ def relax_job(
 
 def _base_job(
     atoms: Atoms,
-    check_relax: bool = False,
     defaults: dict | None = None,
     calc_swaps: dict | None = None,
     additional_fields: dict | None = None,
@@ -174,8 +172,6 @@ def _base_job(
     ----------
     atoms
         Atoms object
-    check_relax
-        Check whether a relaxation's geometry optimization has converged.
     defaults
         The default calculator parameters to use.
     calc_swaps
@@ -199,11 +195,13 @@ def _base_job(
 
     if SETTINGS.CHECK_CONVERGENCE:
         if check_logfile(LOG_FILE, "SCC is NOT converged"):
-            msg = "SCC is not converged"
-            raise ValueError(msg)
-        if check_relax and not check_logfile(LOG_FILE, "Geometry converged"):
-            msg = "Geometry did not converge"
-            raise ValueError(msg)
+            msg = f"SCC is not converged in {LOG_FILE}"
+            raise RuntimeError(msg)
+        if flags.get("Driver_") == "GeometryOptimization" and not check_logfile(
+            LOG_FILE, "Geometry converged"
+        ):
+            msg = f"Geometry optimization did not complete in {LOG_FILE}"
+            raise RuntimeError(msg)
 
     return summarize_run(
         final_atoms,

@@ -85,7 +85,9 @@ def vasp_summarize_run(
 
     # Check for calculation convergence
     if check_convergence and vasp_task_doc["state"] != "successful":
-        raise ValueError("VASP calculation did not converge. Will not store task data.")
+        raise RuntimeError(
+            f"VASP calculation did not converge. Will not store task data. Refer to {dir_path}"
+        )
 
     base_task_doc = summarize_run(atoms, prep_next_run=prep_next_run, store=False)
 
@@ -229,7 +231,7 @@ def _chargemol_runner(
     # Check environment variable
     if atomic_densities_path is None and "DDEC6_ATOMIC_DENSITIES_DIR" not in os.environ:
         msg = "DDEC6_ATOMIC_DENSITIES_DIR environment variable not defined."
-        raise EnvironmentError(msg)
+        raise OSError(msg)
 
     # Run Chargemol analysis
     chargemol_stats = ChargemolAnalysis(

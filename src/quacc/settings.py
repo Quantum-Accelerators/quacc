@@ -314,7 +314,9 @@ class QuaccSettings(BaseSettings):
         os.makedirs(v, exist_ok=True)
         return v
 
-    @field_validator("ORCA_CMD")
+    @field_validator(
+        "GAUSSIAN_CMD", "ORCA_CMD", "QCHEM_LOCAL_SCRATCH", "VASP_PRESET_DIR"
+    )
     @classmethod
     def expand_paths(cls, v):
         return v.expanduser()
