@@ -4,7 +4,6 @@ from __future__ import annotations
 from importlib.metadata import version
 
 from ase import Atoms
-from ase import __version__ as ase_version
 from ase.io.jsonio import decode, encode
 
 from quacc.settings import QuaccSettings
@@ -31,11 +30,6 @@ def atoms_from_dict(d: dict) -> Atoms:
 
 # Load the quacc version
 __version__ = version("quacc")
-
-if tuple(ase_version) <= tuple("3.22.1"):
-    raise ImportError(
-        f"Your ASE version ({ase_version}) is <= 3.22.1. Please upgrade your ASE version: pip install --no-cache-dir https://gitlab.com/ase/ase/-/archive/master/ase-master.zip",
-    )
 
 # Make Atoms MSONable
 Atoms.as_dict = atoms_as_dict
