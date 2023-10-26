@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from shutil import rmtree
 from tempfile import mkdtemp
@@ -280,7 +280,7 @@ def _calc_setup(
     )
 
     # Create a tmpdir for the calculation within the scratch_dir
-    time_now = datetime.utcnow().strftime("%Y-%m-%d-%H-%M-%S-%f")
+    time_now = datetime.now(timezone.utc).strftime("%Y-%m-%d-%H-%M-%S-%f")
     tmpdir = Path(
         mkdtemp(prefix=f"quacc-tmp-{time_now}-", dir=SETTINGS.SCRATCH_DIR)
     ).resolve()
