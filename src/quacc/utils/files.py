@@ -7,7 +7,7 @@ import contextlib
 import os
 import socket
 import warnings
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from random import randint
 from shutil import copy
@@ -81,7 +81,7 @@ def make_unique_dir(base_path: str | None = None) -> Path:
     Path
         Path to the job directory.
     """
-    time_now = datetime.utcnow().strftime("%Y-%m-%d-%H-%M-%S-%f")
+    time_now = datetime.now(timezone.utc).strftime("%Y-%m-%d-%H-%M-%S-%f")
     job_dir = Path(f"quacc-{time_now}-{randint(10000, 99999)}")
     if base_path:
         job_dir = Path(base_path, job_dir)
