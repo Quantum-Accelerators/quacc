@@ -10,7 +10,9 @@ from typing import TYPE_CHECKING
 
 import cclib
 from ase import Atoms
+from ase.io import read
 from cclib.io import ccread
+from cclib.bridge.cclib2ase import write_trajectory
 from maggma.core import Store
 from monty.json import jsanitize
 
@@ -108,24 +110,14 @@ def cclib_summarize_run(
         dir_path, logfile_extensions, analysis=pop_analyses
     )
     attributes = cclib_task_doc["attributes"]
-    metadata = attributes["metadata"]
 
     if check_convergence and attributes.get("optdone") is False:
         msg = f"Optimization not complete. Refer to {dir_path}"
         raise RuntimeError(msg)
 
-    # Now we construct the input Atoms object. Note that this is not necessarily
-    # the same as the initial Atoms from the relaxation because the DFT
-    # package may have re-oriented the system. We only try to store the
-    # input if it is XYZ-formatted though since the Atoms object does not
-    # support internal coordinates or Gaussian Z-matrix.
-    if metadata.get("coord_type") == "xyz" and metadata.get("coords") is not None:
-        coords_obj = metadata["coords"]
-        symbols = [row[0] for row in coords_obj]
-        positions = [row[1:] for row in coords_obj]
-        input_atoms = Atoms(symbols=symbols, positions=positions)
-    else:
-        input_atoms = cclib_task_doc["trajectory"][0]["atoms"]
+    # Now we construct the input Atoms object. Note that this may differ
+    # slightly from the actual input if the system was re-oriented.
+    input_atoms = cclib_task_doc["trajectory"][0]["atoms"]
 
     # Get the base task document for the ASE run
     run_task_doc = summarize_run(
@@ -195,13 +187,13 @@ def _make_cclib_schema(
         raise FileNotFoundError(msg)
 
     # Let's parse the log file with cclib
-    cclib_obj = ccread(logfile, logging.ERROR)
-    if not cclib_obj:
+    ccdata = ccread(logfile, logging.ERROR)
+    if not ccdata:
         msg = f"Could not parse {logfile}"
         raise RuntimeError(msg)
 
     # Fetch all the attributes (i.e. all input/outputs from cclib)
-    attributes = jsanitize(cclib_obj.getattributes())
+    attributes = jsanitize(ccdata.getattributes())
 
     # monty datetime bug workaround:
     # github.com/materialsvirtuallab/monty/issues/275
@@ -210,29 +202,24 @@ def _make_cclib_schema(
     if cpu_time := attributes["metadata"].get("cpu_time"):
         attributes["metadata"]["cpu_time"] = [*map(str, cpu_time)]
 
-    # Store charge and multiplicity since we use it frequently
-    charge = cclib_obj.charge
-    mult = cclib_obj.mult
-
     # Construct the trajectory
-    coords = cclib_obj.atomcoords
-    trajectory = [
-        Atoms(numbers=list(cclib_obj.atomnos), positions=coord) for coord in coords
-    ]
+    cclib_traj = dir_name / "cclib.traj"
+    write_trajectory(cclib_traj, ccdata)
+    trajectory = read(cclib_traj, ":")
     traj_metadata = [
-        atoms_to_metadata(traj, charge_and_multiplicity=(charge, mult))
+        atoms_to_metadata(traj, charge_and_multiplicity=(ccdata.charge, ccdata.mult))
         for traj in trajectory
     ]
 
     # Get the final energy to store as its own key/value pair
     final_scf_energy = (
-        cclib_obj.scfenergies[-1] if cclib_obj.scfenergies is not None else None
+        ccdata.scfenergies[-1] if ccdata.scfenergies is not None else None
     )
 
     # Store the HOMO/LUMO energies for convenience
-    if cclib_obj.moenergies is not None and cclib_obj.homos is not None:
+    if ccdata.moenergies is not None and ccdata.homos is not None:
         homo_energies, lumo_energies, gaps = _get_homos_lumos(
-            cclib_obj.moenergies, cclib_obj.homos
+            ccdata.moenergies, ccdata.homos
         )
         min_gap = min(gaps) if gaps else None
     else:
@@ -259,7 +246,7 @@ def _make_cclib_schema(
 
         for analysis_name in analysis:
             if calc_attributes := _cclib_calculate(
-                cclib_obj, analysis_name, cubefile_path, proatom_dir
+                ccdata, analysis_name, cubefile_path, proatom_dir
             ):
                 popanalysis_attributes[analysis_name] = calc_attributes
             else:
@@ -274,7 +261,7 @@ def _make_cclib_schema(
 
 
 def _cclib_calculate(
-    cclib_obj,
+    ccdata,
     method: str,
     cube_file: Path | str | None = None,
     proatom_dir: Path | str | None = None,
@@ -284,7 +271,7 @@ def _cclib_calculate(
 
     Parameters
     ----------
-    cclib_obj
+    ccdata
         The cclib object to run the population analysis on.
     method
         The population analysis method to use.
@@ -337,11 +324,11 @@ def _cclib_calculate(
     if method in cube_methods:
         vol = cclib.method.volume.read_from_cube(str(cube_file))
         if method in proatom_methods:
-            m = method_class(cclib_obj, vol, str(proatom_dir))
+            m = method_class(ccdata, vol, str(proatom_dir))
         else:
-            m = method_class(cclib_obj, vol)
+            m = method_class(ccdata, vol)
     else:
-        m = method_class(cclib_obj)
+        m = method_class(ccdata)
 
     try:
         m.calculate()
