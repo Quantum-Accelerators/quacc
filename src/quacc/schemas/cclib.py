@@ -11,8 +11,8 @@ from typing import TYPE_CHECKING
 import cclib
 from ase import Atoms
 from ase.io import read
-from cclib.io import ccread
 from cclib.bridge.cclib2ase import write_trajectory
+from cclib.io import ccread
 from maggma.core import Store
 from monty.json import jsanitize
 
