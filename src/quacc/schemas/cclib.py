@@ -26,6 +26,8 @@ from quacc.wflow.db import results_to_db
 if TYPE_CHECKING:
     from typing import Literal
 
+    from cclib.parser.data import ccData
+
     from quacc.schemas._aliases.cclib import (
         PopAnalysisAttributes,
         cclibBaseSchema,
@@ -261,7 +263,7 @@ def _make_cclib_schema(
 
 
 def _cclib_calculate(
-    ccdata,
+    ccdata: ccData,
     method: str,
     cube_file: Path | str | None = None,
     proatom_dir: Path | str | None = None,
