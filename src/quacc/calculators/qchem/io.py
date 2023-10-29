@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from ase import units
-from ase.calculators.calculator import FileIOCalculator
 from emmet.core.tasks import _parse_custodian
 from monty.io import zopen
 from pymatgen.io.ase import AseAtomsAdaptor
@@ -46,8 +45,6 @@ def write_qchem(
     scf_algorithm: str = "diis",
     qchem_input_params: dict[str, Any] | None = None,
     prev_orbital_coeffs: list[float] | None = None,
-    properties: list[str] | None = None,
-    system_changes: list[str] | None = None,
 ) -> None:
     """
     Write the Q-Chem input files.
@@ -73,17 +70,12 @@ def write_qchem(
         `pymatgen.io.qchem.sets.DictSet`.
     prev_orbital_coeffs
         The orbital coefficients from a previous calculation.
-    properties
-        List of properties to calculate.
-    system_changes
-        List of system changes to make.
 
     Returns
     -------
     None
     """
     directory = Path(directory)
-    FileIOCalculator.write_input(atoms, properties, system_changes)
 
     if prev_orbital_coeffs is not None:
         with Path(directory / "53.0").open(mode="wb") as file:

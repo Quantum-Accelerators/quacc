@@ -203,7 +203,7 @@ def test_qchem_read_results_advanced(tmpdir, test_atoms):
     assert calc.results["energy"] == pytest.approx(-605.7310332390 * units.Hartree)
     assert calc.results["forces"][0][0] == pytest.approx(-0.4270884974249971)
     assert calc.prev_orbital_coeffs is not None
-    assert calc.results.get("hessian")
+    assert calc.results.get("hessian") is None
 
 
 def test_qchem_read_results_freq(tmpdir, test_atoms):
@@ -213,7 +213,7 @@ def test_qchem_read_results_freq(tmpdir, test_atoms):
     tmpdir.chdir()
 
     assert calc.results["energy"] == pytest.approx(-605.6859554025 * units.Hartree)
-    assert calc.results.get("forces")
+    assert calc.results.get("forces") is None
     assert calc.prev_orbital_coeffs is not None
     assert len(calc.results["hessian"]) == 42
     assert len(calc.results["hessian"][0]) == 42

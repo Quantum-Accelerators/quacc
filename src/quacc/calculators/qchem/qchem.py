@@ -72,12 +72,13 @@ class QChem(FileIOCalculator):
 
         # Assign variables to self
         self.atoms = atoms
-        self.cores = cores
         self.charge = charge
         self.spin_multiplicity = spin_multiplicity
-        self.job_type = job_type
+        self.method = method
         self.basis_set = basis_set
+        self.job_type = job_type
         self.scf_algorithm = scf_algorithm
+        self.cores = cores
         self.qchem_input_params = qchem_input_params or {}
         self.fileiocalculator_kwargs = fileiocalculator_kwargs
 
@@ -87,17 +88,9 @@ class QChem(FileIOCalculator):
         if "directory" in self.fileiocalculator_kwargs:
             raise NotImplementedError("The directory kwarg is not supported.")
 
-        # Set parameters
-        self.qchem_input_params = self._cleanup_qchem_input_params()
-        self.default_parameters = self._get_default_params(
-            cores,
-            charge,
-            spin_multiplicity,
-            method,
-            basis_set,
-            scf_algorithm,
-            qchem_input_params,
-        )
+        # Clean up parameters
+        self._cleanup_qchem_input_params()
+        self._set_default_params()
 
         # Get Q-Chem executable command
         self.command = self._manage_environment()
@@ -134,6 +127,7 @@ class QChem(FileIOCalculator):
         -------
         None
         """
+        FileIOCalculator.write_input(self, atoms, properties, system_changes)
         write_qchem(
             atoms,
             charge=self.charge,
@@ -143,8 +137,6 @@ class QChem(FileIOCalculator):
             scf_algorithm=self.scf_algorithm,
             qchem_input_params=self.qchem_input_params,
             prev_orbital_coeffs=self.prev_orbital_coeffs,
-            properties=properties,
-            system_changes=system_changes,
         )
 
     def read_results(self) -> None:
@@ -159,7 +151,7 @@ class QChem(FileIOCalculator):
         -------
         None
         """
-        results, prev_orbital_coeffs = read_qchem(self.job_type)
+        results, prev_orbital_coeffs = read_qchem(job_type=self.job_type)
         self.results = results
         self.prev_orbital_coeffs = prev_orbital_coeffs
 
@@ -202,9 +194,9 @@ class QChem(FileIOCalculator):
             self.method
             and "method" not in self.qchem_input_params["overwrite_inputs"]["rem"]
         ):
-            self.qchem_input_params["overwrite_inputs"]["rem"]["method"] = method
+            self.qchem_input_params["overwrite_inputs"]["rem"]["method"] = self.method
 
-    def _get_default_params(self) -> None:
+    def _set_default_params(self) -> None:
         """
         Store the parameters that have been passed to the Q-Chem
         calculator in FileIOCalculator's self.default_parameters
