@@ -89,7 +89,7 @@ def write_qchem(
     mol = AseAtomsAdaptor.get_molecule(atoms)
 
     if prev_orbital_coeffs is not None:
-        with Path(directory/"53.0").open(mode="wb") as file:
+        with Path(directory / "53.0").open(mode="wb") as file:
             for val in prev_orbital_coeffs:
                 data = struct.pack("d", val)
                 file.write(data)
@@ -108,11 +108,12 @@ def write_qchem(
         qchem_version=6,
         **qchem_input_params,
     )
-    qcin.write(directory/"mol.qin")
+    qcin.write(directory / "mol.qin")
 
 
 def read_qchem(
-    directory: Path | str=".", job_type: Literal["sp", "force", "opt", "freq"] = "force"
+    directory: Path | str = ".",
+    job_type: Literal["sp", "force", "opt", "freq"] = "force",
 ) -> tuple[Results, list[float]]:
     """
     Read Q-Chem log files.
@@ -130,8 +131,8 @@ def read_qchem(
         The results of the calculation and the orbital coefficients from a previous
         calculation.
     """
-    qc_input = QCInput.from_file((directory/"mol.qin")).as_dict()
-    qc_output = QCOutput(str(directory/"mol.qout")).data
+    qc_input = QCInput.from_file((directory / "mol.qin")).as_dict()
+    qc_output = QCOutput(str(directory / "mol.qout")).data
 
     results: Results = {}
 
@@ -143,7 +144,7 @@ def read_qchem(
     if job_type in ["force", "opt"]:
         # Read the gradient scratch file in 8 byte chunks
         tmp_grad_data = []
-        with zopen(directory/"131.0", mode="rb") as file:
+        with zopen(directory / "131.0", mode="rb") as file:
             binary = file.read()
         tmp_grad_data.extend(
             struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
@@ -178,7 +179,7 @@ def read_qchem(
     elif job_type == "freq":
         # Read Hessian scratch file in 8 byte chunks
         tmp_hess_data = []
-        with zopen(directory/"132.0", mode="rb") as file:
+        with zopen(directory / "132.0", mode="rb") as file:
             binary = file.read()
         tmp_hess_data.extend(
             struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
@@ -196,7 +197,7 @@ def read_qchem(
 
     # Read orbital coefficients scratch file in 8 byte chunks
     prev_orbital_coeffs = []
-    with zopen(directory/"53.0", mode="rb") as file:
+    with zopen(directory / "53.0", mode="rb") as file:
         binary = file.read()
     prev_orbital_coeffs.extend(
         struct.unpack("d", binary[ii * 8 : (ii + 1) * 8])[0]
