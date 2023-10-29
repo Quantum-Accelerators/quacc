@@ -73,15 +73,13 @@ def static_job(
         "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
     }
 
-    summary = _base_job(
+    return _base_job(
         atoms,
         defaults=defaults,
         calc_swaps=calc_swaps,
         additional_fields={"name": "DFTB+ Static"},
         copy_files=copy_files,
     )
-
-    return summary
 
 
 @job
@@ -147,15 +145,13 @@ def relax_job(
         "Driver_MaxSteps": 2000,
     }
 
-    summary = _base_job(
+    return _base_job(
         atoms,
         defaults=defaults,
         calc_swaps=calc_swaps,
         additional_fields={"name": "DFTB+ Relax"},
         copy_files=copy_files,
     )
-
-    return summary
 
 
 def _base_job(
