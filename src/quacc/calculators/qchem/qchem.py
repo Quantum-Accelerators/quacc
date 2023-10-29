@@ -12,6 +12,7 @@ from quacc.calculators.qchem.io import read_qchem, write_qchem
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Literal
+    from quacc.calculators.qchem.io import Results
 
     from ase import Atoms
 
@@ -27,6 +28,7 @@ class QChem(FileIOCalculator):
         "qc_input",
         "custodian",
     ]
+    results: ClassVar[Results] = {}
 
     def __init__(
         self,
