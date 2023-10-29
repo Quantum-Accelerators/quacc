@@ -128,7 +128,7 @@ class _QChemTemplate(CalculatorTemplate):
         properties: Any,  # skipcq: PYL-W0613
     ) -> None:
         """
-        Write the xTB input files.
+        Write the Q-Chem input files.
 
         Parameters
         ----------
@@ -165,7 +165,7 @@ class _QChemTemplate(CalculatorTemplate):
         Returns
         -------
         Results
-            The xTB results, formatted as a dictionary.
+            The Q-Chem results, formatted as a dictionary.
         """
 
         return read_qchem(
