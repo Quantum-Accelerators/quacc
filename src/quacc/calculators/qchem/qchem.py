@@ -61,6 +61,16 @@ class QChem(FileIOCalculator):
             The total charge of the molecular system.
         spin_multiplicity
             The spin multiplicity of the molecular system.
+        method
+            The level of theory to use.
+        basis_set
+            The basis set.
+        job_type
+            The job type for the calculation.
+        scf_algorithm
+            The SCF algorithm to use
+        cores
+            The number of CPU cores to run on.
         qchem_input_params
             Dictionary of Q-Chem input parameters to be passed to
             `pymatgen.io.qchem.sets.DictSet`.
