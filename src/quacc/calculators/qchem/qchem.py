@@ -165,7 +165,7 @@ class QChem(FileIOCalculator):
         -------
         None
         """
-        results, _prev_orbital_coeffs = read_qchem(job_type=self.job_type)
+        results, _prev_orbital_coeffs = read_qchem()
         self.results = results
         self._prev_orbital_coeffs = _prev_orbital_coeffs
 
