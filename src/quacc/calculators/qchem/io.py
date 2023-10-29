@@ -102,9 +102,7 @@ def write_qchem(
     ).write(directory / "mol.qin")
 
 
-def read_qchem(
-    directory: Path | str = ".",
-) -> tuple[Results, list[float]]:
+def read_qchem(directory: Path | str = ".") -> tuple[Results, list[float]]:
     """
     Read Q-Chem log files.
 
