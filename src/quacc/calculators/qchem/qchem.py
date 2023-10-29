@@ -114,19 +114,6 @@ class QChem(FileIOCalculator):
             **self.fileiocalculator_kwargs,
         )
 
-    def _manage_environment(self) -> str:
-        """
-        Manage the environment for the Q-Chem calculator.
-
-        Returns
-        -------
-        str
-            The command flag to run Q-Chem with Custodian.
-        """
-
-        qchem_custodian_script = Path(inspect.getfile(custodian)).resolve()
-        return f"python {qchem_custodian_script} {self.cores}"
-
     def write_input(
         self,
         atoms: Atoms,
@@ -177,6 +164,19 @@ class QChem(FileIOCalculator):
         results, prev_orbital_coeffs = read_qchem(self.job_type)
         self.results = results
         self.prev_orbital_coeffs = prev_orbital_coeffs
+
+    def _manage_environment(self) -> str:
+        """
+        Manage the environment for the Q-Chem calculator.
+
+        Returns
+        -------
+        str
+            The command flag to run Q-Chem with Custodian.
+        """
+
+        qchem_custodian_script = Path(inspect.getfile(custodian)).resolve()
+        return f"python {qchem_custodian_script} {self.cores}"
 
     def _cleanup_qchem_input_params(self) -> None:
         """
