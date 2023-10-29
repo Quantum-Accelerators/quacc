@@ -43,57 +43,11 @@ def static_job(
         Calculator Defaults:
 
         ```python
-        {
-        "basis_set": basis,
-        "scf_algorithm": scf_algorithm,
-        "method": method,
-        "charge": charge,
-        "spin_multiplicity": spin_multiplicity,
-        "cores": n_cores or multiprocessing.cpu_count(),
-        "qchem_input_params": {
-            "pcm_dielectric": pcm_dielectric,
-            "smd_solvent": smd_solvent,
-            "overwrite_inputs": overwrite_inputs,
-            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
-            "nbo_params": {"version": 7} if SETTINGS.QCHEM_NBO_EXE else None,
-            },
-        }
+
         ```
 
     Parameters
     ----------
-    atoms
-        Atoms object
-    charge
-        Charge of the system.
-    spin_multiplicity
-        Multiplicity of the system.
-    method
-        DFT exchange-correlation functional or other electronic structure
-        method. Defaults to wB97M-V.
-    basis
-        Basis set. Defaults to def2-TZVPD.
-    scf_algorithm
-        Algorithm used to converge the SCF. Defaults to "diis", but for
-        particularly difficult cases, "gdm" should be employed instead.
-    pcm_dielectric
-        Dielectric constant of the optional polarizable continuum impicit
-        solvation model. Defaults to None, in which case PCM will not be
-        employed.
-    smd_solvent
-        Solvent to use for SMD implicit solvation model. Examples include
-        "water", "ethanol", "methanol", and "acetonitrile". Refer to the Q-Chem
-        manual for a complete list of solvents available. Defaults to None, in
-        which case SMD will not be employed.
-    n_cores
-        Number of cores to use for the Q-Chem calculation. Defaults to use all
-        cores available on a given node.
-    overwrite_inputs
-        Dictionary passed to `pymatgen.io.qchem.QChemDictSet` which can modify
-        default values set therein as well as set additional Q-Chem parameters.
-        See QChemDictSet documentation for more details.
-    copy_files
-        Files to copy to the runtime directory.
 
     Returns
     -------
@@ -101,24 +55,20 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
     defaults = {
-        "rem": {"method": method, "basis": basis},
-        "cores": multiprocessing.cpu_count(),
-        "opt":
-    }
-    defaults = {
-        "basis_set": basis,
-        "scf_algorithm": scf_algorithm,
-        "method": method,
-        "charge": charge,
-        "spin_multiplicity": spin_multiplicity,
-        "cores": n_cores or multiprocessing.cpu_count(),
-        "qchem_input_params": {
-            "pcm_dielectric": pcm_dielectric,
-            "smd_solvent": smd_solvent,
-            "overwrite_inputs": overwrite_inputs,
-            "max_scf_cycles": 200 if scf_algorithm.lower() == "gdm" else None,
-            "nbo_params": {"version": 7} if SETTINGS.QCHEM_NBO_EXE else None,
+        "rem": {
+            "job_type": "force",
+            "method": method,
+            "basis": basis,
+            "gen_scfman": True,
+            "xc_grid": 3,
+            "thresh": 14,
+            "s2thresh": 16,
+            "scf_algorithm": "diis",
+            "resp_charges": True,
+            "symmetry": False,
+            "sym_ignore": True,
         },
+        "cores": multiprocessing.cpu_count(),
     }
 
     return _base_job(
@@ -126,6 +76,7 @@ def static_job(
         charge,
         spin_multiplicity,
         defaults=defaults,
+        calc_swaps=calc_swaps,
         additional_fields={"name": "Q-Chem Static"},
         copy_files=copy_files,
     )
@@ -467,6 +418,7 @@ def _base_job(
     charge: int,
     spin_multiplicity: int,
     defaults: dict | None = None,
+    calc_swaps: dict | None = None,
     additional_fields: dict | None = None,
     copy_files: list[str] | None = None,
 ) -> RunSchema:
@@ -484,6 +436,9 @@ def _base_job(
         Multiplicity of the system.
     defaults
         The default parameters for the recipe.
+    calc_swaps
+        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
+        a pre-existing key entirely.
     additional_fields
         Any additional fields to set in the summary.
     copy_files
@@ -495,7 +450,7 @@ def _base_job(
         Dictionary of results from [quacc.schemas.ase.summarize_run][]
     """
 
-    qchem_flags = remove_dict_nones(defaults)
+    qchem_flags = merge_dicts(defaults, calc_swaps)
 
     atoms.calc = QChem(atoms, **qchem_flags)
     final_atoms = run_calc(atoms, copy_files=copy_files)

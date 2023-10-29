@@ -8,12 +8,15 @@ from typing import TYPE_CHECKING
 from ase.calculators.calculator import FileIOCalculator
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.qchem.inputs import QCInput
+from pymatgen.io.qchem.sets import QChemDictSet
+from pymatgen.io.qchem.utils import lower_and_check_unique
 
 from quacc.calculators.qchem import custodian
 from quacc.calculators.qchem.io import read_qchem, write_qchem
+from quacc.utils.dicts import remove_dict_nones
 
 if TYPE_CHECKING:
-    from typing import ClassVar, Literal
+    from typing import Any, ClassVar, Literal
 
     from ase import Atoms
     from pymatgen.core.structure import Molecule
@@ -44,7 +47,6 @@ class QChem(FileIOCalculator):
         charge: int,
         spin_multiplicity: int,
         rem: dict,
-        cores: int = 1,
         opt: dict[str, list[str]] | None = None,
         pcm: dict | None = None,
         solvent: dict | None = None,
@@ -59,6 +61,8 @@ class QChem(FileIOCalculator):
         almo_coupling: list[list[tuple[int, int]]] | None = None,
         svp: dict | None = None,
         pcm_nonels: dict | None = None,
+        cores: int = 1,
+        qchem_dict_set_kwargs: dict[str, Any] | None = None,
         **fileiocalculator_kwargs,
     ) -> None:
         """
@@ -89,7 +93,6 @@ class QChem(FileIOCalculator):
         self.charge = charge
         self.spin_multiplicity = spin_multiplicity
         self.rem = rem
-        self.cores = cores  # TODO: Move to settings.
         self.opt = opt
         self.pcm = pcm
         self.solvent = solvent
@@ -104,6 +107,8 @@ class QChem(FileIOCalculator):
         self.almo_coupling = almo_coupling
         self.svp = svp
         self.pcm_nonels = pcm_nonels
+        self.cores = cores  # TODO: Move to settings.
+        self.qchem_dict_set_kwargs = qchem_dict_set_kwargs or {}
         self.fileiocalculator_kwargs = fileiocalculator_kwargs
 
         # Instantiate previous orbital coefficients
@@ -113,6 +118,22 @@ class QChem(FileIOCalculator):
             raise NotImplementedError("The directory kwarg is not supported.")
 
         # Clean up parameters
+        for attr in [
+            "rem",
+            "pcm",
+            "solvent",
+            "smx",
+            "scan",
+            "van_der_waals",
+            "plots",
+            "nbo",
+            "geom_opt",
+            "svp",
+            "pcm_nonels",
+        ]:
+            attr_val = lower_and_check_unique(getattr(self, attr))
+            setattr(self, attr, attr_val)
+
         self._molecule = self._get_molecule()
         self._set_default_params()
 
@@ -153,24 +174,28 @@ class QChem(FileIOCalculator):
         """
         FileIOCalculator.write_input(self, atoms, properties, system_changes)
 
-        qc_input = QCInput(
-            self._molecule,
-            self.rem,
-            opt=self.opt,
-            pcm=self.pcm,
-            solvent=self.solvent,
-            smx=self.smx,
-            scan=self.scan,
-            van_der_waals=self.van_der_waals,
-            vdw_mode=self.vdw_mode,
-            plots=self.plots,
-            nbo=self.nbo,
-            geom_opt=self.geom_opt,
-            cdft=self.cdft,
-            almo_coupling=self.almo_coupling,
-            svp=self.svp,
-            pcm_nonels=self.pcm_nonels,
-        )
+        # TODO: Merge both input sets if both are passed.
+        if self.qchem_dict_set_kwargs:
+            qc_input = QChemDictSet(self._molecule, **self.qchem_dict_set_kwargs)
+        else:
+            qc_input = QCInput(
+                self._molecule,
+                self.rem,
+                opt=self.opt,
+                pcm=self.pcm,
+                solvent=self.solvent,
+                smx=self.smx,
+                scan=self.scan,
+                van_der_waals=self.van_der_waals,
+                vdw_mode=self.vdw_mode,
+                plots=self.plots,
+                nbo=self.nbo,
+                geom_opt=self.geom_opt,
+                cdft=self.cdft,
+                almo_coupling=self.almo_coupling,
+                svp=self.svp,
+                pcm_nonels=self.pcm_nonels,
+            )
         write_qchem(
             qc_input,
             prev_orbital_coeffs=self._prev_orbital_coeffs,
@@ -254,27 +279,26 @@ class QChem(FileIOCalculator):
         -------
         None
         """
-        self.default_parameters = {
-            "cores": self.cores,
-            "charge": self.charge,
-            "spin_multiplicity": self.spin_multiplicity,
-            "scf_algorithm": self.scf_algorithm,
-            "basis_set": self.basis_set,
-        }
-
-        if self.method:
-            self.default_parameters["method"] = self.method
-
-        # We also want to save the contents of self.qchem_input_params. However,
-        # the overwrite_inputs key will have a corresponding value which is
-        # either an empty dictionary or a nested dict of dicts, requiring a bit
-        # of careful unwrapping.
-        for key in self.qchem_input_params:
-            if key == "overwrite_inputs":
-                for subkey in self.qchem_input_params[key]:
-                    for subsubkey in self.qchem_input_params[key][subkey]:
-                        self.default_parameters[
-                            f"overwrite_{subkey}_{subsubkey}"
-                        ] = self.qchem_input_params[key][subkey][subsubkey]
-            else:
-                self.default_parameters[key] = self.qchem_input_params[key]
+        self.default_parameters = remove_dict_nones(
+            {
+                "cores": self.cores,
+                "charge": self.charge,
+                "spin_multiplicity": self.spin_multiplicity,
+                "rem": self.rem,
+                "opt": self.opt,
+                "pcm": self.pcm,
+                "solvent": self.solvent,
+                "smx": self.smx,
+                "scan": self.scan,
+                "van_der_waals": self.van_der_waals,
+                "vdw_mode": self.vdw_mode,
+                "plots": self.plots,
+                "nbo": self.nbo,
+                "geom_opt": self.geom_opt,
+                "cdft": self.cdft,
+                "almo_coupling": self.almo_coupling,
+                "svp": self.svp,
+                "pcm_nonels": self.pcm_nonels,
+                "cores": self.cores,
+            }
+        )
