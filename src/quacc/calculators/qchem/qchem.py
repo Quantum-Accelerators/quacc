@@ -38,7 +38,7 @@ class QChem(FileIOCalculator):
         spin_multiplicity: int = 1,
         method: str | None = None,
         basis_set: str = "def2-tzvpd",
-        job_type: Literal = ["sp", "force", "opt", "freq"],
+        job_type: Literal["sp", "force", "opt", "freq"] = "force",
         scf_algorithm: str = "diis",
         cores: int = 1,
         qchem_input_params: dict[str, Any] | None = None,
