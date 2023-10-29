@@ -9,6 +9,7 @@ from ase.calculators.calculator import FileIOCalculator
 
 from quacc.calculators.qchem import custodian
 from quacc.calculators.qchem.io import read_qchem, write_qchem
+from quacc.calculators.qchem.params import cleanup_params, get_default_params
 
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Literal
@@ -80,58 +81,26 @@ class QChem(FileIOCalculator):
         self.qchem_input_params = qchem_input_params or {}
         self.fileiocalculator_kwargs = fileiocalculator_kwargs
 
-        # Sanity checks
+        # Instantiate previous orbital coefficients
+        self.prev_orbital_coeffs = None
+
         if "directory" in self.fileiocalculator_kwargs:
             raise NotImplementedError("The directory kwarg is not supported.")
 
-        if "overwrite_inputs" not in self.qchem_input_params:
-            self.qchem_input_params["overwrite_inputs"] = {}
-
-        if self.qchem_input_params.get("smd_solvent") and self.qchem_input_params.get(
-            "pcm_dielectric"
-        ):
-            raise ValueError("PCM and SMD cannot be employed simultaneously.")
-
-        if "rem" not in self.qchem_input_params["overwrite_inputs"]:
-            self.qchem_input_params["overwrite_inputs"]["rem"] = {}
-        if (
-            method
-            and "method" not in self.qchem_input_params["overwrite_inputs"]["rem"]
-        ):
-            self.qchem_input_params["overwrite_inputs"]["rem"]["method"] = method
-
-        # We will save the parameters that have been passed to the Q-Chem
-        # calculator via FileIOCalculator's self.default_parameters
-        self.default_parameters = {
-            "cores": self.cores,
-            "charge": self.charge,
-            "spin_multiplicity": self.spin_multiplicity,
-            "scf_algorithm": self.scf_algorithm,
-            "basis_set": self.basis_set,
-        }
-
-        if method:
-            self.default_parameters["method"] = method
-
-        # We also want to save the contents of self.qchem_input_params. However,
-        # the overwrite_inputs key will have a corresponding value which is
-        # either an empty dictionary or a nested dict of dicts, requiring a bit
-        # of careful unwrapping.
-        for key in self.qchem_input_params:
-            if key == "overwrite_inputs":
-                for subkey in self.qchem_input_params[key]:
-                    for subsubkey in self.qchem_input_params[key][subkey]:
-                        self.default_parameters[
-                            f"overwrite_{subkey}_{subsubkey}"
-                        ] = self.qchem_input_params[key][subkey][subsubkey]
-            else:
-                self.default_parameters[key] = self.qchem_input_params[key]
+        # Set parameters
+        self.qchem_input_params = cleanup_params(self.qchem_input_params, method)
+        self.default_parameters = get_default_params(
+            cores,
+            charge,
+            spin_multiplicity,
+            method,
+            basis_set,
+            scf_algorithm,
+            qchem_input_params,
+        )
 
         # Get Q-Chem executable command
         self.command = self._manage_environment()
-
-        # Instantiate previous orbital coefficients
-        self.prev_orbital_coeffs = None
 
         # Instantiate the calculator
         FileIOCalculator.__init__(
