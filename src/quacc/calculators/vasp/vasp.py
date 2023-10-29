@@ -18,10 +18,10 @@ from quacc import SETTINGS
 from quacc.calculators.custodian import vasp as custodian_vasp
 from quacc.calculators.vasp.io import load_vasp_yaml_calc
 from quacc.calculators.vasp.params import (
-    set_auto_dipole,
-    convert_auto_kpts,
     calc_swaps,
+    convert_auto_kpts,
     remove_unused_flags,
+    set_auto_dipole,
 )
 from quacc.runners.prep import set_magmoms
 

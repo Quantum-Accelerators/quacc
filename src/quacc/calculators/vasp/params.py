@@ -1,13 +1,11 @@
 """
 Parameter-related utilities for the Vasp calculator.
 """
+import logging
 from typing import TYPE_CHECKING
 
-import logging
 import numpy as np
-
 from ase.calculators.vasp import Vasp as Vasp_
-
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.vasp.inputs import Kpoints
 from pymatgen.symmetry.bandstructure import HighSymmKpath
